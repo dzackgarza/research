@@ -68,7 +68,7 @@ be the decomposition of [@DK13, (3.6), printed p. 513], with $h^2 = 2$ and $e,f$
 
 ::: {.proof}
 
-*Item 1.* In the basis $(h;e,f;\beta_1,\dots,\beta_8)$, with $\beta_i$ a basis of the $E_8(2)$ summand, the Gram matrix of $T_\Co$ is block diagonal with entries $h^2 = 2$, $(e,f) = 2$, and the $E_8(2)$ block; its determinant is $2\cdot4\cdot2^8\cdot\abs{\det E_8} = -2048$, and its signature is $(2,9)$.
+*Item 1.* In the basis $(h;e,f;\beta_1,\dots,\beta_8)$, with $\beta_i$ a basis of the $E_8(2)$ summand, the Gram matrix of $T_\Co$ is block diagonal with entries $h^2 = 2$, $(e,f) = 2$, and the $E_8(2)$ block; its determinant is the product $2\cdot(-4)\cdot2^8 = -2048$ of the determinants of the three blocks, and its signature is $(2,9)$.
 The only nonzero entry of the column $(x,\eta)$ is $(f,\eta) = 2$, so
 $$
 \eta^{\perp T_\Co} = \theset{x\in T_\Co \st x_f = 0} = \ZZ e\oplus\generators{h}\oplus E_8(2) = \ZZ\eta\oplus K_I,
@@ -80,7 +80,7 @@ $e$ is primitive, and it is isotropic. Quotienting by $\ZZ\eta$ removes one rank
 Its restriction to $\ZZ\eta\oplus K_I$ is $\id_{\ZZ\eta}\oplus g$, so the map it induces on the quotient $\eta^{\perp}/\ZZ\eta = K_I$ is $g$.
 Conversely an isometry fixing $\eta$ preserves $\eta^\perp$ and the line $\ZZ\eta$, hence induces an isometry of that quotient, so restriction is a well-defined homomorphism $\Stab_{\Orth(T_\Co)}(\eta)\to\Orth(K_I)$; the assignment $g\mapsto\hat g$ is a section of it, and a surjection with a section is onto. So the image is $\Orth(K_I)$.
 
-*Item 3.* A root $r$ of $K_I$ has $r^2\in\theset{-2,-4}$ and is primitive: from $r = 2s$ we would get $s^2 = -1$ or $-1/2$, and $K_I$ is even, so $s^2$ is even. Since $(r,h) = 2r_h$ is even and $r$ is primitive, $\div_{K_I}(r) = 2$.
+*Item 3.* A root $r$ of $K_I$ has $r^2\in\theset{-2,-4}$ and is primitive: from $r = 2s$ we would get $s^2 = -1$ or $-1/2$, and $K_I$ is even, so $s^2$ is even. Every pairing of $r$ with $K_I$ is even --- with $h$ it is $2r_h$, and with a vector of $E_8(2)$ it is twice an integer because $E_8(2)$ is the lattice $E_8$ with its form doubled --- and $r$ is primitive, so $\div_{K_I}(r) = 2$.
 The reflection $s_r(x) = x - 2\frac{(x,r)}{(r,r)}r$ is integral on $K_I$: for $r^2 = -2$ its coefficient is $-(x,r)$, an integer, and for $r^2 = -4$ it is $(x,r)/2$, an integer by the divisibility. So each $s_r$ is an isometry of $K_I$, and
 $$
 W^{(2,4)}(K_I) = \generators{s_r \st r \text{ a root of } K_I} \leq \Orth(K_I)
@@ -141,7 +141,7 @@ The collection of semifans that the semitoroidal compactification of these three
 - The chamber at the one $0$-cusp of $F^{\mathrm{un}}_\Co$, with the Coble roots marked and the orbits of the maximal parabolic subdiagrams under the diagram symmetries: @thm:coble-cusp-chamber, from [@AN06, Table 1, entry $N = 10$, printed p. 52]; the ten-node enumeration that the question originally asked for is superseded by it, the chamber having nine nodes, and the library enumeration of the subdiagram orbits is sage-extensions#254.
 - The reflectivity verdict for each row of the Coble table, the two-reflectivity failure, and the boundary lattices of the non-reflective rows: @cor:coble-table-reflectivity, @thm:coble-table-not-two-reflective, @prop:coble-table-cusp-boundary-lattices, with the open replacement @qst:coble-nonreflective-semifans.
 - The Coble arrangement is nonempty, so the GIT compactification of the ten-nodal sextics is a proper Looijenga model and not the Baily--Borel compactification: @thm:coble-arrangement-nonempty, from [@YZ23, Prop. 3.7, p. 10] with the Winger parametrization of [@Dol18, §7, pp. 13--14] (stated on the open-problems page); the $\Gamma_{10A_1}$-orbit count of the arrangement is stated as open there.
-- The group of the one $0$-cusp of $F^{\mathrm{un}}_\Co$: the representative lies in the $U(2)$ summand of $T_\Co$, its perpendicular splits as $\ZZ\eta\oplus K_I$, and every isometry of $K_I$ extends to one of $T_\Co$ fixing $\eta$, so the image of $\Stab_{\Orth T_\Co}(\eta)$ in $\Orth K_I$ is all of $\Orth K_I$ and contains $W^{(2,4)}(K_I)$ (@prop:cusp-stabilizer-orthogonal-coble). What the same extension gives for $\Gamma_\Co$, and where it stops, is @prop:cusp-stabilizer-section; the part of @qst:cusp-stabilizer-containment that named $\Orth T_\Co$ is discharged and the question now names only $\Gamma_\Co$, $\Gamma_\En$ and $\gent$.
+- The group of the one $0$-cusp of $F^{\mathrm{un}}_\Co$: a representative lies in the $U(2)$ summand of $T_\Co$, its perpendicular splits as $\ZZ\eta\oplus K_I$, and every isometry of $K_I$ extends to one of $T_\Co$ fixing $\eta$, so the image of $\Stab_{\Orth T_\Co}(\eta)$ in $\Orth K_I$ is all of $\Orth K_I$ and contains $W^{(2,4)}(K_I)$ (@prop:cusp-stabilizer-orthogonal-coble). What the same extension gives for $\Gamma_\Co$, and where it stops, is @prop:cusp-stabilizer-section; the part of @qst:cusp-stabilizer-containment that named $\Orth T_\Co$ is discharged and the question now names only $\Gamma_\Co$, $\Gamma_\En$ and $\gent$.
 
 **Open, with the exact missing hypothesis.**
 
