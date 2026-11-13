@@ -189,11 +189,11 @@ A choice of such a basis is a marking of $S$, and it defines an isomorphism of l
 
 ::: {.proof}
 
-For $N = 0$, $\Pic(\PP^2)\cong\bZ$ with generator the class $h$ of a line, $h^2 = 1$ [@Har10a, V Ex. 1.4.2], and $K_{\PP^2} = -3h$ [@Har10a, V Ex. 1.4.4].
+For $N = 0$, $\Pic(\PP^2)\cong\bZ$ with generator the class $h$ of a line, $h^2 = 1$ [@Har77, V Ex. 1.4.2], and $K_{\PP^2} = -3h$ [@Har77, V Ex. 1.4.4].
 For $N\geq 1$, @prop:blowup-geometric-basis holds for $S_{N-1}$ by induction, with basis $e_0', \ldots, e_{N-1}'$.
-By [@Har10a, V.3.2], $\Pic(S_N)\cong\Pic(S_{N-1})\oplus\bZ\,E_N$ by $\pi_N^*$ and $1\mapsto E_N$, with $(\pi_N^*D)\cdot(\pi_N^*D') = D\cdot D'$, $(\pi_N^*D)\cdot E_N = 0$ and $E_N^2 = -1$.
+By [@Har77, V.3.2], $\Pic(S_N)\cong\Pic(S_{N-1})\oplus\bZ\,E_N$ by $\pi_N^*$ and $1\mapsto E_N$, with $(\pi_N^*D)\cdot(\pi_N^*D') = D\cdot D'$, $(\pi_N^*D)\cdot E_N = 0$ and $E_N^2 = -1$.
 So $e_i = \pi_N^* e_i'$ for $i < N$ and $e_N = [E_N]$ form a basis of $\Pic(S_N)$ with the stated intersection numbers, which is (1).
-By [@Har10a, V.3.3], $K_{S_N} = \pi_N^*K_{S_{N-1}} + E_N = -3e_0 + e_1 + \cdots + e_{N-1} + e_N$, which is (2).
+By [@Har77, V.3.3], $K_{S_N} = \pi_N^*K_{S_{N-1}} + E_N = -3e_0 + e_1 + \cdots + e_{N-1} + e_N$, which is (2).
 
 For (3), the divisor $C\in\abs{-2K_S}$ is the disjoint union of the smooth curves $C_i$, so it is smooth, and $S$ is a smooth rational surface.
 So @prop:double-cover-is-k3 applies to $f$ and gives $f^*D\cdot f^*D' = 2(D\cdot D')$ for all $D, D'\in\Pic(S)$.

@@ -172,21 +172,9 @@ A vector of $T_\Co = \delta^{\perp\ten}$ pairs trivially with $\delta$, so no li
 The white nodes certify which root is the marking line: at cusps $3$ and $4$ it is Sterk's label $8$, at cusp $5$ his label $11$, each certified ``is $\pm\delta$: True'', and the root vectors carry $U$-coordinates $(-1, 1)$, of $\delta$-pairing $2$, while the remaining admissible roots carry $U$-coordinates $(1, 1)$, of $\delta$-pairing $0$ (`computations/reports/coble_cusp-admissibility-run.txt`, `computations/reports/coble_enriques-white-root-facets-run.txt`).
 :::
 
-::: {.theorem #thm:no_moduli_loss title="The face of the restricted Enriques semifan determines the marked Coble root"}
-
-At each marked $0$-cusp $[I]$ among Sterk's cusps $3$, $4$ and $5$, with boundary lattice $K_I = \eta_I^{\perp\ten}/\ZZ\eta_I$ and restricted Enriques semifan $\mathcal{F}_I$: for two admissible roots $r_1, r_2$ of $K_I$ that are inequivalent under $\Gamma_{\Co,2} = R_{\Gamma_{\En,2}}$ (@prop:gamma-co-images), the hyperplanes $r_1^\perp$ and $r_2^\perp$ cut different faces of $\mathcal{F}_I$.
-An isomorphism of stable pairs over $[I]$ then induces an element of $\Gamma_{\Co,2}$ that carries one marked root to the other, and the converse holds.
+::: {.conjecture #conj:no_moduli_loss}
 
 The stable quotient determines its marked Coble root among the $T_\Co$-roots of each marked cusp: the $\frac{1}{4}(1,1)$ singularity of @prop:coble-quarter-singularity -- equivalently, the contracted anti-bicanonical $(-4)$-curve of @prop:antibicanonical-system -- recovers it, so that degenerations at a marked cusp whose marked roots are $T_\Co$-roots, inequivalent under $\Gamma_{\Co,2}$, are not identified in the KSBA boundary.
-
-::: {.proof}
-
-By `computations/reports/coble_coble-root-orbits-run.txt`: at cusps $3$ and $4$ the admissible root is unique -- Sterk's label $12$ at cusp $3$, his label $10$ at cusp $4$ -- so no pair of roots exists there and the statement holds vacuously.
-At cusp $5$ the three admissible roots, Sterk's labels $12$, $13$ and $14$, have pairwise distinct classes in $K_I = \eta_I^{\perp\ten}/\ZZ\eta_I$: no two of the three root vectors differ by an integral multiple of $\eta_I$, so each determines its own wall of the fundamental chamber of the reflection group of $K_I$, and the hyperplanes $r^{\perp}$ cut three different faces of $\mathcal{F}_I$.
-Since every pair of admissible roots at the cusp cuts different faces, the pairs that are inequivalent under $\Gamma_{\Co,2}$ -- a subfamily, whose orbit structure the pinned sage-extensions run at 4d5cb14307256f52e5b63e94f5d1444a1744862f computes as three orbits one class each (sage-extensions#370, closed at 1df83be981) -- do so a fortiori.
-The face cut by $r^\perp$ is the wall of that chamber, and the classification of the KSBA stable pairs by cusp and face is [@AEGS25, Thm. 5.9, printed p. 611], the coarsening of the Coxeter fan that defines the irrelevant roots is [@AEGS25, §5.2, printed p. 611], and the walls of the chamber of $K_I$ at the three cusps, eight of square $-4$ and one of $-2$, are the pinned run's.
-
-:::
 
 The group that the determination is modulo is $\Gamma_{\Co,2} = R_{\gent}$, the image of $\Stab_{\gent}(\delta)$ in $\Orth(\delta^{\perp})$ (@prop:gamma-co-images, @prop:gamma-co-2-line-stabilizer): the stabilizer of the root line $\ZZ\delta$ in $\gent$.
 It is not the monodromy group $\Gamma_{\Co}$ of @def:gamma-co-groups, whose equality with the stable subgroup $\widetilde{\Orth}^+(T_{\Co})$ is @conj:gamma-co-stable.
@@ -198,7 +186,9 @@ At cusp $3$ the admissible roots are not both relevant: the label $12$ lies in t
 
 **The corrected statement, and what it waits on.** The determination is stated for the $T_\Co$-roots only: the admissible roots of $K_I$ whose lifts are $(-2)$-vectors of $T_\Co$ orthogonal to $\eta_I$ -- at cusp $3$ Sterk's label $12$, at cusp $4$ his label $10$, at cusp $5$ his labels $12$, $13$ and $14$ (`computations/reports/coble_cusp-admissibility-run.txt`, `computations/reports/coble_enriques-white-root-facets-run.txt`).
 The marking-line root $[\pm\delta]$ is not among them by @prop:marking-line-no-coble-lift, and at cusp $2$ the unique admissible root is the marking line itself, so no $T_\Co$-root exists there.
-The proof is the record `computations/reports/coble_coble-root-orbits-run.txt`: the orbit computation of the admissible roots, filed as sage-extensions#370 and closed at 1df83be981, supplies the orbits, and that record `computations/reports/coble_coble-root-orbits-run.txt` supplies the objects -- the classes of the roots in $K_I$, pairwise distinct at cusp $5$ -- so the map from $\Gamma_{\Co,2}$-orbits of these roots to the faces is injective at each of the three cusps.
+The open step is this: for each admissible $T_\Co$-root $r$ at cusp $5$ -- Sterk's labels $12$, $13$ and $14$ -- the smallest cone of $\mathcal{F}_5$ that contains $r^{\perp}\intersect C$ is not computed.
+Distinct classes in $K_I$ do not decide the statement.
+The record `computations/reports/coble_coble-root-orbits.py` and its run file compute the classes of the roots in $K_I$, pairwise distinct at cusp $5$; the orbit computation of the admissible roots, filed as sage-extensions#370 and closed at 1df83be981, supplies the orbits.
 The classification of the KSBA stable pairs by cusp and face, and the coarsening of the Coxeter fan that defines the irrelevant roots, are both those of the Nagoya Math. J. 259 (2025) text: the classification is [@AEGS25, Thm. 5.9, printed p. 611], and the coarsening is [@AEGS25, §5.2, printed p. 611].
 
 :::

@@ -14,7 +14,7 @@ anything, check whether it, or anything it touches, violates that model or its i
 violation found, in your task or outside it, is recorded as a defect where this repository records
 defects, never worked around or silently kept.
 
-# The evidence model: nothing from a leaf is trusted (read before anything else)
+# The evidence model: nothing from a leaf is trusted
 
 These invariants bind every repository of the programme. They are stated here in full, not only
 by link, because they have been violated repeatedly by moves that each looked locally reasonable.
@@ -170,8 +170,8 @@ The [function-level assignments](../gitclones/sage-indefinite-port/references/po
 ## Owner resume — 2026-10-08
 
 The repository owner resumed this workstream on 2026-10-08 after the October stop. The three
-priority steps of that resume are complete; select current work from the [native issue tree](https://github.com/dzackgarza/research/issues/46)
-with `itree next dzackgarza/research`. Record completed source-audit reasoning, including the required
+priority steps of that resume are complete; work is selected by the always-on issue-tree rule
+below. Record completed source-audit reasoning, including the required
 inventory and ancestor review, in the corresponding commit. Keep unexecuted mathematical assertions and
 unresolved computation frontiers on their owning issues so later execution can find them. The geometry
 and cohomology scope of the former `HANDOFF.md` is [sage-extensions#168](https://github.com/dzackgarza/sage-extensions/issues/168)
