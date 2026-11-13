@@ -95,7 +95,7 @@ In the notation of @prop:cusp-stabilizer-orthogonal-coble let $\rho$ be the disc
 1. $A_{T_\Co} = A_{U(2)}\oplus A_{K_I}$ and $\rho(\hat g) = \id_{A_{U(2)}}\oplus\rho_{K_I}(g)$; hence $\hat g\in\ker\rho$ if and only if $g\in\ker\rho_{K_I}$;
 2. $\hat g\in\Orth^+(T_\Co)$ if and only if $g\in\Orth^+(K_I)$;
 3. the extension therefore carries $\widetilde\Orth^+(K_I)$ into $\widetilde\Orth^+(T_\Co)$, so the image of $\Stab_{\widetilde\Orth^+(T_\Co)}(\eta)$ in $\Orth(K_I)$ contains $\widetilde\Orth^+(K_I)$; under @conj:gamma-co-stable this is the statement for $\Gamma_\Co$;
-4. for an even lattice $L$, the reflection in a $(-2)$-root of $L$ lies in $\ker\rho_L$, and the reflection in a primitive $(-4)$-root of divisibility $2$ does not.
+4. for a lattice $L$, the reflection in a $(-2)$-root of $L$ lies in $\ker\rho_L$, and the reflection in a primitive $(-4)$-root of divisibility $2$ does not.
    In particular every reflection in a $(-2)$-root of $K_I$ lies in $\widetilde\Orth^+(K_I)$, and none in a $(-4)$-root does.
 
 :::
