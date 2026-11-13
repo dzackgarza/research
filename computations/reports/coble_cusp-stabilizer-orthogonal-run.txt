@@ -1,0 +1,46 @@
+Part A: T_Co Gram det = -2048  signature = (2, 9, 0)
+        K_I = <2> + E8(-2): rank 9  det 512  signature (1, 8, 0)
+        eta = e, the U(2) isotropic basis vector: eta^2 = 0
+        (x,eta) = 2*x_f  =>  eta^perp = {x_f = 0} = Z eta (+) K_I
+        rank eta^perp = 10 ; all basis vectors pair 0 with eta: OK
+        eta^perp/Z eta has Gram = K_I, det 512 = 2^9: OK
+
+Part B: A_{T_Co} = A_{U(2)} (+) A_{K_I}
+        |A_{T_Co}| = |det T_Co| = 2048 ; |A_{U(2)}| = 4 ; |A_{K_I}| = 512 ; product = 2048
+
+Part B': the section g |-> id_{U(2)} (+) g lands in Stab_{O(T_Co)}(eta)
+   r = [0, -1, -1, -1, -1, -1, -1, -1, -1]  r^2 = -4  div = 2  | s_r integral: True  isometry of K_I: True  | lift fixes eta: True  lift isometry of T_Co: True
+   r = [0, -1, -1, -1, -1, -1, -1, -1, 0]  r^2 = -4  div = 2  | s_r integral: True  isometry of K_I: True  | lift fixes eta: True  lift isometry of T_Co: True
+   r = [0, -1, -1, -1, -1, -1, -1, 0, -1]  r^2 = -4  div = 2  | s_r integral: True  isometry of K_I: True  | lift fixes eta: True  lift isometry of T_Co: True
+   r = [1, -1, -1, -1, -1, -1, -1, -1, -1]  r^2 = -2  div = 2  | s_r integral: True  isometry of K_I: True  | lift fixes eta: True  lift isometry of T_Co: True
+   r = [-1, -1, -1, -1, -1, -1, -1, -1, -1]  r^2 = -2  div = 2  | s_r integral: True  isometry of K_I: True  | lift fixes eta: True  lift isometry of T_Co: True
+   => every such g in O(K_I) extends to an isometry of T_Co fixing eta
+   => O(K_I) is contained in the image of Stab_{O(T_Co)}(eta) in O(K_I)
+   => the image equals O(K_I), and contains W^(2,4)(K_I) <= O(K_I)
+
+Part C: which root reflections of K_I lie in ker(O(K_I) -> O(A_{K_I}))
+   |A_{K_I}| = 512 (= 2^9 = 512), exponent 2: True
+   r with r^2 = -2  div 2 : s_r integral True | in O^+(K_I): True | trivial on A_{K_I}: True
+   r with r^2 = -4  div 2 : s_r integral True | in O^+(K_I): True | trivial on A_{K_I}: False
+
+   the exceptional case: a (-4)-root whose class r/2 is a nonzero element of A_{K_I}
+   (-4)-roots of K_I acting nontrivially on A_{K_I}: 88 of the 88 tested (box |c_i| <= 1)
+   example r = [0, -1, -1, -1, -1, -1, -1, -1, -1]  : r/2 in K_I^* and r/2 not in K_I => s_r moves the class r/2, so s_r is NOT in ker rho_{K_I}
+
+Part D: T_En = U + U(2) + E8(-2), the five cusp representatives
+   det T_En = 1024  signature (2, 10, 0)
+   type 1 : eta^2 = 0  div = 1  primitive: True
+   type 2 : eta^2 = 0  div = 2  primitive: True
+   type 3 : eta^2 = 0  div = 2  primitive: True
+   type 4 : eta^2 = 0  div = 2  primitive: True
+   type 5 : eta^2 = 0  div = 2  primitive: True
+   type 1 : (x,eta) is a nonzero multiple of x_1 only ; K_j = U(2) + E8(-2)  det -1024  rank 10
+   type 2 : (x,eta) is a nonzero multiple of x_3 only ; K_j = U + E8(-2)  det -256  rank 10
+
+   types 3, 4, 5: div 2 as well, and by [Ste91, Prop. 4.5] the primitive
+   isotropic vectors of T_En form exactly two O(T_En)-orbits, separated by
+   divisibility: type 1 is the div-1 orbit, and types 2, 3, 4, 5 lie in the
+   div-2 orbit, the one represented by e' in the U(2) summand.
+
+DONE
+PYEXIT=0
