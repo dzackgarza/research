@@ -26,6 +26,7 @@ tags:
 | Unknown | Stated in |
 |:---|:---|
 | **The reflection subgroup of each Sterk fundamental domain** | @qst:sterk-reflection-subgroup, @qst:sterk-ideal-vertices |
+| **The cusp-stabilizer containment** | @qst:cusp-stabilizer-containment |
 | **Global questions on hyperbolic Coxeter diagrams** | @qst:maximal-parabolic-complexity, @conj:galois-invariance-parabolics, @qst:parabolic-count-growth, @qst:exact-covolume, @qst:regularized-theta |
 
 : {tbl-colwidths="[35,65]"}
