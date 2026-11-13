@@ -1,0 +1,32 @@
+the admissible roots at the marked cusps 3, 4, 5 of T_Co, their orbits and faces
+Sage runtime; exact ZZ linear algebra; wall data of the pinned sage-extensions copy
+T_En Gram determinant 1024; delta = e - f, delta^2 = -2
+cusp 3: eta_j . delta =  0  (eta_j in T_Co = delta^perp: True)
+cusp 4: eta_j . delta =  0  (eta_j in T_Co = delta^perp: True)
+cusp 5: eta_j . delta =  0  (eta_j in T_Co = delta^perp: True)
+
+=== (1) the admissible roots: the walls orthogonal to delta, of square -2
+cusp 3: 12 printed roots; walls in T_Co (labels) [1, 2, 3, 4, 5, 6, 7, 9, 12]; admissible roots at [12]
+        label 12: r^2 = -2, (r, delta) = 0, (r, eta_j) = 0
+cusp 4: 11 printed roots; walls in T_Co (labels) [1, 2, 3, 4, 5, 6, 7, 9, 10]; admissible roots at [10]
+        label 10: r^2 = -2, (r, delta) = 0, (r, eta_j) = 0
+cusp 5: 14 printed roots; walls in T_Co (labels) [1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 14]; admissible roots at [12, 13, 14]
+        label 12: r^2 = -2, (r, delta) = 0, (r, eta_j) = 0
+        label 13: r^2 = -2, (r, delta) = 0, (r, eta_j) = 0
+        label 14: r^2 = -2, (r, delta) = 0, (r, eta_j) = 0
+the counts are the page's: cusp 3 label 12, cusp 4 label 10, cusp 5 labels 12, 13, 14
+
+=== (2) the orbits under the reflections in the walls' classes, with transporters
+=== (3) the face comparison for each pair of inequivalent roots
+cusp 3: 9 walls in T_Co, 1 roots at labels [12]
+
+cusp 4: 9 walls in T_Co, 1 roots at labels [10]
+
+cusp 5: 11 walls in T_Co, 3 roots at labels [12, 13, 14]
+        labels 12 and 13: the classes agree: False
+        labels 12 and 14: the classes agree: False
+        labels 13 and 14: the classes agree: False
+
+elapsed 0 s
+PYEXIT=0
+exit=0
