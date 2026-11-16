@@ -99,12 +99,14 @@ whose walls are roots of `K`.  Parts C--E are that operation, and `writing/` cit
 Run
 ---
   $HOME/sage-image/run.sh -b "$PWD:/repo" -w /repo -- \\
-      /usr/bin/env PYTHONPATH=/repo/.scratch/sage-extensions/src \\
+      /usr/bin/env PYTHONPATH=/repo/.scratch/se-main/src \\
       /sage/.venv/bin/python /repo/computations/reports/coble_sterk-reflection-subgroup-index.py <cusp>
 
-One cusp per run: `Gamma_{En,2}` and `cusp_chamber()` cost minutes on the shared VM, and the walk is
-the rest of the time.  Transcript: `coble_sterk-reflection-subgroup-index-run.txt`, one block per run,
-each ending with its elapsed time.
+`PYTHONPATH` names the `src` of a clone of `sage_extensions` main, and the run prints the commit of
+whatever it loaded.  One cusp per run: `Gamma_{En,2}` and `cusp_chamber()` cost minutes on the shared
+VM, and the walk is the rest of the time.  Transcript:
+`coble_sterk-reflection-subgroup-index-run.txt`, one block per run, appended in the order the runs
+were made and dated by its start, with its wall time after it.
 """
 import pathlib
 import sys
