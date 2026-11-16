@@ -113,6 +113,22 @@ $$
 $$
 then $Y$ and $W$ are toric for the same polygon $Q$, with lattices $\ZZ^2$ and $\ZZ^2_{\mathrm{even}}$, respectively. Likewise $X$ and $Z$ use the same pyramid $P$ with lattices $\ZZ^3$ and $\{(a,b,c):a+b+c\in2\ZZ\}$. The quotient map $Y\to W$ branches at the torus-fixed vertices, and on the long boundary sides adjacent to the distinguished vertex. The index-two cover $Z\to W$ branches at that vertex and on those boundary sides; at isolated branch points away from $C_W$, the index-one cover $Z'\to W$ branches at the complementary subset (@prop:abcde-two-covers). In the square example $Q=[0,2]^2$, $Y=\PP^1\times\PP^1$ and $W$ has four $A_1$ torus-fixed points. In the triangle with vertices $(0,0),(2,0),(2,2)$, $Y=\PP^2$ and $W=\PP(1,1,2)$ [@AEGS25, §6B].
 
+Write $\alpha:2={}_2\beta\subset\gamma$ when $\alpha$ is the ADE type of $X\to Y$, ${}_2\beta$ is the type of the index-two cover $Z\to W$, and $\gamma$ is the ADE type of the index-one cover $Z'\to W$; omit $\gamma$ when $\beta=\gamma$. The torus involution gives the following families [@AEGS25, §6B]:
+
+| ADE cover | Index-two type | Index-one type when distinct |
+| --- | --- | --- |
+| $A_{4n-1}$ | ${}_2A_{2n-1}$ | |
+| $A_{4n+1}$ | ${}_2\bar A_{2n-1}^{-}$, ${}_2{}^{-}\!A_{2n}$, or ${}_2A_{2n}^{-}$ | |
+| $D_{4n}$ | ${}_2{}'B_{2n}^{-}$ | ${}'D_{2n+1}^{-}$ |
+| $D_{4n+2}$ | ${}_2{}'B_{2n+1}^{-}$ | ${}'D_{2n+2}$ |
+| $\widetilde D_{4n}$ | ${}_2\widetilde C_{2n}$ | $\widetilde D_{2n+2}$ |
+| $\widetilde E_7$ | ${}_2\widetilde B_3$ | $\widetilde D_4$ |
+| $\widetilde A_{4n-1}$ | ${}_2\widetilde A_{2n-1}$ | |
+
+The toric quotient $(W,C_W)$ has the same polygon $Q$ in the even lattice. Its ADE label is read from this polygon, with the decorated cases determined by the non-klt singularities [@AT17, Fig. 9, Tables 2–3]. If $c$ is the distinguished vertex and $v_i$ the adjacent vertices, the sides $(c,v_i)$ that are long in the even lattice can be indexed by $i\equiv0\pmod4$. The map $Z\to W$ branches along their boundary divisors and at $c$, has two $A_1$ points over each intersection of such a divisor with $B_W$, and is unramified over the vertices $v_i$ indexed by $i\equiv2\pmod4$ [@AEGS25, §6B].
+
+For $Q=[0,2]^2$, take the two boundary fibers through $(2,2)$ and $B\in|\mathcal O(2,2)|$. The del Pezzo ADE type of $(Y,C+B/2)$ is $D_4$, that of $(W,C_W)$ is ${}'D_3^{-}$, and the index-two type is ${}_2{}'B_2^{-}$. The two anticanonical double covers of $W$ branch over complementary pairs of its four torus-fixed $A_1$ points, as well as over $B_W$. For the triangular $Q$, take the two sides through $(2,2)$ and $B\in|\mathcal O_{\PP^2}(2)|$. The quotient $W$ is the quadratic cone; $(Y,C)$ has type $A_1$ and $(W,C_W)$ type $A_0^-$. The index-two cover branches over $B_W$ and the long boundary side, with two $A_1$ points over that side's intersection with $B_W$ and two over the apex. The index-one cover branches over $B_W$ and the apex and is isomorphic to $\PP^2$ [@AEGS25, §6B].
+
 For a polytope involution $\tau(x,y)=(x^{-1},-y)$, take $\iota_{\mathrm{En}}(x,y,z)=(x^{-1},-y,-z)$. In the affine $\widetilde A_{2n-1}$ case, the involution is $(x,y,z)\mapsto(qx^{-1},-y,-z)$ and sends $\theta_i$ to $\theta_{4n-i}$; the defining equation is invariant exactly when $c_i=c_{-i}$ [@AEGS25, §6C]. In the finite $A_{4n-1}$ example, the symmetric equation has
 $$
 f=y^2+x^{-2n}+\sum_{i=1}^{2n-1}a_ix^{-2n+i}+a_{2n}
@@ -120,6 +136,18 @@ f=y^2+x^{-2n}+\sum_{i=1}^{2n-1}a_ix^{-2n+i}+a_{2n}
 \qquad a_i=a_{4n-i},
 $$
 giving $2n$ free parameters. With $u=y+\sqrt{-1}z$ and $v=y-\sqrt{-1}z$, the equation becomes $uv+f=0$ and the involution on the eliminated-coordinate chart is $(x,u)\mapsto(x^{-1},-u)$ [@AEGS25, §6C].
+
+The polytope involution gives these further families [@AEGS25, §6C]:
+
+| ADE cover | Index-two type | Index-one type |
+| --- | --- | --- |
+| $A_{4n-1}$ | ${}_2{}''B_{2n}$ | ${}''D_{2n+2}$ |
+| $\bar A_{4n-3}^{-}$ | ${}_2{}''B_{2n-1}^{-}$ | ${}''D_{2n+1}^{-}$ |
+| ${}'A_{4n-1}'$ | ${}_2{}''B_{2n}'$ | ${}''D_{2n+2}'$ |
+| $\widetilde D_{4n}$ | ${}_2\widetilde B_{2n}$ | $\widetilde D_{2n+2}^{\prime\prime}$ |
+| $\widetilde A_{4n-1}$ | ${}_2\widetilde C_{2n}$ | $\widetilde D_{2n+4}^{\prime\prime\prime\prime}$ |
+
+In the first row $Y=\PP(1,1,2n)$ and its minimal resolution is $\mathbb F_{2n}$. The lifted involution fixes four points: two on the negative section and two on a positive section. Their images give four $A_1$ points in the quotient of $\mathbb F_{2n}$; after the contraction to $W$, three singularities remain. The one on $C_W$ has resolution chain with negatives of self-intersections $(2,n+1,2)$. The symmetry condition $a_i=a_{4n-i}$ yields the $2n$ parameters above. The corresponding formula for $A_{4n-3}$ has a fixed curve, so it does not define an Enriques-type involution [@AEGS25, §6C].
 
 ## Components in stable Enriques degenerations
 
