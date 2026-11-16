@@ -49,6 +49,12 @@ U_\sigma\simeq\operatorname{Spec}\mathbb C[x,y,z,w]/(xw-yz).
 $$
 This cone is not simplicial: it has four extremal rays in dimension three. By contrast, every strongly convex two-dimensional cone is simplicial, though it need not be regular; the resulting affine toric surface singularity is a cyclic quotient singularity [@CLS11, §§1.3, 3.1].
 
+## Normalization and finite maps
+
+A morphism $f:Y\to X$ is *finite* when each affine open $\operatorname{Spec}A\subset X$ has affine inverse image $\operatorname{Spec}B$ with $B$ a finite $A$-module. Having finite fibers is necessary but insufficient: the open immersion $\mathbb G_m\hookrightarrow\mathbb A^1$ has fibers of size at most one, yet is not finite. For an irreducible affine variety $X=\operatorname{Spec}A$, its normalization is $\operatorname{Spec}\overline A\to X$, where $\overline A$ is the integral closure of $A$ in its function field. Over $\mathbb C$ this morphism is finite and birational [@CLS11, §1.3].
+
+For an affine semigroup $S$, the normalization of $\mathbb C[S]$ is $\mathbb C[\overline S]$, where $\overline S=\operatorname{Cone}(S)\cap\operatorname{gp}(S)$ is its saturation. The semigroup $S_\sigma=\sigma^\vee\cap M$ is already saturated, which explains the normality of the toric charts above. The $A_1$ ring $\mathbb C[x,y,z]/(y^2-xz)$ is normal despite being singular: normalization and resolution perform different operations [@CLS11, §1.3].
+
 ## Fans, divisors, and blowups
 
 The torus-invariant prime divisors of a normal toric variety correspond to rays $\rho\in\Sigma(1)$. If $u_\rho$ is the primitive generator, the invariant Weil divisor $D=\sum_\rho a_\rho D_\rho$ has associated polyhedron
@@ -66,6 +72,8 @@ $$
 For a full-dimensional polytope with this normal fan, its rays correspond to the *facets* of the polytope. The number of vertices need not equal the number of rays [@Ful93, §3; @CLS11, §4.2].
 
 A subdivision of a fan gives a proper toric birational morphism. In a smooth surface cone $\operatorname{Cone}(u_1,u_2)$, inserting the ray through $u_1+u_2$ is the ordinary blowup of the torus-fixed point. Inserting the primitive ray through a general $a u_1+b u_2$ instead gives a toric weighted blowup, possibly with quotient singularities; it is not generally the ordinary blowup of an ideal written $(x^a,y^b)$ [@CLS11, §3.3]. A complete fan is polytopal exactly when it admits a strictly convex support function. Completeness alone does not ensure projectivity in dimensions at least three [@CLS11, §6.1].
+
+For a smooth projective toric variety with a torus-invariant Kähler form, the moment-map image is a polytope in $M_{\mathbb R}$; after fixing the moment-map translation, this is the polytope of the associated ample line bundle. Its normal fan recovers the toric variety. This gives the symplectic reading of the same polytope used in the integral affine construction (@sec-lagrangian-affine) [@Ful93, §4; @CLS11, §12.3].
 
 ## Polytopes and polar duality
 
@@ -91,6 +99,8 @@ For $\mathbb P^n$, the anticanonical polytope is $(n+1)\Delta_n-\sum_{i=1}^n e_i
 
 The anticanonical polytope of $\mathbb P^2$ and its reflexive polar.
 :::
+
+A normal toric variety is *Gorenstein* exactly when its canonical divisor $K_X$ is Cartier. A Fano variety has ample $-K_X$. A smooth Fano curve is $\mathbb P^1$. The Mori program studies the contractions and flips detected by $K_X$ and its intersections with curves; in the toric setting, these operations can be read from changes to the fan [@CLS11, Ch. 15].
 
 ## Toric models of anticanonical pairs
 
