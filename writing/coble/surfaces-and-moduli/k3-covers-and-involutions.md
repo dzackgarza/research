@@ -187,6 +187,14 @@ Pullback multiplies intersections by the degree of the cover, which
 gives the remaining equalities.
 :::
 
+Let $\mathfrak U$ be the parameter stack on which the square-root line bundle of the universal branch divisor is chosen. Write $\mathcal X$, $\mathcal T$, and $\mathcal S$ for the branch-surface, K3-cover, and Enriques-quotient families over $\mathfrak U$. If $\mathcal B$ is the branch divisor, $\mathcal R$ its ramification preimage, and $\mathcal R_{\mathcal S}$ the reduced image on the Enriques family, the source-native covering square is:
+
+::: {#fig-horikawa-family-cover-square .figure}
+\input{tikz/dissertation/horikawa-family-cover-square.tex}
+
+The double cover and Enriques quotient over the square-root parameter stack; the coefficients agree with @prop:horikawa-pair-volumes.
+:::
+
 The branch family defines a morphism from $U$ to the stack of stable
 surface pairs with coefficient $(1+\epsilon)/2$ and volume
 $8\epsilon^2$. The K3 and Enriques families define the corresponding
