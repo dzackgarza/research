@@ -161,3 +161,77 @@ A_{17}
 $$
 [@Sca87, §6.2, (6.2.1)].
 :::
+
+## Modular curves on the boundary
+
+For $L_k=\langle -2k\rangle\oplus U^2\oplus E_8^2$, let $E\subset L_k$ be a primitive totally isotropic plane of divisibility $e$ and suppose $\gcd(e,2k/e^2)=1$. Scattone identifies the image of its stabilizer in $\SL_2(\ZZ)$ for the stable orthogonal group with $\Gamma^1(e)$, so the open one-cusp $C_E$ is $Y_1(e)=\mathbb H/\Gamma^1(e)$ [@Sca87, Prop. 5.5.3]. The compact modular curve $X_1(e)$ has the following invariants in the cases recorded there:
+
+| $e$ | $1$ | $3$ | $5$ | $7$ | $9$ | $11$ | $13$ | $15$ | prime $q>3$ |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Genus | $0$ | $0$ | $0$ | $0$ | $0$ | $1$ | $2$ | $1$ | $(q-5)(q-7)/24$ |
+| Cusps | $1$ | $2$ | $4$ | $6$ | $8$ | $10$ | $12$ | $16$ | $q-1$ |
+
+The closure $\overline{C_E}$ in the Baily–Borel compactification need not be $X_1(e)$: the extension $X_1(e)\to\overline{C_E}$ can identify several of the modular cusps at one boundary point [@Sca87, §5.5]. Thus the table counts cusps on the normalization; it does not by itself give the number of distinct zero-cusps incident to $C_E$.
+
+Scattone's oriented incidence graph has one vertex for each $\Gamma$-orbit of primitive isotropic lines or planes. For a line $\ell$ and a plane $E$, an edge $[\ell]\to[E]$ means that a representative of $[\ell]$ lies in a representative of $[E]$. Its multiplicity is
+$$
+\mu([\ell],[E])
+=\#\left(N_\Gamma(E)\backslash
+\left\{\ell'\subset E:\ell'\text{ primitive},\ [\ell']=[\ell]\text{ under }\Gamma\right\}\right),
+\qquad
+N_\Gamma(E)=\operatorname{im}\left(\operatorname{Stab}_\Gamma(E)\to\SL(E)\right).
+$$
+If $\mu>1$, the normalization of $\overline{C_E}$ has distinct cusps identified at the same zero-cusp, producing a self-intersection there [@Sca87, (2.1.9)–(2.1.10)].
+
+::: {#fig-scattone-incidence-example .figure}
+\input{tikz/dissertation/cusp_diagrams/example-cusp-diagram.tikz}
+
+An incidence graph with two zero-cusps and two one-cusps. Both $p_1$ and $p_2$ lie on $\overline{C_{12}}$, while only $p_2$ lies on $\overline{C_2}$.
+:::
+
+## The degree-four K3 example
+
+For $k=2$, the complement $N$ of a primitive vector of square $-4$ in $E_8$ has type $D_7$. Scattone obtains nine classes in $\mathcal G(2)$ from primitive embeddings of $D_7$ into eight Niemeier lattices. The row with $E_8\oplus D_{16}$ admits two inequivalent embeddings; all other rows admit one [@Sca87, §6.3]. The resulting generalized types of the complements are:
+
+| Niemeier root system containing $D_7$ | Generalized type of $D_7^\perp$ |
+| --- | --- |
+| $E_8^3$ | $\langle-4\rangle\oplus E_8^2$ |
+| $E_8\oplus D_{16}$ | $\langle-4\rangle\oplus D_{16}$; $E_8\oplus D_9$ |
+| $E_7^2\oplus D_{10}$ | $E_7^2\oplus A_3$ |
+| $D_{24}$ | $D_{17}$ |
+| $D_{12}^2$ | $D_{12}\oplus D_5$ |
+| $D_8^3$ | $\langle-4\rangle\oplus D_8^2$ |
+| $D_9\oplus A_{15}$ | $A_1^2\oplus A_{15}$ |
+| $E_6\oplus D_7\oplus A_{11}$ | $E_6\oplus A_{11}$ |
+
+The direct Vinberg calculation starts from $\langle-4\rangle\oplus U\oplus E_8^2$. Its first $24$ wall diagram, redrawn in the native notes from [@Sca87, Fig. 6.3.1], is the diagram below. This *preliminary* reflection group has infinite index; Scattone adds six further roots to obtain a finite-volume chamber. The degree-four diagram is therefore not the degree-two $(19,1,1)$ diagram of @fig-k3-coxeter-19-1-1 [@Sca87, §6.3].
+
+::: {#fig-scattone-degree-four-preliminary .figure}
+\begin{tikzpicture}[scale=0.65,every node/.style={transform shape}]
+\begin{pgfonlayer}{nodelayer}
+\node[style=white node] (0) at (0,0) {}; \node[style=white node] (1) at (2,0) {};
+\node[style=white node] (2) at (4,0) {}; \node[style=white node] (3) at (6,0) {};
+\node[style=white node] (4) at (8,0) {}; \node[style=white node] (5) at (8,2) {};
+\node[style=white node] (6) at (8,4) {}; \node[style=white node] (7) at (8,6) {};
+\node[style=white node] (8) at (8,8) {}; \node[style=white node] (9) at (6,8) {};
+\node[style=white node] (10) at (4,8) {}; \node[style=white node] (11) at (2,8) {};
+\node[style=white node] (12) at (0,8) {}; \node[style=white node] (13) at (0,6) {};
+\node[style=white node] (14) at (0,4) {}; \node[style=white node] (15) at (0,2) {};
+\node[style=white node] (16) at (1,7) {}; \node[style=white node] (17) at (7,7) {};
+\node[style=white node] (18) at (1,1) {}; \node[style=white node] (19) at (7,1) {};
+\node[style=white node] (20) at (3,5.5) {}; \node[style=white node] (21) at (3,2.5) {};
+\node[style=white node] (22) at (5,2.5) {}; \node[style=white node] (23) at (5,5.5) {};
+\end{pgfonlayer}
+\begin{pgfonlayer}{edgelayer}
+\draw (0) to (4); \draw (4) to (8); \draw (8) to (12); \draw (12) to (0);
+\draw (0) to (18); \draw (4) to (19); \draw (8) to (17); \draw (12) to (16);
+\draw[style=thick edge] (20) to (21); \draw[style=thick edge] (23) to (22);
+\draw[style=plain edge] (16) to (23); \draw[style=plain edge] (16) to (21);
+\draw[style=plain edge] (17) to (20); \draw[style=plain edge] (17) to (22);
+\draw[style=plain edge] (19) to (21); \draw[style=plain edge] (19) to (23);
+\draw[style=plain edge] (18) to (20); \draw[style=plain edge] (18) to (22);
+\end{pgfonlayer}
+\end{tikzpicture}
+
+The $24$-wall diagram before Vinberg completion, from the native appendix drawing.
+:::

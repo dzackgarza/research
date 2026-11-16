@@ -23,6 +23,33 @@ The pair $(W(M), S)$ is a **Coxeter system** of **rank** $\abs{S}$.
 Its **Coxeter diagram** $\Sigma(M)$ is the graph on the vertex set $S$ with an edge $\theset{s,t}$ whenever $m_{st}\geq 3$, labelled by $m_{st}$ when $m_{st}\geq 4$.
 :::
 
+::: {.example #ex:four-generator-coxeter-matrix title="Reading a four-generator Coxeter diagram"}
+
+The archived four-vertex example has Coxeter matrix
+$$
+M=\begin{pmatrix}
+1&3&2&4\\
+3&1&7&3\\
+2&7&1&2\\
+4&3&2&1
+\end{pmatrix}.
+$$
+Thus $W(M)$ has involutory generators $r_1,r_2,r_3,r_4$ and pairwise orders
+$$
+(r_1r_2)^3=(r_1r_3)^2=(r_1r_4)^4
+=(r_2r_3)^7=(r_2r_4)^3=(r_3r_4)^2=e.
+$$
+The missing edges $1$--$3$ and $3$--$4$ stand for order $2$. The integer matrix $M$ records the exponents in this *group presentation*; it does not present $W(M)$ as the cokernel of a homomorphism of free abelian groups.
+:::
+
+The rank-two case is visible in the elementary chamber of angle $\pi/m$:
+
+![Two reflecting lines bound a chamber of angle $\pi/m$.](/rendered/chamber_pi_m.png){#fig-coxeter-rank-two-chamber}
+
+For $m=3$, the roots of $A_2$ meet at angle $2\pi/3$, while their perpendicular mirrors bound a chamber of angle $\pi/3$:
+
+![The simple roots and reflecting mirrors of $A_2$.](/rendered/A2RootSystem.png){#fig-coxeter-a2-roots-mirrors}
+
 ::: {.definition #def:coxeter-gram-form title="The Gram form of a Coxeter matrix"}
 
 Let $M$ be a Coxeter matrix on $S$.

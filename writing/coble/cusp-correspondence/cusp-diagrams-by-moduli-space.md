@@ -1,5 +1,9 @@
 # Cusp diagrams of the Enriques, Coble and Sterk moduli spaces {#sec-cusp-diagrams-by-moduli-space}
 
+The archived working picture @fig-archived-cusp-correspondence-sketch juxtaposes the Enriques and Sterk boundary curves and marks proposed correspondences between their labelled cusps. Its handwritten checks and question marks record the stage of the calculation; the established maps and lattice obstructions are given in @sec-enriques-coble-correspondence.
+
+![An archived working diagram of cusp correspondences, including tentative identifications and symmetry checks.](/rendered/valery_colorful_diagram.png){#fig-archived-cusp-correspondence-sketch}
+
 ## The Enriques moduli space
 
 @fig-enriques-cusps is the cusp diagram of the moduli space $\fen$ of unpolarized Enriques surfaces [@AEGS25], and @fig-enriques-coxeter-diagrams gives the corresponding Coxeter diagrams.
@@ -25,6 +29,12 @@ The mirror moves for $\sen = \EnriquesInvariants_1$.
 
 Coxeter diagrams $G_{\EnriquesInvariants_1} = G_{E_{10}(2)}$ and $G_{(10, 8, 0)_1} = G_{U \oplus E_8(2)}$.
 :::
+
+For the upper diagram, number the ten vertices along its nine-vertex chain and its branch as in the archived $E_{10}$ drawing. Its Cartan matrix is $A=2I_{10}-\operatorname{Adj}(T_{2,3,7})$, with edges
+$$
+(1,2),(2,3),(3,4),(4,5),(5,6),(6,7),(7,8),(8,9),(7,10).
+$$
+Thus the Gram matrix of the norm-$-2$ roots of $E_{10}\cong\mathrm{II}_{1,9}$ in this simple system is $-A$, and the norm-$-4$ roots in $E_{10}(2)$ have Gram matrix $-2A$. This records the Cartan matrix and its sign and scale conventions alongside the native diagram [@AE22, Fig. 3].
 
 The maximal parabolic subdiagrams for $\EnriquesInvariants$ and $(10, 8, 0)$ are shown in @fig-enriques-maximal-parabolics-10-10-0 and @fig-enriques-maximal-parabolics-10-8-0 respectively.
 

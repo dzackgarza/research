@@ -161,6 +161,8 @@ Taking $v,w$ to be unit normals of $H_v, H_w$, the relative position of two hype
 - $|v\cdot w| > 1$: the hyperplanes are ultra-parallel (divergent), at distance $d$ with $-v\cdot w = \cosh d$.
 :::
 
+![Ultraparallel geodesics have a common perpendicular in the hyperbolic plane; asymptotically parallel geodesics meet only at an ideal point. The original sketch shows both in the disc and half-plane models.](/rendered/ultraparallel.jpg){#fig-hyperbolic-parallelism-sketch}
+
 ## Coxeter groups and Coxeter polytopes
 
 ::: {.definition #def:coxeter-group}
