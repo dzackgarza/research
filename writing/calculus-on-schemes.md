@@ -66,6 +66,18 @@ For a smooth real manifold $M$, put $\mathcal A_M=C^\infty_M(\mathbb R)$ and let
 
 The calculus below applies in each setting with its specified differential forms. In the smooth setting, these are smooth differentials, with the smooth chain-rule relations; they are not defined by merely forgetting to sheaves of abstract $\mathbb R$-algebras and taking unrestricted algebraic Kähler differentials. This choice fixes what a differential and a vector field mean.
 
+:::{.remark #rmk:calculus-directional-derivative title="Directional derivatives"}
+Concretely, in smooth local coordinates $x^1,\ldots,x^n$, write $V=\sum_j V(x^j)\partial_{x^j}$. Then
+
+\begin{align*}
+df(V)&=\left(\sum_j\frac{\partial f}{\partial x^j}\,dx^j\right)(V)
+=\sum_j V(x^j)\frac{\partial f}{\partial x^j},\\
+df_x(V_x)&=\sum_j v^j\frac{\partial f}{\partial x^j}(x),\qquad v^j=V(x^j)(x).
+\end{align*}
+
+Thus we recover the directional derivative of $f$ in the direction $V_x$. Here $V$ acts on the coordinate function before evaluation at $x$.
+:::
+
 ## Connections as sheaf maps {#sec-calculus-connections}
 
 For this section, $(\mathcal A,\Omega^\bullet,d)$ denotes the algebraic relative de Rham algebra above, the smooth de Rham algebra, or the holomorphic de Rham algebra. The base scalar sheaf $\mathcal R$ is $f^{-1}\mathcal O_S$ in the algebraic setting and the constant real or complex scalars in the manifold settings. Its image in $\mathcal A$ is annihilated by $d$.
@@ -234,6 +246,37 @@ The identities $\nabla_w(av)=w(a)v+a\nabla_wv$ and $[av,w]=a[v,w]-w(a)v$ give $T
 
 :::{.definition #def:calculus-perfect-metric title="Perfect symmetric pairing"}
 For a finite locally free $\mathcal A$-module $\mathcal E$, a symmetric pairing $g:\mathcal E\otimes\mathcal E\to\mathcal A$ is *perfect* if its adjoint $g^\flat:\mathcal E\to\mathcal E^\vee$, $s\mapsto g(s,-)$, is an isomorphism.
+:::
+
+:::{.remark #rmk:calculus-pairing-adjoints title="The two adjoints of a pairing"}
+A pairing $b:\mathcal E\otimes\mathcal F\to\mathcal A$ induces maps
+
+\begin{align*}
+b_1:\mathcal E&\longrightarrow\mathcal F^\vee,&s&\longmapsto b(s,-),\\
+b_2:\mathcal F&\longrightarrow\mathcal E^\vee,&t&\longmapsto b(-,t).
+\end{align*}
+
+For $\mathcal E=\mathcal F$, symmetry means $b_1=b_2$. For finite locally free modules, the tensor–Hom identifications also give
+
+\begin{align*}
+\mathcal E^\vee\otimes\mathcal F
+&\cong\mathcal H om(\mathcal E,\mathcal F)
+\cong\mathcal H om(\mathcal F^\vee,\mathcal E^\vee),\\
+\mathcal E^\vee\otimes\mathcal F^\vee
+&\cong\mathcal H om(\mathcal E,\mathcal F^\vee)
+\cong\mathcal H om(\mathcal F,\mathcal E^\vee)
+\cong(\mathcal E\otimes\mathcal F)^\vee.
+\end{align*}
+
+The first line uses the dual of a morphism; the second uses $b\mapsto(s\mapsto b(s,-))$ and interchange of the arguments. All maps are over $\mathcal A$.
+:::
+
+:::{.definition #def:calculus-real-positivity title="Positivity at real points"}
+Let $X$ be an $\mathbb R$-scheme, $\mathcal E$ finite locally free, and $g$ a symmetric pairing on $\mathcal E$. At a real point $p:\operatorname{Spec}\mathbb R\to X$, the pairing is *positive semidefinite* if $(p^*g)(v,v)\geq0$ for every $v\in p^*\mathcal E$, and *positive definite* if the inequality is strict for every nonzero $v$. It is positive semidefinite or positive definite on the real locus if the corresponding condition holds at every real point. Nondegeneracy at $p$ means that the adjoint of $p^*g$ is an isomorphism.
+:::
+
+:::{.definition #def:calculus-isometric-endomorphism title="Endomorphisms compatible with a metric"}
+Let $(\mathcal E,g)$ be a finite locally free module with perfect symmetric pairing. An endomorphism $F$ is *compatible with $g$*, or *isometric*, if $g(Fs,Ft)=g(s,t)$ for all local sections. This identity makes $F$ an automorphism: in a frame, $F^{\mathsf t}GF=G$ implies that $\det F$ is a unit. In particular, $F$ induces isometries on all fibers. On a nonreduced scheme, the fiber identities alone need not imply the sheaf identity, since residue fields do not detect nilpotents.
 :::
 
 :::{.definition #def:calculus-riemannian title="Riemannian metric"}
@@ -415,6 +458,29 @@ X \arrow[r] & \operatorname{Spec}\mathbb R.
 
 Its conjugation $\sigma$ is an involution over $X$. Quasicoherent sheaves on $X$ correspond to quasicoherent sheaves $\mathcal F$ on $X_{\mathbb C}$ with descent isomorphism $\theta:\sigma^*\mathcal F\to\mathcal F$ satisfying $\theta\circ\sigma^*\theta=1$ [@stacks-023T]. Morphisms commute with $\theta$. This is descent along $p$. It is not reconstruction from a fixed-point subscheme: fixed complex-valued points recover $X(\mathbb R)$, while descent recovers the scheme and its sheaves. The fixed-section calculation in @prop:calculus-module-descent is the corresponding algebra calculation on affine opens.
 
+:::{.definition #def:calculus-conjugate-scheme title="Conjugate scheme"}
+For a complex scheme $Y\to\operatorname{Spec}\mathbb C$, its *conjugate scheme* is
+
+\begin{align*}
+\overline Y&=Y\times_{\operatorname{Spec}\mathbb C,c}\operatorname{Spec}\mathbb C,
+\end{align*}
+
+where $c$ is induced by complex conjugation, and the second projection is the complex structure morphism. This is the fiber-product construction of [@stacks-01JO]. For $Y=\operatorname{Spec}B$, its coordinate algebra is $B\otimes_{\mathbb C,c}\mathbb C$; for a module $N$, conjugate base change is $N\otimes_{\mathbb C,c}\mathbb C$. Double conjugation recovers $Y$ and $N$ canonically. A real structure supplies an identification between $Y$ and $\overline Y$ satisfying the involution condition; conjugate base change itself does not require a chosen real structure.
+:::
+
+:::{.remark #rmk:calculus-conjugate-descent title="Descent of a module and its conjugate"}
+Given a quasicoherent module $\mathcal F$ on $X_{\mathbb C}$, set $\mathcal G=\mathcal F\oplus\sigma^*\mathcal F$. There is a descent isomorphism
+
+\begin{align*}
+\theta:\sigma^*\mathcal G
+=\sigma^*\mathcal F\oplus\sigma^{*2}\mathcal F
+&\longrightarrow\mathcal F\oplus\sigma^*\mathcal F,\\
+(u,v)&\longmapsto(v,u),
+\end{align*}
+
+using the canonical identification $\sigma^{*2}\mathcal F\cong\mathcal F$. Swapping twice gives $\theta\circ\sigma^*\theta=1$. Thus $\mathcal G$ descends to a quasicoherent module $\mathcal F_{\mathbb R}$ on $X$, with $p^*\mathcal F_{\mathbb R}\cong\mathcal G$. On an affine open this is restriction of scalars along $A\to A\otimes_{\mathbb R}\mathbb C$, followed by the splitting after extension back to $\mathbb C$.
+:::
+
 ## Almost complex structures and integrability {#sec-calculus-integrability}
 
 Let $M$ be a smooth real manifold. Put $\mathcal B=C^\infty_M(\mathbb C)$, $\mathcal T_{\mathbb C}=\mathcal T_M\otimes_{\mathbb R}\mathbb C$, and $\mathcal A^p_{M,\mathbb C}=\mathcal A_M^p\otimes_{\mathbb R}\mathbb C$.
@@ -432,6 +498,18 @@ Apply @prop:calculus-eigensheaves to $\mathcal T_M$ to obtain $\mathcal T^{1,0}\
 \end{align*}
 
 The exterior-power decomposition follows by expanding wedges of the two summands. Define $\partial$ and $\bar\partial$ to be the $(p+1,q)$- and $(p,q+1)$-projections of $d$ on $\mathcal A^{p,q}$ [@Huy05, Definitions 2.6.7 and 2.6.9].
+:::
+
+:::{.remark #rmk:calculus-polyvector-types title="Types of multivector fields"}
+Similarly, exterior powers of the complexified tangent sheaf split as
+
+\begin{align*}
+\bigwedge^r\mathcal T_{\mathbb C}
+&=\bigoplus_{p+q=r}\mathcal T^{p,q},&
+\mathcal T^{p,q}&=\bigwedge^p\mathcal T^{1,0}\otimes_{\mathcal B}\bigwedge^q\mathcal T^{0,1}.
+\end{align*}
+
+Conjugation interchanges $\mathcal T^{p,q}$ and $\mathcal T^{q,p}$, and likewise the form sheaves $\mathcal A^{p,q}$ and $\mathcal A^{q,p}$. These decompositions require only $J^2=-1$.
 :::
 
 :::{.definition #def:calculus-integrable title="Integrability"}
@@ -517,8 +595,44 @@ Locally $D=\partial+A$ with $A$ a holomorphic matrix of one-forms. Its smooth ex
 
 ## Hermitian metrics and the Chern connection {#sec-calculus-hermitian}
 
+:::{.definition #def:calculus-sesquilinear title="Sesquilinear pairings"}
+For smooth complex bundles $\mathcal E,\mathcal F$, a *sesquilinear pairing* is a $\mathcal B$-linear map $b:\mathcal E\otimes_{\mathcal B}\overline{\mathcal F}\to\mathcal B$. We write $b(s,t)$ for $b(s,\bar t)$. Thus $b(as,ct)=a\bar c\,b(s,t)$.
+
+Given complex connections on the bundles, the pairing is *parallel* if
+
+\begin{align*}
+db(s,t)&=b(\nabla^{\mathcal E}s,t)+b(s,\nabla^{\mathcal F}t).
+\end{align*}
+
+Here forms in the second argument are conjugated. If the base is a complex manifold, the two type components of this identity are
+
+\begin{align*}
+\partial b(s,t)&=b(\nabla^{\mathcal E,1,0}s,t)+b(s,\nabla^{\mathcal F,0,1}t),\\
+\bar\partial b(s,t)&=b(\nabla^{\mathcal E,0,1}s,t)+b(s,\nabla^{\mathcal F,1,0}t).
+\end{align*}
+
+This says that the induced connection on $(\mathcal E\otimes\overline{\mathcal F})^\vee$ annihilates $b$. For flat bundles one also calls $b$ a *flat pairing*. Neither positivity nor nondegeneracy is required.
+:::
+
 :::{.definition #def:calculus-hermitian-metric title="Hermitian metric"}
 A *Hermitian metric* on a smooth complex vector bundle is a $\mathcal B$-linear pairing $h:\mathcal E\otimes_{\mathcal B}\overline{\mathcal E}\to\mathcal B$ with $h(s,\bar t)=\overline{h(t,\bar s)}$ and positive-definite values on each fiber. We abbreviate it to $h(s,t)$; it is linear in the first argument and conjugate-linear in the second.
+:::
+
+:::{.remark #rmk:calculus-hermitian-adjoints title="Hermitian symmetry as an equality of sheaf maps"}
+The pairing $h$ induces two adjoints
+
+\begin{align*}
+h_1:\mathcal E&\longrightarrow(\overline{\mathcal E})^\vee,&
+h_2:\overline{\mathcal E}&\longrightarrow\mathcal E^\vee.
+\end{align*}
+
+Conjugating $h_2$ and using double conjugation and the natural identification $\overline{\mathcal E^\vee}\cong(\overline{\mathcal E})^\vee$ gives another map with the source and target of $h_1$. Explicitly,
+
+\begin{align*}
+(\overline{h_2}(s))(\bar t)&=\overline{h(t,\bar s)}.
+\end{align*}
+
+Thus Hermitian symmetry is exactly $h_1=\overline{h_2}$. In the algebraic base-change setting, replace conjugation of modules by $\sigma^*$ and use the canonical identifications $\sigma^{*2}\mathcal E\cong\mathcal E$ and $\sigma^*(\mathcal E^\vee)\cong(\sigma^*\mathcal E)^\vee$. The same equality expresses conjugate symmetry of a pairing $\mathcal E\otimes\sigma^*\mathcal E\to\mathcal O_{X_{\mathbb C}}$.
 :::
 
 :::{.definition #def:calculus-hermitian-connection title="Hermitian connection"}
@@ -563,6 +677,17 @@ g(u,v)&=\omega(u,Jv),& g&=\operatorname{Re}h,& \omega&=-\operatorname{Im}h.
 \end{align*}
 
 The identity $g(Ju,v)=-g(u,Jv)$ proves that $\omega$ is alternating. Perfectness of $g$ and invertibility of $J$ prove that $\omega$ is nondegenerate. Also $h(Ju,v)=ih(u,v)$, $h(v,u)=\overline{h(u,v)}$, and $h(u,u)=g(u,u)>0$ for nonzero tangent vectors. Thus $h$ is a Hermitian metric with the convention of @def:calculus-hermitian-metric. Closure of $\omega$ is an additional differential condition [@Huy05, §1.2 and Definition 3.1.1].
+:::
+
+:::{.remark #rmk:calculus-hermitian-reconstruction title="Equivalent forms of a Hermitian metric"}
+The same construction works for any real vector bundle with complex structure $J$. Conversely, a Hermitian metric $h$ on $\mathcal E_J$ gives the $J$-invariant positive symmetric pairing $g=\operatorname{Re}h$ and the alternating pairing $\omega=-\operatorname{Im}h$. Starting instead with an alternating pairing satisfying
+
+\begin{align*}
+\omega(Ju,Jv)&=\omega(u,v),&\omega(u,Ju)&>0\quad(u\ne0),
+\end{align*}
+
+we recover $g(u,v)=\omega(u,Jv)$ and $h=g-i\omega$. Indeed,
+$\omega(v,Ju)=-\omega(Ju,v)=\omega(u,Jv)$ proves symmetry, and the displayed conditions prove positivity and $J$-invariance. These constructions are inverse. On the tangent bundle, $\omega$ is symplectic precisely when it is also closed; compatibility and positivity alone give an almost Hermitian structure.
 :::
 
 :::{.remark #rmk:calculus-hermitian-normalization title="Normalization on the i-eigensheaf"}
@@ -644,7 +769,9 @@ For a smooth complex algebraic variety, analytification gives a complex manifold
 
 ## Sources
 
-The chapter synthesizes the sections “Calculus on Schemes,” “Riemannian manifolds and symmetric spaces,” and “Hermitian Manifolds” of the archived notes `~/notes/Class_Notes/2024/Dissertation/archive/unused_sections/140_HSD.md`. Another version is `~/notes/diss/archive/unused_sections/140_HSD.md`.
+The chapter synthesizes the calculus, Riemannian geometry, and Hermitian geometry passages of the archived notes `~/notes/Class_Notes/2024/Dissertation/archive/unused_sections/140_HSD.md` and `~/notes/diss/archive/unused_sections/140_HSD.md`. The archives also contain a separate collection of homogeneous-space models, Grassmannians, Hermitian symmetric domains, and arithmetic compactifications.
+
+The archived attributions are Katz [@Kat70] and Ramanan [@Ram04] for connections; Hanselka–Kummer [@HK24] for real pairings and conjugate modules; Narasimhan–Ramanan [@NR69] for holomorphic bundles; and Helgason [@Hel01, Chapter VIII] for Hermitian geometry. These record the sources named in the original notes. The references below give the specific treatments used for the statements and corrections in this chapter.
 
 - [@Ram04, Chapters 1–2]: manifolds as spaces with function sheaves, tangent sheaves, and differential forms; Chapter 5: connections, induced connections, curvature, and parallel transport; Chapters 6–7: torsion and Riemannian geometry.
 - [@Huy05, §1.2]: complexification and Hermitian linear algebra; §2.6: integrability and holomorphic sheaves; §3.1: Kähler forms; §§4.2–4.3: compatible connections and Chern curvature; Appendix 4.A: the Levi-Civita comparison.
