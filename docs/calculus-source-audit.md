@@ -160,3 +160,15 @@ The source's definition, remark, and example form, explicit quotient models, per
 `just docs-lint symmetric-spaces-and-period-domains.md` passed after the final corrections. Chromium inspection of the rendered chapter found no MathJax errors or unresolved cross-references; the Milne, Bass–Milnor–Serre, and Serre bibliography entries all resolved. The marked-root tables were inspected visually and the page fit its viewport. Every destination anchor in this additional-source correspondence exists. These checks are separate from the full-text and image-content comparisons above.
 
 The generated bibliography entries are committed in pandoc-config `1757fd7`. Incoming archive links in the lattice notes, changelogs, TeX assembly, and archive index are redirected to the chapter. Their relative destinations resolve to the authored Markdown file.
+
+### Additional-source retirement
+
+The completed chapter and transfer comparison were committed as research `f132238278` before source retirement. Each source was then checked against its recorded SHA-256, trashed independently, and committed with its incoming-link corrections. The trash copies were checked against the same hashes after retirement.
+
+| Source | Notes retirement commit | Recovery path |
+| --- | --- | --- |
+| C | `2364eb452` | `~/.local/share/Trash/files/Hermitian symmetric domains.md` |
+| D | `14b185217` | `~/.local/share/Trash/files/Hermitian symmetric domains.md_1` |
+| E | `e1070f76e` | `~/.local/share/Trash/files/140_HSD.tex` |
+
+All source paths C/D/E are absent. Their Git blobs above remain a second recovery route. Attachment files remain in their original directories; the mathematical content of every embedded image is represented by the correspondence above.
