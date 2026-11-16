@@ -12,6 +12,35 @@ Every relatively minimal rational elliptic surface is a Halphen surface of some 
 [@DZ99, §2.4].
 :::
 
+## Singular fibres and local monodromy {#sec-kodaira-fibres-monodromy}
+
+For a relatively minimal complex elliptic surface with section, choose a
+basis of the first homology of a nearby smooth fibre. The local monodromy
+around a singular fibre is then an $\mathrm{SL}_2(\bZ)$ conjugacy class.
+Representatives and the corresponding affine Dynkin types of reducible
+fibres are as follows [@Mir89, Lecture II, Table (II.3.1), and Lecture VI,
+Table (VI.2.1)].
+
+| Fibre | Monodromy representative | Reducible-fibre diagram |
+| --- | --- | --- |
+| $I_0$ | $\left(\begin{smallmatrix}1&0\\0&1\end{smallmatrix}\right)$ | smooth elliptic curve |
+| $I_n$, $n\geq1$ | $\left(\begin{smallmatrix}1&n\\0&1\end{smallmatrix}\right)$ | $\widetilde A_{n-1}$ for $n\geq2$ |
+| $II$ | $\left(\begin{smallmatrix}1&1\\-1&0\end{smallmatrix}\right)$ | cuspidal irreducible curve |
+| $III$ | $\left(\begin{smallmatrix}0&1\\-1&0\end{smallmatrix}\right)$ | $\widetilde A_1$ |
+| $IV$ | $\left(\begin{smallmatrix}0&1\\-1&-1\end{smallmatrix}\right)$ | $\widetilde A_2$ |
+| $I_n^*$, $n\geq0$ | $\left(\begin{smallmatrix}-1&-n\\0&-1\end{smallmatrix}\right)$ | $\widetilde D_{n+4}$ |
+| $IV^*$ | $\left(\begin{smallmatrix}-1&-1\\1&0\end{smallmatrix}\right)$ | $\widetilde E_6$ |
+| $III^*$ | $\left(\begin{smallmatrix}0&-1\\1&0\end{smallmatrix}\right)$ | $\widetilde E_7$ |
+| $II^*$ | $\left(\begin{smallmatrix}0&-1\\1&1\end{smallmatrix}\right)$ | $\widetilde E_8$ |
+
+The $I_1$ fibre is an irreducible nodal curve; $I_n$ for $n\geq2$ is a
+cycle of $n$ rational curves, with $I_2$ having two intersection points.
+The $III$ fibre has two tangent components and the $IV$ fibre has three
+components meeting at one point [@Mir89, Lecture II, Table (II.3.1)].
+Changing the homology basis conjugates every displayed matrix. In
+particular, the matrices are representatives, not canonical matrices
+attached to the fibre.
+
 ::: {.proposition #prop:terminal-coble-halphen-blowup title="Terminal Coble surfaces as blowups of Halphen surfaces"}
 
 Let $V$ be a terminal Coble surface of K3 type (@def:coble-surface).
