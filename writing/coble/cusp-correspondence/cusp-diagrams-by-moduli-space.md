@@ -110,6 +110,14 @@ At cusp $2$ of $\fentwo$, the facet of the unique white node $r_{10}$ has the ni
 Sterk's cusp diagram for $\fentwo$.
 :::
 
+The one-cusps incident to a zero-cusp of $\fentwo$ are represented by maximal parabolic subdiagrams of the Vinberg diagram of $U\oplus E_8^2$ or $U(2)\oplus E_8^2$ that are invariant under the corresponding one of the five folding involutions. At cusps $3$ and $5$, the diagram must also contain the roots in which the involution includes reflections: $\alpha_{20}$ for cusp $3$, and $\alpha_1,\alpha_3,\ldots,\alpha_{15}$ for cusp $5$. Indeed, a one-cusp is an isotropic plane in the fixed lattice, and an invariant maximal parabolic records its isotropic line in the boundary lattice [@AEGS25, §3D].
+
+The blue subdiagram in each published panel is the invariant maximal parabolic; the panel label identifies the incident one-cusp, and the adjacent folded diagram gives its Enriques parabolic type. Crosses mark reflection roots. The two degree-four K3 one-cusp types $E_8D_8$ and $D_{16}$ have no symmetric maximal parabolic under these involutions, so they have no preimage one-cusp in $\fentwo$ [@AEGS25, §3D].
+
+![The two invariant maximal parabolics and folded types at Sterk cusp 2, from the source vector figure.](/coble/reference/aegs-par2.svg){#fig-sterk-one-cusps-2}
+
+![The invariant maximal parabolics and folded types at Sterk cusps 1, 3, 4, and 5, from the source vector figure.](/coble/reference/aegs-pars.svg){#fig-sterk-one-cusps-1345}
+
 ::: {#fig-k3-cusp-18-2-0-vinberg .figure}
 \begin{tikzpicture}
 \pic[root labels=index] {object=coxeter/vinberg-18-2-0};
@@ -117,6 +125,14 @@ Sterk's cusp diagram for $\fentwo$.
 
 The $22$-node Vinberg diagram of $(18,2,0)_1$, with indices $1$ through $22$ used for its diagram automorphisms.
 :::
+
+In the source's root indexing $\alpha_0,\ldots,\alpha_{21}$, the $\widetilde E_7^2\widetilde C_2$ maximal parabolic supplies a relation between its two expressions for the same isotropic vector:
+$$
+\alpha_{16}+\alpha_{20}+\alpha_{18}
+=\alpha_1+2\alpha_2+3\alpha_3+4\alpha_4
++3\alpha_5+2\alpha_6+\alpha_7+2\alpha_{17}.
+$$
+The figure uses labels $1,\ldots,22$, so its displayed label $j$ denotes the source's $\alpha_{j-1}$ [@AEGS25, §3D].
 
 The degree-four K3 cusp with boundary lattice $(18,0,0)_1\cong U\oplus E_8^2$ has the following Vinberg diagram. Its two maximal parabolic subdiagrams have types $2\widetilde E_8$ and $\widetilde D_{16}$, giving the two one-cusp types adjacent to this zero-cusp.
 
@@ -134,6 +150,15 @@ The canonical Vinberg diagram of $(18,0,0)_1$, reconstructed from the archived `
 
 The two maximal parabolic subdiagrams of $(18,0,0)_1$.
 :::
+
+The nineteen roots $\alpha_1,\ldots,\alpha_{19}$ in this diagram generate $U\oplus E_8^2$ and obey one relation. With the source's numbering, the null vector of either $\widetilde E_8$ component is
+$$
+3\alpha_1+2\alpha_2+4\alpha_3+6\alpha_4+5\alpha_5
++4\alpha_6+3\alpha_7+2\alpha_8+\alpha_9
+=3\alpha_{19}+2\alpha_{18}+4\alpha_{17}+6\alpha_{16}
++5\alpha_{15}+4\alpha_{14}+3\alpha_{13}+2\alpha_{12}+\alpha_{11}.
+$$
+This equality is the lattice relation behind the $2\widetilde E_8$ parabolic and its folded $\widetilde E_8$ type [@AEGS25, §3D].
 
 ::: {.example #ex:sterk-isotropic-divisibilities title="Divisibilities of the Sterk isotropic vectors"}
 
