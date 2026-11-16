@@ -2,7 +2,7 @@
 
 ## Disposition
 
-The semantic transfer is complete across the calculus chapter and its companion. Independent comparisons found no substantive source material missing and no undue loss of the source's mathematical voice. Each source is eligible for trashing after the destinations and this comparison are committed.
+The semantic transfer is complete across the calculus chapter and its companion. Independent comparisons found no substantive source material missing and no undue loss of the source's mathematical voice. The destinations and comparison were committed as research `8afc9b1f77` before either source was trashed. Each original was then trashed and committed separately.
 
 The destinations are `writing/calculus-on-schemes.md` and `writing/symmetric-spaces-and-period-domains.md`. The source files are:
 
@@ -80,7 +80,9 @@ The full-source comparison and the independent companion audit agree on semantic
 
 | File | Semantic comparison | Voice comparison | Disposition |
 | --- | --- | --- | --- |
-| A | Full calculus and geometry correspondence above; questions and citations resolved or retained. | Definition/remark style and worked calculations retained with corrections. | Verified; eligible for trash after destination commit. |
-| B | Full comparison against A found omissions and TeX damage, with no independent content left untransferred. | Its recoverable prose is represented by A's fuller text and the revised chapters. | Verified separately; eligible for trash after destination commit. |
+| A | Full calculus and geometry correspondence above; questions and citations resolved or retained. | Definition/remark style and worked calculations retained with corrections. | Trashed; notes deletion commit `f4a2a7186`. |
+| B | Full comparison against A found omissions and TeX damage, with no independent content left untransferred. | Its recoverable prose is represented by A's fuller text and the revised chapters. | Trashed; notes deletion commit `3e835a70b`. |
 
-Neither file is an active include or a linked source in the notes tree. The chapters identify their former locations as provenance. Trash is performed one file at a time, followed by a scoped deletion commit. Unrelated changes in either repository are outside this operation.
+Neither file was an active include or a linked source in the notes tree. The chapters identify their former locations as provenance. Each deletion commit contains only its source file. The trash copies are `~/.local/share/Trash/files/140_HSD.md` (A) and `~/.local/share/Trash/files/140_HSD.md_1` (B); their SHA-256 values match the inspected originals above. The source text also remains recoverable from the recorded Git blobs.
+
+Both chapter renders passed `just docs-lint`, including source citation and reference checks. Browser inspection found no MathJax errors or unresolved chapter cross-references; the rendered domain table was inspected for layout. These checks establish document rendering and links, separately from the mathematical and semantic comparisons.
