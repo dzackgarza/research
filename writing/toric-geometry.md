@@ -51,6 +51,8 @@ U_\sigma\simeq\operatorname{Spec}\mathbb C[x,y,z,w]/(xw-yz).
 $$
 This cone is not simplicial: it has four extremal rays in dimension three. By contrast, every strongly convex two-dimensional cone is simplicial, though it need not be regular; the resulting affine toric surface singularity is a cyclic quotient singularity [@CLS11, §§1.3, 3.1].
 
+The semigroup of $C=\operatorname{Cone}((1,0),(1,4))\subset M_{\mathbb R}$ has Hilbert basis $(1,k)$ for $0\leq k\leq4$. Its algebra therefore needs the five monomials $x,xy,xy^2,xy^3,xy^4$. For $C'=\operatorname{Cone}((-2,3),(1,0))$, the Hilbert basis is $(-2,3),(-1,2),(0,1),(1,0)$. Consecutive vectors in this list have determinant of absolute value $1$, giving a regular subdivision of the cone. These examples show why extremal rays alone can miss semigroup generators.
+
 ## Normalization and finite maps
 
 A morphism $f:Y\to X$ is *finite* when each affine open $\operatorname{Spec}A\subset X$ has affine inverse image $\operatorname{Spec}B$ with $B$ a finite $A$-module. Having finite fibers is necessary but insufficient: the open immersion $\mathbb G_m\hookrightarrow\mathbb A^1$ has fibers of size at most one, yet is not finite. For an irreducible affine variety $X=\operatorname{Spec}A$, its normalization is $\operatorname{Spec}\overline A\to X$, where $\overline A$ is the integral closure of $A$ in its function field. Over $\mathbb C$ this morphism is finite and birational [@CLS11, §1.3].
@@ -119,6 +121,12 @@ The anticanonical polytope of $\mathbb P^2$ and its reflexive polar.
 :::
 
 A normal toric variety is *Gorenstein* exactly when its canonical divisor $K_X$ is Cartier. A Fano variety has ample $-K_X$. A smooth Fano curve is $\mathbb P^1$. In dimension three there are eighteen smooth toric Fano varieties up to isomorphism, as classified by [Batyrev](https://www.mathnet.ru/php/archive.phtml?jrnid=im&option_lang=eng&paperid=1581&wshow=paper). The Mori program studies the contractions and flips detected by $K_X$ and its intersections with curves; in the toric setting, these operations can be read from changes to the fan [@CLS11, Ch. 15].
+
+For the reflexive square $P=[-1,1]^2$, the polar is the diamond $P^\circ=\operatorname{Conv}((1,0),(0,1),(-1,0),(0,-1))$. More generally, for a face $F\subset P$ its inward normal cone is
+$$
+\sigma_F=\operatorname{Cone}\{p-f:p\in P,\ f\in F\}^{\vee}.
+$$
+This is the dual of the cone of directions from $F$ into $P$.
 
 ## Toric models of anticanonical pairs
 
