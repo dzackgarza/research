@@ -208,6 +208,11 @@ The direct Vinberg calculation starts from $\langle-4\rangle\oplus U\oplus E_8^2
 
 ::: {#fig-scattone-degree-four-preliminary .figure}
 \begin{tikzpicture}[scale=0.65,every node/.style={transform shape}]
+\pgfdeclarelayer{edgelayer}
+\pgfdeclarelayer{nodelayer}
+\pgfsetlayers{edgelayer,main,nodelayer}
+\tikzset{white node/.style={circle,draw,fill=white,inner sep=2.5pt},
+  plain edge/.style={draw},thick edge/.style={line width=1.5pt}}
 \begin{pgfonlayer}{nodelayer}
 \node[style=white node] (0) at (0,0) {}; \node[style=white node] (1) at (2,0) {};
 \node[style=white node] (2) at (4,0) {}; \node[style=white node] (3) at (6,0) {};

@@ -138,8 +138,6 @@ polygons associated with the five Sterk cusps. The labels $\ell_i'$ identify
 orbits of the indicated symmetry on the marked vertices. They are parameter
 counts before any closure or realizability condition.
 
-\input{tikz/fig_ias_v3_common.tex}
-
 ::: {#fig-ias-v3-st-1 .figure}
 \input{tikz/fig_ias_v3_sterk_1.tex}
 
