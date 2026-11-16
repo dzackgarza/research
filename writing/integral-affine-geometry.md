@@ -71,11 +71,30 @@ The additional $d$-semistability condition is needed for smoothing the assembled
 
 Conversely, start with anticanonical pairs $(V_i,D_i)$ and identifications $D_{ij}\simeq D_{ji}$ that match the triple points. The pushout along these double curves gives a normal crossings central fiber. If its dual complex is $S^2$, its double curves obey the relation above, and the fiber is $d$-semistable, Friedman's smoothing theorem applies [@AE23, Prop. 3.3 and Thm. 3.5]. Ordered toric models and choices of origins on the double curves can make this construction uniform in a family [@AE23, §3; @AEGS25, §4].
 
+A triangulated integral affine sphere must retain the corner blowup
+equivalence class of an anticanonical pair at each singularity
+(@sec-ias-charge). With this local data and a triangulation by unit lattice
+triangles, the reverse construction interprets the star of each vertex as
+an anticanonical pair and glues its boundary curves. For fixed combinatorial
+data, the gluing periods form the torus
+$\operatorname{Hom}(\Lambda,\CC^*)\cong(\CC^*)^{19}$
+[@AE22, Construction 6.12]. Thus the affine sphere does not specify a
+single algebraic central fiber; the gluing periods remain part of the data.
+
 The conservation of charge reads
 $$
 \sum_i Q(V_i,D_i)=24
 $$
 for a Kulikov surface [@AE23, Prop. 3.8]. This counts charge, rather than singular points: one singularity can have charge greater than one. When every singularity is of type $I_1$, there are twenty-four nodes. A chosen integral triangulation of the sphere is retained separately from its affine structure.
+
+If the singularities are all of type $I_n$, an integral affine sphere of
+total charge $24$ also determines a Lagrangian torus fibration on a
+symplectic four-manifold diffeomorphic to a K3 surface. Its singular fibers
+are necklaces of spheres, with $n$ components over an $I_n$ point
+[@AE22, §6D]. This symplectic construction is distinct from choosing the
+complex gluing periods above. In the Enriques application one must further
+make the affine involutions, triangulation, and polarization compatible;
+the symmetric parameters are described in @sec-ias-degenerations.
 
 ## Boundary self-intersections {#sec-ias-edge-intersections}
 

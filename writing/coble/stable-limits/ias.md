@@ -144,6 +144,15 @@ which marked vertices survive in the positive eigenspace of the ambient
 lattice involution?
 :::
 
+::: {.question #qst:ias-model-correspondence title="Recovering equivariant Kulikov models"}
+Given a Vinberg chamber at an Enriques zero-cusp and an invariant
+monodromy vector, which additional affine, triangulation, and gluing data
+recover its Type III Kulikov models with both commuting involutions?
+Conversely, how does a chosen equivariant Kulikov model determine the
+chamber data? The constructions in @sec-type-iii-ias give the local
+dictionary; the gluing periods and changes of model must also be tracked.
+:::
+
 ## Mirror lattices and the Enriques half-twist {#sec-mirror-lattices-half-twist}
 
 ::: {.definition #def:admissible-mirror-cusp title="An admissible isotropic vector"}

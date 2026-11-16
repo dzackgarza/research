@@ -73,6 +73,43 @@ Then the following hold [@AEGS25, Sec. 2.1].
 5. The $\tau$-invariant polynomials $f$ of bidegree $(4,4)$ are the linear combinations of $13$ monomials. They define a point of an open subset $U\subset\PP^{12}$, and the quotient $U/(D_4 \semidirect (\CC^\times)^2)$ has dimension $10$.
 :::
 
+## Recovering the quotient diagram {#sec-intrinsic-enriques-quotients}
+
+The double-cover diagram is related to the projective models of
+[@Cos83, §6.3.1; @CD89, Corollary 4.7.2] and to Horikawa's explicit
+period construction [@Hor78]. Its double-plane antecedent is Enriques'
+construction [@Enr07]; [@CDL25] gives the broader historical account.
+
+Let $(Z,[L])$ be a degree-two numerically polarized Enriques surface in
+this construction, and work with its normal projective models. The
+linear system $|L^{\otimes2}|$ determines the quotient surface $W$.
+It is independent of the choice between $L$ and $L\otimes K_Z$, since
+$2K_Z=0$. In the non-special case $W$ has four $A_1$ singularities;
+in the special case it has singularities $A_3+2A_1$ and the intermediate
+surface is $Y=\PP(1,1,2)$ [@AEGS25, §§2.1–2.2].
+
+The intrinsic reconstruction uses the nonzero class
+$A\in\operatorname{Cl}(W)_{\mathrm{tors}}\cong\ZZ/2$.
+Put $M=\OO_W(A)$ and choose $M^{[2]}\cong\OO_W$, where brackets denote
+reflexive powers. Then
+$$
+Y=\operatorname{Spec}_W(\OO_W\oplus M),\qquad
+X=\operatorname{Norm}(Y\times_W Z).
+$$
+The algebra multiplication is the composite
+$M\otimes M\to M^{[2]}\cong\OO_W$. This specifies the missing
+multiplication data in the degree-two cover. Over $\CC$, rescaling the
+chosen trivialization gives an isomorphic cover.
+
+Normalization in the second formula is necessary. Near an $A_1$ point
+of $W$, the two local index covers have a fiber product whose components
+meet over that point, whereas their normalization separates the sheets.
+On the open set where the quotient is free, the fiber product recovers
+the Klein four-group cover; normalization extends it to the normal
+models. The involutions and the third quotient $X/\iota_{\mathrm{Nik}}$
+are then recovered from the two covering transformations. If $X$ has
+ADE singularities, its minimal resolution gives the smooth K3 surface.
+
 ## The Horikawa parameter space {#sec-horikawa-parameters}
 
 If the branch divisor has ADE singularities, the double cover can be singular:
