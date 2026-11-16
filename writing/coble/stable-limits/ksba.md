@@ -94,6 +94,8 @@ and the two involution equators are shown in @fig-sterk3-ias.
 The del Pezzo equator has weight $2$ and gives $R_{\IA}$
 [@AEGS25, Ex. 4.13].
 
+![The cusp-three integral affine sphere, Kulikov central fiber, and Enriques dlt quotient [@AEGS25, Fig. 13].](/rendered/fig_ias_sterk3_models.png){#fig-ias-stk3-three-models}
+
 The dlt quotient has eight components. In cyclic order along the
 Enriques equator they are
 $$
@@ -139,6 +141,9 @@ The polygon has successive vectors $(2,0),(-1,1),(-1,0),(0,-1)$,
 whose sum is zero. A surgery of size $1$ on the $(-1,1)$ edge
 gives $P(\ell)$ and hence $B_5(\ell)$. All four components of the
 Kulikov central fiber are preserved by the Enriques involution.
+
+![The cusp-five integral affine sphere, Kulikov central fiber, and Enriques dlt quotient [@AEGS25, Fig. 14].](/rendered/fig_ias_sterk5_models.png){#fig-ias-stk5-three-models}
+
 The pairs $(\widetilde V_3,\widetilde D_3)$ and
 $(\widetilde V_4,\widetilde D_4)$ are corner blowups of $D_4$
 involution pairs; $(\widetilde V_2,\widetilde D_2)$ is a corner
@@ -168,6 +173,8 @@ surgery is needed. The central horizontal segment is fixed by
 the del Pezzo affine involution but is outside the support of
 $R_{\IA}$, as required by the non-simple mirror
 [@AEGS25, §4.2 and Ex. 4.15].
+
+![The cusp-two integral affine sphere, Kulikov central fiber, and Enriques dlt quotient [@AEGS25, Fig. 15].](/rendered/fig_ias_sterk2_models.png){#fig-ias-stk2-three-models}
 
 The K3 preimages of $V_2$ and $V_3$ each have two components
 exchanged by the Enriques involution, so their periods have no
