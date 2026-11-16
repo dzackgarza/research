@@ -493,3 +493,23 @@ $$
 $$
 that is, one chamber of the complement of the mirrors of the roots inside the positive cone, in the sense of @def:weyl-chamber.
 :::
+
+For an integral divisor class $L$ on a projective K3 surface,
+Nakai--Moishezon gives
+$L$ ample if and only if $L^2>0$ and $L\cdot C>0$ for every
+irreducible curve $C$. A nef class satisfies $L\cdot C\geq0$ instead.
+The strict inequality distinguishes ampleness from nefness even when
+$L^2>0$ [@Huy16, §8.1].
+
+::: {.example #ex:k3-big-nef-fixed-component title="A big and nef K3 divisor with a fixed component"}
+Let $X\to\PP^1$ be an elliptic K3 surface with fibre $E$ and a
+section $\Gamma$. Then $E^2=0$, $\Gamma^2=-2$ and $E\cdot\Gamma=1$.
+The class $L=2E+\Gamma$ has $L^2=2$ and $L\cdot\Gamma=0$.
+It is nef: for any irreducible $C\neq\Gamma$, both $E\cdot C$ and
+$\Gamma\cdot C$ are nonnegative; the remaining curve is $\Gamma$.
+Thus $L$ is big and nef. But
+$|L|=\Gamma+|2E|$, so $\Gamma$ is fixed and $|L|$ is not
+basepoint-free. Indeed $h^0(2E)=3=h^0(L)$, the latter by
+Riemann--Roch and Kawamata--Viehweg vanishing in characteristic zero
+[@Huy16, §2.3].
+:::

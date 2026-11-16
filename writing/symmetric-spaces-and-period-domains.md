@@ -462,6 +462,18 @@ Hodge orthogonality and positivity conditions; for a K3 surface,
 the cup-product form polarizes the primitive weight-two structure
 [@Huy16, §1.2].
 
+The Hodge conjecture asks, for a smooth projective complex variety
+$X$, whether every rational Hodge class of degree $2p$ is a rational
+linear combination of codimension-$p$ algebraic cycle classes:
+$$
+H^{2p}(X,\QQ)\cap H^{p,p}(X)
+=\operatorname{span}_{\QQ}
+\theset{[Z]\st Z\subset X\text{ has codimension }p}.
+$$
+The Lefschetz $(1,1)$ theorem proves this for $p=1$. Hence it holds
+for every Hodge class on a projective K3 surface, where the only
+degrees are $0$, $2$ and $4$ [@Voi07].
+
 ## Orthogonal period domains {#sec-hsd-period-domains}
 
 :::{.definition #def:hsd-period-domain title="The type IV period domain"}
@@ -564,6 +576,19 @@ The signatures that occur in the archived examples are as follows [@GHS13, Propo
 | Polarized O'Grady tenfolds | $(2,21)$ |
 
 For lattice-polarized K3 surfaces the period lattice is the orthogonal complement of the prescribed polarization lattice in $\Lambda_{\mathrm{K3}}$. For the irreducible symplectic examples, it is the orthogonal complement of a positive polarization class in the Beauville lattice. Removing a positive direction explains the signatures in the table. These domains supply arithmetic period quotients; the actual moduli image and arithmetic group still depend on the marking and polarization data. In particular, the abelian and Kummer moduli problems need not have the same arithmetic quotient [@GHS13, §3.2].
+
+The marked complex K3 period domain has complex dimension $20$.
+Fixing a primitive positive class $h$ of square $2d$ imposes the
+single period equation $(\omega,h)=0$ and gives a type IV domain of
+dimension $19$. Its ample open locus modulo the appropriate arithmetic
+group is the quasiprojective moduli space of primitively polarized K3
+surfaces of degree $2d$. Varying over all possible polarizations does
+not give one $19$-dimensional moduli space of *all* projective K3
+surfaces [@Huy16, Chs. 6--7].
+Inside a fixed polarized moduli space, a Noether--Lefschetz locus
+records periods with an algebraic class independent of $h$; its
+members have $\rho(X)\geq2$. The condition $\rho(X)\geq1$ is automatic
+for a polarized K3 surface.
 :::
 
 ## Arithmetic quotients and boundary components {#sec-hsd-arithmetic-boundary}
