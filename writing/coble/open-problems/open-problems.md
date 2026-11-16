@@ -1,5 +1,19 @@
 # Open problems and technical gaps {#sec-open-problems}
 
+::: {.question #qst:inverse-period-realization title="Inverse period realization"}
+
+Given an orthogonal period domain $\bD(L)$ and an arithmetic subgroup
+$\Gamma\leq\Orth(L)$, when is an open subset of $\bD(L)/\Gamma$ the
+period image of a geometric moduli problem for algebraic surfaces with
+specified polarization and involution? A realization must supply an
+integral embedding into the relevant cohomology lattice, a geometric
+ample cone, an arrangement of excluded periods, and the arithmetic
+group induced by the geometric markings. The Enriques space
+$\fentwo$ and its normalization inside the degree-four hyperelliptic
+K3 period space (@lem:fen2_normalization) give a concrete instance of
+this inverse question from the archived Enriques meeting notes.
+:::
+
 ## Lattice-theoretic gaps
 
 ::: {.question #qst:coble-embedding-matrices title="Open problem: explicit primitive embedding matrices"}

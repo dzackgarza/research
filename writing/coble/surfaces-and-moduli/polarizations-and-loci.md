@@ -22,6 +22,28 @@ $$
 which depends on its class in $\operatorname{NS}(A)$ rather than on
 the representative line bundle.
 
+For a primitive positive class $h\in\operatorname{Num}(Z)\cong E_{10}$,
+the arithmetic group of the numerically polarized period space is the
+image on $\ten$ of the isometries of $\lkt$ that commute with the
+Enriques involution and fix the pullback of $h$. Write this image as $\Gamma_h^+$
+after restriction to the chosen component of the period domain. By
+discriminant gluing it contains the stable orthogonal group
+$\widetilde\Orth^+(\ten)$ and lies in $\Orth^+(\ten)$, so there are
+finite maps
+$$
+\bD(\ten)/\widetilde\Orth^+(\ten)
+\longrightarrow \bD(\ten)/\Gamma_h^+
+\longrightarrow \bD(\ten)/\Orth^+(\ten).
+$$
+For degree two, this middle group is $\gent$, described explicitly in
+@prop:gamma-en-two-gluing. The possible middle groups are controlled
+by subgroups of the finite orthogonal group of the discriminant form;
+their inclusions form a finite partially ordered set. Gritsenko and
+Hulek prove that, as $h$ varies, there are only finitely many
+isomorphism classes of the numerically polarized Enriques moduli spaces
+[@GH15, §3 and Cor. 3.5]. The open moduli loci also depend on which
+nodal divisors are removed for $h$.
+
 Let $F^{\mathrm{pol}}_{\En,2}$ and $F^{\mathrm{num}}_{\En,2}$ denote
 the moduli spaces of smooth Enriques surfaces with an ample line bundle
 of square $2$ and with its numerical class, respectively. Forgetting
