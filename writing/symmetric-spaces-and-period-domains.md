@@ -589,6 +589,12 @@ Inside a fixed polarized moduli space, a Noether--Lefschetz locus
 records periods with an algebraic class independent of $h$; its
 members have $\rho(X)\geq2$. The condition $\rho(X)\geq1$ is automatic
 for a polarized K3 surface.
+The moduli **stack** retains automorphisms of each polarized pair;
+its coarse space retains only isomorphism classes. In characteristic
+zero the stack of primitively polarized K3 surfaces of fixed degree is
+Deligne--Mumford and its coarse space is quasiprojective. The period
+quotient describes the coarse space after the ample root hyperplanes
+are removed [@Huy16, Ch. 7; @GHS13, §2].
 :::
 
 ## Arithmetic quotients and boundary components {#sec-hsd-arithmetic-boundary}

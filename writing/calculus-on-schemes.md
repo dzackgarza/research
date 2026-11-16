@@ -766,6 +766,20 @@ The composite $\nabla\circ J_{\mathcal E}$ alone is not this induced covariant d
 On $\mathbb R^{2n}$, with coordinates $x^j,y^j$, set $J\partial_{x^j}=\partial_{y^j}$, $J\partial_{y^j}=-\partial_{x^j}$, and $g=\sum_j(dx^j\otimes dx^j+dy^j\otimes dy^j)$. Then $\omega=\sum_jdx^j\wedge dy^j$, the connection matrix in the coordinate frame is zero, and $\nabla J=0$. Theorem @thm:calculus-kahler-equivalences recovers the standard Kähler structure with coordinates $z^j=x^j+iy^j$. The same polynomial tensors exist on $\mathbb A^{2n}_{\mathbb R}$; their real-point realization is this manifold calculation.
 :::
 
+::: {.remark #rmk:calculus-frolicher title="From the sheaf of forms to Hodge cohomology"}
+For a complex manifold $X$, the holomorphic de Rham complex
+$\Omega_X^\bullet$ gives the Frölicher spectral sequence
+$$
+E_1^{p,q}=H^q(X,\Omega_X^p)
+\Longrightarrow H^{p+q}(X,\CC).
+$$
+If $X$ is compact Kähler, it degenerates at $E_1$ and identifies
+$H^q(X,\Omega_X^p)$ with the Hodge summand $H^{p,q}(X)$
+[@Huy05, Ch. 3]. Thus the sheaf-theoretic differentials in this
+chapter lead directly to the Hodge decomposition used in
+@sec-hsd-hodge-structures.
+:::
+
 ## Comparing the geometric settings {#sec-calculus-comparison}
 
 | Construction | Algebraic setting | Smooth or complex-analytic setting |

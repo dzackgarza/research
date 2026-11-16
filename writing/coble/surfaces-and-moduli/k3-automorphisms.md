@@ -21,6 +21,15 @@ infinite.
 Nikulin's finite abelian symplectic classification has exactly
 $14$ isomorphism types. For each such group, its induced action on the
 K3 lattice is unique up to isomorphism [@Has12, Thm. 0.1].
+The groups are $C_n$ for $2\leq n\leq8$, together with
+$$
+C_2^2,\quad C_2^3,\quad C_2^4,\quad C_3^2,\quad C_4^2,\quad
+C_2\times C_4,\quad C_2\times C_6
+$$
+[@Huy16, Thm. 15.3.13; @GS08].
+The quotient by a finite symplectic group can have ADE singularities;
+its **minimal resolution** is a K3 surface. The singular quotient
+itself need not be smooth [@Muk88].
 
 ## Gluing and the automorphism group
 
