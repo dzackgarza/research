@@ -462,6 +462,18 @@ Hodge orthogonality and positivity conditions; for a K3 surface,
 the cup-product form polarizes the primitive weight-two structure
 [@Huy16, §1.2].
 
+Two integral Hodge structures are *isogenous* when their rational
+Hodge structures are isomorphic. For a projective K3 surface $X$,
+the first Chern class identifies
+$\operatorname{NS}(X)=H^2(X,\ZZ)\cap H^{1,1}(X)$, and its
+**transcendental lattice** is
+$T(X)=\operatorname{NS}(X)^\perp\subset H^2(X,\ZZ)$.
+It is an integral Hodge substructure; after tensoring with $\QQ$,
+the polarization splits $H^2(X,\QQ)$ into its algebraic and
+transcendental parts. Integral orthogonal direct-sum splitting need
+not hold because the two primitive sublattices can be glued through
+their discriminant groups [@Huy16, §§1.2–1.3].
+
 The Hodge conjecture asks, for a smooth projective complex variety
 $X$, whether every rational Hodge class of degree $2p$ is a rational
 linear combination of codimension-$p$ algebraic cycle classes:
