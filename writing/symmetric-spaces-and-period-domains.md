@@ -261,6 +261,19 @@ The real model also identifies with either component of $\operatorname{Gr}^{+,\m
 Start instead with $\mathbb R^{1,n}$ and $q(x)=x_0^2-\sum_{j=1}^nx_j^2$. The locus $q(x)=1$ is $H^+\sqcup H^-$, where $H^+$ is the sheet $x_0>0$. At $x\in H^+$, $T_xH^+=x^\perp$ is negative definite, so the hyperbolic metric is $-q|_{T_xH^+}$. Sending $x$ to its positive line identifies $H^+$ with $\mathbb H_{\mathbb R}^n$ after reversing the sign of the form.
 
 The full isometry group is the sheet-preserving subgroup $\operatorname O^{\mathrm{sheet}}(1,n)$, isomorphic to $\operatorname{PO}(1,n)$: in each pair $\{g,-g\}$ exactly one preserves $H^+$. Thus the hyperboloid has dimension $n$.
+
+Stereographic projection from $(-1,0,\ldots,0)$ gives the Poincaré ball
+model. With $x=(x_0,x_1,\ldots,x_n)\in H^+$, its map and inverse are
+\[
+\phi(x)=\frac{(x_1,\ldots,x_n)}{1+x_0}\in B^n,
+\qquad
+\phi^{-1}(u)=\frac{(1+\lVert u\rVert^2,\,2u)}{1-\lVert u\rVert^2}.
+\]
+The hyperboloid equation gives $\lVert\phi(x)\rVert<1$ and verifies the
+inverse formula. In this model geodesics are diameters or circular arcs
+orthogonal to $\partial B^n$. Central projection $x\mapsto(x_1,\ldots,x_n)/x_0$
+instead gives the projective (Klein) ball model; it is not the Poincaré
+projection.
 :::
 
 :::{.example #ex:hsd-upper-half-plane title="The hyperbolic plane"}
