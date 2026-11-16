@@ -2,7 +2,7 @@
 
 ## Disposition
 
-The semantic transfer is complete across the calculus chapter and its companion. Independent comparisons found no substantive source material missing and no undue loss of the source's mathematical voice. The destinations and comparison were committed as research `8afc9b1f77` before either source was trashed. Each original was then trashed and committed separately.
+The transfer of sources A and B is complete across the calculus chapter and its companion. Independent comparisons found no substantive material from those sources missing and no undue loss of their mathematical voice. The destinations and comparison were committed as research `8afc9b1f77` before either source was trashed. Each original was then trashed and committed separately. The additional illustrated and native TeX archives are audited separately below.
 
 The destinations are `writing/calculus-on-schemes.md` and `writing/symmetric-spaces-and-period-domains.md`. The source files are:
 
@@ -86,3 +86,77 @@ The full-source comparison and the independent companion audit agree on semantic
 Neither file was an active include or a linked source in the notes tree. The chapters identify their former locations as provenance. Each deletion commit contains only its source file. The trash copies are `~/.local/share/Trash/files/140_HSD.md` (A) and `~/.local/share/Trash/files/140_HSD.md_1` (B); their SHA-256 values match the inspected originals above. The source text also remains recoverable from the recorded Git blobs.
 
 Both chapter renders passed `just docs-lint`, including source citation and reference checks. Browser inspection found no MathJax errors or unresolved chapter cross-references; the rendered domain table was inspected for layout. These checks establish document rendering and links, separately from the mathematical and semantic comparisons.
+
+## Additional archive sources
+
+The subsequent transfer includes the complete text and embedded mathematical images of the illustrated notes, together with the native TeX archive. Its destination is `writing/symmetric-spaces-and-period-domains.md`. Retirement requires semantic and voice comparison of each source, including the image-only material, followed by document checks. The original LaTeX is recoverable as a Git blob as well as from the trash after retirement.
+
+| Source | Path relative to `~/notes` | Git blob | SHA-256 |
+| --- | --- | --- | --- |
+| C | `diss/old-notes/Ch.1 Basics/Symmetric Spaces/Hermitian symmetric domains.md` | `95b1d4d684288e0e1960ba98c763d2c138bd4bf3` | `451c06fea7350801f4bac9c583dc28771854becb40b8d521e3e23d480de6345d` |
+| D | `dissertation/Ch.1 Basics/Symmetric Spaces/Hermitian symmetric domains.md` | `95b1d4d684288e0e1960ba98c763d2c138bd4bf3` | `451c06fea7350801f4bac9c583dc28771854becb40b8d521e3e23d480de6345d` |
+| E | `diss/GROUND_TRUTH/my_enriques_notes/140_HSD.tex` | `674a21e847fc9d297582b14b64d32bc682f969dc` | `300694e479c13a3ae0293382b6b2ec1b1e399ba1e8ac4ea2667e4a5458adfabe` |
+
+C and D are byte-identical. Their attachment paths are resolved separately before retirement. Source E contains independent arithmetic and compactification material, so textual overlap with the earlier archives does not establish its transfer.
+
+### Text correspondence
+
+| Source content | Destination | Correction or clarification |
+| --- | --- | --- |
+| C/D: local/global Hermitian symmetry, types, bounded domains | `rmk:hsd-local-symmetry`, `rmk:hsd-types` | Geodesic symmetry uses `exp(-v)`; parallel curvature is a local criterion. Noncompact type excludes Euclidean factors. |
+| C/D: period integrals, markings, arbitrary polarization type | `rmk:hsd-polarization-types`, `rmk:hsd-ppav` | Period matrix is `n × 2n`; cycles belong to homology. The polarization fixes the marking group and sign convention. |
+| C/D: half-plane/disc, tori, projective line, homogeneous examples | `ex:hsd-upper-half-plane`, `sec-hsd-grassmannians`, `sec-hsd-matrices` | Stabilizers, effective isometry groups, and determinant-one condition corrected. The projective-line question is answered by the Fubini–Study model. |
+| C/D: types I–IV, automorphic/Hodge bundles, tangent spaces | `rmk:hsd-type-dictionary`, `rmk:hsd-automorphic-tautological`, `rmk:hsd-hodge-line` | Type II uses `SO*`, not the split orthogonal group. The determinant Hodge line is an exterior power; canonical exponents are derived. |
+| C/D: tube, conic, projective and oriented-plane models | `cons:hsd-tube-coordinates`, `ex:hsd-conic-half-plane`, `rmk:hsd-oriented-periods` | Explicit normalization and inverse; consistent conic equation and positivity. |
+| E:7–96, symmetric spaces and orthogonal moduli | Earlier homogeneous-space sections; `rmk:hsd-discriminant-arrangements` | Compact dual distinguished from domain; root mirrors and period-image qualifications explicit. |
+| E:99–120, arithmetic/parabolic definitions and classical modular types | `def:hsd-arithmetic-subgroup`, `def:hsd-parabolic-subgroup`, `sec-hsd-arithmetic-boundary` | Faithful representation specified; quaternionic skew-Hermitian real form corrected. |
+| E:124–140, type IV toroidal compactification | `rmk:hsd-toroidal` | Admissible fans, unipotent lattice, torus charts and orbits, canonical curve-cusp charts, properness and map to Baily–Borel. |
+| E:142–174, modular curves and automorphic forms | `ex:hsd-modular-curve` and its following Hodge-line paragraph | Full level includes Weil pairing; level zero means cyclic subgroup; both projective coordinates have weight 12. The source's line-bundle question is answered by the Hodge line and its complete linear system. |
+| E:178–204, K3/Siegel boundaries and rational components | `ex:hsd-k3-boundary`, `rmk:hsd-siegel-boundary`, `rmk:hsd-boundary-components` | Stabilizer/rational-form conditions and component orbits explicit; boundary records periods, not isomorphism classes of central fibers. |
+| E:207–236, explicit orthogonal models | `def:hsd-positive-grassmannians`, `rmk:hsd-hyperboloid`, `rmk:hsd-spinor-conventions`, `rmk:hsd-oriented-periods`, `cons:hsd-tube-coordinates` | Negative restricted metric, dimensions, orientation, and spinor normalization retained correctly. |
+
+### Embedded image correspondence
+
+All images were opened and read, including sections with no accompanying prose. The paths are relative to each note's `../../attachments/` directory. Both sets exist and the corresponding image bytes agree.
+
+| Image filename | Mathematical content | Destination |
+| --- | --- | --- |
+| `2023-04-09-3.png` | Orthogonal moduli examples and signatures; quotient regularity | `rmk:hsd-discriminant-arrangements`, `sec-hsd-arithmetic-boundary` |
+| `2024-04-13-5.png` | Hermitian symmetry | `def:hsd-symmetric-space`, `rmk:hsd-local-symmetry` |
+| `2023-02-27hermsymdom.png` | Irreducibility and Euclidean/compact/noncompact types | `rmk:hsd-types` |
+| `2023-02-27hermdomterm.png` | Harish-Chandra and Bergman realizations | `rmk:hsd-types` |
+| `2023-02-27quotient.png` | Adjoint real group and homogeneous quotient | `sec-hsd-shimura-circle` |
+| `2024-04-13-6.png` | Circle action at a pointed domain | `sec-hsd-shimura-circle` |
+| `2024-04-13-7.png` | Real algebraic group and Shimura formulation | `sec-hsd-shimura-circle` |
+| `2023-03-10tube.png` | Tube-domain definition | `def:hsd-tube-type` |
+| `2023-03-14tube.png` | Formally real Jordan algebras and cones | `sec-hsd-jordan-tubes` |
+| `2024-04-13-16.png` | Siegel action | `rmk:hsd-siegel-action` |
+| `2024-04-13-17.png` | Polarized abelian moduli | `rmk:hsd-ppav`, `rmk:hsd-polarization-types` |
+| `2023-03-14siegel.png` | Siegel homogeneous model | `def:hsd-siegel`, `rmk:hsd-siegel-action` |
+| `2023-03-14-8.png` | Fractional linear action | `rmk:hsd-siegel-action` |
+| `2023-03-14-9.png` | Unitary stabilizer and dimension | `rmk:hsd-siegel-action` |
+| `2023-03-14-10.png` | Cayley transform and bounded realization | `def:hsd-siegel`, `rmk:hsd-siegel-action` |
+| `2023-03-10.png` | Classical and exceptional classification; conjugate invariant complex structures | `rmk:hsd-type-dictionary`, `sec-hsd-marked-diagrams` |
+| `2023-03-12proj.png` | Tube-to-quadric map and conic specialization | `cons:hsd-tube-coordinates`, `ex:hsd-conic-half-plane` |
+| `2023-03-14riem.png` | Determinant-one positive symmetric matrices | `sec-hsd-matrices` |
+| `2023-03-14herm-1.png` | Marked Dynkin classification | `sec-hsd-marked-diagrams` |
+| `2023-03-14-13.png` | Special nodes and root systems | `sec-hsd-marked-diagrams` |
+| `2023-03-14-14.png` | Exceptional diagrams | `sec-hsd-marked-diagrams` |
+| `2023-04-06-4.png` | Parabolics and cusps | `def:hsd-parabolic-subgroup`, `ex:hsd-modular-curve` |
+| `2023-04-06-5.png` | Modular forms and projective embedding | `ex:hsd-modular-curve` and its Hodge-line interpretation |
+| `2023-05-16.png` | Siegel modular varieties; congruence subgroup property for genus at least two | `rmk:hsd-siegel-boundary` |
+| `2023-05-16-1.png` | Siegel Baily–Borel and toroidal compactifications | `rmk:hsd-siegel-boundary`, `rmk:hsd-siegel-toroidal` |
+| `2024-04-13-19.png` | Non-Hermitian complex special-linear example | `sec-hsd-arithmetic-boundary` |
+| `2023-05-16-2.png` | Hilbert modular varieties and compactifications; congruence subgroup property for totally real fields of degree greater than one | `ex:hsd-hilbert-modular` |
+
+### Independent comparison
+
+The final comparison includes both full text sources and their image-only claims. It checked the period-matrix ordering and Riemann-form sign, cohomological Hodge positivity, canonical-bundle exponents, the two circle-action normalizations, Jordan cones, type IV tube coordinates, and all marked-root incidence data. Low-rank diagram shapes are interpreted through the explicit domain coincidences. The general modular-form map includes its basepoint-free hypothesis; the congruence assertions include the required rank and field-degree hypotheses and cite Bass–Milnor–Serre and Serre.
+
+The source's definition, remark, and example form, explicit quotient models, period maps, and calculations remain. Reorganization groups related examples and replaces screenshot diagrams by named root systems, marked nodes, and explicit edge lists. The original reference pointers are retained in Sources. Independent comparison found no remaining unique mathematical claim or undue change of mathematical voice in C/D/E after these corrections. Rendering and retirement are recorded below separately.
+
+### Document verification
+
+`just docs-lint symmetric-spaces-and-period-domains.md` passed after the final corrections. Chromium inspection of the rendered chapter found no MathJax errors or unresolved cross-references; the Milne, Bass–Milnor–Serre, and Serre bibliography entries all resolved. The marked-root tables were inspected visually and the page fit its viewport. Every destination anchor in this additional-source correspondence exists. These checks are separate from the full-text and image-content comparisons above.
+
+The generated bibliography entries are committed in pandoc-config `1757fd7`. Incoming archive links in the lattice notes, changelogs, TeX assembly, and archive index are redirected to the chapter. Their relative destinations resolve to the authored Markdown file.
