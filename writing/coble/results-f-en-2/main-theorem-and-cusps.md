@@ -200,6 +200,63 @@ $$
 The generators preserve the norm marks and all $25$ weighted edges of the canonical diagram. The archive's geometric labels for the direction of $\rho$ and the intended lattice involutions were left under review; the cusp foldings above use the lattice involutions of [@AEGS25, Lems. 3.9–3.10].
 :::
 
+### Root coordinates behind the cusp diagrams
+
+The archived coordinate calculation uses the negative definite $E_8$ root basis
+$\alpha_1,\ldots,\alpha_8$ and a second copy $\alpha'_1,\ldots,\alpha'_8$.
+Write $\bar\alpha_i$ and $\bar\alpha'_i$ for their pairing-dual bases,
+and let $e\cdot f=1$ in $U$ and $e'\cdot f'=2$ in $U(2)$.
+The following roots lie in the boundary lattice
+$U(2)\oplus E_8\oplus E_8\subset U\oplus U(2)\oplus E_8\oplus E_8$.
+Here $v_i$ is the vertex $i$ of @fig-k3-cusp-18-2-0-vinberg, or
+$\alpha_{i-1}$ in the numbering of [@AEGS25, Fig. 5].
+
+| Root | Vector | Root | Vector |
+| --- | --- | --- | --- |
+| $v_1$ | $\alpha'_8$ | $v_{12}$ | $\alpha'_3$ |
+| $v_2$ | $e'+f'+\bar\alpha_1+\bar\alpha'_8$ | $v_{13}$ | $\alpha'_4$ |
+| $v_3$ | $\alpha_1$ | $v_{14}$ | $\alpha'_5$ |
+| $v_4$ | $\alpha_3$ | $v_{15}$ | $\alpha'_6$ |
+| $v_5$ | $\alpha_4$ | $v_{16}$ | $\alpha'_7$ |
+| $v_6$ | $\alpha_5$ | $v_{17}$ | $e'+\bar\alpha'_8$ |
+| $v_7$ | $\alpha_6$ | $v_{18}$ | $\alpha_2$ |
+| $v_8$ | $\alpha_7$ | $v_{19}$ | $e'+\bar\alpha_8$ |
+| $v_9$ | $\alpha_8$ | $v_{20}$ | $\alpha'_2$ |
+| $v_{10}$ | $e'+f'+\bar\alpha_8+\bar\alpha'_1$ | $v_{21}$ | $f'-e'$ |
+| $v_{11}$ | $\alpha'_1$ | $v_{22}$ | $5e'+3f'+2\bar\alpha_2+2\bar\alpha'_2$ |
+
+The $19$ roots of the other K3 cusp, with boundary lattice
+$U\oplus E_8\oplus E_8$, have a parallel coordinate list:
+
+| Roots | Vectors |
+| --- | --- |
+| $w_1,\ldots,w_7$ | $\alpha_1,\alpha_3,\alpha_4,\alpha_5,\alpha_6,\alpha_7,\alpha_8$ |
+| $w_8,w_9,w_{10}$ | $e+\bar\alpha_8,\ f-e,\ e+\bar\alpha'_8$ |
+| $w_{11},\ldots,w_{17}$ | $\alpha'_8,\alpha'_7,\alpha'_6,\alpha'_5,\alpha'_4,\alpha'_3,\alpha'_1$ |
+| $w_{18},w_{19}$ | $\alpha_2,\alpha'_2$ |
+
+The archived row for $v_{10}$ has $f$ in place of $f'$ and $\alpha'_1$
+in place of $\bar\alpha'_1$. The corrected vector above has square
+$-2$ and lies in $U(2)\oplus E_8^2$; the archived one has square $-4$
+and pairs nontrivially with $e$, so it cannot be this boundary root.
+The corrected lists agree with the root construction in
+`sage_extensions.sterk.Sterk` and with all $231$ pairings of the
+$22$-root diagram and all $171$ pairings of the $19$-root diagram
+against [@AEGS25, Fig. 5] (`computations/reports/sterk_figure5_adjacency.py`).
+
+For cusp $1$, the first seven folded roots are the paired simple roots
+$\alpha_i+\alpha'_i$ for $i=1,3,4,5,6,7,8$. The next two are
+$v_2+v_{10}=2e'+2f'+\bar\alpha_1+\bar\alpha'_1+\bar\alpha_8+\bar\alpha'_8$
+and $v_{17}+v_{19}=2e'+\bar\alpha_8+\bar\alpha'_8$.
+The remaining roots are $v_{21}$, $v_{22}$, and $v_{18}+v_{20}$.
+Thus the archived cusp-$1$ table's use of $e,f$ in those two middle
+rows is a coordinate error. For cusp $2$, the corresponding folded
+roots are $w_1+w_{17},\ldots,w_8+w_{10}$, then $w_9$ and
+$w_{18}+w_{19}$. For cusps $3$--$5$, the corrected fold sums and the
+published parabolic incidences are recorded in the exact pairing audit
+and the figures below; the archived partial tables have unresolved
+entries and do not determine those foldings.
+
 ::: {.remark title="The alternate completeness calculation in the Nagoya draft"}
 
 The earlier manuscript also attempts to enumerate the five cusp involutions without Sterk's cusp count. It starts with involutions $J$ of the boundary lattices $U\oplus E_8^2$ and $U(2)\oplus E_8^2$ whose fixed lattice has rank $10$ and type $U(2)\oplus E_8(2)$ or $U\oplus E_8(2)$. Up to the cases constructed in [@AEGS25, Lems. 3.9–3.10], its remaining candidates are: eight commuting root reflections in $U\oplus E_8^2$; a diagonal symmetry of $U(2)\oplus E_8^2$ followed by reflection in one of $\alpha_0,\alpha_8,\alpha_{16},\alpha_{18},\alpha_{20},\alpha_{21}$; and eight commuting root reflections in $U(2)\oplus E_8^2$. The draft reports a SageMath fixed-lattice check that rejects the first case and retains only $\alpha_{20}$ in the second and $\{\alpha_1,\alpha_3,\ldots,\alpha_{15}\}$ in the third. That calculation is recorded in the draft but has no independently checked computation here; the completeness assertion in @prop:fen2-folded-coxeter uses Sterk's classification.
