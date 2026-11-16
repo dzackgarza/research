@@ -42,6 +42,8 @@ Its quotient is $Y=V_Q$. Varying the Dynkin coefficients gives $\CC^n$, the Weyl
 
 The sublattice $2\ZZ^2$ marks even vertices. A blue boundary edge ending at an even vertex has length $2$ and is undecorated; an edge ending at an odd vertex has length $1$ and receives a minus or prime decoration. Priming blows up $D\cap R$ on $X$, or makes the corresponding weighted blowup at $C\cap B$ on $Y$ (@def:priming). A long side meets $R$ twice and a short side once. Once every such point on a side has been blown up, the strict transforms satisfy $D_i'\cdot R'=0$, and $\abs{mR'}$, for sufficiently large $m$, contracts $D_i'$. This explains the loss of one or both boundary components in the primed shapes [@AT17, §3C; @AEGS25, §6].
 
+For example, priming a long side of $A_n$ once gives $A_n'$ and twice gives $A_n''$; priming a short side of $A_n^-$ gives $A_n^+$. The shapes $A_n''$ and $A_n^+$ have one boundary component. Priming both sides gives the zero-boundary shapes ${}''A_n''$, ${}''A_n^+$, and ${}^{+}A_n^+$ [@AEGS25, §6]. The decorations on the left and right record which sides were primed; they are distinct from the minus decoration on a short side.
+
 ## Type II equations
 
 The two ends of the distinguished boundary segment have coefficient $1$; its interior distinguished point has coefficient $\lambda$. Three sections from [@AEGS25, §6] are
