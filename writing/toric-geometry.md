@@ -8,6 +8,8 @@ A toric variety can be built from monomials on affine charts, then glued along t
 
 ## Affine semigroup charts
 
+All cones in a fan below are rational and strongly convex. This ensures that each affine chart has dense torus $\operatorname{Spec}\mathbb C[M]$.
+
 Let $N\simeq\mathbb Z^n$ be a lattice, $M=\operatorname{Hom}(N,\mathbb Z)$ its dual, and $\langle\ ,\ \rangle:M\times N\to\mathbb Z$ the pairing. For a rational polyhedral cone $\sigma\subset N_{\mathbb R}$, put
 $$
 \sigma^\vee=\{m\in M_{\mathbb R}:\langle m,u\rangle\geq0\text{ for all }u\in\sigma\},
@@ -61,7 +63,7 @@ The torus-invariant prime divisors of a normal toric variety correspond to rays 
 $$
 P_D=\{m\in M_{\mathbb R}:\langle m,u_\rho\rangle\geq-a_\rho\text{ for all }\rho\}.
 $$
-Its lattice points index a basis $\{\chi^m:m\in P_D\cap M\}$ of $H^0(X_\Sigma,\mathcal O(D))$ when $D$ is Cartier. A compatible integral linear function on each cone is the Cartier condition. For a complete fan, its support function is convex exactly when $D$ is basepoint free, and strictly convex exactly when $D$ is ample. Thus arbitrary facet coefficients do not by themselves make a divisor Cartier or ample [@CLS11, Ch. 4, Ch. 6].
+Its lattice points index a basis $\{\chi^m:m\in P_D\cap M\}$ of $H^0(X_\Sigma,\mathcal O(D))$ when $D$ is Cartier. A compatible integral linear function on each cone is the Cartier condition. Set $\psi_D(u_\rho)=-a_\rho$. For a complete fan, $D$ is basepoint free exactly when $\psi_D$ is the minimum of its linear pieces, and ample exactly when this minimum is strictly piecewise linear across every wall. This is concavity in the usual analytic convention; toric references call it *upper convexity*. Thus arbitrary facet coefficients do not by themselves make a divisor Cartier or ample [@CLS11, §§4.2, 6.1].
 
 For a smooth complete $n$-dimensional toric variety, the divisor sequence gives
 $$
@@ -71,9 +73,9 @@ $$
 $$
 For a full-dimensional polytope with this normal fan, its rays correspond to the *facets* of the polytope. The number of vertices need not equal the number of rays [@Ful93, §3; @CLS11, §4.2].
 
-A subdivision of a fan gives a proper toric birational morphism. In a smooth surface cone $\operatorname{Cone}(u_1,u_2)$, inserting the ray through $u_1+u_2$ is the ordinary blowup of the torus-fixed point. Inserting the primitive ray through a general $a u_1+b u_2$ instead gives a toric weighted blowup, possibly with quotient singularities; it is not generally the ordinary blowup of an ideal written $(x^a,y^b)$ [@CLS11, §3.3]. A complete fan is polytopal exactly when it admits a strictly convex support function. Completeness alone does not ensure projectivity in dimensions at least three [@CLS11, §6.1].
+A subdivision of a fan gives a proper toric birational morphism. In a smooth surface cone $\operatorname{Cone}(u_1,u_2)$, inserting the ray through $u_1+u_2$ is the ordinary blowup of the torus-fixed point. Inserting the primitive ray through a general $a u_1+b u_2$ instead gives a toric weighted blowup, possibly with quotient singularities; it is not generally the ordinary blowup of an ideal written $(x^a,y^b)$ [@CLS11, §3.3]. A complete fan is polytopal exactly when it admits a strictly concave integral piecewise-linear support function. Completeness alone does not ensure projectivity in dimensions at least three [@CLS11, §6.1].
 
-For a smooth projective toric variety with a torus-invariant Kähler form, the moment-map image is a polytope in $M_{\mathbb R}$; after fixing the moment-map translation, this is the polytope of the associated ample line bundle. Its normal fan recovers the toric variety. This gives the symplectic reading of the same polytope used in the integral affine construction (@sec-lagrangian-affine) [@Ful93, §4; @CLS11, §12.3].
+For a smooth projective toric variety with a torus-invariant Kähler form whose cohomology class is integral, the moment-map image is a polytope in $M_{\mathbb R}$; after fixing the moment-map translation and prequantum line bundle, this is the polytope of the associated ample line bundle. Its normal fan recovers the toric variety. This gives the symplectic reading of the same polytope used in the integral affine construction (@sec-lagrangian-affine) [@Ful93, §4; @CLS11, §12.3].
 
 ## Polytopes and polar duality
 
@@ -90,7 +92,7 @@ The polytope $P$ is *reflexive* if $P^\circ$ is a lattice polytope. Equivalently
 
 The anticanonical divisor on $X_\Sigma$ is $-K_X=\sum_{\rho\in\Sigma(1)}D_\rho$. Therefore $X$ is Gorenstein Fano exactly when its anticanonical polytope $P_{-K_X}$ is reflexive and $\Sigma$ is its normal fan [@CLS11, Thm. 8.3.4]. Smoothness is a separate condition: every maximal cone of $\Sigma$ must be regular. There are sixteen reflexive polygons up to lattice equivalence, and five give smooth toric del Pezzo surfaces: $\mathbb P^2$, $\mathbb P^1\times\mathbb P^1$, and blowups of $\mathbb P^2$ at one, two, or three torus-fixed points [@CLS11, §8.3].
 
-For $\mathbb P^n$, the anticanonical polytope is $(n+1)\Delta_n-\sum_{i=1}^n e_i$. Its normal fan gives $\mathbb P^n$. In dimension four, a general anticanonical hypersurface is a quintic Calabi–Yau threefold. In dimension two, the polytope is the triangle $3\Delta_2-e_1-e_2$, with polar $\operatorname{Conv}(e_1,e_2,-e_1-e_2)$ after a suitable identification of the dual lattice. For a smooth degree-$d$ hypersurface $D\subset\mathbb P^n$, adjunction gives $K_D=(d-n-1)H|_D$; hence $-K_D$ is ample when $d<n+1$, while $d=n+1$ is the Calabi–Yau degree.
+For $\mathbb P^n$, the anticanonical polytope is $(n+1)\Delta_n-\sum_{i=1}^n e_i$. Its normal fan gives $\mathbb P^n$. In dimension four, a general anticanonical hypersurface is a quintic Calabi–Yau threefold. In dimension two, the polytope is the triangle $3\Delta_2-e_1-e_2$, with polar $\operatorname{Conv}(e_1,e_2,-e_1-e_2)$ after a suitable identification of the dual lattice. For a smooth degree-$d$ hypersurface $D\subset\mathbb P^n$, adjunction gives $K_D=(d-n-1)H|_D$; hence $-K_D$ is ample when $d<n+1$, while $d=n+1$ gives trivial canonical bundle. For $n\geq2$ this is the Calabi–Yau degree.
 
 ::: {#fig-toric-p2-polar .figure}
 \begin{tikzpicture}
@@ -100,7 +102,7 @@ For $\mathbb P^n$, the anticanonical polytope is $(n+1)\Delta_n-\sum_{i=1}^n e_i
 The anticanonical polytope of $\mathbb P^2$ and its reflexive polar.
 :::
 
-A normal toric variety is *Gorenstein* exactly when its canonical divisor $K_X$ is Cartier. A Fano variety has ample $-K_X$. A smooth Fano curve is $\mathbb P^1$. The Mori program studies the contractions and flips detected by $K_X$ and its intersections with curves; in the toric setting, these operations can be read from changes to the fan [@CLS11, Ch. 15].
+A normal toric variety is *Gorenstein* exactly when its canonical divisor $K_X$ is Cartier. A Fano variety has ample $-K_X$. A smooth Fano curve is $\mathbb P^1$. In dimension three there are eighteen smooth toric Fano varieties up to isomorphism, as classified by [Batyrev](https://www.mathnet.ru/php/archive.phtml?jrnid=im&option_lang=eng&paperid=1581&wshow=paper). The Mori program studies the contractions and flips detected by $K_X$ and its intersections with curves; in the toric setting, these operations can be read from changes to the fan [@CLS11, Ch. 15].
 
 ## Toric models of anticanonical pairs
 
