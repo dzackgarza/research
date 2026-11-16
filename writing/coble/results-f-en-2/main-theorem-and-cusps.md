@@ -37,7 +37,7 @@ This is established via an algebraic morphism of period domains
 $$
 \Psi : \fentwo \to \fttz
 $$
-induced by the unique lattice embedding $\tilde\Psi : \ten \injects \tdp$ defined by
+induced by the distinguished lattice embedding $\tilde\Psi : \ten \injects \tdp$ defined by
 $$
 \tilde\Psi(u_1, u_2, v) \definedas (u_1, u_2, v, v).
 $$
@@ -111,6 +111,39 @@ The toroidal and semitoroidal cusps are those of @thm:fen2_main(2).
 
 ## Folded Coxeter diagrams of the five cusps
 
+::: {.lemma #lem:enriques-embedding-chain title="Uniqueness of the period-lattice embedding chain"}
+
+The chain of primitive embeddings
+$$
+\ten=U\oplus U(2)\oplus E_8(2)
+\hookrightarrow \tdp=U\oplus U(2)\oplus E_8^2
+\hookrightarrow \lkt
+$$
+is unique up to the action of $\Orth(\lkt)$ [@AEGS25, Lem. 2.4].
+:::
+
+::: {.proof}
+
+Taking orthogonal complements turns this into the chain $U(2)\hookrightarrow U(2)\oplus E_8(2)\hookrightarrow\lkt$. Nikulin's primitive embedding theorem gives uniqueness of the second inclusion [@Nik79, Thm. 1.14.4]. After scaling by $2$, uniqueness of the first reduces to the embedding $U\hookrightarrow U\oplus E_8$: its perpendicular is $E_8$, which determines the embedding up to isometry. Every isometry of $\tdp$ extends to one of $\lkt$ by the gluing and surjectivity results of [@Nik79, Props. 1.5.2, 3.6.3]. Thus an isometry taking one embedded copy of $\ten$ to another extends over the full chain [@AEGS25, proof of Lem. 2.4].
+:::
+
+::: {.lemma #lem:enriques-folding-lifts title="Lifting a cusp folding involution"}
+
+For each of the five folded cusp diagrams in @prop:fen2-folded-coxeter, the involution $J$ of $\overline T_{\mathrm{dP}}$ lifts to an involution $I$ of $\tdp$ whose fixed lattice is $\ten$ [@AEGS25, Lem. 3.11].
+:::
+
+::: {.proof}
+
+At cusp $2$, decompose $\tdp=U(2)\oplus\overline T_{\mathrm{dP}}$ and act trivially on the first factor. At cusp $1$, use $\tdp=U\oplus\overline T_{\mathrm{dP}}$ in the same way. At cusps $3$, $4$, and $5$, $\overline T_{\mathrm{dP}}=U(2)\oplus E_8^2$ has fixed lattice $U\oplus E_8(2)$, and the trivial extension does not have the required fixed lattice.
+
+Write $U=\langle e,f\rangle$, with $e^2=f^2=0$ and $e\cdot f=1$. A section of $\overline T_{\mathrm{dP}}$ into $\ZZ e\oplus\overline T_{\mathrm{dP}}$ is given by $a\in\overline T_{\mathrm{dP}}^*$, sending $x$ to $x+a(x)e$. Its perpendicular in $\tdp$ is $\langle e,2f-2a\rangle$ when $a\notin\overline T_{\mathrm{dP}}$; here $(2f-2a)^2=4a^2$. Choose $a=e'/2$ for a standard isotropic basis vector $e'$ of the $U(2)$ summand of $\overline T_{\mathrm{dP}}$. Its discriminant value is integral, so this perpendicular is $U(2)$. Act by $J$ on the chosen section and trivially on its perpendicular. The resulting fixed lattice is
+$$
+\tdp^{I=1}\cong U(2)\oplus\overline T_{\mathrm{dP}}^{J=1}
+\cong U\oplus U(2)\oplus E_8(2)=\ten.
+$$
+The embedding-chain uniqueness of @lem:enriques-embedding-chain identifies this lift with the required involution on the period lattice [@AEGS25, proof of Lem. 3.11].
+:::
+
 ::: {.proposition #prop:fen2-folded-coxeter title="Folded Coxeter diagrams of $\fentwo$"}
 
 Let $e\in\ten$ be a primitive isotropic vector.
@@ -135,4 +168,11 @@ The folded diagram $G(\overline{T}_{\mathrm{dP}})^J$ of the Coxeter diagram $G(\
    [@AEGS25, Lem. 3.9, Lem. 3.10].
 
 3. These five folded diagrams are precisely the Coxeter diagrams of the reflection groups $W(\Gamma_{\mathrm{En},2,e})$, for the isotropic vectors $e\in\ten$ up to $\Gamma_{\mathrm{En},2}$ [@AEGS25, Cor. 3.12].
+:::
+
+::: {.proof}
+
+The root-folding criterion @lem:root-folding-tdp identifies the folded walls with root hyperplanes of $\overline T_{\mathrm{En}}$. Intersecting a chamber of the ambient reflection group with $\overline T_{\mathrm{En}}\otimes\RR$ gives the chamber in (1): the hyperplane of $\alpha$ restricts to that of $\alpha+J\alpha$ when $J\alpha\ne\alpha$, and a nonempty wall has negative folded norm. At cusp $2$, the orbit sums $\alpha_k+\alpha_{20-k}$, $1\le k\le8$, span $E_8(2)$, while $\alpha_{10}$ and the isotropic vector of the diagram relation span an orthogonal $U$ [@AEGS25, proof of Lem. 3.9]. For cusp $1$, the folded diagram contains $\widetilde E_8(2)$: half its null root and the disjoint simple root span $U(2)$ orthogonal to $E_8(2)$. At cusp $3$, the $E_7A_1(2)$ subsystem has index $2$ in $E_8(2)$, while half the null root of $\widetilde A_1(2)$ and its disjoint root span $U$. The diagrams at cusps $4$ and $5$ start from $\widetilde D_8(2)$ and $\widetilde A_7\widetilde A_1(2)$, respectively [@AEGS25, proofs of Lems. 3.9–3.10].
+
+Each $J$ lifts to $\tdp$ by @lem:enriques-folding-lifts, so the five chambers correspond to Enriques cusp reflection groups. Sterk's classification gives exactly five $0$-cusps [@Ste91, §4.3]; hence the list is exhaustive [@AEGS25, proof of Cor. 3.12].
 :::

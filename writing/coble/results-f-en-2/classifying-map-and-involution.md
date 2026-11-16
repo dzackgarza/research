@@ -7,19 +7,17 @@
 Let $B$ be the closure of the image of $\fentwo$ in $\ksbacpt{\fttz}$, and let $(\mcx_B, \eps\mcr_B)\to B$ be the pullback of the universal family of KSBA-stable pairs.
 Its general fibre is a pair $(X, \eps R)$ of an Enriques K3 surface $X$ and the ramification divisor $R$ of the del Pezzo involution.
 
-1. By uniqueness of KSBA-stable limits, the Enriques involution $\ien$ of the general fibre extends to an involution of $(\mcx_B, \eps\mcr_B)$.
-   The quotient is a family $(\mcz, \eps\mcr_\mcz)\to B$ over a compact base, which extends the universal family of Enriques surfaces with divisor.
+1. The Enriques involution $\ien$ of the general fibre extends uniquely to an involution of $(\mcx_B, \eps\mcr_B)$ commuting with the del Pezzo involution $\idp$.
+   The quotient is a flat family $(\mcz, \eps\mcr_\mcz)\to B$ over a compact base, which extends the universal family of Enriques surfaces with divisor.
 
 2. The normalization $\normalize{B}$ is a compactification of $\fentwo$ with a universal family of pairs, so there is a classifying morphism $\normalize{B}\to\ksbacpt{\fentwo}$
 
 [@AEGS25, Lem. 2.8 and proof of Thm. 5.9].
 :::
 
-::: {.conjecture #conj:enriques_involution_extension title="Uniqueness and compatibility of the extended involution"}
+::: {.proof}
 
-Let $B$ be the Noether--Lefschetz closure of @prop:enriques-involution-extends.
-The involution of $(\mcx_B, \eps\mcr_B)$ in @prop:enriques-involution-extends(1) is the unique involution that extends $\ien$, and it commutes with the del Pezzo involution $\idp$.
-The quotient $(\mcz, \eps\mcr_\mcz)\to B$ is a flat family of KSBA-stable Enriques pairs over $B$.
+The generic involution preserves $R$, hence acts on the relative log canonical algebra that forms the stable model. It therefore extends to the relative $\Proj$ of that algebra. Two extensions agree on a dense open subset and hence everywhere by separatedness; since $\ien$ and $\idp$ commute on the generic fibre, their extensions commute. In characteristic zero, the invariant part of a flat relative coordinate algebra is a direct summand, so the finite quotient remains flat over $B$. The quotient is a family of stable Enriques pairs; over $\fentwo$ it is the original family, which gives the classifying morphism after normalization [@AEGS25, proof of Thm. 5.9].
 :::
 
 ## Finiteness of the classifying map
@@ -33,6 +31,13 @@ $$
 of @prop:enriques-involution-extends(2), from the normalization $\normalize{B}$ of the Noether--Lefschetz closure, is finite [@AEGS25, proof of Thm. 5.9].
 :::
 
+::: {.proof}
+
+The normalization of the KSBA compactification dominates its Baily–Borel compactification: at a Type II boundary point, the elliptic modulus can be recovered from the slc Enriques pair. Either its double curve is elliptic, or it is a rational curve with four distinguished $A_1$ points. In the latter case, the double cover of $\PP^1$ branched at those points has the required $j$-invariant [@AEGS25, proof of Thm. 5.9; @AET23, Thm. 3.17].
+
+The normalized KSBA space therefore lies between the semitoroidal compactification determined by the folded semifans $\semifan{F}_k$ and Baily–Borel. The semitoroidal comparison theorem makes its semifans coarsenings $\semifan{G}_k$ of the $\semifan{F}_k$ [@AE23, Thm. 7.18]. If a maximal cone were lost in a strict coarsening, a codimension-one cone of some $\semifan{F}_k$ would parametrize a one-dimensional family of K3 pairs with fewer than the maximal number of double curves while their Enriques quotients had the maximal number. The explicit quotient models have the maximal number of double curves exactly when their K3 covers do [@AEGS25, Prop. 4.8, Cor. 4.9]. Thus the maximal cones remain distinct, and the classifying morphism is finite by the semitoroidal cone comparison [@AEGS25, proof of Thm. 5.9].
+:::
+
 ::: {.proposition #prop:enriques-semifan-coarsening title="The semifans of the normalized KSBA compactification"}
 
 Let $\semitorfan = \theset{\semifan{F}_k}_{k=1}^5$ be the generalized Coxeter semifans of the folded Coxeter diagrams of the five $0$-cusps of $\fentwo$ [@AEGS25, Def. 5.3, Lem. 5.5].
@@ -41,7 +46,7 @@ Let $\semitorfan = \theset{\semifan{F}_k}_{k=1}^5$ be the generalized Coxeter se
 
 2. If the maximal cones of the $\semifan{G}_k$ are the maximal cones of the $\semifan{F}_k$, then $\phi$ is finite.
 
-3. A degeneration of $(\mcz, \eps\mcr_\mcz)$ has the maximal number of double curves if and only if the corresponding degeneration of $(\mcx, \eps\mcr)$ has
+3. A degeneration of $(\mcz, \eps\mcr_\mcz)$ has the maximal number of double curves if and only if the corresponding degeneration of $(\mcx, \eps\mcr)$ does.
 
 [@AEGS25, proof of Thm. 5.9].
 :::
