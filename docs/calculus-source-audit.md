@@ -534,3 +534,17 @@ claims of unverified absorption.
 | `diss/old-notes/Learning/2023-08-19.md` | `09dac0bab2414607bd2ce0a50e70922e269f6430` | `5a9235a2d1` |
 | `diss/old-notes/Sterk91.md` | `232654e45300225e8e17075d42fbad876162bd9e` | `cfed3848cf` |
 
+### Concurrent research update
+
+Merge `6b024b6d52` preserves the transferred diagrams and conditional
+period-extension proof alongside the incoming reflection and marked-root
+results. Commit `eb543b3ba6` connects the older marking question to the
+proved arithmetic admissibility test; the geometric contraction question
+remains open. The combined source gate passed. All affected registered
+chapters completed both render passes, and the final site has no broken
+local file or fragment targets and no sources newer than their renders.
+Chromium completed MathJax typesetting without errors on the combined KSBA,
+cusp-diagram, and reflection-data pages. The full-book gate recorded above
+belongs to its stated earlier revision; this follow-up checks the merged
+chapters and the complete site's local targets.
+
