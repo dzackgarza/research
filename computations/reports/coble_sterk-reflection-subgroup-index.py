@@ -55,7 +55,8 @@ coordinates of each wall of `P_j` in the basis of the chamber's walls are all no
 also required to be closed: every facet of a chamber inside `P_j` is either shared with another chamber
 inside `P_j` or lies in a wall of `P_j`, and every wall of `P_j` carries at least one facet.
 
-Part E answers @qst:sterk-ideal-vertices: for each ideal vertex of `P_j`, how many constituent chambers
+Part E computes the ideal-vertex columns of @thm:sterk-reflection-subgroup-index: for each ideal vertex
+of `P_j`, how many constituent chambers
 have it as a vertex, and for each ideal vertex of a constituent chamber that is not a vertex of `P_j`,
 the dimension of the face of `P_j` whose relative interior contains it, which is `9` minus the *rank* of
 the walls of `P_j` through it and not minus their number.
@@ -555,7 +556,7 @@ print("    chambers per wall of P_j: %s"
       % sorted(per_mirror.values()))
 print("")
 
-print("Part E. The ideal vertices of P_j (@qst:sterk-ideal-vertices)")
+print("Part E. The ideal vertices of P_j (the columns of @thm:sterk-reflection-subgroup-index)")
 ideal_keys = {key_ray(ray) for ray in ideal}
 vertex_incidence = {}
 elsewhere = {}
