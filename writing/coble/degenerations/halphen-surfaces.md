@@ -12,6 +12,23 @@ Every relatively minimal rational elliptic surface is a Halphen surface of some 
 [@DZ99, §2.4].
 :::
 
+## Genus-one pencils on Enriques surfaces
+
+::: {.proposition #prop:enriques-elliptic-half-fibres title="The two half-fibres of an Enriques pencil"}
+Let $Z$ be a complex Enriques surface and let $|E|$ be an elliptic pencil:
+a one-dimensional complete linear system whose general member is a smooth
+curve of genus one. The pencil is basepoint-free and defines a genus-one
+fibration $Z\to\PP^1$. It has exactly two multiple fibres, both of
+multiplicity $2$. Write them as $2F_1$ and $2F_2$, where $F_i$ is the
+reduced half-fibre. Then
+$$
+|E|=|2F_1|=|2F_2|,
+\qquad
+F_2\sim F_1+K_Z
+$$
+after interchanging the half-fibres if necessary [@CD89].
+:::
+
 ## Singular fibres and local monodromy {#sec-kodaira-fibres-monodromy}
 
 For a relatively minimal complex elliptic surface with section, choose a

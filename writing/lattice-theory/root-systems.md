@@ -130,6 +130,44 @@ $$
 $$
 :::
 
+::: {.example #ex:D16-discriminant-form title="The discriminant form of $D_{16}$"}
+Number the simple roots $\alpha_1,\ldots,\alpha_{16}$ of $D_{16}$ so that
+$\alpha_1-\cdots-\alpha_{14}$ is the long chain and $\alpha_{15}$ and
+$\alpha_{16}$ are its two terminal branches at $\alpha_{14}$. In the
+negative-definite convention of @conv:root-sign, put
+$$
+x=\frac12(\alpha_1+\alpha_3+\cdots+\alpha_{13}+\alpha_{15}),
+\qquad
+y=\frac12(\alpha_1+\alpha_3+\cdots+\alpha_{13}+\alpha_{16}).
+$$
+Each vector pairs integrally with every simple root. Their classes generate
+$D_{16}^{\#}/D_{16}\cong(\ZZ/2\ZZ)^2$, and their Gram matrix is
+$$
+\begin{pmatrix}
+-4&-7/2\\
+-7/2&-4
+\end{pmatrix}.
+$$
+Thus $q_{D_{16}}([x])=q_{D_{16}}([y])=0$ in $\bQ/2\ZZ$ and
+$b_{D_{16}}([x],[y])=1/2$ in $\bQ/\ZZ$. In particular,
+$$
+A_{D_{16},q}\cong A_{U(2),q},
+$$
+with the hyperbolic discriminant form computed in @prop:U2-discriminant.
+:::
+
+::: {.proof}
+The eight simple roots in each half-sum are pairwise orthogonal, so
+$x^2=y^2=8(-2)/4=-4$. The two sums have seven roots in common; their
+distinct branch roots are orthogonal, giving $x\cdot y=7(-2)/4=-7/2$.
+The pairings with simple roots are integral by the $D_{16}$ diagram.
+Also $2x,2y\in D_{16}$, while $x,y,x+y\notin D_{16}$ by their
+simple-root coordinates. Since $\lvert\det D_{16}\rvert=4$, these are
+all four discriminant classes. Reduction of the Gram matrix modulo
+$2\ZZ$ on the diagonal and modulo $\ZZ$ off the diagonal gives the
+claimed form.
+:::
+
 ::: {.definition #def:lattice-En}
 
 The root lattice $E_8$ is realized inside $\QQ^8$ with the negative standard pairing as
