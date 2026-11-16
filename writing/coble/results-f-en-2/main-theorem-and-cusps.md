@@ -2,6 +2,8 @@
 
 ## The main theorem
 
+The degree-six polarized Enriques model arising from Enriques' original construction has a stable-pair compactification described for a four-dimensional subfamily [@Sch22]. The full family has dimension ten, and the larger polarization complicates its boundary. Numerical degree two is the smallest positive degree for an Enriques polarization. Its universal K3 cover also has a nonsymplectic involution whose fixed locus contains a curve, so the stable-pair theory of K3 surfaces with such involutions applies [@AE22].
+
 ::: {.theorem #thm:fen2_main title="Compactification of $\fentwo$"}
 
 Let $\ksbacpt{\fentwo}$ denote the KSBA compactification of the moduli space $\fentwo$ of numerically polarized Enriques surfaces of degree $2$.
