@@ -2,14 +2,23 @@
 
 ## Disposition
 
-Both archived sources must be retained. The chapter gives corrected counterparts to the calculus passages listed below, but does not transfer their full mathematical contents. Neither source meets the condition for trashing.
+The semantic transfer is complete across the calculus chapter and its companion. Independent comparisons found no substantive source material missing and no undue loss of the source's mathematical voice. Each source is eligible for trashing after the destinations and this comparison are committed.
 
-The destination is `writing/calculus-on-schemes.md`. The source files are:
+The destinations are `writing/calculus-on-schemes.md` and `writing/symmetric-spaces-and-period-domains.md`. The source files are:
 
 - `/home/dzack/notes/Class_Notes/2024/Dissertation/archive/unused_sections/140_HSD.md` (A).
 - `/home/dzack/notes/diss/archive/unused_sections/140_HSD.md` (B).
 
-Source ranges below refer to the files inspected on 2026-11-16. B is substantially reflowed and contains damaged TeX. Comparison of the calculus passages found the same mathematical claims in both versions; byte equality is not asserted. The final Kähler equivalence list has corrected numbering in B. Neither formatting similarity nor this comparison certifies the untransferred sections.
+Source ranges below refer to the files inspected on 2026-11-16. B omits introductory sentences and hypotheses from A and contains damaged TeX. Full-text, inline-math and display-math comparisons found no B-only mathematical assertion. Its final Kähler equivalence list corrects a repeated list number. The transfer uses A's fuller statements and checks B separately for additional material; the semantic correspondence below, not formatting similarity, supports the disposition.
+
+Both files were tracked and clean in the notes repository at commit `9fb9a4b20506a06dada21a78f415e7b47e07f137`:
+
+| Source | Git blob | SHA-256 |
+| --- | --- | --- |
+| A | `56c8aa5027fe609ce9d737399f205f6cd34484aa` | `f9fe2307c8530499bcf6e082bdee0b64b459819fc414fa25230c3220aa50b4fc` |
+| B | `acd98dd0ac732fc9a6ad0f80f1403d648fd72873` | `9823efc8aac239b6799a5fd9cf2fbedb626c119408bc6b5a4e0148e9ef4a9156` |
+
+These identifiers identify the inspected originals and allow their exact text to be recovered from notes history. They are not substitutes for the semantic comparison.
 
 ## Calculus correspondence
 
@@ -37,23 +46,41 @@ The opening bibliography and specific archived attributions are retained in the 
 
 Two formulations require an explicit distinction. The conjugate scheme in A:643–650 is transferred to `def:calculus-conjugate-scheme` as base change along complex conjugation, rather than a presumed involution on an arbitrary complex scheme. The names “almost Hermitian scheme” and “Kähler scheme” in A:912–978 refer to a mixture of smooth function sheaves and algebraic schemes. Their intended tensor data, positivity, integrability, closedness and parallelness conditions are retained in the chapter's definitions and comparison section. The chapter does not assert that this mixture is a general algebraic definition: positivity is specified on real fibers, while recovery of holomorphic charts is an analytic theorem. This is a correction of the setting, not a claim that the original generality was established.
 
-## Material still held by the originals
+## Symmetric-space correspondence
 
-| Source A | Source B | Material requiring a destination before deletion |
+| Source A | Source B | Destination and disposition |
 | --- | --- | --- |
-| 421–480 | 248–305 | Compact/noncompact symmetric-space pairs; Hermitian and tube-type classification; Euclidean, spherical, projective and hyperbolic homogeneous models. |
-| 481–510 | 306–343 | Real, complex, quaternionic, indefinite, oriented, Lagrangian and isotropic Grassmannians; compatible complex and quaternionic structures. |
-| 511–555 | 344–390 | Matrix realizations, real forms of classical groups, positive cones, Siegel domains, and defining forms. |
-| 981–1051 | 681–736 | Cartan/Helgason type dictionary; domains I–IV and compact duals; root types; marked principally polarized abelian varieties; exceptional-type pointers; Dolgachev reference pointer. |
-| 1053–1064 | 737–752 | Orthogonal arithmetic quotients, component groups, Baily–Borel boundary strata, polarized K3 groups, and Type II/III degenerations. |
-| 1066–1092 | 753–785 | Hyperboloid and orthogonal period-domain constructions, isometry groups, oriented positive planes, tube realization, and spinor-norm questions. |
+| 421–461 | 248–286 | `ex:hsd-classical-pairs`, `rmk:hsd-type-dictionary`, `def:hsd-tube-type`: all classical pairs, Hermitian types and tube types. Exceptional labels corrected to EIII/EVII. |
+| 463–480 | 288–305 | `ex:hsd-compact-grassmannians`, `ex:hsd-hyperbolic-spaces`, `ex:hsd-upper-half-plane`: Euclidean, spherical, projective and hyperbolic models. The positive-matrix model of the hyperbolic plane imposes determinant one; the disc stabilizer is unitary. |
+| 481–498 | 306–326 | `ex:hsd-compact-grassmannians`, `def:hsd-positive-grassmannians`, `rmk:hsd-positive-graphs`, `rmk:hsd-spinor-conventions`: real, complex and quaternionic Grassmannians, positive subspaces, orientations and connected components. |
+| 500–505 | 327–335 | `ex:hsd-isotropic-models`, `rmk:hsd-structures-versus-subspaces`: real and complex Lagrangians, orthogonal complex structures, quaternionic-linear complex structures. The bare `LGr(H^n)` has no specified form and is replaced by the distinct specified spaces, not asserted as an additional equivalence. |
+| 507–509 | 337–342 | `ex:hsd-split-isotropics`: split real, complex and quaternionic Hermitian maximal isotropics and the quaternionic skew-Hermitian model `U(2n)/Sp(n)`, with graph and stabilizer arguments. Compatible quaternionic structures appear in `rmk:hsd-structures-versus-subspaces`. |
+| 511–520 | 344–353 | `sec-hsd-matrices`, `def:hsd-siegel`, `ex:hsd-isotropic-models`, `rmk:hsd-siegel-complex-structures`: cones, Siegel models and corrected isotropic quotients. The quotient with `U(k)` stabilizer parametrizes a symplectic subspace with a compatible complex structure. |
+| 526–535 | 358–365 | `sec-hsd-groups`, `def:hsd-quaternionic-real-forms`, `rmk:hsd-quaternionic-orthogonal`: defining matrices, dimensions of symplectic representations, quaternionic determinant interpretation and the anti-involution. |
+| 541–555 | 376–389 | `sec-hsd-matrices`, `def:hsd-siegel`, `ex:hsd-hyperbolic-spaces`, `def:hsd-positive-grassmannians`, `def:hsd-isotropic-grassmannians`: every named matrix and subspace locus. Siegel disc matrices are complex symmetric; the hyperbolic vector space is `k^(n+1)`. |
+| 981–1019 | 681–710 | `rmk:hsd-type-dictionary`: Cartan/Helgason labels, bounded domains I–III, compact duals and root types. The maximal orthogonal compact dual is one component. |
+| 1021–1024 | 711–714 | `rmk:hsd-siegel-complex-structures`, `rmk:hsd-ppav`: positive compatible complex structures, Riemann form and symplectically marked principally polarized abelian varieties. Positivity and polarization-preserving marking are explicit. |
+| 1028–1041 | 718–730 | `rmk:hsd-type-dictionary`, `ex:hsd-classical-pairs`: type IV, its quadric dual, compact real group and root type; exceptional dimensions and references retain the original scope, which did not include exceptional matrix constructions. |
+| 1045–1051 | 733–736 | Companion Sources: original Enriques PDF/page pointer retained. The empty definition block makes no mathematical assertion to transfer. |
+| 1053–1064 | 737–752 | `sec-hsd-arithmetic-boundary`, `ex:hsd-k3-boundary`: arithmetic quotients, Baily–Borel line/plane strata, the correctly parented discriminant kernel and Type II/III period limits. Boundary strata do not classify central fibers. |
+| 1066–1082 | 753–777 | `def:hsd-positive-grassmannians`, `rmk:hsd-hyperboloid`, `rmk:hsd-spinor-conventions`: maximal compact stabilizer, hyperboloid metric, dimension and projective isometry group; sheet character and both spinor conventions. |
+| 1084–1092 | 779–785 | `def:hsd-period-domain`, `rmk:hsd-oriented-periods`, `cons:hsd-tube-coordinates`: projective quadric, oriented positive-plane map and explicit tube coordinates with inverse normalization. |
 
-These passages contain assertions that require correction, not just relocation. Examples include mismatched matrix dimensions, compact versus noncompact stabilizers, the sign of the induced hyperboloid metric, orientation in the period-domain correspondence, and spinor-norm conventions. Their questions and citation pointers are part of the material to preserve. This table identifies the outstanding scope; it is not a correctness certificate for those claims.
+The original questions are resolved mathematically: the compact subgroup fixes `R^p⊕0`; the hyperboloid is dimension `n` with metric the negative of the restricted quadratic form; the real compact orthogonal group is obtained by imposing both orthogonality and unitarity; orientation is retained in the period correspondence; and the spinor convention is stated on reflections. The source's unspecified quaternionic notation is resolved into the defined structures in the table. The empty splitting remark at A:629 is supplied by `prop:calculus-eigensheaves`.
 
 ## Voice and exposition
 
-The sources use short definition and remark blocks, explicit maps and tensor identifications, and concrete calculations introduced by phrases such as “Concretely” and “Note that.” The chapter retains the sheaf-first order of ideas and explicit maps, but the first synthesis is a substantial rewrite. Its long explanatory introduction, numbered proof blocks, and repeated “Assume/Prove” headings are additions, not the source's voice.
+The source's short definition, remark and example blocks, explicit maps, tensor identifications and concrete calculations remain the main form of both chapters. The calculus introduction now opens with the sheaf formulation and references, and the added proofs use continuous mathematical prose. The directional derivative, conjugate descent, paired adjoints, type formulas, quaternionic models and period-plane calculation are explicit. Parallel homogeneous-space lists become comparison tables; this reorganizes the examples without replacing their mathematical content.
 
-The restored calculus passages use short definitions and remarks and recover the directional-derivative calculation, conjugate descent map, pairing adjoints, and type formulas. This restores material that the abstract treatment had compressed away. It does not establish sentence-level style fidelity for the whole chapter. The originals remain the evidence for a further comparison of exposition and voice.
+Independent readers compared the chapters with the originals under the criterion of preserving mathematical voice while permitting reorganization, clarification and correction. They found no concrete undue change after this revision. Tentative questions with resolved answers now appear as justified claims; malformed formulas and false equivalences are corrected rather than reproduced. Exact sentence identity is not asserted.
 
-Deletion requires a separate decision for each file, based on a complete comparison with its destinations. Render success, matching headings, shared subject matter, and preservation of a backup are not evidence of full semantic transfer.
+## Verification and file disposition
+
+The full-source comparison and the independent companion audit agree on semantic coverage. The companion audit also checked classical real forms, real versus complex isotropic Grassmannians, the quaternionic skew-Hermitian stabilizer, compatible complex structures, spinor signs and orthogonal tube coordinates. The convention for complex Hermitian forms is linear-first; the right-module negative-line model explicitly uses the other convention. The PPAV paragraph cites Huybrechts Corollary 5.3.5 for the Riemann-form criterion and Kondō Remark 5.7 for the moduli quotient.
+
+| File | Semantic comparison | Voice comparison | Disposition |
+| --- | --- | --- | --- |
+| A | Full calculus and geometry correspondence above; questions and citations resolved or retained. | Definition/remark style and worked calculations retained with corrections. | Verified; eligible for trash after destination commit. |
+| B | Full comparison against A found omissions and TeX damage, with no independent content left untransferred. | Its recoverable prose is represented by A's fuller text and the revised chapters. | Verified separately; eligible for trash after destination commit. |
+
+Neither file is an active include or a linked source in the notes tree. The chapters identify their former locations as provenance. Trash is performed one file at a time, followed by a scoped deletion commit. Unrelated changes in either repository are outside this operation.

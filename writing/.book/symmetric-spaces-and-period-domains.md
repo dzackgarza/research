@@ -1,0 +1,1 @@
+../symmetric-spaces-and-period-domains.md

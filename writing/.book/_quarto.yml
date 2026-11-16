@@ -80,6 +80,7 @@ book:
     # Part 2. The geometry the paper starts from: the three surface classes, then
     # the K3 cover that carries every lattice-theoretic statement later.
     - calculus-on-schemes.md
+    - symmetric-spaces-and-period-domains.md
     - part: coble/index.md
       chapters:
         - coble/annotated-bibliography.md
