@@ -45,8 +45,8 @@ $\ell(L)$ is the minimal cardinality of a set of group generators of the discrim
 | Triple edge | $H_i \pitchfork H_j$ | 5 | $\pi/5$ | $(1+\sqrt5)/4$ |
 | 4-fold edge | $H_i \pitchfork H_j$ | 6 | $\pi/6$ | $\sqrt3/2$ |
 | Labelled simple edge | $H_i \pitchfork H_j$ | $m_{ij}\geq 7$ | $\pi/m_{ij}$ | $\cos(\pi/m_{ij})$ |
-| Thick edge | $H_i \parallel H_j$ | $\infty$ | undefined | $1$ |
-| Dotted edge | $H_i$ ultraparallel $H_j$ | 0 | $\infty$ | $\cosh\rho(H_i,H_j)$ |
+| Thick edge | $H_i \parallel H_j$ at infinity | $\infty$ | $0$ | $1$ |
+| Dotted edge | $H_i$ ultraparallel $H_j$ | -- | undefined; distance $\rho(H_i,H_j)$ | $\cosh\rho(H_i,H_j)$ |
 | White vertex | $h_i^2 = -2$ | - | - | 2 |
 | Black vertex | $h_i^2 = -4$ | - | - | 4 |
 
@@ -79,7 +79,7 @@ of [Explicit root vectors and the folded Sterk diagrams](#sec-root-vectors-and-f
 |  | Type II | Type III |
 | --- | --- | --- |
 | Boundary strata | 1-cusps, curves $C_i$ | 0-cusps, points $p_j$ |
-| Sublattice type | isotropic lines in $L$ | primitive isotropic planes in $L$ |
+| Sublattice type | primitive isotropic planes in $L$ | primitive isotropic lines in $L$ |
 | Subdiagram type | maximal parabolic | maximal elliptic |
 
 ## $E_8$ Gram matrix

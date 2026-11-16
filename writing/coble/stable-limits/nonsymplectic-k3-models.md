@@ -1,5 +1,25 @@
 # Nonsymplectic K3 stable models {#sec-nonsymplectic-k3-models}
 
+## The fixed-locus trichotomy
+
+Let $(X,\iota)$ be a K3 surface with a nonsymplectic involution, and
+write $(r,a,\delta)$ for the invariants of $H^2(X,\ZZ)^{\iota^*=1}$.
+Alexeev and Nikulin divide these pairs by the geometry of $X^\iota$
+[@AN06, §2.8]:
+
+| Type | Fixed locus | Invariant-lattice condition |
+| --- | --- | --- |
+| Elliptic | One curve $C_g$ of genus $g\ge2$, with possible disjoint rational curves | $r+a\le18$, except $(10,8,0)$ |
+| Parabolic | One elliptic curve with possible disjoint rational curves, or two elliptic curves | $r+a=20$, except $(10,10,0)$, together with $(10,8,0)$ |
+| Hyperbolic | Disjoint rational curves, or the empty set | $r+a=22$, together with $(10,10,0)$ |
+
+The empty fixed locus occurs for the Enriques involution with
+invariant lattice $E_{10}(2)$, of type $(10,10,0)$.
+The genus-$g$ ramification construction below lies in the elliptic
+case of this terminology. The table classifies the *smooth fixed
+locus*; the pumpkin descriptions below concern its Type III stable
+limits.
+
 ## Equivariant periods and cusp parity
 
 Fix an involution $\rho\in O(\lkt)$ with hyperbolic invariant lattice

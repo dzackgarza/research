@@ -26,12 +26,12 @@ For the toric examples, let $Q\subset\ZZ^2$ be the polygon of the del Pezzo pair
 | Type | Section $f$ |
 | --- | --- |
 | $A_5$ | $1+y^2+x^6+\sum_{i=1}^{5}a_ix^i$ |
-| $A_1^-$ | $x+y^2+x^3+a_1x^2$ |
+| ${}^-A_1^-$ | $x+y^2+x^3+a_1x^2$ |
 | $A_0^-$ | $1+y^2+x$ |
-| $A_4^-$ with a primed end | $y+x^2y^2+x^3+a_1xy+a_2+a_3x+a_4x^2$ |
+| ${}'A_4^-$ | $y+x^2y^2+x^3+a_1xy+a_2+a_3x+a_4x^2$ |
 | $D_5^-$ | $y^2+x^2y^2+x^3+a_1xy+a_2y+a_3+a_4x+a_5x^2$ |
 | $D'_8$ | $y^2+x^2y^2+x^4y+a_1xy+a_2y+\sum_{i=0}^{4}a_{i+3}x^i+a_8x^3y$ |
-| $E_7$ with a short side | $y^3+x^2y^2+x^4+a_1xy+a_2y^2+a_3y+a_4+a_5x+a_6x^2+a_7x^3$ |
+| ${}^-E_7$ | $y^3+x^2y^2+x^4+a_1xy+a_2y^2+a_3y+a_4+a_5x+a_6x^2+a_7x^3$ |
 
 The remaining sides of $Q$ have lattice distance $2$ from the distinguished vertex, the polygonal form of $B\sim-2(K_Y+C)$. Put $Q$ in $\ZZ^2\times\{0\}$ and add the vertex $p_0+(0,0,2)$ over the distinguished vertex $p_0$. The pyramid $P$ gives the toric variety $V_P$; the anticanonical ADE surface is the hypersurface
 $$
@@ -118,7 +118,7 @@ Write $\alpha:2={}_2\beta\subset\gamma$ when $\alpha$ is the ADE type of $X\to Y
 | ADE cover | Index-two type | Index-one type when distinct |
 | --- | --- | --- |
 | $A_{4n-1}$ | ${}_2A_{2n-1}$ | |
-| $A_{4n+1}$ | ${}_2\bar A_{2n-1}^{-}$, ${}_2{}^{-}\!A_{2n}$, or ${}_2A_{2n}^{-}$ | |
+| $A_{4n+1}$ | ${}_2{}^-A_{2n-1}^{-}$, ${}_2{}^{-}\!A_{2n}$, or ${}_2A_{2n}^{-}$ | |
 | $D_{4n}$ | ${}_2{}'B_{2n}^{-}$ | ${}'D_{2n+1}^{-}$ |
 | $D_{4n+2}$ | ${}_2{}'B_{2n+1}^{-}$ | ${}'D_{2n+2}$ |
 | $\widetilde D_{4n}$ | ${}_2\widetilde C_{2n}$ | $\widetilde D_{2n+2}$ |
@@ -142,7 +142,7 @@ The polytope involution gives these further families [@AEGS25, §6C]:
 | ADE cover | Index-two type | Index-one type |
 | --- | --- | --- |
 | $A_{4n-1}$ | ${}_2{}''B_{2n}$ | ${}''D_{2n+2}$ |
-| $\bar A_{4n-3}^{-}$ | ${}_2{}''B_{2n-1}^{-}$ | ${}''D_{2n+1}^{-}$ |
+| ${}^-A_{4n-3}^{-}$ | ${}_2{}''B_{2n-1}^{-}$ | ${}''D_{2n+1}^{-}$ |
 | ${}'A_{4n-1}'$ | ${}_2{}''B_{2n}'$ | ${}''D_{2n+2}'$ |
 | $\widetilde D_{4n}$ | ${}_2\widetilde B_{2n}$ | $\widetilde D_{2n+2}^{\prime\prime}$ |
 | $\widetilde A_{4n-1}$ | ${}_2\widetilde C_{2n}$ | $\widetilde D_{2n+4}^{\prime\prime\prime\prime}$ |
@@ -155,6 +155,6 @@ For the $(18,2,0)_1$ cusp of the degree-four hyperelliptic K3 moduli space, the 
 
 The Enriques quotient of a Type III K3 stable model is determined by the folding involution at each of the five cusps. At cusp $1$ the action on the spherical dual complex is antipodal, and the quotient has dual complex $\RP^2$; its components occur in exchanged pairs. At cusps $2$, $3$, and $4$ the action is a reflection, giving both exchanged components and fixed components of B type. At cusp $5$ the action agrees on the dual complex with the del Pezzo involution: every component is fixed and its quotient belongs to the torus-involution family above. The ramification divisor forms a cycle at cusps $1$ and $5$ and a chain at cusps $2$, $3$, and $4$. Type II components correspond to relevant connected parts of maximal parabolic subdiagrams, with the same folding rule [@AEGS25, §7C–D].
 
-An exchanged pair of K3 components contributes one Enriques component whose normalization is either member of that pair. A fixed component contributes its quotient by the restricted involution. In the first maximal connected diagram of [@AEGS25, Fig. 19], the folded component is irreducible with normalization of type $\bar E_8^-$; its two boundary sides are identified with each other. The gluing of all components follows the incidence edges of the folded Coxeter diagram [@AEGS25, §7C].
+An exchanged pair of K3 components contributes one Enriques component whose normalization is either member of that pair. A fixed component contributes its quotient by the restricted involution. In the first maximal connected diagram of [@AEGS25, Fig. 19], the folded component is irreducible with normalization of type ${}^-E_8^-$; its two boundary sides are identified with each other. The gluing of all components follows the incidence edges of the folded Coxeter diagram [@AEGS25, §7C].
 
 The Coxeter diagram and its folded elliptic or parabolic subdiagram therefore specify which component shapes and double curves survive. The invariant root coordinates $\ell_i$ specify the corresponding integral affine sphere or its Type II segment (@sec-ias-degenerations). An equivariant divisor model realizes that affine data; quotienting by the Enriques involution gives the dlt Enriques model, and contracting by the descended ramification divisor gives its KSBA pair [@AEGS25, §§4, 7]. On the moduli space, an irrelevant folded root labels a wall that this contraction erases. Deleting precisely the faces made only of irrelevant folded roots yields the generalized Coxeter semifans of @thm:ksba_semitoroidal_En2 [@AEGS25, Def. 5.4, Lem. 5.5].

@@ -48,6 +48,18 @@ Thus the induced K3 lattice polarization is by $E_{10}(2)$; the
 period-domain description must also impose the Enriques open locus
 of @prop:enriques-period-domain.
 
+The diagonal model makes the factor of $2$ in the pullback explicit.
+Set $M=U\oplus E_8$ and identify $H^2(X,\ZZ)$ with
+$M\oplus M\oplus U$. In this marking, the Enriques involution acts by
+$$
+\iota^*(m,m',u)=(m',m,-u).
+$$
+Its invariant lattice is the diagonal copy
+$\{(m,m,0):m\in M\}\cong M(2)$, since
+$(m,m,0)^2=2m^2$. Its anti-invariant lattice is
+$\{(m,-m,u):m\in M,\ u\in U\}\cong M(2)\oplus U$.
+The negative sign on the third $U$ is required by these eigenspaces.
+
 ::: {.proposition #prop:k3-cover-p1xp1-involutions title="The K3 double cover of $\PP^1\times\PP^1$ and its involutions"}
 
 Let $Y = \PP^1\times\PP^1$ and let $\tau$ be the involution
