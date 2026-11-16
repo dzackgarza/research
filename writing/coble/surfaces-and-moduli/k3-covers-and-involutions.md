@@ -56,15 +56,15 @@ $$
 $$
 of $Y$.
 The fixed points of $\tau$ are the four torus-fixed points, those with $x, y\in\theset{0, \infty}$.
-Let $B\in\abs{-2K_Y} = \abs{\OO_Y(4,4)}$ be a $\tau$-invariant divisor with at worst ADE singularities that does not pass through these four points, and let $\pi\colon X\to Y$ be the double cover branched in $B$.
+Let $B\in\abs{-2K_Y} = \abs{\OO_Y(4,4)}$ be a smooth $\tau$-invariant divisor that does not pass through these four points, and let $\pi\colon X\to Y$ be the double cover branched in $B$.
 Write $X$ as the hypersurface $z^2 + f(x,y) = 0$, where $f$ is the $\tau$-invariant polynomial of bidegree $(4,4)$ that defines $B$.
 Then the following hold [@AEGS25, Sec. 2.1].
 
 1. $X$ is a K3 surface. The deck involution of $\pi$ is the **del Pezzo** involution $\idp(x,y,z) = (x,y,-z)$, and $X/\idp = Y$.
 
 2. The involution $\tau$ has two lifts to $X$:
-   - the **Enriques** involution $\ien(x,y,z) = (-x,-y,-z)$, which is basepoint-free, and whose quotient $Z = X/\ien$ is an Enriques surface;
-   - the **Nikulin** involution $\inik(x,y,z) = (-x,-y,z)$, whose quotient $Z' = X/\inik$ is a K3 surface with eight $A_1$ singularities and possibly more.
+   - the **Enriques** involution $\ien(x,y,z) = (-x,-y,-z)$, which is fixed-point-free, and whose quotient $Z = X/\ien$ is an Enriques surface;
+   - the **Nikulin** involution $\inik(x,y,z) = (-x,-y,z)$, whose quotient $Z' = X/\inik$ has eight $A_1$ singularities and a K3 minimal resolution.
 
 3. The involutions $\idp$, $\ien$ and $\inik$ commute, and with the identity they form a Klein four-group in $\Aut(X)$.
 
@@ -74,6 +74,12 @@ Then the following hold [@AEGS25, Sec. 2.1].
 :::
 
 ## The Horikawa parameter space {#sec-horikawa-parameters}
+
+If the branch divisor has ADE singularities, the double cover can be singular:
+its minimal resolution is a smooth K3 surface. The involutions lift to that
+resolution. The quotient by the Enriques involution is then a smooth Enriques
+surface, while the quotient of the unresolved cover is its ADE model
+[@AEGS25, Sec. 2.1].
 
 For the smooth branch curves in @prop:k3-cover-p1xp1-involutions, write
 $$

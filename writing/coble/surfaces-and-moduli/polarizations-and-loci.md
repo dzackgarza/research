@@ -31,7 +31,7 @@ F^{\mathrm{pol}}_{\En,2}\longrightarrow F^{\mathrm{num}}_{\En,2},
 \qquad (Z,L)\longmapsto(Z,[L]),
 $$
 whose two lifts are $L$ and $L\otimes\omega_Z$
-[@GH16, Proposition 4.1; @Knu20, introduction]. The polarized space
+[@GH15, Proposition 4.1; @Knu20, introduction]. The polarized space
 is irreducible: the numerical degree-two component is irreducible,
 and a class of square $2$ cannot be twice an integral class, so
 [@Knu20, Theorem 1.1] applies.
