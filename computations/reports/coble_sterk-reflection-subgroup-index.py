@@ -236,10 +236,9 @@ def facet_rays(walls, gram):
     """The extreme rays of `{x : b(x, w) <= 0 for w in walls}`, with more walls than the dimension.
 
     The inequalities are linear forms in the coordinates `y = G x`, where `b(x, w) = w . y`, so the cone
-    is the polar of the cone the walls generate and Sage's cone arithmetic supplies its extreme rays,
-    lineality and dimension.  A subset enumeration is *not* used: these diagrams are not simple --- the
-    twelve walls of cusp 3 satisfy two linear relations, and a vertex cut by ten facets is then no
-    kernel of nine --- and a walk over the `C(n, 9)` subsets silently returns nothing when it is wrong.
+    is the polar of the cone the walls generate and Sage's cone arithmetic supplies its extreme rays.
+    That is what these diagrams need: they are not simple --- the twelve walls of cusp 3 satisfy two
+    linear relations --- so no `dim` many of the walls cut out a chamber vertex on their own.
     """
     polar = Cone([[-int(c) for c in w] for w in walls])
     cone = polar.dual()
@@ -510,8 +509,7 @@ while stack:
     here = key_mirrors(chamber)
     chambers_in_p[here] = (chamber, rays)
     # the facet across each wall of the chamber, keyed now: the closure below is then a dictionary
-    # comparison and not a second walk over every facet of every chamber, which at cusp 5 is 345 600
-    # facets and costs minutes of the ten this record is allowed.
+    # comparison and not a second walk over every facet of every chamber.
     links = []
     for index in range(len(chamber)):
         neighbour = across(chamber, index, gram)
