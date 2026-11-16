@@ -669,6 +669,15 @@ Put $K=H^{\mathsf t}$. Differentiating $K^{-1}K=1$ gives $\partial K^{-1}=-K^{-1
 If $e$ is a holomorphic frame with $h(e,e)=e^{-\varphi}$ for a smooth real function $\varphi$, then $A=-\partial\varphi$ and $F^{\mathrm{Ch}}=\partial\bar\partial\varphi$. This follows directly from the proof of @thm:calculus-chern. The Chern connection is always compatible with the holomorphic structure; it is a holomorphic connection only if this curvature vanishes, by @prop:calculus-curvature-types.
 :::
 
+For a holomorphic line bundle $L$ on a compact complex manifold,
+*positive* means that some Hermitian metric has positive Chern
+curvature $(i/2\pi)F^{\mathrm{Ch}}$. Kodaira's embedding theorem says
+that such a line bundle is ample and makes the manifold projective;
+conversely, an ample line bundle has a positive metric, obtained from
+the Fubini–Study metric after a suitable tensor power. Thus the
+curvature condition is an analytic criterion for algebraic
+projectivity [@Huy05, §4.3; @Voi07].
+
 ## Kähler geometry {#sec-calculus-kahler}
 
 :::{.definition #def:calculus-almost-hermitian title="Almost Hermitian structure"}

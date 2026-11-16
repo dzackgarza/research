@@ -227,6 +227,10 @@ defines a morphism on all of $X$. A rational map may also extend after
 removing a fixed divisor, so regularity of the rational map alone is
 not a basepoint-freeness test. A basepoint-free *multiple* of $L$
 means that $L$ is semiample [@Huy16, §2.3].
+For a smooth complex projective variety in a projective embedding,
+Bertini's theorem makes a general hyperplane section smooth; for a
+basepoint-free linear system the general member is smooth under the
+usual separability hypotheses [@Huy16, §2.3].
 
 For a reduced, irreducible projective curve $C$, let
 $\nu:\widetilde C\to C$ be its normalization. Its geometric genus is
