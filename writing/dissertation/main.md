@@ -47,6 +47,14 @@ abstract: |
   $\semitorcpt{\fentwo}$ determined by the arithmetic of $\ten$. This
   provides the first explicit and functorial identification of these two
   approaches for Enriques surfaces.
+
+# Repository-side macro preamble (research#757): the dissertation's
+# sections write increasing and decreasing filtrations with these two
+# macros, following the standard convention that an increasing filtration
+# is indexed below ($W_\bullet$) and a decreasing one above ($F^\bullet$).
+header-includes: |
+  \newcommand{\incfiltration}[1]{{#1}_{\bullet}}
+  \newcommand{\decfiltration}[1]{{#1}^{\bullet}}
 ---
 
 ```include

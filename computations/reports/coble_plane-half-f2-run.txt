@@ -4,15 +4,11 @@ provenance
 
 B = U + U + I_{0,7}: rank 11, det -1, signature (2, 9);  P primitive of rank 2
 
-|O(q)| = 46998591897600   (49 s)
-mask isomorphism A = B/2B: 2048 classes   (2 s)
+|O(q)| = 46998591897600   (358 s)
+mask isomorphism A = B/2B: 2048 classes   (9 s)
 
 (2) G = O(q) over F_2
-  4 generators from the orthogonal group
-  |G| = 46998591897600, equals |O(q)|: True   (1 s)
-
-(1) H = <119 lattice generators mod 2>
-  119 generators of Stab_{O(B)}(P)   (152 s)
+  |G| = 46998591897600, equals |O(q)|: True   (4 s)
   |H| = |rho(Stab_{O(B)}(P))| = 247726080
 
 (2 cont.) J, its stabilizer, its orbit
@@ -24,7 +20,7 @@ mask isomorphism A = B/2B: 2048 classes   (2 s)
   |Stab_{O(q)}(J)| = 1981808640
   |O(q) . J| = 23715
   |Stab| * |orbit| = |G|: True
-  H <= Stab: True   (0 s)
+  H <= Stab: True   (3 s)
 
 THE NUMBERS
   |H| = |rho(Stab_{O(B)}(P))|      = 247726080

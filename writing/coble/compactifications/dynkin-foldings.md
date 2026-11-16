@@ -139,16 +139,16 @@ The last statement and the list (1)--(3) together are the forward direction of [
 
 ::: {.definition #def:mirror-move title="Mirror moves"}
 
-A **mirror move** is a lattice-theoretic operation governed by the existence of a primitive isotropic vector $\eta \in T$ of a specified type and splitting:
+A **mirror move** is a lattice-theoretic operation governed by the existence of a primitive isotropic vector $\eta \in T$ of a specified type and splitting [@AE22, Def. 5.6, printed p. 23]:
 
 - **Odd/simple:** $\div_T(\eta) = 1$, splitting as $T \cong U \oplus K$.
-  The new invariants are $(r-2, a, 1)$.
+  The new invariants are $(r-2, a, \delta)$: the odd move preserves the coparity.
 
 - **Even, ordinary:** $\div_T(\eta) = 2$ and $\eta^*$ is ordinary, splitting as $T \cong U(2) \oplus K$.
-  The new invariants are $(r-2, a-2, 1)$.
+  The new invariants are $(r-2, a-2, \delta)$: the even ordinary move preserves the coparity and lowers the generator length by two.
 
 - **Even, characteristic:** $\div_T(\eta) = 2$ and $\eta^*$ is characteristic, splitting as $T \cong I_{1,1}(2) \oplus K$.
-  The new invariants are $(r-2, a-2, 0)$.
+  The move is possible only from a lattice of coparity $\delta = 1$, and the new invariants are $(r-2, a-2, 0)$.
 
 The move replaces $T$ with $\overline{T}_\eta = \eta^{\perp T}/\eta$.
 :::

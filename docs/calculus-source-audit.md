@@ -349,3 +349,188 @@ same basename and Git blob hash as its source.
 This records verification and retirement at these revisions. The shared
 figure sources and the mixed implementation notes retain their distinct
 roles described above.
+
+## Enriques, Coble, lattice, and toric archive absorption
+
+This is a fixed-revision transfer record. The book state is research
+`2bd4eb0abc`; the source checkpoint before retirement is notes
+`44d01adb0`. Source blobs and individual retirement commits appear below.
+The comparison included the differing passages of the successive manuscripts,
+not just the latest draft or their shared text.
+
+### Mathematical owners and semantic comparison
+
+| Archived material | Book owner and preserved content |
+| --- | --- |
+| Coxeter notes, diagrams-to-surfaces, and appendix | `writing/coble/compactifications/` and `writing/coble/cusp-correspondence/`: chambers, Vinberg calculations, cusp incidence, modular curves, preliminary and completed diagrams, and the questions connecting diagrams to surfaces |
+| Hyperbolic and lattice notes | `writing/lattice-theory/`, `writing/coble/lattices-and-moduli/`, and `writing/coble/appendix-reference/`: lattice definitions and proofs, discriminant calculations, Niemeier data, hyperbolic models, monodromy, and native illustrations |
+| Mirror and nonsymplectic notes | `writing/coble/stable-limits/nonsymplectic-k3-models.md`, `writing/coble/stable-limits/ias.md`, and the Kulikov chapters: markings, root arrangements, admissible cusps, mirror lattices, Kulikov models, and open realization questions |
+| V1–V4 and successive Enriques manuscripts | The Enriques results, stable-limits, compactification, and cusp chapters: equations, proofs, folded families, boundary counts, root coordinates, gluing constructions, and draft-specific examples |
+| Dated Enriques meetings and compiled notes | Surface types, polarizations, moduli construction, nonsymplectic models, and main results: fixed-locus alternatives, period quotients, normalization, inverse-period questions, and the special and nonspecial models |
+| Coble paper versions and moduli notes | Coble basics, covers, moduli, and research-program chapters: arguments, examples, diagrams, acknowledgements, and the distinction between established results and proposed compactifications |
+| Enriques talk facts and surface-reading notes | Surface types, K3 periods, calculus on schemes, and adjunction: classification, linear systems, Hodge and Tate structures, torsors, positive-characteristic qualifications, automorphism groups, and surface examples |
+| Toric notes and mathematical whiteboards | `writing/toric-geometry.md` and integral-affine chapters: fans, normal cones, support functions, polar polytopes, divisor sequences, blowups, nef partitions, and degeneration examples |
+| Questions for Phil | `writing/coble/stable-limits/ias.md`: the fiber class, normalized integral-affine volume, and the nilpotent-orbit meaning of approximation |
+| Outline, index, entrypoint, glossary, and bibliography wrapper | The book's topic organization, definitions, notation, and annotated bibliography |
+
+The transfer keeps proofs and examples as mathematical exposition. Questions
+remain questions where the sources do not establish a result. Repeated versions
+were reconciled at their mathematical owners; incomplete or false assertions
+were corrected rather than promoted to theorems.
+
+### Corrections that affect the mathematical content
+
+- The V3 root-coordinate tables have corrected signs and basis labels. The
+  existing Sage computation verifies the square and triangle pairings and the
+  folding sums. The corrected tables and label maps are in the reflection
+  chapter (`dd4ce7306a`, with links corrected in `df64c20532`).
+  The cusp-four parabolic is two copies of affine $D_4$; the cusp-five
+  description includes its root reflections.
+- The five draft IAS drawings retain their parameter labels. The conflict
+  between the even highlighted vertices and the proposed odd negative
+  eigenspace in cusp five remains an explicit realization question.
+- The published ABCDE notation was checked against the actual
+  `sty-en.sty` source of arXiv:2312.03638. Left minus signs, left primes,
+  and left subscripts are distinct. Boundary counts and the published
+  one-cusp diagrams are included.
+- The cover square uses normalization where quotient singularities require
+  it. Smooth branch hypotheses, ADE resolutions, invariant lattices,
+  polarizations, pair coefficients, and volumes are stated separately.
+  Period lattices are distinguished from polarization lattices.
+- The surface material corrects the intersection sign for Coble boundary
+  curves, the Type II/III distinction, primitive orthogonal splitting,
+  Picard-rank bounds, symplectic automorphism bounds, and base-point-free
+  hypotheses. Étale torsors are sheaves without an unsupported universal
+  representability assertion.
+- Toric support-function conventions, dual polytopes, Hilbert bases, divisor
+  sequences, moment classes, and blowup formulas are explicit. The quadric
+  degeneration from the whiteboards is included. A fiber alone does not
+  provide the missing positive-square polarization in the Halphen program.
+- The draft's unfinished proof slots are replaced by complete arguments
+  where supplied by later sources; unresolved assertions retain their
+  research-question status.
+
+### Native figures and verification
+
+Native TikZ and Excalidraw sources and the relevant raster captures are
+preserved in the shared figure repository. Relevant preservation commits include
+`85e7592`, `60a42ce`, `a5a9b90`, `99284d4`, `1b0f8b3`, and
+`99393a8`. The IAS inputs were corrected in `cc79682` so that their
+definitions are inside each TikZ picture. The book's Scattone drawing supplies
+its local styles. These repairs address empty figure bodies that a successful
+Quarto exit alone did not detect.
+
+The full book gate completed both render passes and its citation,
+cross-reference, anchor, and external-link checks. After the final source
+changes, affected pages were rendered again. The final source check passed
+against the registered chapters and staged bibliography. A whole-site scan
+found no missing images, empty figures, unresolved references, broken local
+files, or missing fragment targets. Every registered source was older than
+its rendered page. Chromium loaded MathJax and completed typesetting on the
+IAS, Scattone, ABCDE, and surface-types pages without math errors. The native
+IAS and Scattone diagrams, toric polar diagram, and ABCDE table were visually
+inspected. Grouping the period-domain subscript fixed the browser-only
+double-subscript error.
+
+### Retirement and retained source boundaries
+
+Each source below matched its committed audited blob immediately before
+retirement. Each was moved through `trash`, checked absent from its original
+path, and recovered by its original absolute path in the Trash metadata.
+The recovery file's Git blob hash matched the source hash before the individual
+retirement commit was made. Git history and Trash retain the originals.
+
+The mixed whiteboard note now contains its calculus-grading photograph.
+The meeting index remains because its linked meeting PDFs were not found in
+the inspected filesystem sources and their contents could not be verified.
+Active Obsidian drawings remain with their consumers; byte-identical copies
+are preserved in the shared figure repository. These retained items are not
+claims of unverified absorption.
+
+| Source path relative to notes | Source and recovery blob | Retirement commit |
+| --- | --- | --- |
+| `diss/GROUND_TRUTH/my_enriques_notes/000_INDEX.md` | `a60d59cfec728495c5c0113bf696a7914faf9940` | `463b6b2d6d` |
+| `diss/GROUND_TRUTH/my_enriques_notes/120_coxeter_diagrams.tex` | `e523731e6e389c407425f72caee06be5baf7e787` | `e5dc6d8940` |
+| `diss/GROUND_TRUTH/my_enriques_notes/130_diagrams_to_surfaces.tex` | `9c0d7ad8f12fc77696871ae88bd89b63054b2c37` | `ca621912bc` |
+| `diss/GROUND_TRUTH/my_enriques_notes/150_hyperbolic.tex` | `1bd68e8680e1facd14620fa1d63a7565d5e4a59a` | `ad0953ffb1` |
+| `diss/GROUND_TRUTH/my_enriques_notes/190_lattices.tex` | `8eaa6d08b039ac0f361eb6cc82cff96b3f9d03bb` | `78ba16f442` |
+| `diss/GROUND_TRUTH/my_enriques_notes/200_valery.tex` | `f1628040cf0975951c27307f965804e26d297825` | `864a4f5f36` |
+| `diss/GROUND_TRUTH/my_enriques_notes/210_Mirror_Symmetry.tex` | `de64e45593609cf63d9bbd231ae9e6dca22f2d6f` | `4e8ba78f22` |
+| `diss/GROUND_TRUTH/my_enriques_notes/900_appendix.tex` | `8a67357f44accf14884e6c00f1fb04656cf0c0c5` | `f506d3782c` |
+| `diss/GROUND_TRUTH/my_enriques_notes/V1.tex` | `972eee05db53ed56a922b2c25a792f556d83963d` | `f51f8328b5` |
+| `diss/GROUND_TRUTH/my_enriques_notes/V2.tex` | `3463cb4c27e5f750afafd54bc218ee123d32d56c` | `5f162ab3a7` |
+| `diss/GROUND_TRUTH/my_enriques_notes/V3.tex` | `11f99eb01baa1ed341c415af792dd390a559232b` | `56554ae485` |
+| `diss/GROUND_TRUTH/my_enriques_notes/V4 Paper Outline.md` | `e40ae441d13c773ac10d1ab801bfe064af03ec8d` | `f7c5ceea39` |
+| `diss/GROUND_TRUTH/my_enriques_notes/en-Dec6.tex` | `5792d804289856e10e6d0c8b608bc43a2b34c50e` | `46cfa37ac4` |
+| `diss/GROUND_TRUTH/my_enriques_notes/en-compositio-Jan17-2024.tex` | `9ba971188c6fc9a3136eaa2f3a0b45699aec2ebb` | `b8cf1c269c` |
+| `diss/GROUND_TRUTH/my_enriques_notes/en-dzg-Nov16.tex` | `87bde74bebe30b2ef581a3d403db0f26cbe7db5e` | `49c056957a` |
+| `diss/GROUND_TRUTH/my_enriques_notes/en-dzg-Nov25c-just-proofreading-edits.tex` | `1516d2a3a76bc0839c564fa830ee2e10a1e6d353` | `28048690e1` |
+| `diss/GROUND_TRUTH/my_enriques_notes/en-mathannalen.tex` | `fa819d3d3a6370689cefc07d81b4a9710ecce4fd` | `d721dd2ed2` |
+| `diss/GROUND_TRUTH/my_enriques_notes/en-nagoya-nov30-2024.tex` | `f190982930225fdaa53318d846e0a056f28b1976` | `ff777285a0` |
+| `diss/GROUND_TRUTH/my_enriques_notes/en-onarxiv-Dec27.tex` | `8d4eb2c398df983b729375fbbfec51915fbf0168` | `84d15fbfcc` |
+| `diss/GROUND_TRUTH/my_enriques_notes/en-revised-Oct05.tex` | `15b64e3d7f12f286429654f723eb99813dfb2001` | `6fd10030eb` |
+| `diss/GROUND_TRUTH/my_enriques_notes/en-revised-Oct12-Phil.tex` | `998d2e0cf898fbcb01ec1beee72c60889a17f032` | `8c8996e31f` |
+| `diss/GROUND_TRUTH/my_enriques_notes/en-revised-Oct12b-Phil.tex` | `3586705a444ecad431b13374c52bf38e72d2dff3` | `be0baf2165` |
+| `diss/GROUND_TRUTH/my_enriques_notes/en-revised-Oct15-Phil.tex` | `31e26d87316cbd09c506d578507dca179e25b019` | `b536140885` |
+| `diss/GROUND_TRUTH/my_enriques_notes/en-valery-Dec17.tex` | `b1bfedd4204c050e4b6894843bc9dee803381488` | `2a23b5a4ef` |
+| `diss/GROUND_TRUTH/my_enriques_notes/en-valery-Dec18b.tex` | `46ae9541d1082ee3630f5f1dd78770cfa0d6d5f2` | `10e1509c7b` |
+| `diss/GROUND_TRUTH/my_enriques_notes/en-valery-Dec19b.tex` | `7ddc63f64446af155f6b847de0d9d27639f5ca23` | `8cc9883bf4` |
+| `diss/GROUND_TRUTH/my_enriques_notes/en-valery-Dec19c.tex` | `290b2d09dad69848b6ce20f89a2a1993b00990a6` | `2e304b766e` |
+| `diss/GROUND_TRUTH/my_enriques_notes/en-valery-Dec22.tex` | `5b6df17f751faa2395fef824c57bc3306321cde6` | `68e02166ad` |
+| `diss/GROUND_TRUTH/my_enriques_notes/en-valery-Dec22b.tex` | `4276c4ebfd9813198486bf74e5c1a3ed7287ac03` | `3037e68836` |
+| `diss/GROUND_TRUTH/my_enriques_notes/en-valery-Dec26.tex` | `97d6c8a32b460740bcbb3b7fa58a23c15003d9de` | `1e1dc6e4cc` |
+| `diss/GROUND_TRUTH/my_enriques_notes/en-valery-Nov15.tex` | `d28a61bbc00f6eda7db1c961a4d9d44de81512a0` | `b740fe96c9` |
+| `diss/GROUND_TRUTH/my_enriques_notes/main.tex` | `2298c654a7bb434a2357bd21e4f655bdf95f23f6` | `d83b8b57ec` |
+| `diss/GROUND_TRUTH/my_enriques_notes/symbol_glossary.tex` | `65f1b27df68f7c89c1f063fd5ea925f24bede8f1` | `d0166898ae` |
+| `diss/old-notes/000 Dissertation Outline.md` | `01cd3911f0a316e7996e2ca34dbe78ff42527a73` | `8bd0ffadff` |
+| `diss/old-notes/2023-08-01 Old Notes.md` | `d6be125614c69a6787fae36977b13f5f6d321510` | `622f37bc13` |
+| `diss/old-notes/Archive/000 Questions for Phil.md` | `9ad23f53d9690616db37d681bf566ebe70afdfc2` | `6a18c5d6dc` |
+| `diss/old-notes/Ch.1 Basics/Toric Geometry/Misc Notes 2023-08-01.md` | `7eab9d07808b0b145e80488b1ec0ca66ae003821` | `a034d0ab8e` |
+| `diss/old-notes/Ch.5 Enriques/000 Enriques Talk Facts 0.md` | `559aebadee33dbd9e90de90ef1c5cf322b554bf8` | `fc18f81588` |
+| `diss/old-notes/Ch.5 Enriques/Complete Moduli of Enriques Surfaces.md` | `c35515aaa0cf93df76461a71ffb9fd2bcc8721f4` | `3ce52b3dc9` |
+| `diss/old-notes/Ch.5 Enriques/Enriques surfaces.md` | `33bf4185cdee47cfdfe98436a2bb68c9c38ef238` | `8ab96886e6` |
+| `diss/old-notes/Ch.5 Enriques/Horikawa's Model.md` | `0300654a7002da0181fd4fe1e31917eee07b6518` | `058d988dc7` |
+| `diss/old-notes/Ch.5 Enriques/Moduli of Enriques.md` | `58676aef868ecfb8cd3a4d1f1f32d2cb837372f6` | `1d029b552c` |
+| `diss/old-notes/Ch.6 Cobles/Coble Surfaces.md` | `5c8de01f2e5e4c36c4e0315d577795a0169c0b06` | `340b38443e` |
+| `diss/old-notes/Ch.6 Cobles/moduli of Cobles.md` | `e1c6f591aa43789b89682a66b982c1eebc948bf6` | `90741d6f1e` |
+| `diss/old-notes/Enriques/030_Moduli_of_Cobles.md` | `02b367aea0689c0752b6761a7c11b4209ba7c0f9` | `998b1fec11` |
+| `diss/old-notes/Enriques/CoblePaper.md` | `10dae1c6c6ac83143e353cfb6c4faeadc1b7b0e9` | `63e53befc2` |
+| `diss/old-notes/Enriques/CoblePaper_stripped.md` | `d13929c8654fad05de967dbc415de9e8645f7ff6` | `845fb5ec10` |
+| `diss/old-notes/Enriques/Complex Algebraic Surfaces, 2nd ed_ - Arnaud Beauville.md` | `0e24e373ccaedbb302c8ef2f562cbe0730a0d047` | `0d92ac25e8` |
+| `diss/old-notes/Enriques/Enriques-Kodaira Classification.md` | `2af97053f4215b87ed693ffb4c76b30ce83ff19c` | `cb1913f0e4` |
+| `diss/old-notes/Enriques/LightningTalk_stripped.md` | `d6c7eb2322c3645df47c3af27c2f20c6420766c8` | `b8f2fd8dc3` |
+| `diss/old-notes/Enriques/ResearchStatement.md` | `e2499fdd93e7cb2487a0971c0db070b555158a0b` | `78d6362e36` |
+| `diss/old-notes/Enriques Notes/2023-08-20.md` | `feab75c2f1ca755c302cb2c9684762d2f97c7e6e` | `a6f17ee94c` |
+| `diss/old-notes/Enriques Notes/2023-08-22.md` | `d3dff4619e5d1c402e0f427925e89bed41dabf96` | `d51f597c84` |
+| `diss/old-notes/Enriques Notes/2023-08-23 Compiled Meeting Notes.pdf` | `30ab7c59a1df76762d00d71d4a44b3efeb10be60` | `d70d53e509` |
+| `diss/old-notes/Enriques Notes/2023-08-24 Zack-Luca meeting.md` | `f1ba443ed6412de56c555d4eb8c2849ab427e511` | `cf440eeaca` |
+| `diss/old-notes/Enriques Notes/attachments/2023-08-01 Old Notes 2023-08-25 11.00.30.excalidraw.md` | `8bf9ccbc0e615e0bcde56393ffc1a330e09a80db` | `f5b7e76f33` |
+| `diss/old-notes/Enriques Notes/attachments/2023-08-01 Old Notes 2023-08-25 11.06.13.excalidraw.md` | `281523028aa059c89c98e5fda5673e7d1a9b5915` | `7d3669a483` |
+| `diss/old-notes/Enriques Notes/attachments/2023-08-01 Old Notes 2023-08-25 11.31.06.excalidraw.md` | `299de8a5375a52e525439e2372d1af9de8001227` | `a14b08a663` |
+| `diss/old-notes/Enriques Notes/attachments/2023-08-01 Old Notes 2023-08-25 11.35.49.excalidraw.md` | `be76367205cbcb9557859814116530adc550bba4` | `aa84d694c0` |
+| `diss/old-notes/Enriques Notes/attachments/2023-08-01 Old Notes 2023-08-25 11.38.29.excalidraw.md` | `8913296f6f760dae3f25a3ddb77251c6bcb08e14` | `8f8ac4adaf` |
+| `diss/old-notes/Enriques Notes/attachments/2023-08-01 Old Notes 2023-08-25 13.21.59.excalidraw.md` | `88700249582d84606e51c2c308e230d752ec2ec7` | `893dabb4e9` |
+| `diss/old-notes/Enriques Notes/attachments/2023-08-01 Old Notes 2023-08-25 13.33.48.excalidraw.md` | `5bcbaf3b5e9364ddca63f47c920339efbd2cdf30` | `1d9b344f3a` |
+| `diss/old-notes/Enriques Notes/attachments/2023-08-01 Old Notes 2023-08-25 16.12.11.excalidraw.md` | `183e6189071f0ef71b82926a00fb1268596dff1d` | `0deeddd30f` |
+| `diss/old-notes/Enriques Notes/attachments/Pasted image 20230819153854.png` | `c4a4ef663b98c702b6e8b59cef82b2838f0bd933` | `ac75a1cba5` |
+| `diss/old-notes/Enriques Notes/attachments/Pasted image 20230821194826.png` | `a3a37e40a3f6a944f45cfc45c85978709ab6cf8d` | `e61e66cddd` |
+| `diss/old-notes/Enriques Notes/attachments/Pasted image 20230821194835.png` | `fdc841ccf03a5b9f4edb2b2f624794e37227083b` | `ce63c6af7f` |
+| `diss/old-notes/Enriques Notes/attachments/Pasted image 20230824135448.png` | `c117a569cf8ad5bed0a426a4505b15e76e188024` | `c5c5dfc6ad` |
+| `diss/old-notes/Enriques Notes/attachments/Pasted image 20230824143638.png` | `64532353917d6440b5d927403f11c21a2521685d` | `ad6f888b0b` |
+| `diss/old-notes/Enriques Notes/attachments/Pasted image 20230824150237 1.png` | `678eda3077d7c64a4472486fbc8e195eec4e254c` | `b391ac6776` |
+| `diss/old-notes/Enriques Notes/attachments/Pasted image 20230824150237.png` | `678eda3077d7c64a4472486fbc8e195eec4e254c` | `361c2709de` |
+| `diss/old-notes/Enriques Notes/attachments/Pasted image 20230824150239.png` | `678eda3077d7c64a4472486fbc8e195eec4e254c` | `0c316a838d` |
+| `diss/old-notes/Enriques Notes/attachments/Pasted image 20230825114600.png` | `fc22dbc23f974f1df7ff0caad352b519ea74fd60` | `f77f648b23` |
+| `diss/old-notes/Enriques Notes/attachments/Pasted image 20230825115623.png` | `0df09cb13786d6a5309fdaf0d50953767d3259cf` | `0790a7315c` |
+| `diss/old-notes/Enriques Notes/attachments/Pasted image 20230825115735.png` | `5511064a4855a9735ece80c6658458428481dc3e` | `e0cafc831d` |
+| `diss/old-notes/Enriques Notes/attachments/Pasted image 20230825115934.png` | `2d8bfe019b72be35b14c0be4fb0b120704ab8227` | `ccd5777ac7` |
+| `diss/old-notes/Enriques Notes/attachments/Pasted image 20230825115942.png` | `177ef7d496437238223841ebe80c92a8cfcaf842` | `65ed937b74` |
+| `diss/old-notes/Enriques Notes/attachments/Pasted image 20230825152319.png` | `6e37336d8a9eab3c8c68b5e5ec84eb6cf5218853` | `ba30c19f8b` |
+| `diss/old-notes/Enriques Notes/attachments/Pasted image 20230825152557.png` | `eaea2f515325d96b2f7fbcebf351f002eee2a76e` | `cd9eaeeceb` |
+| `diss/old-notes/Enriques Notes/attachments/Pasted image 20230825152728.png` | `9c6600610cbab63c413c75ac722bde8212cf17c6` | `59fa55d482` |
+| `diss/old-notes/Enriques Notes/attachments/Pasted image 20230825153453.png` | `30433ceb74b09e5dcf968da9d193393088a56acf` | `1ecabbb085` |
+| `diss/old-notes/Enriques Notes/preamble.sty` | `ebcd1cf70a0595583426abb27ae0242eaad679f8` | `8dd08009d4` |
+| `diss/old-notes/Flashcards/000 Enriques Talk Facts 1.md` | `d0fb71ea3359d1bdfcad862626f550f1c82272ac` | `40db6882c3` |
+| `diss/old-notes/Learning/2023-08-19.md` | `09dac0bab2414607bd2ce0a50e70922e269f6430` | `5a9235a2d1` |
+| `diss/old-notes/Sterk91.md` | `232654e45300225e8e17075d42fbad876162bd9e` | `cfed3848cf` |
+

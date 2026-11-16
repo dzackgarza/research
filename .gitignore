@@ -61,6 +61,7 @@ writing/.book/rendered/
 writing/.book/index.html
 writing/.book/site_libs/
 writing/category-theory/**/*.html
+writing/lattice-theory/**/*.html
 writing/**/*_files/
 
 # Agent scratch. A turn's intermediate captures, plan dumps and validation logs

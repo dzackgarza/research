@@ -1,0 +1,536 @@
+Sage 11.0.beta5
+T_En = U + U(2) + E8(2), rank 12, det 1024
+A_{T_En}: 1024 classes, 528 isotropic (527 nonzero)
+the nine generators of M preserve q: True
+M-orbits of the 528 isotropic classes: 5, sizes [1, 2, 120, 135, 270]
+
+=== (1) the five 0-cusps and the Coble root delta = e - f
+delta^2 = -2
+cusp 1: eta_j . delta = -1   (eta_j in T_Co = delta^perp: False)
+cusp 2: eta_j . delta =  0   (eta_j in T_Co = delta^perp: True)
+cusp 3: eta_j . delta =  0   (eta_j in T_Co = delta^perp: True)
+cusp 4: eta_j . delta =  0   (eta_j in T_Co = delta^perp: True)
+cusp 5: eta_j . delta =  0   (eta_j in T_Co = delta^perp: True)
+
+=== (4) the white nodes of Sterk's printed diagrams, and their certification
+cusp 1: 12 printed roots; all orthogonal to eta_j: True; squares: [-4]
+cusp 2: 10 printed roots; all orthogonal to eta_j: True; squares: [-4, -2]
+    white node: label 10  div 1  reflection in Gamma_En,2 at lifts [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]  is +-delta: True
+cusp 3: 12 printed roots; all orthogonal to eta_j: True; squares: [-4, -2]
+    white node: label  8  div 1  reflection in Gamma_En,2 at lifts [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]  is +-delta: True
+    white node: label 12  div 1  reflection in Gamma_En,2 at lifts [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]  is +-delta: False
+cusp 4: 11 printed roots; all orthogonal to eta_j: True; squares: [-4, -2]
+    white node: label  8  div 1  reflection in Gamma_En,2 at lifts [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]  is +-delta: True
+    white node: label 10  div 1  reflection in Gamma_En,2 at lifts [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]  is +-delta: False
+cusp 5: 14 printed roots; all orthogonal to eta_j: True; squares: [-4, -2]
+    white node: label 11  div 1  reflection in Gamma_En,2 at lifts [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]  is +-delta: True
+    white node: label 12  div 1  reflection in Gamma_En,2 at lifts [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]  is +-delta: False
+    white node: label 13  div 1  reflection in Gamma_En,2 at lifts [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]  is +-delta: False
+    white node: label 14  div 1  reflection in Gamma_En,2 at lifts [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]  is +-delta: False
+white-node labels by cusp: {1: [], 2: [10], 3: [8, 12], 4: [8, 10], 5: [11, 12, 13, 14]}
+
+=== (2) the maximal parabolic subdiagrams, their 1-cusps, and the (-2)-test
+cusp 1: 36 maximal parabolic subdiagrams  (0 s)
+    nodes [1, 2, 3, 4, 5, 6, 7, 8, 10]   type [1, 2]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 4, 5, 6, 7, 9, 10]   type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 4, 5, 6, 7, 9, 11]   type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 4, 5, 6, 7, 10, 11]  type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 4, 5, 6, 8, 10, 11]  type [1, 2]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 4, 5, 6, 9, 10, 11]  type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 4, 5, 7, 8, 10, 11]  type [1, 4]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 4, 5, 7, 9, 10, 11]  type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 4, 6, 7, 8, 10, 11]  type [1, 2]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 4, 6, 7, 9, 10, 11]  type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 5, 6, 7, 8, 10, 11]  type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 5, 6, 7, 8, 10, 12]  type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 5, 6, 7, 8, 11, 12]  type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 5, 6, 7, 9, 10, 11]  type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 5, 6, 7, 10, 11, 12] type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 5, 6, 8, 10, 11, 12] type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 5, 7, 8, 10, 11, 12] type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 6, 7, 8, 10, 11, 12] type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 4, 5, 6, 7, 8, 10, 11]  type [1, 2]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 4, 5, 6, 7, 9, 10, 11]  type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 5, 6, 7, 8, 10, 11, 12] type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 3, 4, 5, 6, 7, 8, 9, 11]   type [1, 5]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 3, 4, 5, 6, 7, 8, 9, 12]   type [1, 5]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 3, 4, 5, 6, 7, 8, 11, 12]  type [1, 5]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 3, 4, 5, 6, 7, 9, 10, 11]  type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 3, 4, 5, 6, 7, 9, 11, 12]  type [1, 5]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 3, 4, 5, 6, 8, 9, 11, 12]  type [1, 5]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 3, 4, 5, 7, 8, 9, 11, 12]  type [1, 5]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 3, 4, 6, 7, 8, 9, 11, 12]  type [1, 5]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 3, 5, 6, 7, 8, 9, 11, 12]  type [1, 5]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 3, 5, 6, 7, 8, 10, 11, 12] type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 4, 5, 6, 7, 8, 9, 11, 12]  type [1, 5]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [2, 3, 4, 5, 6, 7, 8, 10, 11]  type [1, 4]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [2, 3, 4, 5, 6, 7, 9, 10, 11]  type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [2, 3, 5, 6, 7, 8, 10, 11, 12] type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [3, 4, 5, 6, 7, 8, 9, 11, 12]  type [1, 5]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+cusp 2: 2 maximal parabolic subdiagrams  (0 s)
+    nodes [1, 2, 3, 4, 5, 6, 7, 8, 9]    type [1, 2]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [2, 3, 4, 5, 6, 7, 8, 9, 10]   type [2, 4, 5]    (-2)-classes of K_J:   16  witness [-5, -7, 0, 0, 12, 15, 21, 30, 24, 18, 12, 6]
+        white nodes descending along this incidence: [10]
+cusp 3: 31 maximal parabolic subdiagrams  (0 s)
+    nodes [1, 2, 3, 4, 5, 6, 7, 9, 10]   type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 4, 5, 6, 7, 9, 11]   type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 4, 5, 6, 7, 10, 11]  type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 4, 5, 6, 9, 10, 11]  type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 4, 5, 7, 8, 9, 11]   type [3, 5]       (-2)-classes of K_J:   16  witness [-5, -5, 1, 0, 4, 6, 8, 12, 10, 8, 4, -1]
+        white nodes descending along this incidence: [8, 12]
+    nodes [1, 2, 3, 4, 5, 7, 8, 9, 12]   type [3, 5]       (-2)-classes of K_J:   16  witness [-5, -5, 1, 0, 4, 6, 8, 12, 10, 8, 4, -1]
+        white nodes descending along this incidence: [8, 12]
+    nodes [1, 2, 3, 4, 5, 7, 8, 11, 12]  type [3, 5]       (-2)-classes of K_J:   16  witness [-5, -5, 1, 0, 4, 6, 8, 12, 10, 8, 4, -1]
+        white nodes descending along this incidence: [8, 12]
+    nodes [1, 2, 3, 4, 5, 7, 9, 10, 11]  type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 4, 5, 7, 9, 11, 12]  type [3, 5]       (-2)-classes of K_J:   16  witness [-5, -5, 1, 0, 4, 6, 8, 12, 10, 8, 4, -1]
+        white nodes descending along this incidence: [8, 12]
+    nodes [1, 2, 3, 4, 5, 8, 9, 11, 12]  type [3, 5]       (-2)-classes of K_J:   16  witness [-5, -5, 1, 0, 4, 6, 8, 12, 10, 8, 4, -1]
+        white nodes descending along this incidence: [8, 12]
+    nodes [1, 2, 3, 4, 6, 7, 9, 10, 11]  type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 4, 7, 8, 9, 11, 12]  type [3, 5]       (-2)-classes of K_J:   16  witness [-5, -5, 1, 0, 4, 6, 8, 12, 10, 8, 4, -1]
+        white nodes descending along this incidence: [8, 12]
+    nodes [1, 2, 3, 5, 6, 7, 9, 10, 11]  type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 5, 7, 8, 9, 11, 12]  type [3, 5]       (-2)-classes of K_J:   16  witness [-5, -5, 1, 0, 4, 6, 8, 12, 10, 8, 4, -1]
+        white nodes descending along this incidence: [8, 12]
+    nodes [1, 2, 4, 5, 6, 7, 9, 10, 11]  type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 4, 5, 7, 8, 9, 11, 12]  type [3, 5]       (-2)-classes of K_J:   16  witness [-5, -5, 1, 0, 4, 6, 8, 12, 10, 8, 4, -1]
+        white nodes descending along this incidence: [8, 12]
+    nodes [1, 3, 4, 5, 6, 7, 8, 11, 12]  type [3, 4]       (-2)-classes of K_J:   16  witness [-1, -1, 0, 0, 1, 2, 2, 3, 2, 1, 1, 0]
+        white nodes descending along this incidence: [8, 12]
+    nodes [1, 3, 4, 5, 6, 7, 9, 10, 11]  type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 3, 4, 5, 7, 8, 9, 11, 12]  type [3, 5]       (-2)-classes of K_J:   16  witness [-5, -5, 1, 0, 4, 6, 8, 12, 10, 8, 4, -1]
+        white nodes descending along this incidence: [8, 12]
+    nodes [2, 3, 4, 5, 6, 7, 8, 10, 11]  type [3, 5]       (-2)-classes of K_J:   16  witness [-5, -5, -6, 0, 10, 13, 18, 26, 21, 16, 11, 6]
+        white nodes descending along this incidence: [8, 12]
+    nodes [2, 3, 4, 5, 6, 7, 8, 10, 12]  type [3, 5]       (-2)-classes of K_J:   16  witness [-5, -5, -6, 0, 10, 13, 18, 26, 21, 16, 11, 6]
+        white nodes descending along this incidence: [8, 12]
+    nodes [2, 3, 4, 5, 6, 7, 8, 11, 12]  type [3, 5]       (-2)-classes of K_J:   16  witness [-5, -5, -6, 0, 10, 13, 18, 26, 21, 16, 11, 6]
+        white nodes descending along this incidence: [8, 12]
+    nodes [2, 3, 4, 5, 6, 7, 9, 10, 11]  type [1, 3]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [2, 3, 4, 5, 6, 7, 10, 11, 12] type [3, 5]       (-2)-classes of K_J:   16  witness [-5, -5, -6, 0, 10, 13, 18, 26, 21, 16, 11, 6]
+        white nodes descending along this incidence: [8, 12]
+    nodes [2, 3, 4, 5, 6, 8, 10, 11, 12] type [3, 5]       (-2)-classes of K_J:   16  witness [-5, -5, -6, 0, 10, 13, 18, 26, 21, 16, 11, 6]
+        white nodes descending along this incidence: [8, 12]
+    nodes [2, 3, 4, 5, 7, 8, 9, 11, 12]  type [3, 5]       (-2)-classes of K_J:   16  witness [-5, -5, 1, 0, 4, 6, 8, 12, 10, 8, 4, -1]
+        white nodes descending along this incidence: [8, 12]
+    nodes [2, 3, 4, 5, 7, 8, 10, 11, 12] type [3, 5]       (-2)-classes of K_J:   16  witness [-5, -5, -6, 0, 10, 13, 18, 26, 21, 16, 11, 6]
+        white nodes descending along this incidence: [8, 12]
+    nodes [2, 3, 4, 6, 7, 8, 10, 11, 12] type [3, 5]       (-2)-classes of K_J:   16  witness [-5, -5, -6, 0, 10, 13, 18, 26, 21, 16, 11, 6]
+        white nodes descending along this incidence: [8, 12]
+    nodes [2, 3, 5, 6, 7, 8, 10, 11, 12] type [3, 5]       (-2)-classes of K_J:   16  witness [-5, -5, -6, 0, 10, 13, 18, 26, 21, 16, 11, 6]
+        white nodes descending along this incidence: [8, 12]
+    nodes [2, 4, 5, 6, 7, 8, 10, 11, 12] type [3, 5]       (-2)-classes of K_J:   16  witness [-5, -5, -6, 0, 10, 13, 18, 26, 21, 16, 11, 6]
+        white nodes descending along this incidence: [8, 12]
+    nodes [3, 4, 5, 6, 7, 8, 10, 11, 12] type [3, 5]       (-2)-classes of K_J:   16  witness [-5, -5, -6, 0, 10, 13, 18, 26, 21, 16, 11, 6]
+        white nodes descending along this incidence: [8, 12]
+cusp 4: 14 maximal parabolic subdiagrams  (0 s)
+    nodes [1, 2, 3, 4, 5, 6, 7, 8, 11]   type [2, 4, 5]    (-2)-classes of K_J:   16  witness [5, 7, -12, 0, 12, 15, 21, 30, 24, 18, 12, 6]
+        white nodes descending along this incidence: [8]
+    nodes [1, 2, 3, 4, 5, 6, 7, 9, 11]   type [1, 4]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 4, 6, 7, 8, 9, 10]   type [4, 5]       (-2)-classes of K_J:   16  witness [-11, -11, 4, -4, 4, 13, 15, 26, 24, 22, 14, 7]
+        white nodes descending along this incidence: [8, 10]
+    nodes [1, 2, 3, 4, 6, 7, 8, 9, 11]   type [4, 5]       (-2)-classes of K_J:   16  witness [-11, -11, 4, -4, 4, 13, 15, 26, 24, 22, 14, 7]
+        white nodes descending along this incidence: [8, 10]
+    nodes [1, 2, 3, 4, 6, 7, 8, 10, 11]  type [4, 5]       (-2)-classes of K_J:   16  witness [-11, -11, 4, -4, 4, 13, 15, 26, 24, 22, 14, 7]
+        white nodes descending along this incidence: [8, 10]
+    nodes [1, 2, 3, 4, 6, 7, 9, 10, 11]  type [4, 5]       (-2)-classes of K_J:   16  witness [-11, -11, 4, -4, 4, 13, 15, 26, 24, 22, 14, 7]
+        white nodes descending along this incidence: [8, 10]
+    nodes [1, 2, 3, 4, 6, 8, 9, 10, 11]  type [4, 5]       (-2)-classes of K_J:   16  witness [-11, -11, 4, -4, 4, 13, 15, 26, 24, 22, 14, 7]
+        white nodes descending along this incidence: [8, 10]
+    nodes [1, 2, 3, 4, 7, 8, 9, 10, 11]  type [4, 5]       (-2)-classes of K_J:   16  witness [-11, -11, 4, -4, 4, 13, 15, 26, 24, 22, 14, 7]
+        white nodes descending along this incidence: [8, 10]
+    nodes [1, 2, 3, 6, 7, 8, 9, 10, 11]  type [4, 5]       (-2)-classes of K_J:   16  witness [-11, -11, 4, -4, 4, 13, 15, 26, 24, 22, 14, 7]
+        white nodes descending along this incidence: [8, 10]
+    nodes [1, 2, 4, 6, 7, 8, 9, 10, 11]  type [4, 5]       (-2)-classes of K_J:   16  witness [-11, -11, 4, -4, 4, 13, 15, 26, 24, 22, 14, 7]
+        white nodes descending along this incidence: [8, 10]
+    nodes [1, 3, 4, 6, 7, 8, 9, 10, 11]  type [4, 5]       (-2)-classes of K_J:   16  witness [-11, -11, 4, -4, 4, 13, 15, 26, 24, 22, 14, 7]
+        white nodes descending along this incidence: [8, 10]
+    nodes [2, 3, 4, 5, 6, 7, 8, 10, 11]  type [3, 4]       (-2)-classes of K_J:   16  witness [1, 1, -2, 0, 2, 2, 3, 4, 3, 2, 2, 1]
+        white nodes descending along this incidence: [8, 10]
+    nodes [2, 3, 4, 5, 6, 7, 9, 10, 11]  type [2, 4, 5]    (-2)-classes of K_J:   16  witness [3, 1, -3, 0, 3, 2, 4, 5, 4, 3, 2, 1]
+        white nodes descending along this incidence: [10]
+    nodes [2, 3, 4, 6, 7, 8, 9, 10, 11]  type [4, 5]       (-2)-classes of K_J:   16  witness [-11, -11, 4, -4, 4, 13, 15, 26, 24, 22, 14, 7]
+        white nodes descending along this incidence: [8, 10]
+cusp 5: 154 maximal parabolic subdiagrams  (0 s)
+    nodes [1, 2, 3, 4, 5, 6, 7, 8, 9]    type [1, 5]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 4, 5, 6, 7, 8, 10]   type [1, 5]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 4, 5, 6, 7, 9, 10]   type [1, 5]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 4, 5, 6, 8, 9, 10]   type [1, 5]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 4, 5, 6, 10, 11, 13] type [2, 4, 5]    (-2)-classes of K_J:   16  witness [1, 1, 4, 4, -2, 3, 4, 6, 5, 4, 3, 1]
+        white nodes descending along this incidence: [11, 13]
+    nodes [1, 2, 3, 4, 5, 7, 8, 9, 10]   type [1, 5]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 4, 6, 7, 8, 9, 10]   type [1, 5]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 4, 6, 7, 10, 11, 12] type [3, 5]       (-2)-classes of K_J:   16  witness [1, 1, 4, 4, -2, 2, 4, 5, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13]
+    nodes [1, 2, 3, 4, 6, 7, 10, 11, 13] type [3, 5]       (-2)-classes of K_J:   16  witness [1, 1, 4, 4, -2, 2, 4, 5, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13]
+    nodes [1, 2, 3, 4, 6, 7, 10, 12, 13] type [3, 5]       (-2)-classes of K_J:   16  witness [1, 1, 4, 4, -2, 2, 4, 5, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13]
+    nodes [1, 2, 3, 4, 6, 7, 11, 12, 13] type [3, 5]       (-2)-classes of K_J:   16  witness [1, 1, 4, 4, -2, 2, 4, 5, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13]
+    nodes [1, 2, 3, 4, 6, 8, 10, 12, 13] type [2, 4, 5]    (-2)-classes of K_J:   16  witness [3, 1, 7, 7, -4, 4, 6, 8, 6, 4, 2, 1]
+        white nodes descending along this incidence: [12, 13]
+    nodes [1, 2, 3, 4, 6, 10, 11, 12, 13] type [3, 5]       (-2)-classes of K_J:   16  witness [1, 1, 4, 4, -2, 2, 4, 5, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13]
+    nodes [1, 2, 3, 4, 7, 10, 11, 12, 13] type [3, 5]       (-2)-classes of K_J:   16  witness [1, 1, 4, 4, -2, 2, 4, 5, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13]
+    nodes [1, 2, 3, 5, 6, 7, 8, 9, 10]   type [1, 5]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 3, 5, 6, 8, 9, 11, 12]  type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 3, 5, 6, 8, 9, 11, 13]  type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 3, 5, 6, 8, 9, 11, 14]  type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 3, 5, 6, 8, 9, 12, 13]  type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 3, 5, 6, 8, 9, 12, 14]  type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 3, 5, 6, 8, 11, 12, 13] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 3, 5, 6, 8, 11, 12, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 3, 5, 6, 9, 11, 12, 13] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 3, 5, 6, 9, 11, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 3, 5, 6, 9, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 3, 5, 6, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 3, 5, 8, 9, 11, 12, 13] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 3, 5, 8, 9, 11, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 3, 5, 8, 9, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 3, 5, 8, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 3, 6, 7, 10, 11, 12, 13] type [3, 5]       (-2)-classes of K_J:   16  witness [1, 1, 4, 4, -2, 2, 4, 5, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13]
+    nodes [1, 2, 3, 6, 8, 9, 11, 12, 13] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 3, 6, 8, 9, 11, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 3, 6, 8, 9, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 3, 6, 8, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 4, 5, 6, 7, 8, 9, 10]   type [1, 5]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 2, 4, 5, 6, 8, 10, 12, 14] type [2, 4, 5]    (-2)-classes of K_J:   16  witness [3, 1, 6, 7, -4, 3, 5, 6, 4, 3, 2, 1]
+        white nodes descending along this incidence: [12, 14]
+    nodes [1, 2, 4, 5, 6, 10, 11, 12, 13] type [4, 5]       (-2)-classes of K_J:   16  witness [3, 3, 8, 10, -6, 4, 6, 7, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 4, 5, 6, 10, 11, 12, 14] type [4, 5]       (-2)-classes of K_J:   16  witness [3, 3, 8, 10, -6, 4, 6, 7, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 4, 5, 6, 10, 11, 13, 14] type [4, 5]       (-2)-classes of K_J:   16  witness [3, 3, 8, 10, -6, 4, 6, 7, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 4, 5, 6, 10, 12, 13, 14] type [4, 5]       (-2)-classes of K_J:   16  witness [3, 3, 8, 10, -6, 4, 6, 7, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 4, 5, 6, 11, 12, 13, 14] type [4, 5]       (-2)-classes of K_J:   16  witness [3, 3, 8, 10, -6, 4, 6, 7, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 4, 5, 10, 11, 12, 13, 14] type [4, 5]       (-2)-classes of K_J:   16  witness [3, 3, 8, 10, -6, 4, 6, 7, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 4, 6, 7, 10, 11, 12, 13] type [3, 5]       (-2)-classes of K_J:   16  witness [1, 1, 4, 4, -2, 2, 4, 5, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13]
+    nodes [1, 2, 4, 6, 8, 9, 10, 12, 13] type [3, 5]       (-2)-classes of K_J:   16  witness [-3, -1, -4, -5, 4, 0, -1, 0, 1, 1, 1, 1]
+        white nodes descending along this incidence: [12, 13, 14]
+    nodes [1, 2, 4, 6, 8, 9, 10, 12, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [-3, -1, -4, -5, 4, 0, -1, 0, 1, 1, 1, 1]
+        white nodes descending along this incidence: [12, 13, 14]
+    nodes [1, 2, 4, 6, 8, 9, 10, 13, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [-3, -1, -4, -5, 4, 0, -1, 0, 1, 1, 1, 1]
+        white nodes descending along this incidence: [12, 13, 14]
+    nodes [1, 2, 4, 6, 8, 9, 12, 13, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [-3, -1, -4, -5, 4, 0, -1, 0, 1, 1, 1, 1]
+        white nodes descending along this incidence: [12, 13, 14]
+    nodes [1, 2, 4, 6, 8, 10, 12, 13, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [-3, -1, -4, -5, 4, 0, -1, 0, 1, 1, 1, 1]
+        white nodes descending along this incidence: [12, 13, 14]
+    nodes [1, 2, 4, 6, 9, 10, 12, 13, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [-3, -1, -4, -5, 4, 0, -1, 0, 1, 1, 1, 1]
+        white nodes descending along this incidence: [12, 13, 14]
+    nodes [1, 2, 4, 6, 10, 11, 12, 13, 14] type [4, 5]       (-2)-classes of K_J:   16  witness [3, 3, 8, 10, -6, 4, 6, 7, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 4, 8, 9, 10, 12, 13, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [-3, -1, -4, -5, 4, 0, -1, 0, 1, 1, 1, 1]
+        white nodes descending along this incidence: [12, 13, 14]
+    nodes [1, 2, 5, 6, 8, 9, 11, 12, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 5, 6, 8, 9, 11, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 5, 6, 8, 9, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 5, 6, 8, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 5, 6, 9, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 5, 6, 10, 11, 12, 13, 14] type [4, 5]       (-2)-classes of K_J:   16  witness [3, 3, 8, 10, -6, 4, 6, 7, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 5, 8, 9, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 2, 6, 8, 9, 10, 12, 13, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [-3, -1, -4, -5, 4, 0, -1, 0, 1, 1, 1, 1]
+        white nodes descending along this incidence: [12, 13, 14]
+    nodes [1, 2, 6, 8, 9, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 4, 5, 6, 7, 8, 9, 10]   type [1, 5]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [1, 3, 4, 5, 7, 8, 10, 11, 13] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 4, 5, 7, 8, 10, 11, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 4, 5, 7, 8, 10, 12, 13] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 4, 5, 7, 8, 10, 12, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 4, 5, 7, 8, 10, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 4, 5, 7, 8, 11, 12, 13] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 4, 5, 7, 8, 11, 12, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 4, 5, 7, 8, 11, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 4, 5, 7, 10, 11, 12, 13] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 4, 5, 7, 10, 11, 12, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 4, 5, 7, 10, 11, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 4, 5, 8, 10, 11, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 4, 5, 8, 10, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 4, 5, 8, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 4, 5, 10, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 4, 6, 7, 10, 11, 12, 13] type [3, 5]       (-2)-classes of K_J:   16  witness [1, 1, 4, 4, -2, 2, 4, 5, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13]
+    nodes [1, 3, 4, 7, 8, 10, 11, 12, 13] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 4, 7, 8, 10, 11, 12, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 4, 7, 8, 10, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 4, 7, 8, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 4, 7, 10, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 4, 8, 10, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 5, 6, 8, 9, 11, 12, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 5, 6, 8, 9, 11, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 5, 6, 8, 9, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 5, 6, 8, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 5, 6, 9, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 5, 7, 8, 10, 11, 12, 13] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 5, 7, 8, 10, 11, 12, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 5, 7, 8, 10, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 5, 7, 8, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 5, 7, 10, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 5, 8, 9, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 5, 8, 10, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 3, 6, 8, 9, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 4, 5, 6, 10, 11, 12, 13, 14] type [4, 5]       (-2)-classes of K_J:   16  witness [3, 3, 8, 10, -6, 4, 6, 7, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 4, 5, 7, 8, 10, 11, 12, 13] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 4, 5, 7, 8, 10, 11, 12, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 4, 5, 7, 8, 10, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 4, 5, 7, 8, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 4, 5, 7, 10, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 4, 5, 8, 10, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [1, 4, 6, 8, 9, 10, 12, 13, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [-3, -1, -4, -5, 4, 0, -1, 0, 1, 1, 1, 1]
+        white nodes descending along this incidence: [12, 13, 14]
+    nodes [2, 3, 4, 5, 6, 7, 8, 9, 10]   type [1, 5]       (-2)-classes of K_J:    0
+        white nodes descending along this incidence: []
+    nodes [2, 3, 4, 5, 6, 8, 10, 11, 14] type [2, 4, 5]    (-2)-classes of K_J:   16  witness [-7, -7, -12, -16, 14, 6, 0, 5, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 14]
+    nodes [2, 3, 4, 5, 6, 9, 10, 11, 13] type [3, 5]       (-2)-classes of K_J:   16  witness [1, 1, 3, 4, -2, 2, 3, 4, 3, 2, 1, 1]
+        white nodes descending along this incidence: [11, 13, 14]
+    nodes [2, 3, 4, 5, 6, 9, 10, 11, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [1, 1, 3, 4, -2, 2, 3, 4, 3, 2, 1, 1]
+        white nodes descending along this incidence: [11, 13, 14]
+    nodes [2, 3, 4, 5, 6, 9, 10, 13, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [1, 1, 3, 4, -2, 2, 3, 4, 3, 2, 1, 1]
+        white nodes descending along this incidence: [11, 13, 14]
+    nodes [2, 3, 4, 5, 6, 9, 11, 13, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [1, 1, 3, 4, -2, 2, 3, 4, 3, 2, 1, 1]
+        white nodes descending along this incidence: [11, 13, 14]
+    nodes [2, 3, 4, 5, 6, 10, 11, 13, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [1, 1, 3, 4, -2, 2, 3, 4, 3, 2, 1, 1]
+        white nodes descending along this incidence: [11, 13, 14]
+    nodes [2, 3, 4, 5, 9, 10, 11, 13, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [1, 1, 3, 4, -2, 2, 3, 4, 3, 2, 1, 1]
+        white nodes descending along this incidence: [11, 13, 14]
+    nodes [2, 3, 4, 6, 7, 10, 11, 12, 13] type [3, 5]       (-2)-classes of K_J:   16  witness [1, 1, 4, 4, -2, 2, 4, 5, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13]
+    nodes [2, 3, 4, 6, 8, 10, 11, 12, 13] type [4, 5]       (-2)-classes of K_J:   16  witness [5, 5, 14, 16, -10, 4, 10, 11, 8, 5, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [2, 3, 4, 6, 8, 10, 11, 12, 14] type [4, 5]       (-2)-classes of K_J:   16  witness [5, 5, 14, 16, -10, 4, 10, 11, 8, 5, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [2, 3, 4, 6, 8, 10, 11, 13, 14] type [4, 5]       (-2)-classes of K_J:   16  witness [5, 5, 14, 16, -10, 4, 10, 11, 8, 5, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [2, 3, 4, 6, 8, 10, 12, 13, 14] type [4, 5]       (-2)-classes of K_J:   16  witness [5, 5, 14, 16, -10, 4, 10, 11, 8, 5, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [2, 3, 4, 6, 8, 11, 12, 13, 14] type [4, 5]       (-2)-classes of K_J:   16  witness [5, 5, 14, 16, -10, 4, 10, 11, 8, 5, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [2, 3, 4, 6, 9, 10, 11, 13, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [1, 1, 3, 4, -2, 2, 3, 4, 3, 2, 1, 1]
+        white nodes descending along this incidence: [11, 13, 14]
+    nodes [2, 3, 4, 6, 10, 11, 12, 13, 14] type [4, 5]       (-2)-classes of K_J:   16  witness [5, 5, 14, 16, -10, 4, 10, 11, 8, 5, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [2, 3, 4, 8, 10, 11, 12, 13, 14] type [4, 5]       (-2)-classes of K_J:   16  witness [5, 5, 14, 16, -10, 4, 10, 11, 8, 5, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [2, 3, 5, 6, 8, 9, 11, 12, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [2, 3, 5, 6, 8, 9, 11, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [2, 3, 5, 6, 8, 9, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [2, 3, 5, 6, 8, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [2, 3, 5, 6, 9, 10, 11, 13, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [1, 1, 3, 4, -2, 2, 3, 4, 3, 2, 1, 1]
+        white nodes descending along this incidence: [11, 13, 14]
+    nodes [2, 3, 5, 6, 9, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [2, 3, 5, 8, 9, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [2, 3, 6, 8, 9, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [5, 5, 9, 14, -10, 1, 3, 2, 0, -2, -2, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [2, 3, 6, 8, 10, 11, 12, 13, 14] type [4, 5]       (-2)-classes of K_J:   16  witness [5, 5, 14, 16, -10, 4, 10, 11, 8, 5, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [2, 4, 5, 6, 7, 8, 10, 11, 12] type [3, 5]       (-2)-classes of K_J:   16  witness [-3, -3, -6, -6, 6, 2, 0, 3, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 14]
+    nodes [2, 4, 5, 6, 7, 8, 10, 11, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [-3, -3, -6, -6, 6, 2, 0, 3, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 14]
+    nodes [2, 4, 5, 6, 7, 8, 10, 12, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [-3, -3, -6, -6, 6, 2, 0, 3, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 14]
+    nodes [2, 4, 5, 6, 7, 8, 11, 12, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [-3, -3, -6, -6, 6, 2, 0, 3, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 14]
+    nodes [2, 4, 5, 6, 7, 10, 11, 12, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [-3, -3, -6, -6, 6, 2, 0, 3, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 14]
+    nodes [2, 4, 5, 6, 8, 10, 11, 12, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [-3, -3, -6, -6, 6, 2, 0, 3, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 14]
+    nodes [2, 4, 5, 6, 9, 10, 11, 13, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [1, 1, 3, 4, -2, 2, 3, 4, 3, 2, 1, 1]
+        white nodes descending along this incidence: [11, 13, 14]
+    nodes [2, 4, 5, 6, 10, 11, 12, 13, 14] type [4, 5]       (-2)-classes of K_J:   16  witness [3, 3, 8, 10, -6, 4, 6, 7, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [2, 4, 5, 7, 8, 10, 11, 12, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [-3, -3, -6, -6, 6, 2, 0, 3, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 14]
+    nodes [2, 4, 6, 7, 8, 10, 11, 12, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [-3, -3, -6, -6, 6, 2, 0, 3, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 14]
+    nodes [2, 4, 6, 8, 9, 10, 12, 13, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [-3, -1, -4, -5, 4, 0, -1, 0, 1, 1, 1, 1]
+        white nodes descending along this incidence: [12, 13, 14]
+    nodes [2, 4, 6, 8, 10, 11, 12, 13, 14] type [4, 5]       (-2)-classes of K_J:   16  witness [5, 5, 14, 16, -10, 4, 10, 11, 8, 5, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [2, 5, 6, 7, 8, 10, 11, 12, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [-3, -3, -6, -6, 6, 2, 0, 3, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 14]
+    nodes [3, 4, 5, 6, 9, 10, 11, 13, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [1, 1, 3, 4, -2, 2, 3, 4, 3, 2, 1, 1]
+        white nodes descending along this incidence: [11, 13, 14]
+    nodes [3, 4, 5, 7, 8, 10, 11, 12, 13] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [3, 4, 5, 7, 8, 10, 11, 12, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [3, 4, 5, 7, 8, 10, 11, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [3, 4, 5, 8, 10, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [3, 4, 6, 8, 10, 11, 12, 13, 14] type [4, 5]       (-2)-classes of K_J:   16  witness [5, 5, 14, 16, -10, 4, 10, 11, 8, 5, 2, 1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [3, 4, 7, 8, 10, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [3, 5, 7, 8, 10, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+    nodes [4, 5, 6, 7, 8, 10, 11, 12, 14] type [3, 5]       (-2)-classes of K_J:   16  witness [-3, -3, -6, -6, 6, 2, 0, 3, 4, 3, 2, 1]
+        white nodes descending along this incidence: [11, 12, 14]
+    nodes [4, 5, 7, 8, 10, 11, 12, 13, 14] type [5]          (-2)-classes of K_J:   16  witness [3, 3, 8, 8, -6, 2, 4, 3, 2, 1, 0, -1]
+        white nodes descending along this incidence: [11, 12, 13, 14]
+
+=== (3) the verdict table
+the 9 distinct 1-cusp types realised: [[1, 2], [1, 3], [1, 4], [1, 5], [2, 4, 5], [3, 4], [3, 5], [4, 5], [5]]
+1-cusp of type [1, 2]         at cusps [1, 2]     (-2)-classes: {0}  -> unmarked
+1-cusp of type [1, 3]         at cusps [1, 3]     (-2)-classes: {0}  -> unmarked
+1-cusp of type [1, 4]         at cusps [1, 4]     (-2)-classes: {0}  -> unmarked
+1-cusp of type [1, 5]         at cusps [1, 5]     (-2)-classes: {0}  -> unmarked
+1-cusp of type [2, 4, 5]      at cusps [2, 4, 5]  (-2)-classes: {16} -> MARKED
+1-cusp of type [3, 4]         at cusps [3, 4]     (-2)-classes: {16} -> MARKED
+1-cusp of type [3, 5]         at cusps [3, 5]     (-2)-classes: {16} -> MARKED
+1-cusp of type [4, 5]         at cusps [4, 5]     (-2)-classes: {16} -> MARKED
+1-cusp of type [5]            at cusps [5]        (-2)-classes: {16} -> MARKED
+
+0-cusps carrying markings (white nodes exist): [2, 3, 4, 5]
+1-cusps carrying markings: [[2, 4, 5], [3, 4], [3, 5], [4, 5], [5]]
+1-cusps carrying none:     [[1, 2], [1, 3], [1, 4], [1, 5]]
+
+incidences at which the test is NOT preserved (marked 0-cusp, unmarked incident 1-cusp):
+    cusp 2 --(incidence)--> 1-cusp of type [1, 2]
+    cusp 3 --(incidence)--> 1-cusp of type [1, 3]
+    cusp 4 --(incidence)--> 1-cusp of type [1, 4]
+    cusp 5 --(incidence)--> 1-cusp of type [1, 5]
+
+elapsed 1 s
+PYEXIT=0

@@ -16,7 +16,7 @@ Since $f$ is finite it is affine, so locally $Y = \Spec A$ and $X = \Spec B$ wit
 Normality of $Y$ says $A$ is integrally closed in $K$, and $B$ is integral over $A$, so $B\iscontainedin A$ and $f$ is an isomorphism.
 
 This is the case of Zariski's main theorem that the classifying map uses, where $\phi$ is finite.
-The theorem in its classical form assumes quasi-finiteness of $f$ rather than finiteness and concludes only that $f$ is an isomorphism onto an open subset [@Har10a, §V.5]; properness of $f$ upgrades that to an isomorphism, and a finite morphism is proper, so the statement above is the special case.
+The theorem in its classical form assumes quasi-finiteness of $f$ rather than finiteness and concludes only that $f$ is an isomorphism onto an open subset [@Har77, §V.5]; properness of $f$ upgrades that to an isomorphism, and a finite morphism is proper, so the statement above is the special case.
 Normality of the source is a hypothesis of neither form.
 
 ::: {.lemma

@@ -98,7 +98,7 @@ The normalization $\normalize{B}$ is initial among all normalizations, so univer
 Existence of the classifying morphism is a consequence of functoriality and the representability of KSBA moduli stacks.
 :::
 
-@thm:semifan-restriction gives the cone statement. At cusp $2$ of $\Fen,2$, @thm:coble-restricted-semifan checks all its mirror hypotheses and identifies the restricted generalized Coxeter semifan, including the inherited marking. The restricted facet is a fundamental chamber of the full group $W^{(2,4)}(\bar S)$.
+@thm:semifan-restriction gives the cone statement. At cusp $2$ of $\fentwo$, @thm:coble-restricted-semifan checks all its mirror hypotheses and identifies the restricted generalized Coxeter semifan, including the inherited marking. The restricted facet is a fundamental chamber of the full group $W^{(2,4)}(\bar S)$.
 
 The identification of $\normalize{B}$ with the associated semitoroidal compactification is a separate statement; it is @prob:restricted-semifan.
 
