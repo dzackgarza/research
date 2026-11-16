@@ -38,6 +38,48 @@ Let $(V, D)$ be an anticanonical pair whose divisor $D$ is a cycle of rational c
 Moreover, $Q(V, D)\geq0$, and $Q(V, D) = 0$ if and only if $(V, D)$ is toric [@Fri15, Lem. 2.7].
 :::
 
+::: {.definition #def:toric-model-anticanonical title="Toric models of anticanonical pairs"}
+
+A *toric model* of an anticanonical pair $(V,D)$ is a diagram of pairs
+$$
+(V,D) \longleftarrow (V',D') \longrightarrow (\bar V,\bar D),
+$$
+where $(\bar V,\bar D)$ is a smooth toric surface with its toric boundary, $V'\to V$ is a sequence of corner blowups at nodes of $D$, and $V'\to\bar V$ is the contraction of the exceptional curves of a sequence of interior blowups at smooth points of the boundary. The boundary on the corner blowup is the reduced inverse image; on an interior blowup it is the strict transform [@AE22, §6.1].
+
+The diagram gives a birational map $V\dashrightarrow\bar V$ through their common model $V'$. The intermediate $V'$ need not be toric: its map to the toric surface contracts curves created by interior blowups. Thus “toric model” names the toric target of the diagram, rather than every surface in it [@AE22, §6.1].
+:::
+
+::: {.theorem #thm:anticanonical-toric-model title="Existence of toric models"}
+
+Every anticanonical pair admits a toric model as in @def:toric-model-anticanonical [@AE22, §6.1].
+:::
+
+::: {.proof}
+
+This is the toric-model lemma of [@AE22, §6.1], citing [@GHK15].
+:::
+
+::: {#fig-anticanonical-interior-blowups .figure}
+\input{tikz/dissertation/NontoricBlowups.tikz}
+
+Nine interior blowups of the toric boundary of $\PP^1\times\PP^1$; the exceptional curves are drawn on the right.
+:::
+
+::: {.proposition #prop:charge-counts-interior-blowups title="Charge counts interior blowups"}
+
+For any toric model of $(V,D)$, the number of interior blowups is $Q(V,D)$.
+:::
+
+::: {.proof}
+
+The toric pair $(\bar V,\bar D)$ has charge $0$ by @prop:charge-under-blowup. Each interior blowup raises charge by $1$, and each corner blowup preserves it. Thus the charge of $(V',D')$ is the number of interior blowups and equals the charge of $(V,D)$ [@AE22, §6.1].
+:::
+
+::: {.example #ex:nine-interior-blowups title="Nine interior blowups of $\PP^1\times\PP^1$"}
+
+Let $D$ be the four toric boundary curves on $\PP^1\times\PP^1$. Blow up nine distinct smooth points of $D$, away from its nodes, and let $D'$ be its strict transform. The pair $(V',D')$ is anticanonical and has charge $9$ by @prop:charge-counts-interior-blowups. @fig-anticanonical-interior-blowups shows the blowup centers and exceptional curves.
+:::
+
 ::: {.theorem #thm:friedman-miranda-charge title="Friedman--Miranda charge theorem"}
 
 Let $\mcx \to (C, 0)$ be a Type III Kulikov degeneration of $K3$ surfaces with central fiber

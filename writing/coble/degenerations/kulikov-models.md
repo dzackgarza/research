@@ -43,6 +43,78 @@ Depending on the nilpotency index of $N$, Kulikov models are classified into thr
   The dual complex is a triangulation of the sphere $S^2$; with the integral affine structure of @def:singular_ias it is an $\ias$.
 :::
 
+## Anticanonical components and the dual complex
+
+::: {.example #ex:tetrahedral-quartic-degeneration title="A tetrahedral quartic degeneration"}
+
+Consider the pencil in $\PP^3\times\Delta$ given by
+$$
+x_0x_1x_2x_3=t(x_0^4+x_1^4+x_2^4+x_3^4).
+$$
+For $t=0$ the fiber is the union of the four coordinate planes, with tetrahedral dual complex. The total space is singular at the points where two coordinates vanish and the sum of the fourth powers of the other two vanishes. Each of the six coordinate lines contains four such points, giving $24$ ordinary double points. At one of these points, two vanishing coordinates and a local coordinate for the residual quartic put the equation in the node form $uv=tw$ to first order. A choice of small resolutions yields a smooth semistable model; different choices can be related by flops. With a symmetric distribution of the resolutions, each plane component is blown up at six points, two on each of its three boundary lines. Its dual complex remains the tetrahedron, while the anticanonical components acquire the blowups needed for the triple-point formula. This example is a degree-four K3 degeneration and illustrates the Type III geometry independently of the degree-two construction in @cons:degree-two-k3-affine-sphere.
+:::
+
+For a proper variety $X$ and an effective $\QQ$-divisor $D$, a *log Calabi–Yau pair* has log canonical singularities and $K_X+D\sim_{\QQ}0$ [@KX16, Introduction]. If a $K$-trivial degeneration has a dlt pair $(\mcx,\mcx_0)$, adjunction gives $K_{V_i}+D_i\sim_{\QQ}0$ on the normalization of each central-fiber component $V_i$, where $D_i$ is its conductor. Thus the anticanonical pairs below are the surface components of a log Calabi–Yau degeneration. The definition of a Kulikov model above is the smooth-total-space, normal-crossings case.
+
+The dimension of the dual complex distinguishes the three Kulikov types: it is $0$ in Type I, $1$ in Type II, and $2$ in Type III. In particular, only Type III has the maximal-dimensional dual complex $S^2$. For a simply connected strict Calabi–Yau general fiber of dimension $n$, Kollár and Xu call a dlt Calabi–Yau degeneration *maximal* when its dual complex has dimension $n$; they prove that this dual complex is a simply connected rational homology sphere and is homeomorphic to $S^n$ for $n\leq3$, as well as for $n=4$ with simple normal crossings central fiber [@KX16, §4, Question 7 and Proposition 8]. Their question asks whether the sphere conclusion holds in general. The proposed mirror-symmetry relation is that this dual complex supplies the base of a limiting torus fibration, whose dual torus fibration produces a mirror; the integral affine structures and their discrete Legendre transform make that relation more precise [@GS03]. This relation is a mirror-symmetry proposal, rather than an identification supplied by the Kulikov classification.
+
+::: {.proposition #prop:kulikov-ias-gluing title="Integral affine gluing from a Type III central fiber"}
+
+Let $\mcx_0=\Union_iV_i$ be a $d$-semistable Type III Kulikov surface, and let $D_i=\Sum_jD_{ij}$ be the cycle of double curves on $V_i$. The dual complex is assembled from the pseudofans of the anticanonical pairs $(V_i,D_i)$. Each face is a unit lattice triangle. For consecutive primitive edge vectors $e_{i,j-1},e_{ij},e_{i,j+1}$ in the star of the vertex of $V_i$, the integral affine gluing rule is
+$$
+e_{i,j-1}+e_{i,j+1}=d_{ij}e_{ij},\qquad
+d_{ij}=\begin{cases}-D_{ij}^{2},&D_{ij}\text{ smooth},\\-D_{ij}^{2}+2,&D_{ij}\text{ nodal}.\end{cases}
+$$
+The structure extends across the vertex exactly when $Q(V_i,D_i)=0$, equivalently when $(V_i,D_i)$ is toric [@AE22, §6.2].
+:::
+
+::: {.proof}
+
+The displayed relation fixes the transition between adjacent unit triangles. Along a double curve $D_{ij}=D_{ji}$, the relations from its two sides agree precisely when the triple point formula $D_{ij}^2+D_{ji}^2=-2$ holds [@AE22, §6.2, citing Engel, Prop. 2.2]. This formula holds for a Kulikov surface. At a vertex, the pseudofan is a toric fan precisely when the anticanonical pair has charge zero by @prop:charge-under-blowup. Thus positive charge is the obstruction to extending the affine chart over that vertex [@AE22, §6.2].
+:::
+
+The triangulation specifies which component pairs meet along double curves and which triples meet at triple points. It does not select the gluing isomorphisms or a smoothing: for a fixed triangulated sphere, the $d$-semistable central fibers form a torus described in [@AE22, §6.2].
+
+At a positive-charge vertex the pseudofan needs a monodromy direction in addition to the visible edges. Two adjacent vertices give components that meet along the curve represented by their common edge. A triangle records a triple point [@AE22, §6.2].
+
+![The monodromy direction at a singular vertex of a pseudofan.](/rendered/IASmonodromy.jpg){#fig-kulikov-monodromy-direction}
+
+![Stars of two adjacent vertices, giving surfaces glued along one double curve.](/rendered/IASgluing.jpg){#fig-kulikov-adjacent-stars}
+
+::: {.definition #def:d-semistability title="$d$-semistability of a Type III surface"}
+
+For a normal crossings Type III surface $X_0$, its infinitesimal smoothing sheaf is
+$$
+T^1_{X_0}=\mathcal{E}xt^1_{\OO_{X_0}}(\Omega^1_{X_0},\OO_{X_0}),
+$$
+an invertible sheaf on the double locus $(X_0)_{\mathrm{sing}}$. The surface is *$d$-semistable* if $T^1_{X_0}\simeq\OO_{(X_0)_{\mathrm{sing}}}$ [@AET23, §2A].
+:::
+
+::: {.theorem #thm:type-iii-d-semistable-smoothing title="Smoothing a Type III surface"}
+
+A Type III normal crossings K3 surface is smoothable to a K3 surface if and only if it is $d$-semistable [@Fri83a; @AET23, §2A].
+:::
+
+::: {.proof}
+
+This is Friedman's smoothing theorem as stated in [@AET23, §2A]. The condition on $T^1_{X_0}$ constrains the component deformations and the gluing isomorphisms, which are extra data beyond the triangulated dual complex.
+:::
+
+::: {.proposition #prop:type-iii-monodromy-triple-points title="Monodromy and triple points"}
+
+For a Type III Kulikov degeneration, there are classes $\delta,\lambda\in H^2(X_t,\ZZ)$ with $\delta$ primitive, $\delta^2=\delta\cdot\lambda=0$, such that
+$$
+Nx=(x\cdot\delta)\lambda-(x\cdot\lambda)\delta,
+\qquad \lambda^2=\#\{\text{triple points of }X_0\}.
+$$
+Here $N=\log T$ is the log monodromy [@FS86; @AET23, §2A].
+:::
+
+::: {.proof}
+
+This is the Picard–Lefschetz and triple-point formula of [@FS86], as quoted in [@AET23, §2A].
+:::
+
 ## The monodromy weight filtration
 
 ::: {.proposition #prop:weight-filtration-by-type title="The weight filtration by type"}

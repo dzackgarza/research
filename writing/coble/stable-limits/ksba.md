@@ -3,6 +3,43 @@
 
 ## How a stable limit is obtained
 
+::: {.construction #cons:degree-two-k3-affine-sphere title="The degree-two K3 affine sphere"}
+
+For the degree-two K3 moduli space $F_2$, let $K$ be a fundamental chamber of the Coxeter fan in $N=U\oplus E_8(-1)^2\oplus A_1(-1)$. A class $\lambda\in K$ determines a nef class $L$ on the rational surface $T$ used in [@AET23, §§5–6]. Start with the moment polygon of a toric model of $(T,L)$. It has eighteen sides, indexed $0,\ldots,17$. Perform Symington surgeries of sizes $b_{18},b_{19},b_{20}$ on sides $0,6,12$. The resulting integral affine disc $P(\lambda)$ has three interior $I_1$ singularities [@AET23, Construction 6.1].
+
+::: {#fig-k3-coxeter-19-1-1 .figure}
+\begin{tikzpicture}[scale=0.56]
+\pic {object=coxeter/vinberg-19-1-1};
+\end{tikzpicture}
+
+The Coxeter diagram of the cusp lattice $U\oplus E_8(-1)^2\oplus A_1(-1)$; the full diagram also contains the four parabolic types that label the degree-two K3 $1$-cusps [@AET23, §5A, Fig. 1 and §3B].
+:::
+
+![The toric fan with eighteen rays used to form the starting polygon.](/rendered/toric18.jpg){#fig-k3-toric-eighteen}
+
+![The starting eighteen-sided polygon.](/rendered/toric18polytope.jpg){#fig-k3-eighteen-gon}
+
+![The polygon after three interior surgeries on sides $0,6,12$.](/rendered/toric18polytope2.jpg){#fig-k3-surgery-polygon}
+
+Glue $P(\lambda)$ to an oppositely oriented copy along the boundary. The gluing has an $I_1$ singularity at each of the eighteen corners. Thus
+$$
+B(\lambda)=P(\lambda)\cup_{\partial P(\lambda)}P(\lambda)^{\mathrm{op}}
+$$
+is an integral affine sphere with twenty-four $I_1$ singularities when all length coordinates are positive. The involution exchanges its hemispheres. Its integral affine ramification divisor $R_{\mathrm{IA}}$ lies on the equator, with weight $2$ on even indexed sides and weight $1$ on odd indexed sides [@AET23, Construction 6.1 and Def. 6.2]. A triangulation by unit lattice triangles, invariant under the involution and containing the equator, prescribes anticanonical components and their double-curve incidences through @prop:kulikov-ias-gluing [@AE22, §8.4].
+
+![The doubled disc with its equator and the hemispherical singularities.](/rendered/IASPuPop.jpg){#fig-k3-doubled-disc}
+
+![A schematic unit triangulation of one hemisphere.](/rendered/IAScompletetriang.jpg){#fig-k3-hemisphere-triangulation}
+
+![The paired triangulations on the integral affine sphere.](/rendered/IASdoubletriang.jpg){#fig-k3-doubled-triangulation}
+:::
+
+When length coordinates reach zero, the singularities of $B(\lambda)$ can collide, and on isotropic boundary rays the sphere can collapse to an interval. The Coxeter fan divides the positive cone by the combinatorial type of $(B(\lambda),R_{\mathrm{IA}})$ [@AET23, Intro. and §§6A–6B]. This construction supplies the combinatorial type of a Kulikov central fiber. Its stable pair is obtained by the subsequent contraction in [@AET23, §7].
+
+For Enriques degenerations the quotient complexes are $\RP^2$ and a disc in Type III, and a segment in Type II (@prop:enriques-quotient-dual-complex). The degree-two Enriques stable-limit components are read from the folded Coxeter diagrams (@prop:fen2-stable-limit-strata). The marked Coble-root compatibility is @qst:coble_cusp_admissibility.
+
+The degree-two K3 model also gives concrete boundary questions for the Enriques and Coble loci. At each Enriques cusp, which folded Coxeter walls survive the quotient by the Enriques involution? Can the K3 integral affine sphere be quotiented to an integral affine $\RP^2$ while keeping the divisor that determines its stable pair? For the Coble locus, how do the commuting Enriques and covering involutions act on the affine complex, and how does the intersection of their ramification data mark the Coble root? Which collisions of affine singularities and equator edges change the stable surface, and which are changes of Kulikov model by flops? The folded Coxeter strata below answer the component question for degree-two Enriques surfaces; the root and contraction questions remain part of @qst:coble_cusp_admissibility and @conj:restricted_ramification_semifan. A triangulated affine complex alone does not determine a unique smoothing or stable contraction, by @def:d-semistability and [@AET23, §§6–7].
+
 ::: {.proposition #prop:fen2-limits-are-k3-quotients title="Enriques stable limits are quotients of K3 stable limits"}
 
 Let $(Z, \eps R_Z)$, $0 < \eps \ll 1$, be the pair of a degree-$2$ numerically polarized Enriques surface $Z \in \fentwo$.
@@ -157,6 +194,16 @@ Under this restriction, a Coble wall is irrelevant precisely when every Enriques
 ::: {.conjecture #conj:ksba_semitoroidal_comparison}
 
 After normalization, the KSBA compactification of the polarized Coble locus agrees with the semitoroidal compactification induced by the restricted ramification semifan.
+:::
+
+::: {.proposition #prop:ksba-period-extension-conditional title="Period extension under the compactification comparison"}
+
+If @conj:ksba_semitoroidal_comparison holds, then the period map of the polarized Coble locus extends from the normalization of its KSBA compactification to the Baily--Borel compactification of its period quotient.
+:::
+
+::: {.proof}
+
+Under the conjectured identification, the normalized KSBA space is semitoroidal. Compose this identification with the semitoroidal morphism to the Baily--Borel compactification in @cor:toroidal-to-baily-borel. On the interior, the composite is the original period map.
 :::
 
 ::: {.conjecture #conj:no_moduli_loss}

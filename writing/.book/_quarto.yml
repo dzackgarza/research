@@ -81,6 +81,7 @@ book:
     # the K3 cover that carries every lattice-theoretic statement later.
     - calculus-on-schemes.md
     - symmetric-spaces-and-period-domains.md
+    - modular-forms-and-hecke-operators.md
     - part: coble/index.md
       chapters:
         - coble/annotated-bibliography.md
@@ -128,10 +129,18 @@ book:
         - lattice-theory/arithmetic/miranda-morrison.md
         - lattice-theory/classification/two-elementary-lattices.md
         - lattice-theory/definite/minima-and-regularity.md
+        - lattice-theory/hyperbolic/constructive-real-rational-splitting.md
         - lattice-theory/hyperbolic/integral-hyperbolic-index.md
+        - lattice-theory/hyperbolic/effective-integral-embedding-bounds.md
+        - lattice-theory/hyperbolic/norm-fibres-and-embedding-loci.md
         - lattice-theory/Coxeter-Systems-and-Lattices.md
         - lattice-theory/invariant-and-coinvariant-lattices.md
         - lattice-theory/examples/k3-enriques-lattices.md
+        - lattice-theory/arithmetic/integral-lattice-algorithms.md
+        - lattice-theory/arithmetic/integral-trace-lattices.md
+        - lattice-theory/arithmetic/indefinite-binary-class-numbers.md
+        - lattice-theory/arithmetic/kneser-neighbors-and-orthogonal-modular-forms.md
+        - lattice-theory/arithmetic/finite-automorphism-groups-and-polynomial-certificates.md
     # This project's own arithmetic, in dependency order: the discriminant orbits
     # are what the Heegner line is cut out of, and the lifting criterion is stated
     # for the arithmetic group that chapter constructs.
@@ -175,6 +184,7 @@ book:
         - coble/cusp-correspondence/enriques-to-coble-cusp-correspondence.md
     - part: Stable limits
       chapters:
+        - integral-affine-geometry.md
         - coble/stable-limits/geometric.md
         - coble/stable-limits/ias.md
         - coble/stable-limits/ksba.md

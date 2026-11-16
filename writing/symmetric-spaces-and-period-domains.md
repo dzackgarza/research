@@ -539,6 +539,35 @@ F_L(\Gamma)&=\Gamma\backslash\Omega_L^+.
 
 This is a locally symmetric arithmetic quotient. Baily–Borel theory makes it a quasiprojective variety with a canonical projective compactification [@BB66]. If $\Gamma$ is torsion-free, its properly discontinuous action makes $F_L(\Gamma)$ a complex manifold. In general, finite stabilizers give local analytic models that are finite quotients of a complex ball [@GHS13, §5.1].
 
+::: {.definition #def:hsd-orthogonal-modular-form title="Orthogonal modular form"}
+Suppose $n\geq3$, and let $\widetilde\Omega_L^+\subset L\otimes\mathbb C$
+be the inverse image of $\Omega_L^+$ under projectivization, with the zero
+vector removed. A *modular form of weight $k$ and character $\chi$* for a
+finite-index subgroup $\Gamma\subset\operatorname O^+(L)$ is a holomorphic
+function $f:\widetilde\Omega_L^+\to\mathbb C$ satisfying
+\[
+f(tz)=t^{-k}f(z),\qquad f(\gamma z)=\chi(\gamma)f(z)
+\quad(t\in\mathbb C^*,\ \gamma\in\Gamma).
+\]
+Write $M_k(\Gamma,\chi)$ for this vector space. The homogeneity condition is
+on the affine cone, not on its projectivization [@GHS13, Definition 6.4].
+:::
+
+For $n\geq3$, Koecher's principle supplies holomorphy at the rational
+boundary. In lower dimensions that condition must be imposed separately
+[@GHS13, §6.1]. With trivial character, multiplication of forms gives the
+graded ring
+\[
+M_\bullet(\Gamma)=\bigoplus_{k\geq0}M_k(\Gamma,1),\qquad
+F_L(\Gamma)^{\mathrm{BB}}=\operatorname{Proj}M_\bullet(\Gamma).
+\]
+The degree-zero term contains the constants. A sufficiently divisible power
+of the automorphic line descends to an ample line bundle $\mathcal L$ on the
+compactification; passing to the corresponding Veronese subring gives the
+same Proj. Its degree-$m$ piece is $H^0(F_L(\Gamma)^{\mathrm{BB}},\mathcal
+L^{\otimes m})$. This is the section-ring interpretation of the
+Baily–Borel construction [@BB66, §10].
+
 Its rational boundary components are associated with nonzero totally isotropic rational subspaces. Since the real signature is $(2,n)$, these have dimension at most two:
 
 | Rational isotropic subspace | Boundary component before arithmetic quotient | Stratum in the compactification |
