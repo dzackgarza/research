@@ -1,5 +1,23 @@
 # K3 Automorphisms {#sec-k3-automorphisms}
 
+## Finite groups
+
+An automorphism of a complex K3 surface is **symplectic** if it fixes
+the line $H^{2,0}(X)$ pointwise. It is **nonsymplectic** if its action on
+that line is nontrivial. It is *purely nonsymplectic* if the scalar has
+the same order as the automorphism.
+
+::: {.proposition #prop:k3-finite-automorphism-bounds title="Bounds for finite automorphism groups of complex K3 surfaces"}
+
+Let $G$ be a finite group acting faithfully on a complex K3 surface.
+If every element acts symplectically, then $|G|\leq960$; equality is
+attained by the Mathieu group $M_{20}$ [@Muk88].
+Without the symplectic condition, $|G|\leq3840$, and the maximal group
+contains $M_{20}$ with index $4$ [@Kon99].
+These are bounds on **finite subgroups**; $\Aut(X)$ itself can be
+infinite.
+:::
+
 ## Gluing and the automorphism group
 
 ::: {.notation #not:k3-automorphism-data title="Lattice data of a K3 surface"}
