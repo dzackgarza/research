@@ -58,29 +58,38 @@ The remaining row is $n = 10$, the lattice $(20,2,1)$.
 
 ::: {.conjecture title="Period domains and KSBA compactifications for $M_{H,2,k}$"}
 
-These lattices can be used to construct period domains of index 2 Halphen pencils, yielding moduli spaces $M_{H,2,k}$ of index 2 Halphen surfaces with an $I_{2k}$ fiber, with the matching arising from a geometric comparison to Coble surfaces.
+These lattices can be used to construct period domains of index 2 Halphen pencils, yielding moduli spaces $M_{H,2,k}$ of index 2 Halphen surfaces with an $I_k$ fiber, whose K3 covers have an $I_{2k}$ fiber, with the matching arising from a geometric comparison to Coble surfaces.
 The normalizations of the stable pair compactifications $\overline{M_{H,2,k}}^R$ are then isomorphic to semitoroidal compactifications of the corresponding period domains, for a suitably canonical divisor $R$.
 :::
 
-::: {.conjecture title="The multiple fiber as the recognizable divisor"}
+::: {.question title="A divisor constructed from the multiple fiber"}
 
 A Halphen surface of index $m\geq 2$ has a unique multiple fiber of multiplicity $m$.
-That fiber can be used to construct a recognizable divisor $R$.
+Can that fiber, together with a suitable canonical horizontal divisor,
+be used to construct a recognizable polarizing divisor $R$?
 :::
+
+The multiple fiber alone cannot give a KSBA polarization on the Halphen
+surface: its numerical class and $K_Y$ are proportional to the fiber
+class, whose square is zero. Thus $K_Y+\epsilon R$ is not big when $R$
+is supported only on fibers. The additional horizontal data are essential.
 
 ## The program for $S = \HalphenInvariants$
 
-Let $S \definedas \HalphenInvariants$.
+Let $S \definedas \HalphenInvariants$ and let
+$T=S^{\perp\lkt}$ for a chosen primitive embedding.
 
 1. Construct the period domain $F_S$.
 
 2. Construct $\overline{F_S}^{\bb}$.
 
-3. Study $\Orth(S)$-orbits of isotropic vectors $e_i$ in $S$.
+3. Specify the arithmetic group $\Gamma\leq\Orth(T)$ for the chosen
+   moduli problem, and study its orbits of primitive isotropic lines and
+   planes in $T$.
 
 4. Determine the cusp diagram of $\partial\overline{F_S}^{\bb}$ lattice-theoretically.
 
-5. Compute $e_i^\perp/\generators{e_i}$ and the Coxeter diagrams at the corresponding 0-cusps.
+5. Compute $e_i^{\perp T}/\generators{e_i}$ and the Coxeter diagrams at the corresponding 0-cusps.
 
 6. Find a recognizable divisor $R$ and construct $\overline{F_S}^R$.
 

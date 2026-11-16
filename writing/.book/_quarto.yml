@@ -184,6 +184,7 @@ book:
         - coble/cusp-correspondence/enriques-to-coble-cusp-correspondence.md
     - part: Stable limits
       chapters:
+        - toric-geometry.md
         - integral-affine-geometry.md
         - coble/stable-limits/geometric.md
         - coble/stable-limits/abcde-surfaces.md

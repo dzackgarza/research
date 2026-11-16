@@ -2,14 +2,14 @@
 unit: research-program
 status: conjectural
 tags:
-  - coble
-  - moduli
-  - ksba
-  - recognizable-divisor
+- coble
+- moduli
+- ksba
+- recognizable-divisor
 notes: |-
   Provenance: `/home/dzack/gitclones/diss/100-corpus/100-data/dzg-research/research-statements/canonical/my_research_statement/ResearchStatement.md`, section "Future Work / Coble surfaces with $1\leq n\leq 10$ boundary components".
   Not in the dissertation.
-  The table of the ten lattices $M = (10+n,\, 12-n,\, \delta)$ and their orthogonal complements $N = M^\perp$ is **already recorded** in [[coble-lattice-table|the Coble lattice table]], sourced from Cossec-Dolgachev-Liedtke, *Enriques Surfaces I*, Table 5.1, p. 553. This note records only the research program built on it, which is not recorded elsewhere.
+  The table of the lattices $M = (10+n,\, 12-n,\, \delta)$ and their orthogonal complements $N = M^\perp$ is **already recorded** in [[coble-lattice-table|the Coble lattice table]], sourced from Cossec-Dolgachev-Liedtke, *Enriques Surfaces I*, Table 5.1, p. 553. This note records only the research program built on it, which is not recorded elsewhere.
 ---
 
 # The research program for $F_{\Co,n}$, $2 \leq n \leq 10$ {#sec-coble-families-research-program}
@@ -47,21 +47,24 @@ For $n = 1$, the image under the period map is an open subset of $\mcm_{\mathrm{
 
 ::: {.conjecture title="Boundary incidence diagrams are computable for all n"}
 
-The Baily-Borel boundaries of all ten families can be described by the techniques used for $n=1$.
+The Baily-Borel boundaries of all families in @tbl-coble-lattices can be described by the techniques used for $n=1$. The two rows with $n=8$ have different coparity and must be treated separately.
 The boundary incidence diagrams are computable by the algorithms of [@AE22] for nonsymplectic involutions.
 :::
 
 ::: {.conjecture title="Recognizability of the ramification locus"}
 
-The ramification locus of the K3 cover of $S$ is described in @prop:nikulin-fixed-locus. The conjecture has two parts:
-
-1. the corresponding involutions are nonsymplectic;
-
-2. a component of the ramification locus is a **recognizable divisor** in the sense of Alexeev's compact moduli of K3 surfaces and AEH21.
-
-Under part 2, AEH21 Thm.
-3.24 identifies the KSBA compactification with a semitoroidal compactification for a specific collection of semifans.
+A suitable divisor constructed from the ramification locus of
+@prop:nikulin-fixed-locus is recognizable in the sense of [@AE23].
+After verifying the positivity and moduli hypotheses of [@AEH21, Theorem
+3.24], this gives a semitoroidal description of the corresponding KSBA
+compactification.
 :::
+
+The covering involution is already nonsymplectic: at a smooth point of a
+ramification curve it acts on tangent coordinates by $(u,v)\mapsto(u,-v)$,
+so it sends the nonvanishing two-form $du\wedge dv$ to its negative.
+Recognizability and the choice of a polarizing divisor remain the
+additional questions.
 
 ::: {.conjecture title="The semifans refine or coarsen the Coxeter fans"}
 

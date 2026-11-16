@@ -17,7 +17,7 @@ The minimal smooth projective surfaces fall into the following classes
 
 | Kodaira dimension | Minimal models |
 | --- | --- |
-| $-\infty$ | $\PP^2$ and ruled surfaces $\PP_C(E)$ |
+| $-\infty$ | $\PP^2$ and minimal ruled surfaces $\PP_C(E)$, excluding $\mathbb F_1$ |
 | $0$ | Abelian, K3, Enriques, and bielliptic surfaces |
 | $1$ | Properly elliptic surfaces |
 | $2$ | Surfaces of general type |
@@ -122,6 +122,10 @@ $$
 \end{matrix}
 $$
 and the second Betti number is $b_2(X)=1+20+1=22$.
+In particular $\chi(\OO_X)=1-0+1=2$ and
+$e(X)=1+22+1=24$. Noether's formula gives
+$c_2(X)=12\chi(\OO_X)-K_X^2=24$.
+The intersection form has signature $3-19=-16$.
 :::
 
 ::: {.example #ex:k3-projective-models title="Projective models of K3 surfaces"}
@@ -134,6 +138,12 @@ projective space plus one. The standard cohomology sequence for a
 complete intersection gives $H^1(X,\OO_X)=0$, so each is a K3 surface
 [@Huy16, §1.2]. Their hyperplane classes have squares $4$, $6$ and
 $8$, respectively.
+A quartic equation in four variables has
+$h^0(\PP^3,\OO(4))=\binom{7}{4}=35$ coefficients. Projectivizing and
+dividing by the $15$-dimensional group $\PGL_4$ gives the expected
+$34-15=19$ moduli dimensions for smooth quartics. This count agrees
+with the degree-$4$ polarized K3 period domain, but describes the
+quartic model locus rather than every degree-$4$ polarized model.
 
 If $B\subset\PP^2$ is a smooth sextic, its double cover $X\to\PP^2$
 is also K3. Indeed $\pi_*\OO_X=\OO_{\PP^2}\oplus\OO_{\PP^2}(-3)$,
@@ -153,6 +163,18 @@ $\PP^{\,1+L^2/2}$. In degree $4$ the map can be hyperelliptic,
 of degree two onto a quadric, or birational onto a quartic surface;
 the degree alone does not choose the model
 [@Huy16, §2.1; @Sai74].
+:::
+
+::: {.proposition #prop:k3-elliptic-isotropic title="Isotropic classes and genus-one fibrations"}
+A projective K3 surface $X$ admits a genus-one fibration
+$X\to\PP^1$ if and only if $\NS(X)$ contains a nonzero class $v$
+with $v^2=0$. In the forward direction the fibre gives such a class.
+Conversely, Riemann--Roch makes one of $v,-v$ effective. Reflections
+in effective $(-2)$-classes move an effective primitive isotropic class
+to the nef cone; its complete linear system is a basepoint-free
+genus-one pencil [@Huy16, Ch. 11].
+The statement concerns a genus-one fibration. A section, which makes
+it Jacobian, is additional data.
 :::
 
 ## Enriques surfaces
@@ -221,6 +243,17 @@ c_1\colon\Pic(Z) \iso H^2(Z; \ZZ) \cong \ZZ^{10}\oplus \ZZ/2\ZZ
 $$
 [@BHPV04, Prop. VIII.15.2].
 The intersection form on the torsion-free quotient of $H^2(Z;\ZZ)$ is isometric to the Enriques lattice $E_{10}=U\oplus E_8\iso\latII_{1,9}$, of signature $(1,9)$, of @def:enriques-lattice [@BHPV04, Lemma VIII.15.1(iii)].
+:::
+
+::: {.remark #rmk:enriques-even-lattice-not-spin title="An even free intersection lattice does not make an Enriques surface spin"}
+The free lattice $H^2(Z,\ZZ)/\mathrm{tors}\cong U\oplus E_8$ is
+even, but $Z$ is not spin. For a complex surface,
+$w_2(TZ)$ is the reduction of $c_1(TZ)=-c_1(K_Z)$ modulo $2$.
+The canonical class is the nonzero element of the $\ZZ/2$ summand of
+$H^2(Z,\ZZ)$ in @prop:enriques-cohomology, and its reduction remains
+nonzero. Thus $w_2(TZ)\neq0$.
+The signature is $1-9=-8$, so Rokhlin's divisibility-by-$16$
+theorem for closed smooth **spin** four-manifolds does not apply.
 :::
 
 ::: {.proposition #prop:enriques-cover-eigenlattices title="Eigenlattices of an Enriques involution"}
