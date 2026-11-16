@@ -605,8 +605,12 @@ interior, boundary, per_mirror = 0, 0, {}
 for key, links in adjacency.items():
     for neighbour_key, mirror in links:
         if neighbour_key in chambers_in_p:
-            assert any(other == key for other, _mirror in adjacency[neighbour_key]), (
-                "crossing a mirror twice does not return the chamber", key, neighbour_key)
+            # the reverse link is checked as a pair and not by the chamber alone: the claim is about a
+            # mirror, so a link back into this chamber across another of the neighbour's walls does
+            # not test it.
+            assert (key, mirror) in adjacency[neighbour_key], (
+                "crossing a mirror twice does not return the chamber across that mirror",
+                key, neighbour_key, mirror)
             interior += 1
             continue
         assert mirror in mirrors, (
