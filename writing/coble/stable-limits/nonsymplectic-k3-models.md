@@ -34,6 +34,15 @@ a component $C_g$ of genus $g\ge2$. Write
 $C_{g,i}=C_g|_{V_i}$ on each normalized component. The stable model
 contracts by this nef divisor after the modifications making it nef.
 
+In the doubled integral affine sphere $B=P\cup P^{\mathrm{op}}$ of the
+construction, the component $V_i$ corresponds to a lattice point $i$.
+The contraction has three cases: a point in the interior of either
+hemisphere gives a component contracted to a point; an equatorial point
+that is not a vertex of $P$ gives a component contracted to $\PP^1$;
+and an equatorial vertex gives a birational map $V_i\to\bar V_i$.
+The numerical dimension of $C_{g,i}$ on these components is respectively
+$0$, $1$, and $2$ [@AE22, Lemma 9.7].
+
 ::: {.definition #def:pumpkin-model title="Pumpkin type"}
 A stable surface is of *pumpkin type* if its normalized components
 $\bar V_i$ have two boundary sides
@@ -47,6 +56,10 @@ A *smashed pumpkin* is the stable surface obtained from a pumpkin by
 contracting a short side, thereby identifying the two poles
 [@AE22, Definition 9.8].
 :::
+
+![Pumpkin and smashed-pumpkin surfaces in the deposited source.](/rendered/fig-pumpkin.png){#fig-k3-pumpkin-models}
+
+![Arrows in the deposited picture indicate the contraction that identifies the poles in the smashed-pumpkin model.](/rendered/fig-pumpkin2.png){#fig-k3-smashed-pumpkin-contraction}
 
 Here short and long sides are measured on the K3 component by
 $C_{g,i}\cdot D=1$ and $2$, respectively. This differs from the
@@ -78,7 +91,8 @@ In the maximally degenerate odd model, the equatorial cycle has
 $2\bar k$ edges. Its components are $2\bar k$ copies of
 $(\PP^2,\text{line}+\text{conic})$. Singly circled odd vertices record
 the lines and doubly circled even vertices the conics. The maximally
-degenerate smashed model has $2\bar k-2$ components: $2\bar k-4$
+degenerate smashed model, for $\bar k\ge2$, has $2\bar k-2$
+components: $2\bar k-4$
 ordinary line–conic pairs and two whose conic side is folded onto
 itself. For nongeneric monodromy $\lambda$, an equatorial vertex in
 $V_2(\lambda)$ smooths the corresponding side; an off-equator vertex
