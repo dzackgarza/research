@@ -85,7 +85,9 @@ The library calls
 `sage_extensions` main, not the checkout inside the image, which is far behind it; the run puts the
 clone's `src` first on `PYTHONPATH`, and the record reads the commit of the checkout it loaded out of
 that checkout's `HEAD` and prints it with the module path, so no pin is typed into this file and the
-first line of a block cannot drift from the code that ran.  `Involutions.I_En` and `Sterk` give
+first line of a block names the code that ran.  A checkout whose commit cannot be read stops the run:
+a block is evidence about a pinned library, so a library that cannot be pinned must produce no block.
+`Involutions.I_En` and `Sterk` give
 `Gamma_{En,2}` and its five cusps,
 `isotropic_vector_reduction_image()` gives `K_j`, `cusp_chamber()` (sage-extensions #387 and #312,
 closed) gives `P_j`, and `fundamental_chamber()` of the hyperbolic lattice on `K_j` gives `C_j`.
@@ -120,19 +122,21 @@ from sage.version import version as SAGE_VERSION
 sys.stdout.reconfigure(line_buffering=True)
 
 def loaded_pin():
-    """The checkout `sage_extensions` was imported from, and its commit.
+    """The checkout `sage_extensions` was imported from, and the commit of its `HEAD`.
 
-    Read out of the checkout rather than typed here: a pin written into the file is a claim about the
-    run, and this record has already been burnt once by a library that moved under a stated pin.  The
-    commit is read from `HEAD` and, for a symbolic ref, from the ref itself or from `packed-refs`.
+    Read out of the checkout rather than typed here: the first line of a block names the code that ran,
+    and it is read from the tree that ran.  A checkout whose commit cannot be read stops the run.  A
+    block is evidence about a pinned library, so a library that cannot be pinned must produce no block
+    rather than a block with a note in it.
     """
     source = pathlib.Path(sage_extensions.__file__).resolve().parents[2]
     git = source / ".git"
     if not git.is_dir():
-        return "%s (not a checkout)" % source
+        raise SystemExit("PROVENANCE: sage_extensions was imported from %s, which is not a git "
+                         "checkout; put a clone of its main branch first on PYTHONPATH" % source)
     head = (git / "HEAD").read_text().strip()
     if not head.startswith("ref: "):
-        return "%s (commit %s)" % (source, head)
+        return "%s (commit %s)" % (source, head)  # a detached HEAD names its commit directly
     reference = head.split(" ", 1)[1]
     loose = git / reference
     if loose.is_file():
@@ -142,7 +146,8 @@ def loaded_pin():
         for line in packed.read_text().splitlines():
             if line.endswith(" " + reference):
                 return "%s (commit %s)" % (source, line.split()[0])
-    return "%s (commit of %s not found)" % (source, reference)
+    raise SystemExit("PROVENANCE: %s has no commit for %s, so the library it loaded cannot be pinned"
+                     % (source, reference))
 # Sterk's printed wall counts, his published ideal-vertex counts, and CoxIter's f-vectors of the same
 # five folded diagrams (`sec-coxiter-results-for-cusp-lattices`).
 PUBLISHED = {1: (12, 9, 23), 2: (10, 2, 10), 3: (12, 4, 33), 4: (11, 5, 26), 5: (14, 13, 115)}
