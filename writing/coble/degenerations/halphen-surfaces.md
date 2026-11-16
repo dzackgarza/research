@@ -1,5 +1,8 @@
 # Halphen surfaces {#sec-halphen-surfaces}
 
+Here an elliptic fibration means a genus-one fibration; a section is not
+part of the data. A fibration with a section is called Jacobian.
+
 ::: {.proposition #prop:halphen-surface-fibres title="Fibres of Halphen surfaces"}
 
 A relatively minimal rational elliptic surface $V$ is a **Halphen surface of index $n$** if the class of its fibre is $-nK_V$.
