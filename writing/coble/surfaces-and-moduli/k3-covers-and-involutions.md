@@ -92,6 +92,19 @@ The double-cover diagram is related to the projective models of
 period construction [@Hor78]. Its double-plane antecedent is Enriques'
 construction [@Enr07]; [@CDL25] gives the broader historical account.
 
+Horikawa starts with a birational double-cover model of the **Enriques
+surface** over $\PP^1\times\PP^1$. Its branch divisor consists of two
+fibres $\Gamma_1,\Gamma_2$ of one projection and a bidegree-$(4,4)$
+curve $B_E^0$ with prescribed singularities and tangencies on those
+fibres. Thus the total branch class is $(4,6)$ in Horikawa's bidegree
+convention. To construct the **K3 cover**, he
+pulls $B_E^0$ back under the degree-two map of the base ramified at
+$\Gamma_1,\Gamma_2$ and applies two elementary transformations. The
+resulting birational K3 model is a double cover of
+$\PP^1\times\PP^1$ branched in a bidegree-$(4,4)$ curve. The two
+branch classes describe different double covers; the $(4,6)$ class
+does not equal $\OO(4,4)$ [@Hor77, pp. 54--55].
+
 Let $(Z,[L])$ be a degree-two numerically polarized Enriques surface in
 this construction, and work with its normal projective models. The
 linear system $|L^{\otimes2}|$ determines the quotient surface $W$.
