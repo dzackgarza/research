@@ -229,6 +229,10 @@ def chamber_rays(chamber, gram):
             ray = -ray
         assert form(gram, ray, chamber[index]) < 0, "a wall of the chamber is not a facet"
         rays.append(ray)
+    cone = Cone([list(ray) for ray in rays])
+    assert cone.is_pointed(), ("the cone of a chamber contains a line", key_mirrors(chamber))
+    assert int(cone.lineality()) == 0, ("the cone of a chamber has a lineality space",
+                                        int(cone.lineality()))
     return rays
 
 
@@ -239,9 +243,18 @@ def facet_rays(walls, gram):
     is the polar of the cone the walls generate and Sage's cone arithmetic supplies its extreme rays.
     That is what these diagrams need: they are not simple --- the twelve walls of cusp 3 satisfy two
     linear relations --- so no `dim` many of the walls cut out a chamber vertex on their own.
+
+    The cone is also asserted here to be pointed, of trivial lineality and of full dimension, which is
+    not decoration: the extreme rays are the vertices of `P_j` only for a pointed cone, and a strictly
+    interior point of the intersection of the half-spaces exists only if it is full-dimensional.
     """
+    dimension = len(walls[0])
     polar = Cone([[-int(c) for c in w] for w in walls])
     cone = polar.dual()
+    assert cone.is_pointed(), ("the cone of P_j contains a line, so P_j is not a polytope", walls)
+    assert int(cone.lineality()) == 0, ("the cone of P_j has a lineality space", int(cone.lineality()))
+    assert int(cone.dim()) == dimension, ("the half-spaces of P_j do not fill the space: the cone has "
+                                          "dimension %d and not %d" % (int(cone.dim()), dimension))
     inverse = matrix(QQ, gram).inverse()
     found = {}
     for ray in cone.rays():
@@ -278,18 +291,43 @@ def interior_point(polytope, facets, gram):
         "rays are not the extreme rays of the polyhedron the walls cut out")
 
 
-def inside(chamber, facets, gram):
-    """The vertex test: every extreme ray of the chamber satisfies every wall inequality of P."""
-    rays = chamber_rays(chamber, gram)
-    return all(form(gram, ray, wall) <= 0 for ray in rays for wall in facets), rays
+def membership(chamber, facets, gram):
+    """Both membership tests, from one inverse of the chamber's wall matrix.
 
+    The vertex test asks whether every extreme ray of the chamber satisfies every wall inequality of
+    `P`; the polar test asks whether every wall of `P` is a nonnegative combination of the chamber's
+    walls.  They are written as one function because both are read off the same matrix: the inverse of
+    `forms = W G` gives the rays, and `W^-1 = G (W G)^-1` gives the polar coordinates, so the walk
+    inverts one 10 x 10 rational matrix per chamber instead of two.
 
-def inside_by_polar(chamber, facets, gram):
-    """The polar test: each wall of P is a nonnegative combination of the chamber's walls."""
+    The chamber's cone --- the intersection of its own half-spaces --- is asserted pointed with trivial
+    lineality here, for every chamber the walk visits: the rays of a pointed cone are its extreme rays,
+    and those are what the vertex test tests.
+    """
     walls = matrix(ZZ, [list(w) for w in chamber])
-    coordinates = (walls.change_ring(QQ).inverse().transpose()
+    gram_matrix = matrix(ZZ, gram)
+    forms = walls * gram_matrix
+    assert forms.rank() == forms.nrows(), "the chamber's walls are dependent"
+    inverse = forms.change_ring(QQ).inverse()
+    rays = []
+    for index in range(walls.nrows()):
+        column = vector(QQ, list(inverse.column(index)))
+        scale = lcm([c.denominator() for c in column])
+        ray = red(vector(ZZ, [int(c * scale) for c in column]))
+        if form(gram, ray, chamber[index]) > 0:
+            ray = -ray
+        assert form(gram, ray, chamber[index]) < 0, "a wall of the chamber is not a facet"
+        rays.append(ray)
+    cone = Cone([list(ray) for ray in rays])
+    assert cone.is_pointed(), ("the cone of a chamber contains a line", key_mirrors(chamber))
+    assert int(cone.lineality()) == 0, ("the cone of a chamber has a lineality space",
+                                        int(cone.lineality()))
+    vertex_ok = all(form(gram, ray, wall) <= 0 for ray in rays for wall in facets)
+    wall_inverse = gram_matrix * inverse
+    coordinates = (wall_inverse.transpose()
                    * matrix(QQ, [list(p) for p in facets]).transpose())
-    return all(entry >= 0 for entry in coordinates.list())
+    polar_ok = all(entry >= 0 for entry in coordinates.list())
+    return vertex_ok, polar_ok, rays
 
 
 def f_vector(rays, facets, gram):
@@ -453,6 +491,10 @@ print("  bonds: %s;  the diagram is Coxeter's, so @def:covolume applies"
       % sorted(bonds.items(), key=lambda item: str(item[0])))
 polytope = facet_rays(subgroup_walls, gram)
 assert polytope, "the walls bound no polytope: their cone has no extreme ray"
+print("  the cone of P_j: dimension %d, pointed, of trivial lineality --- the assertions of "
+      "`facet_rays`; so its extreme rays are the vertices of P_j and its interior is nonempty"
+      % len(subgroup_walls[0]))
+
 assert all(square >= 0 for square, _ray in polytope), (
     "an extreme ray of P_j is space-like, so P_j does not lie in the hyperbolic space")
 ideal = [ray for square, ray in polytope if square == 0]
@@ -489,9 +531,9 @@ while True:
             break
     else:
         raise AssertionError("every violated wall leads back to a visited chamber")
-seed_ok, seed_rays = inside(current, subgroup_walls, gram)
+seed_ok, seed_polar_ok, seed_rays = membership(current, subgroup_walls, gram)
 assert seed_ok, "the chamber containing the point of P_j is not inside P_j"
-assert inside_by_polar(current, subgroup_walls, gram)
+assert seed_polar_ok, "the two membership tests disagree at the seed chamber"
 stamp("the chamber containing an interior point of P_j reached in %d wall crossings" % flips)
 chambers_in_p = {}
 adjacency = {}
@@ -500,8 +542,7 @@ seen = {key_mirrors(current)}
 while stack:
     chamber = stack.pop()
     enqueued += 1
-    vertex_ok, rays = inside(chamber, subgroup_walls, gram)
-    polar_ok = inside_by_polar(chamber, subgroup_walls, gram)
+    vertex_ok, polar_ok, rays = membership(chamber, subgroup_walls, gram)
     assert vertex_ok == polar_ok, ("the two membership tests disagree", key_mirrors(chamber))
     if not polar_ok:
         refused += 1
