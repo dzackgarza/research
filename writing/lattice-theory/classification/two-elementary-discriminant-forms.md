@@ -20,6 +20,19 @@ $$
 Both have bilinear discriminant pairing $\bar\beta(e_1,e_2)=\tfrac12+\bZ$ and $\bar\beta(e_i,e_i)=0$. The form $u$ is the quadratic discriminant form of $U(2)$ and $v$ that of the negative-definite root lattice $D_4$ [@Nik80, §1.8].
 :::
 
+::: {.example #ex:A1-coparity title="The coparity of $A_1$"}
+In the negative-definite convention let $A_1=\ZZ\alpha$ with
+$\alpha^2=-2$. Its dual is $A_1^\#=\tfrac12\ZZ\alpha$, so the
+nonzero discriminant class is $[\alpha/2]$ and
+$$
+q_{A_1}([\alpha/2])=(\alpha/2)^2=-\tfrac12+2\ZZ.
+$$
+Thus $A_{A_1,q}\cong q$ in the notation of
+@def:twoelementary-finite-quadratic-generators. Its quadratic
+values are not contained in $\ZZ/2\ZZ$, and its coparity is
+$\delta(A_1)=1$.
+:::
+
 
 ::: {.theorem #thm:2elementary-decomposition title="Presentation of the $2$-elementary quadratic-form monoid"}
 Let $W=\tfrac12\bZ/2\bZ$, and let $\mathsf Q_{2,W}$ be the commutative monoid of isometry classes of nondegenerate $W$-valued quadratic forms on finite $2$-elementary $\bZ$-modules, with orthogonal sum as its operation. Let
