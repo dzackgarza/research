@@ -1,5 +1,39 @@
 # K3 periods and monodromy {#sec-k3-periods-monodromy}
 
+## Quasi-polarizations and ADE models
+
+The local deformation space of a smooth K3 surface is smooth of dimension
+$20$; this local assertion does not provide a separated coarse moduli
+space of all unpolarized projective K3 surfaces. For a primitive
+hyperbolic polarization lattice $M\hookrightarrow\lkt$ of rank $r$,
+fix the positive chamber and quasi-polarization data of
+[@AE23, Definition 2.6]. The marked quasi-polarized moduli space
+$\mathcal M_M$ is a possibly non-Hausdorff complex manifold of dimension
+$20-r$. Its period map to $\Omega_{M^\perp}$ has fiber over $x$ a
+torsor under
+$$
+W_x=\langle s_\delta:\delta\in M^\perp\cap x^\perp,
+\ \delta^2=-2\rangle
+$$
+[@AE23, Theorem 2.8].
+
+Let $\Gamma=\{\gamma\in O(\lkt):\gamma|_M=\mathrm{id}\}$.
+The stack of unmarked quasi-polarized K3 surfaces is
+$[\mathcal M_M/\Gamma]$. Contracting the curves orthogonal to the
+quasi-polarization gives its separated ADE moduli stack, whose coarse
+space is $\Omega_{M^\perp}/\Gamma$. The ADE stack is not the quotient
+stack $[\Omega_{M^\perp}/\Gamma]$: its stabilizer at $x$ is
+$\Gamma_x/W_x$, not $\Gamma_x$
+[@AE23, Corollary 2.9, Theorem 2.11 and Remark 2.12].
+
+For $M=\ZZ h$ with $h^2=2d$, the changes of marking are the stabilizer
+of $h$ in $O(\lkt)$, and the primitive period lattice is
+$h^\perp\cong U^2\oplus E_8^2\oplus\langle-2d\rangle$.
+This gives the degree-$2d$ quasi-polarized and ADE coarse period space
+of dimension $19$.
+
+## Families and their period maps
+
 ::: {.definition #def:k3-moduli-functors title="K3 families, markings, periods, and monodromy"}
 
 Let

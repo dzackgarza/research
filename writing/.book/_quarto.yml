@@ -186,7 +186,9 @@ book:
       chapters:
         - integral-affine-geometry.md
         - coble/stable-limits/geometric.md
+        - coble/stable-limits/abcde-surfaces.md
         - coble/stable-limits/ias.md
+        - coble/stable-limits/nonsymplectic-k3-models.md
         - coble/stable-limits/ksba.md
     - part: 'Results for $F_{\mathrm{En},2}$'
       chapters:

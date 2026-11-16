@@ -8,6 +8,68 @@ A **numerical polarization** $[h]$ on an algebraic surface $Z$ --- for instance 
 The **degree** of $[h]$ is its self-intersection $h^2$, computed in $\Num(Z)$.
 :::
 
+An ample numerical polarization differs from a *numerical
+quasi-polarization*, for which the representative is big and nef.
+The latter permits curves orthogonal to the class; contracting them
+gives the corresponding ample ADE model. On a smooth complex Enriques
+surface, the two line bundles with a given numerical class differ by
+$K_Z$. Numerical polarization forgets this choice. For comparison,
+on an abelian variety $A$ an ample line bundle $L$ induces
+$$
+\lambda_L\colon A\longrightarrow A^\vee,\qquad
+x\longmapsto t_x^*L\otimes L^{-1},
+$$
+which depends on its class in $\operatorname{NS}(A)$ rather than on
+the representative line bundle.
+
+Let $F^{\mathrm{pol}}_{\En,2}$ and $F^{\mathrm{num}}_{\En,2}$ denote
+the moduli spaces of smooth Enriques surfaces with an ample line bundle
+of square $2$ and with its numerical class, respectively. Forgetting
+the representative gives the étale double cover
+$$
+F^{\mathrm{pol}}_{\En,2}\longrightarrow F^{\mathrm{num}}_{\En,2},
+\qquad (Z,L)\longmapsto(Z,[L]),
+$$
+whose two lifts are $L$ and $L\otimes\omega_Z$
+[@GH16, Proposition 4.1; @Knu20, introduction]. The polarized space
+is irreducible: the numerical degree-two component is irreducible,
+and a class of square $2$ cannot be twice an integral class, so
+[@Knu20, Theorem 1.1] applies.
+
+For a normal compactification $\overline F^{\mathrm{num}}_{\En,2}$,
+the polarized compactification is its normalization in the finite
+extension
+$$
+\CC(F^{\mathrm{num}}_{\En,2})
+\subset\CC(F^{\mathrm{pol}}_{\En,2}).
+$$
+On an affine chart $\operatorname{Spec}A$ this means replacing $A$
+by its integral closure in the larger field. These integral closures
+glue and give a finite map extending the double cover. Normalizing
+$A$ in its own fraction field would instead leave the normal base
+unchanged.
+
+## Degree-four K3 models {#sec-degree-four-k3-models}
+
+For an ample line bundle $H$ with $H^2=4$ on a smooth K3 surface,
+the complete linear system has the following forms
+[@Sha81, introduction, pp. 271–272]:
+
+| Case | Linear system and image |
+| --- | --- |
+| Very ample | $X\hookrightarrow\PP^3$ is a quartic surface. |
+| Hyperelliptic | $|H|$ is base-point-free and maps two-to-one onto a smooth quadric or a quadric cone. |
+| Unigonal | $H\sim3E+\Gamma$, with $|E|$ an elliptic pencil and $\Gamma$ a section; after removing the fixed component $\Gamma$, the image is a twisted cubic. |
+
+In the last row $E^2=0$, $E\cdot\Gamma=1$, and $\Gamma^2=-2$, so
+$(3E+\Gamma)^2=4$. For a double cover
+$\pi\colon X\to\PP^1\times\PP^1$ branched in bidegree $(4,4)$,
+$H=\pi^*\OO(1,1)$ has square $4$. The smooth quartic locus is
+open in the degree-four moduli space of dimension $19$, whereas
+the hyperelliptic locus has dimension $18$: its general member is
+polarized by $U(2)$, of rank two, and
+@cor:m-polarized-k3-dimension gives $20-2=18$.
+
 ## The Noether–Lefschetz locus for Enriques surfaces
 
 ::: {.proposition #prop:enriques-cover-two-involutions title="The two involutions on the K3 cover of a degree-$2$ polarized Enriques surface"}

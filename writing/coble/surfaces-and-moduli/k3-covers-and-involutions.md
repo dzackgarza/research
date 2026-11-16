@@ -30,6 +30,24 @@ For a general such $S$, $\Pic(X)$ is a $2$-elementary lattice of rank $10+n$ who
 
 ## Geometric involutions on the double cover
 
+For a smooth complex Enriques surface $Z$, the canonical cover $q\colon X\to Z$ has the
+intrinsic form
+$$
+X=\operatorname{Spec}_Z(\OO_Z\oplus\omega_Z),
+$$
+with multiplication determined by $\omega_Z^{\otimes2}\cong\OO_Z$.
+It is étale. A *marking* of $Z$ is an isometry
+$\phi\colon\operatorname{Num}(Z)\to E_{10}$. Pullback kills the
+canonical torsion class and induces an isometric embedding
+$$
+q^*\colon\operatorname{Num}(Z)(2)\hookrightarrow H^2(X,\ZZ),
+\qquad \operatorname{im}(q^*)=H^2(X,\ZZ)^{\iota^*=1}
+$$
+(@prop:enriques-cohomology, @prop:enriques-cover-eigenlattices).
+Thus the induced K3 lattice polarization is by $E_{10}(2)$; the
+period-domain description must also impose the Enriques open locus
+of @prop:enriques-period-domain.
+
 ::: {.proposition #prop:k3-cover-p1xp1-involutions title="The K3 double cover of $\PP^1\times\PP^1$ and its involutions"}
 
 Let $Y = \PP^1\times\PP^1$ and let $\tau$ be the involution
@@ -54,6 +72,90 @@ Then the following hold [@AEGS25, Sec. 2.1].
 
 5. The $\tau$-invariant polynomials $f$ of bidegree $(4,4)$ are the linear combinations of $13$ monomials. They define a point of an open subset $U\subset\PP^{12}$, and the quotient $U/(D_4 \semidirect (\CC^\times)^2)$ has dimension $10$.
 :::
+
+## The Horikawa parameter space {#sec-horikawa-parameters}
+
+For the smooth branch curves in @prop:k3-cover-p1xp1-involutions, write
+$$
+f=\sum_{\substack{0\leq a,b\leq4\\a+b\equiv0\pmod2}}
+c_{ab}X_0^{4-a}X_1^aY_0^{4-b}Y_1^b.
+$$
+The four coefficients $c_{00},c_{04},c_{40},c_{44}$ are nonzero precisely
+when the branch curve avoids the fixed points of $\tau$. Let
+$U\subset\PP^{12}$ be the open locus where these coefficients are nonzero
+and $B_f$ is smooth. Its universal branch divisor is
+$$
+\mathcal B=V(f)\subset U\times(\PP^1\times\PP^1).
+$$
+This is the smooth Horikawa family of [@BHPV04, Chapter VIII, §15;
+@AEGS25, §2.1].
+
+::: {.proposition #prop:horikawa-monomials-normalizer title="Invariant monomials and coordinate changes"}
+The invariant monomials are those with $(a,b)$ in
+$$
+\bigl(\{0,2,4\}\times\{0,2,4\}\bigr)
+\;\amalg\;
+\bigl(\{1,3\}\times\{1,3\}\bigr).
+$$
+The centralizer of $\tau$ in $\Aut(\PP^1\times\PP^1)$ is
+$$
+G=(\mathbb G_m^2)\rtimes
+\bigl((\ZZ/2\ZZ)^2\rtimes\ZZ/2\ZZ\bigr).
+$$
+The finite factor is the dihedral group of order $8$: its generators
+invert either coordinate and interchange the two factors. The generic
+quotient of $U$ by $G$ has dimension $10$.
+:::
+
+::: {.proof}
+The involution acts on the displayed monomial by $(-1)^{a+b}$, which gives
+the two sets of exponent pairs. A projective transformation of $\PP^1$
+commuting with $x\mapsto-x$ preserves its fixed set $\{0,\infty\}$,
+so it is $x\mapsto ax$ or $x\mapsto a/x$. Applying this to each factor,
+and adjoining their interchange, gives $G$. A general branch curve has
+finite stabilizer, so the quotient dimension is $12-2=10$, as in
+[@AEGS25, §2.1].
+:::
+
+::: {.proposition #prop:horikawa-pair-volumes title="The branch, K3, and Enriques pairs"}
+Let $\pi\colon X\to Y=\PP^1\times\PP^1$ be a smooth member of this
+family, let $q\colon X\to Z$ be its Enriques quotient, and let $R$ be the
+ramification divisor of $\pi$. Put $R_Z=q(R)$ with its reduced structure.
+For $0<\epsilon\ll1$,
+$$
+\begin{aligned}
+K_X+\epsilon R
+ &=\pi^*\left(K_Y+\frac{1+\epsilon}{2}B\right)
+ =q^*(K_Z+\epsilon R_Z),\\
+\left(K_Y+\frac{1+\epsilon}{2}B\right)^2&=8\epsilon^2,\\
+(K_X+\epsilon R)^2&=16\epsilon^2,\\
+(K_Z+\epsilon R_Z)^2&=8\epsilon^2.
+\end{aligned}
+$$
+:::
+
+::: {.proof}
+The double-cover formula gives $K_X=\pi^*(K_Y+B/2)$ and
+$\pi^*B=2R$. The map $q$ is étale and $q^*R_Z=R$
+[@AEGS25, §2.1], so $K_X=q^*K_Z$ and the second covering equality
+follows. On $Y$, $K_Y=(-2,-2)$ and $B=(4,4)$; hence
+$K_Y+(1+\epsilon)B/2=(2\epsilon,2\epsilon)$ has square $8\epsilon^2$.
+Pullback multiplies intersections by the degree of the cover, which
+gives the remaining equalities.
+:::
+
+The branch family defines a morphism from $U$ to the stack of stable
+surface pairs with coefficient $(1+\epsilon)/2$ and volume
+$8\epsilon^2$. The K3 and Enriques families define the corresponding
+maps with coefficients $\epsilon$ and volumes $16\epsilon^2$ and
+$8\epsilon^2$. For families of double covers these maps are taken on
+the parameter stack where the square-root line bundle is part of the
+data; the universal branch equation over projective coefficient space
+alone does not choose that square root. Taking the closure of each
+image in the coarse KSBA moduli space, then normalizing, gives the
+branch, K3, and Enriques compactifications. The finite-cover comparison
+is developed in @sec-abcde-surfaces and the classifying map in
+@prop:enriques-involution-extends.
 
 ## Induced lattice involutions on $H^2$
 
