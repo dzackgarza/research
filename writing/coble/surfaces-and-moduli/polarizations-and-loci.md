@@ -105,8 +105,7 @@ The surface $X$ and both involutions are determined by the pair $(Z,[\mcl_Z])$ [
 
 ::: {.definition #def:nl-locus-enriques title="Noether–Lefschetz locus \\mathrm{NL}_{S_{\\mathrm{En}}}"}
 
-The moduli space $\fentwo$ of degree-$2$ numerically polarized Enriques surfaces embeds into the K3 moduli space $\fttz$ via a canonical map $j$.
-Its image is the **Noether–Lefschetz locus** $\mathrm{NL}_{S_{\mathrm{En}}}$ defined by the primitive embedding of the **invariant** (algebraic) lattice of $\ien$,
+The moduli space $\fentwo$ of degree-$2$ numerically polarized Enriques surfaces maps to the K3 moduli space $\fttz$ via the canonical morphism $j$ of @lem:fen2_normalization. Its map to the scheme-theoretic image is the normalization; an embedding is not asserted. The image lies in the **Noether–Lefschetz locus** $\mathrm{NL}_{S_{\mathrm{En}}}$ defined by the primitive embedding of the **invariant** (algebraic) lattice of $\ien$,
 $$
 \sen = E_{10}(2) = U(2)\oplus E_8(2)
 ,
