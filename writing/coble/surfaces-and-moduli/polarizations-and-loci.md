@@ -36,6 +36,8 @@ is irreducible: the numerical degree-two component is irreducible,
 and a class of square $2$ cannot be twice an integral class, so
 [@Knu20, Theorem 1.1] applies.
 
+The stabilizer of a polarized pair $(Z,L)$ is finite. For sufficiently large $m$, $L^m$ embeds $Z$ in projective space, so $\Aut(Z,L)$ is an algebraic group of finite type. Its tangent space is $H^0(Z,T_Z)=0$: a vector field would lift to the étale K3 cover, where contraction with a nonzero holomorphic two-form identifies it with a holomorphic one-form, and $h^{1,0}=0$. Thus the group is zero-dimensional and finite in characteristic zero. An automorphism preserving the numerical class $[L]$ permutes $L$ and $L\otimes\omega_Z$, so $\Aut(Z,[L])$ is finite as well. This distinguishes both polarized moduli problems from the unpolarized one, whose surfaces can have infinite automorphism groups [@Ste91, §2]. The unpolarized arithmetic period quotient parametrizes isomorphism classes set-theoretically [@AEH24, Thm. 2.9]; a claim that an associated stack is Deligne–Mumford requires a specified stack and its diagonal, not merely a count of automorphisms.
+
 For a normal compactification $\overline F^{\mathrm{num}}_{\En,2}$,
 the polarized compactification is its normalization in the finite
 extension
