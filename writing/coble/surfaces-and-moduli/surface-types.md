@@ -74,6 +74,13 @@ q(X) \definedas h^{0,1}(X) = h^1(X, \OO_X) = 0
 $$
 :::
 
+Terminology for Calabi–Yau varieties varies. In the convention used
+here, *weak Calabi–Yau* means smooth and projective with
+$\omega_X\simeq\mathcal O_X$; the *strong* condition also asks for
+$H^i(X,\mathcal O_X)=0$ for $0<i<\dim X$ and trivial fundamental
+group. In dimension two, an abelian surface meets the weak condition,
+whereas a K3 surface meets the strong one.
+
 ::: {.proposition #prop:k3-lattice title="The K3 lattice"}
 
 Let $X$ be a $K3$ surface.
@@ -166,6 +173,24 @@ $K_X=\pi^*(K_{\PP^2}+\OO_{\PP^2}(3))\sim0$.
 The minimal resolution of the quotient of an abelian surface by
 $a\mapsto-a$ is a Kummer K3 surface [@Huy16, §1.2].
 
+For a quartic $X\subset\PP^3$ containing a line $R$, let $H$ be its
+hyperplane class and $E=H-R$. The plane sections through $R$ give a
+genus-one pencil $|E|$: $H^2=4$, $R^2=-2$, $H\cdot R=1$, hence
+$E^2=0$ and $H\cdot E=3$. The classes
+$L_k=H+(k-1)E$ then have
+$L_k^2=6k-2$. They are primitive since
+$L_k\cdot E=3$ and $L_k\cdot R=3k-2$ are coprime. This supplies
+explicit K3 polarizations of genera
+$3k$ for $k\geq1$; it is a family of degrees, while nonemptiness of
+the polarized K3 moduli space holds for every positive degree
+$2d$ [@Huy16, Chs. 2, 6].
+The same construction gives unbounded primitive polarization degrees
+over a finite field: over $\mathbb F_{17}$, the smooth Fermat quartic
+contains the line $x_0=\zeta x_1,\ x_2=\zeta x_3$ for an element
+$\zeta$ of order eight. Its classes $L_k$ are defined over
+$\mathbb F_{17}$ and have squares $6k-2$. Thus a fixed finite base
+field does not impose a bound on polarization degree.
+
 For an ample line bundle $L$ on a K3 surface, Riemann--Roch and
 Kodaira vanishing give
 $$
@@ -218,6 +243,13 @@ $-2$ is smooth and rational. This does not say that every curve on a
 K3 is smooth. If $C$ is smooth of genus $g\geq1$, the restriction
 sequence and $K_X=0$ give $h^0(X,\mathcal O_X(C))=g+1$
 [@Huy16, §§2.1–2.2].
+
+An unpointed stable curve of genus at least two is a connected,
+complete nodal curve with finite automorphism group. Its nodes have
+completed local ring $\mathbb C[[x,y]]/(xy)$. A smooth proper genus-one
+curve over a base scheme becomes an elliptic curve when supplied with
+a section; the section is its group identity. This distinction also
+applies to the generic fibers of genus-one fibrations on surfaces.
 
 A line bundle is nef when its intersection with every integral curve
 is nonnegative. On a smooth projective surface, a nef line bundle is

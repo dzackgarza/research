@@ -62,6 +62,17 @@ Two pseudofans are *corner blowup equivalent* when finite sequences of corner bl
 
 ## Type III spheres {#sec-type-iii-ias}
 
+For a one-parameter K3 degeneration, Type III is the maximal
+degeneration: the logarithm $N$ of unipotent monodromy on $H^2$ has
+$N^2\ne0$, and the dual complex of a Kulikov model is two-dimensional.
+This is the K3 instance of a *large complex structure limit*. More
+generally, the essential skeleton of a Calabi–Yau degeneration is a
+model-independent invariant; for a minimal dlt model it equals that
+model's skeleton. Maximality means that this skeleton has dimension
+equal to the dimension of the Calabi–Yau fiber [@NX13; @KS06]. A
+polarization records an additional class in the family, and its
+existence alone does not establish maximal degeneration.
+
 For a Type III Kulikov central fiber $X_0=\bigcup_i V_i$, the double locus $D_i\subset V_i$ is an anticanonical cycle, and the dual complex $\Gamma(X_0)$ triangulates $S^2$. The pseudofan of $(V_i,D_i)$ is the star of the vertex representing $V_i$. Gluing these stars across the edges of $\Gamma(X_0)$ gives the integral affine atlas away from its singular vertices [@AE23, Prop. 3.3; @Eng18, §3]. For a double curve of arithmetic genus $g$, the double-curve relation is
 $$
 (D_{ij})^2+(D_{ji})^2=-2+2g.
