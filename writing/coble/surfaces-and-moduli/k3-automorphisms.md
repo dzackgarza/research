@@ -18,6 +18,10 @@ These are bounds on **finite subgroups**; $\Aut(X)$ itself can be
 infinite.
 :::
 
+Nikulin's finite abelian symplectic classification has exactly
+$14$ isomorphism types. For each such group, its induced action on the
+K3 lattice is unique up to isomorphism [@Has12, Thm. 0.1].
+
 ## Gluing and the automorphism group
 
 ::: {.notation #not:k3-automorphism-data title="Lattice data of a K3 surface"}

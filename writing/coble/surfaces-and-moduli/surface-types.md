@@ -2,6 +2,62 @@
 
 All surfaces are over $\CC$.
 
+## Kodaira dimension and minimal surfaces
+
+For a smooth projective surface $S$, put $P_m(S)=h^0(S,mK_S)$.
+Its Kodaira dimension is the largest dimension of the image of a
+pluricanonical rational map $\varphi_{|mK_S|}$, or $-\infty$ if all
+$P_m$ vanish [@Bea96, Definition VII.1]. Equivalently it measures the
+growth of the nonzero plurigenera. The growth must be taken along
+sufficiently divisible degrees: on an Enriques surface $P_m$ is zero
+for odd $m$ and one for even $m$.
+
+The minimal smooth projective surfaces fall into the following classes
+[@Bea96, Chapters III, VII–X].
+
+| Kodaira dimension | Minimal models |
+| --- | --- |
+| $-\infty$ | $\PP^2$ and ruled surfaces $\PP_C(E)$ |
+| $0$ | Abelian, K3, Enriques, and bielliptic surfaces |
+| $1$ | Properly elliptic surfaces |
+| $2$ | Surfaces of general type |
+
+Here a ruled surface is birational to $C\times\PP^1$; the rational
+case has $C\cong\PP^1$. Among ruled surfaces, $\mathbb F_1$ is not
+minimal. A smooth projective surface is ruled if and only if $P_{12}=0$;
+in particular, $p_g=0$ and $q\geq2$ imply ruledness
+[@Bea96, Chapters V–VI]. Classification by Kodaira dimension separates
+birational types; it does not determine an individual surface or its
+moduli. For curves the corresponding distinction is genus: $\mathcal M_g$
+has dimension $3g-3$ for $g\geq2$, whereas the coarse spaces
+$\mathcal M_0$ and $\mathcal M_1$ have dimensions zero and one.
+
+For compact complex surfaces the classification is broader. There are
+nonprojective complex tori and K3 surfaces, non-Kähler Kodaira surfaces
+of Kodaira dimension zero, and class VII surfaces of Kodaira dimension
+$-\infty$ [@BHPV04, Chapter VI]. These analytic surfaces are distinct
+from the smooth projective surfaces considered in the rest of this chapter.
+
+Kodaira dimension one does not prevent endomorphisms of degree greater
+than one. If $E$ is an elliptic curve and $C$ has genus at least two,
+then $E\times C$ has Kodaira dimension one and
+$[n]\times\operatorname{id}_C$ has degree $n^2$ for $n>1$.
+
+::: {.example #ex:clebsch-cubic title="The Clebsch cubic"}
+The equations
+$$
+\sum_{i=0}^4 x_i=0,\qquad \sum_{i=0}^4 x_i^3=0
+$$
+define a smooth cubic surface in a hyperplane $\PP^3\subset\PP^4$.
+At a putative singular point all $x_i^2$ would be equal. Five numbers
+each equal to $a$ or $-a$ cannot sum to zero unless $a=0$, which gives
+no projective point. Like every smooth cubic surface over $\CC$, it has
+twenty-seven lines [@Bea96, Chapter IV]: in the plane blowup model these
+are the six exceptional curves, the fifteen transforms of lines through
+pairs of the six points, and the six transforms of conics through five
+points. Smoothness is essential to this line count.
+:::
+
 ## $K3$ surfaces
 
 ::: {.definition #def:k3-surface title="K3 surface"}
@@ -68,7 +124,55 @@ $$
 and the second Betti number is $b_2(X)=1+20+1=22$.
 :::
 
+::: {.example #ex:k3-projective-models title="Projective models of K3 surfaces"}
+
+Adjunction gives $K_X\sim0$ for a smooth quartic $X\subset\PP^3$,
+a smooth intersection of a quadric and a cubic in $\PP^4$, and a
+smooth intersection of three quadrics in $\PP^5$: in each case the
+sum of the defining degrees equals the dimension of the ambient
+projective space plus one. The standard cohomology sequence for a
+complete intersection gives $H^1(X,\OO_X)=0$, so each is a K3 surface
+[@Huy16, §1.2]. Their hyperplane classes have squares $4$, $6$ and
+$8$, respectively.
+
+If $B\subset\PP^2$ is a smooth sextic, its double cover $X\to\PP^2$
+is also K3. Indeed $\pi_*\OO_X=\OO_{\PP^2}\oplus\OO_{\PP^2}(-3)$,
+so $H^1(\OO_X)=0$, and the double-cover canonical formula
+@prop:double-cover-canonical-bundle gives
+$K_X=\pi^*(K_{\PP^2}+\OO_{\PP^2}(3))\sim0$.
+The minimal resolution of the quotient of an abelian surface by
+$a\mapsto-a$ is a Kummer K3 surface [@Huy16, §1.2].
+
+For an ample line bundle $L$ on a K3 surface, Riemann--Roch and
+Kodaira vanishing give
+$$
+h^0(X,L)=\chi(X,L)=2+\frac{L^2}{2}.
+$$
+Thus $|L|$, when basepoint-free, maps to
+$\PP^{\,1+L^2/2}$. In degree $4$ the map can be hyperelliptic,
+of degree two onto a quadric, or birational onto a quartic surface;
+the degree alone does not choose the model
+[@Huy16, §2.1; @Sai74].
+:::
+
 ## Enriques surfaces
+
+::: {.proposition #prop:nonsymplectic-k3-projective title="Nonsymplectic finite-order automorphisms force projectivity"}
+Let $X$ be a compact complex K3 surface and $g$ a finite-order
+automorphism whose action on $H^{2,0}(X)$ is nontrivial. Then $X$ is
+projective.
+:::
+
+::: {.proof}
+Average a Kähler class over $\langle g\rangle$. The invariant real
+subspace of $H^2(X,\RR)$ is of type $(1,1)$, since the invariant
+subspaces of $H^{2,0}$ and $H^{0,2}$ vanish. The invariant subspace is
+defined over $\QQ$, so it contains a rational class arbitrarily close
+to the averaged Kähler class. Openness of the Kähler cone makes that
+rational class Kähler. An integral multiple is the first Chern class
+of a positive line bundle by the Lefschetz $(1,1)$ theorem, and the
+Kodaira embedding theorem makes $X$ projective [@BHPV04, Chapters IV, VIII].
+:::
 
 ::: {.definition #def:enriques-surface title="Enriques surface"}
 

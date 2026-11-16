@@ -436,6 +436,32 @@ K_{\mathfrak H_n}&\cong(\det\mathcal F)^{n+1}=\lambda^{n+1}.
 The determinant identity follows by diagonalizing a transition matrix of $\mathcal F$: its eigenvalues $t_i$ act on $\operatorname{Sym}^2\mathcal F$ with product $\prod_{i\leq j}t_it_j=(\prod_i t_i)^{n+1}$. These are equivariant line-bundle identities and descend to a torsion-free arithmetic quotient. The Borel embedding into the complex Lagrangian Grassmannian is described in [@Viv14, §3.3]; the period and Hodge interpretation is [@BL04, §8.1].
 :::
 
+## Hodge structures and Tate twists {#sec-hsd-hodge-structures}
+
+A pure integral Hodge structure of weight $n$ consists of a finite-rank
+free abelian group $H$ and a decomposition
+$$
+H_\CC=\bigoplus_{p+q=n}H^{p,q},
+\qquad
+\overline{H^{p,q}}=H^{q,p}.
+$$
+Its decreasing Hodge filtration is
+$F^pH_\CC=\bigoplus_{r\geq p}H^{r,n-r}$; conversely
+$H^{p,q}=F^pH_\CC\cap\overline{F^qH_\CC}$.
+The integral classes of type $(p,p)$ in a weight-$2p$ structure are
+$H\cap H^{p,p}$; rational Hodge classes lie in
+$H_\QQ\cap H^{p,p}$ [@Del71].
+
+The Tate structure $\ZZ(1)$ has weight $-2$ and type $(-1,-1)$.
+For $k\in\ZZ$, the twist $H(k)=H\tensor\ZZ(k)$ has weight $n-2k$
+and $H(k)^{p,q}=H^{p+k,q+k}$. Thus the first Chern class of a line
+bundle on a complex surface is naturally a morphism into
+$H^2(X,\ZZ(1))$, while its untwisted class has type $(1,1)$
+[@Del71]. A polarization is a bilinear form satisfying the
+Hodge orthogonality and positivity conditions; for a K3 surface,
+the cup-product form polarizes the primitive weight-two structure
+[@Huy16, §1.2].
+
 ## Orthogonal period domains {#sec-hsd-period-domains}
 
 :::{.definition #def:hsd-period-domain title="The type IV period domain"}
