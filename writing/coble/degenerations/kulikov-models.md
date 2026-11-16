@@ -62,18 +62,21 @@ The dimension of the dual complex distinguishes the three Kulikov types: it is $
 
 Let $\mcx_0=\Union_iV_i$ be a $d$-semistable Type III Kulikov surface, and let $D_i=\Sum_jD_{ij}$ be the cycle of double curves on $V_i$. The dual complex is assembled from the pseudofans of the anticanonical pairs $(V_i,D_i)$. Each face is a unit lattice triangle. For consecutive primitive edge vectors $e_{i,j-1},e_{ij},e_{i,j+1}$ in the star of the vertex of $V_i$, the integral affine gluing rule is
 $$
-e_{i,j-1}+e_{i,j+1}=d_{ij}e_{ij},\qquad
-d_{ij}=\begin{cases}-D_{ij}^{2},&D_{ij}\text{ smooth},\\-D_{ij}^{2}+2,&D_{ij}\text{ nodal}.\end{cases}
+e_{i,j-1}+e_{i,j+1}=-D_{ij}^{2}e_{ij}.
 $$
 The structure extends across the vertex exactly when $Q(V_i,D_i)=0$, equivalently when $(V_i,D_i)$ is toric [@AE22, §6.2].
 :::
 
 ::: {.proof}
 
-The displayed relation fixes the transition between adjacent unit triangles. Along a double curve $D_{ij}=D_{ji}$, the relations from its two sides agree precisely when the triple point formula $D_{ij}^2+D_{ji}^2=-2$ holds [@AE22, §6.2, citing Engel, Prop. 2.2]. This formula holds for a Kulikov surface. At a vertex, the pseudofan is a toric fan precisely when the anticanonical pair has charge zero by @prop:charge-under-blowup. Thus positive charge is the obstruction to extending the affine chart over that vertex [@AE22, §6.2].
+The displayed relation fixes the transition between adjacent unit triangles. In the simple normal crossings Kulikov model, each $D_{ij}$ is a smooth rational curve. The relations from its two sides agree precisely when the triple point formula $D_{ij}^2+D_{ji}^2=-2$ holds [@AE22, §6.2, citing Engel, Prop. 2.2]. At a vertex, the pseudofan is a toric fan precisely when the anticanonical pair has charge zero by @prop:charge-under-blowup. Thus positive charge is the obstruction to extending the affine chart over that vertex [@AE22, §6.2].
 :::
 
+For a general anticanonical pseudofan with an irreducible nodal rational boundary component $D_j$, the local coefficient is $-D_j^2+2$ rather than $-D_j^2$ [@AE22, §6.2]. The proposition applies to the smooth double curves of a simple normal crossings Kulikov central fiber. The more general double-curve relation is $D_{ij}^2+D_{ji}^2=-2+2g$ for arithmetic genus $g$ [@AE23, Prop. 3.3].
+
 The triangulation specifies which component pairs meet along double curves and which triples meet at triple points. It does not select the gluing isomorphisms or a smoothing: for a fixed triangulated sphere, the $d$-semistable central fibers form a torus described in [@AE22, §6.2].
+
+The *intersection complex* draws a polygonal tile for each component $V_i$ and labels its sides by the double curves $D_{ij}$. Its dual cellulation places a vertex at each $V_i$, an edge at each $D_{ij}$, and a triangle at each triple point. The latter is the dual complex $\Gamma(X_0)$ used above. Its vertex stars are the pseudofans of the anticanonical pairs, so dualizing the tile picture explains the gluing rule [@AE22, §6.2].
 
 At a positive-charge vertex the pseudofan needs a monodromy direction in addition to the visible edges. Two adjacent vertices give components that meet along the curve represented by their common edge. A triangle records a triple point [@AE22, §6.2].
 

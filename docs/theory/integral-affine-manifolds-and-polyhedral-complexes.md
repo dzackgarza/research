@@ -1,8 +1,9 @@
 # Integral-affine manifolds and polyhedral constructions
 
-This document specifies the mathematical objects and maps needed to construct the
-integral-affine spheres of [AEGS, §4]. It is a category design, not a claim that
-the stated constructions have been implemented. The research preamble presents
+This document specifies the proposed software contracts for constructing the
+integral-affine spheres of [AEGS, §4]. The mathematical exposition is in the
+[book chapter](../../writing/integral-affine-geometry.md). The contracts below do
+not claim that the stated constructions have been implemented. The research preamble presents
 these objects and maps and may use maintained geometry engines privately. The
 relevant existing presentations are
 [`manifolds.py`](../../sage_extensions/categories/manifolds.py),
@@ -131,210 +132,22 @@ face-poset automorphism does not acquire a geometric realization merely from
 membership in that automorphism group. These distinctions are required by
 [`OWN-15`–`OWN-18` and `CAT-30`](../../CONTRIBUTING.md).
 
-## Manifolds and the dimension filtration
+## Mathematical definitions
 
-Fix Hausdorff and second-countable manifolds of finite dimension. A real
-`C^k` manifold, for `k >= 1`, has an equivalence class of atlases whose
-coordinate changes are `C^k` diffeomorphisms. Its morphisms are `C^k` maps.
-An atlas is a presentation of the structure; compatible atlases determine the
-same maximal atlas. `C^infinity` gives smooth real manifolds. For `j >= k`,
-forgetting derivatives defines a functor `C^jMan -> C^kMan`. It is not an
-inclusion with the same hom sets: a `C^k` map between smooth objects need not
-be smooth. Topological manifolds receive the corresponding forgetful functor.
+The book now owns the mathematical exposition used by this implementation
+contract. Read [integral affine geometry](../../writing/integral-affine-geometry.md)
+for the following constructions before using the proposed signatures below:
 
-The dimension is locally constant. Let `Man_n` denote objects of dimension
-exactly `n`; for connected objects this is unambiguous, while a disconnected
-manifold can have components of different dimensions unless the category
-requires pure dimension. The filtration by dimension at most `n` is a full
-subcategory for any chosen map class. The exactly `n` objects form its pure
-dimension stratum. `Man_2` consists of surfaces; “surface” alone does not
-imply compactness, orientation, boundary, or a smooth structure. Manifolds
-with boundary and corners require explicit local models and distinct map
-conditions. Polygon pieces are such objects before edge gluing.
+* [Manifolds, affine spaces, atlas transitions, and tangent lattices](../../writing/integral-affine-geometry.md#sec-affine-atlases).
+* [Singular integral affine surfaces and sphere topology](../../writing/integral-affine-geometry.md#sec-affine-atlases).
+* [Pseudofans, corner blowup classes, and charge](../../writing/integral-affine-geometry.md#sec-ias-charge).
+* [Polytopes, triangulations, complexes, stars, and links](../../writing/integral-affine-geometry.md#sec-ias-gluing).
+* [Face gluings and surgeries](../../writing/integral-affine-geometry.md#sec-integral-affine-surgeries).
+* [Type III dual complexes and their integral affine spheres](../../writing/integral-affine-geometry.md#sec-type-iii-ias).
 
-A complex analytic `m`-manifold has holomorphic charts in `CC^m` and
-holomorphic morphisms. Its realification is a smooth real manifold of dimension
-`2m`. A complex manifold is thus structured over a real smooth manifold, not
-an alternative value for a field parameter on a single undifferentiated
-manifold category. `RR^n` and `CC^m` have their standard identity charts and
-must be admitted as objects of the corresponding manifold categories. In the
-current preamble, `DifferentiableManifolds` stores a finite degree,
-`SmoothManifolds` presents smooth real manifolds, and `ComplexManifolds`
-forgets to smooth real manifolds. The placement of `RR` itself remains a
-separate recorded gap, [sage-extensions#97](https://github.com/dzackgarza/sage-extensions/issues/97).
-
-## Integral-affine structure: selected data and forgetful functors
-
-Let `V` be a real vector space of dimension `n` with a full lattice
-`Lambda <= V`. Its integral-affine group is
-
-`Aff_Lambda(V) = GL(Lambda) semidirect V`.
-
-An affine space modelled on `V` is a nonempty torsor for the additive group
-of `V`. Its translation action and point-difference map satisfy
-`(p - q) + q = p` and `(v + p) - p = v`. The constructor takes a point as a
-witness of nonemptiness without selecting an origin of the affine space.
-
-An integral-affine atlas on a real `n`-manifold `B` consists of charts to open
-subsets of `V` whose changes of coordinates are restrictions of elements of
-`Aff_Lambda(V)`. Equivalently, it is a maximal atlas of that kind. A specified
-atlas or an equivalent developing-map and holonomy presentation determines a
-chosen integral-affine structure. The lattice of integral tangent vectors is
-part of that structure. A smooth atlas alone does not select it. Distinct
-integral-affine structures may live over the same smooth manifold.
-
-There are two useful map categories. In `IAff_n`, morphisms are locally maps
-`x |-> A x + b` with `A(Lambda) <= Lambda'`; isomorphisms require
-`A(Lambda) = Lambda'`. These maps may have noninvertible or rectangular
-linear parts if dimensions vary. The category of integral-affine local
-isomorphisms uses `A in GL_n(ZZ)`. Both have a forgetful functor to smooth real
-manifolds. Over a fixed smooth `B`, the fibre records its possible selected
-integral-affine structures and maps over `id_B`. The functor does not make
-those structures properties of `B`.
-
-Translations in this definition lie in `V`, not necessarily in `Lambda`.
-If an application requires chart origins and overlaps to preserve lattice
-*points*, it asks for the stricter group `GL(Lambda) semidirect Lambda`, plus
-the resulting integral-point data. AEGS uses the latter convention for its
-specified charts [AEGS, Introduction]; it must not silently replace the
-general definition. An oriented integral-affine atlas has linear changes in
-`SL(Lambda)`. Orientation is a refinement of the selected structure; it does
-not follow from dimension two.
-
-Integral-affine maps forget to smooth maps. Ordinary smooth maps do not lift
-canonically to integral-affine maps. Products have product atlases. A quotient
-or gluing is integral-affine only after its local transition maps, including
-those near identified faces, satisfy the atlas conditions.
-
-## Singular integral-affine spaces and spheres
-
-The sphere in [AEGS, §4] is not an integral-affine manifold on all of `S^2`.
-Its data are `(B, Sigma, A)`, where `B` is a topological surface, `Sigma` is a
-finite subset, and `A` is an integral-affine atlas on `B \ Sigma`. The atlas
-does not extend across a point of `Sigma`; a punctured neighbourhood has an
-affine monodromy representation, with linear part in `GL_2(ZZ)`. If the
-construction uses orientation, its linear part lies in `SL_2(ZZ)`. Some
-applications also retain a chosen triangulation with integral vertices, an
-affine polarization, or group actions. These are further data, not implicit
-in `(B, Sigma, A)`.
-
-Define the category of singular integral-affine surfaces with maps of the
-underlying topological surfaces that carry the specified singular sets as
-required and restrict to integral-affine maps on their regular loci. The
-exact morphism condition at a singular point must be stated for each map
-class; isomorphisms preserve the singular set and affine structure. Its
-topological-sphere subcategory has `B` homeomorphic to `S^2` and is the
-natural home of `IAS^2`. The dimension-`n` analogue gives `IAS^n`, with a
-specified singular subset of appropriate codimension and local models. A
-two-dimensional puncture model alone does not define the higher-dimensional
-theory.
-
-An abstract dual complex `Gamma(X_0)` records intersections of components of
-`X_0`. It does not determine `A` or `Sigma`. Under the hypotheses of the
-degeneration, the affine structure is extra data or a derived construction on
-the dual complex. The AEGS triangulation and
-commuting involutions must be retained as separate structure on the sphere.
-
-## Polytopes, ambient spaces, and triangulations
-
-A polytope has an abstract face incidence structure and, when realized, a
-placement in an ambient geometric space. Keep these apart:
-
-* A finite abstract polytope or polytopal complex has its face poset, rank,
-  attaching or incidence maps, and abstract automorphisms.
-* A Euclidean polytope is a bounded convex subset of an affine space modelled
-  on an inner-product space `E^n`; the embedding into that space is selected.
-  An affine lattice `Lambda <= E^n` makes lattice vertices meaningful. The
-  metric `b_std` on `ZZ^n` is useful for Euclidean lengths and orthogonal
-  symmetries but is not required by integral-affine geometry.
-* Spherical and hyperbolic polytopes lie in `S^n` and `H^n`, with geodesic
-  faces and the relevant convexity hypotheses. They have common incidence
-  operations with Euclidean polytopes, while their geometric maps and metric
-  computations remain specific to their ambient geometries.
-
-For a chosen triangulation `T` of a polygon or complex `P`, retain the
-triangles, all face inclusions, and the map `|T| -> P`. An integral
-triangulation has vertices in the specified local affine lattices and
-integral-affine attaching maps. “Unimodular triangulation” is stronger: each
-top-dimensional simplex has normalized lattice volume one. Completeness
-requires the triangles to cover `P` with intersections equal to shared faces.
-For a singular integral-affine surface, specify a triangulation compatible
-with `Sigma` and check integrality in each regular chart. The existing
-`ConvexPolytopes(Lambda)` presents rational coordinate polytopes and their
-integral points; it does not yet present selected triangulations or the full
-geometric range described here.
-
-## Face gluings and surgeries
-
-For a finite family of polygonal complexes `P_i`, a gluing datum is a finite
-family of paired boundary faces and specified face isomorphisms. The quotient
-`B = (disjoint union P_i)/~` is a topological colimit with structure maps
-`P_i -> B`. Face subdivisions must make each pairing cellular. A proposed
-surface is checked locally: interior points have disk links; boundary points
-have interval links if boundary is allowed. At a vertex the cyclic order of
-incident sectors determines whether its link is a circle, an interval, or
-another graph. Incidence alone gives the quotient topology, not its affine
-atlas.
-
-To glue integral-affine pieces, every regular face pairing must extend to an
-integral-affine identification of adjacent collars. Continue the charts over
-regular glued edges. Around a vertex, compose the affine transition maps in
-cyclic order. Trivial affine monodromy with a compatible neighbourhood permits
-a regular chart; nontrivial monodromy or failed extension marks a singular
-point. Record the resulting singular set and holonomy. Topological surface
-checks and affine extension checks are distinct mathematical obligations.
-
-A surgery is specified by an embedded subcomplex or local region `Q -> P`, a
-replacement `Q'`, and a boundary identification `dQ' -> dQ`. Its output is
-the pushout `(P \ int Q) union_{dQ} Q'`, with the inherited cell maps and any
-induced affine atlas on its regular part. “Remove a corner” or “remove a basis
-triangle” is not a complete operation until the region, lattice basis,
-replacement, and boundary map are given. A unimodular triangle is the simplex
-on `p, p+u, p+v` for a basis `(u,v)` of the local tangent lattice. Symington
-surgeries require their own stated cut and regluing data, size, and resulting
-monodromy [AEGS, §4]; they should use this general surgery owner rather than
-define a second gluing mechanism.
-
-For the AEGS doubling `B(ell) = P(ell) union_{boundary} P(ell)^opp`, the
-specified common-boundary identification is the gluing datum. The result is
-topologically a sphere when `P(ell)` is a disk. Its affine structure is
-checked on the two interiors and across the glued boundary away from the
-listed singularities. The Enriques and del Pezzo involutions are explicit
-automorphisms of the resulting structured sphere, with their actions on
-faces, singularities, and affine charts. [AEGS, Introduction and §4] gives
-the relevant constructions and examples.
-
-## Complexes, stars, links, and realizations
-
-A glued polygonal surface is naturally a two-dimensional cell or polytopal
-complex. It is a regular CW complex when every closed cell embeds and its
-attaching map is a homeomorphism onto its image. Self-identifications can
-break regularity. A compatible triangulation can give a simplicial complex
-when simplices are determined by distinct vertex sets and meet in common
-faces. A `Delta`-complex allows more face identifications. A simplicial set
-is another presentation, with degeneracies; the Kan condition is a horn
-filling condition and is not inherent in a polygon gluing. A PL manifold
-requires the relevant vertex links to be PL spheres or balls. Thus none of
-these labels follows from the words “dual complex” alone. These constructions
-meet the existing [`simplicial-and-cw-foundations`](https://github.com/dzackgarza/sage-extensions/issues/199) node.
-
-For a cell `sigma` in a selected complex `K`, its closed star is the union of
-closed cells containing `sigma`; its link is the complex of directions
-transverse to `sigma` in that star (equivalently, in a simplicial complex, the
-simplices disjoint from `sigma` whose joins with `sigma` lie in `K`). Retain
-their inclusions into the subdivision or ambient complex. The link of a
-regular interior vertex of a triangulated surface is a circle; a boundary
-vertex has an interval link. Stars and links are combinatorial constructions
-and can also inherit restricted affine data away from singularities.
-
-There are three distinct symmetry questions. `Aut(face(P))` is the abstract
-incidence automorphism group. Integral-affine automorphisms preserve the
-selected affine placement or atlas. Isometries preserve a selected ambient
-metric and embedding. A combinatorial involution may have no realization as
-an affine map or Euclidean reflection. To draw its fixed line, first give an
-explicit realization and an equivariant action. A planar polygon drawing
-with edge-pair labels and an embedding `B -> RR^3` are presentation maps;
-neither defines the abstract quotient or its integral-affine structure.
+The category graph above and the signatures below record proposed mathematical
+owners, maps, and implementation boundaries. They remain design contracts;
+the linked chapter does not claim that these APIs exist.
 
 ## Public mathematical API and types
 
@@ -379,6 +192,15 @@ their current existence does not establish the entire signature above. Lee,
 *Introduction to Smooth Manifolds*, Chapters 1–2 supplies the atlas and
 smooth-map definitions.
 
+These constructors take Hausdorff, second-countable manifolds of finite
+dimension. `RealCkManifolds(j).forget_to(k)` for `j >= k` is a functor, not
+an inclusion with the same hom sets: a `C^k` map between smooth objects need
+not be smooth. The dimension-at-most-`n` filtration is a full subcategory
+for a chosen map class. The exactly-`n` objects form its pure-dimension
+stratum; disconnected objects need not have one dimension unless that
+condition is imposed. Boundary and corner categories need their own local
+models and map conditions before polygon pieces are glued.
+
 ### Integral-affine atlases and singularities
 
 Let `M` be a specified smooth real `n`-manifold. The category-owned
@@ -405,6 +227,21 @@ coordinate representative, not the intrinsic representation without those
 choices. The stricter translation lattice and the oriented determinant-one
 condition are distinct refinements with the group stated at construction.
 
+The affine-space constructor takes a point as a witness of nonemptiness
+without selecting an origin. It retains the translation action and
+point-difference map with $(p-q)+q=p$ and $(v+p)-p=v$. An integral-affine
+map may have a noninvertible or rectangular linear part when dimensions
+vary; its linear part satisfies $A(\Lambda)\subseteq\Lambda'$. An
+isomorphism requires equality of the selected lattices. The generic chart
+group has translations in $V$, while the specified AEGS charts use the
+stricter lattice-point convention $\operatorname{GL}(\Lambda)\ltimes\Lambda$
+[AEGS, Introduction]. The point data do not follow from the generic
+integral tangent lattice. An oriented atlas has linear changes in
+$\operatorname{SL}(\Lambda)$; dimension two alone does not supply this
+orientation. A product uses the product atlas. A quotient or gluing receives
+an integral-affine structure only after the transitions at identified faces
+meet this atlas contract.
+
 For the AEGS sphere, the constructor is instead
 
 `SingularIntegralAffineSpaces(2).on(B, i: Sigma ↪ B, j: B\Sigma ↪ B, A_{B\Sigma}) -> X`.
@@ -418,6 +255,14 @@ element of the affine group. A local singularity type requires the full stated
 equivalence relation, not only a matrix trace. The `Sphere` property is a
 condition on `B`; an involution or triangulation is an added datum. This is
 the structure in [AEGS, Introduction and §4].
+
+Each class of morphisms of singular integral-affine spaces must state its
+condition at the singular locus and restrict to integral-affine maps on the
+regular loci. Isomorphisms preserve the singular set and affine structure.
+The higher-dimensional version requires a specified singular subset of
+appropriate codimension and its own local models; a punctured-surface model
+does not define it. The abstract dual complex alone supplies neither this
+singular locus nor the affine atlas.
 
 ### Polytopes and chosen triangulations
 
@@ -466,6 +311,17 @@ Hatcher, *Algebraic Topology*, §2.1 gives the `Delta`-complex gluing model;
 the existing [`simplicial-and-cw-foundations`](https://github.com/dzackgarza/sage-extensions/issues/199) node owns the
 general complex foundation.
 
+Face pairings must first be made cellular by compatible subdivisions. At a
+vertex, the cyclic order of incident sectors determines whether the link is
+a circle, an interval, or another graph. A PL manifold requires its vertex
+links to be PL spheres or balls. A regular CW presentation requires every
+closed cell to embed and its attaching map to be a homeomorphism onto its
+image; self-identifications can violate that requirement. A simplicial
+complex requires distinct vertex-set simplices meeting in common faces;
+`Delta`-complexes admit more face identifications, and a simplicial set adds
+degeneracies. A Kan horn-filling property is not supplied by a polygon
+gluing. Keep the chosen complex presentation and its characteristic maps.
+
 The general gluing input is a finite diagram `D: I -> CellComplexes` of
 pieces, selected faces, and specified face maps. `CellComplexes.colimit(D)`
 returns the quotient `B` and its universal cocone `q_i: D(i) -> B`. Pairwise
@@ -475,6 +331,22 @@ singular set, the atlas on its complement, and the maps from every original
 piece. It verifies the topological surface condition separately from the
 affine extension condition; a colimit in cell complexes alone does not imply
 a colimit in singular integral-affine spaces.
+
+Each regular face pairing extends to an integral-affine identification of
+adjacent collars. Charts continue across regular glued edges. Around each
+vertex, compose the affine transition maps in cyclic order. Trivial affine
+monodromy with a compatible neighbourhood permits a regular chart;
+nontrivial monodromy or a failed extension identifies a singular point.
+Retain the resulting singular set and holonomy. The topological link check
+and the affine collar check are separate obligations.
+
+For the AEGS doubling $B(\ell)=P(\ell)\cup_{\partial P(\ell)}P(\ell)^{\mathrm{opp}}$,
+the selected common-boundary isomorphism is the gluing datum. If $P(\ell)$
+is a disk, the quotient is topologically a sphere. Its affine structure
+requires charts on both interiors and across regular points of the glued
+boundary. The Enriques and del Pezzo involutions are maps of the completed
+structured sphere; retain their actions on faces, singularities, and affine
+charts [AEGS, Introduction and §4].
 
 Surgery takes `i: Q ↪ P`, replacement `Q'`, and an isomorphism
 `f: boundary(Q') -> boundary(Q)`. Its result is the pushout of the complement

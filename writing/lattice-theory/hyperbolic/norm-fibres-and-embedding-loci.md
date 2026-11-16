@@ -45,6 +45,8 @@ If $T$ embeds, split its nondegenerate image to write $L\cong T\perp M$. Then $T
 
 When source and target have equal dimension, an embedding is an isometry. The inverse map must be returned with the original endpoints. Over $\bQ$, an affirmative criterion followed by a complete rational enumeration yields a witness; over a real closed exact field, matching diagonal signs and square-root scalings gives one directly. For example $\langle1/4\rangle\cong\langle1\rangle$ over $\bQ$ by $v\mapsto e/2$, with inverse $e\mapsto2v$. The forms $\langle3\rangle$ and $\langle1\rangle$ become isometric over a real algebraic closure by $\sqrt3$, but not over $\bQ$. The rational form $\langle1,1\rangle$ represents $2$ but not $3$, whereas both are represented over a real algebraic closure.
 
+For a concrete higher-dimensional algebraic-real embedding, $T$ with Gram matrix $\left(\begin{smallmatrix}3&1\\1&-2\end{smallmatrix}\right)$ has signature $(1,1)$ and embeds in $L=\langle1,2,-1\rangle$ of signature $(2,1)$. Diagonalize both forms, match one positive and one negative basis vector, scale by positive square roots of the ratios of their squares, and transport through the retained diagonalization maps. This specifies a map in the original source and target without enumerating algebraic-real vectors.
+
 ::: {.proposition #prop:integral-embedding-saturation title="Saturation reduction"}
 
 For nondegenerate finite-rank integral lattices $T,L$,
@@ -89,6 +91,8 @@ A complete enumeration of a countable set reaches each member after finitely man
 There is no sequential enumeration of the entire real norm-zero locus in $U_{\bR}$: it contains the uncountable line $\bR e$. The equalizer and its inclusion still exist. A solver for a fibre may produce a point without enumerating the ambient space; its failure to produce a point is not an emptiness certificate. A known point immediately proves nonemptiness and can be retained for subsequent selection. The zero vector gives such a point for $q^{-1}(0)$. Over a definite integral lattice @prop:definite-coordinate-bound makes a norm fibre finite, and then exact exhaustion can decide it.
 
 An infinite countable discrete set has no uniform probability measure assigning equal positive mass to every point. Continuous sampling from a real box likewise misses the norm-zero axes of $U_{\bR}$ with probability one. A finite embedding box does admit a uniform distribution, but unsuccessful samples never prove absence. Exact emptiness requires a theorem supplying a bound or a separate decision procedure.
+
+For a split integral binary plane $U$, a nonzero square equation is $2xy=a$ and has finitely many integral solutions, indexed by divisors of $a/2$ when $a$ is even. Its zero fibre contains both isotropic axes and is infinite. A rank-zero norm fibre contains its sole zero point exactly at square zero. These are finite-fibre statements, not an enumeration of the whole real locus.
 
 ::: {.proposition #prop:arbitrary-embedding-filter-undecidable title="Undecidability of unrestricted filtered emptiness"}
 

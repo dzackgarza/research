@@ -78,6 +78,8 @@ For an indefinite binary isotropic form, complete a primitive zero to a basis an
 
 The compact-subset step is a source-dependent estimate, not a bound on the change-of-basis matrix. In particular @prop:integral-representative-bound alone does not bound an embedding.
 
+The sharper Li–Margulis representation constant in (1) remains a separate computation. Their §8.5 reduces Theorem 4 to Theorem 1 and Lemma 20; @prop:integral-completion-bound evaluates the latter's completion step. Their §6 reduces Theorem 1 to Theorems 5 and 6 and Lemma 1. Numerical values for Theorem 5 still require its injectivity-radius and bump-function estimates and Lemma 3(2)'s matrix-coefficient estimate, for which the paper points to Shalom, Theorem 2.1, and Kontorovich–Oh, Proposition 3.2 [@LM16b]. The evaluated Calderón route below avoids claiming a numerical value for that sharper chain.
+
 ::: {.proposition #prop:integral-completion-bound title="Completion preserving prescribed columns"}
 
 Suppose $0<m<n$, $\tau^TG\tau=A$, and $a=|\det A|$, $D=|\det G|$, $k=n-m$. Let $d$ be the gcd of the maximal minors of $\tau$. There is an integral completion $\gamma=(\tau\mid\tau_1)$ with

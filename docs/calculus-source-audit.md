@@ -212,3 +212,110 @@ pages rendered successfully after their cross-reference targets were built.
 Chromium found no MathJax errors or unresolved cross-references on those
 renders; the modular chapter was also inspected visually. Source retirement
 is recorded only after the book changes have been committed.
+
+The arithmetic prose was committed in `7e3d003d94` and book integration in
+`0f4b0a41db`. Each source was checked against its recorded blob, trashed
+separately, and committed. The recovered trash bytes have the same Git blob
+hashes. This is the retirement record at those revisions, not a live source
+inventory.
+
+| Source basename | Retirement commit |
+| --- | --- |
+| `integral-lattice-algorithms.md` | `eca18b0e14` |
+| `integral-trace-lattices.md` | `fb1ced1575` |
+| `indefinite-binary-class-numbers.md` | `dc3e332496` |
+| `kneser-neighbors-and-orthogonal-modular-forms.md` | `7b33d26506` |
+| `finite-automorphism-groups-and-polynomial-certificates.md` | `381c2bcbdc` |
+| `modular-forms-and-hecke-operators.md` | `42dc97f893` |
+
+Each trash recovery path is `~/.local/share/Trash/files/` followed by the
+basename in the table. The original Git blobs provide independent recovery.
+
+## Affine, hyperbolic, and compactification transfer
+
+This correspondence records the source revisions used for the November 2026
+migration. Native TeX paths below are relative to
+`notes/diss/GROUND_TRUTH/my_enriques_notes/`; the mixed theory notes are
+relative to `research/`. The historical dissertation remains a separate
+authored work.
+
+| Source | Original Git blob | Mathematical destination |
+| --- | --- | --- |
+| `100_BB.tex` | `8a8ea1f98da5ecdf59374f156b9ff3cadc9556e3` | `writing/symmetric-spaces-and-period-domains.md`; Coble toroidal and Kulikov chapters |
+| `110_boundary.tex` | `2320b17efecc7a437bf72dd0476cc7d1d5ef60f3` | Coble toroidal, Kulikov, and KSBA chapters; symmetric spaces |
+| `160_IAS.tex` | `176f3ed45f7f053c93e16591d943b2287453052d` | `writing/integral-affine-geometry.md`; shared native figure objects and sources |
+| `170_KPP.tex` | `8c2b0879c0ccaa9b71928290476dd44fcdb52346` | Coble anticanonical-pair, Kulikov, toroidal, and KSBA chapters |
+| `180_KSBA.tex` | `736d8ef7db63097a965a040691fbb4cd6c77457f` | Coble toroidal, anticanonical-pair, and KSBA chapters |
+| `docs/theory/hyperbolic-index.md` | `5d53bb3e3c86473815335e5117a599b0c579945a` | The four chapters under `writing/lattice-theory/hyperbolic/`; software contracts remain in the source note |
+| `docs/theory/integral-affine-manifolds-and-polyhedral-complexes.md` | `03cf4e87e4b03de1206194563c45c2175e0cee50` | `writing/integral-affine-geometry.md`; category graph and software contracts remain in the source note |
+
+### Native-source correspondence and corrections
+
+| Source ranges | Retained content and editorial decisions |
+| --- | --- |
+| `100_BB:5–64` | Boundary codimension and incidence; rational parabolics; affine-cone weight and character; degree-zero modular-form ring and Proj; descended ample automorphic line. Homogeneity is on the affine cone. |
+| `100_BB:66–109,119–125` | Toroidal charts, cusp lattices, fan refinement and morphisms; log Calabi–Yau components; maximal dual complexes and the qualified sphere/SYZ statements; squarefree-degree cusp classification. The general cusp statement uses squarefree `d`; the explicit Coxeter example is degree two. |
+| `110_boundary:5–79,236–344` | PPAV periods and exponential coordinates, nodal cubic, monodromy quadratic form, Voronoi/Delaunay duality, Mumford height projection and quotient, theta/Proj description, genus-two cell example, and wall/ray limits. The honeycomb graph and its dual triangulation are distinguished. Component counts belong to the specified cell type. |
+| `110_boundary:81–234` | Full degree-two Coxeter diagram and symmetry; eighteen-sided polygon, surgeries, doubled sphere, weighted equator, triangulation and gluing; twenty-four dependent root pairings in a rank-nineteen lattice; stable eighteen-plane example and Type II labels; Enriques/Coble boundary questions. The last six parameters measure near/opposite distances for the same three singularities, not six independent surgeries. |
+| `110_boundary:345–482` | K3 cusp torus coordinates, Fermat quartic degeneration and small resolutions, intersection/dual complexes, smoothing, recognizable divisors, and the AET/ABE fan comparisons. Uniqueness concerns the stable pair after contraction. The flat ramification limit need not equal the entire fixed locus on a nongeneric Kulikov fiber (AET23 Remark 6.22, Lemma 6.34, Theorem 6.35). |
+| `160_IAS:4–174` | Affine groups, atlases and marked lattice points; Lagrangian torus fibrations and their cotangent-torus converse; local singularity models; pseudofans and corner blowup equivalence; charge and Type III gluing. Tangent lattices do not select affine lattice points. |
+| `160_IAS:175–1043` | Boundary intersection rules; corner/internal blowups and charge; the tenfold moment triangle; every corner and internal blowup panel; nodal trades in order `p13,p23,p12`; nodal slides of sizes two and three. Conic and cubic self-intersections are corrected to four and nine. |
+| `170_KPP:6–114` | Quotient exceptional curves of squares minus four, minus two, minus one; anticanonical pairs; the nine-blowup example and native drawing; Kulikov models, modifications, recognizable divisors and d-semistability. |
+| `170_KPP:117–213` | Kulikov types and log monodromy, charge, existence and meaning of toric models, and charge as the number of interior blowups. Smooth rational double curves and nodal pseudofan conventions are distinguished. |
+| `180_KSBA:5–72` | Stable curves and dualizing degrees; period-extension question with its conditional answer; sextic branch pairs; dlt/slc and stable pairs; small positive coefficient and avoidance of log canonical centers. |
+
+The named raster figures from `110_boundary.tex` are retained byte-for-byte
+in the shared figure library and displayed in the corresponding chapters.
+The full Coxeter drawing is the canonical `vinberg-19-1-1` object, whose
+source identifies its lattice and AET23 diagram; the nine-blowup drawing
+retains `NontoricBlowups.tikz`. The literal word `image` at
+`110_boundary:396,404,413,418` has no filename or attached drawing in the
+source. Its surrounding mathematical descriptions are retained; these
+unpopulated editorial markers supply no image data to recover.
+
+The IAS archive contains nine figure environments and two inline pairs,
+giving twenty-three drawn panels. Native source panels and captions live
+under `pandoc-config/figures/sources/ias-surgeries/`, with canonical drawings
+under `figures/objects/ias/p2-*.tikz`. The shared figure changes are committed
+in `e85af92`, with their cut style in `cfa97af`. Blank image paragraphs and
+Quarto grids are necessary here: the initial adjacent-image paragraphs
+rendered only their first panels. The corrected HTML contains every panel;
+Chromium inspection checked the figure grids, formula rendering, and image
+loads separately from the semantic comparison.
+
+The compactification and affine writers independently compared each other's
+destinations with the native sources. A further fresh mathematical audit
+identified the lattice-point marking and positive-surgery hypotheses; both
+are explicit in the final prose. The source's definitions, worked examples,
+questions, and diagrams remain, with the corrections above rather than
+verbatim retention of erroneous claims.
+
+### Mixed theory notes
+
+The original hyperbolic note's lines 1–112 and 1608–1633 are represented in
+the integral-index chapter; 113–791 in real/rational splitting; 792–1607 in
+effective embedding bounds; and the later mathematical norm-fiber,
+embedding-locus, undecidability, and three-ring examples in those chapters
+and `norm-fibres-and-embedding-loci.md`. The explicit constants, completion
+argument, all-versus-orbit bounds, split and nonsplit binary cases, scaled
+definite shell, Borovoi congruence example, and constrained-search distinction
+were retained. Calderón's equivalence locator is corrected to Theorem 5.1
+and the Siegel-set locator to Proposition 6.6. Zotero imports supplied
+`Cal23`, `Bor00a`, `Hen02`, `Tur37`, `LLL82`, and `Cas78`.
+
+The affine design note's original lines 134–338 supply the general
+mathematical exposition. Its category graph, constructors, map types,
+reuse ledger, phases, and acceptance boundary remain in their existing
+implementation owner. Its mathematical links now lead to the book.
+
+An independent preservation audit found that initial condensation had
+omitted implementation clauses. The retained notes restore the original
+Cauchy-map evaluation, enclosure and relation-termination rules; unknown
+predicate and scaling behavior; exact determinant and finite-bound
+providers; public API examples and source links. The affine note restores
+manifold category guards, torsor identities, rectangular affine maps,
+singular-map requirements, PL links, cellular and collar gluing checks, and
+the specified doubling and involution data. These are preserved design
+contracts and historical implementation observations. This migration does
+not assert that their runtime specimens were executed. The mixed notes are
+therefore retained rather than trashed.
