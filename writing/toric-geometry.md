@@ -112,6 +112,8 @@ The anticanonical divisor on $X_\Sigma$ is $-K_X=\sum_{\rho\in\Sigma(1)}D_\rho$.
 
 For $\mathbb P^n$, the anticanonical polytope is $(n+1)\Delta_n-\sum_{i=1}^n e_i$. Its normal fan gives $\mathbb P^n$. In dimension four, a general anticanonical hypersurface is a quintic Calabi–Yau threefold. In dimension two, the polytope is the triangle $3\Delta_2-e_1-e_2$, with polar $\operatorname{Conv}(e_1,e_2,-e_1-e_2)$ after a suitable identification of the dual lattice. For a smooth degree-$d$ hypersurface $D\subset\mathbb P^n$, adjunction gives $K_D=(d-n-1)H|_D$; hence $-K_D$ is ample when $d<n+1$, while $d=n+1$ gives trivial canonical bundle. For $n\geq2$ this is the Calabi–Yau degree.
 
+The triangle $\operatorname{Conv}((0,1),(1,0),(-1,-1))$ is reflexive. Replacing $(0,1)$ by $(0,2)$ gives a lattice triangle with the origin still interior but with a facet at lattice distance $2$; its polar has a nonintegral vertex, so it is not reflexive. Reflexivity does not imply smoothness: for $P=\operatorname{Conv}((-1,-1),(-1,1),(1,0))$, the primitive inward facet normals are $(1,0),(-1,-2),(-1,2)$. The two normals meeting at $(1,0)$ have determinant of absolute value $4$, so that toric affine chart is singular. A lattice point in the interior of a polytope edge alone is not a smoothness test [@CLS11, §§2.4, 8.3].
+
 ::: {#fig-toric-p2-polar .figure}
 \begin{tikzpicture}
 \input{objects/toric/p2-anticanonical-polar.tikz}
