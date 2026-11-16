@@ -26,6 +26,12 @@ $$
 On an Enriques surface $K_X$ is numerically trivial and
 $\chi(\OO_X)=1$. For rank two this becomes
 $\chi(E)=2+\tfrac12c_1(E)^2-c_2(E)$.
+On a K3 surface $\chi(\OO_X)=2$ and $K_X=0$, so for any rank $r$
+the formula is
+$$
+\chi(E)=2r+\frac12c_1(E)^2-c_2(E).
+$$
+For a line bundle $L$ this gives $\chi(L)=2+L^2/2$.
 
 The exponential sequence identifies
 $\operatorname{Pic}^0(X)=H^1(X,\OO_X)/\operatorname{im}H^1(X,\ZZ)$.
