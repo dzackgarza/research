@@ -6,6 +6,51 @@ The dual complex $\Gamma(\mcx_0)$ of a Type III Kulikov model has a canonical *s
 The total charge is $24$, which constrains the number and type of singularities; for instance one may have $24$ singularities of type $I_1$.
 :::
 
+## Monodromy, fiber class, and affine volume
+
+Let $B$ be a generic integral affine sphere triangulated into lattice
+triangles of normalized volume $1$, and let
+$\mu\colon(S,\omega)\to B$ be its Lagrangian torus fibration. The
+class $f=[\mu^{-1}(p)]$ for a regular point $p\in B$ is the fiber class.
+It is also represented by a nodal $I_1$ fiber, whose class is the
+specialization of the nearby smooth fibers. For a Type III Kulikov
+degeneration with dual complex $B$, the diffeomorphism of
+[@AET23, Theorem 2.43] carries $f$ to the vanishing cycle $\delta$
+and $[\omega]$ to the monodromy invariant $\lambda$ in
+$\delta^\perp/\bZ\delta\otimes\RR$. Thus the fiber class does not
+depend on which $I_1$ point is used to represent it.
+
+In this normalization,
+$$
+\lambda^2
+=\#\{\text{triple points of }\mcx_0\}
+=\operatorname{vol}(B)
+=[\omega]^2
+$$
+[@AET23, proof of Theorem 2.43]. The volume is the sum of the
+normalized volumes of the triangles in the chosen integral affine
+triangulation. It varies with the degeneration and polarization; the
+fixed total singularity charge $24$ is a different quantity.
+
+An integral affine divisor $R_{\mathrm{IA}}$ is a balanced graph in $B$.
+Its weighted edges lift to Lagrangian cylinders in the torus fibration;
+the balancing condition closes them to a Lagrangian visible surface
+$\Sigma_{R_{\mathrm{IA}}}$. The choice of closing chains changes its
+homology class only by a multiple of $f$, so it defines a class in
+$f^\perp/\bZ f$. If a line bundle $\mathcal L$ on the Kulikov family
+induces $R_{\mathrm{IA}}$, the same diffeomorphism identifies this
+visible-surface class with $c_1(\mathcal L_t)$ in
+$\delta^\perp/\bZ\delta$ [@AET23, Definitions 2.40--2.42 and Theorem 2.43].
+
+Near a Type III cusp, [@AET23, Proposition 3.2] says that the period
+map, after quotient by the cusp's unipotent group, is asymptotic to a
+translate of the cocharacter $t\mapsto t^\lambda$ in the boundary
+torus $(I^\perp/I)\otimes\CC^*$. In torus coordinates this means a
+leading term $c\,t^\lambda$ with a holomorphic correction tending to
+the identity as $t\to0$. This is the nilpotent orbit approximation;
+the translate $c$ records limiting period data, and the cocharacter
+$\lambda$ records the monodromy direction.
+
 At Sterk cusp $1$, the Enriques involution acts freely on the Type III integral affine sphere by the antipodal map [@AEGS25, Prop. 4.8]. Its quotient is an integral affine $\RP^2$. Each singularity downstairs has two lifts of the same charge upstairs, so the quotient has total charge $12$. This gives the charge-$12$ model sought by viewing an Enriques degeneration as the quotient of its charge-$24$ K3 cover. The equivariant divisor-model construction and smoothing, including its period condition, are given in [@AEGS25, Thm. 4.6]; the stable pair follows by the descended ramification contraction [@AEGS25, Cor. 4.9].
 
 ::: {.definition #def:symington_polytope}
