@@ -248,8 +248,34 @@ def facet_rays(walls, gram):
         x = inverse * vector(QQ, list(ray))
         scale = lcm([c.denominator() for c in x])
         x = red(vector(ZZ, [int(c * scale) for c in x]))
-        found[key_ray(x)] = (form(gram, x, x), vector(ZZ, key_ray(x)))
+        # the *ray as computed*, not its sign-normalisation: `key_ray` flips a vector so that its first
+        # nonzero coordinate is positive, and a flipped ray no longer satisfies the wall inequalities it
+        # was computed from.  The key is still the normalised one, so the dict deduplicates.
+        found[key_ray(x)] = (form(gram, x, x), x)
     return [(square, ray) for _key, (square, ray) in sorted(found.items())]
+
+
+def interior_point(polytope, facets, gram):
+    """A point strictly inside `P = {x : b(x, w) < 0 for every wall w}`, and the weights that gave it.
+
+    The sum of the extreme rays is the natural candidate and is interior whenever no wall carries every
+    vertex.  It need not be: a vertex at infinity of `P` that is also a vertex of a constituent chamber
+    can put several rays on one wall, and the sum then lies on it.  Distinct positive weights separate
+    such a family, and the loop takes the first combination that is strictly inside.  A positive
+    combination of points of a convex cone is a point of it, so the answer is checked rather than
+    assumed, and the weights that worked are printed with the point.
+    """
+    zero = vector(ZZ, [0] * len(polytope[0][1]))
+    for weights in (tuple([1] * len(polytope)),
+                    tuple(range(1, len(polytope) + 1)),
+                    tuple((index + 1) ** 2 for index in range(len(polytope)))):
+        point = sum((weights[index] * vector(ZZ, ray)
+                     for index, (_square, ray) in enumerate(polytope)), zero)
+        if form(gram, point, point) > 0 and all(form(gram, point, wall) < 0 for wall in facets):
+            return point, weights
+    raise AssertionError(
+        "no positive combination of the extreme rays of P_j is strictly inside its walls, so those "
+        "rays are not the extreme rays of the polyhedron the walls cut out")
 
 
 def inside(chamber, facets, gram):
@@ -445,10 +471,9 @@ print("Part D. The index [W(K_j) : W_j], as the number of W(K_j)-chambers inside
 print("  the full chamber has %d walls, %d extreme rays, %d of them ideal"
       % (len(full_walls), len(chamber_rays(full_walls, gram)),
          sum(1 for ray in chamber_rays(full_walls, gram) if form(gram, ray, ray) == 0)))
-anchor = sum((vector(ZZ, ray) for ray in [r for _s, r in polytope]), vector(ZZ, [0] * len(labels)))
-assert form(gram, anchor, anchor) > 0
-assert all(form(gram, anchor, wall) < 0 for wall in subgroup_walls), (
-    "the sum of the extreme rays of P_j is not in its interior")
+anchor, seed_weights = interior_point(polytope, subgroup_walls, gram)
+print("  the seed point is the positive combination of the %d extreme rays with %s weights"
+      % (len(polytope), "constant" if len(set(seed_weights)) == 1 else "distinct"))
 current, visited, flips = full_walls, set(), 0
 while True:
     violated = [index for index in range(len(current)) if form(gram, anchor, current[index]) > 0]
