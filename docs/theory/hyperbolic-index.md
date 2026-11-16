@@ -1,5 +1,7 @@
 # Hyperbolic index: implementation contracts
 
+Implementation paths and execution reports retain the source snapshot at research revision `0f4b0a41db`. Proposed contracts remain requirements; file names below record that implementation layout.
+
 The mathematical definitions, proofs, bounds, examples and limits of this work are in the research book:
 
 - [Integral hyperbolic index and splitting](../../writing/lattice-theory/hyperbolic/integral-hyperbolic-index.md): hyperbolic pairs, complements, radical reduction, maximality and base-ring examples.
@@ -1064,9 +1066,9 @@ The evaluated bound meets every target-isometry orbit, so decidable
 invariant predicates also admit complete finite exclusion. Other predicates
 require their own termination argument.
 
-The interfaces are defined at the [lattice owner](../../sage_extensions/categories/lattices.py),
-[embedding-space owner](../../sage_extensions/categories/lattice_morphisms.py),
-[finite free-module owner](../../sage_extensions/categories/modules/framed/framed_free_modules.py)
-and [finite enumerated-set owner](../../sage_extensions/categories/sets/finite_ordered_sets.py).
-The [formed scalar-extension construction](../../sage_extensions/categories/modules/framed/formed/form_modules.py)
+The interfaces are defined at the lattice owner (`sage_extensions/categories/lattices.py`),
+embedding-space owner (`sage_extensions/categories/lattice_morphisms.py`),
+finite free-module owner (`sage_extensions/categories/modules/framed/framed_free_modules.py`)
+and finite enumerated-set owner (`sage_extensions/categories/sets/finite_ordered_sets.py`).
+The formed scalar-extension construction (`sage_extensions/categories/modules/framed/formed/form_modules.py`)
 retains the original lattice and scalar map.
