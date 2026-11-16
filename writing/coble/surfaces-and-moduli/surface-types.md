@@ -128,6 +128,19 @@ $c_2(X)=12\chi(\OO_X)-K_X^2=24$.
 The intersection form has signature $3-19=-16$.
 :::
 
+The nowhere-vanishing holomorphic two-form on a K3 surface is
+symplectic and contracts vector fields to one-forms, giving
+$T_X\simeq\Omega_X^1$. Since $h^{1,0}(X)=0$, it follows that
+$H^0(X,T_X)=0$: there are no holomorphic infinitesimal
+automorphisms. A complex K3 surface is simply connected
+[@Huy16, §§1.1–1.3]. There is also a direct algebraic obstruction to
+a nontrivial connected finite étale cover $\pi:Y\to X$: its canonical
+bundle is trivial, while étale Riemann–Roch gives
+$\chi(\mathcal O_Y)=\deg(\pi)\chi(\mathcal O_X)=2\deg(\pi)$.
+But $Y$ is connected and proper, so Serre duality gives
+$\chi(\mathcal O_Y)=2-h^1(\mathcal O_Y)\leq2$; hence
+$\deg(\pi)=1$. Thus the étale fundamental group is trivial.
+
 ::: {.example #ex:k3-projective-models title="Projective models of K3 surfaces"}
 
 Adjunction gives $K_X\sim0$ for a smooth quartic $X\subset\PP^3$,
@@ -176,6 +189,60 @@ genus-one pencil [@Huy16, Ch. 11].
 The statement concerns a genus-one fibration. A section, which makes
 it Jacobian, is additional data.
 :::
+
+### Linear systems, curves, and positivity
+
+For a line bundle $L$ on a projective variety $X$, the base scheme of
+$|L|$ is cut out by the image of the evaluation map
+$H^0(X,L)\otimes\mathcal O_X\to L$. Its support is the intersection of
+the zero sets of all sections. Sections define a rational map
+$X\dashrightarrow\mathbb P(H^0(X,L)^\vee)$ wherever they do not vanish
+simultaneously. When $|L|$ is basepoint-free, its evaluation map
+defines a morphism on all of $X$. A rational map may also extend after
+removing a fixed divisor, so regularity of the rational map alone is
+not a basepoint-freeness test. A basepoint-free *multiple* of $L$
+means that $L$ is semiample [@Huy16, §2.3].
+
+For a reduced, irreducible projective curve $C$, let
+$\nu:\widetilde C\to C$ be its normalization. Its geometric genus is
+$g(\widetilde C)$, whereas $p_a(C)=1-\chi(\mathcal O_C)$. The normalization
+sequence gives
+$$
+p_a(C)-g(\widetilde C)
+=h^0(C,\nu_*\mathcal O_{\widetilde C}/\mathcal O_C)
+=\sum_{p\in C_{\mathrm{sing}}}\delta_p.
+$$
+On a K3 surface, adjunction gives $p_a(C)=1+C^2/2$. Hence an
+*irreducible* curve has $C^2\geq-2$, and an irreducible curve of square
+$-2$ is smooth and rational. This does not say that every curve on a
+K3 is smooth. If $C$ is smooth of genus $g\geq1$, the restriction
+sequence and $K_X=0$ give $h^0(X,\mathcal O_X(C))=g+1$
+[@Huy16, §§2.1–2.2].
+
+A line bundle is nef when its intersection with every integral curve
+is nonnegative. On a smooth projective surface, a nef line bundle is
+big exactly when its square is positive. The ample cone is the
+interior of the nef cone; on a K3 it is the component of the positive
+cone cut out by positive intersection with every smooth rational
+$(-2)$-curve. Thus a nef and big class may lie on a wall and need not
+be ample. Even on a K3, $|L|$ itself need not be basepoint-free for a
+nef and big $L$; the fixed-part alternatives are described by
+Saint-Donat [@Sai74; @Huy16, §2.3]. Kleiman's criterion concerns
+strict positivity on the *closed cone of curves*, rather than merely
+nonnegative intersection with each curve.
+
+In characteristic zero, Kawamata–Viehweg vanishing on a smooth
+projective surface gives $H^i(X,K_X+L)=0$ for $i>0$ when $L$ is nef
+and big. This statement fails in general in positive characteristic.
+For K3 surfaces, the corresponding $H^1(X,L)=0$ for nef and big $L$
+holds in every characteristic by the surface argument in
+[@Huy16, §3.1]; it does not follow just from the existence of a lift.
+The numerical bound $\rho(X)\leq22$ also holds in positive
+characteristic: for a prime $\ell$ different from the characteristic,
+the Kummer sequence injects $\mathrm{NS}(X)\otimes\mathbb Q_\ell$
+into $H^2_{\mathrm{\acute et}}(X,\mathbb Q_\ell(1))$, whose dimension is
+$22$ [@Huy16, §§1.3, 3.2]. In contrast, over $\mathbb C$ the Hodge
+bound is $\rho(X)\leq h^{1,1}(X)=20$.
 
 ## Enriques surfaces
 

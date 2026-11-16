@@ -780,6 +780,36 @@ chapter lead directly to the Hodge decomposition used in
 @sec-hsd-hodge-structures.
 :::
 
+## Geometric fibers, étale maps, and analytification
+
+A geometric point of $S$ is a map $\bar s:\operatorname{Spec}\Omega\to S$
+with $\Omega$ algebraically closed. For $f:X\to S$, its geometric fiber
+is $X_{\bar s}=X\times_S\operatorname{Spec}\Omega$. A scheme over a field
+$k$ is geometrically integral when it remains integral after every
+field extension of $k$; equivalently it is geometrically reduced and
+geometrically irreducible. These conditions concern fibers after base
+change, rather than only the underlying points of $X$
+[@stacks-0366].
+
+An étale morphism is smooth of relative dimension zero. Thus it is
+flat and locally of finite presentation, and has vanishing relative
+differentials $\Omega^1_{X/S}=0$. Conversely, a smooth map with
+$\Omega^1_{X/S}=0$ is étale. On a chosen site, a $G$-torsor is a
+sheaf with a $G$-action that is locally isomorphic to $G$ acting
+on itself. When represented by a scheme, this gives a principal
+homogeneous $G$-space over the base. The topology matters: a torsor
+under a finite étale group is étale locally trivial, while a
+$\mu_p$-torsor in characteristic $p$ may require an fppf cover
+[@stacks-03PA; @stacks-0497].
+
+For a projective complex scheme $X$, analytification carries coherent
+algebraic sheaves to coherent analytic sheaves. GAGA identifies these
+categories and their cohomology, so the algebraic and analytic de
+Rham constructions can be compared through this functor. The
+equivalence requires properness; an arbitrary finite-type complex
+scheme has an analytification but does not satisfy this GAGA
+equivalence [@Ser56].
+
 ## Comparing the geometric settings {#sec-calculus-comparison}
 
 | Construction | Algebraic setting | Smooth or complex-analytic setting |

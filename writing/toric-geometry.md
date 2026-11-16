@@ -110,6 +110,18 @@ The polytope $P$ is *reflexive* if $P^\circ$ is a lattice polytope. Equivalently
 
 The anticanonical divisor on $X_\Sigma$ is $-K_X=\sum_{\rho\in\Sigma(1)}D_\rho$. Therefore $X$ is Gorenstein Fano exactly when its anticanonical polytope $P_{-K_X}$ is reflexive and $\Sigma$ is its normal fan [@CLS11, Thm. 8.3.4]. Smoothness is a separate condition: every maximal cone of $\Sigma$ must be regular. There are sixteen reflexive polygons up to lattice equivalence, and five give smooth toric del Pezzo surfaces: $\mathbb P^2$, $\mathbb P^1\times\mathbb P^1$, and blowups of $\mathbb P^2$ at one, two, or three torus-fixed points [@CLS11, §8.3].
 
+The Batyrev–Borisov construction extends reflexive-polytope duality
+from anticanonical hypersurfaces to certain Calabi–Yau complete
+intersections in Gorenstein toric Fano varieties. A *nef partition*
+decomposes the anticanonical divisor into nef summands; the dual
+partition defines the mirror family. The mirror relation exchanges
+appropriate Hodge numbers, with stringy Hodge numbers used when the
+ambient or complete-intersection models are singular. In Calabi–Yau
+dimension $d$ the expected smooth relation is
+$h^{p,q}(X)=h^{d-p,q}(X^\vee)$. This is a statement about paired
+families and Hodge numbers, rather than a canonical isomorphism
+between the deformation spaces of two specified varieties [@BN07].
+
 For $\mathbb P^n$, the anticanonical polytope is $(n+1)\Delta_n-\sum_{i=1}^n e_i$. Its normal fan gives $\mathbb P^n$. In dimension four, a general anticanonical hypersurface is a quintic Calabi–Yau threefold. In dimension two, the polytope is the triangle $3\Delta_2-e_1-e_2$, with polar $\operatorname{Conv}(e_1,e_2,-e_1-e_2)$ after a suitable identification of the dual lattice. For a smooth degree-$d$ hypersurface $D\subset\mathbb P^n$, adjunction gives $K_D=(d-n-1)H|_D$; hence $-K_D$ is ample when $d<n+1$, while $d=n+1$ gives trivial canonical bundle. For $n\geq2$ this is the Calabi–Yau degree.
 
 The triangle $\operatorname{Conv}((0,1),(1,0),(-1,-1))$ is reflexive. Replacing $(0,1)$ by $(0,2)$ gives a lattice triangle with the origin still interior but with a facet at lattice distance $2$; its polar has a nonintegral vertex, so it is not reflexive. Reflexivity does not imply smoothness: for $P=\operatorname{Conv}((-1,-1),(-1,1),(1,0))$, the primitive inward facet normals are $(1,0),(-1,-2),(-1,2)$. The two normals meeting at $(1,0)$ have determinant of absolute value $4$, so that toric affine chart is singular. A lattice point in the interior of a polytope edge alone is not a smoothness test [@CLS11, §§2.4, 8.3].

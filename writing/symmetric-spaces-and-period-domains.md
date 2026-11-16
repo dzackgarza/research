@@ -474,6 +474,23 @@ The Lefschetz $(1,1)$ theorem proves this for $p=1$. Hence it holds
 for every Hodge class on a projective K3 surface, where the only
 degrees are $0$, $2$ and $4$ [@Voi07].
 
+For a compact Kähler manifold $X$ of complex dimension $n$ and a
+Kähler class $\ell$, write $L(\alpha)=\ell\smile\alpha$. Hard Lefschetz
+states that $L^{n-k}:H^k(X,\mathbb R)\to H^{2n-k}(X,\mathbb R)$ is an
+isomorphism for $k\leq n$. With
+$P^k=\ker(L^{n-k+1}:H^k\to H^{2n-k+2})$, the primitive decomposition is
+$$
+H^k(X,\mathbb R)=
+\bigoplus_{j\geq0}L^jP^{k-2j}.
+$$
+The summands respect the Hodge decomposition. On a compact Kähler
+surface the real cup-product form has signature
+$(2h^{2,0}+1,h^{1,1}-1)$ and its restriction to real $(1,1)$ classes
+has signature $(1,h^{1,1}-1)$. In particular, the orthogonal
+complement of a Kähler class in $H^{1,1}(X,\mathbb R)$ is negative
+definite [@Voi07; @Huy05, Ch. 3]. The corresponding statement for
+the Néron–Severi group is the algebraic Hodge index theorem.
+
 ## Orthogonal period domains {#sec-hsd-period-domains}
 
 :::{.definition #def:hsd-period-domain title="The type IV period domain"}
