@@ -43,6 +43,28 @@ Twisting by $(-1)$ identifies the positive- and negative-definite isometry class
 The class-set formulation is that of @def:genus: all positive-definite odd unimodular lattices of rank $n$ lie in the genus of $\latI_{n,0}$, and all positive-definite even unimodular lattices of rank $8k$ lie in the genus of $E_8(-1)^{\perp k}$ [@CS10, Chs. 15–16]. The divisibility $8\mid n$ follows from @thm:milgram; the classes in the table are the classical definite enumeration [@CS10, Chs. 16–18]. The even rank-$24$ classification is due to Niemeier; its $24$ classes are characterized by their root systems [@CS10, Ch. 16].
 :::
 
+## Niemeier root systems {#sec-niemeier-root-systems}
+
+For an even positive-definite unimodular lattice $N$ of rank $24$, let $R(N)$
+be its norm-$2$ root system. The $23$ nonempty possibilities below classify
+the rooted Niemeier lattices; $R(N)=\varnothing$ characterizes the Leech
+lattice. In the negative-definite convention of @def:root-lattice, replace
+$N$ by $N(-1)$ and read the same list as its norm-$(-2)$ root systems
+[@CS10, Ch. 16].
+
+| $R(N)$ | $R(N)$ | $R(N)$ | $R(N)$ |
+| --- | --- | --- | --- |
+| $E_8^3$ | $D_8^3$ | $D_5^2 A_7^2$ | $A_6^4$ |
+| $E_8D_{16}$ | $D_9A_{15}$ | $A_8^3$ | $A_4^6$ |
+| $E_7^2D_{10}$ | $E_6^4$ | $A_{24}$ | $A_3^8$ |
+| $E_7A_{17}$ | $E_6D_7A_{11}$ | $A_{12}^2$ | $A_2^{12}$ |
+| $D_{24}$ | $D_6^4$ | $D_4^6$ | $A_1^{24}$ |
+| $D_{12}^2$ | $D_6A_9^2$ | $D_4A_5^4$ | — |
+
+Juxtaposition denotes an orthogonal sum of root systems, not a direct-sum
+decomposition of $N$: the roots generate a sublattice of finite index in
+$N$. The Leech lattice is the remaining class and has no roots.
+
 ::: {#tbl-unimodular-definite-class-numbers}
 
 | Rank $n$ | Odd classes | Even classes | Total |
