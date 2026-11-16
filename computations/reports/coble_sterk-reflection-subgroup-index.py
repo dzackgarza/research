@@ -66,9 +66,13 @@ Sources used, with the statement and the printed page
   quotient lattices; 4.3.5 (p. 19, Fig. 4, 12 walls), 4.3.6 (p. 21, Fig. 6, 10 walls;
   `G_{e'} = O(H + E8(-2)) = {+-1} W_{e'}`), 4.3.7 (p. 22, Fig. 8, 12 walls;
   `G_v = {+-1} W_v x| Z/2`), 4.3.8 (p. 23, Fig. 10, 11 walls), 4.3.9 (p. 24, Fig. 12, 14 walls).
-  The five cusp vectors are `Sterk.selected_isotropic_vectors()`; 4.3.8's chamber is drawn at the
-  paper's other representative of that cusp, `Sterk.sterk4_cusp_vector()`, and the library builds it
-  there.
+  The cusp vectors are (4.2.3)'s, `Sterk.selected_isotropic_vectors()`, except at `j = 4`: the paper
+  prints two vectors for that cusp, (4.2.3) lists `e' + 2f' + gamma` and 4.3.8 draws its chamber at
+  `2e' + f' + alpha-bar-1`, the two pairing to `2`, and the eleven walls of Fig. 10 are orthogonal to
+  the second and pair `4, -2, -4` with three of them against the first.  A cusp is either vector and
+  the reductions are isometric, but a *chamber* is at one line, so this record builds `K_4` and its
+  chamber at `Sterk.sterk4_cusp_vector()` and says so in the run; at the other representative the
+  three non-orthogonal printed walls are not even classes of the boundary lattice.
 * Alexeev--Engel--Garza--Schaffler 2025, Definition 3.6 (p. 593) and Corollary 3.12 (p. 595): the
   diagram of `W(Gamma_{En,2,v})` is the folded diagram `G(T_dP)^{J_j}`, which `cusp_chamber()` computes.
 * CoxIter's f-vectors of the five folded diagrams, recorded at `sec-coxiter-results-for-cusp-lattices`
@@ -77,9 +81,11 @@ Sources used, with the statement and the printed page
 
 The library calls
 -----------------
-`sage_extensions` main at `cbec8595f65c96bc60773537a9e3d8c1c3141d71` (2026-11-16), not the checkout
-inside the image, which is far behind it; the run puts that `src` first on `PYTHONPATH` and the record
-prints the loaded module path.  `Involutions.I_En` and `Sterk` give `Gamma_{En,2}` and its five cusps,
+`sage_extensions` main, not the checkout inside the image, which is far behind it; the run puts the
+clone's `src` first on `PYTHONPATH`, and the record reads the commit of the checkout it loaded out of
+that checkout's `HEAD` and prints it with the module path, so no pin is typed into this file and the
+first line of a block cannot drift from the code that ran.  `Involutions.I_En` and `Sterk` give
+`Gamma_{En,2}` and its five cusps,
 `isotropic_vector_reduction_image()` gives `K_j`, `cusp_chamber()` (sage-extensions #387 and #312,
 closed) gives `P_j`, and `fundamental_chamber()` of the hyperbolic lattice on `K_j` gives `C_j`.
 
@@ -97,6 +103,7 @@ One cusp per run: `Gamma_{En,2}` and `cusp_chamber()` cost minutes on the shared
 the rest of the time.  Transcript: `coble_sterk-reflection-subgroup-index-run.txt`, one block per run,
 each ending with its elapsed time.
 """
+import pathlib
 import sys
 import time
 from itertools import combinations
@@ -106,11 +113,35 @@ import sage_extensions
 from sage_extensions.all import HyperbolicLattices, Involutions, Sterk
 from sage_extensions.all import ZZ as SZZ
 from sage.all import QQ, ZZ, lcm, matrix, vector
+from sage.geometry.cone import Cone
 from sage.version import version as SAGE_VERSION
 
 sys.stdout.reconfigure(line_buffering=True)
 
-PIN = "cbec8595f65c96bc60773537a9e3d8c1c3141d71"
+def loaded_pin():
+    """The checkout `sage_extensions` was imported from, and its commit.
+
+    Read out of the checkout rather than typed here: a pin written into the file is a claim about the
+    run, and this record has already been burnt once by a library that moved under a stated pin.  The
+    commit is read from `HEAD` and, for a symbolic ref, from the ref itself or from `packed-refs`.
+    """
+    source = pathlib.Path(sage_extensions.__file__).resolve().parents[2]
+    git = source / ".git"
+    if not git.is_dir():
+        return "%s (not a checkout)" % source
+    head = (git / "HEAD").read_text().strip()
+    if not head.startswith("ref: "):
+        return "%s (commit %s)" % (source, head)
+    reference = head.split(" ", 1)[1]
+    loose = git / reference
+    if loose.is_file():
+        return "%s (commit %s)" % (source, loose.read_text().strip())
+    packed = git / "packed-refs"
+    if packed.is_file():
+        for line in packed.read_text().splitlines():
+            if line.endswith(" " + reference):
+                return "%s (commit %s)" % (source, line.split()[0])
+    return "%s (commit of %s not found)" % (source, reference)
 # Sterk's printed wall counts, his published ideal-vertex counts, and CoxIter's f-vectors of the same
 # five folded diagrams (`sec-coxiter-results-for-cusp-lattices`).
 PUBLISHED = {1: (12, 9, 23), 2: (10, 2, 10), 3: (12, 4, 33), 4: (11, 5, 26), 5: (14, 13, 115)}
@@ -201,23 +232,24 @@ def chamber_rays(chamber, gram):
 
 
 def facet_rays(walls, gram):
-    """The extreme rays of `{x : b(x, w) <= 0 for w in walls}`, with more walls than the dimension."""
-    count, dimension = len(walls), len(walls[0])
+    """The extreme rays of `{x : b(x, w) <= 0 for w in walls}`, with more walls than the dimension.
+
+    The inequalities are linear forms in the coordinates `y = G x`, where `b(x, w) = w . y`, so the cone
+    is the polar of the cone the walls generate and Sage's cone arithmetic supplies its extreme rays,
+    lineality and dimension.  A subset enumeration is *not* used: these diagrams are not simple --- the
+    twelve walls of cusp 3 satisfy two linear relations, and a vertex cut by ten facets is then no
+    kernel of nine --- and a walk over the `C(n, 9)` subsets silently returns nothing when it is wrong.
+    """
+    polar = Cone([[-int(c) for c in w] for w in walls])
+    cone = polar.dual()
+    inverse = matrix(QQ, gram).inverse()
     found = {}
-    for subset in combinations(range(count), dimension - 1):
-        kernel = (matrix(QQ, [list(walls[k]) for k in subset])
-                  * matrix(QQ, gram)).right_kernel()
-        if kernel.dimension() != 1:
-            continue
-        ray = vector(QQ, kernel.basis()[0])
-        scale = lcm([c.denominator() for c in ray])
-        ray = red(vector(ZZ, [int(c * scale) for c in ray]))
-        if form(gram, ray, ray) < 0:
-            continue
-        if any(form(gram, ray, wall) > 0 for wall in walls):
-            continue
-        found[key_ray(ray)] = (form(gram, ray, ray), vector(ZZ, key_ray(ray)))
-    return [found[key] for key in sorted(found)]
+    for ray in cone.rays():
+        x = inverse * vector(QQ, list(ray))
+        scale = lcm([c.denominator() for c in x])
+        x = red(vector(ZZ, [int(c * scale) for c in x]))
+        found[key_ray(x)] = (form(gram, x, x), vector(ZZ, key_ray(x)))
+    return [(square, ray) for _key, (square, ray) in sorted(found.items())]
 
 
 def inside(chamber, facets, gram):
@@ -286,7 +318,7 @@ if len(sys.argv) != 2 or not sys.argv[1].isdigit() or int(sys.argv[1]) not in PU
 j = int(sys.argv[1])
 walls_published, ideal_published, rays_published = PUBLISHED[j]
 
-print("Sage %s; sage_extensions loaded from %s, pin %s" % (SAGE_VERSION, sage_extensions.__file__, PIN))
+print("Sage %s; sage_extensions loaded from %s, %s" % (SAGE_VERSION, sage_extensions.__file__, loaded_pin()))
 print("cusp %d of Sterk (4.2.3), p. 16.  This run says nothing about the other four cusps." % j)
 print("")
 
@@ -304,7 +336,17 @@ group = Involutions.I_En.polarized(invariant.inclusion()(polarization)).coinvari
 stamp("Gamma_En,2 built: AEGS 2025 Definition 2.6 with Sterk Proposition 2.7")
 
 name = "Sterk_%d" % j
-cusp_vector = Sterk.selected_isotropic_vectors()[name]
+selected = Sterk.selected_isotropic_vectors()
+if j == 4:
+    # (4.2.3) lists one vector of this cusp and 4.3.8 draws the chamber at the other; the eleven
+    # walls of Fig. 10 are classes of the boundary lattice at the second and three of them are not
+    # at the first.  The reductions are isometric, so the cusp is either and the chamber is one.
+    cusp_vector = Sterk.sterk4_cusp_vector()
+    assert cusp_vector != selected[name], "4.3.8's vector is (4.2.3)'s at cusp 4"
+    where = "4.3.8's vector 2e' + f' + alpha-bar-1, where his Fig. 10 is drawn"
+else:
+    cusp_vector = selected[name]
+    where = "(4.2.3)'s representative"
 image = group.isotropic_vector_reduction_image(cusp_vector)
 reduction = image.reduction()
 labels = tuple(reduction.module_generating_set())
@@ -312,8 +354,8 @@ gram = gram_of(labels, reduction)
 signature = reduction.signature_pair()
 assert int(reduction.module_rank()) == 10
 assert (int(signature.first()), int(signature.second())) == (1, 9)
-print("  cusp vector %s, primitive and isotropic: %s" %
-      (tuple(int(c) for c in cusp_vector.to_vector()), bool(cusp_vector.is_primitive())))
+print("  cusp vector %s at %s, primitive and isotropic: %s" %
+      (tuple(int(c) for c in cusp_vector.to_vector()), where, bool(cusp_vector.is_primitive())))
 print("  K_j: rank %d, determinant %s, signature (1, 9)" % (int(reduction.module_rank()),
                                                             reduction.determinant()))
 stamp("reduction image built")
@@ -323,6 +365,12 @@ assert chamber_of_the_subgroup.is_complete_wall_set() is True, (
     "cusp_chamber did not reach its own stop at cusp %d, so the wall set is a prefix" % j)
 subgroup_vectors = tuple(chamber_of_the_subgroup.wall_roots())
 subgroup_walls = tuple(coordinates(labels, reduction, w) for w in subgroup_vectors)
+# `fundamental_chamber` and `cusp_chamber` state their chamber as `{x : b(r, x) >= 0 for every wall r}`
+# and the walk below is written for the opposite inequality, so the normals are negated once, here, and
+# everywhere.  Without this the polyhedron would be the antipode of the one the library returns: the
+# same count, since `x |-> -x` preserves every mirror, but not the same chamber, and the transcript
+# would be comparing Sterk's figure with a congruent copy rather than with the object the library built.
+subgroup_walls = tuple(tuple(-c for c in wall) for wall in subgroup_walls)
 stamp("cusp_chamber at Sterk_%d returned %d walls" % (j, len(subgroup_walls)))
 
 full = HyperbolicLattices(SZZ)(reduction).fundamental_chamber()
@@ -330,6 +378,7 @@ assert full.is_complete_wall_set() is True, (
     "fundamental_chamber did not reach its own stop, so the wall set is a prefix")
 full_vectors = tuple(full.wall_roots())
 full_walls = tuple(coordinates(labels, reduction, w) for w in full_vectors)
+full_walls = tuple(tuple(-c for c in wall) for wall in full_walls)  # the same one negation, see above
 stamp("fundamental_chamber of W(K_j) returned %d walls" % len(full_walls))
 
 print("")
@@ -377,6 +426,9 @@ for a in range(len(subgroup_walls)):
 print("  bonds: %s;  the diagram is Coxeter's, so @def:covolume applies"
       % sorted(bonds.items(), key=lambda item: str(item[0])))
 polytope = facet_rays(subgroup_walls, gram)
+assert polytope, "the walls bound no polytope: their cone has no extreme ray"
+assert all(square >= 0 for square, _ray in polytope), (
+    "an extreme ray of P_j is space-like, so P_j does not lie in the hyperbolic space")
 ideal = [ray for square, ray in polytope if square == 0]
 finite = [ray for square, ray in polytope if square != 0]
 computed_f_vector = f_vector([ray for _square, ray in polytope], subgroup_walls, gram)
