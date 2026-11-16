@@ -90,3 +90,26 @@ is split [@CS10, Ch. 15].
 
 This is [@CS10, Ch. 15].
 :::
+
+## Theta series
+
+::: {.proposition #prop:positive-lattice-theta-modularity title="Theta series of an even positive-definite lattice"}
+
+Let $L$ be an even positive-definite lattice of rank $2m$ and quadratic
+level $N=N_q(L)$. Its theta series is
+$$
+\Theta_L(\tau)
+\definedas
+\sum_{x\in L}e^{\pi i\tau\beta(x,x)}
+=\sum_{n\geq0}r_L(n)q^n,
+\qquad
+r_L(n)=\#\theset{x\in L\st\beta(x,x)=2n},
+\quad q=e^{2\pi i\tau}.
+$$
+It is a holomorphic modular form of weight $m$ on $\Gamma_0(N)$
+with discriminant character $\chi_L$ of
+@def:lattice-discriminant-character [@Han13, §3].
+The positive-definiteness assumption makes each coefficient finite.
+For an indefinite lattice, this unregularized series does not define
+the same holomorphic modular form.
+:::
