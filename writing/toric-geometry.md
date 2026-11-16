@@ -93,6 +93,12 @@ Let $P\subset M_{\mathbb R}$ be a full-dimensional lattice polytope. Its *inward
 
 The *normalized lattice volume* is $\operatorname{Vol}_M(P)=n!\operatorname{vol}_{\mathrm{Eucl}}(P)$, where a fundamental lattice parallelepiped has Euclidean volume $1$. The intersection number is $L_P^n=\operatorname{Vol}_M(P)$ [@Ful93, §5]. For $\mathbb P^2$, the standard simplex $\Delta_2=\operatorname{Conv}(0,e_1,e_2)$ has normalized area $1$ and gives $\mathcal O(1)$. Its dilation $3\Delta_2$ has normalized area $9$ and gives $\mathcal O(3)=-K_{\mathbb P^2}$.
 
+The square polytope of $(\PP^1\times\PP^1,\OO(1,1))$ gives a simple toric degeneration. In $\PP^3\times\AA^1$ take the family
+$$
+\mathcal Q=\{xy=tzw\},
+$$
+with $t$ the coordinate on $\AA^1$. For $t\ne0$ this is a smooth quadric, hence $\PP^1\times\PP^1$ with its Segre polarization. At $t=0$ it is the union of the planes $\{x=0\}$ and $\{y=0\}$, meeting along the line $\{x=y=0\}$. Cutting the square along the diagonal joining the lattice points for $z$ and $w$ gives two unit triangles, the polytopes of the two polarized plane components. The common diagonal records their double line.
+
 Assume $0\in\operatorname{int}(P)$. Our polar convention is
 $$
 P^\circ=\{u\in N_{\mathbb R}:\langle m,u\rangle\geq-1
