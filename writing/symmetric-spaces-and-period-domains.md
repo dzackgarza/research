@@ -417,6 +417,8 @@ The tuple $(d_1,\ldots,d_n)$ is the polarization type. A basis $\omega_1,\ldots,
 Conversely $Z\in\mathfrak H_n$ gives $X_Z=\mathbb C^n/(D,Z)\mathbb Z^{2n}$ and the positive Hermitian form $H_Z(v,w)=v^{\mathsf t}(\operatorname{Im}Z)^{-1}\bar w$, whose negative imaginary part has matrix $J_D$ on the displayed lattice. Thus $\mathfrak H_n$ parametrizes polarized complex tori of type $D$ with symplectic basis. The integral change-of-basis group is $\Gamma_D=\{M\in\operatorname{GL}(2n,\mathbb Z):M^{\mathsf t}J_DM=J_D\}$; forgetting the basis gives $\Gamma_D\backslash\mathfrak H_n$ with its induced action. For $D=I_n$ this is the principal case of @rmk:hsd-ppav. Birkenhake–Lange use $E_L=\operatorname{Im}H_L$ and order the basis so the period matrix is $(Z,D)$; exchanging the two blocks and using $-\operatorname{Im}H_L$ gives the convention here [@BL04, §4.2 and §8.1, Propositions 8.1.1–8.1.3].
 :::
 
+For a polarization of type $(d_1,\ldots,d_n)$, the abelian variety has trivial canonical bundle. Kodaira vanishing and Riemann--Roch therefore give $h^0(X,L)=\chi(X,L)=c_1(L)^n/n!=d_1\cdots d_n$. Thus $L$ is principal exactly when $h^0(X,L)=1$; on an abelian surface, $L^2=2h^0(X,L)$ [@BL04, §3.6].
+
 :::{.remark #rmk:hsd-hodge-line title="The Hodge line and the tangent bundle"}
 Use the cohomological realization $W=H^1(X,\mathbb R)$ of a marked polarized torus, with its alternating polarization form $Q$. A point of $\mathfrak H_n$ is a weight-one Hodge decomposition
 
