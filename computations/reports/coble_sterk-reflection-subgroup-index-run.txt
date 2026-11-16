@@ -484,3 +484,262 @@ cusp 5: [W(K_5) : W_5] = 34560
 Total run time: 537 s
 
     wall 542 s, exit 0
+
+Round 3 --- all five cusps under the record at 2e4efffdb9, whose one change since round 2 is the
+docstring of its `Run` section: the AST of the file with docstrings removed is identical, and every
+block below is identical to its round-2 counterpart apart from the elapsed-time stamps.
+
+    $HOME/sage-image/run.sh -b "$PWD:/repo" -w /repo -- \
+        /usr/bin/env PYTHONPATH=/repo/.scratch/se-main/src \
+        /sage/.venv/bin/python /repo/computations/reports/coble_sterk-reflection-subgroup-index.py <cusp>
+
+The blocks are in the order the runs were made here, which is not the order of the cusps.
+
+========== cusp 4 ==========
+
+run started 2026-11-16T11:01:04Z
+Sage 11.0.beta5; sage_extensions loaded from /repo/.scratch/se-main/src/sage_extensions/__init__.py, /repo/.scratch/se-main (commit cf6ba0b201a12615acc4aa5cdf7dbee963a59571)
+cusp 4 of Sterk (4.2.3), p. 16.  This run says nothing about the other four cusps.
+
+Part A. The cusp lattice K_j = eta_j^perp / Z eta_j, and the two chambers
+   11.1 s  Gamma_En,2 built: AEGS 2025 Definition 2.6 with Sterk Proposition 2.7
+  cusp vector (0, 0, 2, 1, -4, -5, -7, -10, -8, -6, -4, -2) at 4.3.8's vector 2e' + f' + alpha-bar-1, where his Fig. 10 is drawn, primitive and isotropic: True
+  K_j: rank 10, determinant -256, signature (1, 9)
+   11.7 s  reduction image built
+  132.4 s  cusp_chamber at Sterk_4 returned 11 walls
+  132.6 s  fundamental_chamber of W(K_j) returned 10 walls
+
+Part B. P_j is Sterk's diagram, read as a chamber of the library
+  walls of the subgroup's chamber: 11;  Sterk prints 11 for cusp 4
+  squares of the walls: 9 x (-4), 2 x (-2)
+  every wall is a root of K_j, and every wall's reflection lies in G_v: 11 of 11
+  the coordinates read off the lattice vectors reproduce the pairings: checked
+
+Part C. P_j is a Coxeter polytope, and its polytope data against the published data
+  bonds: [(2, 45), (3, 8), (4, 2)];  the diagram is Coxeter's, so @def:covolume applies
+  the cone of P_j: dimension 10, pointed, of trivial lineality --- the assertions of `facet_rays`; so its extreme rays are the vertices of P_j and its interior is nonempty
+  extreme rays 26: 21 finite, 5 ideal;  Sterk's diagram has 5 vertices at infinity
+  f-vector (26, 125, 300, 450, 460, 330, 165, 55, 11, 1)
+  CoxIter    (26, 125, 300, 450, 460, 330, 165, 55, 11, 1)
+
+Part D. The index [W(K_j) : W_j], as the number of W(K_j)-chambers inside P_j
+  the full chamber has 10 walls, 10 extreme rays, 2 of them ideal
+  the program over the 26 extreme rays: optimum t* = 2/5, maximiser supported on 7 rays with weights of denominator 5
+  the point [-161, 383, 767, 1152, 1538, 1925, 1361, -476, -86, -84], square 168, strictly inside all 11 walls
+  133.2 s  the chamber containing an interior point of P_j reached in 55 wall crossings
+  137.3 s  the walk closed: 270 chambers inside P_j, 1674 enqueued, 1404 refused
+
+  index [W(K_j) : W_j] = 270
+  the closure of the walk, facet by facet:
+    2700 chamber facets: 1296 shared between two chambers inside P_j, 1404 on the 11 walls of P_j
+    chambers per wall of P_j: [79, 79, 131, 131, 135, 135, 137, 137, 142, 142, 156]
+
+Part E. The ideal vertices of P_j (the columns of @thm:sterk-reflection-subgroup-index)
+  5 ideal vertices of P_j, each a vertex of some constituent chamber; chambers per vertex: [1, 1, 128, 140, 270]
+  ideal vertices of the chambers that are not vertices of P_j: 0 distinct, 0 incidences,
+  lying in the relative interior of faces of P_j of dimensions []
+
+cusp 4: [W(K_4) : W_4] = 270
+Total run time: 137 s
+
+    wall 140 s, exit 0
+
+
+========== cusp 2 ==========
+
+run started 2026-11-16T11:03:24Z
+Sage 11.0.beta5; sage_extensions loaded from /repo/.scratch/se-main/src/sage_extensions/__init__.py, /repo/.scratch/se-main (commit cf6ba0b201a12615acc4aa5cdf7dbee963a59571)
+cusp 2 of Sterk (4.2.3), p. 16.  This run says nothing about the other four cusps.
+
+Part A. The cusp lattice K_j = eta_j^perp / Z eta_j, and the two chambers
+    8.1 s  Gamma_En,2 built: AEGS 2025 Definition 2.6 with Sterk Proposition 2.7
+  cusp vector (0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0) at (4.2.3)'s representative, primitive and isotropic: True
+  K_j: rank 10, determinant -256, signature (1, 9)
+    8.5 s  reduction image built
+   96.0 s  cusp_chamber at Sterk_2 returned 10 walls
+   96.2 s  fundamental_chamber of W(K_j) returned 10 walls
+
+Part B. P_j is Sterk's diagram, read as a chamber of the library
+  walls of the subgroup's chamber: 10;  Sterk prints 10 for cusp 2
+  squares of the walls: 9 x (-4), 1 x (-2)
+  every wall is a root of K_j, and every wall's reflection lies in G_v: 10 of 10
+  the coordinates read off the lattice vectors reproduce the pairings: checked
+
+Part C. P_j is a Coxeter polytope, and its polytope data against the published data
+  bonds: [(2, 36), (3, 8), (4, 1)];  the diagram is Coxeter's, so @def:covolume applies
+  the cone of P_j: dimension 10, pointed, of trivial lineality --- the assertions of `facet_rays`; so its extreme rays are the vertices of P_j and its interior is nonempty
+  extreme rays 10: 8 finite, 2 ideal;  Sterk's diagram has 2 vertices at infinity
+  f-vector (10, 45, 120, 210, 252, 210, 120, 45, 10, 1)
+  CoxIter    (10, 45, 120, 210, 252, 210, 120, 45, 10, 1)
+
+Part D. The index [W(K_j) : W_j], as the number of W(K_j)-chambers inside P_j
+  the full chamber has 10 walls, 10 extreme rays, 2 of them ideal
+  the program over the 10 extreme rays: optimum t* = 2/11, maximiser supported on 10 rays with weights of denominator 11
+  the point [-28, -57, -84, -110, -135, -91, -68, -46, -32, -30], square 680, strictly inside all 10 walls
+   96.5 s  the chamber containing an interior point of P_j reached in 0 wall crossings
+   96.6 s  the walk closed: 1 chambers inside P_j, 11 enqueued, 10 refused
+
+  index [W(K_j) : W_j] = 1
+  the closure of the walk, facet by facet:
+    10 chamber facets: 0 shared between two chambers inside P_j, 10 on the 10 walls of P_j
+    chambers per wall of P_j: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+
+Part E. The ideal vertices of P_j (the columns of @thm:sterk-reflection-subgroup-index)
+  2 ideal vertices of P_j, each a vertex of some constituent chamber; chambers per vertex: [1, 1]
+  ideal vertices of the chambers that are not vertices of P_j: 0 distinct, 0 incidences,
+  lying in the relative interior of faces of P_j of dimensions []
+
+cusp 2: [W(K_2) : W_2] = 1
+Total run time: 97 s
+
+    wall 100 s, exit 0
+
+
+========== cusp 3 ==========
+
+run started 2026-11-16T11:05:04Z
+Sage 11.0.beta5; sage_extensions loaded from /repo/.scratch/se-main/src/sage_extensions/__init__.py, /repo/.scratch/se-main (commit cf6ba0b201a12615acc4aa5cdf7dbee963a59571)
+cusp 3 of Sterk (4.2.3), p. 16.  This run says nothing about the other four cusps.
+
+Part A. The cusp lattice K_j = eta_j^perp / Z eta_j, and the two chambers
+    8.0 s  Gamma_En,2 built: AEGS 2025 Definition 2.6 with Sterk Proposition 2.7
+  cusp vector (0, 0, 1, 1, -2, -3, -4, -6, -5, -4, -3, -2) at (4.2.3)'s representative, primitive and isotropic: True
+  K_j: rank 10, determinant -256, signature (1, 9)
+    8.3 s  reduction image built
+  104.5 s  cusp_chamber at Sterk_3 returned 12 walls
+  104.6 s  fundamental_chamber of W(K_j) returned 10 walls
+
+Part B. P_j is Sterk's diagram, read as a chamber of the library
+  walls of the subgroup's chamber: 12;  Sterk prints 12 for cusp 3
+  squares of the walls: 10 x (-4), 2 x (-2)
+  every wall is a root of K_j, and every wall's reflection lies in G_v: 12 of 12
+  the coordinates read off the lattice vectors reproduce the pairings: checked
+
+Part C. P_j is a Coxeter polytope, and its polytope data against the published data
+  bonds: [(2, 54), (3, 7), (4, 4), ('infinity', 1)];  the diagram is Coxeter's, so @def:covolume applies
+  the cone of P_j: dimension 10, pointed, of trivial lineality --- the assertions of `facet_rays`; so its extreme rays are the vertices of P_j and its interior is nonempty
+  extreme rays 33: 29 finite, 4 ideal;  Sterk's diagram has 4 vertices at infinity
+  f-vector (33, 164, 398, 602, 616, 434, 208, 65, 12, 1)
+  CoxIter    (33, 164, 398, 602, 616, 434, 208, 65, 12, 1)
+
+Part D. The index [W(K_j) : W_j], as the number of W(K_j)-chambers inside P_j
+  the full chamber has 10 walls, 10 extreme rays, 2 of them ideal
+  the program over the 33 extreme rays: optimum t* = 4/9, maximiser supported on 7 rays with weights of denominator 9
+  the point [94, -168, -240, -310, -378, -254, -190, -128, -78, -74], square 1112, strictly inside all 12 walls
+  105.1 s  the chamber containing an interior point of P_j reached in 14 wall crossings
+  108.9 s  the walk closed: 240 chambers inside P_j, 1632 enqueued, 1392 refused
+
+  index [W(K_j) : W_j] = 240
+  the closure of the walk, facet by facet:
+    2400 chamber facets: 1008 shared between two chambers inside P_j, 1392 on the 12 walls of P_j
+    chambers per wall of P_j: [9, 9, 115, 115, 120, 120, 140, 140, 142, 157, 157, 168]
+
+Part E. The ideal vertices of P_j (the columns of @thm:sterk-reflection-subgroup-index)
+  4 ideal vertices of P_j, each a vertex of some constituent chamber; chambers per vertex: [56, 56, 128, 240]
+  ideal vertices of the chambers that are not vertices of P_j: 0 distinct, 0 incidences,
+  lying in the relative interior of faces of P_j of dimensions []
+
+cusp 3: [W(K_3) : W_3] = 240
+Total run time: 109 s
+
+    wall 111 s, exit 0
+
+
+========== cusp 5 ==========
+
+run started 2026-11-16T11:06:55Z
+Sage 11.0.beta5; sage_extensions loaded from /repo/.scratch/se-main/src/sage_extensions/__init__.py, /repo/.scratch/se-main (commit cf6ba0b201a12615acc4aa5cdf7dbee963a59571)
+cusp 5 of Sterk (4.2.3), p. 16.  This run says nothing about the other four cusps.
+
+Part A. The cusp lattice K_j = eta_j^perp / Z eta_j, and the two chambers
+    7.6 s  Gamma_En,2 built: AEGS 2025 Definition 2.6 with Sterk Proposition 2.7
+  cusp vector (2, 2, 0, 0, -4, -5, -7, -10, -8, -6, -4, -2) at (4.2.3)'s representative, primitive and isotropic: True
+  K_j: rank 10, determinant -256, signature (1, 9)
+    7.9 s  reduction image built
+  122.5 s  cusp_chamber at Sterk_5 returned 14 walls
+  122.6 s  fundamental_chamber of W(K_j) returned 10 walls
+
+Part B. P_j is Sterk's diagram, read as a chamber of the library
+  walls of the subgroup's chamber: 14;  Sterk prints 14 for cusp 5
+  squares of the walls: 10 x (-4), 4 x (-2)
+  every wall is a root of K_j, and every wall's reflection lies in G_v: 14 of 14
+  the coordinates read off the lattice vectors reproduce the pairings: checked
+
+Part C. P_j is a Coxeter polytope, and its polytope data against the published data
+  bonds: [(2, 74), (3, 8), (4, 8), ('infinity', 1)];  the diagram is Coxeter's, so @def:covolume applies
+  the cone of P_j: dimension 10, pointed, of trivial lineality --- the assertions of `facet_rays`; so its extreme rays are the vertices of P_j and its interior is nonempty
+  extreme rays 115: 102 finite, 13 ideal;  Sterk's diagram has 13 vertices at infinity
+  f-vector (115, 600, 1352, 1768, 1508, 875, 346, 90, 14, 1)
+  CoxIter    (115, 600, 1352, 1768, 1508, 875, 346, 90, 14, 1)
+
+Part D. The index [W(K_j) : W_j], as the number of W(K_j)-chambers inside P_j
+  the full chamber has 10 walls, 10 extreme rays, 2 of them ideal
+  the program over the 115 extreme rays: optimum t* = 3/2, maximiser supported on 9 rays with weights of denominator 4
+  the point [-156, 159, 321, 486, 654, 825, 591, -204, -39, -27], square 540, strictly inside all 14 walls
+  123.5 s  the chamber containing an interior point of P_j reached in 23 wall crossings
+  529.0 s  the walk closed: 34560 chambers inside P_j, 144288 enqueued, 109728 refused
+
+  index [W(K_j) : W_j] = 34560
+  the closure of the walk, facet by facet:
+    345600 chamber facets: 235872 shared between two chambers inside P_j, 109728 on the 14 walls of P_j
+    chambers per wall of P_j: [1296, 1296, 8144, 8144, 8144, 8144, 8640, 8640, 8640, 8640, 10000, 10000, 10000, 10000]
+
+Part E. The ideal vertices of P_j (the columns of @thm:sterk-reflection-subgroup-index)
+  13 ideal vertices of P_j, each a vertex of some constituent chamber; chambers per vertex: [128, 128, 128, 128, 1792, 1792, 1792, 1792, 4480, 4480, 8960, 8960, 34560]
+  ideal vertices of the chambers that are not vertices of P_j: 0 distinct, 0 incidences,
+  lying in the relative interior of faces of P_j of dimensions []
+
+cusp 5: [W(K_5) : W_5] = 34560
+Total run time: 533 s
+
+    wall 538 s, exit 0
+
+
+========== cusp 1 ==========
+
+run started 2026-11-16T11:15:53Z
+Sage 11.0.beta5; sage_extensions loaded from /repo/.scratch/se-main/src/sage_extensions/__init__.py, /repo/.scratch/se-main (commit cf6ba0b201a12615acc4aa5cdf7dbee963a59571)
+cusp 1 of Sterk (4.2.3), p. 16.  This run says nothing about the other four cusps.
+
+Part A. The cusp lattice K_j = eta_j^perp / Z eta_j, and the two chambers
+    7.7 s  Gamma_En,2 built: AEGS 2025 Definition 2.6 with Sterk Proposition 2.7
+  cusp vector (1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0) at (4.2.3)'s representative, primitive and isotropic: True
+  K_j: rank 10, determinant -1024, signature (1, 9)
+    7.8 s  reduction image built
+  187.7 s  cusp_chamber at Sterk_1 returned 12 walls
+  187.8 s  fundamental_chamber of W(K_j) returned 10 walls
+
+Part B. P_j is Sterk's diagram, read as a chamber of the library
+  walls of the subgroup's chamber: 12;  Sterk prints 12 for cusp 1
+  squares of the walls: 12 x (-4), 0 x (-2)
+  every wall is a root of K_j, and every wall's reflection lies in G_v: 12 of 12
+  the coordinates read off the lattice vectors reproduce the pairings: checked
+
+Part C. P_j is a Coxeter polytope, and its polytope data against the published data
+  bonds: [(2, 53), (3, 10), ('infinity', 3)];  the diagram is Coxeter's, so @def:covolume applies
+  the cone of P_j: dimension 10, pointed, of trivial lineality --- the assertions of `facet_rays`; so its extreme rays are the vertices of P_j and its interior is nonempty
+  extreme rays 23: 14 finite, 9 ideal;  Sterk's diagram has 9 vertices at infinity
+  f-vector (23, 114, 288, 462, 504, 378, 192, 63, 12, 1)
+  CoxIter    (23, 114, 288, 462, 504, 378, 192, 63, 12, 1)
+
+Part D. The index [W(K_j) : W_j], as the number of W(K_j)-chambers inside P_j
+  the full chamber has 10 walls, 10 extreme rays, 1 of them ideal
+  the program over the 23 extreme rays: optimum t* = 1/2, maximiser supported on 8 rays with weights of denominator 8
+  the point [-38, -42, -97, -144, -192, -285, -232, -177, -120, -61], square 864, strictly inside all 12 walls
+  188.3 s  the chamber containing an interior point of P_j reached in 45 wall crossings
+ 2749.8 s  the walk closed: 269824 chambers inside P_j, 928064 enqueued, 658240 refused
+
+  index [W(K_j) : W_j] = 269824
+  the closure of the walk, facet by facet:
+    2698240 chamber facets: 2040000 shared between two chambers inside P_j, 658240 on the 12 walls of P_j
+    chambers per wall of P_j: [2720, 2720, 43074, 43074, 61983, 61983, 61983, 61983, 79536, 79536, 79824, 79824]
+
+Part E. The ideal vertices of P_j (the columns of @thm:sterk-reflection-subgroup-index)
+  9 ideal vertices of P_j, each a vertex of some constituent chamber; chambers per vertex: [256, 256, 256, 256, 30720, 30720, 69120, 69120, 69120]
+  ideal vertices of the chambers that are not vertices of P_j: 0 distinct, 0 incidences,
+  lying in the relative interior of faces of P_j of dimensions []
+
+cusp 1: [W(K_1) : W_1] = 269824
+Total run time: 2777 s
+
+    wall 2789 s, exit 0
