@@ -473,6 +473,11 @@ the polarization splits $H^2(X,\QQ)$ into its algebraic and
 transcendental parts. Integral orthogonal direct-sum splitting need
 not hold because the two primitive sublattices can be glued through
 their discriminant groups [@Huy16, §§1.2–1.3].
+For a nonprojective compact complex K3 surface, the same orthogonal
+definition of $T(X)$ is available, but $\operatorname{NS}(X)$ need not
+have hyperbolic signature. Consequently its orthogonal complement
+need not be a polarizable, irreducible Hodge structure
+[@Huy16, Ch. 3, §2].
 
 The Hodge conjecture asks, for a smooth projective complex variety
 $X$, whether every rational Hodge class of degree $2p$ is a rational
