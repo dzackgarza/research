@@ -162,3 +162,53 @@ real	2m35.248s
 user	2m32.701s
 sys	0m1.564s
 exit=0
+
+
+========== cusp 5 ==========
+
+Sage 11.0.beta5; sage_extensions loaded from /repo/.scratch/sage-extensions/src/sage_extensions/__init__.py, /repo/.scratch/sage-extensions (commit 1488acfb5636b16c6836828e5f29208d610d3712)
+cusp 5 of Sterk (4.2.3), p. 16.  This run says nothing about the other four cusps.
+
+Part A. The cusp lattice K_j = eta_j^perp / Z eta_j, and the two chambers
+    7.9 s  Gamma_En,2 built: AEGS 2025 Definition 2.6 with Sterk Proposition 2.7
+  cusp vector (2, 2, 0, 0, -4, -5, -7, -10, -8, -6, -4, -2) at (4.2.3)'s representative, primitive and isotropic: True
+  K_j: rank 10, determinant -256, signature (1, 9)
+    8.0 s  reduction image built
+  151.4 s  cusp_chamber at Sterk_5 returned 14 walls
+  151.6 s  fundamental_chamber of W(K_j) returned 10 walls
+
+Part B. P_j is Sterk's diagram, read as a chamber of the library
+  walls of the subgroup's chamber: 14;  Sterk prints 14 for cusp 5
+  squares of the walls: 10 x (-4), 4 x (-2)
+  every wall is a root of K_j, and every wall's reflection lies in G_v: 14 of 14
+  the coordinates read off the lattice vectors reproduce the pairings: checked
+
+Part C. P_j is a Coxeter polytope, and its polytope data against the published data
+  bonds: [(2, 74), (3, 8), (4, 8), ('infinity', 1)];  the diagram is Coxeter's, so @def:covolume applies
+  extreme rays 115: 102 finite, 13 ideal;  Sterk's diagram has 13 vertices at infinity
+  f-vector (115, 600, 1352, 1768, 1508, 875, 346, 90, 14, 1)
+  CoxIter    (115, 600, 1352, 1768, 1508, 875, 346, 90, 14, 1)
+
+Part D. The index [W(K_j) : W_j], as the number of W(K_j)-chambers inside P_j
+  the full chamber has 10 walls, 10 extreme rays, 2 of them ideal
+  the seed point is the positive combination of the 115 extreme rays with constant weights
+  152.5 s  the chamber containing an interior point of P_j reached in 23 wall crossings
+  377.2 s  the walk closed: 34560 chambers inside P_j, 144288 enqueued, 109728 refused
+
+  index [W(K_j) : W_j] = 34560
+  the closure of the walk, facet by facet:
+    345600 chamber facets: 235872 shared between two chambers inside P_j, 109728 on the 14 walls of P_j
+    chambers per wall of P_j: [1296, 1296, 8144, 8144, 8144, 8144, 8640, 8640, 8640, 8640, 10000, 10000, 10000, 10000]
+
+Part E. The ideal vertices of P_j (@qst:sterk-ideal-vertices)
+  13 ideal vertices of P_j, each a vertex of some constituent chamber; chambers per vertex: [128, 128, 128, 128, 1792, 1792, 1792, 1792, 4480, 4480, 8960, 8960, 34560]
+  ideal vertices of the chambers that are not vertices of P_j: 0 distinct, 0 incidences,
+  lying in the relative interior of faces of P_j of dimensions []
+
+cusp 5: [W(K_5) : W_5] = 34560
+Total run time: 381 s
+
+real	6m24.557s
+user	6m20.698s
+sys	0m3.726s
+exit=0

@@ -494,6 +494,7 @@ assert seed_ok, "the chamber containing the point of P_j is not inside P_j"
 assert inside_by_polar(current, subgroup_walls, gram)
 stamp("the chamber containing an interior point of P_j reached in %d wall crossings" % flips)
 chambers_in_p = {}
+adjacency = {}
 stack, enqueued, refused = [current], 0, 0
 seen = {key_mirrors(current)}
 while stack:
@@ -505,14 +506,21 @@ while stack:
     if not polar_ok:
         refused += 1
         continue
-    chambers_in_p[key_mirrors(chamber)] = (chamber, rays)
+    here = key_mirrors(chamber)
+    chambers_in_p[here] = (chamber, rays)
+    # the facet across each wall of the chamber, keyed now: the closure below is then a dictionary
+    # comparison and not a second walk over every facet of every chamber, which at cusp 5 is 345 600
+    # facets and costs minutes of the ten this record is allowed.
+    links = []
     for index in range(len(chamber)):
         neighbour = across(chamber, index, gram)
         key = key_mirrors(neighbour)
+        links.append((key, key_ray(chamber[index])))
         if key in seen:
             continue
         seen.add(key)
         stack.append(neighbour)
+    adjacency[here] = links
 index_of_the_subgroup = len(chambers_in_p)
 stamp("the walk closed: %d chambers inside P_j, %d enqueued, %d refused"
       % (index_of_the_subgroup, enqueued, refused))
@@ -523,25 +531,21 @@ if j == 2:
         "Sterk 4.3.6 states O(H + E8(-2)) = {+-1} W_{e'}, so the index at cusp 2 is 1")
 
 print("  the closure of the walk, facet by facet:")
+mirrors = {key_ray(wall) for wall in subgroup_walls}
 interior, boundary, per_mirror = 0, 0, {}
-for key, (chamber, _rays) in chambers_in_p.items():
-    for index in range(len(chamber)):
-        neighbour_key = key_mirrors(across(chamber, index, gram))
+for key, links in adjacency.items():
+    for neighbour_key, mirror in links:
         if neighbour_key in chambers_in_p:
-            assert key_mirrors(across(across(chamber, index, gram),
-                                      [i for i in range(len(chamber))
-                                       if key_ray(across(chamber, index, gram)[i])
-                                       == key_ray(chamber[index])][0], gram)) == key, (
-                "crossing a mirror twice does not return the chamber")
+            assert any(other == key for other, _mirror in adjacency[neighbour_key]), (
+                "crossing a mirror twice does not return the chamber", key, neighbour_key)
             interior += 1
             continue
-        mirror = key_ray(chamber[index])
-        assert mirror in {key_ray(wall) for wall in subgroup_walls}, (
+        assert mirror in mirrors, (
             "a facet of a chamber inside P_j is not on the boundary of P_j", mirror)
         boundary += 1
         per_mirror[mirror] = per_mirror.get(mirror, 0) + 1
 assert interior % 2 == 0
-assert len(per_mirror) == len({key_ray(wall) for wall in subgroup_walls}), (
+assert len(per_mirror) == len(mirrors), (
     "a wall of P_j carries no facet, so it was not needed")
 assert index_of_the_subgroup * len(full_walls) == interior + boundary, (
     "the facets of the chambers do not distribute over P_j")
