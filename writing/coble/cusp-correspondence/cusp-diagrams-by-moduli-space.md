@@ -110,6 +110,31 @@ At cusp $2$ of $\fentwo$, the facet of the unique white node $r_{10}$ has the ni
 Sterk's cusp diagram for $\fentwo$.
 :::
 
+::: {#fig-k3-cusp-18-2-0-vinberg .figure}
+\begin{tikzpicture}
+\pic[root labels=index] {object=coxeter/vinberg-18-2-0};
+\end{tikzpicture}
+
+The $22$-node Vinberg diagram of $(18,2,0)_1$, with indices $1$ through $22$ used for its diagram automorphisms.
+:::
+
+The degree-four K3 cusp with boundary lattice $(18,0,0)_1\cong U\oplus E_8^2$ has the following Vinberg diagram. Its two maximal parabolic subdiagrams have types $2\widetilde E_8$ and $\widetilde D_{16}$, giving the two one-cusp types adjacent to this zero-cusp.
+
+::: {#fig-k3-cusp-18-0-0-vinberg .figure}
+\begin{tikzpicture}
+\pic {object=coxeter/vinberg-18-0-0};
+\end{tikzpicture}
+
+The canonical Vinberg diagram of $(18,0,0)_1$, reconstructed from the archived `Vinberg1` example.
+:::
+
+::: {#fig-k3-cusp-18-0-0-parabolics .figure}
+\input{tikz/dissertation/coxeter_diagrams/18_0_0_Parabolic1.tikz}
+\input{tikz/dissertation/coxeter_diagrams/18_0_0_Parabolic2.tikz}
+
+The two maximal parabolic subdiagrams of $(18,0,0)_1$.
+:::
+
 ::: {.example #ex:sterk-isotropic-divisibilities title="Divisibilities of the Sterk isotropic vectors"}
 
 The isotropic vectors that represent the cusps of @fig-sterk-cusp-diagram have the following divisibilities in $\ten$ and in $T_{\Kthree}$.
@@ -131,4 +156,38 @@ The isotropic vectors that represent the cusps of @fig-sterk-cusp-diagram have t
 \end{tikzpicture}
 
 Cusp diagram for $\fttz$.
+:::
+
+In @fig-220-cusp-diagram, a single arrow from a zero-cusp $[\ZZ e]$ to a one-cusp $[\Pi]$ means that the $2$-elementary discriminant ranks of $e^\perp/e$ and $\Pi^\perp/\Pi$ agree. A double arrow means that the rank drops by $2$ on passage to $\Pi^\perp/\Pi$ [@AE22, §§5C–5D]. This arrow convention records a discriminant change; Scattone's incidence multiplicity $\mu$ is defined separately in @sec-scattone-cusp-method.
+
+The forgetful cusp maps from $\fentwo$ can be read in the following two source-native composites. Under $\fentwo\to\fen$, cusp $1$ maps to the $E_{10}(2)$ boundary lattice and cusps $2$--$5$ map to $U\oplus E_8(2)$. Under $\fentwo\to\fttz$, cusp $2$ maps to $U\oplus E_8^2$ and cusps $1,3,4,5$ map to $U(2)\oplus E_8^2$ (@prop:fen2-folded-coxeter; @ex:sterk-isotropic-divisibilities).
+
+::: {#fig-sterk-to-enriques-cusp-map .figure}
+\input{tikz/dissertation/cusp_correspondence_one.tex}
+
+The cusp diagram of $\fentwo$ above that of $\fen$ under the forgetful map.
+:::
+
+::: {#fig-sterk-to-k3-cusp-map .figure}
+\input{tikz/dissertation/cusp_correspondence_two.tex}
+
+The cusp diagram of $\fentwo$ above that of $\fttz$ under the forgetful map.
+:::
+
+The general polarized K3 moduli spaces of degrees two and four have different Baily–Borel boundaries. In both cases there is one zero-cusp. The degree-two space has four one-cusps (@prop:scattone-niemeier-complements); the degree-four space has nine, with generalized complement types listed in @sec-scattone-cusp-method.
+
+::: {#fig-degree-two-k3-cusp-diagram .figure}
+\begin{tikzpicture}
+\pic {object=bb-cusps/f2};
+\end{tikzpicture}
+
+The four one-cusps incident to the zero-cusp of the degree-two K3 moduli space.
+:::
+
+::: {#fig-degree-four-k3-cusp-diagram .figure}
+\begin{tikzpicture}
+\pic {object=bb-cusps/f4};
+\end{tikzpicture}
+
+The nine one-cusps incident to the zero-cusp of the degree-four K3 moduli space.
 :::
