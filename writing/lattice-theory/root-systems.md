@@ -133,8 +133,15 @@ $$
 ::: {.example #ex:D16-discriminant-form title="The discriminant form of $D_{16}$"}
 Number the simple roots $\alpha_1,\ldots,\alpha_{16}$ of $D_{16}$ so that
 $\alpha_1-\cdots-\alpha_{14}$ is the long chain and $\alpha_{15}$ and
-$\alpha_{16}$ are its two terminal branches at $\alpha_{14}$. In the
-negative-definite convention of @conv:root-sign, put
+$\alpha_{16}$ are its two terminal branches at $\alpha_{14}$.
+
+:::: {#fig-D16-simple-roots .figure}
+\input{tikz/fig_D16_simple_roots.tex}
+
+The numbered $D_{16}$ Dynkin diagram.
+::::
+
+In the negative-definite convention of @conv:root-sign, put
 $$
 x=\frac12(\alpha_1+\alpha_3+\cdots+\alpha_{13}+\alpha_{15}),
 \qquad

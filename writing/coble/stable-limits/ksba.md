@@ -73,6 +73,119 @@ For $k = 1, \dots, 5$ let $G_k$ be the folded Coxeter diagram of the $0$-cusp $k
 4. The irreducible components of a Type II stable limit are described by the relevant connected components of the maximal parabolic subdiagrams of $G_k$ [@AEGS25, §7.4].
 :::
 
+## Three Type III quotient models
+
+Write $B_k(\ell)$ for a folding-symmetric polarized integral affine sphere
+at the $k$-th Enriques $0$-cusp. In the following examples
+$\widetilde V_i$ is a component of the K3 Kulikov central fiber,
+$V_i$ its component in the Enriques dlt quotient, and $\overline V_i$
+the component after stable contraction [@AEGS25, §4.4].
+
+::: {.example #ex:ias-cusp-three-stable-limit title="The diagonal cusp-three model"}
+At cusp $3$ take
+$$
+\ell=(2,0^{15},2,4,6,4,0,4)\in(\ZZ_{\geq0})^{22}.
+$$
+The moment polygon has successive edge vectors
+$(3,-3),(2,2),(-3,3),(-2,-2)$; their sum is zero. Symington
+surgeries of sizes $(1,2,3,2)$ on those edges give $P(\ell)$, and
+$B_3(\ell)=P(\ell)\cup P(\ell)^{\mathrm{op}}$. Its five singularities
+and the two involution equators are shown in @fig-sterk3-ias.
+The del Pezzo equator has weight $2$ and gives $R_{\IA}$
+[@AEGS25, Ex. 4.13].
+
+The dlt quotient has eight components. In cyclic order along the
+Enriques equator they are
+$$
+V_1,V_2,V_4,V_6,V_8,V_7,V_5,V_3.
+$$
+Each double curve along this cycle contains two $A_1$ points of the
+adjacent quotient components.
+The pairs $(\widetilde V_6,\widetilde D_6)$ and
+$(\widetilde V_7,\widetilde D_7)$ are twofold corner blowups of
+$\FF_6$; $(\widetilde V_1,\widetilde D_1)$ is the four-corner blowup
+of the anticanonical square in $\PP^1\times\PP^1$.
+The pairs $(\widetilde V_4,\widetilde D_4)$ and
+$(\widetilde V_5,\widetilde D_5)$ are $\FF_2$.
+The pair $(\widetilde V_8,\widetilde D_8)$ resolves an $A_{15}$
+surface: it is the sixteenfold internal blowup of $\FF_8$ at
+involution-symmetric points of a section of square $8$.
+
+The pairs $(\widetilde V_2,\widetilde D_2)$ and
+$(\widetilde V_3,\widetilde D_3)$ are internal blowups of opposite
+sides of an anticanonical square in $\PP^1\times\PP^1$. For the
+Enriques involution $(x,y)\mapsto(x^{-1},-y)$ to lift, the two
+blowup points $p,q$ must be exchanged, so $y(p)=-y(q)$. This is
+the anti-invariant period condition at the crossed node of cusp $3$.
+
+The quotient ramification divisor is supported on
+$V_1\cup_{D_{18}}V_8$, with $R\cdot D_{18}=1$,
+$R_1^2=0$ and $R_8^2=8$; its K3 preimage on
+$\widetilde V_8$ has square $16$.
+Stable contraction sends $V_2,\ldots,V_7$ to points and contracts
+$V_1$ along a ruling. The stable surface has one irreducible
+component, with normalization $\overline V_8$ and anticanonical
+boundary $\overline D_8\cong\PP^1$ self-glued by an involution
+fixing $0$ and $\infty$ [@AEGS25, Ex. 4.13].
+:::
+
+::: {.example #ex:ias-cusp-five-stable-limit title="The cusp-five model"}
+At cusp $5$ take
+$$
+\ell=(0,0,2,0^7,1,0^3,1,0,0,0,2,0,2,6)
+\in(\ZZ_{\geq0})^{22}.
+$$
+The polygon has successive vectors $(2,0),(-1,1),(-1,0),(0,-1)$,
+whose sum is zero. A surgery of size $1$ on the $(-1,1)$ edge
+gives $P(\ell)$ and hence $B_5(\ell)$. All four components of the
+Kulikov central fiber are preserved by the Enriques involution.
+The pairs $(\widetilde V_3,\widetilde D_3)$ and
+$(\widetilde V_4,\widetilde D_4)$ are corner blowups of $D_4$
+involution pairs; $(\widetilde V_2,\widetilde D_2)$ is a corner
+blowup of a $D_8$ pair. The pair
+$(\widetilde V_1,\widetilde D_1)$ is an internal blowup of
+opposite fibers of an anticanonical square in $\FF_2$, with
+the blowup points exchanged by the involution.
+The K3 ramification squares are
+$$
+\widetilde R_1^2=0,\qquad \widetilde R_2^2=8,\qquad
+\widetilde R_3^2=\widetilde R_4^2=4.
+$$
+In the stable Enriques limit only $V_1$ is contracted, along
+a ruling. The surviving $V_3,V_4$ have type
+$D_4:2={}_2'B_2^-$ and $V_2$ has type
+$D_8:2={}_2'B_4^-$ [@AEGS25, Ex. 4.14 and §6].
+:::
+
+::: {.example #ex:ias-cusp-two-stable-limit title="The non-simple cusp-two model"}
+At cusp $2$ take
+$$
+\ell=(0,1,0^7,2,0^7,1,0)\in(\ZZ_{\geq0})^{19}.
+$$
+The successive vectors $(0,1),(-2,0),(0,-1)$ are closed by a
+horizontal base of vector $(2,0)$; no positive-size Symington
+surgery is needed. The central horizontal segment is fixed by
+the del Pezzo affine involution but is outside the support of
+$R_{\IA}$, as required by the non-simple mirror
+[@AEGS25, §4.2 and Ex. 4.15].
+
+The K3 preimages of $V_2$ and $V_3$ each have two components
+exchanged by the Enriques involution, so their periods have no
+involution constraint. The pair $(V_2,D_2)$ is
+$(\FF_1,\widehat L+C)$, where $\widehat L$ is the strict transform
+of a line in $\PP^2$ and $C$ is a conic. Up to two corner blowups,
+$(V_3,D_3)$ is the $D_8$ pair of @ex:ias-cusp-five-stable-limit.
+The other two quotient pairs are images of the Enriques equator
+and are toric involution quotients for
+$(x,y)\mapsto(x^{-1},-y)$.
+
+Only $V_3$ survives the stable contraction. Its normalization has
+double locus $\overline D_3\cong\PP^1\cup\PP^1$, a banana curve;
+each component is self-glued by an involution fixing its two nodes.
+The surviving ramification divisor has square $\overline R_3^2=8$
+[@AEGS25, Ex. 4.15].
+:::
+
 ## A worked integral affine structure
 
 ::: {.example #ex:type-ii-ias-41 title="The Type II ray at the $1$-cusp $41$"}
@@ -91,6 +204,11 @@ $$
 two copies of the same $\wD_8$ involution pair glued along the elliptic curves $E \in \abs{-K_{\wV_1}}$ with a twist by $2$-torsion.
 
 The Enriques involution flips the segment $\Gamma(\mcx_0)$, so the Enriques equator is not a subcomplex of $\Gamma(\mcx_0)$ [@AEGS25, Ex. 4.16].
+The quotient central fiber $\mcz_0$ is nonnormal. Its normalization is
+$(\wV_1,E)$, and the conductor curve $E$ is self-glued by translation
+by the nonzero $2$-torsion point. In this example the dlt quotient is
+already the stable model: $\overline{\mcz}_0=\mcz_0$
+[@AEGS25, Ex. 4.16].
 :::
 
 ## The polarized Coble locus
