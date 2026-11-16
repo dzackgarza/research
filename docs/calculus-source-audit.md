@@ -319,3 +319,33 @@ the specified doubling and involution data. These are preserved design
 contracts and historical implementation observations. This migration does
 not assert that their runtime specimens were executed. The mixed notes are
 therefore retained rather than trashed.
+
+### Native archive retirement
+
+The transferred prose and source corrections are committed in research
+`593390c250`; historical implementation references are clarified in
+`29240414df`. The full book completed both render passes. Its external-link
+check exposed obsolete PDF addresses in the earlier period-domain chapter;
+`53baecb203` preserves their titles and page references and updates the
+author-hosted Borcherds link. The affected chapter was rendered again. The
+source gate, external-link check, and a complete rendered-site check of local
+files and fragment targets then passed. External requests that time out or
+reject automated clients remain subject to the existing gate's limitations.
+
+The archive index and TeX entrypoint were redirected to the book in notes
+`d9f24326b`. Each native source was checked against its original blob above,
+trashed individually, and committed only after the semantic comparisons and
+render checks. Each recovery copy in `~/.local/share/Trash/files/` has the
+same basename and Git blob hash as its source.
+
+| Native source | Retirement commit in notes |
+| --- | --- |
+| `100_BB.tex` | `be902b63a` |
+| `110_boundary.tex` | `bc1cf13bf` |
+| `160_IAS.tex` | `9a07fdfb4` |
+| `170_KPP.tex` | `7cca50097` |
+| `180_KSBA.tex` | `31f18e549` |
+
+This records verification and retirement at these revisions. The shared
+figure sources and the mixed implementation notes retain their distinct
+roles described above.
