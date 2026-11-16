@@ -172,3 +172,43 @@ The completed chapter and transfer comparison were committed as research `f13223
 | E | `e1070f76e` | `~/.local/share/Trash/files/140_HSD.tex` |
 
 All source paths C/D/E are absent. Their Git blobs above remain a second recovery route. Attachment files remain in their original directories; the mathematical content of every embedded image is represented by the correspondence above.
+
+## Arithmetic and modular-form source transfer
+
+The following sources are relative to `research/docs/theory/`. The Git blobs
+record their complete pre-transfer contents. The first five destinations are
+under `writing/lattice-theory/arithmetic/`; the last is directly under
+`writing/`.
+
+| Source and destination basename | Source Git blob | Semantic comparison |
+| --- | --- | --- |
+| `integral-lattice-algorithms.md` | `581d6d6a11bce9006e3a226ad1ea05ac9724a0c5` | All four source versions; existence versus explicit isometry; specified orbit action; class counts versus mass; independent mathematical acceptance and formal ownership. |
+| `integral-trace-lattices.md` | `1162918123e50c5619df7754c1183b40d7dcb32f` | Trace pairing, signed discriminant, cyclic classification including wild ramification, abelian conductor/parity criterion, real signature, maximal-order versus power-basis index, explicit unimodular map, and family restriction. |
+| `indefinite-binary-class-numbers.md` | `53f34667cd1e1d1734a1556eac630672bc1cca03` | Proper classes, nonmaximal orders, average bound, Pell regulator formula, effective-constant and exhaustion distinctions, exact analytic errors, Gram sign, and narrow-class conventions. |
+| `kneser-neighbors-and-orthogonal-modular-forms.md` | `467f0bb673118f508caf354d54d53f22f8c3b49c` | Cusps and positive-definite quotients, proper/oriented classes, historical genus API and enumeration cap, mass equality, singular-weight identity, character and H1 boundaries, multiplicities, independent cusp vector, and the undetected-error calculation. |
+| `finite-automorphism-groups-and-polynomial-certificates.md` | `8d93a8b51b159a7c853f2a445ec3d1af7e173f3a` | Graph hypotheses, polynomial infeasibility, Nullstellensatz identity, solver/prover/verifier distinction, complexity, faithful lattice actions, kernel and lift obligations, infinite-group limitation, and formal acceptance ownership. |
+| `modular-forms-and-hecke-operators.md` | `db08ce5684d062e7c7e43a9c9ac6f97b2dbeef00` | Every object and lead: congruence groups and Schreier generation, curves, cusp widths, modular and adelic forms, Hecke algebra, Euler factors, analytic continuation, point counts and zeta functions, modularity, Jacobians, isogenies, complex torsion, literature, and software entry points. |
+
+An independent comparison checked the arithmetic pages against their full
+source notes and the four cited preprint versions. The theorem hypotheses
+agree with Zhang Theorem 1.1, Diao Theorem 1.1 and §1.1,
+Müller–Scheithauer Theorem 5.4, and Drecun Theorem 4. These works were imported
+through Zotero as `Zha26`, `Dia26`, `MS26`, and `Dre26`. The modular-form
+comparison checked its expanded claims against the local Diamond–Shurman
+and Silverman texts. The original modular note marked its claims unchecked;
+the book supplies the missing hypotheses and sources, including cusp widths,
+bad-prime conventions, Fricke eigenforms, and the field of definition of an
+isogeny. The right-coset Schreier formula is stated explicitly as
+`ts = h t'`.
+
+The arithmetic prose remains close to its source wording. The former
+`sage_extensions/categories/lattices.py` discussion is explicitly historical,
+preserving its interface and observed bounds without claiming that the old
+path is a current implementation. Programme ownership still points to
+`INTENT.md`. No runtime computation is inferred from the archived API account.
+
+The source gate passed with these pages registered in the book. All six
+pages rendered successfully after their cross-reference targets were built.
+Chromium found no MathJax errors or unresolved cross-references on those
+renders; the modular chapter was also inspected visually. Source retirement
+is recorded only after the book changes have been committed.
