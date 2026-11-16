@@ -1350,7 +1350,7 @@ Then
 
 2. the subgroups of $\Orth(v^{\perp T_\Co}/\generators{v})$ and of $\Orth((v')^{\perp T_\Co}/\generators{v'})$ induced by those stabilizers are mapped onto one another by the isometry $\bar g$ that $g$ induces on the quotients;
 
-3. consequently the subgroups $G\leq\Orth(\latI_{1,8}(2))$ of @qst:sterk-reflection-subgroup at the polarized $0$-cusps are conjugate, and they have equal index.
+3. consequently the subgroups $G\leq\Orth(\latI_{1,8}(2))$ induced by those stabilizers at the polarized $0$-cusps are conjugate, and they have equal index.
 :::
 
 ::: {.remark title="The normality this uses fails on the Enriques side"}

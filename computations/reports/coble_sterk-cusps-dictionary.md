@@ -134,14 +134,15 @@ Three columns need their page stated exactly:
 - **Wall counts:** 12, 10, 12, 11, 14 are Sterk's, read from the plates of Figs 4, 6, 8, 10 and 12 on
   pp. 19, 21, 22, 23 and 24 and recorded in this tree at `sec-coxiter-results-for-cusp-lattices`
   (CoxIter runs on the folded diagrams, "Vertices" column: 12, 10, 12, 11, 14) and in
-  `qst:sterk-reflection-subgroup`. The plate pages carry no caption text and their figures are not in
+  `thm:sterk-reflection-subgroup-index`. The plate pages carry no caption text and their figures are not in
   the text layer: the counts come from `pdftoppm` renders at 300 dpi, and all five now have an input
   in `computations/coxiter/` — `Sterk1`, `Sterk2`, `Sterk3`, `Sterk4`, `Sterk5`. Cusps 1, 3, 4 and 5
   are checked against the reconstruction of their roots, by
   `computations/reports/coble_sterk-cusp-coxiter-inputs.py` for 1, 4 and 5 and by
   `computations/reports/coble_sterk3-coxiter-input.py` for 3; `Sterk2.coxiter` predates this batch and
-  is not checked. The subgroup-chamber script below is still not run, and now only because the
-  chamber of a prescribed subgroup is the operation this tree does not have.
+  is not checked. The chamber of a prescribed reflection subgroup is `cusp_chamber()` on
+  `sage_extensions` main (sage-extensions#297, closed), and `coble_sterk-reflection-subgroup-index.py`
+  runs it at every cusp, together with the index of that subgroup in `W(K_j)`.
 - **Signature line:** the five entries $9,1,2$; $9,1,0$; $9,1,2$; $9,1,1$; $9,1,4$ of
   `sec-coxiter-results-for-cusp-lattices` are $(n_+,n_-,n_0)$ of the *sign-flipped* Gram of Sterk's
   roots, $-x\cdot y$ — rank 10, nine space-like and one time-like direction, and the third entry the
@@ -164,8 +165,12 @@ That operation is no longer needed: the reflection subgroup of $G_v$ is generate
 orthogonal to $v$ (Alexeev--Engel--Garza--Schaffler, Definition 3.6), and Vinberg's algorithm restricted to the
 printed root set is `computations/reports/coble_sterk-reflection-subgroups.py`, whose transcript
 `coble_sterk-reflection-subgroups-run.txt` gives the chambers. Its result is on the page
-(@thm:sterk-reflection-subgroups): in Sterk's own representatives all five printed wall sets are roots of
-$T_\En$ orthogonal to his $\eta_j$, each certified in $\gent$ at some lift of its quotient class
+(@thm:sterk-reflection-subgroups): at Sterk's own vectors all five printed wall sets are roots of
+$T_\En$ orthogonal to the vector the figure is drawn at — at cusp $4$ that is 4.3.8's
+$2e'+f'+\bar\alpha_1$ and not (4.2.3)'s $e'+2f'+\gamma$, since three of Fig. 10's walls pair
+$4,-2,-4$ with the latter and are not classes of the boundary lattice there —
+each certified in $\gent$ at some lift of its quotient class
 (`computations/reports/coble_sterk-root-lifts.py`), and they bound finite-covolume polytopes whose vertex
 counts match the recorded CoxIter $f$-vectors; the folded diagrams of the source are the diagrams they
-draw. Cusps 1, 3 and 4 still have no chamber written as a polyhedron (sage-extensions#312, #297).
+draw. The chamber is now written as a polyhedron at every cusp, by `cusp_chamber()` at the pin recorded in
+`coble_sterk-reflection-subgroup-index-run.txt` (sage-extensions#312 and #297 are closed).

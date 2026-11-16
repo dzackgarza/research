@@ -51,11 +51,11 @@ The Coxeter diagram of $S_\Co$ has exactly two maximal parabolic subdiagrams, $\
 Which of the two classes does the Coble structure distinguish, and how does the pair of subdiagrams match the boundary data of the degree-$2$ polarized moduli space?
 :::
 
-::: {.question title="Open problem: the reflection group of each Sterk fundamental domain"}
+::: {.remark title="The reflection group of each Sterk fundamental domain"}
 
-Sterk's published fundamental domains for the five cusps of $\fentwo$ have $12, 10, 12, 11, 14$ walls [@Ste91], while Vinberg's algorithm applied to the corresponding hyperbolic quotients $\eta_j^{\perp\ten}/\eta_j$ returns ten walls in each case (@sec-sterk-root-counts-and-computed-chambers).
-The quotients for $j = 2,3,4,5$ are mutually isometric, so their full Weyl groups are conjugate and cannot account for four inequivalent published diagrams.
-For each $j$, identify the reflection subgroup $W_j\leq W(\eta_j^{\perp\ten}/\eta_j)$ for which the published diagram bounds a fundamental domain, exhibit that domain as a union of chambers of the full group, and determine the index $[W(\eta_j^{\perp\ten}/\eta_j) : W_j]$ as a covolume ratio.
+Sterk's published fundamental domains for the five cusps of $\fentwo$ have $12, 10, 12, 11, 14$ walls [@Ste91], while the full reflection group of each quotient $\eta_j^{\perp\ten}/\eta_j$ has a ten-wall chamber (@sec-sterk-root-counts-and-computed-chambers).
+The quotients for $j = 2,3,4,5$ are mutually isometric, so their full Weyl groups are conjugate and cannot account for four inequivalent published diagrams: the datum that does is the reflection subgroup $W_j\leq W(\eta_j^{\perp\ten}/\eta_j)$ induced by the stabilizer of $\eta_j$, and it is identified by @thm:sterk-reflection-subgroups.
+What the diagram does not supply is the index: @thm:sterk-reflection-subgroup-index exhibits each published domain as a union of $[W(\eta_j^{\perp\ten}/\eta_j) : W_j]$ chambers of the full group and counts the ideal vertices of the constituent chambers against those of the domain.
 :::
 
 ### General questions on hyperbolic reflection groups
@@ -97,7 +97,7 @@ Find:
 
 - the relation between $\vol(P)$ and the maximal parabolic structure of $\Sigma$;
 
-- a covolume computation sharp enough to decide the index $[W : W_j]$ of a reflection subgroup. What is settled without it is the group: by [@AEGS25] each published diagram is the folded Enriques diagram $G(\bar T_\dP)^{J_j}$, the diagram of $W(\Gamma_{\En,2,\eta_j})$, and @thm:sterk-reflection-subgroups checks that identification against every root Sterk prints and against his five diagrams' vertex counts. What the covolume would add is the index itself; the chamber as a polyhedron is owed at cusps $1$, $3$ and $4$ (sage-extensions#312, #297).
+- a covolume computation sharp enough to decide the index $[W : W_j]$ of a reflection subgroup. What is settled without it is the group: by [@AEGS25] each published diagram is the folded Enriques diagram $G(\bar T_\dP)^{J_j}$, the diagram of $W(\Gamma_{\En,2,\eta_j})$, and @thm:sterk-reflection-subgroups checks that identification against every root Sterk prints and against his five diagrams' vertex counts. What the covolume would add is the index itself, and that index is now counted rather than measured: @thm:sterk-reflection-subgroup-index obtains $[W(K_j):W_j]$ from the chamber decomposition at all five cusps, and the chamber as a polyhedron is available there through `cusp_chamber()` on `sage_extensions` main (sage-extensions#312 and #297 are closed).
 :::
 
 ::: {.question #qst:regularized-theta title="Open problem: theta series of indefinite lattices"}
