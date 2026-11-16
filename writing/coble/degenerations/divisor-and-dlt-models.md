@@ -14,6 +14,17 @@ $$
 [@AEGS25, Def. 4.7].
 :::
 
+For a fixed Picard–Lefschetz transform $\lambda$, the construction of
+[@AEGS25, Remark 4.11] establishes half-divisor models for generic
+degenerations. On a nongeneric Kulikov model the Enriques involution may
+extend only birationally; this can happen already in Type I when the
+central fiber acquires a $(-2)$-curve. Contracting the $ADE$
+configurations that form its indeterminacy locus makes the involution
+regular on the resulting model. Its quotient is generally dlt rather
+than a Kulikov-type normal crossings model. Thus @def:dlt-model applies
+after the regular action has been obtained; it does not assert that
+every chosen Kulikov model carries one.
+
 ::: {.definition #def:dlt-involution-pair title="dlt models and involution pairs"}
 
 For Enriques surface degenerations we study *involution pairs* $(X, D, \iota)$, where $X$ is the K3 cover limit, $D$ is the boundary, and $\iota$ is the involution.
