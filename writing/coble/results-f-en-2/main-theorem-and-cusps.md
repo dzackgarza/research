@@ -252,9 +252,10 @@ The remaining roots are $v_{21}$, $v_{22}$, and $v_{18}+v_{20}$.
 Thus the archived cusp-$1$ table's use of $e,f$ in those two middle
 rows is a coordinate error. For cusp $2$, the corresponding folded
 roots are $w_1+w_{17},\ldots,w_8+w_{10}$, then $w_9$ and
-$w_{18}+w_{19}$. For cusps $3$--$5$, the corrected fold sums and the
-published parabolic incidences are recorded in the exact pairing audit
-and the figures below; the archived partial tables have unresolved
+$w_{18}+w_{19}$. For cusps $3$--$5$, the corrected fold sums are
+recorded in the exact pairing audit, and the published parabolic
+incidences appear in @sec-cusp-diagrams-by-moduli-space. The archived
+partial tables have unresolved
 entries and do not determine those foldings.
 
 ::: {.remark title="The alternate completeness calculation in the Nagoya draft"}
