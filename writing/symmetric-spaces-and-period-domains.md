@@ -262,6 +262,10 @@ Start instead with $\mathbb R^{1,n}$ and $q(x)=x_0^2-\sum_{j=1}^nx_j^2$. The loc
 
 The full isometry group is the sheet-preserving subgroup $\operatorname O^{\mathrm{sheet}}(1,n)$, isomorphic to $\operatorname{PO}(1,n)$: in each pair $\{g,-g\}$ exactly one preserves $H^+$. Thus the hyperboloid has dimension $n$.
 
+![The two sheets of the hyperboloid $q=-1$ in the opposite-sign convention of $\mathbb R^{2,1}$.](/rendered/fig_hyperbolic_quadric.png){#fig-hyperbolic-two-sheets}
+
+![A positive cone and one normalized sheet in $\mathbb R^{1,2}$.](/rendered/fig_hyperboloid_sheet.png){#fig-hyperboloid-cone-sheet}
+
 Stereographic projection from $(-1,0,\ldots,0)$ gives the Poincaré ball
 model. With $x=(x_0,x_1,\ldots,x_n)\in H^+$, its map and inverse are
 \[
