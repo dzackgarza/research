@@ -65,6 +65,16 @@ P_D=\{m\in M_{\mathbb R}:\langle m,u_\rho\rangle\geq-a_\rho\text{ for all }\rho\
 $$
 Its lattice points index a basis $\{\chi^m:m\in P_D\cap M\}$ of $H^0(X_\Sigma,\mathcal O(D))$ when $D$ is Cartier. A compatible integral linear function on each cone is the Cartier condition. Set $\psi_D(u_\rho)=-a_\rho$. For a complete fan, $D$ is basepoint free exactly when $\psi_D$ is the minimum of its linear pieces, and ample exactly when this minimum is strictly piecewise linear across every wall. This is concavity in the usual analytic convention; toric references call it *upper convexity*. Thus arbitrary facet coefficients do not by themselves make a divisor Cartier or ample [@CLS11, §§4.2, 6.1].
 
+For any normal toric variety, the invariant divisors present its class group:
+$$
+M\longrightarrow\operatorname{Div}_T(X_\Sigma)
+=\bigoplus_{\rho\in\Sigma(1)}\mathbb ZD_\rho
+\longrightarrow\operatorname{Cl}(X_\Sigma)\longrightarrow0,
+\qquad m\longmapsto\operatorname{div}(\chi^m)
+=\sum_{\rho\in\Sigma(1)}\langle m,u_\rho\rangle D_\rho.
+$$
+The first map is injective when the ray generators span $N_{\mathbb R}$; otherwise a character can be invertible on all of $X_\Sigma$ and have zero divisor. The matrix of primitive ray generators therefore computes the class group, including its torsion [@CLS11, §4.1].
+
 For a smooth complete $n$-dimensional toric variety, the divisor sequence gives
 $$
 0\longrightarrow M\longrightarrow\mathbb Z^{\Sigma(1)}
