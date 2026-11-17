@@ -156,6 +156,26 @@ print("endpoint edges:", len(incidence), "flag orbits:", len(flag_orbits))
 assert len(incidence) == len(flag_orbits) == 13
 assert all(multiplicity == 1 for multiplicity in incidence.values())
 
+# The kernel incidence graph is not the 13-edge G_Co quotient graph. Its
+# vertices are the 527 individual nonzero isotropic classes c and all 189720
+# individual decorated planes (J,s); its edges are exactly c in J. Check
+# both vertex degrees directly from the full finite-plane enumeration. This
+# provides an independent expected degree sequence for the public kernel
+# incidence operation, without pretending to return its integral witnesses.
+line_degrees = {c: 0 for c in SINGULAR}
+for J in PLANES:
+    assert len(J) == 3
+    for c in J:
+        line_degrees[c] += 8
+assert len(line_degrees) == 527
+assert set(line_degrees.values()) == {1080}
+kernel_plane_count = sum(len(o) for o in decorated_orbits)
+kernel_edge_count = 3 * kernel_plane_count
+assert kernel_plane_count == 189720
+assert kernel_edge_count == 569160 == sum(line_degrees.values())
+print("kernel incidence: line vertices %d degree %d; plane vertices %d degree 3; edges %d" %
+      (len(line_degrees), next(iter(line_degrees.values())), kernel_plane_count, kernel_edge_count))
+
 # Optional exact lift of the *public integral plane representatives* to their
 # stars, not just their undecorated finite-plane types. Invoke this script
 # through Sage with VERIFY_PUBLIC_PLANES=True after saving the public workflow

@@ -30,3 +30,4 @@ endpoint incidence by decorated-plane orbit (vector orbit sizes):
   plane size  69120: [(120, 1), (270, 1)]
   plane size  75600: [(135, 1), (270, 1)]
 endpoint edges: 13 flag orbits: 13
+kernel incidence: line vertices 527 degree 1080; plane vertices 189720 degree 3; edges 569160
