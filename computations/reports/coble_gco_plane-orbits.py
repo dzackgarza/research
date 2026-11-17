@@ -26,6 +26,7 @@ coble_gco_plane-orbits-public-run.txt.
 import itertools
 
 import numpy as np
+from sage.all import GF, PermutationGroup, matrix as sage_matrix
 
 E8_EDGES = [(1, 3), (3, 4), (4, 5), (5, 6), (6, 7), (7, 8), (2, 4)]
 G = np.zeros((10, 10), dtype=int)
@@ -49,6 +50,20 @@ SINGULAR = [n for n in range(1, 1024) if Q[n] == 0]
 PLANES = {frozenset((u, v, u ^ v)) for u in SINGULAR for v in SINGULAR
           if u < v and BETA[u, v] == 0 and Q[u ^ v] == 0}
 print("nonzero singular vectors:", len(SINGULAR), " totally singular planes:", len(PLANES))
+
+# An independent Schreier--Sims order computation certifies the size of the
+# *generated* finite group, not just the orbit partitions of its generators.
+# Restriction to the nonzero singular vectors is faithful: those vectors
+# span the full 10-dimensional F_2-space (verified below), so an isometry
+# acting trivially on them is the identity.
+assert sage_matrix(GF(2), [VEC[n].tolist() for n in SINGULAR]).rank() == 10
+singular_index = {n: i + 1 for i, n in enumerate(SINGULAR)}
+generated_group = PermutationGroup([
+    [singular_index[g[n]] for n in SINGULAR] for g in GENS
+])
+generated_order = int(generated_group.order())
+assert generated_order == 696729600
+print("order of nine-generator finite G_Co image:", generated_order)
 
 
 def orbits(points, act):
@@ -106,6 +121,9 @@ assert sum(len(o) for o in decorated_orbits) == 8 * len(PLANES)
 assert sum(len(o) for o in flag_orbits) == 24 * len(PLANES)
 print("star-decorated plane orbits:", len(decorated_orbits), sorted(len(o) for o in decorated_orbits))
 print("star-decorated flag orbits:", len(flag_orbits), sorted(len(o) for o in flag_orbits))
+for orbit_family in (vector_orbits, plane_orbits, decorated_orbits, flag_orbits):
+    assert all(generated_order % len(o) == 0 for o in orbit_family)
+print("orbit-stabilizer divisibility for all four finite orbit families:", True)
 
 # Resolve the integral orbit fibres over the five *undecorated* finite-plane
 # types, rather than inferring the seven integral orbits from their total.
