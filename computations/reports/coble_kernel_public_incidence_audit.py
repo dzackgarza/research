@@ -14,6 +14,7 @@ Usage:
 """
 import argparse
 import ast
+import hashlib
 import json
 from collections import Counter
 from itertools import combinations
@@ -204,6 +205,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if args.log is not None:
         audit(args.log, class_only=args.class_only)
+        with args.log.open("rb") as source_file:
+            print(f"audited log SHA-256: {hashlib.file_digest(source_file, 'sha256').hexdigest()}")
     else:
         repository = "dzackgarza/sage-extensions"
         status = json.loads(subprocess.run(
@@ -222,4 +225,6 @@ if __name__ == "__main__":
                     check=True, stdout=output,
                 )
             audit(log, class_only=args.class_only)
+            with log.open("rb") as source_file:
+                print(f"audited log SHA-256: {hashlib.file_digest(source_file, 'sha256').hexdigest()}")
         print(f"public workflow {args.run_id} at {status['headSha']} verified")
