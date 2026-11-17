@@ -91,20 +91,31 @@ def main():
     initial = star_sets[0]
     assert all(frozenset(act(g, x) for x in initial) == initial for g in S.gens())
     orbit = {initial}
+    orbit_words = {initial: ()}
     frontier = [initial]
     while frontier:
         star = frontier.pop()
-        for g in F.gens():
+        for i, g in enumerate(F.gens()):
             moved = frozenset(act(g, x) for x in star)
             if moved not in orbit:
                 orbit.add(moved)
+                orbit_words[moved] = orbit_words[star] + (i,)
                 frontier.append(moved)
     assert orbit == set(star_sets)
+    # Each word is a concrete coset representative in F/S.  Replaying it
+    # from the base star must give exactly the corresponding integral star.
+    representatives = [orbit_words[star] for star in star_sets]
+    for star, word in zip(star_sets, representatives):
+        current = initial
+        for i in word:
+            current = frozenset(act(F.gens()[i], x) for x in current)
+        assert current == star
     print("ambient finite image order:", Q.order())
     print("finite plane stabilizer order:", F.order())
     print("integral plane stabilizer image order:", S.order())
     print("proper image index in finite plane stabilizer:", F.order() // S.order())
     print("characteristic stars in the F/S orbit:", len(orbit))
+    print("finite F/S coset representative words:", [list(w) for w in representatives])
     print("integral plane orbit count:", Q.order() // S.order())
 
 

@@ -134,12 +134,14 @@ def test_proper_integral_plane_stabilizer_image():
     transcript = (folder / "coble_proper_plane_stabilizer_image-run.txt").read_bytes()
     assert result.stdout.encode() == transcript
     assert hashlib.sha256(transcript).hexdigest() == (
-        "38287243a6100df785edb2f977a9c5330a5e6211ab9cddd0c1e84e0abe3036d6")
+        "ae05bf38787c79f0fbc1ab76820f94be064a38aab3cf1e48eeb68b27c36e5744")
     assert "ambient finite image order: 46998591897600" in result.stdout
     assert "finite plane stabilizer order: 1981808640" in result.stdout
     assert "integral plane stabilizer image order: 247726080" in result.stdout
     assert "proper image index in finite plane stabilizer: 8" in result.stdout
     assert "characteristic stars in the F/S orbit: 8" in result.stdout
+    assert ("finite F/S coset representative words: [[], [9, 6], [9], "
+            "[9, 12, 4, 5], [9, 12, 4], [9, 7], [9, 12], [0]]") in result.stdout
     assert "integral plane orbit count: 189720" in result.stdout
 
 
