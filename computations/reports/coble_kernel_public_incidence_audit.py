@@ -37,6 +37,31 @@ LABELS = ("Otilde", "Otilde+")
 EXPECTED = (569160, 527, 189720)
 
 
+def _exact_matrix_product(a, b):
+    """Multiply eleven-dimensional integer matrices without Sage."""
+    return [[sum(a[i][k] * b[k][j] for k in range(11))
+             for j in range(11)] for i in range(11)]
+
+
+def _exact_reflection(root):
+    """Integral root reflection in the public T_Co basis."""
+    n = pairing(root, root)
+    assert abs(n) == 4
+    coefficients = [2 * pairing(tuple(int(i == j) for i in range(11)), root)
+                    for j in range(11)]
+    assert all(c % n == 0 for c in coefficients)
+    return [[int(i == j) - root[i] * (coefficients[j] // n)
+             for j in range(11)] for i in range(11)]
+
+
+def _exact_reflection_word(word, generators):
+    result = [[int(i == j) for j in range(11)] for i in range(11)]
+    for index in word:
+        assert type(index) is int and 0 <= index < len(generators)
+        result = _exact_matrix_product(_exact_reflection(generators[index]), result)
+    return result
+
+
 def audit_integral_shard(path: Path, *, allow_incomplete: bool = False) -> int:
     """Independently verify a compressed exact transporter shard, without trusting its producer."""
     folder = Path(__file__).resolve().parent
@@ -48,6 +73,10 @@ def audit_integral_shard(path: Path, *, allow_incomplete: bool = False) -> int:
               for r in lines["representatives"]}
     roots = [tuple(r) for r in lines["generator_roots_standard"]]
     seeds = planes["base_planes_standard"]
+    seed_roots = planes["seed_reflection_roots_standard"]
+    stabilizer = planes["plane_stabilizer_generators_standard"]
+    parabolic_roots = lines["vector_stabilizer_ten_roots_standard"]
+    line_rows = {r["mask_diagonal"]: r for r in lines["representatives"]}
     assert len(source) == len(lines["representatives"]) == 527
     assert len(planes["finite_plane_transports"]) == 23715 and len(seeds) == 8
     finite_keys = [tuple(r["finite_plane_masks"])
@@ -62,6 +91,9 @@ def audit_integral_shard(path: Path, *, allow_incomplete: bool = False) -> int:
     change = lines["standard_to_diagonal"]
     basis = [tuple(int(i == j) for i in range(11)) for j in range(11)]
     digest = hashlib.sha256()
+    plane_word_cache = {}
+    line_word_cache = {}
+    identity = [[int(i == j) for j in range(11)] for i in range(11)]
     with gzip.open(path, "rb") as stream:
         header = json.loads(next(stream))
         assert header["schema"] == "coble-exact-kernel-transport-shard-v1"
@@ -153,6 +185,32 @@ def audit_integral_shard(path: Path, *, allow_incomplete: bool = False) -> int:
                     assert minor > 0
             g = row["positive_kernel_matrix_standard"]
             kernel = row["kernel_matrix_standard"]
+            if plane_index not in plane_word_cache:
+                plane_word_cache.clear()
+                plane_word_cache[plane_index] = _exact_reflection_word(
+                    planes["finite_plane_transports"][plane_index]["word_from_base"], roots)
+            line_mask = row["line_mask_diagonal"]
+            if line_mask not in line_word_cache:
+                line_word_cache[line_mask] = _exact_reflection_word(
+                    line_rows[line_mask]["word_from_base"], roots)
+            seed_map = (identity if row["seed_index"] == 0 else
+                        _exact_reflection(seed_roots[row["seed_index"] - 1]))
+            flag_map = [identity, stabilizer[-2], stabilizer[-1]][row["flag_index"]]
+            ambient_times_line = _exact_matrix_product(
+                _exact_matrix_product(plane_word_cache[plane_index], seed_map), flag_map)
+            correction = identity
+            for factor in row["parabolic_correction_word"]:
+                assert len(factor) == 2
+                root_index, exponent = factor
+                assert type(root_index) is type(exponent) is int
+                assert 0 <= root_index < len(parabolic_roots)
+                assert exponent != 0
+                reflection = _exact_reflection(parabolic_roots[root_index])
+                if exponent % 2:
+                    correction = _exact_matrix_product(reflection, correction)
+            assert _exact_matrix_product(
+                _exact_matrix_product(kernel, line_word_cache[line_mask]), correction
+            ) == ambient_times_line, "parabolic correction word does not reconstruct kernel"
             assert g == (kernel if row["kernel_real_spinor_sign"] == 1 else
                          [[sum(flip[i][k] * kernel[k][j] for k in range(11))
                            for j in range(11)] for i in range(11)])

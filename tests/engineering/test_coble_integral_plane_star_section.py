@@ -392,3 +392,22 @@ def test_complete_single_plane_shard_is_independently_certified(tmp_path, plane_
         cwd=folder.parents[1], capture_output=True, text=True,
     )
     assert invalid.returncode != 0 and "repeated line class" in invalid.stderr
+    forged = tmp_path / "forged-word.jsonl.gz"
+    with gzip.open(output, "rt", encoding="utf-8") as stream:
+        original = [json.loads(line) for line in stream]
+    original[1]["parabolic_correction_word"] = [[0, 1]]
+    digest = hashlib.sha256()
+    with gzip.open(forged, "wt", encoding="utf-8") as stream:
+        stream.write(json.dumps(original[0], separators=(",", ":")) + "\n")
+        for row in original[1:-1]:
+            encoded = json.dumps(row, separators=(",", ":")) + "\n"
+            digest.update(encoded.encode())
+            stream.write(encoded)
+        original[-1]["records_sha256"] = digest.hexdigest()
+        stream.write(json.dumps(original[-1], separators=(",", ":")) + "\n")
+    invalid = subprocess.run(
+        ["python3", str(folder / "coble_kernel_public_incidence_audit.py"),
+         "--shard", str(forged)],
+        cwd=folder.parents[1], capture_output=True, text=True,
+    )
+    assert invalid.returncode != 0 and "parabolic correction word" in invalid.stderr
