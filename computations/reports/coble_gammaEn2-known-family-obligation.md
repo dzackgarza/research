@@ -190,9 +190,10 @@ generator, a negative index its inverse), while the existing `plane_of`
 finite-class verification remained intact. The same exact subgroup orbit
 computation returned **nine** orbits, and this time **all nine actual
 integral plane representatives were materialized**, each passing the
-public `is_primitive()` test. The executed transcript is
-`/tmp/coble_signed_word_probe.log`; the isolated runtime patch is
-`.tmp/coble_signed_word_probe.py` (git-ignored). This confirms the
+public `is_primitive()` test. The complete executed transcript is committed as
+`computations/reports/coble_gammaEn2-signed-word-probe-run.txt`; the isolated
+runtime patch is `.tmp/coble_signed_word_probe.py` (git-ignored), and the
+original diagnostic log is `/tmp/coble_signed_word_probe.log`. This confirms the
 provider consumer-format defect and its correction, but the correction
 is not yet integrated into the provider source or its tests.
 
