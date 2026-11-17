@@ -71,7 +71,7 @@ tags:
 
 | Unknown | Stated in |
 |:---|:---|
-| **The families $F_{\Co,n}$ for $2\leq n\leq 10$** | @sec-coble-families-research-program; the constraint of @cor:coble-table-reflectivity |
+| **A polarizing divisor positive on the fixed locus, for the $g = 0$ rows** | @qst:coble-n-polarizing-divisor |
 | **Nodal Enriques surfaces** | @sec-nodal-enriques-moduli-program |
 | **Halphen surfaces of index $2$** | @sec-halphen-index-2-moduli-program |
 | **The Dolgachev--Zhang classification** | beside @qst:coble-mukai-naturality |
