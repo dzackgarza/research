@@ -202,5 +202,7 @@
       "file_sha256": "d932e1fa94907cbfba2508afe8772eacd37f94f58df433926ddd79eeccef9062",
       "records_sha256": "e54f7da2e8d45e5d3e2e2952755ccbcc75182e0029521cc8de577311d4c73c87"
     }
-  ]
+  ],
+  "sage_image": "ghcr.io/dzackgarza/sage:develop",
+  "sage_image_digest": "sha256:12e5716067b5cf2fd34c00e9ba97e9c09d51a70664de817f4ae29743b64c5f61"
 }

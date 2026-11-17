@@ -25,6 +25,9 @@ def test_complete_integral_flag_certificate_manifest():
     assert manifest["plane_certificate_sha256"] == hashlib.sha256(
         (folder / "coble_plane_integral_star_section.json").read_bytes()).hexdigest()
     assert manifest["artifact_id"] == 14371631974
+    assert manifest["sage_image"] == "ghcr.io/dzackgarza/sage:develop"
+    assert manifest["sage_image_digest"] == (
+        "sha256:12e5716067b5cf2fd34c00e9ba97e9c09d51a70664de817f4ae29743b64c5f61")
     assert manifest["total_edges"] == 569160
     assert manifest["shard_count"] == len(manifest["shards"]) == 32
     assert [row["index"] for row in manifest["shards"]] == list(range(32))
