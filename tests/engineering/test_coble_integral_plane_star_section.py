@@ -34,6 +34,7 @@ def test_all_coble_integral_plane_star_words():
     assert len(base) == 8 and len(rows) == 23715
     assert len({tuple(row["finite_plane_masks"]) for row in rows}) == 23715
     assert len({tuple(star) for star in stars}) == 8
+    root_masks = [mask(root) for root in roots]
     assert flag_coefficients == [[1, 0], [0, 1], [1, 1]]
     assert len(rows) * len(base) * len(flag_coefficients) == 569160
     base_key = key(*base[0])
@@ -49,6 +50,19 @@ def test_all_coble_integral_plane_star_words():
 
     for row in rows:
         a, b = [list(v) for v in base[0]]
+        J = tuple(row["finite_plane_masks"])
+        transformed_stars = set()
+        for star in stars:
+            image = []
+            for x in star:
+                for i in row["word_from_base"]:
+                    root_mask = root_masks[i]
+                    if (x & root_mask).bit_count() % 2:
+                        x ^= root_mask
+                image.append(min(x, x ^ J[0], x ^ J[1], x ^ J[2]))
+            assert len(set(image)) == 7
+            transformed_stars.add(tuple(sorted(image)))
+        assert len(transformed_stars) == 8
         for i in row["word_from_base"]:
             assert 0 <= i < 10
             root = roots[i]
