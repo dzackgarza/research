@@ -22,6 +22,7 @@ EDGE = re.compile(
 DECIDED = re.compile(
     r"\[(Otilde\+?)\] decided: (\d+) edges over (\d+) line cusps and (\d+) plane cusps"
 )
+ROW_PREFIX = re.compile(r"\[(Otilde\+?)\] (line cusp|plane cusp|edge|decided):?\s")
 SUMMARY = (
     "recorded counts: Otilde 569160 edges over 527 line and 189720 plane cusps; "
     "Otilde+ 569160 edges over 527 line and 189720 plane cusps"
@@ -132,6 +133,10 @@ def audit(path: Path) -> None:
                 label, edges, lines, planes = match.groups()
                 assert label not in decided, label
                 decided[label] = tuple(map(int, (edges, lines, planes)))
+                continue
+            # A malformed public witness line must not disappear from the
+            # audit just because its syntax did not match the strict parser.
+            assert ROW_PREFIX.search(line) is None, ("unparsed public row", line[:240])
     assert summaries == 1, ("final successful two-row summary", summaries)
     for label in LABELS:
         assert vertices[label]["line"] == set(range(EXPECTED[1])), (label, "line vertices")
