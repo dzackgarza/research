@@ -5,14 +5,20 @@ Input: log of sage-extensions' coble_gamma_co_2_incidence_rows.py
 for the integral witnesses in this check.
 """
 import argparse
+import ast
 from collections import Counter
+from itertools import combinations
+from math import gcd
 from pathlib import Path
 import re
 
 LABELS = ("Otilde", "Otilde+")
 EXPECTED = (569160, 527, 189720)
 VERTEX = re.compile(r"\[(Otilde\+?)\] (line|plane) cusp (\d+):")
-EDGE = re.compile(r"\[(Otilde\+?)\] edge (\d+): L(\d+) < P(\d+);")
+EDGE = re.compile(
+    r"\[(Otilde\+?)\] edge (\d+): L(\d+) < P(\d+); "
+    r"line=(\(\(.*?\),\)); plane=(\(\(.*?\)\))"
+)
 DECIDED = re.compile(
     r"\[(Otilde\+?)\] decided: (\d+) edges over (\d+) line cusps and (\d+) plane cusps"
 )
@@ -20,6 +26,15 @@ SUMMARY = (
     "recorded counts: Otilde 569160 edges over 527 line and 189720 plane cusps; "
     "Otilde+ 569160 edges over 527 line and 189720 plane cusps"
 )
+E8_EDGES = ((0, 2), (1, 3), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7))
+
+
+def pairing(x: tuple, y: tuple) -> int:
+    """Integral pairing of <2> + U(2) + E8(-2) in the public basis."""
+    e, f = x[3:], y[3:]
+    return (2 * x[0] * y[0] + 2 * (x[1] * y[2] + x[2] * y[1])
+            - 4 * sum(e[i] * f[i] for i in range(8))
+            + 2 * sum(e[a] * f[b] + e[b] * f[a] for a, b in E8_EDGES))
 
 
 def audit(path: Path) -> None:
@@ -42,8 +57,33 @@ def audit(path: Path) -> None:
                 continue
             match = EDGE.search(line)
             if match:
-                label, position, line_id, plane_id = match.groups()
+                label, position, line_id, plane_id, line_source, plane_source = match.groups()
                 position, line_id, plane_id = map(int, (position, line_id, plane_id))
+                (v,) = ast.literal_eval(line_source)
+                p, q = ast.literal_eval(plane_source)
+                assert len(v) == len(p) == len(q) == 11, (label, position, "rank")
+                assert gcd(*v) == 1, (label, position, "line primitive")
+                assert pairing(v, v) == pairing(p, p) == pairing(p, q) == pairing(q, q) == 0, (
+                    label, position, "isotropy"
+                )
+                minor_gcd = 0
+                pivot = None
+                for a, b in combinations(range(11), 2):
+                    minor = p[a] * q[b] - p[b] * q[a]
+                    if minor and pivot is None:
+                        pivot = (a, b, minor)
+                    minor_gcd = gcd(minor_gcd, minor)
+                    if minor_gcd == 1:
+                        break
+                assert minor_gcd == 1, (label, position, "plane primitive")
+                # A primitive rank-two plane contains v iff all rank-three
+                # minors of [v,p,q] vanish. One nonzero 2x2 pivot suffices.
+                assert pivot is not None
+                a, b, determinant = pivot
+                assert all(v[c] * determinant
+                           - v[a] * (p[c] * q[b] - p[b] * q[c])
+                           - v[b] * (p[a] * q[c] - p[c] * q[a]) == 0
+                           for c in range(11)), (label, position, "line-in-plane")
                 assert position not in positions[label], (label, position)
                 positions[label].add(position)
                 pair = (line_id, plane_id)
