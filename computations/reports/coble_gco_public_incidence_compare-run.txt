@@ -4,6 +4,7 @@ public plane types computed directly from integral representatives: {0: 'ABC', 1
 public integral line isotropy and primitivity checks: 4
 public line types computed directly from integral representatives: {0: 'B', 1: 'D', 2: 'A', 3: 'C'}
 public edge witness line-in-plane inclusions checked: 13
+public edge witness discriminant types match both endpoints: 13
 finite source edges verified against committed transcript: 13
 public edges: 13 finite edges: 13
 graph isomorphisms: 4

@@ -117,11 +117,11 @@ if "--verify-public-source" in sys.argv:
     # Verify the displayed inclusion by checking all 3x3 minors of the
     # augmented coordinate matrix, and verify that its plane is primitive.
     edge_rows = re.findall(
-        r"\[Gamma_\{Co,2\}\] edge \d+: L\d+ < P\d+; line=(\(\(.*?\),\)); plane=(\(\(.*?\)\))",
+        r"\[Gamma_\{Co,2\}\] edge (\d+): L(\d+) < P(\d+); line=(\(\(.*?\),\)); plane=(\(\(.*?\)\))",
         log,
     )
     assert len(edge_rows) == 13
-    for line_source, plane_source in edge_rows:
+    for edge_idx, line_idx, plane_idx, line_source, plane_source in edge_rows:
         (v,) = ast.literal_eval(line_source)
         p, q = ast.literal_eval(plane_source)
         assert len(v) == len(p) == len(q) == 11
@@ -135,7 +135,15 @@ if "--verify-public-source" in sys.argv:
                            - v[b] * (p[a] * q[c] - p[c] * q[a])
                            + v[c] * (p[a] * q[b] - p[b] * q[a]))
             assert determinant == 0
+        # These witnesses must also have the finite discriminant type of
+        # the public orbit vertices that the workflow claims they realize.
+        assert vector_type(v) == directly_computed_lines[int(line_idx)]
+        witness_plane_type = "".join(sorted(map(vector_type, (
+            p, q, tuple(a + b for a, b in zip(p, q)),
+        ))))
+        assert witness_plane_type == directly_computed[int(plane_idx)]
     print("public edge witness line-in-plane inclusions checked:", len(edge_rows))
+    print("public edge witness discriminant types match both endpoints:", len(edge_rows))
 
 # Verify the other copied edge set against the committed finite enumeration.
 finite_log = Path(__file__).with_name("coble_gco_plane-orbits-run.txt").read_text()

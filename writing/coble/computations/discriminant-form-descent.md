@@ -387,6 +387,8 @@ The source-verification mode additionally checks the **integral** properties of 
 
 For every one of the thirteen public incidence edges, the workflow also prints a separate *witness* line and plane. The comparison now parses these twenty-six witness objects, checks that each line is primitive isotropic and each plane is primitive totally isotropic, and verifies the line lies in the rational span of the plane by vanishing of every $3\times3$ minor of the augmented three-by-eleven coordinate matrix. Since the plane is primitive in $T_\Co$, rational-span membership of an integral vector is equivalent to membership in that plane. Thus the thirteen reported incidences are independently verified as actual integral line-in-plane inclusions, not only as an abstract graph or a relation of finite discriminant classes.
 
+The witness calculation also checks the discriminant labels of the *witness objects themselves* against those of both public orbit vertices named by each edge. For every edge $L_i<P_j$, the primitive witness line has the same $A,B,C,D$ type as the representative of $L_i$, and the witness plane has the same three-letter finite type as the representative of $P_j$. These checks use the actual coordinate rows in the workflow log; they do not identify the two distinct integral plane orbits of type $AAA$ or $ADD$ from the finite type alone. Their distinction is instead supplied by the public integral orbit computation and the separate decorated-plane graph comparison.
+
 ::: {.definition #def:stabilizer-congruence-data title="The congruence data of a lattice stabilizer"}
 
 Let $V$ be a finite-dimensional vector space over $\bQ$ with a nondegenerate symmetric bilinear form $\beta$.
