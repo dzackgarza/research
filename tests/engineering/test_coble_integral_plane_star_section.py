@@ -8,6 +8,8 @@ from itertools import combinations
 from math import gcd
 from pathlib import Path
 
+import pytest
+
 
 def test_all_coble_integral_plane_star_words():
     folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
@@ -85,6 +87,8 @@ def test_all_coble_integral_plane_star_words():
     sample = section["ambient_transporter_sample"]
     sample_matrix = sample["matrix_standard"]
     kernel_matrix = sample["kernel_matrix_standard"]
+    positive_matrix = sample["positive_kernel_matrix_standard"]
+    spinor_flip_matrix = sample["spinor_flip_matrix_standard"]
     assert len(sample_matrix) == 11 and all(len(r) == 11 for r in sample_matrix)
     sample_line, = (r for r in data["representatives"]
                     if r["mask_diagonal"] == sample["line_mask_diagonal"])
@@ -95,6 +99,13 @@ def test_all_coble_integral_plane_star_words():
     assert [sum(kernel_matrix[i][j] * line_vector[j] for j in range(11))
             for i in range(11)] == flag_vector
     assert all(kernel_matrix[i][j] % 2 == int(i == j)
+               for i in range(11) for j in range(11))
+    assert [sum(positive_matrix[i][j] * line_vector[j] for j in range(11))
+            for i in range(11)] == flag_vector
+    assert [sum(spinor_flip_matrix[i][j] * flag_vector[j] for j in range(11))
+            for i in range(11)] == flag_vector
+    assert all(positive_matrix[i][j] % 2 == int(i == j)
+               and spinor_flip_matrix[i][j] % 2 == int(i == j)
                for i in range(11) for j in range(11))
     assert pairing(flag_vector, flag_vector) == 0 and gcd(*flag_vector) == 1
     assert mask(flag_vector) == sample["line_mask_diagonal"]
@@ -107,6 +118,8 @@ def test_all_coble_integral_plane_star_words():
             assert sum(sample_matrix[k][i] * gram[k][l] * sample_matrix[l][j]
                        for k in range(11) for l in range(11)) == gram[i][j]
             assert sum(kernel_matrix[k][i] * gram[k][l] * kernel_matrix[l][j]
+                       for k in range(11) for l in range(11)) == gram[i][j]
+            assert sum(positive_matrix[k][i] * gram[k][l] * positive_matrix[l][j]
                        for k in range(11) for l in range(11)) == gram[i][j]
     # Independently reconstruct both matrices from the finite-plane word,
     # seed reflection, GL2 flag map, line word, and parabolic correction.
@@ -143,6 +156,18 @@ def test_all_coble_integral_plane_star_words():
         ) ** exponent) * parabolic_word
     correction = line_word * parabolic_word * line_word.inverse()
     assert reconstructed_ambient * correction.inverse() == matrix(ZZ, kernel_matrix)
+    diagonal_kernel = diagonal_change * matrix(ZZ, kernel_matrix) * inverse_change
+    diagonal_flip = diagonal_change * matrix(ZZ, spinor_flip_matrix) * inverse_change
+    diagonal_positive = diagonal_change * matrix(ZZ, positive_matrix) * inverse_change
+    positive_minor = lambda m: m[0, 0] * m[1, 1] - m[0, 1] * m[1, 0]
+    assert positive_minor(diagonal_flip) < 0
+    assert positive_minor(diagonal_positive) > 0
+    sign = 1 if positive_minor(diagonal_kernel) > 0 else -1
+    assert sign == sample["kernel_real_spinor_sign"]
+    assert matrix(ZZ, positive_matrix) == (
+        matrix(ZZ, kernel_matrix) if sign == 1 else
+        matrix(ZZ, spinor_flip_matrix) * matrix(ZZ, kernel_matrix)
+    )
     def quotient_class(x):
         return min(x, x ^ base_key[0], x ^ base_key[1], x ^ base_key[2])
 
@@ -202,22 +227,31 @@ def test_all_coble_integral_plane_star_words():
     assert sum(line_degrees.values()) == 569160
 
 
-def test_requested_nondefault_kernel_transporter():
+@pytest.mark.parametrize("plane_index,seed_index,flag_index", [(100, 3, 1), (0, 0, 0)])
+def test_requested_nondefault_kernel_transporter(plane_index, seed_index, flag_index):
     """The executable computes a second exact edge without rewriting its certificate."""
     folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
     certificate = folder / "coble_plane_integral_star_section.json"
     before = hashlib.sha256(certificate.read_bytes()).digest()
     result = subprocess.run(
-        ["sage", str(folder / "coble_plane_integral_star_section.py"), "100", "3", "1"],
+        ["sage", str(folder / "coble_plane_integral_star_section.py"),
+         str(plane_index), str(seed_index), str(flag_index)],
         cwd=folder.parents[1], capture_output=True, text=True, check=True,
     )
     assert hashlib.sha256(certificate.read_bytes()).digest() == before
     marker = "requested integral kernel transporter: "
     record, = (json.loads(line.split(marker, 1)[1])
                for line in result.stdout.splitlines() if marker in line)
-    assert record["seed_index"] == 3 and record["flag_index"] == 1
+    assert record["seed_index"] == seed_index and record["flag_index"] == flag_index
     assert record["line_mask_diagonal"] in record["finite_plane_masks"]
     kernel = record["kernel_matrix_standard"]
+    positive = record["positive_kernel_matrix_standard"]
     assert all(kernel[i][j] % 2 == int(i == j)
+               and positive[i][j] % 2 == int(i == j)
                for i in range(11) for j in range(11))
+    lines = json.loads((folder / "coble_singular_integral_representatives.json").read_text())
+    line, = (row["vector_standard"] for row in lines["representatives"]
+             if row["mask_diagonal"] == record["line_mask_diagonal"])
+    assert [sum(positive[i][j] * line[j] for j in range(11))
+            for i in range(11)] == record["flag_vector_standard"]
     assert record["parabolic_correction_word"]

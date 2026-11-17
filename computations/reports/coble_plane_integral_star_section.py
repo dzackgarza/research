@@ -213,6 +213,40 @@ assert sample_kernel_transporter*vector(ZZ,sample_line_row['vector_standard'])==
 assert sample_kernel_transporter.transpose()*standard_gram*sample_kernel_transporter==standard_gram
 assert all((int(sample_kernel_transporter[i,j])&1)==int(i==j)
            for i in range(11) for j in range(11))
+
+# Explicit spinor-negative kernel element fixing the chosen flag.
+# On U1+U2+D, -id on U2 fixes e1 and reduces to identity modulo 2.
+# Conjugate it through the integral seed/flag/plane transporter.
+tau_coordinates=identity_matrix(ZZ,11)
+tau_coordinates[2,2]=tau_coordinates[3,3]=-1
+tau_base=to_standard*T*tau_coordinates*T.inverse()*change
+flag_conjugator=sample_plane_word*sample_seed_reflection*sample_flag_map
+tau_flag=flag_conjugator*tau_base*flag_conjugator.inverse()
+assert tau_flag*sample_flag==sample_flag
+assert tau_flag.transpose()*standard_gram*tau_flag==standard_gram
+assert all((int(tau_flag[i,j])&1)==int(i==j)
+           for i in range(11) for j in range(11))
+
+# In diagonal signature (2,9), the normalized real spinor sign is
+# the orientation of the projected positive two-plane: the sign of
+# the determinant of the upper-left 2x2 block. This determinant cannot
+# vanish because an isometry maps positive planes to positive planes.
+kernel_diagonal=change*sample_kernel_transporter*to_standard
+tau_diagonal=change*tau_flag*to_standard
+kernel_minor=kernel_diagonal[0,0]*kernel_diagonal[1,1]-kernel_diagonal[0,1]*kernel_diagonal[1,0]
+tau_minor=tau_diagonal[0,0]*tau_diagonal[1,1]-tau_diagonal[0,1]*tau_diagonal[1,0]
+assert kernel_minor!=0 and tau_minor<0
+kernel_spinor_sign=1 if kernel_minor>0 else -1
+positive_kernel=(sample_kernel_transporter if kernel_spinor_sign==1 else
+                 tau_flag*sample_kernel_transporter)
+positive_diagonal=change*positive_kernel*to_standard
+positive_minor=(positive_diagonal[0,0]*positive_diagonal[1,1]-
+                positive_diagonal[0,1]*positive_diagonal[1,0])
+assert positive_minor>0
+assert positive_kernel*vector(ZZ,sample_line_row['vector_standard'])==sample_flag
+assert positive_kernel.transpose()*standard_gram*positive_kernel==standard_gram
+assert all((int(positive_kernel[i,j])&1)==int(i==j)
+           for i in range(11) for j in range(11))
 output=folder/'coble_plane_integral_star_section.json'
 sample_record={
  'finite_plane_masks':sample_plane['finite_plane_masks'],
@@ -223,7 +257,10 @@ sample_record={
  'matrix_standard':[list(map(int,row)) for row in sample_transporter.rows()],
  'parabolic_correction_word':[list(factor) for factor in correction_word],
  'kernel_matrix_standard':[
-  list(map(int,row)) for row in sample_kernel_transporter.rows()]}
+  list(map(int,row)) for row in sample_kernel_transporter.rows()],
+ 'kernel_real_spinor_sign':kernel_spinor_sign,
+ 'spinor_flip_matrix_standard':[list(map(int,row)) for row in tau_flag.rows()],
+ 'positive_kernel_matrix_standard':[list(map(int,row)) for row in positive_kernel.rows()]}
 if (sample_plane_index,sample_seed_index,sample_flag_index)==(-1,7,2):
  output.write_text(json.dumps({'source':'coble_singular_integral_representatives.json',
  'base_planes_standard':[[list(map(int,to_standard*a)),list(map(int,to_standard*b))] for a,b in base],
@@ -242,5 +279,6 @@ print('integral flag representatives specified by words:',len(rows)*len(base)*le
 print('exact integral plane stabilizer finite image order:',stabilizer_image_order)
 print('exact integral ambient line-to-flag transporter sample:',sample_line_mask)
 print('exact integral kernel line-to-flag transporter word length:',len(correction_word))
+print('exact positive-spinor kernel transporter verified:',positive_minor>0)
 if (sample_plane_index,sample_seed_index,sample_flag_index)!=(-1,7,2):
  print('requested integral kernel transporter:',json.dumps(sample_record,separators=(',',':')))
