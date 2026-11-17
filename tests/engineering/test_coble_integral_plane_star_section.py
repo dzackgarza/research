@@ -344,3 +344,26 @@ def test_bounded_compressed_shard_is_explicitly_incomplete(tmp_path):
         stream.write(json.dumps(bad[-1], separators=(",", ":")) + "\n")
     with pytest.raises(AssertionError):
         audit.audit_integral_shard(corrupted, allow_incomplete=True)
+
+
+def test_complete_single_plane_shard_is_independently_certified(tmp_path):
+    """A full 24-edge shard must pass the strict auditor, not the diagnostic mode."""
+    folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
+    output = tmp_path / "complete.jsonl.gz"
+    subprocess.run(
+        ["sage", str(folder / "coble_plane_integral_star_section.py"),
+         "shard", "0", "23715", str(output)],
+        cwd=folder.parents[1], capture_output=True, text=True, check=True,
+    )
+    with gzip.open(output, "rt", encoding="utf-8") as stream:
+        header = json.loads(next(stream))
+        assert header["expected_edges"] == 24
+        assert header["complete"] is False
+        records = [json.loads(line) for line in stream]
+    assert len(records) == 25
+    assert records[-1]["complete"] is True and records[-1]["records"] == 24
+    subprocess.run(
+        ["python3", str(folder / "coble_kernel_public_incidence_audit.py"),
+         "--shard", str(output)],
+        cwd=folder.parents[1], capture_output=True, text=True, check=True,
+    )

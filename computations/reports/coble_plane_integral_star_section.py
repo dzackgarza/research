@@ -13,6 +13,10 @@ For a compressed exact-certificate shard (optional last argument is a
 diagnostic record limit, not a complete certificate). The transcript contains
 the original line/plane indices and exact integral transporter matrices:
     sage computations/reports/coble_plane_integral_star_section.py shard 0 8 shard-0.jsonl.gz
+Independently audit a completed shard (the final count/digest trailer is required):
+    python3 computations/reports/coble_kernel_public_incidence_audit.py --shard shard-0.jsonl.gz
+For a deliberately truncated diagnostic, use --allow-incomplete on the auditor;
+this does not certify the missing edges or the public library operation.
 """
 import argparse
 import gzip
