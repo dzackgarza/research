@@ -2,15 +2,23 @@
 
 Input: log of sage-extensions' coble_gamma_co_2_incidence_rows.py
 --rows Otilde,Otilde+ --lattice Tco. No finite enumeration substitutes
-for the integral witnesses in this check.
+for the integral witnesses in this check. When given a GitHub run ID,
+require a successful completed run and fetch its actual log before auditing.
+
+Usage:
+    python3 computations/reports/coble_kernel_public_incidence_audit.py --run-id RUN
+    python3 computations/reports/coble_kernel_public_incidence_audit.py --log LOG
 """
 import argparse
 import ast
+import json
 from collections import Counter
 from itertools import combinations
 from math import gcd
 from pathlib import Path
 import re
+import subprocess
+import tempfile
 
 LABELS = ("Otilde", "Otilde+")
 EXPECTED = (569160, 527, 189720)
@@ -161,5 +169,28 @@ def audit(path: Path) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("log", type=Path)
-    audit(parser.parse_args().log)
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument("--log", type=Path, help="saved complete public workflow log")
+    source.add_argument("--run-id", type=int, help="fetch a successful public workflow run")
+    args = parser.parse_args()
+    if args.log is not None:
+        audit(args.log)
+    else:
+        repository = "dzackgarza/sage-extensions"
+        status = json.loads(subprocess.run(
+            ["gh", "run", "view", str(args.run_id), "-R", repository,
+             "--json", "status,conclusion,headSha"],
+            check=True, text=True, capture_output=True,
+        ).stdout)
+        assert status["status"] == "completed" and status["conclusion"] == "success", (
+            "public run did not succeed", args.run_id, status
+        )
+        with tempfile.TemporaryDirectory(prefix="coble-public-kernel-") as directory:
+            log = Path(directory) / "workflow.log"
+            with log.open("w", encoding="utf-8") as output:
+                subprocess.run(
+                    ["gh", "run", "view", str(args.run_id), "-R", repository, "--log"],
+                    check=True, stdout=output,
+                )
+            audit(log)
+        print(f"public workflow {args.run_id} at {status['headSha']} verified")
