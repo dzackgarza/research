@@ -78,9 +78,24 @@ def primitive_plane_pivot(p: tuple, q: tuple) -> tuple:
     return pivot
 
 
+def plane_plucker_key(p: tuple, q: tuple) -> tuple:
+    """Canonical primitive Pluecker coordinates of the integral plane.
+
+    A change of integral basis of a saturated plane has determinant +/-1,
+    so it changes all minors by one common sign. Conversely proportional
+    primitive decomposable bivectors determine the same rational plane,
+    whose saturation is the same integral plane.
+    """
+    minors = tuple(p[a] * q[b] - p[b] * q[a]
+                   for a, b in combinations(range(11), 2))
+    first = next(x for x in minors if x)
+    return minors if first > 0 else tuple(-x for x in minors)
+
+
 def audit(path: Path, *, class_only: bool = False) -> None:
     vertices = {label: {"line": set(), "plane": set()} for label in LABELS}
     vertex_classes = {label: {"line": {}, "plane": {}} for label in LABELS}
+    integral_planes = {label: set() for label in LABELS}
     plane_bases = {label: {} for label in LABELS}
     degrees = {label: (Counter(), Counter()) for label in LABELS}
     pairs = {label: set() for label in LABELS}
@@ -110,6 +125,11 @@ def audit(path: Path, *, class_only: bool = False) -> None:
                         label, index, "plane cusp isotropy"
                     )
                     primitive_plane_pivot(p, q)
+                    plucker = plane_plucker_key(p, q)
+                    assert plucker not in integral_planes[label], (
+                        label, index, "repeated integral plane span"
+                    )
+                    integral_planes[label].add(plucker)
                     vertex_classes[label][kind][index] = mod2_span(p, q)
                     plane_bases[label][index] = (p, q)
                 continue
