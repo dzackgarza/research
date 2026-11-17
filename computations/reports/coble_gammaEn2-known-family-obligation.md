@@ -155,6 +155,38 @@ liftability and fibre hypotheses are already proved; a failed or slow public
 operation is an implementation/verification gap, not an unresolved
 mathematical ambiguity between ten and nine finite strata.
 
+## Current public subgroup execution (17 November 2026)
+
+The current public-library run uses Sage `11.0.beta5`, `sage-extensions` at
+`b72a9161f6d7e9c189aa08f7e868268569e59715` and `sage-indefinite-port` at
+`22ac412254c7c39468af3528d002f949385569f8` (the current checkout
+revisions at the time of the run), rather than the historical mixed-provider
+snapshot discussed below. It constructs the actual
+`NamedLattices.TEn.Aut().discriminant_preimage(M)` through the public
+predicate-subgroup API, with complete character data, where the nine
+integral reflection images generate a group of order `696729600` and index
+`67456` in the full discriminant orthogonal group. The **executed public
+rank-one** operation returned **five** `Gamma_En,2` orbits in `298` seconds,
+and the full orthogonal group returned **two**, exactly as proved in
+@thm:enriques-degree-two-arithmetic(1).
+
+The **rank-two** public operation entered the ambient `O(L)` plane-row and
+`parabolic completeness decision` stages and had not returned a count when
+this record was updated. A separate diagnostic invokes the existing
+`_DividedClassPlaneOrbitDecomposition` with the **two proved complete
+integral ambient representatives** $P_1=\generators{e,e'}$ and
+$P_2=\generators{2e+2f+\alpha,e'}$ from @prop:ten-plane-classes(1).
+It returned **nine** subgroup orbits in `212` seconds, but materializing
+all nine integral representatives failed after the first: the provider's
+`plane_of` transport passes integer letters from
+`self._section.letters_of(element)` into `_transported`, whose loop expects
+`(label, exponent)` pairs, raising `TypeError: cannot unpack non-iterable int
+object`. This precise provider defect is recorded on sage-extensions#294.
+Thus neither the successful diagnostic orbit count nor the failed transport
+is presented as successful completion of the separate top-level public
+rank-two acceptance. The mathematical nine-orbit theorem and the executable
+public verification remain distinct obligations.
+
 ## The lattice-side owners, and the exact revisions of the one call that fails
 
 These are the existing owners of the missing lattice-side computation; no new operation is requested,
