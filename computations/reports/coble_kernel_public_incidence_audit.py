@@ -102,11 +102,18 @@ def audit_integral_shard(path: Path, *, allow_incomplete: bool = False) -> int:
                 columns = [tuple(g[i][j] for i in range(11)) for j in range(11)]
                 assert all(pairing(columns[i], columns[j]) == pairing(basis[i], basis[j])
                            for i in range(11) for j in range(11))
-            g = row["positive_kernel_matrix_standard"]
             x, y = basis[0], tuple(int(i in (1, 2)) for i in range(11))
-            gx = tuple(sum(g[i][j] * x[j] for j in range(11)) for i in range(11))
-            gy = tuple(sum(g[i][j] * y[j] for j in range(11)) for i in range(11))
-            assert pairing(x, gx) * pairing(y, gy) - pairing(x, gy) * pairing(y, gx) > 0
+            for field in ("kernel_matrix_standard", "positive_kernel_matrix_standard"):
+                g = row[field]
+                gx = tuple(sum(g[i][j] * x[j] for j in range(11)) for i in range(11))
+                gy = tuple(sum(g[i][j] * y[j] for j in range(11)) for i in range(11))
+                minor = pairing(x, gx) * pairing(y, gy) - pairing(x, gy) * pairing(y, gx)
+                assert minor != 0
+                if field == "kernel_matrix_standard":
+                    assert row["kernel_real_spinor_sign"] == (1 if minor > 0 else -1)
+                else:
+                    assert minor > 0
+            g = row["positive_kernel_matrix_standard"]
             assert row["positive_kernel_matrix_sha256"] == hashlib.sha256(
                 json.dumps(g, separators=(",", ":")).encode()).hexdigest()
             count += 1
