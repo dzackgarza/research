@@ -1,0 +1,4 @@
+B=I_{2,9}: 496 integral norm +/-2 root reflections constructed and checked
+finite even-norm discriminant space: 527 nonzero singular, 496 nonsingular
+faithful finite permutation image order: 46998591897600
+full O^+(10,2) order: 46998591897600
