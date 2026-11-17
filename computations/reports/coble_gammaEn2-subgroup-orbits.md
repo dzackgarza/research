@@ -13,6 +13,8 @@ $\rho_L^{-1}(H)$ as a predicate subgroup of $\Orth(L)$ with the finite character
 `orthogonal_quotients.OrthogonalCharacterQuotient` and `PredicateSubgroups.character_data`). So
 $\gent = \rho_{\ten}^{-1}(M)$ is expressible without listing a single generator of $\gent$.
 
+The current public verification script uses the existing catalogue owner `NamedLattices.TEn`, not a fresh `Lattices(ZZ)(gram)` object. It checks the complete $12\times12$ Gram matrix against the explicit $U\perp U(2)\perp E_8(2)$ construction before any orbit call. This is a mathematical no-op but an important API identity: the public `isotropic_orbits._enriques_period_lattice_isometry` recognizes the **identical** catalogue object immediately when applying the published two-plane stabilizer-index theorem; a newly constructed isometric object instead enters a general lattice-isometry search. Neither approach is permitted to assume the answer from a Gram determinant or signature alone.
+
 The remaining question was how to name $M \le \Orth(A_{\ten},q_{\ten})$. By
 `@lem:gamma-transport-identity` in `writing/coble/lattices-and-moduli/lattices.md` no transport is
 needed: $A_{\sen}$ and $A_{\ten}$ agree summand by summand ($A_U = 0$), both forms are

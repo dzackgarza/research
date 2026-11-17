@@ -50,7 +50,7 @@ import sage_indefinite_port  # noqa: E402
 
 from sage.all import CartanMatrix, ZZ, block_diagonal_matrix, matrix  # noqa: E402
 from sage.version import version as SAGE_VERSION  # noqa: E402
-from sage_extensions.all import Lattices  # noqa: E402
+from sage_extensions.catalogue import NamedLattices  # noqa: E402
 
 print('provenance')
 print('  Sage: %s' % SAGE_VERSION)
@@ -60,7 +60,13 @@ print('')
 
 U = matrix(ZZ, [[0, 1], [1, 0]])
 E8 = -CartanMatrix(['E', 8])
-T = Lattices(ZZ)([list(r) for r in block_diagonal_matrix(U, 2 * U, 2 * E8).rows()])
+# Use the existing canonical owner object rather than constructing an
+# isometric but distinct lattice. The public orbit engine recognizes this
+# exact named object when applying the proved Enriques plane stabilizer
+# indices; a fresh unnamed object needlessly invokes an expensive generic
+# isometry search before that theorem can be used.
+T = NamedLattices.TEn
+assert matrix(ZZ, 12, 12, lambda i, j: T.gram_tensor()[i, j]) == block_diagonal_matrix(U, 2 * U, 2 * E8)
 A = T.discriminant_quadratic_form()
 print('T_En: rank %d, det %s, signature %s' % (T.rank(), T.determinant(), T.signature_pair()))
 print('|A| = %d, isotropic classes %d' % (int(A.cardinality()), len(list(A.isotropic_elements()))))
