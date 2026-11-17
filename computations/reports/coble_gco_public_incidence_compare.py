@@ -113,6 +113,30 @@ if "--verify-public-source" in sys.argv:
     print("public line types computed directly from integral representatives:",
           directly_computed_lines)
 
+    # Each public incidence edge includes a witness line and witness plane.
+    # Verify the displayed inclusion by checking all 3x3 minors of the
+    # augmented coordinate matrix, and verify that its plane is primitive.
+    edge_rows = re.findall(
+        r"\[Gamma_\{Co,2\}\] edge \d+: L\d+ < P\d+; line=(\(\(.*?\),\)); plane=(\(\(.*?\)\))",
+        log,
+    )
+    assert len(edge_rows) == 13
+    for line_source, plane_source in edge_rows:
+        (v,) = ast.literal_eval(line_source)
+        p, q = ast.literal_eval(plane_source)
+        assert len(v) == len(p) == len(q) == 11
+        assert pairing(v, v) == 0
+        assert pairing(p, p) == pairing(p, q) == pairing(q, q) == 0
+        assert gcd(*v) == 1
+        assert gcd(*(p[a] * q[b] - p[b] * q[a]
+                     for a, b in combinations(range(11), 2))) == 1
+        for a, b, c in combinations(range(11), 3):
+            determinant = (v[a] * (p[b] * q[c] - p[c] * q[b])
+                           - v[b] * (p[a] * q[c] - p[c] * q[a])
+                           + v[c] * (p[a] * q[b] - p[b] * q[a]))
+            assert determinant == 0
+    print("public edge witness line-in-plane inclusions checked:", len(edge_rows))
+
 # Verify the other copied edge set against the committed finite enumeration.
 finite_log = Path(__file__).with_name("coble_gco_plane-orbits-run.txt").read_text()
 finite_rows = re.findall(r"plane size\s+(\d+): \[((?:\(\d+, \d+\)(?:, )?)+)\]", finite_log)

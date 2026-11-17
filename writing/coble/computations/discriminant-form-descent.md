@@ -385,6 +385,8 @@ The four graph isomorphisms all induce the same *graph-inferred* undecorated fin
 
 The source-verification mode additionally checks the **integral** properties of all eleven public representatives: each line vector has square zero and coordinate gcd one; each plane has zero Gram matrix and its two-by-eleven coordinate matrix has gcd one among all $2\times2$ minors. The latter is equivalent, by Smith normal form, to primitivity of the rank-two sublattice. These are checks on the actual integral representatives returned by the public operation, rather than consequences inferred from their mod-two discriminant classes.
 
+For every one of the thirteen public incidence edges, the workflow also prints a separate *witness* line and plane. The comparison now parses these twenty-six witness objects, checks that each line is primitive isotropic and each plane is primitive totally isotropic, and verifies the line lies in the rational span of the plane by vanishing of every $3\times3$ minor of the augmented three-by-eleven coordinate matrix. Since the plane is primitive in $T_\Co$, rational-span membership of an integral vector is equivalent to membership in that plane. Thus the thirteen reported incidences are independently verified as actual integral line-in-plane inclusions, not only as an abstract graph or a relation of finite discriminant classes.
+
 ::: {.definition #def:stabilizer-congruence-data title="The congruence data of a lattice stabilizer"}
 
 Let $V$ be a finite-dimensional vector space over $\bQ$ with a nondegenerate symmetric bilinear form $\beta$.
