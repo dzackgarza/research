@@ -77,6 +77,7 @@ def primitive_plane_pivot(p: tuple, q: tuple) -> tuple:
 def audit(path: Path, *, class_only: bool = False) -> None:
     vertices = {label: {"line": set(), "plane": set()} for label in LABELS}
     vertex_classes = {label: {"line": {}, "plane": {}} for label in LABELS}
+    plane_bases = {label: {} for label in LABELS}
     degrees = {label: (Counter(), Counter()) for label in LABELS}
     pairs = {label: set() for label in LABELS}
     positions = {label: set() for label in LABELS}
@@ -106,6 +107,7 @@ def audit(path: Path, *, class_only: bool = False) -> None:
                     )
                     primitive_plane_pivot(p, q)
                     vertex_classes[label][kind][index] = mod2_span(p, q)
+                    plane_bases[label][index] = (p, q)
                 continue
             match = (CLASS_EDGE if class_only else EDGE).search(line)
             if match:
@@ -116,6 +118,17 @@ def audit(path: Path, *, class_only: bool = False) -> None:
                     J = vertex_classes[label]["plane"].get(plane_id)
                     assert c is not None and J is not None and c in J, (
                         label, position, "divided-class incidence"
+                    )
+                    # Produce an actual primitive integral line in the
+                    # displayed plane for this endpoint class. The stable
+                    # fibre theorem proves its orbit matches the line cusp;
+                    # it does not output the transporter matrix.
+                    p, q = plane_bases[label][plane_id]
+                    candidates = (p, q, tuple(a + b for a, b in zip(p, q)))
+                    flags = [v for v in candidates if tuple(t % 2 for t in v) == c]
+                    assert len(flags) == 1, (label, position, "integral flag lift")
+                    assert gcd(*flags[0]) == 1 and pairing(flags[0], flags[0]) == 0, (
+                        label, position, "primitive integral flag"
                     )
                 else:
                     line_source, plane_source = match.groups()[4:]
