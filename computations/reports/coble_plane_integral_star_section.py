@@ -174,6 +174,7 @@ tau_coordinates[2,2]=tau_coordinates[3,3]=-1
 tau_base=to_standard*T*tau_coordinates*T.inverse()*change
 line_word_cache={}
 plane_word_cache={'index':None,'matrix':None}
+seed_flag_maps=[[seed_maps[s]*flag_maps[f] for f in range(3)] for s in range(8)]
 
 def construct_flag_transporter(sample_plane_index, sample_seed_index, sample_flag_index):
  """Return an exact integral kernel and positive-spinor flag transporter."""
@@ -184,16 +185,15 @@ def construct_flag_transporter(sample_plane_index, sample_seed_index, sample_fla
   plane_word_cache['index']=sample_plane_index
   plane_word_cache['matrix']=word_matrix(sample_plane['word_from_base'])
  sample_plane_word=plane_word_cache['matrix']
- sample_seed_reflection=seed_maps[sample_seed_index]
- sample_flag_map=flag_maps[sample_flag_index]
- sample_flag=sample_plane_word*sample_seed_reflection*sample_flag_map*u0
+ flag_conjugator=sample_plane_word*seed_flag_maps[sample_seed_index][sample_flag_index]
+ sample_flag=flag_conjugator*u0
  sample_line_mask=mask(change*sample_flag)
  sample_line_row=line_rows_by_mask[sample_line_mask]
  if sample_line_mask not in line_word_cache:
-  line_word_cache[sample_line_mask]=word_matrix(sample_line_row['word_from_base'])
- sample_line_word=line_word_cache[sample_line_mask]
- sample_transporter=(sample_plane_word*sample_seed_reflection*sample_flag_map*
-                     sample_line_word.inverse())
+  line_word=word_matrix(sample_line_row['word_from_base'])
+  line_word_cache[sample_line_mask]=(line_word,line_word.inverse())
+ sample_line_inverse=line_word_cache[sample_line_mask][1]
+ sample_transporter=flag_conjugator*sample_line_inverse
  assert sample_transporter*vector(ZZ,sample_line_row['vector_standard'])==sample_flag
  assert sample_transporter.transpose()*standard_gram*sample_transporter==standard_gram
  assert abs(sample_transporter.det())==1
@@ -201,7 +201,7 @@ def construct_flag_transporter(sample_plane_index, sample_seed_index, sample_fla
  # Correct the ambient transporter by an exact integral vector-parabolic
  # word with the same finite image. The quotient is an actual integral
  # discriminant-kernel transporter of the displayed line into its plane.
- base_correction=sample_line_word.inverse()*sample_transporter*sample_line_word
+ base_correction=sample_line_inverse*flag_conjugator
  # This ambient matrix need only fix the *discriminant class* of u0.
  # Its finite reduction is in the vector parabolic; the integral word
  # constructed below fixes u0 exactly.
@@ -240,8 +240,9 @@ def construct_flag_transporter(sample_plane_index, sample_seed_index, sample_fla
  assert word_permutation==target
  assert all((int(a-b)&1)==0 for a,b in zip(
   (change*parabolic_word_matrix*to_standard).list(),diagonal_correction.list()))
- correction=sample_line_word*parabolic_word_matrix*sample_line_word.inverse()
- sample_kernel_transporter=sample_transporter*correction.inverse()
+ # (A L^-1)(L P L^-1)^-1 = A P^-1 L^-1. This avoids constructing
+ # and inverting a large conjugate for every one of the 569160 flags.
+ sample_kernel_transporter=flag_conjugator*parabolic_word_matrix.inverse()*sample_line_inverse
  assert sample_kernel_transporter*vector(ZZ,sample_line_row['vector_standard'])==sample_flag
  assert sample_kernel_transporter.transpose()*standard_gram*sample_kernel_transporter==standard_gram
  assert all((int(sample_kernel_transporter[i,j])&1)==int(i==j)
@@ -250,7 +251,6 @@ def construct_flag_transporter(sample_plane_index, sample_seed_index, sample_fla
  # Explicit spinor-negative kernel element fixing the chosen flag.
  # On U1+U2+D, -id on U2 fixes e1 and reduces to identity modulo 2.
  # Conjugate it through the integral seed/flag/plane transporter.
- flag_conjugator=sample_plane_word*sample_seed_reflection*sample_flag_map
  tau_flag=flag_conjugator*tau_base*flag_conjugator.inverse()
  assert tau_flag*sample_flag==sample_flag
  assert tau_flag.transpose()*standard_gram*tau_flag==standard_gram
