@@ -11,7 +11,8 @@ indices. The finite labels are vector-orbit sizes and decorated-plane orbit
 sizes, not integral orbit cardinalities. Graph isomorphism, not equality of
 these labels, is the comparison invariant.
 """
-from itertools import permutations
+from itertools import combinations, permutations
+from math import gcd
 import ast
 import re
 import subprocess
@@ -72,9 +73,25 @@ if "--verify-public-source" in sys.argv:
     for idx, source in plane_rows:
         v, w = ast.literal_eval(source)
         assert len(v) == len(w) == 11
+        # Check the actual integral plane, not only its finite reduction:
+        # the Gram of T_Co is <2> + U(2) + (-2 Cartan(E8)).
+        def pairing(x, y):
+            e, f = x[3:], y[3:]
+            return (2 * x[0] * y[0] + 2 * (x[1] * y[2] + x[2] * y[1])
+                    - 4 * sum(e[i] * f[i] for i in range(8))
+                    + 2 * sum(e[a] * f[b] + e[b] * f[a] for a, b in e8_edges))
+
+        assert pairing(v, v) == pairing(v, w) == pairing(w, w) == 0
+        # The rank-two sublattice is primitive iff the gcd of all 2x2
+        # minors of its coordinate matrix is one (Smith normal form).
+        minors_gcd = 0
+        for a, b in combinations(range(11), 2):
+            minors_gcd = gcd(minors_gcd, v[a] * w[b] - v[b] * w[a])
+        assert minors_gcd == 1
         third = tuple(a + b for a, b in zip(v, w))
         directly_computed[int(idx)] = "".join(sorted(map(vector_type, (v, w, third))))
     assert set(directly_computed) == set(range(7))
+    print("public integral plane Gram and primitive-minor checks:", len(directly_computed))
     print("public plane types computed directly from integral representatives:", directly_computed)
 
     line_rows = re.findall(
@@ -84,7 +101,15 @@ if "--verify-public-source" in sys.argv:
     directly_computed_lines = {
         int(idx): vector_type(ast.literal_eval(source)[0]) for idx, source in line_rows
     }
+    for _, source in line_rows:
+        vector = ast.literal_eval(source)[0]
+        assert pairing(vector, vector) == 0
+        coordinate_gcd = 0
+        for coordinate in vector:
+            coordinate_gcd = gcd(coordinate_gcd, coordinate)
+        assert coordinate_gcd == 1
     assert set(directly_computed_lines) == set(range(4))
+    print("public integral line isotropy and primitivity checks:", len(line_rows))
     print("public line types computed directly from integral representatives:",
           directly_computed_lines)
 
