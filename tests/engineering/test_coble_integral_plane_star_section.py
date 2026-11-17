@@ -88,6 +88,33 @@ def test_complete_integral_flag_quotient_ci_record():
                 45360, 69120, 75600, 138240, 151200]) == 569160
 
 
+def test_complete_integral_plane_parabolic_generators():
+    """The finite-image certificate alone omits seven integral sign changes."""
+    folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
+    result = subprocess.run(
+        ["sage", "-c", "import runpy,sys;sys.argv=['parabolic'];runpy.run_path("
+         "'computations/reports/coble_complete_plane_parabolic_generators.py',"
+         "run_name='__main__')"],
+        cwd=folder.parents[1], capture_output=True, text=True, check=True)
+    assert "complete integral parabolic generator count: 28" in result.stdout
+    assert "unchanged finite image order: 247726080" in result.stdout
+    assert "even unipotent coefficient lattice index: 2" in result.stdout
+    artifact = folder / "coble_complete_plane_parabolic_generators.json"
+    payload = json.loads(artifact.read_text())
+    assert payload["schema"] == "coble-complete-integral-plane-parabolic-v1"
+    assert payload["generator_count"] == len(payload["generators_standard"]) == 28
+    assert payload["finite_image_order"] == 247726080
+    assert payload["even_unipotent_coefficient_index"] == 2
+    assert payload["line_certificate_sha256"] == hashlib.sha256(
+        (folder / "coble_singular_integral_representatives.json").read_bytes()).hexdigest()
+    assert payload["plane_certificate_sha256"] == hashlib.sha256(
+        (folder / "coble_plane_integral_star_section.json").read_bytes()).hexdigest()
+    old = json.loads((folder / "coble_plane_integral_star_section.json").read_text())
+    assert payload["generators_standard"][:21] == old["plane_stabilizer_generators_standard"]
+    assert hashlib.sha256(artifact.read_bytes()).hexdigest() == (
+        "a2af10a537cc16f4f555f318854b238d72254258a572d947d0ff775b99d87859")
+
+
 def test_all_integral_flags_recover_public_gamma_co_2_edge_weights():
     """All 13 *public* L/P edges occur with their exact integral flag counts."""
     folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
