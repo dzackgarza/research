@@ -280,6 +280,13 @@ if globals().get("VERIFY_PUBLIC_PLANES", False):
         assert decorated_plane_of_integral_rows(q, p) == invariant
         assert decorated_plane_of_integral_rows(tuple(a + b for a, b in zip(p, q)), q) == invariant
         assert decorated_plane_of_integral_rows(tuple(-a for a in p), q) == invariant
+        # Reflection in the norm-one generator of B=<1>+U+E8(-1)
+        # negates coordinate zero and fixes the other ten. It is an
+        # integral isometry congruent to the identity modulo 2B, so the
+        # canonical (J,star) must be unchanged even when P itself moves.
+        assert decorated_plane_of_integral_rows(
+            (-p[0], *p[1:]), (-q[0], *q[1:])
+        ) == invariant
         orbit_size = finite_orbit_of[invariant]
         assert int(index) not in observed_sizes
         observed_sizes[int(index)] = orbit_size
@@ -288,6 +295,7 @@ if globals().get("VERIFY_PUBLIC_PLANES", False):
     assert sorted(observed_sizes.values()) == sorted(len(o) for o in decorated_orbits)
     print("all seven public integral planes occupy distinct finite decorated orbits:", True)
     print("canonical stars invariant under swap, shear and sign changes of all seven plane bases:", True)
+    print("canonical stars invariant under discriminant-trivial positive-unit reflection:", True)
 
     # The workflow returns a *separate integral flag witness* for each edge.
     # Classify that witness by its actual quotient star and divided line
