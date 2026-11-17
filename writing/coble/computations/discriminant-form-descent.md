@@ -606,6 +606,223 @@ At that modulus $\bar K_2$ meets $\Stab_G(L)$ whenever $\sigma_U\in G$, and $\si
 Item 3 is @thm:enriques-spinor-orbit-agreement, whose proof gives the spinor-negative elements of $\ker\rho$.
 :::
 
+## The joint discriminant, determinant and spinor image {#sec-descent-joint}
+
+The discriminant image of @thm:stabilizer-discriminant-image is one of three characters that an integral stabilizer has. The determinant and the real spinor norm are the other two, and the second is what decides the orbit questions of @sec-descent-spinor, $\Orth^+(L)$ being its kernel (@def:lattice-spinor-kernels). By @prop:spinor-congruence-obstruction the spinor sign is not a function of the congruence class in general, and @ex:joint-character-sign-witness shows the same for the determinant, so the discriminant image does not determine either sign. This section computes the joint image of the three, the sign group that the discriminant kernel contributes, and the double-coset count that replaces @thm:descent-double-coset when the signs are not graph characters of the congruence data.
+
+::: {.definition #def:joint-character title="The joint discriminant, determinant and spinor character"}
+
+Let $(V,\beta)$ be a finite-dimensional nondegenerate symmetric bilinear space over $\bQ$ and let $L\subseteq V$ be an integral nondegenerate lattice. Put
+$$
+\kappa_L\definedas\qty(\rho_L,\ \det,\ \spinornorm_\bR)\colon
+\Orth(L)\too\Orth(A_L)\times\theset{\pm1}\times\theset{\pm1},
+$$
+and, when $L$ is even, $\kappa_{L,q}\definedas(\rho_{L,q},\det,\spinornorm_\bR)\colon\Orth(L)\to\Orth(A_{L,q})\times\theset{\pm1}^2$, so that $\kappa_L=(j_q\times\id)\circ\kappa_{L,q}$ for the forgetful monomorphism $j_q$ of @def:discriminant-rep.
+
+The three components have three different domains, and @thm:schreier-joint-image evaluates them one by one:
+
+- $\rho_L$, respectively $\rho_{L,q}$, is defined on $\Orth(L)$ and on nothing larger: it needs an isometry carrying $L$ to itself;
+- $\det$ is the determinant of the underlying $\bQ$-linear automorphism, defined on all of $\Orth(V)$;
+- $\spinornorm_\bR$ is the normalized real spinor norm of @def:spinor-norm, a homomorphism $\Orth(V_\bR)\to\bR^\times/(\bR^\times)^2$ identified with $\theset{\pm1}$, defined on all of $\Orth(V_\bR)$ and so on all of $\Orth(V)$.
+
+Each component is a homomorphism on its domain, so $\kappa_L$ is a homomorphism, with kernel
+$$
+E_L\definedas\ker\rho_L\intersect\ker\det\intersect\ker\spinornorm_\bR\leq\Orth(L)
+$$
+and finite image. Its projection to the first factor is the discriminant image $\rho_L(\Orth(L))$, which @thm:stabilizer-discriminant-image computes from a finite quotient when the congruence data are present, and its projection to the two sign factors is $\epsilon(\Orth(L))$ for
+$$
+\epsilon\definedas(\det,\spinornorm_\bR)\colon\Orth(V)\too\theset{\pm1}^2 .
+$$
+The two projections are not independent in general: the joint image of a subgroup of $\Orth(L)$ need not be the product of its two projections, and $\kappa_L(\Stab_G(L))$ at @ex:joint-character-sign-witness is an instance in which it is not.
+
+For a subgroup $\Gamma\leq\Orth(L)$ write
+$$
+K_\Gamma\definedas\Gamma\intersect\ker\rho_L=\Gamma\intersect\ker\rho_{L,q},
+\qquad
+\Sigma_\Gamma(\kappa)\definedas\epsilon\qty(K_\Gamma)\leq\theset{\pm1}^2
+$$
+for its discriminant kernel and for the group of sign values attained by its elements; the sign values attained in the discriminant kernel of $\Gamma$ are the elements of $\Sigma_\Gamma(\kappa)$. The two kernels in the display agree when $L$ is even, because $j_q$ is injective.
+:::
+
+::: {.definition #def:graph-character title="Graph characters of congruence data"}
+
+Assume $m\geq1$ with $mM\subseteq L$, so that $\pi_m$ of @def:stabilizer-congruence-data is defined, and put $N_m\definedas\bar K_m\intersect\Stab_G(L)$ for the congruence kernel inside the stabilizer. A character of $\Stab_G(L)$ is a **graph character** of the data at $m$ when it is constant on the cosets of $N_m$, that is when it is a function of $\pi_m(g)$ alone, the vertex $\pi_m(g)\bar L_m$ of the finite action on $M/mM$.
+:::
+
+::: {.theorem #thm:schreier-joint-image title="The joint images of the Schreier loops generate the joint image"}
+
+Take the data of @def:stabilizer-congruence-data with $m\geq1$ and $mM\subseteq L$, let $S\subseteq G$ be a finite symmetric generating set, and let $\Sigma_m$, the transporters $t_p$ and the loops $k_{s,p}=t_{sp}^{-1}st_p$ be as in @thm:schreier-discriminant-image.
+
+1. Every loop $k_{s,p}$ is an integral self-isometry of $L$ (@thm:schreier-discriminant-image(1)), so $\kappa_L(k_{s,p})$ is defined, and
+$$
+\kappa_L(k_{s,p})=\qty(
+\alpha_{t_{sp}}(L)^{-1}\circ\alpha_s(L_p)\circ\alpha_{t_p}(L),\quad
+\det(t_{sp})^{-1}\det(s)\det(t_p),\quad
+\spinornorm_\bR(t_{sp})^{-1}\spinornorm_\bR(s)\spinornorm_\bR(t_p)
+).
+$$
+The last two entries are values of characters at the three rational isometries $t_{sp},s,t_p\in G\leq\Orth(V)$, each taken in its own domain $\Orth(V)$ and $\Orth(V_\bR)$. The first entry is a composite of the transports $\alpha$ of @thm:discriminant-transport-functor between the three lattices $L$, $L_p=t_pL$ and $L_{sp}=t_{sp}L$ of the orbit, its factors being isometries $A_L\to A_{L_p}$, $A_{L_p}\to A_{L_{sp}}$ and $A_{L_{sp}}\to A_L$ of distinct discriminant groups. No factor of that composite is $\rho_L$ of a rational transporter: $\rho_L(s)$ is defined only when $sL=L$ and $\rho_L(t_p)$ only when $t_pL=L$, and neither needs to hold. What a non-integral $g\in G$ has is the transport $\alpha_g(L)\colon A_L\to A_{gL}$ between two distinct discriminant modules, not an endomorphism of $A_L$.
+2. $\kappa_L\qty(\Stab_G(L))=\generators{\kappa_L(k_{s,p})\st s\in S,\ p\in\Sigma_m}$: the joint image of the stabilizer is generated by the joint images of the loops.
+3. For a word $k=k_{s_r,p_r}\cdots k_{s_1,p_1}$ in the loops, $\kappa_L(k)=\kappa_L(k_{s_r,p_r})\cdots\kappa_L(k_{s_1,p_1})$. In particular the sign part is multiplicative along words, and two loops with $\rho_L(k_1)\rho_L(k_2)=\id$ have $k_1k_2\in K_{\Stab_G(L)}$ with $\epsilon(k_1k_2)=\epsilon(k_1)\epsilon(k_2)$.
+:::
+
+::: {.proof}
+
+*Item 1.* The loop $k_{s,p}=t_{sp}^{-1}st_p$ is a product of three elements of $G\leq\Orth(V)$, so its determinant and its spinor norm are the products of the three values, by multiplicativity of $\det$ on $\Orth(V)$ and of $\spinornorm_\bR$ on $\Orth(V_\bR)$ (@def:spinor-norm and @prop:spinor-norm-orientation-classes(3)); its discriminant entry is item 3 of @thm:schreier-discriminant-image. The exclusion of the individual factors is the domain statement of @def:joint-character: for $g\notin\Orth(L)$ no $\rho_L(g)$ exists, whereas the transport $\alpha_g(L)$ does by @thm:discriminant-transport-functor(1).
+
+*Item 2.* $\kappa_L$ is a homomorphism (@def:joint-character) and $\Stab_G(L)=\generators{k_{s,p}\st s\in S,\ p\in\Sigma_m}$ (@thm:schreier-discriminant-image(2)), so the image of the stabilizer is generated by the images of the loops.
+
+*Item 3.* Multiplicativity of $\kappa_L$, and $\rho_L(k_1k_2)=\rho_L(k_1)\rho_L(k_2)$.
+:::
+
+::: {.proposition #prop:joint-character-congruence title="Which components of the joint character are graph characters"}
+
+Assume $m\geq1$ with $mM\subseteq e_2L$, so that $N_m=\bar K_m\intersect\Stab_G(L)$ is contained in $\Stab_G(L)\intersect\ker\rho_L$ by @cor:stabilizer-modulus.
+
+1. The discriminant component of $\kappa_L$ is constant on the cosets of $N_m$, hence is a graph character of the data at every modulus satisfying $mM\subseteq e_2L$: it is the homomorphism $\Phi_m$ of @thm:stabilizer-discriminant-image read on $\pi_m(g)$.
+2. The whole character $\kappa_L$ is constant on the cosets of $N_m$ exactly when $\det$ and $\spinornorm_\bR$ are both trivial on $N_m$, and each sign can fail: at $N=T_\En$ with $m=2$ the spinor sign fails (@prop:spinor-congruence-obstruction(2)), and at the data of @ex:joint-character-sign-witness with $M=L$ and $m=2$ the determinant sign fails, $s_a$ being trivial modulo $2L$ with determinant $-1$.
+3. Consequently the joint image is a subgroup of $\Orth(A_{L,q})\times\theset{\pm1}^2$ whose first projection is a graph character and whose sign projection need not be one, and @thm:joint-double-coset uses the joint image rather than its first projection in order to keep the sign information that the graph does not determine.
+:::
+
+::: {.proof}
+
+Item 1 is items 2 and 3 of @thm:stabilizer-discriminant-image: the assignment $\Phi_m$ is well defined on $\bar H_m$ precisely because the congruence kernel acts trivially on $A_L$.
+
+For item 2, two elements $g,g'\in\Stab_G(L)$ have equal images under $\pi_m$ exactly when $g^{-1}g'\in N_m$; their discriminant components agree by item 1, and their signs agree for all such pairs exactly when both signs are trivial on $N_m$. The two failures are the cited statements: $\sigma_U\in\bar K_2$ with $\spinornorm_\bR(\sigma_U)=-1$ at $T_\En$; and at the example with $L=M$, $m=2$ and $e_2=2$, the endomorphism $s_a-\id$ is $-2$ on $\bZ a$ and zero on $e,f,b$, so $s_a$ is trivial modulo $2L$ while $\det(s_a)=-1$.
+
+Item 3 is the definitions of $\kappa_L$ and of a graph character.
+:::
+
+::: {.theorem #thm:kernel-sign-image title="The sign values attained in the discriminant kernel"}
+
+Let $\Gamma\leq\Orth(L)$, let $K_\Gamma$ and $\Sigma_\Gamma(\kappa)$ be as in @def:joint-character, and let $\epsilon=(\det,\spinornorm_\bR)$.
+
+1. The identity-discriminant fibre of the joint image is the joint image of the discriminant kernel:
+$$
+\kappa_L(\Gamma)\intersect\qty(\theset{\id}\times\theset{\pm1}^2)=\kappa_L\qty(K_\Gamma)=\Sigma_\Gamma(\kappa),
+$$
+and the projection of that fibre to the two sign factors is a bijection onto $\Sigma_\Gamma(\kappa)$. Intersecting the joint image with the identity-discriminant fibre and projecting to the sign factors therefore returns exactly the signs attained in the discriminant kernel, and loses nothing, the first coordinate being constant on that fibre.
+2. $\Sigma_\Gamma(\kappa)$ is one of the five subgroups $\theset{1}$, $\generators{(-1,1)}$, $\generators{(1,-1)}$, $\generators{(-1,-1)}$ and $\theset{\pm1}^2$ of $\theset{\pm1}^2$, with the readings:
+   - $\Sigma_\Gamma(\kappa)=\theset{1}$: the discriminant kernel of $\Gamma$ attains no sign, so both signs are functions of the discriminant image on $\Gamma\cap\ker\rho_L$;
+   - $\generators{(-1,1)}$: a kernel element of determinant $-1$ and positive spinor norm, such as a reflection $s_w$ in a vector $w\in L$ of negative square with $\rho_L(s_w)=\id$ (@ex:joint-character-sign-witness takes $w=a$);
+   - $\generators{(1,-1)}$: a kernel element of determinant $1$ and negative spinor norm, such as $-\id$ on a unimodular hyperbolic plane summand $U$, of positive index one, with every other summand fixed (@lem:minus-identity-spinor-norm and @lem:split-isometry-spinor-norm), realized at $T_\En$ by $\sigma_U$ (@prop:spinor-congruence-obstruction(2)) and in @ex:joint-character-sign-witness by $\sigma=-\id_U$;
+   - $\generators{(-1,-1)}$: a kernel element negative in both signs, as $s_a\sigma$ is in @ex:joint-character-sign-witness;
+   - $\theset{\pm1}^2$: the two signs are independent on the discriminant kernel, as they are for $\Gamma=\Orth(L)$ at $L=U\perp A_1\perp A_1$ (@ex:joint-character-sign-witness).
+3. With the Schreier data of @thm:schreier-joint-image and $\Gamma=\Stab_G(L)$, the group $\Sigma_\Gamma(\kappa)$ is not in general generated by the sign parts of the individual loops $k_{s,p}$; it is the set of sign parts of those words in the loops whose discriminant part is the identity, that is
+$$
+\Sigma_\Gamma(\kappa)=\theset{\epsilon(k)\st k\in\Gamma,\ \rho_L(k)=\id}.
+$$
+A witness that is a product of two loops exists exactly when two loops of mutually inverse discriminant component have different signs: for such a pair $k_1,k_2$ one has $k_1k_2\in K_\Gamma$ and $\epsilon(k_1k_2)=\epsilon(k_1)\epsilon(k_2)\neq1$, while neither factor lies in $K_\Gamma$. Individual loops, and in particular the elements of the chosen generating set $S$, need not supply such a witness; @ex:joint-character-sign-witness is an instance in which none of them does.
+:::
+
+::: {.proof}
+
+*Item 1.* For $g\in\Gamma$ the first coordinate of $\kappa_L(g)$ is $\rho_L(g)$, which is $\id$ exactly when $g\in K_\Gamma$; so the intersection is $\kappa_L(K_\Gamma)$, and on it the first coordinate is constant, the two descriptions of $\Sigma_\Gamma$ agree, and the projection to the signs is injective and onto.
+
+*Item 2.* A subgroup of $\theset{\pm1}^2$ is one of the five listed. The readings: the first is the definition; for the second, a reflection $s_w$ has $\det=-1$ and $\spinornorm_\bR(s_w)=[-\beta(w,w)/2]$ (@def:spinor-norm), which is $[1]$ for $w^2<0$; for the third, $-\id$ on a summand of signature $(1,1)$ with the other summands fixed has determinant $(-1)^2=1$ and spinor norm $[(-1)^1]=-1$ by @lem:minus-identity-spinor-norm for that summand and @lem:split-isometry-spinor-norm for the rest; the last two are computations of @ex:joint-character-sign-witness.
+
+*Item 3.* By @thm:schreier-joint-image(2) the joint image $\kappa_L(\Gamma)$ is generated by the $\kappa_L(k_{s,p})$ and by item 1 $\Sigma_\Gamma(\kappa)$ is the part of that image with trivial first coordinate, that is the subgroup generated by the products of loop images whose first coordinates multiply to $\id$; by multiplicativity these are exactly the $\epsilon(k)$ for $k\in\Gamma$ with $\rho_L(k)=\id$. The statement about a pair of loops is @thm:schreier-joint-image(3).
+:::
+
+::: {.theorem #thm:joint-double-coset title="Joint-image double cosets, and when the discriminant cosets suffice"}
+
+Let $L$ be even, let $\Gamma_1\leq\Gamma\leq\Orth(L)$, and let $x$ be an object of one of the kinds of @sec-descent-fibre with datum $D=D(x)$ and nonempty fibre $\mathcal F_{\mathcal X}(D)$ inside $\mathcal X=\Orth(L)\cdot x$. Put $Q=\rho_{L,q}(\Orth(L))$, $F=\Stab_Q(D)$, $S=\rho_{L,q}(\Stab_{\Orth(L)}(x))$, and
+$$
+J_1\definedas\kappa_{L,q}\qty(\Gamma_1\intersect\rho_{L,q}^{-1}(F)),\qquad
+J_D\definedas\kappa_{L,q}\qty(\rho_{L,q}^{-1}(F)),\qquad
+J_x\definedas\kappa_{L,q}\qty(\Stab_{\rho_{L,q}^{-1}(F)}(x)),
+$$
+subgroups of $\Orth(A_{L,q})\times\theset{\pm1}^2$. Assume $E_L\subseteq\Gamma_1$; this holds in particular when $\ker\rho_{L,q}\subseteq\Gamma$ and $\Gamma_1=\theset{g\in\Gamma\st\beta(\epsilon(g))=1}$ for a character $\beta$ of $\theset{\pm1}^2$.
+
+1. The three groups are finite, and the $\Gamma_1$-orbits in $\mathcal F_{\mathcal X}(D)$ are in bijection with the double cosets $J_1\backslash J_D/J_x$. This is the **joint-image double-coset formula**.
+2. The projection $J_D\to F$, $\kappa_{L,q}(g)\mapsto\rho_{L,q}(g)$, is surjective with kernel $\Sigma_{\Orth(L)}(\kappa)$, so the joint image of one discriminant fibre is an extension
+$$
+1\too\Sigma_{\Orth(L)}(\kappa)\too J_D\too F\too1
+$$
+of the discriminant stabilizer by the signs in the discriminant kernel.
+3. **When the discriminant double cosets suffice.** The formula $(\rho(\Gamma_0)\cap F)\backslash F/S$ of @thm:descent-double-coset computes, for a subgroup $\Gamma_0\leq\Orth(L)$, the orbit count of the full preimage $\rho_{L,q}^{-1}\qty(\rho_{L,q}(\Gamma_0))$, not that of $\Gamma_0$. Applied to $\Gamma_1$ it is therefore the count for $\Gamma_1$ exactly when $\Gamma_1=\rho_{L,q}^{-1}\qty(\rho_{L,q}(\Gamma_1))$, that is exactly when $\ker\rho_{L,q}\subseteq\Gamma_1$; and when $\Gamma_1$ is cut out of $\Gamma$ by a character $\beta$ of the two signs, that condition is $\beta$ trivial on $\Sigma_\Gamma(\kappa)$. Under it $\kappa_{L,q}$ maps the three groups of item 1 isomorphically onto $\rho_{L,q}(\Gamma_1)\intersect F$, $F$ and $S$, and the joint formula reduces to the discriminant one. When it fails, $\Gamma_1\intersect\rho_{L,q}^{-1}(F)$ is a proper subgroup of $\rho_{L,q}^{-1}\qty(\rho_{L,q}(\Gamma_1)\intersect F)$, the joint double cosets of item 1 are those of the smaller group, and the discriminant count is the one for the larger group; $\Sigma\ni(1,-1)$ at @ex:joint-character-sign-witness is that failure.
+:::
+
+::: {.proof}
+
+*Item 1.* By @thm:descent-double-coset the group $\rho_{L,q}^{-1}(F)$ acts transitively on $\mathcal F_{\mathcal X}(D)$, with $\Stab_{\rho_{L,q}^{-1}(F)}(x)$ as the stabilizer of $x$, so the $\Gamma_1$-orbits are the double cosets
+$$
+\qty(\Gamma_1\intersect\rho_{L,q}^{-1}(F))\backslash\rho_{L,q}^{-1}(F)\big/\Stab_{\rho_{L,q}^{-1}(F)}(x).
+$$
+The kernel of $\kappa_{L,q}$ on $\rho_{L,q}^{-1}(F)$ is $E_L$, which is normal there and is contained in $\Gamma_1\intersect\rho_{L,q}^{-1}(F)$ by hypothesis; for a normal subgroup $E\subseteq A'$ of a group $A$ acting on a set with point stabilizer $B$, the orbits of $A'$ on $A/B$ are the double cosets $(A'/E)\backslash(A/E)/(BE/E)$, the fibres of $A/B\to A/EB$ being single $E$-orbits. With $A=\rho_{L,q}^{-1}(F)$, $A'=\Gamma_1\intersect\rho_{L,q}^{-1}(F)$ and $B=\Stab_{\rho_{L,q}^{-1}(F)}(x)$, the quotients $A'/E$, $A/E$ and $BE/E$ are $J_1$, $J_D$ and $J_x$ by the definition of $\kappa_{L,q}$; all three lie in the finite group $\Orth(A_{L,q})\times\theset{\pm1}^2$.
+
+*Item 2.* The composition $J_D\to F$ is surjective because $\rho_{L,q}\qty(\rho_{L,q}^{-1}(F))=F$, and its kernel is $\kappa_{L,q}\qty(\ker\rho_{L,q})=\Sigma_{\Orth(L)}(\kappa)$ by @thm:kernel-sign-image(1). A surjection of groups with that kernel is the displayed extension.
+
+*Item 3.* For $\Gamma_0\leq\Orth(L)$ the preimage $\rho_{L,q}^{-1}\qty(\rho_{L,q}(\Gamma_0))$ contains $\ker\rho_{L,q}$, so @thm:descent-double-coset applies to it and gives the displayed double cosets, which depend on $\Gamma_0$ only through its image. Hence they are the count for $\Gamma_1$ exactly when $\Gamma_1$ is that preimage, which is the condition $\ker\rho_{L,q}\subseteq\Gamma_1$; for $\Gamma_1=\Gamma\intersect\beta^{-1}(1)$ with $\ker\rho_{L,q}\subseteq\Gamma$ this reads $\beta\circ\epsilon$ trivial on $\ker\rho_{L,q}\intersect\Gamma$, that is $\beta$ trivial on $\Sigma_\Gamma(\kappa)$. Under the condition $E_L\subseteq\ker\rho_{L,q}\subseteq\Gamma_1$, so $J_1$ is the image of the full preimage of $\rho_{L,q}(\Gamma_1)\intersect F$ and the three images in item 1 are the discriminant groups there. When the condition fails, $\ker\rho_{L,q}\not\subseteq\Gamma_1$ and $\Gamma_1\intersect\rho_{L,q}^{-1}(F)$ is a proper subgroup of $\rho_{L,q}^{-1}\qty(\rho_{L,q}(\Gamma_1)\intersect F)$, so the joint double cosets of item 1 are those of the smaller group while the discriminant count is the one for the larger; @ex:joint-character-sign-witness, where $\Sigma_{\Stab_G(L)}(\kappa)=\generators{(1,-1)}\neq1$, is an instance.
+:::
+
+::: {.corollary #cor:sign-sensitive-splitting title="Sign-sensitive splitting of one orbit"}
+
+Let $L$ be even, let $\Gamma\leq\Orth(L)$ satisfy $\ker\rho_L\subseteq\Gamma$, and let $\beta$ be a character of $\theset{\pm1}^2$ with $\Gamma_1\definedas\theset{g\in\Gamma\st\beta(\epsilon(g))=1}$ of index two in $\Gamma$. For an object $x$ of @sec-descent-fibre with datum $D$ and nonempty fibre $\mathcal F_{\mathcal X}(D)$, every $\Gamma$-orbit $\mathcal O\subseteq\mathcal F_{\mathcal X}(D)$ is the union of one or two $\Gamma_1$-orbits, and it is two exactly when $\Stab_\Gamma(x_{\mathcal O})\subseteq\Gamma_1$, equivalently when no element of the stabilizer has $\beta\circ\epsilon=-1$. Since the stabilizer's sign data are the finite group $\kappa_{L,q}\qty(\Stab_\Gamma(x_{\mathcal O}))$, that test is decided on a finite group. Consequently
+$$
+\#\qty(\Gamma_1\text{-orbits in }\mathcal F_{\mathcal X}(D))
+=\#\qty(\Gamma\text{-orbits in }\mathcal F_{\mathcal X}(D))
++\#\theset{\mathcal O\subseteq\mathcal F_{\mathcal X}(D):\Stab_\Gamma(x_{\mathcal O})\subseteq\Gamma_1},
+$$
+where the $\Gamma$-orbits are counted by @thm:descent-double-coset and the $\Gamma_1$-orbits by @thm:joint-double-coset.
+
+The case $\beta=\spinornorm_\bR$ is @prop:descent-spinor-fibre: the $\Gamma$-orbit stays one $\Gamma_1$-orbit when its stabilizer contains a spinor-negative element. The joint image adds that this is a decision on a finite group and that the orbits which do split are the ones counted by the second term.
+:::
+
+::: {.proof}
+
+By @thm:descent-double-coset the $\Gamma$-orbits in $\mathcal F_{\mathcal X}(D)$ are the double cosets $(\Gamma\cap\rho^{-1}(F))\backslash\rho^{-1}(F)/\Stab_{\rho^{-1}(F)}(x)$, and by the same argument the $\Gamma_1$-orbits inside one $\Gamma$-orbit $\Gamma x_{\mathcal O}$ are the double cosets $\Gamma_1\backslash\Gamma/\Stab_\Gamma(x_{\mathcal O})$. With $[\Gamma:\Gamma_1]=2$ the subgroup $\Gamma_1$ is normal, so these are the orbits of $\Stab_\Gamma(x_{\mathcal O})$ on the two-element set $\Gamma/\Gamma_1$: there are two when $\Stab_\Gamma(x_{\mathcal O})\subseteq\Gamma_1$ and one otherwise. The class of $\beta\circ\epsilon$ on a stabilizer element is the sign coordinate of $\kappa_{L,q}$ of that element, so containment in $\Gamma_1$ is exactly the vanishing of $\beta\circ\epsilon$ on the stabilizer, and membership of $\kappa_{L,q}(\Stab_\Gamma(x_{\mathcal O}))$ in the finite group $\kappa_{L,q}(\Gamma)$ decides it. Summing the two possibilities over the $\Gamma$-orbits gives the displayed count.
+:::
+
+::: {.example #ex:joint-character-sign-witness title="Signs in the discriminant kernel of $U\perp A_1\perp A_1$"}
+
+Let $L=\generators{e,f,a,b}$ with $\beta(e,f)=1$, $\beta(a,a)=\beta(b,b)=-2$ and all other pairings zero, so $L\cong U\perp A_1\perp A_1$ is even of rank $4$, determinant $-4$ and signature $(1,3)$, and $L^\sharp=\generators{e,f,a/2,b/2}$ with $A_L=(\bZ/2)^2$ generated by the classes $\bar a=[a/2]$ and $\bar b=[b/2]$.
+
+**The refinement is not the bilinear form.** One has $q_L(\bar a)=q_L(\bar b)=-1/2$ and $q_L(\bar a+\bar b)=-1$ in $\bQ/2\bZ$, while $b_L(\bar a,\bar a)=b_L(\bar b,\bar b)=1/2$ and $b_L(\bar a,\bar b)=0$. Here $\Orth(A_{L,q})=\theset{\id,\bar\tau}$ for the swap $\bar\tau$ of $\bar a$ and $\bar b$, and $\Orth(A_L)$ is the same two-element group, the bilinear form of this lattice being nondegenerate. The two groups separate on the smaller lattice $L'=\generators{2}\perp\generators{-2}$, where $A_{L'}=(\bZ/2)^2$ with $q_{L'}(x)=(x_1-x_2)/2$: the swap is a bilinear isometry with $q_{L'}\circ\text{swap}=-q_{L'}\neq q_{L'}$, so $\Orth(A_{L'})=\theset{\id,\text{swap}}$ is of order $2$ and $\Orth(A_{L',q})=\theset{\id}$. A count stated in $\Orth(A_L)$ rather than in $\Orth(A_{L,q})$ therefore admits a graph character that no isometry realizes, which is why @def:joint-character and @thm:joint-double-coset state the refinement throughout.
+
+**The signs.** Let $\sigma\definedas-\id_U$, fixing $a,b$ and negating $e,f$; let $s_a$ be the reflection of @def:spinor-norm in $a$; let $\tau\definedas s_{a-b}$, which interchanges $a$ and $b$ and fixes $e,f$; and put $\tau'\definedas\sigma\tau$. Then
+
+| isometry | $\det$ | $\spinornorm_\bR$ | $\rho_{L,q}$ |
+| --- | --- | --- | --- |
+| $s_a$ | $-1$ | $+1$ | $\id$ |
+| $\sigma=-\id_U$ | $+1$ | $-1$ | $\id$ |
+| $\tau=s_{a-b}$ | $-1$ | $+1$ | $\bar\tau$ |
+| $\tau'=\sigma\tau$ | $-1$ | $-1$ | $\bar\tau$ |
+
+The reflections $s_a$ and $s_{a-b}$ are in vectors of square $-2$ and $-4$, so their spinor norms are $[-(-2)/2]=[1]$ and $[-(-4)/2]=[2]$, and each has determinant $-1$; $\sigma$ has determinant $(-1)^2=1$ and spinor norm $[(-1)^1]=-1$ by @lem:minus-identity-spinor-norm, since $U$ has positive index one and @lem:split-isometry-spinor-norm disposes of the other summands; $\tau'$ is the product of the commuting isometries $\sigma$ and $\tau$, so its two signs multiply. On the discriminant, $\sigma$ fixes $a/2$ and $b/2$, $s_a$ negates $a/2$ and $b/2$ and so fixes both classes because those classes are their own negatives, and $\tau$ interchanges $a/2$ and $b/2$; hence $\rho_{L,q}(\sigma)=\rho_{L,q}(s_a)=\id$ and $\rho_{L,q}(\tau)=\rho_{L,q}(\tau')=\bar\tau\neq\id$. Moreover $\rho_{L,q}(\Orth(L))=\Orth(A_{L,q})$, since $\tau$ realizes the only nontrivial class.
+
+Both $\sigma$ and $s_a$ therefore lie in the discriminant kernel of $\Orth(L)$, and
+$$
+\Sigma_{\Orth(L)}(\kappa)=\theset{\pm1}^2:
+$$
+the element $(-1,1)$ is $s_a$, the element $(1,-1)$ is $\sigma$, the element $(-1,-1)$ is $s_a\sigma$, and $(1,1)$ is $\id$. This is the last case of @thm:kernel-sign-image(2): the two signs are independent on the discriminant kernel.
+
+**The Schreier data.** Put $M\definedas\generators{e,f/2,a,b}$, so $L\subseteq M$, $M/L\cong\bZ/2$ and $e_1=2$; and $L^\sharp\intersect M=L$, so $L^\sharp/(L^\sharp\intersect M)\cong A_L\cong(\bZ/2)^2$ and $e_2=2$ in the notation of @def:stabilizer-congruence-data. The multiples of $\exp(M/2L)=4$ are the admissible moduli; take $m=4$, so $4M\subseteq 2L=e_2L$. Let $G\definedas\generators{g,\tau,\tau'}\cong(\bZ/2)^3$ with $g(e)=f/2$, $g(f)=2e$, $g(a)=a$ and $g(b)=b$. Each of $g,\tau,\tau'$ preserves $M$, and $g=s_{2e-f}$ is a reflection in a vector of square $-4$, so $\det g=-1$ and $\spinornorm_\bR(g)=+1$; and $g\notin\Orth(L)$, since $g(e)=f/2\notin L$, so $\rho_L(g)$ is undefined while these two signs are defined.
+
+The orbit of $\bar L_4$ in $M/4M$ is $\Sigma_4=\theset{p_0,p_1}$ with $p_0=\bar L_4$ and $p_1=\overline{gL}_4\neq p_0$: an element of $gL$ has $e$-coordinate divisible by $2$, an element of $4M$ has $e$-coordinate divisible by $4$, and $e$ has $e$-coordinate $1$, so no $v\in gL$ and $w\in M$ satisfy $v+4w=e$ and $\bar e\in\bar L_4$ is not in $\overline{gL}_4$. Take $t_{p_0}=\id$ and $t_{p_1}=g$. The loops are
+
+| | $p_0$ | $p_1$ |
+| --- | --- | --- |
+| $s=g$ | $\id$ | $\id$ |
+| $s=\tau$ | $\tau$ | $\tau$ |
+| $s=\tau'$ | $\tau'$ | $\tau'$ |
+
+the entries in the column $p_1$ using $g\tau=\tau g$ and $g\tau'=\tau'g$, both of which hold because $g$ fixes $a$ and $b$ and $\sigma$ is central. Hence $\Stab_G(L)=\generators{\tau,\tau'}$ is exactly the group generated by the loops, which is @thm:schreier-joint-image(2) at these data. For the loop $k_{\tau,p_1}=g^{-1}\tau g$ the discriminant entry of @thm:schreier-joint-image(1) is the composite $\alpha_g(L)^{-1}\circ\alpha_\tau(gL)\circ\alpha_g(L)$: the two outer factors act as the identity on the classes $[a/2]$ and $[b/2]$ because $g$ fixes $a$ and $b$, and $\alpha_\tau(gL)$ interchanges them, so the composite is $\bar\tau$, as the table says.
+
+**The verdict.** $\kappa_L\qty(\Stab_G(L))=\theset{(1,1,1),(\bar\tau,-1,1),(\bar\tau,-1,-1),(1,1,-1)}$, and the discriminant kernel of the stabilizer is $K_{\Stab_G(L)}=\theset{\id,\tau\tau'=\sigma}$ with
+$$
+\Sigma_{\Stab_G(L)}(\kappa)=\generators{(1,-1)}\cong\bZ/2.
+$$
+The joint image here is not the product of its two projections: its projection to the discriminant is $\theset{\id,\bar\tau}$, of order $2$, and its projection to the signs is all of $\theset{\pm1}^2$, whereas the joint image has four elements rather than eight. On this stabilizer the determinant is a function of the discriminant class, taking $-1$ on the two elements with $\rho_{L,q}\neq\id$, while the spinor sign takes both values on each of the two fibres: the determinant is a graph character of these congruence data and the spinor sign is a sign in the discriminant kernel that they do not determine. The witness is a product: no element of the chosen generating set $S=\theset{g,\tau,\tau'}$ lies in $K_{\Stab_G(L)}$ — $g$ is not even integral, and $\rho_{L,q}(\tau)=\rho_{L,q}(\tau')=\bar\tau$ — and the only loops with trivial discriminant part are $k_{g,p_0}=k_{g,p_1}=\id$, which have the trivial sign; yet $\tau\tau'=\sigma$ lies in the kernel with spinor sign $-1$. This is the phenomenon of @thm:kernel-sign-image(3): a product of two loops of mutually inverse discriminant component and opposite signs is a kernel witness, and a search over the chosen generating set or over the individual loops returns none.
+
+For the coarser congruence data $M=L$, $m=2$ both signs fail to be graph characters: $s_a$ is trivial modulo $2L$ with determinant $-1$ and $\sigma$ is trivial modulo $2L$ with spinor norm $-1$, so neither is a function of $\pi_2(g)$ (@prop:joint-character-congruence(2)). Whether a sign is a graph character is thus a property of the congruence data and of the group, not of the lattice; and since $\Sigma_{\Stab_G(L)}(\kappa)\neq\theset{1}$ at the data above, the discriminant double cosets of @thm:descent-double-coset compute the orbits of the full preimage $\rho_{L,q}^{-1}\qty(\rho_{L,q}(\Gamma_1))$ and not those of a spinor-refined subgroup $\Gamma_1$ of $\Stab_G(L)$, so the joint cosets of @thm:joint-double-coset(3) are the ones that apply.
+:::
+
+::: {.remark}
+
+At the Enriques lattice the hypothesis of @thm:joint-double-coset(3) fails for the spinor refinement. With $N=T_\En$ the element $\sigma_U=-\id_U\oplus\id_{U(2)}\oplus\id_{E_8(2)}$ is trivial modulo $2N$, hence lies in $\ker\rho_N$ by @cor:stabilizer-modulus at $m=2$, and has determinant $(-1)^2=1$ and spinor norm $-1$ (@prop:spinor-congruence-obstruction(2)); so $\Sigma_{\Orth(N)}(\kappa)$ contains $(1,-1)$ and the spinor sign is not a graph character at $T_\En$. For a group $\Gamma\leq\Orth(N)$ containing $\ker\rho_N$ — for instance $\Gamma_{\En,2}=\rho^{-1}(M)$ of @prop:sterk-group-identification(2) — the subgroup $\Gamma\intersect\Orth^+(N)$ therefore does not contain $\ker\rho_N$, and its orbit count is the joint one of @thm:joint-double-coset; where that count agrees with the count for $\Gamma$, the agreement is the stabilizer-witness statement of @prop:descent-spinor-fibre and not a consequence of the congruence quotient.
+:::
+
 ## Supporting lift theorems {#sec-descent-eichler}
 
 ::: {.proposition #prop:descent-eichler title="Eichler filling"}
