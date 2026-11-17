@@ -328,3 +328,17 @@ def test_bounded_compressed_shard_is_explicitly_incomplete(tmp_path):
     assert audit.audit_integral_shard(output, allow_incomplete=True) == 2
     with pytest.raises(AssertionError):
         audit.audit_integral_shard(output)
+    corrupted = tmp_path / "corrupted.jsonl.gz"
+    bad = json.loads(json.dumps(records))
+    bad[1]["flag_vector_standard"][0] += 2
+    digest = hashlib.sha256()
+    with gzip.open(corrupted, "wt", encoding="utf-8") as stream:
+        stream.write(json.dumps(bad[0], separators=(",", ":")) + "\n")
+        for record in bad[1:-1]:
+            encoded = json.dumps(record, separators=(",", ":")) + "\n"
+            digest.update(encoded.encode())
+            stream.write(encoded)
+        bad[-1]["records_sha256"] = digest.hexdigest()
+        stream.write(json.dumps(bad[-1], separators=(",", ":")) + "\n")
+    with pytest.raises(AssertionError):
+        audit.audit_integral_shard(corrupted, allow_incomplete=True)
