@@ -76,6 +76,7 @@ assert len(V) == 1024 and len(SINGULAR) == 527 and len(NONSINGULAR) == 496
 assert matrix(GF(2), [bits(x) for x in SINGULAR]).rank() == 10
 positions = {x: i + 1 for i, x in enumerate(SINGULAR)}
 permutations = []
+root_permutations = {}
 
 for x in NONSINGULAR:
     r = root_lift(x)
@@ -96,17 +97,26 @@ for x in NONSINGULAR:
         image = reflection * e
         image_mask = sum((int(image[j]) & 1) << j for j in range(11))
         assert image_mask == (1 << i) ^ (x if (x & (1 << i)) else 0)
-    permutations.append([
+    permutation = [
         positions[y ^ (x if PARITY(y & x) else 0)] for y in SINGULAR
-    ])
+    ]
+    permutations.append(permutation)
+    root_permutations[x] = permutation
 
 G = PermutationGroup(permutations)
 order = int(G.order())
 expected = 2 * 2**20 * (2**5 - 1) * prod(2**(2*i) - 1 for i in range(1, 5))
 assert order == expected == 46998591897600
+# A deterministic ten-reflection certificate is enough for the *full*
+# finite image, avoiding the 496-generator branching factor when carrying
+# finite plane and flag classes. Each mask has its integral root lift above.
+TEN_ROOTS = (1836, 269, 54, 418, 354, 390, 649, 562, 650, 957)
+assert all(x in root_permutations for x in TEN_ROOTS)
+assert int(PermutationGroup([root_permutations[x] for x in TEN_ROOTS]).order()) == expected
 print('B=I_{2,9}: 496 integral norm +/-2 root reflections constructed and checked')
 print('unimodular change to <1> + U + E8(-1): determinant', M.det())
 print('all 496 integral reflection matrices verified in the standard T_Co basis')
 print('finite even-norm discriminant space: 527 nonzero singular, 496 nonsingular')
 print('faithful finite permutation image order:', order)
 print('full O^+(10,2) order:', expected)
+print('ten integral root reflections generate the full finite image:', TEN_ROOTS)
