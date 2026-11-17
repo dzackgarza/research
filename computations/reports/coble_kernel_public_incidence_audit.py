@@ -97,6 +97,7 @@ def audit(path: Path, *, class_only: bool = False) -> None:
     vertex_classes = {label: {"line": {}, "plane": {}} for label in LABELS}
     integral_planes = {label: set() for label in LABELS}
     plane_bases = {label: {} for label in LABELS}
+    plane_keys = {label: {} for label in LABELS}
     degrees = {label: (Counter(), Counter()) for label in LABELS}
     pairs = {label: set() for label in LABELS}
     positions = {label: set() for label in LABELS}
@@ -130,6 +131,7 @@ def audit(path: Path, *, class_only: bool = False) -> None:
                         label, index, "repeated integral plane span"
                     )
                     integral_planes[label].add(plucker)
+                    plane_keys[label][index] = plucker
                     vertex_classes[label][kind][index] = mod2_span(p, q)
                     plane_bases[label][index] = (p, q)
                 continue
@@ -164,6 +166,9 @@ def audit(path: Path, *, class_only: bool = False) -> None:
                         label, position, "isotropy"
                     )
                     pivot = primitive_plane_pivot(p, q)
+                    assert plane_plucker_key(p, q) == plane_keys[label].get(plane_id), (
+                        label, position, "edge plane differs from indexed integral plane"
+                    )
                     # A primitive rank-two plane contains v iff all rank-three
                     # minors of [v,p,q] vanish. One nonzero 2x2 pivot suffices.
                     a, b, determinant = pivot

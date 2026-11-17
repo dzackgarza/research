@@ -42,6 +42,23 @@ def test_coble_kernel_audit_rejects_false_integral_incidence(tmp_path):
     with pytest.raises(AssertionError, match="divided-class incidence"):
         audit.audit(wrong_class, class_only=True)
 
+    # An edge must use the *indexed integral plane*, not merely a different
+    # primitive isotropic plane with the same mod-two discriminant subgroup.
+    # Negate the E8 coordinates but retain the positive coordinate.
+    # This is another isotropic vector with identical parity.
+    p_other = p[:3] + tuple(-a for a in p[3:])
+    assert audit.pairing(p_other, p_other) == audit.pairing(p_other, q) == 0
+    assert audit.mod2_span(p_other, q) == audit.mod2_span(p, q)
+    assert audit.plane_plucker_key(p_other, q) != audit.plane_plucker_key(p, q)
+    mismatched_plane = tmp_path / "mismatched-plane.log"
+    mismatched_plane.write_text(
+        f"[Otilde] line cusp 0: ({q},)\n"
+        f"[Otilde] plane cusp 0: ({p}, {q})\n"
+        f"[Otilde] edge 0: L0 < P0; line=({q},); plane=({p_other}, {q})\n"
+    )
+    with pytest.raises(AssertionError, match="edge plane differs from indexed integral plane"):
+        audit.audit(mismatched_plane)
+
     valid_edge = tmp_path / "valid-edge.log"
     valid_edge.write_text(
         f"[Otilde] line cusp 0: ({q},)\n"
