@@ -281,7 +281,7 @@ def test_bounded_compressed_shard_is_explicitly_incomplete(tmp_path):
     assert hashlib.sha256(source.read_bytes()).hexdigest() == original
     with gzip.open(output, "rt", encoding="utf-8") as stream:
         records = [json.loads(line) for line in stream]
-    assert len(records) == 3
+    assert len(records) == 4
     header = records[0]
     assert header["schema"] == "coble-exact-kernel-transport-shard-v1"
     assert header["shard_index"] == 0 and header["shard_count"] == 8
@@ -292,14 +292,21 @@ def test_bounded_compressed_shard_is_explicitly_incomplete(tmp_path):
         line_source.read_bytes()
     ).hexdigest()
     assert [(r["plane_index"], r["seed_index"], r["flag_index"])
-            for r in records[1:]] == [(0, 0, 0), (0, 0, 1)]
+            for r in records[1:-1]] == [(0, 0, 0), (0, 0, 1)]
+    trailer = records[-1]
+    assert trailer["trailer"] == header["schema"]
+    assert trailer["records"] == 2 and trailer["complete"] is False
+    digest = hashlib.sha256()
+    for record in records[1:-1]:
+        digest.update(json.dumps(record, separators=(",", ":")).encode() + b"\n")
+    assert trailer["records_sha256"] == digest.hexdigest()
     assert all(len(r["positive_kernel_matrix_sha256"]) == 64
-               for r in records[1:])
+               for r in records[1:-1])
     lines = json.loads(line_source.read_text())
     gram = lines["standard_gram"]
     seed_line = {r["mask_diagonal"]: r["vector_standard"]
                  for r in lines["representatives"]}
-    for row in records[1:]:
+    for row in records[1:-1]:
         source_vector = seed_line[row["line_mask_diagonal"]]
         target_vector = row["flag_vector_standard"]
         for field in ("kernel_matrix_standard", "positive_kernel_matrix_standard"):

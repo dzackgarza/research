@@ -300,6 +300,7 @@ if raw_args and raw_args[0]=='shard':
          'line_certificate_sha256':hashlib.sha256(line_certificate.read_bytes()).hexdigest(),
          'plane_certificate_sha256':hashlib.sha256(plane_certificate.read_bytes()).hexdigest()}
  count=0
+ digest=hashlib.sha256()
  requests=product(range(shard_index,len(rows),shard_count),range(8),range(3))
  if limit is not None:
   requests=islice(requests,limit)
@@ -317,8 +318,14 @@ if raw_args and raw_args[0]=='shard':
             'positive_kernel_matrix_sha256':hashlib.sha256(json.dumps(
              record['positive_kernel_matrix_standard'],separators=(',',':')
             ).encode()).hexdigest()}
-   stream.write(json.dumps(compact,separators=(',',':'))+'\n')
+   encoded=json.dumps(compact,separators=(',',':')).encode()+b'\n'
+   digest.update(encoded)
+   stream.write(encoded.decode())
    count+=1
+  stream.write(json.dumps({'trailer':'coble-exact-kernel-transport-shard-v1',
+                           'records':count,'records_sha256':digest.hexdigest(),
+                           'complete':limit is None and count==expected_edges},
+                          separators=(',',':'))+'\n')
  assert count==(min(expected_edges,limit) if limit is not None else expected_edges)
  print('exact integral kernel transporter shard:',shard_index,shard_count,
        'records',count,'expected',expected_edges,'complete',limit is None,
