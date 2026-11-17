@@ -1625,7 +1625,7 @@ $$
 $$
 of sizes $1$, $2$, $135$, $270$ and $120$; the four nonzero orbits total $527$.
 
-(3) The $0$-cusps of $\bD(T_\Co)/\Gamma_{\Co,2}$ are its orbits on the primitive isotropic vectors of $T_\Co$. Every primitive vector of $T_\Co$ has divisibility $2$ (@lem:divisibilityAlwaysTwoTco), and $\ker\rho\subseteq\Gamma_{\Co,2}$, so by @thm:coble-zero-cusp-count these orbits correspond to the orbits of $\rho(\Gamma_{\Co,2}) = P$ on the $527$ nonzero isotropic classes, which by (2) number four. This is the count that @thm:coble-zero-cusp-count(3) and @rmk:gamma-co-counts leave uncomputed; it is proved here and returned by the row of @rmk:coble-plane-incidence-rows.
+(3) The $0$-cusps of $\bD(T_\Co)/\Gamma_{\Co,2}$ are its orbits on the primitive isotropic vectors of $T_\Co$. Every primitive vector of $T_\Co$ has divisibility $2$ (@lem:divisibilityAlwaysTwoTco), and $\ker\rho\subseteq\Gamma_{\Co,2}$, so by @thm:coble-zero-cusp-count these orbits correspond to the orbits of $\rho(\Gamma_{\Co,2}) = P$ on the $527$ nonzero isotropic classes, which by (2) number four. This count is independently returned by the public row of @rmk:coble-plane-incidence-rows.
 :::
 
 ::: {.remark #rmk:coble-plane-incidence-rows title="The public rows behind the plane fibre, the cusps of $F_{\Co,2}$ and the incidence"}
