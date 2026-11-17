@@ -131,7 +131,7 @@ For these three rows $W_r$ has infinite index in $\Orth$, Vinberg's algorithm do
 
 **The two-reflectivity failure.** No lattice of the Coble table is two-reflective: for every one of them $W_2$ has infinite index in $\Orth$ (@thm:coble-table-not-two-reflective, from [@Nik79b, Prop. 0.2.1, printed p. 1402, and Thm. 0.2.3, printed pp. 1403--1404]).
 
-**The replacement in use.** For the three non-reflective rows the $0$-cusps and their boundary lattices are classified without any diagram, by the mirror moves ([@AE22, Def. 5.6 and Thm. 5.8, printed pp. 22--23]): the boundary lattices are $(3,3,1)$ for $n = 7$, $(2,2,1)$ and $(2,2,0)$ for $n = 8$, and $(1,1,1) = \generators{2}$ for $n = 9$ (@prop:coble-table-cusp-boundary-lattices).
+**The replacement in use.** For the three non-reflective rows the $0$-cusps and their boundary lattices are classified without any diagram, by the mirror moves ([@AE22, Def. 5.6 and Thm. 5.8, printed p. 23]): the boundary lattices are $(3,3,1)$ for $n = 7$, $(2,2,1)$ and $(2,2,0)$ for $n = 8$, and $(1,1,1) = \generators{2}$ for $n = 9$ (@prop:coble-table-cusp-boundary-lattices).
 The collection of semifans that the semitoroidal compactification of these three families uses at their $0$-cusps is the open question @qst:coble-nonreflective-semifans, whose candidate replacements are semifans from recognizable divisors, where no chamber exists, and the induced reflection subgroup, where the diagram would belong to a subgroup.
 
 ## The settled and open work units

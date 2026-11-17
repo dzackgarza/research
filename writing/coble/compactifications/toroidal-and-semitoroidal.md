@@ -115,6 +115,12 @@ For the converse, the maximal cones of the semifan are the unions of the classes
 
 ## Generalized Coxeter semifans
 
+::: {.definition #def:coxeter-semifan}
+
+Let $W\leq\Orth(L)$ be a reflection group with fundamental chamber $\mathfrak{C}$, acting on the rational closure $C_\QQ$ of a cone.
+The **Coxeter semifan** $\mathcal F^{\mathrm{cox}}$ of the chamber has, modulo $W$, the cones $\mathfrak{C}$, its faces, and their $W$-translates; it is a fan if and only if $W$ has finite covolume [@AE22, Def. 3.5, printed p. 10].
+:::
+
 ::: {.definition #def:generalized-coxeter-semifan}
 
 Let $\eta$ be a $0$-cusp with Coxeter diagram $G(\Gamma_\eta)$, reflection group $W$ and fundamental chamber $\mathfrak{C}$.

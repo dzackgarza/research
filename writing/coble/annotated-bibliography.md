@@ -77,6 +77,7 @@
 
 ### Involutions and fixed loci
 
+- [§4C, pp. 16--17: Surfaces for $S$ on the $g = 0$ line, and the sentence that the ramification divisor of $\pi\colon X\to Y$ is the union of the $n$ curves $E_{2i}$. arXiv:2208.10383v2] [@AE22].
 - [Cor. 3.7, p. 14: Three surface involutions and their lattice isometries](<file:///home/dzack/Zotero/storage/JUN7Z2SD/local-write-api-1781873239211-R7C9C75I.pdf#page=14>) [@PS20] [Open in Zotero](zotero://select/library/items/R7C9C75I).
 - [§2.6, p. 57: Root invariants and chamber deformations determine divisor classes in the involution fixed locus](<file:///home/dzack/Zotero/storage/NSGWX3VG/Del%20Pezzo%20and%20K3%20Surfaces%20-%20Valery%20Alexeev.pdf#page=57>) [@AN06] [Open in Zotero](zotero://select/library/items/RYAAK5WJ).
 - [§2.2, p. 5: Involutions on K3 surfaces and on the K3 lattice](<file:///home/dzack/Zotero/storage/JUN7Z2SD/local-write-api-1781873239211-R7C9C75I.pdf#page=5>) [@PS20] [Open in Zotero](zotero://select/library/items/R7C9C75I).
@@ -117,6 +118,7 @@
 
 ### Reflection groups, Coxeter diagrams, and Tits buildings
 
+- [Definition 3.5, p. 10: The Coxeter semifan of a chamber has, modulo $W$, the chamber, its faces and their $W$-translates, and it is a fan iff $W$ has finite covolume. arXiv:2208.10383v2] [@AE22].
 - [p. 17: Chapter I, §3, Combinatorial structure from the Gram matrix](<file:///home/dzack/Zotero/storage/F8KDYEYJ/Vinberg%20-%201985%20-%20Hyperbolic%20groups%20of%20reflections.pdf#page=17>) [@Vin85] [Open in Zotero](zotero://select/library/items/PRDFGNMI).
 - [p. 21: Chapter I, §4, Boundedness and finite-volume criteria](<file:///home/dzack/Zotero/storage/F8KDYEYJ/Vinberg%20-%201985%20-%20Hyperbolic%20groups%20of%20reflections.pdf#page=21>) [@Vin85] [Open in Zotero](zotero://select/library/items/PRDFGNMI).
 - [§3, p. 6: Isotropic types: odd, even ordinary, even characteristic](<file:///home/dzack/Zotero/storage/7F7RU87H/%5BAlexeev%202022%5D%20Reflective%20hyperbolic%202-elementary%20lattices,%20K3%20surfaces%20and%20hyperkahler%20varieties.pdf#page=6>) [@Ale22] [Open in Zotero](zotero://select/library/items/A93AVF5X).
@@ -154,6 +156,7 @@
 
 ### Recognizable divisors and semifans
 
+- [Theorem 9.10, p. 56: In the 50 cases with $g\geq 2$ the normalization of $\overline{F_S}$ is semitoroidal, its ramification semifan a coarsening of the Coxeter fan of $W_2$, which coarsens that of $W_r$. arXiv:2208.10383v2] [@AE22].
 - [Definitions 3.17–3.18, p. 9: Admissible semifans and compatibility at isotropic planes](<file:///home/dzack/Zotero/storage/URNR4MW8/local-write-api-1782660018609-78ZHA45V-2110.13834.pdf#page=9>) [@AEH24] [Open in Zotero](zotero://select/library/items/JMUYJJ7Q).
 - [Lemma 5.2, p. 30: Boundary divisors of the Coxeter toroidal compactification](<file:///home/dzack/Zotero/storage/JB2YRBN3/Alexeev%20et%20al.%20-%202025%20-%20Compact%20moduli%20of%20Enriques%20surfaces%20of%20degree%202.pdf#page=30>) [@AEGS25] [Open in Zotero](zotero://select/library/items/HZHBPI5W).
 - [Lemma 5.8, p. 31: Boundary divisors of the semitoroidal compactification](<file:///home/dzack/Zotero/storage/JB2YRBN3/Alexeev%20et%20al.%20-%202025%20-%20Compact%20moduli%20of%20Enriques%20surfaces%20of%20degree%202.pdf#page=31>) [@AEGS25] [Open in Zotero](zotero://select/library/items/HZHBPI5W).
