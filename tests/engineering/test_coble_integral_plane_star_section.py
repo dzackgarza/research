@@ -1,9 +1,11 @@
 """Independently replay the complete finite-to-integral Coble plane section."""
 
+import ast
 import json
 import hashlib
 import gzip
 import importlib.util
+import re
 import subprocess
 from collections import Counter
 from itertools import combinations
@@ -84,6 +86,33 @@ def test_complete_integral_flag_quotient_ci_record():
     assert "exact integral flags classified: 569160" in text
     assert sum([2160, 2160, 2160, 7560, 9450, 15120, 22680, 28350,
                 45360, 69120, 75600, 138240, 151200]) == 569160
+
+
+def test_all_integral_flags_recover_public_gamma_co_2_edge_weights():
+    """All 13 *public* L/P edges occur with their exact integral flag counts."""
+    folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
+    transcript = (folder / "coble_integral_public_edge_multiplicities-run.txt").read_bytes()
+    assert hashlib.sha256(transcript).hexdigest() == (
+        "805c5f00f9781a707706d7c576c59edef096b69695d4bee9402eb2c6199500e8")
+    text = transcript.decode()
+    matches = re.findall(r"^public Gamma_Co,2 edge multiplicities: (.*)$",
+                         text, re.MULTILINE)
+    assert len(matches) == 1
+    weighted = ast.literal_eval(matches[0])
+    assert len(weighted) == len({edge for edge, _ in weighted}) == 13
+    assert sum(weight for _, weight in weighted) == 569160
+    assert sorted(weight for _, weight in weighted) == [
+        2160, 2160, 2160, 7560, 9450, 15120, 22680, 28350,
+        45360, 69120, 75600, 138240, 151200]
+    # Compare against the actual public graph's committed edge labels,
+    # rather than accepting a relabelled abstract 13-edge graph.
+    comparison = ast.parse((folder / "coble_gco_public_incidence_compare.py").read_text())
+    public = next(ast.literal_eval(node.value) for node in comparison.body
+                  if isinstance(node, ast.Assign)
+                  and any(isinstance(t, ast.Name) and t.id == "public"
+                          for t in node.targets))
+    assert {edge for edge, _ in weighted} == public
+    assert "exact integral flags classified: 569160" in text
 
 
 def test_all_coble_integral_plane_star_words():

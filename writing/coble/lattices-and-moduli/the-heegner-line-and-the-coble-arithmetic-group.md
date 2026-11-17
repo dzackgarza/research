@@ -1653,6 +1653,20 @@ $$
 $$
 They equal the independent finite Schreier orbit sizes, and the $13$ flag orbits have $13$ distinct pairs of line and plane orbit endpoints. The CI job succeeded at 2026-11-17 22:19:41 UTC, retaining artifact `coble-integral-flag-quotient-proof` (ID `14375827131`); its verbatim $38$-line transcript is committed as `computations/reports/coble_integral_flag_quotient-run.txt`. This checks the actual complete integral witness family against the $\Gamma_{\Co,2}$ quotient, rather than comparing independently computed total counts. It remains a research-side certificate, not a returned public Sage-extensions subgroup-incidence row.
 
+The stronger [public-edge-weighted audit 44189878302](https://github.com/dzackgarza/research/actions/runs/44189878302), on commit `712e5be4409d6c9790d04a5ed3810fc2524a494d`, also completed successfully on 2026-11-17 at 22:31:57 UTC. It identified each of the $569\,160$ archived integral flags with an **actual public** $\Gamma_{\Co,2}$ line/plane incidence edge, using the unique graph isomorphism determined by the published integral plane-star invariants. The multiplicities, in the public cusp indices of sage-extensions run 43556671111, are
+
+| Public edge | Integral flags | Public edge | Integral flags |
+| --- | ---: | --- | ---: |
+| $L_0<P_0$ | $2160$ | $L_1<P_1$ | $69120$ |
+| $L_1<P_3$ | $45360$ | $L_1<P_5$ | $15120$ |
+| $L_2<P_0$ | $2160$ | $L_2<P_2$ | $75600$ |
+| $L_2<P_3$ | $22680$ | $L_2<P_4$ | $28350$ |
+| $L_2<P_5$ | $7560$ | $L_2<P_6$ | $9450$ |
+| $L_3<P_0$ | $2160$ | $L_3<P_1$ | $138240$ |
+| $L_3<P_2$ | $151200$ | | |
+
+The $13$ distinct edge labels agree exactly with the public incidence graph, and the weights sum to $569\,160$. The independently produced CI transcript is committed as `computations/reports/coble_integral_public_edge_multiplicities-run.txt` and retained as artifact `coble-integral-flag-quotient-proof` (ID `14377530380`). This establishes the direct numerical correspondence of the complete integral kernel flag family with the public $\Gamma_{\Co,2}$ graph; it does not certify the still-unreturned public $\widetilde\Orth(T_\Co)$ or $\widetilde\Orth^+(T_\Co)$ incidence rows.
+
 The permanent provenance ledger `computations/reports/coble_integral_flag_certificate_manifest.json` retains the SHA-256 of each of the $32$ compressed shards and its uncompressed record stream, the exact per-shard edge counts, the source certificate digests, the producing commit, the archived artifact ID and the Sage image digest. The hashes were independently recomputed from all $32$ downloaded workflow artifacts; the image digest `sha256:12e5716067b5cf2fd34c00e9ba97e9c09d51a70664de817f4ae29743b64c5f61` was independently read from all $32$ shard job logs and was identical in each. The manifest is also checked against the committed source certificates by `test_complete_integral_flag_certificate_manifest`. To verify a downloaded archive, run the independent checker with `--shards shard-*.jsonl.gz --manifest computations/reports/coble_integral_flag_certificate_manifest.json`; this checks both byte identity with the archived certificate and the mathematical content of every transporter.
 
 As an additional cross-revision reproducibility check, the later deterministic-gzip producer on research main regenerated the **entire** shard $4/32$ (all $17\,784$ integral flags). Its uncompressed JSONL record-stream SHA-256 was `bae2df20435b33c8f8c0fb71237965367290e9025c8a8599bca878dfebc4ee4b`, identical to the original archived shard's manifest entry. The compressed-file SHA-256 differs because the later producer intentionally removes the gzip timestamp and embedded filename; this does not change any transporter record.
