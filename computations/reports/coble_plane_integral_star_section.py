@@ -314,6 +314,7 @@ if raw_args and raw_args[0]=='shard':
             'parabolic_correction_word':record['parabolic_correction_word'],
             'kernel_real_spinor_sign':record['kernel_real_spinor_sign'],
             'kernel_matrix_standard':record['kernel_matrix_standard'],
+            'spinor_flip_matrix_standard':record['spinor_flip_matrix_standard'],
             'positive_kernel_matrix_standard':record['positive_kernel_matrix_standard'],
             'positive_kernel_matrix_sha256':hashlib.sha256(json.dumps(
              record['positive_kernel_matrix_standard'],separators=(',',':')

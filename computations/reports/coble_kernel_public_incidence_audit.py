@@ -107,7 +107,18 @@ def audit_integral_shard(path: Path, *, allow_incomplete: bool = False) -> int:
                 columns = [tuple(g[i][j] for i in range(11)) for j in range(11)]
                 assert all(pairing(columns[i], columns[j]) == pairing(basis[i], basis[j])
                            for i in range(11) for j in range(11))
+            flip = row["spinor_flip_matrix_standard"]
+            assert len(flip) == 11 and all(len(r) == 11 for r in flip)
+            assert all(type(z) is int for r in flip for z in r)
+            assert all(flip[i][j] % 2 == int(i == j) for i in range(11) for j in range(11))
+            assert tuple(sum(flip[i][j] * v[j] for j in range(11)) for i in range(11)) == v
+            flip_columns = [tuple(flip[i][j] for i in range(11)) for j in range(11)]
+            assert all(pairing(flip_columns[i], flip_columns[j]) == pairing(basis[i], basis[j])
+                       for i in range(11) for j in range(11))
             x, y = basis[0], tuple(int(i in (1, 2)) for i in range(11))
+            fx = tuple(sum(flip[i][j] * x[j] for j in range(11)) for i in range(11))
+            fy = tuple(sum(flip[i][j] * y[j] for j in range(11)) for i in range(11))
+            assert pairing(x, fx) * pairing(y, fy) - pairing(x, fy) * pairing(y, fx) < 0
             for field in ("kernel_matrix_standard", "positive_kernel_matrix_standard"):
                 g = row[field]
                 gx = tuple(sum(g[i][j] * x[j] for j in range(11)) for i in range(11))
@@ -119,6 +130,10 @@ def audit_integral_shard(path: Path, *, allow_incomplete: bool = False) -> int:
                 else:
                     assert minor > 0
             g = row["positive_kernel_matrix_standard"]
+            kernel = row["kernel_matrix_standard"]
+            assert g == (kernel if row["kernel_real_spinor_sign"] == 1 else
+                         [[sum(flip[i][k] * kernel[k][j] for k in range(11))
+                           for j in range(11)] for i in range(11)])
             assert row["positive_kernel_matrix_sha256"] == hashlib.sha256(
                 json.dumps(g, separators=(",", ":")).encode()).hexdigest()
             count += 1
