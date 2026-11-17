@@ -76,3 +76,21 @@ print("public line index -> finite vector orbit size:", dict(enumerate(lines)))
 print("public plane index -> finite decorated-plane orbit size:", dict(enumerate(planes)))
 print("mapped public edge set equals finite edge set:",
       {(lines[l], planes[p]) for l, p in public} == finite)
+
+# The four graph isomorphisms need not distinguish individual decorated-plane
+# orbits. Check whether the graph-inferred undecorated type is independent of
+# which isomorphism is chosen. This is a combinatorial inference conditional
+# on the graph comparison, not a direct invariant computation on public
+# integral representatives.
+finite_plane_class = {
+    2160: "ABC", 3150: "AAA", 9450: "AAA", 7560: "ADD",
+    22680: "ADD", 69120: "CCD", 75600: "ACC",
+}
+classifications = {
+    tuple(finite_plane_class[planes[p]] for p in range(7))
+    for _, planes in witnesses
+}
+print("distinct finite-plane type assignments:", len(classifications))
+assert len(classifications) == 1
+print("public plane index -> graph-inferred finite-plane type:",
+      dict(enumerate(next(iter(classifications)))))
