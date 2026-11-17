@@ -1,0 +1,5 @@
+public edges: 13 finite edges: 13
+graph isomorphisms: 4
+public line index -> finite vector orbit size: {0: 2, 1: 120, 2: 135, 3: 270}
+public plane index -> finite decorated-plane orbit size: {0: 2160, 1: 69120, 2: 75600, 3: 7560, 4: 3150, 5: 22680, 6: 9450}
+mapped public edge set equals finite edge set: True
