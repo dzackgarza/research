@@ -98,6 +98,9 @@ def audit_integral_shard(path: Path, *, allow_incomplete: bool = False) -> int:
             u = source[row["line_mask_diagonal"]]
             v = tuple(row["flag_vector_standard"])
             assert len(v) == 11 and gcd(*v) == 1 and pairing(v, v) == 0
+            v_mask = sum((sum(change[i][j] * v[j] for j in range(11)) & 1) << i
+                         for i in range(11))
+            assert v_mask == row["line_mask_diagonal"], "flag divided class disagrees with line cusp"
             p, q = (tuple(w) for w in seeds[row["seed_index"]])
             for root_index in planes["finite_plane_transports"][plane_index]["word_from_base"]:
                 root = roots[root_index]
