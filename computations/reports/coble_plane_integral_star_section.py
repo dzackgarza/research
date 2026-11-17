@@ -1,0 +1,67 @@
+"""Eight explicit integral Coble plane stars over all 23715 finite planes."""
+import json
+from collections import deque
+from itertools import combinations
+from math import gcd
+from pathlib import Path
+from sage.all import ZZ, matrix, vector
+
+folder=Path('computations/reports')
+data=json.loads((folder/'coble_singular_integral_representatives.json').read_text())
+change=matrix(ZZ,data['standard_to_diagonal']); to_standard=change.inverse()
+roots=[change*vector(ZZ,r) for r in data['generator_roots_standard']]
+signs=(1,1)+(-1,)*9
+pair=lambda a,b:sum(signs[i]*a[i]*b[i] for i in range(11))
+mask=lambda v:sum((int(x)&1)<<i for i,x in enumerate(v))
+def reflect(v,r):
+ n=pair(r,r);assert abs(n)==2
+ return v-(2//n)*pair(v,r)*r
+def plane_key(a,b):
+ x,y=mask(a),mask(b);assert x and y and x!=y
+ return tuple(sorted((x,y,x^y)))
+def primitive(a,b):
+ return gcd(*(int(a[i]*b[j]-a[j]*b[i]) for i,j in combinations(range(11),2)))==1
+unit=lambda i:vector(ZZ,[int(i==j) for j in range(11)])
+e1=unit(0)+unit(2);f1=unit(0)+unit(3)
+e2=unit(1)+unit(4);f2=unit(1)+unit(5)
+d=[unit(0)+unit(2)+unit(3),unit(1)+unit(4)+unit(5)]+[unit(i) for i in range(6,11)]
+assert pair(e1,f1)==pair(e2,f2)==1
+assert all(pair(x,x)==-1 for x in d)
+assert all(pair(x,y)==0 for x,y in combinations(d,2))
+assert all(pair(x,y)==0 for x in d for y in (e1,f1,e2,f2))
+base=[(e1,e2)]
+for i in range(7):
+ r=2*(e1+f1)+sum((d[j] for j in range(7) if j!=i),vector(ZZ,11))
+ assert pair(r,r)==2
+ base.append((reflect(e1,r),reflect(e2,r)))
+J0=plane_key(e1,e2)
+assert len(base)==8 and all(plane_key(a,b)==J0 and primitive(a,b) and pair(a,a)==pair(a,b)==pair(b,b)==0 for a,b in base)
+a,b=mask(e1),mask(e2)
+coset=lambda x:min(x,x^a,x^b,x^a^b)
+w=[mask(sum((d[j] for j in range(7) if j!=i),vector(ZZ,11))) for i in range(7)]
+stars=[frozenset(map(coset,w))]
+for x in w:
+ stars.append(frozenset(coset(y^(x if (x&y).bit_count()%2 else 0)) for y in w))
+assert len(set(stars))==8 and all(len(s)==7 for s in stars)
+root_masks=[mask(r) for r in roots]
+parent={J0:None}; queue=deque([J0])
+while queue:
+ J=queue.popleft()
+ for i,x in enumerate(root_masks):
+  K=tuple(sorted(y^(x if (x&y).bit_count()%2 else 0) for y in J))
+  if K not in parent:
+   parent[K]=(J,i);queue.append(K)
+assert len(parent)==23715
+rows=[]
+for J in sorted(parent):
+ word=[];cur=J
+ while cur!=J0:
+  cur,i=parent[cur];word.append(i)
+ rows.append({'finite_plane_masks':list(J),'word_from_base':list(reversed(word))})
+output=folder/'coble_plane_integral_star_section.json'
+output.write_text(json.dumps({'source':'coble_singular_integral_representatives.json',
+ 'base_planes_standard':[[list(map(int,to_standard*a)),list(map(int,to_standard*b))] for a,b in base],
+ 'base_stars_quotient_classes':[sorted(s) for s in stars],
+ 'finite_plane_transports':rows},separators=(',',':'))+'\n')
+print('finite planes:',len(rows),'distinct integral stars per plane:',len(set(stars)))
+print('integral plane representatives:',len(rows)*len(base),'compact certificate:',output)

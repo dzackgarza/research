@@ -184,7 +184,7 @@ print('singular discriminant classes reached by integral root words:', len(paren
 print('primitive integral isotropic vector representatives certified:', len(integral_vectors))
 print('sample integral transporter word (zero-based generator indices):', tuple(path))
 
-# Persist the complete finite-to-integral section, rather than only its
+# Persist the complete finite-to-integral vector section, rather than only its
 # cardinality. All vectors are in the standard <1>+U+E8(-1) basis.
 rows = []
 for mask in sorted(integral_vectors):
