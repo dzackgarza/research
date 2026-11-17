@@ -4,3 +4,4 @@ all 496 integral reflection matrices verified in the standard T_Co basis
 finite even-norm discriminant space: 527 nonzero singular, 496 nonsingular
 faithful finite permutation image order: 46998591897600
 full O^+(10,2) order: 46998591897600
+ten integral root reflections generate the full finite image: (1836, 269, 54, 418, 354, 390, 649, 562, 650, 957)
