@@ -32,9 +32,7 @@ $M$ is the subgroup they generate.
 | `\gent.isotropic_orbit_representatives(2)` | the $\gent$-orbits of primitive isotropic **planes**, i.e. the $1$-cusps: published **nine** [@AEGS25 §3.3 p. 590] |
 | the same two for `T.Aut()` | the full-group counts, so the collapse from $\Orth(\ten)$-orbits to $\gent$-orbits is visible in one run: two of rank one (AEGS §3.2, reproduced as job `jmw6ab5wm`), and the rank-two number that job `jmw69fxhq` is computing |
 
-These are lattice orbits with stabilizers, not discriminant walks; the finite strata of
-`coble_gammaEn2-card-run.txt` (`1 + 4 + 5` over image dimension $0,1,2$, against nine published
-$1$-cusps) are the finite-shadow computation and are not summed into a count.
+These are lattice orbits with stabilizers, not discriminant walks. The finite strata of `coble_gammaEn2-card-run.txt` have orbit counts `1 + 4 + 5` over image dimensions $0,1,2$, but the dimension-zero stratum is not realized by any primitive isotropic plane. By @prop:ten-plane-classes and @thm:enriques-integral-plane-stabilizers, the other nine finite orbits lift bijectively to the nine integral plane orbits of @thm:enriques-degree-two-arithmetic(2). The public call is an independent acceptance check of this **already proved** integral result, not a request to infer lattice orbits from an unqualified finite sum.
 
 ## The marking, checked rather than assumed
 

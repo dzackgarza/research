@@ -110,48 +110,50 @@ data.
 
 ## The 1-cusps: computed on one stratum, not closed
 
-A primitive isotropic plane $\varPi\subset\ten$ carries the same kind of datum: the image of
-$\varPi$ in $A_{\ten}$ is a totally isotropic subgroup of dimension $0$, $1$ or $2$ according to
-$\varPi^{*}/\varPi$. Only the $2$-dimensional stratum is a finite-form datum, and there the count is:
+A primitive isotropic plane $\varPi\subset\ten$ has an isotropic discriminant subgroup
+$D(\varPi)$ of **dimension one or two, never zero**. This is proved by
+@prop:ten-plane-classes(1)--(3), not conjectured from the finite orbit counts.
+The two full-$\Orth(\ten)$ plane representatives are
+$P_1=\generators{e,e'}$, with $D(P_1)=\generators{[e'/2]}$ of order $2$,
+and $P_2=\generators{z,e'}$, with $D(P_2)$ of order $4$.
+Equivalently, the mod-two pairing of $\ten=U\perp U(2)\perp E_8(2)$ is supported
+on the rank-two symplectic space $U/2U$; a totally isotropic rank-two plane
+cannot inject into that space, so at least one nonzero primitive parity class
+has even pairing with all of $\ten$. The zero discriminant stratum is
+therefore **not liftable**, accounting exactly for the difference between the
+naive sum of ten finite orbits and the nine arithmetic plane orbits.
 
-All three strata of totally isotropic subgroups of $A_{\sen}$ are now computed
-(`coble_gammaEn2-card-run.txt`):
+The finite calculation in `coble_gammaEn2-card-run.txt` gives:
 
-| stratum: $\dim$ of the image of $\varPi$ in $A$ | finite objects | $G$-orbits | sizes |
-|---|---|---|---|
-| $0$ (trivial subgroup) | 1 | **1** | $1$ |
-| $1$ (isotropic lines) | 527 | **4** | $270, 135, 120, 2$ |
-| $2$ (totally singular 2-spaces) | $23715$ | **5** | $9450, 8640, 3780, 1575, 270$ |
-| | | $\mathbf{10}$ | |
+| $\dim_{\F_2}D(\varPi)$ | Finite objects | $G$-orbits | Sizes | Integral liftability |
+|---|---:|---:|---|---|
+| $0$ | $1$ | $1$ | $1$ | **None** |
+| $1$ | $527$ | $4$ | $270,135,120,2$ | All |
+| $2$ | $23715$ | $5$ | $9450,8640,3780,1575,270$ | All |
 
-Against the published **nine** 1-cusps [@AEGS25, §3.3, p. 590]. The sum over the strata is **ten**,
-and ten is not nine, so the stratification cannot simply be added up. This is the point at which the
-distinction between the two ways a finite count can fail to be an arithmetic count has to be made,
-and it is the substance of what remains:
+The nonzero strata are fully realized: by @prop:ten-plane-classes,
+$P_1$ and $P_2$ realize one subgroup of each respective dimension; the
+full finite orthogonal group is transitive on each such stratum, and the
+surjective discriminant representation of $\Orth(\ten)$ transports these
+representatives to every subgroup. Crucially, realization does not by itself
+prove one lattice orbit per finite $G$-orbit. The **integral fibre theorem**
+@thm:enriques-integral-plane-stabilizers(2) proves exactly that for the
+full discriminant preimage $\gent=\rho^{-1}(G)$: two primitive planes
+are $\gent$-equivalent if and only if their discriminant subgroups are
+$G$-equivalent. The complete arithmetic classification is therefore
+$4+5=9$ plane orbits, as proved in @thm:enriques-degree-two-arithmetic(2)
+and published in [@AEGS25, §3.3] and [@Ste91, §4.3]. This does **not**
+assume kernel transitivity merely from finite equivariance; it uses the
+proved integral parabolic stabilizer image and the two integral plane
+classes.
 
-- **a stratum can be non-liftable.** A totally isotropic subgroup $\bar\varPi\subseteq A$ need not
-  be the image of a primitive isotropic plane $\varPi\subset\ten$ at all; an object that does not
-  lift contributes a finite orbit and no lattice cusp. Nothing computed so far decides liftability
-  for the strata above, and the vector side shows it is not automatic: there the $\operatorname{div}$
-  value, not the subgroup alone, is the invariant that lifts.
-- **a finite class can hide several lattice orbits, or none.** The finite walk counts orbits of
-  $G$, and the map from lattice orbits to $G$-orbits is surjective with fibres
-  $\Stab_{\Gamma_{\En,2}}(x)$-orbits of the lift. It is a bijection only under two hypotheses:
-  (i) every $G$-orbit in the stratum is realized by a lattice object, and (ii) the stabilizer of one
-  object in $\Gamma_{\En,2}$ acts transitively on the objects of the stratum over its class
-  (Eichler transitivity). The equivariance of $x\mapsto [x/\operatorname{div}(x)]$ gives neither.
-
-For the **vector** side both hypotheses are met, and the file above records the evidence rather than
-assuming it: the two $\Orth(\ten)$-orbits are the $\operatorname{div} = 1,2$ classes [@AEGS25, §3.2],
-the only invariant available is $\operatorname{div}$ (which is what the map to $A$ sees), and the
-index computation above pins $K\subseteq\Gamma_{\En,2}$, so the group acting is the whole preimage
-and not a proper subgroup of it. That is why $5$ is used as the vector total and why the same
-argument is *not* transferred to the planes.
-
-So the 1-cusp side stays **open**, now with a diagnosis rather than a gap: ten finite strata-orbits
-against nine published cusps means at least one of the ten does not lift or does not separate, and
-deciding which requires the lattice-level orbit computation for planes — `T_En.cusps(2)` or its
-subgroup form — not a larger finite walk.
+The remaining acceptance obligation in research#748 and sage-extensions#294
+is an **independent execution of the public lattice subgroup operation**
+`Gamma_En,2.isotropic_orbit_representatives(2)` and comparison with the
+`gamma-en-2` group card and lattice card `029J`. The mathematical
+liftability and fibre hypotheses are already proved; a failed or slow public
+operation is an implementation/verification gap, not an unresolved
+mathematical ambiguity between ten and nine finite strata.
 
 ## The lattice-side owners, and the exact revisions of the one call that fails
 
@@ -202,7 +204,4 @@ matching [@AEGS25 §3.2]. The call, its imported revisions and its output are in
 `coble_gammaEn2-cusps-lattice.md`; no port work was done. The plane call `T_En.cusps(2)` runs under
 the same pair as job `jmw69fxhq`.
 
-So the plane side is open for a reason that is now written down in one place: the finite strata do
-not add up to the published count, and the liftability/transitivity hypotheses that would make them
-add up are lattice-level statements whose owner is the `cusps` / subgroup-orbit chain above, at the
-held revision.
+The historical finite-stratum mismatch is resolved by @prop:ten-plane-classes and @thm:enriques-integral-plane-stabilizers, as proved above: the zero stratum is not liftable, and the four one-dimensional and five two-dimensional finite orbits lift bijectively to the nine integral plane orbits. The **public subgroup-orbit execution** remains the outstanding independent verification. The old provider/port failure and its revision provenance are retained here as historical evidence, not presented as an unresolved mathematical problem.
