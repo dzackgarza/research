@@ -110,6 +110,9 @@ def main():
                 orbit_words[moved] = orbit_words[star] + (i,)
                 frontier.append(moved)
     assert orbit == set(star_sets)
+    # Orbit-stabilizer: the star stabilizer in F has order |F|/8=|S|.
+    # Since all S generators fix the star, S is EXACTLY that stabilizer.
+    assert F.order() // len(orbit) == S.order()
     # Each word is a concrete coset representative in F/S.  Replaying it
     # from the base star must give exactly the corresponding integral star.
     representatives = [orbit_words[star] for star in star_sets]
