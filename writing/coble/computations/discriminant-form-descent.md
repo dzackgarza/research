@@ -828,7 +828,7 @@ $$
 $$
 where the $\Gamma$-orbits are counted by @thm:descent-double-coset and the $\Gamma_1$-orbits by @thm:joint-double-coset.
 
-The case $\beta=\spinornorm_\bR$ is @prop:descent-spinor-fibre: the $\Gamma$-orbit stays one $\Gamma_1$-orbit when its stabilizer contains a spinor-negative element. The joint image adds that this is a decision on a finite group and that the orbits which do split are the ones counted by the second term.
+The case of the second-factor character $\beta(d,s)=s$ of $\theset{\pm1}^2$, so that $\Gamma_1=\Gamma\intersect\ker\spinornorm_\bR$, is @prop:descent-spinor-fibre: the $\Gamma$-orbit stays one $\Gamma_1$-orbit when its stabilizer contains a spinor-negative element. The joint image adds that this is a decision on a finite group and that the orbits which do split are the ones counted by the second term.
 :::
 
 ::: {.proof}
