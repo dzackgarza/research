@@ -147,8 +147,8 @@ assume kernel transitivity merely from finite equivariance; it uses the
 proved integral parabolic stabilizer image and the two integral plane
 classes.
 
-The remaining acceptance obligation in research#748 and sage-extensions#294
-is an **independent execution of the public lattice subgroup operation**
+The **formerly outstanding** acceptance obligation in research#748 and sage-extensions#294
+was an independent execution of the public lattice subgroup operation
 `Gamma_En,2.isotropic_orbit_representatives(2)` and comparison with the
 `gamma-en-2` group card and lattice card `029J`. The mathematical
 liftability and fibre hypotheses are already proved; a failed or slow public
@@ -170,9 +170,8 @@ rank-one** operation returned **five** `Gamma_En,2` orbits in `298` seconds,
 and the full orthogonal group returned **two**, exactly as proved in
 @thm:enriques-degree-two-arithmetic(1).
 
-The **rank-two** public operation entered the ambient `O(L)` plane-row and
-`parabolic completeness decision` stages and had not returned a count when
-this record was updated. A separate diagnostic invokes the existing
+In the **historical pre-fix run**, the rank-two public operation entered the ambient `O(L)` plane-row and
+`parabolic completeness decision` stages without returning a count. A separate diagnostic invokes the existing
 `_DividedClassPlaneOrbitDecomposition` with the **two proved complete
 integral ambient representatives** $P_1=\generators{e,e'}$ and
 $P_2=\generators{2e+2f+\alpha,e'}$ from @prop:ten-plane-classes(1).
@@ -193,9 +192,8 @@ integral plane representatives were materialized**, each passing the
 public `is_primitive()` test. The complete executed transcript is committed as
 `computations/reports/coble_gammaEn2-signed-word-probe-run.txt`; the isolated
 runtime patch is `.tmp/coble_signed_word_probe.py` (git-ignored), and the
-original diagnostic log is `/tmp/coble_signed_word_probe.log`. This confirms the
-provider consumer-format defect and its correction, but the correction
-is not yet integrated into the provider source or its tests.
+original diagnostic log is `/tmp/coble_signed_word_probe.log`. This diagnosed the provider consumer-format defect and its correction; the
+provider source was subsequently repaired in `ee8ecdaa`, as documented below.
 
 The provider source has since been fixed and pushed as
 `sage-extensions` commit `ee8ecdaa`. Reexecuting the same exact integral
@@ -291,4 +289,4 @@ matching [@AEGS25 §3.2]. The call, its imported revisions and its output are in
 `coble_gammaEn2-cusps-lattice.md`; no port work was done. The plane call `T_En.cusps(2)` runs under
 the same pair as job `jmw69fxhq`.
 
-The historical finite-stratum mismatch is resolved by @prop:ten-plane-classes and @thm:enriques-integral-plane-stabilizers, as proved above: the zero stratum is not liftable, and the four one-dimensional and five two-dimensional finite orbits lift bijectively to the nine integral plane orbits. The **public subgroup-orbit execution** remains the outstanding independent verification. The old provider/port failure and its revision provenance are retained here as historical evidence, not presented as an unresolved mathematical problem.
+The historical finite-stratum mismatch is resolved by @prop:ten-plane-classes and @thm:enriques-integral-plane-stabilizers, as proved above: the zero stratum is not liftable, and the four one-dimensional and five two-dimensional finite orbits lift bijectively to the nine integral plane orbits. The **public subgroup-orbit execution** was subsequently completed and is documented above. The old provider/port failure and its revision provenance are retained here as historical evidence, not presented as an unresolved mathematical problem.

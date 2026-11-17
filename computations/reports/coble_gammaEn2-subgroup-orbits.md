@@ -27,9 +27,9 @@ in **210 seconds**, and the corrected provider successfully materialized **all
 nine actual integral plane representatives**, each verified primitive. The
 complete successful provider run is committed as
 `coble_gammaEn2-subgroup-orbits-run.txt`. This is no longer a runtime-only
-monkey-patch result. It remains distinct from the top-level public
-`isotropic_orbit_representatives(2)` acceptance, which independently constructs
-ambient representatives and has not yet returned in the current long run.
+monkey-patch result. It remains logically distinct from the top-level public
+`isotropic_orbit_representatives(2)` acceptance, which subsequently returned
+nine and is documented immediately below.
 
 The separate **top-level public rank-two** operation now also succeeds. In
 `sage-extensions` commit `3ec1120b`, the ambient plane-orbit owner constructs
