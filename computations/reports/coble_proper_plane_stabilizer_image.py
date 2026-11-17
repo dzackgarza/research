@@ -56,10 +56,55 @@ def main():
     assert F.order() // S.order() == 8
     assert Q.order() // S.order() == 189720
     assert parabolic["finite_image_order"] == S.order()
+    # Recover the eight characteristic stars as the actual F/S orbit,
+    # not merely as eight preselected finite labels.  A star consists
+    # of seven cosets of J, each containing four singular vectors.
+    plane_masks = (a, b, a ^ b)
+    star_sets = [
+        frozenset(x ^ j for x in star for j in (0, *plane_masks))
+        for star in planes["base_stars_quotient_classes"]
+    ]
+    assert len(set(star_sets)) == 8 and all(len(star) == 28 for star in star_sets)
+    # Singular classes span the ten-dimensional characteristic perpendicular.
+    # Recover the linear action there from ten independent singular classes,
+    # then apply it also to the nonsingular characteristic star classes.
+    basis = []
+    coefficients = {0: 0}
+    for x in singular:
+        if x not in coefficients:
+            j = len(basis)
+            basis.append(x)
+            coefficients.update({u ^ x: c ^ (1 << j)
+                                 for u, c in tuple(coefficients.items())})
+    assert len(basis) == 10 and len(coefficients) == 1024
+    assert all(star <= coefficients.keys() for star in star_sets)
+
+    def act(g, x):
+        c = coefficients[x]
+        images = [singular[g(positions[b]) - 1] for b in basis]
+        result = 0
+        for j, image in enumerate(images):
+            if c & (1 << j):
+                result ^= image
+        return result
+
+    initial = star_sets[0]
+    assert all(frozenset(act(g, x) for x in initial) == initial for g in S.gens())
+    orbit = {initial}
+    frontier = [initial]
+    while frontier:
+        star = frontier.pop()
+        for g in F.gens():
+            moved = frozenset(act(g, x) for x in star)
+            if moved not in orbit:
+                orbit.add(moved)
+                frontier.append(moved)
+    assert orbit == set(star_sets)
     print("ambient finite image order:", Q.order())
     print("finite plane stabilizer order:", F.order())
     print("integral plane stabilizer image order:", S.order())
     print("proper image index in finite plane stabilizer:", F.order() // S.order())
+    print("characteristic stars in the F/S orbit:", len(orbit))
     print("integral plane orbit count:", Q.order() // S.order())
 
 

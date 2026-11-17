@@ -2,4 +2,5 @@ ambient finite image order: 46998591897600
 finite plane stabilizer order: 1981808640
 integral plane stabilizer image order: 247726080
 proper image index in finite plane stabilizer: 8
+characteristic stars in the F/S orbit: 8
 integral plane orbit count: 189720
