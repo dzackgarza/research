@@ -1,6 +1,7 @@
 """Independently replay the complete finite-to-integral Coble plane section."""
 
 import json
+from collections import Counter
 from itertools import combinations
 from math import gcd
 from pathlib import Path
@@ -39,6 +40,8 @@ def test_all_coble_integral_plane_star_words():
     root_masks = [mask(root) for root in roots]
     assert flag_coefficients == [[1, 0], [0, 1], [1, 1]]
     assert len(rows) * len(base) * len(flag_coefficients) == 569160
+    expected_line_masks = {row["mask_diagonal"] for row in data["representatives"]}
+    line_degrees = Counter()
     base_key = key(*base[0])
     def quotient_class(x):
         return min(x, x ^ base_key[0], x ^ base_key[1], x ^ base_key[2])
@@ -67,6 +70,9 @@ def test_all_coble_integral_plane_star_words():
     for row in rows:
         a, b = [list(v) for v in base[0]]
         J = tuple(row["finite_plane_masks"])
+        assert len(J) == 3 and set(J) <= expected_line_masks
+        for line_mask in J:
+            line_degrees[line_mask] += len(base)
         transformed_stars = set()
         for star in stars:
             image = []
@@ -91,3 +97,6 @@ def test_all_coble_integral_plane_star_words():
                 v[:] = [x - k * y for x, y in zip(v, root)]
         assert key(a, b) == tuple(row["finite_plane_masks"])
         assert pairing(a, a) == pairing(a, b) == pairing(b, b) == 0
+    assert set(line_degrees) == expected_line_masks
+    assert set(line_degrees.values()) == {1080}
+    assert sum(line_degrees.values()) == 569160
