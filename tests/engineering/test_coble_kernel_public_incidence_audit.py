@@ -118,3 +118,35 @@ def test_coble_kernel_audit_rejects_false_integral_incidence(tmp_path):
     )
     with pytest.raises(AssertionError, match="transporter integral Gram"):
         audit.audit(wrong_gram_log)
+
+    wrong_action = tmp_path / "wrong-action.log"
+    minus_q = tuple(-x for x in q)
+    wrong_action.write_text(
+        f"[Otilde] line cusp 0: ({q},)\n"
+        f"[Otilde] plane cusp 0: ({p}, {q})\n"
+        f"[Otilde] edge 0: L0 < P0; line=({minus_q},); plane=({p}, {q}); "
+        f"transporter={identity}\n"
+    )
+    with pytest.raises(AssertionError, match="transporter exact line-to-flag action"):
+        audit.audit(wrong_action)
+
+    # An E8 root reflection fixes the displayed line and preserves the
+    # Gram, but its nontrivial mod-two action excludes it from the kernel.
+    root = tuple(int(i == 3) for i in range(11))
+    assert audit.pairing(root, root) == -4
+    nonkernel = [[int(i == j) for j in range(11)] for i in range(11)]
+    for j in range(11):
+        basis_j = tuple(int(i == j) for i in range(11))
+        assert audit.pairing(basis_j, root) % 2 == 0
+        nonkernel[3][j] += audit.pairing(basis_j, root) // 2
+    assert any(nonkernel[i][j] % 2 != int(i == j)
+               for i in range(11) for j in range(11))
+    nonkernel_log = tmp_path / "nonkernel.log"
+    nonkernel_log.write_text(
+        f"[Otilde] line cusp 0: ({q},)\n"
+        f"[Otilde] plane cusp 0: ({p}, {q})\n"
+        f"[Otilde] edge 0: L0 < P0; line=({q},); plane=({p}, {q}); "
+        f"transporter={nonkernel}\n"
+    )
+    with pytest.raises(AssertionError, match="transporter discriminant kernel"):
+        audit.audit(nonkernel_log)
