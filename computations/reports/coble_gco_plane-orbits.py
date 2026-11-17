@@ -273,13 +273,21 @@ if globals().get("VERIFY_PUBLIC_PLANES", False):
     observed_sizes = {}
     for index, source in public_planes:
         p, q = ast.literal_eval(source)
-        orbit_size = finite_orbit_of[decorated_plane_of_integral_rows(p, q)]
+        invariant = decorated_plane_of_integral_rows(p, q)
+        # Changing the primitive Z-basis of the same plane must not change
+        # its finite decorated-plane datum. Swap, elementary shear and sign
+        # change generate GL_2(Z), so these checks exercise its generators.
+        assert decorated_plane_of_integral_rows(q, p) == invariant
+        assert decorated_plane_of_integral_rows(tuple(a + b for a, b in zip(p, q)), q) == invariant
+        assert decorated_plane_of_integral_rows(tuple(-a for a in p), q) == invariant
+        orbit_size = finite_orbit_of[invariant]
         assert int(index) not in observed_sizes
         observed_sizes[int(index)] = orbit_size
         print("  P%s: %d" % (index, orbit_size))
     assert set(observed_sizes) == set(range(7))
     assert sorted(observed_sizes.values()) == sorted(len(o) for o in decorated_orbits)
     print("all seven public integral planes occupy distinct finite decorated orbits:", True)
+    print("canonical stars invariant under swap, shear and sign changes of all seven plane bases:", True)
 
     # The workflow returns a *separate integral flag witness* for each edge.
     # Classify that witness by its actual quotient star and divided line

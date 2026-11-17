@@ -1,4 +1,5 @@
 nonzero singular vectors: 527  totally singular planes: 23715
+order of nine-generator finite G_Co image: 696729600
 G_Co-orbit sizes on nonzero singular vectors: [2, 120, 135, 270]
   plane orbit of size   270; vector-orbit sizes of its nonzero classes: [(2, 135, 270)]
   plane orbit of size  1575; vector-orbit sizes of its nonzero classes: [(135, 135, 135)]
@@ -7,6 +8,7 @@ G_Co-orbit sizes on nonzero singular vectors: [2, 120, 135, 270]
   plane orbit of size  9450; vector-orbit sizes of its nonzero classes: [(135, 270, 270)]
 star-decorated plane orbits: 7 [2160, 3150, 7560, 9450, 22680, 69120, 75600]
 star-decorated flag orbits: 13 [2160, 2160, 2160, 7560, 9450, 15120, 22680, 28350, 45360, 69120, 75600, 138240, 151200]
+orbit-stabilizer divisibility for all four finite orbit families: True
 decorated-plane orbit sizes over each finite-plane orbit:
   finite plane size   270: 1 decorated orbits, sizes [2160]
   finite plane size  1575: 2 decorated orbits, sizes [3150, 9450]
@@ -30,6 +32,7 @@ endpoint incidence by decorated-plane orbit (vector orbit sizes):
   plane size  69120: [(120, 1), (270, 1)]
   plane size  75600: [(135, 1), (270, 1)]
 endpoint edges: 13 flag orbits: 13
+kernel incidence: line vertices 527 degree 1080; plane vertices 189720 degree 3; edges 569160
 public workflow log sha256: 4cc44602660c3891c6c80ed902352612bc3932ef13677524a02be41b28d7da8b
 integral public plane -> finite decorated-plane orbit size:
   P0: 2160
@@ -40,6 +43,7 @@ integral public plane -> finite decorated-plane orbit size:
   P5: 7560
   P6: 3150
 all seven public integral planes occupy distinct finite decorated orbits: True
+canonical stars invariant under swap, shear and sign changes of all seven plane bases: True
 integral public edge witness -> finite (plane,vector,flag) orbit sizes:
   edge 0 L0<P0: (2160,2,2160)
   edge 1 L3<P0: (2160,270,2160)
