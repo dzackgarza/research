@@ -72,13 +72,13 @@ def test_all_coble_integral_cusp_words():
     for j in range(11):
         e = [int(i == j) for i in range(11)]
         v = e
-        for i, exponent in reversed(sample_word):
+        for i, exponent in sample_word:
             if exponent % 2:
                 v = reflection(v, ten_roots[i])
         target = reflection(e, target_root)
         assert all((a - b) % 2 == 0 for a, b in zip(v, target))
     v = list(base)
-    for i, exponent in reversed(sample_word):
+    for i, exponent in sample_word:
         if exponent % 2:
             v = reflection(v, ten_roots[i])
     assert v == base

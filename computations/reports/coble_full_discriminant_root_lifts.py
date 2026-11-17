@@ -172,7 +172,9 @@ for index, exponent in parabolic_word:
     reflection = identity_matrix(ZZ, 11) - (2 // n) * (
         root.column() * (root.row() * B_STANDARD)
     )
-    parabolic_word_matrix *= reflection ** exponent
+    # Sage permutations compose left-to-right; column matrices compose
+    # right-to-left, so prepend each successive word factor.
+    parabolic_word_matrix = reflection ** exponent * parabolic_word_matrix
 assert parabolic_word_permutation == parabolic_target
 parabolic_u_standard = TO_STANDARD * PARABOLIC_U
 assert parabolic_word_matrix * parabolic_u_standard == parabolic_u_standard

@@ -1,5 +1,6 @@
 """Eight explicit integral Coble plane stars over all 23715 finite planes."""
 import json
+import re
 from collections import deque
 from itertools import combinations
 from math import gcd
@@ -115,6 +116,81 @@ for g in stabilizer_generators:
                       for x in singular])
 stabilizer_image_order=int(PermutationGroup(permutations).order())
 assert stabilizer_image_order==46998591897600//189720==247726080
+
+def word_matrix(word):
+ g=identity_matrix(ZZ,11)
+ for i in word:
+  r=change*vector(ZZ,data['generator_roots_standard'][i])
+  g=from_action(lambda x,r=r:reflect(x,r))*g
+ return to_standard*g*change
+
+# An actual integral ambient transporter between the fixed line
+# representative and a prescribed line inside a transported plane.
+# The general formula is W_J s_i h_t W_c^{-1}; the finite image of
+# this transporter can subsequently be cancelled using the explicit
+# ten-generator vector-parabolic section.
+sample_plane=rows[-1]
+sample_seed_index=7
+sample_flag_index=2
+sample_plane_word=word_matrix(sample_plane['word_from_base'])
+seed_r=2*(e1+f1)+sum((d[j] for j in range(7) if j!=sample_seed_index-1),vector(ZZ,11))
+sample_seed_reflection=to_standard*from_action(lambda x:reflect(x,seed_r))*change
+sample_flag_map=to_standard*stabilizer_generators[-1]*change
+u0=to_standard*e1
+sample_flag=sample_plane_word*sample_seed_reflection*sample_flag_map*u0
+sample_line_mask=mask(change*sample_flag)
+sample_line_row,=(r for r in data['representatives'] if r['mask_diagonal']==sample_line_mask)
+sample_line_word=word_matrix(sample_line_row['word_from_base'])
+sample_transporter=(sample_plane_word*sample_seed_reflection*sample_flag_map*
+                    sample_line_word.inverse())
+assert sample_transporter*vector(ZZ,sample_line_row['vector_standard'])==sample_flag
+standard_gram=matrix(ZZ,data['standard_gram'])
+assert sample_transporter.transpose()*standard_gram*sample_transporter==standard_gram
+assert abs(sample_transporter.det())==1
+
+# Correct the ambient transporter by an exact integral vector-parabolic
+# word with the same finite image. The quotient is an actual integral
+# discriminant-kernel transporter of the displayed line into its plane.
+parabolic_masks=data['vector_stabilizer_ten_masks']
+parabolic_permutations=[
+ [positions[y^(x if (x&y).bit_count()%2 else 0)] for y in singular]
+ for x in parabolic_masks]
+parabolic_group=PermutationGroup(parabolic_permutations,canonicalize=False)
+assert int(parabolic_group.order())==89181388800
+base_correction=sample_line_word.inverse()*sample_transporter*sample_line_word
+# This ambient matrix need only fix the *discriminant class* of u0.
+# Its finite reduction is in the vector parabolic; the integral word
+# constructed below fixes u0 exactly.
+assert mask(change*base_correction*u0)==mask(change*u0)
+diagonal_correction=change*base_correction*to_standard
+target_permutation=[positions[mask(diagonal_correction*vector(
+ ZZ,[(x>>i)&1 for i in range(11)]))] for x in singular]
+target=parabolic_group(target_permutation)
+word_string=target.word_problem(parabolic_group.gens(),False)[0]
+correction_word=[]
+for factor in word_string.split('*'):
+ match=re.fullmatch(r'x(\d+)(?:\^(-?\d+))?',factor)
+ assert match is not None,factor
+ correction_word.append((int(match.group(1))-1,int(match.group(2) or 1)))
+parabolic_word_matrix=identity_matrix(ZZ,11)
+word_permutation=parabolic_group.one()
+for index,exponent in correction_word:
+ word_permutation*=parabolic_group.gen(index)**exponent
+ r=change*vector(ZZ,data['vector_stabilizer_ten_roots_standard'][index])
+ reflection=to_standard*from_action(lambda x,r=r:reflect(x,r))*change
+ # Sage permutation products act in the opposite order to column
+ # matrix products: apply the next factor on the left.
+ parabolic_word_matrix=reflection**exponent*parabolic_word_matrix
+assert parabolic_word_matrix*u0==u0
+assert word_permutation==target
+assert all((int(a-b)&1)==0 for a,b in zip(
+ (change*parabolic_word_matrix*to_standard).list(),diagonal_correction.list()))
+correction=sample_line_word*parabolic_word_matrix*sample_line_word.inverse()
+sample_kernel_transporter=sample_transporter*correction.inverse()
+assert sample_kernel_transporter*vector(ZZ,sample_line_row['vector_standard'])==sample_flag
+assert sample_kernel_transporter.transpose()*standard_gram*sample_kernel_transporter==standard_gram
+assert all((int(sample_kernel_transporter[i,j])&1)==int(i==j)
+           for i in range(11) for j in range(11))
 output=folder/'coble_plane_integral_star_section.json'
 output.write_text(json.dumps({'source':'coble_singular_integral_representatives.json',
  'base_planes_standard':[[list(map(int,to_standard*a)),list(map(int,to_standard*b))] for a,b in base],
@@ -124,9 +200,21 @@ output.write_text(json.dumps({'source':'coble_singular_integral_representatives.
   [list(map(int,row)) for row in (to_standard*g*change).rows()]
   for g in stabilizer_generators],
  'plane_stabilizer_finite_image_order':stabilizer_image_order,
+ 'ambient_transporter_sample':{
+  'finite_plane_masks':sample_plane['finite_plane_masks'],
+  'seed_index':sample_seed_index,
+  'flag_index':sample_flag_index,
+  'line_mask_diagonal':sample_line_mask,
+  'flag_vector_standard':list(map(int,sample_flag)),
+  'matrix_standard':[list(map(int,row)) for row in sample_transporter.rows()],
+  'parabolic_correction_word':[list(factor) for factor in correction_word],
+  'kernel_matrix_standard':[
+   list(map(int,row)) for row in sample_kernel_transporter.rows()]},
  'flag_line_coefficients':[list(c) for c in flag_coefficients],
  'finite_plane_transports':rows},separators=(',',':'))+'\n')
 print('finite planes:',len(rows),'distinct integral stars per plane:',len(set(stars)))
 print('integral plane representatives:',len(rows)*len(base),'compact certificate:',output)
 print('integral flag representatives specified by words:',len(rows)*len(base)*len(flag_coefficients))
 print('exact integral plane stabilizer finite image order:',stabilizer_image_order)
+print('exact integral ambient line-to-flag transporter sample:',sample_line_mask)
+print('exact integral kernel line-to-flag transporter word length:',len(correction_word))
