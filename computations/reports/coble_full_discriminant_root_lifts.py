@@ -113,6 +113,16 @@ assert order == expected == 46998591897600
 TEN_ROOTS = (1836, 269, 54, 418, 354, 390, 649, 562, 650, 957)
 assert all(x in root_permutations for x in TEN_ROOTS)
 assert int(PermutationGroup([root_permutations[x] for x in TEN_ROOTS]).order()) == expected
+TEN_STANDARD_ROOTS = tuple(tuple(map(int, TO_STANDARD * root_lift(x))) for x in TEN_ROOTS)
+assert len(set(TEN_STANDARD_ROOTS)) == 10
+for coordinates in TEN_STANDARD_ROOTS:
+    root = vector(ZZ, coordinates)
+    n = int(root * B_STANDARD * root)
+    assert abs(n) == 2
+    s = identity_matrix(ZZ, 11) - (2 // n) * (
+        root.column() * (root.row() * B_STANDARD)
+    )
+    assert s.transpose() * B_STANDARD * s == B_STANDARD and s.det() == -1
 print('B=I_{2,9}: 496 integral norm +/-2 root reflections constructed and checked')
 print('unimodular change to <1> + U + E8(-1): determinant', M.det())
 print('all 496 integral reflection matrices verified in the standard T_Co basis')
@@ -120,3 +130,4 @@ print('finite even-norm discriminant space: 527 nonzero singular, 496 nonsingula
 print('faithful finite permutation image order:', order)
 print('full O^+(10,2) order:', expected)
 print('ten integral root reflections generate the full finite image:', TEN_ROOTS)
+print('ten standard-basis integral roots:', TEN_STANDARD_ROOTS)
