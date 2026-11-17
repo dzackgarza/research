@@ -22,6 +22,7 @@ this does not certify the missing edges or the public library operation.
 """
 import argparse
 import gzip
+from io import TextIOWrapper
 import hashlib
 import json
 import sys
@@ -320,7 +321,11 @@ if raw_args and raw_args[0]=='shard':
  requests=product(range(shard_index,len(rows),shard_count),range(8),range(3))
  if limit is not None:
   requests=islice(requests,limit)
- with gzip.open(output_path,'xt',encoding='utf-8') as stream:
+ # A zero timestamp and empty embedded filename make the compressed
+ # certificate byte-for-byte reproducible, not merely its JSONL payload.
+ with output_path.open('xb') as raw, gzip.GzipFile(
+  filename='',mode='wb',fileobj=raw,mtime=0
+ ) as compressed, TextIOWrapper(compressed,encoding='utf-8') as stream:
   stream.write(json.dumps(header,separators=(',',':'))+'\n')
   for plane_index,seed_index,flag_index in requests:
    record=construct_flag_transporter(plane_index,seed_index,flag_index)

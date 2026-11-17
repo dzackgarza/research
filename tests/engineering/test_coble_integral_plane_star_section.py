@@ -479,3 +479,19 @@ def test_complete_single_plane_shard_is_independently_certified(tmp_path, plane_
         cwd=folder.parents[1], capture_output=True, text=True,
     )
     assert invalid.returncode != 0 and "parabolic correction word" in invalid.stderr
+
+
+def test_integral_shard_gzip_is_byte_reproducible(tmp_path):
+    """Two runs with the same source produce identical compressed archives."""
+    folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
+    outputs = [tmp_path / f"same-{i}.jsonl.gz" for i in range(2)]
+    for output in outputs:
+        subprocess.run(
+            ["sage", str(folder / "coble_plane_integral_star_section.py"),
+             "shard", "0", "23715", str(output), "1"],
+            cwd=folder.parents[1], capture_output=True, text=True, check=True,
+        )
+    assert outputs[0].read_bytes() == outputs[1].read_bytes()
+    archive = outputs[0].read_bytes()
+    assert archive[:3] == b"\x1f\x8b\x08"
+    assert archive[4:8] == b"\0" * 4  # No wall-clock timestamp in gzip header.
