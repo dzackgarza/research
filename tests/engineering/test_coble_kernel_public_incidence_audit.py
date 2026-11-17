@@ -1,6 +1,7 @@
 """Pure-integer regression gates for the public T_Co kernel-incidence audit."""
 
 import importlib.util
+import json
 from pathlib import Path
 
 import pytest
@@ -150,3 +151,50 @@ def test_coble_kernel_audit_rejects_false_integral_incidence(tmp_path):
     )
     with pytest.raises(AssertionError, match="transporter discriminant kernel"):
         audit.audit(nonkernel_log)
+
+
+def test_constructed_kernel_transporters_satisfy_public_strict_audit(tmp_path):
+    """The independent public checker accepts the actual integral word certificates."""
+    folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
+    spec = importlib.util.spec_from_file_location(
+        "coble_kernel_audit", folder / "coble_kernel_public_incidence_audit.py"
+    )
+    assert spec is not None and spec.loader is not None
+    audit = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(audit)
+    lines = json.loads((folder / "coble_singular_integral_representatives.json").read_text())
+    planes = json.loads((folder / "coble_plane_integral_star_section.json").read_text())
+    sample = planes["ambient_transporter_sample"]
+    u, = (tuple(row["vector_standard"]) for row in lines["representatives"]
+          if row["mask_diagonal"] == sample["line_mask_diagonal"])
+    v = tuple(sample["flag_vector_standard"])
+    seed = planes["base_planes_standard"][sample["seed_index"]]
+    plane, = (row for row in planes["finite_plane_transports"]
+              if row["finite_plane_masks"] == sample["finite_plane_masks"])
+
+    def transport(w):
+        w = tuple(w)
+        for index in plane["word_from_base"]:
+            root = tuple(lines["generator_roots_standard"][index])
+            n = audit.pairing(root, root)
+            numerator = 2 * audit.pairing(w, root)
+            assert numerator % n == 0
+            w = tuple(a - (numerator // n) * b for a, b in zip(w, root))
+        return w
+
+    p, q = map(transport, seed)
+    assert audit.pairing(p, p) == audit.pairing(p, q) == audit.pairing(q, q) == 0
+    assert audit.primitive_plane_pivot(p, q)
+    for label, field in (("Otilde", "kernel_matrix_standard"),
+                         ("Otilde+", "positive_kernel_matrix_standard")):
+        log = tmp_path / f"{label}.log"
+        log.write_text(
+            f"[{label}] line cusp 0: ({u},)\n"
+            f"[{label}] plane cusp 0: ({p}, {q})\n"
+            f"[{label}] edge 0: L0 < P0; line=({v},); plane=({p}, {q}); "
+            f"transporter={sample[field]}\n"
+        )
+        # All local integral transporter and positive-spinor checks must
+        # succeed; the intentionally one-edge fixture fails only globally.
+        with pytest.raises(AssertionError, match="final successful two-row summary"):
+            audit.audit(log)
