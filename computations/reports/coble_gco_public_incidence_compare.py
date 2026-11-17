@@ -14,6 +14,7 @@ these labels, is the comparison invariant.
 from itertools import combinations, permutations
 from math import gcd
 import ast
+import hashlib
 import re
 import subprocess
 import sys
@@ -177,7 +178,27 @@ for lines in permutations(line_types):
 print("public edges:", len(public), "finite edges:", len(finite))
 print("graph isomorphisms:", len(witnesses))
 assert witnesses
-lines, planes = witnesses[0]
+# The exact integral perpendicular-quotient computation distinguishes the
+# AAA and ADD plane-orbit pairs that the abstract incidence graph cannot.
+public_star_log = Path(__file__).with_name("coble_gco_plane-orbits-public-run.txt").read_text()
+if "--verify-public-source" in sys.argv:
+    source_hash = re.findall(r"^public workflow log sha256: ([0-9a-f]{64})$",
+                             public_star_log, re.MULTILINE)
+    assert len(source_hash) == 1
+    assert hashlib.sha256(log.encode()).hexdigest() == source_hash[0]
+    print("integral star run uses exact published workflow log:", True)
+public_star_rows = re.findall(r"^  P(\d+): (\d+)$", public_star_log, re.MULTILINE)
+public_star_sizes = {int(p): int(size) for p, size in public_star_rows}
+assert len(public_star_rows) == 7 and set(public_star_sizes) == set(range(7))
+assert sorted(public_star_sizes.values()) == sorted(plane_types)
+star_matched_witnesses = [
+    (line_map, plane_map) for line_map, plane_map in witnesses
+    if all(plane_map[i] == public_star_sizes[i] for i in range(7))
+]
+assert len(star_matched_witnesses) == 1
+print("graph isomorphisms compatible with integral quotient stars:",
+      len(star_matched_witnesses))
+lines, planes = star_matched_witnesses[0]
 print("public line index -> finite vector orbit size:", dict(enumerate(lines)))
 print("public plane index -> finite decorated-plane orbit size:", dict(enumerate(planes)))
 print("mapped public edge set equals finite edge set:",

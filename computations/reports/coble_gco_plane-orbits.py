@@ -10,6 +10,16 @@ For a totally singular plane J, the quotient J^perp/J is a six-dimensional quadr
 plus type, and its isometry group is S_8.  A star is a set of seven nonsingular vectors of
 J^perp/J that are pairwise non-orthogonal; there are eight stars, and they form the natural
 S_8-set.  A star is stored as the set of the 28 elements of A_{S_En} in its seven cosets of J.
+
+To verify the stars of the seven actual integral representatives returned by
+sage-extensions workflow 43556671111, save its log to the ignored path
+`.tmp/coble-public-incidence-gh.log` and execute in the Sage environment:
+
+    sage -c 'VERIFY_PUBLIC_PLANES=True; exec(compile(open("computations/reports/coble_gco_plane-orbits.py").read(), "computations/reports/coble_gco_plane-orbits.py", "exec"))'
+
+The optional path uses the integral primitive perpendicular quotient and its
+seven norm-minus-one basis vectors; it does not infer the star from the
+incidence graph.  The recorded output is coble_gco_plane-orbits-public-run.txt.
 """
 import itertools
 
@@ -143,3 +153,74 @@ for i, plane_orbit in sorted(enumerate(decorated_orbits), key=lambda t: len(t[1]
 print("endpoint edges:", len(incidence), "flag orbits:", len(flag_orbits))
 assert len(incidence) == len(flag_orbits) == 13
 assert all(multiplicity == 1 for multiplicity in incidence.values())
+
+# Optional exact lift of the *public integral plane representatives* to their
+# stars, not just their undecorated finite-plane types. Invoke this script
+# through Sage with VERIFY_PUBLIC_PLANES=True after saving the public workflow
+# log to .tmp/coble-public-incidence-gh.log. The quotient is the primitive
+# negative-definite unimodular lattice P^perp/P in B=T_Co(1/2); its seven
+# norm-minus-one vectors modulo sign determine the characteristic star.
+if globals().get("VERIFY_PUBLIC_PLANES", False):
+    import ast
+    import hashlib
+    import re
+    from pathlib import Path
+
+    from sage.all import ZZ, CartanMatrix, block_diagonal_matrix, matrix, vector
+
+    public_log = Path(".tmp/coble-public-incidence-gh.log").read_text()
+    print("public workflow log sha256:", hashlib.sha256(public_log.encode()).hexdigest())
+    public_planes = re.findall(
+        r"\[Gamma_\{Co,2\}\] plane cusp (\d+): (\(\(.*?\)\))", public_log
+    )
+    assert len(public_planes) == 7
+    B = block_diagonal_matrix(
+        matrix(ZZ, [[1]]), matrix(ZZ, [[0, 1], [1, 0]]),
+        -CartanMatrix(["E", 8]),
+    )
+    finite_orbit_of = {d: len(o) for o in decorated_orbits for d in o}
+    assert len(finite_orbit_of) == 8 * len(PLANES)
+    print("integral public plane -> finite decorated-plane orbit size:")
+    observed_sizes = {}
+    for index, source in public_planes:
+        p, q = ast.literal_eval(source)
+        P = (vector(ZZ, p), vector(ZZ, q))
+        K = matrix(ZZ, 2, 11, [list(B * x) for x in P]).right_kernel().basis_matrix()
+        C = matrix(ZZ, 2, 9)
+        for i, x in enumerate(P):
+            coordinates = K.transpose().solve_right(x)
+            assert all(a in ZZ for a in coordinates)
+            C.set_row(i, coordinates)
+        D, _, V = C.smith_form()
+        assert list(D.diagonal()[:2]) == [1, 1]
+        R = matrix(ZZ, V.inverse().rows()[2:])
+        quotient_basis = R * K
+        Qquot = quotient_basis * B * quotient_basis.transpose()
+        assert Qquot.det() == -1 and Qquot.nrows() == 7
+        U = (-Qquot).LLL_gram()
+        assert U.transpose() * (-Qquot) * U == matrix.identity(ZZ, 7)
+        negative_units = U.transpose() * quotient_basis
+        assert negative_units * B * negative_units.transpose() == -matrix.identity(ZZ, 7)
+        assert all(int(negative_units[t, 0]) % 2 == 1 for t in range(7))
+        assert all(int(x[0]) % 2 == 0 for x in P)
+        j1, j2 = (sum((int(x[k + 1]) % 2) << k for k in range(10)) for x in P)
+        J = frozenset((j1, j2, j1 ^ j2))
+        assert len(J) == 3 and all(Q[j] == 0 for j in J)
+        span = (0, j1, j2, j1 ^ j2)
+        star_masks = []
+        for i in range(7):
+            six_sum = sum((negative_units.row(t) for t in range(7) if t != i),
+                          vector(ZZ, 11))
+            assert six_sum[0] % 2 == 0
+            star_masks.append(sum((int(six_sum[k + 1]) % 2) << k for k in range(10)))
+        assert len(set(star_masks)) == 7
+        characteristic_star = frozenset(mask ^ j for mask in star_masks for j in span)
+        assert len(characteristic_star) == 28
+        assert characteristic_star in stars(J)
+        orbit_size = finite_orbit_of[(J, characteristic_star)]
+        assert int(index) not in observed_sizes
+        observed_sizes[int(index)] = orbit_size
+        print("  P%s: %d" % (index, orbit_size))
+    assert set(observed_sizes) == set(range(7))
+    assert sorted(observed_sizes.values()) == sorted(len(o) for o in decorated_orbits)
+    print("all seven public integral planes occupy distinct finite decorated orbits:", True)
