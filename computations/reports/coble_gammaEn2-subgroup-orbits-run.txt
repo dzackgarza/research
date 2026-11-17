@@ -1,0 +1,33 @@
+provenance
+  Sage: 11.0.beta5
+  sage-indefinite-port: /repos/sage-indefinite-port/src/sage_indefinite_port
+  sage-extensions:      /repos/sage-extensions/src/sage_extensions
+
+T_En: rank 12, det 1024, signature (2, 10)
+|A| = 1024, isotropic classes 528
+
+the nine isometries of T_En
+  s_(e-f): square of (e-f) = -4
+  eight root reflections in E8(2): squares [-4, -4, -4, -4, -4, -4, -4, -4]
+
+their discriminant images: built in 9 s
+|O(A_T,q)| = 46998591897600
+|M| = 696729600   (|W(E8)| = 696729600: True)
+
+Gamma_En,2 = T.Aut().discriminant_preimage(M)
+  built in 0 s: {g in Orthogonal group O(Integral lattice of rank 12 and signature (2, 10)) : rho_L(g) lies in a subgroup given by its own generators}
+  character data retained: True
+
+explicit ambient plane representatives: P1=<e,e_prime>, P2=<2e+2f+alpha,e_prime>
+  both primitive and totally isotropic: True
+  exact integral divided-class subgroup plane orbits: 9 (210 s)
+  integral plane orbit 0: primitive=True divided classes=(0, [f], [fp], [f] + 2*[fp])
+  integral plane orbit 1: primitive=True divided classes=(0, 31*[e] + 2*[f] + 12*[ep] + 32*[fp] - 6*[a1] - 14*[a2] + 26*[a3] - 6*[a4] + 8*[a5] - 22*[a6] - 2*[a7] + 16*[a8], 41*[e] + 20*[ep] + 46*[fp] - 8*[a1] - 26*[a2] + 34*[a3] - 4*[a4] + 10*[a5] - 28*[a6] - 2*[a7] + 20*[a8], 36*[e] + [f] + 16*[ep] + 39*[fp] - 7*[a1] - 20*[a2] + 30*[a3] - 5*[a4] + 9*[a5] - 25*[a6] - 2*[a7] + 18*[a8])
+  integral plane orbit 2: primitive=True divided classes=(0, 8*[e] + [f] + 76*[ep] + 92*[fp] - 52*[a1] + 52*[a2] - 12*[a3] - 80*[a4] + 116*[a5] - 36*[a7] + 28*[a8], 8*[e] + 78*[ep] + 94*[fp] - 53*[a1] + 53*[a2] - 12*[a3] - 82*[a4] + 119*[a5] - 37*[a7] + 28*[a8], 24*[e] + [f] + 232*[ep] + 280*[fp] - 158*[a1] + 158*[a2] - 36*[a3] - 244*[a4] + 354*[a5] - 110*[a7] + 84*[a8])
+  integral plane orbit 3: primitive=True divided classes=(0, 5*[e] + 2*[f] + 2*[ep] + 2*[fp] - 4*[a1] + 2*[a2] + 2*[a3] - 2*[a4] + 2*[a5] + 2*[a7] - 2*[a8], 13*[e] + 49*[ep] + 13*[fp] - 8*[a1] + 3*[a2] + 4*[a3] + 4*[a4] - 3*[a5] - 4*[a7] + 21*[a8], 31*[e] + 2*[f] + 100*[ep] + 28*[fp] - 20*[a1] + 8*[a2] + 10*[a3] + 6*[a4] - 4*[a5] - 6*[a7] + 40*[a8])
+  integral plane orbit 4: primitive=True divided classes=(0, [e] + [f] - 2*[a1] - 2*[a2] + [a3] + [a4], [fp], [e] + [f] + [fp] - 2*[a1] - 2*[a2] + [a3] + [a4])
+  integral plane orbit 5: primitive=True divided classes=(0, 33*[e] + [f] + 39*[ep] + 46*[fp] - 23*[a1] - 72*[a2] + 13*[a3] + 38*[a4] - 5*[a5] + 4*[a6] - 23*[a7] + 41*[a8], 82*[e] + 99*[ep] + 117*[fp] - 56*[a1] - 182*[a2] + 33*[a3] + 95*[a4] - 12*[a5] + 9*[a6] - 55*[a7] + 99*[a8], 115*[e] + [f] + 138*[ep] + 163*[fp] - 79*[a1] - 254*[a2] + 46*[a3] + 133*[a4] - 17*[a5] + 13*[a6] - 78*[a7] + 140*[a8])
+  integral plane orbit 6: primitive=True divided classes=(0, [e] + [f] - 2*[fp] - [a1] - [a2] + 2*[a5] - 2*[a6] + [a7], 2*[e] + [ep] + 2*[fp] + [a1] - [a2] - [a3] + 2*[a5] - [a6] - [a8], 3*[e] + [f] + [ep] - 2*[a2] - [a3] + 4*[a5] - 3*[a6] + [a7] - [a8])
+  integral plane orbit 7: primitive=True divided classes=(0, [e] + [f] + 3*[ep] + [fp] - 2*[a1] + [a3] + [a4] - 2*[a5] - [a6] + 3*[a7], 4*[ep] + 2*[fp] + [a1] + [a4] - 3*[a5] - [a6] + 4*[a7], [e] + [f] + 7*[ep] + 3*[fp] - [a1] + [a3] + 2*[a4] - 5*[a5] - 2*[a6] + 7*[a7])
+  integral plane orbit 8: primitive=True divided classes=(0, [e] + [f] - 2*[a1] + 2*[a3] - [a4] + [a8], 2*[ep] + 6*[fp] - [a1] - 5*[a2] - 3*[a3] + 5*[a4] - [a5] + [a7] + [a8], [e] + [f] + 2*[ep] + 6*[fp] - 3*[a1] - 5*[a2] - [a3] + 4*[a4] - [a5] + [a7] + 2*[a8])
+  all nine integral subgroup plane representatives materialized: True

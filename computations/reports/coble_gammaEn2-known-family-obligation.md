@@ -197,6 +197,15 @@ original diagnostic log is `/tmp/coble_signed_word_probe.log`. This confirms the
 provider consumer-format defect and its correction, but the correction
 is not yet integrated into the provider source or its tests.
 
+The provider source has since been fixed and pushed as
+`sage-extensions` commit `ee8ecdaa`. Reexecuting the same exact integral
+subgroup decomposition with the **actual fixed provider**, without any
+runtime override, returns nine plane orbits in 210 seconds and materializes
+all nine primitive integral plane representatives. Its full transcript is
+`computations/reports/coble_gammaEn2-subgroup-orbits-run.txt`. This discharges
+the provider word-format defect and the independent integral representative
+materialization diagnostic, not the separate top-level public rank-two call.
+
 Neither this runtime-only successful diagnostic nor the earlier failed
 transport is presented as completion of the separate top-level public
 rank-two acceptance. The mathematical nine-orbit theorem and the

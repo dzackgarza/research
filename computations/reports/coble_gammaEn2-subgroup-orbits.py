@@ -105,6 +105,36 @@ print('  character data retained: %s' % (preimage.character_data_is_complete(),)
 assert bool(preimage.character_data_is_complete())
 print('')
 
+if '--certified-ambient-reps' in sys.argv:
+    # Independent integral subgroup decomposition using the two explicitly
+    # proved complete ambient O(T_En)-plane representatives of
+    # prop:ten-plane-classes (Sterk, Prop. 4.6). This invokes the library's
+    # actual divided-class orbit decomposition and transports its integral
+    # representatives; it does NOT replace the public top-level orbit call.
+    from sage_extensions.categories.isotropic_orbits import _DividedClassPlaneOrbitDecomposition
+
+    alpha = roots[0] + roots[1]
+    z = 2 * basis[0] + 2 * basis[1] + alpha
+    assert alpha.q() == -8 and z.q() == 0
+    P1 = T.primitive_isotropic_subobject(basis[0], basis[2])
+    P2 = T.primitive_isotropic_subobject(z, basis[2])
+    assert bool(P1.is_primitive()) and bool(P2.is_primitive())
+    print('explicit ambient plane representatives: P1=<e,e_prime>, P2=<2e+2f+alpha,e_prime>')
+    print('  both primitive and totally isotropic:', True)
+    start = time.time()
+    decomposition = _DividedClassPlaneOrbitDecomposition(preimage, (P1, P2))
+    orbits = tuple(decomposition.orbits())
+    print('  exact integral divided-class subgroup plane orbits:', len(orbits),
+          '(%0.f s)' % (time.time() - start))
+    assert len(orbits) == 9
+    for index, orbit in enumerate(orbits):
+        plane = orbit.representative()
+        assert bool(plane.is_primitive())
+        print('  integral plane orbit %d: primitive=%s divided classes=%s' %
+              (index, plane.is_primitive(), orbit.divided_classes()))
+    print('  all nine integral subgroup plane representatives materialized:', True)
+    sys.exit(0)
+
 for rank, published in ((1, 5), (2, 9)):
     print('rank %d' % rank)
     for label, group in (('Gamma_En,2', preimage), ('O(T_En)', T.Aut())):
