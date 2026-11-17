@@ -48,6 +48,18 @@ def main():
     assert len(complete) == 28
     assert all(g.transpose() * gram * g == gram and abs(g.det()) == 1
                for g in complete)
+    # Check the *whole* family, including the archived 21, preserves the
+    # primitive plane integrally, not merely its three mod-two classes.
+    plane_basis = matrix(ZZ, [inverse * e1, inverse * e2]).transpose()
+    for g in complete:
+        images = change * g * plane_basis
+        assert all(images[i, j] == 0 for i in range(11) if i not in (0, 1, 2, 4)
+                   for j in range(2))
+        # e1=(1,0,1,0,...), e2=(0,1,0,0,1,...)
+        assert all(images[0, j] == images[2, j] and
+                   images[1, j] == images[4, j] for j in range(2))
+        assert abs(matrix(ZZ, [[images[0, j], images[1, j]]
+                               for j in range(2)]).det()) == 1
     # All seven new sign changes are trivial modulo 2, so the exact
     # finite discriminant image order is unchanged.
     assert all(all(int(x) % 2 == int(i == j)
