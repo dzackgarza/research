@@ -198,19 +198,33 @@ def audit_integral_shard(path: Path, *, allow_incomplete: bool = False) -> int:
             flag_map = [identity, stabilizer[-2], stabilizer[-1]][row["flag_index"]]
             ambient_times_line = _exact_matrix_product(
                 _exact_matrix_product(plane_word_cache[plane_index], seed_map), flag_map)
-            correction = identity
+            correction_indices = []
             for factor in row["parabolic_correction_word"]:
                 assert len(factor) == 2
                 root_index, exponent = factor
                 assert type(root_index) is type(exponent) is int
                 assert 0 <= root_index < len(parabolic_roots)
                 assert exponent != 0
-                reflection = _exact_reflection(parabolic_roots[root_index])
                 if exponent % 2:
-                    correction = _exact_matrix_product(reflection, correction)
-            assert _exact_matrix_product(
-                _exact_matrix_product(kernel, line_word_cache[line_mask]), correction
-            ) == ambient_times_line, "parabolic correction word does not reconstruct kernel"
+                    correction_indices.append(root_index)
+            # A reflection acts on a column in O(11^2) integer operations;
+            # forming a dense 11x11 product for every word letter costs O(11^3).
+            # Verify the full matrix identity on the eleven standard columns.
+            for j in range(11):
+                column = [int(i == j) for i in range(11)]
+                for root_index in correction_indices:
+                    root = parabolic_roots[root_index]
+                    norm = pairing(root, root)
+                    coefficient = 2 * pairing(column, root)
+                    assert abs(norm) == 4 and coefficient % norm == 0
+                    column = [a - (coefficient // norm) * b
+                              for a, b in zip(column, root)]
+                carried = [sum(line_word_cache[line_mask][i][k] * column[k]
+                               for k in range(11)) for i in range(11)]
+                result = [sum(kernel[i][k] * carried[k] for k in range(11))
+                          for i in range(11)]
+                assert result == [ambient_times_line[i][j] for i in range(11)], (
+                    "parabolic correction word does not reconstruct kernel", j)
             assert g == (kernel if row["kernel_real_spinor_sign"] == 1 else
                          [[sum(flip[i][k] * kernel[k][j] for k in range(11))
                            for j in range(11)] for i in range(11)])
