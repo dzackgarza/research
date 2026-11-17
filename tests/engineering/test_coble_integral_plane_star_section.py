@@ -88,7 +88,7 @@ def test_complete_integral_flag_quotient_ci_record():
                 45360, 69120, 75600, 138240, 151200]) == 569160
 
 
-def test_complete_integral_plane_parabolic_generators():
+def test_complete_integral_plane_parabolic_generators(tmp_path):
     """The finite-image certificate alone omits seven integral sign changes."""
     folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
     result = subprocess.run(
@@ -113,6 +113,14 @@ def test_complete_integral_plane_parabolic_generators():
     assert payload["generators_standard"][:21] == old["plane_stabilizer_generators_standard"]
     assert hashlib.sha256(artifact.read_bytes()).hexdigest() == (
         "a2af10a537cc16f4f555f318854b238d72254258a572d947d0ff775b99d87859")
+    reproduced = tmp_path / "parabolic.json"
+    subprocess.run(
+        ["sage", "-c", "import runpy,sys;sys.argv=['parabolic','--output',"
+         + repr(str(reproduced)) + "];runpy.run_path("
+         "'computations/reports/coble_complete_plane_parabolic_generators.py',"
+         "run_name='__main__')"],
+        cwd=folder.parents[1], capture_output=True, text=True, check=True)
+    assert reproduced.read_bytes() == artifact.read_bytes()
 
 
 def test_all_integral_flags_recover_public_gamma_co_2_edge_weights():
