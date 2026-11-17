@@ -45,6 +45,8 @@ def audit_integral_shard(path: Path, *, allow_incomplete: bool = False) -> int:
     planes = json.loads(plane_path.read_text())
     source = {r["mask_diagonal"]: tuple(r["vector_standard"])
               for r in lines["representatives"]}
+    roots = [tuple(r) for r in lines["generator_roots_standard"]]
+    seeds = planes["base_planes_standard"]
     basis = [tuple(int(i == j) for i in range(11)) for j in range(11)]
     digest = hashlib.sha256()
     with gzip.open(path, "rb") as stream:
@@ -76,6 +78,21 @@ def audit_integral_shard(path: Path, *, allow_incomplete: bool = False) -> int:
             u = source[row["line_mask_diagonal"]]
             v = tuple(row["flag_vector_standard"])
             assert len(v) == 11 and gcd(*v) == 1 and pairing(v, v) == 0
+            p, q = (tuple(w) for w in seeds[row["seed_index"]])
+            for root_index in planes["finite_plane_transports"][plane_index]["word_from_base"]:
+                root = roots[root_index]
+                norm = pairing(root, root)
+                assert abs(norm) == 4  # T_Co is twice the unimodular Coble form.
+                cp, cq = 2 * pairing(p, root), 2 * pairing(q, root)
+                assert cp % norm == cq % norm == 0
+                p = tuple(a - (cp // norm) * b for a, b in zip(p, root))
+                q = tuple(a - (cq // norm) * b for a, b in zip(q, root))
+            a, b, determinant = primitive_plane_pivot(p, q)
+            assert pairing(p, p) == pairing(p, q) == pairing(q, q) == 0
+            assert all(v[c] * determinant
+                       - v[a] * (p[c] * q[b] - p[b] * q[c])
+                       - v[b] * (p[a] * q[c] - p[c] * q[a]) == 0
+                       for c in range(11)), (plane_index, "flag not in integral plane")
             for field in ("kernel_matrix_standard", "positive_kernel_matrix_standard"):
                 g = row[field]
                 assert len(g) == 11 and all(len(r) == 11 for r in g)
