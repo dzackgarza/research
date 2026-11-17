@@ -24,6 +24,9 @@ import re
 import subprocess
 import tempfile
 
+if not __debug__:
+    raise RuntimeError("Coble incidence certification requires Python assertions; do not run with -O")
+
 LABELS = ("Otilde", "Otilde+")
 EXPECTED = (569160, 527, 189720)
 VERTEX = re.compile(r"\[(Otilde\+?)\] (line|plane) cusp (\d+): (\(.*\))")
