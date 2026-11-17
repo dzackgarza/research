@@ -1,0 +1,67 @@
+name: Coble integral flags to Gamma Co 2 quotient
+
+on:
+  workflow_dispatch:
+    inputs:
+      certificate_run:
+        description: Successful 32-shard integral flag certificate run
+        type: string
+        required: true
+        default: '44170494099'
+
+permissions:
+  contents: read
+  actions: read
+  packages: read
+
+jobs:
+  quotient:
+    name: Independently classify 569160 integral flags into 13 quotient orbits
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    container:
+      image: ghcr.io/dzackgarza/sage@sha256:12e5716067b5cf2fd34c00e9ba97e9c09d51a70664de817f4ae29743b64c5f61
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ github.token }}
+      options: --user root
+    steps:
+      - uses: actions/checkout@v4
+      - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ inputs.certificate_run }}
+          github-token: ${{ github.token }}
+          pattern: coble-integral-shard-*
+          path: shards/
+          merge-multiple: true
+      - name: Check exact source and archived shard hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(find shards -name 'shard-*.jsonl.gz' | wc -l)" -eq 32
+          cd shards
+          sha256sum -c shard-*.sha256
+          cd ..
+          python3 - <<'PY'
+          from pathlib import Path
+          from computations.reports.coble_kernel_public_incidence_audit import verify_integral_shard_manifest
+          paths = sorted(Path('shards').glob('shard-*.jsonl.gz'))
+          assert verify_integral_shard_manifest(
+              paths, Path('computations/reports/coble_integral_flag_certificate_manifest.json')
+          ) == set(range(32))
+          PY
+      - name: Classify all archived integral witnesses under finite G Co
+        shell: bash
+        run: |
+          set -euo pipefail
+          /sage/.venv/bin/sage -c 'import glob,runpy,sys; sys.argv=["audit",*sorted(glob.glob("shards/shard-*.jsonl.gz"))]; runpy.run_path("computations/reports/coble_integral_flag_quotient_audit.py",run_name="__main__")' \
+            | tee coble-integral-flag-quotient-run.txt
+          grep -F 'distinct line/plane quotient endpoints: 13' coble-integral-flag-quotient-run.txt
+          grep -F 'exact integral flags classified: 569160' coble-integral-flag-quotient-run.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coble-integral-flag-quotient-proof
+          path: coble-integral-flag-quotient-run.txt
+          retention-days: 90
+          if-no-files-found: error
