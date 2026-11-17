@@ -70,6 +70,22 @@ def test_complete_integral_flag_certificate_manifest(tmp_path):
         audit.verify_integral_shard_manifest([specimen], manifest_path)
 
 
+def test_complete_integral_flag_quotient_ci_record():
+    """The archived independent full-flag descent has all 13 quotient fibres."""
+    folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
+    transcript = (folder / "coble_integral_flag_quotient-run.txt").read_bytes()
+    assert hashlib.sha256(transcript).hexdigest() == (
+        "efb2f2d60b047113dcb86e63a859604e3c5941dbc12b1198c2ff8e6f224b0b51")
+    text = transcript.decode()
+    assert ("integral flags descended to thirteen G_Co orbits: "
+            "[2160, 2160, 2160, 7560, 9450, 15120, 22680, 28350, "
+            "45360, 69120, 75600, 138240, 151200]") in text
+    assert "distinct line/plane quotient endpoints: 13" in text
+    assert "exact integral flags classified: 569160" in text
+    assert sum([2160, 2160, 2160, 7560, 9450, 15120, 22680, 28350,
+                45360, 69120, 75600, 138240, 151200]) == 569160
+
+
 def test_all_coble_integral_plane_star_words():
     folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
     data = json.loads((folder / "coble_singular_integral_representatives.json").read_text())

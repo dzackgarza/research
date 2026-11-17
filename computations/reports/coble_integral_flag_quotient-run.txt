@@ -1,0 +1,38 @@
+nonzero singular vectors: 527  totally singular planes: 23715
+order of nine-generator finite G_Co image: 696729600
+G_Co-orbit sizes on nonzero singular vectors: [2, 120, 135, 270]
+  plane orbit of size   270; vector-orbit sizes of its nonzero classes: [(2, 135, 270)]
+  plane orbit of size  1575; vector-orbit sizes of its nonzero classes: [(135, 135, 135)]
+  plane orbit of size  3780; vector-orbit sizes of its nonzero classes: [(120, 120, 135)]
+  plane orbit of size  8640; vector-orbit sizes of its nonzero classes: [(120, 270, 270)]
+  plane orbit of size  9450; vector-orbit sizes of its nonzero classes: [(135, 270, 270)]
+star-decorated plane orbits: 7 [2160, 3150, 7560, 9450, 22680, 69120, 75600]
+star-decorated flag orbits: 13 [2160, 2160, 2160, 7560, 9450, 15120, 22680, 28350, 45360, 69120, 75600, 138240, 151200]
+orbit-stabilizer divisibility for all four finite orbit families: True
+decorated-plane orbit sizes over each finite-plane orbit:
+  finite plane size   270: 1 decorated orbits, sizes [2160]
+  finite plane size  1575: 2 decorated orbits, sizes [3150, 9450]
+  finite plane size  3780: 2 decorated orbits, sizes [7560, 22680]
+  finite plane size  8640: 1 decorated orbits, sizes [69120]
+  finite plane size  9450: 1 decorated orbits, sizes [75600]
+flag orbit sizes over each decorated-plane orbit:
+  plane size   2160: 3 flag orbits, sizes [2160, 2160, 2160]
+  plane size   3150: 1 flag orbits, sizes [9450]
+  plane size   7560: 2 flag orbits, sizes [7560, 15120]
+  plane size   9450: 1 flag orbits, sizes [28350]
+  plane size  22680: 2 flag orbits, sizes [22680, 45360]
+  plane size  69120: 2 flag orbits, sizes [69120, 138240]
+  plane size  75600: 2 flag orbits, sizes [75600, 151200]
+endpoint incidence by decorated-plane orbit (vector orbit sizes):
+  plane size   2160: [(2, 1), (135, 1), (270, 1)]
+  plane size   3150: [(135, 1)]
+  plane size   7560: [(120, 1), (135, 1)]
+  plane size   9450: [(135, 1)]
+  plane size  22680: [(120, 1), (135, 1)]
+  plane size  69120: [(120, 1), (270, 1)]
+  plane size  75600: [(135, 1), (270, 1)]
+endpoint edges: 13 flag orbits: 13
+kernel incidence: line vertices 527 degree 1080; plane vertices 189720 degree 3; edges 569160
+integral flags descended to thirteen G_Co orbits: [2160, 2160, 2160, 7560, 9450, 15120, 22680, 28350, 45360, 69120, 75600, 138240, 151200]
+distinct line/plane quotient endpoints: 13
+exact integral flags classified: 569160
