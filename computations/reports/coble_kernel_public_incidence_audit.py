@@ -19,6 +19,7 @@ Usage:
 """
 import argparse
 import ast
+from concurrent.futures import ProcessPoolExecutor
 import hashlib
 import gzip
 import json
@@ -528,8 +529,12 @@ if __name__ == "__main__":
                     header["plane_certificate_sha256"]) == hashes
             assert header["shard_index"] not in indices, "duplicate shard index"
             indices.add(header["shard_index"])
-            edges += audit_integral_shard(path)
         assert total is not None and indices == set(range(total)), "missing shard indices"
+        # Every shard is independently checked against the source certificates.
+        # The work is CPU-bound; distribute it over processes rather than
+        # serially replaying 569160 exact 11x11 integral witnesses.
+        with ProcessPoolExecutor(max_workers=min(4, len(args.shards))) as workers:
+            edges = sum(workers.map(audit_integral_shard, args.shards))
         assert edges == EXPECTED[0], "missing integral flag transporters"
         print(f"independently certified complete integral kernel incidence: {edges} edges")
     elif args.log is not None:

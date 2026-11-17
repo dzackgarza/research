@@ -1,0 +1,81 @@
+name: Coble complete integral flag certificate
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  shards:
+    name: Exact integral flag shard ${{ matrix.shard }}/32
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+    container:
+      image: ghcr.io/dzackgarza/sage:develop
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ github.token }}
+      options: --user root
+    env:
+      SAGE_BIN: /sage/.venv/bin/sage
+    steps:
+      - uses: actions/checkout@v4
+      - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Generate exact integral transporters
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p shards
+          "$SAGE_BIN" computations/reports/coble_plane_integral_star_section.py \
+            shard ${{ matrix.shard }} 32 shards/shard-${{ matrix.shard }}.jsonl.gz
+      - name: Independently audit every transporter in this shard
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 computations/reports/coble_kernel_public_incidence_audit.py \
+            --shard shards/shard-${{ matrix.shard }}.jsonl.gz
+          cd shards
+          sha256sum shard-${{ matrix.shard }}.jsonl.gz \
+            > shard-${{ matrix.shard }}.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coble-integral-shard-${{ matrix.shard }}
+          path: shards/
+          retention-days: 90
+          if-no-files-found: error
+
+  certify:
+    name: Replay all 569160 exact integral flags
+    needs: shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: coble-integral-shard-*
+          path: shards/
+          merge-multiple: true
+      - name: Check shard hashes and independent complete-family certificate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd shards
+          sha256sum -c shard-*.sha256
+          cd ..
+          python3 computations/reports/coble_kernel_public_incidence_audit.py \
+            --shards shards/shard-*.jsonl.gz
+      - name: Retain complete certificate
+        uses: actions/upload-artifact@v4
+        with:
+          name: coble-complete-integral-flag-certificate
+          path: shards/
+          retention-days: 90
+          if-no-files-found: error
