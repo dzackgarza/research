@@ -61,6 +61,7 @@ def audit_integral_shard(path: Path, *, allow_incomplete: bool = False) -> int:
         expected = 24 * len(range(index, len(planes["finite_plane_transports"]), total))
         assert header["expected_edges"] == expected
         count = 0
+        seed_classes = set()
         for raw in stream:
             row = json.loads(raw)
             if "trailer" in row:
@@ -76,6 +77,12 @@ def audit_integral_shard(path: Path, *, allow_incomplete: bool = False) -> int:
                 plane_index, (count % 24) // 3, count % 3)
             assert plane_index < len(planes["finite_plane_transports"])
             assert row["line_mask_diagonal"] in planes["finite_plane_transports"][plane_index]["finite_plane_masks"]
+            assert row["line_mask_diagonal"] not in seed_classes, (
+                plane_index, row["seed_index"], "repeated line class")
+            seed_classes.add(row["line_mask_diagonal"])
+            if count % 3 == 2:
+                assert seed_classes == set(planes["finite_plane_transports"][plane_index]["finite_plane_masks"])
+                seed_classes.clear()
             u = source[row["line_mask_diagonal"]]
             v = tuple(row["flag_vector_standard"])
             assert len(v) == 11 and gcd(*v) == 1 and pairing(v, v) == 0
