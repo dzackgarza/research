@@ -1315,6 +1315,29 @@ $B$ is odd unimodular, so $\Orth(B)$ is transitive on its primitive isotropic ve
 *The groups of item 3.* The group $\Orth(T_\Co)$ is transitive on the primitive isotropic vectors (@thm:unpolarized-cusps), so its count is $1$; that is the group of $F^{\mathrm{un}}_\Co=\bD(T_\Co)/\Orth(T_\Co)$, the quotient in which the moduli space $\mcm_\Co$ of Coble surfaces sits as an open subset [@DK13, (3.6), Prop. 3.2, p. 513]. The group $\Gamma_\Co$ is the monodromy group of the family of unpolarized Coble surfaces, and $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ is @conj:gamma-co-stable and nothing else (@def:gamma-co-groups, @rmk:gamma-co-status), so the count for $\fco$ is conditional on it. The group $\Gamma_{\Co,2}=R_{\gent}$ is the image of a stabilizer in $\gent$ (@def:gamma-co-groups), which is neither of the two groups counted here, so the count above says nothing about its orbits.
 :::
 
+::: {.corollary #cor:coble-eight-standard-line-counts title="Primitive isotropic line orbits for all eight standard orthogonal subgroups"}
+
+Let $T=T_\Co=B(2)$, $O=\Orth(T)$, $K=\ker\rho_T$, and let $O^+=\ker\spinornorm_\bR$, $SO=\ker\det$, and $SO^+=SO\intersect O^+$. Then the numbers of orbits of primitive isotropic **lines** are
+
+| Arithmetic subgroup of $\Orth(T)$ | Number of primitive isotropic line orbits |
+| --- | ---: |
+| $O$, $SO$, $O^+$, $SO^+$ | $1$ each |
+| $K$, $K\intersect SO$, $K\intersect O^+$, $K\intersect SO^+$ | $527$ each |
+
+The same numbers hold for primitive isotropic **vectors**. These are theorem-derived comparison values for the eight standard subgroup operations; the certified values on the $T_\Co$ lattice card are separately owned by lattice-database#7.
+
+:::
+
+::: {.proof}
+
+Fix a primitive isotropic vector $v\in B$. By @lem:odd-unimodular-isotropic-splitting(1), there is an integral orthogonal decomposition $B=U\perp M$ with $v\in U$ and $M\cong\latI_{1,8}$. Choose a vector $d$ of square $-1$ in the standard diagonal basis of $M$. Its integral reflection $r_d$ fixes $U$ pointwise, so fixes $v$, and satisfies $r_d(x)=x+2(x,d)_B d\equiv x\pmod{2B}$ for every $x\in B$. Thus $r_d\in K\intersect\Stab_O(v)$, with $\det(r_d)=-1$ and normalized real spinor norm $+1$ (the reflection is in a negative vector; see @def:spinor-norm).
+
+The isometry $h=\id_U\oplus(-\id_M)$ also fixes $v$ and belongs to $K$, since it is the identity modulo $2B$. It has $\det(h)=(-1)^9=-1$ and $\spinornorm_\bR(h)=-1$ by @lem:minus-identity-spinor-norm, since $M$ has positive index one. Hence the pairs $(\det,\spinornorm_\bR)$ of $r_d$ and $h$ are $(-1,+1)$ and $(-1,-1)$, which generate $\{\pm1\}^2$. Therefore the stabilizer of **every** primitive isotropic vector inside $K$ maps onto both determinant and normalized-spinor characters simultaneously: transport these two witnesses by an isometry of $B$, using transitivity from @lem:I29-plus-line-transitivity and normality of $K$.
+
+If $G$ is any of $O,SO,O^+,SO^+$, every $O$-orbit of primitive isotropic vectors is one $G$-orbit: for $g\in O$ sending $v$ to $v'$, multiply $g$ on the right by a suitable element of $\Stab_K(v)$ to make both required characters equal to $+1$, without changing $gv=v'$. Since $O$ is transitive, each of the four groups has one orbit. Likewise, every $K$-orbit is one orbit for each of $K$, $K\intersect SO$, $K\intersect O^+$ and $K\intersect SO^+$, because the same adjustment can be made inside $K$. There are $527$ such $K$-orbits by @thm:coble-zero-cusp-count(1), (2). Finally, the vector-to-line map is a bijection on orbit sets for each of the eight groups: $O$ is transitive on primitive vectors, and for each $v$ the vectors $v$ and $-v$ are already in one $K\intersect SO^+$-orbit by the same character-adjustment argument applied to $-\id_B\in K$. Thus no further identification occurs upon passing to unoriented lines.
+
+:::
+
 ::: {.remark #rmk:coble-zero-cusp-reproduction title="The public record behind the two line rows"}
 
 The record is sage-extensions#357, closed at `4533f0fdbe`; its commit body is the run's evidence, and it is a computation record rather than a lattice-database card. Its two calls are `Tco.stable_orthogonal_group().isotropic_orbit_representatives(1)` and `Tco.stable_orthogonal_group().intersection(Tco.O_plus()).isotropic_orbit_representatives(1)`, and they returned $527$ representatives each, in $1934.1$ s and $294.0$ s, every representative a primitive isotropic vector of divisor $2$ with a nonzero divided class.
