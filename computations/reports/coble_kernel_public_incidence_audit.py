@@ -46,6 +46,21 @@ def mod2_span(p: tuple, q: tuple) -> frozenset:
     return span
 
 
+def primitive_plane_pivot(p: tuple, q: tuple) -> tuple:
+    """An exact nonzero minor of a saturated rank-two plane basis."""
+    minor_gcd = 0
+    pivot = None
+    for a, b in combinations(range(11), 2):
+        minor = p[a] * q[b] - p[b] * q[a]
+        if minor and pivot is None:
+            pivot = (a, b, minor)
+        minor_gcd = gcd(minor_gcd, minor)
+        if minor_gcd == 1:
+            break
+    assert minor_gcd == 1 and pivot is not None, "plane is not primitive"
+    return pivot
+
+
 def audit(path: Path) -> None:
     vertices = {label: {"line": set(), "plane": set()} for label in LABELS}
     vertex_classes = {label: {"line": {}, "plane": {}} for label in LABELS}
@@ -68,10 +83,15 @@ def audit(path: Path) -> None:
                 if kind == "line":
                     (v,) = coords
                     assert len(v) == 11
+                    assert gcd(*v) == 1 and pairing(v, v) == 0, (label, index, "line cusp")
                     vertex_classes[label][kind][index] = tuple(int(t) % 2 for t in v)
                 else:
                     p, q = coords
                     assert len(p) == len(q) == 11
+                    assert pairing(p, p) == pairing(p, q) == pairing(q, q) == 0, (
+                        label, index, "plane cusp isotropy"
+                    )
+                    primitive_plane_pivot(p, q)
                     vertex_classes[label][kind][index] = mod2_span(p, q)
                 continue
             match = EDGE.search(line)
@@ -85,19 +105,9 @@ def audit(path: Path) -> None:
                 assert pairing(v, v) == pairing(p, p) == pairing(p, q) == pairing(q, q) == 0, (
                     label, position, "isotropy"
                 )
-                minor_gcd = 0
-                pivot = None
-                for a, b in combinations(range(11), 2):
-                    minor = p[a] * q[b] - p[b] * q[a]
-                    if minor and pivot is None:
-                        pivot = (a, b, minor)
-                    minor_gcd = gcd(minor_gcd, minor)
-                    if minor_gcd == 1:
-                        break
-                assert minor_gcd == 1, (label, position, "plane primitive")
+                pivot = primitive_plane_pivot(p, q)
                 # A primitive rank-two plane contains v iff all rank-three
                 # minors of [v,p,q] vanish. One nonzero 2x2 pivot suffices.
-                assert pivot is not None
                 a, b, determinant = pivot
                 assert all(v[c] * determinant
                            - v[a] * (p[c] * q[b] - p[b] * q[c])
