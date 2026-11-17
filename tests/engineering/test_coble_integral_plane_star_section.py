@@ -19,6 +19,7 @@ def test_all_coble_integral_plane_star_words():
     stars = section["base_stars_quotient_classes"]
     flag_coefficients = section["flag_line_coefficients"]
     rows = section["finite_plane_transports"]
+    stabilizer = section["plane_stabilizer_generators_standard"]
 
     def pairing(a, b):
         return sum(a[i] * gram[i][j] * b[j]
@@ -34,6 +35,8 @@ def test_all_coble_integral_plane_star_words():
         return tuple(sorted((x, y, x ^ y)))
 
     assert len(base) == 8 and len(rows) == 23715
+    assert len(stabilizer) == 21
+    assert section["plane_stabilizer_finite_image_order"] == 247726080
     assert len(seed_roots) == 7
     assert len({tuple(row["finite_plane_masks"]) for row in rows}) == 23715
     assert len({tuple(star) for star in stars}) == 8
@@ -43,6 +46,40 @@ def test_all_coble_integral_plane_star_words():
     expected_line_masks = {row["mask_diagonal"] for row in data["representatives"]}
     line_degrees = Counter()
     base_key = key(*base[0])
+    def plucker(a, b):
+        minors = tuple(a[i] * b[j] - a[j] * b[i]
+                       for i, j in combinations(range(11), 2))
+        first = next(x for x in minors if x)
+        return minors if first > 0 else tuple(-x for x in minors)
+
+    base_plucker = plucker(*base[0])
+    for g in stabilizer:
+        assert len(g) == 11 and all(len(row) == 11 for row in g)
+        for i in range(11):
+            for j in range(11):
+                assert sum(g[k][i] * gram[k][l] * g[l][j]
+                           for k in range(11) for l in range(11)) == gram[i][j]
+        images = [[sum(g[i][j] * v[j] for j in range(11))
+                   for i in range(11)] for v in base[0]]
+        assert plucker(*images) == base_plucker
+    # Independently recompute the faithful finite image, rather than
+    # trusting the order recorded by the certificate producer.
+    from sage.all import ZZ, PermutationGroup, matrix, vector
+
+    diagonal_change = matrix(ZZ, change)
+    inverse_change = diagonal_change.inverse()
+    singular = sorted(row["mask_diagonal"] for row in data["representatives"])
+    positions = {mask: i + 1 for i, mask in enumerate(singular)}
+    permutations = []
+    for g in stabilizer:
+        diagonal_action = diagonal_change * matrix(ZZ, g) * inverse_change
+        permutation = []
+        for x in singular:
+            image = diagonal_action * vector(ZZ, [(x >> i) & 1 for i in range(11)])
+            y = sum((int(a) & 1) << i for i, a in enumerate(image))
+            permutation.append(positions[y])
+        permutations.append(permutation)
+    assert int(PermutationGroup(permutations).order()) == 247726080
     def quotient_class(x):
         return min(x, x ^ base_key[0], x ^ base_key[1], x ^ base_key[2])
 

@@ -1,4 +1,5 @@
 finite planes: 23715 distinct integral stars per plane: 8
 integral plane representatives: 189720 compact certificate: computations/reports/coble_plane_integral_star_section.json
 integral flag representatives specified by words: 569160
-SHA-256 JSON: 8fa10a3a0ac71df691ddd4cc312d2f70a208f160ce1434fc0ac89d3f70438c1d
+exact integral plane stabilizer finite image order: 247726080
+SHA-256 JSON: c2015946878d3522f8debc6f3cbad105c1a2722b6c807ed1c051d009cca1c814
