@@ -227,31 +227,39 @@ def test_all_coble_integral_plane_star_words():
     assert sum(line_degrees.values()) == 569160
 
 
-@pytest.mark.parametrize("plane_index,seed_index,flag_index", [(100, 3, 1), (0, 0, 0)])
-def test_requested_nondefault_kernel_transporter(plane_index, seed_index, flag_index):
-    """The executable computes a second exact edge without rewriting its certificate."""
+@pytest.mark.parametrize("mode", ["single", "batch"])
+def test_requested_nondefault_kernel_transporter(mode, tmp_path):
+    """Single and streaming-batch requests preserve the canonical certificate."""
     folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
     certificate = folder / "coble_plane_integral_star_section.json"
     before = hashlib.sha256(certificate.read_bytes()).digest()
+    requests = [[100, 3, 1]] if mode == "single" else [[100, 3, 1], [0, 0, 0]]
+    if mode == "single":
+        arguments = [str(x) for x in requests[0]]
+    else:
+        request_file = tmp_path / "requests.jsonl"
+        request_file.write_text("".join(json.dumps(row) + "\n" for row in requests))
+        arguments = ["batch", str(request_file)]
     result = subprocess.run(
-        ["sage", str(folder / "coble_plane_integral_star_section.py"),
-         str(plane_index), str(seed_index), str(flag_index)],
+        ["sage", str(folder / "coble_plane_integral_star_section.py"), *arguments],
         cwd=folder.parents[1], capture_output=True, text=True, check=True,
     )
     assert hashlib.sha256(certificate.read_bytes()).digest() == before
     marker = "requested integral kernel transporter: "
-    record, = (json.loads(line.split(marker, 1)[1])
-               for line in result.stdout.splitlines() if marker in line)
-    assert record["seed_index"] == seed_index and record["flag_index"] == flag_index
-    assert record["line_mask_diagonal"] in record["finite_plane_masks"]
-    kernel = record["kernel_matrix_standard"]
-    positive = record["positive_kernel_matrix_standard"]
-    assert all(kernel[i][j] % 2 == int(i == j)
-               and positive[i][j] % 2 == int(i == j)
-               for i in range(11) for j in range(11))
+    records = [json.loads(line.split(marker, 1)[1])
+               for line in result.stdout.splitlines() if marker in line]
+    assert len(records) == len(requests)
     lines = json.loads((folder / "coble_singular_integral_representatives.json").read_text())
-    line, = (row["vector_standard"] for row in lines["representatives"]
-             if row["mask_diagonal"] == record["line_mask_diagonal"])
-    assert [sum(positive[i][j] * line[j] for j in range(11))
-            for i in range(11)] == record["flag_vector_standard"]
-    assert record["parabolic_correction_word"]
+    for record, (_, seed_index, flag_index) in zip(records, requests):
+        assert record["seed_index"] == seed_index and record["flag_index"] == flag_index
+        assert record["line_mask_diagonal"] in record["finite_plane_masks"]
+        kernel = record["kernel_matrix_standard"]
+        positive = record["positive_kernel_matrix_standard"]
+        assert all(kernel[i][j] % 2 == int(i == j)
+                   and positive[i][j] % 2 == int(i == j)
+                   for i in range(11) for j in range(11))
+        line, = (row["vector_standard"] for row in lines["representatives"]
+                 if row["mask_diagonal"] == record["line_mask_diagonal"])
+        assert [sum(positive[i][j] * line[j] for j in range(11))
+                for i in range(11)] == record["flag_vector_standard"]
+        assert record["parabolic_correction_word"]

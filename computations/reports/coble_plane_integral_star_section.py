@@ -3,6 +3,11 @@
 Run without arguments to regenerate the canonical certificate, or request
 one exact integral kernel transporter without overwriting the certificate:
     sage computations/reports/coble_plane_integral_star_section.py 100 3 1
+
+For streaming batches, supply JSONL triples [plane_index,seed_index,flag_index]:
+    sage computations/reports/coble_plane_integral_star_section.py batch requests.jsonl
+The exact finite parabolic word epimorphism is built once per batch, and
+transporter matrices are emitted one at a time without accumulating them.
 """
 import argparse
 import json
@@ -130,155 +135,185 @@ def word_matrix(word):
   g=from_action(lambda x,r=r:reflect(x,r))*g
  return to_standard*g*change
 
-# An actual integral ambient transporter between the fixed line
-# representative and a prescribed line inside a transported plane.
-# The general formula is W_J s_i h_t W_c^{-1}; the finite image of
-# this transporter can subsequently be cancelled using the explicit
-# ten-generator vector-parabolic section.
-parser=argparse.ArgumentParser(description=__doc__)
-parser.add_argument('plane_index',nargs='?',type=int,default=-1)
-parser.add_argument('seed_index',nargs='?',type=int,default=7)
-parser.add_argument('flag_index',nargs='?',type=int,default=2)
-arguments=(parser.parse_args() if sys.argv[0].endswith('coble_plane_integral_star_section.py')
-           else parser.parse_args([]))
-sample_plane_index=arguments.plane_index
-sample_seed_index=arguments.seed_index
-sample_flag_index=arguments.flag_index
-assert -len(rows)<=sample_plane_index<len(rows)
-assert 0<=sample_seed_index<8 and 0<=sample_flag_index<3
-sample_plane=rows[sample_plane_index]
-sample_plane_word=word_matrix(sample_plane['word_from_base'])
-if sample_seed_index:
- seed_r=seed_roots[sample_seed_index-1]
- sample_seed_reflection=to_standard*from_action(lambda x:reflect(x,seed_r))*change
-else:
- sample_seed_reflection=identity_matrix(ZZ,11)
-sample_flag_map=(identity_matrix(ZZ,11) if sample_flag_index==0 else
-                 to_standard*stabilizer_generators[-2 if sample_flag_index==1 else -1]*change)
-u0=to_standard*e1
-sample_flag=sample_plane_word*sample_seed_reflection*sample_flag_map*u0
-sample_line_mask=mask(change*sample_flag)
-sample_line_row,=(r for r in data['representatives'] if r['mask_diagonal']==sample_line_mask)
-sample_line_word=word_matrix(sample_line_row['word_from_base'])
-sample_transporter=(sample_plane_word*sample_seed_reflection*sample_flag_map*
-                    sample_line_word.inverse())
-assert sample_transporter*vector(ZZ,sample_line_row['vector_standard'])==sample_flag
-standard_gram=matrix(ZZ,data['standard_gram'])
-assert sample_transporter.transpose()*standard_gram*sample_transporter==standard_gram
-assert abs(sample_transporter.det())==1
-
-# Correct the ambient transporter by an exact integral vector-parabolic
-# word with the same finite image. The quotient is an actual integral
-# discriminant-kernel transporter of the displayed line into its plane.
+# One-time exact finite-group and integral-generator setup. Reuse the GAP
+# epimorphism across all requested edges; rebuilding it per edge would make
+# the complete 569160-edge computation impractical.
+line_rows_by_mask={r['mask_diagonal']:r for r in data['representatives']}
 parabolic_masks=data['vector_stabilizer_ten_masks']
 parabolic_permutations=[
  [positions[y^(x if (x&y).bit_count()%2 else 0)] for y in singular]
  for x in parabolic_masks]
 parabolic_group=PermutationGroup(parabolic_permutations,canonicalize=False)
 assert int(parabolic_group.order())==89181388800
-base_correction=sample_line_word.inverse()*sample_transporter*sample_line_word
-# This ambient matrix need only fix the *discriminant class* of u0.
-# Its finite reduction is in the vector parabolic; the integral word
-# constructed below fixes u0 exactly.
-assert mask(change*base_correction*u0)==mask(change*u0)
-diagonal_correction=change*base_correction*to_standard
-target_permutation=[positions[mask(diagonal_correction*vector(
- ZZ,[(x>>i)&1 for i in range(11)]))] for x in singular]
-target=parabolic_group(target_permutation)
-# Obtain the free-group word in GAP's unambiguous integer-pair format.
-# Parsing Sage's display string is invalid: it can contain parenthesized
-# subwords and powers, not just a product of individual generators.
 epimorphism=libgap.EpimorphismFromFreeGroup(parabolic_group._libgap_())
-free_word=libgap.PreImagesRepresentative(epimorphism,target._libgap_())
-representation=list(map(int,libgap.ExtRepOfObj(free_word).sage()))
-assert len(representation)%2==0
-correction_word=[(representation[i]-1,representation[i+1])
-                 for i in range(0,len(representation),2)]
-parabolic_word_matrix=identity_matrix(ZZ,11)
-word_permutation=parabolic_group.one()
-for index,exponent in correction_word:
- word_permutation*=parabolic_group.gen(index)**exponent
- r=change*vector(ZZ,data['vector_stabilizer_ten_roots_standard'][index])
- reflection=to_standard*from_action(lambda x,r=r:reflect(x,r))*change
- # Sage permutation products act in the opposite order to column
- # matrix products: apply the next factor on the left.
- parabolic_word_matrix=reflection**exponent*parabolic_word_matrix
-assert parabolic_word_matrix*u0==u0
-assert word_permutation==target
-assert all((int(a-b)&1)==0 for a,b in zip(
- (change*parabolic_word_matrix*to_standard).list(),diagonal_correction.list()))
-correction=sample_line_word*parabolic_word_matrix*sample_line_word.inverse()
-sample_kernel_transporter=sample_transporter*correction.inverse()
-assert sample_kernel_transporter*vector(ZZ,sample_line_row['vector_standard'])==sample_flag
-assert sample_kernel_transporter.transpose()*standard_gram*sample_kernel_transporter==standard_gram
-assert all((int(sample_kernel_transporter[i,j])&1)==int(i==j)
-           for i in range(11) for j in range(11))
-
-# Explicit spinor-negative kernel element fixing the chosen flag.
-# On U1+U2+D, -id on U2 fixes e1 and reduces to identity modulo 2.
-# Conjugate it through the integral seed/flag/plane transporter.
+parabolic_reflections=[]
+for root in data['vector_stabilizer_ten_roots_standard']:
+ r=change*vector(ZZ,root)
+ parabolic_reflections.append(to_standard*from_action(lambda x,r=r:reflect(x,r))*change)
+u0=to_standard*e1
+standard_gram=matrix(ZZ,data['standard_gram'])
+seed_maps=[identity_matrix(ZZ,11)]+[
+ to_standard*from_action(lambda x,r=r:reflect(x,r))*change for r in seed_roots]
+flag_maps=[identity_matrix(ZZ,11),to_standard*stabilizer_generators[-2]*change,
+           to_standard*stabilizer_generators[-1]*change]
 tau_coordinates=identity_matrix(ZZ,11)
 tau_coordinates[2,2]=tau_coordinates[3,3]=-1
 tau_base=to_standard*T*tau_coordinates*T.inverse()*change
-flag_conjugator=sample_plane_word*sample_seed_reflection*sample_flag_map
-tau_flag=flag_conjugator*tau_base*flag_conjugator.inverse()
-assert tau_flag*sample_flag==sample_flag
-assert tau_flag.transpose()*standard_gram*tau_flag==standard_gram
-assert all((int(tau_flag[i,j])&1)==int(i==j)
-           for i in range(11) for j in range(11))
+line_word_cache={}
+plane_word_cache={'index':None,'matrix':None}
 
-# In diagonal signature (2,9), the normalized real spinor sign is
-# the orientation of the projected positive two-plane: the sign of
-# the determinant of the upper-left 2x2 block. This determinant cannot
-# vanish because an isometry maps positive planes to positive planes.
-kernel_diagonal=change*sample_kernel_transporter*to_standard
-tau_diagonal=change*tau_flag*to_standard
-kernel_minor=kernel_diagonal[0,0]*kernel_diagonal[1,1]-kernel_diagonal[0,1]*kernel_diagonal[1,0]
-tau_minor=tau_diagonal[0,0]*tau_diagonal[1,1]-tau_diagonal[0,1]*tau_diagonal[1,0]
-assert kernel_minor!=0 and tau_minor<0
-kernel_spinor_sign=1 if kernel_minor>0 else -1
-positive_kernel=(sample_kernel_transporter if kernel_spinor_sign==1 else
-                 tau_flag*sample_kernel_transporter)
-positive_diagonal=change*positive_kernel*to_standard
-positive_minor=(positive_diagonal[0,0]*positive_diagonal[1,1]-
-                positive_diagonal[0,1]*positive_diagonal[1,0])
-assert positive_minor>0
-assert positive_kernel*vector(ZZ,sample_line_row['vector_standard'])==sample_flag
-assert positive_kernel.transpose()*standard_gram*positive_kernel==standard_gram
-assert all((int(positive_kernel[i,j])&1)==int(i==j)
-           for i in range(11) for j in range(11))
+def construct_flag_transporter(sample_plane_index, sample_seed_index, sample_flag_index):
+ """Return an exact integral kernel and positive-spinor flag transporter."""
+ assert -len(rows)<=sample_plane_index<len(rows)
+ assert 0<=sample_seed_index<8 and 0<=sample_flag_index<3
+ sample_plane=rows[sample_plane_index]
+ if plane_word_cache['index']!=sample_plane_index:
+  plane_word_cache['index']=sample_plane_index
+  plane_word_cache['matrix']=word_matrix(sample_plane['word_from_base'])
+ sample_plane_word=plane_word_cache['matrix']
+ sample_seed_reflection=seed_maps[sample_seed_index]
+ sample_flag_map=flag_maps[sample_flag_index]
+ sample_flag=sample_plane_word*sample_seed_reflection*sample_flag_map*u0
+ sample_line_mask=mask(change*sample_flag)
+ sample_line_row=line_rows_by_mask[sample_line_mask]
+ if sample_line_mask not in line_word_cache:
+  line_word_cache[sample_line_mask]=word_matrix(sample_line_row['word_from_base'])
+ sample_line_word=line_word_cache[sample_line_mask]
+ sample_transporter=(sample_plane_word*sample_seed_reflection*sample_flag_map*
+                     sample_line_word.inverse())
+ assert sample_transporter*vector(ZZ,sample_line_row['vector_standard'])==sample_flag
+ assert sample_transporter.transpose()*standard_gram*sample_transporter==standard_gram
+ assert abs(sample_transporter.det())==1
+
+ # Correct the ambient transporter by an exact integral vector-parabolic
+ # word with the same finite image. The quotient is an actual integral
+ # discriminant-kernel transporter of the displayed line into its plane.
+ base_correction=sample_line_word.inverse()*sample_transporter*sample_line_word
+ # This ambient matrix need only fix the *discriminant class* of u0.
+ # Its finite reduction is in the vector parabolic; the integral word
+ # constructed below fixes u0 exactly.
+ assert mask(change*base_correction*u0)==mask(change*u0)
+ diagonal_correction=change*base_correction*to_standard
+ target_permutation=[positions[mask(diagonal_correction*vector(
+  ZZ,[(x>>i)&1 for i in range(11)]))] for x in singular]
+ target=parabolic_group(target_permutation)
+ # Obtain the free-group word in GAP's unambiguous integer-pair format.
+ # Parsing Sage's display string is invalid: it can contain parenthesized
+ # subwords and powers, not just a product of individual generators.
+ free_word=libgap.PreImagesRepresentative(epimorphism,target._libgap_())
+ representation=list(map(int,libgap.ExtRepOfObj(free_word).sage()))
+ assert len(representation)%2==0
+ correction_word=[(representation[i]-1,representation[i+1])
+                  for i in range(0,len(representation),2)]
+ parabolic_word_matrix=identity_matrix(ZZ,11)
+ word_permutation=parabolic_group.one()
+ for index,exponent in correction_word:
+  word_permutation*=parabolic_group.gen(index)**exponent
+  reflection=parabolic_reflections[index]
+  # Sage permutation products act in the opposite order to column
+  # matrix products: apply the next factor on the left.
+  parabolic_word_matrix=reflection**exponent*parabolic_word_matrix
+ assert parabolic_word_matrix*u0==u0
+ assert word_permutation==target
+ assert all((int(a-b)&1)==0 for a,b in zip(
+  (change*parabolic_word_matrix*to_standard).list(),diagonal_correction.list()))
+ correction=sample_line_word*parabolic_word_matrix*sample_line_word.inverse()
+ sample_kernel_transporter=sample_transporter*correction.inverse()
+ assert sample_kernel_transporter*vector(ZZ,sample_line_row['vector_standard'])==sample_flag
+ assert sample_kernel_transporter.transpose()*standard_gram*sample_kernel_transporter==standard_gram
+ assert all((int(sample_kernel_transporter[i,j])&1)==int(i==j)
+            for i in range(11) for j in range(11))
+
+ # Explicit spinor-negative kernel element fixing the chosen flag.
+ # On U1+U2+D, -id on U2 fixes e1 and reduces to identity modulo 2.
+ # Conjugate it through the integral seed/flag/plane transporter.
+ flag_conjugator=sample_plane_word*sample_seed_reflection*sample_flag_map
+ tau_flag=flag_conjugator*tau_base*flag_conjugator.inverse()
+ assert tau_flag*sample_flag==sample_flag
+ assert tau_flag.transpose()*standard_gram*tau_flag==standard_gram
+ assert all((int(tau_flag[i,j])&1)==int(i==j)
+            for i in range(11) for j in range(11))
+
+ # In diagonal signature (2,9), the normalized real spinor sign is
+ # the orientation of the projected positive two-plane: the sign of
+ # the determinant of the upper-left 2x2 block. This determinant cannot
+ # vanish because an isometry maps positive planes to positive planes.
+ kernel_diagonal=change*sample_kernel_transporter*to_standard
+ tau_diagonal=change*tau_flag*to_standard
+ kernel_minor=kernel_diagonal[0,0]*kernel_diagonal[1,1]-kernel_diagonal[0,1]*kernel_diagonal[1,0]
+ tau_minor=tau_diagonal[0,0]*tau_diagonal[1,1]-tau_diagonal[0,1]*tau_diagonal[1,0]
+ assert kernel_minor!=0 and tau_minor<0
+ kernel_spinor_sign=1 if kernel_minor>0 else -1
+ positive_kernel=(sample_kernel_transporter if kernel_spinor_sign==1 else
+                  tau_flag*sample_kernel_transporter)
+ positive_diagonal=change*positive_kernel*to_standard
+ positive_minor=(positive_diagonal[0,0]*positive_diagonal[1,1]-
+                 positive_diagonal[0,1]*positive_diagonal[1,0])
+ assert positive_minor>0
+ assert positive_kernel*vector(ZZ,sample_line_row['vector_standard'])==sample_flag
+ assert positive_kernel.transpose()*standard_gram*positive_kernel==standard_gram
+ assert all((int(positive_kernel[i,j])&1)==int(i==j)
+            for i in range(11) for j in range(11))
+ output=folder/'coble_plane_integral_star_section.json'
+ sample_record={
+  'finite_plane_masks':sample_plane['finite_plane_masks'],
+  'seed_index':sample_seed_index,
+  'flag_index':sample_flag_index,
+  'line_mask_diagonal':sample_line_mask,
+  'flag_vector_standard':list(map(int,sample_flag)),
+  'matrix_standard':[list(map(int,row)) for row in sample_transporter.rows()],
+  'parabolic_correction_word':[list(factor) for factor in correction_word],
+  'kernel_matrix_standard':[
+   list(map(int,row)) for row in sample_kernel_transporter.rows()],
+  'kernel_real_spinor_sign':kernel_spinor_sign,
+  'spinor_flip_matrix_standard':[list(map(int,row)) for row in tau_flag.rows()],
+  'positive_kernel_matrix_standard':[list(map(int,row)) for row in positive_kernel.rows()]}
+ return sample_record
+
+# The canonical invocation retains the complete finite-plane section. A batch
+# request file is JSONL, one [plane_index,seed_index,flag_index] per line.
+# Each request is processed and emitted independently, without storing all
+# 569160 transporter matrices or overwriting the canonical certificate.
+raw_args=(sys.argv[1:] if sys.argv[0].endswith('coble_plane_integral_star_section.py') else [])
 output=folder/'coble_plane_integral_star_section.json'
-sample_record={
- 'finite_plane_masks':sample_plane['finite_plane_masks'],
- 'seed_index':sample_seed_index,
- 'flag_index':sample_flag_index,
- 'line_mask_diagonal':sample_line_mask,
- 'flag_vector_standard':list(map(int,sample_flag)),
- 'matrix_standard':[list(map(int,row)) for row in sample_transporter.rows()],
- 'parabolic_correction_word':[list(factor) for factor in correction_word],
- 'kernel_matrix_standard':[
-  list(map(int,row)) for row in sample_kernel_transporter.rows()],
- 'kernel_real_spinor_sign':kernel_spinor_sign,
- 'spinor_flip_matrix_standard':[list(map(int,row)) for row in tau_flag.rows()],
- 'positive_kernel_matrix_standard':[list(map(int,row)) for row in positive_kernel.rows()]}
-if (sample_plane_index,sample_seed_index,sample_flag_index)==(-1,7,2):
- output.write_text(json.dumps({'source':'coble_singular_integral_representatives.json',
- 'base_planes_standard':[[list(map(int,to_standard*a)),list(map(int,to_standard*b))] for a,b in base],
- 'seed_reflection_roots_standard':[list(map(int,to_standard*r)) for r in seed_roots],
- 'base_stars_quotient_classes':[sorted(s) for s in stars],
- 'plane_stabilizer_generators_standard':[
-  [list(map(int,row)) for row in (to_standard*g*change).rows()]
-  for g in stabilizer_generators],
- 'plane_stabilizer_finite_image_order':stabilizer_image_order,
- 'ambient_transporter_sample':sample_record,
- 'flag_line_coefficients':[list(c) for c in flag_coefficients],
- 'finite_plane_transports':rows},separators=(',',':'))+'\n')
-print('finite planes:',len(rows),'distinct integral stars per plane:',len(set(stars)))
-print('integral plane representatives:',len(rows)*len(base),'compact certificate:',output)
-print('integral flag representatives specified by words:',len(rows)*len(base)*len(flag_coefficients))
-print('exact integral plane stabilizer finite image order:',stabilizer_image_order)
-print('exact integral ambient line-to-flag transporter sample:',sample_line_mask)
-print('exact integral kernel line-to-flag transporter word length:',len(correction_word))
-print('exact positive-spinor kernel transporter verified:',positive_minor>0)
-if (sample_plane_index,sample_seed_index,sample_flag_index)!=(-1,7,2):
- print('requested integral kernel transporter:',json.dumps(sample_record,separators=(',',':')))
+if raw_args and raw_args[0]=='batch':
+ assert len(raw_args)==2
+ with Path(raw_args[1]).open() as stream:
+  for request in stream:
+   if not request.strip():
+    continue
+   triple=json.loads(request)
+   assert isinstance(triple,list) and len(triple)==3
+   record=construct_flag_transporter(*map(int,triple))
+   print('requested integral kernel transporter:',json.dumps(record,separators=(',',':')),flush=True)
+else:
+ parser=argparse.ArgumentParser(description=__doc__)
+ parser.add_argument('plane_index',nargs='?',type=int,default=-1)
+ parser.add_argument('seed_index',nargs='?',type=int,default=7)
+ parser.add_argument('flag_index',nargs='?',type=int,default=2)
+ arguments=parser.parse_args(raw_args)
+ sample_plane_index=arguments.plane_index
+ sample_seed_index=arguments.seed_index
+ sample_flag_index=arguments.flag_index
+ record=construct_flag_transporter(sample_plane_index,sample_seed_index,sample_flag_index)
+ if (sample_plane_index,sample_seed_index,sample_flag_index)==(-1,7,2):
+  output.write_text(json.dumps({'source':'coble_singular_integral_representatives.json',
+  'base_planes_standard':[[list(map(int,to_standard*a)),list(map(int,to_standard*b))] for a,b in base],
+  'seed_reflection_roots_standard':[list(map(int,to_standard*r)) for r in seed_roots],
+  'base_stars_quotient_classes':[sorted(s) for s in stars],
+  'plane_stabilizer_generators_standard':[
+   [list(map(int,row)) for row in (to_standard*g*change).rows()]
+   for g in stabilizer_generators],
+  'plane_stabilizer_finite_image_order':stabilizer_image_order,
+  'ambient_transporter_sample':record,
+  'flag_line_coefficients':[list(c) for c in flag_coefficients],
+  'finite_plane_transports':rows},separators=(',',':'))+'\n')
+ print('finite planes:',len(rows),'distinct integral stars per plane:',len(set(stars)))
+ print('integral plane representatives:',len(rows)*len(base),'compact certificate:',output)
+ print('integral flag representatives specified by words:',len(rows)*len(base)*len(flag_coefficients))
+ print('exact integral plane stabilizer finite image order:',stabilizer_image_order)
+ print('exact integral ambient line-to-flag transporter sample:',record['line_mask_diagonal'])
+ print('exact integral kernel line-to-flag transporter word length:',len(record['parabolic_correction_word']))
+ print('exact positive-spinor kernel transporter verified:',True)
+ if (sample_plane_index,sample_seed_index,sample_flag_index)!=(-1,7,2):
+  print('requested integral kernel transporter:',json.dumps(record,separators=(',',':')))
