@@ -14,6 +14,7 @@ Run with Sage:
     sage -c 'exec(compile(open("computations/reports/coble_full_discriminant_root_lifts.py").read(), "coble_full_discriminant_root_lifts.py", "exec"))'
 """
 from math import prod
+from collections import deque
 from sage.all import (ZZ, GF, CartanMatrix, PermutationGroup, block_diagonal_matrix,
                       diagonal_matrix, identity_matrix, matrix, vector)
 
@@ -123,6 +124,39 @@ for coordinates in TEN_STANDARD_ROOTS:
         root.column() * (root.row() * B_STANDARD)
     )
     assert s.transpose() * B_STANDARD * s == B_STANDARD and s.det() == -1
+
+# Construct integral words carrying one singular discriminant class to
+# every other one. This is a 527-vertex orbit traversal, not enumeration
+# of the 46-trillion-element orthogonal group or its cosets.
+base_singular = SINGULAR[0]
+parent = {base_singular: None}
+queue = deque([base_singular])
+while queue:
+    y = queue.popleft()
+    for i, x in enumerate(TEN_ROOTS):
+        z = y ^ (x if PARITY(y & x) else 0)
+        if z not in parent:
+            parent[z] = (y, i)
+            queue.append(z)
+assert set(parent) == set(SINGULAR)
+target_singular = SINGULAR[-1]
+path = []
+y = target_singular
+while y != base_singular:
+    previous, i = parent[y]
+    path.append(i)
+    y = previous
+path.reverse()
+lift = identity_matrix(ZZ, 11)
+for i in path:
+    root = vector(ZZ, TEN_STANDARD_ROOTS[i])
+    n = int(root * B_STANDARD * root)
+    lift = (identity_matrix(ZZ, 11) - (2 // n) *
+            (root.column() * (root.row() * B_STANDARD))) * lift
+assert lift.transpose() * B_STANDARD * lift == B_STANDARD
+base_vector = TO_STANDARD * vector(ZZ, bits(base_singular))
+target_vector = TO_STANDARD * vector(ZZ, bits(target_singular))
+assert all((int(a - b) % 2) == 0 for a, b in zip(lift * base_vector, target_vector))
 print('B=I_{2,9}: 496 integral norm +/-2 root reflections constructed and checked')
 print('unimodular change to <1> + U + E8(-1): determinant', M.det())
 print('all 496 integral reflection matrices verified in the standard T_Co basis')
@@ -131,3 +165,5 @@ print('faithful finite permutation image order:', order)
 print('full O^+(10,2) order:', expected)
 print('ten integral root reflections generate the full finite image:', TEN_ROOTS)
 print('ten standard-basis integral roots:', TEN_STANDARD_ROOTS)
+print('singular discriminant classes reached by integral root words:', len(parent))
+print('sample integral transporter word (zero-based generator indices):', tuple(path))
