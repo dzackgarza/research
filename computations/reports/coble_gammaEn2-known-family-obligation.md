@@ -211,6 +211,22 @@ transport is presented as completion of the separate top-level public
 rank-two acceptance. The mathematical nine-orbit theorem and the
 required executable public verification remain distinct obligations.
 
+## Completed top-level public line and plane count comparisons
+
+After integrating the integral signed-word transport correction
+(`sage-extensions` `ee8ecdaa`) and the mathematically proved Sterk
+ambient-plane representatives for the canonical named Enriques lattice
+(`sage-extensions` `3ec1120b`), the **actual top-level public**
+`Gamma_En,2.isotropic_orbit_representatives(2)` returned **nine** in 397
+seconds and `O(T_En).isotropic_orbit_representatives(2)` returned **two**.
+The complete executed transcript is
+`computations/reports/coble_gammaEn2-public-rank2-run.txt`.
+The public rank-one operations had already returned five and two,
+respectively. Thus the full published **5/9** polarized and **2/2**
+full-orthogonal-group line/plane count comparison is now executed through
+public operations, not merely inferred from the finite discriminant action.
+The earlier slow or failed runs below are retained as historical evidence.
+
 ## The lattice-side owners, and the exact revisions of the one call that fails
 
 These are the existing owners of the missing lattice-side computation; no new operation is requested,

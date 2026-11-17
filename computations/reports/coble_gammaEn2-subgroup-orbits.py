@@ -135,7 +135,7 @@ if '--certified-ambient-reps' in sys.argv:
     print('  all nine integral subgroup plane representatives materialized:', True)
     sys.exit(0)
 
-for rank, published in ((1, 5), (2, 9)):
+for rank, published in (((2, 9),) if '--rank2-only' in sys.argv else ((1, 5), (2, 9))):
     print('rank %d' % rank)
     for label, group in (('Gamma_En,2', preimage), ('O(T_En)', T.Aut())):
         start = time.time()

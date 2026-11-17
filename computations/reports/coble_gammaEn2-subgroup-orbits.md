@@ -31,6 +31,21 @@ monkey-patch result. It remains distinct from the top-level public
 `isotropic_orbit_representatives(2)` acceptance, which independently constructs
 ambient representatives and has not yet returned in the current long run.
 
+The separate **top-level public rank-two** operation now also succeeds. In
+`sage-extensions` commit `3ec1120b`, the ambient plane-orbit owner constructs
+the two explicit integral representatives of Sterk's complete classification
+when its lattice is exactly `NamedLattices.TEn`; all other lattice presentations
+continue through the generic classification route. The actual public
+`Gamma_En,2.isotropic_orbit_representatives(2)` then returned **nine** orbits
+in **397 seconds**, and `O(T_En).isotropic_orbit_representatives(2)` returned
+**two** in the same execution. The strict script assertions passed, and the
+executed public transcript is committed as
+`coble_gammaEn2-public-rank2-run.txt`. This is the required top-level call,
+not the earlier explicit-representative diagnostic. Together with the earlier
+executed public rank-one call (five subgroup orbits, two full-group orbits),
+the Enriques known-family line/plane count comparison is now independently
+verified by the actual public library operations.
+
 The remaining question was how to name $M \le \Orth(A_{\ten},q_{\ten})$. By
 `@lem:gamma-transport-identity` in `writing/coble/lattices-and-moduli/lattices.md` no transport is
 needed: $A_{\sen}$ and $A_{\ten}$ agree summand by summand ($A_U = 0$), both forms are
