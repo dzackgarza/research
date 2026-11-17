@@ -1480,7 +1480,7 @@ $$
 
 2. the isotropic subgroups of order $4$ of $A_{T_\Co}$ form the $\Orth(q_{T_\Co})$-orbit of $J$, of size $23\,715$, which the five $G_\Co$-orbits of @tbl-finite-plane-orbits, of sizes $1575, 270, 9450, 3780, 8640$, partition;
 
-3. hence the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ has $23\,715\cdot 8 = 189\,720$ $1$-cusps, one fibre of eight over each liftable $J$: a page proof, with the public lattice-orbit computation remaining sage-extensions#286. The quotient $F^{\mathrm{un}}_\Co = \bD(T_\Co)/\Orth(T_\Co)$ has one $1$-cusp (@thm:plane-transitivity-tco, certified by the same operation); the count for $F_{\Co,2}$ is open until sage-extensions#286; the count for $\fco$ is that of the stable quotient if @conj:gamma-co-stable holds.
+3. hence the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ has $23\,715\cdot 8 = 189\,720$ $1$-cusps, one fibre of eight over each liftable $J$: a page proof, and both of its rows are public computation records, returned for $\ker\rho$ and for $\widetilde\Orth^+(T_\Co)$ in run 43798731423 (@rmk:coble-plane-incidence-rows). The quotient $F^{\mathrm{un}}_\Co = \bD(T_\Co)/\Orth(T_\Co)$ has one $1$-cusp (@thm:plane-transitivity-tco), and its row is the $\Orth(T_\Co)$ row of the same operation, returned in run 43556671111. $F_{\Co,2}$ has seven $1$-cusps: that run's row, and not a page proof (@rmk:coble-plane-incidence-rows). The count for $\fco$ is that of the stable quotient if @conj:gamma-co-stable holds.
 :::
 
 ::: {.proof}
@@ -1526,6 +1526,99 @@ $$ \det(c,z_w-z_v)=\det M_w+\det M_v=1+1=0\quad\text{in }\F_2. $$
 The functional $x\mapsto\det(c,x)$ on $\F_2^2$ is nonzero with kernel $\langle c\rangle$, so $z_w-z_v\equiv t c\pmod 2$ for some $t\in\F_2$. Lift $t$ to an integer and replace the second column of $M_w$ by $z_w-t w$. The new $M_w$ has determinant one and $M_w\equiv M_v\pmod2$. So $A=M_wM_v^{-1}$ satisfies $A\equiv I_2\pmod2$ and $Av=w$, that is $A\in\Gamma(P)$ and $A(L_v) = L_w$.
 
 Now fix $P_0\in\mathcal P$. By @thm:plane-transitivity-tco, $P_0 = k(P)$ for some $k\in\Orth(B)$. The group $\widetilde\Orth^+(T_\Co)$ is normal in $\Orth(B)$, so $\Stab_{\widetilde\Orth^+(T_\Co)}(P_0) = k\Stab_{\widetilde\Orth^+(T_\Co)}(P)k^{-1}$, and by (1) and the preceding paragraph it is transitive on the primitive lines $L\subset P_0$ with $[L/2]=c$. Let $(P_1,L_1)$ and $(P_2,L_2)$ be two flags with $P_i\in\mathcal P$ and $[L_i/2] = c$. An element of $\widetilde\Orth^+(T_\Co)$ moves $P_2$ to $P_1$; it lies in $\ker\rho$, so it preserves the class $c$, and it moves $L_2$ to a line of class $c$ in $P_1$. An element of $\Stab_{\widetilde\Orth^+(T_\Co)}(P_1)$ then moves that line to $L_1$.
+:::
+
+### The plane fibre and the flag incidence against the public rows {#sec-plane-flag-rows}
+
+The counts proved above are counts of orbits of groups acting on $T_\Co$, and a computation that certifies one of them has to build the same group. This section fixes which group each public entry point builds, and then reads the plane rows, the cusp rows and the incidence row against @thm:plane-fibre and @prop:coble-arithmetic-flag-incidence. The flags enter it because an incidence row returns a relation between orbit vertices, which is not the set of flag orbits; @prop:coble-flag-orbits-and-edges states the difference exactly.
+
+::: {.proposition #prop:coble-flag-orbits-and-edges title="The flag orbits over a group containing the stable group, and the endpoint relation they refine"}
+Let $B = \latI_{2,9}$, $T_\Co = B(2)$, $J(P)\leq A_{T_\Co}$ the order-$4$ subgroup of a primitive isotropic plane $P\subset B$ (@prop:coble-planecusp-finite(1)), $\rho$ the discriminant representation and $\ker\rho\subseteq\Gamma\subseteq\Orth(B)$, and put $H\definedas\rho(\Gamma)$. For a $\Gamma$-orbit $\mathcal P$ of primitive isotropic planes of $B$ choose $P_0\in\mathcal P$, put $J_0\definedas J(P_0)$ and $H_0\definedas\rho\pqty{\Stab_\Gamma(P_0)}\leq H$, and put
+$$
+C(\mathcal P)\definedas\bigcup_{P'\in\mathcal P}\bigl(J(P')\sm\generators{0}\bigr) = H\cdot\bigl(J_0\sm\generators{0}\bigr)\subseteq A_{T_\Co}\sm\generators{0}
+,$$
+the nonzero isotropic classes that the primitive lines of the planes of $\mathcal P$ represent.
+
+1. (Flag orbits.) The primitive lines of $P_0$ fall into the three nonzero classes of $J_0$, and $\Stab_\Gamma(P_0)$ is transitive on the primitive lines of each of them, because $\widetilde\Orth^+(T_\Co)\subseteq\ker\rho\subseteq\Gamma$ and @prop:coble-arithmetic-flag-incidence(1), (2) gives that transitivity for $\widetilde\Orth^+(T_\Co)$. So the $\Gamma$-orbits of flags $(P',L)$ over $\mathcal P$ are the $H_0$-orbits on $J_0\sm\generators{0}$, and $\Gamma$ has exactly
+$$
+\sum_{\mathcal P}\abs{\pqty{J_0\sm\generators{0}}/H_0}
+$$
+orbits of flags of a primitive isotropic line in a primitive isotropic plane.
+
+2. (The endpoint relation.) A $\Gamma$-orbit of primitive isotropic lines is determined by the $H$-orbit of the class of its lines, because $\ker\rho\subseteq\Gamma$ reduces the orbits through the kernel (@thm:coble-zero-cusp-count, the reduction to $\rho(\Gamma)$ there). So the line orbits meeting the planes of $\mathcal P$ are the $H$-orbits of $C(\mathcal P)$, and the endpoint relation --- the pairs of a line orbit and a plane orbit realized by a flag --- has exactly
+$$
+\sum_{\mathcal P}\abs{C(\mathcal P)/H}
+$$
+edges. Each summand is the number of classes of the relation on $J_0\sm\generators{0}$ that puts $c$ and $c'$ together when $c' = hc$ for some $h\in H$, so it lies between $1$ and $3$.
+
+3. (Which of the two is larger.) $H_0\leq H$, and two elements of $J_0\sm\generators{0}$ in one $H_0$-orbit lie in one $H$-orbit of $C(\mathcal P)$, so the number of edges is at most the number of flag orbits, with equality exactly when for every $\mathcal P$ the $H_0$-orbits on $J_0\sm\generators{0}$ are the classes of that relation. Each plane orbit contributes at most $\abs{J_0\sm\generators{0}} = 3$ to either sum.
+:::
+
+::: {.proof}
+(1) A flag with plane in $\mathcal P$ is carried to one with plane $P_0$ by an element of $\Gamma$, so the $\Gamma$-orbits of flags over $\mathcal P$ are the orbits of $\Stab_\Gamma(P_0)$ on the primitive lines of $P_0$. By @prop:coble-planecusp-finite(1) the nonzero classes of $J_0$ are the classes $[L/2]$ of the primitive lines of $P_0$, and by $[gv/2] = \rho(g)[v/2]$ the class map is $\Stab_\Gamma(P_0)$-equivariant onto $J_0\sm\generators{0}$. Its fibres are single $\Stab_\Gamma(P_0)$-orbits --- that is the transitivity stated --- so the orbits on the lines correspond bijectively to the orbits of $H_0$ on the classes, and summing over the plane orbits gives the total.
+
+(2) For $g\in\Orth(B)$ and a primitive isotropic $v$ one has $[gv/2] = \rho(g)[v/2]$, and $\rho(g)$ preserves isotropy and the nonzero classes; so the class of a line is defined up to the $H$-action, and the $\Gamma$-orbits of primitive isotropic lines are the $H$-orbits of classes, which is the reduction of @thm:coble-zero-cusp-count read at $\Gamma$. A line orbit contains a line of a plane of $\mathcal P$ exactly when its class lies in $C(\mathcal P)$, and $C(\mathcal P)$ is $H$-invariant by construction; every $H$-orbit inside it is the orbit of an element of $J_0\sm\generators{0}$, and two elements of $J_0\sm\generators{0}$ lie in one $H$-orbit of $C(\mathcal P)$ exactly when they are $H$-equivalent. So the $H$-orbits of $C(\mathcal P)$ correspond to the classes of that relation on $J_0\sm\generators{0}$, and the edge count is their sum over the plane orbits.
+
+(3) The partition of $J_0\sm\generators{0}$ into $H_0$-orbits refines its partition into the traces of the $H$-orbits of $C(\mathcal P)$, since equivalence under $H_0$ implies equivalence under $H$. Equality of the two counts for every $\mathcal P$ is therefore exactly the stated condition, and $\abs{J_0\sm\generators{0}} = 3$ bounds each summand.
+:::
+
+::: {.corollary #cor:coble-flag-counts-per-group title="Three flag counts: the stable group, the full orthogonal group, and $\Gamma_{\Co,2}$"}
+1. For $\Gamma = \widetilde\Orth^+(T_\Co)$ one has $H = H_0 = 1$, so the edges and the flag orbits both number $3\cdot 23\,715\cdot 8 = 569\,160$: this is the $24$ per $J$ of @prop:coble-arithmetic-flag-incidence read over the $23\,715$ subgroups of @prop:coble-planecusp-finite(3), and for the stable group it is both the flag count and the edge count.
+2. For $\Gamma = \Orth(B)$ there is one plane orbit (@thm:plane-transitivity-tco) and one line orbit (@thm:unpolarized-cusps), so the endpoint relation is a single edge; and $\rho\pqty{\Stab_{\Orth(B)}(P)}= H_0$ acts on $J_0\sm\generators{0}$ through a group containing $GL(J_0)\cong S_3$ (@thm:coble-plane-stabilizer-image(2)), so it is transitive there and there is one flag orbit as well.
+3. For $\Gamma = \Gamma_{\Co,2}$ the public row of @rmk:coble-plane-incidence-rows returns $4$ line orbits, $7$ plane orbits and $13$ edges; by (3) it fixes the edge count and does not fix the flag count, which lies between $13$ and $3\cdot 7 = 21$. No value between those bounds is asserted here.
+:::
+
+::: {.proof}
+(1) $\widetilde\Orth^+(T_\Co)\subseteq\ker\rho$ gives $H = 1$, hence $H_0 = 1$, so both sums are $\sum_{\mathcal P}3$ over the $189\,720$ plane orbits of @thm:coble-plane-stabilizer-image(5)(c). (2) A group acting on $J_0$ through a group containing $GL(J_0)$ is transitive on $J_0\sm\generators{0}$, so the flag sum has the single term $1$; and $\Orth(q)$ is transitive on the $527$ nonzero isotropic classes (@lem:coble-discriminant-blocks(2)), so $C(\mathcal P)$ is a single $H$-orbit and the edge sum has the single term $1$. (3) is (3) of the proposition together with the row.
+:::
+
+::: {.proposition #prop:coble-cong-point-stabilizer title="The group the public plane stabilizer builds, and the $0$-cusps of $F_{\Co,2}$"}
+1. $\Stab_{\Orth(q_{T_\Co})}\bigl(A_{U(2)}\bigr) = \Orth(q_{U(2)})\times\Orth(q_{E_8(2)}) = P$ of @def:congruence-group, and consequently
+$$
+\rho_{T_\Co}^{-1}\pqty{\Stab_{\Orth(q_{T_\Co})}\bigl(A_{U(2)}\bigr)} = \rho_{T_\Co}^{-1}(P) = \Gamma^{\mathrm{cong}}_{\Co,2} = R_{\gent} = \Gamma_{\Co,2}
+,$$
+the three equalities after $\rho_{T_\Co}^{-1}(P)$ being @def:congruence-group, @prop:gamma-co-images(3) and @def:gamma-co-groups(5).
+2. The orbits of $P$ on the $527$ nonzero isotropic classes of $A_{T_\Co}$ are four, of sizes $2$, $135$, $270$ and $120$.
+3. Hence $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ has exactly four $0$-cusps.
+:::
+
+::: {.proof}
+(1) The inclusion $\supseteq$ is clear, and $\subseteq$ is @lem:coble-discriminant-blocks(4). For the chain, @prop:gamma-co-images(3) describes $P$ as the stabilizer of the decomposition $[h/2]^{\perp} = A_{U(2)}\oplus A_{E_8(2)}$ of $A_{E_{10}(2)}$: an isometry carrying $A_{U(2)}$ onto $A_{E_8(2)}$ would be an isometry of quadratic forms of orders $4$ and $256$, which does not exist, so the stabilizer of the decomposition is the setwise stabilizer of $A_{U(2)}$.
+
+(2) Write $A = A_{T_\Co} = \generators{k}\perp A^0$ with $k = [\zeta/2]$ and $A^0 = A_{U(2)}\perp A_{E_8(2)}$, as in @lem:coble-discriminant-blocks. By (3) of that lemma every isometry of $q_A$ fixes $k$ and acts on $A^0$, and $q_A(k+a) = \tfrac12 + q_{A^0}(a)$, so the isotropic classes of $A$ are the isotropic classes of $A^0$: $0$ together with $527$ nonzero ones, $3\cdot 136 + 1\cdot 120 = 528$ in all (@lem:coble-discriminant-blocks(2), @lem:gco-orbit-transfer).
+On $A_{U(2)}$ the three nonzero classes $u_1,u_2,u_3$ have $q$-values $0,0,1$, and $\Orth(q_{U(2)})$ fixes $u_3$ and swaps $u_1,u_2$ (@prop:gamma-cong-eq-heegner(1)); on $A_{E_8(2)}$ the $135$ nonzero classes of value $0$ form one orbit of $\Orth(q_{E_8(2)})$ and the $120$ of value $1$ form one (@lem:coble-discriminant-blocks(2), by Witt's theorem). Write $E_0$ and $E_1$ for those two sets. The isotropic classes of $A^0$ are then $0$, $u_1$, $u_2$, the classes $(0,e)$, $(u_1,e)$, $(u_2,e)$ with $e\in E_0$, and the classes $(u_3,e')$ with $e'\in E_1$, and by @lem:coble-discriminant-blocks(4) the group $P$ acts on the first coordinate through $\Orth(q_{U(2)})$ and on the second through $\Orth(q_{E_8(2)})$. Its orbits are therefore
+$$
+\generators{0},\qquad
+\theset{u_1,u_2},\qquad
+\theset{(0,e) : e\in E_0},\qquad
+\theset{(u_1,e),(u_2,e) : e\in E_0},\qquad
+\theset{(u_3,e') : e'\in E_1},
+$$
+of sizes $1$, $2$, $135$, $270$ and $120$; the four nonzero orbits total $527$.
+
+(3) The $0$-cusps of $\bD(T_\Co)/\Gamma_{\Co,2}$ are its orbits on the primitive isotropic vectors of $T_\Co$. Every primitive vector of $T_\Co$ has divisibility $2$ (@lem:divisibilityAlwaysTwoTco), and $\ker\rho\subseteq\Gamma_{\Co,2}$, so by @thm:coble-zero-cusp-count these orbits correspond to the orbits of $\rho(\Gamma_{\Co,2}) = P$ on the $527$ nonzero isotropic classes, which by (2) number four. This is the count that @thm:coble-zero-cusp-count(3) and @rmk:gamma-co-counts leave uncomputed; it is proved here and returned by the row of @rmk:coble-plane-incidence-rows.
+:::
+
+::: {.remark #rmk:coble-plane-incidence-rows title="The public rows behind the plane fibre, the cusps of $F_{\Co,2}$ and the incidence"}
+The rows are computation records in sage-extensions and are not lattice-database cards: no card holds a value for $T_\Co$ (lattice-database#7).
+
+*The two plane rows.* The driver is `tests/coble_kernel_plane_rows.py` at `897e7f7fd45e4d4f4cfcb29b266672e9232d25ab`, and the call is `isotropic_orbit_representatives(2)` on `Tco.stable_orthogonal_group()` and on its intersection with `Tco.O_plus()`, that is on $K = \ker\rho$ and on $\widetilde\Orth^+(T_\Co) = K\intersect\Theta_\bR(T_\Co)$, the real-spinor kernel of @conv:spinor-positive-subgroup that the driver names `sn_RR`: the two groups whose counts are @thm:coble-zero-cusp-count(2). Every returned representative is checked to have rank two, to be primitive in $T_\Co$, and to carry the zero Gram tensor, and the count is compared with the double cosets over the single $\Orth(T_\Co)$-class of primitive isotropic planes, computed as a quotient of two group orders. Run 43798731423 reports $189\,720$ planes for $\ker\rho$ in $4013.4$ s and $189\,720$ for $\widetilde\Orth^+(T_\Co)$ in $1821.2$ s, each against an expected $189\,720$ over one class of $\Orth(T_\Co)$; its last line, which the driver prints only after both counts have equalled their double cosets, reports the two counts equal.
+
+The page's count and the row's are the same integer seen from two sides. The page counts eight orbits over each of the $23\,715$ subgroups (@thm:coble-plane-stabilizer-image(5)(c)); the row counts one quotient over the one $\Orth(T_\Co)$-class of planes, namely
+$$
+\frac{\abs{\rho(\Orth(T_\Co))}}{\abs{\rho\pqty{\Stab_{\Orth(B)}(P)}}} = \frac{46\,998\,591\,897\,600}{247\,726\,080} = 189\,720 = 8\cdot 23\,715
+,$$
+and the two agree because $\abs{\Orth(q)}/\abs{S} = \pqty{\abs{\Orth(q)}/\abs{F}}\pqty{\abs{F}/\abs{S}} = 23\,715\cdot 8$ with $F = \Stab_{\Orth(q)}(J)$ and $S = \rho\pqty{\Stab_{\Orth(B)}(P)}$ of @thm:plane-fibre(1). The driver's own note records that its order formula was validated against those two Coble orders.
+
+*The cusp rows and the incidence row.* The driver is `tests/coble_gamma_co_2_incidence_rows.py` at `3147ea330f1f91bef3ae20006210dcbdc4456323`, and the two rows run `cusps(1)`, `cusps(2)` and `tits_building_incidence()` on `Tco.Aut()` and on `Tco.Aut().discriminant_point_stabilizer(point)`, the point being the span of the classes of the two $U(2)$ module generators; that last call is $\rho_{T_\Co}^{-1}$ of the setwise stabilizer of the point, which by @prop:coble-cong-point-stabilizer(1) is $\Gamma_{\Co,2} = R_{\gent}$. The incidence returned is the endpoint relation of @prop:coble-flag-orbits-and-edges(2), the driver retaining one flag certificate per pair of endpoints and asserting of each certificate that its line lies in its plane, that one element of the group carries the line cusp representative into the plane cusp representative, that no two edges share both endpoints, and that every line cusp and every plane cusp carries an edge. Run 43556671111 reports, for $\Orth(T_\Co)$, one line cusp, one plane cusp and one edge in $188.5$ s --- @thm:unpolarized-cusps and @thm:plane-transitivity-tco certified at one plane --- and, for $\Gamma_{\Co,2}$, four line cusps, seven plane cusps and thirteen edges in $2195.2$ s. The four is @prop:coble-cong-point-stabilizer(3), proved on the page independently of the run; the seven and the thirteen are the run's, and they enter no card.
+
+*What the rows do not establish.* Three things stay outside them. The number of $\Gamma_{\Co,2}$-orbits of flags, which @cor:coble-flag-counts-per-group(3) bounds between $13$ and $21$ and which the row does not decide, since it retains one certificate per endpoint pair. The incidence rows of the two kernel subgroups, which are sage-extensions#381 and had not returned when this was written: run 44012568639 at `921dcf6ed7b921ff78479cd4eb067008e2eff42a` is the row whose result is outstanding, and no count of the $\ker\rho$ or $\widetilde\Orth^+(T_\Co)$ incidence is asserted here or inferred from the plane rows or from @prop:coble-flag-orbits-and-edges. And the count for $\fco$ itself: $\Gamma_\Co$ is the monodromy group of the family of unpolarized Coble surfaces and $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ is @conj:gamma-co-stable and nothing else (@def:gamma-co-groups, @rmk:gamma-co-status), so $189\,720$ is the number of $1$-cusps of $\fco$ only under that hypothesis; $\Gamma_{\Co,2}$ is the restricted stabilizer $R_{\gent}$, no inclusion between it and $\Gamma_\Co$ is asserted, and its counts are the cusps of $F_{\Co,2}$ and of nothing else.
+:::
+
+::: {.remark #rmk:coble-plane-incidence-row-provenance title="The revisions the two runs bound, and the ones they do not"}
+Both workflows run in the container `ghcr.io/dzackgarza/sage:develop` and install nothing: the step puts `src` on `PYTHONPATH` and runs the driver from the checkout, so the `sage_extensions` code a row imports is the dispatched commit's, and the workflow head is the revision of that code. It is not the revision of the runtime underneath. The tag `develop` is a moving tag, each log records the manifest digest it pulled, and the two runs pulled different ones: `sha256:84037cf751ae0762b0734d65e9df2b5bcfc1cfec964eb464bcb91d79fb4a1fed` for run 43798731423 and `sha256:40697f55c8a03ce5bc913afdd0acb89f879c4b168ab076ff0a9a4fc348fa7874` for run 43556671111. Each number therefore belongs to the pair of its commit and its image digest, and to no other pair; the Sage version both logs print, `11.0.beta5`, identifies the build no more tightly than that.
+
+The durations are the runs' own. The body of `3147ea330f1f91bef3ae20006210dcbdc4456323` also records `95.1` s for the $\Orth(T_\Co)$ row, `1449.3` s for the $\Gamma_{\Co,2}$ row and a pinned baseline of thirteen pairs in `1599.3` s; those are other runs, and the durations of run 43556671111 are the `188.5` s and `2195.2` s its own log prints.
 :::
 
 ### The reflective set of the stable group {#sec-gamma-co-reflective-set}
