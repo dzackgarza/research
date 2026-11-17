@@ -54,11 +54,11 @@ def _exact_reflection(root):
              for j in range(11)] for i in range(11)]
 
 
-def _exact_reflection_word(word, generators):
+def _exact_reflection_word(word, generator_matrices):
     result = [[int(i == j) for j in range(11)] for i in range(11)]
     for index in word:
-        assert type(index) is int and 0 <= index < len(generators)
-        result = _exact_matrix_product(_exact_reflection(generators[index]), result)
+        assert type(index) is int and 0 <= index < len(generator_matrices)
+        result = _exact_matrix_product(generator_matrices[index], result)
     return result
 
 
@@ -72,8 +72,10 @@ def audit_integral_shard(path: Path, *, allow_incomplete: bool = False) -> int:
     source = {r["mask_diagonal"]: tuple(r["vector_standard"])
               for r in lines["representatives"]}
     roots = [tuple(r) for r in lines["generator_roots_standard"]]
+    root_matrices = [_exact_reflection(root) for root in roots]
     seeds = planes["base_planes_standard"]
     seed_roots = planes["seed_reflection_roots_standard"]
+    seed_matrices = [_exact_reflection(root) for root in seed_roots]
     stabilizer = planes["plane_stabilizer_generators_standard"]
     parabolic_roots = lines["vector_stabilizer_ten_roots_standard"]
     line_rows = {r["mask_diagonal"]: r for r in lines["representatives"]}
@@ -209,13 +211,13 @@ def audit_integral_shard(path: Path, *, allow_incomplete: bool = False) -> int:
             if plane_index not in plane_word_cache:
                 plane_word_cache.clear()
                 plane_word_cache[plane_index] = _exact_reflection_word(
-                    planes["finite_plane_transports"][plane_index]["word_from_base"], roots)
+                    planes["finite_plane_transports"][plane_index]["word_from_base"], root_matrices)
             line_mask = row["line_mask_diagonal"]
             if line_mask not in line_word_cache:
                 line_word_cache[line_mask] = _exact_reflection_word(
-                    line_rows[line_mask]["word_from_base"], roots)
+                    line_rows[line_mask]["word_from_base"], root_matrices)
             seed_map = (identity if row["seed_index"] == 0 else
-                        _exact_reflection(seed_roots[row["seed_index"] - 1]))
+                        seed_matrices[row["seed_index"] - 1])
             flag_map = [identity, stabilizer[-2], stabilizer[-1]][row["flag_index"]]
             ambient_times_line = _exact_matrix_product(
                 _exact_matrix_product(plane_word_cache[plane_index], seed_map), flag_map)
