@@ -51,6 +51,37 @@ def test_all_coble_integral_cusp_words():
         diagonal = [sum(change[i][j] * root[j] for j in range(11))
                     for i in range(11)]
         assert sum((x % 2) << i for i, x in enumerate(diagonal)) == expected_mask
+    sample_mask = data["vector_stabilizer_sample_target_mask"]
+    sample_word = data["vector_stabilizer_sample_word"]
+    assert sample_mask in stabilizer_masks and sample_mask not in ten_masks
+    assert sample_word and all(0 <= i < 10 and exponent != 0
+                               for i, exponent in sample_word)
+    target_root, = (root for root in stabilizer_roots
+                    if sum((sum(change[i][j] * root[j] for j in range(11)) % 2)
+                           << i for i in range(11)) == sample_mask)
+
+    def reflection(v, root):
+        n = pairing(root, root)
+        numerator = 2 * pairing(v, root)
+        assert numerator % n == 0
+        k = numerator // n
+        return [a - k * b for a, b in zip(v, root)]
+
+    # Check the full mod-two matrix on an integral basis, not only one
+    # chosen singular vector. The word's exact integral action fixes u.
+    for j in range(11):
+        e = [int(i == j) for i in range(11)]
+        v = e
+        for i, exponent in reversed(sample_word):
+            if exponent % 2:
+                v = reflection(v, ten_roots[i])
+        target = reflection(e, target_root)
+        assert all((a - b) % 2 == 0 for a, b in zip(v, target))
+    v = list(base)
+    for i, exponent in reversed(sample_word):
+        if exponent % 2:
+            v = reflection(v, ten_roots[i])
+    assert v == base
     for root in roots:
         assert abs(pairing(root, root)) == 2
 

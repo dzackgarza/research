@@ -14,6 +14,7 @@ Run with Sage:
     sage -c 'exec(compile(open("computations/reports/coble_full_discriminant_root_lifts.py").read(), "coble_full_discriminant_root_lifts.py", "exec"))'
 """
 from math import gcd, prod
+import re
 from collections import deque
 import json
 from pathlib import Path
@@ -146,6 +147,41 @@ TEN_PARABOLIC_ROOTS = tuple(
     tuple(map(int, TO_STANDARD * parabolic_root_by_mask[x]))
     for x in TEN_PARABOLIC_MASKS
 )
+# A concrete word-lifting witness for a stabilizer element outside the
+# ten chosen generators. Sage delegates the word problem to GAP's
+# free-group epimorphism; the resulting word is independently checked
+# by multiplying actual integral matrices and their finite actions.
+parabolic_group = PermutationGroup(
+    [root_permutations[x] for x in TEN_PARABOLIC_MASKS], canonicalize=False
+)
+parabolic_target_mask = parabolic_masks[-1]
+assert parabolic_target_mask not in TEN_PARABOLIC_MASKS
+parabolic_target = parabolic_group(root_permutations[parabolic_target_mask])
+word_string = parabolic_target.word_problem(parabolic_group.gens(), False)[0]
+parabolic_word = []
+for factor in word_string.split('*'):
+    match = re.fullmatch(r'x(\d+)(?:\^(-?\d+))?', factor)
+    assert match is not None, factor
+    parabolic_word.append((int(match.group(1)) - 1, int(match.group(2) or 1)))
+parabolic_word_permutation = parabolic_group.one()
+parabolic_word_matrix = identity_matrix(ZZ, 11)
+for index, exponent in parabolic_word:
+    parabolic_word_permutation *= parabolic_group.gen(index) ** exponent
+    root = vector(ZZ, TEN_PARABOLIC_ROOTS[index])
+    n = int(root * B_STANDARD * root)
+    reflection = identity_matrix(ZZ, 11) - (2 // n) * (
+        root.column() * (root.row() * B_STANDARD)
+    )
+    parabolic_word_matrix *= reflection ** exponent
+assert parabolic_word_permutation == parabolic_target
+parabolic_u_standard = TO_STANDARD * PARABOLIC_U
+assert parabolic_word_matrix * parabolic_u_standard == parabolic_u_standard
+assert parabolic_word_matrix.transpose() * B_STANDARD * parabolic_word_matrix == B_STANDARD
+for y in SINGULAR:
+    v = vector(ZZ, bits(y))
+    image = M.transpose() * parabolic_word_matrix * TO_STANDARD * v
+    image_mask = sum((int(a) & 1) << i for i, a in enumerate(image))
+    assert positions[image_mask] == parabolic_target(positions[y])
 TEN_STANDARD_ROOTS = tuple(tuple(map(int, TO_STANDARD * root_lift(x))) for x in TEN_ROOTS)
 assert len(set(TEN_STANDARD_ROOTS)) == 10
 for coordinates in TEN_STANDARD_ROOTS:
@@ -212,6 +248,7 @@ print('ten integral root reflections generate the full finite image:', TEN_ROOTS
 print('exact-vector stabilizer integral root image order:', parabolic_image_order)
 print('integral norm-two vector-stabilizer roots:', len(parabolic_roots))
 print('ten integral vector-stabilizer roots generate full parabolic image:', TEN_PARABOLIC_MASKS)
+print('exact integral finite-stabilizer sample word:', parabolic_target_mask, parabolic_word)
 print('ten standard-basis integral roots:', TEN_STANDARD_ROOTS)
 print('singular discriminant classes reached by integral root words:', len(parent))
 print('primitive integral isotropic vector representatives certified:', len(integral_vectors))
@@ -241,6 +278,8 @@ certificate = {
     ],
     'vector_stabilizer_ten_masks': list(TEN_PARABOLIC_MASKS),
     'vector_stabilizer_ten_roots_standard': [list(root) for root in TEN_PARABOLIC_ROOTS],
+    'vector_stabilizer_sample_target_mask': parabolic_target_mask,
+    'vector_stabilizer_sample_word': [list(factor) for factor in parabolic_word],
     'vector_stabilizer_finite_order': parabolic_image_order,
     'representatives': rows,
 }

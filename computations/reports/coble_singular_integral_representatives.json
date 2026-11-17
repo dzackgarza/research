@@ -3688,6 +3688,61 @@
       -2
     ]
   ],
+  "vector_stabilizer_sample_target_mask": 2039,
+  "vector_stabilizer_sample_word": [
+    [
+      7,
+      -1
+    ],
+    [
+      8,
+      -1
+    ],
+    [
+      7,
+      -1
+    ],
+    [
+      2,
+      1
+    ],
+    [
+      4,
+      1
+    ],
+    [
+      8,
+      1
+    ],
+    [
+      6,
+      -1
+    ],
+    [
+      5,
+      -1
+    ],
+    [
+      6,
+      -1
+    ],
+    [
+      7,
+      -1
+    ],
+    [
+      8,
+      -1
+    ],
+    [
+      4,
+      -1
+    ],
+    [
+      2,
+      -1
+    ]
+  ],
   "vector_stabilizer_finite_order": 89181388800,
   "representatives": [
     {

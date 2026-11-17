@@ -1331,7 +1331,7 @@ Let $B=\latI_{2,9}$ and $u=e_0+e_2$, with $e_0^2=1$ and $e_2^2=-1$. Write $c=u\b
 \[
 \rho(\Stab_{\Orth(B)}(u))=\Stab_{\Orth(q)}(c).
 \]
-In fact, the ten root parity classes $(1919,215,58,359,311,335,591,538,2016,594)$ already generate this full finite stabilizer image, as the same exact Schreier--Sims computation verifies. The construction supplies a ten-generator finite-image word section using actual integral isometries that fix the prescribed primitive isotropic vector.
+In fact, the ten root parity classes $(1919,215,58,359,311,335,591,538,2016,594)$ already generate this full finite stabilizer image, as the same exact Schreier--Sims computation verifies. The construction supplies a ten-generator finite-image word section using actual integral isometries that fix the prescribed primitive isotropic vector. As an executable word-lifting witness, the certificate factors an additional stabilizer symmetry through these ten generators using the exact permutation-group word problem, multiplies the corresponding integral reflection matrices, checks that the resulting matrix fixes $u$ exactly, and verifies its reduction on every singular discriminant class. The independent integer regression verifies the complete reduced matrix on an integral basis and exact vector fixing.
 :::
 
 ::: {.proof}
