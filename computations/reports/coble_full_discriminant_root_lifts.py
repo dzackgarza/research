@@ -200,6 +200,7 @@ for mask in sorted(integral_vectors):
     })
 certificate = {
     'standard_gram': [list(map(int, row)) for row in B_STANDARD.rows()],
+    'standard_to_diagonal': [list(map(int, row)) for row in M.transpose().rows()],
     'base_mask_diagonal': base_singular,
     'generator_roots_standard': [list(root) for root in TEN_STANDARD_ROOTS],
     'representatives': rows,
