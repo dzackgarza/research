@@ -35,7 +35,7 @@ The involution $\theta_\Co$ of @prop:theta-co-exists, with $\lkt^{\theta_\Co} = 
 
 ::: {.question title="Open problem: the 0-cusps that carry the Coble stable limits"}
 
-Which of the $527$ $0$-cusps of the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ (@thm:cusp-lifting) carry the Coble stable limits?
+Which of the $527$ $0$-cusps of the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ (@thm:coble-zero-cusp-count(2)) carry the Coble stable limits?
 :::
 
 ::: {.question #qst:gamma-co-generators title="Open problem: the stable group $\widetilde\Orth^+(T_\Co)$"}

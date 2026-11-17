@@ -1279,6 +1279,51 @@ The images $\rho(E(v,k))$ lie in $N$, and $\rho(E(v,k)) = \id$ if and only if $k
 (2) Let $g = \id_P\oplus(-\id_K)$. It fixes $v$, and it is the identity modulo $2B$, so $g\in\ker\rho$. By @lem:split-isometry-spinor-norm and @lem:minus-identity-spinor-norm, $\spinornorm_\bR(g) = \spinornorm_\bR(-\id_K) = -1$, because the positive index of $K$ is $1$. So $g\notin\Orth^+(B)$.
 :::
 
+::: {.theorem #thm:coble-zero-cusp-count title="The $527$ orbits of primitive isotropic lines of $T_\Co$"}
+
+Let $B=\latI_{2,9}$, $T_\Co=B(2)$, $q=q_{T_\Co}$ and $\rho=\rho_{T_\Co}\colon\Orth(T_\Co)\too\Orth(q)$, and put
+$$
+K \definedas \discriminantkernel{T_\Co}=\ker\rho,
+\qquad
+\widetilde\Orth^+(T_\Co)\definedas K\intersect\Orth^+(T_\Co),
+$$
+the discriminant kernel and its real-spinor-positive part (@conv:spinor-positive-subgroup).
+
+1. If $v,v'\in T_\Co$ are primitive isotropic with $[v'/2]=[v/2]$, then $v'=kv$ for some $k\in K$. So $v\mapsto[v/2]$ is a bijection from the $K$-orbits of primitive isotropic vectors onto the $527$ nonzero isotropic classes of $A_{T_\Co}$, and it is a bijection from the $K$-orbits of primitive isotropic lines onto the same classes.
+2. Consequently $K$ has exactly $527$ orbits of primitive isotropic vectors and exactly $527$ orbits of primitive isotropic lines, one for each nonzero isotropic class of $A_{T_\Co}$, and so does $\widetilde\Orth^+(T_\Co)$. The index is
+$$
+\abs{\Orth(q)}/\abs{\rho\pqty{\Stab_{\Orth(B)}(v)}} = \frac{46\,998\,591\,897\,600}{89\,181\,388\,800} = 527 .
+$$
+3. This is the count for these two groups, and a count of $0$-cusps names its group (@def:gamma-co-groups). For $\Gamma=\Orth(T_\Co)$ it is $1$ (@thm:unpolarized-cusps): that is the single $0$-cusp of $F^{\mathrm{un}}_\Co=\bD(T_\Co)/\Orth(T_\Co)$, a statement about $F^{\mathrm{un}}_\Co$ and not about $\fco$. For $\ker\rho\subseteq\Gamma\subseteq\Orth(T_\Co)$ it is the number of $\rho(\Gamma)$-orbits on the $527$ nonzero isotropic classes, which need not be $527$, so no count is asserted at an intermediate group; for $\Gamma_{\Co,2}$ it is not computed here. Under @conj:gamma-co-stable, $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ and $\fco=\bD(T_\Co)/\Gamma_\Co$ has $527$ $0$-cusps, which is the only sense in which $527$ is asserted for $\fco$.
+4. Both counts stand in the public computation record of @rmk:coble-zero-cusp-reproduction, sage-extensions#357 closed at `4533f0fdbe`, whose two calls return $527$ representatives each. The count is proved here rather than read off that record, and no lattice-database card is minted from it: the $T_\Co$ card is lattice-database#7.
+:::
+
+::: {.proof}
+
+$B$ is odd unimodular, so $\Orth(B)$ is transitive on its primitive isotropic vectors (@lem:I29-plus-line-transitivity).
+
+*The fibre over a class.* Let $v$ be primitive isotropic and $c\definedas[v/2]$, a nonzero isotropic class (@lem:isotropic-classes-lift(1)). By @lem:cusp-vector-stabilizer-image(1), $\rho\pqty{\Stab_{\Orth(B)}(v)}=\Stab_{\Orth(q)}(c)$. So for $v'$ primitive isotropic with $[v'/2]=c$ and $v'=gv$ one has $\rho(g)\in\Stab_{\Orth(q)}(c)$, that is $\rho(g)=\rho(h)$ for some $h\in\Stab_{\Orth(B)}(v)$, and then $v'=kv$ with $k=gh^{-1}\in\ker\rho$. The fibre over $c$ is therefore a single $K$-orbit.
+
+*The classes that occur.* By @lem:isotropic-classes-lift(2) the classes $[v/2]$ of the primitive isotropic $v$ are exactly the $527$ nonzero isotropic classes of $A_{T_\Co}$. With the previous paragraph, $v\mapsto[v/2]$ is a bijection from the $K$-orbits of primitive isotropic vectors onto them.
+
+*Lines.* $A_{T_\Co}=B/2B$ is $2$-torsion, so $-\id\in K$ and $[-v/2]=[v/2]$ for every $v\in T_\Co$: the map is constant on the two vectors spanning a line, and those two vectors lie in one $K$-orbit, so the orbits of primitive isotropic vectors and of primitive isotropic lines are the same partition and the bijection above is one of line orbits.
+
+*Intermediate groups.* A subgroup $\Gamma$ with $K\subseteq\Gamma$ acts on the primitive isotropic vectors through $\rho(\Gamma)$, and each fibre above is a single orbit of $K\subseteq\Gamma$, so the $\Gamma$-orbits correspond to the $\rho(\Gamma)$-orbits on the classes that occur; this is the reduction of the double cosets through the normal subgroup $K$ to the finite group $\Orth(q)$ [@DH23, Lemma 3.6, printed p. 22].
+
+*The two stable groups.* By @prop:discriminant-kernel-orbits(2), $K$ and $\widetilde\Orth^+(T_\Co)=K\intersect\Orth^+(T_\Co)$ have the same orbits on the primitive isotropic vectors and on the primitive isotropic lines, so the count belongs to both. In the index of item 2, $\abs{\Orth(q)}$ is that of @prop:coble-discriminant-group and $\abs{\rho\pqty{\Stab_{\Orth(B)}(v)}}=\abs{\Orth(q)}/527$ is @lem:cusp-vector-stabilizer-image(1) together with the class count of @lem:isotropic-classes-lift(2), namely $89\,181\,388\,800$.
+
+*The groups of item 3.* The group $\Orth(T_\Co)$ is transitive on the primitive isotropic vectors (@thm:unpolarized-cusps), so its count is $1$; that is the group of $F^{\mathrm{un}}_\Co=\bD(T_\Co)/\Orth(T_\Co)$, the quotient in which the moduli space $\mcm_\Co$ of Coble surfaces sits as an open subset [@DK13, (3.6), Prop. 3.2, p. 513]. The group $\Gamma_\Co$ is the monodromy group of the family of unpolarized Coble surfaces, and $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ is @conj:gamma-co-stable and nothing else (@def:gamma-co-groups, @rmk:gamma-co-status), so the count for $\fco$ is conditional on it. The group $\Gamma_{\Co,2}=R_{\gent}$ is the image of a stabilizer in $\gent$ (@def:gamma-co-groups), which is neither of the two groups counted here, so the count above says nothing about its orbits.
+:::
+
+::: {.remark #rmk:coble-zero-cusp-reproduction title="The public record behind the two line rows"}
+
+The record is sage-extensions#357, closed at `4533f0fdbe`; its commit body is the run's evidence, and it is a computation record rather than a lattice-database card. Its two calls are `Tco.stable_orthogonal_group().isotropic_orbit_representatives(1)` and `Tco.stable_orthogonal_group().intersection(Tco.O_plus()).isotropic_orbit_representatives(1)`, and they returned $527$ representatives each, in $1934.1$ s and $294.0$ s, every representative a primitive isotropic vector of divisor $2$ with a nonzero divided class.
+
+On the same lattice the record checks the hypotheses that @lem:isotropic-classes-lift and @lem:cusp-vector-stabilizer-image prove, at the representative of the one $\Orth(T_\Co)$-orbit of primitive isotropic vectors: the split-signature witness held ($46.9$ s), the complement's discriminant surjectivity held ($29.3$ s), the divided class of that vector was nonzero, and the two line-stabilizer images returned $([f_2],\text{False})$ and $([f_2],\text{True})$, in $1092.7$ s and $224.2$ s.
+
+It names the provider revisions `a5fa20dc63` and `1ae9568197` and the port pinned at `991b88b0`, and the test that accompanies the two rows asserts what the construction guarantees for every output --- that each representative is a primitive isotropic line of $T_\Co$, and that the second row has at least as many orbits as the first, the second group being the smaller --- and not the count, which no card holds yet.
+:::
+
 ::: {.proposition #prop:coble-planecusp-finite title="The isotropic subgroups of order $4$ of $A_{T_\Co}$"}
 Let $B$, $T_\Co = B(2)$, $\rho$, $q$ and $A = A_{T_\Co}$ be as in this section, and let $P\subset B$ be a primitive isotropic plane.
 
@@ -1388,11 +1433,11 @@ $$
 \bqty{\Orth(K) : G^+} = 696\,729\,600 ;
 $$
 
-4. the element $\id_{U_1}\oplus(-\id_K)$ lies in $\ker\rho_{T_\Co}$ and outside $\Orth^+(T_\Co)$, so the $\widetilde\Orth(T_\Co)$-orbit of $e_1$ is a single $\widetilde\Orth^+(T_\Co)$-orbit, and since
+4. the element $\id_{U_1}\oplus(-\id_K)$ lies in $\ker\rho_{T_\Co}$ and outside $\Orth^+(T_\Co)$, so the $\widetilde\Orth(T_\Co)$-orbit of $e_1$ is a single $\widetilde\Orth^+(T_\Co)$-orbit, and the index
 $$
-\frac{\abs{\Orth(q)}}{\abs{\rho(S)}} = \frac{46\,998\,591\,897\,600}{89\,181\,388\,800} = 527 = 527\,c ,
+\frac{\abs{\Orth(q)}}{\abs{\rho(S)}} = \frac{46\,998\,591\,897\,600}{89\,181\,388\,800} = 527 = 527\,c
 $$
-$\widetilde\Orth^+(T_\Co)$ has $527$ orbits of primitive isotropic vectors, one per nonzero isotropic class.
+is the count of @thm:coble-zero-cusp-count(2): the orbit of $e_1$ is the one over $[e_1/2]$, and $c = 1$ is the index-one fibre of that theorem read from the cusp lattice.
 :::
 
 ::: {.proof}
@@ -1418,7 +1463,7 @@ Hence $c = \abs{\rho(W)}\cdot\abs{\rho(\ker\pi)}/\abs{\rho(S)} = 348\,364\,800\c
 So $G = \set{\pm1}\cdot G^+$ as subgroups of $\Orth(K) = \set{\pm1}\times\Orth^+(K)$, and the two indices in (3) follow from (2).
 
 (4) The element $g$ lies outside $\Orth^+(T_\Co)$, since it reverses the plane spanned by the positive directions of $U_1$ and of $K$, while it does lie in the discriminant kernel; hence the stabilizer in $\widetilde\Orth(T_\Co)$ of $e_1$ is not contained in $\widetilde\Orth^+(T_\Co)$ and the two groups have the same orbit on $e_1$.
-The orbit count then follows from $\rho$ onto $\Orth(q)$ (@thm:two-elementary-surjectivity): the $\ker\rho$-orbits inside the orbit of $e_1$ are in bijection with $\Orth(q)/\rho(S)$, of order $527$.
+The index $\abs{\Orth(q)}/\abs{\rho(S)}$ is the count of @thm:coble-zero-cusp-count(2), the $\ker\rho$-orbits inside the orbit of $e_1$ being in bijection with $\Orth(q)/\rho(S)$ by $\rho$ onto $\Orth(q)$ (@thm:two-elementary-surjectivity); so $c = 1$ says that the fibre over $[e_1/2]$ is one orbit, which is @lem:cusp-vector-stabilizer-image(1) again.
 :::
 
 ::: {.theorem #thm:plane-fibre title="The plane fibre, the plane classes and the $1$-cusp count of the stable quotient"}
@@ -1454,7 +1499,7 @@ Let $\widetilde\Orth^+(T_\Co) = \widetilde\Orth^+(T_\Co)$. Each isotropic subgro
 
 ::: {.proof}
 Write $J = [P/2]$ with $P = \langle e_1,e_2\rangle$ a primitive isotropic plane of $B$. By @prop:coble-planecusp-finite(1), the three nonzero elements of $J$ are the classes of $\tfrac12 e_1$, $\tfrac12 e_2$ and $\tfrac12(e_1+e_2)$, the classes of the primitive isotropic vectors $e_1$, $e_2$, $e_1+e_2$ of $T_\Co$, each of divisibility $2$.
-By @thm:plane-half-index(4), the primitive isotropic vectors of $T_\Co$ with one nonzero isotropic class form one $\widetilde\Orth^+(T_\Co)$-orbit, so each of the three classes is one $0$-cusp.
+By @thm:coble-zero-cusp-count, parts 1 and 2, the primitive isotropic vectors of $T_\Co$ in one nonzero isotropic class form one $\widetilde\Orth^+(T_\Co)$-orbit, so each of the three classes is one $0$-cusp.
 For a nonzero isotropic class $u$, the subgroups $J$ that contain $u$ are the subgroups $\langle u,v\rangle$ with $v$ isotropic in $u^\perp\setminus\langle u\rangle$. By @prop:coble-planecusp-finite(3) there are $270$ such $v$, and each subgroup contains two of them, so $u$ lies in $135$ subgroups. This agrees with the double count $23\,715\cdot3/527 = 135$.
 :::
 

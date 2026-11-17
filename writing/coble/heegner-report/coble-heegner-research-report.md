@@ -1316,7 +1316,7 @@ Let $\Gamma$ be a group with $\ker\rho_{T_\Co}\subseteq\Gamma\subseteq\Orth(T_\C
 3. The map $\Gamma(L\subset P)\mapsto H\cdot(J(P),s(P),[v_L/2])$, with $v_L$ a primitive vector of $L$, is a bijection from the $\Gamma$-orbits of flags of a primitive isotropic line in a primitive isotropic plane onto the $H$-orbits of triples $(J,s,c)$ with $c$ a nonzero element of $J$.
 4. Parts 1–3 hold with $\Gamma\intersect\Orth^+(T_\Co)$ in place of $\Gamma$.
 
-For $\widetilde\Orth^+(T_\Co) = \ker\rho_{T_\Co}\intersect\Orth^+(T_\Co)$ the three counts are $527$, $8\cdot 23\,715 = 189\,720$ and $3\cdot 189\,720 = 569\,160$.
+For $\widetilde\Orth^+(T_\Co) = \ker\rho_{T_\Co}\intersect\Orth^+(T_\Co)$ the three counts are $527$ (@thm:coble-zero-cusp-count(2)), $8\cdot 23\,715 = 189\,720$ and $3\cdot 189\,720 = 569\,160$.
 For $\rho_{T_\Co}^{-1}(G_\Co)$ they are $4$, $7$ and $13$.
 :::
 
@@ -2398,7 +2398,7 @@ The table lists each statement, whether it is proved, and the section that prove
 | Equality of four arithmetic groups | required theorem | @sec-four-groups |
 | Full orthogonal stabilizer exact sequence | established lattice lemma | @sec-stabilizer-sequence |
 | Unpolarized cusp count | established with standard lattice input | @sec-unpolarized-cusps |
-| Polarized cusp count: $527$ $0$-cusps and $189\,720$ $1$-cusps | established | @sec-finite-orbits |
+| Stable cusp count: $527$ $0$-cusps and $189\,720$ $1$-cusps | established; the $0$-cusp count is @thm:coble-zero-cusp-count(2) | @sec-finite-orbits |
 | Finite $O(A)$ orbit tables | established computation | @sec-finite-orbits |
 | Unpolarized Coxeter chamber | established | @sec-unpolarized-coxeter |
 | Polarized wall-slice arrangements | established computations | @sec-wall-slices |

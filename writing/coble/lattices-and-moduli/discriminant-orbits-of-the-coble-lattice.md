@@ -268,7 +268,7 @@ By @thm:coble-isotropic-class-orbits, the nonzero isotropic classes form a singl
 
 Let $B = U\oplus U\oplus\latI_{0,7}$ and $T_\Co = B(2)$ as in @prop:tco-split-maximal, and let $e, f$ be the isotropic basis vectors of the first hyperbolic summand of $B$, so that in $T_\Co$ they are primitive isotropic vectors with $e\cdot f = 2$.
 Then no $g\in\widetilde\Orth^+(T_\Co)$ satisfies $g(\ZZ e) = \ZZ f$.
-So $\Orth^+(T_\Co)$ is transitive on the primitive isotropic vectors of $T_\Co$ (@thm:unpolarized-cusps) while the stable group $\widetilde\Orth^+(T_\Co)$ is not, and the Baily--Borel compactification of $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ has at least two $0$-cusps; the same holds for $\fco$ if @conj:gamma-co-stable holds.
+So $\Orth^+(T_\Co)$ is transitive on the primitive isotropic vectors of $T_\Co$ (@thm:unpolarized-cusps) while the stable group $\widetilde\Orth^+(T_\Co)$ is not: $\ZZ e$ and $\ZZ f$ lie in different $\widetilde\Orth^+(T_\Co)$-orbits. Those two are the orbits of the classes $[e/2]$ and $[f/2]$, and the orbits of the stable group are indexed by the $527$ nonzero isotropic classes of $A_{T_\Co}$ (@thm:coble-zero-cusp-count(2)); hence $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ has exactly $527$ $0$-cusps, and $\fco$ has $527$ of them under @conj:gamma-co-stable.
 :::
 
 ::: {.proof}

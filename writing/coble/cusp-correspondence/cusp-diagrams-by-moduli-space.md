@@ -95,7 +95,7 @@ The unique maximal parabolic subdiagram $\wB_7(2)$ of $(9, 9, 1)_1$, correspondi
 
 By @thm:coble-cusp-chamber, exactly one of the nine one-node deletions of the Coxeter diagram $G_{(9, 9, 1)_1}$ is parabolic, and it has type $\tilde B_7(2)$ (@fig-coble-cusp-9-9-1-parabolics).
 So, for the group $\Orth^+(T_\Co)$, the $0$-cusp represented by $v_0$ is incident to exactly one $1$-cusp, and its boundary lattice is $(7,7,1)_0$.
-For the stable group $\widetilde\Orth^+(T_\Co)$, the primitive isotropic lines of $T_\Co$ form $527$ orbits, one for each nonzero isotropic class of $A_{T_\Co}$ (@thm:cusp-lifting).
+For the stable group $\widetilde\Orth^+(T_\Co)$, the primitive isotropic lines of $T_\Co$ form $527$ orbits, one for each nonzero isotropic class of $A_{T_\Co}$ (@thm:coble-zero-cusp-count(2)).
 At cusp $2$ of $\fentwo$, the facet of the unique white node $r_{10}$ has the nine-wall diagram $G_{(9,9,1)_1}$ with the induced bond $8-9$ double (@prop:facet-angles-aegs), and all nine white candidates of [@AEGS25], Figures 7--8, have perpendicular lattice $T_\Co$ (@prop:cusp-white-root-complements).
 
 :::

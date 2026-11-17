@@ -26,7 +26,7 @@ $$
 v_0^{\perp T_{\Co}}/\generators{v_0} \cong (9,9,1)_1 \cong \generators{2} \oplus E_{8}(2)
 $$
 
-The group $\widetilde\Orth^+(T_\Co)$ is not transitive on the primitive isotropic vectors (@lem:stable-orthogonal-not-transitive); it has $527$ orbits of them, one for each nonzero isotropic class of $A_{T_\Co}$ (@thm:cusp-lifting).
+The group $\widetilde\Orth^+(T_\Co)$ is not transitive on the primitive isotropic vectors (@lem:stable-orthogonal-not-transitive); it has $527$ orbits of them, one for each nonzero isotropic class of $A_{T_\Co}$, and the discriminant kernel has the same orbits (@thm:coble-zero-cusp-count(2)).
 This $0$-cusp $v_0$ is incident to one $\Orth^+(T_\Co)$-orbit of $1$-cusps, represented by an isotropic plane $J = \generators{v_0, v_1}$ with
 
 $$

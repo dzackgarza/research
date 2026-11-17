@@ -140,8 +140,8 @@ Four groups act on the period domain of the Coble lattice, and every statement a
 | --- | --- | --- |
 | $\Gamma^{\mathrm{un}}_\Co = \Orth(T_\Co)$ | the moduli space of Coble surfaces is an open subset of $\bD(N)/\Orth(N)$, $N = \generators{2}\oplus E(2) = T_\Co$ | [@DK13, (3.6), Prop. 3.2, p. 513] |
 | $\Gamma_\Co$ | the monodromy group of the family of unpolarized Coble surfaces, which the family of unpolarized Enriques surfaces with monodromy group $\Gamma_\En = \widetilde\Orth^+(T_\En)$ induces | @def:gamma-co-groups |
-| $\Gamma_{\Co,2} = R_{\Gent}$ | the image of $\Stab_{\Gent}(\delta)$ in $\Orth(\delta^{\perp})$, for $\delta$ the $(-2)$-vector of $T_\En$ with $\delta^{\perp T_\En} = T_\Co$ | [@AEGS25, Def. 2.6], [@Ste91, Prop. 2.7] |
+| $\Gamma_{\Co,2} = R_{\gent}$ | the image of $\Stab_{\gent}(\delta)$ in $\Orth(\delta^{\perp})$, for $\delta$ the $(-2)$-vector of $T_\En$ with $\delta^{\perp T_\En} = T_\Co$ | [@AEGS25, Def. 2.6], [@Ste91, Prop. 2.7] |
 | $\widetilde\Orth^+(T_\Co)$ | the stable subgroup $\Orth^+(T_\Co)\intersect\ker\bar\rho$, equal to the image of $\Stab_{\Gamma_\En}(\delta)$ (@prop:gamma-co-images(1)) | [@DK13, (2.1)] |
 
 The equality $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ is @conj:gamma-co-stable; neither inclusion is proved.
-The number of orbits on the primitive isotropic vectors of $T_\Co$ depends on the group: one for $\Orth(T_\Co)$ (@thm:unpolarized-cusps); $527$ for the stable subgroup (@thm:cusp-lifting); for $\Gamma_{\Co,2}$, a count not computed here; for $\Gamma_\Co$, the count $527$ if @conj:gamma-co-stable holds. So a count of $0$-cusps names its group.
+The number of orbits on the primitive isotropic vectors of $T_\Co$ depends on the group: one for $\Orth(T_\Co)$ (@thm:unpolarized-cusps); $527$ for the discriminant kernel and for the stable subgroup (@thm:coble-zero-cusp-count(2)); for $\Gamma_{\Co,2}$, a count not computed here; for $\Gamma_\Co$, the count $527$ if @conj:gamma-co-stable holds. So a count of $0$-cusps names its group.
