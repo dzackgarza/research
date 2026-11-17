@@ -339,6 +339,20 @@ The kernel inclusion $\ker\rho_{T_\Co}\subseteq\Gamma$ is immediate from the def
 
 The five orbits of $G_\Co$ on *undecorated* finite isotropic planes in @tbl-finite-plane-orbits are not five integral plane orbits: the integral fibre over each finite plane has eight star choices by @lem:plane-stars, and the arithmetic group acts on those choices. In particular the seven integral plane orbits above do not follow from the five-row table without this stabilizer-image calculation. These statements concern $\rho^{-1}(G_\Co)$, identified with $\Gamma_{\Co,2}$ in @prop:coble-cong-point-stabilizer, and not the geometric monodromy group $\Gamma_\Co$; the latter's equality with the stable group is @conj:gamma-co-stable.
 
+The projection from integral flag orbits to integral plane orbits has the following fibres, computed by forgetting $c$ in the finite triples $(J,s,c)$. The entries in the last column are the sizes of the finite $G_\Co$-orbits of triples above the corresponding orbit of pairs, not counts of integral flags.
+
+| Size of the finite orbit of $(J,s)$ | Number of flag orbits above it | Sizes of the finite orbits of $(J,s,c)$ |
+| ---: | ---: | --- |
+| $2160$ | $3$ | $2160,2160,2160$ |
+| $3150$ | $1$ | $9450$ |
+| $7560$ | $2$ | $7560,15120$ |
+| $9450$ | $1$ | $28350$ |
+| $22680$ | $2$ | $22680,45360$ |
+| $69120$ | $2$ | $69120,138240$ |
+| $75600$ | $2$ | $75600,151200$ |
+
+For each row, the sizes of the triple orbits sum to three times the size of the pair orbit, since each $J$ has three nonzero elements. The computation `computations/reports/coble_gco_plane-orbits.py` now checks both that every triple orbit projects to one pair orbit and that this equality holds for each of the seven rows; the output is retained in `computations/reports/coble_gco_plane-orbits-run.txt`. Thus the flag-orbit count $3+1+2+1+2+2+2=13$ is verified fibre by fibre, independently of the public endpoint-incidence count.
+
 ::: {.definition #def:stabilizer-congruence-data title="The congruence data of a lattice stabilizer"}
 
 Let $V$ be a finite-dimensional vector space over $\bQ$ with a nondegenerate symmetric bilinear form $\beta$.

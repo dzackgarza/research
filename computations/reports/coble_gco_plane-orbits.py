@@ -94,3 +94,19 @@ assert sum(len(o) for o in decorated_orbits) == 8 * len(PLANES)
 assert sum(len(o) for o in flag_orbits) == 24 * len(PLANES)
 print("star-decorated plane orbits:", len(decorated_orbits), sorted(len(o) for o in decorated_orbits))
 print("star-decorated flag orbits:", len(flag_orbits), sorted(len(o) for o in flag_orbits))
+
+# Each integral plane orbit contributes between one and three flag orbits.
+# The map forgetting c is equivariant, so an entire flag orbit lies above
+# exactly one decorated-plane orbit. Count its fibres without relying on
+# equality of the total number of flag orbits and endpoint-incidence edges.
+plane_orbit_index = {d: i for i, o in enumerate(decorated_orbits) for d in o}
+flags_over_plane_orbit = {i: [] for i in range(len(decorated_orbits))}
+for o in flag_orbits:
+    i = plane_orbit_index[next(iter(o))[:2]]
+    assert all(plane_orbit_index[f[:2]] == i for f in o)
+    flags_over_plane_orbit[i].append(len(o))
+print("flag orbit sizes over each decorated-plane orbit:")
+for i, plane_orbit in sorted(enumerate(decorated_orbits), key=lambda t: len(t[1])):
+    sizes = sorted(flags_over_plane_orbit[i])
+    assert sum(sizes) == 3 * len(plane_orbit)
+    print("  plane size %6d: %d flag orbits, sizes %s" % (len(plane_orbit), len(sizes), sizes))
