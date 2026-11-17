@@ -2,7 +2,11 @@
 
 Input: log of sage-extensions' coble_gamma_co_2_incidence_rows.py
 --rows Otilde,Otilde+ --lattice Tco. No finite enumeration substitutes
-for the integral witnesses in this check. When given a GitHub run ID,
+for the integral witnesses in this check. Strict edge rows additionally
+require an exact 11x11 integral transporter matrix, in the public T_Co
+basis, from the indexed line representative to the displayed flag line.
+For Otilde+ its positive-plane orientation is checked exactly.
+When given a GitHub run ID,
 require a successful completed run and fetch its actual log before auditing.
 The optional --class-only mode verifies the newer divided-class endpoint
 relation by integral cusp representatives and the proved lifting criterion;
@@ -32,7 +36,7 @@ EXPECTED = (569160, 527, 189720)
 VERTEX = re.compile(r"\[(Otilde\+?)\] (line|plane) cusp (\d+): (\(.*\))")
 EDGE = re.compile(
     r"\[(Otilde\+?)\] edge (\d+): L(\d+) < P(\d+); "
-    r"line=(\(\(.*?\),\)); plane=(\(\(.*?\)\))"
+    r"line=(\(\(.*?\),\)); plane=(\(\(.*?\)\)); transporter=(\[\[.*\]\])\s*$"
 )
 CLASS_EDGE = re.compile(r"\[(Otilde\+?)\] edge (\d+): L(\d+) < P(\d+)\s*$")
 DECIDED = re.compile(
@@ -97,6 +101,7 @@ def audit(path: Path, *, class_only: bool = False) -> None:
     vertex_classes = {label: {"line": {}, "plane": {}} for label in LABELS}
     integral_planes = {label: set() for label in LABELS}
     plane_bases = {label: {} for label in LABELS}
+    line_vectors = {label: {} for label in LABELS}
     plane_keys = {label: {} for label in LABELS}
     degrees = {label: (Counter(), Counter()) for label in LABELS}
     pairs = {label: set() for label in LABELS}
@@ -119,6 +124,7 @@ def audit(path: Path, *, class_only: bool = False) -> None:
                     assert len(v) == 11
                     assert gcd(*v) == 1 and pairing(v, v) == 0, (label, index, "line cusp")
                     vertex_classes[label][kind][index] = tuple(int(t) % 2 for t in v)
+                    line_vectors[label][index] = v
                 else:
                     p, q = coords
                     assert len(p) == len(q) == 11
@@ -157,7 +163,7 @@ def audit(path: Path, *, class_only: bool = False) -> None:
                         label, position, "primitive integral flag"
                     )
                 else:
-                    line_source, plane_source = match.groups()[4:]
+                    line_source, plane_source, transporter_source = match.groups()[4:]
                     (v,) = ast.literal_eval(line_source)
                     p, q = ast.literal_eval(plane_source)
                     assert len(v) == len(p) == len(q) == 11, (label, position, "rank")
@@ -182,6 +188,42 @@ def audit(path: Path, *, class_only: bool = False) -> None:
                     assert mod2_span(p, q) == vertex_classes[label]["plane"].get(plane_id), (
                         label, position, "plane orbit discriminant subgroup"
                     )
+                    rows = ast.literal_eval(transporter_source)
+                    assert len(rows) == 11 and all(len(row) == 11 for row in rows), (
+                        label, position, "integral transporter matrix shape"
+                    )
+                    assert all(type(x) is int for row in rows for x in row), (
+                        label, position, "integral transporter entries"
+                    )
+                    assert all(rows[i][j] % 2 == int(i == j)
+                               for i in range(11) for j in range(11)), (
+                        label, position, "transporter discriminant kernel"
+                    )
+                    columns = [tuple(rows[i][j] for i in range(11)) for j in range(11)]
+                    basis = [tuple(int(i == j) for i in range(11)) for j in range(11)]
+                    assert all(pairing(columns[i], columns[j]) == pairing(basis[i], basis[j])
+                               for i in range(11) for j in range(11)), (
+                        label, position, "transporter integral Gram"
+                    )
+                    source_line = line_vectors[label].get(line_id)
+                    assert source_line is not None and all(
+                        sum(rows[i][j] * source_line[j] for j in range(11)) == v[i]
+                        for i in range(11)
+                    ), (label, position, "transporter exact line-to-flag action")
+                    if label == "Otilde+":
+                        positive_0, positive_1 = basis[0], tuple(
+                            int(i in (1, 2)) for i in range(11)
+                        )
+                        images = [tuple(sum(rows[i][j] * w[j] for j in range(11))
+                                        for i in range(11))
+                                  for w in (positive_0, positive_1)]
+                        a = pairing(positive_0, images[0])
+                        b = pairing(positive_0, images[1])
+                        c = pairing(positive_1, images[0])
+                        d = pairing(positive_1, images[1])
+                        assert a * d - b * c > 0, (
+                            label, position, "positive real spinor orientation"
+                        )
                 assert position not in positions[label], (label, position)
                 positions[label].add(position)
                 pair = (line_id, plane_id)
@@ -225,7 +267,7 @@ def audit(path: Path, *, class_only: bool = False) -> None:
         print(f"{label}: {EXPECTED[1]} lines, {EXPECTED[2]} planes, "
               f"{EXPECTED[0]} distinct edges; degrees (1080,3); decided; "
               + ("class-only, no public integral edge transporters" if class_only
-                 else "public integral edge witnesses checked"))
+                 else "public integral kernel transporters checked"))
 
 
 if __name__ == "__main__":

@@ -24,6 +24,7 @@ def test_coble_kernel_audit_rejects_false_integral_incidence(tmp_path):
         p, tuple(a + b for a, b in zip(p, q))
     )
     assert audit.plane_plucker_key(p, q) != audit.plane_plucker_key(p, outside)
+    identity = [[int(i == j) for j in range(11)] for i in range(11)]
 
     duplicate = tmp_path / "duplicate.log"
     duplicate.write_text(
@@ -54,7 +55,8 @@ def test_coble_kernel_audit_rejects_false_integral_incidence(tmp_path):
     mismatched_plane.write_text(
         f"[Otilde] line cusp 0: ({q},)\n"
         f"[Otilde] plane cusp 0: ({p}, {q})\n"
-        f"[Otilde] edge 0: L0 < P0; line=({q},); plane=({p_other}, {q})\n"
+        f"[Otilde] edge 0: L0 < P0; line=({q},); plane=({p_other}, {q}); "
+        f"transporter={identity}\n"
     )
     with pytest.raises(AssertionError, match="edge plane differs from indexed integral plane"):
         audit.audit(mismatched_plane)
@@ -73,3 +75,46 @@ def test_coble_kernel_audit_rejects_false_integral_incidence(tmp_path):
     # one-edge fixture must still fail the full two-row completion criterion.
     with pytest.raises(AssertionError, match="final successful two-row summary"):
         audit.audit(valid_edge, class_only=True)
+
+    strict_valid = tmp_path / "strict-valid.log"
+    strict_valid.write_text(
+        f"[Otilde] line cusp 0: ({q},)\n"
+        f"[Otilde] plane cusp 0: ({p}, {q})\n"
+        f"[Otilde] edge 0: L0 < P0; line=({q},); plane=({p}, {q}); "
+        f"transporter={identity}\n"
+    )
+    with pytest.raises(AssertionError, match="final successful two-row summary"):
+        audit.audit(strict_valid)
+
+    missing_transporter = tmp_path / "missing-transporter.log"
+    missing_transporter.write_text(
+        f"[Otilde] line cusp 0: ({q},)\n"
+        f"[Otilde] plane cusp 0: ({p}, {q})\n"
+        f"[Otilde] edge 0: L0 < P0; line=({q},); plane=({p}, {q})\n"
+    )
+    with pytest.raises(AssertionError, match="unparsed public row"):
+        audit.audit(missing_transporter)
+
+    negative_spinor = [row[:] for row in identity]
+    negative_spinor[0][0] = -1  # positive-norm reflection, kernel modulo 2
+    wrong_spinor = tmp_path / "wrong-spinor.log"
+    wrong_spinor.write_text(
+        f"[Otilde+] line cusp 0: ({q},)\n"
+        f"[Otilde+] plane cusp 0: ({p}, {q})\n"
+        f"[Otilde+] edge 0: L0 < P0; line=({q},); plane=({p}, {q}); "
+        f"transporter={negative_spinor}\n"
+    )
+    with pytest.raises(AssertionError, match="positive real spinor orientation"):
+        audit.audit(wrong_spinor)
+
+    wrong_gram = [row[:] for row in identity]
+    wrong_gram[3][3] = -1  # does not preserve E8(-2) off-diagonal pairings
+    wrong_gram_log = tmp_path / "wrong-gram.log"
+    wrong_gram_log.write_text(
+        f"[Otilde] line cusp 0: ({q},)\n"
+        f"[Otilde] plane cusp 0: ({p}, {q})\n"
+        f"[Otilde] edge 0: L0 < P0; line=({q},); plane=({p}, {q}); "
+        f"transporter={wrong_gram}\n"
+    )
+    with pytest.raises(AssertionError, match="transporter integral Gram"):
+        audit.audit(wrong_gram_log)
