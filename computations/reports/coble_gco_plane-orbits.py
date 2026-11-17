@@ -218,6 +218,17 @@ if globals().get("VERIFY_PUBLIC_PLANES", False):
         characteristic_star = frozenset(mask ^ j for mask in star_masks for j in span)
         assert len(characteristic_star) == 28
         assert characteristic_star in stars(J)
+        # Signed permutations are exactly the orthogonal norm-minus-one
+        # bases of -I_7. Verify basis independence constructively, not only
+        # through the abstract uniqueness of the seven norm-minus-one lines.
+        altered_units = matrix(ZZ, [(-1 if t % 2 else 1) * negative_units.row(6 - t)
+                                    for t in range(7)])
+        assert altered_units * B * altered_units.transpose() == -matrix.identity(ZZ, 7)
+        altered_masks = [sum(
+            (int(sum(altered_units[t, k + 1] for t in range(7) if t != i)) % 2) << k
+            for k in range(10)
+        ) for i in range(7)]
+        assert frozenset(mask ^ j for mask in altered_masks for j in span) == characteristic_star
         return J, characteristic_star
 
     print("integral public plane -> finite decorated-plane orbit size:")
