@@ -30,9 +30,11 @@ assert all(pair(x,x)==-1 for x in d)
 assert all(pair(x,y)==0 for x,y in combinations(d,2))
 assert all(pair(x,y)==0 for x in d for y in (e1,f1,e2,f2))
 base=[(e1,e2)]
+seed_roots=[]
 for i in range(7):
  r=2*(e1+f1)+sum((d[j] for j in range(7) if j!=i),vector(ZZ,11))
  assert pair(r,r)==2
+ seed_roots.append(r)
  base.append((reflect(e1,r),reflect(e2,r)))
 J0=plane_key(e1,e2)
 assert len(base)==8 and all(plane_key(a,b)==J0 and primitive(a,b) and pair(a,a)==pair(a,b)==pair(b,b)==0 for a,b in base)
@@ -64,6 +66,7 @@ for J in sorted(parent):
 output=folder/'coble_plane_integral_star_section.json'
 output.write_text(json.dumps({'source':'coble_singular_integral_representatives.json',
  'base_planes_standard':[[list(map(int,to_standard*a)),list(map(int,to_standard*b))] for a,b in base],
+ 'seed_reflection_roots_standard':[list(map(int,to_standard*r)) for r in seed_roots],
  'base_stars_quotient_classes':[sorted(s) for s in stars],
  'flag_line_coefficients':[list(c) for c in flag_coefficients],
  'finite_plane_transports':rows},separators=(',',':'))+'\n')

@@ -14,6 +14,7 @@ def test_all_coble_integral_plane_star_words():
     change = data["standard_to_diagonal"]
     roots = data["generator_roots_standard"]
     base = section["base_planes_standard"]
+    seed_roots = section["seed_reflection_roots_standard"]
     stars = section["base_stars_quotient_classes"]
     flag_coefficients = section["flag_line_coefficients"]
     rows = section["finite_plane_transports"]
@@ -32,12 +33,27 @@ def test_all_coble_integral_plane_star_words():
         return tuple(sorted((x, y, x ^ y)))
 
     assert len(base) == 8 and len(rows) == 23715
+    assert len(seed_roots) == 7
     assert len({tuple(row["finite_plane_masks"]) for row in rows}) == 23715
     assert len({tuple(star) for star in stars}) == 8
     root_masks = [mask(root) for root in roots]
     assert flag_coefficients == [[1, 0], [0, 1], [1, 1]]
     assert len(rows) * len(base) * len(flag_coefficients) == 569160
     base_key = key(*base[0])
+    def quotient_class(x):
+        return min(x, x ^ base_key[0], x ^ base_key[1], x ^ base_key[2])
+
+    for index, root in enumerate(seed_roots, start=1):
+        assert pairing(root, root) == 2
+        for source, target in zip(base[0], base[index]):
+            coefficient = pairing(source, root)
+            assert [x - coefficient * y for x, y in zip(source, root)] == target
+        assert mask(root) not in base_key
+        root_mask = mask(root)
+        reflected_star = sorted({quotient_class(
+            x ^ (root_mask if (x & root_mask).bit_count() % 2 else 0))
+            for x in stars[0]})
+        assert reflected_star == stars[index]
     for a, b in base:
         assert key(a, b) == base_key
         assert pairing(a, a) == pairing(a, b) == pairing(b, b) == 0
