@@ -182,10 +182,24 @@ all nine integral representatives failed after the first: the provider's
 `self._section.letters_of(element)` into `_transported`, whose loop expects
 `(label, exponent)` pairs, raising `TypeError: cannot unpack non-iterable int
 object`. This precise provider defect is recorded on sage-extensions#294.
-Thus neither the successful diagnostic orbit count nor the failed transport
-is presented as successful completion of the separate top-level public
-rank-two acceptance. The mathematical nine-orbit theorem and the executable
-public verification remain distinct obligations.
+The precise consumer-format correction was then independently executed as
+an **uncommitted runtime-only diagnostic**, without modifying the provider:
+`_transported` was given the signed-integer word format returned by
+`_FiniteImageWordSection.letters_of` (a positive index selects its integral
+generator, a negative index its inverse), while the existing `plane_of`
+finite-class verification remained intact. The same exact subgroup orbit
+computation returned **nine** orbits, and this time **all nine actual
+integral plane representatives were materialized**, each passing the
+public `is_primitive()` test. The executed transcript is
+`/tmp/coble_signed_word_probe.log`; the isolated runtime patch is
+`.tmp/coble_signed_word_probe.py` (git-ignored). This confirms the
+provider consumer-format defect and its correction, but the correction
+is not yet integrated into the provider source or its tests.
+
+Neither this runtime-only successful diagnostic nor the earlier failed
+transport is presented as completion of the separate top-level public
+rank-two acceptance. The mathematical nine-orbit theorem and the
+required executable public verification remain distinct obligations.
 
 ## The lattice-side owners, and the exact revisions of the one call that fails
 
