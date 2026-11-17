@@ -47,6 +47,17 @@ def audit_integral_shard(path: Path, *, allow_incomplete: bool = False) -> int:
               for r in lines["representatives"]}
     roots = [tuple(r) for r in lines["generator_roots_standard"]]
     seeds = planes["base_planes_standard"]
+    assert len(source) == len(lines["representatives"]) == 527
+    assert len(planes["finite_plane_transports"]) == 23715 and len(seeds) == 8
+    finite_keys = [tuple(r["finite_plane_masks"])
+                   for r in planes["finite_plane_transports"]]
+    assert len(set(finite_keys)) == 23715
+    assert all(len(key) == 3 and tuple(sorted(key)) == key and len(set(key)) == 3
+               for key in finite_keys)
+    class_degrees = Counter(c for key in finite_keys for c in key)
+    assert set(class_degrees) == set(source)
+    assert set(class_degrees.values()) == {135}
+    assert sum(class_degrees.values()) * len(seeds) == EXPECTED[0]
     change = lines["standard_to_diagonal"]
     basis = [tuple(int(i == j) for i in range(11)) for j in range(11)]
     digest = hashlib.sha256()
