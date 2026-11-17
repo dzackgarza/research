@@ -18,7 +18,9 @@ jobs:
       matrix:
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
     container:
-      image: ghcr.io/dzackgarza/sage:develop
+      # Pin the exact image used by all 32 successful shard jobs in run
+      # 44170494099; the moving develop tag is not a reproducible runtime.
+      image: ghcr.io/dzackgarza/sage@sha256:12e5716067b5cf2fd34c00e9ba97e9c09d51a70664de817f4ae29743b64c5f61
       credentials:
         username: ${{ github.actor }}
         password: ${{ github.token }}
