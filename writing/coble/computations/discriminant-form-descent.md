@@ -84,18 +84,18 @@ Let $L$ be even and nondegenerate, and let $Q=\rho_{L,q}(\Orth(L))$. Fix an actu
 $$ F=\Stab_Q(D),\qquad \mathcal G_D=\rho_{L,q}^{-1}(F). $$
 If the orbit-fibre $\mathcal F_{\mathcal X}(D)=\{y\in\mathcal X:D(y)=D\}$ is nonempty, then $\mathcal G_D$ acts transitively on it. Thus $\mathcal F_{\mathcal X}(D)$ is the single orbit $\mathcal G_D\cdot x$, even when several integral objects of this fixed type have the same finite datum.
 
-For $\Gamma\leq\Orth(L)$, write $\mathcal G_D(x)=\Stab_{\mathcal G_D}(x)$. The $\Gamma$-orbits in this fibre are exactly
+For $\Gamma\leq\Orth(L)$, put $\Gamma_D=\Gamma\cap\mathcal G_D$ and write $\mathcal G_D(x)=\Stab_{\mathcal G_D}(x)$. The $\Gamma_D$-orbits in this fibre are exactly
 $$ (\Gamma\cap\mathcal G_D)\bigl\backslash\mathcal G_D\bigr/\mathcal G_D(x). $$
 In particular, if $K=\ker\rho_{L,q}\subseteq\Gamma$, set $H=\rho_{L,q}(\Gamma)$ and $S=\rho_{L,q}(\Stab_{\Orth(L)}(x))$. The orbit count is
 $$ (H\cap F)\bigl\backslash F\bigl/S. $$
-For any translated datum $qD$ with $q\in Q$ and $\widetilde q\in\Orth(L)$ a lift of $q$, the fibre over $qD$ is $\widetilde q\,\mathcal F_{\mathcal X}(D)$ and, under the same kernel hypothesis, its $\Gamma$-orbits are
+For any translated datum $qD$ with $q\in Q$ and $\widetilde q\in\Orth(L)$ a lift of $q$, the fibre over $qD$ is $\widetilde q\,\mathcal F_{\mathcal X}(D)$ and, under the same kernel hypothesis, its $\Gamma_{qD}=\Gamma\cap\rho^{-1}(\Stab_Q(qD))$-orbits are
 $$ (q^{-1}Hq\cap F)\bigl\backslash F\bigl/S. $$
 :::
 
 ::: {.proof}
 Let $y\in\mathcal F_{\mathcal X}(D)$. Since $\mathcal X$ is one $\Orth(L)$-orbit, some $g\in\Orth(L)$ satisfies $gx=y$. Equivariance gives $\rho_{L,q}(g)D=D$, hence $g\in\mathcal G_D$. Therefore $\mathcal G_D$ acts transitively on the fibre.
 
-For $\Gamma$, the left action of $\Gamma\cap\mathcal G_D$ on the fibre has stabilizer $\mathcal G_D(x)$ on the right, so its orbits are the displayed double cosets. If $K\subseteq\Gamma$, reduction modulo $K$ is faithful on these double cosets: the group $\mathcal G_D$ is $\rho^{-1}(F)$, $\Gamma\cap\mathcal G_D$ is $\rho^{-1}(H\cap F)$, and $\mathcal G_D(x)$ maps to $S$. Conjugation by $\widetilde q$ identifies the new fibre with the old one and replaces $H$ by $q^{-1}Hq$; the order of a double-coset family is therefore independent of the chosen representative and lift.
+The full group $\Gamma$ need not preserve the fibre over $D$. Its subgroup $\Gamma_D=\Gamma\cap\mathcal G_D$ does, and the transitive $\mathcal G_D$-action on that fibre has stabilizer $\mathcal G_D(x)$. Thus the $\Gamma_D$-orbits are the displayed double cosets. If $K\subseteq\Gamma$, reduction modulo $K$ is faithful on these double cosets: the group $\mathcal G_D$ is $\rho^{-1}(F)$, $\Gamma\cap\mathcal G_D$ is $\rho^{-1}(H\cap F)$, and $\mathcal G_D(x)$ maps to $S$. Conjugation by $\widetilde q$ identifies the new fibre with the old one and replaces $H$ by $q^{-1}Hq$; the order of a double-coset family is therefore independent of the chosen representative and lift. To classify the orbits of the **full** $\Gamma$ on $\mathcal X$, take one datum from each $H$-orbit on the finite data attained by $\mathcal X$ and use the corresponding fibre-orbit sets, as in @cor:descent-finite-orbit-sum.
 :::
 
 ::: {.corollary #cor:descent-finite-orbit-sum title="The sum over finite orbits"}
