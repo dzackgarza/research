@@ -367,3 +367,20 @@ def test_complete_single_plane_shard_is_independently_certified(tmp_path):
          "--shard", str(output)],
         cwd=folder.parents[1], capture_output=True, text=True, check=True,
     )
+    duplicate = tmp_path / "duplicate-class.jsonl.gz"
+    records[1] = dict(records[0], flag_index=1)
+    digest = hashlib.sha256()
+    with gzip.open(duplicate, "wt", encoding="utf-8") as stream:
+        stream.write(json.dumps(header, separators=(",", ":")) + "\n")
+        for row in records[:-1]:
+            encoded = json.dumps(row, separators=(",", ":")) + "\n"
+            stream.write(encoded)
+            digest.update(encoded.encode())
+        records[-1]["records_sha256"] = digest.hexdigest()
+        stream.write(json.dumps(records[-1], separators=(",", ":")) + "\n")
+    invalid = subprocess.run(
+        ["python3", str(folder / "coble_kernel_public_incidence_audit.py"),
+         "--shard", str(duplicate)],
+        cwd=folder.parents[1], capture_output=True, text=True,
+    )
+    assert invalid.returncode != 0 and "repeated line class" in invalid.stderr
