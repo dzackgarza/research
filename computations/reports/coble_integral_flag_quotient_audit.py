@@ -46,6 +46,20 @@ def main():
         for i, orbit in enumerate(finite["flag_orbits"])
     }
     assert len(set(endpoints.values())) == 13
+    # Independently recovered labels of the actual public Gamma_Co,2
+    # line/plane cusp representatives, not arbitrary finite orbit indices.
+    comparison = runpy.run_path(str(folder / "coble_gco_public_incidence_compare.py"))
+    assert len(comparison["star_matched_witnesses"]) == 1
+    line_map, plane_map = comparison["star_matched_witnesses"][0]
+    line_by_size = {size: i for i, size in enumerate(line_map)}
+    plane_by_size = {size: i for i, size in enumerate(plane_map)}
+    public_edges = comparison["public"]
+    public_endpoint_of = {
+        i: (line_by_size[line_size],
+            plane_by_size[len(finite["decorated_orbits"][plane_index])])
+        for i, (plane_index, line_size) in endpoints.items()
+    }
+    assert set(public_endpoint_of.values()) == public_edges
     # Convert the eleven diagonal coordinates of <1>+U+E8(-1) to
     # the ten U+E8(-1) coordinates of the independent finite orbit model.
     inverse = matrix(ZZ, lines["standard_to_diagonal"]).inverse()
@@ -77,6 +91,7 @@ def main():
         return mask
 
     counts = Counter()
+    public_counts = Counter()
     total = 0
     cached_index = None
     for path in args.shards:
@@ -110,6 +125,7 @@ def main():
                 assert endpoints[orbit] == (
                     finite["plane_orbit_index"][key[:2]], finite["size_of"][c])
                 counts[orbit] += 1
+                public_counts[public_endpoint_of[orbit]] += 1
                 total += 1
                 if args.limit is not None and total >= args.limit:
                     print("sampled integral flags:", total,
@@ -118,9 +134,12 @@ def main():
     assert total == 569160
     assert sorted(counts.values()) == sorted(sizes)
     assert set(counts) == set(range(13))
+    assert set(public_counts) == public_edges
+    assert sorted(public_counts.values()) == sorted(sizes)
     print("integral flags descended to thirteen G_Co orbits:",
           sorted(counts.values()))
     print("distinct line/plane quotient endpoints:", len(set(endpoints.values())))
+    print("public Gamma_Co,2 edge multiplicities:", sorted(public_counts.items()))
     print("exact integral flags classified:", total)
 
 
