@@ -287,18 +287,26 @@ if globals().get("VERIFY_PUBLIC_PLANES", False):
         assert decorated_plane_of_integral_rows(
             (-p[0], *p[1:]), (-q[0], *q[1:])
         ) == invariant
-        # Reflection in the first simple E8 root has square -2 and sends
-        # the first E8 coordinate x_0 to -x_0+x_2 in Sage's Cartan basis.
-        # Its mod-two action is exactly GENS[1]. Check equivariance of the
-        # canonical star under a genuinely nontrivial discriminant image.
-        reflected_p, reflected_q = list(p), list(q)
-        reflected_p[3] = -p[3] + p[5]
-        reflected_q[3] = -q[3] + q[5]
-        finite_reflection = GENS[1]
-        assert decorated_plane_of_integral_rows(reflected_p, reflected_q) == (
-            frozenset(finite_reflection[x] for x in invariant[0]),
-            frozenset(finite_reflection[x] for x in invariant[1]),
-        )
+        # The nine generators are the U-swap and eight E8 simple-root
+        # reflections. Compare their exact integral actions with *each*
+        # of the nine independently constructed finite transvections.
+        for generator_index, finite_reflection in enumerate(GENS):
+            reflected_p, reflected_q = list(p), list(q)
+            if generator_index == 0:
+                reflected_p[1], reflected_p[2] = p[2], p[1]
+                reflected_q[1], reflected_q[2] = q[2], q[1]
+            else:
+                root_index = generator_index - 1
+                adjacent = [b - 1 for a, b in E8_EDGES if a == generator_index]
+                adjacent += [a - 1 for a, b in E8_EDGES if b == generator_index]
+                for old, reflected in ((p, reflected_p), (q, reflected_q)):
+                    reflected[3 + root_index] = (
+                        -old[3 + root_index] + sum(old[3 + j] for j in adjacent)
+                    )
+            assert decorated_plane_of_integral_rows(reflected_p, reflected_q) == (
+                frozenset(finite_reflection[x] for x in invariant[0]),
+                frozenset(finite_reflection[x] for x in invariant[1]),
+            )
         orbit_size = finite_orbit_of[invariant]
         assert int(index) not in observed_sizes
         observed_sizes[int(index)] = orbit_size
@@ -308,7 +316,7 @@ if globals().get("VERIFY_PUBLIC_PLANES", False):
     print("all seven public integral planes occupy distinct finite decorated orbits:", True)
     print("canonical stars invariant under swap, shear and sign changes of all seven plane bases:", True)
     print("canonical stars invariant under discriminant-trivial positive-unit reflection:", True)
-    print("canonical stars equivariant under nontrivial E8 root reflection:", True)
+    print("canonical stars equivariant under all nine integral G_Co generators:", True)
 
     # The workflow returns a *separate integral flag witness* for each edge.
     # Classify that witness by its actual quotient star and divided line
