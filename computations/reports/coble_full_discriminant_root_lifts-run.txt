@@ -9,3 +9,4 @@ ten standard-basis integral roots: ((0, -1, -1, 2, 4, 5, 7, 6, 5, 3, 2), (0, -1,
 singular discriminant classes reached by integral root words: 527
 primitive integral isotropic vector representatives certified: 527
 sample integral transporter word (zero-based generator indices): (0, 4, 1, 7, 6)
+published exact integral representatives: computations/reports/coble_singular_integral_representatives.json

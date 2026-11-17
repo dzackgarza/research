@@ -15,6 +15,8 @@ Run with Sage:
 """
 from math import gcd, prod
 from collections import deque
+import json
+from pathlib import Path
 from sage.all import (ZZ, GF, CartanMatrix, PermutationGroup, block_diagonal_matrix,
                       diagonal_matrix, identity_matrix, matrix, vector)
 
@@ -181,3 +183,28 @@ print('ten standard-basis integral roots:', TEN_STANDARD_ROOTS)
 print('singular discriminant classes reached by integral root words:', len(parent))
 print('primitive integral isotropic vector representatives certified:', len(integral_vectors))
 print('sample integral transporter word (zero-based generator indices):', tuple(path))
+
+# Persist the complete finite-to-integral section, rather than only its
+# cardinality. All vectors are in the standard <1>+U+E8(-1) basis.
+rows = []
+for mask in sorted(integral_vectors):
+    word = []
+    y = mask
+    while y != base_singular:
+        y, i = parent[y]
+        word.append(i)
+    rows.append({
+        'mask_diagonal': mask,
+        'vector_standard': list(map(int, TO_STANDARD * integral_vectors[mask])),
+        'word_from_base': list(reversed(word)),
+    })
+certificate = {
+    'standard_gram': [list(map(int, row)) for row in B_STANDARD.rows()],
+    'base_mask_diagonal': base_singular,
+    'generator_roots_standard': [list(root) for root in TEN_STANDARD_ROOTS],
+    'representatives': rows,
+}
+output = Path('computations/reports/coble_singular_integral_representatives.json')
+output.write_text(json.dumps(certificate, indent=2) + '\n')
+assert len(rows) == 527 and len({r['mask_diagonal'] for r in rows}) == 527
+print('published exact integral representatives:', output)
