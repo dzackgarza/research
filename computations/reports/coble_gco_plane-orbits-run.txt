@@ -15,3 +15,12 @@ flag orbit sizes over each decorated-plane orbit:
   plane size  22680: 2 flag orbits, sizes [22680, 45360]
   plane size  69120: 2 flag orbits, sizes [69120, 138240]
   plane size  75600: 2 flag orbits, sizes [75600, 151200]
+endpoint incidence by decorated-plane orbit (vector orbit sizes):
+  plane size   2160: [(2, 1), (135, 1), (270, 1)]
+  plane size   3150: [(135, 1)]
+  plane size   7560: [(120, 1), (135, 1)]
+  plane size   9450: [(135, 1)]
+  plane size  22680: [(120, 1), (135, 1)]
+  plane size  69120: [(120, 1), (270, 1)]
+  plane size  75600: [(135, 1), (270, 1)]
+endpoint edges: 13 flag orbits: 13

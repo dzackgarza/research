@@ -110,3 +110,21 @@ for i, plane_orbit in sorted(enumerate(decorated_orbits), key=lambda t: len(t[1]
     sizes = sorted(flags_over_plane_orbit[i])
     assert sum(sizes) == 3 * len(plane_orbit)
     print("  plane size %6d: %d flag orbits, sizes %s" % (len(plane_orbit), len(sizes), sizes))
+
+# Endpoint incidence is the image of the flag-orbit set under the
+# equivariant projection (J,s,c) -> (orbit(J,s), orbit(c)).
+# Compute that image separately: equal total counts do not by themselves
+# imply that the projection is injective.
+incidence = {}
+for orbit in flag_orbits:
+    rep = next(iter(orbit))
+    endpoint = (plane_orbit_index[rep[:2]], size_of[rep[2]])
+    assert all((plane_orbit_index[f[:2]], size_of[f[2]]) == endpoint for f in orbit)
+    incidence[endpoint] = incidence.get(endpoint, 0) + 1
+print("endpoint incidence by decorated-plane orbit (vector orbit sizes):")
+for i, plane_orbit in sorted(enumerate(decorated_orbits), key=lambda t: len(t[1])):
+    edges = sorted((v, multiplicity) for (j, v), multiplicity in incidence.items() if j == i)
+    print("  plane size %6d: %s" % (len(plane_orbit), edges))
+print("endpoint edges:", len(incidence), "flag orbits:", len(flag_orbits))
+assert len(incidence) == len(flag_orbits) == 13
+assert all(multiplicity == 1 for multiplicity in incidence.values())

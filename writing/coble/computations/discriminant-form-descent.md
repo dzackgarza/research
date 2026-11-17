@@ -353,6 +353,20 @@ The projection from integral flag orbits to integral plane orbits has the follow
 
 For each row, the sizes of the triple orbits sum to three times the size of the pair orbit, since each $J$ has three nonzero elements. The computation `computations/reports/coble_gco_plane-orbits.py` now checks both that every triple orbit projects to one pair orbit and that this equality holds for each of the seven rows; the output is retained in `computations/reports/coble_gco_plane-orbits-run.txt`. Thus the flag-orbit count $3+1+2+1+2+2+2=13$ is verified fibre by fibre, independently of the public endpoint-incidence count.
 
+The same computation also projects each triple orbit to the pair consisting of its decorated-plane orbit and its nonzero-vector orbit. Label the four nonzero-vector orbits by their cardinalities $2,120,135,270$ from @tbl-finite-vector-orbits. The seven plane orbits, ordered by their cardinalities in the first column above, are incident to the following vector-orbit types:
+
+| Plane-orbit size | Incident vector-orbit sizes |
+| ---: | --- |
+| $2160$ | $2,135,270$ |
+| $3150$ | $135$ |
+| $7560$ | $120,135$ |
+| $9450$ | $135$ |
+| $22680$ | $120,135$ |
+| $69120$ | $120,270$ |
+| $75600$ | $135,270$ |
+
+Every one of these thirteen endpoint pairs is the image of exactly one triple orbit, as verified by the projection and its multiplicity check in the finite enumeration. Therefore the forgetful map from the thirteen integral flag orbits to the thirteen pairs of incident integral cusp orbits is a bijection for $\Gamma_{\Co,2}$. This equality is special to this computed subgroup: the general inequality of @prop:coble-flag-orbits-and-edges(3) does not assert injectivity for arbitrary arithmetic groups.
+
 ::: {.definition #def:stabilizer-congruence-data title="The congruence data of a lattice stabilizer"}
 
 Let $V$ be a finite-dimensional vector space over $\bQ$ with a nondegenerate symmetric bilinear form $\beta$.
