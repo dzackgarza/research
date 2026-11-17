@@ -203,7 +203,12 @@ def audit(path: Path, *, class_only: bool = False) -> None:
         )
         plane_multiplicities = Counter(vertex_classes[label]["plane"].values())
         assert len(plane_multiplicities) == 23715, (label, "finite isotropic planes")
-        assert set(plane_multiplicities.values()) == {8}, (label, "eight stars per finite plane")
+        # This verifies eight *integral representatives* per finite plane.
+        # Distinctness of their intrinsic quotient stars is a stronger
+        # assertion, not proved by counting or by distinct Pluecker keys.
+        assert set(plane_multiplicities.values()) == {8}, (
+            label, "eight integral plane representatives per finite plane"
+        )
         assert positions[label] == set(range(EXPECTED[0])), (label, "edge positions")
         assert len(pairs[label]) == EXPECTED[0], (label, "distinct edges")
         line_degrees, plane_degrees = degrees[label]
