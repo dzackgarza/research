@@ -1315,16 +1315,16 @@ $B$ is odd unimodular, so $\Orth(B)$ is transitive on its primitive isotropic ve
 *The groups of item 3.* The group $\Orth(T_\Co)$ is transitive on the primitive isotropic vectors (@thm:unpolarized-cusps), so its count is $1$; that is the group of $F^{\mathrm{un}}_\Co=\bD(T_\Co)/\Orth(T_\Co)$, the quotient in which the moduli space $\mcm_\Co$ of Coble surfaces sits as an open subset [@DK13, (3.6), Prop. 3.2, p. 513]. The group $\Gamma_\Co$ is the monodromy group of the family of unpolarized Coble surfaces, and $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ is @conj:gamma-co-stable and nothing else (@def:gamma-co-groups, @rmk:gamma-co-status), so the count for $\fco$ is conditional on it. The group $\Gamma_{\Co,2}=R_{\gent}$ is the image of a stabilizer in $\gent$ (@def:gamma-co-groups), which is neither of the two groups counted here, so the count above says nothing about its orbits.
 :::
 
-::: {.corollary #cor:coble-eight-standard-line-counts title="Primitive isotropic line orbits for all eight standard orthogonal subgroups"}
+::: {.corollary #cor:coble-eight-standard-line-counts title="Line, plane and flag orbits for all eight standard orthogonal subgroups"}
 
-Let $T=T_\Co=B(2)$, $O=\Orth(T)$, $K=\ker\rho_T$, and let $O^+=\ker\spinornorm_\bR$, $SO=\ker\det$, and $SO^+=SO\intersect O^+$. Then the numbers of orbits of primitive isotropic **lines** are
+Let $T=T_\Co=B(2)$, $O=\Orth(T)$, $K=\ker\rho_T$, and let $O^+=\ker\spinornorm_\bR$, $SO=\ker\det$, and $SO^+=SO\intersect O^+$. Then the numbers of orbits of primitive isotropic lines, primitive isotropic planes and incident line-plane flags are
 
-| Arithmetic subgroup of $\Orth(T)$ | Number of primitive isotropic line orbits |
-| --- | ---: |
-| $O$, $SO$, $O^+$, $SO^+$ | $1$ each |
-| $K$, $K\intersect SO$, $K\intersect O^+$, $K\intersect SO^+$ | $527$ each |
+| Arithmetic subgroup of $\Orth(T)$ | Line orbits | Plane orbits | Flag orbits | Incidence edges |
+| --- | ---: | ---: | ---: | ---: |
+| $O$, $SO$, $O^+$, $SO^+$ | $1$ each | $1$ each | $1$ each | $1$ each |
+| $K$, $K\intersect SO$, $K\intersect O^+$, $K\intersect SO^+$ | $527$ each | $189\,720$ each | $569\,160$ each | $569\,160$ each |
 
-The same numbers hold for primitive isotropic **vectors**. These are theorem-derived comparison values for the eight standard subgroup operations; the certified values on the $T_\Co$ lattice card are separately owned by lattice-database#7.
+The line counts also hold for primitive isotropic **vectors**. These are theorem-derived comparison values for the eight standard subgroup operations; the certified line constants on the $T_\Co$ lattice card are separately owned by lattice-database#7, and the public integral kernel-incidence computation by sage-extensions#381.
 
 :::
 
@@ -1335,6 +1335,10 @@ Fix a primitive isotropic vector $v\in B$. By @lem:odd-unimodular-isotropic-spli
 The isometry $h=\id_U\oplus(-\id_M)$ also fixes $v$ and belongs to $K$, since it is the identity modulo $2B$. It has $\det(h)=(-1)^9=-1$ and $\spinornorm_\bR(h)=-1$ by @lem:minus-identity-spinor-norm, since $M$ has positive index one. Hence the pairs $(\det,\spinornorm_\bR)$ of $r_d$ and $h$ are $(-1,+1)$ and $(-1,-1)$, which generate $\{\pm1\}^2$. Therefore the stabilizer of **every** primitive isotropic vector inside $K$ maps onto both determinant and normalized-spinor characters simultaneously: transport these two witnesses by an isometry of $B$, using transitivity from @lem:I29-plus-line-transitivity and normality of $K$.
 
 If $G$ is any of $O,SO,O^+,SO^+$, every $O$-orbit of primitive isotropic vectors is one $G$-orbit: for $g\in O$ sending $v$ to $v'$, multiply $g$ on the right by a suitable element of $\Stab_K(v)$ to make both required characters equal to $+1$, without changing $gv=v'$. Since $O$ is transitive, each of the four groups has one orbit. Likewise, every $K$-orbit is one orbit for each of $K$, $K\intersect SO$, $K\intersect O^+$ and $K\intersect SO^+$, because the same adjustment can be made inside $K$. There are $527$ such $K$-orbits by @thm:coble-zero-cusp-count(1), (2). Finally, the vector-to-line map is a bijection on orbit sets for each of the eight groups: $O$ is transitive on primitive vectors, and for each $v$ the vectors $v$ and $-v$ are already in one $K\intersect SO^+$-orbit by the same character-adjustment argument applied to $-\id_B\in K$. Thus no further identification occurs upon passing to unoriented lines.
+
+For planes and flags, take the standard primitive isotropic plane $P=\generators{e_1,e_2}$ of the Witt decomposition $B=U_1\perp U_2\perp\generators{-1}^{7}$, and the line $\ell=\ZZ e_2\subset P$. Reflection in one of the seven negative norm-one basis vectors of $\generators{-1}^{7}$ fixes $P$ and $\ell$ pointwise, lies in $K$ and has $(\det,\spinornorm_\bR)=(-1,+1)$ by the same reflection formula as above. The isometry $\tau=-\id_{U_1}\oplus\id_{U_2\perp\generators{-1}^{7}}$ preserves $P$, fixes $\ell$ pointwise, lies in $K$ and has $(\det,\spinornorm_\bR)=(+1,-1)$ by @thm:coble-plane-stabilizer-image(5). These two elements generate all four determinant/spinor character pairs inside the stabilizer of the **flag**. By @thm:plane-transitivity-tco and the integral $GL_2(\ZZ)$ Levi action of @thm:coble-plane-stabilizer-image(1), $O$ is transitive on primitive isotropic flags; conjugating the two witnesses gives full character image in every flag stabilizer, hence also every plane stabilizer. The same character-adjustment argument shows that none of the three character restrictions splits an $O$-orbit or a $K$-orbit of planes or flags. The full group therefore has one plane orbit and one flag orbit; the kernel has $189\,720$ plane orbits and $569\,160$ flag orbits by @thm:coble-plane-stabilizer-image(5) and @thm:cusp-lifting(3), respectively. This proves the remaining columns.
+
+For $K$, a line orbit is specified by its nonzero discriminant class $c$, and a plane orbit by its pair $(J,s)$, by @thm:cusp-lifting(1), (2). A flag orbit is specified by $(J,s,c)$ with $0\ne c\in J$, by @thm:cusp-lifting(3). Consequently two distinct $K$-flag orbits have distinct pairs of line and plane orbit endpoints: the forgetful map from flag orbits to incidence edges is injective, hence bijective. The three determinant/spinor restrictions of $K$ have exactly the same line, plane and flag orbits, so the same edge count $569\,160$ applies to them. Each full-group character restriction has just one line and one plane orbit and a flag between them, so its incidence relation consists of one edge. This proves the final column; it is a theorem-derived expected count, not a claim that the pending public kernel-incidence computation has completed.
 
 :::
 
