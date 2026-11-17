@@ -116,6 +116,26 @@ assert order == expected == 46998591897600
 TEN_ROOTS = (1836, 269, 54, 418, 354, 390, 649, 562, 650, 957)
 assert all(x in root_permutations for x in TEN_ROOTS)
 assert int(PermutationGroup([root_permutations[x] for x in TEN_ROOTS]).order()) == expected
+# For u=e_0+e_2, every nonsingular class orthogonal to u admits a
+# norm +/-2 integral lift r with (r,u)=0, not merely (r,u)=0 mod 2.
+# Hence its reflection fixes the primitive isotropic vector u exactly.
+PARABOLIC_U = vector(ZZ, [1, 0, 1] + [0] * 8)
+assert norm(PARABOLIC_U) == 0
+parabolic_masks = tuple(x for x in NONSINGULAR if not PARITY(x & 5))
+parabolic_roots = []
+for x in parabolic_masks:
+    r = list(bits(x))
+    assert r[0] == r[2]
+    if norm(r) == -6:
+        r[1] = 2 if r[1] == 0 else 3
+    root = vector(ZZ, r)
+    assert norm(root) in (-2, 2) and root * B * PARABOLIC_U == 0
+    assert all((int(a) & 1) == b for a, b in zip(root, bits(x)))
+    parabolic_roots.append(root)
+parabolic_image_order = int(PermutationGroup(
+    [root_permutations[x] for x in parabolic_masks]
+).order())
+assert parabolic_image_order == expected // len(SINGULAR)
 TEN_STANDARD_ROOTS = tuple(tuple(map(int, TO_STANDARD * root_lift(x))) for x in TEN_ROOTS)
 assert len(set(TEN_STANDARD_ROOTS)) == 10
 for coordinates in TEN_STANDARD_ROOTS:
@@ -130,7 +150,7 @@ for coordinates in TEN_STANDARD_ROOTS:
 # Construct integral words carrying one singular discriminant class to
 # every other one. This is a 527-vertex orbit traversal, not enumeration
 # of the 46-trillion-element orthogonal group or its cosets.
-base_integral = vector(ZZ, M.row(1))  # the first U basis vector
+base_integral = PARABOLIC_U
 assert norm(base_integral) == 0 and gcd(*map(int, base_integral)) == 1
 base_singular = sum((int(t) & 1) << i for i, t in enumerate(base_integral))
 assert base_singular in SINGULAR
@@ -179,6 +199,8 @@ print('finite even-norm discriminant space: 527 nonzero singular, 496 nonsingula
 print('faithful finite permutation image order:', order)
 print('full O^+(10,2) order:', expected)
 print('ten integral root reflections generate the full finite image:', TEN_ROOTS)
+print('exact-vector stabilizer integral root image order:', parabolic_image_order)
+print('integral norm-two vector-stabilizer roots:', len(parabolic_roots))
 print('ten standard-basis integral roots:', TEN_STANDARD_ROOTS)
 print('singular discriminant classes reached by integral root words:', len(parent))
 print('primitive integral isotropic vector representatives certified:', len(integral_vectors))
@@ -203,6 +225,10 @@ certificate = {
     'standard_to_diagonal': [list(map(int, row)) for row in M.transpose().rows()],
     'base_mask_diagonal': base_singular,
     'generator_roots_standard': [list(root) for root in TEN_STANDARD_ROOTS],
+    'vector_stabilizer_roots_standard': [
+        list(map(int, TO_STANDARD * root)) for root in parabolic_roots
+    ],
+    'vector_stabilizer_finite_order': parabolic_image_order,
     'representatives': rows,
 }
 output = Path('computations/reports/coble_singular_integral_representatives.json')

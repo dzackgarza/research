@@ -23,6 +23,25 @@ def test_all_coble_integral_cusp_words():
     base, = (row["vector_standard"] for row in rows
              if row["mask_diagonal"] == data["base_mask_diagonal"])
     assert gcd(*base) == 1 and pairing(base, base) == 0
+    stabilizer_roots = data["vector_stabilizer_roots_standard"]
+    assert data["vector_stabilizer_finite_order"] == 89181388800
+    stabilizer_masks = set()
+    for root in stabilizer_roots:
+        assert abs(pairing(root, root)) == 2
+        assert pairing(root, base) == 0  # exact vector, not just its class
+        diagonal = [sum(change[i][j] * root[j] for j in range(11))
+                    for i in range(11)]
+        stabilizer_masks.add(sum((x % 2) << i for i, x in enumerate(diagonal)))
+    assert len(stabilizer_masks) == len(stabilizer_roots)
+    base_mask = data["base_mask_diagonal"]
+    expected_stabilizer_masks = {
+        mask for mask in range(1 << 11)
+        if mask.bit_count() % 2 == 0
+        and (mask & base_mask).bit_count() % 2 == 0
+        and (sum((1 if i < 2 else -1) * ((mask >> i) & 1)
+                 for i in range(11)) // 2) % 2 == 1
+    }
+    assert stabilizer_masks == expected_stabilizer_masks
     for root in roots:
         assert abs(pairing(root, root)) == 2
 
