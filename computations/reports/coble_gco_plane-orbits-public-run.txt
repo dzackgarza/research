@@ -34,6 +34,7 @@ endpoint incidence by decorated-plane orbit (vector orbit sizes):
 endpoint edges: 13 flag orbits: 13
 kernel incidence: line vertices 527 degree 1080; plane vertices 189720 degree 3; edges 569160
 public workflow log sha256: 4cc44602660c3891c6c80ed902352612bc3932ef13677524a02be41b28d7da8b
+all nine integral generator matrices preserve B and reduce to their finite actions: True
 integral public plane -> finite decorated-plane orbit size:
   P0: 2160
   P1: 69120

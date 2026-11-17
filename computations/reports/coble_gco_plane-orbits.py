@@ -206,7 +206,7 @@ if globals().get("VERIFY_PUBLIC_PLANES", False):
     import re
     from pathlib import Path
 
-    from sage.all import ZZ, CartanMatrix, block_diagonal_matrix, matrix, vector
+    from sage.all import ZZ, CartanMatrix, block_diagonal_matrix, identity_matrix, matrix, vector
 
     public_log = Path(".tmp/coble-public-incidence-gh.log").read_text()
     print("public workflow log sha256:", hashlib.sha256(public_log.encode()).hexdigest())
@@ -218,6 +218,31 @@ if globals().get("VERIFY_PUBLIC_PLANES", False):
         matrix(ZZ, [[1]]), matrix(ZZ, [[0, 1], [1, 0]]),
         -CartanMatrix(["E", 8]),
     )
+    # Independently certify that each of the nine integer-coordinate
+    # formulas below is a unimodular isometry of B and that its reduction
+    # agrees on all 1024 classes with the finite generator used in the
+    # orbit enumeration. This checks the actual homomorphism input, not
+    # only its action on the seven chosen integral plane representatives.
+    for generator_index, finite_reflection in enumerate(GENS):
+        integral_matrix = identity_matrix(ZZ, 11)
+        if generator_index == 0:
+            integral_matrix[1, 1] = integral_matrix[2, 2] = 0
+            integral_matrix[1, 2] = integral_matrix[2, 1] = 1
+        else:
+            root_index = generator_index - 1
+            integral_matrix[3 + root_index, 3 + root_index] = -1
+            for a, b in E8_EDGES:
+                if a == generator_index:
+                    integral_matrix[3 + root_index, 2 + b] = 1
+                if b == generator_index:
+                    integral_matrix[3 + root_index, 2 + a] = 1
+        assert abs(integral_matrix.det()) == 1
+        assert integral_matrix.transpose() * B * integral_matrix == B
+        for n in range(1024):
+            coordinates = vector(ZZ, (0, *(int((n >> k) & 1) for k in range(10))))
+            image = integral_matrix * coordinates
+            assert sum((int(image[k + 1]) % 2) << k for k in range(10)) == finite_reflection[n]
+    print("all nine integral generator matrices preserve B and reduce to their finite actions:", True)
     finite_orbit_of = {d: len(o) for o in decorated_orbits for d in o}
     assert len(finite_orbit_of) == 8 * len(PLANES)
 
