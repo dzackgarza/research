@@ -2,6 +2,7 @@
 
 import json
 import hashlib
+import gzip
 import subprocess
 from collections import Counter
 from itertools import combinations
@@ -263,3 +264,34 @@ def test_requested_nondefault_kernel_transporter(mode, tmp_path):
         assert [sum(positive[i][j] * line[j] for j in range(11))
                 for i in range(11)] == record["flag_vector_standard"]
         assert record["parabolic_correction_word"]
+
+
+def test_bounded_compressed_shard_is_explicitly_incomplete(tmp_path):
+    """A diagnostic shard cannot be mistaken for full integral acceptance."""
+    folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
+    source = folder / "coble_plane_integral_star_section.json"
+    line_source = folder / "coble_singular_integral_representatives.json"
+    original = hashlib.sha256(source.read_bytes()).hexdigest()
+    output = tmp_path / "shard.jsonl.gz"
+    subprocess.run(
+        ["sage", str(folder / "coble_plane_integral_star_section.py"),
+         "shard", "0", "8", str(output), "2"],
+        cwd=folder.parents[1], capture_output=True, text=True, check=True,
+    )
+    assert hashlib.sha256(source.read_bytes()).hexdigest() == original
+    with gzip.open(output, "rt", encoding="utf-8") as stream:
+        records = [json.loads(line) for line in stream]
+    assert len(records) == 3
+    header = records[0]
+    assert header["schema"] == "coble-exact-kernel-transport-shard-v1"
+    assert header["shard_index"] == 0 and header["shard_count"] == 8
+    assert header["expected_edges"] == 24 * len(range(0, 23715, 8))
+    assert header["complete"] is False
+    assert header["plane_certificate_sha256"] == original
+    assert header["line_certificate_sha256"] == hashlib.sha256(
+        line_source.read_bytes()
+    ).hexdigest()
+    assert [(r["plane_index"], r["seed_index"], r["flag_index"])
+            for r in records[1:]] == [(0, 0, 0), (0, 0, 1)]
+    assert all(len(r["positive_kernel_matrix_sha256"]) == 64
+               for r in records[1:])

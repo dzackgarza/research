@@ -8,12 +8,18 @@ For streaming batches, supply JSONL triples [plane_index,seed_index,flag_index]:
     sage computations/reports/coble_plane_integral_star_section.py batch requests.jsonl
 The exact finite parabolic word epimorphism is built once per batch, and
 transporter matrices are emitted one at a time without accumulating them.
+
+For a compressed exact-certificate shard (optional last argument is a
+diagnostic record limit, not a complete certificate):
+    sage computations/reports/coble_plane_integral_star_section.py shard 0 8 shard-0.jsonl.gz
 """
 import argparse
+import gzip
+import hashlib
 import json
 import sys
 from collections import deque
-from itertools import combinations
+from itertools import combinations, islice, product
 from math import gcd
 from pathlib import Path
 from sage.all import ZZ, PermutationGroup, diagonal_matrix, identity_matrix, libgap, matrix, vector
@@ -276,7 +282,44 @@ def construct_flag_transporter(sample_plane_index, sample_seed_index, sample_fla
 # 569160 transporter matrices or overwriting the canonical certificate.
 raw_args=(sys.argv[1:] if sys.argv[0].endswith('coble_plane_integral_star_section.py') else [])
 output=folder/'coble_plane_integral_star_section.json'
-if raw_args and raw_args[0]=='batch':
+if raw_args and raw_args[0]=='shard':
+ assert len(raw_args) in (4,5)
+ shard_index,shard_count=int(raw_args[1]),int(raw_args[2])
+ assert shard_count>0 and 0<=shard_index<shard_count
+ limit=int(raw_args[4]) if len(raw_args)==5 else None
+ assert limit is None or limit>0
+ output_path=Path(raw_args[3])
+ assert output_path!=output
+ line_certificate=folder/'coble_singular_integral_representatives.json'
+ plane_certificate=folder/'coble_plane_integral_star_section.json'
+ expected_edges=24*len(range(shard_index,len(rows),shard_count))
+ header={'schema':'coble-exact-kernel-transport-shard-v1',
+         'shard_index':shard_index,'shard_count':shard_count,
+         'expected_edges':expected_edges,'complete':limit is None,
+         'line_certificate_sha256':hashlib.sha256(line_certificate.read_bytes()).hexdigest(),
+         'plane_certificate_sha256':hashlib.sha256(plane_certificate.read_bytes()).hexdigest()}
+ count=0
+ requests=product(range(shard_index,len(rows),shard_count),range(8),range(3))
+ if limit is not None:
+  requests=islice(requests,limit)
+ with gzip.open(output_path,'wt',encoding='utf-8') as stream:
+  stream.write(json.dumps(header,separators=(',',':'))+'\n')
+  for plane_index,seed_index,flag_index in requests:
+   record=construct_flag_transporter(plane_index,seed_index,flag_index)
+   compact={'plane_index':plane_index,'seed_index':seed_index,'flag_index':flag_index,
+            'line_mask_diagonal':record['line_mask_diagonal'],
+            'parabolic_correction_word':record['parabolic_correction_word'],
+            'kernel_real_spinor_sign':record['kernel_real_spinor_sign'],
+            'positive_kernel_matrix_sha256':hashlib.sha256(json.dumps(
+             record['positive_kernel_matrix_standard'],separators=(',',':')
+            ).encode()).hexdigest()}
+   stream.write(json.dumps(compact,separators=(',',':'))+'\n')
+   count+=1
+ assert count==(min(expected_edges,limit) if limit is not None else expected_edges)
+ print('exact integral kernel transporter shard:',shard_index,shard_count,
+       'records',count,'expected',expected_edges,'complete',limit is None,
+       'output',output_path)
+elif raw_args and raw_args[0]=='batch':
  assert len(raw_args)==2
  with Path(raw_args[1]).open() as stream:
   for request in stream:
@@ -305,6 +348,7 @@ else:
    [list(map(int,row)) for row in (to_standard*g*change).rows()]
    for g in stabilizer_generators],
   'plane_stabilizer_finite_image_order':stabilizer_image_order,
+  'base_spinor_flip_standard':[list(map(int,row)) for row in tau_base.rows()],
   'ambient_transporter_sample':record,
   'flag_line_coefficients':[list(c) for c in flag_coefficients],
   'finite_plane_transports':rows},separators=(',',':'))+'\n')
