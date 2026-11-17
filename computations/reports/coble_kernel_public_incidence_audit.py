@@ -47,6 +47,7 @@ def audit_integral_shard(path: Path, *, allow_incomplete: bool = False) -> int:
               for r in lines["representatives"]}
     roots = [tuple(r) for r in lines["generator_roots_standard"]]
     seeds = planes["base_planes_standard"]
+    change = lines["standard_to_diagonal"]
     basis = [tuple(int(i == j) for i in range(11)) for j in range(11)]
     digest = hashlib.sha256()
     with gzip.open(path, "rb") as stream:
@@ -89,6 +90,10 @@ def audit_integral_shard(path: Path, *, allow_incomplete: bool = False) -> int:
                 q = tuple(a - (cq // norm) * b for a, b in zip(q, root))
             a, b, determinant = primitive_plane_pivot(p, q)
             assert pairing(p, p) == pairing(p, q) == pairing(q, q) == 0
+            masks = [sum((sum(change[i][j] * w[j] for j in range(11)) & 1) << i
+                         for i in range(11)) for w in (p, q)]
+            assert sorted((masks[0], masks[1], masks[0] ^ masks[1])) == (
+                planes["finite_plane_transports"][plane_index]["finite_plane_masks"])
             assert all(v[c] * determinant
                        - v[a] * (p[c] * q[b] - p[b] * q[c])
                        - v[b] * (p[a] * q[c] - p[c] * q[a]) == 0
