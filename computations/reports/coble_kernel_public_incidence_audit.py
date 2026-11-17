@@ -16,6 +16,9 @@ Usage:
     python3 computations/reports/coble_kernel_public_incidence_audit.py --run-id RUN
     python3 computations/reports/coble_kernel_public_incidence_audit.py --log LOG
     python3 computations/reports/coble_kernel_public_incidence_audit.py --shards shard-*.jsonl.gz
+    python3 computations/reports/coble_kernel_public_incidence_audit.py \
+        --shards shard-*.jsonl.gz \
+        --manifest computations/reports/coble_integral_flag_certificate_manifest.json
 """
 import argparse
 import ast
@@ -319,6 +322,41 @@ def plane_plucker_key(p: tuple, q: tuple) -> tuple:
     return minors if first > 0 else tuple(-x for x in minors)
 
 
+def verify_integral_shard_manifest(paths, manifest_path):
+    """Check downloaded compressed archives against the published CI ledger.
+
+    The mathematical audit must also run: a hash proves byte identity, not
+    mathematical validity.
+    """
+    manifest = json.loads(Path(manifest_path).read_text())
+    assert manifest["schema"] == "coble-integral-flag-certificate-manifest-v1"
+    assert manifest["shard_count"] == len(manifest["shards"]) == 32
+    assert manifest["total_edges"] == EXPECTED[0]
+    folder = Path(__file__).resolve().parent
+    for name, key in (
+        ("coble_singular_integral_representatives.json", "line_certificate_sha256"),
+        ("coble_plane_integral_star_section.json", "plane_certificate_sha256"),
+    ):
+        assert hashlib.sha256((folder / name).read_bytes()).hexdigest() == manifest[key]
+    expected = {row["index"]: row for row in manifest["shards"]}
+    assert set(expected) == set(range(32))
+    assert sum(row["records"] for row in expected.values()) == EXPECTED[0]
+    observed = set()
+    for path in paths:
+        with gzip.open(path, "rb") as stream:
+            header = json.loads(next(stream))
+        index = header["shard_index"]
+        assert header["shard_count"] == 32 and index in expected and index not in observed
+        assert header["expected_edges"] == expected[index]["records"]
+        assert header["line_certificate_sha256"] == manifest["line_certificate_sha256"]
+        assert header["plane_certificate_sha256"] == manifest["plane_certificate_sha256"]
+        with open(path, "rb") as source:
+            actual = hashlib.file_digest(source, "sha256").hexdigest()
+        assert actual == expected[index]["file_sha256"], ("archive SHA-256", index)
+        observed.add(index)
+    return observed
+
+
 def audit(path: Path, *, class_only: bool = False) -> None:
     vertices = {label: {"line": set(), "plane": set()} for label in LABELS}
     vertex_classes = {label: {"line": {}, "plane": {}} for label in LABELS}
@@ -505,9 +543,13 @@ if __name__ == "__main__":
                         help="verify divided-class endpoints, not integral edge transporters")
     parser.add_argument("--allow-incomplete", action="store_true",
                         help="diagnostic shard verification only, never full acceptance")
+    parser.add_argument("--manifest", type=Path,
+                        help="also verify archive hashes against the permanent CI manifest")
     args = parser.parse_args()
     if args.shard is not None:
         assert not args.class_only
+        if args.manifest is not None:
+            verify_integral_shard_manifest([args.shard], args.manifest)
         count = audit_integral_shard(args.shard, allow_incomplete=args.allow_incomplete)
         print(f"independently verified integral transporter shard: {count} records")
     elif args.shards is not None:
@@ -530,6 +572,8 @@ if __name__ == "__main__":
             assert header["shard_index"] not in indices, "duplicate shard index"
             indices.add(header["shard_index"])
         assert total is not None and indices == set(range(total)), "missing shard indices"
+        if args.manifest is not None:
+            assert verify_integral_shard_manifest(args.shards, args.manifest) == indices
         # Every shard is independently checked against the source certificates.
         # The work is CPU-bound; distribute it over processes rather than
         # serially replaying 569160 exact 11x11 integral witnesses.
@@ -538,12 +582,12 @@ if __name__ == "__main__":
         assert edges == EXPECTED[0], "missing integral flag transporters"
         print(f"independently certified complete integral kernel incidence: {edges} edges")
     elif args.log is not None:
-        assert not args.allow_incomplete
+        assert not args.allow_incomplete and args.manifest is None
         audit(args.log, class_only=args.class_only)
         with args.log.open("rb") as source_file:
             print(f"audited log SHA-256: {hashlib.file_digest(source_file, 'sha256').hexdigest()}")
     else:
-        assert not args.allow_incomplete
+        assert not args.allow_incomplete and args.manifest is None
         repository = "dzackgarza/sage-extensions"
         status = json.loads(subprocess.run(
             ["gh", "run", "view", str(args.run_id), "-R", repository,

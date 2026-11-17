@@ -13,7 +13,7 @@ from pathlib import Path
 import pytest
 
 
-def test_complete_integral_flag_certificate_manifest():
+def test_complete_integral_flag_certificate_manifest(tmp_path):
     """Check the permanent provenance ledger of the 32-shard full CI run."""
     folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
     manifest = json.loads((folder / "coble_integral_flag_certificate_manifest.json").read_text())
@@ -40,6 +40,30 @@ def test_complete_integral_flag_certificate_manifest():
         assert all(len(digest) == 64 and
                    all(c in "0123456789abcdef" for c in digest)
                    for digest in digests)
+    spec = importlib.util.spec_from_file_location(
+        "coble_manifest_audit", folder / "coble_kernel_public_incidence_audit.py")
+    assert spec is not None and spec.loader is not None
+    audit = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(audit)
+    # Exercise archive identity separately from mathematical verification:
+    # the latter is deliberately not replaced by a successful hash check.
+    specimen = tmp_path / "shard-4.jsonl.gz"
+    header = {"schema": "coble-exact-kernel-transport-shard-v1",
+              "shard_index": 4, "shard_count": 32,
+              "expected_edges": manifest["shards"][4]["records"],
+              "line_certificate_sha256": manifest["line_certificate_sha256"],
+              "plane_certificate_sha256": manifest["plane_certificate_sha256"]}
+    with gzip.open(specimen, "wt", encoding="utf-8") as stream:
+        stream.write(json.dumps(header) + "\n")
+    synthetic = json.loads(json.dumps(manifest))
+    synthetic["shards"][4]["file_sha256"] = hashlib.sha256(specimen.read_bytes()).hexdigest()
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(json.dumps(synthetic))
+    assert audit.verify_integral_shard_manifest([specimen], manifest_path) == {4}
+    with specimen.open("ab") as stream:
+        stream.write(b"corruption")
+    with pytest.raises(AssertionError, match="archive SHA-256"):
+        audit.verify_integral_shard_manifest([specimen], manifest_path)
 
 
 def test_all_coble_integral_plane_star_words():
