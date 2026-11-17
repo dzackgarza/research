@@ -19,7 +19,9 @@ sage-extensions workflow 43556671111, save its log to the ignored path
 
 The optional path uses the integral primitive perpendicular quotient and its
 seven norm-minus-one basis vectors; it does not infer the star from the
-incidence graph.  The recorded output is coble_gco_plane-orbits-public-run.txt.
+incidence graph. It also maps all thirteen separately returned integral flag
+witnesses to their actual finite (J,star,c)-orbits. The recorded output is
+coble_gco_plane-orbits-public-run.txt.
 """
 import itertools
 
@@ -180,10 +182,9 @@ if globals().get("VERIFY_PUBLIC_PLANES", False):
     )
     finite_orbit_of = {d: len(o) for o in decorated_orbits for d in o}
     assert len(finite_orbit_of) == 8 * len(PLANES)
-    print("integral public plane -> finite decorated-plane orbit size:")
-    observed_sizes = {}
-    for index, source in public_planes:
-        p, q = ast.literal_eval(source)
+
+    def decorated_plane_of_integral_rows(p, q):
+        """Canonical finite (J,star) from an integral primitive isotropic plane."""
         P = (vector(ZZ, p), vector(ZZ, q))
         K = matrix(ZZ, 2, 11, [list(B * x) for x in P]).right_kernel().basis_matrix()
         C = matrix(ZZ, 2, 9)
@@ -217,10 +218,59 @@ if globals().get("VERIFY_PUBLIC_PLANES", False):
         characteristic_star = frozenset(mask ^ j for mask in star_masks for j in span)
         assert len(characteristic_star) == 28
         assert characteristic_star in stars(J)
-        orbit_size = finite_orbit_of[(J, characteristic_star)]
+        return J, characteristic_star
+
+    print("integral public plane -> finite decorated-plane orbit size:")
+    observed_sizes = {}
+    for index, source in public_planes:
+        p, q = ast.literal_eval(source)
+        orbit_size = finite_orbit_of[decorated_plane_of_integral_rows(p, q)]
         assert int(index) not in observed_sizes
         observed_sizes[int(index)] = orbit_size
         print("  P%s: %d" % (index, orbit_size))
     assert set(observed_sizes) == set(range(7))
     assert sorted(observed_sizes.values()) == sorted(len(o) for o in decorated_orbits)
     print("all seven public integral planes occupy distinct finite decorated orbits:", True)
+
+    # The workflow returns a *separate integral flag witness* for each edge.
+    # Classify that witness by its actual quotient star and divided line
+    # class; this is stronger than identifying the endpoints of the edge.
+    public_flags = re.findall(
+        r"\[Gamma_\{Co,2\}\] edge (\d+): L(\d+) < P(\d+); line=(\(\(.*?\),\)); plane=(\(\(.*?\)\))",
+        public_log,
+    )
+    assert len(public_flags) == 13
+    public_lines = re.findall(
+        r"\[Gamma_\{Co,2\}\] line cusp (\d+): (\(\(.*?\),\))", public_log
+    )
+    assert len(public_lines) == 4
+    line_orbit_sizes = {}
+    for index, source in public_lines:
+        (v,) = ast.literal_eval(source)
+        assert int(v[0]) % 2 == 0
+        c = sum((int(v[k + 1]) % 2) << k for k in range(10))
+        line_orbit_sizes[int(index)] = size_of[c]
+    assert set(line_orbit_sizes) == set(range(4))
+    assert sorted(line_orbit_sizes.values()) == sorted(len(o) for o in vector_orbits)
+    seen_flag_orbits = set()
+    print("integral public edge witness -> finite (plane,vector,flag) orbit sizes:")
+    for edge, line_index, plane_index, line_source, plane_source in public_flags:
+        (v,) = ast.literal_eval(line_source)
+        p, q = ast.literal_eval(plane_source)
+        J, characteristic_star = decorated_plane_of_integral_rows(p, q)
+        c = sum((int(v[k + 1]) % 2) << k for k in range(10))
+        assert int(v[0]) % 2 == 0 and c in J
+        triple = (J, characteristic_star, c)
+        containing_orbits = [i for i, orbit in enumerate(flag_orbits) if triple in orbit]
+        assert len(containing_orbits) == 1
+        flag_orbit_index = containing_orbits[0]
+        assert flag_orbit_index not in seen_flag_orbits
+        seen_flag_orbits.add(flag_orbit_index)
+        plane_size = finite_orbit_of[(J, characteristic_star)]
+        assert plane_size == observed_sizes[int(plane_index)]
+        assert size_of[c] == line_orbit_sizes[int(line_index)]
+        print("  edge %s L%s<P%s: (%d,%d,%d)" %
+              (edge, line_index, plane_index, plane_size, size_of[c],
+               len(flag_orbits[flag_orbit_index])))
+    assert seen_flag_orbits == set(range(len(flag_orbits)))
+    print("all thirteen public integral flag witnesses occupy distinct finite flag orbits:", True)

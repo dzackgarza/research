@@ -398,6 +398,20 @@ The four graph isomorphisms all induce the same *graph-inferred* undecorated fin
 The seven computed orbit sizes are pairwise distinct and exhaust the seven finite decorated-plane orbits. The full exact Sage output is `computations/reports/coble_gco_plane-orbits-public-run.txt`; it uses the public representative coordinates from [sage-extensions run 43556671111](https://github.com/dzackgarza/sage-extensions/actions/runs/43556671111). The graph-comparison script reads this result and verifies that **exactly one** of the four abstract incidence-graph isomorphisms agrees with these independently computed integral star labels. Thus the two $AAA$ and the two $ADD$ public integral cusp orbits are now distinguished by their actual integral parabolic quotient, not by arbitrary graph labeling.
 The optional Sage run records the SHA-256 of its input workflow log, and `coble_gco_public_incidence_compare.py --verify-public-source` checks that digest against a fresh retrieval of the published workflow. This prevents a stale or substituted local log from supplying the integral star labels unnoticed.
 
+**Direct integral determination of the flag fibres.** The same optional Sage calculation now also processes all thirteen *separately returned integral flag witnesses* in the public incidence row. For each witness $(\ell\subset P)$, it reconstructs the canonical star $s(P)$ from the saturated integral quotient as above, reduces a primitive generator of $\ell$ to its nonzero discriminant class $c\in J(P)$, and locates the actual triple $(J(P),s(P),c)$ in the thirteen independently enumerated finite $G_\Co$-orbits. It verifies that the plane orbit agrees with the named public plane endpoint and that the vector orbit agrees with the named public line endpoint. The resulting complete correspondence is:
+
+| Public plane vertex | Public line vertices | Sizes of the corresponding finite triple orbits, in the displayed line order |
+| --- | --- | --- |
+| $P0$ | $L0,L3,L2$ | $2160,2160,2160$ |
+| $P1$ | $L3,L1$ | $138240,69120$ |
+| $P2$ | $L3,L2$ | $151200,75600$ |
+| $P3$ | $L1,L2$ | $45360,22680$ |
+| $P4$ | $L2$ | $28350$ |
+| $P5$ | $L1,L2$ | $15120,7560$ |
+| $P6$ | $L2$ | $9450$ |
+
+All thirteen public integral witness triples lie in **distinct** finite flag orbits, and together they exhaust the thirteen finite triple orbits. This is asserted in `computations/reports/coble_gco_plane-orbits.py` and recorded in `coble_gco_plane-orbits-public-run.txt`. Consequently the comparison between the public integral $\Gamma_{\Co,2}$ incidence witnesses and the integral cusp-lifting theorem is now verified at the level of the actual **flag orbits**, not merely at the level of endpoint graphs or finite plane types. It still does not certify the separate lattice-database card or the pending kernel-group public incidence rows.
+
 The source-verification mode additionally checks the **integral** properties of all eleven public representatives: each line vector has square zero and coordinate gcd one; each plane has zero Gram matrix and its two-by-eleven coordinate matrix has gcd one among all $2\times2$ minors. The latter is equivalent, by Smith normal form, to primitivity of the rank-two sublattice. These are checks on the actual integral representatives returned by the public operation, rather than consequences inferred from their mod-two discriminant classes.
 
 For every one of the thirteen public incidence edges, the workflow also prints a separate *witness* line and plane. The comparison now parses these twenty-six witness objects, checks that each line is primitive isotropic and each plane is primitive totally isotropic, and verifies the line lies in the rational span of the plane by vanishing of every $3\times3$ minor of the augmented three-by-eleven coordinate matrix. Since the plane is primitive in $T_\Co$, rational-span membership of an integral vector is equivalent to membership in that plane. Thus the thirteen reported incidences are independently verified as actual integral line-in-plane inclusions, not only as an abstract graph or a relation of finite discriminant classes.
