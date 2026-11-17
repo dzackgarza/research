@@ -36,6 +36,9 @@ for i in range(7):
  base.append((reflect(e1,r),reflect(e2,r)))
 J0=plane_key(e1,e2)
 assert len(base)==8 and all(plane_key(a,b)==J0 and primitive(a,b) and pair(a,a)==pair(a,b)==pair(b,b)==0 for a,b in base)
+flag_coefficients=((1,0),(0,1),(1,1))
+assert all(all(gcd(*map(int,u*a+v*b))==1 and pair(u*a+v*b,u*a+v*b)==0
+               for u,v in flag_coefficients) for a,b in base)
 a,b=mask(e1),mask(e2)
 coset=lambda x:min(x,x^a,x^b,x^a^b)
 w=[mask(sum((d[j] for j in range(7) if j!=i),vector(ZZ,11))) for i in range(7)]
@@ -62,6 +65,8 @@ output=folder/'coble_plane_integral_star_section.json'
 output.write_text(json.dumps({'source':'coble_singular_integral_representatives.json',
  'base_planes_standard':[[list(map(int,to_standard*a)),list(map(int,to_standard*b))] for a,b in base],
  'base_stars_quotient_classes':[sorted(s) for s in stars],
+ 'flag_line_coefficients':[list(c) for c in flag_coefficients],
  'finite_plane_transports':rows},separators=(',',':'))+'\n')
 print('finite planes:',len(rows),'distinct integral stars per plane:',len(set(stars)))
 print('integral plane representatives:',len(rows)*len(base),'compact certificate:',output)
+print('integral flag representatives specified by words:',len(rows)*len(base)*len(flag_coefficients))
