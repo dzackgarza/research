@@ -14,7 +14,7 @@ import re
 
 LABELS = ("Otilde", "Otilde+")
 EXPECTED = (569160, 527, 189720)
-VERTEX = re.compile(r"\[(Otilde\+?)\] (line|plane) cusp (\d+):")
+VERTEX = re.compile(r"\[(Otilde\+?)\] (line|plane) cusp (\d+): (\(.*\))")
 EDGE = re.compile(
     r"\[(Otilde\+?)\] edge (\d+): L(\d+) < P(\d+); "
     r"line=(\(\(.*?\),\)); plane=(\(\(.*?\)\))"
@@ -37,8 +37,18 @@ def pairing(x: tuple, y: tuple) -> int:
             + 2 * sum(e[a] * f[b] + e[b] * f[a] for a, b in E8_EDGES))
 
 
+def mod2_span(p: tuple, q: tuple) -> frozenset:
+    """The order-four discriminant subgroup of a primitive isotropic plane."""
+    x, y = (tuple(int(t) % 2 for t in v) for v in (p, q))
+    span = frozenset((tuple(0 for _ in x), x, y,
+                      tuple(a ^ b for a, b in zip(x, y))))
+    assert len(span) == 4
+    return span
+
+
 def audit(path: Path) -> None:
     vertices = {label: {"line": set(), "plane": set()} for label in LABELS}
+    vertex_classes = {label: {"line": {}, "plane": {}} for label in LABELS}
     degrees = {label: (Counter(), Counter()) for label in LABELS}
     pairs = {label: set() for label in LABELS}
     positions = {label: set() for label in LABELS}
@@ -50,10 +60,19 @@ def audit(path: Path) -> None:
                 summaries += 1
             match = VERTEX.search(line)
             if match:
-                label, kind, index = match.groups()
+                label, kind, index, source = match.groups()
                 index = int(index)
                 assert index not in vertices[label][kind], (label, kind, index)
                 vertices[label][kind].add(index)
+                coords = ast.literal_eval(source)
+                if kind == "line":
+                    (v,) = coords
+                    assert len(v) == 11
+                    vertex_classes[label][kind][index] = tuple(int(t) % 2 for t in v)
+                else:
+                    p, q = coords
+                    assert len(p) == len(q) == 11
+                    vertex_classes[label][kind][index] = mod2_span(p, q)
                 continue
             match = EDGE.search(line)
             if match:
@@ -84,6 +103,12 @@ def audit(path: Path) -> None:
                            - v[a] * (p[c] * q[b] - p[b] * q[c])
                            - v[b] * (p[a] * q[c] - p[c] * q[a]) == 0
                            for c in range(11)), (label, position, "line-in-plane")
+                assert tuple(int(t) % 2 for t in v) == vertex_classes[label]["line"].get(line_id), (
+                    label, position, "line orbit discriminant class"
+                )
+                assert mod2_span(p, q) == vertex_classes[label]["plane"].get(plane_id), (
+                    label, position, "plane orbit discriminant subgroup"
+                )
                 assert position not in positions[label], (label, position)
                 positions[label].add(position)
                 pair = (line_id, plane_id)
@@ -101,6 +126,12 @@ def audit(path: Path) -> None:
     for label in LABELS:
         assert vertices[label]["line"] == set(range(EXPECTED[1])), (label, "line vertices")
         assert vertices[label]["plane"] == set(range(EXPECTED[2])), (label, "plane vertices")
+        assert len(set(vertex_classes[label]["line"].values())) == EXPECTED[1], (
+            label, "distinct discriminant line classes"
+        )
+        plane_multiplicities = Counter(vertex_classes[label]["plane"].values())
+        assert len(plane_multiplicities) == 23715, (label, "finite isotropic planes")
+        assert set(plane_multiplicities.values()) == {8}, (label, "eight stars per finite plane")
         assert positions[label] == set(range(EXPECTED[0])), (label, "edge positions")
         assert len(pairs[label]) == EXPECTED[0], (label, "distinct edges")
         line_degrees, plane_degrees = degrees[label]
