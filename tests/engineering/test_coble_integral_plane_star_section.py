@@ -13,6 +13,32 @@ from pathlib import Path
 import pytest
 
 
+def test_complete_integral_flag_certificate_manifest():
+    """Check the permanent provenance ledger of the 32-shard full CI run."""
+    folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
+    manifest = json.loads((folder / "coble_integral_flag_certificate_manifest.json").read_text())
+    assert manifest["schema"] == "coble-integral-flag-certificate-manifest-v1"
+    assert manifest["workflow_run"] == 44170494099
+    assert manifest["source_commit"] == "c08aeb6baa98cfcd2a39c46141432f4ce9c92661"
+    assert manifest["line_certificate_sha256"] == hashlib.sha256(
+        (folder / "coble_singular_integral_representatives.json").read_bytes()).hexdigest()
+    assert manifest["plane_certificate_sha256"] == hashlib.sha256(
+        (folder / "coble_plane_integral_star_section.json").read_bytes()).hexdigest()
+    assert manifest["artifact_id"] == 14371631974
+    assert manifest["total_edges"] == 569160
+    assert manifest["shard_count"] == len(manifest["shards"]) == 32
+    assert [row["index"] for row in manifest["shards"]] == list(range(32))
+    assert [row["records"] for row in manifest["shards"]] == [
+        24 * len(range(i, 23715, 32)) for i in range(32)]
+    assert sum(row["records"] for row in manifest["shards"]) == 569160
+    for key in ("file_sha256", "records_sha256"):
+        digests = [row[key] for row in manifest["shards"]]
+        assert len(set(digests)) == 32
+        assert all(len(digest) == 64 and
+                   all(c in "0123456789abcdef" for c in digest)
+                   for digest in digests)
+
+
 def test_all_coble_integral_plane_star_words():
     folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
     data = json.loads((folder / "coble_singular_integral_representatives.json").read_text())
