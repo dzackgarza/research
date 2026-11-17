@@ -295,3 +295,20 @@ def test_bounded_compressed_shard_is_explicitly_incomplete(tmp_path):
             for r in records[1:]] == [(0, 0, 0), (0, 0, 1)]
     assert all(len(r["positive_kernel_matrix_sha256"]) == 64
                for r in records[1:])
+    lines = json.loads(line_source.read_text())
+    gram = lines["standard_gram"]
+    seed_line = {r["mask_diagonal"]: r["vector_standard"]
+                 for r in lines["representatives"]}
+    for row in records[1:]:
+        source_vector = seed_line[row["line_mask_diagonal"]]
+        target_vector = row["flag_vector_standard"]
+        for field in ("kernel_matrix_standard", "positive_kernel_matrix_standard"):
+            g = row[field]
+            assert len(g) == 11 and all(len(r) == 11 for r in g)
+            assert all(g[i][j] % 2 == int(i == j)
+                       for i in range(11) for j in range(11))
+            assert [sum(g[i][j] * source_vector[j] for j in range(11))
+                    for i in range(11)] == target_vector
+            assert all(sum(g[k][i] * gram[k][l] * g[l][j]
+                           for k in range(11) for l in range(11)) == gram[i][j]
+                       for i in range(11) for j in range(11))

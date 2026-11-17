@@ -10,7 +10,8 @@ The exact finite parabolic word epimorphism is built once per batch, and
 transporter matrices are emitted one at a time without accumulating them.
 
 For a compressed exact-certificate shard (optional last argument is a
-diagnostic record limit, not a complete certificate):
+diagnostic record limit, not a complete certificate). The transcript contains
+the original line/plane indices and exact integral transporter matrices:
     sage computations/reports/coble_plane_integral_star_section.py shard 0 8 shard-0.jsonl.gz
 """
 import argparse
@@ -308,8 +309,11 @@ if raw_args and raw_args[0]=='shard':
    record=construct_flag_transporter(plane_index,seed_index,flag_index)
    compact={'plane_index':plane_index,'seed_index':seed_index,'flag_index':flag_index,
             'line_mask_diagonal':record['line_mask_diagonal'],
+            'flag_vector_standard':record['flag_vector_standard'],
             'parabolic_correction_word':record['parabolic_correction_word'],
             'kernel_real_spinor_sign':record['kernel_real_spinor_sign'],
+            'kernel_matrix_standard':record['kernel_matrix_standard'],
+            'positive_kernel_matrix_standard':record['positive_kernel_matrix_standard'],
             'positive_kernel_matrix_sha256':hashlib.sha256(json.dumps(
              record['positive_kernel_matrix_standard'],separators=(',',':')
             ).encode()).hexdigest()}
