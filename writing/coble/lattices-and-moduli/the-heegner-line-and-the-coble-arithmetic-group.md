@@ -1324,7 +1324,7 @@ Let $T=T_\Co=B(2)$, $O=\Orth(T)$, $K=\ker\rho_T$, and let $O^+=\ker\spinornorm_\
 | $O$, $SO$, $O^+$, $SO^+$ | $1$ each | $1$ each | $1$ each | $1$ each |
 | $K$, $K\intersect SO$, $K\intersect O^+$, $K\intersect SO^+$ | $527$ each | $189\,720$ each | $569\,160$ each | $569\,160$ each |
 
-The line counts also hold for primitive isotropic **vectors**. These are theorem-derived comparison values for the eight standard subgroup operations; the certified line constants on the $T_\Co$ lattice card are separately owned by lattice-database#7, and the public integral kernel-incidence computation by sage-extensions#381.
+The line counts also hold for primitive isotropic **vectors**. These are theorem-derived comparison values for the eight standard subgroup operations. The independent lattice-database card `lattices/6JRR.md` now records the eight certified primitive isotropic **line** constants under field certificate `4282656a7d42a5489e900ad120e0f39897cca2d71dabca91e1874feee4fca7b9`, and its two arithmetic-group index certificates are `682c595c52447cd1add71138601fe9259fd3e5e868e05a646a95e0b27c3225f1` and `326145ccf46247778eb506416cb6c6985eedf61029060ff4497597e2c3f8a3b0`. The card still lacks certified integral generators and full affected-card verification (lattice-database#7), while the public integral kernel-incidence operation belongs to sage-extensions#381. The lattice-database card also currently contains an unconditional $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ assertion contradicted by its own subsequent statement that the identification is conjectural; only the eight subgroup-specific numerical certificates are cited here, and the family-group identification remains conditional on @conj:gamma-co-stable.
 
 :::
 
