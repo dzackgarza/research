@@ -4,6 +4,9 @@ Input: log of sage-extensions' coble_gamma_co_2_incidence_rows.py
 --rows Otilde,Otilde+ --lattice Tco. No finite enumeration substitutes
 for the integral witnesses in this check. When given a GitHub run ID,
 require a successful completed run and fetch its actual log before auditing.
+The optional --class-only mode verifies the newer divided-class endpoint
+relation by integral cusp representatives and the proved lifting criterion;
+it does NOT certify a returned integral edge flag or subgroup transporter.
 
 Usage:
     python3 computations/reports/coble_kernel_public_incidence_audit.py --run-id RUN
@@ -27,6 +30,7 @@ EDGE = re.compile(
     r"\[(Otilde\+?)\] edge (\d+): L(\d+) < P(\d+); "
     r"line=(\(\(.*?\),\)); plane=(\(\(.*?\)\))"
 )
+CLASS_EDGE = re.compile(r"\[(Otilde\+?)\] edge (\d+): L(\d+) < P(\d+)\s*$")
 DECIDED = re.compile(
     r"\[(Otilde\+?)\] decided: (\d+) edges over (\d+) line cusps and (\d+) plane cusps"
 )
@@ -70,7 +74,7 @@ def primitive_plane_pivot(p: tuple, q: tuple) -> tuple:
     return pivot
 
 
-def audit(path: Path) -> None:
+def audit(path: Path, *, class_only: bool = False) -> None:
     vertices = {label: {"line": set(), "plane": set()} for label in LABELS}
     vertex_classes = {label: {"line": {}, "plane": {}} for label in LABELS}
     degrees = {label: (Counter(), Counter()) for label in LABELS}
@@ -103,31 +107,39 @@ def audit(path: Path) -> None:
                     primitive_plane_pivot(p, q)
                     vertex_classes[label][kind][index] = mod2_span(p, q)
                 continue
-            match = EDGE.search(line)
+            match = (CLASS_EDGE if class_only else EDGE).search(line)
             if match:
-                label, position, line_id, plane_id, line_source, plane_source = match.groups()
+                label, position, line_id, plane_id = match.groups()[:4]
                 position, line_id, plane_id = map(int, (position, line_id, plane_id))
-                (v,) = ast.literal_eval(line_source)
-                p, q = ast.literal_eval(plane_source)
-                assert len(v) == len(p) == len(q) == 11, (label, position, "rank")
-                assert gcd(*v) == 1, (label, position, "line primitive")
-                assert pairing(v, v) == pairing(p, p) == pairing(p, q) == pairing(q, q) == 0, (
-                    label, position, "isotropy"
-                )
-                pivot = primitive_plane_pivot(p, q)
-                # A primitive rank-two plane contains v iff all rank-three
-                # minors of [v,p,q] vanish. One nonzero 2x2 pivot suffices.
-                a, b, determinant = pivot
-                assert all(v[c] * determinant
-                           - v[a] * (p[c] * q[b] - p[b] * q[c])
-                           - v[b] * (p[a] * q[c] - p[c] * q[a]) == 0
-                           for c in range(11)), (label, position, "line-in-plane")
-                assert tuple(int(t) % 2 for t in v) == vertex_classes[label]["line"].get(line_id), (
-                    label, position, "line orbit discriminant class"
-                )
-                assert mod2_span(p, q) == vertex_classes[label]["plane"].get(plane_id), (
-                    label, position, "plane orbit discriminant subgroup"
-                )
+                if class_only:
+                    c = vertex_classes[label]["line"].get(line_id)
+                    J = vertex_classes[label]["plane"].get(plane_id)
+                    assert c is not None and J is not None and c in J, (
+                        label, position, "divided-class incidence"
+                    )
+                else:
+                    line_source, plane_source = match.groups()[4:]
+                    (v,) = ast.literal_eval(line_source)
+                    p, q = ast.literal_eval(plane_source)
+                    assert len(v) == len(p) == len(q) == 11, (label, position, "rank")
+                    assert gcd(*v) == 1, (label, position, "line primitive")
+                    assert pairing(v, v) == pairing(p, p) == pairing(p, q) == pairing(q, q) == 0, (
+                        label, position, "isotropy"
+                    )
+                    pivot = primitive_plane_pivot(p, q)
+                    # A primitive rank-two plane contains v iff all rank-three
+                    # minors of [v,p,q] vanish. One nonzero 2x2 pivot suffices.
+                    a, b, determinant = pivot
+                    assert all(v[c] * determinant
+                               - v[a] * (p[c] * q[b] - p[b] * q[c])
+                               - v[b] * (p[a] * q[c] - p[c] * q[a]) == 0
+                               for c in range(11)), (label, position, "line-in-plane")
+                    assert tuple(int(t) % 2 for t in v) == vertex_classes[label]["line"].get(line_id), (
+                        label, position, "line orbit discriminant class"
+                    )
+                    assert mod2_span(p, q) == vertex_classes[label]["plane"].get(plane_id), (
+                        label, position, "plane orbit discriminant subgroup"
+                    )
                 assert position not in positions[label], (label, position)
                 positions[label].add(position)
                 pair = (line_id, plane_id)
@@ -164,7 +176,9 @@ def audit(path: Path) -> None:
         assert set(plane_degrees.values()) == {3}, (label, "plane degrees")
         assert decided.get(label) == EXPECTED, (label, "public row status")
         print(f"{label}: {EXPECTED[1]} lines, {EXPECTED[2]} planes, "
-              f"{EXPECTED[0]} distinct edges; degrees (1080,3); decided")
+              f"{EXPECTED[0]} distinct edges; degrees (1080,3); decided; "
+              + ("class-only, no public integral edge transporters" if class_only
+                 else "public integral edge witnesses checked"))
 
 
 if __name__ == "__main__":
@@ -172,9 +186,11 @@ if __name__ == "__main__":
     source = parser.add_mutually_exclusive_group(required=True)
     source.add_argument("--log", type=Path, help="saved complete public workflow log")
     source.add_argument("--run-id", type=int, help="fetch a successful public workflow run")
+    parser.add_argument("--class-only", action="store_true",
+                        help="verify divided-class endpoints, not integral edge transporters")
     args = parser.parse_args()
     if args.log is not None:
-        audit(args.log)
+        audit(args.log, class_only=args.class_only)
     else:
         repository = "dzackgarza/sage-extensions"
         status = json.loads(subprocess.run(
@@ -192,5 +208,5 @@ if __name__ == "__main__":
                     ["gh", "run", "view", str(args.run_id), "-R", repository, "--log"],
                     check=True, stdout=output,
                 )
-            audit(log)
+            audit(log, class_only=args.class_only)
         print(f"public workflow {args.run_id} at {status['headSha']} verified")
