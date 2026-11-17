@@ -5,6 +5,8 @@ the stabilizer F of a finite plane, and the image S of the complete 28-matrix
 integral plane parabolic.  Check [F:S]=8 and [Q:S]=189720 directly.
 """
 import json
+import argparse
+import hashlib
 from pathlib import Path
 
 from sage.all import ZZ, PermutationGroup, matrix, vector
@@ -12,10 +14,16 @@ from sage.combinat.permutation import Permutation
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", type=Path)
+    args = parser.parse_args()
     folder = Path(__file__).resolve().parent
-    lines = json.loads((folder / "coble_singular_integral_representatives.json").read_text())
-    planes = json.loads((folder / "coble_plane_integral_star_section.json").read_text())
-    parabolic = json.loads((folder / "coble_complete_plane_parabolic_generators.json").read_text())
+    line_path = folder / "coble_singular_integral_representatives.json"
+    plane_path = folder / "coble_plane_integral_star_section.json"
+    parabolic_path = folder / "coble_complete_plane_parabolic_generators.json"
+    lines = json.loads(line_path.read_text())
+    planes = json.loads(plane_path.read_text())
+    parabolic = json.loads(parabolic_path.read_text())
     change = matrix(ZZ, lines["standard_to_diagonal"])
     singular = sorted(row["mask_diagonal"] for row in lines["representatives"])
     assert len(singular) == 527
@@ -110,6 +118,30 @@ def main():
         for i in word:
             current = frozenset(act(F.gens()[i], x) for x in current)
         assert current == star
+    if args.output is not None:
+        certificate = {
+            "schema": "coble-proper-plane-stabilizer-finite-cosets-v1",
+            "source_sha256": {
+                "line": hashlib.sha256(line_path.read_bytes()).hexdigest(),
+                "plane": hashlib.sha256(plane_path.read_bytes()).hexdigest(),
+                "integral_parabolic": hashlib.sha256(parabolic_path.read_bytes()).hexdigest(),
+            },
+            "singular_masks_diagonal": singular,
+            "base_finite_plane_masks": sorted((a, b, a ^ b)),
+            "ambient_order": int(Q.order()),
+            "finite_plane_stabilizer_order": int(F.order()),
+            "integral_plane_image_order": int(S.order()),
+            "finite_plane_stabilizer_generators_on_singular_classes": [
+                [int(g(i)) for i in range(1, 528)] for g in F.gens()
+            ],
+            "integral_star_masks_diagonal": [
+                sorted(star) for star in star_sets
+            ],
+            "coset_words_in_finite_plane_stabilizer_generators": [
+                list(word) for word in representatives
+            ],
+        }
+        args.output.write_text(json.dumps(certificate, separators=(",", ":")) + "\n")
     print("ambient finite image order:", Q.order())
     print("finite plane stabilizer order:", F.order())
     print("integral plane stabilizer image order:", S.order())

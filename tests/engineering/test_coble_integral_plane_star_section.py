@@ -123,11 +123,11 @@ def test_complete_integral_plane_parabolic_generators(tmp_path):
     assert reproduced.read_bytes() == artifact.read_bytes()
 
 
-def test_proper_integral_plane_stabilizer_image():
+def test_proper_integral_plane_stabilizer_image(tmp_path):
     """Compute Q, the finite-plane stabilizer F, and integral image S."""
     folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
     result = subprocess.run(
-        ["sage", "-c", "import runpy;runpy.run_path("
+        ["sage", "-c", "import runpy,sys;sys.argv=['finite'];runpy.run_path("
          "'computations/reports/coble_proper_plane_stabilizer_image.py',"
          "run_name='__main__')"],
         cwd=folder.parents[1], capture_output=True, text=True, check=True)
@@ -142,6 +142,28 @@ def test_proper_integral_plane_stabilizer_image():
     assert "characteristic stars in the F/S orbit: 8" in result.stdout
     assert ("finite F/S coset representative words: [[], [9, 6], [9], "
             "[9, 12, 4, 5], [9, 12, 4], [9, 7], [9, 12], [0]]") in result.stdout
+    artifact = folder / "coble_proper_plane_stabilizer_image.json"
+    assert hashlib.sha256(artifact.read_bytes()).hexdigest() == (
+        "23955b7d90671c3bf299707ef076483a3bd7aa3d21e406dff099551a96d409e4")
+    data = json.loads(artifact.read_text())
+    assert data["schema"] == "coble-proper-plane-stabilizer-finite-cosets-v1"
+    assert len(data["singular_masks_diagonal"]) == 527
+    assert len(data["integral_star_masks_diagonal"]) == 8
+    assert len(data["coset_words_in_finite_plane_stabilizer_generators"]) == 8
+    generators = data["finite_plane_stabilizer_generators_on_singular_classes"]
+    assert len(generators) >= 1
+    assert all(sorted(g) == list(range(1, 528)) for g in generators)
+    assert all(all(0 <= i < len(generators) for i in word)
+               for word in data["coset_words_in_finite_plane_stabilizer_generators"])
+    output = tmp_path / "replay.json"
+    replay = subprocess.run(
+        ["sage", "-c", "import runpy,sys;sys.argv=['finite','--output',"
+         + repr(str(output)) + "];runpy.run_path("
+         "'computations/reports/coble_proper_plane_stabilizer_image.py',"
+         "run_name='__main__')"],
+        cwd=folder.parents[1], capture_output=True, text=True, check=True)
+    assert replay.stdout == result.stdout
+    assert output.read_bytes() == artifact.read_bytes()
     assert "integral plane orbit count: 189720" in result.stdout
 
 
