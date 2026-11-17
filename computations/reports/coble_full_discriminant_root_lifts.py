@@ -136,6 +136,16 @@ parabolic_image_order = int(PermutationGroup(
     [root_permutations[x] for x in parabolic_masks]
 ).order())
 assert parabolic_image_order == expected // len(SINGULAR)
+TEN_PARABOLIC_MASKS = (1919, 215, 58, 359, 311, 335, 591, 538, 2016, 594)
+assert all(x in parabolic_masks for x in TEN_PARABOLIC_MASKS)
+assert int(PermutationGroup(
+    [root_permutations[x] for x in TEN_PARABOLIC_MASKS]
+).order()) == parabolic_image_order
+parabolic_root_by_mask = dict(zip(parabolic_masks, parabolic_roots))
+TEN_PARABOLIC_ROOTS = tuple(
+    tuple(map(int, TO_STANDARD * parabolic_root_by_mask[x]))
+    for x in TEN_PARABOLIC_MASKS
+)
 TEN_STANDARD_ROOTS = tuple(tuple(map(int, TO_STANDARD * root_lift(x))) for x in TEN_ROOTS)
 assert len(set(TEN_STANDARD_ROOTS)) == 10
 for coordinates in TEN_STANDARD_ROOTS:
@@ -201,6 +211,7 @@ print('full O^+(10,2) order:', expected)
 print('ten integral root reflections generate the full finite image:', TEN_ROOTS)
 print('exact-vector stabilizer integral root image order:', parabolic_image_order)
 print('integral norm-two vector-stabilizer roots:', len(parabolic_roots))
+print('ten integral vector-stabilizer roots generate full parabolic image:', TEN_PARABOLIC_MASKS)
 print('ten standard-basis integral roots:', TEN_STANDARD_ROOTS)
 print('singular discriminant classes reached by integral root words:', len(parent))
 print('primitive integral isotropic vector representatives certified:', len(integral_vectors))
@@ -228,6 +239,8 @@ certificate = {
     'vector_stabilizer_roots_standard': [
         list(map(int, TO_STANDARD * root)) for root in parabolic_roots
     ],
+    'vector_stabilizer_ten_masks': list(TEN_PARABOLIC_MASKS),
+    'vector_stabilizer_ten_roots_standard': [list(root) for root in TEN_PARABOLIC_ROOTS],
     'vector_stabilizer_finite_order': parabolic_image_order,
     'representatives': rows,
 }

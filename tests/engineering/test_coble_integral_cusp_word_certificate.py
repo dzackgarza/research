@@ -42,6 +42,15 @@ def test_all_coble_integral_cusp_words():
                  for i in range(11)) // 2) % 2 == 1
     }
     assert stabilizer_masks == expected_stabilizer_masks
+    ten_masks = data["vector_stabilizer_ten_masks"]
+    ten_roots = data["vector_stabilizer_ten_roots_standard"]
+    assert len(ten_masks) == len(ten_roots) == len(set(ten_masks)) == 10
+    assert set(ten_masks) <= stabilizer_masks
+    for expected_mask, root in zip(ten_masks, ten_roots):
+        assert root in stabilizer_roots and pairing(root, base) == 0
+        diagonal = [sum(change[i][j] * root[j] for j in range(11))
+                    for i in range(11)]
+        assert sum((x % 2) << i for i, x in enumerate(diagonal)) == expected_mask
     for root in roots:
         assert abs(pairing(root, root)) == 2
 

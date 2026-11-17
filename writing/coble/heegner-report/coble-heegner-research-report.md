@@ -1331,7 +1331,7 @@ Let $B=\latI_{2,9}$ and $u=e_0+e_2$, with $e_0^2=1$ and $e_2^2=-1$. Write $c=u\b
 \[
 \rho(\Stab_{\Orth(B)}(u))=\Stab_{\Orth(q)}(c).
 \]
-The construction supplies a finite-image word section using actual integral isometries that fix the prescribed primitive isotropic vector.
+In fact, the ten root parity classes $(1919,215,58,359,311,335,591,538,2016,594)$ already generate this full finite stabilizer image, as the same exact Schreier--Sims computation verifies. The construction supplies a ten-generator finite-image word section using actual integral isometries that fix the prescribed primitive isotropic vector.
 :::
 
 ::: {.proof}
