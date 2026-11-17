@@ -339,6 +339,18 @@ The kernel inclusion $\ker\rho_{T_\Co}\subseteq\Gamma$ is immediate from the def
 
 The five orbits of $G_\Co$ on *undecorated* finite isotropic planes in @tbl-finite-plane-orbits are not five integral plane orbits: the integral fibre over each finite plane has eight star choices by @lem:plane-stars, and the arithmetic group acts on those choices. In particular the seven integral plane orbits above do not follow from the five-row table without this stabilizer-image calculation. These statements concern $\rho^{-1}(G_\Co)$, identified with $\Gamma_{\Co,2}$ in @prop:coble-cong-point-stabilizer, and not the geometric monodromy group $\Gamma_\Co$; the latter's equality with the stable group is @conj:gamma-co-stable.
 
+The exact finite action also determines which of the five plane types split into distinct integral plane orbits. Forgetting the star gives the following fibres:
+
+| Undecorated plane type | Finite orbit size | Decorated-plane orbit sizes | Number of integral plane orbits |
+| --- | ---: | --- | ---: |
+| $ABC$ | $270$ | $2160$ | $1$ |
+| $AAA$ | $1575$ | $3150,9450$ | $2$ |
+| $ADD$ | $3780$ | $7560,22680$ | $2$ |
+| $CCD$ | $8640$ | $69120$ | $1$ |
+| $ACC$ | $9450$ | $75600$ | $1$ |
+
+The action on the eight stars is transitive for types $ABC$, $CCD$ and $ACC$, and has two orbits for each of $AAA$ and $ADD$. For each row, the decorated-orbit sizes sum to eight times the undecorated-orbit size; this is asserted for all five rows by `computations/reports/coble_gco_plane-orbits.py` and recorded in its run transcript. In particular the seven integral plane orbits are distributed $1+2+2+1+1$ over the five finite-plane types, rather than being obtained by a uniform splitting factor.
+
 The projection from integral flag orbits to integral plane orbits has the following fibres, computed by forgetting $c$ in the finite triples $(J,s,c)$. The entries in the last column are the sizes of the finite $G_\Co$-orbits of triples above the corresponding orbit of pairs, not counts of integral flags.
 
 | Size of the finite orbit of $(J,s)$ | Number of flag orbits above it | Sizes of the finite orbits of $(J,s,c)$ |

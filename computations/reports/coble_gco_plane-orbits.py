@@ -95,6 +95,21 @@ assert sum(len(o) for o in flag_orbits) == 24 * len(PLANES)
 print("star-decorated plane orbits:", len(decorated_orbits), sorted(len(o) for o in decorated_orbits))
 print("star-decorated flag orbits:", len(flag_orbits), sorted(len(o) for o in flag_orbits))
 
+# Resolve the integral orbit fibres over the five *undecorated* finite-plane
+# types, rather than inferring the seven integral orbits from their total.
+finite_plane_type = {J: len(o) for o in plane_orbits for J in o}
+decorated_over_finite = {len(o): [] for o in plane_orbits}
+for orbit in decorated_orbits:
+    finite_size = finite_plane_type[next(iter(orbit))[0]]
+    assert all(finite_plane_type[d[0]] == finite_size for d in orbit)
+    decorated_over_finite[finite_size].append(len(orbit))
+print("decorated-plane orbit sizes over each finite-plane orbit:")
+for finite_size, sizes in sorted(decorated_over_finite.items()):
+    sizes.sort()
+    assert sum(sizes) == 8 * finite_size
+    print("  finite plane size %5d: %d decorated orbits, sizes %s" %
+          (finite_size, len(sizes), sizes))
+
 # Each integral plane orbit contributes between one and three flag orbits.
 # The map forgetting c is equivariant, so an entire flag orbit lies above
 # exactly one decorated-plane orbit. Count its fibres without relying on
