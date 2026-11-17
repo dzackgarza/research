@@ -123,6 +123,25 @@ def test_complete_integral_plane_parabolic_generators(tmp_path):
     assert reproduced.read_bytes() == artifact.read_bytes()
 
 
+def test_proper_integral_plane_stabilizer_image():
+    """Compute Q, the finite-plane stabilizer F, and integral image S."""
+    folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
+    result = subprocess.run(
+        ["sage", "-c", "import runpy;runpy.run_path("
+         "'computations/reports/coble_proper_plane_stabilizer_image.py',"
+         "run_name='__main__')"],
+        cwd=folder.parents[1], capture_output=True, text=True, check=True)
+    transcript = (folder / "coble_proper_plane_stabilizer_image-run.txt").read_bytes()
+    assert result.stdout.encode() == transcript
+    assert hashlib.sha256(transcript).hexdigest() == (
+        "e7b20b3382b95ec324b0d048dc86b76600287967c7948f840177a59ed73355e2")
+    assert "ambient finite image order: 46998591897600" in result.stdout
+    assert "finite plane stabilizer order: 1981808640" in result.stdout
+    assert "integral plane stabilizer image order: 247726080" in result.stdout
+    assert "proper image index in finite plane stabilizer: 8" in result.stdout
+    assert "integral plane orbit count: 189720" in result.stdout
+
+
 def test_all_integral_flags_recover_public_gamma_co_2_edge_weights():
     """All 13 *public* L/P edges occur with their exact integral flag counts."""
     folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
