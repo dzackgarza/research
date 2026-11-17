@@ -1,11 +1,17 @@
-"""Eight explicit integral Coble plane stars over all 23715 finite planes."""
+"""Eight explicit integral Coble plane stars over all 23715 finite planes.
+
+Run without arguments to regenerate the canonical certificate, or request
+one exact integral kernel transporter without overwriting the certificate:
+    sage computations/reports/coble_plane_integral_star_section.py 100 3 1
+"""
+import argparse
 import json
-import re
+import sys
 from collections import deque
 from itertools import combinations
 from math import gcd
 from pathlib import Path
-from sage.all import ZZ, PermutationGroup, diagonal_matrix, identity_matrix, matrix, vector
+from sage.all import ZZ, PermutationGroup, diagonal_matrix, identity_matrix, libgap, matrix, vector
 
 folder=Path('computations/reports')
 data=json.loads((folder/'coble_singular_integral_representatives.json').read_text())
@@ -129,13 +135,26 @@ def word_matrix(word):
 # The general formula is W_J s_i h_t W_c^{-1}; the finite image of
 # this transporter can subsequently be cancelled using the explicit
 # ten-generator vector-parabolic section.
-sample_plane=rows[-1]
-sample_seed_index=7
-sample_flag_index=2
+parser=argparse.ArgumentParser(description=__doc__)
+parser.add_argument('plane_index',nargs='?',type=int,default=-1)
+parser.add_argument('seed_index',nargs='?',type=int,default=7)
+parser.add_argument('flag_index',nargs='?',type=int,default=2)
+arguments=(parser.parse_args() if sys.argv[0].endswith('coble_plane_integral_star_section.py')
+           else parser.parse_args([]))
+sample_plane_index=arguments.plane_index
+sample_seed_index=arguments.seed_index
+sample_flag_index=arguments.flag_index
+assert -len(rows)<=sample_plane_index<len(rows)
+assert 0<=sample_seed_index<8 and 0<=sample_flag_index<3
+sample_plane=rows[sample_plane_index]
 sample_plane_word=word_matrix(sample_plane['word_from_base'])
-seed_r=2*(e1+f1)+sum((d[j] for j in range(7) if j!=sample_seed_index-1),vector(ZZ,11))
-sample_seed_reflection=to_standard*from_action(lambda x:reflect(x,seed_r))*change
-sample_flag_map=to_standard*stabilizer_generators[-1]*change
+if sample_seed_index:
+ seed_r=seed_roots[sample_seed_index-1]
+ sample_seed_reflection=to_standard*from_action(lambda x:reflect(x,seed_r))*change
+else:
+ sample_seed_reflection=identity_matrix(ZZ,11)
+sample_flag_map=(identity_matrix(ZZ,11) if sample_flag_index==0 else
+                 to_standard*stabilizer_generators[-2 if sample_flag_index==1 else -1]*change)
 u0=to_standard*e1
 sample_flag=sample_plane_word*sample_seed_reflection*sample_flag_map*u0
 sample_line_mask=mask(change*sample_flag)
@@ -166,12 +185,15 @@ diagonal_correction=change*base_correction*to_standard
 target_permutation=[positions[mask(diagonal_correction*vector(
  ZZ,[(x>>i)&1 for i in range(11)]))] for x in singular]
 target=parabolic_group(target_permutation)
-word_string=target.word_problem(parabolic_group.gens(),False)[0]
-correction_word=[]
-for factor in word_string.split('*'):
- match=re.fullmatch(r'x(\d+)(?:\^(-?\d+))?',factor)
- assert match is not None,factor
- correction_word.append((int(match.group(1))-1,int(match.group(2) or 1)))
+# Obtain the free-group word in GAP's unambiguous integer-pair format.
+# Parsing Sage's display string is invalid: it can contain parenthesized
+# subwords and powers, not just a product of individual generators.
+epimorphism=libgap.EpimorphismFromFreeGroup(parabolic_group._libgap_())
+free_word=libgap.PreImagesRepresentative(epimorphism,target._libgap_())
+representation=list(map(int,libgap.ExtRepOfObj(free_word).sage()))
+assert len(representation)%2==0
+correction_word=[(representation[i]-1,representation[i+1])
+                 for i in range(0,len(representation),2)]
 parabolic_word_matrix=identity_matrix(ZZ,11)
 word_permutation=parabolic_group.one()
 for index,exponent in correction_word:
@@ -192,7 +214,18 @@ assert sample_kernel_transporter.transpose()*standard_gram*sample_kernel_transpo
 assert all((int(sample_kernel_transporter[i,j])&1)==int(i==j)
            for i in range(11) for j in range(11))
 output=folder/'coble_plane_integral_star_section.json'
-output.write_text(json.dumps({'source':'coble_singular_integral_representatives.json',
+sample_record={
+ 'finite_plane_masks':sample_plane['finite_plane_masks'],
+ 'seed_index':sample_seed_index,
+ 'flag_index':sample_flag_index,
+ 'line_mask_diagonal':sample_line_mask,
+ 'flag_vector_standard':list(map(int,sample_flag)),
+ 'matrix_standard':[list(map(int,row)) for row in sample_transporter.rows()],
+ 'parabolic_correction_word':[list(factor) for factor in correction_word],
+ 'kernel_matrix_standard':[
+  list(map(int,row)) for row in sample_kernel_transporter.rows()]}
+if (sample_plane_index,sample_seed_index,sample_flag_index)==(-1,7,2):
+ output.write_text(json.dumps({'source':'coble_singular_integral_representatives.json',
  'base_planes_standard':[[list(map(int,to_standard*a)),list(map(int,to_standard*b))] for a,b in base],
  'seed_reflection_roots_standard':[list(map(int,to_standard*r)) for r in seed_roots],
  'base_stars_quotient_classes':[sorted(s) for s in stars],
@@ -200,16 +233,7 @@ output.write_text(json.dumps({'source':'coble_singular_integral_representatives.
   [list(map(int,row)) for row in (to_standard*g*change).rows()]
   for g in stabilizer_generators],
  'plane_stabilizer_finite_image_order':stabilizer_image_order,
- 'ambient_transporter_sample':{
-  'finite_plane_masks':sample_plane['finite_plane_masks'],
-  'seed_index':sample_seed_index,
-  'flag_index':sample_flag_index,
-  'line_mask_diagonal':sample_line_mask,
-  'flag_vector_standard':list(map(int,sample_flag)),
-  'matrix_standard':[list(map(int,row)) for row in sample_transporter.rows()],
-  'parabolic_correction_word':[list(factor) for factor in correction_word],
-  'kernel_matrix_standard':[
-   list(map(int,row)) for row in sample_kernel_transporter.rows()]},
+ 'ambient_transporter_sample':sample_record,
  'flag_line_coefficients':[list(c) for c in flag_coefficients],
  'finite_plane_transports':rows},separators=(',',':'))+'\n')
 print('finite planes:',len(rows),'distinct integral stars per plane:',len(set(stars)))
@@ -218,3 +242,5 @@ print('integral flag representatives specified by words:',len(rows)*len(base)*le
 print('exact integral plane stabilizer finite image order:',stabilizer_image_order)
 print('exact integral ambient line-to-flag transporter sample:',sample_line_mask)
 print('exact integral kernel line-to-flag transporter word length:',len(correction_word))
+if (sample_plane_index,sample_seed_index,sample_flag_index)!=(-1,7,2):
+ print('requested integral kernel transporter:',json.dumps(sample_record,separators=(',',':')))

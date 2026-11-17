@@ -1,6 +1,8 @@
 """Independently replay the complete finite-to-integral Coble plane section."""
 
 import json
+import hashlib
+import subprocess
 from collections import Counter
 from itertools import combinations
 from math import gcd
@@ -198,3 +200,24 @@ def test_all_coble_integral_plane_star_words():
     assert set(line_degrees) == expected_line_masks
     assert set(line_degrees.values()) == {1080}
     assert sum(line_degrees.values()) == 569160
+
+
+def test_requested_nondefault_kernel_transporter():
+    """The executable computes a second exact edge without rewriting its certificate."""
+    folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
+    certificate = folder / "coble_plane_integral_star_section.json"
+    before = hashlib.sha256(certificate.read_bytes()).digest()
+    result = subprocess.run(
+        ["sage", str(folder / "coble_plane_integral_star_section.py"), "100", "3", "1"],
+        cwd=folder.parents[1], capture_output=True, text=True, check=True,
+    )
+    assert hashlib.sha256(certificate.read_bytes()).digest() == before
+    marker = "requested integral kernel transporter: "
+    record, = (json.loads(line.split(marker, 1)[1])
+               for line in result.stdout.splitlines() if marker in line)
+    assert record["seed_index"] == 3 and record["flag_index"] == 1
+    assert record["line_mask_diagonal"] in record["finite_plane_masks"]
+    kernel = record["kernel_matrix_standard"]
+    assert all(kernel[i][j] % 2 == int(i == j)
+               for i in range(11) for j in range(11))
+    assert record["parabolic_correction_word"]
