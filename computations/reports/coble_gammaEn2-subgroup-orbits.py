@@ -87,6 +87,8 @@ O_T = A.orthogonal_group()
 print('|O(A_T,q)| = %d' % int(O_T.order()))
 M = O_T.subgroup(images)
 print('|M| = %d   (|W(E8)| = 696729600: %s)' % (int(M.order()), int(M.order()) == 696729600))
+assert int(M.order()) == 696729600
+assert int(O_T.order()) // int(M.order()) == 67456
 print('')
 
 print('Gamma_En,2 = T.Aut().discriminant_preimage(M)')
@@ -94,19 +96,18 @@ start = time.time()
 preimage = T.Aut().discriminant_preimage(M)
 print('  built in %.0f s: %s' % (time.time() - start, str(preimage)[:160]))
 print('  character data retained: %s' % (preimage.character_data_is_complete(),))
+assert bool(preimage.character_data_is_complete())
 print('')
 
 for rank, published in ((1, 5), (2, 9)):
     print('rank %d' % rank)
     for label, group in (('Gamma_En,2', preimage), ('O(T_En)', T.Aut())):
         start = time.time()
-        try:
-            reps = group.isotropic_orbit_representatives(rank)
-            count = reps.cardinality() if hasattr(reps, 'cardinality') else len(list(reps))
-            print('  %-10s isotropic_orbit_representatives(%d) -> %s   (%.0f s)'
-                  % (label, rank, count, time.time() - start))
-        except Exception as exc:
-            print('  %-10s FAILED %s   (%.0f s): %s' % (label, type(exc).__name__, time.time() - start,
-                                                        str(exc)[:300]))
+        reps = group.isotropic_orbit_representatives(rank)
+        count = reps.cardinality() if hasattr(reps, 'cardinality') else len(list(reps))
+        print('  %-10s isotropic_orbit_representatives(%d) -> %s   (%.0f s)'
+              % (label, rank, count, time.time() - start))
+        expected = published if label == 'Gamma_En,2' else 2
+        assert int(count) == expected, (label, rank, count, expected)
     print('  published: %d' % published)
     print('')
