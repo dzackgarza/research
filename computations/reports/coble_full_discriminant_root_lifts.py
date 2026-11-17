@@ -14,10 +14,33 @@ Run with Sage:
     sage -c 'exec(compile(open("computations/reports/coble_full_discriminant_root_lifts.py").read(), "coble_full_discriminant_root_lifts.py", "exec"))'
 """
 from math import prod
-from sage.all import ZZ, GF, PermutationGroup, diagonal_matrix, identity_matrix, matrix, vector
+from sage.all import (ZZ, GF, CartanMatrix, PermutationGroup, block_diagonal_matrix,
+                      diagonal_matrix, identity_matrix, matrix, vector)
 
 SIGNS = (1, 1) + (-1,) * 9
 B = diagonal_matrix(ZZ, SIGNS)
+# Rows of a unimodular change of basis from the standard
+# <1> + U + E8(-1) presentation of T_Co(1/2) to diagonal I_{2,9}.
+# The first row is the characteristic norm-one vector, the next two
+# span U, and the remaining eight are an E8(-1) simple-root basis.
+M = matrix(ZZ, [
+    [3,1,1,1,1,1,1,1,1,1,1],
+    [0,1,1,0,0,0,0,0,0,0,0],
+    [0,1,0,1,0,0,0,0,0,0,0],
+    [-3,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1],
+    [0,0,0,0,0,1,-1,0,0,0,0],
+    [3,1,1,1,1,1,1,1,2,1,1],
+    [-2,-1,-1,-1,-1,-1,0,-1,-1,0,-1],
+    [2,1,1,1,1,1,1,1,0,0,1],
+    [-1,0,0,0,0,-1,-1,-1,0,0,0],
+    [0,0,0,0,0,0,0,1,0,0,-1],
+    [0,0,0,0,-1,0,0,0,0,0,1],
+])
+B_STANDARD = block_diagonal_matrix(matrix(ZZ, [[1]]),
+                                   matrix(ZZ, [[0, 1], [1, 0]]),
+                                   -CartanMatrix(['E', 8]))
+assert abs(M.det()) == 1 and M * B * M.transpose() == B_STANDARD
+TO_STANDARD = matrix(ZZ, M.transpose().inverse())
 PARITY = lambda n: n.bit_count() & 1
 V = tuple(x for x in range(1 << 11) if not PARITY(x))
 
@@ -61,6 +84,12 @@ for x in NONSINGULAR:
     reflection = identity_matrix(ZZ, 11) - (2 // n) * (r.column() * (r.row() * B))
     assert reflection.transpose() * B * reflection == B
     assert reflection.det() == -1
+    # An explicit integral root and reflection in the actual T_Co basis.
+    standard_root = TO_STANDARD * r
+    standard_reflection = TO_STANDARD * reflection * M.transpose()
+    assert standard_root in ZZ**11 and standard_root * B_STANDARD * standard_root == n
+    assert standard_reflection.base_ring() == ZZ
+    assert standard_reflection.transpose() * B_STANDARD * standard_reflection == B_STANDARD
     # Its mod-two action is the nonsingular symmetry y -> y+(y,x)x.
     for i in range(11):
         e = vector(ZZ, [int(i == j) for j in range(11)])
@@ -76,6 +105,8 @@ order = int(G.order())
 expected = 2 * 2**20 * (2**5 - 1) * prod(2**(2*i) - 1 for i in range(1, 5))
 assert order == expected == 46998591897600
 print('B=I_{2,9}: 496 integral norm +/-2 root reflections constructed and checked')
+print('unimodular change to <1> + U + E8(-1): determinant', M.det())
+print('all 496 integral reflection matrices verified in the standard T_Co basis')
 print('finite even-norm discriminant space: 527 nonzero singular, 496 nonsingular')
 print('faithful finite permutation image order:', order)
 print('full O^+(10,2) order:', expected)

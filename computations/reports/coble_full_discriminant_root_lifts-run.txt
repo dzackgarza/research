@@ -1,4 +1,6 @@
 B=I_{2,9}: 496 integral norm +/-2 root reflections constructed and checked
+unimodular change to <1> + U + E8(-1): determinant -1
+all 496 integral reflection matrices verified in the standard T_Co basis
 finite even-norm discriminant space: 527 nonzero singular, 496 nonsingular
 faithful finite permutation image order: 46998591897600
 full O^+(10,2) order: 46998591897600
