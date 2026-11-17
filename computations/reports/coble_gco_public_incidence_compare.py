@@ -12,6 +12,7 @@ sizes, not integral orbit cardinalities. Graph isomorphism, not equality of
 these labels, is the comparison invariant.
 """
 from itertools import permutations
+import ast
 import re
 import subprocess
 import sys
@@ -38,6 +39,54 @@ if "--verify-public-source" in sys.argv:
     extracted = {(int(l), int(p)) for l, p in matches}
     assert len(matches) == 13 and extracted == public, (len(matches), extracted ^ public)
     print("public source edges verified against workflow log:", len(matches))
+
+    # Directly classify the actual public integral plane representatives in
+    # T_Co = <2> + U(2) + E8(-2), using their parity classes in A_T. The
+    # negative E8 Cartan Gram in Sage's standard simple-root order has the
+    # seven edges below (cf. CartanMatrix(['E',8])).
+    plane_rows = re.findall(
+        r"\[Gamma_\{Co,2\}\] plane cusp (\d+): (\(\(.*?\)\))", log
+    )
+    assert len(plane_rows) == 7
+    e8_edges = ((0, 2), (1, 3), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7))
+
+    def vector_type(vector):
+        v = tuple(int(x) % 2 for x in vector)
+        assert len(v) == 11 and v[0] == 0
+        u, e = v[1:3], v[3:]
+        q_e = (sum(e) - sum(e[a] * e[b] for a, b in e8_edges)) % 2
+        assert (u[0] * u[1] + q_e) % 2 == 0
+        if u == (0, 0):
+            assert any(e) and q_e == 0
+            return "A"
+        if not any(e):
+            assert u in ((1, 0), (0, 1))
+            return "B"
+        if u == (1, 1):
+            assert q_e == 1
+            return "D"
+        assert q_e == 0
+        return "C"
+
+    directly_computed = {}
+    for idx, source in plane_rows:
+        v, w = ast.literal_eval(source)
+        assert len(v) == len(w) == 11
+        third = tuple(a + b for a, b in zip(v, w))
+        directly_computed[int(idx)] = "".join(sorted(map(vector_type, (v, w, third))))
+    assert set(directly_computed) == set(range(7))
+    print("public plane types computed directly from integral representatives:", directly_computed)
+
+    line_rows = re.findall(
+        r"\[Gamma_\{Co,2\}\] line cusp (\d+): (\(\(.*?\),\))", log
+    )
+    assert len(line_rows) == 4
+    directly_computed_lines = {
+        int(idx): vector_type(ast.literal_eval(source)[0]) for idx, source in line_rows
+    }
+    assert set(directly_computed_lines) == set(range(4))
+    print("public line types computed directly from integral representatives:",
+          directly_computed_lines)
 
 # Verify the other copied edge set against the committed finite enumeration.
 finite_log = Path(__file__).with_name("coble_gco_plane-orbits-run.txt").read_text()
@@ -94,3 +143,10 @@ print("distinct finite-plane type assignments:", len(classifications))
 assert len(classifications) == 1
 print("public plane index -> graph-inferred finite-plane type:",
       dict(enumerate(next(iter(classifications)))))
+if "--verify-public-source" in sys.argv:
+    assert directly_computed == dict(enumerate(next(iter(classifications))))
+    print("direct integral discriminant types equal graph-inferred types:", True)
+    finite_vector_type = {2: "B", 120: "D", 135: "A", 270: "C"}
+    assert all(directly_computed_lines[i] == finite_vector_type[lines[i]]
+               for i in range(4))
+    print("direct integral line types equal graph-inferred types:", True)
