@@ -28,6 +28,10 @@ def test_complete_integral_flag_certificate_manifest(tmp_path):
     assert manifest["sage_image"] == "ghcr.io/dzackgarza/sage:develop"
     assert manifest["sage_image_digest"] == (
         "sha256:12e5716067b5cf2fd34c00e9ba97e9c09d51a70664de817f4ae29743b64c5f61")
+    workflow = (folder.parents[1] / ".github" / "workflows" /
+                "coble-integral-flag-certificate.yml").read_text()
+    assert ("image: ghcr.io/dzackgarza/sage@" +
+            manifest["sage_image_digest"]) in workflow
     assert manifest["total_edges"] == 569160
     assert manifest["shard_count"] == len(manifest["shards"]) == 32
     assert [row["index"] for row in manifest["shards"]] == list(range(32))
