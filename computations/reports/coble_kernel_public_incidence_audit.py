@@ -89,10 +89,15 @@ def audit_integral_shard(path: Path, *, allow_incomplete: bool = False) -> int:
     assert set(class_degrees.values()) == {135}
     assert sum(class_degrees.values()) * len(seeds) == EXPECTED[0]
     change = lines["standard_to_diagonal"]
+    root_masks = [sum((sum(change[i][j] * root[j] for j in range(11)) & 1) << i
+                      for i in range(11)) for root in roots]
+    base_stars = planes["base_stars_quotient_classes"]
+    assert len(base_stars) == len(seeds) == 8
     basis = [tuple(int(i == j) for i in range(11)) for j in range(11)]
     digest = hashlib.sha256()
     plane_word_cache = {}
     line_word_cache = {}
+    checked_stars = set()
     identity = [[int(i == j) for j in range(11)] for i in range(11)]
     with gzip.open(path, "rb") as stream:
         header = json.loads(next(stream))
@@ -120,6 +125,22 @@ def audit_integral_shard(path: Path, *, allow_incomplete: bool = False) -> int:
             assert (row["plane_index"], row["seed_index"], row["flag_index"]) == (
                 plane_index, (count % 24) // 3, count % 3)
             assert plane_index < len(planes["finite_plane_transports"])
+            if plane_index not in checked_stars:
+                finite_plane = planes["finite_plane_transports"][plane_index]
+                key = finite_plane["finite_plane_masks"]
+                transported_stars = set()
+                for star in base_stars:
+                    image = []
+                    for class_mask in star:
+                        for root_index in finite_plane["word_from_base"]:
+                            mask = root_masks[root_index]
+                            if (class_mask & mask).bit_count() % 2:
+                                class_mask ^= mask
+                        image.append(min(class_mask, *(class_mask ^ c for c in key)))
+                    assert len(set(image)) == 7, "nonprimitive integral star quotient"
+                    transported_stars.add(tuple(sorted(image)))
+                assert len(transported_stars) == 8, "integral star fibre collapsed"
+                checked_stars.add(plane_index)
             assert row["line_mask_diagonal"] in planes["finite_plane_transports"][plane_index]["finite_plane_masks"]
             assert row["line_mask_diagonal"] not in seed_classes, (
                 plane_index, row["seed_index"], "repeated line class")
