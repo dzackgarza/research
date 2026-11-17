@@ -70,3 +70,23 @@ def test_all_coble_integral_cusp_words():
                     for i in range(11)]
         mask = sum((x % 2) << i for i, x in enumerate(diagonal))
         assert mask == row["mask_diagonal"]
+        # Conjugate the ten exact-vector parabolic generators by this
+        # integral word. Their resulting reflections fix this *actual*
+        # primitive isotropic vector, not just its discriminant class.
+        conjugate_masks = set()
+        for parabolic_root in ten_roots:
+            transported = list(parabolic_root)
+            for i in row["word_from_base"]:
+                root = roots[i]
+                n = pairing(root, root)
+                numerator = 2 * pairing(transported, root)
+                assert numerator % n == 0
+                k = numerator // n
+                transported = [a - k * b for a, b in zip(transported, root)]
+            assert abs(pairing(transported, transported)) == 2
+            assert pairing(transported, v) == 0
+            diagonal_root = [sum(change[i][j] * transported[j]
+                                 for j in range(11)) for i in range(11)]
+            conjugate_masks.add(sum((x % 2) << i
+                                    for i, x in enumerate(diagonal_root)))
+        assert len(conjugate_masks) == 10
