@@ -16,6 +16,10 @@ EDGE = re.compile(r"\[(Otilde\+?)\] edge (\d+): L(\d+) < P(\d+);")
 DECIDED = re.compile(
     r"\[(Otilde\+?)\] decided: (\d+) edges over (\d+) line cusps and (\d+) plane cusps"
 )
+SUMMARY = (
+    "recorded counts: Otilde 569160 edges over 527 line and 189720 plane cusps; "
+    "Otilde+ 569160 edges over 527 line and 189720 plane cusps"
+)
 
 
 def audit(path: Path) -> None:
@@ -24,8 +28,11 @@ def audit(path: Path) -> None:
     pairs = {label: set() for label in LABELS}
     positions = {label: set() for label in LABELS}
     decided = {}
+    summaries = 0
     with path.open(encoding="utf-8", errors="replace") as stream:
         for line in stream:
+            if SUMMARY in line:
+                summaries += 1
             match = VERTEX.search(line)
             if match:
                 label, kind, index = match.groups()
@@ -50,6 +57,7 @@ def audit(path: Path) -> None:
                 label, edges, lines, planes = match.groups()
                 assert label not in decided, label
                 decided[label] = tuple(map(int, (edges, lines, planes)))
+    assert summaries == 1, ("final successful two-row summary", summaries)
     for label in LABELS:
         assert vertices[label]["line"] == set(range(EXPECTED[1])), (label, "line vertices")
         assert vertices[label]["plane"] == set(range(EXPECTED[2])), (label, "plane vertices")
