@@ -3,6 +3,7 @@
 import json
 import hashlib
 import gzip
+import importlib.util
 import subprocess
 from collections import Counter
 from itertools import combinations
@@ -319,3 +320,11 @@ def test_bounded_compressed_shard_is_explicitly_incomplete(tmp_path):
             assert all(sum(g[k][i] * gram[k][l] * g[l][j]
                            for k in range(11) for l in range(11)) == gram[i][j]
                        for i in range(11) for j in range(11))
+    spec = importlib.util.spec_from_file_location(
+        "coble_kernel_audit", folder / "coble_kernel_public_incidence_audit.py")
+    assert spec is not None and spec.loader is not None
+    audit = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(audit)
+    assert audit.audit_integral_shard(output, allow_incomplete=True) == 2
+    with pytest.raises(AssertionError):
+        audit.audit_integral_shard(output)

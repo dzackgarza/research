@@ -19,6 +19,7 @@ Usage:
 import argparse
 import ast
 import hashlib
+import gzip
 import json
 from collections import Counter
 from itertools import combinations
@@ -33,6 +34,66 @@ if not __debug__:
 
 LABELS = ("Otilde", "Otilde+")
 EXPECTED = (569160, 527, 189720)
+
+
+def audit_integral_shard(path: Path, *, allow_incomplete: bool = False) -> int:
+    """Independently verify a compressed exact transporter shard, without trusting its producer."""
+    folder = Path(__file__).resolve().parent
+    line_path = folder / "coble_singular_integral_representatives.json"
+    plane_path = folder / "coble_plane_integral_star_section.json"
+    lines = json.loads(line_path.read_text())
+    planes = json.loads(plane_path.read_text())
+    source = {r["mask_diagonal"]: tuple(r["vector_standard"])
+              for r in lines["representatives"]}
+    basis = [tuple(int(i == j) for i in range(11)) for j in range(11)]
+    digest = hashlib.sha256()
+    with gzip.open(path, "rb") as stream:
+        header = json.loads(next(stream))
+        assert header["schema"] == "coble-exact-kernel-transport-shard-v1"
+        assert header["complete"] is False
+        assert header["line_certificate_sha256"] == hashlib.sha256(line_path.read_bytes()).hexdigest()
+        assert header["plane_certificate_sha256"] == hashlib.sha256(plane_path.read_bytes()).hexdigest()
+        index, total = header["shard_index"], header["shard_count"]
+        assert type(index) is type(total) is int and 0 <= index < total
+        expected = 24 * len(range(index, len(planes["finite_plane_transports"]), total))
+        assert header["expected_edges"] == expected
+        count = 0
+        for raw in stream:
+            row = json.loads(raw)
+            if "trailer" in row:
+                assert row["trailer"] == header["schema"]
+                assert row["records"] == count and row["records_sha256"] == digest.hexdigest()
+                assert row["complete"] is (count == expected)
+                assert row["complete"] or allow_incomplete
+                assert next(stream, None) is None
+                return count
+            digest.update(raw)
+            plane_index = index + (count // 24) * total
+            assert (row["plane_index"], row["seed_index"], row["flag_index"]) == (
+                plane_index, (count % 24) // 3, count % 3)
+            assert plane_index < len(planes["finite_plane_transports"])
+            assert row["line_mask_diagonal"] in planes["finite_plane_transports"][plane_index]["finite_plane_masks"]
+            u = source[row["line_mask_diagonal"]]
+            v = tuple(row["flag_vector_standard"])
+            assert len(v) == 11 and gcd(*v) == 1 and pairing(v, v) == 0
+            for field in ("kernel_matrix_standard", "positive_kernel_matrix_standard"):
+                g = row[field]
+                assert len(g) == 11 and all(len(r) == 11 for r in g)
+                assert all(type(x) is int for r in g for x in r)
+                assert all(g[i][j] % 2 == int(i == j) for i in range(11) for j in range(11))
+                assert tuple(sum(g[i][j] * u[j] for j in range(11)) for i in range(11)) == v
+                columns = [tuple(g[i][j] for i in range(11)) for j in range(11)]
+                assert all(pairing(columns[i], columns[j]) == pairing(basis[i], basis[j])
+                           for i in range(11) for j in range(11))
+            g = row["positive_kernel_matrix_standard"]
+            x, y = basis[0], tuple(int(i in (1, 2)) for i in range(11))
+            gx = tuple(sum(g[i][j] * x[j] for j in range(11)) for i in range(11))
+            gy = tuple(sum(g[i][j] * y[j] for j in range(11)) for i in range(11))
+            assert pairing(x, gx) * pairing(y, gy) - pairing(x, gy) * pairing(y, gx) > 0
+            assert row["positive_kernel_matrix_sha256"] == hashlib.sha256(
+                json.dumps(g, separators=(",", ":")).encode()).hexdigest()
+            count += 1
+    raise AssertionError("missing terminal shard certificate")
 VERTEX = re.compile(r"\[(Otilde\+?)\] (line|plane) cusp (\d+): (\(.*\))")
 EDGE = re.compile(
     r"\[(Otilde\+?)\] edge (\d+): L(\d+) < P(\d+); "
@@ -275,14 +336,23 @@ if __name__ == "__main__":
     source = parser.add_mutually_exclusive_group(required=True)
     source.add_argument("--log", type=Path, help="saved complete public workflow log")
     source.add_argument("--run-id", type=int, help="fetch a successful public workflow run")
+    source.add_argument("--shard", type=Path, help="independently audit a compressed integral transporter shard")
     parser.add_argument("--class-only", action="store_true",
                         help="verify divided-class endpoints, not integral edge transporters")
+    parser.add_argument("--allow-incomplete", action="store_true",
+                        help="diagnostic shard verification only, never full acceptance")
     args = parser.parse_args()
-    if args.log is not None:
+    if args.shard is not None:
+        assert not args.class_only
+        count = audit_integral_shard(args.shard, allow_incomplete=args.allow_incomplete)
+        print(f"independently verified integral transporter shard: {count} records")
+    elif args.log is not None:
+        assert not args.allow_incomplete
         audit(args.log, class_only=args.class_only)
         with args.log.open("rb") as source_file:
             print(f"audited log SHA-256: {hashlib.file_digest(source_file, 'sha256').hexdigest()}")
     else:
+        assert not args.allow_incomplete
         repository = "dzackgarza/sage-extensions"
         status = json.loads(subprocess.run(
             ["gh", "run", "view", str(args.run_id), "-R", repository,
