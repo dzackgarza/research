@@ -12,6 +12,10 @@ sizes, not integral orbit cardinalities. Graph isomorphism, not equality of
 these labels, is the comparison invariant.
 """
 from itertools import permutations
+import re
+import subprocess
+import sys
+from pathlib import Path
 
 public = {
     (0, 0), (3, 0), (2, 0), (3, 1), (1, 1), (3, 2), (2, 2),
@@ -23,6 +27,30 @@ finite = {
     (120, 22680), (135, 22680), (120, 69120), (270, 69120),
     (135, 75600), (270, 75600),
 }
+# Optional source verification: read the actual public workflow log rather than
+# trusting the copied index pairs.  The default mode remains offline/reproducible.
+if "--verify-public-source" in sys.argv:
+    log = subprocess.run(
+        ["gh", "run", "view", "43556671111", "-R", "dzackgarza/sage-extensions", "--log"],
+        check=True, text=True, capture_output=True,
+    ).stdout
+    matches = re.findall(r"\[Gamma_\{Co,2\}\] edge \d+: L(\d+) < P(\d+)", log)
+    extracted = {(int(l), int(p)) for l, p in matches}
+    assert len(matches) == 13 and extracted == public, (len(matches), extracted ^ public)
+    print("public source edges verified against workflow log:", len(matches))
+
+# Verify the other copied edge set against the committed finite enumeration.
+finite_log = Path(__file__).with_name("coble_gco_plane-orbits-run.txt").read_text()
+finite_rows = re.findall(r"plane size\s+(\d+): \[((?:\(\d+, \d+\)(?:, )?)+)\]", finite_log)
+extracted_finite = {
+    (int(vector), int(plane))
+    for plane, entries in finite_rows
+    for vector, multiplicity in re.findall(r"\((\d+), (\d+)\)", entries)
+    if int(multiplicity) == 1
+}
+assert len(finite_rows) == 7 and extracted_finite == finite
+print("finite source edges verified against committed transcript:", len(extracted_finite))
+
 line_types = (2, 120, 135, 270)
 plane_types = (2160, 3150, 7560, 9450, 22680, 69120, 75600)
 assert len(public) == len(finite) == 13
