@@ -102,7 +102,7 @@ The full group $\Gamma$ need not preserve the fibre over $D$. Its subgroup $\Gam
 With $\mathcal X$ as above, let $\mathcal R$ be a set of representatives of the $H=\rho_{L,q}(\Gamma)$-orbits on the finite data attained by $\mathcal X$. If $K\subseteq\Gamma$, the total number of $\Gamma$-orbits in $\mathcal X$ is the sum over $D\in\mathcal R$ of the double-coset counts in @thm:descent-double-coset. No surjectivity assumption on $\rho_{L,q}(\Gamma)$ is used. Surjectivity of $\rho_{L,q}$ on $\Orth(L)$ is used only to choose an integral lift of any desired $q\in Q$.
 :::
 
-Here $S\leq F$, because $\Stab_{\Orth(L)}(x)$ preserves $D(x)$ by @lem:descent-subobject-data; the fibre over $D$ is one $\Gamma$-orbit exactly when $(H\cap F)S=F$.
+Here $S\leq F$, because $\Stab_{\Orth(L)}(x)$ preserves $D(x)$ by @lem:descent-subobject-data; the fibre over $D$ is one $\Gamma_D$-orbit exactly when $(H\cap F)S=F$. This is a transitivity criterion for the **fibre-preserving** subgroup $\Gamma_D$, not a claim that the full $\Gamma$ acts on the fixed fibre.
 
 ## Spinor restriction {#sec-descent-spinor}
 
