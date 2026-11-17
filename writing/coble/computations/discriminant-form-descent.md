@@ -329,6 +329,16 @@ Item d is item 2 of @prop:coble-arithmetic-flag-incidence, which is item 2 of @p
 
 ## The stabilizer's discriminant image is a congruence quotient {#sec-descent-congruence}
 
+::: {.corollary #cor:coble-heegner-integral-plane-descent title="Integral plane and flag orbits for the Coble Heegner subgroup"}
+Let $T_\Co=B(2)$ and let $G_\Co\leq\Orth(q_{T_\Co})$ be the finite image of @thm:coble-heegner-finite-orbits. Put $\Gamma=\rho_{T_\Co}^{-1}(G_\Co)$. Then $\Gamma$ has seven orbits of primitive isotropic planes and thirteen orbits of incident primitive isotropic line-plane flags. The same numbers hold for $\Gamma\intersect\Orth^+(T_\Co)$.
+:::
+
+::: {.proof}
+The kernel inclusion $\ker\rho_{T_\Co}\subseteq\Gamma$ is immediate from the definition of $\Gamma$. By @thm:cusp-lifting(2), the integral plane orbits are the $G_\Co$-orbits of pairs $(J,s)$ consisting of an order-$4$ isotropic subgroup and one of its eight stars; by @thm:cusp-lifting(3), the flag orbits are the $G_\Co$-orbits of triples $(J,s,c)$ with $0\neq c\in J$. The exact finite enumeration in `computations/reports/coble_gco_plane-orbits.py` and `computations/reports/coble_gco_plane-orbits-run.txt`, cited in the proof of @thm:cusp-lifting, gives respectively seven and thirteen orbits. The spinor-negative stabilizers constructed in @thm:cusp-lifting(4) show that neither orbit set splits upon intersection with $\Orth^+(T_\Co)$.
+:::
+
+The five orbits of $G_\Co$ on *undecorated* finite isotropic planes in @tbl-finite-plane-orbits are not five integral plane orbits: the integral fibre over each finite plane has eight star choices by @lem:plane-stars, and the arithmetic group acts on those choices. In particular the seven integral plane orbits above do not follow from the five-row table without this stabilizer-image calculation. These statements concern $\rho^{-1}(G_\Co)$, identified with $\Gamma_{\Co,2}$ in @prop:coble-cong-point-stabilizer, and not the geometric monodromy group $\Gamma_\Co$; the latter's equality with the stable group is @conj:gamma-co-stable.
+
 ::: {.definition #def:stabilizer-congruence-data title="The congruence data of a lattice stabilizer"}
 
 Let $V$ be a finite-dimensional vector space over $\bQ$ with a nondegenerate symmetric bilinear form $\beta$.
@@ -896,4 +906,3 @@ Let $L\cong U\perp U_1\perp L_0$, with $U_1$ a second hyperbolic plane. If $v,v'
 ::: {.proof}
 Apply @thm:eichler-criterion to $v_1=v$ and $v_2=v'$: both squares are $0$, and $v_1^*=v_2^*$ by hypothesis.
 :::
-
