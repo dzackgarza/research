@@ -15,6 +15,7 @@ it does NOT certify a returned integral edge flag or subgroup transporter.
 Usage:
     python3 computations/reports/coble_kernel_public_incidence_audit.py --run-id RUN
     python3 computations/reports/coble_kernel_public_incidence_audit.py --log LOG
+    python3 computations/reports/coble_kernel_public_incidence_audit.py --shards shard-*.jsonl.gz
 """
 import argparse
 import ast
@@ -399,6 +400,8 @@ if __name__ == "__main__":
     source.add_argument("--log", type=Path, help="saved complete public workflow log")
     source.add_argument("--run-id", type=int, help="fetch a successful public workflow run")
     source.add_argument("--shard", type=Path, help="independently audit a compressed integral transporter shard")
+    source.add_argument("--shards", nargs="+", type=Path,
+                        help="certify the full 569160-edge family of compressed shards")
     parser.add_argument("--class-only", action="store_true",
                         help="verify divided-class endpoints, not integral edge transporters")
     parser.add_argument("--allow-incomplete", action="store_true",
@@ -408,6 +411,29 @@ if __name__ == "__main__":
         assert not args.class_only
         count = audit_integral_shard(args.shard, allow_incomplete=args.allow_incomplete)
         print(f"independently verified integral transporter shard: {count} records")
+    elif args.shards is not None:
+        assert not args.class_only and not args.allow_incomplete
+        indices = set()
+        total = None
+        hashes = None
+        edges = 0
+        for path in args.shards:
+            with gzip.open(path, "rt", encoding="utf-8") as stream:
+                header = json.loads(next(stream))
+            assert header["schema"] == "coble-exact-kernel-transport-shard-v1"
+            if total is None:
+                total = header["shard_count"]
+                hashes = (header["line_certificate_sha256"],
+                          header["plane_certificate_sha256"])
+            assert header["shard_count"] == total
+            assert (header["line_certificate_sha256"],
+                    header["plane_certificate_sha256"]) == hashes
+            assert header["shard_index"] not in indices, "duplicate shard index"
+            indices.add(header["shard_index"])
+            edges += audit_integral_shard(path)
+        assert total is not None and indices == set(range(total)), "missing shard indices"
+        assert edges == EXPECTED[0], "missing integral flag transporters"
+        print(f"independently certified complete integral kernel incidence: {edges} edges")
     elif args.log is not None:
         assert not args.allow_incomplete
         audit(args.log, class_only=args.class_only)

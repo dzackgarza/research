@@ -15,6 +15,8 @@ the original line/plane indices and exact integral transporter matrices:
     sage computations/reports/coble_plane_integral_star_section.py shard 0 8 shard-0.jsonl.gz
 Independently audit a completed shard (the final count/digest trailer is required):
     python3 computations/reports/coble_kernel_public_incidence_audit.py --shard shard-0.jsonl.gz
+After all shard indices have been generated, certify their disjoint union:
+    python3 computations/reports/coble_kernel_public_incidence_audit.py --shards shard-*.jsonl.gz
 For a deliberately truncated diagnostic, use --allow-incomplete on the auditor;
 this does not certify the missing edges or the public library operation.
 """
@@ -308,7 +310,7 @@ if raw_args and raw_args[0]=='shard':
  requests=product(range(shard_index,len(rows),shard_count),range(8),range(3))
  if limit is not None:
   requests=islice(requests,limit)
- with gzip.open(output_path,'wt',encoding='utf-8') as stream:
+ with gzip.open(output_path,'xt',encoding='utf-8') as stream:
   stream.write(json.dumps(header,separators=(',',':'))+'\n')
   for plane_index,seed_index,flag_index in requests:
    record=construct_flag_transporter(plane_index,seed_index,flag_index)

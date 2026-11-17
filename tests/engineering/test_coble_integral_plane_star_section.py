@@ -369,6 +369,12 @@ def test_complete_single_plane_shard_is_independently_certified(tmp_path, plane_
          "--shard", str(output)],
         cwd=folder.parents[1], capture_output=True, text=True, check=True,
     )
+    missing = subprocess.run(
+        ["python3", str(folder / "coble_kernel_public_incidence_audit.py"),
+         "--shards", str(output)],
+        cwd=folder.parents[1], capture_output=True, text=True,
+    )
+    assert missing.returncode != 0 and "missing shard indices" in missing.stderr
     duplicate = tmp_path / "duplicate-class.jsonl.gz"
     records[1] = dict(records[0], flag_index=1)
     digest = hashlib.sha256()
