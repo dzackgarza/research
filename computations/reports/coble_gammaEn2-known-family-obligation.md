@@ -225,6 +225,21 @@ The public rank-one operations had already returned five and two,
 respectively. Thus the full published **5/9** polarized and **2/2**
 full-orthogonal-group line/plane count comparison is now executed through
 public operations, not merely inferred from the finite discriminant action.
+The exact card comparison is as follows. The current
+`lattice-database/lattices/029J.md` card has
+`integral.primitive_orbits.O.constant = 2`; both public full-$O(T_{\En})$
+line and plane operations return **2**. The current arithmetic-group card
+`lattice-database/arithmetic-groups/gamma-en-2.md` records
+`parent_group: o-t-en` and `index_in_orthogonal_group: 67456`;
+the public construction uses exactly `T.Aut().discriminant_preimage(M)`
+with $|O(q_T)|=46\,998\,591\,897\,600$ and
+$|M|=696\,729\,600$, giving the card's index **67456**.
+The **five line and nine plane** counts are the cited published
+AEGS/Sterk classification, and the current `029J` card does **not** store
+separate `gamma-en-2` primitive-orbit values. The public outputs agree
+with the published values; no nonexistent card row is claimed to have
+been read or certified.
+
 The earlier slow or failed runs below are retained as historical evidence.
 
 ## The lattice-side owners, and the exact revisions of the one call that fails
