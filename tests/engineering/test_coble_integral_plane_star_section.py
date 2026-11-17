@@ -151,6 +151,21 @@ def test_all_coble_integral_plane_star_words():
     flag_map = flag_maps[sample["flag_index"]]
     reconstructed_ambient = plane_word * seed_reflection * flag_map * line_word.inverse()
     assert reconstructed_ambient == matrix(ZZ, sample_matrix)
+    # The producer's F_2 column-mask action must equal the actual integral
+    # action on every one of the 527 nonzero singular discriminant classes.
+    diagonal_correction = (diagonal_change * line_word.inverse() *
+                           reconstructed_ambient * line_word * inverse_change)
+    column_masks = [sum((int(diagonal_correction[i, j]) & 1) << i
+                        for i in range(11)) for j in range(11)]
+    for class_mask in singular:
+        direct = diagonal_correction * vector(
+            ZZ, [(class_mask >> j) & 1 for j in range(11)])
+        expected = sum((int(direct[i]) & 1) << i for i in range(11))
+        image = 0
+        for j in range(11):
+            if (class_mask >> j) & 1:
+                image ^= column_masks[j]
+        assert image == expected
     parabolic_word = identity_matrix(ZZ, 11)
     for index, exponent in sample["parabolic_correction_word"]:
         parabolic_word = (reflection_matrix(

@@ -207,8 +207,18 @@ def construct_flag_transporter(sample_plane_index, sample_seed_index, sample_fla
  # constructed below fixes u0 exactly.
  assert mask(change*base_correction*u0)==mask(change*u0)
  diagonal_correction=change*base_correction*to_standard
- target_permutation=[positions[mask(diagonal_correction*vector(
-  ZZ,[(x>>i)&1 for i in range(11)]))] for x in singular]
+ # The discriminant action is linear over F_2. Form its eleven column masks
+ # once; constructing 527 Sage vectors and multiplying 527 integral matrices
+ # per flag is unnecessary and dominated the hot loop.
+ correction_columns=[sum((int(diagonal_correction[i,j])&1)<<i for i in range(11))
+                     for j in range(11)]
+ target_permutation=[]
+ for x in singular:
+  image=0
+  for j in range(11):
+   if (x>>j)&1:
+    image^=correction_columns[j]
+  target_permutation.append(positions[image])
  target=parabolic_group(target_permutation)
  # Obtain the free-group word in GAP's unambiguous integer-pair format.
  # Parsing Sage's display string is invalid: it can contain parenthesized
