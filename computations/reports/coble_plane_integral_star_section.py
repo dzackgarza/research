@@ -296,7 +296,7 @@ if raw_args and raw_args[0]=='shard':
  expected_edges=24*len(range(shard_index,len(rows),shard_count))
  header={'schema':'coble-exact-kernel-transport-shard-v1',
          'shard_index':shard_index,'shard_count':shard_count,
-         'expected_edges':expected_edges,'complete':limit is None,
+         'expected_edges':expected_edges,'complete':False,
          'line_certificate_sha256':hashlib.sha256(line_certificate.read_bytes()).hexdigest(),
          'plane_certificate_sha256':hashlib.sha256(plane_certificate.read_bytes()).hexdigest()}
  count=0

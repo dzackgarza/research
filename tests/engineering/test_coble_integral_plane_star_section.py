@@ -286,7 +286,7 @@ def test_bounded_compressed_shard_is_explicitly_incomplete(tmp_path):
     assert header["schema"] == "coble-exact-kernel-transport-shard-v1"
     assert header["shard_index"] == 0 and header["shard_count"] == 8
     assert header["expected_edges"] == 24 * len(range(0, 23715, 8))
-    assert header["complete"] is False
+    assert header["complete"] is False  # Only the final trailer can certify completion.
     assert header["plane_certificate_sha256"] == original
     assert header["line_certificate_sha256"] == hashlib.sha256(
         line_source.read_bytes()
