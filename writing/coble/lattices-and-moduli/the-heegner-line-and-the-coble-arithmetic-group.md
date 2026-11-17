@@ -1321,7 +1321,9 @@ The record is sage-extensions#357, closed at `4533f0fdbe`; its commit body is th
 
 On the same lattice the record checks the hypotheses that @lem:isotropic-classes-lift and @lem:cusp-vector-stabilizer-image prove, at the representative of the one $\Orth(T_\Co)$-orbit of primitive isotropic vectors: the split-signature witness held ($46.9$ s), the complement's discriminant surjectivity held ($29.3$ s), the divided class of that vector was nonzero, and the two line-stabilizer images returned $([f_2],\text{False})$ and $([f_2],\text{True})$, in $1092.7$ s and $224.2$ s.
 
-It names the provider revisions `a5fa20dc63` and `1ae9568197` and the port pinned at `991b88b0`, and the test that accompanies the two rows asserts what the construction guarantees for every output --- that each representative is a primitive isotropic line of $T_\Co$, and that the second row has at least as many orbits as the first, the second group being the smaller --- and not the count, which no card holds yet.
+The revisions the rows ran at are not in the body of `4533f0fdbe`, which names the port `991b88b0` and no revision: the run report retained at `61394dad3de18255fc1b2488eadc72fc67f9c6b4` --- `results/issue357-tco-kernel-rows.md`, the evidence file whose content that commit moved into its own body --- records that all rows were run on the #357 worktree at `a5fa20dc63` with the port bound at `991b88b0`.
+
+The test is recorded in a separate commit, `1ae9568197894256e7fd45e294c12ecdb7c142f8`, whose body states that the test records both counts and compares each with the page-proof value of `sec-cusp-lifting` in its docstring, its assertions being the recorded computed counts and never the page. `4533f0fdbe` then removed the two `cardinal(527)` assertions, so what the test asserts now is the construction's guarantee for every output --- that each representative is a primitive isotropic line of $T_\Co$, and that the second row has at least as many orbits as the first, the second group being the smaller --- and not the count, which no card holds yet.
 :::
 
 ::: {.proposition #prop:coble-planecusp-finite title="The isotropic subgroups of order $4$ of $A_{T_\Co}$"}
