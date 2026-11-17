@@ -74,6 +74,19 @@ stars=[frozenset(map(coset,w))]
 for x in w:
  stars.append(frozenset(coset(y^(x if (x&y).bit_count()%2 else 0)) for y in w))
 assert len(set(stars))==8 and all(len(s)==7 for s in stars)
+# Independently reconstruct each star from the *integral* negative-definite
+# quotient basis of its seed plane. A seed reflection carries the seven
+# norm-minus-one basis vectors d_i to an orthogonal norm-minus-one basis of
+# the new P^perp/P; their six-fold sums are the seven characteristic star
+# classes. This rules out a merely formal permutation of the eight labels.
+for seed_index,root in enumerate(seed_roots):
+ negative_units=[reflect(x,root) for x in d]
+ assert all(pair(x,x)==-1 for x in negative_units)
+ assert all(pair(x,y)==0 for x,y in combinations(negative_units,2))
+ integral_star=frozenset(coset(mask(sum((negative_units[j]
+                       for j in range(7) if j!=i),vector(ZZ,11))))
+                       for i in range(7))
+ assert integral_star==stars[seed_index+1]
 root_masks=[mask(r) for r in roots]
 parent={J0:None}; queue=deque([J0])
 while queue:
