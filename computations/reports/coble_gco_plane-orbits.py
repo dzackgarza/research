@@ -287,6 +287,18 @@ if globals().get("VERIFY_PUBLIC_PLANES", False):
         assert decorated_plane_of_integral_rows(
             (-p[0], *p[1:]), (-q[0], *q[1:])
         ) == invariant
+        # Reflection in the first simple E8 root has square -2 and sends
+        # the first E8 coordinate x_0 to -x_0+x_2 in Sage's Cartan basis.
+        # Its mod-two action is exactly GENS[1]. Check equivariance of the
+        # canonical star under a genuinely nontrivial discriminant image.
+        reflected_p, reflected_q = list(p), list(q)
+        reflected_p[3] = -p[3] + p[5]
+        reflected_q[3] = -q[3] + q[5]
+        finite_reflection = GENS[1]
+        assert decorated_plane_of_integral_rows(reflected_p, reflected_q) == (
+            frozenset(finite_reflection[x] for x in invariant[0]),
+            frozenset(finite_reflection[x] for x in invariant[1]),
+        )
         orbit_size = finite_orbit_of[invariant]
         assert int(index) not in observed_sizes
         observed_sizes[int(index)] = orbit_size
@@ -296,6 +308,7 @@ if globals().get("VERIFY_PUBLIC_PLANES", False):
     print("all seven public integral planes occupy distinct finite decorated orbits:", True)
     print("canonical stars invariant under swap, shear and sign changes of all seven plane bases:", True)
     print("canonical stars invariant under discriminant-trivial positive-unit reflection:", True)
+    print("canonical stars equivariant under nontrivial E8 root reflection:", True)
 
     # The workflow returns a *separate integral flag witness* for each edge.
     # Classify that witness by its actual quotient star and divided line

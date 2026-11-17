@@ -45,6 +45,7 @@ integral public plane -> finite decorated-plane orbit size:
 all seven public integral planes occupy distinct finite decorated orbits: True
 canonical stars invariant under swap, shear and sign changes of all seven plane bases: True
 canonical stars invariant under discriminant-trivial positive-unit reflection: True
+canonical stars equivariant under nontrivial E8 root reflection: True
 integral public edge witness -> finite (plane,vector,flag) orbit sizes:
   edge 0 L0<P0: (2160,2,2160)
   edge 1 L3<P0: (2160,270,2160)
