@@ -189,6 +189,25 @@ def test_item_7_the_orbit_decision_probe_and_its_bound() -> None:
     assert "PROBE_EXIT=124" in text or "PROBE_EXIT=137" in text
 
 
+def test_item_7_the_last_invariant_agrees() -> None:
+    """Item 7: the isometry class of the complement, which is the classical obstruction, agrees.
+
+    The complements of the three roots in K_5 are the invariant that decides O(K_5)-orbits of
+    primitive vectors.  The library builds each from its Gram and decides the isometry in under a
+    second --- `is_isometric_to` returns a verified boolean --- and all three pairs come out
+    isometric.  So every invariant computable on the pair agrees, and the orbit question is left
+    to the subgroup alone.
+    """
+    record = ROOT / "computations/reports/coble_760-isometry-decision-probe.py"
+    run = ROOT / "computations/reports/coble_760-isometry-decision-probe-run.txt"
+    assert record.exists() and run.exists(), (record, run)
+    text = run.read_text(encoding="utf-8")
+    assert text.count("is_isometric_to -> True") == 3, text.count("is_isometric_to -> True")
+    assert text.count("Integral lattice of rank 9 and signature (1, 8)") == 3
+    assert "no complement invariant separates the roots" in text
+    assert text.rstrip().endswith("PYEXIT=0")
+
+
 def test_item_8_cusp_four_is_not_a_pair() -> None:
     """Item 8: the transcript prints one admissible root at cusp 4."""
     text = FACE_RUN.read_text(encoding="utf-8")

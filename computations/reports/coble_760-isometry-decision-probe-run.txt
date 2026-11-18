@@ -1,0 +1,13 @@
+label 14: complement det 512, rank 9
+
+complement of label 12 as a library lattice: Integral lattice of rank 9 and signature (1, 8)
+complement of label 13 as a library lattice: Integral lattice of rank 9 and signature (1, 8)
+complement of label 14 as a library lattice: Integral lattice of rank 9 and signature (1, 8)
+labels 12,13: is_isometric_to -> True  (0.2 s)
+labels 12,14: is_isometric_to -> True  (0.0 s)
+labels 13,14: is_isometric_to -> True  (0.0 s)
+
+all three complements isometric: no complement invariant separates the roots, so the
+orbit question is decided by the subgroup and by nothing computable on the pair
+elapsed 0 s
+PYEXIT=0
