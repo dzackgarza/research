@@ -157,6 +157,7 @@ def main():
                 sorted(star) for star in star_sets
             ],
             "integral_plane_representatives_standard": planes["base_planes_standard"],
+            "flag_line_coefficients": planes["flag_line_coefficients"],
             "finite_plane_transports": [
                 {
                     "finite_plane_masks": entry["finite_plane_masks"],
