@@ -28,12 +28,20 @@ Run it with
     python3 -m pytest tests/engineering/test_coble_a13_acceptance.py \
         -q -o addopts="" --confcutdir=tests/engineering
 
-The two overrides are environment facts, not concessions: `-o addopts=""` drops the project's
-addopts, which require pytest-timeout and pytest-reportlog, and `--confcutdir` keeps
-tests/conftest.py out of the run, that file importing dzack_research, whose install would pull
-pandoc-config, sage-extensions and streamlit for a test that needs only sympy.  Nothing here
-touches the sage image, so the job that runs it is a plain ubuntu-latest python job; it is
-prepared but not landed, a push touching .github/workflows/ needing `workflow` permission.
+The two overrides are for a bare interpreter: `-o addopts=""` drops the project's addopts, which
+require pytest-timeout and pytest-reportlog, and `--confcutdir` keeps tests/conftest.py out of the
+run, that file importing dzack_research, whose install would pull pandoc-config, sage-extensions
+and streamlit for a test that needs only sympy.
+
+No workflow file of its own is needed.  The gate that runs on every push and pull request
+(.github/workflows/development.yml) delegates to ai-review-ci's sage profile, whose
+_sage-pytest-coverage collects every tests/**/test_*.py outside tests/acceptance/ and the QC
+exclusions -- this file among them, as ai-review-ci's _sage-python-test-files prints -- and runs
+it under the Sage interpreter with the project's own conftest and pytest configuration.  Nothing
+here touches the sage image beyond that.  The explicit ubuntu-latest job prepared for this one
+file was withdrawn: it repeats a run the gate already carries, and a push adding a file under
+.github/workflows/ is refused without `workflows` permission, which is the refusal GitHub gave
+for it.
 """
 
 import subprocess
