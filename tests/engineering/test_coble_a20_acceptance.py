@@ -259,7 +259,11 @@ def test_item1_pages_citing_the_open_form_are_updated():
     Decides the last clause of item 1's acceptance.  The two remarks the
     acceptance names were folded into one by the house-style pass; what the
     check enforces is that a remark carrying the computation sits with the
-    proposition, and that both registers state the condition that remains.
+    proposition, and that both registers state where the block question stands.
+    Updated when the block condition was decided: the remark now points at the
+    decision instead of naming it as the remaining condition, the register row
+    carries the resulting equality, and the open problem no longer lists the
+    answered item.
     """
     page = _text(PAGE)
     prop_at = page.index("{.proposition #prop:gamma-cong-eq-heegner")
@@ -268,22 +272,65 @@ def test_item1_pages_citing_the_open_form_are_updated():
     assert prop_at < remark_at < next_header, "the remark is not attached to the proposition"
     remark = _block(page, '{.remark title="The block condition is satisfiable')
     assert "coble_a20-enriques-gluing-block.py" in remark
-    assert "@qst:gamma-co-generators(2)" in remark
     assert "@prob:coble-rigidity" in remark
+    # the condition is now decided, and the remark says where
+    assert "@prop:coble-block-compatibility" in remark
+    assert "@prop:coble-enriques-ambient-isometry" in remark
 
     q = _text(OPEN_PROBLEMS)
-    item2 = next(line for line in q.splitlines() if line.startswith("2. Are the subgroups"))
-    assert "@def:congruence-group" in item2 and "@prop:gamma-cong-eq-heegner" in item2
-    assert "\\gamma_\\Co(A_{U(2)})" in item2
-    # the entry names the statement that owns it, and why no computation decides it
-    assert "@prob:coble-rigidity" in item2
-    assert "no computation on the discriminant forms decides it" in item2
+    # the answered item has left the question; the two that remain keep their order
+    assert "2. Are the subgroups" not in q
+    assert "3. Let $W(T_\\Co)$" not in q
+    assert "2. Let $W(T_\\Co)$" in q
+    assert "3. Does $\\rho_{T_\\Co}$ admit a section" in q
+    assert "with item 2 it would make the congruence group" in q
+    # and the question says where its block half was decided
+    assert "@prop:coble-block-compatibility" in _block(
+        q, "{.question #qst:gamma-co-generators")
 
     row = next(line for line in _text(OPEN_QUESTIONS).splitlines()
                if line.startswith("| **Equality of the four arithmetic groups**"))
     assert "@prob:group-identification" in row
     assert "@qst:gamma-co-generators" in row
+    assert "@cor:gamma-hdg-is-congruence" in row
+    assert "@prop:coble-block-compatibility" in row
     assert "@prob:coble-rigidity" in row and "@prob:B24" in row and "@prob:B25" in row
+
+
+def test_item1c_the_block_test_is_in_the_record_and_the_transcript_decides_it():
+    """The block condition of @def:congruence-group is decided on the marked gluings.
+
+    Decides: that the answer on the page is backed by a run, that the run tests
+    both gluings, that the search over each target block is exhaustive (4 and
+    256 candidates, one image per class), and that both answers are affirmative.
+    """
+    page = _text(PAGE)
+    prop = _block(page, "{.proposition #prop:coble-block-compatibility")
+    assert "\\gamma_\\Co(A_{U(2)}) = A_{U(2)}" in _block(
+        page, "{.proof}\n\nThe test is `computations/reports/coble_a21-ambient-extension.py`")
+    assert "not block-compatible" not in prop
+
+    cor = _block(page, "{.corollary #cor:gamma-hdg-is-congruence")
+    assert "\\Gamma^{\\mathrm{Hdg}}_\\Co = \\Gamma^\\theta_\\Co" in cor
+
+    run = _text(REPORTS / "coble_a21-ambient-extension-run.txt")
+    script = _text(REPORTS / "coble_a21-ambient-extension.py")
+    assert "6. the block test of @def:congruence-group" in script
+    lines = run.splitlines()
+    start = next(i for i, line in enumerate(lines)
+                 if line.startswith("6. the block test of @def:congruence-group"))
+    block = "\n".join(lines[start:])
+    assert "Coble: gamma_Co is block-compatible" in block
+    assert "Enriques: gamma_En is block-compatible" in block
+    assert "NOT block-compatible" not in block
+    # exhaustive on both blocks, on both sides
+    assert block.count("the whole block: 255 of the 255 nonzero classes have exactly one image"
+                       " inside it") == 2
+    assert block.count("the blocks, as class sets: source U(2) 4, source E8(2) 256,"
+                       " target U(2) 4, target E8(2) 256") == 2
+    assert block.count("gamma carries the U(2) block to the U(2) block: True") == 2
+    # the third block too, on the Coble side
+    assert "the remaining square-2 direction: [alpha/2] lands on [0]" in block
 
 
 # ---------------------------------------------------------------------------
@@ -373,9 +420,9 @@ def test_absorbed_d1_is_b25_with_the_unpolarized_definition():
 def test_absorbed_ri_is_the_index_of_the_reflection_group():
     """(RI) ker rho_T = W, in decidable form: the index of W(T_Co)."""
     q = _text(OPEN_PROBLEMS)
-    item3 = next(line for line in q.splitlines() if line.startswith("3. Let $W(T_\\Co)$"))
-    assert "[\\widetilde\\Orth^+(T_\\Co) : W(T_\\Co)]" in item3
-    assert "@prop:gamma-co-reflective-set" in item3
+    item2 = next(line for line in q.splitlines() if line.startswith("2. Let $W(T_\\Co)$"))
+    assert "[\\widetilde\\Orth^+(T_\\Co) : W(T_\\Co)]" in item2
+    assert "@prop:gamma-co-reflective-set" in item2
 
 
 def test_absorbed_ri_names_the_input_that_would_settle_it():
@@ -391,9 +438,9 @@ def test_absorbed_ri_names_the_input_that_would_settle_it():
     assert "a Coxeter presentation of $W(T_\\Co)$" in qst
     assert "exactly when that chamber has finite volume" in qst
     assert "@prop:gamma-co-reflective-set" in qst
-    item3 = next(line for line in _text(OPEN_PROBLEMS).splitlines()
-                 if line.startswith("3. Let $W(T_\\Co)$"))
-    assert "@qst:gamma-co-reflection-index" in item3
+    item2 = next(line for line in _text(OPEN_PROBLEMS).splitlines()
+                 if line.startswith("2. Let $W(T_\\Co)$"))
+    assert "@qst:gamma-co-reflection-index" in item2
 
 
 def test_absorbed_inv_names_the_input_that_would_settle_it():
@@ -415,10 +462,10 @@ def test_absorbed_inv_names_the_input_that_would_settle_it():
 def test_absorbed_rel_is_the_splitting_question():
     """(REL): a section of rho_T normalizing W(T_Co) and a homomorphism modulo it."""
     q = _text(OPEN_PROBLEMS)
-    item4 = next(line for line in q.splitlines() if line.startswith("4. Does $\\rho_{T_\\Co}$"))
-    assert "\\sigma(p)w\\sigma(p)^{-1}\\in W(T_\\Co)" in item4
-    assert "\\sigma(p)\\sigma(q)\\sigma(pq)^{-1}\\in W(T_\\Co)" in item4
-    assert "W(T_\\Co)\\rtimes P" in item4
+    item3 = next(line for line in q.splitlines() if line.startswith("3. Does $\\rho_{T_\\Co}$"))
+    assert "\\sigma(p)w\\sigma(p)^{-1}\\in W(T_\\Co)" in item3
+    assert "\\sigma(p)\\sigma(q)\\sigma(pq)^{-1}\\in W(T_\\Co)" in item3
+    assert "W(T_\\Co)\\rtimes P" in item3
 
 
 def test_absorbed_inv_is_asked_as_a_question_on_the_page():

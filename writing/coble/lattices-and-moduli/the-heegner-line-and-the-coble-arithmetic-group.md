@@ -531,7 +531,7 @@ Every assertion is a check at the owner on the objects, in `computations/reports
 
 What it settles is the last step of A20 item 2 as stated: the comparison of the labelled Coble and Enriques data is carried by an exhibited element of $\Orth(\lkt)$ rather than by an argument that one exists, and its action on every label is an equality of lattice elements. Part 3 sharpens @prop:coble-enriques-polarized-match: in this marking the two primitive embeddings coincide, the degree-$4$ class of the Coble tuple is the degree-$2$ class of the Enriques tuple, the del Pezzo slot $\sdp$ is the Enriques polarization, and the whole labelled difference between the two data is the sign of the root, which $g$ reverses.
 
-What it does not settle. The chamber clause, for the reason @qst:chamber-clause-one-node gives: a chamber is cut from the effective classes of a member and no isometry of $\lkt$ decides effectivity, so $g$ transports the lattice labels and not $\mcc$. The multi-node locus, where $S_{\mathrm{dP}}$ has rank $k+2$ and the containment $\sdp\subseteq S_\Co$ of @prop:del-pezzo-placement fails for $k\ne1$ (@qst:del-pezzo-saturation-higher-k). And the block-compatibility of $\gamma$ and $\gamma_\Co$ of @def:congruence-group: the two gluings now exist as objects, so the block test is a finite check on an object, but it is not run in this record, and the pair of forms alone still cannot select it (@lem:coble-discriminant-blocks).
+What it does not settle. The chamber clause, for the reason @qst:chamber-clause-one-node gives: a chamber is cut from the effective classes of a member and no isometry of $\lkt$ decides effectivity, so $g$ transports the lattice labels and not $\mcc$. The multi-node locus, where $S_{\mathrm{dP}}$ has rank $k+2$ and the containment $\sdp\subseteq S_\Co$ of @prop:del-pezzo-placement fails for $k\ne1$ (@qst:del-pezzo-saturation-higher-k). The block-compatibility of $\gamma$ and $\gamma_\Co$ of @def:congruence-group is decided separately, on the two gluings as objects: @prop:coble-block-compatibility answers it affirmatively for both.
 
 The Coble-to-Coble form of @prob:coble-rigidity is @thm:a21-labels on the one-node locus, by parallel transport; the object here is the Coble-to-Enriques comparison that A20 item 2 needs, and it does not extend @thm:a21-labels beyond that locus.
 :::
@@ -1284,9 +1284,52 @@ $\Gamma^\theta_\Co$ lies in $\Orth^+(T_\Co)$ and contains $\widetilde\Orth^+(T_\
 By @lem:coble-discriminant-blocks(5) a block-compatible anti-isometry $A_{S_\En}\too A_{T_\En}$ exists, and by (4) one that moves the block exists as well; so the hypothesis of @prop:gamma-cong-eq-heegner(2) is a condition on the chosen gluing, neither vacuous nor automatic.
 Both are on record at the owner, on $A_{S_\En}$ of order $1024$: `computations/reports/coble_a20-enriques-gluing-block.py`, transcript `-run.txt`, finds the three orbits of $\Orth(q_{S_\En})$ on its classes, of sizes $1$, $496$ and $527$, meeting the $U(2)$ block in $1$, $1$ and $2$ classes, with the witness pair $[0]+[1]$ inside and $[2]+[4]+[7]+[9]$ outside, both in the orbit of size $496$ and both of value $1$.
 The same record applies the block test to the anti-isometry that the owner's torsion-form isometry constructor returns for $A_{S_\En}\too A_{T_\En}(-1)$: it satisfies $q_{T_\En}\circ\gamma = -q_{S_\En}$ on all $259$ classes of the two blocks and carries the $U(2)$ block to a four-element subgroup contained in neither block, so that map is not block-compatible.
-The record decides nothing about the gluing of the marked embedding $S_\En\injects\lkt$, and by the orbit computation it cannot: no property of the pair of forms selects a block-compatible anti-isometry.
-What the pair of forms cannot supply, the marked embedding does: @prop:coble-enriques-ambient-isometry builds both primitive embeddings with their marked classes, and the gluing anti-isometry of each inclusion, as objects, so the block test of @def:congruence-group is a finite check on an object rather than a search among anti-isometries.
-That check is not run there; the labelled-embedding datum of @prob:coble-rigidity, and with it the comparison of the Heegner and $\theta$ descriptions with the congruence one (@qst:gamma-co-generators(2)), is what remains after it.
+The record decides nothing about the gluing of the marked embedding $S_\En\injects\lkt$, and by the orbit computation it cannot: no property of the pair of forms selects a block-compatible anti-isometry, and which one a marking induces is the labelled-embedding datum of @prob:coble-rigidity.
+What the pair of forms cannot supply, the marked embedding does: @prop:coble-enriques-ambient-isometry builds both primitive embeddings with their marked classes, and the gluing anti-isometry of each inclusion, as objects; on those objects the block test is a decision, and @prop:coble-block-compatibility runs it and answers it affirmatively for both gluings.
+:::
+
+::: {.proposition #prop:coble-block-compatibility title="Both marked gluings are block-compatible"}
+
+The gluing anti-isometries $\gamma$ of @prop:gamma-en-two-gluing and $\gamma_\Co$ of @prop:theta-co-exists are block-compatible in the sense of @def:congruence-group.
+Precisely, in the model of @prop:coble-enriques-ambient-isometry with
+$$
+S_\En = \Delta(U_2,U_3)\oplus\Delta(E_{8,1},E_{8,2}),\quad S_\Co = S_\En\oplus\ZZ\alpha,
+$$
+$$
+T_\En = U_1\oplus\Delta^-(U_2,U_3)\oplus\Delta^-(E_{8,1},E_{8,2}),\quad T_\Co = \langle\zeta\rangle\oplus\Delta^-(U_2,U_3)\oplus\Delta^-(E_{8,1},E_{8,2}),
+$$
+where $\zeta = e_0+e_1$ has $\zeta^2 = 2$:
+
+1. each of $\gamma\colon A_{S_\En}\iso A_{T_\En}$ and $\gamma_\Co\colon A_{S_\Co}\iso A_{T_\Co}$ carries the $U(2)$ block of its source onto the $U(2)$ block $\Delta^-(U_2,U_3)$ of its target, and the $E_8(2)$ block onto the $E_8(2)$ block $\Delta^-(E_{8,1},E_{8,2})$ of its target;
+2. the restriction to the two blocks is a bijection there: every one of the $1024$ classes of the two blocks has exactly one image, and the eight generators of the $E_8(2)$ block are carried to eight distinct classes of the target block;
+3. $\gamma_\Co$ carries the remaining square-$2$ direction $[\alpha/2]$ to $[\zeta/2]$, which is $[\overline{K_S/2}]\mapsto[\bar\zeta/2]$ of @lem:coble-discriminant-blocks(3) under $\alpha = -f^*K_S$.
+:::
+
+::: {.proof}
+
+The test is `computations/reports/coble_a21-ambient-extension.py` part 6, transcript `-run.txt`, provider main `1488acf`, Sage 11.0.beta5.
+
+*How a class is read off.* Let $x\in S^*$ represent a class of $A_S$ and $y\in T^*$ a class of $A_T$, with $S,T$ one of the two complementary pairs. By Nikulin's gluing theorem (@thm:nikulin-gluing) the class $\gamma(x)$ is the unique class of $A_T$ represented by a $y$ with $x+y\in\lkt$; in the standard basis of $\lkt$ used by @prop:coble-enriques-ambient-isometry that membership is the integrality of the coordinate vector $x+y$. So the search over the target block — four classes for $U(2)$, $256$ for $E_8(2)$, built as the classes of $u/2$ for $u$ running over the block vectors — is exhaustive, and each answer is a decision rather than a search bound. That each representative $u/2$ is a dual vector is checked by the pairing test $u\cdot S\subseteq 2\ZZ$; the classes are the ones of @lem:coble-discriminant-blocks, the $U(2)$ block being the del Pezzo slot and the $E_8(2)$ block being $\Delta(E_{8,1},E_{8,2})$.
+
+*The Coble side.* The three nonzero classes of the $U(2)$ block of $A_{S_\Co}$ land on the three nonzero classes of the $U(2)$ block of $A_{T_\Co}$; the eight generators of the $E_8(2)$ block land on the classes of the eight target block generators, one each; all $255$ nonzero classes of the block have exactly one image inside it; and $[\alpha/2]$ lands on $[\zeta/2]$. Hence $\gamma_\Co(A_{U(2)}) = A_{U(2)}$ and $\gamma_\Co$ preserves the $E_8(2)$ block, which is block-compatibility and more.
+
+*The Enriques side.* The same three statements hold with $A_{S_\En}$ and $A_{T_\En}$ in place of $A_{S_\Co}$ and $A_{T_\Co}$, so $\gamma(A_{U(2)}) = A_{U(2)}$ as well.
+:::
+
+::: {.corollary #cor:gamma-hdg-is-congruence title="The Heegner and $\theta$ descriptions coincide with the congruence one"}
+
+By @prop:coble-block-compatibility the hypotheses of the three equivalences in @prop:gamma-cong-eq-heegner hold, so
+$$
+\rho_{T_\Co}\bigl(\Gamma^{\mathrm{Hdg}}_\Co\bigr) = P = \rho_{T_\Co}\bigl(\Gamma^\theta_\Co\bigr),
+\qquad
+\Gamma^{\mathrm{Hdg}}_\Co = \Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co).
+$$
+:::
+
+::: {.proof}
+
+Items (2), (3) and (4) of @prop:gamma-cong-eq-heegner each state the corresponding assertion as an equivalence with block-compatibility of $\gamma$, respectively of $\gamma_\Co$; @prop:coble-block-compatibility supplies both hypotheses, so each conclusion holds.
+Nothing else enters: the indices computed there ($\abs{P} = \abs{W(E_8)}$, $[\Gamma^{\mathrm{cong}}_{\Co,2}:\widetilde\Orth^+(T_\Co)] = 2\abs{W(E_8)}$) are unchanged.
 :::
 
 ::: {.question #qst:kernel-and-root-arrangement title="The root arrangement"}
