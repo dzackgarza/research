@@ -112,6 +112,26 @@ def test_item_3_the_lean_route_and_its_blocker() -> None:
     assert "Unknown identifier `Semifan`" in checked
 
 
+def test_item_3_names_the_owner() -> None:
+    """Item 3 stops at an owner in another repository, and this pins where that is recorded.
+
+    The obligation is the publication of lean-categories' `Lattices/Valued/` subtree, the lattice,
+    discriminant and orthogonal-group layer a declaration of the semifan statement would sit on.
+    Two tracked files carry that: `computations/scripts/sterk-enriques-cusps/DAG.md` says the
+    refactor and publication is "tracked as an issue on `lean-categories`, not here", and
+    `docs/theory/hyperbolic-index.md` names the modules (`LeanCategories/Lattices/Valued/`).
+    No issue number is recorded in this repository, and the connector reads this project's one
+    connected repository only, so the number cannot be fetched from here.  That is the named
+    input, not a substitute for it.
+    """
+    dag = " ".join((ROOT / "computations/scripts/sterk-enriques-cusps/DAG.md")
+                   .read_text(encoding="utf-8").split())
+    assert "tracked as an issue on `lean-categories`, not here" in dag
+    index = (ROOT / "docs/theory/hyperbolic-index.md").read_text(encoding="utf-8")
+    assert "LeanCategories/Lattices/Valued/" in index
+    assert "~/gitclones/lean-categories" in dag
+
+
 def test_item_4_a_pair_whose_faces_agree() -> None:
     """Item 4: the transcript's face line is the smallest input."""
     text = FACE_RUN.read_text(encoding="utf-8")
@@ -146,6 +166,46 @@ def test_item_7_the_inequivalence_leg_and_its_bound() -> None:
     remark = block("rmk:coble-root-orbits-cusp-five")
     for token in ("20\\,484", "depth $12$", "divisibility $1$ in $K_5$", "not proved"):
         assert token in remark, token
+
+
+def test_item_7_the_orbit_decision_probe_and_its_bound() -> None:
+    """Item 7's probe: what the library can and cannot do, run against a stated bound.
+
+    The library builds K_5 in about a second and exposes orbit series for its standard
+    orthogonal subgroups; it exposes no reduction or normal form for a subgroup, and
+    ``K.primitive_orbit_series(bound=4)`` does not return within the wrapper's bound.  Those three
+    facts are what make the orbit question undecidable here rather than merely unattempted, and
+    the transcript carries all of them.
+    """
+    record = ROOT / "computations/reports/coble_760-orbit-decision-probe.py"
+    run = ROOT / "computations/reports/coble_760-orbit-decision-probe-run.txt"
+    assert record.exists() and run.exists(), (record, run)
+    text = run.read_text(encoding="utf-8")
+    assert "K_5 = eta_5^perp / Z eta_5: Integral lattice of rank 10" in text
+    assert "primitive_orbit_series     True" in text
+    for absent in ("fundamental_domain", "reduce", "normal_form", "orbit_invariants"):
+        assert absent + " " * (27 - len(absent)) + "False" in text, absent
+    assert "BOUND-REACHED: K.primitive_orbit_series did not return within 600 s" in text
+    assert "PROBE_EXIT=124" in text or "PROBE_EXIT=137" in text
+
+
+def test_item_7_the_last_invariant_agrees() -> None:
+    """Item 7: the isometry class of the complement, which is the classical obstruction, agrees.
+
+    The complements of the three roots in K_5 are the invariant that decides O(K_5)-orbits of
+    primitive vectors.  The library builds each from its Gram and decides the isometry in under a
+    second --- `is_isometric_to` returns a verified boolean --- and all three pairs come out
+    isometric.  So every invariant computable on the pair agrees, and the orbit question is left
+    to the subgroup alone.
+    """
+    record = ROOT / "computations/reports/coble_760-isometry-decision-probe.py"
+    run = ROOT / "computations/reports/coble_760-isometry-decision-probe-run.txt"
+    assert record.exists() and run.exists(), (record, run)
+    text = run.read_text(encoding="utf-8")
+    assert text.count("is_isometric_to -> True") == 3, text.count("is_isometric_to -> True")
+    assert text.count("Integral lattice of rank 9 and signature (1, 8)") == 3
+    assert "no complement invariant separates the roots" in text
+    assert text.rstrip().endswith("PYEXIT=0")
 
 
 def test_item_8_cusp_four_is_not_a_pair() -> None:

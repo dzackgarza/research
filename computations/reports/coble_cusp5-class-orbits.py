@@ -224,6 +224,26 @@ def bounded(start, gens, depth, cap):
     return seen, False
 
 
+print("=== (0) why the reflection route is closed: the square-(-2) roots are pairwise orthogonal")
+L2 = [11, 12, 13, 14]
+print("        " + "".join("%9s" % ("label %d" % j) for j in L2), flush=True)
+for i in L2:
+    print("%8s" % ("label %d" % i)
+          + "".join("%9d" % ip(ROOTS[i - 1], ROOTS[j - 1]) for j in L2), flush=True)
+print("  labels 12, 13, 14 are orthogonal to delta and to eta_5: %s"
+      % all(ip(ROOTS[i - 1], delta) == 0 and ip(ROOTS[i - 1], eta) == 0 for i in (12, 13, 14)))
+print("  label 11 is the marking line: eta_5-orthogonal %s, delta-orthogonal %s"
+      % (ip(ROOTS[10], eta) == 0, ip(ROOTS[10], delta) == 0))
+for a, b in ((12, 13), (12, 14), (13, 14)):
+    u, v = ROOTS[a - 1], ROOTS[b - 1]
+    print("  pair (%2d, %2d): u.v = %d, (u+v)^2 = %d, (u-v)^2 = %d, so neither sum nor difference"
+          " is a root" % (a, b, ip(u, v), ip(u + v, u + v), ip(u - v, u - v)))
+print("  hence a reflection in any of these roots, or in any sum or difference of two of them,")
+print("  fixes the other two classes up to sign: no product of such reflections carries one of")
+print("  the three classes to another, and the orbit counts of (A) below are the orbit of a class")
+print("  that only a non-reflection isometry of K_5 can move to a sibling.")
+print()
+
 print("=== (A) the eleven printed roots orthogonal to delta and eta_5")
 orbs = []
 for lab in (12, 13, 14):
