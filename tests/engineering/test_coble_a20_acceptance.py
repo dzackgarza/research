@@ -498,15 +498,18 @@ def test_item3_geometric_entry_is_decided_by_the_direct_period_theorems():
     assert "121" in b24_proof
 
     b25 = _block(report, "{.theorem #prob:B25")
-    assert "deck group of the marking cover and the geometric monodromy group both equal" in b25
+    assert "geometric monodromy group coincide" in b25
+    assert "if the $\\{\\pm1\\}$-cover of the period image is nontrivial" in b25
+    assert "if it splits" in b25
     b25_proof = _block(report, "{.proof}\n\n*The two groups.*")
     assert "\\Gamma_{\\mathrm{lab}} = \\Gamma^{\\mathrm{dir}}_{\\Co,2}" in b25_proof
     assert "@lem:chamber-from-marked-period the marked moduli injects" in b25_proof
     assert "the complement of a locally finite union of proper closed analytic subsets" in b25_proof
-    assert "regular covering of the connected moduli stack with deck group" in b25_proof
+    assert "and not $\\Gamma_{\\mathrm{lab}}$" in b25_proof
 
     cor = _block(report, "{.corollary #cor:four-groups-decided")
-    assert "\\Gamma^{\\mathrm{geom}}_{\\Co,2} = \\Gamma^{\\mathrm{dir}}_{\\Co,2} = \\Gamma^{\\mathrm{Hdg}}_{\\Co,2}" in cor
+    assert "\\Gamma^{\\mathrm{dir}}_{\\Co,2} = \\Gamma^{\\mathrm{Hdg}}_{\\Co,2} = \\Gamma^\\theta_\\Co" in cor
+    assert "or $\\Gamma^{\\mathrm{dir}}_{\\Co,2}/\\{\\pm1\\}$" in cor
     assert "s_\\zeta" in cor
 
 
@@ -523,8 +526,10 @@ def test_absorbed_d1_monodromy_maximality_is_b25_proved():
     """
     report = _text(REPORT)
     b25 = _block(report, "{.theorem #prob:B25")
-    assert "geometric monodromy group both equal" in b25
-    assert "proved" in b25
+    assert "geometric monodromy group coincide" in b25
+    assert "if the $\\{\\pm1\\}$-cover of the period image is nontrivial" in b25
+    assert "if it splits" in b25
+    assert "in either case" in b25
     unpolarized = _block(report, "{.definition #def:unpolarized-direct-group")
     assert "remains a geometric monodromy statement until the direct period theorem is proved" in unpolarized
 

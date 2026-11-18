@@ -2075,14 +2075,14 @@ In the situation of @prop:one-node-family, let $(X_b,\psi_b)$ and $(X_{b'},\psi_
 
 ::: {.proof}
 
-The transition isometry $g = \psi_{b'}^{-1}\psi_b\colon H^2(X_b,\ZZ)\iso H^2(X_{b'},\ZZ)$ is a Hodge isometry, the periods agreeing. The class $A = 2H-\alpha\in\lkt$ is ample on every member of the construction: $H$ is nef and big and $\alpha$ is effective by @prop:tuple-of-the-construction, part 3, and in the model $2H_b-\alpha_b = \widehat\pi_b^*(-K_{\widehat Y})$ with $-K_{\widehat Y}$ ample and $\widehat\pi_b$ finite, as in the proof of @prop:one-node-period-image. So $g$ carries the ample class $\psi_b^{-1}A$ to the ample class $\psi_{b'}^{-1}A$, and the strong Torelli theorem [@BHPV04, Ch. VIII, Thm. 11.1] makes $g$ the pullback of an isomorphism $\varphi\colon X_{b'}\to X_b$. Then $\psi_{b'} = \psi_b\varphi^*$, so the two marked tuples agree and their chambers correspond.
+The transition isometry $g = \psi_{b'}^{-1}\psi_b\colon H^2(X_b,\ZZ)\iso H^2(X_{b'},\ZZ)$ is a Hodge isometry, the periods agreeing. The class $A = 2H-\alpha\in\lkt$ is ample on every member of the construction: $H$ is nef and big and $\alpha$ is effective by @prop:tuple-of-the-construction, part 3, and in the model $2H_b-\alpha_b = \widehat\pi_b^*(-K_{\widehat Y})$ with $-K_{\widehat Y}$ ample and $\widehat\pi_b$ finite, as in the proof of @prop:one-node-period-image. So $g$ carries the ample class $\psi_b^{-1}A$ to the ample class $\psi_{b'}^{-1}A$, and the strong Torelli theorem [@BHPV04, Ch. VIII, Thm. 11.1] makes $g$ the pullback of an isomorphism $\varphi\colon X_{b'}\to X_b$, that is $g = \varphi^*$. Hence $\psi_{b'}^{-1}\psi_b = \varphi^*$ and $\psi_{b'} = \psi_b(\varphi^*)^{-1}$, so the two marked tuples agree and their chambers correspond.
 
 This is not in conflict with @thm:chamber-clause-fails: that theorem compares two members with different periods that share their labels, and shows that the labels alone do not determine the chamber. The chamber is a function of the marked period — the datum the moduli stack carries — and not of the labels alone.
 :::
 
 ::: {.theorem #prob:B25 title="B2.5. Direct monodromy theorem — proved"}
 
-The deck group of the marking cover and the geometric monodromy group both equal $\Gamma^{\mathrm{dir}}_{\Co,2}$, hence also $\Gamma^{\mathrm{Hdg}}_{\Co,2} = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$. The chamber datum is the member's own (@def:coble-polarization-classes, part 3), and by @lem:chamber-from-marked-period it is a function of the marked period, so no hypothesis on the labels beyond @sec-labeled-lattice-data enters.
+The deck group of the marking cover and the geometric monodromy group coincide, and equal $\Gamma^{\mathrm{dir}}_{\Co,2}$ if the $\{\pm1\}$-cover of the period image is nontrivial and $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm1\}$ if it splits; $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2} = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ in either case. The chamber datum is the member's own (@def:coble-polarization-classes, part 3), and by @lem:chamber-from-marked-period it is a function of the marked period, so no hypothesis on the labels beyond @sec-labeled-lattice-data enters.
 :::
 
 ::: {.proof}
@@ -2093,12 +2093,16 @@ The deck group of the marking cover and the geometric monodromy group both equal
 
 *$O$ is connected.* By @prob:B24 the complement of $\mathrm{im}(p)$ is a union of Heegner divisors, so $O$ is the complement in the component of $\bD(T_\Co)$ of a union of walls; that union is locally finite, each compact subset of the domain meeting only the walls of the classes whose periods satisfy a bound, and the complement of a locally finite union of proper closed analytic subsets of a connected complex manifold is connected and dense. It is $\Gamma_{\mathrm{lab}}$-invariant as a preimage.
 
-*The monodromy.* The forgetting map $O\to O/\Gamma_{\mathrm{lab}} = \mathfrak M$ is therefore a regular covering of the connected moduli stack with deck group $\Gamma_{\mathrm{lab}}$, and the local system $T_\Co$ is trivialized by it, a marking being an isometry of $H^2$ carrying the labels. The monodromy of a local system trivialized by a regular covering is its deck group — the deck transformations are by definition the image of $\pi_1$ in the automorphisms of a fibre — so both the deck group and the geometric monodromy group are $\Gamma_{\mathrm{lab}} = \Gamma^{\mathrm{dir}}_{\Co,2}$. The last equality is @cor:gamma-hdg-is-congruence.
+*The two covers.* Two markings with the same period differ by a label-preserving isometry acting trivially on $\bD(T_\Co)$. Since $I_\Co$ acts by $-1$ on $T_\Co$, the element $-\id_{T_\Co}$ lies in $\Gamma_{\mathrm{lab}}$ — it pairs with $\id_{S_\Co}$ through the glue, $-\id = \id$ on the $2$-torsion of $A_{T_\Co}$ — and it acts trivially on the period domain, so the period cover $O\to O/\Gamma_{\mathrm{lab}} = \mathfrak M$ has deck group $\Gamma_{\mathrm{lab}}/\{\pm1\}$ and not $\Gamma_{\mathrm{lab}}$. The marking cover is the $\{\pm1\}$-cover of $O$ above it, of degree $\abs{\Gamma_{\mathrm{lab}}}$ over $\mathfrak M$; it trivializes $T_\Co$, since a marking is an isometry of $H^2$ carrying the labels, and the monodromy is the deck group of *that* cover.
+
+*What that leaves.* The monodromy is therefore $\Gamma_{\mathrm{lab}}$ if the double cover is nontrivial and $\Gamma_{\mathrm{lab}}/\{\pm1\}$ if it splits:
+$$\Gamma^{\mathrm{geom}}_{\Co,2} = \Gamma^{\mathrm{dir}}_{\Co,2} \quad\text{or}\quad \Gamma^{\mathrm{geom}}_{\Co,2}\cong\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm1\},$$
+the two differing by whether $-\id_{T_\Co}$ lies in the monodromy, that is whether some loop of $\mathfrak M$ carries it. Nothing here decides that: by @prob:B24 no $(-2)$-wall of $T_\Co$ is met by the construction, so the loops around the Heegner divisors that the image does meet carry reflections in classes of norm at most $-4$, and no loop with holonomy $-\id_{T_\Co}$ is exhibited. So @prob:B25 is established only up to this two-element ambiguity, and the deck group of the marking cover inherits it.
 :::
 
 ::: {.corollary #cor:four-groups-decided title="The four arithmetic groups"}
 
-$\Gamma^{\mathrm{geom}}_{\Co,2} = \Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2} = \Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$, and $\Gamma^{\mathrm{cong}}_{\Co,2}$ is the union of that group with its $s_\zeta$-coset.
+$\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2} = \Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$, and $\Gamma^{\mathrm{cong}}_{\Co,2}$ is the union of that group with its $s_\zeta$-coset. The geometric entry is $\Gamma^{\mathrm{geom}}_{\Co,2} = \Gamma^{\mathrm{dir}}_{\Co,2}$ or $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm1\}$ according to @prob:B25, and which of the two is not decided here.
 :::
 
 ::: {.problem #prob:B26 title="B2.6. Direct stable-pair theorem"}
