@@ -223,6 +223,34 @@ def test_coble_level_two_eichler_squares_fail_normal_generation():
     assert len(pivots) == 56
 
 
+def test_coble_level_two_relation_words_are_public_kernel_morphisms():
+    """Every certified relation word constructs an owned kernel morphism."""
+    import json
+    from pathlib import Path
+    from sage.all import ZZ, identity_matrix, matrix
+    from sage_extensions.all import NamedLattices, ZZ as OwnedZZ
+
+    folder = Path(__file__).resolve().parents[2] / "computations/reports"
+    data = json.loads((folder / "coble_ambient_twenty_one_generators.json").read_text())
+    lattice = NamedLattices.Tco
+    labels = tuple(lattice.module_generating_set())
+    group = lattice.O()
+    kernel = lattice.stable_orthogonal_group()
+    generators = [matrix(ZZ, record["matrix_standard"])
+                  for record in data["generators"]]
+    for word in data["level_two_normal_relation_words"]:
+        product = identity_matrix(ZZ, 11)
+        for index in word:
+            product *= generators[index]
+        morphism = group({
+            label: lattice.linear_combination({
+                labels[j]: OwnedZZ(int(product[j, i])) for j in range(11)
+            })
+            for i, label in enumerate(labels)
+        })
+        assert morphism in kernel
+
+
 def test_coble_ambient_generators_are_public_integral_isometry_morphisms():
     """All 21 standard matrices construct actual owned O(T_Co) morphisms."""
     import json

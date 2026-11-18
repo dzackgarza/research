@@ -33,6 +33,7 @@ jobs:
             "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_ambient_standard_generator_certificate",
             "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_ambient_generators_are_public_integral_isometry_morphisms",
             "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_level_two_eichler_squares_fail_normal_generation",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_level_two_relation_words_are_public_kernel_morphisms",
             "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_level_two_eichler_squares_fail_normal_generation",
             "tests/engineering/test_coble_integral_plane_star_section.py::test_level_two_integral_plane_parabolic_kernel_generators",
             "tests/engineering/test_coble_integral_plane_star_section.py::test_proper_integral_plane_stabilizer_image",
