@@ -841,6 +841,28 @@ def test_item_7_the_three_roots_are_certified_in_the_acting_group() -> None:
     assert "does not settle" in doc
 
 
+def test_item_7_the_certified_reflection_set_closes_and_the_orbit_stays_two() -> None:
+    """Item 7: conjugation closes the certified reflection set at six roots; the orbit of [12] is two.
+
+    Conjugation is free: if s and s_w are in G_v then s_{s(w)} is too.  The closure adds three roots,
+    each certified True through the sift, and then finds no further candidates -- so no reflection
+    product in that group carries [12] to [13], and the pair needs an element of G_v outside it.
+    """
+    record = ROOT / "computations/reports/coble_760-cusp5-certified-reflection-closure.py"
+    run = ROOT / "computations/reports/coble_760-cusp5-certified-reflection-closure-run.txt"
+    assert record.exists() and run.exists(), (record, run)
+    text = run.read_text(encoding="utf-8")
+    assert text.rstrip().endswith("PYEXIT=0"), "the run did not reach its anchor"
+    flat = " ".join(text.split())
+    for line in ("certified roots to start: 3", "certified a new root (total 6): True",
+                 "step 3: candidate new roots from conjugation: 0",
+                 "not found within this budget: certified roots 6, orbit 2"):
+        assert line in flat, line
+    doc = " ".join(record.read_text(encoding="utf-8").split())
+    assert "the closure is six roots" in doc
+    assert "closed and not merely bounded" in doc
+
+
 def test_open_questions_row_names_the_open_step() -> None:
     """The row for the withdrawn step names the orbit computation as what is open."""
     text = OPEN_QUESTIONS.read_text(encoding="utf-8")

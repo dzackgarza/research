@@ -1,0 +1,16 @@
+[  105.0s] Gamma_Co,2 built
+[  105.1s] certified roots to start: 3
+[  105.1s] orbit of [12] under the starting certified reflections: 2 classes, found False
+[  105.1s] step 0: candidate new roots from conjugation: 3
+[  213.5s]    certified a new root (total 4): True
+[  213.5s]    orbit of [12] now 2 classes, found False
+[  213.5s] step 1: candidate new roots from conjugation: 2
+[  213.6s]    certified a new root (total 5): True
+[  213.6s]    orbit of [12] now 2 classes, found False
+[  213.6s] step 2: candidate new roots from conjugation: 1
+[  213.7s]    certified a new root (total 6): True
+[  213.7s]    orbit of [12] now 2 classes, found False
+[  213.7s] step 3: candidate new roots from conjugation: 0
+
+[  213.7s] not found within this budget: certified roots 6, orbit 2
+PYEXIT=0
