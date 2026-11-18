@@ -152,6 +152,8 @@ def main():
                 "public_gamma_co_2": hashlib.sha256(public_path.read_bytes()).hexdigest(),
             },
             "singular_masks_diagonal": singular,
+            "standard_gram": lines["standard_gram"],
+            "integral_reflection_roots_standard": lines["generator_roots_standard"],
             "base_finite_plane_masks": sorted((a, b, a ^ b)),
             "ambient_order": int(Q.order()),
             "finite_plane_stabilizer_order": int(F.order()),
