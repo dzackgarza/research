@@ -1769,7 +1769,7 @@ $$
 \qquad
 \langle\!\langle K\rangle\!\rangle_{\Orth(B)}=\Gamma(2).
 $$
-Here double brackets denote **normal closure** in the indicated ambient group. The proposition does not assert $K=\Gamma(2)$: the additional missing statement is precisely that $K$ is normalized by the full ambient group (or an alternative direct ordinary-generation proof).
+Here double brackets denote **normal closure** in the indicated ambient group. The proposition does not assert $K=\Gamma(2)$: a sufficient additional statement is that $K$ is normalized by the full ambient group (or one may give a direct ordinary-generation proof).
 :::
 
 ::: {.proof}
