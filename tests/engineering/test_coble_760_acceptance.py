@@ -1,0 +1,161 @@
+"""Acceptance gate for research#760: the face of the restricted semifan and the marked root.
+
+The acceptance, item by item, is the issue body together with its four review comments:
+
+  item 1   the page states, as a theorem with proof or as a counterexample with its
+           computation, whether the face determines the marked Coble root.
+  item 2   every step of it is cited: authors, numbered statement, page of the version read.
+  item 3   conj:no_moduli_loss is a theorem that cites item 1, or it is corrected to match.
+  item 4   the page carries a pair r_1, r_2 whose faces agree (comment 1, "define the
+           object exactly" and "inequivalence is not shown" are items 8 and 7 below).
+  item 5   a computation record under computations/reports/ produces item 4.
+  item 6   the object compared is defined exactly (comment 1, point 2).
+  item 7   the pair is INEQUIVALENT under Gamma_Co,2 (comment 1, point 1).
+  item 8   cusp 4 is not offered as a pair (comment 1, point 3).
+  item 9   one version of AEGS25, each statement at the page of that version (comment 1,
+           point 4).
+
+Each test names the smallest input that decides its item: the page's statement for the prose
+items, the committed transcript for the computed ones.  Nothing here re-derives a computation:
+the transcripts are the evidence and the page quotes them or quotes nothing.  No Sage, no
+provider call, standard library only, so the file runs under ``python3 -m pytest`` as well as
+standalone.
+"""
+
+from __future__ import annotations
+
+import pathlib
+import re
+
+ROOT = pathlib.Path(__file__).resolve().parents[2]
+PAGE = ROOT / "writing/coble/stable-limits/ksba.md"
+FACE_RUN = ROOT / "computations/reports/coble_irrelevant-marking-face-run.txt"
+ORBIT_RUN = ROOT / "computations/reports/coble_gammaCo2-orbits-cusp5-run.txt"
+ORBIT_RECORD = ROOT / "computations/reports/coble_gammaCo2-orbits-cusp5.py"
+OPEN_QUESTIONS = ROOT / "writing/open-questions.md"
+
+
+def page() -> str:
+    return PAGE.read_text(encoding="utf-8")
+
+
+def block(identifier: str) -> str:
+    """The fenced div whose id is `identifier`, without its neighbours."""
+    text = page()
+    start = text.index("#" + identifier)
+    start = text.rindex("::: {", 0, start)
+    end = text.index("\n:::", start)
+    return text[start:end]
+
+
+def test_item_1_the_page_states_the_verdict() -> None:
+    """Item 1: the smallest input is the theorem's own statement."""
+    theorem = block("thm:face-irrelevant-marking")
+    assert ".theorem" in theorem
+    assert "irrelevant" in theorem and "one and the same cone" in theorem
+    assert "12" in theorem and "13" in theorem and "14" in theorem
+
+
+def test_item_2_every_step_is_cited_at_a_printed_page() -> None:
+    """Item 2: the numbered statements and their printed pages, as the page writes them."""
+    text = page()
+    for citation in (
+        "Def. 5.4, printed p. 611",
+        "Lemma 5.5, printed p. 611",
+        "Lemma 5.6, printed p. 611",
+        "Lemma 5.8, printed p. 611",
+        "Lemma 5.2, printed p. 610",
+        "Lemma 3.10, printed p. 594",
+        "Fig. 5, printed p. 592",
+        "§5.2, printed p. 610",
+    ):
+        assert citation in text, citation
+
+
+def test_item_3_the_conjecture_is_corrected_not_proved() -> None:
+    """Item 3: the conjecture's corrected form says what the face does and does not give."""
+    conjecture = block("conj:no_moduli_loss")
+    assert ".conjecture" in conjecture
+    assert "read off the contracted" in conjecture
+    assert "no face can" in conjecture
+    assert "not made" in conjecture or "uncomputed" in conjecture
+
+
+def test_item_4_a_pair_whose_faces_agree() -> None:
+    """Item 4: the transcript's face line is the smallest input."""
+    text = FACE_RUN.read_text(encoding="utf-8")
+    line = [l for l in text.splitlines() if "the face of F_5 cut by r^perp" in l]
+    assert len(line) == 1, line
+    assert line[0].count("the maximal cone M") == 3, line[0]
+    assert "label 12" in line[0] and "label 13" in line[0] and "label 14" in line[0]
+
+
+def test_item_5_the_record_exists_and_exits_zero() -> None:
+    """Item 5: both records, their transcripts, and the anchored exit line."""
+    for path in (FACE_RUN, ORBIT_RUN, ORBIT_RECORD):
+        assert path.exists(), path
+    for path in (FACE_RUN, ORBIT_RUN):
+        assert path.read_text(encoding="utf-8").rstrip().endswith("PYEXIT=0"), path
+
+
+def test_item_6_the_object_is_defined() -> None:
+    """Item 6: the definition of the cone cut by r^perp, and the rejected alternative."""
+    theorem = block("thm:face-irrelevant-marking")
+    assert "relative interior of $r^{\\perp}\\intersect\\mathfrak{C}_I$" in theorem
+    assert "smallest cone, and not the restricted fan" in theorem
+
+
+def test_item_7_the_inequivalence_leg_and_its_bound() -> None:
+    """Item 7: still open; the transcript carries the bound and the invariants that fail to
+    separate the roots, and the page remark carries the same."""
+    text = ORBIT_RUN.read_text(encoding="utf-8")
+    assert "div_{K_5}(r) = 1" in text
+    assert "not reached within depth 12 over 20484 classes" in text
+    assert "the subgroup generated by the twelve certified reflections does not carry" in text
+    remark = block("rmk:coble-root-orbits-cusp-five")
+    for token in ("20\\,484", "depth $12$", "divisibility $1$ in $K_5$", "not proved"):
+        assert token in remark, token
+
+
+def test_item_8_cusp_four_is_not_a_pair() -> None:
+    """Item 8: the transcript prints one admissible root at cusp 4."""
+    text = FACE_RUN.read_text(encoding="utf-8")
+    lines = [l for l in text.splitlines() if l.startswith("cusp 4:") and "admissible roots" in l]
+    assert lines and "admissible roots [10]" in lines[0], lines
+    assert "one admissible root: no pair exists" in text
+
+
+def test_item_9_one_version_of_the_citation() -> None:
+    """Item 9: a single AEGS25 version, and the pages are inside its printed range."""
+    pages = [int(p) for p in re.findall(r"AEGS25[^]]*?printed p\. (\d+)", page())]
+    assert pages, "no AEGS25 printed pages cited"
+    assert all(581 <= p <= 624 for p in pages), sorted(pages)
+
+
+def test_open_questions_row_names_the_open_step() -> None:
+    """The row for the withdrawn step names the orbit computation as what is open."""
+    text = OPEN_QUESTIONS.read_text(encoding="utf-8")
+    row = [l for l in text.splitlines() if "no_moduli_loss" in l]
+    assert len(row) == 1, row
+    assert "Gamma" in row[0] or "\\Gamma" in row[0]
+
+
+def _run_all() -> int:
+    """Run every test in this module without pytest, which the repo's conftest needs installed."""
+    items = sorted((name, fn) for name, fn in globals().items()
+                   if name.startswith("test_") and callable(fn))
+    failures = 0
+    for name, fn in items:
+        try:
+            fn()
+        except AssertionError as exc:
+            failures += 1
+            print(f"FAIL {name}: {exc}")
+        else:
+            print(f"ok   {name}")
+    print(f"\n{len(items) - failures}/{len(items)} checks pass")
+    return failures
+
+
+if __name__ == "__main__":
+    raise SystemExit(1 if _run_all() else 0)

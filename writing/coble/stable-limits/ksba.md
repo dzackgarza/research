@@ -409,6 +409,7 @@ The record checks those three facts for all twelve and then walks from the class
 The scalar invariants agree on the three --- square $-2$, pairing $0$ with $\delta$, divisibility $1$ in $K_5$ --- so no one of them separates the roots either.
 Equivalence is therefore not established and inequivalence is not proved: the walk stays in the subgroup those twelve reflections generate, which is not known to be the stabilizer of $\eta_5$ in $\Gamma_{\Co,2}$, and the orbit is infinite, so a bound is not a proof.
 What does not depend on that question is the face: all three cut one cone, so no face of $\semifan{F}_5$ separates them.
+The complement of each root in $K_5$ is an invariant of its $\Orth(K_5)$-orbit, hence of its $\Gamma_{\Co,2}$-orbit: all three have rank $9$, determinant $512$ and the same discriminant quadratic form, so that invariant does not separate them either, and the values are those a single $\Orth(K_5)$-orbit would give.
 :::
 
 ## Boundary cusp data

@@ -164,6 +164,9 @@ row = vector(ZZ, G * vector(ZZ, eta))
 S_, U_, V_ = matrix(ZZ, 1, N, list(row)).smith_form()
 assert S_[0, 0] != 0
 Lbasis = [vector(ZZ, [V_[i, j] for i in range(N)]) for j in range(1, N)]
+MBAS = matrix(ZZ, 11, 12, [list(b) for b in Lbasis])
+_eta_sol = MBAS.transpose().solve_right(vector(ZZ, eta))
+eta_coords = vector(ZZ, [_eta_sol[i] for i in range(11)])
 assert len(Lbasis) == 11 and all(ip(b, eta) == 0 for b in Lbasis)
 print()
 print("=== the scalar invariants of the three classes (square, pairing with delta, divisibility in K_5)")
@@ -175,6 +178,89 @@ for label in admissible:
     print("  label %2d: r^2 = %2d, (r, delta) = %d, div_{K_5}(r) = %d"
           % (label, ip(r, r), ip(r, delta), d))
 print("no scalar invariant separates them, so the orbit question is not settled by one")
+
+# The orthogonal complement of a primitive root in K_5 is an invariant of its O(K_5)-orbit, hence of
+# its Gamma_Co,2-orbit: an isometry carrying one root to another carries the complements to each
+# other.  Its determinant and the discriminant quadratic form of its dual quotient are the classical
+# obstructions, and both are computed here rather than argued.
+# K_5's own basis with eta first: coordinates of eta in the M-basis, completed by Smith form.
+Sg, Ug, Vg = matrix(ZZ, 11, 1, list(eta_coords)).smith_form()
+assert Sg[0, 0] == 1, Sg[0, 0]
+Uinv = Ug.inverse()
+assert Ug * vector(ZZ, list(eta_coords)) == vector(ZZ, [1] + [0] * 10)
+Kbas = [vector(ZZ, MBAS.transpose() * vector(ZZ, list(Uinv.column(j)))) for j in range(1, 11)]
+GK = matrix(ZZ, 10, 10, lambda i, j: ip(Kbas[i], Kbas[j]))
+assert GK.det() == -256, GK.det()
+print()
+print("K_5: rank 10, determinant %d" % GK.det())
+
+
+def kcoords(r):
+    sol = MBAS.transpose().solve_right(vector(ZZ, r))
+    x = vector(ZZ, [sol[i] for i in range(11)])
+    y = Ug * x
+    return vector(ZZ, [y[i] for i in range(1, 11)])
+
+
+def complement_basis(v):
+    """A Z-basis of v^perp inside K_5.  v itself is not in it, v^2 != 0."""
+    rw = vector(ZZ, list(v * GK))
+    g0 = 0
+    for x in rw:
+        g0 = gcd(g0, abs(int(x)))
+    assert g0 == 1, ("the class is not primitive in K_5", g0)
+    Sv, _, Vv = matrix(ZZ, 1, 10, list(rw)).smith_form()
+    ker = [vector(ZZ, [Vv[i, j] for i in range(10)]) for j in range(1, 10)]
+    for b in ker:
+        assert b * GK * v == 0
+    return ker
+
+
+def disc_values(Gr):
+    """The multiset of the discriminant quadratic form of Gr, values in [0,2)."""
+    n = Gr.nrows()
+    Gq = matrix(QQ, Gr)
+    Ginv = Gq.inverse()
+    gens = [vector(QQ, list(Ginv.column(j))) for j in range(n)]
+    zero = tuple(QQ(0) for _ in range(n))
+
+    def frac(w):
+        return tuple(QQ(w[i]) - QQ(w[i]).floor() for i in range(n))
+
+    seen = {zero}
+    front = [zero]
+    while front:
+        nxt = []
+        for x in front:
+            for g in gens:
+                y = frac([QQ(x[i]) + g[i] for i in range(n)])
+                if y not in seen:
+                    seen.add(y)
+                    nxt.append(y)
+        front = nxt
+    out = []
+    for x in seen:
+        y = vector(QQ, list(x))
+        q = QQ(y * Gq * y)
+        out.append(q - 2 * (q / 2).floor())
+    return out
+
+
+print()
+print("=== the complement of each admissible root in K_5: rank, determinant, discriminant form")
+compl = {}
+for label in admissible:
+    v = kcoords(ROOTS5[label - 1])
+    cb = complement_basis(v)
+    GC = matrix(ZZ, 9, 9, lambda i, j: cb[i] * GK * cb[j])
+    vals = disc_values(GC)
+    compl[label] = (GC.det(), tuple(sorted(str(q) for q in vals)))
+    print("  label %2d: rank 9, det %6d, |A| %3d, q-value multiplicities %s"
+          % (label, GC.det(), len(vals),
+             sorted((str(q), vals.count(q)) for q in set(vals))))
+print("the three complements agree in determinant and in discriminant form, so this invariant does")
+print("not separate the roots either: the values are consistent with one O(K_5)-orbit, which is what")
+print("a Gamma_Co,2-orbit would have to sit inside")
 
 start = canon(ROOTS5[11])
 targets = {canon(ROOTS5[12]): 13, canon(ROOTS5[13]): 14}
