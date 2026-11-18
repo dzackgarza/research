@@ -35,6 +35,7 @@ jobs:
             "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_level_two_eichler_squares_fail_normal_generation",
             "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_level_two_relation_words_are_public_kernel_morphisms",
             "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_eichler_normal_relations_have_rank_54_at_level_eight",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_eichler_squares_generate_every_odd_modulus_image",
             "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_level_two_eichler_squares_fail_normal_generation",
             "tests/engineering/test_coble_integral_plane_star_section.py::test_level_two_integral_plane_parabolic_kernel_generators",
             "tests/engineering/test_coble_integral_plane_star_section.py::test_proper_integral_plane_stabilizer_image",

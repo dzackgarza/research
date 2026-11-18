@@ -223,6 +223,27 @@ def test_coble_level_two_eichler_squares_fail_normal_generation():
     assert len(pivots) == 56
 
 
+def test_coble_eichler_squares_generate_every_odd_modulus_image():
+    """Each Eichler generator is an odd-modulus power of its square."""
+    import json
+    from pathlib import Path
+    from sage.all import ZZ, identity_matrix, matrix
+
+    folder = Path(__file__).resolve().parents[2] / "computations/reports"
+    data = json.loads((folder / "coble_ambient_twenty_one_generators.json").read_text())
+    generators = [matrix(ZZ, row["matrix_standard"])
+                  for row in data["generators"][:18]]
+    identity = identity_matrix(ZZ, 11)
+    for modulus in (3, 5, 7, 9, 15):
+        for generator in generators:
+            assert all((entry - int(i == j)) % modulus == 0
+                       for i, row in enumerate((generator ** modulus).rows())
+                       for j, entry in enumerate(row))
+            lift = (generator * generator) ** ((modulus + 1) // 2)
+            assert all((lift[i, j] - generator[i, j]) % modulus == 0
+                       for i in range(11) for j in range(11))
+
+
 def test_coble_eichler_normal_relations_have_rank_54_at_level_eight():
     """Their derived lifts persist through the next two 2-adic layers."""
     import json

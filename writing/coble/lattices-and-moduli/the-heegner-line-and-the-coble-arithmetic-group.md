@@ -1528,6 +1528,23 @@ $$
 so $(g^2-I)/2^{m+1}\equiv A\pmod2$. Iterating, $h_i^{2^{k-2}}\in H\cap\Gamma(2^k)$ and their leading matrices modulo two are the same independent 54 matrices for every $k\ge2$. The regression verifies this lifting explicitly at $k=3,4$ using exact arithmetic modulo 32; the formula proves it for all $k$.
 :::
 
+::: {.corollary #cor:coble-eichler-odd-congruence-surjectivity title="The Eichler-square normal closure surjects at every odd modulus"}
+
+Let $E=\generators{g_1,\ldots,g_{18}}$ be the explicit Eichler group of @thm:coble-ambient-21-generators, and let $N_2\lhd E$ be the normal closure of the squares $g_i^2$. For **every odd positive integer** $m$, the reductions of $N_2$ and $E$ in $\GL(B/mB)$ are equal:
+$$
+\rho_m(N_2)=\rho_m(E).
+$$
+The same is therefore true for the larger normal closure of all 19 level-two Eichler relations. In particular, **no odd-modulus finite congruence quotient distinguishes that normal closure from $E$**. This is an exact theorem for every odd modulus, independent of the remaining higher-power-of-two problem.
+:::
+
+::: {.proof}
+Each $g_i$ is an Eichler transvection $t(e,a)$ or $t(f,a)$, so the composition identity of @thm:coble-ambient-21-generators gives $g_i^n=t(e,na)$ (or $t(f,na)$) for every integer $n$. For odd $m$, the matrix formula for $t(e,ma)$ has all nonconstant terms divisible by $m$, hence $g_i^m\equiv I\pmod m$. Consequently
+$$
+(g_i^2)^{(m+1)/2}=g_i^{m+1}\equiv g_i\pmod m.
+$$
+Since $g_i^2\in N_2$, the reduction of $N_2$ contains every $\rho_m(g_i)$, which generate $\rho_m(E)$. The reverse inclusion follows from $N_2\subseteq E$. The exact regression `test_coble_eichler_squares_generate_every_odd_modulus_image` independently checks the displayed matrix identities for all 18 generators at moduli $3,5,7,9,15$; the transvection identity proves them uniformly.
+:::
+
 ::: {.proposition #prop:coble-level-two-plane-parabolic title="Generators of the level-two kernel in the integral plane stabilizer"}
 
 In the notation of @thm:coble-plane-stabilizer-image, let $K_P=\Stab_{\Orth(B)}(P)\cap\ker\rho$. The following $26$ integral isometries generate $K_P$:
