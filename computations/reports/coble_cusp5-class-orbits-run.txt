@@ -69,7 +69,12 @@ label 14        0        0        0       -2
     K_5, but three of them move delta, so they are not in Gamma_Co,2; the counts above
     say how far that larger group reaches and are reported as reached, not as closed,
     unless closed is True.
-The orbits under Gamma_Co,2 itself remain uncomputed.
-elapsed 30 s
+The orbits under Gamma_Co,2 itself are not merely uncomputed here: no operation in the
+library decides them.  computations/reports/coble_760-orbit-decision-probe-run.txt
+prints the exposed operations -- primitive_orbit_series and discriminant_orbit_series,
+with primitive_orbit_series(bound=4) not returning in 600 s, PROBE_EXIT=124 -- and
+fundamental_domain, reduce, normal_form and orbit_invariants all absent on a stabilizer
+subgroup.  That operation is sage-extensions#370; its call fails in this image as #389.
+elapsed 130 s
 PYEXIT=0
 exit=0
