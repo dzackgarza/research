@@ -372,23 +372,14 @@ PAGES_THIS_ISSUE_OWNS = (
 )
 
 
-def test_a2_the_pages_this_issue_owns_use_only_defined_macros():
+def test_a2_the_pages_this_issue_owns_and_the_research_report_use_only_defined_macros():
     if not MACRO_CORPUS.exists():
         return  # a bare checkout has no generated corpus; `just docs-assets` writes it
-    offenders = {rel: sorted(undefined_macros(ROOT / rel)) for rel in PAGES_THIS_ISSUE_OWNS}
+    offenders = {rel: sorted(undefined_macros(ROOT / rel))
+                 for rel in PAGES_THIS_ISSUE_OWNS + (
+                     "writing/coble/heegner-report/coble-heegner-research-report.md",)}
     offenders = {k: v for k, v in offenders.items() if v}
     assert not offenders, offenders
-
-
-def test_a2_the_undefined_macros_in_the_research_report_are_the_known_pre_existing_three():
-    if not MACRO_CORPUS.exists():
-        return
-    report = ROOT / "writing/coble/heegner-report/coble-heegner-research-report.md"
-    assert sorted(undefined_macros(report)) == ["Fcox", "Fgen", "rk"], (
-        "the heegner report's undefined macros changed; \\rk is the one #757 repaired elsewhere, "
-        "\\Fcox and \\Fgen are undefined in the corpus, and this issue repaired \\Gent -> \\gent "
-        "on the pages it owns"
-    )
 
 
 if __name__ == "__main__":
