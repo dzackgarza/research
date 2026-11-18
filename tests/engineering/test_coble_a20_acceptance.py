@@ -54,6 +54,8 @@ RECORD_CO = REPORTS / "coble_gluing_discriminants.py"
 RUN_CO = REPORTS / "coble_gluing_discriminants-run.txt"
 RECORD_EN_OLD = REPORTS / "coble_a20-block-invariance.py"
 RUN_EN_OLD = REPORTS / "coble_a20-block-invariance-run.txt"
+RUN_CAPS = REPORTS / "coble_a20-owner-capabilities-run.txt"
+RECORD_CAPS = REPORTS / "coble_a20-owner-capabilities.py"
 
 
 def _text(path: Path) -> str:
@@ -217,6 +219,34 @@ def test_item1b_the_body_s_explicit_isometry_constructor_exists_at_this_runtime(
         assert "isometry-to-the-twist check q_" in run and ": True" in run
     assert "A_{S_En}.is_anti_isometric(A_{T_En}) = True" in _text(RUN_EN)
     assert "A_{S_Co}.is_anti_isometric(A_{T_Co}) = True" in _text(RUN_CO)
+
+
+def test_item1a_body_surjectivity_call_returns_true_at_this_runtime():
+    """#663 item 1(a) of the body: T_Co.discriminant_representation_is_surjective().
+
+    Decides: the operation the body records as raising at the pinned provider returns True at the
+    runtime the checkouts carry, with its three controls, and the record names the method's line.
+    It decides the capability, not the mathematics behind it (@thm:two-elementary-surjectivity).
+    """
+    run = _text(RUN_CAPS)
+    assert "lattices.py:4226" in run
+    assert "T_Co.discriminant_representation_is_surjective() = True" in run
+    for control in ("S_Co  -> True", "T_En  -> True", "S_En  -> True"):
+        assert control in run
+    assert "prob:coble-rigidity" in run          # the scope the record declares
+
+
+def test_item1b_body_twisted_isometry_holds_on_every_class():
+    """#663 item 1(b) of the body: the explicit twisted anti-isometry on all 1024 classes.
+
+    Decides: the object exists, is typed, is built against the TWISTED target, satisfies
+    q_T o gamma = -q_S on every class and is injective there.
+    """
+    run = _text(RUN_CAPS)
+    assert "A_{S_En}.isometry_to(A_{T_En}(-1))   = OwnedTorsionFormIsometryMor" in run
+    assert "q_{T_En(-1)}(gamma x) = q_{S_En}(x) on all 1024 classes: True" in run
+    assert "distinct images: 1024" in run
+    assert "A_{S_En}.is_anti_isometric(A_{T_En}) = True" in run
 
 
 # ---------------------------------------------------------------------------

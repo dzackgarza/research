@@ -1,0 +1,32 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions: /repos/sage-extensions/src/sage_extensions/__init__.py
+  budget for the single surjectivity call below: 900 s (faulthandler stack dump)
+
+the lattices
+  T_Co = <2> + U(2) + E8(2) rank 11, determinant  -2048, signature (2, 9)
+  S_Co = <2> + <-2>^10       rank 11, determinant   2048, signature (1, 10)
+  T_En = U + U(2) + E8(2)   rank 12, determinant   1024, signature (2, 10)
+  S_En = U(2) + E8(2)       rank 10, determinant  -1024, signature (1, 9)
+
+=== part 1: an explicit anti-isometry A_{S_En} -> A_{T_En} with q_T o gamma = -q_S
+  A_{S_En}.is_isometric_to(A_{T_En})   = True
+  A_{S_En}.is_anti_isometric(A_{T_En}) = True
+  A_{S_En}.isometry_to(A_{T_En}(-1))   = OwnedTorsionFormIsometryMor_with_category_with_category.element_class   (26 s)
+  classes enumerated: 1024 = 2^10
+  q_{T_En(-1)}(gamma x) = q_{S_En}(x) on all 1024 classes: True   (75 s)
+  distinct images: 1024
+  So the object the body records as not existing exists here, twisted variant included.
+
+=== part 2: discriminant_representation_is_surjective() on T_Co (#663 item 1(a) of the body)
+  the method: sage_extensions/categories/lattices.py:4226, which calls discriminant_image()
+  T_Co.discriminant_representation_is_surjective() = True   (413 s)
+
+  controls, same call, same session
+    S_Co  -> True   (166 s)
+    T_En  -> True   (532 s)
+    S_En  -> True   (108 s)
+
+What this decides: part 1 decides the capability the body records as missing; part 2 records
+whether the surjectivity route runs at this provider, which is the input #664 leans on for T_Co.
+Neither part says anything about the marked embedding (prob:coble-rigidity).
