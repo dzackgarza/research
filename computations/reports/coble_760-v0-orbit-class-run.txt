@@ -1,0 +1,5 @@
+[    1.2s] |A| = 2048
+[    1.3s] q takes values (in quarters): ['0', '1', '2', '3']
+[  135.3s] 2-dim subspaces of A_{T_Co}: 698027
+[  135.3s] isometric to V0 (q = 0,0,1/2 with b = 1/2): 67456
+PYEXIT=0

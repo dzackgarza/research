@@ -863,6 +863,28 @@ def test_item_7_the_certified_reflection_set_closes_and_the_orbit_stays_two() ->
     assert "closed and not merely bounded" in doc
 
 
+def test_item_7_the_orbit_class_of_v0_is_counted_and_the_caveat_stands() -> None:
+    """Item 7: 67 456 subspaces are isometric to V0; the deciding record exhausts 18 360 of them.
+
+    The deciding negative is stated modulo the provider's family generating Stab_O(r12); this record
+    measures the class rather than dissolving the caveat: the subgroup's orbit is properly smaller than
+    the O(q)-orbit, so the conclusion holds once the family generates the stabilizer, and the record
+    says it has nothing to say about whether it does.
+    """
+    record = ROOT / "computations/reports/coble_760-v0-orbit-class.py"
+    run = ROOT / "computations/reports/coble_760-v0-orbit-class-run.txt"
+    assert record.exists() and run.exists(), (record, run)
+    text = run.read_text(encoding="utf-8")
+    assert text.rstrip().endswith("PYEXIT=0"), "the count did not reach its anchor"
+    flat = " ".join(text.split())
+    for line in ("2-dim subspaces of A_{T_Co}: 698027",
+                 "isometric to V0 (q = 0,0,1/2 with b = 1/2): 67456"):
+        assert line in flat, line
+    doc = " ".join(record.read_text(encoding="utf-8").split())
+    assert "does not dissolve it" in doc
+    assert "Nothing here bears on whether it does" in doc
+
+
 def test_open_questions_row_names_the_open_step() -> None:
     """The row for the withdrawn step names the orbit computation as what is open."""
     text = OPEN_QUESTIONS.read_text(encoding="utf-8")
