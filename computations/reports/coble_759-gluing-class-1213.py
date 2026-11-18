@@ -8,13 +8,27 @@ the two gluing classes agree there.
 
 Result
 ------
-Both are trivial: for r12 and for r13 the class of p/2 is (0, 0) in (r, delta) coordinates, and
-both complements have determinant -256.  So the P side obstructs nothing, and whatever obstructs
-the extension lives in the complement's discriminant form and in whether an isometry of the two
-complements matches it -- which this record does not decide.  The complements themselves are
-isometric by every invariant computed (coble_759-invariant-lattices-1213-run.txt), so the
-remaining question is exactly the matching, i.e. the transporter the library refuses
-(coble_759-transporter-1213-run.txt).
+The gluing classes are
+
+    r12: p/2 = (-1/2, 1/2)   in the (r, delta) coordinates, mod Z^2
+    r13: p/2 = ( 1/2, 1/2)
+
+and since -1/2 = 1/2 mod 1 they are EQUAL in (Q/Z)^2.  So the P side obstructs nothing for either
+root, and whatever obstructs the extension lives in the complements.
+
+This corrects an earlier version of this record, which reported (0, 0) for both: its 2-division
+vector was trivial -- it satisfied 2v in P + P^perp by being in P + P^perp already -- so it was
+not a generator of the quotient.  The search here refuses trivial classes.
+
+Where the pair now stands
+-------------------------
+The two complements are isometric by every invariant (coble_759-invariant-lattices-1213-run.txt)
+and the library returns an explicit isometry between them (Lattices(...).isometry_matrix_to
+returns a matrix, not None).  So the pair (12,13) is reduced to one question: does that explicit
+isometry carry the gluing class of one complement onto that of the other.  This record does not
+answer it -- applying the library's morphism to a half-integral vector needed a conversion of its
+elements into sage coordinates that did not come together here -- and it does not report the
+answer either way.
 
 Run
 ---
@@ -104,13 +118,18 @@ print("gluing class in the (r, delta) coordinates, as p/2 mod Z^2:")
 print("  r12: %s" % (a12,))
 print("  r13: %s" % (a13,))
 print()
+print("the classes are equal mod Z^2: %s"
+      % all((QQ(a12[i]) - QQ(a13[i])) in ZZ for i in range(2)))
+print()
 if d12 != d13:
-    print("RESULT: the two complements differ in determinant, so no isometry of S carries r12 to r13")
-    print("while fixing delta: the pair is INEQUIVALENT.")
-elif a12 != a13:
-    print("RESULT: the gluing classes differ, so no isometry of S carries r12 to r13 while fixing")
-    print("delta: the pair (12,13) is INEQUIVALENT.")
+    print("RESULT: the complements differ in determinant, so no isometry of S carries r12 to r13")
+    print("while fixing delta.")
+elif all((QQ(a12[i]) - QQ(a13[i])) in ZZ for i in range(2)):
+    print("RESULT: the P side obstructs nothing -- the gluing classes agree in (Q/Z)^2 -- so the pair")
+    print("is reduced to whether an isometry of the two complements (which exist, and which the")
+    print("library exhibits explicitly) carries one complement gluing class onto the other.  That")
+    print("comparison is not made here.")
 else:
-    print("RESULT: the gluing classes agree, so this obstruction vanishes; the extension is then")
-    print("decided by whether an isometry of the complements matches the gluing, which is not done here.")
+    print("RESULT: the gluing classes differ in (Q/Z)^2, so no isometry of S carries r12 to r13")
+    print("while fixing delta.")
 print("PYEXIT=0")
