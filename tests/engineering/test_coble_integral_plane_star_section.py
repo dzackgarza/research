@@ -150,6 +150,55 @@ def test_complete_integral_plane_parabolic_generators(tmp_path):
     assert reproduced.read_bytes() == artifact.read_bytes()
 
 
+def test_coble_ambient_twenty_one_integral_generators():
+    """Verify the 18 Eichler and three character generators of O(I_{2,9})."""
+    from sage.all import ZZ, identity_matrix, matrix, vector
+
+    gram = matrix(ZZ, 11, 11)
+    for i in (0, 2):
+        gram[i, i + 1] = gram[i + 1, i] = 1
+    for i in range(4, 11):
+        gram[i, i] = -1
+    identity = identity_matrix(ZZ, 11)
+    standard = [vector(ZZ, identity.column(i)) for i in range(11)]
+    roots = [standard[i] - standard[i + 1] for i in range(4, 10)]
+    roots.append(standard[9] + standard[10])
+    complement = [standard[2], standard[3], *roots]
+    even_basis = matrix(ZZ, 11, 11, lambda i, j: (
+        standard[j][i] if j < 4 else roots[j - 4][i]
+    ))
+    assert abs(even_basis.det()) == 2
+    even_gram = even_basis.transpose() * gram * even_basis
+    dual_basis = even_basis * even_gram.inverse()
+
+    def transvection(e, a):
+        e_pairing = e.row() * gram
+        a_pairing = a.row() * gram
+        return (identity + a.column() * e_pairing - e.column() * a_pairing
+                - (a * gram * a // 2) * e.column() * e_pairing)
+
+    eichler = [transvection(e, a) for e in standard[:2] for a in complement]
+    assert len(eichler) == 18
+    reflect = lambda a: identity - (2 // (a * gram * a)) * a.column() * (a.row() * gram)
+    extra = [reflect(standard[2] - standard[3]), reflect(standard[4]),
+             identity - 2 * standard[0].column() * standard[0].row()
+             - 2 * standard[1].column() * standard[1].row()]
+    for generator in [*eichler, *extra]:
+        assert generator.base_ring() is ZZ
+        assert generator.transpose() * gram * generator == gram
+        assert abs(generator.det()) == 1
+        assert all(x in ZZ for x in (
+            even_basis.inverse() * generator * even_basis
+        ).list())
+    for generator in [*eichler, extra[0], extra[2]]:
+        assert all(x in ZZ for x in (
+            even_basis.inverse() * (generator - identity) * dual_basis
+        ).list())
+    assert any(x not in ZZ for x in (
+        even_basis.inverse() * (extra[1] - identity) * dual_basis
+    ).list())
+
+
 def test_coble_even_neighbor_has_kneser_local_ranks():
     """The canonical even sublattice is U^2 + D7(-1), with local ranks 10 and 11."""
     from sage.all import ZZ, identity_matrix, matrix
