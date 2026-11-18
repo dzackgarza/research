@@ -37,8 +37,17 @@ Result:
 
 The test is calibrated on elements the page already places in Gamma_Co,2: the identity, -id, and
 the reflections s_w in all eleven printed roots w with (w, delta) = 0, which [@AEGS25, Sec. 3.4]
-makes integral; every one of them is in Gent by this test.  The one element the test rejects is
-the one witness the vacuity argument needed.
+makes integral; every one of them is in Gent by this test, and so are the three reflections in the
+printed roots that are not orthogonal to delta.  The one element the test rejects is the one
+witness the vacuity argument needed.
+
+That rejection also corrects a reading in `coble_760-witness-13-14-run.txt`, which concluded from
+equal class counts at depths 1, 2 and 3 that the 12 <-> 13 witness "is already in the group the
+fourteen reflections generate".  Equal counts at three depths are a heuristic, and here they are
+wrong: every reflection in a printed root lies in Gent, the witness does not, and Gent is a
+subgroup, so the witness is not in the group those reflections generate.
+
+    usage: python3 computations/reports/coble_760-gent-membership.py
 
     usage: python3 computations/reports/coble_760-gent-membership.py
 """
@@ -168,6 +177,19 @@ for lab in range(1, 15):
         continue
     verdict("s_w, printed label %d" % lab, reflection(w))
 print()
+print("=== all fourteen reflections, and what the calibration implies")
+notin = []
+for lab in range(1, 15):
+    w = R5[lab - 1]
+    r = reflection(w)
+    kept = summands_preserved(r)
+    ingent = all(not bad for (_, _, bad) in kept)
+    print("   s_w, printed label %2d  (w, delta) = %2d  fixes Zdelta %-5s  in Gent %s"
+          % (lab, ip(w, delta), r * vector(ZZ, delta) == vector(ZZ, delta), ingent))
+    if not ingent:
+        notin.append(lab)
+print("   every reflection in a printed root lies in Gent: %s" % (notin == []))
+print()
 print("=== the two witnesses")
 verdict("13 <-> 14 witness (the diagram symmetry)", build_13_14(), (13, 14))
 g12, idx = build_12_13()
@@ -179,5 +201,15 @@ print("13 and 14 are Gamma_Co,2-equivalent: the witness is in Gent.")
 print("12 and 13 are in one O(T_En)-orbit, but the witness is not in Gent, so the Gamma_Co,2-orbit")
 print("question for the pair (12,13) is OPEN, and the vacuity argument of bdb78a77ce does not hold:")
 print("it needs all three roots in one Gamma_Co,2-orbit, and 12 is not shown to be.")
+print()
+print("Because every reflection in a printed root is in Gent and the 12 <-> 13 witness is not, that")
+print("witness is not in the group those fourteen reflections generate; the depth-3 class counts of")
+print("coble_760-witness-13-14-run.txt do not show membership, and are not a proof of it.")
+print()
+print("What decides the pair: with g any isometry of T_En carrying r12 to r13, the class of r12 is")
+print("Gamma_Co,2-equivalent to that of r13 exactly when the image of g in O(A_{T_En}, q) lies in")
+print("M . rho(Stab_O(r12) cap Stab_O(Z eta_5)) --- a coset condition in the finite group O(q).  This")
+print("record settles the coset for the two candidates it has; evaluating it needs generators of that")
+print("stabilizer's image, which the library does not expose (sage-extensions#273).")
 print()
 print("PYEXIT=0")

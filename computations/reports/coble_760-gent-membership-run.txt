@@ -23,6 +23,23 @@ s_w, printed label 12                          integral True  form True  fixes d
 s_w, printed label 13                          integral True  form True  fixes delta,eta_5 True  in Gent True
 s_w, printed label 14                          integral True  form True  fixes delta,eta_5 True  in Gent True
 
+=== all fourteen reflections, and what the calibration implies
+   s_w, printed label  1  (w, delta) =  0  fixes Zdelta True   in Gent True
+   s_w, printed label  2  (w, delta) =  0  fixes Zdelta True   in Gent True
+   s_w, printed label  3  (w, delta) =  0  fixes Zdelta True   in Gent True
+   s_w, printed label  4  (w, delta) =  0  fixes Zdelta True   in Gent True
+   s_w, printed label  5  (w, delta) =  0  fixes Zdelta True   in Gent True
+   s_w, printed label  6  (w, delta) =  0  fixes Zdelta True   in Gent True
+   s_w, printed label  7  (w, delta) =  0  fixes Zdelta True   in Gent True
+   s_w, printed label  8  (w, delta) =  0  fixes Zdelta True   in Gent True
+   s_w, printed label  9  (w, delta) = -2  fixes Zdelta False  in Gent True
+   s_w, printed label 10  (w, delta) = -2  fixes Zdelta False  in Gent True
+   s_w, printed label 11  (w, delta) =  2  fixes Zdelta False  in Gent True
+   s_w, printed label 12  (w, delta) =  0  fixes Zdelta True   in Gent True
+   s_w, printed label 13  (w, delta) =  0  fixes Zdelta True   in Gent True
+   s_w, printed label 14  (w, delta) =  0  fixes Zdelta True   in Gent True
+   every reflection in a printed root lies in Gent: True
+
 === the two witnesses
 13 <-> 14 witness (the diagram symmetry)       integral True  form True  fixes delta,eta_5 True  in Gent True
       swaps printed labels 13 and 14: True
@@ -37,5 +54,15 @@ s_w, printed label 14                          integral True  form True  fixes d
 12 and 13 are in one O(T_En)-orbit, but the witness is not in Gent, so the Gamma_Co,2-orbit
 question for the pair (12,13) is OPEN, and the vacuity argument of bdb78a77ce does not hold:
 it needs all three roots in one Gamma_Co,2-orbit, and 12 is not shown to be.
+
+Because every reflection in a printed root is in Gent and the 12 <-> 13 witness is not, that
+witness is not in the group those fourteen reflections generate; the depth-3 class counts of
+coble_760-witness-13-14-run.txt do not show membership, and are not a proof of it.
+
+What decides the pair: with g any isometry of T_En carrying r12 to r13, the class of r12 is
+Gamma_Co,2-equivalent to that of r13 exactly when the image of g in O(A_{T_En}, q) lies in
+M . rho(Stab_O(r12) cap Stab_O(Z eta_5)) --- a coset condition in the finite group O(q).  This
+record settles the coset for the two candidates it has; evaluating it needs generators of that
+stabilizer's image, which the library does not expose (sage-extensions#273).
 
 PYEXIT=0
