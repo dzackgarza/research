@@ -378,13 +378,16 @@ def test_coble_fifty_five_positive_elements_span_kernel_modulo_sixteen():
     """The 55-element positive subset generates every graded layer through 16."""
     import hashlib
     import json
+    import subprocess
     from collections import deque
     from pathlib import Path
     from sage.all import GF, Integers, ZZ, identity_matrix, matrix
 
     folder = Path(__file__).resolve().parents[2] / "computations/reports"
     source = folder / "coble_kernel_positive_schreier_generators.json"
-    data = json.loads((folder / "coble_positive_kernel_fifty_five_generators.json").read_text())
+    artifact = folder / "coble_positive_kernel_fifty_five_generators.json"
+    before = artifact.read_bytes()
+    data = json.loads(before)
     assert data["schema"] == "coble-positive-kernel-55-ordinary-mod-sixteen-v1"
     assert data["source_sha256"] == hashlib.sha256(source.read_bytes()).hexdigest()
     assert data["generator_count"] == len(data["generators"]) == 55
@@ -432,6 +435,9 @@ def test_coble_fifty_five_positive_elements_span_kernel_modulo_sixteen():
         for previous in tuple(lifts):
             admit(element * previous * element.inverse() * previous.inverse())
     assert tuple(len(pivots[level]) for level in levels) == (55, 54, 55)
+    subprocess.run(["sage", str(folder / "coble_positive_kernel_fifty_five_generators.py")],
+                   cwd=folder.parents[1], check=True, capture_output=True, text=True)
+    assert artifact.read_bytes() == before
 
 
 def test_coble_positive_fifty_five_odd_local_certificate():
