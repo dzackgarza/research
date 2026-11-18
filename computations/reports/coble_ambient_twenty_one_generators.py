@@ -12,6 +12,11 @@ from pathlib import Path
 from sage.all import ZZ, identity_matrix, matrix, vector
 
 ROOT = Path(__file__).resolve().parent
+if not (ROOT / 'coble_singular_integral_representatives.json').is_file():
+    # Sage's ``sage script.py`` entry point evaluates in the Sage session
+    # namespace and can supply Sage's own __file__.  Support that invocation
+    # from the research repository root as well as Python's runpy path.
+    ROOT = Path.cwd() / 'computations' / 'reports'
 SOURCE = ROOT / 'coble_singular_integral_representatives.json'
 OUTPUT = ROOT / 'coble_ambient_twenty_one_generators.json'
 source = json.loads(SOURCE.read_text())
