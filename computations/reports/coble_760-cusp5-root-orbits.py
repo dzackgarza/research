@@ -18,10 +18,13 @@ rather than quoting it, by exhibiting an element of G_v that the acting family m
 
 So the family the call acts with separates two classes that are Gamma_Co,2-equivalent, and its
 singleton orbits carry no information about the pair (12,13).  What is missing is not the orbit
-call but a *complete* generating family at a primitive isotropic line -- the certificate that
-``generators_are_certified_complete`` reports as False (sage-extensions#312).  The failing expression
-is the ``stabilizer_generators=`` argument below: the 36 generators
-``supergroup().isotropic_stabilizer_generators(line)`` returns are not complete.
+call but a generating family at a primitive isotropic line that actually generates: the expression
+``supergroup().isotropic_stabilizer_generators(line)``, which is
+``_isotropic_stabilizer_generators`` at ``isotropic_orbits.py:1679`` returning
+``automorphism_group_generators`` from ``sage_indefinite_port``, is documented as generators of the
+*full* orthogonal group's stabilizer of the isotropic subobject, and it fails that claim here: the
+family it returns separates two classes joined by an element of that very stabilizer.  The certificate
+``generators_are_certified_complete`` reports this as False rather than fixing it.
 
     usage: python3 computations/reports/coble_760-cusp5-root-orbits.py     (~4 min)
 """
