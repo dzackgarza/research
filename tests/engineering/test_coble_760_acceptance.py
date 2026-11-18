@@ -801,6 +801,8 @@ def test_item_7_the_pruned_transporter_search_and_its_depth() -> None:
     doc = " ".join(record.read_text(encoding="utf-8").split())
     assert "this is a bound and not a decision" in doc
     assert "saturation is NOT exhaustion" in doc
+    assert "A second variant does not return" in doc
+    assert "17 min 33 s of elapsed time and 16 min 39 s of CPU" in doc
 
 
 def test_open_questions_row_names_the_open_step() -> None:

@@ -22,6 +22,13 @@ An earlier run of the same search was killed at depth 10 (exit 137) because it d
 global set of 372,899 integer matrices; deduplicating per level fixes it, since the frontier is three
 orders of magnitude smaller than the union of the levels.
 
+A second variant does not return.  Feeding ``root_class_orbits`` the generators of Gamma_Co,2 that
+preserve the line -- which by sage-extensions#312's membership criterion is admissible input, since
+rho(K_v) is trivial at Sterk's cusps -- was run for 17 min 33 s of elapsed time and 16 min 39 s of CPU
+at a resident size of 7.5 GB without printing a result, and was stopped: this VM had 1 GB available and
+carries other projects' jobs.  So a larger acting family does not make the call return at this size;
+the cost is in the orbit computation over O(K_5), not in the family.
+
     usage: python3 computations/reports/coble_760-transporter-pruned-search.py   (~8 min, needs .scratch/w760/tco_stab.pkl)
 """
 
