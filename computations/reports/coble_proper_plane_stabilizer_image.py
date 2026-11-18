@@ -140,6 +140,7 @@ def main():
             "integral_star_masks_diagonal": [
                 sorted(star) for star in star_sets
             ],
+            "integral_plane_representatives_standard": planes["base_planes_standard"],
             "coset_words_in_finite_plane_stabilizer_generators": [
                 list(word) for word in representatives
             ],
