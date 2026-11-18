@@ -144,12 +144,18 @@ def test_proper_integral_plane_stabilizer_image(tmp_path):
             "[9, 12, 4, 5], [9, 12, 4], [9, 7], [9, 12], [0]]") in result.stdout
     artifact = folder / "coble_proper_plane_stabilizer_image.json"
     assert hashlib.sha256(artifact.read_bytes()).hexdigest() == (
-        "ea6c785c0e07c0da700554ed5f82a715e95ad4b17219ddd6017e231e5b755c79")
+        "4fc2372a966fcf2ba1d52fdb9b634ff030a2be670f2189a32ec9fd2ff9ebb667")
     data = json.loads(artifact.read_text())
     assert data["schema"] == "coble-proper-plane-stabilizer-finite-cosets-v1"
     assert len(data["singular_masks_diagonal"]) == 527
     assert len(data["integral_star_masks_diagonal"]) == 8
     assert len(data["integral_plane_representatives_standard"]) == 8
+    finite_planes = data["finite_plane_transports"]
+    assert len(finite_planes) == 23715
+    assert len({tuple(sorted(row["finite_plane_masks"])) for row in finite_planes}) == 23715
+    assert all(len(row["finite_plane_masks"]) == 3 and
+               len(set(row["finite_plane_masks"])) == 3 and
+               len(row["word_from_base"]) >= 0 for row in finite_planes)
     assert len(data["coset_words_in_finite_plane_stabilizer_generators"]) == 8
     generators = data["finite_plane_stabilizer_generators_on_singular_classes"]
     assert len(generators) >= 1

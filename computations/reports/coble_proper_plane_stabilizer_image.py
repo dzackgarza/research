@@ -64,6 +64,22 @@ def main():
     assert F.order() // S.order() == 8
     assert Q.order() // S.order() == 189720
     assert parabolic["finite_image_order"] == S.order()
+    root_masks = [mask(change * vector(ZZ, root))
+                  for root in lines["generator_roots_standard"]]
+
+    def transport(x, word):
+        for i in word:
+            root = root_masks[i]
+            if (x & root).bit_count() % 2:
+                x ^= root
+        return x
+
+    base_plane_masks = {a, b, a ^ b}
+    for entry in planes["finite_plane_transports"]:
+        word = entry["word_from_base"]
+        assert all(0 <= i < len(root_masks) for i in word)
+        assert {transport(x, word) for x in base_plane_masks} == set(
+            entry["finite_plane_masks"])
     # Recover the eight characteristic stars as the actual F/S orbit,
     # not merely as eight preselected finite labels.  A star consists
     # of seven cosets of J, each containing four singular vectors.
@@ -141,6 +157,13 @@ def main():
                 sorted(star) for star in star_sets
             ],
             "integral_plane_representatives_standard": planes["base_planes_standard"],
+            "finite_plane_transports": [
+                {
+                    "finite_plane_masks": entry["finite_plane_masks"],
+                    "word_from_base": entry["word_from_base"],
+                }
+                for entry in planes["finite_plane_transports"]
+            ],
             "coset_words_in_finite_plane_stabilizer_generators": [
                 list(word) for word in representatives
             ],
