@@ -275,6 +275,19 @@ running it. Remove disposable scratch in the same unit that consumes it. The
 same applies to log captures that run to megabytes: keep the finding, not the
 capture.
 
+Nothing is ever unpacked into the shared checkout. Reading a file out of another
+tree — `git archive`, `git show`, a `cp -r`, a `tar -x` — writes under `.scratch/`
+and nowhere else, because every chat's uncommitted work lives in that checkout's
+working tree and an extraction there overwrites it silently: `tar` reports no
+conflict, `git status` afterwards looks like a normal set of edits, and the
+damage is indistinguishable from work in progress. On 2026-11-18 a `git archive
+omm/main writing | tar -x -C .` run in the shared checkout to compare a pushed
+tree against a working copy overwrote twenty files under `writing/`; two carried
+staged work and were restored from the index, and the other eighteen held stale
+copies, which was established only afterwards by checking that no sibling
+worktree had those files staged or modified. `git grep <rev>` reads a revision
+without writing anything, and that is what a comparison like this one needs.
+
 ## One line of record: `origin/main` (always-on)
 
 This repository does not use pull requests. Commit work directly on `main`.
