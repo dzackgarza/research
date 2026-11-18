@@ -1,0 +1,112 @@
+"""Exact odd-prime Lie and finite classical audits for the 55 positive generators."""
+import hashlib
+import json
+from pathlib import Path
+
+from sage.all import GF, ZZ, Integers, identity_matrix, matrix, vector
+from sage.libs.gap.libgap import libgap
+
+ROOT = Path(__file__).resolve().parent
+if not (ROOT / 'coble_positive_kernel_fifty_five_generators.json').exists():
+    ROOT = Path.cwd() / 'computations/reports'
+SOURCE = ROOT / 'coble_positive_kernel_fifty_five_generators.json'
+BASIS = ROOT / 'coble_singular_integral_representatives.json'
+data = json.loads(SOURCE.read_text())
+matrices = [matrix(ZZ, row['matrix_standard']) for row in data['generators']]
+identity = identity_matrix(ZZ, 11)
+change = matrix(ZZ, json.loads(BASIS.read_text())['standard_to_diagonal'])
+unipotents = [g for g in matrices if (g - identity)**3 == 0]
+assert len(unipotents) == 47
+
+# The logarithms are integral nilpotent matrices of degree at most three.
+logs = []
+for g in unipotents:
+    n = g - identity
+    log = change * (n - n**2 / 2) * change.inverse()
+    assert all(x in ZZ for x in log.list())
+    logs.append(matrix(ZZ, log))
+pairs = [(i, j) for i in range(11) for j in range(i + 1, 11)]
+span = matrix(ZZ, [[a[i, j] for i, j in pairs] for a in logs]).hermite_form()
+span = matrix(ZZ, [row for row in span.rows() if row != 0])
+assert span.rank() == 47
+iterations = 0
+while True:
+    lie = []
+    for row in span.rows():
+        a = matrix(ZZ, 11, 11)
+        for entry, (i, j) in zip(row, pairs, strict=True):
+            a[i, j] = entry
+            a[j, i] = -(-1 if i < 2 else 1) * (-1 if j < 2 else 1) * entry
+        lie.append(a)
+    entries = [[a[i, j] for i, j in pairs] for a in lie]
+    entries.extend([(a*b - b*a)[i, j] for i, j in pairs]
+                   for a in lie for b in logs)
+    updated = matrix(ZZ, entries).hermite_form()
+    updated = matrix(ZZ, [row for row in updated.rows() if row != 0])
+    iterations += 1
+    if updated == span:
+        break
+    span = updated
+assert span.rank() == 55 and abs(span.det()) == 2**63
+
+libgap.LoadPackage('recog')
+libgap.LoadPackage('classical')
+records = []
+for prime in (3, 5, 7, 11, 13):
+    field = GF(prime)
+    finite = [matrix(field, g) for g in matrices]
+    recognition = libgap.RecogniseClassical(
+        libgap.Group([libgap(g) for g in finite])
+    )
+    assert str(recognition['isOmegaContained']) == 'true'
+    assert str(recognition['QuadraticFormType']) == 'orthogonalcircle'
+    inverses = [g.inverse() for g in finite]
+    ring = Integers(prime*prime)
+    pivots = {}
+    queue = []
+
+    def admit(element):
+        values = vector(field, element.list())
+        while values:
+            pivot = next(i for i, value in enumerate(values) if value)
+            if pivot in pivots:
+                values -= values[pivot] * pivots[pivot]
+            else:
+                values /= values[pivot]
+                pivots[pivot] = values
+                queue.append(matrix(field, 11, 11, values))
+                return
+
+    for generator in unipotents:
+        power = matrix(ring, generator)**prime
+        assert all(int(power[i,j]) % prime == int(i == j)
+                   for i in range(11) for j in range(11))
+        admit(matrix(field, 11, 11, [
+            ((int(power[i,j]) - int(i == j)) // prime) % prime
+            for i in range(11) for j in range(11)
+        ]))
+    position = 0
+    while position < len(queue):
+        element = queue[position]
+        position += 1
+        for generator, inv in zip(finite, inverses, strict=True):
+            admit(generator * element * inv)
+    assert len(pivots) == 55
+    records.append({'prime': prime, 'contains_omega': True,
+                    'principal_p_layer_rank': 55})
+    print('Certified positive 55 at odd prime', prime, flush=True)
+
+result = {
+    'schema': 'coble-positive-55-odd-local-v1',
+    'source_sha256': hashlib.sha256(SOURCE.read_bytes()).hexdigest(),
+    'basis_sha256': hashlib.sha256(BASIS.read_bytes()).hexdigest(),
+    'unipotent_count': 47,
+    'initial_lie_rank': 47,
+    'lie_rank': 55,
+    'lie_index': int(abs(span.det())),
+    'lie_iterations': iterations,
+    'records': records,
+}
+(ROOT / 'coble_positive_fifty_five_odd_local.json').write_text(
+    json.dumps(result, indent=2) + '\n'
+)
