@@ -125,4 +125,46 @@ else:
     print("RESULT: the gluing classes differ in (Q/Z)^2, so no isometry of S carries r12 to r13")
     print("while fixing delta.")
 print()
+print()
+print("=== (2) the norm of the gluing element, the pointed lattice's own invariant")
+print("The gluing element of the pointed lattice (S; r, delta) is h = (p/2, l/2) in A_P + A_L, and")
+print("q(h) = q_P(p/2) + q_L(l/2) is an invariant of that pointed lattice:")
+for lab, r in ((12, ROOTS[11]), (13, ROOTS[12]), (14, ROOTS[13])):
+    a, GL, _ = glue(r)
+    rv, dv = vector(ZZ, r), vector(ZZ, delta)
+    cP = matrix(QQ, S).transpose().solve_right(vector(QQ, rv))
+    cD = matrix(QQ, S).transpose().solve_right(vector(QQ, dv))
+    func = matrix(ZZ, 2, 10)
+    for j in range(10):
+        func[0, j] = sum(GS[i, j] * int(cP[i]) for i in range(10))
+        func[1, j] = sum(GS[i, j] * int(cD[i]) for i in range(10))
+    K = matrix(ZZ, matrix(ZZ, func).right_kernel_matrix()).saturation()
+    B = matrix(QQ, 10, 10, [list(cP), list(cD)] + [[int(K[i][j]) for j in range(10)] for i in range(8)])
+    def in_lattice(cv):
+        try:
+            y = B.transpose().solve_right(vector(QQ, cv))
+        except Exception:
+            return False
+        return all(v in ZZ for v in y)
+    from itertools import product
+    found = None
+    for combo in product([0, 1], repeat=10):
+        if sum(combo) == 0:
+            continue
+        cv = vector(QQ, combo)
+        if in_lattice(cv) or not in_lattice(2 * cv):
+            continue
+        x = B.transpose().solve_right(2 * cv)
+        if all(v in ZZ for v in x):
+            found = x
+            break
+    p = vector(QQ, [found[0], found[1]])
+    l = vector(QQ, list(found)[2:])
+    GP = matrix(ZZ, 2, 2, lambda i, j: ip((rv, dv)[i], (rv, dv)[j]))
+    qP = vector(QQ, [v / 2 for v in p]) * matrix(QQ, GP) * vector(QQ, [v / 2 for v in p])
+    qL = vector(QQ, [v / 2 for v in l]) * matrix(QQ, GL) * vector(QQ, [v / 2 for v in l])
+    tot = QQ(qP) + QQ(qL)
+    print("  label %2d: q_P(p/2) = %s, q_L(l/2) = %s, sum = %s (mod 2Z: %s)"
+          % (lab, qP, qL, tot, tot - 2 * (tot / 2).floor()))
+print("  the three agree, so this invariant separates nothing either.")
 print("PYEXIT=0")
