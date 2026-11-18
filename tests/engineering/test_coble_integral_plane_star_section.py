@@ -211,6 +211,12 @@ def test_coble_ambient_twenty_one_integral_generators():
     extra = [reflect(standard[2] - standard[3]), reflect(standard[4]),
              identity - 2 * standard[0].column() * standard[0].row()
              - 2 * standard[1].column() * standard[1].row()]
+    assert all(g * g == identity for g in extra)
+    assert all(g * h == h * g for i, g in enumerate(extra) for h in extra[:i])
+    from sage.all import GF
+    assert matrix(GF(2), extra[0]) != identity_matrix(GF(2), 11)
+    assert matrix(GF(2), extra[1]) == identity_matrix(GF(2), 11)
+    assert matrix(GF(2), extra[2]) == identity_matrix(GF(2), 11)
     for generator in [*eichler, *extra]:
         assert generator.base_ring() is ZZ
         assert generator.transpose() * gram * generator == gram
@@ -247,6 +253,7 @@ def test_coble_ambient_twenty_one_integral_generators():
             target = sum((int(image[i]) % 2) << i for i in range(11))
             permutation.append(positions[target])
         permutations.append(libgap.PermList(permutation))
+    assert int(libgap.Size(libgap.Group(permutations[:18]))) == 23499295948800
     assert int(libgap.Size(libgap.Group(permutations))) == 46998591897600
 
 
