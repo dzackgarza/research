@@ -739,7 +739,7 @@ Take $\tau = \sum_ic_ie_i$ with $c_i\in\set{0,1}$, in the basis $e_0,e_1$ of the
 ::: {.proposition #prop:no-rank-one-automorphism title="A rank-one del Pezzo slot is induced by no automorphism"}
 
 Let $\widetilde X$ be a projective K3 surface over $\CC$, let $\iota$ be a nonsymplectic involution of it with invariant lattice $S \definedas H^2(\widetilde X,\bZ)^{\iota}$, and let $\iota'$ be an involution commuting with $\iota$ whose invariant lattice $S'$ is isometric to $U(2)$.
-Let $H\in S\cap S'$ with $H^2 = 4$, suppose $\rk(S\cap S') = 1$, and let $\alpha\in S$ be effective with $\alpha^2 = -2$ and $H\cdot\alpha = 0$.
+Let $H\in S\cap S'$ with $H^2 = 4$, suppose $\rank(S\cap S') = 1$, and let $\alpha\in S$ be effective with $\alpha^2 = -2$ and $H\cdot\alpha = 0$.
 Then $\iota'(\alpha) = -\alpha$, and no automorphism of $\widetilde X$ induces $\iota'$.
 :::
 
@@ -748,7 +748,7 @@ Then $\iota'(\alpha) = -\alpha$, and no automorphism of $\widetilde X$ induces $
 $S$ is even because $H^2(\widetilde X,\bZ)$ is, and it has signature $(1,\cdot)$: $\iota$ is nonsymplectic, so it acts as $-\id$ on $H^{2,0}\oplus H^{0,2}$, and a Kähler class can be averaged over $\set{\id,\iota}$ to an invariant one.
 Hence $H$, of positive square, spans a maximal positive definite subspace, and $H^{\perp S}$ is negative definite, the orthogonal complement of a non-isotropic vector being nondegenerate.
 $\iota'$ commutes with $\iota$, so it preserves $S$, and $A \definedas S\cap S'$ is the fixed lattice of $\iota'$ in $S$; it is saturated in $S$ because both factors are saturated in $H^2(\widetilde X,\bZ)$.
-By hypothesis $\rk A = 1$ and $H\in A$, so $A = \ZZ H$: $H$ is primitive in $S$, since $H/2\in S$ would give $(H/2)^2 = 1$, odd in an even lattice.
+By hypothesis $\rank A = 1$ and $H\in A$, so $A = \ZZ H$: $H$ is primitive in $S$, since $H/2\in S$ would give $(H/2)^2 = 1$, odd in an even lattice.
 Therefore $\iota'$ is $+\id$ on $\ZZ H$ and $-\id$ on $H^{\perp S}$, which is its $(-1)$-eigenspace in $S$.
 The class $\alpha$ lies in $S$ and $\alpha\cdot H = 0$, so $\alpha\in H^{\perp S}$ and $\iota'(\alpha) = -\alpha$.
 If $g\in\Aut(\widetilde X)$ had $g^* = \iota'$, then $g_*\alpha = (g^*)^{-1}\alpha = -\alpha$ would be the class of the effective divisor $g(D)$, for any effective divisor $D$ of class $\alpha$.
@@ -779,7 +779,7 @@ The product $\rho = \iota_\Co\iota_{\mathrm{dP}}$ of @prop:local-operators is $\
 Over a fixed point at which $f\ne0$ there are two, $z = \pm\sqrt f$.
 Over one at which $f = 0$ the single point is the node, which the resolution replaces by the two points $[1:\pm i:0]$ of @prop:del-pezzo-type-on-the-resolution(2).
 So $\rho$ has $2\cdot4 = 8$ fixed points when $I_\Co$ has no fixed point, and $2\cdot3+2 = 8$ with one node.
-By the formula of @prop:tuple-of-the-construction, $\rk S_\rho = \tfrac12(8+20) = 14$, and $S_\Co\cap S_{\mathrm{dP}}\subseteq S_\rho$ because a class fixed by both involutions is fixed by their product.
+By the formula of @prop:tuple-of-the-construction, $\rank S_\rho = \tfrac12(8+20) = 14$, and $S_\Co\cap S_{\mathrm{dP}}\subseteq S_\rho$ because a class fixed by both involutions is fixed by their product.
 :::
 
 ::: {.proposition #prop:del-pezzo-type-on-the-resolution title="The invariant type of the lifted del Pezzo involution on the resolution"}
@@ -787,7 +787,7 @@ By the formula of @prop:tuple-of-the-construction, $\rk S_\rho = \tfrac12(8+20) 
 Let $\widehat X\to X^\sharp$ be the minimal resolution of the node at $p$, $D$ the exceptional $(-2)$-curve, and $\widehat\iota_{\mathrm{dP}}$, $\widehat\iota_\Co$ the lifts. Then:
 1. $\widehat\iota_\Co$ acts trivially on the exceptional $\PP^2$ and hence fixes $D$ pointwise;
 2. $\widehat\iota_{\mathrm{dP}}$ acts on that $\PP^2$ by $[X:Y:Z]\mapsto[X:Y:-Z]$, so it preserves the conic $D = \set{Z^2 = X^2+Y^2}$ and fixes on it exactly the two points $[1:\pm i:0]$, which are also where the proper transform of the branch curve meets $D$;
-3. consequently $\mathrm{Fix}(\widehat\iota_{\mathrm{dP}})$ is the normalization of the branch curve: for $f$ with exactly $k$ nodes and otherwise smooth, the branch curve has arithmetic genus $9$ and geometric genus $9-k$, so $\chi(\mathrm{Fix}) = 2-2(9-k) = 2k-16$, and Lefschetz gives $\rk S_{\mathrm{dP}} = \tfrac12(22+(2k-16)-2) = 2+k$;
+3. consequently $\mathrm{Fix}(\widehat\iota_{\mathrm{dP}})$ is the normalization of the branch curve: for $f$ with exactly $k$ nodes and otherwise smooth, the branch curve has arithmetic genus $9$ and geometric genus $9-k$, so $\chi(\mathrm{Fix}) = 2-2(9-k) = 2k-16$, and Lefschetz gives $\rank S_{\mathrm{dP}} = \tfrac12(22+(2k-16)-2) = 2+k$;
 4. $S_{\mathrm{dP}}$ contains $\pi^*\Pic(Y)\perp\ZZ D_1\perp\cdots\perp\ZZ D_k$, of rank $2+k$: the pullbacks of $\Pic(Y) = \ZZ^2$ have Gram matrix $U(2)$, each $D_g$ is a $(-2)$-class because it is preserved by $\widehat\iota_{\mathrm{dP}}$, and $D_g\perp\pi^*\Pic(Y)$ and $D_g\perp D_{g'}$ for $g\ne g'$ because the resolution contracts them.
 So $S_{\mathrm{dP}}$ contains $U(2)\perp\langle-2\rangle^{\oplus k}$ with finite index, and $S_{\mathrm{dP}}\not\cong U(2)$ whenever $k\neq0$.
 :::
@@ -806,7 +806,7 @@ Let $\pi\colon X^\sharp = \set{z^2 = f(x,y)}\to Y = \PP^1\times\PP^1$ be the dou
 2. $\alpha^2 = -2$, $H\cdot\alpha = 0$, and $\alpha$ is fixed by $I_\Co$ and by $I_{\mathrm{dP}}$;
 3. $H$ is nef and big, $h^0(\widehat X,H) = 4$, and $\alpha$ is the class of an effective curve;
 4. both involutions are nonsymplectic and their product is symplectic;
-5. $\rk S_{\mathrm{dP}} = k+2$ and $\rk S_\Co = k+10$;
+5. $\rank S_{\mathrm{dP}} = k+2$ and $\rank S_\Co = k+10$;
 6. $\pi^*\Pic(Y)\perp\ZZ D_1\perp\cdots\perp\ZZ D_k\subseteq S_\Co\cap S_{\mathrm{dP}}$, and $S_{\mathrm{dP}}\subseteq S_\Co$.
 So for $k\ge1$ the five bullets of @sec-labeled-lattice-data hold on $\widehat X$: the tuple of the direct-projective construction exists, and its quotient by $I_\Co$ is not Enriques.
 :::
@@ -817,8 +817,8 @@ So for $k\ge1$ the five bullets of @sec-labeled-lattice-data hold on $\widehat X
 (2) $D_g$ is a $(-2)$-curve, fixed pointwise by $\widehat\iota_\Co$ and preserved by $\widehat\iota_{\mathrm{dP}}$ (@prop:del-pezzo-type-on-the-resolution, parts 1 and 2); and $H\cdot D_g = \OO(1,1)\cdot\pi_*D_g = 0$ because $\pi_*D_g = 0$, the curve lying in a fibre of the resolution.
 (3) $\OO_Y(1,1)$ is very ample, the Segre embedding, hence nef; for a curve $C$ one has $H\cdot C = \OO(1,1)\cdot\pi_*C\ge0$, so $H$ is nef, and $H^2 = 4>0$ with $H$ nef makes $H$ big on a surface. The surface $X^\sharp$ is normal, so the resolution $\nu\colon\widehat X\to X^\sharp$ has $\nu_*\OO_{\widehat X} = \OO_{X^\sharp}$, and $\pi_*\OO_{X^\sharp} = \OO_Y\oplus\OO_Y(-2,-2)$; by the projection formula $h^0(\widehat X,H) = h^0(\OO_Y(1,1))+h^0(\OO_Y(-1,-1)) = 4+0$. $\alpha$ is the class of the curve $D_g$.
 (4) @prop:local-operators, part 2, computes the two characters on $X^\sharp$; away from the nodes the resolution is an isomorphism and both involutions act on the exceptional curves, so the characters are unchanged.
-(5) For a nonsymplectic involution of a K3 with fixed locus $F$, Lefschetz gives $\chi(F) = 2+\tr$. Decompose over $\QQ$, where the eigensplitting is available: $H^2(\widehat X,\QQ) = S_\QQ\oplus T_\QQ$ with $\id$ on $S$ and $-\id$ on $T$, so $\tr = \rk S-\rk T$ and, with $\rk S+\rk T = 22$, $\tr = 2\rk S-22$ and $\rk S = \tfrac12(\chi(F)+20)$. For $\widehat\iota_{\mathrm{dP}}$ the fixed locus is the normalization of $B$, of $\chi = 2k-16$ (@prop:del-pezzo-type-on-the-resolution, part 3), so $\rk S_{\mathrm{dP}} = k+2$. For $\widehat\iota_\Co$ it is the disjoint union of the $k$ exceptional curves: @prop:local-operators, part 4, puts every fixed point of $\iota_\Co$ at a singular point, and @prop:del-pezzo-type-on-the-resolution, part 1, makes the curve over each of them fixed pointwise. So $\chi(F) = 2k$ and $\rk S_\Co = k+10$. At $k = 0$ this last value is $10$, the rank of the invariant lattice of an Enriques involution of a K3, which is what $I_\Co$ is when its fixed locus is empty.
-(6) The involution $\iota_{\mathrm{dP}}$ is the deck transformation of $\pi$, so it fixes every class $\pi^*c$; the involution $\iota_\Co$ covers $\tau$, and $\tau^*\OO_Y(a,b) = \OO_Y(a,b)$, so it fixes every $\pi^*c$ too. Each $D_g$ is fixed by both involutions by (2), and $D_g\cdot\pi^*c = c\cdot\pi_*D_g = 0$, while $D_g\cdot D_{g'} = 0$ for $g\ne g'$. This gives the first containment. That sublattice has rank $k+2 = \rk S_{\mathrm{dP}}$ by (5) and @prop:del-pezzo-type-on-the-resolution, part 4. The invariant lattice $S_\Co$ of an isometry is primitive in $H^2(\widehat X,\ZZ)$, so $S_\Co\cap S_{\mathrm{dP}}$ is primitive in $S_{\mathrm{dP}}$; it has full rank, so it is $S_{\mathrm{dP}}$.
+(5) For a nonsymplectic involution of a K3 with fixed locus $F$, Lefschetz gives $\chi(F) = 2+\tr$. Decompose over $\QQ$, where the eigensplitting is available: $H^2(\widehat X,\QQ) = S_\QQ\oplus T_\QQ$ with $\id$ on $S$ and $-\id$ on $T$, so $\tr = \rank S-\rank T$ and, with $\rank S+\rank T = 22$, $\tr = 2\rank S-22$ and $\rank S = \tfrac12(\chi(F)+20)$. For $\widehat\iota_{\mathrm{dP}}$ the fixed locus is the normalization of $B$, of $\chi = 2k-16$ (@prop:del-pezzo-type-on-the-resolution, part 3), so $\rank S_{\mathrm{dP}} = k+2$. For $\widehat\iota_\Co$ it is the disjoint union of the $k$ exceptional curves: @prop:local-operators, part 4, puts every fixed point of $\iota_\Co$ at a singular point, and @prop:del-pezzo-type-on-the-resolution, part 1, makes the curve over each of them fixed pointwise. So $\chi(F) = 2k$ and $\rank S_\Co = k+10$. At $k = 0$ this last value is $10$, the rank of the invariant lattice of an Enriques involution of a K3, which is what $I_\Co$ is when its fixed locus is empty.
+(6) The involution $\iota_{\mathrm{dP}}$ is the deck transformation of $\pi$, so it fixes every class $\pi^*c$; the involution $\iota_\Co$ covers $\tau$, and $\tau^*\OO_Y(a,b) = \OO_Y(a,b)$, so it fixes every $\pi^*c$ too. Each $D_g$ is fixed by both involutions by (2), and $D_g\cdot\pi^*c = c\cdot\pi_*D_g = 0$, while $D_g\cdot D_{g'} = 0$ for $g\ne g'$. This gives the first containment. That sublattice has rank $k+2 = \rank S_{\mathrm{dP}}$ by (5) and @prop:del-pezzo-type-on-the-resolution, part 4. The invariant lattice $S_\Co$ of an isometry is primitive in $H^2(\widehat X,\ZZ)$, so $S_\Co\cap S_{\mathrm{dP}}$ is primitive in $S_{\mathrm{dP}}$; it has full rank, so it is $S_{\mathrm{dP}}$.
 :::
 
 ::: {.proposition #prop:one-node-family title="The one-node construction is a smooth proper equivariant family with a relative polarization and an exceptional divisor"}
@@ -1079,7 +1079,7 @@ For the occurrence: the value of a $\tau$-invariant section at the $\tau$-fixed 
 
 ::: {.proposition #prop:rank-two-slot-boundary title="The rank-two del Pezzo slot"}
 
-In the notation of @prop:no-rank-one-automorphism let $\rk(S\cap S') = 2$.
+In the notation of @prop:no-rank-one-automorphism let $\rank(S\cap S') = 2$.
 Then $S\cap S' = S'$, so $S'\subseteq S$; taking isotropic classes $a_1,a_2$ of $S'\cong U(2)$ with $a_1\cdot a_2 = 2$, one has $H = \pm(a_1+a_2)$, and $\alpha = p(a_1-a_2)+\beta$ with $\beta\perp S'$ and $p\in\bQ$ satisfies:
 1. $\beta\in S\otimes\bQ\cap H^{\perp}$, which is negative definite, so $\beta^2\le0$; and $\beta^2 = -2+4p^2$, so $p^2\le\tfrac12$; since $\alpha\cdot a_1 = -2p\in\bZ$, this leaves $\alpha\cdot a_1\in\set{-1,0,1}$.
 2. $\iota'(\alpha) = -\alpha$ exactly when $\alpha\cdot a_1 = 0$, and in that case no automorphism of $\widetilde X$ induces $\iota'$.
@@ -1088,7 +1088,7 @@ Then $S\cap S' = S'$, so $S'\subseteq S$; taking isotropic classes $a_1,a_2$ of 
 
 ::: {.proof}
 
-$\rk(S\cap S') = 2 = \rk S'$ and $S\cap S'$ is saturated in $S'$, so the two coincide and $S' = \langle a_1,a_2\rangle$ with $a_i$ isotropic and $a_1\cdot a_2 = 2$. Writing $H = ma_1+na_2$ gives $H^2 = 4mn = 4$, so $(m,n) = \pm(1,1)$.
+$\rank(S\cap S') = 2 = \rank S'$ and $S\cap S'$ is saturated in $S'$, so the two coincide and $S' = \langle a_1,a_2\rangle$ with $a_i$ isotropic and $a_1\cdot a_2 = 2$. Writing $H = ma_1+na_2$ gives $H^2 = 4mn = 4$, so $(m,n) = \pm(1,1)$.
 Decompose $\alpha$ over $\bQ$ as $\alpha = (pa_1+qa_2)+\beta$ with $\beta\perp S'$; then $\alpha\cdot H = 2(p+q) = 0$, so $q = -p$ and the $S'$-component of $\alpha$ is $p(a_1-a_2)$, of square $-4p^2$; the cross terms with $\beta$ vanish, so $\beta^2 = \alpha^2+4p^2 = -2+4p^2$.
 $\beta$ lies in $S\otimes\bQ$ and is orthogonal to $H$, so $\beta^2\le0$ by the proof of @prop:no-rank-one-automorphism, giving $p^2\le\tfrac12$; and $\alpha\cdot a_1 = -2p$ is an integer because both classes lie in the lattice, leaving $\alpha\cdot a_1\in\set{-1,0,1}$.
 Since $\iota'$ is $\id$ on $S'$ and $-\id$ on $S'^{\perp}$, $\iota'(\alpha) = p(a_1-a_2)-\beta$, which equals $-\alpha$ exactly when $p = 0$, that is exactly when $\alpha\cdot a_1 = 0$. The effectivity argument of @prop:no-rank-one-automorphism then shows that no automorphism induces $\iota'$.
@@ -1261,18 +1261,18 @@ the two finite images being identified through the gluing anti-isometry $\gamma$
 
 ::: {.proof}
 
-Let $s_v$ be the reflection of @lem:polarization-stabilizer-discriminant-nontrivial, so $v = u_0-w_0\in S_\En$, $s_v(h) = h$ and $\rho_{S_\En}(s_v)\neq\id$; put $c \definedas \gamma\,\rho_{S_\En}(s_v)\,\gamma^{-1}\in\Orth(q_{\TEn})$, which is nontrivial.
+Let $s_v$ be the reflection of @lem:polarization-stabilizer-discriminant-nontrivial, so $v = u_0-w_0\in S_\En$, $s_v(h) = h$ and $\rho_{S_\En}(s_v)\neq\id$; put $c \definedas \gamma\,\rho_{S_\En}(s_v)\,\gamma^{-1}\in\Orth(q_{\ten})$, which is nontrivial.
 
 *Surjectivity.*
 $T_\Co$ is even, indefinite and $2$-elementary, so $\rho_{T_\Co}\colon\Orth(T_\Co)\to\Orth(q_{T_\Co})$ is onto (@thm:two-elementary-surjectivity).
-By @prop:coble-discriminant-group every isometry of $q_{T_\Co}$ fixes the class $\zeta/2$ and respects the decomposition $A_{T_\Co} = \ZZ(\zeta/2)\perp A^0$, so the representation factors through $\Orth(q_{T_\Co})\iso\Orth(q_{T_\Co}|_{A^0})$, and $A^0$ is identified with $A_{\TEn}$ as in the proof of @prop:gamma-co-in-heegner-group.
+By @prop:coble-discriminant-group every isometry of $q_{T_\Co}$ fixes the class $\zeta/2$ and respects the decomposition $A_{T_\Co} = \ZZ(\zeta/2)\perp A^0$, so the representation factors through $\Orth(q_{T_\Co})\iso\Orth(q_{T_\Co}|_{A^0})$, and $A^0$ is identified with $A_{\ten}$ as in the proof of @prop:gamma-co-in-heegner-group.
 Choose $\varphi\in\Orth(T_\Co)$ whose class is the one matching $c$ under that identification.
 
 *Extension.*
 $\varphi$ fixes $\zeta/2$, so $\varphi\oplus\id_{\ZZ\delta}$ preserves the gluing subgroup $\generators{(\delta/2,\,\zeta/2)}$ of @lem:coble-heegner-vector and by @cor:liftable-automorphisms extends over the index-two overlattice $\ten$ to an isometry $g$ with $g(\delta) = \delta$ and $\restrictionof{g}{T_\Co} = \varphi$.
 
 *Membership in $\gent$.*
-By that extension the class of $g$ in $\Orth(q_{\TEn})$ is the class of $\varphi$ on $A^0$, that is $c = \gamma\rho_{S_\En}(s_v)\gamma^{-1}$; so $\bar g_T\circ\gamma = \gamma\circ\bar g_S$ with $g_S = s_v$, and $s_v(h) = h$.
+By that extension the class of $g$ in $\Orth(q_{\ten})$ is the class of $\varphi$ on $A^0$, that is $c = \gamma\rho_{S_\En}(s_v)\gamma^{-1}$; so $\bar g_T\circ\gamma = \gamma\circ\bar g_S$ with $g_S = s_v$, and $s_v(h) = h$.
 By @prop:gamma-en-two-gluing this is exactly the condition for $g\in\gent$, and $g(\delta) = \delta$, so $g\in\Stab_{\gent}(\ZZ\delta)$ with nontrivial $\rho_{T_\Co}(\restrictionof{g}{T_\Co})$.
 
 *The component condition.*
@@ -1282,7 +1282,7 @@ So $\Gamma^{\mathrm{Hdg}}_\Co$ contains an element of $\Orth^+(T_\Co)$ acting no
 
 *The other inclusion, hence equality.*
 Nothing above used anything about $s_v$ except that it lies in $\Stab_{\Orth(S_\En)}(h)$, so the construction applies to every element of that stabilizer and gives $\gamma\,G_\Co\,\gamma^{-1}\subseteq\rho_{T_\Co}\bigl(\Gamma^{\mathrm{Hdg}}_\Co\bigr)$.
-Conversely $\rho_{T_\Co}\bigl(\Gamma^{\mathrm{Hdg}}_\Co\bigr)\subseteq\gamma\,G_\Co\,\gamma^{-1}$: that is the containment in the proof of @prop:gamma-co-in-heegner-group(2), where the image of $\gent$ in $\Orth(q_{\TEn})$ is identified with the $\gamma$-transport of the image of $\Stab_{\Orth(S_\En)}(h)$ (@prop:gamma-en-two-gluing) and $\Gamma^{\mathrm{Hdg}}_\Co$ is the image of $\Stab_{\gent}(\ZZ\delta)\iscontainedin\gent$ under restriction.
+Conversely $\rho_{T_\Co}\bigl(\Gamma^{\mathrm{Hdg}}_\Co\bigr)\subseteq\gamma\,G_\Co\,\gamma^{-1}$: that is the containment in the proof of @prop:gamma-co-in-heegner-group(2), where the image of $\gent$ in $\Orth(q_{\ten})$ is identified with the $\gamma$-transport of the image of $\Stab_{\Orth(S_\En)}(h)$ (@prop:gamma-en-two-gluing) and $\Gamma^{\mathrm{Hdg}}_\Co$ is the image of $\Stab_{\gent}(\ZZ\delta)\iscontainedin\gent$ under restriction.
 So the two images are equal, and by @prop:gamma-co-in-heegner-group(2) the index is their common order.
 
 *The order of $G_\Co$.*
@@ -1786,7 +1786,7 @@ the discriminant kernel and its real-spinor-positive part (@conv:spinor-positive
 1. If $v,v'\in T_\Co$ are primitive isotropic with $[v'/2]=[v/2]$, then $v'=kv$ for some $k\in K$. So $v\mapsto[v/2]$ is a bijection from the $K$-orbits of primitive isotropic vectors onto the $527$ nonzero isotropic classes of $A_{T_\Co}$, and it is a bijection from the $K$-orbits of primitive isotropic lines onto the same classes.
 2. Consequently $K$ has exactly $527$ orbits of primitive isotropic vectors and exactly $527$ orbits of primitive isotropic lines, one for each nonzero isotropic class of $A_{T_\Co}$, and so does $\widetilde\Orth^+(T_\Co)$. The index is
 $$
-\abs{\Orth(q)}/\abs{\rho\pqty{\Stab_{\Orth(B)}(v)}} = \frac{46\,998\,591\,897\,600}{89\,181\,388\,800} = 527 .
+\abs{\Orth(q)}/\abs{\rho\left(\Stab_{\Orth(B)}(v)\right)} = \frac{46\,998\,591\,897\,600}{89\,181\,388\,800} = 527 .
 $$
 3. This is the count for these two groups, and a count of $0$-cusps names its group (@def:gamma-co-groups). For $\Gamma=\Orth(T_\Co)$ it is $1$ (@thm:unpolarized-cusps): that is the single $0$-cusp of $F^{\mathrm{un}}_\Co=\bD(T_\Co)/\Orth(T_\Co)$, a statement about $F^{\mathrm{un}}_\Co$ and not about $\fco$. For $\ker\rho\subseteq\Gamma\subseteq\Orth(T_\Co)$ it is the number of $\rho(\Gamma)$-orbits on the $527$ nonzero isotropic classes, which depends on the subgroup; in particular, for $\Gamma_{\Co,2}$ the count is $4$ by @thm:cusp-lifting and the finite $G_\Co$-orbit computation in @cor:coble-heegner-integral-plane-descent, independently checked by the public row of @rmk:coble-plane-incidence-rows. Under @conj:gamma-co-stable, $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ and $\fco=\bD(T_\Co)/\Gamma_\Co$ has $527$ $0$-cusps, which is the only sense in which $527$ is asserted for $\fco$.
 4. Both counts stand in the public computation record of @rmk:coble-zero-cusp-reproduction, sage-extensions#357 closed at `4533f0fdbe`, whose two calls return $527$ representatives each. The count is proved here rather than read off that record, and the eight line-orbit constants are now separately certified on the $T_\Co$ lattice card in lattice-database#7. The two arithmetic-group generator fields are also independently certified on that card: 56 ordinary generators of $\widetilde O(T_\Co)$ and 95 ordinary generators of $\widetilde O^+(T_\Co)$, at lattice-database commit `a784518254`.
@@ -1796,7 +1796,7 @@ $$
 
 $B$ is odd unimodular, so $\Orth(B)$ is transitive on its primitive isotropic vectors (@lem:I29-plus-line-transitivity).
 
-*The fibre over a class.* Let $v$ be primitive isotropic and $c\definedas[v/2]$, a nonzero isotropic class (@lem:isotropic-classes-lift(1)). By @lem:cusp-vector-stabilizer-image(1), $\rho\pqty{\Stab_{\Orth(B)}(v)}=\Stab_{\Orth(q)}(c)$. So for $v'$ primitive isotropic with $[v'/2]=c$ and $v'=gv$ one has $\rho(g)\in\Stab_{\Orth(q)}(c)$, that is $\rho(g)=\rho(h)$ for some $h\in\Stab_{\Orth(B)}(v)$, and then $v'=kv$ with $k=gh^{-1}\in\ker\rho$. The fibre over $c$ is therefore a single $K$-orbit.
+*The fibre over a class.* Let $v$ be primitive isotropic and $c\definedas[v/2]$, a nonzero isotropic class (@lem:isotropic-classes-lift(1)). By @lem:cusp-vector-stabilizer-image(1), $\rho\left(\Stab_{\Orth(B)}(v)\right)=\Stab_{\Orth(q)}(c)$. So for $v'$ primitive isotropic with $[v'/2]=c$ and $v'=gv$ one has $\rho(g)\in\Stab_{\Orth(q)}(c)$, that is $\rho(g)=\rho(h)$ for some $h\in\Stab_{\Orth(B)}(v)$, and then $v'=kv$ with $k=gh^{-1}\in\ker\rho$. The fibre over $c$ is therefore a single $K$-orbit.
 
 *The classes that occur.* By @lem:isotropic-classes-lift(2) the classes $[v/2]$ of the primitive isotropic $v$ are exactly the $527$ nonzero isotropic classes of $A_{T_\Co}$. With the previous paragraph, $v\mapsto[v/2]$ is a bijection from the $K$-orbits of primitive isotropic vectors onto them.
 
@@ -1804,7 +1804,7 @@ $B$ is odd unimodular, so $\Orth(B)$ is transitive on its primitive isotropic ve
 
 *Intermediate groups.* A subgroup $\Gamma$ with $K\subseteq\Gamma$ acts on the primitive isotropic vectors through $\rho(\Gamma)$, and each fibre above is a single orbit of $K\subseteq\Gamma$, so the $\Gamma$-orbits correspond to the $\rho(\Gamma)$-orbits on the classes that occur; this is the reduction of the double cosets through the normal subgroup $K$ to the finite group $\Orth(q)$ [@DH23, Lemma 3.6, printed p. 22].
 
-*The two stable groups.* By @prop:discriminant-kernel-orbits(2), $K$ and $\widetilde\Orth^+(T_\Co)=K\intersect\Orth^+(T_\Co)$ have the same orbits on the primitive isotropic vectors and on the primitive isotropic lines, so the count belongs to both. In the index of item 2, $\abs{\Orth(q)}$ is that of @prop:coble-discriminant-group and $\abs{\rho\pqty{\Stab_{\Orth(B)}(v)}}=\abs{\Orth(q)}/527$ is @lem:cusp-vector-stabilizer-image(1) together with the class count of @lem:isotropic-classes-lift(2), namely $89\,181\,388\,800$.
+*The two stable groups.* By @prop:discriminant-kernel-orbits(2), $K$ and $\widetilde\Orth^+(T_\Co)=K\intersect\Orth^+(T_\Co)$ have the same orbits on the primitive isotropic vectors and on the primitive isotropic lines, so the count belongs to both. In the index of item 2, $\abs{\Orth(q)}$ is that of @prop:coble-discriminant-group and $\abs{\rho\left(\Stab_{\Orth(B)}(v)\right)}=\abs{\Orth(q)}/527$ is @lem:cusp-vector-stabilizer-image(1) together with the class count of @lem:isotropic-classes-lift(2), namely $89\,181\,388\,800$.
 
 *The groups of item 3.* The group $\Orth(T_\Co)$ is transitive on the primitive isotropic vectors (@thm:unpolarized-cusps), so its count is $1$; that is the group of $F^{\mathrm{un}}_\Co=\bD(T_\Co)/\Orth(T_\Co)$, the quotient in which the moduli space $\mcm_\Co$ of Coble surfaces sits as an open subset [@DK13, (3.6), Prop. 3.2, p. 513]. The group $\Gamma_\Co$ is the monodromy group of the family of unpolarized Coble surfaces, and $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ is @conj:gamma-co-stable and nothing else (@def:gamma-co-groups, @rmk:gamma-co-status), so the count for $\fco$ is conditional on it. The group $\Gamma_{\Co,2}=R_{\gent}$ is the image of a stabilizer in $\gent$ (@def:gamma-co-groups), which is neither of the two groups counted here, so the count above says nothing about its orbits.
 :::
@@ -1879,7 +1879,7 @@ and put $\beta = 2b\bmod 2$, so that $\beta([x/2],[y/2]) = (x,y)_B\bmod 2$. Writ
 $$ \bar x\mapsto\bar x + \beta(\bar x,j_i)\bar w + \bigl(\beta(\bar x,\bar w) + \tfrac{w^2}{2}\beta(\bar x,j_i)\bigr)j_i , $$
 and $\sigma = E_{e_1,e_2}$ maps to the transvection $\bar x\mapsto\bar x + \beta(\bar x,j_1)j_2 + \beta(\bar x,j_2)j_1$.
 3. (The image.) $\abs{\rho\bigl(\Stab_{\Orth(B)}(P)\bigr)} = 30240\cdot 2^{13} = 247\,726\,080 = 2^{18}\cdot 3^3\cdot 5\cdot 7$.
-4. (The index.) $\bqty{\Stab_{\Orth(q)}(J) : \rho(\Stab_{\Orth(B)}(P))} = 8 = \bqty{\Orth^+(6,2) : S_7} = \bqty{S_8 : S_7}$.
+4. (The index.) $\left[\Stab_{\Orth(q)}(J) : \rho(\Stab_{\Orth(B)}(P))\right] = 8 = \left[\Orth^+(6,2) : S_7\right] = \left[S_8 : S_7\right]$.
 5. (The orbit fibres.) Let $\ker\rho\iscontainedin\Gamma\iscontainedin\Orth(B)$, and put $Q = \Orth(q)$, $H = \rho(\Gamma)$, $F = \Stab_Q(J)$ and $S = \rho\bigl(\Stab_{\Orth(B)}(P)\bigr)$. For $k\in Q$, put $\Gamma_{kJ}=\Gamma\intersect\rho^{-1}(\Stab_Q(kJ))$. The $\Gamma_{kJ}$-orbits of the primitive isotropic planes $P'\subset B$ with $J(P') = kJ$ are in bijection with the double cosets
 $$ \bigl(k^{-1}Hk\intersect F\bigr)\bigl\backslash F \big/ S . $$
 In particular:
@@ -1904,7 +1904,7 @@ The elements of (2) attain each block. The classes $[w/2]$ of $w\in D^{\mathrm{e
 (4) The space $J^{\perp}/J$ is seven-dimensional over $\F_2$ and spanned by the $\bar d_i$. It has the descended quadratic form, because $J$ is totally isotropic and $b(J,J^{\perp}) = 0$, so $q(x+j) = q(x)$. Since $(w_0,w_0)_B = -7$, $q(\bar w_0) = -\tfrac72 \equiv \tfrac12$ and $b(\bar w_0,\bar w_0) = -\tfrac72 \equiv \tfrac12 \neq 0$. So $\bar w_0$ is not in the radical of $b$, and
 $$ V_6 \definedas \bar w_0^{\perp} \cap J^{\perp}/J = \theset{\textstyle\sum c_i \bar d_i : \sum c_i \equiv 0 \pmod 2} $$
 is six-dimensional, with $J^{\perp}/J = \generators{\bar w_0} \perp V_6$. On $V_6$ the form is $q(\sum c_i \bar d_i) = -\tfrac{\mathrm{wt}}{2} \bmod 2$, where $\mathrm{wt} = \sum c_i$ is even, so $q$ is $\F_2$-valued on $V_6$. It is nondegenerate of plus type. The classes with $q = 0$ are those of weight $\equiv 0 \pmod 4$, and they number $\binom70 + \binom74 = 36 = 2^5 + 2^2$, the plus-type count $2^{2m-1}+2^{m-1}$ at $m = 3$.
-The Levi factor of $\Stab_{\Orth(q)}(J)$ is $S_3\times\Orth^+(6,2)$, and $\Orth^+(6,2)\cong S_8$ acts on $V_6$ and fixes the characteristic class $\bar w_0$. The Levi factor $L$ acts on $P^{\perp B}/P\cong D$ through $\Orth(D)$, the signed permutation group of order $2^7\cdot 7!$, whose image modulo $2$ is the $S_7$ of (2). By (3), $\rho(\Stab_{\Orth(B)}(P))$ contains the unipotent radical of $\Stab_{\Orth(q)}(J)$, and its Levi image is $S_3\times S_7$. So the index is $\bqty{S_3\times S_8 : S_3\times S_7} = \bqty{S_8 : S_7} = 8$, and indeed $1\,981\,808\,640/247\,726\,080 = 8$ by (3) and @prop:coble-planecusp-finite(4).
+The Levi factor of $\Stab_{\Orth(q)}(J)$ is $S_3\times\Orth^+(6,2)$, and $\Orth^+(6,2)\cong S_8$ acts on $V_6$ and fixes the characteristic class $\bar w_0$. The Levi factor $L$ acts on $P^{\perp B}/P\cong D$ through $\Orth(D)$, the signed permutation group of order $2^7\cdot 7!$, whose image modulo $2$ is the $S_7$ of (2). By (3), $\rho(\Stab_{\Orth(B)}(P))$ contains the unipotent radical of $\Stab_{\Orth(q)}(J)$, and its Levi image is $S_3\times S_7$. So the index is $\left[S_3\times S_8 : S_3\times S_7\right] = \left[S_8 : S_7\right] = 8$, and indeed $1\,981\,808\,640/247\,726\,080 = 8$ by (3) and @prop:coble-planecusp-finite(4).
 
 (5) By @thm:plane-transitivity-tco, every primitive isotropic plane of $B$ is $g(P)$ for some $g\in\Orth(B)$. By @prop:coble-planecusp-finite(1), $J(g(P)) = \rho(g)J$. So the planes $P'$ with $J(P') = J$ form the orbit of $P$ under $\rho^{-1}(F)$, and the $\Gamma$-orbits on it are the double cosets
 $$ \bigl(\Gamma\intersect\rho^{-1}(F)\bigr)\bigl\backslash \rho^{-1}(F) \big/ \Stab_{\rho^{-1}(F)}(P) . $$
@@ -2429,7 +2429,7 @@ So the image of $\Stab_{\widetilde\Orth^+(T_\Co)}(v')$ is $\bar g\,\rho_v(\Stab_
 
 Let $v$ be a primitive isotropic vector of $T_\Co$, $S = \Stab_{\Orth(T_\Co)}(v)$, $K = v^{\perp T_\Co}/\generators{v}\cong\I_{1,8}(2)$, $\pi: S\to\Orth(K)$, $W\leq S$ generated by the nine wall reflections of the $K$-chamber, and
 $$
-G \definedas \pi(\ker\rho_{T_\Co}\cap S),\qquad G^+ \definedas \pi\pqty{\ker\rho_{T_\Co}\cap S\cap\Orth^+(T_\Co)} = G\cap\Orth^+(K),\qquad c \definedas \abs{\rho(W)\cap\rho(\ker\pi)} .
+G \definedas \pi(\ker\rho_{T_\Co}\cap S),\qquad G^+ \definedas \pi\left(\ker\rho_{T_\Co}\cap S\cap\Orth^+(T_\Co)\right) = G\cap\Orth^+(K),\qquad c \definedas \abs{\rho(W)\cap\rho(\ker\pi)} .
 $$
 Then
 
@@ -2439,9 +2439,9 @@ Then
 
 3. $-\id_K$ lies in $G$ and not in $\Orth^+(K)$, so
 $$
-\bqty{\Orth^+(K) : G^+} = \bqty{\Orth(K) : G} = \frac{\abs{\rho(W)}}{c} = 348\,364\,800,
+\left[\Orth^+(K) : G^+\right] = \left[\Orth(K) : G\right] = \frac{\abs{\rho(W)}}{c} = 348\,364\,800,
 \qquad
-\bqty{\Orth(K) : G^+} = 696\,729\,600 ;
+\left[\Orth(K) : G^+\right] = 696\,729\,600 ;
 $$
 
 4. the element $\id_{U_1}\oplus(-\id_K)$ lies in $\ker\rho_{T_\Co}$ and outside $\Orth^+(T_\Co)$, so the $\widetilde\Orth(T_\Co)$-orbit of $e_1$ is a single $\widetilde\Orth^+(T_\Co)$-orbit, and the index
@@ -2601,7 +2601,7 @@ and $\Orth(T_\Co)$ with $1,1,1$, proved on this page. The plane count of each ro
 The counts proved above are counts of orbits of groups acting on $T_\Co$, and a computation that certifies one of them has to build the same group. This section fixes which group each public entry point builds, and then reads the plane rows, the cusp rows and the incidence row against @thm:plane-fibre and @prop:coble-arithmetic-flag-incidence. The flags enter it because an incidence row returns a relation between orbit vertices, which is not the set of flag orbits; @prop:coble-flag-orbits-and-edges states the difference exactly.
 
 ::: {.proposition #prop:coble-flag-orbits-and-edges title="The flag orbits over a group containing the stable group, and the endpoint relation they refine"}
-Let $B = \latI_{2,9}$, $T_\Co = B(2)$, $J(P)\leq A_{T_\Co}$ the order-$4$ subgroup of a primitive isotropic plane $P\subset B$ (@prop:coble-planecusp-finite(1)), $\rho$ the discriminant representation and $\widetilde\Orth^+(T_\Co)\subseteq\Gamma\subseteq\Orth(B)$, and put $H\definedas\rho(\Gamma)$. For a $\Gamma$-orbit $\mathcal P$ of primitive isotropic planes of $B$ choose $P_0\in\mathcal P$, put $J_0\definedas J(P_0)$ and $H_0\definedas\rho\pqty{\Stab_\Gamma(P_0)}\leq H$, and put
+Let $B = \latI_{2,9}$, $T_\Co = B(2)$, $J(P)\leq A_{T_\Co}$ the order-$4$ subgroup of a primitive isotropic plane $P\subset B$ (@prop:coble-planecusp-finite(1)), $\rho$ the discriminant representation and $\widetilde\Orth^+(T_\Co)\subseteq\Gamma\subseteq\Orth(B)$, and put $H\definedas\rho(\Gamma)$. For a $\Gamma$-orbit $\mathcal P$ of primitive isotropic planes of $B$ choose $P_0\in\mathcal P$, put $J_0\definedas J(P_0)$ and $H_0\definedas\rho\left(\Stab_\Gamma(P_0)\right)\leq H$, and put
 $$
 C(\mathcal P)\definedas\bigcup_{P'\in\mathcal P}\bigl(J(P')\sm\generators{0}\bigr) = H\cdot\bigl(J_0\sm\generators{0}\bigr)\subseteq A_{T_\Co}\sm\generators{0}
 ,$$
@@ -2609,7 +2609,7 @@ the nonzero isotropic classes that the primitive lines of the planes of $\mathca
 
 1. (Flag orbits.) The primitive lines of $P_0$ fall into the three nonzero classes of $J_0$, and $\Stab_\Gamma(P_0)$ is transitive on the primitive lines of each of them, because $\widetilde\Orth^+(T_\Co)\subseteq\Gamma$ and @prop:coble-arithmetic-flag-incidence(1), (2) gives that transitivity for $\widetilde\Orth^+(T_\Co)$. So the $\Gamma$-orbits of flags $(P',L)$ over $\mathcal P$ are the $H_0$-orbits on $J_0\sm\generators{0}$, and $\Gamma$ has exactly
 $$
-\sum_{\mathcal P}\abs{\pqty{J_0\sm\generators{0}}/H_0}
+\sum_{\mathcal P}\abs{\left(J_0\sm\generators{0}\right)/H_0}
 $$
 orbits of flags of a primitive isotropic line in a primitive isotropic plane.
 
@@ -2632,7 +2632,7 @@ edges. Each summand is the number of classes of the relation on $J_0\sm\generato
 
 ::: {.corollary #cor:coble-flag-counts-per-group title="Three flag counts: the stable group, the full orthogonal group, and $\Gamma_{\Co,2}$"}
 1. For $\Gamma = \widetilde\Orth^+(T_\Co)$ one has $H = H_0 = 1$, so the edges and the flag orbits both number $3\cdot 23\,715\cdot 8 = 569\,160$: this is the $24$ per $J$ of @prop:coble-arithmetic-flag-incidence read over the $23\,715$ subgroups of @prop:coble-planecusp-finite(3), and for the stable group it is both the flag count and the edge count.
-2. For $\Gamma = \Orth(B)$ there is one plane orbit (@thm:plane-transitivity-tco) and one line orbit (@thm:unpolarized-cusps), so the endpoint relation is a single edge; and $\rho\pqty{\Stab_{\Orth(B)}(P)}= H_0$ acts on $J_0\sm\generators{0}$ through a group containing $GL(J_0)\cong S_3$ (@thm:coble-plane-stabilizer-image(2)), so it is transitive there and there is one flag orbit as well.
+2. For $\Gamma = \Orth(B)$ there is one plane orbit (@thm:plane-transitivity-tco) and one line orbit (@thm:unpolarized-cusps), so the endpoint relation is a single edge; and $\rho\left(\Stab_{\Orth(B)}(P)\right)= H_0$ acts on $J_0\sm\generators{0}$ through a group containing $GL(J_0)\cong S_3$ (@thm:coble-plane-stabilizer-image(2)), so it is transitive there and there is one flag orbit as well.
 3. For $\Gamma = \Gamma_{\Co,2}$ there are $4$ line orbits, $7$ plane orbits, $13$ flag orbits and $13$ edges. The public row of @rmk:coble-plane-incidence-rows computes the endpoint relation and its $13$ edges, not the flag-orbit count; the latter is established independently by @cor:coble-heegner-integral-plane-descent and its finite triple-orbit enumeration.
 :::
 
@@ -2643,7 +2643,7 @@ edges. Each summand is the number of classes of the relation on $J_0\sm\generato
 ::: {.proposition #prop:coble-cong-point-stabilizer title="The group the public plane stabilizer builds, and the $0$-cusps of $F_{\Co,2}$"}
 1. $\Stab_{\Orth(q_{T_\Co})}\bigl(A_{U(2)}\bigr) = \Orth(q_{U(2)})\times\Orth(q_{E_8(2)}) = P$ of @def:congruence-group, and consequently
 $$
-\rho_{T_\Co}^{-1}\pqty{\Stab_{\Orth(q_{T_\Co})}\bigl(A_{U(2)}\bigr)} = \rho_{T_\Co}^{-1}(P) = \Gamma^{\mathrm{cong}}_{\Co,2} = R_{\gent} = \Gamma_{\Co,2}
+\rho_{T_\Co}^{-1}\left(\Stab_{\Orth(q_{T_\Co})}\bigl(A_{U(2)}\bigr)\right) = \rho_{T_\Co}^{-1}(P) = \Gamma^{\mathrm{cong}}_{\Co,2} = R_{\gent} = \Gamma_{\Co,2}
 ,$$
 the three equalities after $\rho_{T_\Co}^{-1}(P)$ being @def:congruence-group, @prop:gamma-co-images(3) and @def:gamma-co-groups(5).
 2. The orbits of $P$ on the $527$ nonzero isotropic classes of $A_{T_\Co}$ are four, of sizes $2$, $135$, $270$ and $120$.
@@ -2696,9 +2696,9 @@ These plane and incidence rows are computation records in sage-extensions, not l
 
 The page's count and the row's are the same integer seen from two sides. The page counts eight orbits over each of the $23\,715$ subgroups (@thm:coble-plane-stabilizer-image(5)(c)); the row counts one quotient over the one $\Orth(T_\Co)$-class of planes, namely
 $$
-\frac{\abs{\rho(\Orth(T_\Co))}}{\abs{\rho\pqty{\Stab_{\Orth(B)}(P)}}} = \frac{46\,998\,591\,897\,600}{247\,726\,080} = 189\,720 = 8\cdot 23\,715
+\frac{\abs{\rho(\Orth(T_\Co))}}{\abs{\rho\left(\Stab_{\Orth(B)}(P)\right)}} = \frac{46\,998\,591\,897\,600}{247\,726\,080} = 189\,720 = 8\cdot 23\,715
 ,$$
-and the two agree because $\abs{\Orth(q)}/\abs{S} = \pqty{\abs{\Orth(q)}/\abs{F}}\pqty{\abs{F}/\abs{S}} = 23\,715\cdot 8$ with $F = \Stab_{\Orth(q)}(J)$ and $S = \rho\pqty{\Stab_{\Orth(B)}(P)}$ of @thm:plane-fibre(1). The driver's own note records that its order formula was validated against those two Coble orders.
+and the two agree because $\abs{\Orth(q)}/\abs{S} = \left(\abs{\Orth(q)}/\abs{F}\right)\left(\abs{F}/\abs{S}\right) = 23\,715\cdot 8$ with $F = \Stab_{\Orth(q)}(J)$ and $S = \rho\left(\Stab_{\Orth(B)}(P)\right)$ of @thm:plane-fibre(1). The driver's own note records that its order formula was validated against those two Coble orders.
 
 *The cusp rows and the incidence row.* The driver is `tests/coble_gamma_co_2_incidence_rows.py` at `3147ea330f1f91bef3ae20006210dcbdc4456323`, and the two rows run `cusps(1)`, `cusps(2)` and `tits_building_incidence()` on `Tco.Aut()` and on `Tco.Aut().discriminant_point_stabilizer(point)`, the point being the span of the classes of the two $U(2)$ module generators; that last call is $\rho_{T_\Co}^{-1}$ of the setwise stabilizer of the point, which by @prop:coble-cong-point-stabilizer(1) is $\Gamma_{\Co,2} = R_{\gent}$. The incidence returned is the endpoint relation of @prop:coble-flag-orbits-and-edges(2), the driver retaining one flag certificate per pair of endpoints and asserting of each certificate that its line lies in its plane, that one element of the group carries the line cusp representative into the plane cusp representative, that no two edges share both endpoints, and that every line cusp and every plane cusp carries an edge. Run 43556671111 reports, for $\Orth(T_\Co)$, one line cusp, one plane cusp and one edge in $188.5$ s --- @thm:unpolarized-cusps and @thm:plane-transitivity-tco certified at one plane --- and, for $\Gamma_{\Co,2}$, four line cusps, seven plane cusps and thirteen edges in $2195.2$ s. The four is @prop:coble-cong-point-stabilizer(3), proved on the page independently of the run. The seven is @cor:coble-heegner-integral-plane-descent, proved on the page as well, and the run reproduces it rather than supplying it. The thirteen is the run's, and what the run counts is its *edge* count: the thirteen flag orbits are the corollary's and are a different object, by @prop:coble-flag-orbits-and-edges(3). No count in this remark is read off a card. The seven and the thirteen are also recomputed from the discriminant module alone, without the provider, in `computations/reports/coble_a2-plane-flag-orbit-reproduction.py`, whose transcript records the same seven decorated-plane orbits and the same thirteen flag orbits with the sizes listed above.
 

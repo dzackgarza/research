@@ -382,6 +382,29 @@ def test_a2_the_pages_this_issue_owns_and_the_research_report_use_only_defined_m
     assert not offenders, offenders
 
 
+def test_a2_no_book_page_uses_an_undefined_project_macro_spelling():
+    """A list of spellings the book's macro corpus does not define, checked over every authored page.
+
+    These are the ones the render layer found: `\\Gent` (this issue), and, on pages outside it,
+    `\\Fcox`, `\\Fgen`, `\\Fco`, `\\Fen`, `\\Fram`, `\\TEn`, `\\rk`, `\\bqty`, `\\pqty`.  A page that
+    carries one leaves it raw in the html as a MathJax error box while the parse and the source
+    layer both pass, so this list is asserted empty tree-wide rather than per page.  The repairs,
+    all of them meaning-preserving and each onto a macro the corpus defines: `\\Gent` -> `\\gent`,
+    `\\Fcox` -> `\\F^{\\cox}`, `\\Fgen` -> `\\F^{\\gen}`, `\\Fco` -> `\\fco`, `\\Fen,2` -> `\\fentwo`,
+    `\\Fram` -> `\\fram`, `\\TEn` -> `\\ten`, `\\rk` -> `\\rank`, `\\bqty{X}` -> `\\left[X\\right]`,
+    `\\pqty{X}` -> `\\left(X\\right)`.
+    """
+    bad = re.compile(r"\\(Gent|Fcox|Fgen|Fco|Fen|Fram|TEn)(?![A-Za-z])|\\rk(?![A-Za-z])"
+                     r"|\\bqty(?![A-Za-z])|\\pqty(?![A-Za-z])")
+    hits = []
+    for path in pages():
+        for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            m = bad.search(line)
+            if m:
+                hits.append((path.relative_to(ROOT).as_posix(), number, m.group(0)))
+    assert not hits, hits
+
+
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
         if name.startswith("test_") and callable(fn):
