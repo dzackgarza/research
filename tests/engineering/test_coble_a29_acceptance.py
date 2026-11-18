@@ -309,6 +309,88 @@ def test_a2_the_cusp_vectors_printed_on_the_diagram_page_are_the_library_ones():
     assert "Sterk.selected_isotropic_vectors()" in text
 
 
+
+
+# ------------------------------------ item 2, render layer: no undefined macro on these pages
+#
+# The book defines no macros of its own (justfile `docs-assets`): the corpus is
+# ~/.pandoc/templates/css/mathjax-macros.html, copied to writing/.assets.  An undefined macro is
+# left raw in the html and renders as a MathJax error box, so a markdown parse and the source
+# layer both pass while the page is broken.  This is the check the render layer would make.
+
+MACRO_CORPUS = ROOT / "writing/.assets/mathjax-macros.html"
+
+STANDARD_MACROS = set("""
+alpha beta gamma delta epsilon varepsilon zeta eta theta vartheta iota kappa lambda mu nu xi
+omicron pi varpi rho varrho sigma varsigma tau upsilon phi varphi chi psi omega
+Gamma Delta Theta Lambda Xi Pi Sigma Upsilon Phi Psi Omega
+frac dfrac tfrac sqrt sum prod int oint iint lim inf sup max min bigcup bigcap
+left right big Big bigg Bigg bigl bigr Bigl Bigr middle
+langle rangle lfloor rfloor lceil rceil vert Vert backslash lvert rvert
+cdot cdots ldots dots vdots ddots times oplus ominus otimes odot bigoplus wedge vee neg
+le ge leq geq neq ne lt gt equiv sim simeq approx cong propto perp parallel asymp doteq
+subset subseteq supset supseteq subsetneq supsetneq nsubseteq nsupseteq in notin ni not
+cup cap setminus emptyset varnothing sqcup sqcap uplus
+to mapsto rightarrow leftarrow Rightarrow Leftarrow leftrightarrow Leftrightarrow
+longleftrightarrow implies iff hookrightarrow longrightarrow longleftarrow
+infty partial nabla forall exists nexists aleph hbar ell wp Re Im
+mathbb mathbf mathcal mathfrak mathrm mathit mathsf mathtt operatorname mathop mathbin mathrel
+rm bf it sf tt cal em
+text textbf textit overline underline widehat widetilde hat bar vec dot ddot tilde acute grave
+breve check over stackrel overset underset binom choose atop
+quad qquad enspace thinspace hspace hfill mkern
+pm mp ast star circ bullet div mid nmid dashv vdash models vDash
+zmod limits nolimits pmod pod bmod mod
+begin end boldsymbol bm dots colon
+ker dim deg arg hom det coker rank gcd arccos log ln exp sin cos tan
+veebar barwedge curlyvee curlywedge lhd rhd unlhd unrhd
+triangleleft triangleright trianglelefteq trianglerighteq
+square blacksquare Box boxtimes ltimes rtimes
+ll gg sharp flat natural
+hline arrow cline multicolumn
+input include pic usepackage newtheorem theoremstyle set
+newcommand renewcommand DeclareMathOperator
+""".split())
+
+
+def undefined_macros(page: pathlib.Path) -> set[str]:
+    """The macros a page uses that neither the book's corpus nor standard LaTeX defines."""
+    text = MACRO_CORPUS.read_text(encoding="utf-8")
+    defined = set(re.findall(r"\\(?:newcommand|renewcommand)\s*\{?\\?([A-Za-z]+)", text))
+    defined |= set(re.findall(r"\\DeclareMathOperator\s*\{?\\?([A-Za-z]+)", text))
+    body = page.read_text(encoding="utf-8")
+    used = set(re.findall(r"\\([A-Za-z]+)", body))
+    return {m for m in used if m not in defined and m not in STANDARD_MACROS}
+
+
+PAGES_THIS_ISSUE_OWNS = (
+    "writing/coble/coble-moduli/cusp-correspondence-morphism-chain.md",
+    "writing/coble/cusp-correspondence/cusp-diagrams-by-moduli-space.md",
+    "writing/coble/extracted-references/extracted-references.md",
+    "writing/research-statement/ResearchStatement.md",
+    "writing/open-questions.md",
+)
+
+
+def test_a2_the_pages_this_issue_owns_use_only_defined_macros():
+    if not MACRO_CORPUS.exists():
+        return  # a bare checkout has no generated corpus; `just docs-assets` writes it
+    offenders = {rel: sorted(undefined_macros(ROOT / rel)) for rel in PAGES_THIS_ISSUE_OWNS}
+    offenders = {k: v for k, v in offenders.items() if v}
+    assert not offenders, offenders
+
+
+def test_a2_the_undefined_macros_in_the_research_report_are_the_known_pre_existing_three():
+    if not MACRO_CORPUS.exists():
+        return
+    report = ROOT / "writing/coble/heegner-report/coble-heegner-research-report.md"
+    assert sorted(undefined_macros(report)) == ["Fcox", "Fgen", "rk"], (
+        "the heegner report's undefined macros changed; \\rk is the one #757 repaired elsewhere, "
+        "\\Fcox and \\Fgen are undefined in the corpus, and this issue repaired \\Gent -> \\gent "
+        "on the pages it owns"
+    )
+
+
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
         if name.startswith("test_") and callable(fn):
