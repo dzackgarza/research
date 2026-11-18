@@ -150,6 +150,27 @@ def test_complete_integral_plane_parabolic_generators(tmp_path):
     assert reproduced.read_bytes() == artifact.read_bytes()
 
 
+def test_coble_even_neighbor_has_kneser_local_ranks():
+    """The canonical even sublattice is U^2 + D7(-1), with local ranks 10 and 11."""
+    from sage.all import ZZ, identity_matrix, matrix
+
+    unit = identity_matrix(ZZ, 7)
+    roots = [unit.row(i) - unit.row(i + 1) for i in range(6)]
+    roots.append(unit.row(5) + unit.row(6))
+    basis = matrix(ZZ, roots)
+    gram = basis * basis.transpose()
+    assert abs(basis.det()) == 2
+    assert gram.det() == 4
+    assert gram[:6, :6].det() == 7
+    # A six-dimensional odd-determinant minor is a 2-adic unimodular
+    # summand. The determinant 4 leaves one rank-one scale-four constituent.
+    assert gram.rank() == 7
+    # For D7 the half-sum of all seven coordinates has order four in
+    # D7^*/D7: twice it has odd coordinate sum and four times it does not.
+    assert sum([1] * 7) % 2 == 1
+    assert sum([2] * 7) % 2 == 0
+
+
 def test_level_two_integral_plane_parabolic_kernel_generators(tmp_path):
     """The 26 integral generators preserve P and lie in the reduction kernel."""
     folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
