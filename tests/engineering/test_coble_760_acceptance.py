@@ -132,6 +132,48 @@ def test_item_9_one_version_of_the_citation() -> None:
     assert all(581 <= p <= 624 for p in pages), sorted(pages)
 
 
+def test_item_3_the_conjecture_is_still_a_conjecture() -> None:
+    """Item 3 is open: no theorem declares the conjecture, and the regress is named.
+
+    The proof route of the acceptance needs a lean-categories declaration of the generalized
+    Coxeter semifan, its irrelevant roots, K_I and Gamma_Co,2.  That library is not present in
+    this environment (no ``lean-categories`` directory under /opt, no path carrying the name,
+    and LEAN_PATH holds only Cli, LeanSearchClient, Qq, aesop, batteries, importGraph, mathlib,
+    plausible, proofwidgets), and the repository has no lakefile of its own.  So the check that
+    holds is the negative one: nothing on the page claims the conjecture as a theorem.
+    """
+    text = page()
+    assert "#thm:no_moduli_loss" not in text
+    assert "#thm:coble-no-moduli-loss" not in text
+    assert ".theorem" in text  # the theorem of item 1 is there, the conjecture is not restated as one
+    conjecture = block("conj:no_moduli_loss")
+    assert ".conjecture" in conjecture
+
+
+def test_item_7_names_what_is_missing() -> None:
+    """Item 7 is open on one named input: the stabilizer of eta_5 in Gamma_Co,2, which the walk
+    replaces by a subgroup.  The record says so in its own docstring, and the bound is printed."""
+    record = " ".join(ORBIT_RECORD.read_text(encoding="utf-8").split())
+    assert "proper subgroup of the stabilizer of eta_5 in Gamma_Co,2" in record
+    assert "NOT thereby proved inequivalent" in record
+    run = ORBIT_RUN.read_text(encoding="utf-8")
+    assert "20484 classes" in run or "20484" in run
+
+
+def test_the_body_letter_of_route_b_and_the_comment_that_tightens_it() -> None:
+    """Route (B) as the body words it: a pair whose faces agree, a record, the conjecture
+    corrected.  All three are on the page.  Comment 1 adds inequivalence, which is item 7 and is
+    the only piece missing; this test records the difference rather than collapsing it."""
+    body_letter = (
+        bool(block("thm:face-irrelevant-marking")),
+        FACE_RUN.exists(),
+        ".corrected" in block("conj:no_moduli_loss") or "no face can" in block("conj:no_moduli_loss"),
+    )
+    assert all(body_letter), body_letter
+    comment_letter = "not reached within depth 12 over 20484 classes" in ORBIT_RUN.read_text(encoding="utf-8")
+    assert comment_letter, "the inequivalence leg must remain visibly unproved"
+
+
 def test_open_questions_row_names_the_open_step() -> None:
     """The row for the withdrawn step names the orbit computation as what is open."""
     text = OPEN_QUESTIONS.read_text(encoding="utf-8")
