@@ -1153,7 +1153,8 @@ Then:
 1. the only $\Orth(q_{E_8(2)})$-invariant subgroups of $A_{E_8(2)}$ are $0$ and $A_{E_8(2)}$, and $A_{U(2)}$ is the only subgroup of $A^0$ of order $4$ invariant under $\Orth(q_{U(2)})\times\Orth(q_{E_8(2)})$;
 2. the orbits of $\Orth(q_{A^0})$ on $A^0$ are $\set{0}$, the $527$ nonzero classes with $q = 0$, and the $496$ classes with $q = 1$;
 3. if $A = \ZZ k\perp A^0$, every isometry of $q_A$ fixes $k$, restriction to $A^0$ is an isomorphism $\Orth(q_A)\iso\Orth(q_{A^0})$, and the orbits of $\Orth(q_A)$ on $A$ are the orbits of (2) and their translates by $k$, of sizes $1, 1, 527, 527, 496, 496$;
-4. $\Stab_{\Orth(q_A)}\bigl(A_{U(2)}\bigr) = \Orth(q_{U(2)})\times\Orth(q_{E_8(2)})$, and some $g\in\Orth(q_A)$ has $g(A_{U(2)})\neq A_{U(2)}$; so if an anti-isometry $\gamma$ with source $A$ is block-compatible, then $\gamma\circ g$ is not.
+4. $\Stab_{\Orth(q_A)}\bigl(A_{U(2)}\bigr) = \Orth(q_{U(2)})\times\Orth(q_{E_8(2)})$, and some $g\in\Orth(q_A)$ has $g(A_{U(2)})\neq A_{U(2)}$; so if an anti-isometry $\gamma$ with source $A$ is block-compatible, then $\gamma\circ g$ is not;
+5. if $A'$ is a second form of the shapes above with the same two summands $A_{U(2)}$, $A_{E_8(2)}$ — as $A_{S_\En}$ and $A_{T_\En}$ are — then there is an anti-isometry $A\too A'$ with $\gamma(A_{U(2)}) = A_{U(2)}$, and one without that property.
 :::
 
 ::: {.proof}
@@ -1170,6 +1171,8 @@ Let $W\leq A^0$ be a subgroup of order $4$ invariant under $\Orth(q_H)\times\Ort
 (3) Since $k\perp A^0$ and $b_A$ is nondegenerate, $b(k,k) = \tfrac12$. For $x = \epsilon k+a$ with $a\in A^0$ one has $b(a,a)\equiv q(a)\equiv0\pmod 1$, so $b(x,x) = \tfrac\epsilon2 = b(x,k)$. If $c\in A$ also satisfies $b(x,x) = b(x,c)$ for every $x$, then $c-k$ is orthogonal to $A$, so $c = k$. An isometry preserves $b$, so it fixes $k$ and preserves $k^\perp = A^0$; conversely every isometry of $q_{A^0}$ extends by $k\mapsto k$. The orbits follow from (2), because $q(k+a) = q(k)+q(a)$.
 
 (4) An isometry that preserves $H$ fixes $k$ by (3) when $A = \ZZ k\perp A^0$, so it preserves $A^0$ and hence $H^\perp\intersect A^0 = E$; this gives the stabilizer. The class of value $1$ in $H$ and the image $r\in E$ of a root lie in one orbit by (2) and (3), so some $g$ maps the first to $r\notin H$, and $g(H)\neq H$. If $\gamma(H) = H$, then $\gamma(g(H))\neq\gamma(H) = H$.
+
+(5) The map that is the identity on each of the two summands is an isometry $A\too A'$ carrying $H$ to $H$, and both $q_A$ and $q_{A'}$ take values in $\tfrac12\ZZ/\ZZ$, where $q = -q$; so that map is an anti-isometry, and composing it with the $g$ of (4) gives one that moves the block.
 :::
 
 ::: {.lemma #lem:overgroups-of-gamma-co title="Overgroups of the stable group in $\Orth^+(T_\Co)$"}
@@ -1231,6 +1234,15 @@ $\Gamma^{\mathrm{Hdg}}_\Co$ lies in $\Orth^+(T_\Co)$ and contains $\widetilde\Or
 The anti-isometry $\gamma_\Co$ maps $[K/2]$ to $[\zeta/2]$, because these are the classes characterized in @lem:coble-discriminant-blocks(3), so it maps the summand $A^0$ of $A_{S_\Co}$ onto that of $A_{T_\Co}$.
 By @lem:coble-discriminant-blocks(4), $\gamma_\Co P_{S_\Co}\gamma_\Co^{-1}$ is the stabilizer of $\gamma_\Co(A_{U(2)})$, and it is $P$ if and only if $\gamma_\Co$ is block-compatible, by the argument of (2).
 $\Gamma^\theta_\Co$ lies in $\Orth^+(T_\Co)$ and contains $\widetilde\Orth^+(T_\Co)$ (@prop:gamma-co-in-theta-centralizer), so by @lem:overgroups-of-gamma-co and (3), $\Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ if and only if $\rho_{T_\Co}(\Gamma^\theta_\Co) = P$.
+:::
+
+::: {.remark title="The block condition is satisfiable and not automatic, computed"}
+
+By @lem:coble-discriminant-blocks(5) a block-compatible anti-isometry $A_{S_\En}\too A_{T_\En}$ exists, and by (4) one that moves the block exists as well; so the hypothesis of @prop:gamma-cong-eq-heegner(2) is a condition on the chosen gluing, neither vacuous nor automatic.
+Both are on record at the owner, on $A_{S_\En}$ of order $1024$: `computations/reports/coble_a20-enriques-gluing-block.py`, transcript `-run.txt`, finds the three orbits of $\Orth(q_{S_\En})$ on its classes, of sizes $1$, $496$ and $527$, meeting the $U(2)$ block in $1$, $1$ and $2$ classes, with the witness pair $[0]+[1]$ inside and $[0]+[1]+[2]+[3]+[4]+[5]+[7]$ outside, both in the orbit of size $496$ and both of value $1$.
+The same record applies the block test to the anti-isometry that the owner's torsion-form isometry constructor returns for $A_{S_\En}\too A_{T_\En}(-1)$: it satisfies $q_{T_\En}\circ\gamma = -q_{S_\En}$ on all $259$ classes of the two blocks and carries the $U(2)$ block to a four-element subgroup contained in neither block, so that map is not block-compatible.
+The record decides nothing about the gluing of the marked embedding $S_\En\injects\lkt$, and by the orbit computation it cannot: no property of the pair of forms selects a block-compatible anti-isometry, so the choice among them is the labeled-embedding datum of @prob:coble-rigidity.
+That choice, for $\gamma$ and for $\gamma_\Co$ alike, is what remains of the comparison of the Heegner and $\theta$ descriptions with the congruence one (@qst:gamma-co-generators(2)).
 :::
 
 ::: {.question #qst:kernel-and-root-arrangement title="The root arrangement"}
