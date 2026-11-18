@@ -1,0 +1,36 @@
+{
+  "schema": "coble-kernel-56-small-odd-local-v1",
+  "source_sha256": "9708165fc7b7e0d5fa27c613260030935bd63146e5e1257d2dca78063886ace1",
+  "records": [
+    {
+      "prime": 3,
+      "contains_omega": true,
+      "orthogonal_type": "odd_dimension_11",
+      "principal_p_layer_rank": 55
+    },
+    {
+      "prime": 5,
+      "contains_omega": true,
+      "orthogonal_type": "odd_dimension_11",
+      "principal_p_layer_rank": 55
+    },
+    {
+      "prime": 7,
+      "contains_omega": true,
+      "orthogonal_type": "odd_dimension_11",
+      "principal_p_layer_rank": 55
+    },
+    {
+      "prime": 11,
+      "contains_omega": true,
+      "orthogonal_type": "odd_dimension_11",
+      "principal_p_layer_rank": 55
+    },
+    {
+      "prime": 13,
+      "contains_omega": true,
+      "orthogonal_type": "odd_dimension_11",
+      "principal_p_layer_rank": 55
+    }
+  ]
+}
