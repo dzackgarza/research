@@ -41,6 +41,8 @@ def source_for(name):
     for path in (SOURCE / name, FIGURES / "raster" / "dissertation" / name,
                  FIGURES / "raster" / name):
         if path.is_file():
+            if path.read_bytes()[:43] == b"version https://git-lfs.github.com/spec/v1\n":
+                sys.exit(f"docs-figures: {path} is an unresolved Git LFS pointer")
             return path
     if name in {"fig-pumpkin.png", "fig-pumpkin2.png"}:
         path = DEPOSITED / (Path(name).stem + ".pdf")
