@@ -189,6 +189,28 @@ def test_item_3_beneath_the_library_the_statement_is_unstatable() -> None:
            "the sources read give no dictionary" in joined
 
 
+def test_item_3_the_cusp_marking_is_in_no_source_held_here() -> None:
+    """Item 3's first block, checked against the sources rather than asserted.
+
+    The corrected conjecture needs the identification of the cusp chamber's simple roots with
+    curves of the Coble surface.  `warn:coble-marking` says no source read gives it; the search over
+    the two sources that warning names, both held in tmp/sources, confirms it: AN06 never says
+    "Coble" at all (it supplies the boundary lattice K_I), and DK13 section 8 describes the Coble
+    surface through phi_h and its branch curve W without ever pairing a root with a curve.  The one
+    root-to-component dictionary that does exist is the Enriques/K3 one, which is not this.
+    """
+    run = ROOT / "computations/reports/coble_760-cusp-marking-search-run.txt"
+    assert run.exists(), run
+    text = run.read_text(encoding="utf-8")
+    assert "occurrences of 'Coble': 0" in text
+    assert "section 8 begins at line" in text
+    assert "lines in the whole article pairing a simple root with a curve: 0" in text
+    verdict = " ".join(text.split())
+    assert "it is a definition, not a citation" in verdict
+    assert "author has to decide it" in verdict
+    assert text.rstrip().endswith("PYEXIT=0")
+
+
 def test_item_4_a_pair_whose_faces_agree() -> None:
     """Item 4: the transcript's face line is the smallest input."""
     text = FACE_RUN.read_text(encoding="utf-8")

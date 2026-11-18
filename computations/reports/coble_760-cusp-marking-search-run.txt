@@ -1,0 +1,47 @@
+the cusp marking, searched for in the sources this repository holds
+
+=== AN06 (alexeev-nikulin 2006), the source of the boundary lattice K_I = (9,9,1):
+   occurrences of 'Coble': 0
+   occurrences of 'curve': 153
+   lines pairing a root with a curve of a Coble surface: 0 (the source never says 'Coble')
+   so AN06 supplies the lattice and no dictionary.
+
+=== DK13 (dolgachev-kondo 2013), section 8, 'A geometric construction: Coble surfaces':
+   section 8 begins at line 666 of the extracted text
+   |                 § 8. A geometric construction: Coble surfaces
+   |    We assume that S is an unnodal Coble surface in the sense that it has no
+   | ( 2)-curves. We know that the orthogonal complement of KS in Pic(S) isomor-
+   | phic to the Enriques lattice E. As in the case of unnodal Enriques surfaces, we
+   | consider a polarization h = [F1 + F2 ] of degree 2. Such polarizations correspond
+   | to lattice embeddings U ,! E. One can show that the linear system |2h| defines
+   | a regular map h : S ! P4 whose image is a 4-nodal quartic del Pezzo surface
+   | D (see [10]). The set of fixed points of the deck transformation of S consists
+   | of a smooth curve W of genus 4 and three isolated points. The image of the
+   | anti-canonical curve C 2 | 2KS | is a singular point q of D (the other three singular
+   | points are the images of the isolated fixed points). The curve W intersects C at two
+   | points. Its image W on D is a curve of arithmetic genus 5 with a double point at q.
+   | It is equal to the complete intersection of a net of quadrics. Thus a Coble surface
+   | is obtained as a degeneration of an Enriques surface when the branch curve W of
+   | the map h passes through a singular point of D.
+   |    Let us look at the discriminant curve of the net N of quadrics with base locus
+   | equal to W . It is a plane quintic with two double points corresponding to corank 2
+   | quadrics in the pencil |OD (2)|. What is di↵erent here is that one of the double
+   | points is a cusp. In fact, it is known that the tangent cone of a double point of the
+   | discriminant curve corresponding to a corank 2 quadric in the net consists of quadric
+   | tangent to the singular line ` of the corank 2 quadric. Since the point q is a base
+   | point of the net N , the restriction of N to the singular line ` has q as a base point.
+   | Hence there is only one pencil of quadrics touching ` at one point (di↵erent from q).
+
+   lines in the whole article pairing a simple root with a curve: 0
+   occurrences of '(-2)-curve': 5
+   so DK13 describes S through phi_h and its branch curve W, and never identifies the
+   chamber's roots with curves of S.
+
+=== the nearest identification that does exist, for reference:
+2264:In Figures 18 and 19 we list the maximal connected elliptic subdiagrams in the Coxeter
+   that is the Enriques/K3 dictionary (roots <-> components of a Kulikov model), not the
+   Coble one the marking needs: it says nothing about curves of the Coble surface S.
+
+VERDICT: the cusp marking is in neither source; it is a definition, not a citation, and the
+author has to decide it.  Nothing here substitutes for it.
+PYEXIT=0
