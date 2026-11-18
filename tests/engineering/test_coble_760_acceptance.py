@@ -127,9 +127,21 @@ def test_item_3_names_the_owner() -> None:
     dag = " ".join((ROOT / "computations/scripts/sterk-enriques-cusps/DAG.md")
                    .read_text(encoding="utf-8").split())
     assert "tracked as an issue on `lean-categories`, not here" in dag
+    assert "Sixteen nodes carry `R`" in dag, "the repository's own Lean development moved"
     index = (ROOT / "docs/theory/hyperbolic-index.md").read_text(encoding="utf-8")
     assert "LeanCategories/Lattices/Valued/" in index
     assert "~/gitclones/lean-categories" in dag
+    # the repository's own Lean development is the natural home, since it carries the
+    # neighbouring atoms: the subgroup, the divisor ideal, the cone.  What it does not carry is
+    # the notion the statement is about, and that is the sharp form of the block.
+    atoms = (ROOT / "computations/scripts/sterk-enriques-cusps/lean/Atoms.lean")
+    text = atoms.read_text(encoding="utf-8")
+    assert "def orthogonalGroup" in text, "the neighbouring atom is gone"
+    assert "def divisorIdeal" in text
+    assert "def lorentz" in text or "def negativeCone" in text
+    for missing in ("def Semifan", "def Chamber", "def Irrelevant", "def Fan"):
+        assert missing not in text, missing
+    assert "sorry" not in text, "the atom file must stay sorry-free"
 
 
 def test_item_4_a_pair_whose_faces_agree() -> None:
