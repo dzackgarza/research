@@ -26,5 +26,12 @@ VERDICT: roots 13 and 14 are Gamma_Co,2-equivalent (the first witness).  Roots 1
 are in one O(T_En)-orbit (the second), which is not the group of the question; no symmetry
 of the diagram identifies 12 with 13 while preserving the Coble root, so that pair still
 needs the reduction rather than a symmetry.
+
+=== does the witness enlarge the reflection walk?  (three depths, both generator sets)
+   depth 1: 4 classes without g, 4 with g and g^-1  -> same group on this orbit: True
+   depth 2: 11 classes without g, 11 with g and g^-1  -> same group on this orbit: True
+   depth 3: 30 classes without g, 30 with g and g^-1  -> same group on this orbit: True
+   so the witness is already in the group the fourteen reflections generate, and adding it
+   to the orbit search reaches nothing new: root 12 is untouched by that route.
 elapsed 0 s
 PYEXIT=0

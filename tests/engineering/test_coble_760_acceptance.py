@@ -442,6 +442,9 @@ def test_item_7_one_pair_is_settled_by_a_witness() -> None:
     assert "g(delta) = delta: True" in text and "g(delta) = delta: False" in text
     assert "roots 13 and 14 are\n      Gamma_Co,2-equivalent at cusp 5" in text
     assert "witnesses only that the two" in text and "one O(T_En)-orbit" in text
+    # the witness is already in the reflection group, so it adds no route to root 12
+    assert text.count("same group on this orbit: True") == 3
+    assert "root 12 is untouched by that route" in " ".join(text.split())
 
 
 def test_item_8_cusp_four_is_not_a_pair() -> None:

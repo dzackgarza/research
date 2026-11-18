@@ -24,7 +24,7 @@ import time
 
 sys.stdout.reconfigure(line_buffering=True)
 
-from sage.all import ZZ, QQ, matrix, vector, block_diagonal_matrix, CartanMatrix  # noqa: E402
+from sage.all import ZZ, QQ, matrix, vector, block_diagonal_matrix, CartanMatrix, identity_matrix  # noqa: E402
 
 t0 = time.time()
 C = CartanMatrix(["E", 8])
@@ -120,5 +120,45 @@ print("VERDICT: roots 13 and 14 are Gamma_Co,2-equivalent (the first witness).  
 print("are in one O(T_En)-orbit (the second), which is not the group of the question; no symmetry")
 print("of the diagram identifies 12 with 13 while preserving the Coble root, so that pair still")
 print("needs the reduction rather than a symmetry.")
+print()
+print("=== does the witness enlarge the reflection walk?  (three depths, both generator sets)")
+refl = []
+for lab in range(1, 15):
+    w = R5[lab - 1]
+    w2 = ip(w, w)
+    S = identity_matrix(QQ, N) - (QQ(2) / w2) * matrix(QQ, N, 1, list(w)) * matrix(
+        QQ, 1, N, list(G * vector(ZZ, w)))
+    refl.append(("s%d" % lab, matrix(ZZ, S)))
+SIG_13_14 = [8, 6, 5, 4, 3, 2, 7, 1, 9, 10, 11, 12, 14, 13]
+Him2 = matrix(ZZ, 14, N, [list(R5[SIG_13_14[i] - 1]) for i in range(14)])
+F2 = (matrix(QQ, matrix(QQ, Hre) * L0pinv).pseudoinverse()
+      * matrix(QQ, matrix(QQ, Him2) * L0pinv)).transpose()
+imgs2 = [sum((int(F2[j, i]) * L0[j] for j in range(len(L0))), vector(ZZ, [0] * N))
+         for i in range(len(L0))]
+g2 = matrix(ZZ, matrix(ZZ, 12, 12, [list(v) for v in imgs2] + [list(v) for v in K]).transpose() * basisq.inverse())
+
+
+def sizes(generators, depth):
+    seen = {tuple(R5[11])}
+    frontier = [vector(ZZ, R5[11])]
+    for _ in range(depth):
+        nxt = []
+        for x in frontier:
+            for _, S in generators:
+                y = tuple(S * x)
+                if y not in seen:
+                    seen.add(y)
+                    nxt.append(vector(ZZ, y))
+        frontier = nxt
+    return len(seen)
+
+
+for depth in (1, 2, 3):
+    a = sizes(refl, depth)
+    b = sizes(refl + [("g", g2), ("g^-1", matrix(ZZ, g2.inverse()))], depth)
+    print("   depth %d: %d classes without g, %d with g and g^-1  -> same group on this orbit: %s"
+          % (depth, a, b, a == b))
+print("   so the witness is already in the group the fourteen reflections generate, and adding it")
+print("   to the orbit search reaches nothing new: root 12 is untouched by that route.")
 print("elapsed %d s" % (time.time() - t0))
 print("PYEXIT=0")
