@@ -427,6 +427,26 @@ def test_item2_direct_group_is_defined_and_its_comparison_handed_on():
 # item 3: Gamma^geom, a period theorem with no lattice statement.
 # ---------------------------------------------------------------------------
 
+def test_item2b_the_chamber_subscript_is_not_dropped():
+    """A20 item 2 as the issue states it: the object carries the chamber mcc.
+
+    Decides: the equality is for the centralizer WITHOUT the chamber, and both the page and the
+    definition of the issue's group say what follows for the object that carries it -- an
+    inclusion plus a criterion, with the preservation open at @qst:kernel-and-root-arrangement.
+    Without these sentences the page reads as proving an equality about a group the issue never
+    defined.
+    """
+    page = _text(PAGE)
+    proof = page[page.index("::: {.proof}", page.index("{.proposition #prop:direct-eq-heegner")):]
+    chamber = proof[proof.index("*The chamber.*"):]
+    assert "carries the subscript $\\mcc$" in chamber
+    assert "with equality exactly when every element of the centralizer preserves the chamber $\\mcc$" in chamber
+    assert "@qst:kernel-and-root-arrangement" in chamber
+    definition = _block(_text(REPORT), "{.definition #def:direct-group")
+    assert "The chamber $\\mcc$ is part of this datum and is not dropped by what follows" in definition
+    assert "with equality exactly when every element of that centralizer preserves $\\mcc$" in definition
+
+
 def test_item3_geometric_entry_is_a_period_theorem():
     """Decides: Gamma^geom is monodromy of the direct stack, named to B24 and B25."""
     report = _text(REPORT)

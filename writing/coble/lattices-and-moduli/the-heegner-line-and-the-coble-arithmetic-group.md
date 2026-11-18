@@ -1379,6 +1379,8 @@ and by @cor:gamma-hdg-is-congruence that is $\Gamma^{\mathrm{Hdg}}_\Co$.
 *The chamber.*
 @def:direct-group carries the subscript $\mcc$ and nothing above uses it: an isometry fixing $H$ and $\alpha$ and commuting with the two involutions need not preserve the chamber, and whether every one of them does is @qst:kernel-and-root-arrangement, which needs the effective arrangement of a member and not a computation on $\lkt$.
 The equality proved is therefore the one for the centralizer without that subscript; the subscript is that question, and it is where the labelled rigidity theorem's chamber clause enters this group.
+For the object of @def:direct-group the consequence is an inclusion and a criterion: $\Gamma^{\mathrm{dir}}_{\Co,2}$ as defined — that is, with $\mcc$ in its datum — lies in $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$, with equality exactly when every element of the centralizer preserves the chamber $\mcc$.
+Whether every one does is open and is @qst:kernel-and-root-arrangement; it is decided by the effective arrangement of a member, not by a computation on $\lkt$ or on $A_{T_\Co}$, so nothing on this page settles it either way.
 :::
 
 ::: {.question #qst:kernel-and-root-arrangement title="The root arrangement"}

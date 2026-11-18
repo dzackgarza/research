@@ -1030,6 +1030,8 @@ This group is the natural group of a fixed normalized Heegner component once the
  \too O^+(T_{\Co})
  \right).
 \]
+
+The chamber $\mcc$ is part of this datum and is not dropped by what follows: the equality of @prop:direct-eq-heegner is proved for the centralizer $Z_{O(L_{K3})}(I_{\Co},I_{\mathrm{dP}})_{H,\alpha}$ without it, so the group above lies in $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ with equality exactly when every element of that centralizer preserves $\mcc$. Whether every one does is @qst:kernel-and-root-arrangement, decided by the effective arrangement of a member rather than by a lattice computation.
 :::
 
 This is the arithmetic group naturally attached to the autonomous lattice datum, provided the labeled rigidity theorem holds.
