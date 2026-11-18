@@ -38,6 +38,12 @@ I_{1,8}(2) by Nikulin's classification of indefinite 2-elementary lattices, so t
 0-cusps of F_{Co,2} have one cusp lattice, as thm:one-cusp-lattice states, and this
 instantiates it at the four public representatives.
 
+cross-check, on a matrix that is not one of the four quotient Grams:
+   the standard form <2> + E8(-2): rank 9 , det 512 , signature (1, 8) , 2-elementary True , a = 9 , delta = 1
+   its level profile: {'0': 136, '1/2': 136, '1': 120, '3/2': 120}
+   the four quotients and this matrix have the same invariants: True
+   (the level profiles agree as printed above)
+
 K at line cusp 0, in the basis of the script:
     [2, 0, 0, 0, 0, 0, 0, 0, 0]
     [0, -4, 0, 2, 0, 0, 0, 0, 0]

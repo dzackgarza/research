@@ -2052,8 +2052,10 @@ This one is, its class being the trivial class of $A_{T_\Co}$, and the $121$ cla
 Separating them class by class is the content of that record, and no part of it is decided here.
 :::
 
-The rest of the problem is not available here, and the items it waits on are the ones @tbl-status-ledger already names: the polarized Coble Coxeter diagrams of @sec-coxeter, marked not established, and the direct dlt and stable-model theorem of @sec-coble-dlt, marked open.
-Those two are what an explicit determination of the cusps, Coxeter diagrams, Type II and Type III strata and fan-versus-semifan loci requires, and what the semitoroidal identification of the normalized KSBA closure requires; at the one $0$-cusp of $F^{\mathrm{un}}_\Co$ the marking is missing in addition (@warn:coble-marking).
+**Clauses two and three are not established, so this problem is not settled, and this page claims no more than @tbl-status-ledger records.**
+What clause three has is a computation of the cusps and of one cusp lattice at all four of them — $I_{1,8}(2)$, at the four public representatives (`computations/reports/coble_671-four-cusps-run.txt`, which also states that the identification rests on the computed invariants and [@Nik80, Thm. 3.6.2] and not on a library call).
+What it owes is the four folded Coxeter diagrams, and with them the Type II and Type III strata at the labelled cusps, and that owes two inputs: the images $\Gamma_e\le\Orth(I_{1,8}(2))$ of the four stabilizers, which are a stabilizer computation in $\Gamma_{\Co,2}$ over the four representatives — the provider's own stabilizer families being labelled untrusted engine output, and the discriminant criterion being blocked by the lifting theory of [@Wal62], which is not among the sources at hand — and the relevance marking, without which "fan versus semifan" is not readable at a Coble cusp at all (@warn:coble-marking).
+Clause two, the semitoroidal identification of the normalized KSBA closure, waits on the direct dlt and stable-model theorem of @sec-coble-dlt, marked open, and on those diagrams.
 
 ### Heegner comparison target {#sec-heegner-target}
 
@@ -2077,6 +2079,9 @@ Under this isomorphism:
 :::
 
 Target theorem B is the comparison theorem of @sec-central-problem.
+**Status, clause by clause, and it is a target theorem.** Of the six clauses, the first is decided: the direct and Heegner arithmetic groups agree, at $\Gamma^{\mathrm{dir}}_{\Co,2}=\Gamma^{\mathrm{Hdg}}_{\Co,2}=\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ (@cor:four-groups-decided, with the loop and isotropy readings separated at @thm:no-loop-carries-the-sign and @thm:sign-is-isotropy).
+The other five are not established: the commuting period diagram is @prob:period-diagram, clause four needs the folded diagrams that clause three of Target theorem A owes, clause five needs the descended ramification divisor's identity with the restriction of $R_Z$ and the marking dictionary (@def:coble-descended-ramification, @warn:coble-marking), and clause six needs clause two of Target theorem A.
+The canonical isomorphism itself, at the head of the statement, is not established either, and nothing in this report proves it.
 Target theorem A is a substantial independent theorem and an intermediate strategy, but it becomes a proof of the Heegner statement only after Target theorem B is established.
 
 ## Proof strategies and research programs {#sec-strategies}
@@ -2889,6 +2894,7 @@ The table lists each statement, whether it is proved, and the section that prove
 | Direct dlt and stable-model theorem | open | @sec-coble-dlt |
 | Exact Coble semifans | established at the four $0$-cusps of $F_{\Co,2}$ by restriction, the marking inherited; no marking at the one $0$-cusp of $F^{\mathrm{un}}_\Co$ | @sec-direct-semifans, @sec-coble-pair-semifan |
 | Normalization of the Heegner KSBA closure | target theorem | @sec-heegner-target |
+| Target theorem B, clause by clause | clause 1 decided (@cor:four-groups-decided); clauses 2 to 6 not established, and with them the canonical isomorphism at the head of the statement | @sec-heegner-target |
 
 : Statements of the report and the sections that prove or state them. {#tbl-status-ledger}
 

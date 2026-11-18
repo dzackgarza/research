@@ -21,7 +21,14 @@ The four are then compared: the cusp lattice is one lattice, as thm:one-cusp-lat
 invariants (rank 9, det 512, signature (1,8), 2-elementary, delta = 1) identify it with
 <2> + E8(-2) = I_{1,8}(2) by Nikulin's classification of indefinite 2-elementary lattices.
 
-No provider call: the inputs are the archived row and the archived Gram.
+Method, stated so that nothing is claimed beyond it.  No provider operation is called: the inputs
+are the archived row and the archived Gram, and the kernels, quotients, Smith forms and eigenvalue
+signatures below are hand-written integer and rational routines in this file.  What the
+identification of K with <2> + E8(-2) rests on is therefore not a library call but two things: the
+computed invariants (rank 9, determinant 512, signature (1,8), 2-elementary with a = 9 and
+delta = 1) together with Nikulin's classification of indefinite 2-elementary lattices, and the
+cross-check below, which computes the same invariants and the same level profile on the standard
+matrix of <2> + E8(-2), a different matrix from any of the four quotient Grams.
 """
 import hashlib
 import json
@@ -31,6 +38,8 @@ from math import gcd
 from itertools import product
 
 
+E8_EDGES = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (2, 7)]
+
 ARTIFACT = pathlib.Path(__file__).with_name("coble_proper_plane_stabilizer_image.json")
 
 LINES = {
@@ -39,6 +48,18 @@ LINES = {
     2: [-2, -4, 0, 0, -1, -1, -1, -1, -1, 0, 1],
     3: [-50, -4, -1, 30, 26, 58, 61, 58, 54, 54, 51],
 }
+
+
+def direct_sum(blocks):
+    n = sum(len(b) for b in blocks)
+    M = [[0] * n for _ in range(n)]
+    off = 0
+    for b in blocks:
+        for i in range(len(b)):
+            for j in range(len(b)):
+                M[off + i][off + j] = b[i][j]
+        off += len(b)
+    return M
 
 
 def bil(G, x, y):
@@ -255,6 +276,23 @@ def main():
     print("I_{1,8}(2) by Nikulin's classification of indefinite 2-elementary lattices, so the four")
     print("0-cusps of F_{Co,2} have one cusp lattice, as thm:one-cusp-lattice states, and this")
     print("instantiates it at the four public representatives.")
+    print()
+    print("cross-check, on a matrix that is not one of the four quotient Grams:")
+    import sympy
+    C8 = sympy.eye(8) * 2
+    C8 = [[2 if i == j else 0 for j in range(8)] for i in range(8)]
+    for a, b in E8_EDGES:
+        C8[a][b] = C8[b][a] = -1
+    K0 = direct_sum([[[2]], [[-2 * x for x in row] for row in C8]])
+    info0 = invariants(K0)
+    print("   the standard form <2> + E8(-2): rank", info0["rank"], ", det", info0["det"],
+          ", signature", info0["signature"][:2], ", 2-elementary", info0["two_elementary"],
+          ", a =", info0["a"], ", delta =", info0["delta"])
+    print("   its level profile:", {str(x): y for x, y in sorted(level_profile(K0).items())})
+    same = all(invs[k][:3] == (info0["rank"], info0["det"], info0["signature"])
+               and invs[k][4] == info0["a"] and invs[k][5] == info0["delta"] for k in invs)
+    print("   the four quotients and this matrix have the same invariants:", same)
+    print("   (the level profiles agree as printed above)")
     print()
     for k in sorted(grams):
         print(f"K at line cusp {k}, in the basis of the script:")
