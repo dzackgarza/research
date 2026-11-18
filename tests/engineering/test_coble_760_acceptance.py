@@ -783,6 +783,23 @@ def test_item_7_the_gamma_co_2_transporter_search_is_bounded_and_says_so() -> No
     assert "BOUND and not a decision" in doc
 
 
+def test_item_7_the_pruned_transporter_search_and_its_depth() -> None:
+    """Item 7: the pruned search to depth 16, its saturation, and that saturation is not exhaustion."""
+    record = ROOT / "computations/reports/coble_760-transporter-pruned-search.py"
+    run = ROOT / "computations/reports/coble_760-transporter-pruned-search-run.txt"
+    assert record.exists() and run.exists(), (record, run)
+    text = run.read_text(encoding="utf-8")
+    assert text.rstrip().endswith("PYEXIT=0"), "the search did not reach its anchor"
+    flat = " ".join(text.split())
+    for line in ("g|T_Co keeps the line True, moves the class True, in Gamma_Co,2 False",
+                 "depth 16: survivors 51830, found False",
+                 "no transporter found within the pruned search to the recorded depth"):
+        assert line in flat, line
+    doc = " ".join(record.read_text(encoding="utf-8").split())
+    assert "this is a bound and not a decision" in doc
+    assert "saturation is NOT exhaustion" in doc
+
+
 def test_open_questions_row_names_the_open_step() -> None:
     """The row for the withdrawn step names the orbit computation as what is open."""
     text = OPEN_QUESTIONS.read_text(encoding="utf-8")
