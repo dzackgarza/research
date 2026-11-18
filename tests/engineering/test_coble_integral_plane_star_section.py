@@ -378,13 +378,16 @@ def test_coble_fifty_five_positive_elements_span_kernel_modulo_sixteen():
     """The 55-element positive subset generates every graded layer through 16."""
     import hashlib
     import json
+    import subprocess
     from collections import deque
     from pathlib import Path
     from sage.all import GF, Integers, ZZ, identity_matrix, matrix
 
     folder = Path(__file__).resolve().parents[2] / "computations/reports"
     source = folder / "coble_kernel_positive_schreier_generators.json"
-    data = json.loads((folder / "coble_positive_kernel_fifty_five_generators.json").read_text())
+    artifact = folder / "coble_positive_kernel_fifty_five_generators.json"
+    before = artifact.read_bytes()
+    data = json.loads(before)
     assert data["schema"] == "coble-positive-kernel-55-ordinary-mod-sixteen-v1"
     assert data["source_sha256"] == hashlib.sha256(source.read_bytes()).hexdigest()
     assert data["generator_count"] == len(data["generators"]) == 55
@@ -432,6 +435,36 @@ def test_coble_fifty_five_positive_elements_span_kernel_modulo_sixteen():
         for previous in tuple(lifts):
             admit(element * previous * element.inverse() * previous.inverse())
     assert tuple(len(pivots[level]) for level in levels) == (55, 54, 55)
+    subprocess.run(["sage", str(folder / "coble_positive_kernel_fifty_five_generators.py")],
+                   cwd=folder.parents[1], check=True, capture_output=True, text=True)
+    assert artifact.read_bytes() == before
+
+
+def test_coble_positive_fifty_five_odd_local_certificate():
+    """The 55 positive generators have full odd Lie and small-prime images."""
+    import hashlib
+    import json
+    import subprocess
+    from pathlib import Path
+
+    folder = Path(__file__).resolve().parents[2] / "computations/reports"
+    artifact = folder / "coble_positive_fifty_five_odd_local.json"
+    before = artifact.read_bytes()
+    data = json.loads(before)
+    assert data["schema"] == "coble-positive-55-odd-local-v1"
+    for field, name in (
+        ("source_sha256", "coble_positive_kernel_fifty_five_generators.json"),
+        ("basis_sha256", "coble_singular_integral_representatives.json"),
+    ):
+        assert data[field] == hashlib.sha256((folder / name).read_bytes()).hexdigest()
+    assert data["unipotent_count"] == data["initial_lie_rank"] == 47
+    assert data["lie_rank"] == 55 and data["lie_index"] == 2**63
+    assert [row["prime"] for row in data["records"]] == [3, 5, 7, 11, 13]
+    assert all(row["contains_omega"] is True and
+               row["principal_p_layer_rank"] == 55 for row in data["records"])
+    subprocess.run(["sage", str(folder / "coble_positive_fifty_five_odd_local.py")],
+                   cwd=folder.parents[1], check=True, capture_output=True, text=True)
+    assert artifact.read_bytes() == before
 
 
 def test_coble_fifty_six_ordinary_elements_span_kernel_modulo_sixteen():

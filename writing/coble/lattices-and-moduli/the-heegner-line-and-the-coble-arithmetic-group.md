@@ -1810,7 +1810,7 @@ By @cor:coble-level-two-kernel-split-extension, $\Gamma(2)=E_2\rtimes\generators
 
 ::: {.theorem #thm:coble-positive-kernel-ninety-five-generators title="Ninety-five explicit ordinary generators of the positive Coble discriminant kernel"}
 
-The subgroup $\widetilde O^+(T_\Co)=\Gamma(2)\cap\ker(\operatorname{sn}_{\mathbb R})$ is generated **as an ordinary infinite integral group** by the **95 exact integral matrices** in the source-hashed certificate `computations/reports/coble_kernel_positive_schreier_generators.json`. They are obtained by an index-two Reidemeister--Schreier construction from the 56 ordinary generators of @thm:coble-fifty-six-ordinary-full-kernel-generation; no cosets of the enormous discriminant image are enumerated.
+The subgroup $\widetilde O^+(T_\Co)=\Gamma(2)\cap\ker(\operatorname{sn}_{\mathbb R})$ is generated **as an ordinary infinite integral group** by the **95 exact integral matrices** in the source-hashed certificate `computations/reports/coble_kernel_positive_schreier_generators.json`. They are obtained by an index-two Reidemeister--Schreier construction from the 56 ordinary generators of @thm:coble-fifty-six-ordinary-full-kernel-generation; no cosets of the enormous discriminant image are enumerated. The smaller, **provably minimal 55-generator family** is established in @thm:coble-positive-fifty-five-full-generation.
 :::
 
 ::: {.proof}
@@ -1823,7 +1823,7 @@ Let $S=\generators{s_1,\ldots,s_{56}}$ be the certified ordinary generating fami
 
 The first **55** matrices in the certified 95-element positive Schreier family of @thm:coble-positive-kernel-ninety-five-generators are linearly independent modulo four. Their ordinary subgroup has the **full image of $\widetilde O^+(T_\Co)$ modulo sixteen**, with exact successive congruence ranks $(55,54,55)$ at levels two, four, and eight. They are recorded, with source SHA-256, in `computations/reports/coble_positive_kernel_fifty_five_generators.json`.
 
-The number 55 is the **sharp lower bound** on the number of ordinary generators of the infinite positive kernel, since its quotient modulo four is $(\ZZ/2)^{55}$. This proposition establishes finite congruence generation, not by itself ordinary generation of the infinite positive kernel; the 95-element Schreier family remains the certified ordinary generating family.
+The number 55 is the **sharp lower bound** on the number of ordinary generators of the infinite positive kernel, since its quotient modulo four is $(\ZZ/2)^{55}$. This proposition establishes finite congruence generation; the separate arithmeticity and congruence-subgroup proof of **full infinite ordinary generation** is @thm:coble-positive-fifty-five-full-generation.
 :::
 
 ::: {.proof}
@@ -1843,6 +1843,35 @@ has **finite index** in the infinite positive kernel, and has full image in the 
 By @prop:coble-positive-fifty-five-congruence-basis, the 55 ordinary generators fill the successive graded congruence layers of ranks $(55,54,55)$ through modulus sixteen. The 55 independent level-eight lifts obtained by subgroup collection remain independent at every higher $2$-power level under repeated squaring, by the formula of @thm:coble-eichler-exact-deep-congruence-ranks. This proves full $2$-adic congruence images. Consequently $K_{55}$ is Zariski dense in the connected rational orthogonal group, since its $2$-adic closure contains an open subgroup.
 
 The source-hashed Schreier construction `coble_kernel_positive_schreier_generators.py` orders the first 55 matrices as the positive members of the original 56-element family. Its unique omitted original generator is index 3, the determinant-negative Levi matrix $\operatorname{diag}(-1,1)$ on the fixed integral isotropic plane. All the other 25 generators of the integral level-two plane stabilizer are retained. In particular, the **14 Eichler transvections and central unipotent generator** at original indices 11 through 25 are all in $K_{55}$; these generate a finite-index subgroup of the integral unipotent radical of the maximal rational parabolic stabilizing the plane, by @prop:coble-level-two-plane-parabolic. The Raghunathan--Venkataramana arithmeticity criterion quoted and applied through the simply connected spin cover in @thm:coble-fifty-six-ordinary-generators-finite-index therefore applies equally to $K_{55}$ and proves it has finite index in the positive arithmetic group.
+:::
+
+::: {.theorem #thm:coble-positive-fifty-five-full-generation title="Exactly 55 ordinary generators of the full positive Coble kernel"}
+
+Let $S_{55}$ be the **55 exact integral matrices** in the source-hashed certificate `computations/reports/coble_positive_kernel_fifty_five_generators.json`. Then
+$$
+\boxed{\widetilde O^+(T_\Co)=\generators{S_{55}}.}
+$$
+This is equality of **infinite integral arithmetic groups**, not merely of finite congruence images. The number **55 is minimal**, since $\widetilde O^+(T_\Co)$ has an elementary abelian quotient of rank 55 modulo four. Consequently the 95-element Reidemeister--Schreier family of @thm:coble-positive-kernel-ninety-five-generators can be replaced by this provably minimal ordinary generating family in the public arithmetic-group API and the lattice-database card.
+:::
+
+::: {.proof}
+Write $K=\generators{S_{55}}$, $E_2=E(2)$ and $\Gamma^+=\widetilde O^+(T_\Co)=E_2\rtimes\generators{r}$, where $r$ is a negative-root reflection with determinant $-1$ and real-spinor sign $+1$. The first 55 Schreier generators include the negative-root reflection from the original plane-parabolic generator at index 4, so $K$ contains such an $r$. Put $K_0=K\cap E_2$.
+
+**The exact odd-prime calculation.** The 55 matrices contain **47 unipotent isometries** of nilpotency degree at most three. Their integral logarithms, transported to the odd diagonal basis, generate under Lie brackets a full-rank sublattice of $\mathfrak{so}_{11}(\ZZ)$ of **index $2^{63}$**, by the exact source-hashed audit `coble_positive_fifty_five_odd_local.py`. In particular the logarithms generate the entire Lie algebra modulo every odd prime. For $p=3,5,7,11,13$, the same audit independently applies GAP's `RecogniseClassical` to the 55 reductions, certifies that the generated finite group contains $\Omega_{11}(\F_p)$, and proves that the $p$-th powers of the 47 unipotents and their conjugates span the full 55-dimensional first $p$-adic congruence layer. For $p\ge17$, the full integral Lie span and the finite-characteristic recognition argument of @thm:coble-fifty-six-all-odd-prime-powers apply verbatim: the 47 unipotents have order $p$, their logarithms generate $\mathfrak{so}_{11}(\F_p)$, the natural module is absolutely irreducible, and Guralnick's theorem identifies the finite group generated by these $p$-elements with $\Omega_{11}(\F_p)$. Its adjoint action generates the full first congruence layer; iterated $p$-th powers generate all higher layers. All 47 unipotents lie in $E_2$ (unipotents have determinant and rational spinor norm one), so
+$$
+\rho_{p^k}(K_0)=\rho_{p^k}(E_2)
+\qquad(p\text{ odd},\ k\ge1).
+$$
+
+**The two-adic calculation.** The exact ordinary subgroup-collection test `test_coble_fifty_five_positive_elements_span_kernel_modulo_sixteen` proves that $K$ has full graded ranks $(55,54,55)$ through modulus sixteen. By @thm:coble-eichler-exact-deep-congruence-ranks, repeated squaring of the 55 level-eight witnesses gives full image at every deeper $2$-power. Since $K$ contains $r$ and the character $\Gamma^+/E_2\cong\ZZ/2$ is already detected modulo four, $K_0$ has the full image of $E_2$ modulo every $2^k$.
+
+**Mixed moduli and equality.** The odd-prime local groups $\rho_{p^k}(E_2)$ are perfect, as proved in @thm:coble-fifty-six-full-congruence-density. The $2$-adic congruence image of $E_2$ is a finite $2$-group. These groups have no common nontrivial quotient, so Goursat's lemma and the Chinese remainder theorem combine the prime-power equalities into
+$$
+\rho_n(K_0)=\rho_n(E_2)\quad\text{for every }n\ge1.
+$$
+By @thm:coble-positive-fifty-five-finite-index, $K_0$ has finite index in $E_2$. The simply connected spin-cover argument and the **trivial congruence kernel** proved in @thm:coble-fifty-six-ordinary-full-kernel-generation now apply without alteration: the lift of $K_0$ is finite-index and congruence-dense in the arithmetic spin cover, so it equals the lift of $E_2$. Hence $K_0=E_2$. Since $r\in K$, we conclude $K=\Gamma^+$.
+
+The rank-55 quotient of @prop:coble-positive-fifty-five-congruence-basis proves that no smaller ordinary generating family exists.
 :::
 
 ::: {.proposition #prop:coble-level-two-plane-parabolic title="Generators of the level-two kernel in the integral plane stabilizer"}
@@ -2100,7 +2129,7 @@ of sizes $1$, $2$, $135$, $270$ and $120$; the four nonzero orbits total $527$.
 ::: {.remark #rmk:coble-plane-incidence-rows title="The public rows behind the plane fibre, the cusps of $F_{\Co,2}$ and the incidence"}
 These plane and incidence rows are computation records in sage-extensions, not lattice-database card fields. The $T_\Co$ lattice card now separately holds certified primitive isotropic **line** counts for all eight standard subgroups, and its two arithmetic-group cards hold certified indices (lattice-database#7). The required integral generator morphisms remain absent on both arithmetic-group cards, and affected-card `latticedb verify` has not passed; #7 therefore remains open against its original acceptance.
 
-*The two plane rows.* The driver is `tests/coble_kernel_plane_rows.py` at `897e7f7fd45e4d4f4cfcb29b266672e9232d25ab`, and the call is `isotropic_orbit_representatives(2)` on `Tco.stable_orthogonal_group()` and on its intersection with `Tco.O_plus()`, that is on $K = \ker\rho$ and on $\widetilde\Orth^+(T_\Co) = K\intersect\Theta_\bR(T_\Co)$, the real-spinor kernel of @conv:spinor-positive-subgroup that the driver names `sn_RR`: the two groups whose line counts are @thm:coble-zero-cusp-count(2) and whose plane and flag counts are @cor:coble-eight-standard-line-counts. Every returned representative is checked to have rank two, to be primitive in $T_\Co$, and to carry the zero Gram tensor, and the count is compared with the double cosets over the single $\Orth(T_\Co)$-class of primitive isotropic planes, computed as a quotient of two group orders. Run 43798731423 reports $189\,720$ planes for $\ker\rho$ in $4013.4$ s and $189\,720$ for $\widetilde\Orth^+(T_\Co)$ in $1821.2$ s, each against an expected $189\,720$ over one class of $\Orth(T_\Co)$; its last line, which the driver prints only after both counts have equalled their double cosets, reports the two counts equal.
+*The two plane rows.* The driver is `tests/coble_kernel_plane_rows.py` at `897e7f7fd45e4d4f4cfcb29b266672e9232d25ab`, and the call is `isotropic_orbit_representatives(2)` on `Tco.stable_orthogonal_group()` and on its intersection with `Tco.O_plus()`, that is on $K = \ker\rho$ and on $\widetilde\Orth^+(T_\Co) = K\intersect\Theta_\bR(T_\Co)$, the real-spinor kernel of @conv:spinor-positive-subgroup that the driver names `sn_RR`: the two groups whose line counts are @thm:coble-zero-cusp-count(2) and whose plane and flag counts are @cor:coble-eight-standard-line-counts. Every returned representative is checked to have rank two, to be primitive in $T_\Co$, and to carry the zero Gram tensor, and the count is compared with the double cosets over the single $\Orth(T_\Co)$-class of primitive isotropic planes, computed as a quotient of two group orders. Run 43798731423 reports $189\,720$ planes for $\ker\rho$ in $4013.4$ s and $189\,720$ for $\widetilde\Orth^+(T_\Co)$ in $1821.2$ s, each against an expected $189\,720$ over one class of $\Orth(T_\Co)$; the run's own record, sage-extensions#390's closing comment of 2026-11-16, gives the same two counts and durations and states that the driver checks each count against the double-coset count of Dutour Sikiric--Hulek, arXiv:2302.01679v2, Lemma 3.6, and it is archived verbatim at `computations/reports/coble_kernel_plane_rows-issue390-run-record.txt` because the run's log archive is not downloadable without admin rights on that repository.
 
 The page's count and the row's are the same integer seen from two sides. The page counts eight orbits over each of the $23\,715$ subgroups (@thm:coble-plane-stabilizer-image(5)(c)); the row counts one quotient over the one $\Orth(T_\Co)$-class of planes, namely
 $$

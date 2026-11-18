@@ -1,0 +1,20 @@
+Record of the two kernel plane rows of research#645 / sage-extensions#390.
+
+This is the public record of run 43798731423, retrieved on 2026-11-18 from the
+GitHub API without authentication:
+
+    GET https://api.github.com/repos/dzackgarza/sage-extensions/issues/390/comments
+
+and archived here because the chapter quotes its numbers and the run's log
+archive itself is not downloadable without admin rights on that repository:
+
+    GET https://api.github.com/repos/dzackgarza/sage-extensions/actions/runs/43798731423/logs
+    403 {"message": "Must have admin rights to Repository."}
+
+The comment's permanent address is
+    https://github.com/dzackgarza/sage-extensions/issues/390#issuecomment-6908392364
+author dzackgarza, created 2026-11-16T05:41:06Z, updated 2026-11-16T05:41:06Z.
+The text below is verbatim; nothing in it is paraphrased or added.
+
+--- verbatim comment ---
+Closed on image run 43798731423 (coble-kernel-plane-rows.yml, main 897e7f7fd4, ghcr.io/dzackgarza/sage:develop): isotropic_orbit_representatives(2) on T_Co returns 189720 orbits of primitive isotropic planes under Otilde(T_Co) (4013.4 s) and 189720 under Otilde+(T_Co) (1821.2 s), over the one O(T_Co)-class; tests/coble_kernel_plane_rows.py checks that each representative is a primitive totally isotropic plane and that each count equals the double-coset count of Dutour Sikiric-Hulek, arXiv:2302.01679v2, Lemma 3.6, p. 22. The run's timing record is artifact 14200263043.

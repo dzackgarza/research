@@ -116,6 +116,24 @@ def test_a1_the_plane_rows_report_the_two_kernel_groups():
     assert "double cosets" in para
 
 
+def test_a1_the_plane_rows_record_is_archived():
+    """The record of run 43798731423 is in this repository, and the page names it.
+
+    The run's log archive needs admin rights on sage-extensions (the API answers
+    403), so the record archived here is the issue's closing comment, retrieved
+    verbatim from the public API.  It must carry the run, the revision, both
+    counts and both durations, and the page must point at it.
+    """
+    rec = (ROOT / "computations/reports/coble_kernel_plane_rows-issue390-run-record.txt").read_text()
+    assert "43798731423" in rec and "897e7f7fd4" in rec
+    assert rec.count("189720") >= 2
+    assert "4013.4" in rec and "1821.2" in rec
+    assert "double-coset count" in rec
+    para = next(p for p in PAGE.read_text().split("\n\n") if p.startswith("*The two plane rows.*"))
+    assert "coble_kernel_plane_rows-issue390-run-record.txt" in para
+    assert "4013.4" in para and "1821.2" in para
+
+
 # ---------------------------------------------------------------------------
 # A2: the group bookkeeping the issue fixes.
 # ---------------------------------------------------------------------------
