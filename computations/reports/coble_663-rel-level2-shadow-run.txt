@@ -1,0 +1,12 @@
+T_Co det: -2048  B det: -1
+classes whose beta-square is -2 mod 4: 1024
+dimension of the span of the h(s_v): 56
+control, zeta + alpha_1: beta-square = -2 (want -2), in span: True
+  h(iota) = identity      [theorem: NOT in W]: in span? True   <-- the shadow does not separate: known not to be in W, and in the span
+  h(eps)                  [theorem: NOT in W]: in span? True   <-- the shadow does not separate: known not to be in W, and in the span
+  h(eps')                             : in span? True
+  h(delta_E8)  <- the (REL) query     : in span? True
+
+So the level-two abelian shadow contains elements outside W and cannot decide the query:
+h(delta_E8) is in the span, which is no evidence either way, and the question needs a
+non-abelian computation at level >= 3, which is the operation the provider does not offer.
