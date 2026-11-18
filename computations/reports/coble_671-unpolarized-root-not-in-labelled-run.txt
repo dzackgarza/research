@@ -1,0 +1,11 @@
+K = I_{1,8}(2) = <2>_H0 + <-2>_{E1..E8}, orthogonal basis; rank 9, det 512
+r_0 = H_0 - E_1 - E_2 - E_3, r_0^2 = -4
+s_{r_0} integral on a basis of K: True
+classes of A_K (512) whose q changes: 0
+classes moved across A_<h> perp A_{E_8(2)}: 256 of 512
+witness: [E_3/2] = ('0', '0', '0', '1/2', '0', '0', '0', '0', '0')  ->  ('1/2', '1/2', '1/2', '0', '0', '0', '0', '0', '0')
+
+so the action of s_{r_0} on A_K does not preserve the decomposition that P is defined by,
+and every lift of s_{r_0} has the same action on A_K because the lifts differ by
+ker(Orth(T_Co) -> Orth(K)), which acts trivially there.  Hence s_{r_0} is outside
+Gamma_e at every labelled cusp: the folded diagram is not the unpolarized chamber.
