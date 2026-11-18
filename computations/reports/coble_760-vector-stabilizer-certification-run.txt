@@ -7,47 +7,55 @@ Sage 11.0.beta5; sage-extensions main 6b8f7d2b382c9235787267e3f2eac9d74d11e447; 
     lattice_morphisms.py:4916  supplies (``sage-indefinite-port``); they are untrusted engine
     lattice_morphisms.py:4928  result = lattice.lattice_category()._marked_automorphism_generators(category, marked)
     lattice_morphisms.py:4141  def _discriminant_point_orbit_and_section(self, point):
+    lattice_morphisms.py:4726  def _computed_group_generators(self):
+    lattice_morphisms.py:4739  computes generators. All answers are untrusted
     lattices.py:2827  def _marked_automorphism_generators(self, diagram_category, marked):
     lattices.py:2861  if isinstance(diagram_category, (CosliceCategory, OrientedIsotropicFlags))
     lattices.py:2870  return automorphism_group_generators(diagram_category, marked)
     lattices.py:2934  def _isotropic_plane_parabolic_generators(self, marked):
     lattices.py:2955  def _isotropic_line_stabilizer_generators(self, marked):
 
-[    1.3s] T_Co: rank 11, det -2048; r12 [1, 3, 3, -2, 1, 2, 2, 1, 0, 0, 0], square -2
+[    1.1s] T_Co: rank 11, det -2048; r12 [1, 3, 3, -2, 1, 2, 2, 1, 0, 0, 0], square -2
 
 (2) which category the pointed marking is in, from the library's own constructor:
     _pointed_marking(T_Co, r12) -> Lattices.Coslices_with_category
     isinstance(category, CosliceCategory): True
     so lattices.py:2859-2865 sets parabolic = None and no own construction is entered
 
+    The same defect sits one level up: the ambient generators of O(L) are the port's
+    (_computed_group_generators above), and a family read off a Schreier construction over
+    them is complete only relative to a family the caller states generates O(L)
+    (src/sage_extensions/categories/group/groups.py:6419, :6430).  Changing route to the
+    discriminant-point stabilizer that #459 repaired therefore moves the dependence.
+
 (3) the call the deciding record makes, twice:
-[    1.3s]     Aut.vector_stabilizer_generators(r12), attempt 1
-[se-stage] _marked_automorphism_generators start t=442467.8
-[se-stage] _marked_automorphism_generators done in 17.4s: 57 gens
-[   18.8s]     -> FiniteOrderedSets.parent_class, 57 members, 57 verified integral, form-preserving and fixing r12
-[   18.8s]     Aut.vector_stabilizer_generators(r12), attempt 2
-[se-stage] _marked_automorphism_generators start t=442485.3
-[se-stage] _marked_automorphism_generators done in 7.4s: 57 gens
-[   26.3s]     -> FiniteOrderedSets.parent_class, 57 members, 57 verified integral, form-preserving and fixing r12
+[    1.1s]     Aut.vector_stabilizer_generators(r12), attempt 1
+[se-stage] _marked_automorphism_generators start t=442787.1
+[se-stage] _marked_automorphism_generators done in 17.2s: 42 gens
+[   18.3s]     -> FiniteOrderedSets.parent_class, 42 members, 42 verified integral, form-preserving and fixing r12
+[   18.3s]     Aut.vector_stabilizer_generators(r12), attempt 2
+[se-stage] _marked_automorphism_generators start t=442804.3
+[se-stage] _marked_automorphism_generators done in 7.3s: 42 gens
+[   25.6s]     -> FiniteOrderedSets.parent_class, 42 members, 42 verified integral, form-preserving and fixing r12
     (this run's two calls above; the count is a datum of the run and not a property of the
      stabilizer --- the earlier records of this family name 40 and 44 in
      computations/reports/coble_759-gamma-co-2-orbit-1213-run.txt and 51 and 60 in
      computations/reports/coble_760-transporter-in-gent-run.txt)
 
-    counts this run: [57, 57]
+    counts this run: [42, 42]
 
 (4) the library's own spelling of the same subgroup's generators:
-[   26.3s]     Aut.stabilizer(r12) -> StabilizerSubgroups.parent_class
-[se-stage] _marked_automorphism_generators start t=442492.8
-[se-stage] _marked_automorphism_generators done in 8.1s: 57 gens
-[   34.3s]     .group_generators() -> 57 members, through the same _marked_automorphism_generators
+[   25.6s]     Aut.stabilizer(r12) -> StabilizerSubgroups.parent_class
+[se-stage] _marked_automorphism_generators start t=442811.6
+[se-stage] _marked_automorphism_generators done in 7.2s: 42 gens
+[   32.8s]     .group_generators() -> 42 members, through the same _marked_automorphism_generators
 
 (5) the expression that would state the item, and why its answer is no decision:
-[   34.4s]     Aut.subgroup(family) == Aut.subgroup(family)  [the same subgroup] -> False
-[   34.4s]     Aut.subgroup(family) == Aut.stabilizer(r12)     [the item] -> False
-[   34.4s]     Aut.stabilizer(r12)  == Aut.subgroup(family)     [the item] -> False
-[   62.0s]     Aut.subgroup(family).cardinality() -> ℵ_0
-[   91.7s]     Aut.stabilizer(r12).cardinality()  -> ℵ_0
+[   32.8s]     Aut.subgroup(family) == Aut.subgroup(family)  [the same subgroup] -> False
+[   32.8s]     Aut.subgroup(family) == Aut.stabilizer(r12)     [the item] -> False
+[   32.8s]     Aut.stabilizer(r12)  == Aut.subgroup(family)     [the item] -> False
+[   50.6s]     Aut.subgroup(family).cardinality() -> ℵ_0
+[   67.8s]     Aut.stabilizer(r12).cardinality()  -> ℵ_0
     The first line is False for two families of one and the same stabilizer, so subgroup
     equality here is not a decision about groups; the second and third lines therefore
     carry no information, in either direction.  Both sides have cardinality aleph_0, so no

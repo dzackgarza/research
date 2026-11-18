@@ -43,7 +43,9 @@ for path, keys in (
                    "def _marking_stabilizer_generators",
                    "they are untrusted engine",
                    "result = lattice.lattice_category()._marked_automorphism_generators",
-                   "def _discriminant_point_orbit_and_section"]),
+                   "def _discriminant_point_orbit_and_section",
+                   "def _computed_group_generators",
+                   "All answers are untrusted"]),
     (lat.__file__, ["def _marked_automorphism_generators",
                     "isinstance(diagram_category, (CosliceCategory, OrientedIsotropicFlags))",
                     "return automorphism_group_generators(diagram_category, marked)",
@@ -74,6 +76,12 @@ category, marked = lm._pointed_marking(lattice, elt(r12))
 print("    _pointed_marking(T_Co, r12) -> %s" % type(category).__name__)
 print("    isinstance(category, CosliceCategory): %s" % isinstance(category, CosliceCategory))
 print("    so lattices.py:2859-2865 sets parabolic = None and no own construction is entered")
+print()
+print("    The same defect sits one level up: the ambient generators of O(L) are the port's")
+print("    (_computed_group_generators above), and a family read off a Schreier construction over")
+print("    them is complete only relative to a family the caller states generates O(L)")
+print("    (src/sage_extensions/categories/group/groups.py:6419, :6430).  Changing route to the")
+print("    discriminant-point stabilizer that #459 repaired therefore moves the dependence.")
 print()
 
 print("(3) the call the deciding record makes, twice:")
