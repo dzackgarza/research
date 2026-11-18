@@ -152,6 +152,10 @@ def test_proper_integral_plane_stabilizer_image(tmp_path):
     assert len(data["integral_plane_representatives_standard"]) == 8
     assert data["flag_line_coefficients"] == [[1, 0], [0, 1], [1, 1]]
     public = data["public_gamma_co_2_representatives"]
+    public_path = folder / "coble_gco_public_representatives.json"
+    assert data["source_sha256"]["public_gamma_co_2"] == hashlib.sha256(
+        public_path.read_bytes()).hexdigest()
+    assert public == json.loads(public_path.read_text())
     assert public["source_workflow"] == 43556671111
     assert len(public["lines"]) == 4
     assert len(public["planes"]) == 7
@@ -161,6 +165,9 @@ def test_proper_integral_plane_stabilizer_image(tmp_path):
     assert sorted(x["index"] for x in public["edges"]) == list(range(13))
     assert all(0 <= e["line_index"] < 4 and 0 <= e["plane_index"] < 7
                for e in public["edges"])
+    assert {(e["line_index"], e["plane_index"]) for e in public["edges"]} == {
+        (0, 0), (3, 0), (2, 0), (3, 1), (1, 1), (3, 2), (2, 2),
+        (1, 3), (2, 3), (2, 4), (1, 5), (2, 5), (2, 6)}
     finite_planes = data["finite_plane_transports"]
     assert len(finite_planes) == 23715
     assert len({tuple(sorted(row["finite_plane_masks"])) for row in finite_planes}) == 23715
