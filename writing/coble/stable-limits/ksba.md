@@ -470,6 +470,38 @@ So the KSBA-boundary form of the marked-root statement is not a statement that r
 
 :::
 
+::: {.lemma #lem:coble-root-separation-transport title="Root separation transports along an identification that preserves the marked side"}
+
+Let $\Gamma\definedas\Gamma_{\Co,2}$, $F\definedas\bD(T_\Co)/\Gamma$ (@def:gamma-co-groups(5)), and let $\semitorcpt{F}$ be a semitoroidal compactification of $F$ (@def:semitoroidal-compactification).
+Let $\pi$ send a marked degeneration at a marked cusp to its boundary point in $\semitorcpt{F}$, and let $\pi^{K}$ send it to its point of the KSBA boundary.
+Suppose:
+
+1. $\pi$ is well defined, and two marked degenerations have the same image in $\semitorcpt{F}$ exactly when their markings differ by an element of $\Gamma$;
+2. the marked root of a marked degeneration is a function of the marking modulo $\Gamma$ (@def:coble-marking-dictionary);
+3. after normalization of $\ksbacpt{\fco}$ there is an isomorphism $\varphi\colon\ksbacpt{\fco}\to\semitorcpt{F}$ with $\varphi\circ\pi^{K} = \pi$.
+
+Then two marked degenerations at a marked cusp whose marked roots lie in different $\Gamma$-orbits are not identified in the KSBA boundary.
+:::
+
+::: {.proof}
+
+By (2) the marked root is constant on the fibres of $\pi$, so marked roots in different $\Gamma$-orbits put the two degenerations in different fibres of $\pi$; by (1) their images in $\semitorcpt{F}$ differ; by (3), an isomorphism commuting with the forgetful maps, their images in $\ksbacpt{\fco}$ differ.
+:::
+
+::: {.remark #rmk:coble-transport-hypotheses title="Which hypotheses of the transport hold, and which one is A7"}
+
+Hypothesis (1) is the construction of the semitoroidal compactification, which glues the boundary components modulo $\Gamma$ (@def:semitoroidal-compactification, after [@Loo02, Def. 6.1] and [@AE23, Def. 5.11]); the group there is the group of the moduli problem, $\Gamma_{\Co,2}$, and the degree-two numerical polarization is part of the datum, as it is for $F_{\En,2} = \bD(T_\En)/\Gamma_{\En,2}$ in [@AEGS25, Def. 2.7, printed p. 587].
+Hypothesis (2) is @prop:coble-marking-class-is-heegner(3) together with @def:coble-marking-dictionary; it is hypothesis (2) alone that @rmk:coble-marking-conventions separates from the Coble convention.
+Hypothesis (3) is not available on $F_\Co$: it is A7, @conj:ksba_semitoroidal_comparison, research#650. It is also strictly stronger than the identification of the two spaces, because an isomorphism $\varphi$ of the underlying varieties does not by itself make the two forgetful maps agree; in the one case where the agreement is known it comes not from the identification but from a construction on the marked level, the family over the compactified moduli stack in the proof of [@AEGS25, Thm. 5.9, printed p. 612].
+So the transport is a lemma whose only missing hypothesis is (3), and (3) cannot be recovered from the identification of the two compactifications as spaces.
+:::
+
+::: {.remark #rmk:coble-transport-failure title="The group of hypothesis (1) is not cosmetic: the same sentence fails for the unpolarized quotient"}
+
+Replace $\Gamma_{\Co,2}$ by $\Orth^+(T_\Co)$ throughout, that is, compactify the unpolarized quotient instead. Hypotheses (1) and (2) hold for that group as well, and the conclusion fails at cusp $5$: the roots $12$ and $13$ are $\Gamma_{\Co,2}$-inequivalent on the decision of research#759's item 1, modulo the stabilizer family owned by sage-extensions#603, while the transposition of the two square-$(-2)$ generators of the saturation of $\generators{\delta,r_{12},r_{13}}$, extended by the identity on its complement, is an integral form-preserving isometry of $\ten$ fixing $\delta$, hence preserves $\delta^{\perp\ten} = T_\Co$ and restricts to an isometry of $T_\Co$ carrying the class of $12$ to that of $13$ (@rmk:coble-root-orbits-cusp-five, `computations/reports/coble_760-witness-12-13-run.txt`). So the two roots are one $\Orth^+(T_\Co)$-orbit and the unpolarized compactification does not separate their degenerations; at the level of cusps the collapse is total, since $\Orth^+(T_\Co)\backslash\bD_\Co$ has a single orbit of primitive isotropic lines (@thm:unpolarized-cusps), so the unpolarized boundary does not distinguish even the four marked cusps of $F_\Co$.
+What fails in this reading is therefore not (3) but hypothesis (1) read with a group other than the one the KSBA moduli problem carries. The sentence is true for the polarized compactification exactly because $\Gamma_{\Co,2}$ is that group, and false for the unpolarized one.
+:::
+
 ::: {.conjecture #conj:no_moduli_loss title="The stable Coble quotient determines its marked Coble root"}
 
 The stable quotient is $\bD(T_\Co)/\Gamma_{\Co,2}$ (@def:gamma-co-groups(5)).
