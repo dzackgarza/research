@@ -223,6 +223,93 @@ def test_coble_level_two_eichler_squares_fail_normal_generation():
     assert len(pivots) == 56
 
 
+@pytest.mark.parametrize("start", range(0, 56, 8))
+def test_coble_fifty_six_ordinary_elements_are_public_kernel_morphisms(start):
+    """Each of the 56 ordinary candidates belongs to the owned kernel."""
+    import json
+    from pathlib import Path
+    from sage_extensions.all import NamedLattices, ZZ as OwnedZZ
+
+    folder = Path(__file__).resolve().parents[2] / "computations/reports"
+    data = json.loads((folder / "coble_kernel_fifty_six_congruence_generators.json").read_text())
+    lattice = NamedLattices.Tco
+    labels = tuple(lattice.module_generating_set())
+    group = lattice.O()
+    kernel = lattice.stable_orthogonal_group()
+    for row in data["generators"][start:start + 8]:
+        entries = row["matrix_standard"]
+        morphism = group({
+            label: lattice.linear_combination({
+                labels[j]: OwnedZZ(entries[j][i]) for j in range(11)
+            })
+            for i, label in enumerate(labels)
+        })
+        assert morphism in kernel
+
+
+def test_coble_fifty_six_ordinary_elements_span_kernel_modulo_sixteen():
+    """The 56 ordinary elements generate every certified layer modulo 16."""
+    import hashlib
+    import json
+    from collections import deque
+    from pathlib import Path
+    from sage.all import Integers, ZZ, identity_matrix, matrix
+
+    folder = Path(__file__).resolve().parents[2] / "computations/reports"
+    data = json.loads((folder / "coble_kernel_fifty_six_congruence_generators.json").read_text())
+    assert data["schema"] == "coble-kernel-56-ordinary-mod-four-v1"
+    assert data["generator_count"] == len(data["generators"]) == 56
+    for name, field in (
+        ("coble_plane_parabolic_level_two_generators.json", "parabolic_sha256"),
+        ("coble_ambient_twenty_one_generators.json", "ambient_sha256"),
+    ):
+        assert data[field] == hashlib.sha256((folder / name).read_bytes()).hexdigest()
+
+    ring = Integers(16)
+    identity = identity_matrix(ring, 11)
+    gram = matrix(ZZ, json.loads(
+        (folder / "coble_ambient_twenty_one_generators.json").read_text()
+    )["standard_gram"])
+    generators = [matrix(ring, row["matrix_standard"]) for row in data["generators"]]
+    for row in data["generators"]:
+        g = matrix(ZZ, row["matrix_standard"])
+        assert g.transpose() * gram * g == gram
+        assert all((g[i, j] - int(i == j)) % 2 == 0
+                   for i in range(11) for j in range(11))
+
+    levels = (2, 4, 8)
+    pivots = {level: {} for level in levels}
+    pending = deque()
+    lifts = []
+
+    def leading(element, level):
+        return sum((((int(element[i, j]) - int(i == j)) // level) % 2)
+                   << (11 * i + j) for i in range(11) for j in range(11))
+
+    def admit(element):
+        for level in levels:
+            bits = leading(element, level)
+            while bits:
+                pivot = bits.bit_length() - 1
+                if pivot in pivots[level]:
+                    element *= pivots[level][pivot].inverse()
+                    bits = leading(element, level)
+                else:
+                    pivots[level][pivot] = element
+                    pending.append(element)
+                    lifts.append(element)
+                    return
+
+    for generator in generators:
+        admit(generator)
+    while pending:
+        element = pending.popleft()
+        admit(element * element)
+        for previous in tuple(lifts):
+            admit(element * previous * element.inverse() * previous.inverse())
+    assert tuple(len(pivots[level]) for level in levels) == (56, 54, 55)
+
+
 def test_coble_nineteen_relations_generate_the_full_kernel_modulo_sixteen():
     """Exact subgroup collection fills all three certified congruence layers."""
     import json
