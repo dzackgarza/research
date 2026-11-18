@@ -85,6 +85,19 @@ print("  form.orthogonal_group(): returned in %.1f s" % (time.time() - t), flush
 
 
 print()
+print("=== is this the known GAP misresolution, or scale?  The control:")
+import shutil
+from sage.interfaces.gap import gap as sage_gap
+print("  gap on PATH: %s" % shutil.which("gap"))
+print("  its version: %s" % sage_gap.version())
+Lsmall = Lattices(LZZ)(tensor(LZZ, (), (1, 1), [[LZZ(2)]]))
+small = Lsmall.discriminant_group()
+t = time.time()
+smallgens = list(small.orthogonal_group().group_generators())
+print("  the same call on a rank-1 form: %d generators in %.1f s" % (len(smallgens), time.time() - t))
+print("  so the environment resolves GAP correctly and the call works at small rank:")
+print("  what stalls below is the scale, not the GAP wiring.")
+print()
 print("The promotion step itself is O(A_L, q).group_generators() followed by")
 print("L.discriminant_lift(...), which hands the group to GAP.  Measured in this session, on a")
 print("bound rather than to completion:")
