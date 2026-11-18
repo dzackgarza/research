@@ -22,6 +22,18 @@ These tests read those transcripts and the two pages, and the last one re-runs t
 and requires the committed transcripts to be reproduced line for line from the first numbered
 section on.  That is the reusable part: every number below is re-derived, in seconds, from the
 marking alone -- no provider, no container, no network.
+
+Run it with
+
+    python3 -m pytest tests/engineering/test_coble_a13_acceptance.py \
+        -q -o addopts="" --confcutdir=tests/engineering
+
+The two overrides are environment facts, not concessions: `-o addopts=""` drops the project's
+addopts, which require pytest-timeout and pytest-reportlog, and `--confcutdir` keeps
+tests/conftest.py out of the run, that file importing dzack_research, whose install would pull
+pandoc-config, sage-extensions and streamlit for a test that needs only sympy.  Nothing here
+touches the sage image, so the job that runs it is a plain ubuntu-latest python job; it is
+prepared but not landed, a push touching .github/workflows/ needing `workflow` permission.
 """
 
 import subprocess
