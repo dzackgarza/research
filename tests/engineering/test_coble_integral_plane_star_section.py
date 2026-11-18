@@ -144,9 +144,15 @@ def test_proper_integral_plane_stabilizer_image(tmp_path):
             "[9, 12, 4, 5], [9, 12, 4], [9, 7], [9, 12], [0]]") in result.stdout
     artifact = folder / "coble_proper_plane_stabilizer_image.json"
     assert hashlib.sha256(artifact.read_bytes()).hexdigest() == (
-        "1bfb228a5a4a0156258b358bea7a330732c2062c3c31c27c589d376ac2e28d74")
+        "b29321a10f9170ecefbf468b29b5c9e0555d0b720e57ea3fa10aeb5bfa13b0cd")
     data = json.loads(artifact.read_text())
     assert data["schema"] == "coble-proper-plane-stabilizer-finite-cosets-v1"
+    assert data["kernel_subgroups_with_identical_plane_and_flag_orbits"] == [
+        "Otilde", "Otilde+"]
+    assert data["kernel_orbit_counts"] == {
+        "line": 527, "plane": 189720, "flag": 569160}
+    assert data["gamma_co_2_orbit_counts"] == {
+        "line": 4, "plane": 7, "flag": 13}
     assert len(data["singular_masks_diagonal"]) == 527
     assert len(data["integral_reflection_roots_standard"]) == 10
     gram = data["standard_gram"]

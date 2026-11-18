@@ -173,6 +173,15 @@ def main():
     if args.output is not None:
         certificate = {
             "schema": "coble-proper-plane-stabilizer-finite-cosets-v1",
+            "kernel_subgroups_with_identical_plane_and_flag_orbits": [
+                "Otilde", "Otilde+"
+            ],
+            "kernel_orbit_counts": {
+                "line": 527, "plane": 189720, "flag": 569160
+            },
+            "gamma_co_2_orbit_counts": {
+                "line": 4, "plane": 7, "flag": 13
+            },
             "source_sha256": {
                 "line": hashlib.sha256(line_path.read_bytes()).hexdigest(),
                 "plane": hashlib.sha256(plane_path.read_bytes()).hexdigest(),
