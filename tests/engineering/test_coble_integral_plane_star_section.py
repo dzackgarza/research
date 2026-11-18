@@ -150,6 +150,40 @@ def test_complete_integral_plane_parabolic_generators(tmp_path):
     assert reproduced.read_bytes() == artifact.read_bytes()
 
 
+def test_level_two_integral_plane_parabolic_kernel_generators(tmp_path):
+    """The 26 integral generators preserve P and lie in the reduction kernel."""
+    folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
+    path = folder / "coble_plane_parabolic_level_two_generators.json"
+    data = json.loads(path.read_text())
+    assert data["schema"] == "coble-integral-plane-parabolic-level-two-kernel-v1"
+    assert data["generator_count"] == len(data["generators_standard"]) == 26
+    for key, filename in (("line", "coble_singular_integral_representatives.json"),
+                          ("complete_parabolic", "coble_complete_plane_parabolic_generators.json")):
+        assert data["source_sha256"][key] == hashlib.sha256((folder / filename).read_bytes()).hexdigest()
+    from sage.all import ZZ, matrix, vector
+
+    source = json.loads((folder / "coble_singular_integral_representatives.json").read_text())
+    gram = matrix(ZZ, source["standard_gram"])
+    change = matrix(ZZ, source["standard_to_diagonal"])
+    basis = [vector(ZZ, [int(i == j) for j in range(11)]) for i in range(11)]
+    plane = matrix(ZZ, [change.inverse() * (basis[0] + basis[2]),
+                        change.inverse() * (basis[1] + basis[4])]).row_module()
+    for rows in data["generators_standard"]:
+        g = matrix(ZZ, rows)
+        assert g.transpose() * gram * g == gram and abs(g.det()) == 1
+        assert all(int(g[i, j]) % 2 == int(i == j)
+                   for i in range(11) for j in range(11))
+        assert all(g * v in plane for v in plane.basis())
+    reproduced = tmp_path / "kernel.json"
+    subprocess.run(
+        ["sage", "-c", "import runpy,sys;sys.argv=['kernel','--output',"
+         + repr(str(reproduced)) + "];runpy.run_path("
+         "'computations/reports/coble_plane_parabolic_level_two_generators.py',"
+         "run_name='__main__')"],
+        cwd=folder.parents[1], capture_output=True, text=True, check=True)
+    assert reproduced.read_bytes() == path.read_bytes()
+
+
 def test_proper_integral_plane_stabilizer_image(tmp_path):
     """Compute Q, the finite-plane stabilizer F, and integral image S."""
     folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
