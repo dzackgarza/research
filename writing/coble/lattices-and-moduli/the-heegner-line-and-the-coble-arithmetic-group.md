@@ -1572,7 +1572,7 @@ Let $E=\widetilde{\mathrm{SO}}^+(U^{\oplus2}\perp D_7(-1))$ and let $N_2\lhd E$ 
 $$
 1024\ \le\ [E(2):N_2]\ <\ \infty.
 $$
-The normal closure $N_{19}$ of the 19 relations obtained by adjoining $g_8g_9=t(e,2d_6)$ likewise has finite index in $E(2)$. This is a theorem about the *infinite* integral arithmetic group, not a finite congruence calculation. It does **not** establish $N_{19}=E(2)$.
+The normal closure $N_{19}$ of the 19 relations obtained by adjoining $g_8g_9=t(e,2d_6)$ likewise has finite index in $E(2)$. This is a theorem about the *infinite* integral arithmetic group, not a finite congruence calculation. It does **not** establish $N_{19}=E(2)$, nor does the normal subgroup theorem alone identify a principal congruence subgroup contained in $N_{19}$.
 :::
 
 ::: {.proof}
