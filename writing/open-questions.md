@@ -50,7 +50,7 @@ tags:
 
 | Unknown | Stated in |
 |:---|:---|
-| **KSBA versus semitoroidal** | @conj:coble-ksba-semitoroidal-morphism, @conj:ksba_semitoroidal_comparison, @conj:no_moduli_loss (corrected to the contracted $(-4)$-curve: no face of the restricted semifan carries the marking, by @thm:face-irrelevant-marking), @conj:restricted_ramification_semifan |
+| **KSBA versus semitoroidal** | @conj:coble-ksba-semitoroidal-morphism, @conj:ksba_semitoroidal_comparison, @conj:no_moduli_loss (no face of the restricted semifan carries the marking: every admissible $T_\Co$-root at the marked cusps is irrelevant, so all of them cut one cone, @thm:face-irrelevant-marking; the open step is the $\Gamma_{\Co,2}$-orbits of the three classes at cusp $5$, since distinct classes in $K_5$ are not distinct orbits and the orbits are uncomputed), @conj:restricted_ramification_semifan |
 | **An equivariant triangulation compatible with the marked root** | @qst:equivariant_triangulation |
 | **The position of the three Coble semifans** | @qst:semifan-poset-position |
 | **Do the integral-affine data determine the stable limit** | @conj:classification-ia-data |

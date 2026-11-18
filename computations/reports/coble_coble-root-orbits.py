@@ -1,5 +1,5 @@
-"""#760 (stage 1): the admissible roots at the marked cusps 3, 4, 5 of T_Co, their
-Gamma_Co,2-orbits with transporters, and whether inequivalent roots cut the same face.
+"""#760 (stage 1): the admissible roots at the marked cusps 3, 4, 5 of T_Co, and their
+classes in the boundary lattice K_I.
 
 The question
 ------------
@@ -8,26 +8,23 @@ for two admissible roots r_1, r_2 of K_I inequivalent under Gamma_Co,2 = R_{Gamm
 hyperplanes r_1^perp and r_2^perp cut different faces of the restricted Enriques semifan F_I?
 The page states the conjecture conj:no_moduli_loss for the T_Co-roots, the admissible roots of
 K_I whose lifts are (-2)-vectors of T_Co orthogonal to eta_I: at cusp 3 Sterk's label 12, at
-cusp 4 his label 10, at cusp 5 his labels 12, 13 and 14.  This record decides, per cusp:
+cusp 4 his label 10, at cusp 5 his labels 12, 13 and 14.  This record computes, per cusp:
 
   (1) the admissible roots: the walls of Sterk's printed diagram at that cusp that are
       orthogonal to the Coble root delta = e - f and of square -2, with their printed labels;
-  (2) their Gamma_Co,2-orbits, as certified by the pinned sage-extensions run: one orbit at
-      each of cusps 3 and 4, three orbits one class each at cusp 5, the acting family being the
-      certified reflections and line-stabilizer generators of IsotropicVectorReductionImage
-      (sage-extensions#370, closed at 1df83be981; the counts are those of its results file,
-      measured on the adopted runtime), so at cusps 3 and 4 no pair of roots exists and at cusp
-      5 every pair of roots is inequivalent;
-  (3) for each pair of inequivalent roots, whether r_1^perp and r_2^perp cut the same face of
-      F_I: the face cut by r^perp is the wall of the fundamental chamber of the reflection group
-      of K_I that the class of r determines, and two hyperplanes cut the same face exactly when
-      the classes of their roots are equal, decided by the exact test that the two root vectors
-      differ by an integral multiple of eta_j.
+  (2) the classes of those roots in K_I, by the exact test that two root vectors differ by an
+      integral multiple of eta_j: at cusp 5 the three classes are pairwise distinct.
 
-The face cut by r^perp is the wall of the fundamental chamber of the reflection group of K_I
-that the class of r determines; two hyperplanes cut the same face exactly when the classes of
-their roots are equal, and the record decides this exactly by testing whether the two root
-vectors differ by an integral multiple of eta_j.
+What this record does NOT compute
+---------------------------------
+Neither the Gamma_Co,2-orbits of those classes nor the faces of F_I.  Distinct classes are not
+distinct orbits -- for a wall r orthogonal to delta the reflection s_r lies in Gamma_Co,2 and
+carries the class of r to the class of -r -- so (2) does not settle inequivalence, and the
+orbit counts quoted in earlier drafts of this docstring came from a sage-extensions results
+file that no code here reads (sage-extensions#370; the call is unavailable in this image).
+The face, which for an irrelevant root is the maximal cone of F_I and not the wall, is computed
+in computations/reports/coble_irrelevant-marking-face.py, whose transcript records that at cusp
+5 all three classes cut one and the same maximal cone.
 
 The data
 --------
@@ -103,8 +100,8 @@ ROOTS[5] = ([at[1], at[3], at[4], at[5], at[6], at[7], at[0], abart[7],
              2 * et - at[0], 2 * et + (abart[1] - abart[2]), ft - et,
              et + ft + (abart[5] - abart[2]), et + ft + (abart[0] + abart[7] - abart[2]), et + ft + at[2]])
 
-print("the admissible roots at the marked cusps 3, 4, 5 of T_Co, their orbits and faces")
-print("Sage runtime; exact ZZ linear algebra; wall data of the pinned sage-extensions copy")
+print("the admissible roots at the marked cusps 3, 4, 5 of T_Co and their classes in K_I")
+print("Sage runtime; exact ZZ linear algebra; Sterk's printed root sets transcribed in the file")
 print("T_En Gram determinant %d; delta = e - f, delta^2 = %d" % (G.det(), ip(delta, delta)))
 for j in (3, 4, 5):
     eta = STERK_ETA[j]
@@ -132,8 +129,7 @@ assert LABELS == {3: [12], 4: [10], 5: [12, 13, 14]}
 print("the counts are the page's: cusp 3 label 12, cusp 4 label 10, cusp 5 labels 12, 13, 14")
 
 print()
-print("=== (2) the orbits under the reflections in the walls' classes, with transporters")
-print("=== (3) the face comparison for each pair of inequivalent roots")
+print("=== (2) the classes of the admissible roots in K_I = eta_j^perp / Z eta_j")
 
 for j in (3, 4, 5):
     eta = STERK_ETA[j]
