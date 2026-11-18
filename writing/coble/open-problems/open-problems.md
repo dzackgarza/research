@@ -18,7 +18,7 @@ this inverse question from the archived Enriques meeting notes.
 
 ::: {.remark title="The embedding matrices of the chain"}
 
-The matrices of the chain $T_\Co\injects\ten\injects\tdp\injects\lkt$, in the standard basis of the marking of @thm:theta-co-coordinates, are @thm:chain-matrices: the four bases, the three block inclusion matrices, their primitivity, and the identification of the first step with $\eta$ and of the composite with the display of @lem:sequence_of_embeddings. What that theorem does not give is the equations of the sextic $C$ and of its double plane, which is @qst:coble-explicit-equations; a basis of $H^2$ determines no equation, so the two questions were never one.
+The matrices of the chain $T_\Co\injects\ten\injects\tdp\injects\lkt$, in the standard basis of the marking of @thm:theta-co-coordinates, are @thm:chain-matrices: the four bases, the three block inclusion matrices, their primitivity, and the identification of the first step with $\eta$ and of the composite with the display of @lem:sequence_of_embeddings. What that theorem does not give is the equations of the sextic $C$ and of its double plane, which is @thm:coble-explicit-sextic; a basis of $H^2$ determines no equation, so the two questions were never one.
 :::
 
 ::: {.remark title="The horizontal folding involution, resolved"}
@@ -129,8 +129,9 @@ Consequently the GIT compactification is the proper Looijenga model for this non
 
 Dolgachev places the Winger curve at $(\lambda:\mu)=(27,5)$ in the pencil
 $$
-\mu(xy+z^2)^3+\lambda z(x^5+y^5+z^5+5x^2y^2z-5xyz^3+z^5)
+\mu(xy+z^2)^3+\lambda z(x^5+y^5+z^5+5x^2y^2z-5xyz^3)
 $$
+(the quintic's $z^5$ appears once; the transcription that stood here carried it twice, and the member with the duplicate does not contain the parametrized curve at all, while the member above has it as its implicit equation — @thm:coble-explicit-sextic and its record, where both are printed)
 and, in his coordinates $(x,y,z)=(A_1,A_2,A_0)$, parametrizes it by
 $$
 [u:v]\longmapsto[-v^6+3u^5v:\;u^6+3uv^5:\;-5u^3v^3]
@@ -254,7 +255,40 @@ Stable limits of Coble surfaces arise as $S_2$-quotients of nodal K3 surfaces, p
 
 ## Foundational equations and computational verification
 
-::: {.question #qst:coble-explicit-equations title="Open problem: explicit equations for the Coble curve and its K3 cover"}
+::: {.theorem #thm:coble-explicit-sextic title="The ten-nodal sextic and its double plane, explicitly"}
 
-Give an explicit equation $F(x,y,z) = 0$ of an irreducible rational plane sextic $C$ with ten nodes $p_1,\dots,p_{10}$ (@lem:rational_sextic_ten_nodes, @lem:coble_halphen_blowdown), as the image of $\PP^1$ under a degree-$6$ map $(s:t)\mapsto[f_0:f_1:f_2]$, together with the double plane $w^2 = F(x,y,z)$ in $\PP(1,1,1,3)$, whose ten $A_1$ singularities lie over the nodes $p_m$.
+The image of
+$$
+\varphi\colon\PP^1\too\PP^2,\qquad [u:v]\mapsto[-v^6+3u^5v:\;u^6+3uv^5:\;-5u^3v^3]
+$$
+is the irreducible plane sextic
+$$
+F = 27x^5z+5x^3y^3+150x^2y^2z^2-120xyz^4+27y^5z+32z^6,
+$$
+which is the member at $(\lambda:\mu)=(27:5)$ of the pencil $\mu(xy+z^2)^3+\lambda z(x^5+y^5+z^5+5x^2y^2z-5xyz^3)$ of [@Dol18, §7, pp. 13--14], read with the correction recorded in the proof of @thm:coble-arrangement-nonempty; $\varphi$ is birational onto it.
+
+The sextic has exactly ten singular points, all ordinary nodes. They lie in the chart $z = 1$; their $y$-coordinates are the roots of
+$$
+(y^2+6y+4)\,(y^4-8y^3+24y^2+8y+16)\,(y^4+2y^3+24y^2-32y+16),
+$$
+and for each such $y$ the $x$-coordinate is $x = -(y^9+3948y^4)/1760$. The two points at infinity, $(1:0:0)$ and $(0:1:0)$, are smooth, the line $z = 0$ being a three-fold tangent at each.
+
+The double plane
+$$
+w^2 = F(x,y,z)\qquad\text{in }\PP(1,1,1,3)
+$$
+has an ordinary double point over each of the ten nodes; its minimal resolution has $K = 0$, and the ten exceptional curves together with the pullback of a line are the eleven classes $e_0, e_1,\dots,e_{10}$ of @prop:coble-cover-marking: $(f^*H)^2 = 2$ by the projection formula (@prop:double-cover-is-k3) and $E_i^2 = -2$ by adjunction, all mutually orthogonal. This sextic is therefore a plane model of the marked Coble cover, and its ten nodes are the ten $(-2)$-classes of the marking of @thm:theta-co-coordinates.
+:::
+
+::: {.proof}
+
+Every value below is in `computations/reports/coble_explicit-sextic-run.txt`.
+
+**The curve and its equation.** Substituting the three forms into $F$ gives $0$, so the image lies on $F = 0$; and the sextics through the image form a one-dimensional space, since the $37$ coefficient equations in the $28$ coefficients of a degree-$6$ form have rank $27$ — so $F$ is the implicit equation of the image, found without using the pencil at all, and it coincides with the pencil member. $F$ is irreducible of degree $6$, and $\gcd(f_0,f_1) = 1$ gives the three forms no common zero, so the degree-$6$ map is birational onto a degree-$6$ curve. That curve is rational, so the sum of the $\delta$-invariants of its singularities is $(6-1)(6-2)/2 = 10$.
+
+**The ten nodes.** Dehomogenize at $z = 1$ and let $I$ be the ideal of $f, f_x, f_y$ there. Its lexicographic Gröbner basis has leading monomials $x$ and $y^{10}$, so $I$ is zero-dimensional of degree $10$ — the number of standard monomials — and the elimination gives $x$ as the displayed polynomial in $y$, with the $y$-coordinates the roots of the displayed product of three squarefree factors of degrees $2$, $4$, $4$. Hence there are ten distinct singular points, and $10$ is the sum of the lengths of the local algebras $\C\{x,y\}/(f,f_x,f_y)$, the Milnor numbers $\mu_p$. With $m_p$ the multiplicity, $\mu_p\geq(m_p-1)^2$; and $\sum_p m_p(m_p-1)/2\geq\sum_p\delta_p = 10$. Were some $m_p\geq3$, that point alone would give $\mu_p\geq4$ and $m_p(m_p-1)/2\geq3$, so at most six further singular points would fit in the total $10$ of the Milnor numbers while at least seven would be needed for the total $10$ of the $\delta$'s; hence every $m_p = 2$, and then the Milnor total gives at most ten points while the $\delta$ total gives at least ten, so there are exactly ten, with $\mu_p = 1$ and $\delta_p = 1$ at each. A double point with $\mu = 1$ is an ordinary node.
+
+**The two points at infinity.** $F(x,y,0) = 5x^3y^3$, so $z = 0$ meets the curve only at $(1:0:0)$ and $(0:1:0)$, and in the charts $x = 1$ and $y = 1$ the linear terms at those points are $27z\neq0$: both are smooth, and all ten singularities lie in the chart $z = 1$.
+
+**The double plane.** At an ordinary node a linear change of coordinates makes $F = xy + (\text{terms of degree}\geq3)$, so the surface $w^2 = F$ has the quadratic part $w^2-xy$ there, whose matrix $\begin{pmatrix}1&0&0\\0&0&-\frac12\\0&-\frac12&0\end{pmatrix}$ has determinant $-\frac14$: a nondegenerate quadric cone, that is an ordinary double point. The double plane has $K = \pi^*(K_{\PP^2}+3H) = 0$, the branch curve being $6H$, and resolving an ordinary double point is crepant, so the minimal resolution has $K = 0$; its exceptional curves are smooth rational curves, and adjunction $2g-2 = E^2+E\cdot K$ gives $E_i^2 = -2$. The pullback of a line has square $2\cdot1 = 2$ by the projection formula. These eleven classes are mutually orthogonal, and they are the ones @prop:coble-cover-marking names.
 :::

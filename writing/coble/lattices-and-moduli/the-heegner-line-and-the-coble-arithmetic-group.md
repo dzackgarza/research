@@ -1723,7 +1723,7 @@ and their types are read off the displays, not classified: $T_\Co\cong\generator
 
 5. The Smith normal form of each inclusion matrix is trivial, which is the primitivity the two lemmas invoke, and the cokernels $\ten/T_\Co$, $\tdp/\ten$, $\lkt/\tdp$ have ranks $1$, $8$, $2$.
 
-What this does not give is the equations of the sextic $C$ and of its double plane in these bases; that is @qst:coble-explicit-equations, and no basis of $H^2$ determines an equation.
+What this does not give is the equations of the sextic $C$ and of its double plane in these bases; that is @thm:coble-explicit-sextic, which works in the plane model rather than in a lattice basis, no basis of $H^2$ determining an equation.
 :::
 
 ::: {.proof}
