@@ -1602,6 +1602,21 @@ $$
 Since $g_i^2\in N_2$, the reduction of $N_2$ contains every $\rho_m(g_i)$, which generate $\rho_m(E)$. The reverse inclusion follows from $N_2\subseteq E$. The exact regression `test_coble_eichler_squares_generate_every_odd_modulus_image` independently checks the displayed matrix identities for all 18 generators at moduli $3,5,7,9,15$; the transvection identity proves them uniformly.
 :::
 
+::: {.theorem #thm:coble-eichler-full-congruence-density title="The 19 explicit relations are dense in every integral congruence quotient"}
+
+Let $E=\widetilde{\mathrm{SO}}^+(U^{\oplus2}\perp D_7(-1))$, $E(2)=\ker(E\to\Orth(B/2B))$, and let $H\lhd E$ be the normal closure of the 19 exact Eichler relations. Then for **every positive integer $n$**,
+$$
+\rho_n(H)=\rho_n(E(2)),\qquad\text{equivalently }H\,(E(2)\cap\Gamma(n))=E(2).
+$$
+Thus the 19 relations generate the entire image of the infinite level-two kernel in **every** congruence quotient, including arbitrary mixed moduli, not only powers of two. The normal closure is congruence-dense in $E(2)$. This theorem does **not** identify $H$ with $E(2)$ as abstract groups: equality also requires ruling out proper finite-index subgroups invisible to congruence reduction.
+:::
+
+::: {.proof}
+The even lattice $M=U^{\oplus2}\perp D_7(-1)$ satisfies the hypotheses of [@GHS08, Theorem 1.7], which proves that $E=\widetilde{\mathrm{SO}}^+(M)$ has **trivial abelianization**, i.e. $E$ is perfect. By @cor:coble-eichler-odd-congruence-surjectivity, the normal closure of the 18 squares, which lies in $H\subseteq E(2)$, surjects onto $\rho_m(E)$ for every odd integer $m$. Therefore $\rho_m(E(2))=\rho_m(E)$, a perfect finite group, and $\rho_m(H)$ equals it. By @thm:coble-eichler-normal-closure-two-adic-density, $\rho_{2^k}(H)=\rho_{2^k}(E(2))$ for every $k\ge0$.
+
+Write $n=2^km$ with $m$ odd, and put $A=\rho_{2^k}(E(2))$, $B=\rho_m(E(2))$. The group $A$ is a finite $2$-group: it consists of matrices congruent to the identity modulo two, with a filtration whose successive quotients are elementary abelian $2$-groups. The group $B$ is perfect, as just proved. By the Chinese remainder theorem, the images of $H$ and of $E(2)$ modulo $n$ are subgroups of $A\times B$, and each projects surjectively to **both** factors. By Goursat's lemma, any such subdirect subgroup determines a common quotient of $A$ and $B$. Every quotient of a finite $2$-group is a $2$-group, while every quotient of a perfect group is perfect; the only finite perfect $2$-group is trivial. Hence every such subdirect subgroup is the full direct product $A\times B$. In particular both $H$ and $E(2)$ have the same image modulo $n$, proving the theorem.
+:::
+
 ::: {.theorem #thm:coble-eichler-normal-closure-finite-index title="The explicit Eichler-square normal closure has finite index"}
 
 Let $E=\widetilde{\mathrm{SO}}^+(U^{\oplus2}\perp D_7(-1))$ and let $N_2\lhd E$ be the normal closure of the squares of the 18 explicit Eichler generators of @thm:coble-ambient-21-generators. Then **$N_2$ has finite index in $E$**, hence also in $E(2)$. More precisely,
