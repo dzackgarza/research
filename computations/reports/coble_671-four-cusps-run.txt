@@ -1,0 +1,33 @@
+T_Co Gram: <2> + U(2) + E8(-2), rank 11, det -2048  signature (2, 9, 0)
+
+the four public line-cusp vectors in that basis:
+  line cusp 0: v = (0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+     primitive: True   v^2 = 0   isotropic: True   divisibility: 2
+  line cusp 1: v = (0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0)
+     primitive: True   v^2 = 0   isotropic: True   divisibility: 2
+  line cusp 2: v = (-2, -4, 0, 0, -1, -1, -1, -1, -1, 0, 1)
+     primitive: True   v^2 = -4   isotropic: False   divisibility: 2
+  line cusp 3: v = (-50, -4, -1, 30, 26, 58, 61, 58, 54, 54, 51)
+     primitive: True   v^2 = -3336   isotropic: False   divisibility: 2
+
+so the coordinates of the public row are NOT in this basis.
+
+testing permutations of the summands, to see whether the difference is only an ordering:
+  E8(-2), order ('H', 'U', 'E8neg'): v^2 = [0, 0, -4, -3336]   all isotropic: False
+  E8(-2), order ('H', 'E8neg', 'U'): v^2 = [-4, -8, -64, 16]   all isotropic: False
+  E8(-2), order ('U', 'H', 'E8neg'): v^2 = [0, -2, 20, -7550]   all isotropic: False
+  E8(-2), order ('U', 'E8neg', 'H'): v^2 = [0, -8, 30, -9950]   all isotropic: False
+  E8(-2), order ('E8neg', 'H', 'U'): v^2 = [-4, -8, -54, -17552]   all isotropic: False
+  E8(-2), order ('E8neg', 'U', 'H'): v^2 = [-4, -8, -54, -17534]   all isotropic: False
+  E8(+2), order ('H', 'U', 'E8pos'): v^2 = [0, 8, 20, 13368]   all isotropic: False
+  E8(+2), order ('H', 'E8pos', 'U'): v^2 = [4, 8, 80, 32016]   all isotropic: False
+  E8(+2), order ('U', 'H', 'E8pos'): v^2 = [0, 6, 44, 9154]   all isotropic: False
+  E8(+2), order ('U', 'E8pos', 'H'): v^2 = [0, 8, 38, 21954]   all isotropic: False
+  E8(+2), order ('E8pos', 'H', 'U'): v^2 = [4, 8, 58, 51248]   all isotropic: False
+  E8(+2), order ('E8pos', 'U', 'H'): v^2 = [4, 8, 58, 51266]   all isotropic: False
+
+no ordering in either sign convention makes all four vectors isotropic, so the public row
+is in the provider's own basis of its Tco object.
+The datum that is missing, and that would make the row usable, is the Gram matrix of that
+object, equivalently the basis change from it to <2> + U(2) + E8(-2); it is not archived
+in this repository.
