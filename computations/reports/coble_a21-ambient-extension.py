@@ -30,6 +30,9 @@ the labels pointwise on lattice elements rather than on their abstract types:
      data are.
   5. The two gluing anti-isometries of the two finite-index inclusions, the discriminant
      isometry of g, and the surjectivity decision O(T_Co) -> O(A_{T_Co}).
+  6. The block test of @def:congruence-group on both marked gluings: whether gamma_Co and
+     gamma_En carry the U(2) block of A_{S_Co}, respectively A_{S_En}, onto the U(2) block of
+     A_{T_Co}, respectively A_{T_En}, and what each block generator is carried to.
 
 What is computed here, and what a reader should take from it.  In this marking the two
 primitive embeddings *coincide*: S_Co = M as sublattices of L_K3 and H = h, printed below as
@@ -44,6 +47,13 @@ classes of a member, not from lattice data, and no isometry of L_K3 decides it (
 the chamber clause as false as authored under one reading of the fourth bullet and as
 closing under the other).  Nor is the k >= 2 locus touched: every lattice here is the one of
 @prop:coble-enriques-polarized-match.
+
+Part 6 also decides the block condition of @def:congruence-group for both marked gluings.
+That test is posed on the *embedding*, which is why a discriminant-form computation could not
+make it (@lem:coble-discriminant-blocks: the decomposition is not O(q)-invariant and both
+kinds of anti-isometry exist); with the embeddings built, the class gamma(x) is read off as
+the unique class of A_T represented by a y with x + y integral in the standard L_K3, and the
+search over the block on the other side is exhaustive.
 """
 import sys
 import time
@@ -397,6 +407,101 @@ for name, lattice in (('S_Co', S_Co), ('T_Co', T_Co)):
     sys.stdout.flush()
     stamp('surjectivity for %s' % name)
 
+# ---------------------------------------------------------------- 6. the block test
+print('')
+print('6. the block test of @def:congruence-group, on the two marked gluings')
+print('   A class of A_S is represented by a rational vector x with x.S integral; by Nikulin')
+print('   gluing the class gamma(x) is the unique class of A_T represented by a y with')
+print('   x + y in L_K3.  The ambient lattice here is the standard one, so x + y in L_K3 is the')
+print('   integrality of x + y, and the search is exhaustive over the block on the other side:')
+print('   4 candidates for the U(2) block, 256 for the E8(2) block.')
+blocks = {
+    'Coble': (S_Co, T_Co,
+              [vec({2: 1, 4: 1}), vec({3: 1, 5: 1})],
+              [vec({6 + k: 1, 14 + k: 1}) for k in range(8)],
+              [alpha],
+              [vec({2: 1, 4: -1}), vec({3: 1, 5: -1})],
+              [vec({6 + k: 1, 14 + k: -1}) for k in range(8)],
+              [vec({0: 1, 1: 1})]),
+    'Enriques': (S_En, T_En,
+                 [vec({2: 1, 4: 1}), vec({3: 1, 5: 1})],
+                 [vec({6 + k: 1, 14 + k: 1}) for k in range(8)],
+                 [],
+                 [vec({2: 1, 4: -1}), vec({3: 1, 5: -1})],
+                 [vec({6 + k: 1, 14 + k: -1}) for k in range(8)],
+                 []),
+}
+all_compatible = True
+for name, (source, target, src_u2, src_e8, src_extra, tgt_u2, tgt_e8, tgt_extra) in blocks.items():
+    def halves(vectors):
+        return [[QQ(c) / 2 for c in coords(v)] for v in vectors]
+
+    def combinations(vectors):
+        classes = [[]]
+        out = []
+        for eps in range(2 ** len(vectors)):
+            v = [QQ(0)] * n
+            for bit, h in enumerate(halves(vectors)):
+                if (eps >> bit) & 1:
+                    v = [v[d] + h[d] for d in range(n)]
+            out.append(v)
+        return out
+
+    def primality(vectors):
+        """Every representative x/2 must satisfy (x/2).S integral."""
+        return all(all(QQ(int(v * w)) % 2 == 0 for w in
+                       [source.inclusion()(source.module_generator(l))
+                        for l in source.module_generating_set()])
+                   for v in vectors)
+
+    def image(x, candidates):
+        return [j for j, y in enumerate(candidates)
+                if all(QQ(x[d] + y[d]).denominator() == 1 for d in range(n))]
+
+    print('   %s side: S = %s, T = %s' % (name, source, target))
+    print('     the block representatives are dual vectors: U(2) %s, E8(2) %s'
+          % (primality(src_u2), primality(src_e8)))
+    if not primality(src_u2) or not primality(src_e8):
+        raise AssertionError('a block representative is not integral on the source lattice')
+    u2_classes = combinations(src_u2)
+    e8_classes = combinations(src_e8)
+    tgt_u2 = combinations(tgt_u2)
+    tgt_e8 = combinations(tgt_e8)
+    print('     the blocks, as class sets: source U(2) %d, source E8(2) %d, target U(2) %d,'
+          ' target E8(2) %d' % (len(u2_classes), len(e8_classes), len(tgt_u2), len(tgt_e8)))
+    compatible = True
+    hits_u2 = [image(x, tgt_u2) for x in u2_classes]
+    print('     gamma carries the U(2) block to the U(2) block: %s'
+          % all(len(h) == 1 for h in hits_u2))
+    print('       the three nonzero classes land on candidates %s'
+          % [h[0] if h else None for h in hits_u2[1:]])
+    compatible = compatible and all(len(h) == 1 for h in hits_u2)
+    generators = [image([QQ(c) / 2 for c in coords(v)], tgt_e8) for v in src_e8]
+    print('     the eight generators of the E8(2) block land on candidates %s, each with %s'
+          ' candidate' % ([h[0] if h else None for h in generators],
+                          sorted(set(len(h) for h in generators))))
+    image_e8 = [image(half_of, tgt_e8) for half_of in e8_classes[1:]]
+    inside_e8 = [h for h in image_e8 if len(h) == 1]
+    print('     the whole block: %d of the %d nonzero classes have exactly one image inside'
+          ' it, so the restriction is a bijection of the block'
+          % (len(inside_e8), len(e8_classes) - 1))
+    compatible = compatible and len(inside_e8) == len(e8_classes) - 1 \
+        and all(len(h) == 1 for h in generators)
+    if src_extra:
+        extra_hits = [image([QQ(c) / 2 for c in coords(v)], [[QQ(c) / 2 for c in coords(u)]
+                                                             for u in tgt_extra])
+                      for v in src_extra]
+        print('     the remaining square-2 direction: [alpha/2] lands on %s, so the third'
+              ' block goes to the third block: %s'
+              % ([h[0] if h else None for h in extra_hits],
+                 all(len(h) == 1 for h in extra_hits)))
+        compatible = compatible and all(len(h) == 1 for h in extra_hits)
+    print('     %s: gamma_%s is %sblock-compatible'
+          % (name, 'Co' if name == 'Coble' else 'En', '' if compatible else 'NOT '))
+    all_compatible = all_compatible and compatible
+    stamp('the block test, %s side' % name)
+assert all_compatible, 'a marked gluing is not block-compatible'
+
 print('')
 print('CONCLUSION')
 print('  Built, in one copy of L_K3 = U^3 + 2E8(-1):')
@@ -410,6 +515,9 @@ print('    AEGS involutions and with both members of the reflected pair.')
 print('  In this marking S_Co = M and H = h: the Coble invariant lattice is the Enriques')
 print('  lattice plus the line of the root, the del Pezzo slot is the Enriques polarization,')
 print('  and the whole labelled difference is the sign of the root, which g reverses.')
+print('  Both marked gluings are block-compatible in the sense of @def:congruence-group: each')
+print('  carries the U(2) block onto the U(2) block and the E8(2) block onto the E8(2) block,')
+print('  class by class, with exactly one image per class on all 1024 classes of the two blocks.')
 print('  Not settled here: the chamber (a statement about the effective classes of a member,')
 print('  not about L_K3), and the k >= 2 locus.')
 print('')
