@@ -279,9 +279,17 @@ The ramification divisor $R_Z \in \abs{M}$ of $\rho$ is ample, and the pair $(Z,
 Hence $\fentwo$ has a compactification $\ksbacpt{\fentwo}$ in the KSBA moduli space of pairs $(Z, \eps R_Z)$ with semi log canonical singularities, $K_Z \equiv 0$ and $R_Z$ an ample $\QQ$-Cartier divisor [@AEGS25, §1].
 :::
 
+::: {.definition #def:coble-descended-ramification title="The descended ramification divisor $R_{\bar S}$ of a stable limit"}
+
+Let $(\bar S, \eps R_{\bar S})$, $0 < \eps \ll 1$, be a KSBA stable limit of the pairs $(Z, \eps R_Z)$ of @thm:fen2-ksba-pair, and let $\rho \colon \bar S \to W$ be the morphism to the quotient by the descended del Pezzo involution, so that $\bar S$ is the quotient of a K3 stable limit by the Enriques involution (@prop:fen2-limits-are-k3-quotients).
+Then $R_{\bar S}$ is the divisorial part of the ramification divisor of $\rho$ that is not contained in the double locus of $\bar S$ [@AEGS25, §2.4, printed p. 588].
+For the dlt models of @prop:fen2-stable-limit-strata(3), $R_{\bar S} = \tfrac{1}{2}\rho^*(B_W)$ is a reduced divisor and equals the image of the invariant ramification divisor of the K3 cover [@AEGS25, Prop. 6.1(2), printed p. 616].
+On a Type III stable limit the boundary of the Coxeter diagram of the cusp represents $R_{\bar S}$: a cycle at cusps $1$ and $5$, and a chain at cusps $2$, $3$ and $4$ [@AEGS25, §7.3, printed p. 622].
+:::
+
 ::: {.question #qst:coble-stable-pair title="Is the descended Coble pair KSBA stable?"}
 
-Let $\bar S$ be the stable quotient surface and $R_{\bar S}$ the descended ramification divisor, and consider the pair
+Let $\bar S$ be the stable quotient surface and $R_{\bar S}$ the divisor of @def:coble-descended-ramification, and consider the pair
 $$
 (\bar S, \eps R_{\bar S}), \qquad 0 < \eps \ll 1 .
 $$
@@ -392,7 +400,7 @@ The stable quotient determines its marked Coble root among the $T_\Co$-roots of 
 
 **What the face does and does not give.** This conjecture asked a face of the restricted semifan to carry the marking, and no face can: by @thm:face-irrelevant-marking every admissible $T_\Co$-root at every marked cusp is irrelevant, so all of them cut one maximal cone, and at cusp $5$ the three roots $12$, $13$ and $14$ cut it together.
 Whether the conjecture then fails at cusp $5$ turns on a computation that is not made: if some pair of the three classes is inequivalent under $\Gamma_{\Co,2}$, that pair's two degenerations are identified in the KSBA boundary and no face separates them, and the conjecture is false; if the three classes are one orbit, the hypothesis of the conjecture is never met at cusp $5$. Distinct classes in $K_5$ do not decide this (`computations/reports/coble_coble-root-orbits-run.txt`, @thm:face-irrelevant-marking(3)).
-The recovery asserted here is therefore a statement about the contracted curve alone, and nothing is computed for it: the divisor it would be read off, $R_{\bar S}$, is named inside @qst:coble-stable-pair and is not defined on any page.
+The recovery asserted here is therefore a statement about the contracted curve alone: the divisor it would be read off is @def:coble-descended-ramification, defined from [@AEGS25, §2.4, printed p. 588] and [@AEGS25, Prop. 6.1(2), printed p. 616], and nothing computes the recovery from it.
 The pair the page carried as a counterexample before -- roots $11$ and $12$ at cusp $5$ -- is withdrawn on a different ground: root $11$ is the marking line $[\pm\delta]$, which has no lift in $T_\Co$ by @prop:marking-line-no-coble-lift, so that pair was never comparable; the comparable pair is $12$ and $13$ at cusp $5$, and whether it is a pair of inequivalent roots is the computation left open here.
 
 The group that the determination is modulo is $\Gamma_{\Co,2} = R_{\gent}$, the image of $\Stab_{\gent}(\delta)$ in $\Orth(\delta^{\perp})$ (@prop:gamma-co-images, @prop:gamma-co-2-line-stabilizer): the stabilizer of the root line $\ZZ\delta$ in $\gent$.
