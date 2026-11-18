@@ -424,6 +424,27 @@ def test_item_7_the_mod_two_lift_test_has_no_obstruction() -> None:
     assert "remains the open input for item 7" in verdict
 
 
+def test_item_7_one_pair_is_settled_by_a_witness() -> None:
+    """Item 7: roots 13 and 14 are Gamma_Co,2-equivalent, certified by an explicit isometry.
+
+    The symmetry that fixes the Coble root's label and exchanges 13 with 14 lifts: the root span has
+    rank 10, its complement rank 2, the two glue into T_En with index 2, and the gluing class
+    (0, 1/2, 0, ..., 0 | 0, 0) is preserved.  The record builds the extension as a 12 x 12 integral
+    matrix and checks it, so the equivalence is not asserted but exhibited.  What remains for item 7
+    is root 12 against that pair.
+    """
+    run = ROOT / "computations/reports/coble_760-witness-13-14-run.txt"
+    assert run.exists(), run
+    text = run.read_text(encoding="utf-8")
+    for line in ("g is integral: True", "g preserves the form: True",
+                 "g maps every root as sigma says: True", "g(delta) = delta: True",
+                 "g(eta_5) = eta_5: True",
+                 "g(r_13) = r_14 and g(r_14) = r_13: True"):
+        assert line in text, line
+    assert "phi fixes the gluing class: True" in text
+    assert "roots 13 and 14 are Gamma_Co,2-equivalent at cusp 5" in text
+
+
 def test_item_8_cusp_four_is_not_a_pair() -> None:
     """Item 8: the transcript prints one admissible root at cusp 4."""
     text = FACE_RUN.read_text(encoding="utf-8")
