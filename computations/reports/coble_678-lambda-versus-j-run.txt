@@ -9,6 +9,7 @@
 [   0.1s] J^perp: the restricted form has rank 8 on its 10 generators, so its radical
 [   0.1s] J^perp: has dimension 2 = rank J, and J is inside it since dot(e,e) = dot(e,e2) = 0;
 [   0.1s] J^perp: J^perp/J is therefore of rank 8 and nondegenerate (the induced form)
+[   0.1s] J/Ze: rank J = 2, rank Ze = 1 (e is primitive in J since its Smith invariants are [1,1]), so rank J/Ze = 1: the lambda at a FIXED cusp form a rank 1 lattice
 [   0.1s] primitive lam in J are a e + b e2 with gcd(a,b) = 1; e is the vanishing cycle, so lam and
 [   0.1s] lam + c e are the same transform (AE22 p. 28 puts lam in e-perp/e), and the integers that
 [   0.1s] can separate one transform from another are b and the divisibility of lam
@@ -37,29 +38,41 @@
 [   0.1s] div_T(lam) takes the values [1, 2]; both families are COUNTABLE
 [   0.1s] every lam in J is admissible, and there are countably many of them
 
-VERDICT.  The data do not determine the limit at this cusp, and the reason is a count.
+WHAT IS COMPUTED HERE, AND WHAT IS NOT.
 
-Fix the 1-cusp J.  Its Baily-Borel boundary component is a modular curve [AEGS25, Def. 2.9,
-printed p. 588], that is a quotient of the upper half plane by a finite-index group, on which
-the j-invariant is a non-constant holomorphic function; AET23 records the finite morphism to
-the j-line in the parallel case [AET23, section 3B, printed p. 16].  So the limits over J
-carry uncountably many values of j.  The points over the cusp are KSBA stable limits of
-degenerations in F_En,2 [AEGS25, section 5.3, printed p. 611], and the preimage of the
-component in the compactification is a family over it [AET23, section 3C, printed p. 17].
+Computed: T_En with its invariants; one explicit, primitive, totally isotropic plane J;
+rank J/Ze = 1 and rank J^perp/J = 8; the unbounded coordinate b enumerating the lambda at
+this cusp; and that every lambda in J is null, so lam^2 = 0 excludes none.
 
-Every such degeneration has a monodromy invariant lam, and since the cusp is the plane
-(Z d + Z lam)_sat [AE22, section 6A, printed p. 28] a lam at a FIXED cusp ranges over J/Ze,
-a rank 1 lattice: countably many, computed above as the coordinate b, which is unbounded.
-J is totally isotropic, so each of them satisfies lam^2 = 0 and the Type II condition
-excludes none of them.
+Not computed, and not computable at this level: a pair of boundary points with distinct j.
+No operation of the lattice library constructs a stable limit, so the pair below is produced
+by a count and not by a construction; the computation is evidence for the count's two
+premises on the lattice side only.
 
-Now count.  If each lam occurred at a single j, the j-values realised over the cusp would
-be at most countable, one per lam.  They are uncountable.  So one lam occurs at two
-different j.  At a fixed transform the data can be chosen to be the same for all
-degenerations [AEGS25, section 4.1, printed p. 599], and a limit carries the j of its double
-curve as an invariant of the pair [AEGS25, proof of Theorem 5.9, printed p. 612].  Those two
-limits are therefore non-isomorphic with identical (Gamma, R_IA): the conjecture is false,
-and no elliptic curve had to be constructed to see it.
+VERDICT.  The data do not determine the limit, and the reason is a count.
+
+Fix a 1-cusp of F_En,2.  By Sterk, section 4.1, printed p. 15, a rational boundary component
+of the period domain with sgn L_- = (2,10) is a singleton for a rank 1 isotropic I and a
+HALF-PLANE for a rank 2 one; and section 4.3.16, printed p. 27, computes the one-dimensional
+components as H/Gamma^1(2) with Gamma^1(2) a congruence subgroup of SL2(Z), while section
+4.3.17, printed p. 27, has Gamma' containing the level 2 subgroup Gamma(2) in the remaining
+cases.  So the boundary component of a 1-cusp is H/Gamma' with Gamma' a congruence subgroup
+of SL2(Z): uncountable, and the classical j is a non-constant holomorphic function on it,
+hence its image is uncountable.  The points of the KSBA compactification over it are the
+KSBA stable limits of degenerations in F_En,2 [AEGS25, section 5.3, printed p. 611], and the
+j-invariant of such a boundary point is recovered from the stable pair [AEGS25, proof of
+Theorem 5.9, printed p. 612].
+
+On the other side, a degeneration has a monodromy invariant lam, and since the cusp is the
+plane (Z d + Z lam)_sat [AE22, section 6A, printed p. 28], a lam at a FIXED cusp is a class in
+J/Ze: rank one by the computation above, hence countably many, and each is admissible because
+J is totally isotropic.
+
+Count: were each lam attached to one value of j, the j realised over the cusp would be
+countable, one per lam.  Uncountably many j against countably many lam leaves one lam at two
+different j.  At a fixed transform the data can be chosen the same for all degenerations
+[AEGS25, section 4.1, printed p. 599], so the two limits carry one (Gamma, R_IA) and, having
+different j, are non-isomorphic.  The conjecture is false.
 
 elapsed 0 s
 PYEXIT=0
