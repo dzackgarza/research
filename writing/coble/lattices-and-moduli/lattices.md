@@ -179,7 +179,7 @@ For (3). By definition $\gent = \rho^{-1}(M)$, so a $g = \varphi\oplus\id\in\Ort
 :::
 
 ::: {.remark #rmk:gamma-co-counts title="The cusp counts name their group"}
-The quotient $F^{\mathrm{un}}_\Co = \bD(T_\Co)/\Orth(T_\Co)$ has one $0$-cusp, $\Orth^+(T_\Co)$ being transitive on the primitive isotropic vectors (@thm:unpolarized-cusps), computed by sage-extensions#286 in its $\Orth(T_\Co)$ row, and one $1$-cusp, by @thm:plane-transitivity-tco, certified by the same operation. The stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ has $527$ $0$-cusps (@thm:coble-zero-cusp-count(2)). The subgroup $\Gamma_{\Co,2} = \bar\rho^{-1}(P)$ has four orbits of primitive isotropic vectors, hence $F_{\Co,2}$ has four $0$-cusps (@prop:coble-cong-point-stabilizer(3)).
+The quotient $F^{\mathrm{un}}_\Co = \bD(T_\Co)/\Orth(T_\Co)$ has one $0$-cusp, $\Orth^+(T_\Co)$ being transitive on the primitive isotropic vectors (@thm:unpolarized-cusps), computed by sage-extensions#286 in its $\Orth(T_\Co)$ row, and one $1$-cusp, by @thm:plane-transitivity-tco, certified by the same operation. The stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ has $527$ $0$-cusps (@thm:coble-zero-cusp-count(2)) and $189\,720$ $1$-cusps, one fibre of eight over each of the $23\,715$ liftable classes (@thm:plane-fibre(3)). The subgroup $\Gamma_{\Co,2} = \bar\rho^{-1}(P)$ has four orbits of primitive isotropic vectors, hence $F_{\Co,2}$ has four $0$-cusps (@prop:coble-cong-point-stabilizer(3)), and seven $1$-cusps, the row's and no page proof (@thm:plane-fibre(3), @rmk:coble-plane-incidence-rows).
 
 The cusp counts of $\fco$ are those of the stable quotient if @conj:gamma-co-stable holds. Without it they are not determined.
 
