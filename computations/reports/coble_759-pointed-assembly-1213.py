@@ -8,12 +8,26 @@ What is computed
    them: Lattices(...).isometry_matrix_to returns a morphism, and its images of the generators,
    read off as the integer combinations they print as, give a matrix satisfying
    Phi^T G1 Phi = G2.
-3. Phi carries the complement gluing class of one root onto the other's -- in both directions.
+3. A direct comparison of the two complement gluing classes under Phi reports agreement in both
+   directions.  THAT COMPARISON IS NOT THE DECIDING TEST and must not be read as matching; see the
+   correction below.
 
 So every datum that a pointed-lattice isometry needs is present and matches.  What the record does
 NOT do is assemble them: writing tau as "identity on <r, delta>, Phi on the complement" gives a
 map that is not integral on S, in either direction of Phi, so that naive gluing correction fails
 and the equivalence of 12 and 13 is not certified here.
+
+Correction: the deciding test, and it fails
+------------------------------------------
+Since [S : P + P^perp] = 2, an isometry of S inducing the identity on P and Phi on P^perp must send
+x to (sigma(p) + phi(l))/2, where 2x = p + l.  Running that on a basis of S gives, at the very
+first basis vector,
+
+    image of S_0 is not integral: [-5/2, 2, 0, 0, 1/2, 2, 2, 0, -1, 4]
+
+so identity-on-P glued with this Phi is not an isometry of S, and the direct comparison of the two
+gluing classes above does not imply that it is.  The pair is therefore NOT certified equivalent by
+this Phi, and the earlier reading of that comparison is withdrawn here.
 
 What that means for the pair
 ----------------------------
