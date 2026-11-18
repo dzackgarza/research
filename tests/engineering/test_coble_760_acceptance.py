@@ -735,6 +735,31 @@ def test_item_7_the_gent_family_is_named_by_the_call_that_fails() -> None:
     assert "gent-family-probe" not in remark, "the page must not lean on a killed computation"
 
 
+def test_item_7_the_orbit_call_exists_and_its_family_is_refuted() -> None:
+    """Item 7: the #370 orbit call runs and returns singletons; its acting family is incomplete.
+
+    The call exists and is used, so the item is not "no operation".  What it returns is three
+    singleton orbits, which by its own docstring decides nothing; and the family it acts with is
+    refuted inside the record by an element of the group it claims to act with: g_{13<->14} fixes
+    delta and eta_5 and lies in Gent, so it joins 13 and 14 in K_5, and the call separates them.
+    """
+    record = ROOT / "computations/reports/coble_760-cusp5-root-orbits.py"
+    run = ROOT / "computations/reports/coble_760-cusp5-root-orbits-run.txt"
+    assert record.exists() and run.exists(), (record, run)
+    text = run.read_text(encoding="utf-8")
+    assert text.rstrip().endswith("PYEXIT=0"), "the run did not reach its anchor"
+    flat = " ".join(text.split())
+    for line in ("returned 3 orbits:", "1 class(es): ['12']", "1 class(es): ['13']",
+                 "1 class(es): ['14']",
+                 "g_{13<->14}: integral True, isometry True, in Gent True",
+                 "so its reduction lies in G_v and joins the classes of 13 and 14, which the call separates",
+                 "complete generating family at a primitive isotropic line"):
+        assert line in flat, line
+    remark = block("rmk:coble-root-orbits-cusp-five")
+    assert "coble_760-cusp5-root-orbits-run.txt" in remark
+    assert "sage-extensions#312" in remark
+
+
 def test_open_questions_row_names_the_open_step() -> None:
     """The row for the withdrawn step names the orbit computation as what is open."""
     text = OPEN_QUESTIONS.read_text(encoding="utf-8")
