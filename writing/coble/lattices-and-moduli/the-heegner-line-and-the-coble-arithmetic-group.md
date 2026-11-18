@@ -1160,7 +1160,7 @@ Then:
 
 Write $H = A_{U(2)}$ and $E = A_{E_8(2)} = E_8/2E_8$.
 On $A^0$ the form $q$ takes values in $\ZZ/2\ZZ$, so $(A^0,q)$ is a quadratic space over $\mathbb{F}_2$; its bilinear form is nondegenerate because $A^0$ is an orthogonal summand of a nondegenerate discriminant form, so Witt's extension theorem applies to it and to $E$.
-On $H$ the three nonzero classes have the values $0$, $0$, $1$ (the proof of @prop:gamma-cong-eq-heegner(1)); on $E$ the $120$ classes of value $1$ are the images of the $240$ roots of $E_8$, and the other $135$ nonzero classes have value $0$.
+On $H$ the three nonzero classes $[e'/2]$, $[f'/2]$ and $[(e'+f')/2]$, for a standard isotropic basis $e',f'$ of $U(2)$ with $e'\cdot f' = 2$, have the values $q = \tfrac14(e')^2 = 0$, $\tfrac14(f')^2 = 0$ and $\tfrac14(e'+f')^2 = 1$; on $E$ the $120$ classes of value $1$ are the images of the $240$ roots of $E_8$, and the other $135$ nonzero classes have value $0$.
 
 (1) Let $W\leq E$ be a nonzero $\Orth(q_E)$-invariant subgroup and $x\in W$ nonzero. By Witt's extension theorem $\Orth(q_E)$ is transitive on the nonzero classes of each value of $q$, so $W$ contains every nonzero class of value $q(x)$. If $q(x) = 1$, these are the images of the roots, which span $E$. If $q(x) = 0$, then $W$ has at least $136 > 128 = \tfrac12\abs{E}$ elements. In both cases $W = E$.
 Let $W\leq A^0$ be a subgroup of order $4$ invariant under $\Orth(q_H)\times\Orth(q_E)$. Its projection to $E$ along $H$ is $\Orth(q_E)$-invariant of order at most $4 < 256$, hence $0$. So $W\leq H$, and $W = H$.

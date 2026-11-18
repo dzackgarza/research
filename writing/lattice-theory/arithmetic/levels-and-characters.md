@@ -16,11 +16,11 @@ N\,\beta_{L_\bQ}(x,x)\in2\bZ
 $$
 Equivalently, after choosing an ordered basis with Gram matrix $G_L$, the matrix $N_q(L)G_L^{-1}$ is integral with even diagonal.
 For even $L$, this is the level used in the theory of theta series [@Han13; @SSP99].
-If
+Its **bilinear denominator** is the exponent of the finite group $L^\#/L$,
 $$
-N_b(L)\definedas\exp(L^\#/L)
+N_b(L)\definedas\exp(L^\#/L),
 $$
-is the bilinear denominator of @def:discriminant, then
+and
 $$
 N_q(L)\in\theset{N_b(L),\,2N_b(L)}.
 $$

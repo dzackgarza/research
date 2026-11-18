@@ -129,9 +129,27 @@ is unique up to the action of $\Orth(\lkt)$ [@AEGS25, Lem. 2.4].
 Taking orthogonal complements turns this into the chain $U(2)\hookrightarrow U(2)\oplus E_8(2)\hookrightarrow\lkt$. Nikulin's primitive embedding theorem gives uniqueness of the second inclusion [@Nik79, Thm. 1.14.4]. After scaling by $2$, uniqueness of the first reduces to the embedding $U\hookrightarrow U\oplus E_8$: its perpendicular is $E_8$, which determines the embedding up to isometry. Every isometry of $\tdp$ extends to one of $\lkt$ by the gluing and surjectivity results of [@Nik79, Props. 1.5.2, 3.6.3]. Thus an isometry taking one embedded copy of $\ten$ to another extends over the full chain [@AEGS25, proof of Lem. 2.4].
 :::
 
+::: {.construction #cons:fen2-cusp-involutions title="The five cusp folding involutions"}
+
+Let $e\in\ten$ be a primitive isotropic vector.
+Let $\overline{T}_{\mathrm{En}} = e^\perp/e$ in $\ten$ and $\overline{T}_{\mathrm{dP}} = e^\perp/e$ in $\tdp$, so that $\overline{T}_{\mathrm{En}}\subset\overline{T}_{\mathrm{dP}}$.
+Let $J = -\overline{I}_{\mathrm{En}}$ be the involution of $\overline{T}_{\mathrm{dP}}$ induced by $-\Ien$, whose $(+1)$-eigenspace is $\overline{T}_{\mathrm{En}}$ [@AEGS25, Def. 3.5].
+The five involutions $J$ below are numbered by the $0$-cusps in Sterk's numbering, and the simple roots $\alpha_k$ of the Coxeter diagram $G(\overline{T}_{\mathrm{dP}})$ are numbered as in [@AEGS25, Fig. 5].
+
+| Cusp | $\overline{T}_{\mathrm{dP}}$ | Involution $J$ | $\overline{T}_{\mathrm{dP}}^{J=1}$ |
+| --- | --- | --- | --- |
+| $1$ | $(18,2,0)_1$ | rotation of the diagram by $180^\circ$ | $U(2)\oplus E_8(2)$ |
+| $2$ | $(18,0,0)_1$ | reflection $\alpha_k\mapsto\alpha_{20-k}$ of the diagram about the vertical line | $U\oplus E_8(2)$ |
+| $3$ | $(18,2,0)_1$ | reflection of the diagram about the diagonal, followed by the reflection in the root $\alpha_{20}$ | $U\oplus E_8(2)$ |
+| $4$ | $(18,2,0)_1$ | reflection of the diagram about a horizontal line | $U\oplus E_8(2)$ |
+| $5$ | $(18,2,0)_1$ | composition of the $8$ commuting reflections in the roots $\alpha_1,\alpha_3,\dots,\alpha_{15}$ | $U\oplus E_8(2)$ |
+
+[@AEGS25, Lem. 3.9, Lem. 3.10].
+:::
+
 ::: {.lemma #lem:enriques-folding-lifts title="Lifting a cusp folding involution"}
 
-For each of the five folded cusp diagrams in @prop:fen2-folded-coxeter, the involution $J$ of $\overline T_{\mathrm{dP}}$ lifts to an involution $I$ of $\tdp$ whose fixed lattice is $\ten$ [@AEGS25, Lem. 3.11].
+For each of the five involutions $J$ of $\overline T_{\mathrm{dP}}$ in @cons:fen2-cusp-involutions, $J$ lifts to an involution $I$ of $\tdp$ whose fixed lattice is $\ten$ [@AEGS25, Lem. 3.11].
 :::
 
 ::: {.proof}
@@ -148,26 +166,13 @@ The embedding-chain uniqueness of @lem:enriques-embedding-chain identifies this 
 
 ::: {.proposition #prop:fen2-folded-coxeter title="Folded Coxeter diagrams of $\fentwo$"}
 
-Let $e\in\ten$ be a primitive isotropic vector.
-Let $\overline{T}_{\mathrm{En}} = e^\perp/e$ in $\ten$ and $\overline{T}_{\mathrm{dP}} = e^\perp/e$ in $\tdp$, so that $\overline{T}_{\mathrm{En}}\subset\overline{T}_{\mathrm{dP}}$.
-Let $J = -\overline{I}_{\mathrm{En}}$ be the involution of $\overline{T}_{\mathrm{dP}}$ induced by $-\Ien$, whose $(+1)$-eigenspace is $\overline{T}_{\mathrm{En}}$ [@AEGS25, Def. 3.5].
+Let $e$, $\overline{T}_{\mathrm{En}}\subset\overline{T}_{\mathrm{dP}}$ and $J$ be as in @cons:fen2-cusp-involutions.
 The folded diagram $G(\overline{T}_{\mathrm{dP}})^J$ of the Coxeter diagram $G(\overline{T}_{\mathrm{dP}})$ has as nodes the folded vectors $\beta_{[\alpha]}$ (@def:folded-root) of the simple roots $\alpha$ for which these vectors are roots of $\overline{T}_{\mathrm{En}}$ [@AEGS25, Def. 3.7].
 
 1. Let $\mathfrak{C}$ be a chamber of $W(\Gamma_{\mathrm{dP},e})$ in the positive cone of $\overline{T}_{\mathrm{dP}}$ whose intersection with $\overline{T}_{\mathrm{En}}\otimes\RR$ has maximal dimension.
    Then $\mathfrak{C}^J = \mathfrak{C}\intersect\overline{T}_{\mathrm{En}}\otimes\RR$ is a fundamental chamber of $W(\Gamma_{\mathrm{En},2,e})$, and its Coxeter diagram is $G(\overline{T}_{\mathrm{dP}})^J$ [@AEGS25, Lem. 3.8].
 
-2. The following five involutions $J$ give the folded diagrams of the five $0$-cusps, in Sterk's numbering.
-   The simple roots $\alpha_k$ are numbered as in [@AEGS25, Fig. 5].
-
-   | Cusp | $\overline{T}_{\mathrm{dP}}$ | Involution $J$ | $\overline{T}_{\mathrm{dP}}^{J=1}$ |
-   | --- | --- | --- | --- |
-   | $1$ | $(18,2,0)_1$ | rotation of the diagram by $180^\circ$ | $U(2)\oplus E_8(2)$ |
-   | $2$ | $(18,0,0)_1$ | reflection $\alpha_k\mapsto\alpha_{20-k}$ of the diagram about the vertical line | $U\oplus E_8(2)$ |
-   | $3$ | $(18,2,0)_1$ | reflection of the diagram about the diagonal, followed by the reflection in the root $\alpha_{20}$ | $U\oplus E_8(2)$ |
-   | $4$ | $(18,2,0)_1$ | reflection of the diagram about a horizontal line | $U\oplus E_8(2)$ |
-   | $5$ | $(18,2,0)_1$ | composition of the $8$ commuting reflections in the roots $\alpha_1,\alpha_3,\dots,\alpha_{15}$ | $U\oplus E_8(2)$ |
-
-   [@AEGS25, Lem. 3.9, Lem. 3.10].
+2. The five involutions $J$ of @cons:fen2-cusp-involutions give the folded diagrams of the five $0$-cusps, in Sterk's numbering [@AEGS25, Lem. 3.9, Lem. 3.10].
 
 3. These five folded diagrams are precisely the Coxeter diagrams of the reflection groups $W(\Gamma_{\mathrm{En},2,e})$, for the isotropic vectors $e\in\ten$ up to $\Gamma_{\mathrm{En},2}$ [@AEGS25, Cor. 3.12].
 :::

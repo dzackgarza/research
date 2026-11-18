@@ -18,8 +18,6 @@ m_{st} = m_{ts} \in \theset{2,3,4,\dots}\unioninfty
 \quad (s\neq t)
 .
 $$
-The Coxeter group presented by $M$ is the group $W(M)$ of @def:coxeter-group, the relation $(s t)^{m_{st}} = e$ being imposed only for $m_{st} < \infty$.
-The pair $(W(M), S)$ is a **Coxeter system** of **rank** $\abs{S}$.
 Its **Coxeter diagram** $\Sigma(M)$ is the graph on the vertex set $S$ with an edge $\theset{s,t}$ whenever $m_{st}\geq 3$, labelled by $m_{st}$ when $m_{st}\geq 4$.
 :::
 

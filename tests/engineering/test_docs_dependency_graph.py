@@ -24,6 +24,7 @@ custom-numbered-blocks:
     theorem: {}
     lemma: {}
     definition: {}
+    remark: {}
 """
 
 LUA = 'local ref_prefixes = { thm = true, lem = true, def = true }\n'
@@ -50,11 +51,15 @@ TWO = "# Part\n"
 
 THREE = """\
 ::: {.theorem #thm:c}
-By @lem:b, and @thm:missing. Also @sec-elsewhere.
+By @lem:b, and @thm:missing. Also @sec-elsewhere; compare @rmk:d.
 :::
 
 ::: {.lemma}
 Uses @def:a.
+:::
+
+::: {.remark #rmk:d}
+A pointer back to @thm:c.
 :::
 """
 
@@ -80,9 +85,12 @@ def test_edges_come_from_statement_and_proof_references(tmp_path):
     graph, findings, code = run(tmp_path)
     edges = {(e["source"], e["target"]): e for e in graph["edges"]}
     assert edges[("lem:b", "def:a")]["statement"] and edges[("lem:b", "def:a")]["proof"]
-    assert edges[("lem:b", "thm:c")] == {"source": "lem:b", "target": "thm:c",
+    assert edges[("lem:b", "thm:c")] == {"source": "lem:b", "target": "thm:c", "forward": True,
+                                         "relation": "uses",
                                          "statement": False, "proof": True}
     assert ("thm:c", "lem:b") in edges
+    # A remark and a theorem that cite each other are commentary, not a cycle.
+    assert edges[("thm:c", "rmk:d")]["relation"] == edges[("rmk:d", "thm:c")]["relation"] == "mentions"
     nodes = {n["id"]: n for n in graph["nodes"]}
     assert nodes["lem:b"]["proved"] and not nodes["thm:c"]["proved"]
     assert [nodes[i]["position"] for i in ("def:a", "lem:b", "thm:c")] == [0, 1, 2]
@@ -95,7 +103,6 @@ def test_findings_name_each_defect(tmp_path):
     _, findings, _ = run(tmp_path)
     messages = sorted(f["message"] for f in findings)
     assert messages == sorted([
-        "#lem:b uses #thm:c, which comes later (in three.md)",
         "#thm:c cites @thm:missing, which no block defines",
         "a lemma block has no id, so nothing can cite it",
         "a proof follows no numbered block",

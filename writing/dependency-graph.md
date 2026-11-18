@@ -110,7 +110,7 @@ Choose a block to see what it rests on, what rests on it, or both, to a chosen d
   cy.elements().style("display", "none");
 
   const box = document.getElementById("depgraph-findings");
-  box.querySelector("summary").textContent = `${findings.length} findings: forward references, cycles, missing ids`;
+  box.querySelector("summary").textContent = `${findings.length} findings: circular definitions or proofs, blocks without ids`;
   for (const f of findings) {
     const li = document.createElement("li"); li.textContent = `${f.chapter}: ${f.message}`;
     box.querySelector("ul").append(li);

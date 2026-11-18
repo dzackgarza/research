@@ -175,7 +175,7 @@ For $I=R$ set $\mathbf{Unimod}_R\definedas\mathbf{ModLat}_{R,R}$.
 ::: {.definition #def:discriminant title="Bilinear and quadratic discriminant forms"}
 
 Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ be integral.
-The **bilinear denominator** is $N_b(L)\definedas\exp\qty{A_L^\sharp}$.
+Let $N_b(L)=\exp\qty{A_L^\sharp}$ be the bilinear denominator of @def:lattice-level.
 The restricted pairing has value module $\tfrac1{N_b(L)}\bZ$:
 $$
 L^\#\tensor_{\bZ}L^\#

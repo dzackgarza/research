@@ -14,15 +14,17 @@ result without citing it is an authoring defect and the graph cannot see it.
 
 A `::: {.proof}` div proves the numbered block that immediately precedes it in
 the same enclosing block list. Edge attributes `statement` and `proof` record
-which part of `a` cites `b`.
+which part of `a` cites `b`. `relation` is `uses` when both blocks belong to the
+logical development (LOGICAL below) and `mentions` when either is commentary.
 
 The chapters are parsed by pandoc (through panflute), in `book.chapters` order;
-each node's `position` is its index in that reading order.
+each node's `position` is its index in that order, and an edge's `forward` says
+the cited block comes later. The site is not read in order, so a forward edge is
+information, not a defect.
 
 Findings, each one a defect in the book:
   - a reference to a theorem-family id that no block defines;
-  - a forward edge: `a` uses a block that comes after it in reading order;
-  - a cycle (each strongly connected component with more than one block);
+  - a cycle of `uses` edges (circular definitions or proofs);
   - a proof with no numbered block immediately before it;
   - an id that two blocks define;
   - a numbered block with no id (it is a node, keyed `<chapter>#<position>`, but
@@ -52,6 +54,15 @@ import yaml
 
 # The theorem-family reference prefixes, as the amsthm-refs filter registers them.
 AMSTHM_REFS = "_extensions/local/amsthm-refs/amsthm-refs.lua"
+
+# Block kinds whose statement or proof is part of the logical development. A citation
+# between two of them is a `uses` edge. A citation to or from any other kind (an
+# example, a remark, a question, ...) is commentary, a `mentions` edge: an example
+# cannot be a premise, and a remark's pointer is not a dependency.
+LOGICAL = frozenset({
+    "theorem", "lemma", "corollary", "proposition", "conjecture", "claim",
+    "definition", "construction", "notation", "convention", "assumption",
+})
 
 
 @dataclass(frozen=True)
@@ -212,14 +223,15 @@ def build(project: Path) -> tuple[nx.DiGraph, list[Finding]]:
         else:
             graph.add_edge(source, cited, statement=part == "statement", proof=part == "proof")
 
-    for source, target in graph.edges:
-        if graph.nodes[target]["position"] > graph.nodes[source]["position"]:
-            findings.append(Finding(graph.nodes[source]["chapter"],
-                                    f"#{source} uses #{target}, which comes later "
-                                    f"(in {graph.nodes[target]['chapter']})"))
-    for component in nx.strongly_connected_components(graph):
+    for source, target, data in graph.edges(data=True):
+        data["forward"] = graph.nodes[target]["position"] > graph.nodes[source]["position"]
+        data["relation"] = ("uses" if graph.nodes[source]["kind"] in LOGICAL
+                            and graph.nodes[target]["kind"] in LOGICAL else "mentions")
+    uses = graph.edge_subgraph(
+        (u, v) for u, v, r in graph.edges(data="relation") if r == "uses")
+    for component in nx.strongly_connected_components(uses):
         if len(component) > 1:
-            cycle = [u for u, _ in nx.find_cycle(graph.subgraph(component))]
+            cycle = [u for u, _ in nx.find_cycle(uses.subgraph(component))]
             findings.append(Finding(graph.nodes[cycle[0]]["chapter"],
                                     "cycle: " + " -> ".join(f"#{n}" for n in [*cycle, cycle[0]])))
     return graph, findings
