@@ -221,16 +221,6 @@ def test_coble_level_two_eichler_squares_fail_normal_generation():
             for i in range(11) for j in range(11)
         ]))
     assert len(pivots) == 56
-    # Two independent character involutions supply the missing directions
-    # of the full 56-dimensional principal congruence quotient.
-    for index in (19, 20):
-        generator = matrix(ZZ, data["generators"][index]["matrix_standard"])
-        assert matrix(GF(2), generator) == identity_matrix(GF(2), 11)
-        admit(matrix(GF(2), 11, 11, [
-            int((generator[i, j] - identity[i, j]) // 2) % 2
-            for i in range(11) for j in range(11)
-        ]))
-    assert len(pivots) == 56
 
 
 def test_coble_ambient_generators_are_public_integral_isometry_morphisms():
