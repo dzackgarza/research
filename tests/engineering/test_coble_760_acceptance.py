@@ -676,6 +676,37 @@ def test_item_7_the_two_records_agree_on_what_is_open() -> None:
     assert "P is not a direct summand (index 4)" in text
 
 
+def test_item_7_the_mod_two_probe_is_one_sided_and_says_so() -> None:
+    """Item 7: the mod-2 orbit of label 12 is a one-sided test, and nothing reads a decision off it.
+
+    Gamma(2) is contained in ker rho, hence in Gent, so the class of a root mod 2T_En is invariant
+    along a Gamma_Co,2-orbit and the mod-2 orbit is a necessary condition.  The orbit this record
+    can compute is the orbit under a subgroup of Gent --- the elements it can build and check --- so
+    a class missing from it is not a proof of inequivalence.  The record must carry that scope, and
+    the page must not claim the pair is decided.
+    """
+    record = ROOT / "computations/reports/coble_760-mod2-orbit-probe.py"
+    run = ROOT / "computations/reports/coble_760-mod2-orbit-probe-run.txt"
+    assert record.exists() and run.exists(), (record, run)
+    text = run.read_text(encoding="utf-8")
+    assert text.rstrip().endswith("PYEXIT=0"), "the probe did not run to its anchor"
+    flat = " ".join(text.split())
+    for line in ("generators checked and accepted as Gent elements: 23",
+                 "orbit of the class of label 12: 512 classes",
+                 "class of 13 in the orbit of 12: False",
+                 "class of 14 in the orbit of 13: True",
+                 "it shows that no product of these twenty-three elements carries r12 to r13, and not that Gent contains none",
+                 "sage-extensions#273"):
+        assert line in flat, line
+    doc = record.read_text(encoding="utf-8")
+    assert "decides nothing about the pair" in doc
+    assert "rather than replacing it" in doc
+    # the page states the pair open and cites no decision
+    remark = block("rmk:coble-root-orbits-cusp-five")
+    assert "the root $12$ is undecided" in remark
+    assert "mod2-orbit-probe" not in remark, "the page must not lean on a one-sided probe"
+
+
 def test_open_questions_row_names_the_open_step() -> None:
     """The row for the withdrawn step names the orbit computation as what is open."""
     text = OPEN_QUESTIONS.read_text(encoding="utf-8")
