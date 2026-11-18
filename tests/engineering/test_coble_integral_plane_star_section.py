@@ -223,6 +223,65 @@ def test_coble_level_two_eichler_squares_fail_normal_generation():
     assert len(pivots) == 56
 
 
+def test_coble_nineteen_relations_generate_the_full_kernel_modulo_sixteen():
+    """Exact subgroup collection fills all three certified congruence layers."""
+    import json
+    from collections import deque
+    from pathlib import Path
+    from sage.all import Integers, identity_matrix, matrix
+
+    folder = Path(__file__).resolve().parents[2] / "computations/reports"
+    data = json.loads((folder / "coble_ambient_twenty_one_generators.json").read_text())
+    ring = Integers(16)
+    identity = identity_matrix(ring, 11)
+    generators = [matrix(ring, row["matrix_standard"])
+                  for row in data["generators"][:18]]
+    inverses = [generator.inverse() for generator in generators]
+    levels = (2, 4, 8)
+    bases = {level: {} for level in levels}
+    pending = deque()
+    lifts = []
+
+    def leading_bits(element, level):
+        return sum((((int(element[i, j]) - int(i == j)) // level) % 2)
+                   << (11 * i + j) for i in range(11) for j in range(11))
+
+    def collect(element, insert=True):
+        for level in levels:
+            bits = leading_bits(element, level)
+            while bits:
+                pivot = bits.bit_length() - 1
+                if pivot in bases[level]:
+                    element *= bases[level][pivot].inverse()
+                    bits = leading_bits(element, level)
+                else:
+                    if insert:
+                        bases[level][pivot] = element
+                        pending.append(element)
+                        lifts.append(element)
+                    return False
+        return True
+
+    for word in data["level_two_normal_relation_words"][:19]:
+        element = identity
+        for index in word:
+            element *= generators[index]
+        collect(element)
+    while pending:
+        element = pending.popleft()
+        collect(element * element)
+        for earlier in tuple(lifts):
+            collect(element * earlier * element.inverse() * earlier.inverse())
+        for generator, inv in zip(generators, inverses, strict=True):
+            collect(generator * element * inv)
+
+    assert tuple(len(bases[level]) for level in levels) == (54, 54, 55)
+    # The extra rank-55 witness at level eight is already in the normal
+    # closure, although it is independent of the 54 displayed squares.
+    short_word = generators[17] * inverses[14] * inverses[11] * generators[3]
+    assert collect(short_word ** 10, insert=False)
+
+
 def test_coble_eichler_squares_generate_every_odd_modulus_image():
     """Each Eichler generator is an odd-modulus power of its square."""
     import json

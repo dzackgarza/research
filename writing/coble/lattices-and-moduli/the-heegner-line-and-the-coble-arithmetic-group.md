@@ -1570,6 +1570,21 @@ For any $k\ge2$, write $g=I+2^kA$ with $g\in E(2^k)$. Orthogonality in the odd d
 The exact regression `test_coble_eichler_normal_relations_have_rank_54_at_level_eight` constructs 54 independent elements of $E(4)/E(8)$ as squares and commutators of the 19-relation lifts. Squaring these 54 elements gives 54 independent classes in $E(8)/E(16)$. The same regression constructs the displayed four-letter word and verifies that its tenth power is the identity modulo eight, while its leading matrix modulo sixteen is **independent** of those 54 classes. Therefore $E(8)/E(16)$ has dimension at least 55, and the upper bound proves equality. For $k\ge3$, the identity $(I+2^kA)^2\equiv I+2^{k+1}A\pmod{2^{k+2}}$ preserves the leading matrix under squaring, so the 55 independent witnesses propagate to every deeper layer. This proves the formula for all $k\ge3$.
 :::
 
+::: {.theorem #thm:coble-eichler-normal-closure-two-adic-density title="The 19 explicit Eichler relations are dense at every power of two"}
+
+Let $H\lhd E$ be the normal closure of the 19 exact integral Eichler relations of @prop:coble-eichler-squares-obstruction. Then for **every integer $k\ge1$**,
+$$
+H\,E(2^k)=E(2).
+$$
+Equivalently, the 19 relations normally generate the **entire image of $E(2)$ modulo $2^k$ for every $k$**. This is an infinite family of exact finite-quotient equalities, not a bounded computational extrapolation. It proves that $H$ is dense in the $2$-adic congruence topology on $E(2)$; it does **not**, by itself, prove the abstract group equality $H=E(2)$.
+:::
+
+::: {.proof}
+The exact test `test_coble_nineteen_relations_generate_the_full_kernel_modulo_sixteen` works with the 18 Eichler generators from the source-hashed 21-matrix certificate, reduced modulo sixteen. Starting from the 19 certified level-two words, it repeatedly forms squares, commutators and conjugates by all 18 Eichler generators, retaining an exact matrix lift whenever a new independent leading vector appears at levels two, four or eight. Every retained lift is therefore a product of conjugates of the 19 relations, hence belongs to $H$. The calculation terminates with independent ranks **$(54,54,55)$** in the successive quotients $E(2)/E(4)$, $E(4)/E(8)$, and $E(8)/E(16)$. These are their *exact full dimensions*, by @prop:coble-eichler-squares-obstruction, @prop:coble-eichler-level-eight-derived-image and @thm:coble-eichler-exact-deep-congruence-ranks. In particular $H\,E(16)=E(2)$, and the four-letter witness $w=(g_{17}g_{14}^{-1}g_{11}^{-1}g_3)^{10}$ from @thm:coble-eichler-exact-deep-congruence-ranks reduces to the identity against the retained $H$-basis modulo sixteen.
+
+The same computation supplies 55 actual elements $h_1,\ldots,h_{55}\in H\cap E(8)$ whose leading matrices $(h_i-I)/8\pmod2$ are independent. For every $m\ge3$, the squaring identity $(I+2^mA)^2\equiv I+2^{m+1}A\pmod{2^{m+2}}$ shows that $h_i^{2^{m-3}}\in H\cap E(2^m)$ have the **same 55 independent leading matrices**. By @thm:coble-eichler-exact-deep-congruence-ranks, this is the entire quotient $E(2^m)/E(2^{m+1})$. Inductively, from $H\,E(16)=E(2)$ we obtain $H\,E(2^k)=E(2)$ for every $k\ge4$; the lower powers follow immediately. No assertion about noncongruence finite quotients is used.
+:::
+
 ::: {.corollary #cor:coble-eichler-odd-congruence-surjectivity title="The Eichler-square normal closure surjects at every odd modulus"}
 
 Let $E=\generators{g_1,\ldots,g_{18}}$ be the explicit Eichler group of @thm:coble-ambient-21-generators, and let $N_2\lhd E$ be the normal closure of the squares $g_i^2$. For **every odd positive integer** $m$, the reductions of $N_2$ and $E$ in $\GL(B/mB)$ are equal:
