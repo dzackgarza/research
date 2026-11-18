@@ -267,6 +267,6 @@ Contents:
 
 [@Ste91]
 
-- **Used here for:** divisibilities of isotropic vectors, cusp labels, and the identification of Sterk cusp 2.
+- **Used here for:** divisibilities of isotropic vectors, the cusp labels, and the two statements of @thm:coble-zero-cusp-sterk-two: each of Sterk's cusps $2$ to $5$ carries a Coble $0$-cusp with boundary lattice $(9,9,1)_1$, and cusp $2$ is the one whose restricted chamber is the Coble chamber and whose cusp vector has divisibility $2$ in $T_{\mathrm{dP}}$.
 
-- **Project relevance:** the Coble cusp map to $(18,0,0)_1$ is interpreted through Sterk's cusp classification.
+- **Project relevance:** the Coble cusp map to $(18,0,0)_1$ is interpreted through Sterk's cusp classification: cusp $2$ alone among the five carries the Coble lattice's own isotropic generator, and its image in $\overline{F_{(2,2,0)}}^{\mathrm{BB}}$ is the $(18,0,0)_1$ cusp, while cusps $3$, $4$, $5$ carry Coble $0$-cusps whose images are $(18,2,0)_1$ (@thm:coble-zero-cusp-sterk-two(4)).

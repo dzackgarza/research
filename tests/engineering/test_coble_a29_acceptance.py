@@ -238,6 +238,51 @@ def test_a2_the_open_question_register_no_longer_asks_it():
     assert "@sec-cusp-correspondence-morphism-chain" not in text
 
 
+def pages():
+    """Every authored page under writing/, excluding the book's symlinked mirror."""
+    out = []
+    for path in sorted((ROOT / "writing").rglob("*.md")):
+        parts = path.parts
+        if ".book" in parts or ".assets" in parts:
+            continue
+        out.append(path)
+    assert len(out) > 100, f"only {len(out)} pages found: the sweep is not sweeping"
+    return out
+
+
+FORBIDDEN_CLAIMS = (
+    "the identification of Sterk cusp 2",
+    "Coble 0-cusp corresponds with cusp 2",
+    "Coble 0-cusp corresponds to cusp 2",
+    "the Coble cusps correspond to",
+    "conj:coble-zero-cusp-sterk-two",
+)
+
+
+def test_a2_no_page_anywhere_still_asserts_the_unique_correspondence():
+    hits = []
+    for path in pages():
+        text = path.read_text(encoding="utf-8")
+        for claim in FORBIDDEN_CLAIMS:
+            if claim in text:
+                hits.append((path.relative_to(ROOT).as_posix(), claim))
+    assert not hits, hits
+
+
+def test_a2_the_bibliography_note_on_sterk_cites_the_theorem():
+    text = (ROOT / "writing/coble/extracted-references/extracted-references.md").read_text(encoding="utf-8")
+    entry = text[text.index("## Ste91"):]
+    entry = entry[: entry.index("\n## ", 10)] if "\n## " in entry[10:] else entry
+    assert "@thm:coble-zero-cusp-sterk-two" in entry
+    assert "the identification of Sterk cusp 2" not in entry
+
+
+def test_a2_the_restricted_semifan_page_says_cusp_2_is_where_the_chamber_occurs():
+    text = (ROOT / "writing/coble/heegner-report/coble-heegner-research-report.md").read_text(encoding="utf-8")
+    assert "Cusp $2$ is the one cusp of $\\fentwo$ at which this chamber occurs" in text
+    assert "carry Coble $0$-cusps with boundary lattice $(9,9,1)_1$" in text
+
+
 def test_a2_the_research_statement_no_longer_asserts_the_unique_correspondence():
     text = (ROOT / "writing/research-statement/ResearchStatement.md").read_text(encoding="utf-8")
     assert "I have computed that the Coble 0-cusp corresponds with cusp 2" not in text

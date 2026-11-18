@@ -2758,6 +2758,8 @@ $$
  =(3,2,1,5,6,7,8,9,4),
 $$
 the irrelevant root is $v_9$ and the restricted irrelevant group is $\langle s_{v_9}\rangle\cong S_2$, while $v_1,\dots,v_8$ are relevant.
+
+Cusp $2$ is the one cusp of $\fentwo$ at which this chamber occurs: at cusps $3$, $4$ and $5$ the facet of a white node has $10$, $10$ and $11$ distinct walls, and all four cusps carry Coble $0$-cusps with boundary lattice $(9,9,1)_1$, so the boundary lattice alone does not locate the chamber (@thm:coble-zero-cusp-sterk-two(2)--(3)).
 :::
 
 ::: {.proof}
