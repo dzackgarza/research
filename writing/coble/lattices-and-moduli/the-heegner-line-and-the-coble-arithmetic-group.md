@@ -1808,6 +1808,17 @@ Finally, the **congruence subgroup property with trivial congruence kernel** hol
 By @cor:coble-level-two-kernel-split-extension, $\Gamma(2)=E_2\rtimes\generators{r_{d_1},-\id_{U_1}}$. Both character involutions occur among the 26 plane-parabolic generators contained in $S$. Hence $K$ contains $E_2$ and the two complementary generators, proving $K=\Gamma(2)$. The minimality assertion follows from the exact 56-dimensional level-four quotient.
 :::
 
+::: {.theorem #thm:coble-positive-kernel-ninety-five-generators title="Ninety-five explicit ordinary generators of the positive Coble discriminant kernel"}
+
+The subgroup $\widetilde O^+(T_\Co)=\Gamma(2)\cap\ker(\operatorname{sn}_{\mathbb R})$ is generated **as an ordinary infinite integral group** by the **95 exact integral matrices** in the source-hashed certificate `computations/reports/coble_kernel_positive_schreier_generators.json`. They are obtained by an index-two Reidemeister--Schreier construction from the 56 ordinary generators of @thm:coble-fifty-six-ordinary-full-kernel-generation; no cosets of the enormous discriminant image are enumerated.
+:::
+
+::: {.proof}
+Work in the diagonal realization $B\cong\generators1^2\perp\generators{-1}^9$, and let $A_g$ be the upper-left $2\times2$ block of $g$. Since $g$ preserves the form of signature $(2,9)$, the positive-plane projection $A_g$ is invertible. The sign $\chi(g)=\operatorname{sgn}\det A_g$ is the orientation character of the maximal positive two-plane. By Cartan--Dieudonné it suffices to compare $\chi$ and the real spinor character on reflections. Reflection in a positive-norm vector reverses this orientation and has real spinor norm $-1$ for the Gritsenko--Hulek--Sankaran multiplier $-\tfrac12$; reflection in a negative-norm vector preserves it and has real spinor norm $+1$. Thus $\chi=\operatorname{sn}_{\mathbb R}$ on $O(B)$.
+
+Let $S=\generators{s_1,\ldots,s_{56}}$ be the certified ordinary generating family of $\Gamma(2)$, and choose one $t\in S$ with $\chi(t)=-1$. The two right cosets of $\ker\chi$ have representatives $1,t$. The Reidemeister--Schreier theorem gives an ordinary generating family consisting of the elements $r s_i\,\overline{r s_i}^{-1}$, for $r\in\{1,t\}$, where the bar denotes the chosen right-coset representative. The reproducible Sage script `computations/reports/coble_kernel_positive_schreier_generators.py` constructs all 112 candidates as exact integral matrices, checks their Gram identities, reduction modulo two and positive-plane character, and removes identities and repeated matrices, leaving **95**. The source SHA-256 and exact matrix list are retained in the accompanying JSON. The public regression `test_coble_positive_schreier_generators_are_public_positive_kernel_morphisms` verifies that every matrix is an actual member of the maintained $\widetilde O^+(T_\Co)$ predicate. Since $S$ generates $\Gamma(2)$ by @thm:coble-fifty-six-ordinary-full-kernel-generation, Reidemeister--Schreier proves that the 95 matrices generate its positive real-spinor kernel, as claimed.
+:::
+
 ::: {.proposition #prop:coble-level-two-plane-parabolic title="Generators of the level-two kernel in the integral plane stabilizer"}
 
 In the notation of @thm:coble-plane-stabilizer-image, let $K_P=\Stab_{\Orth(B)}(P)\cap\ker\rho$. The following $26$ integral isometries generate $K_P$:
