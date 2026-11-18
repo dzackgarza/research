@@ -102,4 +102,28 @@ else:
     print()
     print("RESULT: P is not a direct summand (index %s); the identity extension is not available and" % d2)
     print("the gluing question for this pair is open.")
+print()
+print("=== the same question inside the rank-10 span S of the fourteen roots")
+print("T_En = S + S^perp with index 1 (coble_759-lift-1314-run.txt), so an isometry of S extends;")
+print("the class of r12 maps to the class of r13 exactly, since S meets S^perp in 0 and eta lies")
+print("in S^perp.  So the pair is decided by whether <r12, r13> is a direct summand of S:")
+Sm = matrix(ZZ, [vector(ZZ, r) for r in ROOTS]).saturation()
+GS = matrix(ZZ, Sm.nrows(), Sm.nrows(), lambda i, j: ip(Sm[i], Sm[j]))
+P2 = matrix(ZZ, [vector(ZZ, r12), vector(ZZ, r13)]).saturation()
+GP2 = matrix(ZZ, P2.nrows(), P2.nrows(), lambda i, j: ip(P2[i], P2[j]))
+func = P2 * G * Sm.transpose()
+K2 = matrix(ZZ, matrix(ZZ, func).right_kernel_matrix()).saturation()
+basis2 = K2 * Sm
+GK2 = matrix(ZZ, basis2.nrows(), basis2.nrows(), lambda i, j: ip(basis2[i], basis2[j]))
+print("  S: rank %d, det %d;  P = sat.span(r12, r13): rank %d, det %d;  P^perp in S: rank %d, det %d"
+      % (Sm.nrows(), GS.det(), P2.nrows(), GP2.det(), basis2.nrows(), GK2.det()))
+d2S = QQ(GP2.det()) * QQ(GK2.det()) / QQ(GS.det())
+print("  index^2 of P + P^perp in S: %s -> index %s" % (d2S, d2S.sqrt() if d2S.is_square() else "?"))
+if d2S == 1:
+    print("  RESULT: a direct summand of S; the swap extends inside S and hence to T_En.")
+else:
+    print("  RESULT: not a direct summand of S either, so the construction fails at rank 10 as well.")
+    print("  What remains is a gluing extension inside S, or a transporter for a family with")
+    print("  nontrivial pointwise orthogonal stabilizer, which the library does not provide")
+    print("  (coble_759-transporter-1213-run.txt).")
 print("PYEXIT=0")
