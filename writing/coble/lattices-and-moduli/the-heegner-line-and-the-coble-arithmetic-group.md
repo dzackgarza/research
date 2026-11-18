@@ -1332,6 +1332,55 @@ Items (2), (3) and (4) of @prop:gamma-cong-eq-heegner each state the correspondi
 Nothing else enters: the indices computed there ($\abs{P} = \abs{W(E_8)}$, $[\Gamma^{\mathrm{cong}}_{\Co,2}:\widetilde\Orth^+(T_\Co)] = 2\abs{W(E_8)}$) are unchanged.
 :::
 
+::: {.proposition #prop:direct-eq-heegner title="The direct labelled group equals the Heegner one"}
+
+Let $\Gamma^{\mathrm{dir}}_{\Co,2}$ and $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ be the groups of @def:direct-group and @def:hodge-group, the first taken with the centralizer $Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ and without the chamber subscript, which is @qst:kernel-and-root-arrangement.
+Then
+$$
+\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2} = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co).
+$$
+:::
+
+::: {.proof}
+
+*The $S$-side of the centralizer.*
+Two facts, computed on the objects of @prop:coble-enriques-ambient-isometry in part 7 of `computations/reports/coble_a21-ambient-extension.py`, transcript `-run.txt`, provider main `1488acf`:
+
+1. $\alpha^{\perp}\cap S_\Co = S_\En$: the orthogonal complement of the root line inside $S_\Co$ is the Enriques invariant lattice, checked there as mutual containment of two primitive rank-$10$ sublattices of determinant $2^{10}$ — the content, in coordinates, of the orthogonal decomposition $S_\Co = S_\En\oplus\ZZ\alpha$ of @prop:coble-enriques-ambient-isometry(3);
+2. $I_{\mathrm{dP}}$ acts on $S_\Co$ by $+1$ on the slot $\Delta(U_2,U_3)$, by $-1$ on $\Delta(E_{8,1},E_{8,2})$ and by $-1$ on $\ZZ\alpha$, and by $-\id$ on $T_\Co$, checked on the bases of those pieces.
+
+So an isometry of $\lkt$ commuting with $I_\Co$ and $I_{\mathrm{dP}}$ is a pair preserving $S_\Co$ and $T_\Co$ and, inside $S_\Co$, the three pieces; if it fixes $\alpha$ it preserves $\alpha^{\perp}\cap S_\Co = S_\En$, and restriction to $S_\En$ is injective because an isometry acting trivially on $S_\En$ and on $\alpha$ is the identity.
+Conversely every $\psi\in\Stab_{\Orth(S_\En)}(h)$ extends by $\id$ on $\ZZ\alpha$, fixes the three pieces, and hence commutes with $I_{\mathrm{dP}}$ and fixes $H = h$ and $\alpha$.
+Therefore
+$$
+\{\,\psi \mid (\psi,\varphi)\in Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}\,\} = \Stab_{\Orth(S_\En)}(h),
+$$
+whose discriminant image is $P_{S_\En}$ of order $\abs{W(E_8)}$ (@prop:gamma-co-heegner-strict).
+
+*The image in $\Orth(A_{T_\Co})$.*
+The glue condition is $\bar\varphi\gamma_\Co = \gamma_\Co\bar\psi$ (@thm:automorphism-lifting-criterion), so
+$$
+\rho_{T_\Co}\bigl(\Gamma^{\mathrm{dir}}_{\Co,2}\bigr)
+= \gamma_\Co P_{S_\En}\gamma_\Co^{-1}
+= \Stab_{\Orth(q_{T_\Co})}\bigl(\gamma_\Co(A_{U(2)})\bigr)
+= P,
+$$
+the second equality by @lem:coble-discriminant-blocks(4) and the third by @prop:coble-block-compatibility.
+
+*The kernel and the sign.*
+For $\varphi\in\widetilde\Orth^+(T_\Co)$ the pair $(\id_{S_\Co},\varphi)$ acts trivially on both discriminant forms, so it glues; it fixes $H$ and $\alpha$ and commutes with both involutions, since $I_{\mathrm{dP}}$ is $-\id$ on $T_\Co$ by fact 2.
+Hence $\widetilde\Orth^+(T_\Co)\subseteq\Gamma^{\mathrm{dir}}_{\Co,2}$, and the same inclusion holds for $\Gamma^{\mathrm{Hdg}}_\Co$ (@prop:gamma-co-in-heegner-group).
+An element of $\Orth^+(T_\Co)$ whose discriminant action lies in $P$ therefore differs from one of $\Gamma^{\mathrm{dir}}_{\Co,2}$ by an element of $\widetilde\Orth^+(T_\Co)$, so
+$$
+\Gamma^{\mathrm{dir}}_{\Co,2} = \rho_{T_\Co}^{-1}(P)\intersect\Orth^+(T_\Co) = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co),
+$$
+and by @cor:gamma-hdg-is-congruence that is $\Gamma^{\mathrm{Hdg}}_\Co$.
+
+*The chamber.*
+@def:direct-group carries the subscript $\mcc$ and nothing above uses it: an isometry fixing $H$ and $\alpha$ and commuting with the two involutions need not preserve the chamber, and whether every one of them does is @qst:kernel-and-root-arrangement, which needs the effective arrangement of a member and not a computation on $\lkt$.
+The equality proved is therefore the one for the centralizer without that subscript; the subscript is that question, and it is where the labelled rigidity theorem's chamber clause enters this group.
+:::
+
 ::: {.question #qst:kernel-and-root-arrangement title="The root arrangement"}
 
 Does every $g\in Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ preserve the $(-2)$-root arrangement of the tuple?

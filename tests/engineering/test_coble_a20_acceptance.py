@@ -375,6 +375,38 @@ def test_item2_the_two_half_fibres_have_the_numbers_the_proposition_uses():
     assert dot(tuple(x + y for x, y in zip(F1, F2)), tuple(x + y for x, y in zip(F1, F2))) == 2
 
 
+def test_item2b_the_direct_group_equals_the_heegner_one():
+    """The second equality of the four, for the centralizer without the chamber subscript.
+
+    Decides: that @prop:direct-eq-heegner states the equality, that its proof names the two
+    computed inputs (alpha^perp cap S_Co = S_En, and the action of I_dP on the pieces), that
+    it rests on block-compatibility and on the surjectivity facts already on record, and that
+    the record's part 7 prints both inputs as checked.
+    """
+    page = _text(PAGE)
+    prop = _block(page, "{.proposition #prop:direct-eq-heegner")
+    assert "\\Gamma^{\\mathrm{dir}}_{\\Co,2} = \\Gamma^{\\mathrm{Hdg}}_{\\Co,2}" in prop
+    assert "@qst:kernel-and-root-arrangement" in prop  # the chamber subscript is named
+
+    proof = _block(page, "{.proof}\n\n*The $S$-side of the centralizer.*")
+    assert "part 7 of `computations/reports/coble_a21-ambient-extension.py`" in proof
+    assert "\\alpha^{\\perp}\\cap S_\\Co = S_\\En" in proof
+    assert "@prop:gamma-co-heegner-strict" in proof
+    assert "@prop:coble-block-compatibility" in proof
+
+    run = _text(REPORTS / "coble_a21-ambient-extension-run.txt")
+    lines = run.splitlines()
+    start = next(i for i, line in enumerate(lines)
+                 if line.startswith("7. the direct labelled group against the Heegner one"))
+    block = "\n".join(lines[start:])
+    assert "equal True" in block            # alpha^perp cap S_Co = S_En
+    assert "rank 10, det -1024, sig (1, 9)" in block
+    assert "+1 on the slot: I_dP(e) = e True, I_dP(f) = f True" in block
+    assert "-1 on Delta(E8): True over the eight generators" in block
+    assert "-1 on ZZ alpha: I_dP(alpha) = -alpha True" in block
+    assert "-1 on T_Co: True over a basis of T_Co" in block
+
+
 def test_item2_direct_group_is_defined_and_its_comparison_handed_on():
     """Decides: Gamma^dir is a named group whose comparison is the labeled embedding.
 
