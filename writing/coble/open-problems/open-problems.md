@@ -38,7 +38,7 @@ The entry that stood here conjectured two things about $\theta_\Co$: that it ind
 
 ::: {.question title="Open problem: the 0-cusps that carry the Coble stable limits"}
 
-Which of the $527$ $0$-cusps of the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ (@thm:coble-zero-cusp-count(2)) carry the Coble stable limits?
+Which of the $527$ $0$-cusps of the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ (@thm:coble-zero-cusp-count(2), the cusps being the classes themselves by @thm:coble-integral-lifting-fibre(1)) carry the Coble stable limits?
 :::
 
 ::: {.question #qst:gamma-co-generators title="Open problem: the stable group $\widetilde\Orth^+(T_\Co)$"}

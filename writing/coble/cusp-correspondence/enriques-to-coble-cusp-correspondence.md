@@ -61,7 +61,7 @@ We then have $\div_{\ten}(w_1) = 2$.
 ::: {.proof}
 
 By @lem:divisibilityAlwaysTwoTco, $v_1$ has divisibility $2$ in $T_\Co$; moreover it is isotropic.
-By @thm:unpolarized-cusps and @prop:tco-split-maximal, $\Orth^+(T_\Co)$ is transitive on primitive isotropic vectors, with quotient $\latI_{1,8}(2)$ at any of them, so $v_1$ represents *the* $0$-cusp of $F^{\mathrm{un}}_\Co$ and $$(v_1)^{\perp T_\Co}/v_1 \cong \latI_{1,8}(2) = (9,9,1) \cong \generators{2} \oplus E_8(2).$$ The stable group $\widetilde\Orth^+(T_\Co)$ has $527$ orbits of primitive isotropic vectors (@thm:coble-zero-cusp-count(2)); they lie in one $\Orth^+(T_\Co)$-orbit, so all $527$ $0$-cusps of the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ have boundary lattice $\latI_{1,8}(2)$.
+By @thm:unpolarized-cusps and @prop:tco-split-maximal, $\Orth^+(T_\Co)$ is transitive on primitive isotropic vectors, with quotient $\latI_{1,8}(2)$ at any of them, so $v_1$ represents *the* $0$-cusp of $F^{\mathrm{un}}_\Co$ and $$(v_1)^{\perp T_\Co}/v_1 \cong \latI_{1,8}(2) = (9,9,1) \cong \generators{2} \oplus E_8(2).$$ The stable group $\widetilde\Orth^+(T_\Co)$ has $527$ orbits of primitive isotropic vectors (@thm:coble-zero-cusp-count(2), one orbit per nonzero isotropic class by @thm:coble-integral-lifting-fibre(1), (2)); they lie in one $\Orth^+(T_\Co)$-orbit, so all $527$ $0$-cusps of the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ have boundary lattice $\latI_{1,8}(2)$.
 
 Since $\tilde e' \tilde f' = 2$, and $\tilde e'$ is orthogonal to the remaining generators of $\ten$, we have
 
