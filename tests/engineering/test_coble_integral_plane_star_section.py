@@ -197,6 +197,29 @@ def test_coble_ambient_twenty_one_integral_generators():
     assert any(x not in ZZ for x in (
         even_basis.inverse() * (extra[1] - identity) * dual_basis
     ).list())
+    # The discriminant form of B(2) has 527 nonzero isotropic classes:
+    # masks x with x^2 divisible by 4.  Each of the 21 exact isometries
+    # permutes these classes.  Its permutation image must have the full
+    # independently known order of O(q), not merely preserve q.
+    from sage.libs.gap.libgap import libgap
+
+    masks = [
+        mask for mask in range(1, 1 << 11)
+        if (2 * (((mask >> 0) & 1) * ((mask >> 1) & 1)
+                  + ((mask >> 2) & 1) * ((mask >> 3) & 1))
+            - sum((mask >> i) & 1 for i in range(4, 11))) % 4 == 0
+    ]
+    assert len(masks) == 527
+    positions = {mask: i + 1 for i, mask in enumerate(masks)}
+    permutations = []
+    for generator in [*eichler, *extra]:
+        permutation = []
+        for mask in masks:
+            image = generator * vector(ZZ, [(mask >> i) & 1 for i in range(11)])
+            target = sum((int(image[i]) % 2) << i for i in range(11))
+            permutation.append(positions[target])
+        permutations.append(libgap.PermList(permutation))
+    assert int(libgap.Size(libgap.Group(permutations))) == 46998591897600
 
 
 def test_coble_even_neighbor_has_kneser_local_ranks():
