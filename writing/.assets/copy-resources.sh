@@ -17,7 +17,7 @@ out="${QUARTO_PROJECT_OUTPUT_DIR:?post-render step run outside Quarto}"
 # sit beside that page's html, whatever directory the source lives in.
 for file in category-theory/lean/category-graph.html category-theory/lean/category-graph.dot; do
     [ -f "${file}" ] || { echo "copy-resources: ${file} is missing" >&2; exit 1; }
-    cp -L --no-preserve=mode "${file}" "${out}/category-theory/"
+    cp -L --remove-destination --no-preserve=mode "${file}" "${out}/category-theory/"
 done
 
 for tree in data coble/reference coble/papers; do
@@ -25,5 +25,7 @@ for tree in data coble/reference coble/papers; do
     mkdir -p "${out}/$(dirname "${tree}")"
     # -L dereferences the symlinked part; --no-preserve=mode keeps the output
     # world-readable regardless of the source tree's bits.
-    cp -RL --no-preserve=mode "${tree}" "${out}/$(dirname "${tree}")/"
+    # --remove-destination: Quarto may already have put a symlinked figure into the
+    # output as the same symlink, and cp refuses to copy a file onto itself.
+    cp -RL --remove-destination --no-preserve=mode "${tree}" "${out}/$(dirname "${tree}")/"
 done

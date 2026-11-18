@@ -16,6 +16,7 @@ project:
   # pass. Everything the site needs is copied by the post-render step instead.
   post-render:
     - .assets/copy-resources.sh
+    - .assets/dependency-graph.sh
 book:
   title: "Coble and Enriques surfaces"
   subtitle: "Lattices, compactifications, and cusps"
@@ -238,6 +239,7 @@ book:
     - open-questions.md
     - index-of-results.md
     - index-of-definitions.md
+    - dependency-graph.md
 # Deliberately unlisted prose under the linked parts. A book renders exactly
 # `book.chapters`, so nothing below reaches the site; each reason is recorded
 # because the counterpart rule is "listed, or deliberately unlisted".
