@@ -112,7 +112,14 @@ Choose a block to see what it rests on, what rests on it, or both, to a chosen d
   const box = document.getElementById("depgraph-findings");
   box.querySelector("summary").textContent = `${findings.length} findings: circular definitions or proofs, blocks without ids`;
   for (const f of findings) {
-    const li = document.createElement("li"); li.textContent = `${f.chapter}: ${f.message}`;
+    const li = document.createElement("li");
+    li.append(`${f.kind} in ${f.chapter}: `);
+    for (const id of f.blocks) {
+      const n = nodes.get(id);
+      if (!n) { li.append(` @${id}`); continue; }
+      const a = document.createElement("a"); a.href = href(n); a.textContent = name(n);
+      li.append(" ", a);
+    }
     box.querySelector("ul").append(li);
   }
 })();

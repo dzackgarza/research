@@ -99,14 +99,14 @@ def test_edges_come_from_statement_and_proof_references(tmp_path):
     assert code == 1
 
 
+
 def test_findings_name_each_defect(tmp_path):
     _, findings, _ = run(tmp_path)
-    messages = sorted(f["message"] for f in findings)
-    assert messages == sorted([
-        "#thm:c cites @thm:missing, which no block defines",
-        "a lemma block has no id, so nothing can cite it",
-        "a proof follows no numbered block",
-        next(m for m in messages if m.startswith("cycle: ")),
-    ])
-    cycle = next(m for m in messages if m.startswith("cycle: "))
-    assert set(cycle.removeprefix("cycle: ").split(" -> ")) == {"#lem:b", "#thm:c"}
+    by_kind = {f["kind"]: f for f in findings}
+    assert sorted(f["kind"] for f in findings) == ["cycle", "dangling", "missing-id", "orphan-proof"]
+    assert by_kind["dangling"] == {"kind": "dangling", "chapter": "three.md",
+                                   "blocks": ["thm:c", "thm:missing"]}
+    assert by_kind["missing-id"]["blocks"] == ["three.md#3"]
+    assert by_kind["orphan-proof"]["chapter"] == "one.md"
+    # The lem:b <-> thm:c circle of uses is reported; the thm:c <-> rmk:d mentions are not.
+    assert sorted(by_kind["cycle"]["blocks"]) == ["lem:b", "thm:c"]

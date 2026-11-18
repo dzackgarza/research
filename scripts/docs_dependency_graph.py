@@ -43,9 +43,11 @@ exits nonzero when there are findings.
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import json
 import sys
 from dataclasses import dataclass
+from enum import StrEnum
 from pathlib import Path
 
 import networkx as nx
@@ -65,13 +67,29 @@ LOGICAL = frozenset({
 })
 
 
+class Kind(StrEnum):
+    DANGLING = "dangling"
+    CYCLE = "cycle"
+    ORPHAN_PROOF = "orphan-proof"
+    DUPLICATE_ID = "duplicate-id"
+    MISSING_ID = "missing-id"
+
+
 @dataclass(frozen=True)
 class Finding:
+    """One defect: its kind, the chapter it is in, and the block ids it concerns.
+
+    kind is one of "dangling" (blocks = [citing block, missing id]), "cycle" (the
+    blocks of the cycle, in order), "orphan-proof" (no blocks), "duplicate-id"
+    ([id]) and "missing-id" ([the node key `<chapter>#<position>`]).
+    """
+
+    kind: Kind
     chapter: str
-    message: str
+    blocks: tuple[str, ...] = ()
 
     def __str__(self) -> str:
-        return f"{self.chapter}: {self.message}"
+        return f"{self.chapter}: {self.kind} {' '.join(self.blocks)}".rstrip()
 
 
 def chapter_list(book: dict[str, list[str | dict[str, str | list[str]]]]) -> list[str]:
@@ -178,11 +196,9 @@ def build(project: Path) -> tuple[nx.DiGraph, list[Finding]]:
                     if not ident:
                         # Nothing can cite it, but its own references are still edges.
                         ident = f"{chapter}#{position}"
-                        findings.append(Finding(chapter, f"a {sorted(kinds)[0]} block has no id, "
-                                                "so nothing can cite it"))
+                        findings.append(Finding(Kind.MISSING_ID, chapter, (ident,)))
                     if ident in graph:
-                        findings.append(Finding(chapter, f"#{ident} is defined twice "
-                                                f"(also in {graph.nodes[ident]['chapter']})"))
+                        findings.append(Finding(Kind.DUPLICATE_ID, chapter, (ident,)))
                     graph.add_node(
                         ident,
                         kind=sorted(kinds)[0],
@@ -197,7 +213,7 @@ def build(project: Path) -> tuple[nx.DiGraph, list[Finding]]:
                     previous = ident
                 elif isinstance(block, pf.Div) and "proof" in block.classes:
                     if previous is None:
-                        findings.append(Finding(chapter, "a proof follows no numbered block"))
+                        findings.append(Finding(Kind.ORPHAN_PROOF, chapter))
                     else:
                         graph.nodes[previous]["proved"] = True
                         for cited in cited_ids(block, block_classes):
@@ -214,7 +230,7 @@ def build(project: Path) -> tuple[nx.DiGraph, list[Finding]]:
         prefix = cited.split(":", 1)[0]
         if cited not in graph:
             if ":" in cited and prefix in prefixes:
-                findings.append(Finding(chapter, f"#{source} cites @{cited}, which no block defines"))
+                findings.append(Finding(Kind.DANGLING, chapter, (source, cited)))
             continue
         if cited == source:
             continue
@@ -232,8 +248,7 @@ def build(project: Path) -> tuple[nx.DiGraph, list[Finding]]:
     for component in nx.strongly_connected_components(uses):
         if len(component) > 1:
             cycle = [u for u, _ in nx.find_cycle(uses.subgraph(component))]
-            findings.append(Finding(graph.nodes[cycle[0]]["chapter"],
-                                    "cycle: " + " -> ".join(f"#{n}" for n in [*cycle, cycle[0]])))
+            findings.append(Finding(Kind.CYCLE, graph.nodes[cycle[0]]["chapter"], tuple(cycle)))
     return graph, findings
 
 
@@ -253,7 +268,7 @@ def add_numbers(graph: nx.DiGraph, registry: Path) -> None:
 def write(graph: nx.DiGraph, findings: list[Finding], out: Path) -> None:
     out.mkdir(parents=True, exist_ok=True)
     (out / "dependency-findings.json").write_text(json.dumps(
-        [{"chapter": f.chapter, "message": f.message} for f in findings], indent=1))
+        [dataclasses.asdict(f) for f in findings], indent=1))
     nx.write_graphml(graph, out / "dependency-graph.graphml")
     nx.nx_pydot.write_dot(graph, out / "dependency-graph.dot")
     data = nx.node_link_data(graph, edges="edges")
