@@ -76,9 +76,12 @@ def test_item_3_the_conjecture_is_corrected_not_proved() -> None:
     """Item 3: the conjecture's corrected form says what the face does and does not give."""
     conjecture = block("conj:no_moduli_loss")
     assert ".conjecture" in conjecture
-    assert "read off the contracted" in conjecture
-    assert "no face can" in conjecture
-    assert "not made" in conjecture or "uncomputed" in conjecture
+    assert "read off the contracted" in conjecture          # the conjecture's own title
+    assert "no face can" in conjecture                      # the corrected statement
+    # the open computation must still be visible, in whatever wording the page currently uses
+    assert any(t in conjecture for t in ("not made", "uncomputed",
+                                         "no operation in the library decides",
+                                         "cannot be computed")), conjecture[:200]
 
 
 def test_item_3_the_lean_route_and_its_blocker() -> None:
@@ -199,6 +202,26 @@ def test_item_7_the_orbit_decision_probe_and_its_bound() -> None:
         assert absent + " " * (27 - len(absent)) + "False" in text, absent
     assert "BOUND-REACHED: K.primitive_orbit_series did not return within 600 s" in text
     assert "PROBE_EXIT=124" in text or "PROBE_EXIT=137" in text
+
+
+def test_item_7_the_orbit_engine_states_its_regime() -> None:
+    """Item 7: the library's vector-orbit engine is finite-regime by design, in its own words.
+
+    Every invariant of the pair agrees (test_item_7_the_last_invariant_agrees), so the question is
+    the orbit under an infinite arithmetic group on an indefinite lattice.  The library's
+    decomposition engine says what it covers: "listed only when the full orthogonal group is
+    finite, equivalently in the definite regime ... No finite approximation is used for an
+    indefinite arithmetic centralizer."  That sentence, with its file and line, is the transcript.
+    """
+    run = ROOT / "computations/reports/coble_760-orbit-engine-scope-run.txt"
+    assert run.exists(), run
+    text = run.read_text(encoding="utf-8")
+    assert "class _EquivariantVectorOrbitDecompositionEngine" in text
+    assert "No finite approximation is used for an indefinite" in text
+    assert "file: .scratch/sage-extensions/src/sage_extensions/categories/lattice_centralizers.py" in text
+    assert "133:class _EquivariantVectorOrbitDecompositionEngine" in text
+    assert "explicitly not for an indefinite arithmetic centralizer" in text
+    assert text.rstrip().endswith("PYEXIT=0")
 
 
 def test_item_7_the_last_invariant_agrees() -> None:

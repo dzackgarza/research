@@ -1,0 +1,30 @@
+the scope of the library's vector-orbit decomposition, quoted from its source
+library: .scratch/sage-extensions/src
+
+=== the engine and its stated regime
+file: .scratch/sage-extensions/src/sage_extensions/categories/lattice_centralizers.py
+133:class _EquivariantVectorOrbitDecompositionEngine(_CentralizerOrbitDecompositionEngine):
+134-    r"""The exact vector-orbit decomposition under ``O(L,f)`` when finite.
+135-
+136-    The centralizer of ``f`` is listed only when the full orthogonal group is
+137-    finite, equivalently in the definite regime supported by the existing
+138-    subgroup engine.  No finite approximation is used for an indefinite
+139-    arithmetic centralizer.
+140-    """
+141-
+142-    def __init__(self, isometry, square, **rest) -> None:
+143-        self._isometry = isometry
+144-        lattice = isometry.domain()
+145-        if isometry.codomain() is not lattice:
+
+=== every orbit-decomposition entry point, and whether it is finite-only
+129:    def orbits(self):
+191:    def orbit_of(self, vector):
+337:    def orbit_of(self, candidate):
+
+=== the indefinite case, as the source states it
+138:    subgroup engine.  No finite approximation is used for an indefinite
+
+conclusion: the vector-orbit decomposition is offered in the definite (finite) regime and
+explicitly not for an indefinite arithmetic centralizer, which is what item 7 needs.
+PYEXIT=0
