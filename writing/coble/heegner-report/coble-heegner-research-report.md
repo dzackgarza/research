@@ -1965,7 +1965,24 @@ And the Coble surfaces of [@DK13, §3, printed p. 513] are the blowups of ten no
 
 The complement is not empty and contains the whole root arrangement: @thm:direct-period-misses-root-walls.
 So the clause cannot be read with an empty complement, and every $(-2)$-Heegner divisor of $T_\Co$ lies in the excluded locus.
-The excluded divisors beyond the root arrangement are not decided here: the record of @prob:B24, part 2, is that each of the $121$ classes of the level set $\set{q_{T_\Co}=1}$ carries a divisor the image misses, at the exploratory tier that record declares.
+The excluded divisors beyond the root arrangement are not decided here: the record of @prob:B24, part 2, is that the $121$ classes it counts on the invariant side are carried by the gluing into the level set $\set{q_{T_\Co}=1}$ and carry divisors the image misses, at the exploratory tier that record declares.
+That level set is not the record's: it has $496$ classes, computed exactly (@rmk:coble-discriminant-levels), so $121$ is a subset of it and not the set.
+
+::: {.remark #rmk:coble-discriminant-levels title="the level sets of the discriminant forms of $S_\Co$ and $T_\Co$, exactly"}
+The discriminant form $q_L(x)=v^2\bmod 2\bZ$ of a $2$-elementary lattice takes four values, and at the models of [@DK13, §3, printed p. 511] and @prop:coble-transcendental the numbers of the $2048$ classes at each are
+
+| lattice | $q=0$ | $q=\tfrac12$ | $q=1$ | $q=\tfrac32$ |
+|:--|--:|--:|--:|--:|
+| $S_\Co=\langle2\rangle\oplus\langle-2\rangle^{\oplus10}$ | $528$ | $496$ | $496$ | $528$ |
+| $T_\Co=\langle2\rangle\oplus U(2)\oplus E_8(2)$ | $528$ | $528$ | $496$ | $496$ |
+
+computed exactly in `computations/reports/coble_671-discriminant-levels.py`, transcript `-run.txt`, where the second row is checked against the negation of the first, $q_{T_\Co}=-q_{S_\Co}$ [@DK13, printed p. 513].
+The level-$0$ entry of $T_\Co$ is $528=527+1$: the $527$ nonzero singular classes of @thm:coble-zero-cusp-count(2), with the zero class.
+
+Two readings follow.
+First, a class containing a vector of square $n$ satisfies $q_L(z)\equiv n\pmod{2\bZ}$, because $q_L$ is $v^2$ on a lift: classes containing vectors of square $-2$ and of square $-4$ both sit at level $0$, and a class at level $1$ contains lifts of odd square only.
+Second, the level set $\set{q_{T_\Co}=1}$ therefore has $496$ classes, and the $121$ of @prob:B24, part 2 is a count on the invariant side singled out by that record's own condition; in the normalization above the record's two clauses for it, that its classes carry a $(-4)$-vector and that they sit at $q_S=-1$, cannot both hold, since an even square is level $0$. So the $121$ is quoted as a number in the record's convention, at the tier the record declares, and not as the level set.
+:::
 
 The rest of the problem is not available here, and the items it waits on are the ones @tbl-status-ledger already names: the polarized Coble Coxeter diagrams of @sec-coxeter, marked not established, and the direct dlt and stable-model theorem of @sec-coble-dlt, marked open.
 Those two are what an explicit determination of the cusps, Coxeter diagrams, Type II and Type III strata and fan-versus-semifan loci requires, and what the semitoroidal identification of the normalized KSBA closure requires; at the one $0$-cusp of $F^{\mathrm{un}}_\Co$ the marking is missing in addition (@warn:coble-marking).
@@ -2675,8 +2692,9 @@ The table lists each statement, whether it is proved, and the section that prove
 | Explicit equivariant smoothing | established for the projective family | @sec-equivariant-smoothing |
 | Coverage of the complete Coble locus | required theorem | @sec-projective-coverage |
 | The direct period image misses every $(-2)$-Heegner divisor of $T_\Co$ | proved | @thm:direct-period-misses-root-walls |
-| Target theorem A, first clause | published in the unpolarized form [@DK13, Prop. 3.2, printed p. 513]; the root exclusion is @thm:direct-period-misses-root-walls; the polarized refinement is @prob:B25, up to its two-element ambiguity | @sec-autonomous-target |
+| Target theorem A, first clause | published in the unpolarized form [@DK13, Prop. 3.2, printed p. 513]; the root exclusion is @thm:direct-period-misses-root-walls; the exact complement is open beyond the root arrangement, its level set computed at @rmk:coble-discriminant-levels; the polarized refinement is @qst:b25-sign-holonomy | @sec-autonomous-target |
 | Target theorem A, clauses two and three | not established; they wait on @sec-coxeter and @sec-coble-dlt | @sec-autonomous-target |
+| The level sets of the discriminant forms of $S_\Co$ and $T_\Co$ | computed exactly: $528$, $496$, $496$, $528$ and $528$, $528$, $496$, $496$ over the $2048$ classes | @rmk:coble-discriminant-levels |
 | $T_{\Co}\cong\langle2\rangle\oplus U(2)\oplus E_8(2)$ | established | @sec-orthogonal-complement |
 | $S_{\Co}$ and reflection twist | established as lattice calculations | @sec-reflection-twist |
 | Labeled embedding uniqueness | required theorem | @sec-labeled-lattice-data |

@@ -1,0 +1,20 @@
+S_Co = <2> + <-2>^10  (Dolgachev--Kondo, printed p. 511)
+  rank 11, |det G| = 2048, |A_L| = 2048
+    q = 0: 528 classes
+    q = 1/2: 496 classes
+    q = 1: 496 classes
+    q = 3/2: 528 classes
+T_Co = <2> + U(2) + E8(2)  (prop:coble-transcendental)
+  rank 11, |det G| = 2048, |A_L| = 2048
+    q = 0: 528 classes
+    q = 1/2: 528 classes
+    q = 1: 496 classes
+    q = 3/2: 496 classes
+negation of the S-row (must equal the T-row, q_T = -q_S, DK13 printed p. 513):
+    q = 0: 528 classes
+    q = 1/2: 528 classes
+    q = 1: 496 classes
+    q = 3/2: 496 classes
+rows agree: True
+level 0 count of T_Co is 528 = 527 + 1, the 527 nonzero singular classes of
+thm:coble-zero-cusp-count(2) and the zero class
