@@ -323,9 +323,29 @@ and by the symmetry exchanging the two ends of the diagram the same holds for $\
 The proportionality is [@ABE22, Intro.]: "each curve $C_i$ specializes to a sum of the section $s$ and $d+1$ singular fibers", so $R\equiv n_d\bigl(s+\frac{d+1}{24}\sum_i f_i\bigr)$, "which is proportional to $s+m\sum_{i=1}^{24}f_i$".
 :::
 
+::: {.proposition #prop:recognizability-restricts title="Recognizability passes to a sub-moduli locus"}
+
+Let $F_{S'}\subseteq F_S$ be a locus of $S'$-polarized K3 surfaces inside the moduli of $S$-polarized ones, and let $R$ be a recognizable divisor for $F_S$. Then the restriction of $R$ to $F_{S'}$ is a recognizable divisor for $F_{S'}$.
+:::
+
+::: {.proof}
+
+A quasipolarized Kulikov degeneration whose generic fibre lies in $F_{S'}$ is a quasipolarized Kulikov degeneration whose generic fibre lies in $F_S$, and the divisor and the surfaces are the same objects in the two readings. So the flat limit that @def:recognizable-divisor supplies for $F_S$ is the one for $F_{S'}$, and its uniqueness up to $\Aut^0(\tilde{\mcx}_0)$ is the same statement. Nothing in the definition refers to the polarization lattice beyond fixing the surfaces.
+:::
+
+::: {.theorem #thm:recognizable-fails-W title="A recognizable divisor whose semifan does not coarsen the Coxeter semifan"}
+
+Let $F\subseteq F_2$ be the elliptic Heegner locus, the moduli of elliptic K3 surfaces with a section polarized by $L=s+2f$ of degree $2$, and let $R_{\rcop}$ be the rational-curve divisor of @ex:recognizable-divisors on $F_2$, recognizable by [@AE23]. Then $R_{\rcop}|_F$ is a recognizable divisor for $F$ (@prop:recognizability-restricts), and its semifan is the fan $\mcf_{\mathrm{rc}}$ of @prop:semifan-coarsening-fails, which does not coarsen the Coxeter semifan. Hypothesis (W) of @thm:semifan-recognizable-divisor therefore fails for a recognizable divisor, and the closed form of that theorem is not a statement about recognizable divisors as such.
+:::
+
+::: {.proof}
+
+On a surface of $F$ the curves of $|L|$ are the curves $s+2f$, and [@ABE22, Intro.] records that "each curve $C_i$ specializes to a sum of the section $s$ and $d+1$ singular fibers", with $d=1$ here, so that the rational-curve divisor of $F_2$ restricts on $F$ to the sum of those curves, of class $n_1\bigl(s+\frac{1}{12}\sum_{i=1}^{24}f_i\bigr)$; [@ABE22, Intro.] states that this is "proportional to $s+m\sum_{i=1}^{24}f_i$" and names its stable-pair compactification, for the divisor $s+m\sum_{i=1}^{24}f_i$, after the rational curves. That compactification is the toroidal one for $\mcf_{\mathrm{rc}}$ by [@ABE22, Intro., Thm. 1.2], and the failure of the coarsening is @prop:semifan-coarsening-fails, certified by the computation of @rmk:rcop-split-computation: over the chamber of that cusp the wall normals have squares in $\{-4,-6\}$ and $-12$, none of them $-2$, so none is a root.
+:::
+
 ::: {.remark #rmk:rcop-split-computation}
 
-Both questions of @qst:recognizable-semifan have been put to the library: the script `computations/reports/coble_679-rcop-split.py` and its transcript `computations/reports/coble_679-rcop-split-run.txt`, running on `sage-extensions`.
+The question of @qst:recognizable-semifan has been put to the library: the script `computations/reports/coble_679-rcop-split.py` and its transcript `computations/reports/coble_679-rcop-split-run.txt`, running on `sage-extensions`.
 
 At the $0$-cusp of $F_2$, whose boundary lattice $U\oplus E_8(-1)^{\oplus2}\oplus A_1(-1)$ the script builds, it runs Vinberg's algorithm for the fundamental chamber and its walls. The walk does not finish within $900$ seconds there, nor within $1800$ (`computations/reports/coble_679-rcop-split-run-1800.txt` is the same script under that bound), so no wall set and no cone inventory is recorded at that cusp: the split is not computed. What the split needs is the stable limit of $(X,\eps R_{\rcop})$ over a cone, and that is not an operation of the library — no module of `src/sage_extensions` names a stable pair, a Kulikov model or a semifan, and the transcript carries the two expressions that raise `AttributeError`.
 
@@ -360,13 +380,9 @@ The fan criterion of @thm:semifan-recognizable-divisor(4) is the joint one of [@
 Let $F$ parameterize elliptic K3 surfaces with section $s$ and singular fibers $f_1,\ldots,f_{24}$, counted with multiplicity. For the polarizing divisor $R=s+m\sum_i f_i$ with $m\ge1$, the normalization of the stable-pair compactification is toroidal. Its fan subdivides each Coxeter chamber into nine chambers, so it refines the Coxeter fan [@ABE22, Intro., Thm. 1.2]. For the image of the trisection of nonzero $2$-torsion points after contracting the section, the normalization is toroidal for a fan whose chamber is the union of four Coxeter chambers [@ABE22, Intro., Thm. 1.1 and §3]. Thus these two geometric divisors give opposite directions of comparison with the same Coxeter fan.
 :::
 
-::: {.question #qst:recognizable-semifan title="The cones for the rational-curve divisor, and whether (W) can fail for a recognizable divisor"}
+::: {.question #qst:recognizable-semifan title="The cones for the rational-curve divisor on $F_{2d}$"}
 
-Two questions, and together they are what @thm:semifan-stratum and @thm:semifan-recognizable-divisor leave open.
+One question remains, and it is the explicit computation rather than the form of the answer: for $R_{\rcop}$ on $F_{2d}$, which split $I\sqcup J$ does $\mcf_{R_{\rcop}}$ induce at each $0$-cusp, if it coarsens the Coxeter semifan there at all — equivalently, across which mirrors of the Coxeter diagram does the combinatorial type of the KSBA-stable limits of the pairs $(X,\eps R_{\rcop})$ stay constant, equivalently whether the universal family extends over the Coxeter toroidal compactification (@prop:semifan-coarsening-extension)?
 
-1. Is there a **recognizable** polarizing divisor whose semifan does not coarsen the Coxeter semifan? By @prop:semifan-coarsening-extension this is the question whether, for a recognizable $R$, the universal family of stable pairs fails to extend over the Coxeter toroidal compactification while some semitoroidal compactification normalizes the KSBA compactification. @prop:semifan-coarsening-fails exhibits a polarizing divisor whose family stops at the finer fan $\mcf_{\mathrm{rc}}$, the elliptic divisor $s+m\sum_i f_i$, proportional to the rational-curve divisor on that locus; but [@ABE22] does not assert that this divisor is recognizable, and no other source read does.
-
-2. For $R_{\rcop}$ on $F_{2d}$, which is recognizable for all $d$ [@AE23], which split $I\sqcup J$ does $\mcf_{R_{\rcop}}$ induce at each $0$-cusp, if (W) holds there at all --- equivalently, across which mirrors of the Coxeter diagram does the combinatorial type of the KSBA-stable limits of the pairs $(X,\eps R_{\rcop})$ stay constant, equivalently whether the universal family extends over the Coxeter toroidal compactification.
-
-No cone of $\mcf_{R_{\rcop}}$ is recorded in any source read: [@AET23] computes the stable limits of the pairs $(X,\eps R)$ for the ramification divisor $R\in|3L|$, and [@AE22] those of $(X,\eps C_g)$, in both cases a ramification divisor and not $R_{\rcop}$. Question 2 is therefore the computation of $\bS_{R_{\rcop}}$ and nothing further, and the only computation of a semifan for a rational-curve divisor in the sources read is the elliptic locus of @prop:semifan-coarsening-fails. Question 1 needs an input of a different kind: a recognizability proof for one of the polarizing divisors whose semifan is computed and does not coarsen the Coxeter fan.
+That (W) can fail for a recognizable divisor is settled, by @thm:recognizable-fails-W on the elliptic locus of $F_2$; what is not recorded is where it holds on $F_{2d}$ itself, and no cone of $\mcf_{R_{\rcop}}$ there appears in any source read: [@AET23] computes the stable limits of the pairs $(X,\eps R)$ for the ramification divisor $R\in|3L|$, and [@AE22] those of $(X,\eps C_g)$. The computation would decide the split cone by cone, and it needs the stable limit of the pair over a cone, which is not an operation of the library (@rmk:rcop-split-computation).
 :::
