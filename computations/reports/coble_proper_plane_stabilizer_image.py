@@ -7,9 +7,10 @@ integral plane parabolic.  Check [F:S]=8 and [Q:S]=189720 directly.
 import json
 import argparse
 import hashlib
+from math import gcd
 from pathlib import Path
 
-from sage.all import ZZ, PermutationGroup, matrix, vector
+from sage.all import QQ, ZZ, PermutationGroup, matrix, vector
 from sage.combinat.permutation import Permutation
 
 
@@ -30,6 +31,33 @@ def main():
     assert len(public["lines"]) == 4 and len(public["planes"]) == 7
     assert len(public["edges"]) == 13
     change = matrix(ZZ, lines["standard_to_diagonal"])
+    gram = matrix(ZZ, lines["standard_gram"])
+    lattice_gram = 2 * gram
+    public_lines = {row["index"]: vector(ZZ, row["vector"])
+                    for row in public["lines"]}
+    public_planes = {row["index"]: tuple(vector(ZZ, v) for v in row["basis"])
+                     for row in public["planes"]}
+    for v in public_lines.values():
+        assert gcd(*map(int, v)) == 1 and v * lattice_gram * v == 0
+    for p, q in public_planes.values():
+        assert p * lattice_gram * p == p * lattice_gram * q == q * lattice_gram * q == 0
+        minors_gcd = 0
+        for i in range(11):
+            for j in range(i + 1, 11):
+                minors_gcd = gcd(minors_gcd, int(p[i] * q[j] - p[j] * q[i]))
+        assert minors_gcd == 1
+    for edge in public["edges"]:
+        p, q = [vector(ZZ, v) for v in edge["plane_witness"]]
+        v = vector(ZZ, edge["line_witness"])
+        assert gcd(*map(int, v)) == 1 and v * lattice_gram * v == 0
+        assert p * lattice_gram * p == p * lattice_gram * q == q * lattice_gram * q == 0
+        minors_gcd = 0
+        for i in range(11):
+            for j in range(i + 1, 11):
+                minors_gcd = gcd(minors_gcd, int(p[i] * q[j] - p[j] * q[i]))
+        assert minors_gcd == 1
+        coefficients = matrix(ZZ, [p, q]).transpose().change_ring(QQ).solve_right(v)
+        assert all(c in ZZ for c in coefficients)
     singular = sorted(row["mask_diagonal"] for row in lines["representatives"])
     assert len(singular) == 527
     positions = {x: i + 1 for i, x in enumerate(singular)}

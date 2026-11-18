@@ -144,7 +144,7 @@ def test_proper_integral_plane_stabilizer_image(tmp_path):
             "[9, 12, 4, 5], [9, 12, 4], [9, 7], [9, 12], [0]]") in result.stdout
     artifact = folder / "coble_proper_plane_stabilizer_image.json"
     assert hashlib.sha256(artifact.read_bytes()).hexdigest() == (
-        "1a369a3dc6902b3725852fc64e891a8b0a66bb3266d618dcde8c7e70f9bf397c")
+        "1bfb228a5a4a0156258b358bea7a330732c2062c3c31c27c589d376ac2e28d74")
     data = json.loads(artifact.read_text())
     assert data["schema"] == "coble-proper-plane-stabilizer-finite-cosets-v1"
     assert len(data["singular_masks_diagonal"]) == 527
@@ -174,6 +174,10 @@ def test_proper_integral_plane_stabilizer_image(tmp_path):
     assert sorted(x["index"] for x in public["planes"]) == list(range(7))
     assert sorted(x["index"] for x in public["edges"]) == list(range(13))
     assert all(0 <= e["line_index"] < 4 and 0 <= e["plane_index"] < 7
+               for e in public["edges"])
+    assert all(len(e["line_witness"]) == 11 and
+               len(e["plane_witness"]) == 2 and
+               all(len(v) == 11 for v in e["plane_witness"])
                for e in public["edges"])
     assert {(e["line_index"], e["plane_index"]) for e in public["edges"]} == {
         (0, 0), (3, 0), (2, 0), (3, 1), (1, 1), (3, 2), (2, 2),
