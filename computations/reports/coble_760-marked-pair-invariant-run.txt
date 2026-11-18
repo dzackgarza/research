@@ -1,0 +1,17 @@
+the marked pair's invariant, and why the triple's complement is not it
+delta^2 = -2, eta^2 = 0 (isotropic), (delta,eta) = 0
+
+label 12: complement of <delta, eta_5, r> has rank 9, determinant 0
+label 13: complement of <delta, eta_5, r> has rank 9, determinant 0
+label 14: complement of <delta, eta_5, r> has rank 9, determinant 0
+
+labels 12,13: is_isometric_to on the degenerate complement -> True
+labels 12,14: is_isometric_to on the degenerate complement -> True
+labels 13,14: is_isometric_to on the degenerate complement -> True
+
+a determinant of 0 says the subspace is degenerate, because eta_5 is isotropic: the
+decision above compares degenerate forms and carries no information.  The invariant that
+does carry information is the complement in K_5 of the root alone, or the pair (K_5, r)
+itself, and the pair's Gamma_Co,2-refinement is the reduction the library lacks.
+elapsed 0 s
+PYEXIT=0

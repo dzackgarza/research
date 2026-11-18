@@ -263,6 +263,24 @@ def test_item_7_the_last_invariant_agrees() -> None:
     assert text.rstrip().endswith("PYEXIT=0")
 
 
+def test_item_7_the_degenerate_route_is_named_as_such() -> None:
+    """Item 7: the obvious invariant --- the complement of the triple --- is degenerate, and this
+    keeps the record from being read as a decision.
+
+    eta_5 is isotropic, so <delta, eta_5, r> is degenerate, its complement has determinant 0, and
+    an isometry decision on a degenerate form returns True for every pair.  The record says so
+    rather than reporting three satisfied comparisons as evidence.
+    """
+    record = ROOT / "computations/reports/coble_760-marked-pair-invariant.py"
+    run = ROOT / "computations/reports/coble_760-marked-pair-invariant-run.txt"
+    assert record.exists() and run.exists(), (record, run)
+    text = run.read_text(encoding="utf-8")
+    assert text.count("determinant 0") == 3, text.count("determinant 0")
+    assert "carries no information" in text
+    assert "the reduction the library lacks" in text
+    assert text.rstrip().endswith("PYEXIT=0")
+
+
 def test_item_8_cusp_four_is_not_a_pair() -> None:
     """Item 8: the transcript prints one admissible root at cusp 4."""
     text = FACE_RUN.read_text(encoding="utf-8")
