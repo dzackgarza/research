@@ -1830,6 +1830,21 @@ The number 55 is the **sharp lower bound** on the number of ordinary generators 
 The source-hashed generator script selects independent leading matrices $(g-I)/2\pmod2$ from the 95 exact Schreier matrices; exact binary elimination selects precisely indices $0,\ldots,54$ and gives rank 55. The regression `test_coble_fifty_five_positive_elements_span_kernel_modulo_sixteen` constructs their ordinary subgroup using exact matrix products, squares and commutators modulo sixteen (without taking ambient normal closures). Its successive subgroup-collection ranks are $(55,54,55)$. The corresponding full positive-kernel ranks are 55 at level two (the real-spinor character removes one of the 56 full-kernel directions), 54 at level four by @prop:coble-eichler-level-eight-derived-image, and 55 at level eight by @thm:coble-eichler-exact-deep-congruence-ranks. Equality of all three ranks proves the stated finite congruence generation. The quotient of rank 55 proves the generator lower bound.
 :::
 
+::: {.theorem #thm:coble-positive-fifty-five-finite-index title="The 55-element positive kernel family has finite index"}
+
+Let $S_{55}$ be the first 55 exact matrices in the positive Schreier certificate, as in @prop:coble-positive-fifty-five-congruence-basis. Then their **ordinary subgroup**
+$$
+K_{55}=\generators{S_{55}}\le\widetilde O^+(T_\Co)
+$$
+has **finite index** in the infinite positive kernel, and has full image in the positive kernel modulo $2^k$ for every $k\ge1$. In particular, the smallest possible number of ordinary generators already suffices to generate a finite-index, $2$-adically dense subgroup. Equality with the entire positive kernel is not asserted here.
+:::
+
+::: {.proof}
+By @prop:coble-positive-fifty-five-congruence-basis, the 55 ordinary generators fill the successive graded congruence layers of ranks $(55,54,55)$ through modulus sixteen. The 55 independent level-eight lifts obtained by subgroup collection remain independent at every higher $2$-power level under repeated squaring, by the formula of @thm:coble-eichler-exact-deep-congruence-ranks. This proves full $2$-adic congruence images. Consequently $K_{55}$ is Zariski dense in the connected rational orthogonal group, since its $2$-adic closure contains an open subgroup.
+
+The source-hashed Schreier construction `coble_kernel_positive_schreier_generators.py` orders the first 55 matrices as the positive members of the original 56-element family. Its unique omitted original generator is index 3, the determinant-negative Levi matrix $\operatorname{diag}(-1,1)$ on the fixed integral isotropic plane. All the other 25 generators of the integral level-two plane stabilizer are retained. In particular, the **14 Eichler transvections and central unipotent generator** at original indices 11 through 25 are all in $K_{55}$; these generate a finite-index subgroup of the integral unipotent radical of the maximal rational parabolic stabilizing the plane, by @prop:coble-level-two-plane-parabolic. The Raghunathan--Venkataramana arithmeticity criterion quoted and applied through the simply connected spin cover in @thm:coble-fifty-six-ordinary-generators-finite-index therefore applies equally to $K_{55}$ and proves it has finite index in the positive arithmetic group.
+:::
+
 ::: {.proposition #prop:coble-level-two-plane-parabolic title="Generators of the level-two kernel in the integral plane stabilizer"}
 
 In the notation of @thm:coble-plane-stabilizer-image, let $K_P=\Stab_{\Orth(B)}(P)\cap\ker\rho$. The following $26$ integral isometries generate $K_P$:
