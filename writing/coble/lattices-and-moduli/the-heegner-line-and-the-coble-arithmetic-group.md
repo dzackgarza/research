@@ -1545,6 +1545,19 @@ $$
 Since $g_i^2\in N_2$, the reduction of $N_2$ contains every $\rho_m(g_i)$, which generate $\rho_m(E)$. The reverse inclusion follows from $N_2\subseteq E$. The exact regression `test_coble_eichler_squares_generate_every_odd_modulus_image` independently checks the displayed matrix identities for all 18 generators at moduli $3,5,7,9,15$; the transvection identity proves them uniformly.
 :::
 
+::: {.theorem #thm:coble-eichler-normal-closure-finite-index title="The explicit Eichler-square normal closure has finite index"}
+
+Let $E=\widetilde{\mathrm{SO}}^+(U^{\oplus2}\perp D_7(-1))$ and let $N_2\lhd E$ be the normal closure of the squares of the 18 explicit Eichler generators of @thm:coble-ambient-21-generators. Then **$N_2$ has finite index in $E$**, hence also in $E(2)$. More precisely,
+$$
+1024\ \le\ [E(2):N_2]\ <\ \infty.
+$$
+The normal closure $N_{19}$ of the 19 relations obtained by adjoining $g_8g_9=t(e,2d_6)$ likewise has finite index in $E(2)$. This is a theorem about the *infinite* integral arithmetic group, not a finite congruence calculation. It does **not** establish $N_{19}=E(2)$.
+:::
+
+::: {.proof}
+The integral group $E$ has index eight in $\Orth(I_{2,9})$ by @thm:coble-ambient-21-generators and lies in the identity component $\mathrm{SO}_0(2,9)$. By the Borel--Harish-Chandra lattice theorem, it is an arithmetic lattice in that connected simple real Lie group. The group $\mathrm{SO}_0(2,9)$ has real rank two and finite center, so $E$ is an irreducible higher-rank lattice. The first Eichler generator $g_1=t(e,e')$ has infinite order: $g_1^n=t(e,ne')$ and its action on $f$ distinguishes all integers $n$. Therefore $N_2$ contains the infinite cyclic subgroup $\generators{g_1^2}$ and is an infinite normal subgroup of $E$. The [Margulis normal subgroup theorem (Witte Morris, *Introduction to Arithmetic Groups*, Theorem 13.1)](https://www.mathi.uni-heidelberg.de/~wienhard/retreat10/references/morris_book.pdf) implies that $E/N_2$ is finite. Since $N_2\subseteq E(2)$, its index in $E(2)$ is finite. The exact level-four ranks 44 and 54 of @prop:coble-eichler-squares-obstruction give $[E(2):N_2]\ge2^{54-44}=1024$. Finally $N_2\subseteq N_{19}\subseteq E(2)$, so $N_{19}$ also has finite index.
+:::
+
 ::: {.proposition #prop:coble-level-two-plane-parabolic title="Generators of the level-two kernel in the integral plane stabilizer"}
 
 In the notation of @thm:coble-plane-stabilizer-image, let $K_P=\Stab_{\Orth(B)}(P)\cap\ker\rho$. The following $26$ integral isometries generate $K_P$:
