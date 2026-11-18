@@ -194,6 +194,22 @@ def test_coble_level_two_eichler_squares_fail_normal_generation():
         for generator, inv in zip(finite, inverse, strict=True):
             admit(generator * element * inv)
     assert len(pivots) == 44
+    # The final two simple D7 roots differ by 2*d7, so their Eichler
+    # transvections have the same reduction modulo two.  Their product
+    # is an additional exact level-two relation, not a generator square.
+    relation = generators[7] * generators[8]
+    assert matrix(GF(2), relation) == identity_matrix(GF(2), 11)
+    admit(matrix(GF(2), 11, 11, [
+        int((relation[i, j] - identity[i, j]) // 2) % 2
+        for i in range(11) for j in range(11)
+    ]))
+    position = 0
+    while position < len(queue):
+        element = queue[position]
+        position += 1
+        for generator, inv in zip(finite, inverse, strict=True):
+            admit(generator * element * inv)
+    assert len(pivots) == 54
     # The independently certified full Gamma(2)/Gamma(4) has rank 56,
     # while Gamma(2)/E(2) has order 4.  The E(2) image modulo four has
     # dimension at least 54, so rank 44 disproves normal generation.
