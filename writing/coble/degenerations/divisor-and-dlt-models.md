@@ -83,11 +83,22 @@ Write $\widetilde{\fentwo}$ for the semitoroidal compactification of $\fentwo$ f
 
 1. The half that holds is constancy at fixed monodromy: $(\Gamma(\mcx_0),R_{\IA})$ can be chosen to be the same for all degenerations with a fixed Picard--Lefschetz transform [@AEGS25, §4.1, printed p. 599, after @AE23, Theorem 8.11(5)].
 2. What the data determine is the *combinatorial type* of the limit, and with it the stratum. The cones of a semifan are, by construction, the collections of Picard--Lefschetz transformations for which $(\Gamma(\mcx_0),R_{\IA})$ determines a KSBA-stable pair of a fixed combinatorial type [@AEGS25, §4.1, printed p. 599, after @AE23, Corollary 8.13 and Theorem 9.3], and a stratum of $\widetilde{\fentwo}$ is a cone. So the data name the stratum in which the limit lies, and not the point of it.
-3. The other half fails. At a Type II degeneration $\Gamma(\mcx_0)$ is a segment [@AEGS25, §4.1, printed p. 598], so every Type II degeneration at one $1$-cusp carries one $(\Gamma(\mcx_0),R_{\IA})$ by (1); a $1$-cusp is a modular curve [@AEGS25, Definition 2.9, printed p. 588], on which $j$ is not constant. The limit carries that $j$ as an invariant of the pair: its double curve is elliptic with that $j$, or is a $\PP^1$ whose four distinguished $A_1$ points give the double cover with that $j$ [@AEGS25, proof of Theorem 5.9, printed p. 612]. Two Type II degenerations at one $1$-cusp whose $j$ differ therefore have the same $(\Gamma(\mcx_0),R_{\IA})$ and non-isomorphic KSBA stable limits.
-4. The freedom is Hodge-theoretic and not combinatorial: the limit is read off the dlt model, that is, off Hodge-theoretic data [@AEGS25, §1, printed p. 583], and the data of (2) do not supply the $j$ of (3).
-5. Consequently computing $B(\lambda)$ computes the stratum of the limit and a candidate of the right combinatorial type, and not the limit. The hinge of the divisor-model method is (1) with (2), which is a published theorem, and the forward direction in the form (3) refutes is false.
+3. That is the whole of what the sources determine, and it is what the method uses but not what the ledger's question asks: (1) makes the data a function of the Picard--Lefschetz transform and (2) makes their output the *combinatorial type* of the limit, so $B(\lambda)$ computes a candidate whose combinatorial type is the limit's; whether that candidate is the limit is not decided by (1) and (2) and is not asserted here.
+4. The point-level reading is open, and the proof of it on this page is withdrawn. It rested on the step "a degeneration at a $1$-cusp has the Picard--Lefschetz transform of the cusp", which is false: the transform is $T = \exp N$ with
+$$
+N(x) = (x\cdot\lambda)e - (x\cdot e)\lambda,
+$$
+$e$ primitive isotropic and $\lambda\in e^\perp/e$ the monodromy invariant, and when $\lambda^2 = 0$, $\lambda\neq0$ it is the *plane* $(\ZZ e\oplus\ZZ\lambda)_{\mathrm{sat}}$ that defines the $1$-cusp [@AE22, §6A, arXiv:2208.10383v2, p. 28]. One $1$-cusp therefore carries a cone of monodromy invariants, two limits at it need not share a transform, and the recovery of $j$ from the pair [@AEGS25, proof of Theorem 5.9, printed p. 612] separates limits at a *fixed* $\lambda$ only given an argument that $\lambda$ is fixed on the locus in question. No such argument is in this record, and the claim that the data do not determine the pair goes with it.
+5. The point-level reading is therefore open, and it is @qst:ia-data-pair-determinacy.
 
-So the conjecture is false as stated, and what replaces it is the pair (1) and (2): the data determine the stratum, and the point inside the stratum is the period.
+So the ledger's question is answered in the affirmative at the level of the combinatorial type, which is the level at which the sources prove it and at which the divisor-model method uses it; the point-level reading is neither a theorem nor a refuted conjecture, and it is @qst:ia-data-pair-determinacy.
+:::
+
+::: {.question #qst:ia-data-pair-determinacy title="Do the integral-affine data determine the limit itself, and not only its combinatorial type?"}
+
+A pair of divisor models with one Picard--Lefschetz transform, one $(\Gamma(\mcx_0),R_{\IA})$ and non-isomorphic KSBA stable limits would answer no, and so would a locus of $\widetilde{\fentwo}$ on which the transform is constant and which is of positive dimension, which no finite map carries to a point [@AEGS25, proof of Theorem 5.9, printed p. 612].
+The literature's own construction is where such a pair belongs: at a fixed transform the models of a combinatorial type are the deformations of the gluings and of the moduli of the components [@AEGS25, §4.1, printed p. 598], and the Type II period takes values in the elliptic curve of the double curve [@AE22, §6A, arXiv:2208.10383v2, p. 29], whose $j$ the pair recovers [@AEGS25, proof of Theorem 5.9, printed p. 612].
+What is missing is the pair itself, and with it the definition of the integral-affine polarization on a Type II segment, which is [@ABE22, Definition 5.17] as [@AEGS25, §4.1, printed p. 598] cites it; ABE22 is not in `tmp/sources`, and no computation here builds either model.
 :::
 
 ::: {.proof}
@@ -96,13 +107,11 @@ So the conjecture is false as stated, and what replaces it is the pair (1) and (
 
 (2) is the two sentences that follow it in the same paragraph, which name the cones as the loci of pairs of a fixed combinatorial type, after [@AE23, Corollary 8.13 and Theorem 9.3]. That a stratum of the compactification is a cone is the construction of the semifan and of the semitoroidal compactification [@AEGS25, §5.2, printed p. 610], and $\widetilde{\fentwo}$ is that compactification [@AEGS25, Theorem 5.9, printed p. 611].
 
-(3) has three steps, each printed. The first is that a Type II degeneration has $\Gamma(\mcx_0)$ a segment [@AEGS25, §4.1, printed p. 598]. The second is that $R_{\IA}$ does not change with the degeneration: the Picard--Lefschetz transform of a degeneration at a $1$-cusp is that of the cusp, so (1) applies and the data are one value on the cusp. The third is that $j$ is an invariant of the limit and moves with the cusp: a $1$-cusp is a modular curve [@AEGS25, Definition 2.9, printed p. 588], where the $j$-invariant of its points is not constant, and the $j$-invariant of a Type II boundary point is recovered from the slc stable pair, through the elliptic double curve or through the double cover of $\PP^1$ branched at the four distinguished $A_1$ points [@AEGS25, proof of Theorem 5.9, printed p. 612]. The double curve is a closed subscheme of the pair, so two limits with different $j$ are non-isomorphic, which with the first two steps is (3).
+(3) is (1) with (2): the data are a function of the transform, and (2) gives their output a combinatorial type; nothing read here identifies the point of the stratum with them.
 
-(4) is [@AEGS25, §1, printed p. 583]: the stable limit of a degeneration in $\fentwo$ is extracted from its dlt model, and that extraction is described there as one from Hodge-theoretic data. The $j$ of (3) is the part of that passage that the dual complex does not see.
+(4) is the printed form of the transform. [@AE22, §6A, arXiv:2208.10383v2, p. 28] reads $T = \exp N$ with $N(x) = (x\cdot\lambda)e - (x\cdot e)\lambda$, $e$ primitive isotropic and $\lambda\in e^\perp/e$ the monodromy invariant, and separates the cases: $\lambda^2>0$ is Type III, where $\ZZ e$ defines the $0$-cusp, and $\lambda^2 = 0$, $\lambda\neq0$ is Type II, where $(\ZZ e\oplus\ZZ\lambda)_{\mathrm{sat}}$ defines the $1$-cusp. The monodromy invariant is thus not a function of the $1$-cusp, which is what the withdrawn step assumed.
 
-(5) collects (1)--(4): the monodromy $\lambda$ and the polarization are what $B(\lambda)$ is computed from, (2) makes their output a stratum together with a combinatorial type, and (3) is the failure of the further step to the point.
-
-The K3 form of the conjecture fails by the same three citations, the two analogous facts being printed for $\overline{\mathcal F}_{(2,2,0)}$: its normalization is semitoroidal [@AEGS25, §5.2, printed p. 610, from @AE22], and it has eight $1$-cusps and two $0$-cusps [@AEGS25, §3.1, printed p. 589], each $1$-cusp a modular curve [@AEGS25, Definition 2.9, printed p. 588]; the segment and the constancy are [@AEGS25, §4.1, printed pp. 598--599] as above, and the double curve of the limit is again part of the pair.
+The K3 setting of the conjecture needs nothing further for (1) and (2): the same two facts are printed for $\overline{\mathcal F}_{(2,2,0)}$, whose normalization is semitoroidal [@AEGS25, §5.2, printed p. 610, from @AE22] and which has two $0$-cusps and eight $1$-cusps [@AEGS25, §3.1, printed p. 589].
 :::
 
 ## Half-divisor models

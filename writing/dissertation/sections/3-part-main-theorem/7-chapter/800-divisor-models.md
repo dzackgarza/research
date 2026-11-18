@@ -36,11 +36,12 @@ A **divisor model** for a degeneration $\pi: \mcx \to C$ of K3 (or Enriques) sur
 Given a divisor model, the isomorphism class of $\OO_{\mcx_0}(\mcr_0)$ is encoded by its corresponding integral-affine divisor $R_{\IA}$ on $\Gamma(\mcx_0)$.
 The dual complex, together with $R_{\IA}$, captures all line bundle glueing data and allows for explicit calculation of limit objects.
 
-::: {.conjecture title="{Classification via Integral-Affine Data}" #conj:classification-ia-data}
-Given a fixed Picard–Lefschetz monodromy invariant $\lambda$, the combinatorial type $(\Gamma(\mcx_0), R_{\IA})$—that is, the dual complex with its weighted, balanced subgraph—determines the KSBA stable limit $(\overline{\mcx}_0, \epsilon \overline{\mcr}_0)$.
-Furthermore, this combinatorial type is locally constant in families with fixed Picard–Lefschetz form.
+::: {.theorem title="{Classification via Integral-Affine Data}" #thm:ia-data-determination}
+Given a fixed Picard–Lefschetz monodromy invariant $\lambda$, the combinatorial type $(\Gamma(\mcx_0), R_{\IA})$—that is, the dual complex with its weighted, balanced subgraph—determines the *combinatorial type* of the KSBA stable limit of $(\mcx_t, \epsilon \mcr_t)$, and it is locally constant in families with fixed Picard–Lefschetz form.
 
-What is established is the converse direction, from the divisor model to the data (@thm:explicit-construction), and the constancy of the data in families [@AE22; @AEGS25]. That the data determine the limit does not follow from properness of the KSBA functor or from the invariance of dual complexes under PL homeomorphism, and is not available in the literature as far as this thesis can determine.
+Both halves are theorems of the literature: the constancy is [@AEGS25, §4.1, printed p. 599, after @AE23, Theorem 8.11(5)], and the determination of the combinatorial type, together with the semifan cones as the loci on which it holds, is the same paragraph of the same page, after [@AE23, Corollary 8.13 and Theorem 9.3]. The record, and what is not settled, are @thm:ia-data-verdict and @qst:ia-data-pair-determinacy.
+
+The stronger reading, in which the data determine the limit as a pair, is not asserted: it is @qst:ia-data-pair-determinacy, and an earlier version of this section asserted it unproved. The converse direction, from the divisor model to the data, is @thm:explicit-construction.
 :::
 
 ::: {.proposition title="{Semitoroidal Compactification via Recognizable Divisors}" #prop:semitoroidal-recognizable}
