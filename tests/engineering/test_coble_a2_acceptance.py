@@ -298,6 +298,23 @@ def test_a5_the_two_number_sets_are_the_parameter_and_the_measure():
     assert orbits(s3) == 1  # H_0 = H = S_3: equality, one flag orbit and one edge
 
 
+def test_a5_the_seven_and_thirteen_are_reproduced_from_the_module():
+    """The two orbit counts recomputed here, not only transcribed from a record.
+
+    ``coble_a2-plane-flag-orbit-reproduction.py`` builds ``A_{S_En} = C/2C`` for
+    ``C = U + E8(-1)``, the nine G_Co transvections, the eight stars of every
+    isotropic plane and the flags, and counts the orbits with no Sage and no
+    provider call.  Its transcript must carry the same seven and thirteen.
+    """
+    run = (ROOT / "computations/reports/coble_a2-plane-flag-orbit-reproduction-run.txt").read_text()
+    assert "nonzero isotropic classes of A: 527" in run
+    assert "isotropic 2-planes: 23715" in run
+    assert "stars of each J: 8" in run
+    assert "G_Co-orbits of decorated planes: 7" in run
+    assert "G_Co-orbits of flags: 13" in run
+    assert "151200" in run and "2160" in run
+
+
 # ---------------------------------------------------------------------------
 # A6: the proved stable flag theorem, and the kernel computation kept apart.
 # ---------------------------------------------------------------------------
