@@ -782,6 +782,30 @@ def test_coble_ambient_generators_are_public_integral_isometry_morphisms():
         assert morphism.codomain() is lattice
 
 
+def test_coble_large_character_maps_directly_to_faithful_permutations():
+    """The nontrivial Coble root character has a faithful permutation image."""
+    from sage.libs.gap.libgap import libgap
+    from sage_extensions.all import NamedLattices, ZZ as OwnedZZ
+
+    lattice = NamedLattices.Tco
+    group = lattice.O()
+    labels = tuple(lattice.module_generating_set())
+    data = json.loads((Path(__file__).resolve().parents[2] /
+                       "computations/reports/coble_ambient_twenty_one_generators.json").read_text())
+    entries = next(row["matrix_standard"] for row in data["generators"]
+                   if row["name"] == "root_reflection_U2")
+    reflection = group({
+        label: lattice.linear_combination({
+            labels[j]: OwnedZZ(entries[j][i]) for j in range(11)
+        }) for i, label in enumerate(labels)
+    })
+    quotient = lattice.stable_orthogonal_group().finite_character_quotient()
+    permutation = quotient._permutation_of_key(quotient.image(reflection))
+    _factors, _models, target, _embeddings = quotient._character_permutation_factors()
+    assert permutation != libgap.One(target)
+    assert permutation * permutation == libgap.One(target)
+
+
 def test_coble_ambient_standard_generator_certificate():
     """The reusable standard-basis 21-matrix certificate is exact and sourced."""
     import hashlib
