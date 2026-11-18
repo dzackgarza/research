@@ -37,7 +37,7 @@ tags:
 | **A generating set of the group $\widetilde\Orth^+(T_\Co)$** | @qst:gamma-co-generators, @prob:coxeter-completeness |
 | **Which quotient of $D(T_\Co)$ is the Coble moduli space** | @qst:sextic-group-comparison |
 | **Projective coverage and the moduli equivalence** | @prob:projective-coverage, @prob:cover-singular-equivalence, @prob:period-diagram |
-| **The Enriques-to-Coble cusp correspondence** | @sec-enriques-coble-correspondence; the reduction @prop:cusp-map-separates-mod-two |
+| **Which divisibility-$2$ $0$-cusps lie over a Coble $0$-cusp** | @sec-enriques-coble-correspondence; the orbit map $\Phi$ is defined and equivariant (@thm:coble-strong-lifting), injective (@prop:cusp-map-injective) and not onto (@prop:cusp-map-not-onto), and a class is in its image exactly when it is orthogonal to a $(-2)$-vector of the $\Gamma_\En$-orbit of $k$; which divisibility-$2$ classes these are is open |
 | **The Coble cusps in the morphism chain** | @sec-cusp-correspondence-morphism-chain |
 | **The distinguished elliptic fibration of the K3 cover** | @qst:distinguished-elliptic-fibration |
 | **The home of the group action** | @qst:coble-mukai-naturality |

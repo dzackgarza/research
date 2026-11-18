@@ -1017,10 +1017,15 @@ What has since been settled is listed at the end, so that a reader can tell "res
   The equivariance obligation at the Coble-Enriques cusps, and its resolution.  The cusp
   correspondence first asserted a bijection of Gamma-orbits and was then downgraded to a statement
   about representatives, with the equivariance recorded as an open obligation: for every
-  phi in Gamma_Co, an isometry phi~ of T_En with phi~ eta = eta phi.  That obligation was already
-  discharged in the book, and the downgrade was a cross-chapter contradiction rather than a missing
-  theorem: the stabilizer step of thm:normalization proves both directions, and the cusp proof now
-  cites it instead of claiming the homomorphism absent.  The exact content, with the kernel checked
+  phi in Gamma_Co, an isometry phi~ of T_En with phi~ eta = eta phi.  The obligation is discharged for
+  the stable group by thm:coble-strong-lifting: the section Ext with res o Ext = id, its image
+  Ext(O~+(T_Co)) = Stab_{Gamma_En}(k), the kernel {1, s_k} of res, and the direct product for the line
+  stabilizer, resting on Nikulin's extension criterion (Prop. 1.5.1 and Cor. 1.5.2, printed p. 111) and
+  on the published descriptions of the two lattices, so the earlier route through the stabilizer step of
+  thm:normalization is superseded.  For Gamma_Co itself the obligation stays conditional: the section is
+  stated for O~+(T_Co) and neither inclusion between Gamma_Co and O~+(T_Co) is proved
+  (rmk:gamma-co-status), so it applies to the monodromy group under conj:gamma-co-stable.
+  The exact content, with the kernel checked
   because that is where it is easy to be wrong: K = T_Co^{perp T_En} = Z k with k = e~ - f~ and
   k^2 = -2; the gluing group is H = <(h/2, k/2)> in A_{T_Co} + A_K, of order 2 and isotropic because
   q(h/2) + q_K(k/2) = 1/2 - 1/2 = 0; every phi in Gamma_Co preserves H as phi + id_K, since phi-bar is
@@ -1043,14 +1048,15 @@ What has since been settled is listed at the end, so that a reader can tell "res
   Gamma_Co\Y/Stab was the reversed expression and is gone; nothing derives from it.
   Two results on the 0-cusp map, both by all-vector arguments rather than by sampling.  Surjectivity
   fails: every primitive isotropic v of T_Co has div_En(eta(v)) even, hence 2, so the divisibility-1
-  cusp with boundary lattice (10,10,0)_1 is missed (prop:cusp-map-not-onto).  And injectivity is
-  reduced: because a Gamma_En element acts trivially on A_T_En, the class
+  cusp with boundary lattice (10,10,0)_1 is missed (prop:cusp-map-not-onto).  And injectivity holds, in two
+  steps: because a Gamma_En element acts trivially on A_T_En, the class
   x-bar = x/2 in A_T_En of a divisibility-2 vector is Gamma_En-invariant, so eta(v) and eta(v') in one
-  Gamma_En-orbit force v = v' mod 2T_Co (prop:cusp-map-separates-mod-two); a fibre therefore draws its
-  representatives from a single class in T_Co/2T_Co, and the residue of the injectivity question is one
-  mod-2 class.  The same argument separates the two Coble 0-cusps the book knows: e' and f', the
-  isotropic generators of the U(2) summand, are in different Gamma_Co-orbits (@lem:stable-orthogonal-
-  not-transitive) and incongruent mod 2, so their images are distinct -- Phi does not collapse them.
+  Gamma_En-orbit force v = v' mod 2T_Co (prop:cusp-map-separates-mod-two); and congruence mod 2T_Co is
+  exactly equality of the classes v* = [v/2], on which thm:coble-zero-cusp-count(1) gives one
+  discriminant-kernel orbit per class.  So each fibre is a single orbit
+  (prop:cusp-map-injective), and no injectivity residue is left.  The same argument separates the two Coble 0-cusps the book knows: e' and f', the
+  isotropic generators of the U(2) summand, are in different Gamma_Co-orbits
+  (@lem:stable-orthogonal-not-transitive) and incongruent mod 2, so their images are distinct -- Phi does not collapse them.
   What is a finite check and what is not: the divisibility identity
   div_En(eta(v)) = gcd(div_Co(v), beta_Co(v,h)/2), the evenness of both entries, the mod-4 vanishing
   that forces a even, and the class separation of e' and f' are verified on and for the representatives
@@ -1292,18 +1298,24 @@ What has since been settled is listed at the end, so that a reader can tell "res
   Consequence for the cusp correspondence, stated rather than glossed: the mod-2 invariant of
   prop:cusp-map-separates-mod-two is the discriminant class v*, since for divisibility 2 the class of v/2
   is v*, so the fibre question is a question about the group studied in the discriminant-orbits section
-  and not a new invariant; and injectivity is *not* concluded, because lifting a rho(Gamma_Co)-orbit back
-  to a Gamma_Co-orbit is precisely the step the audited theorem would have supplied.  Surjectivity onto
+  and not a new invariant; and injectivity *is* concluded, without the descent that the audited theorem
+  would have supplied: thm:coble-zero-cusp-count(1) is that descent, one discriminant-kernel orbit per
+  isotropic class, so the stable group needs nothing from [@Daw22] here (prop:cusp-map-injective).  What
+  is not concluded is the same statement for Gamma_Co, the monodromy group: the map proved injective has
+  O~+(T_Co) on the source, and neither inclusion between Gamma_Co and O~+(T_Co) is proved
+  (rmk:gamma-co-status), so the two agree only under conj:gamma-co-stable.  Surjectivity onto
   the divisibility-2 locus is a further, independent question, stated in the chapter as: does some
   Gamma_En element carry a divisibility-2 primitive isotropic w~ into eta(T_Co) = k^perp, equivalently is
-  beta(w~, gamma^{-1}k) = 0 for some (-2)-vector in the Gamma_En-orbit of k.  Neither implies the other.  Whether every divisibility-2 Gamma_En-orbit
-  meets eta(T_Co) is the same open question as injectivity seen from the target.  All of this is about
+  beta(w~, gamma^{-1}k) = 0 for some (-2)-vector in the Gamma_En-orbit of k.  Neither implies the other.
+  Whether every divisibility-2 Gamma_En-orbit meets eta(T_Co) is now the whole of the residue, and it is
+  a question about the target.  All of this is about
   rank-1 isotropic lines, i.e. 0-cusps; the rank-2 (plane, 1-cusp) fibre is a separate question and
   nothing here is asserted about it.
   Finally, the two maps must not be conflated in the manuscript: the arrow of the correspondence figure
   records a matching of boundary-lattice *types* at the displayed representatives, which is what the
-  lemmas prove, while the stable cusp-orbit map is Phi, defined and equivariant, not onto, and injective
-  only up to the mod-2 refinement.  The chapter now says so, and no bijection claim survives anywhere:
+  lemmas prove, while the stable cusp-orbit map is Phi, defined and equivariant (thm:coble-strong-lifting),
+  not onto (prop:cusp-map-not-onto) and injective (prop:cusp-map-injective).  The chapter now says so, and
+  no bijection claim survives anywhere:
   the original statement is refuted, not merely weakened.
   Two prose corrections went with it.  The target of the map is the ambient quotient
   B(T_En)/Gamma_En and not the moduli space F_En = (B(T_En) minus H_{-2})/Gamma_En of
