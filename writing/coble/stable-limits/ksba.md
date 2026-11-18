@@ -428,7 +428,7 @@ Let $(\bar S,\eps R_{\bar S})$ be a KSBA stable limit at a marked $0$-cusp $[I]$
 
 1. The curves are functions of the limit: $|-2K_{\wV}| = \theset{C}$ is a single curve, $E = \psi^{-1}(C)$ is a single curve, and $E$ is the exceptional curve of the resolution of the unique node of the K3 cover, the node that the involution fixes.
 2. The vanishing class is primitive of square $-2$ and satisfies $\iota^*\nu_\xi = -\nu_\xi$; hence $\nu_\xi\in T_\En$.
-3. $\nu_\xi$ is orthogonal to $T_\Co$, and therefore $\nu_\xi = \pm\delta$; hence $\kappa_{[I]}(\xi) = [\pm\delta]$, which is a class of $K_I$, and it does not depend on the degeneration, the smoothing, the Kulikov model, or the marking.
+3. $\nu_\xi$ is orthogonal to $T_\Co$, and therefore $\nu_\xi = \pm\delta$; hence $\kappa_{[I]}(\xi) = [\pm\delta]$, which is a class of $K_I$, and it does not depend on the degeneration, the smoothing, the Kulikov model, or the marking of the Coble lattice, that is, on $\Gamma_{\Co,2}$. It does depend on a marking taken one level up: the markings modulo $\gent$ carry $\delta$ to the whole $\gent$-orbit of $\delta$, and by @thm:coble-cusp-admissibility(1) the classes so obtained are exactly the admissible roots of the cusp, so at cusp $5$ the four classes $11$, $12$, $13$, $14$ (@thm:coble-cusp-admissibility(2)). @rmk:coble-marking-conventions names the two conventions and what each one leaves of @conj:no_moduli_loss.
 :::
 
 ::: {.proof}
@@ -457,6 +457,19 @@ This is not the argument withdrawn in @warn:no-moduli-loss-vacuity: that one com
 So a $T_\Co$-root is a class attached to the degeneration and its marking and not to the contracted curve, and the two-orbit computation of @rmk:coble-root-orbits-cusp-five decides the $T_\Co$-root question, which is @conj:no_moduli_loss's and research#760's, not the contracted-curve question, which is @prop:coble-marking-class-is-heegner's and is closed.
 :::
 
+::: {.remark #rmk:coble-marking-conventions title="Two marking conventions, and where the marked-root statement has content"}
+
+The two readings of the preceding remark are two conventions for what a marking is, and each one leaves a different statement.
+
+**The Coble convention.** A marking identifies the transcendental lattice of the resolved K3 cover with $T_\Co = \delta^{\perp\ten}$, and markings are considered modulo $\Gamma_{\Co,2} = R_{\gent}$: this is the convention of @def:gamma-co-groups(5), in which the stable quotient is $\bD(T_\Co)/\Gamma_{\Co,2}$. There the marked root is the single class $[\pm\delta]$ (@prop:coble-marking-class-is-heegner(3)), so the hypothesis of the marked-root statement is not met and the statement holds.
+
+**The Enriques convention.** The marking is taken on the ambient Enriques lattice, so markings are considered modulo $\gent$; the marked root is then $[h\delta]$ for the marking $h$, and by @thm:coble-cusp-admissibility(1) the values at a marked cusp are exactly its admissible roots. On this convention the marked root is data of the marking, so the separation statement is a statement about the forgetful map from markings to stable pairs and not about curves on $\bar S$.
+
+**Where the content is.** On the Coble convention the statement is a corollary of @prop:coble-marking-class-is-heegner and is settled. On the Enriques convention the (semi)toroidal compactification of $\bD(T_\Co)/\Gamma_{\Co,2}$ has, by construction, the $\Gamma_{\Co,2}$-orbits of its boundary data as its boundary points, so inequivalent marked roots give distinct points of *that* compactification with nothing to prove; what such a statement can carry is then the transport to the KSBA boundary, which is the identification of @conj:ksba_semitoroidal_comparison, A7 of research#650, whose own question is when a semitoroidal compactification restricted to a Heegner divisor is semitoroidal.
+So the KSBA-boundary form of the marked-root statement is not a statement that research#759 proves on the second convention: what this page carries of it is the definition of the root (@def:coble-marking-dictionary), the proof that it is $[\pm\delta]$ in the Coble convention (@prop:coble-marking-class-is-heegner), the form of what the comparison would transport (this remark), and the decision of the orbit question at cusp $5$ modulo the stabilizer family (research#759 item 1, sage-extensions#603).
+
+:::
+
 ::: {.conjecture #conj:no_moduli_loss title="The stable Coble quotient determines its marked Coble root"}
 
 The stable quotient is $\bD(T_\Co)/\Gamma_{\Co,2}$ (@def:gamma-co-groups(5)).
@@ -467,7 +480,7 @@ Two degenerations at $[I]$ whose $T_\Co$-roots lie in different $\Gamma_{\Co,2}$
 **Which half is proved.** On the stable quotient the claim is @thm:no-moduli-loss, proved there modulo the stabilizer family its proof names.
 On the KSBA boundary it is a statement about stable pairs: the boundary of the moduli problem is the moduli of stable pairs, so two degenerations at $[I]$ are identified there exactly when their stable limits are isomorphic, and the claim is the contrapositive of the first half of the boundary Torelli statement of research#760, that an isomorphism of stable pairs over $[I]$ induces an element of $\Gamma_{\Co,2}$ carrying one root to the other; the second half of that statement is the converse.
 @def:coble-marking-dictionary does not decide it and does not need to: by @prop:coble-marking-class-is-heegner the contracted curve's class is $\pm\delta\notin T_\Co$, so no $T_\Co$-root is the class of a curve of $\bar S$ at the cusp, and what a $T_\Co$-root classifies is the degeneration together with its marking (@rmk:coble-marking-dictionary-scope).
-Its hypothesis is met at cusp $5$: the $T_\Co$-roots $12$ and $13$ lie in different $\Gamma_{\Co,2}$-orbits and $13$ and $14$ in one (@thm:face-irrelevant-marking(3), @rmk:coble-root-orbits-cusp-five), so the statement is not vacuous.
+Its hypothesis is met at cusp $5$ on one decision and not unconditionally: $13$ and $14$ lie in one $\Gamma_{\Co,2}$-orbit, by an explicit integral isometry (@rmk:coble-root-orbits-cusp-five), while whether $12$ and $13$ lie in different ones is research#759's item 1, whose computation on this page is exhaustive only over the subgroup generated by the family `vector_stabilizer_generators` returns, and is decided there modulo that family (sage-extensions#603, `computations/reports/coble_759-vector-stabilizer-absence-run.txt`). So the statement is not vacuous; its instance at cusp $5$ is conditional on that family.
 Open is the identification step, and a comparison of two stable pairs needs a limit-pair operation that the library does not have (`computations/reports/coble_759-limit-pair-call-probe-run.txt`); a counterexample would be a pair of degenerations at one marked cusp, with $T_\Co$-roots in different $\Gamma_{\Co,2}$-orbits, whose stable limits are isomorphic.
 
 :::
