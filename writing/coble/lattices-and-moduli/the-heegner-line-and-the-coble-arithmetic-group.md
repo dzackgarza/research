@@ -1000,6 +1000,20 @@ So the chamber subscript of @def:direct-group is a linear condition on the trans
 (2) $g\mathfrak c_b = \mathfrak c_b$ exactly when $g$ permutes the walls of $\mathfrak c_b$, that is when $g\Delta_b = \Delta_b$; by (1) and the injectivity of $g$ that is the stated orthogonality.
 :::
 
+::: {.corollary #cor:chamber-preserved-by-picard-stabilizer title="Preserving the Picard lattice preserves the chamber"}
+
+In the situation of @lem:chamber-condition-is-period-condition, let $g\in Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ satisfy $g\Pic(\widehat X_b) = \Pic(\widehat X_b)$ as sublattices of $\lkt$. Then $g\mathfrak c_b = \mathfrak c_b$. Conversely, if the effective classes of square $-2$ span $\Pic(\widehat X_b)\tensor\QQ$, the two conditions are equivalent.
+
+Hence the question of @qst:chamber-subscript-image is the question whether the stabilizer of the member's Picard lattice surjects onto $P$, and a surjection there is sufficient, with no hypothesis on the effective classes, for the image of the centralizer to be all of $\Gamma^{\mathrm{dir}}_{\Co,2}$.
+:::
+
+::: {.proof}
+
+Write $\Pic_b\definedas\Pic(\widehat X_b)$, so that $\Pic_b = \omega_b^\perp\intersect\lkt$. Suppose $g\Pic_b = \Pic_b$, and let $x\in\Pic_b$: then $g^{-1}x\in\Pic_b$, so $\omega_b\perp g^{-1}x$, so $g^{-1}\omega_b\perp x$ because $(g^{-1}\omega_b, x) = (\omega_b, g^{-1}x)$. Since $\langle\Delta_b\rangle\subseteq\Pic_b\tensor\QQ$ (the effective classes are classes of the member), @lem:chamber-condition-is-period-condition gives $g\mathfrak c_b = \mathfrak c_b$.
+
+Conversely, suppose the effective classes span $\Pic_b\tensor\QQ$. Orthogonality to $\langle\Delta_b\rangle$ is then orthogonality to $\Pic_b$, which says $g^{-1}\omega_b\perp\Pic_b$; then $\omega_b\perp g\Pic_b$ by the same identity, that is $g\Pic_b\subseteq\omega_b^\perp\intersect\lkt = \Pic_b$, and the two lattices have equal rank, so the inclusion is an equality.
+:::
+
 ::: {.corollary #cor:construction-monodromy title="The monodromy of the one-node construction lies in the stabilizer of its lattice labels"}
 
 In the situation of @prop:one-node-family the monodromy representation of $R^2\widehat\pi_*\ZZ$ on $H^2(\widehat X_b,\ZZ)$ lands, after a marking, in the stabilizer in $\Orth(\lkt)$ of the quadruple $(S_\Co,S_{\mathrm{dP}},H,\alpha)$, that is in the group of isometries that commute with both involutions and fix $H$ and $\alpha$.
