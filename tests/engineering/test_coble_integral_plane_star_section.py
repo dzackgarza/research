@@ -223,6 +223,31 @@ def test_coble_level_two_eichler_squares_fail_normal_generation():
     assert len(pivots) == 56
 
 
+def test_coble_fifty_six_contains_all_nineteen_eichler_normal_relations():
+    """All normal generators have exact ordinary words of length at most four."""
+    import hashlib
+    import json
+    import subprocess
+    from pathlib import Path
+
+    folder = Path(__file__).resolve().parents[2] / "computations/reports"
+    artifact = folder / "coble_kernel_fifty_six_normal_relation_words.json"
+    before = artifact.read_bytes()
+    data = json.loads(before)
+    assert data["schema"] == "coble-kernel-56-normal-relations-ordinary-words-v1"
+    assert data["ordinary_sha256"] == hashlib.sha256(
+        (folder / "coble_kernel_fifty_six_congruence_generators.json").read_bytes()
+    ).hexdigest()
+    assert data["ambient_sha256"] == hashlib.sha256(
+        (folder / "coble_ambient_twenty_one_generators.json").read_bytes()
+    ).hexdigest()
+    assert data["relation_count"] == len(data["relations"]) == 19
+    assert data["max_word_length"] == 4
+    subprocess.run(["sage", str(folder / "coble_kernel_fifty_six_normal_relation_words.py")],
+                   cwd=folder.parents[1], check=True, capture_output=True, text=True)
+    assert artifact.read_bytes() == before
+
+
 def test_coble_fifty_six_small_odd_local_images_are_full():
     """Exact classical recognition and rank-55 local lifting at small odd primes."""
     import hashlib
