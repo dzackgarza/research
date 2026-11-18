@@ -606,23 +606,28 @@ def test_absorbed_inv_names_the_member_where_it_holds():
     assert "negates the effective class $\\delta$" in scope
 
 
-def test_absorbed_pair_without_a_page_formulation_is_reported_not_invented():
-    """The two remaining absorbed entries have no statement under writing/ to attach to.
+def test_absorbed_pair_is_formulated_now_and_decided():
+    """The absorbed pair $G_3$, $G_4$: formulated from theorems already on record.
 
-    Decides the finding rather than a gap: a pair no page formulates cannot be
-    recorded against a page.  The check pins the fact, so that a later
-    formulation of either one fails here and gets its one line.
+    The earlier version of this check pinned the fact that no page named the pair, so that the
+    day one was formulated it failed here and the entry got its line.  It has one now:
+    @cor:g3-g4-decided states that $G_3$ is the geometric monodromy group and that $G_4$ strictly
+    exceeds it, with the coarse-space reading beside them, and decides each from
+    @thm:sign-is-isotropy, @prop:direct-eq-heegner and @cor:four-groups-decided.
     """
-    book = ROOT / "writing"
-    hits = []
-    for path in book.rglob("*.md"):
-        if ".book" in path.parts:
-            continue
-        text = path.read_text(errors="ignore")
-        for name in ("G_3", "G_4"):
-            if re.search(r"(?<![\\A-Za-z])" + re.escape(name) + r"(?![0-9A-Za-z])", text):
-                hits.append(f"{path.relative_to(ROOT)}:{name}")
-    assert hits == [], f"a page now formulates one of the absorbed pair: {hits}"
+    report = _text(REPORT)
+    cor = _block(report, "{.corollary #cor:g3-g4-decided")
+    assert "$G_1 = G_2 = G_3$" in cor
+    assert r"$G_4\neq G_1$" in cor
+    assert "@thm:sign-is-isotropy" in cor
+    assert "@prop:direct-eq-heegner" in cor
+    assert "@cor:four-groups-decided" in cor
+    assert "@thm:no-loop-carries-the-sign" in cor
+    proof = _block(report, "{.proof}\n\n(1) is @thm:sign-is-isotropy")
+    assert r"s_\zeta\notin\Orth^+(T_\Co)" in proof
+    assert r"-\id_{T_\Co}" in proof
+    # the two entries are named on a page now, which is what the pair was waiting for
+    assert "G_3" in cor and "G_4" in cor
 
 
 def _run_all() -> int:

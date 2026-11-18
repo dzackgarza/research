@@ -2409,6 +2409,22 @@ Multiplication by an element of $W(T_\Co)$ is a bijection of $\Orth(T_\Co)$, so 
 $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2} = \Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$, and $\Gamma^{\mathrm{cong}}_{\Co,2}$ is the union of that group with its $s_\zeta$-coset. The geometric entry is either $\Gamma^{\mathrm{geom}}_{\Co,2}=\Gamma^{\mathrm{dir}}_{\Co,2}$ or $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm1\}$, and the two are separated by which monodromy group is meant: $\Gamma^{\mathrm{dir}}_{\Co,2}$ is the orbifold group of @def:geometric-monodromy (@thm:sign-is-isotropy) and $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm1\}$ is the monodromy of loops over the coarse moduli space (@thm:no-loop-carries-the-sign).
 :::
 
+::: {.corollary #cor:g3-g4-decided title="The two comparison entries left untouched: $G_3$ is the geometric monodromy, $G_4$ is strictly larger than it"}
+
+Write $G_1\definedas\Gamma^{\mathrm{geom}}_{\Co,2}$ (@def:geometric-monodromy), $G_2\definedas\Gamma^{\mathrm{dir}}_{\Co,2}$ (@def:direct-group), $G_3\definedas\Gamma^{\mathrm{Hdg}}_{\Co,2}$ and $G_4\definedas\Gamma^{\mathrm{cong}}_{\Co,2}$ — the entries $G_1$ to $G_4$ of the ledger of research#720, whose last two it left untouched. Then
+
+1. $G_1 = G_2 = G_3$. The geometric monodromy group in the sense of @def:geometric-monodromy is the direct group (@thm:sign-is-isotropy), and $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2}$ (@prop:direct-eq-heegner).
+2. $G_4\neq G_1$. The congruence group is the union of $\Gamma^{\mathrm{dir}}_{\Co,2}$ with its $s_\zeta$-coset, and $s_\zeta\notin\Orth^+(T_\Co)$ (@cor:four-groups-decided), whereas $G_1 = G_2$ lies in $\Orth^+(T_\Co)$.
+3. Read over the coarse moduli space instead of the stack, the monodromy is $H$, the complement of $\{\pm\id_{T_\Co}\}$ of @thm:no-loop-carries-the-sign, and no one of $G_2$, $G_3$, $G_4$ equals it: $H$ has index two in $G_2 = G_3$ and contains no $-\id_{T_\Co}$, which $G_4$ contains.
+:::
+
+::: {.proof}
+
+(1) is @thm:sign-is-isotropy and @prop:direct-eq-heegner composed.
+For (2): $G_4 = \Gamma^{\mathrm{dir}}_{\Co,2}\cup s_\zeta\Gamma^{\mathrm{dir}}_{\Co,2}$ with $s_\zeta\notin\Orth^+(T_\Co)$ (@cor:four-groups-decided), and $\Gamma^{\mathrm{dir}}_{\Co,2} = \rho_{T_\Co}^{-1}(P)\intersect\Orth^+(T_\Co)\subseteq\Orth^+(T_\Co)$ (@prop:direct-eq-heegner), so $s_\zeta\in G_4\setminus G_1$.
+For (3): $H\{ \pm\id_{T_\Co}\} = \Gamma^{\mathrm{dir}}_{\Co,2}$ with $H\cap\{\pm\id_{T_\Co}\} = \{\id\}$ (@thm:no-loop-carries-the-sign), so $H$ has index two in $G_2 = G_3$; and $-\id_{T_\Co}\in\Gamma^{\mathrm{dir}}_{\Co,2}$ (@lem:minus-id-in-direct-group) lies in $G_4$ but not in $H$.
+:::
+
 ::: {.problem #prob:B26 title="B2.6. Direct stable-pair theorem"}
 The universal divisor $R^\sharp$ is flat, uniformly $\bQ$-Cartier and ample, and the pairs $(V^\sharp,\epsilon R^\sharp)$ define a separated bounded KSBA moduli problem for $0<\epsilon\ll1$.
 :::
