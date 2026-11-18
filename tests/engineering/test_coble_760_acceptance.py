@@ -167,6 +167,28 @@ def test_item_3_the_statement_cannot_be_expressed() -> None:
     assert "no face lattice of a fan to coarsen" in record.read_text(encoding="utf-8")
 
 
+def test_item_3_beneath_the_library_the_statement_is_unstatable() -> None:
+    """Item 3, second input: the conjecture's corrected form has no referent without a cusp marking.
+
+    The corrected conjecture reads the marking off the contracted (-4)-curve, and doing so needs
+    the identification of the chamber's simple roots with curves of the Coble surface.  The page
+    carries that gap as `warn:coble-marking`, which names the sources it read and says they supply
+    no such dictionary, and the conjecture cites it.  So item 3 is blocked in two places: a fan and
+    coarsening definition in Lean, and this dictionary, which is a definition the author has to
+    decide because no source read gives it.
+    """
+    page_text = page()
+    assert "@warn:coble-marking" in page_text, "the conjecture no longer cites the missing marking"
+    marking = (ROOT / "writing/coble/cusp-correspondence/cusp-diagram-calculations.md").read_text(encoding="utf-8")
+    block = marking[marking.index("#warn:coble-marking"):]
+    block = block[:block.index("\n:::")] if "\n:::" in block else block[:4000]
+    joined = " ".join(block.split())
+    assert "no dictionary from the nine roots" in joined
+    assert "cusp marking" in joined
+    assert "the sources read supply none" in " ".join(marking.split()) or \
+           "the sources read give no dictionary" in joined
+
+
 def test_item_4_a_pair_whose_faces_agree() -> None:
     """Item 4: the transcript's face line is the smallest input."""
     text = FACE_RUN.read_text(encoding="utf-8")
