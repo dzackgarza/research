@@ -393,6 +393,22 @@ def test_absorbed_ri_names_the_input_that_would_settle_it():
     assert "@qst:gamma-co-reflection-index" in item3
 
 
+def test_absorbed_inv_names_the_input_that_would_settle_it():
+    """(INV): the question, and the input it needs, at the statement that asks it.
+
+    Decides: the root-arrangement question names what would settle it -- an effective-Torelli or
+    lift-to-automorphism input, of which @prob:B24 is the direct statement -- and says why no
+    computation on the lattice decides it.  Without that line the entry is a question with no
+    attack, which is what #663's acceptance asks each absorbed entry not to be.
+    """
+    page = _text(PAGE)
+    qst = _block(page, "{.question #qst:kernel-and-root-arrangement")
+    assert "preserve the $(-2)$-root arrangement of the tuple" in qst
+    assert "What would settle it is an effective-Torelli or lift-to-automorphism input" in qst
+    assert "@prob:B24" in qst
+    assert "effectivity is a property of a member and its Kähler cone" in qst
+
+
 def test_absorbed_rel_is_the_splitting_question():
     """(REL): a section of rho_T normalizing W(T_Co) and a homomorphism modulo it."""
     q = _text(OPEN_PROBLEMS)

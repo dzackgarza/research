@@ -1248,6 +1248,8 @@ That choice, for $\gamma$ and for $\gamma_\Co$ alike, is what remains of the com
 ::: {.question #qst:kernel-and-root-arrangement title="The root arrangement"}
 
 Does every $g\in Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ preserve the $(-2)$-root arrangement of the tuple?
+What would settle it is an effective-Torelli or lift-to-automorphism input: a statement that each element of that centralizer is induced by an automorphism of the marked members, hence carries classes the marking presents as effective to classes the marking presents as effective — @prob:B24 is the direct theorem of that shape.
+A computation on $T_\Co$ or on $A_{T_\Co}$ does not decide it, because effectivity is a property of a member and its Kähler cone rather than of the lattice alone, and the centralizer is infinite.
 :::
 
 ## Integral cusp lifting {#sec-cusp-lifting}
