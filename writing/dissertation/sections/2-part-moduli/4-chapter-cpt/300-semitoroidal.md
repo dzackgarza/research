@@ -140,9 +140,10 @@ where $R_i$ runs over all irreducible rational curves in the linear system $|L|$
 .
 .\end{align*}
 
-In degree $2$, $\mcf_{\rcop}$ is a semifan but not a fan, and coarsens the Coxeter fan.
-For elliptic K3 surfaces with divisor $s + \Sum_{i=1}^{24} f_i$, the semifan is in fact a fan, which further refines the maximal cone of the Coxeter fan.
-It is currently a widely open problem to describe the semifan $\mcf_R$ for a recognizable divisor in full generality, and is still open in the case of $R = R^{\rcop}$ -- these are currently only characterized only as the coarsest subdivision such that the combinatorial type of stable pairs is constant on its cones.
+In degree $2$ the semifan that is computed is the one attached to the ramification divisor $R_\iota \in |3L|$, and it is not a fan: it is the generalized Coxeter semifan for the split $I = \{0,\ldots,17\}$, $J = \{18,\ldots,23\}$ of the twenty-four roots of $\bar T = H \oplus E_8^2 \oplus A_1$ ([@AET23, §4D and Prop. 4.17, printed p. 27]), so it coarsens the Coxeter fan ([@AET23, Thm. 1.2, printed p. 3]; [@AET23, Thm. 8.2, printed p. 50]), and its maximal cone has infinitely many faces and an infinite stabilizer ([@AET23], printed p. 27).
+For elliptic K3 surfaces with divisor $s + \Sum_{i=1}^{24} f_i$, the semifan is in fact a fan, which refines the Coxeter fan ([@ABE22], Intro., Thm. 1.2).
+The semifan of a recognizable divisor is thus described, and not only characterized: when the combinatorial type of the stable limit depends only on the monodromy invariant and the semifan coarsens the Coxeter semifan, it is the generalized Coxeter semifan of the boundary diagram --- its maximal cones are the $W$-translates of $L = \bigcup_{h \in W_J} h(\thecone{C})$, where $J$ is the set of irrelevant roots, its remaining cones are the images of the faces not cut out by irrelevant mirrors, and its cones are indexed by the relevant content, hence by the combinatorial type ([@AET23], Def. 4.16 and Prop. 4.17, printed pp. 26--27, Cor. 4.18 and Rem. 4.19, printed p. 27; [@AE22], Def. 9.1 and Def. 9.3, printed p. 53, Def. 9.5, printed p. 54, Rem. 9.11, printed p. 57; [@AEGS25], \S5.2, printed p. 610).
+What is not settled is the split for the rational-curve divisor: neither [@AE22] nor [@AET23] computes the stable limits of the pairs $(X, \epsilon R_{\rcop})$, both treating the ramification divisor instead, so no cone of $\mcf_{\rcop}$ is recorded for any $d$.
 Our work in @AEGS25 relies on the fact that recognizability was proved for ramification loci of non-symplectic automorphisms in @AE22, and explicit constructions of the corresponding semifans are provided.
 :::
 

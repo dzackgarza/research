@@ -172,22 +172,26 @@ def test_item_3_the_statement_cannot_be_expressed() -> None:
 
 
 def test_item_3_beneath_the_library_the_statement_is_unstatable() -> None:
-    """Item 3, second input: the conjecture's corrected form has no referent without a cusp marking.
+    """Item 3, second input: the marking the conjecture reads off the contracted curve.
 
-    The corrected conjecture reads the marking off the contracted (-4)-curve, and doing so needs
-    the identification of the chamber's simple roots with curves of the Coble surface.  The page
-    carries that gap as `warn:coble-marking`, which names the sources it read and says they supply
-    no such dictionary, and the conjecture cites it.  So item 3 is blocked in two places: a fan and
-    coarsening definition in Lean, and this dictionary, which is a definition the author has to
-    decide because no source read gives it.
+    The corrected conjecture reads the marking off the contracted (-4)-curve, and doing so needs an
+    identification of that curve with a class of the boundary lattice.  #759 and #760 recorded that
+    gap as `warn:coble-marking`, and the page said the marking "has no referent yet".  A later turn
+    built the identification instead: `def:coble-marking-dictionary` with
+    `prop:coble-marking-class-is-heegner` gives the class of the contracted curve as the Heegner
+    vector, one class at every degeneration at a marked cusp, so the marking has the referent it was
+    said to lack.  What stays true is the narrower warning, that no source pairs a *simple root of
+    the chamber* with a curve of the Coble surface.  This test now holds both halves: the warning is
+    still cited and still says what it says, and the theorem names the dictionary that replaced it.
     """
     page_text = page()
-    assert "@warn:coble-marking" in page_text, "the conjecture no longer cites the missing marking"
-    # the conjecture's body still reads unconditionally, so its caveat must stay inside the same
-    # block: the object it names has no referent, and that has to be said where the claim is made
+    assert "@warn:coble-marking" in page_text, "the page no longer cites the warning it corrects"
+    # the conjecture's body still reads unconditionally, so its referent has to be named inside the
+    # same block: the object it names now exists, and where it comes from has to be said there
     conj_block = block("thm:no-moduli-loss")
     assert "determines its marked Coble root" in conj_block
-    assert "no referent" in conj_block, "the caveat has drifted out of the conjecture"
+    assert "def:coble-marking-dictionary" in conj_block, "the referent of the marking is not named"
+    assert "no referent" not in conj_block, "the page still says the marking has no referent"
     marking = (ROOT / "writing/coble/cusp-correspondence/cusp-diagram-calculations.md").read_text(encoding="utf-8")
     warn_block = marking[marking.index("#warn:coble-marking"):]
     warn_block = warn_block[:warn_block.index("\n:::")] if "\n:::" in warn_block else warn_block[:4000]
