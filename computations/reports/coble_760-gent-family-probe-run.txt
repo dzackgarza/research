@@ -1,0 +1,11 @@
+the point A_{U(2)} in the discriminant module, and the preimage that is needed to name Gent
+Sage 11.0.beta5; sage-extensions at commit 1488acf
+
+(1) the discriminant module: Finitely presented module on 12 module generators over Integer Ring with invariant factors Invariant-factor family: [0 |-> 2, 1 |-> 2, 2 |-> 2, 3 |-> 2, 4 |-> 2, 5 |-> 2, 6 |-> 2, 7 |-> 2, 8 |-> 2, 9 |-> 2]
+    class e_3 -> q = [0] in Fraction Field of Integer Ring / (2)Integer Ring ; class e_4 -> q = [0] in Fraction Field of Integer Ring / (2)Integer Ring ; class e_3 + e_4 -> q = [1] in Fraction Field of Integer Ring / (2)Integer Ring
+    (0, 0, 1/2 is the hyperbolic plane A_{U(2)}: the point is the right one)
+
+(2) the preimage:
+[ 625.4s]     calling discriminant_point_stabilizer(point).group_generators()
+
+--- killed: exit status 137 (SIGKILL, the memory ceiling), 625 s, no further output ---

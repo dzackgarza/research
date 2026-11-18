@@ -707,6 +707,32 @@ def test_item_7_the_mod_two_probe_is_one_sided_and_says_so() -> None:
     assert "mod2-orbit-probe" not in remark, "the page must not lean on a one-sided probe"
 
 
+def test_item_7_the_gent_family_is_named_by_the_call_that_fails() -> None:
+    """Item 7: the point A_{U(2)} is constructible; the preimage that would name Gent is killed.
+
+    The decisive mod-2 triple test needs a complete generating family of Gent, that is
+    rho^{-1} of the stabilizer of A_{U(2)} in O(A_L).  The point itself can be named in the
+    discriminant module by integer coordinates, and the quadratic form confirms which pair of classes
+    it is.  The preimage call is killed at the memory ceiling, which is the defect this record
+    reports; it must not be reported as a missing *operation* on the page, and the page must not
+    claim a decision from it.
+    """
+    record = ROOT / "computations/reports/coble_760-gent-family-probe.py"
+    run = ROOT / "computations/reports/coble_760-gent-family-probe-run.txt"
+    assert record.exists() and run.exists(), (record, run)
+    text = run.read_text(encoding="utf-8")
+    flat = " ".join(text.split())
+    for line in ("class e_3 -> q = [0]", "class e_3 + e_4 -> q = [1]",
+                 "calling discriminant_point_stabilizer(point).group_generators()",
+                 "killed: exit status 137 (SIGKILL, the memory ceiling), 625 s"):
+        assert line in flat, line
+    doc = " ".join(record.read_text(encoding="utf-8").split())
+    assert "does not return" in doc
+    assert "Nothing here is a substitute for either" in doc
+    remark = block("rmk:coble-root-orbits-cusp-five")
+    assert "gent-family-probe" not in remark, "the page must not lean on a killed computation"
+
+
 def test_open_questions_row_names_the_open_step() -> None:
     """The row for the withdrawn step names the orbit computation as what is open."""
     text = OPEN_QUESTIONS.read_text(encoding="utf-8")
