@@ -1499,7 +1499,7 @@ and by @cor:gamma-hdg-is-congruence that is $\Gamma^{\mathrm{Hdg}}_\Co$.
 @def:direct-group carries the subscript $\mcc$, and nothing above uses it: every step is a statement about the centralizer of the four labels $I_\Co,I_{\mathrm{dP}},H,\alpha$.
 The subscript is nevertheless no restriction on that centralizer where the group is defined, since at a one-node member with $\Pic(\widehat X_b) = S_{\Co,b}$ the chamber is a function of $H_b$ and $\alpha_b$ (@thm:chamber-pinned-by-labels): every element of the centralizer preserves it, and
 $$Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha,\mcc} = Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}.$$
-The equality proved is therefore the one for the group that @def:direct-group defines, with $\mcc$ in its datum, and not for a subscript-free variant of it: the chamber clause of the labelled rigidity theorem is not an input here, the chamber being read off from the other labels.
+The equality proved is therefore the one for the group that @def:direct-group defines, with $\mcc$ in its datum, and not for a subscript-free variant of it: the chamber clause of the labelled rigidity theorem is not an input here, the chamber being read off from the other labels; and at a member whose Picard lattice is larger it is no restriction on the part of the centralizer that preserves the member's period either, which preserves the chamber there as well (@lem:chamber-preserved-on-period).
 :::
 
 ::: {.remark #rmk:root-arrangement-answered title="The root arrangement"}
@@ -1508,7 +1508,35 @@ Every $g\in Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ preserves the $(-
 
 The two grounds on which this was earlier expected to need an effective-Torelli input do not hold, and are recorded here because they are what the question rested on. Effectivity is not an extra input: on a $K3$ exactly one of $\pm\delta$ is effective for a class of square $-2$, and the nef class $H_b$ decides which one. And the centralizer being infinite does not put the question beyond a lattice argument: an element of it acts on $\mathcal C_b$ through its restriction to $S_{\Co,b}$, and the pairs with trivial first component act trivially there.
 
-What the argument does not reach is the member with a larger Picard lattice, where the chamber is cut finer and the subscript is a genuine condition (@rmk:chamber-pinned-scope).
+What the argument does not reach is the member with a larger Picard lattice, where $\Delta_b$ is not a function of the labels and the chamber is cut finer, so that the subscript is a condition on the centralizer (@rmk:chamber-pinned-scope). It is not a condition on the whole of it: every element that preserves the member's period preserves the member's chamber, at every member of the construction and by Torelli, which is @lem:chamber-preserved-on-period. What is left is the part of the centralizer that moves the period, and it does not reach an answer there either, since the question is then about the arrangement of the member's own $(-2)$-classes and not about the labels: @qst:chamber-subscript-image states it.
+:::
+
+::: {.lemma #lem:chamber-preserved-on-period title="The chamber is preserved by the part of the centralizer that preserves the member's period"}
+
+In the situation of @prop:one-node-family, let $b$ be a member, let $\psi\colon H^2(\widehat X_b,\ZZ)\iso\lkt$ be a marking, and let $g\in Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ satisfy $g\psi(\omega_b)\in\CC\psi(\omega_b)$ for a holomorphic $2$-form $\omega_b$ on $\widehat X_b$.
+Then $\psi^{-1}g\psi$ preserves the chamber $\mathfrak c_b$ and the arrangement $\Delta_b$ of @def:coble-polarization-classes, part 3.
+
+Consequently the chamber in the datum of @def:direct-group costs nothing on that part of the centralizer at every member of the construction, the members whose Picard lattice is larger than $S_{\Co,b}$ included, where @thm:chamber-pinned-by-labels does not apply.
+:::
+
+::: {.proof}
+
+Put $\gamma\definedas\psi^{-1}g\psi$, an isometry of $H^2(\widehat X_b,\ZZ)$; the hypothesis says it carries $\omega_b$ to a multiple of itself, so it is a Hodge isometry.
+It fixes $H_b$ and $\alpha_b$ because $g$ fixes $H$ and $\alpha$, hence it fixes $A_b = 2H_b-\alpha_b$, and $A_b$ is ample on every member of the construction (@lem:chamber-from-marked-period).
+A Hodge isometry carrying an ample class to an ample class is the pullback of an automorphism: that is the form of the strong Torelli theorem [@BHPV04, Ch. VIII, Thm. 11.1] used in @lem:chamber-from-marked-period, applied here with the two ample classes equal.
+So $\gamma = \varphi^*$ for some $\varphi\in\Aut(\widehat X_b)$, and an automorphism preserves the effective classes: $\gamma\Delta_b = \Delta_b$, and $\gamma$ permutes the walls $\delta^\perp$, $\delta\in\Delta_b$, of $\mathfrak c_b$.
+Since $\gamma A_b = A_b$ and $A_b$ is ample, $\mathfrak c_b$ and $\gamma\mathfrak c_b$ are both components of $\mathcal C_b\setminus\bigcup_{\delta\in\Delta_b}\delta^\perp$ containing the ample class $A_b$; components are disjoint, so they are equal.
+:::
+
+::: {.question #qst:chamber-subscript-image title="The chamber subscript off the period-preserving part of the centralizer"}
+
+@lem:chamber-preserved-on-period settles the chamber in the datum of @def:direct-group on the elements of $Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ that preserve the member's period. What it does not settle is one question at two levels.
+
+1. At a member $b$ whose Picard lattice is larger than $S_{\Co,b}$, an element $g$ of the centralizer that does not preserve $\CC\omega_b$ still acts on $\lkt\tensor\RR$, and $\mathfrak c_b$ and $g\mathfrak c_b$ are two cones there; is $g\mathfrak c_b = \mathfrak c_b$? An element acting trivially on $T_\Co$ and by a symmetry of $S_\Co$ moves neither $H_b$ nor $\alpha_b$, and whether it moves the chamber is a statement about the arrangement of the member's own $(-2)$-classes, not about the labels.
+
+2. Consequently, does the subscript change the image? That is, is $\rho_{T_\Co}\bigl(Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha,\mcc}\bigr)$ equal to $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ at a member whose Picard lattice is larger than $S_{\Co,b}$, as @prop:direct-eq-heegner proves it at a member whose Picard lattice is $S_{\Co,b}$ itself?
+
+What would settle (1) is one member, one element and the two cones computed; @thm:chamber-clause-fails does not supply it, since it compares the chambers of two members. What would settle (2) is (1) together with the images of the elements concerned.
 :::
 
 ## Integral cusp lifting {#sec-cusp-lifting}
