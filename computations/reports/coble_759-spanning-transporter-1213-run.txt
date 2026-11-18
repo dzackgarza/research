@@ -1,0 +1,6 @@
+built the vectors; e.e = 0, eta^2 = 0
+family size 18 (spans T_En: True)
+asking O(L).transporter(F1, F2) ...
+witness: None
+PYEXIT=0
+exit=0
