@@ -693,5 +693,33 @@ def test_absorbed_ri_lattice_arithmetic():
     assert reflect[0, 0] == -1 and all(reflect[i, i] == 1 for i in range(1, 11))
 
 
+def test_absorbed_rel_names_the_missing_operation():
+    """(REL): the operation it needs, named at the provider with the calls that refuse.
+
+    Decides the naming rather than the splitting: W(T_Co) is wanted as a group, the provider's
+    reflective locus is a condition set, the two group constructors the closed issue #646
+    delivered take a finite generator list or an element predicate, and every finite
+    enumeration of the roots refuses on the indefinite lattice.  The transcripts carry the
+    verbatim failures, so a later provider that supplies the operation fails here and gets
+    taken up.
+    """
+    run1 = _text(REPORTS / "coble_rel-reflection-group-capability-run.txt")
+    run2 = _text(REPORTS / "coble_rel-reflection-group-capability2-run.txt")
+    assert "cannot run a definite-lattice algorithm" in run1
+    assert "signature (2, 9)" in run1
+    assert "no attribute 'reflection_group'" in run1
+    assert "_ConditionSetEngine" in run1
+    assert "subgroup_on" in run1 and "no attribute 'subgroup_on'" in run1
+    assert "finite reflective-root enumeration requires a definite lattice" in run2
+    assert "subgroup(generators, *, cardinality_decision=None)" in run2
+    assert "predicate_subgroup(predicate, description" in run2
+
+    item3 = next(line for line in _text(OPEN_PROBLEMS).splitlines()
+                 if line.startswith("3. Does $\\rho_{T_\\Co}$"))
+    assert "reflective_root_locus()" in item3
+    assert "lattices.py:9169" in item3
+    assert "coble_rel-reflection-group-capability-run.txt" in item3
+
+
 if __name__ == "__main__":
     raise SystemExit(1 if _run_all() else 0)

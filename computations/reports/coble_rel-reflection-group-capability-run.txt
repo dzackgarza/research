@@ -1,0 +1,26 @@
+provenance
+  sage-extensions: /repo/.scratch/se-main/src/sage_extensions/__init__.py
+  T = rank 11, det -2048, signature (2, 9)
+
+lattice attributes named root/reflect/vinberg/chamber/generat:
+   ['generator_pairings', 'is_finitely_generated', 'is_nondegenerate', 'local_minimal_generators', 'local_number_of_generators', 'minimal_number_of_generators', 'module_generating_set', 'module_generator', 'module_generator_morphism', 'module_generators', 'norm_two_root_types', 'number_field_vinberg', 'number_of_module_generators', 'possible_root_lengths', 'reflection', 'reflective_root_locus', 'reflective_root_system_components', 'root_module_generating_set', 'root_sublattice', 'roots', 'roots_of_square', 'selected_resolution_generating_set', 'selected_resolution_generator', 'stable_complement_root_reflections', 'stable_orthogonal_group_generators']
+
+the documented root calls, called:
+  possible_root_lengths() -> {1, 2, 4}
+  T.roots() -> ValueError: cannot run a definite-lattice algorithm on Integral lattice of rank 11 and signature (2, 9): it must be positive or negative definite, but its signature is (2, 
+  T.reflective_root_locus() -> Sets.parent_class[_ConditionSetEngine].ObjectType: 'Subset of Integral lattice of rank 11 and signature (2, 9) cut out by <function Lattices.ParentMethods.reflect'
+
+group side (the operations #646 delivered):
+  T.O_plus() -> PreimageSubgroups.parent_class
+    has subgroup_on: False; has validate_point_closure: False; has __contains__: True
+    methods named subgroup/closure/member/contain/generat: ['commutator_subgroup', 'conjugate_subgroup', 'contains_character_kernel', 'derived_subgroup', 'discriminant_generator_lifts', 'finite_index_schreier_generating_morphism', 'finite_index_schreier_generators', 'generated_submonoid', 'group_generating_set', 'group_generator', 'group_generator_morphism', 'group_generators', 'group_generators_are_computable', 'has_computed_group_generators', 'has_selected_finite_group_generating_set', 'is_finitely_generated', 'is_finitely_generated_as_magma', 'kernel_image_generating_morphism', 'number_of_group_generators', 'predicate_subgroup', 'schreier_generating_morphism', 'schreier_generators', 'select_group_generators', 'selected_resolution_generating_set', 'selected_resolution_generator', 'subgroup', 'subgroup_conjugation_g_set', 'subgroups', 'target_subgroup', 'trivial_subgroup']
+  T.stable_orthogonal_group() -> PreimageSubgroups.parent_class
+    has subgroup_on: False; has validate_point_closure: False; has __contains__: True
+    methods named subgroup/closure/member/contain/generat: ['commutator_subgroup', 'conjugate_subgroup', 'contains_character_kernel', 'derived_subgroup', 'discriminant_generator_lifts', 'finite_index_schreier_generating_morphism', 'finite_index_schreier_generators', 'generated_submonoid', 'group_generating_set', 'group_generator', 'group_generator_morphism', 'group_generators', 'group_generators_are_computable', 'has_computed_group_generators', 'has_selected_finite_group_generating_set', 'is_finitely_generated', 'is_finitely_generated_as_magma', 'kernel_image_generating_morphism', 'number_of_group_generators', 'predicate_subgroup', 'schreier_generating_morphism', 'schreier_generators', 'select_group_generators', 'selected_resolution_generating_set', 'selected_resolution_generator', 'subgroup', 'subgroup_conjugation_g_set', 'subgroups', 'target_subgroup', 'trivial_subgroup']
+
+the expressions REL needs:
+  T.reflective_root_locus().is_finite() -> AtomicProposition
+  T.reflection_group() -> AttributeError: 'OwnedJoinCategory.parent_class[_SparseFreeModuleParent].ObjectType' object has no attribute 'reflection_group'
+  T.O().subgroup_on(T.reflective_root_locus()) -> AttributeError: 'OwnedLatticeIsometryMor_with_category_with_category' object has no attribute 'subgroup_on'
+  T.stable_orthogonal_group().subgroup_on([T.zero()]) -> AttributeError: 'PreimageSubgroups.parent_class' object has no attribute 'subgroup_on'
+done
