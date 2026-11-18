@@ -536,6 +536,78 @@ What it does not settle. It does not settle the chamber clause, and by @thm:cham
 The Coble-to-Coble content of @prob:coble-rigidity is @thm:a21-labels on the one-node locus, by parallel transport, and that is all of it that survives: the chamber clause fails (@thm:chamber-clause-fails) and the node count separates the strata of the construction (@prop:node-count-invariant). The object here is the Coble-to-Enriques comparison that A20 item 2 needs, and it does not extend @thm:a21-labels beyond that locus.
 :::
 
+::: {.theorem #thm:theta-co-coordinates title="The sign involution of the Coble embedding in coordinates"}
+
+In the model $\lkt = U^3\oplus E_8^2$ of @prop:coble-enriques-ambient-isometry, with standard basis $e_0,\dots,e_{21}$ and blocks
+$$
+U_1 = \generators{e_0,e_1},\quad U_2 = \generators{e_2,e_3},\quad U_3 = \generators{e_4,e_5},\quad
+E_{8,1} = \generators{e_6,\dots,e_{13}},\quad E_{8,2} = \generators{e_{14},\dots,e_{21}},
+$$
+let $I_\En$ be the Enriques involution of [@AEGS25, Def. 2.3, printed p. 586], let $\alpha = e_0-e_1$, and let $w = s_\alpha$ be the reflection in $\alpha$, so that $J_\Co \definedas w\,I_\En$ is the involution of @prop:coble-enriques-ambient-isometry with invariant lattice $S_\Co = \ker(J_\Co-\id)$.
+Then the sign involution $\theta_\Co$ of @prop:theta-co-exists is, in this marking,
+$$
+\theta_\Co = -J_\Co = -w\,I_\En .
+$$
+On the standard basis it is the signed permutation
+$$
+\theta_\Co(e_0) = e_1,\quad \theta_\Co(e_1) = e_0,\quad
+\theta_\Co(e_2) = -e_4,\quad \theta_\Co(e_4) = -e_2,\quad
+\theta_\Co(e_3) = -e_5,\quad \theta_\Co(e_5) = -e_3,
+$$
+$$
+\theta_\Co(e_{6+k}) = -e_{14+k},\qquad \theta_\Co(e_{14+k}) = -e_{6+k},
+\qquad k = 0,\dots,7,
+$$
+that is, the $22\times22$ matrix whose blocks are indexed by $(U_1,U_2,U_3,E_{8,1},E_{8,2})$,
+$$
+\Theta =
+\begin{pmatrix}
+P & 0 & 0 & 0 & 0\\
+0 & 0 & -I_2 & 0 & 0\\
+0 & -I_2 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & -I_8\\
+0 & 0 & 0 & -I_8 & 0
+\end{pmatrix},
+\qquad
+P = \begin{pmatrix}0 & 1\\ 1 & 0\end{pmatrix},
+$$
+with $\Theta\in M_{22}(\bZ)$, $\Theta^2 = \id$, $\Theta^{\mathsf T}G\Theta = G$ for the Gram matrix $G$ of $\lkt$, $\trace\Theta = 0$ and $\det\Theta = -1$.
+
+Its eigenspaces have the following bases in the same coordinates:
+$$
+\lkt^{\theta_\Co} = T_\Co = \generators{e_0+e_1,\; e_2-e_4,\; e_3-e_5,\; e_{6+k}-e_{14+k}\ (k = 0,\dots,7)},
+$$
+$$
+\lkt^{-\theta_\Co} = S_\Co = \generators{e_0-e_1,\; e_2+e_4,\; e_3+e_5,\; e_{6+k}+e_{14+k}\ (k = 0,\dots,7)},
+$$
+with Gram matrices $\generators{2}\perp U(2)\perp E_8(-1)(2)$ and $\generators{-2}\perp U(2)\perp E_8(-1)(2)$, the three blocks being pairwise orthogonal in each. Both lattices have rank $11$, discriminant group $(\bZ/2\bZ)^{11}$ and coparity $\delta = 1$, so by Nikulin's classification [@Nik80, Thm. 3.6.2, printed p. 144] each is determined by its signature: $T_\Co\cong\generators{2}\oplus U(2)\oplus E_8(2)$ of @prop:theta-co-exists, of determinant $-2^{11}$ and signature $(2,9)$, and $S_\Co\cong\generators{2}\oplus\generators{-2}^{10} = \latI_{1,10}(2)$ of @prop:coble-invariant-lattice, of determinant $2^{11}$ and signature $(1,10)$. The two are orthogonal and of index
+$$
+[\lkt : S_\Co\oplus T_\Co] = 2^{11}.
+$$
+
+The degree-$4$ Coble class is $H = \tilde h_\Co = e_2+e_3+e_4+e_5$ in this marking, with $H^2 = 4$ and $H\cdot\alpha = 0$, and
+$$
+\theta_\Co(H) = -H,
+\qquad
+\theta_\Co(\alpha) = -\alpha .
+$$
+
+The matrix is a representative and not an invariant of $\lkt$ alone: if $\theta'$ is any involution of $\lkt$ whose $(+1)$- and $(-1)$-eigenspaces are isometric to $T_\Co$ and $S_\Co$, then $\theta'$ is $\Orth(\lkt)$-conjugate to $\theta_\Co$. Hence every marking of the Coble pair presents $\theta_\Co$ by a matrix conjugate to $\Theta$, and $\Theta$ exhibits the coordinates of $\theta_\Co$ up to that conjugacy.
+:::
+
+::: {.proof}
+
+**The matrix.** The block $P$ exchanges the two isotropic generators of the unimodular plane $U_1$: its Gram matrix $\begin{pmatrix}0&1\\1&0\end{pmatrix}$ is $P$-invariant and $P^2 = \id$. The block on $U_2\oplus U_3$ sends $(u,u')$ to $(-u',-u)$, so it multiplies $\langle (u,u'),(v,v')\rangle = u\cdot v + u'\cdot v'$ by $(-1)(-1) = 1$, and its square is the identity; the same computation applies to $E_{8,1}\oplus E_{8,2}$, whose form is likewise the orthogonal sum of two isometric summands. Hence $\Theta^{\mathsf T}G\Theta = G$ and $\Theta^2 = \id$, and $\Theta$ is integral. Its trace is $0$ because no basis vector is fixed, and its determinant is $(-1)^{11}$ because each of the eleven two-dimensional blocks has determinant $-1$ and the blocks are permuted in pairs.
+
+**The eigenspaces.** Each vector of the first display is fixed and each vector of the second is negated: $\theta_\Co(e_0+e_1) = e_1+e_0$, $\theta_\Co(e_2-e_4) = -e_4+e_2$, $\theta_\Co(e_{6+k}-e_{14+k}) = -e_{14+k}+e_{6+k}$, and the same three computations with the signs reversed give $\theta_\Co(e_0-e_1) = -e_0+e_1$, $\theta_\Co(e_2+e_4) = -e_2-e_4$ and $\theta_\Co(e_{6+k}+e_{14+k}) = -e_{6+k}-e_{14+k}$. The eleven vectors of each display are linearly independent. Both eigenspaces therefore have rank $11$: $\trace\Theta = 0$ gives $\dim\lkt^{\theta_\Co} = \dim\lkt^{-\theta_\Co}$, and the two dimensions sum to $22$. Each display is thus a basis of its eigenspace. Both eigenspaces are primitive, as the eigenspaces of an integral involution always are: $kx\in\ker(\theta_\Co-\id)$ implies $\theta_\Co(x) = x$.
+
+**The Gram matrices and the types.** In the first display $e_0+e_1$ has square $2$ and is orthogonal to the other ten vectors; $e_2-e_4$ and $e_3-e_5$ are isotropic and pair to $e_2\cdot e_3+e_4\cdot e_5 = 2$, so they span $U(2)$; and $e_{6+k}-e_{14+k}$ has square $-4$ and pairs with $e_{6+j}-e_{14+j}$ to $2\,(e_{6+k}\cdot e_{6+j} + e_{14+k}\cdot e_{14+j})$, so these eight span $E_8(-1)(2)$. In the second display the same computation with the signs reversed gives the same three Gram matrices, with $\generators{-2}$ in place of $\generators{2}$. The ranks, determinants, signatures, Smith normal forms $(\bZ/2\bZ)^{11}$ and coparities $\delta = 1$ of the two Gram matrices, and the identity $[\lkt:S_\Co\oplus T_\Co] = 2^{11}$, are recorded in `computations/reports/coble_a13-theta-coordinates-run.txt`. Nikulin's classification [@Nik80, Thm. 3.6.2, printed p. 144] then identifies the two isometry classes from the signature, the generator length $a = 11$ and the coparity $\delta = 1$, both lattices being indefinite.
+
+**The identification with $\theta_\Co$.** By @prop:theta-co-exists the sign involution $\theta_\Co$ is the isometry of $\lkt$ that is $-\id$ on $S_\Co$ and $\id$ on $T_\Co$, and $J_\Co$ is $+\id$ on $S_\Co$ and $-\id$ on $T_\Co$ by the definition of $S_\Co$ in @prop:coble-enriques-ambient-isometry and the primitivity of the eigenspaces; so $-J_\Co$ has exactly the two restrictions that define $\theta_\Co$. Two isometries of $\lkt$ agreeing on $S_\Co$ and on $T_\Co$ agree on $\lkt$, since $S_\Co\oplus T_\Co$ has finite index in $\lkt$. The two labelled images are values of the displayed matrix: $\theta_\Co(e_2+e_3+e_4+e_5) = -e_4-e_5-e_2-e_3$ and $\theta_\Co(e_0-e_1) = e_1-e_0$.
+
+**The conjugacy class.** Let $\theta'$ be an involution of $\lkt$ with eigenspaces $T' = \lkt^{\theta'}$ and $S' = \lkt^{-\theta'}$ isometric to $T_\Co$ and $S_\Co$, and choose isometries $\psi\colon S'\iso S_\Co$ and $\varphi\colon T'\iso T_\Co$. Let $\gamma$, $\gamma'$ be the gluing anti-isometries of the two primitive embeddings $S_\Co\oplus T_\Co\injects\lkt$ and $S'\oplus T'\injects\lkt$, which exist by @thm:nikulin-gluing and are isomorphisms $A_{S_\Co}\iso A_{T_\Co}(-1)$ and $A_{S'}\iso A_{T'}(-1)$. The composite $\gamma\,\bar\psi^{-1}\,\gamma'^{-1}$ is an isometry of $q_{T'}$, so $\varphi$ can be replaced by $\varphi\circ\eta$ for an $\eta\in\Orth(T')$ chosen so that the pair $(\psi^{-1},\varphi\eta)$ carries the graph of $\gamma'$ onto the graph of $\gamma$: the element of $\Orth(T')$ needed is the one realizing the isometry of $q_{T'}$ given by the composite, and it exists because $\rho_{T'}$ is onto for the even indefinite $2$-elementary lattice $T'$ [@thm:two-elementary-surjectivity, which is @Nik80, Thm. 3.6.3, printed p. 144]. Then $\psi^{-1}\oplus\varphi\eta$ is an isometry $S'\oplus T'\iso S_\Co\oplus T_\Co$ respecting the two gluings, and it extends over the common overlattice $\lkt$ to an isometry $\Phi$ with $\Phi\theta'\Phi^{-1} = \theta_\Co$: an involution is determined by its eigenspaces, and $\Phi$ carries the pair $(T',S')$ to $(T_\Co,S_\Co)$.
+:::
+
 ::: {.corollary #cor:no-del-pezzo-involution-coble-cover title="The isometry fixing $\langle f^*F_1,f^*F_2\rangle$ is not geometric"}
 
 In the marking of @prop:coble-cover-marking, the isometry $\phi$ is a Hodge isometry of $H^2(X,\ZZ)$, and it is not the action of an automorphism of $X$.

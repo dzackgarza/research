@@ -23,7 +23,7 @@ this inverse question from the archived Enriques meeting notes.
    T_\Co \injects \ten \injects \tdp \injects \lkt
    $$
    of @lem:sequence_of_embeddings and @lem:primitive_embedding_eta, and the equations of the sextic $C$ and its double plane (@qst:coble-explicit-equations) in the same bases.
-2. Write the $22\times 22$ matrix of the involution $\theta_\Co$ of @prop:theta-co-exists on the standard basis of $\lkt\cong U^{3}\oplus E_8^{2}$, and the polarization classes and the roots of the Coxeter diagram in that basis.
+2. Write the polarization classes $h_\Co$ and $h_\En$ and the roots of the Coxeter diagram in the standard basis of $\lkt\cong U^{3}\oplus E_8^{2}$ in which @thm:theta-co-coordinates gives the matrix of the sign involution $\theta_\Co$ of @prop:theta-co-exists, and compare the two there.
 :::
 
 ::: {.conjecture #conj:horizontal-folding title="The horizontal folding involution"}
