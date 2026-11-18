@@ -1965,7 +1965,7 @@ And the Coble surfaces of [@DK13, §3, printed p. 513] are the blowups of ten no
 
 The complement is not empty and contains the whole root arrangement: @thm:direct-period-misses-root-walls.
 So the clause cannot be read with an empty complement, and every $(-2)$-Heegner divisor of $T_\Co$ lies in the excluded locus.
-The excluded divisors beyond the root arrangement are not decided here: the record of @prob:B24, part 2, is that the $121$ classes it counts on the invariant side are carried by the gluing into the level set $\set{q_{T_\Co}=1}$ and carry divisors the image misses, at the exploratory tier that record declares.
+The excluded divisors beyond the root arrangement are decided in one direction and not in the other: at least one $(-4)$-Heegner divisor is met, at the member $b_\star$ of @thm:direct-period-meets-minus-four, so the excluded locus is a proper subarrangement of the negative arrangement and not the whole of it; and the record of @prob:B24, part 2, is that the $121$ classes it counts on the invariant side are carried by the gluing into the level set $\set{q_{T_\Co}=1}$ and carry divisors the image misses, at the exploratory tier that record declares.
 That level set is not the record's: it has $496$ classes, computed exactly (@rmk:coble-discriminant-levels), so $121$ is a subset of it and not the set.
 
 ::: {.remark #rmk:coble-discriminant-levels title="the level sets of the discriminant forms of $S_\Co$ and $T_\Co$, exactly"}
@@ -1982,6 +1982,43 @@ The level-$0$ entry of $T_\Co$ is $528=527+1$: the $527$ nonzero singular classe
 Two readings follow.
 First, a class containing a vector of square $n$ satisfies $q_L(z)\equiv n\pmod{2\bZ}$, because $q_L$ is $v^2$ on a lift: classes containing vectors of square $-2$ and of square $-4$ both sit at level $0$, and a class at level $1$ contains lifts of odd square only.
 Second, the level set $\set{q_{T_\Co}=1}$ therefore has $496$ classes, and the $121$ of @prob:B24, part 2 is a count on the invariant side singled out by that record's own condition; in the normalization above the record's two clauses for it, that its classes carry a $(-4)$-vector and that they sit at $q_S=-1$, cannot both hold, since an even square is level $0$. So the $121$ is quoted as a number in the record's convention, at the tier the record declares, and not as the level set.
+:::
+
+::: {.theorem #thm:direct-period-meets-minus-four title="the direct period image meets a $(-4)$-Heegner divisor"}
+Let $b_\star$ be the one-node member of @prop:one-node-family exhibited in @thm:chamber-clause-fails, whose branch curve is bitangent to the two ruling fibres $\set{x=1}$ and $\set{x=-1}$.
+Then $T_{\Co,b_\star}\intersect\Pic(\widehat X_{b_\star})$ contains a primitive class of square $-4$, and the period of $b_\star$ lies on the $(-4)$-Heegner divisor of $T_\Co$ that this class defines.
+Together with @thm:direct-period-misses-root-walls this says that the excluded locus of the direct period map is a proper, nonempty subarrangement of the negative Heegner arrangement of $T_\Co$: it contains every $(-2)$-divisor and does not contain this $(-4)$-divisor.
+:::
+
+::: {.proof}
+*The two split fibres.*
+At $b_\star$ the restrictions of the branch curve to the two ruling fibres are
+$$f_\star(1,y)=(y-3)^2(y-1)^2,\qquad f_\star(-1,y)=(y+1)^2(y+3)^2,$$
+so each fibre meets the branch curve in two points of multiplicity two and nowhere else away from the node's own fibre $x=0$ (@thm:chamber-clause-fails, and its record `computations/reports/coble_a21_chamber_fails-run.txt`, which prints these two factorisations and $\gcd(q,q')=x^2-1$ for the $x$-discriminant).
+Over such a fibre $F$ the covering surface is $z^2=\prod_i(y-a_i)^2$, which is the union of the two curves $z=\pm\prod_i(y-a_i)$: two smooth rational curves meeting in the two points $y=a_i$, so $\widehat\pi_b^{-1}(F)=D_+ + D_-$ with $D_+\cdot D_- = 2$.
+Each component is rational, so $D_\pm^2 = 2p_a-2 = -2$ by the genus formula [@AN06, display (10), printed p. 22].
+
+*The involution exchanges the two fibres.*
+$\widehat\iota_{\Co,b_\star}$ covers $\tau$ (@prop:tuple-of-the-construction), and $\tau$ carries $\set{x=c}$ to $\set{x=-c}$; the point $p=(0,0)$ lies on neither of the fibres $c=\pm1$, so on them $\tau$ acts as on $Y$.
+Hence $\widehat\iota_{\Co,b_\star}$ maps the two components over $x=1$ bijectively onto the two components over $x=-1$.
+Write $D_{1,\pm}$ for the components over $x=1$ and put $D_{-1,\pm}\definedas\widehat\iota_{\Co,b_\star}(D_{1,\pm})$.
+
+*The class.*
+$v\definedas D_{1,+}-D_{-1,+}$ is nonzero, and
+$$\widehat\iota_{\Co,b_\star}v=D_{-1,+}-D_{1,+}=-v,$$
+so $v\in T_{\Co,b_\star}$, and it is the class of a difference of curves, so $v\in\Pic(\widehat X_{b_\star})$.
+The two ruling fibres are disjoint, so $D_{1,+}\cdot D_{-1,+}=0$, and with $D_{1,+}^2=D_{-1,+}^2=-2$ the class has
+$$v^2=-2-2-2\cdot0=-4.$$
+It is primitive: $v=2w$ with $w\in T_{\Co,b_\star}$ would give $w^2=-1$, and $T_\Co$ is even (@prop:coble-transcendental).
+So the period of $b_\star$ is orthogonal to a primitive class of square $-4$ of $T_{\Co,b_\star}$, that is, it lies on the corresponding $(-4)$-Heegner divisor of $T_\Co$; that divisor is not one of the root divisors of @thm:direct-period-misses-root-walls, which are the divisors of classes of square $-2$.
+:::
+
+::: {.remark title="what this fixes in the complement, and what it leaves"}
+The image meets this $(-4)$-divisor, and by @thm:direct-period-misses-root-walls it meets no $(-2)$-divisor.
+So two readings of the first clause of @prob:autonomous-theorem are excluded: the complement being empty, and the complement being the whole negative arrangement.
+What stays open is which $(-4)$-divisors are met.
+This one is, its class being the trivial class of $A_{T_\Co}$, and the $121$ classes of @prob:B24, part 2 are recorded there as met by none; the two statements concern different classes and are compatible.
+Separating them class by class is the content of that record, and no part of it is decided here.
 :::
 
 The rest of the problem is not available here, and the items it waits on are the ones @tbl-status-ledger already names: the polarized Coble Coxeter diagrams of @sec-coxeter, marked not established, and the direct dlt and stable-model theorem of @sec-coble-dlt, marked open.
@@ -2692,9 +2729,10 @@ The table lists each statement, whether it is proved, and the section that prove
 | Explicit equivariant smoothing | established for the projective family | @sec-equivariant-smoothing |
 | Coverage of the complete Coble locus | required theorem | @sec-projective-coverage |
 | The direct period image misses every $(-2)$-Heegner divisor of $T_\Co$ | proved | @thm:direct-period-misses-root-walls |
-| Target theorem A, first clause | published in the unpolarized form [@DK13, Prop. 3.2, printed p. 513]; the root exclusion is @thm:direct-period-misses-root-walls; the exact complement is open beyond the root arrangement, its level set computed at @rmk:coble-discriminant-levels; the polarized refinement is @qst:b25-sign-holonomy | @sec-autonomous-target |
+| Target theorem A, first clause | published in the unpolarized form [@DK13, Prop. 3.2, printed p. 513]; no root divisor is met (@thm:direct-period-misses-root-walls) and one $(-4)$-divisor is (@thm:direct-period-meets-minus-four), so the complement is a proper nonempty subarrangement; which $(-4)$-divisors are met is the record of @prob:B24, part 2, its level set computed at @rmk:coble-discriminant-levels; the polarized refinement is @qst:b25-sign-holonomy | @sec-autonomous-target |
 | Target theorem A, clauses two and three | not established; they wait on @sec-coxeter and @sec-coble-dlt | @sec-autonomous-target |
 | The level sets of the discriminant forms of $S_\Co$ and $T_\Co$ | computed exactly: $528$, $496$, $496$, $528$ and $528$, $528$, $496$, $496$ over the $2048$ classes | @rmk:coble-discriminant-levels |
+| A primitive $(-4)$-class in $T_{\Co,b}\intersect\Pic$ at the member $b_\star$ | proved, with the class $D_{1,+}-\widehat\iota_{\Co,b_\star}(D_{1,+})$ of two components of split ruling fibres | @thm:direct-period-meets-minus-four |
 | $T_{\Co}\cong\langle2\rangle\oplus U(2)\oplus E_8(2)$ | established | @sec-orthogonal-complement |
 | $S_{\Co}$ and reflection twist | established as lattice calculations | @sec-reflection-twist |
 | Labeled embedding uniqueness | required theorem | @sec-labeled-lattice-data |
