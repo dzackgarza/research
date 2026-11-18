@@ -469,6 +469,24 @@ def test_item_7_the_finite_symmetry_group_separates_root_12() -> None:
     assert "not the whole stabilizer of eta_5 in Gamma_Co,2" in text
 
 
+def test_item_7_the_pair_invariant_is_uniform_too() -> None:
+    """Item 7: the last delta-sensitive invariant agrees on all three roots.
+
+    The complement of the saturation of <delta, r> is the invariant that remembers the Coble root,
+    and it is isometric for all three pairs.  With this, every invariant computable from one or two
+    vectors is exhausted; what separates root 12 from 13, if anything does, is the orbit under the
+    infinite stabilizer, which the library states it cannot compute.
+    """
+    run = ROOT / "computations/reports/coble_760-pair-complement-run.txt"
+    assert run.exists(), run
+    text = run.read_text(encoding="utf-8")
+    assert text.count("complements of <delta,r> isometric -> True") == 3
+    assert text.count("det   1024") == 3
+    verdict = " ".join(text.split())
+    assert "does not separate root 12 from 13" in verdict
+    assert "sage-extensions#370" in verdict
+
+
 def test_item_8_cusp_four_is_not_a_pair() -> None:
     """Item 8: the transcript prints one admissible root at cusp 4."""
     text = FACE_RUN.read_text(encoding="utf-8")
