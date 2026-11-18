@@ -508,6 +508,27 @@ def test_item_7_the_pair_invariant_is_uniform_too() -> None:
     assert "sage-extensions#370" in verdict
 
 
+def test_item_3_the_semifan_arithmetic_is_done_and_the_marking_is_not() -> None:
+    """Item 3: what is missing is the geometric dictionary, not the semifan arithmetic.
+
+    Another record, `coble_pair-semifan-cusps.py`, computes the restricted chamber at each Coble
+    0-cusp --- projected wall Gram, bond graph, coincident walls, inherited relevance, W_irr,
+    maximal affine subdiagrams, the semifan-restriction hypotheses, and the chamber's volume --- and
+    it reads its relevance input from this issue's own transcript.  So the arithmetic side of the
+    restricted semifan is settled and cross-linked, and the only thing item 3 still lacks is the
+    dictionary from the chamber's roots to curves of the Coble surface.
+    """
+    pair = ROOT / "computations/reports/coble_pair-semifan-cusps.py"
+    assert pair.exists(), pair
+    text = pair.read_text(encoding="utf-8")
+    assert "coble_irrelevant-marking-face-run.txt" in text, "the relevance input is no longer read"
+    assert "inherited relevance" in text or "irrelevant" in text
+    # and its transcript reports a per-cusp verdict, so the computation ran
+    run = ROOT / "computations/reports/coble_pair-semifan-cusps-run.txt"
+    assert run.exists(), run
+    assert "part D summary" in run.read_text(encoding="utf-8")
+
+
 def test_item_8_cusp_four_is_not_a_pair() -> None:
     """Item 8: the transcript prints one admissible root at cusp 4."""
     text = FACE_RUN.read_text(encoding="utf-8")
