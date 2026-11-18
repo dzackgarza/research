@@ -68,6 +68,25 @@ for j in range(10):
     func[0, j] = sum(GS[i, j] * int(cP[i]) for i in range(10))
     func[1, j] = sum(GS[i, j] * int(cD[i]) for i in range(10))
 K = matrix(ZZ, matrix(ZZ, func).right_kernel_matrix()).saturation()
+Bmat = matrix(QQ, 10, 10, [list(cP), list(cD)] + [[int(K[i][j]) for j in range(10)] for i in range(8)])
+def _in_lattice(cv):
+    try:
+        y = Bmat.transpose().solve_right(vector(QQ, cv))
+    except Exception:
+        return False
+    return all(v in ZZ for v in y)
+_lcoords = None
+for _combo in __import__("itertools").product([0, 1], repeat=10):
+    if sum(_combo) == 0:
+        continue
+    _cv = vector(QQ, _combo)
+    if _in_lattice(_cv) or not _in_lattice(2 * _cv):
+        continue
+    _x = Bmat.transpose().solve_right(2 * _cv)
+    if all(v in ZZ for v in _x):
+        _lcoords = list(_x)[2:]
+        break
+assert _lcoords is not None
 GL = matrix(ZZ, 8, 8, lambda i, j: sum(int(K[i][a]) * GS[a, b] * int(K[j][b])
                                        for a in range(10) for b in range(10)))
 BOUND = 120
@@ -97,6 +116,56 @@ smallgens = list(small.orthogonal_group().group_generators())
 print("  the same call on a rank-1 form: %d generators in %.1f s" % (len(smallgens), time.time() - t))
 print("  so the environment resolves GAP correctly and the call works at small rank:")
 print("  what stalls below is the scale, not the GAP wiring.")
+print()
+print("=== the GAP-free route, and why it is empty")
+import itertools
+from collections import deque
+Ks = K
+GLs = GL
+
+
+def roots_of(Gr, box=2):
+    n = Gr.nrows()
+    out = []
+    for combo in itertools.product(range(-box, box + 1), repeat=n):
+        if all(c == 0 for c in combo):
+            continue
+        v = vector(ZZ, combo)
+        if int(v * Gr * v) == -2:
+            out.append(v)
+    return out
+
+
+roots = roots_of(GLs)
+print("  roots of the complement found in the box: %d" % len(roots))
+
+
+def reflect(w, cls):
+    coeff = QQ(2) * (vector(QQ, cls) * GLs * vector(QQ, w)) / QQ(w * GLs * w)
+    return vector(QQ, [QQ(cls[i]) - coeff * QQ(w[i]) for i in range(GLs.nrows())])
+
+
+def canon(cls):
+    return tuple(QQ(x) - QQ(x).floor() for x in cls)
+
+
+start = canon(vector(QQ, [QQ(v) / 2 for v in _half])) if False else None
+# the gluing class of the complement, from the 2-division of the record's setup
+start = canon(vector(QQ, [QQ(c) / 2 for c in _lcoords]))
+seen = {start}
+queue = deque([start])
+while queue and len(seen) < 300:
+    cur = queue.popleft()
+    for w in roots:
+        nxt = canon(reflect(w, cur))
+        if nxt not in seen:
+            seen.add(nxt)
+            queue.append(nxt)
+print("  classes of A_L reached from the gluing class under those reflections: %d" % len(seen))
+if len(seen) == 1:
+    print("  SO: the reflections in the complement's roots fix its gluing class, and no product of")
+    print("  them can repair a gluing mismatch.  The repair, if any, needs a NON-reflection isometry")
+    print("  of the complement -- exactly the promotion above.  The GAP-free route is empty.")
 print()
 print("The promotion step itself is O(A_L, q).group_generators() followed by")
 print("L.discriminant_lift(...), which hands the group to GAP.  Measured in this session, on a")

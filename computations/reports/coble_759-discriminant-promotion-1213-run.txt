@@ -10,6 +10,13 @@ the promotion step for the pair (12,13), on the complement of <r12, delta> in S
   so the environment resolves GAP correctly and the call works at small rank:
   what stalls below is the scale, not the GAP wiring.
 
+=== the GAP-free route, and why it is empty
+  roots of the complement found in the box: 72
+  classes of A_L reached from the gluing class under those reflections: 1
+  SO: the reflections in the complement's roots fix its gluing class, and no product of
+  them can repair a gluing mismatch.  The repair, if any, needs a NON-reflection isometry
+  of the complement -- exactly the promotion above.  The GAP-free route is empty.
+
 The promotion step itself is O(A_L, q).group_generators() followed by
 L.discriminant_lift(...), which hands the group to GAP.  Measured in this session, on a
 bound rather than to completion:
