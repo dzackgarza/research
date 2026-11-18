@@ -50,7 +50,7 @@ tags:
 
 | Unknown | Stated in |
 |:---|:---|
-| **KSBA versus semitoroidal** | @conj:coble-ksba-semitoroidal-morphism, @conj:ksba_semitoroidal_comparison, @conj:no_moduli_loss (stated for the $T_\Co$-roots of the marked cusps; the marking-line root lies in no $\Gamma_{\Co,2}$-orbit by @prop:marking-line-no-coble-lift, and the open step is the smallest cone of $\mathcal{F}_5$ that contains $r^{\perp}\intersect C$, not computed), @conj:restricted_ramification_semifan |
+| **KSBA versus semitoroidal** | @conj:coble-ksba-semitoroidal-morphism, @conj:ksba_semitoroidal_comparison, @conj:no_moduli_loss (corrected to the contracted $(-4)$-curve: no face of the restricted semifan carries the marking, by @thm:face-irrelevant-marking), @conj:restricted_ramification_semifan |
 | **An equivariant triangulation compatible with the marked root** | @qst:equivariant_triangulation |
 | **The position of the three Coble semifans** | @qst:semifan-poset-position |
 | **Do the integral-affine data determine the stable limit** | @conj:classification-ia-data |

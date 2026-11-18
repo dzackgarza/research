@@ -358,25 +358,44 @@ A vector of $T_\Co = \delta^{\perp\ten}$ pairs trivially with $\delta$, so no li
 The white nodes certify which root is the marking line: at cusps $3$ and $4$ it is Sterk's label $8$, at cusp $5$ his label $11$, each certified ``is $\pm\delta$: True'', and the root vectors carry $U$-coordinates $(-1, 1)$, of $\delta$-pairing $2$, while the remaining admissible roots carry $U$-coordinates $(1, 1)$, of $\delta$-pairing $0$ (`computations/reports/coble_cusp-admissibility-run.txt`, `computations/reports/coble_enriques-white-root-facets-run.txt`).
 :::
 
-::: {.conjecture #conj:no_moduli_loss}
+::: {.theorem #thm:face-irrelevant-marking title="No face of the restricted Enriques semifan determines a marked Coble root"}
+
+Let $[I]$ be a marked $0$-cusp among Sterk's cusps $3$, $4$ and $5$, with boundary lattice $K_I = \eta_I^{\perp\ten}/\ZZ\eta_I$, fundamental chamber $\mathfrak{C}_I$ of the reflection group of $K_I$, and restricted Enriques semifan $\semifan{F}_I$ whose irrelevant roots are the foldings of the irrelevant roots of the K3 diagram (@prop:fen2-stable-limit-strata(1)).
+For a simple root $r$ of $K_I$, that is a vertex of the Coxeter diagram $G_I$ of the cusp, let $\mathfrak{f}(r)$ be the cone of $\semifan{F}_I$ whose relative interior contains the relative interior of $r^{\perp}\intersect\mathfrak{C}_I$; it is unique, and one exists, because the relative interiors of the cones of $\semifan{F}_I$ partition its support.
+
+1. If $r$ is relevant then $\mathfrak{f}(r)$ is the wall $r^{\perp}\intersect\overline{\mathfrak{C}_I}$, of codimension one in $\mathfrak{C}_I$. If $r$ is irrelevant then $\mathfrak{f}(r)$ is the maximal cone $\mathfrak{C}_I^{\mathrm{gen}} = \bigcup_{h\in W^{\mathrm{irr}}_I} h(\mathfrak{C}_I)$ of $\semifan{F}_I$, and that value does not depend on which irrelevant root $r$ is.
+
+2. Every admissible $T_\Co$-root is irrelevant: at cusp $3$ Sterk's label $12$, at cusp $4$ his label $10$, at cusp $5$ his labels $12$, $13$ and $14$.
+
+3. At cusp $5$ the three admissible $T_\Co$-roots lie in pairwise distinct classes of $K_5$, hence in pairwise distinct $\Gamma_{\Co,2}$-orbits, and
+$$\mathfrak{f}(r_{12}) = \mathfrak{f}(r_{13}) = \mathfrak{f}(r_{14}) = \mathfrak{C}_5^{\mathrm{gen}} .$$
+
+So the map from $\Gamma_{\Co,2}$-orbits of admissible roots to faces of $\semifan{F}_I$ is not injective, and the face of the restricted Enriques semifan does not determine the marked Coble root at any marked cusp.
+:::
+
+::: {.proof}
+
+**(1).** By @def:generalized-coxeter-semifan the maximal cones of $\semifan{F}_I$ are $\mathfrak{C}_I^{\mathrm{gen}}$ and its $W$-images, and by [@AEGS25, §5.2, printed p. 610] the semifan is the coarsening of the Coxeter fan obtained by removing the faces $\bigcap_j \alpha_j^{\perp} \intersect C$ in which all $\alpha_j$ are irrelevant roots. A point $x$ in the relative interior of $r^{\perp}\intersect\mathfrak{C}_I$ lies in the relative interior of the facet $r^{\perp}\intersect\overline{\mathfrak{C}_I}$ of the chamber; that facet is the face $\bigcap_j \alpha_j^{\perp} \intersect C$ of the definition for the single root $r$, so it is removed exactly when $r$ is irrelevant. If $r$ is relevant the facet is not removed, it is a cone of $\semifan{F}_I$, and $\mathfrak{f}(r)$ is it. If $r$ is irrelevant the facet is removed: its two sides are the interiors of $\mathfrak{C}_I$ and of $s_r(\mathfrak{C}_I)$, and $s_r \in W^{\mathrm{irr}}_I$, so both chambers lie in the single maximal cone $\mathfrak{C}_I^{\mathrm{gen}}$, in whose relative interior $x$ then lies. The value depends on $\mathfrak{C}_I$ and on the set of irrelevant roots only, not on $r$; and if the face cut by $r^{\perp}$ is read instead as the unordered pair of maximal cones on its two sides, every irrelevant root gives the pair $(\mathfrak{C}_I^{\mathrm{gen}}, \mathfrak{C}_I^{\mathrm{gen}})$, again the same for all of them.
+At cusps $3$ and $5$ the group $W^{\mathrm{irr}}_I$ is infinite, so $\mathfrak{C}_I^{\mathrm{gen}}$ is not finitely generated and $\semifan{F}_I$ is not a fan [@AEGS25, Lemma 5.6, printed p. 611]; the maximal cones are still the unions of chambers and their $W$-images [@AEGS25, §5.2, printed p. 610], which is all that the argument uses.
+
+**(2).** Each printed root of Sterk's diagram is a folding of the K3 roots of [@AEGS25, Fig. 5, printed p. 592], and by [@AEGS25, Def. 5.4, printed p. 611] a folded root is irrelevant exactly when the roots it folds are outside the boundary $0$--$15$ of the square, respectively $2$--$18$ of the triangle [@AEGS25, §5.2, printed p. 610]. `computations/reports/coble_irrelevant-marking-face-run.txt` prints the constituents of every folded root, asserts each against the library's own expression, and reads off: cusp $3$, label $12$ is the folding of the printed nodes $21$, $17$, $17$, and labels $10$ and $11$ of $16$, $18$ and $21$, $19$, $19$; cusp $4$, label $10$ is the folding of $16$, $19$ and label $11$ of $17$, $18$; cusp $5$, label $11$ is the folding of $16$ and labels $7$, $9$, $12$, $13$, $14$ of $20$, $21$, $17$, $18$, $19$. Every constituent lies in $16$--$21$, so each of the listed roots is irrelevant. At cusp $5$ the printed order and the library's vertex order differ, and the record enumerates all eight permutations of the library order that carry one labelled Gram matrix to the other, and obtains the same set of printed labels under each; at cusps $3$ and $4$ the two orders agree.
+That no admissible root at cusp $5$ is relevant is consistent with the count of [@AEGS25, Lemma 5.8, printed p. 611]: the semitoroidal compactification has $3 + 0$ divisors at cusp $5$, so no Type III cone survives the coarsening there, and the wall of a relevant root is one.
+
+**(3).** For two of the three root vectors $r_a$, $r_b$ the record computes the rank over $\QQ$ of the pair $(\eta_5, r_a - r_b)$ and obtains $2$ in all three cases. A difference in $\eta_5^{\perp\ten}$ that is not a rational multiple of $\eta_5$ is not a class difference in $K_5$, so the three classes are distinct; and an element of $\Gamma_{\Co,2}$ carrying one marked pair at $[5]$ to another preserves $[5]$ and hence acts on $K_5$, so distinct classes give distinct orbits. With (2) each of the three is irrelevant, so (1) gives the common value $\mathfrak{C}_5^{\mathrm{gen}}$. The record also exhibits the comparison at cusps $3$ and $4$, where the single admissible root leaves no pair to compare.
+:::
+
+::: {.conjecture #conj:no_moduli_loss title="The marking of a marked cusp is read off the contracted $(-4)$-curve, not off a face"}
 
 The stable quotient determines its marked Coble root among the $T_\Co$-roots of each marked cusp: the $\frac{1}{4}(1,1)$ singularity of @prop:coble-quarter-singularity -- equivalently, the contracted anti-bicanonical $(-4)$-curve of @prop:antibicanonical-system -- recovers it, so that degenerations at a marked cusp whose marked roots are $T_\Co$-roots, inequivalent under $\Gamma_{\Co,2}$, are not identified in the KSBA boundary.
 
+**The corrected form.** This conjecture asked the face of the restricted semifan to carry the marking, and in that form it is false: by @thm:face-irrelevant-marking every admissible $T_\Co$-root at every marked cusp is irrelevant, so all of them cut one maximal cone, and at cusp $5$ the three inequivalent roots $12$, $13$ and $14$ cut the same one.
+The recovery asserted here is therefore a statement about the contracted curve alone, and nothing is computed for it.
+The pair the page carried as a counterexample before -- roots $11$ and $12$ at cusp $5$ -- is withdrawn on a different ground: root $11$ is the marking line $[\pm\delta]$, which has no lift in $T_\Co$ by @prop:marking-line-no-coble-lift, so that pair was never comparable; the pair of @thm:face-irrelevant-marking is.
+
 The group that the determination is modulo is $\Gamma_{\Co,2} = R_{\gent}$, the image of $\Stab_{\gent}(\delta)$ in $\Orth(\delta^{\perp})$ (@prop:gamma-co-images, @prop:gamma-co-2-line-stabilizer): the stabilizer of the root line $\ZZ\delta$ in $\gent$.
 It is not the monodromy group $\Gamma_{\Co}$ of @def:gamma-co-groups, whose equality with the stable subgroup $\widetilde{\Orth}^+(T_{\Co})$ is @conj:gamma-co-stable.
-
-**The withdrawn counterexample of a6e3a2eaac.** The counterexample this page carried before -- the pair of admissible roots $11$ and $12$ at cusp $5$, both irrelevant, whose hyperplanes were said to cut the same face of $\mathcal{F}_5$, namely none -- is withdrawn.
-Root $11$ is the marking-line root $[-\delta]$: by @prop:marking-line-no-coble-lift it has no lift in $T_\Co$ and lies in no $\Gamma_{\Co,2}$-orbit, so the pair is not comparable under the group.
-The object the pair was claimed to share was never defined: for an irrelevant root $r$ the hyperplane $r^{\perp}$ is not a wall of $\mathcal{F}_I$, but it still meets the cone $C$, and neither the restricted fan $r^{\perp}\intersect\mathcal{F}_I$ nor the smallest cone of $\mathcal{F}_I$ that contains $r^{\perp}\intersect C$ was computed for any admissible root.
-At cusp $3$ the admissible roots are not both relevant: the label $12$ lies in the fold-transport irrelevant set $\{10, 11, 12\}$ (`computations/reports/sterk_irrelevant_inertia-run.txt`), the same relevant-versus-irrelevant split as cusp $4$, whose labels $8$ and $10$ are relevant and irrelevant.
-
-**The corrected statement, and what it waits on.** The determination is stated for the $T_\Co$-roots only: the admissible roots of $K_I$ whose lifts are $(-2)$-vectors of $T_\Co$ orthogonal to $\eta_I$ -- at cusp $3$ Sterk's label $12$, at cusp $4$ his label $10$, at cusp $5$ his labels $12$, $13$ and $14$ (`computations/reports/coble_cusp-admissibility-run.txt`, `computations/reports/coble_enriques-white-root-facets-run.txt`).
-The marking-line root $[\pm\delta]$ is not among them by @prop:marking-line-no-coble-lift, and at cusp $2$ the unique admissible root is the marking line itself, so no $T_\Co$-root exists there.
-The open step is this: for each admissible $T_\Co$-root $r$ at cusp $5$ -- Sterk's labels $12$, $13$ and $14$ -- the smallest cone of $\mathcal{F}_5$ that contains $r^{\perp}\intersect C$ is not computed.
-Distinct classes in $K_I$ do not decide the statement.
-The record `computations/reports/coble_coble-root-orbits.py` and its run file compute the classes of the roots in $K_I$, pairwise distinct at cusp $5$; the orbit computation of the admissible roots, filed as sage-extensions#370 and closed at 1df83be981, supplies the orbits.
-The classification of the KSBA stable pairs by cusp and face, and the coarsening of the Coxeter fan that defines the irrelevant roots, are both those of the Nagoya Math. J. 259 (2025) text: the classification is [@AEGS25, Thm. 5.9, printed p. 611], and the coarsening is [@AEGS25, §5.2, printed p. 611].
-
+The marking-line root is not among the $T_\Co$-roots by @prop:marking-line-no-coble-lift, and at cusp $2$ the unique admissible root is the marking line itself, so no $T_\Co$-root exists there.
+Cusps $3$ and $4$ carry one $T_\Co$-root each and so no pair, which leaves cusp $5$, where the three roots are pairwise inequivalent by @thm:face-irrelevant-marking(3).
 :::
 
 ## Boundary cusp data
