@@ -21,9 +21,14 @@ def main():
     line_path = folder / "coble_singular_integral_representatives.json"
     plane_path = folder / "coble_plane_integral_star_section.json"
     parabolic_path = folder / "coble_complete_plane_parabolic_generators.json"
+    public_path = folder / "coble_gco_public_representatives.json"
     lines = json.loads(line_path.read_text())
     planes = json.loads(plane_path.read_text())
     parabolic = json.loads(parabolic_path.read_text())
+    public = json.loads(public_path.read_text())
+    assert public["source_workflow"] == 43556671111
+    assert len(public["lines"]) == 4 and len(public["planes"]) == 7
+    assert len(public["edges"]) == 13
     change = matrix(ZZ, lines["standard_to_diagonal"])
     singular = sorted(row["mask_diagonal"] for row in lines["representatives"])
     assert len(singular) == 527
@@ -144,6 +149,7 @@ def main():
                 "line": hashlib.sha256(line_path.read_bytes()).hexdigest(),
                 "plane": hashlib.sha256(plane_path.read_bytes()).hexdigest(),
                 "integral_parabolic": hashlib.sha256(parabolic_path.read_bytes()).hexdigest(),
+                "public_gamma_co_2": hashlib.sha256(public_path.read_bytes()).hexdigest(),
             },
             "singular_masks_diagonal": singular,
             "base_finite_plane_masks": sorted((a, b, a ^ b)),
@@ -158,6 +164,7 @@ def main():
             ],
             "integral_plane_representatives_standard": planes["base_planes_standard"],
             "flag_line_coefficients": planes["flag_line_coefficients"],
+            "public_gamma_co_2_representatives": public,
             "finite_plane_transports": [
                 {
                     "finite_plane_masks": entry["finite_plane_masks"],

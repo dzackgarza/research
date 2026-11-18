@@ -144,13 +144,23 @@ def test_proper_integral_plane_stabilizer_image(tmp_path):
             "[9, 12, 4, 5], [9, 12, 4], [9, 7], [9, 12], [0]]") in result.stdout
     artifact = folder / "coble_proper_plane_stabilizer_image.json"
     assert hashlib.sha256(artifact.read_bytes()).hexdigest() == (
-        "29fe060e8f6d9b152904ea787f1c40576a9aa3a5a3aa0dceee4623f558606729")
+        "957165e566390a41a6019b525dee528969a0fb4d56f534a17a6aec3069ce42b8")
     data = json.loads(artifact.read_text())
     assert data["schema"] == "coble-proper-plane-stabilizer-finite-cosets-v1"
     assert len(data["singular_masks_diagonal"]) == 527
     assert len(data["integral_star_masks_diagonal"]) == 8
     assert len(data["integral_plane_representatives_standard"]) == 8
     assert data["flag_line_coefficients"] == [[1, 0], [0, 1], [1, 1]]
+    public = data["public_gamma_co_2_representatives"]
+    assert public["source_workflow"] == 43556671111
+    assert len(public["lines"]) == 4
+    assert len(public["planes"]) == 7
+    assert len(public["edges"]) == 13
+    assert sorted(x["index"] for x in public["lines"]) == list(range(4))
+    assert sorted(x["index"] for x in public["planes"]) == list(range(7))
+    assert sorted(x["index"] for x in public["edges"]) == list(range(13))
+    assert all(0 <= e["line_index"] < 4 and 0 <= e["plane_index"] < 7
+               for e in public["edges"])
     finite_planes = data["finite_plane_transports"]
     assert len(finite_planes) == 23715
     assert len({tuple(sorted(row["finite_plane_masks"])) for row in finite_planes}) == 23715
