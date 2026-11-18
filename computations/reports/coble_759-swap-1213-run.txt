@@ -1,0 +1,9 @@
+pairings: r12.r13 = 0, r12.delta = 0, r13.delta = 0; each square -2
+P = sat.span(r12, r13, delta): rank 3
+P^perp: rank 9, det -512;  det P = -8, det P * det P^perp = 4096, det T_En = 1024
+index^2 of P + P^perp: 4 -> index 2
+
+RESULT: P is not a direct summand (index 4); the identity extension is not available and
+the gluing question for this pair is open.
+PYEXIT=0
+exit=0
