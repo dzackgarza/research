@@ -501,7 +501,7 @@ def test_item3_geometric_entry_is_decided_by_the_direct_period_theorems():
     assert "deck group of the marking cover and the geometric monodromy group both equal" in b25
     b25_proof = _block(report, "{.proof}\n\n*The two groups.*")
     assert "\\Gamma_{\\mathrm{lab}} = \\Gamma^{\\mathrm{dir}}_{\\Co,2}" in b25_proof
-    assert "injective on marked isomorphism classes" in b25_proof
+    assert "@lem:chamber-from-marked-period the marked moduli injects" in b25_proof
     assert "the complement of a locally finite union of proper closed analytic subsets" in b25_proof
     assert "regular covering of the connected moduli stack with deck group" in b25_proof
 
@@ -738,6 +738,30 @@ def test_absorbed_rel_block_diagonal_section_leaves_one_query():
     assert "coble_rel_block_diagonal_section-run.txt" in item3
     assert "a single membership query" in item3
     assert "sufficient condition and not an equivalence" in item3
+
+
+def test_item3_the_chamber_step_is_proved_against_its_counterexample():
+    """The step the review rejected: marked data determine the chamber.
+
+    Decides: the lemma is stated for the marked period (not for the labels), proved through
+    strong Torelli at the ample class 2H - alpha, and reconciled with the theorem that the
+    labels need not determine the chamber; and B25's proof cites it instead of the label-only
+    proposition.
+    """
+    report = _text(REPORT)
+    lem = _block(report, "{.lemma #lem:chamber-from-marked-period")
+    assert "whose periods agree as points of $\\bD(T_\\Co)$" in lem
+    assert "their chambers" in lem
+    lem_proof = _block(report, "{.proof}\n\nThe transition isometry $g = ")
+    assert "strong Torelli theorem [@BHPV04, Ch. VIII, Thm. 11.1]" in lem_proof
+    assert "2H_b-" in lem_proof
+    assert "@thm:chamber-clause-fails" in lem_proof
+    assert "not of the labels alone" in lem_proof
+    b25 = _block(report, "{.theorem #prob:B25")
+    assert "@lem:chamber-from-marked-period" in b25
+    b25_proof = _block(report, "{.proof}\n\n*The two groups.*")
+    assert "@lem:chamber-from-marked-period the marked moduli injects" in b25_proof
+    assert "the period map is injective on marked isomorphism classes" not in b25_proof
 
 
 if __name__ == "__main__":

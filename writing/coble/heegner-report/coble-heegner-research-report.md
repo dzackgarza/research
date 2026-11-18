@@ -2068,16 +2068,28 @@ So the marked direct Coble moduli stack is the complement of that subarrangement
 *The refutation.* With both parts, the excluded and the included divisors are both nonempty: no $(-2)$-wall of $T_\Co$ is met, and each of the $121$ walls of part 2 is missed, while the complement of the whole divisorial locus is dense. So the image is neither $\bD^\circ_\Co$ nor the whole domain, and the arrangement-complement form of B2.4 fails on the side of the $121$ divisors.
 :::
 
+::: {.lemma #lem:chamber-from-marked-period title="The chamber is a function of the marked period"}
+
+In the situation of @prop:one-node-family, let $(X_b,\psi_b)$ and $(X_{b'},\psi_{b'})$ be marked tuples of the construction whose periods agree as points of $\bD(T_\Co)$ after transport by the markings. Then the two marked tuples are isomorphic, and their chambers — the nef cones of the two surfaces, transported by the markings — coincide.
+:::
+
+::: {.proof}
+
+The transition isometry $g = \psi_{b'}^{-1}\psi_b\colon H^2(X_b,\ZZ)\iso H^2(X_{b'},\ZZ)$ is a Hodge isometry, the periods agreeing. The class $A = 2H-\alpha\in\lkt$ is ample on every member of the construction: $H$ is nef and big and $\alpha$ is effective by @prop:tuple-of-the-construction, part 3, and in the model $2H_b-\alpha_b = \widehat\pi_b^*(-K_{\widehat Y})$ with $-K_{\widehat Y}$ ample and $\widehat\pi_b$ finite, as in the proof of @prop:one-node-period-image. So $g$ carries the ample class $\psi_b^{-1}A$ to the ample class $\psi_{b'}^{-1}A$, and the strong Torelli theorem [@BHPV04, Ch. VIII, Thm. 11.1] makes $g$ the pullback of an isomorphism $\varphi\colon X_{b'}\to X_b$. Then $\psi_{b'} = \psi_b\varphi^*$, so the two marked tuples agree and their chambers correspond.
+
+This is not in conflict with @thm:chamber-clause-fails: that theorem compares two members with different periods that share their labels, and shows that the labels alone do not determine the chamber. The chamber is a function of the marked period — the datum the moduli stack carries — and not of the labels alone.
+:::
+
 ::: {.theorem #prob:B25 title="B2.5. Direct monodromy theorem — proved"}
 
-The deck group of the marking cover and the geometric monodromy group both equal $\Gamma^{\mathrm{dir}}_{\Co,2}$, hence also $\Gamma^{\mathrm{Hdg}}_{\Co,2} = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$.
+The deck group of the marking cover and the geometric monodromy group both equal $\Gamma^{\mathrm{dir}}_{\Co,2}$, hence also $\Gamma^{\mathrm{Hdg}}_{\Co,2} = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$. The chamber datum is the member's own (@def:coble-polarization-classes, part 3), and by @lem:chamber-from-marked-period it is a function of the marked period, so no hypothesis on the labels beyond @sec-labeled-lattice-data enters.
 :::
 
 ::: {.proof}
 
 *The two groups.* $\Gamma_{\mathrm{lab}} = \Gamma^{\mathrm{dir}}_{\Co,2}$: a label-preserving isometry of $\lkt$ preserves $S_\Co$, $S_{\mathrm{dP}}$, $H$ and $\alpha$, so its image in $\Orth(T_\Co)$ acts on $A_{T_\Co}$ through the conjugating block structure, that is within $P$; conversely $\rho_{T_\Co}^{-1}(P)\intersect\Orth^+(T_\Co)\subseteq\Gamma^{\mathrm{dir}}_{\Co,2}$ because $\widetilde\Orth^+(T_\Co)\subseteq\Gamma^{\mathrm{dir}}_{\Co,2}$ and the image is $P$ — these are the two inclusions of @prop:direct-eq-heegner. The chamber cuts nothing out of either, by @thm:chamber-pinned-by-labels.
 
-*The marked period space.* By @prop:one-node-period-image the period map is injective on marked isomorphism classes: a Hodge isometry of $\lkt$ carrying the labels carries the ample class $2H-\alpha$ to an ample class, so the strong Torelli theorem realizes it. Hence the marked moduli is the set $O = \pi^{-1}\bigl(\mathrm{im}(p)\bigr)$ of periods of marked members, $\pi\colon\bD(T_\Co)\to\bD(T_\Co)/\Gamma_{\mathrm{lab}}$ the quotient.
+*The marked period space.* By @lem:chamber-from-marked-period the marked moduli injects into $\bD(T_\Co)$, with the chamber included, and by @prob:B24 its image is exactly the set $O = \pi^{-1}\bigl(\mathrm{im}(p)\bigr)$ of realized periods, $\pi\colon\bD(T_\Co)\to\bD(T_\Co)/\Gamma_{\mathrm{lab}}$ the quotient.
 
 *$O$ is connected.* By @prob:B24 the complement of $\mathrm{im}(p)$ is a union of Heegner divisors, so $O$ is the complement in the component of $\bD(T_\Co)$ of a union of walls; that union is locally finite, each compact subset of the domain meeting only the walls of the classes whose periods satisfy a bound, and the complement of a locally finite union of proper closed analytic subsets of a connected complex manifold is connected and dense. It is $\Gamma_{\mathrm{lab}}$-invariant as a preimage.
 
