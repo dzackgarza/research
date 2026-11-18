@@ -362,6 +362,9 @@ def test_item_7_the_cusp_symmetries_do_not_identify_the_roots() -> None:
     assert "1 swap labels 12 and 13, and of those 0 fix label 11" in text
     assert "no symmetry of the cusp identifies 12 with 13 while preserving the Coble root's label" in text
     assert "not about Gamma_Co,2" in text
+    # and the one pair a marking-preserving symmetry does exchange, with the lift named as the gap
+    assert "fixes the Coble root's label 11, and exchanges labels 13 and 14" in text
+    assert "Whether it lifts is an extension problem" in text
 
 
 def test_item_8_cusp_four_is_not_a_pair() -> None:

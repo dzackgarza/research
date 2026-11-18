@@ -121,5 +121,21 @@ else:
     print("  diagram's symmetries, not about Gamma_Co,2, whose elements need not preserve the")
     print("  printed chamber; the orbit question therefore stands exactly where the library")
     print("  leaves it, and the lift question does not arise for these permutations.")
+print()
+print("=== the pair that a marking-preserving symmetry does exchange")
+pair = [s for s in sols if s[10] + 1 == 11 and s[12] + 1 == 14 and s[13] + 1 == 13]
+for s in pair:
+    lab = [s[l - 1] + 1 for l in range(1, 15)]
+    print("  the symmetry %s" % lab)
+    print("  fixes the Coble root's label 11, and exchanges labels 13 and 14.")
+    print("  If it lifted to an integral isometry of T_En, roots 13 and 14 would be")
+    print("  Gamma_Co,2-equivalent, and the pair (12, 13) would be the only pair left to decide:")
+    print("  no symmetry of the diagram exchanges 12 with either of them while fixing 11.")
+    print("  Whether it lifts is an extension problem over the rank-%d sublattice the fourteen"
+          % (12 - 2))
+    print("  roots span, and no operation here performs it; that is the input item 7 still")
+    print("  needs, together with the reduction it needed before.")
+if not pair:
+    print("  no symmetry fixes label 11 and exchanges 13 with 14")
 print("elapsed %d s" % (time.time() - t0))
 print("PYEXIT=0")

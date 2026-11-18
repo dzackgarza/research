@@ -31,5 +31,15 @@ VERDICT, stated from the numbers above and not from a programme.
   diagram's symmetries, not about Gamma_Co,2, whose elements need not preserve the
   printed chamber; the orbit question therefore stands exactly where the library
   leaves it, and the lift question does not arise for these permutations.
+
+=== the pair that a marking-preserving symmetry does exchange
+  the symmetry [8, 6, 5, 4, 3, 2, 7, 1, 9, 10, 11, 12, 14, 13]
+  fixes the Coble root's label 11, and exchanges labels 13 and 14.
+  If it lifted to an integral isometry of T_En, roots 13 and 14 would be
+  Gamma_Co,2-equivalent, and the pair (12, 13) would be the only pair left to decide:
+  no symmetry of the diagram exchanges 12 with either of them while fixing 11.
+  Whether it lifts is an extension problem over the rank-10 sublattice the fourteen
+  roots span, and no operation here performs it; that is the input item 7 still
+  needs, together with the reduction it needed before.
 elapsed 0 s
 PYEXIT=0
