@@ -1,0 +1,22 @@
+fourteen integral reflections on T_En, labels 1..14; delta^2 = -2, eta^2 = 0
+start: class of label 12; targets: classes of labels 13 and 14
+  depth  1:      4 classes, 0 hits on a target
+  depth  2:     11 classes, 0 hits on a target
+  depth  3:     30 classes, 0 hits on a target
+  depth  4:     90 classes, 0 hits on a target
+  depth  5:    288 classes, 0 hits on a target
+  depth  6:    960 classes, 0 hits on a target
+  depth  7:   3271 classes, 0 hits on a target
+  depth  8:  11265 classes, 0 hits on a target
+  depth  9:  39020 classes, 0 hits on a target
+  depth 10: 135571 classes, 0 hits on a target
+  cap reached: no further depth is searched
+
+witnesses found: 0
+
+VERDICT: no witness within depth 10 over 135571 classes, the cap having stopped the search there.
+This is not a proof of inequivalence: the acting group is infinite, and a witness may
+be longer than the bound.  What it does settle is that no word of that length over all
+fourteen printed roots carries 12 to 13 or 14 while preserving delta and eta_5.
+elapsed 101 s
+PYEXIT=0
