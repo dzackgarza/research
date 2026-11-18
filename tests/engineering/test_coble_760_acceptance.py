@@ -565,6 +565,28 @@ def test_the_body_letter_of_route_b_and_the_comment_that_tightens_it() -> None:
     assert comment_letter, "the inequivalence leg must remain visibly unproved"
 
 
+def test_item_7_the_two_records_agree_on_what_is_open() -> None:
+    """Item 7: the page's remark, the open-questions row and #759's swap record say the same thing.
+
+    Three places now record the state of the orbit question: this issue's remark on the page, the
+    open-questions row, and the parallel record `coble_759-swap-1213-run.txt`, which attacks the
+    (12,13) pair by a direct-sum construction and reports the same obstruction this issue's probes
+    found --- the pair's span is not a direct summand.  They must not drift apart.
+    """
+    remark = block("rmk:coble-root-orbits-cusp-five")
+    assert "13$ and $14$ are $\\Gamma_{\\Co,2}$-equivalent" in remark
+    assert "sage-extensions\\#370" in remark
+    row = [l for l in OPEN_QUESTIONS.read_text(encoding="utf-8").splitlines()
+           if "no_moduli_loss" in l][0]
+    assert "roots $13$ and $14$ are one orbit" in row
+    assert "only the pair $(12,13)$ is undecided" in row
+    swap = ROOT / "computations/reports/coble_759-swap-1213-run.txt"
+    assert swap.exists(), swap
+    text = " ".join(swap.read_text(encoding="utf-8").split())
+    assert "P is not a direct summand (index 4)" in text
+    assert "the gluing question for this pair is open" in text
+
+
 def test_open_questions_row_names_the_open_step() -> None:
     """The row for the withdrawn step names the orbit computation as what is open."""
     text = OPEN_QUESTIONS.read_text(encoding="utf-8")
