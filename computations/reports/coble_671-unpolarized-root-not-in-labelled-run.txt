@@ -1,11 +1,24 @@
-K = I_{1,8}(2) = <2>_H0 + <-2>_{E1..E8}, orthogonal basis; rank 9, det 512
-r_0 = H_0 - E_1 - E_2 - E_3, r_0^2 = -4
-s_{r_0} integral on a basis of K: True
-classes of A_K (512) whose q changes: 0
-classes moved across A_<h> perp A_{E_8(2)}: 256 of 512
-witness: [E_3/2] = ('0', '0', '0', '1/2', '0', '0', '0', '0', '0')  ->  ('1/2', '1/2', '1/2', '0', '0', '0', '0', '0', '0')
+K = I_{1,8}(2) = <2>_H0 + <-2>_{E_1..E_8}, orthogonal basis; rank 9, det 512
 
-so the action of s_{r_0} on A_K does not preserve the decomposition that P is defined by,
-and every lift of s_{r_0} has the same action on A_K because the lifts differ by
-ker(Orth(T_Co) -> Orth(K)), which acts trivially there.  Hence s_{r_0} is outside
-Gamma_e at every labelled cusp: the folded diagram is not the unpolarized chamber.
+root   square   support of [r/2]  integral  moved across  verdict
+r_0        -4              mixed      True           256  OUT
+r_1        -4         A_{E_8(2)}      True             0  in Gamma_e
+r_2        -4         A_{E_8(2)}      True             0  in Gamma_e
+r_3        -4         A_{E_8(2)}      True             0  in Gamma_e
+r_4        -4         A_{E_8(2)}      True             0  in Gamma_e
+r_5        -4         A_{E_8(2)}      True             0  in Gamma_e
+r_6        -4         A_{E_8(2)}      True             0  in Gamma_e
+r_7        -4         A_{E_8(2)}      True             0  in Gamma_e
+r_8        -2         A_{E_8(2)}      True             0  in Gamma_e
+
+witness for r_0: [E_3/2] = (0,0,0,1/2,0,0,0,0,0) -> (1/2,1/2,1/2,0,0,0,0,0,0),
+which has a nonzero A_<h> component; for r_1..r_7 the class of r/2 is supported in
+A_{E_8(2)} alone, so their reflections preserve the decomposition, and r_8 has square -2
+and acts trivially on A_K.
+
+outside Gamma_e among the simple roots: ['r_0']
+inside Gamma_e among the simple roots: ['r_1', 'r_2', 'r_3', 'r_4', 'r_5', 'r_6', 'r_7', 'r_8']
+
+So the labelled cusp's chamber contains the union of the two unpolarized chambers that meet
+along r_0^perp, and r_0^perp is not a labelled wall: the counted simple system of
+thm:unpolarized-coxeter loses exactly the node r_0 at a labelled cusp.
