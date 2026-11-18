@@ -157,6 +157,7 @@ def test_level_two_integral_plane_parabolic_kernel_generators(tmp_path):
     data = json.loads(path.read_text())
     assert data["schema"] == "coble-integral-plane-parabolic-level-two-kernel-v1"
     assert data["generator_count"] == len(data["generators_standard"]) == 26
+    assert data["level_four_image_rank"] == 26
     for key, filename in (("line", "coble_singular_integral_representatives.json"),
                           ("complete_parabolic", "coble_complete_plane_parabolic_generators.json")):
         assert data["source_sha256"][key] == hashlib.sha256((folder / filename).read_bytes()).hexdigest()
@@ -174,6 +175,21 @@ def test_level_two_integral_plane_parabolic_kernel_generators(tmp_path):
         assert all(int(g[i, j]) % 2 == int(i == j)
                    for i in range(11) for j in range(11))
         assert all(g * v in plane for v in plane.basis())
+    # The reduction of (g-I)/2 modulo 2 is a homomorphism on the
+    # principal level-two group, since cross terms vanish modulo 4.
+    # Its 26 independent images force at least 26 group generators.
+    echelon = {}
+    for rows in data["generators_standard"]:
+        bits = sum(((((rows[i][j] - int(i == j)) // 2) % 2)
+                    << (11 * i + j)) for i in range(11) for j in range(11))
+        while bits:
+            pivot = bits.bit_length() - 1
+            if pivot in echelon:
+                bits ^= echelon[pivot]
+            else:
+                echelon[pivot] = bits
+                break
+    assert len(echelon) == 26
     reproduced = tmp_path / "kernel.json"
     subprocess.run(
         ["sage", "-c", "import runpy,sys;sys.argv=['kernel','--output',"

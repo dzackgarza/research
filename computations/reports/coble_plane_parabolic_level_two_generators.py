@@ -8,7 +8,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
-from sage.all import ZZ, block_diagonal_matrix, diagonal_matrix, identity_matrix, matrix, vector
+from sage.all import GF, ZZ, block_diagonal_matrix, diagonal_matrix, identity_matrix, matrix, vector
 
 
 def main():
@@ -59,6 +59,10 @@ def main():
                for g in standard)
     assert all(all(int(g[i, j]) % 2 == int(i == j)
                    for i in range(11) for j in range(11)) for g in standard)
+    level_four = matrix(GF(2), [
+        [int((g[i, j] - int(i == j)) // 2) % 2
+         for i in range(11) for j in range(11)] for g in standard])
+    assert level_four.rank() == 26
     plane = matrix(ZZ, e).row_module()
     assert all(all(g * v in plane for v in e) for g in generators)
     assert full['generator_count'] == 28
@@ -71,6 +75,7 @@ def main():
                 'complete_parabolic': hashlib.sha256(full_path.read_bytes()).hexdigest(),
             },
             'generator_count': 26,
+            'level_four_image_rank': int(level_four.rank()),
             'generators_standard': [
                 [[int(x) for x in row] for row in g.rows()] for g in standard],
         }
