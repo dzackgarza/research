@@ -35,7 +35,7 @@ tags:
 | Unknown | Stated in |
 |:---|:---|
 | **A generating set of the group $\widetilde\Orth^+(T_\Co)$** | @qst:gamma-co-generators, @prob:coxeter-completeness |
-| **Equality of the four arithmetic groups** | @prob:group-identification, @sec-four-groups, @sec-gamma-co-comparison, @qst:gamma-co-generators |
+| **Equality of the four arithmetic groups** | @prob:group-identification, @sec-four-groups, @sec-gamma-co-comparison, @qst:gamma-co-generators; the Heegner and $\theta$ descriptions are compared with the congruence one in @prop:gamma-cong-eq-heegner, which leaves block-compatibility of the two gluings (@def:congruence-group, @lem:coble-discriminant-blocks, item 2 of @qst:gamma-co-generators), and the direct and geometric entries are @prob:coble-rigidity and @prob:B24, @prob:B25 |
 | **Which quotient of $D(T_\Co)$ is the Coble moduli space** | @qst:sextic-group-comparison |
 | **Labeled Coble rigidity** | @prob:coble-rigidity, @qst:chamber-clause-one-node, @qst:reflected-pair-conjugacy, @qst:del-pezzo-saturation-higher-k |
 | **Projective coverage and the moduli equivalence** | @prob:projective-coverage, @prob:cover-singular-equivalence, @prob:period-diagram |
