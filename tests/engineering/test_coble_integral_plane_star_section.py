@@ -223,6 +223,26 @@ def test_coble_level_two_eichler_squares_fail_normal_generation():
     assert len(pivots) == 56
 
 
+def test_coble_fifty_six_mod_three_full_orthogonal_image_certificate():
+    """The 56 ordinary candidates have the full exact O(11,3) image."""
+    import hashlib
+    import json
+    from pathlib import Path
+
+    folder = Path(__file__).resolve().parents[2] / "computations/reports"
+    certificate = json.loads((folder / "coble_kernel_fifty_six_mod_three_image.json").read_text())
+    source = folder / "coble_kernel_fifty_six_congruence_generators.json"
+    assert certificate["source_sha256"] == hashlib.sha256(source.read_bytes()).hexdigest()
+    assert certificate["prime"] == 3
+    assert certificate["matrix_count"] == 56
+    expected = 2 * 3**25
+    for i in range(1, 6):
+        expected *= 3 ** (2 * i) - 1
+    assert certificate["full_odd_orthogonal_order"] == expected
+    assert certificate["generated_order"] == expected
+    assert certificate["full_image"] is True
+
+
 @pytest.mark.parametrize("start", range(0, 56, 8))
 def test_coble_fifty_six_ordinary_elements_are_public_kernel_morphisms(start):
     """Each of the 56 ordinary candidates belongs to the owned kernel."""
