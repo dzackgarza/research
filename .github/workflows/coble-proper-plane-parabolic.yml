@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   certify:
-    name: Verify 28 integral generators and eight F/S cosets
+    name: Verify 28 parabolic generators, 26 kernel generators and eight F/S cosets
     runs-on: ubuntu-latest
     timeout-minutes: 20
     container:
@@ -28,5 +28,6 @@ jobs:
           /sage/.venv/bin/sage -c 'import pytest; raise SystemExit(pytest.main([
             "-q",
             "tests/engineering/test_coble_integral_plane_star_section.py::test_complete_integral_plane_parabolic_generators",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_level_two_integral_plane_parabolic_kernel_generators",
             "tests/engineering/test_coble_integral_plane_star_section.py::test_proper_integral_plane_stabilizer_image",
           ]))'
