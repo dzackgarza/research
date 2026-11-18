@@ -345,6 +345,25 @@ def test_item_7_no_witness_over_all_fourteen_roots() -> None:
     assert text.rstrip().endswith("PYEXIT=0")
 
 
+def test_item_7_the_cusp_symmetries_do_not_identify_the_roots() -> None:
+    """Item 7: the diagram's own symmetries cannot witness the equivalence, and this is why.
+
+    Of the eight automorphisms of Sterk's labelled cusp-5 Gram, two fix the Coble root's label
+    (the root of label 11 is +-delta), one swaps labels 12 and 13, and that one does not fix label
+    11: every symmetry that swaps the roots moves delta.  So no symmetry of the cusp identifies
+    them while preserving the marking --- a negative about the diagram, which is why the question
+    needs Gamma_Co,2's elements and not the chamber's.
+    """
+    record = ROOT / "computations/reports/coble_760-cusp-symmetry.py"
+    run = ROOT / "computations/reports/coble_760-cusp-symmetry-run.txt"
+    assert record.exists() and run.exists(), (record, run)
+    text = " ".join(run.read_text(encoding="utf-8").split())
+    assert "There are 8 symmetries of the labelled diagram, 2 of them fix the Coble root's label" in text
+    assert "1 swap labels 12 and 13, and of those 0 fix label 11" in text
+    assert "no symmetry of the cusp identifies 12 with 13 while preserving the Coble root's label" in text
+    assert "not about Gamma_Co,2" in text
+
+
 def test_item_8_cusp_four_is_not_a_pair() -> None:
     """Item 8: the transcript prints one admissible root at cusp 4."""
     text = FACE_RUN.read_text(encoding="utf-8")

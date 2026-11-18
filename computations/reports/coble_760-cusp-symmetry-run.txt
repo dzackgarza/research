@@ -1,0 +1,35 @@
+the symmetries of Sterk's cusp-5 diagram and the Coble root's fate
+(delta = e - f is the root of printed label 11: |(r_11, delta)| = 2, r_11^2 = -2)
+automorphisms of the labelled Gram: 8
+
+  sigma [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+     11 (delta) -> 11   |   12,13,14 -> 12, 13, 14   |   preserves Z delta: True
+  sigma [1, 10, 8, 6, 5, 4, 9, 3, 7, 2, 14, 13, 12, 11]
+     11 (delta) -> 14   |   12,13,14 -> 13, 12, 11   |   preserves Z delta: False
+  sigma [3, 2, 1, 10, 8, 6, 7, 5, 9, 4, 12, 11, 13, 14]
+     11 (delta) -> 12   |   12,13,14 -> 11, 13, 14   |   preserves Z delta: False
+  sigma [3, 4, 5, 6, 8, 10, 9, 1, 7, 2, 14, 13, 11, 12]
+     11 (delta) -> 14   |   12,13,14 -> 13, 11, 12   |   preserves Z delta: False
+  sigma [5, 4, 3, 2, 1, 10, 9, 8, 7, 6, 13, 14, 11, 12]
+     11 (delta) -> 13   |   12,13,14 -> 14, 11, 12   |   preserves Z delta: False
+  sigma [5, 6, 8, 10, 1, 2, 7, 3, 9, 4, 12, 11, 14, 13]
+     11 (delta) -> 12   |   12,13,14 -> 11, 14, 13   |   preserves Z delta: False
+  sigma [8, 6, 5, 4, 3, 2, 7, 1, 9, 10, 11, 12, 14, 13]
+     11 (delta) -> 11   |   12,13,14 -> 12, 14, 13   |   preserves Z delta: True
+  sigma [8, 10, 1, 2, 3, 4, 9, 5, 7, 6, 13, 14, 12, 11]
+     11 (delta) -> 13   |   12,13,14 -> 14, 12, 11   |   preserves Z delta: False
+
+automorphisms preserving the Coble root's label (11 -> 11): 2 of 8
+automorphisms swapping labels 12 and 13: 1
+  of those, ones that also fix label 11: 0
+
+VERDICT, stated from the numbers above and not from a programme.
+  There are 8 symmetries of the labelled diagram, 2 of them fix the Coble root's label,
+  1 swap labels 12 and 13, and of those 0 fix label 11.
+  So no symmetry of the cusp identifies 12 with 13 while preserving the Coble root's
+  label: every one that swaps them moves delta's label.  That is a negative about the
+  diagram's symmetries, not about Gamma_Co,2, whose elements need not preserve the
+  printed chamber; the orbit question therefore stands exactly where the library
+  leaves it, and the lift question does not arise for these permutations.
+elapsed 0 s
+PYEXIT=0
