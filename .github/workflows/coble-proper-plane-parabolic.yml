@@ -40,6 +40,7 @@ jobs:
             "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_fifty_six_ordinary_elements_span_kernel_modulo_sixteen",
             "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_fifty_six_ordinary_elements_are_public_kernel_morphisms",
             "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_fifty_six_mod_three_full_orthogonal_image_certificate",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_fifty_six_unipotent_lie_lattice_is_full_away_from_two",
             "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_level_two_eichler_squares_fail_normal_generation",
             "tests/engineering/test_coble_integral_plane_star_section.py::test_level_two_integral_plane_parabolic_kernel_generators",
             "tests/engineering/test_coble_integral_plane_star_section.py::test_proper_integral_plane_stabilizer_image",

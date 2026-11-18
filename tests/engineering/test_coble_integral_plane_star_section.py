@@ -223,6 +223,33 @@ def test_coble_level_two_eichler_squares_fail_normal_generation():
     assert len(pivots) == 56
 
 
+def test_coble_fifty_six_unipotent_lie_lattice_is_full_away_from_two():
+    """The exact commutator Lie lattice has index precisely 2^64."""
+    import hashlib
+    import json
+    import subprocess
+    from pathlib import Path
+
+    folder = Path(__file__).resolve().parents[2] / "computations/reports"
+    artifact = folder / "coble_kernel_fifty_six_lie_span.json"
+    before = artifact.read_bytes()
+    result = json.loads(before)
+    assert result["schema"] == "coble-kernel-56-unipotent-lie-span-v1"
+    assert result["source_sha256"] == hashlib.sha256(
+        (folder / "coble_kernel_fifty_six_congruence_generators.json").read_bytes()
+    ).hexdigest()
+    assert result["diagonal_source_sha256"] == hashlib.sha256(
+        (folder / "coble_singular_integral_representatives.json").read_bytes()
+    ).hexdigest()
+    assert len(result["unipotent_indices"]) == 46
+    assert result["initial_rank"] == 46
+    assert result["lie_rank"] == 55
+    assert result["integral_index"] == 2**64
+    subprocess.run(["sage", str(folder / "coble_kernel_fifty_six_lie_span.py")],
+                   cwd=folder.parents[1], check=True, capture_output=True, text=True)
+    assert artifact.read_bytes() == before
+
+
 def test_coble_fifty_six_mod_three_full_orthogonal_image_certificate():
     """The 56 ordinary candidates have the full exact O(11,3) image."""
     import hashlib
