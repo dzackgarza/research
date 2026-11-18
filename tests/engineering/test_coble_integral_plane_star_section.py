@@ -307,6 +307,27 @@ def test_coble_eichler_normal_relations_have_rank_54_at_level_eight():
         for earlier in queue[:i]:
             admit_higher(element * earlier * element.inverse() * earlier.inverse())
     assert len(higher) == 54
+    # Zassenhaus's spinor-norm formula cuts the 55-dimensional alternating
+    # Lie algebra at level four by one linear equation. In the odd diagonal
+    # basis it is the parity of the sum of the upper-triangular entries.
+    source = json.loads((folder / "coble_singular_integral_representatives.json").read_text())
+    change = matrix(GF(2), source["standard_to_diagonal"])
+    from sage.all import ZZ, identity_matrix as integral_identity_matrix
+    for element in higher_lifts:
+        integral_a = matrix(ZZ, 11, 11, [
+            (int(element[i, j]) - int(i == j)) // 4
+            for i in range(11) for j in range(11)
+        ])
+        assert (integral_identity_matrix(ZZ, 11) + 2 * integral_a).det() % 8 == 1
+        leading = matrix(GF(2), 11, 11, [
+            ((int(element[i, j]) - int(i == j)) // 4) % 2
+            for i in range(11) for j in range(11)
+        ])
+        diagonal = change * leading * change.inverse()
+        assert diagonal == diagonal.transpose()
+        assert all(diagonal[i, i] == 0 for i in range(11))
+        assert sum(int(diagonal[i, j]) for i in range(11)
+                   for j in range(i + 1, 11)) % 2 == 0
     for exponent, level in ((2, 8), (4, 16)):
         echelon = {}
         for element in higher_lifts:
