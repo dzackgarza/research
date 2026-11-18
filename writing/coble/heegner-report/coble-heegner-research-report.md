@@ -1793,7 +1793,7 @@ For each direct Coble $0$-cusp, define a root to be relevant if a general crossi
 The maximal regions of combinatorial constancy of direct Coble stable pairs are exactly the cones of the generalized Coxeter semifan obtained from the direct Coble Coxeter diagram of @prob:coxeter-completeness and the intrinsic relevance marking.
 :::
 
-At the one $0$-cusp of $F^{\mathrm{un}}_\Co$ the Coxeter part is a theorem: the chamber is that of @thm:coble-cusp-chamber and the Coxeter semifan of it is a fan with one Type II ray, @thm:coble-coxeter-semifan. What that theorem records as missing is the marking: the divisor of the Coble stable pair is not defined on the pages, so the generalized semifan is not formed there.
+At the four $0$-cusps of $F_{\Co,2}$ the generalized semifan is a theorem, with the marking inherited by restriction from the Enriques semifans: @thm:coble-pair-semifan answers the three questions of this unit at each of them. At the one $0$-cusp of $F^{\mathrm{un}}_\Co$ there is no Enriques cusp above it to restrict from, and there the Coxeter part is @thm:coble-coxeter-semifan, a fan with one Type II ray; what is missing at that cusp is the marking, the dictionary from its nine simple roots to curves of the Coble surface, which @warn:coble-marking records.
 
 The theorem must determine cusp by cusp whether the irrelevant reflection group is finite, whether the semifan is an actual fan, and whether any Type II parabolic component consists entirely of irrelevant roots.
 
@@ -2479,7 +2479,7 @@ The table lists each statement, whether it is proved, and the section that prove
 | Polarized Coble Coxeter diagrams | not established | @sec-coxeter |
 | Integral-affine Coble package | defined; realization open | @sec-coble-affine-package |
 | Direct dlt and stable-model theorem | open | @sec-coble-dlt |
-| Exact Coble semifans | open | @sec-direct-semifans |
+| Exact Coble semifans | established at the four $0$-cusps of $F_{\Co,2}$ by restriction, the marking inherited; no marking at the one $0$-cusp of $F^{\mathrm{un}}_\Co$ | @sec-direct-semifans, @sec-coble-pair-semifan |
 | Normalization of the Heegner KSBA closure | target theorem | @sec-heegner-target |
 
 : Statements of the report and the sections that prove or state them. {#tbl-status-ledger}

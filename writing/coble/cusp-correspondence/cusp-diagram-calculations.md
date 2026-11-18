@@ -182,7 +182,7 @@ The marking of relevance is **not** read off a boundary divisor by [@AEGS25]. Th
 
 What does survive is a lattice obstruction, and it is a citation. [@AEGS25], Lemmas 3.9 and 3.10 with Corollary 3.12, printed pp. 594--595, give the fixed lattices of the five involutions: $U(2)\oplus E_8(2)$ for cusp $1$ and $U\oplus E_8(2)$ for cusps $2, 3, 4, 5$. Those four quotient lattices are therefore isometric, while by Lemma 5.6, printed p. 611, $W_{\mathrm{irr}}$ is $S_2$ at cusp $2$, $S_2^2$ at cusp $4$ and infinite at cusps $1$, $3$, $5$. A datum that varies across isometric lattices is not a function of the lattice and its chamber: the marking is extra data, and no computation inside $T_\Co$ produces it.
 
-The general statement of how a marking behaves under restriction to a $(-2)$-Heegner sublattice is @thm:semifan-restriction. At a $0$-cusp of $F_{\En,2}$ a $(-2)$-root $\delta\perp e$ has its reflection among the generators of $W(\Gamma_{\En,2,e})$ ([@AEGS25], Definition 3.6), so $\bar\delta$ is a **mirror** of $W$, and Case A of that theorem does not apply: the facets of the chambers on the mirror tile it, but the facet's own angles are not the ambient ones, being given by the formula recorded in the research report, and the tiling is the chamber tiling of a reflection group of $\bar S$ only when those angles are submultiples of $\pi$. That condition is not verified here; @thm:coble-cusp-chamber computes a nine-node chamber whose bonds are those of a Coxeter simplex, which is a check on it and not the proof.
+The general statement of how a marking behaves under restriction to a $(-2)$-Heegner sublattice is @thm:semifan-restriction. At a $0$-cusp of $F_{\En,2}$ a $(-2)$-root $\delta\perp e$ has its reflection among the generators of $W(\Gamma_{\En,2,e})$ ([@AEGS25], Definition 3.6), so $\bar\delta$ is a **mirror** of $W$, and Case A of that theorem does not apply: the facets of the chambers on the mirror tile it, but the facet's own angles are not the ambient ones, being given by the formula recorded in the research report, and the tiling is the chamber tiling of a reflection group of $\bar S$ only when those angles are submultiples of $\pi$. That condition is not verified here; @thm:coble-cusp-chamber computes a nine-node chamber whose bonds are those of a Coxeter simplex, which is a check on it and not the proof. The mirror case is Case B of @thm:semifan-restriction, and at the four $0$-cusps of $F_{\Co,2}$ its hypotheses are verified one by one in @thm:coble-pair-semifan, where the restricted chambers are the facets of @prop:facet-angles-aegs.
 :::
 
 ::: {.warning #warn:coble-marking title="The step that fails: the dictionary from the roots of the chamber to curves on $S$"}
@@ -223,4 +223,104 @@ In $\tdp$ the image of $v_0$ is $e'\in U(2)$ and $e'f' = 2$, so $\div_{\tdp}(v_0
 
 The Coxeter diagram $G_{(9,9,1)_1}$ of $v_0^{\perp T_\Co}/\generators{v_0}\cong\generators{2}\oplus E_8(2)$ (@fig-coble-coxeter-diagrams) has exactly one maximal parabolic subdiagram, of type $\wB_7(2)$ (@fig-coble-cusp-9-9-1-parabolics).
 By @thm:unpolarized-cusps the $0$-cusp $v_0$ is incident to exactly one $\Orth^+(T_\Co)$-orbit of $1$-cusps.
+:::
+
+## The generalized Coxeter semifan at the $0$-cusps of $F_{\Co,2}$ {#sec-coble-pair-semifan}
+
+The pair $(S,\tfrac12\mathfrak c+\eps W)$ of @thm:coble-pair-ksba carries a degree-$2$ polarization, so its moduli space is the $(-2)$-Heegner divisor
+$$
+F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}, \qquad
+\Gamma_{\Co,2} \definedas R_{\gent} = \text{the image of } \Stab_{\gent}(\delta) \text{ in } \Orth(T_\Co),
+$$
+of $\fentwo$ (@def:gamma-co-groups(4)--(5), @thm:normalization), the vector being $\delta = e-f$ of square $-2$ and $T_\Co = \delta^{\perp T_\En}$ (@prop:cusp-white-root-complements). The semifan at a $0$-cusp of $F_{\Co,2}$ is not formed from a divisor of the Coble surface: it is inherited, by restriction of the Enriques semifan at the cusp above it, through the theorem of @thm:semifan-restriction. The unmarked half --- the Coxeter semifan at the one $0$-cusp of $F^{\mathrm{un}}_\Co$, where no such restriction is available --- is @thm:coble-coxeter-semifan.
+
+The three definitions used are those of [@AEGS25]: the Coxeter semifan (Definition 5.1, printed p. 609); the generalized Coxeter semifan $\mathcal F^{\mathrm{gen}}(I\sqcup J)$ of a split of the diagram into relevant and irrelevant roots, with $C_{\mathrm{gen}} = \bigcup_{h\in W_{\mathrm{irr}}} hC$ (printed p. 610, after [@AET23], §4D and [2], §9A); and the marking of the Enriques diagrams (Definition 5.3, printed p. 610, with Definition 5.4 and Lemma 5.5, printed p. 611). The two lemmas the third item uses are [@AEGS25], Lemma 5.6 and Lemma 5.7, printed p. 611.
+
+::: {.theorem #thm:coble-pair-semifan title="The generalized Coxeter semifan of the Coble stable pairs at each $0$-cusp of $F_{\Co,2}$"}
+Let $\delta = e-f$, $T_\Co = \delta^{\perp T_\En}$, $\Gamma_{\Co,2} = R_{\gent}$ and $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ as above, and for $k = 2,3,4,5$ let $\mathcal F^{k}$ be the generalized Coxeter semifan of [@AEGS25], Definitions 5.3--5.4 with Lemma 5.5, printed pp. 610--611, at the $0$-cusp $k$ of $\fentwo$. Then:
+
+**(0) The cusps.** $F_{\Co,2}$ has exactly four $0$-cusps (@prop:coble-cong-point-stabilizer(3)), and they sit one over each of the cusps $k = 2,3,4,5$ of $\fentwo$: the matching is by the class of $\bar\eta \definedas \tfrac12\eta \bmod T_\En$ in $A_{T_\En}$ against the four orbits of @prop:coble-cong-point-stabilizer(2),
+$$
+k = 2 \leftrightarrow \mathcal O_{2} \ (2 \text{ classes}), \qquad
+k = 3 \leftrightarrow \mathcal O_{120}, \qquad
+k = 4 \leftrightarrow \mathcal O_{270}, \qquad
+k = 5 \leftrightarrow \mathcal O_{135},
+$$
+whose sizes are those of the four orbits of $P$ there. Cusp $1$ of $\fentwo$ carries no class of a Coble cusp vector, and no Coble cusp lies over it (@prop:cusp-map-not-onto, @lem:divisibilityAlwaysTwoTco). At all four the boundary lattice is
+$$
+K \;=\; \bigl(\eta^{\perp T_\En}\cap\delta^{\perp T_\En}\bigr)/\ZZ\eta \;\cong\; (9,9,1)_1 \;=\; \generators{2}\oplus E_8(2),
+$$
+of rank $9$, determinant $-2^9$ and signature $(1,8)$.
+
+**(1) The chamber and the marking.** At each of the four the chamber is the facet $C_\delta = C\cap\delta^\perp$ that $\delta$ cuts out of the Enriques chamber $C$ at $k$, and the marking is inherited: a wall of $C_\delta$ is relevant exactly when the root of $C$ that cuts it is relevant in the sense of [@AEGS25], Definition 5.4, printed p. 611. In the figure order of the recorded transcript (`computations/reports/coble_pair-semifan-cusps-run.txt`, using the node order and printed-root matching of `computations/reports/coble_enriques-white-root-facets-run.txt`):
+
+| over cusp $k$ | $2$ | $3$ | $4$ | $5$ |
+|:---|:---|:---|:---|:---|
+| restricted roots | $9$ | $11$ | $10$ | $13$ |
+| coincident walls | --- | $4\equiv 11$ | --- | $3\equiv 13\equiv 10$ |
+| no-intersection pairs | --- | $10,11$ | --- | $13,14$ |
+| distinct walls | $9$ | $10$ | $10$ | $11$ |
+| walls of square $-2$ | $9$ | $4,9,11$ | $7,8$ | $3,9,10,12,13$ |
+| walls of square $-4$ | $1$--$8$ | the other $8$ | the other $8$ | the other $8$ |
+| irrelevant roots | $4$ | $4,9,11$ | $7,8$ | $9,10,12,13,14$ |
+| irrelevant walls | $4$ | $4\equiv11$; $9$ | $7$; $8$ | $9$; $12$; $14$; $3\equiv13\equiv10$ |
+| relevant walls | the other $8$ | the other $8$ | the other $8$ | the other $7$ |
+
+with bonds at $\pi/3$ (single) and $\pi/4$ (double):
+
+- cusp $2$: $1-2$, $1-4$, $1-5$, $2-3$, $5-6$, $6-7$, $7-8$, and $8-9$ at $\pi/4$; this is the nine-wall chamber of @thm:coble-cusp-chamber, as @thm:coble-restricted-semifan records;
+- cusp $3$: $1-2$, $1-6$, $1-12$, $2-3$, and $3-4$, $8-9$, $9-10$ at $\pi/4$;
+- cusp $4$: $1-2$, $1-6$, $1-10$, $2-3$, $3-4$, $4-5$, $5-11$, and $5-8$, $6-7$ at $\pi/4$;
+- cusp $5$: $1-2$, $1-8$, $4-5$, $5-6$, $6-7$, $7-8$, and $1-9$, $2-3$, $3-4$, $5-12$, $7-10$, $9-14$, $12-14$ at $\pi/4$.
+
+Every intersecting pair has induced angle $\pi/2$, $\pi/3$ or $\pi/4$, so all four chambers are acute. The hypotheses of Case B of @thm:semifan-restriction hold at the cusps over $2$, $3$ and $4$: the cut mirror is relevant ((B1)); the nonzero angles of $\delta$ with the other walls are $\pi/2$ and $\pi/4$ ((B2)); every pairing $(\alpha,\delta)$ of another wall with $\delta$ is $0$ or $+2$, so every projected normal $\alpha+\tfrac12(\alpha,\delta)\delta$ is an integral vector of $K$ and its reflection is the restriction of an integral isometry of $K$ ((B3)); the induced angles are $\pi/2,\pi/3,\pi/4$ or parallel ((B4)); and each coincident pair carries one relevance only ((B5)). At the cusp over $5$, (B1) and (B5) both fail: $\delta$ is itself an irrelevant root there, and the coincident wall $3\equiv13\equiv10$ carries the relevant root $3$ together with the irrelevant roots $10,13$.
+
+**(2) Whether $W_{\mathrm{irr}}$ is finite.** Let $W_{\mathrm{irr}}$ be generated by the reflections in the irrelevant walls of $C_\delta$.
+
+| over cusp $k$ | irrelevant roots | Gram of the generators | $W_{\mathrm{irr}}$ |
+|:---|:---|:---|:---|
+| $2$ | $1$ | $(-4)$ | $S_2$, finite |
+| $3$ | $3$, on $2$ walls | $\mathrm{diag}(-2,-2)$ | $S_2\times S_2$, finite |
+| $4$ | $2$ | $\mathrm{diag}(-2,-2)$ | $S_2\times S_2$, finite |
+| $5$ | $5$, on $4$ walls | negative semidefinite of rank $3$, one-dimensional radical | infinite: an affine reflection group |
+
+**(3) Whether the semifan is a fan, and its Type II rays.**
+
+| over cusp $k$ | $2$ | $3$ | $4$ | $5$ |
+|:---|:---|:---|:---|:---|
+| the semifan is a fan | yes | yes | yes | no |
+| maximal parabolic subdiagrams | $1$ | $11$ | $11$ | $21$ |
+| with a connected component of irrelevant walls only | $0$ | $2$ | $2$ | $9$ |
+| toroidal over the adjacent $1$-cusp | yes | at the two of the eleven, no | at the two of the eleven, no | at the nine of the twenty-one, no |
+
+The fan verdict is [@AEGS25], Lemma 5.6, printed p. 611, with the argument of its proof: the maximal cones of the generalized semifan are the translates of $C_{\mathrm{gen}} = \bigcup_{h\in W_{\mathrm{irr}}} hC_\delta$, so they are polyhedral exactly when $W_{\mathrm{irr}}$ is finite, and by (2) that holds over $2,3,4$ and fails over $5$. Type II rays are in bijection with the maximal parabolic subdiagrams when the Coxeter semifan of the cusp is a fan ([@AEGS25], Definition 5.1 and Lemma 5.2, printed pp. 609--610); at the cusp over $2$ the chamber is a simplex of finite volume with one ideal vertex, so its single Type II ray is the ideal vertex, the one affine maximal parabolic of @thm:coble-coxeter-semifan(2). The last two rows are the criterion of [@AEGS25], Lemma 5.7, printed p. 611: a semitoroidal compactification of this collection is toroidal over a $1$-cusp exactly when the corresponding maximal parabolic diagram carries no connected component consisting entirely of irrelevant vertices. The theorem does not assert that conclusion for $F_{\Co,2}$ itself; that is @prob:restricted-semifan.
+:::
+
+::: {.proof}
+*(0)* The four cusps are @prop:coble-cong-point-stabilizer(3). For the matching, $\bar\eta = \tfrac12\eta \bmod T_\En$ is an isotropic class of $A_{T_\En}$ ($\eta$ is isotropic with divisibility $2$ at cusps $2$--$5$ of @ex:sterk-isotropic-divisibilities), and the transcript prints its canonical representative in $\{0,\tfrac12\}^{12}$: its $U$ coordinates vanish and its $U(2)$ and $E_8(2)$ coordinates are
+$$
+2:\ (1,0) \text{ with } E_8(2)\text{ trivial}, \quad
+3:\ (1,1) \text{ with } E_8(2)\text{ nontrivial}, \quad
+4:\ (0,1) \text{ with } E_8(2)\text{ nontrivial}, \quad
+5:\ (0,0) \text{ with } E_8(2)\text{ nontrivial},
+$$
+which are exactly the four orbits $\mathcal O_2 = \{u_1,u_2\}$, $\mathcal O_{120}$, $\mathcal O_{270}$ and $\mathcal O_{135}$ of @prop:coble-cong-point-stabilizer(2) — the description of those orbits there is by the vanishing of the $E_8(2)$ component and by the three classes $u_1,u_2,u_3$ of $A_{U(2)}$ with $q(u_1) = q(u_2) = 0 \ne q(u_3)$. Cusp $1$ has divisibility $1$: its class lies in the $U$ summand, and $\Gamma_{\Co,2}$ acts on the primitive isotropic vectors of $T_\Co$, every one of which has divisibility $2$ (@lem:divisibilityAlwaysTwoTco, @prop:cusp-map-not-onto), so no Coble cusp lies over it. Since $\ker\rho_{T_\Co}\subseteq\Gamma_{\Co,2}$ (@prop:gamma-co-images(3)), two primitive isotropic vectors of $T_\Co$ lie in one $\Gamma_{\Co,2}$-orbit exactly when their classes lie in one orbit of $P$ (@thm:coble-zero-cusp-count), which is what the display uses. For the boundary lattice: the four cusp vectors are primitive isotropic vectors of one lattice, and $\Orth(T_\Co)$ is transitive on them (@thm:unpolarized-cusps), so the four boundary lattices are isometric; the one over cusp $2$ is computed as $\generators{2}\oplus E_8(2)$ in @thm:coble-restricted-semifan, which is $(9,9,1)_1$ of rank $9$, determinant $-2^9$ and signature $(1,8)$.
+
+*(1)* The chamber is $C\cap\delta^\perp$ and the inherited marking is the statement of @thm:semifan-restriction(1) and (3); the hypotheses (B1)--(B5) of its Case B are read off the recorded wall Gram matrices and induced angle tables. The pairings $(\alpha,\delta)$ are $0$ and $+2$ only (no negative value occurs), so $\alpha^\perp\cap\delta^\perp$ meets $\delta^\perp$ at $\pi/2$ or at $\pi/4 = \pi/(2\cdot2)$, which is (B2). The same parity makes $\alpha+\tfrac12(\alpha,\delta)\delta$ an integral vector of $K$; the reflection in its mirror is the restriction to $K$ of an integral isometry of $K$, namely one built from $s_\alpha$ and $s_\delta$ as in the proof of @thm:semifan-restriction, which is (B3). The induced angles are computed from $\cos\phi_{ij} = (g_{ij}+g_{\delta i}g_{\delta j})/\sqrt{(1-g_{\delta i}^2)(1-g_{\delta j}^2)}$ as in @prop:facet-angles-aegs and are $\pi/2$, $\pi/3$, $\pi/4$, parallel, or — in the single pair $10,11$ at cusp $3$ and $13,14$ at cusp $5$ — no intersection, which is (B4). The coincident walls are the parallel pairs, listed in the table, and at cusps $2$, $3$, $4$ each of them carries one relevance only, which is (B5). The relevance itself is Definition 5.4 of [@AEGS25] read through Lemma 5.5, printed pp. 610--611: at cusp $2$ the irrelevant root is the single interior spur of @thm:coble-restricted-semifan, and at cusps $3,4,5$ the irrelevant printed labels are those computed in `computations/reports/coble_irrelevant-marking-face-run.txt`. At cusp $5$ the cut mirror is on that list and one wall carries roots of both relevances, so Case B does not apply and the marking is not inherited there as a marking; that is the obstruction recorded in @rmk:coble-pair-semifan-marking.
+
+*(2)* The squares are $\alpha^2+\tfrac12(\alpha,\delta)^2$ and the pairings $\alpha\cdot\beta+\tfrac12(\alpha,\delta)(\beta,\delta)$, in the recorded table. A set of roots generates a finite reflection group exactly when its Gram matrix is negative definite, so the four rows read: negative definite, negative definite, negative definite, and negative semidefinite with a one-dimensional radical. In the last row the three walls $9,12,14$ have Gram
+$$
+\begin{pmatrix} -2 & 0 & 2\\ 0 & -2 & 2\\ 2 & 2 & -4\end{pmatrix},
+$$
+of rank two and determinant zero, so their radical is one-dimensional and the group they generate is affine, hence infinite; the reflection in the wall of $3$ is orthogonal to all three and contributes a direct factor.
+
+*(3)* The fan criterion is [@AEGS25], Lemma 5.6, with the argument of its proof: $C_{\mathrm{gen}}$ is a union of chambers indexed by $W_{\mathrm{irr}}$, so it has finitely many facets exactly when that group is finite. For the Type II rows: a maximal parabolic subdiagram is a maximal subdiagram whose Gram matrix is negative semidefinite with a one-dimensional radical; the count is the enumeration of the subsets of the recorded wall set with that property, no one of them properly containing another. Connected components are taken in the graph of non-orthogonal pairs, and a component is irrelevant-only when every wall in it is irrelevant. At the cusp over $2$ the single maximal parabolic is the deletion of wall $3$ from the nine, which is the affine one of @thm:coble-coxeter-semifan(2), and its one component contains the relevant wall $1$, so it carries no irrelevant-only component. At the cusp over $3$ the subdiagrams $[1,2,4,6,7,8,9,12]$ and $[1,2,4,6,8,9,10,12]$ each carry the isolated irrelevant wall $4$; at the cusp over $4$, $[1,2,4,5,7,8,10,11]$ and $[1,2,4,6,7,8,10,11]$ carry the isolated walls $7$ and $8$; at the cusp over $5$, nine of the twenty-one do. The last row is [@AEGS25], Lemma 5.7, printed p. 611, whose proof is the criterion stated.
+:::
+
+::: {.remark #rmk:coble-pair-semifan-marking title="What the semifan at the cusp over Sterk $5$ is not"}
+At three of the four cusps the marking descends literally: each wall of $C_\delta$ comes from one relevance class of roots of $C$, so the intersection $\mathcal F^{k}\cap\delta^\perp$ is a generalized Coxeter semifan of a marked diagram, and its irrelevant group is the one tabulated. At the cusp over Sterk $5$ both (B1) and (B5) of @thm:semifan-restriction fail: the cut mirror $\delta$ is irrelevant, so the face $\delta^\perp$ is one the coarsening deletes, and one restricted wall carries the relevant root $3$ together with the irrelevant roots $10,13$. What is defined there is the intersection $\mathcal F^{5}\cap\delta^\perp$, which is what the restriction of a semifan to a subspace always gives; it is not the generalized Coxeter semifan of the restricted diagram with an inherited marking, and this theorem asserts no such identification at that cusp. Its irrelevant group is infinite either way, by (2), so the fan verdict at that cusp is the same under either reading.
+:::
+
+::: {.remark #rmk:coble-pair-semifan-scope title="What is inherited and what is not"}
+The theorem gives the semifan at the four $0$-cusps of $F_{\Co,2}$, which is the datum a semitoroidal compactification of $F_{\Co,2}$ consumes at its $0$-cusps. It does not assert that the normalization of the KSBA closure of $F_{\Co,2}$ is the semitoroidal compactification of that datum: that is @prob:restricted-semifan, which needs in addition the saturated intersection of the toroidal charts with the Coble cusp subspaces (@prob:A6). Nor does it supply a marking at the one $0$-cusp of $F^{\mathrm{un}}_\Co$, where no Enriques cusp sits above it to restrict from; that marking is what @warn:coble-marking records as missing, and @thm:coble-coxeter-semifan is the whole of what is available there.
 :::
