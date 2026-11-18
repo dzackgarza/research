@@ -1,0 +1,18 @@
+[    0.0s] stage 1: the 0-cusp lattice of F_2, N = U + E8(-1) + E8(-1) + A1(-1)
+[    0.1s] N = Integral lattice of rank 19 and signature (1, 18), rank 19, signature (1, 18)
+[    0.1s] stage 2: the fundamental chamber of N and its walls (Vinberg)
+[  900.1s] the Vinberg walk on N did not finish in 900 s: timeout
+[  900.1s] stage 4: the split, which is the stable limit of (X, eps R_rc) over each cone
+[  900.3s] no chamber of N was computed; the attempt below is made on the chamber of U + A1(-1), which is built in under a second, because the operation it misses is a method of the chamber class and not of this lattice
+[  900.3s] stand_in.stable_pairs() -> AttributeError: 'RationalPolyhedralCones.parent_class[Sets.parent_class[_ConditionSetEngine].ObjectType].ObjectType' object has no attribute 'stable_pairs'
+[  900.3s] stand_in.wall_roots()[0].stable_pairs() -> AttributeError: 'OwnedJoinCategory.element_class[_SparseFreeModuleElement]' object has no attribute 'stable_pairs'
+[  900.3s] the missing operation is the KSBA stable limit of the pair over a cone of the chamber: the chamber's methods live in src/sage_extensions/categories/polyhedral_cones.py and the diagram's in src/sage_extensions/categories/coxeter_diagrams.py, and neither module, nor any other in src/sage_extensions, names a stable pair, a Kulikov model or a semifan
+[  900.3s] stage 5: the elliptic cusp, II_{1,17} = U + E8(-1) + E8(-1), where the semifan is known
+[  900.3s] M = Integral lattice of rank 18 and signature (1, 17), rank 18, signature (1, 17)
+[  975.0s] walls: 19, complete wall set: True
+[  975.0s] wall squares: [-2]
+[  975.2s] pairings between simple roots: [(0, 153), (1, 18)]
+[  975.7s] squares of a_j - a_i over all simple pairs: [-6, -4]
+[  998.1s] squares of a_c + 2 a_b - a_a over admissible triples: [-12]
+[  998.1s] a root has square -2: none of these is a root, so the four semifan walls are not Coxeter walls and (W) fails at this cusp
+[  998.1s] done

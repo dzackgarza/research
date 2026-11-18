@@ -323,6 +323,19 @@ and by the symmetry exchanging the two ends of the diagram the same holds for $\
 The proportionality is [@ABE22, Intro.]: "each curve $C_i$ specializes to a sum of the section $s$ and $d+1$ singular fibers", so $R\equiv n_d\bigl(s+\frac{d+1}{24}\sum_i f_i\bigr)$, "which is proportional to $s+m\sum_{i=1}^{24}f_i$".
 :::
 
+::: {.remark #rmk:rcop-split-computation}
+
+Both questions of @qst:recognizable-semifan have been put to the library: the script `computations/reports/coble_679-rcop-split.py` and its transcript `computations/reports/coble_679-rcop-split-run.txt`, running on `sage-extensions`.
+
+At the $0$-cusp of $F_2$, whose boundary lattice $U\oplus E_8(-1)^{\oplus2}\oplus A_1(-1)$ the script builds, it runs Vinberg's algorithm for the fundamental chamber and its walls. The walk does not finish within $900$ seconds there, so no wall set and no cone inventory is recorded at that cusp: the split is not computed. What the split needs is the stable limit of $(X,\eps R_{\rcop})$ over a cone, and that is not an operation of the library — no module of `src/sage_extensions` names a stable pair, a Kulikov model or a semifan, and the transcript carries the two expressions that raise `AttributeError`.
+
+At the elliptic cusp of @prop:semifan-coarsening-fails the script does complete. The chamber has $19$ walls, every one of square $-2$, $18$ of their $171$ pairs meeting and $153$ orthogonal, and the two squares that decide (W) come out, over every pair and every admissible triple of the simple roots, as
+$$
+\gamma^2\in\{-4,-6\},\qquad \beta^2=-12 .
+$$
+So no wall of the semifan of that divisor is a Coxeter wall, and (W) fails at that cusp by computation and not only by the hand evaluation of @prop:semifan-coarsening-fails.
+:::
+
 ::: {.corollary #cor:semifan-computed-cases title="(W), and the split, in the computed cases"}
 
 Hypothesis (W) of @thm:semifan-recognizable-divisor holds, with the following $I$ and $J$, for the following divisors:
