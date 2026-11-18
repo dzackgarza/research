@@ -971,3 +971,21 @@ corrections to that sentence are now on the page, and neither changes any theore
 Both statements, with their proofs, are on the page: the last paragraph of `@prob:B25` and
 `@qst:b25-sign-holonomy` in `writing/coble/heegner-report/coble-heegner-research-report.md`.
 `(D1)`, `(RI)` and `(REL)` keep the status this register gives them.
+
+### (D1) after the period image was decided, 2026-11-18
+
+`(D1)` above asks that the family's discriminant meet every orbit of walls. Half of it is now a corollary
+of Theorem A rather than of any monodromy computation: by Theorem A, part 1, no period of the construction
+lies on a wall `delta^perp` of a class of square `-2`, so every such wall is contained in the discriminant and
+every orbit of them is met — the whole family, not one representative per orbit
+(`writing/coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md`,
+`@cor:d1-minus-two-half`). What that buys on the monodromy side is conditional on one local statement, the
+meridian of `delta^perp` acting by the reflection `s_delta` — the statement §6.1 above computes at the two
+wall types: given it, `W(T_Co)` is contained in the monodromy group with no orbit count anywhere
+(`@prop:monodromy-contains-root-reflections`).
+
+The `-4` half is not decided by Theorem A: part 2 excludes the walls of the 121 classes only. The classes of
+square `-4` in `T_Co` are infinitely many, so the statement has to be made on the discriminant level sets, and
+`{q_{T_Co} = 1}` has 496 classes (`coble_671-discriminant-levels`), the 121 among them; whether every orbit of
+that set under `Gamma^dir_{Co,2}` contains one of the 121 is `@qst:d1-minus-four-half`. `(RI)`, `(REL)` and the
+sign question keep the status this register gives them.
