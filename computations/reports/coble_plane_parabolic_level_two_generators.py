@@ -7,6 +7,7 @@ E_{e_i,2d_j} (i=1,2; j=1,...,7), and the central shear squared.
 import argparse
 import hashlib
 import json
+from collections import deque
 from pathlib import Path
 from sage.all import GF, ZZ, block_diagonal_matrix, diagonal_matrix, identity_matrix, matrix, vector
 
@@ -63,6 +64,33 @@ def main():
         [int((g[i, j] - int(i == j)) // 2) % 2
          for i in range(11) for j in range(11)] for g in standard])
     assert level_four.rank() == 26
+    # The normal closure's image modulo four is the linear span of the
+    # conjugates of (g-I)/2 under the ambient mod-two reflection action.
+    # The ten integral reflections are those of the existing finite-image
+    # certificate; every conjugate remains a genuine integral isometry.
+    reflections = []
+    for root in line['generator_roots_standard']:
+        r = vector(ZZ, root)
+        norm = r * gram * r
+        assert abs(norm) == 2
+        reflection = identity_matrix(ZZ, 11) - (2 // norm) * r.column() * (r.row() * gram)
+        assert reflection.transpose() * gram * reflection == gram
+        reflections.append(matrix(GF(2), reflection))
+    span = matrix(GF(2), 0, 121)
+    frontier = deque()
+    for row in level_four.rows():
+        if span.stack(matrix(GF(2), [row])).rank() > span.rank():
+            span = span.stack(matrix(GF(2), [row]))
+            frontier.append(matrix(GF(2), 11, 11, row))
+    while frontier:
+        current = frontier.popleft()
+        for reflection in reflections:
+            moved = reflection * current * reflection
+            row = vector(GF(2), moved.list())
+            if span.stack(matrix(GF(2), [row])).rank() > span.rank():
+                span = span.stack(matrix(GF(2), [row]))
+                frontier.append(moved)
+    assert span.rank() == 56
     plane = matrix(ZZ, e).row_module()
     assert all(all(g * v in plane for v in e) for g in generators)
     assert full['generator_count'] == 28
@@ -76,6 +104,7 @@ def main():
             },
             'generator_count': 26,
             'level_four_image_rank': int(level_four.rank()),
+            'normal_conjugate_level_four_image_rank': int(span.rank()),
             'generators_standard': [
                 [[int(x) for x in row] for row in g.rows()] for g in standard],
         }

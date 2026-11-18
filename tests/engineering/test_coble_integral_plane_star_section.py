@@ -7,7 +7,7 @@ import gzip
 import importlib.util
 import re
 import subprocess
-from collections import Counter
+from collections import Counter, deque
 from itertools import combinations
 from math import gcd
 from pathlib import Path
@@ -158,10 +158,11 @@ def test_level_two_integral_plane_parabolic_kernel_generators(tmp_path):
     assert data["schema"] == "coble-integral-plane-parabolic-level-two-kernel-v1"
     assert data["generator_count"] == len(data["generators_standard"]) == 26
     assert data["level_four_image_rank"] == 26
+    assert data["normal_conjugate_level_four_image_rank"] == 56
     for key, filename in (("line", "coble_singular_integral_representatives.json"),
                           ("complete_parabolic", "coble_complete_plane_parabolic_generators.json")):
         assert data["source_sha256"][key] == hashlib.sha256((folder / filename).read_bytes()).hexdigest()
-    from sage.all import ZZ, matrix, vector
+    from sage.all import GF, ZZ, identity_matrix, matrix, vector
 
     source = json.loads((folder / "coble_singular_integral_representatives.json").read_text())
     gram = matrix(ZZ, source["standard_gram"])
@@ -190,6 +191,34 @@ def test_level_two_integral_plane_parabolic_kernel_generators(tmp_path):
                 echelon[pivot] = bits
                 break
     assert len(echelon) == 26
+    reflections = []
+    for coordinates in source["generator_roots_standard"]:
+        root = vector(ZZ, coordinates)
+        norm = root * gram * root
+        assert abs(norm) == 2
+        reflection = identity_matrix(ZZ, 11) - (2 // norm) * root.column() * (root.row() * gram)
+        assert reflection.transpose() * gram * reflection == gram
+        reflections.append(matrix(GF(2), reflection))
+    frontier = deque(
+        matrix(GF(2), 11, 11, [((g[i][j] - int(i == j)) // 2) % 2
+                               for i in range(11) for j in range(11)])
+        for g in data["generators_standard"]
+    )
+    while frontier:
+        current = frontier.popleft()
+        for reflection in reflections:
+            moved = reflection * current * reflection
+            bits = sum(int(x) << i for i, x in enumerate(moved.list()))
+            remainder = bits
+            while remainder:
+                pivot = remainder.bit_length() - 1
+                if pivot in echelon:
+                    remainder ^= echelon[pivot]
+                else:
+                    echelon[pivot] = remainder
+                    frontier.append(moved)
+                    break
+    assert len(echelon) == 56
     reproduced = tmp_path / "kernel.json"
     subprocess.run(
         ["sage", "-c", "import runpy,sys;sys.argv=['kernel','--output',"
