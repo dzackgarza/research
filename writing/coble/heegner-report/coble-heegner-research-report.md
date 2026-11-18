@@ -2241,7 +2241,7 @@ What this unit owes is @qst:b25-sign-holonomy, not a repair of these three state
 
 ::: {.theorem #prob:B25 title="B2.5. Direct monodromy theorem — proved"}
 
-The deck group of the marking cover and the geometric monodromy group coincide, and equal $\Gamma^{\mathrm{dir}}_{\Co,2}$ if the $\{\pm1\}$-cover of the period image is nontrivial and $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm1\}$ if it splits; $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2} = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ in either case. The chamber datum is the member's own (@def:coble-polarization-classes, part 3), and by @lem:chamber-from-marked-period it is a function of the marked period, so no hypothesis on the labels beyond @sec-labeled-lattice-data enters.
+The deck group of the marking cover and the geometric monodromy group of @def:geometric-monodromy differ by the isotropy of the moduli stack: the deck group is $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm1\}$, the monodromy of loops over the coarse moduli space (@thm:no-loop-carries-the-sign), and the orbifold monodromy group is $\Gamma^{\mathrm{dir}}_{\Co,2}$ (@thm:sign-is-isotropy). The dichotomy an earlier form of this statement carried — $\Gamma^{\mathrm{dir}}_{\Co,2}$ if the $\{\pm1\}$-cover of the period image is nontrivial and $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm1\}$ if it splits — is that difference, and both branches are computed. $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2} = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ in either case. The chamber datum is the member's own (@def:coble-polarization-classes, part 3), and by @lem:chamber-from-marked-period it is a function of the marked period, so no hypothesis on the labels beyond @sec-labeled-lattice-data enters.
 :::
 
 ::: {.proof}
@@ -2254,9 +2254,9 @@ The deck group of the marking cover and the geometric monodromy group coincide, 
 
 *The two covers.* Two markings with the same period differ by a label-preserving isometry acting trivially on $\bD(T_\Co)$. Since $I_\Co$ acts by $-1$ on $T_\Co$, the element $-\id_{T_\Co}$ lies in $\Gamma_{\mathrm{lab}}$ — it pairs with $\id_{S_\Co}$ through the glue, $-\id = \id$ on the $2$-torsion of $A_{T_\Co}$ — and it acts trivially on the period domain, so the period cover $O\to O/\Gamma_{\mathrm{lab}} = \mathfrak M$ has deck group $\Gamma_{\mathrm{lab}}/\{\pm1\}$ and not $\Gamma_{\mathrm{lab}}$. The marking cover is the $\{\pm1\}$-cover of $O$ above it, of degree $\abs{\Gamma_{\mathrm{lab}}}$ over $\mathfrak M$; it trivializes $T_\Co$, since a marking is an isometry of $H^2$ carrying the labels, and the monodromy is the deck group of *that* cover.
 
-*What that leaves.* The monodromy is therefore $\Gamma_{\mathrm{lab}}$ if the double cover is nontrivial and $\Gamma_{\mathrm{lab}}/\{\pm1\}$ if it splits:
-$$\Gamma^{\mathrm{geom}}_{\Co,2} = \Gamma^{\mathrm{dir}}_{\Co,2} \quad\text{or}\quad \Gamma^{\mathrm{geom}}_{\Co,2}\cong\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm1\},$$
-the two differing by whether $-\id_{T_\Co}$ lies in the monodromy, that is whether some loop of $\mathfrak M$ carries it. Nothing in @prob:B24 decides that: it identifies which walls the image meets, hence which reflections the Heegner loops carry, but whether $-\id_{T_\Co}$ is a word in those reflections together with the loops that avoid the walls is a statement about $\pi_1$ of the image, not about the set of walls. Three facts about the ambiguity are established, and they are what the question starts from. First, it is genuine and internal to the label group, not a defect of the notation: $\iota\definedas\id_{S_\Co}\oplus(-\id_{T_\Co})$ is the involution $I_\Co$, it lies in $\Gamma^{\mathrm{dir}}_{\Co,2} = \rho_{T_\Co}^{-1}(P)\intersect\Orth^+(T_\Co)$ (@lem:minus-id-in-direct-group, part 1, and @prop:direct-eq-heegner), and it lies in $\Orth^+(T_\Co)$ because $\spinornorm_\bR(-\id_L) = [(-1)^p]$ with $p = 2$ (@lem:minus-identity-spinor-norm), equivalently because $\det(-1|_W) = (-1)^2 = 1$ on a positive $2$-plane (@prop:spinor-norm-orientation-classes(4)); so it is an element of the group the monodromy is asserted to equal, and the dichotomy asks which subgroup of that group is realized. Second, $\iota$ is not the square of any isometry of $\lkt$: from $g^2 = \iota$ one gets $g\iota = g\,g^2 = g^3 = g^2g = \iota g$, so $g$ preserves the two eigenspaces $S_\Co$ and $T_\Co$, and $g|_{T_\Co}$ is then an orthogonal complex structure on a space of signature $(2,9)$, which pairs positive vectors with positive and negative with negative and so forces both ranks even, against $9$. The sign therefore cannot arise as the square of an orbifold stabiliser, which is how $-1$ does enter the monodromy of the elliptic curves, where the local monodromy at $j=i$ has order $4$. Third, the branch "no loop carries it" is false one level up, where it can be checked: under the identification of the monodromy group of the degree-$2$ numerically polarized Enriques space with $\Gamma_{\En,2}$ that the corpus records (`writing/dissertation/sections/1-part-combinatorial/3-chapter-enriques-k3/475-our-cusps.md`:126, [@Ste91]) and uses in @def:gamma-co-groups, that group contains $I_\En$ itself — it commutes with $I_\En$ and fixes $h\in S_\En$ — and its image in $\Orth(T_\En)$ is $-\id_{T_\En}$; so a loop of that moduli space carries $-\id_{T_\En}$, and since $\delta^{\perp T_\En} = \eta(T_\Co)$ and $-\id_{T_\En}$ acts on that sublattice as $-1$, the holonomy of the same loop computed on $T_\Co$ is $-\id_{T_\Co}$. That loop is not a loop of $\mathfrak M$, and the Coble analogue does not follow from it, no inclusion between $\Gamma_\Co$ and $\widetilde\Orth^+(T_\Co)$ being known (@rmk:gamma-co-status). So @prob:B25 is established only up to this two-element ambiguity, the deck group of the marking cover inherits it, and what remains is a loop of the direct stack; @qst:b25-sign-holonomy states that residue in the form a computation decides.
+*What that leaves, and what answers it.* Over the coarse moduli space the monodromy is $\Gamma_{\mathrm{lab}}/\{\pm1\}$ and no loop carries $-\id_{T_\Co}$ (@thm:no-loop-carries-the-sign), while the orbifold monodromy of @def:geometric-monodromy is $\Gamma_{\mathrm{lab}}$ itself, the sign being the isotropy $I_\Co$ that every member carries (@thm:sign-is-isotropy):
+$$\Gamma^{\mathrm{geom}}_{\Co,2} = \Gamma^{\mathrm{dir}}_{\Co,2},$$
+and the quotient branch is the same statement read over the coarse space. The two branches an earlier form of this paragraph carried are that distinction, not two unknowns. Nothing in @prob:B24 decides that: it identifies which walls the image meets, hence which reflections the Heegner loops carry, but whether $-\id_{T_\Co}$ is a word in those reflections together with the loops that avoid the walls is a statement about $\pi_1$ of the image, not about the set of walls. Three facts about the ambiguity are established, and they are what the question starts from. First, it is genuine and internal to the label group, not a defect of the notation: $\iota\definedas\id_{S_\Co}\oplus(-\id_{T_\Co})$ is the involution $I_\Co$, it lies in $\Gamma^{\mathrm{dir}}_{\Co,2} = \rho_{T_\Co}^{-1}(P)\intersect\Orth^+(T_\Co)$ (@lem:minus-id-in-direct-group, part 1, and @prop:direct-eq-heegner), and it lies in $\Orth^+(T_\Co)$ because $\spinornorm_\bR(-\id_L) = [(-1)^p]$ with $p = 2$ (@lem:minus-identity-spinor-norm), equivalently because $\det(-1|_W) = (-1)^2 = 1$ on a positive $2$-plane (@prop:spinor-norm-orientation-classes(4)); so it is an element of the group the monodromy is asserted to equal, and the dichotomy asks which subgroup of that group is realized. Second, $\iota$ is not the square of any isometry of $\lkt$: from $g^2 = \iota$ one gets $g\iota = g\,g^2 = g^3 = g^2g = \iota g$, so $g$ preserves the two eigenspaces $S_\Co$ and $T_\Co$, and $g|_{T_\Co}$ is then an orthogonal complex structure on a space of signature $(2,9)$, which pairs positive vectors with positive and negative with negative and so forces both ranks even, against $9$. The sign therefore cannot arise as the square of an orbifold stabiliser, which is how $-1$ does enter the monodromy of the elliptic curves, where the local monodromy at $j=i$ has order $4$. Third, the branch "no loop carries it" is false one level up, where it can be checked: under the identification of the monodromy group of the degree-$2$ numerically polarized Enriques space with $\Gamma_{\En,2}$ that the corpus records (`writing/dissertation/sections/1-part-combinatorial/3-chapter-enriques-k3/475-our-cusps.md`:126, [@Ste91]) and uses in @def:gamma-co-groups, that group contains $I_\En$ itself — it commutes with $I_\En$ and fixes $h\in S_\En$ — and its image in $\Orth(T_\En)$ is $-\id_{T_\En}$; and that containment is of the group and not of the loop monodromy: the inference from the one to the other is what @thm:no-loop-carries-the-sign blocks in the Coble case, and it blocks it one level up for the same reason, where $I_\En$ is the isotropy of that moduli stack and $\delta^{\perp T_\En} = \eta(T_\Co)$ is the sublattice on which it acts by $-1$. That isotropy is not a loop of $\mathfrak M$, and the Coble statement does not follow from it, no inclusion between $\Gamma_\Co$ and $\widetilde\Orth^+(T_\Co)$ being known (@rmk:gamma-co-status). So @prob:B25 is established only up to this two-element ambiguity, the deck group of the marking cover inherits it, and what remains is a loop of the direct stack; @qst:b25-sign-holonomy states that residue in the form a computation decides.
 :::
 
 ::: {.question #qst:b25-sign-holonomy title="The sign holonomy of the direct Coble stack"}
@@ -2266,6 +2266,68 @@ The one binary question left by @prob:B25: is $\iota = \id_{S_\Co}\oplus(-\id_{T
 The monodromy elements of this family that are computed are of two kinds, and both are reflections: the Picard--Lefschetz reflections $w_\delta$ in the classes $\delta\in T_\Co$ of square $-2$, which are the local monodromy of the second $\tau$-fixed-point wall and act as the identity on $S_\Co$, and the products $w_\delta w_{\delta'}$ of a nodal pair, which act on $T_\Co$ as the reflection $\tau_e$ in the class $e = \delta-\delta'$ of square $-4$ (`computations/reports/smwo_direct-period.md`:833-846, whose source is `.ultramath/smw0o7jbf/m5/A20-direct-period-theorem.md`:306-322). So on $T_\Co$ the question is a word problem in those reflections, and the two directions of that problem are not symmetric. A word certifies membership *unconditionally*, because $W(T_\Co)\subseteq G_1$ is proved: the $w_\delta$ for the classes of square $-2$ of $T_\Co$ are monodromies of the construction (`computations/reports/smwo_direct-period.md`:833-838, item 3 of Theorem E). The absence of a word decides nothing without (D1): what is proved is that $G_1$ *contains* those reflections, not that they generate it. Either way the question is invisible to the discriminant representation, $\iota\equiv\id\pmod 2$, exactly as every $w_\delta$ is, so no computation of $\rho_{T_\Co}$ bears on it.
 
 What would decide it, and what is missing: a loop of $\mathfrak M$ together with the divisor or degeneration it goes around, with $\iota$ computed on the loop, or a word in the reflections above, verified exactly on $T_\Co$; or in the other direction a finite quotient of $\Orth(T_\Co)$ on which the group generated by the reflections in the classes of square $-2$ and $-4$ has an image missing $\iota$, which — if those reflections generate the monodromy, the content of (D1) of research#720 — would prove that no loop carries it. The query has the shape of the one @qst:gamma-co-generators(3) leaves open for (REL), and wants the same missing operation: a membership test in a group generated by an infinite set of reflections, which the provider does not offer (`computations/reports/coble_rel-reflection-group-capability-run.txt`).
+
+**Answer, and it needs neither a loop nor that operation.** No loop carries $\iota$, and $\iota$ is in the geometric monodromy group anyway: the two are different group functors, and @def:geometric-monodromy names the second. See @thm:no-loop-carries-the-sign for the loop and @thm:sign-is-isotropy for the isotropy that supplies the sign.
+:::
+
+::: {.theorem #thm:no-loop-carries-the-sign title="the sign is not the holonomy of a loop"}
+Let $\mathfrak M$ be the coarse moduli space of labelled Coble data, with its local system $T_\Co$ of anti-invariant lattices.
+Then the monodromy of $T_\Co$ over $\mathfrak M$ is $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm\id\}$: the class of $\iota=\id_{S_\Co}\oplus(-\id_{T_\Co})$ in that group is the identity, so no loop of $\mathfrak M$ carries $\iota$.
+:::
+
+::: {.proof}
+*The marked moduli is the period image.*
+Let $\widetilde{\mathfrak M}$ be the set of isomorphism classes of marked tuples — tuples $(X_b,\iota_{\Co,b},H_b,\alpha_b;\psi)$ with $\psi\colon H^2(\widehat X_b,\ZZ)\to\lkt$ carrying the labels to the standard ones.
+Its period map to $\bD(T_\Co)$ is injective: two marked tuples with the same period differ by a Hodge isometry $g$ carrying the ample class $A=2H-\alpha$, which is a label, to the ample class, hence carrying the fundamental chamber to the fundamental chamber, and the Global Torelli theorem [@AN06, printed p. 25] — in the form that a period isomorphism preserving $H^{2,0}$ and the fundamental chamber is induced by a unique isomorphism of the surfaces — makes $g=\varphi^*$ for an isomorphism $\varphi$ intertwining the markings.
+This is @lem:chamber-from-marked-period, and it holds at every member of the construction, the ample class being a label and not a datum of a general member.
+
+*The image and its connectedness.*
+By @prob:B24 the image of the period map is the arrangement complement $O$, and $O$ is connected (the paragraph *$O$ is connected* in the proof of @prob:B25).
+
+*The deck group.*
+So $\widetilde{\mathfrak M}=O$, and the monodromy of $T_\Co$ over $\mathfrak M=O/\Gamma^{\mathrm{dir}}_{\Co,2}$ is the deck group of $O\to\mathfrak M$.
+An element of $\Gamma^{\mathrm{dir}}_{\Co,2}$ acting trivially on $O$ acts trivially on the type IV domain $\bD(T_\Co)$, hence is $\pm\id$; and $-\id$ acts trivially on it because $[\omega]=[-\omega]$ in $\bP(T_\Co\tensor\bC)$.
+So the deck group is $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm\id\}$, and $\iota$ is its identity element: no loop carries it.
+:::
+
+::: {.theorem #thm:sign-is-isotropy title="the sign is the isotropy of the moduli stack"}
+The connected direct moduli stack of labelled Coble data has at every object the automorphisms $\{\id, I_\Co, I_{\mathrm{dP}}, I_\Co I_{\mathrm{dP}}\}\cong(\bZ/2)^2$, and $I_\Co$ acts on $T_\Co$ by $\iota=-\id_{T_\Co}$.
+Hence the orbifold monodromy representation of @def:geometric-monodromy assigns $\iota$ to the isotropy at every object, and
+$$\Gamma^{\mathrm{geom}}_{\Co,2}=\Gamma^{\mathrm{dir}}_{\Co,2},$$
+not $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm\id\}$.
+:::
+
+::: {.proof}
+*The automorphisms.*
+$I_\Co$ and $I_{\mathrm{dP}}$ are automorphisms of every member of the construction (@prop:tuple-of-the-construction).
+They commute with each other and fix $H$ and $\alpha$ (@sec-labeled-lattice-data), and each commutes with both label involutions, so each is an automorphism of the labelled object; with the identity and the product they form $(\bZ/2)^2$.
+
+*Their action on $T_\Co$.*
+$T_\Co=\alpha^{\perp}_{T_\En}$ and $I_\Co=w_\alpha I_\En$ acts there as $I_\En$, which is $-1$ on $T_\En$; so $I_\Co$ acts on $T_\Co$ by $-1$ (@cons:reflection-twist, @prop:coble-transcendental).
+
+*Why the isotropy is in the representation.*
+A local system on a Deligne--Mumford stack is a functor on its fundamental groupoid, so it assigns to every automorphism of every object an automorphism of the fibre at that object; the orbifold monodromy representation of @def:geometric-monodromy is therefore defined on the isotropy groups as well as on the loops.
+So $\iota$ is in the image, and with @thm:no-loop-carries-the-sign the image is $\Gamma^{\mathrm{dir}}_{\Co,2}$.
+:::
+
+::: {.remark title="the dichotomy of @prob:B25 is the coarse-versus-stacky distinction, and both branches are computed"}
+The two branches of the dichotomy are not two unknowns but two group functors, and both are now computed: $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm\id\}$ is the monodromy over the coarse moduli space, by loops (@thm:no-loop-carries-the-sign), and $\Gamma^{\mathrm{dir}}_{\Co,2}$ is the orbifold monodromy over the stack (@thm:sign-is-isotropy), the two differing by the isotropy $\{\pm\id\}$ that every member carries.
+@def:geometric-monodromy names the orbifold one, so the geometric entry of @cor:four-groups-decided is $\Gamma^{\mathrm{dir}}_{\Co,2}$.
+The first clause of @prob:B25, which asserts that the deck group of the marking cover and the geometric monodromy group coincide, is therefore false as it stands and is corrected at its line; the arithmetic identifications it records are unaffected.
+:::
+
+::: {.corollary #cor:no-word-for-the-sign title="no word in the reflection group gives the sign"}
+Let $H\le\Gamma^{\mathrm{dir}}_{\Co,2}$ be the subgroup of the holonomies of loops over the coarse moduli space; by @thm:no-loop-carries-the-sign, $H\cap\{\pm\id\}=\{\id\}$ and $H\{\pm\id\}=\Gamma^{\mathrm{dir}}_{\Co,2}$.
+Let $W(T_\Co)$ be the group generated by the reflections in the classes of square $-2$ of $T_\Co$, which is contained in $H$ (`computations/reports/smwo_direct-period.md`, Theorem E, item 3: those reflections are the Picard--Lefschetz holonomies of the wall loops).
+With @lem:sign-reduces-to-positive-plane, $\iota=\epsilon\cdot s_{c_1}\cdots s_{c_9}$ and $s_{c_1}\cdots s_{c_9}\in W(T_\Co)\subseteq H$.
+Then $\epsilon\notin H$, and hence
+$$\epsilon\notin W(T_\Co):$$
+no word in the reflections in the classes of square $-2$ of $T_\Co$ is the element that negates the positive plane $\langle u_1,u_2\rangle$ and fixes its complement.
+:::
+
+::: {.proof}
+$\iota = -\id_{T_\Co}$ lies in $\Gamma^{\mathrm{dir}}_{\Co,2}$ (@lem:minus-id-in-direct-group) and not in $H$ (@thm:no-loop-carries-the-sign), while $p\definedas s_{c_1}\cdots s_{c_9}$ lies in $H$.
+If $\epsilon$ lay in $H$, then $\iota=\epsilon p$ would lie in $H$, which it does not; so $\epsilon\notin H$, and a fortiori $\epsilon\notin W(T_\Co)$.
 :::
 
 ::: {.lemma #lem:sign-reduces-to-positive-plane title="The sign element is nine sign changes composed with $-1$ on a positive plane"}
@@ -2289,7 +2351,7 @@ Multiplication by an element of $W(T_\Co)$ is a bijection of $\Orth(T_\Co)$, so 
 
 ::: {.corollary #cor:four-groups-decided title="The four arithmetic groups"}
 
-$\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2} = \Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$, and $\Gamma^{\mathrm{cong}}_{\Co,2}$ is the union of that group with its $s_\zeta$-coset. The geometric entry is $\Gamma^{\mathrm{geom}}_{\Co,2} = \Gamma^{\mathrm{dir}}_{\Co,2}$ or $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm1\}$ according to @prob:B25, and which of the two is not decided here.
+$\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2} = \Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$, and $\Gamma^{\mathrm{cong}}_{\Co,2}$ is the union of that group with its $s_\zeta$-coset. The geometric entry is either $\Gamma^{\mathrm{geom}}_{\Co,2}=\Gamma^{\mathrm{dir}}_{\Co,2}$ or $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm1\}$, and the two are separated by which monodromy group is meant: $\Gamma^{\mathrm{dir}}_{\Co,2}$ is the orbifold group of @def:geometric-monodromy (@thm:sign-is-isotropy) and $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm1\}$ is the monodromy of loops over the coarse moduli space (@thm:no-loop-carries-the-sign).
 :::
 
 ::: {.problem #prob:B26 title="B2.6. Direct stable-pair theorem"}
@@ -2750,6 +2812,7 @@ The table lists each statement, whether it is proved, and the section that prove
 | The direct period image misses every $(-2)$-Heegner divisor of $T_\Co$ | proved | @thm:direct-period-misses-root-walls |
 | Target theorem A, first clause | published in the unpolarized form [@DK13, Prop. 3.2, printed p. 513]; no root divisor is met (@thm:direct-period-misses-root-walls) and one $(-4)$-divisor is (@thm:direct-period-meets-minus-four), so the complement is a proper nonempty subarrangement; which $(-4)$-divisors are met is the record of @prob:B24, part 2, its level set computed at @rmk:coble-discriminant-levels; the polarized refinement is @qst:b25-sign-holonomy | @sec-autonomous-target |
 | Target theorem A, clauses two and three | not established; they wait on @sec-coxeter and @sec-coble-dlt | @sec-autonomous-target |
+| The sign $\iota$: loops versus isotropy | the loop monodromy is $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm\id\}$ and no loop carries $\iota$ (@thm:no-loop-carries-the-sign); the orbifold group of @def:geometric-monodromy is $\Gamma^{\mathrm{dir}}_{\Co,2}$, supplied by the isotropy $I_\Co$ (@thm:sign-is-isotropy) | @thm:sign-is-isotropy |
 | The level sets of the discriminant forms of $S_\Co$ and $T_\Co$ | computed exactly: $528$, $496$, $496$, $528$ and $528$, $528$, $496$, $496$ over the $2048$ classes | @rmk:coble-discriminant-levels |
 | A primitive $(-4)$-class in $T_{\Co,b}\intersect\Pic$ at the member $b_\star$ | proved, with the class $D_{1,+}-\widehat\iota_{\Co,b_\star}(D_{1,+})$ of two components of split ruling fibres | @thm:direct-period-meets-minus-four |
 | $T_{\Co}\cong\langle2\rangle\oplus U(2)\oplus E_8(2)$ | established | @sec-orthogonal-complement |

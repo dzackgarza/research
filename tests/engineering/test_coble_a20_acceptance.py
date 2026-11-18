@@ -498,7 +498,8 @@ def test_item3_geometric_entry_is_decided_by_the_direct_period_theorems():
     assert "121" in b24_proof
 
     b25 = _block(report, "{.theorem #prob:B25")
-    assert "geometric monodromy group coincide" in b25
+    assert "differ by the isotropy of the moduli stack" in b25
+    assert "@thm:no-loop-carries-the-sign" in b25 and "@thm:sign-is-isotropy" in b25
     assert "if the $\\{\\pm1\\}$-cover of the period image is nontrivial" in b25
     assert "if it splits" in b25
     b25_proof = _block(report, "{.proof}\n\n*The two groups.*")
@@ -526,7 +527,8 @@ def test_absorbed_d1_monodromy_maximality_is_b25_proved():
     """
     report = _text(REPORT)
     b25 = _block(report, "{.theorem #prob:B25")
-    assert "geometric monodromy group coincide" in b25
+    assert "differ by the isotropy of the moduli stack" in b25
+    assert "@thm:no-loop-carries-the-sign" in b25 and "@thm:sign-is-isotropy" in b25
     assert "if the $\\{\\pm1\\}$-cover of the period image is nontrivial" in b25
     assert "if it splits" in b25
     assert "in either case" in b25
