@@ -989,3 +989,18 @@ square `-4` in `T_Co` are infinitely many, so the statement has to be made on th
 `{q_{T_Co} = 1}` has 496 classes (`coble_671-discriminant-levels`), the 121 among them; whether every orbit of
 that set under `Gamma^dir_{Co,2}` contains one of the 121 is `@qst:d1-minus-four-half`. `(RI)`, `(REL)` and the
 sign question keep the status this register gives them.
+
+### (INV) decided false, 2026-11-18
+
+`(INV)` as the register states it — every `g` in `Z_{O(L_K3)}(I_Co,I_dP)_{H,alpha}` preserves the tuple's
+model-effective arrangement — is false, and the witness is on the page: `@thm:chamber-subscript-is-a-condition`
+in `writing/coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md`. At the member of
+`@thm:chamber-clause-fails` the ruling fibre has two components `C_+-,C_-` of square `-2` with
+`C_+ + C_-` in `S_{Co,b}`; `u = C_+ - C_-` is nonzero of square `-8`, the classes of square `-2` of `T_Co` span
+it rationally (they are the vectors of square `-1` of the unimodular companion, `@prop:tco-as-twist`), so some
+root `delta` of `T_Co` pairs nontrivially with `u`; then `s_delta` fixes `H` and `alpha`, commutes with both
+involutions, and carries `C_+` to `C_+ + m delta` with `m != 0`, a class that is not algebraic at the member
+because `delta` is not (`@prob:B24`, part 1). So it moves the arrangement and the chamber. What this does not
+touch: the chamber is preserved at every member by the part of the centralizer that preserves the member's
+period (`@lem:chamber-preserved-on-period`), and whether the chamber condition changes the image in `O(T_Co)`
+stays open (`@qst:chamber-subscript-image`).
