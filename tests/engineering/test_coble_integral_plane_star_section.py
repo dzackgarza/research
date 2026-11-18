@@ -151,7 +151,7 @@ def test_complete_integral_plane_parabolic_generators(tmp_path):
 
 
 def test_coble_level_two_eichler_squares_fail_normal_generation():
-    """The normal closure of 18 squares has mod-four rank 44, below 54."""
+    """A single additional root-pair relation completes E(2) modulo four."""
     import json
     from pathlib import Path
     from sage.all import GF, ZZ, identity_matrix, matrix
@@ -210,9 +210,27 @@ def test_coble_level_two_eichler_squares_fail_normal_generation():
         for generator, inv in zip(finite, inverse, strict=True):
             admit(generator * element * inv)
     assert len(pivots) == 54
-    # The independently certified full Gamma(2)/Gamma(4) has rank 56,
-    # while Gamma(2)/E(2) has order 4.  The E(2) image modulo four has
-    # dimension at least 54, so rank 44 disproves normal generation.
+    # The two explicit commuting character involutions complement the
+    # Eichler congruence image, and the resulting 56 classes span the
+    # *entire* independently certified Gamma(2)/Gamma(4).
+    for record in data["generators"][19:21]:
+        generator = matrix(ZZ, record["matrix_standard"])
+        assert matrix(GF(2), generator) == identity_matrix(GF(2), 11)
+        admit(matrix(GF(2), 11, 11, [
+            int((generator[i, j] - identity[i, j]) // 2) % 2
+            for i in range(11) for j in range(11)
+        ]))
+    assert len(pivots) == 56
+    # Two independent character involutions supply the missing directions
+    # of the full 56-dimensional principal congruence quotient.
+    for index in (19, 20):
+        generator = matrix(ZZ, data["generators"][index]["matrix_standard"])
+        assert matrix(GF(2), generator) == identity_matrix(GF(2), 11)
+        admit(matrix(GF(2), 11, 11, [
+            int((generator[i, j] - identity[i, j]) // 2) % 2
+            for i in range(11) for j in range(11)
+        ]))
+    assert len(pivots) == 56
 
 
 def test_coble_ambient_generators_are_public_integral_isometry_morphisms():
