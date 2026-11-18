@@ -1630,6 +1630,42 @@ The normal closure $N_{19}$ of the 19 relations obtained by adjoining $g_8g_9=t(
 The integral group $E$ has index eight in $\Orth(I_{2,9})$ by @thm:coble-ambient-21-generators and lies in the identity component $\mathrm{SO}_0(2,9)$. By the Borel--Harish-Chandra lattice theorem, it is an arithmetic lattice in that connected simple real Lie group. The group $\mathrm{SO}_0(2,9)$ has real rank two and finite center, so $E$ is an irreducible higher-rank lattice. The first Eichler generator $g_1=t(e,e')$ has infinite order: $g_1^n=t(e,ne')$ and its action on $f$ distinguishes all integers $n$. Therefore $N_2$ contains the infinite cyclic subgroup $\generators{g_1^2}$ and is an infinite normal subgroup of $E$. The [Margulis normal subgroup theorem (Witte Morris, *Introduction to Arithmetic Groups*, Theorem 13.1)](https://www.mathi.uni-heidelberg.de/~wienhard/retreat10/references/morris_book.pdf) implies that $E/N_2$ is finite. Since $N_2\subseteq E(2)$, its index in $E(2)$ is finite. The exact level-four ranks 44 and 54 of @prop:coble-eichler-squares-obstruction give $[E(2):N_2]\ge2^{54-44}=1024$. Finally $N_2\subseteq N_{19}\subseteq E(2)$, so $N_{19}$ also has finite index.
 :::
 
+::: {.theorem #thm:coble-eichler-full-normal-generation title="The 19 Eichler relations normally generate the full infinite level-two kernel"}
+
+Let $B=I_{2,9}$, $M=U^{\oplus2}\perp D_7(-1)$, $E=\widetilde{\mathrm{SO}}^+(M)$, and $E(2)=E\cap\Gamma(2)$. Then the normal closure $H\lhd E$ of the **19 explicit integral relations**
+$$
+g_i^2\ (0\le i<18),\qquad g_7g_8
+$$
+from the exact source-hashed `coble_ambient_twenty_one_generators.json` satisfies
+$$
+\boxed{H=E(2).}
+$$
+Consequently the full infinite principal level-two orthogonal kernel has the exact **finite normal-generation description**
+$$
+\Gamma(2)=\generators{E(2),r_{d_1},-\id_{U_1}}
+=E(2)\rtimes(\ZZ/2)^2,
+$$
+where $E(2)$ is the normal closure in the explicitly 18-generated Eichler group $E$ of the 19 displayed relations. This is an equality of **abstract integral groups**, not merely of finite congruence images.
+
+The 19 relations are **normal generators relative to $E$**, not asserted to be an ordinary 19-element generating set of $E(2)$. A concrete ordinary finite generating family can be obtained by Reidemeister--Schreier from the finite quotient $E/E(2)$, but its compact, directly usable realization remains a separate API requirement.
+:::
+
+::: {.proof}
+We combine the exact congruence-density theorem @thm:coble-eichler-full-congruence-density with the arithmetic normal-subgroup theorem @thm:coble-eichler-normal-closure-finite-index, and eliminate the possible noncongruence finite quotient by the **central congruence kernel** and the **trivial Schur multiplier** of the finite simple discriminant image.
+
+**Centrality of the congruence kernel.** Let $G=\operatorname{Spin}(B_\QQ)$, an absolutely simple simply connected $\QQ$-group of type $B_5$ and $\QQ$-rank $2$. Its real Lie group $G(\RR)=\operatorname{Spin}(2,9)(\RR)$ is *not* topologically simply connected: a maximal compact subgroup has a circle factor from $\operatorname{Spin}(2)$, so its fundamental group is infinite. The congruence kernel of $G$ is central by the Kneser--Raghunathan centrality theorem for isotropic simply connected groups; see [Prasad--Rapinchuk, *Developments on the congruence subgroup problem*, §5.1](https://www.mathi.uni-heidelberg.de/~wienhard/retreat10/references/prasad_rapinchuk_CSP.pdf). Their Theorem 3 says the metaplectic kernel is trivial when $S=\{\infty\}$ contains a real place at which $G(\RR)$ is not topologically simply connected; their Theorem 2 identifies the central congruence kernel with its Pontryagin dual. Hence the congruence kernel of $G$ is **trivial**.
+
+Let $\pi:G\to\mathrm{SO}(B_\QQ)$ be the central isogeny, and let $\widetilde E=\pi^{-1}(E)\subset G(\QQ)$. Since $E$ is an arithmetic subgroup of the rational spinor kernel, $\widetilde E$ is arithmetic, and the trivial congruence kernel property passes to this finite-index arithmetic subgroup. Thus the profinite completion $\widehat{\widetilde E}$ identifies with its closure in $G(\mathbb A_f)$. The exact central quotient $\widetilde E/\{\pm1\}=E$ gives $\widehat E\cong\widehat{\widetilde E}/\{\pm1\}$. On the other hand, the congruence completion $\overline E$ is the image of the compact closure $\overline{\widetilde E}\subset G(\mathbb A_f)$ under $\pi$. The kernel of $\pi$ on this closure is contained in the product of the local central kernels $\prod_p\{\pm1\}$, hence is central. Therefore the kernel $C_E$ of $\widehat E\to\overline E$ is **central**, whether or not it is trivial. This argument does not assume that arbitrary congruence subgroups have congruence images under $\pi$.
+
+**The finite central extension.** By @thm:coble-eichler-normal-closure-finite-index, $H\lhd E$ has finite index. Put $Q=E/H$ and $K=E(2)/H$. Since $H$ has the *same image as $E(2)$ in every congruence quotient* by @thm:coble-eichler-full-congruence-density, the compact image of $\widehat H$ in $\overline E$ equals the image of $\widehat{E(2)}$. Thus every element of $K$ is represented in $Q$ by an element of the central congruence kernel $C_E$: for a lift of $x\in E(2)$, choose a lift from $\widehat H$ with the same congruence image; their quotient lies in $C_E$. Consequently $K\subseteq Z(Q)$.
+
+By [@GHS08, Theorem 1.7], $E$ is **perfect**, so its finite quotient $Q$ is perfect. The exact 527-point Schreier--Sims computation in `test_coble_ambient_twenty_one_integral_generators` identifies the quotient $F=E/E(2)$ as the finite simple orthogonal group $P\Omega_{10}^+(2)$ of order $23\,499\,295\,948\,800$: it is the derived index-two subgroup of the full plus-type discriminant orthogonal group. Its Schur multiplier is **trivial**, by the standard $D_n(q)$ multiplier formula for odd $n$ (order $\gcd(4,q-1)$), here $n=5$, $q=2$; the [ATLAS entry for $O_{10}^+(2)$](https://brauer.maths.qmul.ac.uk/Atlas/v3/clas/O10p2/) records its exact order $23\,499\,295\,948\,800$, multiplier $1$, and a faithful $527$-point permutation representation, matching the certified finite action; see also [GLS, Theorem 2.5.12(i)](https://ri.conicet.gov.ar/server/api/core/bitstreams/cfea7e45-79d3-4836-838f-98aaa5dc0b90/content). Hence
+$$
+1\longrightarrow K\longrightarrow Q\longrightarrow F\longrightarrow1
+$$
+is a **perfect central extension** of a perfect group with trivial Schur multiplier. Such an extension has trivial kernel by the universal-central-extension characterization of the Schur multiplier. Therefore $K=1$, i.e. $H=E(2)$. The final split decomposition follows from @cor:coble-level-two-kernel-split-extension.
+:::
+
 ::: {.proposition #prop:coble-level-two-plane-parabolic title="Generators of the level-two kernel in the integral plane stabilizer"}
 
 In the notation of @thm:coble-plane-stabilizer-image, let $K_P=\Stab_{\Orth(B)}(P)\cap\ker\rho$. The following $26$ integral isometries generate $K_P$:

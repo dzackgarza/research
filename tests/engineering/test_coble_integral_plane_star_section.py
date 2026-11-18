@@ -595,6 +595,9 @@ def test_coble_ambient_twenty_one_integral_generators():
             permutation.append(positions[target])
         permutations.append(libgap.PermList(permutation))
     assert int(libgap.Size(libgap.Group(permutations[:18]))) == 23499295948800
+    # The ATLAS table O10+(2) is the simple plus-type group, not its
+    # index-two full orthogonal extension; it also has a 527-point action.
+    assert int(libgap.Size(libgap.CharacterTable("O10+(2)"))) == 23499295948800
     assert int(libgap.Size(libgap.Group(permutations))) == 46998591897600
 
 
