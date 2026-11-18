@@ -275,6 +275,9 @@ def test_item1_pages_citing_the_open_form_are_updated():
     item2 = next(line for line in q.splitlines() if line.startswith("2. Are the subgroups"))
     assert "@def:congruence-group" in item2 and "@prop:gamma-cong-eq-heegner" in item2
     assert "\\gamma_\\Co(A_{U(2)})" in item2
+    # the entry names the statement that owns it, and why no computation decides it
+    assert "@prob:coble-rigidity" in item2
+    assert "no computation on the discriminant forms decides it" in item2
 
     row = next(line for line in _text(OPEN_QUESTIONS).splitlines()
                if line.startswith("| **Equality of the four arithmetic groups**"))
