@@ -147,6 +147,26 @@ def test_item_3_names_the_owner() -> None:
     assert "sorry" not in text, "the atom file must stay sorry-free"
 
 
+def test_item_3_the_statement_cannot_be_expressed() -> None:
+    """Item 3, at the level below the library: the definitions the theorem needs do not exist.
+
+    Lean carries the cone primitives the statement would be built on --- `ConvexCone`,
+    `PointedCone`, `Module.Ray` all elaborate --- and carries no `Semifan`, no `Fan`, no `Chamber`
+    and no `Irrelevant`.  Without a fan there is no face lattice to coarsen, so the coarsening the
+    theorem is about cannot even be stated, let alone proved.  That is the sharper form of the
+    block, and the transcript carries both halves of it.
+    """
+    record = ROOT / "computations/reports/coble_760-lean-expressibility-probe.lean"
+    run = ROOT / "computations/reports/coble_760-lean-expressibility-probe-run.txt"
+    assert record.exists() and run.exists(), (record, run)
+    text = run.read_text(encoding="utf-8")
+    for present in ("ConvexCone", "PointedCone", "Module.Ray"):
+        assert present in text, present
+    for absent in ("Semifan", "Fan", "Chamber", "Irrelevant"):
+        assert f"Unknown identifier `{absent}`" in text, absent
+    assert "no face lattice of a fan to coarsen" in record.read_text(encoding="utf-8")
+
+
 def test_item_4_a_pair_whose_faces_agree() -> None:
     """Item 4: the transcript's face line is the smallest input."""
     text = FACE_RUN.read_text(encoding="utf-8")
