@@ -2330,6 +2330,25 @@ $\iota = -\id_{T_\Co}$ lies in $\Gamma^{\mathrm{dir}}_{\Co,2}$ (@lem:minus-id-in
 If $\epsilon$ lay in $H$, then $\iota=\epsilon p$ would lie in $H$, which it does not; so $\epsilon\notin H$, and a fortiori $\epsilon\notin W(T_\Co)$.
 :::
 
+::: {.lemma #lem:block-signs-not-both-in-w title="At most one of the two block signs is a word in the reflections"}
+
+Write $T_\Co = \langle 2\rangle\perp U(2)\perp E_8(2)$ (@prop:coble-transcendental) and put
+$$\delta_{E_8}\definedas\id_{\langle2\rangle\perp U(2)}\oplus(-\id_{E_8(2)}),\qquad
+\epsilon'\definedas(-\id_{\langle2\rangle\perp U(2)})\oplus\id_{E_8(2)}.$$
+Both are isometries of $T_\Co$, both act trivially on $A_{T_\Co}$ because both are $\id$ modulo $2$, and
+$$\delta_{E_8}\,\epsilon' = -\id_{T_\Co}.$$
+Since $-\id_{T_\Co}\notin H\supseteq W(T_\Co)$ (@cor:no-word-for-the-sign), at most one of $\delta_{E_8}$ and $\epsilon'$ lies in $W(T_\Co)$.
+
+Consequently the membership query of research#720's (REL) — whether the block-diagonal $-1$ on $E_8(2)$ lies in $W(T_\Co)$ — is not monotone: an affirmative answer for it is an answer against $\epsilon'$, and the answer for the sign $\iota$ does not transport to either of them.
+:::
+
+::: {.proof}
+
+On the three orthogonal summands the two isometries act by the scalars $(-1,1,1)$ and $(1,1,-1)$ up to the order of the summands, so on each summand their product acts by the product of the scalars, which is $-1$; hence the product is $-\id_{T_\Co}$.
+Each is $\id$ modulo $2$ — a scalar $-1$ is $1$ modulo $2$ — so each acts trivially on $A_{T_\Co} = T_\Co^\#/T_\Co$ (@prop:coble-transcendental) and lies in $\ker\rho_{T_\Co}$.
+If both lay in $W(T_\Co)$, then their product $-\id_{T_\Co}$ would lie in $W(T_\Co)$, hence in $H$, which @cor:no-word-for-the-sign excludes; so at most one of them does.
+:::
+
 ::: {.lemma #lem:sign-reduces-to-positive-plane title="The sign element is nine sign changes composed with $-1$ on a positive plane"}
 
 Let $B\cong\latI_{2,9}$ be the unimodular lattice with $T_\Co = B(2)$ (@prop:tco-as-twist), and write
