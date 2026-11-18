@@ -148,6 +148,27 @@ def test_item_7_the_inequivalence_leg_and_its_bound() -> None:
         assert token in remark, token
 
 
+def test_item_7_the_orbit_decision_probe_and_its_bound() -> None:
+    """Item 7's probe: what the library can and cannot do, run against a stated bound.
+
+    The library builds K_5 in about a second and exposes orbit series for its standard
+    orthogonal subgroups; it exposes no reduction or normal form for a subgroup, and
+    ``K.primitive_orbit_series(bound=4)`` does not return within the wrapper's bound.  Those three
+    facts are what make the orbit question undecidable here rather than merely unattempted, and
+    the transcript carries all of them.
+    """
+    record = ROOT / "computations/reports/coble_760-orbit-decision-probe.py"
+    run = ROOT / "computations/reports/coble_760-orbit-decision-probe-run.txt"
+    assert record.exists() and run.exists(), (record, run)
+    text = run.read_text(encoding="utf-8")
+    assert "K_5 = eta_5^perp / Z eta_5: Integral lattice of rank 10" in text
+    assert "primitive_orbit_series     True" in text
+    for absent in ("fundamental_domain", "reduce", "normal_form", "orbit_invariants"):
+        assert absent + " " * (27 - len(absent)) + "False" in text, absent
+    assert "BOUND-REACHED: K.primitive_orbit_series did not return within 600 s" in text
+    assert "PROBE_EXIT=124" in text or "PROBE_EXIT=137" in text
+
+
 def test_item_8_cusp_four_is_not_a_pair() -> None:
     """Item 8: the transcript prints one admissible root at cusp 4."""
     text = FACE_RUN.read_text(encoding="utf-8")

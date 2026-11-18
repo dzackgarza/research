@@ -1,0 +1,19 @@
+the orbit-decision probe for #760 item 7
+T_En: Integral lattice of rank 12 and signature (2, 10)
+eta_5 as the library holds it: 2*e_e + 2*e_f - 4*e_a1 - 5*e_a2 - 7*e_a3 - 10*e_a4 - 8*e_a5 - 6*e_a6 - 4*e_a7 - 2*e_a8
+K_5 = eta_5^perp / Z eta_5: Integral lattice of rank 10 and signature (1, 9) (1.4 s)
+rank 10, determinant -256
+
+the orbit-deciding operations the library exposes on K_5:
+   primitive_orbit_series     True
+   discriminant_orbit_series  True
+a reduction or normal form for a subgroup:
+   fundamental_domain         False
+   reduce                     False
+   normal_form                False
+   orbit_invariants           False
+
+calling K.primitive_orbit_series(bound=4); the wrapper bounds it, and a bound reached
+without a return is the finding
+PROBE_EXIT=124
+BOUND-REACHED: K.primitive_orbit_series did not return within 600 s
