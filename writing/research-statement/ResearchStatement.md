@@ -151,7 +151,7 @@ Dotted arrows indicate the boundary correspondence under $\eta$.
 I have extended \( \eta \) to a morphism \( \tilde \eta: \overline{  F_{\Co} }^{\operatorname{BB}} \to \overline{  F_{(2,2,0)}  }^{\operatorname{BB}} \), a moduli space of quartic hyperelliptic K3 surfaces used in [@AEGS25].
 I determined that that the Coble cusps correspond to \( U\oplus E_8^2 \), the lattice with invariants \( (18, 0, 0)_1 \) in @fig:220-cusps-diagram.
 Using our previous work in [@AEGS25], I am working on a correspondence between \( \fco \) and \( F_{\En, 2} \) in order to construct KSBA degenerations.
-The cusp diagram for \( F_{\En, 2} \) was first given by [@Ste91], and I have computed that the Coble 0-cusp corresponds with cusp 2 of @fig:sterk-cusp-diagram.
+The cusp diagram for \( F_{\En, 2} \) was first given by [@Ste91]. I have since found that the Coble 0-cusp does not sit over a single one of Sterk's cusps: each of cusps 2 to 5 carries a Coble 0-cusp, all four with boundary lattice \( (9,9,1)_1 \), and what singles out cusp 2 is the reflection chamber, the facet at its white node \( r_{10} \) being the Coble chamber, together with the divisibility in \( T_{\mathrm{dP}} \): the Coble lattice's own isotropic generator is Sterk's cusp-2 vector, the only one of the five whose image in the degree-four K3 boundary is the \( (18,0,0)_1 \) cusp.
 This correspondence requires studying a separate period domain \( D_{\Co}/\Gamma \) for a certain subgroup \( \Gamma_{\Co} \leq {\Orth}(T_{\Co}) \) and classifying orbits of isotropic vectors under this subgroup.
 
 Toward this end, I have been working on adapting the techniques of [@Ste91] and [@Sca87] to new lattices.

@@ -164,15 +164,21 @@ This equality is the lattice relation behind the $2\widetilde E_8$ parabolic and
 
 The isotropic vectors that represent the cusps of @fig-sterk-cusp-diagram have the following divisibilities in $\ten$ and in $T_{\Kthree}$.
 
-| Sterk Cusp | Vector | $\mathrm{div}_{\ten}$ | $\mathrm{div}_{T_{\Kthree}}$ |
+| Sterk Cusp | Vector, in the coordinates of $\ten = U\oplus U(2)\oplus E_8(2)$ | $\mathrm{div}_{\ten}$ | $\mathrm{div}_{T_{\Kthree}}$ |
 | :--------- | :------------------------------- | :--------------------- | :------------------------------- |
 | 1 | $e$ | 1 | 1 |
 | 2 | $e'$ | 2 | 2 |
-| 3 | $e' + f' + \overline{\alpha}_8$ | 2 | 1 |
-| 4 | $2e' + f' + \overline{\alpha}_1$ | 2 | 1 |
-| 5 | $2e + 2f + \overline{\alpha}_1$ | 2 | 1 |
+| 3 | $e' + f' + y_3$ | 2 | 1 |
+| 4 | $2e' + f' + y_4$ | 2 | 1 |
+| 5 | $2e + 2f + y_4$ | 2 | 1 |
+
+with $y_3 = -(2\alpha_1+3\alpha_2+4\alpha_3+6\alpha_4+5\alpha_5+4\alpha_6+3\alpha_7+2\alpha_8)$, the negative of the highest root of $E_8$, and $y_4 = -(4\alpha_1+5\alpha_2+7\alpha_3+10\alpha_4+8\alpha_5+6\alpha_6+4\alpha_7+2\alpha_8)$.
 
 : Isotropic vectors in $\fentwo$ and their divisibilities.
+
+The coordinates are those printed beside the wall Gram matrices in the transcript of @prop:facet-angles-aegs, `computations/reports/coble_enriques-white-root-facets-run.txt`; $y_3$ has square $-2$ as a vector of $E_8$, hence $-4$ in $E_8(2)$, and $y_4$ has square $-4$, hence $-8$, so $e'+f'$ of square $4$ and $2e'+f'$ and $2e+2f$ of square $8$ make the four vectors isotropic.
+An earlier printing of this table named $y_3$ by the single root $\overline\alpha_8$, which is of square $-4$ and does not make $e'+f'+\overline\alpha_8$ isotropic; the vectors above are the transcript's.
+The two divisibilities are recomputed in `computations/reports/coble_672-zero-cusp-sterk-two-run.txt`.
 :::
 
 ::: {#fig-220-cusp-diagram .figure}
