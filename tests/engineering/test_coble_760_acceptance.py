@@ -275,6 +275,29 @@ def test_item_3_the_marking_is_absent_from_the_whole_corpus() -> None:
     assert "DZ01 (dolgachev-zhang 2001)" in close.read_text(encoding="utf-8")
 
 
+def test_item_3_the_issue_statement_is_a_theorem_vacuously() -> None:
+    """Item 3: the issue's own statement is proved on the page, with its steps cited.
+
+    The acceptance's proof route asks that the page carry the theorem with every step cited and that
+    conj:no_moduli_loss become a theorem citing it.  With the three admissible roots at cusp 5 now
+    one Gamma_Co,2-orbit, the conjecture's hypothesis is never met, so its conclusion holds and
+    `thm:no-moduli-loss-vacuous` states that, citing the two witness records, the single-root cusps
+    and the marking-line exclusion.  The conjecture block carries the pointer to it.
+    """
+    theorem = block("thm:no-moduli-loss-vacuous")
+    assert "pairwise $\\Gamma_{\\Co,2}$-equivalent" in theorem
+    assert "is never met" in theorem
+    proof = page()[page().index("#thm:no-moduli-loss-vacuous"):]
+    proof = proof[:proof.index("\n:::", proof.index("::: {.proof}"))]
+    for step in ("witness-13-14-run.txt", "witness-12-13-run.txt",
+                 "@thm:face-irrelevant-marking(2)", "@prop:marking-line-no-coble-lift",
+                 "@thm:coble-cusp-admissibility(2)"):
+        assert step in proof, step
+    conj_block = block("conj:no_moduli_loss")
+    assert "Settled, vacuously" in conj_block
+    assert "@thm:no-moduli-loss-vacuous" in conj_block
+
+
 def test_item_4_a_pair_whose_faces_agree() -> None:
     """Item 4: the transcript's face line is the smallest input."""
     text = FACE_RUN.read_text(encoding="utf-8")

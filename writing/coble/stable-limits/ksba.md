@@ -397,6 +397,9 @@ the orbit operation itself has been run: at cusp $5$ it returns three singleton 
 
 ::: {.conjecture #conj:no_moduli_loss title="The marking of a marked cusp is read off the contracted $(-4)$-curve, not off a face"}
 
+**Settled, vacuously.** The form of this statement that the issue asks about --- degenerations at a marked cusp whose marked roots are $T_\Co$-roots, inequivalent under $\Gamma_{\Co,2}$, are not identified in the KSBA boundary --- is @thm:no-moduli-loss-vacuous: at each marked cusp the admissible roots are pairwise $\Gamma_{\Co,2}$-equivalent, so there is no inequivalent pair to identify, and the determination holds.
+The paragraphs below record the state of the weaker, curve-based reading of the recovery, which the vacuity makes unnecessary but which nothing here withdraws.
+
 The stable quotient determines its marked Coble root among the $T_\Co$-roots of each marked cusp: the $\frac{1}{4}(1,1)$ singularity of @prop:coble-quarter-singularity -- equivalently, the contracted anti-bicanonical $(-4)$-curve of @prop:antibicanonical-system -- recovers it, so that degenerations at a marked cusp whose marked roots are $T_\Co$-roots, inequivalent under $\Gamma_{\Co,2}$, are not identified in the KSBA boundary.
 
 **What the face does and does not give.** This conjecture asked a face of the restricted semifan to carry the marking, and no face can: by @thm:face-irrelevant-marking every admissible $T_\Co$-root at every marked cusp is irrelevant, so all of them cut one maximal cone, and at cusp $5$ the three roots $12$, $13$ and $14$ cut it together.
@@ -423,6 +426,19 @@ For the pair $12$, $13$ no symmetry of the printed diagram suffices: the transpo
 So all three admissible roots at cusp $5$ lie in one $\Gamma_{\Co,2}$-orbit --- and cusps $3$ and $4$ carry one admissible root each, cusp $2$ only the marking line (@prop:marking-line-no-coble-lift).
 Consequently there is no pair of inequivalent admissible roots at any marked cusp, the hypothesis of @conj:no_moduli_loss is never met there, and its conclusion holds vacuously: the marking is unique up to $\Gamma_{\Co,2}$, so the stable quotient cannot lose it.
 That is a stronger statement than the one the earlier versions of this page left open, and it is not in tension with @thm:face-irrelevant-marking, since all three roots cut one cone because there is one marking to cut it, not because the face fails to see three.
+:::
+
+::: {.theorem #thm:no-moduli-loss-vacuous title="The determination holds vacuously at every marked cusp"}
+
+At every marked $0$-cusp $[I]$ the admissible $T_\Co$-roots of $K_I$ are pairwise $\Gamma_{\Co,2}$-equivalent.
+Hence the hypothesis of @conj:no_moduli_loss --- two admissible $T_\Co$-roots of $K_I$ inequivalent under $\Gamma_{\Co,2}$ --- is never met, and the determination it asserts holds: no degeneration at a marked cusp is identified in the KSBA boundary with one whose marked root is inequivalent to it, because there is no such root.
+:::
+
+::: {.proof}
+
+At cusp $5$ the three admissible roots are one orbit, by two exhibited isometries of $\ten$: one fixes $\delta$ and $\eta_5$ and exchanges Sterk's labels $13$ and $14$ (`computations/reports/coble_760-witness-13-14-run.txt`), and one fixes $\delta$ and $\eta_5$ and exchanges labels $12$ and $13$ (`computations/reports/coble_760-witness-12-13-run.txt`); each is checked as an integral matrix, so each lies in $\Gamma_{\Co,2}$ and fixes the cusp.
+At cusps $3$ and $4$ there is one admissible root each (@thm:face-irrelevant-marking(2)), so there is no pair to compare; at cusp $2$ the unique admissible root is the marking line itself, which has no lift in $T_\Co$ (@prop:marking-line-no-coble-lift, @thm:coble-cusp-admissibility(2)).
+So at every marked cusp the admissible roots form a single $\Gamma_{\Co,2}$-orbit.
 :::
 
 ## Boundary cusp data
