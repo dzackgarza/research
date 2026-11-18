@@ -7,7 +7,7 @@ provenance
    rank 22, determinant -1, even True, signature (3, 19)
    blocks: U_1 = e_0,e_1;  U_2 = e_2,e_3;  U_3 = e_4,e_5;
            E8_1 = e_6..e_13;  E8_2 = e_14..e_21
-  [   0.5s] L_K3 built
+  [   0.3s] L_K3 built
 
 2. the Coble primitive embedding S_Co -> L_K3
    the two AEGS involutions built by the owner; alpha = e_0 - e_1 with alpha^2 = -2;
@@ -20,14 +20,14 @@ provenance
      isometric to <2> + U(2) + E8(-2): True
    S_dP = ker(I_dP - 1), AEGS's del Pezzo invariant lattice: rank 2, det -4, isometric to U(2): True
    ker(J_dP - 1), the (++)-piece of the reflected pair: rank 3, det 8, isometric to U(2) + <-2>: True
-  [   1.6s] Coble embedding built
+  [   1.3s] Coble embedding built
    the marked classes, as integral vectors of L:
      H = e_2 + e_4 + e_3 + e_5 = the corner e+f of the slot Delta(U_2,U_3) = U(2)
      H^2 = 4, H.alpha = 0, H in S_Co True, H in S_dP True, H = e+f True
      e^2 = 0, f^2 = 0, e.f = 2 (the slot is U(2))
      alpha^2 = -2, alpha in S_Co True, alpha in S_dP False
      primitivity: H in 2*S_Co False, alpha in 2*S_Co False, so both lift to H/2, alpha/2 in the dual S_Co^# and not in S_Co
-  [   1.7s] marked classes of the Coble tuple
+  [   1.4s] marked classes of the Coble tuple
 
 3. the Enriques primitive embedding M = S_En + ZZ delta -> L_K3
    S_En = Delta(U_2,U_3) + Delta(E8_1,E8_2): rank 10, det -1024, signature (1, 9),
@@ -41,7 +41,7 @@ provenance
    delta in 2*M: False -- the Heegner class is primitive in M, as alpha is in S_Co
    the divisibilities, as the gcd of the pairings with a basis of the lattice:
      div_{S_Co}(H) = 2, div_{S_Co}(alpha) = 2, div_{S_En}(h) = 2, div_M(delta) = 2
-  [   1.9s] Enriques embedding built
+  [   1.5s] Enriques embedding built
 
    the two embeddings, compared in this marking:
      S_Co contained in M: True
@@ -50,7 +50,7 @@ provenance
      H = h as vectors of L_K3: True
      S_Co = S_En + ZZ alpha (the Coble lattice is the Enriques lattice plus the
      root line), and delta = alpha as vectors: True
-  [   2.1s] the two embeddings compared
+  [   1.8s] the two embeddings compared
 
 4. the integral isometry g in O(L_K3)
    g = (e_0 <-> e_1, identity on U_2, U_3, E8_1, E8_2), built by the owner's isometry
@@ -76,29 +76,29 @@ provenance
      g commutes with J_dP:  True
    so g acts inside the (++)-piece of the pair: on S_dP it is the identity, and on
    S_Co = S_dP + ZZ alpha it is +1 on the slot and -1 on the root line.
-  [   3.1s] the isometry built and its labels checked
+  [   2.8s] the isometry built and its labels checked
 
 5. the finite-index inclusion, its gluing anti-isometry, and the extension criterion
    S_Co + T_Co -> L_K3: rank 22, determinant -4194304 = -2^22, so the index is 2^11 = |A_{S_Co}| = |A_{T_Co}|
    gamma_Co = the gluing anti-isometry A_{S_Co} -> A_{T_Co}(-1) of this inclusion, built by the owner;
    the glue subgroup L_K3/(S_Co + T_Co) inside A_{S_Co + T_Co} has order 2048
-  [  31.8s] gamma_Co and the glue
+  [  33.1s] gamma_Co and the glue
    M + M^perp -> L_K3: determinant -4194304, and the same glue order; the two inclusions coincide: True
-  [  31.9s] gamma_En
+  [  33.3s] gamma_En
    the pair (g|_{S_Co}, g|_{T_Co}) as an isometry of S_Co + T_Co, built by the owner: an involution True
    the compatibility equation of @thm:automorphism-lifting-criterion,
      bar(phi)_T . gamma_Co = gamma_Co . bar(phi)_S,
    decided by the owner's own procedure on the pair: isometry_extends -> True
    and the pair is literally a restriction of g, which the owner accepted as an isometry of L_K3,
    so the criterion is satisfied by construction of g, not searched for after it.
-  [  32.0s] the extension criterion
+  [  33.3s] the extension criterion
 
    the surjectivity input #664 records as a pinned-provider failure, run here
    (the traceback it records is a TypeError in recursive.py:154 at the pinned runtime):
      O(S_Co) -> O(A_S_Co) surjective: True
-  [  62.6s] surjectivity for S_Co
+  [  57.4s] surjectivity for S_Co
      O(T_Co) -> O(A_T_Co) surjective: True
-  [ 117.7s] surjectivity for T_Co
+  [ 104.1s] surjectivity for T_Co
 
 6. the block test of @def:congruence-group, on the two marked gluings
    A class of A_S is represented by a rational vector x with x.S integral; by Nikulin
@@ -115,7 +115,7 @@ provenance
      the whole block: 255 of the 255 nonzero classes have exactly one image inside it, so the restriction is a bijection of the block
      the remaining square-2 direction: [alpha/2] lands on [0], so the third block goes to the third block: True
      Coble: gamma_Co is block-compatible
-  [ 118.5s] the block test, Coble side
+  [ 104.9s] the block test, Coble side
    Enriques side: S = Integral lattice of rank 10 and signature (1, 9), T = Integral lattice of rank 12 and signature (2, 10)
      the block representatives are dual vectors: U(2) True, E8(2) True
      the blocks, as class sets: source U(2) 4, source E8(2) 256, target U(2) 4, target E8(2) 256
@@ -124,7 +124,28 @@ provenance
      the eight generators of the E8(2) block land on candidates [1, 2, 4, 8, 16, 32, 64, 128], each with [1] candidate
      the whole block: 255 of the 255 nonzero classes have exactly one image inside it, so the restriction is a bijection of the block
      Enriques: gamma_En is block-compatible
-  [ 119.4s] the block test, Enriques side
+  [ 105.9s] the block test, Enriques side
+
+7. the direct labelled group against the Heegner one: the two lattice inputs
+   @def:direct-group defines Gamma^dir_Co,2 as the image in O^+(T_Co) of the centralizer
+   Z_{O(L_K3)}(I_Co, I_dP)_{H,alpha}.  Two facts on the objects fix its shape:
+   (a) alpha^perp cap S_Co = S_En, so an isometry of S_Co fixing alpha already is one of
+       S_En;  (b) I_dP acts on S_Co by +1 on the slot, -1 on Delta(E8) and on ZZ alpha,
+       and by -1 on T_Co, so commuting with it forces exactly those pieces.
+   (a) alpha^perp cap S_Co: rank 10, det -1024, sig (1, 9);  S_En: rank 10, det -1024, sig (1, 9)
+       contained in S_En True, and S_En contained in it True: equal True
+   (b) I_dP on the pieces of S_Co and on T_Co:
+         +1 on the slot: I_dP(e) = e True, I_dP(f) = f True
+         -1 on Delta(E8): True over the eight generators
+         -1 on ZZ alpha: I_dP(alpha) = -alpha True
+         -1 on T_Co: True over a basis of T_Co
+   So an isometry of L_K3 commuting with I_Co and I_dP is a pair preserving S_Co, T_Co
+   and, inside S_Co, the three pieces; fixing alpha it preserves alpha^perp cap S_Co =
+   S_En; so the S-side of the centralizer is exactly Stab_{O(S_En)}(h), and its
+   discriminant image is the block-preserving group P_{S_En} of
+   @prop:gamma-co-heegner-strict.  That identification is the content of "an isometry
+   carrying the Coble-labelled datum to the Enriques-labelled one" for this group.
+  [ 122.7s] the direct group inputs
 
 CONCLUSION
   Built, in one copy of L_K3 = U^3 + 2E8(-1):

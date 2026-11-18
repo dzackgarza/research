@@ -48,6 +48,9 @@ the chamber clause as false as authored under one reading of the fourth bullet a
 closing under the other).  Nor is the k >= 2 locus touched: every lattice here is the one of
 @prop:coble-enriques-polarized-match.
 
+Part 7 records the two lattice facts on which the comparison of @def:direct-group with
+@def:hodge-group rests: alpha^perp cap S_Co = S_En, and the action of I_dP on the pieces.
+
 Part 6 also decides the block condition of @def:congruence-group for both marked gluings.
 That test is posed on the *embedding*, which is why a discriminant-form computation could not
 make it (@lem:coble-discriminant-blocks: the decomposition is not O(q)-invariant and both
@@ -109,10 +112,18 @@ def block_split(v):
     return (c[0:2], c[2:4], c[4:6], c[6:14], c[14:22])
 
 
+def to_L(sub, label):
+    """An element of a sublattice of L, or of a sublattice of S_Co, as a vector of L."""
+    lift = sub.inclusion()
+    element = lift(sub.module_generator(label))
+    if lift.codomain() is not L:
+        element = S_Co.inclusion()(element)
+    return element
+
+
 def sub_basis(sub):
     """A basis of the sublattice, as integer coordinate vectors in L's standard basis."""
-    return [coords(sub.inclusion()(sub.module_generator(l)))
-            for l in sub.module_generating_set()]
+    return [coords(to_L(sub, l)) for l in sub.module_generating_set()]
 
 
 def sub_coords(sub, v):
@@ -145,8 +156,7 @@ def contained(A, v):
 
 def same_lattice(A, B):
     return (A.module_rank() == B.module_rank()
-            and all(contained(B, A.inclusion()(A.module_generator(l)))
-                    for l in A.module_generating_set()))
+            and all(contained(B, to_L(A, l)) for l in A.module_generating_set()))
 
 
 def divisibility(sub, v):
@@ -501,6 +511,56 @@ for name, (source, target, src_u2, src_e8, src_extra, tgt_u2, tgt_e8, tgt_extra)
     all_compatible = all_compatible and compatible
     stamp('the block test, %s side' % name)
 assert all_compatible, 'a marked gluing is not block-compatible'
+
+# ---------------------------------------------------------------- 7. the direct group
+print('')
+print('7. the direct labelled group against the Heegner one: the two lattice inputs')
+print("   @def:direct-group defines Gamma^dir_Co,2 as the image in O^+(T_Co) of the centralizer")
+print('   Z_{O(L_K3)}(I_Co, I_dP)_{H,alpha}.  Two facts on the objects fix its shape:')
+print('   (a) alpha^perp cap S_Co = S_En, so an isometry of S_Co fixing alpha already is one of')
+print('       S_En;  (b) I_dP acts on S_Co by +1 on the slot, -1 on Delta(E8) and on ZZ alpha,')
+print('       and by -1 on T_Co, so commuting with it forces exactly those pieces.')
+# alpha^perp cap S_Co, as the kernel of the linear form x -> x.alpha on a basis of S_Co
+alpha_pairings = matrix(ZZ, 1, len(sub_basis(S_Co)),
+                        lambda i, j: sum(sub_basis(S_Co)[j][a] * G[a][b] * coords(alpha)[b]
+                                         for a in range(n) for b in range(n)))
+perp_alpha = L.primitive_sublattice_from([
+    vec(dict(enumerate([sum(int(coefficient) * sub_basis(S_Co)[j][d]
+                            for j, coefficient in enumerate(combination))
+                        for d in range(n)])))
+    for combination in alpha_pairings.right_kernel().basis_matrix().rows()])
+print('   (a) alpha^perp cap S_Co: rank %d, det %d, sig %s;  S_En: rank %d, det %d, sig %s'
+      % (perp_alpha.rank(), int(perp_alpha.determinant()), perp_alpha.signature_pair(),
+         S_En.rank(), int(S_En.determinant()), S_En.signature_pair()))
+inside = all(contained(S_En, to_L(perp_alpha, l)) for l in perp_alpha.module_generating_set())
+back = all(contained(perp_alpha, S_En.inclusion()(S_En.module_generator(l)))
+           for l in S_En.module_generating_set())
+print('       contained in S_En %s, and S_En contained in it %s: equal %s'
+      % (inside, back, inside and back))
+assert inside and back
+print('   (b) I_dP on the pieces of S_Co and on T_Co:')
+print('         +1 on the slot: I_dP(e) = e %s, I_dP(f) = f %s'
+      % (I_dP(slot_e) == slot_e, I_dP(slot_f) == slot_f))
+print('         -1 on Delta(E8): %s over the eight generators'
+      % all(I_dP(u) == -u for u in
+            [vec({6 + k: 1, 14 + k: 1}) for k in range(8)]))
+print('         -1 on ZZ alpha: I_dP(alpha) = -alpha %s' % (I_dP(alpha) == -alpha))
+print('         -1 on T_Co: %s over a basis of T_Co'
+      % all(I_dP(T_Co.inclusion()(T_Co.module_generator(l)))
+            == -T_Co.inclusion()(T_Co.module_generator(l))
+            for l in T_Co.module_generating_set()))
+assert I_dP(slot_e) == slot_e and I_dP(slot_f) == slot_f and I_dP(alpha) == -alpha
+assert all(I_dP(u) == -u for u in [vec({6 + k: 1, 14 + k: 1}) for k in range(8)])
+assert all(I_dP(T_Co.inclusion()(T_Co.module_generator(l)))
+           == -T_Co.inclusion()(T_Co.module_generator(l))
+           for l in T_Co.module_generating_set())
+print('   So an isometry of L_K3 commuting with I_Co and I_dP is a pair preserving S_Co, T_Co')
+print('   and, inside S_Co, the three pieces; fixing alpha it preserves alpha^perp cap S_Co =')
+print('   S_En; so the S-side of the centralizer is exactly Stab_{O(S_En)}(h), and its')
+print('   discriminant image is the block-preserving group P_{S_En} of')
+print('   @prop:gamma-co-heegner-strict.  That identification is the content of "an isometry')
+print('   carrying the Coble-labelled datum to the Enriques-labelled one" for this group.')
+stamp('the direct group inputs')
 
 print('')
 print('CONCLUSION')
