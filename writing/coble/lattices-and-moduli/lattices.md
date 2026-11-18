@@ -141,7 +141,7 @@ $$
 :::
 
 ::: {.remark #rmk:gamma-co-status title="What is established about $\Gamma_\Co$"}
-Neither inclusion between $\Gamma_\Co$ and $\widetilde\Orth^+(T_\Co)$ is proved. @prop:gamma-co-images(1) identifies $\widetilde\Orth^+(T_\Co)$ with the restricted stabilizer $R_{\Gamma_\En}$; that is a statement about the lattices $T_\Co\injects T_\En$, and it yields neither inclusion. A statement of this book about $\fco$ that uses more than $\Gamma_\Co\leq\Orth(T_\Co)$ is conditional on @conj:gamma-co-stable and says so.
+Neither inclusion between $\Gamma_\Co$ and $\widetilde\Orth^+(T_\Co)$ is proved, but the sign half of the first is: the monodromy of a family of Coble surfaces lies in $\SO^+(T_\Co)\subseteq\Orth^+(T_\Co)$ (@lem:monodromy-is-spinor-positive), so what is open in $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$ is its discriminant half, $\Gamma_\Co\subseteq\discriminantkernel{T_\Co}$. @prop:gamma-co-images(1) identifies $\widetilde\Orth^+(T_\Co)$ with the restricted stabilizer $R_{\Gamma_\En}$; that is a statement about the lattices $T_\Co\injects T_\En$, and it yields neither inclusion. A statement of this book about $\fco$ that uses more than $\Gamma_\Co\leq\SO^+(T_\Co)$ is conditional on @conj:gamma-co-stable and says so.
 :::
 
 ::: {.proposition #prop:gamma-co-images title="The three restricted stabilizers"}
