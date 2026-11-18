@@ -1,0 +1,56 @@
+provenance
+  sympy 1.14.0, exact integer and rational arithmetic
+  python 3.12.14
+  no sage and no sage-extensions
+  marking, S_Co, T_Co: @thm:theta-co-coordinates and @thm:gamma-co-coordinates
+
+1. the Heegner pair in the marking of @thm:theta-co-coordinates
+   delta = + e_0 - e_1, zeta = + e_0 + e_1
+   delta^2 = -2, zeta^2 = 2, delta.zeta = 0
+   Gram of <delta,zeta> = [[-2, 0], [0, 2]], determinant -4, so the span has index 2 in U_1
+   T_En = U_1 + Delta^-(U_2,U_3) + Delta^-(E8): rank 12, det 1024
+   T_Co = <zeta> + Delta^-(U_2,U_3) + Delta^-(E8): rank 11, det -2048
+   every T_Co basis vector is orthogonal to delta: True
+   rank of [T_Co basis, delta] = 12 = rank T_En, so delta^perp cap T_En = T_Co: True
+
+2. the reflection s_zeta in the marking
+   s_zeta = 1 - (2/zeta^2) zeta (G zeta)^T: integral True, s^2 = 1 True, s^T G s = G True, det -1
+   s_zeta fixes S_Co pointwise: True
+   s_zeta fixes delta: True
+   s_zeta commutes with theta_Co: True
+   so s_zeta lies in Z_{Orth(lkt)}(theta_Co) cap Stab(H), and its restriction to T_Co is
+   the reflection in zeta there: True
+   dual basis of T_Co^# checked: (t_i^*, t_j) = delta_ij True
+   dual basis of T_En^# checked: (u_i^*, u_j) = delta_ij True
+   s_zeta acts trivially on A_{T_Co}: s(t_i^*) - t_i^* in T_Co for the 11 dual generators True
+   s_zeta acts trivially on A_{T_En}: s(u_i^*) - u_i^* in T_En for the 12 dual generators True
+   hence rho_{T_En}(s_zeta) = 1, so s_zeta lies in ker rho_{T_En} and therefore in
+   gent = rho^{-1}(M) (@prop:sterk-group-identification(2)), and it fixes the line Z delta
+
+3. the discriminant form of T_Co, and the block A^0
+   the 2048 classes 1/2 sum eps_i t_i; values of q take the 4 values ['0', '1', '1/2', '3/2']
+   A^0 = the classes with q integral: 1024 elements = 2^10
+   A^0 is a subgroup: True
+   the class of zeta/2 has q = 1/2, outside A^0: True
+
+4. the index [Orth(T_Co) : Gamma_{Co,2}] = [Orth(q_{T_Co}) : P]
+   a F_2-basis of A^0 found: 10 vectors, spanning 1024 elements
+   qualifying pairs (i,j) of nonzero classes: 202368, and each subspace is met by three of
+   them, so the number of decompositions A^0 = W perp W^perp with W = A_{U(2)} and
+   W^perp = A_{E_8(2)} is 67456
+   |Orth(q_{T_Co})| = 46998591897600 and |P| = 696729600, so |Orth(q)|/|P| = 67456, equal to the count
+   [Orth(T_Co) : Gamma_{Co,2}] = 67456
+
+5. the indices of the comparison
+   |W(E8)| = 696729600, 2|W(E8)| = 1393459200
+   [Gamma_{Co,2} : Gamma_{Co,2} cap Orth^+] = 2, the two cosets being the components;
+   [Gamma_{Co,2} cap Orth^+ : Otilde^+(T_Co)] = |W(E8)| = 696729600;
+   [Gamma_{Co,2} : Otilde^+(T_Co)] = 1393459200
+   [Orth(T_Co) : Otilde^+(T_Co)] = 93997183795200 = 67456 * 1393459200
+   (a tower of two computed indices, not an independent count)
+
+6. not computed here
+   the group-theoretic steps: that the theta-image is rho^{-1}(P) and that R_gent is, are
+   prose with @prop:gamma-co-images(3), @prop:theta-co-index and
+   @prop:coble-block-compatibility; @conj:gamma-co-stable is a conjecture and is used only
+   where it is named.

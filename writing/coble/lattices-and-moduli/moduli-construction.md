@@ -53,7 +53,7 @@ F_{\mathrm{En}}
 ```
 
 The tower relates the degree-$2$ numerically polarized Coble and Enriques moduli $F_{\Co,2}$, $\fentwo$, their unpolarized quotients $\fco$, $\fen$, and the degree-$(2,2,0)$ K3 moduli space $\fttz\injects F_4$.
-The map $F_{\Co,2}\to \fco$ marked $?$ is undetermined: no inclusion between $\Gamma_{\Co,2}$ and $\Gamma_\Co$ is proved.
+The map $F_{\Co,2}\to \fco$ marked $?$ is finite of degree $2\abs{W(E_8)} = 1\,393\,459\,200$ under @conj:gamma-co-stable, by @thm:gamma-co-2-comparison(4): unconditionally $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_{\Co,2}$ with that index, and the identification $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ is exactly the conjecture.
 
 ## The GIT construction
 
