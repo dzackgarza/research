@@ -150,6 +150,55 @@ def test_complete_integral_plane_parabolic_generators(tmp_path):
     assert reproduced.read_bytes() == artifact.read_bytes()
 
 
+def test_coble_level_two_eichler_squares_fail_normal_generation():
+    """The normal closure of 18 squares has mod-four rank 44, below 54."""
+    import json
+    from pathlib import Path
+    from sage.all import GF, ZZ, identity_matrix, matrix
+
+    folder = Path(__file__).resolve().parents[2] / "computations/reports"
+    data = json.loads((folder / "coble_ambient_twenty_one_generators.json").read_text())
+    generators = [matrix(ZZ, record["matrix_standard"])
+                  for record in data["generators"][:18]]
+    finite = [matrix(GF(2), generator) for generator in generators]
+    inverse = [generator.inverse() for generator in finite]
+    identity = identity_matrix(ZZ, 11)
+    pivots = {}
+    queue = []
+
+    def admit(element):
+        bits = sum(int(element[i, j]) << (11 * i + j)
+                   for i in range(11) for j in range(11))
+        while bits:
+            pivot = bits.bit_length() - 1
+            if pivot in pivots:
+                bits ^= pivots[pivot]
+            else:
+                pivots[pivot] = bits
+                queue.append(element)
+                return
+
+    for generator in generators:
+        square = generator * generator
+        assert all((square[i, j] - identity[i, j]) % 2 == 0
+                   for i in range(11) for j in range(11))
+        admit(matrix(GF(2), 11, 11, [
+            int((square[i, j] - identity[i, j]) // 2) % 2
+            for i in range(11) for j in range(11)
+        ]))
+    assert len(pivots) == 16
+    position = 0
+    while position < len(queue):
+        element = queue[position]
+        position += 1
+        for generator, inv in zip(finite, inverse, strict=True):
+            admit(generator * element * inv)
+    assert len(pivots) == 44
+    # The independently certified full Gamma(2)/Gamma(4) has rank 56,
+    # while Gamma(2)/E(2) has order 4.  The E(2) image modulo four has
+    # dimension at least 54, so rank 44 disproves normal generation.
+
+
 def test_coble_ambient_generators_are_public_integral_isometry_morphisms():
     """All 21 standard matrices construct actual owned O(T_Co) morphisms."""
     import json
