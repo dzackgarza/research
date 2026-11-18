@@ -223,6 +223,69 @@ def test_coble_level_two_eichler_squares_fail_normal_generation():
     assert len(pivots) == 56
 
 
+def test_coble_eichler_normal_relations_have_rank_54_at_level_eight():
+    """Their squares and commutators span 54 independent level-eight classes."""
+    import json
+    from pathlib import Path
+    from sage.all import GF, Integers, matrix, identity_matrix
+
+    folder = Path(__file__).resolve().parents[2] / "computations/reports"
+    data = json.loads((folder / "coble_ambient_twenty_one_generators.json").read_text())
+    ring = Integers(8)
+    identity = identity_matrix(ring, 11)
+    generators = [matrix(ring, row["matrix_standard"])
+                  for row in data["generators"][:18]]
+    inverse = [generator.inverse() for generator in generators]
+    basis = {}
+    queue = []
+
+    def vector_bits(element, level):
+        return sum((((int(element[i, j]) - int(i == j)) // level) % 2)
+                   << (11 * i + j) for i in range(11) for j in range(11))
+
+    def admit(element):
+        bits = vector_bits(element, 2)
+        while bits:
+            pivot = bits.bit_length() - 1
+            if pivot in basis:
+                bits ^= basis[pivot]
+            else:
+                basis[pivot] = bits
+                queue.append(element)
+                return
+
+    for word in data["level_two_normal_relation_words"][:19]:
+        product = identity
+        for index in word:
+            product *= generators[index]
+        admit(product)
+    position = 0
+    while position < len(queue):
+        element = queue[position]
+        position += 1
+        for generator, inv in zip(generators, inverse, strict=True):
+            admit(generator * element * inv)
+    assert len(basis) == len(queue) == 54
+    higher = {}
+
+    def admit_higher(element):
+        assert vector_bits(element, 2) == 0
+        bits = vector_bits(element, 4)
+        while bits:
+            pivot = bits.bit_length() - 1
+            if pivot in higher:
+                bits ^= higher[pivot]
+            else:
+                higher[pivot] = bits
+                return
+
+    for i, element in enumerate(queue):
+        admit_higher(element * element)
+        for earlier in queue[:i]:
+            admit_higher(element * earlier * element.inverse() * earlier.inverse())
+    assert len(higher) == 54
+
+
 def test_coble_level_two_relation_words_are_public_kernel_morphisms():
     """Every certified relation word constructs an owned kernel morphism."""
     import json
