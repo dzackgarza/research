@@ -231,6 +231,25 @@ def test_item_3_the_divisor_the_conjecture_rests_on_is_sourced() -> None:
     assert "not the divisor but the dictionary" in verdict
 
 
+def test_the_restricted_diagram_keeps_the_conclusion() -> None:
+    """The issue names the RESTRICTED semifan; the theorem is proved from the Enriques diagram.
+
+    The restriction to the Coble hyperplane keeps the walls orthogonal to delta, and its irrelevant
+    roots are the Enriques irrelevant ones among those.  At every marked cusp the admissible roots
+    are still irrelevant there: cusp 3 keeps [12], cusp 4 keeps [10], cusp 5 keeps [7, 12, 13, 14].
+    So the conclusion holds for the object the issue names and not merely for the diagram it was
+    proved from.
+    """
+    run = ROOT / "computations/reports/coble_760-restricted-irrelevance-run.txt"
+    assert run.exists(), run
+    text = run.read_text(encoding="utf-8")
+    assert "irrelevant in the RESTRICTED diagram: [12]" in text
+    assert "irrelevant in the RESTRICTED diagram: [10]" in text
+    assert "irrelevant in the RESTRICTED diagram: [7, 12, 13, 14]" in text
+    assert text.count("all irrelevant after restriction: True") == 3
+    assert "the semifan the issue names" in " ".join(text.split())
+
+
 def test_item_4_a_pair_whose_faces_agree() -> None:
     """Item 4: the transcript's face line is the smallest input."""
     text = FACE_RUN.read_text(encoding="utf-8")
