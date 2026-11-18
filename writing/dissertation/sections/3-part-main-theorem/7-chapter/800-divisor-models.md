@@ -39,9 +39,9 @@ The dual complex, together with $R_{\IA}$, captures all line bundle glueing data
 ::: {.theorem title="{Classification via Integral-Affine Data}" #thm:ia-data-determination}
 Given a fixed Picard–Lefschetz monodromy invariant $\lambda$, the combinatorial type $(\Gamma(\mcx_0), R_{\IA})$—that is, the dual complex with its weighted, balanced subgraph—determines the *combinatorial type* of the KSBA stable limit of $(\mcx_t, \epsilon \mcr_t)$, and it is locally constant in families with fixed Picard–Lefschetz form.
 
-Both halves are theorems of the literature: the constancy is [@AEGS25, §4.1, printed p. 599, after @AE23, Theorem 8.11(5)], and the determination of the combinatorial type, together with the semifan cones as the loci on which it holds, is the same paragraph of the same page, after [@AE23, Corollary 8.13 and Theorem 9.3]. The record, and what is not settled, are @thm:ia-data-verdict and @qst:ia-data-pair-determinacy.
+Both halves are theorems of the literature: the constancy is [@AEGS25, §4.1, printed p. 599, after @AE23, Theorem 8.11(5)], and the determination of the combinatorial type, together with the semifan cones as the loci on which it holds, is the same paragraph of the same page, after [@AE23, Corollary 8.13 and Theorem 9.3]. The converse direction, from the divisor model to the data, is @thm:explicit-construction.
 
-The stronger reading, in which the data determine the limit as a pair, is not asserted: it is @qst:ia-data-pair-determinacy, and an earlier version of this section asserted it unproved. The converse direction, from the divisor model to the data, is @thm:explicit-construction.
+The stronger reading, in which the data determine the limit as a pair, is false, and it is refuted at a $1$-cusp by a count: see @thm:ia-data-verdict(3) with its record.
 :::
 
 ::: {.proposition title="{Semitoroidal Compactification via Recognizable Divisors}" #prop:semitoroidal-recognizable}

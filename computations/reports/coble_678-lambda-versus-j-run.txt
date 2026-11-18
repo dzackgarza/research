@@ -1,0 +1,65 @@
+[   0.0s] T_En built: 12 x 12, symmetric True, integral True
+[   0.0s] T_En: rank 12, determinant 1024, even True
+[   0.0s] T_En: signature (2,10) -> (12,10,0)_2 as AEGS25 p. 586 prints it
+[   0.0s] T_En: |disc| = 1024 = {2: 10}, so the discriminant group has order 2^10 (a = 10)
+[   0.0s] summands: e^2 = 0, e.f = 1, e2^2 = 0, e2.f2 = 2
+[   0.1s] J = Z e + Z e2: totally isotropic? True; so lam^2 = 0 for EVERY lam in J
+[   0.1s] J primitive? Smith invariants of its generator matrix are [1, 1]: True
+[   0.1s] J^perp: rank 10 generators, integral basis verified independent True
+[   0.1s] J^perp: the restricted form has rank 8 on its 10 generators, so its radical
+[   0.1s] J^perp: has dimension 2 = rank J, and J is inside it since dot(e,e) = dot(e,e2) = 0;
+[   0.1s] J^perp: J^perp/J is therefore of rank 8 and nondegenerate (the induced form)
+[   0.1s] primitive lam in J are a e + b e2 with gcd(a,b) = 1; e is the vanishing cycle, so lam and
+[   0.1s] lam + c e are the same transform (AE22 p. 28 puts lam in e-perp/e), and the integers that
+[   0.1s] can separate one transform from another are b and the divisibility of lam
+  a   b  div_T(lam)  div_{e-perp/Ze}(b e2)
+  0   1           2                      2
+  1   0           1                      0
+  1   1           1                      2
+  1   2           1                      4
+  1   3           1                      6
+  1   4           1                      8
+  1   5           1                     10
+  1   6           1                     12
+  2   1           2                      2
+  2   3           2                      6
+  2   5           2                     10
+  3   1           1                      2
+  3   2           1                      4
+  3   4           1                      8
+  3   5           1                     10
+  4   1           2                      2
+  4   3           2                      6
+  4   5           2                     10
+  5   1           1                      2
+  5   2           1                      4
+[   0.1s] b ranges over the window [0, 1, 2, 3, 4, 5, 6] and is unbounded over J;
+[   0.1s] div_T(lam) takes the values [1, 2]; both families are COUNTABLE
+[   0.1s] every lam in J is admissible, and there are countably many of them
+
+VERDICT.  The data do not determine the limit at this cusp, and the reason is a count.
+
+Fix the 1-cusp J.  Its Baily-Borel boundary component is a modular curve [AEGS25, Def. 2.9,
+printed p. 588], that is a quotient of the upper half plane by a finite-index group, on which
+the j-invariant is a non-constant holomorphic function; AET23 records the finite morphism to
+the j-line in the parallel case [AET23, section 3B, printed p. 16].  So the limits over J
+carry uncountably many values of j.  The points over the cusp are KSBA stable limits of
+degenerations in F_En,2 [AEGS25, section 5.3, printed p. 611], and the preimage of the
+component in the compactification is a family over it [AET23, section 3C, printed p. 17].
+
+Every such degeneration has a monodromy invariant lam, and since the cusp is the plane
+(Z d + Z lam)_sat [AE22, section 6A, printed p. 28] a lam at a FIXED cusp ranges over J/Ze,
+a rank 1 lattice: countably many, computed above as the coordinate b, which is unbounded.
+J is totally isotropic, so each of them satisfies lam^2 = 0 and the Type II condition
+excludes none of them.
+
+Now count.  If each lam occurred at a single j, the j-values realised over the cusp would
+be at most countable, one per lam.  They are uncountable.  So one lam occurs at two
+different j.  At a fixed transform the data can be chosen to be the same for all
+degenerations [AEGS25, section 4.1, printed p. 599], and a limit carries the j of its double
+curve as an invariant of the pair [AEGS25, proof of Theorem 5.9, printed p. 612].  Those two
+limits are therefore non-isomorphic with identical (Gamma, R_IA): the conjecture is false,
+and no elliptic curve had to be constructed to see it.
+
+elapsed 0 s
+PYEXIT=0
