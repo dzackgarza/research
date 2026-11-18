@@ -201,6 +201,24 @@ def test_item1b_block_compatibility_is_neither_vacuous_nor_automatic():
     assert "where $q = -q$" in proof
 
 
+def test_item1b_the_body_s_explicit_isometry_constructor_exists_at_this_runtime():
+    """The body records the twisted explicit isometry as unavailable; both transcripts have one.
+
+    Decides the capability half of item 1's body at the runtime the records were made on: the
+    object returned is a typed isometry of torsion forms, it is built against the TWISTED target
+    (``A(...).twist(-1)``), the untwisted answer is True, and the anti-isometry identity holds on
+    every class of the blocks.  What stays open next to it is not this operation but the marking.
+    """
+    for run_name, target in ((RUN_EN, "A_{T_En}(-1)"), (RUN_CO, "A_{T_Co}(-1)")):
+        run = _text(run_name)
+        assert f"isometry_to({target})" in run
+        assert "is_anti_isometric(A_{T_" in run and "= True" in run
+        assert "built: OwnedTorsionFormIsometryMor" in run
+        assert "isometry-to-the-twist check q_" in run and ": True" in run
+    assert "A_{S_En}.is_anti_isometric(A_{T_En}) = True" in _text(RUN_EN)
+    assert "A_{S_Co}.is_anti_isometric(A_{T_Co}) = True" in _text(RUN_CO)
+
+
 # ---------------------------------------------------------------------------
 # item 1, the pages the acceptance names.
 # ---------------------------------------------------------------------------
@@ -238,6 +256,44 @@ def test_item1_pages_citing_the_open_form_are_updated():
 # ---------------------------------------------------------------------------
 # item 2: Gamma^dir, a reduction and not a claim.
 # ---------------------------------------------------------------------------
+
+def test_item2_the_unlabelled_comparison_is_a_page_proposition():
+    """The settled half of item 2: one isometry of L_K3 carries the Coble datum to the Enriques one.
+
+    Decides: that the body's "the unlabelled comparison of the two polarizations is settled in the
+    affirmative" is carried by a statement, not by prose -- Phi(S_Co) = M, Phi(T_Co) =
+    delta^perp, Phi(H) = h -- while the labels stay with A21.
+    """
+    page = _text(PAGE)
+    prop = _block(page, "{.proposition #prop:coble-enriques-polarized-match")
+    assert "\\Phi(S_\\Co) = M" in prop
+    assert "\\Phi(T_\\Co) = \\delta^{\\perp\\ten}" in prop
+    assert "\\Phi(H) = h" in prop
+    assert "@prob:coble-rigidity" not in prop  # the labels are not claimed here
+
+
+def test_item2_the_two_half_fibres_have_the_numbers_the_proposition_uses():
+    """The arithmetic of item 2's settled half, on the page's own displayed classes.
+
+    Decides: F_1 = 3H - sum_{i<=9}E_i and F_2 = 3H - sum_{i<=8}E_i - E_10 on the plane model
+    (H^2 = 1, H.E_i = 0, E_i^2 = -1) have F_i^2 = 0, F_1.F_2 = 1 and (F_1+F_2)^2 = 2, which is
+    what @prop:coble-enriques-polarized-match transports to h = e+f in U(2).
+    """
+    page = _text(PAGE)
+    assert "F_1 = 3H_{\\PP^2}-\\Sum_{i\\le9}E_i" in page
+    assert "F_2 = 3H_{\\PP^2}-\\Sum_{i\\le8}E_i-E_{10}" in page
+    assert "F_i^2 = 0$, $F_1\\cdot F_2 = 1" in page
+
+    def dot(a, b):                      # (H, E_1..E_10) in diag(1, -1, ..., -1)
+        return a[0] * b[0] - sum(x * y for x, y in zip(a[1:], b[1:]))
+
+    F1 = (3,) + (-1,) * 9 + (0,)
+    F2 = (3,) + (-1,) * 8 + (0, -1)
+    assert dot(F1, F1) == 0
+    assert dot(F2, F2) == 0
+    assert dot(F1, F2) == 1
+    assert dot(tuple(x + y for x, y in zip(F1, F2)), tuple(x + y for x, y in zip(F1, F2))) == 2
+
 
 def test_item2_direct_group_is_defined_and_its_comparison_handed_on():
     """Decides: Gamma^dir is a named group whose comparison is the labeled embedding.
