@@ -150,6 +150,30 @@ def test_complete_integral_plane_parabolic_generators(tmp_path):
     assert reproduced.read_bytes() == artifact.read_bytes()
 
 
+def test_coble_ambient_generators_are_public_integral_isometry_morphisms():
+    """All 21 standard matrices construct actual owned O(T_Co) morphisms."""
+    import json
+    from pathlib import Path
+    from sage_extensions.all import NamedLattices, ZZ as OwnedZZ
+
+    folder = Path(__file__).resolve().parents[2] / "computations/reports"
+    data = json.loads((folder / "coble_ambient_twenty_one_generators.json").read_text())
+    lattice = NamedLattices.Tco
+    labels = tuple(lattice.module_generating_set())
+    group = lattice.O()
+    for row in data["generators"]:
+        entries = row["matrix_standard"]
+        morphism = group({
+            label: lattice.linear_combination({
+                labels[j]: OwnedZZ(entries[j][i]) for j in range(11)
+            })
+            for i, label in enumerate(labels)
+        })
+        assert morphism in group
+        assert morphism.domain() is lattice
+        assert morphism.codomain() is lattice
+
+
 def test_coble_ambient_standard_generator_certificate():
     """The reusable standard-basis 21-matrix certificate is exact and sourced."""
     import hashlib
