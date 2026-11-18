@@ -1,0 +1,16 @@
+L = Integral lattice of rank 12 and signature (2, 10)
+r12^2 = -2, r13^2 = -2, delta^2 = -2, eta^2 = 0
+
+call: O(L).transporter({r12, delta, eta_5}, {r13, delta, eta_5})
+REFUSED: AssertionError: the vectors of Generic morphism:
+  From: {0,...,2}
+  To:   Integral lattice of rank 12 and signature (2, 10) span a rational subspace of rank 3 of Integral lattice of rank 12 and signature (2, 10), of rank 12, with pairing rank 2: this computation requires the full space or an isotropic hyperplane, whose pointwise orthogonal stabilizer is trivial
+
+control: the stabilizer call on a family that does span is accepted
+  stabilizer of the fourteen walls with delta and eta: {g in Orthogonal group O(Integral lattice of rank 12 and signature (2, 10)) : isometries preserving the defining coloured vector family up to reindexing}
+
+VERDICT: the pair (12,13) can be posed only as a transporter whose pointwise orthogonal
+stabilizer is nontrivial, which the library's spanning hypothesis excludes; the subgroup
+alternative returns singleton orbits under a family it does not certify complete.
+PYEXIT=0
+exit=0
