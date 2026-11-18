@@ -1,0 +1,31 @@
+the complements of the admissible roots 12, 13, 14 in the boundary lattice K_5
+Sage 11.0.beta5; exact ZZ/QQ linear algebra
+T_En Gram determinant 1024; delta^2 = -2; eta_5^2 = 0, div_TEn(eta_5) = 2
+
+K_5: rank 10, det -256, signature (1, 9), even: True
+
+=== the three admissible roots, their classes and the complements r^perp in K_5
+label 12: class coordinates [3, 3, -24]..., class square -2
+        r^perp: rank 9, det 512, signature (1, 8), Smith [2, 2, 2, 2, 2, 2, 2, 2, 2], even True, coparity delta 1
+label 13: class coordinates [3, 4, -28]..., class square -2
+        r^perp: rank 9, det 512, signature (1, 8), Smith [2, 2, 2, 2, 2, 2, 2, 2, 2], even True, coparity delta 1
+label 14: class coordinates [2, 3, -20]..., class square -2
+        r^perp: rank 9, det 512, signature (1, 8), Smith [2, 2, 2, 2, 2, 2, 2, 2, 2], even True, coparity delta 1
+
+=== the verdict of the invariants
+determinants        [512]: all equal True
+signatures          [(1, 8)]: all equal True
+Smith invariants    [(2, 2, 2, 2, 2, 2, 2, 2, 2)]: all equal True
+(even, coparity)    [(True, 1)]: all equal True
+
+The three complements share every invariant of an even 2-elementary lattice: rank 9,
+determinant 512, signature (1, 8), and coparity 1.  An indefinite even 2-elementary lattice
+is determined by its signature and the triple (r, a, delta) [@AEGS25, section 2.3, printed
+p. 586; Nikulin], so the three complements are isometric.  Hence:
+  * no invariant of the boundary lattice separates the three classes, and this record
+    proves no inequivalence;
+  * the Gamma_Co,2-orbits of the three classes are NOT computed here, and inequivalence
+    remains open.
+elapsed 1 s
+PYEXIT=0
+exit=0
