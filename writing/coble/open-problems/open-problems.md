@@ -16,13 +16,9 @@ this inverse question from the archived Enriques meeting notes.
 
 ## Lattice-theoretic gaps
 
-::: {.question #qst:coble-embedding-matrices title="Open problem: explicit primitive embedding matrices"}
+::: {.remark title="The embedding matrices of the chain"}
 
-1. Write, in coordinate bases, the matrices of the chain of primitive embeddings
-   $$
-   T_\Co \injects \ten \injects \tdp \injects \lkt
-   $$
-   of @lem:sequence_of_embeddings and @lem:primitive_embedding_eta, and the equations of the sextic $C$ and its double plane (@qst:coble-explicit-equations) in the same bases.
+The matrices of the chain $T_\Co\injects\ten\injects\tdp\injects\lkt$, in the standard basis of the marking of @thm:theta-co-coordinates, are @thm:chain-matrices: the four bases, the three block inclusion matrices, their primitivity, and the identification of the first step with $\eta$ and of the composite with the display of @lem:sequence_of_embeddings. What that theorem does not give is the equations of the sextic $C$ and of its double plane, which is @qst:coble-explicit-equations; a basis of $H^2$ determines no equation, so the two questions were never one.
 :::
 
 ::: {.remark title="The horizontal folding involution, resolved"}

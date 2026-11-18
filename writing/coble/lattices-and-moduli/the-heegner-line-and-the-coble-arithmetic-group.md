@@ -1663,6 +1663,70 @@ Every value below is in `computations/reports/coble_a13-diagram-roots-run.txt`.
 **The pairings.** $H\cdot\alpha_i = H\cdot\tilde\alpha_i = 0$ because $H$ has no component in either $E_8$; $H\cdot(\omega_8+e_2) = H\cdot e_2 = 1$ because $\omega_8$ lies in $E_{8,1}$, which is orthogonal to $H$, and $H\cdot e_2 = 1$; likewise for $\tilde\omega_8+e_2$; and $H\cdot(e_3-e_2) = 1-1 = 0$. The Heegner vector lies in $U_1$, which is orthogonal to $W$ and to $W'$.
 :::
 
+::: {.theorem #thm:chain-matrices title="The chain $T_\Co\injects\ten\injects\tdp\injects\lkt$ in the standard basis"}
+
+In the marking of @thm:theta-co-coordinates, write $\Delta^\pm$ for the diagonal and antidiagonal copies of a summand of a doubled sum and put
+$$
+T_\Co = \generators{e_0+e_1}\oplus\Delta^-(U_2,U_3)\oplus\Delta^-(E_{8,1},E_{8,2}),
+\qquad
+T_\En = U_1\oplus\Delta^-(U_2,U_3)\oplus\Delta^-(E_{8,1},E_{8,2}),
+$$
+$$
+T_{\mathrm{dP}} = U_1\oplus\Delta^-(U_2,U_3)\oplus E_{8,1}\oplus E_{8,2},
+\qquad
+\lkt = U_1\oplus U_2\oplus U_3\oplus E_{8,1}\oplus E_{8,2}.
+$$
+Then:
+
+1. $T_\Co = \ker(\theta_\Co-\id)$, the $(+1)$-eigenspace of @thm:theta-co-coordinates; $T_\En = \ker(I_\En+\id)$ and $T_{\mathrm{dP}} = \ker(I_{\mathrm{dP}}+\id)$, while $S_{\mathrm{dP}}\definedas\ker(I_{\mathrm{dP}}-\id)$ is $\Delta(U_2,U_3)\cong U(2)$, with $I_\En$ and $I_{\mathrm{dP}}$ the involutions of [@AEGS25, Def. 2.3, printed p. 586].
+2. The three inclusions of @lem:sequence_of_embeddings are primitive, and in the bases displayed above they are the block matrices
+$$
+M_{\Co\En} = \begin{pmatrix}1&0\\ 1&0\\ 0&I_{10}\end{pmatrix},
+\qquad
+M_{\En\mathrm{dP}} = \begin{pmatrix}I_{12}\\ 0_{8\times4}\mid -I_8\end{pmatrix},
+\qquad
+M_{\mathrm{dP}\lkt} =
+\begin{pmatrix}
+I_2&0&0&0\\
+0&I_2&0&0\\
+0&-I_2&0&0\\
+0&0&I_8&0\\
+0&0&0&I_8
+\end{pmatrix},
+$$
+of shapes $12\times11$, $20\times12$ and $22\times20$, the rows and columns being ordered by the summands of the displays.
+3. $M_{\mathrm{dP}\lkt}\,M_{\En\mathrm{dP}}\,M_{\Co\En}$ is the coordinate matrix of $T_\Co$ in the standard basis. The first factor is the map $\eta$ of @lem:primitive_embedding_eta, $h\mapsto\tilde e+\tilde f = e_0+e_1$ and the identity on $E_{10}(2) = \Delta^-(U_2,U_3)\oplus\Delta^-(E_{8,1},E_{8,2})$; and the composite equals the map $(h,x,y)\mapsto(\tilde e+\tilde f,\,x,\,(y,y))$ of @lem:sequence_of_embeddings after the isometry $\sigma$ of $\lkt$ that is the identity on $U_1,U_2,U_3$ and $-\id$ on $E_{8,2}$.
+4. The four members have the invariants
+
+| member | rank | determinant | signature | Smith normal form |
+|:---|:---|:---|:---|:---|
+| $T_\Co$ | $11$ | $-2048$ | $(2,9)$ | $2^{11}$ |
+| $T_\En$ | $12$ | $1024$ | $(2,10)$ | $1^2,\,2^{10}$ |
+| $T_{\mathrm{dP}}$ | $20$ | $4$ | $(2,18)$ | $1^{18},\,2^{2}$ |
+| $\lkt$ | $22$ | $-1$ | $(3,19)$ | $1^{22}$ |
+
+and their types are read off the displays, not classified: $T_\Co\cong\generators{2}\oplus U(2)\oplus E_8(2)$, $T_\En\cong U\oplus U(2)\oplus E_8(2)$, $T_{\mathrm{dP}}\cong U\oplus U(2)\oplus E_8^2$.
+
+5. The Smith normal form of each inclusion matrix is trivial, which is the primitivity the two lemmas invoke, and the cokernels $\ten/T_\Co$, $\tdp/\ten$, $\lkt/\tdp$ have ranks $1$, $8$, $2$.
+
+What this does not give is the equations of the sextic $C$ and of its double plane in these bases; that is @qst:coble-explicit-equations, and no basis of $H^2$ determines an equation.
+:::
+
+::: {.proof}
+
+Every value and every entry below is in `computations/reports/coble_a13-chain-matrices-run.txt`.
+
+**The eigenspaces.** $\theta_\Co$ is $-\id$ on $S_\Co$ and $+\id$ on $T_\Co$ (@thm:theta-co-coordinates), and $T_\Co$ as displayed has $\beta = e_0+e_1$ with $\beta^2 = 2$ and the nine antidiagonal vectors, each an eigenvector of $\theta_\Co$ with eigenvalue $+1$; since both spaces have rank $11$, the displayed basis is the eigenspace. $I_\En$ acts on $U_1$ as $-\id$, on $\Delta^\pm(U_2,U_3)$ and $\Delta^\pm(E_8)$ by the sign of the diagonal, hence $\ker(I_\En+\id) = U_1\oplus\Delta^-(U_2,U_3)\oplus\Delta^-(E_{8,1},E_{8,2})$ of rank $12$, which is $T_\En$; and $I_{\mathrm{dP}}$ negates $U_1$, swaps $U_2$ and $U_3$, and negates both $E_8$ summands, so its $(-1)$-eigenspace is $U_1\oplus\Delta^-(U_2,U_3)\oplus E_8^2$ and its $(+1)$-eigenspace is $\Delta(U_2,U_3)$, of ranks $20$ and $2$.
+
+**The containments and the matrices.** Each displayed basis is a set of standard basis vectors or of differences of two, so containments are read off term by term, and in the displayed bases the coordinate matrices are the block matrices of part 2: the first column of $M_{\Co\En}$ is $\beta = e_0+e_1$ in the basis $(e_0,e_1)$ of $U_1$ and the remaining ten columns are the identity, since the two lattices share the $E_{10}(2)$ summand; $M_{\En\mathrm{dP}}$ is the identity on $U_1\oplus\Delta^-(U_2,U_3)$ and sends the antidiagonal vector $e_{6+k}-e_{14+k}$ to $e_{6+k}-e_{14+k}$, that is to minus the $k$-th vector of the $E_{8,2}$ block of $T_{\mathrm{dP}}$; and $M_{\mathrm{dP}\lkt}$ writes each of the twenty basis vectors in the standard basis, the two antidiagonal ones as $e_2-e_4$, $e_3-e_5$.
+
+**The composite.** Multiplying the three block matrices gives the coordinate matrix of $T_\Co$ in the standard basis, which the record checks against the direct construction. The first factor being $\eta$ is immediate from its block form. For the last statement: $\sigma$ is an isometry of $\lkt$ (it negates a whole $E_8$ summand and fixes the rest), it preserves $T_{\mathrm{dP}}$, and it carries the composite's images to $\beta$, to $e_2-e_4$ and $e_3-e_5$, and to $e_{6+k}+e_{14+k}$ for $k = 0,\dots,7$ — that is to $\tilde e+\tilde f = e_0+e_1$, to $x$, and to $(y,y)$.
+
+**Primitivity.** The Smith normal form of each inclusion matrix is trivial (all invariant factors $1$), which says the cokernel is torsion-free; that is the criterion of @lem:primitive_embedding_eta and of the proof of @lem:sequence_of_embeddings, so each step is primitive. The ranks of the cokernels are the rank differences $12-11$, $20-12$, $22-20$.
+
+**The invariants.** The Gram matrices of the four displayed bases are computed in the record; the determinants and signatures are those of the orthogonal sums the displays name, and the decompositions $\generators{2}\oplus U(2)\oplus E_8(2)$, $U\oplus U(2)\oplus E_8(2)$, $U\oplus U(2)\oplus E_8^2$ are the displays themselves, so no classification theorem is used for them. The Smith normal forms are those of the Gram matrices: $2^{11}$ for $T_\Co$, $1^2,2^{10}$ for $T_\En$, $1^{18},2^2$ for $T_{\mathrm{dP}}$, and $1^{22}$ for the unimodular $\lkt$.
+:::
+
 ::: {.proposition #prop:direct-eq-heegner title="The direct labelled group equals the Heegner one"}
 
 Let $\Gamma^{\mathrm{dir}}_{\Co,2}$ and $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ be the groups of @def:direct-group and @def:hodge-group, the first taken with the centralizer $Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ of its four labels, which at a member with $\Pic(\widehat X_b) = S_{\Co,b}$ is the centralizer of @def:direct-group with the chamber in its datum as well, by @thm:chamber-pinned-by-labels.

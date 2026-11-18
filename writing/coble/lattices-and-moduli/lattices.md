@@ -72,6 +72,7 @@ $$
 $$
 
 and thus an embedding $\fco \injects \fttz$.
+The three matrices, in the standard basis of the marking of @thm:theta-co-coordinates, are @thm:chain-matrices.
 :::
 
 ::: {.proof}
