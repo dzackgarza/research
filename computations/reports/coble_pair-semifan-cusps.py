@@ -18,7 +18,11 @@ This script computes, with ZZ/QQ arithmetic only:
      white node delta: the projected wall Gram matrix, the induced bond graph, the
      coincident walls, the inertia, the inherited relevance, the Gram and inertia of
      W_irr, and the maximal affine subdiagrams with the AEGS Lemma 5.7 test;
-  C. hypotheses (B2), (B3), (B4), (B5) of thm:semifan-restriction Case B, and (B1).
+  C. hypotheses (B2), (B3), (B4), (B5) of thm:semifan-restriction Case B, and (B1);
+  D. the volume of each restricted chamber, by the criterion of thm:coxeter-polytope-volume:
+     the extreme rays of the cone {(nu_i,x) >= 0}, enumerated over the eight-subsets of the
+     walls (complete because the walls span K, so the cone is pointed), each classified
+     ordinary (v^2 > 0), ideal (v^2 = 0) or outside (v^2 < 0).
 
 Run:  python3 computations/reports/coble_pair-semifan-cusps.py
 """
@@ -201,6 +205,8 @@ IRR = {2: {4}, 3: {4, 9, 11}, 4: {7, 8}, 5: {9, 10, 11, 12, 13, 14}}
 print()
 print("=== part B. the restricted chamber at each Coble 0-cusp")
 summary = {}
+CHAMBER = {}
+VOL = {}
 for k in (2, 3, 4, 5):
     Gm = GRAM[k]; MM = len(Gm)
     dn = DELTA_NODE[k]
@@ -317,10 +323,84 @@ for k in (2, 3, 4, 5):
         print("      %s -> %s" % (S, badc))
     summary[k] = (len(nodes), len(reps), iner_i, iner_i[0] == 0 and iner_i[2] == 0,
                   dn not in IRR[k], not mixed, len(maxaff), nbad)
+    CHAMBER[k] = (reps, Pd)
 print()
 print("=== summary")
 print("cusp roots walls  W_irr inertia  W_irr finite  delta relevant  (B5)  max-affine  irr-only-comp")
 for k in (2, 3, 4, 5):
     r, w, ii, fin, rel, b5, ma, nb = summary[k]
     print("  %d    %2d    %2d   %-12s %-13s %-14s %-5s %-10s  %d" % (k, r, w, ii, fin, rel, b5, ma, nb))
+print()
+print("=== part D. the volume of the restricted chamber")
+print("thm:coxeter-polytope-volume(3): the polytope has infinite volume if and only if its")
+print("closure in the projective model has a vertex outside the closed hyperbolic space, and by")
+print("(1) it has finite volume if and only if the closure is the convex hull of finitely many")
+print("of its ordinary and ideal vertices.  The vertices are the extreme rays of the cone")
+print("C = {x : (nu_i,x) >= 0}; since the walls span K, C is pointed, and every extreme ray is")
+print("cut out by an independent set of dim K - 1 = 8 walls, so the enumeration over 8-subsets")
+print("is complete.  A ray is ordinary when v^2 > 0, ideal when v^2 = 0, and outside when v^2 < 0.")
+
+
+def rank_of(M):
+    return Matrix(M).rank()
+
+for k in (2, 3, 4, 5):
+    reps, Pd = CHAMBER[k]
+    n = len(reps)
+    basis = []
+    for i in range(n):
+        cand = basis + [i]
+        if rank_of([[Pd[a][b] for b in cand] for a in cand]) == len(cand):
+            basis = cand
+    assert len(basis) == 9, (k, len(basis))
+    GB = [[Pd[a][b] for b in basis] for a in basis]
+    Grow = [[Pd[i][b] for b in basis] for i in range(n)]
+    rays = {}
+    for S in combinations(range(n), 8):
+        A = Matrix([[sp.Rational(Grow[i][j]) for j in range(9)] for i in S])
+        if A.rank() != 8:
+            continue
+        ns = A.nullspace()
+        if len(ns) != 1:
+            continue
+        v = [sp.Rational(x) for x in ns[0]]
+        den = 1
+        for x in v:
+            den = sp.ilcm(den, int(sp.denom(x)))
+        v = [int(x * den) for x in v]
+        if not all(sum(F(Grow[j][t]) * v[t] for t in range(9)) >= 0 for j in range(n)):
+            continue
+        key = tuple(v)
+        dup = False
+        for kk in rays:
+            if all(kk[t] * key[0] == key[t] * kk[0] for t in range(9)):
+                dup = True
+                break
+        if not dup:
+            rays[key] = sum(F(v[a]) * GB[a][b] * F(v[b]) for a in range(9) for b in range(9))
+    kinds = {'ordinary': 0, 'ideal': 0, 'outside': 0}
+    outside = []
+    for v, nrm in rays.items():
+        if nrm > 0:
+            kinds['ordinary'] += 1
+        elif nrm == 0:
+            kinds['ideal'] += 1
+        else:
+            kinds['outside'] += 1
+            outside.append((v, nrm))
+    print()
+    print("-- over Sterk cusp %d: %d distinct walls, %d extreme rays" % (k, n, len(rays)))
+    print("   ordinary (v^2>0): %d ; ideal (v^2=0): %d ; outside (v^2<0): %d"
+          % (kinds['ordinary'], kinds['ideal'], kinds['outside']))
+    print("   finite volume: %s" % (kinds['outside'] == 0))
+    for v, nrm in outside:
+        print("      an extreme ray outside the closed hyperbolic space: v = %s with v^2 = %s" % (v, nrm))
+    VOL[k] = (n, len(rays), kinds, kinds['outside'] == 0)
+print()
+print("=== part D summary")
+print("cusp  walls  extreme rays  ordinary  ideal  outside  finite volume")
+for k in (2, 3, 4, 5):
+    n, nr, kinds, fin = VOL[k]
+    print("  %d     %2d       %2d          %2d       %2d     %2d       %s"
+          % (k, n, nr, kinds['ordinary'], kinds['ideal'], kinds['outside'], fin))
 print("PYEXIT=0")
