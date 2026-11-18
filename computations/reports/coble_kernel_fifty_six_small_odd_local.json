@@ -6,31 +6,36 @@
       "prime": 3,
       "contains_omega": true,
       "orthogonal_type": "odd_dimension_11",
-      "principal_p_layer_rank": 55
+      "principal_p_layer_rank": 55,
+      "adjoint_commutator_rank": 55
     },
     {
       "prime": 5,
       "contains_omega": true,
       "orthogonal_type": "odd_dimension_11",
-      "principal_p_layer_rank": 55
+      "principal_p_layer_rank": 55,
+      "adjoint_commutator_rank": 55
     },
     {
       "prime": 7,
       "contains_omega": true,
       "orthogonal_type": "odd_dimension_11",
-      "principal_p_layer_rank": 55
+      "principal_p_layer_rank": 55,
+      "adjoint_commutator_rank": 55
     },
     {
       "prime": 11,
       "contains_omega": true,
       "orthogonal_type": "odd_dimension_11",
-      "principal_p_layer_rank": 55
+      "principal_p_layer_rank": 55,
+      "adjoint_commutator_rank": 55
     },
     {
       "prime": 13,
       "contains_omega": true,
       "orthogonal_type": "odd_dimension_11",
-      "principal_p_layer_rank": 55
+      "principal_p_layer_rank": 55,
+      "adjoint_commutator_rank": 55
     }
   ]
 }

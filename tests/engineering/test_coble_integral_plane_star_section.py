@@ -241,7 +241,8 @@ def test_coble_fifty_six_small_odd_local_images_are_full():
     assert [record["prime"] for record in data["records"]] == [3, 5, 7, 11, 13]
     assert all(record["contains_omega"] is True and
                record["orthogonal_type"] == "odd_dimension_11" and
-               record["principal_p_layer_rank"] == 55 for record in data["records"])
+               record["principal_p_layer_rank"] == 55 and
+               record["adjoint_commutator_rank"] == 55 for record in data["records"])
     subprocess.run(["sage", str(folder / "coble_kernel_fifty_six_small_odd_local.py")],
                    cwd=folder.parents[1], check=True, capture_output=True, text=True)
     assert artifact.read_bytes() == before

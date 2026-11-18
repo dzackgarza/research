@@ -16,6 +16,7 @@ data = json.loads(source.read_text())
 matrices = [matrix(ZZ, row["matrix_standard"]) for row in data["generators"]]
 unipotents = [g for g in matrices if (g - identity_matrix(ZZ, 11))**3 == 0]
 assert len(unipotents) == 46
+diagonal_source = json.loads((root / "coble_singular_integral_representatives.json").read_text())
 records = []
 for prime in (3, 5, 7, 11, 13):
     field = GF(prime)
@@ -56,11 +57,36 @@ for prime in (3, 5, 7, 11, 13):
         for generator, inv in zip(finite, inverse, strict=True):
             admit(generator * element * inv)
     assert len(pivots) == 55
+    # The adjoint coinvariants vanish: the unipotent subgroup acts on
+    # the full orthogonal Lie algebra without any trivial quotient.
+    change = matrix(field, diagonal_source["standard_to_diagonal"])
+    change_inverse = change.inverse()
+    adjoint_pivots = {}
+    unipotent_finite = [matrix(field, g) for g in unipotents]
+    for i in range(11):
+        for j in range(i + 1, 11):
+            elementary = matrix(field, 11, 11)
+            elementary[i, j] = 1
+            elementary[j, i] = -(-1 if i < 2 else 1) * (-1 if j < 2 else 1)
+            standard = change_inverse * elementary * change
+            for generator in unipotent_finite:
+                difference = generator * standard * generator.inverse() - standard
+                values = vector(field, difference.list())
+                while values:
+                    pivot = next(k for k, value in enumerate(values) if value)
+                    if pivot in adjoint_pivots:
+                        values -= values[pivot] * adjoint_pivots[pivot]
+                    else:
+                        values /= values[pivot]
+                        adjoint_pivots[pivot] = values
+                        break
+    assert len(adjoint_pivots) == 55
     records.append({
         "prime": prime,
         "contains_omega": True,
         "orthogonal_type": "odd_dimension_11",
         "principal_p_layer_rank": len(pivots),
+        "adjoint_commutator_rank": len(adjoint_pivots),
     })
     print("Certified local prime", prime, "rank", len(pivots), flush=True)
 result = {
