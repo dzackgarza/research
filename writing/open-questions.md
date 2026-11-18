@@ -35,7 +35,6 @@ tags:
 | Unknown | Stated in |
 |:---|:---|
 | **A generating set of the group $\widetilde\Orth^+(T_\Co)$** | @qst:gamma-co-generators, @prob:coxeter-completeness |
-| **Equality of the four arithmetic groups** | @prob:group-identification, @sec-four-groups, @sec-gamma-co-comparison, @qst:gamma-co-generators; three of the four coincide, $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_\Co = \Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ (@prop:direct-eq-heegner, @cor:gamma-hdg-is-congruence, with block-compatibility decided in @prop:coble-block-compatibility); what remains is the geometric entry, @prob:B24 and @prob:B25; the chamber of the centralizer's datum, drawn from the labelled tuple of @prob:coble-rigidity, is not extra at a member whose Picard lattice is the invariant lattice (@thm:chamber-pinned-by-labels) |
 | **Which quotient of $D(T_\Co)$ is the Coble moduli space** | @qst:sextic-group-comparison |
 | **Projective coverage and the moduli equivalence** | @prob:projective-coverage, @prob:cover-singular-equivalence, @prob:period-diagram |
 | **The Enriques-to-Coble cusp correspondence** | @sec-enriques-coble-correspondence; the reduction @prop:cusp-map-separates-mod-two |

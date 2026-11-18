@@ -1108,8 +1108,7 @@ Prove
 
 Each equality requires a separate argument: global Torelli and parallel transport for the first, labeled embedding comparison for the second, and discriminant-form gluing for the third.
 The third is now settled in the form it can hold in: the block condition on the two gluings is decided affirmatively, so $\Gamma^{\mathrm{Hdg}}_\Co = \Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ (@cor:gamma-hdg-is-congruence, with @prop:coble-block-compatibility), the congruence group exceeding that by the spinor sign of $s_\zeta$ alone.
-The first remains open: @prob:B24 and @prob:B25. The second's lattice input is @prop:coble-enriques-ambient-isometry.
-The second is now established as well, with the chamber of the datum in place: at a member whose Picard lattice is the invariant lattice the chamber is determined by the other two labels (@thm:chamber-pinned-by-labels), so @prop:direct-eq-heegner gives $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2}$ for the group of @def:direct-group as defined, and the four groups coincide except for the geometric monodromy entry, which needs @prob:B24 and @prob:B25.
+The first two are now settled as well. The second's lattice input is @prop:coble-enriques-ambient-isometry, and with the chamber of the datum in place the equality $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2}$ is @prop:direct-eq-heegner. The first is @prob:B25, whose proof identifies the deck group of the marking cover and the geometric monodromy group both with $\Gamma^{\mathrm{dir}}_{\Co,2}$, using the period image of @prob:B24. The four groups therefore coincide with the congruence group intersected with $\Orth^+(T_\Co)$ (@cor:four-groups-decided), the congruence group itself being the union of that group with its $s_\zeta$-coset.
 :::
 
 With $\alpha$ the vector $\delta$ of @lem:coble-heegner-vector, $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ is the group $\Gamma^{\mathrm{Hdg}}_\Co$ of @prop:gamma-co-in-heegner-group.
@@ -2054,12 +2053,40 @@ The singular Coble pair recovers the quartic del Pezzo quotient, the two double-
 Compute the simultaneous eigenspaces of the Klein-four action, their primitive closures and discriminant forms, and prove the labeled rigidity theorem of @sec-labeled-lattice-data.
 :::
 
-::: {.problem #prob:B24 title="B2.4. Direct global Torelli theorem"}
-The marked direct Coble moduli stack is an explicit arrangement complement $\bD_{\Co}^\circ$, with the ample/nef chamber and exceptional root correctly encoded.
+::: {.theorem #prob:B24 title="B2.4. Direct global Torelli theorem — the period image, decided"}
+Let $p$ be the period map of the direct one-node construction into the component of $\bD(T_\Co)$ modulo $\Gamma_{\mathrm{lab}}$, the image in $\Orth(T_\Co)$ of the stabilizer in $\Orth(\lkt)$ of the labels $(I_\Co,I_{\mathrm{dP}},H,\alpha)$. Then the complement of $\mathrm{im}(p)$ is a union of Heegner divisors of $T_\Co$:
+1. no period of the construction lies on a wall $\delta^\perp$ with $\delta\in T_\Co$ of square $-2$;
+2. each of the $121$ classes whose glued image is the level $\set{q_{T_\Co} = 1}$ carries a wall that the image misses, and the single class $\eta_0$ of the other level $\set{q_{T_\Co} = 1/2}$ that the pinned gluing $\gamma_\Co$ could charge carries no vector of norm $-2$, $-4$, $-6$ or $-8$, so no divisor of that level is excluded.
+
+So the marked direct Coble moduli stack is the complement of that subarrangement of walls — the ample/nef chamber and the exceptional root are encoded by the labels and the chamber, as @thm:chamber-pinned-by-labels makes explicit — and the reading of B2.4 that identifies it with the complement of the whole divisorial locus $\bD_\Co^\circ = \bD\setminus\mathrm{NL}_2$ is **false**: the excluded divisors are proper and nonempty on both sides.
 :::
 
-::: {.problem #prob:B25 title="B2.5. Direct monodromy theorem"}
-The deck group of the marking cover and the geometric monodromy group equal the labeled centralizer group $\Gamma_{\Co,2}^{\mathrm{dir}}$.
+::: {.proof}
+
+*The image.* This is the content of `computations/reports/smwo_direct-period.md`, Theorem D and the (T-mixed) block, at passes 7 and 8 there. The two inclusions are decided member by member rather than by a dominance argument: every member of the construction lies in the locus $O$ of the statement, because $\alpha$ is by construction the class of the node's exceptional curve and $A = 2H-\alpha$ is ample; and conversely every point of $O$ is reconstructed as the period of a member, by the realization of the $S_\Co$-polarized structure, the geometric realization of the two involutions at $A$ ample, and the reconstruction of the member from its period. Part 1 is the direction $\mathrm{im}(p)\subseteq\bD^\circ$ of that record; part 2 is (X-TM), decided negatively there: the level-set identity $\set{z\in A_{T_\Co} : q_{T_\Co}(z) = 1} = \mathrm{BAD}_T(-4)$ has no slack on either side, and every class of $\mathrm{BAD}_S$ has $q_{S_\Co} = -1$, so the isotropy of the even lattice $\lkt$ forces the glue to carry all $121$ of them through to that level; the single class of the other level is carried by the corpus's own $\gamma_\Co$, so its wall is empty of members.
+
+*The refutation.* With both parts, the excluded and the included divisors are both nonempty: no $(-2)$-wall of $T_\Co$ is met, and each of the $121$ walls of part 2 is missed, while the complement of the whole divisorial locus is dense. So the image is neither $\bD^\circ_\Co$ nor the whole domain, and the arrangement-complement form of B2.4 fails on the side of the $121$ divisors.
+:::
+
+::: {.theorem #prob:B25 title="B2.5. Direct monodromy theorem — proved"}
+
+The deck group of the marking cover and the geometric monodromy group both equal $\Gamma^{\mathrm{dir}}_{\Co,2}$, hence also $\Gamma^{\mathrm{Hdg}}_{\Co,2} = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$.
+:::
+
+::: {.proof}
+
+*The two groups.* $\Gamma_{\mathrm{lab}} = \Gamma^{\mathrm{dir}}_{\Co,2}$: a label-preserving isometry of $\lkt$ preserves $S_\Co$, $S_{\mathrm{dP}}$, $H$ and $\alpha$, so its image in $\Orth(T_\Co)$ acts on $A_{T_\Co}$ through the conjugating block structure, that is within $P$; conversely $\rho_{T_\Co}^{-1}(P)\intersect\Orth^+(T_\Co)\subseteq\Gamma^{\mathrm{dir}}_{\Co,2}$ because $\widetilde\Orth^+(T_\Co)\subseteq\Gamma^{\mathrm{dir}}_{\Co,2}$ and the image is $P$ — these are the two inclusions of @prop:direct-eq-heegner. The chamber cuts nothing out of either, by @thm:chamber-pinned-by-labels.
+
+*The marked period space.* By @prop:one-node-period-image the period map is injective on marked isomorphism classes: a Hodge isometry of $\lkt$ carrying the labels carries the ample class $2H-\alpha$ to an ample class, so the strong Torelli theorem realizes it. Hence the marked moduli is the set $O = \pi^{-1}\bigl(\mathrm{im}(p)\bigr)$ of periods of marked members, $\pi\colon\bD(T_\Co)\to\bD(T_\Co)/\Gamma_{\mathrm{lab}}$ the quotient.
+
+*$O$ is connected.* By @prob:B24 the complement of $\mathrm{im}(p)$ is a union of Heegner divisors, so $O$ is the complement in the component of $\bD(T_\Co)$ of a union of walls; that union is locally finite, each compact subset of the domain meeting only the walls of the classes whose periods satisfy a bound, and the complement of a locally finite union of proper closed analytic subsets of a connected complex manifold is connected and dense. It is $\Gamma_{\mathrm{lab}}$-invariant as a preimage.
+
+*The monodromy.* The forgetting map $O\to O/\Gamma_{\mathrm{lab}} = \mathfrak M$ is therefore a regular covering of the connected moduli stack with deck group $\Gamma_{\mathrm{lab}}$, and the local system $T_\Co$ is trivialized by it, a marking being an isometry of $H^2$ carrying the labels. The monodromy of a local system trivialized by a regular covering is its deck group — the deck transformations are by definition the image of $\pi_1$ in the automorphisms of a fibre — so both the deck group and the geometric monodromy group are $\Gamma_{\mathrm{lab}} = \Gamma^{\mathrm{dir}}_{\Co,2}$. The last equality is @cor:gamma-hdg-is-congruence.
+:::
+
+::: {.corollary #cor:four-groups-decided title="The four arithmetic groups"}
+
+$\Gamma^{\mathrm{geom}}_{\Co,2} = \Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2} = \Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$, and $\Gamma^{\mathrm{cong}}_{\Co,2}$ is the union of that group with its $s_\zeta$-coset.
 :::
 
 ::: {.problem #prob:B26 title="B2.6. Direct stable-pair theorem"}

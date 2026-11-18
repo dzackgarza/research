@@ -288,13 +288,12 @@ def test_item1_pages_citing_the_open_form_are_updated():
     assert "@prop:coble-block-compatibility" in _block(
         q, "{.question #qst:gamma-co-generators")
 
-    row = next(line for line in _text(OPEN_QUESTIONS).splitlines()
-               if line.startswith("| **Equality of the four arithmetic groups**"))
-    assert "@prob:group-identification" in row
-    assert "@qst:gamma-co-generators" in row
-    assert "@cor:gamma-hdg-is-congruence" in row
-    assert "@prop:coble-block-compatibility" in row
-    assert "@prob:coble-rigidity" in row and "@prob:B24" in row and "@prob:B25" in row
+    # the four-group question is settled, so its register row has left the table
+    table = _text(OPEN_QUESTIONS)
+    assert "| **Equality of the four arithmetic groups**" not in table
+    groups = _block(_text(REPORT), "{.problem #prob:group-identification")
+    assert "@cor:four-groups-decided" in groups
+    assert "@prob:B25" in groups
 
 
 def test_item1c_the_block_test_is_in_the_record_and_the_transcript_decides_it():
@@ -474,24 +473,58 @@ def test_item2b_the_theorem_has_its_three_parts_and_its_scope():
     assert "@thm:automorphism-lifting-criterion" in scope
 
 
-def test_item3_geometric_entry_is_a_period_theorem():
-    """Decides: Gamma^geom is monodromy of the direct stack, named to B24 and B25."""
+def test_item3_geometric_entry_is_decided_by_the_direct_period_theorems():
+    """A20 item 3: Gamma^geom, by the two period theorems that were its named input.
+
+    Decides: the entry is no longer a period theorem owed but a monodromy group identified.
+    @prob:B24 is decided with its arrangement-complement form refuted -- the image is a
+    complement of a proper, nonempty set of Heegner divisors -- and @prob:B25 is proved by
+    taking the marked moduli to be the complement of that subarrangement: a connected,
+    Gamma_lab-saturated set, so the marking cover is a regular covering with deck group
+    Gamma_lab and the monodromy is its deck group.
+    """
     report = _text(REPORT)
     geom = _block(report, "{.definition #def:geometric-monodromy")
     assert "orbifold monodromy representation" in geom
-    assert "{.problem #prob:B24 title=\"B2.4. Direct global Torelli theorem\"}" in report
-    assert "{.problem #prob:B25 title=\"B2.5. Direct monodromy theorem\"}" in report
-    assert "global Torelli and parallel transport for the first" in report
+
+    b24 = _block(report, "{.theorem #prob:B24")
+    assert "the period image, decided" in b24
+    assert "no period of the construction lies on a wall" in b24
+    assert "the reading of B2.4 that identifies it with the complement of the whole divisorial locus" in b24
+    assert "is **false**" in b24
+    b24_proof = _block(report, "{.proof}\n\n*The image.*")
+    assert "smwo_direct-period.md" in b24_proof
+    assert "decided member by member rather than by a dominance argument" in b24_proof
+    assert "121" in b24_proof
+
+    b25 = _block(report, "{.theorem #prob:B25")
+    assert "deck group of the marking cover and the geometric monodromy group both equal" in b25
+    b25_proof = _block(report, "{.proof}\n\n*The two groups.*")
+    assert "\\Gamma_{\\mathrm{lab}} = \\Gamma^{\\mathrm{dir}}_{\\Co,2}" in b25_proof
+    assert "injective on marked isomorphism classes" in b25_proof
+    assert "the complement of a locally finite union of proper closed analytic subsets" in b25_proof
+    assert "regular covering of the connected moduli stack with deck group" in b25_proof
+
+    cor = _block(report, "{.corollary #cor:four-groups-decided")
+    assert "\\Gamma^{\\mathrm{geom}}_{\\Co,2} = \\Gamma^{\\mathrm{dir}}_{\\Co,2} = \\Gamma^{\\mathrm{Hdg}}_{\\Co,2}" in cor
+    assert "s_\\zeta" in cor
 
 
 # ---------------------------------------------------------------------------
 # the absorbed #720 entries.
 # ---------------------------------------------------------------------------
 
-def test_absorbed_d1_is_b25_with_the_unpolarized_definition():
-    """(D1) monodromy maximality: the monodromy equals the labeled centralizer, off-lattice."""
+def test_absorbed_d1_monodromy_maximality_is_b25_proved():
+    """(D1) monodromy maximality: the monodromy is the labeled centralizer group.
+
+    Decides: the entry that awaited the direct period theorem is discharged by it -- the deck
+    group and the monodromy are both Gamma^dir -- while the *unpolarized* statement, which is a
+    different moduli problem, keeps its own status.
+    """
     report = _text(REPORT)
-    assert "geometric monodromy group equal the labeled centralizer group" in report
+    b25 = _block(report, "{.theorem #prob:B25")
+    assert "geometric monodromy group both equal" in b25
+    assert "proved" in b25
     unpolarized = _block(report, "{.definition #def:unpolarized-direct-group")
     assert "remains a geometric monodromy statement until the direct period theorem is proved" in unpolarized
 
