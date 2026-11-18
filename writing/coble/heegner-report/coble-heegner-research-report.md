@@ -1108,7 +1108,7 @@ Prove
 
 Each equality requires a separate argument: global Torelli and parallel transport for the first, labeled embedding comparison for the second, and discriminant-form gluing for the third.
 The third is now settled in the form it can hold in: the block condition on the two gluings is decided affirmatively, so $\Gamma^{\mathrm{Hdg}}_\Co = \Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ (@cor:gamma-hdg-is-congruence, with @prop:coble-block-compatibility), the congruence group exceeding that by the spinor sign of $s_\zeta$ alone.
-The first two are now settled as well. The second's lattice input is @prop:coble-enriques-ambient-isometry, and with the chamber of the datum in place the equality $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2}$ is @prop:direct-eq-heegner. The first is @prob:B25, whose proof identifies the deck group of the marking cover and the geometric monodromy group both with $\Gamma^{\mathrm{dir}}_{\Co,2}$, using the period image of @prob:B24. The four groups therefore coincide with the congruence group intersected with $\Orth^+(T_\Co)$ (@cor:four-groups-decided), the congruence group itself being the union of that group with its $s_\zeta$-coset.
+The first two are now settled as well. The second's lattice input is @prop:coble-enriques-ambient-isometry, and with the chamber of the datum in place the equality $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2}$ is @prop:direct-eq-heegner. The first is @prob:B25, whose proof identifies the geometric monodromy group with $\Gamma^{\mathrm{dir}}_{\Co,2}$ and the deck group of the marking cover with its quotient by $\{\pm\id\}$, using the period image of @prob:B24 (@thm:sign-is-isotropy, @thm:no-loop-carries-the-sign). The four groups therefore coincide with the congruence group intersected with $\Orth^+(T_\Co)$ (@cor:four-groups-decided), the congruence group itself being the union of that group with its $s_\zeta$-coset.
 :::
 
 With $\alpha$ the vector $\delta$ of @lem:coble-heegner-vector, $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ is the group $\Gamma^{\mathrm{Hdg}}_\Co$ of @prop:gamma-co-in-heegner-group.
@@ -1960,7 +1960,7 @@ What is settled below is the shape of that complement and the published status o
 
 The unpolarized form of the open identification is published: [@DK13, Prop. 3.2, printed p. 513] identifies the moduli space $\mcm_\Co$ of classical Coble surfaces with an open subset of $\bD(N)/\Orth(N)$, where $N=\langle2\rangle\oplus E(2)$ with $E=U\oplus E_8$ [@DK13, (3.6), printed p. 513], and that $N$ is $T_\Co$ by @prop:coble-transcendental.
 Two qualifications belong with it.
-The group is the whole orthogonal group, so the quotient is $F^{\mathrm{un}}_\Co=\bD(T_\Co)/\Orth(T_\Co)$ and not the $\Gamma_{\Co,2}^{\mathrm{dir}}\backslash\bD_\Co$ of the clause: the passage from $\Orth(T_\Co)$ to the finite-index subgroup $\Gamma^{\mathrm{dir}}_{\Co,2}$ of @def:direct-group, which lies inside $\Orth^+(T_\Co)$ (@lem:minus-id-in-direct-group(2)), is @prob:B25, and it is established there only up to the two-element ambiguity its proof records.
+The group is the whole orthogonal group, so the quotient is $F^{\mathrm{un}}_\Co=\bD(T_\Co)/\Orth(T_\Co)$ and not the $\Gamma_{\Co,2}^{\mathrm{dir}}\backslash\bD_\Co$ of the clause: the passage from $\Orth(T_\Co)$ to the finite-index subgroup $\Gamma^{\mathrm{dir}}_{\Co,2}$ of @def:direct-group, which lies inside $\Orth^+(T_\Co)$ (@lem:minus-id-in-direct-group(2)), is @prob:B25, and the two-element ambiguity its proof recorded is decided: the sign is in the orbifold group of @def:geometric-monodromy (@thm:sign-is-isotropy) and in no loop (@thm:no-loop-carries-the-sign).
 And the Coble surfaces of [@DK13, §3, printed p. 513] are the blowups of ten nodes of an irreducible plane sextic, so the proposition covers the unpolarized Coble moduli space and not the labeled tuple of @sec-labeled-lattice-data.
 
 The complement is not empty and contains the whole root arrangement: @thm:direct-period-misses-root-walls.
@@ -2236,7 +2236,7 @@ So the three statements stand as written:
 
 3. $-\id_{T_\Co}$ lies in $\Gamma^{\mathrm{cong}}_{\Co,2}$ and in its $\Orth^+$-half, so it forces no identification of the two halves and no equality $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{cong}}_{\Co,2}$; the excess is the $s_\zeta$-coset, and whether $s_\zeta$ equals $-\id$ modulo $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ remains the joint spinor computation of research#751.
 
-What this unit owes is @qst:b25-sign-holonomy, not a repair of these three statements.
+What that unit owed was @qst:b25-sign-holonomy, since answered by @thm:no-loop-carries-the-sign and @thm:sign-is-isotropy; the three statements above are not repaired by that answer.
 :::
 
 ::: {.theorem #prob:B25 title="B2.5. Direct monodromy theorem — proved"}
@@ -2339,7 +2339,7 @@ $$\iota = -\id_{T_\Co} = \epsilon\cdot s_{c_1}\cdots s_{c_9},\qquad
 \epsilon\definedas -\id_{\langle u_1,u_2\rangle}\oplus\id_{\langle c_1,\dots,c_9\rangle}.$$
 So $\iota\in W(T_\Co)$ if and only if $\epsilon\in W(T_\Co)$.
 
-Consequently the question of @qst:b25-sign-holonomy is not about the odd rank of $T_\Co$ and not about its $E_8(2)$ summand: it is the single question whether the reflection group contains the element that negates one positive definite $2$-plane and nothing else, and a certificate for $\iota$ needs only a word for that element.
+Consequently the question of @qst:b25-sign-holonomy is not about the odd rank of $T_\Co$ and not about its $E_8(2)$ summand: it is the single question whether the reflection group contains the element that negates one positive definite $2$-plane and nothing else, and a certificate for $\iota$ needs only a word for that element. That question too is answered, in the negative, at @cor:no-word-for-the-sign: no word gives $\epsilon$, and no loop gives $\iota$.
 :::
 
 ::: {.proof}
@@ -2810,7 +2810,7 @@ The table lists each statement, whether it is proved, and the section that prove
 | Explicit equivariant smoothing | established for the projective family | @sec-equivariant-smoothing |
 | Coverage of the complete Coble locus | required theorem | @sec-projective-coverage |
 | The direct period image misses every $(-2)$-Heegner divisor of $T_\Co$ | proved | @thm:direct-period-misses-root-walls |
-| Target theorem A, first clause | published in the unpolarized form [@DK13, Prop. 3.2, printed p. 513]; no root divisor is met (@thm:direct-period-misses-root-walls) and one $(-4)$-divisor is (@thm:direct-period-meets-minus-four), so the complement is a proper nonempty subarrangement; which $(-4)$-divisors are met is the record of @prob:B24, part 2, its level set computed at @rmk:coble-discriminant-levels; the polarized refinement is @qst:b25-sign-holonomy | @sec-autonomous-target |
+| Target theorem A, first clause | published in the unpolarized form [@DK13, Prop. 3.2, printed p. 513]; no root divisor is met (@thm:direct-period-misses-root-walls) and one $(-4)$-divisor is (@thm:direct-period-meets-minus-four), so the complement is a proper nonempty subarrangement; which $(-4)$-divisors are met is the record of @prob:B24, part 2, its level set computed at @rmk:coble-discriminant-levels; the polarized refinement is decided: the sign is in $\Gamma^{\mathrm{geom}}_{\Co,2}$ through the isotropy $I_\Co$ (@thm:sign-is-isotropy) and in no loop (@thm:no-loop-carries-the-sign), and no word in the reflection group gives it (@cor:no-word-for-the-sign) | @sec-autonomous-target |
 | Target theorem A, clauses two and three | not established; they wait on @sec-coxeter and @sec-coble-dlt | @sec-autonomous-target |
 | The sign $\iota$: loops versus isotropy | the loop monodromy is $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm\id\}$ and no loop carries $\iota$ (@thm:no-loop-carries-the-sign); the orbifold group of @def:geometric-monodromy is $\Gamma^{\mathrm{dir}}_{\Co,2}$, supplied by the isotropy $I_\Co$ (@thm:sign-is-isotropy) | @thm:sign-is-isotropy |
 | The level sets of the discriminant forms of $S_\Co$ and $T_\Co$ | computed exactly: $528$, $496$, $496$, $528$ and $528$, $528$, $496$, $496$ over the $2048$ classes | @rmk:coble-discriminant-levels |
@@ -3002,7 +3002,7 @@ On the resolution, the degree-$2$ class is a quasipolarization, $|-2K|$ consists
 \frac{1+\epsilon}{2}C+\epsilon R_{\wV}.
 \]
 
-The open problems are the labeled embedding rigidity, equality with geometric monodromy, complete Vinberg chambers, algebraic realization of the Coble affine package, intrinsic relevance of walls, and the comparison between the autonomous compactification and the normalized Enriques Heegner closure.
+The open problems are the labeled embedding rigidity, complete Vinberg chambers, algebraic realization of the Coble affine package, intrinsic relevance of walls, and the comparison between the autonomous compactification and the normalized Enriques Heegner closure; the equality of the labelled group with the geometric monodromy is no longer one of them, being @thm:sign-is-isotropy over the moduli stack and @thm:no-loop-carries-the-sign over the coarse space.
 
 The autonomous strategy organizes these issues into direct Coble analogues of the AEGS theorem chain.
 The Heegner strategy organizes them into arithmetic normalization, universal-family, and no-further-coarsening statements.
