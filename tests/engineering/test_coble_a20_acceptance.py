@@ -633,5 +633,65 @@ def _run_all() -> int:
     return failures
 
 
+
+def test_absorbed_ri_unrestricted_form_is_false():
+    """(RI) as the issue states it: ker rho_T = W.  Decided, negatively.
+
+    Decides: the reflection in the square-2 summand lies in the congruence kernel -- every
+    pairing in T_Co is even, so it is trivial modulo 2T -- and outside O^+(T_Co), where every
+    reflection in a square-(-2) vector lies; so the kernel is strictly larger than the
+    short-root reflection group, and the surviving question is the index inside
+    tilde-O^+(T_Co).  The lattice facts are the arithmetic of the page's proof: the Gram matrix
+    of <2> + U(2) + E8(2) has determinant -2048, signature (2,9) and all entries even.
+    """
+    page = _text(PAGE)
+    prop = _block(page, "{.proposition #prop:kernel-exceeds-short-roots")
+    assert "\\langle 2\\rangle\\oplus U(2)\\oplus E_8(2)" in prop
+    assert "s_g\\in\\ker\\rho_{T_\\Co}" in prop
+    assert "s_g\\notin\\Orth^+(T_\\Co)" in prop
+    assert "\\ker\\rho_{T_\\Co}\\neq W(T_\\Co)" in prop
+    proof = _block(page, "{.proof}\n\n(1) $g^2 = 2$")
+    assert "2T_\\Co" in proof
+    assert "\\rho_{T_\\Co}(h) = \\id$ means $h\\equiv\\id\\bmod 2" in proof
+    assert "maximal positive definite $2$-plane" in proof
+
+    qst = _block(page, "{.question #qst:gamma-co-reflection-index")
+    assert "The unrestricted form, $\\ker\\rho_{T_\\Co} = W(T_\\Co)$, is false" in qst
+    item2 = next(line for line in _text(OPEN_PROBLEMS).splitlines()
+                 if line.startswith("2. Let $W(T_\\Co)$"))
+    assert "@prop:kernel-exceeds-short-roots" in item2
+    assert "\\widetilde\\Orth^+(T_\\Co)" in item2
+
+
+def test_absorbed_ri_lattice_arithmetic():
+    """The arithmetic behind the witness: T_Co = <2> + U(2) + E8(2) and s_g.
+
+    Decides, without a provider, that the decomposition has determinant -2048 and signature
+    (2,9), that every pairing in it is even, and that the reflection in the <2> generator is an
+    integral isometry of determinant -1 that fixes the rest of the basis.
+    """
+    import numpy as np
+
+    e8 = np.array([
+        [2, -1, 0, 0, 0, 0, 0, 0], [-1, 2, -1, 0, 0, 0, 0, 0],
+        [0, -1, 2, -1, 0, 0, 0, -1], [0, 0, -1, 2, -1, 0, 0, 0],
+        [0, 0, 0, -1, 2, -1, 0, 0], [0, 0, 0, 0, -1, 2, -1, 0],
+        [0, 0, 0, 0, 0, -1, 2, 0], [0, 0, -1, 0, 0, 0, 0, 2]], dtype=int)
+    g = np.zeros((11, 11), dtype=int)
+    g[0, 0] = 2
+    g[1, 2] = g[2, 1] = 2
+    g[3:, 3:] = -2 * e8
+    assert abs(round(np.linalg.det(g.astype(float)))) == 2048
+    signs = np.linalg.eigvalsh(g.astype(float))
+    assert (signs > 0).sum() == 2 and (signs < 0).sum() == 9
+    assert all(int(v) % 2 == 0 for v in g.flatten())
+    reflect = np.eye(11, dtype=int)
+    reflect[0, :] = np.eye(11, dtype=int)[0, :] - g[0, :]
+    assert np.array_equal(reflect.dot(reflect), np.eye(11, dtype=int))
+    assert np.array_equal(reflect.T.dot(g).dot(reflect), g)
+    assert round(np.linalg.det(reflect.astype(float))) == -1
+    assert reflect[0, 0] == -1 and all(reflect[i, i] == 1 for i in range(1, 11))
+
+
 if __name__ == "__main__":
     raise SystemExit(1 if _run_all() else 0)

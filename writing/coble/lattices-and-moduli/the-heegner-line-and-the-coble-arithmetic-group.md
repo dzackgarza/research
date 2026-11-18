@@ -2457,8 +2457,27 @@ Under the convention above, $A_{T_\Co} = B/2B$ and $\rho_{T_\Co}(g) = \id$ means
 With (2) this excludes the two positive squares and the long roots, leaving exactly (1), and the reflective set is the short roots.
 :::
 
+::: {.proposition #prop:kernel-exceeds-short-roots title="The congruence kernel is strictly larger than the short-root reflection group"}
+
+Let $g\in T_\Co$ span the $\langle 2\rangle$ summand of $T_\Co = \langle 2\rangle\oplus U(2)\oplus E_8(2)$, and let $s_g(x) = x-(x\cdot g)g$ be the reflection in it. Then
+
+1. $s_g$ is an integral isometry of $T_\Co$, and $s_g\in\ker\rho_{T_\Co}$;
+2. $s_g\notin\Orth^+(T_\Co)$, while $W(T_\Co)\subseteq\Orth^+(T_\Co)$;
+3. hence $\ker\rho_{T_\Co}\neq W(T_\Co)$, and the reflection index that remains is the one inside $\widetilde\Orth^+(T_\Co) = \ker\rho_{T_\Co}\intersect\Orth^+(T_\Co)$.
+:::
+
+::: {.proof}
+
+(1) $g^2 = 2$, and $x\cdot g\in 2\Z$ for every $x\in T_\Co$: the three summands of the decomposition are mutually orthogonal and each has all its pairings even, so every pairing in $T_\Co$ is even. Hence $s_g(x) = x-(x\cdot g)g$ is integral, and being a reflection it is an isometry with $s_g^2 = \id$. For $x\in T_\Co$ the difference $s_g(x)-x = -(x\cdot g)g$ lies in $2T_\Co$, so $s_g\equiv\id\bmod 2$ and $\rho_{T_\Co}(s_g) = \id$, under the convention that $\rho_{T_\Co}(h) = \id$ means $h\equiv\id\bmod 2$ (proof of @prop:gamma-co-reflective-set, part (3)).
+
+(2) The class of a reflection in $\pi_0\Orth(T_\Co\tensor\RR) = \pi_0\Orth(2)\times\pi_0\Orth(9)$ is read off from the sign of its square. If $v^2<0$ then the mirror $v^\perp$ contains a maximal positive definite $2$-plane on which $s_v$ is the identity, so $s_v$ preserves the orientation of the positive part; if $v^2>0$ then a maximal positive definite $2$-plane containing $v$ is preserved by $s_v$, which acts on it with determinant $-1$. So every reflection in a vector of square $-2$ lies in $\Orth^+(T_\Co)$, hence $W(T_\Co)\subseteq\Orth^+(T_\Co)$, while $s_g$ has $g^2 = 2$ and does not.
+
+(3) By (1) $s_g\in\ker\rho_{T_\Co}$ and by (2) $s_g\notin\Orth^+(T_\Co)$, so $\ker\rho_{T_\Co}$ is not contained in $\Orth^+(T_\Co)$; since $W(T_\Co)$ is contained there, the two groups differ.
+:::
+
 ::: {.question #qst:gamma-co-reflection-index title="The index of the short-root reflection group"}
 Is the index $[\widetilde\Orth^+(T_\Co) : W(T_\Co)]$ finite, and if so, what is it?
+The unrestricted form, $\ker\rho_{T_\Co} = W(T_\Co)$, is false: @prop:kernel-exceeds-short-roots exhibits an element of $\ker\rho_{T_\Co}$ outside $\Orth^+(T_\Co)$, so the question is the index inside $\widetilde\Orth^+(T_\Co)$, where both groups lie.
 What would settle it is a finite set of reflections generating $W(T_\Co)$ together with the chamber they cut in the space of positive definite $2$-planes of $T_\Co\tensor_\ZZ\RR$, namely $\Orth(T_\Co\tensor_\ZZ\RR)/\Orth(2)\times\Orth(9)$ — equivalently a Coxeter presentation of $W(T_\Co)$.
 The reflective set is known as a set (@prop:gamma-co-reflective-set), but not as a finite presentation, and no operation used on this page produces one.
 The group $\widetilde\Orth^+(T_\Co)$ has finite covolume, so the index is finite exactly when that chamber has finite volume, and it is then the ratio of the two covolumes.
