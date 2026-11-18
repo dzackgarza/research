@@ -1,0 +1,15 @@
+[    0.0s] stage 1: the 0-cusp lattice of F_2, N = U + E8(-1) + E8(-1) + A1(-1)
+[    0.4s] N = Integral lattice of rank 19 and signature (1, 18), rank 19, signature (1, 18)
+[    0.4s] stage 2: the fundamental chamber of N and its walls (Vinberg)
+[ 1801.3s] the Vinberg walk on N did not finish in 1800 s: timeout
+[ 1801.3s] stage 4: the split, which is the stable limit of (X, eps R_rc) over each cone
+[ 1801.3s] skipped: no chamber was computed, and the split is indexed by its walls
+[ 1801.3s] stage 5: the elliptic cusp, II_{1,17} = U + E8(-1) + E8(-1), where the semifan is known
+[ 1801.3s] M = Integral lattice of rank 18 and signature (1, 17), rank 18, signature (1, 17)
+[ 1870.9s] walls: 19, complete wall set: True
+[ 1871.0s] wall squares: [-2]
+[ 1871.2s] pairings between simple roots: [(0, 153), (1, 18)]
+[ 1871.6s] squares of a_j - a_i over all simple pairs: [-6, -4]
+[ 1891.1s] squares of a_c + 2 a_b - a_a over admissible triples: [-12]
+[ 1891.1s] a root has square -2: none of these is a root, so the four semifan walls are not Coxeter walls and (W) fails at this cusp
+[ 1891.1s] done
