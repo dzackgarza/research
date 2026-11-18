@@ -387,6 +387,24 @@ def test_item_7_the_cusp_symmetries_do_not_identify_the_roots() -> None:
     assert "Whether it lifts is an extension problem" in text
 
 
+def test_item_7_the_mod_two_lift_test_has_no_obstruction() -> None:
+    """Item 7: the cheapest necessary condition for the lift, run and found satisfied.
+
+    An integral isometry acts on T_En/2T_En, so congruent roots must stay congruent.  Among the
+    fourteen roots only labels 7 and 9 are congruent modulo 2, and both permutations at issue
+    respect that, so the test removes no candidate and settles nothing.  Recording it matters:
+    it is the one lift test that could have proven the roots inequivalent outright.
+    """
+    run = ROOT / "computations/reports/coble_760-mod2-lift-obstruction-run.txt"
+    assert run.exists(), run
+    text = run.read_text(encoding="utf-8")
+    assert "pairs of roots congruent modulo 2: {7: [9]}" in text
+    assert text.count("mod-2 congruences preserved: True") == 2
+    verdict = " ".join(text.split())
+    assert "no mod-2 obstruction to either permutation" in verdict
+    assert "remains the open input for item 7" in verdict
+
+
 def test_item_8_cusp_four_is_not_a_pair() -> None:
     """Item 8: the transcript prints one admissible root at cusp 4."""
     text = FACE_RUN.read_text(encoding="utf-8")
