@@ -1,0 +1,328 @@
+Each incidence row against the public orbit call	UNKNOWN STEP	﻿2026-11-14T04:26:37.3106492Z Current runner version: '2.338.2'
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3143038Z ##[group]Runner Image Provisioner
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3144389Z Hosted Compute Agent
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3145379Z Version: 20261103.629
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3146699Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3147966Z Build Date: 2026-11-03T17:26:59Z
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3149583Z Worker ID: {9d1a1ddc-0cbb-4203-bf9a-b59eeb909d8f}
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3150856Z Region: eastus
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3151878Z Cloud: Azure
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3152800Z ##[endgroup]
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3155311Z ##[group]Operating System
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3156447Z Ubuntu
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3157348Z 26.04.1
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3158311Z LTS
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3159416Z ##[endgroup]
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3161012Z ##[group]Runner Image
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3162119Z Image: ubuntu-26.04
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3163157Z Version: 20261111.196.1
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3165382Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261111.196/images/ubuntu/Ubuntu2604-Readme.md
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3168367Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261111.196
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3170339Z ##[endgroup]
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3172371Z ##[group]GITHUB_TOKEN Permissions
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3175507Z Contents: read
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3176692Z Metadata: read
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3177639Z ##[endgroup]
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3181160Z Secret source: Actions
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3182776Z Cache mode: write
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3184312Z Prepare workflow directory
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3797955Z Prepare all required actions
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.3854587Z Getting action download info
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.5347066Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.7470254Z Complete job name: Each incidence row against the public orbit call
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.8246936Z ##[group]Checking docker version
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.8266727Z ##[command]/usr/bin/docker version --format '{{.Server.APIVersion}}'
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.9299394Z '1.54'
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.9313254Z Docker daemon API version: '1.54'
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.9314088Z ##[command]/usr/bin/docker version --format '{{.Client.APIVersion}}'
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.9505856Z '1.54'
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.9522815Z Docker client API version: '1.54'
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.9527812Z ##[endgroup]
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.9531797Z ##[group]Clean up resources from previous jobs
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.9537442Z ##[command]/usr/bin/docker ps --all --quiet --no-trunc --filter "label=f735bc"
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.9707504Z ##[command]/usr/bin/docker network prune --force --filter "label=f735bc"
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.9866775Z ##[endgroup]
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.9867336Z ##[group]Create local container network
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:37.9877442Z ##[command]/usr/bin/docker network create --label f735bc github_network_b5da281f0cfd4861b93974e8469d215b
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.0338928Z ab01f22efa32ddf0f9f1220aa4ea098701eb241891168fe89019c6da3c4cbc38
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.0363084Z ##[endgroup]
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.0386865Z ##[group]Starting job container
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.0409247Z ##[command]/usr/bin/docker --config /home/runner/work/_temp/.docker_ba8552e8-41b2-40f2-8bbe-f0b653809fb5 login ghcr.io -u dzackgarza --password-stdin
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.2091368Z ##[command]/usr/bin/docker --config /home/runner/work/_temp/.docker_ba8552e8-41b2-40f2-8bbe-f0b653809fb5 pull ghcr.io/dzackgarza/sage:develop
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.4396391Z develop: Pulling from dzackgarza/sage
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5933248Z 083d98b295e3: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5935113Z 6b5f76ee171d: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5936113Z 31b3b81f1a2e: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5937549Z b16ca00618dd: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5939108Z 1f1de2bcc688: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5940245Z 274e59ee79bb: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5941609Z cb2ce50e6420: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5942689Z b8cf45eb869e: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5944005Z 239e7a5793ca: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5945308Z 0fe85eac7ce2: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5946503Z f2fd5ffbda14: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5947618Z a0a23a7bb913: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5949001Z 05540686c0d3: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5950212Z 2c1ce468d9f3: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5951370Z 53caedd4ae9d: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5952210Z a964c3198f58: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5952826Z 76ffc473c2f9: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5953829Z d4dcafb18700: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5954482Z 8c46c8c7aa02: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5955091Z e51111f1b30f: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5955693Z 63c2bde73573: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5956633Z 5bc4c8cd8e8c: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5957282Z 2c1ce468d9f3: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5958306Z 4a71dbafa92c: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5959318Z 0a15c654062e: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5960084Z f38ab71d4bf6: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5961087Z 2d36ea81dfe4: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5961724Z e7d3cdf80ce3: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5962742Z e7661336cd3c: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5963831Z 5a970cfc6768: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5964898Z 9c464a10f330: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5966392Z d93a6552abc4: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.5967621Z ff9b69f9ab39: Pulling fs layer
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.6366439Z 44136fa355b3: Already exists
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.7343896Z 31b3b81f1a2e: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.7366403Z 05540686c0d3: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.7380482Z 2c1ce468d9f3: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.7390635Z e7d3cdf80ce3: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.7411185Z d93a6552abc4: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.7425764Z 8e366dfb6d14: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.7452666Z 9c464a10f330: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.8329583Z 274e59ee79bb: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.8357671Z 53caedd4ae9d: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.8371413Z 0a15c654062e: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.8384169Z b16ca00618dd: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.9403976Z cb2ce50e6420: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:38.9416466Z f2fd5ffbda14: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:39.0435700Z 4a71dbafa92c: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:39.1323825Z 0fe85eac7ce2: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:39.9359422Z 1f1de2bcc688: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:40.1413628Z 083d98b295e3: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:40.4308136Z b8cf45eb869e: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:41.1347216Z 5a970cfc6768: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:41.2297720Z 6b5f76ee171d: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:41.4941520Z 083d98b295e3: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:41.5320608Z 31b3b81f1a2e: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:41.6381543Z e7661336cd3c: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:42.6300220Z f38ab71d4bf6: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:43.4048356Z 1f1de2bcc688: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:45.8391665Z b8cf45eb869e: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:46.1297561Z 63c2bde73573: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:47.0377295Z 2d36ea81dfe4: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:48.6611210Z f2fd5ffbda14: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:50.1475424Z 53caedd4ae9d: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:51.4266520Z a964c3198f58: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:51.7291343Z a0a23a7bb913: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:52.1931926Z 2c1ce468d9f3: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:52.2510337Z 8c46c8c7aa02: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:52.6352030Z ff9b69f9ab39: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:26:59.7281063Z d4dcafb18700: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:27:02.9271681Z 76ffc473c2f9: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:27:08.0275622Z 5bc4c8cd8e8c: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:27:10.1681869Z a964c3198f58: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:27:17.2837351Z 8c46c8c7aa02: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:27:17.4266184Z 239e7a5793ca: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:27:23.1265686Z e51111f1b30f: Download complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:27:53.4383474Z 4a71dbafa92c: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:27:53.4516385Z 5bc4c8cd8e8c: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:27:54.5278018Z e7d3cdf80ce3: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:27:54.5424169Z f38ab71d4bf6: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:28:01.8290390Z d93a6552abc4: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:28:01.8307092Z 9c464a10f330: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:28:01.8339846Z 0a15c654062e: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:28:01.8470553Z ff9b69f9ab39: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:28:01.9306563Z 274e59ee79bb: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:28:01.9307457Z b16ca00618dd: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:28:03.4367297Z e7661336cd3c: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:28:03.5302510Z 0fe85eac7ce2: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:28:07.2279918Z 05540686c0d3: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:28:07.2340244Z 2d36ea81dfe4: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:28:35.3339469Z d4dcafb18700: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:28:37.4305037Z 63c2bde73573: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:28:37.6275543Z cb2ce50e6420: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:29:46.4323085Z 239e7a5793ca: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:29:56.9293454Z a0a23a7bb913: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:30:36.2294435Z 76ffc473c2f9: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:26.1306616Z e51111f1b30f: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:26.9275468Z 5a970cfc6768: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:28.0204112Z 6b5f76ee171d: Pull complete
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:28.0205603Z Digest: sha256:40697f55c8a03ce5bc913afdd0acb89f879c4b168ab076ff0a9a4fc348fa7874
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:28.0206578Z Status: Downloaded newer image for ghcr.io/dzackgarza/sage:develop
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:28.0210444Z ghcr.io/dzackgarza/sage:develop
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:28.0385251Z ##[command]/usr/bin/docker create --name 8bc54c31ac81428ea32db561989be10c_ghcriodzackgarzasagedevelop_cbe1b4 --label f735bc --workdir /__w/sage-extensions/sage-extensions --network github_network_b5da281f0cfd4861b93974e8469d215b  -e "HOME=/github/home" -e GITHUB_ACTIONS=true -e CI=true -v "/var/run/docker.sock":"/var/run/docker.sock" -v "/home/runner/work":"/__w" -v "/home/runner/actions-runner/cached/2.338.2/externals":"/__e":ro -v "/home/runner/work/_temp":"/__w/_temp" -v "/home/runner/work/_actions":"/__w/_actions" -v "/opt/hostedtoolcache":"/__t" -v "/home/runner/work/_temp/_github_home":"/github/home" -v "/home/runner/work/_temp/_github_workflow":"/github/workflow" --entrypoint "tail" ghcr.io/dzackgarza/sage:develop "-f" "/dev/null"
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.5549885Z 88a6cecab5fa8ef625f29bee00fe2725318e62c4605be9845fccf81807c2f7d8
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.5578375Z ##[command]/usr/bin/docker start 88a6cecab5fa8ef625f29bee00fe2725318e62c4605be9845fccf81807c2f7d8
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.7739511Z 88a6cecab5fa8ef625f29bee00fe2725318e62c4605be9845fccf81807c2f7d8
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.7769546Z ##[command]/usr/bin/docker ps --all --filter id=88a6cecab5fa8ef625f29bee00fe2725318e62c4605be9845fccf81807c2f7d8 --filter status=running --no-trunc --format "{{.ID}} {{.Status}}"
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8077339Z 88a6cecab5fa8ef625f29bee00fe2725318e62c4605be9845fccf81807c2f7d8 Up Less than a second
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8106645Z ##[command]/usr/bin/docker inspect --format "{{range .Config.Env}}{{println .}}{{end}}" 88a6cecab5fa8ef625f29bee00fe2725318e62c4605be9845fccf81807c2f7d8
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8256044Z HOME=/github/home
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8256374Z GITHUB_ACTIONS=true
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8256583Z CI=true
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8256985Z PATH=/opt/elan/bin:/sage/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8257453Z DEBIAN_FRONTEND=noninteractive
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8257739Z GIT_CEILING_DIRECTORIES=/sage/subprojects
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8258043Z UV_INSTALL_DIR=/usr/local/bin
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8258310Z UV_PYTHON_INSTALL_DIR=/opt/uv-python
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8258601Z UV_PYTHON_BIN_DIR=/usr/local/bin
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8259187Z UV_NO_MODIFY_PATH=1
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8259438Z PKG_CONFIG_PATH=/sage/.venv/lib/pkgconfig
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8259875Z NORMALIZ_LOCAL_DIR=/sage/.venv
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8260139Z JULIA_DEPOT_PATH=/opt/julia-depot:
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8260431Z JULIA_CPU_TARGET=generic
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8260661Z JULIA_BINDIR=/opt/julia/bin
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8260920Z PYTHON_JULIAPKG_EXE=/opt/julia/bin/julia
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8261616Z SAGE_BIN=/sage/.venv/bin/sage
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8261854Z CCACHE_DIR=/ccache
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8262053Z ELAN_HOME=/opt/elan
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8287954Z ##[endgroup]
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8297584Z ##[group]Waiting for all services to be ready
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8301888Z ##[endgroup]
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8729437Z ##[group]Run actions/checkout@v4
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8730092Z with:
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8730302Z   fetch-depth: 1
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8730595Z   repository: dzackgarza/sage-extensions
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8733047Z   token: ***
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8733250Z   ssh-strict: true
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8733452Z   ssh-user: git
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8733667Z   persist-credentials: true
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8733899Z   clean: true
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8734120Z   sparse-checkout-cone-mode: true
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8734372Z   fetch-tags: false
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8734584Z   show-progress: true
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8734786Z   lfs: false
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8734968Z   submodules: false
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8735190Z   set-safe-directory: true
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8735435Z   allow-unsafe-pr-checkout: false
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8735913Z ##[endgroup]
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:30.8800610Z ##[command]/usr/bin/docker exec  88a6cecab5fa8ef625f29bee00fe2725318e62c4605be9845fccf81807c2f7d8 sh -c "cat /etc/*release | grep ^ID"
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.2800332Z Syncing repository: dzackgarza/sage-extensions
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.2802537Z ##[group]Getting Git version info
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.2803267Z Working directory is '/__w/sage-extensions/sage-extensions'
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.2804249Z [command]/usr/bin/git version
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.2804681Z git version 2.47.3
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.2853047Z ##[endgroup]
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.2870381Z Temporarily overriding HOME='/__w/_temp/82eac128-bba6-4c06-858a-4439423a205d' before making global git config changes
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.2871878Z Adding repository directory to the temporary git global config as a safe directory
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.2876903Z [command]/usr/bin/git config --global --add safe.directory /__w/sage-extensions/sage-extensions
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.2934713Z Deleting the contents of '/__w/sage-extensions/sage-extensions'
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.2938231Z ##[group]Initializing the repository
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.2943610Z [command]/usr/bin/git init /__w/sage-extensions/sage-extensions
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.3028634Z hint: Using 'master' as the name for the initial branch. This default branch name
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.3029511Z hint: is subject to change. To configure the initial branch name to use in all
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.3030043Z hint: of your new repositories, which will suppress this warning, call:
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.3030686Z hint:
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.3031192Z hint: 	git config --global init.defaultBranch <name>
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.3031732Z hint:
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.3032272Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.3033086Z hint: 'development'. The just-created branch can be renamed via this command:
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.3033789Z hint:
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.3034179Z hint: 	git branch -m <name>
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.3034883Z Initialized empty Git repository in /__w/sage-extensions/sage-extensions/.git/
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.3047811Z [command]/usr/bin/git remote add origin https://github.com/dzackgarza/sage-extensions
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.3096402Z ##[endgroup]
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.3097191Z ##[group]Disabling automatic garbage collection
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.3100746Z [command]/usr/bin/git config --local gc.auto 0
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.3139266Z ##[endgroup]
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.3140157Z ##[group]Setting up auth
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.3147767Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.3186725Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.3638201Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.3684798Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.3962643Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.4009674Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.4273989Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.4325466Z ##[endgroup]
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.4325903Z ##[group]Fetching the repository
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:31.4339560Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +3147ea330f1f91bef3ae20006210dcbdc4456323:refs/remotes/origin/main
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.2598619Z From https://github.com/dzackgarza/sage-extensions
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.2599502Z  * [new ref]         3147ea330f1f91bef3ae20006210dcbdc4456323 -> origin/main
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.2629775Z ##[endgroup]
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.2630755Z ##[group]Determining the checkout info
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.2632480Z ##[endgroup]
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.2640431Z [command]/usr/bin/git sparse-checkout disable
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.2697064Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.2735216Z ##[group]Checking out the ref
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.2740930Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.4195891Z Switched to a new branch 'main'
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.4197910Z branch 'main' set up to track 'origin/main'.
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.4207734Z ##[endgroup]
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.4276591Z [command]/usr/bin/git log -1 --format=%H
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.4302003Z 3147ea330f1f91bef3ae20006210dcbdc4456323
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.4549923Z ##[group]Run git config --global --add safe.directory "$GITHUB_WORKSPACE"
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.4550539Z ^[[36;1mgit config --global --add safe.directory "$GITHUB_WORKSPACE"^[[0m
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.4554185Z shell: sh -e {0}
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.4554414Z ##[endgroup]
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.5286791Z ##[group]Run set -o pipefail
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.5287131Z ^[[36;1mset -o pipefail^[[0m
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.5287371Z ^[[36;1m"$SAGE_BIN" --version^[[0m
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.5287615Z ^[[36;1mgit rev-parse HEAD^[[0m
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.5287992Z ^[[36;1msage_python="$("$SAGE_BIN" -c "import sys; print(sys.executable)")"^[[0m
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.5288479Z ^[[36;1m"$sage_python" tests/coble_gamma_co_2_incidence_rows.py \^[[0m
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.5289223Z ^[[36;1m  --cap "$COBLE_CALL_CAP" --budget "$COBLE_ROW_BUDGET"^[[0m
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.5290829Z shell: bash --noprofile --norc -e -o pipefail {0}
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.5291148Z env:
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.5291340Z   PYTHONPATH: src
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.5291552Z   COBLE_CALL_CAP: 10800
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.5291775Z   COBLE_ROW_BUDGET: 28800
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:32.5292031Z ##[endgroup]
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:34.5039706Z 11.0.beta5
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:34.7430209Z 3147ea330f1f91bef3ae20006210dcbdc4456323
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:31:39.0878508Z the Coble period lattice Integral lattice of rank 11 and signature (2, 9) of rank 11
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:38:09.2341705Z [O(T_Co)] line cusp 0: ((0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0),)
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:38:09.2368309Z [O(T_Co)] plane cusp 0: ((2, 0, 0, 0, -1, -1, -2, -2, -2, -2, -2), (0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:38:09.3253440Z [O(T_Co)] edge 0: L0 < P0; line=((0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0),); plane=((2, 0, 0, 0, -1, -1, 0, 0, 0, 0, 0), (0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T04:38:09.3503428Z [O(T_Co)] 1 edges over 1 line cusps and 1 plane cusps in 188.5 s
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:14:44.5789931Z [Gamma_{Co,2}] line cusp 0: ((0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0),)
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:14:44.5805701Z [Gamma_{Co,2}] line cusp 1: ((0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0),)
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:14:44.5822348Z [Gamma_{Co,2}] line cusp 2: ((-2, -4, 0, 0, -1, -1, -1, -1, -1, 0, 1),)
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:14:44.5839164Z [Gamma_{Co,2}] line cusp 3: ((-50, -4, -1, 30, 26, 58, 61, 58, 54, 54, 51),)
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:14:44.5868032Z [Gamma_{Co,2}] plane cusp 0: ((2, 0, 0, 0, -1, -1, -2, -2, -2, -2, -2), (0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:14:44.5897191Z [Gamma_{Co,2}] plane cusp 1: ((2, 8881872224626913893, 30953402808808478276, 18906529145886909243, 35356606528585926230, 44283422753246798327, 60511353450655499270, 55346697591227405866, 31985658939559638989, 30002506980293675983, 10676203991543792161), (0, 33310887175846213286, 116088734739262880001, 70907714425259206928, 132602665430033884935, 166082112170406517359, 226943916403526892627, 207574208724275872024, 119960144577009317597, 112522461451541730124, 40040412385416046900))
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:14:44.5927762Z [Gamma_{Co,2}] plane cusp 2: ((6, 953881043278656380871005640280591180279372321070955, 1281976046755069383729248755457785368777650702322870, 846173367460227071820098030668176946474744370630523, 1808095291294611217134938158363787846018261094731925, 2092591595535758945293025204479909826589705210707949, 2458948135001190700010638622361266314067504659956946, 2141230526028719101201163757456397992926316274148134, 1924937662703969856745181140594317848576005018283078, 1465561015933119117994225592730237368038943067649826, 38936213559022300099306968000322735563071202131628), (0, 984387646626064813535631526387413110817780013683456, 1322975639979830462012318623089754084665632429652918, 873235311364178883109175998402082119684406667409280, 1865920998445946343753379351487599432116168254244863, 2159515938170463178270681699640805479667556053589318, 2537589131103277227622852546162887624863209314609696, 2209710417513299618770604590710247314785200811359806, 1986500171109373512021718504417650516976869331204693, 1512431942774083408090185627999071700920753529604605, 40181454389904484850372491398436525336499070041513))
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:14:44.5952002Z [Gamma_{Co,2}] plane cusp 3: ((2, 0, 0, 0, -1, -1, -2, -2, -2, -2, -2), (0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0))
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:14:44.5982288Z [Gamma_{Co,2}] plane cusp 4: ((4, 2123959920365516973185452296582326892, 3015726855799194936906934749783055918, 2242543842681084791495558883292260733, 4810049920861430751071214031029140173, 5367136613497583785754635966100556122, 6891210418271500914824897674475443887, 5842940398463399296312720912310751183, 5066608097607873848163939944664768724, 3797271475159003460963636252186104488, 287077296252046503737178146989852788), (0, 8282773966756514509606891159519562542, 11760383824833864648181593189321283292, 8745213872149000628339754993774777799, 18757677996322097165725526756515822642, 20930140438174175304775842832586912548, 26873547708978294350249705991494420475, 22785625170071027772155388662196814571, 19758173988237169265729202948958288741, 14808161405296888186826944000868134075, 1119510934760999655326430590100919719))
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:14:44.6006777Z [Gamma_{Co,2}] plane cusp 5: ((2, 0, -2, 0, -1, -1, -2, -2, -2, -2, -2), (0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1))
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:14:44.6036194Z [Gamma_{Co,2}] plane cusp 6: ((2, 1085294843130569827994295331752625417091146, 1775925905879518602882035565341030286084974, -686720187705674473323132643988974623433518, -408766926274641877935474311975986415097051, -1226899348419679429433724161931546898521621, -1133245164521561894755627212403930633172865, -765833236721335517080839743706107413346494, -816746576573737543822825783114023640553290, 54029557452340885978280180468653187807139, -1151469062283305414867458619440595197162053), (0, 1171790133649299921912317884033256881923508, 1917462768549663470373417767755492258960108, -741450072876181179570135074346715062113221, -441344630173599600837566678654668772879287, -1324680164619534535386023065615327563794506, -1223561975989582412591884484904962265373276, -826868234462628555170486246765940632173751, -881839240441140188143051354262789971814566, 58335578344284262803069324072828644209120, -1243238272923092753091305899507489981993739))
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:14:49.4794170Z [Gamma_{Co,2}] edge 0: L0 < P0; line=((0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0),); plane=((2, 0, 0, 0, -1, -1, -2, -2, -2, -2, -2), (0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:14:49.9633777Z [Gamma_{Co,2}] edge 1: L3 < P0; line=((2, 1, 0, 0, -1, -1, -2, -2, -2, -2, -2),); plane=((2, 0, 0, 0, -1, -1, -2, -2, -2, -2, -2), (0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:14:50.3704676Z [Gamma_{Co,2}] edge 2: L2 < P0; line=((2, 0, 0, 0, -1, -1, -2, -2, -2, -2, -2),); plane=((2, 0, 0, 0, -1, -1, -2, -2, -2, -2, -2), (0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:14:51.0707073Z [Gamma_{Co,2}] edge 3: L3 < P1; line=((40839060220964572, -38778436095389007, -7788101453680560, -14850248713778553, -21306978534883548, -26819000607574305, -40294898609521136, -27600296762127456, 14728565632942055, 25745832707313851, 4812839692608581),); plane=((14, 145710012718787923432702851, 30076184229017397011729313, -10082403329645939469322245, -43620941855459143200859299, -43073230138763909330058336, -67962158456708946144961639, -71521224051343858044801234, -110835186158454702981709148, -37940539989584625248427359, 8299139661685730982099229), (0, 637043803835083268343983055, 131493000711456964559672214, -44080241632488595916796547, -190710646495521378569871934, -188316052267587543419565933, -297130383370847626257516506, -312690609069822206562622796, -484571151094597827942935789, -165875944031165510014680443, 36283817426070312497803631))
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:14:51.6294931Z [Gamma_{Co,2}] edge 4: L1 < P1; line=((308548127128487218, -292979437990313073, -58840782905288397, -112196926676579621, -160978997951558945, -202623542279790966, -304436967730295781, -208526450063650966, 111277402877264902, 194515400157614053, 36362080157151861),); plane=((14, 145710012718787923432702851, 30076184229017397011729313, -10082403329645939469322245, -43620941855459143200859299, -43073230138763909330058336, -67962158456708946144961639, -71521224051343858044801234, -110835186158454702981709148, -37940539989584625248427359, 8299139661685730982099229), (0, 637043803835083268343983055, 131493000711456964559672214, -44080241632488595916796547, -190710646495521378569871934, -188316052267587543419565933, -297130383370847626257516506, -312690609069822206562622796, -484571151094597827942935789, -165875944031165510014680443, 36283817426070312497803631))
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:14:52.5404111Z [Gamma_{Co,2}] edge 5: L3 < P2; line=((4610334524978, -29422483911, -439389671514, -789843296679, -2655955741110, -1163991972357, -1950206292560, 53316432952, -1132710737691, -1354381399361, -2886615166707),); plane=((26, 646525789958986100, 2334673704027660466, 1209239237027259140, 2869965769242361139, 2661531104186683532, 4125432632622864098, 3908134840241765728, 2272912586393183315, 1307001469631551133, 618517702241885677), (0, 71690960363367548293, 258883717519546028156, 134088266172722257237, 318240363188030051251, 295127779679479971439, 457454647502724966902, 433359263122731648216, 252035245416659824318, 144928774705434042230, 68585242482402978644))
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:14:53.3986596Z [Gamma_{Co,2}] edge 6: L2 < P2; line=((53052093660670, -338975041546, -5057609780162, -9089649920314, -30564438702217, -13395965981518, -22444015754334, 611079529808, -13035763183171, -15585970304325, -33217277525753),); plane=((26, 646525789958986100, 2334673704027660466, 1209239237027259140, 2869965769242361139, 2661531104186683532, 4125432632622864098, 3908134840241765728, 2272912586393183315, 1307001469631551133, 618517702241885677), (0, 71690960363367548293, 258883717519546028156, 134088266172722257237, 318240363188030051251, 295127779679479971439, 457454647502724966902, 433359263122731648216, 252035245416659824318, 144928774705434042230, 68585242482402978644))
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:14:54.1344526Z [Gamma_{Co,2}] edge 7: L1 < P3; line=((0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0),); plane=((2, 0, 0, 0, -1, -1, -2, -2, -2, -2, -2), (0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0))
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:14:55.1070674Z [Gamma_{Co,2}] edge 8: L2 < P3; line=((2, 0, 0, 0, -1, -1, -2, -2, -2, -2, -2),); plane=((2, 0, 0, 0, -1, -1, -2, -2, -2, -2, -2), (0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0))
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:14:56.3477378Z [Gamma_{Co,2}] edge 9: L2 < P4; line=((82692186, -166481948, -153857752, -122645775, -277157107, -309418218, -411457599, -370296405, -365468062, -256531006, -14941054),); plane=((2, 526136667280, 754493735230, 593228579328, 1231070174749, 1398955334928, 1811445872392, 1526815110506, 1326821722205, 1010504158379, 105247259231), (0, 576331477108, 826474404722, 649824132489, 1348517479124, 1532419321302, 1984262531505, 1672477252833, 1453403973857, 1106908889723, 115288122167))
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:14:58.0005464Z [Gamma_{Co,2}] edge 10: L1 < P5; line=((0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1),); plane=((2, 0, -2, 0, -1, -1, -2, -2, -2, -2, -2), (0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1))
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:14:59.7317631Z [Gamma_{Co,2}] edge 11: L2 < P5; line=((2, 0, -2, 0, -1, -1, -2, -2, -2, -2, -2),); plane=((2, 0, -2, 0, -1, -1, -2, -2, -2, -2, -2), (0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1))
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:02.1070985Z [Gamma_{Co,2}] edge 12: L2 < P6; line=((-1522260777235020, 1235100719584, 18257502364316, 335765841676120, 863009466311241, 569673532849169, 853593815158897, 105092471538146, 560517514160036, 960051997069965, 1056595679453653),); plane=((12, 77587007669022377046, 267938751684397520446, 61798362944132007485, 231524817799621338025, 189429441954770084446, 402639346752648027482, 433998397966688617397, 314496766183017811576, 196333814732685048606, 156237821574098217093), (0, 120076614323610695306, 414672238496480343974, 95641505143854134155, 358316644609676910334, 293168234302473058721, 623140020527324270533, 671672485063730512809, 486727198709309831204, 303853705132032351525, 241799615780316675542))
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:04.8856722Z [Gamma_{Co,2}] 13 edges over 4 line cusps and 7 plane cusps in 2195.2 s
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:04.8857942Z the O(T_Co) incidence has 1 edge; the Gamma_{Co,2} incidence has 13 edges over 4 line orbits and 7 plane orbits
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:12.2824865Z Post job cleanup.
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:12.2832468Z ##[command]/usr/bin/docker exec  88a6cecab5fa8ef625f29bee00fe2725318e62c4605be9845fccf81807c2f7d8 sh -c "cat /etc/*release | grep ^ID"
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:12.4845121Z [command]/usr/bin/git version
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:12.4901425Z git version 2.47.3
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:12.4952070Z Copying '/github/home/.gitconfig' to '/__w/_temp/ad7ebfd1-e775-4fc9-96ae-c8f03927b9e8/.gitconfig'
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:12.5023939Z Temporarily overriding HOME='/__w/_temp/ad7ebfd1-e775-4fc9-96ae-c8f03927b9e8' before making global git config changes
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:12.5030046Z Adding repository directory to the temporary git global config as a safe directory
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:12.5031250Z [command]/usr/bin/git config --global --add safe.directory /__w/sage-extensions/sage-extensions
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:12.5047196Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:12.5114757Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:12.5454500Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:12.5488434Z http.https://github.com/.extraheader
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:12.5503815Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:12.5547604Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:12.5859771Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:12.5901647Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:12.6390006Z Stop and remove container: 8bc54c31ac81428ea32db561989be10c_ghcriodzackgarzasagedevelop_cbe1b4
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:12.6394973Z ##[command]/usr/bin/docker rm --force 88a6cecab5fa8ef625f29bee00fe2725318e62c4605be9845fccf81807c2f7d8
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:12.8357593Z 88a6cecab5fa8ef625f29bee00fe2725318e62c4605be9845fccf81807c2f7d8
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:12.8391699Z Remove container network: github_network_b5da281f0cfd4861b93974e8469d215b
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:12.8396404Z ##[command]/usr/bin/docker network rm github_network_b5da281f0cfd4861b93974e8469d215b
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:12.8961060Z github_network_b5da281f0cfd4861b93974e8469d215b
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:12.9036672Z Cleaning up orphan processes
+Each incidence row against the public orbit call	UNKNOWN STEP	2026-11-14T05:15:12.9529234Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

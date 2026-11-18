@@ -158,9 +158,14 @@ def test_proper_integral_plane_stabilizer_image(tmp_path):
     assert data["flag_line_coefficients"] == [[1, 0], [0, 1], [1, 1]]
     public = data["public_gamma_co_2_representatives"]
     public_path = folder / "coble_gco_public_representatives.json"
+    public_log = folder / "coble_gco_public_incidence_source-run.log"
+    assert hashlib.sha256(public_log.read_bytes()).hexdigest() == (
+        "4cc44602660c3891c6c80ed902352612bc3932ef13677524a02be41b28d7da8b")
     assert data["source_sha256"]["public_gamma_co_2"] == hashlib.sha256(
         public_path.read_bytes()).hexdigest()
     assert public == json.loads(public_path.read_text())
+    assert public["source_log_sha256"] == hashlib.sha256(
+        public_log.read_bytes()).hexdigest()
     assert public["source_workflow"] == 43556671111
     assert len(public["lines"]) == 4
     assert len(public["planes"]) == 7
