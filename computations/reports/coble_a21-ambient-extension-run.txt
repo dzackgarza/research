@@ -1,0 +1,119 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions imported from: /repo/.scratch/sage-extensions/src/sage_extensions/__init__.py
+  runtime: shared image rootfs, read only; repository bound at /repo
+
+1. L_K3 = U^3 + 2E8(-1), in its standard basis
+   rank 22, determinant -1, even True, signature (3, 19)
+   blocks: U_1 = e_0,e_1;  U_2 = e_2,e_3;  U_3 = e_4,e_5;
+           E8_1 = e_6..e_13;  E8_2 = e_14..e_21
+  [   0.3s] L_K3 built
+
+2. the Coble primitive embedding S_Co -> L_K3
+   the two AEGS involutions built by the owner; alpha = e_0 - e_1 with alpha^2 = -2;
+   the reflection w_alpha of L built by the owner; the reflected pair
+   J_Co = w_alpha . I_En and J_dP = w_alpha . I_dP:
+     both involutions and they commute: True
+   S_Co = ker(J_Co - 1): rank 11, det 2048, signature (1, 10), even True,
+     isometric to U(2) + <-2> + E8(-2): True
+   T_Co = S_Co^perp:       rank 11, det -2048, signature (2, 9),
+     isometric to <2> + U(2) + E8(-2): True
+   S_dP = ker(I_dP - 1), AEGS's del Pezzo invariant lattice: rank 2, det -4, isometric to U(2): True
+   ker(J_dP - 1), the (++)-piece of the reflected pair: rank 3, det 8, isometric to U(2) + <-2>: True
+  [   1.0s] Coble embedding built
+   the marked classes, as integral vectors of L:
+     H = e_2 + e_4 + e_3 + e_5 = the corner e+f of the slot Delta(U_2,U_3) = U(2)
+     H^2 = 4, H.alpha = 0, H in S_Co True, H in S_dP True, H = e+f True
+     e^2 = 0, f^2 = 0, e.f = 2 (the slot is U(2))
+     alpha^2 = -2, alpha in S_Co True, alpha in S_dP False
+     primitivity: H in 2*S_Co False, alpha in 2*S_Co False, so both lift to H/2, alpha/2 in the dual S_Co^# and not in S_Co
+  [   1.0s] marked classes of the Coble tuple
+
+3. the Enriques primitive embedding M = S_En + ZZ delta -> L_K3
+   S_En = Delta(U_2,U_3) + Delta(E8_1,E8_2): rank 10, det -1024, signature (1, 9),
+     isometric to C(2) = U(2) + E8(-2): True
+   T_En = S_En^perp: rank 12, det 1024, signature (2, 10)
+   delta = e_0 - e_1: delta^2 = -2, delta in T_En True
+   M = S_En + ZZ delta: rank 11, det 2048, signature (1, 10)
+     isometric to U(2) + <-2> + E8(-2), that is to S_Co: True
+   M^perp = delta^perp cap T_En: rank 11, det -2048, signature (2, 9), isometric to T_Co: True
+   h = e_2 + e_4 + e_3 + e_5: h^2 = 4, h in S_En True, h.delta = 0
+   delta in 2*M: False -- the Heegner class is primitive in M, as alpha is in S_Co
+   the divisibilities, as the gcd of the pairings with a basis of the lattice:
+     div_{S_Co}(H) = 2, div_{S_Co}(alpha) = 2, div_{S_En}(h) = 2, div_M(delta) = 2
+  [   1.1s] Enriques embedding built
+
+   the two embeddings, compared in this marking:
+     S_Co contained in M: True
+     M contained in S_Co: True
+     S_Co = M as sublattices of L_K3: True
+     H = h as vectors of L_K3: True
+     S_Co = S_En + ZZ alpha (the Coble lattice is the Enriques lattice plus the
+     root line), and delta = alpha as vectors: True
+  [   1.3s] the two embeddings compared
+
+4. the integral isometry g in O(L_K3)
+   g = (e_0 <-> e_1, identity on U_2, U_3, E8_1, E8_2), built by the owner's isometry
+   constructor from its images on the standard basis (so "isometry" is the owner's
+   check, not an assertion):
+     g preserves the pairing on the whole basis: True
+     g is an involution: True
+   its matrix on the standard basis is the permutation matrix of e_0 <-> e_1;
+   determinant -1, and it equals its own transpose: True
+   the labelled classes, pointwise:
+     g(alpha) = -delta:  True
+     g(H) = h:           True
+     g(delta) = -alpha:  True
+   the two primitive embeddings, as images:
+     g(S_Co) = M: True
+     g(T_Co) = M^perp: True
+     g(S_dP) = S_dP: True (the del Pezzo slot is pointwise fixed)
+     S_dP contained in S_Co (the rank-two placement of @prop:del-pezzo-placement): True
+   g against the involutions whose eigenspaces the two data are:
+     g commutes with I_dP:  True
+     g commutes with I_En:  True
+     g commutes with J_Co:  True
+     g commutes with J_dP:  True
+   so g acts inside the (++)-piece of the pair: on S_dP it is the identity, and on
+   S_Co = S_dP + ZZ alpha it is +1 on the slot and -1 on the root line.
+  [   2.1s] the isometry built and its labels checked
+
+5. the finite-index inclusion, its gluing anti-isometry, and the extension criterion
+   S_Co + T_Co -> L_K3: rank 22, determinant -4194304 = -2^22, so the index is 2^11 = |A_{S_Co}| = |A_{T_Co}|
+   gamma_Co = the gluing anti-isometry A_{S_Co} -> A_{T_Co}(-1) of this inclusion, built by the owner;
+   the glue subgroup L_K3/(S_Co + T_Co) inside A_{S_Co + T_Co} has order 2048
+  [  26.5s] gamma_Co and the glue
+   M + M^perp -> L_K3: determinant -4194304, and the same glue order; the two inclusions coincide: True
+  [  26.6s] gamma_En
+   the pair (g|_{S_Co}, g|_{T_Co}) as an isometry of S_Co + T_Co, built by the owner: an involution True
+   the compatibility equation of @thm:automorphism-lifting-criterion,
+     bar(phi)_T . gamma_Co = gamma_Co . bar(phi)_S,
+   decided by the owner's own procedure on the pair: isometry_extends -> True
+   and the pair is literally a restriction of g, which the owner accepted as an isometry of L_K3,
+   so the criterion is satisfied by construction of g, not searched for after it.
+  [  26.7s] the extension criterion
+
+   the surjectivity input #664 records as a pinned-provider failure, run here
+   (the traceback it records is a TypeError in recursive.py:154 at the pinned runtime):
+     O(S_Co) -> O(A_S_Co) surjective: True
+  [  48.7s] surjectivity for S_Co
+     O(T_Co) -> O(A_T_Co) surjective: True
+  [  89.2s] surjectivity for T_Co
+
+CONCLUSION
+  Built, in one copy of L_K3 = U^3 + 2E8(-1):
+    S_Co (rank 11, det 2048, sig (1,10)) with H, alpha and the slot S_dP = U(2);
+    T_Co = S_Co^perp (rank 11, det -2048, sig (2,9));
+    S_En (rank 10, det -1024), T_En = S_En^perp, the Heegner class delta, and
+    M = S_En + ZZ delta (rank 11, det 2048, sig (1,10)) with h and M^perp = T_Co;
+    the integral isometry g in O(L_K3), an involution, with g(S_Co) = M,
+    g(T_Co) = M^perp, g(H) = h, g(alpha) = -delta, g(S_dP) = S_dP, commuting with both
+    AEGS involutions and with both members of the reflected pair.
+  In this marking S_Co = M and H = h: the Coble invariant lattice is the Enriques
+  lattice plus the line of the root, the del Pezzo slot is the Enriques polarization,
+  and the whole labelled difference is the sign of the root, which g reverses.
+  Not settled here: the chamber (a statement about the effective classes of a member,
+  not about L_K3), and the k >= 2 locus.
+
+OK: L_K3, the two primitive embeddings and the isometry are objects, and the labels
+    are checked pointwise on lattice elements

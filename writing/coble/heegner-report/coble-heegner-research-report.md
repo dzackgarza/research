@@ -598,6 +598,9 @@ It is the Coble analogue of the AEGS embedding-rigidity lemma and is needed befo
 The tuple of the direct projective construction is @prop:tuple-of-the-construction.
 On the one-node locus its labels are conjugate (@thm:a21-labels), and its chamber clause is @qst:chamber-clause-one-node.
 
+Of the Coble-to-Enriques instance that A20 item 2 reads this problem for, the lattice labels are now settled by an object and not only by an argument: @prop:coble-enriques-ambient-isometry builds $L_{K3}$, the Coble and Enriques primitive embeddings with their marked classes, and the integral isometry of $L_{K3}$ carrying one labelled datum to the other, and checks the labels pointwise.
+What that leaves of the problem above is the chamber $\mcc$ — which is the same open question as the fourth bullet, not a separate one — and the multi-node locus.
+
 ::: {.lemma #lem:one-node-picard-rank title="the invariant lattices of a one-node member"}
 Let $b$ be a one-node member of @prop:one-node-family.
 Then
@@ -728,6 +731,7 @@ T_{\Co}
 
 The autonomous strategy begins with the leftmost lattice as the anti-invariant lattice of $I_{\Co}$ and must later construct and identify the two larger lattices.
 The comparison theorem must show that the two chains are conjugate as **labeled embedded chains**, not merely termwise isometric.
+For the Coble-to-Enriques pair of chains that comparison is now an object rather than a requirement: @prop:coble-enriques-ambient-isometry exhibits the isometry of $L_{K3}$ and its action on the labels.
 
 ## The resolved surface, the quasipolarization, and the stable divisor {#sec-surface-divisors}
 

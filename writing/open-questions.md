@@ -35,9 +35,9 @@ tags:
 | Unknown | Stated in |
 |:---|:---|
 | **A generating set of the group $\widetilde\Orth^+(T_\Co)$** | @qst:gamma-co-generators, @prob:coxeter-completeness |
-| **Equality of the four arithmetic groups** | @prob:group-identification, @sec-four-groups, @sec-gamma-co-comparison, @qst:gamma-co-generators; the Heegner and $\theta$ descriptions are compared with the congruence one in @prop:gamma-cong-eq-heegner, which leaves block-compatibility of the two gluings (@def:congruence-group, @lem:coble-discriminant-blocks, item 2 of @qst:gamma-co-generators), and the direct and geometric entries are @prob:coble-rigidity and @prob:B24, @prob:B25 |
+| **Equality of the four arithmetic groups** | @prob:group-identification, @sec-four-groups, @sec-gamma-co-comparison, @qst:gamma-co-generators; the Heegner and $\theta$ descriptions are compared with the congruence one in @prop:gamma-cong-eq-heegner, which leaves block-compatibility of the two gluings (@def:congruence-group, @lem:coble-discriminant-blocks, item 2 of @qst:gamma-co-generators), and the direct and geometric entries are @prob:coble-rigidity and @prob:B24, @prob:B25; the lattice comparison behind the direct entry now exists as an isometry of $L_{K3}$ with its labels checked (@prop:coble-enriques-ambient-isometry) |
 | **Which quotient of $D(T_\Co)$ is the Coble moduli space** | @qst:sextic-group-comparison |
-| **Labeled Coble rigidity** | @prob:coble-rigidity, @qst:chamber-clause-one-node, @qst:reflected-pair-conjugacy, @qst:del-pezzo-saturation-higher-k |
+| **Labeled Coble rigidity**: the labels of a one-node member are conjugate (@thm:a21-labels) and the Coble-to-Enriques comparison is an exhibited isometry of $L_{K3}$ (@prop:coble-enriques-ambient-isometry); what is open is the chamber and the multi-node locus | @prob:coble-rigidity, @qst:chamber-clause-one-node, @qst:reflected-pair-conjugacy, @qst:del-pezzo-saturation-higher-k |
 | **Projective coverage and the moduli equivalence** | @prob:projective-coverage, @prob:cover-singular-equivalence, @prob:period-diagram |
 | **The Enriques-to-Coble cusp correspondence** | @sec-enriques-coble-correspondence; the reduction @prop:cusp-map-separates-mod-two |
 | **The Coble cusps in the morphism chain** | @sec-cusp-correspondence-morphism-chain |

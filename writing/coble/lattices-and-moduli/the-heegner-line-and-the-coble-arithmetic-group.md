@@ -493,6 +493,49 @@ The map $\bar\varphi_0^{-1}\gamma_M\bar\psi\gamma_\Co^{-1}$ is an isometry of $q
 Then $\varphi\definedas\varphi_0\chi$ satisfies $\bar\varphi\gamma_\Co = \gamma_M\bar\psi$, so $\psi\oplus\varphi$ maps the graph of $\gamma_\Co$ to the graph of $\gamma_M$, and by Nikulin's gluing theorem (@thm:nikulin-gluing) it extends to an isometry $\Phi$ of the common overlattice $\lkt$, which restricts to $\psi$ on $S_\Co$.
 :::
 
+::: {.proposition #prop:coble-enriques-ambient-isometry title="The isometry of the comparison, built"}
+The isometry $\Phi$ of @prop:coble-enriques-polarized-match exists as an integral isometry of $\lkt$.
+In the model $\lkt = U^3\oplus 2E_8(-1)$ with standard basis $e_0,\dots,e_{21}$ and blocks $U_1 = \langle e_0,e_1\rangle$, $U_2 = \langle e_2,e_3\rangle$, $U_3 = \langle e_4,e_5\rangle$, $E_{8,1} = \langle e_6,\dots,e_{13}\rangle$, $E_{8,2} = \langle e_{14},\dots,e_{21}\rangle$, let $I_{\mathrm{dP}}, I_\En$ be the two involutions of [@AEGS25, def:involutions], $w$ the reflection in $\alpha = e_0-e_1$, and $J_\Co = wI_\En$, $J_{\mathrm{dP}} = wI_{\mathrm{dP}}$; write $\Delta$, $\Delta^-$ for the diagonal and antidiagonal copies of a summand in a split sum, and put
+$$
+S_\Co = \ker(J_\Co-\id),\qquad T_\Co = S_\Co^{\perp\lkt},\qquad \delta = e_0-e_1,
+$$
+$$
+M = \Delta(U_2,U_3)\oplus\Delta(E_{8,1},E_{8,2})\oplus\ZZ\delta,\qquad H = h = e_2+e_3+e_4+e_5.
+$$
+Then:
+
+1. $S_\Co\cong U(2)\oplus\generators{-2}\oplus E_8(2)$, $T_\Co = S_\Co^{\perp\lkt}\cong\generators{2}\oplus U(2)\oplus E_8(2)$, and $H\in S_\Co$ has $H^2 = 4$, $H\cdot\alpha = 0$, with $H$ and $\alpha$ primitive of divisibility $2$ in $S_\Co$; $H$ is the corner of the primitive $U(2) = \Delta(U_2,U_3)\subseteq S_\Co$, which is $\sdp$;
+2. $\Delta(U_2,U_3)\oplus\Delta(E_{8,1},E_{8,2}) = S_\En$, and $M = S_\En\oplus\ZZ\delta$ with $\delta^2 = -2$, $\delta\in S_\En^{\perp\lkt}$, $h^2 = 4$, $h\cdot\delta = 0$, $M\cong S_\Co$ and $M^{\perp\lkt} = \delta^{\perp T_\En}\cong T_\Co$;
+3. $S_\Co = M$ and $H = h$, as sublattices and as classes of $\lkt$: the Coble invariant lattice is the Enriques one plus the line $\ZZ\alpha$;
+4. the map $g$ exchanging $e_0$ and $e_1$ and fixing $e_2,\dots,e_{21}$ is an integral involution of $\lkt$ with
+$$
+g(S_\Co) = M,\qquad g(T_\Co) = M^{\perp\lkt},\qquad g(H) = h,\qquad g(\alpha) = -\delta,
+$$
+fixing the slot $U(2) = \Delta(U_2,U_3)$ pointwise and commuting with $I_{\mathrm{dP}}$, $I_\En$, $J_\Co$ and $J_{\mathrm{dP}}$.
+:::
+
+::: {.proof}
+
+Every assertion is a check at the owner on the objects, in `computations/reports/coble_a21-ambient-extension.py`, transcript `-run.txt`, sage-extensions at provider main `1488acf`, Sage 11.0.beta5; the run takes about ninety seconds and prints each line below.
+
+*The two embeddings.* $S_\Co$, $S_\En$, $T_\Co$, $T_\En$, $M$ and $M^{\perp\lkt}$ are built as primitive sublattices by `primitive_sublattice_from` and `orthogonal_complement`, and their types are decided by `is_isometric_to` against the model lattices: the ranks $11, 10, 11, 12, 11, 11$, the determinants $2^{11}$, $-2^{10}$, $-2^{11}$, $2^{10}$, $2^{11}$, $-2^{11}$ and the signatures $(1,10)$, $(1,9)$, $(2,9)$, $(2,10)$, $(1,10)$, $(2,9)$ of parts 1 and 2 are the owner's, and $M\cong S_\Co$ is the owner's `is_isometric_to` (`True`). The classes $H$, $h$, $\alpha$, $\delta$ are entered as integral vectors and their squares, their pairing, their primitivity in $S_\Co$ and in $M$ (as the coordinate test $H\notin 2S_\Co$, $\alpha\notin 2S_\Co$, $\delta\notin 2M$) are computed. Part 3 is two containment tests in both directions, `S_Co contained in M` and `M contained in S_Co`, together with the vector equality $H = h$.
+
+*The isometry.* $g$ is entered by its images on the standard basis and accepted by `L.O()`, so the isometry property is the constructor's; the pairing is separately checked on all $22\cdot22$ pairs, $g^2 = \id$ on the basis, and the matrix of $g$ on the standard basis is the permutation matrix of $e_0\leftrightarrow e_1$, of determinant $-1$. The four labelled images of part 4 are equalities of lattice elements, and $g(S_\Co) = M$, $g(T_\Co) = M^{\perp\lkt}$ are equality of sublattices, tested by exact coordinates in each other's bases. Commutation with the four involutions is checked on the basis.
+
+*The criterion.* The two gluing anti-isometries $\gamma_\Co$ and $\gamma_M$ are built by `gluing_anti_isometry` from the two finite-index inclusions $S_\Co\oplus T_\Co\injects\lkt$ and $M\oplus M^{\perp\lkt}\injects\lkt$, each of index $2^{11}$ with glue subgroup of order $2048$ in $A_{S_\Co\oplus T_\Co}$; the restriction $g|_{S_\Co}\oplus g|_{T_\Co}$ is an isometry of $S_\Co\oplus T_\Co$ and `isometry_extends` returns `True`, which is @thm:automorphism-lifting-criterion applied to it, that is exactly the equation $\bar\varphi\gamma_\Co = \gamma_M\bar\psi$. Since the pair is the restriction of an isometry of $\lkt$ that the owner has already accepted, the criterion is satisfied by the construction of $g$ and not searched for after it.
+
+*The surjectivity input.* $\rho_{S_\Co}\colon\Orth(S_\Co)\to\Orth(A_{S_\Co})$ and $\rho_{T_\Co}\colon\Orth(T_\Co)\to\Orth(A_{T_\Co})$ are both decided surjective at this provider (`discriminant_representation_is_surjective` returns `True` for each), which is @thm:two-elementary-surjectivity instantiated; the pinned-provider `TypeError` at `recursive.py:154` recorded for $T_\Co$ under A20 item 1 does not reproduce at this provider.
+:::
+
+::: {.remark title="What the object settles, and what it does not"}
+
+What it settles is the last step of A20 item 2 as stated: the comparison of the labelled Coble and Enriques data is carried by an exhibited element of $\Orth(\lkt)$ rather than by an argument that one exists, and its action on every label is an equality of lattice elements. Part 3 sharpens @prop:coble-enriques-polarized-match: in this marking the two primitive embeddings coincide, the degree-$4$ class of the Coble tuple is the degree-$2$ class of the Enriques tuple, the del Pezzo slot $\sdp$ is the Enriques polarization, and the whole labelled difference between the two data is the sign of the root, which $g$ reverses.
+
+What it does not settle. The chamber clause, for the reason @qst:chamber-clause-one-node gives: a chamber is cut from the effective classes of a member and no isometry of $\lkt$ decides effectivity, so $g$ transports the lattice labels and not $\mcc$. The multi-node locus, where $S_{\mathrm{dP}}$ has rank $k+2$ and the containment $\sdp\subseteq S_\Co$ of @prop:del-pezzo-placement fails for $k\ne1$ (@qst:del-pezzo-saturation-higher-k). And the block-compatibility of $\gamma$ and $\gamma_\Co$ of @def:congruence-group: the two gluings now exist as objects, so the block test is a finite check on an object, but it is not run in this record, and the pair of forms alone still cannot select it (@lem:coble-discriminant-blocks).
+
+The Coble-to-Coble form of @prob:coble-rigidity is @thm:a21-labels on the one-node locus, by parallel transport; the object here is the Coble-to-Enriques comparison that A20 item 2 needs, and it does not extend @thm:a21-labels beyond that locus.
+:::
+
 ::: {.corollary #cor:no-del-pezzo-involution-coble-cover title="The isometry fixing $\langle f^*F_1,f^*F_2\rangle$ is not geometric"}
 
 In the marking of @prop:coble-cover-marking, the isometry $\phi$ is a Hodge isometry of $H^2(X,\ZZ)$, and it is not the action of an automorphism of $X$.
@@ -1241,8 +1284,9 @@ $\Gamma^\theta_\Co$ lies in $\Orth^+(T_\Co)$ and contains $\widetilde\Orth^+(T_\
 By @lem:coble-discriminant-blocks(5) a block-compatible anti-isometry $A_{S_\En}\too A_{T_\En}$ exists, and by (4) one that moves the block exists as well; so the hypothesis of @prop:gamma-cong-eq-heegner(2) is a condition on the chosen gluing, neither vacuous nor automatic.
 Both are on record at the owner, on $A_{S_\En}$ of order $1024$: `computations/reports/coble_a20-enriques-gluing-block.py`, transcript `-run.txt`, finds the three orbits of $\Orth(q_{S_\En})$ on its classes, of sizes $1$, $496$ and $527$, meeting the $U(2)$ block in $1$, $1$ and $2$ classes, with the witness pair $[0]+[1]$ inside and $[2]+[4]+[7]+[9]$ outside, both in the orbit of size $496$ and both of value $1$.
 The same record applies the block test to the anti-isometry that the owner's torsion-form isometry constructor returns for $A_{S_\En}\too A_{T_\En}(-1)$: it satisfies $q_{T_\En}\circ\gamma = -q_{S_\En}$ on all $259$ classes of the two blocks and carries the $U(2)$ block to a four-element subgroup contained in neither block, so that map is not block-compatible.
-The record decides nothing about the gluing of the marked embedding $S_\En\injects\lkt$, and by the orbit computation it cannot: no property of the pair of forms selects a block-compatible anti-isometry, so the choice among them is the labeled-embedding datum of @prob:coble-rigidity.
-That choice, for $\gamma$ and for $\gamma_\Co$ alike, is what remains of the comparison of the Heegner and $\theta$ descriptions with the congruence one (@qst:gamma-co-generators(2)).
+The record decides nothing about the gluing of the marked embedding $S_\En\injects\lkt$, and by the orbit computation it cannot: no property of the pair of forms selects a block-compatible anti-isometry.
+What the pair of forms cannot supply, the marked embedding does: @prop:coble-enriques-ambient-isometry builds both primitive embeddings with their marked classes, and the gluing anti-isometry of each inclusion, as objects, so the block test of @def:congruence-group is a finite check on an object rather than a search among anti-isometries.
+That check is not run there; the labelled-embedding datum of @prob:coble-rigidity, and with it the comparison of the Heegner and $\theta$ descriptions with the congruence one (@qst:gamma-co-generators(2)), is what remains after it.
 :::
 
 ::: {.question #qst:kernel-and-root-arrangement title="The root arrangement"}
