@@ -63,6 +63,10 @@ What decides the pair: with g any isometry of T_En carrying r12 to r13, the clas
 Gamma_Co,2-equivalent to that of r13 exactly when the image of g in O(A_{T_En}, q) lies in
 M . rho(Stab_O(r12) cap Stab_O(Z eta_5)) --- a coset condition in the finite group O(q).  This
 record settles the coset for the two candidates it has; evaluating it needs generators of that
-stabilizer's image, which the library does not expose (sage-extensions#273).
+stabilizer's image.  That object is Stab_O(r12) cap Stab_O(delta) cap Stab_O(Z eta_5): the
+library builds the intersection as a predicate but does not resolve it into generators, and its
+group_generators() raises 'has no chosen resolution relative to Category of groups'.  With those
+generators the same subspace-orbit test decides the pair; coble_760-transporter-in-gent-run.txt
+runs it for the stabilizer of r12 alone, which is where the pair turns out to be Gent-equivalent.
 
 PYEXIT=0

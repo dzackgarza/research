@@ -22,7 +22,8 @@ the classes of 13 and 14 lying in one H-orbit agrees with their being one Gamma_
 to r13, and not that Gent contains none.
 The decisive group is the image of Gent in O(T_En/2T_En), G_g = {sigma : rho(sigma) in M}; its
 orbit of the class of 12 decides the pair.  Equivalently the pair is decided by whether the
-image of a transporter g lies in M . rho(Stab_O(r12) cap Stab_O(Z eta_5)).  Both forms need
-generators of the image of a point stabilizer in the discriminant group: sage-extensions#273.
+image of a transporter g lies in M . rho(Stab_O(r12) cap Stab_O(delta) cap Stab_O(Z eta_5)).
+The provider returns stabilizer generators for a single vector; the intersection is built as a
+predicate and not resolved into generators (coble_760-transporter-in-gent-run.txt).
 
 PYEXIT=0

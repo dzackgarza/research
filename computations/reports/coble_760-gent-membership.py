@@ -17,13 +17,13 @@ respects the decomposition in the two summands.  The page's own @prop:gamma-co-i
 the same criterion.  So membership in Gamma_Co,2 needs one further check beyond integrality, and
 the record makes it:
 
-    g in Gent  <=>  the induced map a |-> g^T a on A_{T_En} = Z^12 / G Z^12
-                    carries each summand into itself.
+    g in Gent  <=>  the induced map on A_{T_En} = Z^12 / G Z^12 carries each summand into itself.
 
-The action is read in a-coordinates: a in Z^12 stands for the class of sum_{i} a_i d_i, where
-d_i is the dual basis vector, and then the class of g(d_i) is the i-th column of g^T, so the
-induced map is literally a |-> g^T a modulo G Z^12, and it is well defined because
-g^T G = G g^{-1} is integral.
+The induced map is a |-> (g^{-1})^T a, not a |-> g^T a: for v in L* the class of v is the class of
+the a-coordinate vector G v, so g sends it to G g v = (g^{-1})^T (G v).  The record tests the
+summand condition with g^T, which is the same test: T(V0) = V0 exactly when T^{-1}(V0) = V0, and the
+two matrices are inverse transposes of each other.  Only the transporter condition, which this record
+does not use, is sensitive to the difference.
 
 Result:
 
@@ -210,6 +210,10 @@ print("What decides the pair: with g any isometry of T_En carrying r12 to r13, t
 print("Gamma_Co,2-equivalent to that of r13 exactly when the image of g in O(A_{T_En}, q) lies in")
 print("M . rho(Stab_O(r12) cap Stab_O(Z eta_5)) --- a coset condition in the finite group O(q).  This")
 print("record settles the coset for the two candidates it has; evaluating it needs generators of that")
-print("stabilizer's image, which the library does not expose (sage-extensions#273).")
+print("stabilizer's image.  That object is Stab_O(r12) cap Stab_O(delta) cap Stab_O(Z eta_5): the")
+print("library builds the intersection as a predicate but does not resolve it into generators, and its")
+print("group_generators() raises 'has no chosen resolution relative to Category of groups'.  With those")
+print("generators the same subspace-orbit test decides the pair; coble_760-transporter-in-gent-run.txt")
+print("runs it for the stabilizer of r12 alone, which is where the pair turns out to be Gent-equivalent.")
 print()
 print("PYEXIT=0")

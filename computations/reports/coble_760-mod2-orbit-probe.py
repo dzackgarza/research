@@ -26,9 +26,10 @@ whole of Gent in O(T_En/2T_En), that is
 
 and the orbit of the class of 12 under G_g.  Equivalently, with g any isometry carrying r12 to r13,
 the pair is decided by whether the image of g in O(A_{T_En}, q) lies in
-M . rho(Stab_O(r12) cap Stab_O(Z eta_5)).  Evaluating either form needs generators of the image of a
-point stabilizer in the discriminant group, which the provider does not expose: that is the operation
-of sage-extensions#273, and this record owes it rather than replacing it.  Nothing here is a
+M . rho(Stab_O(r12) cap Stab_O(delta) cap Stab_O(Z eta_5)).  The stabilizer generators the provider
+needs for that are available at this checkout for a single vector (lattice_morphisms.py:4282, :4791);
+what is missing is the intersection, which the library builds as a predicate but does not resolve
+into generators (coble_760-transporter-in-gent-run.txt prints the failure).  Nothing here is a
 substitute for it, and no statement on the page is read off this record.
 
     usage: python3 computations/reports/coble_760-mod2-orbit-probe.py
@@ -137,7 +138,8 @@ print("12 is therefore one-sided: it shows that no product of these twenty-three
 print("to r13, and not that Gent contains none.")
 print("The decisive group is the image of Gent in O(T_En/2T_En), G_g = {sigma : rho(sigma) in M}; its")
 print("orbit of the class of 12 decides the pair.  Equivalently the pair is decided by whether the")
-print("image of a transporter g lies in M . rho(Stab_O(r12) cap Stab_O(Z eta_5)).  Both forms need")
-print("generators of the image of a point stabilizer in the discriminant group: sage-extensions#273.")
+print("image of a transporter g lies in M . rho(Stab_O(r12) cap Stab_O(delta) cap Stab_O(Z eta_5)).")
+print("The provider returns stabilizer generators for a single vector; the intersection is built as a")
+print("predicate and not resolved into generators (coble_760-transporter-in-gent-run.txt).")
 print()
 print("PYEXIT=0")
