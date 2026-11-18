@@ -1,15 +1,16 @@
-the permutation on labels 1..14: [8, 6, 5, 4, 3, 2, 7, 1, 9, 10, 11, 12, 14, 13]
-  it fixes label 11 (the Coble root's class) and swaps 13 and 14: True
-  it is a Gram automorphism of the fourteen roots: True
-rank of span(roots, delta) saturated: 10
-rank of the complement: 2
-complement generator v: v^2 = -2, div = 1
-the permutation on the roots: 168 equations, rank 120 of 144 unknowns, consistent True
-  M is an isometry on the span: not on all of T_En
-  M delta = [1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-  M delta == delta: True ; M delta == -delta: False
+S = sat.span(roots): rank 10; delta in S: True
+complement vectors c1 = [1, 0, 0, 0]..., c2 = [0, 0, 1, 0]...; index [T_En : S + Zc] = 1
+M on S: fixes delta exactly; M s = sigma(s) on the fourteen roots
+S^perp: rank 2, Gram [[0, 2], [2, 4]], det -4;  det S * det S^perp = 1024, det T_En = 1024
+index^2 of S + S^perp in T_En: 1  -> index 1
+M = tau on S, identity on S^perp: integral True
+  M^T G M == G: True
+  M delta == delta: True
+  M r_i == r_sigma(i) for all fourteen roots: True
+  det M: -1
 
-RESULT: the permutation fixes the Coble root's line, so it is not excluded at this stage;
-the remaining question is the gluing of span(roots) with its rank-2 complement.
+RESULT: the permutation LIFTS.  M = tau on S and the identity on S^perp is an integral
+isometry of T_En fixing delta and exchanging labels 13 and 14.  Hence the classes of
+roots 13 and 14 are one Gamma_Co,2-orbit, and (12, 13) is the only pair left at cusp 5.
 PYEXIT=0
 exit=0
