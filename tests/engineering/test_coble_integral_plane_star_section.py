@@ -328,6 +328,7 @@ def test_coble_eichler_normal_relations_have_rank_54_at_level_eight():
         assert all(diagonal[i, i] == 0 for i in range(11))
         assert sum(int(diagonal[i, j]) for i in range(11)
                    for j in range(i + 1, 11)) % 2 == 0
+    level_echelons = {}
     for exponent, level in ((2, 8), (4, 16)):
         echelon = {}
         for element in higher_lifts:
@@ -342,6 +343,25 @@ def test_coble_eichler_normal_relations_have_rank_54_at_level_eight():
                     echelon[pivot] = bits
                     break
         assert len(echelon) == 54
+        level_echelons[level] = echelon
+    # A four-letter ambient Eichler word has order ten modulo eight.
+    # Its tenth power supplies the missing 55th leading direction at
+    # level sixteen, independent of the 54 fourth powers above.
+    word = generators[17] * inverse[14] * inverse[11] * generators[3]
+    witness = word ** 10
+    assert all(int(witness[i, j]) % 8 == int(i == j)
+               for i in range(11) for j in range(11))
+    for level, element in ((8, witness), (16, witness * witness)):
+        echelon = level_echelons[level]
+        bits = vector_bits(element, level)
+        while bits:
+            pivot = bits.bit_length() - 1
+            if pivot in echelon:
+                bits ^= echelon[pivot]
+            else:
+                echelon[pivot] = bits
+                break
+        assert len(echelon) == 55
 
 
 def test_coble_level_two_relation_words_are_public_kernel_morphisms():

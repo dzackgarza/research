@@ -1549,6 +1549,27 @@ $$
 so $(g^2-I)/2^{m+1}\equiv A\pmod2$. Iterating, $h_i^{2^{k-2}}\in H\cap\Gamma(2^k)$ and their leading matrices modulo two are the same independent 54 matrices for every $k\ge2$. The regression verifies this lifting explicitly at $k=3,4$ using exact arithmetic modulo 32; the formula proves it for all $k$.
 :::
 
+::: {.theorem #thm:coble-eichler-exact-deep-congruence-ranks title="Exact rank 55 at every congruence level at least eight"}
+
+For $E=\widetilde{\mathrm{SO}}^+(U^{\oplus2}\perp D_7(-1))$, **every** integer $k\ge3$ satisfies
+$$
+E(2^k)/E(2^{k+1})\cong(\ZZ/2)^{55}.
+$$
+This differs from the rank **54** at $k=2$ proved in @prop:coble-eichler-level-eight-derived-image. The extra direction at level eight has a short, explicit integral witness: if $g_0,\ldots,g_{17}$ are the zero-based Eichler generators in `coble_ambient_twenty_one_generators.json`, then
+$$
+w=\big(g_{17}g_{14}^{-1}g_{11}^{-1}g_3\big)^{10}\in E(8)
+$$
+has leading matrix $(w-I)/8\pmod2$ independent of the 54 classes supplied by the squares of the preceding level-four witnesses. Its successive powers $w^{2^{k-3}}$ supply the extra direction for all $k\ge3$.
+
+Consequently the 19-relation normal closure is proved to supply at least 54 of the 55 dimensions at every deeper level; **whether it also supplies the last dimension is not established**. In particular, a rank-54 lower bound cannot be promoted to full higher-congruence generation.
+:::
+
+::: {.proof}
+For any $k\ge2$, write $g=I+2^kA$ with $g\in E(2^k)$. Orthogonality in the odd diagonal basis gives $A^tD+DA+2^kA^tDA=0$. Modulo two this makes $A$ symmetric; its diagonal equations imply $A_{ii}$ is divisible by $2^{k-1}$, hence even. Thus the leading matrix $A\bmod2$ is alternating, a space of dimension $\binom{11}{2}=55$. This proves the upper bound $55$ for every congruence layer.
+
+The exact regression `test_coble_eichler_normal_relations_have_rank_54_at_level_eight` constructs 54 independent elements of $E(4)/E(8)$ as squares and commutators of the 19-relation lifts. Squaring these 54 elements gives 54 independent classes in $E(8)/E(16)$. The same regression constructs the displayed four-letter word and verifies that its tenth power is the identity modulo eight, while its leading matrix modulo sixteen is **independent** of those 54 classes. Therefore $E(8)/E(16)$ has dimension at least 55, and the upper bound proves equality. For $k\ge3$, the identity $(I+2^kA)^2\equiv I+2^{k+1}A\pmod{2^{k+2}}$ preserves the leading matrix under squaring, so the 55 independent witnesses propagate to every deeper layer. This proves the formula for all $k\ge3$.
+:::
+
 ::: {.corollary #cor:coble-eichler-odd-congruence-surjectivity title="The Eichler-square normal closure surjects at every odd modulus"}
 
 Let $E=\generators{g_1,\ldots,g_{18}}$ be the explicit Eichler group of @thm:coble-ambient-21-generators, and let $N_2\lhd E$ be the normal closure of the squares $g_i^2$. For **every odd positive integer** $m$, the reductions of $N_2$ and $E$ in $\GL(B/mB)$ are equal:
