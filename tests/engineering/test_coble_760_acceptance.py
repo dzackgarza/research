@@ -724,7 +724,9 @@ def test_item_7_the_gent_family_is_named_by_the_call_that_fails() -> None:
     flat = " ".join(text.split())
     for line in ("class e_3 -> q = [0]", "class e_3 + e_4 -> q = [1]",
                  "calling discriminant_point_stabilizer(point).group_generators()",
-                 "killed: exit status 137 (SIGKILL, the memory ceiling), 625 s"):
+                 "killed: exit status 137 (SIGKILL, the memory ceiling), 625 s",
+                 "r12 - r13 b(., e_i) mod 2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] in the radical: True",
+                 "so no mod-2 pairing separates the two classes"):
         assert line in flat, line
     doc = " ".join(record.read_text(encoding="utf-8").split())
     assert "does not return" in doc

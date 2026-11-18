@@ -14,7 +14,14 @@ This record settles the first half of that and reports the second half failing.
     hyperbolic plane of order 4 that A_{U(2)} is.  (Rational covector representatives are refused:
     ``d(vector(QQ, d3))`` raises TypeError, so this integer route is the one that works.)
 
-(2) The preimage is KILLED.  ``L.Aut().discriminant_point_stabilizer(point)`` --- the call that turns
+(2) The mod-2 shadow cannot decide it either.  The form b mod 2 on L/2L has radical 2L*/2L, of order
+    |L*/L| = 1024, and r12 - r13 lies in it: b(r12 - r13, e_i) is even for all twelve basis vectors,
+    while the same pairing is odd for r12 and for delta and even for eta_5.  So the two classes are
+    indistinguishable by their mod-2 pairings, and no invariant of that shadow separates them; the
+    discriminating data is the (1/2)Z/Z-valued quadratic form on A_L, which is exactly what rho
+    carries and what the preimage below would expose.
+
+(3) The preimage is KILLED.  ``L.Aut().discriminant_point_stabilizer(point)`` --- the call that turns
     that point into rho_L^{-1}(P) with generators --- does not return: the process was killed with
     exit code 137 after 625 s, at the memory ceiling, printing nothing.  This is the failure the
     method's own docstring records for a sibling route ("the joint discriminant image of the preimage
@@ -57,7 +64,14 @@ print("    class e_3 -> q = %s ; class e_4 -> q = %s ; class e_3 + e_4 -> q = %s
       % (p3.q(), p4.q(), d([0, 0, 1, 1] + [0] * 8).q()))
 print("    (0, 0, 1/2 is the hyperbolic plane A_{U(2)}: the point is the right one)")
 print()
-print("(2) the preimage:")
+print("(2) the mod-2 shadow: is r12 - r13 in the radical of b mod 2?")
+B = [vector(ZZ, [1 if k == i else 0 for k in range(N)]) for i in range(N)]
+for name, v in (("r12 - r13", r12 - r13), ("r12", r12), ("delta", dv), ("eta_5", ev)):
+    vals = [int(v * Mgram * b) % 2 for b in B]
+    print("    %-10s b(., e_i) mod 2 = %s   in the radical: %s" % (name, vals, all(x == 0 for x in vals)))
+print("    (the radical is 2L*/2L, of order |L*/L| = %d, so no mod-2 pairing separates the two classes)" % abs(Mgram.det()))
+print()
+print("(3) the preimage:")
 say("    calling discriminant_point_stabilizer(point).group_generators()")
 fam = L.Aut().discriminant_point_stabilizer(frozenset([p3, p4]))
 gens = list(fam.group_generators())
