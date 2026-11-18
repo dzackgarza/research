@@ -17,7 +17,8 @@ What is checked, for the two members b_0 and b_star:
       rulings {x = x_0} fail to be transverse to the branch curve. A simple
       root is a nodal (irreducible) fibre, a double root is a bitangency whose
       fibre splits, the node's own ruling x = 0 is the I_2 fibre.
-  (4) the leading coefficient at x = infinity, i.e. the fibre at infinity.
+  (4) the leading coefficient in each variable, i.e. the fibres at infinity of both
+      rulings.
 
 Output: nu(b) = #{delta in Pic : delta^2 = -2, delta.H = 1}, which is the
 number of H-degree-1 components of reducible ruling fibres:
@@ -39,7 +40,8 @@ member b_0
      q vanishes at the other node ruling? False
   f(1, y) = 6*y**4 - 2*y**3 - 6*y**2 + 3*y + 5
   f(-1, y) = 6*y**4 + 2*y**3 - 6*y**2 - 3*y + 5
-  fibre at x = infinity is {z^2 = 5*y**4 - 2*y**2 + 3}, degree in y 4, gcd(w,w') = 1
+  fibre at x = infinity is {z^2 = 5*y**4 - 2*y**2 + 3}, degree 4, gcd(w,w') = 1
+  fibre at y = infinity is {z^2 = 5*x**4 + 2*x**2 - 1}, degree 4, gcd(w,w') = 1
 ========================================================================
 member b_star
   tau-invariant (i+j even for every monomial): True
@@ -56,7 +58,8 @@ member b_star
      q vanishes at the other node ruling? False
   f(1, y) = (y - 3)**2*(y - 1)**2
   f(-1, y) = (y + 1)**2*(y + 3)**2
-  fibre at x = infinity is {z^2 = 8*y**4 + 7*y**2 + 6}, degree in y 4, gcd(w,w') = 1
+  fibre at x = infinity is {z^2 = 8*y**4 + 7*y**2 + 6}, degree 4, gcd(w,w') = 1
+  fibre at y = infinity is {z^2 = 8*x**4 + 3*x**2 - 10}, degree 4, gcd(w,w') = 1
 ========================================================================
 H-degree bookkeeping in <e_b, f_b, D> (Gram: e_b^2 = f_b^2 = 0,
 e_b.f_b = 2, D^2 = -2, D.e_b = D.f_b = 0, H = e_b + f_b):

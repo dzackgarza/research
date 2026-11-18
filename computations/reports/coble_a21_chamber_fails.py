@@ -18,7 +18,8 @@ What is checked, for the two members b_0 and b_star:
       rulings {x = x_0} fail to be transverse to the branch curve. A simple
       root is a nodal (irreducible) fibre, a double root is a bitangency whose
       fibre splits, the node's own ruling x = 0 is the I_2 fibre.
-  (4) the leading coefficient at x = infinity, i.e. the fibre at infinity.
+  (4) the leading coefficient in each variable, i.e. the fibres at infinity of both
+      rulings.
 
 Output: nu(b) = #{delta in Pic : delta^2 = -2, delta.H = 1}, which is the
 number of H-degree-1 components of reducible ruling fibres:
@@ -93,11 +94,12 @@ def check(name, f):
     for xv in (1, -1):
         print('  f(%s, y) = %s' % (xv, sp.factor(sp.expand(f.subs(x, xv)))))
 
-    # the fibre at infinity of the x-fibration: the top x-coefficient
-    lead = sp.Poly(f, x).LC()
-    print('  fibre at x = infinity is {z^2 = %s}, degree in y %d, gcd(w,w\') = %s'
-          % (sp.expand(lead), sp.degree(lead, y),
-             sp.gcd(sp.Poly(lead, y), sp.Poly(sp.diff(lead, y), y)).as_expr()))
+    # the fibres at infinity of both rulings: the top coefficient in the other variable
+    for var, rest, tag in ((x, y, 'x'), (y, x, 'y')):
+        lead = sp.Poly(f, var).LC()
+        print('  fibre at %s = infinity is {z^2 = %s}, degree %d, gcd(w,w\') = %s'
+              % (tag, sp.expand(lead), sp.degree(lead, rest),
+                 sp.gcd(sp.Poly(lead, rest), sp.Poly(sp.diff(lead, rest), rest)).as_expr()))
 
 
 print(__doc__)
