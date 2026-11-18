@@ -1,0 +1,9 @@
+complement determinant inside S: r12 -> -256, r13 -> -256
+gluing class in the (r, delta) coordinates, as p/2 mod Z^2:
+  r12: (0, 0)
+  r13: (0, 0)
+
+RESULT: the gluing classes agree, so this obstruction vanishes; the extension is then
+decided by whether an isometry of the complements matches the gluing, which is not done here.
+PYEXIT=0
+exit=0
