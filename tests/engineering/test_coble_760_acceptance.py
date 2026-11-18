@@ -760,6 +760,29 @@ def test_item_7_the_orbit_call_exists_and_its_family_is_refuted() -> None:
     assert "sage-extensions#312" in remark
 
 
+def test_item_7_the_gamma_co_2_transporter_search_is_bounded_and_says_so() -> None:
+    """Item 7: the exact Gamma_Co,2 membership test, and the search's bound.
+
+    Gamma_Co,2 = rho^{-1}(P) is tested exactly on the 2048 classes of A_{T_Co}, calibrated on the
+    identity and -identity; the raw 12<->13 witness restricted to T_Co keeps the eta_5 line and moves
+    the class but is outside the group; and no word of length at most three in the provider's
+    stabilizer generators lands inside.  The record must state that this is a bound, not a decision.
+    """
+    record = ROOT / "computations/reports/coble_760-gamma-co-2-transporter-search.py"
+    run = ROOT / "computations/reports/coble_760-gamma-co-2-transporter-search-run.txt"
+    assert record.exists() and run.exists(), (record, run)
+    text = run.read_text(encoding="utf-8")
+    assert text.rstrip().endswith("PYEXIT=0"), "the search did not reach its anchor"
+    flat = " ".join(text.split())
+    for line in ("calibration identity in Gamma_Co,2: True",
+                 "calibration -identity in Gamma_Co,2: True",
+                 "g|T_Co: keeps the line True, moves [12]->[13] True, in Gamma_Co,2 False",
+                 "found False", "no transporter of word length <= 3"):
+        assert line in flat, line
+    doc = " ".join(record.read_text(encoding="utf-8").split())
+    assert "BOUND and not a decision" in doc
+
+
 def test_open_questions_row_names_the_open_step() -> None:
     """The row for the withdrawn step names the orbit computation as what is open."""
     text = OPEN_QUESTIONS.read_text(encoding="utf-8")
