@@ -171,3 +171,21 @@ cp: cannot create regular file '.../writing/.book/_site/category-theory/': Not a
 Observed on 2026-11-10 with `just docs-lint coble/lattices-and-moduli/local-systems-of-lattices-and-monodromy.md`: `_site` held only `coble/`, `index.html`, `search.json` and `site_libs/` afterwards. A cross-reference to an anchor on a page that was not rendered in the same run (`@sec-orientation-characters`) is also reported as unresolved, although the source check passes.
 
 `just docs-deploy` rebuilds the full site. To check a page's source, run `python3 scripts/docs_check.py --source` alone; it does not touch `_site`.
+
+## The full render completes, and the post-render copy can still fail on a figure link
+
+The two AEGS reference figures that `writing/coble/cusp-correspondence/cusp-diagrams-by-moduli-space.md` and its neighbours include are symlinks into the shared figure tree, and that tree is not in this repository:
+
+```
+writing/coble/reference/aegs-pars.svg -> /home/dzack/.pandoc/figures/vector/aegs-paper/fig-pars.svg
+writing/coble/reference/aegs-par2.svg -> /home/dzack/.pandoc/figures/vector/aegs-paper/fig-par2.svg
+```
+
+When the target is absent — a fresh `~/.pandoc` clone whose LFS content was never fetched, which is the state here since at least 2026-11-18 — the render itself still succeeds: the whole book is written to `writing/.book/_site` (133 pages, about 7 s per chapter, so a 132-chapter pass is roughly 15 minutes) and the failure is in the post-render step, which copies `coble/reference` with `cp -RL`:
+
+```
+cp: cannot stat 'coble/reference/aegs-pars.svg': No such file or directory
+docs-check: `quarto render` failed on pass 1 (exit 1)
+```
+
+The gate reports that as a render failure, so read the message before believing the render is broken. `python3 scripts/docs_figures.py` fails the same way and says so directly: `…/A2RootSystem.png is an unresolved Git LFS pointer`. The distinction matters when a page this repository owns is under test: the page's own html is in `_site` at that point and can be inspected, which is how the 2026-11-18 check of the #672 pages was done.

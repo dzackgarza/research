@@ -15,7 +15,8 @@ Run: `just docs-check`.
 `--source` runs only the checks that read the markdown sources: the chapter list,
 the part links, citation keys against the bibliographies `_quarto.yml` lists, Quarto
 cross-references and `#sec-` links against the explicit ids, path and block links,
-heading numbers, inline citation URLs, refs-web.bib, and theorem-family references.
+heading numbers, inline citation URLs, refs-web.bib, theorem-family references, and
+macro spellings the book's generated macro corpus does not define.
 It renders nothing and opens no network connection, so `just docs-lint` runs it in
 under a second. The render itself, citations outside the prose, links to generated
 ids, and external links belong to the full gate, which CI runs on every push.
@@ -279,7 +280,37 @@ for md, text in sources.items():
             failures.append(f"{md.name}:{i}: {m.group(0)} is raw LaTeX — "
                             f"write @{m.group(1)} or [-@{m.group(1)}]")
 
-# 8. external links must resolve — a cited resource that 404s can't be verified to exist.
+# 8. no undefined macro spelling — the book defines no macros of its own: `just docs-assets`
+# copies the generated `mathjax-macros.html` out of the ~/.pandoc working tree into .assets.
+# A spelling the corpus does not define is left raw in the html and renders as a MathJax
+# error box, which neither check 7 (cross-references in the source) nor the render checks
+# 1--3 can see. Each listed spelling is verified undefined before it is enforced, and a
+# spelling the corpus later gains is reported instead of enforced, so the list cannot go
+# stale silently.
+MACRO_CORPUS = ASSETS / "mathjax-macros.html"
+UNDEFINED_MACRO_SPELLINGS = ("Gent", "Fcox", "Fgen", "Fco", "Fen", "Fram", "TEn", "rk", "bqty", "pqty")
+if not MACRO_CORPUS.exists():
+    print(f"docs-check: check 8 skipped — {MACRO_CORPUS} is missing (`just docs-assets` writes it)",
+          file=sys.stderr)
+else:
+    corpus = MACRO_CORPUS.read_text(encoding="utf-8", errors="replace")
+    corpus_names = set(re.findall(r"\\(?:newcommand|renewcommand)\s*\{?\\?([A-Za-z]+)", corpus))
+    corpus_names |= set(re.findall(r"\\DeclareMathOperator\s*\{?\\?([A-Za-z]+)", corpus))
+    for name in UNDEFINED_MACRO_SPELLINGS:
+        if name in corpus_names:
+            print(f"docs-check: check 8 — the corpus now defines \\{name}; drop it from "
+                  f"UNDEFINED_MACRO_SPELLINGS", file=sys.stderr)
+            continue
+        spelling = re.compile(r"\\" + name + r"(?![A-Za-z])")
+        for md in SITE_MD:
+            for i, line in enumerate(md.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+                if spelling.search(line):
+                    failures.append(f"{md.name}:{i}: \\{name} is in no macro definition — the book "
+                                    f"defines no macros, so this renders as an error box; the repair "
+                                    f"for each spelling is listed in "
+                                    f"tests/engineering/test_coble_a29_acceptance.py")
+
+# 9. external links must resolve — a cited resource that 404s can't be verified to exist.
 # Full gate only: a source-only run opens no connection.
 import urllib.request
 import urllib.error
