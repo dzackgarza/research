@@ -758,6 +758,9 @@ def test_item_7_the_orbit_call_exists_and_its_family_is_refuted() -> None:
     remark = block("rmk:coble-root-orbits-cusp-five")
     assert "coble_760-cusp5-root-orbits-run.txt" in remark
     assert "sage-extensions#312" in remark
+    assert "coble_760-transporter-pruned-search-run.txt" in remark
+    assert "51\\,830" in remark
+    assert "bound rather than a decision" in remark
 
 
 def test_item_7_the_gamma_co_2_transporter_search_is_bounded_and_says_so() -> None:
