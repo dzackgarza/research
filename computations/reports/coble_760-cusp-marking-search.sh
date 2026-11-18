@@ -36,6 +36,19 @@ else
   echo "   ABSENT: $DK"
 fi
 echo
+echo "=== DZ01 (dolgachev-zhang 2001), the third source that describes the Coble surface:"
+DZ="$SRC/dolgachev-zhang-2001-coble-rational-surfaces.pdf"
+if [ -f "$DZ" ]; then
+  pdftotext -layout "$DZ" /tmp/dz01-760.txt 2>/dev/null || true
+  echo "   occurrences of 'Coble': $(grep -ci coble /tmp/dz01-760.txt)"
+  echo "   lines pairing a simple root with a curve: $(grep -ciE 'simple root' /tmp/dz01-760.txt)"
+  echo "   what it does give: the lattice M_S = (K_S)^perp in Pic(S) and its orthogonal group,"
+  grep -n "E10" /tmp/dz01-760.txt | head -1 | cut -c1-150
+  echo "   which is the Weyl group of E_10 -- the group, not a dictionary from roots to curves."
+else
+  echo "   ABSENT: $DZ"
+fi
+echo
 echo "=== the nearest identification that does exist, for reference:"
 grep -rn "maximal connected elliptic subdiagrams" "$SRC/aegs-2025-compact-moduli-of-enriques-surfaces-of-degree-2.md" 2>/dev/null | head -2 | cut -c1-160
 echo "   that is the Enriques/K3 dictionary (roots <-> components of a Kulikov model), not the"

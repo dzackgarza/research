@@ -37,6 +37,13 @@ the cusp marking, searched for in the sources this repository holds
    so DK13 describes S through phi_h and its branch curve W, and never identifies the
    chamber's roots with curves of S.
 
+=== DZ01 (dolgachev-zhang 2001), the third source that describes the Coble surface:
+   occurrences of 'Coble': 154
+   lines pairing a simple root with a curve: 0
+   what it does give: the lattice M_S = (K_S)^perp in Pic(S) and its orthogonal group,
+48:is isomorphic to the Weyl group of infinite root system of type E10 . A similar
+   which is the Weyl group of E_10 -- the group, not a dictionary from roots to curves.
+
 === the nearest identification that does exist, for reference:
 2264:In Figures 18 and 19 we list the maximal connected elliptic subdiagrams in the Coxeter
    that is the Enriques/K3 dictionary (roots <-> components of a Kulikov model), not the
