@@ -1,0 +1,43 @@
+the LC-09 search for the declarations item 3 of research#760 needs
+date: 2026-11-18T05:34:26Z
+
+=== /opt/mathlib/Mathlib (8311 .lean files)
+     53 CoxeterSystem
+     21 Irrelevant
+
+=== /opt/cslib/Cslib (178 .lean files)
+
+=== the two structural facts
+--- Mathlib's Coxeter material, by file:
+Basic.lean
+Inversion.lean
+Length.lean
+Matrix.lean
+--- any declaration named with a fan, a semifan or a stable pair:
+abbrev BinaryFan
+abbrev Fan
+abbrev binaryFan
+abbrev ofFan
+abbrev toFan
+def BinaryFan
+def Fan
+def binaryFanIsBinaryProduct
+def binaryFanZeroLeft
+def binaryFanZeroLeftIsLimit
+def binaryFanZeroRight
+def binaryFanZeroRightIsLimit
+def extendFan
+def extendFanIsLimit
+def isLimitBinaryFan
+def isLimitEquivFanOfIsThin
+def isLimitFanMkObjOfIsLimit
+def isLimitMapConeBinaryFanEquiv
+def isLimitMapConeBinaryFanOfPreservesKernels
+def isLimitMapConeFanMkEquiv
+    (an empty list above is the finding, not a failure of the search)
+
+=== lean-categories, the library the issue's rule wants the declaration in
+    nothing listed above: no checkout anywhere on this machine
+    LEAN_PATH packages:  Cli LeanSearchClient Qq aesop batteries importGraph mathlib plausible proofwidgets 
+
+PYEXIT=0

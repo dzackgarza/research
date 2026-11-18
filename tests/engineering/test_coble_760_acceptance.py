@@ -81,6 +81,37 @@ def test_item_3_the_conjecture_is_corrected_not_proved() -> None:
     assert "not made" in conjecture or "uncomputed" in conjecture
 
 
+def test_item_3_the_lean_route_and_its_blocker() -> None:
+    """Item 3, second reading: the LC-09 search over what is installed, and the absence it found.
+
+    The acceptance's proof route wants conj:no_moduli_loss as a theorem, which the issue's
+    contestation rule accepts only as a lean-categories declaration after the LC-09 search.  The
+    search has been run (``coble_760-lean-declaration-search-run.txt``): Mathlib carries
+    CoxeterSystem and the quadratic-form and bilinear-form types, carries no occurrence of
+    semifan, semitoroidal, KSBA, stable pair, Enriques, Coxeter fan, Vinberg, fundamental chamber
+    or reflection group, and CSLib carries none of them either; the ``Fan`` declarations Mathlib
+    does have are the categorical BinaryFan, not a toric fan.  Lean's own checker agrees
+    (``coble_760-lean-declaration-probe-run.txt``): the four Coxeter and quadratic-form names
+    elaborate and ``#check @Semifan`` is an unknown identifier.
+
+    So the declaration cannot be built here at all: it needs the lean-categories library, which
+    has no checkout at any of the five paths tried --- including ``~/gitclones/lean-categories``,
+    the location ``computations/scripts/sterk-enriques-cusps/DAG.md`` documents for it --- and is
+    not on LEAN_PATH.
+    """
+    search = (ROOT / "computations/reports/coble_760-lean-declaration-search-run.txt")
+    probe = (ROOT / "computations/reports/coble_760-lean-declaration-probe-run.txt")
+    assert search.exists() and probe.exists(), (search, probe)
+    found = search.read_text(encoding="utf-8")
+    assert "CoxeterSystem" in found
+    for absent in ("Semifan", "semitoroidal", "KSBA", "Enriques", "Vinberg"):
+        assert absent not in found.split("=== the two structural facts")[0], absent
+    assert "no checkout anywhere on this machine" in found
+    checked = probe.read_text(encoding="utf-8")
+    assert "CoxeterSystem" in checked and "QuadraticForm" in checked
+    assert "Unknown identifier `Semifan`" in checked
+
+
 def test_item_4_a_pair_whose_faces_agree() -> None:
     """Item 4: the transcript's face line is the smallest input."""
     text = FACE_RUN.read_text(encoding="utf-8")
