@@ -72,6 +72,33 @@ def test_complete_integral_flag_certificate_manifest(tmp_path):
         audit.verify_integral_shard_manifest([specimen], manifest_path)
 
 
+def test_permanent_integral_flag_release_matches_all_32_shard_digests():
+    """The permanent 541 MB release retains the exact CI-certified archives."""
+    folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
+    manifest = json.loads((folder / "coble_integral_flag_certificate_manifest.json").read_text())
+    release = json.loads((folder / "coble_integral_flag_permanent_release.json").read_text())
+    assert release["schema"] == "coble-integral-flag-permanent-release-v1"
+    assert release["release_url"] == (
+        "https://github.com/dzackgarza/research/releases/tag/coble-integral-flags-v1")
+    assert release["source_commit"] == manifest["source_commit"]
+    assert release["source_workflow"] == manifest["workflow_run"]
+    assert release["source_artifact_id"] == manifest["artifact_id"]
+    assert release["total_edges"] == manifest["total_edges"] == 569160
+    assert len(release["assets"]) == 32
+    assert [a["index"] for a in release["assets"]] == list(range(32))
+    assert len({a["asset_id"] for a in release["assets"]}) == 32
+    assert release["total_archive_bytes"] == sum(a["bytes"] for a in release["assets"])
+    assert release["total_archive_bytes"] == 541965486
+    for asset, source in zip(release["assets"], manifest["shards"]):
+        assert asset["index"] == source["index"]
+        assert asset["name"] == f'shard-{asset["index"]}.jsonl.gz'
+        assert asset["sha256"] == source["file_sha256"]
+        assert asset["bytes"] > 0
+        assert asset["download_url"] == (
+            "https://github.com/dzackgarza/research/releases/download/"
+            f'coble-integral-flags-v1/{asset["name"]}')
+
+
 def test_complete_integral_flag_quotient_ci_record():
     """The archived independent full-flag descent has all 13 quotient fibres."""
     folder = Path(__file__).resolve().parents[2] / "computations" / "reports"
