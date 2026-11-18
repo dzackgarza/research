@@ -112,6 +112,26 @@ def test_item_3_the_lean_route_and_its_blocker() -> None:
     assert "Unknown identifier `Semifan`" in checked
 
 
+def test_item_3_names_the_owner() -> None:
+    """Item 3 stops at an owner in another repository, and this pins where that is recorded.
+
+    The obligation is the publication of lean-categories' `Lattices/Valued/` subtree, the lattice,
+    discriminant and orthogonal-group layer a declaration of the semifan statement would sit on.
+    Two tracked files carry that: `computations/scripts/sterk-enriques-cusps/DAG.md` says the
+    refactor and publication is "tracked as an issue on `lean-categories`, not here", and
+    `docs/theory/hyperbolic-index.md` names the modules (`LeanCategories/Lattices/Valued/`).
+    No issue number is recorded in this repository, and the connector reads this project's one
+    connected repository only, so the number cannot be fetched from here.  That is the named
+    input, not a substitute for it.
+    """
+    dag = " ".join((ROOT / "computations/scripts/sterk-enriques-cusps/DAG.md")
+                   .read_text(encoding="utf-8").split())
+    assert "tracked as an issue on `lean-categories`, not here" in dag
+    index = (ROOT / "docs/theory/hyperbolic-index.md").read_text(encoding="utf-8")
+    assert "LeanCategories/Lattices/Valued/" in index
+    assert "~/gitclones/lean-categories" in dag
+
+
 def test_item_4_a_pair_whose_faces_agree() -> None:
     """Item 4: the transcript's face line is the smallest input."""
     text = FACE_RUN.read_text(encoding="utf-8")
