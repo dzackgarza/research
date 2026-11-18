@@ -224,14 +224,14 @@ def test_coble_level_two_eichler_squares_fail_normal_generation():
 
 
 def test_coble_eichler_normal_relations_have_rank_54_at_level_eight():
-    """Their squares and commutators span 54 independent level-eight classes."""
+    """Their derived lifts persist through the next two 2-adic layers."""
     import json
     from pathlib import Path
     from sage.all import GF, Integers, matrix, identity_matrix
 
     folder = Path(__file__).resolve().parents[2] / "computations/reports"
     data = json.loads((folder / "coble_ambient_twenty_one_generators.json").read_text())
-    ring = Integers(8)
+    ring = Integers(32)
     identity = identity_matrix(ring, 11)
     generators = [matrix(ring, row["matrix_standard"])
                   for row in data["generators"][:18]]
@@ -267,6 +267,7 @@ def test_coble_eichler_normal_relations_have_rank_54_at_level_eight():
             admit(generator * element * inv)
     assert len(basis) == len(queue) == 54
     higher = {}
+    higher_lifts = []
 
     def admit_higher(element):
         assert vector_bits(element, 2) == 0
@@ -277,6 +278,7 @@ def test_coble_eichler_normal_relations_have_rank_54_at_level_eight():
                 bits ^= higher[pivot]
             else:
                 higher[pivot] = bits
+                higher_lifts.append(element)
                 return
 
     for i, element in enumerate(queue):
@@ -284,6 +286,20 @@ def test_coble_eichler_normal_relations_have_rank_54_at_level_eight():
         for earlier in queue[:i]:
             admit_higher(element * earlier * element.inverse() * earlier.inverse())
     assert len(higher) == 54
+    for exponent, level in ((2, 8), (4, 16)):
+        echelon = {}
+        for element in higher_lifts:
+            power = element ** exponent
+            assert vector_bits(power, level // 2) == 0
+            bits = vector_bits(power, level)
+            while bits:
+                pivot = bits.bit_length() - 1
+                if pivot in echelon:
+                    bits ^= echelon[pivot]
+                else:
+                    echelon[pivot] = bits
+                    break
+        assert len(echelon) == 54
 
 
 def test_coble_level_two_relation_words_are_public_kernel_morphisms():

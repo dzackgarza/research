@@ -1515,6 +1515,19 @@ The source-hashed regression `test_coble_eichler_normal_relations_have_rank_54_a
 For $x\in\Gamma(4)$, the homomorphism $x\mapsto(x-I)/4\pmod2$ has kernel $\Gamma(8)$. Starting from the 19 integral relations, the regression retains one actual matrix lift whenever a new independent vector in the image of $\Gamma(2)/\Gamma(4)$ appears. Closing under the 18 Eichler conjugations terminates with 54 lifts. Their squares and commutators lie in $\Gamma(4)$, since the quotient $\Gamma(2)/\Gamma(4)$ is elementary abelian. Reducing the resulting 54 squares and $\binom{54}{2}$ commutators by exact binary elimination yields rank 54, proving the stated lower bound.
 :::
 
+::: {.corollary #cor:coble-eichler-all-higher-congruence-lower-bound title="Uniform rank 54 at every higher power of two"}
+
+Let $H\lhd E$ be the normal closure of the 19 integral Eichler relations of @prop:coble-eichler-squares-obstruction. For **every** integer $k\ge2$, the image of $H\cap\Gamma(2^k)$ in $\Gamma(2^k)/\Gamma(2^{k+1})$ contains an elementary abelian subgroup of rank **54**. Thus the 19 explicit relations give a uniform, infinite tower of independent higher-congruence classes, not merely the level-four computation. This remains a *lower bound* and does not assert equality with the full congruence subgroup at any level.
+:::
+
+::: {.proof}
+By @prop:coble-eichler-level-eight-derived-image, there are 54 elements $h_i\in H\cap\Gamma(4)$ with linearly independent images $(h_i-I)/4\pmod2$. For any $m\ge2$ and $g=I+2^m A$ with integral $A$, direct multiplication gives
+$$
+g^2=I+2^{m+1}(A+2^{m-1}A^2),
+$$
+so $(g^2-I)/2^{m+1}\equiv A\pmod2$. Iterating, $h_i^{2^{k-2}}\in H\cap\Gamma(2^k)$ and their leading matrices modulo two are the same independent 54 matrices for every $k\ge2$. The regression verifies this lifting explicitly at $k=3,4$ using exact arithmetic modulo 32; the formula proves it for all $k$.
+:::
+
 ::: {.proposition #prop:coble-level-two-plane-parabolic title="Generators of the level-two kernel in the integral plane stabilizer"}
 
 In the notation of @thm:coble-plane-stabilizer-image, let $K_P=\Stab_{\Orth(B)}(P)\cap\ker\rho$. The following $26$ integral isometries generate $K_P$:
