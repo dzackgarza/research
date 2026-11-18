@@ -10,10 +10,11 @@ Result
 ------
 The gluing classes are
 
-    r12: p/2 = (-1/2, 1/2)   in the (r, delta) coordinates, mod Z^2
-    r13: p/2 = ( 1/2, 1/2)
+    r12: p/2 = (1/2, 1/2)    in the (r, delta) coordinates, mod Z^2
+    r13: p/2 = (1/2, 1/2)
 
-and since -1/2 = 1/2 mod 1 they are EQUAL in (Q/Z)^2.  So the P side obstructs nothing for either
+(names taken in [0, 1); the raw representatives are (-1/2, 1/2) and (1/2, 1/2), equal mod 1).  So
+they are EQUAL in (Q/Z)^2.  So the P side obstructs nothing for either
 root, and whatever obstructs the extension lives in the complements.
 
 This corrects an earlier version of this record, which reported (0, 0) for both: its 2-division
@@ -63,56 +64,47 @@ S = matrix(ZZ, [vector(ZZ, r) for r in ROOTS]).saturation()   # 10 x 12
 GS = matrix(ZZ, 10, 10, lambda i, j: ip(S[i], S[j]))
 
 def glue(r):
-    rv = vector(ZZ, r); dv = vector(ZZ, delta)
-    # P = span(r, delta) (saturated: they are primitive and orthogonal, both (-2))
-    P = matrix(ZZ, [rv, dv])
-    # coordinates in the S-basis
-    def coords(x):
-        return matrix(QQ, S).transpose().solve_right(vector(QQ, x))
-    cP, cD = coords(rv), coords(dv)
-    # L = P^perp inside S, in S-coordinates: kernel of [GS*cP ; GS*cD]
+    """(gluing class on the P side, complement Gram, gluing vector in complement coordinates)"""
+    rv, dv = vector(ZZ, r), vector(ZZ, delta)
+    cP = matrix(QQ, S).transpose().solve_right(vector(QQ, rv))
+    cD = matrix(QQ, S).transpose().solve_right(vector(QQ, dv))
     func = matrix(ZZ, 2, 10)
     for j in range(10):
         func[0, j] = sum(GS[i, j] * int(cP[i]) for i in range(10))
         func[1, j] = sum(GS[i, j] * int(cD[i]) for i in range(10))
-    K = matrix(ZZ, matrix(ZZ, func).right_kernel_matrix()).saturation()
+    K = matrix(ZZ, matrix(ZZ, func).right_kernel_matrix()).saturation()   # P^perp inside S
     assert K.nrows() == 8, K.nrows()
-    # the index of P + L in S
-    GL = matrix(ZZ, 8, 8, lambda i, j: sum(int(K[i][a]) * GS[a, b] * int(K[j][b]) for a in range(10) for b in range(10)))
+    GL = matrix(ZZ, 8, 8, lambda i, j: sum(int(K[i][a]) * GS[a, b] * int(K[j][b])
+                                           for a in range(10) for b in range(10)))
     d2 = QQ(4) * QQ(GL.det()) / QQ(GS.det())
     assert d2.is_square() and d2.sqrt() == 2, (d2, GL.det())
-    # find v in S with 2v in P + L, i.e. the class of 2v in S/(P+L) is zero but v is not
-    # solve: v = a*r + b*delta + l over QQ with a, b not both integral-half;
-    # equivalent: find v with 2 (v . cP-part) ... simpler: search the 2-division of the class
-    # assemble a basis of span(P, L) in S-coordinates: 2 + 8 = 10 rows -> often full rank
-    B = matrix(QQ, 2 + 8, 10, [list(cP), list(cD)] + [[int(K[i][j]) for j in range(10)] for i in range(8)])
-    # a vector v whose double lands in the span: solve for v in the dual sense
-    # we look for v in S with 2v in lattice(P,L) but v not: check the quotient S/lattice(P,L) has order 2
-    # take v = the sum of the S-basis vectors whose coordinates realise the missing class:
+    B = matrix(QQ, 10, 10, [list(cP), list(cD)] + [[int(K[i][j]) for j in range(10)] for i in range(8)])
+    def in_lattice(cv):
+        try:
+            y = B.transpose().solve_right(vector(QQ, cv))
+        except Exception:
+            return False
+        return all(v in ZZ for v in y)
     from itertools import product
-    found = None
     for combo in product([0, 1], repeat=10):
         if sum(combo) == 0:
             continue
         cv = vector(QQ, combo)
-        # 2v in lattice(P,L)?
-        # solve B^T * x = 2*cv  (x of length 10)
-        try:
-            x = B.transpose().solve_right(2 * cv)
-        except Exception:
+        if in_lattice(cv) or not in_lattice(2 * cv):
+            continue            # trivial class, or not a 2-division at all
+        x = B.transpose().solve_right(2 * cv)
+        if not all(v in ZZ for v in x):
             continue
-        if all(v in ZZ for v in x):
-            found = (cv, x); break
-    assert found, "no 2-division vector found"
-    cv, x = found
-    p_part = [x[0], x[1]]                       # coordinates of p in the (r, delta) basis
-    # a = class of p/2 in P*/P, i.e. the pair (p1/2, p2/2) mod Z^2
-    a = (QQ(p_part[0]) / 2 - (QQ(p_part[0]) / 2).floor(),
-         QQ(p_part[1]) / 2 - (QQ(p_part[1]) / 2).floor())
-    return a, GL.det()
+        p_part = vector(QQ, [x[0], x[1]])
+        l_coords = sum(x[2 + i] * vector(QQ, K[i]) for i in range(8))
+        cL = matrix(QQ, K).transpose().solve_right(vector(QQ, l_coords))
+        a = tuple(QQ(p_part[i]) / 2 - (QQ(p_part[i]) / 2).floor() for i in range(2))
+        return a, GL, vector(QQ, cL)
+    raise RuntimeError("no nontrivial 2-division found")
 
-a12, d12 = glue(r12)
-a13, d13 = glue(r13)
+a12, GL1, cL1 = glue(r12)
+a13, GL2, cL2 = glue(r13)
+d12, d13 = GL1.det(), GL2.det()
 print("complement determinant inside S: r12 -> %d, r13 -> %d" % (d12, d13))
 print("gluing class in the (r, delta) coordinates, as p/2 mod Z^2:")
 print("  r12: %s" % (a12,))
@@ -132,4 +124,5 @@ elif all((QQ(a12[i]) - QQ(a13[i])) in ZZ for i in range(2)):
 else:
     print("RESULT: the gluing classes differ in (Q/Z)^2, so no isometry of S carries r12 to r13")
     print("while fixing delta.")
+print()
 print("PYEXIT=0")

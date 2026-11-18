@@ -1,7 +1,7 @@
 complement determinant inside S: r12 -> -256, r13 -> -256
 gluing class in the (r, delta) coordinates, as p/2 mod Z^2:
-  r12: (0, 0)
-  r13: (0, 0)
+  r12: (1/2, 1/2)
+  r13: (1/2, 1/2)
 
 the classes are equal mod Z^2: True
 
@@ -9,5 +9,6 @@ RESULT: the P side obstructs nothing -- the gluing classes agree in (Q/Z)^2 -- s
 is reduced to whether an isometry of the two complements (which exist, and which the
 library exhibits explicitly) carries one complement gluing class onto the other.  That
 comparison is not made here.
+
 PYEXIT=0
 exit=0
