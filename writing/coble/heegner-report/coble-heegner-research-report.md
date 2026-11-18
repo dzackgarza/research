@@ -1960,7 +1960,7 @@ What is settled below is the shape of that complement and the published status o
 
 The unpolarized form of the open identification is published: [@DK13, Prop. 3.2, printed p. 513] identifies the moduli space $\mcm_\Co$ of classical Coble surfaces with an open subset of $\bD(N)/\Orth(N)$, where $N=\langle2\rangle\oplus E(2)$ with $E=U\oplus E_8$ [@DK13, (3.6), printed p. 513], and that $N$ is $T_\Co$ by @prop:coble-transcendental.
 Two qualifications belong with it.
-The group is the whole orthogonal group, so the quotient is $F^{\mathrm{un}}_\Co=\bD(T_\Co)/\Orth(T_\Co)$ and not the $\Gamma_{\Co,2}^{\mathrm{dir}}\backslash\bD_\Co$ of the clause: the passage from $\Orth(T_\Co)$ to the finite-index subgroup $\Gamma^{\mathrm{dir}}_{\Co,2}=\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ of @cor:four-groups-decided is @prob:B25, and it is established there only up to the two-element ambiguity its proof records.
+The group is the whole orthogonal group, so the quotient is $F^{\mathrm{un}}_\Co=\bD(T_\Co)/\Orth(T_\Co)$ and not the $\Gamma_{\Co,2}^{\mathrm{dir}}\backslash\bD_\Co$ of the clause: the passage from $\Orth(T_\Co)$ to the finite-index subgroup $\Gamma^{\mathrm{dir}}_{\Co,2}$ of @def:direct-group, which is not inside $\Orth^+(T_\Co)$ (@lem:minus-id-in-direct-group, @warn:direct-group-orth-plus), is @prob:B25, and it is established there only up to the two-element ambiguity its proof records.
 And the Coble surfaces of [@DK13, §3, printed p. 513] are the blowups of ten nodes of an irreducible plane sextic, so the proposition covers the unpolarized Coble moduli space and not the labeled tuple of @sec-labeled-lattice-data.
 
 The complement is not empty and contains the whole root arrangement: @thm:direct-period-misses-root-walls.
@@ -2135,6 +2135,49 @@ In the situation of @prop:one-node-family, let $(X_b,\psi_b)$ and $(X_{b'},\psi_
 The transition isometry $g = \psi_{b'}^{-1}\psi_b\colon H^2(X_b,\ZZ)\iso H^2(X_{b'},\ZZ)$ is a Hodge isometry, the periods agreeing. The class $A = 2H-\alpha\in\lkt$ is ample on every member of the construction: $H$ is nef and big and $\alpha$ is effective by @prop:tuple-of-the-construction, part 3, and in the model $2H_b-\alpha_b = \widehat\pi_b^*(-K_{\widehat Y})$ with $-K_{\widehat Y}$ ample and $\widehat\pi_b$ finite, as in the proof of @prop:one-node-period-image. So $g$ carries the ample class $\psi_b^{-1}A$ to the ample class $\psi_{b'}^{-1}A$, and the strong Torelli theorem [@BHPV04, Ch. VIII, Thm. 11.1] makes $g$ the pullback of an isomorphism $\varphi\colon X_{b'}\to X_b$, that is $g = \varphi^*$. Hence $\psi_{b'}^{-1}\psi_b = \varphi^*$ and $\psi_{b'} = \psi_b(\varphi^*)^{-1}$, so the two marked tuples agree and their chambers correspond.
 
 This is not in conflict with @thm:chamber-clause-fails: that theorem compares two members with different periods that share their labels, and shows that the labels alone do not determine the chamber. The chamber is a function of the marked period — the datum the moduli stack carries — and not of the labels alone.
+:::
+
+::: {.lemma #lem:minus-id-in-direct-group title="the label centralizer contains $-\id_{T_\Co}$, which is not in $\Orth^+$"}
+
+Let $b$ be a one-node member of @prop:one-node-family with $\Pic(\widehat X_b) = S_{\Co,b}$, and let $Z=Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha,\mcc}$ be the centralizer of @def:direct-group at that member.
+Then
+
+1. $g\definedas\id_{S_\Co}\oplus(-\id_{T_\Co})$ is an isometry of $\lkt$ lying in $Z$, so its image $-\id_{T_\Co}$ lies in $\Gamma^{\mathrm{dir}}_{\Co,2}$;
+
+2. $-\id_{T_\Co}\notin\Orth^+(T_\Co)$, so $\Gamma^{\mathrm{dir}}_{\Co,2}$ is not contained in $\Orth^+(T_\Co)$, and the image of the centralizer is taken in $\Orth(T_\Co)$.
+:::
+
+::: {.proof}
+*The isometry.*
+$g$ preserves $S_\Co$ and $T_\Co$ and is an isometry of each.
+The lattice $\lkt$ is an overlattice of $S_\Co\oplus T_\Co$ glued along a subgroup of $A_{S_\Co}\oplus A_{T_\Co}$, and an isometry of the two summands extends to the overlattice exactly when it preserves that subgroup (@thm:nikulin-gluing; [@Nik80, Prop. 1.4.1]).
+Both discriminant groups are $2$-torsion: $A_{T_\Co}\cong(\bZ/2)^{11}$ by @prop:coble-transcendental, and $A_{S_\Co}\cong(\bZ/2)^{11}$ because $S_\Co\cong\latI_{1,10}(2)$ (@prop:coble-invariant-lattice) is the lattice of [@DK13, §3, printed p. 511], whose discriminant group is stated there to be $(\bZ/2\bZ)^{11}$.
+So $g$ acts on $A_{S_\Co}\oplus A_{T_\Co}$ as $(-\id,\id)=(\id,\id)$, that is trivially, and hence preserves every subgroup; so $g\in\Orth(\lkt)$.
+
+*The labels.*
+$I_\Co$ acts by $+\id$ on $S_\Co$ and by $-\id$ on $T_\Co$ (@cons:reflection-twist, @prop:coble-transcendental), and $g$ acts by the same two scalars, so $gI_\Co=I_\Co g$.
+$I_{\mathrm{dP}}$ commutes with $I_\Co$, hence preserves each of the two lattices, and $g$ is a scalar on each, so $gI_{\mathrm{dP}}=I_{\mathrm{dP}}g$.
+$H$ and $\alpha$ lie in $S_\Co$, both being fixed by $I_\Co$ (@sec-labeled-lattice-data), and $g$ is the identity on $S_\Co$, so $gH=H$ and $g\alpha=\alpha$.
+For the chamber: at this member $\Delta_b\subseteq S_{\Co,b}$ and $\mcc_b$ is cut out of $\mathcal C_b$ by the sign conditions of @thm:chamber-pinned-by-labels, parts (1) and (2), and $g$ is the identity on $S_{\Co,b}$, hence on $\mathcal C_b\subseteq\Pic(\widehat X_b)\otimes\RR$, so it preserves $\mcc_b$; that is part (3) of the same theorem applied to $\id\in\Orth(S_{\Co,b})$, whose hypothesis at $H_b$ and $\alpha_b$ it meets.
+So $g\in Z$, and its image in $\Orth(T_\Co)$ is $-\id_{T_\Co}$.
+
+*The positive cone.*
+By [@AEGS25, §5.1, printed p. 609], $O^+(\Lambda)$ is the subgroup of index $2$ of $O(\Lambda)$ preserving $C$, one of the two halves of $\set{v\in\Lambda_\RR:v^2>0}$.
+The lattice $T_\Co$ has signature $(2,9)$ (@prop:coble-transcendental), so its positive part is $2$-dimensional and $\set{v\in(T_\Co)_\RR:v^2>0}$ has two halves, with $-v$ in the half opposite to $v$.
+So $-\id_{T_\Co}$ exchanges the halves and is not in $\Orth^+(T_\Co)$; with the first part, $\Gamma^{\mathrm{dir}}_{\Co,2}$ contains an element outside $\Orth^+(T_\Co)$.
+:::
+
+::: {.warning #warn:direct-group-orth-plus title="the group of @def:direct-group is not inside $\Orth^+$, and the coset recorded at @cor:four-groups-decided has to be re-read"}
+By @lem:minus-id-in-direct-group the image of the label centralizer contains $-\id_{T_\Co}$, which is not in $\Orth^+(T_\Co)$.
+Three statements on this page therefore cannot stand as they are written; they are recorded here rather than rewritten, because the unit that owns them is not this one.
+
+1. The target of the image in @def:direct-group is written $O^+(T_\Co)$; the image lies in $\Orth(T_\Co)$ and is not contained in $O^+$.
+
+2. The sentence after that definition, the paragraph resolving @prob:group-identification, and @cor:four-groups-decided identify $\Gamma^{\mathrm{dir}}_{\Co,2}$ with $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$. What the two inclusions of @prop:direct-eq-heegner give is $\Gamma^{\mathrm{dir}}_{\Co,2}\intersect\Orth^+(T_\Co)=\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ together with $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)\subseteq\Gamma^{\mathrm{dir}}_{\Co,2}$, and with $-\id_{T_\Co}$ in $\Gamma^{\mathrm{dir}}_{\Co,2}$ the second is not an equality: the group that the four-group statement names is the index-two subgroup $\Gamma^{\mathrm{dir}}_{\Co,2}\intersect\Orth^+(T_\Co)$.
+
+3. The element $-\id_{T_\Co}$ lies in $\Gamma^{\mathrm{cong}}_{\Co,2}$, since it acts trivially on $A_{T_\Co}$; hence $\Gamma^{\mathrm{cong}}_{\Co,2}$ meets both halves of $\Orth(T_\Co)$, and its cosets modulo $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ are exactly two. With the inclusion $\Gamma^{\mathrm{dir}}_{\Co,2}\subseteq\Gamma^{\mathrm{cong}}_{\Co,2}$ of @prop:direct-eq-heegner and $-\id_{T_\Co}\in\Gamma^{\mathrm{dir}}_{\Co,2}$, the group $\Gamma^{\mathrm{dir}}_{\Co,2}$ meets both cosets, so $\Gamma^{\mathrm{dir}}_{\Co,2}=\Gamma^{\mathrm{cong}}_{\Co,2}$, and the excess that @cor:four-groups-decided records as the $s_\zeta$-coset is not an excess: $s_\zeta$ lies in that same nontrivial coset, and whether it equals $-\id$ modulo $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ is a computation of the joint spinor image.
+
+The repair of (1) to (3) belongs to research#663 (A20, the four arithmetic groups) and research#751 (the joint discriminant, determinant and spinor image); this warning states the defect and its reason and makes no repair.
 :::
 
 ::: {.theorem #prob:B25 title="B2.5. Direct monodromy theorem — proved"}
