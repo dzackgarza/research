@@ -1,36 +1,30 @@
-the lift of sigma [8, 6, 5, 4, 3, 2, 7, 1, 9, 10, 11, 12, 14, 13]: solve g r_i = r_sigma(i) for integral g
-system: 168 equations, 144 unknowns, rank 120
-consistent over QQ: True (0.0 s)
-the particular solution is integral: True
-solution space dimension: 24
-form-preserving: False
-maps every root correctly: True
-delta -> [1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] (== delta: True, == -delta: False)
+the cusp symmetries that lift, and what each one does
+root span rank 10; complement rank 2; the two glue into T_En with index 2
 
-=== the complement of the root span, and whether the lattice splits over it
-kernel of the roots' pairing rows has rank 2
-root span rank 10
-det of the root span's Gram: -1024
-det of the complement's Gram: -4
-product of determinants: 4096   (det T_En = 1024)
-the lattice splits as an orthogonal direct sum over them: False
+=== sigma_13_14  [8, 6, 5, 4, 3, 2, 7, 1, 9, 10, 11, 12, 14, 13]
+   g integral: True
+   g preserves the form: True
+   g maps every printed root as the permutation says: True
+   g(delta) = delta: True
+   g(eta_5) = eta_5: True
+   g exchanges the lifts of labels 13 and 14: True
+   => g lies in Gamma_Co,2 and fixes eta_5, so roots 13 and 14 are
+      Gamma_Co,2-equivalent at cusp 5.  THE WITNESS IS g ITSELF.
 
-=== the gluing class, and whether sigma preserves it
-det of the glued sublattice (index in T_En): 2
-the gluing class is (h0, hK) = (['0', '1/2', '0', '0', '0', '0', '0', '0', '0', '0'] | ['0', '0'])
-phi on the span: integral True, determinant -1, C F^T = D: True
-h0 = ['0', '1/2', '0', '0', '0', '0', '0', '0', '0', '0']
-phi(h0) = ['0', '1/2', '0', '0', '0', '0', '0', '0', '0', '0']
-phi fixes the gluing class: True
+=== sigma_12_13  [1, 10, 8, 6, 5, 4, 9, 3, 7, 2, 14, 13, 12, 11]
+   g integral: True
+   g preserves the form: True
+   g maps every printed root as the permutation says: True
+   g(delta) = delta: False
+   g(eta_5) = eta_5: True
+   g exchanges the lifts of labels 12 and 13: True
+   => g is an isometry of T_En exchanging the two roots, but it moves delta's
+      label to 14: it is not in Gamma_Co,2, so it witnesses only that the two
+      roots are in one O(T_En)-orbit.
 
-=== the witness, built and checked as an explicit matrix (the arbiter of the above)
-g is integral: True
-g preserves the form: True
-g maps every root as sigma says: True
-g(delta) = delta: True
-g(eta_5) = eta_5: True
-g(r_13) = r_14 and g(r_14) = r_13: True
-
-WITNESS: g is an integral isometry of T_En fixing delta and eta_5 and exchanging the
-lifts of labels 13 and 14, so roots 13 and 14 are Gamma_Co,2-equivalent at cusp 5.
+VERDICT: roots 13 and 14 are Gamma_Co,2-equivalent (the first witness).  Roots 12 and 13
+are in one O(T_En)-orbit (the second), which is not the group of the question; no symmetry
+of the diagram identifies 12 with 13 while preserving the Coble root, so that pair still
+needs the reduction rather than a symmetry.
+elapsed 0 s
 PYEXIT=0

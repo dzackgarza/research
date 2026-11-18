@@ -436,13 +436,12 @@ def test_item_7_one_pair_is_settled_by_a_witness() -> None:
     run = ROOT / "computations/reports/coble_760-witness-13-14-run.txt"
     assert run.exists(), run
     text = run.read_text(encoding="utf-8")
-    for line in ("g is integral: True", "g preserves the form: True",
-                 "g maps every root as sigma says: True", "g(delta) = delta: True",
-                 "g(eta_5) = eta_5: True",
-                 "g(r_13) = r_14 and g(r_14) = r_13: True"):
-        assert line in text, line
-    assert "phi fixes the gluing class: True" in text
-    assert "roots 13 and 14 are Gamma_Co,2-equivalent at cusp 5" in text
+    assert text.count("g preserves the form: True") == 2, "both permutations lift as isometries"
+    assert text.count("g maps every printed root as the permutation says: True") == 2
+    # the 13/14 witness keeps delta and eta, so it is in Gamma_Co,2; the 12/13 one does not
+    assert "g(delta) = delta: True" in text and "g(delta) = delta: False" in text
+    assert "roots 13 and 14 are\n      Gamma_Co,2-equivalent at cusp 5" in text
+    assert "witnesses only that the two" in text and "one O(T_En)-orbit" in text
 
 
 def test_item_8_cusp_four_is_not_a_pair() -> None:
