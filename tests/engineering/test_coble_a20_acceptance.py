@@ -375,6 +375,24 @@ def test_absorbed_ri_is_the_index_of_the_reflection_group():
     assert "@prop:gamma-co-reflective-set" in item3
 
 
+def test_absorbed_ri_names_the_input_that_would_settle_it():
+    """(RI) as an entry the issue can be split on: the statement, and what it needs.
+
+    Decides: the index question names the missing input -- a finite presentation of W(T_Co) with
+    its chamber -- in the owning question, and the register points at that question instead of
+    restating it.  Without this the entry states a question and no way to attack it.
+    """
+    page = _text(PAGE)
+    qst = _block(page, "{.question #qst:gamma-co-reflection-index")
+    assert "What would settle it is a finite set of reflections generating $W(T_\\Co)$" in qst
+    assert "a Coxeter presentation of $W(T_\\Co)$" in qst
+    assert "exactly when that chamber has finite volume" in qst
+    assert "@prop:gamma-co-reflective-set" in qst
+    item3 = next(line for line in _text(OPEN_PROBLEMS).splitlines()
+                 if line.startswith("3. Let $W(T_\\Co)$"))
+    assert "@qst:gamma-co-reflection-index" in item3
+
+
 def test_absorbed_rel_is_the_splitting_question():
     """(REL): a section of rho_T normalizing W(T_Co) and a homomorphism modulo it."""
     q = _text(OPEN_PROBLEMS)

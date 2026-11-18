@@ -2270,4 +2270,7 @@ With (2) this excludes the two positive squares and the long roots, leaving exac
 
 ::: {.question #qst:gamma-co-reflection-index title="The index of the short-root reflection group"}
 Is the index $[\widetilde\Orth^+(T_\Co) : W(T_\Co)]$ finite, and if so, what is it?
+What would settle it is a finite set of reflections generating $W(T_\Co)$ together with the chamber they cut in the space of positive definite $2$-planes of $T_\Co\tensor_\ZZ\RR$, namely $\Orth(T_\Co\tensor_\ZZ\RR)/\Orth(2)\times\Orth(9)$ — equivalently a Coxeter presentation of $W(T_\Co)$.
+The reflective set is known as a set (@prop:gamma-co-reflective-set), but not as a finite presentation, and no operation used on this page produces one.
+The group $\widetilde\Orth^+(T_\Co)$ has finite covolume, so the index is finite exactly when that chamber has finite volume, and it is then the ratio of the two covolumes.
 :::
