@@ -280,6 +280,25 @@ Then, with $I=V-J$, $W_J=\langle w_j\mid j\in J\rangle$ and $L=\Union_{h\in W_J}
 *Step 3: the properties.* Assertions (2), (3) and (4) are [@AET23, Prop. 4.17, printed pp. 26--27] and [@AET23, Cor. 4.18, printed p. 27], in whose notation $I$ is the set of active and $J$ the set of inactive mirrors, with the fan criterion of [@AE22, Rem. 9.11, printed p. 57] and [@AET23, Rem. 4.19, printed p. 27]. The first clause of (W) is what makes Step 2 legitimate: without it a semifan may cut the interior of a chamber, and @prop:semifan-coarsening-fails exhibits exactly that.
 :::
 
+::: {.proposition #prop:semifan-coarsening-extension title="(W) is the extension of the universal family over the Coxeter toroidal compactification"}
+
+Let $R$ be a recognizable polarizing divisor for $F_S$ and let $\eta$ be a $0$-cusp. Then the coarsening clause of (W) --- that every cone of $\mcf_{R,\eta}$ is a union of cones of the Coxeter semifan, equivalently that the Coxeter fan $\mcf^{\mathrm{cox}}$ refines $\mcf_{R,\eta}$ --- is equivalent to each of the following:
+
+1. the family of stable pairs $(X,\eps R)$ extends from $F_S$ to a family of stable pairs over the toroidal compactification $\overline F^{\mcf^{\mathrm{cox}}}$;
+2. there is a morphism $\overline F^{\mcf^{\mathrm{cox}}}\to\overline F^{\mcf_R}$ over the Baily--Borel compactification, and the family of item 1 is the pullback under it of the family over $\overline F^{\mcf_R}$.
+:::
+
+::: {.proof}
+
+The family over $\overline F^{\mcf_R}$ is what the identification of @thm:semifan-stratum supplies, $\overline F^{\mcf_R}$ being the normalization of the KSBA compactification.
+
+*Item 1 implies item 2.* A family of stable pairs over $\overline F^{\mcf^{\mathrm{cox}}}$ restricts to the universal family on $F_S$, so it and the universal family are classified by the same map to the moduli of stable pairs, which therefore extends over the boundary; that map is the required morphism, and the family is its pullback.
+
+*The coarsening implies item 2.* A refinement of semifans gives a morphism of the semitoroidal compactifications, which is @prop:semifan-refinement-morphism [@AE23, Thm. 5.13; @Loo02, Lem. 6.6].
+
+*Item 1 implies the coarsening.* A family of stable pairs over $\overline F^{\mcf^{\mathrm{cox}}}$ is flat, so its combinatorial type is locally constant on the base, hence constant on each boundary stratum of the toroidal compactification, the strata being connected. By @thm:semifan-stratum the cones of $\mcf_{R,\eta}$ are the loci of constant combinatorial type, so every cone of $\mcf^{\mathrm{cox}}$ lies in a cone of $\mcf_{R,\eta}$.
+:::
+
 ::: {.proposition #prop:semifan-coarsening-fails title="(W) is not automatic: the rational-curve divisor on the elliptic locus"}
 
 Let $F$ be the moduli space of elliptic K3 surfaces with section $s$ and singular fibers $f_1,\dots,f_{24}$, and let $R=s+m\sum_{i=1}^{24}f_i$ with $m\ge1$. Then the semifan of the stable-pair compactification of $F$ for the divisor $R$ is the rational-curve fan $\mcf_{\mathrm{rc}}$ of [@ABE22, §3], and $\mcf_{\mathrm{rc}}$ does not coarsen the Coxeter semifan: it subdivides each chamber of $\mcf^{\mathrm{cox}}$ by the four hyperplanes $\beta_L^\perp,\gamma_L^\perp,\beta_R^\perp,\gamma_R^\perp$ into nine cones, and none of the four is the mirror of a root.
@@ -315,7 +334,7 @@ Hypothesis (W) of @thm:semifan-recognizable-divisor holds, with the following $I
 
 ::: {.proof}
 
-In each case the cited statement identifies the semitoroidal compactification for the displayed semifan with the normalization of the stable-pair compactification, and exhibits it as a coarsening of the Coxeter fan with the displayed split: (1) [@AE22, Def. 9.5, printed p. 54] with [@AE22, Thm. 9.10, printed p. 56]; (2) [@AET23, §4D, printed p. 27] with [@AET23, Thm. 8.2, printed p. 50]; (3) [@AEGS25, Lemma 5.5 and Thm. 5.9, printed p. 611]. The second clause of (W) is the root-level declaration of relevance in each of the three definitions: the cones of each semifan are unions of Coxeter chambers, and the chambers are merged exactly across the mirrors of the irrelevant roots. Where a source states its diagram for the $(-2)$-roots alone, its coarsening is a coarsening of the full diagram too: no semifan that coarsens the $(-2)$-fan has a wall along the mirror of a long root, since such a wall would be a union of $(-2)$-facets lying in one hyperplane, and that hyperplane is then a $(-2)$-mirror.
+In each case the cited statement identifies the semitoroidal compactification for the displayed semifan with the normalization of the stable-pair compactification, and exhibits it as a coarsening of the Coxeter fan with the displayed split: (1) [@AE22, Def. 9.5, printed p. 54] with [@AE22, Thm. 9.10, printed p. 56]; (2) [@AET23, §4D, printed p. 27] with [@AET23, Thm. 8.2, printed p. 50]; (3) [@AEGS25, Lemma 5.5 and Thm. 5.9, printed p. 611]. Each source also supplies the family and not only the comparison of fans, so (W) is decided there in the form of @prop:semifan-coarsening-extension: in (2) it is the sentence of the abstract of [@AET23], "the universal family of polarized K3 surfaces of degree 2 can be extended to a flat family of stable KSBA pairs $(X,\eps R)$ over the toroidal compactification associated to the Coxeter fan"; in (1) the domination of $\overline F_S^{\mcf_{R,\eta}}$ by the Coxeter compactifications in [@AE22, Thm. 9.10, printed p. 56]; in (3) the family over the compactified moduli stack constructed in the proof of [@AEGS25, Thm. 5.9, printed p. 612]. The second clause of (W) is the root-level declaration of relevance in each of the three definitions: the cones of each semifan are unions of Coxeter chambers, and the chambers are merged exactly across the mirrors of the irrelevant roots. Where a source states its diagram for the $(-2)$-roots alone, its coarsening is a coarsening of the full diagram too: no semifan that coarsens the $(-2)$-fan has a wall along the mirror of a long root, since such a wall would be a union of $(-2)$-facets lying in one hyperplane, and that hyperplane is then a $(-2)$-mirror.
 :::
 
 ::: {.remark #rmk:semifan-not-a-fan}
@@ -332,9 +351,9 @@ Let $F$ parameterize elliptic K3 surfaces with section $s$ and singular fibers $
 
 Two questions, and together they are what @thm:semifan-stratum and @thm:semifan-recognizable-divisor leave open.
 
-1. Is there a **recognizable** polarizing divisor whose semifan does not coarsen the Coxeter semifan, that is, for which hypothesis (W) fails? @prop:semifan-coarsening-fails exhibits a polarizing divisor with that property --- the elliptic divisor $s+m\sum_i f_i$, proportional to the rational-curve divisor on that locus --- but [@ABE22] does not assert that this divisor is recognizable, so the question for recognizable divisors is not decided by that computation.
+1. Is there a **recognizable** polarizing divisor whose semifan does not coarsen the Coxeter semifan? By @prop:semifan-coarsening-extension this is the question whether, for a recognizable $R$, the universal family of stable pairs fails to extend over the Coxeter toroidal compactification while some semitoroidal compactification normalizes the KSBA compactification. @prop:semifan-coarsening-fails exhibits a polarizing divisor whose family stops at the finer fan $\mcf_{\mathrm{rc}}$, the elliptic divisor $s+m\sum_i f_i$, proportional to the rational-curve divisor on that locus; but [@ABE22] does not assert that this divisor is recognizable, and no other source read does.
 
-2. For $R_{\rcop}$ on $F_{2d}$, which is recognizable for all $d$ [@AE23], which split $I\sqcup J$ does $\mcf_{R_{\rcop}}$ induce at each $0$-cusp, if (W) holds there at all --- equivalently, across which mirrors of the Coxeter diagram does the combinatorial type of the KSBA-stable limits of the pairs $(X,\eps R_{\rcop})$ stay constant?
+2. For $R_{\rcop}$ on $F_{2d}$, which is recognizable for all $d$ [@AE23], which split $I\sqcup J$ does $\mcf_{R_{\rcop}}$ induce at each $0$-cusp, if (W) holds there at all --- equivalently, across which mirrors of the Coxeter diagram does the combinatorial type of the KSBA-stable limits of the pairs $(X,\eps R_{\rcop})$ stay constant, equivalently whether the universal family extends over the Coxeter toroidal compactification.
 
-No cone of $\mcf_{R_{\rcop}}$ is recorded in any source read: [@AET23] computes the stable limits of the pairs $(X,\eps R)$ for the ramification divisor $R\in|3L|$, and [@AE22] those of $(X,\eps C_g)$, in both cases a ramification divisor and not $R_{\rcop}$. The second question is not a matter for more prose: it is the computation of $\bS_{R_{\rcop}}$, and the elliptic locus of @prop:semifan-coarsening-fails is the only computation of a semifan for a rational-curve divisor in the sources read.
+No cone of $\mcf_{R_{\rcop}}$ is recorded in any source read: [@AET23] computes the stable limits of the pairs $(X,\eps R)$ for the ramification divisor $R\in|3L|$, and [@AE22] those of $(X,\eps C_g)$, in both cases a ramification divisor and not $R_{\rcop}$. Question 2 is therefore the computation of $\bS_{R_{\rcop}}$ and nothing further, and the only computation of a semifan for a rational-curve divisor in the sources read is the elliptic locus of @prop:semifan-coarsening-fails. Question 1 needs an input of a different kind: a recognizability proof for one of the polarizing divisors whose semifan is computed and does not coarsen the Coxeter fan.
 :::
