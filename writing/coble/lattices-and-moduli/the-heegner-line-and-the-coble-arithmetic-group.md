@@ -1672,7 +1672,7 @@ There is a **56-element ordinary generating family** $S\subset\Gamma(2)$, given 
 $$
 \generators{S}\,\Gamma(16)=\Gamma(2).
 $$
-In fact $S$ consists of the 26 proved generators of the integral level-two plane stabilizer $K_P$ from @prop:coble-level-two-plane-parabolic, together with 30 explicitly selected conjugates $g_i k_j g_i^{-1}$ for $10\le i\le15$ and $k_j\in K_P$, where $g_i$ are the published ambient Eichler generators. The 56 matrices are **ordinary generators of the finite congruence quotient**, not asserted to generate the entire infinite group $\Gamma(2)$; this distinction is essential for the lattice-database `generator_morphisms` field.
+In fact $S$ consists of the 26 proved generators of the integral level-two plane stabilizer $K_P$ from @prop:coble-level-two-plane-parabolic, together with 30 explicitly selected conjugates $g_i k_j g_i^{-1}$ for $10\le i\le15$ and $k_j\in K_P$, where $g_i$ are the published ambient Eichler generators. The 56 matrices are **ordinary generators of the finite congruence quotient**, not asserted to generate the entire infinite group $\Gamma(2)$; this distinction is essential for the lattice-database `generator_morphisms` field. Moreover, **56 is a sharp lower bound for the number of ordinary generators of $\Gamma(2)$**: its quotient $\Gamma(2)/\Gamma(4)\cong(\ZZ/2)^{56}$ requires at least 56 generators. Thus this family has the smallest cardinality any complete ordinary generating family could have, although its completeness as an infinite generating family has not been proved.
 :::
 
 ::: {.proof}
