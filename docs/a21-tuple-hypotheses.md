@@ -292,10 +292,19 @@ are:
 * the label `$S_{\mathrm{dP}}\cong U(2)$` of `@prop:del-pezzo-placement`,
   `@prop:no-rank-one-automorphism` and `@prop:rank-two-slot-boundary` is *not* the type of the
   del Pezzo involution this construction produces, so those results do not close A21;
-* the rejection of the authored tuple asserted in earlier rounds is withdrawn, and A21 is open
-  for the tuples of the construction: what is missing is the saturation of
-  `$\pi^*\Pic(\mathbf P^1\times\mathbf P^1)\perp\bigoplus\ZZ D_g$` in
-  `$S_{\mathrm{dP}}$` (containment with equal rank is not equality), the same for `$S_\Co$`,
-  and the geometry of the slot on this tuple — in particular whether $H$ and the root span
-  `$S_\Co\cap S_{\mathrm{dP}}$`, and the chamber obligation, which the later sections of this
-  file record as undischarged.
+* the rejection of the authored tuple asserted in earlier rounds is withdrawn and stays
+  withdrawn — the tuples of the construction exist and satisfy the five authored bullets; and
+  **A21 is false for them**, decided in the negative in this round rather than left open. The
+  chamber obligation is refuted by `@thm:chamber-clause-fails` in
+  `writing/coble/heegner-report/coble-heegner-research-report.md`: two one-node members
+  (`computations/reports/coble_a21_chamber_fails.py`, transcript `-run.txt`) whose labels are
+  conjugate and whose chambers no label-preserving isometry matches, the invariant being the
+  number of `$(-2)$`-classes of `$H$`-degree `$1$`, which is `$0$` for one member and `$4$` for
+  the other. The multi-node locus is refuted independently of any chamber by
+  `@prop:node-count-invariant`: `$S_{\mathrm{dP}}$` has rank `$k+2$`, and both `$k=1$` and
+  `$k=2$` occur, so tuples from different node strata are never conjugate. What is still open in
+  this file's ledger is only the saturation of
+  `$\pi^*\Pic(\mathbf P^1\times\mathbf P^1)\perp\bigoplus\ZZ D_g$` in `$S_{\mathrm{dP}}$` for
+  `$k\ge2$` (`@qst:del-pezzo-saturation-higher-k`; settled for `$k=0,1$` by
+  `@prop:det-saturation-del-pezzo`), which is a lattice question no reading of A21 depends on —
+  and the geometry of the slot on this tuple, unchanged.

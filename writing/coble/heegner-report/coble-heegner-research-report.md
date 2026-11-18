@@ -588,7 +588,7 @@ where
 
 - the product $I_{\Co}I_{\mathrm{dP}}$ has the required symplectic character.
 
-::: {.problem #prob:coble-rigidity title="Required theorem (labeled Coble rigidity)"}
+::: {.problem #prob:coble-rigidity title="Labeled Coble rigidity"}
 Any two tuples $\mathfrak L_{\Co,2}$ arising from the direct projective construction are conjugate by an element of $O(L_{K3})$ preserving the labels, the degree-$4$ class, the effective root, and the chosen chamber.
 :::
 
@@ -596,10 +596,13 @@ This is stronger than uniqueness of a primitive embedding of $S_{\Co}$ into $L_{
 It is the Coble analogue of the AEGS embedding-rigidity lemma and is needed before any direct period quotient can be declared coordinate independent.
 
 The tuple of the direct projective construction is @prop:tuple-of-the-construction.
-On the one-node locus its labels are conjugate (@thm:a21-labels), and its chamber clause is @qst:chamber-clause-one-node.
 
-Of the Coble-to-Enriques instance that A20 item 2 reads this problem for, the lattice labels are now settled by an object and not only by an argument: @prop:coble-enriques-ambient-isometry builds $L_{K3}$, the Coble and Enriques primitive embeddings with their marked classes, and the integral isometry of $L_{K3}$ carrying one labelled datum to the other, and checks the labels pointwise.
-What that leaves of the problem above is the chamber $\mcc$ — which is the same open question as the fourth bullet, not a separate one — and the multi-node locus.
+The problem above is **false as stated**, and it fails in two independent ways, both decided here rather than deferred.
+On the one-node locus the labels, the degree-$4$ class and the root are conjugate (@thm:a21-labels), and the chamber clause nevertheless fails: @thm:chamber-clause-fails exhibits two one-node members whose tuples satisfy all five conditions above and whose labels are conjugate, but which no isometry carrying the labels carries one chamber onto the other.
+Independently of any chamber, @prop:node-count-invariant shows that one-node and two-node members of the construction both occur and that no isometry of $\lkt$ carries the tuple of one to the tuple of the other, since the invariant lattice of $I_{\mathrm{dP}}$ has rank $k+2$; so the blanket quantifier over tuples of the construction fails at the one-node/two-node boundary before the chamber is reached.
+
+Of the Coble-to-Enriques instance that A20 item 2 reads this problem for, the lattice labels are settled by an object and not only by an argument: @prop:coble-enriques-ambient-isometry builds $L_{K3}$, the Coble and Enriques primitive embeddings with their marked classes, and the integral isometry of $L_{K3}$ carrying one labelled datum to the other, and checks the labels pointwise.
+That comparison stands on its own; what is withdrawn is its reading as the Coble-to-Enriques instance of a rigidity theorem for the Coble tuple, the statement it would be read from being false.
 
 ::: {.lemma #lem:one-node-picard-rank title="the invariant lattices of a one-node member"}
 Let $b$ be a one-node member of @prop:one-node-family.
@@ -681,8 +684,51 @@ With @lem:one-node-picard-rank this gives $\Pic(\widehat X_b) = S_{\Co,b}$.
 This proves (3).
 :::
 
-::: {.question #qst:chamber-clause-one-node title="the chamber clause on the one-node locus"}
-Are there one-node members $b,b'$ such that no isometry of $\lkt$ that carries the labels of $b$ to the labels of $b'$ carries the chamber of the tuple at $b$ to the chamber of the tuple at $b'$?
+::: {.theorem #thm:chamber-clause-fails title="the chamber clause of labeled Coble rigidity fails on the one-node locus"}
+There are one-node members $b_0$ and $b_\star$ of the direct projective construction whose tuples satisfy all five conditions of @sec-labeled-lattice-data, whose labels, degree-$4$ class and root are conjugate (@thm:a21-labels), and for which no isometry $\gamma\in\Orth(\lkt)$ with $\gamma H_{b_0}=H_{b_\star}$ and $\gamma\alpha_{b_0}=\alpha_{b_\star}$ that conjugates the two pairs of involutions carries the chamber of the tuple at $b_0$ to the chamber of the tuple at $b_\star$.
+Hence the chamber clause of @prob:coble-rigidity is false, and that problem with it.
+:::
+
+::: {.proof}
+*The chamber, in the corpus's definition.*
+By @def:coble-polarization-classes, part 3, the chamber of a member is the component of $\mathcal C_b\setminus\bigcup_{\delta\in\Delta_b}\delta^\perp$ containing the ample cone, inside $\Pic(\widehat X_b)\tensor\RR$, where $\Delta_b$ is the set of effective classes of square $-2$.
+So $\mathfrak c_b$ is open in $\Pic(\widehat X_b)\tensor\RR$ and every facet of it lies in $\delta^\perp$ for some $\delta\in\Delta_b$, with normal $\pm\delta$: two primitive classes defining the same hyperplane are proportional.
+An isometry $\gamma$ with $\gamma\mathfrak c_{b_0}=\mathfrak c_{b_\star}$ therefore has $\gamma(\Pic(\widehat X_{b_0})\tensor\RR)=\Pic(\widehat X_{b_\star})\tensor\RR$, a chamber being open in its own linear span.
+
+*The invariant.*
+Put
+$$\nu(b)\definedas\cardinality{\set{\delta\in\Pic(\widehat X_b):\ \delta^2=-2,\ \delta\cdot H_b=1}}.$$
+For $\delta$ with $\delta^2=-2$, Riemann–Roch gives $h^0(\delta)+h^0(-\delta)\ge1$, and $H_b$ is nef (@prop:tuple-of-the-construction, part 3) with $H_b\cdot(-\delta)=-1<0$, so $-\delta$ is not effective and $\delta$ is.
+Write $k\definedas\delta\cdot e_b$ and $m\definedas\delta\cdot f_b$; both are $\ge0$ because $e_b=\widehat\pi_b^*h_1$ and $f_b=\widehat\pi_b^*h_2$ are nef and $\delta$ is effective, and $k+m=\delta\cdot H_b=1$.
+So $(k,m)$ is $(1,0)$ or $(0,1)$, and every component of $\delta$ is contracted by one and the same of the two ruling fibrations, hence lies in a fibre of it; no component is a whole fibre, because $H_b$ of a fibre is $2$.
+Components in different fibres are disjoint and a fibre with two components has negative semidefinite intersection matrix, so a $\delta$ of square $-2$ is supported on a single reducible fibre, where it is a proper sub-divisor.
+Conversely a component of a reducible ruling fibre of $H_b$-degree $1$ is such a class, components of reducible fibres of a genus-one fibration of a K3 surface being $(-2)$-curves.
+So $\nu(b)$ is the number of components of $H_b$-degree $1$ in the reducible fibres of the two fibrations, and an isometry with $\gamma H_{b_0}=H_{b_\star}$ and $\gamma(\Pic(\widehat X_{b_0})\tensor\RR)=\Pic(\widehat X_{b_\star})\tensor\RR$ carries the set counted for $b_0$ onto the set counted for $b_\star$. Hence $\nu(b_0)=\nu(b_\star)$.
+
+*The two members.*
+Take
+$$f_0=5x^4y^4-2x^4y^2+3x^4+x^3y^3-4x^3y+2x^2y^4+x^2y^2+2x^2-3xy^3+7xy-y^4-5y^2,$$
+$$f_\star=8x^4y^4+7x^4y^2+6x^4+5x^3y^3+4x^3y+3x^2y^4+2x^2y^2+3x^2-13xy^3-28xy-10y^4+13y^2.$$
+Both are $\tau$-invariant, both vanish at $p$ with nondegenerate quadratic part, $2x^2+7xy-5y^2$ and $3x^2-28xy+13y^2$, and both branch curves are smooth away from $p$: the Jacobian ideal is $\generators{x,y}$ in the chart at $p$ and the unit ideal in each of the other three charts of $\PP^1\times\PP^1$.
+So both are members of @prop:one-node-family and the tuples attached to them by @prop:tuple-of-the-construction satisfy the five conditions.
+
+For $b_0$ the $y$-discriminant of $f_0$ is $x^2$ times a squarefree polynomial of degree $22$ coprime to $x^2-1$, the $x$-discriminant is $y^2$ times a squarefree polynomial of degree $22$, and the leading $x$-coefficient is the squarefree $5y^4-2y^2+3$.
+A ruling whose fibre is not reduced gives a multiple root of the relevant discriminant, and a simple root of a discriminant which is otherwise squarefree means exactly one double point, that is a nodal fibre; so every ruling of either fibration away from the node's has an irreducible nodal fibre, the node's own fibre is $D_b+(L_1-D_b)$ with $H_b$-degrees $0$ and $2$ (@lem:face-at-H, part 1), and the fibre at $x=\infty$ is smooth elliptic.
+None of those fibres contributes a component of $H_b$-degree $1$, so $\nu(b_0)=0$.
+
+For $b_\star$ the $y$-discriminant is $x^2(x-1)^2(x+1)^2$ times a squarefree polynomial of degree $18$ that does not vanish at $x=0,1,-1$, the $x$-discriminant is $y^2$ times a squarefree polynomial of degree $22$, the leading $x$-coefficient is the squarefree $8y^4+7y^2+6$, and $f_\star(1,y)=(y-1)^2(y-3)^2$ and $f_\star(-1,y)=(y+1)^2(y+3)^2$.
+So $\set{x=1}$ and $\set{x=-1}$ are the only reducible fibres away from the node's, and over each the fibre is $\widehat\pi_b^*h_1=C_++C_-$ with $C_\pm$ smooth rational, $C_\pm\cdot \widehat\pi_b^*h_1=0$ and $C_+\cdot C_-=2$, whence $C_\pm^2=-2$ and $C_\pm\cdot H_{b_\star}=C_\pm\cdot\widehat\pi_b^*h_2=1$.
+On such a fibre a class $aC_++bC_-$ has square $-2(a-b)^2$ and $H_{b_\star}$-degree $a+b$, so the classes of square $-2$ and $H$-degree $1$ there are exactly $(a,b)=(1,0)$ and $(0,1)$, the two components; and on the node's fibre, whose two components have $H$-degrees $0$ and $2$, the same computation gives none.
+So $\nu(b_\star)=2+2=4$.
+
+Thus $\nu(b_0)=0\ne4=\nu(b_\star)$, and no isometry with the stated properties exists.
+The two members and the two counts are checked by `computations/reports/coble_a21_chamber_fails.py`, whose transcript `computations/reports/coble_a21_chamber_fails-run.txt` prints the Gröbner bases, the two discriminants with the degrees and squarefreeness of their squarefree parts, the restrictions $f_\star(\pm1,y)$, the fibre at infinity and the within-fibre class count on both fibre types.
+:::
+
+::: {.remark title="the reading under which the fourth bullet is a theorem, and why it is not the one in force"}
+If the fourth bullet is read as asking only for a chamber of the arrangement cut by the labels' *own* lattice $\generators{e_b,f_b,\alpha_b}$, then the chamber is a function of $H$ and $\alpha$ and is transported by every label-preserving isometry, so the clause holds — and constrains no member beyond what the second and third bullets already say.
+That is not the reading of @def:coble-polarization-classes, part 3, which cuts the chamber by the member's own effective classes and is what "the chamber in which $\alpha$ is effective and $H$ is nef and big" refers to; under it the clause is false, by the theorem above.
+The theorem is therefore a refutation of @prob:coble-rigidity and not a weakening of it: the labels are conjugate, and what fails is the chamber.
 :::
 
 ::: {.question #qst:del-pezzo-saturation-higher-k title="the del Pezzo invariant lattice for several nodes"}
