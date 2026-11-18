@@ -23,12 +23,15 @@ this inverse question from the archived Enriques meeting notes.
    T_\Co \injects \ten \injects \tdp \injects \lkt
    $$
    of @lem:sequence_of_embeddings and @lem:primitive_embedding_eta, and the equations of the sextic $C$ and its double plane (@qst:coble-explicit-equations) in the same bases.
-2. Write the polarization classes $h_\Co$ and $h_\En$ and the roots of the Coxeter diagram in the standard basis of $\lkt\cong U^{3}\oplus E_8^{2}$ in which @thm:theta-co-coordinates gives the matrix of the sign involution $\theta_\Co$ of @prop:theta-co-exists, and compare the two there.
 :::
 
-::: {.conjecture #conj:horizontal-folding title="The horizontal folding involution"}
+::: {.remark title="The horizontal folding involution, resolved"}
 
-The involution $\theta_\Co$ of @prop:theta-co-exists, with $\lkt^{\theta_\Co} = T_\Co$ and $\lkt^{-\theta_\Co} = S_\Co$, induces on roots the *horizontal folding* of the $(18,0,0)_1$ Coxeter diagram (@def:folded-root), and it exchanges the polarization classes $h_\En$ and $h_\Co$.
+The entry that stood here conjectured two things about $\theta_\Co$: that it induces the horizontal folding of the $(18,0,0)_1$ Coxeter diagram in the sense of @def:folded-root, and that it exchanges the polarization classes $h_\En$ and $h_\Co$. Both are decided by @thm:diagram-roots-coordinates, and this note stays here because the second cannot be stated that way.
+
+*The folding.* @def:folded-root asks for an involution preserving a root system inside its own lattice, the folded roots being the orbit sums. $\theta_\Co$ preserves no copy of $(18,0,0)_1$ in $\lkt$: it carries the copy $W = U_2\oplus E_{8,1}\oplus E_{8,2}$ onto the second one $W' = U_3\oplus E_{8,1}\oplus E_{8,2}$. What the involution induces is the *correspondence of the two copies*: $I_\Co = -\theta_\Co$ carries the nineteen roots of the diagram in $W$ to the nineteen roots in $W'$, node $k$ to node $18-k$, which is the reflection $J\colon\alpha_k\mapsto\alpha_{20-k}$ of [@AEGS25, Lemma 3.9, printed p. 593], and the folded roots are the ten of the cusp-$2$ diagram [@AEGS25, Fig. 7, printed p. 594]. That is the precise content of "the folding is realized by the Coble involution"; the folded root system inside a single copy is the one of $J$, not one of $\theta_\Co$.
+
+*The polarization classes.* $\tilde h_\Co$ and $h_\En$ are one class: $\tilde h_\Co = H$ (@prop:coble-cover-marking) and $H = h$ (@prop:coble-enriques-ambient-isometry(3)). So there are not two classes for an involution to exchange. Read literally as $\theta_\Co(h_\En) = h_\Co$ the clause asserts $\theta_\Co(H) = H$, and that is false, $H\in S_\Co$ being an eigenvector of $\theta_\Co$ with eigenvalue $-1$. With the covering involution in place of $\theta_\Co$ the clause is true and empty: $I_\Co(H) = H = h_\Co$.
 :::
 
 ## Isotropic orbits, cusps, and reflection groups
