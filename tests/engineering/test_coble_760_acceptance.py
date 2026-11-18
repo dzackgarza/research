@@ -815,6 +815,32 @@ def test_item_7_the_pruned_transporter_search_and_its_depth() -> None:
     assert "17 min 33 s of elapsed time and 16 min 39 s of CPU" in doc
 
 
+def test_item_7_the_three_roots_are_certified_in_the_acting_group() -> None:
+    """Item 7: the sift certifies the three admissible roots in G_v, and their orbit of [12] is two.
+
+    This is the first positive statement about the group acting on K_5 obtained without the library's
+    refuted generator family: contains_root_reflection answers True for labels 12, 13 and 14.  It does
+    not decide the pair, because the orbit of the class of 12 under those three reflections has two
+    classes and not three.
+    """
+    record = ROOT / "computations/reports/coble_760-cusp5-certified-reflections.py"
+    run = ROOT / "computations/reports/coble_760-cusp5-certified-reflections-run.txt"
+    assert record.exists() and run.exists(), (record, run)
+    text = run.read_text(encoding="utf-8")
+    assert text.rstrip().endswith("PYEXIT=0"), "the run did not reach its anchor"
+    flat = " ".join(text.split())
+    for line in ("label 12: q=-2, (.,eta5)=0 -> certified in G_v: True",
+                 "label 13: q=-2, (.,eta5)=0 -> certified in G_v: True",
+                 "label 14: q=-2, (.,eta5)=0 -> certified in G_v: True",
+                 "certified: [12, 13, 14]",
+                 "depth 1: orbit 2, found False",
+                 "not reached in the bound"):
+        assert line in flat, line
+    doc = " ".join(record.read_text(encoding="utf-8").split())
+    assert "are certified in G_v" in doc
+    assert "does not settle" in doc
+
+
 def test_open_questions_row_names_the_open_step() -> None:
     """The row for the withdrawn step names the orbit computation as what is open."""
     text = OPEN_QUESTIONS.read_text(encoding="utf-8")
