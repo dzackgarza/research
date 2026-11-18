@@ -401,6 +401,16 @@ The marking-line root is not among the $T_\Co$-roots by @prop:marking-line-no-co
 Cusps $3$ and $4$ carry one $T_\Co$-root each and so no pair, which leaves cusp $5$, whose three roots are pairwise distinct classes of $K_5$ (@thm:face-irrelevant-marking(3)) with $\Gamma_{\Co,2}$-orbits not computed.
 :::
 
+::: {.remark #rmk:coble-root-orbits-cusp-five title="The orbit computation the conjecture above leaves open, as far as it goes"}
+
+The paragraph above leaves the $\Gamma_{\Co,2}$-orbits of the three classes at cusp $5$ unmade, and `computations/reports/coble_gammaCo2-orbits-cusp5-run.txt` makes the attempt and records why it stops short.
+Each root of $K_5$ that is the class of a $(-4)$- or $(-2)$-vector of $T_\Co$ orthogonal to $\eta_5$ --- Sterk's printed labels $1$--$8$ and $12$--$14$ --- lifts to a vector $w$ of $\ten$ with $2\div(w)\in(w\cdot w)\ZZ$, so $s_w$ is an integral isometry [@AEGS25, §3.4, printed p. 591]; it fixes $\delta$, so it lies in $\Gamma_{\Co,2} = \Stab_{\Orth(\ten)}(\ZZ\delta)$ (@prop:gamma-co-2-line-stabilizer); and it fixes $\eta_5$, so it acts on $K_5$.
+The record checks those three facts for all twelve and then walks from the class of root $12$: $20\,484$ classes to depth $12$, and the classes of $13$ and $14$ are not among them.
+The scalar invariants agree on the three --- square $-2$, pairing $0$ with $\delta$, divisibility $1$ in $K_5$ --- so no one of them separates the roots either.
+Equivalence is therefore not established and inequivalence is not proved: the walk stays in the subgroup those twelve reflections generate, which is not known to be the stabilizer of $\eta_5$ in $\Gamma_{\Co,2}$, and the orbit is infinite, so a bound is not a proof.
+What does not depend on that question is the face: all three cut one cone, so no face of $\semifan{F}_5$ separates them.
+:::
+
 ## Boundary cusp data
 
 ::: {.proposition #prop:coble-isotropic-even-in-ten title="Isotropic vectors of $T_\Co$ have even divisibility in $\ten$"}
