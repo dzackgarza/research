@@ -344,6 +344,36 @@ def test_coble_fifty_six_ordinary_elements_are_public_kernel_morphisms(start):
         assert morphism in kernel
 
 
+@pytest.mark.parametrize("start", range(0, 95, 10))
+def test_coble_positive_schreier_generators_are_public_positive_kernel_morphisms(start):
+    """Exact 95 ordinary Schreier generators belong to the public Otilde+ subgroup."""
+    import hashlib
+    import json
+    from pathlib import Path
+    from sage_extensions.all import NamedLattices, ZZ as OwnedZZ
+
+    folder = Path(__file__).resolve().parents[2] / "computations/reports"
+    data = json.loads((folder / "coble_kernel_positive_schreier_generators.json").read_text())
+    assert data["schema"] == "coble-positive-kernel-ordinary-schreier-v1"
+    assert data["generator_count"] == len(data["generators"]) == 95
+    assert data["source_sha256"] == hashlib.sha256(
+        (folder / "coble_kernel_fifty_six_congruence_generators.json").read_bytes()
+    ).hexdigest()
+    lattice = NamedLattices.Tco
+    labels = tuple(lattice.module_generating_set())
+    group = lattice.O()
+    positive_kernel = lattice.stable_orthogonal_group().intersection(lattice.O_plus())
+    for row in data["generators"][start:start + 10]:
+        entries = row["matrix_standard"]
+        morphism = group({
+            label: lattice.linear_combination({
+                labels[j]: OwnedZZ(entries[j][i]) for j in range(11)
+            })
+            for i, label in enumerate(labels)
+        })
+        assert morphism in positive_kernel
+
+
 def test_coble_fifty_six_ordinary_elements_span_kernel_modulo_sixteen():
     """The 56 ordinary elements generate every certified layer modulo 16."""
     import hashlib
