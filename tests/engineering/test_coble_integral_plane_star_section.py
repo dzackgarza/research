@@ -783,7 +783,7 @@ def test_coble_ambient_generators_are_public_integral_isometry_morphisms():
 
 
 def test_coble_large_character_maps_directly_to_faithful_permutations():
-    """A nontrivial T_Co character maps without a giant GAP product element."""
+    """The nontrivial Coble root character has a faithful permutation image."""
     from sage.libs.gap.libgap import libgap
     from sage_extensions.all import NamedLattices, ZZ as OwnedZZ
 
