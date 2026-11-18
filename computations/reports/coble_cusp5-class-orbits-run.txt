@@ -15,6 +15,22 @@ class map: S = (10/1) x 12 with denominator 3, integral on eta_5^perp, kills eta
 
 generator sets: (A) labels [1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 14], (B) labels [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 
+=== (0) why the reflection route is closed: the square-(-2) roots are pairwise orthogonal
+         label 11 label 12 label 13 label 14
+label 11       -2        0        0        0
+label 12        0       -2        0        0
+label 13        0        0       -2        0
+label 14        0        0        0       -2
+  labels 12, 13, 14 are orthogonal to delta and to eta_5: True
+  label 11 is the marking line: eta_5-orthogonal True, delta-orthogonal False
+  pair (12, 13): u.v = 0, (u+v)^2 = -4, (u-v)^2 = -4, so neither sum nor difference is a root
+  pair (12, 14): u.v = 0, (u+v)^2 = -4, (u-v)^2 = -4, so neither sum nor difference is a root
+  pair (13, 14): u.v = 0, (u+v)^2 = -4, (u-v)^2 = -4, so neither sum nor difference is a root
+  hence a reflection in any of these roots, or in any sum or difference of two of them,
+  fixes the other two classes up to sign: no product of such reflections carries one of
+  the three classes to another, and the orbit counts of (A) below are the orbit of a class
+  that only a non-reflection isometry of K_5 can move to a sibling.
+
 === (A) the eleven printed roots orthogonal to delta and eta_5
   orbit of label 12: at least 20001 classes, closed: False; contains 12:True 13:False 14:False
   orbit of label 13: at least 20001 classes, closed: False; contains 12:False 13:True 14:False
@@ -54,6 +70,6 @@ generator sets: (A) labels [1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 14], (B) labels [1, 
     say how far that larger group reaches and are reported as reached, not as closed,
     unless closed is True.
 The orbits under Gamma_Co,2 itself remain uncomputed.
-elapsed 129 s
+elapsed 30 s
 PYEXIT=0
 exit=0
