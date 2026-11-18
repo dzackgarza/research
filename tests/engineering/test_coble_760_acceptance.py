@@ -211,6 +211,26 @@ def test_item_3_the_cusp_marking_is_in_no_source_held_here() -> None:
     assert text.rstrip().endswith("PYEXIT=0")
 
 
+def test_item_3_the_divisor_the_conjecture_rests_on_is_sourced() -> None:
+    """Item 3: the half that is citation rather than decision, settled at the pages named.
+
+    `def:coble-descended-ramification` cites AEGS25 §2.4 printed p. 588 and Prop. 6.1(2) printed
+    p. 616.  Both resolve: Definition 2.10 is on 588, Proposition 6.1 is stated on 615, and its
+    part (2) --- "R_Z = 1/2 rho_*(B_W) ... are reduced divisors and one has R = psi_*(R_Z)" --- is on
+    616.  So the divisor the corrected conjecture reads off exists in the source; what is missing is
+    the dictionary attaching a class of K_I to it, which is `warn:coble-marking`.
+    """
+    run = ROOT / "computations/reports/coble_760-descended-divisor-citations-run.txt"
+    assert run.exists(), run
+    text = run.read_text(encoding="utf-8")
+    assert "Definition 2.10" in text
+    assert "Proposition 6.1" in text
+    assert "are reduced divisors and one has R = " in text
+    assert "NOT FOUND" not in text
+    verdict = " ".join(text.split())
+    assert "not the divisor but the dictionary" in verdict
+
+
 def test_item_4_a_pair_whose_faces_agree() -> None:
     """Item 4: the transcript's face line is the smallest input."""
     text = FACE_RUN.read_text(encoding="utf-8")

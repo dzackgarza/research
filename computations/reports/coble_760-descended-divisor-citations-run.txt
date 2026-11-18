@@ -1,0 +1,17 @@
+the descended ramification divisor: its two citations, checked at the pages named
+source: tmp/sources/aegs-2025-compact-moduli-of-enriques-surfaces-of-degree-2.md (Nagoya Math. J. 259 (2025) 581-624)
+
+printed p. 588, the definition of the KSBA compactification the datum lives in:
+    →W = Z/τdP that is not contained in the double locus of Z. Definition 2.10. The compactiﬁcation FEn,2  →F En,2 is the closure of the space of pairs {(Z,ϵRZ) Z ∈FEn,2} in the moduli space of KSBA stable pairs. Our main goal is to describe the normalization of F En,2 and the surfaces appearing on the boundary. https://doi.org/10.1017/nmj.2025.10 Published o
+
+printed p. 615, where Proposition 6.1 is stated:
+   X →X/ι is not ramiﬁed along any irreducible component of D. Proposition 6.1. Let π: (X,D + ϵR) →(Y,C + 1+ϵ 2 B) be the anticanonical and del Pezzo ADE surfaces, and ιdP be the anticanonical involution such that Y = X/ιdP. Suppose https://doi.org/10.1017/nmj.2025.10 Published online by Cambridge University Press   
+
+printed p. 616, its part (2), the reduced divisor the conjecture would read off:
+   e quotient by the symplectic involution ιNik = ιdP ◦ιEn. 2. RZ = 1 2ρ∗(BW ) and RZ′ = 1 2ρ′∗(BW ) are reduced divisors and one has R = ψ∗(RZ) = ψ′∗(RZ′). 3. DZ = ρ∗(CW ) and DZ′ = ρ′∗(CW ) are reduced divisors and one has D = ψ∗(DZ) = ψ′∗(DZ′). 4. (W,CW + 1+ϵ 2 BW ) is a del Pezzo ADE surface, and (Z′,DZ′ +ϵRZ′) is an anticanonical ADE surface which is its i
+
+VERDICT: both citations resolve at the pages named -- the definition on 588 and part (2)
+on 616, where R_Z is a reduced divisor with R = psi_*(R_Z).  What the conjecture lacks is
+not the divisor but the dictionary that would attach a class of K_I to it.
+
+PYEXIT=0
