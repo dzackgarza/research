@@ -4,6 +4,8 @@ What was noticed while moving the dissertation from LaTeX back to Markdown, with
 The open items are work units in the [issue tree](https://github.com/dzackgarza/research/issues/46): #721, #722, #723 and #724. None of them blocks the build, which compiles with no LaTeX errors.
 What has since been settled is listed at the end, so that a reader can tell "resolved" from "never noticed".
 
+A convention on the group $\Gamma_{\mathrm{Co}}$, whose definition moved under this ledger. The book now defines $\Gamma_{\mathrm{Co}}$ as the monodromy group of the family of unpolarized Coble surfaces (@def:gamma-co-groups(1)), not as the subgroup $\Orth^+(T_{\mathrm{Co}})\cap\ker\rho$, and the two are related only conjecturally (@conj:gamma-co-stable; neither inclusion is proved, @rmk:gamma-co-status). An entry below that was written under the earlier convention --- one that has $\Gamma_{\mathrm{Co}}$ act trivially on $A_{T_{\mathrm{Co}}}$, or on the isotropic classes of $A_{T_{\mathrm{Co}}}$, or that writes an orbit set $\Gamma_{\mathrm{Co}}\backslash I(T_{\mathrm{Co}})$ --- is to be read with $\widetilde\Orth^+(T_{\mathrm{Co}})$ in the place of $\Gamma_{\mathrm{Co}}$, unless it says otherwise. Where the distinction decides the assertion, it is flagged in place; the strong lifting is the entry where it does (@rmk:coble-strong-lifting-group).
+
 ## Possibly missing content
 
 - [[450-scattone|Scattone boundary analysis]] carries
@@ -1028,22 +1030,26 @@ What has since been settled is listed at the end, so that a reader can tell "res
   The exact content, with the kernel checked
   because that is where it is easy to be wrong: K = T_Co^{perp T_En} = Z k with k = e~ - f~ and
   k^2 = -2; the gluing group is H = <(h/2, k/2)> in A_{T_Co} + A_K, of order 2 and isotropic because
-  q(h/2) + q_K(k/2) = 1/2 - 1/2 = 0; every phi in Gamma_Co preserves H as phi + id_K, since phi-bar is
-  the identity on A_{T_Co}, and so extends to T_En by thm:automorphism-lifting-criterion, and the
-  extension lies in Gamma_En.  Hence Ext: Gamma_Co -> Stab_{Gamma_En}(T_Co), phi |-> the extension
-  fixing k.  Ext is injective, restriction is a left inverse, and restriction is not injective: its
+  q(h/2) + q_K(k/2) = 1/2 - 1/2 = 0; every phi in O~+(T_Co) preserves H as phi + id_K, since phi-bar is
+  the identity on A_{T_Co}, and so extends to T_En by Nikulin's extension criterion, which is
+  thm:coble-strong-lifting's own step and not thm:automorphism-lifting-criterion read through
+  thm:normalization, and the extension lies in Gamma_En.  Hence Ext: O~+(T_Co) -> Stab_{Gamma_En}(T_Co),
+  phi |-> the extension fixing k.  Here is where the monodromy group stops: "phi-bar is the identity on
+  A_{T_Co}" is the unproved inclusion Gamma_Co <= O~+(T_Co), and nothing below may be read for Gamma_Co
+  without it.  Ext is injective, restriction is a left inverse, and restriction is not injective: its
   kernel is {1, s_k}, the reflection in the (-2)-vector k, which fixes T_Co pointwise and negates k.
-  So the stabilizer of the vector k is Ext(Gamma_Co) and the stabilizer of the line Z k is
-  Ext(Gamma_Co) x <s_k>; the equivariant assignment is the section fixing k, not restriction.  With
+  So the stabilizer of the vector k is Ext(O~+(T_Co)) and the stabilizer of the line Z k is
+  Ext(O~+(T_Co)) x <s_k>; the equivariant assignment is the section fixing k, not restriction.  With
   it, eta(phi v) = Ext(phi) eta(v), so the object map descends to a map of orbit sets
-  Gamma_Co\I(T_Co) -> Gamma_En\I(T_En).  That is the first step and it is now written down in the
-  chapter.
-  The 0-cusp orbit map: fibre, image, and the two things settled.  With Phi: Gamma_Co\I(T_Co) ->
-  Gamma_En\I(T_En), v |-> [eta(v)], and the stable groups fixed on both sides (Gamma_Co =
-  Orth^+(T_Co)^*, Gamma_En = Orth^+(T_En)^*; AEGS25's larger Gamma^K_En = Orth(T_En) is a different
-  group and now written with the K), the fibre over a target class [w~] is the double-coset set
-  Stab_{Gamma_En}(w~) \ Y / Ext(Gamma_Co) with Y = {gamma : gamma^{-1}w~ in eta(T_Co)} -- stabilizer on
-  the LEFT, Ext(Gamma_Co) on the RIGHT, the two actions being v_{h gamma} = v_gamma and
+  O~+(T_Co)\I(T_Co) -> Gamma_En\I(T_En).  That is the first step and it is now written down in the
+  chapter for the stable group; under conj:gamma-co-stable the same sentences hold with Gamma_Co.
+  The 0-cusp orbit map: fibre, image, and the two things settled.  With Phi: O~+(T_Co)\I(T_Co) ->
+  Gamma_En\I(T_En), v |-> [eta(v)], and the stable groups fixed on both sides (O~+(T_Co) =
+  Orth^+(T_Co)^* intersect ker rho_{T_Co}, Gamma_En = Orth^+(T_En)^*; AEGS25's larger
+  Gamma^K_En = Orth(T_En) is a different group and now written with the K), the fibre over a target
+  class [w~] is the double-coset set
+  Stab_{Gamma_En}(w~) \ Y / Ext(O~+(T_Co)) with Y = {gamma : gamma^{-1}w~ in eta(T_Co)} -- stabilizer on
+  the LEFT, Ext(O~+(T_Co)) on the RIGHT, the two actions being v_{h gamma} = v_gamma and
   v_{gamma Ext(phi)} = phi^{-1}v_gamma, with the converse giving the double cosets exactly.  The earlier
   Gamma_Co\Y/Stab was the reversed expression and is gone; nothing derives from it.
   Two results on the 0-cusp map, both by all-vector arguments rather than by sampling.  Surjectivity
@@ -1055,8 +1061,9 @@ What has since been settled is listed at the end, so that a reader can tell "res
   exactly equality of the classes v* = [v/2], on which thm:coble-zero-cusp-count(1) gives one
   discriminant-kernel orbit per class.  So each fibre is a single orbit
   (prop:cusp-map-injective), and no injectivity residue is left.  The same argument separates the two Coble 0-cusps the book knows: e' and f', the
-  isotropic generators of the U(2) summand, are in different Gamma_Co-orbits
-  (@lem:stable-orthogonal-not-transitive) and incongruent mod 2, so their images are distinct -- Phi does not collapse them.
+  isotropic generators of the U(2) summand, are in different O~+(T_Co)-orbits
+  (@lem:stable-orthogonal-not-transitive, whose group is the stable one) and incongruent mod 2, so their
+  images are distinct -- Phi does not collapse them.
   What is a finite check and what is not: the divisibility identity
   div_En(eta(v)) = gcd(div_Co(v), beta_Co(v,h)/2), the evenness of both entries, the mod-4 vanishing
   that forces a even, and the class separation of e' and f' are verified on and for the representatives
@@ -1292,8 +1299,10 @@ What has since been settled is listed at the end, so that a reader can tell "res
   The same mismatch sits one level down, in the book's own theorem: thm:split-maximal-isotropic-
   transitivity is stated without a parity hypothesis, proved by citation to Dawes §3.1, and applied in
   this chapter to the odd B, so it now carries an explicit caveat and the applications to B inherit the
-  gap.  What survives is one-directional: since Gamma_Co fixes every class of A_{T_Co}, vectors in
-  different classes lie in different orbits, so the finite count is a lower bound for the integral one
+  gap.  What survives is one-directional: for a group that fixes every class of A_{T_Co} -- which
+  O~+(T_Co) does, and Gamma_Co does under conj:gamma-co-stable, its discriminant action being otherwise
+  unknown -- vectors in different classes lie in different orbits, so the finite count is a lower bound
+  for the integral one
   and never an upper one.
   Consequence for the cusp correspondence, stated rather than glossed: the mod-2 invariant of
   prop:cusp-map-separates-mod-two is the discriminant class v*, since for divisibility 2 the class of v/2
