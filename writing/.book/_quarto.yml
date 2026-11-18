@@ -291,7 +291,6 @@ format:
 #     stylesheet need none of this and stay beside this file.
 filters:
   - book-toc
-  - block-index
   - amsthm-refs
   - amsthm-divs
   - custom-numbered-blocks
@@ -320,33 +319,51 @@ custom-numbered-blocks:
     theorem:
       group: blocks
       label: Theorem
+      listin:
+        - results
     lemma:
       group: blocks
       label: Lemma
+      listin:
+        - results
     corollary:
       group: blocks
       label: Corollary
+      listin:
+        - results
     proposition:
       group: blocks
       label: Proposition
+      listin:
+        - results
     conjecture:
       group: blocks
       label: Conjecture
+      listin:
+        - results
     definition:
       group: blocks
       label: Definition
+      listin:
+        - definitions
     example:
       group: blocks
       label: Example
     construction:
       group: blocks
       label: Construction
+      listin:
+        - definitions
     notation:
       group: blocks
       label: Notation
+      listin:
+        - definitions
     convention:
       group: blocks
       label: Convention
+      listin:
+        - definitions
     exercise:
       group: blocks
       label: Exercise

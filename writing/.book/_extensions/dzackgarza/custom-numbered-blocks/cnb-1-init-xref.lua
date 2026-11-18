@@ -48,6 +48,16 @@ return{
     local xrefs = {}
     -- cnbx.xreffile = "testing.json"
     if cnbx.isbook then xrefs = readxref(cnbx.xreffile) end
+    -- The registry persists between renders. Entries of the chapter being rendered
+    -- are registered again from its divs, so the old ones are dropped: a deleted
+    -- block must not survive. Entries of files that are no longer chapters are
+    -- dropped too.
+    for id, info in pairs(xrefs) do
+      if info.file == cnbx.processedfile
+         or (cnbx.chapterorder and not cnbx.chapterorder[info.file]) then
+        xrefs[id] = nil
+      end
+    end
     cnbx.xref = xrefs
     -- print("xrefs are "..type(cnbx.xref))
     return(met)

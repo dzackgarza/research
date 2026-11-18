@@ -172,8 +172,12 @@ local doCounting = function(el)
       info = cnbx.xref[el.identifier]
 
       info.file = cnbx.processedfile -- for book crossreferences
-      
+      info.src = cnbx.processedsrc   -- for links from list-of pages
+
       info.cnbclass = cls
+      -- the lists this block belongs to: those of its class and of its own listin
+      info.listin = uti.mergeStringLists(ClassDef.listin or {},
+        el.attributes.listin and {el.attributes.listin} or {})
       
       parentid = el.attributes["_nested"]
      -- if parentid then print("parent is "..parentid) end
@@ -270,7 +274,9 @@ local writexref = function(filename)
     strippedxref[k] = {
          reflabel = v.reflabel, 
          refnumber = tostring(v.refnumber), 
-         file = v.file, 
+         file = v.file,
+         src = v.src,
+         listin = v.listin,
          md = v.mdtitle}
     strippedxref.pandoctitle = nil
   end

@@ -60,10 +60,13 @@ local chapterinfo =  function (book, fname)
   local first = "" 
   local last = "" 
   local info = {}
+  -- reading position of every chapter, keyed by its path without extension
+  local order = {}
   --if book.render then
     for index, v in ipairs(book.render) do
       if str(v.type) == "chapter" then
         last = pandoc.path.split_extension(str(v.file))
+        order[last] = index
         if first == "" then first = last end
         if last == fname then 
           info.chapno = v.number 
@@ -76,6 +79,7 @@ local chapterinfo =  function (book, fname)
     info.islast = (fname == last)
     info.isfirst = (fname == first)
     info.lastchapter = last
+    info.order = order
   --  dev.showtable(info, "chapter info")
     return(info)
 end
@@ -119,6 +123,10 @@ local initRenderInfo = function (meta)
       pandoc.path.make_relative(quarto.doc.input_file, projectdir))
     cnbx.processedfile = processedfile
     local chinfo = chapterinfo(meta.book, processedfile)
+    -- the source path, with its extension, is what a link from another page names
+    cnbx.processedsrc = pandoc.path.make_relative(quarto.doc.input_file, projectdir)
+    cnbx.chapterorder = chinfo.order
+    cnbx.projectdir = projectdir
     if cnbx.ishtmlbook then
       cnbx.xreffile= pandoc.path.join({projectdir, "._htmlbook_xref.json"})
     else
