@@ -82,6 +82,12 @@ certificate = {
     'generator_count': len(records),
     'eichler_generator_indices': list(range(18)),
     'level_two_character_complement_indices': [19, 20],
+    # These 21 positive words are actual integral kernel elements. Their
+    # E-conjugates span E(2) modulo four, and the final two words supply
+    # the character complement; no infinite kernel-generation claim.
+    'level_two_normal_relation_words': (
+        [[i, i] for i in range(18)] + [[7, 8], [19], [20]]
+    ),
     'finite_discriminant_image_order': 46998591897600,
     'eichler_discriminant_image_order': 23499295948800,
     'generators': records,
