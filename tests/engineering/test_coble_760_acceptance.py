@@ -255,6 +255,26 @@ def test_the_restricted_diagram_keeps_the_conclusion() -> None:
     assert "the semifan the issue names" in " ".join(text.split())
 
 
+def test_item_3_the_marking_is_absent_from_the_whole_corpus() -> None:
+    """Item 3: the dictionary is missing from every source held, not just the three read closely.
+
+    The sweep scores each file in tmp/sources for "Coble", "root" and "curve", and prints the lines
+    that mention a root and a curve together, so a lead can be judged without opening the file.  The
+    eleven files with such a line are coincidental: the lines speak of root lattices attached to
+    sextic curves, not of the cusp chamber's roots identified with curves of the Coble surface.
+    """
+    run = ROOT / "computations/reports/coble_760-marking-source-sweep-run.txt"
+    assert run.exists(), run
+    text = run.read_text(encoding="utf-8")
+    assert "files swept:" in text
+    assert "root/curve line" in text
+    assert "the lines, so the lead can be judged without opening the file" in text
+    assert "a root/curve line elsewhere in this" in " ".join(text.split())
+    # and the three sources that describe Coble surfaces were read at their sections
+    close = ROOT / "computations/reports/coble_760-cusp-marking-search-run.txt"
+    assert "DZ01 (dolgachev-zhang 2001)" in close.read_text(encoding="utf-8")
+
+
 def test_item_4_a_pair_whose_faces_agree() -> None:
     """Item 4: the transcript's face line is the smallest input."""
     text = FACE_RUN.read_text(encoding="utf-8")
