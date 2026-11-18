@@ -8,15 +8,16 @@ g(r12) = +-r13 + k*eta_5, then it carries the lattice
 for r = r12 onto the one for r = r13.  This record computes both: determinant, Smith normal
 form of the Gram, signature and parity.  They agree, so this test separates nothing.
 
-What this record does NOT do
-----------------------------
-It does not compare the discriminant forms, which is the finer invariant.  That comparison was
-attempted in the same session and abandoned: the version written here failed its own
-basis-independence control (the multiset of q-values changed when the basis changed, so the
-representative construction was wrong), and the library's own discriminant form wants a bilinear
-form object rather than a Gram matrix, which was not resolved in the time available.  A failed
-control is not evidence, so nothing is claimed from it -- in particular the pair is NOT reported
-as inequivalent on that basis.
+What this record also does
+--------------------------
+It compares the finer invariant, the discriminant forms, through the library: both lattices are
+built as bilinear-form tensors and their q-forms evaluated on the discriminant group, which makes
+the comparison basis-free by construction.  The two agree -- |A| = 256 on both, and the same
+multiset of q-values -- so this test separates nothing either.
+
+An earlier attempt at that comparison in the same session was discarded because it failed its own
+basis-independence control; this is a different, library-based computation, and it is the one
+reported.
 
 Run
 ---
@@ -71,28 +72,53 @@ def lattice_of(vs):
     return (Fm * B)[1:], N9[1:, 1:]
 
 
+def rank8_gram(r):
+    vs = (r, delta, eta)
+    func = matrix(ZZ, 3, N, lambda i, j: ip(BAS[j], vs[i]))
+    B = matrix(ZZ, func.right_kernel_matrix()).saturation()
+    NB = matrix(ZZ, 9, 9, lambda i, j: ip(B[i], B[j]))
+    c = vector(ZZ, [int(x) for x in matrix(QQ, B).transpose().solve_right(vector(QQ, eta))])
+    D, Usm, Vsm = matrix(ZZ, 1, 9, list(c)).smith_form()
+    Fm = matrix(ZZ, Vsm.inverse() if Usm[0, 0] == 1 else -Vsm.inverse())
+    if vector(ZZ, [int(x) for x in Fm[0]]) == -c:
+        Fm = matrix(ZZ, [-1] + [0] * 8).stack(Fm[1:])
+    N9 = Fm * NB * Fm.transpose()
+    return N9[1:, 1:]
+
+
 res = {}
-for lab, r in ((12, r12), (13, r13)):
-    K, GB = lattice_of([r, delta, eta])
-    assert K.nrows() == 8, K.nrows()
+for lab, r in ((12, ROOTS[11]), (13, ROOTS[12])):
+    GB = rank8_gram(r)
     ev = GB.change_ring(RDF).eigenvalues()
     res[lab] = dict(det=GB.det(), smith=[abs(x) for x in GB.smith_form()[0].diagonal()],
                     sig=(sum(1 for x in ev if x > 1e-9), sum(1 for x in ev if x < -1e-9)),
-                    even=all(GB[i, i] % 2 == 0 for i in range(8)), GB=GB)
+                    even=all(GB[i, i] % 2 == 0 for i in range(8)))
     d = res[lab]
     print("label %2d: rank 8, det %d, Smith %s, signature %s, even %s"
           % (lab, d["det"], d["smith"], d["sig"], d["even"]))
-
-print()
 same = {k: res[12][k] == res[13][k] for k in ("det", "smith", "sig", "even")}
-print("invariants equal:", same)
 print()
-if all(same.values()):
-    print("RESULT: the two invariant lattices agree in determinant, Smith invariants, signature and")
-    print("parity, so this test does not separate the pair.  The finer comparison, of the")
-    print("discriminant forms, was attempted and discarded: this record's version of it failed its")
-    print("own basis-independence control, so no difference it showed is reported as evidence.")
+print("coarse invariants equal:", same)
+print()
+print("=== (2) the discriminant forms, through the library")
+from sage_extensions.all import Lattices, tensor, ZZ as LZZ
+from collections import Counter
+info = {}
+for lab, r in ((12, ROOTS[11]), (13, ROOTS[12])):
+    Gr = rank8_gram(r)
+    values = [[LZZ(int(Gr[i, j])) for j in range(8)] for i in range(8)]
+    L = Lattices(LZZ)(tensor(LZZ, (), (8, 8), values))
+    form = L.discriminant_group()
+    els = list(form.elements())
+    qs = Counter(str(form.q(p)) for p in els)
+    info[lab] = dict(qs=dict(qs), card=len(els))
+    print("  label %2d: |A| = %d, %d distinct q values" % (lab, len(els), len(qs)), flush=True)
+print("  q multisets equal: %s" % (info[12]["qs"] == info[13]["qs"]))
+print()
+if info[12]["qs"] == info[13]["qs"]:
+    print("VERDICT: determinant, Smith invariants, signature, parity and the discriminant form all")
+    print("agree for the two roots, so no invariant available here separates the pair (12,13).")
 else:
-    print("RESULT: an invariant differs, so no isometry of T_En fixes delta and eta and carries")
-    print("r12 to r13 mod eta: the pair (12,13) is INEQUIVALENT.")
+    print("VERDICT: the discriminant forms differ, so the two lattices are not isometric and the pair")
+    print("(12,13) is INEQUIVALENT.")
 print("PYEXIT=0")

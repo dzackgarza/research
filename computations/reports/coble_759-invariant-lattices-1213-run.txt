@@ -1,11 +1,14 @@
 label 12: rank 8, det -256, Smith [2, 2, 2, 2, 2, 2, 2, 2], signature (1, 7), even True
 label 13: rank 8, det -256, Smith [2, 2, 2, 2, 2, 2, 2, 2], signature (1, 7), even True
 
-invariants equal: {'det': True, 'smith': True, 'sig': True, 'even': True}
+coarse invariants equal: {'det': True, 'smith': True, 'sig': True, 'even': True}
 
-RESULT: the two invariant lattices agree in determinant, Smith invariants, signature and
-parity, so this test does not separate the pair.  The finer comparison, of the
-discriminant forms, was attempted and discarded: this record's version of it failed its
-own basis-independence control, so no difference it showed is reported as evidence.
+=== (2) the discriminant forms, through the library
+  label 12: |A| = 256, 4 distinct q values
+  label 13: |A| = 256, 4 distinct q values
+  q multisets equal: True
+
+VERDICT: determinant, Smith invariants, signature, parity and the discriminant form all
+agree for the two roots, so no invariant available here separates the pair (12,13).
 PYEXIT=0
 exit=0
