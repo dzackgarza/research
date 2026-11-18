@@ -1819,6 +1819,17 @@ Work in the diagonal realization $B\cong\generators1^2\perp\generators{-1}^9$, a
 Let $S=\generators{s_1,\ldots,s_{56}}$ be the certified ordinary generating family of $\Gamma(2)$, and choose one $t\in S$ with $\chi(t)=-1$. The two right cosets of $\ker\chi$ have representatives $1,t$. The Reidemeister--Schreier theorem gives an ordinary generating family consisting of the elements $r s_i\,\overline{r s_i}^{-1}$, for $r\in\{1,t\}$, where the bar denotes the chosen right-coset representative. The reproducible Sage script `computations/reports/coble_kernel_positive_schreier_generators.py` constructs all 112 candidates as exact integral matrices, checks their Gram identities, reduction modulo two and positive-plane character, and removes identities and repeated matrices, leaving **95**. The source SHA-256 and exact matrix list are retained in the accompanying JSON. The public regression `test_coble_positive_schreier_generators_are_public_positive_kernel_morphisms` verifies that every matrix is an actual member of the maintained $\widetilde O^+(T_\Co)$ predicate. Since $S$ generates $\Gamma(2)$ by @thm:coble-fifty-six-ordinary-full-kernel-generation, Reidemeister--Schreier proves that the 95 matrices generate its positive real-spinor kernel, as claimed.
 :::
 
+::: {.proposition #prop:coble-positive-fifty-five-congruence-basis title="A sharp 55-element positive-kernel congruence basis"}
+
+The first **55** matrices in the certified 95-element positive Schreier family of @thm:coble-positive-kernel-ninety-five-generators are linearly independent modulo four. Their ordinary subgroup has the **full image of $\widetilde O^+(T_\Co)$ modulo sixteen**, with exact successive congruence ranks $(55,54,55)$ at levels two, four, and eight. They are recorded, with source SHA-256, in `computations/reports/coble_positive_kernel_fifty_five_generators.json`.
+
+The number 55 is the **sharp lower bound** on the number of ordinary generators of the infinite positive kernel, since its quotient modulo four is $(\ZZ/2)^{55}$. This proposition establishes finite congruence generation, not by itself ordinary generation of the infinite positive kernel; the 95-element Schreier family remains the certified ordinary generating family.
+:::
+
+::: {.proof}
+The source-hashed generator script selects independent leading matrices $(g-I)/2\pmod2$ from the 95 exact Schreier matrices; exact binary elimination selects precisely indices $0,\ldots,54$ and gives rank 55. The regression `test_coble_fifty_five_positive_elements_span_kernel_modulo_sixteen` constructs their ordinary subgroup using exact matrix products, squares and commutators modulo sixteen (without taking ambient normal closures). Its successive subgroup-collection ranks are $(55,54,55)$. The corresponding full positive-kernel ranks are 55 at level two (the real-spinor character removes one of the 56 full-kernel directions), 54 at level four by @prop:coble-eichler-level-eight-derived-image, and 55 at level eight by @thm:coble-eichler-exact-deep-congruence-ranks. Equality of all three ranks proves the stated finite congruence generation. The quotient of rank 55 proves the generator lower bound.
+:::
+
 ::: {.proposition #prop:coble-level-two-plane-parabolic title="Generators of the level-two kernel in the integral plane stabilizer"}
 
 In the notation of @thm:coble-plane-stabilizer-image, let $K_P=\Stab_{\Orth(B)}(P)\cap\ker\rho$. The following $26$ integral isometries generate $K_P$:

@@ -374,6 +374,66 @@ def test_coble_positive_schreier_generators_are_public_positive_kernel_morphisms
         assert morphism in positive_kernel
 
 
+def test_coble_fifty_five_positive_elements_span_kernel_modulo_sixteen():
+    """The 55-element positive subset generates every graded layer through 16."""
+    import hashlib
+    import json
+    from collections import deque
+    from pathlib import Path
+    from sage.all import GF, Integers, ZZ, identity_matrix, matrix
+
+    folder = Path(__file__).resolve().parents[2] / "computations/reports"
+    source = folder / "coble_kernel_positive_schreier_generators.json"
+    data = json.loads((folder / "coble_positive_kernel_fifty_five_generators.json").read_text())
+    assert data["schema"] == "coble-positive-kernel-55-ordinary-mod-sixteen-v1"
+    assert data["source_sha256"] == hashlib.sha256(source.read_bytes()).hexdigest()
+    assert data["generator_count"] == len(data["generators"]) == 55
+    assert data["source_generator_indices"] == list(range(55))
+    gram = matrix(ZZ, json.loads(
+        (folder / "coble_ambient_twenty_one_generators.json").read_text()
+    )["standard_gram"])
+    ring = Integers(16)
+    identity = identity_matrix(ring, 11)
+    generators = []
+    for row in data["generators"]:
+        g = matrix(ZZ, row["matrix_standard"])
+        assert g.transpose() * gram * g == gram
+        assert matrix(GF(2), g) == identity_matrix(GF(2), 11)
+        generators.append(matrix(ring, g))
+
+    levels = (2, 4, 8)
+    pivots = {level: {} for level in levels}
+    pending = deque()
+    lifts = []
+
+    def leading(element, level):
+        return sum((((int(element[i, j]) - int(i == j)) // level) % 2)
+                   << (11 * i + j) for i in range(11) for j in range(11))
+
+    def admit(element):
+        for level in levels:
+            bits = leading(element, level)
+            while bits:
+                pivot = bits.bit_length() - 1
+                if pivot in pivots[level]:
+                    element *= pivots[level][pivot].inverse()
+                    bits = leading(element, level)
+                else:
+                    pivots[level][pivot] = element
+                    pending.append(element)
+                    lifts.append(element)
+                    return
+
+    for generator in generators:
+        admit(generator)
+    while pending:
+        element = pending.popleft()
+        admit(element * element)
+        for previous in tuple(lifts):
+            admit(element * previous * element.inverse() * previous.inverse())
+    assert tuple(len(pivots[level]) for level in levels) == (55, 54, 55)
+
+
 def test_coble_fifty_six_ordinary_elements_span_kernel_modulo_sixteen():
     """The 56 ordinary elements generate every certified layer modulo 16."""
     import hashlib
