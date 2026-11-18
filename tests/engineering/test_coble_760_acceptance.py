@@ -179,10 +179,15 @@ def test_item_3_beneath_the_library_the_statement_is_unstatable() -> None:
     """
     page_text = page()
     assert "@warn:coble-marking" in page_text, "the conjecture no longer cites the missing marking"
+    # the conjecture's body still reads unconditionally, so its caveat must stay inside the same
+    # block: the object it names has no referent, and that has to be said where the claim is made
+    conj_block = block("conj:no_moduli_loss")
+    assert "determines its marked Coble root" in conj_block
+    assert "no referent" in conj_block, "the caveat has drifted out of the conjecture"
     marking = (ROOT / "writing/coble/cusp-correspondence/cusp-diagram-calculations.md").read_text(encoding="utf-8")
-    block = marking[marking.index("#warn:coble-marking"):]
-    block = block[:block.index("\n:::")] if "\n:::" in block else block[:4000]
-    joined = " ".join(block.split())
+    warn_block = marking[marking.index("#warn:coble-marking"):]
+    warn_block = warn_block[:warn_block.index("\n:::")] if "\n:::" in warn_block else warn_block[:4000]
+    joined = " ".join(warn_block.split())
     assert "no dictionary from the nine roots" in joined
     assert "cusp marking" in joined
     assert "the sources read supply none" in " ".join(marking.split()) or \
