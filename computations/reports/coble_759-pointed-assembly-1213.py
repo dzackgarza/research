@@ -36,6 +36,18 @@ the P-side gluing, and not in the complement isometry -- it is in the gluing cor
 assembles them into an isometry of S, or equivalently in a pointed-isometry decision the library
 does not expose.
 
+The citation route, and why it is closed
+----------------------------------------
+The uniqueness statement one would want is Nikulin, Integral symmetric bilinear forms and some of
+their applications, Proposition 1.14.1 (the copy in tmp/sources, subsection 1.14): two primitive
+embeddings are equivalent when the complement has one class in its genus and O(K) is onto O(q_K).
+That proposition is stated for an even lattice embedded in an even UNIMODULAR lattice, and its
+companion Theorem 1.14.2 supplies the two complement conditions (its case b applies here, the
+complement having rank 8 = l(A_2)).  But S is not unimodular -- det S = -256 -- so Proposition
+1.14.1 does not apply to embeddings into S, and the route through it is closed for that reason,
+not for want of a page reference.  Theorem 1.14.2 remains usable on the complement alone; it says
+nothing about embeddings into S.
+
 Run
 ---
   $HOME/.udocker/bin/proot-x86_64 -R $HOME/sage-image/rootfs -b /proc -b /dev -b /sys \\
