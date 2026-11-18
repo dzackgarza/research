@@ -1608,6 +1608,26 @@ G_{\mathrm{slice}}^5.
 The chosen roots are $\alpha_{10}$, $\alpha_0$, $\alpha_6$, and $\alpha_{16}$, respectively.
 Whether the displayed walls form a complete simple system is @prob:coxeter-completeness.
 
+::: {.theorem #thm:one-cusp-lattice title="one cusp lattice for every $0$-cusp of $\bD(T_\Co)$"}
+Let $\Gamma\le\Orth(T_\Co)$ be any arithmetic subgroup and let $e$ be a primitive isotropic vector of $T_\Co$ whose line is a $0$-cusp of $\bD(T_\Co)/\Gamma$.
+Then
+$$e^{\perp}/\bZ e\cong I_{1,8}(2).$$
+In particular the four $0$-cusps of $F_{\Co,2}$ and the one $0$-cusp of $F^{\mathrm{un}}_{\Co}$ have one and the same cusp lattice, and the Coxeter data by which they differ are the images $\Gamma_e\le\Orth(I_{1,8}(2))$ of their stabilizers, not the lattice.
+:::
+
+::: {.proof}
+By @prop:tco-as-twist, $T_\Co=I_{2,9}(2)$, and $O^+(T_\Co)$ is transitive on the primitive isotropic vectors of $T_\Co$ (@thm:unpolarized-cusps, whose proof is @lem:I29-plus-line-transitivity).
+So there is an isometry $g$ of $T_\Co$ with $g(e)=e_0$ for the representative $e_0$ of @thm:unpolarized-cusps; it carries $\bZ e$ onto $\bZ e_0$ and hence induces an isometry $e^{\perp}/\bZ e\to e_0^{\perp}/\bZ e_0$, which is $I_{1,8}(2)$ by that theorem.
+The cusp lattice therefore depends on no orbit, and in particular on no arithmetic group.
+:::
+
+::: {.remark title="what this fixes in @prob:coxeter-completeness, and what it leaves"}
+Item 1 of @prob:coxeter-completeness asks for the arithmetic cusp lattice and the image of its stabilizer.
+The lattice half is one computation and is done, for every cusp at once, at @thm:one-cusp-lattice; what that item still owes is the second half, the subgroups $\Gamma_e\le\Orth(I_{1,8}(2))$, which do depend on the cusp.
+Items 2 to 5 are therefore four problems on one diagram rather than one problem on four lattices, the candidates $G^2_{\mathrm{slice}},\dots,G^5_{\mathrm{slice}}$ above being read as the folded charts of that diagram at the four stabilizer images.
+At the one $0$-cusp of $F^{\mathrm{un}}_\Co$, whose group is $\Orth(T_\Co)$, the full reflection group's chamber is @thm:unpolarized-coxeter and its rank-$8$ elliptic subdiagrams are @tbl-unpolarized-elliptic, so the Type III cones are determined there and the comparison with the labelled cusps is a comparison of subgroups.
+:::
+
 ::: {.problem #prob:coxeter-completeness title="Required theorem (Coble Vinberg and root completeness)"}
 For every polarized Coble $0$-cusp:
 
@@ -2830,7 +2850,9 @@ The table lists each statement, whether it is proved, and the section that prove
 | Coverage of the complete Coble locus | required theorem | @sec-projective-coverage |
 | The direct period image misses every $(-2)$-Heegner divisor of $T_\Co$ | proved | @thm:direct-period-misses-root-walls |
 | Target theorem A, first clause | published in the unpolarized form [@DK13, Prop. 3.2, printed p. 513]; no root divisor is met (@thm:direct-period-misses-root-walls) and one $(-4)$-divisor is (@thm:direct-period-meets-minus-four), so the complement is a proper nonempty subarrangement; which $(-4)$-divisors are met is the record of @prob:B24, part 2, its level set computed at @rmk:coble-discriminant-levels; the polarized refinement is decided: the sign is in $\Gamma^{\mathrm{geom}}_{\Co,2}$ through the isotropy $I_\Co$ (@thm:sign-is-isotropy) and in no loop (@thm:no-loop-carries-the-sign), and no word in the reflection group gives it (@cor:no-word-for-the-sign) | @sec-autonomous-target |
-| Target theorem A, clauses two and three | not established; they wait on @sec-coxeter and @sec-coble-dlt | @sec-autonomous-target |
+| Target theorem A, clause three, the cusps | the cusp lattice is one lattice at every cusp (@thm:one-cusp-lattice), the cusps themselves are four $0$-cusps and seven $1$-cusps (@prop:coble-cong-point-stabilizer(3), @cor:coble-heegner-integral-plane-descent), and the semifans at the four $0$-cusps are @thm:coble-pair-semifan | @sec-autonomous-target |
+| Target theorem A, clause three, the diagrams | the four folded Coxeter diagrams, and with them the Type II and Type III strata at the labelled cusps, are not established: what each cusp owes is the image $\Gamma_e\le\Orth(I_{1,8}(2))$ of its stabilizer (@prob:coxeter-completeness) | @sec-coxeter |
+| Target theorem A, clause two | not established; it waits on @sec-coble-dlt and on the diagrams above | @sec-autonomous-target |
 | The sign $\iota$: loops versus isotropy | the loop monodromy is $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm\id\}$ and no loop carries $\iota$ (@thm:no-loop-carries-the-sign); the orbifold group of @def:geometric-monodromy is $\Gamma^{\mathrm{dir}}_{\Co,2}$, supplied by the isotropy $I_\Co$ (@thm:sign-is-isotropy) | @thm:sign-is-isotropy |
 | The level sets of the discriminant forms of $S_\Co$ and $T_\Co$ | computed exactly: $528$, $496$, $496$, $528$ and $528$, $528$, $496$, $496$ over the $2048$ classes | @rmk:coble-discriminant-levels |
 | A primitive $(-4)$-class in $T_{\Co,b}\intersect\Pic$ at the member $b_\star$ | proved, with the class $D_{1,+}-\widehat\iota_{\Co,b_\star}(D_{1,+})$ of two components of split ruling fibres | @thm:direct-period-meets-minus-four |
@@ -2849,7 +2871,7 @@ The table lists each statement, whether it is proved, and the section that prove
 | Finite $O(A)$ orbit tables | established computation | @sec-finite-orbits |
 | Unpolarized Coxeter chamber | established | @sec-unpolarized-coxeter |
 | Polarized wall-slice arrangements | established computations | @sec-wall-slices |
-| Polarized Coble Coxeter diagrams | not established | @sec-coxeter |
+| Polarized Coble Coxeter diagrams | the lattice is one, $I_{1,8}(2)$, at every cusp (@thm:one-cusp-lattice); the folded diagrams at the four stabilizer images are not established | @sec-coxeter |
 | Integral-affine Coble package | defined; realization open | @sec-coble-affine-package |
 | Direct dlt and stable-model theorem | open | @sec-coble-dlt |
 | Exact Coble semifans | established at the four $0$-cusps of $F_{\Co,2}$ by restriction, the marking inherited; no marking at the one $0$-cusp of $F^{\mathrm{un}}_\Co$ | @sec-direct-semifans, @sec-coble-pair-semifan |
