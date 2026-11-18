@@ -69,28 +69,49 @@ def main():
     # The ten integral reflections are those of the existing finite-image
     # certificate; every conjugate remains a genuine integral isometry.
     reflections = []
+    integral_reflections = []
     for root in line['generator_roots_standard']:
         r = vector(ZZ, root)
         norm = r * gram * r
         assert abs(norm) == 2
         reflection = identity_matrix(ZZ, 11) - (2 // norm) * r.column() * (r.row() * gram)
         assert reflection.transpose() * gram * reflection == gram
+        integral_reflections.append(reflection)
         reflections.append(matrix(GF(2), reflection))
     span = matrix(GF(2), 0, 121)
     frontier = deque()
-    for row in level_four.rows():
+    independent = []
+    for index, row in enumerate(level_four.rows()):
         if span.stack(matrix(GF(2), [row])).rank() > span.rank():
             span = span.stack(matrix(GF(2), [row]))
-            frontier.append(matrix(GF(2), 11, 11, row))
+            current = matrix(GF(2), 11, 11, row)
+            frontier.append((current, index, ()))
+            independent.append((current, index, ()))
     while frontier:
-        current = frontier.popleft()
-        for reflection in reflections:
+        current, seed, word = frontier.popleft()
+        for index, reflection in enumerate(reflections):
             moved = reflection * current * reflection
             row = vector(GF(2), moved.list())
             if span.stack(matrix(GF(2), [row])).rank() > span.rank():
                 span = span.stack(matrix(GF(2), [row]))
-                frontier.append(moved)
+                record = (moved, seed, (index,) + word)
+                frontier.append(record)
+                independent.append(record)
     assert span.rank() == 56
+    normal_generators = []
+    for expected, seed, word in independent:
+        conjugator = identity_matrix(ZZ, 11)
+        for index in word:
+            conjugator *= integral_reflections[index]
+        element = conjugator * standard[seed] * conjugator.inverse()
+        assert matrix(GF(2), 11, 11, [
+            int((element[i, j] - int(i == j)) // 2) % 2
+            for i in range(11) for j in range(11)]) == expected
+        normal_generators.append({
+            'kernel_generator_index': seed,
+            'conjugating_reflection_word': list(word),
+            'matrix_standard': [[int(x) for x in row] for row in element.rows()],
+        })
     plane = matrix(ZZ, e).row_module()
     assert all(all(g * v in plane for v in e) for g in generators)
     assert full['generator_count'] == 28
@@ -105,6 +126,7 @@ def main():
             'generator_count': 26,
             'level_four_image_rank': int(level_four.rank()),
             'normal_conjugate_level_four_image_rank': int(span.rank()),
+            'normal_conjugate_level_four_generators': normal_generators,
             'generators_standard': [
                 [[int(x) for x in row] for row in g.rows()] for g in standard],
         }

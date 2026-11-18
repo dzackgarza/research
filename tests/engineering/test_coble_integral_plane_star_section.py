@@ -192,12 +192,14 @@ def test_level_two_integral_plane_parabolic_kernel_generators(tmp_path):
                 break
     assert len(echelon) == 26
     reflections = []
+    integral_reflections = []
     for coordinates in source["generator_roots_standard"]:
         root = vector(ZZ, coordinates)
         norm = root * gram * root
         assert abs(norm) == 2
         reflection = identity_matrix(ZZ, 11) - (2 // norm) * root.column() * (root.row() * gram)
         assert reflection.transpose() * gram * reflection == gram
+        integral_reflections.append(reflection)
         reflections.append(matrix(GF(2), reflection))
     frontier = deque(
         matrix(GF(2), 11, 11, [((g[i][j] - int(i == j)) // 2) % 2
@@ -219,6 +221,30 @@ def test_level_two_integral_plane_parabolic_kernel_generators(tmp_path):
                     frontier.append(moved)
                     break
     assert len(echelon) == 56
+    witnesses = data["normal_conjugate_level_four_generators"]
+    assert len(witnesses) == 56
+    assert all(len(row["conjugating_reflection_word"]) <= 1 for row in witnesses)
+    witness_echelon = {}
+    for record in witnesses:
+        seed = record["kernel_generator_index"]
+        assert 0 <= seed < 26
+        conjugator = identity_matrix(ZZ, 11)
+        for index in record["conjugating_reflection_word"]:
+            assert 0 <= index < len(integral_reflections)
+            conjugator *= integral_reflections[index]
+        expected = (conjugator * matrix(ZZ, data["generators_standard"][seed])
+                    * conjugator.inverse())
+        assert expected == matrix(ZZ, record["matrix_standard"])
+        bits = sum((int((expected[i, j] - int(i == j)) // 2) % 2)
+                   << (11 * i + j) for i in range(11) for j in range(11))
+        while bits:
+            pivot = bits.bit_length() - 1
+            if pivot in witness_echelon:
+                bits ^= witness_echelon[pivot]
+            else:
+                witness_echelon[pivot] = bits
+                break
+    assert len(witness_echelon) == 56
     reproduced = tmp_path / "kernel.json"
     subprocess.run(
         ["sage", "-c", "import runpy,sys;sys.argv=['kernel','--output',"
