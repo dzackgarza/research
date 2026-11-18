@@ -176,9 +176,10 @@ with $y_3 = -(2\alpha_1+3\alpha_2+4\alpha_3+6\alpha_4+5\alpha_5+4\alpha_6+3\alph
 
 : Isotropic vectors in $\fentwo$ and their divisibilities.
 
-The coordinates are those printed beside the wall Gram matrices in the transcript of @prop:facet-angles-aegs, `computations/reports/coble_enriques-white-root-facets-run.txt`; $y_3$ has square $-2$ as a vector of $E_8$, hence $-4$ in $E_8(2)$, and $y_4$ has square $-4$, hence $-8$, so $e'+f'$ of square $4$ and $2e'+f'$ and $2e+2f$ of square $8$ make the four vectors isotropic.
-An earlier printing of this table named $y_3$ by the single root $\overline\alpha_8$, which is of square $-4$ and does not make $e'+f'+\overline\alpha_8$ isotropic; the vectors above are the transcript's.
-The two divisibilities are recomputed in `computations/reports/coble_672-zero-cusp-sterk-two-run.txt`.
+The coordinates are the lattice database's own, printed for `Sterk.selected_isotropic_vectors()` in the basis $(a_1,\dots,a_8,e,e',f,f')$ of $\ten$ [@Ste91, (4.2.2)--(4.2.3), printed p. 16], and the same vectors stand beside the wall Gram matrices in the transcript of @prop:facet-angles-aegs; $y_3$ has square $-2$ as a vector of $E_8$, hence $-4$ in $E_8(2)$, and $y_4$ has square $-4$, hence $-8$, so $e'+f'$ of square $4$ and $2e'+f'$ and $2e+2f$ of square $8$ make the four vectors isotropic.
+Cusp $4$ has two printed representatives: the table gives the one its chamber is drawn at, $2e'+f'+y_4$, which is `Sterk.sterk4_cusp_vector()`, while `Sterk.selected_isotropic_vectors()` returns (4.2.3)'s $e'+2f'+y_4$; both have the divisibilities tabulated here and isometric reductions.
+An earlier printing of this table named $y_3$ by the single root $\overline\alpha_8$, which is of square $-4$ and does not make $e'+f'+\overline\alpha_8$ isotropic; the vectors above are the library's.
+The two divisibilities, and the reduction at each cusp, are computed in `computations/reports/coble_672-zero-cusp-sterk-two-run.txt`.
 :::
 
 ::: {#fig-220-cusp-diagram .figure}

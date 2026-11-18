@@ -69,7 +69,7 @@ So the orbit of $F_\ell$ is carried to the orbit of $F_{\iota\ell}$, that is $[\
 
 ::: {.theorem #thm:coble-zero-cusp-sterk-two title="Which cusp of $\fentwo$ carries the Coble $0$-cusp: cusps $2$--$5$ for the boundary lattice, cusp $2$ for the chamber"}
 
-Let $\delta = e-f$, $T_\Co = \delta^{\perp\ten}$, $\Gamma_{\Co,2} = R_{\Gent}$ and $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$, and let $\eta_1,\dots,\eta_5$ be the printed Enriques cusp vectors of @ex:sterk-isotropic-divisibilities, in the coordinates of $\ten = U\oplus U(2)\oplus E_8(2)$.
+Let $\delta = e-f$, $T_\Co = \delta^{\perp\ten}$, $\Gamma_{\Co,2} = R_{\Gent}$ and $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$, and let $\eta_1,\dots,\eta_5$ be Sterk's five cusp vectors in $\ten = U\oplus U(2)\oplus E_8(2)$, that is the vectors the lattice database returns as `Sterk.selected_isotropic_vectors()` [@Ste91, (4.2.2)--(4.2.3), printed p. 16], whose coordinates and divisibilities are tabulated in @ex:sterk-isotropic-divisibilities.
 Then:
 
 1. **Cusp $1$ carries no Coble $0$-cusp.** $(\eta_1,\delta) = -1$, so $\eta_1\notin T_\Co$.
@@ -86,16 +86,21 @@ Then:
 
 ::: {.proof}
 
-Items (1), (2) and (4), and the wall counts of (3), are the record `computations/reports/coble_672-zero-cusp-sterk-two-run.txt`: it reads the five cusp vectors back from the transcript of @prop:facet-angles-aegs and computes, in exact integer and rational arithmetic, the pairings with $\delta$, the squares, the primitivity, the divisibilities in $\ten$ and in $\tdp$, and the quotient lattices $\eta_k^{\perp T_\Co}/\ZZ\eta_k$ with their invariant factors and invariants $(r,a,\delta)$.
-There $\delta^2 = -2$ and $\div_{\ten}(\delta) = 1$; $T_\Co = \delta^{\perp\ten}$ is of rank $11$, determinant $-2048$ and signature $(2,9)$.
+Items (1), (2) and (4), and the wall counts of (3), are the record `computations/reports/coble_672-zero-cusp-sterk-two-run.txt`, which works entirely in the lattice database: $T_\Co$, $\ten$ and $\tdp$ are its `NamedLattices.Tco`, `.TEn` and `.TdP`, each verified there to be isometric to the orthogonal sum of its named summands, namely $\langle2\rangle\oplus U(2)\oplus E_8(2)$, $U\oplus U(2)\oplus E_8(2)$ and $U\oplus U(2)\oplus E_8^{\oplus2}$, and the five vectors are its own `Sterk.selected_isotropic_vectors()`.
+No Gram matrix is typed in the record and no linear-algebra routine is written in it; the perpendiculars, quotients, radicals, discriminant forms and isometry decisions are the library's own operations, and each conclusion below is that library's verdict.
 
-For (2), the quotient $\eta_k^{\perp T_\Co}/\ZZ\eta_k$ is computed as the orthogonal complement of $\eta_k$ in $T_\Co$ modulo the line, with the basis obtained by completing $\eta_k$ to a unimodular basis; its invariants are $(9,9,1)$ at each of the four cusps, so by @thm:two-elementary-classification, whose uniqueness clause is [@Nik80, Thm. 3.6.2, printed p. 144], the four boundary lattices are one lattice $(9,9,1)_1$.
+For (1) and the divisibility of (2): $\delta^2 = -2$ and $\div_{\ten}(\delta) = 1$, and $\delta^{\perp\ten}$ — the perpendicular of the line $\ZZ\delta$ — is isometric to $T_\Co$, of rank $11$, determinant $-2048$ and signature $(2,9)$.
+The pairing of $\eta_1$ with $\delta$ is $-1$, so $\eta_1$ is not a vector of $T_\Co$; for $k=2,3,4,5$ the pairing is $0$ and the divisibility ideal in $\ten$ is $2\ZZ$.
+
+For (2): the primitive span of $\delta$ and $\eta_k$ has for its perpendicular the rank-$10$ lattice $M = T_\Co\intersect\eta_k^{\perp}$; since $\eta_k^2 = 0$ and $\eta_k\in M$, the line $\ZZ\eta_k$ is the radical of $M$, so $M/\rad M$ is $\eta_k^{\perp T_\Co}/\ZZ\eta_k$, and the library's radical quotient of $M$ returns it: rank $9$, determinant $2^9$, signature $(1,8)$, even, $2$-elementary with invariants $(9,9,1)$, and isometric to $\langle2\rangle\oplus E_8(2)$ — at each of the four cusps, so the four boundary lattices are one lattice $(9,9,1)_1$ (@thm:two-elementary-classification, whose uniqueness clause is [@Nik80, Thm. 3.6.2, printed p. 144]).
 That each is a $0$-cusp of $F_{\Co,2}$ over the cusp named by the same vector is @lem:cusp-map-of-a-period-lattice-embedding applied to $\bD(T_\Co)\subset\bD(\ten)$.
+Cusp $4$ has two printed representatives, (4.2.3)'s and the one its chamber is drawn at [@Ste91]; the record runs both, and both give the boundary lattice $(9,9,1)_1$ and divisibility $1$ in $\tdp$, so no clause here depends on the choice.
 
-For (3), write $\bar\alpha = \alpha + \tfrac12(\alpha,\delta)\delta$ for the projection to $\delta^\perp$; it preserves squares because $\delta^2 = -2$, so of the projected roots of the cusp-$2$ diagram the eight orthogonal to $\delta$ keep square $-4$ and the one with $(\alpha,\delta) = 2$, the printed root $r_9$, becomes the vector $r_9+\delta$ of square $-4+2\cdot2-2 = -2$.
+For (3), write $\bar\alpha = \alpha + \tfrac12(\alpha,\delta)\delta$ for the projection to $\delta^\perp$; since $\delta^2 = -2$ it satisfies $\bar\alpha^2 = \alpha^2 + \tfrac12(\alpha,\delta)^2$ and $(\bar\alpha,\bar\beta) = (\alpha,\beta) + \tfrac12(\alpha,\delta)(\beta,\delta)$, so of the projected roots of the cusp-$2$ diagram the eight orthogonal to $\delta$ keep square $-4$ and the one with $(\alpha,\delta) = 2$, the printed root $r_9$, becomes the vector $r_9+\delta$ of square $-4+2 = -2$.
 The record prints the labelled graphs of both sides: the Coble chamber's adjacency table, as in @thm:coble-cusp-chamber ([@AN06, Table 1, entry $N = 10$, printed p. 52]), and the facet at cusp $2$, agree edge by edge and vertex by vertex, and the restricted chambers at cusps $3$, $4$ and $5$ have $10$, $10$ and $11$ distinct walls after the induced parallel pairs are identified, the numbers printed beside their bond lists in `computations/reports/coble_pair-semifan-cusps-run.txt`.
 
-For (4), the divisibilities are those of @ex:sterk-isotropic-divisibilities, recomputed in the record, and the two $0$-cusps of $\bbcpt{\fttz}$ are distinguished by $\div_{\tdp}\in\theset{1,2}$ [@AEGS25, §3.1, printed p. 589], while the map on $0$-cusps of $\fentwo\to\fttz$ reads off those divisibilities [@AEGS25, Lem. 3.2 and its proof, printed p. 590].
+For (4), the divisibility in $\tdp$ is that of the image under the library's $\ten\injects\tdp$ embedding, and its ideal is $2\ZZ$ for cusp $2$ and $\ZZ$ for cusps $1,3,4,5$; the record also reduces the image at each cusp and confirms by isometry that cusp $2$'s is $U\oplus E_8^{\oplus2}=(18,0,0)_1$ and cusps $1,3,4,5$'s are $U(2)\oplus E_8^{\oplus2}=(18,2,0)_1$.
+The two $0$-cusps of $\bbcpt{\fttz}$ are distinguished by $\div_{\tdp}\in\theset{1,2}$ [@AEGS25, §3.1, printed p. 589], and the map on $0$-cusps of $\fentwo\to\fttz$ reads off those divisibilities [@AEGS25, Lem. 3.2 and its proof, printed p. 590].
 
 For (5), $\Gamma(\mcz_0)$ at each of cusps $2$ to $5$ is $\Dc^2$ and at cusp $1$ is $\RP^2$ (@ex:fen2_five_cusps, from [@AEGS25, §3.2, printed p. 590]), and by (1) and (2) the Coble $0$-cusps are exactly those over cusps $2$ to $5$.
 :::
