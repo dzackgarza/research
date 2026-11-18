@@ -229,6 +229,33 @@ If $R$ is recognizable, then the normalization of the KSBA compactification $\oF
 This is [@AE23, Thm. 9.1].
 :::
 
+::: {.theorem #thm:semifan-recognizable-divisor title="The semifan of a recognizable divisor is the generalized Coxeter semifan"}
+
+Let $R$ be a recognizable polarizing divisor for $F_S$ (@def:recognizable-divisor) and let $\eta$ be a $0$-cusp. Put $\bar T=\eta^\perp/\eta$, denote by $C\subset\bar T_\RR$ the positive cone, by $\Gamma_\eta$ the Coxeter diagram of $\bar T$ with vertex set $V=V(\Gamma_\eta)$ and reflection group $W=W(\Gamma_\eta)$, and by $\mathfrak C$ its fundamental chamber. Write $H_v^+=\{x\in\bar T_\RR : x\cdot v\ge 0\}$. Assume
+
+- **(T)** the combinatorial type of the KSBA-stable limit of a degeneration of monodromy invariant $\lambda\in\bar T\cap C$ depends only on $\lambda$, and the loci on which it is locally constant are the cones of a semifan $\mcf_{R,\eta}$ whose semitoroidal compactification normalizes the KSBA compactification;
+- **(W)** $\mcf_{R,\eta}$ is invariant under $W$, every wall of it is a mirror $r^\perp$ of a root $r\in V$, uniformly along the mirror: there is a subset $J\subseteq V$ such that two chambers of the Coxeter complex whose common facet lies in $r^\perp$ lie in a common cone of $\mcf_{R,\eta}$ if and only if $r\in J$.
+
+Let $J$ be the set of (W), put $I=V-J$ and $W_J=\langle w_j\mid j\in J\rangle$, and let $L=\Union_{h\in W_J}h(\mathfrak C)$. Then:
+
+1. the maximal cones of $\mcf_{R,\eta}$ are the $W$-translates of $L$, and its remaining cones are the images $g(F)$ with $g\in W$ and $F$ a face of $\mathfrak C$ which is not of the form $\mathfrak C\cap\bigcap_{j\in J'}r_j^\perp$ for any $J'\subseteq J$; equivalently, $\mcf_{R,\eta}$ is the coarsening of the Coxeter semifan obtained by deleting the faces $\bigl(\bigcap_{j\in J'}\alpha_j^\perp\bigr)\cap\mathfrak C$ for $J'\subseteq J$;
+2. $L=\bigcap_{i\in I}\bigcap_{h\in W_J}H^+_{h(r_i)}$ is convex and locally finite, its stabilizer in $W$ is $W_J$, and its support is the rational closure of $C$;
+3. two Type II or Type III cones of the Coxeter semifan, that is, two cones cut out by a maximal parabolic or an elliptic subdiagram, lie in one cone of $\mcf_{R,\eta}$ exactly when their relevant contents agree, so the cones of $\mcf_{R,\eta}$ are indexed by the combinatorial types of the KSBA-stable limits;
+4. $\mcf_{R,\eta}$ is a fan if and only if $J$ spans an elliptic subdiagram, that is, if and only if $W_J$ is finite;
+5. $\mcf_{R,\eta}$ is invariant under $\Stab_\Gamma(\eta)$, hence $\Gamma$-admissible for the monodromy group $\Gamma$ of $F_S$.
+:::
+
+::: {.proof}
+
+Hypothesis (T) is [@AE22, Prop. 8.1 and its proof, printed p. 41], which states it for the two-elementary lattices of [@AE22, Fig. 1, printed p. 5] with $g\ge2$ and $S\ne(10,8,0)$ and at every $0$-cusp of $F_S$; the proof derives the statement from the cone-by-cone determination [@AE23, Thm. 9.3 and Def. 8.12], the path independence of the limit being [@AE23, Cor. 8.13], so (T) is available for a recognizable $R$ on any $F_S$ exactly as far as that determination is. The semifan $\mcf_{R,\eta}$ is invariant under the image of $\Stab_\Gamma(\eta)$ in $\Orth(\bar T)$, because an element of $\Gamma$ fixing $\eta$ carries a degeneration of monodromy $\lambda$ to one of monodromy $g\lambda$ whose stable limit is the same, so it is $\Gamma$-admissible.
+
+*Step 1: the relation on chambers.* Two neighbouring chambers of the Coxeter complex share exactly one facet, and that facet lies in exactly one mirror $r^\perp$. By (W) the facet is a wall of $\mcf_{R,\eta}$ exactly when $r\in I$, and by (T) the two chambers lie in one cone of $\mcf_{R,\eta}$, equivalently have the same combinatorial type, exactly when the facet is not a wall. So the two chambers are merged exactly when $r\in J$.
+
+*Step 2: the maximal cones.* A cone of $\mcf_{R,\eta}$ is a union of chambers closed under the relation of Step 1, and a maximal cone is a connected component of that relation, since a further merge would have to cross a facet in a mirror of $I$, which is a wall. The reflections $w_j$, $j\in J$, generate $W_J$; the orbit $W_J\mathfrak C$ is connected for this relation, because a facet of $h(\mathfrak C)$ in $h(r_j)^\perp$ is shared with $hw_j(\mathfrak C)$, and it is closed under it, for the same reason. Hence the maximal cones are the closures of the sets $\Union_{h\in W_J}h(\mathfrak C^\circ)$, which are $L=\Union_{h\in W_J}h(\mathfrak C)$ and its $W$-translates. This is [@AE22, Def. 9.1 and Def. 9.3, printed p. 53], and the description of the coarsening as the deletion of the faces spanned by irrelevant roots is [@AEGS25, §5.2, printed p. 610].
+
+*Step 3: the properties.* Assertions (2), (3) and (4) are [@AET23, Prop. 4.17, printed pp. 26--27] and [@AET23, Cor. 4.18, printed p. 27], in whose notation $I$ is the set of active and $J$ the set of inactive mirrors; the identification of the relevant content with the combinatorial type is [@AET23, Thm. 7.5, printed p. 48] together with [@AET23, Prop. 7.6, printed p. 49], and the fan criterion is [@AE22, Rem. 9.11, printed p. 57] and [@AET23, Rem. 4.19, printed p. 27]. Assertion (5) is the first paragraph.
+:::
+
 ::: {.example #ex:recognizable-divisors}
 
 Two basic examples of recognizable divisors:
@@ -238,12 +265,33 @@ Two basic examples of recognizable divisors:
 2. The **ramification divisor** $R_\iota$ of a nonsymplectic involution.
 :::
 
+::: {.corollary #cor:semifan-computed-cases title="The hypothesis, and the split, in the computed cases"}
+
+Hypotheses (T) and (W) of @thm:semifan-recognizable-divisor hold, with the following $I$ and $J$, for the ramification divisor $R_\iota$ of a nonsymplectic involution, in three families:
+
+1. **Two-elementary lattices with $g\ge2$, $S\ne(10,8,0)$.** (T) is [@AE22, Prop. 8.1, printed p. 41]. For the lattice $\bar T_1=(10+\bar k,10-\bar k,\bar\delta)$ the set $I$ is the $2\bar k$ vertices on the $I_{2\bar k}$ cycle and $J$ every other vertex, "in particular all the black vertices"; for a lattice $\bar T_{\bar g}$ reached by a chain of mirror moves, $I$ consists of the vertices inherited from $\Gamma(\bar T_1)$ and $J$ of the rest [@AE22, Def. 9.5, printed p. 54]. (W) is [@AE22, Def. 9.5, printed p. 54] together with [@AE22, Thm. 9.10, printed p. 56], which dominates $\overline F_S^{\mcf_{R,\eta}}$ by the semitoroidal compactifications for the Coxeter semifans of $W_2$ and of $W_r$.
+2. **Degree-two K3 surfaces.** $I=\{0,\dots,17\}$ and $J=\{18,\dots,23\}$ for the twenty-four roots of $\bar T=H\oplus E_8^2\oplus A_1$ [@AET23, printed p. 27]. (T) is [@AET23, Thm. 7.5, printed p. 48] with [@AET23, Thm. 8.2, printed p. 50], and (W) is [@AET23, Thm. 1.2, printed p. 3]: "the Coxeter fan refines this semifan".
+3. **Enriques surfaces of degree two.** A folded root lies in $J$ exactly when it is the folding of a root off the boundary of the square, resp. the triangle [@AEGS25, Def. 5.4 and Lemma 5.5, printed p. 611]. (T) is [@AEGS25, Thm. 5.9, printed p. 611], whose proof excludes a strict coarsening of the collection on the ground that it would merge a codimension-one cone carrying a one-parameter family of non-maximal pairs [@AEGS25, printed p. 612].
+:::
+
+::: {.proof}
+
+In each case the cited statement identifies the semitoroidal compactification for the displayed semifan with the normalization of the stable-pair compactification, and the displayed split is the one the cited definition uses: (1) [@AE22, Def. 9.5, printed p. 54] and [@AE22, Thm. 9.10, printed p. 56]; (2) [@AET23, §4D, printed p. 27] with [@AET23, Thm. 8.2, printed p. 50]; (3) [@AEGS25, Lemma 5.5 and Thm. 5.9, printed p. 611]. Hypothesis (W) is then the coarsening statement in each of the three sources, and (T) is the corresponding cone-by-cone determination of the stable limits.
+:::
+
+::: {.remark #rmk:semifan-not-a-fan}
+
+Part (4) of @thm:semifan-recognizable-divisor is what "the coarsest subdivision" leaves out. The semifan is a fan only when the irrelevant roots span an elliptic subdiagram, which [@AE22, Rem. 9.11, printed p. 57] records as happening "in rather few cases" among the two-elementary cusps, and which holds at $\fentwo$ at the $0$-cusps $2$ and $4$ and fails at $1$, $3$ and $5$ [@AEGS25, Lemma 5.6, printed p. 611]. So the semifan of a recognizable divisor is in general not a fan, and no description of it as the coarsest fan above $\{C^+\}$ can exist.
+:::
+
 ::: {.example #ex:elliptic-k3-divisor-fans title="Two polarizing divisors on elliptic K3 surfaces"}
 
 Let $F$ parameterize elliptic K3 surfaces with section $s$ and singular fibers $f_1,\ldots,f_{24}$, counted with multiplicity. For the polarizing divisor $R=s+m\sum_i f_i$ with $m\ge1$, the normalization of the stable-pair compactification is toroidal. Its fan subdivides each Coxeter chamber into nine chambers, so it refines the Coxeter fan [@ABE22, Intro., Thm. 1.2]. For the image of the trisection of nonzero $2$-torsion points after contracting the section, the normalization is toroidal for a fan whose chamber is the union of four Coxeter chambers [@ABE22, Intro., Thm. 1.1 and §3]. Thus these two geometric divisors give opposite directions of comparison with the same Coxeter fan.
 :::
 
-::: {.question #qst:recognizable-semifan title="The semifan of a recognizable divisor"}
+::: {.question #qst:recognizable-semifan title="The semifan of the rational-curve divisor"}
 
-Describe the semifan $\mcf_R$ of @thm:recognizable-semitoroidal for a recognizable divisor $R$, and in particular for the rational curve divisor $R_{\rcop}$ of @ex:recognizable-divisors.
+Let $R_{\rcop}$ be the rational-curve divisor of @ex:recognizable-divisors on $F_{2d}$. Is hypothesis (W) of @thm:semifan-recognizable-divisor satisfied at each $0$-cusp, that is, does $\mcf_{R_{\rcop}}$ coarsen the Coxeter semifan, and if so, which split $I\sqcup J$ does it induce --- equivalently, across which mirrors of the Coxeter diagram does the combinatorial type of the KSBA-stable limits of the pairs $(X,\eps R_{\rcop})$ stay constant?
+
+Neither source that computes a semifan computes this one: [@AET23] determines the stable limits of the pairs $(X,\eps R)$ for $R$ the ramification divisor in $|3L|$, and [@AE22] those of $(X,\eps C_g)$ for the fixed curve, so in both the divisor is $R_\iota$ and not $R_{\rcop}$. The answers are therefore recorded for no $d$ in the sources read, and by @thm:semifan-recognizable-divisor the open input is the type function $\bS_{R_{\rcop}}$ at the $0$-cusps and nothing further.
 :::
