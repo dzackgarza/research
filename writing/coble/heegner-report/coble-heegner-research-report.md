@@ -713,7 +713,8 @@ Both are $\tau$-invariant, both vanish at $p$ with nondegenerate quadratic part,
 So both are members of @prop:one-node-family and the tuples attached to them by @prop:tuple-of-the-construction satisfy the five conditions.
 
 For $b_0$ the $y$-discriminant of $f_0$ is $x^2$ times a squarefree polynomial of degree $22$ coprime to $x^2-1$, the $x$-discriminant is $y^2$ times a squarefree polynomial of degree $22$, and the leading $x$-coefficient is the squarefree $5y^4-2y^2+3$.
-A ruling whose fibre is not reduced gives a multiple root of the relevant discriminant, and a simple root of a discriminant which is otherwise squarefree means exactly one double point, that is a nodal fibre; so every ruling of either fibration away from the node's has an irreducible nodal fibre, the node's own fibre is $D_b+(L_1-D_b)$ with $H_b$-degrees $0$ and $2$ (@lem:face-at-H, part 1), and the fibre at $x=\infty$ is smooth elliptic.
+A ruling whose fibre is not reduced gives a multiple root of the relevant discriminant, and a simple root of a discriminant which is otherwise squarefree means exactly one double point, that is a nodal fibre; so every ruling of either fibration away from the node's has an irreducible nodal fibre.
+The ruling through $p$ is $F_1=\set{x=0}$, and its strict transform $\widetilde F_1$ in $\Bl_pY$ satisfies $h_1=[\widetilde F_1]+[e]$; applying $\widehat\pi_b^*$ and using $\widehat\pi_b^*e=D_b$ (@lem:face-at-H, part 1) gives $L_1=\widehat\pi_b^*\widetilde F_1+D_b$, so that fibre is $\widehat\pi_b^*F_1=(L_1-D_b)+D_b$, with $H_b$-degrees $2$ and $0$, and the fibre at $x=\infty$ is smooth elliptic.
 None of those fibres contributes a component of $H_b$-degree $1$, so $\nu(b_0)=0$.
 
 For $b_\star$ the $y$-discriminant is $x^2(x-1)^2(x+1)^2$ times a squarefree polynomial of degree $18$ that does not vanish at $x=0,1,-1$, the $x$-discriminant is $y^2$ times a squarefree polynomial of degree $22$, the leading $x$-coefficient is the squarefree $8y^4+7y^2+6$, and $f_\star(1,y)=(y-1)^2(y-3)^2$ and $f_\star(-1,y)=(y+1)^2(y+3)^2$.
@@ -1077,7 +1078,7 @@ This group is the natural group of a fixed normalized Heegner component once the
  \right).
 \]
 
-The chamber $\mcc$ is part of this datum and is not dropped by what follows: the equality of @prop:direct-eq-heegner is proved for the centralizer $Z_{O(L_{K3})}(I_{\Co},I_{\mathrm{dP}})_{H,\alpha}$ without it, so the group above lies in $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ with equality exactly when every element of that centralizer preserves $\mcc$. Whether every one does is @qst:kernel-and-root-arrangement, decided by the effective arrangement of a member rather than by a lattice computation.
+The chamber $\mcc$ is part of this datum. It is not an extra label at a member whose Picard lattice is the invariant lattice $S_{\Co,b}$: there the chamber is a function of $H$ and $\alpha$ (@thm:chamber-pinned-by-labels), so every element of the centralizer $Z_{O(L_{K3})}(I_{\Co},I_{\mathrm{dP}})_{H,\alpha}$ preserves it and the group above is the one @prop:direct-eq-heegner computes, $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$. At a member whose Picard lattice is larger the chamber is cut finer and the subscript is a genuine condition on the centralizer (@rmk:chamber-pinned-scope), so the group is that of such a member.
 :::
 
 This is the arithmetic group naturally attached to the autonomous lattice datum, provided the labeled rigidity theorem holds.
@@ -1107,8 +1108,8 @@ Prove
 
 Each equality requires a separate argument: global Torelli and parallel transport for the first, labeled embedding comparison for the second, and discriminant-form gluing for the third.
 The third is now settled in the form it can hold in: the block condition on the two gluings is decided affirmatively, so $\Gamma^{\mathrm{Hdg}}_\Co = \Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ (@cor:gamma-hdg-is-congruence, with @prop:coble-block-compatibility), the congruence group exceeding that by the spinor sign of $s_\zeta$ alone.
-The first two remain open: @prob:B24 and @prob:B25 for the first, and the group-level comparison behind @prob:coble-rigidity for the second, whose lattice input is @prop:coble-enriques-ambient-isometry and whose group statement is not established.
-The second is now established as well, for the centralizer without the chamber subscript: @prop:direct-eq-heegner gives $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2}$, so the four groups coincide except for the geometric monodromy entry, which needs @prob:B24 and @prob:B25, and the chamber subscript, which is @qst:kernel-and-root-arrangement.
+The first remains open: @prob:B24 and @prob:B25. The second's lattice input is @prop:coble-enriques-ambient-isometry.
+The second is now established as well, with the chamber of the datum in place: at a member whose Picard lattice is the invariant lattice the chamber is determined by the other two labels (@thm:chamber-pinned-by-labels), so @prop:direct-eq-heegner gives $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2}$ for the group of @def:direct-group as defined, and the four groups coincide except for the geometric monodromy entry, which needs @prob:B24 and @prob:B25.
 :::
 
 With $\alpha$ the vector $\delta$ of @lem:coble-heegner-vector, $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ is the group $\Gamma^{\mathrm{Hdg}}_\Co$ of @prop:gamma-co-in-heegner-group.
