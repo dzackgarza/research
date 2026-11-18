@@ -347,13 +347,24 @@ On a surface of $F$ the curves of $|L|$ are the curves $s+2f$, and [@ABE22, Intr
 
 The question of @qst:recognizable-semifan has been put to the library: the script `computations/reports/coble_679-rcop-split.py` and its transcript `computations/reports/coble_679-rcop-split-run.txt`, running on `sage-extensions`.
 
-At the $0$-cusp of $F_2$, whose boundary lattice $U\oplus E_8(-1)^{\oplus2}\oplus A_1(-1)$ the script builds, it runs Vinberg's algorithm for the fundamental chamber and its walls. The walk does not finish within $900$ seconds there, nor within $1800$ (`computations/reports/coble_679-rcop-split-run-1800.txt` is the same script under that bound), so no wall set and no cone inventory is recorded at that cusp: the split is not computed. What the split needs is the stable limit of $(X,\eps R_{\rcop})$ over a cone, and that is not an operation of the library — no module of `src/sage_extensions` names a stable pair, a Kulikov model or a semifan, and the transcript carries the two expressions that raise `AttributeError`.
+At the $0$-cusp of $F_2$, whose boundary lattice $U\oplus E_8(-1)^{\oplus2}\oplus A_1(-1)$ the script builds, it runs Vinberg's algorithm for the fundamental chamber and its walls. The walk does not finish within $900$ seconds there, nor within $1800$ (`computations/reports/coble_679-rcop-split-run-1800.txt` is the same script under that bound), nor within $2400$ with the walk alone and a bound of its own (`computations/reports/coble_679-rcop-chamber-run.txt`), so no wall set and no cone inventory is recorded at that cusp: the split is not computed. What the split needs is the stable limit of $(X,\eps R_{\rcop})$ over a cone, and that is not an operation of the library — no module of `src/sage_extensions` names a stable pair, a Kulikov model or a semifan, and the transcript carries the two expressions that raise `AttributeError`.
 
 At the elliptic cusp of @prop:semifan-coarsening-fails the script does complete. The chamber has $19$ walls, every one of square $-2$, $18$ of their $171$ pairs meeting and $153$ orthogonal, and the two squares that decide (W) come out, over every pair and every admissible triple of the simple roots, as
 $$
 \gamma^2\in\{-4,-6\},\qquad \beta^2=-12 .
 $$
 So no wall of the semifan of that divisor is a Coxeter wall, and (W) fails at that cusp by computation and not only by the hand evaluation of @prop:semifan-coarsening-fails.
+:::
+
+::: {.remark #rmk:missing-stable-limit}
+
+The operation that would decide the split, stated so that the gap is a contract and not a description. Fix a $0$-cusp $\eta$ of $F_{2d}$, a cone $\sigma$ of $\mcf^{\mathrm{cox}}$, and the rational-curve divisor $R_{\rcop}$.
+
+- **Input:** the boundary lattice $\bar T=\eta^\perp/\eta$ with its form, the cone $\sigma$ (equivalently a monodromy invariant $\lambda$ in its relative interior), and the polarized surface $(X,L)$.
+- **Output:** the combinatorial type of the KSBA stable limit of the pair $(X,\eps R_{\rcop})$ — the dual graph of the central fibre with the genera of its components, the multiplicities with which the limit divisor meets them, and the contraction that defines the stable model. This is the value of the type function of @thm:semifan-stratum.
+- **Parent:** the cone of the chamber, whose methods are in `src/sage_extensions/categories/polyhedral_cones.py`, with the Kulikov model and its integral-affine structure as the intermediate the construction runs through.
+
+The defining maps are those of [@AET23, Thm. 7.5, printed p. 48] and [@AE22, §§8--9, printed pp. 41--57], which produce that output for the ramification divisors, and of [@ABE22, §3], which produces it for the elliptic one. The library has none of the three: no module of `src/sage_extensions` names a stable pair, a Kulikov model or a semifan, and @rmk:rcop-split-computation records the two expressions that raise `AttributeError`.
 :::
 
 ::: {.corollary #cor:semifan-computed-cases title="(W), and the split, in the computed cases"}
