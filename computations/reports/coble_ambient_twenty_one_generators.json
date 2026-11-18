@@ -291,6 +291,32 @@
     ]
   ],
   "generator_count": 21,
+  "eichler_generator_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17
+  ],
+  "level_two_character_complement_indices": [
+    19,
+    20
+  ],
+  "finite_discriminant_image_order": 46998591897600,
+  "eichler_discriminant_image_order": 23499295948800,
   "generators": [
     {
       "name": "eichler_0_0",

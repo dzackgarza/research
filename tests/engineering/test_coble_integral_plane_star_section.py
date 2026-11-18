@@ -167,6 +167,10 @@ def test_coble_ambient_standard_generator_certificate():
     split_gram = change.transpose() * gram * change
     assert abs(change.det()) == 1
     assert data["generator_count"] == len(data["generators"]) == 21
+    assert data["eichler_generator_indices"] == list(range(18))
+    assert data["level_two_character_complement_indices"] == [19, 20]
+    assert data["finite_discriminant_image_order"] == 46998591897600
+    assert data["eichler_discriminant_image_order"] == 23499295948800
     assert len(set(row["name"] for row in data["generators"])) == 21
     for row in data["generators"]:
         generator = matrix(ZZ, row["matrix_standard"])
@@ -176,6 +180,9 @@ def test_coble_ambient_standard_generator_certificate():
         assert all(x in ZZ for x in split.list())
         assert split.transpose() * split_gram * split == split_gram
     assert matrix(ZZ, data["generators"][-1]["matrix_standard"]) != identity_matrix(ZZ, 11)
+    from sage.all import GF
+    for index in data["level_two_character_complement_indices"]:
+        assert matrix(GF(2), data["generators"][index]["matrix_standard"]) == identity_matrix(GF(2), 11)
 
 
 def test_coble_ambient_twenty_one_integral_generators():

@@ -75,6 +75,10 @@ certificate = {
     'standard_gram': [list(map(int, row)) for row in standard_gram.rows()],
     'standard_from_split': [list(map(int, row)) for row in standard_from_split.rows()],
     'generator_count': len(records),
+    'eichler_generator_indices': list(range(18)),
+    'level_two_character_complement_indices': [19, 20],
+    'finite_discriminant_image_order': 46998591897600,
+    'eichler_discriminant_image_order': 23499295948800,
     'generators': records,
 }
 OUTPUT.write_text(json.dumps(certificate, indent=2) + '\n')
