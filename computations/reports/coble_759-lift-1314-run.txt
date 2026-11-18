@@ -1,0 +1,15 @@
+the permutation on labels 1..14: [8, 6, 5, 4, 3, 2, 7, 1, 9, 10, 11, 12, 14, 13]
+  it fixes label 11 (the Coble root's class) and swaps 13 and 14: True
+  it is a Gram automorphism of the fourteen roots: True
+rank of span(roots, delta) saturated: 10
+rank of the complement: 2
+complement generator v: v^2 = -2, div = 1
+the permutation on the roots: 168 equations, rank 120 of 144 unknowns, consistent True
+  M is an isometry on the span: not on all of T_En
+  M delta = [1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  M delta == delta: True ; M delta == -delta: False
+
+RESULT: the permutation fixes the Coble root's line, so it is not excluded at this stage;
+the remaining question is the gluing of span(roots) with its rank-2 complement.
+PYEXIT=0
+exit=0
