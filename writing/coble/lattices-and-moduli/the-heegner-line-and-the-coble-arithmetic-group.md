@@ -962,6 +962,7 @@ So the two readings of the fourth bullet of @sec-labeled-lattice-data — a cham
 Let $b$ be the member of @thm:chamber-clause-fails, with the two $H_b$-degree-one components $C_+,C_-$ of its ruling fibre, of square $-2$, of sum $C_++C_-\in S_{\Co,b}$ and difference $u\definedas C_+-C_-$ of square $-8$ (@rmk:chamber-pinned-scope). Then there is a class $\delta\in T_\Co$ of square $-2$ with $u\cdot\delta\neq0$, and for such a class
 $$g\definedas s_\delta\;\in\;Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha},\qquad
 g\;\notin\;Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha,\mcc}.$$
+The element is the identity modulo $2$, so it lies in $\ker\rho_{T_\Co}$: the subscript cuts into the kernel, and nothing here is asserted about the image of the centralizer in $P$, which is @qst:chamber-subscript-image.
 So the chamber subscript of @def:direct-group is a genuine condition at a member of the construction, and the implication (INV) of research#720 — every $g\in Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ preserves the tuple's model-effective arrangement — is false.
 :::
 
@@ -970,6 +971,8 @@ So the chamber subscript of @def:direct-group is a genuine condition at a member
 *The class $\delta$ exists.* The classes of square $-2$ of $T_\Co$ span $T_\Co\tensor\QQ$, so a nonzero vector of $T_\Co$ pairs nontrivially with one of them, and $u^2 = -8$ makes $u$ nonzero. For the span: write $B\cong\latI_{2,9}$ with $T_\Co = B(2)$ and $B = \langle u_1,u_2\rangle\perp\langle c_1,\dots,c_9\rangle$ (@prop:tco-as-twist); the vectors $c_j$ and $u_i + c_1 + c_2$ have square $-1$ in $B$, hence $-2$ in $T_\Co$, and a vector orthogonal to all of them is orthogonal to the $c_j$, hence lies in $\langle u_1,u_2\rangle\otimes\QQ$, and orthogonal to $u_1+c_1+c_2$ and to $u_2+c_1+c_2$, hence orthogonal to $u_1$ and $u_2$, hence zero.
 
 *$g$ fixes the labels.* The class $\delta$ lies in $T_\Co$, so $s_\delta$ is the identity on $S_\Co$ and, $H$ and $\alpha$ lying in $S_\Co$, fixes both; and $I_\Co$ and $I_{\mathrm{dP}}$ act on $T_\Co$ by $-\id$ (@prop:coble-transcendental, and the action of $I_{\mathrm{dP}}$ computed in @prop:direct-eq-heegner), so both commute with $s_\delta$ and both leave $S_\Co$ invariant, so $g$ commutes with both.
+
+*$g$ is discriminant-trivial.* Every pairing in $\lkt$ is even, so $s_\delta(x)-x = (x\cdot\delta)\delta$ lies in $2\lkt$ and $s_\delta\equiv\id\pmod 2$; under the convention of @prop:gamma-co-reflective-set, part (3), that is $\rho_{T_\Co}(g) = \id$.
 
 *$g$ moves the arrangement.* Write $m\definedas C_+\cdot\delta = \tfrac12 u\cdot\delta$, which is nonzero because $C_++C_-$ lies in $S_{\Co,b}$ and $\delta\perp S_\Co$. Then
 $$g(C_+) = C_+ + (C_+\cdot\delta)\,\delta = C_+ + m\delta,$$
@@ -1642,7 +1645,7 @@ Since $\gamma A_b = A_b$ and $A_b$ is ample, $\mathfrak c_b$ and $\gamma\mathfra
 
 What is left is what that condition does to the group: is
 $$\rho_{T_\Co}\bigl(Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha,\mcc}\bigr)\;=\;\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$$
-at a member whose Picard lattice is larger than $S_{\Co,b}$, as @prop:direct-eq-heegner proves it at a member whose Picard lattice is $S_{\Co,b}$ itself? What would settle it is a generating set of the centralizer together with the chamber condition decided on each generator, one element and one member at a time; the element of @thm:chamber-subscript-is-a-condition is the first such check, and it shows that the image is not the image of the whole centralizer.
+at a member whose Picard lattice is larger than $S_{\Co,b}$, as @prop:direct-eq-heegner proves it at a member whose Picard lattice is $S_{\Co,b}$ itself? What would settle it is a generating set of $P$ together with, for each generator, a chamber-preserving lift or a proof that none exists — one member and one element at a time. The witness of @thm:chamber-subscript-is-a-condition is not such a check: it is the identity modulo $2$, so it is discriminant-trivial and moves no element of $P$. What that theorem decides is that the subscript cuts into the kernel of $\rho_{T_\Co}$, not that it changes the image.
 :::
 
 ## Integral cusp lifting {#sec-cusp-lifting}

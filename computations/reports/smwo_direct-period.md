@@ -1004,3 +1004,9 @@ because `delta` is not (`@prob:B24`, part 1). So it moves the arrangement and th
 touch: the chamber is preserved at every member by the part of the centralizer that preserves the member's
 period (`@lem:chamber-preserved-on-period`), and whether the chamber condition changes the image in `O(T_Co)`
 stays open (`@qst:chamber-subscript-image`).
+
+Addendum to the block above: the witness $s_\delta$ is the identity modulo 2 on the K3 lattice, since every pairing
+there is even, so it lies in $\ker\rho_{T_\Co}$ and it moves no element of $P$. The chamber subscript therefore cuts
+into the kernel of the discriminant representation, and the theorem says nothing about the image of the centralizer in
+$P$: that is `@qst:chamber-subscript-image`, and it is untouched by the decision above. The sentence that read
+otherwise in the question block of my previous commit is corrected here.
