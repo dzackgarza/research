@@ -149,3 +149,28 @@ B24 **verbatim** ($\operatorname{im}(p) = D_\Co^\circ/\Gamma_L$) **is false for 
 B25's residual content is exactly (D1) and (RI)/(REL); $G_3, G_4$ untouched; the (INV) implication
 governs only the item-6 (full-tuple) form of (CH); the labels'-own-reading equality
 $\Gamma^{dir}_{\Co,2} = \Gamma_L$ stands (§I).
+
+## Status of the entries above, 2026-11-18
+
+This record is append-only, so the OPEN labels in the sections above are kept as they were written. What
+has been decided since, with the statement that decides it:
+
+- **(RI)**, "$\ker\rho_{T_\Co} = W$", is **false**: `@prop:kernel-exceeds-short-roots` on the-heegner-line page
+  exhibits the reflection in the $\langle 2\rangle$ summand, which lies in the kernel and outside $\Orth^+$.
+  What remains is the index inside $\widetilde\Orth^+(T_\Co)$, which is `@qst:gamma-co-reflection-index`.
+- **(INV)** is **false**: `@thm:chamber-subscript-is-a-condition` exhibits an element of the label centralizer,
+  a reflection in a class of $T_\Co$ that is not algebraic at a member with larger Picard lattice, which
+  carries an effective class of the member to a class of square $-2$ that is not algebraic there. The part of
+  the implication that does hold, for the elements that preserve the member's period, is
+  `@lem:chamber-preserved-on-period`.
+- **(D1)** is **false** as stated: its $(-2)$ half is a corollary of the period image
+  (`@cor:d1-minus-two-half`), and its $(-4)$ half fails on
+  $496 - 121 = 375$ classes (`@thm:d1-minus-four-half`, with the record `coble_663-d1-level-orbits.py`).
+- **The sign question** left as a two-element ambiguity in Theorem E is decided: no loop carries the sign
+  (`@thm:no-loop-carries-the-sign`) and the sign is the isotropy of the stack (`@thm:sign-is-isotropy`); the
+  coarse and orbifold readings are kept apart there.
+- **$G_3$ and $G_4$**, "untouched" at the end of this record, are decided in `@cor:g3-g4-decided`: $G_3$ is the
+  geometric monodromy group and $G_4$ strictly exceeds it.
+- **(REL)** stays **open**: `@lem:block-signs-not-both-in-w` bounds its single query, and the query itself —
+  whether the block-diagonal $-1$ on $E_8(2)$ lies in $W(T_\Co)$ — wants a membership test in a group generated
+  by an infinite set of reflections, which the provider does not offer (`coble_rel-reflection-group-capability-run.txt`).
