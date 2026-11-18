@@ -608,6 +608,62 @@ The matrix is a representative and not an invariant of $\lkt$ alone: if $\theta'
 **The conjugacy class.** Let $\theta'$ be an involution of $\lkt$ with eigenspaces $T' = \lkt^{\theta'}$ and $S' = \lkt^{-\theta'}$ isometric to $T_\Co$ and $S_\Co$, and choose isometries $\psi\colon S'\iso S_\Co$ and $\varphi\colon T'\iso T_\Co$. Let $\gamma$, $\gamma'$ be the gluing anti-isometries of the two primitive embeddings $S_\Co\oplus T_\Co\injects\lkt$ and $S'\oplus T'\injects\lkt$, which exist by @thm:nikulin-gluing and are isomorphisms $A_{S_\Co}\iso A_{T_\Co}(-1)$ and $A_{S'}\iso A_{T'}(-1)$. The composite $\gamma\,\bar\psi^{-1}\,\gamma'^{-1}$ is an isometry of $q_{T'}$, so $\varphi$ can be replaced by $\varphi\circ\eta$ for an $\eta\in\Orth(T')$ chosen so that the pair $(\psi^{-1},\varphi\eta)$ carries the graph of $\gamma'$ onto the graph of $\gamma$: the element of $\Orth(T')$ needed is the one realizing the isometry of $q_{T'}$ given by the composite, and it exists because $\rho_{T'}$ is onto for the even indefinite $2$-elementary lattice $T'$ [@thm:two-elementary-surjectivity, which is @Nik80, Thm. 3.6.3, printed p. 144]. Then $\psi^{-1}\oplus\varphi\eta$ is an isometry $S'\oplus T'\iso S_\Co\oplus T_\Co$ respecting the two gluings, and it extends over the common overlattice $\lkt$ to an isometry $\Phi$ with $\Phi\theta'\Phi^{-1} = \theta_\Co$: an involution is determined by its eigenspaces, and $\Phi$ carries the pair $(T',S')$ to $(T_\Co,S_\Co)$.
 :::
 
+::: {.theorem #thm:gamma-co-coordinates title="The Coble gluing anti-isometry in coordinates"}
+
+In the marking of @thm:theta-co-coordinates put $\alpha = e_0-e_1$ and $\beta = e_0+e_1$, write $\Delta(V)$ and $\Delta^-(V)$ for the diagonal and antidiagonal copies of a summand $V$ in a doubled sum, and identify $U_2 = \generators{e_2,e_3}$ with $U_3 = \generators{e_4,e_5}$ by $e_2\mapsto e_4$, $e_3\mapsto e_5$, and $E_{8,1}$ with $E_{8,2}$ by $e_{6+k}\mapsto e_{14+k}$, so that there
+$$
+S_\Co = \generators{\alpha}\oplus\Delta(U_2,U_3)\oplus\Delta(E_{8,1},E_{8,2}),
+\qquad
+T_\Co = \generators{\beta}\oplus\Delta^-(U_2,U_3)\oplus\Delta^-(E_{8,1},E_{8,2}).
+$$
+Then the gluing anti-isometry $\gamma_\Co\colon A_{S_\Co}\iso A_{T_\Co}$ of @prop:theta-co-exists is
+$$
+\gamma_\Co\bigl([\alpha/2]\bigr) = [\beta/2],
+\qquad
+\gamma_\Co\bigl([(w,w)/2]\bigr) = [(w,-w)/2]
+$$
+for every $w$ in $U_2\oplus U_3$ and every $w$ in $E_{8,1}$; equivalently $\gamma_\Co$ is the identity map $A_{\Delta(V)}\iso A_{\Delta^-(V)}$ read through $w\mapsto (w,w)/2$ and $w\mapsto(w,-w)/2$. In particular:
+
+1. the formula is well defined on classes and bijective, because $(w,w)/2\in\Delta(V)$ forces $w\in 2V$, so $w\mapsto(w,w)/2$ is injective on $V/2V$, whose order is that of $A_{\Delta(V)}$;
+2. the eleven gluing vectors of the inclusion $S_\Co\oplus T_\Co\injects\lkt$ are the standard basis vectors
+$$
+\alpha/2+\beta/2 = e_0,\qquad (e_2+e_4)/2+(e_2-e_4)/2 = e_2,\qquad e_3,\qquad e_{6+k}\ (k = 0,\dots,7),
+$$
+and $\det[s_1,\dots,s_{11},\,e_0,e_2,e_3,e_6,\dots,e_{13}] = 1$, so that $\lkt = \generators{S_\Co, e_0, e_2, e_3, e_6,e_7,\dots,e_{13}}$: the eleven values determine $\gamma_\Co$ on the whole of $A_{S_\Co}$ and not only up to a coset;
+3. $q_{T_\Co}\circ\gamma_\Co = -q_{S_\Co}$ on all $2048$ classes of $A_{S_\Co}$, and $b_{T_\Co}(\gamma_\Co x,\gamma_\Co x') = -b_{S_\Co}(x,x')$, so the displayed map is an anti-isometry;
+4. it is block-compatible in the sense of @def:congruence-group, with the two blocks and the remaining class explicit: $\gamma_\Co(A_{\Delta(U_2,U_3)}) = A_{\Delta^-(U_2,U_3)}$, $\gamma_\Co(A_{\Delta(E_{8,1},E_{8,2})}) = A_{\Delta^-(E_{8,1},E_{8,2})}$ and $\gamma_\Co([\alpha/2]) = [\zeta/2]$ for $\zeta = \beta$; this is the marked instance of @prop:coble-block-compatibility;
+5. the class of the degree-$4$ polarization goes to
+$$
+\gamma_\Co\bigl([H/2]\bigr) = [(e_2+e_3-e_4-e_5)/2],
+$$
+of value $-q_{S_\Co}(\overline{H/2}) = -H^2/4 = -1$, odd, and the vector that @prop:rank-one-slot(3) asks for is
+$$
+t = \tfrac12\bigl(-3e_2-e_3+3e_4+e_5\bigr) - e_6 + e_{14},
+\qquad
+t^2 = -1,
+$$
+whose class in $T_\Co^{\#} = \tfrac12T_\Co$ is $\gamma_\Co([H/2])$; with $b\definedas H/2+t = -e_2+2e_4+e_5-e_6+e_{14}$ one has $b\in\lkt$, $b^2 = 0$, $b\cdot H = 2$ and $b\perp H^{\perp S_\Co}$, the lattice $\langle H,b\rangle$ has Gram matrix $\begin{pmatrix}4&2\\2&0\end{pmatrix}$ and is $U(2)$, and the involution $J$ with $(+1)$-eigenspace $\langle H,b\rangle$ is integral, fixes $H$ and $b$, preserves the form and commutes with $\theta_\Co$.
+:::
+
+::: {.proof}
+
+Every value below is printed in `computations/reports/coble_a13-gluing-anti-isometry-run.txt`, sections 1--8: the two Gram matrices and the index, the eleven classes and their images, the determinant, the $2048$ values of $q$ and the $121$ bilinear pairs, the block images, the marked class, the vector $t$ and the involution $J$. The text gives the reasons; the transcript gives the decisions.
+
+**How a class is read off.** By Nikulin's gluing theorem (@thm:nikulin-gluing) the gluing subgroup of $A_{S_\Co}\oplus A_{T_\Co}$ is the graph of $\gamma_\Co$: for $x\in S_\Co^{\#}$ and $y\in T_\Co^{\#}$ the class $(x,y)$ lies in it if and only if $x+y\in\lkt$, and then $y$ represents $\gamma_\Co(x)$. The graph meets each fibre over $A_{S_\Co}$ in exactly one class, so an exhibited $y$ is a decision and not a choice.
+
+**The classes are a basis.** Each of $[\alpha/2]$, $[(e_2+e_4)/2]$, $[(e_3+e_5)/2]$ and $[(e_{6+k}+e_{14+k})/2]$ is represented by a vector whose pairings with the $S_\Co$-basis $(\alpha,\,e_2+e_4,\,e_3+e_5,\,e_{6+k}+e_{14+k})$ are integers, so it is a class of $A_{S_\Co}$; and the $2^{11} = 2048$ sums of these eleven are distinct, which is the order of $A_{S_\Co}$, so they are a $\Z/2$-basis.
+
+**The images.** The announced sums are integral vectors of $\lkt$: $\alpha/2+\beta/2 = e_0$, $(e_2+e_4)/2+(e_2-e_4)/2 = e_2$, $(e_3+e_5)/2+(e_3-e_5)/2 = e_3$ and $(e_{6+k}+e_{14+k})/2+(e_{6+k}-e_{14+k})/2 = e_{6+k}$. For each of the eleven classes, the classes of $A_{T_\Co}$ whose representative $y$ makes $x+y$ integral were enumerated — the $2048$ classes $\tfrac12\sum\epsilon_jt_j$ of $T_\Co^{\#} = \tfrac12T_\Co$ — and exactly one does, the announced one. Hence the display is $\gamma_\Co$ on a basis of $A_{S_\Co}$, and by linearity on all of $A_{S_\Co}$.
+
+**Why the basis values are the whole map.** The $22\times22$ determinant $\det[s_1,\dots,s_{11},e_0,e_2,e_3,e_6,\dots,e_{13}]$ is $1$, so $\lkt$ is generated over $\Z$ by $S_\Co$ and those eleven vectors; an element of $A_{S_\Co}$ is therefore the class of a vector of $S_\Co^{\#}$ whose sum with the corresponding half of those vectors lies in $\lkt$, and no coset ambiguity is left.
+
+**The anti-isometry.** For each of the $2048$ classes $x = \sum\epsilon_ix_i$ with its image $y = \sum\epsilon_iy_i$ one has $x+y\in\lkt$ and hence $q_{S_\Co}(x)+q_{T_\Co}(y)\equiv0$ modulo $2\Z$, that is $q_{T_\Co}(\gamma_\Co x) = -q_{S_\Co}(x)$; the bilinear relation $b_{T_\Co}(\gamma_\Co x,\gamma_\Co x')\equiv -b_{S_\Co}(x,x')$ modulo $\Z$ holds on the $121$ pairs of basis classes and hence everywhere. Both signs are the ones of @prop:theta-co-exists, in the convention $q_L(\bar x) = x^2$ modulo $2\Z$ of @def:discriminant that @prop:rank-one-slot(2) uses.
+
+**The blocks.** For $V$ one of $U_2\oplus U_3$ and $E_{8,1}$, the map $w\mapsto[(w,w)/2]$ is a group homomorphism $V/2V\to A_{\Delta(V)}$, injective because $(w,w)/2\in\Delta(V)$ forces $w\in2V$, and $|V/2V| = |A_{\Delta(V)}|$; so it is an isomorphism, and the display says that $\gamma_\Co$ carries $A_{\Delta(V)}$ onto $A_{\Delta^-(V)}$ and $[\alpha/2]$ to $[\beta/2]$. That is @prop:coble-block-compatibility for $\gamma_\Co$ in this marking, obtained here as a consequence of the formula rather than by a search over the two blocks.
+
+**The marked class and $t$.** $H$ has divisibility $2$ in $S_\Co$ — $H\cdot\alpha = 0$, $H\cdot(e_2+e_4) = H\cdot(e_3+e_5) = 2$ and $H\cdot(e_{6+k}+e_{14+k}) = 0$ — so $\overline{H/2}$ is a class, and $H/2 = (u,u)/2$ with $u = e_2+e_3$, whence $\gamma_\Co(\overline{H/2}) = [(u,-u)/2] = [(e_2+e_3-e_4-e_5)/2]$ and its value is $((e_2+e_3-e_4-e_5)/2)^2 = -1$. The displayed $t$ satisfies $2t\in T_\Co$, $t\cdot T_\Co\subseteq\Z$ and $t^2 = -1$, so it is the vector of @prop:rank-one-slot(3) with that class; then $b = H/2+t$ is an integral vector because the two summands' classes are the two halves of a gluing vector, $b^2 = \tfrac14H^2+t^2 = 1-1 = 0$, $b\cdot H = \tfrac12H^2 = 2$, and $b$ is orthogonal to $H^{\perp S_\Co}$ because both summands are. The Gram matrix of $H,b$ is $\begin{pmatrix}4&2\\2&0\end{pmatrix}$, of determinant $-4$ and even, so $\langle H,b\rangle\cong U(2)$; $J = 2\operatorname{proj}_{\langle H,b\rangle}-\id$, the projection being along the orthogonal complement, is $+1$ on $\langle H,b\rangle$ and $-1$ on its complement, hence $J^2 = \id$ and $J$ preserves the form; it is integral, which the record checks column by column, and it fixes $H$ and $b$ by construction. Commutation with $\theta_\Co$: $\theta_\Co(b) = -H/2+t = H-b$, so $\theta_\Co$ preserves $\langle H,b\rangle$ and hence its orthogonal complement, and $J$ is $+1$ on the first and $-1$ on the second; therefore $J$ and $\theta_\Co$ commute, which is also what the record checks on the $22$ basis vectors.
+:::
+
 ::: {.corollary #cor:no-del-pezzo-involution-coble-cover title="The isometry fixing $\langle f^*F_1,f^*F_2\rangle$ is not geometric"}
 
 In the marking of @prop:coble-cover-marking, the isometry $\phi$ is a Hodge isometry of $H^2(X,\ZZ)$, and it is not the action of an automorphism of $X$.
