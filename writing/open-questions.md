@@ -52,7 +52,7 @@ tags:
 | **An equivariant triangulation compatible with the marked root** | @qst:equivariant_triangulation |
 | **The position of the three Coble semifans** | @qst:semifan-poset-position |
 | **The semifan of a recognizable divisor** | @qst:recognizable-semifan |
-| **The direct Coble theory** | @sec-status-ledger; @prob:coxeter-completeness, @prob:affine-realization, @prob:algebraic-extension, @prob:dlt-quotient, @prob:stable-proj, @prob:component-classification, @prob:direct-semifan (answered at the four $0$-cusps of $F_{\Co,2}$: @thm:coble-pair-semifan), @prob:restricted-semifan, @prob:autonomous-theorem, @prob:comparison-theorem |
+| **The direct Coble theory** | @sec-status-ledger; @prob:coxeter-completeness, @prob:affine-realization, @prob:algebraic-extension, @prob:dlt-quotient, @prob:stable-proj, @prob:component-classification, @prob:direct-semifan (answered at the four $0$-cusps of $F_{\Co,2}$: @thm:coble-pair-semifan), @prob:restricted-semifan, @prob:autonomous-theorem (its first clause is published in the unpolarized form, [@DK13, Prop. 3.2, printed p. 513], and the direct period image misses every $(-2)$-Heegner divisor of $T_\Co$ by @thm:direct-period-misses-root-walls, the polarized refinement being @prob:B25's up to its two-element ambiguity; clauses two and three wait on @sec-coxeter and @sec-coble-dlt), @prob:comparison-theorem |
 
 : {tbl-colwidths="[35,65]"}
 

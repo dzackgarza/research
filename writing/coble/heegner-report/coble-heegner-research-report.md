@@ -1913,6 +1913,63 @@ All cusps, Coxeter diagrams, Type II and Type III strata, and fan-versus-semifan
 This theorem is logically independent of the Enriques Heegner comparison.
 It requires direct analogues of the entire AEGS proof architecture.
 
+::: {.theorem #thm:direct-period-misses-root-walls title="no period of the direct construction lies on a root divisor of $T_\Co$"}
+Let $X$ be a projective K3 surface, $\iota$ a nonsymplectic involution of $X$, $h$ an ample class fixed by $\iota^*$, and $T\subset H^2(X,\ZZ)$ the $(-1)$-eigenspace of $\iota^*$.
+Then $T\intersect\Pic(X)$ contains no class of square $-2$.
+
+Consequently at every member $b$ of the direct one-node construction (@prop:one-node-family), with its Coble involution $\widehat\iota_{\Co,b}$, its invariant lattice $S_{\Co,b}$, its anti-invariant lattice $T_{\Co,b}=S_{\Co,b}^{\perp}$ and $A_b=2H_b-\alpha_b$, the lattice $T_{\Co,b}\intersect\Pic(\widehat X_b)$ contains no class of square $-2$.
+Equivalently, the period of $\widehat X_b$ is orthogonal to no $(-2)$-vector of $T_{\Co,b}$: the image of the direct period map is disjoint from the $(-2)$-Heegner divisor of $T_\Co$.
+:::
+
+::: {.proof}
+Let $\delta\in T\intersect\Pic(X)$ with $\delta^2=-2$.
+
+*The ample class is orthogonal to $\delta$.*
+The action $\iota^*$ is an isometry fixing $h$ and negating $\delta$, so
+$$h\cdot\delta=(\iota^*h)\cdot(\iota^*\delta)=-h\cdot\delta,$$
+an equality in $\ZZ$, hence $h\cdot\delta=0$.
+At a member, $A_b$ is fixed by $\widehat\iota_{\Co,b}$, because $H_b$ and $\alpha_b$ are fixed by both involutions of the tuple (@sec-labeled-lattice-data, and @prop:tuple-of-the-construction for the members of the construction).
+So $A_b\in S_{\Co,b}$, which is orthogonal to $T_{\Co,b}$: these are the two eigenspaces of an isometry, and for $s\in S_{\Co,b}$ and $t\in T_{\Co,b}$ one has $s\cdot t=(\widehat\iota_{\Co,b}^*s)\cdot(\widehat\iota_{\Co,b}^*t)=-s\cdot t$.
+And $A_b$ is ample: $2H_b-\alpha_b=\widehat\pi_b^*(-K_{\widehat Y})$ with $-K_{\widehat Y}$ ample and $\widehat\pi_b$ finite (@prop:one-node-period-image).
+
+*The class is effective up to sign.*
+Riemann–Roch on a K3 surface reads [@AN06, display (11), printed p. 23]
+$$l(\delta)+l(-\delta)=h^1(\delta)+\tfrac12\delta^2+2\ge\tfrac12\delta^2+2=1,$$
+so one of $\pm\delta$ is effective.
+The same step is stated as a necessary condition on the period of a polarized K3 surface in [@Nik80, printed p. 157], and it is the observation of [@DK13, printed p. 511] that the period point of a marked K3 surface lies on the $(-2)$-Heegner divisor of the complement lattice exactly when the image of a $(-2)$-vector is an effective class orthogonal to every class of the polarized lattice.
+
+*The contradiction.*
+Let $D\ne0$ be an effective divisor whose class is $\pm\delta$, so that $h\cdot D=0$.
+An ample class meets every curve positively, this being the Nakai--Moishezon criterion in the form used in [@AN06, printed p. 105], where ampleness is decided by $A^2>0$ and $A\cdot C>0$ for every curve $C$; it therefore meets every nonzero effective divisor positively.
+So $h\cdot D>0$, a contradiction.
+
+*From algebraicity to the period.*
+A class of $T_{\Co,b}$ is orthogonal to the period $\omega_b$ exactly when it lies in $H^{1,1}(\widehat X_b)$, and on a K3 surface the integral classes of type $(1,1)$ are exactly the classes of divisors; this is the equivalence by which [@DK13, printed p. 511] reads membership of the period point in a Heegner divisor as the existence of the corresponding class in $\Pic$.
+So no $(-2)$-vector of $T_{\Co,b}$ is orthogonal to $\omega_b$.
+:::
+
+::: {.remark title="where the argument stops, and what it leaves to the discriminant form"}
+The positivity in the effectivity step is exactly the hypothesis $\delta^2\ge-2$: for a class of square $-4$ the same display reads $l(\delta)+l(-\delta)=h^1(\delta)$, which is not positive, and $\delta$ and $-\delta$ may both be ineffective.
+So the argument excludes the root divisors of $T_\Co$ and no others.
+The divisors of the classes of square $-4$ and below are not reached by Riemann--Roch; the ones the image misses are those of the level set $\set{q_{T_\Co}=1}$ recorded in @prob:B24, part 2.
+:::
+
+**What this fixes in @prob:autonomous-theorem.**
+The first clause of that problem asks the direct open period map to identify the moduli space with $\Gamma_{\Co,2}^{\mathrm{dir}}\backslash\bD_{\Co}^{\circ}$ for an explicit hyperplane complement, and to transfer that identification to the normalization of the KSBA closure.
+What is settled below is the shape of that complement and the published status of the open identification.
+
+The unpolarized form of the open identification is published: [@DK13, Prop. 3.2, printed p. 513] identifies the moduli space $\mcm_\Co$ of classical Coble surfaces with an open subset of $\bD(N)/\Orth(N)$, where $N=\langle2\rangle\oplus E(2)$ with $E=U\oplus E_8$ [@DK13, (3.6), printed p. 513], and that $N$ is $T_\Co$ by @prop:coble-transcendental.
+Two qualifications belong with it.
+The group is the whole orthogonal group, so the quotient is $F^{\mathrm{un}}_\Co=\bD(T_\Co)/\Orth(T_\Co)$ and not the $\Gamma_{\Co,2}^{\mathrm{dir}}\backslash\bD_\Co$ of the clause: the passage from $\Orth(T_\Co)$ to the finite-index subgroup $\Gamma^{\mathrm{dir}}_{\Co,2}=\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ of @cor:four-groups-decided is @prob:B25, and it is established there only up to the two-element ambiguity its proof records.
+And the Coble surfaces of [@DK13, §3, printed p. 513] are the blowups of ten nodes of an irreducible plane sextic, so the proposition covers the unpolarized Coble moduli space and not the labeled tuple of @sec-labeled-lattice-data.
+
+The complement is not empty and contains the whole root arrangement: @thm:direct-period-misses-root-walls.
+So the clause cannot be read with an empty complement, and every $(-2)$-Heegner divisor of $T_\Co$ lies in the excluded locus.
+The excluded divisors beyond the root arrangement are not decided here: the record of @prob:B24, part 2, is that each of the $121$ classes of the level set $\set{q_{T_\Co}=1}$ carries a divisor the image misses, at the exploratory tier that record declares.
+
+The rest of the problem is not available here, and the items it waits on are the ones @tbl-status-ledger already names: the polarized Coble Coxeter diagrams of @sec-coxeter, marked not established, and the direct dlt and stable-model theorem of @sec-coble-dlt, marked open.
+Those two are what an explicit determination of the cusps, Coxeter diagrams, Type II and Type III strata and fan-versus-semifan loci requires, and what the semitoroidal identification of the normalized KSBA closure requires; at the one $0$-cusp of $F^{\mathrm{un}}_\Co$ the marking is missing in addition (@warn:coble-marking).
+
 ### Heegner comparison target {#sec-heegner-target}
 
 Let $\discriminant_\alpha$ be the $(-2)$-Heegner divisor in the degree-$2$ Enriques period quotient, defined using a fixed embedded root.
@@ -2063,7 +2120,7 @@ So the marked direct Coble moduli stack is the complement of that subarrangement
 
 ::: {.proof}
 
-*The image.* This is the content of `computations/reports/smwo_direct-period.md`, Theorem D and the (T-mixed) block, at passes 7 and 8 there. The two inclusions are decided member by member rather than by a dominance argument: every member of the construction lies in the locus $O$ of the statement, because $\alpha$ is by construction the class of the node's exceptional curve and $A = 2H-\alpha$ is ample; and conversely every point of $O$ is reconstructed as the period of a member, by the realization of the $S_\Co$-polarized structure, the geometric realization of the two involutions at $A$ ample, and the reconstruction of the member from its period. Part 1 is the direction $\mathrm{im}(p)\subseteq\bD^\circ$ of that record; part 2 is (X-TM), decided negatively there: the level-set identity $\set{z\in A_{T_\Co} : q_{T_\Co}(z) = 1} = \mathrm{BAD}_T(-4)$ has no slack on either side, and every class of $\mathrm{BAD}_S$ has $q_{S_\Co} = -1$, so the isotropy of the even lattice $\lkt$ forces the glue to carry all $121$ of them through to that level; the single class of the other level is carried by the corpus's own $\gamma_\Co$, so its wall is empty of members.
+*The image.* This is the content of `computations/reports/smwo_direct-period.md`, Theorem D and the (T-mixed) block, at passes 7 and 8 there. The two inclusions are decided member by member rather than by a dominance argument: every member of the construction lies in the locus $O$ of the statement, because $\alpha$ is by construction the class of the node's exceptional curve and $A = 2H-\alpha$ is ample; and conversely every point of $O$ is reconstructed as the period of a member, by the realization of the $S_\Co$-polarized structure, the geometric realization of the two involutions at $A$ ample, and the reconstruction of the member from its period. Part 1 is no longer the record's: it is @thm:direct-period-misses-root-walls, which proves it from the Riemann–Roch effectivity of [@AN06, (11), printed p. 23] and the Nakai–Moishezon criterion [@AN06, printed p. 105], without the record and without the programme's own constructions; part 2 is (X-TM), decided negatively there: the level-set identity $\set{z\in A_{T_\Co} : q_{T_\Co}(z) = 1} = \mathrm{BAD}_T(-4)$ has no slack on either side, and every class of $\mathrm{BAD}_S$ has $q_{S_\Co} = -1$, so the isotropy of the even lattice $\lkt$ forces the glue to carry all $121$ of them through to that level; the single class of the other level is carried by the corpus's own $\gamma_\Co$, so its wall is empty of members.
 
 *The refutation.* With both parts, the excluded and the included divisors are both nonempty: no $(-2)$-wall of $T_\Co$ is met, and each of the $121$ walls of part 2 is missed, while the complement of the whole divisorial locus is dense. So the image is neither $\bD^\circ_\Co$ nor the whole domain, and the arrangement-complement form of B2.4 fails on the side of the $121$ divisors.
 :::
@@ -2560,6 +2617,9 @@ The table lists each statement, whether it is proved, and the section that prove
 | Local $\frac{1}{4}(1,1)$ quotient | established | @sec-cover-quotient |
 | Explicit equivariant smoothing | established for the projective family | @sec-equivariant-smoothing |
 | Coverage of the complete Coble locus | required theorem | @sec-projective-coverage |
+| The direct period image misses every $(-2)$-Heegner divisor of $T_\Co$ | proved | @thm:direct-period-misses-root-walls |
+| Target theorem A, first clause | published in the unpolarized form [@DK13, Prop. 3.2, printed p. 513]; the root exclusion is @thm:direct-period-misses-root-walls; the polarized refinement is @prob:B25, up to its two-element ambiguity | @sec-autonomous-target |
+| Target theorem A, clauses two and three | not established; they wait on @sec-coxeter and @sec-coble-dlt | @sec-autonomous-target |
 | $T_{\Co}\cong\langle2\rangle\oplus U(2)\oplus E_8(2)$ | established | @sec-orthogonal-complement |
 | $S_{\Co}$ and reflection twist | established as lattice calculations | @sec-reflection-twist |
 | Labeled embedding uniqueness | required theorem | @sec-labeled-lattice-data |
