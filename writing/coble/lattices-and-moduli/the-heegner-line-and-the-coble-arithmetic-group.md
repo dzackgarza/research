@@ -983,6 +983,23 @@ again of square $-2$; and it is not a class of $\widehat X_b$: if $C_+ + m\delta
 *$g$ moves the chamber.* Both $\mathfrak c_b$ and $g\mathfrak c_b$ contain $A_b$, since $A = 2H-\alpha$ lies in $S_\Co$, is fixed by $g$ and is ample. If the two chambers were equal, $g$ would carry each facet of $\mathfrak c_b$ to a facet, and the facets lie in the walls $\gamma^\perp$ for $\gamma\in\Delta_b$ with the sign fixed by $A$-positivity (@def:coble-polarization-classes, part 3); so $g$ would permute the classes of $\Delta_b$, contradicting the previous paragraph. Hence $g\mathfrak c_b\neq\mathfrak c_b$, that is $g\notin Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha,\mcc}$.
 :::
 
+::: {.lemma #lem:chamber-condition-is-period-condition title="The chamber condition is a linear condition on the period, not a count of chambers"}
+
+In the situation of @thm:chamber-subscript-is-a-condition, let $g\in Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ and let $\omega_b$ be a holomorphic $2$-form on $\widehat X_b$, with $\langle\Delta_b\rangle$ the span of the effective classes of square $-2$ in $H^2(\widehat X_b,\ZZ)$. Then
+
+1. for $\gamma\in\Delta_b$ the class $g\gamma$ has square $-2$ and $H_b$-degree $H_b\cdot\gamma$, and $g\gamma\in\Delta_b$ if and only if $g^{-1}\omega_b\perp\gamma$;
+2. consequently $g\mathfrak c_b = \mathfrak c_b$ if and only if $g^{-1}\omega_b\perp\langle\Delta_b\rangle$.
+
+So the chamber subscript of @def:direct-group is a linear condition on the transport of the period, and not a condition to be read off from the arrangement of chambers.
+:::
+
+::: {.proof}
+
+(1) $g$ is an isometry, so $(g\gamma)^2 = -2$, and it fixes $H$, so $H_b\cdot g\gamma = H_b\cdot\gamma$; write $h\definedas H_b\cdot\gamma\ge0$, the class being effective. If $h>0$ then Riemann--Roch gives $h^0(g\gamma)+h^0(-g\gamma)\ge1$ on the member whose Picard lattice contains $g\gamma$, and $H_b\cdot(-g\gamma) = -h<0$ with $H_b$ nef excludes the second summand, so $h^0(g\gamma)>0$; this is the argument @thm:chamber-clause-fails runs on its $H$-degree-one classes. Such a class is effective if and only if it is algebraic, that is if and only if $\omega_b\perp g\gamma$, which is $g^{-1}\omega_b\perp\gamma$. If $h = 0$ then $\gamma = \alpha_b$ by @lem:face-at-H, part 4, and $g\alpha_b = \alpha_b$ because $\alpha\in S_\Co$ and $g$ fixes $S_\Co$.
+
+(2) $g\mathfrak c_b = \mathfrak c_b$ exactly when $g$ permutes the walls of $\mathfrak c_b$, that is when $g\Delta_b = \Delta_b$; by (1) and the injectivity of $g$ that is the stated orthogonality.
+:::
+
 ::: {.corollary #cor:construction-monodromy title="The monodromy of the one-node construction lies in the stabilizer of its lattice labels"}
 
 In the situation of @prop:one-node-family the monodromy representation of $R^2\widehat\pi_*\ZZ$ on $H^2(\widehat X_b,\ZZ)$ lands, after a marking, in the stabilizer in $\Orth(\lkt)$ of the quadruple $(S_\Co,S_{\mathrm{dP}},H,\alpha)$, that is in the group of isometries that commute with both involutions and fix $H$ and $\alpha$.
@@ -1729,7 +1746,7 @@ Since $\gamma A_b = A_b$ and $A_b$ is ample, $\mathfrak c_b$ and $\gamma\mathfra
 
 What is left is what that condition does to the group: is
 $$\rho_{T_\Co}\bigl(Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha,\mcc}\bigr)\;=\;\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$$
-at a member whose Picard lattice is larger than $S_{\Co,b}$, as @prop:direct-eq-heegner proves it at a member whose Picard lattice is $S_{\Co,b}$ itself? The input this waits on is not a generating set of $P$ but the member's lattice: an explicit $\Pic(\widehat X_{b_\star})$, that is the whole effective arrangement $\Delta_{b_\star}$ and not only its $H$-degree-one part. What the record fixes at $b_\star$ is the branch curve, the two reducible fibres over $x=\pm1$ with their four components, the node's fibre, and the count $\nu(b_\star) = 4$ (@thm:chamber-clause-fails and its proof; with that one can decide, for a given generator of $P$, whether a chamber-preserving lift exists, and with the whole arrangement one can decide it for all of them. The witness of @thm:chamber-subscript-is-a-condition is not such a check: it is the identity modulo $2$, so it is discriminant-trivial and moves no element of $P$; what that theorem decides is that the subscript cuts into the kernel of $\rho_{T_\Co}$, not that it changes the image.
+at a member whose Picard lattice is larger than $S_{\Co,b}$, as @prop:direct-eq-heegner proves it at a member whose Picard lattice is $S_{\Co,b}$ itself? By @lem:chamber-condition-is-period-condition the condition is linear: a lift $g$ preserves the chamber exactly when the transported period $g^{-1}\omega_b$ is orthogonal to the span of $\Delta_{b_\star}$. So the question is which cosets of $\ker\rho_{T_\Co}$ in the centralizer contain an element with that property, and it is decided by a lattice computation once the span of $\Delta_{b_\star}$ is known, that is once $\Pic(\widehat X_{b_\star})$ is. What the record fixes at $b_\star$ is the branch curve, the two reducible fibres over $x=\pm1$ with their four components, the node's fibre, and the count $\nu(b_\star) = 4$ (@thm:chamber-clause-fails and its proof). It does not fix the rest of $\Delta_{b_\star}$, and by @lem:chamber-condition-is-period-condition the classes of $H$-degree greater than one are walls of the chamber too: $2C_+ + C_-$ is one, of square $-2$ and $H$-degree $3$. The witness of @thm:chamber-subscript-is-a-condition is not such a check, being discriminant-trivial and moving no element of $P$; what that theorem decides is that the subscript cuts into the kernel of $\rho_{T_\Co}$, not that it changes the image.
 :::
 
 ## Integral cusp lifting {#sec-cusp-lifting}
