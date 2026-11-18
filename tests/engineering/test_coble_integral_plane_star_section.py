@@ -150,6 +150,34 @@ def test_complete_integral_plane_parabolic_generators(tmp_path):
     assert reproduced.read_bytes() == artifact.read_bytes()
 
 
+def test_coble_ambient_standard_generator_certificate():
+    """The reusable standard-basis 21-matrix certificate is exact and sourced."""
+    import hashlib
+    import json
+    from pathlib import Path
+    from sage.all import ZZ, identity_matrix, matrix
+
+    folder = Path(__file__).resolve().parents[2] / "computations/reports"
+    data = json.loads((folder / "coble_ambient_twenty_one_generators.json").read_text())
+    assert data["source_sha256"] == hashlib.sha256(
+        (folder / "coble_singular_integral_representatives.json").read_bytes()
+    ).hexdigest()
+    gram = matrix(ZZ, data["standard_gram"])
+    change = matrix(ZZ, data["standard_from_split"])
+    split_gram = change.transpose() * gram * change
+    assert abs(change.det()) == 1
+    assert data["generator_count"] == len(data["generators"]) == 21
+    assert len(set(row["name"] for row in data["generators"])) == 21
+    for row in data["generators"]:
+        generator = matrix(ZZ, row["matrix_standard"])
+        assert generator.transpose() * gram * generator == gram
+        assert abs(generator.det()) == 1
+        split = change.inverse() * generator * change
+        assert all(x in ZZ for x in split.list())
+        assert split.transpose() * split_gram * split == split_gram
+    assert matrix(ZZ, data["generators"][-1]["matrix_standard"]) != identity_matrix(ZZ, 11)
+
+
 def test_coble_ambient_twenty_one_integral_generators():
     """Verify the 18 Eichler and three character generators of O(I_{2,9})."""
     from sage.all import ZZ, identity_matrix, matrix, vector

@@ -30,6 +30,7 @@ jobs:
             "tests/engineering/test_coble_integral_plane_star_section.py::test_complete_integral_plane_parabolic_generators",
             "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_even_neighbor_has_kneser_local_ranks",
             "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_ambient_twenty_one_integral_generators",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_ambient_standard_generator_certificate",
             "tests/engineering/test_coble_integral_plane_star_section.py::test_level_two_integral_plane_parabolic_kernel_generators",
             "tests/engineering/test_coble_integral_plane_star_section.py::test_proper_integral_plane_stabilizer_image",
           ]))'
