@@ -576,7 +576,7 @@ def test_absorbed_inv_is_answered_by_the_theorem():
 def test_absorbed_rel_is_the_splitting_question():
     """(REL): a section of rho_T normalizing W(T_Co) and a homomorphism modulo it."""
     q = _text(OPEN_PROBLEMS)
-    item3 = next(line for line in q.splitlines() if line.startswith("3. Does $\\rho_{T_\\Co}$"))
+    item3 = next(line for line in q.splitlines() if line.startswith("3. Does $\\rho_{T_\\Co}$ admit a section"))
     assert "\\sigma(p)w\\sigma(p)^{-1}\\in W(T_\\Co)" in item3
     assert "\\sigma(p)\\sigma(q)\\sigma(pq)^{-1}\\in W(T_\\Co)" in item3
     assert "W(T_\\Co)\\rtimes P" in item3
@@ -719,6 +719,25 @@ def test_absorbed_rel_names_the_missing_operation():
     assert "reflective_root_locus()" in item3
     assert "lattices.py:9169" in item3
     assert "coble_rel-reflection-group-capability-run.txt" in item3
+
+
+def test_absorbed_rel_block_diagonal_section_leaves_one_query():
+    """(REL): the block-diagonal section maps onto P, so one membership query decides it.
+
+    Decides the reduction, not the item: rho(<tau> x W(E_8)) = P with kernel <-1>, so a section
+    taken there has its deviations in <-1> and (REL) follows from the block-diagonal -1 on
+    E8(2) lying in W(T_Co).  The order computation is in the record, sympy only, no provider.
+    """
+    run = _text(REPORTS / "coble_rel_block_diagonal_section-run.txt")
+    assert "order of the mod-2 image of W(E_8) = 348364800" in run
+    assert "image = O(q_{E8(2)}): True" in run
+    assert "kernel order                       = 2" in run
+    assert "= |P|: True" in run
+    item3 = next(line for line in _text(OPEN_PROBLEMS).splitlines()
+                 if line.startswith("3. Does $\\rho_{T_\\Co}$"))
+    assert "coble_rel_block_diagonal_section-run.txt" in item3
+    assert "a single membership query" in item3
+    assert "sufficient condition and not an equivalence" in item3
 
 
 if __name__ == "__main__":

@@ -1,0 +1,12 @@
+#720 (REL): the block-diagonal section
+  |W(E_8)|                          = 696729600
+  |O(q_{E8(2)})| (register)         = 348364800 = 348364800
+  |O(q_{U(2)})| (register)          = 2
+  order of the mod-2 image of W(E_8) = 348364800
+  image = O(q_{E8(2)}): True
+  kernel order                       = 2
+  |rho(H_0)| = |O(q_U(2))| * |image| = 696729600 = |P|: True
+
+So rho(H_0) = P and H_0 cap ker rho = <-1>, and (REL) follows from
+  the block-diagonal -1 on E8(2) lying in W(T_Co) --
+one membership query against the missing operation, not an equivalence.
