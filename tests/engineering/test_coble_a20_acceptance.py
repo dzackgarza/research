@@ -386,7 +386,7 @@ def test_item2b_the_direct_group_equals_the_heegner_one():
     page = _text(PAGE)
     prop = _block(page, "{.proposition #prop:direct-eq-heegner")
     assert "\\Gamma^{\\mathrm{dir}}_{\\Co,2} = \\Gamma^{\\mathrm{Hdg}}_{\\Co,2}" in prop
-    assert "@qst:kernel-and-root-arrangement" in prop  # the chamber subscript is named
+    assert "@thm:chamber-pinned-by-labels" in prop  # the chamber is in the datum, and redundant
 
     proof = _block(page, "{.proof}\n\n*The $S$-side of the centralizer.*")
     assert "part 7 of `computations/reports/coble_a21-ambient-extension.py`" in proof
@@ -427,24 +427,51 @@ def test_item2_direct_group_is_defined_and_its_comparison_handed_on():
 # item 3: Gamma^geom, a period theorem with no lattice statement.
 # ---------------------------------------------------------------------------
 
-def test_item2b_the_chamber_subscript_is_not_dropped():
+def test_item2b_the_chamber_subscript_stands_and_is_preserved():
     """A20 item 2 as the issue states it: the object carries the chamber mcc.
 
-    Decides: the equality is for the centralizer WITHOUT the chamber, and both the page and the
-    definition of the issue's group say what follows for the object that carries it -- an
-    inclusion plus a criterion, with the preservation open at @qst:kernel-and-root-arrangement.
-    Without these sentences the page reads as proving an equality about a group the issue never
-    defined.
+    Decides: the equality is stated for the centralizer WITH the chamber in its datum, and the
+    chamber is not dropped but proved redundant -- every element of the centralizer preserves it
+    (@thm:chamber-pinned-by-labels).  Both the page and the definition of the issue's group say
+    so, and no page leaves the preservation open.  A page that proves the equality for a
+    subscript-free variant is what the review rejected.
     """
     page = _text(PAGE)
     proof = page[page.index("::: {.proof}", page.index("{.proposition #prop:direct-eq-heegner")):]
     chamber = proof[proof.index("*The chamber.*"):]
     assert "carries the subscript $\\mcc$" in chamber
-    assert "with equality exactly when every element of the centralizer preserves the chamber $\\mcc$" in chamber
-    assert "@qst:kernel-and-root-arrangement" in chamber
+    assert "every element of the centralizer preserves it" in chamber
+    assert "Z_{\\Orth(\\lkt)}(I_\\Co,I_{\\mathrm{dP}})_{H,\\alpha,\\mcc} = Z_{\\Orth(\\lkt)}(I_\\Co,I_{\\mathrm{dP}})_{H,\\alpha}" in chamber
+    assert "@thm:chamber-pinned-by-labels" in chamber
     definition = _block(_text(REPORT), "{.definition #def:direct-group")
-    assert "The chamber $\\mcc$ is part of this datum and is not dropped by what follows" in definition
-    assert "with equality exactly when every element of that centralizer preserves $\\mcc$" in definition
+    assert "The chamber $\\mcc$ is part of this datum" in definition
+    assert "@thm:chamber-pinned-by-labels" in definition
+    assert "@qst:kernel-and-root-arrangement" not in _text(REPORT)
+    assert "@qst:kernel-and-root-arrangement" not in page
+
+
+def test_item2b_the_theorem_has_its_three_parts_and_its_scope():
+    """The input of the preservation: the (-2)-classes, the chamber, the action, and the scope.
+
+    Decides: the theorem's three clauses are the proof's content, the two inputs it uses are
+    named -- Riemann-Roch plus the nefness of H, and @lem:face-at-H part 2 -- and the scope, a
+    member whose Picard lattice is the invariant lattice, is stated together with the mechanism
+    that makes it a scope rather than an ornament.
+    """
+    page = _text(PAGE)
+    thm = _block(page, "{.theorem #thm:chamber-pinned-by-labels")
+    assert "\\Delta_b = \\set{\\delta\\in S_{\\Co,b} : \\delta^2 = -2,\\ H_b\\cdot\\delta>0}\\cup\\set{\\alpha_b}" in thm
+    assert "x\\cdot\\delta>0 \\ \\text{for every}\\ \\delta\\in\\Delta_b" in thm
+    assert "\\psi(\\Delta_b) = \\Delta_b" in thm and "\\psi(\\mcc_b) = \\mcc_b" in thm
+    assert "Z_{\\Orth(\\lkt)}(I_\\Co,I_{\\mathrm{dP}})_{H,\\alpha,\\mcc} = Z_{\\Orth(\\lkt)}(I_\\Co,I_{\\mathrm{dP}})_{H,\\alpha}" in thm
+    proof = _block(page, "{.proof}\n\n*The classes of square $-2$.*")
+    assert "Riemann–Roch" in proof
+    assert "h^0(\\delta)+h^0(-\\delta) = 1+h^1(\\delta)\\ge1" in proof
+    assert "@lem:face-at-H, part 2" in proof
+    scope = _block(page, "{.remark #rmk:chamber-pinned-scope")
+    assert "\\Pic(\\widehat X_b) = S_{\\Co,b}" in scope
+    assert "s_\\delta$ fixes $H_b$ and $\\alpha_b$" in scope
+    assert "@thm:automorphism-lifting-criterion" in scope
 
 
 def test_item3_geometric_entry_is_a_period_theorem():
@@ -495,20 +522,22 @@ def test_absorbed_ri_names_the_input_that_would_settle_it():
     assert "@qst:gamma-co-reflection-index" in item2
 
 
-def test_absorbed_inv_names_the_input_that_would_settle_it():
-    """(INV): the question, and the input it needs, at the statement that asks it.
+def test_absorbed_inv_is_answered_by_the_theorem():
+    """(INV): every g in Z(O(lkt))(I_Co,I_dP)_{H,alpha} preserves the tuple's (-2)-root arrangement.
 
-    Decides: the root-arrangement question names what would settle it -- an effective-Torelli or
-    lift-to-automorphism input, of which @prob:B24 is the direct statement -- and says why no
-    computation on the lattice decides it.  Without that line the entry is a question with no
-    attack, which is what #663's acceptance asks each absorbed entry not to be.
+    Decides: the page answers the entry rather than asking it -- the arrangement is read off from
+    the two labels at a member whose Picard lattice is the invariant lattice -- and records why
+    the earlier formulation expected an effective-Torelli input: effectivity is decided by the
+    nef class H together with Riemann-Roch, and the centralizer's infinity does not put the
+    question beyond a lattice argument.
     """
     page = _text(PAGE)
-    qst = _block(page, "{.question #qst:kernel-and-root-arrangement")
-    assert "preserve the $(-2)$-root arrangement of the tuple" in qst
-    assert "What would settle it is an effective-Torelli or lift-to-automorphism input" in qst
-    assert "@prob:B24" in qst
-    assert "effectivity is a property of a member and its Kähler cone" in qst
+    rmk = _block(page, "{.remark #rmk:root-arrangement-answered")
+    assert "preserves the $(-2)$-root arrangement $\\Delta_b$ of the tuple" in rmk
+    assert "exactly one of $\\pm\\delta$ is effective for a class of square $-2$" in rmk
+    assert "Z_{\\Orth(\\lkt)}(I_\\Co,I_{\\mathrm{dP}})_{H,\\alpha}" in rmk
+    assert "@rmk:chamber-pinned-scope" in rmk
+    assert "{.question #qst:kernel-and-root-arrangement" not in page
 
 
 def test_absorbed_rel_is_the_splitting_question():
@@ -520,12 +549,21 @@ def test_absorbed_rel_is_the_splitting_question():
     assert "W(T_\\Co)\\rtimes P" in item3
 
 
-def test_absorbed_inv_is_asked_as_a_question_on_the_page():
-    """(INV): the (-2)-root arrangement of the tuple."""
+def test_absorbed_inv_names_the_member_where_it_holds():
+    """(INV): the scope, at the statement that answers it.
+
+    Decides: the answer is not left unscoped -- the member whose Picard lattice is the invariant
+    lattice is named, the larger-Picard-lattice case is named as the one the argument does not
+    reach, and the mechanism there is the reflection in an effective class of square -2 outside
+    the invariant lattice.
+    """
     page = _text(PAGE)
-    qst = _block(page, "{.question #qst:kernel-and-root-arrangement")
-    assert "preserve the $(-2)$-root arrangement of the tuple" in qst
-    assert "Z_{\\Orth(\\lkt)}(I_\\Co,I_{\\mathrm{dP}})_{H,\\alpha}" in qst
+    rmk = _block(page, "{.remark #rmk:root-arrangement-answered")
+    assert "at a member whose Picard lattice is the invariant lattice" in rmk
+    scope = _block(page, "{.remark #rmk:chamber-pinned-scope")
+    assert "the member with a larger Picard lattice" in rmk
+    assert "does not reach" in rmk
+    assert "negates the effective class $\\delta$" in scope
 
 
 def test_absorbed_pair_without_a_page_formulation_is_reported_not_invented():

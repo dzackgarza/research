@@ -782,6 +782,53 @@ Let $\mathfrak c$ be a component whose closure contains $H_b$ and which lies on 
 By @lem:face-at-H, part 4, $\mathfrak c_b$ is such a component, so $\mathfrak c = \mathfrak c_b$.
 :::
 
+::: {.theorem #thm:chamber-pinned-by-labels title="At a member whose Picard lattice is the invariant lattice the chamber is a function of the labels"}
+
+Let $b$ be a one-node member of @prop:one-node-family with $\Pic(\widehat X_b) = S_{\Co,b}$, let $\Delta_b$ and $\mcc_b$ be as in @def:coble-polarization-classes, part 3, and put $\mathcal C_b\definedas\mathcal C_{\widehat X_b}$ as in @prop:chamber-pinned. Then
+
+1. $\Delta_b = \set{\delta\in S_{\Co,b} : \delta^2 = -2,\ H_b\cdot\delta>0}\cup\set{\alpha_b}$, and $\alpha_b$ is the only class of $\Delta_b$ orthogonal to $H_b$;
+2. $\mcc_b = \set{x\in\mathcal C_b : x\cdot\delta>0 \ \text{for every}\ \delta\in\Delta_b}$;
+3. every $\psi\in\Orth(S_{\Co,b})$ with $\psi H_b = H_b$ and $\psi\alpha_b = \alpha_b$ satisfies $\psi(\Delta_b) = \Delta_b$ and $\psi(\mcc_b) = \mcc_b$;
+
+and consequently every $g\in Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ preserves $\Delta_b$ and $\mcc_b$, so that the chamber carried by @def:direct-group costs nothing at such a member:
+$$Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha,\mcc} = Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}.$$
+:::
+
+::: {.proof}
+
+*The classes of square $-2$.*
+Let $\delta\in S_{\Co,b}$ have $\delta^2 = -2$ and $H_b\cdot\delta>0$.
+On a $K3$ surface Riemann–Roch gives $\chi(\delta) = 2+\tfrac12\delta^2 = 1$, and Serre duality gives $h^2(\delta) = h^0(-\delta)$, so $h^0(\delta)+h^0(-\delta) = 1+h^1(\delta)\ge1$; both cannot be positive, since effective divisors of classes $\delta$ and $-\delta$ would sum to an effective divisor linearly equivalent to $0$.
+Exactly one of $\pm\delta$ is therefore effective, and it is $\delta$: were $-\delta$ effective, then $H_b\cdot(-\delta)\ge0$ because $H_b$ is nef (@prop:tuple-of-the-construction, part 3), against $H_b\cdot\delta>0$.
+So $\delta\in\Delta_b$, and conversely a class of $\Delta_b$ has square $-2$ and pairs nonnegatively with the nef class $H_b$.
+If now $\delta\in\Delta_b$ has $H_b\cdot\delta = 0$, write $\delta = \sum_ia_iC_i$ over irreducible curves with $a_i>0$: then $0 = \sum_ia_i(H_b\cdot C_i)$ with every term nonnegative, so $H_b\cdot C_i = 0$ for every $i$ and $C_i\in\RR_{\ge0}\alpha_b$ by @lem:face-at-H, part 2, that is $C_i = k_i\alpha_b$ with $k_i$ a positive integer. An irreducible curve of negative square satisfies $C_i^2 = 2p_a-2\ge-2$ by adjunction, while $(k_i\alpha_b)^2 = -2k_i^2$, so $k_i = 1$ and $C_i = \alpha_b$; hence $\delta = m\alpha_b$ with $m$ a positive integer, and $-2 = \delta^2 = -2m^2$ forces $m = 1$, while $\alpha_b\in\Delta_b$ by @prop:tuple-of-the-construction, part 3.
+This proves (1).
+
+*The chamber.*
+By @def:coble-polarization-classes, part 3, $\mcc_b$ is the component of $\mathcal C_b\setminus\bigcup_{\delta\in\Delta_b}\delta^\perp$ that contains $\Amp(\widehat X_b)$; a class of it pairs with a fixed $\delta\in\Delta_b$ with a sign that is constant on the connected set $\mcc_b$, and that sign is positive because $\Amp(\widehat X_b)\subseteq\mcc_b$ and an ample class is positive on an effective class.
+The set displayed in (2) is convex, contains an ample class and meets no wall, so it lies in a single component, which is then $\mcc_b$.
+This proves (2).
+
+*The action.*
+The walls are the hyperplanes $\delta^\perp$ for $\delta$ of square $-2$, a set that every isometry of $S_{\Co,b}$ permutes, so $\psi$ carries components of the complement to components; and it preserves $\mathcal C_b$, the component of the positive cone containing $H_b$, because $\psi H_b = H_b$.
+For $\delta$ in the first piece of (1) one has $(\psi\delta)^2 = -2$ and $H_b\cdot\psi\delta = \psi^{-1}H_b\cdot\delta = H_b\cdot\delta>0$, so $\psi\delta$ lies in that piece; and $\psi\alpha_b = \alpha_b$.
+Hence $\psi(\Delta_b)\subseteq\Delta_b$, and applying the same to $\psi^{-1}$ turns this into equality.
+Then, by (2),
+$$\psi(\mcc_b) = \set{x\in\mathcal C_b : (\psi^{-1}x)\cdot\delta>0 \ \text{for all}\ \delta\in\Delta_b} = \set{x\in\mathcal C_b : x\cdot\psi\delta>0 \ \text{for all}\ \delta\in\Delta_b} = \mcc_b.$$
+This proves (3).
+
+For the last assertion: an isometry of $\lkt$ commuting with $I_\Co$ preserves the $(+1)$-eigenspace of $I_\Co$, which is $S_{\Co,b}$, and hence also its orthogonal complement $T_\Co$; fixing $H$ and $\alpha$ it induces $\psi\in\Orth(S_{\Co,b})$ with $\psi H_b = H_b$ and $\psi\alpha_b = \alpha_b$, so (3) applies, and the two centralizers agree because the second condition is then redundant.
+:::
+
+::: {.remark #rmk:chamber-pinned-scope title="What the hypothesis $\Pic(\widehat X_b) = S_{\Co,b}$ buys, and where it fails"}
+
+The hypothesis is used in (1) and nowhere else: with it $\Delta_b$ is a set of classes of $S_{\Co,b}$, and (1) then says that it is the set of classes of square $-2$ pairing positively with $H_b$, together with $\alpha_b$ — a set determined by the two labels and the lattice, not by the member.
+
+The hypothesis is not redundant. At a member whose Picard lattice is larger than $S_{\Co,b}$ the extra classes are not functions of the labels, and they cut the chamber: for $\delta\in\Pic(\widehat X_b)\cap T_\Co$ effective of square $-2$ the reflection $s_\delta$ fixes $H_b$ and $\alpha_b$ and commutes with both involutions, since $I_\Co$ and $I_{\mathrm{dP}}$ both act on $\delta\in T_\Co$ by $-1$; it acts trivially on $A_{T_\Co}$, so the pair $(\id_{S_\Co},s_\delta)$ is an element of $Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ (@thm:automorphism-lifting-criterion); and it negates the effective class $\delta$, whose sign is constant and positive on $\mcc_b$, so it preserves neither $\Delta_b$ nor $\mcc_b$.
+The equality of centralizers in @thm:chamber-pinned-by-labels is therefore a statement about the members whose Picard lattice is exactly the invariant lattice, which exist by @prop:one-node-period-image, part 3; at a member with a larger one the chamber subscript is a genuine condition on the centralizer.
+So the two readings of the fourth bullet of @sec-labeled-lattice-data — a chamber cut by the classes the labels themselves generate, and a chamber cut by the member's own effective classes — agree at a member whose Picard lattice is the invariant lattice, and part company only where the member carries more classes of square $-2$ than its labels force.
+:::
+
 ::: {.corollary #cor:construction-monodromy title="The monodromy of the one-node construction lies in the stabilizer of its lattice labels"}
 
 In the situation of @prop:one-node-family the monodromy representation of $R^2\widehat\pi_*\ZZ$ on $H^2(\widehat X_b,\ZZ)$ lands, after a marking, in the stabilizer in $\Orth(\lkt)$ of the quadruple $(S_\Co,S_{\mathrm{dP}},H,\alpha)$, that is in the group of isometries that commute with both involutions and fix $H$ and $\alpha$.
@@ -1334,7 +1381,7 @@ Nothing else enters: the indices computed there ($\abs{P} = \abs{W(E_8)}$, $[\Ga
 
 ::: {.proposition #prop:direct-eq-heegner title="The direct labelled group equals the Heegner one"}
 
-Let $\Gamma^{\mathrm{dir}}_{\Co,2}$ and $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ be the groups of @def:direct-group and @def:hodge-group, the first taken with the centralizer $Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ and without the chamber subscript, which is @qst:kernel-and-root-arrangement.
+Let $\Gamma^{\mathrm{dir}}_{\Co,2}$ and $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ be the groups of @def:direct-group and @def:hodge-group, the first taken with the centralizer $Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ of its four labels, which at a member with $\Pic(\widehat X_b) = S_{\Co,b}$ is the centralizer of @def:direct-group with the chamber in its datum as well, by @thm:chamber-pinned-by-labels.
 Then
 $$
 \Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2} = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co).
@@ -1377,17 +1424,19 @@ $$
 and by @cor:gamma-hdg-is-congruence that is $\Gamma^{\mathrm{Hdg}}_\Co$.
 
 *The chamber.*
-@def:direct-group carries the subscript $\mcc$ and nothing above uses it: an isometry fixing $H$ and $\alpha$ and commuting with the two involutions need not preserve the chamber, and whether every one of them does is @qst:kernel-and-root-arrangement, which needs the effective arrangement of a member and not a computation on $\lkt$.
-The equality proved is therefore the one for the centralizer without that subscript; the subscript is that question, and it is where the labelled rigidity theorem's chamber clause enters this group.
-For the object of @def:direct-group the consequence is an inclusion and a criterion: $\Gamma^{\mathrm{dir}}_{\Co,2}$ as defined — that is, with $\mcc$ in its datum — lies in $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$, with equality exactly when every element of the centralizer preserves the chamber $\mcc$.
-Whether every one does is open and is @qst:kernel-and-root-arrangement; it is decided by the effective arrangement of a member, not by a computation on $\lkt$ or on $A_{T_\Co}$, so nothing on this page settles it either way.
+@def:direct-group carries the subscript $\mcc$, and nothing above uses it: every step is a statement about the centralizer of the four labels $I_\Co,I_{\mathrm{dP}},H,\alpha$.
+The subscript is nevertheless no restriction on that centralizer where the group is defined, since at a one-node member with $\Pic(\widehat X_b) = S_{\Co,b}$ the chamber is a function of $H_b$ and $\alpha_b$ (@thm:chamber-pinned-by-labels): every element of the centralizer preserves it, and
+$$Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha,\mcc} = Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}.$$
+The equality proved is therefore the one for the group that @def:direct-group defines, with $\mcc$ in its datum, and not for a subscript-free variant of it: the chamber clause of the labelled rigidity theorem is not an input here, the chamber being read off from the other labels.
 :::
 
-::: {.question #qst:kernel-and-root-arrangement title="The root arrangement"}
+::: {.remark #rmk:root-arrangement-answered title="The root arrangement"}
 
-Does every $g\in Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ preserve the $(-2)$-root arrangement of the tuple?
-What would settle it is an effective-Torelli or lift-to-automorphism input: a statement that each element of that centralizer is induced by an automorphism of the marked members, hence carries classes the marking presents as effective to classes the marking presents as effective — @prob:B24 is the direct theorem of that shape.
-A computation on $T_\Co$ or on $A_{T_\Co}$ does not decide it, because effectivity is a property of a member and its Kähler cone rather than of the lattice alone, and the centralizer is infinite.
+Every $g\in Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ preserves the $(-2)$-root arrangement $\Delta_b$ of the tuple and its chamber, at a member whose Picard lattice is the invariant lattice: there $\Delta_b$ is the set of classes of square $-2$ pairing positively with $H_b$, together with $\alpha_b$, and the chamber is the set of classes of $\mathcal C_b$ positive on all of $\Delta_b$, so both are functions of the two labels (@thm:chamber-pinned-by-labels).
+
+The two grounds on which this was earlier expected to need an effective-Torelli input do not hold, and are recorded here because they are what the question rested on. Effectivity is not an extra input: on a $K3$ exactly one of $\pm\delta$ is effective for a class of square $-2$, and the nef class $H_b$ decides which one. And the centralizer being infinite does not put the question beyond a lattice argument: an element of it acts on $\mathcal C_b$ through its restriction to $S_{\Co,b}$, and the pairs with trivial first component act trivially there.
+
+What the argument does not reach is the member with a larger Picard lattice, where the chamber is cut finer and the subscript is a genuine condition (@rmk:chamber-pinned-scope).
 :::
 
 ## Integral cusp lifting {#sec-cusp-lifting}
