@@ -236,6 +236,8 @@ book:
     # The register of research unknowns across the whole book: it cites blocks from
     # every part and from the dissertation, so it closes the reading order.
     - open-questions.md
+    - index-of-results.md
+    - index-of-definitions.md
 # Deliberately unlisted prose under the linked parts. A book renders exactly
 # `book.chapters`, so nothing below reaches the site; each reason is recorded
 # because the counterpart rule is "listed, or deliberately unlisted".
@@ -289,6 +291,7 @@ format:
 #     stylesheet need none of this and stay beside this file.
 filters:
   - book-toc
+  - block-index
   - amsthm-refs
   - amsthm-divs
   - custom-numbered-blocks
