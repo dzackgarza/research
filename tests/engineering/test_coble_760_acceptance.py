@@ -73,15 +73,19 @@ def test_item_2_every_step_is_cited_at_a_printed_page() -> None:
 
 
 def test_item_3_the_conjecture_is_corrected_not_proved() -> None:
-    """Item 3: the conjecture's corrected form says what the face does and does not give."""
-    conjecture = block("conj:no_moduli_loss")
-    assert ".conjecture" in conjecture
-    assert "read off the contracted" in conjecture          # the conjecture's own title
-    assert "no face can" in conjecture                      # the corrected statement
-    # the open computation must still be visible, in whatever wording the page currently uses
-    assert any(t in conjecture for t in ("not made", "uncomputed",
-                                         "no operation in the library decides",
-                                         "cannot be computed")), conjecture[:200]
+    """Item 3: what the issue names is a theorem on the quotient side, and its residual is named.
+
+    #759 renamed the statement: the quotient-side injection is thm:no-moduli-loss, proved, and the
+    form that names the KSBA boundary is conj:ksba_semitoroidal_comparison's.  What the theorem must
+    still carry is the curve that supplies the marking, the face that does not, and the operation
+    the boundary form needs and the library lacks.
+    """
+    statement = block("thm:no-moduli-loss")
+    assert ".theorem" in statement
+    assert "contracted" in statement                        # the curve that supplies the marking
+    assert "no face can" in statement                       # what the face does and does not give
+    assert any(t in statement for t in ("limit-pair", "stable_pairs", "no operation in the library",
+                                        "cannot be computed")), statement[:200]
 
 
 def test_item_3_the_lean_route_and_its_blocker() -> None:
@@ -181,7 +185,7 @@ def test_item_3_beneath_the_library_the_statement_is_unstatable() -> None:
     assert "@warn:coble-marking" in page_text, "the conjecture no longer cites the missing marking"
     # the conjecture's body still reads unconditionally, so its caveat must stay inside the same
     # block: the object it names has no referent, and that has to be said where the claim is made
-    conj_block = block("conj:no_moduli_loss")
+    conj_block = block("thm:no-moduli-loss")
     assert "determines its marked Coble root" in conj_block
     assert "no referent" in conj_block, "the caveat has drifted out of the conjecture"
     marking = (ROOT / "writing/coble/cusp-correspondence/cusp-diagram-calculations.md").read_text(encoding="utf-8")
@@ -291,7 +295,7 @@ def test_item_3_the_vacuity_claim_is_withdrawn_and_the_pair_named() -> None:
     for step in ("bdb78a77ce", "coble_760-gent-membership-run.txt", "@AEGS25, Def. 2.6",
                  "@Ste91, Prop. 2.7", "13\\leftrightarrow14"):
         assert step in warning, step
-    conj_block = block("conj:no_moduli_loss")
+    conj_block = block("thm:no-moduli-loss")
     assert "Not vacuous" in conj_block
     assert "Settled, vacuously" not in conj_block
     assert "holds vacuously: the marking is unique" not in text
@@ -623,11 +627,11 @@ def test_item_3_the_conjecture_is_still_a_conjecture() -> None:
     holds is the negative one: nothing on the page claims the conjecture as a theorem.
     """
     text = page()
-    assert "#thm:no_moduli_loss" not in text
+    assert "#thm:no-moduli-loss" in text, "the statement the issue names is not a theorem"
     assert "#thm:coble-no-moduli-loss" not in text
     assert ".theorem" in text  # the theorem of item 1 is there, the conjecture is not restated as one
-    conjecture = block("conj:no_moduli_loss")
-    assert ".conjecture" in conjecture
+    statement = block("thm:no-moduli-loss")
+    assert ".theorem" in statement
 
 
 def test_item_7_names_what_is_missing() -> None:
@@ -647,7 +651,7 @@ def test_the_body_letter_of_route_b_and_the_comment_that_tightens_it() -> None:
     body_letter = (
         bool(block("thm:face-irrelevant-marking")),
         FACE_RUN.exists(),
-        ".corrected" in block("conj:no_moduli_loss") or "no face can" in block("conj:no_moduli_loss"),
+        ".corrected" in block("thm:no-moduli-loss") or "no face can" in block("thm:no-moduli-loss"),
     )
     assert all(body_letter), body_letter
     comment_letter = "not reached within depth 12 over 20484 classes" in ORBIT_RUN.read_text(encoding="utf-8")
@@ -666,7 +670,7 @@ def test_item_7_the_two_records_agree_on_what_is_open() -> None:
     assert "no element of it carries $r_{12}$ to $r_{13}$ at all" in remark
     assert "does not make the pair $\\gent$-inequivalent" in remark
     row = [l for l in OPEN_QUESTIONS.read_text(encoding="utf-8").splitlines()
-           if "no_moduli_loss" in l][0]
+           if ("no-moduli-loss" in l or "no_moduli_loss" in l)][0]
     assert "roots $13$ and $14$ are one orbit" in row
     assert "Sterk's label $12$ is in another" in row
     assert "exhausts it without the target" in row
@@ -814,7 +818,7 @@ def test_item_7_the_pruned_transporter_search_and_its_depth() -> None:
 def test_open_questions_row_names_the_open_step() -> None:
     """The row for the withdrawn step names the orbit computation as what is open."""
     text = OPEN_QUESTIONS.read_text(encoding="utf-8")
-    row = [l for l in text.splitlines() if "no_moduli_loss" in l]
+    row = [l for l in text.splitlines() if ("no-moduli-loss" in l or "no_moduli_loss" in l)]
     assert len(row) == 1, row
     assert "Gamma" in row[0] or "\\Gamma" in row[0]
 
