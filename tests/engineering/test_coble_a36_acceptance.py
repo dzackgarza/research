@@ -431,6 +431,8 @@ def test_the_p_greater_one_cusp_shares_a_one_cusp_with_the_unigonal_one():
     assert "\\langle-2k\\rangle\\oplus E_8(-1)^{\\oplus2}" in page
     assert "$J=\\ZZ\\delta\\oplus\\ZZ e_2$ is a primitive isotropic rank-two sublattice" in page
     assert "$H_{J,\\delta}=H_{J,e_2}$" in page
+    assert "with $p_*(\\delta_\\eta)=p>1$" in page
+    assert "k=d/p^2=d_0h^2" in page
     register = REGISTER.read_text(encoding="utf-8")
     assert "lem:p-cusp-meets-unigonal" in register
 
