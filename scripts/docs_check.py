@@ -26,6 +26,28 @@ copies from the ~/.pandoc working tree; CI copies the same file from pandoc-conf
 main branch. A key that exists only in uncommitted ~/.pandoc changes passes here and
 fails in CI, and a key those changes renamed fails here and passes in CI. Compare
 against `git -C ~/.pandoc show origin/main:bib/references.bib` when the two disagree.
+
+That comparison has to be made before any count in a report is believed. Measured on
+2026-11-19, the same commit of this repository gives two different answers:
+
+  local ~/.pandoc at 190e730 (25 findings, `--source`)
+      the 13 keys BMS67 Bor00a Cal23 Cas78 Dia26 Dre26 Hen02 LLL82 MS26 Mil05
+      Ser70 Tur37 Zha26 are in no bibliography, plus their per-line reports and one
+      inline citation URL — 26 findings from the full gate;
+  pandoc-config origin/main at cf39453 (1 finding, `--source`)
+      every one of those 13 keys is present, and only the inline citation URL on
+      `the-heegner-line-and-the-coble-arithmetic-group.md` remains.
+
+So that local baseline was an artefact of a stale checkout, not a property of the
+book, and reports quoting "the 25 pre-existing findings" were quoting this machine.
+Reproduce with:
+
+    git -C ~/.pandoc fetch origin main
+    git -C ~/.pandoc show origin/main:bib/references.bib > /tmp/refs-main.bib
+    cp /tmp/refs-main.bib writing/.assets/references.bib && python3 scripts/docs_check.py --source
+
+`just docs-assets` restores the local copy, so the two counts alternate on one
+checkout without anything in this repository changing.
 """
 import argparse
 import os
