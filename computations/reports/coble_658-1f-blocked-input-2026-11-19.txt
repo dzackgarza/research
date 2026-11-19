@@ -49,5 +49,19 @@ an orbit.  So there is no class-level reduction of 1f: it is an orbit computatio
 divisibility-2 primitive isotropic vectors, and the fibre-singleton statement is one way to get it,
 not an equivalent form of it.
 
+ROUTE (d): separate the orbits by the isometry class of v^perp/<v>.  Discarded, and the reason is
+worth keeping because it is the obvious first idea.  For a primitive isotropic v of divisibility d in
+a lattice L, the determinant of v^perp/<v> is det(L)/d^2, so it is determined by the class and cannot
+distinguish two vectors in it: the test is vacuous before it is run.  The attempt made here also
+showed the implementation route is not a shortcut -- a hand-written quotient returned -1024 for a
+lattice whose formula value is 256, because the step that quotients by Z v dropped an HNF generator
+instead of computing the quotient.  That probe was deleted rather than committed, per the rule that
+half-run probes stay out of this directory.
+
+What route (d) leaves: the finer invariants of v^perp/<v> -- its discriminant form, parity and root
+system -- on a correctly saturated quotient.  Any such code should first reproduce the known T_Co
+count (one kernel orbit per isotropic class, hence 527), where the answer is on the page, before it is
+pointed at T_En.
+
 STATE: item 1f is NOT MET.  The class-level proposition is proved and the orbit question is open and
 recorded as open; no page claims surjectivity onto the divisibility-2 locus.
