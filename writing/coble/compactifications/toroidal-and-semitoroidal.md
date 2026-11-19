@@ -339,6 +339,8 @@ The divisor of @prop:semifan-coarsening-fails is ABE22's polarizing divisor $s+m
 
 The proportionality itself is weaker than the sentence suggests. All fibres of a morphism are algebraically equivalent, so the $24$ singular fibres satisfy $\sum_{i=1}^{24}f_i\equiv 24f$; with $L=s+(d+1)f$ and $d=1$, ABE22's divisor is $s+24mf$ and the rational-curve divisor has the class $n_1L=24s+48f$. The two are proportional only at $m=\frac{d+1}{24}=\frac1{12}$, which is not an integer, and at the integer $m=2$, where their degrees agree ($48=24\cdot2$), the classes $s+48f$ and $s+2f$ are not proportional (`computations/reports/coble_679-proportionality-run.txt`, reproduced by `tests/engineering/test_coble_a36_acceptance.py`).
 
+The display has exactly one coefficient at which it is true, $(d+1)/24$, and at that coefficient ABE22's divisor is $s+(d+1)f$, which is the polarization $L$ itself; the divisor their theorem is about, $s+m\sum_i f_i$ with an integer $m\ge1$, is not proportional to $R_{\rcop}$'s class. So the sentence cannot be read as relating the two compactifications under either reading, and the body text's divisor, whose compactification [@ABE22, Intro., Thm. 1.2] computes, is not the rational-curve divisor's.
+
 So the failure of (W) is established for ABE22's divisor and not for one known to be recognizable. Whether a **recognizable** divisor can fail (W) is open, and it is the first of the two questions of @qst:recognizable-semifan. @prop:recognizability-restricts would close it the moment the divisor $s+m\sum_i f_i$ were known to be recognizable, and no source read asserts that.
 
 ::: {.remark #rmk:rcop-split-computation}

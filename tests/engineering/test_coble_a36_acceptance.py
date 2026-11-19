@@ -114,6 +114,8 @@ def test_the_proportionality_probe_reproduces_its_record():
     # the decision the probe delivers, restated so a change of the script cannot slip past
     page = page_text()
     assert "24s+48f" in page and "not proportional" in page, "the page no longer carries the probe's numbers"
+    assert "which is the polarization $L$ itself" in page, "the page no longer records the second reading"
+    assert "which is the polarization L" in produced
     assert "the degrees agree at m = 2" in produced
     assert "there the classes are proportional: False" in produced
     assert "that is m = (d+1)/24 = 1/12" in produced

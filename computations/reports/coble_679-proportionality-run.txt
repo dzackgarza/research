@@ -11,8 +11,15 @@ d = 1, polarization L = s + 2 f
     deg(R_rc) = 48 and deg(s + m sum f_i) = 24 m, so the degrees agree at m = 2;
     there the classes are proportional: False  ((1) s + (48) f vs (1) s + (2) f)
 
-Conclusion.  ABE22's divisor s + m sum f_i coincides with the rational-curve divisor's
-class only at m = (d+1)/24, which is not an integer; at the integer m that equalizes
-degrees the two classes are not proportional.  The printed 'proportional to' therefore
-cannot carry the identification of the two stable-pair compactifications, which is why
+The reading under which the display is true: the coefficient is (d+1)/24 itself, and
+ABE22's divisor is s + (d+1)/24 (sum f_i) = s + (d+1) f, which is the polarization L.
+  so the divisor whose compactification ABE22 compute is proportional to L, and not to
+  the rational-curve divisor R_rc, whose class is n_d L with n_1 = 24.
+
+Conclusion.  Under no reading is ABE22's divisor -- with an integer m >= 1, as their
+display's 's + m sum f_i' is written -- proportional to the rational-curve divisor's
+class: the proportionality holds only at m = (d+1)/24, which is not an integer and at
+which ABE22's divisor is the polarization L itself.  At the integer m that equalizes
+degrees the classes differ.  So the printed 'proportional to' cannot carry an
+identification of the two stable-pair compactifications, which is why
 thm:recognizable-fails-W was withdrawn (rmk:recognizable-gap).

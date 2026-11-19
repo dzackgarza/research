@@ -98,8 +98,17 @@ for d in sorted(YAU_ZASLOW):
         proportional(reference, at_equality)[1], format_vector(at_equality), format_vector(reference)))
     print()
 
-print("Conclusion.  ABE22's divisor s + m sum f_i coincides with the rational-curve divisor's")
-print("class only at m = (d+1)/24, which is not an integer; at the integer m that equalizes")
-print("degrees the two classes are not proportional.  The printed 'proportional to' therefore")
-print("cannot carry the identification of the two stable-pair compactifications, which is why")
+# The second reading: the coefficient (d+1)/24 is what ABE22's display actually carries,
+# and then the divisor is s + (d+1) f.  Which class is that?
+print("The reading under which the display is true: the coefficient is (d+1)/24 itself, and")
+print("ABE22's divisor is s + (d+1)/24 (sum f_i) = s + (d+1) f, which is the polarization L.")
+print("  so the divisor whose compactification ABE22 compute is proportional to L, and not to")
+print("  the rational-curve divisor R_rc, whose class is n_d L with n_1 = 24.")
+print()
+print("Conclusion.  Under no reading is ABE22's divisor -- with an integer m >= 1, as their")
+print("display's 's + m sum f_i' is written -- proportional to the rational-curve divisor's")
+print("class: the proportionality holds only at m = (d+1)/24, which is not an integer and at")
+print("which ABE22's divisor is the polarization L itself.  At the integer m that equalizes")
+print("degrees the classes differ.  So the printed 'proportional to' cannot carry an")
+print("identification of the two stable-pair compactifications, which is why")
 print("thm:recognizable-fails-W was withdrawn (rmk:recognizable-gap).")
