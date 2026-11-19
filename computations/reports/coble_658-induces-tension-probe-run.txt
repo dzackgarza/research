@@ -1,0 +1,11 @@
+def:gamma-co-groups(1) carries the 'induces' clause:        True
+rmk:gamma-co-status says neither inclusion is proved:      True
+prop:gamma-co-images(1) gives R_{Gamma_En} = O~+(T_Co):    True
+
+strong reading: Gamma_Co <= R_{Gamma_En} = O~+(T_Co) = item 1e -- contradicting the remark.
+weak reading:   the clause relates the two lattices only, and yields no inclusion.
+
+verdict: REFUTED as stated.  The three sentences cannot stand together with the clause
+  informative: either the book's Enriques monodromy identification and its 'induces' clause
+  give item 1e (and rmk:gamma-co-status is wrong), or the clause is weaker than it reads and
+  the book owes the weaker statement in writing.  Item 1e is not thereby decided.
