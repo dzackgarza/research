@@ -349,6 +349,12 @@ def test_the_wall_criterion_is_on_the_page():
     assert "#lem:wall-criterion" in page
     assert "If $H$ is not the mirror of a vector of $\\bar T$ of square $-2$ or $-4$" in page
     assert "spans one of those $24$ root mirrors" in page
+    # The root list is the printed one: (-2)-vectors everywhere, (-4)-vectors of
+    # divisibility 2 only where the boundary lattice is 2-elementary (AE22, 3A, p. 10).
+    assert "the $(-2)$-vectors in every diagram read here" in page
+    # Gamma is the group of changes of marking, not a discriminant kernel
+    # (AE23, Cor. 2.9, printed p. 5).
+    assert "Cor. 2.9, printed p. 5" in page
 
 
 def test_the_p_greater_one_cusp_lattice_record_reproduces_and_the_page_states_it():
