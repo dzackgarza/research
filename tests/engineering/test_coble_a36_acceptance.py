@@ -442,6 +442,30 @@ def test_the_k_one_two_cusps_are_the_survivors_and_nothing_printed_decides_them(
     assert "neither criterion fires" in page
 
 
+def test_the_cusp_census_record_reproduces_its_table():
+    """The census, exactly: every d <= 60, every class {+-q}, the triple (p,a,k).
+
+    lem:cusp-census is proved in prose from the printed parametrisation (AE23, Section 10C,
+    printed p. 37).  This record is what makes its numbers nameable: p = 1 exactly at the
+    class {0}, k = d_0 h^2, k in {1,2} exactly for h = 1 and d_0 in {1,2}, and
+    floor((N+2)/2) classes for every d.
+    """
+    script = REPORTS / "coble_679-cusp-census.py"
+    record = REPORTS / "coble_679-cusp-census-run.txt"
+    assert script.exists() and record.exists()
+    produced = subprocess.run(
+        [sys.executable, str(script)], capture_output=True, text=True, check=True
+    ).stdout
+    assert produced == record.read_text(encoding="utf-8"), "the transcript no longer matches the script"
+    assert "PASS: p = 1 exactly for q = 0 mod N" in produced
+    assert "PASS: k = d_0 h^2" in produced
+    assert "PASS: k in {1,2} exactly for h = 1 and d_0 in {1,2}" in produced
+    assert "PASS: floor((N+2)/2) classes" in produced
+    page = page_text()
+    assert "#lem:cusp-census" in page
+    assert "$d_0h^2\\in\\{1,2\\}$" in page
+
+
 def test_the_p_greater_one_cusp_lattice_record_reproduces_and_the_page_states_it():
     """The p_* > 1 item's first datum: the boundary lattice, for general (p, k).
 

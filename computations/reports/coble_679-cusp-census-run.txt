@@ -1,0 +1,30 @@
+cusp census of F_{2d} for d <= 60
+
+   d   N   d_0   q   h   p   a    k
+   1   1     1   0   1   1   0    1
+   2   1     2   0   1   1   0    2
+   3   1     3   0   1   1   0    3
+   4   2     1   0   2   1   0    4
+   4   2     1   1   1   2   1    1
+   5   1     5   0   1   1   0    5
+   6   1     6   0   1   1   0    6
+   7   1     7   0   1   1   0    7
+   8   2     2   0   2   1   0    8
+   8   2     2   1   1   2   1    2
+   9   3     1   0   3   1   0    9
+   9   3     1   1   1   3   1    1
+  10   1    10   0   1   1   0   10
+  11   1    11   0   1   1   0   11
+  12   2     3   0   2   1   0   12
+  12   2     3   1   1   2   1    3
+
+classes checked: 92
+cusps with p_* > 1: 32
+cusps with p_* > 1 and k in {1,2}: 14
+d <= 60 neither a square nor twice a square: 48
+  of these, cusps with p_* > 1 in total: 14
+
+PASS: p = 1 exactly for q = 0 mod N (every d <= 60)
+PASS: k = d_0 h^2 (every class)
+PASS: k in {1,2} exactly for h = 1 and d_0 in {1,2} (every class)
+PASS: floor((N+2)/2) classes (every d <= 60)
