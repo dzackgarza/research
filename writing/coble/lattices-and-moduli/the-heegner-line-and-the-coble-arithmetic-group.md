@@ -957,6 +957,22 @@ The equality of centralizers in @thm:chamber-pinned-by-labels is therefore a sta
 So the two readings of the fourth bullet of @sec-labeled-lattice-data — a chamber cut by the classes the labels themselves generate, and a chamber cut by the member's own effective classes — part company at a member with more classes: the $(-2)$-witness above is excluded by @prob:B24, and the witness of @thm:chamber-subscript-is-a-condition is of another shape.
 :::
 
+::: {.theorem #thm:effective-roots-are-the-h-positive-ones title="At every member the effective classes of square $-2$ are the member's $H$-positive ones, with $\alpha_b$"}
+
+In the situation of @prop:one-node-family, at every member $b$ of the construction,
+$$\Delta_b = \set{\gamma\in\Pic(\widehat X_b) : \gamma^2 = -2,\ H_b\cdot\gamma>0}\cup\set{\alpha_b},$$
+and $\alpha_b$ is the only class of $\Delta_b$ orthogonal to $H_b$.
+
+So @thm:chamber-pinned-by-labels, part 1, holds at every member once $S_{\Co,b}$ is replaced by the member's own Picard lattice, and the member's arrangement is a function of $H_b$ and $\Pic(\widehat X_b)$ alone — not of the labels, and not of anything else about the member.
+:::
+
+::: {.proof}
+
+Let $\gamma\in\Pic(\widehat X_b)$ have $\gamma^2 = -2$. If the effective sign of $\pm\gamma$ is $\gamma$ then $H_b\cdot\gamma\ge0$ because $H_b$ is nef (@prop:tuple-of-the-construction, part 3) and $\gamma$ is a nonnegative combination of effective curves; and if $H_b\cdot\gamma = 0$ then $\gamma = \alpha_b$ by @lem:face-at-H, part 4.
+
+Conversely, let $h\definedas H_b\cdot\gamma>0$. Riemann--Roch gives $h^0(\gamma)+h^0(-\gamma) = 1+h^1(\gamma)\ge1$, and $H_b\cdot(-\gamma) = -h<0$ with $H_b$ nef excludes $h^0(-\gamma)>0$; so $h^0(\gamma)>0$ and $\gamma$ is effective. This is the argument @thm:chamber-clause-fails runs on its $H$-degree-one classes, and it does not use the degree beyond its sign.
+:::
+
 ::: {.theorem #thm:chamber-subscript-is-a-condition title="The chamber in the datum of the direct group is a genuine condition, and the element that moves it"}
 
 Let $b$ be the member of @thm:chamber-clause-fails, with the two $H_b$-degree-one components $C_+,C_-$ of its ruling fibre, of square $-2$, of sum $C_++C_-\in S_{\Co,b}$ and difference $u\definedas C_+-C_-$ of square $-8$ (@rmk:chamber-pinned-scope). Then there is a class $\delta\in T_\Co$ of square $-2$ with $u\cdot\delta\neq0$, and for such a class
@@ -1824,7 +1840,7 @@ Since $\gamma A_b = A_b$ and $A_b$ is ample, $\mathfrak c_b$ and $\gamma\mathfra
 
 What is left is what that condition does to the group: is
 $$\rho_{T_\Co}\bigl(Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha,\mcc}\bigr)\;=\;\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$$
-at a member whose Picard lattice is larger than $S_{\Co,b}$, as @prop:direct-eq-heegner proves it at a member whose Picard lattice is $S_{\Co,b}$ itself? By @lem:chamber-condition-is-period-condition the condition is linear: a lift $g$ preserves the chamber exactly when the transported period $g^{-1}\omega_b$ is orthogonal to the span of $\Delta_{b_\star}$. So the question is which cosets of $\ker\rho_{T_\Co}$ in the centralizer contain an element with that property, and it is decided by a lattice computation once the span of $\Delta_{b_\star}$ is known, that is once $\Pic(\widehat X_{b_\star})$ is. What the record fixes at $b_\star$ is the branch curve, the two reducible fibres over $x=\pm1$ with their four components, the node's fibre, and the count $\nu(b_\star) = 4$ (@thm:chamber-clause-fails and its proof). It does not fix the rest of $\Delta_{b_\star}$, and by @lem:chamber-condition-is-period-condition the classes of $H$-degree greater than one are walls of the chamber too: $2C_+ + C_-$ is one, of square $-2$ and $H$-degree $3$. The witness of @thm:chamber-subscript-is-a-condition is not such a check, being discriminant-trivial and moving no element of $P$; what that theorem decides is that the subscript cuts into the kernel of $\rho_{T_\Co}$, not that it changes the image.
+at a member whose Picard lattice is larger than $S_{\Co,b}$, as @prop:direct-eq-heegner proves it at a member whose Picard lattice is $S_{\Co,b}$ itself? By @lem:chamber-condition-is-period-condition the condition is linear: a lift $g$ preserves the chamber exactly when the transported period $g^{-1}\omega_b$ is orthogonal to the span of $\Delta_{b_\star}$. So the question is which cosets of $\ker\rho_{T_\Co}$ in the centralizer contain an element with that property, and it is decided by a lattice computation once the span of $\Delta_{b_\star}$ is known, that is once $\Pic(\widehat X_{b_\star})$ is. What the record fixes at $b_\star$ is the branch curve, the two reducible fibres over $x=\pm1$ with their four components, the node's fibre, and the count $\nu(b_\star) = 4$ (@thm:chamber-clause-fails and its proof). It does not fix $\Pic(\widehat X_{b_\star})$, which by @thm:effective-roots-are-the-h-positive-ones determines the whole arrangement; and by @lem:chamber-condition-is-period-condition the classes of $H$-degree greater than one are walls of the chamber too: $2C_+ + C_-$ is one, of square $-2$ and $H$-degree $3$. The witness of @thm:chamber-subscript-is-a-condition is not such a check, being discriminant-trivial and moving no element of $P$; what that theorem decides is that the subscript cuts into the kernel of $\rho_{T_\Co}$, not that it changes the image.
 :::
 
 ## Integral cusp lifting {#sec-cusp-lifting}
