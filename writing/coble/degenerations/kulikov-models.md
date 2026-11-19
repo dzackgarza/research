@@ -97,7 +97,7 @@ an invertible sheaf on the double locus $(X_0)_{\mathrm{sing}}$. The surface is 
 
 ::: {.theorem #thm:type-iii-d-semistable-smoothing title="Smoothing a Type III surface"}
 
-A Type III normal crossings K3 surface is smoothable to a K3 surface if and only if it is $d$-semistable [@Fri83a; @AET23, §2A].
+A Type III normal crossings K3 surface is smoothable to a K3 surface if and only if it is $d$-semistable [@Fri83a, Thm. 5.10; @AET23, §2A].
 :::
 
 ::: {.proof}
@@ -112,7 +112,7 @@ $$
 Nx=(x\cdot\delta)\lambda-(x\cdot\lambda)\delta,
 \qquad \lambda^2=\#\{\text{triple points of }X_0\}.
 $$
-Here $N=\log T$ is the log monodromy [@FS86; @AET23, §2A].
+Here $N=\log T$ is the log monodromy [@FS86, Lem. 1.1 and Prop. 7.1; @AET23, §2A].
 :::
 
 ::: {.proof}
@@ -155,6 +155,8 @@ Thus $\dim\Gr^W_2 = \dim\operatorname{Ker}N - \dim\operatorname{Im}N = 22 - 2\di
 Type $\mathrm{III}$: $\dim W_0 = 1$ and $W_2 = W_0^\perp$ has dimension $21$, so $\Gr^W_0$, $\Gr^W_2$ and $\Gr^W_4$ have dimensions $1$, $20$ and $1$.
 :::
 
+The limiting mixed Hodge structure of a degeneration is the subject of the nilpotent orbit theorem and of the Clemens–Schmid sequence [@Sch73; @Cle77]; the existence of Kulikov models without the projectivity hypothesis is [@PP81] (@thm:kulikov-existence).
+
 ::: {.theorem #thm:lmhs title="Limiting mixed Hodge structure and degenerations"}
 
 For a one-parameter degeneration of polarized K3 surfaces over a punctured disk, the unipotent monodromy operator $T \in \Orth(T_{2d})$ and its nilpotent logarithm $N = \log T$ induce a canonical monodromy weight filtration $W^{\bullet}$.
@@ -171,7 +173,7 @@ The [boundary components]{.other-sense} of $\bbcpt{\ftd}$ are classified by the 
 
 ::: {.proof}
 
-The construction of the limiting mixed Hodge structure is the nilpotent orbit theorem together with the Clemens-Schmid sequence [@Sch73, Thm. 4.9; @Cle77], and the relation between the nilpotency index of $N$ and the type of the degeneration is Kulikov's classification [@Kul77, Thm. II; @PP81].
+The limiting mixed Hodge structure is constructed by the nilpotent orbit theorem [@Sch73, Thm. 4.9], and the nilpotency index of $N$ determines the type of the degeneration by Kulikov's classification [@Kul77, Thm. II].
 
 For a degeneration of type II the monodromy is unipotent with $N\neq0$, $N^2=0$, so the weight filtration has the three steps $0\subset W_1\subset W_2\subset W_3$ with $\Gr^W_i=0$ otherwise; the primitive part of $H^2$ contributing to $\Gr^W_2$ is annihilated by $N$ and by its transpose, hence is the orthogonal complement of the isotropic subspace $I$ of the special fibre, quotiented by $I$ itself, which is $\overline{T}_I$ of the boundary lattice.
 So the pure Hodge structure of weight $2$ on $\Gr^W_2$ is the one on $\overline{T}_I$, and by @def:signature its signature is $(2-k,n-k)$ for $\rank I=k$.
