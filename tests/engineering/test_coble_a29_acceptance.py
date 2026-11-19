@@ -549,6 +549,37 @@ def test_a2_the_pcrm_slide_states_the_cusp_correspondence_as_proved():
     assert "Pending computation!" not in talk.read_text(encoding="utf-8")
 
 
+def test_a2_the_research_report_carries_the_corrected_wall_counts():
+    """research#672 review, finding 2: the report still prints the withdrawn 10, 10, 11.
+
+    The deciding probe is the recomputation from the committed figure transcripts below, not a
+    typed constant: the three numbers must be what the printed wall Gram matrices give.
+    """
+    counts, _ = recomputed_counts()
+    assert counts == {2: 9, 3: 11, 4: 10, 5: 13}, counts
+    text = (ROOT / "writing/coble/heegner-report/coble-heegner-research-report.md").read_text(encoding="utf-8")
+    assert "$10$, $10$ and $11$ distinct walls" not in text, "the withdrawn counts are still in the report"
+    sentence = ("at cusps $3$, $4$ and $5$ the facet of a white node has "
+                "$%d$, $%d$ and $%d$ distinct walls" % (counts[3], counts[4], counts[5]))
+    assert sentence in text, sentence
+
+
+def test_a2_the_pcrm_cusp_slide_carries_the_proof_of_its_cusp_statement():
+    """research#672 review, finding 2: the cusp slide's justification was a to-do list.
+
+    ``Check that ... lift, argue non-splitting under Gamma_{Co,2}`` supplies no proof.  What the
+    slide must carry instead is the two facts the book proves: the four nonzero orbits of
+    ``P = rho(Gamma_{Co,2})`` on the 527 isotropic classes of ``A_{T_Co}`` (sizes 2, 135, 270,
+    120), and the cusp map by the same isotropic line.
+    """
+    talk = (ROOT / "writing/talks/2026-07 PCRM/pcrm_pres.tex").read_text(encoding="utf-8")
+    assert "Check that" not in talk, "the cusp slide still sets an exercise instead of a proof"
+    assert "argue non-splitting" not in talk, "the cusp slide still sets an exercise instead of a proof"
+    for token in ("527", "135", "270", "120"):
+        assert token in talk, f"the slide does not carry the orbit count ({token} missing)"
+    assert "the cusp of the same line" in talk, "the slide does not state how the cusp map acts"
+
+
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
         if name.startswith("test_") and callable(fn):
