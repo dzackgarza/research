@@ -39,7 +39,7 @@ Every $a$ (@def:a) is a $b$, so round apples are $b$.
 :::
 
 ::: {.proof}
-By [@def:a] and [-@thm:c].
+By [@def:a] and [-@thm:c], and [@Smith20, Thm. 2].
 :::
 
 ::: {.proof}
@@ -59,7 +59,7 @@ Uses @def:a.
 :::
 
 ::: {.remark #rmk:d}
-A pointer back to @thm:c, about a round apple.
+A pointer back to @thm:c, about a round apple [@Jones19].
 :::
 
 ::: {.lemma #lem:e}
@@ -132,3 +132,17 @@ def test_findings_name_each_defect(tmp_path):
     assert [f for f in findings if f["blocks"][:1] == ["lem:f"]] == []
     # The lem:b <-> thm:c circle of uses is reported; the thm:c <-> rmk:d mentions are not.
     assert sorted(by_kind["cycle"]["blocks"]) == ["lem:b", "thm:c"]
+
+
+def test_cited_works_are_nodes(tmp_path):
+    graph, _, _ = run(tmp_path)
+    nodes = {n["id"]: n for n in graph["nodes"]}
+    edges = {(e["source"], e["target"]): e for e in graph["edges"]}
+    # A result taken from a paper is a premise: the cited work is a node, and the proof
+    # that relies on it has a uses edge to it, with the locator of the result.
+    assert nodes["Smith20"]["kind"] == "reference"
+    assert edges[("lem:b", "Smith20")]["relation"] == "uses"
+    assert edges[("lem:b", "Smith20")]["proof"]
+    assert edges[("lem:b", "Smith20")]["locators"] == "Thm. 2"
+    # A remark that cites a paper only mentions it.
+    assert edges[("rmk:d", "Jones19")]["relation"] == "mentions"
