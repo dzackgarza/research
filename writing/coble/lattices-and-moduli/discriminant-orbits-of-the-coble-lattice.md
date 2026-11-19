@@ -337,6 +337,18 @@ By @prop:tco-as-twist, $T_\Co=B(2)$, so $\beta_{T_\Co}=2\beta_B$ takes even valu
 to $U$ contains two vectors with pairing $1$.
 :::
 
+::: {.proposition #prop:ten-no-second-plane title="$\ten$ does not split off two hyperbolic planes"}
+
+There is no orthogonal splitting $\ten = U\perp U_1\perp L_0$ with $U_1$ isometric to $U$. Hence @thm:eichler-criterion does not apply to $\ten$ either.
+:::
+
+::: {.proof}
+
+Write $\ten = U\oplus B_0(2)$ with $B_0(2) = U(2)\oplus E_8(2)$ [@AEGS25, Def. 2.3, printed p. 586]. A vector of $\ten$ orthogonal to both basis vectors of the $U$ summand has zero components there, so $U^{\perp\ten} = B_0(2)$. Every value of $\beta_\ten$ on $B_0(2)$ is even, because that lattice is doubled, and a sublattice isometric to $U$ needs two vectors with pairing $1$; so $B_0(2)$ contains no copy of $U$, and a second hyperbolic plane orthogonal to the first does not exist.
+
+This is the same obstruction that @prop:tco-no-hyperbolic-plane records for $T_\Co$, and it is why the Eichler criterion, which needs two, is not available for either lattice.
+:::
+
 ## The two $0$-cusp lattices {#sec-zero-cusp-lattices}
 
 ::: {.proposition #prop:zero-cusp-lattices title="The $0$-cusp lattices of $\fen$ and of $\fco$"}

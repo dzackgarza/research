@@ -77,6 +77,20 @@ def test_one_f_is_reduced_to_an_orbit_count_per_class():
     assert "@prop:cusp-map-surjective-on-classes" in proof
 
 
+def test_the_eichler_criterion_is_unavailable_for_t_en():
+    """Like T_Co, T_En has no second hyperbolic plane, so the criterion that would give fibres does not run."""
+    page = (ROOT / "writing/coble/lattices-and-moduli/discriminant-orbits-of-the-coble-lattice.md").read_text(
+        encoding="utf-8")
+    start = page.index("#prop:ten-no-second-plane")
+    block = page[start:page.index("\n:::", page.index("\n", start))]
+    assert "no orthogonal splitting" in block
+    assert "@thm:eichler-criterion does not apply" in block
+    proof = page[start:]
+    proof = proof[:proof.index("## The two $0$-cusp lattices")]
+    assert "U^{\\perp\\ten} = B_0(2)" in proof
+    assert "prop:tco-no-hyperbolic-plane" in proof
+
+
 def _run_all() -> int:
     items = [(name, fn) for name, fn in sorted(globals().items())
              if name.startswith("test_") and callable(fn)]
