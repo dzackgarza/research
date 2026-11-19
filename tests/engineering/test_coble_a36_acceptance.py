@@ -155,6 +155,34 @@ def test_the_four_records_of_the_unit_are_committed():
         assert (REPORTS / name).exists(), name
 
 
+def test_the_two_blockers_of_the_open_rows_are_what_the_records_say():
+    """The controls on the two red rows: if either blocker lifts, this fires and the row must be re-read.
+
+    A red row is only honest while the reason it is red is true and machine-checked.  The two
+    reasons are (i) the library has no operation for the stable limit of a pair over a cone,
+    and (ii) the Vinberg walk at the F_2 cusp does not finish.  (i) is recorded by the two
+    AttributeErrors of coble_679-rcop-split-run.txt; (ii) by the timeout lines of the three
+    bounded attempts.  Both are asserted here, together with the bound each record carries, so
+    a re-run that changes either number makes this test fail before the page goes stale.
+    """
+    split_record = (REPORTS / "coble_679-rcop-split-run.txt").read_text(encoding="utf-8")
+    assert "stand_in.stable_pairs() -> AttributeError" in split_record
+    assert "stand_in.wall_roots()[0].stable_pairs() -> AttributeError" in split_record
+    assert "the missing operation is the KSBA stable limit of the pair over a cone" in split_record
+
+    bounds = {
+        "coble_679-rcop-split-run.txt": "the Vinberg walk on N did not finish in 900 s",
+        "coble_679-rcop-split-run-1800.txt": "the Vinberg walk on N did not finish in 1800 s",
+        "coble_679-rcop-chamber-run.txt": "the Vinberg walk on N did not finish in 2400 s",
+        "coble_679-rcop-chamber-controlling-vector-run.txt": "the walk with the controlling vector did not finish in 1500 s",
+    }
+    for name, line in bounds.items():
+        assert line in (REPORTS / name).read_text(encoding="utf-8"), name
+    page = page_text()
+    for bound in ("900", "1800", "2400", "1500"):
+        assert bound in page, "the page no longer quotes the %s s bound" % bound
+
+
 @pytest.mark.xfail(
     strict=True,
     reason="no record decides whether a recognizable divisor can fail (W): the only candidate, "

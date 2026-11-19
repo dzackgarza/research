@@ -364,6 +364,8 @@ The operation that would decide the split, stated so that the gap is a contract 
 - **Output:** the combinatorial type of the KSBA stable limit of the pair $(X,\eps R_{\rcop})$ — the dual graph of the central fibre with the genera of its components, the multiplicities with which the limit divisor meets them, and the contraction that defines the stable model. This is the value of the type function of @thm:semifan-stratum.
 - **Parent:** the cone of the chamber, whose methods are in `src/sage_extensions/categories/polyhedral_cones.py`, with the Kulikov model and its integral-affine structure as the intermediate the construction runs through.
 
+The absence of the operation, and the bounds of the chamber attempts, are guarded by `tests/engineering/test_coble_a36_acceptance.py`, which fails as soon as either record changes.
+
 The defining maps are those of [@AET23, Thm. 7.5, printed p. 48] and [@AE22, §§8--9, printed pp. 41--57], which produce that output for the ramification divisors, and of [@ABE22, §3], which produces it for the elliptic one. The library has none of the three: no module of `src/sage_extensions` names a stable pair, a Kulikov model or a semifan, and @rmk:rcop-split-computation records the two expressions that raise `AttributeError`.
 :::
 
