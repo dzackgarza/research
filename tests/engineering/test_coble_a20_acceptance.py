@@ -777,6 +777,59 @@ def test_item2_the_higher_degree_wall_exists_so_the_count_does_not_suffice():
     assert "g^{-1}\\omega_b\\perp\\langle\\Delta_b\\rangle" in lem
 
 
+def test_rel_block_sign_reduces_to_an_explicit_element_of_gamma_four():
+    """#720 (REL)'s smallest deciding step so far: delta_E8 = w k with w in W and k in Gamma(4).
+
+    The reduction is checked here on the certificate the record prints: 14 vectors of square -2,
+    their reflections are exact isometries of T_Co, their product is the block sign modulo 4, and
+    k = w^{-1} delta_E8 is integral, an isometry, congruent to the identity modulo 4, and not the
+    identity.  So the membership question for the block sign is the one for k, and it is still open
+    (guarded by test_open_items_a20_2_and_rel_are_not_claimed_decided).
+    """
+    import sympy
+    C = sympy.zeros(8)
+    for i in range(8):
+        C[i, i] = 2
+    for i, j in [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (2, 7)]:
+        C[i, j] = C[j, i] = -1
+    GT = sympy.zeros(11)
+    GT[0, 0] = 2
+    GT[1, 2] = GT[2, 1] = 2
+    GT[3:, 3:] = -2 * C
+    cert = [
+        [-1, -2, -2, -2, -2, -2, -2, -1, -2, -2, -2],
+        [-1, -2, -2, -2, -2, -2, -2, -1, -1, -2, -2],
+        [-1, -2, -2, -2, -2, -2, -2, -1, -1, 1, -2],
+        [-1, -2, -2, -2, -2, -2, -1, -2, 0, -1, -1],
+        [-1, -2, -2, -2, -2, -2, -1, -2, -1, -2, -1],
+        [-1, -2, -2, -2, -2, -2, -1, -2, -1, 1, -1],
+        [-1, -2, -2, -2, -2, -2, -1, 1, 0, -1, -1],
+        [-1, -2, -2, -2, -2, -1, -2, -2, -2, -2, 0],
+        [-1, -2, -2, -2, -2, -1, -2, -2, -2, -2, -1],
+        [-1, -2, -2, -2, -1, -2, -2, -2, -2, -2, -2],
+        [-1, -2, -2, -1, -2, -2, -2, -2, -2, -1, 1],
+        [-1, -2, -2, -1, -2, -2, -2, -2, -1, 0, 1],
+        [-1, -2, -2, -1, -2, -2, -2, -2, -1, -1, 1],
+        [-1, -2, -2, -1, -1, 0, -2, -2, -2, -2, 0],
+    ]
+    I = sympy.eye(11)
+    W = I
+    for vv in cert:
+        v = sympy.Matrix(vv)
+        assert (v.T * GT * v)[0] == -2                     # a genuine (-2)-vector
+        R = I + v * (v.T * GT)
+        assert R.T * GT * R == GT                          # an exact isometry of T_Co
+        W = W * R
+    D = sympy.diag(*[(-1 if 3 <= i <= 10 else 1) for i in range(11)])
+    assert all((W - D)[i, j] % 4 == 0 for i in range(11) for j in range(11))   # w == delta mod 4
+    assert W != D                                          # and not equal, so k is not the identity
+    K = W.inv() * D
+    assert all(x.q == 1 for x in K)                        # integral
+    assert K.T * GT * K == GT                              # an isometry
+    assert all((K - I)[i, j] % 4 == 0 for i in range(11) for j in range(11))   # in Gamma(4)
+    assert K != I
+
+
 def _run_all() -> int:
     items = [(name, fn) for name, fn in sorted(globals().items()) if name.startswith("test_")]
     failures = 0

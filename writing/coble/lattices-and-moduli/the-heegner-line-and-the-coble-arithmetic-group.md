@@ -3002,6 +3002,25 @@ The natural attempt on the membership query of research#720 (REL) is this. The b
 That transport is invalid, and @lem:minus-two-vectors-use-the-two-summand is why: the reflections generating $W(T_\Co)$ are those in vectors of square $-2$, and every such vector has odd coefficient on $\langle\zeta\rangle$; the reflections in $E_8(2)$'s own vectors have square $-4$ and lie outside $\ker\rho_{T_\Co}$. So the $E_8(2)$ summand carries no generator of $W(T_\Co)$ at all, and the query cannot be answered inside it. What the lemma does give in the other direction is a constraint on any positive answer: a word for $\delta_{E_8}$ has to use vectors with nonzero $U(2)$ and $\langle\zeta\rangle$ parts, and those act nontrivially on the other summands in general.
 :::
 
+::: {.lemma #lem:block-sign-reduces-to-gamma-four title="The block sign is a word in the reflections times an explicit element of $\Gamma(4)$"}
+
+Let $T_\Co = \langle2\rangle\perp U(2)\perp E_8(2)$, let $h(g) = (g-\id)/2$ be the level-two shadow of @prop:level-two-shadow-consistent-with-both-answers, and let $\delta_{E_8}$ be the block sign of @lem:block-signs-not-both-in-w. Then the $\F_2$-span of the $h(s_v)$ over the classes of $T_\Co$ that carry a vector of square $-2$ has dimension $55$, it contains $h(\delta_{E_8})$, and consequently there are
+
+1. a product $w$ of $14$ reflections in classes of square $-2$ — hence $w\in W(T_\Co)$, verified as an exact isometry of $T_\Co$ — with $w\equiv\delta_{E_8}\pmod 4$, listed in `computations/reports/coble_663-rel-gamma4-reduction-run.txt`;
+2. an element $k\definedas w^{-1}\delta_{E_8}$ with $k\equiv\id\pmod 4$, so $k\in\Gamma(4)$, integral and an exact isometry, and $k\neq\id$.
+
+Hence $\delta_{E_8} = wk$ and
+$$\delta_{E_8}\in W(T_\Co)\iff k\in W(T_\Co),$$
+so the membership query of research#720 (REL) is a question about one explicit element of $\Gamma(4)$ and not about the arrangement of the root system.
+:::
+
+::: {.proof}
+
+$h(s_v)$ depends only on $v\bmod 2$: it is $x\mapsto b_B(x,v)v$ with $T_\Co = B(2)$. So the span is computed over the finitely many classes that carry a vector of square $-2$; the enumeration of `computations/reports/coble_663-rel-gamma4-reduction.py` collects $50\,732$ such vectors realising $494$ classes, and elimination over $\F_2$ gives dimension $55$ and a certificate of $14$ classes for $h(\delta_{E_8})$.
+
+The corresponding product $w = \prod s_{v_i}$ satisfies $h(w)\equiv\sum h(s_{v_i})\equiv h(\delta_{E_8})\pmod 2$, because $h(g_1g_2)\equiv h(g_1)+h(g_2)$ on the congruence subgroup (@prop:level-two-shadow-consistent-with-both-answers, part 1); hence $w\equiv\id+2h(\delta_{E_8}) = \delta_{E_8}\pmod 4$. The script verifies both steps exactly, on integer matrices: every factor satisfies $R^{\mathsf T}GR = G$, the product satisfies $(w-\delta_{E_8})\equiv0\pmod 4$, and $k = w^{-1}\delta_{E_8}$ is integral, is an isometry, satisfies $k\equiv\id\pmod4$, and is not the identity.
+:::
+
 ::: {.proposition #prop:level-two-shadow-consistent-with-both-answers title="The level-two shadow is consistent with both answers to the block-sign query"}
 
 Let $T_\Co = B(2)$ and let $h(g)\in\End_{\F_2}(B/2B)$ be defined by $g = \id + 2h$ for $g\in\Orth(T_\Co)$ congruent to the identity modulo $2$. Then
