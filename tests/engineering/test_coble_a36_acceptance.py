@@ -414,8 +414,11 @@ def test_the_k_greater_one_comparison_group_is_not_a_lattice():
     page = page_text()
     assert "#lem:k-not-two-reflective" in page
     assert "[@Nik79b, Thm. 0.2.2, printed p. 1403]" in page
-    assert "[@Nik79b, Thm. 0.2.4, printed p. 1404]" in page
-    assert "is not a fan" in page
+    assert "[@Nik79b, Prop. 0.2.1, printed p. 1402, and the equivalence on p. 1404;" in page
+    assert "against a semifan and not a fan" in page
+    assert "if and only if $k=1$" in page
+    assert "$p_*(\\delta)=\\sqrt d$" in page
+    assert "has a two-reflective boundary lattice only for $d=1$" in page
     register = REGISTER.read_text(encoding="utf-8")
     assert "lem:k-not-two-reflective" in register
 
