@@ -101,6 +101,17 @@ def test_the_argument_is_a_proposal_that_names_its_missing_inputs():
     assert "proposal, not a theorem" in proposal
 
 
+def test_the_classical_model_cannot_host_the_witness():
+    """The proposal's gap 2 has a reason: in DK13's model the node classes lie in M_X, orthogonal to T_Co."""
+    lattices = (ROOT / "writing/coble/lattices-and-moduli/lattices.md").read_text(encoding="utf-8")
+    start = lattices.index("#rmk:gamma-co-nodal-pair-proposal")
+    body = lattices[start:lattices.index("\n:::", lattices.index("\n", start))]
+    assert "M_X\\cong\\generators{2}\\oplus\\generators{-2}" in body
+    assert "acts as the identity on $T_\\Co$" in body
+    assert "e_i\\pm e_j\\in M_X" in body
+    assert "nonzero $T_\\Co$-component" in body
+
+
 def _run_all() -> int:
     items = [(name, fn) for name, fn in sorted(globals().items())
              if name.startswith("test_") and callable(fn)]
