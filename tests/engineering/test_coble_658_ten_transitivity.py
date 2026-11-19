@@ -91,6 +91,17 @@ def test_the_eichler_criterion_is_unavailable_for_t_en():
     assert "prop:tco-no-hyperbolic-plane" in proof
 
 
+def test_the_register_states_the_class_level_answer_and_the_open_orbit_count():
+    """The register said "which divisibility-2 classes these are is open"; the classes are known."""
+    row = [l for l in (ROOT / "writing/open-questions.md").read_text(encoding="utf-8").splitlines()
+           if "Which divisibility-$2$ $0$-cusps" in l]
+    assert len(row) == 1
+    row = row[0]
+    assert "exactly the $527$ nonzero isotropic classes" in row
+    assert "@prop:cusp-map-onto-criterion" in row
+    assert "which divisibility-$2$ classes these are is open" not in row
+
+
 def _run_all() -> int:
     items = [(name, fn) for name, fn in sorted(globals().items())
              if name.startswith("test_") and callable(fn)]
