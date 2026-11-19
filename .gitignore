@@ -81,3 +81,4 @@ writing/talks/**/*.xdv
 # and are not reproduced by any recipe.
 writing/research-statement/ResearchStatement.pdf
 /tmp/
+writing/.book/.releases/

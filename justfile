@@ -29,20 +29,31 @@ docs-assets:
 
 # Rebuild the book and refresh the local static copy at http://lattice-research.localhost/
 docs-deploy: docs-check
+    @just docs-publish
+
+# Publish the finished render. nginx serves /var/www/static-sites/lattice-research for
+# lattice-research.localhost. Quarto empties writing/.book/_site when any render starts,
+# so the served link never points at _site: a stopped, failed or one-page render would
+# take the site down. This copies _site to a new release directory and switches the link
+# to it with one rename, so the site is always a complete, gated render. The previous
+# release is kept and older ones are trashed.
+# Copy the finished render to a release directory and switch the served site to it
+docs-publish:
     #!/usr/bin/env bash
     set -euo pipefail
-    # nginx serves /var/www/static-sites/<app> for <app>.localhost, and the entry for
-    # this book is a symlink straight at the render output, so a successful render *is*
-    # the deploy: nothing to copy, and no window where the site is half-written. The
-    # gate is a dependency, so a book with a broken citation or a dangling reference
-    # never reaches the served copy -- the previous render stays up instead.
     site="$(pwd)/writing/.book/_site"
+    releases="$(pwd)/writing/.book/.releases"
     link=/var/www/static-sites/lattice-research
-    [ -f "$site/index.html" ] || { echo "docs-deploy: $site has no index.html" >&2; exit 1; }
-    [ "$(readlink -f "$link" 2>/dev/null)" = "$site" ] || ln -sfn "$site" "$link"
+    [ -f "$site/index.html" ] || { echo "docs-publish: $site has no index.html" >&2; exit 1; }
+    mkdir -p "$releases"
+    new="$releases/$(date +%Y%m%dT%H%M%S)-$(git rev-parse --short HEAD)"
+    cp -a "$site" "$new"
+    ln -sfn "$new" "$link.next"
+    mv -T "$link.next" "$link"
     code=$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: lattice-research.localhost' http://127.0.0.1/)
-    [ "$code" = 200 ] || { echo "docs-deploy: nginx answered $code for lattice-research.localhost" >&2; exit 1; }
-    echo "docs-deploy: http://lattice-research.localhost/ is serving $(find "$site" -name '*.html' | wc -l) pages"
+    [ "$code" = 200 ] || { echo "docs-publish: nginx answered $code for lattice-research.localhost" >&2; exit 1; }
+    ls -1d "$releases"/*/ | head -n -2 | while read -r old; do trash "$old"; done
+    echo "docs-publish: http://lattice-research.localhost/ is serving $(find "$new" -name '*.html' | wc -l) pages from $new"
 
 # Full gate, the build CI runs on every push: render the docs book twice and fail on undefined citations, unresolved cross-refs, broken anchor links, or dead external links
 docs-check: docs-assets
