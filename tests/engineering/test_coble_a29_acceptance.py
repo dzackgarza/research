@@ -155,27 +155,50 @@ def figure_data(cusp: int):
 
 
 def restricted_chamber(cusp: int):
-    """The walls C cap delta^perp: project each root other than delta, then label the graph."""
+    """The walls C cap delta^perp: project each root other than delta, then label the graph.
+
+    ``pg`` is the Gram matrix of the projections, ``(alpha_bar, beta_bar) = g_ab + g_ad g_bd / 2``,
+    which is what the transcripts support.  A pair whose two projections span a *degenerate* plane is
+    labelled ``"degenerate"``: in an indefinite form ``b(x,y)^2 = q(x)q(y)`` says only that, it does not
+    make the two walls equal, and an earlier version of the gate subtracted such pairs.  Whether two
+    projections are proportional is decided below from ``pg``, by the necessary condition of the row.
+    """
     G = wall_gram(cusp)
     white, pairs = figure_data(cusp)
     pd = {i: 0 for i in range(1, len(G) + 1)}
     pd.update(pairs)
     keep = [i for i in range(1, len(G) + 1) if i != white]
-    n = len(keep)
     # alpha_bar^2 = alpha^2 + (alpha,delta)^2 / 2, because delta^2 = -2
     square = {a: F(G[a - 1][a - 1]) + F(pd[a] * pd[a], 2) for a in keep}
+    pg = {(a, b): F(2 * G[a - 1][b - 1] + pd[a] * pd[b], 2) for a in keep for b in keep}
     edges, labels = [], {}
     for i, a in enumerate(keep):
         for b in keep[i + 1:]:
-            # (alpha_bar, beta_bar) = g_ab + g_ad g_bd / 2
-            val2 = 2 * G[a - 1][b - 1] + pd[a] * pd[b]
-            if val2 == 0:
+            val = pg[(a, b)]
+            if val == 0:
                 continue
             edges.append((a, b))
-            cos2 = F(val2 * val2, 4) / (F(square[a]) * F(square[b]))
+            cos2 = val * val / (square[a] * square[b])
             labels[(a, b)] = 3 if cos2 == F(1, 4) else 4 if cos2 == F(1, 2) else (
-                "parallel" if cos2 == 1 else "other")
-    return keep, square, edges, labels
+                "degenerate" if cos2 == 1 else "other")
+    return keep, square, edges, labels, pg
+
+
+def proportional_walls(keep, square, pg):
+    """The pairs of projected walls the transcripts do not rule out as proportional.
+
+    If ``x`` and ``y`` are proportional then, since ``q(x) = q(y) != 0`` forces the factor to be
+    ``+-1``, the row of the Gram matrix at ``x`` equals the row at ``y`` or its negative.  A pair whose
+    rows are neither cannot be proportional, whatever its own ``q`` and ``b`` are.
+    """
+    out = []
+    for i, a in enumerate(keep):
+        for b in keep[i + 1:]:
+            if all(pg[(a, c)] == pg[(b, c)] for c in keep):
+                out.append((a, b))
+            elif all(pg[(a, c)] == -pg[(b, c)] for c in keep):
+                out.append((a, b))
+    return out
 
 
 def arm_signature(keep, square, edges, labels):
@@ -218,34 +241,53 @@ def test_a1b_the_chamber_half_recomputed():
     and projects them with plain arithmetic, so the record's library computation and this one are two
     implementations.  The expected shape is `AN06_BONDS`' arms above, from the printed table.
     """
-    keep, square, edges, labels = restricted_chamber(2)
+    keep, square, edges, labels, pg = restricted_chamber(2)
     assert len(keep) == 9 and len(edges) == 8
     assert sorted(square.values()) == [-4] * 8 + [-2]
     assert arm_signature(keep, square, edges, labels) == AN06_ARMS
+    assert proportional_walls(keep, square, pg) == []
 
 
 def recomputed_counts():
-    counts = {}
+    """The projected walls at each cusp, from the figure transcripts, and the degenerate pairs.
+
+    The count of walls is the number of projected walls: no pair of them is proportional, so no pair
+    is one wall (see `proportional_walls`).  An earlier version of this function subtracted the pairs
+    with ``b(x,y)^2 = q(x)q(y)``, which are the pairs at cusps 3 and 5 listed below and are not pairs
+    of equal walls at all -- research#672 review, finding 1.
+    """
+    counts, degenerate = {}, {}
     for cusp in (2, 3, 4, 5):
-        keep, square, edges, labels = restricted_chamber(cusp)
-        parallel = sum(1 for lab in labels.values() if lab == "parallel")
-        counts[cusp] = len(keep) - parallel
-    return counts
+        keep, square, edges, labels, pg = restricted_chamber(cusp)
+        assert proportional_walls(keep, square, pg) == [], f"cusp {cusp} has a proportional pair"
+        counts[cusp] = len(keep)
+        degenerate[cusp] = sum(1 for lab in labels.values() if lab == "degenerate")
+    return counts, degenerate
 
 
 def record_counts():
     """The counts the record prints, which its library calls produce."""
     out = {}
     for name, number in (("Sterk_2", 2), ("Sterk_3", 3), ("Sterk_4", 4), ("Sterk_5", 5)):
-        m = re.search(name + r"\s+\d+ distinct walls", record())
+        m = re.search(name + r"\s+(\d+) distinct walls,\s+(\d+) facets", record())
         assert m, f"the record does not print a count for {name}"
-        out[number] = int(m.group(0).split()[1])
+        out[number] = (int(m.group(1)), int(m.group(2)))
     return out
 
 
 def test_a1b_the_two_implementations_agree_on_the_four_counts():
-    """No typed counts: the record's library computation and the recomputation must agree."""
-    assert recomputed_counts() == record_counts()
+    """No typed counts: the record's library computation and the recomputation must agree.
+
+    The record's two numbers are the distinct walls and the facets, which agree with one another
+    because every projected normal is an extreme ray; the recomputation supplies the first of them
+    from the printed figure data alone.
+    """
+    counts, degenerate = recomputed_counts()
+    printed = record_counts()
+    assert {cusp: printed[cusp][0] for cusp in printed} == counts
+    assert all(walls == facets for walls, facets in printed.values())
+    # the pairs whose span is degenerate exist, and none of them was subtracted
+    assert degenerate == {2: 0, 3: 1, 4: 0, 5: 2}
 
 
 def test_a1b_part_f_takes_its_walls_from_the_library_and_reads_no_transcript():

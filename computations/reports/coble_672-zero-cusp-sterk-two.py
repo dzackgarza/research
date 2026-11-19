@@ -50,9 +50,9 @@ Two projected walls cut the same hyperplane of delta^perp exactly when their pro
 proportional over QQ; the record decides that by the rank of the 2 x 12 matrix of the two projected
 coordinate vectors, which are the library's ``to_vector``.  The test b(x,y)^2 = q(x)q(y) used by an
 earlier version of this record is *not* that test: over an indefinite form it says only that the span
-of x and y is degenerate, which happens for pairs that are not proportional at all (at cusp 3 the
-projected square-(-2) walls alpha_10 and alpha_11 have Gram [[-2, 2], [2, -2]]), so it made
-identifications that do not exist.  A distinct wall is a facet of the restricted chamber exactly when
+of x and y is degenerate, which happens for pairs that are not proportional at all, for instance at
+cusp 3, where two projected walls of square -2 pair 2 with one another and are still independent, so
+it made identifications that do not exist.  A distinct wall is a facet of the restricted chamber exactly when
 its projection is an extreme ray of the cone the projections generate, and that cone is taken as an
 exact rational polyhedron, so the facet count is printed beside the count of distinct walls.
 
@@ -210,8 +210,8 @@ for name in sorted(vectors):
 # 2 x 12 matrix of the two projected coordinate vectors.  An earlier version of this record instead
 # identified the pair (x, y) whenever b(x,y)^2 = q(x)q(y); over an indefinite form that says only that
 # the span of x and y is degenerate, not that they are proportional, and at cusps 3 and 5 it holds for
-# independent pairs (at cusp 3 the projected square-(-2) walls alpha_10, alpha_11 have Gram
-# [[-2, 2], [2, -2]]), so it identified walls that differ.
+# independent pairs: at cusp 3 the projected walls alpha_10 and alpha_11 both have square -2 and pair
+# 2 with each other, and they are not proportional, so the old test identified walls that differ.
 #
 # A distinct wall is a facet of the restricted chamber exactly when its projection is an extreme ray of
 # the cone the projections generate: otherwise its inequality is implied by the others.  That cone is
