@@ -112,6 +112,8 @@ def test_the_classical_model_cannot_host_the_witness():
     assert "neither produced nor excluded by it" in body
     assert "(-4)$-Heegner divisor" in body
     assert "the meridians to generate" in body
+    assert "an input, not a result of this book" in body
+    assert "cons:lefschetz-periods" in body
 
 
 def _run_all() -> int:
