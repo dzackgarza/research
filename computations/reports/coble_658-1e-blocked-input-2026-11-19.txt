@@ -13,8 +13,9 @@ THE INPUT NEEDED (either of two, and only these two will do):
   (ii) a computed loop: an explicit family of Coble surfaces over a punctured disc whose monodromy
       on T_Co is computed to be s_e, with the computation on main.
 
-WHAT WAS CHECKED IN tmp/sources (full-text markdown conversions, not stubs: AEGS25 has 2432 lines,
-Sterk 1991 has 1526, DK13 has 499):
+WHAT WAS CHECKED IN tmp/sources.  Two passes: first the markdown conversions (not stubs: AEGS25 has
+2432 lines, Sterk 1991 has 1526, DK13 has 499), then -- because a conversion can be partial -- every
+PDF, converted with pdftotext: 28 PDFs, 28 conversions, all searched.
 
   - no occurrence of "vanishing cycle" or of a Picard--Lefschetz formula in any held conversion;
   - DK13 contains no occurrence of "monodromy" at all -- it computes no monodromy anywhere, so its
@@ -25,6 +26,14 @@ Sterk 1991 has 1526, DK13 has 499):
   - the derivation that computations/reports/smwo_direct-period.md cites for the two-node product,
     .ultramath/smw0o7jbf/m5/A20-direct-period-theorem.md sec. 6.1(b), is not on main
     (`git cat-file -e omm/main:...` fails), so it is not an input the book may cite.
+
+The full-PDF pass adds the following, and it is the strongest form of the negative available here:
+seven held documents contain a Picard--Lefschetz formula at all -- Sterk's 1988 thesis, Shah 1980,
+Nikulin 1979, Alexeev--Engel 2022 and 2023, Alexeev--Engel--Thompson 2023, Yu--Zheng 2023 -- and
+none of them states the monodromy of a degeneration acquiring two ordinary double points at once.
+A search of all 28 conversions for "simultaneous", for "two nodes" beside monodromy, and for a
+"product of ... reflections", returns nothing on point; the classical statements are the one-node
+formula, whose hypothesis is that the critical values are distinct.
 
 CANDIDATES TO OBTAIN -- named as candidates, not cited, because no printed page has been seen:
 
