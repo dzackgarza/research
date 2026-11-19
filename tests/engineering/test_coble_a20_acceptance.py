@@ -1183,6 +1183,25 @@ def test_item2_the_root_exclusion_does_not_decide_the_dichotomy():
     assert "the dichotomy is decided" not in page
 
 
+def test_item2_the_dichotomy_s_indices_are_finite_by_the_rank_count():
+    """A20 item 2: the dichotomy is an equation of determinants only because the ranks are forced.
+
+    Pic contains a rank-12 lattice and its orthogonal complement sits in a rank-10 lattice, so
+    12 <= rho <= 22 - 10 = 12 pins rho = 12 and rank T = 10; both inclusions are then of finite index
+    and det(T) = det(u^perp) k^2, det(Pic) = det(known)/j^2 are equations of integers.  Without that
+    count the two cases would not be exhaustive.  The check pins the count and the page's sentence.
+    """
+    rho_lower, t_upper, total = 12, 10, 22
+    assert rho_lower + t_upper == total
+    assert 12 <= (total - t_upper) == 12          # so rho = 12 and T = 10
+    page = _text(PAGE)
+    thm = _block(page, "{.theorem #rmk:divisibility-of-the-difference-class")
+    assert "\\rho = 12" in thm and "finite index" in thm
+    assert "finite index" in thm
+    rmk = _block(page, "{.remark #rmk:dichotomy-not-decided-by-the-root-exclusion")
+    assert "(2,0)" in rmk and "does not lie in $\\Pic\\otimes\\CC$" in rmk
+
+
 def _run_all() -> int:
     items = [(name, fn) for name, fn in sorted(globals().items()) if name.startswith("test_")]
     failures = 0

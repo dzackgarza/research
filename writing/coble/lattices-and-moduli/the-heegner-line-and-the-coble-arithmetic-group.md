@@ -1901,7 +1901,7 @@ With $k\definedas\bigl[u^{\perp T_\Co} : T_{\Co,b_\star}\bigr]$ and $j\definedas
 1. $(k,j) = (2,1)$: $\Pic(\widehat X_{b_\star}) = S_{\Co,b}\perp\langle u\rangle$, of rank $12$ and determinant $2^{14}$, and the transcendental lattice is an index-two sublattice of $u^{\perp T_\Co}$;
 2. $(k,j) = (1,2)$: $\Pic(\widehat X_{b_\star})$ is an index-two overlattice of $S_{\Co,b}\perp\langle u\rangle$ — it contains a class $\tfrac12(s+u)$ with $s\in S_{\Co,b}$ — of rank $12$ and determinant $2^{12}$, and its transcendental lattice is the whole of $u^{\perp T_\Co}$.
 
-So the member's Picard rank is $12$ in both cases, the determinant is $2^{14}$ or $2^{12}$, and which case holds is decided by whether $u^{\perp T_\Co}$ is contained in $\Pic(\widehat X_{b_\star})$.
+The two indices in that equation are finite, and this is where the rank count enters: $\Pic(\widehat X_{b_\star})$ contains the rank-$12$ lattice $S_{\Co,b}\perp\langle u\rangle$, and its orthogonal complement is contained in the rank-$10$ lattice $u^{\perp T_\Co}$; so the rank count forces $\rho = 12$ and $\operatorname{rank}T_{\Co,b_\star} = 10$, and both inclusions are of finite index. So the member's Picard rank is $12$ in both cases, the determinant is $2^{14}$ or $2^{12}$, and which case holds is decided by whether $u^{\perp T_\Co}$ is contained in $\Pic(\widehat X_{b_\star})$.
 :::
 
 
@@ -1913,7 +1913,7 @@ The two cases of @rmk:divisibility-of-the-difference-class are not separated by 
 
 *Why it fails.* In that case $u^{\perp T_\Co}$ is the transcendental lattice, so a vector of square $-2$ inside it is transcendental and not algebraic; @prob:B24 excludes algebraic classes of square $-2$ in $T_\Co$, not transcendental ones. Indeed the exclusion is what the second case is consistent with: it puts the whole rank-$10$ negative-definite-ish part beyond the algebraic classes.
 
-So the dichotomy of @rmk:divisibility-of-the-difference-class is not decided by the period image, and neither case contradicts any statement on record. It is decided only by whether $u^{\perp T_\Co}$ is contained in $\Pic(\widehat X_{b_\star})$.
+So the dichotomy of @rmk:divisibility-of-the-difference-class is not decided by the period image, and neither case contradicts any statement on record. Neither does the period decide it directly: $\omega_{b_\star}$ is of type $(2,0)$ and so does not lie in $\Pic\otimes\CC$, and a containment $\omega\perp\Pic$ would give no inclusion of $u^{\perp T_\Co}$ in either direction — the period is orthogonal to $\Pic$ by definition, which is why it cannot be used to test membership in it. It is decided only by whether $u^{\perp T_\Co}$ is contained in $\Pic(\widehat X_{b_\star})$.
 :::
 
 ::: {.question #qst:chamber-subscript-image title="What the chamber subscript does to the group"}
