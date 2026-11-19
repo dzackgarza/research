@@ -988,7 +988,7 @@ Conversely, let $h\definedas H_b\cdot\gamma>0$. Riemann--Roch gives $h^0(\gamma)
 
 ::: {.theorem #thm:chamber-subscript-is-a-condition title="The chamber in the datum of the direct group is a genuine condition, and the element that moves it"}
 
-Let $b$ be the member of @thm:chamber-clause-fails, with the two $H_b$-degree-one components $C_+,C_-$ of its ruling fibre, of square $-2$, of sum $C_++C_-\in S_{\Co,b}$ and difference $u\definedas C_+-C_-$ of square $-8$ (@rmk:chamber-pinned-scope). Then there is a class $\delta\in T_\Co$ of square $-2$ with $u\cdot\delta\neq0$, and for such a class
+Let $b$ be the member of @thm:chamber-clause-fails, with the two $H_b$-degree-one components $C_+,C_-$ of its ruling fibre, of square $-2$, of sum $C_++C_-\in S_{\Co,b}$, and let $v\definedas C_+-\widehat\iota_{\Co,b}C_+$ be the class of square $-4$ in $T_{\Co,b}\intersect\Pic(\widehat X_b)$ of @thm:direct-period-meets-minus-four (@rmk:chamber-pinned-scope). Then there is a class $\delta\in T_\Co$ of square $-2$ with $v\cdot\delta\neq0$, and for such a class
 $$g\definedas s_\delta\;\in\;Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha},\qquad
 g\;\notin\;Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha,\mcc}.$$
 The element is the identity modulo $2$, so it lies in $\ker\rho_{T_\Co}$: the subscript cuts into the kernel, and nothing here is asserted about the image of the centralizer in $P$, which is @qst:chamber-subscript-image.
@@ -997,15 +997,15 @@ So the chamber subscript of @def:direct-group is a genuine condition at a member
 
 ::: {.proof}
 
-*The class $\delta$ exists.* The classes of square $-2$ of $T_\Co$ span $T_\Co\tensor\QQ$, so a nonzero vector of $T_\Co$ pairs nontrivially with one of them, and $u^2 = -8$ makes $u$ nonzero. For the span: write $B\cong\latI_{2,9}$ with $T_\Co = B(2)$ and $B = \langle u_1,u_2\rangle\perp\langle c_1,\dots,c_9\rangle$ (@prop:tco-as-twist); the vectors $c_j$ and $u_i + c_1 + c_2$ have square $-1$ in $B$, hence $-2$ in $T_\Co$, and a vector orthogonal to all of them is orthogonal to the $c_j$, hence lies in $\langle u_1,u_2\rangle\otimes\QQ$, and orthogonal to $u_1+c_1+c_2$ and to $u_2+c_1+c_2$, hence orthogonal to $u_1$ and $u_2$, hence zero.
+*The class $\delta$ exists.* The classes of square $-2$ of $T_\Co$ span $T_\Co\tensor\QQ$, so a nonzero vector of $T_\Co$ pairs nontrivially with one of them, and $v^2 = -4$ makes $v$ nonzero. For the span: write $B\cong\latI_{2,9}$ with $T_\Co = B(2)$ and $B = \langle u_1,u_2\rangle\perp\langle c_1,\dots,c_9\rangle$ (@prop:tco-as-twist); the vectors $c_j$ and $u_i + c_1 + c_2$ have square $-1$ in $B$, hence $-2$ in $T_\Co$, and a vector orthogonal to all of them is orthogonal to the $c_j$, hence lies in $\langle u_1,u_2\rangle\otimes\QQ$, and orthogonal to $u_1+c_1+c_2$ and to $u_2+c_1+c_2$, hence orthogonal to $u_1$ and $u_2$, hence zero.
 
 *$g$ fixes the labels.* The class $\delta$ lies in $T_\Co$, so $s_\delta$ is the identity on $S_\Co$ and, $H$ and $\alpha$ lying in $S_\Co$, fixes both; and $I_\Co$ and $I_{\mathrm{dP}}$ act on $T_\Co$ by $-\id$ (@prop:coble-transcendental, and the action of $I_{\mathrm{dP}}$ computed in @prop:direct-eq-heegner), so both commute with $s_\delta$ and both leave $S_\Co$ invariant, so $g$ commutes with both.
 
 *$g$ is discriminant-trivial.* Every pairing in $\lkt$ is even, so $s_\delta(x)-x = (x\cdot\delta)\delta$ lies in $2\lkt$ and $s_\delta\equiv\id\pmod 2$; under the convention of @prop:gamma-co-reflective-set, part (3), that is $\rho_{T_\Co}(g) = \id$.
 
-*The difference class.* At the member $b_\star$ of @thm:chamber-clause-fails the two components of a reducible ruling fibre satisfy $C_\pm\cdot\widehat\pi^*h_1 = 0$ and $C_\pm\cdot\widehat\pi^*h_2 = 1$ (@thm:chamber-clause-fails and its proof, so $u = C_+-C_-$ is orthogonal to both ruling classes, that is to the whole $U(2)$ summand; and $u\perp S_\Co$ because $I_\Co$ exchanges $C_+$ and $C_-$. So $u = a\zeta + W$ with $W\in E_8(2)$ and $2a^2 + W^2 = -8$. Its coordinates are not determined by the record: the count $\nu(b_\star) = 4$ fixes the $H$-degree-one part of the arrangement, not the lattice.
+*The class $v$.* $\widehat\iota_{\Co,b}$ covers $\tau$, which carries the ruling fibre over $x=1$ to the one over $x=-1$ (@thm:direct-period-meets-minus-four, proof), so $C_+$ and $\widehat\iota_{\Co,b}C_+$ lie in disjoint fibres; $v$ is anti-invariant, hence in $T_\Co$, and $C_++\widehat\iota_{\Co,b}C_+$ is invariant, hence in $S_{\Co,b}$. The class $C_+-C_-$ is not anti-invariant, since $\widehat\iota_{\Co,b}$ does not carry the fibre over $x=1$ to itself, and it does not lie in $T_\Co$.
 
-*$g$ moves the arrangement.* Write $m\definedas C_+\cdot\delta = \tfrac12 u\cdot\delta$, which is nonzero because $C_++C_-$ lies in $S_{\Co,b}$ and $\delta\perp S_\Co$. Then
+*$g$ moves the arrangement.* Write $m\definedas C_+\cdot\delta = \tfrac12 v\cdot\delta$, which is nonzero because $C_++\widehat\iota_{\Co,b}C_+$ lies in $S_{\Co,b}$ and $\delta\perp S_\Co$. Then
 $$g(C_+) = C_+ + (C_+\cdot\delta)\,\delta = C_+ + m\delta,$$
 again of square $-2$; and it is not a class of $\widehat X_b$: if $C_+ + m\delta$ were integral for the member, then $m\delta\in\Pic(\widehat X_b)$ with $m\neq0$, and $\Pic(\widehat X_b)$ being primitive in $\lkt$ this would put $\delta$ in it, whereas no period of the construction lies on a wall of a class of square $-2$ in $T_\Co$ (@prob:B24, part 1, @thm:direct-period-misses-root-walls). So $g(C_+)$ is not algebraic at $b$, hence not effective, and $g\Delta_b\neq\Delta_b$.
 
@@ -1014,27 +1014,25 @@ again of square $-2$; and it is not a class of $\widehat X_b$: if $C_+ + m\delta
 
 ::: {.lemma #lem:known-part-of-the-picard-lattice-at-the-test-member title="The part of $\Pic(\widehat X_{b_\star})$ the record determines"}
 
-At the member $b_\star$ of @thm:direct-period-meets-minus-four, let $C_\pm$ be the two components of the ruling fibre over $x=1$ and $u\definedas C_+-C_-$. Then
+At the member $b_\star$ of @thm:direct-period-meets-minus-four, let $D_{1,\pm}$ be the two components of the ruling fibre over $x=1$, $D_{-1,\pm}\definedas\widehat\iota_{\Co,b_\star}D_{1,\pm}$ those over $x=-1$, $f\definedas\widehat\pi^*h_1$ the fibre class, and $v\definedas D_{1,+}-D_{-1,+}$. Then
 
-1. $C_+ + C_- = \widehat\pi^*h_1$ is the fibre class, $C_\pm^2 = -2$ and $C_+\cdot C_- = 2$, so $u^2 = -8$ and $u$ is orthogonal to $\widehat\pi^*h_1$;
-2. $u\perp S_{\Co,b}$, because the ruling classes lie in the $I_\Co$-invariant lattice and $I_\Co$ exchanges $C_+$ and $C_-$;
-3. consequently $\Pic(\widehat X_{b_\star})$ contains the primitive sublattice
-$$S_{\Co,b}\perp\langle u\rangle = U(2)\perp\langle-2\rangle\perp E_8(2)\perp\langle-8\rangle,$$
-of rank $12$, determinant $-2^{14}$ and signature $(1,11)$;
-4. and the transcendental lattice is contained in $u^{\perp T_\Co}$, of rank $10$ and signature $(2,8)$, so $\rho(\widehat X_{b_\star})\ge12$ and the transcendental rank is at most $8$.
+1. $D_{1,+}+D_{1,-} = D_{-1,+}+D_{-1,-} = f$, $D_{\pm1,\pm}^2=-2$, and $s_0\definedas D_{1,+}+D_{-1,+}\in S_{\Co,b}$;
+2. $v\in T_\Co$ has $v^2=-4$, is primitive, and has divisibility $2$ in $T_\Co$;
+3. the lattice $M\definedas S_{\Co,b}+\ZZ D_{1,+}$ spanned by $S_{\Co,b}$ and the four components is the index-two overlattice of $S_{\Co,b}\perp\langle v\rangle$ glued by $D_{1,+}=\tfrac12(s_0+v)$, of rank $12$, signature $(1,11)$ and $\abs{\det M}=2^{11}$;
+4. $M\subseteq\Pic(\widehat X_{b_\star})$ and $T_{\Co,b_\star}\subseteq v^{\perp T_\Co}$, a lattice of rank $10$, signature $(2,8)$ and $\abs{\det}=2^{11}$; so $\rho(\widehat X_{b_\star})\ge12$.
 
-This is the part of the member's Picard lattice that the record determines; the rest of $\Delta_{b_\star}$, and with it the input of @qst:chamber-subscript-image, is not fixed by it.
+The difference $C_+-C_-$ of the two components over one fibre is not in $T_\Co$: it is $2D_{1,+}-f$, and its image $2D_{-1,+}-f$ is a different class.
 :::
 
 ::: {.proof}
 
-(1) is @thm:direct-period-meets-minus-four and its proof: the fibre is the sum of its two components, each is a smooth rational $(-2)$-curve, and they meet with multiplicity two, since each is a component of the fibre and the fibre's self-intersection is $0$. Then $u^2 = C_+^2+C_-^2-2C_+\cdot C_- = -2-2-4 = -8$, and $u\cdot(C_++C_-) = C_+^2-C_-^2 = 0$.
+(1) @thm:direct-period-meets-minus-four and its proof give the components, their squares and $D_{1,+}\cdot D_{1,-}=2$. $\widehat\iota_{\Co,b_\star}$ covers $\tau$, which preserves the ruling $h_1$, so $f$ is invariant; $s_0$ is invariant because $\widehat\iota_{\Co,b_\star}$ is an involution exchanging $D_{1,+}$ and $D_{-1,+}$, and $S_{\Co,b}$ is the invariant lattice.
 
-(2) $S_{\Co,b}$ is the $I_\Co$-invariant lattice, and $\widehat\iota_{\Co,b}$ carries $C_+$ to a component of the fibre over $\tau(1) = -1$ (@thm:chamber-clause-fails, proof), so $I_\Co$ exchanges $C_+$ and $C_-$ up to sign and hence acts on $u$ by $-1$; therefore $u$ is orthogonal to every invariant class.
+(2) $v$ is anti-invariant, so $v\in T_\Co$; $v^2=-4$ and primitivity are @thm:direct-period-meets-minus-four. $T_\Co = B(2)$ with $B$ unimodular (@prop:tco-as-twist), so $v\cdot T_\Co = 2(v'\cdot B)$ for $v=v'$ read in $B$, and $v'$ is primitive in $B$, so $v'\cdot B=\ZZ$ and the divisibility is $2$.
 
-(3) $S_{\Co,b}\cong U(2)\perp\langle-2\rangle\perp E_8(2)$ (@prop:coble-invariant-lattice), with determinant $(-4)(-2)(2^8) = 2^{11}$ and signature $(1,10)$; adjoining the orthogonal vector $u$ of square $-8$ multiplies the determinant by $-8$ and adds one negative direction.
+(3) $D_{1,-}=f-D_{1,+}$ and $D_{-1,\pm}$ lie in $S_{\Co,b}+\ZZ D_{1,+}$, and $2D_{1,+}=s_0+v$. $D_{1,+}\notin S_{\Co,b}\perp\langle v\rangle$, since $v\cdot D_{1,+} = -2$ and $\tfrac{v\cdot D_{1,+}}{v^2}=\tfrac12$. So the index is $2$ and $\abs{\det M}=2^{11}\cdot4/4=2^{11}$, with $\abs{\det S_{\Co,b}}=2^{11}$ (@prop:coble-invariant-lattice).
 
-(4) $\Pic(\widehat X_{b_\star})\subseteq u^{\perp\lkt}$ by (1) and (2), and $u\in T_\Co$ with $u^2<0$, so $u^{\perp T_\Co}$ has rank $11-1 = 10$ and signature $(2,8)$.
+(4) The components are curves, so $M\subseteq\Pic$; the transcendental lattice is orthogonal to $v$ and lies in $T_\Co$. $\abs{\det v^{\perp T_\Co}} = \abs{\det T_\Co}\cdot\abs{v^2}/\div(v)^2 = 2^{11}\cdot4/4$.
 :::
 
 ::: {.lemma #lem:chamber-condition-is-period-condition title="The chamber condition is a linear condition on the period, not a count of chambers"}
@@ -1892,28 +1890,18 @@ So $\gamma = \varphi^*$ for some $\varphi\in\Aut(\widehat X_b)$, and an automorp
 Since $\gamma A_b = A_b$ and $A_b$ is ample, $\mathfrak c_b$ and $\gamma\mathfrak c_b$ are both components of $\mathcal C_b\setminus\bigcup_{\delta\in\Delta_b}\delta^\perp$ containing the ample class $A_b$; components are disjoint, so they are equal.
 :::
 
-::: {.theorem #rmk:divisibility-of-the-difference-class title="Either the known part is the Picard lattice or it has index two in it, and nothing in between"}
+::: {.theorem #rmk:divisibility-of-the-difference-class title="If the Picard rank is twelve, the known part is the whole Picard lattice"}
 
-Let $u\in T_\Co$ be the difference class of @lem:known-part-of-the-picard-lattice-at-the-test-member, which is primitive because a non-primitive one would give a class of square $-2$ in $T_\Co$ algebraic at $b_\star$, excluded by @prob:B24. By @lem:divisibilityAlwaysTwoTco its divisibility in $T_\Co$ is $2$, so
-$$\det\bigl(u^{\perp T_\Co}\bigr) = \frac{\det T_\Co\cdot u^2}{\div_{T_\Co}(u)^2} = \frac{2^{11}\cdot8}{4} = 2^{12},\qquad \det\bigl(S_{\Co,b}\perp\langle u\rangle\bigr) = 2^{14}.$$
-With $k\definedas\bigl[u^{\perp T_\Co} : T_{\Co,b_\star}\bigr]$ and $j\definedas\bigl[\Pic(\widehat X_{b_\star}) : S_{\Co,b}\perp\langle u\rangle\bigr]$, unimodularity of $L_{K3}$ gives $\det T_{\Co,b_\star} = \pm\det\Pic(\widehat X_{b_\star})$, that is $2^{12}k^2 = 2^{14}/j^2$, hence $kj = 2$ and exactly two cases occur:
-
-1. $(k,j) = (2,1)$: $\Pic(\widehat X_{b_\star}) = S_{\Co,b}\perp\langle u\rangle$, of rank $12$ and determinant $2^{14}$, and the transcendental lattice is an index-two sublattice of $u^{\perp T_\Co}$;
-2. $(k,j) = (1,2)$: $\Pic(\widehat X_{b_\star})$ is an index-two overlattice of $S_{\Co,b}\perp\langle u\rangle$ — it contains a class $\tfrac12(s+u)$ with $s\in S_{\Co,b}$ — of rank $12$ and determinant $2^{12}$, and its transcendental lattice is the whole of $u^{\perp T_\Co}$.
-
-The two indices in that equation are finite, and this is where the rank count enters: $\Pic(\widehat X_{b_\star})$ contains the rank-$12$ lattice $S_{\Co,b}\perp\langle u\rangle$, and its orthogonal complement is contained in the rank-$10$ lattice $u^{\perp T_\Co}$; so the rank count forces $\rho = 12$ and $\operatorname{rank}T_{\Co,b_\star} = 10$, and both inclusions are of finite index. So the member's Picard rank is $12$ in both cases, the determinant is $2^{14}$ or $2^{12}$, and which case holds is decided by whether $u^{\perp T_\Co}$ is contained in $\Pic(\widehat X_{b_\star})$.
+In the notation of @lem:known-part-of-the-picard-lattice-at-the-test-member, if $\rho(\widehat X_{b_\star})=12$ then $\Pic(\widehat X_{b_\star})=M$ and $T_{\Co,b_\star}=v^{\perp T_\Co}$.
 :::
 
+::: {.proof}
+With $\rho=12$ both inclusions of @lem:known-part-of-the-picard-lattice-at-the-test-member, part 4, are of finite index, say $j=[\Pic:M]$ and $k=[v^{\perp T_\Co}:T_{\Co,b_\star}]$. $\Pic$ and $T_{\Co,b_\star}$ are mutual orthogonal complements in the unimodular $\lkt$, so $\abs{\det\Pic}=\abs{\det T_{\Co,b_\star}}$, that is $2^{11}/j^2 = 2^{11}k^2$, and $j=k=1$.
+:::
 
-::: {.remark #rmk:dichotomy-not-decided-by-the-root-exclusion title="The period image does not decide the dichotomy, though the route is tempting"}
+::: {.remark #rmk:dichotomy-not-decided-by-the-root-exclusion title="What is left of A20 2 at this member"}
 
-The two cases of @rmk:divisibility-of-the-difference-class are not separated by @prob:B24, and the argument that looks as though it separates them fails for a specific reason.
-
-*The tempting argument.* In the second case the transcendental lattice is the whole of $u^{\perp T_\Co}$; that lattice has rank $10$ and signature $(2,8)$ and does contain vectors of square $-2$ — for six sampled classes of $u$ of square $-8$ a perpendicular $(-2)$-vector is exhibited in `computations/reports/coble_663-minus-eight-perp-roots-run.txt` — so one would conclude that a $(-2)$-class of $T_\Co$ is algebraic at $b_\star$, which @prob:B24, part 1 forbids.
-
-*Why it fails.* In that case $u^{\perp T_\Co}$ is the transcendental lattice, so a vector of square $-2$ inside it is transcendental and not algebraic; @prob:B24 excludes algebraic classes of square $-2$ in $T_\Co$, not transcendental ones. Indeed the exclusion is what the second case is consistent with: it puts the whole rank-$10$ negative-definite-ish part beyond the algebraic classes.
-
-So the dichotomy of @rmk:divisibility-of-the-difference-class is not decided by the period image, and neither case contradicts any statement on record. Neither does the period decide it directly: $\omega_{b_\star}$ is of type $(2,0)$ and so does not lie in $\Pic\otimes\CC$, and a containment $\omega\perp\Pic$ would give no inclusion of $u^{\perp T_\Co}$ in either direction — the period is orthogonal to $\Pic$ by definition, which is why it cannot be used to test membership in it. It is decided only by whether $u^{\perp T_\Co}$ is contained in $\Pic(\widehat X_{b_\star})$.
+An earlier version of @lem:known-part-of-the-picard-lattice-at-the-test-member took $u=C_+-C_-$, of square $-8$, to lie in $T_\Co$, on the reading that $\widehat\iota_{\Co,b_\star}$ exchanges the two components of one fibre. It does not: it carries the fibre over $x=1$ to the fibre over $x=-1$ (@thm:direct-period-meets-minus-four, proof). So the dichotomy that was stated for $u$, and the question whether $u^{\perp T_\Co}\subseteq\Pic(\widehat X_{b_\star})$, have no object. The algebraic part of $T_\Co$ that the record fixes is $\ZZ v$, and @rmk:divisibility-of-the-difference-class leaves no second case. The rank count gives only $\rho\ge12$. It does not give $\rho=12$. What remains is the Picard number of this one explicit member. A reduction modulo a prime $p$ of good reduction at which the Frobenius has no eigenvalue $p\zeta$ on the $10$-dimensional complement of $M$ decides it, by point counts of $z^2=f_\star(x,y)$ over $\FF_{p^n}$.
 :::
 
 ::: {.question #qst:chamber-subscript-image title="What the chamber subscript does to the group"}
@@ -1922,7 +1910,7 @@ So the dichotomy of @rmk:divisibility-of-the-difference-class is not decided by 
 
 What is left is what that condition does to the group: is
 $$\rho_{T_\Co}\bigl(Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha,\mcc}\bigr)\;=\;\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$$
-at a member whose Picard lattice is larger than $S_{\Co,b}$, as @prop:direct-eq-heegner proves it at a member whose Picard lattice is $S_{\Co,b}$ itself? By @lem:chamber-condition-is-period-condition the condition is linear: a lift $g$ preserves the chamber exactly when the transported period $g^{-1}\omega_b$ is orthogonal to the span of $\Delta_{b_\star}$. So the question is which cosets of $\ker\rho_{T_\Co}$ in the centralizer contain an element with that property, and it is decided by a lattice computation once the span of $\Delta_{b_\star}$ is known, that is once $\Pic(\widehat X_{b_\star})$ is: @cor:chamber-preserved-by-picard-stabilizer reduces it further to whether the stabilizer of the member's Picard lattice surjects onto $P$, which is the form the computation should take. What the record fixes at $b_\star$ is @lem:known-part-of-the-picard-lattice-at-the-test-member: the branch curve, the two reducible fibres over $x=\pm1$ with their four components, the node's fibre, and the count $\nu(b_\star) = 4$ (@thm:chamber-clause-fails and its proof). It does not fix $\Pic(\widehat X_{b_\star})$, which by @thm:effective-roots-are-the-h-positive-ones determines the whole arrangement; whether the part that is fixed is the whole of it is decided by @rmk:divisibility-of-the-difference-class, which leaves exactly two cases, and @rmk:dichotomy-not-decided-by-the-root-exclusion shows that the period image does not choose between them; and by @lem:chamber-condition-is-period-condition the classes of $H$-degree greater than one are walls of the chamber too: $2C_+ + C_-$ is one, of square $-2$ and $H$-degree $3$. The witness of @thm:chamber-subscript-is-a-condition is not such a check, being discriminant-trivial and moving no element of $P$; what that theorem decides is that the subscript cuts into the kernel of $\rho_{T_\Co}$, not that it changes the image.
+at a member whose Picard lattice is larger than $S_{\Co,b}$, as @prop:direct-eq-heegner proves it at a member whose Picard lattice is $S_{\Co,b}$ itself? By @lem:chamber-condition-is-period-condition the condition is linear: a lift $g$ preserves the chamber exactly when the transported period $g^{-1}\omega_b$ is orthogonal to the span of $\Delta_{b_\star}$. So the question is which cosets of $\ker\rho_{T_\Co}$ in the centralizer contain an element with that property, and it is decided by a lattice computation once the span of $\Delta_{b_\star}$ is known, that is once $\Pic(\widehat X_{b_\star})$ is: @cor:chamber-preserved-by-picard-stabilizer reduces it further to whether the stabilizer of the member's Picard lattice surjects onto $P$, which is the form the computation should take. What the record fixes at $b_\star$ is @lem:known-part-of-the-picard-lattice-at-the-test-member: the branch curve, the two reducible fibres over $x=\pm1$ with their four components, the node's fibre, and the count $\nu(b_\star) = 4$ (@thm:chamber-clause-fails and its proof). It does not fix $\Pic(\widehat X_{b_\star})$, which by @thm:effective-roots-are-the-h-positive-ones determines the whole arrangement; by @rmk:divisibility-of-the-difference-class the part that is fixed, $M$, is the whole of it exactly when $\rho(\widehat X_{b_\star})=12$ (@rmk:dichotomy-not-decided-by-the-root-exclusion); and by @lem:chamber-condition-is-period-condition the classes of $H$-degree greater than one are walls of the chamber too: $2C_+ + C_-$ is one, of square $-2$ and $H$-degree $3$. The witness of @thm:chamber-subscript-is-a-condition is not such a check, being discriminant-trivial and moving no element of $P$; what that theorem decides is that the subscript cuts into the kernel of $\rho_{T_\Co}$, not that it changes the image.
 :::
 
 ## Integral cusp lifting {#sec-cusp-lifting}
