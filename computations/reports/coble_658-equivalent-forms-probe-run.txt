@@ -1,0 +1,12 @@
+A_{T_Co}: |A| = 2048, nonzero isotropic classes = 527
+|P| = |O(q_{T_Co})| / [O(T_Co) : R_{gent}] = 46998591897600 / 67456 = 696729600
+
+the four forms of item 1e, equivalent by the lemma:
+  (a) rho(Gamma_Co) = 1  <=>  Gamma_Co <= ker(rho_{T_Co})
+  (b) Gamma_Co fixes each of the 527 nonzero isotropic classes of A_{T_Co}
+  (c) every Gamma_Co-orbit on the 527 0-cusps of D(T_Co)/O~+(T_Co) is a singleton
+  (d) [Gamma_Co : Gamma_Co cap O~+(T_Co)] = |rho(Gamma_Co)| = 1  (a divisor of 696729600)
+
+verdict: the lemma holds -- the four are one question, none of them decided here.  A solver may
+  compute orbits (c), test the classes (b), the index (d) or the image (a), whichever tool is
+  at hand.
