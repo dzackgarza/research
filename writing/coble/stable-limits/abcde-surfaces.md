@@ -17,11 +17,11 @@ $$
 K_X+D+\eps R
 =\pi^*\left(K_Y+C+\frac{1+\eps}{2}B\right).
 $$
-The two kinds of pair correspond bijectively [@AT17, Lem. 2.3; @AEGS25, §6]. The components in Type III carry ordinary ADE Dynkin labels; those in Type II carry affine $\widetilde A$, $\widetilde D$, or $\widetilde E$ labels.
+The two kinds of pair correspond bijectively [@AT17, Lem. 2.3; @AEGS25, (6.1)]. The components in Type III carry ordinary ADE Dynkin labels; those in Type II carry affine $\widetilde A$, $\widetilde D$, or $\widetilde E$ labels.
 
 ## Type III equations and priming
 
-For the toric examples, let $Q\subset\ZZ^2$ be the polygon of the del Pezzo pair $(Y,C)$ and $L_Q$ its ample line bundle. Two sides at a distinguished vertex give $C=C_1+C_2$. A section $f$ of $L_Q$ has coefficient $1$ at the three distinguished vertices, coefficients $a_i$ at the Dynkin nodes, and zero at the other lattice points. In the examples of [@AEGS25, §6], the equations are
+For the toric examples, let $Q\subset\ZZ^2$ be the polygon of the del Pezzo pair $(Y,C)$ and $L_Q$ its ample line bundle. Two sides at a distinguished vertex give $C=C_1+C_2$. A section $f$ of $L_Q$ has coefficient $1$ at the three distinguished vertices, coefficients $a_i$ at the Dynkin nodes, and zero at the other lattice points. In the examples of [@AEGS25, §6.1], the equations are
 
 | Type | Section $f$ |
 | --- | --- |
@@ -38,15 +38,15 @@ $$
 X=\{z^2+f(x,y)=0\}\subset V_P,
 \qquad \iota_{\mathrm{dP}}(x,y,z)=(x,y,-z).
 $$
-Its quotient is $Y=V_Q$. Varying the Dynkin coefficients gives $\CC^n$, the Weyl quotient of $\operatorname{Hom}(\Lambda^*,\CC^*)$ for the ADE root lattice $\Lambda$ of rank $n$ [@AEGS25, §6].
+Its quotient is $Y=V_Q$. Varying the Dynkin coefficients gives $\CC^n$, the Weyl quotient of $\operatorname{Hom}(\Lambda^*,\CC^*)$ for the ADE root lattice $\Lambda$ of rank $n$ [@AEGS25, §6.1].
 
-The sublattice $2\ZZ^2$ marks even vertices. A blue boundary edge ending at an even vertex has length $2$ and is undecorated; an edge ending at an odd vertex has length $1$ and receives a minus or prime decoration. Priming blows up $D\cap R$ on $X$, or makes the corresponding weighted blowup at $C\cap B$ on $Y$ (@def:priming). A long side meets $R$ twice and a short side once. Once every such point on a side has been blown up, the strict transforms satisfy $D_i'\cdot R'=0$, and $\abs{mR'}$, for sufficiently large $m$, contracts $D_i'$. This explains the loss of one or both boundary components in the primed shapes [@AT17, §3C; @AEGS25, §6].
+The sublattice $2\ZZ^2$ marks even vertices. A blue boundary edge ending at an even vertex has length $2$ and is undecorated; an edge ending at an odd vertex has length $1$ and receives a minus or prime decoration. Priming blows up $D\cap R$ on $X$, or makes the corresponding weighted blowup at $C\cap B$ on $Y$ (@def:priming). A long side meets $R$ twice and a short side once. Once every such point on a side has been blown up, the strict transforms satisfy $D_i'\cdot R'=0$, and $\abs{mR'}$, for sufficiently large $m$, contracts $D_i'$. This explains the loss of one or both boundary components in the primed shapes [@AT17, §3C; @AEGS25, §6.2].
 
-For example, priming a long side of $A_n$ once gives $A_n'$ and twice gives $A_n''$; priming a short side of $A_n^-$ gives $A_n^+$. The shapes $A_n''$ and $A_n^+$ have one boundary component. Priming both sides gives the zero-boundary shapes ${}''A_n''$, ${}''A_n^+$, and ${}^{+}A_n^+$ [@AEGS25, §6]. The decorations on the left and right record which sides were primed; they are distinct from the minus decoration on a short side.
+For example, priming a long side of $A_n$ once gives $A_n'$ and twice gives $A_n''$; priming a short side of $A_n^-$ gives $A_n^+$. The shapes $A_n''$ and $A_n^+$ have one boundary component. Priming both sides gives the zero-boundary shapes ${}''A_n''$, ${}''A_n^+$, and ${}^{+}A_n^+$ [@AEGS25, §6.2]. The decorations on the left and right record which sides were primed; they are distinct from the minus decoration on a short side.
 
 ## Type II equations
 
-The two ends of the distinguished boundary segment have coefficient $1$; its interior distinguished point has coefficient $\lambda$. Three sections from [@AEGS25, §6] are
+The two ends of the distinguished boundary segment have coefficient $1$; its interior distinguished point has coefficient $\lambda$. Three sections from [@AEGS25, §6.3] are
 
 | Type | Section $f$ |
 | --- | --- |
@@ -60,7 +60,7 @@ $$
 \PP(1,2^2,3^2,4^2,5,6),\qquad
 \PP(1^4,2^{2n-3})\quad(\widetilde D_{2n}).
 $$
-The section on the distinguished segment defines a double cover of $\PP^1$ by an elliptic curve. Varying $\lambda$ gives a family of weighted projective spaces over the $j$-line; its fiber over $j(E)$ is the Weyl quotient of $\operatorname{Hom}(\Lambda,E)$ [@AEGS25, §6].
+The section on the distinguished segment defines a double cover of $\PP^1$ by an elliptic curve. Varying $\lambda$ gives a family of weighted projective spaces over the $j$-line; its fiber over $j(E)$ is the Weyl quotient of $\operatorname{Hom}(\Lambda,E)$ [@AEGS25, §6.3].
 
 The affine $\widetilde A_{2n-1}$ case is instead a double cover of a cone over an elliptic curve. For $E_q=\CC^*/q^{\ZZ}$, $0<|q|<1$, and a line bundle $L$ of degree $n$, set
 $$
@@ -68,11 +68,11 @@ $$
 \qquad g(x)=\sum_{i\in\ZZ/(2n)}c_i\theta_i(x),
 \qquad f(x,y)=y^2+g(x).
 $$
-The $\theta_i$ are sections of $L^2$. For a nonzero coefficient tuple, $f$ descends from the square of the tautological line bundle on $\PP(\mathcal O_E\oplus L)$ to the cone obtained by contracting its exceptional section. The equation $z^2+f=0$ defines the anticanonical double cover, with $\iota_{\mathrm{dP}}(x,y,z)=(x,y,-z)$ [@AEGS25, §6].
+The $\theta_i$ are sections of $L^2$. For a nonzero coefficient tuple, $f$ descends from the square of the tautological line bundle on $\PP(\mathcal O_E\oplus L)$ to the cone obtained by contracting its exceptional section. The equation $z^2+f=0$ defines the anticanonical double cover, with $\iota_{\mathrm{dP}}(x,y,z)=(x,y,-z)$ [@AEGS25, §6.3].
 
 ## Two commuting involutions
 
-For a log canonical pair $(X,D)$ with $K_X+D\sim0$, call an involution symplectic or nonsymplectic according as it acts by $+1$ or $-1$ on $H^0(X,\mathcal O_X(K_X+D))$. The local form $dx\wedge dy/y$ shows that a nonsymplectic quotient cannot ramify along an irreducible component of $D$ [@AEGS25, §6].
+For a log canonical pair $(X,D)$ with $K_X+D\sim0$, call an involution symplectic or nonsymplectic according as it acts by $+1$ or $-1$ on $H^0(X,\mathcal O_X(K_X+D))$. The local form $dx\wedge dy/y$ shows that a nonsymplectic quotient cannot ramify along an irreducible component of $D$ [@AEGS25, §6.4].
 
 ::: {.proposition #prop:abcde-two-covers title="The index-one and index-two quotient surfaces"}
 

@@ -79,5 +79,5 @@ The label
 $$
 \alpha : 2 = {}_2\beta \subset \gamma
 $$
-records three types at once: $\alpha$ is the ADE type of the double cover $X\to Y$, $\gamma$ the ADE type of the symplectic quotient $Z'\to W$, and ${}_2\beta$ the ABCDE type of the index-two nonsymplectic quotient $Z\to W$ [@AEGS25 §6].
+records three types at once: $\alpha$ is the ADE type of the double cover $X\to Y$, $\gamma$ the ADE type of the symplectic quotient $Z'\to W$, and ${}_2\beta$ the ABCDE type of the index-two nonsymplectic quotient $Z\to W$ [@AEGS25, §6.4].
 :::
