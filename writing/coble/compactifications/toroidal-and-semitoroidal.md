@@ -416,6 +416,13 @@ The fan criterion of @thm:semifan-recognizable-divisor(4) is the joint one of [@
 Let $F$ parameterize elliptic K3 surfaces with section $s$ and singular fibers $f_1,\ldots,f_{24}$, counted with multiplicity. For the polarizing divisor $R=s+m\sum_i f_i$ with $m\ge1$, the normalization of the stable-pair compactification is toroidal. Its fan subdivides each Coxeter chamber into nine chambers, so it refines the Coxeter fan [@ABE22, Intro., Thm. 1.2]. For the image of the trisection of nonzero $2$-torsion points after contracting the section, the normalization is toroidal for a fan whose chamber is the union of four Coxeter chambers [@ABE22, Intro., Thm. 1.1 and §3]. Thus these two geometric divisors give opposite directions of comparison with the same Coxeter fan.
 :::
 
+::: {.remark #rmk:two-questions-are-one}
+
+The two questions of @qst:recognizable-semifan are one question about a single computation, once the inventory of what is *known* to be recognizable is counted. In the deposits only two classes of polarizing divisor carry a recognizability proof: the ramification divisor of a nonsymplectic involution, in its fixed-locus form [@AE22, §8A, printed p. 41; @AEH24, Thm. 3.24] and in its Enriques form [@AEGS25, Thm. 5.9, printed p. 611], and the rational-curve divisor $R_{\rcop}$ on $F_{2d}$ [@AE23, witnessed by @AE23a] (`computations/reports/coble_679-recognizability-inventory-run.txt`).
+
+For the first class, (W) is decided wherever the semifan is computed, and it holds (@cor:semifan-computed-cases); what is not computed is whether it holds at a $0$-cusp of a two-elementary family outside those three classes. For the second class nothing is computed at all. So apart from that residue of uncomputed cusps, question 1 is decided exactly when question 2 is: an affirmative answer to question 2's computation for some $d$ and some cusp — a cone of $\mcf_{R_{\rcop}}$ that is not a union of Coxeter cones — answers question 1 affirmatively with a recognizable divisor, and a proof that every cone of $\mcf_{R_{\rcop}}$ is a union of Coxeter cones answers it negatively for every divisor now known to be recognizable.
+:::
+
 ::: {.question #qst:recognizable-semifan title="The cones for the rational-curve divisor, and whether (W) can fail for a recognizable divisor"}
 
 Two questions, and together they are what @thm:semifan-stratum and @thm:semifan-recognizable-divisor leave open.

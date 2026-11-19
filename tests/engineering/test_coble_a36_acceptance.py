@@ -190,6 +190,27 @@ def test_the_four_records_of_the_unit_are_committed():
         assert (REPORTS / name).exists(), name
 
 
+def test_the_two_open_rows_are_known_to_be_one_computation():
+    """The reduction: among the divisors known to be recognizable, only R_rc is uncomputed.
+
+    The inventory names the divisors the deposits carry a recognizability proof for -- the
+    ramification divisor in its fixed-locus and Enriques forms, and R_rc.  (W) is computed for
+    the first class in three families and for the second class nowhere, so question 1 and
+    question 2 are one computation except for the uncomputed cusps of the first class.  The
+    page must keep saying that, and the register row must keep both questions.
+    """
+    page = page_text()
+    block = page[page.index("#rmk:two-questions-are-one"):]
+    block = block[: block.index("\n:::")] if "\n:::" in block else block
+    assert "only two classes of polarizing divisor carry a recognizability proof" in block
+    assert "question 1 is decided exactly when question 2 is" in block
+    assert "answers question 1 affirmatively with a recognizable divisor" in block
+    register = REGISTER.read_text(encoding="utf-8")
+    row = [line for line in register.splitlines() if "qst:recognizable-semifan" in line][0]
+    assert "whether a *recognizable* divisor can fail" in row
+    assert "the cones of $\\mcf_{R_\\rcop}$ itself" in row
+
+
 def test_the_two_blockers_of_the_open_rows_are_what_the_records_say():
     """The controls on the two red rows: if either blocker lifts, this fires and the row must be re-read.
 
