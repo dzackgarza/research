@@ -303,7 +303,7 @@ def test_the_register_item_is_closed_and_the_conjecture_is_replaced():
     text = OPEN_PROBLEMS.read_text()
     # the A13 register question is now a remark pointing at the two theorems
     assert "The embedding matrices of the chain" in text
-    assert "The horizontal folding involution, resolved" in text
+    assert "The folding conjecture for $\\theta_\\Co$, resolved" in text
     # the ids the question and the conjecture had are gone
     for gone in ("qst:coble-embedding-matrices", "qst:coble-explicit-equations",
                  "conj:horizontal-folding"):

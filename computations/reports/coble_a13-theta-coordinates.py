@@ -286,13 +286,14 @@ print("")
 
 print("9. the marked classes of the Coble tuple in this marking")
 H = vec({2: 1, 3: 1, 4: 1, 5: 1})
-print("   H = e_2+e_3+e_4+e_5, the corner of the slot Delta(U_2,U_3) = U(2):")
+print("   H = e_2+e_3+e_4+e_5, the sum of the hyperbolic basis e = e_2+e_4, f = e_3+e_5 of")
+print("   the summand Delta(U_2,U_3) = U(2) of S_Co:")
 print("     H^2 = %d, alpha^2 = %d, H.alpha = %d"
       % (int((H.T * G * H)[0, 0]), int((alpha.T * G * alpha)[0, 0]),
          int((H.T * G * alpha)[0, 0])))
 print("     theta_Co(H) = -H %s, theta_Co(alpha) = -alpha %s"
       % ((th * H) == (-1) * H, (th * alpha) == (-1) * alpha))
-print("     the slot Delta(U_2,U_3) = U(2) is negated: theta_Co(e_2+e_4) = -(e_2+e_4) %s"
+print("     theta_Co negates the summand Delta(U_2,U_3): theta_Co(e_2+e_4) = -(e_2+e_4) %s"
       % ((th * vec({2: 1, 4: 1})) == (-1) * vec({2: 1, 4: 1})))
 print("")
 

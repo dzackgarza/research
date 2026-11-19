@@ -274,7 +274,7 @@ print("")
 print("5. the indices of the comparison")
 WE8 = 696729600
 print("   |W(E8)| = %d, 2|W(E8)| = %d" % (WE8, 2 * WE8))
-print("   [Gamma_{Co,2} : Gamma_{Co,2} cap Orth^+] = 2, the two cosets being the components;")
+print("   [Gamma_{Co,2} : Gamma_{Co,2} cap Orth^+] = 2, that is two cosets of Orth^+(T_Co);")
 print("   [Gamma_{Co,2} cap Orth^+ : Otilde^+(T_Co)] = |W(E8)| = %d;" % WE8)
 print("   [Gamma_{Co,2} : Otilde^+(T_Co)] = %d" % (2 * WE8))
 print("   [Orth(T_Co) : Otilde^+(T_Co)] = %d = %d * %d" % (count * 2 * WE8, count, 2 * WE8))

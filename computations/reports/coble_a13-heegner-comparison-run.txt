@@ -43,7 +43,7 @@ provenance
 
 5. the indices of the comparison
    |W(E8)| = 696729600, 2|W(E8)| = 1393459200
-   [Gamma_{Co,2} : Gamma_{Co,2} cap Orth^+] = 2, the two cosets being the components;
+   [Gamma_{Co,2} : Gamma_{Co,2} cap Orth^+] = 2, that is two cosets of Orth^+(T_Co);
    [Gamma_{Co,2} cap Orth^+ : Otilde^+(T_Co)] = |W(E8)| = 696729600;
    [Gamma_{Co,2} : Otilde^+(T_Co)] = 1393459200
    [Orth(T_Co) : Otilde^+(T_Co)] = 93997183795200 = 67456 * 1393459200

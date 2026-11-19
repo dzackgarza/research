@@ -105,10 +105,11 @@ provenance
    @prop:theta-co-exists.
 
 9. the marked classes of the Coble tuple in this marking
-   H = e_2+e_3+e_4+e_5, the corner of the slot Delta(U_2,U_3) = U(2):
+   H = e_2+e_3+e_4+e_5, the sum of the hyperbolic basis e = e_2+e_4, f = e_3+e_5 of
+   the summand Delta(U_2,U_3) = U(2) of S_Co:
      H^2 = 4, alpha^2 = -2, H.alpha = 0
      theta_Co(H) = -H True, theta_Co(alpha) = -alpha True
-     the slot Delta(U_2,U_3) = U(2) is negated: theta_Co(e_2+e_4) = -(e_2+e_4) True
+     theta_Co negates the summand Delta(U_2,U_3): theta_Co(e_2+e_4) = -(e_2+e_4) True
 
 10. the reversed sign assignment, and one nearby perturbation, both fail
     J_Co = -theta_Co has the same two eigenspaces with the signs reversed; an isometry

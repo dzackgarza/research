@@ -1,5 +1,43 @@
 # The #81 fresh-context language audit: what was asked, what was available, what it found
 
+## The instrument was supplied on 2026-11-19 and the audit was run as specified
+
+The priming file was placed at tmp/sources/mathematical-auditor-priming.md (the vault copy of
+the path below, which this VM cannot reach through the .agents symlink).  The audit was then run
+as the priming's usage contract requires: a fresh-context agent that received ONLY the priming
+prompt and the artifact paths -- no summary of the text under audit -- and returned five flags
+plus a reach list of the terms it verified as standard.  Its dispositions, each fixed at the
+source or rejected with a citation:
+
+  F1 "horizontal folding" (register note title and body).  UPHELD as coinage: a folding of a
+     Coxeter diagram is folding by a diagram automorphism with orbit sums as folded roots
+     [@Bou08, Ch. 6 Sec. 4], and "horizontal" belongs to period maps, not to diagrams.  FIXED:
+     the note is retitled "The folding conjecture for theta_Co, resolved", the phrase is marked
+     as quoted from the retired entry, and the note says the term is not standard.
+  F2 "generator length a = 11" (proof of thm:theta-co-coordinates).  UPHELD: the invariant is
+     Nikulin's a = dim_{F2} A_L, the number of generators of the discriminant group [@Nik80,
+     Thm. 3.6.2]; "length" in lattice theory means the norm or a different generator count.
+     FIXED to "the number a = dim_{F2} A_L = 11 of generators of the discriminant group".
+     The same phrase stands in lattice-theory/classification/two-elementary-lattices.md, which
+     is another unit's page; it is named in the report rather than edited here.
+  F3 "component" for a coset of Orth^+ (parts 1-2 of thm:gamma-co-2-comparison and the
+     comparison transcript).  UPHELD as misuse: Orth(T_Co) is discrete and the objects are the
+     two cosets of the spinor kernel Orth^+(T_Co) (spinor norm: O'Meara, Introduction to Quadratic
+     Forms, Ch. 5; this bibliography has no key for it, so it is named here and not cited on a
+     page).  FIXED to "the condition
+     phi in Orth^+(T_Co)", "the two descriptions differ by one coset", "that is two cosets of
+     Orth^+(T_Co)".
+  F4 "the boundary lattice of the Coble 0-cusp" (part 2 of thm:diagram-roots-coordinates).
+     PARTLY UPHELD: in this corpus "boundary lattice" is eta^perp/eta for an isotropic eta, a
+     different object, so the phrase collides even though the lattice meant is the source's
+     T_bar_dP.  FIXED to "the lattice T_bar_dP = U + E8^2 = (18,0,0)_1 of the 0-cusp to which
+     the Coble 0-cusp maps (@lem:cusp_map_dP)".
+  F5 "the corner of the slot" (theta transcript, two lines).  UPHELD for "corner": a summand
+     of a lattice has no corner, and the object is the vector H of square 4.  "Slot" is
+     retained where it is this program's own label for the del Pezzo summand, defined at
+     @prop:del-pezzo-placement.  FIXED to "the sum of the hyperbolic basis e = e_2+e_4,
+     f = e_3+e_5 of the summand Delta(U_2,U_3) = U(2)".
+
 ## The required instrument, and its path
 
 research#81 requires, before any correction ships:
