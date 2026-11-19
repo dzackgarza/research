@@ -60,6 +60,7 @@ CHAIN = [
     ("coble_658-nodal-pair-refutation-probe-run.txt", "verdict: item 1e is FALSE."),
     ("coble_658-pointwise-criterion-probe-run.txt", "An isometry fixing S_Co pointwise acts trivially on A_{T_Co}"),
     ("coble_658-source-census-probe-run.txt", "verdict: no source held in tmp/sources states the monodromy group"),
+    ("coble_658-ten-transitivity-probe-run.txt", "verdict: the transitivity shortcut for item 1f is REFUTED."),
     ("coble_658-meridian-lemma-probe-run.txt", "verdict: the meridian lemma is PROVED"),
     ("coble_658-reflective-generation-probe-run.txt", "verdict: item 1e holds for every subgroup"),
     ("coble_658-cusp-parabolic-probe-run.txt", "verdict: every kind of monodromy element"),

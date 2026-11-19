@@ -1,0 +1,13 @@
+T_En = U+U(2)+E8(2) rank 12   even True   det +1024   signature (2,10)
+U + E8(-1) (Enriques) rank 10   even True   det -1   signature (1,9)
+
+T_En is even of signature (2,10) with |det| = 1024 = 2^10: 2-elementary, NOT unimodular.
+The Enriques lattice U + E8(-1) is the unimodular one, of signature (1,9) and rank 10.
+
+verdict: the transitivity shortcut for item 1f is REFUTED.  cor:hyperbolic-splitting needs a
+  unimodular lattice, so it does not split T_En at an isotropic vector; and since
+  A_{T_En} = (Z/2)^10 is nonzero, Gamma_En = O~^+(T_En) is a proper subgroup of O^+(T_En),
+  acting through its image in O(A_{T_En}).  The map v |-> v* in A_{T_En} is invariant under
+  all of O(T_En), so Gamma_En-orbits are refined by discriminant classes: transitivity cannot
+  follow from an O^+-transitivity theorem even if T_En were unimodular.  Item 1f's content
+  is the orbit computation itself, as it was for the 527 orbits of T_Co.
