@@ -21,11 +21,15 @@ What the pages now carry, and what the first group of tests reads:
 
 What is NOT decided, and the RED test:
 
-  item 1e  the discriminant half, Gamma_Co <= ker rho_{T_Co}.  Its smallest deciding input is a set
+  item 1e  the discriminant half, Gamma_Co <= ker rho_{T_Co}.  Its smallest deciding input was a set
            of generators of Gamma_Co; computations/reports/coble_658-gamma-co-discriminant-probe.py
            takes exactly that and answers exactly that, and its committed transcript
            (coble_658-gamma-co-discriminant-probe-run.txt) prints the verdict "undecided" because
-           the record holds no generator.  The test below is marked strict xfail: it is red now, it
+           the record holds no generator.  A generator is no longer needed: the record's nodal-pair
+           element acts on T_Co as the reflection in a (-4)-class, which lies outside the kernel, so
+           the item is refuted -- computations/reports/coble_658-nodal-pair-refutation-probe.py and
+           test_coble_658_nodal_pair.py carry that lemma.  The test below is kept because it is the
+           generator-fed form of the question, and it is still red: it is red now, it
            turns green the moment a run of that probe prints a verdict of "inclusion-holds" or
            "excluding", and being strict it fails loudly if that happens without the marker being
            removed — so the item cannot close silently.

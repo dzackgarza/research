@@ -10,6 +10,8 @@ The twelve entries, by subject:
   item 1 (the Gamma_Co lifting)
     coble_658-gamma-co-discriminant-probe        the deciding probe for Gamma_Co <= ker(rho); verdict
                                                  "undecided" until generators exist
+    coble_658-nodal-pair-refutation-probe        REFUTED: the nodal-pair monodromy acts on T_Co as the
+                                                 reflection in a (-4)-class, outside the kernel
     coble_658-meridian-lemma-probe                reflections and Eichler transvections lie in the kernel
     coble_658-reflective-generation-probe         2668 reflections, 200 transvections, 100 products, all in
     coble_658-cusp-parabolic-probe                16 cusp meridians, in the kernel
@@ -55,6 +57,9 @@ RED_NAME = "test_the_chain_index_is_in_the_book"
 # (transcript, a line the script prints that states its verdict)
 CHAIN = [
     ("coble_658-gamma-co-discriminant-probe-run.txt", "verdict: undecided"),
+    ("coble_658-nodal-pair-refutation-probe-run.txt", "verdict: item 1e is FALSE."),
+    ("coble_658-pointwise-criterion-probe-run.txt", "An isometry fixing S_Co pointwise acts trivially on A_{T_Co}"),
+    ("coble_658-source-census-probe-run.txt", "verdict: no source held in tmp/sources states the monodromy group"),
     ("coble_658-meridian-lemma-probe-run.txt", "verdict: the meridian lemma is PROVED"),
     ("coble_658-reflective-generation-probe-run.txt", "verdict: item 1e holds for every subgroup"),
     ("coble_658-cusp-parabolic-probe-run.txt", "verdict: every kind of monodromy element"),

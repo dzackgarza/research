@@ -1,0 +1,23 @@
+T_Co = <2> + U(2) + E8(2), rank 11
+e = a_1 is the first E8(2) coordinate: e^2 = -4, primitive True
+
+Lambda = <s> + T_Co, s^2 = -4; delta = (s+e)/2, delta' = (s-e)/2:
+  delta^2 = -2   delta'^2 = -2   delta.delta' = 0
+  the product w_delta w_delta' preserves <s> and T_Co: True
+  w_delta w_delta' acts on T_Co exactly as the reflection w_e in the (-4)-class e: True
+
+(ii) the reflection w_e is integral on T_Co: True
+(iii) spinor norm of w_e is [-e^2/2] = [2], and [2] = [1] in R^*/(R^*)^2: True
+  w_e acts trivially on A_{T_Co}: False
+  e/2 lies in T_Co^* (G e is even): True
+  e/2 lies in T_Co: False   (so the class [e/2] of A_{T_Co} is nonzero)
+  a class y = G^{-1}v of T_Co^* with y.e odd: v the basis vector 3, y.e = 1
+  hence w_e(y) - y = -(y.e) e/2 is not in T_Co, and rho_{T_Co}(w_e) is not the identity.
+
+verdict: item 1e is FALSE.  The nodal-pair monodromy w_delta w_delta' acts on T_Co as the
+  reflection in the (-4)-class e; w_e is integral, lies in O^+(T_Co), and does not lie in
+  ker rho_{T_Co}.  Gamma_Co therefore contains an element outside the discriminant kernel,
+  the inclusion Gamma_Co <= O~^+(T_Co) is false, and with it the Gamma_Co form of the
+  strong lifting (@prop:gamma-co-strong-lifting) and the forward half of
+  @conj:gamma-co-stable.  The page's @prop:gamma-co-reflective-set(3) already proves the
+  lattice half; what the record supplies is that the monodromy realises such a reflection.
