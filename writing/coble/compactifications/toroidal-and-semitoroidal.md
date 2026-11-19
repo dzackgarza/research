@@ -509,6 +509,16 @@ is a primitive isotropic representative of $\eta$ with $p_*(\delta)=p$. The vect
 With $d=N^2d_0$, $p=N/h$ and $a=q/h$ one has $k=d/p^2=d_0h^2$ and $ka^2=d_0q^2$. Hence $\delta^2=-2da^2+p^2(e_1+d_0q^2f_1)^2=-2da^2+2p^2d_0q^2=0$, and $\delta$ is primitive because the gcd of its coordinates $(a,p,pd_0q^2)=(q/h,N/h,Nd_0q^2/h)$ is $\gcd(q,N)/h=1$. The class of $\delta/p=(q/N)g+e_1+d_0q^2f_1$ in $\Delta_{2d}$ is that of $(q/N)g=2qNd_0\cdot g/(2d)$, namely $2qNd_0$, so $\delta$ represents the cusp $\{\pm q\}$ [@AE23, §10C, printed p. 37]; $\delta/p$ lies in $L^*$, while $\delta/p^2$ pairs as $1/p$ with $f_1$ and does not, so $p_*(\delta)=p$. The vector $e_2$ is primitive isotropic with $p_*(e_2)=1$, and $\delta\cdot e_2=0$ because $g,e_1,f_1$ are orthogonal to $e_2$. The plane $J$ is primitive: a combination $m\delta+ne_2$ has $g$-coordinate $ma$, so divisibility in $L$ forces $m=0$ and then $n=0$; it is isotropic because both generators are. By [@AET23, §3B, printed pp. 15--16] a primitive isotropic rank-two $J$ defines a $1$-cusp $F_J$, and $F_I\subset\overline{F_J}$ exactly when the isotropic line $I$ lies in $J$; here both $\ZZ\delta$ and $\ZZ e_2$ do. The compatibility clause of [@AE23, Def. 5.11, printed p. 14] requires, for each $1$-cusp, that the direction sublattice $H_{I,\delta}$ of the tiling induced by the $0$-cusp $\delta$ be independent of $\delta$ in $I$; applied to the two lines in $J$ it gives $H_{J,\delta}=H_{J,e_2}$.
 :::
 
+::: {.lemma #lem:unigonal-locus-cusp-support title="The unigonal locus meets only the cusp with $p_*=1$"}
+
+Let $F_H\hookrightarrow F_{2d}$ be the unigonal locus, of elliptic K3 surfaces with $L=s+(d+1)f$ [@AE23, Def. 10.9, printed p. 36]. Then the closure of $F_H$ in the Baily--Borel compactification meets only the $0$-cusps with $p_*(\delta)=1$; by [@AE23, Thm. 10.16, printed p. 38] these form a single $\Gamma$-orbit, the unigonal cusp. Consequently, at a cusp with $p_*>1$ no degeneration of a unigonal surface occurs, the identification $R_{\rcop}=n_d\bigl(s+\frac{d+1}{24}\sum_i f_i\bigr)$ of [@AE23, Prop. 10.10, printed p. 36] is not available, and the restriction theorem [@AE23, Thm. 10.16, printed p. 38] cannot be applied there.
+:::
+
+::: {.proof}
+
+In the proof of [@AE23, Thm. 10.16, printed pp. 38--39] the cusps met by the unigonal locus are those of a primitive isotropic $\delta\in H^\perp$, and the proof records that such a $\delta$ has invariant $\delta^*=0$ (loc. cit.), that is $p_*(\delta)=1$. All $\delta$ with $p_*(\delta)=1$ are $\Gamma$-equivalent [@AE23, Thm. 10.16, printed p. 38], so there is a single such cusp. At a cusp with $p_*>1$ the hypothesis of [@AE23, Thm. 10.16, printed p. 38] fails, and with it the identification of the restriction of $R_{\rcop}$ with ABE22's divisor on which the theorem's proof rests.
+:::
+
 ::: {.lemma #lem:shared-one-cusp-lattice title="The lattice of the shared $1$-cusp"}
 
 Let $\eta$, $q$, $h$, $p=N/h$, $a=q/h$, $k=d/p^2=d_0h^2$, $\delta$ and $J$ be as in @lem:p-cusp-meets-unigonal. Then

@@ -385,6 +385,23 @@ def test_the_p_greater_one_cusp_lattice_record_reproduces_and_the_page_states_it
     assert "lem:cusp-lattice-p-greater-one" in register
 
 
+def test_the_unigonal_locus_meets_only_the_p_one_cusp():
+    """Why the restriction theorem cannot reach the p_* > 1 cusps.
+
+    AE23's proof of Thm. 10.16 takes a primitive isotropic delta in H^perp and
+    records that its invariant delta^* is 0, i.e. p_*(delta) = 1; all such delta
+    are Gamma-equivalent.  So the closure of the unigonal locus meets only the
+    unigonal cusp, and at a p_* > 1 cusp the identification of R_rc with ABE22's
+    divisor is unavailable.
+    """
+    page = page_text()
+    assert "#lem:unigonal-locus-cusp-support" in page
+    assert "meets only the $0$-cusps with $p_*(\\delta)=1$" in page
+    assert "cannot be applied there" in page
+    register = REGISTER.read_text(encoding="utf-8")
+    assert "lem:unigonal-locus-cusp-support" in register
+
+
 def test_the_k_greater_one_comparison_group_is_not_a_lattice():
     """At k >= 2 the comparison group is not two-reflective, so the semifan is not a fan.
 
