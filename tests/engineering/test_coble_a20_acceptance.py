@@ -1108,6 +1108,32 @@ def test_the_source_gate_findings_do_not_name_this_issue_s_pages():
         assert page not in "\n".join(findings), page
 
 
+def test_the_open_question_asks_about_the_group_the_proposition_computes():
+    """A20 item 2's question must ask about the same group the settled proposition computes.
+
+    If the question drifted to a different group -- a subgroup, a quotient, a different orthogonal
+    group -- the residue would no longer be the one the proposition leaves open, and a reader could
+    take a settled statement as its answer.  The check extracts the equality from
+    prop:direct-eq-heegner and requires the question block to name the same right-hand side, and
+    requires the (REL) entry to state the same semidirect product its own question does.
+    """
+    page = _text(PAGE)
+    prop = _block(page, "{.proposition #prop:direct-eq-heegner")
+    assert "\\Gamma^{\\mathrm{cong}}_{\\Co,2}\\intersect\\Orth^+(T_\\Co)" in prop
+    q = _block(page, "{.question #qst:chamber-subscript-image")
+    assert "\\Gamma^{\\mathrm{cong}}_{\\Co,2}\\intersect\\Orth^+(T_\\Co)" in q
+    # the question asks whether the chamber-refined image is that group
+    assert "Z_{\\Orth(\\lkt)}(I_\\Co,I_{\\mathrm{dP}})_{H,\\alpha,\\mcc}" in q
+    # and the proposition's own statement is the chamber-free one, so the two are not the same claim
+    assert "\\\\mcc" not in prop.split(":::", 1)[0], "the proposition must not claim the chamber-refined form"
+    # (REL): the entry and the question it belongs to agree on the semidirect product
+    rel = next(line for line in _text(OPEN_PROBLEMS).splitlines()
+               if line.startswith("3. Does $\\rho_{T_\\Co}$ admit a section"))
+    assert "W(T_\\Co)\\rtimes P" in rel
+    gens = _block(_text(OPEN_PROBLEMS), "{.question #qst:gamma-co-generators")
+    assert "W(T_\\Co)\\rtimes P" in gens
+
+
 def _run_all() -> int:
     items = [(name, fn) for name, fn in sorted(globals().items()) if name.startswith("test_")]
     failures = 0
