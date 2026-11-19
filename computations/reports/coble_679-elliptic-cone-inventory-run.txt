@@ -5,3 +5,6 @@
 [  108.4s] the cone inventory: orbits of subdiagrams
 [  172.5s]   maximal parabolic subdiagram orbits (Type II cones): 10   [ABE22: 9^2+1 = 82 rays in W-orbits, 46 in Gamma-orbits]
 [  772.6s]   maximal elliptic subdiagram orbits (Type III cones): the enumeration did not finish in 600 s
+# the script's own 600 s alarm did not interrupt the maximal-elliptic enumeration;
+# the run was cut by the invoking timeout at 2700 s
+PROBE_EXIT=124
