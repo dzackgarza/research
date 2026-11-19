@@ -1,4 +1,4 @@
-docs-check --source on main@cf2992dec5, executed locally for research#658
+The docs gates on main, executed locally for research#658 (source pass, then full pass)
 
 The source-level gate needs two assets that the repository does not carry (they are gitignored and
 CI fetches them from the pandoc-config repository):
@@ -29,5 +29,19 @@ Output:
     ids, and external links are checked by the full gate)
 
 The check covers the tree that carries the research#658 commits 99db75bdae, 201c982c5f, f67b436ca0,
-f97458dc06 and cf2992dec5, so the pages this issue changed are clean at the source level.  The full
-gate (render, generated-id links, external links) is CI's and was not run here.
+f97458dc06 and cf2992dec5, so the pages this issue changed are clean at the source level.
+
+The full gate, on main@ecf7388dee (which carries all five of those commits):
+
+    QUARTO=quarto python3 scripts/docs_check.py
+
+    docs-check: OK (citations, cross-refs, anchor links, and 100 external links all resolve)
+
+exit 0, 13 min 50 s, no warnings: the render, the citations outside the prose, the links to
+generated ids and the external links all resolve on the tree that carries this issue's changes.
+
+The gate needs no figures, so this pass ran without scripts/docs_figures.py, which is the one step
+that cannot run in this VM: the figure sources under pandoc-config/figures/raster are Git LFS
+objects and `git lfs` is not installed here, so those files are pointers.  The figure copy is CI's
+separate step and is not part of the gate's verdict; quarto is present here (1.10.20), which is
+what made the pass possible.
