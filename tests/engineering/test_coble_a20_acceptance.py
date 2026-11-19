@@ -877,15 +877,24 @@ def test_pages_this_issue_touched_have_every_reference_resolving():
         declared.update(re.findall(r"^:::\s*\{[^}]*#([A-Za-z0-9:_-]+)", text, re.M))
         declared.update(re.findall(r"\{#([A-Za-z0-9:_-]+)\}", text))
     touched = [PAGE, REPORT, OPEN_PROBLEMS, book / "open-questions.md"]
-    # One dangling reference is known, book-wide, and is NOT this issue's to repair: @def:signature
-    # is used in five pages (this report at :463 among them) and declared nowhere.  It is pinned by
-    # name here so that any NEW dangling reference fails, and so that a repair elsewhere turns this
-    # red and the entry gets removed.
-    # "thm:invertible-summand" is declared in writing/category-theory/, which a sparse checkout of
-    # this repository may omit; it is therefore tolerated too, and only when its page is absent.
-    KNOWN_DANGLING = {"def:signature"}
+    # KNOWN, pre-existing, and NOT this issue's to repair: ten references in the dissertation part
+    # resolve to no id.  They are pinned by name so that any NEW dangling reference fails, and so
+    # that a repair elsewhere turns this red and the entry gets removed.
+    #
+    # Correction of this check's first version: it listed @def:signature here as declared nowhere.
+    # That was wrong -- it is declared at writing/category-theory/forms-quadratic/
+    # Bilinear-and-Quadratic-Forms.md:552 -- and the error came from running the check in a sparse
+    # worktree that had no category-theory pages.  The set below was recomputed on a FULL worktree of
+    # current main.  Two ids of that part are added only when the pages holding them are absent, so
+    # that a sparse checkout does not produce the same false alarm.
+    KNOWN_DANGLING = {
+        "cor:finiteness-classifying-map", "def:quadratic-form", "lem:semifan-comparison",
+        "prop:double-curve-constraint", "prop:normalization-pullback-family",
+        "prop:properties-classifying", "thm:explicit-construction",
+        "thm:geometric-identification-dual", "thm:no-coarsening", "thm:universal-family-moduli",
+    }
     if not (book / "category-theory").exists():
-        KNOWN_DANGLING.add("thm:invertible-summand")
+        KNOWN_DANGLING |= {"def:signature", "thm:invertible-summand"}
     unresolved = set()
     for path in touched:
         text = path.read_text(errors="ignore")
@@ -894,7 +903,7 @@ def test_pages_this_issue_touched_have_every_reference_resolving():
         for ref in sorted(refs):
             kind = ref.split(":", 1)[0]
             if kind not in kinds:
-                continue                      # a bibliography key, or an external scheme
+                continue
             if ref not in declared:
                 unresolved.add(ref)
     assert unresolved <= KNOWN_DANGLING, f"new dangling references: {sorted(unresolved - KNOWN_DANGLING)}"
