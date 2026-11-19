@@ -337,6 +337,20 @@ def test_the_citations_and_the_open_status_carry_their_printed_pages():
     assert "[@AE23, Intro., printed p. 3]" in dissertation
 
 
+def test_the_wall_criterion_is_on_the_page():
+    """The p_* > 1 item's next step: what (W) forces on an 18-dimensional cone.
+
+    A cone of the Coxeter semifan of dimension 18 is a facet of a chamber, hence lies in the
+    mirror of a simple root (AET23, Lemma 4.4, printed p. 22); so an 18-dimensional cone of
+    F_rc spanning a hyperplane that is no root mirror refutes (W).  At the cusps with
+    d = p^2 the boundary lattice is the F_2 one and the root mirrors are the 24 printed ones.
+    """
+    page = page_text()
+    assert "#lem:wall-criterion" in page
+    assert "If $H$ is not the mirror of a vector of $\\bar T$ of square $-2$ or $-4$" in page
+    assert "spans one of those $24$ root mirrors" in page
+
+
 def test_the_p_greater_one_cusp_lattice_record_reproduces_and_the_page_states_it():
     """The next open item's first datum: the boundary lattice at a p_* > 1 cusp.
 
