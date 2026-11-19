@@ -328,6 +328,8 @@ def test_the_citations_and_the_open_status_carry_their_printed_pages():
     assert "[@ABE22, §4C, printed p. 14]," in page, "the squares are still cited to Section 4C"
     assert "an interesting open question" in page
     assert "[@AE23, Intro., printed p. 3]" in page
+    assert "[@AE22, §3A, printed p. 10]" in page, "the long-root convention is not recorded"
+    assert "whether that mirror is a wall" in page
     register = REGISTER.read_text(encoding="utf-8")
     assert "[@AE23, Intro., printed p. 3]" in register
     dissertation = DISSERTATION.read_text(encoding="utf-8")
