@@ -504,6 +504,16 @@ Let $d=N^2d_0$ with $d_0$ squarefree, and let $\eta$ be the $0$-cusp of $F_{2d}$
 $h=\gcd(q,N)$ divides $N$, so $p=N/h=1$ exactly when $h=N$, that is when $N$ divides $q$; and $k=d/p^2=N^2d_0h^2/N^2=d_0h^2$. As $d_0\ge1$ is squarefree and $h\ge1$, the product $d_0h^2$ is $1$ only for $(d_0,h)=(1,1)$ and $2$ only for $(d_0,h)=(2,1)$. The condition $h=1$ is $\gcd(q,N)=1$, and $d_0=1$, resp. $d_0=2$, is $d=N^2$, resp. $d=2N^2$. Assertion 3 is assertion 2 with the contrapositive of @lem:generalized-unigonal-constraint.
 :::
 
+::: {.lemma #lem:k-one-two-sharp title="The cusps with $k\in\{1,2\}$ are where neither criterion fires"}
+
+Let $\eta$ be a $0$-cusp of $F_{2d}$ with $p_*(\delta)=p>1$ and $k=d/p^2\in\{1,2\}$, so that $d=N^2$ or $d=2N^2$ with $N\ge2$ and the class $\{\pm q\}$ of $\eta$ is a unit modulo $N$ (@lem:cusp-census), and let $z$ generate the $\langle-2k\rangle$ summand of $\bar T$ as in @lem:generalized-unigonal-hyperplane. Then $z^2=-2$ at $k=1$ and $z^2=-4$ at $k=2$, so $z^\perp$ **is** the mirror of a vector of $\bar T$ of square $-2$, respectively $-4$: the wall criterion @lem:wall-criterion does not refute (W) at $\eta$, and the generalized-unigonal constraint @lem:generalized-unigonal-constraint is silent there. At $k=1$ the boundary lattice is the lattice of the $F_2$ cusp, whose Coxeter fan is the printed one of twenty-four $(-2)$-roots [@AET23, Def. 4.1 and Fig. 1, printed pp. 21--22], so at those cusps (W) is a well-posed question about a printed fan; no printed source records a cone of $\mcf_{R_{\rcop},\eta}$ at them, so it is not decided.
+:::
+
+::: {.proof}
+
+By @lem:cusp-census the cusps with $p_*>1$ and $k\in\{1,2\}$ are those with $d_0\in\{1,2\}$ and $h=1$, that is $d=N^2$ or $d=2N^2$ with $\gcd(q,N)=1$; $q\equiv0\pmod N$ would give $p=1$, so $N\ge2$. There $z^2=-2k$ is $-2$ or $-4$, so $z^\perp$ is the mirror of $z$ itself, a vector of square $-2$ or $-4$, and the hypothesis of @lem:wall-criterion fails; the hypothesis $(\mathrm H_p)$ of @lem:generalized-unigonal-constraint is not needed because its conclusion needs $k\notin\{1,2\}$. At $k=1$ the boundary lattice is $\langle-2\rangle\oplus U\oplus E_8(-1)^{\oplus2}$, the lattice of the $F_2$ cusp (@lem:cusp-lattice-p-greater-one), whose Coxeter fan is cut by the twenty-four $(-2)$-roots of [@AET23, Def. 4.1, printed p. 21].
+:::
+
 ::: {.lemma #lem:k-greater-one-fan-not-prism title="The comparison fan at the $k\ge2$ cusps is not a prism"}
 
 Let $k\ge1$, $N_k=\langle-2k\rangle\oplus U\oplus E_8(-1)^{\oplus2}$ with $g$ a generator of the first summand, $e,f$ the standard basis of $U$, and $C\subset U\oplus E_8(-1)^{\oplus2}$ the fundamental chamber of its root system. Then $r=g+(k-1)e+f$ is a $(-2)$-root of $N_k$, and its mirror $r^\perp$ meets the interior of $\RR g\times C$ while being neither $\RR g$ nor the preimage of a wall of $C$ under the projection $\RR g\times(U\oplus E_8^{\oplus2})\to U\oplus E_8^{\oplus2}$. Hence the Coxeter chamber of $N_k$ is strictly contained in a translate of $\RR g\times C$. For $k\ge2$ the lattice $N_k$ is not $N_1$ (their discriminants are $2k$ and $2$), and its comparison fan is not the product of the printed $F_2$ fan with a line: it cannot be read off the $24$-root diagram.

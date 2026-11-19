@@ -425,6 +425,23 @@ def test_the_cusp_census_says_where_the_constraint_bites():
     assert "neither a square nor twice a square" in page
 
 
+def test_the_k_one_two_cusps_are_the_survivors_and_nothing_printed_decides_them():
+    """Where the constraint is silent, and what is printed there.
+
+    By the census the p_* > 1 cusps with k in {1,2} are those of F_{N^2} and F_{2N^2},
+    N >= 2, with the class {+-q} a unit modulo N.  There z has square -2 or -4, so z^perp
+    IS a root mirror and neither the wall criterion nor the generalized-unigonal constraint
+    fires.  At k = 1 the boundary lattice is the F_2 cusp lattice, whose Coxeter fan is the
+    printed 24-root one (AET23, Def. 4.1 and Fig. 1, printed pp. 21-22), so (W) there is a
+    well-posed question about a printed fan; no printed source gives a cone of F_rc at those
+    cusps, so it is not decided.
+    """
+    page = page_text()
+    assert "#lem:k-one-two-sharp" in page
+    assert "is a well-posed question about a printed fan" in page
+    assert "neither criterion fires" in page
+
+
 def test_the_p_greater_one_cusp_lattice_record_reproduces_and_the_page_states_it():
     """The p_* > 1 item's first datum: the boundary lattice, for general (p, k).
 
