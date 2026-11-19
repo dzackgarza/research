@@ -907,6 +907,43 @@ def test_pages_this_issue_touched_have_every_reference_resolving():
         assert new in declared, new
 
 
+def test_every_block_this_issue_added_is_cited_somewhere():
+    """No orphan blocks: a numbered block nothing refers to never enters the book's registry.
+
+    Each statement this issue added is declared on one of its pages and must be referenced from
+    somewhere under writing/.  Two were orphans when this check was written -- the closed-route
+    remark and the concrete witness of (D1)'s failure -- and each now has the reference that makes
+    it reachable: from the level-two proposition and from the remark after
+    thm:d1-minus-four-half respectively.
+    """
+    import pathlib
+    import re
+    book = ROOT / "writing"
+    declared, referenced = {}, set()
+    for path in book.rglob("*.md"):
+        if ".book" in path.parts:
+            continue
+        text = path.read_text(errors="ignore")
+        for m in re.finditer(r"^:::\s*\{[^}]*#([A-Za-z0-9:_-]+)", text, re.M):
+            declared.setdefault(m.group(1), str(path))
+        for m in re.finditer(r"(?<![@\w-])@([A-Za-z][A-Za-z0-9-]*:[A-Za-z0-9_][A-Za-z0-9_:.-]*)", text):
+            referenced.add(m.group(1).rstrip(".:"))
+    added = [
+        "lem:chamber-preserved-on-period", "qst:chamber-subscript-image",
+        "thm:chamber-subscript-is-a-condition", "cor:d1-minus-two-half",
+        "prop:monodromy-contains-root-reflections", "thm:d1-minus-four-half",
+        "lem:block-signs-not-both-in-w", "thm:effective-roots-are-the-h-positive-ones",
+        "cor:chamber-preserved-by-picard-stabilizer", "lem:chamber-condition-is-period-condition",
+        "lem:minus-two-vectors-use-the-two-summand", "rmk:longest-element-route-closed",
+        "prop:level-two-shadow-consistent-with-both-answers", "lem:block-sign-reduces-to-gamma-four",
+        "cor:d1-concrete-witness", "cor:g3-g4-decided",
+    ]
+    for name in added:
+        assert name in declared, f"{name} is not declared on any page"
+    orphans = [n for n in added if n not in referenced]
+    assert orphans == [], f"declared but never referenced: {orphans}"
+
+
 def _run_all() -> int:
     items = [(name, fn) for name, fn in sorted(globals().items()) if name.startswith("test_")]
     failures = 0
