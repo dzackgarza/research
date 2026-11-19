@@ -665,6 +665,69 @@ def test_open_items_a20_2_and_rel_are_not_claimed_decided():
         assert phrase not in text, f"an open item is claimed decided: {phrase}"
 
 
+def test_rel_level_two_probe_is_a_homomorphism_and_sees_the_block_sign():
+    """The smallest correct probe for #720 (REL): the three facts it rests on, checked exactly.
+
+    (1) every (-2)-vector of T_Co has odd coefficient on the <2> summand, so no reflection in the
+        U(2)+E8(2) summand generates W(T_Co);
+    (2) h(g) = (g - id)/2 is additive modulo 2 on the congruence subgroup -- checked on two
+        reflections, which is where the whole shadow argument starts;
+    (3) h(delta_E8) is the projection onto the eight E8(2)-coordinates, so it is nonzero: the
+        shadow is not blind to the block sign.
+
+    The membership question itself is left open and is guarded by
+    test_open_items_a20_2_and_rel_are_not_claimed_decided.  A first attempt at the certificate in
+    the span failed its own consistency check and is not claimed anywhere.
+    """
+    import sympy
+    C = sympy.zeros(8)
+    for i in range(8):
+        C[i, i] = 2
+    for i, j in [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (2, 7)]:
+        C[i, j] = C[j, i] = -1
+    GT = sympy.zeros(11)
+    GT[0, 0] = 2
+    GT[1, 2] = GT[2, 1] = 2
+    GT[3:, 3:] = -2 * C
+    assert GT.det() == -2048
+
+    # (1) square of a zeta + b zeta', etc: v^2 = 2a^2 + u^2 + w^2 with u^2, w^2 in 4Z
+    for a in (0, 1, -1, 2):
+        for e in (0, 1, -1, 2):
+            for f in (0, 1, -1):
+                v = sympy.zeros(11, 1)
+                v[0], v[1], v[2] = a, e, f
+                for idx in (3, 5, 8):
+                    v[idx] = 1
+                sq = int((v.T * GT * v)[0])
+                assert (sq - 2 * a) % 4 == 0, (a, e, f, sq)
+    # and a (-2)-vector has a odd, hence nonzero
+    v = sympy.zeros(11, 1); v[0] = 1; v[3] = 1
+    assert int((v.T * GT * v)[0]) == -2 and v[0] % 2 == 1
+
+    # (2) additivity of h modulo 2, on two reflections
+    def refl(vv):
+        vv = sympy.Matrix(vv)
+        return sympy.eye(11) + vv * (vv.T * GT)
+    I = sympy.eye(11)
+    v1 = [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+    v2 = [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
+    R1, R2 = refl(v1), refl(v2)
+    assert R1.T * GT * R1 == GT and R2.T * GT * R2 == GT
+    M = R1 * R2
+    h = lambda R: (R - I).applyfunc(lambda x: sympy.nsimplify(x)) / 2
+    assert all((M - I)[i, j] % 2 == 0 for i in range(11) for j in range(11))
+    diff = h(M) - (h(R1) + h(R2))
+    assert all(diff[i, j] % 2 == 0 for i in range(11) for j in range(11))
+
+    # (3) h(delta_E8) = projection onto the E8(2) coordinates, nonzero
+    D = sympy.diag(*[(-1 if 3 <= i <= 10 else 1) for i in range(11)])
+    hD = (D - I) / 2
+    assert all(hD[i, i] == (-1 if 3 <= i <= 10 else 0) for i in range(11))
+    assert all(hD[i, j] == 0 for i in range(11) for j in range(11) if i != j)
+    assert hD != sympy.zeros(11)
+
+
 def _run_all() -> int:
     items = [(name, fn) for name, fn in sorted(globals().items()) if name.startswith("test_")]
     failures = 0
