@@ -107,7 +107,7 @@ Alternatively, by [@AE22 Prop. 5.5], the isomorphism type of $w_1^{\perp \ten}/w
 So $\eta(v_1)$ sits at the $(10,8,0)_1$ cusp.
 :::
 
-Divisibility also distinguishes the two Enriques $0$-cusps: $(10,10,0)_1$ has divisibility $1$ and $(10,8,0)_1$ has divisibility $2$ [@AEGS25, §2].
+Divisibility also distinguishes the two Enriques $0$-cusps: $(10,10,0)_1$ has divisibility $1$ and $(10,8,0)_1$ has divisibility $2$ [@AEGS25, §3.2 and Fig. 3].
 
 ::: {.lemma #lem:1_cusp_correspondence}
 
@@ -225,7 +225,7 @@ The images therefore lie in one irreducible component of rank at least $12$, and
 
 ## The orbit map on $0$-cusps {#sec-cusp-orbit-map}
 
-Throughout, $\Gamma_\En\definedas\Orth^+(\ten)^*$, as in @thm:normalization, and $\Gamma^K_\En\definedas\Orth(\ten)$ is the group of [@AEGS25].
+Throughout, $\Gamma_\En\definedas\Orth^+(\ten)^*$, as in @thm:normalization, and $\Gamma^K_\En\definedas\Orth(\ten)$ is the group of [@AEGS25, Def. 2.6].
 
 Let $K = T_\Co^{\perp\ten} = \ZZ k$, with $k = \tilde e - \tilde f$ and $k^2 = -2$. The gluing group of $T_\Co\oplus K\subset\ten$ is $H = \generators{(h/2,\,k/2)}\leq A_{T_\Co}\oplus A_K$, which is isotropic because $q_{T_\Co}(h/2) + q_K(k/2) = \frac12-\frac12 = 0$. Every $\varphi\in\widetilde\Orth^+(T_\Co)$ acts trivially on $A_{T_\Co}$, so $\varphi\oplus\id_K$ preserves $H$ and extends to an element of $\Gamma_\En$ by @thm:automorphism-lifting-criterion, as in the proof of @thm:normalization. This gives a homomorphism
 $$\mathrm{Ext}\colon\widetilde\Orth^+(T_\Co)\too\Stab_{\Gamma_\En}(T_\Co)\subset\Gamma_\En,\qquad \varphi\mapsto\tilde\varphi,\quad \tilde\varphi(k) = k,$$
@@ -283,4 +283,4 @@ $$\beta_\ten\bigl(\tilde w,\ \gamma^{-1}k\bigr) = 0$$
 for some $\gamma\in\Gamma_\En$: when $\tilde w$ is orthogonal to a $(-2)$-vector in the $\Gamma_\En$-orbit of $k$.
 For example, by @lem:stable-orthogonal-not-transitive the isotropic generators $e'$ and $f'$ of the $U(2)$ summand lie in different $\widetilde\Orth^+(T_\Co)$-orbits, and $[\tilde e']\neq[\tilde f']$.
 
-Every period of $T_\Co$ is orthogonal to $k$, so the image of $\fco$ in $\fen = \bD(\ten)/\Gamma_\En$ lies in the Heegner divisor $\mch_{-2}/\Gamma_\En$ (@thm:normalization). The cusp diagram of [@AEGS25, §2], with the two $0$-cusps $(10,10,0)_1$, $(10,8,0)_1$ and the two $1$-cusps $(8,8,0)_0$, $(8,6,0)_0$, is the diagram of $F^K_\En = \bD(\ten)/\Gamma^K_\En$.
+Every period of $T_\Co$ is orthogonal to $k$, so the image of $\fco$ in $\fen = \bD(\ten)/\Gamma_\En$ lies in the Heegner divisor $\mch_{-2}/\Gamma_\En$ (@thm:normalization). The cusp diagram of [@AEGS25, Fig. 3], with the two $0$-cusps $(10,10,0)_1$, $(10,8,0)_1$ and the two $1$-cusps $(8,8,0)_0$, $(8,6,0)_0$, is the diagram of $F^K_\En = \bD(\ten)/\Gamma^K_\En$.
