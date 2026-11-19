@@ -203,7 +203,7 @@ The negative-definite lattice $\tilde w_2^{\perp \tdp}/\tilde w_2 \cong (16,0,0)
 ::: {.proof}
 
 The invariants $(r,a,\delta) = (16,0,0)$ do not by themselves determine the isometry class, since the even negative-definite unimodular lattices of rank $16$ are exactly $E_8^{\oplus 2}$ and $D_{16}^+$.
-The root system of $E_8^{\oplus 2}$ has two orthogonal components, each of rank $8$; the root system of $D_{16}^+$ is the irreducible system $D_{16}$.
+The root system (@def:root-system-base) of $E_8^{\oplus 2}$ has two orthogonal components, each of rank $8$; the root system of $D_{16}^+$ is the irreducible system $D_{16}$.
 So it suffices to exhibit a chain of roots of $\tilde J^\perp/\tilde J$, where $\tilde J = \generators{\tilde w_1, \tilde w_2}$, in which consecutive roots are not orthogonal and which spans a sublattice of rank greater than $8$.
 
 Label the simple roots of each $E_8$ summand as in Bourbaki, so that $\alpha_1 \perp \alpha_2$, as $\tilde w_2^2 = 0$ requires, and $\alpha_3$ meets $\alpha_1$, as in the proof above.

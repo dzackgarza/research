@@ -425,7 +425,7 @@ $$
 A_{ij}=\frac{2\,b(\alpha_i,\alpha_j)}{b(\alpha_j,\alpha_j)} ,
 $$
 normalized by the second index.
-For the simple roots of a root system these entries are the *Cartan integers* [@Hum72, §11.1].
+For the simple roots of a root system (@def:root-system-base) these entries are the *Cartan integers* [@Hum72, §11.1].
 
 Write $G$ for the Gram matrix of the family, as in @prop:gram-matrix-free-module, and put $d_j=b(\alpha_j,\alpha_j)/2$.
 Then

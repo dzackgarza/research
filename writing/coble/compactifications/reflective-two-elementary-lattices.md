@@ -310,7 +310,7 @@ In @not:reflective-fundamental-polytope, let $\mathcal I$ be the set of primitiv
    For the lattices of @thm:coxeter-built-on-complete-graphs they correspond bijectively to the maximal parabolic subdiagrams modulo $\Aut\Gamma_r$.
 
 4. Let $\Gamma\iscontainedin\Gamma_r$ be a maximal parabolic subdiagram with vector $v\in\mathcal I$, and let $\Gamma'$ be a connected component of $\Gamma$ of type $\wA_n$, $\wD_n$ or $\wE_n$.
-   Then all vertices of $\Gamma'$ are short roots or all are long roots, and the images in $v^{\perp}/v$ of the roots of $\Gamma'$ span a root system of type $A_n$, $D_n$, $E_n$ in the first case and of type $A_n(2)$, $D_n(2)$, $E_n(2)$ in the second [@Ale22, §2].
+   Then all vertices of $\Gamma'$ are short roots or all are long roots, and the images in $v^{\perp}/v$ of the roots of $\Gamma'$ span a root system (@def:root-system-base) of type $A_n$, $D_n$, $E_n$ in the first case and of type $A_n(2)$, $D_n(2)$, $E_n(2)$ in the second [@Ale22, §2].
 :::
 
 ::: {.proof}

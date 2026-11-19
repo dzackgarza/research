@@ -40,13 +40,13 @@ Twisting by $(-1)$ identifies the positive- and negative-definite isometry class
 :::
 
 ::: {.proof}
-The class-set formulation is that of @def:genus: all positive-definite odd unimodular lattices of rank $n$ lie in the genus of $\latI_{n,0}$, and all positive-definite even unimodular lattices of rank $8k$ lie in the genus of $E_8(-1)^{\perp k}$ [@CS10, Chs. 15–16]. The divisibility $8\mid n$ follows from @thm:milgram; the classes in the table are the classical definite enumeration [@CS10, Chs. 16–18]. The even rank-$24$ classification is due to Niemeier; its $24$ classes are characterized by their root systems [@CS10, Ch. 16].
+The class-set formulation is that of @def:genus: all positive-definite odd unimodular lattices of rank $n$ lie in the genus of $\latI_{n,0}$, and all positive-definite even unimodular lattices of rank $8k$ lie in the genus of $E_8(-1)^{\perp k}$ [@CS10, Chs. 15–16]. The divisibility $8\mid n$ follows from @thm:milgram; the classes in the table are the classical definite enumeration [@CS10, Chs. 16–18]. The even rank-$24$ classification is due to Niemeier; its $24$ classes are characterized by their root systems (@def:root-system-base) [@CS10, Ch. 16].
 :::
 
 ## Niemeier root systems {#sec-niemeier-root-systems}
 
 For an even positive-definite unimodular lattice $N$ of rank $24$, let $R(N)$
-be its norm-$2$ root system. The $23$ nonempty possibilities below classify
+be its norm-$2$ root system (@def:root-system-base). The $23$ nonempty possibilities below classify
 the rooted Niemeier lattices; $R(N)=\varnothing$ characterizes the Leech
 lattice. In the negative-definite convention of @def:root-lattice, replace
 $N$ by $N(-1)$ and read the same list as its norm-$(-2)$ root systems

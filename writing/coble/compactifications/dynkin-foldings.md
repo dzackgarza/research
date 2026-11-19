@@ -24,7 +24,7 @@ This is [@Kac90, Prop. 7.9(b), (e), (f)].
 
 ::: {.definition #def:folded-root title="Folded root systems"}
 
-Let $L$ be a lattice containing a root system $\Phi$ and $G \subset \Orth(L)$ a finite group preserving $\Phi$.
+Let $L$ be a lattice containing a root system $\Phi$ (@def:root-system-base) and $G \subset \Orth(L)$ a finite group preserving $\Phi$.
 Given a simple root $\alpha_i \in \Phi$, let $[\alpha_i] \subset \Phi$ denote its $G$-orbit.
 
 The associated **folded root** and **folded root system** are defined by
