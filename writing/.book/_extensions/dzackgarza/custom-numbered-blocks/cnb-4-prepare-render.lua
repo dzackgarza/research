@@ -144,11 +144,10 @@ local makeblocktitle = function(el)
           -- do not remove this in the first run? or does it work anyway, because the cites are allready resolved, and refs get resolved later?
         table.remove(el.content, 1) 
       else 
-      -- mdtitle = ""
-      -- pandoctitle = {pandoc.Str(info.mdtitle)}
-      -- pandoctitle = stringToInlines(info.mdtitle)
-      pandoctitle = quarto.utils.as_inlines(info.mdtitle)
-    --  print("     mdtitle: "..info.mdtitle.." thus pandoctitle "..pandoc.utils.stringify(pandoctitle))
+      -- the title attribute is Markdown source: read it so that math, emphasis and
+      -- citations in it become inlines rather than one literal string
+      local blocks = pandoc.read(info.mdtitle, "markdown").blocks
+      pandoctitle = #blocks > 0 and blocks[1].content or {}
     end
   end
    --print("pandoctitle: "..pandoc.utils.stringify(pandoctitle))
