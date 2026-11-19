@@ -97,6 +97,8 @@ def test_the_argument_is_a_proposal_that_names_its_missing_inputs():
     proposal = block("rmk:gamma-co-nodal-pair-proposal")
     assert "smw0o7jbf/m5" in proposal, "the off-main derivation must be named as missing"
     assert "restrict ourselves to these classical examples" in proposal, "DK13's scope must be named"
+    assert "a singular Coble quotient in the book's sense" in proposal
+    assert "says nothing about whether the one-node members lie in the same open subset" in proposal
     assert "contained in $\\Gamma_\\Co$" in proposal, "the containment step must be named"
     assert "proposal, not a theorem" in proposal
 
