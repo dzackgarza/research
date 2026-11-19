@@ -148,9 +148,9 @@ The vertices of $G^{(2)}$ are in natural bijection with the vertices and edges o
 A Coxeter--Vinberg diagram (@def:coxeter-vinberg-diagram) $\Gamma$ is **built on top of** a simple graph $H$ if $\Gamma$ contains a subdiagram of main roots (@def:main-roots) isomorphic to $H$ and the remaining roots of $\Gamma$ are determined by the main roots by explicit rules.
 :::
 
-::: {.theorem #thm:coxeter-built-on-complete-graphs title="Coxeter diagrams on the line $r + a = 22$"}
+::: {.theorem #thm:coxeter-built-on-complete-graphs title="Coxeter--Vinberg diagrams on the line $r + a = 22$"}
 
-For $n = 3, 4, 5, 6$ the [Coxeter diagram]{.other-sense} $\Gamma_r$ of the even $2$-elementary lattice $(10 + n,\, 12 - n,\, 1)$ is built on top of $K_n^{(2)}$ (@def:built-on-top-of), where $K_n$ is the complete graph on $n$ vertices.
+For $n = 3, 4, 5, 6$ the Coxeter--Vinberg diagram $\Gamma_r$ (@def:coxeter-vinberg-diagram) of the even $2$-elementary lattice $(10 + n,\, 12 - n,\, 1)$ is built on top of $K_n^{(2)}$ (@def:built-on-top-of), where $K_n$ is the complete graph on $n$ vertices.
 The diagram of $(18, 4, 0)$ is built on top of $K_{4,4}^{(2)}$, the complete bipartite graph on $4 + 4$ vertices, and that of $(14, 8, 0)$ on top of $D_4^{(2)}$.
 In each case a main root $\alpha$ and an additional root $\beta$ are joined exactly when $\alpha\cdot\beta = 2$.
 In every case
