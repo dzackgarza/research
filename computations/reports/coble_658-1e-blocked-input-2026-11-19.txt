@@ -58,6 +58,17 @@ strictly larger than the moduli, the period map has positive-dimensional fibres,
 nothing about whether the image lies in the classical open subset.  A dimension count cannot decide
 gap 2; only the periods themselves can.
 
+AND GAP 2 IS SUBSTANTIVE, WHICH [@DZ01] CONFIRMS: the reviewer's objection is not a formality.  [@DZ01]
+states that the classical construction does not exhaust the class -- "This makes some (not all, as we
+shall see) Coble surfaces ..." and, later, that the corresponding statement "cannot be extended to all
+Coble surfaces" (Example 6.10).  So identifying the one-node members with the classical ones is a real
+question about periods, not a convention.
+
+  Caveat on the citation: the two passages are on one page of the PDF conversion, whose pagination
+  does not match the journal's, so no printed page is given here.  Under the standing rule the
+  statement may not be written into a page of the book until the printed page is read; what it is used
+  for here is the internal note that the gap is substantive.
+
 CANDIDATES TO OBTAIN -- named as candidates, not cited, because no printed page has been seen:
 
   - SGA 7 II, the Picard--Lefschetz exposé (Deligne--Katz);
