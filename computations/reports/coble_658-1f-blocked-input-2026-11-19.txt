@@ -71,5 +71,13 @@ divisibility-1 isotropic vectors, in its U summand, so E(T_En) is nontrivial; bu
 criterion the book has, thm:eichler-criterion, still requires a second hyperbolic plane
 (prop:ten-no-second-plane), so neither lattice's count follows from it.
 
+AND THE ONE-PLANE TRANSITIVITY THAT WOULD SUFFICE IS NOT IN THE HELD SOURCES EITHER.  What 1f needs is
+transitivity on the primitive isotropic vectors of one class, and the strength that would give it with
+a single hyperbolic plane.  The closest held statement is Sterk 1991, Remark 2.5, citing Cossec
+(Proposition 1.6.1): O(H + E_8(-1)) acts transitively on the *exceptional sequences* -- sequences
+(f_1,...,f_r) of isotropic vectors with (f_i, f_j) = 1 for i != j, r < 9.  That is a statement about
+sequences with pairwise pairing 1, not about the fibre of the class map, and it is about the Enriques
+lattice rather than T_En.  So it does not give 1f.
+
 STATE: item 1f is NOT MET.  The class-level proposition is proved and the orbit question is open and
 recorded as open; no page claims surjectivity onto the divisibility-2 locus.
