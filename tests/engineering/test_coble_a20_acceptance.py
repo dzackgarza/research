@@ -630,6 +630,41 @@ def test_absorbed_pair_is_formulated_now_and_decided():
     assert "G_3" in cor and "G_4" in cor
 
 
+def test_open_items_a20_2_and_rel_are_not_claimed_decided():
+    """The two items still open, pinned so that an over-claim turns this red.
+
+    This is the guard for the residue, in the idiom of the check that used to pin the absent
+    $G_3$/$G_4$ pair: what is open is asserted to be open, and the statements that would make it
+    closed are asserted absent.  A20 item 2's residue is the image of the chamber-refined
+    centralizer, and #720 (REL)'s is the block sign's membership; when either is decided the page
+    will say so in one of these forms and this test will fail, which is the signal to replace the
+    assertion with the deciding one.
+
+    Smallest deciding probe, run here: the open statements exist at their lines, and no page
+    asserts either of the two closures.
+    """
+    page = _text(PAGE)
+    report = _text(REPORT)
+    q = _text(OPEN_PROBLEMS)
+
+    # A20 item 2: the residue exists as a question, and the decisive equality is not asserted.
+    assert "{.question #qst:chamber-subscript-image" in page
+    block = _block(page, "{.question #qst:chamber-subscript-image")
+    assert "\\Gamma^{\\mathrm{cong}}_{\\Co,2}\\intersect\\Orth^+(T_\\Co)" in block
+    assert "is a genuine condition" in page                     # decided: the condition is real
+
+    # #720 (REL): the item is still a question in its entry, with its block named.
+    rel = next(line for line in q.splitlines() if line.startswith("3. Does $\\rho_{T_\\Co}$ admit a section"))
+    assert "W(T_\\Co)\\rtimes P" in rel
+    assert "membership query is the operation the item is missing" in rel
+
+    # No page claims either closure.  Each phrase below is one a decision would produce.
+    for text, phrase in ((page, "\\Gamma^{\\mathrm{cong}}_{\\Co,2} = \\Gamma^{\\mathrm{dir}}_{\\Co,2}"),
+                         (rel, "(REL) holds"),
+                         (report, "(REL) is decided")):
+        assert phrase not in text, f"an open item is claimed decided: {phrase}"
+
+
 def _run_all() -> int:
     items = [(name, fn) for name, fn in sorted(globals().items()) if name.startswith("test_")]
     failures = 0
