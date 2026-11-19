@@ -59,7 +59,7 @@ Uses @def:a.
 :::
 
 ::: {.remark #rmk:d}
-A pointer back to @thm:c, about a round apple [@Jones19, Thm. 1], [@Dol13, §8, p. 37], [@Ray20, Figs. 7 and 8], [@Kul77, Thm. II] and [@Vin85, Introduction, no. 1, printed pp. 31–32].
+A pointer back to @thm:c, about a round apple [@Jones19, Thm. 1], [@Dol13, §8, p. 37], [@Ray20, Figs. 7 and 8], [@Kul77, Thm. II], [@Vin75, Thm. 2.6 bis] and [@Vin85, Introduction, no. 1, printed pp. 31–32].
 :::
 
 ::: {.lemma #lem:e}
@@ -181,4 +181,4 @@ def test_a_page_is_not_a_lettered_section(tmp_path):
 def test_plural_labels_name_each_result(tmp_path):
     graph, _, _ = run(tmp_path)
     targets = {e["target"] for e in graph["edges"] if e["source"] == "rmk:d"}
-    assert {"Ray20 Fig. 7", "Ray20 Fig. 8", "Kul77 Thm. II", "Vin85 Intro. no. 1"} <= targets
+    assert {"Ray20 Fig. 7", "Ray20 Fig. 8", "Kul77 Thm. II", "Vin75 Thm. 2.6 bis", "Vin85 Intro. no. 1"} <= targets
