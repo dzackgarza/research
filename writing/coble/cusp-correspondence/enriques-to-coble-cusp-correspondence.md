@@ -274,7 +274,23 @@ Transport is an isometry (@prop:local-system-of-lattices-monodromy), and it carr
 
 ::: {.remark #rmk:coble-strong-lifting-group title="The group in the strong lifting"}
 
-The statement is about $\widetilde\Orth^+(T_\Co) = \discriminantkernel{T_\Co}\intersect\Orth^+(T_\Co)$, and every step of the proof uses only that group: the condition $\bar\varphi(h/2) = h/2$ of the extension criterion holds because $\bar\varphi$ is the identity on $A_{T_\Co}$, and the sign is inherited by the spinor-norm identity. So the conclusion holds verbatim for every subgroup of $\widetilde\Orth^+(T_\Co)$. The lifting of the monodromy group $\Gamma_\Co$ of the Coble family (@def:gamma-co-groups(1)) is therefore exactly the inclusion $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$: that inclusion is not proved --- neither inclusion between the two groups is (@rmk:gamma-co-status) --- and it follows from @conj:gamma-co-stable. Neither the equivariance nor the stabilizer comparison is asserted here for $\Gamma_\Co$ without it. The sign half of the inclusion is unconditional: the monodromy of a family of Coble surfaces lies in $\SO^+(T_\Co)$ (@lem:monodromy-is-spinor-positive). So the inclusion $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$ reduces to its discriminant half, which the ten exceptional classes of the K3 double cover decide (@cor:gamma-co-lifting-criterion).
+The statement is about $\widetilde\Orth^+(T_\Co) = \discriminantkernel{T_\Co}\intersect\Orth^+(T_\Co)$, and every step of the proof uses only that group: the condition $\bar\varphi(h/2) = h/2$ of the extension criterion holds because $\bar\varphi$ is the identity on $A_{T_\Co}$, and the sign is inherited by the spinor-norm identity. So the conclusion holds verbatim for every subgroup of $\widetilde\Orth^+(T_\Co)$. The lifting of the monodromy group $\Gamma_\Co$ of the Coble family (@def:gamma-co-groups(1)) is therefore exactly the inclusion $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$: that inclusion is not proved --- neither inclusion between the two groups is (@rmk:gamma-co-status) --- and it follows from @conj:gamma-co-stable. Neither the equivariance nor the stabilizer comparison is asserted here for $\Gamma_\Co$ without it. The sign half of the inclusion is unconditional: the monodromy of a family of Coble surfaces lies in $\SO^+(T_\Co)$ (@lem:monodromy-is-spinor-positive). So the inclusion $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$ reduces to its discriminant half, which the ten exceptional classes of the K3 double cover decide (@cor:gamma-co-lifting-criterion); the precise statement, with the inclusion it needs, is @prop:gamma-co-strong-lifting.
+:::
+
+::: {.proposition #prop:gamma-co-strong-lifting title="The $\Gamma_\Co$ form of the strong lifting, under the inclusion it needs"}
+
+Let $\Gamma_\Co\le\Orth(T_\Co)$ be the monodromy group of the family of unpolarized Coble surfaces, with $\fco=\bD(T_\Co)/\Gamma_\Co$ and periods in one component (@def:gamma-co-groups(1)). Then the following are equivalent:
+
+1. the conclusion of @thm:coble-strong-lifting holds with $\Gamma_\Co$ in place of $\widetilde\Orth^+(T_\Co)$: every $\varphi\in\Gamma_\Co$ has exactly one $\gamma\in\Gamma_\En$ with $\gamma\circ\eta=\eta\circ\varphi$ and $\gamma(k)=k$, the assignment $\varphi\mapsto\gamma$ is a homomorphism of which $\mathrm{res}$ is a left inverse, and its image is $\Stab_{\Gamma_\En}(k)$;
+2. $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$.
+
+The sign half of (2) holds unconditionally, $\Gamma_\Co\subseteq\SO^+(T_\Co)$ (@lem:monodromy-is-spinor-positive). The other half, $\Gamma_\Co\subseteq\discriminantkernel{T_\Co}$, is the inclusion of @conj:gamma-co-stable, and no other statement of this book asserts it (@rmk:gamma-co-status). So (1) is equivalent to that inclusion and rests on it.
+:::
+
+::: {.proof}
+
+Assume (2). Then $\Gamma_\Co$ is a subgroup of $\widetilde\Orth^+(T_\Co)$ and @rmk:coble-strong-lifting-group gives (1), the theorem applying verbatim to every subgroup.
+Conversely, a lift $\gamma\in\Gamma_\En$ of $\varphi$ lies in $\discriminantkernel{\ten}$, and $\gamma\circ\eta = \eta\circ\varphi$ with $\gamma(k)=k$ makes it preserve $\eta(T_\Co)$; the two arguments of the stabilizer comparison in the proof of @thm:coble-strong-lifting --- on the classes of $A_{E_{10}(2)}$ and on the class $h/2$ --- conclude $\bar\rho_{T_\Co}(\varphi) = \id$ from exactly those three facts. So (1) places $\Gamma_\Co$ in $\discriminantkernel{T_\Co}$, and with the sign of @lem:monodromy-is-spinor-positive it gives (2).
 :::
 
 ::: {.lemma #lem:coble-discriminant-actions-conjugate title="The two discriminant actions of an isometry of the K3 lattice"}
@@ -293,7 +309,7 @@ The isometry $g$ preserves $M\oplus N$ and $\lkt$, hence preserves the gluing su
 
 Suppose that the local system of the family of unpolarized Coble surfaces, with fibre $T_\Co$, is the $N$-summand of the $H^2$ local system of the family of K3 double covers, so that the monodromy acts on $M$ as well. Then
 $$\Gamma_\Co\subseteq\discriminantkernel{T_\Co}\quad\Longleftrightarrow\quad\text{the monodromy acts trivially on }A_M,$$
-which by @rmk:coble-strong-lifting-group is one of the two conditions for the strong lifting to hold for $\Gamma_\Co$. Since $A_M$ is generated by the classes of $\tfrac12 e_0,\dots,\tfrac12 e_{10}$, the condition fails as soon as a loop of the family exchanges two of the ten exceptional classes $e_1,\dots,e_{10}$; under the hypothesis, such a loop refutes the $\Gamma_\Co$ form of the lifting (@lem:coble-discriminant-actions-conjugate). The other condition, the sign, needs no hypothesis: $\Gamma_\Co\subseteq\SO^+(T_\Co)\subseteq\Orth^+(T_\Co)$ (@lem:monodromy-is-spinor-positive). So on this reading the $\Gamma_\Co$ form of @thm:coble-strong-lifting holds exactly when the monodromy acts trivially on $A_M$.
+which by @rmk:coble-strong-lifting-group is one of the two conditions for the strong lifting to hold for $\Gamma_\Co$. Since $A_M$ is generated by the classes of $\tfrac12 e_0,\dots,\tfrac12 e_{10}$, the condition fails as soon as a loop of the family exchanges two of the ten exceptional classes $e_1,\dots,e_{10}$; under the hypothesis, such a loop refutes the $\Gamma_\Co$ form of the lifting (@lem:coble-discriminant-actions-conjugate). The other condition, the sign, needs no hypothesis: $\Gamma_\Co\subseteq\SO^+(T_\Co)\subseteq\Orth^+(T_\Co)$ (@lem:monodromy-is-spinor-positive). So, under that identification, the $\Gamma_\Co$ form of @thm:coble-strong-lifting holds exactly when the monodromy acts trivially on $A_M$: that is condition (2) of @prop:gamma-co-strong-lifting read on the discriminant side.
 :::
 
 ::: {.remark #rmk:coble-lifting-criterion-not-lattice title="What the criterion is not decided by"}
