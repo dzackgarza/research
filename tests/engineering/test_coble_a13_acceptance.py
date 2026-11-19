@@ -21,7 +21,8 @@ decisions are the four records
     computations/reports/coble_explicit-sextic-run.txt              the sextic
 
 and the construction research#81 asks for, which needs the Sage image, is
-computations/reports/coble_a13-library-construction.py with its transcript.
+computations/reports/coble_a13-library-construction.py with its transcript; its reproduction
+test runs under the Sage interpreter and skips, naming the reason, where there is none.
 
 These tests read those transcripts and the two pages, and the last one re-runs the four scripts
 and requires the committed transcripts to be reproduced line for line from the first numbered
@@ -49,9 +50,12 @@ file was withdrawn: it repeats a run the gate already carries, and a push adding
 for it.
 """
 
+import re
 import subprocess
 import sys
 from pathlib import Path
+
+import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 REPORTS = ROOT / "computations/reports"
@@ -314,11 +318,20 @@ def test_the_register_item_is_closed_and_the_conjecture_is_replaced():
 # --- 7. the reusable part: the records reproduce ---------------------------------------
 
 
+STAMP = re.compile(r"^\s*\[\s*\d+\.\ds\]")
+
+
 def _body(text):
+    """The transcript from its first numbered section on, without the timing stamps.
+
+    The two provider-based records (this issue's library construction and the A20/A21 record
+    beside it) print an elapsed-time stamp per stage; those cannot reproduce and carry no
+    mathematical content, so they are dropped before comparing.
+    """
     lines = text.splitlines()
     for i, line in enumerate(lines):
         if line.startswith("1. "):
-            return lines[i:]
+            return [line for line in lines[i:] if not STAMP.match(line)]
     raise AssertionError("the record has no numbered section '1.'")
 
 
@@ -329,6 +342,27 @@ def test_the_six_records_reproduce_from_their_scripts():
         assert run.returncode == 0, (script.name, run.stderr[-2000:])
         fresh, committed = _body(run.stdout), _body(record.read_text())
         assert fresh == committed, "%s does not reproduce its transcript" % script.name
+
+
+def test_the_library_construction_record_reproduces_under_sage():
+    """The #81 construction, re-run in the interpreter that has the library.
+
+    The QC gate's sage-tests step (_sage-pytest-coverage) runs this suite under the Sage
+    interpreter, where the imports below resolve and this test runs; a plain CPython without
+    Sage skips it, loudly, rather than passing it silently.
+    """
+    try:
+        import sage.all  # noqa: F401
+        import sage_extensions  # noqa: F401
+    except Exception as exc:                                   # pragma: no cover
+        pytest.skip("needs the Sage image and sage-extensions, absent from this interpreter "
+                    "(%s: %s); the QC gate's sage-tests step runs this test under Sage"
+                    % (type(exc).__name__, exc))
+    run = subprocess.run([sys.executable, str(LIBRARY[0])], capture_output=True,
+                         text=True, timeout=1800, cwd=str(ROOT))
+    assert run.returncode == 0, (LIBRARY[0].name, run.stderr[-3000:])
+    assert _body(run.stdout) == _body(LIBRARY[1].read_text()), \
+        "%s does not reproduce its transcript" % LIBRARY[0].name
 
 
 def test_the_library_construction_record_exists_with_its_transcript():

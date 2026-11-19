@@ -25,7 +25,7 @@ What is computed.
 import sys
 from fractions import Fraction
 
-from sympy import Matrix, Rational, zeros
+from sympy import Matrix, Rational, eye, zeros
 from sympy import __version__ as sympy_version
 
 sys.stdout.reconfigure(line_buffering=True)
@@ -77,6 +77,37 @@ def sq(v):
 
 def ip(x, y):
     return (x.T * G * y)[0, 0]
+
+
+def aegs_enriques(G, N):
+    """I_En of [@AEGS25, Def. 2.3], defined on the named summands of lkt.
+
+    -id on U_1, the swap of U_2 and U_3, and the swap of the two E8 summands.  The matrix is
+    read off that definition, not typed.
+    """
+    M = zeros(N, N)
+    for k in (0, 1):
+        M[k, k] = -1
+    for (a, b) in ((2, 4), (3, 5)):
+        M[a, b] = 1
+        M[b, a] = 1
+    for k in range(8):
+        M[6 + k, 14 + k] = 1
+        M[14 + k, 6 + k] = 1
+    return M
+
+
+def reflection_in(G, N, v):
+    """The integral reflection in v: 1 - (2/v^2) v (G v)^T."""
+    return eye(N) - Rational(2, 1) / (v.T * G * v)[0, 0] * v * (G * v).T
+
+
+def theta_co(G, N):
+    """theta_Co = -w . I_En for w the reflection in alpha = e_0 - e_1."""
+    alpha = zeros(N, 1)
+    alpha[0] = 1
+    alpha[1] = -1
+    return -(reflection_in(G, N, alpha) * aegs_enriques(G, N))
 
 
 print("provenance")
@@ -222,16 +253,7 @@ print("     bonds leaving the E8-blocks: %s"
 print("")
 
 print("6. the involutions act on the roots: theta(W) = W', I_Co(Phi) = Phi' and theta(Phi) = -Phi'")
-th = zeros(N, N)
-th[0, 1] = 1
-th[1, 0] = 1
-th[2, 4] = -1
-th[4, 2] = -1
-th[3, 5] = -1
-th[5, 3] = -1
-for k in range(8):
-    th[6 + k, 14 + k] = -1
-    th[14 + k, 6 + k] = -1
+th = theta_co(G, N)
 Php = diagram_roots(col({4: 1}), col({5: 1}), alpha, talpha, (W1[:, 7], W2[:, 7]))
 pairing = []
 for k in range(19):

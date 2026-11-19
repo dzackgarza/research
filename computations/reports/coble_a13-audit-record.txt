@@ -70,5 +70,7 @@ later commits of this issue replaced that question with a remark and one of the 
 a theorem, and the test was not re-run, so it failed on main while the transcript-reproduction
 half still passed.  FIXED: the register test now asserts the register's current state, and the
 reproduction test covers all six provider-free records rather than the first four.  A test for
-the library construction record is added, checking the calls it makes and the invariants its
-transcript prints; it is not re-run here because it needs the Sage image.
+the library construction record is added in two parts: one checks the calls it makes and the
+invariants its transcript prints, and one re-runs it and compares the transcript, skipping with
+a named reason where the interpreter has no sage.all.  Run under the Sage interpreter of the
+adopted image, both pass (100 s, the re-run included).

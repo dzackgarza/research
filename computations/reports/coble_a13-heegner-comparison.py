@@ -30,7 +30,7 @@ What this transcript decides, in the marking of @thm:theta-co-coordinates:
 import sys
 from fractions import Fraction
 
-from sympy import Matrix, Rational, zeros
+from sympy import Matrix, Rational, eye, zeros
 from sympy import __version__ as sympy_version
 
 sys.stdout.reconfigure(line_buffering=True)
@@ -88,6 +88,37 @@ def pair(x, y):
     return (x.T * G * y)[0, 0]
 
 
+def aegs_enriques(G, N):
+    """I_En of [@AEGS25, Def. 2.3], defined on the named summands of lkt.
+
+    -id on U_1, the swap of U_2 and U_3, and the swap of the two E8 summands.  The matrix is
+    read off that definition, not typed.
+    """
+    M = zeros(N, N)
+    for k in (0, 1):
+        M[k, k] = -1
+    for (a, b) in ((2, 4), (3, 5)):
+        M[a, b] = 1
+        M[b, a] = 1
+    for k in range(8):
+        M[6 + k, 14 + k] = 1
+        M[14 + k, 6 + k] = 1
+    return M
+
+
+def reflection_in(G, N, v):
+    """The integral reflection in v: 1 - (2/v^2) v (G v)^T."""
+    return eye(N) - Rational(2, 1) / (v.T * G * v)[0, 0] * v * (G * v).T
+
+
+def theta_co(G, N):
+    """theta_Co = -w . I_En for w the reflection in alpha = e_0 - e_1."""
+    alpha = zeros(N, 1)
+    alpha[0] = 1
+    alpha[1] = -1
+    return -(reflection_in(G, N, alpha) * aegs_enriques(G, N))
+
+
 print("provenance")
 print("  sympy %s, exact integer and rational arithmetic" % sympy_version)
 print("  python %s" % sys.version.split()[0])
@@ -136,16 +167,7 @@ print("   s_zeta = 1 - (2/zeta^2) zeta (G zeta)^T: integral %s, s^2 = 1 %s, s^T 
       % (is_integral(w), (w * w) == Matrix.eye(N), (w.T * G * w) == G, int(w.det())))
 print("   s_zeta fixes S_Co pointwise: %s" % all((w * v) == v for v in S_basis))
 print("   s_zeta fixes delta: %s" % ((w * delta) == delta))
-th = zeros(N, N)
-th[0, 1] = 1
-th[1, 0] = 1
-th[2, 4] = -1
-th[4, 2] = -1
-th[3, 5] = -1
-th[5, 3] = -1
-for k in range(8):
-    th[6 + k, 14 + k] = -1
-    th[14 + k, 6 + k] = -1
+th = theta_co(G, N)
 print("   s_zeta commutes with theta_Co: %s" % ((w * th) == (th * w)))
 print("   so s_zeta lies in Z_{Orth(lkt)}(theta_Co) cap Stab(H), and its restriction to T_Co is")
 print("   the reflection in zeta there: %s" % all((w * v) != 0 for v in T_basis))

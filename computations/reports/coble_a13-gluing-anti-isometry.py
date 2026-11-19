@@ -101,6 +101,37 @@ def pair(x, y):
     return (x.T * G * y)[0, 0]
 
 
+def aegs_enriques(G, N):
+    """I_En of [@AEGS25, Def. 2.3], defined on the named summands of lkt.
+
+    -id on U_1, the swap of U_2 and U_3, and the swap of the two E8 summands.  The matrix is
+    read off that definition, not typed.
+    """
+    M = zeros(N, N)
+    for k in (0, 1):
+        M[k, k] = -1
+    for (a, b) in ((2, 4), (3, 5)):
+        M[a, b] = 1
+        M[b, a] = 1
+    for k in range(8):
+        M[6 + k, 14 + k] = 1
+        M[14 + k, 6 + k] = 1
+    return M
+
+
+def reflection_in(G, N, v):
+    """The integral reflection in v: 1 - (2/v^2) v (G v)^T."""
+    return eye(N) - Rational(2, 1) / (v.T * G * v)[0, 0] * v * (G * v).T
+
+
+def theta_co(G, N):
+    """theta_Co = -w . I_En for w the reflection in alpha = e_0 - e_1."""
+    alpha = zeros(N, 1)
+    alpha[0] = 1
+    alpha[1] = -1
+    return -(reflection_in(G, N, alpha) * aegs_enriques(G, N))
+
+
 print("provenance")
 print("  sympy %s, exact integer and rational arithmetic" % sympy_version)
 print("  python %s" % sys.version.split()[0])
@@ -285,12 +316,7 @@ print("   J = 2 proj_{<H,b>} - 1: integral %s, J^2 = 1 %s, J^T G J = G %s, det %
       % (is_integral(J), (J * J) == eye(N), (J.T * G * J) == G, int(J.det())))
 print("   J fixes H %s, fixes b %s, and its (+1)-eigenspace is <H,b>: rank %d"
       % ((J * H) == H, (J * bvec) == bvec, N - (J - eye(N)).rank()))
-th = zeros(N, N)
-th[0, 1] = 1; th[1, 0] = 1
-th[2, 4] = -1; th[4, 2] = -1; th[3, 5] = -1; th[5, 3] = -1
-for k in range(8):
-    th[6 + k, 14 + k] = -1
-    th[14 + k, 6 + k] = -1
+th = theta_co(G, N)
 print("   J commutes with theta_Co of @thm:theta-co-coordinates: %s" % ((J * th) == (th * J)))
 print("   hence J preserves both eigenspaces of theta_Co, that is the sublattices S_Co and T_Co:")
 print("     theta_Co(J s) = -J s for the S_Co basis %s, theta_Co(J t) = J t for the T_Co basis %s"
