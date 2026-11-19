@@ -545,6 +545,32 @@ def test_the_image_of_b_under_theta_is_b_minus_H_and_not_H_minus_b():
     assert r"\theta_\Co(b) = -H/2+t = H-b" not in page
 
 
+def test_the_records_cite_the_pages_verified_against_the_deposited_sources():
+    """Every page attribution the A13 records make, pinned to the page it was verified on.
+
+    The pages were read off the deposited copies in tmp/sources on 2026-11-19, by printed
+    number, and each names what stands there; a later edit that moves a number breaks this
+    test rather than the attribution.
+
+      Alexeev--Engel--Garza--Schaffler, Nagoya Math. J. 259 (2025) 581--624, deposited as
+      aegs-2025-compact-moduli-of-enriques-surfaces-of-degree-2.pdf:
+        Definition 2.3, printed p. 586 -- the three involutions I_dP, I_En, I_Nik;
+        Lemma 3.9, printed p. 594 -- the reflection alpha_k -> alpha_{20-k};
+        Figure 7, printed p. 594 -- the folded diagram of cusp 2.
+      Nikulin, Math. USSR Izv. 14 (1980) 103--167:
+        Theorem 3.6.2, printed p. 144 -- the genus of an even 2-elementary lattice.
+      Bourbaki, Lie Groups and Lie Algebras, Ch. 4--6:
+        Ch. VI Sec. 4, printed p. 208 -- "of nodes and bonds in the following way".
+    """
+    records = "".join(path.read_text(errors="ignore") for path in sorted(REPORTS.glob("coble_a13-*"))
+                      if path.suffix in (".py", ".txt"))
+    for citation in ("Def. 2.3, printed p. 586", "Lemma 3.9, printed p. 594",
+                     "Fig. 7, printed p. 594", "Thm. 3.6.2, printed p. 144"):
+        assert citation in records, citation
+    audit = (REPORTS / "coble_a13-audit-record.txt").read_text()
+    assert "Ch. VI Sec. 4, printed p. 208" in audit
+
+
 def test_the_group_the_question_names_is_the_one_the_theorem_computes():
     """A13 asks for the comparison to $\\Gamma^\\En_\\Co(\\delta)$; the book must name it.
 
