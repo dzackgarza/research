@@ -36,6 +36,18 @@ Three obligations are stated here, each from a printed source rather than invent
 Nothing here decides $R_\\rcop$: the third test only requires the object, and where the type is
 not published the contract fixes no value.
 
+Prerequisite, and it is not yet met either.  A stable limit is asked for by a monodromy
+invariant, and in AET23's determination the invariant enters as the vector $(\\lambda\\cdot r_i)$ on
+the simple roots of the chamber (Theorem 7.5, printed p. 48, with Definition 4.2's subdiagram
+$G=\\{r_i\\}$); the same is true of AE22's stratum function, whose input is $\\lambda\\in\\bar T\\cap C$.
+So an implementation needs the chamber, i.e. the simple roots of $\\bar T=U\\oplus E_8(-1)^{\\oplus2}
+\\oplus A_1(-1)$, and the library's Vinberg walk on that lattice does not finish: the four
+attempts recorded in `computations/reports/coble_679-rcop-*-run*.txt` stop at 900, 1800, 2400 and
+1500 seconds, against 75 seconds for the rank-18 elliptic cusp.  The chart's roots are printed
+(AET23, Fig. 1, printed p. 22) but not as vectors, so the chamber has to be computed or
+transcribed with its pairings checked.  Whoever implements `stable_limit` should read that order
+of work: chamber first, then the type.
+
 Run it explicitly: the repository's `pyproject.toml` sets `testpaths = ["tests"]`, so a bare
 `pytest` at the repository root does not collect this directory, and no workflow under
 `.github/workflows` names it.
