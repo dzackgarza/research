@@ -59,7 +59,7 @@ Uses @def:a.
 :::
 
 ::: {.remark #rmk:d}
-A pointer back to @thm:c, about a round apple [@Jones19, Thm. 1] and [@Dol13, §8, p. 37].
+A pointer back to @thm:c, about a round apple [@Jones19, Thm. 1], [@Dol13, §8, p. 37] and [@Ray20, Figs. 7 and 8].
 :::
 
 ::: {.lemma #lem:e}
@@ -176,3 +176,9 @@ def test_a_page_is_not_a_lettered_section(tmp_path):
     # "§8, p. 37" names a section and a page; "p" is not a section letter as in "§3D".
     graph, _, _ = run(tmp_path)
     assert not any(n["id"].startswith("Dol13") for n in graph["nodes"])
+
+
+def test_plural_labels_name_each_result(tmp_path):
+    graph, _, _ = run(tmp_path)
+    targets = {e["target"] for e in graph["edges"] if e["source"] == "rmk:d"}
+    assert {"Ray20 Fig. 7", "Ray20 Fig. 8"} <= targets
