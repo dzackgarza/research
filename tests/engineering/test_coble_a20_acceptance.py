@@ -1082,6 +1082,32 @@ def test_every_record_path_the_pages_cite_exists():
     assert cited >= 100, cited      # the pages do cite their records; a collapse would show here
 
 
+def test_the_source_gate_findings_do_not_name_this_issue_s_pages():
+    """The gate's state at the recorded SHA, with this issue's pages checked against it.
+
+    computations/reports/coble_663-docs-gate-source-run.txt is the transcript of
+    scripts/docs_check.py --source on a full worktree, produced by the script beside it.  It failed on
+    24 findings, all of them bibliography keys on other pages; none names a page this issue owns.
+    The check pins both numbers and the absence, so a run that starts failing on these pages shows up
+    here rather than in a reviewer's hands.
+    """
+    import pathlib
+    path = ROOT / "computations/reports/coble_663-docs-gate-source-run.txt"
+    assert path.exists(), "the gate transcript is missing"
+    text = path.read_text()
+    assert "docs_check --source exit status: 1" in text
+    assert "findings: 24" in text
+    assert "--- findings naming this issue's pages (want none):" in text
+    after = text.split("--- findings naming this issue's pages (want none):")[1].split("--- the findings")[0]
+    assert after.strip() == "none", after
+    findings = [line for line in text.splitlines() if line.startswith("  - ")]
+    assert len(findings) == 24, len(findings)
+    assert all("is in no bibliography" in line for line in findings), findings
+    for page in ("heegner-line-and-the-coble", "heegner-research-report", "open-problems.md",
+                 "open-questions.md"):
+        assert page not in "\n".join(findings), page
+
+
 def _run_all() -> int:
     items = [(name, fn) for name, fn in sorted(globals().items()) if name.startswith("test_")]
     failures = 0
