@@ -352,26 +352,30 @@ def test_the_wall_criterion_is_on_the_page():
 
 
 def test_the_p_greater_one_cusp_lattice_record_reproduces_and_the_page_states_it():
-    """The next open item's first datum: the boundary lattice at a p_* > 1 cusp.
+    """The p_* > 1 item's first datum: the boundary lattice, for general (p, k).
 
-    AE23 Section 10C prints delta^perp/delta = <-2d/p_*> + H + E8^2 (p. 38).  At d = p^2
-    the vector delta = g + p(e1 + f1) is primitive isotropic with p_*(delta) = p, and
-    delta^perp/delta is <-2> + U + E8(-1)^2, the F_2 cusp lattice; the printed formula
-    would give <-2p>, a lattice of the wrong discriminant.  The record proves the
-    instance, and the page's lemma states it and draws the Coxeter-fan consequence.
+    AE23 Section 10C prints delta^perp/delta = <-2d/p_*> + H + E8^2 (p. 38).  For
+    delta = g + p(e1 + k f1) in L_{2d} with d = p^2 k, the vector is primitive isotropic
+    with p_*(delta) = p, and delta^perp/delta is <-2k> + U + E8(-1)^2 = <-2d/p_*^2> + ...
+    so the printed formula would give <-2pk>, a lattice of the wrong discriminant.  At
+    k = 1 (d = p^2) the lattice is the F_2 cusp lattice; for k >= 2 it is the unigonal
+    cusp lattice of F_{2k}.  The record proves the cases and the page's lemma states them.
     """
     script = REPORTS / "coble_679-cusp-lattice.py"
     record = REPORTS / "coble_679-cusp-lattice-run.txt"
     assert script.exists() and record.exists()
     produced = subprocess.run([sys.executable, str(script)], capture_output=True, text=True, check=True).stdout
     assert produced == record.read_text(encoding="utf-8"), "the transcript no longer matches the script"
-    assert "d = 4, p = 2" in produced
-    assert "p_*(delta) = 2" in produced
-    assert "first summand -2, discriminant 2" in produced
-    assert "printed first summand -2d/p_* = -4, discriminant 4" in produced
+    assert "d = 4, p = 2, k = 1" in produced
+    assert "d = 8, p = 2, k = 2" in produced
+    assert "d = 16, p = 2, k = 4" in produced
+    assert "d = 18, p = 3, k = 2" in produced
+    assert "first summand -2k = -4" in produced
+    assert "printed first summand -2d/p_* = -8" in produced
     page = page_text()
     assert "#lem:cusp-lattice-p-greater-one" in page
-    assert "isometric to the boundary lattice of the $F_2$ cusp" in page
+    assert "$\\langle-2k\\rangle\\oplus U\\oplus E_8(-1)^{\\oplus2}$" in page
+    assert "boundary lattice of the unigonal cusp of $F_{2k}$" in page
     register = REGISTER.read_text(encoding="utf-8")
     assert "lem:cusp-lattice-p-greater-one" in register
 
