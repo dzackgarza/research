@@ -137,6 +137,21 @@ def test_the_locus_probe_reproduces_its_record():
     assert "coble_679-locus-probe-run.txt" in page
 
 
+def test_the_pages_that_discuss_the_semifan_state_the_hypothesis_as_one():
+    """Item 2's substance, not only its wording: nothing implies coarsening is automatic.
+
+    The research statement conjectures that the Coble semifan coarsens the Coxeter fan.  That is
+    hypothesis (W) of @thm:semifan-recognizable-divisor for the Coble divisor, and the page and
+    the statement must both say it is a hypothesis: the general theory does not supply it.
+    """
+    statement = (REPO / "writing/research-statement/ResearchStatement.md").read_text(encoding="utf-8")
+    assert "Coarsening is a named hypothesis in that theory, not a consequence of it" in statement
+    assert "thm:semifan-recognizable-divisor" in statement
+    assert "a genuine statement about the Coble divisor and not a special case" in statement
+    page = page_text()
+    assert "#thm:semifan-stratum" in page and "hypothesis" in page
+
+
 def test_the_recognizability_inventory_reproduces_and_names_the_gap():
     """Which deposits assert recognizability, and for which divisor: the input of question 1."""
     script = REPORTS / "coble_679-recognizability-inventory.py"
