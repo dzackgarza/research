@@ -453,8 +453,18 @@ def test_every_citation_of_the_folding_lemma_carries_its_printed_page():
     for path in sorted((ROOT / "writing").rglob("*.md")):
         if ".book" in path.parts:
             continue
+        if path.name == "annotated-bibliography.md":
+            # An index of the deposited PDF: its "p. N" is the PDF's own page, matched by the
+            # #page=N of its link, and it states nothing.  Its AEGS25 entries are consistent
+            # with that convention -- "Definition 2.3, p. 6" is PDF p. 6, printed p. 586.
+            continue
         for number, line in enumerate(path.read_text(errors="ignore").splitlines(), 1):
-            if "Lemma 3.9" in line and "printed p. 594" not in line:
+            if "AEGS25" not in line:
+                continue
+            # "Lemma 3.9", and the plural spellings a bare citation hides behind.
+            if not re.search(r"Lemmas? 3\.9|Lems\. 3\.9", line):
+                continue
+            if "printed p" not in line or "594" not in line:
                 missing.append("%s:%d" % (path.relative_to(ROOT), number))
     # The records cite the source too, and a transcript is what a reader checks a page against:
     # the diagram-roots record carried the refuted page in its script and in its committed

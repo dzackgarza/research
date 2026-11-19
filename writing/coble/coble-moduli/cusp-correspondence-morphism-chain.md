@@ -38,7 +38,7 @@ On $0$-cusps, $\eta$ induces an injective map from the $527$ $0$-cusps of the st
 
 Let $e\in\ten$ be a primitive isotropic vector, and number the $0$-cusps of $\fentwo$ as in [@Ste91].
 
-1. The lattice $e^{\perp}/e$ is $U(2)\oplus E_8(2)=(10,10,0)_1$ when $e$ represents cusp $1$, and $U\oplus E_8(2)=(10,8,0)_1$ when $e$ represents one of cusps $2$ to $5$ [@AEGS25, Lemmas 3.9, 3.10].
+1. The lattice $e^{\perp}/e$ is $U(2)\oplus E_8(2)=(10,10,0)_1$ when $e$ represents cusp $1$, and $U\oplus E_8(2)=(10,8,0)_1$ when $e$ represents one of cusps $2$ to $5$ [@AEGS25, Lemmas 3.9, 3.10, printed p. 594].
 2. The Coxeter diagram of cusp $2$ is the folding of the Coxeter diagram of $(18,0,0)_1$ by the reflection $\alpha_k\mapsto\alpha_{20-k}$ [@AEGS25, Lemma 3.9, printed p. 594]. The Coxeter diagrams of cusps $1$, $3$, $4$ and $5$ are foldings of the Coxeter diagram of $(18,2,0)_1$ [@AEGS25, Lemma 3.10, printed p. 594].
 :::
 
