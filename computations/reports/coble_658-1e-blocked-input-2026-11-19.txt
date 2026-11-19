@@ -1,0 +1,47 @@
+research#658, item 1e: the input that is missing, and what was checked
+
+Item 1e asks whether Gamma_Co <= ker rho_{T_Co}.  The proposal rmk:gamma-co-nodal-pair-proposal
+(lattices.md) reduces it to one geometric statement and names three gaps.  This note records what
+was searched for the first of them, so that the next session does not repeat the search and does
+not mistake a neighbour for the input.
+
+THE INPUT NEEDED (either of two, and only these two will do):
+
+  (i) a printed statement, by authors, number and page, that the local monodromy of a degeneration
+      of surfaces acquiring two ordinary double points at once is the product of the two
+      commuting Picard--Lefschetz transformations in the vanishing classes; or
+  (ii) a computed loop: an explicit family of Coble surfaces over a punctured disc whose monodromy
+      on T_Co is computed to be s_e, with the computation on main.
+
+WHAT WAS CHECKED IN tmp/sources (full-text markdown conversions, not stubs: AEGS25 has 2432 lines,
+Sterk 1991 has 1526, DK13 has 499):
+
+  - no occurrence of "vanishing cycle" or of a Picard--Lefschetz formula in any held conversion;
+  - DK13 contains no occurrence of "monodromy" at all -- it computes no monodromy anywhere, so its
+    Prop. 3.2 and (3.6) cannot supply (i);
+  - AEGS25's Picard--Lefschetz material (its lines 1036-1060) is about the Picard--Lefschetz
+    transforms of Kulikov degenerations of K3 surfaces and their combinatorial types; it is not a
+    statement about a family of Coble surfaces acquiring two ordinary nodes at once;
+  - the derivation that computations/reports/smwo_direct-period.md cites for the two-node product,
+    .ultramath/smw0o7jbf/m5/A20-direct-period-theorem.md sec. 6.1(b), is not on main
+    (`git cat-file -e omm/main:...` fails), so it is not an input the book may cite.
+
+CANDIDATES TO OBTAIN -- named as candidates, not cited, because no printed page has been seen:
+
+  - SGA 7 II, the Picard--Lefschetz exposé (Deligne--Katz);
+  - Lamotke, The topology of complex projective varieties after S. Lefschetz, Topology 20 (1981);
+  - Voisin, Hodge Theory and Complex Algebraic Geometry II, sec. 3 (its Thm. 3.16 is one node,
+    not two).
+
+  None of these is held in tmp/sources.  Under the standing rule, none may be written as a citation
+  until its printed page is read; naming them here is a to-do list, not a reference.
+
+THE OTHER TWO ROUTES THAT WOULD SETTLE THE ITEM:
+
+  - prove the containment G1 <= Gamma_Co (the proposal's gaps 2 and 3), which with the lattice
+    computation would refute the conjecture; or
+  - prove Gamma_Co <= O~^+(T_Co) directly, which would settle item 1e the other way and restore the
+    conjecture as a theorem.  Nothing in this repository does either.
+
+Until one of these exists on main, item 1e stays NOT MET, and no page may state that the conjecture
+is false: conj:gamma-co-stable is open and rmk:gamma-co-status says so.
