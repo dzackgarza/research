@@ -367,6 +367,12 @@ The operation that would decide the split, stated so that the gap is a contract 
 The defining maps are those of [@AET23, Thm. 7.5, printed p. 48] and [@AE22, §§8--9, printed pp. 41--57], which produce that output for the ramification divisors, and of [@ABE22, §3], which produces it for the elliptic one. The library has none of the three: no module of `src/sage_extensions` names a stable pair, a Kulikov model or a semifan, and @rmk:rcop-split-computation records the two expressions that raise `AttributeError`.
 :::
 
+::: {.remark #rmk:cone-inventory}
+
+The step after the chamber — the inventory of the cones the semifan would coarsen — has been attempted once, at the one cusp where the chamber is computed at all. [@ABE22, §3] prints the counts of this fan: "In $\mcf^{\mathrm{cox}}/W$ there are $2\cdot 9+1=19$ facets and $9^2+1=82$ rays. In $\mcf^{\mathrm{cox}}/\Gamma$ there are $9+1=10$ facets and $\frac{9\cdot 10}{2}+1=46$ rays."
+
+The chamber the library computes has $19$ walls, which is the facet count. The orbit count it returns for the family of maximal parabolic subdiagrams with one affine component is $10$; the call's own definition is the orbit set of the diagram's automorphism group $\Aut G$ acting on that family, not of the reflection group $W$, so it is neither the $82$ nor the $46$ above and no cone count is asserted here. The enumeration of maximal elliptic subdiagrams did not finish in $600$ seconds, and the run was cut by its outer bound inside the next enumeration, the script's own alarm not interrupting it; the record ends there (`computations/reports/coble_679-elliptic-cone-inventory-run.txt`).
+
 ::: {.corollary #cor:semifan-computed-cases title="(W), and the split, in the computed cases"}
 
 Hypothesis (W) of @thm:semifan-recognizable-divisor holds, with the following $I$ and $J$, for the following divisors:
