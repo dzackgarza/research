@@ -137,7 +137,7 @@ _TAGS = re.compile(r"\bTags?\s+([0-9A-Z]{4}(?:\s*(?:,|and)\s*[0-9A-Z]{4})*)")
 # A Bourbaki numbered paragraph: "Ch. V §3 no. 1".
 _BOURBAKI = re.compile(r"(?:(?:Ch\.|Chapter)\s*([IVXLC\d]+),?\s*)?§\s*(\d+)\s*no\.\s*(\d+)")
 # A bare item or equation number with a dot: "4.6", "V.3.3", "(2.1.10)".
-_BARE_NUMBER = re.compile(r"(?<![\w.§])\(?(?:[IVXLC]+\.\d+(?:\.\d+)*|\d+(?:\.\d+)+|\d+:\d+)\)?(?![\w.])")
+_BARE_NUMBER = re.compile(r"(?<![\w.§])\(?(?:[IVXLC]+\.\d+(?:\.\d+)*|\d+(?:\.\d+)+)\)?(?![\w.])")
 
 
 def cited_results(key: str, locator: str) -> list[str]:
@@ -155,6 +155,10 @@ def cited_results(key: str, locator: str) -> list[str]:
         for tag in re.split(r"\s*(?:,|and)\s*", match.group(1)):
             add(f"{key} Tag {tag}")
     rest = _TAGS.sub(" ", rest)
+    # O'Meara's item numbers, "42:16", read before a section label can take the "42".
+    for match in re.finditer(r"(?<![\w.:])\d+:\d+(?![\w:])", rest):
+        add(f"{key} {match.group(0)}")
+    rest = re.sub(r"(?<![\w.:])\d+:\d+(?![\w:])", " ", rest)
     for match in _BOURBAKI.finditer(rest):
         chapter = f"Ch. {match.group(1)} " if match.group(1) else ""
         add(f"{key} {chapter}§{match.group(2)} no. {match.group(3)}")
