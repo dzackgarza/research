@@ -856,6 +856,57 @@ def test_open_items_name_the_input_they_wait_on():
     assert "\\delta_{E_8}\\in W(T_\\Co)\\iff k\\in W(T_\\Co)" in lem
 
 
+def test_pages_this_issue_touched_have_every_reference_resolving():
+    """A red test on the pages this issue edited, without pandoc, so CI cannot lack a tool.
+
+    Every @ref of a statement kind in the four pages this run changed must name an id that some page
+    under writing/ declares; references with any other prefix are bibliography keys and are left to
+    the citation layer.  This is the cheap half of the book-wide audit in
+    computations/reports/coble_663-book-id-audit.py, restricted to the pages at risk.
+    """
+    import pathlib
+    import re
+    kinds = ("thm", "lem", "prop", "cor", "def", "qst", "prob", "rmk", "conj", "sec", "fig",
+             "tbl", "eq", "ex", "cons", "conv", "warn", "obs", "note", "claim", "ass")
+    book = ROOT / "writing"
+    declared = set()
+    for path in book.rglob("*.md"):
+        if ".book" in path.parts:
+            continue
+        text = path.read_text(errors="ignore")
+        declared.update(re.findall(r"^:::\s*\{[^}]*#([A-Za-z0-9:_-]+)", text, re.M))
+        declared.update(re.findall(r"\{#([A-Za-z0-9:_-]+)\}", text))
+    touched = [PAGE, REPORT, OPEN_PROBLEMS, book / "open-questions.md"]
+    # One dangling reference is known, book-wide, and is NOT this issue's to repair: @def:signature
+    # is used in five pages (this report at :463 among them) and declared nowhere.  It is pinned by
+    # name here so that any NEW dangling reference fails, and so that a repair elsewhere turns this
+    # red and the entry gets removed.
+    # "thm:invertible-summand" is declared in writing/category-theory/, which a sparse checkout of
+    # this repository may omit; it is therefore tolerated too, and only when its page is absent.
+    KNOWN_DANGLING = {"def:signature"}
+    if not (book / "category-theory").exists():
+        KNOWN_DANGLING.add("thm:invertible-summand")
+    unresolved = set()
+    for path in touched:
+        text = path.read_text(errors="ignore")
+        refs = {m.group(1).rstrip(".:") for m in
+                re.finditer(r"(?<![@\w-])@([A-Za-z][A-Za-z0-9-]*:[A-Za-z0-9_][A-Za-z0-9_:.-]*)", text)}
+        for ref in sorted(refs):
+            kind = ref.split(":", 1)[0]
+            if kind not in kinds:
+                continue                      # a bibliography key, or an external scheme
+            if ref not in declared:
+                unresolved.add(ref)
+    assert unresolved <= KNOWN_DANGLING, f"new dangling references: {sorted(unresolved - KNOWN_DANGLING)}"
+    # and the ids this run introduced are among them
+    for new in ("lem:block-sign-reduces-to-gamma-four",
+                "thm:effective-roots-are-the-h-positive-ones",
+                "cor:chamber-preserved-by-picard-stabilizer",
+                "lem:chamber-condition-is-period-condition",
+                "prop:level-two-shadow-consistent-with-both-answers"):
+        assert new in declared, new
+
+
 def _run_all() -> int:
     items = [(name, fn) for name, fn in sorted(globals().items()) if name.startswith("test_")]
     failures = 0
