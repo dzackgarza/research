@@ -110,7 +110,7 @@ provenance
    it exchanges the two E8 subdiagrams: True
    in the node names: w_1->w_17, w_2->w_16, w_3->w_15, w_4->w_14, w_5->w_13, w_6->w_12, w_7->w_11, w_8->w_10, w_9->w_9, w_10->w_8, w_11->w_7, w_12->w_6, w_13->w_5, w_14->w_4, w_15->w_3, w_16->w_2, w_17->w_1, w_18->w_19, w_19->w_18
    that is w_k <-> w_{18-k} for k = 1..8 and w_18 <-> w_19, which is the reflection
-   J : alpha_k -> alpha_{20-k} of [@AEGS25, Lemma 3.9, printed p. 593] read on the two
+   J : alpha_k -> alpha_{20-k} of [@AEGS25, Lemma 3.9, printed p. 594] read on the two
    copies of (18,0,0)_1
 
 7. the folded roots, and the cusp-2 diagram of [@AEGS25, Fig. 7, printed p. 594]

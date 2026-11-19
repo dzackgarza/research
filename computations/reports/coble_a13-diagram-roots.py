@@ -16,7 +16,7 @@ What is computed.
     subdiagrams, and the null relation of the 2 E8-tilde parabolic);
   * the action of theta_Co on them: theta_Co(W) = W' and theta_Co(Phi) = -Phi', with the node
     pairing w_k -> w'_{18-k}, which is the reflection J : alpha_k -> alpha_{20-k} of
-    [@AEGS25, Lemma 3.9, printed p. 593] read on the two copies;
+    [@AEGS25, Lemma 3.9, printed p. 594] read on the two copies;
   * the folded roots w_k + w_{18-k} (k = 1..8), w_9, w_18 + w_19, whose norms are the entries of
     the cusp-2 diagram of [@AEGS25, Fig. 7, printed p. 594];
   * the pairings of the polarization classes with every root, for H = h~_Co = h_En, and the
@@ -281,7 +281,7 @@ print("   it exchanges the two E8 subdiagrams: %s"
 print("   in the node names: %s"
       % ", ".join("%s->%s" % (names[k], names[sigma[k]]) for k in range(19)))
 print("   that is w_k <-> w_{18-k} for k = 1..8 and w_18 <-> w_19, which is the reflection")
-print("   J : alpha_k -> alpha_{20-k} of [@AEGS25, Lemma 3.9, printed p. 593] read on the two")
+print("   J : alpha_k -> alpha_{20-k} of [@AEGS25, Lemma 3.9, printed p. 594] read on the two")
 print("   copies of (18,0,0)_1")
 print("")
 

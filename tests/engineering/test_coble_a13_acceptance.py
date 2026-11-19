@@ -456,6 +456,15 @@ def test_every_citation_of_the_folding_lemma_carries_its_printed_page():
         for number, line in enumerate(path.read_text(errors="ignore").splitlines(), 1):
             if "Lemma 3.9" in line and "printed p. 594" not in line:
                 missing.append("%s:%d" % (path.relative_to(ROOT), number))
+    # The records cite the source too, and a transcript is what a reader checks a page against:
+    # the diagram-roots record carried the refuted page in its script and in its committed
+    # transcript while every Markdown page was right, so the scan reads the records as well.
+    for path in sorted(REPORTS.glob("*")):
+        if path.suffix not in (".py", ".txt"):
+            continue
+        for number, line in enumerate(path.read_text(errors="ignore").splitlines(), 1):
+            if "Lemma 3.9" in line and "printed p. 594" not in line:
+                missing.append("%s:%d" % (path.relative_to(ROOT), number))
     assert not missing, missing
 
 
