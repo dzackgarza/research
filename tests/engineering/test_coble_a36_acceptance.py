@@ -329,7 +329,8 @@ def test_the_citations_and_the_open_status_carry_their_printed_pages():
     assert "an interesting open question" in page
     assert "[@AE23, Intro., printed p. 3]" in page
     assert "[@AE22, §3A, printed p. 10]" in page, "the long-root convention is not recorded"
-    assert "whether that mirror is a wall" in page
+    assert "$h_\\beta=\\sigma_{22}\\cap\\beta_L^\\perp$" in page
+    assert "the long root $g$ at $k=2$ is included in this and does not repair (W)" in page
     register = REGISTER.read_text(encoding="utf-8")
     assert "[@AE23, Intro., printed p. 3]" in register
     dissertation = DISSERTATION.read_text(encoding="utf-8")
