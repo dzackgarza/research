@@ -192,6 +192,23 @@ def test_the_four_records_of_the_unit_are_committed():
         assert (REPORTS / name).exists(), name
 
 
+def test_the_single_lemma_is_stated_with_its_smallest_test():
+    """The reduction to one lemma: its hypotheses, its smallest test, and its two excluded routes.
+
+    lem:rcop-refinement-criterion is the one statement whose proof closes the unit.  The page must
+    keep stating it for d = 1 at the single cusp, name the open cell as the smallest test, and say
+    that the Heegner-restriction route needs prob:restricted-semifan -- otherwise a later session
+    will spend the loop again looking for that cheaper route.
+    """
+    page = page_text()
+    block = page[page.index("#lem:rcop-refinement-criterion"):]
+    block = block[: block.index("\n:::")] if "\n:::" in block else block
+    assert "is not a union of cones of" in block
+    assert "the open cell" in block
+    assert "@prob:restricted-semifan" in block
+    assert "does not apply to" in block
+
+
 def test_the_two_open_rows_are_known_to_be_one_computation():
     """The reduction: among the divisors known to be recognizable, only R_rc is uncomputed.
 
