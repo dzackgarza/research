@@ -1,6 +1,6 @@
 ---
 unit: research-program
-status: conjectural
+status: proved
 tags:
   - coble
   - cusps
@@ -52,19 +52,26 @@ Every $0$-cusp of $\fentwo$ over the image in $F^K_\En$ of the $0$-cusp $(9,9,1)
 The morphism $\fentwo\to F^K_\En$ of @prop:fen2-forgetful-maps sends the $0$-cusp of a primitive isotropic vector $e\in\ten$ to the $0$-cusp of the same vector $e$, so it preserves the lattice $e^{\perp}/e$. By @lem:w1_perp_calculation the image of $(9,9,1)_1$ is the $0$-cusp $(10,8,0)_1$ of $F^K_\En$. By @prop:fen2-zero-cusp-lattices the cusps of $\fentwo$ with $e^{\perp}/e=(10,8,0)_1$ are cusps $2$ to $5$. Their dual complexes are listed in @ex:fen2_five_cusps.
 :::
 
-::: {.lemma #lem:cusp-map-of-a-period-lattice-embedding title="The $0$-cusp of an isotropic line maps to the $0$-cusp of the same line"}
+::: {.lemma #lem:cusp-map-of-a-period-lattice-embedding title="The $0$-cusp of an isotropic line is the point that line names, and it is functorial"}
 
-Let $\iota\colon T\injects T'$ be a primitive embedding of even lattices of signature $(2,n)$ and $(2,n')$ with $n,n'\geq1$, let $\Gamma\subseteq\Orth^+(T)$ and $\Gamma'\subseteq\Orth^+(T')$, and suppose the inclusion of period domains $\bD(T)\subset\bD(T')$ descends to a morphism $\bbcpt{\bD(T)/\Gamma}\to\bbcpt{\bD(T')/\Gamma'}$ extending to the Baily--Borel compactifications [@KK72, §5, Thm. 2].
-Then for a primitive isotropic line $\ell = \ZZ v\subset T$ the induced map of $0$-cusps sends $[\ell]$ to $[\iota(\ell)]$.
+Let $\iota\colon T\injects T'$ be a primitive embedding of even lattices of signature $(2,n)$ and $(2,n')$ with $n,n'\geq1$, let $v\in T$ be primitive isotropic and $\ell=\ZZ v$. Let $\Gamma\subseteq\Orth^+(T)$ and $\Gamma'\subseteq\Orth^+(T')$ be arithmetic subgroups such that $\iota$ is $\Gamma$-equivariant for a homomorphism $\varphi\colon\Gamma\to\Gamma'$ and such that the induced morphism $\bD(T)/\Gamma\to\bD(T')/\Gamma'$ extends to a morphism $\Phi$ of Baily--Borel compactifications.
+
+1. The boundary component of $\bD(T)$ attached to $\ell$ is the singleton $\{[\ell]\}$ of $\PP(T_\CC)$.
+2. $\Phi$ carries the $0$-cusp $[\ell]$ of $\bD(T)/\Gamma$ to the $0$-cusp $[\iota(\ell)]$ of $\bD(T')/\Gamma'$.
 :::
 
 ::: {.proof}
 
-A point of $\bD(T)$ is a positive definite $2$-plane $P\subset T_\bR$, and since $T_\bR\subset T'_\bR$ the same $P$ is a point of $\bD(T')$: the inclusion of period domains is literal.
-The boundary component attached to $\ell$ is $F_\ell = \bD(\ell^{\perp T}/\ell)$, the positive $2$-planes whose complex line is $\ell$.
-Because $\iota$ is injective, $\ell^{\perp T} = T\intersect\ell^{\perp T'}$, so $\ell^{\perp T}/\ell\subset\ell^{\perp T'}/\ell$ and hence $F_\ell\subset F_{\iota\ell}$ as subdomains of the boundary of $\bD(T')$.
-A $0$-cusp is the orbit of one of these components, equivalently of the primitive isotropic line that names it [@AEGS25, §3.1, printed p. 589], and the extension of [@KK72, §5, Thm. 2] carries rational boundary components to rational boundary components compatibly with the action of the two groups.
-So the orbit of $F_\ell$ is carried to the orbit of $F_{\iota\ell}$, that is $[\ell]\mapsto[\iota(\ell)]$.
+Choose $u\in T_\QQ$ with $(v,u)=1$, possible because $v\neq0$ and the form is nondegenerate over $\QQ$, and put $K=\generators{v,u}^{\perp T_\QQ}$ and $K'=\generators{\iota v,\iota u}^{\perp T'_\QQ}$. Then $K$ has signature $(1,n-1)$, $K'$ has signature $(1,n'-1)$ and $K\subset K'$. By @cons:hsd-tube-coordinates, applied to the hyperbolic plane $\generators{v,u}$,
+$$\bD(T)=\{z\in K_\CC:\operatorname{Im}z\in C\},\qquad \bD(T')=\{z\in K'_\CC:\operatorname{Im}z\in C'\},$$
+where $C$ is a component of $\{y\in K_\RR:y^2>0\}$ and $C'$ is a component of $\{y\in K'_\RR:y^2>0\}$ chosen so that $C=C'\intersect K_\RR$; the period of $z=x+iy$ is $[w(z)]$ with $w(z)=u+z-\tfrac12(z,z)v$. The projection $K\to\ell^{\perp T_\QQ}/\QQ v$ is an isomorphism, so $K$ is the cusp cone of $[\ell]$ in the sense of @rmk:hsd-toroidal and $C$ is one of its two positive cones.
+
+For $y_0\in C$ and $t>0$ put $z_t=i t y_0$. Then $w(z_t)=u+i t y_0+\tfrac12t^2y_0^2\,v$, so $[w(z_t)]\to[v]$ in $\PP(T_\CC)$ as $t\to\infty$. The points $w(z_t)$ lie, for $t$ large, in a Siegel domain at $[\ell]$ and in one at $[\iota(\ell)]$, since $\operatorname{Im}z_t=t y_0\in C\subset C'$ and $(t y_0,w)\to\infty$ for $w$ in the interior of the cone; by [@BB66, 4.7--4.8] they lie in the closure of a fundamental set for $\Gamma$, respectively for $\Gamma'$, and by [@BB66, Thm. 4.9(i) and Prop. 4.10] the Satake topology agrees with the natural topology on that closure. Hence the images of $w(z_t)$ converge to the $0$-cusp $[\ell]$ in $\bbcpt{\bD(T)/\Gamma}$ and to the $0$-cusp $[\iota(\ell)]$ in $\bbcpt{\bD(T')/\Gamma'}$.
+
+By [@Ste91, §4.1, printed p. 15] the boundary components of $\bD(T)$ are the sets $F_I=\PP(I_\CC)\intersect\overline{\bD(T)}$ for the nonzero isotropic subspaces $I\subset T_\RR$, and $F_I$ is a singleton when $\dim I=1$; by [@Ste91, §4.2, printed p. 15] and [@AEGS25, Def. 2.9, printed p. 588] the zero-dimensional boundary components of $\bD(T)/\Gamma$ are the $\Gamma$-orbits of primitive isotropic lines. The point $[v]$ lies in $\overline{\bD(T)}$ by the previous paragraph, so $F_\ell=\{[v]\}$: the $0$-cusp is the point that the line names. The lattice $\ell^{\perp T}/\ell$ has signature $(1,n-1)$; it is the cusp cone of the toroidal compactification at $[\ell]$ (@rmk:hsd-toroidal), not a period domain, and in particular not the boundary component.
+
+Finally, $\Phi$ is continuous and agrees with the inclusion on the dense open $\bD(T)/\Gamma$, so
+$$\Phi([\ell])=\lim_{t\to\infty}\Phi([w(z_t)])=\lim_{t\to\infty}[w(z_t)]=[\iota(\ell)].$$
 :::
 
 ::: {.theorem #thm:coble-zero-cusp-sterk-two title="Which cusp of $\fentwo$ carries the Coble $0$-cusp: cusps $2$--$5$ for the boundary lattice, cusp $2$ for the chamber"}
@@ -93,7 +100,7 @@ For (1) and the divisibility of (2): $\delta^2 = -2$ and $\div_{\ten}(\delta) = 
 The pairing of $\eta_1$ with $\delta$ is $-1$, so $\eta_1$ is not a vector of $T_\Co$; for $k=2,3,4,5$ the pairing is $0$ and the divisibility ideal in $\ten$ is $2\ZZ$.
 
 For (2): the primitive span of $\delta$ and $\eta_k$ has for its perpendicular the rank-$10$ lattice $M = T_\Co\intersect\eta_k^{\perp}$; since $\eta_k^2 = 0$ and $\eta_k\in M$, the line $\ZZ\eta_k$ is the radical of $M$, so $M/\rad M$ is $\eta_k^{\perp T_\Co}/\ZZ\eta_k$, and the library's radical quotient of $M$ returns it: rank $9$, determinant $2^9$, signature $(1,8)$, even, $2$-elementary with invariants $(9,9,1)$, and isometric to $\langle2\rangle\oplus E_8(2)$ — at each of the four cusps, so the four boundary lattices are one lattice $(9,9,1)_1$ (@thm:two-elementary-classification, whose uniqueness clause is [@Nik80, Thm. 3.6.2, printed p. 144]).
-That each is a $0$-cusp of $F_{\Co,2}$ over the cusp named by the same vector is @lem:cusp-map-of-a-period-lattice-embedding applied to $\bD(T_\Co)\subset\bD(\ten)$.
+That each is a $0$-cusp of $F_{\Co,2}$ over the cusp named by the same vector is @lem:cusp-map-of-a-period-lattice-embedding applied to $\bD(T_\Co)\subset\bD(\ten)$ with $\Gamma_{\Co,2} = R_{\gent}\subseteq\gent$; the equivariance it asks for is the definition of $R_\gent$ as the image of $\Stab_{\gent}(\delta)$ in $\Orth(T_\Co)$ (@def:gamma-co-groups).
 Cusp $4$ has two printed representatives, (4.2.3)'s and the one its chamber is drawn at [@Ste91]; the record runs both, and both give the boundary lattice $(9,9,1)_1$ and divisibility $1$ in $\tdp$, so no clause here depends on the choice.
 
 For (3), the walls of the five cusp chambers are not transcribed: they are the library's `Sterk.cusp_roots_in_TEn(name)`, whose docstring cites Sterk (1991) 4.3.1 and 4.3.6--4.3.9, whose diagrams are Figs. 6, 8, 10 and 12 on printed pp. 21, 22, 23 and 24 for cusps $2$, $3$, $4$ and $5$, together with card `029J`'s `cusp_chambers` row, and they are returned as vectors of $\ten$.
@@ -113,6 +120,7 @@ For (5), $\Gamma(\mcz_0)$ at each of cusps $2$ to $5$ is $\Dc^2$ and at cusp $1$
 
 The claim used to stand here as a conjecture, on the strength of the $\Dc^2$-type check: cusp $1$ of $\fentwo$ is $\RP^2$-type and cusps $2$ to $5$ are $\Dc^2$-type, while Coble degenerations were asserted to be $\Dc^2$-type. Item (5) of @thm:coble-zero-cusp-sterk-two removes the check: it is satisfied by all four Coble $0$-cusps, and what it can see is already excluded by the divisibility $2$ in $\ten$ (@prop:cusp-map-not-onto).
 What the claim got right is item (4): the Coble lattice's own isotropic generator $e'$ is Sterk's cusp-$2$ vector, and cusp $2$ is the unique one of the five whose image in $\bbcpt{\fttz}$ is the $(18,0,0)_1$ cusp.
+The proof of @lem:cusp-map-of-a-period-lattice-embedding was rewritten as well: an earlier form identified the boundary component of an isotropic line $\ell$ with the period domain $\bD(\ell^{\perp}/\ell)$, but $\ell^{\perp}/\ell$ has signature $(1,n-1)$ and is the cusp cone of the toroidal compactification at the cusps it names (@rmk:hsd-toroidal), while the Baily--Borel component is the point $[\ell]$ itself ([@Ste91, §4.1, printed p. 15]).
 What it got wrong is the uniqueness: the boundary lattice is $(9,9,1)_1$ at all four of cusps $2$ to $5$, and the only invariant that separates cusp $2$ from cusps $3$, $4$, $5$ at $\fentwo$ itself is the chamber, item (3), where the numbers of distinct walls at cusps $2$, $3$, $4$ and $5$ are $9$, $11$, $10$ and $13$ — a count of wall hyperplanes, decided by proportionality of the projected normals.
 :::
 
