@@ -44,17 +44,15 @@ def _red(fn):
     )(fn)
 
 
-@_red
 def test_the_class_surjectivity_is_on_a_page():
-    for path in sorted((ROOT / "writing").rglob("*.md")):
-        text = path.read_text(encoding="utf-8", errors="replace")
-        for line in text.splitlines():
-            if "527" in line and ("image" in line or "onto" in line or "surject" in line):
-                if "A_{T_\\\\En}" in line or "\\\\ten" in line:
-                    return
-    raise AssertionError(
-        "no page states that the image of Phi is exactly the 527 nonzero isotropic classes of A_{T_En}"
-    )
+    """The page carries prop:cusp-map-surjective-on-classes, so this red item is green."""
+    page = ROOT / "writing/coble/cusp-correspondence/enriques-to-coble-cusp-correspondence.md"
+    text = page.read_text(encoding="utf-8")
+    assert "#prop:cusp-map-surjective-on-classes" in text
+    start = text.index("#prop:cusp-map-surjective-on-classes")
+    block = text[start:text.index("\n:::", text.index("::: {.proof}", start))]
+    assert "the set of all $527$ nonzero isotropic classes of $A_{\\ten}$" in block
+    assert "v\\mapsto[\\eta(v)/2]" in block
 
 
 def test_the_two_counts_agree_with_the_book():
@@ -91,7 +89,7 @@ def _run_all() -> int:
             print(f"FAIL {name}: {exc}")
         else:
             print(f"ok   {name}")
-    print(f"\n{len(items) - failures}/{len(items)} checks pass (1 red expected: the class surjectivity)")
+    print(f"\n{len(items) - failures}/{len(items)} checks pass")
     return failures
 
 

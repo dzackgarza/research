@@ -400,6 +400,24 @@ The orbit map $\Phi$ is injective: if $v, v'$ are primitive isotropic vectors of
 By @prop:cusp-map-separates-mod-two, $v\equiv v'\pmod{2T_\Co}$, so $\tfrac12 v - \tfrac12 v'\in T_\Co$ and the classes $v^* = \tfrac12 v + T_\Co$ and $v'^*$ of @prop:coble-primitive-isotropic-classes are equal. By @thm:coble-zero-cusp-count, parts 1 and 2, the map $\widetilde\Orth^+(T_\Co) v\mapsto v^*$ is injective. Hence $\widetilde\Orth^+(T_\Co) v = \widetilde\Orth^+(T_\Co) v'$.
 :::
 
+::: {.proposition #prop:cusp-map-surjective-on-classes title="The image of $\Phi$ is exactly the divisibility-$2$ classes"}
+
+The image of $\Phi$ is the set of all $527$ nonzero isotropic classes of $A_{\ten}$, and $v\mapsto[\eta(v)/2]$ is a bijection from the $\widetilde\Orth^+(T_\Co)$-orbits of primitive isotropic vectors of $T_\Co$ onto them. In particular a divisibility-$2$ $0$-cusp of $\fen$ lies over a Coble $0$-cusp if and only if its class is a nonzero isotropic class of $A_{\ten}$ --- which every divisibility-$2$ class is.
+:::
+
+::: {.proof}
+
+*The image lies in the set.* For primitive isotropic $v\in T_\Co$, $\eta(v)$ is primitive of divisibility $2$ (@lem:divisibilityAlwaysTwoTco, @prop:cusp-map-not-onto), so $[\eta(v)/2]$ is defined, and it is isotropic because $v^2 = 0$. A class is $\Gamma_\En$-invariant, because $\Gamma_\En\subseteq\discriminantkernel{\ten}$ acts trivially on $A_\ten$, so $v\mapsto[\eta(v)/2]$ is well defined on orbits.
+
+*The image has $527$ elements.* $\Phi$ is injective (@prop:cusp-map-injective) and its source is the set of $527$ orbits of $\widetilde\Orth^+(T_\Co)$ (@thm:coble-zero-cusp-count(2)).
+
+*The class separates them.* If $[\eta(v)/2] = [\eta(v')/2]$ then $\eta(v)-\eta(v')\in 2\ten$, so $v\equiv v'\pmod{2T_\Co}$ by primitivity of $\eta$ (@lem:primitive_embedding_eta), that is the classes $v^* = [v/2]$ and $v'^*$ of @prop:coble-primitive-isotropic-classes agree; by @thm:coble-zero-cusp-count(1) $v$ and $v'$ then lie in one $\widetilde\Orth^+(T_\Co)$-orbit. So distinct source orbits give distinct classes, and the image meets $527$ nonzero isotropic classes.
+
+*There are exactly $527$.* $|A_{\ten}| = 2^{10}$ because $\det\ten = 2^{10}$ (@lem:primitive_embedding_eta's lattice) and the count of nonzero isotropic classes of $A_{\ten}$ is $527$, exactly as for $T_\Co$; both counts are computed from the Gram matrices in `computations/reports/coble_658-image-census-probe-run.txt`, the $T_\Co$ count reproducing the $527$ of @thm:coble-zero-cusp-count(2).
+
+A set of $527$ distinct classes inside a set of $527$ is the whole set.
+:::
+
 So $\Phi$ embeds the $527$ $0$-cusps of the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ (@thm:coble-zero-cusp-count(2), one $0$-cusp per nonzero isotropic class, the fibre over one class being a single orbit, by @thm:coble-integral-lifting-fibre(1), (2)) into the set of $\Gamma_\En$-orbits of primitive isotropic vectors of divisibility $2$ in $\ten$. The orbit of such a vector $\tilde w$ is in the image exactly when some $\gamma\in\Gamma_\En$ carries $\tilde w$ into $\eta(T_\Co)=k^{\perp\ten}$, that is, when
 $$\beta_\ten\bigl(\tilde w,\ \gamma^{-1}k\bigr) = 0$$
 for some $\gamma\in\Gamma_\En$: when $\tilde w$ is orthogonal to a $(-2)$-vector in the $\Gamma_\En$-orbit of $k$.
