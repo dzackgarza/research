@@ -1,24 +1,24 @@
-"""research#658 item 1f: the witness and eta(e') are in one class, so one transporter would decide it.
+"""research#658 item 1f: the transporter exists, and it is an elementary transvection.
 
-The image of Phi is the set of Gamma_En-classes of primitive isotropic vectors of divisibility 2 that
-are orthogonal to some element of Gamma_En.k.  Write w = 2e~ + e~' for the witness of the book's passage
-on the exact image locus, and e~' = eta(e') for a vector whose class IS in the image (e~'.k = 0).
+The image of Phi is the set of Gamma_En-classes of primitive isotropic vectors of divisibility 2 that are
+orthogonal to some element of Gamma_En.k.  Write w = 2e~ + e~' for the witness of the book's passage on
+the exact image locus, and e~' = eta(e') for a vector whose class IS in the image (e~'.k = 0).
 
-What this probe verifies exactly, and what it is worth:
+This probe verifies the two facts that decide it, independently of the route taken by
+coble_658-stabilizer-image-probe.py:
 
-1. w and e~' are primitive isotropic of divisibility 2 and have THE SAME class in A_{T_En}:
-   (w/2) - (e~'/2) in T_En.  So the pair is exactly the situation of thm:coble-zero-cusp-count(1) for
-   T_Co, one lattice over.
-2. Consequence, which is the reduction: if some g in ker(rho_{T_En}) carries e~' to +-w, then
-   w = +-g(e~') is orthogonal to +-g(k), and g(k) lies in the Gamma_En-orbit of k, so w IS in the image
-   of Phi.  The proof is one line and uses only that g preserves the form: (e~', k) = 0 gives
-   (g e~', g k) = 0.  The witness therefore needs no orbit search of its own: it needs ONE transporter,
-   and the class equality says the only obstruction to finding it is the transitivity of ker(rho_{T_En})
-   on primitive isotropic vectors within a class -- the T_En analogue of thm:coble-zero-cusp-count(1),
-   which the book proves for T_Co and not for T_En.
-3. The search it runs: reflections in (-2)-vectors generate a subgroup of Gamma_En (integral, isometric,
-   trivially acting on A_{T_En}, spinor norm [1]), and the orbit of e~' under words of length at most two
-   is examined for +-w.  A hit is a certificate; a miss decides nothing, and the verdict says so.
+1. w and e~' are primitive isotropic of divisibility 2 with the same class in A_{T_En}, since
+   (w/2) - (e~'/2) lies in T_En.  Hence ONE element of ker(rho_{T_En}) carrying e~' to +-w decides the
+   witness: if g(e~') = +-w then w = +-g(e~') is orthogonal to +-g(k), and g(k) lies in the Gamma_En-orbit
+   of k, by g(e~') . g(k) = e~' . k = 0.
+2. Such an element exists and is elementary: a transvection tau(x) = x + (x.u)v - (x.v)u with u, v
+   isotropic of product zero.  The probe searches transvections with small coefficients, finds one with
+   tau(e~') = -w, and checks with the exact discriminant test of
+   coble_658-stabilizer-image-probe.py that tau acts trivially on A_{T_En}, so that tau lies in
+   ker(rho_{T_En}); and it checks w . tau(k) = 0, which is the conclusion by hand.
+
+So the class of w IS in the image of Phi -- the claim the earlier version of this file left undecided,
+because it searched reflections only, and the transporter is not a short reflection word.
 
 Usage: python3 computations/reports/coble_658-class-orbit-probe.py
 """
@@ -85,6 +85,49 @@ def inverse(m):
 GINV = inverse(G)
 
 
+def discriminant_trivial(m):
+    """Does m act trivially on A = Z^n / (G Z^n)?  For m in O(L) the action is v |-> m^{-T} v, so the
+    condition is m(y) - y in Z^n for the generators y = G^{-1} e_i."""
+    for i in range(N):
+        y = [F(0)] * N
+        y[i] = F(1)
+        y = mv(GINV, y)
+        z = mv(m, y)
+        if any((a - b).denominator != 1 for a, b in zip(z, y)):
+            return False
+    return True
+
+
+def is_integral(m):
+    return all(getattr(x, "denominator", 1) == 1 for row in m for x in row)
+
+
+def is_isometry(m):
+    return is_integral(m) and matmul(transpose(m), matmul(G, m)) == G
+
+
+def transpose(m):
+    return [[m[j][i] for j in range(len(m))] for i in range(len(m[0]))]
+
+
+def matmul(a, b):
+    return [[sum(a[i][k] * b[k][j] for k in range(len(b))) for j in range(len(b[0]))]
+            for i in range(len(a))]
+
+
+def transvection(u, v):
+    gu, gv = mv(G, list(u)), mv(G, list(v))
+    out = [[0] * N for _ in range(N)]
+    for j in range(N):
+        e = [0] * N
+        e[j] = 1
+        a = sum(e[i] * gu[i] for i in range(N))
+        b = sum(e[i] * gv[i] for i in range(N))
+        for i in range(N):
+            out[i][j] = e[i] + a * v[i] - b * u[i]
+    return out
+
+
 def multiline(name, value):
     print("%-46s %s" % (name, value))
 
@@ -123,39 +166,52 @@ def main():
     assert same_class and dot(w, w) == 0 and dot(ep, ep) == 0 and dot(ep, k) == 0
     print()
 
-    roots = short_roots()
-    multiline("(-2)-vectors enumerated", len(roots))
-    print("orbit of e~' under words in their reflections, length <= %d:" % DEPTH)
-    layer = {tuple(ep)}
-    found = None
-    for depth in range(1, DEPTH + 1):
-        nxt = set()
-        for point in layer:
-            for r in roots:
-                coeff = dot(list(point), list(r))
-                image = tuple(point[i] + coeff * r[i] for i in range(N))
-                nxt.add(image)
-                if image == tuple(w) or image == tuple(-t for t in w):
-                    found = (depth, r)
-                    break
-            if found:
-                break
-        print("  depth %d: %d points" % (depth, len(nxt)))
-        if found:
+    isotropic = []
+    for a1, b1, c1, d1 in product(range(-2, 3), repeat=4):
+        v = [a1, b1, c1, d1] + [0] * 8
+        if dot(v, v) == 0 and any(v):
+            isotropic.append(tuple(v))
+    isotropic = sorted(set(isotropic))
+    multiline("isotropic vectors with small coefficients", len(isotropic))
+
+    certificate = None
+    tried = 0
+    for u in isotropic:
+        for v in isotropic:
+            if dot(list(u), list(v)) != 0:
+                continue
+            g = transvection(u, v)
+            if not is_isometry(g):
+                continue
+            tried += 1
+            image = mv(g, ep)
+            if image != [x for x in w] and image != [-x for x in w]:
+                continue
+            if not discriminant_trivial(g):
+                continue
+            certificate = (u, v, g, image)
             break
-        layer = nxt
+        if certificate:
+            break
+    multiline("transvections examined", tried)
     print()
 
-    if found:
-        print("CERTIFICATE: e~' is carried to +-w by a word of reflections of length %d." % found[0])
+    if certificate:
+        u, v, g, image = certificate
+        print("CERTIFICATE: the transvection with u = %s" % (u[:4],))
+        print("                               v = %s" % (v[:4],))
+        print("  carries e~' to %s-w, is integral %s, an isometry %s, acts trivially on A_{T_En} %s"
+              % ("+" if image == w else "-", is_integral(g), is_isometry(g), discriminant_trivial(g)))
+        gk = mv(g, k)
+        print("  and w . g(k) = %d with g(k) of square %d" % (dot(list(gk), w), dot(list(gk), list(gk))))
+        assert dot(list(gk), w) == 0
+        print()
         print("verdict: the class of w = 2e~ + e~' IS in the image of Phi.")
+        print("  g lies in ker(rho_{T_En}) and g(k) lies in the orbit of k under the discriminant kernel, so w")
+        print("  is orthogonal to an element of that orbit -- the criterion of sec-enriques-coble-correspondence.")
     else:
-        print("verdict: undecided -- no transporter found within length %d." % DEPTH)
-        print("  What is decided is the reduction, which does not depend on the bound: w and e~' have the")
-        print("  same class in A_{T_En}, so ONE element of ker(rho_{T_En}) carrying e~' to +-w puts w in the")
-        print("  image, by (e~', k) = 0 and form preservation.  Whether such an element exists is the")
-        print("  transitivity of ker(rho_{T_En}) on primitive isotropic vectors within a class -- the T_En")
-        print("  analogue of thm:coble-zero-cusp-count(1), which the book proves for T_Co and not for T_En.")
+        print("verdict: undecided -- no transvection of small coefficients was found.")
+        print("  The class reduction of the docstring does not depend on the bound.")
 
 
 if __name__ == "__main__":

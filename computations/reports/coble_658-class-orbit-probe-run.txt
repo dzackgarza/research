@@ -4,14 +4,14 @@ e~': square, divisibility                      (0, 2)
 (w/2) - (e~'/2) lies in T_En                   True
 e~' . k                                        0
 
-(-2)-vectors enumerated                        614
-orbit of e~' under words in their reflections, length <= 2:
-  depth 1: 303 points
-  depth 2: 91809 points
+isotropic vectors with small coefficients      112
+transvections examined                         9
 
-verdict: undecided -- no transporter found within length 2.
-  What is decided is the reduction, which does not depend on the bound: w and e~' have the
-  same class in A_{T_En}, so ONE element of ker(rho_{T_En}) carrying e~' to +-w puts w in the
-  image, by (e~', k) = 0 and form preservation.  Whether such an element exists is the
-  transitivity of ker(rho_{T_En}) on primitive isotropic vectors within a class -- the T_En
-  analogue of thm:coble-zero-cusp-count(1), which the book proves for T_Co and not for T_En.
+CERTIFICATE: the transvection with u = (-2, -2, -2, 1)
+                               v = (-1, 0, -1, 0)
+  carries e~' to --w, is integral True, an isometry True, acts trivially on A_{T_En} True
+  and w . g(k) = 0 with g(k) of square -2
+
+verdict: the class of w = 2e~ + e~' IS in the image of Phi.
+  g lies in ker(rho_{T_En}) and g(k) lies in the orbit of k under the discriminant kernel, so w
+  is orthogonal to an element of that orbit -- the criterion of sec-enriques-coble-correspondence.

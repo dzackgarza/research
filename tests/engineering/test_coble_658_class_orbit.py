@@ -44,9 +44,9 @@ def _red(fn):
         return fn
     return pytest.mark.xfail(
         strict=True,
-        reason="research#658 item 1f: w = 2e~ + e~' and e~' lie in one class of A_{T_En}, so one "
-               "transporter in ker(rho_{T_En}) decides the witness; no page carries that reduction. "
-               "Remove this marker when one does.",
+        reason="research#658 item 1f: two independent probes now decide that the class of "
+               "w = 2e~ + e~' lies in the image of Phi (a transvection through e~', and the transvection "
+               "carrying k to delta). No page records it. Remove this marker when one does.",
     )(fn)
 
 
@@ -67,11 +67,12 @@ def test_the_class_equality_is_verified():
     assert "e~' . k                                        0" in out
 
 
-def test_the_verdict_states_the_reduction_and_names_the_missing_input():
+def test_the_transporter_is_found_and_verified():
     out = TRANSCRIPT.read_text(encoding="utf-8")
-    assert "verdict: undecided -- no transporter found within length 2." in out
-    assert "ONE element of ker(rho_{T_En}) carrying e~' to +-w puts w in the" in out
-    assert "thm:coble-zero-cusp-count(1), which the book proves for T_Co and not for T_En" in out
+    assert "CERTIFICATE: the transvection with u = (-2, -2, -2, 1)" in out
+    assert "carries e~' to --w, is integral True, an isometry True, acts trivially on A_{T_En} True" in out
+    assert "and w . g(k) = 0 with g(k) of square -2" in out
+    assert "verdict: the class of w = 2e~ + e~' IS in the image of Phi." in out
 
 
 @_red
