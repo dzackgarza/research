@@ -30,5 +30,18 @@ E8(2) + U(2) supplies isotropic representatives in every nonzero isotropic class
 been made, and the printed form of [@GHS08, Prop. 3.3(i)] is not held here; that is the input this
 route is missing.
 
+ROUTE (c): cite an orbit theorem from the held literature.  Closed as well.  The one held source on
+orbits of vectors under orthogonal groups is [@Daw22] (`tmp/sources/dawes-2022-arxiv-2205.10601-orbits-in-lattices.pdf`),
+and it states *algorithms* -- Algorithms 2.1, 2.2 and 2.3 for finding orbits of vectors for certain
+subgroups of O(L), with software, and Algorithms 3.2 and 3.4 for Tits buildings in signature (2,n) --
+not a closed form for a prescribed lattice and subgroup.  Running it is the missing computation, and
+the book's own records say the subgroup-orbit operation is not available in the provider
+(sage-extensions#286, cited at rmk:gamma-co-counts: "no count on this page is read off it").  What
+the reduction does give, and it is worth recording: for a divisibility-2 vector v = 2x and k of
+divisibility 1, beta(v,k) = 2 beta(x,k) is even and, since beta(.,k): L -> Z is onto, a vector of
+the same *class* can be chosen orthogonal to k.  So the class-level obstruction to Phi being onto
+vanishes, and 1f is equivalent to the fibre-singleton statement alone -- the analogue of
+thm:coble-zero-cusp-count(1) (one kernel orbit per class) for T_En rather than T_Co.
+
 STATE: item 1f is NOT MET.  The class-level proposition is proved and the orbit question is open and
 recorded as open; no page claims surjectivity onto the divisibility-2 locus.
