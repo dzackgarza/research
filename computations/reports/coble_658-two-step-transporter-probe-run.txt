@@ -1,0 +1,11 @@
+T_En = U + U(2) + E8(2), rank 12
+(-2)-vectors enumerated: 614 (U, U(2) coordinates in [-2,2], E8(2) part 2*rho)
+search: words in reflections of length <= 3, orbit capped at 150
+
+depth 1: orbit size 306
+depth 2: orbit size 45604
+depth 3: orbit size 45604
+
+verdict: undecided -- no certificate within depth 3 and width 150.
+  A (-2)-orbit is infinite, so this bound proves nothing about what lies beyond it;
+  raising the bound or passing to rho(Stab_{O(T_En)}(k)) is what would decide it.
