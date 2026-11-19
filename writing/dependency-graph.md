@@ -29,7 +29,9 @@ Each block kind belongs to one side, for the following reason.
 
 The dependency checker stops with an error on a block kind that is not in this table.
 
-A cited work is also a node, drawn in grey and named by its bibliography key. A block that cites a paper, as in `[@AEGS25, Lem. 3.9]`, has an arrow to the paper, and the arrow lists the cited results. A result taken from a paper is a premise, so the arrow from a block of the logical development is a uses arrow; from a commentary block it is a mentions arrow. A work cites nothing in the book, so it ends every chain of uses: each chain stops at a definition, at a block with no citations, or at the literature.
+A result of another work is also a node, drawn grey and named by the work's bibliography key and the result: a block that cites `[@AEGS25, Lem. 3.9]` has an arrow to the node "AEGS25 Lem. 3.9". "Theorem 2" and "Thm. 2" name one node. A result taken from a paper is a premise, so the arrow from a block of the logical development is a uses arrow; from a commentary block it is a mentions arrow. Such a result cites nothing in the book, so each chain of uses stops at a definition, at a block with no citations, or at the literature.
+
+A citation of a whole work, as `[@Vin75]`, or of a chapter, a section or a page of one, names no result. It says where something comes from, or it summarizes the work, so it makes no arrow. In a proof it is an **unlocated citation** on the findings list: if the proof rests on one result of the work, the citation names that result, and if it only says where the argument comes from, the attribution goes in the statement or the text around the block.
 
 Only uses arrows can make a definition or a proof circular. So the check for circular definitions and proofs reads the uses arrows only, and a remark and the theorem it discusses can cite each other.
 
@@ -68,7 +70,7 @@ Choose a block to see what it rests on, what rests on it, or both, to a chosen d
     fetch(base + "dependency-findings.json").then(r => r.json()),
   ]);
   const name = n => n.label || n.id;
-  const href = n => n.chapter.replace(/\.md$/, ".html") + (n.kind === "reference" ? "#ref-" : "#") + n.id;
+  const href = n => n.chapter.replace(/\.md$/, ".html") + (n.kind === "reference" ? "#ref-" + n.work : "#" + n.id);
   const nodes = new Map(graph.nodes.map(n => [n.id, n]));
 
   const list = document.getElementById("depgraph-blocks");
@@ -85,7 +87,7 @@ Choose a block to see what it rests on, what rests on it, or both, to a chosen d
     maxZoom: 1.5,
     elements: [
       ...graph.nodes.map(n => ({ data: { ...n, name: name(n) } })),
-      ...graph.edges.map(e => ({ data: { id: e.source + "->" + e.target, source: e.source, target: e.target, relation: e.relation, locators: e.locators || "" } })),
+      ...graph.edges.map(e => ({ data: { id: e.source + "->" + e.target, source: e.source, target: e.target, relation: e.relation } })),
     ],
     style: [
       { selector: "node", style: { label: "data(name)", "font-size": 10, color: style.color,
@@ -94,8 +96,6 @@ Choose a block to see what it rests on, what rests on it, or both, to a chosen d
       { selector: 'node[kind = "theorem"], node[kind = "proposition"], node[kind = "lemma"], node[kind = "corollary"]',
         style: { "background-color": "#b85450" } },
       { selector: 'node[kind = "reference"]', style: { "background-color": "#999", shape: "round-rectangle" } },
-      { selector: "edge[locators]", style: { label: "data(locators)", "font-size": 8, "text-rotation": "autorotate", color: style.color } },
-      { selector: 'edge[locators = ""]', style: { label: "" } },
       { selector: "node.focus", style: { width: 20, height: 20, "border-width": 3, "border-color": style.color } },
       { selector: "edge", style: { width: 1, "curve-style": "bezier", "target-arrow-shape": "triangle",
           "line-color": "#666", "target-arrow-color": "#666" } },
@@ -147,7 +147,7 @@ Choose a block to see what it rests on, what rests on it, or both, to a chosen d
   const kindName = { "dangling": "reference to no block", "cycle": "circular uses",
     "orphan-proof": "proof of no block", "duplicate-id": "id defined twice",
     "missing-id": "block without an id", "uncited-term": "uncited use",
-    "parse-warning": "pandoc warning" };
+    "parse-warning": "pandoc warning", "unlocated-citation": "unlocated citation" };
   const counts = {};
   for (const f of findings) counts[f.kind] = (counts[f.kind] || 0) + 1;
   box.querySelector("summary").textContent = findings.length === 0 ? "0 findings"
@@ -156,6 +156,7 @@ Choose a block to see what it rests on, what rests on it, or both, to a chosen d
     const li = document.createElement("li");
     li.append(`${kindName[f.kind] || f.kind} in ${f.chapter}: `);
     if (f.kind === "uncited-term") li.append(`“${f.detail}” in`);
+    else if (f.kind === "unlocated-citation") li.append(`[${f.detail}] in`);
     else if (f.detail) li.append(f.detail);
     f.blocks.forEach((id, i) => {
       if (f.kind === "uncited-term" && i === 1) li.append(", defined in");

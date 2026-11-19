@@ -71,7 +71,7 @@ Every $c$ is $d$.
 :::
 
 ::: {.proof}
-By [@Green21], [@Green21, Ch. 3] and [@stacks-02LS].
+By [@Green21], [@Green21, Ch. 3], [@stacks-02LS] and [@Lang02, Tag 01DQ, §III.2 and (2.9)].
 :::
 
 ::: {.lemma #lem:f}
@@ -164,3 +164,9 @@ def test_cited_results_are_nodes(tmp_path):
     unlocated = sorted((f["blocks"], f["detail"]) for f in findings
                        if f["kind"] == "unlocated-citation")
     assert unlocated == [(["lem:g"], "@Green21"), (["lem:g"], "@Green21, Ch. 3")]
+
+
+def test_locators_name_tags_subsections_and_numbered_items(tmp_path):
+    graph, _, _ = run(tmp_path)
+    targets = {t for s, t in ((e["source"], e["target"]) for e in graph["edges"]) if s == "lem:g"}
+    assert {"Lang02 Tag 01DQ", "Lang02 §III.2", "Lang02 (2.9)"} <= targets

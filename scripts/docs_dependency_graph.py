@@ -12,10 +12,13 @@ statement of `a`, or the proof that follows it, cites `b` as `@b`, `[@b]` or
 `[-@b]`. The references are the whole dependency record, so a block that uses a
 result without citing it is an authoring defect and the graph cannot see it.
 
-A cited work is a node too, of kind `reference`, keyed by its bibliography key: a
-block that cites `[@AEGS25, Lem. 3.9]` has an edge to `AEGS25`, whose `locators`
-attribute lists the cited results ("Lem. 3.9; Cor. 3.12"). A work has no outgoing
-edges, so every chain of uses ends at a definition, an uncited block or the literature.
+A cited result of another work is a node too, of kind `reference`: a block that cites
+`[@AEGS25, Lem. 3.9]` has an edge to the node `AEGS25 Lem. 3.9`, whose `work` is
+`AEGS25`. Spellings of one result are one node ("Theorem 2" and "Thm. 2"); see
+`cited_results`. A citation of a whole work, or of a chapter, section or page of one,
+names no result: it says where something comes from or summarizes the work, so it makes
+no node and no edge. Results of other works have no outgoing edges, so every chain of
+uses ends at a definition, an uncited block or the literature.
 
 A `::: {.proof}` div proves the numbered block that immediately precedes it in
 the same enclosing block list. Edge attributes `statement` and `proof` record
@@ -38,7 +41,11 @@ Findings, each one a defect in the book:
   - a use with no citation: a logical block whose prose contains a term of two or
     more words that a definition, construction, notation or convention sets in bold,
     when no block that it reaches through citations defines that term. One-word terms
-    are not checked, because the same word has different senses in different parts.
+    are not checked, because the same word has different senses in different parts;
+  - an unlocated citation: the proof of a logical block cites a whole work, or a chapter,
+    section or page of one. If the proof rests on one result of that work, the citation
+    must name it; if the proof only says where the argument comes from, the citation is
+    attribution and belongs in the statement or in the prose around the block.
 
 Outputs, written to --out: `dependency-graph.graphml`, `dependency-graph.dot`,
 `dependency-graph.json` (networkx node-link data, which the book's graph page
@@ -87,10 +94,87 @@ COMMENTARY = frozenset({
     "example", "remark", "note", "warning", "exercise", "problem", "question",
 })
 
-# The kind of a node that is a cited work, keyed by its bibliography key. A result taken
-# from a paper is a premise, so a citation of a work by a logical block is a `uses` edge,
-# and the work belongs to the logical development like a block.
+# The kind of a node that is one result of a cited work, keyed "<bibliography key>
+# <locator>", as "AEGS25 Lem. 3.9". A result taken from a paper is a premise, so a citation
+# of it by a logical block is a `uses` edge. A citation of a whole work, or of a chapter,
+# section or page of one, names no result: it says where something comes from or
+# summarizes the work, so it makes no node and no edge.
 REFERENCE = "reference"
+# Keys that name one result by themselves: a Stacks Project tag, an nLab page.
+RESULT_KEY_PREFIXES = ("stacks-", "nlab:")
+# The spellings of each kind of result, mapped to one abbreviation, so that "Theorem 2"
+# and "Thm. 2" are one node. A numbered section counts as a result when it has a
+# subsection number (§4.2); a chapter, a whole section (§2) or a page does not.
+RESULT_LABELS = {
+    "Thm.": ("theorems", "theorem", "thms", "thm", "th"),
+    "Prop.": ("propositions", "proposition", "props", "prop"),
+    "Lem.": ("lemmas", "lemmata", "lemma", "lems", "lem"),
+    "Cor.": ("corollaries", "corollary", "cors", "cor"),
+    "Def.": ("definitions", "definition", "defs", "defn", "def"),
+    "Rem.": ("remarks", "remark", "rems", "rem", "rmk"),
+    "Ex.": ("examples", "example", "exercises", "exercise", "exs", "exa", "ex"),
+    "Constr.": ("constructions", "construction", "constr"),
+    "Alg.": ("algorithms", "algorithm", "alg"),
+    "Conj.": ("conjectures", "conjecture", "conj"),
+    "Table": ("tables", "table", "tab"),
+    "Fig.": ("figures", "figure", "fig"),
+    "Obs.": ("observations", "observation", "obs"),
+    "Fact": ("facts", "fact"),
+    "Claim": ("claims", "claim"),
+    "Not.": ("notations", "notation", "not"),
+    "eq.": ("equations", "equation", "eqs", "eq"),
+    "§": ("sections", "section", "secs", "sec", "§§", "§", "subsection"),
+}
+_LABEL = {alias: label for label, aliases in RESULT_LABELS.items() for alias in aliases}
+_NUMBER = (r"\(?(?:[IVXLC]+\.)?[A-Z]?\d+(?:\.\d+)*[A-Za-z]?\)?(?:\([ivxlc\d]+\))?"
+           r"|[A-Z](?![a-z])")
+_RESULT = re.compile(
+    r"(?<![\w.])(" + "|".join(sorted(map(re.escape, _LABEL), key=len, reverse=True))
+    + r")\.?\s*((?:" + _NUMBER + r")(?:\s*(?:,|and|&)\s*(?:" + _NUMBER + r"))*)",
+    re.IGNORECASE)
+# A Stacks Project tag in a locator: "Tag 0109", "Tags 01DQ and 02F5".
+_TAGS = re.compile(r"\bTags?\s+([0-9A-Z]{4}(?:\s*(?:,|and)\s*[0-9A-Z]{4})*)")
+# A Bourbaki numbered paragraph: "Ch. V §3 no. 1".
+_BOURBAKI = re.compile(r"(?:(?:Ch\.|Chapter)\s*([IVXLC\d]+),?\s*)?§\s*(\d+)\s*no\.\s*(\d+)")
+# A bare item or equation number with a dot: "4.6", "V.3.3", "(2.1.10)".
+_BARE_NUMBER = re.compile(r"(?<![\w.§])\(?(?:[IVXLC]+\.\d+(?:\.\d+)*|\d+(?:\.\d+)+)\)?(?![\w.])")
+
+
+def cited_results(key: str, locator: str) -> list[str]:
+    """The node ids of the results that `[@key, locator]` names; empty for a whole work."""
+    if key.startswith(RESULT_KEY_PREFIXES):
+        return [key]
+    out: list[str] = []
+
+    def add(node: str) -> None:
+        if node not in out:
+            out.append(node)
+
+    rest = locator
+    for match in _TAGS.finditer(rest):
+        for tag in re.split(r"\s*(?:,|and)\s*", match.group(1)):
+            add(f"{key} Tag {tag}")
+    rest = _TAGS.sub(" ", rest)
+    for match in _BOURBAKI.finditer(rest):
+        chapter = f"Ch. {match.group(1)} " if match.group(1) else ""
+        add(f"{key} {chapter}§{match.group(2)} no. {match.group(3)}")
+    rest = _BOURBAKI.sub(" ", rest)
+    for match in _RESULT.finditer(rest):
+        label = _LABEL[match.group(1).lower()]
+        for number in re.split(r"\s*(?:,|and|&)\s*", match.group(2)):
+            # A section is a result only at subsection depth: §4.2, §III.2, §3D.
+            # A parenthesized number after another label is an equation: "§III.2 and (2.9)".
+            if number.startswith("(") and label != "eq.":
+                add(f"{key} {number}")
+                continue
+            if not number or (label == "§" and "." not in number and not number[-1].isalpha()):
+                continue
+            add(f"{key} {label}{'' if label == '§' else ' '}{number}")
+    # A page reference is never a result; drop it before reading bare numbers.
+    rest = re.sub(r"\bpp?\.\s*\S+", " ", _RESULT.sub(" ", rest))
+    for match in _BARE_NUMBER.finditer(rest):
+        add(f"{key} {match.group(0)}")
+    return out
 # Quarto's own cross-reference keys (sections, figures, tables, equations), which are
 # neither blocks nor works.
 QUARTO_CROSSREF_PREFIXES = ("sec-", "fig-", "tbl-", "eq-")
@@ -111,6 +195,7 @@ class Kind(StrEnum):
     MISSING_ID = "missing-id"
     UNCITED_TERM = "uncited-term"
     PARSE_WARNING = "parse-warning"
+    UNLOCATED_CITATION = "unlocated-citation"
 
 
 @dataclass(frozen=True)
@@ -120,9 +205,10 @@ class Finding:
     kind is one of "dangling" (blocks = [citing block, missing id]), "cycle" (the
     blocks of the cycle, in order), "orphan-proof" (no blocks), "duplicate-id"
     ([id]), "missing-id" ([the node key `<chapter>#<position>`]), "uncited-term"
-    ([using block, defining blocks ...]; detail = the term) and "parse-warning" (no
+    ([using block, defining blocks ...]; detail = the term), "parse-warning" (no
     blocks; detail = pandoc's warning, such as an unclosed div, after which the
-    chapter's blocks are nested wrongly).
+    chapter's blocks are nested wrongly) and "unlocated-citation" ([citing block];
+    detail = the citation, as "@Nik80" or "@Hum90, Ch. 5").
     """
 
     kind: Kind
@@ -330,27 +416,33 @@ def build(project: Path) -> tuple[nx.DiGraph, list[Finding]]:
 
         visit_list(list(doc.content))
 
+    def add_edge(source: str, target: str, part: str) -> None:
+        if target == source:
+            return
+        if not graph.has_edge(source, target):
+            graph.add_edge(source, target, statement=False, proof=False)
+        graph.edges[source, target][part] = True
+
     for chapter, source, cited, locator, part in citations:
-        prefix = cited.split(":", 1)[0]
-        if cited not in graph:
-            if ":" in cited and prefix in prefixes:
-                findings.append(Finding(Kind.DANGLING, chapter, (source, cited)))
-                continue
-            if cited.startswith(QUARTO_CROSSREF_PREFIXES):
-                continue
-            # A bibliography key: the cited work is a node, a source of results that the
-            # book takes from outside. Its page is the citing chapter, whose bibliography
-            # holds the entry as `#ref-<key>`.
-            graph.add_node(cited, kind=REFERENCE, chapter=chapter, position=-1,
-                           title=cited, proved=False)
-        if cited == source:
+        if cited in graph:
+            add_edge(source, cited, part)
             continue
-        if not graph.has_edge(source, cited):
-            graph.add_edge(source, cited, statement=False, proof=False, locators="")
-        edge = graph.edges[source, cited]
-        edge[part] = True
-        if locator and locator not in edge["locators"].split("; "):
-            edge["locators"] = "; ".join(filter(None, (edge["locators"], locator)))
+        if ":" in cited and cited.split(":", 1)[0] in prefixes:
+            findings.append(Finding(Kind.DANGLING, chapter, (source, cited)))
+            continue
+        if cited.startswith(QUARTO_CROSSREF_PREFIXES):
+            continue
+        # A bibliography key. Each result it names is a node; its page is the citing
+        # chapter, whose bibliography holds the work as `#ref-<key>`.
+        results = cited_results(cited, locator)
+        for result in results:
+            if result not in graph:
+                graph.add_node(result, kind=REFERENCE, work=cited, chapter=chapter,
+                               position=-1, title=result, proved=False)
+            add_edge(source, result, part)
+        if not results and part == "proof" and graph.nodes[source]["kind"] in LOGICAL:
+            findings.append(Finding(Kind.UNLOCATED_CITATION, chapter, (source,),
+                                    f"@{cited}" + (f", {locator}" if locator else "")))
 
     for source, target, data in graph.edges(data=True):
         data["forward"] = graph.nodes[target]["position"] > graph.nodes[source]["position"]
@@ -441,7 +533,7 @@ def main() -> None:
     for finding in findings:
         print(f"docs-deps: {finding}", file=sys.stderr)
     works = sum(1 for _, kind in graph.nodes(data="kind") if kind == REFERENCE)
-    print(f"docs-deps: {graph.number_of_nodes() - works} blocks, {works} cited works, "
+    print(f"docs-deps: {graph.number_of_nodes() - works} blocks, {works} cited results, "
           f"{graph.number_of_edges()} edges, "
           f"{len(findings)} findings -> {args.out}", file=sys.stderr)
     if args.check and findings:
