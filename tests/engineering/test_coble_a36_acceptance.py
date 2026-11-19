@@ -466,6 +466,20 @@ def test_the_cusp_census_record_reproduces_its_table():
     assert "$d_0h^2\\in\\{1,2\\}$" in page
 
 
+def test_the_register_row_records_where_the_question_now_stands():
+    """Item 2 of the issue, kept true after the constraint and the census landed.
+
+    The register row is the standing statement of this open question, so it has to say
+    that (W) is now decided conditionally at every p_* > 1 cusp except the unit classes of
+    F_{N^2} and F_{2N^2}, N >= 2, and that those are blocked on the stable limit.
+    """
+    register = REGISTER.read_text(encoding="utf-8")
+    assert "@lem:generalized-unigonal-constraint" in register
+    assert "@lem:k-one-two-sharp" in register
+    assert "except the unit classes of $F_{N^2}$ and $F_{2N^2}$" in register
+    assert "@rmk:missing-stable-limit" in register
+
+
 def test_the_p_greater_one_cusp_lattice_record_reproduces_and_the_page_states_it():
     """The p_* > 1 item's first datum: the boundary lattice, for general (p, k).
 
