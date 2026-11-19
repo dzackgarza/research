@@ -137,7 +137,7 @@ _TAGS = re.compile(r"\bTags?\s+([0-9A-Z]{4}(?:\s*(?:,|and)\s*[0-9A-Z]{4})*)")
 # A Bourbaki numbered paragraph: "Ch. V §3 no. 1".
 _BOURBAKI = re.compile(r"(?:(?:Ch\.|Chapter)\s*([IVXLC\d]+),?\s*)?§\s*(\d+)\s*no\.\s*(\d+)")
 # A bare item or equation number with a dot: "4.6", "V.3.3", "(2.1.10)".
-_BARE_NUMBER = re.compile(r"(?<![\w.§])\(?(?:[IVXLC]+\.\d+(?:\.\d+)*|\d+(?:\.\d+)+)\)?(?![\w.])")
+_BARE_NUMBER = re.compile(r"(?<![\w.§])\(?(?:[IVXLC]+\.\d+(?:\.\d+)*|\d+(?:\.\d+)+|\d+:\d+)\)?(?![\w.])")
 
 
 def cited_results(key: str, locator: str) -> list[str]:
