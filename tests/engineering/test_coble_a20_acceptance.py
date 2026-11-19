@@ -1160,6 +1160,29 @@ def test_item2_the_difference_class_leaves_exactly_two_cases():
     assert "d^2\\in\\{1\\}" not in page
 
 
+def test_item2_the_root_exclusion_does_not_decide_the_dichotomy():
+    """A20 item 2: the tempting exclusion of the second case, recorded as failing.
+
+    In the second case u^perp is the transcendental lattice, so a (-2)-vector inside it is
+    transcendental, not algebraic; prob:B24 forbids only algebraic (-2)-classes of T_Co.  The check
+    pins the recorded computation (six sampled classes of square -8, each with a perpendicular
+    (-2)-vector) and, more importantly, the sentence that says what it does not show -- so the route
+    is not mistaken later for a disproof.
+    """
+    import pathlib
+    path = ROOT / "computations/reports/coble_663-minus-eight-perp-roots-run.txt"
+    assert path.exists()
+    text = path.read_text()
+    assert "classes admitting one: 6 of 6" in text
+    assert "The dichotomy stands open" in text
+    page = _text(PAGE)
+    rmk = _block(page, "{.remark #rmk:dichotomy-not-decided-by-the-root-exclusion")
+    assert "is transcendental and not algebraic" in rmk
+    assert "does not separate" in rmk or "not separated by" in rmk
+    # and the page does not claim the dichotomy decided
+    assert "the dichotomy is decided" not in page
+
+
 def _run_all() -> int:
     items = [(name, fn) for name, fn in sorted(globals().items()) if name.startswith("test_")]
     failures = 0
