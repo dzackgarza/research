@@ -1027,6 +1027,25 @@ A convention on the group $\Gamma_{\mathrm{Co}}$, whose definition moved under t
   thm:normalization is superseded.  For Gamma_Co itself the obligation stays conditional: the section is
   stated for O~+(T_Co) and neither inclusion between Gamma_Co and O~+(T_Co) is proved
   (rmk:gamma-co-status), so it applies to the monodromy group under conj:gamma-co-stable.
+
+  What the conditionality reduces to, so that it is not left as a bare unknown.  The forward
+  inclusion fails as soon as the parameter space of the family meets a Heegner divisor of square
+  $-4$ in $T_{\mathrm{Co}}$: a loop around such a divisor carries the reflection $s_\delta$, which
+  lies in $\mathrm{O}^+(T_{\mathrm{Co}})$ and outside the discriminant kernel
+  (@prop:gamma-co-reflective-set(3), @rmk:gamma-co-nodal-pair-proposal).  Two inputs are therefore
+  missing, and both are named rather than assumed: a printed statement of the Picard--Lefschetz
+  identification, which @prop:monodromy-contains-root-reflections takes as a hypothesis and
+  @cons:lefschetz-periods states without a source; and the answer to which Heegner divisors of
+  $T_{\mathrm{Co}}$ the parameter space meets, which neither [@DK13, Prop. 3.2, printed p. 513] (an
+  open-subset statement that constrains no Heegner divisor) nor [@DZ01] (a classification paper,
+  with no moduli, period or deformation statement) decides.  The routes closed, with their records,
+  are: the Eichler criterion, which needs two hyperbolic planes and neither $T_{\mathrm{Co}}$ nor
+  $T_{\mathrm{En}}$ has them (@prop:tco-no-hyperbolic-plane, @prop:ten-no-second-plane);
+  transitivity of $\Gamma_{\mathrm{En}}$ on the primitive isotropic vectors of $T_{\mathrm{En}}$,
+  false because that lattice is $2$-elementary (`coble_658-ten-transitivity-probe-run.txt`); and
+  reading the collision of two nodes in [@DK13]'s classical model as producing a class of square
+  $-4$ in $T_{\mathrm{Co}}$, which fails because the classes $e_0,\dots,e_{10}$ are algebraic on
+  every member and vanish on none.
   The exact content, with the kernel checked
   because that is where it is easy to be wrong: K = T_Co^{perp T_En} = Z k with k = e~ - f~ and
   k^2 = -2; the gluing group is H = <(h/2, k/2)> in A_{T_Co} + A_K, of order 2 and isotropic because

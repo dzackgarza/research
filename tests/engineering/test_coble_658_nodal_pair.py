@@ -116,6 +116,16 @@ def test_the_classical_model_cannot_host_the_witness():
     assert "cons:lefschetz-periods" in body
 
 
+def test_the_gap_ledger_states_what_the_conditionality_reduces_to():
+    """GAPS.md is where the book records what is missing; it must carry the criterion and the inputs."""
+    gaps = (ROOT / "writing/dissertation/GAPS.md").read_text(encoding="utf-8")
+    assert "What the conditionality reduces to" in gaps
+    assert "a printed statement of the Picard--Lefschetz" in gaps
+    assert "which Heegner divisors of" in gaps
+    assert "prop:tco-no-hyperbolic-plane, @prop:ten-no-second-plane" in gaps
+    assert "vanish on none" in gaps
+
+
 def _run_all() -> int:
     items = [(name, fn) for name, fn in sorted(globals().items())
              if name.startswith("test_") and callable(fn)]
