@@ -374,7 +374,7 @@ An element of $\bar K_m$ acts trivially on $M/mM$, hence fixes every element of 
 
 For item 2, if $L=M$ then $\bar L_m=L/mM=M/mM$ is the whole of $M/mM$, whose orbit is itself; so $\Sigma_m$ is a single point, $\sigma_m$ is trivial, $\kappa_m=G$, and $\bar K_m$ is the congruence subgroup modulo $mM$, a proper subgroup of $G$ when $\pi_m$ is nontrivial.
 
-Item 3 is then immediate in general and follows from an explicit element for the [Enriques lattice]{.other-sense}: let $N=T_\En$ of @sec-lattices, $L=M=N$ and $m=2$, so that $\kappa_2=\Orth(N)$ by item 2; the isometry interchanging $e'\leftrightarrow f'$ in the summand $U(2)$ and fixing $U\oplus E_8(2)$ is integral and carries the class of $e'/2$ to the class of $f'/2$, so it acts nontrivially on $A_N$ while lying in $\kappa_2$.
+Item 3 is then immediate in general and follows from an explicit element for the lattice $T_\En = U\oplus E_{10}(2)$ of @sec-lattices: let $N=T_\En$, $L=M=N$ and $m=2$, so that $\kappa_2=\Orth(N)$ by item 2; the isometry interchanging $e'\leftrightarrow f'$ in the summand $U(2)$ and fixing $U\oplus E_8(2)$ is integral and carries the class of $e'/2$ to the class of $f'/2$, so it acts nontrivially on $A_N$ while lying in $\kappa_2$.
 Hence an element of $\kappa_m$ need not act trivially on $A_L$, and passing to the permutation image loses the module action that $\Phi_m$ is defined on.
 :::
 
@@ -587,7 +587,7 @@ The image statement follows from item 2.
 Let $m\geq1$ with $mM\subseteq e_2L$ and let $\spinornorm_\bR\colon\Orth(V_\bR)\to\bR^\times/(\bR^\times)^2=\theset{\pm1}$ be the normalized real spinor norm of @def:spinor-norm, restricted to $G\leq\Orth(V)$.
 
 1. The composite $\Stab_G(L)\to\theset{\pm1}$, $g\mapsto\spinornorm_\bR(g)$, factors through $\pi_m$ if and only if $\spinornorm_\bR$ is trivial on $\Stab_G(L)\intersect\bar K_m$.
-2. The condition of item 1 fails in general, and it fails for the [Enriques lattice]{.other-sense} at modulus $2$: with $N=T_\En$ of @sec-lattices, $L=M=N$ and $m=2$, the isometry
+2. The condition of item 1 fails in general, and it fails for the lattice $T_\En = U\oplus E_{10}(2)$ of @sec-lattices at modulus $2$: with $N=T_\En$, $L=M=N$ and $m=2$, the isometry
 $$ \sigma_U=-\id_U\oplus\id_{U(2)}\oplus\id_{E_8(2)}\in\Orth(N) $$
 satisfies $\sigma_U\equiv\id\pmod{2N}$ and $\spinornorm_\bR(\sigma_U)=-1$.
 Consequently two lifts of one element of $\bar H_2$ can carry opposite spinor signs, and no function of the congruence class alone returns the spinor norm of an element of $\Stab_G(L)$.
