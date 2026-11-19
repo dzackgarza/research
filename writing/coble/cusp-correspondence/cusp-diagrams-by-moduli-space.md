@@ -185,7 +185,7 @@ Cusp diagram for $\fttz$.
 
 In @fig-220-cusp-diagram, a single arrow from a zero-cusp $[\ZZ e]$ to a one-cusp $[\Pi]$ means that the $2$-elementary discriminant ranks of $e^\perp/e$ and $\Pi^\perp/\Pi$ agree. A double arrow means that the rank drops by $2$ on passage to $\Pi^\perp/\Pi$ [@AE22, §§5C–5D]. This arrow convention records a discriminant change; Scattone's incidence multiplicity $\mu$ is defined separately in @sec-scattone-cusp-method.
 
-The forgetful cusp maps from $\fentwo$ can be read in the following two source-native composites. Under $\fentwo\to\fen$, cusp $1$ maps to the $E_{10}(2)$ boundary lattice and cusps $2$--$5$ map to $U\oplus E_8(2)$. Under $\fentwo\to\fttz$, cusp $2$ maps to $U\oplus E_8^2$ and cusps $1,3,4,5$ map to $U(2)\oplus E_8^2$ (@prop:fen2-folded-coxeter; @ex:sterk-isotropic-divisibilities).
+The forgetful cusp maps from $\fentwo$ can be read in the following two source-native composites. Under $\fentwo\to\fen$, cusp $1$ maps to the $E_{10}(2)$ boundary lattice and cusps $2$--$5$ map to $U\oplus E_8(2)$. Under $\fentwo\to\fttz$, cusp $2$ maps to $U\oplus E_8^2$ and cusps $1,3,4,5$ map to $U(2)\oplus E_8^2$ (@cons:fen2-cusp-involutions; @ex:sterk-isotropic-divisibilities).
 
 ::: {#fig-sterk-to-enriques-cusp-map .figure}
 \input{tikz/dissertation/cusp_correspondence_one.tex}

@@ -47,7 +47,7 @@ Let $B$ be the closure of the image of $\fentwo$ in $\ksbacpt{\fttz}$ (@prop:enr
 1. The normalization $\normalize{B}$ is the semitoroidal compactification of the Noether--Lefschetz locus $B$ induced by the ramification semifan $\semifan{F}_{\ram}$, which gives the normalization $\normksbacpt{\fttz}$ [@AEGS25, proof of Thm. 5.9].
 
 2. For each $0$-cusp of $\fentwo$, the semifan $\semifan{F}_k$ is the intersection of the semifan $\semifan{F}_{\ram}(\overline{T}_{\mathrm{dP}})$, for $\overline{T}_{\mathrm{dP}} = (18,0,0)_1$ or $(18,2,0)_1$, with the subspace $\overline{T}_{\mathrm{En}} = (10,10,0)_1$ or $(10,8,0)_1$ [@AEGS25, Def. 5.3].
-   The subspace $\overline{T}_{\mathrm{En}}$ is the $(+1)$-eigenspace of the involution $J$ of $\overline{T}_{\mathrm{dP}}$ in @prop:fen2-folded-coxeter [@AEGS25, Def. 3.5].
+   The subspace $\overline{T}_{\mathrm{En}}$ is the $(+1)$-eigenspace of the involution $J$ of $\overline{T}_{\mathrm{dP}}$ in @cons:fen2-cusp-involutions [@AEGS25, Def. 3.5].
 
 3. The semifans $\semifan{F}_k$ are the generalized Coxeter semifans of the folded Coxeter diagrams of @prop:fen2-folded-coxeter, in which the irrelevant roots are the foldings of the irrelevant roots of $\semifan{F}_{\ram}$ [@AEGS25, Sec. 5.2, Def. 5.4, Lem. 5.5].
 
