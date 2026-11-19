@@ -480,6 +480,19 @@ def test_the_register_row_records_where_the_question_now_stands():
     assert "@rmk:missing-stable-limit" in register
 
 
+def test_the_dissertation_states_what_is_known_beyond_d_one():
+    """The third page that states the open form: the dissertation's semitoroidal section.
+
+    It already cites @lem:rcop-refinement-criterion and @prop:semifan-coarsening-extension
+    from the coble chapter, so the new lemmas resolve there; what it lacked is the
+    constraint and the survivor set.
+    """
+    dissertation = DISSERTATION.read_text(encoding="utf-8")
+    assert "@lem:generalized-unigonal-constraint" in dissertation
+    assert "@lem:k-one-two-sharp" in dissertation
+    assert "except the unit classes of $F_{N^2}$ and $F_{2N^2}$" in dissertation
+
+
 def test_the_p_greater_one_cusp_lattice_record_reproduces_and_the_page_states_it():
     """The p_* > 1 item's first datum: the boundary lattice, for general (p, k).
 
