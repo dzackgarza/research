@@ -1,0 +1,13 @@
+rank 19: 19, signature (1, 18)
+rank 18: 18, signature (1, 17)
+rank 19            max_roots= 1 -> timeout at 120 s
+rank 19            max_roots= 4 -> timeout at 120 s
+rank 19            max_roots=12 -> timeout at 120 s
+rank 19            max_roots=24 -> timeout at 120 s
+rank 18 (control)  max_roots= 1 -> 18 roots in   65.6s
+rank 18 (control)  max_roots= 4 -> 18 roots in   63.0s
+
+Conclusion.  The rank-19 walk does not finish at any bound tried, including max_roots = 1.
+The cost there is therefore not the number of roots the search must find, and a bound on the
+search cannot deliver the chamber.  The rank-18 control returns the whole chamber under the
+same bounds, so the difference is the rank and not the parameter.

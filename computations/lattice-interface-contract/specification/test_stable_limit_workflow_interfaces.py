@@ -43,7 +43,10 @@ $G=\\{r_i\\}$); the same is true of AE22's stratum function, whose input is $\\l
 So an implementation needs the chamber, i.e. the simple roots of $\\bar T=U\\oplus E_8(-1)^{\\oplus2}
 \\oplus A_1(-1)$, and the library's Vinberg walk on that lattice does not finish: the four
 attempts recorded in `computations/reports/coble_679-rcop-*-run*.txt` stop at 900, 1800, 2400 and
-1500 seconds, against 75 seconds for the rank-18 elliptic cusp.  The chart's roots are printed
+1500 seconds, against 75 seconds for the rank-18 elliptic cusp, and bounding the search does not
+help: at `max_roots = 1` the rank-19 walk still does not finish in 120 s while the rank-18
+control returns all eighteen roots in 63--66 s under the same bounds
+(`computations/reports/coble_679-chamber-bound-probe-run.txt`).  The chart's roots are printed
 (AET23, Fig. 1, printed p. 22) but not as vectors, so the chamber has to be computed, or its
 pairings transcribed and checked, and the vectors then realized in the lattice with those
 pairings.  That is the one missing input: the dictionary from a stable type to its components

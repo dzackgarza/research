@@ -184,6 +184,8 @@ def test_the_four_records_of_the_unit_are_committed():
         "coble_679-proportionality-run.txt",
         "coble_679-locus-probe.py",
         "coble_679-locus-probe-run.txt",
+        "coble_679-chamber-bound-probe.py",
+        "coble_679-chamber-bound-probe-run.txt",
         "coble_679-recognizability-inventory.py",
         "coble_679-recognizability-inventory-run.txt",
     ):
@@ -211,6 +213,25 @@ def test_the_two_open_rows_are_known_to_be_one_computation():
     row = [line for line in register.splitlines() if "qst:recognizable-semifan" in line][0]
     assert "whether a *recognizable* divisor can fail" in row
     assert "the cones of $\\mcf_{R_\\rcop}$ itself" in row
+
+
+def test_no_bound_on_the_search_delivers_the_chamber():
+    """The chamber blocker, decided at the parameter: max_roots does not bring rank 19 into range.
+
+    The probe bounds Vinberg's search at 1, 4, 12 and 24 roots and runs the rank-18 lattice as a
+    control.  Rank 19 times out at every bound; the control returns all eighteen roots in 63-66
+    seconds.  So the cost is the rank, not the number of roots searched, and no parameter of the
+    call can supply the chamber the stable-limit operation needs.
+    """
+    record = (REPORTS / "coble_679-chamber-bound-probe-run.txt").read_text(encoding="utf-8")
+    assert "max_roots= 1 -> timeout at 120 s" in record
+    assert "max_roots=24 -> timeout at 120 s" in record
+    assert "rank 18 (control)  max_roots= 1 -> 18 roots" in record
+    assert "bounding the search cannot deliver the chamber" in record or "a bound on the" in record
+    script = REPORTS / "coble_679-chamber-bound-probe.py"
+    assert script.exists()
+    page = page_text()
+    assert "coble_679-chamber-bound-probe-run.txt" in page
 
 
 def test_the_two_blockers_of_the_open_rows_are_what_the_records_say():
