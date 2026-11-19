@@ -3051,21 +3051,21 @@ The mod-2 count agrees: of the $1024$ classes of $A_{T_\Co}$ whose $\beta$-squar
 
 ::: {.remark #rmk:longest-element-route-closed title="Why the longest element of $W(E_8)$ does not put the block sign in $W(T_\Co)$"}
 
-The natural attempt on the membership query of research#720 (REL) is this. The block sign $\delta_{E_8} = -\id_{E_8(2)}$, extended by the identity, is the image of the longest element of $W(E_8)$, which is $-\id$ — its exponents $1,7,11,13,17,19,23,29$ are all odd and $w_0 = -1$ [@Bou08, Ch. VI, §4, no. 10, printed p. 227]. One would like to read that as $\delta_{E_8}\in W(T_\Co)$ by transporting the word through the isomorphism $E_8(2)\cong 2E_8(-1)$.
+The natural attempt on the membership query of research#720 (REL) is this, and what it refutes is the transport, not the membership: $\delta_{E_8}\in W(T_\Co)$ is now @thm:coble-block-sign-in-w, by an argument that uses no word in $W(E_8)$. The block sign $\delta_{E_8} = -\id_{E_8(2)}$, extended by the identity, is the image of the longest element of $W(E_8)$, which is $-\id$ — its exponents $1,7,11,13,17,19,23,29$ are all odd and $w_0 = -1$ [@Bou08, Ch. VI, §4, no. 10, printed p. 227]. One would like to read that as $\delta_{E_8}\in W(T_\Co)$ by transporting the word through the isomorphism $E_8(2)\cong 2E_8(-1)$.
 
 That transport is invalid, and @lem:minus-two-vectors-use-the-two-summand is why: the reflections generating $W(T_\Co)$ are those in vectors of square $-2$, and every such vector has odd coefficient on $\langle\zeta\rangle$; the reflections in $E_8(2)$'s own vectors have square $-4$ and lie outside $\ker\rho_{T_\Co}$. So the $E_8(2)$ summand carries no generator of $W(T_\Co)$ at all, and the query cannot be answered inside it. What the lemma does give in the other direction is a constraint on any positive answer: a word for $\delta_{E_8}$ has to use vectors with nonzero $U(2)$ and $\langle\zeta\rangle$ parts, and those act nontrivially on the other summands in general.
 :::
 
 ::: {.lemma #lem:block-sign-reduces-to-gamma-four title="The block sign is a word in the reflections times an explicit element of $\Gamma(4)$"}
 
-Let $T_\Co = \langle2\rangle\perp U(2)\perp E_8(2)$, let $h(g) = (g-\id)/2$ be the level-two shadow of @prop:level-two-shadow-consistent-with-both-answers, and let $\delta_{E_8}$ be the block sign of @lem:block-signs-not-both-in-w. Then the $\F_2$-span of the $h(s_v)$ over the classes of $T_\Co$ that carry a vector of square $-2$ has dimension $55$, it contains $h(\delta_{E_8})$, and consequently there are
+Let $T_\Co = \langle2\rangle\perp U(2)\perp E_8(2)$, let $h(g) = (g-\id)/2$ be the level-two shadow of @prop:level-two-shadow-consistent-with-both-answers, and let $\delta_{E_8}=\id_{\langle2\rangle\perp U(2)}\oplus(-\id_{E_8(2)})$ be the block sign of @warn:block-signs-not-both-in-w. Then the $\F_2$-span of the $h(s_v)$ over the classes of $T_\Co$ that carry a vector of square $-2$ has dimension $55$, it contains $h(\delta_{E_8})$, and consequently there are
 
 1. a product $w$ of $14$ reflections in classes of square $-2$ — hence $w\in W(T_\Co)$, verified as an exact isometry of $T_\Co$ — with $w\equiv\delta_{E_8}\pmod 4$, listed in `computations/reports/coble_663-rel-gamma4-reduction-run.txt`;
 2. an element $k\definedas w^{-1}\delta_{E_8}$ with $k\equiv\id\pmod 4$, so $k\in\Gamma(4)$, integral and an exact isometry, and $k\neq\id$.
 
 Hence $\delta_{E_8} = wk$ and
 $$\delta_{E_8}\in W(T_\Co)\iff k\in W(T_\Co),$$
-so the membership query of research#720 (REL) is a question about one explicit element of $\Gamma(4)$ and not about the arrangement of the root system.
+so the membership query of research#720 (REL) is a question about one explicit element of $\Gamma(4)$ and not about the arrangement of the root system. (The query is now answered, by a different route: @thm:coble-block-sign-in-w.)
 :::
 
 ::: {.proof}
@@ -3081,9 +3081,9 @@ Let $T_\Co = B(2)$ and let $h(g)\in\End_{\F_2}(B/2B)$ be defined by $g = \id + 2
 
 1. $W(T_\Co)$ lies in that congruence subgroup, and $h(s_v)\neq0$ for every $v$ of square $-2$;
 2. $h(\delta_{E_8})$ is the projection onto the eight $E_8(2)$-coordinates, so it is nonzero, and it lies in the $\F_2$-span of the $h(s_v)$, which has dimension $56$;
-3. hence no linear functional $\lambda$ of $h$ takes the value $0$ on $W(T_\Co)$ and a nonzero value at $\delta_{E_8}$: the shadow certifies neither the membership nor its negation. It cannot certify non-membership by (2), and it cannot certify membership either, since the same span contains $h(\iota)$ and $h(\epsilon)$ for two elements that are *not* in $W(T_\Co)$ (@cor:no-word-for-the-sign).
+3. hence no linear functional $\lambda$ of $h$ takes the value $0$ on $W(T_\Co)$ and a nonzero value at $\delta_{E_8}$: the shadow separates neither $\delta_{E_8}$ from $W(T_\Co)$ nor its negation. That limitation is now immaterial: $\delta_{E_8}\in W(T_\Co)$ and so do $\iota$ and $\epsilon$ (@thm:coble-block-sign-in-w), and the span of the $h(s_v)$, which contains all three, was never going to distinguish them.
 
-So the level-two information is consistent with both answers to (REL)'s query, and the query needs data that is neither this shadow nor a linear functional of it. That rules out the level-two family of arguments; the other natural attempt, through the longest element of $W(E_8)$, is closed in @rmk:longest-element-route-closed, and the reduction that survives is @lem:block-sign-reduces-to-gamma-four. The orientation test is exhausted as well: on the positive definite plane $\langle\zeta, e'+f'\rangle$ the quantity $\det(\pi_W g|_W)$ of @prop:spinor-norm-orientation-classes(4) is positive for the word $w$, for $\delta_{E_8}$ and for the residual $k$ alike ($1\,485\,620\,920\,945$, $1$ and $1\,485\,620\,920\,945$), so $\Orth^+$ separates none of them.
+So the level-two information was consistent with both answers to (REL)'s query and could decide neither; the query is now decided by an arithmetic argument of a different kind (@thm:coble-block-sign-in-w). That rules out the level-two family of arguments; the other natural attempt, through the longest element of $W(E_8)$, is closed in @rmk:longest-element-route-closed, and the level-four reduction of @lem:block-sign-reduces-to-gamma-four is no longer needed for the answer. The orientation test is exhausted as well: on the positive definite plane $\langle\zeta, e'+f'\rangle$ the quantity $\det(\pi_W g|_W)$ of @prop:spinor-norm-orientation-classes(4) is positive for the word $w$, for $\delta_{E_8}$ and for the residual $k$ alike ($1\,485\,620\,920\,945$, $1$ and $1\,485\,620\,920\,945$), so $\Orth^+$ separates none of them.
 :::
 
 ::: {.proof}
@@ -3092,7 +3092,7 @@ So the level-two information is consistent with both answers to (REL)'s query, a
 
 (2) $\delta_{E_8}$ acts by $-1$ on $E_8(2)$ and by $+1$ elsewhere, so $\delta_{E_8} = \id + 2h$ with $h = -1$ on the eight $E_8(2)$-coordinates and $0$ elsewhere, that is the projection onto those coordinates after reduction modulo $2$; it is nonzero. That it lies in the span is computed: over the $1024$ classes whose $\beta$-square is $-2$ modulo $4$ the span of the $h(s_v)$ has dimension $56$ and contains the projection onto every block, this one included (`computations/reports/coble_663-rel-level2-shadow-run.txt`, whose controls are the two elements quoted in (3)).
 
-(3) If $\lambda\circ h$ vanishes on $W$ then it annihilates the span of the $h(s_v)$, so by (2) it vanishes at $h(\delta_{E_8})$: no such functional separates $\delta_{E_8}$ from $W$. For the other direction, $h(\iota)$ and $h(\epsilon)$ are in the span while $\iota,\epsilon\notin W$ (@cor:no-word-for-the-sign), so membership in the span is not membership in $W$.
+(3) If $\lambda\circ h$ vanishes on $W$ then it annihilates the span of the $h(s_v)$, so by (2) it vanishes at $h(\delta_{E_8})$: no such functional separates $\delta_{E_8}$ from $W$. For the other direction, $h(\iota)$ and $h(\epsilon)$ are in the span, and $\iota,\epsilon\in W$ (@thm:coble-block-sign-in-w), so membership in the span is a statement about the abelian shadow and not about $W$.
 :::
 
 ::: {.proposition #prop:kernel-exceeds-short-roots title="The congruence kernel is strictly larger than the short-root reflection group"}
@@ -3113,10 +3113,72 @@ Let $g\in T_\Co$ span the $\langle 2\rangle$ summand of $T_\Co = \langle 2\rangl
 (3) By (1) $s_g\in\ker\rho_{T_\Co}$ and by (2) $s_g\notin\Orth^+(T_\Co)$, so $\ker\rho_{T_\Co}$ is not contained in $\Orth^+(T_\Co)$; since $W(T_\Co)$ is contained there, the two groups differ.
 :::
 
+::: {.lemma #lem:coble-2adic-closure-short-roots title="The $2$-adic closure of the short-root reflections contains $\Gamma(8)$"}
+
+Let $B=\latI_{2,9}$ and let $W_0\subseteq W(T_\Co)$ be the subgroup generated by the reflections $s_v$ in the norm $-1$ vectors $v\in B$ whose coordinates in the diagonal basis lie in $\{-1,0,1\}$. There are $3\,282$ such vectors and, since $s_v=s_{-v}$, $1\,641$ distinct reflections. Write $\Gamma(2^k)=\ker(\Orth(B)\to\Orth(B/2^kB))$. Then the $2$-adic closure of $W_0$ contains $\Gamma(8)$, and
+$$
+\delta_{E_8},\qquad -\id_{T_\Co},\qquad \epsilon'=\delta_{E_8}(-\id_{T_\Co})
+\;\in\; W_0\cdot\Gamma(16).
+$$
+:::
+
+::: {.proof}
+
+The record is `computations/reports/coble_663-rel-lemma-c.py`, whose output is `computations/reports/coble_663-rel-lemma-c-run.txt` and whose assertions are also stored in `coble_663-rel-lemma-c.json`. It builds $B$ as `Lattices(ZZ).IPQ(2,9)` and $T_\Co$ as `NamedLattices.Tco`, verifies $T_\Co=B(2)$ through a library isometry of the halved Gram matrix to $B$, transports the block sign $\id_{\langle2\rangle\perp U(2)}\oplus(-\id_{E_8(2)})$ to the diagonal model of $B$, and checks that its $(-1)$-eigenspace is $E_8(-1)$. The image of $W_0$ in $\Gamma(2)/\Gamma(2^k)$ is computed by subgroup collection, the algorithm of `test_coble_fifty_five_positive_elements_span_kernel_modulo_sixteen`: generators are admitted through a pivot set recording the leading matrix at each level, and the admitted set is closed under squares and commutators. As a control, the same code reproduces the ranks $(55,54,55)$ that @prop:coble-positive-fifty-five-congruence-basis records for the certified $55$-element family; a second control shows that $\epsilon$ of @lem:sign-reduces-to-positive-plane lies in the subgroup modulo $16$ while the reflection in the norm $+1$ basis vector $e_0$ does not, so the test is not vacuous.
+
+The layers are $(55,54)$ modulo $8$ and $(55,54,55)$ modulo $16$, against $\dim\mathfrak{so}_{11}(\F_2)=55$. The second layer is the trace hyperplane: $\det(g)=1$ and $g=\id+4A$ give $1\equiv\det(g)\equiv1+4\operatorname{tr}A\pmod{16}$, so $\operatorname{tr}A\equiv0\pmod2$. $\delta_{E_8}$, $\epsilon'$ and $-\id$ all reduce to the identity against the pivot set of the level-sixteen image.
+
+For the closure, let $g\in W_0\cap\Gamma(8)$ and put $A=(g-\id)/8\pmod2$. The leading matrices of $W_0\cap\Gamma(8)$ span $\mathfrak{so}_{11}(\F_2)$, and if $g_j$ realises the $j$-th basis vector then $g_j^{2^m}\equiv\id+2^{3+m}A_j\pmod{2^{4+m}}$, so the closed subgroup generated by the $g_j$ contains $\id+8A$ for every $A$ in the $\Z_2$-span of the $A_j$, which is $\mathfrak{so}_{11}(\Z_2)$. Every element of $\Gamma(8)$ is a product of such an $\id+8A$ with an element of $\Gamma(64)$: for $g=\id+8A_1$ the isometry condition reads $A_1^{\mathsf T}G+GA_1=-8A_1^{\mathsf T}GA_1$, the right side is symmetric, and $C\mapsto C^{\mathsf T}G+GC$ is onto the symmetric matrices over $\Z_2$, so $A=A_1+8C$ is orthogonal and $g(\id+8A)^{-1}\in\Gamma(64)$. Induction on the level gives $\Gamma(8)$ in the closure, using $(1+2^jA)^2\equiv1+2^{j+1}A\pmod{2^{j+2}}$ for $j\ge2$. Since $\Gamma(16)\subseteq\Gamma(8)$, the three named elements lie in the closure.
+:::
+
+::: {.theorem #thm:coble-block-sign-in-w title="The block sign and $-\id$ lie in the short-root reflection group"}
+
+Let $T_\Co=\langle2\rangle\perp U(2)\perp E_8(2)=B(2)$ with $B=\latI_{2,9}$, and let $W(T_\Co)$ be the group generated by the reflections in the $(-2)$-vectors of $T_\Co$, that is, by $s_v(x)=x+2b_B(x,v)v$ for $v\in B$ with $v^2=-1$. Then
+$$
+\delta_{E_8}\definedas\id_{\langle2\rangle\perp U(2)}\oplus(-\id_{E_8(2)})\in W(T_\Co),
+\qquad
+-\id_{T_\Co}\in W(T_\Co).
+$$
+Consequently $\epsilon'=\delta_{E_8}(-\id_{T_\Co})$ and $\epsilon=-\id_{\langle u_1,u_2\rangle}\oplus\id_{\langle c_1,\dots,c_9\rangle}$ of @lem:sign-reduces-to-positive-plane lie in $W(T_\Co)$, and $W(T_\Co)$ has finite index in $\Orth(B)$.
+:::
+
+::: {.proof}
+
+**Step 0, where the two elements sit.** For $v\in B$ with $v^2=-1$, $s_v(x)-x=2b_B(x,v)v\in2B$, so $W(T_\Co)\subseteq\Gamma(2)$, and $gs_vg^{-1}=s_{gv}$ makes $W(T_\Co)$ normal in $\Orth(B)$. The normalised spinor norm of @def:spinor-norm is $\spinornorm_\bR(s_v)=[-b_B(v,v)/2]=[1]$, and $\det s_v=-1$, so $\spinornorm_\bR=\det$ on $W(T_\Co)$.
+
+On $B$ the block sign is $\id_{\langle1\rangle\perp U}\oplus(-\id_{E_8(-1)})$, with determinant $(+1)^3(-1)^8=1$ and $(-1)$-eigenspace $E_8(-1)$, so, by Dickson--Zassenhaus, $\spinornorm_\bR(\delta_{E_8})=\det(E_8(-1))=1$; it acts as the identity on the rank-three summand $\langle1\rangle\perp U$, of signature $(2,1)$, so it fixes a positive definite plane pointwise and lies in $\SO(B)\cap\ker\spinornorm_\bR=\pi(\Spin(B)(\Z))$. For $-\id_{T_\Co}s_v$: the determinant is $(-1)^{11}(-1)=1$ and the spinor norm is $\spinornorm_\bR(-\id_{T_\Co})\spinornorm_\bR(s_v)=[(-1)^2][1]=1$ (@lem:minus-identity-spinor-norm); its $(+1)$-eigenspace is $\Z v$, since $s_v(v)=-v$, and $-\id s_v$ acts as $-1$ on $v^\perp$, of signature $(2,8)$, so it preserves the orientation of a positive plane and lies in the identity component as well. Hence both are in the image of $\Spin(B)(\Z)$; write $x_\delta$ and $x_v$ for their lifts.
+
+**Step 1, finite index.** $\Gamma=\Orth(B)\cap\SO(2,9)^0$ is an irreducible arithmetic lattice in the simple group $\SO(2,9)^0$ of real rank $2$ and finite centre (Borel--Harish-Chandra). $W(T_\Co)\cap\Gamma$ is normal in $\Gamma$. It is infinite: in the model $B=\langle a\rangle\perp U\perp E_8(-1)$ (an odd unimodular lattice of signature $(2,9)$, hence isometric to $B$), with $a^2=1$, hyperbolic pair $e,f$, and roots $r,r'$ of $E_8(-1)$ with $r\cdot r'=1$, the vectors $v=a+r$ and $w=a+f+r'$ have $v^2=w^2=-1$ and $v\cdot w=2$, so $s_vs_w$ acts on the Lorentzian plane $\langle v,w\rangle$ as a hyperbolic element; $(s_vs_w)^2\in\Gamma$ has infinite order. It is not central, the centre of $\Gamma$ being finite. By the Margulis normal subgroup theorem (Witte Morris, *Introduction to Arithmetic Groups*, Theorem 13.1, printed p. 217; Margulis, *Discrete Subgroups of Semisimple Lie Groups*, Ch. IV, Theorem 4.9, whose printed page was not reached in this pass) $W(T_\Co)\cap\Gamma$ has finite index in $\Gamma$. Since $\Gamma$ has index two in $\SO(B)$ and $\det$ is onto on both $W$ and $\Orth(B)$, $W(T_\Co)$ has finite index in $\Orth(B)$; so $W(T_\Co)\cap\SO(B)$ has finite index in $\SO(B)$, and $\widetilde W=\pi^{-1}(W(T_\Co)\cap\SO(B))\cap\Spin(B)(\Z)$ has finite index in $\Spin(B)(\Z)$ and contains $\pm1$.
+
+**Step 2, congruence.** Let $G=\Spin(B_\QQ)$, absolutely simple and simply connected of type $B_5$ and $\QQ$-rank $2$; $S=\{\infty\}$ and $\rk_SG=2$. The $S$-congruence kernel of an isotropic group of $S$-rank $\ge2$ is central (Raghunathan; Prasad--Rapinchuk, *Developments on the congruence subgroup problem after the work of Bass, Milnor and Serre*, in *Collected Papers of John Milnor* V, AMS 2010, 307--325, §5.1, printed p. 317, and §5.7, printed p. 320; Kneser, *Normalteiler ganzzahliger Spingruppen*, J. reine angew. Math. 311/312 (1979) 191--214, proves the centrality for $G=\Spin(f)$ with $f$ a quadratic form in $n\ge5$ variables as the same survey states at §5.3, printed p. 319, and the original was not reached in this pass). By Theorem 2(1) of the survey, printed p. 313, a central congruence kernel is finite and, when the Margulis--Platonov property holds, is the Pontryagin dual of the metaplectic kernel $M(S,G)$; (MP) holds here because $G$ is $\QQ$-isotropic and the Kneser--Tits property over global fields is Gille's theorem (same survey, §3.5, printed p. 312). By Theorem 3, printed p. 315, $M(S,G)$ is trivial when $S$ contains a real place at which $G$ is not topologically simply connected, and $\Spin(2,9)(\RR)$ is not: its maximal compact subgroup is $(\Spin(2)\times\Spin(9))/\{\pm1\}$, with fundamental group $\Z$. Hence the congruence kernel is trivial, and $\widetilde W\supseteq\Gamma'(N)=\ker(\Spin(B)(\Z)\to\Spin(B)(\Z/N\Z))$ for some $N=2^a m$ with $m$ odd.
+
+**Step 3, odd local images.** Let $\ell$ be odd, $G_\ell=\Spin(\Z_\ell)$, $P_\ell=\ker(G_\ell\to\Spin(\F_\ell))$, and $K_\ell$ the closure of $\widetilde W$ in $G_\ell$. $K_\ell$ is open, containing $\Gamma'(\ell^b)$ for $\ell^b\|N$, and normal. The image of $W(T_\Co)\cap\SO(B)$ in $\SO(B/\ell B)=\SO_{11}(\F_\ell)=\Omega_{11}(\F_\ell)$ is a nontrivial normal subgroup — it contains $s_vs_w\neq\id$ for $v=e_2$ and $w=e_2+e_3+e_0$, whose inner product is $-1$ — so it is all of $\SO_{11}(\F_\ell)$, by the simplicity of $\Omega_{11}(\F_\ell)$ for odd $\ell$ (Dickson's theorem, used on this page at @thm:coble-fifty-six-full-congruence-density; no printed page of a reference for it was checked in this pass). Hence $K_\ell$ surjects onto $G_\ell/P_\ell=\Spin_{11}(\F_\ell)$, so $G_\ell=K_\ell P_\ell$, and
+$$
+G_\ell/K_\ell\cong P_\ell/(P_\ell\cap K_\ell)
+$$
+is a quotient of the pro-$\ell$ group $P_\ell$ (its layers are the $\ell$-groups $\Gamma'(\ell^j)/\Gamma'(\ell^{j+1})$), finite because $K_\ell$ is open; it is therefore a finite $\ell$-group, hence nilpotent and solvable.
+
+$G_\ell$ is topologically perfect. Its reduction $G_\ell/P_\ell=\Spin_{11}(\F_\ell)$ is perfect, being the universal central extension of the simple group $\Omega_{11}(\F_\ell)$; each layer $P_\ell^{(j)}/P_\ell^{(j+1)}$ is $\mathfrak{so}_{11}(\F_\ell)$ with its adjoint action, and the coinvariants vanish: $\mathfrak{so}_{11}(\F_\ell)\cong\Lambda^2V$ is self-dual, and an invariant vector is an invariant alternating bilinear form on $V$, while the invariant bilinear form is unique and symmetric. For $\ell=3,5,7,11,13$ this rank is $55$, computed exactly in `computations/reports/coble_663-rel-odd-local-perfection.py` with output `coble_663-rel-odd-local-perfection-run.txt`; the argument above covers every odd $\ell$. Induction on the level makes every finite quotient $G_\ell/G_\ell^{(k)}$ perfect, and the principal congruence subgroups are cofinal among the open normal subgroups, so every continuous finite quotient of $G_\ell$ is perfect. A perfect group has no nontrivial solvable quotient, so $K_\ell=G_\ell$.
+
+**Step 4, the $2$-adic input.** By @lem:coble-2adic-closure-short-roots the closure of $W(T_\Co)\cap\SO(B)$ in $\SO(B\otimes\Z_2)$ contains $\Gamma(8)$, and $\delta_{E_8}\in W_0\Gamma(16)$; since $\Gamma(16)\subseteq\Gamma(8)$, $\delta_{E_8}$ lies in that closure. So does $-\id_{T_\Co}s_v$, which is $-\id_{T_\Co}$ times the reflection $s_v\in W(T_\Co)$. Because $\Gamma(8)$ lies in the closure, for every $k$ the image of $W(T_\Co)\cap\SO(B)$ in $\SO(B/2^kB)$ is the image of the closure in that finite quotient and contains $\delta_{E_8}$ and $-\id s_v$; the same holds after applying $\pi$.
+
+**Step 5, Goursat and conclusion.** Let $x\in\Spin(B)(\Z)$ be a lift of $\delta_{E_8}$. At each odd $\ell^b\|N$ the image of $x$ in $\Spin(\Z/\ell^b)$ lies in the image of $\widetilde W$, because $K_\ell=G_\ell$ and the image of a dense subgroup in a finite quotient is the image of its closure. At $2^a$ it does too, by Step 4, and $\Gamma'(2^a)\subseteq\widetilde W$. No two of the local images have a common nontrivial quotient: the odd ones are perfect with nonabelian composition factor $\Omega_{11}(\F_\ell)$, and the $2$-adic one is a $2$-group, because the image of $W(T_\Co)\cap\SO(B)$ in $\SO(B/2^aB)$ lies in the pro-$2$ group $\Gamma(2)$. By Goursat's lemma the image of $\widetilde W$ in $\Spin(\Z/N)$ is the full product of the local images, so the image of $x$ is the image of an element of $\widetilde W$, and $x\in\widetilde W\Gamma'(N)=\widetilde W$. Projecting to $\SO(B)$ gives $\delta_{E_8}\in W(T_\Co)$. The same argument with $x_v$ in place of $x_\delta$ gives $-\id_{T_\Co}s_v\in W(T_\Co)$, and multiplying by $s_v$ gives $-\id_{T_\Co}\in W(T_\Co)$; then $\epsilon'=\delta_{E_8}(-\id)\in W$, and $\epsilon=\iota\,(s_{c_1}\cdots s_{c_9})^{-1}$ with $\iota=-\id_{T_\Co}$ and $s_{c_j}\in W$ (@lem:sign-reduces-to-positive-plane) lies in $W$ too.
+:::
+
+::: {.corollary #cor:coble-rel-section title="The block-diagonal section of $\rho_{T_\Co}$ exists, so $(REL)$ holds"}
+
+Let $H_0=\langle\tau\rangle\times W(E_8)\subseteq\Orth(T_\Co)$, with $\tau$ the transposition of the two isotropic generators of $U(2)$ and $W(E_8)$ acting on $E_8(2)$. Then $\rho_{T_\Co}(H_0)=P$ and $H_0\cap\ker\rho_{T_\Co}=\langle\delta_{E_8}\rangle\subseteq W(T_\Co)$. Consequently $H_0\subseteq\Gamma^{\mathrm{cong}}_{\Co,2}$, and any section $\sigma\colon P\to H_0$ of $\rho_{T_\Co}|_{H_0}$ satisfies $\sigma(p)w\sigma(p)^{-1}\in W(T_\Co)$ and $\sigma(p)\sigma(q)\sigma(pq)^{-1}\in H_0\cap\ker\rho_{T_\Co}\subseteq W(T_\Co)$; that is, $(REL)$ of research\#720, item 3 of @qst:gamma-co-generators, holds.
+:::
+
+::: {.proof}
+
+$H_0\subseteq\rho_{T_\Co}^{-1}(P)=\Gamma^{\mathrm{cong}}_{\Co,2}$ because $\rho_{T_\Co}(H_0)=P$: the mod-$2$ image of $W(E_8)$ on $E_8/2E_8$ has order $\abs{\Orth(q_{E_8(2)})}=348\,364\,800=|W(E_8)|/2$ and kernel $\{\pm1\}$, and $\rho_{T_\Co}(\tau)\neq\id$, so $\abs{\rho_{T_\Co}(H_0)}=2\cdot348\,364\,800=\abs P$ (`computations/reports/coble_rel_block_diagonal_section-run.txt`). An element of $H_0$ in $\ker\rho_{T_\Co}$ lies in $\langle\tau\rangle\cap\ker\rho=\{\id\}$ or in $W(E_8)\cap\ker\rho=\{\pm1\}=\langle\delta_{E_8}\rangle$, so $H_0\cap\ker\rho_{T_\Co}=\langle\delta_{E_8}\rangle$, which lies in $W(T_\Co)$ by @thm:coble-block-sign-in-w. The normalization clause is automatic because $W(T_\Co)$ is normal in $\Orth(T_\Co)$, and the cocycle defect lies in $H_0\cap\ker\rho_{T_\Co}$.
+:::
+
 ::: {.question #qst:gamma-co-reflection-index title="The index of the short-root reflection group"}
-Is the index $[\widetilde\Orth^+(T_\Co) : W(T_\Co)]$ finite, and if so, what is it?
+**The index is finite**, and its value is what remains open. Finiteness is @thm:coble-block-sign-in-w: $W(T_\Co)$ has finite index in $\Orth(B)$, hence in the finite-index subgroup $\widetilde\Orth^+(T_\Co)$.
 The unrestricted form, $\ker\rho_{T_\Co} = W(T_\Co)$, is false: @prop:kernel-exceeds-short-roots exhibits an element of $\ker\rho_{T_\Co}$ outside $\Orth^+(T_\Co)$, so the question is the index inside $\widetilde\Orth^+(T_\Co)$, where both groups lie.
 What would settle it is a finite set of reflections generating $W(T_\Co)$ together with the chamber they cut in the space of positive definite $2$-planes of $T_\Co\tensor_\ZZ\RR$, namely $\Orth(T_\Co\tensor_\ZZ\RR)/\Orth(2)\times\Orth(9)$ — equivalently a Coxeter presentation of $W(T_\Co)$.
 The reflective set is known as a set (@prop:gamma-co-reflective-set), but not as a finite presentation, and no operation used on this page produces one.
-The group $\widetilde\Orth^+(T_\Co)$ has finite covolume, so the index is finite exactly when that chamber has finite volume, and it is then the ratio of the two covolumes.
+The group $\widetilde\Orth^+(T_\Co)$ has finite covolume, so the finite index is the ratio of the two covolumes once the chamber is known; that ratio, and not the finiteness, is what the chamber would supply.
 :::

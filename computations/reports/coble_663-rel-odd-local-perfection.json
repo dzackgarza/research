@@ -1,0 +1,38 @@
+{
+  "schema": "coble-663-rel-odd-local-perfection-v1",
+  "script_sha256": "95386672db40a6f7ee428e61cd0400f3098a53c67a7b588f13753ee7d784cfeb",
+  "source_sha256": "9708165fc7b7e0d5fa27c613260030935bd63146e5e1257d2dca78063886ace1",
+  "unipotent_count": 46,
+  "records": [
+    {
+      "prime": 3,
+      "adjoint_commutator_rank": 55,
+      "dim_so_11": 55,
+      "coinvariants_vanishing": true
+    },
+    {
+      "prime": 5,
+      "adjoint_commutator_rank": 55,
+      "dim_so_11": 55,
+      "coinvariants_vanishing": true
+    },
+    {
+      "prime": 7,
+      "adjoint_commutator_rank": 55,
+      "dim_so_11": 55,
+      "coinvariants_vanishing": true
+    },
+    {
+      "prime": 11,
+      "adjoint_commutator_rank": 55,
+      "dim_so_11": 55,
+      "coinvariants_vanishing": true
+    },
+    {
+      "prime": 13,
+      "adjoint_commutator_rank": 55,
+      "dim_so_11": 55,
+      "coinvariants_vanishing": true
+    }
+  ]
+}

@@ -1,0 +1,355 @@
+{
+  "schema": "coble-663-rel-lemma-c-v1",
+  "script_sha256": "ff786c698ae1c7fce722edad7bd15798345a992d9bda1fd1fa267fa9f26e114f",
+  "lattice": {
+    "T_co_gram": [
+      [
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        -4,
+        0,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        -4,
+        0,
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        2,
+        0,
+        -4,
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        2,
+        2,
+        -4,
+        2,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        -4,
+        2,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        -4,
+        2,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        -4,
+        2
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        -4
+      ]
+    ],
+    "T_co_determinant": -2048,
+    "B_gram": [
+      [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        -1,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        -1,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        -1,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        -1
+      ]
+    ],
+    "B_determinant": -1,
+    "T_co_is_B_twice": true,
+    "block_sign_minus_one_eigenspace_is_E8_minus_one": true
+  },
+  "generators": {
+    "norm_minus_one_vectors_entries_in_minus_one_zero_one": 3282,
+    "distinct_reflections": 1641
+  },
+  "images": {
+    "mod_8": {
+      "levels": [
+        2,
+        4
+      ],
+      "layer_dimensions": [
+        55,
+        54
+      ],
+      "order_exponent": 109
+    },
+    "mod_16": {
+      "levels": [
+        2,
+        4,
+        8
+      ],
+      "layer_dimensions": [
+        55,
+        54,
+        55
+      ],
+      "order_exponent": 164
+    },
+    "dim_so_11_f2": 55
+  },
+  "membership_mod_16": {
+    "delta_E8": true,
+    "minus_id": true,
+    "epsilon_prime": true
+  },
+  "membership_mod_8": {
+    "delta_E8": true,
+    "minus_id": true,
+    "epsilon_prime": true
+  },
+  "controls": {
+    "positive_kernel_fifty_five_generators_layer_dimensions": [
+      55,
+      54,
+      55
+    ],
+    "reflection_in_e0_in_subgroup_mod_16": false,
+    "reflection_in_e0_residual_nnz_by_level": [
+      1,
+      1,
+      1
+    ],
+    "eps_diag_minus_one_minus_one_in_subgroup_mod_16": true
+  }
+}
