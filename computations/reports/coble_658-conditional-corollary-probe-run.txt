@@ -1,0 +1,10 @@
+the page states conj:gamma-co-stable (Gamma_Co = O~+(T_Co)):      True
+prop:gamma-co-strong-lifting carries clause (2), the inclusion:   True
+prop:gamma-co-strong-lifting says (1) and (2) are equivalent:     True
+thm:coble-strong-lifting is on the page:                          True
+
+verdict: the corollary holds.  Under conj:gamma-co-stable the inclusion needed by
+  prop:gamma-co-strong-lifting is an equality, so the Gamma_Co form of thm:coble-strong-lifting
+  follows -- the issue's first item is a theorem of the book modulo the book's own conjecture.
+  Unconditionally it remains item 1e, reduced on the record to the 527 isotropic classes, to an
+  index dividing 696,729,600 and to the dichotomy of coble_658-dichotomy-probe.py.
