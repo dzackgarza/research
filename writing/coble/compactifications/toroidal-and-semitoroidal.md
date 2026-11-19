@@ -347,7 +347,7 @@ On a surface of $F$ the curves of $|L|$ are the curves $s+2f$, and [@ABE22, Intr
 
 The question of @qst:recognizable-semifan has been put to the library: the script `computations/reports/coble_679-rcop-split.py` and its transcript `computations/reports/coble_679-rcop-split-run.txt`, running on `sage-extensions`.
 
-At the $0$-cusp of $F_2$, whose boundary lattice $U\oplus E_8(-1)^{\oplus2}\oplus A_1(-1)$ the script builds, it runs Vinberg's algorithm for the fundamental chamber and its walls. The walk does not finish within $900$ seconds there, nor within $1800$ (`computations/reports/coble_679-rcop-split-run-1800.txt` is the same script under that bound), nor within $2400$ with the walk alone and a bound of its own (`computations/reports/coble_679-rcop-chamber-run.txt`), nor within $1500$ with the controlling vector $e+f$ of square $2$, which lies on every wall carried by the $E_8(-1)^{\oplus2}\oplus A_1(-1)$ blocks (`computations/reports/coble_679-rcop-chamber-controlling-vector-run.txt`), so no wall set and no cone inventory is recorded at that cusp: the split is not computed. What the split needs is the stable limit of $(X,\eps R_{\rcop})$ over a cone, and that is not an operation of the library — no module of `src/sage_extensions` names a stable pair, a Kulikov model or a semifan, and the transcript carries the two expressions that raise `AttributeError`.
+At the $0$-cusp of $F_2$, whose boundary lattice $U\oplus E_8(-1)^{\oplus2}\oplus A_1(-1)$ the script builds, it runs Vinberg's algorithm for the fundamental chamber and its walls. The walk does not finish within $900$ seconds there, nor within $1800$ (`computations/reports/coble_679-rcop-split-run-1800.txt` is the same script under that bound), nor within $2400$ with the walk alone and a bound of its own (`computations/reports/coble_679-rcop-chamber-run.txt`), nor within $1500$ with the controlling vector $e+f$ of square $2$, which lies on every wall carried by the $E_8(-1)^{\oplus2}\oplus A_1(-1)$ blocks (`computations/reports/coble_679-rcop-chamber-controlling-vector-run.txt`), so the library yields no wall set at that cusp. That is a fact about the walk and not about the literature: the chamber there is printed, and so is the inventory of its cones, in @thm:cone-inventory-printed. What the split needs is the stable limit of $(X,\eps R_{\rcop})$ over a cone, and that is not an operation of the library — no module of `src/sage_extensions` names a stable pair, a Kulikov model or a semifan, and the transcript carries the two expressions that raise `AttributeError`.
 
 At the elliptic cusp of @prop:semifan-coarsening-fails the script does complete. The chamber has $19$ walls, every one of square $-2$, $18$ of their $171$ pairs meeting and $153$ orthogonal, and the two squares that decide (W) come out, over every pair and every admissible triple of the simple roots, as
 $$
@@ -365,6 +365,23 @@ The operation that would decide the split, stated so that the gap is a contract 
 - **Parent:** the cone of the chamber, whose methods are in `src/sage_extensions/categories/polyhedral_cones.py`, with the Kulikov model and its integral-affine structure as the intermediate the construction runs through.
 
 The defining maps are those of [@AET23, Thm. 7.5, printed p. 48] and [@AE22, §§8--9, printed pp. 41--57], which produce that output for the ramification divisors, and of [@ABE22, §3], which produces it for the elliptic one. The library has none of the three: no module of `src/sage_extensions` names a stable pair, a Kulikov model or a semifan, and @rmk:rcop-split-computation records the two expressions that raise `AttributeError`.
+:::
+
+::: {.theorem #thm:cone-inventory-printed title="The cones of the Coxeter semifan at the $F_2$ cusp, from the printed diagram"}
+
+Let $N=U\oplus E_8(-1)^{\oplus2}\oplus A_1(-1)$ be the boundary lattice of the $0$-cusp of $F_2$ and $\Gamma$ its Coxeter diagram, with vertex set the $24$ roots $r_0,\dots,r_{23}$. Then the cones of the Coxeter semifan $\mcf^{\mathrm{cox}}$ at that cusp are described as follows, all of it printed:
+
+1. the faces of the fundamental chamber $\mathcal K$ correspond, order-reversing, to the elliptic and maximal parabolic subdiagrams $G\subseteq\Gamma$, by $F\mapsto\{i: F\subset r_i^\perp\}$ and $G\mapsto\bigcap_{i\in G}r_i^\perp$, the chamber itself corresponding to $G=\emptyset$;
+2. the Type III cones meeting the interior of the positive cone and of dimension $d>0$ correspond to the elliptic subdiagrams of rank $r=19-d$, which are the disjoint unions of Dynkin diagrams $G_i$ of ADE type with $\sum_i|G_i|=r$;
+3. the Type II rays $\RR_{\ge0}v$ with $v^2=0$ correspond to the maximal parabolic subdiagrams, the disjoint unions of affine Dynkin diagrams $\widehat G_i$ with $\sum_i|G_i|=17$;
+4. modulo $W(N)$ the cones are in bijection with the faces of $\mathcal K$, and modulo $O^+(N)=S_3\ltimes W(N)$ with the elliptic and maximal parabolic subdiagrams modulo $S_3$; the maximal parabolic ones number $4$ modulo $S_3$, "illustrated on the right in Fig. 1".
+:::
+
+::: {.proof}
+
+This is [@AET23, Definition 4.2, Theorem 4.3, Lemma 4.4 and Lemma 4.5, printed p. 22], with the diagram $\Gamma$ and the four maximal parabolic subdiagrams printed in [@AET23, Fig. 1, printed p. 22]: the subdiagrams drawn there are $A_{17}$, $A_{17}^-$, $D_{10}E_7$, $E_8^2A_1$ and $D_{16}A_1$, which is four modulo the symmetry. The same lattice appears in [@AE22, §10, printed p. 57] as $T=(19,1,1)\cong N$, and its Vinberg diagram is the one printed in the second panel of [@AE22, Fig. 4, printed p. 57], attributed there to Vinberg--Kaplinskaja and to Kondo; that attribution is quoted, and neither of the two papers is deposited among the sources of this repository, so neither is cited by its own pagination.
+
+The reading for the issue: this is the whole cone inventory at the cusp where the library's walk does not terminate, obtained from the source at no computational cost, and it is the fan that the semifan of $R_{\rcop}$ would be compared against. What it does not supply is which of the $24$ roots are relevant for $R_{\rcop}$: that is the split (W) of @thm:semifan-recognizable-divisor, and it is decided by the stable limit of the pair, not by the diagram.
 :::
 
 ::: {.remark #rmk:cone-inventory}
