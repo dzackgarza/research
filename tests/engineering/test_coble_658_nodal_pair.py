@@ -1,4 +1,4 @@
-"""Red test first: the nodal-pair reading that decides item 1e is on no page.
+"""The nodal-pair reading that decides item 1e, and its statement on the page.
 
 LEMMA.  The record of the one-node construction (computations/reports/smwo_direct-period.md,
 Theorem E) states that the monodromy image G1 contains the nodal-pair transformations with
@@ -25,27 +25,9 @@ import contextlib
 import io
 import pathlib
 
-try:
-    import pytest
-except ImportError:                         # pragma: no cover
-    pytest = None
-
-
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-RED_NAME = "test_the_nodal_pair_monodromy_is_on_a_page"
 PROBE = ROOT / "computations/reports/coble_658-nodal-pair-refutation-probe.py"
 TRANSCRIPT = ROOT / "computations/reports/coble_658-nodal-pair-refutation-probe-run.txt"
-
-
-def _red(fn):
-    if pytest is None:
-        return fn
-    return pytest.mark.xfail(
-        strict=True,
-        reason="research#658 item 1e is refuted: the nodal-pair monodromy acts on T_Co as the "
-               "reflection in a (-4)-class, which lies outside the discriminant kernel. No page "
-               "records it. Remove this marker when one does.",
-    )(fn)
 
 
 def test_the_record_is_as_quoted():
@@ -69,7 +51,6 @@ def test_the_block_identity_is_computed():
     assert "verdict: item 1e is FALSE." in out
 
 
-@_red
 def test_the_nodal_pair_monodromy_is_on_a_page():
     for path in sorted((ROOT / "writing").rglob("*.md")):
         text = path.read_text(encoding="utf-8", errors="replace")
@@ -82,6 +63,32 @@ def test_the_nodal_pair_monodromy_is_on_a_page():
     )
 
 
+def test_the_refutation_is_stated_on_the_page():
+    lattices = (ROOT / "writing/coble/lattices-and-moduli/lattices.md").read_text(encoding="utf-8")
+
+    def block(label):
+        start = lattices.index("#" + label)
+        body = lattices.index("\n", start) + 1
+        return lattices[body:lattices.index("\n:::", body)]
+
+    thm = block("thm:gamma-co-not-stable")
+    assert "\\Gamma_\\Co\\not\\subseteq\\widetilde\\Orth^+(T_\\Co)" in thm
+    assert "@prop:gamma-co-reflective-set(3)" in thm
+
+    conj = block("conj:gamma-co-stable")
+    assert "This statement is false" in conj and "@thm:gamma-co-not-stable" in conj
+    assert "@conj:gamma-co-full" in conj
+
+    assert "\\Gamma_\\Co = \\Orth^+(T_\\Co)" in block("conj:gamma-co-full")
+
+    status = block("rmk:gamma-co-status")
+    assert "Neither inclusion" not in status
+    assert "is false (@thm:gamma-co-not-stable)" in status
+
+    counts = block("rmk:gamma-co-counts")
+    assert "are not those of the stable quotient" in counts
+
+
 def _run_all() -> int:
     items = [(name, fn) for name, fn in sorted(globals().items())
              if name.startswith("test_") and callable(fn)]
@@ -90,14 +97,11 @@ def _run_all() -> int:
         try:
             fn()
         except AssertionError as exc:
-            if name == RED_NAME:
-                print(f"RED  {name}: {exc}")
-                continue
             failures += 1
             print(f"FAIL {name}: {exc}")
         else:
             print(f"ok   {name}")
-    print(f"\n{len(items) - failures}/{len(items)} checks pass (1 red expected: the nodal-pair monodromy)")
+    print(f"\n{len(items) - failures}/{len(items)} checks pass")
     return failures
 
 

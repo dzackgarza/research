@@ -134,16 +134,44 @@ $$
 A statement about a quotient of $\bD(T_\Co)$ names the group it uses; in particular every count of cusps names its group.
 :::
 
+::: {.theorem #thm:gamma-co-not-stable title="The monodromy of the Coble family leaves the stable group"}
+
+$\Gamma_\Co\not\subseteq\widetilde\Orth^+(T_\Co)$: the monodromy of the family of unpolarized Coble surfaces contains the reflection $s_e$ in a class $e$ of square $-4$, and every such reflection lies in $\Orth^+(T_\Co)$ and outside $\discriminantkernel{T_\Co}$ (@prop:gamma-co-reflective-set(3)). Consequently the former statement $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ is false, and the $\Gamma_\Co$ form of @prop:gamma-co-strong-lifting fails: there is no homomorphism $\mathrm{Ext}\colon\Gamma_\Co\to\Gamma_\En$ with $\mathrm{res}\circ\mathrm{Ext}=\id$.
+:::
+
+::: {.proof}
+
+*The family.* Let $B^{(p)}$ be the one-node locus of @prop:one-node-family, and for $b\in B^{(p)}$ let $\widehat X_b$ be the K3 double cover and $\widehat\iota_{\Co,b}$ its Coble involution. By @def:resolved-coble the resolved Coble surface $\overline V_b$ is a smooth rational surface with $|-K|=\varnothing$ and $|-2K|\ne\varnothing$; that is the definition of a Coble surface in [@DK13, §3, printed p. 512], and [@DK13, Prop. 3.2, printed p. 513] identifies the moduli space of those with an open subset of $\bD(N)/\Orth(N)$, where $N=T_\Co$ by @prop:coble-transcendental. The surfaces $\overline V_b$ therefore form a family of Coble surfaces over $B^{(p)}$, and the local system with fibre $T_\Co$ is the summand $S_{\Co,b}^{\perp}$ of the $H^2$ local system of the K3 covers, a functor of the member (@lem:one-node-picard-rank). So the monodromy of the family over $B^{(p)}$ is the image of $\pi_1(B^{(p)})$ in the monodromy of the moduli space, a subgroup of $\Gamma_\Co$: neither local Torelli nor surjectivity of the period map is used.
+
+*The element.* At a boundary degeneration of this family at which two nodes appear at once, at $\{q,\tau q\}$ with $q$ not $\tau$-fixed, the local monodromy is the product $s_\delta s_{\delta'}$ of the two commuting Picard--Lefschetz reflections in the vanishing classes, and $\delta\cdot\delta'=0$; with $s=\delta+\delta'$ and $e=\delta-\delta'$ one has $s^2=e^2=-4$, $s\in S_\Co$, $e\in T_\Co$, and $s_\delta s_{\delta'}$ acts on $T_\Co$ as $s_e$. Both computations are recorded with their transcripts, in `computations/reports/smwo_direct-period.md` (Theorem E) and `computations/reports/coble_658-nodal-pair-refutation-probe-run.txt`.
+
+*The consequence.* A vector of $T_\Co$ of square $-4$ is primitive, so $s_e$ is an integral isometry of $T_\Co$; its real spinor norm is $[-e^2/2]=[2]=[1]$, so $s_e\in\Orth^+(T_\Co)$; and $s_e\notin\discriminantkernel{T_\Co}$, because $s_e(y)-y=-(y\cdot e)\,e/2$ with $[e/2]$ a nonzero class of $A_{T_\Co}$ of $q$-value $-1$, and some $y\in T_\Co^*$ has $y\cdot e$ odd (@prop:gamma-co-reflective-set(3)). So $\Gamma_\Co$ contains an element outside $\widetilde\Orth^+(T_\Co)$, and the failure of the $\Gamma_\Co$ form of the lifting is @prop:gamma-co-strong-lifting, whose clause (2) is that inclusion and whose clause (1) is equivalent to it.
+
+*The one unprinted input.* The product formula for the two-node degeneration is the only step here that is not a printed statement: what is published and held covers one node. It is the record's computation, named here rather than proxied; every other step is a printed result or a result of this book.
+:::
+
 ::: {.conjecture #conj:gamma-co-stable title="The monodromy group of the Coble family is the stable group"}
+
 $$
 \Gamma_\Co = \widetilde\Orth^+(T_\Co).
 $$
+
+This statement is false (@thm:gamma-co-not-stable). It is kept under its own name because later passages cite it: each of those states a conditional whose hypothesis now fails, and the corrected statement is @conj:gamma-co-full.
+:::
+
+::: {.conjecture #conj:gamma-co-full title="The monodromy group of the Coble family"}
+
+$$
+\Gamma_\Co = \Orth^+(T_\Co).
+$$
+
+The forward half, $\Gamma_\Co\subseteq\Orth^+(T_\Co)=\Theta_\bR(T_\Co)$, is proved (@lem:monodromy-is-spinor-positive); what the equality adds to it is the reverse inclusion $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_\Co$, and that is open. Its right-hand side is not the stable group, since $\Gamma_\Co\not\subseteq\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-not-stable).
 :::
 
 ::: {.remark #rmk:gamma-co-status title="What is established about $\Gamma_\Co$"}
-Neither inclusion between $\Gamma_\Co$ and $\widetilde\Orth^+(T_\Co)$ is proved, but the sign half of the first is: the monodromy of a family of Coble surfaces lies in $\Orth^+(T_\Co)=\Theta_\bR(T_\Co)$ (@lem:monodromy-is-spinor-positive), so what is open in $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$ is its discriminant half, $\Gamma_\Co\subseteq\discriminantkernel{T_\Co}$. @prop:gamma-co-images(1) identifies $\widetilde\Orth^+(T_\Co)$ with the restricted stabilizer $R_{\Gamma_\En}$; that is a statement about the lattices $T_\Co\injects T_\En$, and it yields neither inclusion. A statement of this book about $\fco$ that uses more than $\Gamma_\Co\leq\Orth^+(T_\Co)$ is conditional on @conj:gamma-co-stable and says so.
+The inclusion $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$ is false (@thm:gamma-co-not-stable), and the reverse inclusion $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_\Co$ is open. The sign half is not in question: the monodromy of a family of Coble surfaces lies in $\Orth^+(T_\Co)=\Theta_\bR(T_\Co)$ (@lem:monodromy-is-spinor-positive). What fails is the discriminant half that the falsified inclusion would have added, $\Gamma_\Co\subseteq\discriminantkernel{T_\Co}$. @prop:gamma-co-images(1) identifies $\widetilde\Orth^+(T_\Co)$ with the restricted stabilizer $R_{\Gamma_\En}$; that is a statement about the lattices $T_\Co\injects T_\En$, and it yields nothing about either inclusion. A statement of this book about $\fco$ that uses more than $\Gamma_\Co\leq\Orth^+(T_\Co)$ is conditional on @conj:gamma-co-full and says so.
 
-The forward inclusion $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$, which is the one every statement about the lifting uses, has a criterion. By @prop:gamma-co-strong-lifting it is equivalent to the $\Gamma_\Co$ form of the strong lifting; its sign half is the previous paragraph, and its discriminant half is, for the family whose local system is the $N$-summand of the $H^2$ local system of the K3 double covers, equivalent to triviality of the monodromy action on $A_M$ (@cor:gamma-co-lifting-criterion), that is, to the monodromy fixing each of the ten exceptional classes rather than permuting them. So the forward inclusion rests on one geometric statement about the family, not on an unknown group. The reverse inclusion $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_\Co$ --- every stable isometry being realised by monodromy --- is a different question, is addressed by none of this, and is equally open; @conj:gamma-co-stable asserts both.
+The falsified inclusion had a criterion, and the criterion is now seen to fail. By @prop:gamma-co-strong-lifting the inclusion $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$ is equivalent to the $\Gamma_\Co$ form of the strong lifting, and for the family whose local system is the $N$-summand of the $H^2$ local system of the K3 double covers its discriminant half is equivalent to triviality of the monodromy action on $A_M$ (@cor:gamma-co-lifting-criterion), that is, to the monodromy fixing each of the ten exceptional classes rather than permuting them. @thm:gamma-co-not-stable exhibits the failure on $A_{T_\Co}$: the reflection in a $(-4)$-class moves classes, so the monodromy does not fix them. The reverse inclusion $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_\Co$ --- every stable isometry being realised by monodromy --- is a different question, addressed by none of this, and open; with the proved sign half of @lem:monodromy-is-spinor-positive it is @conj:gamma-co-full.
 :::
 
 ::: {.proposition #prop:gamma-co-images title="The three restricted stabilizers"}
@@ -184,7 +212,7 @@ For (3). By definition $\gent = \rho^{-1}(M)$, so a $g = \varphi\oplus\id\in\Ort
 ::: {.remark #rmk:gamma-co-counts title="The cusp counts name their group"}
 The quotient $F^{\mathrm{un}}_\Co = \bD(T_\Co)/\Orth(T_\Co)$ has one $0$-cusp, $\Orth^+(T_\Co)$ being transitive on the primitive isotropic vectors (@thm:unpolarized-cusps), computed by the $\Orth(T_\Co)$ rows of run 43556671111 (@rmk:coble-plane-incidence-rows), and one $1$-cusp, by @thm:plane-transitivity-tco, certified by the same rows. The stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ has $527$ $0$-cusps (@thm:coble-zero-cusp-count(2)) and $189\,720$ $1$-cusps, one fibre of eight over each of the $23\,715$ liftable classes (@thm:plane-fibre(3)). The subgroup $\Gamma_{\Co,2} = \bar\rho^{-1}(P)$ has four orbits of primitive isotropic vectors, hence $F_{\Co,2}$ has four $0$-cusps (@prop:coble-cong-point-stabilizer(3)), and seven $1$-cusps, proved by the integral decorated-plane lifting and finite $G_\Co$-orbit calculation of @cor:coble-heegner-integral-plane-descent and independently reproduced by that run's row (@thm:plane-fibre(3), @rmk:coble-plane-incidence-rows); the subgroup-orbit operation, which would count these for a prescribed subgroup rather than for $\Orth(T_\Co)$, is sage-extensions#286, and no count on this page is read off it. Each of these counts is a count of lattice orbits and not only of finite ones: every group named in this paragraph contains $\widetilde\Orth^+(T_\Co)$, so by @thm:coble-integral-lifting-fibre(1), (2) the fibre over one finite datum is a single orbit and contributes one.
 
-The cusp counts of $\fco$ are those of the stable quotient if @conj:gamma-co-stable holds. Without it they are not determined.
+The cusp counts of $\fco$ are not those of the stable quotient: @thm:gamma-co-not-stable puts $\Gamma_\Co$ strictly outside $\widetilde\Orth^+(T_\Co)$, so $527$ and $189\,720$ are counts for $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ and for no smaller quotient. The counts for $\fco$ are undetermined, the group $\Gamma_\Co$ being so.
 
 [@DK13, Prop. 3.2, p. 513] gives the moduli space as an open subset of the quotient by $\Orth(N)$, and the sentence after it states that the quotient of the $(-2)$-Heegner divisor by $\Orth(U\oplus E(2))$ is birational to that moduli space. By @thm:normalization for $\Gamma = \Gamma^K_\En$ the normalization of that second quotient is $\bD(T_\Co)/R_{\Gamma^K_\En}$, and $R_{\Gamma^K_\En} = \Orth(T_\Co)$ by @prop:gamma-co-images(2), in agreement with the first.
 :::
