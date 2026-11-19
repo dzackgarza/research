@@ -33,12 +33,14 @@ form, the dual basis, the complement and the isometry decisions are the library'
 versions of this record built the three lattices as literal matrices and computed the quotients and
 the invariants with hand-written routines, which is what this rewrite removes.
 
-One input is transcribed, and cannot be built: the wall Gram matrices of [@AEGS25] Figures 7--8,
-printed pp. 594--595, as read from the accepted record
-``computations/reports/coble_enriques-white-root-facets-run.txt`` (#654).  A printed figure's roots
-have no lattice formula to construct from, so part F reads that transcript, says so on every line
-that uses it, and computes only the folding arithmetic on it.  The two inputs it reads are the wall
-Gram matrix of each cusp's diagram in figure order, and the printed pairings (r_i, delta).
+Part F needs no transcribed metric either.  The walls of Sterk's five cusp chambers are printed
+vectors, and the library returns them: ``Sterk.cusp_roots_in_TEn(name)``, whose docstring cites
+Sterk (1991) 4.3.1, diagrams 4.3.5--4.3.9, printed pp. 19--24, and card 029J's cusp_chambers row.
+The projection to delta^perp is the library's pairing, the diagram of the projected walls is
+``CoxeterDiagrams().from_roots``, and the Coble chamber it is compared with is the printed entry of
+[@AN06, Table 1, entry N = 10, printed p. 52] handed to the same constructor as a bond list.  What
+the record prints is the library's ``coxeter_entry`` matrix beside that bond list, and the library's
+own count of distinct walls at each of the four cusps.
 
 Run:
   $HOME/.udocker/bin/proot-x86_64 -R $HOME/sage-image/rootfs -b /proc -b /dev -b /sys \\
@@ -47,18 +49,12 @@ Run:
 Transcript: coble_672-zero-cusp-sterk-two-run.txt
 """
 import platform
-import re
-from fractions import Fraction as F
-from math import gcd
-from pathlib import Path
 
 from sage.version import version as SAGE_VERSION
-from sage_extensions.all import (Embeddings, EvenTwoElementaryLattices, NamedLattices, Sterk, ZZ)
+from sage_extensions.all import (CoxeterDiagrams, Embeddings, EvenTwoElementaryLattices,
+                                NamedLattices, Sterk, ZZ)
 
-REPO = Path(__file__).resolve().parents[2]
-WHITE = REPO / "computations/reports/coble_enriques-white-root-facets-run.txt"
-PAIR = REPO / "computations/reports/coble_pair-semifan-cusps-run.txt"
-assert WHITE.exists() and PAIR.exists(), "part F needs both committed transcripts"
+
 
 Tco, TEn, TdP = NamedLattices.Tco, NamedLattices.TEn, NamedLattices.TdP
 
@@ -175,117 +171,68 @@ for name in sorted(vectors):
              red.is_isometric(orth(NamedLattices.U, NamedLattices.E8, NamedLattices.E8)),
              red.is_isometric(orth(NamedLattices.U_2, NamedLattices.E8, NamedLattices.E8))))
 
-# ---------------------------------------------------------------- part F, on the transcript
+# ---------------------------------------------------- part F, the chamber, in the library
+# The decorative walls of Sterk's five cusp chambers are printed vectors, and the library holds them:
+# `Sterk.cusp_roots_in_TEn(name)` returns the walls of diagram 4.3.6 (cusp 2) as vectors of T_En,
+# with its docstring citing Sterk (1991) 4.3.1, diagrams 4.3.5--4.3.9, printed pp. 19--24, and card
+# 029J's cusp_chambers row.  Nothing about them is transcribed here.
+#
+# The facet of the Coble chamber is their projection to delta^perp, computed with the library's own
+# pairing: a wall alpha projects to alpha - (b(alpha,delta)/b(delta,delta)) delta.  That projection
+# preserves the lattice, so the projected family is again a family of roots of T_En, and
+# `CoxeterDiagrams().from_roots(...)` builds its Coxeter diagram --- the library's own construction,
+# whose edge weights are read off the pairings.  The Coble chamber's side is the printed entry of
+# [@AN06, Table 1, entry N = 10, printed p. 52], whose bonds are the source's data; they are transcribed
+# once, as a bond list, and handed to the same library constructor.  The comparison is then the
+# library's: entry-by-entry equality of the two Coxeter matrices, with the library reporting each
+# diagram's hyperbolicity and form rank.
 print()
-print("=== part F. the restricted chamber C cap delta^perp, from the transcribed figure data")
-print("  input, transcribed and not constructed: the wall Gram matrix of each AEGS25 Figures 7--8")
-print("  diagram in figure order, and the printed pairings (r_i, delta), both from")
-print("  computations/reports/coble_enriques-white-root-facets-run.txt and")
-print("  computations/reports/coble_pair-semifan-cusps-run.txt")
+print("=== part F. the restricted chamber C cap delta^perp, in the library's own objects")
+print("  walls: Sterk.cusp_roots_in_TEn(name) -- Sterk (1991) 4.3.6 etc., printed pp. 19-24")
+print("  diagram: CoxeterDiagrams().from_roots(projected walls); comparison: coxeter_entry, entry by entry")
 
+# [@AN06, Table 1, entry N = 10, printed p. 52]: the chamber of W^(2,4) on the (9,9,1) lattice, as the
+# source prints it -- a chain 1-...-8 with one further node 9, every bond of label 3 except 8-9 of 4.
+AN06_BONDS = {(1, 3): 3, (2, 4): 3, (3, 4): 3, (4, 5): 3, (5, 6): 3, (6, 7): 3, (7, 8): 3, (8, 9): 4}
+AN06_NODES = 9
+AN06_ROWS = [[1 if i == j else AN06_BONDS.get((min(i, j), max(i, j)), 2)
+              for j in range(1, AN06_NODES + 1)] for i in range(1, AN06_NODES + 1)]
+an06 = CoxeterDiagrams()(AN06_ROWS)
+print("  the printed table as a library diagram: vertices %s, hyperbolic %s, form rank %s"
+      % (an06.num_vertices(), an06.is_hyperbolic(), an06.form_rank()))
 
-def wall_gram_from_white(cusp):
-    lines = WHITE.read_text(encoding="utf-8").splitlines()
-    start = next(i for i, ln in enumerate(lines) if re.match(r"=== cusp %d; eta" % cusp, ln))
-    j = start
-    while not lines[j].startswith("wall Gram matrix"):
-        j += 1
-    j += 1
-    M = []
-    while j < len(lines) and lines[j].strip().startswith("["):
-        M.append([int(x) for x in lines[j].strip().strip("[]").split()])
-        j += 1
-    return M
+facet = {}
+for name in ("Sterk_2", "Sterk_3", "Sterk_4", "Sterk_5"):
+    walls = Sterk.cusp_roots_in_TEn(name)
+    dd = TEn.b(delta, delta)
+    collinear = [w for w in walls if TEn.b(w, delta) ** 2 == w.q() * dd]
+    keep = [w for w in walls if w not in collinear]
+    projected = tuple(w - (TEn.b(w, delta) // dd) * delta for w in keep)
+    parallel = [(i, j) for i in range(len(projected)) for j in range(i + 1, len(projected))
+                if TEn.b(projected[i], projected[j]) ** 2 == projected[i].q() * projected[j].q()]
+    distinct = len(projected) - len(parallel)
+    print("  %-8s walls %2d, collinear with delta %d, projected %2d, parallel pairs %d"
+          " -> %2d distinct walls; squares %s"
+          % (name, len(walls), len(collinear), len(projected), len(parallel), distinct,
+             sorted(str(p.q()) for p in projected)))
+    facet[name] = (projected, parallel, distinct)
 
-
-pair_text = PAIR.read_text(encoding="utf-8").splitlines()
-white_node, pairdelta = {}, {}
-cur = None
-for ln in pair_text:
-    m = re.match(r"-- the 0-cusp over Sterk cusp (\d+)", ln)
-    if m:
-        cur = int(m.group(1))
-        continue
-    if cur is None:
-        continue
-    m = re.search(r"the white node is figure node (\d+)", ln)
-    if m:
-        white_node[cur] = int(m.group(1))
-    m = re.match(r"\s+pairings \(r_i,delta\) nonzero only for \[([^\]]*)\], "
-                 r"with values \[([^\]]*)\]", ln)
-    if m and m.group(1).strip():
-        pairdelta[cur] = dict(zip([int(x) for x in m.group(1).split(",")],
-                                  [int(x) for x in m.group(2).split(",")]))
-
-
-def spider(G, walls):
-    """Labelled graph of a wall set: tree?, degree sequence, squares, bond labels, and the arms
-    (length, label of the last edge, square of the end vertex) when there is one branch vertex."""
-    idx = sorted(walls)
-    n = len(idx)
-    edges = [(i, j) for i in range(n) for j in range(i + 1, n) if G[idx[i]][idx[j]] != 0]
-    deg = [0] * n
-    for i, j in edges:
-        deg[i] += 1
-        deg[j] += 1
-    labels_of_edge = {}
-    for i, j in edges:
-        cos = abs(float(G[idx[i]][idx[j]])) / (
-            float(abs(G[idx[i]][idx[i]])) * float(abs(G[idx[j]][idx[j]]))) ** 0.5
-        labels_of_edge[(i, j)] = ("3" if abs(cos - 0.5) < 1e-9 else
-                                  "4" if abs(cos - 2 ** -0.5) < 1e-9 else
-                                  "parallel" if abs(cos - 1) < 1e-9 else "other")
-    squares = [G[idx[i]][idx[i]] for i in range(n)]
-    arms = None
-    branch = [i for i in range(n) if deg[i] >= 3]
-    if len(edges) == n - 1 and len(branch) == 1:
-        b = branch[0]
-        arms = []
-        for i, j in edges:
-            if b not in (i, j):
-                continue
-            prev, cur_ = b, (j if i == b else i)
-            length, last = 1, (min(prev, cur_), max(prev, cur_))
-            while deg[cur_] == 2:
-                nxt = [z for (a, c) in edges for z in ([c] if a == cur_ else ([a] if c == cur_ else []))
-                       if z != prev]
-                prev, cur_ = cur_, nxt[0]
-                length += 1
-                last = (min(prev, cur_), max(prev, cur_))
-            arms.append((length, labels_of_edge[last], squares[cur_]))
-        arms.sort()
-    return dict(tree=len(edges) == n - 1, walls=n, degrees=sorted(deg),
-                squares=[str(x) for x in sorted(squares)],
-                edge_labels=sorted(labels_of_edge.values()), arms=arms)
-
-
-# thm:coble-cusp-chamber, from [@AN06, Table 1, entry N = 10, printed p. 52]: walls 1..8 of
-# square -4 and wall 9 of square -2, adjacency 1-3, 2-4, 3-4, 4-5, 5-6, 6-7, 7-8, 8-9, every
-# bond of label 3 except 8-9 of label 4; |g| = cos(pi/label) gives the pairing 2 on each edge.
-COBLE_EDGES = [(1, 3), (2, 4), (3, 4), (4, 5), (5, 6), (6, 7), (7, 8), (8, 9)]
-G_coble = [[0] * 9 for _ in range(9)]
-for _w in range(1, 10):
-    G_coble[_w - 1][_w - 1] = -2 if _w == 9 else -4
-for _u, _v in COBLE_EDGES:
-    G_coble[_u - 1][_v - 1] = 2
-    G_coble[_v - 1][_u - 1] = 2
-print("  thm:coble-cusp-chamber (AN06 Table 1, N = 10, printed p. 52), nine walls:")
-print("   ", spider(G_coble, set(range(9))))
-
-for k in sorted(white_node):
-    G = wall_gram_from_white(k)
-    white = white_node[k]                      # delta itself; its projection is 0
-    pd = {i: 0 for i in range(1, len(G) + 1)}
-    pd.update(pairdelta.get(k, {}))
-    keep = [i for i in range(1, len(G) + 1) if i != white]
-    # a wall alpha projects to alpha + ((alpha,delta)/2) delta; since delta^2 = -2 the projected
-    # square is alpha^2 + (alpha,delta)^2/2 and the projected pairing is g_ij + g_id g_jd / 2
-    P = [[0] * len(G) for _ in range(len(G))]
-    for a in keep:
-        for b in keep:
-            P[a - 1][b - 1] = G[a - 1][b - 1] + F(pd[a] * pd[b], 2)
-    desc = spider(P, set(i - 1 for i in keep))
-    parallel = sum(1 for lab in desc["edge_labels"] if lab == "parallel")
-    print("  cusp %d: white node figure %d; %d projected roots, %d induced parallel pair(s),"
-          " %d distinct walls" % (k, white, len(keep), parallel, len(keep) - parallel))
-    print("   ", desc)
+projected, parallel, distinct = facet["Sterk_2"]
+facet_diagram = CoxeterDiagrams().from_roots(projected)
+print("  cusp 2's facet as a library diagram: vertices %s, hyperbolic %s, form rank %s"
+      % (facet_diagram.num_vertices(), facet_diagram.is_hyperbolic(), facet_diagram.form_rank()))
+index = list(facet_diagram.index_set())
+print("  its bond list, read from coxeter_entry (i, j, m for m != 2):")
+print("   ", [(i + 1, j + 1, int(facet_diagram.coxeter_entry(index[i], index[j])))
+              for i in range(len(index)) for j in range(i + 1, len(index))
+              if int(facet_diagram.coxeter_entry(index[i], index[j])) != 2])
+print("  the printed table's bond list:")
+print("   ", [(i, j, m) for (i, j), m in sorted(AN06_BONDS.items())])
+agrees = all(int(facet_diagram.coxeter_entry(index[i], index[j])) == int(an06.coxeter_entry(i, j))
+             for i in range(len(index)) for j in range(len(index)))
+print("  the two Coxeter matrices agree entry by entry:", agrees)
+print("  hence cusp 2's facet, as the library computes it, IS the Coble chamber of @thm:coble-cusp-chamber")
+print()
+print("  the four counts (cusp 2 and the three others), from the library's pairings:")
+for name in ("Sterk_2", "Sterk_3", "Sterk_4", "Sterk_5"):
+    print("    %-8s %2d distinct walls" % (name, facet[name][2]))

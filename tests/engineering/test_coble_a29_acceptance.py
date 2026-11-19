@@ -71,6 +71,7 @@ def test_a1_the_cusp_map_lemma_the_argument_rests_on_is_stated_and_proved():
 # ------------------------------------- item 1b: library construction, no typed matrices
 
 FORBIDDEN = ("det_bareiss", "smith_normal_form", "quotient_gram", "reduce_row", "inverse_unimodular",
+             "white-root-facets", "pair-semifan-cusps",
              "CartanMatrix", "IntegralLattice(", "np.linalg", "import numpy")
 
 
@@ -202,32 +203,73 @@ def arm_signature(keep, square, edges, labels):
     return tuple(sorted(arms))
 
 
-COBLE_ARMS = ((1, 3, -4), (2, 3, -4), (5, 4, -2))   # thm:coble-cusp-chamber, AN06 Table 1, N = 10
+# The chamber's data, from the source: [@AN06, Table 1, entry N = 10, printed p. 52] prints a chain
+# 1-...-8 with one further node 9, every bond of label 3 except 8-9 of 4.  That bond list is the only
+# chamber input in this file; the arms and the counts below are computed from it.
+AN06_BONDS = {(1, 3): 3, (2, 4): 3, (3, 4): 3, (4, 5): 3, (5, 6): 3, (6, 7): 3, (7, 8): 3, (8, 9): 4}
+AN06_ARMS = ((1, 3, -4), (2, 3, -4), (5, 4, -2))   # read off that table: arms 1, 2, 5 at the branch,
+                                                    # skins 8 walls of square -4 and the -2 at the end
 
 
 def test_a1b_the_chamber_half_recomputed():
+    """An independent recomputation, in the standard library, of the facet at cusp 2.
+
+    This does not touch the record's route: it reads the #654 figure transcript's wall Gram matrices
+    and projects them with plain arithmetic, so the record's library computation and this one are two
+    implementations.  The expected shape is `AN06_BONDS`' arms above, from the printed table.
+    """
     keep, square, edges, labels = restricted_chamber(2)
     assert len(keep) == 9 and len(edges) == 8
     assert sorted(square.values()) == [-4] * 8 + [-2]
-    assert arm_signature(keep, square, edges, labels) == COBLE_ARMS
+    assert arm_signature(keep, square, edges, labels) == AN06_ARMS
 
 
-def test_a1b_the_other_three_cusps_have_more_walls():
+def recomputed_counts():
     counts = {}
-    for cusp in (3, 4, 5):
+    for cusp in (2, 3, 4, 5):
         keep, square, edges, labels = restricted_chamber(cusp)
         parallel = sum(1 for lab in labels.values() if lab == "parallel")
         counts[cusp] = len(keep) - parallel
-    assert counts == {3: 10, 4: 10, 5: 11}, counts
+    return counts
 
 
-def test_a1b_the_transcript_reports_those_same_counts():
+def record_counts():
+    """The counts the record prints, which its library calls produce."""
+    out = {}
+    for name, number in (("Sterk_2", 2), ("Sterk_3", 3), ("Sterk_4", 4), ("Sterk_5", 5)):
+        m = re.search(name + r"\s+\d+ distinct walls", record())
+        assert m, f"the record does not print a count for {name}"
+        out[number] = int(m.group(0).split()[1])
+    return out
+
+
+def test_a1b_the_two_implementations_agree_on_the_four_counts():
+    """No typed counts: the record's library computation and the recomputation must agree."""
+    assert recomputed_counts() == record_counts()
+
+
+def test_a1b_part_f_takes_its_walls_from_the_library_and_reads_no_transcript():
+    """The decisive chamber construction must be the library's, and part F must read no transcript.
+
+    (research#672 review, finding 1: part F typed the Coble Gram matrix, hand-wrote the graph
+    classification, and asserted typed counts against a transcript.)
+    """
+    text = script()
+    for call in ("Sterk.cusp_roots_in_TEn", "CoxeterDiagrams().from_roots", "CoxeterDiagrams()(AN06_ROWS)",
+                 "coxeter_entry"):
+        assert call in text, call
+    for transcript in ("white-root-facets-run.txt", "pair-semifan-cusps-run.txt"):
+        assert transcript not in text, f"part F reads {transcript}; the library returns the walls"
+    for typed in ("COBLE_ARMS", "spider(", "wall_gram_from_white"):
+        assert typed not in text, f"{typed} is a hand-written chamber routine in the record"
+    assert not re.search(r"\{\s*3\s*:\s*10", text), "a typed count dictionary is in the record"
+
+
+def test_a1b_the_record_compares_the_two_diagrams_in_the_library():
     text = record()
-    for line in ("cusp 2: white node figure 10; 9 projected roots, 0 induced parallel pair(s), 9 distinct walls",
-                 "cusp 3: white node figure 5; 11 projected roots, 1 induced parallel pair(s), 10 distinct walls",
-                 "cusp 4: white node figure 9; 10 projected roots, 0 induced parallel pair(s), 10 distinct walls",
-                 "cusp 5: white node figure 11; 13 projected roots, 2 induced parallel pair(s), 11 distinct walls"):
-        assert line in text, line
+    assert "the printed table as a library diagram: vertices 9, hyperbolic True, form rank 9" in text
+    assert "the two Coxeter matrices agree entry by entry: True" in text
+    assert "hence cusp 2's facet, as the library computes it, IS the Coble chamber" in text
 
 
 # ------------------------------------------------------------------ item 2: the other pages
@@ -292,7 +334,9 @@ def test_a2_the_research_statement_no_longer_asserts_the_unique_correspondence()
 def test_a2_every_computed_number_names_its_record():
     text = page()
     assert "computations/reports/coble_672-zero-cusp-sterk-two-run.txt" in text
-    assert "computations/reports/coble_pair-semifan-cusps-run.txt" in text
+    # the chamber counts are now the library's, so the page must not send a reader to the older
+    # hand-built record for them
+    assert "coble_pair-semifan-cusps-run.txt" not in text
 
 
 def test_a2_the_source_citations_carry_printed_pages():
