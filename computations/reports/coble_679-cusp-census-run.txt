@@ -24,6 +24,22 @@ cusps with p_* > 1 and k in {1,2}: 14
 d <= 60 neither a square nor twice a square: 48
   of these, cusps with p_* > 1 in total: 14
 
+the survivors -- cusps with p_* > 1 and k in {1,2}, (d, class {+-q}, k):
+  d =  4, N = 2, class {+-1} of Z/2, k = 1
+  d =  8, N = 2, class {+-1} of Z/2, k = 2
+  d =  9, N = 3, class {+-1} of Z/3, k = 1
+  d = 16, N = 4, class {+-1} of Z/4, k = 1
+  d = 18, N = 3, class {+-1} of Z/3, k = 2
+  d = 25, N = 5, class {+-1} of Z/5, k = 1
+  d = 25, N = 5, class {+-2} of Z/5, k = 1
+  d = 32, N = 4, class {+-1} of Z/4, k = 2
+  d = 36, N = 6, class {+-1} of Z/6, k = 1
+  d = 49, N = 7, class {+-1} of Z/7, k = 1
+  d = 49, N = 7, class {+-2} of Z/7, k = 1
+  d = 49, N = 7, class {+-3} of Z/7, k = 1
+  d = 50, N = 5, class {+-1} of Z/5, k = 2
+  d = 50, N = 5, class {+-2} of Z/5, k = 2
+
 PASS: p = 1 exactly for q = 0 mod N (every d <= 60)
 PASS: k = d_0 h^2 (every class)
 PASS: k in {1,2} exactly for h = 1 and d_0 in {1,2} (every class)

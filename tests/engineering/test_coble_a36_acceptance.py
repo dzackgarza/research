@@ -461,6 +461,11 @@ def test_the_cusp_census_record_reproduces_its_table():
     assert "PASS: k = d_0 h^2" in produced
     assert "PASS: k in {1,2} exactly for h = 1 and d_0 in {1,2}" in produced
     assert "PASS: floor((N+2)/2) classes" in produced
+    # The survivors are listed one by one, so the open classes are named, not counted.
+    assert "the survivors -- cusps with p_* > 1 and k in {1,2}" in produced
+    assert "d =  4, N = 2, class {+-1} of Z/2, k = 1" in produced
+    assert "d = 50, N = 5, class {+-2} of Z/5, k = 2" in produced
+    assert sum(1 for ln in produced.splitlines() if ln.startswith("  d = ")) == 14
     page = page_text()
     assert "#lem:cusp-census" in page
     assert "$d_0h^2\\in\\{1,2\\}$" in page

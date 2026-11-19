@@ -82,6 +82,11 @@ print("cusps with p_* > 1 and k in {1,2}: %d" % n_k12)
 print("d <= %d neither a square nor twice a square: %d" % (D, len(d_neither)))
 print("  of these, cusps with p_* > 1 in total: %d" % sum(n for _, n in d_neither))
 print()
+print("the survivors -- cusps with p_* > 1 and k in {1,2}, (d, class {+-q}, k):")
+for d, N, d0, q, h, p, a, k in rows:
+    if p > 1 and k in (1, 2):
+        print("  d = %2d, N = %d, class {+-%d} of Z/%d, k = %d" % (d, N, q, N, k))
+print()
 print("PASS: p = 1 exactly for q = 0 mod N (every d <= %d)" % D)
 print("PASS: k = d_0 h^2 (every class)")
 print("PASS: k in {1,2} exactly for h = 1 and d_0 in {1,2} (every class)")
