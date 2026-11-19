@@ -1713,7 +1713,7 @@ Then:
 $$
 M_{\Co\En} = \begin{pmatrix}1&0\\ 1&0\\ 0&I_{10}\end{pmatrix},
 \qquad
-M_{\En\mathrm{dP}} = \begin{pmatrix}I_{12}\\ 0_{8\times4}\mid -I_8\end{pmatrix},
+M_{\En\mathrm{dP}} = \begin{pmatrix}I_2&0&0\\ 0&I_2&0\\ 0&0&I_8\\ 0&0&-I_8\end{pmatrix},
 \qquad
 M_{\mathrm{dP}\lkt} =
 \begin{pmatrix}
@@ -1724,7 +1724,7 @@ I_2&0&0&0\\
 0&0&0&I_8
 \end{pmatrix},
 $$
-of shapes $12\times11$, $20\times12$ and $22\times20$, the rows and columns being ordered by the summands of the displays.
+of shapes $12\times11$, $20\times12$ and $22\times20$. The blocks are those of the summands $(U_1,\ \Delta^-(U_2,U_3),\ E_{8,1},\ E_{8,2})$: in $M_{\Co\En}$ the row blocks have sizes $1,1,10$ and the column blocks $1,10$; in $M_{\En\mathrm{dP}}$ they are $2,2,8,8$ and $2,2,8$; in $M_{\mathrm{dP}\lkt}$ they are $2,2,2,8,8$ and $2,2,8,8$.
 3. $M_{\mathrm{dP}\lkt}\,M_{\En\mathrm{dP}}\,M_{\Co\En}$ is the coordinate matrix of $T_\Co$ in the standard basis. The first factor is the map $\eta$ of @lem:primitive_embedding_eta, $h\mapsto\tilde e+\tilde f = e_0+e_1$ and the identity on $E_{10}(2) = \Delta^-(U_2,U_3)\oplus\Delta^-(E_{8,1},E_{8,2})$; and the composite equals the map $(h,x,y)\mapsto(\tilde e+\tilde f,\,x,\,(y,y))$ of @lem:sequence_of_embeddings after the isometry $\sigma$ of $\lkt$ that is the identity on $U_1,U_2,U_3$ and $-\id$ on $E_{8,2}$.
 4. The four members have the invariants
 
