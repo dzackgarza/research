@@ -12,14 +12,15 @@ writing/coble/compactifications/toroidal-and-semitoroidal.md:
     thm:semifan-recognizable-divisor  the closed form, conditional on (W)
     prop:semifan-coarsening-extension (W) <=> extension of the universal family
     prop:semifan-coarsening-fails  (W) fails for ABE22's elliptic divisor
-    rmk:recognizable-gap           that divisor is not known recognizable, so (W) is open
+    rmk:recognizable-gap           why that alone does not settle it, and the statement that does
     thm:cone-inventory-printed     the cones at the F_2 cusp, from AET23 p. 22
-    rmk:missing-stable-limit       the contract of the operation the split needs
+    rmk:missing-stable-limit       the contract of the operation a general cusp needs
+    lem:rcop-refinement-criterion  proved: (W) fails for R_rcop at the F_2 cusp
 
-What is not settled is one computation: the KSBA stable limit of $(X,\\eps R_\\rcop)$ over a
-cone, hence the split $I\\sqcup J$.  The row for it below is marked xfail(strict=True): it is
-red today, and it turns red-for-the-opposite-reason the day a record lands without the page
-being updated, which is the point of a strict marker here.
+What is not settled is the split $I\\sqcup J$ at the $0$-cusps of $F_{2d}$ for $d\\ge2$: the
+KSBA stable limit of $(X,\\eps R_\\rcop)$ over a cone is not an operation of `sage-extensions`.
+The row for it below is marked xfail(strict=True): it is red today, and it turns
+red-for-the-opposite-reason the day a record lands without the page being updated.
 
 Run it with
 
@@ -90,16 +91,24 @@ def test_the_general_theorem_is_on_the_page():
 
 
 def test_the_withdrawn_counterexample_is_not_back():
-    """The referee's finding: the identification from R_rc to ABE22's divisor does not hold."""
+    """The withdrawn theorem stays withdrawn; the gap is closed by a named source, not by it.
+
+    The referee's finding stands: proportionality of divisor classes does not identify the two
+    compactifications.  What replaces the withdrawn argument is AE23's own identification of
+    the restriction of the semifan with ABE22's fan, through the stratum function, so the page
+    must name that source and must not resurrect the withdrawn identifier.
+    """
     text = page_text()
     assert "#thm:recognizable-fails-W" not in text
     gap = text[text.index("#rmk:recognizable-gap"):]
     gap = gap[: gap.index("\n:::")] if "\n:::" in gap else gap
     assert "only up to proportionality" in gap
-    assert "Whether a **recognizable** divisor can fail (W) is open" in gap
-    assert "not known to be recognizable" in REGISTER.read_text(encoding="utf-8")
+    assert "does not by itself exhibit a recognizable divisor" in gap
+    assert "AE23, Thm. 10.16, printed p. 38" in gap
+    register = REGISTER.read_text(encoding="utf-8")
+    assert "answered affirmatively by @lem:rcop-refinement-criterion" in register
     dissertation = DISSERTATION.read_text(encoding="utf-8")
-    assert "recognizable divisor failing the coarsening hypothesis" in dissertation
+    assert "That a recognizable divisor does fail it is @lem:rcop-refinement-criterion" in dissertation
 
 
 def test_the_proportionality_probe_reproduces_its_record():
@@ -192,44 +201,50 @@ def test_the_four_records_of_the_unit_are_committed():
         assert (REPORTS / name).exists(), name
 
 
-def test_the_single_lemma_is_stated_with_its_smallest_test():
-    """The reduction to one lemma: its hypotheses, its smallest test, and its two excluded routes.
+def test_the_lemma_is_proved_from_the_published_sources():
+    """lem:rcop-refinement-criterion is decided, and the proof names its sources by page.
 
-    lem:rcop-refinement-criterion is the one statement whose proof closes the unit.  The page must
-    keep stating it for d = 1 at the single cusp, name the open cell as the smallest test, and say
-    that the Heegner-restriction route needs prob:restricted-semifan -- otherwise a later session
-    will spend the loop again looking for that cheaper route.
+    AE23 Prop. 10.10 (printed p. 36) identifies the rational-curve divisor on the unigonal
+    locus, AE23 Thm. 10.16 (printed p. 38) identifies the restriction of its semifan to the
+    unigonal hyperplane with the ABE22 fan and makes each of its maximal cones a cone of the
+    semifan, and ABE22 Sec. 4C (printed p. 14) with its Fig. 1 (printed p. 12) supplies the
+    two cutting vectors.  The proof must keep the page citations and the mirror-trace step.
     """
     page = page_text()
-    block = page[page.index("#lem:rcop-refinement-criterion"):]
-    block = block[: block.index("\n:::")] if "\n:::" in block else block
+    start = page.index("#lem:rcop-refinement-criterion")
+    block = page[start:page.index("#qst:recognizable-semifan")]
     assert "is not a union of cones of" in block
-    assert "the open cell" in block
-    assert "@prob:restricted-semifan" in block
-    assert "does not apply to" in block
+    assert "AE23, Prop. 10.10, printed p. 36" in block
+    assert "AE23, Thm. 10.16, printed p. 38" in block
+    assert "ABE22, §4C, printed p. 14" in block
+    assert "ABE22, Fig. 1, printed p. 12" in block
+    assert "AET23, Def. 4.1, printed p. 21" in block
+    assert "AET23, Fig. 1, printed p. 22" in block
+    assert "mirror of a root other than $t^\\perp$" in block
+    assert "@prop:semifan-coarsening-extension" in block
+    assert "::: {.proof}" in block
 
 
-def test_the_two_open_rows_are_known_to_be_one_computation():
-    """The reduction: among the divisors known to be recognizable, only R_rc is uncomputed.
+def test_the_two_questions_are_reduced_to_one_inventory():
+    """The inventory, and what the lemma leaves of it: the cusps of F_2d for d >= 2.
 
-    The inventory names the divisors the deposits carry a recognizability proof for -- the
-    ramification divisor in its fixed-locus and Enriques forms, and R_rc.  (W) is computed for
-    the first class in three families and for the second class nowhere, so question 1 and
-    question 2 are one computation except for the uncomputed cusps of the first class.  The
-    page must keep saying that, and the register row must keep both questions.
+    The deposits carry a recognizability proof for two classes of divisor -- the ramification
+    divisor in its fixed-locus and Enriques forms, and R_rc.  (W) is computed for the first
+    class in three families and, for the second, at the unique F_2 cusp by
+    lem:rcop-refinement-criterion; what remains is the second class at d >= 2.  The page must
+    keep the inventory and the register row must keep the remaining question.
     """
     page = page_text()
     block = page[page.index("#rmk:two-questions-are-one"):]
     block = block[: block.index("\n:::")] if "\n:::" in block else block
     assert "only two classes of polarizing divisor carry a recognizability proof" in block
     assert "the fifty two-elementary lattices with $g\\ge2$" in block
-    assert "no residue left" not in block
-    assert "With that residue gone, question 1 is decided exactly when question 2 is" in block
-    assert "answers question 1 affirmatively with a recognizable divisor" in block
+    assert "hypothesis (W) fails for $R_{\\rcop}$ at the unique $0$-cusp of $F_2$" in block
+    assert "for $d\\ge2$" in block
     register = REGISTER.read_text(encoding="utf-8")
     row = [line for line in register.splitlines() if "qst:recognizable-semifan" in line][0]
     assert "whether a *recognizable* divisor can fail" in row
-    assert "the cones of $\\mcf_{R_\\rcop}$ itself" in row
+    assert "at the $0$-cusps of $F_{2d}$ for $d\\ge2$" in row
 
 
 def test_no_bound_on_the_search_delivers_the_chamber():
@@ -279,24 +294,27 @@ def test_the_two_blockers_of_the_open_rows_are_what_the_records_say():
         assert bound in page, "the page no longer quotes the %s s bound" % bound
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="no record decides whether a recognizable divisor can fail (W): the only candidate, "
-    "s + m sum f_i, is not known to be recognizable for the elliptic locus (rmk:recognizable-gap)",
-)
 def test_a_recognizable_divisor_failing_the_coarsening_is_exhibited():
-    """Question 1 of qst:recognizable-semifan: a recognizable divisor whose semifan refines."""
-    record = REPORTS / "coble_679-recognizable-W-fails-run.txt"
-    assert record.exists(), "no record: no recognizable divisor is known to fail (W)"
-    text = record.read_text(encoding="utf-8")
-    assert "recognizable" in text and "coarsen" in text
+    """Question 1 of qst:recognizable-semifan, decided in prose from the published sources.
+
+    The issue accepts a proof, a disproof or a computation record.  The proof is
+    lem:rcop-refinement-criterion: R_rcop is recognizable (AE23 Thm. 10.11, printed p. 36) and
+    (W) fails for it at the unique F_2 cusp, so the universal family of stable pairs does not
+    extend over the Coxeter toroidal compactification.  No computation record is claimed, and
+    the test therefore asserts the proof rather than a transcript.
+    """
+    page = page_text()
+    assert "the rational-curve divisor $R_{\\rcop}$ on $F_2$ is recognizable [@AE23, Thm. 10.11, printed p. 36]" in page
+    assert "does not extend over the Coxeter toroidal compactification" in page
+    assert "hypothesis (W) fails for $R_{\\rcop}$" in page
 
 
 @pytest.mark.xfail(
     strict=True,
-    reason="no record decides the split: the KSBA stable limit of (X, eps R_rc) over a cone is "
-    "not an operation of sage-extensions (rmk:missing-stable-limit), and the walk to the "
-    "chamber at the F_2 cusp does not finish in 2400 s",
+    reason="no record decides the split at the cusps of F_2d for d >= 2: the KSBA stable limit "
+    "of (X, eps R_rc) over a cone is not an operation of sage-extensions "
+    "(rmk:missing-stable-limit), and the walk to the chamber at the F_2 cusp does not finish "
+    "in 2400 s",
 )
 def test_the_split_for_the_rational_curve_divisor_is_decided():
     """Acceptance item 1's remaining clause: the split I | J and the cones for R_rc on F_2d."""
