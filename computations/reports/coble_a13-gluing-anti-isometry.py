@@ -14,13 +14,13 @@ e_{6+k} <-> e_{14+k}.
 
 The announced gluing, and what is checked.
 
-For w in U_2 + U_3 or in E8_1, write (w,w) for its image in the doubled summand and
-(w,-w) for the corresponding antidiagonal vector.  Then
+For w in U_2 or in E8_1, write (w,+-w) = w +- iota(w) for its image in the doubled summand
+and the corresponding antidiagonal vector.  Then
 
     gamma_Co([alpha/2]) = [beta/2],        gamma_Co([(w,w)/2]) = [(w,-w)/2],
 
 on the eleven classes [alpha/2], [(e_2+e_4)/2], [(e_3+e_5)/2], [(e_{6+k}+e_{14+k})/2], which are
-a Z/2-basis of A_{S_Co}; the corresponding gluing vectors alpha/2 + beta/2 = e_1,
+a Z/2-basis of A_{S_Co}; the corresponding gluing vectors alpha/2 + beta/2 = e_0,
 (e_2+e_4)/2 + (e_2-e_4)/2 = e_2, e_3, e_{6+k} are eleven standard basis vectors of lkt.
 
 What is decided here, in this order: that the eleven classes are a basis of A_{S_Co}; that the
