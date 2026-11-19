@@ -38,6 +38,38 @@ source or rejected with a citation:
      @prop:del-pezzo-placement.  FIXED to "the sum of the hyperbolic basis e = e_2+e_4,
      f = e_3+e_5 of the summand Delta(U_2,U_3) = U(2)".
 
+## The second, third and fourth fresh-context auditors (same swarm, same session)
+
+Three further members audited the same artifacts independently.  Their new flags, and the
+dispositions:
+
+  F6 "bonds" (edges of a Coxeter diagram; thm:diagram-roots-coordinates).  REJECTED with a
+     citation: "bond" is Bourbaki's own word for the edge of a Coxeter/Dynkin graph -- "the nodes
+     and bonds in the following way", Ch. VI Sec. 4, printed p. 208, deposited at
+     tmp/sources/bourbaki-lie-groups-chapters-4-6-2008.pdf -- and the word is the corpus's
+     throughout.  The citation is now given where the theorem uses the word.
+
+  F7 "E_8(2)" against "E_8(-1)(2)" for one and the same block.  UPHELD as an inconsistency, with
+     the correction running the auditors' way round from their proposal: in this corpus E_8 is
+     the NEGATIVE definite lattice (:1308 "where E_8 is negative definite in that definition's
+     convention"; :1417), so E_8(2) is the right spelling and E_8(-1)(2) the wrong one.  FIXED:
+     the three occurrences of E_8(-1)(2) are E_8(2), the sentence now says the block is negative
+     definite of Gram diag(-4) by @def:enriques-lattice, and the theta transcript prints E8(2).
+
+  F8 "saturated kernels" (the remark and the library record).  UPHELD: the compound is no
+     source's noun, though "saturated" is standard for "primitive".  FIXED to the invariant
+     lattices ker(theta_Co +- 1), each taken as a primitive sublattice with its inclusion.
+
+  F9 "the correspondence of the two copies" (register note).  UPHELD: the object is an
+     automorphism of the diagram.  FIXED to "an automorphism of the diagram: node k to node 18-k".
+
+  F10 "slot" (all three auditors, as an engineering noun on a summand).  PARTLY ACCEPTED: the
+     word is this program's own label for the del Pezzo summand, introduced at
+     @prop:del-pezzo-placement, and it is kept there; it is removed from the two transcript lines
+     where it stood for the summand in general, which now name Delta(U_2,U_3) = U(2).  The label's
+     introduction on the page is named here for that page's owner rather than rewritten from this
+     issue.
+
 ## The required instrument, and its path
 
 research#81 requires, before any correction ships:

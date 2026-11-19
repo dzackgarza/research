@@ -256,7 +256,7 @@ print("7. the Gram matrices of the two eigenspaces")
 print("   S_Co = ker(theta_Co + 1), basis alpha, e_2+e_4, e_3+e_5, e_{6+k}+e_{14+k}:")
 print("     <alpha>    %s" % [[int(GS[0, 0])]])
 print("     U(2)       %s" % [[int(GS[i, j]) for j in (1, 2)] for i in (1, 2)])
-print("     E8(-1)(2)  diag %s" % [int(GS[3 + k, 3 + k]) for k in range(8)])
+print("     E8(2)      diag %s" % [int(GS[3 + k, 3 + k]) for k in range(8)])
 report("S_Co", GS)
 print("     the three blocks are pairwise orthogonal %s"
       % all(GS[i, j] == 0 for i in range(11) for j in range(11)
@@ -264,7 +264,7 @@ print("     the three blocks are pairwise orthogonal %s"
 print("   T_Co = ker(theta_Co - 1), basis beta, e_2-e_4, e_3-e_5, e_{6+k}-e_{14+k}:")
 print("     <beta>     %s" % [[int(GT[0, 0])]])
 print("     U(2)       %s" % [[int(GT[i, j]) for j in (1, 2)] for i in (1, 2)])
-print("     E8(-1)(2)  diag %s" % [int(GT[3 + k, 3 + k]) for k in range(8)])
+print("     E8(2)      diag %s" % [int(GT[3 + k, 3 + k]) for k in range(8)])
 report("T_Co", GT)
 print("     the three blocks are pairwise orthogonal %s"
       % all(GT[i, j] == 0 for i in range(11) for j in range(11)

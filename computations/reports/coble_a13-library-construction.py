@@ -29,8 +29,8 @@ What is built, in order.
      negation of the two E8 summands), through the library's isometry constructor L.O().
   3. w = s_alpha the library's reflection in alpha = e_0 - e_1, and theta_Co = -w . I_En.
      Its integrality and form preservation are the constructor's; its order two is checked.
-  4. S_Co = the saturated kernel of theta_Co + 1 and T_Co = the saturated kernel of
-     theta_Co - 1, each as a primitive sublattice with its inclusion into L; the two are
+  4. S_Co = the invariant lattice ker(theta_Co + 1) and T_Co = ker(theta_Co - 1), each taken as a
+     primitive sublattice with its inclusion into L; the two are
      compared with S_Co = ker(J_Co - 1) and T_Co = S_Co^perp, the latter through
      orthogonal_complement, so primitivity and orthogonality are the library's.
   5. The isometry types, decided by is_isometric_to against the lattices the sources name:
@@ -158,17 +158,17 @@ for i in range(n):
     print('    ' + ' '.join('%2d' % int(M_theta[i, j]) for j in range(n)))
 stamp('theta_Co built')
 
-# --------------------------------------------------------------- 4. the saturated kernels
-print('4. the eigenspaces as saturated kernels, with their inclusions into L')
+# ---------------------------------------------------- 4. the invariant lattices
+print('4. the eigenspaces as the invariant lattices ker(theta_Co -+ 1), primitive, with inclusions')
 S_Co = L.primitive_sublattice_from(
     [vec(dict(enumerate([int(c) for c in r])))
      for r in (M_theta + identity_matrix(ZZ, n)).kernel().basis_matrix().rows()])
 T_Co = L.primitive_sublattice_from(
     [vec(dict(enumerate([int(c) for c in r])))
      for r in (M_theta - identity_matrix(ZZ, n)).kernel().basis_matrix().rows()])
-print('   S_Co = saturated ker(theta_Co + 1): rank %d, det %d, sig %s'
+print('   S_Co = prim ker(theta_Co + 1): rank %d, det %d, sig %s'
       % (S_Co.rank(), int(S_Co.determinant()), S_Co.signature_pair()))
-print('   T_Co = saturated ker(theta_Co - 1): rank %d, det %d, sig %s'
+print('   T_Co = prim ker(theta_Co - 1): rank %d, det %d, sig %s'
       % (T_Co.rank(), int(T_Co.determinant()), T_Co.signature_pair()))
 T_Co_oc = L.orthogonal_complement(S_Co)
 print('   T_Co = S_Co^perp through L.orthogonal_complement: same lattice: %s'
@@ -253,7 +253,7 @@ print('   object and the glue subgroup, not a second table.')
 stamp('gluing built')
 
 # --------------------------------------------------------------- 7. the chain
-print('7. the chain T_Co -> T_En -> T_dP -> L, each member a saturated kernel of its involution')
+print('7. the chain T_Co -> T_En -> T_dP -> L, each member an invariant lattice of its involution')
 M_En = is_matrix(I_En)
 M_dP = is_matrix(I_dP)
 T_En = L.primitive_sublattice_from(

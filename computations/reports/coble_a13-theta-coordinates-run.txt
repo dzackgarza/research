@@ -86,13 +86,13 @@ provenance
    S_Co = ker(theta_Co + 1), basis alpha, e_2+e_4, e_3+e_5, e_{6+k}+e_{14+k}:
      <alpha>    [[-2]]
      U(2)       [[0, 2], [2, 0]]
-     E8(-1)(2)  diag [-4, -4, -4, -4, -4, -4, -4, -4]
+     E8(2)      diag [-4, -4, -4, -4, -4, -4, -4, -4]
      S_Co   rank 11, det 2048, even True, signature (1, 10), SNF [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2], coparity delta = 1
      the three blocks are pairwise orthogonal True
    T_Co = ker(theta_Co - 1), basis beta, e_2-e_4, e_3-e_5, e_{6+k}-e_{14+k}:
      <beta>     [[2]]
      U(2)       [[0, 2], [2, 0]]
-     E8(-1)(2)  diag [-4, -4, -4, -4, -4, -4, -4, -4]
+     E8(2)      diag [-4, -4, -4, -4, -4, -4, -4, -4]
      T_Co   rank 11, det -2048, even True, signature (2, 9), SNF [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2], coparity delta = 1
      the three blocks are pairwise orthogonal True
 

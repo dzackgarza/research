@@ -8,7 +8,7 @@ provenance
    rank 22, determinant -1, even True, signature (3, 19)
    summands: U_1 = e_0,e_1;  U_2 = e_2,e_3;  U_3 = e_4,e_5;  E8_1 = e_6..e_13;
              E8_2 = e_14..e_21, each E8 with Gram -Cartan(E8)
-  [   0.1s] L built
+  [   0.4s] L built
 2. I_En and I_dP of [@AEGS25, Def. 2.3, printed p. 586], defined on the named summands
    I_En: v -> -v on U_1, (u,u') -> (u',u) on U_2 + U_3, (e,e') -> (e',e) on E8_1 + E8_2
    I_dP: v -> -v on U_1, (u,u') -> (u',u), and -id on each E8 summand
@@ -16,7 +16,7 @@ provenance
         the (+1)- and (-1)-eigenspace ranks: 10 and 12
    I_dP  an isometry of L by construction; its square is the identity: True
         the (+1)- and (-1)-eigenspace ranks: 2 and 20
-  [   1.7s] involutions built
+  [   2.6s] involutions built
 3. alpha = e_0 - e_1, its reflection w, and theta_Co = -w . I_En
    alpha^2 = -2
    w = L.reflection(alpha): an integral isometry by construction; w^2 = 1: True
@@ -47,14 +47,14 @@ provenance
      0  0  0  0  0  0  0  0  0  0  0 -1  0  0  0  0  0  0  0  0  0  0
      0  0  0  0  0  0  0  0  0  0  0  0 -1  0  0  0  0  0  0  0  0  0
      0  0  0  0  0  0  0  0  0  0  0  0  0 -1  0  0  0  0  0  0  0  0
-  [   2.2s] theta_Co built
-4. the eigenspaces as saturated kernels, with their inclusions into L
-   S_Co = saturated ker(theta_Co + 1): rank 11, det 2048, sig (1, 10)
-   T_Co = saturated ker(theta_Co - 1): rank 11, det -2048, sig (2, 9)
+  [   3.7s] theta_Co built
+4. the eigenspaces as the invariant lattices ker(theta_Co -+ 1), primitive, with inclusions
+   S_Co = prim ker(theta_Co + 1): rank 11, det 2048, sig (1, 10)
+   T_Co = prim ker(theta_Co - 1): rank 11, det -2048, sig (2, 9)
    T_Co = S_Co^perp through L.orthogonal_complement: same lattice: True
    each carries its inclusion into L (S_Co.inclusion()), so primitivity is the
    construction's and not a separate check
-  [   2.5s] eigenspaces built
+  [   4.5s] eigenspaces built
 5. the isometry types, decided by is_isometric_to against the lattices the sources name
    the models, from the Gram data the sources print:
      <2> + <-2>^10 has rank 11, det 2048
@@ -63,7 +63,7 @@ provenance
    T_Co is isometric to <2> + U(2) + E8(2): True
    (the models are built from the Gram data the sources print; the decision is the
     library's isometry test, not a comparison of matrices)
-  [  10.4s] types decided
+  [  23.4s] types decided
 6. the index and the gluing anti-isometry, from the finite-index inclusion
    S_Co + T_Co -> L: rank 22, |determinant| 4194304
    [L : S_Co + T_Co]^2 = |det(S_Co + T_Co)| / |det L| = 4194304, so the index is 2048
@@ -79,8 +79,8 @@ provenance
    eleven class values (each with exactly one integrable representative) and the sum
    q_T(gamma x) + q_S(x) = 0 on all 2048 classes.  This record contributes the morphism
    object and the glue subgroup, not a second table.
-  [ 135.1s] gluing built
-7. the chain T_Co -> T_En -> T_dP -> L, each member a saturated kernel of its involution
+  [ 384.0s] gluing built
+7. the chain T_Co -> T_En -> T_dP -> L, each member an invariant lattice of its involution
    T_Co  rank 11, det  -2048, sig (2, 9)
    T_En  rank 12, det   1024, sig (2, 10)
    T_dP  rank 20, det      4, sig (2, 18)
@@ -88,7 +88,7 @@ provenance
    T_En is isometric to U + U(2) + E8(2): True
    T_dP is isometric to U + U(2) + E8^2: True
    S_dP is isometric to U(2): True
-  [ 136.3s] chain built
+  [ 385.3s] chain built
 8. the nineteen diagram roots as elements of L, and the polarization class
    w_8 and tilde w_8 as the fundamental weights dual to alpha_8, tilde alpha_8:
      (w_8, alpha_j) = delta_{8j}: True
@@ -96,7 +96,7 @@ provenance
    the nineteen roots are elements of L; their squares, through the library pairing:
      [-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2]
    H = e_2 + e_3 + e_4 + e_5, H^2 = 4, H.w = [0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-  [ 136.4s] roots placed
+  [ 385.4s] roots placed
 9. the induced action on the roots, computed from the library images
    theta_Co carries the copy W = U_2 + E8^2 onto W' = U_3 + E8^2, so the images of the
    nineteen roots of the diagram in W are the nineteen roots of the diagram in W':
