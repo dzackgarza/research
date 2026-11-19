@@ -1,0 +1,13 @@
+T_Co = <2> + U(2) + E8(2), rank 11
+the swap s of e', f': integral True, isometry True, fixes h True
+  acts trivially on A_{T_Co}: False
+  preserves the E8(2) part of A_{T_Co}: True
+  and swaps the two classes [e'/2], [f'/2] of A_{U(2)}: True
+
+so rho(s) preserves the decomposition [h/2]^perp = A_{U(2)} + A_{E_8(2)}, i.e. rho(s) lies in the
+P of @prop:gamma-co-images(3); hence s lies in rho^{-1}(P) = Gamma_{Co,2} and the polarized
+monodromy is NOT contained in ker(rho_{T_Co}).
+
+verdict: the discriminant kernel is strictly smaller than Gamma_{Co,2}.  Item 1e asks the same
+question for the unpolarized monodromy Gamma_Co, which this probe does not decide; what it
+removes is the inference from the polarized family to the unpolarized one.
