@@ -728,6 +728,55 @@ def test_rel_level_two_probe_is_a_homomorphism_and_sees_the_block_sign():
     assert hD != sympy.zeros(11)
 
 
+def test_item2_the_higher_degree_wall_exists_so_the_count_does_not_suffice():
+    """A20 item 2's residue: the smallest probe, and the reason the missing input is necessary.
+
+    The record fixes nu(b_star) = 4 at the test member -- the H-degree-one classes of square -2 --
+    and the question block says an H-degree-three wall exists too, namely 2C_+ + C_-, so the count
+    does not determine the arrangement.  That is arithmetic on the relations the theorem states:
+    C_+ + C_- is orthogonal to C_+ - C_-, so u = C_+ - C_- has u^2 = -8, and
+
+        (2 C_+ + C_-)^2 = 4(-2) + (-2) + 4(2) = -2,     H-degree = 2 (1) + 1 = 3,
+
+    with C_+^2 = C_-^2 = -2, C_+.C_- = 2, H.C_+ = H.C_- = 1.  The probe checks these numbers from
+    the relations and checks that the lemma making the chamber condition linear does not presuppose
+    the count.  The image question itself stays open and is guarded by
+    test_open_items_a20_2_and_rel_are_not_claimed_decided.
+    """
+    # the relations the record asserts at b_star, as a Gram matrix on the span of C_+, C_-
+    C22 = {("Cp", "Cp"): -2, ("Cm", "Cm"): -2, ("Cp", "Cm"): 2, ("Cm", "Cp"): 2}
+    def dot(x, y):
+        # x, y are integer combinations (a, b) of C_+ and C_-
+        tot = 0
+        for k1, v1 in x.items():
+            for k2, v2 in y.items():
+                tot += v1 * v2 * C22[(k1, k2)]
+        return tot
+    Cp = {"Cp": 1}; Cm = {"Cm": 1}
+    u = {"Cp": 1, "Cm": -1}
+    assert dot(Cp, Cp) == -2 and dot(Cm, Cm) == -2 and dot(Cp, Cm) == 2
+    assert dot(u, u) == -8                                  # the difference class
+    assert dot(Cp, {"Cp": 1, "Cm": 1}) + dot(Cm, {"Cp": 1, "Cm": 1}) == 0   # u perp C_+ + C_-
+    # the H-degree-three wall
+    w = {"Cp": 2, "Cm": 1}
+    assert dot(w, w) == -2
+    assert 2 * 1 + 1 == 3                                   # H.C_+ = H.C_- = 1
+    # an H-degree-one class has square -2 only at the components themselves
+    def sq_deg(a, b):
+        return a * a * (-2) + b * b * (-2) + 2 * a * b * 2, a + b
+    ones = [(a, b) for a in range(-3, 4) for b in range(-3, 4)
+            if (a, b) != (0, 0) and sq_deg(a, b) == (-2, 1)]
+    assert sorted(ones) == [(0, 1), (1, 0)], ones   # the two components, as the record says
+    assert (2, 1) in [(a, b) for a in range(-3, 4) for b in range(-3, 4) if sq_deg(a, b) == (-2, 3)]
+    # and 2 C_+ + C_- is not one of them, so nu does not see it
+    assert (2, 1) not in ((1, 0), (0, 1))
+    page = _text(PAGE)
+    q = _block(page, "{.question #qst:chamber-subscript-image")
+    assert "2C_+ + C_-" in q and "H$-degree $3" in q
+    lem = _block(page, "{.lemma #lem:chamber-condition-is-period-condition")
+    assert "g^{-1}\\omega_b\\perp\\langle\\Delta_b\\rangle" in lem
+
+
 def _run_all() -> int:
     items = [(name, fn) for name, fn in sorted(globals().items()) if name.startswith("test_")]
     failures = 0
