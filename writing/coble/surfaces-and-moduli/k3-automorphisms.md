@@ -11,7 +11,7 @@ the same order as the automorphism.
 
 Let $G$ be a finite group acting faithfully on a complex K3 surface.
 If every element acts symplectically, then $|G|\leq960$; equality is
-attained by the Mathieu group $M_{20}$ [@Muk88].
+attained by the Mathieu group $M_{20}$ [@Muk88, Thm. 0.6 and Ex. 0.4].
 Without the symplectic condition, $|G|\leq3840$, and the maximal group
 contains $M_{20}$ with index $4$ [@Kon99].
 These are bounds on **finite subgroups**; $\Aut(X)$ itself can be
@@ -29,7 +29,7 @@ $$
 [@Huy16, Thm. 15.3.13; @GS08].
 The quotient by a finite symplectic group can have ADE singularities;
 its **minimal resolution** is a K3 surface. The singular quotient
-itself need not be smooth [@Muk88].
+itself need not be smooth [@Muk88, Prop. 8.10].
 
 ## Gluing and the automorphism group
 

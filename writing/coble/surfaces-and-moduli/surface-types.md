@@ -200,7 +200,7 @@ Thus $|L|$, when basepoint-free, maps to
 $\PP^{\,1+L^2/2}$. In degree $4$ the map can be hyperelliptic,
 of degree two onto a quadric, or birational onto a quartic surface;
 the degree alone does not choose the model
-[@Huy16, §2.1; @Sai74].
+[@Huy16, §2.1; @Sai74, Thm. 5.2].
 :::
 
 ::: {.proposition #prop:k3-elliptic-isotropic title="Isotropic classes and genus-one fibrations"}
@@ -210,7 +210,7 @@ with $v^2=0$. In the forward direction the fibre gives such a class.
 Conversely, Riemann--Roch makes one of $v,-v$ effective. Reflections
 in effective $(-2)$-classes move an effective primitive isotropic class
 to the nef cone; its complete linear system is a basepoint-free
-genus-one pencil [@Huy16, Ch. 11].
+genus-one pencil [@Huy16, Prop. 11.1.3 and Rem. 8.2.13].
 The statement concerns a genus-one fibration. A section, which makes
 it Jacobian, is additional data.
 :::
