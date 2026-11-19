@@ -36,12 +36,18 @@ and it states *algorithms* -- Algorithms 2.1, 2.2 and 2.3 for finding orbits of 
 subgroups of O(L), with software, and Algorithms 3.2 and 3.4 for Tits buildings in signature (2,n) --
 not a closed form for a prescribed lattice and subgroup.  Running it is the missing computation, and
 the book's own records say the subgroup-orbit operation is not available in the provider
-(sage-extensions#286, cited at rmk:gamma-co-counts: "no count on this page is read off it").  What
-the reduction does give, and it is worth recording: for a divisibility-2 vector v = 2x and k of
-divisibility 1, beta(v,k) = 2 beta(x,k) is even and, since beta(.,k): L -> Z is onto, a vector of
-the same *class* can be chosen orthogonal to k.  So the class-level obstruction to Phi being onto
-vanishes, and 1f is equivalent to the fibre-singleton statement alone -- the analogue of
-thm:coble-zero-cusp-count(1) (one kernel orbit per class) for T_En rather than T_Co.
+(sage-extensions#286, cited at rmk:gamma-co-counts: "no count on this page is read off it").  Withdrawn
+below, after one turn, is the further claim that this would reduce 1f to a class-level statement.
+
+WITHDRAWN, 2026-11-19, after one turn: an argument that "for a divisibility-2 vector v = 2x and k of
+divisibility 1, beta(v,k) = 2 beta(x,k) is even and, since beta(.,k) is onto, a vector of the same
+*class* can be chosen orthogonal to k, so the class-level obstruction vanishes and 1f reduces to the
+fibre-singleton statement".  The step is false: adding 2w preserves the class but not isotropy,
+since (v + 2w)^2 = 4(v.w) + 4 w^2 is not zero in general.  What survives is the parity statement
+alone -- beta(v,k) is even for divisibility-2 v -- which does not produce an orthogonal vector inside
+an orbit.  So there is no class-level reduction of 1f: it is an orbit computation for Gamma_En on the
+divisibility-2 primitive isotropic vectors, and the fibre-singleton statement is one way to get it,
+not an equivalent form of it.
 
 STATE: item 1f is NOT MET.  The class-level proposition is proved and the orbit question is open and
 recorded as open; no page claims surjectivity onto the divisibility-2 locus.
