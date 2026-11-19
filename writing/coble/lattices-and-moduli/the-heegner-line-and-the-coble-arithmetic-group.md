@@ -2994,6 +2994,26 @@ The natural attempt on the membership query of research#720 (REL) is this. The b
 That transport is invalid, and @lem:minus-two-vectors-use-the-two-summand is why: the reflections generating $W(T_\Co)$ are those in vectors of square $-2$, and every such vector has odd coefficient on $\langle\zeta\rangle$; the reflections in $E_8(2)$'s own vectors have square $-4$ and lie outside $\ker\rho_{T_\Co}$. So the $E_8(2)$ summand carries no generator of $W(T_\Co)$ at all, and the query cannot be answered inside it. What the lemma does give in the other direction is a constraint on any positive answer: a word for $\delta_{E_8}$ has to use vectors with nonzero $U(2)$ and $\langle\zeta\rangle$ parts, and those act nontrivially on the other summands in general.
 :::
 
+::: {.proposition #prop:level-two-blind-to-the-block-sign title="The block sign maps to zero in the level-two shadow, so no abelian invariant of the congruence subgroup separates it"}
+
+Let $T_\Co = B(2)$ and let $h(g)\in\End_{\F_2}(B/2B)$ be defined by $g = \id + 2h$ for $g\in\Orth(T_\Co)$ congruent to the identity modulo $2$. Then
+
+1. $W(T_\Co)$ lies in that congruence subgroup, and $h(s_v)\neq0$ for every $v$ of square $-2$;
+2. $h(\delta_{E_8}) = 0$, where $\delta_{E_8}$ is the block sign of @lem:block-signs-not-both-in-w;
+3. consequently no invariant of the form $\lambda\circ h$, with $\lambda$ a linear functional on $\End_{\F_2}(B/2B)$, vanishes on $W(T_\Co)$ and takes a nonzero value at $\delta_{E_8}$.
+
+So the level-two shadow is not merely too coarse for the membership query of research#720 (REL): it is blind to the query's subject, and the query needs data that is neither abelian at level $2$ nor a functional of it.
+:::
+
+::: {.proof}
+
+(1) Every pairing in $T_\Co$ is even, so $(x\cdot v)\in2\ZZ$ for all $x$ and $s_v(x)-x = (x\cdot v)v\in2T_\Co$; hence $s_v\equiv\id\pmod2$ and $h(s_v)$ is defined. It is nonzero: in the coordinates of $B$, $h(s_v)(\bar x) = \overline{(x\cdot v)/2}\cdot \bar v$, and choosing $x$ with $(x\cdot v)/2$ odd, which is possible because $v$ is primitive in $B$ and $B$ unimodular, gives $\bar v\neq0$.
+
+(2) A scalar $-1$ is $1$ modulo $2$, so $\delta_{E_8}\equiv\id\pmod2$ and $h(\delta_{E_8}) = 0$ by the definition $g = \id + 2h$.
+
+(3) If $\lambda\circ h$ vanishes on $W$ then in particular it vanishes at every $s_v$; that says nothing about $\delta_{E_8}$, where $\lambda\circ h$ evaluates to $\lambda(0) = 0$. So no such functional separates $\delta_{E_8}$ from $W$, and a fortiori no abelian quotient of the congruence subgroup through which $h$ factors does.
+:::
+
 ::: {.proposition #prop:kernel-exceeds-short-roots title="The congruence kernel is strictly larger than the short-root reflection group"}
 
 Let $g\in T_\Co$ span the $\langle 2\rangle$ summand of $T_\Co = \langle 2\rangle\oplus U(2)\oplus E_8(2)$, and let $s_g(x) = x-(x\cdot g)g$ be the reflection in it. Then
