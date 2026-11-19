@@ -1,0 +1,12 @@
+T_Co = <2> + U(2) + E8(2), rank 11
+the reflection s_h in the <2> summand: h^2 = 2
+  integral True   isometry True   acts trivially on A_{T_Co} True
+  spinor norm [-h^2/2] = [-1], the class -1: so s_h is NOT in O^+(T_Co)
+
+reflections in (-2)-vectors checked (basis vectors, sums of two and of three): 47
+  all integral, isometric, and trivial on A_{T_Co}; spinor norm [-(-2)/2] = [1], so in O^+
+
+consequence: ker(rho_{T_Co}) strictly contains the reflection group of the (-2)-vectors, and it
+  is not contained in O^+(T_Co) because s_h is outside O^+.  With the sign lemma, item 1e is
+  therefore the statement Gamma_Co <= O~+(T_Co) = ker(rho) cap O^+, whose remaining input is the
+  monodromy side (@qst:gamma-co-generators, qst:gamma-co-reflection-index).
