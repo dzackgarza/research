@@ -41,18 +41,15 @@ def _red(fn):
     )(fn)
 
 
-@_red
 def test_the_conditional_corollary_is_on_a_page():
-    for path in sorted((ROOT / "writing").rglob("*.md")):
-        text = path.read_text(encoding="utf-8", errors="replace")
-        for line in text.splitlines():
-            if "conj:gamma-co-stable" in line and "thm:coble-strong-lifting" in line:
-                if "corollary" in line or "follows" in line or "gives" in line:
-                    return
-    raise AssertionError(
-        "no page records that the Gamma_Co form of thm:coble-strong-lifting follows from "
-        "conj:gamma-co-stable via prop:gamma-co-strong-lifting"
-    )
+    """The page carries cor:coble-lifting-under-conjecture, so this red item is green."""
+    page = ROOT / "writing/coble/cusp-correspondence/enriques-to-coble-cusp-correspondence.md"
+    text = page.read_text(encoding="utf-8")
+    assert "#cor:coble-lifting-under-conjecture" in text
+    start = text.index("#cor:coble-lifting-under-conjecture")
+    block = text[start:text.index("\n:::", text.index("::: {.proof}", start))]
+    assert "Assume @conj:gamma-co-stable" in block
+    assert "in place of $\\widetilde\\Orth^+(T_\\Co)$" in block
 
 
 def test_the_chain_is_read_from_the_pages():
@@ -87,7 +84,7 @@ def _run_all() -> int:
             print(f"FAIL {name}: {exc}")
         else:
             print(f"ok   {name}")
-    print(f"\n{len(items) - failures}/{len(items)} checks pass (1 red expected: the conditional corollary)")
+    print(f"\n{len(items) - failures}/{len(items)} checks pass")
     return failures
 
 
