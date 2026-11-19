@@ -1,0 +1,11 @@
+T_En: rank 12, |A| = 1024, nonzero isotropic classes = 527
+T_Co: rank 11, |A| = 2048, nonzero isotropic classes = 527
+
+cross-check: thm:coble-zero-cusp-count(2) counts the stable 0-cusps of the Coble quotient as
+  527 = the number of nonzero isotropic classes of A_{T_Co}; computed here: 527
+and the image of Phi has that many elements, prop:cusp-map-injective giving injectivity.
+
+verdict: the lemma holds -- Phi's image is the set of 527 nonzero isotropic classes of
+  A_{T_En}, which is exactly the census, so every divisibility-2 class lies over a Coble
+  0-cusp.  The recorded witness w = 2e~ + e~' is one of them, consistent with the explicit
+  transvection of coble_658-stabilizer-image-probe.py.
