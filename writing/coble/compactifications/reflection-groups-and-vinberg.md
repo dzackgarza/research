@@ -86,11 +86,11 @@ As $A_L$ is $2$-elementary, $\div_L(v)\in\theset{1,2}$, so $2\mid\div_L(v)$ hold
 
 Let $L$ be an even $2$-elementary lattice and let $v\in L$ be primitive with $v^2 < 0$.
 Then $s_v\in\Orth(L)$ if and only if either $v^2 = -2$, or $v^2 = -4$ and $\div_L(v) = 2$.
+This is the description of roots in [@Ale22, §2], where a root is a vector $\alpha$ with $\alpha^2<0$ and $s_\alpha(L) = L$.
 :::
 
 ::: {.proof}
 
-This is [@Ale22, §2], where a root is a vector $\alpha$ with $\alpha^2<0$ and $s_\alpha(L) = L$.
 Sufficiency is @prop:root-integrality.
 For necessity, $\div_L(v)\in\theset{1, 2}$ by the proof of @prop:root-integrality, so the integrality condition $2\div_L(v)/v^2\in\ZZ$ of @def:k-root restricts $v^2$ to $\theset{-2, -4}$, with $\div_L(v) = 2$ forced in the second case.
 :::
@@ -319,7 +319,7 @@ If $\Gamma$ contains no Lannér subgraph (@def:lanner-subgraph), and every conne
 
 ::: {.proof}
 
-This is the sufficient condition of [@Vin75], in the form used in [@Ale22, §3].
+This is the sufficient condition of [@Vin75], in the form used in [@Ale22, proof of Thm. 1.5].
 :::
 
 ## Root-system conventions

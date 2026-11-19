@@ -146,7 +146,7 @@ Let $P\iscontainedin\HH^n_L$ be a Coxeter polytope (@def:coxeter-polytope) with 
 
 ::: {.proof}
 
-This is [@Vin67; @Vin85].
+This is [@Vin67, §3, eqs. (8) and (9)] and [@Vin85, Ch. I, §4.1].
 :::
 
 ::: {.corollary #cor:coxeter-simplex-volume title="The simplex case"}

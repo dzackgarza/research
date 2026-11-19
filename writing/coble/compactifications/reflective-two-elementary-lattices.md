@@ -32,11 +32,13 @@ For $\Gamma = W_r(S)$ and $\Gamma = W_2(S)$ these are the conditions of @def:ref
 Let $S$ be an even hyperbolic $2$-elementary lattice with invariants $(r,a,\delta)$.
 Then $a\leq r$, and if $S$ is reflective then $r\leq 20$ or $r = 22$.
 In particular there are only finitely many reflective even hyperbolic $2$-elementary lattices.
+This is stated in [@Ale22, §1], where the bound $r\leq 20$ or $r = 22$ is attributed to Esselmann.
 :::
 
 ::: {.proof}
 
-This is [@Ale22, §1], where the bound $r\leq 20$ or $r = 22$ is attributed to Esselmann.
+The discriminant group $(\ZZ/2)^a$ is a quotient of $\dualof{S}\cong\ZZ^r$, so $a\leq r$.
+The bound on $r$ is [@Ess96, Thm. 1]: no lattice of signature $(n,1)$ with $n\geq 22$ or $n = 20$ has a reflection group of finite index, and here $r = n+1$.
 Finiteness follows because an indefinite even $2$-elementary lattice is determined by its signature and $(r,a,\delta)$ (@thm:two-elementary-classification), and $\delta\in\theset{0,1}$.
 :::
 
@@ -257,7 +259,7 @@ So $\Orth^+(S) = W_r(S)\rtimes\Sym(P_r)$, and $P_r$ has finite volume because $W
 
 (2) An element $h\in\Sym(P_r)$ permutes the walls of $P_r$, say $h(H_s) = H_{\bar h(s)}$.
 Then $h\alpha_s$ is a root orthogonal to $H_{\bar h(s)}$ and nonnegative on $P_r$, and roots are primitive, so $h\alpha_s = \alpha_{\bar h(s)}$.
-Hence $\bar h$ preserves the norms $\alpha_s^2$ and the products $\alpha_s\cdot\alpha_t$, which determine the colours and edges of $\Gamma_r$ [@Ale22, §2], so $\bar h\in\Aut\Gamma_r$.
+Hence $\bar h$ preserves the norms $\alpha_s^2$ and the products $\alpha_s\cdot\alpha_t$, which determine the colours and edges of $\Gamma_r$ (@def:coxeter-vinberg-diagram), so $\bar h\in\Aut\Gamma_r$.
 Since $P_r$ has finite volume, it is nondegenerate, so no nonzero vector of $S_\RR$ is orthogonal to every $\alpha_s$ [@Vin85, Ch. I, §1.1]; that is, the $\alpha_s$ span $S_\RR$.
 An $h$ with $\bar h = \id$ fixes every $\alpha_s$, so $h = \id$.
 :::
@@ -473,7 +475,7 @@ For an even hyperbolic $2$-elementary lattice $S$ the quotient group $W_r(S)/W_2
 
 ::: {.proof}
 
-This is [@Ale22 §4].
+This is [@Ale22, proof of Lem. 4.1].
 :::
 
 ::: {.theorem #thm:k3-automorphism-sequence title="The automorphism group of a two-elementary K3 surface"}

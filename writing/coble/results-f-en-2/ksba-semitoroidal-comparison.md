@@ -23,8 +23,8 @@ of semifans, one for each $0$-cusp of the Baily--Borel compactification $\bbcpt{
 
 The proof is [@AEGS25, proof of Thm. 5.9].
 For a recognizable divisor $R$, the normalization of the KSBA compactification of K3 pairs $(X, \eps R)$ is semitoroidal (@thm:recognizable-semitoroidal).
-The ramification divisor of a nonsymplectic involution is recognizable (@ex:recognizable-divisors; [@AEH24]).
-For $\fttz$ the semifan of this compactification is the ramification semifan $\semifan{F}_{\ram}$ [@AE22].
+The ramification divisor of a nonsymplectic involution is recognizable (@ex:recognizable-divisors; [@AEH24, Thm. 3.24]).
+For $\fttz$ the semifan of this compactification is the ramification semifan $\semifan{F}_{\ram}$ [@AE22, Thm. 9.10].
 
 Let $B$ be the closure of the image of $\fentwo$ in $\ksbacpt{\fttz}$.
 The Enriques involution extends to the pulled-back family over $B$, and there is a classifying morphism $\normalize{B}\to\ksbacpt{\fentwo}$ (@prop:enriques-involution-extends).
