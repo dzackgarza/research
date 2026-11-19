@@ -126,7 +126,7 @@ It is obtained in one of two ways:
 
 - **Jacobian type**: as a blowdown of some disjoint sections, and possibly of components of one fibre, of a non-minimal rational elliptic surface with a section.
 
-A Coble surface of elliptic type admits a birational morphism onto $\PP^2$ [@DZ99, Introduction].
+A Coble surface of elliptic type admits a birational morphism onto $\PP^2$ [@DZ99, Thm. 4.3].
 :::
 
 ::: {.theorem #thm:dz-k3-type-criterion title="K3 type criterion"}
@@ -155,7 +155,7 @@ For a Coble surface (@def:coble-surface) $X$ the following are equivalent:
 
 ::: {.definition #def:rational-log-enriques title="Rational log Enriques surface of index 2"}
 
-A **rational log [Enriques surface]{.other-sense} of index $2$** is a normal rational surface $\bar X$ with at worst quotient singularities such that $\OO(-2K_{\bar X}) \cong \OO_{\bar X}$ [@DZ99, §6].
+A **rational log [Enriques surface]{.other-sense} of index $2$** is a normal rational surface $\bar X$ with at worst quotient singularities such that $\OO(-2K_{\bar X}) \cong \OO_{\bar X}$ [@DZ99, §6, paragraph before Prop. 6.4].
 :::
 
 ::: {.theorem #thm:coble-log-enriques-resolution title="Terminal Coble surfaces are resolutions of log Enriques surfaces"}
