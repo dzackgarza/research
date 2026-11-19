@@ -152,7 +152,7 @@ The conjecture was that the Baily--Borel boundaries of all ten families are comp
 So the conjecture is false as stated.
 The ten families, which are the ten values of $n$, fall into four classes, each named by its values of $n$:
 
-- $n = 1$: established --- its $0$-cusps and $1$-cusps for the stable group are @thm:coble-zero-cusp-count and @thm:plane-fibre, each of them a count of lattice orbits through @thm:coble-integral-lifting-fibre, and they are counts for the stable group, not carried to $\fco$: $\Gamma_\Co\not\subseteq\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-not-stable), so the counts of $\fco$ are undetermined.
+- $n = 1$: established --- its $0$-cusps and $1$-cusps for the stable group are @thm:coble-zero-cusp-count and @thm:plane-fibre, each of them a count of lattice orbits through @thm:coble-integral-lifting-fibre, and @conj:gamma-co-stable carries them to $\fco$.
 - $n = 2, 3, 4, 5, 6$: unproved, because @lem:I29-plus-line-transitivity and @lem:cusp-vector-stabilizer-image are stated for $B = \latI_{2,9}$ alone, and no row of this chapter proves them for another $B_n$.
 - $n = 7$, $n = 8$ with $\delta = 1$, and $n = 9$: non-reflective (@thm:nonreflective-r-plus-a-22), so the $n = 1$ chamber technique does not apply to them.
 - $n = 9$ and $n = 10$: no boundary of the shape the comparison needs, by (3).

@@ -1053,6 +1053,8 @@ trivial on lattice-vector reflections because `[delta] = 0` in `A_{T_Co}`)".  Th
 `(-2)`-walls and false for the mixed walls: the nodal-pair element `w_delta w_delta'` acts on `T_Co` as
 the reflection in `e = delta - delta'` of square `-4`, which is an integral isometry of `T_Co` lying in
 `O^+(T_Co)` and outside `ker rho_{T_Co}` -- `s_e(y) - y = -(y.e) e/2`, the class `[e/2]` of `A_{T_Co}`
-is nonzero, and some `y` in `T_Co^*` has `y.e` odd.  This is `prop:gamma-co-reflective-set(3)` of the
-book, computed in `coble_658-nodal-pair-refutation-probe-run.txt`, and it is the content of
-`thm:gamma-co-not-stable`.  The sentence above is amended; nothing else in this record changes.
+is nonzero, and some `y` in `T_Co^*` has `y.e` odd (`prop:gamma-co-reflective-set(3)` of the book,
+computed in `coble_658-nodal-pair-refutation-probe-run.txt`).  This is a statement about the *lattice*
+reflection; whether this element is realised by the monodromy of the Coble family is the open step of
+`rmk:gamma-co-nodal-pair-proposal`, and nothing here asserts it.  The sentence above is amended;
+nothing else in this record changes.

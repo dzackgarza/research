@@ -29,6 +29,7 @@ except ImportError:                         # pragma: no cover
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 LATTICES = ROOT / "writing/coble/lattices-and-moduli/lattices.md"
+RED_NAME = "test_the_tension_is_on_a_page"
 
 
 def _red(fn):
@@ -46,21 +47,21 @@ def _red(fn):
 def test_both_sentences_are_on_the_page():
     text = LATTICES.read_text(encoding="utf-8")
     assert "induces this family and its local system" in text
-    assert "The inclusion $\\Gamma_\\Co\\subseteq\\widetilde\\Orth^+(T_\\Co)$ is false" in text
+    assert "Neither inclusion between $\\Gamma_\\Co$ and $\\widetilde\\Orth^+(T_\\Co)$ is proved" in text
     assert "1. $R_{\\Gamma_\\En} = \\widetilde\\Orth^+(T_\\Co)$." in text
 
 
-def test_the_resolution_is_on_a_page():
-    """The tension is gone because the strong reading is refuted, and that must be on a page."""
-    lattices = (ROOT / "writing/coble/lattices-and-moduli/lattices.md").read_text(encoding="utf-8")
-    assert "#thm:gamma-co-not-stable" in lattices
-    status = lattices[lattices.index("#rmk:gamma-co-status"):]
-    status = status[:status.index("\n:::")]
-    assert "The inclusion $\\Gamma_\\Co\\subseteq\\widetilde\\Orth^+(T_\\Co)$ is false" in status
-    # and the cusp correspondence states why the strong reading of the clause fails
-    page = (ROOT / "writing/coble/cusp-correspondence/enriques-to-coble-cusp-correspondence.md").read_text(
-        encoding="utf-8")
-    assert "not an inclusion of bases" in page
+@_red
+def test_the_tension_is_on_a_page():
+    for path in sorted((ROOT / "writing").rglob("*.md")):
+        text = path.read_text(encoding="utf-8", errors="replace")
+        for line in text.splitlines():
+            if "induces this family" in line and ("strong" in line or "contradict" in line or "tension" in line):
+                return
+    raise AssertionError(
+        "no page records that the 'induces this family and its local system' clause, read strongly with "
+        "prop:gamma-co-images(1), gives Gamma_Co <= O~+(T_Co) and contradicts rmk:gamma-co-status"
+    )
 
 
 def test_the_three_sentences_are_read_from_the_page():
@@ -76,8 +77,8 @@ def test_the_three_sentences_are_read_from_the_page():
         ns["main"]()
     assert buf.getvalue() == transcript
     assert "def:gamma-co-groups(1) carries the 'induces' clause:        True" in transcript
-    assert "rmk:gamma-co-status says the inclusion is false:           True" in transcript
-    assert "verdict: RESOLVED." in transcript
+    assert "rmk:gamma-co-status says neither inclusion is proved:      True" in transcript
+    assert "verdict: REFUTED as stated." in transcript
 
 
 def _run_all() -> int:
@@ -88,11 +89,14 @@ def _run_all() -> int:
         try:
             fn()
         except AssertionError as exc:
+            if name == RED_NAME:
+                print(f"RED  {name}: {exc}")
+                continue
             failures += 1
             print(f"FAIL {name}: {exc}")
         else:
             print(f"ok   {name}")
-    print(f"\n{len(items) - failures}/{len(items)} checks pass")
+    print(f"\n{len(items) - failures}/{len(items)} checks pass (1 red expected: the tension)")
     return failures
 
 

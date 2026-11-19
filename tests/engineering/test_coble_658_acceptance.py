@@ -84,8 +84,7 @@ def test_theorem_and_equivalence_are_on_the_page():
     assert "2. $\\Gamma_\\Co\\subseteq\\widetilde\\Orth^+(T_\\Co)$" in prop
     assert "3. Under (1), $\\mathrm{Ext}(\\Gamma_\\Co) = \\Stab_{\\Gamma_\\En}(k)$" in prop
     assert "Then (1) and (2) are equivalent" in prop
-    assert "Clause (2) is false (@thm:gamma-co-not-stable)" in prop
-    assert "the $\\Gamma_\\Co$ form of the lifting fails" in prop
+    assert "it does not need the equality" in prop
 
 
 def test_the_sign_half_is_stated_in_the_spinor_kernel_and_not_in_SO():
@@ -121,9 +120,7 @@ def test_no_page_asserts_the_equality_outside_the_conjecture():
             ls = text.rfind("\n", 0, m.start()) + 1
             line = text[ls:text.find("\n", m.end())]
             if ("conj:gamma-co-stable" in line or "conjectur" in line
-                    or "exactly when" in line or "equality" in line
-                    or "is false" in line or "former" in line or "refutes" in line
-                    or "not contained in" in line):
+                    or "exactly when" in line or "equality" in line):
                 continue
             offenders.append("%s:%d" % (path.relative_to(ROOT), text.count("\n", 0, m.start()) + 1))
     assert not offenders, "equality asserted as fact at: %s" % offenders
@@ -132,9 +129,9 @@ def test_no_page_asserts_the_equality_outside_the_conjecture():
 def test_the_register_tracks_both_residues():
     text = REGISTER.read_text(encoding="utf-8")
     assert "Which divisibility-$2$ $0$-cusps lie over a Coble $0$-cusp" in text
-    assert "The monodromy group of the Coble family" in text
+    assert "The monodromy group of the Coble family against the stable group" in text
     row = [l for l in text.splitlines() if "The monodromy group of the Coble family" in l][0]
-    assert "@conj:gamma-co-full" in row and "@thm:gamma-co-not-stable" in row
+    assert "@conj:gamma-co-stable" in row and "@prop:gamma-co-strong-lifting" in row
 
 
 def test_the_probe_exercises_both_answers_on_known_elements():
@@ -157,14 +154,13 @@ def test_the_probe_decides_the_question_on_given_generators():
     assert verdict == "excluding" and detail and detail[0][0] == 1
 
 
+@_red
 def test_item_1e_the_discriminant_half_is_decided():
-    """The generator-fed probe is undecided, and no longer needed: item 1e is refuted outright."""
     out = TRANSCRIPT.read_text(encoding="utf-8")
     verdict = [l for l in out.splitlines() if l.startswith("verdict: ")][0]
-    assert verdict == "verdict: undecided", verdict
-    nodal = (ROOT / "computations/reports/coble_658-nodal-pair-refutation-probe-run.txt").read_text(
-        encoding="utf-8")
-    assert "verdict: item 1e is FALSE." in nodal
+    assert verdict in ("verdict: inclusion-holds", "verdict: excluding"), (
+        "the deciding probe has not returned a verdict: %s" % verdict
+    )
 
 
 def _run_all() -> int:
@@ -182,7 +178,8 @@ def _run_all() -> int:
             print(f"FAIL {name}: {exc}")
         else:
             print(f"ok   {name}")
-    print(f"\n{len(items) - failures}/{len(items)} checks pass")
+    print(f"\n{len(items) - failures}/{len(items)} checks pass "
+          f"(1 red expected: research#658 item 1e)")
     return failures
 
 

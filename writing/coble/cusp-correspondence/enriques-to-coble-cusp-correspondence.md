@@ -284,7 +284,7 @@ The conclusion is sharp and is not containment in $\SO$: a reflection $s_\delta$
 
 ::: {.remark #rmk:coble-strong-lifting-group title="The group in the strong lifting"}
 
-The statement is about $\widetilde\Orth^+(T_\Co) = \discriminantkernel{T_\Co}\intersect\Orth^+(T_\Co)$, and every step of the proof uses only that group: the condition $\bar\varphi(h/2) = h/2$ of the extension criterion holds because $\bar\varphi$ is the identity on $A_{T_\Co}$, and the sign is inherited by the spinor-norm identity. So the conclusion holds verbatim for every subgroup of $\widetilde\Orth^+(T_\Co)$. The lifting of the monodromy group $\Gamma_\Co$ of the Coble family (@def:gamma-co-groups(1)) is therefore exactly the inclusion $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$, and that inclusion is false (@thm:gamma-co-not-stable): the monodromy contains the reflection in a $(-4)$-class, carried by the nodal-pair degeneration, and such a reflection lies outside the discriminant kernel. So the $\Gamma_\Co$ form of the lifting fails, while the theorem above, stated for $\widetilde\Orth^+(T_\Co)$, stands unharmed. Neither the equivariance nor the stabilizer comparison is asserted here for $\Gamma_\Co$. The reverse inclusion $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_\Co$ is open (@rmk:gamma-co-status).
+The statement is about $\widetilde\Orth^+(T_\Co) = \discriminantkernel{T_\Co}\intersect\Orth^+(T_\Co)$, and every step of the proof uses only that group: the condition $\bar\varphi(h/2) = h/2$ of the extension criterion holds because $\bar\varphi$ is the identity on $A_{T_\Co}$, and the sign is inherited by the spinor-norm identity. So the conclusion holds verbatim for every subgroup of $\widetilde\Orth^+(T_\Co)$. The lifting of the monodromy group $\Gamma_\Co$ of the Coble family (@def:gamma-co-groups(1)) is therefore exactly the inclusion $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$: that inclusion is not proved --- neither inclusion between the two groups is (@rmk:gamma-co-status) --- and it follows from @conj:gamma-co-stable. Neither the equivariance nor the stabilizer comparison is asserted here for $\Gamma_\Co$ without it. The sign half of the inclusion is unconditional: the monodromy of a family of Coble surfaces lies in $\Orth^+(T_\Co)$ (@lem:monodromy-is-spinor-positive). So the inclusion $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$ reduces to its discriminant half, which the ten exceptional classes of the K3 double cover decide (@cor:gamma-co-lifting-criterion); the precise statement, with the inclusion it needs, is @prop:gamma-co-strong-lifting.
 :::
 
 ::: {.proposition #prop:gamma-co-strong-lifting title="The $\Gamma_\Co$ form of the strong lifting, under the inclusion it needs"}
@@ -295,7 +295,7 @@ Let $\Gamma_\Co\le\Orth(T_\Co)$ be the monodromy group of the family of unpolari
 2. $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$.
 3. Under (1), $\mathrm{Ext}(\Gamma_\Co) = \Stab_{\Gamma_\En}(k)$.
 
-Then (1) and (2) are equivalent, and, given (1), (3) is equivalent to the equality $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ of the former @conj:gamma-co-stable, which @thm:gamma-co-not-stable refutes. Clause (2) is false (@thm:gamma-co-not-stable): the sign half holds unconditionally, $\Gamma_\Co\subseteq\Orth^+(T_\Co)$ (@lem:monodromy-is-spinor-positive), and the discriminant half, $\Gamma_\Co\subseteq\discriminantkernel{T_\Co}$, fails. The equivalence is what the proposition asserts, and with (2) false it says that the $\Gamma_\Co$ form of the lifting fails, which it does.
+Then (1) and (2) are equivalent, and, given (1), (3) is equivalent to the equality $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ of @conj:gamma-co-stable. The sign half of (2) holds unconditionally, $\Gamma_\Co\subseteq\Orth^+(T_\Co)$ (@lem:monodromy-is-spinor-positive). The other half, $\Gamma_\Co\subseteq\discriminantkernel{T_\Co}$, is the inclusion of @conj:gamma-co-stable, and no other statement of this book asserts it (@rmk:gamma-co-status). So the $\Gamma_\Co$ form of the lifting is equivalent to that inclusion and rests on it; it does not need the equality.
 :::
 
 ::: {.proof}
@@ -308,7 +308,7 @@ For (3), assume (1). The image $\mathrm{Ext}(\Gamma_\Co)$ is a subgroup of $\Sta
 
 ::: {.corollary #cor:coble-lifting-under-conjecture title="The $\Gamma_\Co$ form of the strong lifting, under the book's own conjecture"}
 
-Assume @conj:gamma-co-stable, that is $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ --- an assumption that is false (@thm:gamma-co-not-stable), so the corollary is vacuous and nothing about $\Gamma_\Co$ follows from it. What it records is the implication: then the conclusion of @thm:coble-strong-lifting holds with $\Gamma_\Co$ in place of $\widetilde\Orth^+(T_\Co)$:
+Assume @conj:gamma-co-stable, that is $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$. Then the conclusion of @thm:coble-strong-lifting holds with $\Gamma_\Co$ in place of $\widetilde\Orth^+(T_\Co)$:
 
 1. every $\varphi\in\Gamma_\Co$ has exactly one $\gamma\in\Gamma_\En$ with $\gamma\circ\eta = \eta\circ\varphi$ and $\gamma(k) = k$, and the assignment $\mathrm{Ext}$ is a homomorphism of which $\mathrm{res}$ is a left inverse;
 2. $\mathrm{Ext}(\Gamma_\Co) = \Stab_{\Gamma_\En}(k)$, and $\eta$ is $\mathrm{Ext}$-equivariant.
@@ -317,7 +317,7 @@ Assume @conj:gamma-co-stable, that is $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ --
 
 ::: {.proof}
 
-By the hypothesis $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$, which is false (@thm:gamma-co-not-stable), so condition (2) of @prop:gamma-co-strong-lifting holds, and (1) there gives the first clause; clause (3) of the same proposition gives the second, since $\Gamma_\Co$ is now the whole of $\widetilde\Orth^+(T_\Co)$ and the image of $\mathrm{Ext}$ on that group is $\Stab_{\Gamma_\En}(k)$ by @thm:coble-strong-lifting(2). The equivariance is the identity $\mathrm{Ext}(\varphi)\circ\eta = \eta\circ\varphi$.
+By the conjecture $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$, so condition (2) of @prop:gamma-co-strong-lifting holds, and (1) there gives the first clause; clause (3) of the same proposition gives the second, since $\Gamma_\Co$ is now the whole of $\widetilde\Orth^+(T_\Co)$ and the image of $\mathrm{Ext}$ on that group is $\Stab_{\Gamma_\En}(k)$ by @thm:coble-strong-lifting(2). The equivariance is the identity $\mathrm{Ext}(\varphi)\circ\eta = \eta\circ\varphi$.
 :::
 
 ::: {.lemma #lem:meridian-kernel title="The reflections and Eichler transvections lie in the discriminant kernel"}
@@ -414,9 +414,11 @@ The orbit map $\Phi$ is injective: if $v, v'$ are primitive isotropic vectors of
 By @prop:cusp-map-separates-mod-two, $v\equiv v'\pmod{2T_\Co}$, so $\tfrac12 v - \tfrac12 v'\in T_\Co$ and the classes $v^* = \tfrac12 v + T_\Co$ and $v'^*$ of @prop:coble-primitive-isotropic-classes are equal. By @thm:coble-zero-cusp-count, parts 1 and 2, the map $\widetilde\Orth^+(T_\Co) v\mapsto v^*$ is injective. Hence $\widetilde\Orth^+(T_\Co) v = \widetilde\Orth^+(T_\Co) v'$.
 :::
 
-::: {.proposition #prop:cusp-map-surjective-on-classes title="The image of $\Phi$ is exactly the divisibility-$2$ classes"}
+::: {.proposition #prop:cusp-map-surjective-on-classes title="The divisibility-$2$ classes are exactly the classes of the image of $\Phi$"}
 
-The image of $\Phi$ is the set of all $527$ nonzero isotropic classes of $A_{\ten}$, and $v\mapsto[\eta(v)/2]$ is a bijection from the $\widetilde\Orth^+(T_\Co)$-orbits of primitive isotropic vectors of $T_\Co$ onto them. In particular a divisibility-$2$ $0$-cusp of $\fen$ lies over a Coble $0$-cusp if and only if its class is a nonzero isotropic class of $A_{\ten}$ --- which every divisibility-$2$ class is.
+The classes of the vectors in the image of $\Phi$ are exactly the $527$ nonzero isotropic classes of $A_{\ten}$: $v\mapsto[\eta(v)/2]$ is a bijection from the $\widetilde\Orth^+(T_\Co)$-orbits of primitive isotropic vectors of $T_\Co$ onto them.
+
+The statement is about classes and not about orbits. Whether every divisibility-$2$ $\Gamma_\En$-orbit meets $\eta(T_\Co)$ --- equivalently, whether every divisibility-$2$ $0$-cusp of $\fen$ lies over a Coble $0$-cusp --- is a question about the orbits of $\Gamma_\En$ and is not implied by an equality of discriminant classes; it is recorded as open in @sec-enriques-coble-correspondence.
 :::
 
 ::: {.proof}
@@ -429,7 +431,7 @@ The image of $\Phi$ is the set of all $527$ nonzero isotropic classes of $A_{\te
 
 *There are exactly $527$.* $|A_{\ten}| = 2^{10}$ because $\det\ten = 2^{10}$ (@lem:primitive_embedding_eta's lattice) and the count of nonzero isotropic classes of $A_{\ten}$ is $527$, exactly as for $T_\Co$; both counts are computed from the Gram matrices in `computations/reports/coble_658-image-census-probe-run.txt`, the $T_\Co$ count reproducing the $527$ of @thm:coble-zero-cusp-count(2).
 
-A set of $527$ distinct classes inside a set of $527$ is the whole set.
+A set of $527$ distinct classes inside a set of $527$ is the whole set. This proves the statement about classes; it says nothing about which $\Gamma_\En$-orbits those classes come from, which is the open question named in the proposition.
 :::
 
 So $\Phi$ embeds the $527$ $0$-cusps of the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ (@thm:coble-zero-cusp-count(2), one $0$-cusp per nonzero isotropic class, the fibre over one class being a single orbit, by @thm:coble-integral-lifting-fibre(1), (2)) into the set of $\Gamma_\En$-orbits of primitive isotropic vectors of divisibility $2$ in $\ten$. The orbit of such a vector $\tilde w$ is in the image exactly when some $\gamma\in\Gamma_\En$ carries $\tilde w$ into $\eta(T_\Co)=k^{\perp\ten}$, that is, when

@@ -75,7 +75,7 @@ CHAIN = [
     ("coble_658-meridians-do-not-generate-probe-run.txt", "verdict: REFUTED"),
     ("coble_658-pushoff-fails-probe-run.txt", "verdict: the lemma holds"),
     ("coble_658-enriques-monodromy-gap-probe-run.txt", "verdict: REFUTED"),
-    ("coble_658-induces-tension-probe-run.txt", "verdict: RESOLVED."),
+    ("coble_658-induces-tension-probe-run.txt", "verdict: REFUTED as stated"),
     ("coble_658-strong-reading-false-probe-run.txt", "verdict: REFUTED"),
     ("coble_658-image-witness-probe-run.txt", "the (-2)-vectors of T_En are infinite in number"),
     ("coble_658-stabilizer-image-probe-run.txt", "verdict: the class of w = 2e~ + e~' IS in the image of Phi."),
