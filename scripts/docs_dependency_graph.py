@@ -126,7 +126,7 @@ RESULT_LABELS = {
     "§": ("sections", "section", "secs", "sec", "§§", "§", "subsection"),
 }
 _LABEL = {alias: label for label, aliases in RESULT_LABELS.items() for alias in aliases}
-_NUMBER = (r"\(?(?:[IVXLC]+\.)?[A-Z]?\d+(?:\.\d+)*[A-Za-z]?\)?(?:\([ivxlc\d]+\))?"
+_NUMBER = (r"\(?(?:[IVXLC]+\.)?[A-Z]?\d+(?:\.\d+)*[A-Za-z]?\)?(?:\([ivxlc\d]+\))?(?:\s+bis\b)?"
            r"|(?-i:[IVXLC]+|[A-Z])(?![A-Za-z])")
 _RESULT = re.compile(
     r"(?<![\w.])(" + "|".join(sorted(map(re.escape, _LABEL), key=len, reverse=True))

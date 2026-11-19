@@ -261,7 +261,7 @@ A parabolic subdiagram is **maximal** if it is not properly contained in a large
 ::: {.theorem #thm:vinberg-algorithm title="Vinberg’s algorithm for a fundamental chamber"}
 
 Let $\Gamma\iscontainedin\Orth(L)$ be an arithmetic reflection subgroup of a hyperbolic lattice $L$.
-Vinberg's algorithm constructs a fundamental chamber $P\iscontainedin\HH^n$ for $\Gamma$ as follows [@Vin75].
+Vinberg's algorithm constructs a fundamental chamber $P\iscontainedin\HH^n$ for $\Gamma$ as follows [@Vin75, §1.4 and §3.2].
 
 1. **Control vector.** Choose a generic positive-norm vector $v_0\in C_L^+$.
    Its stabilizer in $\Gamma$ is the reflection group of the finite subdiagram of roots orthogonal to $v_0$, which are used as the first walls.
@@ -284,7 +284,7 @@ The algorithm terminates in finitely many steps if and only if $\Gamma$ has fini
 
 ::: {.proof}
 
-This is [@Vin75].
+The algorithm is [@Vin75, §1.4]; its form for a hyperbolic lattice, and the equivalence of finite index $[\Orth(L):\Gamma]<\infty$ with termination, are [@Vin75, §3.2].
 :::
 
 ::: {.definition #def:lanner-subgraph title="Lannér subgraph"}
@@ -319,7 +319,7 @@ If $\Gamma$ contains no Lannér subgraph (@def:lanner-subgraph), and every conne
 
 ::: {.proof}
 
-This is the sufficient condition of [@Vin75], in the form used in [@Ale22, proof of Thm. 1.5].
+This is the sufficient direction of [@Vin75, Thm. 2.6 bis], in the form used in [@Ale22, proof of Thm. 1.5].
 :::
 
 ## Root-system conventions

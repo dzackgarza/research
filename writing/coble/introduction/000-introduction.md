@@ -20,7 +20,7 @@ The Baily--Borel compactification of $F_{2d} = D_{L_{2d}}/\Gamma_{L_{2d}}$.
 \input{tikz/hyperbolic_cone_fundamental_domain.tikz}
 
 A fundamental polyhedron $P$ for the Weyl group of a hyperbolic lattice acting on the positive cone $\mcc$, together with its images under the reflections in the walls of $P$; the Coxeter fan is the resulting decomposition of $\mcc$.
-Such a polyhedron is computed by Vinberg's algorithm [@Vin75 §1].
+Such a polyhedron is computed by Vinberg's algorithm [@Vin75, §1.4].
 :::
 
 ::: {.conjecture #conj:coble-ksba-semitoroidal-morphism title="The KSBA compactification of $\fco$ maps to a semitoroidal one"}
