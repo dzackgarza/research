@@ -491,6 +491,19 @@ the $p>1$ analogue of the last sentence of [@AE23, Thm. 10.16, printed p. 38], w
 One has $z^2=-2k<0$, so $z^\perp$ has signature $(1,17)$ and $z^\perp\cap C^+$ is a nonempty open subset of it. By $(\mathrm H_p)$ that set is a locally finite union of closed convex cones of $\mcf_{R_{\rcop},\eta}$, each of them contained in the closure of $C^+$ and hence, being contained in $z^\perp$, of dimension at most $18$. A cone of dimension at most $17$ has empty interior in $z^\perp$, and a locally finite union of closed sets with empty interior has empty interior, so one of the cones has dimension $18$ and spans $z^\perp$. By @lem:generalized-unigonal-hyperplane the vectors of $\bar T$ whose mirror is $z^\perp$ are the multiples $cz$, of square $-2kc^2$, and $-2kc^2\in\{-2,-4\}$ requires $k\in\{1,2\}$ because $c^2\ge1$. So for $k\notin\{1,2\}$ the span $z^\perp$ is not the mirror of a vector of $\bar T$ of square $-2$ or $-4$, and @lem:wall-criterion gives the failure of (W).
 :::
 
+::: {.lemma #lem:cusp-census title="The census of $0$-cusps by $(p,a,k)$"}
+
+Let $d=N^2d_0$ with $d_0$ squarefree, and let $\eta$ be the $0$-cusp of $F_{2d}$ of class $\{\pm q\}$, $q\in\ZZ/N\ZZ$, with $h=\gcd(q,N)$, $p=N/h$, $a=q/h$ and $k=d/p^2=d_0h^2$ as in @lem:cusp-lattice-p-greater-one. Then:
+1. $p=1$ exactly for the classes with $q\equiv0\pmod N$, that is for the single class $\{0\}$; every other $0$-cusp of $F_{2d}$ has $p_*>1$. So $F_{2d}$ has $\lfloor(N+2)/2\rfloor-1$ cusps with $p_*>1$, its $\lfloor(N+2)/2\rfloor$ cusps being the classes $\{\pm q\}$ [@AE23, §10C, printed p. 37].
+2. At a cusp with $p_*>1$ one has $k=d_0h^2$, so $d_0h^2\in\{1,2\}$ exactly when $(d_0,h)\in\{(1,1),(2,1)\}$: the cusps with $k\in\{1,2\}$ are exactly those of $F_{N^2}$ and of $F_{2N^2}$ whose class $\{\pm q\}$ has $\gcd(q,N)=1$, and there $k=1$ and $k=2$ respectively.
+3. Consequently, if $d$ is neither a square nor twice a square, then every $0$-cusp of $F_{2d}$ with $p_*>1$ has $k\notin\{1,2\}$, and at each of them (W) forces $(\mathrm H_p)$ of @lem:generalized-unigonal-constraint to fail.
+:::
+
+::: {.proof}
+
+$h=\gcd(q,N)$ divides $N$, so $p=N/h=1$ exactly when $h=N$, that is when $N$ divides $q$; and $k=d/p^2=N^2d_0h^2/N^2=d_0h^2$. As $d_0\ge1$ is squarefree and $h\ge1$, the product $d_0h^2$ is $1$ only for $(d_0,h)=(1,1)$ and $2$ only for $(d_0,h)=(2,1)$. The condition $h=1$ is $\gcd(q,N)=1$, and $d_0=1$, resp. $d_0=2$, is $d=N^2$, resp. $d=2N^2$. Assertion 3 is assertion 2 with the contrapositive of @lem:generalized-unigonal-constraint.
+:::
+
 ::: {.lemma #lem:k-greater-one-fan-not-prism title="The comparison fan at the $k\ge2$ cusps is not a prism"}
 
 Let $k\ge1$, $N_k=\langle-2k\rangle\oplus U\oplus E_8(-1)^{\oplus2}$ with $g$ a generator of the first summand, $e,f$ the standard basis of $U$, and $C\subset U\oplus E_8(-1)^{\oplus2}$ the fundamental chamber of its root system. Then $r=g+(k-1)e+f$ is a $(-2)$-root of $N_k$, and its mirror $r^\perp$ meets the interior of $\RR g\times C$ while being neither $\RR g$ nor the preimage of a wall of $C$ under the projection $\RR g\times(U\oplus E_8^{\oplus2})\to U\oplus E_8^{\oplus2}$. Hence the Coxeter chamber of $N_k$ is strictly contained in a translate of $\RR g\times C$. For $k\ge2$ the lattice $N_k$ is not $N_1$ (their discriminants are $2k$ and $2$), and its comparison fan is not the product of the printed $F_2$ fan with a line: it cannot be read off the $24$-root diagram.

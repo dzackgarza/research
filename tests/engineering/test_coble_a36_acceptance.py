@@ -409,6 +409,22 @@ def test_what_W_forces_on_the_generalized_unigonal_hyperplane():
     assert "Thm. 10.16, printed p. 38" in page
 
 
+def test_the_cusp_census_says_where_the_constraint_bites():
+    """Which cusps can have k in {1,2}: only d = N^2 and d = 2N^2, with q a unit.
+
+    With d = N^2 d_0, d_0 squarefree, and the cusp of class {+-q} in Z/N, AE23 Section 10C
+    (printed p. 37) gives h = gcd(q,N), p = N/h and k = d/p^2 = d_0 h^2.  So p = 1 exactly
+    at q = 0 and k in {1,2} exactly for (d_0,h) = (1,1) or (2,1).  Hence for every d that is
+    neither a square nor twice a square, every p_* > 1 cusp has k not in {1,2}, and the
+    generalized-unigonal constraint forces (H_p) to fail wherever (W) holds.
+    """
+    page = page_text()
+    assert "#lem:cusp-census" in page
+    assert "exactly for the classes with $q\\equiv0\\pmod N$" in page
+    assert "$d_0h^2\\in\\{1,2\\}$" in page
+    assert "neither a square nor twice a square" in page
+
+
 def test_the_p_greater_one_cusp_lattice_record_reproduces_and_the_page_states_it():
     """The p_* > 1 item's first datum: the boundary lattice, for general (p, k).
 
