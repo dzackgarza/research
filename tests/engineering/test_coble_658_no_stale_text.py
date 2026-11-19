@@ -68,6 +68,21 @@ def test_the_record_keeps_the_dated_correction():
     assert "every `(-2)`-wall reflection already lies in the stable group" in record
 
 
+def test_the_pages_point_at_the_divisor_form():
+    """A page that calls the discriminant half open must say what that now reduces to."""
+    sites = [
+        "writing/coble/lattices-and-moduli/lattices.md",
+        "writing/coble/lattices-and-moduli/moduli-construction.md",
+        "writing/coble/reference-tables/lattice-and-diagram-conventions.md",
+    ]
+    missing = []
+    for rel in sites:
+        text = (ROOT / rel).read_text(encoding="utf-8")
+        if "rmk:gamma-co-nodal-pair-proposal" not in text:
+            missing.append(rel)
+    assert not missing, missing
+
+
 def _run_all() -> int:
     items = [(name, fn) for name, fn in sorted(globals().items())
              if name.startswith("test_") and callable(fn)]
