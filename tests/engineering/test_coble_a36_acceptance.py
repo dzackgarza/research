@@ -392,6 +392,23 @@ def test_the_generalized_unigonal_class_is_az_at_every_cusp():
     assert "exactly when $k\\in\\{1,2\\}$" in page
 
 
+def test_what_W_forces_on_the_generalized_unigonal_hyperplane():
+    """The constraint: at k not in {1,2}, (W) forbids z^perp cap C^+ from being a union.
+
+    The hypothesis is the p > 1 analogue of the last sentence of AE23 Thm. 10.16 (printed
+    p. 38), which is printed at p_* = 1 only: that z^perp cap C^+ is a union of cones of
+    F_rc.  Then z^2 = -2k < 0 makes z^perp of signature (1,17), the union argument gives an
+    18-dimensional cone spanning z^perp, and by the generalized-unigonal lemma the only
+    vectors with that mirror are the multiples cz with cz^2 = -2kc^2, so the wall criterion
+    fires unless k is in {1,2}.
+    """
+    page = page_text()
+    assert "#lem:generalized-unigonal-constraint" in page
+    assert "(\\mathrm H_p)" in page
+    assert "not a union of cones" in page
+    assert "Thm. 10.16, printed p. 38" in page
+
+
 def test_the_p_greater_one_cusp_lattice_record_reproduces_and_the_page_states_it():
     """The p_* > 1 item's first datum: the boundary lattice, for general (p, k).
 
