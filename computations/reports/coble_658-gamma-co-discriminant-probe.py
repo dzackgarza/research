@@ -124,15 +124,20 @@ def is_isometry(g, gram):
 
 
 def acts_trivially_on_discriminant(g, gram):
-    """rho(g) = id on A = gram^{-1}Z^n / Z^n  <=>  (g^{-1})^T y - y in Z^n on generators y."""
+    """Does g act trivially on A = L^v/L?
+
+    A is Z^n / (gram Z^n) in the coordinates v_j = (x, e_j) of x in L^v, so g acts by v |-> g^{-T} v.
+    For g in O(L) one has g^{-T} = gram g gram^{-1}, so triviality is equivalent to g(y) - y in Z^n for
+    the n generators y = gram^{-1} e_i of A.  (Using g^{-T} itself here would test the wrong condition:
+    that is what this file first did, and the check below is the correction.)
+    """
     n = len(gram)
     gin = inverse_rational(gram)
-    ginv_t = transpose(inverse_rational(g))
     for i in range(n):
         basis = [F(0)] * n
         basis[i] = F(1)
-        y = mv(gin, basis)                 # generators of A
-        z = mv(ginv_t, y)
+        y = mv(gin, basis)
+        z = mv(g, y)
         if any((zi - yi).denominator != 1 for zi, yi in zip(z, y)):
             return False
     return True

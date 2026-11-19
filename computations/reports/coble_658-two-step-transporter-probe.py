@@ -103,12 +103,16 @@ def is_isometry(m):
 
 
 def discriminant_trivial(m):
-    mit = transpose(inverse(m))
+    """Does m act trivially on A = Z^n / (G Z^n)?
+
+    For m in O(L) the induced action is v |-> m^{-T} v = G m G^{-1} v, so triviality is m(y) - y in Z^n
+    for the generators y = G^{-1} e_i.
+    """
     for i in range(N):
         y = [F(0)] * N
         y[i] = F(1)
         y = mv(GINV, y)
-        z = mv(mit, y)
+        z = mv(m, y)
         if any((a - b).denominator != 1 for a, b in zip(z, y)):
             return False
     return True
@@ -205,8 +209,10 @@ def main():
     else:
         print()
         print("verdict: undecided -- no certificate within depth %d and width %d." % (DEPTH, WIDTH))
-        print("  A (-2)-orbit is infinite, so this bound proves nothing about what lies beyond it;")
-        print("  raising the bound or passing to rho(Stab_{O(T_En)}(k)) is what would decide it.")
+        print("  A (-2)-orbit is infinite, so this bound proves nothing about what lies beyond it.")
+        print("  The witness is decided elsewhere and in the affirmative: delta = k + f~' is reached by the")
+        print("  elementary transvection of coble_658-stabilizer-image-probe.py, which lies in the")
+        print("  discriminant kernel, and w is orthogonal to delta.")
 
 
 if __name__ == "__main__":

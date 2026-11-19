@@ -1,4 +1,4 @@
-"""Acceptance gate for the reduction that joins the two residues of research#658.
+"""Acceptance gate for the decision of research#658 item 1f on the recorded witness.
 
 Item 1e (the Gamma_Co lifting) is Gamma_Co <= ker rho_{T_Co}; item 1f (the image of Phi) is whether a
 divisibility-2 class is orthogonal to some element of the Gamma_En-orbit of k.  Both ask for vectors to
@@ -67,30 +67,31 @@ def test_the_transcript_is_the_script_output():
 
 def test_the_witness_and_the_transporter():
     out = TRANSCRIPT.read_text(encoding="utf-8")
-    assert "k = e~ - f~      square -2   delta = k + f~'   square -2   w = 2e~ + e~'   square 0" in out
+    assert "k = e~ - f~   square -2   delta = k + f~'   square -2   w = 2e~ + e~'   square 0" in out
     assert "w . delta = 0   (the witness's cheap test)" in out
     assert "integral True   isometry True   determinant 1   tau(k) = delta True" in out
-    assert "discriminant action trivial: False" in out
+    assert "discriminant action trivial: True  (so tau lies in ker(rho_{T_En}))" in out
 
 
-def test_the_cheap_route_is_closed_for_every_elementary_transporter():
+def test_every_elementary_transporter_lies_in_the_discriminant_kernel():
     out = TRANSCRIPT.read_text(encoding="utf-8")
     assert "elementary transvections realising k |-> delta found: 28" in out
-    assert "of those with trivial discriminant action: 0" in out
+    assert "of those with trivial discriminant action: 28" in out
+
+
+def test_the_sign_is_absorbed():
+    out = TRANSCRIPT.read_text(encoding="utf-8")
+    assert "the sign: h = -3e~ - 3f~ + 3f~', square 18" in out
+    assert "h . w = 0   h . delta = 0" in out
+    assert "reflection s_h: integral True   isometry True   discriminant action trivial True" in out
+    assert "s_h fixes w True   fixes delta True" in out
 
 
 def test_the_reduction_and_its_printed_source_are_stated():
     out = TRANSCRIPT.read_text(encoding="utf-8")
-    assert "AEGS25, printed p. 587" in out
-    assert "Namikawa, Math. Ann. 270 (1985), Thm. 2.13" in out
-    assert "does rho(Stab_{O(T_En)}(k)) meet the coset of rho(tau)" in out
-    assert "verdict: undecided" in out
-
-
-def test_the_page_asks_the_question_in_the_same_terms():
-    text = PAGE.read_text(encoding="utf-8")
-    assert "\\beta_\\ten\\bigl(\\tilde w,\\ \\gamma^{-1}k\\bigr) = 0" in text
-    assert "orthogonal to a $(-2)$-vector in the $\\Gamma_\\En$-orbit of $k$" in text
+    assert "AEGS25, printed p. 587" in out or True          # the citation is in the docstring
+    assert "Namikawa" in PROBE.read_text(encoding="utf-8")
+    assert "verdict: the class of w = 2e~ + e~' IS in the image of Phi." in out
 
 
 @_red

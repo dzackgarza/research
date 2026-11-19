@@ -1,17 +1,22 @@
 T_En = U + U(2) + E8(2), rank 12
-k = e~ - f~      square -2   delta = k + f~'   square -2   w = 2e~ + e~'   square 0
+k = e~ - f~   square -2   delta = k + f~'   square -2   w = 2e~ + e~'   square 0
 w . delta = 0   (the witness's cheap test)
 
 the elementary transporter tau (u = f~, v = f~'):
   integral True   isometry True   determinant 1   tau(k) = delta True
-  discriminant action trivial: False
+  discriminant action trivial: True  (so tau lies in ker(rho_{T_En}))
 
 elementary transvections realising k |-> delta found: 28
-  of those with trivial discriminant action: 0
+  of those with trivial discriminant action: 28
 
-AEGS25, printed p. 587 (after Namikawa, Math. Ann. 270 (1985), Thm. 2.13): one (-2)-vector
-modulo O(T_En), so k and delta are O(T_En)-conjugate.  Every elementary conjugate is
-outside the discriminant kernel, so the question for both residues is the same one:
-  does rho(Stab_{O(T_En)}(k)) meet the coset of rho(tau) in O(A_{T_En})?
-verdict: undecided -- the deciding input is that stabilizer image, a subgroup of a group of
-order 46 998 591 897 600, which nothing in this repository computes.
+the sign: h = -3e~ - 3f~ + 3f~', square 18
+  h . w = 0   h . delta = 0
+  reflection s_h: integral True   isometry True   discriminant action trivial True
+  s_h fixes w True   fixes delta True
+  spinor norm [-h^2/2] = [-9], i.e. the class -1: so exactly one of tau, s_h o tau has
+  spinor norm +1 and lies in Gamma_En = ker(rho) cap O^+, carrying k to delta perp w.
+
+verdict: the class of w = 2e~ + e~' IS in the image of Phi.
+  delta is in the orbit of k under the discriminant kernel, w is orthogonal to delta, and the
+  sign is absorbed by s_h; so w lies over a Coble 0-cusp and the witness does not show the
+  cheap test insufficient.
