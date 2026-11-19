@@ -17,8 +17,11 @@ writing/coble/compactifications/toroidal-and-semitoroidal.md:
     rmk:missing-stable-limit       the contract of the operation a general cusp needs
     lem:rcop-refinement-criterion  proved: (W) fails for R_rcop at the F_2 cusp
 
-What is not settled is the split $I\\sqcup J$ at the $0$-cusps of $F_{2d}$ for $d\\ge2$: the
-KSBA stable limit of $(X,\\eps R_\\rcop)$ over a cone is not an operation of `sage-extensions`.
+What is not settled is the split $I\\sqcup J$ at the $0$-cusps of $F_{2d}$ for $d\\ge2$: AE23's
+Introduction, printed p. 3, states that there is no explicit description of the rational-curve
+semifan and calls one an interesting open question; a computation would need the KSBA stable
+limit of $(X,\\eps R_\\rcop)$ over a cone, which is not an operation of `sage-extensions`
+(rmk:missing-stable-limit), and the Coxeter fan at those cusps is not printed.
 The row for it below is marked xfail(strict=True): it is red today, and it turns
 red-for-the-opposite-reason the day a record lands without the page being updated.
 
@@ -219,7 +222,7 @@ def test_the_lemma_is_proved_from_the_published_sources():
     assert "ABE22, §4C, printed p. 14" in block
     assert "ABE22, Fig. 1, printed p. 12" in block
     assert "AET23, Def. 4.1, printed p. 21" in block
-    assert "AET23, Fig. 1, printed p. 22" in block
+    assert "AET23, §5C, printed p. 29; Fig. 1, printed p. 22" in block
     assert "mirror of a root other than $t^\\perp$" in block
     assert "@prop:semifan-coarsening-extension" in block
     assert "::: {.proof}" in block
@@ -309,12 +312,50 @@ def test_a_recognizable_divisor_failing_the_coarsening_is_exhibited():
     assert "hypothesis (W) fails for $R_{\\rcop}$" in page
 
 
+def test_the_citations_and_the_open_status_carry_their_printed_pages():
+    """The referee's citation repair, and the source's own statement of what remains.
+
+    The Coxeter-fan counts 19/82 and 10/46 are Corollary 4.3 in Section 4A of ABE22, printed
+    p. 13, not Section 4C on p. 14; the two squares -8 and -4 are Section 4C, printed p. 14,
+    and stay there.  The remaining cusps are not a gap of this repository: AE23, Introduction,
+    printed p. 3, states that there is no explicit description of the rational-curve semifan
+    and calls one an interesting open question, and the page, the register and the dissertation
+    section must carry that sentence with its page.
+    """
+    page = page_text()
+    assert "[@ABE22, Cor. 4.3, §4A, printed p. 13] prints the counts" in page
+    assert "[@ABE22, §4C, printed p. 14] prints the counts" not in page
+    assert "[@ABE22, §4C, printed p. 14]," in page, "the squares are still cited to Section 4C"
+    assert "an interesting open question" in page
+    assert "[@AE23, Intro., printed p. 3]" in page
+    register = REGISTER.read_text(encoding="utf-8")
+    assert "[@AE23, Intro., printed p. 3]" in register
+    dissertation = DISSERTATION.read_text(encoding="utf-8")
+    assert "[@AE23, Intro., printed p. 3]" in dissertation
+
+
+def test_the_mirror_trace_step_does_not_claim_the_lattice_has_no_minus_four_vector():
+    """gamma_L itself is a vector of N of square -4, so the square -4 case is not empty.
+
+    What excludes the two facets is that the Coxeter fan is cut by the (-2)-roots alone
+    (AET23 Def. 4.1, printed p. 21), and that no (-2)-vector other than +-t has its mirror
+    through h_gamma or h_beta.  The landed version said the square (-4) case was empty, by a
+    count of N* that ignores gamma_L in U + E8(-1)^2; that sentence must not return.
+    """
+    page = page_text()
+    block = page[page.index("#lem:rcop-refinement-criterion"):page.index("#qst:recognizable-semifan")]
+    assert "$2s$ with $s\\in N^*$" not in block
+    assert "and here that case is empty" not in block
+    assert r"$\gamma_L$ itself has $\gamma_L^2=-4$" in block
+    assert r"no $(-2)$-vector other than $\pm t$" in block
+
+
 @pytest.mark.xfail(
     strict=True,
-    reason="no record decides the split at the cusps of F_2d for d >= 2: the KSBA stable limit "
-    "of (X, eps R_rc) over a cone is not an operation of sage-extensions "
-    "(rmk:missing-stable-limit), and the walk to the chamber at the F_2 cusp does not finish "
-    "in 2400 s",
+    reason="no record decides the split at the cusps of F_2d for d >= 2: the explicit description "
+    "of the rational-curve semifan is open in the literature (AE23, Intro., printed p. 3), the "
+    "KSBA stable limit of (X, eps R_rc) over a cone is not an operation of sage-extensions "
+    "(rmk:missing-stable-limit), and the Coxeter fan at those cusps is not printed",
 )
 def test_the_split_for_the_rational_curve_divisor_is_decided():
     """Acceptance item 1's remaining clause: the split I | J and the cones for R_rc on F_2d."""
