@@ -1,0 +1,26 @@
+========================================================================
+p = 11: good reduction: True
+  n=1  tr F^n|H^2 = 52  tr F^n.iota|H^2 = 36  tr F^n|H^2_+ = 4 p^n  tr F^n|H^2_- = 8
+  n=2  tr F^n|H^2 = 724  tr F^n.iota|H^2 = 244  tr F^n|H^2_+ = 4 p^n  tr F^n|H^2_- = 240
+  n=3  tr F^n|H^2 = 10126  tr F^n.iota|H^2 = 8508  tr F^n|H^2_+ = 7 p^n  tr F^n|H^2_- = 809
+  n=4  tr F^n|H^2 = 118584  tr F^n.iota|H^2 = 115672  tr F^n|H^2_+ = 8 p^n  tr F^n|H^2_- = 1456
+  n=5  tr F^n|H^2 = 832072  tr F^n.iota|H^2 = 456336  tr F^n|H^2_+ = 4 p^n  tr F^n|H^2_- = 187868
+  sign +1 of Q(t) = sign t^10 Q(1/t): consistent with n <= 5: True
+    p^10 Q(t/p) = t^10 + 3*t^9 - 55*t^8 + 5324*t^6 + 644204*t^4 - 97435855*t^2 + 643076643*t + 25937424601
+    cyclotomic factors Phi_d of Q: d in []
+  sign -1 of Q(t) = sign t^10 Q(1/t): consistent with n <= 5: True
+    p^10 Q(t/p) = (t - 11) * (t + 11) * (t^8 + 3*t^7 + 66*t^6 + 363*t^5 + 13310*t^4 + 43923*t^3 + 966306*t^2 + 5314683*t + 214358881)
+    cyclotomic factors Phi_d of Q: d in [1, 2]
+========================================================================
+p = 13: good reduction: True
+  n=1  tr F^n|H^2 = 26  tr F^n.iota|H^2 = 52  tr F^n|H^2_+ = 3 p^n  tr F^n|H^2_- = -13
+  n=2  tr F^n|H^2 = 1638  tr F^n.iota|H^2 = 52  tr F^n|H^2_+ = 5 p^n  tr F^n|H^2_- = 793
+  n=3  tr F^n|H^2 = 25688  tr F^n.iota|H^2 = 676  tr F^n|H^2_+ = 6 p^n  tr F^n|H^2_- = 12506
+  n=4  tr F^n|H^2 = 199082  tr F^n.iota|H^2 = 86528  tr F^n|H^2_+ = 5 p^n  tr F^n|H^2_- = 56277
+  n=5  tr F^n|H^2 = 2390336  tr F^n.iota|H^2 = -162578  tr F^n|H^2_+ = 3 p^n  tr F^n|H^2_- = 1276457
+  sign +1 of Q(t) = sign t^10 Q(1/t): consistent with n <= 5: True
+    p^10 Q(t/p) = t^10 + 26*t^9 + 26*t^8 - 8619*t^7 - 134017*t^6 - 22648873*t^4 - 246167259*t^3 + 125497034*t^2 + 21208998746*t + 137858491849
+    cyclotomic factors Phi_d of Q: d in []
+  sign -1 of Q(t) = sign t^10 Q(1/t): consistent with n <= 5: True
+    p^10 Q(t/p) = (t - 13) * (t + 13) * (t^8 + 26*t^7 + 195*t^6 - 4225*t^5 - 101062*t^4 - 714025*t^3 + 5569395*t^2 + 125497034*t + 815730721)
+    cyclotomic factors Phi_d of Q: d in [1, 2]
