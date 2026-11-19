@@ -1134,6 +1134,27 @@ def test_the_open_question_asks_about_the_group_the_proposition_computes():
     assert "W(T_\\Co)\\rtimes P" in gens
 
 
+def test_item2_the_divisibility_decides_whether_the_known_part_is_all_of_pic():
+    """A20 item 2: the one number that decides whether the known lattice is the whole Picard lattice.
+
+    Unimodularity of L_K3 gives det(u^perp in T_Co) = det(T_Co) u^2 / div(u)^2 = +- det(Pic) when
+    the two agree, i.e. (2^11 * 8)/div^2 = 2^14, which forces div(u) = 1.  The check recomputes the
+    four admissible values and asserts that only div = 1 matches, so the remark on the page cannot
+    drift from its arithmetic.
+    """
+    import sympy
+    detT, u2, detPic = -2048, -8, 2048 * (-8)          # -2^11, u^2, -2^14
+    values = {d: sympy.Rational(detT * u2, d * d) for d in (1, 2, 4, 8)}
+    assert values[1] == 16384 and abs(values[1]) == abs(detPic)
+    for d in (2, 4, 8):
+        assert abs(values[d]) != abs(detPic), d
+    assert [d for d, v in values.items() if abs(v) == abs(detPic)] == [1]
+    page = _text(PAGE)
+    rmk = _block(page, "{.remark #rmk:divisibility-of-the-difference-class")
+    assert "d^2\\in\\{1\\}" in rmk
+    assert "[u/2]" in rmk
+
+
 def _run_all() -> int:
     items = [(name, fn) for name, fn in sorted(globals().items()) if name.startswith("test_")]
     failures = 0
