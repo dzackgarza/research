@@ -66,6 +66,10 @@ A pointer back to @thm:c, about a round apple.
 A round apple is an apple.
 :::
 
+::: {.lemma #lem:f}
+A [round apple]{.other-sense} of a tree is a crown.
+:::
+
 ::: {.remark #rmk:open}
 Its closing fence is on the text line.:::
 """
@@ -123,5 +127,7 @@ def test_findings_name_each_defect(tmp_path):
     # A closing fence on a text line leaves the div open; pandoc warns and the checker reports it.
     assert by_kind["parse-warning"]["chapter"] == "three.md"
     assert "unclosed" in by_kind["parse-warning"]["detail"]
+    # lem:f marks its use as another sense, so it is not listed.
+    assert [f for f in findings if f["blocks"][:1] == ["lem:f"]] == []
     # The lem:b <-> thm:c circle of uses is reported; the thm:c <-> rmk:d mentions are not.
     assert sorted(by_kind["cycle"]["blocks"]) == ["lem:b", "thm:c"]
