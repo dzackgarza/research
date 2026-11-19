@@ -1134,25 +1134,30 @@ def test_the_open_question_asks_about_the_group_the_proposition_computes():
     assert "W(T_\\Co)\\rtimes P" in gens
 
 
-def test_item2_the_divisibility_decides_whether_the_known_part_is_all_of_pic():
-    """A20 item 2: the one number that decides whether the known lattice is the whole Picard lattice.
+def test_item2_the_difference_class_leaves_exactly_two_cases():
+    """A20 item 2: the known part is either the Picard lattice or index two inside it.
 
-    Unimodularity of L_K3 gives det(u^perp in T_Co) = det(T_Co) u^2 / div(u)^2 = +- det(Pic) when
-    the two agree, i.e. (2^11 * 8)/div^2 = 2^14, which forces div(u) = 1.  The check recomputes the
-    four admissible values and asserts that only div = 1 matches, so the remark on the page cannot
-    drift from its arithmetic.
+    The difference class u is primitive and, by the corpus's own lemma, has divisibility 2 in T_Co,
+    so det(u^perp) = 2^11 * 8 / 4 = 2^12 while det(S_Co + <u>) = 2^14.  Unimodularity of L_K3 gives
+    2^12 k^2 = 2^14 / j^2, i.e. k j = 2, and the only two solutions are (k,j) = (2,1) and (1,2) --
+    Pic = S + <u> of determinant 2^14, or an index-two overlattice of it of determinant 2^12.  The
+    check recomputes this and fails if a third case appears.
     """
     import sympy
-    detT, u2, detPic = -2048, -8, 2048 * (-8)          # -2^11, u^2, -2^14
-    values = {d: sympy.Rational(detT * u2, d * d) for d in (1, 2, 4, 8)}
-    assert values[1] == 16384 and abs(values[1]) == abs(detPic)
-    for d in (2, 4, 8):
-        assert abs(values[d]) != abs(detPic), d
-    assert [d for d, v in values.items() if abs(v) == abs(detPic)] == [1]
+    detT, u2, divu = 2 ** 11, 8, 2                 # |det T_Co|, |u^2|, divisibility in T_Co
+    det_perp = sympy.Rational(detT * u2, divu ** 2)  # det(u^perp) = 2^12
+    det_known = detT * u2                            # det(S_Co + <u>) = 2^14
+    assert det_perp == 4096 and det_known == 16384
+    sols = [(k, j) for k in range(1, 5) for j in range(1, 5)
+            if det_perp * k * k == sympy.Rational(det_known, j * j)]
+    assert sols == [(1, 2), (2, 1)], sols
     page = _text(PAGE)
-    rmk = _block(page, "{.remark #rmk:divisibility-of-the-difference-class")
-    assert "d^2\\in\\{1\\}" in rmk
-    assert "[u/2]" in rmk
+    thm = _block(page, "{.theorem #rmk:divisibility-of-the-difference-class")
+    assert "kj = 2" in thm or "kj = 2" in thm.replace("$", "")
+    assert "(k,j) = (2,1)" in thm and "(k,j) = (1,2)" in thm
+    assert "\\div_{T_\\Co}(u)^2" in thm
+    # the superseded claim is gone from the page
+    assert "d^2\\in\\{1\\}" not in page
 
 
 def _run_all() -> int:
