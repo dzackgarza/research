@@ -40,7 +40,7 @@ The normalized KSBA space therefore lies between the semitoroidal compactificati
 
 ::: {.proposition #prop:enriques-semifan-coarsening title="The semifans of the normalized KSBA compactification"}
 
-Let $\semitorfan = \theset{\semifan{F}_k}_{k=1}^5$ be the generalized Coxeter semifans (@def:generalized-coxeter-semifan) of the folded Coxeter diagrams (@def:coxeter-matrix) of the five $0$-cusps of $\fentwo$ [@AEGS25, Def. 5.3, Lem. 5.5].
+Let $\semitorfan = \theset{\semifan{F}_k}_{k=1}^5$ be the generalized Coxeter semifans (@def:generalized-coxeter-semifan) of the folded Coxeter--Vinberg diagrams (@def:coxeter-vinberg-diagram) of the five $0$-cusps of $\fentwo$ [@AEGS25, Def. 5.3, Lem. 5.5].
 
 1. The normalization $\normksbacpt{\fentwo}$ dominates the Baily--Borel compactification $\bbcpt{\fentwo}$, and it is the semitoroidal compactification (@def:semitoroidal-compactification) for a collection of semifans $\semifan{G}_k$ that coarsen the $\semifan{F}_k$.
 

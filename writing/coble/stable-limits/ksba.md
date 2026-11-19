@@ -14,7 +14,7 @@ The construction uses twenty-four nonnegative root pairings $a_i=\lambda\cdot r_
 \pic {object=coxeter/vinberg-19-1-1};
 \end{tikzpicture}
 
-The Coxeter diagram (@def:coxeter-matrix) of the cusp lattice $U\oplus E_8(-1)^2\oplus A_1(-1)$; the full diagram also contains the four parabolic types that label the degree-two K3 $1$-cusps [@AET23, §5A, Fig. 1 and §3B].
+The Coxeter--Vinberg diagram (@def:coxeter-vinberg-diagram) of the cusp lattice $U\oplus E_8(-1)^2\oplus A_1(-1)$; the full diagram also contains the four parabolic types that label the degree-two K3 $1$-cusps [@AET23, §5A, Fig. 1 and §3B].
 :::
 
 The reflection group $W(N)$ acts on the positive cone (@not:reflection-groups-sign-convention), and the chamber $K$ is a fundamental domain. Its diagram has an $S_3$ symmetry; more precisely $\operatorname O^+(N)=S_3\ltimes W(N)$ [@AET23, §4, Lemma 4.4]. Thus the four parabolic labels above are types modulo this symmetry, while individual parabolic subdiagrams can occur more than once in the full diagram.
@@ -60,15 +60,15 @@ Let $(Z, \eps R_Z)$, $0 < \eps \ll 1$, be the pair of a degree-$2$ numerically p
 Every KSBA stable limit of such pairs is the quotient of a KSBA stable limit of K3 pairs $(X, \eps R)$, $X \in \fttz$, by an Enriques involution [@AEGS25, §7.3].
 :::
 
-::: {.proposition #prop:fen2-stable-limit-strata title="Boundary strata of $\ksbacpt{\fentwo}$ from folded Coxeter diagrams"}
+::: {.proposition #prop:fen2-stable-limit-strata title="Boundary strata of $\ksbacpt{\fentwo}$ from folded Coxeter--Vinberg diagrams"}
 
-For $k = 1, \dots, 5$ let $G_k$ be the folded Coxeter diagram (@def:coxeter-matrix) of the $0$-cusp $k$ of $\fentwo$.
+For $k = 1, \dots, 5$ let $G_k$ be the folded Coxeter--Vinberg diagram (@def:coxeter-vinberg-diagram) of the $0$-cusp $k$ of $\fentwo$.
 
 1. The semifan $\semifan{F}_k$ of the $0$-cusp $k$ is the generalized Coxeter semifan (@def:generalized-coxeter-semifan) of $G_k$, with irrelevant roots the foldings of the irrelevant roots of the K3 diagrams [@AEGS25, Def. 5.4 and Lemma 5.5].
 
 2. The faces of the Coxeter fan of $G_k$ are of two types: Type II rays, in bijection with the maximal parabolic subdiagrams of $G_k$, and Type III cones, in bijection with the elliptic subdiagrams of $G_k$ [@AEGS25, §5.1].
 
-3. For a Type III stable limit $Z = X/\ien$ at the $0$-cusp $k$, the largest irreducible components of $X$ and of $Z$ are described by the maximal connected elliptic subdiagrams of the Coxeter diagram at that cusp. Every other irreducible component corresponds to a subdiagram of one of these that is preserved by the folding symmetry, and the components are glued according to the Coxeter diagram [@AEGS25, §7.3].
+3. For a Type III stable limit $Z = X/\ien$ at the $0$-cusp $k$, the largest irreducible components of $X$ and of $Z$ are described by the maximal connected elliptic subdiagrams of the Coxeter--Vinberg diagram at that cusp. Every other irreducible component corresponds to a subdiagram of one of these that is preserved by the folding symmetry, and the components are glued according to the Coxeter--Vinberg diagram [@AEGS25, §7.3].
 
 4. The irreducible components of a Type II stable limit are described by the relevant connected components of the maximal parabolic subdiagrams of $G_k$ [@AEGS25, §7.4].
 :::

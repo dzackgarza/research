@@ -31,7 +31,7 @@ $$
 $$
 from the normalization of the KSBA compactification (@def:ksba-compactification) to the semitoroidal compactification (@def:semitoroidal-compactification) associated with them.
 At the cusp represented by $v_1$, whose boundary lattice is $\latI_{1,8}(2) = (9,9,1)_1$, the Coxeter fan of $T_{\Co}$ refines the semifan $\mcf_{v_1}$.
-Stable Coble surfaces (@def:coble-surface) in the boundary of $\overline{F_\Co}$ admit explicit descriptions in terms of surfaces associated to sub-Dynkin diagrams of Coxeter diagrams (@def:coxeter-matrix).
+Stable Coble surfaces (@def:coble-surface) in the boundary of $\overline{F_\Co}$ admit explicit descriptions in terms of surfaces associated to sub-Dynkin diagrams of Coxeter--Vinberg diagrams (@def:coxeter-vinberg-diagram).
 :::
 
 ## Acknowledgements

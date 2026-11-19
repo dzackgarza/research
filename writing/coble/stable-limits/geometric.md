@@ -68,7 +68,7 @@ The ramification divisor $R_Z\in\abs{\mathcal{M}}$ of $\rho$ is ample, and the p
 ::: {.definition #def:ade-surfaces title="ADE surfaces"}
 
 The **ADE surfaces** are the irreducible components of the KSBA stable degenerations of K3 surfaces with a nonsymplectic involution.
-A Type III component is labelled by a Dynkin diagram $A_n$, $D_n$ or $E_n$, and a Type II component by an affine diagram $\wA_n$, $\wD_n$ or $\wE_n$, matching the elliptic and parabolic subdiagrams of the Coxeter diagram (@def:coxeter-matrix) (@def:elliptic-subdiagram). Each ADE surface $(X, D + \eps R)$ comes with a double cover $\pi\colon X\to Y$ onto a del Pezzo ADE surface $\bigl(Y,\ C + \tfrac{1+\eps}{2}B\bigr)$ of index $2$ [@AEGS25 §6].
+A Type III component is labelled by a Dynkin diagram $A_n$, $D_n$ or $E_n$, and a Type II component by an affine diagram $\wA_n$, $\wD_n$ or $\wE_n$, matching the elliptic and parabolic subdiagrams of the Coxeter--Vinberg diagram (@def:coxeter-vinberg-diagram) (@def:elliptic-subdiagram). Each ADE surface $(X, D + \eps R)$ comes with a double cover $\pi\colon X\to Y$ onto a del Pezzo ADE surface $\bigl(Y,\ C + \tfrac{1+\eps}{2}B\bigr)$ of index $2$ [@AEGS25 §6].
 :::
 
 ::: {.definition #def:bcde-surfaces title="BCDE surfaces and the folding labels"}

@@ -365,7 +365,7 @@ Then
 
 1. $\Orth(K(2)) = \Orth(K)$, and the reflection $s_r$ of @def:spinor-norm is unchanged when the form is scaled, so the Coxeter chamber of $K(2)$ is the chamber of $K$ with every root norm doubled;
 
-2. the chamber of $K_\En = \eta_1^{\perp}/\eta_1$ has ten walls, with Coxeter diagram (@def:coxeter-matrix) $T_{2,3,7}$, all of whose edges have label $3$, one ideal vertex, and its ten walls are the roots
+2. the chamber of $K_\En = \eta_1^{\perp}/\eta_1$ has ten walls, with Coxeter--Vinberg diagram (@def:coxeter-vinberg-diagram) $T_{2,3,7}$, all of whose edges have label $3$, one ideal vertex, and its ten walls are the roots
 $$
 -\eps_3,\ \dots,\ -\eps_{10},\qquad \eps_1-\eps_2,\qquad \eps_2+2\eps_3+3\eps_4+4\eps_5+6\eps_6+5\eps_7+4\eps_8+3\eps_9+2\eps_{10}
 $$
@@ -381,7 +381,7 @@ in the basis $\eps_1,\dots,\eps_{10}$ of @sec-sterk-root-counts-and-computed-cha
 
 *The scaling lemma.* The form of $K(2)$ is $2b_K$, so an endomorphism $g$ satisfies $2b_K(gx,gy) = 2b_K(x,y)$ for all $x,y$ exactly when it is an isometry of $K$: $\Orth(K(2)) = \Orth(K)$ as subgroups of $\GL(K)$. The reflection $s_r(x) = x - 2\frac{b(x,r)}{b(r,r)}r$ is homogeneous of degree $0$ in the form, so the reflection in $r$ is the same map for $K$ and for $K(2)$, and the wall it defines has norm $r^2$ in $K$ and $2r^2$ in $K(2)$. Hence the chambers correspond wall by wall, with the norms doubled.
 
-*The Enriques chambers.* The walls, their norms and the Coxeter diagrams of items 2 and 4 are the simple roots of the two rank-$10$ quotient lattices in @sec-sterk-root-counts-and-computed-chambers; the ideal vertices, Gram fields and $f$-vectors are those of the $(10,10,0)_1$ and $(10,8,0)_1$ rows of @sec-coxiter-results-for-cusp-lattices.
+*The Enriques chambers.* The walls, their norms and the Coxeter--Vinberg diagrams of items 2 and 4 are the simple roots of the two rank-$10$ quotient lattices in @sec-sterk-root-counts-and-computed-chambers; the ideal vertices, Gram fields and $f$-vectors are those of the $(10,10,0)_1$ and $(10,8,0)_1$ rows of @sec-coxiter-results-for-cusp-lattices.
 
 *The Coble chamber.* By item 1 it suffices to treat $K'_\Co = \I_{1,8}$, with basis $v_0,\dots,v_8$ of squares $(1,-1,\dots,-1)$.
 Put $e_i = -v_i+v_{i+1}$ for $1\leq i\leq 7$, $e_8 = -v_8$ and $w = v_0+v_1+v_2+v_3$.

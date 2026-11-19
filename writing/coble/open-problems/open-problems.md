@@ -28,7 +28,7 @@ this inverse question from the archived Enriques meeting notes.
 
 ::: {.conjecture #conj:horizontal-folding title="The horizontal folding involution"}
 
-The involution $\theta_\Co$ of @prop:theta-co-exists, with $\lkt^{\theta_\Co} = T_\Co$ and $\lkt^{-\theta_\Co} = S_\Co$, induces on roots the *horizontal folding* of the $(18,0,0)_1$ Coxeter diagram (@def:coxeter-matrix) (@def:folded-root), and it exchanges the polarization classes $h_\En$ and $h_\Co$.
+The involution $\theta_\Co$ of @prop:theta-co-exists, with $\lkt^{\theta_\Co} = T_\Co$ and $\lkt^{-\theta_\Co} = S_\Co$, induces on roots the *horizontal folding* of the $(18,0,0)_1$ Coxeter--Vinberg diagram (@def:coxeter-vinberg-diagram) (@def:folded-root), and it exchanges the polarization classes $h_\En$ and $h_\Co$.
 :::
 
 ## Isotropic orbits, cusps, and reflection groups
