@@ -1,0 +1,35 @@
+Boundary lattice at a 0-cusp of F_{2d} with p_*(delta) > 1: d = p^2.
+Sources: AE23 Section 10C, printed p. 38; AET23 Def. 4.1 and Fig. 1, printed pp. 21-22.
+
+d = 4, p = 2
+  delta = g + 2 e1 + 2 f1, delta^2 = 0, primitive = True
+  delta/p in L*: pairings with (g, e1, f1) = (-4, 1, 1), all integral
+  delta/p^2 in L*: pairing with e1 = 1/2, not integral -> p_*(delta) = 2
+  u = e1 - f1: u.delta = 0, u^2 = -2
+  v = g + 4 f1: v.delta = 0, v^2 = -8, delta = v + 2 u
+  every (a,b,c) in K with b + c = 4 a equals a v + b u
+  delta^perp/delta: rank 19 = 1 + 2 + 16, first summand -2, discriminant 2
+  printed first summand -2d/p_* = -4, discriminant 4
+  -> the printed lattice has discriminant 4; the cusp has 2
+
+d = 9, p = 3
+  delta = g + 3 e1 + 3 f1, delta^2 = 0, primitive = True
+  delta/p in L*: pairings with (g, e1, f1) = (-6, 1, 1), all integral
+  delta/p^2 in L*: pairing with e1 = 1/3, not integral -> p_*(delta) = 3
+  u = e1 - f1: u.delta = 0, u^2 = -2
+  v = g + 6 f1: v.delta = 0, v^2 = -18, delta = v + 3 u
+  every (a,b,c) in K with b + c = 6 a equals a v + b u
+  delta^perp/delta: rank 19 = 1 + 2 + 16, first summand -2, discriminant 2
+  printed first summand -2d/p_* = -6, discriminant 6
+  -> the printed lattice has discriminant 6; the cusp has 2
+
+d = 16, p = 4
+  delta = g + 4 e1 + 4 f1, delta^2 = 0, primitive = True
+  delta/p in L*: pairings with (g, e1, f1) = (-8, 1, 1), all integral
+  delta/p^2 in L*: pairing with e1 = 1/4, not integral -> p_*(delta) = 4
+  u = e1 - f1: u.delta = 0, u^2 = -2
+  v = g + 8 f1: v.delta = 0, v^2 = -32, delta = v + 4 u
+  every (a,b,c) in K with b + c = 8 a equals a v + b u
+  delta^perp/delta: rank 19 = 1 + 2 + 16, first summand -2, discriminant 2
+  printed first summand -2d/p_* = -8, discriminant 8
+  -> the printed lattice has discriminant 8; the cusp has 2

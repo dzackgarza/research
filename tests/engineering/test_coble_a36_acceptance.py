@@ -337,6 +337,31 @@ def test_the_citations_and_the_open_status_carry_their_printed_pages():
     assert "[@AE23, Intro., printed p. 3]" in dissertation
 
 
+def test_the_p_greater_one_cusp_lattice_record_reproduces_and_the_page_states_it():
+    """The next open item's first datum: the boundary lattice at a p_* > 1 cusp.
+
+    AE23 Section 10C prints delta^perp/delta = <-2d/p_*> + H + E8^2 (p. 38).  At d = p^2
+    the vector delta = g + p(e1 + f1) is primitive isotropic with p_*(delta) = p, and
+    delta^perp/delta is <-2> + U + E8(-1)^2, the F_2 cusp lattice; the printed formula
+    would give <-2p>, a lattice of the wrong discriminant.  The record proves the
+    instance, and the page's lemma states it and draws the Coxeter-fan consequence.
+    """
+    script = REPORTS / "coble_679-cusp-lattice.py"
+    record = REPORTS / "coble_679-cusp-lattice-run.txt"
+    assert script.exists() and record.exists()
+    produced = subprocess.run([sys.executable, str(script)], capture_output=True, text=True, check=True).stdout
+    assert produced == record.read_text(encoding="utf-8"), "the transcript no longer matches the script"
+    assert "d = 4, p = 2" in produced
+    assert "p_*(delta) = 2" in produced
+    assert "first summand -2, discriminant 2" in produced
+    assert "printed first summand -2d/p_* = -4, discriminant 4" in produced
+    page = page_text()
+    assert "#lem:cusp-lattice-p-greater-one" in page
+    assert "isometric to the boundary lattice of the $F_2$ cusp" in page
+    register = REGISTER.read_text(encoding="utf-8")
+    assert "lem:cusp-lattice-p-greater-one" in register
+
+
 def test_the_mirror_trace_step_does_not_claim_the_lattice_has_no_minus_four_vector():
     """gamma_L itself is a vector of N of square -4, so the square -4 case is not empty.
 
