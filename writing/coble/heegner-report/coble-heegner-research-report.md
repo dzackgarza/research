@@ -1653,60 +1653,67 @@ On $A_{T_\Co}=A_{\langle h\rangle}\perp A_{U(2)}\perp A_{E_8(2)}$ its action is 
 Since $\ker\rho_{T_\Co}\subseteq\Gamma$, the lift lies in $\Gamma$, and $s_r$ lies in the image.
 :::
 
-::: {.theorem #thm:unpolarized-root-outside-labelled title="the $(-4)$-root $H_0-E_1-E_2-E_3$ of the unpolarized chamber is not a wall at a labelled cusp"}
-At every labelled $0$-cusp the reflection $s_{r_0}$ in the $(-4)$-vector $r_0=H_0-E_1-E_2-E_3$ of the unpolarized chamber (@thm:unpolarized-coxeter) is an integral isometry of the cusp lattice $I_{1,8}(2)$ and lies **outside** $\Gamma_e$.
-Hence the reflection group of a labelled cusp is strictly smaller than the reflection group of @thm:unpolarized-coxeter: the folded diagram is not that chamber, and the wall $r_0^{\perp}$ of the unpolarized chamber is not a wall of the labelled one.
+::: {.lemma #lem:cusp-image-is-the-stabilizer-of-a-class title="the image of the labelled cusp stabilizer is the stabilizer of one class of $A_K$"}
+Let $\eta$ be the primitive isotropic vector $e$ of the $U(2)$ summand of $T_\Co=\langle h\rangle\oplus U(2)\oplus E_8(2)$, so that $K=\eta^{\perp}/\bZ\eta=\langle h\rangle\oplus E_8(2)$ (@prop:cusp-stabilizer-orthogonal-coble(1)), and let $\Gamma_e$ be the image of $\Stab_{\Gamma_{\Co,2}}(\eta)$ in $\Orth(K)$.
+Then
+$$
+\Gamma_e=\rho_K^{-1}\bigl(\Stab_{\Orth(q_K)}(e_0)\bigr),\qquad e_0\definedas[h/2]\in A_K,
+$$
+so that a root $r$ of $K$ has $s_r\in\Gamma_e$ exactly when $\rho_K(s_r)$ fixes $e_0$; for $r^2=-4$ that is exactly when $4\mid(r,h)$.
 :::
 
 ::: {.proof}
-$r_0^2=-4$ and $s_{r_0}(x)=x+\tfrac12(x,r_0)r_0$ is integral on a basis of $I_{1,8}(2)$; in the model $I_{1,8}(2)=\langle2\rangle_{H_0}\oplus\langle-2\rangle_{E_1,\dots,E_8}$ it preserves $q$ on all $512$ classes of $A_K$ and moves exactly $256$ of them across the decomposition $A_K=A_{\langle h\rangle}\perp A_{E_8(2)}$, the class $[E_3/2]$ going to $[H_0/2]+[E_1/2]+[E_2/2]$ (`computations/reports/coble_671-unpolarized-root-not-in-labelled-run.txt`).
-The condition defining $\Gamma_{\Co,2}=\rho_{T_\Co}^{-1}(P)$ is blockwise: $P=O(q_{U(2)})\times O(q_{E_8(2)})$ acts on the $U(2)$ and $E_8(2)$ summands of $A_{T_\Co}$ and trivially on $A_{\langle h\rangle}$, so no element of $P$ moves a class across that decomposition; and every lift of $s_{r_0}$ has the same action on $A_K$, the lifts differing by $\ker(\Orth(T_\Co)\to\Orth(K))$, which acts trivially there.
-So no lift of $s_{r_0}$ has discriminant action in $P$, and $s_{r_0}\notin\Gamma_e$.
+A lift of $\bar g\in\Orth(K)$ is $\sigma(\bar g)=\id_{U(2)}\oplus\bar g$ of @prop:cusp-stabilizer-orthogonal-coble(2), and its discriminant action on $A_{T_\Co}=A_{\langle h\rangle}\perp A_{U(2)}\perp A_{E_8(2)}$ is the identity on $A_{U(2)}$ and $\rho_K(\bar g)$ on the rest.
+Every lift differs from $\sigma(\bar g)$ by an element of $\ker(\Orth(T_\Co)\to\Orth(K))$, which is trivial on $K\otimes\bQ$ and hence on $A_K=K^*/K$, so all lifts of one $\bar g$ act alike there (@lem:cusp-image-is-finite).
+Since $\Gamma_{\Co,2}=\rho_{T_\Co}^{-1}(P)$ and $P=O(q_{U(2)})\times O(q_{E_8(2)})$ acts on the last two summands and trivially on $A_{\langle h\rangle}$, the condition that some lift have discriminant action in $P$ is exactly that $\rho_K(\bar g)$ be the identity on $A_{\langle h\rangle}$, that is that it fix $e_0$: the class $e_0$ spans that summand.
+No action on the $U(2)$ block is prescribed.
+For $r^2=-4$ one has $s_r(v)=v+\tfrac12(v,r)r$ on $K$, so $s_r(h/2)=h/2+\tfrac14(r,h)r$, which is $h/2$ modulo $K$ exactly when $4\mid(r,h)$; and $b_K([r/2],e_0)=\tfrac14(r,h)\bmod1$ (`computations/reports/coble_671-cusp-image-and-the-labelled-chamber-run.txt`, Part A, which computes the action on all $512$ classes rather than paraphrasing it).
 :::
 
-::: {.corollary #cor:labelled-simple-system-census title="the census of the unpolarized simple roots at a labelled cusp"}
-Of the nine simple roots of @thm:unpolarized-coxeter, exactly one lies outside $\Gamma_e$ at a labelled $0$-cusp, namely $r_0$.
-The other eight, $r_1,\dots,r_8$, lie in it: the class of $r_i/2$ for $1\le i\le7$ is supported in the $E_8(2)$ summand alone, and $r_8$ has square $-2$ and acts trivially on $A_K$.
-Each of the eight also cuts a wall of the labelled chamber, since $r_i^{\perp}$ bounds $C$ and $C$ lies in that chamber; but the eight do not bound it, and the simple system of the labelled chamber strictly contains $\{r_1,\dots,r_8\}$ (@thm:labelled-chamber-extra-wall).
-So the labelled diagram is **not** the unpolarized diagram with the node $r_0$ deleted, at any labelled cusp.
-:::
-
-::: {.proof}
-The census is the table of `computations/reports/coble_671-unpolarized-root-not-in-labelled-run.txt`: for each simple root it prints the support of the class $r/2$, the integrality of the reflection on a basis, and the number of the $512$ classes of $A_K$ moved across the decomposition $A_{\langle h\rangle}\perp A_{E_8(2)}$.
-$r_2,\dots,r_7$ have support $A_{E_8(2)}$ and move nothing across, as does $r_1$; $r_0$ is the only root whose class is mixed, and it moves $256$.
-By @thm:unpolarized-root-outside-labelled the mixed one is outside and, the class being supported in one summand, the others' reflections lie in $P$ and hence, through the section, in $\Gamma_e$.
-Where an earlier form of this corollary ended — with the claim that the chamber of the group generated by all the simple reflections but one is the union of the two chambers across the missing wall, whence the node $r_0$ would be deleted — that claim is not valid, and @thm:labelled-chamber-extra-wall shows it fails here: the eight retained half-spaces cut a region strictly larger than the two chambers across $r_0^{\perp}$, and the labelled chamber is strictly smaller than that region.
-What the census asserts is the retention of the eight reflections, which is what a labelled diagram's nodes record; which further nodes it has is open.
-:::
-
-::: {.theorem #thm:labelled-chamber-extra-wall title="the labelled simple system strictly contains the eight retained nodes"}
-Let $\eta$ be a primitive isotropic vector of $T_\Co$ of divisibility $2$, $K=\eta^{\perp}/\bZ\eta$ the cusp lattice, $\Gamma_e\le\Orth(K)$ the image of $\Stab_{\Gamma_{\Co,2}}(\eta)$, $W_e$ the group generated by the reflections lying in $\Gamma_e$, and $C_e$ the chamber of $W_e$ containing the unpolarized chamber $C$ of @thm:unpolarized-coxeter.
-Put $D=\set{x\in K\otimes\bR:(x,r_i)\ge0,\ 1\le i\le8}$, the intersection of the closed half-spaces of the eight simple roots that lie in $\Gamma_e$ (@cor:labelled-simple-system-census).
-Then $C_e\subsetneq D$: the eight retained roots are walls of $C_e$ and do not bound it, and the simple system of $C_e$ strictly contains $\{r_1,\dots,r_8\}$.
-Consequently the labelled diagram at a $0$-cusp is not the unpolarized diagram with the node $r_0$ deleted, at any labelled cusp, because what refutes the deletion is the $(-2)$-part of the cusp lattice, which lies in $\Gamma_e$ unconditionally (@lem:root-reflections-in-the-labelled-cusp).
+::: {.theorem #thm:labelled-chamber-is-the-unpolarized-chamber title="at a labelled cusp the reflection group is the full one, so the labelled chamber is the unpolarized chamber"}
+In the notation of @lem:cusp-image-is-the-stabilizer-of-a-class, $\Gamma_e$ contains $s_r$ for **every** root $r$ of $K$.
+Hence $W_e=W(K)$, and the chamber of $W_e$ containing the unpolarized chamber $C$ of @thm:unpolarized-coxeter is $C$ itself: the labelled diagram at a $0$-cusp is the nine-node Coble diagram, and no node is deleted.
+In particular all nine simple roots $r_0,\dots,r_8$ of the unpolarized chamber are walls of the labelled chamber.
 :::
 
 ::: {.proof}
-*The two inclusions.*
-$C$ is bounded by $r_1^{\perp},\dots,r_8^{\perp}$ and by $r_0^{\perp}$, and $r_0^{\perp}$ is the mirror of no reflection of $W_e$: $s_{r_0}\notin\Gamma_e$ (@thm:unpolarized-root-outside-labelled), and a root cutting that same hyperplane is $\pm r_0$, since $r_0$ is primitive.
-So the interiors of $C$ and of $s_{r_0}C$, together with the relative interior of the facet they share, are connected and meet no mirror of $W_e$, and they lie in one chamber of $W_e$, which is $C_e$; hence $C\subseteq C_e$.
-For $1\le i\le8$ the reflection $s_{r_i}$ lies in $\Gamma_e$, so $r_i^{\perp}$ does not cross the interior of $C_e$; $(x,r_i)$ is positive on the interior of $C$ and therefore on that of $C_e$. That is $C_e\subseteq D$.
+*Which class $e_0$ is.*
+$h$ is primitive, so $K=\bZ h\oplus h^{\perp}$ is a direct sum and $A_K=\langle e_0\rangle\perp e_0^{\perp}$ with $q(e_0)=\tfrac12$ and $e_0^{\perp}$ the discriminant form of $h^{\perp}=E_8(2)$, which is the $(a,\delta)=(8,0)$ form.
+Over the $512$ classes of $A_K$ exactly one class of square $\tfrac12$ has that orthogonal complement, and in the model $\langle2\rangle_{H_0}\oplus\langle-2\rangle^{E_1,\dots,E_8}$ it is the all-ones class (`computations/reports/coble_671-cusp-image-and-the-labelled-chamber-run.txt`, Part B); that is the class of $[h/2]$ for every $h$ of square $2$ with $h^{\perp}\cong E_8(2)$ (same transcript, Part A, where $h=3H_0-E_1-\cdots-E_8$ is taken).
+So $e_0$ is pinned by the lattice and not by a choice of model.
 
-*The two are not equal.*
-Let $\rho=3H_0-2E_1-2E_2-E_3-E_4$. It is primitive, $\rho^2=-2$ and $\div(\rho)=2$, so $\rho$ is a root of $K$ whose reflection is trivial on $A_K$, hence $s_\rho\in\Gamma_e$ (@lem:root-reflections-in-the-labelled-cusp).
-On $C$ one has $a\ge b_1+b_2+b_3$, so
-$$(x,\rho)=2(3a-2b_1-2b_2-b_3-b_4)\ \ge\ 2(b_1+b_2+2b_3-b_4)\ >\ 0 .$$
-The point $p=\tfrac{16}{5}H_0-2E_1-2E_2-E_3-\tfrac1{10}(E_5+E_6+E_7+E_8)$ has $b$-coordinates $2,2,1,1,\tfrac1{10},\dots,\tfrac1{10}$, all positive and decreasing, so $p$ lies in the interior of $D$, and $(p,p)=\tfrac25>0$, so it lies in the positive cone of $K$; while $(p,\rho)=-\tfrac45<0$.
-Since $s_\rho$ fixes $\rho^{\perp}$ pointwise, no chamber of $W_e$ straddles $\rho^{\perp}$, and $C_e$ lies on its positive side; so $p\notin C_e$, that is $C_e\subsetneq D$.
+*Every root fixes it.*
+A $(-2)$-root acts trivially on $A_K$ (@lem:root-reflections-in-the-labelled-cusp) and so fixes $e_0$.
+Let $r=aH_0-\sum b_iE_i$ be a $(-4)$-root in the model; it is primitive, so $a^2-\sum b_i^2=-2$.
+If $a$ is even then $\sum b_i^2\equiv2\pmod4$, so the number of odd $b_i$ is $2$ or $6$; if $a$ is odd then $a^2\equiv1\pmod8$ and $\sum b_i^2\equiv3\pmod4$, so that number is $3$ or $7$.
+Either way the number of odd coordinates of $r$ is even, and $(r,h)=2(3a-\sum b_i)$ is therefore divisible by $4$, so $s_r$ fixes $e_0$ by @lem:cusp-image-is-the-stabilizer-of-a-class (transcript, Part C, which verifies the parity over every $(-4)$-root pattern with $|a|,|b_i|\le4$).
+Hence every reflection of $W(K)$ lies in $\Gamma_e$.
 
-*The simple system.*
-Each $r_i^{\perp}$ meets $C_e$, in the facet it cuts on $C$, so each $r_i$ is a simple root of $C_e$; and an intersection of the eight half-spaces strictly larger than $C_e$ says that the boundary of $C_e$ inside $D$ is carried by mirrors of $W_e$ other than the eight, that is that $C_e$ has further walls.
-Every primitive root of $K$ of negative square has square $-2$ or $-4$, because $\div(r)=2$ for a primitive $r$ and the integrality of $s_r$ reads $4/r^2\in\bZ$; the $(-2)$-roots all lie in $\Gamma_e$ (@lem:root-reflections-in-the-labelled-cusp) and, of the $(-4)$-roots, exactly those with even $a$-coordinate, by the parity criterion of `computations/reports/coble_671-labelled-chamber-extra-wall-run.txt`, Part B.
-So the further walls are drawn from those two families, and finding them is the Vinberg computation that @prob:coxeter-completeness asks for; the whole of `computations/reports/coble_671-labelled-chamber-extra-wall-run.txt` is the arithmetic of this proof, with no provider call.
+*The group and its chamber.*
+Every reflection in $\Gamma_e$ is the reflection in a root of $K$, so $W_e\subseteq W(K)$, and with the previous paragraph $W_e=W(K)$.
+A fundamental chamber of $W_e$ is then a fundamental chamber of $W(K)$, and $C$ is one (@thm:unpolarized-coxeter); the chamber of $W_e$ containing $C$ is $C$, its simple system is $\{r_0,\dots,r_8\}$, and its diagram is the nine-node Coble diagram of @thm:unpolarized-coxeter.
 :::
 
-**What the second half of item 1 waits on, at the four cusps of $F_{\Co,2}$.** Two inputs, and neither is on the record.
-The first is the images themselves, which by @lem:cusp-image-is-finite are a finite discriminant computation: the subgroup of $O(A_{T_\Co})$ cut out by $P$, transported to $O(A_K)$ through the section, together with the finitely many lift cosets.
+::: {.remark title="what this withdraws, and why the earlier census differed"}
+Two statements stood in this place and are withdrawn: `thm:unpolarized-root-outside-labelled`, that $s_{r_0}\notin\Gamma_e$ at a labelled cusp, and `cor:labelled-simple-system-census`, that exactly $r_0$ of the nine simple roots is outside, on the ground that the class of $r_0/2$ "mixes $A_{\langle h\rangle}$ with $A_{E_8(2)}$".
+That computation was made against the class $[H_0/2]$ of the model $I_{1,8}(2)=\langle2\rangle_{H_0}\oplus\langle-2\rangle^{E_1,\dots,E_8}$ and read as though it were the class $[h/2]$ of $A_{\langle h\rangle}$; the two are different classes.
+$H_0^{\perp}$ is $\langle-2\rangle^{8}$ and $h^{\perp}$ is $E_8(2)$, and these are not isometric: their discriminant forms have $(a,\delta)=(8,1)$ and $(8,0)$, and their smallest vectors are $16$ of square $-2$ against none of square $-2$ and $240$ of square $-4$.
+So no isometry of $K$ carries $H_0$ to $h$, and a criterion computed against $[H_0/2]$ is a criterion for a class that is not the cusp's.
+Against $[H_0/2]$ the test reads $b([r/2],[H_0/2])=0$, which is "$a$ is even", and that is where the earlier verdicts came from; against the cusp's $[h/2]$ every root passes (`computations/reports/coble_671-cusp-image-and-the-labelled-chamber-run.txt`, Part E, prints both tables side by side).
+The earlier record `computations/reports/coble_671-unpolarized-root-not-in-labelled-run.txt` stays as the record of what was run; its criterion is the $[H_0/2]$ one.
+The theorem `thm:labelled-chamber-extra-wall` and the parity criterion quoted in it are withdrawn with them.
+:::
+
+::: {.remark title="the lifting theory the earlier form of this section said was needed"}
+An earlier form of this page said that deciding the labelled image needed the $\bZ_2$-orthogonal-group theory of [@Wal62], because it asked for a lift "with a prescribed action on the other block".
+It does not: $P$ contains all of $O(q_{U(2)})$, so only *some* action on the $U(2)$ block is required and the identity will do, and the only coordinate the condition pins is that of $\langle h\rangle$.
+That is @lem:cusp-image-is-the-stabilizer-of-a-class, which uses nothing beyond the two facts @lem:cusp-image-is-finite already records, and it is the reason the first of the two inputs this section used to name is no longer missing.
+:::
+
+**What item 1 still waits on, at the four cusps of $F_{\Co,2}$.** One input, and the other is supplied.
+Supplied at a labelled cusp in the shape of @prop:cusp-stabilizer-orthogonal-coble, that is for the representative $\eta=e$ of the $U(2)$ summand: the image is $\rho_K^{-1}(\Stab_{\Orth(q_K)}(e_0))$ with $e_0=[h/2]$, it contains every reflection of $K$, and the labelled chamber is the unpolarized chamber (@lem:cusp-image-is-the-stabilizer-of-a-class, @thm:labelled-chamber-is-the-unpolarized-chamber).
+What the four published representatives still need is the transport of that one class to each of them: for $\eta_i$ carried to $e$ by $g_i\in\Orth(T_\Co)$ the group $\Gamma_{\Co,2}$ is carried to $\rho^{-1}(\rho(g_i)P\rho(g_i)^{-1})$, so the class whose stabilizer is the image at the $i$-th cusp is $\rho(g_i)(e_0)$ and not $e_0$ unless $g_i$ normalizes $P$.
+So the image at a labelled cusp is now a single class of $A_K$ per cusp, and the four classes are computable from the four recorded representatives.
 Run 43556671111, archived as `computations/reports/coble_gco_public_incidence_source-run.log`, prints four lines `[Gamma_{Co,2}] line cusp 0` to `line cusp 3` with integral coordinate vectors, but it prints no stabilizer.
 What those images are is not an infinite stabilizer computation, and an earlier form of this remark said it was; the corrected reason is @lem:cusp-image-is-finite.
 The basis of that row is archived after all, in an object rather than in a transcript: the artifact `computations/reports/coble_proper_plane_stabilizer_image.json` carries the key `standard_gram`, the Gram matrix of $B=\langle1\rangle\oplus U\oplus E_8(-1)$ in the provider's standard basis, and the four printed vectors are isotropic in it (`computations/reports/coble_671-four-cusps.py`, transcript `-run.txt`; the model $\langle2\rangle\oplus U(2)\oplus E_8(-2)$ of @prop:tco-as-twist is $B(2)$, and the four are isotropic in $B$ and hence in $B(2)$).
@@ -1714,8 +1721,7 @@ An earlier form of this remark said that Gram was archived nowhere in the reposi
 
 **The four cusps' lattice data, computed.** With that Gram the four representatives check out and their cusp lattices follow: each is primitive, isotropic and of divisibility $2$, the four classes $[v/2]$ of $A_{T_\Co}$ are pairwise distinct singular classes, and every one of the four cusp lattices $v^{\perp}/\bZ v$ has rank $9$, determinant $512$, signature $(1,8)$, is $2$-elementary with $a=9$ and $\delta=1$, and has level profile $\set{0:136,\ \tfrac12:136,\ 1:120,\ \tfrac32:120}$.
 By [@Nik80, Thm. 3.6.2] that is $\langle2\rangle\oplus E_8(-2)=I_{1,8}(2)$, so @thm:one-cusp-lattice is instantiated at the four public representatives, and the four Gram matrices are on record as the input a folding computation needs.
-The second is the relevance marking: "fan versus semifan" at a cusp is a statement about the walls the retained roots generate, and the dictionary from a simple root of the chamber to a curve of the Coble surface is what @warn:coble-marking records as missing, so the phrase is not yet readable at a Coble cusp at all.
-A shortcut for the first is not available either: at the full group the extension criterion of [@Nik80, §1.5] settles it and is what @prop:cusp-stabilizer-orthogonal-coble uses, but the labelled refinement asks whether an isometry of one block of $A_{T_\Co}=A_{U(2)}\perp A_{K_I}$ (the decomposition of `computations/reports/coble-cusp-stabilizer-orthogonal-run.txt`, Part B) can be lifted with a prescribed action on the other block, and the $\mathbb{Z}_2$-orthogonal-group theory that decides such liftings is [@Wal62], which is not among the sources at hand; this page therefore states the question and does not paraphrase the theory.
+The input that remains is the relevance marking: "fan versus semifan" at a cusp is a statement about the walls the retained roots generate, and the dictionary from a simple root of the chamber to a curve of the Coble surface is what @warn:coble-marking records as missing, so the phrase is not yet readable at a Coble cusp at all.
 :::
 
 ::: {.problem #prob:coxeter-completeness title="Required theorem (Coble Vinberg and root completeness)"}
@@ -2964,7 +2970,7 @@ The table lists each statement, whether it is proved, and the section that prove
 | The direct period image misses every $(-2)$-Heegner divisor of $T_\Co$ | proved | @thm:direct-period-misses-root-walls |
 | Target theorem A, first clause | published in the unpolarized form [@DK13, Prop. 3.2, printed p. 513]; no root divisor is met (@thm:direct-period-misses-root-walls) and one $(-4)$-divisor is (@thm:direct-period-meets-minus-four), so the complement is a proper nonempty subarrangement; which $(-4)$-divisors are met is the record of @prob:B24, part 2, its level set computed at @rmk:coble-discriminant-levels; the polarized refinement is decided: the sign is in $\Gamma^{\mathrm{geom}}_{\Co,2}$ through the isotropy $I_\Co$ (@thm:sign-is-isotropy) and in no loop (@thm:no-loop-carries-the-sign), and no word in the reflection group gives it (@cor:no-word-for-the-sign) | @sec-autonomous-target |
 | Target theorem A, clause three, the cusps | the cusp lattice is one lattice at every cusp (@thm:one-cusp-lattice), computed at the four public representatives: rank $9$, determinant $512$, signature $(1,8)$, $2$-elementary with $a=9$, $\delta=1$, that is $I_{1,8}(2)$ (`computations/reports/coble_671-four-cusps-run.txt`); the cusps themselves are four $0$-cusps and seven $1$-cusps (@prop:coble-cong-point-stabilizer(3), @cor:coble-heegner-integral-plane-descent), and the semifans at the four $0$-cusps are @thm:coble-pair-semifan | @sec-autonomous-target |
-| Target theorem A, clause three, the diagrams | the four folded Coxeter diagrams, and with them the Type II and Type III strata at the labelled cusps, are not established: what each cusp owes is the image $\Gamma_e\le\Orth(I_{1,8}(2))$ of its stabilizer, which is a congruence subgroup fixed by a finite discriminant datum (@lem:cusp-image-is-finite), and two inputs are missing — that finite computation on $O(A_{T_\Co})$, with $P$ transported to the cusp, and the relevance marking for the fan-versus-semifan reading (@prob:coxeter-completeness, @warn:coble-marking); the basis of the public row is no longer among them, the artifact's `standard_gram` supplying it; what is unconditional at every labelled cusp is the $(-2)$-part: the reflections in the $(-2)$-vectors of the cusp lattice lie in the image (@lem:root-reflections-in-the-labelled-cusp); of the nine simple roots of the unpolarized chamber exactly one is outside: $H_0-E_1-E_2-E_3$, whose class mixes $A_{\langle h\rangle}$ with $A_{E_8(2)}$ (@thm:unpolarized-root-outside-labelled), while $r_1,\dots,r_8$ are in (@cor:labelled-simple-system-census); those eight do not bound the labelled chamber, which is strictly smaller than the region their half-spaces cut (@thm:labelled-chamber-extra-wall), so the labelled diagram is not the unpolarized chain with the branch point removed, and the nodes beyond the eight are not known | @sec-coxeter |
+| Target theorem A, clause three, the diagrams | the four folded Coxeter diagrams, and with them the Type II and Type III strata at the labelled cusps, are not established: what each cusp owes is the image $\Gamma_e\le\Orth(I_{1,8}(2))$ of its stabilizer, which is a congruence subgroup fixed by a finite discriminant datum (@lem:cusp-image-is-finite), and two inputs are missing — that finite computation on $O(A_{T_\Co})$, with $P$ transported to the cusp, and the relevance marking for the fan-versus-semifan reading (@prob:coxeter-completeness, @warn:coble-marking); the basis of the public row is no longer among them, the artifact's `standard_gram` supplying it; at a labelled cusp the image is $\rho_K^{-1}(\Stab_{\Orth(q_K)}(e_0))$, one class $e_0=[h/2]$ of $A_K$, and it contains **every** reflection of the cusp lattice, so the labelled chamber is the unpolarized chamber and the labelled diagram is the nine-node Coble diagram with no node deleted (@lem:cusp-image-is-the-stabilizer-of-a-class, @thm:labelled-chamber-is-the-unpolarized-chamber); what the four published representatives still need is the transport of that one class along each, and the relevance marking decides the fan-versus-semifan reading | @sec-coxeter |
 | Target theorem A, clause two | not established; it waits on @sec-coble-dlt and on the diagrams above | @sec-autonomous-target |
 | The sign $\iota$: loops versus isotropy | the loop monodromy is $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm\id\}$ and no loop carries $\iota$ (@thm:no-loop-carries-the-sign); the orbifold group of @def:geometric-monodromy is $\Gamma^{\mathrm{dir}}_{\Co,2}$, supplied by the isotropy $I_\Co$ (@thm:sign-is-isotropy) | @thm:sign-is-isotropy |
 | The level sets of the discriminant forms of $S_\Co$ and $T_\Co$ | computed exactly: $528$, $496$, $496$, $528$ and $528$, $528$, $496$, $496$ over the $2048$ classes | @rmk:coble-discriminant-levels |
