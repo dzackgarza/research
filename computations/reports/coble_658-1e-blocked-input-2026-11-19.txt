@@ -35,6 +35,19 @@ A search of all 28 conversions for "simultaneous", for "two nodes" beside monodr
 "product of ... reflections", returns nothing on point; the classical statements are the one-node
 formula, whose hypothesis is that the critical values are distinct.
 
+A FOURTH HELD SOURCE, CHECKED FOR THE MODULI STATEMENT: [@DZ01], Dolgachev--Zhang, Coble rational
+surfaces, held as tmp/sources/dolgachev-zhang-2001-coble-rational-surfaces.pdf (2594 lines of
+pdftotext).  It is the standard reference on the geometry the book's Coble surfaces belong to --
+Lemma 6.2 there characterises the Coble surfaces of K3-type as those whose double cover is a K3 with
+at worst ordinary double points, which is exactly the book's construction -- but it contains no
+occurrence of "moduli", "period", "Torelli" or "deformation" at all: it is a classification paper,
+not a moduli paper.  So it cannot supply the statement of which Heegner divisors form the
+discriminant, which is what 1e now needs.
+
+  Caveat on that source: its pdftotext conversion drops minus signs (K_X^2 = -1 prints as "KX2 =
+  1"), so it is usable for word searches and not for symbol searches; nothing above relies on a
+  symbol search in it.
+
 CANDIDATES TO OBTAIN -- named as candidates, not cited, because no printed page has been seen:
 
   - SGA 7 II, the Picard--Lefschetz exposé (Deligne--Katz);
