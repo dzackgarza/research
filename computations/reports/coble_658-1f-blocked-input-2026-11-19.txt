@@ -1,0 +1,34 @@
+research#658, item 1f: the input that is missing, and the two routes that were checked
+
+Item 1f asks whether Phi is onto the divisibility-2 locus, i.e. whether every divisibility-2
+Gamma_En-orbit of primitive isotropic vectors of T_En meets eta(T_Co) = k^perp.  The page states
+the class-level result it can prove (prop:cusp-map-surjective-on-classes) and leaves the orbit
+question open.  This note records the two routes examined and why neither is available on main.
+
+ROUTE (a): transitivity of Gamma_En on the primitive isotropic vectors.  REFUTED, with a
+computation: T_En = U + U(2) + E8(2) is not unimodular (rank 12, det 2^10, A = (Z/2)^10), so
+cor:hyperbolic-splitting does not apply; and Gamma_En = O~^+(T_En) acts through O(A), so its
+orbits are refined by the discriminant class v |-> v*.  See
+coble_658-ten-transitivity-probe-run.txt.
+
+ROUTE (b): the fibre over one discriminant class is a single orbit, as thm:coble-integral-lifting-fibre
+proves for T_Co, and then one asks whether each such fibre contains a vector orthogonal to a root
+in the Gamma_En-orbit of k.  This is the route that would settle 1f positively, and it does not
+transfer as stated: thm:coble-integral-lifting-fibre is a theorem about T_Co = B(2) with B = I_{2,9},
+and its proof uses A_{T_Co} = B/2B and Orth(T_Co) = Orth(B).  T_En is U + B_0(2) with
+B_0 = U + E8, i.e. it has a *unimodular* summand U beside the doubled part, so it is not B(2) for
+any integral B and the 2-adic lifting step does not apply verbatim.  What the analogue would need is
+a fibre-singleton statement for a lattice of the shape U + B_0(2), together with the existence, in
+each nonzero isotropic class, of a divisibility-2 primitive isotropic representative orthogonal to a
+root in the orbit of k.
+
+A candidate tool for route (b) is thm:eichler-criterion (the book's form of the Eichler criterion,
+[@GHS08, Prop. 3.3(i)]), which gives transitivity on primitive vectors of equal norm and equal
+discriminant class.  Two things must be checked before it can be used: whether its "second
+hyperbolic plane" U_1 covers the scaled plane U(2) that T_En actually contains, and whether
+E8(2) + U(2) supplies isotropic representatives in every nonzero isotropic class.  Neither check has
+been made, and the printed form of [@GHS08, Prop. 3.3(i)] is not held here; that is the input this
+route is missing.
+
+STATE: item 1f is NOT MET.  The class-level proposition is proved and the orbit question is open and
+recorded as open; no page claims surjectivity onto the divisibility-2 locus.
