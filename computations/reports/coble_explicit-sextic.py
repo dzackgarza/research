@@ -117,19 +117,42 @@ print("   each factor is squarefree: %s"
 print("   total degree of the factors: %d" % sum(sp.Poly(ff, y).degree()*e for ff, e in fac[1]))
 print("")
 
-print("5. why each of the ten points is an ordinary node")
-print("   Write m_p for the multiplicity of the point p and mu_p for the length of the local")
-print("   algebra C{x,y}/(f, f_x, f_y) at p, which is the Milnor number.  Two exact facts:")
-print("     (a) the degree of the singular scheme is the sum of the mu_p, and here it is 10;")
-print("     (b) rationality gives sum of delta_p = 10, and delta_p <= m_p(m_p-1)/2 for each p,")
-print("         so sum m_p(m_p-1)/2 >= 10.")
-print("   Also mu_p >= (m_p-1)^2.  If some m_p were at least 3, that point alone would give")
-print("   mu_p >= 4 and m_p(m_p-1)/2 >= 3, so (a) would leave at most 6 further points while")
-print("   (b) would need at least 7 of them; hence every m_p = 2.  Then (a) gives at most ten")
-print("   points and (b) at least ten, so there are exactly ten, and 10 = sum of mu_p >= 10")
-print("   with mu_p >= 1 forces mu_p = 1 and delta_p = 1 at each: every one is an ordinary node.")
-print("   (Cross-check with Milnor's formula mu_p = 2 delta_p - r_p + 1, r_p the number of")
-print("   branches: ten nodes give r_p = 2 and mu_p = 1, summing to 10, as computed.)")
+print("5. each of the ten points is an ordinary node, decided point by point")
+print("   At a singular point of f the lowest term has degree at least 2; the point is an")
+print("   ordinary node exactly when that lowest term is a nondegenerate quadratic form, whose")
+print("   two factors are then distinct linear forms and give the two smooth branches.  For a")
+print("   singular point of a plane curve the quadratic part is nondegenerate exactly when the")
+print("   Hessian determinant f_xx f_yy - f_xy^2 is nonzero there, so the check is that")
+print("   determinant, evaluated at each point in the number field Q[y]/(its factor).")
+fxx, fyy, fxy = sp.diff(f, x, 2), sp.diff(f, y, 2), sp.diff(f, x, y)
+Hess = sp.expand(fxx * fyy - fxy ** 2)
+print("   f_xx f_yy - f_xy^2 =", Hess)
+fac = sp.factor_list(univar[0]) if univar else sp.factor_list(
+    (y**2 + 6*y + 4)*(y**4 - 8*y**3 + 24*y**2 + 8*y + 16)*(y**4 + 2*y**3 + 24*y**2 - 32*y + 16))
+total = 0
+all_nonzero = True
+for gexpr, mult in fac[1]:
+    g = sp.Poly(gexpr, y)
+    deg = g.degree()
+    # x as an element of Q[y]/(g)
+    xpoly = sp.Poly(sp.expand(-(y**9 + 3948*y**4)), y)
+    inv1760 = sp.invert(sp.Integer(1760), g)
+    x_in_field = (xpoly * inv1760).rem(g)
+    h = sp.Poly(Hess.subs({x: sp.Poly(x_in_field, y).as_expr()}), y).rem(g)
+    nonzero = h != 0
+    all_nonzero = all_nonzero and nonzero
+    total += deg
+    print("   factor of degree %d: %d points; the Hessian determinant there is %s in Q[y]/(g),"
+          % (deg, deg, "nonzero" if nonzero else "ZERO"))
+    print("     so every point over this factor has a nondegenerate quadratic part")
+print("   the ten points are accounted for: %d" % total)
+assert total == 10 and all_nonzero
+print("   hence each of the ten singular points is an ordinary node, and with the ten distinct")
+print("   points and total delta 10 of section 3 no singular point is left over")
+print("   (the multiplicity and Milnor-number totals are consistent with this and are not")
+print("    needed: the earlier printed argument used the inequality delta_p <= m(m-1)/2, which")
+print("    is the wrong way round -- the correct inequality is delta_p >= m(m-1)/2 -- and this")
+print("    computation replaces it)")
 print("")
 
 print("6. the two points at infinity")

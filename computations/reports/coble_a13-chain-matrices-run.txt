@@ -129,4 +129,5 @@ theta_Co  integral True, involution True, isometry True
 7. the quotient ranks, and what stays open
    ranks of the cokernels: T_En/T_Co 1, T_dP/T_En 8, lkt/T_dP 2
    the equations of the sextic C and its double plane in these bases are not touched
-   here: that is @qst:coble-explicit-equations, a separate open question.
+   here: they are @thm:coble-explicit-sextic, which works in the plane model, a basis of
+   H^2 determining no equation.

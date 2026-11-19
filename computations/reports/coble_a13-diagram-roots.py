@@ -98,9 +98,25 @@ G_E2 = Matrix(8, 8, lambda i, j: ip(talpha[i + 1], talpha[j + 1]))
 W1 = Matrix.hstack(*[alpha[i] for i in range(1, 9)]) * G_E1.inv()
 W2 = Matrix.hstack(*[talpha[i] for i in range(1, 9)]) * G_E2.inv()
 print("1. the two E8 summands, and the fundamental weights")
-print("   E8 Gram = -Cartan, checked: %s"
-      % (G_E1 == -Matrix(8, 8, lambda i, j: 2 if i == j else (-1 if (i + 1, j + 1) in
-         [(1, 3), (2, 4), (3, 4), (4, 5), (5, 6), (6, 7), (7, 8)] else 0))))
+E8_EDGES_1BASED = [(1, 3), (2, 4), (3, 4), (4, 5), (5, 6), (6, 7), (7, 8)]
+
+
+def cartan_e8_negative():
+    """-Cartan(E8) in Bourbaki numbering, built symmetrically from the edge list."""
+    C = zeros(8, 8)
+    for i in range(8):
+        C[i, i] = -2
+    for a, b in E8_EDGES_1BASED:
+        C[a - 1, b - 1] = 1
+        C[b - 1, a - 1] = 1
+    return C
+
+
+print("   E8 Gram = -Cartan, checked: %s" % (G_E1 == cartan_e8_negative()))
+print("   (the expected matrix is built symmetrically from the Bourbaki edge list; an earlier")
+print("    version filled one orientation of each edge only, so the check printed False while")
+print("    the Gram matrix itself was right -- see section 5 for the same block against the")
+print("    diagram roots)")
 print("   (w_8, alpha_j) = delta_{8j}: %s, (w_8)^2 = %s"
       % ([[ip(W1[:, 7], alpha[j]) for j in range(1, 9)]], sq(W1[:, 7])))
 print("   (tilde w_8, tilde alpha_j) = delta_{8j}: %s, (tilde w_8)^2 = %s"

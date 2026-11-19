@@ -17,6 +17,11 @@ decisions are the four records
     computations/reports/coble_a13-gluing-anti-isometry-run.txt     gamma_Co
     computations/reports/coble_a13-heegner-comparison-run.txt       the comparison at delta
     computations/reports/coble_a13-diagram-roots-run.txt            classes and roots
+    computations/reports/coble_a13-chain-matrices-run.txt           the chain's matrices
+    computations/reports/coble_explicit-sextic-run.txt              the sextic
+
+and the construction research#81 asks for, which needs the Sage image, is
+computations/reports/coble_a13-library-construction.py with its transcript.
 
 These tests read those transcripts and the two pages, and the last one re-runs the four scripts
 and requires the committed transcripts to be reproduced line for line from the first numbered
@@ -63,7 +68,13 @@ COMPARISON = (REPORTS / "coble_a13-heegner-comparison.py",
               REPORTS / "coble_a13-heegner-comparison-run.txt")
 ROOTS = (REPORTS / "coble_a13-diagram-roots.py",
          REPORTS / "coble_a13-diagram-roots-run.txt")
-RECORDS = (THETA, GLUING, COMPARISON, ROOTS)
+LIBRARY = (REPORTS / "coble_a13-library-construction.py",
+           REPORTS / "coble_a13-library-construction-run.txt")
+CHAIN = (REPORTS / "coble_a13-chain-matrices.py",
+         REPORTS / "coble_a13-chain-matrices-run.txt")
+SEXTIC = (REPORTS / "coble_explicit-sextic.py",
+          REPORTS / "coble_explicit-sextic-run.txt")
+RECORDS = (THETA, GLUING, COMPARISON, ROOTS, CHAIN, SEXTIC)
 
 
 def _lines(record, marker):
@@ -286,11 +297,17 @@ def test_the_page_carries_the_displays_the_records_decide():
 
 def test_the_register_item_is_closed_and_the_conjecture_is_replaced():
     text = OPEN_PROBLEMS.read_text()
-    assert "#qst:coble-embedding-matrices" in text
-    assert "the matrices of the chain of primitive embeddings" in text
-    assert "Write the polarization classes" not in text
-    assert "conj:horizontal-folding" not in text
+    # the A13 register question is now a remark pointing at the two theorems
+    assert "The embedding matrices of the chain" in text
     assert "The horizontal folding involution, resolved" in text
+    # the ids the question and the conjecture had are gone
+    for gone in ("qst:coble-embedding-matrices", "qst:coble-explicit-equations",
+                 "conj:horizontal-folding"):
+        assert gone not in text, gone
+    # and the two questions they asked are theorems
+    assert "#thm:chain-matrices" in text or "thm:chain-matrices" in text
+    assert "#thm:coble-explicit-sextic" in text
+    # the falsified clause is recorded as falsified, with its reason
     assert "theta_\\Co(H) = H$, and that is false" in text
 
 
@@ -305,10 +322,24 @@ def _body(text):
     raise AssertionError("the record has no numbered section '1.'")
 
 
-def test_the_four_records_reproduce_from_their_scripts():
+def test_the_six_records_reproduce_from_their_scripts():
     for script, record in RECORDS:
         run = subprocess.run([sys.executable, str(script)], capture_output=True,
                              text=True, timeout=900, cwd=str(ROOT))
         assert run.returncode == 0, (script.name, run.stderr[-2000:])
         fresh, committed = _body(run.stdout), _body(record.read_text())
         assert fresh == committed, "%s does not reproduce its transcript" % script.name
+
+
+def test_the_library_construction_record_exists_with_its_transcript():
+    """The #81 construction record needs the Sage image, so it is checked here, not re-run."""
+    assert LIBRARY[0].exists() and LIBRARY[1].exists()
+    text = LIBRARY[0].read_text()
+    for call in ("L.O()", "L.reflection(", "primitive_sublattice_from(", "kernel()",
+                 "orthogonal_complement(", "is_isometric_to(", "gluing_anti_isometry("):
+        assert call in text, call
+    record = LIBRARY[1].read_text()
+    assert "sage-extensions imported from" in record
+    for marker in ("S_Co is isometric to <2> + <-2>^10", "T_Co is isometric to <2> + U(2) + E8(2)",
+                   "the glue subgroup of A_{S_Co + T_Co} has order 2048"):
+        assert marker in record, marker

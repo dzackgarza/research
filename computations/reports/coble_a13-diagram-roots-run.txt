@@ -7,7 +7,11 @@ provenance
               section 'The (18,0,0)_1 diagram: 19 roots'
 
 1. the two E8 summands, and the fundamental weights
-   E8 Gram = -Cartan, checked: False
+   E8 Gram = -Cartan, checked: True
+   (the expected matrix is built symmetrically from the Bourbaki edge list; an earlier
+    version filled one orientation of each edge only, so the check printed False while
+    the Gram matrix itself was right -- see section 5 for the same block against the
+    diagram roots)
    (w_8, alpha_j) = delta_{8j}: [[0, 0, 0, 0, 0, 0, 0, 1]], (w_8)^2 = -2
    (tilde w_8, tilde alpha_j) = delta_{8j}: [[0, 0, 0, 0, 0, 0, 0, 1]], (tilde w_8)^2 = -2
 

@@ -11,7 +11,7 @@ The marking is the one of @thm:theta-co-coordinates.  What is given here:
   * that each step is primitive, by the Smith normal form of its inclusion matrix being trivial
     (equivalently: the cokernel is torsion-free, which is the criterion the two lemmas invoke);
   * that each lattice is the eigenspace of a named involution of [@AEGS25, Def. 2.3] or of
-    theta_Co: T_Co = ker(theta_Co + 1), T_En = ker(I_En + 1), T_dP = ker(I_dP + 1), and
+    theta_Co: T_Co = ker(theta_Co - 1), T_En = ker(I_En + 1), T_dP = ker(I_dP + 1), and
     S_dP = ker(I_dP - 1) = Delta(U_2,U_3) = U(2);
   * the invariants of each member -- rank, determinant, signature, and the triple (r, a, delta)
     of the 2-elementary classification -- and the isometry type the lemmas name;
@@ -298,4 +298,5 @@ print("   ranks of the cokernels: T_En/T_Co %d, T_dP/T_En %d, lkt/T_dP %d"
       % (len(T_En_basis) - len(T_Co_basis), len(T_dP_basis) - len(T_En_basis),
          len(lkt_basis) - len(T_dP_basis)))
 print("   the equations of the sextic C and its double plane in these bases are not touched")
-print("   here: that is @qst:coble-explicit-equations, a separate open question.")
+print("   here: they are @thm:coble-explicit-sextic, which works in the plane model, a basis of")
+print("   H^2 determining no equation.")

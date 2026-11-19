@@ -35,19 +35,27 @@ provenance
    each factor is squarefree: True
    total degree of the factors: 10
 
-5. why each of the ten points is an ordinary node
-   Write m_p for the multiplicity of the point p and mu_p for the length of the local
-   algebra C{x,y}/(f, f_x, f_y) at p, which is the Milnor number.  Two exact facts:
-     (a) the degree of the singular scheme is the sum of the mu_p, and here it is 10;
-     (b) rationality gives sum of delta_p = 10, and delta_p <= m_p(m_p-1)/2 for each p,
-         so sum m_p(m_p-1)/2 >= 10.
-   Also mu_p >= (m_p-1)^2.  If some m_p were at least 3, that point alone would give
-   mu_p >= 4 and m_p(m_p-1)/2 >= 3, so (a) would leave at most 6 further points while
-   (b) would need at least 7 of them; hence every m_p = 2.  Then (a) gives at most ten
-   points and (b) at least ten, so there are exactly ten, and 10 = sum of mu_p >= 10
-   with mu_p >= 1 forces mu_p = 1 and delta_p = 1 at each: every one is an ordinary node.
-   (Cross-check with Milnor's formula mu_p = 2 delta_p - r_p + 1, r_p the number of
-   branches: ten nodes give r_p = 2 and mu_p = 1, summing to 10, as computed.)
+5. each of the ten points is an ordinary node, decided point by point
+   At a singular point of f the lowest term has degree at least 2; the point is an
+   ordinary node exactly when that lowest term is a nondegenerate quadratic form, whose
+   two factors are then distinct linear forms and give the two smooth branches.  For a
+   singular point of a plane curve the quadratic part is nondegenerate exactly when the
+   Hessian determinant f_xx f_yy - f_xy^2 is nonzero there, so the check is that
+   determinant, evaluated at each point in the number field Q[y]/(its factor).
+   f_xx f_yy - f_xy^2 = 16200*x**6*y + 162000*x**5 - 1125*x**4*y**4 + 255600*x**3*y**3 - 259200*x**2*y**2 + 16200*x*y**6 + 144000*x*y + 162000*y**5 - 14400
+   factor of degree 2: 2 points; the Hessian determinant there is nonzero in Q[y]/(g),
+     so every point over this factor has a nondegenerate quadratic part
+   factor of degree 4: 4 points; the Hessian determinant there is nonzero in Q[y]/(g),
+     so every point over this factor has a nondegenerate quadratic part
+   factor of degree 4: 4 points; the Hessian determinant there is nonzero in Q[y]/(g),
+     so every point over this factor has a nondegenerate quadratic part
+   the ten points are accounted for: 10
+   hence each of the ten singular points is an ordinary node, and with the ten distinct
+   points and total delta 10 of section 3 no singular point is left over
+   (the multiplicity and Milnor-number totals are consistent with this and are not
+    needed: the earlier printed argument used the inequality delta_p <= m(m-1)/2, which
+    is the wrong way round -- the correct inequality is delta_p >= m(m-1)/2 -- and this
+    computation replaces it)
 
 6. the two points at infinity
    F(x,y,0) = 5*x**3*y**3, so z = 0 meets the curve at (1:0:0) and (0:1:0) only

@@ -1,0 +1,74 @@
+# The #81 fresh-context language audit: what was asked, what was available, what it found
+
+## The required instrument, and its path
+
+research#81 requires, before any correction ships:
+
+    Run fresh-context invented-language audits (.agents/references/mathematical-auditor-priming.md)
+    after processing any correction
+
+The file is NOT AVAILABLE in this environment.  Its paths:
+
+    in-repo path        .agents/references/mathematical-auditor-priming.md
+    .agents is a symlink to
+                        /home/dzack/.agent-memory-vault/projects/github__dzackgarza__research
+    resolved path       /home/dzack/.agent-memory-vault/projects/github__dzackgarza__research/references/mathematical-auditor-priming.md
+
+    $ ls -la .agents
+    lrwxrwxrwx 1 projects projects 73 .agents -> /home/dzack/.agent-memory-vault/projects/...
+    $ ls /home/dzack
+    ls: cannot access '/home/dzack': No such file or directory
+    $ ls .agents/references
+    ls: cannot access '.agents/references': No such file or directory
+
+The vocabulary reference that CONTRIBUTING.md names beside it, terminology-dictionary.md, is
+absent through the same dangling symlink.
+
+## What was done instead, and its limits
+
+The audit was run by hand: every noun and every numeric claim in the six theorems and the seven
+records of #656 was read against the page's own definitions and against the cited sources'
+statement numbers.  This is NOT a fresh-context audit -- the reader is the author of the text
+under review -- and nothing in this repository should be read as claiming otherwise.
+
+## What it found, and what was done
+
+1. @thm:coble-explicit-sextic identified the minimal resolution of the double plane with the
+   surface X of @prop:coble-cover-marking only implicitly, deriving E_i^2 = -2 by adjunction in
+   that proposition's notation.  FIXED: the blowup separates the two branches at each node, the
+   double cover of Bl_10 P^2 branched along the proper transform is that resolution, it is X,
+   and e_0^2 = 2H^2, e_i^2 = 2E_i^2 by the projection formula.
+
+2. @thm:chain-matrices displayed M_{En->dP} as the malformed (I_12 ; 0|-I_8) with only a
+   gesture at the ordering.  FIXED: the 4 x 3 block matrix with blocks I_2, I_2, I_8, -I_8, and
+   the row and column block sizes of all three matrices are printed.
+
+## Defects found by the reviewer of record, and fixed in the same commit
+
+3. A printed proof error, found on review: the ten-node argument in @thm:coble-explicit-sextic
+   used delta_p <= m_p(m_p-1)/2, the reverse of the true inequality delta_p >= m_p(m_p-1)/2, so
+   the auxiliary multiplicity argument did not stand.  REPLACED by a point-by-point decision:
+   the Hessian determinant f_xx f_yy - f_xy^2 is evaluated at each of the ten points in the
+   number field Q[y]/(g) for each irreducible factor g, and is nonzero on all of them, so each
+   point has a nondegenerate quadratic part and hence is an ordinary node.  The record
+   coble_explicit-sextic-run.txt prints the three evaluations and the count of ten.
+
+4. A checker defect, not a lattice error: coble_a13-diagram-roots.py built its expected
+   -Cartan(E8) with one orientation of each edge, so its comparison printed False while the E8
+   Gram matrices were right (the block checks further down printed True).  FIXED: the expected
+   matrix is built symmetrically from the Bourbaki edge list, and the record prints True.
+
+5. A cross-reference defect: coble_a13-chain-matrices.py said ker(theta_Co + 1) where T_Co is
+   ker(theta_Co - 1), and its last section cited @qst:coble-explicit-equations, an anchor that
+   the sextic theorem replaced.  FIXED in both the docstring and the printed section.
+
+## The stale acceptance test
+
+The test committed with the theorems asserted strings from the register as it stood then
+("#qst:coble-embedding-matrices", "the matrices of the chain of primitive embeddings"); two
+later commits of this issue replaced that question with a remark and one of the references with
+a theorem, and the test was not re-run, so it failed on main while the transcript-reproduction
+half still passed.  FIXED: the register test now asserts the register's current state, and the
+reproduction test covers all six provider-free records rather than the first four.  A test for
+the library construction record is added, checking the calls it makes and the invariants its
+transcript prints; it is not re-run here because it needs the Sage image.
