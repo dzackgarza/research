@@ -35,6 +35,16 @@ Three obligations are stated here, each from a printed source rather than invent
 
 Nothing here decides $R_\\rcop$: the third test only requires the object, and where the type is
 not published the contract fixes no value.
+
+Run it explicitly: the repository's `pyproject.toml` sets `testpaths = ["tests"]`, so a bare
+`pytest` at the repository root does not collect this directory, and no workflow under
+`.github/workflows` names it.
+
+    python3 -m pytest computations/lattice-interface-contract/specification -q -o addopts=""
+
+The obligation is CI-visible in the other direction as the two strict-xfail rows of
+`tests/engineering/test_coble_a36_acceptance.py`, which fail if either record appears; this
+file is the detailed contract an implementation is written against.
 """
 
 from __future__ import annotations
