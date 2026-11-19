@@ -29,6 +29,8 @@ Each block kind belongs to one side, for the following reason.
 
 The dependency checker stops with an error on a block kind that is not in this table.
 
+A cited work is also a node, drawn in grey and named by its bibliography key. A block that cites a paper, as in `[@AEGS25, Lem. 3.9]`, has an arrow to the paper, and the arrow lists the cited results. A result taken from a paper is a premise, so the arrow from a block of the logical development is a uses arrow; from a commentary block it is a mentions arrow. A work cites nothing in the book, so it ends every chain of uses: each chain stops at a definition, at a block with no citations, or at the literature.
+
 Only uses arrows can make a definition or a proof circular. So the check for circular definitions and proofs reads the uses arrows only, and a remark and the theorem it discusses can cite each other.
 
 The findings list under the graph names each defect that the render found. An **uncited use** is a block of the logical development that uses a term of two or more words, set in bold where it is defined, and that does not reach the defining block through its citations. It is a use that the arrows do not show. The check matches the words of the term, not its sense, so each finding is a candidate to read: a block that writes "right adjoints" of a functor is listed against the right adjoints of a pairing. A use in another sense is written `[right adjoints]{.other-sense}`; the check skips it, and the page shows plain text.
@@ -66,7 +68,7 @@ Choose a block to see what it rests on, what rests on it, or both, to a chosen d
     fetch(base + "dependency-findings.json").then(r => r.json()),
   ]);
   const name = n => n.label || n.id;
-  const href = n => n.chapter.replace(/\.md$/, ".html") + "#" + n.id;
+  const href = n => n.chapter.replace(/\.md$/, ".html") + (n.kind === "reference" ? "#ref-" : "#") + n.id;
   const nodes = new Map(graph.nodes.map(n => [n.id, n]));
 
   const list = document.getElementById("depgraph-blocks");
@@ -83,7 +85,7 @@ Choose a block to see what it rests on, what rests on it, or both, to a chosen d
     maxZoom: 1.5,
     elements: [
       ...graph.nodes.map(n => ({ data: { ...n, name: name(n) } })),
-      ...graph.edges.map(e => ({ data: { id: e.source + "->" + e.target, source: e.source, target: e.target, relation: e.relation } })),
+      ...graph.edges.map(e => ({ data: { id: e.source + "->" + e.target, source: e.source, target: e.target, relation: e.relation, locators: e.locators || "" } })),
     ],
     style: [
       { selector: "node", style: { label: "data(name)", "font-size": 10, color: style.color,
@@ -91,6 +93,9 @@ Choose a block to see what it rests on, what rests on it, or both, to a chosen d
       { selector: 'node[kind = "definition"]', style: { "background-color": "#82b366" } },
       { selector: 'node[kind = "theorem"], node[kind = "proposition"], node[kind = "lemma"], node[kind = "corollary"]',
         style: { "background-color": "#b85450" } },
+      { selector: 'node[kind = "reference"]', style: { "background-color": "#999", shape: "round-rectangle" } },
+      { selector: "edge[locators]", style: { label: "data(locators)", "font-size": 8, "text-rotation": "autorotate", color: style.color } },
+      { selector: 'edge[locators = ""]', style: { label: "" } },
       { selector: "node.focus", style: { width: 20, height: 20, "border-width": 3, "border-color": style.color } },
       { selector: "edge", style: { width: 1, "curve-style": "bezier", "target-arrow-shape": "triangle",
           "line-color": "#666", "target-arrow-color": "#666" } },

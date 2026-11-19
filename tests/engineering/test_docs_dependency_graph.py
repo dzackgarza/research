@@ -99,7 +99,7 @@ def test_edges_come_from_statement_and_proof_references(tmp_path):
     assert edges[("lem:b", "def:a")]["statement"] and edges[("lem:b", "def:a")]["proof"]
     assert edges[("lem:b", "thm:c")] == {"source": "lem:b", "target": "thm:c", "forward": True,
                                          "relation": "uses",
-                                         "statement": False, "proof": True}
+                                         "statement": False, "proof": True, "locators": ""}
     assert ("thm:c", "lem:b") in edges
     # A remark and a theorem that cite each other are commentary, not a cycle.
     assert edges[("thm:c", "rmk:d")]["relation"] == edges[("rmk:d", "thm:c")]["relation"] == "mentions"

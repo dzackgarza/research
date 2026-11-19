@@ -12,6 +12,11 @@ statement of `a`, or the proof that follows it, cites `b` as `@b`, `[@b]` or
 `[-@b]`. The references are the whole dependency record, so a block that uses a
 result without citing it is an authoring defect and the graph cannot see it.
 
+A cited work is a node too, of kind `reference`, keyed by its bibliography key: a
+block that cites `[@AEGS25, Lem. 3.9]` has an edge to `AEGS25`, whose `locators`
+attribute lists the cited results ("Lem. 3.9; Cor. 3.12"). A work has no outgoing
+edges, so every chain of uses ends at a definition, an uncited block or the literature.
+
 A `::: {.proof}` div proves the numbered block that immediately precedes it in
 the same enclosing block list. Edge attributes `statement` and `proof` record
 which part of `a` cites `b`. `relation` is `uses` when both blocks belong to the
@@ -81,6 +86,14 @@ LOGICAL = frozenset({
 COMMENTARY = frozenset({
     "example", "remark", "note", "warning", "exercise", "problem", "question",
 })
+
+# The kind of a node that is a cited work, keyed by its bibliography key. A result taken
+# from a paper is a premise, so a citation of a work by a logical block is a `uses` edge,
+# and the work belongs to the logical development like a block.
+REFERENCE = "reference"
+# Quarto's own cross-reference keys (sections, figures, tables, equations), which are
+# neither blocks nor works.
+QUARTO_CROSSREF_PREFIXES = ("sec-", "fig-", "tbl-", "eq-")
 
 # Block kinds whose bold phrases are defined terms.
 DEFINING = frozenset({"definition", "construction", "notation", "convention"})
@@ -164,7 +177,8 @@ def theorem_prefixes(project: Path) -> set[str]:
 class Contents:
     """What one statement or proof holds, not counting nested numbered blocks or proofs."""
 
-    cited: list[str] = dataclasses.field(default_factory=list)
+    # (citation key, locator): `[@AEGS25, Lem. 3.9]` is ("AEGS25", "Lem. 3.9").
+    cited: list[tuple[str, str]] = dataclasses.field(default_factory=list)
     # The prose words, lowercased; mathematics and citations are left out.
     text: str = ""
     # The bold phrases (`**term**`) that contain no mathematics, lowercased.
@@ -181,7 +195,8 @@ def contents(elem: pf.Element, block_classes: set[str]) -> Contents:
         ):
             return
         if isinstance(e, pf.Cite):
-            found.cited.extend(c.id for c in e.citations)
+            found.cited.extend((c.id, pf.stringify(pf.Span(*c.suffix)).strip(" ,"))
+                               for c in e.citations)
             return
         if isinstance(e, pf.Span) and OTHER_SENSE in e.classes:
             words.append(" ")
@@ -291,8 +306,8 @@ def build(project: Path) -> tuple[nx.DiGraph, list[Finding]]:
                     )
                     position += 1
                     found = contents(block, block_classes)
-                    for cited in found.cited:
-                        citations.append((chapter, ident, cited, "statement"))
+                    for cited, locator in found.cited:
+                        citations.append((chapter, ident, cited, locator, "statement"))
                     prose[ident] = found.text
                     if graph.nodes[ident]["kind"] in DEFINING:
                         for term in found.terms:
@@ -304,8 +319,8 @@ def build(project: Path) -> tuple[nx.DiGraph, list[Finding]]:
                     else:
                         graph.nodes[previous]["proved"] = True
                         found = contents(block, block_classes)
-                        for cited in found.cited:
-                            citations.append((chapter, previous, cited, "proof"))
+                        for cited, locator in found.cited:
+                            citations.append((chapter, previous, cited, locator, "proof"))
                         prose[previous] += " " + found.text
                     previous = None
                 else:
@@ -315,23 +330,33 @@ def build(project: Path) -> tuple[nx.DiGraph, list[Finding]]:
 
         visit_list(list(doc.content))
 
-    for chapter, source, cited, part in citations:
+    for chapter, source, cited, locator, part in citations:
         prefix = cited.split(":", 1)[0]
         if cited not in graph:
             if ":" in cited and prefix in prefixes:
                 findings.append(Finding(Kind.DANGLING, chapter, (source, cited)))
-            continue
+                continue
+            if cited.startswith(QUARTO_CROSSREF_PREFIXES):
+                continue
+            # A bibliography key: the cited work is a node, a source of results that the
+            # book takes from outside. Its page is the citing chapter, whose bibliography
+            # holds the entry as `#ref-<key>`.
+            graph.add_node(cited, kind=REFERENCE, chapter=chapter, position=-1,
+                           title=cited, proved=False)
         if cited == source:
             continue
-        if graph.has_edge(source, cited):
-            graph.edges[source, cited][part] = True
-        else:
-            graph.add_edge(source, cited, statement=part == "statement", proof=part == "proof")
+        if not graph.has_edge(source, cited):
+            graph.add_edge(source, cited, statement=False, proof=False, locators="")
+        edge = graph.edges[source, cited]
+        edge[part] = True
+        if locator and locator not in edge["locators"].split("; "):
+            edge["locators"] = "; ".join(filter(None, (edge["locators"], locator)))
 
     for source, target, data in graph.edges(data=True):
         data["forward"] = graph.nodes[target]["position"] > graph.nodes[source]["position"]
         data["relation"] = ("uses" if graph.nodes[source]["kind"] in LOGICAL
-                            and graph.nodes[target]["kind"] in LOGICAL else "mentions")
+                            and graph.nodes[target]["kind"] in LOGICAL | {REFERENCE}
+                            else "mentions")
     uses = graph.edge_subgraph(
         (u, v) for u, v, r in graph.edges(data="relation") if r == "uses")
     for component in nx.strongly_connected_components(uses):
@@ -415,7 +440,9 @@ def main() -> None:
     write(graph, findings, args.out)
     for finding in findings:
         print(f"docs-deps: {finding}", file=sys.stderr)
-    print(f"docs-deps: {graph.number_of_nodes()} blocks, {graph.number_of_edges()} edges, "
+    works = sum(1 for _, kind in graph.nodes(data="kind") if kind == REFERENCE)
+    print(f"docs-deps: {graph.number_of_nodes() - works} blocks, {works} cited works, "
+          f"{graph.number_of_edges()} edges, "
           f"{len(findings)} findings -> {args.out}", file=sys.stderr)
     if args.check and findings:
         sys.exit(1)
