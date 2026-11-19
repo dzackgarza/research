@@ -459,6 +459,21 @@ def test_every_citation_of_the_folding_lemma_carries_its_printed_page():
     assert not missing, missing
 
 
+def test_the_group_the_question_names_is_the_one_the_theorem_computes():
+    """A13 asks for the comparison to $\\Gamma^\\En_\\Co(\\delta)$; the book must name it.
+
+    The symbol stands for the image of the stabilizer of the Heegner vector in the degree-two
+    Enriques group, which is the group the book writes $\\Gamma_{\\Co,2}$.  Unless the definition
+    gives the symbol and the comparison states the identity, a reader sent to
+    @thm:gamma-co-2-comparison cannot recognise the object A13 names.
+    """
+    lattices = (ROOT / "writing/coble/lattices-and-moduli/lattices.md").read_text()
+    assert r"\Gamma^{\En}_\Co(\delta)" in lattices
+    page = PAGE.read_text()
+    assert (r"\Gamma_{\Co,2} = \Gamma^{\En}_\Co(\delta) = "
+            r"\Gamma^{\mathrm{cong}}_{\Co,2}") in page
+
+
 def test_no_page_still_carries_the_open_form_of_the_question():
     """#656's acceptance: every page that cites the open form is updated."""
     moduli = (ROOT / "writing/coble/lattices-and-moduli/moduli-construction.md").read_text()

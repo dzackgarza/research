@@ -129,7 +129,7 @@ $\bar\rho$ being the discriminant representation of $T_\Co$ and $\ker\bar\rho$ t
 $$
 R_\Gamma\definedas \text{the image of } \Stab_{\Gamma}(\delta) \text{ in } \Orth(\delta^{\perp T_\En}) = \Orth(T_\Co).
 $$
-5. $\Gamma_{\Co,2}\definedas R_{\gent}$, with $F_{\Co,2}\definedas\bD(T_\Co)/\Gamma_{\Co,2}$.
+5. $\Gamma_{\Co,2}\definedas R_{\gent}$, with $F_{\Co,2}\definedas\bD(T_\Co)/\Gamma_{\Co,2}$; named by the Enriques datum that defines it, the same group is written $\Gamma^{\En}_\Co(\delta)$, the image of $\Stab_{\gent}(\delta)$ in $\Orth(T_\Co)$.
 
 A statement about a quotient of $\bD(T_\Co)$ names the group it uses; in particular every count of cusps names its group.
 :::
