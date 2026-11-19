@@ -125,7 +125,7 @@ So $\alpha$ lies in this set if and only if $\alpha u=\alpha'$ does.
 ::: {.example #ex:rank16-genus-spinor-partition title="A rank-16 genus and its spinor partition"}
 
 Let $L_{16}\definedas E_8^{\perp2}$.
-Under @conv:root-sign, $L_{16}$ and $D_{16}^+$ are the two negative-definite even unimodular lattices of rank $16$ up to isometry: this is the $(-1)$-twist of the classical rank-$16$ classification [@CS10, Ch. 16], with $D_{16}^+$ as in @def:plus-construction.
+Under @conv:root-sign, $L_{16}$ and $D_{16}^+$ are the two negative-definite even unimodular lattices of rank $16$ up to isometry: this is the $(-1)$-twist of the classical rank-$16$ classification [@CS10, Table 2.2], with $D_{16}^+$ as in @def:plus-construction.
 Hence
 $$
 \Cl(L_{16})
@@ -188,7 +188,7 @@ $$
 n_+-n_-
 \pmod 8
 $$
-[@MH73, Appendix 4].
+[@MH73, Ch. II §5, Rem. 2].
 :::
 
 ::: {.proof}

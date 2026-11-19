@@ -81,7 +81,7 @@ For integral exclusion, suppose $q(x,y,z)=1$ and set $u=x-y$, $v=x+y$. Then
 $$2z^2-1=u(u+8v).$$
 Reduction of the original equation modulo two makes $x,y$ have opposite parity, hence $u,v$ are odd. Modulo eight the displayed equation forces $z$ odd. Modulo sixteen it gives $u^2\equiv9$, so $u\equiv\pm3\pmod8$. Some odd prime divisor $p$ of $u$ must then be $\pm3\pmod8$. But $2z^2\equiv1\pmod p$ makes $2$ a quadratic residue, which requires $p\equiv\pm1\pmod8$, a contradiction. Thus the integral norm-one fibre is empty.
 
-Borovoi's example pairs this form with $\operatorname{diag}(-1,64,2)$ in the same genus; the latter represents one at $(1,0,1)$. The forms are inequivalent, and Eichler's theorem gives more than one spinor genus in this genus [@CS10, Chapter 15]. The local tests therefore cannot decide the first integral embedding problem.
+Borovoi's example pairs this form with $\operatorname{diag}(-1,64,2)$ in the same genus; the latter represents one at $(1,0,1)$. The forms are inequivalent, and Eichler's theorem gives more than one spinor genus in this genus [@CS10, Ch. 15, Thm. 14 and eq. (51)]. The local tests therefore cannot decide the first integral embedding problem.
 :::
 
 ## Enumeration, choice and emptiness {#sec-hyperbolic-enumeration}

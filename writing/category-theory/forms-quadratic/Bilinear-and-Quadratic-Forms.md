@@ -457,7 +457,7 @@ $$
 \det(b)\in R^{\bullet}/(R^{\bullet})^{2},
 $$
 and a general form on a free module has a well-defined class in the quotient monoid $R/(R^{\bullet})^{2}$ [@MH73, I §2.5].
-Under orthogonal sum the rank adds and the determinant multiplies [@MH73, I §3].
+Under orthogonal sum the rank adds and the determinant multiplies [@MH73, I §3, display before (3.1)].
 :::
 
 ::: {.proposition #prop:alternating-gram title="Alternating forms in a basis"}
