@@ -48,7 +48,7 @@ docs-deploy: docs-check
 docs-check: docs-assets
     python3 scripts/docs_check.py
 
-# Dependency graph of the book's numbered blocks (edges = @refs in a statement or its proof), written to .tmp/dependency-graph; fails on circular definitions or proofs, orphan proofs, blocks without ids and defined terms used without a citation
+# Dependency graph of the book's numbered blocks (edges = @refs in a statement or its proof), written to .tmp/dependency-graph; fails on circular definitions or proofs, orphan proofs, blocks without ids, defined terms used without a citation and pandoc parse warnings
 docs-deps:
     cd writing/.book && uv run --script ../../scripts/docs_dependency_graph.py --project . --out ../../.tmp/dependency-graph --check
 

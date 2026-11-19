@@ -123,7 +123,8 @@ Choose a block to see what it rests on, what rests on it, or both, to a chosen d
   const box = document.getElementById("depgraph-findings");
   const kindName = { "dangling": "reference to no block", "cycle": "circular uses",
     "orphan-proof": "proof of no block", "duplicate-id": "id defined twice",
-    "missing-id": "block without an id", "uncited-term": "uncited use" };
+    "missing-id": "block without an id", "uncited-term": "uncited use",
+    "parse-warning": "pandoc warning" };
   const counts = {};
   for (const f of findings) counts[f.kind] = (counts[f.kind] || 0) + 1;
   box.querySelector("summary").textContent = findings.length === 0 ? "0 findings"
@@ -131,9 +132,10 @@ Choose a block to see what it rests on, what rests on it, or both, to a chosen d
   for (const f of findings) {
     const li = document.createElement("li");
     li.append(`${kindName[f.kind] || f.kind} in ${f.chapter}: `);
-    if (f.term) li.append(`“${f.term}” in`);
+    if (f.kind === "uncited-term") li.append(`“${f.detail}” in`);
+    else if (f.detail) li.append(f.detail);
     f.blocks.forEach((id, i) => {
-      if (f.term && i === 1) li.append(", defined in");
+      if (f.kind === "uncited-term" && i === 1) li.append(", defined in");
       const n = nodes.get(id);
       if (!n) { li.append(` @${id}`); return; }
       const a = document.createElement("a"); a.href = href(n); a.textContent = name(n);

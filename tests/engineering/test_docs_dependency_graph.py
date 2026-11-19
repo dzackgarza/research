@@ -65,6 +65,9 @@ A pointer back to @thm:c, about a round apple.
 ::: {.lemma #lem:e}
 A round apple is an apple.
 :::
+
+::: {.remark #rmk:open}
+Its closing fence is on the text line.:::
 """
 
 
@@ -108,14 +111,17 @@ def test_findings_name_each_defect(tmp_path):
     _, findings, _ = run(tmp_path)
     by_kind = {f["kind"]: f for f in findings}
     assert sorted(f["kind"] for f in findings) == [
-        "cycle", "dangling", "missing-id", "orphan-proof", "uncited-term"]
+        "cycle", "dangling", "missing-id", "orphan-proof", "parse-warning", "uncited-term"]
     # lem:e uses the defined phrase and cites nothing. lem:b cites def:a, thm:c reaches it
     # through lem:b, and rmk:d is commentary; the one-word term "apple" is not checked.
     assert by_kind["uncited-term"] == {"kind": "uncited-term", "chapter": "three.md",
-                                       "blocks": ["lem:e", "def:a"], "term": "round apple"}
+                                       "blocks": ["lem:e", "def:a"], "detail": "round apple"}
     assert by_kind["dangling"] == {"kind": "dangling", "chapter": "three.md",
-                                   "blocks": ["thm:c", "thm:missing"], "term": ""}
+                                   "blocks": ["thm:c", "thm:missing"], "detail": ""}
     assert by_kind["missing-id"]["blocks"] == ["three.md#3"]
     assert by_kind["orphan-proof"]["chapter"] == "one.md"
+    # A closing fence on a text line leaves the div open; pandoc warns and the checker reports it.
+    assert by_kind["parse-warning"]["chapter"] == "three.md"
+    assert "unclosed" in by_kind["parse-warning"]["detail"]
     # The lem:b <-> thm:c circle of uses is reported; the thm:c <-> rmk:d mentions are not.
     assert sorted(by_kind["cycle"]["blocks"]) == ["lem:b", "thm:c"]

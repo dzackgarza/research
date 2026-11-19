@@ -29,6 +29,7 @@ Findings, each one a defect in the book:
   - an id that two blocks define;
   - a numbered block with no id (it is a node, keyed `<chapter>#<position>`, but
     nothing can cite it);
+  - a pandoc warning while reading a chapter, such as an unclosed div;
   - a use with no citation: a logical block whose prose contains a term of two or
     more words that a definition, construction, notation or convention sets in bold,
     when no block that it reaches through citations defines that term. One-word terms
@@ -48,8 +49,10 @@ from __future__ import annotations
 
 import argparse
 import dataclasses
+import io
 import json
 import re
+import subprocess
 import sys
 from dataclasses import dataclass
 from enum import StrEnum
@@ -90,26 +93,38 @@ class Kind(StrEnum):
     DUPLICATE_ID = "duplicate-id"
     MISSING_ID = "missing-id"
     UNCITED_TERM = "uncited-term"
+    PARSE_WARNING = "parse-warning"
 
 
 @dataclass(frozen=True)
 class Finding:
-    """One defect: its kind, the chapter it is in, and the block ids it concerns.
+    """One defect: its kind, the chapter it is in, the block ids it concerns, a detail.
 
     kind is one of "dangling" (blocks = [citing block, missing id]), "cycle" (the
     blocks of the cycle, in order), "orphan-proof" (no blocks), "duplicate-id"
-    ([id]), "missing-id" ([the node key `<chapter>#<position>`]) and "uncited-term"
-    ([using block, defining blocks ...], with the term).
+    ([id]), "missing-id" ([the node key `<chapter>#<position>`]), "uncited-term"
+    ([using block, defining blocks ...]; detail = the term) and "parse-warning" (no
+    blocks; detail = pandoc's warning, such as an unclosed div, after which the
+    chapter's blocks are nested wrongly).
     """
 
     kind: Kind
     chapter: str
     blocks: tuple[str, ...] = ()
-    term: str = ""
+    detail: str = ""
 
     def __str__(self) -> str:
-        term = f' "{self.term}"' if self.term else ""
-        return f"{self.chapter}: {self.kind}{term} {' '.join(self.blocks)}".rstrip()
+        detail = f' "{self.detail}"' if self.detail else ""
+        return f"{self.chapter}: {self.kind}{detail} {' '.join(self.blocks)}".rstrip()
+
+
+def parse(path: Path) -> tuple[pf.Doc, list[str]]:
+    """The chapter's pandoc AST, and the warnings pandoc gave while reading it."""
+    done = subprocess.run(["pandoc", "-f", "markdown", "-t", "json", str(path)],
+                          capture_output=True, text=True, check=True)
+    doc = pf.load(io.StringIO(done.stdout))
+    warnings = [" ".join(line.split()) for line in done.stderr.splitlines() if line.strip()]
+    return doc, warnings
 
 
 def chapter_list(book: dict[str, list[str | dict[str, str | list[str]]]]) -> list[str]:
@@ -238,9 +253,9 @@ def build(project: Path) -> tuple[nx.DiGraph, list[Finding]]:
 
     position = 0
     for chapter in chapter_list(config["book"]):
-        text = (project / chapter).read_text(encoding="utf-8")
-        doc = pf.convert_text(text, input_format="markdown", standalone=True)
-        assert isinstance(doc, pf.Doc)
+        doc, warnings = parse(project / chapter)
+        for warning in warnings:
+            findings.append(Finding(Kind.PARSE_WARNING, chapter, (), warning))
 
         def visit_list(blocks: list[pf.Element]) -> None:
             nonlocal position
