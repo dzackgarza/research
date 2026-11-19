@@ -160,3 +160,40 @@ misreading entered.  It now prints the $8\times8$ block and its determinant
 `:103-111`), and the page's Gram paragraph at
 `writing/coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md:583` and
 `:604` states the block by that matrix.
+
+## The re-audit of research#770's corrections to @thm:gamma-co-coordinates
+
+research#770's comment 7006157649 supplied the corrected item 3, the corrected item 5, the
+notation, and the corrected record docstring.  The corrections landed on 2026-11-19 in commit
+31711851d4d1c880af83d3397d1bcc378e766fbd, and the landed text was then read against that
+comment statement by statement.
+
+  - 626 defines Delta(V_1,V_2) and Delta^-(V_1,V_2) as the diagonal and antidiagonal copies
+    of V_1 + V_2 in a doubled sum, and Delta(V) := Delta(V, iota V), Delta^-(V) :=
+    Delta^-(V, iota V) for V = U_2 and V = E_{8,1}, with iota the identification e_2 -> e_4,
+    e_3 -> e_5, e_{6+k} -> e_{14+k}.
+  - 638 quantifies over w in U_2 and w in E_{8,1}, with (w,+-w) = w +- iota(w).  The printed
+    quantifier over U_2 + U_3, ill-typed because iota is not defined on U_3, is gone.
+  - 675 states |U_2/2U_2| = 4 = |A_{Delta(U_2,U_3)}|, because Delta(U_2,U_3) = U(2) has
+    determinant -4, and |E_{8,1}/2E_{8,1}| = 2^8 = |A_{E_8(2)}|, because det E_8(2) = 2^8,
+    and cites the gluing as the graph of an anti-isometry to Nikulin, Prop. 1.5.1 and
+    Cor. 1.5.2, printed p. 111.
+  - 652 (item 5) and 677 state the value of the marked class as
+    -q_{S_Co}(H/2) = -H^2/4 = -1 (mod 2Z), and its square as
+    ((e_2+e_3-e_4-e_5)/2)^2 = 1 = -1 = -q_{S_Co}(H/2) (mod 2Z).  The false rational
+    equality ((e_2+e_3-e_4-e_5)/2)^2 = -1 is gone.
+  - docstring lines 17-23 of coble_a13-gluing-anti-isometry.py read "For w in U_2 or in E8_1,
+    write (w,+-w) = w +- iota(w)" and "alpha/2 + beta/2 = e_0".  The record was re-run after
+    the edit, and the fresh transcript is byte-identical to the committed one, whose section 4
+    prints the gluing vector + e_0; the values in its sections 3-7 are unchanged, as the
+    comment states they should be.
+
+Verdict: the landed text matches comment 7006157649's corrected statements; no formula
+differs.  The fresh-context read reported as item 8 in that comment was made on those
+statements; this entry records the landing check against the comment, not a second
+fresh-context audit.
+
+The checks run for this landing: `tests/engineering/test_coble_a13_acceptance.py` (46 passed,
+1 skipped, the Sage-image test) and `scripts/docs_check.py --source`, whose only findings are
+the pre-existing ones -- 24 unresolved bibliography keys and the pre-existing `\rk` at
+`the-heegner-line-and-the-coble-arithmetic-group.md:3163` -- none on a corrected line.
