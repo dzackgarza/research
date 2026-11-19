@@ -1060,6 +1060,28 @@ def test_the_report_holds_the_acceptance_item_by_item():
         assert ("Pic(\\widehat X_{b_\\star})" in row) or ("membership test in $W(T_\\Co)$" in row), row
 
 
+def test_every_record_path_the_pages_cite_exists():
+    """Every computations/reports/ path named by these pages names a file that is there.
+
+    A page that cites a transcript or a script which is not in the tree is the failure mode the
+    corpus has hit before: the evidence is quoted and cannot be found.  The four pages this issue
+    owns cite 112 such paths, and all of them resolve.
+    """
+    import pathlib
+    import re
+    pages = [PAGE, REPORT, OPEN_PROBLEMS, ROOT / "writing" / "open-questions.md"]
+    cited = 0
+    missing = []
+    for page in pages:
+        text = pathlib.Path(page).read_text(errors="ignore")
+        for m in re.finditer(r"`?(computations/reports/[A-Za-z0-9_.\-]+)`?", text):
+            cited += 1
+            if not (ROOT / m.group(1)).exists():
+                missing.append((pathlib.Path(page).name, m.group(1)))
+    assert missing == [], f"cited but absent: {missing}"
+    assert cited >= 100, cited      # the pages do cite their records; a collapse would show here
+
+
 def _run_all() -> int:
     items = [(name, fn) for name, fn in sorted(globals().items()) if name.startswith("test_")]
     failures = 0
