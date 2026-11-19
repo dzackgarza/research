@@ -555,6 +555,34 @@ def test_the_image_of_b_under_theta_is_b_minus_H_and_not_H_minus_b():
     assert r"\theta_\Co(b) = -H/2+t = H-b" not in page
 
 
+def test_every_Nikulin_and_Dolgachev_Kondo_statement_cited_carries_its_printed_page():
+    """The same rule for the two other deposits these pages cite by numbered statement.
+
+    Nikulin, Math. USSR Izv. 14 (1980) 103--167, deposited as
+    nikulin-1980-integral-symmetric-bilinear-forms.pdf: Corollary 1.5.2 on printed p. 111,
+    Corollary 1.6.2 on printed p. 112, Theorems 3.6.2 and 3.6.3 on printed p. 144.
+    Dolgachev--Kondo, Izv. Math. 77 (2013), deposited as
+    dolgachev-kondo-2013-coble-surfaces-izv-math.pdf: Proposition 3.1 on printed p. 512,
+    Proposition 3.2 on printed p. 513, Theorems 6.3 and 6.4 on printed p. 518.
+    """
+    pages = [PAGE,
+             ROOT / "writing/coble/lattices-and-moduli/lattices.md",
+             ROOT / "writing/coble/lattices-and-moduli/moduli-construction.md",
+             OPEN_PROBLEMS,
+             ROOT / "writing/coble/coble-moduli/cusp-correspondence-morphism-chain.md",
+             ROOT / "writing/coble/computations/sterk-root-counts-and-computed-chambers.md"]
+    statement = re.compile(r"(Def\.|Definition|Lem\.|Lemmas?|Lems\.|Thm\.|Theorem|Props?\.|Propositions?|Cor\.|Corollary|Rem\.|Remark)")
+    bad = []
+    for path in pages:
+        for number, line in enumerate(path.read_text().splitlines(), 1):
+            for source in ("Nik80", "DK13"):
+                for match in re.finditer(r"@" + source + r"[^\]]*", line):
+                    citation = match.group(0)
+                    if statement.search(citation) and not re.search(r"(?<![A-Za-z])p\. ?\d", citation):
+                        bad.append("%s:%d %s" % (path.name, number, citation))
+    assert not bad, bad
+
+
 def test_every_Sterk_statement_cited_on_these_pages_carries_its_printed_page():
     """The same rule for the other source these pages lean on, whose deposit is in the tree.
 

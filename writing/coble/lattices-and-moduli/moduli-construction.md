@@ -194,7 +194,7 @@ The group $\Orth(\ten)$ is the group $\Gamma^K_\En$ of the opening display, and 
 2. There are two $\Orth(\ten)$-orbits of $(-4)$-vectors in $\ten$ [@AEGS25, §2.3].
    One orbit consists of the vectors $\delta$ with $\delta^{\perp\ten}\cong T_\Nod = U\oplus\generators{4}\oplus E_8(2)$; let $\mch^{\mathrm{nod}}_{-4}\iscontainedin\mch_{-4}$ be the union of their hyperplanes.
    The divisor $\mcm^{\mathrm{nod}}_\En \definedas \qty{\mch^{\mathrm{nod}}_{-4}\sm\mch_{-2}}/\Orth(\ten)$ parametrizes nodal Enriques surfaces [@AEGS25, §2.3].
-   The quotient $\bD(T_\Nod)/\Orth(T_\Nod)$ is a quasi-projective variety of dimension $9$, and $\mcm^{\mathrm{nod}}_\En$ is birationally isomorphic to it [@DK13, §3, Prop. 3.1].
+   The quotient $\bD(T_\Nod)/\Orth(T_\Nod)$ is a quasi-projective variety of dimension $9$, and $\mcm^{\mathrm{nod}}_\En$ is birationally isomorphic to it [@DK13, §3, Prop. 3.1, p. 512].
    The other orbit gives the divisor of unigonal Enriques surfaces (@prop:coble-and-unigonal-heegner-divisors).
 3. The quotient $\mch_{-2}/\Orth(\ten)$ is birationally isomorphic to the moduli space $\mcm_\Co$ of Coble surfaces (@prop:coble-moduli-heegner-divisor).
 
@@ -218,12 +218,12 @@ S_\Co \definedas \generators{2}\oplus \generators{-2}^{10} = \latI_{1, 10}(2) = 
 .
 $$
 The lattice $S_\Co$ is $2$-elementary of signature $(1, 10)$ with $A_{S_\Co}\cong(\bZ/2\bZ)^{11}$ [@DK13, §3].
-2. The orthogonal complement of this sublattice in $H^2(X,\ZZ)\cong\lkt$ is a $2$-elementary lattice of signature $(2, 9)$ with discriminant form $-q_{S_\Co}$ [@DK13, §3; @Nik80, Cor. 1.6.2]. Its isomorphism class is determined by $-q_{S_\Co}$ [@DK13, §3; @Nik80, Thm. 3.6.2], so
+2. The orthogonal complement of this sublattice in $H^2(X,\ZZ)\cong\lkt$ is a $2$-elementary lattice of signature $(2, 9)$ with discriminant form $-q_{S_\Co}$ [@DK13, §3; @Nik80, Cor. 1.6.2, printed p. 112]. Its isomorphism class is determined by $-q_{S_\Co}$ [@DK13, §3; @Nik80, Thm. 3.6.2, printed p. 144], so
 $$
 T_\Co \definedas S_\Co^{\perp \lkt} = (11, 11, 1)_2 \cong \generators{2} \oplus E_{10}(2)
 .
 $$
-3. The quotient $\bD(T_\Co)/\Orth(T_\Co)$ is a normal quasi-projective variety of dimension $9$. By the Torelli theorem for algebraic K3 surfaces [@PS71], the moduli space $\mcm_\Co$ of @prop:coble-moduli-git is isomorphic to an open subset of $\bD(T_\Co)/\Orth(T_\Co)$ [@DK13, §3, Prop. 3.2].
+3. The quotient $\bD(T_\Co)/\Orth(T_\Co)$ is a normal quasi-projective variety of dimension $9$. By the Torelli theorem for algebraic K3 surfaces [@PS71], the moduli space $\mcm_\Co$ of @prop:coble-moduli-git is isomorphic to an open subset of $\bD(T_\Co)/\Orth(T_\Co)$ [@DK13, §3, Prop. 3.2, p. 513].
 
 :::
 
@@ -237,7 +237,7 @@ The quotient of the $(-2)$-Heegner divisor $\mch_{-2}$ in $\bD(\ten)$ by $\Orth(
 ::: {.theorem #thm:coble-moduli-rational title="Rationality of the Coble moduli space"}
 
 Let $\mcm'_{5,\cusp}$ be the moduli space of plane quintics $C$ with a cusp $p$ such that the tangent line $L$ of $C$ at $p$ is tangent to $C$ at a nonsingular point $q$ of $C$.
-Then $\mcm_\Co$ is birationally isomorphic to $\mcm'_{5,\cusp}$ [@DK13, §4, Thm. 6.3], and $\mcm_\Co$ is a rational variety [@DK13, Thm. 6.4].
+Then $\mcm_\Co$ is birationally isomorphic to $\mcm'_{5,\cusp}$ [@DK13, §4, Thm. 6.3, p. 518], and $\mcm_\Co$ is a rational variety [@DK13, Thm. 6.4, p. 518].
 
 :::
 
