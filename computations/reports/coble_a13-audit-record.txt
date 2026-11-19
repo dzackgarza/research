@@ -53,8 +53,9 @@ dispositions:
      the correction running the auditors' way round from their proposal: in this corpus E_8 is
      the NEGATIVE definite lattice (:1308 "where E_8 is negative definite in that definition's
      convention"; :1417), so E_8(2) is the right spelling and E_8(-1)(2) the wrong one.  FIXED:
-     the three occurrences of E_8(-1)(2) are E_8(2), the sentence now says the block is negative
-     definite of Gram diag(-4) by @def:enriques-lattice, and the theta transcript prints E8(2).
+     the three occurrences of E_8(-1)(2) are E_8(2), the sentence said the block is negative
+     definite of Gram diag(-4) by @def:enriques-lattice --- FALSE, corrected below --- and the
+     theta transcript prints E8(2).
 
   F8 "saturated kernels" (the remark and the library record).  UPHELD: the compound is no
      source's noun, though "saturated" is standard for "primitive".  FIXED to the invariant
@@ -144,3 +145,18 @@ the library construction record is added in two parts: one checks the calls it m
 invariants its transcript prints, and one re-runs it and compares the transcript, skipping with
 a named reason where the interpreter has no sage.all.  Run under the Sage interpreter of the
 adopted image, both pass (100 s, the re-run included).
+
+## Correction to F7, from the review of 2026-11-19
+
+F7's disposition about the SPELLING stands: in this corpus $E_8$ is the negative definite lattice
+(@def:enriques-lattice), so $E_8(2)$ names the block and $E_8(-1)(2)$ does not.  What that
+disposition also introduced was false.  The block spanned by $e_{6+k}-e_{14+k}$, $k = 0,\dots,7$,
+has the Gram matrix $-2\,\mathrm{Cartan}(E_8)$ --- diagonal entries $-4$, off-diagonal entries $0$
+or $2$, determinant $2^8 = 256$ --- and not $\mathrm{diag}(-4^{\times8})$, which is a different
+lattice, of determinant $4^8 = 65536$; the inner-product formula written with it carried an extra
+factor $2$.  The provider-free record printed only the DIAGONAL of that block, which is how the
+misreading entered.  It now prints the $8\times8$ block and its determinant
+(`computations/reports/coble_a13-theta-coordinates-run.txt:89-97`, and the same for $T_\Co$ at
+`:103-111`), and the page's Gram paragraph at
+`writing/coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md:583` and
+`:604` states the block by that matrix.

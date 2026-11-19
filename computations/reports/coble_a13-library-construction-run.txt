@@ -1,6 +1,7 @@
 provenance
   Sage: 11.0.beta5
   sage-extensions imported from: /repos/sage-extensions/src/sage_extensions/__init__.py
+  sage-extensions at: cf6ba0b201a12615acc4aa5cdf7dbee963a59571
   runtime: shared image rootfs, read only; repository bound at /repo
   the constructions are the library's; the six provider-free records are the cross-check
 
@@ -8,7 +9,7 @@ provenance
    rank 22, determinant -1, even True, signature (3, 19)
    summands: U_1 = e_0,e_1;  U_2 = e_2,e_3;  U_3 = e_4,e_5;  E8_1 = e_6..e_13;
              E8_2 = e_14..e_21, each E8 with Gram -Cartan(E8)
-  [   0.4s] L built
+  [   0.1s] L built
 2. I_En and I_dP of [@AEGS25, Def. 2.3, printed p. 586], defined on the named summands
    I_En: v -> -v on U_1, (u,u') -> (u',u) on U_2 + U_3, (e,e') -> (e',e) on E8_1 + E8_2
    I_dP: v -> -v on U_1, (u,u') -> (u',u), and -id on each E8 summand
@@ -16,13 +17,19 @@ provenance
         the (+1)- and (-1)-eigenspace ranks: 10 and 12
    I_dP  an isometry of L by construction; its square is the identity: True
         the (+1)- and (-1)-eigenspace ranks: 2 and 20
-  [   2.6s] involutions built
+  [   0.8s] involutions built
 3. alpha = e_0 - e_1, its reflection w, and theta_Co = -w . I_En
    alpha^2 = -2
    w = L.reflection(alpha): an integral isometry by construction; w^2 = 1: True
    w(alpha) = -alpha: True
-   theta_Co = -(w * I_En): an integral form-preserving isometry by construction
-   theta_Co^2 = 1: False
+   J_Co = w . I_En, and theta_Co = -J_Co built by the isometry constructor from the
+   images of -J_Co on the named summands, so theta_Co is an element of O(L) by
+   construction and not only an integral form-preserving map
+   theta_Co^2 = 1, the library decision inside O(L): True
+   theta_Co(v) = -J_Co(v) on all 22 basis vectors: True
+   (the equation holds on a basis, hence on L; the arrow -(w . I_En) itself is an
+    arrow of the underlying free-module category, and no Mor holds it together with
+    the identity of O(L), so comparing those two arrows decides nothing)
    so J_Co = w . I_En = -theta_Co is the covering involution of the marking
    its matrix in the standard basis, printed only now, after the construction:
      0  1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
@@ -47,23 +54,56 @@ provenance
      0  0  0  0  0  0  0  0  0  0  0 -1  0  0  0  0  0  0  0  0  0  0
      0  0  0  0  0  0  0  0  0  0  0  0 -1  0  0  0  0  0  0  0  0  0
      0  0  0  0  0  0  0  0  0  0  0  0  0 -1  0  0  0  0  0  0  0  0
-  [   3.7s] theta_Co built
+  [   1.0s] theta_Co built
 4. the eigenspaces as the invariant lattices ker(theta_Co -+ 1), primitive, with inclusions
    S_Co = prim ker(theta_Co + 1): rank 11, det 2048, sig (1, 10)
    T_Co = prim ker(theta_Co - 1): rank 11, det -2048, sig (2, 9)
-   T_Co = S_Co^perp through L.orthogonal_complement: same lattice: True
+   T_Co = S_Co^perp through L.orthogonal_complement: its eleven generators lie in
+   S_Co^perp (True), and the two have rank 11 and determinant -2048 and -2048, so the two
+   embedded sublattices of L are equal and not only isometric
    each carries its inclusion into L (S_Co.inclusion()), so primitivity is the
    construction's and not a separate check
-  [   4.5s] eigenspaces built
-5. the isometry types, decided by is_isometric_to against the lattices the sources name
+  [   1.1s] eigenspaces built
+5. the isometry types, with an explicit isometry onto each lattice the sources name
    the models, from the Gram data the sources print:
      <2> + <-2>^10 has rank 11, det 2048
      <2> + U(2) + E8(2) has rank 11, det -2048
-   S_Co is isometric to <2> + <-2>^10 = I_{1,10}(2): True
-   T_Co is isometric to <2> + U(2) + E8(2): True
-   (the models are built from the Gram data the sources print; the decision is the
-    library's isometry test, not a comparison of matrices)
-  [  23.4s] types decided
+   S_Co is isometric to I_{1,10}(2) = <2> + <-2>^10, by an explicit isometry of the model onto it:
+     its matrix M in the two bases, det -1, satisfies M^T G M = G entry by entry: True
+     its 11 images in L lie in S_Co: True; they span rank 11 of determinant 2048 against
+     the 11 and 2048 of S_Co, so the image is S_Co itself: True
+     M =
+        -2  -2  -3   0   0   0   0   0   0   0   0
+         2   1   2   0   0   0   0   0   0   0   0
+         1   2   2   0   0   0   0   0   0   0   0
+         0   0   0   1   0   0   0   0   0   0   0
+         0   0   0   0   1   0   0   0   0   0   0
+         0   0   0   0   0   1   0   0   0   0   0
+         0   0   0   0   0   0   1   0   0   0   0
+         0   0   0   0   0   0   0   1   0   0   0
+         0   0   0   0   0   0   0   0   1   0   0
+         0   0   0   0   0   0   0   0   0   1   0
+         0   0   0   0   0   0   0   0   0   0   1
+   T_Co is isometric to <2> + U(2) + E8(2), by an explicit isometry of the model onto it:
+     its matrix M in the two bases, det 1, satisfies M^T G M = G entry by entry: True
+     its 11 images in L lie in T_Co: True; they span rank 11 of determinant 2048 against
+     the 11 and 2048 of T_Co, so the image is T_Co itself: True
+     M =
+         1   0   0   0   0   0   0   0   0   0   0
+         0   1   0   0   0   0   0   0   0   0   0
+         0   0   1   0   0   0   0   0   0   0   0
+         0   0   0   1   0   0   0   0   0   0   0
+         0   0   0   0   1   0   0   0   0   0   0
+         0   0   0   0   0   1   0   0   0   0   0
+         0   0   0   0   0   0   1   0   0   0   0
+         0   0   0   0   0   0   0   1   0   0   0
+         0   0   0   0   0   0   0   0   1   0   0
+         0   0   0   0   0   0   0   0   0   1   0
+         0   0   0   0   0   0   0   0   0   0   1
+   (the models are built from the Gram data the sources print, E8(2) = 2E8 being of
+    determinant 2^8; each isometry above is the library's and its matrix is printed,
+    so the identification is an exhibited map and not the boolean of one existing)
+  [   2.2s] types decided
 6. the index and the gluing anti-isometry, from the finite-index inclusion
    S_Co + T_Co -> L: rank 22, |determinant| 4194304
    [L : S_Co + T_Co]^2 = |det(S_Co + T_Co)| / |det L| = 4194304, so the index is 2048
@@ -79,16 +119,62 @@ provenance
    eleven class values (each with exactly one integrable representative) and the sum
    q_T(gamma x) + q_S(x) = 0 on all 2048 classes.  This record contributes the morphism
    object and the glue subgroup, not a second table.
-  [ 384.0s] gluing built
+  [  26.1s] gluing built
 7. the chain T_Co -> T_En -> T_dP -> L, each member an invariant lattice of its involution
    T_Co  rank 11, det  -2048, sig (2, 9)
    T_En  rank 12, det   1024, sig (2, 10)
    T_dP  rank 20, det      4, sig (2, 18)
    S_dP  rank  2, det     -4, sig (1, 1)
-   T_En is isometric to U + U(2) + E8(2): True
-   T_dP is isometric to U + U(2) + E8^2: True
-   S_dP is isometric to U(2): True
-  [ 385.3s] chain built
+   T_En is isometric to U + U(2) + E8(2), by an explicit isometry of the model onto it:
+     its matrix M in the two bases, det 1, satisfies M^T G M = G entry by entry: True
+     its 12 images in L lie in T_En: True; they span rank 12 of determinant 1024 against
+     the 12 and 1024 of T_En, so the image is T_En itself: True
+     M =
+         1   0   0   0   0   0   0   0   0   0   0   0
+         0   1   0   0   0   0   0   0   0   0   0   0
+         0   0   1   0   0   0   0   0   0   0   0   0
+         0   0   0   1   0   0   0   0   0   0   0   0
+         0   0   0   0   1   0   0   0   0   0   0   0
+         0   0   0   0   0   1   0   0   0   0   0   0
+         0   0   0   0   0   0   1   0   0   0   0   0
+         0   0   0   0   0   0   0   1   0   0   0   0
+         0   0   0   0   0   0   0   0   1   0   0   0
+         0   0   0   0   0   0   0   0   0   1   0   0
+         0   0   0   0   0   0   0   0   0   0   1   0
+         0   0   0   0   0   0   0   0   0   0   0   1
+   T_dP is isometric to U + U(2) + E8^2, by an explicit isometry of the model onto it:
+     its matrix M in the two bases, det 1, satisfies M^T G M = G entry by entry: True
+     its 20 images in L lie in T_dP: True; they span rank 20 of determinant 4 against
+     the 20 and 4 of T_dP, so the image is T_dP itself: True
+     M =
+         1   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+         0   1   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+         0   0   1   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+         0   0   0   1   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+         0   0   0   0   1   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+         0   0   0   0   0   1   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+         0   0   0   0   0   0   1   0   0   0   0   0   0   0   0   0   0   0   0   0
+         0   0   0   0   0   0   0   1   0   0   0   0   0   0   0   0   0   0   0   0
+         0   0   0   0   0   0   0   0   1   0   0   0   0   0   0   0   0   0   0   0
+         0   0   0   0   0   0   0   0   0   1   0   0   0   0   0   0   0   0   0   0
+         0   0   0   0   0   0   0   0   0   0   1   0   0   0   0   0   0   0   0   0
+         0   0   0   0   0   0   0   0   0   0   0   1   0   0   0   0   0   0   0   0
+         0   0   0   0   0   0   0   0   0   0   0   0   1   0   0   0   0   0   0   0
+         0   0   0   0   0   0   0   0   0   0   0   0   0   1   0   0   0   0   0   0
+         0   0   0   0   0   0   0   0   0   0   0   0   0   0   1   0   0   0   0   0
+         0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   1   0   0   0   0
+         0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   1   0   0   0
+         0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   1   0   0
+         0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   1   0
+         0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   1
+   S_dP is isometric to U(2), by an explicit isometry of the model onto it:
+     its matrix M in the two bases, det 1, satisfies M^T G M = G entry by entry: True
+     its 2 images in L lie in S_dP: True; they span rank 2 of determinant 4 against
+     the 2 and 4 of S_dP, so the image is S_dP itself: True
+     M =
+         1   0
+         0   1
+  [  27.2s] chain built
 8. the nineteen diagram roots as elements of L, and the polarization class
    w_8 and tilde w_8 as the fundamental weights dual to alpha_8, tilde alpha_8:
      (w_8, alpha_j) = delta_{8j}: True
@@ -96,7 +182,7 @@ provenance
    the nineteen roots are elements of L; their squares, through the library pairing:
      [-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2]
    H = e_2 + e_3 + e_4 + e_5, H^2 = 4, H.w = [0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-  [ 385.4s] roots placed
+  [  27.3s] roots placed
 9. the induced action on the roots, computed from the library images
    theta_Co carries the copy W = U_2 + E8^2 onto W' = U_3 + E8^2, so the images of the
    nineteen roots of the diagram in W are the nineteen roots of the diagram in W':
@@ -107,5 +193,6 @@ provenance
    the cusp-2 diagram [@AEGS25, Fig. 7, printed p. 594], as the provider-free
    record prints them
 
-All assertions above hold: the objects of the six theorems, built by the library,
-carry the invariants their records state.
+Every check above is an assert, so reaching this line means all of them hold: the
+objects of the six theorems, built by the library, carry the invariants their
+records state.

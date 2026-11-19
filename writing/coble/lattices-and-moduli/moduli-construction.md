@@ -29,8 +29,8 @@ The equality $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ is @conj:gamma-co-stable: t
 The group $\Gamma_{\Co,2}$ of $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ is the image of the stabilizer of $\delta$ in $\gent$ (@prop:gamma-co-images).
 The stable subgroup $\widetilde\Orth^+(T_\Co)$ is the kernel of the action on $A_{T_\Co}$ of each of the groups $\Gamma^{\mathrm{Hdg}}_\Co$ and $\Gamma^\theta_\Co$ of @sec-gamma-co-comparison, and both inclusions are strict, of index $\abs{W(E_8)} = 696\,729\,600$ (@prop:gamma-co-heegner-strict, @prop:theta-co-index).
 
-::: {.question}
-What is an explicit description of $\Gamma_{\Co, 2}$?
+::: {.remark title="The group $\Gamma_{\Co,2}$, explicitly"}
+@def:gamma-co-groups describes $\Gamma_{\Co,2}$ as the image of the stabilizer of the Heegner vector, and @thm:gamma-co-2-comparison(1) evaluates that description: $\Gamma_{\Co,2} = \rho_{T_\Co}^{-1}(P) = \Gamma^{\mathrm{cong}}_{\Co,2}$, the preimage in $\Orth(T_\Co)$ of the stabilizer $P$ of the decomposition $[h/2]^{\perp} = A_{U(2)}\oplus A_{E_8(2)}$ of $A_{T_\Co}$ (@prop:gamma-co-images(3)), of index $[\Orth(T_\Co):\Gamma_{\Co,2}] = 67\,456$ (@thm:gamma-co-2-comparison(3)).
 :::
 
 ```{.tikz}
@@ -38,8 +38,7 @@ What is an explicit description of $\Gamma_{\Co, 2}$?
 %%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
 \begin{tikzcd}[column sep=large, row sep=large]
 F_{\mathrm{Co},2}
-  \arrow[r]
-  \arrow[d, "?"'] &
+  \arrow[r] &
 F_{\mathrm{En},2}
   \arrow[r]
   \arrow[d] &
@@ -47,13 +46,14 @@ F_{(2,2,0)}
   \arrow[r, hook] &
 F_4 \\
 F_{\mathrm{Co}}
-  \arrow[r] &
+  \arrow[r]
+  \arrow[u, "2\,|W(E_8)|"'] &
 F_{\mathrm{En}}
 \end{tikzcd}
 ```
 
 The tower relates the degree-$2$ numerically polarized Coble and Enriques moduli $F_{\Co,2}$, $\fentwo$, their unpolarized quotients $\fco$, $\fen$, and the degree-$(2,2,0)$ K3 moduli space $\fttz\injects F_4$.
-The map $F_{\Co,2}\to \fco$ marked $?$ is finite of degree $2\abs{W(E_8)} = 1\,393\,459\,200$ under @conj:gamma-co-stable, by @thm:gamma-co-2-comparison(4): unconditionally $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_{\Co,2}$ with that index, and the identification $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ is exactly the conjecture.
+The vertical map is $F_{\Co}\to F_{\Co,2}$, finite of degree $[\Gamma_{\Co,2}:\Gamma_\Co] = 2\abs{W(E_8)} = 1\,393\,459\,200$ under @conj:gamma-co-stable, by @thm:gamma-co-2-comparison(4). Unconditionally $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_{\Co,2}$ with that index, so the quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)\to F_{\Co,2}$ has that degree, and the identification $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ is exactly the conjecture.
 
 ## The GIT construction
 

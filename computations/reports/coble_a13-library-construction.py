@@ -1,9 +1,13 @@
 """A13, the six records rebuilt as library constructions: the objects, not their matrices.
 
-    PYTHONPATH=/repo/.scratch/se-main/src HOME=/workspace/nucleus/work/home \
+    PYTHONPATH=/repos/sage-extensions/src HOME=/workspace/nucleus/work/home \
     $HOME/.udocker/bin/proot-x86_64 -R $HOME/sage-image/rootfs -b /proc -b /dev -b /sys \
-        -b <repo>:/repo -w /repo /sage/.venv/bin/sage -python \
+        -b <repo>:/repo -b <sage-extensions clone>:/repos/sage-extensions \
+        -w /repo /sage/.venv/bin/sage -python \
         /repo/computations/reports/coble_a13-library-construction.py
+
+The record prints the commit of the clone it imported, so the pin is in the transcript and not
+only in this header.  The six provider-free records below are run by a bare interpreter.
 
 Why this record exists.  research#81's authoritative clause requires the 22x22 matrix to be a
 derived presentation: "Construct the K3 lattice from named summands, define the involution on
@@ -27,14 +31,22 @@ What is built, in order.
   2. I_En and I_dP of [@AEGS25, Def. 2.3, printed p. 586] as isometries of L, defined by their
      action on the named summands (v -> -v on U_1, the swap of U_2 and U_3, the swap or the
      negation of the two E8 summands), through the library's isometry constructor L.O().
-  3. w = s_alpha the library's reflection in alpha = e_0 - e_1, and theta_Co = -w . I_En.
-     Its integrality and form preservation are the constructor's; its order two is checked.
+  3. w = s_alpha the library's reflection in alpha = e_0 - e_1, J_Co = w . I_En, and
+     theta_Co = -J_Co built by the isometry constructor from the images of -J_Co.  Its
+     integrality and form preservation are the constructor's, and its order two is decided
+     inside O(L) and again on the 22 basis vectors.  (The arrow -(w . I_En) is not in O(L):
+     it is an arrow of the underlying free-module category, which shares no Mor with O(L), so
+     comparing it with the identity decides nothing.  A revision of this record compared the
+     two arrows and printed "theta_Co^2 = 1: False" beside its own assertions.)
   4. S_Co = the invariant lattice ker(theta_Co + 1) and T_Co = ker(theta_Co - 1), each taken as a
      primitive sublattice with its inclusion into L; the two are
      compared with S_Co = ker(J_Co - 1) and T_Co = S_Co^perp, the latter through
      orthogonal_complement, so primitivity and orthogonality are the library's.
-  5. The isometry types, decided by is_isometric_to against the lattices the sources name:
-     S_Co = <2> + <-2>^10, T_Co = <2> + U(2) + E8(2), and T_En, T_dP, S_dP for the chain.
+  5. The isometry types, with an explicit isometry onto each lattice the sources name,
+     through the indefinite port's isometry search: S_Co = <2> + <-2>^10,
+     T_Co = <2> + U(2) + E8(2), and T_En, T_dP, S_dP for the chain.  Each witness is printed
+     as a matrix and checked to satisfy M^T G M = G entry by entry, and its image is compared
+     with the named lattice as an embedded sublattice of L and not only up to isometry.
   6. The index [L : S_Co + T_Co] and the gluing anti-isometry gamma_Co, built by the library's
      gluing_anti_isometry from the inclusion, and checked to satisfy q_T(gamma x) = -q_S(x) on
      every class of the discriminant group.  Block compatibility is asked of gamma_Co on the
@@ -63,6 +75,7 @@ from sage.version import version as SAGE_VERSION
 
 import sage_extensions
 from sage_extensions.all import Lattices
+from sage_indefinite_port.indefinite.marked_lattices import isometry as indefinite_isometry
 
 sys.stdout.reconfigure(line_buffering=True)
 T0 = time.time()
@@ -72,9 +85,22 @@ def stamp(tag):
     print('  [%6.1fs] %s' % (time.time() - T0, tag))
 
 
+def _library_commit():
+    """The commit of the sage-extensions checkout this record imports, for provenance."""
+    import os
+    import subprocess
+    root = os.path.dirname(os.path.dirname(os.path.abspath(sage_extensions.__file__)))
+    try:
+        return subprocess.check_output(['git', '-C', root, 'rev-parse', 'HEAD'],
+                                       text=True, stderr=subprocess.DEVNULL).strip() or 'unknown'
+    except Exception:
+        return 'unknown'
+
+
 print('provenance')
 print('  Sage: %s' % SAGE_VERSION)
 print('  sage-extensions imported from: %s' % sage_extensions.__file__)
+print('  sage-extensions at: %s' % _library_commit())
 print('  runtime: shared image rootfs, read only; repository bound at /repo')
 print('  the constructions are the library\'s; the six provider-free records are the cross-check')
 print('')
@@ -118,6 +144,64 @@ def is_matrix(iso):
     return matrix(ZZ, n, n, lambda i, j: coords(iso(L.basis_vector(j)))[i])
 
 
+def lattice_of(sub):
+    """The lattice a sublattice presents by its own Gram matrix, in its inclusion basis.
+
+    The isometry search of the next function runs between lattices, and the primitive
+    subobject that carries the inclusion is not a domain of every route of that search;
+    the Gram matrix of its basis is the same lattice, and the basis itself is kept so that
+    every image is read back in L.
+    """
+    r = int(sub.rank())
+    base = [sub.inclusion()(sub.module_generator(j)) for j in range(r)]
+    gram = matrix(ZZ, r, r, lambda i, j: int(base[i] * base[j]))
+    return Lattices(ZZ)([list(row) for row in gram.rows()]), base, gram
+
+
+def explicit_isometry(sub, model):
+    """The library's isometry ``model -> sub``, as a matrix and as its images in L.
+
+    The witness is the indefinite port's isometry, which is the route the library's
+    ``Isom(...).an_element`` takes for an indefinite pair of rank at least three
+    (``lattice_morphisms.LatticeIsometryMor.an_element``); it is called here directly and
+    verified below.  Its columns are the coordinates, in the eigenspace's basis, of the
+    images of the model's generators; read through the inclusion they are elements of L.
+    """
+    presented, base, gram = lattice_of(sub)
+    witness = indefinite_isometry(Lattices(ZZ), model, presented)
+    assert witness is not None, 'the port exhibited no isometry onto %s' % model
+    r = int(model.rank())
+    N = matrix(ZZ, r, r,
+               lambda i, j: int(list(witness(model.basis_vector(j)).to_vector())[i]))
+    images = [sum((N[j, i] * base[j] for j in range(r)), L.zero()) for i in range(r)]
+    return N, base, gram, images
+
+
+def report_isometry(sub, model, name, model_label):
+    """Print an explicit isometry from ``model`` onto ``sub``, and check it is one onto."""
+    N, base, g_sub, images = explicit_isometry(sub, model)
+    r = int(model.rank())
+    g_model = matrix(ZZ, r, r,
+                     lambda i, j: int(model.basis_vector(i) * model.basis_vector(j)))
+    isometry = N.transpose() * g_sub * N == g_model
+    span = L.subobject_on(tuple(images))
+    inside = all(v in sub for v in images)
+    same = (inside and span.rank() == sub.rank()
+            and abs(int(span.determinant())) == abs(int(sub.determinant())))
+    print('   %s is isometric to %s, by an explicit isometry of the model onto it:'
+          % (name, model_label))
+    print('     its matrix M in the two bases, det %d, satisfies M^T G M = G entry by entry: %s'
+          % (int(N.det()), isometry))
+    print('     its %d images in L lie in %s: %s; they span rank %d of determinant %d against'
+          % (r, name, inside, span.rank(), abs(int(span.determinant()))))
+    print('     the %d and %d of %s, so the image is %s itself: %s'
+          % (sub.rank(), abs(int(sub.determinant())), name, name, same))
+    print('     M =')
+    for i in range(r):
+        print('       ' + ' '.join('%3d' % int(N[i, j]) for j in range(r)))
+    assert isometry and same
+
+
 # --------------------------------------------------------------- 2. the two AEGS involutions
 def aegs_action(kind, v):
     a, b, c, e, f = block_split(v)
@@ -148,9 +232,20 @@ w = L.reflection(alpha)
 print('   w = L.reflection(alpha): an integral isometry by construction; w^2 = 1: %s'
       % (w * w == L.O().one()))
 print('   w(alpha) = -alpha: %s' % (w(alpha) == -alpha))
-theta = -(w * I_En)
-print('   theta_Co = -(w * I_En): an integral form-preserving isometry by construction')
-print('   theta_Co^2 = 1: %s' % (theta * theta == L.O().one()))
+J_Co = w * I_En
+theta = image_isometry(lambda v: -J_Co(v))
+print('   J_Co = w . I_En, and theta_Co = -J_Co built by the isometry constructor from the')
+print('   images of -J_Co on the named summands, so theta_Co is an element of O(L) by')
+print('   construction and not only an integral form-preserving map')
+print('   theta_Co^2 = 1, the library decision inside O(L): %s'
+      % (theta * theta == L.O().one()))
+print('   theta_Co(v) = -J_Co(v) on all %d basis vectors: %s'
+      % (n, all(theta(L.basis_vector(i)) == -J_Co(L.basis_vector(i)) for i in range(n))))
+print('   (the equation holds on a basis, hence on L; the arrow -(w . I_En) itself is an')
+print('    arrow of the underlying free-module category, and no Mor holds it together with')
+print('    the identity of O(L), so comparing those two arrows decides nothing)')
+assert theta * theta == L.O().one()
+assert all(theta(L.basis_vector(i)) == -J_Co(L.basis_vector(i)) for i in range(n))
 print('   so J_Co = w . I_En = -theta_Co is the covering involution of the marking')
 M_theta = is_matrix(theta)
 print('   its matrix in the standard basis, printed only now, after the construction:')
@@ -171,17 +266,20 @@ print('   S_Co = prim ker(theta_Co + 1): rank %d, det %d, sig %s'
 print('   T_Co = prim ker(theta_Co - 1): rank %d, det %d, sig %s'
       % (T_Co.rank(), int(T_Co.determinant()), T_Co.signature_pair()))
 T_Co_oc = L.orthogonal_complement(S_Co)
-print('   T_Co = S_Co^perp through L.orthogonal_complement: same lattice: %s'
-      % (T_Co.is_isometric_to(T_Co_oc)
-         and T_Co.rank() == T_Co_oc.rank()
-         and int(T_Co.determinant()) == int(T_Co_oc.determinant())))
-inc = [i for i in dir(S_Co) if 'inclusion' in i][:2]
+T_gens = [T_Co.inclusion()(T_Co.module_generator(j)) for j in range(T_Co.rank())]
+inside = all(v in T_Co_oc for v in T_gens)
+print('   T_Co = S_Co^perp through L.orthogonal_complement: its eleven generators lie in')
+print('   S_Co^perp (%s), and the two have rank %d and determinant %d and %d, so the two'
+      % (inside, T_Co.rank(), int(T_Co.determinant()), int(T_Co_oc.determinant())))
+print('   embedded sublattices of L are equal and not only isometric')
+assert inside and T_Co.rank() == T_Co_oc.rank()
+assert int(T_Co.determinant()) == int(T_Co_oc.determinant())
 print('   each carries its inclusion into L (S_Co.inclusion()), so primitivity is the')
 print('   construction\'s and not a separate check')
 stamp('eigenspaces built')
 
 # --------------------------------------------------------------- 5. the isometry types
-print('5. the isometry types, decided by is_isometric_to against the lattices the sources name')
+print('5. the isometry types, with an explicit isometry onto each lattice the sources name')
 half = Lattices(ZZ)([[2]])
 U2 = Lattices(ZZ)([list(r) for r in (2 * U).rows()])
 E8n = Lattices(ZZ)([list(r) for r in (-CartanMatrix(['E', 8])).rows()])
@@ -192,11 +290,11 @@ TCO = Lattices(ZZ)([list(r) for r in block_diagonal_matrix(
 print('   the models, from the Gram data the sources print:')
 print('     <2> + <-2>^10 has rank %d, det %d' % (SCO.rank(), int(SCO.determinant())))
 print('     <2> + U(2) + E8(2) has rank %d, det %d' % (TCO.rank(), int(TCO.determinant())))
-print('   S_Co is isometric to <2> + <-2>^10 = I_{1,10}(2): %s' % S_Co.is_isometric_to(SCO))
-print('   T_Co is isometric to <2> + U(2) + E8(2): %s' % T_Co.is_isometric_to(TCO))
-assert S_Co.is_isometric_to(SCO) and T_Co.is_isometric_to(TCO)
-print('   (the models are built from the Gram data the sources print; the decision is the')
-print('    library\'s isometry test, not a comparison of matrices)')
+report_isometry(S_Co, SCO, 'S_Co', 'I_{1,10}(2) = <2> + <-2>^10')
+report_isometry(T_Co, TCO, 'T_Co', '<2> + U(2) + E8(2)')
+print('   (the models are built from the Gram data the sources print, E8(2) = 2E8 being of')
+print('    determinant 2^8; each isometry above is the library\'s and its matrix is printed,')
+print('    so the identification is an exhibited map and not the boolean of one existing)')
 stamp('types decided')
 
 # --------------------------------------------------------------- 6. index, gluing, blocks
@@ -270,9 +368,9 @@ for name, sub in (('T_Co', T_Co), ('T_En', T_En), ('T_dP', T_dP), ('S_dP', S_dP)
                                                  sub.signature_pair()))
 TEN = Lattices(ZZ)([list(r) for r in block_diagonal_matrix(U, 2 * U, 2 * E8).rows()])
 TDP = Lattices(ZZ)([list(r) for r in block_diagonal_matrix(U, 2 * U, E8, E8).rows()])
-print('   T_En is isometric to U + U(2) + E8(2): %s' % T_En.is_isometric_to(TEN))
-print('   T_dP is isometric to U + U(2) + E8^2: %s' % T_dP.is_isometric_to(TDP))
-print('   S_dP is isometric to U(2): %s' % S_dP.is_isometric_to(U2))
+report_isometry(T_En, TEN, 'T_En', 'U + U(2) + E8(2)')
+report_isometry(T_dP, TDP, 'T_dP', 'U + U(2) + E8^2')
+report_isometry(S_dP, U2, 'S_dP', 'U(2)')
 stamp('chain built')
 
 # --------------------------------------------------------------- 8. the diagram roots
@@ -317,7 +415,7 @@ roots_other = [alpha_root[1], alpha_root[3], alpha_root[4], alpha_root[5], alpha
                talpha_root[8], talpha_root[7], talpha_root[6], talpha_root[5],
                talpha_root[4], talpha_root[3], talpha_root[1],
                alpha_root[2], talpha_root[2]]
-I_Co = -theta
+I_Co = J_Co          # = -theta_Co, and an element of O(L)
 pairing = []
 for r in roots:
     img = I_Co(r)
@@ -346,5 +444,6 @@ print('   the cusp-2 diagram [@AEGS25, Fig. 7, printed p. 594], as the provider-
 print('   record prints them')
 
 print('')
-print('All assertions above hold: the objects of the six theorems, built by the library,')
-print('carry the invariants their records state.')
+print('Every check above is an assert, so reaching this line means all of them hold: the')
+print('objects of the six theorems, built by the library, carry the invariants their')
+print('records state.')

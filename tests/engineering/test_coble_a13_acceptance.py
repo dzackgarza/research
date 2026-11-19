@@ -370,10 +370,87 @@ def test_the_library_construction_record_exists_with_its_transcript():
     assert LIBRARY[0].exists() and LIBRARY[1].exists()
     text = LIBRARY[0].read_text()
     for call in ("L.O()", "L.reflection(", "primitive_sublattice_from(", "kernel()",
-                 "orthogonal_complement(", "is_isometric_to(", "gluing_anti_isometry("):
+                 "orthogonal_complement(", "lattice_of(", "indefinite_isometry(",
+                 "gluing_anti_isometry("):
         assert call in text, call
     record = LIBRARY[1].read_text()
-    assert "sage-extensions imported from" in record
-    for marker in ("S_Co is isometric to <2> + <-2>^10", "T_Co is isometric to <2> + U(2) + E8(2)",
+    assert "sage-extensions imported from" in record and "sage-extensions at:" in record
+    for marker in ("S_Co is isometric to I_{1,10}(2) = <2> + <-2>^10",
+                   "T_Co is isometric to <2> + U(2) + E8(2)",
                    "the glue subgroup of A_{S_Co + T_Co} has order 2048"):
         assert marker in record, marker
+
+
+def test_the_construction_records_no_failed_self_check():
+    """#656: the record must not print a property as false beside its own claim that all hold.
+
+    A revision of this record compared the arrow ``-(w . I_En)``, which is an arrow of the
+    underlying free-module category and not of ``O(L)``, with the identity of ``O(L)``, and
+    printed ``theta_Co^2 = 1: False`` immediately above a line asserting that every check
+    held.  The order-two equation is now decided inside ``O(L)`` and again on the standard
+    basis, both are asserted in the script, and the transcript of a record whose checks are
+    asserts carries no failed one.
+    """
+    record = LIBRARY[1].read_text()
+    assert "False" not in record, [line for line in record.splitlines() if "False" in line]
+    assert "theta_Co^2 = 1, the library decision inside O(L): True" in record
+    assert "theta_Co(v) = -J_Co(v) on all 22 basis vectors: True" in record
+    script = LIBRARY[0].read_text()
+    assert "assert theta * theta == L.O().one()" in script
+    assert "assert all(theta(L.basis_vector(i)) == -J_Co(L.basis_vector(i)) for i in range(n))" in script
+
+
+def test_the_eigenspaces_are_matched_by_exhibited_isometries():
+    """#81 criterion two: an isometry, exhibited and checked, not the boolean of one existing.
+
+    The five identifications print a matrix ``M`` and check ``M^T G M = G`` entry by entry,
+    and each image is compared with the named sublattice in L, so the identification is a map
+    onto the eigenspace itself and not only onto an isometric copy of it.
+    """
+    record = LIBRARY[1].read_text()
+    assert record.count("satisfies M^T G M = G entry by entry: True") == 5, record.count(
+        "satisfies M^T G M = G entry by entry: True")
+    for name in ("S_Co", "T_Co", "T_En", "T_dP", "S_dP"):
+        assert "so the image is %s itself: True" % name in record, name
+        assert "images in L lie in %s: True" % name in record, name
+    assert "T_Co = S_Co^perp through L.orthogonal_complement" in record
+    assert "embedded sublattices of L are equal and not only isometric" in record
+
+
+def test_the_page_states_the_E8_2_block_by_its_own_Gram_matrix():
+    """The block is 2 . (-Cartan(E8)) of determinant 2^8, not the diagonal lattice <-4>^8."""
+    page = PAGE.read_text()
+    assert "\\mathrm{diag}(-4^{\\times8})" not in page
+    assert "$-2\\,\\mathrm{Cartan}(E_8)$, of diagonal entries $-4$ and off-diagonal entries $0$ or $2$" in page
+    assert "the two cross terms vanish because $E_{8,1}$ and $E_{8,2}$ are orthogonal" in page
+    assert "not the diagonal lattice $\\generators{-4}^{8}$, whose determinant is $4^8$" in page
+
+
+def test_the_conjugacy_proof_composes_maps_of_matching_domains():
+    """The composite must be an isometry of q_{T'}, and the corrected isometry must enter it."""
+    page = PAGE.read_text()
+    assert "\\eta_0\\definedas\\bar\\varphi^{-1}\\gamma\\bar\\psi\\gamma'^{-1}" in page
+    assert "\\bar\\varphi_1\\gamma' = \\bar\\varphi\\,\\bar\\varphi^{-1}\\gamma\\bar\\psi = \\gamma\\bar\\psi" in page
+    assert "The composite $\\gamma\\,\\bar\\psi^{-1}\\,\\gamma'^{-1}$ is an isometry of $q_{T'}$" not in page
+
+
+def test_the_AEGS25_lemma_is_cited_at_its_printed_page():
+    """Lemma 3.9 is printed on p. 594; its neighbours, Def. 3.7 and Lemma 3.8, are on p. 593."""
+    for path in (PAGE, OPEN_PROBLEMS):
+        text = path.read_text()
+        assert "Lemma 3.9, printed p. 593" not in text, path.name
+        assert "Lemma 3.9, printed p. 594" in text, path.name
+
+
+def test_no_page_still_carries_the_open_form_of_the_question():
+    """#656's acceptance: every page that cites the open form is updated."""
+    moduli = (ROOT / "writing/coble/lattices-and-moduli/moduli-construction.md").read_text()
+    assert "What is an explicit description of $\\Gamma_{\\Co, 2}$?" not in moduli
+    assert '\\arrow[d, "?"\']' not in moduli
+    assert "The map $F_{\\Co,2}\\to \\fco$" not in moduli
+    assert "The vertical map is $F_{\\Co}\\to F_{\\Co,2}$" in moduli
+    assert "The group $\\Gamma_{\\Co,2}$, explicitly" in moduli
+    lattices = (ROOT / "writing/coble/lattices-and-moduli/lattices.md").read_text()
+    assert "The proof does not evaluate that index" not in lattices
+    page = PAGE.read_text()
+    assert "states but leaves unevaluated" not in page
