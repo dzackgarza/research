@@ -1,0 +1,12 @@
+/workspace/nucleus/work/projects/p-9fcb4ed7f4b64e008de2ee29a7197bf4/repo/.scratch/wt-663m/computations/reports/coble_663-book-id-audit.py:8: SyntaxWarning: invalid escape sequence '\s'
+  Check 1 (fence defects): every id declared by ``^:::\s*{...#id`` must appear as a Div identifier in
+pages under writing/ (excluding .book): 182
+distinct ids declared by ::: fences: 1595
+distinct Div identifiers pandoc parsed: 2662
+
+CHECK 1 -- fence defects (declared by a ::: fence but not parsed as a Div): 0
+
+CHECK 2 -- @refs resolving to no id and to no external scheme: 1
+   eq:three-lattice-involutions: ['writing/dissertation/sections/1-part-combinatorial/3-chapter-enriques-k3/475-our-cusps.md']
+
+External schemes not checked here, resolved by the book's stack filter: nlab
