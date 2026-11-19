@@ -136,6 +136,8 @@ _RESULT = re.compile(
 _TAGS = re.compile(r"\bTags?\s+([0-9A-Z]{4}(?:\s*(?:,|and)\s*[0-9A-Z]{4})*)")
 # A Bourbaki numbered paragraph: "Ch. V §3 no. 1".
 _BOURBAKI = re.compile(r"(?:(?:Ch\.|Chapter)\s*([IVXLC\d]+),?\s*)?§\s*(\d+)\s*no\.\s*(\d+)")
+# A numbered item of an introduction: "Introduction, no. 1", "Intro., 4".
+_INTRO_ITEM = re.compile(r"\b(?:Introduction|Intro\.)\s*,?\s*(?:no\.\s*)?(\d+)(?![\d.])")
 # A bare item or equation number with a dot: "4.6", "V.3.3", "(2.1.10)".
 _BARE_NUMBER = re.compile(r"(?<![\w.§])\(?(?:[IVXLC]+\.\d+(?:\.\d+)*|\d+(?:\.\d+)+)\)?(?![\w.])")
 
@@ -163,6 +165,9 @@ def cited_results(key: str, locator: str) -> list[str]:
         chapter = f"Ch. {match.group(1)} " if match.group(1) else ""
         add(f"{key} {chapter}§{match.group(2)} no. {match.group(3)}")
     rest = _BOURBAKI.sub(" ", rest)
+    for match in _INTRO_ITEM.finditer(rest):
+        add(f"{key} Intro. no. {match.group(1)}")
+    rest = _INTRO_ITEM.sub(" ", rest)
     for match in _RESULT.finditer(rest):
         label = _LABEL[match.group(1).lower()]
         for number in re.split(r"\s*(?:,|and|&)\s*", match.group(2)):
