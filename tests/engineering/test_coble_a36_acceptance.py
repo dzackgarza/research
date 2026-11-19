@@ -382,6 +382,24 @@ def test_the_p_greater_one_cusp_lattice_record_reproduces_and_the_page_states_it
     assert "lem:cusp-lattice-p-greater-one" in register
 
 
+def test_the_k_greater_one_comparison_group_is_not_a_lattice():
+    """At k >= 2 the comparison group is not two-reflective, so the semifan is not a fan.
+
+    N_k = <-2k> + U + E8(-1)^2 = U + K with K = <-2k> + E8(-1)^2 of rank 17 and
+    discriminant Z/(2k).  For k >= 2, K is not 2-elementary and is not the rank-17 entry
+    E8(-1)^2 + A1(-1) of Nikulin's list, so N_k is in neither branch of his Theorem 0.2.4;
+    hence W_2(N_k) has infinite index in Orth(N_k), and by AET23 Def. 3.5 the Coxeter
+    semifan is not a fan.
+    """
+    page = page_text()
+    assert "#lem:k-not-two-reflective" in page
+    assert "[@Nik79b, Thm. 0.2.2, printed p. 1403]" in page
+    assert "[@Nik79b, Thm. 0.2.4, printed p. 1404]" in page
+    assert "is not a fan" in page
+    register = REGISTER.read_text(encoding="utf-8")
+    assert "lem:k-not-two-reflective" in register
+
+
 def test_the_k_greater_one_comparison_fan_is_not_a_prism():
     """What "unprinted" means at the k >= 2 cusps: the fan is not the printed one times a line.
 
