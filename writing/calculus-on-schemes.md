@@ -88,7 +88,7 @@ A *connection* on an $\mathcal A$-module $\mathcal E$ is an $\mathcal R$-linear 
 \nabla(as)&=da\otimes s+a\nabla s.
 \end{align*}
 
-This is the Leibniz formulation of [@Ram04, Chapter 5, §1; @Huy05, Definition 4.2.1].
+This is the Leibniz formulation of [@Ram04, Ch. 5, 1.4; @Huy05, Definition 4.2.1].
 :::
 
 :::{.definition #def:calculus-horizontal-morphism title="Morphisms of connections"}
@@ -145,7 +145,7 @@ For a morphism $q:Y\to X$ in the chosen geometric category, over the same base i
 (q^*\nabla)(a\otimes s)&=da\otimes s+a\,(dq\otimes1)(q^*(\nabla s)).
 \end{align*}
 
-Here $q^*\mathcal E=\mathcal O_Y\otimes_{q^{-1}\mathcal O_X}q^{-1}\mathcal E$. These formulas descend through the tensor-product relations because the Leibniz terms on both representatives of $as\otimes t=s\otimes at$ agree. They commute with restriction and satisfy the connection Leibniz rule [@Huy05, Examples 4.2.6; @Ram04, Chapter 5, §1].
+Here $q^*\mathcal E=\mathcal O_Y\otimes_{q^{-1}\mathcal O_X}q^{-1}\mathcal E$. These formulas descend through the tensor-product relations because the Leibniz terms on both representatives of $as\otimes t=s\otimes at$ agree. They commute with restriction and satisfy the connection Leibniz rule [@Huy05, Examples 4.2.6; @Ram04, Ch. 5, 1.13].
 :::
 
 ## Curvature and flatness {#sec-calculus-curvature}
@@ -157,7 +157,7 @@ A connection extends to $\mathcal R$-linear maps $d_\nabla:\Omega^p(\mathcal E)\
 d_\nabla(\alpha\otimes s)&=d\alpha\otimes s+(-1)^p\alpha\wedge\nabla s.
 \end{align*}
 
-To check balancing, expand $d(a\alpha)=da\wedge\alpha+a\,d\alpha$ and $\nabla(as)=da\otimes s+a\nabla s$. The relation $da\wedge\alpha=(-1)^p\alpha\wedge da$ identifies the two expansions. The extension is therefore well-defined [@Ram04, Chapter 5, §5].
+To check balancing, expand $d(a\alpha)=da\wedge\alpha+a\,d\alpha$ and $\nabla(as)=da\otimes s+a\nabla s$. The relation $da\wedge\alpha=(-1)^p\alpha\wedge da$ identifies the two expansions. The extension is therefore well-defined [@Ram04, Ch. 5, Rem. 1.11].
 :::
 
 :::{.definition #def:calculus-curvature title="Curvature"}
@@ -298,7 +298,7 @@ for all local sections. Equivalently, the induced connection on $\mathcal E^\vee
 :::
 
 :::{.theorem #thm:calculus-levi-civita title="Levi-Civita connection"}
-A perfect symmetric pairing $g$ on $\mathcal T$ determines a unique torsion-free connection compatible with $g$. In the smooth real case this is the Levi-Civita connection [@Huy05, Theorem 4.A.3; @Ram04, Chapter 7, §2]. Its defining formula is
+A perfect symmetric pairing $g$ on $\mathcal T$ determines a unique torsion-free connection compatible with $g$. In the smooth real case this is the Levi-Civita connection [@Huy05, Theorem 4.A.3; @Ram04, Ch. 7, Thm. 4.7]. Its defining formula is
 
 \begin{align*}
 2g(\nabla_u v,w)
@@ -329,11 +329,11 @@ Conversely, write compatibility for the triples $(u,v,w)$, $(v,w,u)$, and $(w,u,
 Here $M$ is a smooth manifold and $E$ is a finite-rank smooth vector bundle with sheaf of sections $\mathcal E$ and connection $\nabla$.
 
 :::{.construction #cons:calculus-transport title="Parallel transport"}
-For a piecewise smooth path $\gamma:[a,b]\to M$, a section $s$ of $\gamma^*E$ is parallel if $(\gamma^*\nabla)_{\partial_t}s=0$. In a frame this is the linear ordinary differential equation $u'(t)+A(\dot\gamma(t))u(t)=0$. Existence and uniqueness for linear ordinary differential equations give an isomorphism $P_\gamma:E_{\gamma(a)}\to E_{\gamma(b)}$, sending the initial value to the final value [@Ram04, Chapter 5, §1]. Reversing the path gives its inverse; solving consecutively gives composition under concatenation.
+For a piecewise smooth path $\gamma:[a,b]\to M$, a section $s$ of $\gamma^*E$ is parallel if $(\gamma^*\nabla)_{\partial_t}s=0$. In a frame this is the linear ordinary differential equation $u'(t)+A(\dot\gamma(t))u(t)=0$. Existence and uniqueness for linear ordinary differential equations give an isomorphism $P_\gamma:E_{\gamma(a)}\to E_{\gamma(b)}$, sending the initial value to the final value [@Ram04, Ch. 5, Def. 7.1]. Reversing the path gives its inverse; solving consecutively gives composition under concatenation.
 :::
 
 :::{.theorem #thm:calculus-flat-local-system title="Flat connections and local systems"}
-For a smooth real or complex vector bundle, flatness of $\nabla$ is equivalent to the existence of local parallel frames. It is also equivalent to invariance of $P_\gamma$ under homotopies with fixed endpoints. In this case $\mathcal E^\nabla$ is a local system, and multiplication induces an isomorphism $\mathcal A_M\otimes_{\underline{k}}\mathcal E^\nabla\cong\mathcal E$, with $k=\mathbb R$ or $\mathbb C$ as appropriate [@Ram04, Chapter 5, §5].
+For a smooth real or complex vector bundle, flatness of $\nabla$ is equivalent to the existence of local parallel frames. It is also equivalent to invariance of $P_\gamma$ under homotopies with fixed endpoints. In this case $\mathcal E^\nabla$ is a local system, and multiplication induces an isomorphism $\mathcal A_M\otimes_{\underline{k}}\mathcal E^\nabla\cong\mathcal E$, with $k=\mathbb R$ or $\mathbb C$ as appropriate [@Ram04, Ch. 5, Thm. 5.12].
 :::
 
 :::{.proof title="Horizontal integral manifolds"}
@@ -368,7 +368,7 @@ For a Riemannian metric $g$ with Levi-Civita connection and the curvature sign c
 K_x(\langle u,v\rangle)&=\frac{g(F_\nabla(u,v)v,u)}{g(u,u)g(v,v)-g(u,v)^2}.
 \end{align*}
 
-Alternation in $u,v$ and skew-adjointness of $F_\nabla(u,v)$ make both numerator and denominator transform by the square of the determinant under a change of basis of the plane. Skew-adjointness follows by applying the induced curvature to the parallel tensor $g$. Hence the quotient is well-defined. This convention makes the unit round sphere have curvature $+1$ [@Ram04, Chapter 7, §6, with the curvature sign fixed here].
+Alternation in $u,v$ and skew-adjointness of $F_\nabla(u,v)$ make both numerator and denominator transform by the square of the determinant under a change of basis of the plane. Skew-adjointness follows by applying the induced curvature to the parallel tensor $g$. Hence the quotient is well-defined. This convention makes the unit round sphere have curvature $+1$ [@Ram04, Ch. 7, 6.3, with the curvature sign fixed here].
 :::
 
 :::{.definition #def:calculus-constant-curvature title="Constant sectional curvature"}
@@ -714,7 +714,7 @@ $\omega(v,Ju)=-\omega(Ju,v)=\omega(u,Jv)$ proves symmetry, and the displayed con
 :::
 
 :::{.remark #rmk:calculus-hermitian-normalization title="Normalization on the i-eigensheaf"}
-Let $g_{\mathbb C}$ be the complex-bilinear extension of $g$ and $\xi(u)=\tfrac12(u-iJu)$. Expanding gives $g_{\mathbb C}(\xi(u),\overline{\xi(v)})=\tfrac12h(u,v)$. Thus $h$ on $(\mathcal T_M)_J$ corresponds to twice this restricted pairing on $\mathcal T^{1,0}$. The factor does not change its Chern connection, because it is a positive constant [@Huy05, Appendix 4.A].
+Let $g_{\mathbb C}$ be the complex-bilinear extension of $g$ and $\xi(u)=\tfrac12(u-iJu)$. Expanding gives $g_{\mathbb C}(\xi(u),\overline{\xi(v)})=\tfrac12h(u,v)$. Thus $h$ on $(\mathcal T_M)_J$ corresponds to twice this restricted pairing on $\mathcal T^{1,0}$. The factor does not change its Chern connection, because it is a positive constant [@Huy05, Lem. 1.2.17 and Prop. 4.2.14].
 :::
 
 :::{.definition #def:calculus-symplectic title="Symplectic form"}
@@ -784,7 +784,7 @@ E_1^{p,q}=H^q(X,\Omega_X^p)
 $$
 If $X$ is compact Kähler, it degenerates at $E_1$ and identifies
 $H^q(X,\Omega_X^p)$ with the Hodge summand $H^{p,q}(X)$
-[@Huy05, Ch. 3]. Thus the sheaf-theoretic differentials in this
+[@Huy05, Cor. 3.2.12 and Ex. 3.2.14]. Thus the sheaf-theoretic differentials in this
 chapter lead directly to the Hodge decomposition used in
 @sec-hsd-hodge-structures.
 :::
