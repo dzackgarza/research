@@ -28,7 +28,11 @@ Findings, each one a defect in the book:
   - a proof with no numbered block immediately before it;
   - an id that two blocks define;
   - a numbered block with no id (it is a node, keyed `<chapter>#<position>`, but
-    nothing can cite it).
+    nothing can cite it);
+  - a use with no citation: a logical block whose prose contains a term of two or
+    more words that a definition, construction, notation or convention sets in bold,
+    when no block that it reaches through citations defines that term. One-word terms
+    are not checked, because the same word has different senses in different parts.
 
 Outputs, written to --out: `dependency-graph.graphml`, `dependency-graph.dot`,
 `dependency-graph.json` (networkx node-link data, which the book's graph page
@@ -45,6 +49,7 @@ from __future__ import annotations
 import argparse
 import dataclasses
 import json
+import re
 import sys
 from dataclasses import dataclass
 from enum import StrEnum
@@ -57,14 +62,25 @@ import yaml
 # The theorem-family reference prefixes, as the amsthm-refs filter registers them.
 AMSTHM_REFS = "_extensions/local/amsthm-refs/amsthm-refs.lua"
 
-# Block kinds whose statement or proof is part of the logical development. A citation
-# between two of them is a `uses` edge. A citation to or from any other kind (an
-# example, a remark, a question, ...) is commentary, a `mentions` edge: an example
-# cannot be a premise, and a remark's pointer is not a dependency.
+# Block kinds whose statement or proof is part of the logical development: a later
+# proof can take the block as a premise. A citation between two of them is a `uses`
+# edge. An observation is a stated fact with its proof, so it is logical; a conjecture
+# is logical because a result can be proved conditionally on it.
 LOGICAL = frozenset({
-    "theorem", "lemma", "corollary", "proposition", "conjecture", "claim",
+    "theorem", "lemma", "corollary", "proposition", "observation", "claim", "conjecture",
     "definition", "construction", "notation", "convention", "assumption",
 })
+
+# Block kinds that comment on the development and establish nothing in it. A citation
+# to or from one of them is a `mentions` edge. An example illustrates and a remark or
+# note points; an exercise, problem or question asks for work that the text does not
+# do, so none of them can be a premise.
+COMMENTARY = frozenset({
+    "example", "remark", "note", "warning", "exercise", "problem", "question",
+})
+
+# Block kinds whose bold phrases are defined terms.
+DEFINING = frozenset({"definition", "construction", "notation", "convention"})
 
 
 class Kind(StrEnum):
@@ -73,6 +89,7 @@ class Kind(StrEnum):
     ORPHAN_PROOF = "orphan-proof"
     DUPLICATE_ID = "duplicate-id"
     MISSING_ID = "missing-id"
+    UNCITED_TERM = "uncited-term"
 
 
 @dataclass(frozen=True)
@@ -81,15 +98,18 @@ class Finding:
 
     kind is one of "dangling" (blocks = [citing block, missing id]), "cycle" (the
     blocks of the cycle, in order), "orphan-proof" (no blocks), "duplicate-id"
-    ([id]) and "missing-id" ([the node key `<chapter>#<position>`]).
+    ([id]), "missing-id" ([the node key `<chapter>#<position>`]) and "uncited-term"
+    ([using block, defining blocks ...], with the term).
     """
 
     kind: Kind
     chapter: str
     blocks: tuple[str, ...] = ()
+    term: str = ""
 
     def __str__(self) -> str:
-        return f"{self.chapter}: {self.kind} {' '.join(self.blocks)}".rstrip()
+        term = f' "{self.term}"' if self.term else ""
+        return f"{self.chapter}: {self.kind}{term} {' '.join(self.blocks)}".rstrip()
 
 
 def chapter_list(book: dict[str, list[str | dict[str, str | list[str]]]]) -> list[str]:
@@ -121,9 +141,20 @@ def theorem_prefixes(project: Path) -> set[str]:
     return set(re.findall(r'(\w+)"?\]?\s*=\s*true', table.group(1)))
 
 
-def cited_ids(elem: pf.Element, block_classes: set[str]) -> list[str]:
-    """Ids cited inside `elem`, not counting nested numbered blocks or proofs."""
-    found: list[str] = []
+@dataclass
+class Contents:
+    """What one statement or proof holds, not counting nested numbered blocks or proofs."""
+
+    cited: list[str] = dataclasses.field(default_factory=list)
+    # The prose words, lowercased; mathematics and citations are left out.
+    text: str = ""
+    # The bold phrases (`**term**`) that contain no mathematics, lowercased.
+    terms: set[str] = dataclasses.field(default_factory=set)
+
+
+def contents(elem: pf.Element, block_classes: set[str]) -> Contents:
+    found = Contents()
+    words: list[str] = []
 
     def walk(e: pf.Element) -> None:
         if isinstance(e, pf.Div) and e is not elem and (
@@ -131,13 +162,31 @@ def cited_ids(elem: pf.Element, block_classes: set[str]) -> list[str]:
         ):
             return
         if isinstance(e, pf.Cite):
-            found.extend(c.id for c in e.citations)
+            found.cited.extend(c.id for c in e.citations)
             return
+        if isinstance(e, pf.Str):
+            words.append(e.text)
+        elif isinstance(e, (pf.Space, pf.SoftBreak, pf.LineBreak, pf.Math)):
+            words.append(" ")
+        elif isinstance(e, pf.Strong) and not any(
+                isinstance(m, pf.Math) for m in _descendants(e)):
+            term = " ".join(pf.stringify(e).lower().split()).strip(" .,;:")
+            if re.search(r"[a-z]{3}", term) and " " in term:
+                found.terms.add(term)
         for child in children(e):
             walk(child)
 
     walk(elem)
+    found.text = " ".join("".join(words).lower().split())
     return found
+
+
+def _descendants(e: pf.Element) -> list[pf.Element]:
+    out: list[pf.Element] = []
+    for child in children(e):
+        out.append(child)
+        out.extend(_descendants(child))
+    return out
 
 
 def children(e: pf.Element) -> list[pf.Element]:
@@ -174,11 +223,18 @@ def block_lists(e: pf.Element) -> list[list[pf.Element]]:
 def build(project: Path) -> tuple[nx.DiGraph, list[Finding]]:
     config = yaml.safe_load((project / "_quarto.yml").read_text())
     block_classes = set(config["custom-numbered-blocks"]["classes"])
+    unclassified = block_classes - LOGICAL - COMMENTARY
+    if unclassified:
+        sys.exit(f"docs-deps: block kinds {sorted(unclassified)} are neither LOGICAL nor "
+                 "COMMENTARY; classify them in scripts/docs_dependency_graph.py")
     prefixes = theorem_prefixes(project)
     graph = nx.DiGraph()
     findings: list[Finding] = []
     # (source id, cited id, part) in reading order; resolved once every block is known
     citations: list[tuple[str, str, str, str]] = []
+    # Each block's prose (statement and proof), and each bold term's defining blocks.
+    prose: dict[str, str] = {}
+    definers: dict[str, set[str]] = {}
 
     position = 0
     for chapter in chapter_list(config["book"]):
@@ -208,16 +264,23 @@ def build(project: Path) -> tuple[nx.DiGraph, list[Finding]]:
                         proved=False,
                     )
                     position += 1
-                    for cited in cited_ids(block, block_classes):
+                    found = contents(block, block_classes)
+                    for cited in found.cited:
                         citations.append((chapter, ident, cited, "statement"))
+                    prose[ident] = found.text
+                    if graph.nodes[ident]["kind"] in DEFINING:
+                        for term in found.terms:
+                            definers.setdefault(term, set()).add(ident)
                     previous = ident
                 elif isinstance(block, pf.Div) and "proof" in block.classes:
                     if previous is None:
                         findings.append(Finding(Kind.ORPHAN_PROOF, chapter))
                     else:
                         graph.nodes[previous]["proved"] = True
-                        for cited in cited_ids(block, block_classes):
+                        found = contents(block, block_classes)
+                        for cited in found.cited:
                             citations.append((chapter, previous, cited, "proof"))
+                        prose[previous] += " " + found.text
                     previous = None
                 else:
                     previous = None
@@ -249,7 +312,36 @@ def build(project: Path) -> tuple[nx.DiGraph, list[Finding]]:
         if len(component) > 1:
             cycle = [u for u, _ in nx.find_cycle(uses.subgraph(component))]
             findings.append(Finding(Kind.CYCLE, graph.nodes[cycle[0]]["chapter"], tuple(cycle)))
+    findings.extend(uncited_terms(graph, prose, definers))
     return graph, findings
+
+
+def uncited_terms(graph: nx.DiGraph, prose: dict[str, str],
+                  definers: dict[str, set[str]]) -> list[Finding]:
+    """Uses of a defined term by a block that cites none of the blocks defining it.
+
+    A defining block names its term in bold. A block of the logical development whose
+    prose contains that term (or its plural), that defines it nowhere itself and that
+    cites none of its defining blocks, uses the definition without a citation, which the
+    citation edges cannot show.
+    """
+    if not definers:
+        return []
+    terms = sorted(definers, key=len, reverse=True)
+    pattern = re.compile(r"(?<![\w-])(" + "|".join(map(re.escape, terms)) + r")(?:s|es)?(?![\w-])")
+    out: list[Finding] = []
+    for ident, text in prose.items():
+        data = graph.nodes[ident]
+        if data["kind"] not in LOGICAL:
+            continue
+        cited = nx.descendants(graph, ident)
+        for term in sorted({m.group(1) for m in pattern.finditer(text)}):
+            owners = definers[term]
+            if ident in owners or cited & owners:
+                continue
+            out.append(Finding(Kind.UNCITED_TERM, data["chapter"],
+                               (ident, *sorted(owners)), term))
+    return out
 
 
 def add_numbers(graph: nx.DiGraph, registry: Path) -> None:

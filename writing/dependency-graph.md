@@ -6,6 +6,15 @@ unit: reference
 
 Each numbered block is a node. An arrow from $a$ to $b$ means that the statement of $a$, or its proof, cites $b$. So the references are the whole record of what a block uses, and a result used without a reference is missing from this graph.
 
+An arrow is one of two kinds.
+
+- A **uses** arrow, drawn solid, joins two blocks of the logical development: theorems, propositions, lemmas, corollaries, observations, claims, conjectures, definitions, constructions, notations, conventions and assumptions. The statement or proof of $a$ takes $b$ as a premise.
+- A **mentions** arrow, drawn dashed, has an example, remark, note, warning, exercise, problem or question at one end. These blocks illustrate or point, or they ask for work that the text does not do. None of them is a premise, so the arrow records a reference and not a dependency.
+
+Only uses arrows can make a definition or a proof circular. So the check for circular definitions and proofs reads the uses arrows only, and a remark and the theorem it discusses can cite each other.
+
+The findings list under the graph names each defect that the render found. An **uncited use** is a block of the logical development that uses a term of two or more words, set in bold where it is defined, and that does not reach the defining block through its citations. It is a use that the arrows do not show.
+
 Choose a block to see what it rests on, what rests on it, or both, to a chosen depth. Click a node to move to it; the link under the graph opens the block in its chapter. The render builds the graph from the chapter sources. The same graph is in [GraphML](dependency-graph/dependency-graph.graphml), [DOT](dependency-graph/dependency-graph.dot) and [node-link JSON](dependency-graph/dependency-graph.json).
 
 ```{=html}
@@ -56,7 +65,7 @@ Choose a block to see what it rests on, what rests on it, or both, to a chosen d
     maxZoom: 1.5,
     elements: [
       ...graph.nodes.map(n => ({ data: { ...n, name: name(n) } })),
-      ...graph.edges.map(e => ({ data: { id: e.source + "->" + e.target, source: e.source, target: e.target } })),
+      ...graph.edges.map(e => ({ data: { id: e.source + "->" + e.target, source: e.source, target: e.target, relation: e.relation } })),
     ],
     style: [
       { selector: "node", style: { label: "data(name)", "font-size": 10, color: style.color,
@@ -66,7 +75,9 @@ Choose a block to see what it rests on, what rests on it, or both, to a chosen d
         style: { "background-color": "#b85450" } },
       { selector: "node.focus", style: { width: 20, height: 20, "border-width": 3, "border-color": style.color } },
       { selector: "edge", style: { width: 1, "curve-style": "bezier", "target-arrow-shape": "triangle",
-          "line-color": "#999", "target-arrow-color": "#999" } },
+          "line-color": "#666", "target-arrow-color": "#666" } },
+      { selector: 'edge[relation = "mentions"]', style: { "line-style": "dashed",
+          "line-color": "#aaa", "target-arrow-color": "#aaa", "target-arrow-shape": "vee" } },
     ],
   });
 
@@ -110,16 +121,24 @@ Choose a block to see what it rests on, what rests on it, or both, to a chosen d
   cy.elements().style("display", "none");
 
   const box = document.getElementById("depgraph-findings");
-  box.querySelector("summary").textContent = `${findings.length} findings: circular definitions or proofs, blocks without ids`;
+  const kindName = { "dangling": "reference to no block", "cycle": "circular uses",
+    "orphan-proof": "proof of no block", "duplicate-id": "id defined twice",
+    "missing-id": "block without an id", "uncited-term": "uncited use" };
+  const counts = {};
+  for (const f of findings) counts[f.kind] = (counts[f.kind] || 0) + 1;
+  box.querySelector("summary").textContent = findings.length === 0 ? "0 findings"
+    : `${findings.length} findings: ` + Object.entries(counts).map(([k, n]) => `${n} ${kindName[k] || k}`).join(", ");
   for (const f of findings) {
     const li = document.createElement("li");
-    li.append(`${f.kind} in ${f.chapter}: `);
-    for (const id of f.blocks) {
+    li.append(`${kindName[f.kind] || f.kind} in ${f.chapter}: `);
+    if (f.term) li.append(`“${f.term}” in`);
+    f.blocks.forEach((id, i) => {
+      if (f.term && i === 1) li.append(", defined in");
       const n = nodes.get(id);
-      if (!n) { li.append(` @${id}`); continue; }
+      if (!n) { li.append(` @${id}`); return; }
       const a = document.createElement("a"); a.href = href(n); a.textContent = name(n);
       li.append(" ", a);
-    }
+    });
     box.querySelector("ul").append(li);
   }
 })();
