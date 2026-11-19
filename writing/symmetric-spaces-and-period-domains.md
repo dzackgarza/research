@@ -41,7 +41,7 @@ Let $\jmath(z)=J_n\bar z$ on $\mathbb C^{2n}$. Set
 \operatorname{SO}^*(2n)&=\{g\in\operatorname{SL}(2n,\mathbb C):g^{\mathsf t}g=I_{2n},\ g^*J_ng=J_n\}.
 \end{align*}
 
-The first group is $\operatorname{SL}(n,\mathbb H)$, with determinant understood via its complex representation. The second preserves a complex symmetric form and a skew-Hermitian form [@Hel01, Chapter X, §2].
+The first group is $\operatorname{SL}(n,\mathbb H)$, with determinant understood via its complex representation. The second preserves a complex symmetric form and a skew-Hermitian form [@Hel01, §X.2].
 :::
 
 :::{.remark #rmk:hsd-quaternionic-orthogonal title="Quaternionic orthogonal notation"}
@@ -62,7 +62,7 @@ Write $G^0$ for the identity component of a real Lie group. For block diagonal g
 ## Homogeneous spaces and Grassmannians {#sec-hsd-grassmannians}
 
 :::{.definition #def:hsd-symmetric-space title="Symmetric spaces"}
-A connected Riemannian manifold is *symmetric* if every point $x$ admits an isometry $s_x$ with $s_x(x)=x$ and $(ds_x)_x=-1$. It is *Hermitian symmetric* if it is Hermitian and each $s_x$ can be chosen holomorphic [@Hel01, Chapter IV, §3; @Viv14, Definition 2.4].
+A connected Riemannian manifold is *symmetric* if every point $x$ admits an isometry $s_x$ with $s_x(x)=x$ and $(ds_x)_x=-1$. It is *Hermitian symmetric* if it is Hermitian and each $s_x$ can be chosen holomorphic [@Hel01, §IV.3 and §VIII.4; @Viv14, Definition 2.4].
 :::
 
 :::{.remark #rmk:hsd-local-symmetry title="Local and global symmetries"}
@@ -221,7 +221,7 @@ Let $\operatorname{Sym}_n(\mathbb R)=\{A:A^{\mathsf t}=A\}$ and $\operatorname{H
 Surjectivity follows from the positive square root; the displayed compact groups are the stabilizers of $I_n$. Here positivity includes symmetry or Hermitian symmetry. The real dimension of $\operatorname{Sym}_{n,1}^+(\mathbb R)$ is $n(n+1)/2-1$: symmetric matrices have $n(n+1)/2$ independent entries, and the derivative of determinant at $I_n$ is the nonzero trace functional.
 
 :::{.example #ex:hsd-classical-pairs title="Classical symmetric pairs"}
-The classical compact/noncompact pairs are [@Hel01, Chapter X, §6]:
+The classical compact/noncompact pairs are [@Hel01, §X.6, Table V]:
 
 | Type | Noncompact space | Compact dual |
 | --- | --- | --- |
@@ -293,7 +293,7 @@ The following models are diffeomorphic, with invariant metrics matched by a scal
 \end{align*}
 
 The Cayley transform $z\mapsto(z-i)/(z+i)$ gives the unit disc, also $\mathbb H_{\mathbb C}^1\cong\operatorname{SU}(1,1)/S(\operatorname U(1)\times\operatorname U(1))$.
-Among the spaces $\operatorname{SL}(n,\mathbb R)/\operatorname{SO}(n)$ with $n\geq2$, only $n=2$ is Hermitian symmetric: the irreducible Hermitian families in @rmk:hsd-type-dictionary contain the rank-one coincidence $AI_2\cong CI_1$, but no higher-rank $AI_n$ [@Hel01, Chapter X, §6].
+Among the spaces $\operatorname{SL}(n,\mathbb R)/\operatorname{SO}(n)$ with $n\geq2$, only $n=2$ is Hermitian symmetric: the irreducible Hermitian families in @rmk:hsd-type-dictionary contain the rank-one coincidence $AI_2\cong CI_1$, but no higher-rank $AI_n$ [@Hel01, §X.6.3 and Table V].
 :::
 
 :::{.example #ex:hsd-one-dimensional title="The disc, projective line, and flat quotients"}
@@ -323,7 +323,7 @@ Here $Q^n=\{[z]:\sum_{j=0}^{n+1}z_j^2=0\}$. The correspondence $[x+iy]\mapsto\la
 
 The Helgason labels are respectively AIII, DIII, CI, and BDI with a signature index two. The exceptional domains $V$ and $VI$ have labels EIII and EVII. Their explicit models use complexified octonionic constructions [@Viv14, §§3.5–3.6]. Low-rank coincidences are listed in [@Viv14, Table 7]; in particular $IV_2$ is a product of discs rather than an irreducible domain.
 
-On each irreducible non-Euclidean symmetric factor, the invariant complex structure compatible with its symmetric metric has two choices, $J$ and $-J$. The corresponding Hermitian metrics have the same Riemannian part and conjugate complex structures. In a product, the sign can be chosen independently on each factor. This is the choice implicit in the classification of Hermitian symmetric manifolds [@Viv14, Theorem 2.16 and Definition 2.15; @Hel01, Chapter VIII, §4].
+On each irreducible non-Euclidean symmetric factor, the invariant complex structure compatible with its symmetric metric has two choices, $J$ and $-J$. The corresponding Hermitian metrics have the same Riemannian part and conjugate complex structures. In a product, the sign can be chosen independently on each factor. This is the choice implicit in the classification of Hermitian symmetric manifolds [@Viv14, Theorem 2.16 and Definition 2.15; @Hel01, §VIII.4].
 
 For $q=1$, $I_{p,1}$ is the unit ball in $\mathbb C^p$. For type IV, the real graph domain in @rmk:hsd-positive-graphs is a real-analytic model of a component. Its real matrix entries are not the holomorphic Harish-Chandra coordinates $z$ in the table.
 :::
@@ -594,7 +594,7 @@ R_{-2}(L)&=\{\delta\in L:(\delta,\delta)=-2\},&
 \mathcal H_L&=\bigcup_{\delta\in R_{-2}(L)}\bigl(\delta^\perp\cap\Omega_L^+\bigr).
 \end{align*}
 
-This is the root hyperplane arrangement, or *discriminant arrangement*. For polarized K3 surfaces the ample periods form its complement in the appropriate domain; the quasi-polarized periods permit these hyperplanes [@GHS13, §2]. In other period problems the excluded arrangement depends on the moduli problem and its Torelli theorem.
+This is the root hyperplane arrangement, or *discriminant arrangement*. For polarized K3 surfaces the ample periods form its complement in the appropriate domain; the quasi-polarized periods permit these hyperplanes [@GHS13, Thm. 2.9]. In other period problems the excluded arrangement depends on the moduli problem and its Torelli theorem.
 
 The signatures that occur in the archived examples are as follows [@GHS13, Proposition 3.2 and §5.1]:
 
@@ -628,13 +628,13 @@ its coarse space retains only isomorphism classes. In characteristic
 zero the stack of primitively polarized K3 surfaces of fixed degree is
 Deligne--Mumford and its coarse space is quasiprojective. The period
 quotient describes the coarse space after the ample root hyperplanes
-are removed [@Huy16, Ch. 7; @GHS13, §2].
+are removed [@Huy16, Ch. 7; @GHS13, Thm. 2.9].
 :::
 
 ## Arithmetic quotients and boundary components {#sec-hsd-arithmetic-boundary}
 
 :::{.definition #def:hsd-arithmetic-subgroup title="Arithmetic subgroups"}
-Let $G$ be a linear algebraic group over $\mathbb Q$ with a fixed faithful rational representation $G\hookrightarrow\operatorname{GL}_m$. Put $G(\mathbb Z)=G(\mathbb Q)\cap\operatorname{GL}_m(\mathbb Z)$. A subgroup $\Gamma\subset G(\mathbb Q)$ is *arithmetic* if it is commensurable with $G(\mathbb Z)$. This condition is independent of the chosen faithful rational representation [@BB66, §1].
+Let $G$ be a linear algebraic group over $\mathbb Q$ with a fixed faithful rational representation $G\hookrightarrow\operatorname{GL}_m$. Put $G(\mathbb Z)=G(\mathbb Q)\cap\operatorname{GL}_m(\mathbb Z)$. A subgroup $\Gamma\subset G(\mathbb Q)$ is *arithmetic* if it is commensurable with $G(\mathbb Z)$. This condition is independent of the chosen faithful rational representation [@BB66, 3.1].
 :::
 
 :::{.definition #def:hsd-parabolic-subgroup title="Parabolic subgroups"}
@@ -676,7 +676,7 @@ of the automorphic line descends to an ample line bundle $\mathcal L$ on the
 compactification; passing to the corresponding Veronese subring gives the
 same Proj. Its degree-$m$ piece is $H^0(F_L(\Gamma)^{\mathrm{BB}},\mathcal
 L^{\otimes m})$. This is the section-ring interpretation of the
-Baily–Borel construction [@BB66, §10].
+Baily–Borel construction [@BB66, Thm. 10.11].
 
 Its rational boundary components are associated with nonzero totally isotropic rational subspaces. Since the real signature is $(2,n)$, these have dimension at most two:
 
@@ -688,7 +688,7 @@ Its rational boundary components are associated with nonzero totally isotropic r
 Strata are indexed by $\Gamma$-orbits of these subspaces. The incidence $I\subset J$ gives a point in the closure of the corresponding curve. Their stabilizers give the rational boundary parabolics; in the usual type IV range $n\geq3$ these are maximal parabolics. This is the boundary correspondence used in @thm:baily-borel-isotropic-boundary.
 
 :::{.remark #rmk:hsd-boundary-components title="Boundary components and rationality"}
-In the Harish-Chandra realization $D\subset\mathbb C^N$, a boundary component is an equivalence class in $\overline D$ under chains of holomorphic discs. Its normalizer $N_G(F)$ is a parabolic subgroup of the connected automorphism group $G$, and $F$ is rational relative to a specified $\mathbb Q$-form of $G$ when this normalizer is defined over $\mathbb Q$ [@Viv14, §4.1, Theorem 4.5; @BB66, §3]. The arithmetic group permutes rational boundary components. The Baily–Borel topology on the union of $D$ with these components gives the compactification after taking the $\Gamma$-quotient. The compact dual from the Borel embedding is a different compactification of $D$; its full projective boundary is not the Baily–Borel boundary of $\Gamma\backslash D$.
+In the Harish-Chandra realization $D\subset\mathbb C^N$, a boundary component is an equivalence class in $\overline D$ under chains of holomorphic discs. Its normalizer $N_G(F)$ is a parabolic subgroup of the connected automorphism group $G$, and $F$ is rational relative to a specified $\mathbb Q$-form of $G$ when this normalizer is defined over $\mathbb Q$ [@Viv14, §4.1, Theorem 4.5; @BB66, Thm. 3.7]. The arithmetic group permutes rational boundary components. The Baily–Borel topology on the union of $D$ with these components gives the compactification after taking the $\Gamma$-quotient. The compact dual from the Borel embedding is a different compactification of $D$; its full projective boundary is not the Baily–Borel boundary of $\Gamma\backslash D$.
 :::
 
 The other classical Hermitian arithmetic quotients include Siegel modular varieties of type $III_n$ from $\operatorname{Sp}(2n,\mathbb R)$, Hermitian modular varieties of type $I_{n,n}$ from $\operatorname{SU}(n,n)$, and type $II_{2n}$ quotients from $\operatorname{SO}^*(4n)$. The compact duals are respectively $\operatorname{LGr}(\mathbb C^{2n})$, $\operatorname{Gr}_n(\mathbb C^{2n})$, and one component of $\operatorname{OGr}_{2n}(\mathbb C^{4n})$ [@Viv14, §§3.1–3.3]. An arithmetic quotient requires a specified rational form and arithmetic subgroup of its real group. In particular, the type $II_{2n}$ group is the quaternionic skew-Hermitian orthogonal group of @rmk:hsd-quaternionic-orthogonal, not the quaternionic Hermitian group $\operatorname{Sp}(p,q)$.
@@ -705,15 +705,15 @@ A_{L_{2d}}&=L_{2d}^\vee/L_{2d},\\
 &=\ker\bigl(\operatorname O(L_{2d})^+\longrightarrow\operatorname O(A_{L_{2d}})\bigr).
 \end{align*}
 
-The lattice $L_{2d}$ has signature $(2,19)$. The polarized K3 period quotient uses this discriminant kernel. For ample polarizations the period domain excludes the hyperplanes $\delta^\perp$ with $\delta\in L_{2d}$ and $\delta^2=-2$; the full quotient also permits the quasi-polarized periods [@GHS13, §2].
+The lattice $L_{2d}$ has signature $(2,19)$. The polarized K3 period quotient uses this discriminant kernel. For ample polarizations the period domain excludes the hyperplanes $\delta^\perp$ with $\delta\in L_{2d}$ and $\delta^2=-2$; the full quotient also permits the quasi-polarized periods [@GHS13, Thm. 2.9].
 
-For a Kulikov–Persson–Pinkham degeneration, after finite base change to unipotent monodromy, let $N$ be the logarithm of monodromy. Type II has $N\ne0$ and $N^2=0$ and determines an isotropic plane, hence a $1$-cusp. Its elliptic double curve supplies the limiting point of that modular curve. Type III has $N^2\ne0$ and $N^3=0$ and determines an isotropic line, hence a $0$-cusp. Type II central fibers have a chain of components with elliptic double curves; Type III fibers have rational components with dual complex a sphere [@AE23, §§2–3]. The Baily–Borel boundary records limiting periods; it does not classify central fibers up to isomorphism.
+For a Kulikov–Persson–Pinkham degeneration, after finite base change to unipotent monodromy, let $N$ be the logarithm of monodromy. Type II has $N\ne0$ and $N^2=0$ and determines an isotropic plane, hence a $1$-cusp. Its elliptic double curve supplies the limiting point of that modular curve. Type III has $N^2\ne0$ and $N^3=0$ and determines an isotropic line, hence a $0$-cusp. Type II central fibers have a chain of components with elliptic double curves; Type III fibers have rational components with dual complex a sphere [@AE23, Prop. 3.3 and Thm. 3.13]. The Baily–Borel boundary records limiting periods; it does not classify central fibers up to isomorphism.
 :::
 
 :::{.remark #rmk:hsd-toroidal title="Toroidal compactification at a type IV cusp"}
-For each $\Gamma$-orbit of rational isotropic lines $I\subset L_{\mathbb Q}$, put $P_I=\operatorname{Stab}(I)$ and let $U(I)$ be its unipotent radical. The quadratic pairing identifies its rational vector group with $(I^\perp/I)\otimes I$. The quotient $I^\perp/I$ has signature $(1,n-1)$, and a choice of component of its positive cone determines a cusp cone $C_I$. A toroidal compactification uses a $\Gamma$-admissible rational polyhedral fan $\Sigma_I$ in the rational closure of $C_I$, with finitely many cone orbits under the cusp stabilizer and compatible choices for equivalent cusps [@Eng23, §2.4, Definition 2.13; @AE23, §5].
+For each $\Gamma$-orbit of rational isotropic lines $I\subset L_{\mathbb Q}$, put $P_I=\operatorname{Stab}(I)$ and let $U(I)$ be its unipotent radical. The quadratic pairing identifies its rational vector group with $(I^\perp/I)\otimes I$. The quotient $I^\perp/I$ has signature $(1,n-1)$, and a choice of component of its positive cone determines a cusp cone $C_I$. A toroidal compactification uses a $\Gamma$-admissible rational polyhedral fan $\Sigma_I$ in the rational closure of $C_I$, with finitely many cone orbits under the cusp stabilizer and compatible choices for equivalent cusps [@Eng23, §2.4, Definition 2.13; @AE23, Defs. 5.8 and 5.9].
 
-Write $U(I)_{\mathbb Z}=\Gamma\cap U(I)(\mathbb Q)$. The tube realization gives an open immersion $D/U(I)_{\mathbb Z}\hookrightarrow U(I)_{\mathbb C}/U(I)_{\mathbb Z}$, and $\Sigma_I$ supplies a torus embedding at this cusp. The cusp charts glue to a compactification $\overline{F_L(\Gamma)}^{\Sigma}$ with a morphism to the Baily–Borel compactification [@Eng23, §2.4, Theorem 2.12 and Definition 2.13; @AE23, §5]. An isotropic boundary ray in $I^\perp/I$ is associated with an isotropic plane containing $I$ and hence with a $1$-cusp; its chart must agree with that curve's boundary chart [@Eng23, §2.4, Remark 2.14].
+Write $U(I)_{\mathbb Z}=\Gamma\cap U(I)(\mathbb Q)$. The tube realization gives an open immersion $D/U(I)_{\mathbb Z}\hookrightarrow U(I)_{\mathbb C}/U(I)_{\mathbb Z}$, and $\Sigma_I$ supplies a torus embedding at this cusp. The cusp charts glue to a compactification $\overline{F_L(\Gamma)}^{\Sigma}$ with a morphism to the Baily–Borel compactification [@Eng23, §2.4, Theorem 2.12 and Definition 2.13; @AE23, Prop. 4.13 and Constr. 5.10]. An isotropic boundary ray in $I^\perp/I$ is associated with an isotropic plane containing $I$ and hence with a $1$-cusp; its chart must agree with that curve's boundary chart [@Eng23, §2.4, Remark 2.14].
 
 Each cone $\sigma\in\Sigma_I$ gives a torus orbit in the partial compactification. Orbits for cones meeting the interior of $C_I$ lie over the $0$-cusp of $I$; rational isotropic boundary rays lie over the incident $1$-cusps. The partial charts at $1$-cusps are canonical and need no independent fan. Their gluing is a proper algebraic space over $\mathbb C$ [@Eng23, §2.4; @AMRT10, Chapter III, Theorem 5.2].
 :::
@@ -733,7 +733,7 @@ More generally, suppose a power of the automorphic line descends to a line bundl
 \phi_{\mathcal L}:x&\longmapsto[f_0(x):\cdots:f_N(x)].
 \end{align*}
 
-A change of local trivialization multiplies all coordinates by the same nonzero scalar, so the projective point is well-defined; basepoint-freeness ensures that the coordinates do not vanish simultaneously. A very ample complete linear system gives a closed embedding. Baily–Borel theory supplies such embeddings from sufficiently high powers of its ample automorphic line [@BB66, §10]. This is the general construction realized by the weight-$12$ pair above.
+A change of local trivialization multiplies all coordinates by the same nonzero scalar, so the projective point is well-defined; basepoint-freeness ensures that the coordinates do not vanish simultaneously. A very ample complete linear system gives a closed embedding. Baily–Borel theory supplies such embeddings from sufficiently high powers of its ample automorphic line [@BB66, Thm. 10.11]. This is the general construction realized by the weight-$12$ pair above.
 :::
 
 :::{.remark #rmk:hsd-siegel-boundary title="The Siegel boundary"}
