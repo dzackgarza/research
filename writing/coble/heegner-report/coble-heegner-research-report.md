@@ -3153,6 +3153,26 @@ The following references indicate where the standard theories used in this repor
 
 - The Stacks Project [@Stacks] is a general reference for relative spectra, finite morphisms, normalization, descent, and family-theoretic language.
 
+## The acceptance items, item by item {#sec-a20-status}
+
+The issue's acceptance is a list, and this section holds it in one place: each entry, whether it is settled, and the statement that settles it. A settled entry cites the block or the record that decides it; an open one names the input it waits on. Nothing here is new mathematics, and no entry is claimed settled without the statement beside it.
+
+| entry | status | decided by, or waiting on |
+|:---|:---|:---|
+| A20 1(a) | met | `computations/reports/coble_a20-owner-capabilities-run.txt`, lines 7 and 23: $T_\Co$ of determinant $-2048$ and signature $(2,9)$, and `discriminant_representation_is_surjective()` returning `True` |
+| A20 1(b) | met | the same transcript, lines 15 and 17--18: the typed isometry to $A_{T_\En}(-1)$, the twisted identity on all $1024$ classes, $1024$ distinct images |
+| A20 1 | met, and the un-intersected statement refuted | @prop:direct-eq-heegner with @cor:four-groups-decided: $\Gamma^{\mathrm{dir}}_{\Co,2}=\Gamma^{\mathrm{Hdg}}_{\Co,2}=\Gamma^\theta_\Co=\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$, the last as the union with its $s_\zeta$-coset; the transcript `computations/reports/coble_a21-ambient-extension-run.txt`, lines 117 and 126 |
+| A20 2 | open | the chamber condition is decided and genuine (@thm:chamber-subscript-is-a-condition), it is linear in the period (@lem:chamber-condition-is-period-condition) and equivalent to preserving the member's Picard lattice (@cor:chamber-preserved-by-picard-stabilizer); what is known of that lattice is @lem:known-part-of-the-picard-lattice-at-the-test-member; it waits on an explicit $\Pic(\widehat X_{b_\star})$, which is the image question @qst:chamber-subscript-image, and on the labelled comparison, research#664 |
+| A20 3 | met | @thm:no-loop-carries-the-sign and @thm:sign-is-isotropy, with @cor:no-word-for-the-sign; the reduction to the block sign is @lem:sign-reduces-to-positive-plane |
+| #720 (D1) | met, decided false | @cor:d1-minus-two-half for the $(-2)$ half, @thm:d1-minus-four-half for the $(-4)$ half with @cor:d1-concrete-witness, and the record `computations/reports/coble_663-d1-level-orbits-run.txt` |
+| #720 (RI) | met, decided false | @prop:kernel-exceeds-short-roots; the surviving index is @qst:gamma-co-reflection-index |
+| #720 (REL) | open | the block sign is a word in the reflections times an explicit $k\in\Gamma(4)$ (@lem:block-sign-reduces-to-gamma-four, `computations/reports/coble_663-rel-gamma4-reduction-run.txt`); three invariants are exhausted on $k$ (@prop:level-two-shadow-consistent-with-both-answers, @rmk:longest-element-route-closed, and the orientation test); the query needs a membership test in $W(T_\Co)$, which is the operation `open-problems.md` item 3 names as missing |
+| #720 (INV) | met, decided false | @thm:chamber-subscript-is-a-condition; the part that holds is @lem:chamber-preserved-on-period |
+| #720 $G_3$ | met | @cor:g3-g4-decided, clause (1): $G_3=\Gamma^{\mathrm{Hdg}}_{\Co,2}$ is the geometric monodromy group |
+| #720 $G_4$ | met, decided false | @cor:g3-g4-decided, clause (2): $\Gamma^{\mathrm{cong}}_{\Co,2}$ strictly exceeds it, with the coarse-space reading in clause (3) |
+
+Two entries are open, and each waits on an input that is not in this paper: an explicit $\Pic(\widehat X_{b_\star})$ for A20 2, and a membership test in the infinite reflection group for (REL).
+
 ## Conclusion {#sec-conclusion}
 
 The open geometry of the Coble compactification problem is governed by invariant nodal $(4,4)$ curves, a nodal K3 cover with two commuting involutions, the lattice $T_{\mathrm{Co}} \cong \langle2\rangle\oplus U(2)\oplus E_8(2)$, and the singular stable pair $(V^\sharp,\epsilon R^\sharp)$.

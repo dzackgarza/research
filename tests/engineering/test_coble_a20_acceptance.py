@@ -1035,6 +1035,31 @@ def test_item2_the_known_part_of_the_picard_lattice_at_the_test_member():
     assert "\\rho(\\widehat X_{b_\\star})\\ge12" in lem
 
 
+def test_the_report_holds_the_acceptance_item_by_item():
+    """The issue's acceptance, written down where a reader can audit it.
+
+    The report's status section must carry one row per acceptance entry, mark the two that are open
+    as open, and cite a deciding statement for each settled one.  This is the check that keeps the
+    table from drifting away from the blocks it cites: an entry settled in the text but left "open"
+    here, or the reverse, fails.
+    """
+    report = _text(REPORT)
+    sec = report[report.index("## The acceptance items, item by item"):]
+    sec = sec[:sec.index("## Conclusion")]
+    rows = [line for line in sec.splitlines() if line.startswith("| A20") or line.startswith("| #720")]
+    assert len(rows) == 11, len(rows)   # 5 A20 entries and 6 of the absorbed #720 ones
+    open_rows = [r for r in rows if "| open |" in r]
+    assert len(open_rows) == 2, open_rows
+    assert any(r.startswith("| A20 2 |") for r in open_rows)
+    assert any(r.startswith("| #720 (REL) |") for r in open_rows)
+    for name in ("A20 1", "A20 3", "#720 (D1)", "#720 (RI)", "#720 (INV)", "#720 $G_3$", "#720 $G_4$"):
+        row = next(r for r in rows if r.startswith("| " + name + " |"))
+        assert "met" in row, (name, row)
+    # each open row names the input it waits on
+    for row in open_rows:
+        assert ("Pic(\\widehat X_{b_\\star})" in row) or ("membership test in $W(T_\\Co)$" in row), row
+
+
 def _run_all() -> int:
     items = [(name, fn) for name, fn in sorted(globals().items()) if name.startswith("test_")]
     failures = 0
