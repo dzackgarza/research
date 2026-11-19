@@ -41,6 +41,10 @@ fibres of an elliptic fibration -- ABE22's s + m sum f_i, the unit's only candid
 nothing states it either way, ABE22 itself included, whose paper does not use the word.  So question 1 of @qst:recognizable-semifan cannot be settled
 from these deposits, and the input it needs is a recognizability proof for that divisor.
 
+One further datum the inventory records: AE23a states of the rational-curve divisor that
+it "was proven to be recognizable in" AE23, so the unit's citation of AE23 for that fact
+has a deposited witness; AE23 itself is not deposited.
+
 Not read by design: tmp/sources (local copies and text extracts, not version controlled)
 and the PDFs (binary).  AEGS25 states that the ramification divisor is recognizable; that
 is cited on the page from the deposited PDF and is not part of this reproducible scan.

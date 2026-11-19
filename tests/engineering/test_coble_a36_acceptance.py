@@ -165,6 +165,9 @@ def test_the_recognizability_inventory_reproduces_and_names_the_gap():
     assert "[flex divisor]" in produced
     assert "whose paper does not use the word" in produced
     assert "coble_679-recognizability-inventory-run.txt" in page_text()
+    assert "has a deposited witness; AE23 itself is not deposited" in produced
+    page = page_text()
+    assert "was proven to be recognizable in" in page and "@AE23a]" in page
 
 
 def test_the_four_records_of_the_unit_are_committed():

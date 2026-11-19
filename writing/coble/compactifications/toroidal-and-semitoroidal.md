@@ -251,7 +251,7 @@ $\Gamma$-admissibility: an element of $\Gamma$ fixing $\eta$ carries a degenerat
 
 Two basic examples of recognizable divisors:
 
-1. The **rational curve divisor** $R_{\rcop} = \Sum R_i$ (the sum of all smooth rational curves in $|L|$), recognizable for all $d$ [@AE23].
+1. The **rational curve divisor** $R_{\rcop} = \Sum R_i$ (the sum of all smooth rational curves in $|L|$), recognizable for all $d$ [@AE23]. The assertion is also readable in a deposited source: [@AE23a] states that $R_{\rcop}$ "was proven to be recognizable in" [@AE23], and gives $R_{\rcop}\in|n_dL|$.
 
 2. The **ramification divisor** $R_\iota$ of a nonsymplectic involution.
 
@@ -424,7 +424,7 @@ Two questions, and together they are what @thm:semifan-stratum and @thm:semifan-
 
 That divisor lives on the elliptic locus $F\subset F_2$ and not on $F_2$: it is built from a section and a fibre class, so it needs a surface whose Picard group contains $U\oplus\langle-2\rangle$, of rank $3$, while the very general degree-two K3 surface has Picard rank $1$. The question is therefore posed for $F$, which is the space [@ABE22] write $F$, and there the divisor is positive on both curve classes of that lattice, $D\cdot f=1$ and $D\cdot s=24m-2>0$ for $m\ge1$, so the candidate is a genuine polarizing divisor wherever the question can be asked (`computations/reports/coble_679-locus-probe-run.txt`).
 
-2. For $R_{\rcop}$ on $F_{2d}$, which is recognizable for all $d$ [@AE23], which split $I\sqcup J$ does $\mcf_{R_{\rcop}}$ induce at each $0$-cusp, if (W) holds there at all --- equivalently, across which mirrors of the Coxeter diagram does the combinatorial type of the KSBA-stable limits of the pairs $(X,\eps R_{\rcop})$ stay constant, equivalently whether the universal family extends over the Coxeter toroidal compactification?
+2. For $R_{\rcop}$ on $F_{2d}$, which is recognizable for all $d$ [@AE23; @AE23a], which split $I\sqcup J$ does $\mcf_{R_{\rcop}}$ induce at each $0$-cusp, if (W) holds there at all --- equivalently, across which mirrors of the Coxeter diagram does the combinatorial type of the KSBA-stable limits of the pairs $(X,\eps R_{\rcop})$ stay constant, equivalently whether the universal family extends over the Coxeter toroidal compactification?
 
 No cone of $\mcf_{R_{\rcop}}$ is recorded in any source read: [@AET23] computes the stable limits of the pairs $(X,\eps R)$ for the ramification divisor $R\in|3L|$, and [@AE22] those of $(X,\eps C_g)$. Question 2 is the computation of the type function at each cone, and it needs the stable limit of the pair over a cone, which is not an operation of the library (@rmk:missing-stable-limit, @rmk:rcop-split-computation). The cones it would be labelled in are printed at the $F_2$ cusp (@thm:cone-inventory-printed).
 :::
