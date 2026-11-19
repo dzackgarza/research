@@ -347,8 +347,17 @@ def test_the_wall_criterion_is_on_the_page():
     """
     page = page_text()
     assert "#lem:wall-criterion" in page
-    assert "If $H$ is not the mirror of a vector of $\\bar T$ of square $-2$ or $-4$" in page
+    assert "If $H$ is not the mirror of a root of $\\bar T$" in page
     assert "spans one of those $24$ root mirrors" in page
+    # The two-square list is the 2-elementary convention (AE22, Section 3A, printed p. 10)
+    # and T-bar is 2-elementary only at k = 1; for k >= 2 the list is not the root list.
+    assert "the two-square list is not the root list" in page or (
+        "is not the root list of $\\bar T$" in page
+    )
+    assert "$v_2(k)=1$" in page
+    assert "$w+3me+3f$" in page
+    assert "square $-6$" in page
+    assert "of square $-2$ or $-4$, then (W) fails" not in page
 
 
 def test_the_p_greater_one_cusp_lattice_record_reproduces_and_the_page_states_it():
