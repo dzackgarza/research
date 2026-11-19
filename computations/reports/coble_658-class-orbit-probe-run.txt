@@ -1,0 +1,17 @@
+T_En = U + U(2) + E8(2), rank 12
+w = 2e~ + e~': square, divisibility            (0, 2)
+e~': square, divisibility                      (0, 2)
+(w/2) - (e~'/2) lies in T_En                   True
+e~' . k                                        0
+
+(-2)-vectors enumerated                        614
+orbit of e~' under words in their reflections, length <= 2:
+  depth 1: 303 points
+  depth 2: 91809 points
+
+verdict: undecided -- no transporter found within length 2.
+  What is decided is the reduction, which does not depend on the bound: w and e~' have the
+  same class in A_{T_En}, so ONE element of ker(rho_{T_En}) carrying e~' to +-w puts w in the
+  image, by (e~', k) = 0 and form preservation.  Whether such an element exists is the
+  transitivity of ker(rho_{T_En}) on primitive isotropic vectors within a class -- the T_En
+  analogue of thm:coble-zero-cusp-count(1), which the book proves for T_Co and not for T_En.
