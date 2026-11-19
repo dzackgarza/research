@@ -555,6 +555,31 @@ def test_the_image_of_b_under_theta_is_b_minus_H_and_not_H_minus_b():
     assert r"\theta_\Co(b) = -H/2+t = H-b" not in page
 
 
+def test_every_Gritsenko_Hulek_Sankaran_statement_cited_carries_its_printed_page():
+    """The same rule for the last deposit these pages cite by numbered statement.
+
+    Gritsenko--Hulek--Sankaran, arXiv:0810.1614v1, deposited as
+    gritsenko-hulek-sankaran-2008-arxiv-0810.1614v1.pdf, whose pages print their numbers at the
+    foot: Theorem 1.1 on printed p. 4; Theorem 1.7 on printed p. 6; Proposition 3.4 and its
+    equation (15) on printed p. 12.
+    """
+    pages = [PAGE,
+             ROOT / "writing/coble/lattices-and-moduli/lattices.md",
+             ROOT / "writing/coble/lattices-and-moduli/moduli-construction.md",
+             OPEN_PROBLEMS,
+             ROOT / "writing/coble/coble-moduli/cusp-correspondence-morphism-chain.md",
+             ROOT / "writing/coble/computations/sterk-root-counts-and-computed-chambers.md"]
+    statement = re.compile(r"(Def\.|Definition|Lem\.|Lemmas?|Lems\.|Thm\.|Theorem|Props?\.|Propositions?|Cor\.|Corollary|Rem\.|Remark)")
+    bad = []
+    for path in pages:
+        for number, line in enumerate(path.read_text().splitlines(), 1):
+            for match in re.finditer(r"@GHS08[^\]]*", line):
+                citation = match.group(0)
+                if statement.search(citation) and not re.search(r"(?<![A-Za-z])p\. ?\d", citation):
+                    bad.append("%s:%d %s" % (path.name, number, citation))
+    assert not bad, bad
+
+
 def test_every_Nikulin_and_Dolgachev_Kondo_statement_cited_carries_its_printed_page():
     """The same rule for the two other deposits these pages cite by numbered statement.
 
