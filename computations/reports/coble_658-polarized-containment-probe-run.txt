@@ -1,0 +1,8 @@
+T_Co = <2> + U(2) + E8(2), rank 11
+the swap s of e', f': isometry True, acts trivially on A_{T_Co} False
+  preserves the E8(2) part, so rho(s) lies in P: True
+
+verdict: the lemma holds.  Since s lies in rho^{-1}(P) = Gamma_{Co,2} and has rho(s) != 1,
+  any containment Gamma_{Co,2} <= Gamma_Co puts s in Gamma_Co and falsifies item 1e.  So item
+  1e implies Gamma_Co is a PROPER subgroup of Gamma_{Co,2}: the unpolarized family cannot carry
+  all the polarized monodromy if the item holds.
