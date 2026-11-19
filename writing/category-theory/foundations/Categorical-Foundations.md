@@ -194,7 +194,7 @@ $$
 \pi_1(B,b)\too\pi_0(F)\too\pi_0(E)
 \too\pi_0(B).
 $$
-Consequently, the fiber of $\pi_0(E)\to\pi_0(B)$ need not equal $\pi_0(F)$ [@May99].
+Consequently, the fiber of $\pi_0(E)\to\pi_0(B)$ need not equal $\pi_0(F)$ [@May99, Ch. 9 §3, last display].
 A set-valued invariant formed from this sequence must specify whether it uses the fiber after $\pi_0$ or the components of the homotopy fiber.
 
 ::: {.definition #def:generalized-element title="Generalized elements"}

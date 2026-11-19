@@ -358,8 +358,8 @@ With those, the bound is $\Tor^R_i(M,k)\cong F_i\tensor_Rk$ for the minimal reso
 ::: {.definition #def:minimal-resolution title="Minimal free resolutions"}
 
 Let $(R,\mathfrak m)$ be a local ring.
-A free resolution $F$ of $M$ is *minimal* if $\im\varphi_n\iscontainedin\mathfrak mF_{n-1}$ for every $n$, equivalently if every differential of $F\tensor_RR/\mathfrak m$ is zero [@Eis95, Ch. 20].
-For a finitely generated module over a local ring, and for a finitely generated graded module over a positively graded algebra over a field with its graded maximal ideal, the minimal free resolution is unique up to isomorphism, and every free resolution is the direct sum of the minimal one with a free resolution of the zero module [@Eis95, Ch. 20].
+A free resolution $F$ of $M$ is *minimal* if $\im\varphi_n\iscontainedin\mathfrak mF_{n-1}$ for every $n$, equivalently if every differential of $F\tensor_RR/\mathfrak m$ is zero [@Eis95, §19.1, Definition before Lem. 19.4].
+For a finitely generated module over a local ring, and for a finitely generated graded module over a positively graded algebra over a field with its graded maximal ideal, the minimal free resolution is unique up to isomorphism, and every free resolution is the direct sum of the minimal one with a free resolution of the zero module [@Eis95, Thm. 20.2].
 :::
 
 ## Derived functors, Ext, and Tor {#sec-derived-functors}

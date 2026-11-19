@@ -18,7 +18,7 @@ $$
 \qquad
 \operatorname{can}_M(x)(f)=\overline{f(x)},
 $$
-is an isomorphism [@Ran98, §20].
+is an isomorphism [@Ran98, §20A, paragraph before Def. 20.1].
 :::
 
 ::: {.definition #def:epsilon-symmetric-form title="$\epsilon$-symmetric and $\epsilon$-quadratic forms"}
@@ -94,12 +94,12 @@ $$
 \qquad
 d_{C^{n-*}}=(-1)^{r}(d_C)^{*},
 $$
-[@Ran98, §20].
+[@Ran98, §20A, paragraph after Def. 20.1].
 :::
 
 ::: {.definition #def:poincare-complex title="Algebraic Poincaré complexes and $L$-groups"}
 
-An *$n$-dimensional $\epsilon$-symmetric Poincaré complex* over a ring with involution $A$ is a pair $(C,\phi)$ consisting of an $n$-dimensional $A$-module chain complex $C$ and an $\epsilon$-symmetric structure $\phi$ on $C$ whose component $\phi_0\colon C^{n-*}\to C$ is a chain equivalence; the $\epsilon$-quadratic case replaces $\phi$ by an $\epsilon$-quadratic structure $\psi$ and requires $(1+T_{\epsilon})\psi_0$ to be a chain equivalence, where $T_{\epsilon}$ is the $\epsilon$-transposition involution on $C\tensor_AC$ given by $x\tensor_A y\mapsto(-1)^{pq}\epsilon\,y\tensor_A x$ for $x\in C_p$ and $y\in C_q$ [@Ran98, §20].
+An *$n$-dimensional $\epsilon$-symmetric Poincaré complex* over a ring with involution $A$ is a pair $(C,\phi)$ consisting of an $n$-dimensional $A$-module chain complex $C$ and an $\epsilon$-symmetric structure $\phi$ on $C$ whose component $\phi_0\colon C^{n-*}\to C$ is a chain equivalence; the $\epsilon$-quadratic case replaces $\phi$ by an $\epsilon$-quadratic structure $\psi$ and requires $(1+T_{\epsilon})\psi_0$ to be a chain equivalence, where $T_{\epsilon}$ is the $\epsilon$-transposition involution on $C\tensor_AC$ given by $x\tensor_A y\mapsto(-1)^{pq}\epsilon\,y\tensor_A x$ for $x\in C_p$ and $y\in C_q$ [@Ran98, Def. 20.2].
 For a $*$-invariant subgroup $U\iscontainedin\widetilde K_0(A)$, the *$n$-dimensional $U$-intermediate $\epsilon$-symmetric $L$-group* $L^{n}_{U}(A,\epsilon)$ and its $\epsilon$-quadratic counterpart $L^{U}_{n}(A,\epsilon)$ are the cobordism groups of such complexes with $[C]\in U$ [@Ran98, Def. 20.10].
 :::
 
@@ -156,7 +156,7 @@ The corresponding $\infty$-categorical constructions are @def:loops-suspension, 
 ::: {.definition #def:stable-infinity-category title="Stable $\infty$-categories"}
 
 An $\infty$-category $\mcc$ is *stable* if it has a zero object, every morphism of $\mcc$ admits a kernel and a cokernel, and a triangle in $\mcc$ is exact if and only if it is coexact [@Lur09, Def. 2.9].
-The homotopy category of a stable $\infty$-category is triangulated [@Lur09, Thm. 3.11], a stable $\infty$-category admits all finite limits and colimits [@Lur09, Prop. 4.4], and on it the suspension and loop functors of @def:loops-suspension are mutually inverse equivalences [@Lur09, §2].
+The homotopy category of a stable $\infty$-category is triangulated [@Lur09, Thm. 3.11], a stable $\infty$-category admits all finite limits and colimits [@Lur09, Prop. 4.4], and on it the suspension and loop functors of @def:loops-suspension are mutually inverse equivalences [@Lur09, §3, paragraph before Rmk. 3.3].
 The hypothesis of the first is weaker than stability: it asks that $\mcc$ be pointed, admit cokernels, and have the suspension an equivalence.
 That hypothesis holds for every stable $\mcc$, and is in fact equivalent to stability, by [@Lur09, Rmk. 3.12].
 :::
@@ -230,7 +230,7 @@ Taking $\mca=A\text{-}\mathbf{Mod}$ places the complexes of @def:poincare-comple
 ::: {.definition #def:ring-spectrum title="Ring spectra and their modules"}
 
 Let $B$ be a commutative $S$-algebra.
-A *$B$-algebra* is a monoid in the symmetric monoidal category of $B$-modules under $\wedge_B$, and a module spectrum over it is a module for that monoid [@EKMM07].
+A *$B$-algebra* is a monoid in the symmetric monoidal category of $B$-modules under $\wedge_B$, and a module spectrum over it is a module for that monoid [@EKMM07, Def. VII.1.1].
 The *enveloping $B$-algebra* of a $B$-algebra $A$ is $A^{e}=A\wedge_B A^{\opop}$.
 :::
 
@@ -240,9 +240,9 @@ For a $B$-algebra $A$ and an $(A,A)$-bimodule $M$, the *topological Hochschild h
 $$
 THH^{B}(A;M)=M\wedge_{A^{e}}A
 $$
-[@EKMM07, Ch. IX].
-When $B$ is a discrete commutative ring and $A$ is a $B$-algebra that is flat as a $B$-module, $\pi_n THH^{B}(A;M)\cong HH^{B}_n(A;M)$ [@EKMM07, Ch. IX].
-The simplicial construction of $THH^{B}(A)$ is cyclic, and $THH^{B}(A)$ is an $S^{1}$-equivariant $B$-module [@EKMM07, Ch. IX].
+[@EKMM07, Def. IX.1.1].
+When $B$ is a discrete commutative ring and $A$ is a $B$-algebra that is flat as a $B$-module, $\pi_n THH^{B}(A;M)\cong HH^{B}_n(A;M)$ [@EKMM07, Thm. IX.1.7].
+The simplicial construction of $THH^{B}(A)$ is cyclic, and $THH^{B}(A)$ is an $S^{1}$-equivariant $B$-module [@EKMM07, Rem. IX.3.9].
 :::
 
 Algebraic $K$-theory of a ring and of an exact category, and the groups $K_n(A)=\pi_nK(A)$, are those of [@Wei13].

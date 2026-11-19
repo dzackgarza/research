@@ -98,7 +98,7 @@ For a subgroup $G\le\Orth(L)$, define $G^+$ by the pullback
 G^+ \arrow[r] \arrow[d] \arrow[dr,phantom,very near start,"\lrcorner"] & G \arrow[d] \\
 \Orth^+(L) \arrow[r] & \Orth(L)
 ```
-[@GHS08, §1].
+[@GHS08, eq. (2)].
 For $G=\SO_\bR(L)$ this defines $\SO^+(L)$, and for $G=\widetilde\Orth(L)$ it defines the simultaneous discriminant-and-spinor kernel
 $$
 \widetilde\Orth^+(L)
