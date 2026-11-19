@@ -238,9 +238,9 @@ For Enriques surfaces, $\fentwo$ is the normalization of a closed subvariety of 
 ::: {.proposition #prop:sterk-group-identification title="The discriminant image of $\gent$"}
 
 Let $\rho\colon\Orth(\ten)\to\Orth(A_{\ten}, q_{\ten})$ be the discriminant representation and $K = \ker\rho$.
-Identify $\ten = U\oplus U(2)\oplus E_8(2)$ with the lattice $L_- = \mathbf H\oplus\mathbf H(2)\oplus E_8(-2)$ of [@Ste91, §2] summand by summand, and let $e', f'$ be the isotropic basis of $U(2)$, with $(e', f') = 2$.
+Identify $\ten = U\oplus U(2)\oplus E_8(2)$ with the lattice $L_- = \mathbf H\oplus\mathbf H(2)\oplus E_8(-2)$ of [@Ste91, 1.3] summand by summand, and let $e', f'$ be the isotropic basis of $U(2)$, with $(e', f') = 2$.
 
-1. $\gent$ is the group $\Gamma$ of [@Ste91, §2], and $\gent = \theset{g\in\Orth(\ten) \st \rho(g)\text{ preserves the summands } A_{U(2)} \text{ and } A_{E_8(2)} \text{ of } A_{\ten}}$.
+1. $\gent$ is the group $\Gamma$ of [@Ste91, §2, Prop. 2.7], and $\gent = \theset{g\in\Orth(\ten) \st \rho(g)\text{ preserves the summands } A_{U(2)} \text{ and } A_{E_8(2)} \text{ of } A_{\ten}}$.
 2. $\rho(\gent) = M\definedas\Orth(q_{U(2)})\times\Orth(q_{E_8(2)})$, and $\gent = \rho^{-1}(M)$; in particular $K\subseteq\gent$.
 3. $\gent$ is a proper subgroup of $\Stab_{\Orth(\ten)}\bigl([(e'+f')/2]\bigr)$.
 :::

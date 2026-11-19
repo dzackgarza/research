@@ -175,7 +175,7 @@ Let $T$ be an even nondegenerate lattice of signature $(2,n)$, and for a subgrou
 ::: {.theorem #thm:sh23-enriques-moduli-groups title="The arithmetic groups of polarized Enriques moduli"}
 
 Let $\ten = U\oplus U(2)\oplus E_8(2)$, of signature $(2,10)$.
-For a polarization $h$ of an Enriques surface (@def:enriques-surface), let $\Gamma_h^+\leq\Orth^+(\ten)$ be the arithmetic group with $\mathcal M_{\En,h} = \Gamma_h^+\backslash\mathcal D_{\ten}$ [@SH23, §2].
+For a polarization $h$ of an Enriques surface (@def:enriques-surface), let $\Gamma_h^+\leq\Orth^+(\ten)$ be the arithmetic group with $\mathcal M_{\En,h} = \Gamma_h^+\backslash\mathcal D_{\ten}$ [@SH23, §2, (5)].
 
 1. The groups $\Gamma_h^+$ fall into exactly $87$ conjugacy classes [@SH23, Thm. 3.5].
 

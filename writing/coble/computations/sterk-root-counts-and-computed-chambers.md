@@ -189,7 +189,7 @@ Let $\eta_j$ be Sterk's representative of the $j$-th cusp ([@Ste91, (4.2.3), pri
 
 3. at $j = 2$ the index is $1$, which is Sterk's own statement $O(H\oplus E_8(-2)) = \set{\pm1}W_{e'}$ ([@Ste91, (4.3.6), printed p. 21]).
 
-The five rows are (4.3.5)--(4.3.9) of [@Ste91], printed pp. 19, 21, 22, 23 and 24, the figures being his Figs 4, 6, 8, 10 and 12. The section, proposition and figure numbers here are the article's, read off the text version beside it, `tmp/sources/sterk-1991-compactifications-of-the-period-space-of-enriques-surfaces-i.md`, and the printed pages are the ones recorded for the same plates in `computations/reports/coble_sterk-cusps-dictionary.md`.
+The five rows are those of [@Ste91, (4.3.5)--(4.3.9), pp. 19, 21, 22, 23 and 24, Figs. 4, 6, 8, 10 and 12]. The section, proposition and figure numbers here are the article's, read off the text version beside it, `tmp/sources/sterk-1991-compactifications-of-the-period-space-of-enriques-surfaces-i.md`, and the printed pages are the ones recorded for the same plates in `computations/reports/coble_sterk-cusps-dictionary.md`.
 
 :::
 
