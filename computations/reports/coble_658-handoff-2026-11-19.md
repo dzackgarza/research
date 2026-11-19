@@ -1,6 +1,6 @@
 # research#658 (A15): state of the item, for the orchestrator
 
-At `main@6262a99e6c`.  The issue's acceptance is: "Done when the question is settled in `writing/`
+At `main@10dc46868b`, and kept current as the reductions sharpen.  The issue's acceptance is: "Done when the question is settled in `writing/`
 with a proof, a disproof, or a computation record, and every page that cites the open form is
 updated."
 
@@ -18,6 +18,14 @@ updated."
 
 ## The four reductions now on the page
 
+0. **1e's gap 2 is sharpened and substantive.**  The members are Coble surfaces by the book's own
+   definitions -- a one-node member is a singular Coble quotient (`def:singular-coble`) whose
+   resolution is the resolved Coble surface of `def:resolved-coble` -- so what is missing is the
+   *moduli* identification: whether the one-node members lie in the open subset of $\bD(N)/\Orth(N)$
+   that [@DK13, Prop. 3.2, printed p. 513] gives for the classical ten-node construction.  That
+   question is substantive: [@DZ01] states the classical construction gives "some (not all) Coble
+   surfaces", so the class is strictly larger (recorded without a printed page, which the conversion
+   does not pin).
 1. **1e is a divisor question.**  The forward inclusion fails as soon as the parameter space of the
    Coble family meets a Heegner divisor of square $-4$ in $T_\Co$, since the monodromy around one is
    $s_\delta$, which lies in $\Orth^+$ and outside the discriminant kernel
@@ -41,7 +49,9 @@ updated."
   $B(2)$ (`coble_658-1f-blocked-input-2026-11-19.txt`, route b);
 * the literature — [@Daw22] states algorithms, not a closed form, and the subgroup-orbit operation is
   unavailable (sage-extensions#286), route c;
-* separation by $\det(v^\perp/\langle v\rangle)$ — class-determined, so vacuous, route d.
+* separation by $\det(v^\perp/\langle v\rangle)$ — class-determined, so vacuous, route d;
+* a dimension count for the moduli identification — the parameter space is 11-dimensional against a
+  9-dimensional moduli, so the period map has fibres and the count decides nothing, route e.
 
 ## Claims withdrawn this session, so that they are not re-derived as findings
 
