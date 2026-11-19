@@ -170,7 +170,7 @@ $$
 
 Thus point counts for a scheme over $\mathbb Z$ lead to local zeta functions;
 they are not, without a specified cohomological factor, coefficients of one
-modular form [@Sil09, Chapter V; @DS05, §§8.1 and 8.8].
+modular form [@Sil09, Thm. V.2.2; @DS05, §§8.1 and 8.8].
 
 The modularity theorem of Wiles, Taylor–Wiles, and
 Breuil–Conrad–Diamond–Taylor associates to an elliptic curve of conductor $N$
@@ -188,7 +188,7 @@ kernel, Vélu's formulas give explicit equations for this quotient. An isogeny
 $\phi:E\to E'$ of degree $d$ has a dual $\widehat\phi:E'\to E$ with
 $\widehat\phi\phi=[d]$ and $\phi\widehat\phi=[d]$. Curves isogenous over
 $\mathbb Q$ have equal $a_p$ at their good primes. The field of definition
-matters in this assertion [@Sil09, III §§4–6 and V §2].
+matters in this assertion [@Sil09, Prop. III.4.12, Thm. III.6.1 and Ex. V.5.4].
 
 For the complex torus $E(\mathbb C)=\mathbb C/\Lambda$, with
 $\Lambda=\mathbb Z+\mathbb Z\tau$, multiplication by $n$ gives
@@ -203,7 +203,7 @@ $\frac1n\Lambda$ in the half-open fundamental parallelogram. For
 $\mathbb C^g/\Lambda$, the same calculation gives
 $(\mathbb Z/n\mathbb Z)^{2g}$ and $n^{2g}$ points. This is complex torsion;
 the rational torsion subgroup over a number field need not contain these
-points [@Sil09, VI §5; @DS05, §1.4].
+points [@Sil09, Prop. VI.5.4; @DS05, §1.4].
 
 ## Automorphic and computational directions
 

@@ -16,7 +16,7 @@ $$
 \qquad S_\sigma=\sigma^\vee\cap M,
 \qquad U_\sigma=\operatorname{Spec}\mathbb C[S_\sigma].
 $$
-Gordan's lemma makes $S_\sigma$ finitely generated. The monomial $\chi^m$ corresponds to $m\in S_\sigma$, with $\chi^m\chi^{m'}=\chi^{m+m'}$ [@Ful93, §1; @CLS11, Ch. 1]. A face $\tau=\sigma\cap m^\perp$, with $m\in S_\sigma$, gives the open immersion $U_\tau\simeq (U_\sigma)_{\chi^m}\hookrightarrow U_\sigma$. For a fan $\Sigma$, glue its $U_\sigma$ along these face opens. The result $X_\Sigma$ is a normal toric variety, and its dense torus is $\operatorname{Spec}\mathbb C[M]$ [@Ful93, §1].
+Gordan's lemma makes $S_\sigma$ finitely generated. The monomial $\chi^m$ corresponds to $m\in S_\sigma$, with $\chi^m\chi^{m'}=\chi^{m+m'}$ [@Ful93, §1.2, Prop. 1; @CLS11, Prop. 1.2.17 and Thm. 1.2.18]. A face $\tau=\sigma\cap m^\perp$, with $m\in S_\sigma$, gives the open immersion $U_\tau\simeq (U_\sigma)_{\chi^m}\hookrightarrow U_\sigma$. For a fan $\Sigma$, glue its $U_\sigma$ along these face opens. The result $X_\Sigma$ is a normal toric variety, and its dense torus is $\operatorname{Spec}\mathbb C[M]$ [@Ful93, §1.4 and §2.1].
 
 A cone is *strongly convex* when $\sigma\cap(-\sigma)=\{0\}$. This condition makes $\sigma^\vee$ full dimensional. A cone is *simplicial* when its rays are linearly independent. It is *regular* when its primitive ray generators extend to a basis of $N$; the affine toric chart is smooth exactly in this case. Thus full dimension of the dual tests strong convexity, while regularity tests smoothness [@CLS11, §§1.2, 3.1].
 
@@ -83,17 +83,17 @@ $$
 \longrightarrow\operatorname{Pic}(X_\Sigma)\longrightarrow0,
 \qquad \operatorname{rank}\operatorname{Pic}(X_\Sigma)=|\Sigma(1)|-n.
 $$
-For a full-dimensional polytope with this normal fan, its rays correspond to the *facets* of the polytope. The number of vertices need not equal the number of rays [@Ful93, §3; @CLS11, §4.2].
+For a full-dimensional polytope with this normal fan, its rays correspond to the *facets* of the polytope. The number of vertices need not equal the number of rays [@Ful93, §1.5 and §3.4; @CLS11, §4.2].
 
 A subdivision of a fan gives a proper toric birational morphism. In a smooth surface cone $\operatorname{Cone}(u_1,u_2)$, inserting the ray through $u_1+u_2$ is the ordinary blowup of the torus-fixed point. Inserting the primitive ray through a general $a u_1+b u_2$ instead gives a toric weighted blowup, possibly with quotient singularities; it is not generally the ordinary blowup of an ideal written $(x^a,y^b)$ [@CLS11, §3.3]. A complete fan is polytopal exactly when it admits a strictly concave integral piecewise-linear support function. Completeness alone does not ensure projectivity in dimensions at least three [@CLS11, §6.1].
 
-For a smooth projective toric variety with a torus-invariant Kähler form whose cohomology class is integral, the moment-map image is a polytope in $M_{\mathbb R}$; after fixing the moment-map translation and prequantum line bundle, this is the polytope of the associated ample line bundle. Its normal fan recovers the toric variety. This gives the symplectic reading of the same polytope used in the integral affine construction (@sec-lagrangian-affine) [@Ful93, §4; @CLS11, §12.3].
+For a smooth projective toric variety with a torus-invariant Kähler form whose cohomology class is integral, the moment-map image is a polytope in $M_{\mathbb R}$; after fixing the moment-map translation and prequantum line bundle, this is the polytope of the associated ample line bundle. Its normal fan recovers the toric variety. This gives the symplectic reading of the same polytope used in the integral affine construction (@sec-lagrangian-affine) [@Ful93, §4.2; @CLS11, §12.3].
 
 ## Polytopes and polar duality
 
-Let $P\subset M_{\mathbb R}$ be a full-dimensional lattice polytope. Its *inward* normal cone at a face $F$ consists of $u\in N_{\mathbb R}$ for which $\langle m,u\rangle$ is minimized on $F$. These cones form the complete normal fan $\Sigma_P$. When $0$ lies in the interior, the normal fan is also the fan of cones over faces of the polar $P^\circ$ defined below. The construction $P\mapsto(X_{\Sigma_P},L_P)$ produces a projective toric variety with an ample line bundle. Conversely, an ample invariant Cartier divisor determines a lattice polytope up to translation [@Ful93, §§2–3; @CLS11, Ch. 6].
+Let $P\subset M_{\mathbb R}$ be a full-dimensional lattice polytope. Its *inward* normal cone at a face $F$ consists of $u\in N_{\mathbb R}$ for which $\langle m,u\rangle$ is minimized on $F$. These cones form the complete normal fan $\Sigma_P$. When $0$ lies in the interior, the normal fan is also the fan of cones over faces of the polar $P^\circ$ defined below. The construction $P\mapsto(X_{\Sigma_P},L_P)$ produces a projective toric variety with an ample line bundle. Conversely, an ample invariant Cartier divisor determines a lattice polytope up to translation [@Ful93, §1.5 and §3.4; @CLS11, Prop. 6.1.10].
 
-The *normalized lattice volume* is $\operatorname{Vol}_M(P)=n!\operatorname{vol}_{\mathrm{Eucl}}(P)$, where a fundamental lattice parallelepiped has Euclidean volume $1$. The intersection number is $L_P^n=\operatorname{Vol}_M(P)$ [@Ful93, §5]. For $\mathbb P^2$, the standard simplex $\Delta_2=\operatorname{Conv}(0,e_1,e_2)$ has normalized area $1$ and gives $\mathcal O(1)$. Its dilation $3\Delta_2$ has normalized area $9$ and gives $\mathcal O(3)=-K_{\mathbb P^2}$.
+The *normalized lattice volume* is $\operatorname{Vol}_M(P)=n!\operatorname{vol}_{\mathrm{Eucl}}(P)$, where a fundamental lattice parallelepiped has Euclidean volume $1$. The intersection number is $L_P^n=\operatorname{Vol}_M(P)$ [@Ful93, §5.3]. For $\mathbb P^2$, the standard simplex $\Delta_2=\operatorname{Conv}(0,e_1,e_2)$ has normalized area $1$ and gives $\mathcal O(1)$. Its dilation $3\Delta_2$ has normalized area $9$ and gives $\mathcal O(3)=-K_{\mathbb P^2}$.
 
 The square polytope of $(\PP^1\times\PP^1,\OO(1,1))$ gives a simple toric degeneration. In $\PP^3\times\AA^1$ take the family
 $$
