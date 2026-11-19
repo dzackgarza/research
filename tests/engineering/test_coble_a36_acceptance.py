@@ -203,7 +203,9 @@ def test_the_two_open_rows_are_known_to_be_one_computation():
     block = page[page.index("#rmk:two-questions-are-one"):]
     block = block[: block.index("\n:::")] if "\n:::" in block else block
     assert "only two classes of polarizing divisor carry a recognizability proof" in block
-    assert "question 1 is decided exactly when question 2 is" in block
+    assert "the fifty two-elementary lattices with $g\\ge2$" in block
+    assert "no residue left" not in block
+    assert "With that residue gone, question 1 is decided exactly when question 2 is" in block
     assert "answers question 1 affirmatively with a recognizable divisor" in block
     register = REGISTER.read_text(encoding="utf-8")
     row = [line for line in register.splitlines() if "qst:recognizable-semifan" in line][0]
