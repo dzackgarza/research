@@ -63,6 +63,10 @@ docs-check: docs-assets
 docs-deps:
     cd writing/.book && uv run --script ../../scripts/docs_dependency_graph.py --project . --out ../../.tmp/dependency-graph --check
 
+# Every citation that names no result (a whole work, a chapter, a section, a page), in statements, proofs and prose, with its sentence and block, grouped by work; read each and keep it as attribution or tighten it to the result it uses. Report: .tmp/citation-audit.md
+docs-citation-audit:
+    cd writing/.book && uv run --script ../../scripts/docs_citation_audit.py --project . --out ../../.tmp/citation-audit.md
+
 # Local check in seconds: the gate's source checks over the whole book (citation keys, cross-references, path links, heading numbers, inline citation URLs, theorem references), then one page rendered for tikz and markdown syntax errors. e.g. `just docs-lint coble/index.md`
 docs-lint FILE: docs-assets
     python3 scripts/docs_check.py --source
