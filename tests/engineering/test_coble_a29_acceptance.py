@@ -302,8 +302,9 @@ FORBIDDEN_CLAIMS = (
 
 
 def test_a2_no_page_anywhere_still_asserts_the_unique_correspondence():
+    # every authored page, in either markup: `pages()` is the markdown, `authored_tex()` the decks
     hits = []
-    for path in pages():
+    for path in list(pages()) + authored_tex():
         text = path.read_text(encoding="utf-8")
         for claim in FORBIDDEN_CLAIMS:
             if claim in text:
@@ -457,9 +458,18 @@ def authored_tex():
     return out
 
 
-SETTLED_SLIDE = re.compile(
-    r"\\begin\{(conjecture|theorem)\}(?:\[[^\]]*\])?\s*\n?"
-    r"\$\\bd\\bbcpt\{F_\{\\Co, 2\}\}\$ has four 0-cusps")
+ENVIRONMENT = re.compile(r"\\begin\{(conjecture|theorem)\}(.*?)\\end\{\1\}", re.S)
+CLAIM = "has four 0-cusps"
+
+
+def settled_slide_blocks(path):
+    """Every (kind, body, line) block of `path` whose body states the four-0-cusp claim."""
+    text = path.read_text(encoding="utf-8")
+    out = []
+    for m in ENVIRONMENT.finditer(text):
+        if CLAIM in m.group(2):
+            out.append((m.group(1), m.group(2), text[: m.start()].count("\n") + 1))
+    return out
 
 
 def test_a2_no_authored_tex_slide_wraps_the_four_cusp_count_as_a_conjecture():
@@ -470,27 +480,24 @@ def test_a2_no_authored_tex_slide_wraps_the_four_cusp_count_as_a_conjecture():
     follows" -- with the theorem's own argument printed beneath it as an "Idea".  That slide is the
     one this test pins: the deck's other two conjectures (the semitoroidal comparison, and the
     involution as a limit of Enriques involutions) are still conjectures and are none of this
-    issue's business, so the test matches the slide by its claim, not by the environment alone.
+    issue's business, so the test matches the slide by its claim, not by the environment alone.  The
+    block scan is by environment, so reformatting the slide does not defeat it.
     """
-    hits = []
-    for path in authored_tex():
-        text = path.read_text(encoding="utf-8")
-        for m in SETTLED_SLIDE.finditer(text):
-            line = text[: m.start()].count("\n") + 1
-            hits.append((path.relative_to(ROOT).as_posix(), line, m.group(1)))
-    assert not hits or all(kind == "theorem" for _, _, kind in hits), (
+    hits = [(p.relative_to(ROOT).as_posix(), line, kind)
+            for p in authored_tex() for kind, _body, line in settled_slide_blocks(p)]
+    assert hits, "the slide this test pins is gone; delete the test rather than let it pass silently"
+    assert all(kind == "theorem" for _, _, kind in hits), (
         f"the four-0-cusp correspondence is still stated as a {hits[0][2]}: {hits}"
     )
-    assert hits, "the slide this test pins is gone; delete the test rather than let it pass silently"
 
 
 def test_a2_the_pcrm_slide_states_the_cusp_correspondence_as_proved():
-    text = (ROOT / "writing/talks/2026-07 PCRM/pcrm_pres.tex").read_text(encoding="utf-8")
-    m = SETTLED_SLIDE.search(text)
-    assert m, "the four-0-cusp slide is gone from the PCRM deck"
-    assert m.group(1) == "theorem", "the PCRM deck still marks the Coble cusp correspondence pending"
+    talk = ROOT / "writing/talks/2026-07 PCRM/pcrm_pres.tex"
+    blocks = settled_slide_blocks(talk)
+    assert blocks, "the four-0-cusp slide is gone from the PCRM deck"
+    assert blocks[0][0] == "theorem", "the PCRM deck still marks the Coble cusp correspondence pending"
     # the "Pending computation!" marker belonged to that slide and to no other
-    assert "Pending computation!" not in text
+    assert "Pending computation!" not in talk.read_text(encoding="utf-8")
 
 
 if __name__ == "__main__":
