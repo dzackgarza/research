@@ -1,0 +1,11 @@
+thm:normalization: the image of f^Gamma is the Heegner divisor H_{-2}/Gamma: True
+the cusp page places every Coble period on that divisor:                    True
+
+and the source, [DK13, printed p. 512]:
+  The quotient D(N)/O(N) is a normal quasi-projective variety of dimension 10, and D(N) \ H_{-2}/O(N) is the moduli space M_En of Enriques surfaces
+  -- the Enriques moduli is the COMPLEMENT of that divisor.
+
+verdict: REFUTED.  A map of bases from the Coble moduli to the Enriques moduli would carry a
+  period in H_{-2} to a period in its complement, which is impossible; so the 'induces' clause
+  is lattice-level only, the strong reading that would give item 1e is false, and last turn's
+  tension resolves in favour of rmk:gamma-co-status.
