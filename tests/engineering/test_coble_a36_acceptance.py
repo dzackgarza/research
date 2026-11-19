@@ -375,6 +375,23 @@ def test_every_minus_two_reflection_of_the_boundary_lattice_lifts():
     assert "invariant under $W_2(\\bar T)$" in page
 
 
+def test_the_generalized_unigonal_class_is_az_at_every_cusp():
+    """m7's h_p generalized to every p_* > 1 cusp, with no hypothesis on a = q/h.
+
+    The page's proof of lem:cusp-lattice-p-greater-one constructs u = e_1 - d_0 q^2 f_1,
+    v = g + 2pka f_1, delta = av + pu, and z = rv + su with as - pr = 1.  Then
+    az - r delta = (as - pr)u = u, so the class of u in T-bar is a z, z^2 = -2k, and
+    u^perp = z^perp = U + E8(-1)^2 is unimodular of rank 18 at every cusp.  A vector
+    with that mirror is cz, of square -2kc^2, so the hyperplane is a (-2)-mirror exactly
+    at k = 1 and a (-2)- or (-4)-mirror exactly at k in {1,2}.
+    """
+    page = page_text()
+    assert "#lem:generalized-unigonal-hyperplane" in page
+    assert "\\bar u=az" in page
+    assert "unimodular of rank $18$" in page
+    assert "exactly when $k\\in\\{1,2\\}$" in page
+
+
 def test_the_p_greater_one_cusp_lattice_record_reproduces_and_the_page_states_it():
     """The p_* > 1 item's first datum: the boundary lattice, for general (p, k).
 
