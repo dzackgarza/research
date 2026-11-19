@@ -48,6 +48,16 @@ discriminant, which is what 1e now needs.
   1"), so it is usable for word searches and not for symbol searches; nothing above relies on a
   symbol search in it.
 
+ROUTE (e): settle the moduli identification by a dimension count.  Checked, and it does not close the
+gap.  The space of tau-invariant bidegree-(4,4) forms on P^1 x P^1 is spanned by the monomials x^i y^j
+with i + j even, i, j in {0,...,4}, of which there are 13; the condition f(p) = 0 at the tau-fixed
+point p removes one, leaving 12, or 11 projectively.  (The two derivative conditions are automatic:
+tau acts on the cotangent space at a fixed point by -1, so an invariant f has df(p) = 0 for free.)
+The moduli space is 9-dimensional (DK13, Prop. 3.2, printed p. 513).  So the parameter space is
+strictly larger than the moduli, the period map has positive-dimensional fibres, and the count says
+nothing about whether the image lies in the classical open subset.  A dimension count cannot decide
+gap 2; only the periods themselves can.
+
 CANDIDATES TO OBTAIN -- named as candidates, not cited, because no printed page has been seen:
 
   - SGA 7 II, the Picard--Lefschetz exposé (Deligne--Katz);
