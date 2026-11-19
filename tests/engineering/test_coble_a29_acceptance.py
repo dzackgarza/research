@@ -482,6 +482,13 @@ def test_a2_no_authored_tex_slide_wraps_the_four_cusp_count_as_a_conjecture():
     involution as a limit of Enriques involutions) are still conjectures and are none of this
     issue's business, so the test matches the slide by its claim, not by the environment alone.  The
     block scan is by environment, so reformatting the slide does not defeat it.
+
+    That the swap is *valid* was decided by the smallest LaTeX probe available: the full deck does
+    not build on this machine (`tikzit.sty` is in no TeX tree here), but a document loading
+    `booktabs`, `mathtools` and `dzg-beamer` -- the deck's own order, lines 3--5 -- and carrying one
+    `theorem` and one `conjecture` block compiles, and `pdftotext` shows the claim under the label
+    "Theorem".  So `dzg-beamer` supplies both environments and the block below is well formed.  The
+    deck's other style file, `scuwqt.sty`, is tracked in this repository beside the deck.
     """
     hits = [(p.relative_to(ROOT).as_posix(), line, kind)
             for p in authored_tex() for kind, _body, line in settled_slide_blocks(p)]
