@@ -442,6 +442,23 @@ def test_the_AEGS25_lemma_is_cited_at_its_printed_page():
         assert "Lemma 3.9, printed p. 594" in text, path.name
 
 
+def test_every_citation_of_the_folding_lemma_carries_its_printed_page():
+    """The rule the last review applied to two pages, applied to all of them.
+
+    AEGS25's Lemma 3.9 is printed on p. 594, and a page that cites it without the page leaves
+    the reader with a statement the source does not carry there.  Two pages outside this
+    issue's own files cited it bare, so the check reads every page and not only those two.
+    """
+    missing = []
+    for path in sorted((ROOT / "writing").rglob("*.md")):
+        if ".book" in path.parts:
+            continue
+        for number, line in enumerate(path.read_text(errors="ignore").splitlines(), 1):
+            if "Lemma 3.9" in line and "printed p. 594" not in line:
+                missing.append("%s:%d" % (path.relative_to(ROOT), number))
+    assert not missing, missing
+
+
 def test_no_page_still_carries_the_open_form_of_the_question():
     """#656's acceptance: every page that cites the open form is updated."""
     moduli = (ROOT / "writing/coble/lattices-and-moduli/moduli-construction.md").read_text()
