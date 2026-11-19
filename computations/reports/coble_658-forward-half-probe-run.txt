@@ -1,0 +1,7 @@
+the page defines the stable group as O^+(T_Co) cap ker(rho): True
+the page states conj:gamma-co-stable as Gamma_Co = O~+(T_Co):   True
+
+verdict: the lemma holds.  Item 1e is the forward half: conj gives Gamma_Co = ker(rho) cap O^+,
+  which lies in ker(rho); and conversely item 1e with the sign lemma gives that containment, so
+  the conjecture is item 1e plus the reverse inclusion.  Item 1e therefore HOLDS under
+  conj:gamma-co-stable, and only its unconditional form is open.
