@@ -627,7 +627,7 @@ Then $b$ is
 - *parabolic* if $n\geq2$ and $(p,q,r)=(0,n-1,1)$.
 :::
 
-::: {.convention}
+::: {#conv:negative-definite-root-lattices .convention}
 Root lattices are taken negative definite here, so the forms on $A_n$, $D_n$ and $E_n$ are negative definite and the hyperbolic signature is $(1,n-1,0)$.
 :::
 
@@ -689,7 +689,7 @@ The form $x^{2}+y^{2}-3z^{2}$ has signature $(2,1,0)$, so $\min(p,q)=1$, and it 
 For a primitive integral solution of $x^{2}+y^{2}=3z^{2}$, reduction modulo $3$ forces $3\mid x$ and $3\mid y$ because $-1$ is not a square modulo $3$; then $9\mid3z^{2}$ gives $3\mid z$, contradicting primitivity.
 :::
 
-::: {.notation title="The signature as a pair and as an integer"}
+::: {#not:signature-pair-and-integer .notation title="The signature as a pair and as an integer"}
 For a nondegenerate symmetric form over an ordered field $F$, the signature is the pair $(p,q)$ of @def:signature.
 [@MH73, III §2.5] calls the integer $p-q$ the signature at the ordering; it depends only on the Witt class, is additive over orthogonal sums and multiplicative over tensor products, and so defines a ring homomorphism $W(F)\to\bZ$ [@MH73, III Lem. 2.6].
 :::

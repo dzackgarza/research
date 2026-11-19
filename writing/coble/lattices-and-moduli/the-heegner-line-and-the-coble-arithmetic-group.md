@@ -1353,7 +1353,7 @@ Then
 3. consequently the subgroups $G\leq\Orth(\latI_{1,8}(2))$ induced by those stabilizers at the polarized $0$-cusps are conjugate, and they have equal index.
 :::
 
-::: {.remark title="The normality this uses fails on the Enriques side"}
+::: {#rmk:normality-fails-enriques-side .remark title="The normality this uses fails on the Enriques side"}
 
 Step 3 uses that $\widetilde\Orth^+(T_\Co)$ is normal in $\Orth(T_\Co)$, so that the stabilizers at two cusps are conjugate in $\Orth(T_\Co)$ and the induced subgroups are carried onto one another. Nothing of the kind holds for $\gent\subset\Orth(T_\En)$, which is a level-two subgroup and not normal: the four divisibility-two Enriques cusps lie in four different $\gent$-orbits, and the class stabilizers inside $M$ have orders $348\,364\,800$, $5\,806\,080$, $2\,580\,480$ and $5\,160\,960$ at cusps $2,3,4,5$ respectively (@thm:sterk-reflection-subgroups). The unit of that theorem is the $\gent$-orbit of a $0$-cusp, not the isometry class of the quotient, which is why the four published Enriques diagrams can differ while their quotient lattices coincide.
 :::
@@ -1483,7 +1483,7 @@ Now fix $P_0\in\mathcal P$. By @thm:plane-transitivity-tco, $P_0 = k(P)$ for som
 
 ### The reflective set of the stable group {#sec-gamma-co-reflective-set}
 
-::: {.notation title="Discriminants of twists by $2$"}
+::: {#not:discriminants-of-twists-by-2 .notation title="Discriminants of twists by $2$"}
 $T_\Co = B(2)$ and $S_\En = C(2)$ are twists by $2$ of unimodular lattices, so their duals are half of them,
 $$
 T_\Co^* = \tfrac12 T_\Co \subset T_\Co\tensor\bQ,

@@ -1,6 +1,6 @@
 # Reflective two-elementary lattices {#sec-reflective-two-elementary}
 
-::: {.notation title="Sign convention"}
+::: {#not:two-elementary-sign-convention .notation title="Sign convention"}
 
 Hyperbolic means signature $(1, r-1)$, root lattices are negative definite, and the roots of an even $2$-elementary lattice are the short roots $v^2 = -2$ and the long roots $v^2 = -4$ with $\div_L(v) = 2$ (@def:2elementary-roots).
 :::

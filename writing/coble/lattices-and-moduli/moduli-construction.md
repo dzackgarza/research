@@ -29,7 +29,7 @@ The equality $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ is @conj:gamma-co-stable, a
 The group $\Gamma_{\Co,2}$ of $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ is the image of the stabilizer of $\delta$ in $\gent$ (@prop:gamma-co-images).
 The stable subgroup $\widetilde\Orth^+(T_\Co)$ is the kernel of the action on $A_{T_\Co}$ of each of the groups $\Gamma^{\mathrm{Hdg}}_\Co$ and $\Gamma^\theta_\Co$ of @sec-gamma-co-comparison, and both inclusions are strict, of index $\abs{W(E_8)} = 696\,729\,600$ (@prop:gamma-co-heegner-strict, @prop:theta-co-index).
 
-::: {.question}
+::: {#qst:coble-arithmetic-group-description .question}
 What is an explicit description of $\Gamma_{\Co, 2}$?
 :::
 

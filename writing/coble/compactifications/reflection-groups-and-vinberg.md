@@ -1,6 +1,6 @@
 # Hyperbolic reflection groups and Vinberg's algorithm {#sec-reflection-groups-and-vinberg}
 
-::: {.notation title="Sign convention"}
+::: {#not:reflection-groups-sign-convention .notation title="Sign convention"}
 
 Roots are *negative-definite* directions, a **short root** having norm $v^2 = -2$ and a **long root** norm $v^2 = -4$.
 An indefinite lattice $L$ of signature $(1, n)$ is called **hyperbolic**; its **positive cone**
@@ -245,7 +245,7 @@ A subdiagram $D\iscontainedin G$ is:
 - **hyperbolic** if its Gram matrix is nondegenerate of signature $(1, k-1)$, where $k$ is the number of vertices of $D$.
 :::
 
-::: {.notation title="The opposite normalization for subdiagrams"}
+::: {#not:subdiagram-opposite-normalization .notation title="The opposite normalization for subdiagrams"}
 
 For roots of norm $+2$, the three conditions of @def:elliptic-subdiagram read positive definite, positive semidefinite with a one-dimensional kernel on each connected component, and signature $(k-1,1)$.
 :::
@@ -323,7 +323,7 @@ This is the sufficient condition of [@Vin75], in the form used in [@Ale22, §3].
 
 ## Root-system conventions
 
-::: {.notation title="Bourbaki labelling and twists"}
+::: {#not:bourbaki-labelling-and-twists .notation title="Bourbaki labelling and twists"}
 
 The classical root systems are taken with the Bourbaki labelling, in the negative-definite twists
 $$

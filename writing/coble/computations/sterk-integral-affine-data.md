@@ -31,7 +31,7 @@ Sterk 4 and Sterk 5 were never plotted.
 
 The Coble $0$-cusp maps to the $0$-cusp $(18,0,0)_1$ of $\fttz$ (@lem:cusp_map_dP).
 
-::: {.question title="The rank of the projected root vectors"}
+::: {#qst:rank-of-projected-root-vectors .question title="The rank of the projected root vectors"}
 
 The integral-affine plots for Sterk 4 and Sterk 5 project the root vectors to a space of rank $10$; the projected vectors span a space of rank $11$.
 The $+1$-eigenspaces of [Explicit root vectors and the folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams) have ranks $12, 12, 12, 14$; whether their image has rank $10$ is open.
@@ -39,7 +39,7 @@ The $+1$-eigenspaces of [Explicit root vectors and the folded Sterk diagrams](#s
 
 ## The plotting procedure
 
-::: {.construction title="From directions to a polygon with symmetry"}
+::: {#cons:polygon-from-boundary-directions .construction title="From directions to a polygon with symmetry"}
 
 1. Fix the ordered primitive boundary directions $v_i \in \ZZ^2$.
 

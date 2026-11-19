@@ -256,7 +256,7 @@ and these are the vertex counts of the polytopes his walls bound, the totals bei
 The orbits, the representatives' classes and the stabilizer orders are in `coble_sterk-reflection-subgroups-run.txt`, which prints them from the nine recorded elements generating $M$; the squares, the divisibilities in $T_\En$ and the two certification columns are in `coble_sterk-root-lifts-run.txt`, whose rows are Sterk's printed roots in the frame $\eta_j^\perp = \ZZ\eta_j\oplus K_j$. The weights, the finite and ideal vertex counts are in the first transcript: for a set of roots of $K_j$ the vertex rays of $\set{x : b(x,r)\le 0}$ are the extreme rays of the polar of the cone the roots positively span, which the record obtains from the `Cone(...).dual()` call, and a ray is finite or ideal according as its square is negative or zero. The identification of the diagrams is the cited statement of [@AEGS25] and is not re-derived here.
 :::
 
-::: {.remark title="Third-type roots need no divisibility condition"}
+::: {#rmk:third-type-roots-divisibility .remark title="Third-type roots need no divisibility condition"}
 Let $\alpha$ be a $(-2)$-root of $T_\dP$ with $\alpha\cdot I(\alpha) = 0$ and let $\alpha_I = \alpha + I(\alpha)$ be the folded vector of @lem:sterk-reflection-lift-criterion(2): a root of $T_\En$ of square $-4$ whose divisibility in $T_\dP$ is $1$, so that $s_{\alpha_I}$ is not itself an isometry of $T_\dP$. The product $s_\alpha s_{I(\alpha)}$ is one --- both factors are $(-2)$-reflections of $T_\dP$ --- and it commutes with $I$, since $I s_\alpha I = s_{I(\alpha)}$ and the two factors commute because $\alpha\cdot I(\alpha) = 0$. It therefore preserves $T_\En = T_\dP^{I=1}$; and for $x\in T_\En$ one has $x\cdot I(\alpha) = I(x)\cdot I(\alpha) = x\cdot\alpha$, so
 $$
 s_\alpha s_{I(\alpha)}(x) = x + (x\cdot\alpha)\,\alpha + (x\cdot\alpha)\,I(\alpha) = x + \tfrac12 (x\cdot\alpha_I)\,\alpha_I = s_{\alpha_I}(x).
@@ -264,11 +264,11 @@ $$
 So $s_{\alpha_I}$ extends to an isometry of $T_\dP$, and lies in $\gent$ by Definition 2.6 of [@AEGS25] --- the extension being the product and not the reflection --- and the divisibility of $\alpha_I$ in $T_\dP$ is irrelevant to that. The record repeats the construction at a printed root of this type at each cusp: it builds $\alpha$ from $\alpha_I$ in the block form of ([@AEGS25], Definition 2.3), checks $\alpha^2 = -2$, $\alpha\cdot I(\alpha) = 0$ and $\alpha + I(\alpha) = \alpha_I$, and verifies that the product is an integral isometry of $T_\dP$ commuting with $I$ and acting on $T_\En$ as $s_{\alpha_I}$. What the record does record, and what (3) says, is the different fact that the *discriminant* verdict on a lift is lift-dependent: that is a property of the test, not of membership in $\gent$.
 :::
 
-::: {.remark title="The chambers, as polyhedra"}
+::: {#rmk:sterk-chambers-as-polyhedra .remark title="The chambers, as polyhedra"}
 The record of this section gives, at every cusp, Sterk's wall set, the Gram matrix of those walls and the vertex counts of the polytope they bound. The polyhedron itself is now returned at every cusp by `cusp_chamber()` on `sage_extensions` main, which the two operations this tree was waiting on made possible (sage-extensions [#312](https://github.com/dzackgarza/sage-extensions/issues/312) and [#297](https://github.com/dzackgarza/sage-extensions/issues/297), both closed), and @thm:sterk-reflection-subgroup-index uses it to write each published domain as a union of chambers of the full group.
 :::
 
-::: {.remark title="What the index settles, and what it leaves"}
+::: {#rmk:sterk-index-consequences .remark title="What the index settles, and what it leaves"}
 By @thm:sterk-reflection-subgroup-index the index $[W(K_j) : W_j]$ is known at all five cusps and every $P_j$ is written as a union of that many chambers of $W(K_j)$, so the group bounding each published diagram and its index are both settled there. What is not answered by it is the index of $G_v = \Gamma_{\En,2,\eta_j}$ itself in $\Orth K_j$: the chamber the record computes is the chamber of the reflection subgroup $W_j$, and $[\Orth K_j : G_v]$ and $[G_v : W_j]$ are not computed here.
 :::
 

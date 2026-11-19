@@ -16,7 +16,7 @@ notes: |-
 
 ## Setting
 
-::: {.construction title="The lattices from a Coble set"}
+::: {#cons:coble-set-lattices .construction title="The lattices from a Coble set"}
 
 Let $S$ be a terminal Coble surface of K3 type with $n$ boundary components, and let $X$ be its K3 double cover, branched along $C = C_1 + \cdots + C_n$.
 For a general such $S$, $\Pic(X)$ is the $2$-elementary lattice $M$ of @tbl-coble-lattices with invariants $(r,a,\delta) = (10+n,\, 12-n,\, \delta)$.
@@ -45,13 +45,13 @@ For $n = 1$, the image under the period map is an open subset of $\mcm_{\mathrm{
 
 ## The conjectural program
 
-::: {.conjecture title="Boundary incidence diagrams are computable for all n"}
+::: {#conj:coble-boundary-incidence-diagrams .conjecture title="Boundary incidence diagrams are computable for all n"}
 
 The Baily-Borel boundaries of all families in @tbl-coble-lattices can be described by the techniques used for $n=1$. The two rows with $n=8$ have different coparity and must be treated separately.
 The boundary incidence diagrams are computable by the algorithms of [@AE22] for nonsymplectic involutions.
 :::
 
-::: {.conjecture title="Recognizability of the ramification locus"}
+::: {#conj:coble-ramification-recognizable .conjecture title="Recognizability of the ramification locus"}
 
 A suitable divisor constructed from the ramification locus of
 @prop:nikulin-fixed-locus is recognizable in the sense of [@AE23].
@@ -66,7 +66,7 @@ so it sends the nonvanishing two-form $du\wedge dv$ to its negative.
 Recognizability and the choice of a polarizing divisor remain the
 additional questions.
 
-::: {.conjecture title="The semifans refine or coarsen the Coxeter fans"}
+::: {#conj:coble-semifans-and-coxeter-fans .conjecture title="The semifans refine or coarsen the Coxeter fans"}
 
 These semifans are either refinements or coarsenings of the canonical Coxeter fans at the Baily-Borel cusps, and admit an explicit description via an extension of the theory of ADE surfaces (AT21). From that data one extracts a classification of dlt models for KSBA stable limits, hence a first description of $\partial\overline{F}_{\Co,n}$, as AEGS23 did for numerically polarized Enriques surfaces.
 :::

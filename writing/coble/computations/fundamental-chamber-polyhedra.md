@@ -85,7 +85,7 @@ From the presentation of @cons:chamber-cone one reads off:
 The last two are the data of the chamber as a subset of $L$, and are what a computation inside $C\intersect L$ requires.
 :::
 
-::: {.example title="The chamber of the $22$ roots of $\Phi_{(18,2,0)}$"}
+::: {#ex:chamber-of-phi-18-2-0 .example title="The chamber of the $22$ roots of $\Phi_{(18,2,0)}$"}
 
 Let $C$ be the cone cut out by the $22$ roots of $\Phi_{(18,2,0)}$ in $U(2)\oplus E_8^{\oplus 2}$ ([root vectors and folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams)), or by their restriction to the rank-$10$ invariant sublattice of the block-exchange involution.
 In both cases $C$ is full-dimensional, closed and non-compact.

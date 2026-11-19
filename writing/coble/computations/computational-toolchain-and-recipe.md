@@ -17,7 +17,7 @@ notes: |-
 
 ## The recipe
 
-::: {.construction title="Seven steps, from a lattice to its cusps and integral-affine data"}
+::: {#cons:lattice-to-cusps-recipe .construction title="Seven steps, from a lattice to its cusps and integral-affine data"}
 
 1. **Build the lattice** from $U$, $U(2)$, $E_8$, $E_8(2)$, $\generators{\pm2}$ blocks.
    Confirm 2-elementarity and read off $(r,a,\delta)$, computing $\delta$ by the diagonal test on the discriminant quadratic form.

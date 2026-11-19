@@ -252,16 +252,16 @@ Algebraic $K$-theory of a ring and of an exact category, and the groups $K_n(A)=
 A stabilization of $\mathbf{Lat}_R$ by an endofunctor $F_M$ of @def:hyperbolic-stabilization is asked to do two things at once: to become invertible, so that it presents a stable category, and to move the Witt class, so that it shifts an invariant.
 @thm:invertible-summand shows that on $\mathbf{Lat}_R$ these two demands are incompatible: an $M$ with $[M]\neq0$ has $b_M\neq0$ and so $F_M$ is not an equivalence, while an $M$ for which $F_M$ is an equivalence has $[M]=0$ and induces the identity on $W(R)$.
 
-::: {.question}
+::: {#qst:stable-infinity-category-of-lattices .question}
 Let $R$ be a Dedekind domain with $4\cdot1_R\neq0$ and let $S=F_{H(R)}$ be the hyperbolic stabilization of $\mathbf{Lat}_R$ (@def:hyperbolic-stabilization).
 Is there a pointed $\infty$-category $\mcc$, a functor $\iota\colon\mathbf{Lat}_R^{\simeq}\to\mcc^{\simeq}$, and an equivalence $\iota\circ S\simeq\Sigma\circ\iota$ with $\Sigma$ the suspension of @def:loops-suspension?
 :::
 
-::: {.question}
+::: {#qst:invertible-lattice-nonzero-witt-class .question}
 Is there a symmetric monoidal structure on a category built from $\mathbf{Lat}_R$, other than the orthogonal sum of @def:orthogonal-sum, with an invertible object $M$ whose class in $W(R)$ is nonzero?
 @thm:invertible-summand answers this for $(\mathbf{Lat}_R,\perp,0)$ itself.
 :::
 
-::: {.question}
+::: {#qst:discriminant-through-poincare-complexes .question}
 Does the discriminant construction of @sec-lattices-discriminant factor through the $\epsilon$-quadratic Poincaré complexes of @def:poincare-complex over $\bZ$, and through which functor?
 :::

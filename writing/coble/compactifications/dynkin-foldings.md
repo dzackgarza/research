@@ -1,6 +1,6 @@
 # Foldings of Dynkin diagrams {#sec-dynkin-foldings}
 
-::: {.notation title="Sign convention"}
+::: {#not:folding-sign-convention .notation title="Sign convention"}
 
 Root lattices are negative definite and roots have norm $-2$ (@def:root-lattice).
 :::
@@ -60,7 +60,7 @@ In each case the type is the Langlands dual of the type of the fixed point subal
 
 ## The root-folding criterion for $\tdp$
 
-::: {.notation title="Short and long roots of $\tdp$"}
+::: {#not:short-and-long-roots-tdp .notation title="Short and long roots of $\tdp$"}
 
 $\Phi^2$ denotes the **short roots** ($(-2)$-roots) and $\Phi^4$ the **long roots** ($(-4)$-roots, of divisibility $2$) of @def:k-root.
 :::

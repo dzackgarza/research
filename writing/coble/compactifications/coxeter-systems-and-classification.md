@@ -1,6 +1,6 @@
 # Coxeter systems and their classification
 
-::: {.notation title="Sign convention"}
+::: {#not:coxeter-sign-convention .notation title="Sign convention"}
 
 Simple roots are negative-definite directions of norm $-2$, following the algebraic-geometry convention of @def:root-lattice, so a spherical Coxeter system has a negative definite Gram form.
 :::
@@ -90,7 +90,7 @@ m & 2 & 3 & 4 & 5 & 6 & \infty \\\hline
 $$
 :::
 
-::: {.notation title="The opposite normalization"}
+::: {#not:schlafli-matrix-normalization .notation title="The opposite normalization"}
 
 Much of the reflection-group literature normalizes simple roots to $\alpha_s^2 = +2$ and attaches to $M$ the **Schläfli matrix** $C_{st} = -2\cos(\pi/m_{st})$, with $C_{ss} = 2$.
 Then $C = -G(M)$, and the definiteness conditions of @def:coxeter-system-type are read with the opposite sign: a spherical system has $C$ positive definite.
@@ -167,7 +167,7 @@ $$
 is the **standard parabolic subgroup** determined by $I$, and $(W_I, I)$ is a Coxeter system with Coxeter matrix $M[I,I]$ [@Bou08, Ch. IV §1 no. 8, Th. 2; @Hum90, §5.5, Theorem].
 :::
 
-::: {.notation title="Parabolic subgroups and parabolic subdiagrams"}
+::: {#not:parabolic-subgroups-and-subdiagrams .notation title="Parabolic subgroups and parabolic subdiagrams"}
 
 The subgroup $W_I$ is a standard parabolic subgroup for every subset $I\iscontainedin S$, whatever the definiteness of $G[I,I]$.
 The subdiagram $\Sigma_I$ is parabolic when each of its connected components is euclidean (@def:elliptic-subdiagram).
@@ -245,7 +245,7 @@ By definition, $(W,S)$ is spherical exactly when $B=-\tfrac12G$ is positive defi
 The cited statements classify the connected Coxeter graphs whose form $B$ is positive definite, and $G = -2B$.
 :::
 
-::: {.notation title="The diagrams $I_2(p)$"}
+::: {#not:dihedral-diagrams .notation title="The diagrams $I_2(p)$"}
 
 $I_2(p)$ denotes the rank-two diagram with $m_{12} = p$, so that $I_2(3)\cong A_2$, $I_2(4)\cong B_2$ and $I_2(6)\cong G_2$.
 :::

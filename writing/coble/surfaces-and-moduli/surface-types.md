@@ -93,7 +93,7 @@ the orthogonal direct sum of three hyperbolic planes and two copies of the negat
 It is even, unimodular, of signature $(3, 19)$ [@Huy16, Prop. 1.3.5].
 :::
 
-::: {.notation title="Sign of $E_8$ in the K3 lattice"}
+::: {#not:k3-lattice-e8-sign .notation title="Sign of $E_8$ in the K3 lattice"}
 
 If $E_8$ denotes the positive-definite root lattice, the K3 lattice is written $U^3\oplus E_8(-1)^2$.
 :::
@@ -395,7 +395,7 @@ The group $\Gamma^K_{\En}$ contains an isometry that exchanges the two component
 
 ## $ADE$ and $BC$ surfaces
 
-::: {.notation title="Sign convention for root lattices"}
+::: {#not:surface-root-lattice-sign .notation title="Sign convention for root lattices"}
 
 The root lattices $A_n$, $D_n$ and $E_n$ here are negative definite, with roots of square $-2$; see @def:root-lattice and @def:lattice-En.
 :::

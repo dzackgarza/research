@@ -271,7 +271,7 @@ The three involutions are distinct and nontrivial: $\Idp$ and $\Ien$ send $(u_1,
 A group of order $4$ in which every element has order at most $2$ is isomorphic to $\ZZ_2^2$.
 :::
 
-::: {.notation title="Invariant and coinvariant sublattices of the lattice involutions"}
+::: {#not:invariant-coinvariant-sublattices .notation title="Invariant and coinvariant sublattices of the lattice involutions"}
 
 For $\star\in\theset{\dP, \En, \Nik}$, write $S_\star \definedas \lkt^{I_\star = 1}$ for the invariant sublattice and $T_\star \definedas \lkt^{I_\star = -1}$ for the coinvariant sublattice of $I_\star$, in the sense of @def:invariant_coinvariant_lattices.
 For the Nikulin involution these are also written $L_{\Nik}^{+} = S_{\Nik}$ and $L_{\Nik}^{-} = T_{\Nik}$.
@@ -306,7 +306,7 @@ Then $H^2(X,\ZZ)^{\iota}$ contains no class of square $-2$, and consequently $\i
 With an isotropic basis $a,b$ of $U(2)$ satisfying $a\cdot b = 2$, the vectors are $ma+nb$ and have square $4mn$, so $-2$ is not attained; an integral class fixed by $\iota$ lies in $H^2(X,\ZZ)^{\iota}$, and the class of a smooth rational curve fixed by $\iota$ is such a class of square $-2$.
 :::
 
-::: {.example title="A class of square $-2$ in $\tdp$"}
+::: {#ex:square-minus-2-class-tdp .example title="A class of square $-2$ in $\tdp$"}
 
 Let $E,F$ be a hyperbolic basis of $U$ and $a,b$ an isotropic basis of $U(2)$ with $a\cdot b=2$.
 In $\tdp=U\oplus U(2)\oplus E_8^2$ the class $E+F+a-b$ has square $2-4=-2$.

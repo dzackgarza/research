@@ -1,6 +1,6 @@
 # Period domain embeddings and normalization {#sec-lattices}
 
-::: {.notation title="The lattices of this chapter"}
+::: {#not:lattices-of-chapter .notation title="The lattices of this chapter"}
 
 $$
 \begin{aligned}

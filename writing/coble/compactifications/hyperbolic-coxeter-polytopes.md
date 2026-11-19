@@ -1,6 +1,6 @@
 # Hyperbolic Coxeter polytopes and finite covolume {#sec-hyperbolic-coxeter-polytopes}
 
-::: {.notation}
+::: {#not:hyperbolic-polytope-setting .notation}
 
 Throughout, $L$ is a hyperbolic lattice of signature $(1,n)$, $C_L^+$ is a fixed component of its positive cone, and $\HH^n_L$ is the associated hyperbolic $n$-space of @def:hyperbolic-model.
 Roots are negative-definite directions, so a mirror $H_v = v^{\perp}\intersect\HH^n_L$ is nonempty exactly when $v^2 < 0$.
@@ -67,7 +67,7 @@ This is [@Hum90, §6.5], where the vector $\lambda$ spanning the radical is $\de
 
 ## Vertices of a Coxeter polytope
 
-::: {.notation}
+::: {#not:coxeter-polytope-faces .notation}
 
 Let $P\iscontainedin\HH^n_L$ be a Coxeter polytope (@def:coxeter-polytope) with walls $H_s = \alpha_s^{\perp}$ indexed by a finite set $S$, and Coxeter--Vinberg diagram $\Sigma$.
 For $I\iscontainedin S$ write

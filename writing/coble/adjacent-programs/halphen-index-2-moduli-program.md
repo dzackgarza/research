@@ -16,7 +16,7 @@ notes: |-
 
 ## Definitions and known moduli
 
-::: {.definition title="Index, Halphen pencil, Halphen surface"}
+::: {#def:halphen-surface-index .definition title="Index, Halphen pencil, Halphen surface"}
 
 A **rational genus-one surface** is a smooth projective rational surface $Y$ with a relatively minimal fibration $\pi: Y\to\PP^1$ whose generic fiber is a smooth geometrically integral curve of genus one. The term *rational elliptic surface* is also used here without requiring a section; a section makes the fibration Jacobian.
 Its **index** is the minimal $m$ with $\pi$ given by $|-mK_Y|$.
@@ -56,13 +56,13 @@ The remaining row is $n = 10$, the lattice $(20,2,1)$.
 
 ## The program
 
-::: {.conjecture title="Period domains and KSBA compactifications for $M_{H,2,k}$"}
+::: {#conj:halphen-index-2-period-domains .conjecture title="Period domains and KSBA compactifications for $M_{H,2,k}$"}
 
 These lattices can be used to construct period domains of index 2 Halphen pencils, yielding moduli spaces $M_{H,2,k}$ of index 2 Halphen surfaces with an $I_k$ fiber, whose K3 covers have an $I_{2k}$ fiber, with the matching arising from a geometric comparison to Coble surfaces.
 The normalizations of the stable pair compactifications $\overline{M_{H,2,k}}^R$ are then isomorphic to semitoroidal compactifications of the corresponding period domains, for a suitably canonical divisor $R$.
 :::
 
-::: {.question title="A divisor constructed from the multiple fiber"}
+::: {#qst:halphen-multiple-fiber-divisor .question title="A divisor constructed from the multiple fiber"}
 
 A Halphen surface of index $m\geq 2$ has a unique multiple fiber of multiplicity $m$.
 Can that fiber, together with a suitable canonical horizontal divisor,

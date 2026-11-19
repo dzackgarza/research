@@ -36,7 +36,7 @@ $$
 
 ## The images under the embedding chain
 
-::: {.construction title="Term-by-term transport along the embedding chain"}
+::: {#cons:isotropic-transport-embedding-chain .construction title="Term-by-term transport along the embedding chain"}
 
 The same 18 vectors are mapped term-by-term along the embedding chain $T_{\Co}\injects \ten\injects \tdp$:
 
@@ -45,7 +45,7 @@ The same 18 vectors are mapped term-by-term along the embedding chain $T_{\Co}\i
 - into $\tdp = U \oplus U(2) \oplus E_8^{\oplus 2}$ by $a_i \mapsto a_i + b_i$.
 :::
 
-::: {.definition title="The isotropic trichotomy used as a separating invariant"}
+::: {#def:isotropic-trichotomy .definition title="The isotropic trichotomy used as a separating invariant"}
 
 A primitive isotropic vector is classified as **Odd**, **Even ordinary**, or **Even characteristic**, by testing $(v^\perp/v)^\perp$ against $U$, $U(2)$ and $I_{1,1}(2)$.
 :::

@@ -33,7 +33,7 @@ The involution $\theta_\Co$ of @prop:theta-co-exists, with $\lkt^{\theta_\Co} = 
 
 ## Isotropic orbits, cusps, and reflection groups
 
-::: {.question title="Open problem: the 0-cusps that carry the Coble stable limits"}
+::: {#qst:coble-stable-limit-cusps .question title="Open problem: the 0-cusps that carry the Coble stable limits"}
 
 Which of the $527$ $0$-cusps of the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ (@thm:cusp-lifting) carry the Coble stable limits?
 :::
@@ -51,7 +51,7 @@ The Coxeter diagram of $S_\Co$ has exactly two maximal parabolic subdiagrams, $\
 Which of the two classes does the Coble structure distinguish, and how does the pair of subdiagrams match the boundary data of the degree-$2$ polarized moduli space?
 :::
 
-::: {.remark title="The reflection group of each Sterk fundamental domain"}
+::: {#rmk:sterk-domain-reflection-groups .remark title="The reflection group of each Sterk fundamental domain"}
 
 Sterk's published fundamental domains for the five cusps of $\fentwo$ have $12, 10, 12, 11, 14$ walls [@Ste91], while the full reflection group of each quotient $\eta_j^{\perp\ten}/\eta_j$ has a ten-wall chamber (@sec-sterk-root-counts-and-computed-chambers).
 The quotients for $j = 2,3,4,5$ are mutually isometric, so their full Weyl groups are conjugate and cannot account for four inequivalent published diagrams: the datum that does is the reflection subgroup $W_j\leq W(\eta_j^{\perp\ten}/\eta_j)$ induced by the stabilizer of $\eta_j$, and it is identified by @thm:sterk-reflection-subgroups.
@@ -235,14 +235,14 @@ so $(a,\bar r)(y,\bar r)\geq0$, and $(a,\bar r)>0$ gives $(y,\bar r)\geq0$: the 
 
 ## dlt and KSBA stable models
 
-::: {.question title="Open problem: Coble-specific dlt models and pot geometry"}
+::: {#qst:coble-dlt-models-pot-geometry .question title="Open problem: Coble-specific dlt models and pot geometry"}
 
 - **Coble pot geometry.** Construct the stable pair $(\mcv, \mcd)$ whose pot component is a rational Coble surface carrying a $\tfrac14(1,1)$ cyclic quotient singularity corresponding to the nodes of the rational sextic $C$, the singularity of @prop:coble-quarter-singularity (cf. @def:dlt-involution-pair and @def:coble-divisor-model).
 
 - **Stalk assembly.** Describe the transition of the stalk assembly and the integral-affine configuration as the Enriques surface log-collapses onto the discriminant divisor $\Delta$, where the K3 cover becomes nodal.
 :::
 
-::: {.question title="Open problem: monodromy invariants and stable models $B(\lambda)$"}
+::: {#qst:coble-monodromy-stable-models .question title="Open problem: monodromy invariants and stable models $B(\lambda)$"}
 
 Stable limits of Coble surfaces arise as $S_2$-quotients of nodal K3 surfaces, parameterized by a monodromy invariant $\ell \in \check{\mch}$ through the construction $B(\lambda)$ of [@AEGS25].
 

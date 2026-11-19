@@ -11,7 +11,7 @@ tags:
 
 ## Setting
 
-::: {.definition title="Nodal and unnodal"}
+::: {#def:nodal-enriques-surface .definition title="Nodal and unnodal"}
 
 An Enriques surface $Y$ is **nodal** if it contains a rational $(-2)$-curve, and **unnodal** otherwise.
 A generic Enriques surface is unnodal, and $F_{\Nod}$ is an irreducible hypersurface in $\fen$.
@@ -50,7 +50,7 @@ A composite of a primitive embedding with isometries of the source and of the ta
 
 ## The program
 
-::: {.conjecture title="Baily-Borel boundary by the same techniques"}
+::: {#conj:nodal-enriques-baily-borel-boundary .conjecture title="Baily-Borel boundary by the same techniques"}
 
 Orbits under $\Orth(T_{\Nod})$ of isotropic vectors and planes can be classified, yielding a boundary incidence diagram; and the lattice embedding above allows AEGS23 to be leveraged to construct the KSBA compactification, its dlt models, and the integral-affine structures classifying KSBA stable limits of nodal Enriques surfaces.
 :::

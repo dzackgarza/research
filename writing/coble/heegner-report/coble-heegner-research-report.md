@@ -2304,7 +2304,7 @@ The groups are equal and $C_\delta$ is a fundamental chamber of the full group, 
 The marking is AEGS Definition 5.4: roots on the folded triangle's boundary are relevant, and Figure 7's interior spur is the only irrelevant root. Lemma 5.5 attaches that marking to $\mathcal F^2$. It descends unchanged by @thm:semifan-restriction, while @thm:semifan-restriction(3) supplies the generalized fan identification. The only irrelevant reflection is integral and of order $2$, so its group is $S_2$, in agreement with AEGS Lemma 5.6, printed p. 611. Current node $4$ is named $v_9$ by the displayed reordering, proving (2) and (3).
 :::
 
-::: {.remark title="Why the mirror case has a parity hypothesis"}
+::: {#rmk:mirror-case-parity-hypothesis .remark title="Why the mirror case has a parity hypothesis"}
 In Case B, (B3) is used to make each induced wall reflection integral on $\bar S$, and (B4) is used to make $C_\delta$ a Vinberg chamber. The additional even-incidence condition (B2) serves a different purpose: it supplies the element of $\Stab_W(H_\RR)$ inducing that reflection, hence it makes the $W_\delta$-chambers coincide with the restriction of the original chamber decomposition. Without this compatibility, proving that one facet has Coxeter angles would not prove equality of the two semifans.
 :::
 
