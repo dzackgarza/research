@@ -1,0 +1,33 @@
+docs-check --source on main@cf2992dec5, executed locally for research#658
+
+The source-level gate needs two assets that the repository does not carry (they are gitignored and
+CI fetches them from the pandoc-config repository):
+
+    writing/.assets/references.bib        <- pandoc-config/bib/references.bib
+    writing/.assets/mathjax-macros.html   <- pandoc-config/templates/css/mathjax-macros.html
+
+`just docs-assets` copies them from a shared checkout at $HOME/.pandoc.  That checkout is absent
+from this VM, so the recipe fails and scripts/docs_check.py --source stops with
+
+    docs-check: bibliography writing/.book/.assets/references.bib is missing (`just docs-assets`
+    copies the shared one)
+
+writing/.book/.assets is a symlink to writing/.assets, so the missing file is the one above.
+
+Reproduction without touching the shared home:
+
+    git clone --depth 1 https://github.com/dzackgarza/pandoc-config .scratch/pandoc-config
+    cp .scratch/pandoc-config/bib/references.bib              writing/.assets/references.bib
+    cp .scratch/pandoc-config/templates/css/mathjax-macros.html writing/.assets/mathjax-macros.html
+    python3 scripts/docs_check.py --source
+
+pandoc-config revision cloned: cf39453c6ac807022b09f928395535dd35b0ee93
+
+Output:
+
+    docs-check --source: OK (132 chapters, 2093 bibliography keys; the render, links to generated
+    ids, and external links are checked by the full gate)
+
+The check covers the tree that carries the research#658 commits 99db75bdae, 201c982c5f, f67b436ca0,
+f97458dc06 and cf2992dec5, so the pages this issue changed are clean at the source level.  The full
+gate (render, generated-id links, external links) is CI's and was not run here.
