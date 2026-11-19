@@ -253,7 +253,7 @@ In @not:reflective-fundamental-polytope:
 
 ::: {.proof}
 
-(1) The group $\Orth^+(S)$ is a discrete group of motions of $\HH^{r-1}_S$ with a fundamental domain of finite volume [@Vin85, Introduction, 4].
+(1) The group $\Orth^+(S)$ is a discrete group of motions of $\HH^{r-1}_S$ with a fundamental domain of finite volume [@Vin85, Introduction, no. 6].
 The set of reflections in roots of $S$ is stable under conjugation by $\Orth^+(S)$, since $g s_\alpha g^{-1} = s_{g\alpha}$ and $g\alpha$ is a root.
 So $\Orth^+(S) = W_r(S)\rtimes\Sym(P_r)$, and $P_r$ has finite volume because $W_r(S)$ has finite index in $\Orth^+(S)$ [@Vin83, §1.1].
 
@@ -273,7 +273,7 @@ If $wx\in K$, then $wx = x$.
 ::: {.proof}
 
 The interior $K^\circ$ of $K$ is the cone over the interior of $P_r$, it is connected, and $K$ is its closure.
-For $w\neq 1$ the polytopes $P_r$ and $wP_r$ have no common interior point [@Vin85, Introduction, 1].
+For $w\neq 1$ the polytopes $P_r$ and $wP_r$ have no common interior point [@Vin85, Introduction, no. 1].
 Consequently, a reflection $r\neq 1$ in $W_r(S)$ fixes no interior point of $P_r$, since such a point would be a common interior point of $P_r$ and $rP_r$.
 
 Choose $v_0\in K^\circ\intersect S$, which exists because $K^\circ$ is a nonempty open cone.
