@@ -119,6 +119,22 @@ def test_the_proportionality_probe_reproduces_its_record():
     assert "that is m = (d+1)/24 = 1/12" in produced
 
 
+def test_the_locus_probe_reproduces_its_record():
+    """The second probe: in which family ABE22's divisor exists, and that it is polarizing there."""
+    script = REPORTS / "coble_679-locus-probe.py"
+    record = REPORTS / "coble_679-locus-probe-run.txt"
+    assert script.exists() and record.exists()
+    produced = subprocess.run(
+        [sys.executable, str(script)], capture_output=True, text=True, check=True
+    ).stdout
+    assert produced == record.read_text(encoding="utf-8"), "the transcript no longer matches the script"
+    assert "proper locus F in F_2: rank 3 > 1" in produced
+    assert "D.s = 22 > 0" in produced
+    page = page_text()
+    assert "Picard group contains $U\\oplus\\langle-2\\rangle$, of rank $3$" in page
+    assert "coble_679-locus-probe-run.txt" in page
+
+
 def test_the_four_records_of_the_unit_are_committed():
     for name in (
         "coble_679-rcop-split.py",
@@ -131,8 +147,23 @@ def test_the_four_records_of_the_unit_are_committed():
         "coble_679-elliptic-cone-inventory-run.txt",
         "coble_679-proportionality.py",
         "coble_679-proportionality-run.txt",
+        "coble_679-locus-probe.py",
+        "coble_679-locus-probe-run.txt",
     ):
         assert (REPORTS / name).exists(), name
+
+
+@pytest.mark.xfail(
+    strict=True,
+    reason="no record decides whether a recognizable divisor can fail (W): the only candidate, "
+    "s + m sum f_i, is not known to be recognizable for the elliptic locus (rmk:recognizable-gap)",
+)
+def test_a_recognizable_divisor_failing_the_coarsening_is_exhibited():
+    """Question 1 of qst:recognizable-semifan: a recognizable divisor whose semifan refines."""
+    record = REPORTS / "coble_679-recognizable-W-fails-run.txt"
+    assert record.exists(), "no record: no recognizable divisor is known to fail (W)"
+    text = record.read_text(encoding="utf-8")
+    assert "recognizable" in text and "coarsen" in text
 
 
 @pytest.mark.xfail(
