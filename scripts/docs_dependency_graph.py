@@ -117,7 +117,7 @@ RESULT_LABELS = {
     "Alg.": ("algorithms", "algorithm", "alg"),
     "Conj.": ("conjectures", "conjecture", "conj"),
     "Table": ("tables", "table", "tab"),
-    "Fig.": ("figures", "figure", "fig"),
+    "Fig.": ("figures", "figure", "figs", "fig"),
     "Obs.": ("observations", "observation", "obs"),
     "Fact": ("facts", "fact"),
     "Claim": ("claims", "claim"),
