@@ -1007,6 +1007,31 @@ again of square $-2$; and it is not a class of $\widehat X_b$: if $C_+ + m\delta
 *$g$ moves the chamber.* Both $\mathfrak c_b$ and $g\mathfrak c_b$ contain $A_b$, since $A = 2H-\alpha$ lies in $S_\Co$, is fixed by $g$ and is ample. If the two chambers were equal, $g$ would carry each facet of $\mathfrak c_b$ to a facet, and the facets lie in the walls $\gamma^\perp$ for $\gamma\in\Delta_b$ with the sign fixed by $A$-positivity (@def:coble-polarization-classes, part 3); so $g$ would permute the classes of $\Delta_b$, contradicting the previous paragraph. Hence $g\mathfrak c_b\neq\mathfrak c_b$, that is $g\notin Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha,\mcc}$.
 :::
 
+::: {.lemma #lem:known-part-of-the-picard-lattice-at-the-test-member title="The part of $\Pic(\widehat X_{b_\star})$ the record determines"}
+
+At the member $b_\star$ of @thm:direct-period-meets-minus-four, let $C_\pm$ be the two components of the ruling fibre over $x=1$ and $u\definedas C_+-C_-$. Then
+
+1. $C_+ + C_- = \widehat\pi^*h_1$ is the fibre class, $C_\pm^2 = -2$ and $C_+\cdot C_- = 2$, so $u^2 = -8$ and $u$ is orthogonal to $\widehat\pi^*h_1$;
+2. $u\perp S_{\Co,b}$, because the ruling classes lie in the $I_\Co$-invariant lattice and $I_\Co$ exchanges $C_+$ and $C_-$;
+3. consequently $\Pic(\widehat X_{b_\star})$ contains the primitive sublattice
+$$S_{\Co,b}\perp\langle u\rangle = U(2)\perp\langle-2\rangle\perp E_8(2)\perp\langle-8\rangle,$$
+of rank $12$, determinant $-2^{14}$ and signature $(1,11)$;
+4. and the transcendental lattice is contained in $u^{\perp T_\Co}$, of rank $10$ and signature $(2,8)$, so $\rho(\widehat X_{b_\star})\ge12$ and the transcendental rank is at most $8$.
+
+This is the part of the member's Picard lattice that the record determines; the rest of $\Delta_{b_\star}$, and with it the input of @qst:chamber-subscript-image, is not fixed by it.
+:::
+
+::: {.proof}
+
+(1) is @thm:direct-period-meets-minus-four and its proof: the fibre is the sum of its two components, each is a smooth rational $(-2)$-curve, and they meet with multiplicity two, since each is a component of the fibre and the fibre's self-intersection is $0$. Then $u^2 = C_+^2+C_-^2-2C_+\cdot C_- = -2-2-4 = -8$, and $u\cdot(C_++C_-) = C_+^2-C_-^2 = 0$.
+
+(2) $S_{\Co,b}$ is the $I_\Co$-invariant lattice, and $\widehat\iota_{\Co,b}$ carries $C_+$ to a component of the fibre over $\tau(1) = -1$ (@thm:chamber-clause-fails, proof), so $I_\Co$ exchanges $C_+$ and $C_-$ up to sign and hence acts on $u$ by $-1$; therefore $u$ is orthogonal to every invariant class.
+
+(3) $S_{\Co,b}\cong U(2)\perp\langle-2\rangle\perp E_8(2)$ (@prop:coble-invariant-lattice), with determinant $(-4)(-2)(2^8) = 2^{11}$ and signature $(1,10)$; adjoining the orthogonal vector $u$ of square $-8$ multiplies the determinant by $-8$ and adds one negative direction.
+
+(4) $\Pic(\widehat X_{b_\star})\subseteq u^{\perp\lkt}$ by (1) and (2), and $u\in T_\Co$ with $u^2<0$, so $u^{\perp T_\Co}$ has rank $11-1 = 10$ and signature $(2,8)$.
+:::
+
 ::: {.lemma #lem:chamber-condition-is-period-condition title="The chamber condition is a linear condition on the period, not a count of chambers"}
 
 In the situation of @thm:chamber-subscript-is-a-condition, let $g\in Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ and let $\omega_b$ be a holomorphic $2$-form on $\widehat X_b$, with $\langle\Delta_b\rangle$ the span of the effective classes of square $-2$ in $H^2(\widehat X_b,\ZZ)$. Then
@@ -1868,7 +1893,7 @@ Since $\gamma A_b = A_b$ and $A_b$ is ample, $\mathfrak c_b$ and $\gamma\mathfra
 
 What is left is what that condition does to the group: is
 $$\rho_{T_\Co}\bigl(Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha,\mcc}\bigr)\;=\;\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$$
-at a member whose Picard lattice is larger than $S_{\Co,b}$, as @prop:direct-eq-heegner proves it at a member whose Picard lattice is $S_{\Co,b}$ itself? By @lem:chamber-condition-is-period-condition the condition is linear: a lift $g$ preserves the chamber exactly when the transported period $g^{-1}\omega_b$ is orthogonal to the span of $\Delta_{b_\star}$. So the question is which cosets of $\ker\rho_{T_\Co}$ in the centralizer contain an element with that property, and it is decided by a lattice computation once the span of $\Delta_{b_\star}$ is known, that is once $\Pic(\widehat X_{b_\star})$ is: @cor:chamber-preserved-by-picard-stabilizer reduces it further to whether the stabilizer of the member's Picard lattice surjects onto $P$, which is the form the computation should take. What the record fixes at $b_\star$ is the branch curve, the two reducible fibres over $x=\pm1$ with their four components, the node's fibre, and the count $\nu(b_\star) = 4$ (@thm:chamber-clause-fails and its proof). It does not fix $\Pic(\widehat X_{b_\star})$, which by @thm:effective-roots-are-the-h-positive-ones determines the whole arrangement; and by @lem:chamber-condition-is-period-condition the classes of $H$-degree greater than one are walls of the chamber too: $2C_+ + C_-$ is one, of square $-2$ and $H$-degree $3$. The witness of @thm:chamber-subscript-is-a-condition is not such a check, being discriminant-trivial and moving no element of $P$; what that theorem decides is that the subscript cuts into the kernel of $\rho_{T_\Co}$, not that it changes the image.
+at a member whose Picard lattice is larger than $S_{\Co,b}$, as @prop:direct-eq-heegner proves it at a member whose Picard lattice is $S_{\Co,b}$ itself? By @lem:chamber-condition-is-period-condition the condition is linear: a lift $g$ preserves the chamber exactly when the transported period $g^{-1}\omega_b$ is orthogonal to the span of $\Delta_{b_\star}$. So the question is which cosets of $\ker\rho_{T_\Co}$ in the centralizer contain an element with that property, and it is decided by a lattice computation once the span of $\Delta_{b_\star}$ is known, that is once $\Pic(\widehat X_{b_\star})$ is: @cor:chamber-preserved-by-picard-stabilizer reduces it further to whether the stabilizer of the member's Picard lattice surjects onto $P$, which is the form the computation should take. What the record fixes at $b_\star$ is @lem:known-part-of-the-picard-lattice-at-the-test-member: the branch curve, the two reducible fibres over $x=\pm1$ with their four components, the node's fibre, and the count $\nu(b_\star) = 4$ (@thm:chamber-clause-fails and its proof). It does not fix $\Pic(\widehat X_{b_\star})$, which by @thm:effective-roots-are-the-h-positive-ones determines the whole arrangement; and by @lem:chamber-condition-is-period-condition the classes of $H$-degree greater than one are walls of the chamber too: $2C_+ + C_-$ is one, of square $-2$ and $H$-degree $3$. The witness of @thm:chamber-subscript-is-a-condition is not such a check, being discriminant-trivial and moving no element of $P$; what that theorem decides is that the subscript cuts into the kernel of $\rho_{T_\Co}$, not that it changes the image.
 :::
 
 ## Integral cusp lifting {#sec-cusp-lifting}

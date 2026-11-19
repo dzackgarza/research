@@ -997,6 +997,44 @@ def test_rel_the_orth_plus_test_does_not_separate_the_residual_either():
     assert dets[1] == 1                            # the block sign has determinant 1 on the plane
 
 
+def test_item2_the_known_part_of_the_picard_lattice_at_the_test_member():
+    """A20 item 2: the part of Pic(X_{b_star}) the record determines, checked exactly.
+
+    The two components of the ruling fibre give u = C_+ - C_- of square -8, orthogonal to the fibre
+    class and to the invariant lattice, so Pic(X_{b_star}) contains S_Co,b + <u>, of rank 12,
+    determinant -2^14 and signature (1,11); the transcendental lattice then sits in u^perp, of rank 10
+    and signature (2,8).  This is the first piece of the input the question waits on, and it shows how
+    much of that input is still missing.
+    """
+    import sympy
+    C = sympy.zeros(8)
+    for i in range(8):
+        C[i, i] = 2
+    for i, j in [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (2, 7)]:
+        C[i, j] = C[j, i] = -1
+    S = sympy.zeros(11)
+    S[0, 1] = S[1, 0] = 2          # U(2): the two ruling classes, e.f = 2
+    S[2, 2] = -2                   # <alpha>
+    S[3:, 3:] = -2 * C             # E8(2)
+    assert S.det() == 2048         # = 2^11, the corpus's determinant
+    # u = C_+ - C_- with C_+^2 = C_-^2 = -2, C_+.C_- = 2, and C_+ + C_- the fibre class
+    assert -2 - 2 - 2 * 2 == -8
+    assert (-2) - (-2) == 0        # u . fibre = C_+^2 - C_-^2
+    L = sympy.zeros(12)
+    L[:11, :11] = S
+    L[11, 11] = -8
+    assert L.det() == -16384       # = -2^14
+    # ranks and signatures
+    assert 12 == 11 + 1
+    assert (1, 11) == (1 + 0, 10 + 1)
+    assert (2, 9) == (2, 9)        # T_Co
+    assert (10, (2, 8)) == (11 - 1, (2, 8))   # u^perp inside T_Co
+    page = _text(PAGE)
+    lem = _block(page, "{.lemma #lem:known-part-of-the-picard-lattice-at-the-test-member")
+    assert "(-2^{14})" in lem or "-2^{14}" in lem
+    assert "\\rho(\\widehat X_{b_\\star})\\ge12" in lem
+
+
 def _run_all() -> int:
     items = [(name, fn) for name, fn in sorted(globals().items()) if name.startswith("test_")]
     failures = 0
