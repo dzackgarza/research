@@ -56,7 +56,7 @@ Every anticanonical pair (@def:anticanonical-pair) admits a toric model as in @d
 
 ::: {.proof}
 
-This is the toric-model lemma of [@AE22, §6.1], citing [@GHK15].
+This is [@AE22, Lem. 6.3], which is [@GHK15, Prop. 1.3].
 :::
 
 ::: {#fig-anticanonical-interior-blowups .figure}

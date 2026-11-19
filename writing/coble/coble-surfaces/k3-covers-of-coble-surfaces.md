@@ -167,7 +167,7 @@ The fixed locus $R$ is nonempty and is not a union of two elliptic curves, so it
 A single smooth rational curve gives $g = 0$ and $k = 0$, so $22-r-a = 0$ and $r-a = 0$, that is $r = a = 11$.
 As $M$ is $2$-elementary with $a = 11$, $\abs{\det H^2(X, \bZ)^\sigma} = 2^{11}$.
 Since $S_\Co \iscontainedin H^2(X, \bZ)^\sigma$ have equal rank $11$ and equal absolute determinant $2^{11}$, the index $[H^2(X, \bZ)^\sigma : S_\Co]$ is $1$: the two coincide, and by @thm:invariants-coinvariants-integral the invariant lattice -- hence $S_\Co$ -- is primitive in $H^2(X, \bZ)$.
-That the invariants $(11, 11, 1)_1$ determine the isometry class $\generators{2}\oplus\generators{-2}^{10}\cong\generators{-2}\oplus E_{10}(2)$ is Nikulin's classification of indefinite even $2$-elementary lattices [@Nik80].
+That the invariants $(11, 11, 1)_1$ determine the isometry class $\generators{2}\oplus\generators{-2}^{10}\cong\generators{-2}\oplus E_{10}(2)$ is Nikulin's classification of indefinite even $2$-elementary lattices [@Nik80, Thm. 3.6.2].
 :::
 
 ::: {.proposition #prop:blowup-geometric-basis title="Geometric basis of a blowup of the plane"}

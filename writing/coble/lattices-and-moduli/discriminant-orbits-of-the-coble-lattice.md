@@ -98,7 +98,7 @@ $$
 \Sigma(\bar q)\definedas\sum_{x\in V}(-1)^{\bar q(x)} = \#\inverseof{\bar q}(0) - \#\inverseof{\bar q}(1)
 .
 $$
-Then $\Sigma(\bar q) = 2^m$ if $\bar q$ is of plus type and $\Sigma(\bar q) = -2^m$ if $\bar q$ is of minus type, in the sense of [@CCN+85, Ch. 2, §4]: of Witt index $m$, respectively $m-1$.
+Then $\Sigma(\bar q) = 2^m$ if $\bar q$ is of plus type and $\Sigma(\bar q) = -2^m$ if $\bar q$ is of minus type, in the sense of [@CCN+85, Tables 2 and 6]: of Witt index $m$, respectively $m-1$.
 Hence
 $$
 \#\inverseof{\bar q}(0) = 2^{2m-1} + \tfrac12\Sigma(\bar q)
@@ -165,7 +165,7 @@ The Dynkin diagram of $E_8$ is connected and the simple roots form a basis of $E
 Hence the kernel is $\theset{\pm\id_{E_8}}$, and the image has order $\tfrac12\abs{W(E_8)} = 348\,364\,800$.
 
 By @lem:even-unimodular-mod-two-form, $\bar q_{E_8}$ is a quadratic form of plus type on $\bF_2^8$ with nondegenerate polar form, so its isometry group is $\operatorname{GO}^+_8(2)$.
-Its order is $2N$ with $N = q^{m(m-1)}(q^m-1)\prod_{i=1}^{m-1}(q^{2i}-1)$ at $q = 2$, $m = 4$ [@CCN+85, Ch. 2, §4], that is, $2\cdot2^{12}\cdot15\cdot3\cdot15\cdot63 = 348\,364\,800$.
+Its order is $2N$ with $N = q^{m(m-1)}(q^m-1)\prod_{i=1}^{m-1}(q^{2i}-1)$ at $q = 2$, $m = 4$ [@CCN+85, Tables 2 and 6], that is, $2\cdot2^{12}\cdot15\cdot3\cdot15\cdot63 = 348\,364\,800$.
 So the image is all of $\operatorname{GO}^+_8(2)$.
 :::
 
@@ -225,7 +225,7 @@ $\rho$ is surjective.
 Given $g_0\in\Orth(A^0)$, extend it by $\bar h\mapsto\bar h$; the extension preserves $q_{T_\Co}$ because the decomposition $A_{T_\Co} = \generators{\bar h}\perp A^0$ is orthogonal.
 
 By @lem:even-unimodular-mod-two-form, $(A_{E_{10}(2)}, q_{E_{10}(2)})$ is the $10$-dimensional $\bF_2$-space $E_{10}/2E_{10}$ with the plus-type form $\bar q_{E_{10}}$, so its isometry group is $\operatorname{GO}^+_{10}(2)$.
-For $n = 2m$ and $q$ a prime power, $\abs{\operatorname{GO}^+_{2m}(q)} = 2N$ with $N = q^{m(m-1)}(q^m-1)\prod_{i=1}^{m-1}(q^{2i}-1)$ [@CCN+85, Ch. 2, §4].
+For $n = 2m$ and $q$ a prime power, $\abs{\operatorname{GO}^+_{2m}(q)} = 2N$ with $N = q^{m(m-1)}(q^m-1)\prod_{i=1}^{m-1}(q^{2i}-1)$ [@CCN+85, Tables 2 and 6].
 At $q = 2$, $m = 5$,
 $$
 2N = 2\cdot 2^{20}\cdot 31\cdot 3\cdot 15\cdot 63\cdot 255 = 2^{21}\cdot 3^5\cdot 5^2\cdot 7\cdot 17\cdot 31 = 46\,998\,591\,897\,600

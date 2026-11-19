@@ -247,7 +247,7 @@ Identify $\ten = U\oplus U(2)\oplus E_8(2)$ with the lattice $L_- = \mathbf H\op
 
 ::: {.proof}
 
-(1) The group $\Gamma$ of [@Ste91, §2] is the image in $\Orth(L_-)$ of the isometries of the K3 lattice that commute with the Enriques involution (@def:enriques-surface) and fix the polarization vector, and $\gent$ is the image in $\Orth(\ten)$ of the same group [@AEGS25 Def. 2.6].
+(1) The group $\Gamma$ of [@Ste91, Prop. 2.7] is the image in $\Orth(L_-)$ of the isometries of the K3 lattice that commute with the Enriques involution (@def:enriques-surface) and fix the polarization vector, and $\gent$ is the image in $\Orth(\ten)$ of the same group [@AEGS25 Def. 2.6].
 The description by the two summands is [@Ste91, Prop. 2.7].
 
 (2) Because $U$ is unimodular, $A_{\ten} = A_{U(2)}\perp A_{E_8(2)}$, and an isometry of $q_{\ten}$ preserves both summands exactly when it is a pair of isometries of the summands.

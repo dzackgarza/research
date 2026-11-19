@@ -307,7 +307,7 @@ When $T$ is a nodal type, $\per_T$ is moreover an isomorphism of orbifolds onto 
 
 ::: {.proof}
 
-This is [@YZZ25 §3.1; §1, §3.2, §3.3, §6.2].
+This is [@YZZ25, Prop. 3.2, Thms. 3.3, 3.4 and 4.11, Prop. 6.6].
 :::
 
 ::: {.theorem #thm:git-equals-looijenga title="The GIT compactification is a Looijenga compactification"}
@@ -328,7 +328,7 @@ between the GIT compactification of $\mcm_T$ and the Looijenga compactification 
 
 ::: {.proof}
 
-This is [@YZZ25 §4.1, §4.2; @Sha80; @Loo02].
+This is [@YZZ25, Thm. 4.1, Lem. 4.8 and Thm. 4.11].
 :::
 
 ::: {.proposition #prop:sextic-group-as-normalizer title="The arithmetic group as a normalizer"}

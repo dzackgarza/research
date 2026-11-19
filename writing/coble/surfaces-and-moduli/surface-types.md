@@ -301,8 +301,8 @@ subspaces of $H^{2,0}$ and $H^{0,2}$ vanish. The invariant subspace is
 defined over $\QQ$, so it contains a rational class arbitrarily close
 to the averaged Kähler class. Openness of the Kähler cone makes that
 rational class Kähler. An integral multiple is the first Chern class
-of a positive line bundle by the Lefschetz $(1,1)$ theorem, and the
-Kodaira embedding theorem makes $X$ projective [@BHPV04, Chapters IV, VIII].
+of a positive line bundle $L$ by the Lefschetz $(1,1)$ theorem.
+Then $c_1(L)^2>0$, so $X$ is projective [@BHPV04, Ch. IV, Thm. 6.2].
 :::
 
 ::: {.definition #def:enriques-surface title="Enriques surface"}

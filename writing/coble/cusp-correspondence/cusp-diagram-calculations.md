@@ -78,7 +78,7 @@ The generalized Coxeter semifan (@def:generalized-coxeter-semifan) of [@AEGS25],
 :::
 
 ::: {.proof}
-(1) is [@AEGS25], Definition 5.1, printed p. 609, read with @thm:coble-cusp-chamber. The criterion stated there for the semifan to be a fan is that the Coxeter polyhedron $P$ have finite volume, equivalently that $W$ have finite index in $\Orth(\Lambda)$; the chamber here is a simplex of finite volume with one ideal vertex, its $f$-vector being $(9,36,84,126,126,84,36,9,1)$ and its transcript reporting one vertex at infinity.
+(1) is [@AEGS25, Def. 5.1], read with @thm:coble-cusp-chamber. The criterion stated there for the semifan to be a fan is that the Coxeter polyhedron $P$ have finite volume, equivalently that $W$ have finite index in $\Orth(\Lambda)$; the chamber here is a simplex of finite volume with one ideal vertex, its $f$-vector being $(9,36,84,126,126,84,36,9,1)$ and its transcript reporting one vertex at infinity.
 
 (2) By the same definition the Type II rays are the rays $\RR_{\ge0}v$ with $v^2 = 0$ on $\partial C_\QQ$, in bijection with the maximal parabolic subdiagrams of $G$, which by @thm:coble-cusp-chamber are the nine one-node deletions. A facet of a finite-volume chamber lies at infinity exactly when its own reflection group does not have finite covolume, that is when the deletion is affine rather than elliptic. The recorded run `computations/coxiter/logs/9-9-1_1.txt` reports $8$ finite vertices and $1$ vertex at infinity, and a simplex with nine facets has nine vertices; so exactly one of the nine deletions is affine. That facet is the one @thm:coble-cusp-chamber identifies, carrying the adjacent $1$-cusp with boundary lattice $(7,7,1)_0$.
 

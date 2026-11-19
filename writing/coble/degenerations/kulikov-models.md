@@ -117,7 +117,7 @@ Here $N=\log T$ is the log monodromy [@FS86; @AET23, §2A].
 
 ::: {.proof}
 
-This is the Picard–Lefschetz and triple-point formula of [@FS86], as quoted in [@AET23, §2A].
+This is the Picard–Lefschetz and triple-point formula of [@FS86, Lem. 1.1 and Prop. 7.1], as quoted in [@AET23, §2A].
 :::
 
 ## The monodromy weight filtration
@@ -147,7 +147,7 @@ Type $\latII$: $N^2 = 0$ gives $\operatorname{Im}N\subseteq\operatorname{Ker}N$,
 Then $N(W_3) = W_1$ and $N(W_2) = 0$.
 The map $N\colon V/\operatorname{Ker}N\to\operatorname{Im}N$ is an isomorphism, and $\Gr^W_0 = \Gr^W_4 = 0$.
 Since $N\neq0$, $\Gr^W_1 = \operatorname{Im}N\neq0$, and so $\Gr^W_3\cong\Gr^W_1\neq0$.
-The operator $N$ is skew-symmetric for the cup product, because it is the logarithm of the isometry $T$ [@FS86, Sec. 1].
+The operator $N$ is skew-symmetric for the cup product, because it is the logarithm of the isometry $T$ [@FS86, proof of Lem. 1.1].
 So $(Nx\cdot Ny) = -(x\cdot N^2y) = 0$ for all $x, y$, and $\operatorname{Im}N$ is totally isotropic.
 By @prop:k3-lattice the cup product on $V\tensor\RR$ has signature $(3,19)$, so a totally isotropic subspace has dimension at most $3$.
 Thus $\dim\Gr^W_2 = \dim\operatorname{Ker}N - \dim\operatorname{Im}N = 22 - 2\dim\operatorname{Im}N\geq16$.
@@ -171,7 +171,7 @@ The [boundary components]{.other-sense} of $\bbcpt{\ftd}$ are classified by the 
 
 ::: {.proof}
 
-The construction of the limiting mixed Hodge structure is the nilpotent orbit theorem together with the Clemens-Schmid sequence [@Sch73; @Cle77], and the relation between the nilpotency index of $N$ and the type of the degeneration is Kulikov's classification [@Kul77, Thm. II; @PP81].
+The construction of the limiting mixed Hodge structure is the nilpotent orbit theorem together with the Clemens-Schmid sequence [@Sch73, Thm. 4.9; @Cle77], and the relation between the nilpotency index of $N$ and the type of the degeneration is Kulikov's classification [@Kul77, Thm. II; @PP81].
 
 For a degeneration of type II the monodromy is unipotent with $N\neq0$, $N^2=0$, so the weight filtration has the three steps $0\subset W_1\subset W_2\subset W_3$ with $\Gr^W_i=0$ otherwise; the primitive part of $H^2$ contributing to $\Gr^W_2$ is annihilated by $N$ and by its transpose, hence is the orthogonal complement of the isotropic subspace $I$ of the special fibre, quotiented by $I$ itself, which is $\overline{T}_I$ of the boundary lattice.
 So the pure Hodge structure of weight $2$ on $\Gr^W_2$ is the one on $\overline{T}_I$, and by @def:signature its signature is $(2-k,n-k)$ for $\rank I=k$.

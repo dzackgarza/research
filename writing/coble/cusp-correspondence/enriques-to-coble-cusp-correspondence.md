@@ -103,9 +103,11 @@ $$
 } \cong U \oplus E_{8}(2) \cong (10,8,0)_1.
 $$
 
-Alternatively, by [@AE22 Prop. 5.5], the isomorphism type of $w_1^{\perp \ten}/w_1$ is determined by $\mathrm{div}_{\ten}(w_1)$, which the divisibility calculation (@lem:divisibilityTcoOne) gives as $2$; divisibility is also what distinguishes the two Enriques $0$-cusps, $(10,10,0)_1$ at divisibility $1$ and $(10,8,0)_1$ at divisibility $2$ [@AEGS25, §2].
+Alternatively, by [@AE22 Prop. 5.5], the isomorphism type of $w_1^{\perp \ten}/w_1$ is determined by $\mathrm{div}_{\ten}(w_1)$, which the divisibility calculation (@lem:divisibilityTcoOne) gives as $2$.
 So $\eta(v_1)$ sits at the $(10,8,0)_1$ cusp.
 :::
+
+Divisibility also distinguishes the two Enriques $0$-cusps: $(10,10,0)_1$ has divisibility $1$ and $(10,8,0)_1$ has divisibility $2$ [@AEGS25, §2].
 
 ::: {.lemma #lem:1_cusp_correspondence}
 
