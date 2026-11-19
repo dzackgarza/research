@@ -1,0 +1,10 @@
+|O(q_{T_Co})| = 46998591897600  = 2^21 * 3^5 * 5^2 * 7 * 17 * 31   [prop:coble-discriminant-group]
+[O(T_Co) : R_{gent}] = 67456  = 2^7 * 17 * 31          [thm:gamma-co-2-comparison(3)]
+|P| = 46998591897600 / 67456 = 696729600  = 2^14 * 3^5 * 5^2 * 7
+
+|P| = |W(E_8)| = 696,729,600, which is the bound the book proves for rho(Gamma^Hdg_Co).
+
+verdict: the lemma holds.  Item 1e is the statement that the index
+  [Gamma_Co : Gamma_Co cap O~+(T_Co)] = |rho(Gamma_Co)| equals 1; it is a divisor of
+  696,729,600 = 2^14 * 3^5 * 5^2 * 7, so the question is finite and, by the sign lemma,
+  purely about the image of Gamma_Co in O(A_{T_Co}).
