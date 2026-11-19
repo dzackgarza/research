@@ -100,7 +100,13 @@ TRACES = {
          5: (832072, 456336)},
     13: {1: (26, 52), 2: (1638, 52), 3: (25688, 676), 4: (199082, 86528),
          5: (2390336, -162578)},
+    17: {1: (126, 78), 2: (2616, 852), 3: (21372, 37584), 4: (629956, 372296),
+         5: (22606526, 8630328)},
+    19: {1: (110, 80), 2: (1802, 1808), 3: (32540, -5104), 4: (982290, 320920),
+         5: (10407480, 14353510)},
 }
+# p = 17, 19, n = 5: sums of half(p, 5, k0, k1) over consecutive ranges
+# covering [0, (p^5 - 1)/2), minus 1 + q^2.
 
 
 if __name__ == '__main__':
@@ -120,3 +126,11 @@ if __name__ == '__main__':
             cyc = [d for d in range(1, 400) if euler_phi(d) <= 10 and
                    Q % cyclotomic_polynomial(d, t) == 0]
             print('    cyclotomic factors Phi_d of Q: d in %s' % cyc)
+            if sign == -1:
+                # Artin-Tate over F_{p^2}: disc NS . #Br is, up to squares,
+                # prod over the 8 remaining roots of (1 - beta^2) = Q_8(1) Q_8(-1);
+                # with R(t) = p^8 Q_8(t/p) that is R(p) R(-p) / p^16.
+                R8 = (p**10 * Q(t / p)) // ((t - p) * (t + p))
+                D = R8(p) * R8(-p)
+                print('    R(p) R(-p) = %s, class in Q*/Q*^2: %s'
+                      % (factor(D), D.squarefree_part()))

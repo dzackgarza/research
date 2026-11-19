@@ -11,6 +11,7 @@ p = 11: good reduction: True
   sign -1 of Q(t) = sign t^10 Q(1/t): consistent with n <= 5: True
     p^10 Q(t/p) = (t - 11) * (t + 11) * (t^8 + 3*t^7 + 66*t^6 + 363*t^5 + 13310*t^4 + 43923*t^3 + 966306*t^2 + 5314683*t + 214358881)
     cyclotomic factors Phi_d of Q: d in [1, 2]
+    R(p) R(-p) = 2^8 * 7 * 11^14, class in Q*/Q*^2: 7
 ========================================================================
 p = 13: good reduction: True
   n=1  tr F^n|H^2 = 26  tr F^n.iota|H^2 = 52  tr F^n|H^2_+ = 3 p^n  tr F^n|H^2_- = -13
@@ -24,3 +25,28 @@ p = 13: good reduction: True
   sign -1 of Q(t) = sign t^10 Q(1/t): consistent with n <= 5: True
     p^10 Q(t/p) = (t - 13) * (t + 13) * (t^8 + 26*t^7 + 195*t^6 - 4225*t^5 - 101062*t^4 - 714025*t^3 + 5569395*t^2 + 125497034*t + 815730721)
     cyclotomic factors Phi_d of Q: d in [1, 2]
+    R(p) R(-p) = 2^5 * 3 * 13^14, class in Q*/Q*^2: 6
+========================================================================
+p = 17: good reduction: True
+  n=1  tr F^n|H^2 = 126  tr F^n.iota|H^2 = 78  tr F^n|H^2_+ = 6 p^n  tr F^n|H^2_- = 24
+  n=2  tr F^n|H^2 = 2616  tr F^n.iota|H^2 = 852  tr F^n|H^2_+ = 6 p^n  tr F^n|H^2_- = 882
+  n=3  tr F^n|H^2 = 21372  tr F^n.iota|H^2 = 37584  tr F^n|H^2_+ = 6 p^n  tr F^n|H^2_- = -8106
+  n=4  tr F^n|H^2 = 629956  tr F^n.iota|H^2 = 372296  tr F^n|H^2_+ = 6 p^n  tr F^n|H^2_- = 128830
+  n=5  tr F^n|H^2 = 22606526  tr F^n.iota|H^2 = 8630328  tr F^n|H^2_+ = 11 p^n  tr F^n|H^2_- = 6988099
+  sign +1 of Q(t) = sign t^10 Q(1/t): consistent with n <= 5: True
+    p^10 Q(t/p) = (t - 17)^2 * (t + 17)^2 * (t^6 - 7*t^5 + 306*t^4 + 2312*t^3 + 88434*t^2 - 584647*t + 24137569)
+    cyclotomic factors Phi_d of Q: d in [1, 2]
+========================================================================
+p = 19: good reduction: True
+  n=1  tr F^n|H^2 = 110  tr F^n.iota|H^2 = 80  tr F^n|H^2_+ = 5 p^n  tr F^n|H^2_- = 15
+  n=2  tr F^n|H^2 = 1802  tr F^n.iota|H^2 = 1808  tr F^n|H^2_+ = 5 p^n  tr F^n|H^2_- = -3
+  n=3  tr F^n|H^2 = 32540  tr F^n.iota|H^2 = -5104  tr F^n|H^2_+ = 2 p^n  tr F^n|H^2_- = 18822
+  n=4  tr F^n|H^2 = 982290  tr F^n.iota|H^2 = 320920  tr F^n|H^2_+ = 5 p^n  tr F^n|H^2_- = 330685
+  n=5  tr F^n|H^2 = 10407480  tr F^n.iota|H^2 = 14353510  tr F^n|H^2_+ = 5 p^n  tr F^n|H^2_- = -1973015
+  sign +1 of Q(t) = sign t^10 Q(1/t): consistent with n <= 5: True
+    p^10 Q(t/p) = t^10 + 4*t^9 + 190*t^8 - 3249*t^7 - 48013*t^6 - 17332693*t^4 - 423412929*t^3 + 8938717390*t^2 + 67934252164*t + 6131066257801
+    cyclotomic factors Phi_d of Q: d in []
+  sign -1 of Q(t) = sign t^10 Q(1/t): consistent with n <= 5: True
+    p^10 Q(t/p) = (t - 19) * (t + 19) * (t^8 + 4*t^7 + 551*t^6 - 1805*t^5 + 150898*t^4 - 651605*t^3 + 71806871*t^2 + 188183524*t + 16983563041)
+    cyclotomic factors Phi_d of Q: d in [1, 2]
+    R(p) R(-p) = 2^5 * 3 * 5 * 19^14 * 29, class in Q*/Q*^2: 870
