@@ -116,7 +116,7 @@ This follows from [@KK72 §5, Thm.2].
 ::: {.definition #def:gamma-co-groups title="The groups of the Coble lattice"}
 $T_\Co$ is the lattice $N$ of [@DK13, (3.6)], $N = \generators{2}\oplus E(2)$ with $E(2) = U(2)\oplus E_8(2)$; in the notation of @lem:primitive_embedding_eta it is $\generators{h}\oplus E_{10}(2)$. Let $\delta\definedas\tilde e-\tilde f$, a $(-2)$-vector of $T_\En$ with $\delta^{\perp T_\En} = \eta(T_\Co)$; then $T_\En = (T_\Co\perp\ZZ\delta)_H$ is the overlattice glued along $H = \generators{(h/2,\,\delta/2)}$ (@lem:primitive_embedding_eta, @def:gluing-datum-of-a-pair).
 
-Three groups act on $\bD(T_\En)$: the stable group $\Gamma_\En\definedas\widetilde\Orth^+(T_\En) = \Orth^+(T_\En)\intersect\discriminantkernel{T_\En}$; the group $\Gamma^K_\En\definedas\Orth(T_\En)$, which is the group that [@AEGS25, Def. 2.6, printed p. 587] writes $\Gamma_\En$; and $\gent = \rho^{-1}(M)$, with $M$ the summand-preserving subgroup of $\Orth(A_{T_\En},q)$ [@AEGS25, Def. 2.6, printed p. 587; @Ste91, Prop. 2.7].
+Three groups act on $\bD(T_\En)$: the stable group $\Gamma_\En\definedas\widetilde\Orth^+(T_\En) = \Orth^+(T_\En)\intersect\discriminantkernel{T_\En}$; the group $\Gamma^K_\En\definedas\Orth(T_\En)$, which is the group that [@AEGS25, Def. 2.6, printed p. 587] writes $\Gamma_\En$; and $\gent = \rho^{-1}(M)$, with $M$ the summand-preserving subgroup of $\Orth(A_{T_\En},q)$ [@AEGS25, Def. 2.6, printed p. 587; @Ste91, Prop. 2.7, printed p. 6].
 
 1. $\Gamma_\Co\leq\Orth(T_\Co)$ is the monodromy group of the family of unpolarized Coble surfaces: the image of the monodromy representation (@def:transport-and-monodromy) of the local system of lattices with fibre $T_\Co$ (@def:local-system-of-lattices) of that family. The family of unpolarized Enriques surfaces, whose local system of lattices has fibre $T_\En$ and monodromy group $\Gamma_\En$, induces this family and its local system. Put $\fco\definedas\bD(T_\Co)/\Gamma_\Co$.
 2. $\Gamma^{\mathrm{un}}_\Co\definedas\Orth(T_\Co)$, with $F^{\mathrm{un}}_\Co\definedas\bD(T_\Co)/\Orth(T_\Co)$: the moduli space $M_\Co$ of Coble surfaces is isomorphic to an open subset of $\bD(N)/\Orth(N)$ [@DK13, Prop. 3.2, p. 513].
@@ -251,7 +251,7 @@ Identify $\ten = U\oplus U(2)\oplus E_8(2)$ with the lattice $L_- = \mathbf H\op
 ::: {.proof}
 
 (1) The group $\Gamma$ of [@Ste91, §2] is the image in $\Orth(L_-)$ of the isometries of the K3 lattice that commute with the Enriques involution and fix the polarization vector, and $\gent$ is the image in $\Orth(\ten)$ of the same group [@AEGS25 Def. 2.6, printed p. 587].
-The description by the two summands is [@Ste91, Prop. 2.7].
+The description by the two summands is [@Ste91, Prop. 2.7, printed p. 6].
 
 (2) Because $U$ is unimodular, $A_{\ten} = A_{U(2)}\perp A_{E_8(2)}$, and an isometry of $q_{\ten}$ preserves both summands exactly when it is a pair of isometries of the summands.
 So (1) says $\gent = \rho^{-1}(M)$.
@@ -260,7 +260,7 @@ The lattice $\ten$ is even, indefinite and $2$-elementary, so $\rho$ is surjecti
 (3) The three nonzero classes of $A_{U(2)}$ are $[e'/2]$, $[f'/2]$ and $[(e'+f')/2]$, with $q$-values $0$, $0$ and $(e'+f')^2/4 = 1$.
 So every element of $\Orth(q_{U(2)})$ fixes $[(e'+f')/2]$, and $\gent$ stabilizes it by (2).
 Since $f'\in\ten$, the classes $[(e'+f')/2]$ and $[(e'-f')/2]$ are equal.
-The isometry $\psi\in\Orth(L_-)$ of [@Ste91, Rem. 2.8] stabilizes $\tfrac12(e'-f')+L_-$ and is not in $\Gamma$.
+The isometry $\psi\in\Orth(L_-)$ of [@Ste91, Rem. 2.8, printed p. 7] stabilizes $\tfrac12(e'-f')+L_-$ and is not in $\Gamma$.
 :::
 
 ::: {.proposition #prop:gamma-en-two-index title="The index of $\gent$"}
@@ -277,7 +277,7 @@ By @prop:sterk-group-identification, $\gent = \rho^{-1}(M)$ and $\rho$ is surjec
 Because $U$ is unimodular, $A_{\ten} = A_{E_{10}(2)}$, so $\abs{\Orth(A_{\ten},q_{\ten})} = 2^{21}\cdot3^5\cdot5^2\cdot7\cdot17\cdot31$ by @prop:coble-discriminant-group.
 By @prop:gamma-en-two-gluing, $M = \rho(\gent)$ is the $\gamma$-transport of the image of $\Stab_{\Orth(\sen)}(h)$ in $\Orth(q_{\sen})$, which has order $\abs{W(E_8)} = 2^{14}\cdot3^5\cdot5^2\cdot7$ by @thm:coble-heegner-finite-orbits(1).
 The quotient of the two orders is $2^7\cdot17\cdot31$.
-This is the index computed in [@Ste91, Rem. 2.12].
+This is the index computed in [@Ste91, Rem. 2.12, printed p. 8].
 :::
 
 ::: {.proposition #prop:ten-plane-classes title="The two classes of primitive isotropic planes of $\ten$"}
@@ -299,7 +299,7 @@ For a primitive totally isotropic plane $\varPi\subseteq\ten$ let $D(\varPi)\leq
 The vector $\alpha/2$ corresponds to $e_1\notin E_8$, so $z$ is primitive in $U\oplus E_8(2)$, and $e'$ is primitive in $U(2)$; a span of primitive vectors of two orthogonal summands is primitive in their sum, so $\varPi_2$ is primitive, and so is $\varPi_1$.
 The vector $e$ has divisibility one.
 For a primitive $az+be'\in\varPi_2$, the ideal $(az+be',\ten)$ contains $(az+be',f) = 2a$ and $(az+be',f') = 2b$, and it lies in $2\ZZ$ because $(z,\ten)$ and $(e',\ten)$ do; so $az+be'$ has divisibility two.
-By [@Ste91, Prop. 4.6] there are exactly two $\Orth(\ten)$-classes of primitive isotropic planes, and divisibility is invariant under $\Orth(\ten)$, so $\varPi_1$ and $\varPi_2$ represent the two classes.
+By [@Ste91, Prop. 4.6, printed p. 29] there are exactly two $\Orth(\ten)$-classes of primitive isotropic planes, and divisibility is invariant under $\Orth(\ten)$, so $\varPi_1$ and $\varPi_2$ represent the two classes.
 
 (2), (3): the subgroup $D(\varPi)$.
 $A_{\ten}$ has exponent two, so $2\ten^*\subseteq\ten$, and primitivity of $\varPi$ gives $\varPi_\QQ\cap\ten^*\subseteq\tfrac12(\varPi_\QQ\cap\ten) = \tfrac12\varPi$.
@@ -431,7 +431,7 @@ $$
 ::: {.proof}
 
 For $g\in\Orth(\ten)$ one has $c(g\ZZ v) = \rho(g)\,c(\ZZ v)$, because $g$ preserves divisibility.
-By [@Ste91, Prop. 4.5] there is $g\in\Orth(\ten)$ with $g\ZZ v_0 = \ZZ v$ for $v_0 = e$ or $v_0 = e'$.
+By [@Ste91, Prop. 4.5, printed p. 28] there is $g\in\Orth(\ten)$ with $g\ZZ v_0 = \ZZ v$ for $v_0 = e$ or $v_0 = e'$.
 Conjugation by $g$ carries $\Stab_{\Orth(\ten)}(\ZZ v_0)$ to $\Stab_{\Orth(\ten)}(\ZZ v)$, and conjugation by $\rho(g)$ carries the stabilizer of $c(\ZZ v_0)$ to the stabilizer of $c(\ZZ v)$.
 The first equality holds for $v_0$ by @lem:ten-base-stabilizers, because $c(\ZZ e) = 0$ and $c(\ZZ e') = d_1$.
 
@@ -451,7 +451,7 @@ Two primitive isotropic lines $\ell,\ell'\subseteq\ten$ are $\Gamma$-equivalent 
 
 If $\ell' = \gamma\ell$ with $\gamma\in\Gamma$, then $c(\ell') = \rho(\gamma)c(\ell)$.
 Conversely let $c(\ell') = h\,c(\ell)$ with $h\in H$.
-The class $c(\ell)$ is $0$ exactly when $\operatorname{div}(\ell) = 1$, so $\ell$ and $\ell'$ have the same divisibility, and by [@Ste91, Prop. 4.5] there is $g\in\Orth(\ten)$ with $g\ell = \ell'$.
+The class $c(\ell)$ is $0$ exactly when $\operatorname{div}(\ell) = 1$, so $\ell$ and $\ell'$ have the same divisibility, and by [@Ste91, Prop. 4.5, printed p. 28] there is $g\in\Orth(\ten)$ with $g\ell = \ell'$.
 Then $h^{-1}\rho(g)$ fixes $c(\ell)$, so by @lem:line-stabilizer-image $h^{-1}\rho(g) = \rho(s)$ with $s\in\Stab_{\Orth(\ten)}(\ell)$.
 The element $\gamma = gs^{-1}$ carries $\ell$ to $\ell'$ and has $\rho(\gamma) = h$, so $\gamma\in\rho^{-1}(H) = \Gamma$.
 :::
@@ -523,7 +523,7 @@ Then $h^{-1}\rho(g)$ stabilizes $D(\varPi)$, so $h^{-1}\rho(g) = \rho(s)$ with $
 Let $M = \rho(\gent)$ as in @prop:sterk-group-identification.
 Use the four $M$-orbits $A$, $B$, $C$, $D$ of nonzero isotropic elements of $A_{\ten}$ and the five $M$-orbits $AAA$, $ABC$, $ACC$, $ADD$, $CCD$ of isotropic subgroups of order $4$ of @ex:gco-finite-orbits, with $[e'/2]$, $[f'/2]$, $[(e'+f')/2]$ in place of $[u_0/2]$, $[w_0/2]$, $[h/2]$.
 
-1. The primitive isotropic lines of $\ten$ form five $\gent$-orbits, the orbits of the vectors of [@Ste91, Prop. 4.2.3]:
+1. The primitive isotropic lines of $\ten$ form five $\gent$-orbits, the orbits of the vectors of [@Ste91, Prop. 4.2.3, printed p. 16]:
 
    | type | representative | class $c(\ZZ v)$ | $M$-orbit of the class |
    | :--- | :--- | :--- | :--- |
@@ -554,7 +554,7 @@ Use the four $M$-orbits $A$, $B$, $C$, $D$ of nonzero isotropic elements of $A_{
    | $\theset{3,5}$ | | | $\tilde B_6\oplus\tilde C_2$ | | $\tilde C_6\oplus\tilde C_2$ |
    | $\theset{3,4}$ | | | $\tilde C_8$ | $\tilde C_8$ | |
    | $\theset{5,5}$ | | | | | $\tilde B_3\oplus\tilde B_3\oplus\tilde C_2$ |
-4. For a plane $\varPi$ with label $\lambda$, the intersection of the image of $\Stab_{\gent}(\varPi)$ in $\GL(\varPi)$ with $\SL(\varPi)$ is $\Gamma^1(2)$ for $\lambda = \theset{1,t}$ [@Ste91, §4.3.16]; it is $\Gamma(2)$ for $\theset{2,4,5}$, $\Gamma^1(2)$ for $\theset{4,5}$, $\theset{3,5}$ and $\theset{3,4}$, and $\SL_2(\ZZ)$ for $\theset{5,5}$ [@Ste91, §4.3.17 and the proof of Prop. 4.7].
+4. For a plane $\varPi$ with label $\lambda$, the intersection of the image of $\Stab_{\gent}(\varPi)$ in $\GL(\varPi)$ with $\SL(\varPi)$ is $\Gamma^1(2)$ for $\lambda = \theset{1,t}$ [@Ste91, §4.3.16]; it is $\Gamma(2)$ for $\theset{2,4,5}$, $\Gamma^1(2)$ for $\theset{4,5}$, $\theset{3,5}$ and $\theset{3,4}$, and $\SL_2(\ZZ)$ for $\theset{5,5}$ [@Ste91, §4.3.17, printed p. 27, and the proof of Prop. 4.7, printed p. 29].
 5. The orbits of $\gent^+ = \gent\cap\Orth^+(\ten)$ on lines and on planes are the orbits of $\gent$.
 
 So the Baily--Borel compactification of $\fentwo$ has five $0$-dimensional and nine $1$-dimensional boundary components, with the incidence of item 3 [@Ste91, §4.2, §4.4].

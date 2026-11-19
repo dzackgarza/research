@@ -555,6 +555,34 @@ def test_the_image_of_b_under_theta_is_b_minus_H_and_not_H_minus_b():
     assert r"\theta_\Co(b) = -H/2+t = H-b" not in page
 
 
+def test_every_Sterk_statement_cited_on_these_pages_carries_its_printed_page():
+    """The same rule for the other source these pages lean on, whose deposit is in the tree.
+
+    Sterk, Math. Z. 207 (1991) 1--36, deposited as
+    sterk-1991-compactifications-of-the-period-space-of-enriques-surfaces-i.pdf, printed page =
+    PDF page: Proposition 2.7 on p. 6, Remark 2.8 on p. 7, Remark 2.12 on p. 8, Proposition
+    4.2.3 on p. 16, Lemma 4.3.4 on p. 18, Sec. 4.3.17 on p. 27, Proposition 4.5 on p. 28,
+    Propositions 4.6 and 4.7 on p. 29.
+    """
+    pages = [PAGE,
+             ROOT / "writing/coble/lattices-and-moduli/lattices.md",
+             ROOT / "writing/coble/lattices-and-moduli/moduli-construction.md",
+             OPEN_PROBLEMS,
+             ROOT / "writing/coble/coble-moduli/cusp-correspondence-morphism-chain.md",
+             ROOT / "writing/coble/computations/sterk-root-counts-and-computed-chambers.md"]
+    statement = re.compile(r"(Def\.|Definition|Lem\.|Lemmas?|Lems\.|Thm\.|Theorem|Props?\.|Propositions?|Cor\.|Corollary|Rem\.|Remark)")
+    bad = []
+    for path in pages:
+        for number, line in enumerate(path.read_text().splitlines(), 1):
+            # the segment from @Ste91 to the end of its bracket, so that a second source in
+            # the same bracket ("[@AEGS25, ...; @Ste91, Prop. 2.7]") is read too
+            for match in re.finditer(r"@Ste91[^\]]*", line):
+                citation = match.group(0)
+                if statement.search(citation) and "printed p" not in citation:
+                    bad.append("%s:%d %s" % (path.name, number, citation))
+    assert not bad, bad
+
+
 def test_every_AEGS25_statement_cited_on_these_pages_carries_its_printed_page():
     """A statement of the source is cited by number *and* by the page that carries it.
 

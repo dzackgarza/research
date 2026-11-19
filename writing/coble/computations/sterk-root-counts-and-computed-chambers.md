@@ -26,14 +26,14 @@ $$
 \eta_4 = e'+2f'+\alpha,\quad
 \eta_5 = 2e+2f+\alpha,
 $$
-with $\omega = 2w_8$ and $\alpha = 2w_1$ in the dual basis ([Coble lattice isotropic candidates](#sec-coble-lattice-isotropic-candidates)) [@Ste91, Prop. 4.2.3].
+with $\omega = 2w_8$ and $\alpha = 2w_1$ in the dual basis ([Coble lattice isotropic candidates](#sec-coble-lattice-isotropic-candidates)) [@Ste91, Prop. 4.2.3, printed p. 16].
 Each quotient $\eta_j^{\perp}/\eta_j$ is a hyperbolic lattice of rank $10$, so it determines a copy of $\HH^9$ (@def:hyperbolic-model), and
 $$
 \eta_1^{\perp}/\eta_1 \cong U(2)\oplus E_8(2) = E_{10}(2),
 \qquad
 \eta_j^{\perp}/\eta_j \cong U\oplus E_8(2) \quad (j = 2,3,4,5)
 $$
-[@Ste91, Lem. 4.3.4].
+[@Ste91, Lem. 4.3.4, printed p. 18].
 These lattices are even and $2$-elementary (@def:p-elementary) of types $(10,10,0)$ and $(10,8,0)$ respectively.
 :::
 
