@@ -140,7 +140,7 @@ b^\sharp(x)(y)=b(x,y),
 \qquad
 {}^\sharp b(y)(x)=b(x,y).
 $$
-Define the left and right radicals and coradicals by the exact sequences
+Define the left and right radicals and coradicals (@def:pairing-adjoints) by the exact sequences
 $$
 0\too\radic_{\mathrm L}(M)
 \too M

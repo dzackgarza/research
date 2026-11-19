@@ -30,13 +30,13 @@ Since $C = C_1+\cdots+C_n \sim -2K_S$, intersecting with $C_i$ gives $-2K_S\cdot
 
 ::: {.definition #def:minimal-coble-surface title="Minimal Coble surface"}
 
-A Coble surface $S$ is **minimal** if, for every $(-1)$-curve $E$ on $S$, the surface obtained by blowing down $E$ is not a Coble surface [@DK25, proof of Prop. 9.1.4].
+A Coble surface (@def:coble-surface) $S$ is **minimal** if, for every $(-1)$-curve $E$ on $S$, the surface obtained by blowing down $E$ is not a Coble surface [@DK25, proof of Prop. 9.1.4].
 
 :::
 
 ::: {.proposition #prop:coble-one-boundary-minimal title="One boundary component implies minimal"}
 
-A terminal Coble surface of K3 type with $n = 1$ is minimal in the sense of @def:minimal-coble-surface [@DK25, proof of Prop. 9.1.4].
+A terminal Coble surface (@def:coble-surface) of K3 type with $n = 1$ is minimal in the sense of @def:minimal-coble-surface [@DK25, proof of Prop. 9.1.4].
 
 :::
 
@@ -55,8 +55,8 @@ The group $W_S$ does not depend on the choice of geometric basis [@CD12, §1.1, 
 
 ::: {.theorem #thm:cremona-special-classification title="Cremona special point sets over the complex numbers"}
 
-Let $\mathcal{P}\iscontainedin\PP^2_\CC$ be a Cremona special point set.
-Then $\mathcal{P}$ is unnodal, and either $n = 9$ and $\mathcal{P}$ is a Halphen set, or $n = 10$ and $\mathcal{P}$ is a Coble set: the set of the ten points blown up to give a Coble surface $S$ with $K_S^2 = -1$ and $\abs{-2K_S}$ consisting of one irreducible curve.
+Let $\mathcal{P}\iscontainedin\PP^2_\CC$ be a Cremona special (@def:cremona-special) point set.
+Then $\mathcal{P}$ is unnodal, and either $n = 9$ and $\mathcal{P}$ is a Halphen set, or $n = 10$ and $\mathcal{P}$ is a Coble set: the set of the ten points blown up to give a Coble surface (@def:coble-surface) $S$ with $K_S^2 = -1$ and $\abs{-2K_S}$ consisting of one irreducible curve.
 Conversely, every unnodal Halphen set and every unnodal Coble set is Cremona special.
 Unnodal point sets form a Zariski open subset of the variety of point sets that define Halphen and Coble surfaces [@CD12, §1.4, Main Theorem; @CD12, §3].
 

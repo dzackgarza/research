@@ -96,7 +96,7 @@ This is [@CS10, Ch. 15].
 ::: {.proposition #prop:positive-lattice-theta-modularity title="Theta series of an even positive-definite lattice"}
 
 Let $L$ be an even positive-definite lattice of rank $2m$ and quadratic
-level $N=N_q(L)$. Its theta series is
+level (@def:lattice-level) $N=N_q(L)$. Its theta series is
 $$
 \Theta_L(\tau)
 \definedas

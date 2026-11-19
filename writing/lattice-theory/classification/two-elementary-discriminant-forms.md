@@ -8,7 +8,7 @@ $$
 p(e)=\tfrac12+2\bZ,\qquad
 q(e)=-\tfrac12+2\bZ.
 $$
-They are the quadratic discriminant forms of $\generators{2}$ and $\generators{-2}$. The rank-two forms $u,v$ have underlying module $C_2\oplus C_2$ with generators $e_1,e_2$ and are determined by
+They are the quadratic discriminant forms (@def:discriminant) of $\generators{2}$ and $\generators{-2}$. The rank-two forms $u,v$ have underlying module $C_2\oplus C_2$ with generators $e_1,e_2$ and are determined by
 $$
 \begin{array}{c|ccc}
  &q(e_1)&q(e_2)&q(e_1+e_2)\\ \hline
@@ -54,7 +54,7 @@ The orthogonal-sum morphism $\mathsf F\too\mathsf Q_{2,W}$ induces an isomorphis
 $$
 \mathsf F/\sim_{\mathcal R}\xrightarrow{\sim}\mathsf Q_{2,W}.
 $$
-An isometry class in $\mathsf Q_{2,W}$ is therefore determined by the rank of its underlying $\bF_2$-vector space, whether its quadratic values lie in $\bZ/2\bZ\injects W$, and its Brown invariant of @def:brown-invariant; see [@Nik80, §1.8]. In particular, the quadratic discriminant form of every even $2$-elementary lattice belongs to this monoid.
+An isometry class in $\mathsf Q_{2,W}$ is therefore determined by the rank of its underlying $\bF_2$-vector space, whether its quadratic values lie in $\bZ/2\bZ\injects W$, and its Brown invariant of @def:brown-invariant; see [@Nik80, §1.8]. In particular, the quadratic discriminant form (@def:discriminant) of every even $2$-elementary lattice belongs to this monoid.
 :::
 
 ::: {.proof}

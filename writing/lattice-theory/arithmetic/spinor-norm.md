@@ -136,7 +136,7 @@ Let $L$ be a lattice of signature $(1,n)$ and let
 $$
 C(L)\definedas\theset{x\in L\otimes\bR \st x^2>0}
 $$
-be its positive cone, which has two components.
+be its positive cone (@not:reflection-groups-sign-convention), which has two components.
 Then $\Orth^+(L)=\Theta_\bR(L)$ is the subgroup of $\Orth(L)$ preserving each component of $C(L)$.
 :::
 

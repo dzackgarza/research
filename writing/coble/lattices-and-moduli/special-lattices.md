@@ -4,7 +4,7 @@
 
 ::: {.proposition #prop:enriques-numerical-lattice title="The numerical lattice of an Enriques surface"}
 
-Let $Z$ be a complex Enriques surface.
+Let $Z$ be a complex Enriques surface (@def:enriques-surface).
 Then
 $$
 \Num(Z) = \NS(Z)/\mathrm{Tors} = \NS(Z)/(K_Z) \cong U\oplus E_8 = E_{10}

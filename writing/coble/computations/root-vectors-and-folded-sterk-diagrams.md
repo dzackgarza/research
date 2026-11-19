@@ -133,7 +133,7 @@ The vectors $v_1,\dots,v_{22}$ span a sublattice of rank $18$ of $U(2)\oplus E_8
 ::: {.proposition #prop:eighteen-two-zero-vinberg-diagram title="The 22 roots give the Vinberg diagram of $(18,2,0)$"}
 
 Put $\epsilon_i = -1$ for $i\in\theset{2,10,17,19,21,22}$ and $\epsilon_i = 1$ otherwise.
-Then $(\epsilon_i v_i,\epsilon_j v_j)\geq 0$ for all $i\neq j$, and the Coxeter diagram of $\epsilon_1v_1,\ldots,\epsilon_{22}v_{22}$ is the diagram of the lattice $(18,2,0)$ in [@AE22, Fig. 4].
+Then $(\epsilon_i v_i,\epsilon_j v_j)\geq 0$ for all $i\neq j$, and the Coxeter diagram (@def:coxeter-matrix) of $\epsilon_1v_1,\ldots,\epsilon_{22}v_{22}$ is the diagram of the lattice $(18,2,0)$ in [@AE22, Fig. 4].
 :::
 
 ::: {.proof}

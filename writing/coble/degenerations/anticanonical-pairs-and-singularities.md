@@ -28,7 +28,7 @@ $$
 
 ::: {.proposition #prop:charge-under-blowup title="Charge under blowup"}
 
-Let $(V, D)$ be an anticanonical pair whose divisor $D$ is a cycle of rational curves.
+Let $(V, D)$ be an anticanonical pair (@def:anticanonical-pair) whose divisor $D$ is a cycle of rational curves.
 
 - **Corner blowups**, at nodes of $D$ (points where two components of $D$ meet), preserve the charge.
 
@@ -40,7 +40,7 @@ Moreover, $Q(V, D)\geq0$, and $Q(V, D) = 0$ if and only if $(V, D)$ is toric [@F
 
 ::: {.definition #def:toric-model-anticanonical title="Toric models of anticanonical pairs"}
 
-A *toric model* of an anticanonical pair $(V,D)$ is a diagram of pairs
+A *toric model* of an anticanonical pair (@def:anticanonical-pair) $(V,D)$ is a diagram of pairs
 $$
 (V,D) \longleftarrow (V',D') \longrightarrow (\bar V,\bar D),
 $$
@@ -51,7 +51,7 @@ The diagram gives a birational map $V\dashrightarrow\bar V$ through their common
 
 ::: {.theorem #thm:anticanonical-toric-model title="Existence of toric models"}
 
-Every anticanonical pair admits a toric model as in @def:toric-model-anticanonical [@AE22, §6.1].
+Every anticanonical pair (@def:anticanonical-pair) admits a toric model as in @def:toric-model-anticanonical [@AE22, §6.1].
 :::
 
 ::: {.proof}
@@ -87,7 +87,7 @@ $$
 \mcx_0 = \Union_{i=1}^n V_i
 .
 $$
-Let $\tilde V_i$ be the normalization of $V_i$, and let $\tilde D_i$ be the inverse image in $\tilde V_i$ of the double curve of $\mcx_0$ on $V_i$, so that each $(\tilde V_i, \tilde D_i)$ is an anticanonical pair.
+Let $\tilde V_i$ be the normalization of $V_i$, and let $\tilde D_i$ be the inverse image in $\tilde V_i$ of the double curve of $\mcx_0$ on $V_i$, so that each $(\tilde V_i, \tilde D_i)$ is an anticanonical pair (@def:anticanonical-pair).
 Then the sum of the charges of all components is exactly $24$:
 $$
 \Sum_{i=1}^n Q(\tilde V_i, \tilde D_i) = 24

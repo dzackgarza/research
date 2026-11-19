@@ -14,7 +14,7 @@ Define $\ell(L)\definedas\ell(A_L)$.
 
 ::: {.proposition #prop:discriminant-nondegenerate title="Nondegeneracy and polarization of discriminant forms"}
 
-The bilinear discriminant form $A_L$ is nondegenerate.
+The bilinear discriminant form (@def:discriminant) $A_L$ is nondegenerate.
 For even $L$, the quadratic refinement $A_{L,q}$ has bilinearization given by postcomposition of $\bar{\beta}_L$ with
 $$
 d_L\colon
@@ -142,7 +142,7 @@ $$
 
 ::: {.proposition #prop:eichler-spinor-class title="Eichler's theorem on indefinite spinor genera"}
 
-For $R=\bZ$, every spinor genus of an indefinite lattice of rank at least $3$ contains one integral isometry class [@CS10, Ch. 15, Thm. 14].
+For $R=\bZ$, every spinor genus (@def:spinor-genus-partition) of an indefinite lattice of rank at least $3$ contains one integral isometry class [@CS10, Ch. 15, Thm. 14].
 :::
 
 ::: {.proof}
@@ -153,7 +153,7 @@ This is [@CS10, Ch. 15, Thm. 14].
 
 ::: {.definition #def:mass title="Mass of a lattice genus"}
 
-When the genus groupoid $\operatorname{Gen}(L)$ is essentially finite in the sense of @def:groupoid-cardinality, its **mass** is the groupoid cardinality
+When the genus groupoid (@def:genus) $\operatorname{Gen}(L)$ is essentially finite in the sense of @def:groupoid-cardinality, its **mass** is the groupoid cardinality
 $m(L)\definedas\cardinality{\operatorname{Gen}(L)}$.
 :::
 ## Brown invariant and Milgram's formula

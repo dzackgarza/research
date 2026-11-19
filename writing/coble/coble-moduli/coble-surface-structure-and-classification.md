@@ -58,7 +58,7 @@ In particular, does every Coble surface of rational type in the sense of @def:co
 
 ::: {.definition #def:coble-mukai-lattice title="Coble-Mukai lattice"}
 
-Let $S$ be a terminal Coble surface of K3 type with boundary components $C_1,\ldots,C_n$, and let $\beta_i\in\Pic(S)$ be the class of $C_i$.
+Let $S$ be a terminal Coble surface (@def:coble-surface) of K3 type with boundary components $C_1,\ldots,C_n$, and let $\beta_i\in\Pic(S)$ be the class of $C_i$.
 Let $\widetilde{\Pic}(S)$ be the $\ZZ$-submodule of $\Pic(S)_\QQ$ spanned by $\Pic(S)$ and $\tfrac12\beta_1,\ldots,\tfrac12\beta_n$.
 The **Coble-Mukai lattice** of $S$ is
 $$
@@ -76,7 +76,7 @@ Let $S$ be a terminal Coble surface of K3 type with $n$ boundary components.
 2. The quotient $\widetilde{\Pic}(S)/\Pic(S)$ is an $\mathbb{F}_2$-vector space of dimension at most $n-1$.
 3. $\CM(S)$ has rank $10$ and signature $(1,9)$.
 4. $\Aut(S)$ permutes the curves $C_1,\ldots,C_n$ and so acts on $\CM(S)$ [@DK25, §9.2].
-5. If $n = 1$, then $\CM(S) = K_S^{\perp\,\Pic(S)}$, and it is isomorphic to the Enriques lattice $E_{10}$ [@DK25, §9.2].
+5. If $n = 1$, then $\CM(S) = K_S^{\perp\,\Pic(S)}$, and it is isomorphic to the Enriques lattice $E_{10}$ (@def:enriques-lattice) [@DK25, §9.2].
 6. Over $\CC$, $\CM(S)$ is isomorphic to $E_{10}$ for every $n$ [@DK25, Thm. 9.2.14].
 
 :::
@@ -111,7 +111,7 @@ Is $\CM(S)$ rather than $S_{\Co}$ the natural home for the action of $\Gamma_{\C
 
 ::: {.definition #def:coble-elliptic-rational-type title="Elliptic and rational types"}
 
-Let $X$ be a Coble surface, let $E$ be a $(-1)$-curve on $X$ with blowdown $\pi\colon X\to Y$, and assume that $p_a(-2K_X + 2E) = 1$.
+Let $X$ be a Coble surface (@def:coble-surface), let $E$ be a $(-1)$-curve on $X$ with blowdown $\pi\colon X\to Y$, and assume that $p_a(-2K_X + 2E) = 1$.
 Write $\abs{-2K_X + 2E} = \abs{M} + P$, where $\abs{M}$ is the mobile part and $P$ is the fixed part.
 Then $X$ is of **elliptic type with respect to $E$** if $p_a(M) = 1$, and of **rational type with respect to $E$** if $p_a(M) = 0$ [@DZ99, 2.1].
 A Coble surface is of **elliptic type** if it is of Halphen type or of Jacobian type, and of **rational type** if it is not of elliptic type [@DZ99, 2.9].
@@ -119,7 +119,7 @@ A Coble surface is of **elliptic type** if it is of Halphen type or of Jacobian 
 
 ::: {.theorem #thm:coble-elliptic-type-classification title="Coble surfaces of elliptic type"}
 
-A Coble surface of elliptic type admits a birational morphism onto a surface $Y$ such that $\abs{-K_Y}$ has exactly one member and a general member of the mobile part of $\abs{-2K_Y}$ is a smooth elliptic curve.
+A Coble surface (@def:coble-surface) of elliptic type (@def:coble-elliptic-rational-type) admits a birational morphism onto a surface $Y$ such that $\abs{-K_Y}$ has exactly one member and a general member of the mobile part of $\abs{-2K_Y}$ is a smooth elliptic curve.
 It is obtained in one of two ways:
 
 - **Halphen type**: as a blowup of singular points, and their infinitely near points, of a non-multiple fibre of a minimal rational elliptic surface with one multiple fibre, of multiplicity $2$;
@@ -131,7 +131,7 @@ A Coble surface of elliptic type admits a birational morphism onto $\PP^2$ [@DZ9
 
 ::: {.theorem #thm:dz-k3-type-criterion title="K3 type criterion"}
 
-Let $X$ be a Coble surface with $M^2 = 0$, for $M$ as in @def:coble-elliptic-rational-type.
+Let $X$ be a Coble surface (@def:coble-surface) with $M^2 = 0$, for $M$ as in @def:coble-elliptic-rational-type.
 
 - If $X$ is of Halphen type, obtained from a minimal Halphen surface $Y_m$ of index $2$ by one blowup of a singular point on its non-multiple fibre $F$, then $X$ is of K3 type if and only if $F$ has type $I_n$, $\II$, $\III$ or $\IV$.
 
@@ -142,7 +142,7 @@ Let $X$ be a Coble surface with $M^2 = 0$, for $M$ as in @def:coble-elliptic-rat
 
 ::: {.lemma #lem:dz-k3-type-double-cover title="K3 type and the double cover"}
 
-For a Coble surface $X$ the following are equivalent:
+For a Coble surface (@def:coble-surface) $X$ the following are equivalent:
 
 1. $\abs{-2K_X}$ contains a reduced divisor;
 
@@ -155,29 +155,29 @@ For a Coble surface $X$ the following are equivalent:
 
 ::: {.definition #def:rational-log-enriques title="Rational log Enriques surface of index 2"}
 
-A **rational log Enriques surface of index $2$** is a normal rational surface $\bar X$ with at worst quotient singularities such that $\OO(-2K_{\bar X}) \cong \OO_{\bar X}$ [@DZ99, §6].
+A **rational log [Enriques surface]{.other-sense} of index $2$** is a normal rational surface $\bar X$ with at worst quotient singularities such that $\OO(-2K_{\bar X}) \cong \OO_{\bar X}$ [@DZ99, §6].
 :::
 
 ::: {.theorem #thm:coble-log-enriques-resolution title="Terminal Coble surfaces are resolutions of log Enriques surfaces"}
 
-1. The minimal resolution $X$ of a rational log Enriques surface of index $2$ is a Coble surface with $h^0(-2K_X) = 1$. The unique member $D\in\abs{-2K_X}$ is reduced, and each connected component of $D$ is either a single $(-4)$-curve or a linear chain with dual graph
+1. The minimal resolution $X$ of a rational log [Enriques surface]{.other-sense} of index $2$ is a Coble surface (@def:coble-surface) with $h^0(-2K_X) = 1$. The unique member $D\in\abs{-2K_X}$ is reduced, and each connected component of $D$ is either a single $(-4)$-curve or a linear chain with dual graph
 $$
 (-3) - (-2) - \cdots - (-2) - (-3)
 .
 $$
-Conversely, a Coble surface with these properties is the minimal resolution of a rational log Enriques surface of index $2$.
+Conversely, a Coble surface with these properties is the minimal resolution of a rational log [Enriques surface]{.other-sense} of index $2$.
 2. A Coble surface is terminal if and only if it has exactly one anti-bicanonical divisor $D$, and $D$ is reduced and a disjoint union of $(-4)$-curves.
 3. The minimal resolution of a rational normal surface with at worst singularities of type $\tfrac14(1,1)$ is a terminal Coble surface, and conversely.
 
 [@DZ99, Prop. 6.4]
-A terminal Coble surface is the minimal resolution of a maximum rational log Enriques surface of index $2$ [@DZ99, Introduction].
+A terminal Coble surface is the minimal resolution of a maximum rational log [Enriques surface]{.other-sense} of index $2$ [@DZ99, Introduction].
 :::
 
 ## Dolgachev-Kondo geometry of the degree 2 polarization
 
 ::: {.proposition #prop:coble-degree-two-branch-geometry title="The branch geometry of a degree 2 polarization"}
 
-Let $S$ be a Coble surface with no $(-2)$-curves, and let $h = [F_1 + F_2] \in \Pic(S)$ be a polarization of degree $2$.
+Let $S$ be a Coble surface (@def:coble-surface) with no $(-2)$-curves, and let $h = [F_1 + F_2] \in \Pic(S)$ be a polarization of degree $2$.
 Then $\abs{2h}$ defines a morphism $\phi_h\colon S \to \PP^4$ whose image $\mathsf{D}$ is a $4$-nodal quartic del Pezzo surface.
 Let $\sigma$ be its deck transformation, and let $C \in \abs{-2K_S}$ be the anti-bicanonical curve.
 
@@ -186,13 +186,13 @@ Let $\sigma$ be its deck transformation, and let $C \in \abs{-2K_S}$ be the anti
 3. $\bar W$ meets $C$ in two points.
 4. $W \definedas \phi_h(\bar W)$ has $p_a(W) = 5$ and a double point at $q$, and it is the complete intersection of a net of quadrics.
 
-So a Coble surface is obtained as a degeneration of an Enriques surface when the branch curve $W$ of $\phi_h$ passes through a singular point of $\mathsf{D}$ [@DK13, §8].
+So a Coble surface is obtained as a degeneration of an Enriques surface (@def:enriques-surface) when the branch curve $W$ of $\phi_h$ passes through a singular point of $\mathsf{D}$ [@DK13, §8].
 :::
 
 ::: {.proposition #prop:cuspidal-quintics-enriques title="Cuspidal quintics and Enriques surfaces"}
 
 Let $\mcm_{\cusp}$ be the moduli space of cuspidal plane quintics, the GIT quotient of the projective space of cuspidal plane quintics by $\PGL_3$.
-Then $\mcm_{\cusp}$ is a rational variety, birationally isomorphic to the moduli space $\mcm_{\En}$ of Enriques surfaces [@DK13, §4].
+Then $\mcm_{\cusp}$ is a rational variety, birationally isomorphic to the moduli space $\mcm_{\En}$ of Enriques surfaces (@def:enriques-surface) [@DK13, §4].
 The locus $\mcm'_{5,\cusp}$ of @thm:coble-moduli-rational is a rational variety of dimension $9$ [@DK13, Thm. 4.1].
 :::
 

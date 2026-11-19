@@ -671,7 +671,7 @@ $$
 Hence $(x,h)h\in d\,H^2(X,\ZZ)$, and $d$ divides $(x,h)$ because $h$ is primitive.
 The lattice $H^2(X,\ZZ)$ is unimodular (@prop:k3-lattice) and $h$ is primitive, so $(x,h)=1$ for some $x$; hence $d=1$.
 Conversely, if $d=1$ then $g(x)\definedas(x,h)h-x$ is the negative of the reflection $s_h$, so it is an isometry of $H^2(X,\ZZ)$; it fixes $h$, and it is $-\id$ on $h^\perp$.
-It maps $H^{2,0}(X)\iscontainedin h^\perp_\CC$ to itself, so it is a Hodge isometry.
+It maps $H^{2,0}(X)\iscontainedin h^\perp_\CC$ to itself, so it is a Hodge isometry (@not:k3-automorphism-data).
 :::
 
 ::: {.proposition #prop:monodromy-hodge-automorphism title="When a monodromy operator is an automorphism of the Hodge structure"}

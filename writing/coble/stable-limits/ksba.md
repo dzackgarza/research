@@ -14,10 +14,10 @@ The construction uses twenty-four nonnegative root pairings $a_i=\lambda\cdot r_
 \pic {object=coxeter/vinberg-19-1-1};
 \end{tikzpicture}
 
-The Coxeter diagram of the cusp lattice $U\oplus E_8(-1)^2\oplus A_1(-1)$; the full diagram also contains the four parabolic types that label the degree-two K3 $1$-cusps [@AET23, §5A, Fig. 1 and §3B].
+The Coxeter diagram (@def:coxeter-matrix) of the cusp lattice $U\oplus E_8(-1)^2\oplus A_1(-1)$; the full diagram also contains the four parabolic types that label the degree-two K3 $1$-cusps [@AET23, §5A, Fig. 1 and §3B].
 :::
 
-The reflection group $W(N)$ acts on the positive cone, and the chamber $K$ is a fundamental domain. Its diagram has an $S_3$ symmetry; more precisely $\operatorname O^+(N)=S_3\ltimes W(N)$ [@AET23, §4, Lemma 4.4]. Thus the four parabolic labels above are types modulo this symmetry, while individual parabolic subdiagrams can occur more than once in the full diagram.
+The reflection group $W(N)$ acts on the positive cone (@not:reflection-groups-sign-convention), and the chamber $K$ is a fundamental domain. Its diagram has an $S_3$ symmetry; more precisely $\operatorname O^+(N)=S_3\ltimes W(N)$ [@AET23, §4, Lemma 4.4]. Thus the four parabolic labels above are types modulo this symmetry, while individual parabolic subdiagrams can occur more than once in the full diagram.
 
 ![The toric fan with eighteen rays used to form the starting polygon.](/rendered/toric18.jpg){#fig-k3-toric-eighteen}
 
@@ -56,13 +56,13 @@ The degree-two K3 model also gives concrete boundary questions for the Enriques 
 
 ::: {.proposition #prop:fen2-limits-are-k3-quotients title="Enriques stable limits are quotients of K3 stable limits"}
 
-Let $(Z, \eps R_Z)$, $0 < \eps \ll 1$, be the pair of a degree-$2$ numerically polarized Enriques surface $Z \in \fentwo$.
+Let $(Z, \eps R_Z)$, $0 < \eps \ll 1$, be the pair of a degree-$2$ numerically polarized Enriques surface (@def:enriques-surface) $Z \in \fentwo$.
 Every KSBA stable limit of such pairs is the quotient of a KSBA stable limit of K3 pairs $(X, \eps R)$, $X \in \fttz$, by an Enriques involution [@AEGS25, §7.3].
 :::
 
 ::: {.proposition #prop:fen2-stable-limit-strata title="Boundary strata of $\ksbacpt{\fentwo}$ from folded Coxeter diagrams"}
 
-For $k = 1, \dots, 5$ let $G_k$ be the folded Coxeter diagram of the $0$-cusp $k$ of $\fentwo$.
+For $k = 1, \dots, 5$ let $G_k$ be the folded Coxeter diagram (@def:coxeter-matrix) of the $0$-cusp $k$ of $\fentwo$.
 
 1. The semifan $\semifan{F}_k$ of the $0$-cusp $k$ is the generalized Coxeter semifan (@def:generalized-coxeter-semifan) of $G_k$, with irrelevant roots the foldings of the irrelevant roots of the K3 diagrams [@AEGS25, Def. 5.4 and Lemma 5.5].
 
@@ -273,7 +273,7 @@ So the map factors through the quotient by $\Stab_{\gent}(\ZZ\delta)$.
 
 ::: {.theorem #thm:fen2-ksba-pair title="The degree-$2$ Enriques stable pair"}
 
-Let $Z$ be an Enriques surface with ADE singularities and $[\mcl_Z] \in \Pic Z/\ZZ_2$ an ample numerical polarization of degree $2$, and put $M = \mcl_Z^{\tensor 2}$.
+Let $Z$ be an Enriques surface (@def:enriques-surface) with ADE singularities and $[\mcl_Z] \in \Pic Z/\ZZ_2$ an ample numerical polarization (@def:numerical-polarization) of degree $2$, and put $M = \mcl_Z^{\tensor 2}$.
 The linear system $\abs{M}$ is basepoint free and defines a double cover $\rho \colon Z \to W$ of a quartic del Pezzo surface with $4A_1$ or $A_3 + 2A_1$ singularities.
 The ramification divisor $R_Z \in \abs{M}$ of $\rho$ is ample, and the pair $(Z, \eps R_Z)$ is log canonical for $0 < \eps \ll 1$.
 Hence $\fentwo$ has a compactification $\ksbacpt{\fentwo}$ in the KSBA moduli space of pairs $(Z, \eps R_Z)$ with semi log canonical singularities, $K_Z \equiv 0$ and $R_Z$ an ample $\QQ$-Cartier divisor [@AEGS25, §1].
@@ -294,7 +294,7 @@ For the slc condition, one route runs through the du Val singularities on the K3
 
 Let $Y = \PP^1 \times \PP^1$ with $\tau(x,y) = (-x,-y)$, let $B = (f = 0)$ be a $\tau$-invariant curve of bidegree $(4,4)$, and let $X^\sharp = \theset{z^2 = f(x,y)}$ be the double cover of $Y$ branched along $B$ [@Hor77, p. 54].
 Suppose that $B$ passes through exactly one $\tau$-fixed point $p$, that the quadratic term of $f$ at $p$ is nondegenerate, and that $B$ is smooth away from $p$.
-Let $\iota_{\Co}(x,y,z) = (-x,-y,-z)$; this is the formula of the Enriques involution $\ien$ of @sec-aegs-projective.
+Let $\iota_{\Co}(x,y,z) = (-x,-y,-z)$; this is the formula of the Enriques involution $\ien$ (@def:enriques-surface) of @sec-aegs-projective.
 
 1. The curve $B$ has an ordinary node at $p$, and $X^\sharp$ has an $A_1$ singularity over $p$ that $\iota_{\Co}$ fixes.
 
@@ -324,7 +324,7 @@ So $\mu$ restricts to an isomorphism $\wV \setminus C \to \bar S \setminus \mu(C
 
 ::: {.conjecture #conj:restricted_ramification_semifan}
 
-The semitoroidal model of the polarized Coble locus is obtained by restricting the Enriques ramification semifan of the degree-$2$ compactification problem to the hyperplane cut out by the Coble root, and keeping exactly those walls whose relative interiors meet the Coble positive cone.
+The semitoroidal model of the polarized Coble locus is obtained by restricting the Enriques ramification semifan of the degree-$2$ compactification problem to the hyperplane cut out by the Coble root, and keeping exactly those walls whose relative interiors meet the Coble positive cone (@not:reflection-groups-sign-convention).
 Under this restriction, a Coble wall is irrelevant precisely when every Enriques wall restricting to it is already irrelevant.
 :::
 
@@ -332,12 +332,12 @@ Under this restriction, a Coble wall is irrelevant precisely when every Enriques
 
 ::: {.conjecture #conj:ksba_semitoroidal_comparison}
 
-After normalization, the KSBA compactification of the polarized Coble locus agrees with the semitoroidal compactification induced by the restricted ramification semifan.
+After normalization, the KSBA compactification (@def:ksba-compactification) of the polarized Coble locus agrees with the semitoroidal compactification (@def:semitoroidal-compactification) induced by the restricted ramification semifan.
 :::
 
 ::: {.proposition #prop:ksba-period-extension-conditional title="Period extension under the compactification comparison"}
 
-If @conj:ksba_semitoroidal_comparison holds, then the period map of the polarized Coble locus extends from the normalization of its KSBA compactification to the Baily--Borel compactification of its period quotient.
+If @conj:ksba_semitoroidal_comparison holds, then the period map of the polarized Coble locus extends from the normalization of its KSBA compactification (@def:ksba-compactification) to the Baily--Borel compactification of its period quotient.
 :::
 
 ::: {.proof}
@@ -375,7 +375,7 @@ The marking-line root $[\pm\delta]$ is not among them by @prop:marking-line-no-c
 The open step is this: for each admissible $T_\Co$-root $r$ at cusp $5$ -- Sterk's labels $12$, $13$ and $14$ -- the smallest cone of $\mathcal{F}_5$ that contains $r^{\perp}\intersect C$ is not computed.
 Distinct classes in $K_I$ do not decide the statement.
 The record `computations/reports/coble_coble-root-orbits.py` and its run file compute the classes of the roots in $K_I$, pairwise distinct at cusp $5$; the orbit computation of the admissible roots, filed as sage-extensions#370 and closed at 1df83be981, supplies the orbits.
-The classification of the KSBA stable pairs by cusp and face, and the coarsening of the Coxeter fan that defines the irrelevant roots, are both those of the Nagoya Math. J. 259 (2025) text: the classification is [@AEGS25, Thm. 5.9, printed p. 611], and the coarsening is [@AEGS25, §5.2, printed p. 611].
+The classification of the KSBA stable pairs by cusp and face, and the coarsening of the Coxeter fan that defines the irrelevant roots (@def:generalized-coxeter-semifan), are both those of the Nagoya Math. J. 259 (2025) text: the classification is [@AEGS25, Thm. 5.9, printed p. 611], and the coarsening is [@AEGS25, §5.2, printed p. 611].
 
 :::
 
@@ -413,7 +413,7 @@ Call the pair **admissible** when some lift of $r$ in $I^{\perp\ten}$, respectiv
 1. **The test.** $(I, r)$, respectively $(J, r)$, is admissible if and only if $r^2 = -2$.
    Then every lift is a $(-2)$ vector of $\ten$ orthogonal to $I$, respectively $J$, the reflection in every lift lies in $\gent$, and the pair is $\gent$-equivalent to one marked by $\delta$ itself.
 2. **The $0$-cusps.** A $0$-cusp carries a marking if and only if its boundary lattice contains a class of square $-2$.
-   The marked cusps are exactly Sterk's cusps $2,3,4,5$; his representatives $\eta_2,\dots,\eta_5$ are orthogonal to $\delta$, so $\delta$ itself is a lift at each of the four, and among his printed simple systems the admissible roots are exactly the white nodes: cusp $2$: his root $10$; cusp $3$: his roots $8$ and $12$; cusp $4$: his roots $8$ and $10$; cusp $5$: his roots $11$--$14$.
+   The marked cusps are exactly Sterk's cusps $2,3,4,5$; his representatives $\eta_2,\dots,\eta_5$ are orthogonal to $\delta$, so $\delta$ itself is a lift at each of the four, and among his printed simple systems (@def:weyl-chamber) the admissible roots are exactly the white nodes: cusp $2$: his root $10$; cusp $3$: his roots $8$ and $12$; cusp $4$: his roots $8$ and $10$; cusp $5$: his roots $11$--$14$.
    His roots $10$, $8$, $8$ and $11$ are $\pm\delta$.
 3. **The $1$-cusps.** A $1$-cusp carries a marking if and only if $J^{\perp\ten}$ contains a $(-2)$ vector of $\ten$, if and only if some $\gent$-translate of the plane lies in $T_\Co$.
    The four $1$-cusps whose closures contain cusp $1$ --- those of types $\{1,2\}$, $\{1,3\}$, $\{1,4\}$, $\{1,5\}$ in the type notation of [@Ste91, §4.3.15, printed p. 26] --- carry none; the remaining five, of types $\{2,4,5\}$, $\{3,4\}$, $\{3,5\}$, $\{4,5\}$ and $\{5,5\}$, each carry markings, and each has exactly $16$ classes of square $-2$ in its boundary lattice.

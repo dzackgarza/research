@@ -6,10 +6,10 @@ The degree-six polarized Enriques model arising from Enriques' original construc
 
 ::: {.theorem #thm:fen2_main title="Compactification of $\fentwo$"}
 
-Let $\ksbacpt{\fentwo}$ denote the KSBA compactification of the moduli space $\fentwo$ of numerically polarized Enriques surfaces of degree $2$.
+Let $\ksbacpt{\fentwo}$ denote the KSBA compactification (@def:ksba-compactification) of the moduli space $\fentwo$ of numerically polarized Enriques surfaces (@def:enriques-surface) of degree $2$.
 Let $\semitorfan = \theset{\semifan{F}_k}_{k=1}^5$ be the collection of folded semifans for the $0$-cusps.
 
-1. The normalization $\normksbacpt{\fentwo}$ is isomorphic to the semitoroidal compactification $\semifancpt{\fentwo}{\semitorfan}$ [@AEGS25, Thm. 1.1].
+1. The normalization $\normksbacpt{\fentwo}$ is isomorphic to the semitoroidal compactification (@def:semitoroidal-compactification) $\semifancpt{\fentwo}{\semitorfan}$ [@AEGS25, Thm. 1.1].
 
 2. This compactification is toroidal over the $0$-cusps $2$ and $4$, their adjacent $1$-cusps, and the $1$-cusp $35$, and strictly semitoroidal over all other cusps [@AEGS25, Lem. 5.7].
 
@@ -134,7 +134,7 @@ Taking orthogonal complements turns this into the chain $U(2)\hookrightarrow U(2
 Let $e\in\ten$ be a primitive isotropic vector.
 Let $\overline{T}_{\mathrm{En}} = e^\perp/e$ in $\ten$ and $\overline{T}_{\mathrm{dP}} = e^\perp/e$ in $\tdp$, so that $\overline{T}_{\mathrm{En}}\subset\overline{T}_{\mathrm{dP}}$.
 Let $J = -\overline{I}_{\mathrm{En}}$ be the involution of $\overline{T}_{\mathrm{dP}}$ induced by $-\Ien$, whose $(+1)$-eigenspace is $\overline{T}_{\mathrm{En}}$ [@AEGS25, Def. 3.5].
-The five involutions $J$ below are numbered by the $0$-cusps in Sterk's numbering, and the simple roots $\alpha_k$ of the Coxeter diagram $G(\overline{T}_{\mathrm{dP}})$ are numbered as in [@AEGS25, Fig. 5].
+The five involutions $J$ below are numbered by the $0$-cusps in Sterk's numbering, and the simple roots $\alpha_k$ of the Coxeter diagram (@def:coxeter-matrix) $G(\overline{T}_{\mathrm{dP}})$ are numbered as in [@AEGS25, Fig. 5].
 
 | Cusp | $\overline{T}_{\mathrm{dP}}$ | Involution $J$ | $\overline{T}_{\mathrm{dP}}^{J=1}$ |
 | --- | --- | --- | --- |
@@ -167,9 +167,9 @@ The embedding-chain uniqueness of @lem:enriques-embedding-chain identifies this 
 ::: {.proposition #prop:fen2-folded-coxeter title="Folded Coxeter diagrams of $\fentwo$"}
 
 Let $e$, $\overline{T}_{\mathrm{En}}\subset\overline{T}_{\mathrm{dP}}$ and $J$ be as in @cons:fen2-cusp-involutions.
-The folded diagram $G(\overline{T}_{\mathrm{dP}})^J$ of the Coxeter diagram $G(\overline{T}_{\mathrm{dP}})$ has as nodes the folded vectors $\beta_{[\alpha]}$ (@def:folded-root) of the simple roots $\alpha$ for which these vectors are roots of $\overline{T}_{\mathrm{En}}$ [@AEGS25, Def. 3.7].
+The folded diagram $G(\overline{T}_{\mathrm{dP}})^J$ of the Coxeter diagram (@def:coxeter-matrix) $G(\overline{T}_{\mathrm{dP}})$ has as nodes the folded vectors $\beta_{[\alpha]}$ (@def:folded-root) of the simple roots $\alpha$ for which these vectors are roots of $\overline{T}_{\mathrm{En}}$ [@AEGS25, Def. 3.7].
 
-1. Let $\mathfrak{C}$ be a chamber of $W(\Gamma_{\mathrm{dP},e})$ in the positive cone of $\overline{T}_{\mathrm{dP}}$ whose intersection with $\overline{T}_{\mathrm{En}}\otimes\RR$ has maximal dimension.
+1. Let $\mathfrak{C}$ be a chamber of $W(\Gamma_{\mathrm{dP},e})$ in the positive cone (@not:reflection-groups-sign-convention) of $\overline{T}_{\mathrm{dP}}$ whose intersection with $\overline{T}_{\mathrm{En}}\otimes\RR$ has maximal dimension.
    Then $\mathfrak{C}^J = \mathfrak{C}\intersect\overline{T}_{\mathrm{En}}\otimes\RR$ is a fundamental chamber of $W(\Gamma_{\mathrm{En},2,e})$, and its Coxeter diagram is $G(\overline{T}_{\mathrm{dP}})^J$ [@AEGS25, Lem. 3.8].
 
 2. The five involutions $J$ of @cons:fen2-cusp-involutions give the folded diagrams of the five $0$-cusps, in Sterk's numbering [@AEGS25, Lem. 3.9, Lem. 3.10].

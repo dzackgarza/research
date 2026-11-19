@@ -28,7 +28,7 @@ this inverse question from the archived Enriques meeting notes.
 
 ::: {.conjecture #conj:horizontal-folding title="The horizontal folding involution"}
 
-The involution $\theta_\Co$ of @prop:theta-co-exists, with $\lkt^{\theta_\Co} = T_\Co$ and $\lkt^{-\theta_\Co} = S_\Co$, induces on roots the *horizontal folding* of the $(18,0,0)_1$ Coxeter diagram (@def:folded-root), and it exchanges the polarization classes $h_\En$ and $h_\Co$.
+The involution $\theta_\Co$ of @prop:theta-co-exists, with $\lkt^{\theta_\Co} = T_\Co$ and $\lkt^{-\theta_\Co} = S_\Co$, induces on roots the *horizontal folding* of the $(18,0,0)_1$ Coxeter diagram (@def:coxeter-matrix) (@def:folded-root), and it exchanges the polarization classes $h_\En$ and $h_\Co$.
 :::
 
 ## Isotropic orbits, cusps, and reflection groups
@@ -76,7 +76,7 @@ An instance is the uniqueness of $\wB_7(2)$ as a maximal parabolic subdiagram of
 
 ::: {.conjecture #conj:galois-invariance-parabolics title="Open problem: Galois invariance of the maximal parabolic count"}
 
-Let $\Sigma$ be a Coxeter--Vinberg diagram whose Gram form $G$ is defined over a totally real number field $K$, and let $\sigma\in\gal(K/\QQ)$ be such that $\sigma(G)$ is again hyperbolic; the signature of $\sigma(G)$ is not determined by that of $G$ (@ex:galois-conjugate-gram-form).
+Let $\Sigma$ be a Coxeter--Vinberg diagram (@def:coxeter-vinberg-diagram) whose [Gram form]{.other-sense} $G$ is defined over a totally real number field $K$, and let $\sigma\in\gal(K/\QQ)$ be such that $\sigma(G)$ is again hyperbolic; the signature of $\sigma(G)$ is not determined by that of $G$ (@ex:galois-conjugate-gram-form).
 Then $\Sigma$ and $\sigma(\Sigma)$ have the same number of maximal parabolic subdiagrams.
 :::
 

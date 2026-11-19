@@ -188,7 +188,11 @@ def contents(elem: pf.Element, block_classes: set[str]) -> Contents:
             return
         if isinstance(e, pf.Str):
             words.append(e.text)
-        elif isinstance(e, (pf.Space, pf.SoftBreak, pf.LineBreak, pf.Math)):
+        elif isinstance(e, pf.Math):
+            # A formula stays a token, so "marked $K3$ surface" does not read as
+            # "marked surface".
+            words.append(" \u00a4 ")
+        elif isinstance(e, (pf.Space, pf.SoftBreak, pf.LineBreak)):
             words.append(" ")
         elif isinstance(e, pf.Strong) and not any(
                 isinstance(m, pf.Math) for m in _descendants(e)):
@@ -349,6 +353,12 @@ def uncited_terms(graph: nx.DiGraph, prose: dict[str, str],
     """
     if not definers:
         return []
+    # "long roots" and "long root" are one term: a plural folds into its singular.
+    for term in sorted(definers):
+        for suffix in ("es", "s"):
+            if term.endswith(suffix) and term[:-len(suffix)] in definers:
+                definers[term[:-len(suffix)]] |= definers.pop(term)
+                break
     terms = sorted(definers, key=len, reverse=True)
     pattern = re.compile(r"(?<![\w-])(" + "|".join(map(re.escape, terms)) + r")(?:s|es)?(?![\w-])")
     out: list[Finding] = []

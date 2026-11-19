@@ -699,7 +699,7 @@ $$
 $$
 on the locally $(n-1)$-truncated higher categories [@Lur18c, Tag 05EA].
 Its inclusion supplies $\iota_n$ after an equivalence $\mathbf{Cat}_n^{\mathrm{loc}}\simeq\mathbf{Cat}_n$ has been established.
-Its left and right adjoints, when they exist, supply $\tau_{\leq n}$ and $\tau_{\leq n}^{\mathrm R}$.
+Its left and [right adjoints]{.other-sense}, when they exist, supply $\tau_{\leq n}$ and $\tau_{\leq n}^{\mathrm R}$.
 
 For higher categories $C,D$, define
 $$

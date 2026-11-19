@@ -92,7 +92,7 @@ the group of restrictions to $\delta^{\perp\ten}$ of those elements of $\gent$ t
 
 ::: {.proposition #prop:gamma-en-two-gluing title="Discriminant description of $\gent$"}
 
-Let $\sen = U(2)\oplus E_8(2)$ and $\ten$ be the invariant and coinvariant lattices of the Enriques involution on $\lkt$, and let
+Let $\sen = U(2)\oplus E_8(2)$ and $\ten$ be the invariant and coinvariant lattices of the Enriques involution (@def:enriques-surface) on $\lkt$, and let
 $$
 \gamma\colon A_{\sen}\iso A_{\ten},
 \qquad
@@ -283,7 +283,7 @@ For the last claim, an isometry commuting with an involution preserves its eigen
 
 ::: {.proposition #prop:unnodal-coble-polarization-nef title="The degree-$2$ polarization of an unnodal Coble surface is nef and big"}
 
-Let $S$ be an unnodal Coble surface, that is one with no $(-2)$-curves, let $F_1\in\abs{f_1}$ and $F_2\in\abs{f_2}$ be half-fibres of its two Halphen fibrations of index $2$, and put $h = F_1+F_2$, so that $F_i^2 = 0$, $F_1\cdot F_2 = 1$ and $h^2 = 2$.
+Let $S$ be an unnodal Coble surface (@def:coble-surface), that is one with no $(-2)$-curves, let $F_1\in\abs{f_1}$ and $F_2\in\abs{f_2}$ be half-fibres of its two Halphen fibrations of index $2$, and put $h = F_1+F_2$, so that $F_i^2 = 0$, $F_1\cdot F_2 = 1$ and $h^2 = 2$.
 Then $\abs{2h}$ has no base points, and $h$ is nef and big.
 :::
 
@@ -351,7 +351,7 @@ At an isolated fixed point $p'$ of $\tau$ on $\mathfrak C$, both eigenvalues of 
 In @cons:cd12-double-plane let $\tilde\tau$ be a lift of $\tau$ (@cor:lift-in-cd12-model). Then:
 
 1. $\tilde\tau$ and $\tilde\tau I_\Co$ agree on $\pi^*\Pic(S)$; they fix $\pi^*\mathsf H$ and $\pi^*K_S$ and negate $\pi^*E_8$;
-2. $\pi^*\mathsf H\cong U(2)$ and $(\pi^*K_S)^2 = -2$, so the invariant lattice of $\tilde\tau$ contains $\pi^*\mathsf H\oplus\ZZ\pi^*K_S$, of rank $3$, and is not $\sdp\cong U(2)$;
+2. $\pi^*\mathsf H\cong U(2)$ and $(\pi^*K_S)^2 = -2$, so the invariant lattice (@def:invariant_coinvariant_lattices) of $\tilde\tau$ contains $\pi^*\mathsf H\oplus\ZZ\pi^*K_S$, of rank $3$, and is not $\sdp\cong U(2)$;
 3. $I_\Co$ acts by $-1$ on $H^{2,0}(\widetilde X)$, so exactly one of $\tilde\tau$ and $\tilde\tau I_\Co$ is nonsymplectic.
 :::
 
@@ -495,7 +495,7 @@ Then $\varphi\definedas\varphi_0\chi$ satisfies $\bar\varphi\gamma_\Co = \gamma_
 
 ::: {.corollary #cor:no-del-pezzo-involution-coble-cover title="The isometry fixing $\langle f^*F_1,f^*F_2\rangle$ is not geometric"}
 
-In the marking of @prop:coble-cover-marking, the isometry $\phi$ is a Hodge isometry of $H^2(X,\ZZ)$, and it is not the action of an automorphism of $X$.
+In the marking of @prop:coble-cover-marking, the isometry $\phi$ is a Hodge isometry (@not:k3-automorphism-data) of $H^2(X,\ZZ)$, and it is not the action of an automorphism of $X$.
 :::
 
 ::: {.proof}
@@ -567,7 +567,7 @@ Take $\tau = \sum_ic_ie_i$ with $c_i\in\set{0,1}$, in the basis $e_0,e_1$ of the
 
 ::: {.proposition #prop:no-rank-one-automorphism title="A rank-one del Pezzo slot is induced by no automorphism"}
 
-Let $\widetilde X$ be a projective K3 surface over $\CC$, let $\iota$ be a nonsymplectic involution of it with invariant lattice $S \definedas H^2(\widetilde X,\bZ)^{\iota}$, and let $\iota'$ be an involution commuting with $\iota$ whose invariant lattice $S'$ is isometric to $U(2)$.
+Let $\widetilde X$ be a projective K3 surface over $\CC$, let $\iota$ be a nonsymplectic involution of it with invariant lattice (@def:invariant_coinvariant_lattices) $S \definedas H^2(\widetilde X,\bZ)^{\iota}$, and let $\iota'$ be an involution commuting with $\iota$ whose invariant lattice $S'$ is isometric to $U(2)$.
 Let $H\in S\cap S'$ with $H^2 = 4$, suppose $\rk(S\cap S') = 1$, and let $\alpha\in S$ be effective with $\alpha^2 = -2$ and $H\cdot\alpha = 0$.
 Then $\iota'(\alpha) = -\alpha$, and no automorphism of $\widetilde X$ induces $\iota'$.
 :::
@@ -646,7 +646,7 @@ So for $k\ge1$ the five bullets of @sec-labeled-lattice-data hold on $\widehat X
 (2) $D_g$ is a $(-2)$-curve, fixed pointwise by $\widehat\iota_\Co$ and preserved by $\widehat\iota_{\mathrm{dP}}$ (@prop:del-pezzo-type-on-the-resolution, parts 1 and 2); and $H\cdot D_g = \OO(1,1)\cdot\pi_*D_g = 0$ because $\pi_*D_g = 0$, the curve lying in a fibre of the resolution.
 (3) $\OO_Y(1,1)$ is very ample, the Segre embedding, hence nef; for a curve $C$ one has $H\cdot C = \OO(1,1)\cdot\pi_*C\ge0$, so $H$ is nef, and $H^2 = 4>0$ with $H$ nef makes $H$ big on a surface. The surface $X^\sharp$ is normal, so the resolution $\nu\colon\widehat X\to X^\sharp$ has $\nu_*\OO_{\widehat X} = \OO_{X^\sharp}$, and $\pi_*\OO_{X^\sharp} = \OO_Y\oplus\OO_Y(-2,-2)$; by the projection formula $h^0(\widehat X,H) = h^0(\OO_Y(1,1))+h^0(\OO_Y(-1,-1)) = 4+0$. $\alpha$ is the class of the curve $D_g$.
 (4) @prop:local-operators, part 2, computes the two characters on $X^\sharp$; away from the nodes the resolution is an isomorphism and both involutions act on the exceptional curves, so the characters are unchanged.
-(5) For a nonsymplectic involution of a K3 with fixed locus $F$, Lefschetz gives $\chi(F) = 2+\tr$. Decompose over $\QQ$, where the eigensplitting is available: $H^2(\widehat X,\QQ) = S_\QQ\oplus T_\QQ$ with $\id$ on $S$ and $-\id$ on $T$, so $\tr = \rk S-\rk T$ and, with $\rk S+\rk T = 22$, $\tr = 2\rk S-22$ and $\rk S = \tfrac12(\chi(F)+20)$. For $\widehat\iota_{\mathrm{dP}}$ the fixed locus is the normalization of $B$, of $\chi = 2k-16$ (@prop:del-pezzo-type-on-the-resolution, part 3), so $\rk S_{\mathrm{dP}} = k+2$. For $\widehat\iota_\Co$ it is the disjoint union of the $k$ exceptional curves: @prop:local-operators, part 4, puts every fixed point of $\iota_\Co$ at a singular point, and @prop:del-pezzo-type-on-the-resolution, part 1, makes the curve over each of them fixed pointwise. So $\chi(F) = 2k$ and $\rk S_\Co = k+10$. At $k = 0$ this last value is $10$, the rank of the invariant lattice of an Enriques involution of a K3, which is what $I_\Co$ is when its fixed locus is empty.
+(5) For a nonsymplectic involution of a K3 with fixed locus $F$, Lefschetz gives $\chi(F) = 2+\tr$. Decompose over $\QQ$, where the eigensplitting is available: $H^2(\widehat X,\QQ) = S_\QQ\oplus T_\QQ$ with $\id$ on $S$ and $-\id$ on $T$, so $\tr = \rk S-\rk T$ and, with $\rk S+\rk T = 22$, $\tr = 2\rk S-22$ and $\rk S = \tfrac12(\chi(F)+20)$. For $\widehat\iota_{\mathrm{dP}}$ the fixed locus is the normalization of $B$, of $\chi = 2k-16$ (@prop:del-pezzo-type-on-the-resolution, part 3), so $\rk S_{\mathrm{dP}} = k+2$. For $\widehat\iota_\Co$ it is the disjoint union of the $k$ exceptional curves: @prop:local-operators, part 4, puts every fixed point of $\iota_\Co$ at a singular point, and @prop:del-pezzo-type-on-the-resolution, part 1, makes the curve over each of them fixed pointwise. So $\chi(F) = 2k$ and $\rk S_\Co = k+10$. At $k = 0$ this last value is $10$, the rank of the invariant lattice (@def:invariant_coinvariant_lattices) of an Enriques involution (@def:enriques-surface) of a K3, which is what $I_\Co$ is when its fixed locus is empty.
 (6) The involution $\iota_{\mathrm{dP}}$ is the deck transformation of $\pi$, so it fixes every class $\pi^*c$; the involution $\iota_\Co$ covers $\tau$, and $\tau^*\OO_Y(a,b) = \OO_Y(a,b)$, so it fixes every $\pi^*c$ too. Each $D_g$ is fixed by both involutions by (2), and $D_g\cdot\pi^*c = c\cdot\pi_*D_g = 0$, while $D_g\cdot D_{g'} = 0$ for $g\ne g'$. This gives the first containment. That sublattice has rank $k+2 = \rk S_{\mathrm{dP}}$ by (5) and @prop:del-pezzo-type-on-the-resolution, part 4. The invariant lattice $S_\Co$ of an isometry is primitive in $H^2(\widehat X,\ZZ)$, so $S_\Co\cap S_{\mathrm{dP}}$ is primitive in $S_{\mathrm{dP}}$; it has full rank, so it is $S_{\mathrm{dP}}$.
 :::
 
@@ -786,7 +786,7 @@ Let $f,f'$ be $\tau$-invariant sections of $\OO_Y(4,4)$ whose branch curves have
 
 ::: {.proof}
 
-A conjugation preserving the labels carries $I_{\mathrm{dP}}$ to $I'_{\mathrm{dP}}$, and conjugate involutions have isometric invariant lattices, of ranks $k+2$ and $k'+2$ by @prop:tuple-of-the-construction; hence $k = k'$.
+A conjugation preserving the labels carries $I_{\mathrm{dP}}$ to $I'_{\mathrm{dP}}$, and conjugate involutions have isometric invariant lattices (@def:invariant_coinvariant_lattices), of ranks $k+2$ and $k'+2$ by @prop:tuple-of-the-construction; hence $k = k'$.
 
 For the occurrence: the value of a $\tau$-invariant section at the $\tau$-fixed point $([1:0],[1:0])$ is the coefficient of $x_0^4y_0^4$, and correspondingly $x_0^4y_1^4$, $x_1^4y_0^4$, $x_1^4y_1^4$ at the other three fixed points. These four monomials are independent, and every other invariant monomial vanishes at all four points, so the conditions $f(p) = 0$ at chosen fixed points and $f\neq0$ at the others are independent hyperplane conditions in the $\bP^{12}$ of @sec-invariant-system. By @lem:node-condition the general member of each stratum has an ordinary node at each chosen fixed point; degeneracy of the quadratic part there and nodes elsewhere are proper closed conditions, so the general member has neither. Taking one, respectively two, chosen points gives $k = 1$ and $k = 2$.
 :::
@@ -812,7 +812,7 @@ Since $\iota'$ is $\id$ on $S'$ and $-\id$ on $S'^{\perp}$, $\iota'(\alpha) = p(
 ::: {.proposition #prop:rank-one-slot-hodge-locus title="The periods at which the rank-one slot is a Hodge isometry"}
 
 Let $t$, $b$ and $J$ be as in @prop:rank-one-slot. Let $X$ be a K3 surface with a marking $H^2(X,\ZZ)\iso\lkt$ under which $S_\Co\subseteq\Pic(X)$, and let $\omega$ span $H^{2,0}(X)$.
-Then $2t\in T_\Co$ and $(2t)^2 = -4$, and $J$ is a Hodge isometry of $H^2(X,\ZZ)$ if and only if $\omega\cdot 2t = 0$, that is, if and only if $2t\in\Pic(X)$.
+Then $2t\in T_\Co$ and $(2t)^2 = -4$, and $J$ is a Hodge isometry (@not:k3-automorphism-data) of $H^2(X,\ZZ)$ if and only if $\omega\cdot 2t = 0$, that is, if and only if $2t\in\Pic(X)$.
 The orthogonal complement $(2t)^{\perp T_\Co}$ has rank $10$ and signature $(2,8)$.
 :::
 
@@ -1048,7 +1048,7 @@ The two corollaries are @prop:gamma-co-two-definitions(1) and the first isomorph
 
 ::: {.lemma #lem:coble-stabilizer-discriminant-nontrivial title="The $\tilde h_\Co$-stabilizer of $S_\Co$ has nontrivial discriminant image"}
 
-Let $C = \Pic(S)\cong\latI_{1,10}$, and let $h_\Co = F_1+F_2\in C$, with $F_i^2 = 0$ and $F_1\cdot F_2 = 1$, be the degree-$2$ numerical polarization of @def:coble-polarization-classes. Write
+Let $C = \Pic(S)\cong\latI_{1,10}$, and let $h_\Co = F_1+F_2\in C$, with $F_i^2 = 0$ and $F_1\cdot F_2 = 1$, be the degree-$2$ numerical polarization (@def:numerical-polarization) of @def:coble-polarization-classes. Write
 $$
 C \;\iso\; \generators{K}\oplus U\oplus E_8,
 \qquad K^2 = -1,
@@ -1516,7 +1516,7 @@ Then, for a primitive $v$, $s_v$ is an isometry of $T_\Co$ exactly for $v^2\in\{
 2. if $v^2 = 2$ or $v^2 = 4$ then $s_v\notin\Orth^+(T_\Co)$, hence $s_v\notin\widetilde\Orth^+(T_\Co)$; for $v^2 = 2$ one has in addition $s_v\in\ker\rho_{T_\Co}$, and for $v^2 = 4$ never;
 3. if $v^2 = -4$ then $s_v\in\Orth^+(T_\Co)$ and $s_v\notin\ker\rho_{T_\Co}$.
 
-Consequently the reflective set of $\widetilde\Orth^+(T_\Co)$ — the primitive vectors of $T_\Co$ whose reflection lies in $\widetilde\Orth^+(T_\Co)$ — is exactly the set of primitive short roots, which is every vector of square $-2$, and no long root lies in it.
+Consequently the reflective set of $\widetilde\Orth^+(T_\Co)$ — the primitive vectors of $T_\Co$ whose reflection lies in $\widetilde\Orth^+(T_\Co)$ — is exactly the set of primitive short roots, which is every vector of square $-2$, and no long root (@def:2elementary-roots) lies in it.
 :::
 
 ::: {.proof}

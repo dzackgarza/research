@@ -45,7 +45,7 @@ Let $b\colon T\tensor_RT\too K/R$ be a symmetric pairing on a finite-length $R$-
 $$
 b^\sharp\colon T\longrightarrow T^\dagger.
 $$
-Then the following are equivalent: $\ker(b^\sharp)=0$; $\operatorname{coker}(b^\sharp)=0$; and $b^\sharp$ is an isomorphism. Hence a symmetric finite torsion linking pairing is nondegenerate exactly when it is perfect.
+Then the following are equivalent: $\ker(b^\sharp)=0$; $\operatorname{coker}(b^\sharp)=0$; and $b^\sharp$ is an isomorphism. Hence a symmetric finite torsion linking pairing (@def:torsion-pairing) is nondegenerate exactly when it is perfect.
 
 The complete exact sequence is
 $$
@@ -74,7 +74,7 @@ $$
 (\pi_L(x),\pi_L(y))&\longmapsto\beta_{L_K}(x,y)+R.
 \end{aligned}
 $$
-This is a perfect symmetric torsion linking pairing. For $R=\bZ$, it is the composite of the bilinear discriminant form $A_L$ of @def:discriminant with the canonical value-module inclusion $W_b(L)\injects\bQ/\bZ$.
+This is a perfect symmetric torsion linking pairing (@def:torsion-pairing). For $R=\bZ$, it is the composite of the bilinear discriminant form $A_L$ of @def:discriminant with the canonical value-module inclusion $W_b(L)\injects\bQ/\bZ$.
 
 The adjective **discriminant** refers to the bilinear form arising from this metric-dual cokernel (and, for quadratic refinements, to the corresponding quadratic discriminant cokernel). It is not a synonym for an arbitrary torsion linking pairing.
 :::

@@ -510,7 +510,7 @@ in $\Orth^+(L)$, and $-g$ also carries $\ZZ v$ to $\ZZ v'$. So $\Orth^+(L)$ is t
 
 ::: {.proposition #prop:rank-nine-vector-transitivity title="Primitive isotropic vectors of $\latI_{1,8}$ and of its twist"}
 
-Let $L$ be $\latI_{1,8}$ or $\latI_{1,8}(2)$, of signature $(1,8)$, and fix a component $C^+$ of the positive cone $\theset{x\in L\otimes\bR\st x^2>0}$.
+Let $L$ be $\latI_{1,8}$ or $\latI_{1,8}(2)$, of signature $(1,8)$, and fix a component $C^+$ of the positive cone (@not:reflection-groups-sign-convention) $\theset{x\in L\otimes\bR\st x^2>0}$.
 For a primitive isotropic $v\in L$ the sign of $\beta_\bR(v,e)$ is independent of the choice of $e\in C^+$, because $\beta_\bR(v,-)$ has no zero on $C^+$ --- a zero would put the isotropic $v$ in the negative definite hyperplane $e^{\perp}$ --- and $C^+$ is connected; call that sign the **side** of $v$.
 Then
 

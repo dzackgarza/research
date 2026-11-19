@@ -145,7 +145,7 @@ A **mirror move** is a lattice-theoretic operation governed by the existence of 
   The new invariants are $(r-2, a, \delta)$: the odd move preserves the coparity.
 
 - **Even, ordinary:** $\div_T(\eta) = 2$ and $\eta^*$ is ordinary, splitting as $T \cong U(2) \oplus K$.
-  The new invariants are $(r-2, a-2, \delta)$: the even ordinary move preserves the coparity and lowers the generator length by two.
+  The new invariants are $(r-2, a-2, \delta)$: the even ordinary (@def:two-elementary-isotropic-types) move preserves the coparity and lowers the generator length by two.
 
 - **Even, characteristic:** $\div_T(\eta) = 2$ and $\eta^*$ is characteristic, splitting as $T \cong I_{1,1}(2) \oplus K$.
   The move is possible only from a lattice of coparity $\delta = 1$, and the new invariants are $(r-2, a-2, 0)$.

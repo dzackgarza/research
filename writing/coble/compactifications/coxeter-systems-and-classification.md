@@ -2,7 +2,7 @@
 
 ::: {#not:coxeter-sign-convention .notation title="Sign convention"}
 
-Simple roots are negative-definite directions of norm $-2$, following the algebraic-geometry convention of @def:root-lattice, so a spherical Coxeter system has a negative definite Gram form.
+Simple roots are negative-definite directions of norm $-2$, following the algebraic-geometry convention of @def:root-lattice, so a spherical Coxeter system (@def:coxeter-group) has a negative definite Gram form (@def:coxeter-gram-form).
 :::
 
 ## Coxeter matrices and their Gram forms
@@ -100,7 +100,7 @@ Then $C = -G(M)$, and the definiteness conditions of @def:coxeter-system-type ar
 
 ::: {.definition #def:coxeter-system-type}
 
-Let $(W,S)$ be an irreducible Coxeter system of rank $n$ with Coxeter matrix $M$ and Gram form $G = G(M)$.
+Let $(W,S)$ be an irreducible Coxeter system (@def:coxeter-group) of rank $n$ with Coxeter matrix (@def:coxeter-matrix) $M$ and Gram form (@def:coxeter-gram-form) $G = G(M)$.
 Say that $(W,S)$, or $M$, is
 
 - **spherical** if $G$ is negative definite;
@@ -116,7 +116,7 @@ For subdiagrams, @def:elliptic-subdiagram names the corresponding conditions **e
 
 ::: {.proposition #prop:coxeter-type-signature title="The three types by signature"}
 
-Let $(W,S)$ be an irreducible Coxeter system of rank $n$ with Gram form $G$, and let $\operatorname{sig}(\RR^S, G) = (p,q,r)$ be the signature of @def:signature.
+Let $(W,S)$ be an irreducible Coxeter system (@def:coxeter-group) of rank $n$ with Gram form (@def:coxeter-gram-form) $G$, and let $\operatorname{sig}(\RR^S, G) = (p,q,r)$ be the signature of @def:signature.
 Then $(W,S)$ is spherical if and only if $(p,q,r) = (0,n,0)$, euclidean if and only if $(p,q,r) = (0,n-1,1)$, and hyperbolic if and only if $(p,q,r) = (1,n-1,0)$.
 :::
 
@@ -130,7 +130,7 @@ It is nondegenerate of signature $(1,n-1)$ exactly when $r = 0$, $p = 1$ and $q 
 
 ::: {.theorem #thm:coxeter-type-and-geometry title="The geometry of the three types"}
 
-Let $(W,S)$ be an irreducible Coxeter system of rank $n$ with Gram form $G$.
+Let $(W,S)$ be an irreducible Coxeter system (@def:coxeter-group) of rank $n$ with Gram form (@def:coxeter-gram-form) $G$.
 
 1. $(W,S)$ is spherical if and only if $W$ is finite.
    In that case $W$ acts on the unit sphere of the negative definite space $(\RR^S, -G)$ as a finite reflection group whose fundamental domain is a spherical simplex [@Bou08, Ch. V §4 no. 8, Th. 2 and Prop. 9].
@@ -157,8 +157,8 @@ In (3) the hyperboloid inside the nondegenerate space $(\RR^S,G)$ is the model o
 
 ::: {.definition #def:coxeter-subdiagram}
 
-Let $\Sigma$ be the Coxeter diagram of $(W,S)$ and let $I\iscontainedin S$.
-The **subdiagram** $\Sigma_I$ is the induced diagram on $I$, with Coxeter matrix $M[I,I]$ and Gram form the principal submatrix $G[I,I]$.
+Let $\Sigma$ be the Coxeter diagram (@def:coxeter-matrix) of the Coxeter system (@def:coxeter-group) $(W,S)$ and let $I\iscontainedin S$.
+The **subdiagram** $\Sigma_I$ is the induced diagram on $I$, with Coxeter matrix $M[I,I]$ and Gram form (@def:coxeter-gram-form) the principal submatrix $G[I,I]$.
 The **rank** of $\Sigma_I$ is the rank of $G[I,I]$.
 The subgroup
 $$
@@ -169,19 +169,19 @@ is the **standard parabolic subgroup** determined by $I$, and $(W_I, I)$ is a Co
 
 ::: {#not:parabolic-subgroups-and-subdiagrams .notation title="Parabolic subgroups and parabolic subdiagrams"}
 
-The subgroup $W_I$ is a standard parabolic subgroup for every subset $I\iscontainedin S$, whatever the definiteness of $G[I,I]$.
+The subgroup $W_I$ is a standard parabolic subgroup (@def:coxeter-subdiagram) for every subset $I\iscontainedin S$, whatever the definiteness of $G[I,I]$.
 The subdiagram $\Sigma_I$ is parabolic when each of its connected components is euclidean (@def:elliptic-subdiagram).
 :::
 
 ::: {.proposition #prop:parabolic-subdiagram-product title="The Coxeter system of a parabolic subdiagram"}
 
 Let $\Sigma_I$ be a parabolic subdiagram with connected components $\Sigma_{I_1},\dots,\Sigma_{I_r}$.
-Then $W_I$ is the direct product of the standard parabolic subgroups $W_{I_1},\dots,W_{I_r}$, and each $(W_{I_j}, I_j)$ is an irreducible euclidean Coxeter system.
+Then $W_I$ is the direct product of the standard parabolic subgroups $W_{I_1},\dots,W_{I_r}$, and each $(W_{I_j}, I_j)$ is an irreducible euclidean Coxeter system (@def:coxeter-group).
 :::
 
 ::: {.proof}
 
-By @def:coxeter-subdiagram, $(W_I, I)$ is a Coxeter system with Coxeter diagram $\Sigma_I$.
+By @def:coxeter-subdiagram, $(W_I, I)$ is a Coxeter system with Coxeter diagram (@def:coxeter-matrix) $\Sigma_I$.
 For any Coxeter system, $W$ is the direct product of the standard parabolic subgroups of the connected components of its Coxeter diagram, and each of these is an irreducible Coxeter system [@Hum90, §6.1, Proposition].
 Each $\Sigma_{I_j}$ is euclidean because $\Sigma_I$ is parabolic.
 :::
@@ -206,12 +206,12 @@ Applying both to $-\beta$ gives the statement for $n_-$.
 
 ::: {.corollary #cor:subdiagram-inheritance}
 
-Let $\Sigma$ be a Coxeter diagram on $S$ and $J\iscontainedin I\iscontainedin S$.
+Let $\Sigma$ be a Coxeter diagram (@def:coxeter-matrix) on $S$ and $J\iscontainedin I\iscontainedin S$.
 
 1. If $\Sigma_I$ is elliptic then so is $\Sigma_J$.
    Equivalently, a subdiagram that is not elliptic is contained in no elliptic subdiagram.
 
-2. If the Gram form of $\Sigma$ has exactly one positive square --- in particular if $\Sigma$ is hyperbolic --- then the Gram form of every subdiagram of $\Sigma$ has at most one positive square, so every subdiagram is negative semidefinite or of signature $(1,q)$ with a possibly nontrivial kernel.
+2. If the Gram form (@def:coxeter-gram-form) of $\Sigma$ has exactly one positive square --- in particular if $\Sigma$ is hyperbolic --- then the Gram form of every subdiagram of $\Sigma$ has at most one positive square, so every subdiagram is negative semidefinite or of signature $(1,q)$ with a possibly nontrivial kernel.
 :::
 
 ::: {.proof}
@@ -223,7 +223,7 @@ For (2), apply the upper bound of @prop:signature-under-restriction with $n_+(G)
 
 ::: {.theorem #thm:spherical-classification title="Classification of spherical Coxeter systems"}
 
-An irreducible Coxeter system is spherical if and only if its Coxeter diagram is one of
+An irreducible Coxeter system (@def:coxeter-group) is spherical if and only if its Coxeter diagram (@def:coxeter-matrix) is one of
 $$
 A_n\ (n\geq 1),\quad
 B_n\ (n\geq 2),\quad
@@ -252,7 +252,7 @@ $I_2(p)$ denotes the rank-two diagram with $m_{12} = p$, so that $I_2(3)\cong A_
 
 ::: {.proposition #prop:bn-cn-coxeter-system title="$B_n$ and $C_n$ have one Coxeter system"}
 
-The root systems $B_n$ and $C_n$ of @def:root-system-Bn-Cn are distinct crystallographic root systems with the same Weyl group, the Coxeter group of type $B_n$ [@Hum90, §2.9].
+The root systems $B_n$ and $C_n$ of @def:root-system-Bn-Cn are distinct crystallographic root systems with the same Weyl group, the Coxeter group (@def:coxeter-group) of type $B_n$ [@Hum90, §2.9].
 :::
 
 ::: {.proof}
@@ -262,7 +262,7 @@ This is [@Hum90, §2.9].
 
 ::: {.theorem #thm:euclidean-classification title="Classification of euclidean Coxeter systems"}
 
-An irreducible Coxeter system is euclidean if and only if its Coxeter diagram is one of
+An irreducible Coxeter system (@def:coxeter-group) is euclidean if and only if its Coxeter diagram (@def:coxeter-matrix) is one of
 $$
 \tilde A_1,\quad
 \tilde A_n\ (n\geq 2),\quad
@@ -285,7 +285,7 @@ This is the classification of the connected Coxeter graphs with $B$ positive sem
 
 ::: {.proposition #prop:euclidean-radical title="The radical of a euclidean diagram"}
 
-Let $\Sigma$ be an irreducible euclidean diagram on the vertex set $I$, with Gram form $G[I,I]$ and simple roots $\theset{\alpha_s}_{s\in I}$.
+Let $\Sigma$ be an irreducible euclidean diagram on the vertex set $I$, with Gram form (@def:coxeter-gram-form) $G[I,I]$ and simple roots $\theset{\alpha_s}_{s\in I}$.
 Then $\ker G[I,I]$ is spanned by a vector
 $$
 \delta = \Sum_{s\in I} n_s\,\alpha_s
@@ -316,7 +316,7 @@ whose coefficients at $\alpha_1,\dots,\alpha_8$ are those of the highest root of
 
 ::: {.definition #def:crystallographic-coxeter}
 
-A Coxeter matrix $M$ on $S$ is **crystallographic** if $m_{st}\in\theset{2,3,4,6,\infty}$ for all $s\neq t$.
+A Coxeter matrix (@def:coxeter-matrix) $M$ on $S$ is **crystallographic** if $m_{st}\in\theset{2,3,4,6,\infty}$ for all $s\neq t$.
 :::
 
 ::: {.theorem #thm:crystallographic-lattice}
@@ -350,13 +350,13 @@ For $m_{st}\in\theset{2,3}$ the entries $0$ and $1$ are already integral, and th
 
 ::: {.definition #def:coxeter-base-field}
 
-Let $M$ be a Coxeter matrix on $S$.
+Let $M$ be a Coxeter matrix (@def:coxeter-matrix) on $S$.
 Its **field of definition** is the subfield
 $$
 K(M) \definedas \QQ\!\left(\, 2\cos(\pi/m_{st}) \;:\; s\neq t,\ m_{st} < \infty \,\right) \iscontainedin \RR
 ,
 $$
-the smallest field over which the Gram form $G(M)$ is defined.
+the smallest field over which the Gram form (@def:coxeter-gram-form) $G(M)$ is defined.
 :::
 
 ::: {.proposition #prop:coxeter-base-field-degree}

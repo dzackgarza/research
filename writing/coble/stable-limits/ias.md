@@ -2,7 +2,7 @@
 
 ::: {.definition #def:singular_ias}
 
-The dual complex $\Gamma(\mcx_0)$ of a Type III Kulikov model has a canonical *singular integral affine structure*: away from a finite singular set its charts map to $\RR^2$ with transition functions in $\operatorname{GL}_2(\bZ) \ltimes \RR^2$, and its singularities correspond to the components of positive charge, the non-toric anticanonical pairs.
+The dual complex $\Gamma(\mcx_0)$ of a Type III Kulikov model has a canonical *singular integral affine structure*: away from a finite singular set its charts map to $\RR^2$ with transition functions in $\operatorname{GL}_2(\bZ) \ltimes \RR^2$, and its singularities correspond to the components of positive charge, the non-toric anticanonical pairs (@def:anticanonical-pair).
 The total charge is $24$, which constrains the number and type of singularities; for instance one may have $24$ singularities of type $I_1$.
 :::
 

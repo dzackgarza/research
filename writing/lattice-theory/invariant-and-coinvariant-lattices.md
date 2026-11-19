@@ -86,7 +86,7 @@ In particular the ideal $(n)$ is contained in the annihilators over $\bZ$ of all
 :::
 
 ::: {.proof}
-The first two modules are the kernel and cokernel of the norm on module coinvariants. The surjection $L\too\nu_G(L)/nL^G$ has kernel $L^G+L_G$: if $\nu_G(x)=ns$, then $x-s\in\ker\nu_G=L_G$, and the converse is immediate. This gives the isomorphism with $C_G$. The inclusions $nL^G\subseteq\nu_G(L)\subseteq L^G$ yield the remaining exact sequence and annihilator containments.
+The first two modules are the kernel and cokernel of the norm on module coinvariants (@def:invariant_coinvariant_lattices). The surjection $L\too\nu_G(L)/nL^G$ has kernel $L^G+L_G$: if $\nu_G(x)=ns$, then $x-s\in\ker\nu_G=L_G$, and the converse is immediate. This gives the isomorphism with $C_G$. The inclusions $nL^G\subseteq\nu_G(L)\subseteq L^G$ yield the remaining exact sequence and annihilator containments.
 :::
 
 ## Integral isotypic sublattices {#sec-integral-isotypic-sublattices}
@@ -269,7 +269,7 @@ Adding the two expressions gives $v_+ + v_- = 2v$, and the summands are orthogon
 ::: {.proposition #prop:coinvariant_involution_2elementary}
 
 Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ be $2$-elementary and let $I\in\widetilde\Orth(L)$ be an involution.
-Then the invariant lattice $L^{\generators{I}}$ and geometric coinvariant lattice $L_{\generators{I}}$ have $2$-elementary discriminant groups.
+Then the invariant lattice (@def:invariant_coinvariant_lattices) $L^{\generators{I}}$ and geometric coinvariant lattice $L_{\generators{I}}$ have $2$-elementary discriminant groups.
 :::
 
 ::: {.proof}

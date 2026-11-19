@@ -365,7 +365,7 @@ Then
 
 1. $\Orth(K(2)) = \Orth(K)$, and the reflection $s_r$ of @def:spinor-norm is unchanged when the form is scaled, so the Coxeter chamber of $K(2)$ is the chamber of $K$ with every root norm doubled;
 
-2. the chamber of $K_\En = \eta_1^{\perp}/\eta_1$ has ten walls, with Coxeter diagram $T_{2,3,7}$, all of whose edges have label $3$, one ideal vertex, and its ten walls are the roots
+2. the chamber of $K_\En = \eta_1^{\perp}/\eta_1$ has ten walls, with Coxeter diagram (@def:coxeter-matrix) $T_{2,3,7}$, all of whose edges have label $3$, one ideal vertex, and its ten walls are the roots
 $$
 -\eps_3,\ \dots,\ -\eps_{10},\qquad \eps_1-\eps_2,\qquad \eps_2+2\eps_3+3\eps_4+4\eps_5+6\eps_6+5\eps_7+4\eps_8+3\eps_9+2\eps_{10}
 $$

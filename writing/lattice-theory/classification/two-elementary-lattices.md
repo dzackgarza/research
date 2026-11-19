@@ -116,7 +116,7 @@ Then exactly one of the following holds [@AE22, Prop. 5.5]:
 
 1. If $v$ is odd, $S\isoto U\perp\qty{v^{\perp_S}}^{\mathrm{nd}}$, and $\qty{v^{\perp_S}}^{\mathrm{nd}}$ has invariants $(r-2,a,\delta)$.
 
-2. If $v$ is even ordinary, $S\isoto U(2)\perp\qty{v^{\perp_S}}^{\mathrm{nd}}$, and $\qty{v^{\perp_S}}^{\mathrm{nd}}$ has invariants $(r-2,a-2,\delta)$.
+2. If $v$ is even ordinary (@def:two-elementary-isotropic-types), $S\isoto U(2)\perp\qty{v^{\perp_S}}^{\mathrm{nd}}$, and $\qty{v^{\perp_S}}^{\mathrm{nd}}$ has invariants $(r-2,a-2,\delta)$.
 
 3. If $v$ is even characteristic, $S\isoto\latI_{1,1}(2)\perp\qty{v^{\perp_S}}^{\mathrm{nd}}$, necessarily $\delta=1$, and $\qty{v^{\perp_S}}^{\mathrm{nd}}$ has invariants $(r-2,a-2,0)$.
 

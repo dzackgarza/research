@@ -4,7 +4,7 @@
 
 ::: {.definition #def:numerical-polarization title="Numerical polarization"}
 
-A **numerical polarization** $[h]$ on an algebraic surface $Z$ --- for instance an Enriques surface --- is the numerical class of $h \definedas c_1(\mcl)$ for an ample line bundle $\mcl\in\Pic(Z)$, often written $[\mcl]$.
+A **numerical polarization** $[h]$ on an algebraic surface $Z$ --- for instance an Enriques surface (@def:enriques-surface) --- is the numerical class of $h \definedas c_1(\mcl)$ for an ample line bundle $\mcl\in\Pic(Z)$, often written $[\mcl]$.
 The **degree** of $[h]$ is its self-intersection $h^2$, computed in $\Num(Z)$.
 :::
 
@@ -98,14 +98,14 @@ polarized by $U(2)$, of rank two, and
 
 ::: {.proposition #prop:enriques-cover-two-involutions title="The two involutions on the K3 cover of a degree-$2$ polarized Enriques surface"}
 
-Let $Z$ be an Enriques surface with a numerical polarization $[\mcl_Z]$ of degree $2$, and let $\pi\colon X\to Z$ be its canonical double cover.
+Let $Z$ be an Enriques surface (@def:enriques-surface) with a numerical polarization (@def:numerical-polarization) $[\mcl_Z]$ of degree $2$, and let $\pi\colon X\to Z$ be its canonical double cover.
 Then the K3 surface $X$ has two commuting involutions: the fixed-point-free **Enriques involution** $\ien$, which is the deck transformation of $\pi$, and the **del Pezzo involution** $\idp$.
 The surface $X$ and both involutions are determined by the pair $(Z,[\mcl_Z])$ [@AEGS25, §2.1, Rem. 2.2].
 :::
 
 ::: {.definition #def:nl-locus-enriques title="Noether–Lefschetz locus \\mathrm{NL}_{S_{\\mathrm{En}}}"}
 
-The moduli space $\fentwo$ of degree-$2$ numerically polarized Enriques surfaces maps to the K3 moduli space $\fttz$ via the canonical morphism $j$ of @lem:fen2_normalization. Its map to the scheme-theoretic image is the normalization; an embedding is not asserted. The image lies in the **Noether–Lefschetz locus** $\mathrm{NL}_{S_{\mathrm{En}}}$ defined by the primitive embedding of the **invariant** (algebraic) lattice of $\ien$,
+The moduli space $\fentwo$ of degree-$2$ numerically polarized Enriques surfaces (@def:enriques-surface) maps to the K3 moduli space $\fttz$ via the canonical morphism $j$ of @lem:fen2_normalization. Its map to the scheme-theoretic image is the normalization; an embedding is not asserted. The image lies in the **Noether–Lefschetz locus** $\mathrm{NL}_{S_{\mathrm{En}}}$ defined by the primitive embedding of the **invariant** (algebraic) lattice of $\ien$,
 $$
 \sen = E_{10}(2) = U(2)\oplus E_8(2)
 ,
@@ -166,9 +166,9 @@ Let $f\colon X\to S$ be the K3 double cover.
 
 1. The **hyperplane class** is $H\in\Pic(S)$, the pullback of $c_1(\OO_{\PP^2}(1))$, with $H^2 = 1$; its K3 pullback $e_0\definedas f^{*}H\in S_\Co$ has $e_0^2 = 2$ by the K3 double-cover proposition (@prop:double-cover-is-k3).
 
-2. The **degree-$2$ numerical polarization** is a class $h_\Co\in K_S^{\perp}\iscontainedin\Pic(S)$ of Enriques type: in the non-degenerate case $h_\Co = F_1 + F_2$ with $F_1,F_2\in K_S^{\perp}$, $F_i^2 = 0$ and $F_1\cdot F_2 = 1$, so that $h_\Co^2 = 2$; its K3 pullback $\tilde h_\Co\definedas f^{*}h_\Co$ lies in $f^{*}(K_S^{\perp})\iscontainedin S_\Co$ and has $\tilde h_\Co^2 = 4$. Thus $\tilde h_\Co = f^*F_1 + f^*F_2$ is the sum of the standard basis of $\generators{f^*F_1, f^*F_2}\cong U(2)$, as for the vector $h = e + f$ of [@AEGS25, Def. 2.5].
+2. The **degree-$2$ [numerical polarization]{.other-sense}** is a class $h_\Co\in K_S^{\perp}\iscontainedin\Pic(S)$ of Enriques type: in the non-degenerate case $h_\Co = F_1 + F_2$ with $F_1,F_2\in K_S^{\perp}$, $F_i^2 = 0$ and $F_1\cdot F_2 = 1$, so that $h_\Co^2 = 2$; its K3 pullback $\tilde h_\Co\definedas f^{*}h_\Co$ lies in $f^{*}(K_S^{\perp})\iscontainedin S_\Co$ and has $\tilde h_\Co^2 = 4$. Thus $\tilde h_\Co = f^*F_1 + f^*F_2$ is the sum of the standard basis of $\generators{f^*F_1, f^*F_2}\cong U(2)$, as for the vector $h = e + f$ of [@AEGS25, Def. 2.5].
 
-3. Let $\mathcal C_X\iscontainedin\NS(X)\tensor\RR$ be the component of the positive cone that contains the ample cone $\Amp(X)$ (@lem:k3-positive-cone-component), and let $\Delta_X$ be the set of classes of square $-2$ that are effective on $X$. The **chamber** $\mathfrak c$ of $X$ is the component of $\mathcal C_X\setminus\bigcup_{\delta\in\Delta_X}\delta^{\perp}$ that contains $\Amp(X)$; it exists because $\Amp(X)$ is convex and every ample class is positive on every $\delta\in\Delta_X$.
+3. Let $\mathcal C_X\iscontainedin\NS(X)\tensor\RR$ be the component of the positive cone (@not:reflection-groups-sign-convention) that contains the ample cone $\Amp(X)$ (@lem:k3-positive-cone-component), and let $\Delta_X$ be the set of classes of square $-2$ that are effective on $X$. The **chamber** $\mathfrak c$ of $X$ is the component of $\mathcal C_X\setminus\bigcup_{\delta\in\Delta_X}\delta^{\perp}$ that contains $\Amp(X)$; it exists because $\Amp(X)$ is convex and every ample class is positive on every $\delta\in\Delta_X$.
 :::
 
 ::: {.example #ex:coble-polarization-small-degree title="$h_\Co$ against $(-2)$-classes of $H$-degree at most $3$"}

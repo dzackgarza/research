@@ -117,7 +117,7 @@ $T_\Co$ is the lattice $N$ of [@DK13, (3.6)], $N = \generators{2}\oplus E(2)$ wi
 
 Three groups act on $\bD(T_\En)$: the stable group $\Gamma_\En\definedas\widetilde\Orth^+(T_\En) = \Orth^+(T_\En)\intersect\discriminantkernel{T_\En}$; the group $\Gamma^K_\En\definedas\Orth(T_\En)$, which is the group that [@AEGS25, Def. 2.6] writes $\Gamma_\En$; and $\gent = \rho^{-1}(M)$, with $M$ the summand-preserving subgroup of $\Orth(A_{T_\En},q)$ [@AEGS25, Def. 2.6; @Ste91, Prop. 2.7].
 
-1. $\Gamma_\Co\leq\Orth(T_\Co)$ is the monodromy group of the family of unpolarized Coble surfaces: the image of the monodromy representation (@def:transport-and-monodromy) of the local system of lattices with fibre $T_\Co$ (@def:local-system-of-lattices) of that family. The family of unpolarized Enriques surfaces, whose local system of lattices has fibre $T_\En$ and monodromy group $\Gamma_\En$, induces this family and its local system. Put $\fco\definedas\bD(T_\Co)/\Gamma_\Co$.
+1. $\Gamma_\Co\leq\Orth(T_\Co)$ is the monodromy group of the family of unpolarized Coble surfaces (@def:coble-surface): the image of the monodromy representation (@def:transport-and-monodromy) of the local system of lattices with fibre $T_\Co$ (@def:local-system-of-lattices) of that family. The family of unpolarized Enriques surfaces (@def:enriques-surface), whose local system of lattices has fibre $T_\En$ and monodromy group $\Gamma_\En$, induces this family and its local system. Put $\fco\definedas\bD(T_\Co)/\Gamma_\Co$.
 2. $\Gamma^{\mathrm{un}}_\Co\definedas\Orth(T_\Co)$, with $F^{\mathrm{un}}_\Co\definedas\bD(T_\Co)/\Orth(T_\Co)$: the moduli space $M_\Co$ of Coble surfaces is isomorphic to an open subset of $\bD(N)/\Orth(N)$ [@DK13, Prop. 3.2, p. 513].
 3. The stable group
 $$
@@ -247,7 +247,7 @@ Identify $\ten = U\oplus U(2)\oplus E_8(2)$ with the lattice $L_- = \mathbf H\op
 
 ::: {.proof}
 
-(1) The group $\Gamma$ of [@Ste91, §2] is the image in $\Orth(L_-)$ of the isometries of the K3 lattice that commute with the Enriques involution and fix the polarization vector, and $\gent$ is the image in $\Orth(\ten)$ of the same group [@AEGS25 Def. 2.6].
+(1) The group $\Gamma$ of [@Ste91, §2] is the image in $\Orth(L_-)$ of the isometries of the K3 lattice that commute with the Enriques involution (@def:enriques-surface) and fix the polarization vector, and $\gent$ is the image in $\Orth(\ten)$ of the same group [@AEGS25 Def. 2.6].
 The description by the two summands is [@Ste91, Prop. 2.7].
 
 (2) Because $U$ is unimodular, $A_{\ten} = A_{U(2)}\perp A_{E_8(2)}$, and an isometry of $q_{\ten}$ preserves both summands exactly when it is a pair of isometries of the summands.
@@ -552,7 +552,7 @@ Use the four $M$-orbits $A$, $B$, $C$, $D$ of nonzero isotropic elements of $A_{
 4. For a plane $\varPi$ with label $\lambda$, the intersection of the image of $\Stab_{\gent}(\varPi)$ in $\GL(\varPi)$ with $\SL(\varPi)$ is $\Gamma^1(2)$ for $\lambda = \theset{1,t}$ [@Ste91, §4.3.16]; it is $\Gamma(2)$ for $\theset{2,4,5}$, $\Gamma^1(2)$ for $\theset{4,5}$, $\theset{3,5}$ and $\theset{3,4}$, and $\SL_2(\ZZ)$ for $\theset{5,5}$ [@Ste91, §4.3.17 and the proof of Prop. 4.7].
 5. The orbits of $\gent^+ = \gent\cap\Orth^+(\ten)$ on lines and on planes are the orbits of $\gent$.
 
-So the Baily--Borel compactification of $\fentwo$ has five $0$-dimensional and nine $1$-dimensional boundary components, with the incidence of item 3 [@Ste91, §4.2, §4.4].
+So the Baily--Borel compactification of $\fentwo$ has five $0$-dimensional and nine $1$-dimensional [boundary components]{.other-sense}, with the incidence of item 3 [@Ste91, §4.2, §4.4].
 :::
 
 ::: {.proof}
@@ -576,7 +576,7 @@ Subgroups of different orders are not $M$-equivalent, so there are nine orbits.
 For a plane with a vector of divisibility one, every primitive vector of divisibility two has the class $c$ (@prop:ten-plane-classes(2)), and such vectors exist, for example $e'\in\varPi_1$.
 For a plane without one, the classes of the primitive vectors are the three nonzero elements of $D(\varPi)$ (@prop:ten-plane-classes(3)).
 By item 1 the type of a vector is read off from the $M$-orbit of its class, which gives the labels.
-A $0$-dimensional boundary component lies in the closure of a $1$-dimensional one exactly when the line is $\gent$-equivalent to a line in the plane [@Ste91, §4.4].
+A $0$-dimensional [boundary component]{.other-sense} lies in the closure of a $1$-dimensional one exactly when the line is $\gent$-equivalent to a line in the plane [@Ste91, §4.4].
 The diagrams at the vectors of types $1$ to $5$ are those of [@Ste91, Figs. 5, 7, 9, 11, 13]; there are $4$, $2$, $3$, $4$ and $5$ of them, the number of labels that contain each type.
 The plane orbits are matched across types in [@Ste91, §4.3.6--4.3.9].
 The $\tilde E_8$ class at $e'$ is the class of $\ZZ e\oplus\ZZ e'$, the $\tilde E_8$ class at $e$ (§4.3.6), so its label is $\theset{1,2}$.

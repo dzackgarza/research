@@ -84,7 +84,7 @@ So $(g(e),g(f))$ is one of $(e,f)$, $(f,e)$, $(-e,-f)$, $(-f,-e)$, and each of t
 
 ::: {.lemma #lem:subdiagram-type-integer-gram title="The type of a subdiagram is the signature of an integer matrix"}
 
-Let $L$ be an integral lattice, let $\theset{r_i}_{i\in I}$ be simple roots of a Coxeter polytope with $r_i^2<0$, and suppose that $g_{ij}\leq 1$ for all $i\neq j$ in $I$, so that $\Sigma_I$ has a Coxeter matrix $M[I,I]$ with $g_{ij} = \cos(\pi/m_{ij})$ (@def:coxeter-vinberg-diagram).
+Let $L$ be an integral lattice, let $\theset{r_i}_{i\in I}$ be simple roots of a Coxeter polytope (@def:coxeter-polytope) with $r_i^2<0$, and suppose that $g_{ij}\leq 1$ for all $i\neq j$ in $I$, so that $\Sigma_I$ has a Coxeter matrix $M[I,I]$ with $g_{ij} = \cos(\pi/m_{ij})$ (@def:coxeter-vinberg-diagram).
 Let $R_I = (r_i\cdot r_j)_{i,j\in I}$, an integer matrix.
 Then $\operatorname{sig}(\RR^I, G[I,I]) = \operatorname{sig}(\QQ^I, R_I)$, and $G[I,I]$ and $R_I$ have the same connected components.
 Hence the type of $\Sigma_I$ in @def:coxeter-system-type, and the type of the subdiagram in @def:elliptic-subdiagram, are determined by the signature over $\QQ$ of the integer matrix $R_I$, componentwise.

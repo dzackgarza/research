@@ -58,8 +58,8 @@ The remaining row is $n = 10$, the lattice $(20,2,1)$.
 
 ::: {#conj:halphen-index-2-period-domains .conjecture title="Period domains and KSBA compactifications for $M_{H,2,k}$"}
 
-These lattices can be used to construct period domains of index 2 Halphen pencils, yielding moduli spaces $M_{H,2,k}$ of index 2 Halphen surfaces with an $I_k$ fiber, whose K3 covers have an $I_{2k}$ fiber, with the matching arising from a geometric comparison to Coble surfaces.
-The normalizations of the stable pair compactifications $\overline{M_{H,2,k}}^R$ are then isomorphic to semitoroidal compactifications of the corresponding period domains, for a suitably canonical divisor $R$.
+These lattices can be used to construct period domains of index 2 Halphen pencils, yielding moduli spaces $M_{H,2,k}$ of index 2 Halphen surfaces with an $I_k$ fiber, whose K3 covers have an $I_{2k}$ fiber, with the matching arising from a geometric comparison to Coble surfaces (@def:coble-surface).
+The normalizations of the stable pair compactifications $\overline{M_{H,2,k}}^R$ are then isomorphic to semitoroidal compactifications (@def:semitoroidal-compactification) of the corresponding period domains, for a suitably canonical divisor $R$.
 :::
 
 ::: {#qst:halphen-multiple-fiber-divisor .question title="A divisor constructed from the multiple fiber"}

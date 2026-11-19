@@ -13,7 +13,7 @@ tags:
 
 ::: {#def:nodal-enriques-surface .definition title="Nodal and unnodal"}
 
-An Enriques surface $Y$ is **nodal** if it contains a rational $(-2)$-curve, and **unnodal** otherwise.
+An Enriques surface (@def:enriques-surface) $Y$ is **nodal** if it contains a rational $(-2)$-curve, and **unnodal** otherwise.
 A generic Enriques surface is unnodal, and $F_{\Nod}$ is an irreducible hypersurface in $\fen$.
 :::
 
@@ -52,7 +52,7 @@ A composite of a primitive embedding with isometries of the source and of the ta
 
 ::: {#conj:nodal-enriques-baily-borel-boundary .conjecture title="Baily-Borel boundary by the same techniques"}
 
-Orbits under $\Orth(T_{\Nod})$ of isotropic vectors and planes can be classified, yielding a boundary incidence diagram; and the lattice embedding above allows AEGS23 to be leveraged to construct the KSBA compactification, its dlt models, and the integral-affine structures classifying KSBA stable limits of nodal Enriques surfaces.
+Orbits under $\Orth(T_{\Nod})$ of isotropic vectors and planes can be classified, yielding a boundary incidence diagram; and the lattice embedding above allows AEGS23 to be leveraged to construct the KSBA compactification (@def:ksba-compactification), its dlt models (@def:dlt-model), and the integral-affine structures classifying KSBA stable limits of nodal Enriques surfaces (@def:enriques-surface).
 :::
 
 ::: {.proposition #prop:nodal-transcendental-not-two-elementary title="$T_{\Nod}$ is not $2$-elementary"}
@@ -78,13 +78,13 @@ The class of $h/4$ has order $4$, so $A^\sharp_{T_{\Nod}}$ is not isomorphic to 
 ::: {.proposition #prop:nodal-enriques-known-results title="Automorphisms, Reye congruences, derived categories and rationality"}
 
 1. Let $Q$ be the quadratic form of rank $10$ of the Dynkin diagram $T_{2,4,6}$, let $W$ be its Weyl group, and let $\overline W(2)$ be the unique normal subgroup of $W$ that contains the $2$-congruence subgroup $W(2)$ and has $W/\overline W(2)\cong\mathrm{Sp}(8,\mathbb F_2)$.
-   Over an algebraically closed field of characteristic $p\notin\theset{2,3,5,7,17}$, the automorphism group of a generic nodal Enriques surface is isomorphic to $\overline W(2)$, and any two nonsingular rational curves on a generic nodal Enriques surface differ by an automorphism of the surface [@CD85, Thms. 1 and 3].
+   Over an algebraically closed field of characteristic $p\notin\theset{2,3,5,7,17}$, the automorphism group of a generic nodal Enriques surface (@def:enriques-surface) is isomorphic to $\overline W(2)$, and any two nonsingular rational curves on a generic nodal Enriques surface differ by an automorphism of the surface [@CD85, Thms. 1 and 3].
 
 2. Every classical nodal Enriques surface $X$ is a Reye congruence: $X$ has a Fano polarization $H$ whose morphism $\varphi_H\colon X\to\PP^5$ maps $X$ onto a nondegenerate surface of degree $10$ and factors through a smooth quadric hypersurface [@MMV24, Def. 3.1 and Thm. 1.1].
 
 3. Let $S$ be the nodal Enriques surface of a quartic symmetroid $D\subset\PP^3$, let $X$ be the nodal quartic double solid ramified in $D$, and let $X^+$ be a small resolution of $X$.
    Let $\mathcal A_S\subset D^b(S)$ be the orthogonal subcategory of the completely orthogonal exceptional collection $\theset{\mathcal O_S(-F_i^+)}_{i=1}^{10}$, where $F_i^+$ is a multiple fiber of the $i$-th of the ten elliptic pencils on $S$.
-   There is a semiorthogonal decomposition $D^b(X^+) = \generators{\mathcal A_{X^+},\ \mathcal O_{X^+}(-h),\ \mathcal O_{X^+}}$, with $h$ the pullback of the hyperplane class of $\PP^3$ and $\mathcal A_{X^+} = \generators{\mathcal O_{X^+}(-h),\mathcal O_{X^+}}^\perp$, and $\mathcal A_{X^+}\cong\mathcal A_S$ [@IK15, §1, Prop. 3.8 and Thm. 4.3].
+   There is a semiorthogonal decomposition $D^b(X^+) = \generators{\mathcal A_{X^+},\ \mathcal O_{X^+}(-h),\ \mathcal O_{X^+}}$, with $h$ the pullback of the [hyperplane class]{.other-sense} of $\PP^3$ and $\mathcal A_{X^+} = \generators{\mathcal O_{X^+}(-h),\mathcal O_{X^+}}^\perp$, and $\mathcal A_{X^+}\cong\mathcal A_S$ [@IK15, §1, Prop. 3.8 and Thm. 4.3].
 
 4. Over $\CC$ the coarse moduli space of nodal Enriques surfaces is rational [@DK13, Thm. 6.4].
 :::

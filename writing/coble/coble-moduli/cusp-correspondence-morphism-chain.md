@@ -28,7 +28,7 @@ $$
 \qquad
 \tilde\eta: \bbcpt{\fco} \to \bbcpt{\fttz} .
 $$
-The stratification of $\partial\bbcpt{F^{\mathrm{un}}_\Co}$ is obtained by applying the mirror moves of [@AE22] to $S_{\Co} = (11,11,1)_1$.
+The stratification of $\partial\bbcpt{F^{\mathrm{un}}_\Co}$ is obtained by applying the mirror moves (@def:mirror-move) of [@AE22] to $S_{\Co} = (11,11,1)_1$.
 On $0$-cusps, $\eta$ induces an injective map from the $527$ $0$-cusps of the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ to the $0$-cusps of $\fen$ of divisibility $2$ (@prop:cusp-map-injective, @prop:cusp-map-not-onto).
 :::
 
@@ -39,7 +39,7 @@ On $0$-cusps, $\eta$ induces an injective map from the $527$ $0$-cusps of the st
 Let $e\in\ten$ be a primitive isotropic vector, and number the $0$-cusps of $\fentwo$ as in [@Ste91].
 
 1. The lattice $e^{\perp}/e$ is $U(2)\oplus E_8(2)=(10,10,0)_1$ when $e$ represents cusp $1$, and $U\oplus E_8(2)=(10,8,0)_1$ when $e$ represents one of cusps $2$ to $5$ [@AEGS25, Lemmas 3.9, 3.10].
-2. The Coxeter diagram of cusp $2$ is the folding of the Coxeter diagram of $(18,0,0)_1$ by the reflection $\alpha_k\mapsto\alpha_{20-k}$ [@AEGS25, Lemma 3.9]. The Coxeter diagrams of cusps $1$, $3$, $4$ and $5$ are foldings of the Coxeter diagram of $(18,2,0)_1$ [@AEGS25, Lemma 3.10].
+2. The Coxeter diagram (@def:coxeter-matrix) of cusp $2$ is the folding of the Coxeter diagram of $(18,0,0)_1$ by the reflection $\alpha_k\mapsto\alpha_{20-k}$ [@AEGS25, Lemma 3.9]. The Coxeter diagrams of cusps $1$, $3$, $4$ and $5$ are foldings of the Coxeter diagram of $(18,2,0)_1$ [@AEGS25, Lemma 3.10].
 :::
 
 ::: {.corollary #cor:coble-zero-cusp-over-sterk-two-to-five title="The $0$-cusps of $\fentwo$ over the $0$-cusp $(9,9,1)_1$ of $F^{\mathrm{un}}_\Co$"}
@@ -61,6 +61,6 @@ The $0$-cusp $(9,9,1)_1$ of $F^{\mathrm{un}}_\Co$ corresponds to cusp $2$ of the
 
 ::: {#def:terminal-coble-surface .definition title="Terminal"}
 
-A Coble surface is **terminal** when it is not the image of any birational but not biregular morphism from another Coble surface.
+A Coble surface (@def:coble-surface) is **terminal** when it is not the image of any birational but not biregular morphism from another Coble surface.
 The $n=1$ case, the blowup of a plane sextic at $N=10$ ordinary double points (some possibly infinitely near), is terminal.
 :::

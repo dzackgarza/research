@@ -18,7 +18,7 @@ notes: |-
 
 ::: {#cons:coble-set-lattices .construction title="The lattices from a Coble set"}
 
-Let $S$ be a terminal Coble surface of K3 type with $n$ boundary components, and let $X$ be its K3 double cover, branched along $C = C_1 + \cdots + C_n$.
+Let $S$ be a terminal Coble surface (@def:coble-surface) of K3 type with $n$ boundary components, and let $X$ be its K3 double cover, branched along $C = C_1 + \cdots + C_n$.
 For a general such $S$, $\Pic(X)$ is the $2$-elementary lattice $M$ of @tbl-coble-lattices with invariants $(r,a,\delta) = (10+n,\, 12-n,\, \delta)$.
 The period domain construction of @sec-moduli-construction, applied to $M$ and its orthogonal complement $N = M^{\perp\lkt}$, gives the moduli spaces $F_{\Co,n}$.
 :::
@@ -38,7 +38,7 @@ By @prop:coble-table-invariants, $r = 10+n$ and $a = 12-n$, so $22-r-a = 0$ and 
 ::: {.proposition #prop:coble-families-in-enriques-moduli title="Each Coble family lies in the Coble divisor of Enriques moduli"}
 
 For each lattice $M$ of rank $10+n$ in @tbl-coble-lattices, the moduli functor of $M$-polarized K3 surfaces of [@CDL25, §5.4] embeds into the moduli functor of $E_{10}(2)$-polarized K3 surfaces.
-Its image is an open subset of an irreducible closed subset of codimension $n-1$ of the quotient $\Gamma^\sharp_{\mathrm{Enr}}\backslash\mch(-2)$ of the $(-2)$-Heegner divisor of the Enriques period domain, and it is a coarse moduli space of Coble surfaces with $n$ boundary components [@CDL25, §5.4, Prop. 5.4.6 and the paragraph after it].
+Its image is an open subset of an irreducible closed subset of codimension $n-1$ of the quotient $\Gamma^\sharp_{\mathrm{Enr}}\backslash\mch(-2)$ of the $(-2)$-Heegner divisor of the Enriques period domain, and it is a coarse moduli space of Coble surfaces (@def:coble-surface) with $n$ boundary components [@CDL25, §5.4, Prop. 5.4.6 and the paragraph after it].
 For $n = 1$, the image under the period map is an open subset of $\mcm_{\mathrm{Coble}}$, and the coarse moduli space is the coarse moduli space of marked Coble surfaces with $n = 1$ [@CDL25, Prop. 5.4.6].
 
 :::
@@ -57,7 +57,7 @@ A suitable divisor constructed from the ramification locus of
 @prop:nikulin-fixed-locus is recognizable in the sense of [@AE23].
 After verifying the positivity and moduli hypotheses of [@AEH21, Theorem
 3.24], this gives a semitoroidal description of the corresponding KSBA
-compactification.
+compactification (@def:ksba-compactification).
 :::
 
 The covering involution is already nonsymplectic: at a smooth point of a
@@ -68,7 +68,7 @@ additional questions.
 
 ::: {#conj:coble-semifans-and-coxeter-fans .conjecture title="The semifans refine or coarsen the Coxeter fans"}
 
-These semifans are either refinements or coarsenings of the canonical Coxeter fans at the Baily-Borel cusps, and admit an explicit description via an extension of the theory of ADE surfaces (AT21). From that data one extracts a classification of dlt models for KSBA stable limits, hence a first description of $\partial\overline{F}_{\Co,n}$, as AEGS23 did for numerically polarized Enriques surfaces.
+These semifans are either refinements or coarsenings of the canonical Coxeter fans at the Baily-Borel cusps, and admit an explicit description via an extension of the theory of ADE surfaces (@def:ade-surfaces) (AT21). From that data one extracts a classification of dlt models (@def:dlt-model) for KSBA stable limits, hence a first description of $\partial\overline{F}_{\Co,n}$, as AEGS23 did for numerically polarized Enriques surfaces (@def:enriques-surface).
 :::
 
 Related: [The Coble cusp correspondence and the morphism chain](#sec-cusp-correspondence-morphism-chain), [Moduli of index 2 Halphen and rational elliptic surfaces](#sec-halphen-index-2-moduli-program), [The nodal Enriques moduli program](#sec-nodal-enriques-moduli-program).

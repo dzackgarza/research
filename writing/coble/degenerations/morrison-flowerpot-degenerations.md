@@ -15,9 +15,9 @@ A **marked surface** $(V, D)$ is an algebraic surface $V$ with a reduced effecti
 
 ::: {.proposition #prop:flower-pot-periods title="Periods of flower pot degenerations"}
 
-Let $\Lambda$ be the $(-1)$-eigenlattice of the covering involution on the second homology of the K3 cover of an Enriques surface, and for $\lambda\in\Lambda$ with $\lambda^2 = -2$ let $H_\lambda\subset\Gamma\backslash D$ be the hypersurface of periods of K3 surfaces on which $\lambda$ is of type $(1,1)$.
+Let $\Lambda$ be the $(-1)$-eigenlattice of the covering involution on the second homology of the K3 cover of an Enriques surface (@def:enriques-surface), and for $\lambda\in\Lambda$ with $\lambda^2 = -2$ let $H_\lambda\subset\Gamma\backslash D$ be the hypersurface of periods of K3 surfaces on which $\lambda$ is of type $(1,1)$.
 
-1. Let $X\to\Delta$ be a flower pot degeneration, with period map $\Phi\colon\Delta^*\to\Gamma\backslash D$.
+1. Let $X\to\Delta$ be a flower pot degeneration (@def:flower-pot-degeneration), with period map $\Phi\colon\Delta^*\to\Gamma\backslash D$.
    If $\Phi$ extends to $\Phi\colon\Delta\to\Gamma\backslash D$, then $\Phi(0)\in H_\lambda$ for some $\lambda$ [@Mor81, Lemma 7.1].
 
 2. Let $X\to\Delta$ be a weakly projective flower pot degeneration.
@@ -26,7 +26,7 @@ Let $\Lambda$ be the $(-1)$-eigenlattice of the covering involution on the secon
 
 ::: {.proposition #prop:morrison-dlt-correspondence title="Morrison's degenerations and dlt models"}
 
-The cases (i a), (i b), (ii a), (ii b), (iii a) and (iii b) of the classification of semistable degenerations of Enriques surfaces [@Mor81, Cor. 6.2] correspond, respectively, to:
+The cases (i a), (i b), (ii a), (ii b), (iii a) and (iii b) of the classification of semistable degenerations of Enriques surfaces (@def:enriques-surface) [@Mor81, Cor. 6.2] correspond, respectively, to:
 
 - Type $\latI$ degenerations;
 - Type $\latI$ degenerations with a klt singularity;
@@ -36,6 +36,6 @@ The cases (i a), (i b), (ii a), (ii b), (iii a) and (iii b) of the classificatio
 - Type $\mathrm{III}$ degenerations with $\Gamma(Z_0) = \Dc^2$ (cusps $2$ to $5$).
 
 Case (i b) is the flower pot.
-The flowers and stalk assemblies are the semistable resolutions of the $S_2$-quotients of the $ADE$ singularities in the total space of the smoothing.
+The flowers and stalk assemblies (@def:flower-pot-degeneration) are the semistable resolutions of the $S_2$-quotients of the $ADE$ singularities in the total space of the smoothing.
 The pots are the components of the dlt models (@def:dlt-model) along which the flower and stalk assembly are attached [@AEGS25, Rem. 4.12].
 :::

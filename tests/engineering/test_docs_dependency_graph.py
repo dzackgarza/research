@@ -31,7 +31,7 @@ LUA = 'local ref_prefixes = { thm = true, lem = true, def = true }\n'
 
 ONE = """\
 ::: {.definition #def:a title="A"}
-An $a$ is a **round apple**; an **apple** is a fruit.
+An $a$ is a **round apple**; an **apple** is a fruit; $b$ are **round apples**.
 :::
 
 ::: {.lemma #lem:b}
@@ -68,6 +68,7 @@ A round apple is an apple.
 
 ::: {.lemma #lem:f}
 A [round apple]{.other-sense} of a tree is a crown.
+A round $x$ apple is a crown.
 :::
 
 ::: {.remark #rmk:open}

@@ -23,7 +23,7 @@ $$
 
 ::: {.proposition #prop:coble-k3-cover title="The K3 cover of a terminal Coble surface"}
 
-Let $S$ be a terminal Coble surface of K3 type over $\CC$, with $\abs{-2K_S} = \theset{C}$ and $C = C_1+\cdots+C_n$, where $C_1,\dots,C_n$ are disjoint $(-4)$-curves.
+Let $S$ be a terminal Coble surface (@def:coble-surface) of K3 type over $\CC$, with $\abs{-2K_S} = \theset{C}$ and $C = C_1+\cdots+C_n$, where $C_1,\dots,C_n$ are disjoint $(-4)$-curves.
 Let $\mcl \definedas \OO_S(-K_S)$, let $s\in H^0(S, \mcl^{\tensor_{\OO_S} 2})$ have $Z(s) = C$, and let $f\colon X\to S$ be the double cover defined by $(\mcl, s)$.
 Let $\sigma$ be the covering involution of $f$.
 
@@ -110,7 +110,7 @@ $$
 
 ::: {.proposition #prop:coble-invariant-lattice}
 
-Let $f: X\to S$ be the K3 double cover of a terminal Coble surface of K3 type with $n = 1$, and let $\sigma$ be the covering involution.
+Let $f: X\to S$ be the K3 double cover of a terminal Coble surface (@def:coble-surface) of K3 type with $n = 1$, and let $\sigma$ be the covering involution.
 Write $\Pic(S) = \generators{H, E_1, \ldots, E_{10}} \cong \latI_{1, 10}$, where $H$ is the pullback of a line and the $E_i$ are the exceptional curves of $S = \Bl_{p_1, \ldots, p_{10}} \PP^2$, so that $H^2 = 1$, $E_i^2 = -1$, and $H\cdot E_i = E_i\cdot E_j = 0$ for $i\neq j$.
 Then $f^*: \Pic(S)\to \Pic(X)$ is injective, its image
 $$
@@ -181,7 +181,7 @@ Let $e_0\in\Pic(S)$ be the pullback of the class of a line in $\PP^2$, and for $
 
 1. The classes $e_0, e_1, \ldots, e_N$ form a basis of $\Pic(S)$ with $e_0^2 = 1$, $e_i^2 = -1$ for $i\geq 1$, and $e_i\cdot e_j = 0$ for $i\neq j$. So $\Pic(S)\cong\latI_{1,N}$, and $\rho(S) = N+1$.
 2. $K_S = -3e_0 + e_1 + \cdots + e_N$.
-3. If $S$ is a terminal Coble surface of K3 type and $f\colon X\to S$ is the double cover of @prop:coble-k3-cover, then $f^*$ is injective and $f^*\Pic(S)\cong\latI_{1,N}(2)$, with basis $f^*e_0,\dots,f^*e_N$.
+3. If $S$ is a terminal Coble surface (@def:coble-surface) of K3 type and $f\colon X\to S$ is the double cover of @prop:coble-k3-cover, then $f^*$ is injective and $f^*\Pic(S)\cong\latI_{1,N}(2)$, with basis $f^*e_0,\dots,f^*e_N$.
 
 A choice of such a basis is a marking of $S$, and it defines an isomorphism of lattices $\Pic(S)\to\latI_{1,N}$ [@CDL25, §5.4, p. 552].
 

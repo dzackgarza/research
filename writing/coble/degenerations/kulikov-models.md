@@ -19,7 +19,7 @@ Such a model is *semistable* by conditions (1) and (2) and *$K$-trivial* by cond
 
 Let $\pi\colon X\to\Delta$ be a proper flat morphism from a complex manifold $X$ of dimension $3$ to the unit disc, with nonsingular fibers $X_t$ for $t\neq 0$.
 
-1. Assume that $\pi$ is projective, that the general fiber is a K3 surface ($m = 1$) or an Enriques surface ($m = 2$), and that $X_0 = V_1 + \cdots + V_n$ is a normal crossings divisor whose components $V_i$ are smooth and of multiplicity $1$.
+1. Assume that $\pi$ is projective, that the general fiber is a K3 surface ($m = 1$) or an Enriques surface (@def:enriques-surface) ($m = 2$), and that $X_0 = V_1 + \cdots + V_n$ is a normal crossings divisor whose components $V_i$ are smooth and of multiplicity $1$.
    Then $\pi$ has a modification $\pi_1\colon X'\to\Delta$ such that $X_0'$ is a normal crossings divisor with smooth components of multiplicity $1$ and $mK_{X'}$ is trivial [@Kul77, Thm. I].
 
 2. Assume that every component of $X_0$ has multiplicity $1$, that $X_0$ has local normal crossings, that $K_{X_t}$ is trivial for $t\neq0$, and that every component of $X_0$ is algebraic.
@@ -62,7 +62,7 @@ The dimension of the dual complex distinguishes the three Kulikov types: it is $
 
 ::: {.proposition #prop:kulikov-ias-gluing title="Integral affine gluing from a Type III central fiber"}
 
-Let $\mcx_0=\Union_iV_i$ be a $d$-semistable Type III Kulikov surface, and let $D_i=\Sum_jD_{ij}$ be the cycle of double curves on $V_i$. The dual complex is assembled from the pseudofans of the anticanonical pairs $(V_i,D_i)$. Each face is a unit lattice triangle. For consecutive primitive edge vectors $e_{i,j-1},e_{ij},e_{i,j+1}$ in the star of the vertex of $V_i$, the integral affine gluing rule is
+Let $\mcx_0=\Union_iV_i$ be a $d$-semistable Type III Kulikov surface, and let $D_i=\Sum_jD_{ij}$ be the cycle of double curves on $V_i$. The dual complex is assembled from the pseudofans of the anticanonical pairs (@def:anticanonical-pair) $(V_i,D_i)$. Each face is a unit lattice triangle. For consecutive primitive edge vectors $e_{i,j-1},e_{ij},e_{i,j+1}$ in the star of the vertex of $V_i$, the integral affine gluing rule is
 $$
 e_{i,j-1}+e_{i,j+1}=-D_{ij}^{2}e_{ij}.
 $$
@@ -159,7 +159,7 @@ Type $\mathrm{III}$: $\dim W_0 = 1$ and $W_2 = W_0^\perp$ has dimension $21$, so
 
 For a one-parameter degeneration of polarized K3 surfaces over a punctured disk, the unipotent monodromy operator $T \in \Orth(T_{2d})$ and its nilpotent logarithm $N = \log T$ induce a canonical monodromy weight filtration $W^{\bullet}$.
 
-The boundary components of $\bbcpt{\ftd}$ are classified by the nilpotency index of $N$:
+The [boundary components]{.other-sense} of $\bbcpt{\ftd}$ are classified by the nilpotency index of $N$:
 
 - **Type $\latII$ degenerations (1-cusps)**: $N \neq 0$, $N^2 = 0$.
   The weight filtration is 3-step ($W_0 \subset W_1 \subset W_2 \subset W_3$), and $\Gr_2^W = I^\perp / I = \overline{T}_I$ has a pure polarized Hodge structure of weight 2.

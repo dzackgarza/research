@@ -4,7 +4,7 @@
 
 ::: {.theorem #thm:ksba_semitoroidal_En2 title="Isomorphism between KSBA and semitoroidal compactifications of $\fentwo$"}
 
-Let $\fentwo$ be the moduli space of degree-$2$ numerically polarized Enriques surfaces, and let $\ksbacpt{\fentwo}$ be its KSBA compactification.
+Let $\fentwo$ be the moduli space of degree-$2$ numerically polarized Enriques surfaces (@def:enriques-surface), and let $\ksbacpt{\fentwo}$ be its KSBA compactification (@def:ksba-compactification).
 There is an isomorphism
 $$
 \normalize{\semifancpt{\fentwo}{\semitorfan}}
@@ -12,7 +12,7 @@ $$
 \normksbacpt{\fentwo}
 $$
 where $(-)^\nu$ denotes normalization.
-The left-hand side is the semitoroidal compactification corresponding to an explicit collection
+The left-hand side is the semitoroidal compactification (@def:semitoroidal-compactification) corresponding to an explicit collection
 $$
 \semitorfan = \{\, \semifan{F}_1,\ \torfan_2,\ \semifan{F}_3,\ \torfan_4,\ \semifan{F}_5 \,\}
 $$
@@ -44,17 +44,17 @@ The toroidal and strictly semitoroidal cusps are given by [@AEGS25, Lem. 5.7].
 
 Let $B$ be the closure of the image of $\fentwo$ in $\ksbacpt{\fttz}$ (@prop:enriques-involution-extends).
 
-1. The normalization $\normalize{B}$ is the semitoroidal compactification of the Noether--Lefschetz locus $B$ induced by the ramification semifan $\semifan{F}_{\ram}$, which gives the normalization $\normksbacpt{\fttz}$ [@AEGS25, proof of Thm. 5.9].
+1. The normalization $\normalize{B}$ is the semitoroidal compactification (@def:semitoroidal-compactification) of the Noether--Lefschetz locus (@def:nl-locus-enriques) $B$ induced by the ramification semifan $\semifan{F}_{\ram}$, which gives the normalization $\normksbacpt{\fttz}$ [@AEGS25, proof of Thm. 5.9].
 
 2. For each $0$-cusp of $\fentwo$, the semifan $\semifan{F}_k$ is the intersection of the semifan $\semifan{F}_{\ram}(\overline{T}_{\mathrm{dP}})$, for $\overline{T}_{\mathrm{dP}} = (18,0,0)_1$ or $(18,2,0)_1$, with the subspace $\overline{T}_{\mathrm{En}} = (10,10,0)_1$ or $(10,8,0)_1$ [@AEGS25, Def. 5.3].
    The subspace $\overline{T}_{\mathrm{En}}$ is the $(+1)$-eigenspace of the involution $J$ of $\overline{T}_{\mathrm{dP}}$ in @cons:fen2-cusp-involutions [@AEGS25, Def. 3.5].
 
-3. The semifans $\semifan{F}_k$ are the generalized Coxeter semifans of the folded Coxeter diagrams of @prop:fen2-folded-coxeter, in which the irrelevant roots are the foldings of the irrelevant roots of $\semifan{F}_{\ram}$ [@AEGS25, Sec. 5.2, Def. 5.4, Lem. 5.5].
+3. The semifans $\semifan{F}_k$ are the generalized Coxeter semifans (@def:generalized-coxeter-semifan) of the folded Coxeter diagrams (@def:coxeter-matrix) of @prop:fen2-folded-coxeter, in which the irrelevant roots are the foldings of the irrelevant roots of $\semifan{F}_{\ram}$ [@AEGS25, Sec. 5.2, Def. 5.4, Lem. 5.5].
 
 4. The family of KSBA-stable pairs over $\normalize{B}$ gives a family over the induced compactification of $\fentwo$, and the normalization of this compactification is $\semifancpt{\fentwo}{\semitorfan}$ for the collection $\semitorfan = \theset{\semifan{F}_k}_{k=1}^5$ [@AEGS25, proof of Thm. 5.9].
 :::
 
 ::: {.conjecture #conj:descent_semitoroidal_data_En2 title="Projectivity of $\normalize{B}$"}
 
-The normalization $\normalize{B}$ of the Noether--Lefschetz closure $B$ is a projective variety.
+The normalization $\normalize{B}$ of the Noether--Lefschetz closure (@def:nl-locus-enriques) $B$ is a projective variety.
 :::

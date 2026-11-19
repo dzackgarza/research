@@ -125,7 +125,7 @@ since then $(\omega_i, \alpha_k^\vee) = \Sum_{j} (G^{-1})_{ij}\,G_{jk} = \delta_
 
 ::: {.definition #def:hyperbolic-model}
 
-Let $L$ be a hyperbolic lattice and $C_L^+$ one connected component of its positive cone $C_L$.
+Let $L$ be a hyperbolic lattice and $C_L^+$ one connected component of its positive cone $C_L$ (@not:reflection-groups-sign-convention).
 The intersection pairing induces a hyperbolic metric on $L_\RR$, and the associated hyperbolic $n$-space $\HH^n_L$ admits two standard models:
 
 - the **unit hyperboloid model**
@@ -192,7 +192,7 @@ A **Coxeter polytope** $P$ in $X = \EE^n$, $S^n$, or $\HH^n$ is a polytope such 
 
 ::: {.definition #def:discriminant-locus}
 
-The **discriminant locus** $\Delta(L)$ is the union of all mirrors, i.e. the hyperplanes orthogonal to the short roots $\Phi_2(L) = \theset{ v\in L \mid v^2 = -2 }$:
+The **discriminant locus** $\Delta(L)$ is the union of all mirrors, i.e. the hyperplanes orthogonal to the [short roots]{.other-sense} $\Phi_2(L) = \theset{ v\in L \mid v^2 = -2 }$:
 $$
 \Delta(L) \definedas \Union_{v\in\Phi_2(L)} v^{\perp L}
 .
@@ -214,7 +214,7 @@ A **simple system** is a set of roots whose mirrors form the bounding hyperplane
 
 ::: {.definition #def:coxeter-vinberg-diagram}
 
-The **Coxeter--Vinberg diagram** of a hyperbolic Coxeter polytope is a graph whose vertices correspond to the simple roots $r_i$ (equivalently, to the walls $H_i$ of the fundamental chamber), and whose edges encode the relative position of the mirrors $H_i, H_j$ through the normalized pairing
+The **Coxeter--Vinberg diagram** of a hyperbolic Coxeter polytope (@def:coxeter-polytope) is a graph whose vertices correspond to the simple roots $r_i$ (equivalently, to the walls $H_i$ of the fundamental chamber), and whose edges encode the relative position of the mirrors $H_i, H_j$ through the normalized pairing
 $$
 g_{ij} \definedas \frac{r_i\cdot r_j}{\sqrt{r_i^2\, r_j^2}} = \cos\!\left(\frac{\pi}{m_{ij}}\right)
 .
@@ -229,14 +229,14 @@ Edges are drawn according to the following conventions:
 
 - **dotted** if $g_{ij} > 1$ (ultra-parallel mirrors).
 
-For $2$-elementary lattices, vertices are drawn **white** for short roots ($v^2 = -2$) and **black** for long roots ($v^2 = -4$).
+For $2$-elementary lattices, vertices are drawn **white** for [short roots]{.other-sense} ($v^2 = -2$) and **black** for [long roots]{.other-sense} ($v^2 = -4$).
 :::
 
 ## Elliptic and parabolic subdiagrams
 
 ::: {.definition #def:elliptic-subdiagram}
 
-Let $G$ be a Coxeter--Vinberg diagram with vertices the simple roots $v_i$.
+Let $G$ be a Coxeter--Vinberg diagram (@def:coxeter-vinberg-diagram) with vertices the simple roots $v_i$.
 A subdiagram $D\iscontainedin G$ is:
 
 - **elliptic** if its Gram matrix $(v_i\cdot v_j)$ is negative definite;
@@ -289,7 +289,7 @@ This is [@Vin75].
 
 ::: {.definition #def:lanner-subgraph title="Lannér subgraph"}
 
-Let $D$ be a hyperbolic subdiagram of a Coxeter--Vinberg diagram (@def:elliptic-subdiagram).
+Let $D$ be a hyperbolic subdiagram (@def:elliptic-subdiagram) of a Coxeter--Vinberg diagram (@def:coxeter-vinberg-diagram).
 Then $D$ is a **Lannér subgraph** if all of its proper subdiagrams are elliptic, and a **quasi-Lannér subgraph** if each of its proper subdiagrams is elliptic or connected parabolic.
 :::
 
@@ -314,7 +314,7 @@ Conversely, if $G$ has signature $(1,d)$, then $C_W$ has exactly one negative ei
 ::: {.theorem #thm:vinberg-completeness-criterion title="A sufficient criterion for completeness"}
 
 Let $\Gamma$ be a Coxeter--Vinberg diagram without dotted edges, obtained from a run of @thm:vinberg-algorithm.
-If $\Gamma$ contains no Lannér subgraph, and every connected parabolic subdiagram of $\Gamma$ is contained in a maximal parabolic subdiagram of maximal rank, then $\Gamma$ is complete: the accepted roots bound a finite-volume polytope and the algorithm may be stopped.
+If $\Gamma$ contains no Lannér subgraph (@def:lanner-subgraph), and every connected parabolic subdiagram of $\Gamma$ is contained in a maximal parabolic subdiagram of maximal rank, then $\Gamma$ is complete: the accepted roots bound a finite-volume polytope and the algorithm may be stopped.
 :::
 
 ::: {.proof}

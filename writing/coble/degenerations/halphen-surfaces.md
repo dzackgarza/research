@@ -18,7 +18,7 @@ Every relatively minimal rational elliptic surface is a Halphen surface of some 
 ## Genus-one pencils on Enriques surfaces
 
 ::: {.proposition #prop:enriques-elliptic-half-fibres title="The two half-fibres of an Enriques pencil"}
-Let $Z$ be a complex Enriques surface and let $|E|$ be an elliptic pencil:
+Let $Z$ be a complex Enriques surface (@def:enriques-surface) and let $|E|$ be an elliptic pencil:
 a one-dimensional complete linear system whose general member is a smooth
 curve of genus one. The pencil is basepoint-free and defines a genus-one
 fibration $Z\to\PP^1$. It has exactly two multiple fibres, both of
@@ -76,7 +76,7 @@ In case 2 the fibre is of type $\tilde A_k$ with $k\leq8$, and in case 1 the two
 
 ::: {.proposition #prop:coble-sextic-halphen-pencil title="The Halphen pencil of a Coble sextic"}
 
-Let $V$ be a terminal Coble surface of K3 type with $n = 1$, and let $W = V(F_6)$ be the irreducible plane sextic of @prop:coble-sextic-model, with $10$ ordinary nodes or cusps, possibly infinitely near.
+Let $V$ be a terminal Coble surface (@def:coble-surface) of K3 type with $n = 1$, and let $W = V(F_6)$ be the irreducible plane sextic of @prop:coble-sextic-model, with $10$ ordinary nodes or cusps, possibly infinitely near.
 Choose $9$ of the $10$ double points of $W$.
 Then a plane cubic $V(F_3)$ passes through them, and the pencil $V(\lambda F_6 + \mu F_3^2)$ is a Halphen pencil of index $2$.
 The minimal resolution of its base points is a Halphen surface of index $2$, and $V$ is the blowup of a singular point of an irreducible simple fibre of this pencil.
@@ -89,7 +89,7 @@ The blowup of the singular points of this curve is a terminal Coble surface of K
 ::: {.proposition #prop:terminal-coble-deformations title="Deformations of terminal Coble surfaces"}
 
 Let $k$ be the base field, of characteristic $p\neq2$.
-Let $V$ be a terminal Coble surface of K3 type with $K_V^2 = -n$ and anti-bicanonical curve $C$.
+Let $V$ be a terminal Coble surface (@def:coble-surface) of K3 type with $K_V^2 = -n$ and anti-bicanonical curve $C$.
 Then
 $$
 h^i(\Theta_{V/k}) = \begin{cases} 10 + 2n & i = 1, \\ 0 & \text{otherwise} \end{cases}

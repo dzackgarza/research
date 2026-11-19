@@ -92,7 +92,7 @@ Two conditions on $(W,S)$ are used below, and they cut out different classes.
 - **The signature condition.** The form $b$ is hyperbolic, equivalently of Lorentzian signature, when its signature is $(1,n-1,0)$; this is @def:definiteness, and it is the condition under which a lattice is called hyperbolic.
   The term *Lorentzian* for a form with exactly one positive square is the usage of [@CS10, Ch. 27].
 
-- **The condition of [@Hum90, §6.8].** The system $(W,S)$ is a *hyperbolic Coxeter system* when $b$ has signature $(1,n-1,0)$ and, in addition, $b(\lambda,\lambda)>0$ for every $\lambda\in C$.
+- **The condition of [@Hum90, §6.8].** The system $(W,S)$ is a *hyperbolic Coxeter system* (@def:coxeter-group) when $b$ has signature $(1,n-1,0)$ and, in addition, $b(\lambda,\lambda)>0$ for every $\lambda\in C$.
   Equivalently: $b$ is nondegenerate and not negative definite, and for each $s\in S$ the Coxeter graph obtained by deleting $s$ has negative semidefinite form.
 
 The system is *compact hyperbolic* when $b$ is nondegenerate and not negative definite and for each $s$ the graph obtained by deleting $s$ has negative definite form; these are the systems classified by Lannér [@Hum90, §6.8].
@@ -104,7 +104,7 @@ The condition on $C$ is a further restriction, and the two classes differ: hyper
 ::: {.proposition #prop:hyperbolic-covolume title="Covolume"}
 
 Give the homogeneous space $O(V,b)/W$ the measure induced by the Haar measure of the real Lie group $O(V,b)$.
-That measure is finite exactly when $b$ is negative definite, in which case $W$ is finite, or when $(W,S)$ is a hyperbolic Coxeter system in the sense of @def:hyperbolic-coxeter, the condition on the cone $C$ included [@Hum90, §6.8].
+That measure is finite exactly when $b$ is negative definite, in which case $W$ is finite, or when $(W,S)$ is a hyperbolic Coxeter system (@def:coxeter-group) in the sense of @def:hyperbolic-coxeter, the condition on the cone $C$ included [@Hum90, §6.8].
 
 When $b$ has signature $(1,n-1,0)$, one component of $\{\lambda\in V\mid b(\lambda,\lambda)=2\}$ is a model of hyperbolic space of dimension $n-1$ [@Hum90, §6.8].
 :::
@@ -125,7 +125,7 @@ Since $b$ has signature $(1,n-1,0)$, its restriction to a tangent space of the h
 
 Let $R$ be a subring of $\mathbb R$ containing the entries $2\cos(\pi/m(s,t))$ of the Gram matrix of @def:coxeter-form, so that the canonical form takes values in $R$.
 
-A *Coxeter system in a lattice* over $R$ is a triple $(\Phi,L,\iota)$ consisting of
+A *Coxeter system in a lattice* (@def:coxeter-group) over $R$ is a triple $(\Phi,L,\iota)$ consisting of
 
 - a finite set $\Phi=\{\alpha_s\}_{s\in S}$ of simple roots spanning a lattice $\langle\Phi\rangle$ over $R$ with the form of @def:coxeter-form,
 

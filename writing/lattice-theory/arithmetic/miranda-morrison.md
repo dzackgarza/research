@@ -30,7 +30,7 @@ $\Gamma_\bQ:=\theset{\pm1}\times\bQ^\times/(\bQ^\times)^2$.
 
 ::: {.definition #def:mm-integral-spinor-data title="Integral determinant–spinor images"}
 
-The action of $\Orth(\widehat L)$ on the quadratic discriminant form defines the discriminant kernel
+The action of $\Orth(\widehat L)$ on the quadratic discriminant form (@def:discriminant) defines the discriminant kernel
 $$
 \widetilde\Orth(\widehat L)\definedas
 \ker\qty{\Orth(\widehat L)\longrightarrow\Orth(A_{L,q})}.
@@ -134,7 +134,7 @@ $$
 
 ::: {.corollary #cor:nikulin-mm-vanishing title="Nikulin's criterion for vanishing obstructions"}
 
-Let $L$ be an even indefinite integral lattice of rank at least $3$. Write $\ell_p(A_L)$ for the length of its $p$-primary discriminant module and $q_{L,2}$ for its $2$-primary quadratic discriminant form. Assume
+Let $L$ be an even indefinite integral lattice of rank at least $3$. Write $\ell_p(A_L)$ for the length of its $p$-primary discriminant module and $q_{L,2}$ for its $2$-primary quadratic discriminant form (@def:discriminant). Assume
 1. $\rank L\geq\ell_p(A_L)+2$ for every odd prime $p$;
 2. if $\rank L=\ell_2(A_L)$, then $q_{L,2}$ has an orthogonal summand isometric to the rank-two form $u$ or $v$ of @thm:2elementary-decomposition.
 

@@ -41,7 +41,7 @@ Every point $v$ of $\HH^n_L$ has $v^2 = 1$ (@def:hyperbolic-model), and $0^2 = 0
 
 ::: {.proposition #prop:chamber-cone-criterion title="The volume criterion on the cone"}
 
-Let $L$ have signature $(1,n)$, let $C_L^+$ be the chosen component of the positive cone, and let $C$ be as in @cons:chamber-cone.
+Let $L$ have signature $(1,n)$, let $C_L^+$ be the chosen component of the positive cone (@not:reflection-groups-sign-convention), and let $C$ be as in @cons:chamber-cone.
 Then $\vol(C\intersect\HH^n_L) < \infty$ if and only if
 
 1. every extremal ray generator $v$ of $C$ satisfies $v^2 \geq 0$;

@@ -35,7 +35,7 @@ notes: |-
    The definiteness tests that decide each type, and the monotonicity that prunes the subset search, are in [lattice algorithms by signature](#sec-lattice-algorithms-by-signature).
 
 6. **Enumerate isotropic orbits** with the function `vector_orbit_representatives` of `sage-indefinite-port`, using $\div(v)$ and $v^\perp/v$ as separating invariants, matched against the table of $2$-elementary lattices keyed by $(r,a,\delta)$ [@Nik79b].
-   The algorithm this invokes, its hypotheses, and the Tits building it computes are in [isotropic orbits and Tits buildings](#sec-isotropic-orbits-and-tits-buildings).
+   The algorithm this invokes, its hypotheses, and the Tits building (@def:signature-two-tits-building) it computes are in [isotropic orbits and Tits buildings](#sec-isotropic-orbits-and-tits-buildings).
 
 7. **Build the integral-affine structure** by the polygon-walking procedure in [Sterk integral-affine data](#sec-sterk-integral-affine-data).
 :::

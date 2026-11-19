@@ -38,7 +38,7 @@ itself need not be smooth [@Muk88].
 Let $X$ be a $K3$ surface (@def:k3-surface).
 Put $L\definedas H^2(X;\ZZ)$ with its cup-product pairing; it is even and unimodular by @prop:k3-lattice.
 Let $S\definedas\NS(X)$ be the Néron–Severi lattice, of rank $\rho=\rho(X)$, and let $T\definedas S^{\perp L}$ be the transcendental lattice.
-Let $C_X\iscontainedin H^{1,1}(X)\intersect H^2(X;\RR)$ be the positive cone and $\Amp(X)\iscontainedin S\tensor\RR$ the ample cone of [@PS24, §19.1] (@def:ample-cone).
+Let $C_X\iscontainedin H^{1,1}(X)\intersect H^2(X;\RR)$ be the [positive cone]{.other-sense} and $\Amp(X)\iscontainedin S\tensor\RR$ the ample cone of [@PS24, §19.1] (@def:ample-cone).
 Put $\mathcal C_S\definedas C_X\intersect(S\tensor\RR)$.
 
 An isometry $g$ of $L$ or of $T$ is a **Hodge isometry** if $g_\CC(H^{2,0}(X))=H^{2,0}(X)$.
@@ -110,7 +110,7 @@ The set $P$ has exactly the two components $P_0$ and $-P_0$.
 For $\rho=1$ this holds because $S\tensor\RR$ is a line.
 For $\rho\geq2$, $S$ has signature $(1,\rho-1)$ by @prop:k3-ns-transcendental, so $P$ has two components by @prop:spinor-plus-cone-components, each preserved by $\Orth^+(S)$; and $-\id_S\notin\Orth^+(S)$ by @lem:minus-identity-spinor-norm because the positive index of $S$ is $1$, so $-\id_S$ exchanges them.
 
-The positive cone $C_X$ is a connected component of the open set of classes of positive square in $H^{1,1}(X)\intersect H^2(X;\RR)$ [@PS24, §19.1].
+The [positive cone]{.other-sense} $C_X$ is a connected component of the open set of classes of positive square in $H^{1,1}(X)\intersect H^2(X;\RR)$ [@PS24, §19.1].
 So $\mathcal C_S=C_X\intersect P$ is open and closed in $P$, and it is a union of components of $P$.
 It contains $\Amp(X)$ [@PS24, §19.1], so $P_0\iscontainedin\mathcal C_S$.
 
@@ -242,7 +242,7 @@ So $\ker\det_+=\ker\chi$, which is $\Orth^+(S)$ by @prop:spinor-plus-cone-compon
 ::: {.theorem #thm:signed-miranda-morrison title="The signed Miranda–Morrison sequence"}
 
 Let $N$ be a nondegenerate, indefinite, even lattice of rank at least $3$.
-Let $\Orth^+(N)$ be the subgroup of $\Orth(N)$ that preserves positive sign structures, and let $g(N)$ be the genus group of $N$.
+Let $\Orth^+(N)$ be the subgroup of $\Orth(N)$ that preserves positive sign structures, and let $g(N)$ be the genus group (@def:mm-genus-group) of $N$.
 There is a group $\operatorname{MM}^+(N)$ and an exact sequence of groups
 $$
 \Orth^+(N)\xrightarrow{\rho_{N,q}}\Orth(A_{N,q})\xrightarrow{e_N^+}\operatorname{MM}^+(N)\too g(N)\too1.
@@ -409,7 +409,7 @@ If $K=1$, then $F=N\times\theset{1}$ by @prop:k3-aut-pullback-group-generators (
 
 ::: {.proposition #prop:k3-aut-marking title="The automorphism group in a marking"}
 
-In @not:k3-automorphism-data, let $(X,\varphi)$ be a marked $K3$ surface (@def:marked-k3-surface).
+In @not:k3-automorphism-data, let $(X,\varphi)$ be a [marked $K3$ surface]{.other-sense} (@def:marked-k3-surface).
 Put $\ell\definedas\varphi_\CC(H^{2,0}(X))$ and $\mathcal A\definedas\varphi_\RR(\Amp(X))$.
 Then $f\mapsto\varphi\circ f_*\circ\varphi^{-1}$ is an isomorphism
 $$

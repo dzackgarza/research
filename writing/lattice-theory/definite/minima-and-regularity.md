@@ -73,7 +73,7 @@ $$
 =
 \operatorname{Sym}^2_\bQ(L_\bQ).
 $$
-Equivalently, the values of the quadratic form on the minimal shell determine the form up to scale [@Mar03, Ch. 4].
+Equivalently, the values of the quadratic form on the minimal shell (@def:definite-minimum-shell) determine the form up to scale [@Mar03, Ch. 4].
 :::
 
 ::: {.definition #def:regular-ternary-lattice title="Regular and spinor-regular ternary lattices"}

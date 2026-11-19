@@ -338,7 +338,7 @@ Its deck group is $\langle\iota\rangle\cong\ZZ/2\ZZ$, where $\iota$ is the Enriq
 
 ::: {.proposition #prop:enriques-cohomology title="Hodge numbers and cohomology of an Enriques surface"}
 
-Let $Z$ be an Enriques surface.
+Let $Z$ be an Enriques surface (@def:enriques-surface).
 Then
 $$
 h^{1,0}(Z) = h^{0,1}(Z) = h^{2,0}(Z) = h^{0,2}(Z) = 0,
@@ -367,7 +367,7 @@ theorem for closed smooth **spin** four-manifolds does not apply.
 
 ::: {.proposition #prop:enriques-cover-eigenlattices title="Eigenlattices of an Enriques involution"}
 
-Let $X\to Z$ be the $K3$ cover of an Enriques surface, with Enriques involution $\iota$.
+Let $X\to Z$ be the $K3$ cover of an Enriques surface (@def:enriques-surface), with Enriques involution $\iota$.
 Then there is an isometry $\varphi\colon H^2(X;\ZZ)\iso\lkt$ with $\varphi\circ\iota^* = \Ien\circ\varphi$, for $\Ien$ as in @def:lattice-involutions-k3.
 The invariant sublattice of $H^2(X;\ZZ)$ under $\iota^*$ is isometric to $\sen = E_{10}(2)=U(2)\oplus E_8(2)$.
 Its orthogonal complement is isometric to $\ten = U\oplus U(2)\oplus E_8(2)$, of signature $(2,10)$.
@@ -389,7 +389,7 @@ $$
 $$
 be the type IV period domain of $\ten$, with its two connected components.
 Let $\Gamma^K_{\En} = \Orth(\ten)$, and let $\widetilde\Delta\subset\Omega_{\ten}$ be the union of the hyperplane sections $\alpha^\perp$ over the vectors $\alpha\in\ten$ with $\alpha^2 = -2$; these vectors form one $\Gamma^K_{\En}$-orbit.
-Then the points of $(\Omega_{\ten}\setminus\widetilde\Delta)/\Gamma^K_{\En}$ are in bijection with the isomorphism classes of Enriques surfaces [@AEGS25, Defs. 2.5–2.7].
+Then the points of $(\Omega_{\ten}\setminus\widetilde\Delta)/\Gamma^K_{\En}$ are in bijection with the isomorphism classes of Enriques surfaces (@def:enriques-surface) [@AEGS25, Defs. 2.5–2.7].
 The group $\Gamma^K_{\En}$ contains an isometry that exchanges the two components of $\Omega_{\ten}$, so this quotient is also $(\bD(\ten)\setminus\widetilde\Delta)/\Gamma^K_{\En}$ in the notation of @def:type-iv-period-domain (@lem:period-quotient-full-domain).
 :::
 
@@ -505,7 +505,7 @@ The following hold [@ABE22, Sec. 1, Thms. 1.1 and 1.2].
 
 1. **Ramification divisor compactification** $\overline{F}^{\,\operatorname{ram}}$.
    The polarizing divisor is the ramification divisor $R\in\abs{3(s + 2f)}$ of the double cover $X\to\PP(1, 1, 4)$.
-   The normalization of $\overline{F}^{\,\operatorname{ram}}$ is the toroidal compactification for the $\Gamma$-orbit of one chamber, which is the union of $4$ Coxeter chambers.
+   The normalization of $\overline{F}^{\,\operatorname{ram}}$ is the toroidal compactification (@def:toroidal-compactification) for the $\Gamma$-orbit of one chamber, which is the union of $4$ Coxeter chambers.
 
 2. **Rational curve divisor compactification** $\overline{F}^{\,\mathrm{rc}}$.
    The polarizing divisor is $R = s + m\Sum_{i=1}^{24} f_i$, where $f_i$ are the $24$ singular fibers counted with multiplicity, and any $m\geq 1$ gives the same result.

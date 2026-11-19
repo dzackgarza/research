@@ -40,7 +40,7 @@ K_S^2 = -1,
 C \sim 6e_0 - 2\Sum_{k=1}^{10} e_k = -2K_S
 .
 $$
-The surface $S$ is a Coble surface [@DK13, §3].
+The surface $S$ is a Coble surface (@def:coble-surface) [@DK13, §3].
 Coble studied the sets of ten nodes of rational sextics in [@Cob19].
 
 :::
@@ -62,7 +62,7 @@ Applied ten times, with $W\sim 6h$ for the class $h$ of a line [@Har77, II.6.4],
 
 ::: {.proposition #prop:antibicanonical-curve title="Invariants of an antibicanonical curve"}
 
-Let $S$ be a Coble surface of K3 type with $K_S^2 = -1$, and let $C\in\abs{-2K_S}$ be an integral curve.
+Let $S$ be a Coble surface (@def:coble-surface) of K3 type with $K_S^2 = -1$, and let $C\in\abs{-2K_S}$ be an integral curve.
 Then $C$ is a smooth rational curve and $C^2 = -4$.
 
 :::
