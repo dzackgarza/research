@@ -31,12 +31,29 @@ integral; if in addition rho(w_e) = id then (y.e) is even for every y in T_Co^*,
 class of T_Co gives a reflection in O^+(T_Co) outside the discriminant kernel.  This is
 @prop:gamma-co-reflective-set(3) at the level of the lattice.
 
-The geometric input is the record's: the local monodromy of the nodal-pair degeneration is the product
-of the two commuting Picard--Lefschetz reflections w_delta w_delta', and it is an element of the
-monodromy of a family of Coble surfaces, hence of Gamma_Co.  Therefore Gamma_Co is not contained in
-ker rho_{T_Co}: item 1e is FALSE, and by @prop:gamma-co-strong-lifting -- (1) <=> (2) -- the
-Gamma_Co form of @thm:coble-strong-lifting fails with it, and the forward half
-Gamma_Co <= O~^+(T_Co) of @conj:gamma-co-stable is false.
+The geometric input and the containment.  The record computes, for the family of K3 double covers
+over B^(p) = {f in H^0(O_Y(4,4))^tau : f(p) = 0, det Hess_p != 0, Sing B_f = {p}}, that the local
+monodromy of the nodal-pair degeneration is the product of the two commuting Picard--Lefschetz
+reflections w_delta w_delta'.  That family is a family of Coble surfaces: the involution's fixed locus
+is the single (-2)-curve D_b with no isolated fixed points (lem:one-node-picard-rank: rank S_Co = 11,
+signature (1,10)), so the quotient is smooth after resolution, and the resolved surface is "the object
+traditionally called a classical Coble surface" (def:resolved-coble) -- which is what DK13's moduli
+parametrizes, "a smooth rational projective surface S such that |-K_S| = empty but |-2K_S| != empty",
+M_Co an open subset of D(N)/O(N) [DK13, Prop. 3.2, printed p. 513] with N = T_Co [DK13, (3.6),
+printed p. 513].  So B^(p) carries a family of Coble surfaces and a period map to M_Co, the T_Co local
+system is the pullback of the universal one, and the monodromy over B^(p) is the image of
+pi_1(B^(p)) -> pi_1(M_Co) -> O(T_Co), a subgroup of Gamma_Co.  No local Torelli and no surjectivity of
+the period map is used, and the conclusion is marking-independent because ker rho is normal.
+
+Therefore Gamma_Co is not contained in ker rho_{T_Co}: item 1e is FALSE, and by
+@prop:gamma-co-strong-lifting -- (1) <=> (2) -- the Gamma_Co form of @thm:coble-strong-lifting fails
+with it, and the forward half Gamma_Co <= O~^+(T_Co) of @conj:gamma-co-stable is false.
+
+Sourcing.  Every step above is a page result or a printed statement except one: there is no held
+published numbered statement that the local monodromy of a degeneration acquiring two ordinary nodes at
+once is the product of the two commuting Picard--Lefschetz reflections.  The nearest held statement is
+one node, not two (Voisin, Hodge Theory II, Thm. 3.16).  That input is the record's own exact
+computation, named here rather than proxied.
 
 Usage: python3 computations/reports/coble_658-nodal-pair-refutation-probe.py
 """
