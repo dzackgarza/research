@@ -29,7 +29,7 @@ $$
 \tilde\eta: \bbcpt{\fco} \to \bbcpt{\fttz} .
 $$
 The stratification of $\partial\bbcpt{F^{\mathrm{un}}_\Co}$ is obtained by applying the mirror moves of [@AE22] to $S_{\Co} = (11,11,1)_1$.
-On $0$-cusps, $\eta$ induces an injective map from the $527$ $0$-cusps of the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ to the $0$-cusps of $\fen$ of divisibility $2$: the orbit map is defined because the embedding is equivariant, $\eta(\varphi v) = \mathrm{Ext}(\varphi)\eta(v)$ (@thm:coble-strong-lifting); it is injective (@prop:cusp-map-injective) and it misses the divisibility-$1$ cusps (@prop:cusp-map-not-onto).
+On $0$-cusps, $\eta$ induces an injective map from the $527$ $0$-cusps of the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ (@thm:coble-zero-cusp-count(2), the cusps being the nonzero isotropic classes, the fibre over one class being a single $\widetilde\Orth^+(T_\Co)$-orbit by @thm:coble-integral-lifting-fibre(1), (2)) to the $0$-cusps of $\fen$ of divisibility $2$: the orbit map is defined because the embedding is equivariant, $\eta(\varphi v) = \mathrm{Ext}(\varphi)\eta(v)$ (@thm:coble-strong-lifting); it is injective (@prop:cusp-map-injective) and it misses the divisibility-$1$ cusps (@prop:cusp-map-not-onto).
 :::
 
 ## The two cusp identifications
