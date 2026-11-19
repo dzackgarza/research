@@ -341,7 +341,7 @@ The proportionality itself is weaker than the sentence suggests. All fibres of a
 
 The display has exactly one coefficient at which it is true, $(d+1)/24$, and at that coefficient ABE22's divisor is $s+(d+1)f$, which is the polarization $L$ itself; the divisor their theorem is about, $s+m\sum_i f_i$ with an integer $m\ge1$, is not proportional to $R_{\rcop}$'s class. So the sentence cannot be read as relating the two compactifications under either reading, and the body text's divisor, whose compactification [@ABE22, Intro., Thm. 1.2] computes, is not the rational-curve divisor's.
 
-So the failure of (W) is established for ABE22's divisor and not for one known to be recognizable. Whether a **recognizable** divisor can fail (W) is open, and it is the first of the two questions of @qst:recognizable-semifan. @prop:recognizability-restricts would close it the moment the divisor $s+m\sum_i f_i$ were known to be recognizable, and no source read asserts that.
+So the failure of (W) is established for ABE22's divisor and not for one known to be recognizable. Whether a **recognizable** divisor can fail (W) is open, and it is the first of the two questions of @qst:recognizable-semifan. @prop:recognizability-restricts would close it the moment the divisor $s+m\sum_i f_i$ were known to be recognizable, and no source read asserts that: the version-controlled deposits state recognizability for the fixed locus of an involution and for the ramification divisor, state it for the flex divisor as a conjecture, and say nothing of a divisor built from a section and the fibres — ABE22's own paper does not use the word (`computations/reports/coble_679-recognizability-inventory-run.txt`).
 
 ::: {.remark #rmk:rcop-split-computation}
 

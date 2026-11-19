@@ -137,6 +137,21 @@ def test_the_locus_probe_reproduces_its_record():
     assert "coble_679-locus-probe-run.txt" in page
 
 
+def test_the_recognizability_inventory_reproduces_and_names_the_gap():
+    """Which deposits assert recognizability, and for which divisor: the input of question 1."""
+    script = REPORTS / "coble_679-recognizability-inventory.py"
+    record = REPORTS / "coble_679-recognizability-inventory-run.txt"
+    assert script.exists() and record.exists()
+    produced = subprocess.run(
+        [sys.executable, str(script)], capture_output=True, text=True, check=True
+    ).stdout
+    assert produced == record.read_text(encoding="utf-8"), "the transcript no longer matches the script"
+    assert "lines speaking of recognizability: 9" in produced
+    assert "[flex divisor]" in produced
+    assert "whose paper does not use the word" in produced
+    assert "coble_679-recognizability-inventory-run.txt" in page_text()
+
+
 def test_the_four_records_of_the_unit_are_committed():
     for name in (
         "coble_679-rcop-split.py",
@@ -151,6 +166,8 @@ def test_the_four_records_of_the_unit_are_committed():
         "coble_679-proportionality-run.txt",
         "coble_679-locus-probe.py",
         "coble_679-locus-probe-run.txt",
+        "coble_679-recognizability-inventory.py",
+        "coble_679-recognizability-inventory-run.txt",
     ):
         assert (REPORTS / name).exists(), name
 
