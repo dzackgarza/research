@@ -11,6 +11,24 @@ An arrow is one of two kinds.
 - A **uses** arrow, drawn solid, joins two blocks of the logical development: theorems, propositions, lemmas, corollaries, observations, claims, conjectures, definitions, constructions, notations, conventions and assumptions. The statement or proof of $a$ takes $b$ as a premise.
 - A **mentions** arrow, drawn dashed, has an example, remark, note, warning, exercise, problem or question at one end. These blocks illustrate or point, or they ask for work that the text does not do. None of them is a premise, so the arrow records a reference and not a dependency.
 
+Each block kind belongs to one side, for the following reason.
+
+| Kind | Side | Reason |
+|---|---|---|
+| theorem, proposition, lemma, corollary | logical | a stated result with a proof; later results rest on it |
+| observation | logical | a stated fact with its proof, so it can be a premise like a lemma |
+| claim | logical | a stated result inside a proof, used by the rest of that proof |
+| conjecture | logical | a result can be proved conditionally on it |
+| definition, construction | logical | it introduces an object that later blocks use |
+| notation, convention | logical | it fixes the meaning of symbols that later blocks use |
+| assumption | logical | it is a hypothesis of the blocks that cite it |
+| example | commentary | it illustrates a result and establishes nothing used later |
+| remark, note, warning | commentary | it points to or comments on the development |
+| exercise, problem | commentary | it asks for work that the text does not do, so it cannot be a premise |
+| question | commentary | it asks whether something holds; it states no fact |
+
+The dependency checker stops with an error on a block kind that is not in this table.
+
 Only uses arrows can make a definition or a proof circular. So the check for circular definitions and proofs reads the uses arrows only, and a remark and the theorem it discusses can cite each other.
 
 The findings list under the graph names each defect that the render found. An **uncited use** is a block of the logical development that uses a term of two or more words, set in bold where it is defined, and that does not reach the defining block through its citations. It is a use that the arrows do not show. The check matches the words of the term, not its sense, so each finding is a candidate to read: a block that writes "right adjoints" of a functor is listed against the right adjoints of a pairing. A use in another sense is written `[right adjoints]{.other-sense}`; the check skips it, and the page shows plain text.
