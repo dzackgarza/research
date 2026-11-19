@@ -380,6 +380,23 @@ def test_the_p_greater_one_cusp_lattice_record_reproduces_and_the_page_states_it
     assert "lem:cusp-lattice-p-greater-one" in register
 
 
+def test_the_p_greater_one_cusp_shares_a_one_cusp_with_the_unigonal_one():
+    """The link between the decided cusps and the open ones: a common 1-cusp.
+
+    For delta = g + p(e1 + k f1) the vector e2 is a primitive isotropic vector with
+    p_*(e2) = 1 (the unigonal cusp), orthogonal to delta, so J = Z delta + Z e2 is a
+    primitive isotropic plane and the 1-cusp F_J carries both 0-cusps.  AE23 Def. 5.11,
+    printed p. 14, requires the direction sublattice H_{J,delta} to be independent of
+    delta in J, so the two 0-cusp semifans are tied at that 1-cusp.
+    """
+    page = page_text()
+    assert "#lem:p-cusp-meets-unigonal" in page
+    assert "$J=\\ZZ\\delta\\oplus\\ZZ e_2$ is a primitive isotropic rank-two sublattice" in page
+    assert "$H_{J,\\delta}=H_{J,e_2}$" in page
+    register = REGISTER.read_text(encoding="utf-8")
+    assert "lem:p-cusp-meets-unigonal" in register
+
+
 def test_the_mirror_trace_step_does_not_claim_the_lattice_has_no_minus_four_vector():
     """gamma_L itself is a vector of N of square -4, so the square -4 case is not empty.
 
