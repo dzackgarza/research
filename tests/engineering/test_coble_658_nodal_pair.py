@@ -108,8 +108,8 @@ def test_the_classical_model_cannot_host_the_witness():
     body = lattices[start:lattices.index("\n:::", lattices.index("\n", start))]
     assert "M_X\\cong\\generators{2}\\oplus\\generators{-2}" in body
     assert "acts as the identity on $T_\\Co$" in body
-    assert "e_i\\pm e_j\\in M_X" in body
-    assert "nonzero $T_\\Co$-component" in body
+    assert "they are not vanishing classes" in body
+    assert "neither produced nor excluded by it" in body
 
 
 def _run_all() -> int:
