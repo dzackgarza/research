@@ -141,7 +141,7 @@ Let $(W,S)$ be an irreducible Coxeter system (@def:coxeter-group) of rank $n$ wi
    $$
    P \definedas \theset{\, [v] \in \HH^{\,n-1} \mid \beta(v,\alpha_s)\geq 0 \text{ for all } s\in S \,}
    $$
-   of @def:coxeter-polytope and [@Vin67; @Vin85].
+   of @def:coxeter-polytope and [@Vin67, §1; @Vin85, Introduction, no. 1].
 :::
 
 ::: {.proof}

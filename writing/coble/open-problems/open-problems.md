@@ -111,7 +111,7 @@ Define a regularized theta series for the hyperbolic lattices of the Coble and E
 ## The GIT and Looijenga models of the Coble moduli space
 
 ::: {.theorem #thm:coble-arrangement-nonempty title="The Coble arrangement is nonempty, and the GIT compactification is not Baily--Borel"}
-For a singular type $T$, write $\overline{\Sigma}_T$ for the Zariski closure of the nodal stratum in $\PP(\operatorname{Sym}^6 V^\vee)$. The arrangement $\mch_T^*$ is empty if and only if $\overline{\Sigma}_T$ contains no cube $Q^3$ of a **smooth** conic $Q$. This is Yu--Zheng's Proposition 3.7 [@YZ23, p. 10], read together with Remark 2.2 [@YZ23, p. 5] and diagram (8) [@YZ23, p. 9].
+For a singular type $T$, write $\overline{\Sigma}_T$ for the Zariski closure of the nodal stratum in $\PP(\operatorname{Sym}^6 V^\vee)$. The arrangement $\mch_T^*$ is empty if and only if $\overline{\Sigma}_T$ contains no cube $Q^3$ of a **smooth** conic $Q$. This is Yu--Zheng's proposition [@YZ23, Prop. 3.7, p. 10], read together with [@YZ23, Rem. 2.2, p. 5] and diagram [@YZ23, (8), p. 9].
 
 For $T=10A_1$, the closure contains such a cube, and hence
 $$
@@ -153,7 +153,7 @@ is smooth because its defining quadratic form is nondegenerate. Density of $U$ a
 
 The Coxeter, KSBA, and Looijenga semifans of the Coble period domain arise from distinct inputs; @def:looijenga-compactification and the following remark record the Looijenga input. By @thm:coble-arrangement-nonempty the arrangement is nonempty and the compactification is a proper Looijenga model. The orbit decomposition and the Coxeter comparison are settled by @thm:coble-looijenga-coxeter.
 
-**(1) Closure and cusps of Shah's semistable degenerations.** Shah's Theorem 2.4 [@Sha80, pp. 491--492] lists the minimal-orbit curves, and his Theorem 3.2 [@Sha80, p. 493] supplies the nilpotence exponents; the first theorem does not itself assign a cusp. The double smooth cubic in Group II(4) is **not** in $\overline{\Sigma}_{10A_1}$, so it receives no Coble cusp. The remaining rows have the following proved assignments. Only the orbit information shown is claimed.
+**(1) Closure and cusps of Shah's semistable degenerations.** Shah's theorem [@Sha80, Thm. 2.4, pp. 491--492] lists the minimal-orbit curves, and his theorem [@Sha80, Thm. 3.2, p. 493] supplies the nilpotence exponents; the first theorem does not itself assign a cusp. The double smooth cubic in Group II(4) is **not** in $\overline{\Sigma}_{10A_1}$, so it receives no Coble cusp. The remaining rows have the following proved assignments. Only the orbit information shown is claimed.
 
 | Shah row | membership in $\overline{\Sigma}_{10A_1}$ | cusp level |
 |:---|:---|:---|
@@ -165,7 +165,7 @@ The Coxeter, KSBA, and Looijenga semifans of the Coble period domain arise from 
 | Group III(2), three distinct double lines $x_0^2x_1^2x_2^2$ | included | the unique $0$-cusp $(9,9,1)_1$ |
 | Group IV, the cube $Q^3$ of a nonsingular conic | included | the special Looijenga point, not a Baily--Borel cusp |
 
-In particular the **double smooth cubic is excluded**, rather than assigned to either cusp. Group II gives *a* $1$-cusp, without selecting an orbit of planes. For Group III, the quotient is $F^{\mathrm{un}}_\Co = \bD(T_\Co)/\Orth(T_\Co)$ (@def:gamma-co-groups), and @thm:unpolarized-cusps gives the unique $\Orth(T_\Co)$-orbit of primitive isotropic vectors, computed in its $\Orth(T_\Co)$ row at commit `963843f735`; that justifies "the" $0$-cusp of $F^{\mathrm{un}}_\Co$, whose boundary type is $(9,9,1)_1$ by @thm:cusp_correspondence. Group IV has no family-independent Baily--Borel assignment because Shah's Remark 3.3 [@Sha80, p. 497] permits every exponent $1$, $2$, and $3$; it is the contraction point of [@YZ23, Remark 2.2, p. 5].
+In particular the **double smooth cubic is excluded**, rather than assigned to either cusp. Group II gives *a* $1$-cusp, without selecting an orbit of planes. For Group III, the quotient is $F^{\mathrm{un}}_\Co = \bD(T_\Co)/\Orth(T_\Co)$ (@def:gamma-co-groups), and @thm:unpolarized-cusps gives the unique $\Orth(T_\Co)$-orbit of primitive isotropic vectors, computed in its $\Orth(T_\Co)$ row at commit `963843f735`; that justifies "the" $0$-cusp of $F^{\mathrm{un}}_\Co$, whose boundary type is $(9,9,1)_1$ by @thm:cusp_correspondence. Group IV has no family-independent Baily--Borel assignment because Shah's remark [@Sha80, Rem. 3.3, p. 497] permits every exponent $1$, $2$, and $3$; it is the contraction point of [@YZ23, Remark 2.2, p. 5].
 
 **(2) Is the Looijenga semifan the Coxeter semifan of a reflection group? Yes.** @thm:coble-looijenga-coxeter identifies every hyperplane as a pure root. At each $0$-cusp, only roots orthogonal to the cusp line contribute; their boundary traces are primitive $(-2)$-roots and are exactly the mirrors of the reflection group they generate. The induced semifan is therefore Coxeter. This reflection group has only $(-2)$-mirrors; the full $W^{(2,4)}$-Coxeter semifan of @thm:coble-coxeter-semifan additionally has $(-4)$-mirrors.
 
@@ -173,7 +173,7 @@ In particular the **double smooth cubic is excluded**, rather than assigned to e
 :::
 
 ::: {.proof}
-**The image-cycle criterion.** Put $M=\overline M_{0,0}(\PP^2,6)$ and write $\Phi(\mu)=\mu_*[D]$ for the image cycle of a stable map $\mu:D\to\PP^2$, with multiplicities retained. Chen--Coskun's Theorem 1.4 [@CC11, p. 4; proof pp. 9--10] makes this a morphism to $\operatorname{Chow}_{6,0,2}$. Fulton--Pandharipande's §0.4 and Theorems 1--3 [@FulPan97, pp. 6--7, 11--12] show that $M$ is irreducible and that its smooth-domain locus is dense.
+**The image-cycle criterion.** Put $M=\overline M_{0,0}(\PP^2,6)$ and write $\Phi(\mu)=\mu_*[D]$ for the image cycle of a stable map $\mu:D\to\PP^2$, with multiplicities retained. Chen--Coskun's theorem [@CC11, Thm. 1.4, p. 4; proof pp. 9--10] makes this a morphism to $\operatorname{Chow}_{6,0,2}$. Fulton--Pandharipande [@FulPan97, §0.4, Thms. 1, 2 and 3, pp. 6--7, 11--12] show that $M$ is irreducible and that its smooth-domain locus is dense.
 
 Let $U\subset M$ consist of birational maps from $\PP^1$ whose images have only ordinary nodes. Transversality makes this condition open: a node has two regular identification equations at its preimage pair, compactness excludes new identifications away from those pairs and the diagonal, and the immersion condition is open. Dolgachev's Winger parametrization ([@Dol18, §7, pp. 13--14]) supplies a point of $U$, so $U$ is dense in $M$. Normalization gives $\Phi(U)=\Sigma_{10A_1}$: the image is an irreducible rational sextic, whose total $\delta$-invariant is $10$, and therefore has exactly ten $A_1$ singularities. Hence continuity and properness of $M$ give
 $$
@@ -192,7 +192,7 @@ Every central stable map below therefore certifies closure; curve selection turn
 
 **Exclusion of II(4).** Suppose the double smooth cubic $2E$ belonged to $\overline{\Sigma}_{10A_1}$. The image-cycle criterion would give a stable map $\mu:D\to\PP^2$ with $\mu_*[D]=2[E]$. Every domain component has rational normalization, since the connected nodal domain has arithmetic genus zero. At least one nonconstant component must therefore map onto $E$, producing a nonconstant morphism $\PP^1\to E$. No such morphism exists when $E$ is a smooth elliptic cubic. Hence $2E\notin\overline{\Sigma}_{10A_1}$.
 
-**The cusp directions.** Shah's Theorem 3.2 [@Sha80, p. 493] gives exponents $1$, $2$, and $3$ to Groups I, II, and III. Those exponents match Types I, II, and III in Alexeev--Engel--Thompson's Definition 2.2 [@AET23, p. 6]. Their §3B [@AET23, pp. 15--16] then gives the rank-one/Type III/$0$-cusp and rank-two/Type II/$1$-cusp convention. It does not by itself identify a particular orbit of planes, which is why only a $1$-cusp is asserted for Group II. The unique $0$-cusp asserted for Group III uses the full-group record at `963843f735` stated above, not a cusp correspondence between stable orbit sets.
+**The cusp directions.** Shah's theorem [@Sha80, Thm. 3.2, p. 493] gives exponents $1$, $2$, and $3$ to Groups I, II, and III. Those exponents match Types I, II, and III in Alexeev--Engel--Thompson's definition [@AET23, Def. 2.2, p. 6]. Their §3B [@AET23, pp. 15--16] then gives the rank-one/Type III/$0$-cusp and rank-two/Type II/$1$-cusp convention. It does not by itself identify a particular orbit of planes, which is why only a $1$-cusp is asserted for Group II. The unique $0$-cusp asserted for Group III uses the full-group record at `963843f735` stated above, not a cusp correspondence between stable orbit sets.
 :::
 
 ::: {.theorem #thm:coble-looijenga-coxeter title="The ten-nodal Looijenga semifan is a Coxeter semifan"}
@@ -244,7 +244,7 @@ so $(a,\bar r)(y,\bar r)\geq0$, and $(a,\bar r)>0$ gives $(y,\bar r)\geq0$: the 
 
 ::: {#qst:coble-monodromy-stable-models .question title="Open problem: monodromy invariants and stable models $B(\lambda)$"}
 
-Stable limits of Coble surfaces arise as $S_2$-quotients of nodal K3 surfaces, parameterized by a monodromy invariant $\ell \in \check{\mch}$ through the construction $B(\lambda)$ of [@AEGS25].
+Stable limits of Coble surfaces arise as $S_2$-quotients of nodal K3 surfaces, parameterized by a monodromy invariant $\ell \in \check{\mch}$ through the construction $B(\lambda)$ of [@AEGS25, Thm. 4.4].
 
 - Determine the map from the Coble polarization to the discretization $\ell$ on the dual complex. The surgery sizes are the pairings $\ell_i = h\cdot\alpha_i$ against the roots $\alpha_i$ of the Coxeter diagram of the chosen cusp; which of the classes $h_\Co\in K_S^{\perp\Pic(S)}$ and $\tilde h_\Co\in S_\Co$ of @def:coble-polarization-classes is $h$?
 

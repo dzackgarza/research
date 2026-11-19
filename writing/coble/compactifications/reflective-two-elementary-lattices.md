@@ -376,7 +376,7 @@ For the reflective even $2$-elementary lattices with $r + a\geq 22$ the numbers 
 
 ::: {.proof}
 
-This is [@Ale22 §3].
+This is [@Ale22, §3].
 :::
 
 ::: {.theorem #thm:coble-picard-parabolics title="The Coxeter diagram of $S_\Co$"}
@@ -394,7 +394,7 @@ both of even ordinary (@def:two-elementary-isotropic-types) type, so the primiti
 
 ::: {.proof}
 
-This is [@Ale22 §3], the case $(11,11,1)$ of @thm:maximal-parabolic-counts.
+This is [@Ale22, §3, paragraph "(11,11,1)"], the case $(11,11,1)$ of @thm:maximal-parabolic-counts.
 :::
 
 ::: {.corollary #cor:coble-picard-cusp-quotients title="The two quotient lattices of $S_\Co$"}

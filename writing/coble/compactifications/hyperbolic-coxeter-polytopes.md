@@ -141,7 +141,7 @@ Let $P\iscontainedin\HH^n_L$ be a Coxeter polytope (@def:coxeter-polytope) with 
 2. $P$ is compact if and only if $\vol(P)<\infty$ and $P$ has no ideal vertex; equivalently, if and only if the closure of $P$ in the projective model is the convex hull of finitely many ordinary vertices.
    By @cor:ideal-vertices-are-parabolic this is the condition that no parabolic subdiagram of $\Sigma$ of rank $n-1$ is cut out by a set of walls meeting in $\overline{P}$.
 
-3. $P$ has infinite volume if and only if its closure in the projective model has a vertex outside $\overline{\HH^n_L}$ [@Vin67; @Vin85].
+3. $P$ has infinite volume if and only if its closure in the projective model has a vertex outside $\overline{\HH^n_L}$ [@Vin67, §3, (9); @Vin85, Ch. I §4, no. 1].
 :::
 
 ::: {.proof}

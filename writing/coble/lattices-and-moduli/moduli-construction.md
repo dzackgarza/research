@@ -22,8 +22,8 @@ F_{\Nod} &= \bD(T_\Nod)/\Orth^+(T_\Nod)^*
 \end{aligned}
 $$
 
-Here $\tdp$ is the lattice of [@AEGS25], and $\eta\colon T_\Co\injects\ten$ is the embedding of @lem:primitive_embedding_eta.
-The quotient $F^K_{\En} = \bD(\ten)/\Gamma^K_{\En}$, with $\Gamma^K_{\En} = \Orth(\ten)$ the group $\Gamma_{\mathrm{Enr}}$ of [@AEGS25], has two $0$-cusps $(10,10,0)_1$, $(10,8,0)_1$ and two $1$-cusps $(8,8,0)_0$, $(8,6,0)_0$ [@AEGS25, §2]. The quotient $\fentwo = \bD(\ten)/\gent$, with $\gent = \Gamma^K_{\En}\intersect\Gamma_{\dP}$, has five $0$-cusps [@AEGS25, §3]. Throughout, $\Gamma_\En$ denotes the stable group $\widetilde\Orth^+(\ten)$, also written $\Orth^+(\ten)^*$ (@def:gamma-co-groups, @sec-heegner-line, @thm:normalization, @def:gamma-co-en).
+Here $\tdp$ is the $(-1)$-eigenlattice of $I_\dP$ [@AEGS25, Def. 2.3], and $\eta\colon T_\Co\injects\ten$ is the embedding of @lem:primitive_embedding_eta.
+The quotient $F^K_{\En} = \bD(\ten)/\Gamma^K_{\En}$, with $\Gamma^K_{\En} = \Orth(\ten)$ the group $\Gamma_{\mathrm{Enr}}$ of [@AEGS25, Def. 2.6], has two $0$-cusps $(10,10,0)_1$, $(10,8,0)_1$ and two $1$-cusps $(8,8,0)_0$, $(8,6,0)_0$ [@AEGS25, §3.2, Fig. 3]. The quotient $\fentwo = \bD(\ten)/\gent$, with $\gent = \Gamma^K_{\En}\intersect\Gamma_{\dP}$, has five $0$-cusps [@AEGS25, §3]. Throughout, $\Gamma_\En$ denotes the stable group $\widetilde\Orth^+(\ten)$, also written $\Orth^+(\ten)^*$ (@def:gamma-co-groups, @sec-heegner-line, @thm:normalization, @def:gamma-co-en).
 The group $\Gamma_\Co$ is the monodromy group of the family of unpolarized Coble surfaces that the family of unpolarized Enriques surfaces induces, and $\fco = \bD(T_\Co)/\Gamma_\Co$ (@def:gamma-co-groups).
 The equality $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ is @conj:gamma-co-stable, and neither inclusion is proved (@rmk:gamma-co-status).
 The group $\Gamma_{\Co,2}$ of $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ is the image of the stabilizer of $\delta$ in $\gent$ (@prop:gamma-co-images).
@@ -181,7 +181,7 @@ For $d\in\ZZ$, the **$(-2d)$-Heegner divisor** of $\bD(N)$ is
 $$
 \mch_{-2d} \definedas \Union_{\delta\in N,\ \delta^2 = -2d} \theset{[\omega]\in\bD(N) \suchthat \omega\cdot\delta = 0}
 $$
-[@DK13, §3].
+[@DK13, (3.2)].
 :::
 
 ::: {.proposition #prop:enriques-nodal-coble-heegner title="Enriques, nodal Enriques and Coble surfaces in the Enriques period domain"}
