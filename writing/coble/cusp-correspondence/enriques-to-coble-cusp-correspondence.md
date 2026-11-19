@@ -317,7 +317,7 @@ Assume @conj:gamma-co-stable, that is $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ --
 
 ::: {.proof}
 
-By the conjecture $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$, so condition (2) of @prop:gamma-co-strong-lifting holds, and (1) there gives the first clause; clause (3) of the same proposition gives the second, since $\Gamma_\Co$ is now the whole of $\widetilde\Orth^+(T_\Co)$ and the image of $\mathrm{Ext}$ on that group is $\Stab_{\Gamma_\En}(k)$ by @thm:coble-strong-lifting(2). The equivariance is the identity $\mathrm{Ext}(\varphi)\circ\eta = \eta\circ\varphi$.
+By the hypothesis $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$, which is false (@thm:gamma-co-not-stable), so condition (2) of @prop:gamma-co-strong-lifting holds, and (1) there gives the first clause; clause (3) of the same proposition gives the second, since $\Gamma_\Co$ is now the whole of $\widetilde\Orth^+(T_\Co)$ and the image of $\mathrm{Ext}$ on that group is $\Stab_{\Gamma_\En}(k)$ by @thm:coble-strong-lifting(2). The equivariance is the identity $\mathrm{Ext}(\varphi)\circ\eta = \eta\circ\varphi$.
 :::
 
 ::: {.lemma #lem:meridian-kernel title="The reflections and Eichler transvections lie in the discriminant kernel"}
