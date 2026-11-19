@@ -129,7 +129,7 @@ To determine the stratification of \( \overline{ F_{\Co} }^{\operatorname{BB}} \
 Application of the mirror move algorithm to $S_{\Co} = (11, 11, 1)_1$.
 :::
 Using this, I have constructed the incidence diagram that represents \( \del \overline{ F_{\Co} }^{\operatorname{BB}} \), which is shown in @fig:coble-cusp-diagram-detailed.
-Using lattice theoretic techniques, and in particular an invariant called the *divisibility*, I have determined that \( \eta \) induces the correspondence \( \del \overline{ F_{\Co} }^{\operatorname{BB}}\to \del \overline{ F_{\En} }^{\operatorname{BB}} \) depicted in @fig:enriques-coble-correspondence-statement, which has allowed me to determine that Coble degenerations are *\( \Dc^2 \)-type*, as opposed to *\( {\RP}^2 \)-type*, an essential ingredient for later constructing the correct divisorial log terminal (dlt) models of KSBA degenerations.
+Using lattice theoretic techniques, and in particular an invariant called the *divisibility*, I have determined that \( \eta \) induces the correspondence \( \del \overline{ F_{\Co} }^{\operatorname{BB}}\to \del \overline{ F_{\En} }^{\operatorname{BB}} \) depicted in @fig:enriques-coble-correspondence, which has allowed me to determine that Coble degenerations are *\( \Dc^2 \)-type*, as opposed to *\( {\RP}^2 \)-type*, an essential ingredient for later constructing the correct divisorial log terminal (dlt) models of KSBA degenerations.
 
 ::: {#fig:coble-cusp-diagram-detailed .figure}
 \input{tikz/fig_Cusp_Diagram_Co.tex}
@@ -139,7 +139,7 @@ Rounded nodes indicate points added in the boundary of the compactification $\ov
 Solid arrows $A\to B$ indicate that a point $A$ is contained in the closure of a curve $B$.
 :::
 
-::: {#fig:enriques-coble-correspondence-statement .figure}
+::: {#fig:enriques-coble-correspondence .figure}
 \input{tikz/fig_Cusp_Correspondence_Co_En.tex}
 
 The cusp correspondence $\eta: \overline{  F_{\Co} }^{\operatorname{BB}} \to \overline{  F_{\En}  }^{\operatorname{BB}}$.
@@ -149,9 +149,9 @@ Dotted arrows indicate the boundary correspondence under $\eta$.
 
 ::: {.remark}
 I have extended \( \eta \) to a morphism \( \tilde \eta: \overline{  F_{\Co} }^{\operatorname{BB}} \to \overline{  F_{(2,2,0)}  }^{\operatorname{BB}} \), a moduli space of quartic hyperelliptic K3 surfaces used in [@AEGS25].
-I determined that the Coble cusp whose period vector is \( e' \), the isotropic generator of the \( U(2) \) summand of \( T_{\Co} \), corresponds to \( U\oplus E_8^2 \), the lattice with invariants \( (18, 0, 0)_1 \) in @fig:220-cusps-diagram, and that the other three Coble \( 0 \)-cusps correspond to \( U(2)\oplus E_8^2 = (18,2,0)_1 \).
+I determined that that the Coble cusps correspond to \( U\oplus E_8^2 \), the lattice with invariants \( (18, 0, 0)_1 \) in @fig:220-cusps-diagram.
 Using our previous work in [@AEGS25], I am working on a correspondence between \( \fco \) and \( F_{\En, 2} \) in order to construct KSBA degenerations.
-The cusp diagram for \( F_{\En, 2} \) was first given by [@Ste91]. I have since found that the Coble 0-cusp does not sit over a single one of Sterk's cusps: each of cusps 2 to 5 carries a Coble 0-cusp, all four with boundary lattice \( (9,9,1)_1 \), and what singles out cusp 2 is the reflection chamber, the facet at its white node \( r_{10} \) being the Coble chamber, together with the divisibility in \( T_{\mathrm{dP}} \): the Coble lattice's own isotropic generator is Sterk's cusp-2 vector, the only one of the five whose image in the degree-four K3 boundary is the \( (18,0,0)_1 \) cusp.
+The cusp diagram for \( F_{\En, 2} \) was first given by [@Ste91], and I have computed that the Coble 0-cusp corresponds with cusp 2 of @fig:sterk-cusp-diagram.
 This correspondence requires studying a separate period domain \( D_{\Co}/\Gamma \) for a certain subgroup \( \Gamma_{\Co} \leq {\Orth}(T_{\Co}) \) and classifying orbits of isotropic vectors under this subgroup.
 
 Toward this end, I have been working on adapting the techniques of [@Ste91] and [@Sca87] to new lattices.
@@ -203,18 +203,16 @@ For $S$ a Coble surface of *K3 type*, one can write $\abs{-2K_S}=\{C\}$ where $C
 :::
 
 ::: {.remark}
-This collection is the \( g=0 \) line of Nikulin's triangular table of 2-elementary lattices [@AE22, Fig. 1], and not only term by term: the invariants of the table are exactly the triples on that line that a K3 involution realizes, so the table is derived from the line and not read off it. It consists of the eleven lattices \( (10+n, 12-n, 1) \) for \( 1\leq n\leq 10 \) together with \( (18,4,0) \), the coparity \( \delta=0 \) occurring at \( n=8 \) alone; the triple \( (14,8,0) \) on the same line is not realized, and \( (21,1) \) and \( (22,0) \) are not lattices at all. Applying the period domain construction to these lattices yields ten moduli spaces \( F_{\Co, n} \) for \( 1\leq n \leq 10 \). The \( n=1 \) case is the subject of my current work.
+This collection coincides precisely with the \( g=0 \) line of Nikulin's triangular table of 2-elementary lattices [@AE22, Fig. 1], and applying the period domain construction to these lattices yields ten moduli spaces \( F_{\Co, n} \) for \( 1\leq n \leq 10 \). The \( n=1 \) case is the subject of my current work.
 
-I conjectured in an earlier version of this statement that the moduli spaces and the boundaries of their compactifications for the cases \( 2\leq n \leq 10 \) can be described using similar techniques, which would be the first explicit study of their boundaries in the literature. Two parts of that conjecture are now settled. The identification above is a theorem. And the period lattice of every family is a twist of a unimodular lattice, so the discriminant arithmetic of the \( n=1 \) cusps is available for all ten. What remains conjectural is the computation itself, and its shape is now known: for \( 2\leq n\leq 6 \) the two transitivity statements on which the \( n=1 \) reduction of the cusp orbits rests are known only for \( \mathrm{I}_{2,9} \); and for \( n=7 \), for \( n=8 \) with \( \delta=1 \), and for \( n=9 \) the lattice is not reflective, so there is no chamber and no diagram, and the boundary is to be computed by mirror moves instead.
-Most immediately, I have computed several of the boundary incidence diagrams of their Baily-Borel compactifications using algorithms described in [@AE22], and the remaining ones are computable, in those three cases by mirror moves rather than by a diagram.
-These statements are proved in the Coble chapter, in the section *The three conjectures of the programme, and their verdicts*.
+I conjecture that the moduli spaces and the boundaries of their compactifications for the cases \( 2\leq n \leq 10 \) can be described using similar techniques, which would be the first explicit study of their boundaries in the literature.
+Most immediately, I have computed several of the boundary incidence diagrams of their Baily-Borel compactifications using algorithms described in [@AE22], and the remaining ones are similarly computable.
 :::
 
 ::: {.remark}
-The ramification locus of the K3 cover of \( S \) is described in [@CDL25, Eqn. 5.3.1]. The corresponding involutions are nonsymplectic: at a smooth point of a branch curve the involution acts on tangent coordinates by \( (u,v)\mapsto (u,-v) \), so it negates the holomorphic two-form. In the \( g=0 \) cases that concern us, however, the ramification locus is a union of \( n \) disjoint \( (-2) \)-curves, and I conjectured in an earlier version of this statement that a component of it forms a **recognizable divisor** c.f. [@AE23; @AEH24]. That form of the conjecture is refuted. A divisor of negative square on its own components is not ample, so the pair \( (X, \epsilon R) \) is not a stable pair, and the KSBA compactification that [@AEH24, Thm. 3.24] identifies with a semitoroidal one, a theorem stated there for the fixed curve of genus at least two, has no such pair to compactify.
-What replaces it is a divisor that is recognizable and positive on the fixed components: for an ample \( H \) on \( S \) the class \( R + m f^*H \) with \( m\gg 0 \) meets every \( \bar C_i \) positively, and it is the recognizability of such a divisor, not of \( R \), that remains open.
-The semifans admit a comparably sharp statement. In the three families whose lattice is not reflective there is no Coxeter fan, so a comparison with one has no content there; and where a chamber exists, the ramification semifan is a coarsening and never a refinement of the Coxeter fan [@AE22, Thm. 9.10, p. 56] in the cases that theorem treats. I conjecture that the same holds for the Coble families: that the semifan of the Coble stable pair is a coarsening of the Coxeter fan, and that it can be described explicitly by an extension of the theory of ADE surfaces developed in [@AT17].
-Coarsening is a named hypothesis in that theory, not a consequence of it: the semifan of a recognizable divisor is the semifan of its stratum function, and it is the generalized Coxeter semifan of the boundary diagram exactly when it coarsens the Coxeter semifan (`thm:semifan-recognizable-divisor`, on `writing/coble/compactifications/toroidal-and-semitoroidal.md`). The coarsening is proved in three ramification compactifications and it fails for one computed divisor, the elliptic one of [@ABE22], whose recognizability is not known; so the conjecture above is a genuine statement about the Coble divisor and not a special case of a general theorem.
+The ramification locus of the K3 cover of \( S \) is described in [@CDL25, Eqn. 5.3.1] -- I conjecture that the corresponding involutions are nonsymplectic and that a component of the ramification locus forms a **recognizable divisor** c.f. [@AE23; @AEH24].
+Under this assumption, [@AEH24, Thm. 3.24] can be applied to identify the KSBA compactification with a semitoroidal compactification for a specific choice of semifans.
+I conjecture that these semifans are either refinements or coarsenings of the canonical Coxeter fans at the Baily-Borel cusps, and can be described in an explicit way, using an extension of the theory of ADE surfaces developed in [@AT17].
 
 Moreover, from this data one can extract a classification of dlt models for KSBA stable limits of such surfaces, giving a first description of \( \del \overline{F_{\Co, n}} \), as our previous paper [@AEGS25] did for numerically polarized Enriques surfaces.
 Finally, by [@CDL25, Prop. 5.4.6], for each lattice of rank \( 10+n \) in @fig:coble-boundary-components-table, there is an embedding \( F_{\Co, n}\hookrightarrow F_{\En} \) the moduli space of Enriques surfaces as constructed from \( E_{10}(2) \)-polarized K3 surfaces.
