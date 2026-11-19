@@ -172,20 +172,30 @@ Observed on 2026-11-10 with `just docs-lint coble/lattices-and-moduli/local-syst
 
 `just docs-deploy` rebuilds the full site. To check a page's source, run `python3 scripts/docs_check.py --source` alone; it does not touch `_site`.
 
-## The full render completes, and the post-render copy can still fail on a figure link
+## The post-render copy dereferences symlinks, so one broken one fails a good render
 
-The two AEGS reference figures that `writing/coble/cusp-correspondence/cusp-diagrams-by-moduli-space.md` and its neighbours include are symlinks into the shared figure tree, and that tree is not in this repository:
-
-```
-writing/coble/reference/aegs-pars.svg -> /home/dzack/.pandoc/figures/vector/aegs-paper/fig-pars.svg
-writing/coble/reference/aegs-par2.svg -> /home/dzack/.pandoc/figures/vector/aegs-paper/fig-par2.svg
-```
-
-When the target is absent — a fresh `~/.pandoc` clone whose LFS content was never fetched, which is the state here since at least 2026-11-18 — the render itself still succeeds: the whole book is written to `writing/.book/_site` (133 pages, about 7 s per chapter, so a 132-chapter pass is roughly 15 minutes) and the failure is in the post-render step, which copies `coble/reference` with `cp -RL`:
+The post-render step copies `data`, `coble/reference`, `coble/papers` and the
+CategoryTheory diagram into `_site` with `cp -RL`, so it follows symlinks. A tracked
+symlink in one of those trees whose target is missing therefore fails the run *after*
+the whole book has rendered, and the gate reports it as a render failure:
 
 ```
 cp: cannot stat 'coble/reference/aegs-pars.svg': No such file or directory
 docs-check: `quarto render` failed on pass 1 (exit 1)
 ```
 
-The gate reports that as a render failure, so read the message before believing the render is broken. `python3 scripts/docs_figures.py` fails the same way and says so directly: `…/A2RootSystem.png is an unresolved Git LFS pointer`. The distinction matters when a page this repository owns is under test: the page's own html is in `_site` at that point and can be inspected, which is how the 2026-11-18 check of the #672 pages was done.
+That is what happened on 2026-11-18: `writing/coble/reference/aegs-pars.svg` and
+`aegs-par2.svg` were tracked symlinks to `/home/dzack/.pandoc/figures/vector/aegs-paper/`,
+an absolute path outside this repository, and the two files named there are in no
+version control — `pandoc-config` tracks no `aegs-paper/*par*` file, and every PDF in
+that directory is a 130-byte Git LFS pointer on this machine, which is also why
+`scripts/docs_figures.py` stops at `A2RootSystem.png is an unresolved Git LFS pointer`.
+
+Both symlinks are gone as of research#672: the page that embedded them names the printed
+panels instead ([@AEGS25, Figures 7 and 8, printed pp. 594--595]), which is what
+`writing/toric-geometry.md` does for the two TikZ sources that exist in no figure tree
+(research#765). A figure for the book is either a file this repository holds or a printed
+statement; a path into `~/.pandoc` is neither, and after this it fails a clone's gate.
+
+Read the message before believing a render is broken: the html of every chapter is in
+`_site` when this fires, which is how the pages of research#672 were checked.

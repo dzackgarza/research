@@ -114,9 +114,7 @@ The one-cusps incident to a zero-cusp of $\fentwo$ are represented by maximal pa
 
 The blue subdiagram in each published panel is the invariant maximal parabolic; the panel label identifies the incident one-cusp, and the adjacent folded diagram gives its Enriques parabolic type. Crosses mark reflection roots. The two degree-four K3 one-cusp types $E_8D_8$ and $D_{16}$ have no symmetric maximal parabolic under these involutions, so they have no preimage one-cusp in $\fentwo$ [@AEGS25, §3D].
 
-![The two invariant maximal parabolics and folded types at Sterk cusp 2, from the source vector figure.](/coble/reference/aegs-par2.svg){#fig-sterk-one-cusps-2}
-
-![The invariant maximal parabolics and folded types at Sterk cusps 1, 3, 4, and 5, from the source vector figure.](/coble/reference/aegs-pars.svg){#fig-sterk-one-cusps-1345}
+The source's own vector figure prints the two invariant maximal parabolics and the folded type at cusp $2$ [@AEGS25, Figure 7, printed p. 594], and the four at cusps $1$, $3$, $4$ and $5$ [@AEGS25, Figure 8, printed p. 595]; those two panels are not reproduced here, because the SVG files this page used to embed were symlinks to `~/.pandoc/figures/vector/aegs-paper/`, a path outside this repository that holds no such file in any version control (research#672). The panels' content is used below only through the folded diagrams, which are drawn from the printed root data in @prop:facet-angles-aegs.
 
 ::: {#fig-k3-cusp-18-2-0-vinberg .figure}
 \begin{tikzpicture}
