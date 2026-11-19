@@ -52,7 +52,7 @@ The subgroup $K_L\hookrightarrow\Sigma(L)$ is the pullback in $\mathbf{Ab}$
 K_L \arrow[r] \arrow[d] & \Sigma(L) \arrow[d,hook] \\
 \Gamma_\bQ \arrow[r,hook] & \Gamma_{\mathbb A_f}.
 ```
-In particular, $K_L=\Gamma_\bQ\cap\Sigma(L)$ inside $\Gamma_{\mathbb A_f}$ [@MM09, Ch. VIII, §§2–5].
+In particular, $K_L=\Gamma_\bQ\cap\Sigma(L)$ inside $\Gamma_{\mathbb A_f}$ [@MM09, Ch. VIII, §2, display defining $\Sigma^\#(L)$, and §3, display defining $\Sigma(L)$].
 :::
 
 ## The obstruction and genus groups
