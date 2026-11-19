@@ -36,20 +36,22 @@ LATTICES = ROOT / "writing/coble/lattices-and-moduli/lattices.md"
 def main():
     text = LATTICES.read_text(encoding="utf-8")
     clause = "induces this family and its local system" in text
-    remark = "Neither inclusion between $\\Gamma_\\Co$ and $\\widetilde\\Orth^+(T_\\Co)$ is proved" in text
+    remark = "The inclusion $\\Gamma_\\Co\\subseteq\\widetilde\\Orth^+(T_\\Co)$ is false" in text
     prop1 = "1. $R_{\\Gamma_\\En} = \\widetilde\\Orth^+(T_\\Co)$." in text
     print("def:gamma-co-groups(1) carries the 'induces' clause:        %s" % clause)
-    print("rmk:gamma-co-status says neither inclusion is proved:      %s" % remark)
+    print("rmk:gamma-co-status says the inclusion is false:           %s" % remark)
     print("prop:gamma-co-images(1) gives R_{Gamma_En} = O~+(T_Co):    %s" % prop1)
     assert clause and remark and prop1
     print()
-    print("strong reading: Gamma_Co <= R_{Gamma_En} = O~+(T_Co) = item 1e -- contradicting the remark.")
-    print("weak reading:   the clause relates the two lattices only, and yields no inclusion.")
+    print("The tension the earlier version of this probe recorded is gone, and it is resolved against")
+    print("the strong reading: a loop of the Coble family need not come from the Enriques base -- the")
+    print("period of a Coble surface lies in the Heegner divisor mch_{-2}, which the Enriques moduli")
+    print("excludes -- and the monodromy itself is now known to leave the stable group:")
+    print("Gamma_Co is not contained in O~+(T_Co) (thm:gamma-co-not-stable).  So the 'induces' clause")
+    print("is the weak one, and the book states it as a relation of local systems, not of bases.")
     print()
-    print("verdict: REFUTED as stated.  The three sentences cannot stand together with the clause")
-    print("  informative: either the book's Enriques monodromy identification and its 'induces' clause")
-    print("  give item 1e (and rmk:gamma-co-status is wrong), or the clause is weaker than it reads and")
-    print("  the book owes the weaker statement in writing.  Item 1e is not thereby decided.")
+    print("verdict: RESOLVED.  The strong reading is refuted by thm:gamma-co-not-stable, and")
+    print("  rmk:gamma-co-status now records the failure instead of an open inclusion.")
 
 
 if __name__ == "__main__":

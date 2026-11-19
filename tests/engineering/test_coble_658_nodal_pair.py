@@ -79,7 +79,9 @@ def test_the_refutation_is_stated_on_the_page():
     assert "This statement is false" in conj and "@thm:gamma-co-not-stable" in conj
     assert "@conj:gamma-co-full" in conj
 
-    assert "\\Gamma_\\Co = \\Orth^+(T_\\Co)" in block("conj:gamma-co-full")
+    full = block("conj:gamma-co-full")
+    assert "\\widetilde\\Orth^+(T_\\Co)\\subseteq\\Gamma_\\Co" in full
+    assert "deliberately not asserted" in full
 
     status = block("rmk:gamma-co-status")
     assert "Neither inclusion" not in status

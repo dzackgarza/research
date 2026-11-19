@@ -295,7 +295,7 @@ Let $\Gamma_\Co\le\Orth(T_\Co)$ be the monodromy group of the family of unpolari
 2. $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$.
 3. Under (1), $\mathrm{Ext}(\Gamma_\Co) = \Stab_{\Gamma_\En}(k)$.
 
-Then (1) and (2) are equivalent, and, given (1), (3) is equivalent to the equality $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ of @conj:gamma-co-stable. Clause (2) is false (@thm:gamma-co-not-stable): the sign half holds unconditionally, $\Gamma_\Co\subseteq\Orth^+(T_\Co)$ (@lem:monodromy-is-spinor-positive), and the discriminant half, $\Gamma_\Co\subseteq\discriminantkernel{T_\Co}$, fails. The equivalence is what the proposition asserts, and with (2) false it says that the $\Gamma_\Co$ form of the lifting fails, which it does.
+Then (1) and (2) are equivalent, and, given (1), (3) is equivalent to the equality $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ of the former @conj:gamma-co-stable, which @thm:gamma-co-not-stable refutes. Clause (2) is false (@thm:gamma-co-not-stable): the sign half holds unconditionally, $\Gamma_\Co\subseteq\Orth^+(T_\Co)$ (@lem:monodromy-is-spinor-positive), and the discriminant half, $\Gamma_\Co\subseteq\discriminantkernel{T_\Co}$, fails. The equivalence is what the proposition asserts, and with (2) false it says that the $\Gamma_\Co$ form of the lifting fails, which it does.
 :::
 
 ::: {.proof}
@@ -308,7 +308,7 @@ For (3), assume (1). The image $\mathrm{Ext}(\Gamma_\Co)$ is a subgroup of $\Sta
 
 ::: {.corollary #cor:coble-lifting-under-conjecture title="The $\Gamma_\Co$ form of the strong lifting, under the book's own conjecture"}
 
-Assume @conj:gamma-co-stable, that is $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$. Then the conclusion of @thm:coble-strong-lifting holds with $\Gamma_\Co$ in place of $\widetilde\Orth^+(T_\Co)$:
+Assume @conj:gamma-co-stable, that is $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ --- an assumption that is false (@thm:gamma-co-not-stable), so the corollary is vacuous and nothing about $\Gamma_\Co$ follows from it. What it records is the implication: then the conclusion of @thm:coble-strong-lifting holds with $\Gamma_\Co$ in place of $\widetilde\Orth^+(T_\Co)$:
 
 1. every $\varphi\in\Gamma_\Co$ has exactly one $\gamma\in\Gamma_\En$ with $\gamma\circ\eta = \eta\circ\varphi$ and $\gamma(k) = k$, and the assignment $\mathrm{Ext}$ is a homomorphism of which $\mathrm{res}$ is a left inverse;
 2. $\mathrm{Ext}(\Gamma_\Co) = \Stab_{\Gamma_\En}(k)$, and $\eta$ is $\mathrm{Ext}$-equivariant.

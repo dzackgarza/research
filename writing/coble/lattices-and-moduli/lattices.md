@@ -159,13 +159,13 @@ $$
 This statement is false (@thm:gamma-co-not-stable). It is kept under its own name because later passages cite it: each of those states a conditional whose hypothesis now fails, and the corrected statement is @conj:gamma-co-full.
 :::
 
-::: {.conjecture #conj:gamma-co-full title="The monodromy group of the Coble family"}
+::: {.conjecture #conj:gamma-co-full title="The monodromy group of the Coble family contains the stable group"}
 
 $$
-\Gamma_\Co = \Orth^+(T_\Co).
+\widetilde\Orth^+(T_\Co)\subseteq\Gamma_\Co .
 $$
 
-The forward half, $\Gamma_\Co\subseteq\Orth^+(T_\Co)=\Theta_\bR(T_\Co)$, is proved (@lem:monodromy-is-spinor-positive); what the equality adds to it is the reverse inclusion $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_\Co$, and that is open. Its right-hand side is not the stable group, since $\Gamma_\Co\not\subseteq\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-not-stable).
+With @lem:monodromy-is-spinor-positive this places $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_\Co\subseteq\Orth^+(T_\Co)$, the right inclusion proved and the left one the open content. The stronger form $\Gamma_\Co=\Orth^+(T_\Co)$ is deliberately not asserted: $\Gamma_\Co\subseteq\Gamma_{\Co,2}$ is a separate statement (@thm:gamma-co-2-comparison(4)), and $\Orth^+(T_\Co)\subseteq\Gamma_{\Co,2}$ fails because $\bar\rho(\Orth^+(T_\Co))=\Orth(q)$ strictly contains $P$ (@prop:gamma-co-images(3), @thm:two-elementary-surjectivity), so the equality with $\Orth^+$ would contradict it.
 :::
 
 ::: {.remark #rmk:gamma-co-status title="What is established about $\Gamma_\Co$"}

@@ -534,7 +534,7 @@ Nor does the statement follow from an isomorphism of stable pairs without one of
 The pair the page carried as a counterexample before -- roots $11$ and $12$ at cusp $5$ -- is withdrawn on a different ground: root $11$ is the marking line $[\pm\delta]$, which has no lift in $T_\Co$ by @prop:marking-line-no-coble-lift, so that pair was never comparable; the comparable pair is $12$ and $13$ at cusp $5$, and it is a pair of inequivalent roots (@thm:face-irrelevant-marking(3)).
 
 The group that the determination is modulo is $\Gamma_{\Co,2} = R_{\gent}$, the image of $\Stab_{\gent}(\delta)$ in $\Orth(\delta^{\perp})$ (@prop:gamma-co-images, @prop:gamma-co-2-line-stabilizer): the stabilizer of the root line $\ZZ\delta$ in $\gent$.
-It is not the monodromy group $\Gamma_{\Co}$ of @def:gamma-co-groups, whose equality with the stable subgroup $\widetilde{\Orth}^+(T_{\Co})$ is @conj:gamma-co-stable.
+It is not the monodromy group $\Gamma_{\Co}$ of @def:gamma-co-groups, which is not contained in, and does not equal, the stable subgroup $\widetilde{\Orth}^+(T_{\Co})$ (@thm:gamma-co-not-stable).
 The marking-line root is not among the $T_\Co$-roots by @prop:marking-line-no-coble-lift, and at cusp $2$ the unique admissible root is the marking line itself, so no $T_\Co$-root exists there.
 Cusps $3$ and $4$ carry one $T_\Co$-root each and so no pair, which leaves cusp $5$, whose three roots are pairwise distinct classes of $K_5$ (@thm:face-irrelevant-marking(3)) and exactly two $\Gamma_{\Co,2}$-orbits, $\{13,14\}$ and $\{12\}$ (@rmk:coble-root-orbits-cusp-five).
 :::
