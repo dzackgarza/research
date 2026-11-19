@@ -72,3 +72,29 @@ d = 18, p = 3, k = 2
   J = Z delta + Z e2: delta.e2 = 0, e2^2 = 0, delta = v1 + 3 u1
   u1 = e1 - 2 f1, u1^2 = -4; v1 = g + 12 f1, v1^2 = -36
   J^perp/J: rank 17 = 1 + 16, first summand -2k = -4
+
+General cusps: d = N^2 d_0, h = gcd(q,N), p = N/h, a = q/h, k = d/p^2.
+
+general cusp: d = 144, N = 12, d_0 = 1, q = 5, h = 1, p = 12, k = 1, a = 5
+  delta = 5 g + 12 e1 + 300 f1, delta^2 = 0, primitive = True
+  p_*(delta): delta/p has pairings (-120, 25, 1), delta/p^2 pairs 1/12 with f1 -> p_* = 12
+  u = e1 - 25 f1, u^2 = -50; v = g + 120 f1, v^2 = -288; delta = 5 v + 12 u
+  z = 2 v + 5 u, z^2 = -2 (Bezout 5*5 - 12*2 = 1)
+  delta^perp/delta: rank 19 = 1 + 2 + 16, first summand -2k = -2, discriminant 2
+  printed first summand -2d/p_* = -24, discriminant 24
+
+general cusp: d = 81, N = 9, d_0 = 1, q = 2, h = 1, p = 9, k = 1, a = 2
+  delta = 2 g + 9 e1 + 36 f1, delta^2 = 0, primitive = True
+  p_*(delta): delta/p has pairings (-36, 4, 1), delta/p^2 pairs 1/9 with f1 -> p_* = 9
+  u = e1 - 4 f1, u^2 = -8; v = g + 36 f1, v^2 = -162; delta = 2 v + 9 u
+  z = 1 v + 5 u, z^2 = -2 (Bezout 2*5 - 9*1 = 1)
+  delta^perp/delta: rank 19 = 1 + 2 + 16, first summand -2k = -2, discriminant 2
+  printed first summand -2d/p_* = -18, discriminant 18
+
+general cusp: d = 16, N = 4, d_0 = 1, q = 2, h = 2, p = 2, k = 4, a = 1
+  delta = 1 g + 2 e1 + 8 f1, delta^2 = 0, primitive = True
+  p_*(delta): delta/p has pairings (-16, 4, 1), delta/p^2 pairs 1/2 with f1 -> p_* = 2
+  u = e1 - 4 f1, u^2 = -8; v = g + 16 f1, v^2 = -32; delta = 1 v + 2 u
+  z = 0 v + 1 u, z^2 = -8 (Bezout 1*1 - 2*0 = 1)
+  delta^perp/delta: rank 19 = 1 + 2 + 16, first summand -2k = -8, discriminant 8
+  printed first summand -2d/p_* = -16, discriminant 16

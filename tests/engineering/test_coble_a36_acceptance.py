@@ -374,6 +374,9 @@ def test_the_p_greater_one_cusp_lattice_record_reproduces_and_the_page_states_it
     assert "printed first summand -2d/p_* = -8" in produced
     assert "J^perp/J: rank 17 = 1 + 16, first summand -2k = -2" in produced
     assert "1-cusp lattice E8(-1)^2 + A1(-1)" in produced
+    assert "general cusp: d = 144, N = 12, d_0 = 1, q = 5, h = 1, p = 12, k = 1, a = 5" in produced
+    assert "z = 2 v + 5 u, z^2 = -2" in produced
+    assert "general cusp: d = 16, N = 4, d_0 = 1, q = 2, h = 2, p = 2, k = 4, a = 1" in produced
     page = page_text()
     assert "#lem:cusp-lattice-p-greater-one" in page
     assert "$\\langle-2k\\rangle\\oplus U\\oplus E_8(-1)^{\\oplus2}$" in page

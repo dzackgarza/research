@@ -30,6 +30,8 @@ is the unigonal cusp lattice of F_{2k}.  No Sage is needed: every check is
 integer arithmetic on the rank-three form.
 """
 
+import math
+
 
 def dot(d, x, y):
     return -2 * d * x[0] * y[0] + x[1] * y[2] + x[2] * y[1]
@@ -39,6 +41,13 @@ def dot5(d, x, y):
     """The rank-five lattice <g> + H(e1, f1) + H(e2, f2), coordinates (g, e1, f1, e2, f2)."""
     return (-2 * d * x[0] * y[0] + x[1] * y[2] + x[2] * y[1]
             + x[3] * y[4] + x[4] * y[3])
+
+
+def bezout(a, p):
+    """Return (r, s) with a s - p r = 1, for coprime positive a, p."""
+    s = pow(a % p, -1, p)
+    r = (a * s - 1) // p
+    return r, s
 
 
 def main():
@@ -81,6 +90,36 @@ def main():
         out.append("  J^perp/J: rank 17 = 1 + 16, first summand -2k = %d" % (-2 * k))
         if k == 1:
             out.append("  1-cusp lattice E8(-1)^2 + A1(-1)")
+        out.append("")
+
+    out.append("General cusps: d = N^2 d_0, h = gcd(q,N), p = N/h, a = q/h, k = d/p^2.")
+    out.append("")
+    for N, d_0, q in ((12, 1, 5), (9, 1, 2), (4, 1, 2)):
+        h = math.gcd(q, N)
+        p = N // h
+        a = q // h
+        d = N * N * d_0
+        k = d // (p * p)
+        assert k == d_0 * h * h
+        delta = (a, p, p * d_0 * q * q, 0, 0)
+        u = (0, 1, -d_0 * q * q, 0, 0)
+        v = (1, 0, 2 * p * k * a, 0, 0)
+        r, s = bezout(a, p)
+        z = (r * v[0] + s * u[0], r * v[1] + s * u[1], r * v[2] + s * u[2], 0, 0)
+        out.append("general cusp: d = %d, N = %d, d_0 = %d, q = %d, h = %d, p = %d, k = %d, a = %d"
+                   % (d, N, d_0, q, h, p, k, a))
+        out.append("  delta = %d g + %d e1 + %d f1, delta^2 = %d, primitive = %s"
+                   % (a, p, p * d_0 * q * q, dot5(d, delta, delta),
+                      math.gcd(math.gcd(a, p), p * d_0 * q * q) == 1))
+        out.append("  p_*(delta): delta/p has pairings (%d, %d, %d), delta/p^2 pairs 1/%d with f1 -> p_* = %d"
+                   % (-2 * p * k * a, d_0 * q * q, 1, p, p))
+        out.append("  u = e1 - %d f1, u^2 = %d; v = g + %d f1, v^2 = %d; delta = %d v + %d u"
+                   % (d_0 * q * q, dot5(d, u, u), 2 * p * k * a, dot5(d, v, v), a, p))
+        out.append("  z = %d v + %d u, z^2 = %d (Bezout %d*%d - %d*%d = 1)"
+                   % (r, s, dot5(d, z, z), a, s, p, r))
+        out.append("  delta^perp/delta: rank 19 = 1 + 2 + 16, first summand -2k = %d, discriminant %d"
+                   % (-2 * k, 2 * k))
+        out.append("  printed first summand -2d/p_* = %d, discriminant %d" % (-2 * p * k, 2 * p * k))
         out.append("")
     return "\n".join(out)
 
