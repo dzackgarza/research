@@ -1,0 +1,18 @@
+d = 1, polarization L = s + 2 f
+  L^2 = 2
+  sum of the 24 singular fibres: (0) s + (24) f
+  R_rc == n_d L                      (24) s + (48) f   degree against L: 48
+  ABE22: s + m (sum f_i) = s + 24 m f, against R_rc == n_d(s + (d+1)/24 sum f_i):
+    coefficient of s: 1 in both, so any proportionality has scalar 1
+    coefficient of f: need 24 m = 2, that is m = (d+1)/24 = 1/12
+    m = 1: divisor (1) s + (24) f | proportional to s + (d+1) f: False  (degrees: 24 vs 2)
+    m = 2: divisor (1) s + (48) f | proportional to s + (d+1) f: False  (degrees: 48 vs 2)
+    m = 3: divisor (1) s + (72) f | proportional to s + (d+1) f: False  (degrees: 72 vs 2)
+    deg(R_rc) = 48 and deg(s + m sum f_i) = 24 m, so the degrees agree at m = 2;
+    there the classes are proportional: False  ((1) s + (48) f vs (1) s + (2) f)
+
+Conclusion.  ABE22's divisor s + m sum f_i coincides with the rational-curve divisor's
+class only at m = (d+1)/24, which is not an integer; at the integer m that equalizes
+degrees the two classes are not proportional.  The printed 'proportional to' therefore
+cannot carry the identification of the two stable-pair compactifications, which is why
+thm:recognizable-fails-W was withdrawn (rmk:recognizable-gap).
