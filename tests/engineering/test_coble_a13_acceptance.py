@@ -459,6 +459,83 @@ def test_every_citation_of_the_folding_lemma_carries_its_printed_page():
     assert not missing, missing
 
 
+def _theta_on(coordinates):
+    """$\\theta_\\Co$ of @thm:theta-co-coordinates on a half-integral 22-vector.
+
+    The action on the standard basis is the signed permutation of that theorem:
+    e_0 <-> e_1, e_2 -> -e_4, e_4 -> -e_2, e_3 -> -e_5, e_5 -> -e_3, e_{6+k} -> -e_{14+k},
+    e_{14+k} -> -e_{6+k}.  Exact, with Fractions, so a half-integral vector is allowed.
+    """
+    out = {}
+    for index, value in coordinates.items():
+        if index in (0, 1):
+            image, sign = 1 - index, 1
+        elif index in (2, 4):
+            image, sign = 6 - index, -1
+        elif index in (3, 5):
+            image, sign = 8 - index, -1
+        elif 6 <= index <= 13:
+            image, sign = index + 8, -1
+        else:
+            image, sign = index - 8, -1
+        out[image] = out.get(image, 0) + sign * value
+    return {index: value for index, value in out.items() if value}
+
+
+def test_the_image_of_b_under_theta_is_b_minus_H_and_not_H_minus_b():
+    """One lemma, with its hypotheses: $H = e_2+e_3+e_4+e_5$, $b = -e_2+2e_4+e_5-e_6+e_{14}$.
+
+    In the marking of @thm:theta-co-coordinates $\\theta_\\Co$ is $-\\id$ on $S_\\Co$ and
+    $\\id$ on $T_\\Co$, so it fixes $H$'s sign and fixes $t = b-H/2$; hence
+    $\\theta_\\Co(b) = -H/2+t = b-H$.  The theorem's proof printed $H-b$ in place of $b-H$,
+    and $H-b = -\\theta_\\Co(b)$ is a different vector.  The probe below is the exact
+    computation; the two page assertions then hold the proof to it.
+    """
+    from fractions import Fraction
+
+    H = {2: 1, 3: 1, 4: 1, 5: 1}
+    b = {2: -1, 4: 2, 5: 1, 6: -1, 14: 1}
+
+    def shift(left, right):
+        out = dict(left)
+        for index, value in right.items():
+            out[index] = out.get(index, 0) - value
+        return {index: value for index, value in out.items() if value}
+
+    theta_b = _theta_on(b)
+    b_minus_H = shift(b, H)
+    H_minus_b = shift(H, b)
+    assert theta_b == b_minus_H, (theta_b, b_minus_H)
+    assert theta_b != H_minus_b, (theta_b, H_minus_b)
+    # the hypotheses the lemma uses: H^2 = 4, b^2 = 0, H.b = 2 in the form of lkt
+    E8_EDGES = {(0, 2), (1, 3), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7)}
+
+    def pairing(x, y):
+        total = Fraction(0)
+        for index, value in x.items():
+            for other, weight in y.items():
+                if index in (0, 1) or other in (0, 1):
+                    gram = 1 if {index, other} == {0, 1} else 0
+                elif index < 6 and other < 6:
+                    gram = 1 if {index, other} in ({2, 3}, {4, 5}) else 0
+                elif 6 <= index <= 13 and 6 <= other <= 13:
+                    a, c = index - 6, other - 6
+                    gram = -2 if a == c else (1 if (min(a, c), max(a, c)) in E8_EDGES else 0)
+                elif 14 <= index <= 21 and 14 <= other <= 21:
+                    a, c = index - 14, other - 14
+                    gram = -2 if a == c else (1 if (min(a, c), max(a, c)) in E8_EDGES else 0)
+                else:
+                    gram = 0
+                total += value * weight * gram
+        return total
+
+    assert pairing(H, H) == 4 and pairing(b, b) == 0 and pairing(H, b) == 2
+
+    page = PAGE.read_text()
+    assert r"\theta_\Co(b) = -H/2+t = b-H" in page
+    assert r"\theta_\Co(b) = -H/2+t = H-b" not in page
+
+
 def test_the_group_the_question_names_is_the_one_the_theorem_computes():
     """A13 asks for the comparison to $\\Gamma^\\En_\\Co(\\delta)$; the book must name it.
 
