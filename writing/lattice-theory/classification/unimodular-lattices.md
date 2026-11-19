@@ -25,7 +25,7 @@ For each signature $(p,q)$ with $p,q>0$, there is exactly one odd unimodular iso
 :::
 
 ::: {.proof}
-The formulas for $\latI_{p,q}$ and $\latII_{p,q}$ exhibit unimodular integral lattices of the indicated signature and parity. Their uniqueness is the indefinite unimodular classification of [@Ser73, Ch. V; @MH73, Ch. II]. In the even case unimodularity gives $A_{L,q}=0$ by @def:discriminant, hence $\operatorname{Br}(A_{L,q})=0$ by @def:brown-invariant; applying @thm:milgram gives the asserted congruence. The displayed models realize every permitted signature.
+The formulas for $\latI_{p,q}$ and $\latII_{p,q}$ exhibit unimodular integral lattices of the indicated signature and parity. Their uniqueness is the indefinite unimodular classification of [@Ser73, Ch. V, Thm. 6]. In the even case unimodularity gives $A_{L,q}=0$ by @def:discriminant, hence $\operatorname{Br}(A_{L,q})=0$ by @def:brown-invariant; applying @thm:milgram gives the asserted congruence. The displayed models realize every permitted signature.
 :::
 
 ## Definite unimodular lattices {#sec-definite-unimodular-classification}
@@ -40,7 +40,7 @@ Twisting by $(-1)$ identifies the positive- and negative-definite isometry class
 :::
 
 ::: {.proof}
-The class-set formulation is that of @def:genus: all positive-definite odd unimodular lattices of rank $n$ lie in the genus of $\latI_{n,0}$, and all positive-definite even unimodular lattices of rank $8k$ lie in the genus of $E_8(-1)^{\perp k}$ [@CS10, Chs. 15–16]. The divisibility $8\mid n$ follows from @thm:milgram; the classes in the table are the classical definite enumeration [@CS10, Chs. 16–18]. The even rank-$24$ classification is due to Niemeier; its $24$ classes are characterized by their root systems (@def:root-system-base) [@CS10, Ch. 16].
+The class-set formulation is that of @def:genus: all positive-definite odd unimodular lattices of rank $n$ lie in the genus of $\latI_{n,0}$, and all positive-definite even unimodular lattices of rank $8k$ lie in the genus of $E_8(-1)^{\perp k}$ [@CS10, Chs. 15–16]. The divisibility $8\mid n$ follows from @thm:milgram; the classes in the table are the classical definite enumeration [@CS10, Table 2.2]. The even rank-$24$ classification is due to Niemeier; its $24$ classes are characterized by their root systems (@def:root-system-base) [@CS10, Ch. 16, Thm. 4].
 :::
 
 ## Niemeier root systems {#sec-niemeier-root-systems}

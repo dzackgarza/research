@@ -111,5 +111,5 @@ Moreover $b_{\det}(X,X)=2\det X$, hence the matrix lattice is even.
 
 For $A,B\in\SL_2(\bZ)$,
 $\det(AXB^{-1})=\det X$, so this action preserves $b_{\det}$.
-Under $\phi$, the Eichler--Siegel transvections generate exactly this image [@GHS08].
+Under $\phi$, the Eichler--Siegel transvections generate exactly this image [@GHS08, Lem. 3.2].
 :::

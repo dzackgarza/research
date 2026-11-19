@@ -193,7 +193,7 @@ $$
 
 ::: {.proof}
 
-This is [@MH73, Appendix 4].
+This is Milgram's theorem [@MH73, Ch. II §5, Rem. 2], proved in Appendix 4 of the same book.
 :::
 
 ::: {.corollary #cor:primitive-complement-signature title="Signature congruence for primitive complements"}

@@ -338,7 +338,7 @@ For a smooth real or complex vector bundle, flatness of $\nabla$ is equivalent t
 
 :::{.proof title="Horizontal integral manifolds"}
 
-On the frame bundle, curvature is the vertical component, up to sign, of the bracket of horizontal lifts. Its vanishing makes the horizontal distribution involutive. Frobenius gives integral manifolds transverse to the fibers; their local sections provide parallel frames [@Ram04, Chapter 5, §5, flatness criterion]. Conversely, a parallel frame has connection matrix zero and hence curvature zero.
+On the frame bundle, curvature is the vertical component, up to sign, of the bracket of horizontal lifts. Its vanishing makes the horizontal distribution involutive. Frobenius gives integral manifolds transverse to the fibers; their local sections provide parallel frames [@Ram04, Chapter 5, Prop. 5.8]. Conversely, a parallel frame has connection matrix zero and hence curvature zero.
 
 Transition matrices between parallel frames have derivative zero and are locally constant. Parallel transport in these frames is constant continuation. Subdividing a homotopy into frame neighborhoods proves homotopy invariance.
 

@@ -151,7 +151,7 @@ $$U^TGU=J,\qquad \|U\|_\infty\le F_n(h,k).$$
 
 ::: {.proof}
 
-For indefinite forms substitute (3) into Calderón's Appendix F constants and Theorem 5.1 with $S=\{\infty\}$ [@Cal23]. The factor $2^{2n^6}$ in (4) retains the closed-orbit volume factor without absorbing it into another constant. Replacing positive fractional exponents by their ceilings enlarges every bound, and polynomial coefficient height is at most twice matrix height. For definite forms, negate both forms if needed. Each isometry column has square at most $k$; the inverse-Gram estimate bounds its coordinate square by $k(n-1)!h^{n-1}$, which is below $F_n(h,k)^2$.
+For indefinite forms substitute (3) into Calderón's Appendix F constants and Theorem 5.1 with $S=\{\infty\}$ [@Cal23, Theorem 5.1 and Appendix F]. The factor $2^{2n^6}$ in (4) retains the closed-orbit volume factor without absorbing it into another constant. Replacing positive fractional exponents by their ceilings enlarges every bound, and polynomial coefficient height is at most twice matrix height. For definite forms, negate both forms if needed. Each isometry column has square at most $k$; the inverse-Gram estimate bounds its coordinate square by $k(n-1)!h^{n-1}$, which is below $F_n(h,k)^2$.
 :::
 
 ::: {.proposition #prop:integral-embedding-orbit-bound title="Bound in every embedding orbit"}

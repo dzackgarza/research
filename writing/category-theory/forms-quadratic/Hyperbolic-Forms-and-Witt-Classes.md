@@ -155,7 +155,7 @@ The tensor-product closure uses only that $N_X$ is a lagrangian: the form of @de
 ::: {.proposition #prop:negation-is-metabolic title="A form orthogonally summed with its twist"}
 
 Let $(X,b_X)$ be a perfect form over $R$.
-Then $X\perp X(-1)$, with the twist of @def:form-twist, is metabolic, and
+Then $X\perp X(-1)$, with the twist of @def:form-twist, is metabolic [@MH73, Lem. I.6.2], and
 $$
 N\definedas\theset{(x,x)\st x\in X}
 $$
@@ -164,7 +164,7 @@ is a lagrangian.
 
 ::: {.proof}
 
-This is the standard construction of the additive inverse in $W(R)$ [@MH73, I §7]: the diagonal $N=\theset{(x,x)}$ is a direct summand split by $(x,y)\mapsto x$, it is isotropic because the two summands carry opposite forms, and an element of its orthogonal complement satisfies $b_X(x,z)=b_X(y,z)$ for all $z$, so $x=y$ by perfection.
+This is the standard construction of the additive inverse in $W(R)$: the diagonal $N=\theset{(x,x)}$ is a direct summand split by $(x,y)\mapsto x$, it is isotropic because the two summands carry opposite forms, and an element of its orthogonal complement satisfies $b_X(x,z)=b_X(y,z)$ for all $z$, so $x=y$ by perfection.
 :::
 
 ## Hyperbolic stabilization {#sec-hyperbolic-stabilization}
@@ -353,12 +353,12 @@ $$
 \qquad
 \sigma\bigl[\langle1\rangle\bigr]=1,
 $$
-with $\langle1\rangle$ as in @ex:rank-one-forms and [@MH73, Ch. II §4].
+with $\langle1\rangle$ as in @ex:rank-one-forms and [@MH73, Cor. II.4.4].
 :::
 
 ::: {.proof}
 
-The isomorphism is [@MH73, Ch. II §4].
+The isomorphism is [@MH73, Cor. II.4.4].
 Alternatively, with $\sigma(L)=p-q$ the signature of @def:signature, $\sigma$ is additive and multiplicative on representatives, because orthogonality concatenates diagonalizations and a tensor product of diagonalizations is diagonal (@thm:sylvester); it vanishes on metabolic forms, a lagrangian having dimension $\tfrac12\dim$ and a totally isotropic subspace of a real form of signature $(p,q)$ at most $\min(p,q)$; so it descends.
 Surjectivity is $n\langle1\rangle$ for $n\geq0$ and $m\langle-1\rangle$ for $m\leq0$.
 For injectivity, a unimodular lattice with $\sigma(L)=0$ is $0$, or definite of rank $0$, or indefinite with $p=q$, hence a sum of copies of $\langle1\rangle\perp\langle-1\rangle$ or of the hyperbolic plane by @thm:indefinite-unimodular-classification, both metabolic.

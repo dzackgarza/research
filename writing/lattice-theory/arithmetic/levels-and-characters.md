@@ -88,7 +88,9 @@ is split [@CS10, Ch. 15].
 
 ::: {.proof}
 
-This is [@CS10, Ch. 15].
+The space $H^{\perp m}$ has discriminant $(-1)^m$, and nondegenerate quadratic spaces over $\bF_p$ are classified by dimension and discriminant [@Ser73, Ch. IV §1.7, Prop. 5].
+So $L_{\bF_p}$ is split exactly when $\Delta_L$ is a square modulo $p$.
+The quotient $\Delta_L/d_L$ is a rational square and $p\nmid d_L$, so this holds exactly when $\left(\frac{d_L}{p}\right)=1$, that is, when $\chi_L(p)=1$.
 :::
 
 ## Theta series

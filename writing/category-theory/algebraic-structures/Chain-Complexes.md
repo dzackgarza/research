@@ -351,7 +351,7 @@ Every finitely generated graded $R$-module has a graded free resolution of lengt
 ::: {.proof}
 
 This is [@Eis95, Thm. 1.13].
-The proof uses exactness of the Koszul complex $K(x_1,\dots,x_r)$ on a regular sequence, which makes it a free resolution of $k$ of length $r$ [@Eis95, Ch. 17], and the coincidence of the minimal resolution with the computation of Tor [@Eis95, Ch. 20].
+The proof uses exactness of the Koszul complex $K(x_1,\dots,x_r)$ on a regular sequence, which makes it a free resolution of $k$ of length $r$ [@Eis95, Cor. 17.5], and the coincidence of the minimal resolution with the computation of Tor [@Eis95, Cor. 19.5].
 With those, the bound is $\Tor^R_i(M,k)\cong F_i\tensor_Rk$ for the minimal resolution $F$ of $M$, which vanishes for $i>r$ because $K(x)$ does, so $F_i=0$ for $i>r$.
 :::
 
