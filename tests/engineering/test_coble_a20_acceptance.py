@@ -953,6 +953,50 @@ def test_every_block_this_issue_added_is_cited_somewhere():
     assert orphans == [], f"declared but never referenced: {orphans}"
 
 
+def test_rel_the_orth_plus_test_does_not_separate_the_residual_either():
+    """#720 (REL): Orth^+ does not separate k from W, so that invariant is exhausted too.
+
+    On the positive definite plane spanned by zeta (square 2) and e' + f' (square 4, in U(2)), the
+    criterion of prop:spinor-norm-orientation-classes(4) reads the sign of det(pi_W g|_W).  The three
+    elements -- the word w in W, the block sign, and the residual k -- all have it positive, so none
+    of them is excluded from Orth^+(T_Co) by it and the membership of k is not decided this way.
+    """
+    import sympy
+    C = sympy.zeros(8)
+    for i in range(8):
+        C[i, i] = 2
+    for i, j in [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (2, 7)]:
+        C[i, j] = C[j, i] = -1
+    GT = sympy.zeros(11)
+    GT[0, 0] = 2
+    GT[1, 2] = GT[2, 1] = 2
+    GT[3:, 3:] = -2 * C
+    v1 = sympy.Matrix([1] + [0] * 10)          # zeta, square 2
+    v2 = sympy.Matrix([0, 1, 1] + [0] * 8)     # e' + f' in U(2), square 4
+    P = sympy.Matrix.hstack(v1, v2)
+    assert P.T * GT * P == sympy.diag(2, 4)    # positive definite
+    Minv = (P.T * GT * P).inv() * (P.T * GT)
+    I = sympy.eye(11)
+    cert = [
+        [-1, -2, -2, -2, -2, -2, -2, -1, -2, -2, -2], [-1, -2, -2, -2, -2, -2, -2, -1, -1, -2, -2],
+        [-1, -2, -2, -2, -2, -2, -2, -1, -1, 1, -2], [-1, -2, -2, -2, -2, -2, -1, -2, 0, -1, -1],
+        [-1, -2, -2, -2, -2, -2, -1, -2, -1, -2, -1], [-1, -2, -2, -2, -2, -2, -1, -2, -1, 1, -1],
+        [-1, -2, -2, -2, -2, -2, -1, 1, 0, -1, -1], [-1, -2, -2, -2, -2, -1, -2, -2, -2, -2, 0],
+        [-1, -2, -2, -2, -2, -1, -2, -2, -2, -2, -1], [-1, -2, -2, -2, -1, -2, -2, -2, -2, -2, -2],
+        [-1, -2, -2, -1, -2, -2, -2, -2, -2, -1, 1], [-1, -2, -2, -1, -2, -2, -2, -2, -1, 0, 1],
+        [-1, -2, -2, -1, -2, -2, -2, -2, -1, -1, 1], [-1, -2, -2, -1, -1, 0, -2, -2, -2, -2, 0],
+    ]
+    Wm = I
+    for vv in cert:
+        v = sympy.Matrix(vv)
+        Wm = Wm * (I + v * (v.T * GT))
+    D = sympy.diag(*[(-1 if 3 <= i <= 10 else 1) for i in range(11)])
+    K = Wm.inv() * D
+    dets = [(Minv * g * P).det() for g in (Wm, D, K)]
+    assert all(d > 0 for d in dets), dets          # all three in Orth^+, none separated
+    assert dets[1] == 1                            # the block sign has determinant 1 on the plane
+
+
 def _run_all() -> int:
     items = [(name, fn) for name, fn in sorted(globals().items()) if name.startswith("test_")]
     failures = 0
