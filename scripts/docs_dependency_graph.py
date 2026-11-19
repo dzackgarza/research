@@ -127,7 +127,7 @@ RESULT_LABELS = {
 }
 _LABEL = {alias: label for label, aliases in RESULT_LABELS.items() for alias in aliases}
 _NUMBER = (r"\(?(?:[IVXLC]+\.)?[A-Z]?\d+(?:\.\d+)*[A-Za-z]?\)?(?:\([ivxlc\d]+\))?"
-           r"|[A-Z](?![a-z])")
+           r"|(?-i:[A-Z])(?![a-z])")
 _RESULT = re.compile(
     r"(?<![\w.])(" + "|".join(sorted(map(re.escape, _LABEL), key=len, reverse=True))
     + r")\.?\s*((?:" + _NUMBER + r")(?:\s*(?:,|and|&)\s*(?:" + _NUMBER + r"))*)",
