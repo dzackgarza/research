@@ -83,7 +83,7 @@ The first summand is $\bZ$ by @lem:primitive_embedding_eta, and $(a,b)\mapsto a-
 The cokernel is torsion-free, so the map is primitive by @prop:primitive-characterization.
 The embedding $\fco\injects\fttz$ is the one that @lem:locally_closed_embedding_BB induces.
 
-For uniqueness, by [@AEGS25 Lem. 2.4] it suffices to show uniqueness of $\sen \injects S_{\Co}$, i.e.
+For uniqueness, by [@AEGS25 Lem. 2.4, printed p. 586] it suffices to show uniqueness of $\sen \injects S_{\Co}$, i.e.
 
 $$
 E_{10}(2) \injects \generators{-2}\oplus E_{10}(2)
@@ -116,7 +116,7 @@ This follows from [@KK72 §5, Thm.2].
 ::: {.definition #def:gamma-co-groups title="The groups of the Coble lattice"}
 $T_\Co$ is the lattice $N$ of [@DK13, (3.6)], $N = \generators{2}\oplus E(2)$ with $E(2) = U(2)\oplus E_8(2)$; in the notation of @lem:primitive_embedding_eta it is $\generators{h}\oplus E_{10}(2)$. Let $\delta\definedas\tilde e-\tilde f$, a $(-2)$-vector of $T_\En$ with $\delta^{\perp T_\En} = \eta(T_\Co)$; then $T_\En = (T_\Co\perp\ZZ\delta)_H$ is the overlattice glued along $H = \generators{(h/2,\,\delta/2)}$ (@lem:primitive_embedding_eta, @def:gluing-datum-of-a-pair).
 
-Three groups act on $\bD(T_\En)$: the stable group $\Gamma_\En\definedas\widetilde\Orth^+(T_\En) = \Orth^+(T_\En)\intersect\discriminantkernel{T_\En}$; the group $\Gamma^K_\En\definedas\Orth(T_\En)$, which is the group that [@AEGS25, Def. 2.6] writes $\Gamma_\En$; and $\gent = \rho^{-1}(M)$, with $M$ the summand-preserving subgroup of $\Orth(A_{T_\En},q)$ [@AEGS25, Def. 2.6; @Ste91, Prop. 2.7].
+Three groups act on $\bD(T_\En)$: the stable group $\Gamma_\En\definedas\widetilde\Orth^+(T_\En) = \Orth^+(T_\En)\intersect\discriminantkernel{T_\En}$; the group $\Gamma^K_\En\definedas\Orth(T_\En)$, which is the group that [@AEGS25, Def. 2.6, printed p. 587] writes $\Gamma_\En$; and $\gent = \rho^{-1}(M)$, with $M$ the summand-preserving subgroup of $\Orth(A_{T_\En},q)$ [@AEGS25, Def. 2.6, printed p. 587; @Ste91, Prop. 2.7].
 
 1. $\Gamma_\Co\leq\Orth(T_\Co)$ is the monodromy group of the family of unpolarized Coble surfaces: the image of the monodromy representation (@def:transport-and-monodromy) of the local system of lattices with fibre $T_\Co$ (@def:local-system-of-lattices) of that family. The family of unpolarized Enriques surfaces, whose local system of lattices has fibre $T_\En$ and monodromy group $\Gamma_\En$, induces this family and its local system. Put $\fco\definedas\bD(T_\Co)/\Gamma_\Co$.
 2. $\Gamma^{\mathrm{un}}_\Co\definedas\Orth(T_\Co)$, with $F^{\mathrm{un}}_\Co\definedas\bD(T_\Co)/\Orth(T_\Co)$: the moduli space $M_\Co$ of Coble surfaces is isomorphic to an open subset of $\bD(N)/\Orth(N)$ [@DK13, Prop. 3.2, p. 513].
@@ -235,7 +235,7 @@ A finite birational morphism from a normal variety onto a reduced irreducible va
 
 ::: {.remark #rmk:normalization-enriques-analogue title="The Enriques case"}
 
-For Enriques surfaces, $\fentwo$ is the normalization of a closed subvariety of $\fttz$ [@AEGS25 Lem. 2.8].
+For Enriques surfaces, $\fentwo$ is the normalization of a closed subvariety of $\fttz$ [@AEGS25 Lem. 2.8, printed p. 587].
 :::
 
 ::: {.proposition #prop:sterk-group-identification title="The discriminant image of $\gent$"}
@@ -250,7 +250,7 @@ Identify $\ten = U\oplus U(2)\oplus E_8(2)$ with the lattice $L_- = \mathbf H\op
 
 ::: {.proof}
 
-(1) The group $\Gamma$ of [@Ste91, §2] is the image in $\Orth(L_-)$ of the isometries of the K3 lattice that commute with the Enriques involution and fix the polarization vector, and $\gent$ is the image in $\Orth(\ten)$ of the same group [@AEGS25 Def. 2.6].
+(1) The group $\Gamma$ of [@Ste91, §2] is the image in $\Orth(L_-)$ of the isometries of the K3 lattice that commute with the Enriques involution and fix the polarization vector, and $\gent$ is the image in $\Orth(\ten)$ of the same group [@AEGS25 Def. 2.6, printed p. 587].
 The description by the two summands is [@Ste91, Prop. 2.7].
 
 (2) Because $U$ is unimodular, $A_{\ten} = A_{U(2)}\perp A_{E_8(2)}$, and an isometry of $q_{\ten}$ preserves both summands exactly when it is a pair of isometries of the summands.

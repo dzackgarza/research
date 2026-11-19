@@ -213,7 +213,7 @@ Here $\sqrt2 = 2\cos(\pi/4)$ comes from the label-$4$ bonds of these diagrams.
 
 ## The criterion of the source, and the five diagrams compared
 
-Sterk describes each of his five diagrams as the diagram of the reflection subgroup of $G_v$ (4.3.5--4.3.9, pp. 19--24), with $G_v = \rho(\Stab_\Gamma(v))$ for $\Gamma = \gent$ and $v$ his isotropic representative. In the notation of [@AEGS25] that group is $\Gamma_{\En,2,v}$: with $\Gamma^K_\En = \Orth(T_\En)$ the group that [@AEGS25, Def. 2.6] writes $\Gamma_\En$, $\Gamma_\dP = \Orth(T_\dP)$ and $\gent = \Gamma^K_\En\cap\Gamma_\dP$ (Definition 2.6), the stabilizer of a primitive isotropic $v$ fits into
+Sterk describes each of his five diagrams as the diagram of the reflection subgroup of $G_v$ (4.3.5--4.3.9, pp. 19--24), with $G_v = \rho(\Stab_\Gamma(v))$ for $\Gamma = \gent$ and $v$ his isotropic representative. In the notation of [@AEGS25] that group is $\Gamma_{\En,2,v}$: with $\Gamma^K_\En = \Orth(T_\En)$ the group that [@AEGS25, Def. 2.6, printed p. 587] writes $\Gamma_\En$, $\Gamma_\dP = \Orth(T_\dP)$ and $\gent = \Gamma^K_\En\cap\Gamma_\dP$ (Definition 2.6), the stabilizer of a primitive isotropic $v$ fits into
 $$
 0 \to U_v \to \Stab_{\gent}(v) \to \Gamma_{\En,2,v} \to 0,
 $$

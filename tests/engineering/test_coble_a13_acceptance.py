@@ -555,6 +555,32 @@ def test_the_image_of_b_under_theta_is_b_minus_H_and_not_H_minus_b():
     assert r"\theta_\Co(b) = -H/2+t = H-b" not in page
 
 
+def test_every_AEGS25_statement_cited_on_these_pages_carries_its_printed_page():
+    """A statement of the source is cited by number *and* by the page that carries it.
+
+    The rule was applied to the folding lemmas first, one page at a time; this is the same rule
+    over every numbered statement the pages of this issue cite from AEGS25, and it also refuses
+    the id form ``[@AEGS25, def:involutions]``, which names nothing the source prints.
+    """
+    pages = [PAGE,
+             ROOT / "writing/coble/lattices-and-moduli/lattices.md",
+             ROOT / "writing/coble/lattices-and-moduli/moduli-construction.md",
+             OPEN_PROBLEMS,
+             ROOT / "writing/coble/coble-moduli/cusp-correspondence-morphism-chain.md",
+             ROOT / "writing/coble/computations/sterk-root-counts-and-computed-chambers.md"]
+    statement = re.compile(r"(Def\.|Definition|Lem\.|Lemmas?|Lems\.|Thm\.|Theorem|Props?\.|Propositions?|Cor\.|Corollary)")
+    bad = []
+    for path in pages:
+        for number, line in enumerate(path.read_text().splitlines(), 1):
+            for match in re.finditer(r"\[@AEGS25[^\]]*\]", line):
+                citation = match.group(0)
+                if statement.search(citation) and "printed p" not in citation:
+                    bad.append("%s:%d %s" % (path.name, number, citation))
+                if re.search(r"\b(def|thm|lem|prop|cor):", citation):
+                    bad.append("%s:%d %s" % (path.name, number, citation + "  -- an id, not a statement"))
+    assert not bad, bad
+
+
 def test_the_records_cite_the_pages_verified_against_the_deposited_sources():
     """Every page attribution the A13 records make, pinned to the page it was verified on.
 

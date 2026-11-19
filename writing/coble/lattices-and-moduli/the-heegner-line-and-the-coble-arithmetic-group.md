@@ -110,13 +110,13 @@ g_T\in\Orth(\ten)
 \,}
 ,
 $$
-where $h = e + f\in U(2) = \sdp\iscontainedin \sen$ is the degree-$2$ polarization vector, with $e^2 = f^2 = 0$ and $e\cdot f = 2$, so that $h^2 = 4$ [@AEGS25 Def. 2.5, Def. 2.6].
+where $h = e + f\in U(2) = \sdp\iscontainedin \sen$ is the degree-$2$ polarization vector, with $e^2 = f^2 = 0$ and $e\cdot f = 2$, so that $h^2 = 4$ [@AEGS25 Def. 2.5 and Def. 2.6, printed p. 587].
 Equivalently, the image of $\gent$ in $\Orth(q_{\ten})$ is the $\gamma$-transport of the image of $\Stab_{\Orth(\sen)}(h)$ in $\Orth(q_{\sen})$.
 :::
 
 ::: {.proof}
 
-By definition $\gent$ is the image in $\Orth(\ten)$ of the isometries of $\lkt$ that commute with $\Ien$ and fix $h$ [@AEGS25 Def. 2.6].
+By definition $\gent$ is the image in $\Orth(\ten)$ of the isometries of $\lkt$ that commute with $\Ien$ and fix $h$ [@AEGS25 Def. 2.6, printed p. 587].
 An isometry of $\lkt$ commuting with $\Ien$ is the same as a pair $(g_S, g_T)\in\Orth(\sen)\times\Orth(\ten)$ preserving the two eigenlattices, and by Nikulin's gluing theorem (@thm:nikulin-gluing) such a pair extends over the overlattice $\lkt$ of $\sen\oplus \ten$ exactly when it preserves the graph of $\gamma$, that is when $\bar g_T\circ\gamma = \gamma\circ\bar g_S$.
 The polarization $h$ lies in $\sen$, so the condition $g(h) = h$ on $\lkt$ is the condition $g_S(h) = h$.
 :::
@@ -495,7 +495,7 @@ Then $\varphi\definedas\varphi_0\chi$ satisfies $\bar\varphi\gamma_\Co = \gamma_
 
 ::: {.proposition #prop:coble-enriques-ambient-isometry title="The isometry of the comparison, built"}
 The isometry $\Phi$ of @prop:coble-enriques-polarized-match exists as an integral isometry of $\lkt$.
-In the model $\lkt = U^3\oplus 2E_8(-1)$ with standard basis $e_0,\dots,e_{21}$ and blocks $U_1 = \langle e_0,e_1\rangle$, $U_2 = \langle e_2,e_3\rangle$, $U_3 = \langle e_4,e_5\rangle$, $E_{8,1} = \langle e_6,\dots,e_{13}\rangle$, $E_{8,2} = \langle e_{14},\dots,e_{21}\rangle$, let $I_{\mathrm{dP}}, I_\En$ be the two involutions of [@AEGS25, def:involutions], $w$ the reflection in $\alpha = e_0-e_1$, and $J_\Co = wI_\En$, $J_{\mathrm{dP}} = wI_{\mathrm{dP}}$; write $\Delta$, $\Delta^-$ for the diagonal and antidiagonal copies of a summand in a split sum, and put
+In the model $\lkt = U^3\oplus 2E_8(-1)$ with standard basis $e_0,\dots,e_{21}$ and blocks $U_1 = \langle e_0,e_1\rangle$, $U_2 = \langle e_2,e_3\rangle$, $U_3 = \langle e_4,e_5\rangle$, $E_{8,1} = \langle e_6,\dots,e_{13}\rangle$, $E_{8,2} = \langle e_{14},\dots,e_{21}\rangle$, let $I_{\mathrm{dP}}, I_\En$ be the two involutions of [@AEGS25, Def. 2.3, printed p. 586], $w$ the reflection in $\alpha = e_0-e_1$, and $J_\Co = wI_\En$, $J_{\mathrm{dP}} = wI_{\mathrm{dP}}$; write $\Delta$, $\Delta^-$ for the diagonal and antidiagonal copies of a summand in a split sum, and put
 $$
 S_\Co = \ker(J_\Co-\id),\qquad T_\Co = S_\Co^{\perp\lkt},\qquad \delta = e_0-e_1,
 $$
@@ -736,7 +736,7 @@ Then:
 1. the values $x\cdot H$ for $x\in S_\Co$ generate $2\bZ$, and $\varphi(x)\definedas -x+\tfrac12(x\cdot H)H$ is an integral isometry of $S_\Co$ with $\varphi^2 = \id$, $\varphi(H) = H$, $\varphi = -\id$ on $H^{\perp S_\Co}$ and fixed lattice exactly $\ZZ H$; the eigenspaces $\ZZ H$ and $H^{\perp S_\Co}$ nevertheless span only an index-$2$ sublattice of $S_\Co$;
 2. $q_{T_\Co}\bigl(\gamma_\Co(\overline{H/2})\bigr) = -1$, and every class of $A_{T_\Co,q}$ of odd value contains a vector of $T_\Co^{\#}$ of square $-1$; there are $496$ such classes among the $2048$;
 3. hence there is $t\in T_\Co^{\#}$ with $t^2 = -1$ and class $\gamma_\Co(\overline{H/2})$, and $b\definedas\tfrac12H+t$ lies in $\lkt$, is isotropic, satisfies $b\cdot H = 2$, and is orthogonal to $H^{\perp S_\Co}$;
-4. the involution $J$ of $\lkt$ with $(+1)$-eigenspace $\langle H,b\rangle$ is integral, fixes $H$, commutes with $I_\Co$, has invariant lattice $\langle H,b\rangle\cong U(2) = \sdp$ meeting $S_\Co$ in $\ZZ H$, is conjugate to $I_{\mathrm{dP}}$ of [@AEGS25, def:involutions] in $\Orth(\lkt)$, and is nonsymplectic for every action of it on a K3 surface — so the product $I_\Co J$ is symplectic, both factors acting by $-1$ on the holomorphic $2$-form.
+4. the involution $J$ of $\lkt$ with $(+1)$-eigenspace $\langle H,b\rangle$ is integral, fixes $H$, commutes with $I_\Co$, has invariant lattice $\langle H,b\rangle\cong U(2) = \sdp$ meeting $S_\Co$ in $\ZZ H$, is conjugate to $I_{\mathrm{dP}}$ of [@AEGS25, Def. 2.3, printed p. 586] in $\Orth(\lkt)$, and is nonsymplectic for every action of it on a K3 surface — so the product $I_\Co J$ is symplectic, both factors acting by $-1$ on the holomorphic $2$-form.
 :::
 
 ::: {.proof}
