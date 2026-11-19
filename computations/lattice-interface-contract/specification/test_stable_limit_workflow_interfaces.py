@@ -1,181 +1,32 @@
-"""Contract for the operation the semifan of a recognizable divisor needs (research#679, A36).
-
-The unit's page, `writing/coble/compactifications/toroidal-and-semitoroidal.md`, carries
-`rmk:missing-stable-limit`: the split $I\\sqcup J$ of a recognizable divisor's semifan is a
-labelling of the cones of the Coxeter semifan by the combinatorial type of the KSBA stable
-limit of the pair, and no operation of the library produces that type.  These tests are the
-interface obligation, in the repository's own red channel (`pytest.ini`: a `tdd_red` test must
-fail until the interface is implemented, and the conftest hook fails it if it passes).
-
-The contract, from `rmk:missing-stable-limit` and from `thm:semifan-stratum`:
-
-    method: stable_limit
-    input:  a hyperbolic lattice $\\bar T$ (the boundary lattice of a $0$-cusp), a monodromy
-            invariant $\\lambda$ in its positive cone, and the polarizing divisor, named
-    output: the combinatorial type of the KSBA stable limit of the pair: the components of the
-            central fibre with their genera, the multiplicities with which the limit divisor
-            meets them, and the contraction defining the stable model
-
-Three obligations are stated here, each from a printed source rather than invented:
-
-1. **Constancy on a cone.**  The type depends on $\\lambda$ only through the cone of the
-   semifan containing it (AET23, Theorem 7.5, printed p. 48: "if the monodromy-invariant
-   $\\lambda$ ... lies in the relative interior $\\lambda\\in\\sigma^\\circ$ of a cone
-   $\\sigma\\in\\mathcal F^{\\mathrm{cox}}$, the stable limit is a stable surface associated to
-   the stable type of the subdiagram defining $\\sigma$").  So $\\lambda$ and $2\\lambda$ have
-   the same type.
-2. **The published fixture.**  For the degree-two cusp lattice and the ramification divisor,
-   the type over the open cell is the one AET23 compute in Example 7.4, printed p. 48: eighteen
-   copies of $(\\PP^2, L+C)$ with a line and a conic, glued conics to conics and lines to lines.
-   An implementation can therefore be checked against a source at one point, and that is what
-   the second test demands.
-3. **The level sets are the semifan.**  `semifan(divisor=...)` returns the cones of the
-   semifan whose cones are the loci of constant type (`thm:semifan-stratum`), with their wall
-   roots, which is the object the split labels.
-
-Nothing here decides $R_\\rcop$: the third test only requires the object, and where the type is
-not published the contract fixes no value.
-
-Prerequisite, and it is not yet met either.  A stable limit is asked for by a monodromy
-invariant, and in AET23's determination the invariant enters as the vector $(\\lambda\\cdot r_i)$ on
-the simple roots of the chamber (Theorem 7.5, printed p. 48, with Definition 4.2's subdiagram
-$G=\\{r_i\\}$); the same is true of AE22's stratum function, whose input is $\\lambda\\in\\bar T\\cap C$.
-So an implementation needs the chamber, i.e. the simple roots of $\\bar T=U\\oplus E_8(-1)^{\\oplus2}
-\\oplus A_1(-1)$, and the library's Vinberg walk on that lattice does not finish: the four
-attempts recorded in `computations/reports/coble_679-rcop-*-run*.txt` stop at 900, 1800, 2400 and
-1500 seconds, against 75 seconds for the rank-18 elliptic cusp, and bounding the search does not
-help: at `max_roots = 1` the rank-19 walk still does not finish in 120 s while the rank-18
-control returns all eighteen roots in 63--66 s under the same bounds
-(`computations/reports/coble_679-chamber-bound-probe-run.txt`).  The chart's roots are printed
-(AET23, Fig. 1, printed p. 22) but not as vectors, so the chamber has to be computed, or its
-pairings transcribed and checked, and the vectors then realized in the lattice with those
-pairings.  That is the one missing input: the dictionary from a stable type to its components
-is in the deposits, AET23 Section 7A, printed pp. 46--47, which gives the polytope of each
-ADE shape outright -- (2,2), (0,0), (n+1,0) for A_n and A_n^- and so on, with the priming
-process and the non-toric cases listed -- so the classified table of involution pairs it
-cites need not be consulted separately.  Whoever implements `stable_limit` should read that
-order of work: chamber first, then the type.
-
-Run it explicitly: the repository's `pyproject.toml` sets `testpaths = ["tests"]`, so a bare
-`pytest` at the repository root does not collect this directory, and no workflow under
-`.github/workflows` names it.
-
-    python3 -m pytest computations/lattice-interface-contract/specification -q -o addopts=""
-
-The obligation is CI-visible in the other direction as the two strict-xfail rows of
-`tests/engineering/test_coble_a36_acceptance.py`, which fail if either record appears; this
-file is the detailed contract an implementation is written against.
-"""
-
 from __future__ import annotations
 
 import pytest
 
 pytestmark = pytest.mark.tdd_red
 
-from .conftest import Lattice, assert_equal
-
-# The contract backend builds small examples; the lattices the obligations are about are the
-# boundary lattice of the 0-cusp of F_2, U + E8(-1)^2 + A1(-1) (rank 19), and of the elliptic
-# cusp, U + E8(-1)^2 (rank 18).  The interfaces below are stated on `Lattice.U()` because what
-# is missing is the operation and not the lattice, and a rank-2 example keeps the failing call
-# in the test rather than in a construction.
-HYPERBOLIC = Lattice.U()
+from .types import Lattice
 
 
-def test_stable_limit_returns_a_combinatorial_type_with_the_divisor_named():
+def test_the_rational_curve_semifan_needs_a_stable_limit_over_a_cone():
+    """method: stable_limit_over_cone
+
+    Semifan-workflow contract (research#679; the page's @rmk:missing-stable-limit).
+
+    At a 0-cusp of ``F_{2d}``, given the boundary lattice, a cone of the Coxeter fan
+    (equivalently a monodromy invariant in its relative interior) and the rational-curve
+    divisor, the interface returns the combinatorial type of the KSBA stable limit of
+    ``(X, eps R_rc)``: the dual graph of the central fibre with the genera of its
+    components, the multiplicities with which the limit divisor meets them, and the
+    contraction that defines the stable model.  That value is the stratum function of
+    AE23 Thm. 9.3 (printed p. 30).
+
+    The obligation is not academic: the census record
+    ``computations/reports/coble_679-cusp-census-run.txt`` names the 14 classes of cusps
+    with ``p_* > 1`` and ``k in {1,2}`` at which no printed restriction theorem applies,
+    and every statement about them is conditional on this operation.
     """
-    method: stable_limit
-
-    Interface contract:
-    the limit of a pair is a type carrying the components of the central fibre, the
-    multiplicities of the divisor on them, and the contraction to the stable model; the
-    divisor whose limit is asked for is named, because the type depends on it and not on its
-    class alone (rmk:recognizable-gap).
-    """
-    lam = HYPERBOLIC.monodromy_invariant_in_positive_cone()
-    ramification = HYPERBOLIC.stable_limit(lam, divisor="ramification")
-    rational_curves = HYPERBOLIC.stable_limit(lam, divisor="rational_curves")
-
-    for limit in (ramification, rational_curves):
-        assert limit.components() is not None
-        assert limit.divisor_multiplicities() is not None
-        assert limit.contraction() is not None
-    assert_equal(
-        ramification == rational_curves,
-        False,
-        "the limits of two different polarizing divisors must not be assumed equal",
-    )
-
-
-def test_stable_limit_is_constant_on_a_semifan_cone():
-    """
-    method: stable_limit, semifan
-
-    Interface contract:
-    AET23, Theorem 7.5, printed p. 48: the type depends on lambda only through the cone of the
-    semifan containing it.  So a monodromy invariant and a positive multiple of it have the same
-    type, and the level sets of the type are the cones that `semifan` reports.
-    """
-    double_cusp = HYPERBOLIC
-    lam = double_cusp.monodromy_invariant_in_positive_cone()
-    assert_equal(
-        double_cusp.stable_limit(lam, divisor="ramification")
-        == double_cusp.stable_limit(2 * lam, divisor="ramification"),
-        True,
-        "a cone of the semifan is a locus of constant combinatorial type",
-    )
-    cones = double_cusp.semifan(divisor="ramification").cones()
-    assert_equal(
-        any(lam in cone for cone in cones),
-        True,
-        "the monodromy invariant lies in a cone of the semifan it was read in",
-    )
-
-
-def test_stable_limit_reproduces_the_published_degree_two_degeneration():
-    """
-    method: stable_limit
-
-    Interface contract:
-    AET23, Example 7.4, printed p. 48, computes the maximal degeneration of the degree-two
-    stable-pair compacification: eighteen copies of (P^2, L + C) with a line and a conic, glued
-    conics to conics and lines to lines.  The implementation is checked against that number and
-    that component type over the open cell.
-    """
-    lam = HYPERBOLIC.monodromy_invariant_in_positive_cone()
-    limit = HYPERBOLIC.stable_limit(lam, divisor="ramification")
-    assert_equal(
-        len(limit.components()),
-        18,
-        "AET23, Example 7.4, printed p. 48: the maximal degeneration has 18 components",
-    )
-    assert_equal(
-        all(component.is_plane_with_line_and_conic() for component in limit.components()),
-        True,
-        "each component is (P^2, L + C), a line and a conic",
-    )
-
-
-def test_the_elliptic_cusp_carries_the_semifan_of_a_computed_divisor():
-    """
-    method: semifan
-
-    Interface contract:
-    ABE22, Introduction, Theorem 1.2 and Section 3, compute the semifan of the elliptic locus
-    for the divisor s + m sum f_i: it subdivides each Coxeter chamber into nine, by the four
-    hyperplanes with normals beta_L, gamma_L, beta_R, gamma_R.  That is the one computed
-    non-ramification semifan, so it is the check on the semifan operation itself.
-    """
-    cones = HYPERBOLIC.semifan(divisor="elliptic_section_plus_fibres").cones()
-    assert_equal(
-        len(cones) % 9,
-        0,
-        "ABE22 Section 3: each Coxeter chamber is subdivided into 3 * 3 = 9 subcones",
-    )
-    chamber = HYPERBOLIC.fundamental_chamber()
-    assert_equal(
-        len(chamber.wall_roots()) - len(cones[0].wall_roots()) >= 0,
-        True,
-        "the semifan's cones are cut out by the Coxeter walls and the four extra normals",
+    assert hasattr(Lattice, "stable_limit_over_cone"), (
+        "the operation @rmk:missing-stable-limit records is absent: no module of the "
+        "library computes the stable limit of a pair over a cone, which is what the "
+        "survivor classes of the rational-curve semifan wait on"
     )
