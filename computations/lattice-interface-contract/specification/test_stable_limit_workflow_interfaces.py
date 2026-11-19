@@ -44,9 +44,14 @@ So an implementation needs the chamber, i.e. the simple roots of $\\bar T=U\\opl
 \\oplus A_1(-1)$, and the library's Vinberg walk on that lattice does not finish: the four
 attempts recorded in `computations/reports/coble_679-rcop-*-run*.txt` stop at 900, 1800, 2400 and
 1500 seconds, against 75 seconds for the rank-18 elliptic cusp.  The chart's roots are printed
-(AET23, Fig. 1, printed p. 22) but not as vectors, so the chamber has to be computed or
-transcribed with its pairings checked.  Whoever implements `stable_limit` should read that order
-of work: chamber first, then the type.
+(AET23, Fig. 1, printed p. 22) but not as vectors, so the chamber has to be computed, or its
+pairings transcribed and checked, and the vectors then realized in the lattice with those
+pairings.  That is the one missing input: the dictionary from a stable type to its components
+is in the deposits, AET23 Section 7A, printed pp. 46--47, which gives the polytope of each
+ADE shape outright -- (2,2), (0,0), (n+1,0) for A_n and A_n^- and so on, with the priming
+process and the non-toric cases listed -- so the classified table of involution pairs it
+cites need not be consulted separately.  Whoever implements `stable_limit` should read that
+order of work: chamber first, then the type.
 
 Run it explicitly: the repository's `pyproject.toml` sets `testpaths = ["tests"]`, so a bare
 `pytest` at the repository root does not collect this directory, and no workflow under
