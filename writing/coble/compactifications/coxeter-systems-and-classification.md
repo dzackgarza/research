@@ -32,7 +32,7 @@ M=\begin{pmatrix}
 4&3&2&1
 \end{pmatrix}.
 $$
-Thus $W(M)$ has involutory generators $r_1,r_2,r_3,r_4$ and pairwise orders
+Thus the Coxeter group $W(M)$ of @def:coxeter-group has involutory generators $r_1,r_2,r_3,r_4$ and pairwise orders
 $$
 (r_1r_2)^3=(r_1r_3)^2=(r_1r_4)^4
 =(r_2r_3)^7=(r_2r_4)^3=(r_3r_4)^2=e.
@@ -57,7 +57,7 @@ G(M)_{st} \definedas \beta(\alpha_s,\alpha_t) = 2\cos\!\left(\frac{\pi}{m_{st}}\
 ,
 $$
 read on the diagonal as $G(M)_{ss} = 2\cos\pi = -2$, and as $G(M)_{st} = 2$ when $m_{st} = \infty$.
-Each $\alpha_s$ has norm $-2$ and is therefore a short root in the sense of @def:2elementary-roots; the reflections $s_{\alpha_s}$ of @def:reflection preserve $G(M)$, and $s\mapsto s_{\alpha_s}$ extends to an injective homomorphism $W(M)\to \Orth(\RR^S, G(M))$ [@Bou08, Ch. V §4 no. 3, Prop. 3, and no. 4, Cor. 2 of Th. 1; @Hum90, §5.3, Proposition, and §5.4, Corollary]. These sources use the form $B_M(\alpha_s,\alpha_t)=-\cos(\pi/m_{st})$, so $G(M)=-2B_M$, and their reflection $\sigma_s(x)=x-2B_M(\alpha_s,x)\alpha_s$ is the reflection $s_{\alpha_s}(x)=x+\beta(x,\alpha_s)\alpha_s$.
+Each $\alpha_s$ has norm $-2$ and is therefore a short root in the sense of @def:2elementary-roots; the reflections $s_{\alpha_s}$ of @def:reflection preserve $G(M)$, and $s\mapsto s_{\alpha_s}$ extends to an injective homomorphism from the Coxeter group $W(M)$ of @def:coxeter-group to $\Orth(\RR^S, G(M))$ [@Bou08, Ch. V §4 no. 3, Prop. 3, and no. 4, Cor. 2 of Th. 1; @Hum90, §5.3, Proposition, and §5.4, Corollary]. These sources use the form $B_M(\alpha_s,\alpha_t)=-\cos(\pi/m_{st})$, so $G(M)=-2B_M$, and their reflection $\sigma_s(x)=x-2B_M(\alpha_s,x)\alpha_s$ is the reflection $s_{\alpha_s}(x)=x+\beta(x,\alpha_s)\alpha_s$.
 :::
 
 ::: {.proposition #prop:coxeter-normalized-pairing title="Normalized pairings of a Coxeter matrix"}
