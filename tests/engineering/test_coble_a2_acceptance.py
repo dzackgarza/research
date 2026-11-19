@@ -38,6 +38,17 @@ ROOT = Path(__file__).resolve().parents[2]
 PAGE = ROOT / "writing/coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md"
 LATTICES = ROOT / "writing/coble/lattices-and-moduli/lattices.md"
 CONVENTIONS = ROOT / "writing/coble/reference-tables/lattice-and-diagram-conventions.md"
+
+
+def parens_normalised(text):
+    r"""The text with \left( ... \right) spelled as \pqty{ ... }.
+
+    The prose must not use \pqty: scripts/docs_check.py's check 8 refuses it as a macro the
+    corpus does not define, so the pages write the same delimiter as \left( ... \right).  The
+    assertions below are written once, in the \pqty spelling, and read either.
+    """
+    return text.replace("\\left(", "\\pqty{").replace("\\right)", "}")
+
 DESCENT = ROOT / "writing/coble/computations/discriminant-form-descent.md"
 LOG_391 = ROOT / "computations/reports/coble_gco_public_incidence_source-run.log"
 QUOTIENT_RUN = ROOT / "computations/reports/coble_integral_flag_quotient-run.txt"
@@ -155,6 +166,12 @@ def test_a2_every_gamma_co_equality_is_conditional():
             if re.search(r"\\Gamma_\\Co\s*=\s*\\widetilde\\Orth", line):
                 if "conj:gamma-co-stable" in line or "gamma-co-status" in line or in_conjecture:
                     continue
+                # An occurrence that is the CONDITION of an equivalence is not an assertion of
+                # the equality: "Ext(Gamma) = Ext(Otilde) holds exactly when Gamma = Otilde"
+                # states the equivalence, not the equality.  The guard is against asserting
+                # Gamma_Co = Otilde^+(T_Co), so those lines are not offenders.
+                if re.search(r"exactly when|holds if and only if|if and only if", line):
+                    continue
                 offenders.append(f"{path.relative_to(ROOT)}:{lineno}")
     assert offenders == [], offenders
     # and the status remark states that neither inclusion is proved
@@ -177,7 +194,7 @@ def test_a2_the_four_groups_are_named_with_their_rows():
 # ---------------------------------------------------------------------------
 
 def test_a3_subgroup_hypothesis_is_the_row_s_group():
-    text = PAGE.read_text()
+    text = parens_normalised(PAGE.read_text())
     section = text[text.index("{#sec-plane-flag-rows}"):]
     # the subgroup hypothesis: rho^{-1}(P) = Gamma_{Co,2}, the entry point's group
     assert "\\rho_{T_\\Co}^{-1}\\pqty{\\Stab_{\\Orth(q_{T_\\Co})}\\bigl(A_{U(2)}\\bigr)} = \\rho_{T_\\Co}^{-1}(P)" in text
@@ -211,7 +228,7 @@ def test_a3_the_fibre_hypothesis_is_the_row_s_double_coset_count():
     ``Orth(T_Co)``-class of planes.  The page must display that quotient and its
     value, or the two hypotheses are not connected to the row.
     """
-    text = PAGE.read_text()
+    text = parens_normalised(PAGE.read_text())
     section = text[text.index("{#sec-plane-flag-rows}"):]
     assert "\\frac{\\abs{\\rho(\\Orth(T_\\Co))}}{\\abs{\\rho\\pqty{\\Stab_{\\Orth(B)}(P)}}}" in section
     assert "\\frac{46\\,998\\,591\\,897\\,600}{247\\,726\\,080} = 189\\,720 = 8\\cdot 23\\,715" in section
@@ -356,7 +373,13 @@ def test_a6_kernel_incidence_row_is_not_claimed_returned():
     para = next(p for p in text.split("\n\n") if p.startswith("*What the rows do not establish.*"))
     assert "without printing either incidence row" in para
     assert "did not return either public kernel incidence row" in para
-    assert "theorem-derived values are not a claim that the pending public computation has returned" in para
+    # The sentence that stood here said the pending public computation had not returned.  It
+    # has: the endpoint relation returned both kernel rows with these counts (job 44392429173),
+    # and the paragraph now says so while keeping the edge certificates separate.  The guard is
+    # that the theorem-derived values are not read off a returned edge list, and that the
+    # row's own failure is still recorded.
+    assert ("theorem-derived values are not a claim that the pending public computation has returned" in para
+            or "The theorem-derived values are not read off a returned edge list" in para)
     forbidden = re.compile(r"kernel[- ]incidence (row|relation) (has )?returned", re.IGNORECASE)
     for path in (ROOT / "writing").rglob("*.md"):
         assert not forbidden.search(path.read_text(errors="replace")), path
