@@ -372,6 +372,8 @@ def test_the_p_greater_one_cusp_lattice_record_reproduces_and_the_page_states_it
     assert "d = 18, p = 3, k = 2" in produced
     assert "first summand -2k = -4" in produced
     assert "printed first summand -2d/p_* = -8" in produced
+    assert "J^perp/J: rank 17 = 1 + 16, first summand -2k = -2" in produced
+    assert "1-cusp lattice E8(-1)^2 + A1(-1)" in produced
     page = page_text()
     assert "#lem:cusp-lattice-p-greater-one" in page
     assert "$\\langle-2k\\rangle\\oplus U\\oplus E_8(-1)^{\\oplus2}$" in page
@@ -407,6 +409,8 @@ def test_the_p_greater_one_cusp_shares_a_one_cusp_with_the_unigonal_one():
     """
     page = page_text()
     assert "#lem:p-cusp-meets-unigonal" in page
+    assert "#lem:shared-one-cusp-lattice" in page
+    assert "\\langle-2k\\rangle\\oplus E_8(-1)^{\\oplus2}" in page
     assert "$J=\\ZZ\\delta\\oplus\\ZZ e_2$ is a primitive isotropic rank-two sublattice" in page
     assert "$H_{J,\\delta}=H_{J,e_2}$" in page
     register = REGISTER.read_text(encoding="utf-8")

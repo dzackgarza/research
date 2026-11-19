@@ -35,6 +35,12 @@ def dot(d, x, y):
     return -2 * d * x[0] * y[0] + x[1] * y[2] + x[2] * y[1]
 
 
+def dot5(d, x, y):
+    """The rank-five lattice <g> + H(e1, f1) + H(e2, f2), coordinates (g, e1, f1, e2, f2)."""
+    return (-2 * d * x[0] * y[0] + x[1] * y[2] + x[2] * y[1]
+            + x[3] * y[4] + x[4] * y[3])
+
+
 def main():
     out = []
     out.append("Boundary lattice at a 0-cusp of F_{2d} with p_*(delta) > 1: d = p^2 k.")
@@ -64,6 +70,17 @@ def main():
         out.append("  printed first summand -2d/p_* = %d, discriminant %d" % (-2 * p * k, 2 * p * k))
         out.append("  -> the printed lattice has discriminant %d; the cusp has %d"
                    % (2 * p * k, 2 * k))
+        e2 = (0, 0, 0, 1, 0)
+        delta5 = (delta[0], delta[1], delta[2], 0, 0)
+        u1 = (0, 1, -k, 0, 0)
+        v1 = (1, 0, 2 * p * k, 0, 0)
+        out.append("  J = Z delta + Z e2: delta.e2 = %d, e2^2 = %d, delta = v1 + %d u1"
+                   % (dot5(d, delta5, e2), dot5(d, e2, e2), p))
+        out.append("  u1 = e1 - %d f1, u1^2 = %d; v1 = g + %d f1, v1^2 = %d"
+                   % (k, dot5(d, u1, u1), 2 * p * k, dot5(d, v1, v1)))
+        out.append("  J^perp/J: rank 17 = 1 + 16, first summand -2k = %d" % (-2 * k))
+        if k == 1:
+            out.append("  1-cusp lattice E8(-1)^2 + A1(-1)")
         out.append("")
     return "\n".join(out)
 
