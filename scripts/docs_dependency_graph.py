@@ -127,7 +127,7 @@ RESULT_LABELS = {
 }
 _LABEL = {alias: label for label, aliases in RESULT_LABELS.items() for alias in aliases}
 _NUMBER = (r"\(?(?:[IVXLC]+\.)?[A-Z]?\d+(?:\.\d+)*[A-Za-z]?\)?(?:\([ivxlc\d]+\))?"
-           r"|(?-i:[A-Z])(?![a-z])")
+           r"|(?-i:[IVXLC]+|[A-Z])(?![A-Za-z])")
 _RESULT = re.compile(
     r"(?<![\w.])(" + "|".join(sorted(map(re.escape, _LABEL), key=len, reverse=True))
     + r")\.?\s*((?:" + _NUMBER + r")(?:\s*(?:,|and|&)\s*(?:" + _NUMBER + r"))*)",
@@ -171,7 +171,8 @@ def cited_results(key: str, locator: str) -> list[str]:
             if number.startswith("(") and label != "eq.":
                 add(f"{key} {number}")
                 continue
-            if not number or (label == "§" and "." not in number and not number[-1].isalpha()):
+            if not number or (label == "§" and "." not in number
+                                and not (number[0].isdigit() and number[-1].isalpha())):
                 continue
             add(f"{key} {label}{'' if label == '§' else ' '}{number}")
     # A page reference is never a result; drop it before reading bare numbers.
