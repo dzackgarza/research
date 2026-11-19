@@ -414,6 +414,18 @@ The orbit map $\Phi$ is injective: if $v, v'$ are primitive isotropic vectors of
 By @prop:cusp-map-separates-mod-two, $v\equiv v'\pmod{2T_\Co}$, so $\tfrac12 v - \tfrac12 v'\in T_\Co$ and the classes $v^* = \tfrac12 v + T_\Co$ and $v'^*$ of @prop:coble-primitive-isotropic-classes are equal. By @thm:coble-zero-cusp-count, parts 1 and 2, the map $\widetilde\Orth^+(T_\Co) v\mapsto v^*$ is injective. Hence $\widetilde\Orth^+(T_\Co) v = \widetilde\Orth^+(T_\Co) v'$.
 :::
 
+::: {.proposition #prop:cusp-map-onto-criterion title="Surjectivity of $\Phi$ is an orbit count per class"}
+
+$\Phi$ is onto the divisibility-$2$ locus if and only if every nonzero isotropic class of $A_{\ten}$ carries exactly one $\Gamma_\En$-orbit of primitive isotropic vectors of divisibility $2$.
+:::
+
+::: {.proof}
+
+Source and image. The source of $\Phi$ has $527$ orbits (@thm:coble-zero-cusp-count(2)) and $\Phi$ is injective (@prop:cusp-map-injective), so the image has $527$ elements. By @prop:cusp-map-surjective-on-classes the classes of those $527$ vectors are exactly the $527$ nonzero isotropic classes of $A_{\ten}$; hence the image meets each such class in exactly one $\Gamma_\En$-orbit.
+
+The criterion. Every divisibility-$2$ vector has a nonzero isotropic class, and the class of a vector is invariant under $\Gamma_\En$, which acts trivially on $A_{\ten}$. So the divisibility-$2$ locus is the disjoint union, over the $527$ classes, of the orbits lying in each. The image already contributes one orbit to every class, so $\Phi$ is onto exactly when no class carries a second one, that is exactly when each class carries exactly one.
+:::
+
 ::: {.proposition #prop:cusp-map-surjective-on-classes title="The divisibility-$2$ classes are exactly the classes of the image of $\Phi$"}
 
 The classes of the vectors in the image of $\Phi$ are exactly the $527$ nonzero isotropic classes of $A_{\ten}$: $v\mapsto[\eta(v)/2]$ is a bijection from the $\widetilde\Orth^+(T_\Co)$-orbits of primitive isotropic vectors of $T_\Co$ onto them.

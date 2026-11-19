@@ -62,6 +62,21 @@ def test_the_page_states_one_f_at_the_strength_of_its_proof():
     assert "open" in block
 
 
+def test_one_f_is_reduced_to_an_orbit_count_per_class():
+    """The equivalence is proved from the injectivity and the class-level proposition."""
+    page = (ROOT / "writing/coble/cusp-correspondence/enriques-to-coble-cusp-correspondence.md").read_text(
+        encoding="utf-8")
+    start = page.index("#prop:cusp-map-onto-criterion")
+    block = page[start:page.index("\n:::", page.index("\n", start))]
+    assert "if and only if every nonzero isotropic class" in block
+    assert "exactly one $\\Gamma_\\En$-orbit" in block
+    proof = page[page.index("#prop:cusp-map-onto-criterion"):]
+    proof = proof[:proof.index("#prop:cusp-map-surjective-on-classes")]
+    assert "@prop:cusp-map-injective" in proof
+    assert "@thm:coble-zero-cusp-count(2)" in proof
+    assert "@prop:cusp-map-surjective-on-classes" in proof
+
+
 def _run_all() -> int:
     items = [(name, fn) for name, fn in sorted(globals().items())
              if name.startswith("test_") and callable(fn)]
