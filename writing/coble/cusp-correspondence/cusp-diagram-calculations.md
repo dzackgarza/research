@@ -257,14 +257,15 @@ of rank $9$, determinant $-2^9$ and signature $(1,8)$.
 | over cusp $k$ | $2$ | $3$ | $4$ | $5$ |
 |:---|:---|:---|:---|:---|
 | restricted roots | $9$ | $11$ | $10$ | $13$ |
-| coincident walls | --- | $4\equiv 11$ | --- | $3\equiv 13\equiv 10$ |
 | no-intersection pairs | --- | $10,11$ | --- | $13,14$ |
-| distinct walls | $9$ | $10$ | $10$ | $11$ |
+| distinct walls | $9$ | $11$ | $10$ | $13$ |
 | walls of square $-2$ | $9$ | $4,9,11$ | $7,8$ | $3,9,10,12,13$ |
 | walls of square $-4$ | $1$--$8$ | the other $8$ | the other $8$ | the other $8$ |
 | irrelevant roots | $4$ | $4,9,11$ | $7,8$ | $9,10,12,13,14$ |
-| irrelevant walls | $4$ | $4\equiv11$; $9$ | $7$; $8$ | $9$; $12$; $14$; $3\equiv13\equiv10$ |
-| relevant walls | the other $8$ | the other $8$ | the other $8$ | the other $7$ |
+| irrelevant walls | $4$ | $4$; $9$; $11$ | $7$; $8$ | $9$; $12$; $14$; $10$; $13$ |
+| relevant walls | the other $8$ | the other $8$ | the other $8$ | the other $8$ |
+
+The row *distinct walls* is the projected count and it is the number of walls, because no two walls coincide: the record `computations/reports/coble_672-zero-cusp-sterk-two-run.txt` prints for each of the four cusps the projected walls together with the pairs whose normals are proportional, and that set is empty at all four. The pairs whose span is degenerate, $b(x,y)^2=q(x)q(y)$, are none at cusps $2$ and $4$, $(10,11)$ at cusp $3$ and $(8,14)$, $(10,14)$ at cusp $5$ in the library's printed indices, and a degenerate span is not proportionality: $x+y$ is isotropic there while neither vector is a multiple of the other. So each irrelevant root cuts its own wall, which is why the row *relevant walls* is the other $8$ at every cusp.
 
 with bonds at $\pi/3$ (single) and $\pi/4$ (double):
 
@@ -280,7 +281,7 @@ Every intersecting pair has induced angle $\pi/2$, $\pi/3$ or $\pi/4$, so all fo
 | over cusp $k$ | irrelevant roots | Gram of the generators | $W_{\mathrm{irr}}$ |
 |:---|:---|:---|:---|
 | $2$ | $1$ | $(-4)$ | $S_2$, finite |
-| $3$ | $3$, on $2$ walls | $\mathrm{diag}(-2,-2)$ | $S_2\times S_2$, finite |
+| $3$ | $3$, on $3$ walls | $\mathrm{diag}(-2,-2,-2)$ | $S_2\times S_2\times S_2$, finite |
 | $4$ | $2$ | $\mathrm{diag}(-2,-2)$ | $S_2\times S_2$, finite |
 | $5$ | $5$, on $4$ walls | negative semidefinite of rank $3$, one-dimensional radical | infinite: an affine reflection group |
 

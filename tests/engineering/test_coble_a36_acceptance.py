@@ -442,6 +442,27 @@ def test_the_k_one_two_cusps_are_the_survivors_and_nothing_printed_decides_them(
     assert "neither criterion fires" in page
 
 
+def test_the_coble_pair_semifan_table_merges_no_walls():
+    """research#768: the wall counts at the Sterk cusps are the roots' counts.
+
+    The table merged walls by a test research#672 refuted; the record
+    coble_672-zero-cusp-sterk-two-run.txt prints the projected walls and an empty
+    proportional-pair set at all four cusps, so no two walls coincide and the counts
+    are 9, 11, 10, 13 -- the same as thm:coble-zero-cusp-sterk-two.
+    """
+    page = (REPO / "writing/coble/cusp-correspondence/cusp-diagram-calculations.md").read_text(
+        encoding="utf-8"
+    )
+    assert "| distinct walls | $9$ | $11$ | $10$ | $13$ |" in page
+    assert "no two walls coincide" in page
+    assert "$4\\equiv 11$" not in page and "$3\\equiv 13\\equiv 10$" not in page
+    record = REPORTS / "coble_672-zero-cusp-sterk-two-run.txt"
+    assert record.exists()
+    text = record.read_text(encoding="utf-8")
+    assert text.count("proportional pairs []") == 4
+    assert "projected 11" in text and "projected 13" in text
+
+
 def test_the_cusp_census_record_reproduces_its_table():
     """The census, exactly: every d <= 60, every class {+-q}, the triple (p,a,k).
 
