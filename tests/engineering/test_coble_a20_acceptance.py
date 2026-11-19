@@ -830,6 +830,32 @@ def test_rel_block_sign_reduces_to_an_explicit_element_of_gamma_four():
     assert K != I
 
 
+def test_open_items_name_the_input_they_wait_on():
+    """Each open item must carry the input it waits on, in its own block.
+
+    This is the partner of the guard above: the guard forbids a closure being claimed, this one
+    forbids the residue being left as a bare question.  A20 item 2 waits on an explicit
+    Pic(X_{b_star}) -- its chamber condition is linear in the period, so the span of the effective
+    classes -- and #720 (REL) waits on a non-abelian membership computation, its level-two shadow
+    being consistent with both answers while the block sign is reduced to an explicit element of
+    Gamma(4).  An edit that deletes either statement fails here.
+    """
+    page = _text(PAGE)
+    q = _block(page, "{.question #qst:chamber-subscript-image")
+    assert "Pic(\\widehat X_{b_\\star})" in q
+    assert "the span of $\\Delta_{b_\\star}$ is known" in q
+    assert "@lem:chamber-condition-is-period-condition" in q
+    assert "@cor:chamber-preserved-by-picard-stabilizer" in q      # cited where the residue is stated
+
+    rel = next(line for line in _text(OPEN_PROBLEMS).splitlines()
+               if line.startswith("3. Does $\\rho_{T_\\Co}$ admit a section"))
+    assert "membership query is the operation the item is missing" in rel
+    assert "non-abelian computation at level" in rel
+    assert "@lem:block-sign-reduces-to-gamma-four" in rel
+    lem = _block(page, "{.lemma #lem:block-sign-reduces-to-gamma-four")
+    assert "\\delta_{E_8}\\in W(T_\\Co)\\iff k\\in W(T_\\Co)" in lem
+
+
 def _run_all() -> int:
     items = [(name, fn) for name, fn in sorted(globals().items()) if name.startswith("test_")]
     failures = 0
