@@ -192,7 +192,7 @@ A **Coxeter polytope** $P$ in $X = \EE^n$, $S^n$, or $\HH^n$ is a polytope such 
 
 ::: {.definition #def:discriminant-locus}
 
-The **discriminant locus** $\Delta(L)$ is the union of all mirrors, i.e. the hyperplanes orthogonal to the [short roots]{.other-sense} $\Phi_2(L) = \theset{ v\in L \mid v^2 = -2 }$:
+The **discriminant locus** $\Delta(L)$ is the union of all mirrors, i.e. the hyperplanes orthogonal to the short roots (@def:2elementary-roots) $\Phi_2(L) = \theset{ v\in L \mid v^2 = -2 }$:
 $$
 \Delta(L) \definedas \Union_{v\in\Phi_2(L)} v^{\perp L}
 .
@@ -229,7 +229,7 @@ Edges are drawn according to the following conventions:
 
 - **dotted** if $g_{ij} > 1$ (ultra-parallel mirrors).
 
-For $2$-elementary lattices, vertices are drawn **white** for [short roots]{.other-sense} ($v^2 = -2$) and **black** for [long roots]{.other-sense} ($v^2 = -4$).
+For $2$-elementary lattices, vertices are drawn **white** for short roots ($v^2 = -2$, @def:2elementary-roots) and **black** for long roots ($v^2 = -4$).
 :::
 
 ## Elliptic and parabolic subdiagrams

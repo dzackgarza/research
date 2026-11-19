@@ -260,7 +260,7 @@ The finite crystallographic Coxeter systems are the spherical ones whose orders 
 
 The root set $R(B_n)$ is equipped with the monomorphism $\iota_{B_n}\colon R(B_n)\injects U(\ZZ^n)$ in $\mathbf{Set}$ whose image consists of the **short roots** $\pm e_i$ for $1\leq i\leq n$ together with the **long roots** $\pm e_i\pm e_j$ for $1\leq i<j\leq n$.
 Thus $\cardinality{R(B_n)}=2n^2$, with $2n$ short and $2n(n-1)$ long roots.
-A simple system is
+A [simple system]{.other-sense} [@Bou08, Ch. VI §1 no. 5] is
 $$
 \alpha_i \definedas e_i - e_{i+1} \ \ (1\leq i\leq n-1),
 \qquad \alpha_n \definedas e_n
@@ -268,7 +268,7 @@ $$
 $$
 
 The root system $R(C_n)$ is dual to $B_n$: it consists of the **long roots** $2r_i = \pm 2e_i$ together with the **short roots** $r_{ij} = \pm e_i \pm e_j$, again $2n^2$ roots in total ($2n$ long, $2n(n-1)$ short).
-A simple system is
+A [simple system]{.other-sense} [@Bou08, Ch. VI §1 no. 5] is
 $$
 \alpha_i \definedas e_i - e_{i+1} \ \ (1\leq i\leq n-1),
 \qquad \alpha_n \definedas 2e_n
@@ -277,17 +277,17 @@ $$
 :::
 
 ::: {.definition #def:root-system-F4 title="The root system $F_4$"}
-Equip $\bQ^4$ with the negative standard form. The root system $F_4$ consists of the $24$ long roots
+Equip $\bQ^4$ with the negative standard form. The root system $F_4$ consists of the $24$ **long roots**
 $$
 \theset{\pm e_i\pm e_j\st1\le i<j\le4}
 $$
-of square $-2$ and the $24$ short roots
+of square $-2$ and the $24$ **short roots**
 $$
 \theset{\pm e_i\st1\le i\le4}
 \cup
 \theset{\tfrac12(\pm e_1\pm e_2\pm e_3\pm e_4)}
 $$
-of square $-1$, with all $16$ sign choices in the latter set. A simple system is
+of square $-1$, with all $16$ sign choices in the latter set. A [simple system]{.other-sense} [@Bou08, Ch. VI §1 no. 5] is
 $$
 \alpha_1=e_2-e_3,\quad
 \alpha_2=e_3-e_4,\quad
@@ -301,7 +301,7 @@ Equip $\bZ^3$ with the negative standard form and let $\Sigma\colon\bZ^3\too\bZ$
 $$
 0\too\bZ^3_\Delta\too\bZ^3\xrightarrow{\Sigma}\bZ\too0.
 $$
-The $G_2$ roots in $\bZ^3_\Delta$ are the six short roots $\pm(e_i-e_j)$ and the six long roots $\pm(2e_i-e_j-e_k)$, where $\{i,j,k\}=\{1,2,3\}$. A simple system is
+The $G_2$ roots in $\bZ^3_\Delta$ are the six **short roots** $\pm(e_i-e_j)$ and the six **long roots** $\pm(2e_i-e_j-e_k)$, where $\{i,j,k\}=\{1,2,3\}$. A [simple system]{.other-sense} [@Bou08, Ch. VI §1 no. 5] is
 $$
 \alpha_1=e_1-e_2,\qquad
 \alpha_2=-e_1+2e_2-e_3.
