@@ -380,6 +380,22 @@ def test_the_p_greater_one_cusp_lattice_record_reproduces_and_the_page_states_it
     assert "lem:cusp-lattice-p-greater-one" in register
 
 
+def test_the_k_greater_one_comparison_fan_is_not_a_prism():
+    """What "unprinted" means at the k >= 2 cusps: the fan is not the printed one times a line.
+
+    In N_k = <-2k> + U + E8(-1)^2 the vector r = g + (k-1)e + f has square -2, and its
+    mirror meets the interior of Rg x C, where C is the chamber of U + E8(-1)^2; so the
+    Coxeter chamber of N_k is strictly smaller than the prism, and for k >= 2 the fan at
+    the cusp with d/p^2 = k cannot be read off the printed 24-root diagram.
+    """
+    page = page_text()
+    assert "#lem:k-greater-one-fan-not-prism" in page
+    assert "is not the product of the printed $F_2$ fan with a line" in page
+    assert "$r=g+(k-1)e+f$" in page
+    register = REGISTER.read_text(encoding="utf-8")
+    assert "lem:k-greater-one-fan-not-prism" in register
+
+
 def test_the_p_greater_one_cusp_shares_a_one_cusp_with_the_unigonal_one():
     """The link between the decided cusps and the open ones: a common 1-cusp.
 
