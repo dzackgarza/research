@@ -405,6 +405,50 @@ def test_a2_no_book_page_uses_an_undefined_project_macro_spelling():
     assert not hits, hits
 
 
+def authored_tex():
+    """Authored prose in another markup: the Beamer talks.  `writing/coble/papers/` is excluded --
+    those are other authors' deposited sources, not this book's text, and may say anything."""
+    out = sorted((ROOT / "writing" / "talks").rglob("*.tex"))
+    assert out, "no authored .tex found: the talks moved, and this sweep is looking in the wrong place"
+    return out
+
+
+SETTLED_SLIDE = re.compile(
+    r"\\begin\{(conjecture|theorem)\}(?:\[[^\]]*\])?\s*\n?"
+    r"\$\\bd\\bbcpt\{F_\{\\Co, 2\}\}\$ has four 0-cusps")
+
+
+def test_a2_no_authored_tex_slide_wraps_the_four_cusp_count_as_a_conjecture():
+    """The .md sweep cannot see a Beamer slide, and one carried the settled claim as a conjecture.
+
+    `writing/talks/2026-07 PCRM/pcrm_pres.tex` had, until research#672, a slide reading
+    `\\begin{conjecture}[Pending computation!]` -- "F_Co,2 has four 0-cusps and maps to F_En,2 as
+    follows" -- with the theorem's own argument printed beneath it as an "Idea".  That slide is the
+    one this test pins: the deck's other two conjectures (the semitoroidal comparison, and the
+    involution as a limit of Enriques involutions) are still conjectures and are none of this
+    issue's business, so the test matches the slide by its claim, not by the environment alone.
+    """
+    hits = []
+    for path in authored_tex():
+        text = path.read_text(encoding="utf-8")
+        for m in SETTLED_SLIDE.finditer(text):
+            line = text[: m.start()].count("\n") + 1
+            hits.append((path.relative_to(ROOT).as_posix(), line, m.group(1)))
+    assert not hits or all(kind == "theorem" for _, _, kind in hits), (
+        f"the four-0-cusp correspondence is still stated as a {hits[0][2]}: {hits}"
+    )
+    assert hits, "the slide this test pins is gone; delete the test rather than let it pass silently"
+
+
+def test_a2_the_pcrm_slide_states_the_cusp_correspondence_as_proved():
+    text = (ROOT / "writing/talks/2026-07 PCRM/pcrm_pres.tex").read_text(encoding="utf-8")
+    m = SETTLED_SLIDE.search(text)
+    assert m, "the four-0-cusp slide is gone from the PCRM deck"
+    assert m.group(1) == "theorem", "the PCRM deck still marks the Coble cusp correspondence pending"
+    # the "Pending computation!" marker belonged to that slide and to no other
+    assert "Pending computation!" not in text
+
+
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
         if name.startswith("test_") and callable(fn):
