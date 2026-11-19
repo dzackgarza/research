@@ -110,6 +110,8 @@ def test_the_classical_model_cannot_host_the_witness():
     assert "acts as the identity on $T_\\Co$" in body
     assert "they are not vanishing classes" in body
     assert "neither produced nor excluded by it" in body
+    assert "(-4)$-Heegner divisor" in body
+    assert "the meridians to generate" in body
 
 
 def _run_all() -> int:
