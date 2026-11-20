@@ -1701,7 +1701,7 @@ $$
 $$
 it is the number of decompositions of $A^0 = [\overline{\zeta/2}]^{\perp}$ into a two-dimensional summand isometric to $A_{U(2)}$ and an eight-dimensional one isometric to $A_{E_8(2)}$.
 
-4. Under @conj:gamma-co-stable, $\Gamma_\Co = \widetilde\Orth^+(T_\Co)\subseteq R_{\gent}\intersect\Orth^+(T_\Co)$, and then $\fco = \bD(T_\Co)/\Gamma_\Co\to\bD(T_\Co)/(R_{\gent}\intersect\Orth^+(T_\Co))$ is finite of degree $\abs{W(E_8)} = 696\,729\,600$; the inclusion $\widetilde\Orth^+(T_\Co)\subseteq R_{\gent}\intersect\Orth^+(T_\Co)$ and that index hold unconditionally.
+4. Under @conj:gamma-co-stable, $\Gamma_\Co$ of @def:coble-family-unpolarized $= \widetilde\Orth^+(T_\Co)\subseteq R_{\gent}\intersect\Orth^+(T_\Co)$, and then $\fco = \bD(T_\Co)/\Gamma_\Co\to\bD(T_\Co)/(R_{\gent}\intersect\Orth^+(T_\Co))$ is finite of degree $\abs{W(E_8)} = 696\,729\,600$; the inclusion $\widetilde\Orth^+(T_\Co)\subseteq R_{\gent}\intersect\Orth^+(T_\Co)$ and that index hold unconditionally.
 
 5. In the marking of @thm:theta-co-coordinates, $\delta = e_0-e_1$ and $\zeta = e_0+e_1$; the span $\generators{\delta,\zeta}$ has index $2$ in $U_1$, and $\delta^{\perp\ten} = T_\Co$; $s_\zeta$ is the reflection in $e_0+e_1$, an integral isometry of $\lkt$ fixing $S_\Co$ pointwise, hence lying in $Z_{\Orth(\lkt)}(\theta_\Co)\intersect\Stab(\tilde h_\Co)$, and it acts trivially on $A_{T_\Co}$ and on $A_{T_\En}$, so it lies in $\ker\rho_{T_\En}\subseteq\gent$ and fixes the line $\ZZ\delta$.
 :::

@@ -264,7 +264,7 @@ using $\gamma k = k$; a vector of $\ten$ orthogonal to $k$ lies in $\ten\interse
 
 ::: {.lemma #lem:monodromy-is-spinor-positive title="The monodromy of a family of Coble surfaces lies in $\Orth^+(T_\Co)$"}
 
-Let $\mathcal S\to B$ be a family of Coble surfaces over a connected base, with the local system of lattices $T_\Co$, monodromy group $\Gamma_\Co\le\Orth(T_\Co)$ (@def:gamma-co-groups(1)) and periods in one component $D^+\subset\bD(T_\Co)$. Then $\Gamma_\Co\subseteq\Orth^+(T_\Co)=\Theta_\bR(T_\Co)$.
+Let $\mathcal S\to B$ be a family of Coble surfaces over a connected base, with the local system of lattices $T_\Co$, monodromy group $\Gamma_\Co\le\Orth(T_\Co)$ (@def:gamma-co-groups(1), @def:coble-family-unpolarized) and periods in one component $D^+\subset\bD(T_\Co)$. Then $\Gamma_\Co\subseteq\Orth^+(T_\Co)=\Theta_\bR(T_\Co)$.
 :::
 
 ::: {.proof}

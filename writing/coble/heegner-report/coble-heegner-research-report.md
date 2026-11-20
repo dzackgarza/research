@@ -1052,7 +1052,7 @@ Dropping the degree-$4$ polarization and the del Pezzo involution from the label
 
 The corresponding geometric monodromy group is defined from the direct unpolarized Coble moduli stack.
 The expected equality $\Gamma_{\Co}^{\mathrm{dir}}=O^+(T_{\Co})$ is compatible with the full stabilizer lemma below, but it remains a geometric monodromy statement until the direct period theorem is proved.
-The group $\Gamma_\Co$ of @def:gamma-co-groups is conjecturally $\widetilde\Orth^+(T_\Co)$ (@conj:gamma-co-stable); no relation between $\Gamma_{\Co}^{\mathrm{dir}}$ and $\Gamma_\Co$ is established.
+The group $\Gamma_\Co$ of @def:gamma-co-groups, the monodromy group of @def:coble-family-unpolarized, is conjecturally $\widetilde\Orth^+(T_\Co)$ (@conj:gamma-co-stable); no relation between $\Gamma_{\Co}^{\mathrm{dir}}$ and $\Gamma_\Co$ is established.
 :::
 
 ::: {.definition #def:hodge-group title="Hodge-theoretic Heegner group"}
