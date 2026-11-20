@@ -9,7 +9,9 @@ Sources read: Huybrechts, *Lectures on K3 Surfaces* (CUP 2016), text version
 the passages quoted; Kondo, *K3 Surfaces* (EMS 2020), `kondo-2020-k3-surfaces.md`, Ch. 6
 and §9 by grep; Liedtke, *Arithmetic moduli and lifting of Enriques surfaces* (Crelle 2015,
 arXiv:1007.0787), `liedtke-2013-arithmetic-moduli-enriques.md`, Intro and §§4-5;
-Alexeev-Engel, *On lattice-polarized K3 surfaces*, arXiv:2505.22557 (HTML), §§3-5;
+Alexeev-Engel, *On lattice-polarized K3 surfaces*, arXiv:2505.22557**v4** (HTML), §§3-5,
+whose numbering was re-checked against v4 and only v4 pins it: Theorem 3.11, Definition 4.6,
+Definition 4.21, Theorem 4.7, Theorem 4.22, Theorem 5.5, Remark 4.23;
 search highlights of Alexeev-Engel-Han arXiv:2110.13834 §2B, Gritsenko-Hulek-Sankaran
 arXiv:1012.4155 §2, Harder-Thompson arXiv:1501.04049 §1.2, Di Lorenzo-Fringuelli-Vistoli
 arXiv:2305.07574 §1. Zotero was not queried.
