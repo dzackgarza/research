@@ -50,28 +50,24 @@ def test_the_cover_index_is_a_lemma():
     assert "YZZ25, Lemma 6.7" in proof
 
 
-def test_the_labelled_identification_is_now_the_equality_from_the_enriques_side():
-    """The equality is proved, but not from the sextic side.
-
-    The sextic side gives only the inclusion and the index |rho-bar(Gamma_Co(Bbar))|;
-    the equality comes from lem:d2-monodromy-is-enriques-stabilizer with
-    prop:gamma-co-images(1)."""
+def test_the_labeled_identification_is_the_inclusion_and_the_open_equality():
+    """The equality was claimed twice and withdrawn twice.  The theorem now states the
+    inclusion, the exact statement a proof must supply, and the three failed routes."""
     text = LATTICES.read_text(encoding="utf-8")
     body = _block(text, "thm:gamma-co-is-stable")
-    assert "\\Gamma_\\Co=\\widetilde\\Orth^+(T_\\Co)" in body
+    assert "is a subgroup of $\\widetilde\\Orth^+(T_\\Co)$" in body
+    assert "explicit" in body and "surjective" in body.replace("onto", "surjective")
     proof = _proof_after(text, "thm:gamma-co-is-stable")
-    assert "@lem:d2-monodromy-is-enriques-stabilizer" in proof
-    assert "@prop:gamma-co-images(1)" in proof
-    # the sextic side is explicitly recorded as not closing it
-    assert "@rmk:gamma-co-orbifold-obstruction" in proof
+    assert "@rmk:d2-routes-for-the-equality" in proof
 
 
-def test_the_equality_is_not_derived_from_the_reflection_group():
-    """Guard: the W(T_Co) route was withdrawn and must not reappear as a proof."""
+def test_the_withdrawn_enriques_route_cannot_return():
+    """Guard: the Enriques-stabilizer lemma was withdrawn; it must not reappear."""
     text = LATTICES.read_text(encoding="utf-8")
-    proof = _proof_after(text, "thm:gamma-co-is-stable")
-    assert "W(T_\\Co)=" not in proof
-    assert "reflection" not in proof.lower() or "does not" in proof
+    assert "lem:d2-monodromy-is-enriques-stabilizer" not in text
+    routes = _block(text, "rmk:d2-routes-for-the-equality")
+    assert "withdrawn" in routes
+    assert "pi_1(H,s)" in routes or "\\pi_1(H,s)" in routes
 
 
 def test_the_refuted_orbifold_identification_cannot_come_back():
