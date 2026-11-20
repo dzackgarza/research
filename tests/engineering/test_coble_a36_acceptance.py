@@ -149,6 +149,21 @@ def test_the_locus_probe_reproduces_its_record():
     assert "coble_679-locus-probe-run.txt" in page
 
 
+def test_the_f2_argument_does_not_transfer_to_the_k_one_cusps():
+    """The next cusp: same boundary lattice, but no unigonal restriction there.
+
+    At the k = 1 cusps of F_{N^2}, N >= 2, the boundary lattice is the F_2 one and its
+    Coxeter fan is the printed 24-root fan; but the unigonal locus meets only the
+    p_* = 1 cusp (lem:unigonal-locus-cusp-support), so AE23 Thm. 10.16 gives nothing
+    there and the nine-cone argument of lem:f2-cusp-is-the-refinement-case does not
+    transfer.  That is the statement, not a computation.
+    """
+    page = page_text()
+    assert "#lem:f2-argument-does-not-transfer" in page
+    assert "does not transfer" in page
+    assert "no analogue of the nine-cone fan is recorded" in page
+
+
 def test_the_f2_cusp_is_the_refinement_case():
     """The smallest case, decided without (W): at the F_2 cusp the semifan refines.
 

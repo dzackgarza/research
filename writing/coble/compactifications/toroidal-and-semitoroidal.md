@@ -257,6 +257,16 @@ Two basic examples of recognizable divisors:
 
 :::
 
+::: {.lemma #lem:f2-argument-does-not-transfer title="The $F_2$ determination does not transfer to the cusps with $p_*>1$ and $k=1$"}
+
+Let $\eta$ be a $0$-cusp of $F_{N^2}$ with $N\ge2$ whose class $\{\pm q\}$ is a unit modulo $N$, so that $p_*(\delta)>1$ and $k=d/p_*^2=1$ (@lem:cusp-census). Then: (1) the boundary lattice of $\eta$ is $\langle-2\rangle\oplus U\oplus E_8(-1)^{\oplus2}$, the lattice of the $F_2$ cusp, and its Coxeter fan is the printed fan of twenty-four $(-2)$-roots [@AET23, Def. 4.1 and Fig. 1, printed pp. 21--22]; and (2) the unigonal locus meets only the $0$-cusp with $p_*=1$ (@lem:unigonal-locus-cusp-support), so [@AE23, Thm. 10.16, printed p. 38], whose assertion is a restriction to $\langle-2d\rangle^\perp$ on the unigonal locus, yields nothing at $\eta$. Consequently the argument of @lem:f2-cusp-is-the-refinement-case **does not transfer**: no analogue of the nine-cone fan is recorded on the unigonal hyperplane of $\bar T$ at such a cusp, and no cone of $\mcf_{R_{\rcop},\eta}$ is recorded there in the sources read.
+:::
+
+::: {.proof}
+
+Assertion (1) is @lem:cusp-lattice-p-greater-one at $k=1$ together with @lem:k-one-two-sharp's identification of the cusp family. For (2), [@AE23, Thm. 10.16, printed p. 38] restricts $\mcf_{R_{\rcop}}$ to $\langle-2d\rangle^\perp$ and identifies it with the fan of [@ABE22, §4C, printed p. 14]; its proof uses the unigonal locus, a family of elliptic K3 surfaces with $L=s+(d+1)f$, and @lem:unigonal-locus-cusp-support records from the same proof that this locus meets only the $p_*=1$ cusp. At $\eta$ the two lattices agree but the restricting family is absent, so the theorem's hypothesis does not hold there and its conclusion is unavailable — the coincidence of boundary lattices transfers nothing by itself.
+:::
+
 ::: {.lemma #lem:f2-cusp-is-the-refinement-case title="At the unique $0$-cusp of $F_2$ the semifan refines the Coxeter fan along the unigonal hyperplane"}
 
 Let $\eta$ be the unique $0$-cusp of $F_2$, with boundary lattice $\bar T=U\oplus E_8(-1)^{\oplus2}\oplus A_1(-1)$ and $t$ a generator of the $A_1(-1)$ summand, so that $t^\perp=U\oplus E_8(-1)^{\oplus2}$ is the unigonal hyperplane and a wall of the Coxeter chamber. Then the restriction of $\mcf_{R_{\rcop},\eta}$ to $t^\perp$ is the fan of [@ABE22, §4C, printed p. 14], which subdivides the chamber $P\subset t^\perp$ by the four hyperplanes $\beta_L^\perp,\gamma_L^\perp,\beta_R^\perp,\gamma_R^\perp$ into nine cones, none of the four being the mirror of a root. So at this cusp the semifan realises the **refinement** half of the dichotomy of @rmk:coarsening-is-one-half, along that wall: the nine cones are strictly finer than $P$, and by @lem:semifan-determined-on-one-chamber they are the part of the semifan's trace on $\overline{\mathfrak C}$ that lies in $t^\perp$.
