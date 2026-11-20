@@ -236,6 +236,9 @@ PLANE_MODEL = "rmk:which-coble-surfaces-have-a-plane-model"
 def test_the_subclass_with_a_plane_model_is_named():
     body = _block(MC.read_text(encoding="utf-8"), PLANE_MODEL)
     assert "@DZ99, Rem. 2.9" in body
+    # Prop. 6.4(1) is read exactly: its conclusion is about log Enriques resolutions
+    assert "Prop. 6.4(1)" in body
+    assert "log Enriques" in body
     assert "classical" in body
     assert "not" in body
     # the coordination the finding asks for is recorded rather than performed silently
