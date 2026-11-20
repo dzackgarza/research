@@ -216,3 +216,15 @@ def test_the_two_arrangements_are_distinguished():
     # the closedness mechanism is proper discontinuity
     assert "properly discontinuously" in body
     assert "locally finite" in body
+
+
+TWO_STEPS = "rmk:the-two-steps-and-where-they-fail"
+
+
+def test_the_first_failing_step_is_named():
+    body = _block(MC.read_text(encoding="utf-8"), TWO_STEPS)
+    assert "structure theorem for Coble surfaces" in body
+    assert "first step that fails" in body.lower()
+    assert "not" in body
+    # and the second failure, the special-member isotropy
+    assert "special member" in body
