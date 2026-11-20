@@ -445,26 +445,27 @@ Let $V$ and $B=V/\PGL_3$ be as in @not:d2-plane-sextic-base.
 (4) The family and $\bT$ are $\PGL_3$-equivariant (@lem:d2-unpolarised-family(3)), so they descend to the base $B$ of the principal bundle $V\to B$. A loop of $B$ lifts to a path of $V$ by local triviality and compactness of $[0,1]$; the lift ends at $gs$ for some $g\in\PGL_3$, and since $\PGL_3$ is connected a path from $e$ to $g$ turns it into a loop of $V$ over the given loop. Hence $\pi_1(V,s)\to\pi_1(B,[s])$ is surjective. The monodromy group (@def:k3-moduli-functors) of the descended system on $B$ is $\rho\qty{\pi_1(B,[s])}$, and its pullback to $V$ is $\bT$, so it equals $\rho\qty{\pi_1(V,s)}$, which is $\Gamma_\Co$ (@lem:d2a-monodromy-of-the-stack).
 :::
 
-::: {.lemma #lem:d2-incidence-connected title="The labelled incidence variety, $B$ and $\bar B$ are connected"}
+::: {.lemma #lem:d2-incidence-connected title="The incidence variety, $B$ and $\bar B$ are connected"}
 
-In the notation of @not:d2-plane-sextic-base, let $U\subset(\PP^2)^{10}$ be the image of $V$ and let $\pi\colon V\to U$ be the projection. Then:
+In the notation of @not:d2-plane-sextic-base, let $W\subset U\times\abs{\OO_{\PP^2}(6)}$ be the set of pairs $(p,Z)$ with $p_i\in\Sing Z$ for all $i$, and let $\pi\colon W\to U$ and $\pi_V\colon V\to U$ be the projections. Then:
 
-1. $\pi$ is a finite morphism, and it is birational: the fibre over the generic point of $U$ is a single point.
-2. $U$ is irreducible, and $V$ is irreducible; hence $V$, $B=V/\PGL_3$ and $\bar B=[B/S_{10}]$ are connected.
+1. $\pi$ is proper and has finite fibres; hence $\pi$ is finite, every fibre of $\pi$ over $U$ is a single point, and $W$ is irreducible.
+2. $V$ is an open subset of $W$, hence irreducible and connected; so are $B=V/\PGL_3$ and $\bar B=[B/S_{10}]$.
 :::
 
 ::: {.proof}
 
-(1) *Finiteness.* For $p=(p_1,\dots,p_{10})\in U$ the fibre $\pi^{-1}(p)$ is the set of sextics $Z$ with $\operatorname{Sing}Z$ equal to $\{p_1,\dots,p_{10}\}$ as a set and each $p_i$ an ordinary double point. A sextic has $h^0(\OO_{\PP^2}(6))=28$; the condition that $Z$ pass through $p_i$ with multiplicity at least $2$ is three linear conditions (the value and the two first derivatives at $p_i$), so the sextics with all ten $p_i$ as singular points form a projective linear subspace of dimension at least $28-1-30=-3$, that is the empty set or a single point, and in either case $\pi^{-1}(p)$ is finite. A quasi-finite morphism of varieties of finite type over $\CC$ is finite, so $\pi$ is finite.
+1. *Properness.* $\abs{\OO_{\PP^2}(6)}$ is a projective space, hence proper over $\CC$, so the projection $U\times\abs{\OO_{\PP^2}(6)}\to U$ is proper; $W$ is closed in the product, being defined by the closed conditions $Z(p_i)=\partial_xZ(p_i)=\partial_yZ(p_i)=0$ for all $i$, so $\pi$ is proper.
 
-*Birationality.* Over the generic point $\pi$ is injective by the same count, and the set of $p\in U$ over which there is a sextic at all is dense, so $\pi$ is birational onto its image, which is $U$ by definition.
+*Finite fibres.* The fibre over $p$ is the linear system $|\mathfrak m_{p_1}^2\cdots\mathfrak m_{p_{10}}^2(6)|$, a projective linear subspace. The ten double points impose $30$ linear conditions on the $28$-dimensional space of sextics, so that subspace has dimension at most $-1$, i.e. it is empty or a single point; a quasi-finite proper morphism is finite.
 
-(2) *Irreducibility of $U$.* The sextics with exactly ten ordinary double points are the image of the irreducible variety of degree-$6$ morphisms $\PP^1\to\PP^2$ whose image has exactly ten nodes: a rational sextic has arithmetic genus $10$, and ten ordinary double points account for the whole of it, so such a morphism is birational onto a ten-nodal sextic; conversely the normalization of a ten-nodal sextic is $\PP^1$ (@lem:d2-plane-sextic-freeness(2)). That image is irreducible, being the image of an irreducible variety, and it is $U$ up to the ordering of the labels, which is a union of finitely many copies of it; so $U$ is irreducible.
+*Irreducibility.* By definition of $U$ as the image of $V$, the map $\pi$ is surjective onto $U$ and every fibre is a single point, so $\pi$ is a finite birational morphism of degree one. A finite morphism of degree one onto an irreducible variety has one irreducible component, hence $W$ is irreducible.
 
-*Irreducibility of $V$.* The morphism $\pi$ is finite and birational with $U$ irreducible. Were $V=V_1\cup V_2$ a union of two proper closed subsets, then $U=\pi(V_1)\cup\pi(V_2)$, so $U=\pi(V_1)$ by irreducibility; but $\pi$ is birational, so $\pi^{-1}$ of a dense open subset of $U$ is a dense open subset of $V$ contained in $V_1$, forcing $V_1=V$. So $V$ is irreducible, hence connected.
+2. *Irreducibility of $U$, and of $V$.* $U$ is irreducible: the ten-nodal sextics are the image of the irreducible variety of degree-$6$ morphisms $\PP^1\to\PP^2$ whose image has exactly ten nodes, since a rational sextic has arithmetic genus $10$ and ten ordinary double points exhaust it, and the normalization of a ten-nodal sextic is $\PP^1$ (@lem:d2-plane-sextic-freeness(2)); $U$ is the image of that under the node map. For $V$: it is the open subset of $W$ on which the ten points are distinct ordinary double points and there is no other singular point (@not:d2-plane-sextic-base), so $V$ is a nonempty open subset of the irreducible $W$, hence irreducible and connected.
 
 *$B$ and $\bar B$.* $B=V/\PGL_3$ is a quotient of a connected space, hence connected, and $\bar B=[B/S_{10}]$ has $B$ as a smooth cover, so it is connected.
 :::
+
 
 ::: {.lemma #lem:d2-s10-not-free title="The $S_{10}$-action on the labelled base is not free"}
 
