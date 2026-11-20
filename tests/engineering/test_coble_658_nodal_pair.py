@@ -141,21 +141,17 @@ def test_the_cusp_correspondence_from_f_co_descends_under_the_lifting():
     assert "@cor:coble-lifting-under-conjecture" in proof
 
 
-def test_the_criterion_that_makes_a_period_computation_decisive():
-    """Item 1e is now an equivalence under two named hypotheses, plus one closed direction."""
+def test_the_criterion_is_stated_upstairs():
+    """The generation is done in the contractible cover; the conclusion and its tension are on the page."""
     lattices = (ROOT / "writing/coble/lattices-and-moduli/lattices.md").read_text(encoding="utf-8")
     start = lattices.index("#rmk:gamma-co-nodal-pair-proposal")
     body = lattices[start:lattices.index("\n:::", lattices.index("\n", start))]
     assert "[@Voi07, Thm. 3.16, printed p. 78]" in body
-    assert "*(MG)* is where the work is" in body
-    assert "*(MG)* is where the work is" in body
-    assert "the criterion must be rewritten" in body
-    assert "Gamma^{\\mathrm{bulk}}" in body
-    assert "the boundary contributes nothing" in body
-    assert "Godbillon" in body
-    assert "if and only if" in body or "\\iff" in body
+    assert "done upstairs, because" in body
+    assert "\\Gamma_\\Co=\\Orth(T_\\Co)" in body
+    assert "SGA1, Expos" in body
+    assert "The tension this exposes" in body
     assert "meets no Heegner divisor of positive square" in body
-    assert "Neither hypothesis is proved in this book" in body
 
 
 def _run_all() -> int:
