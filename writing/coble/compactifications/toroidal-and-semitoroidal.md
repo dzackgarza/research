@@ -257,6 +257,16 @@ Two basic examples of recognizable divisors:
 
 :::
 
+::: {.lemma #lem:unigonal-hyperplane-fan title="The semifan on the unigonal hyperplane, for every $d$"}
+
+Let $\eta$ be the $0$-cusp of $F_{2d}$ with $p_*(\delta)=1$, with $t^\perp=\langle-2d\rangle^\perp=U\oplus E_8(-1)^{\oplus2}$ as in @lem:unigonal-restriction, and let $P\subset t^\perp$ be the chamber of the Coxeter fan of $t^\perp$. Then the restriction of $\mcf_{R_{\rcop},\eta}$ to $t^\perp$ is the fan of [@ABE22, §4C, printed p. 14]: it cuts $P$ by the four hyperplanes $\beta_L^\perp$, $\gamma_L^\perp$, $\beta_R^\perp$, $\gamma_R^\perp$ into nine cones $\sigma_{LR}$, of which $\sigma_{22}$ is one, and every one of the nine is a cone of $\mcf_{R_{\rcop},\eta}$. In particular the restriction **does not depend on $d$**: the same nine-cone fan occurs on the unigonal hyperplane at the unigonal cusp of every $F_{2d}$, because that hyperplane is $U\oplus E_8(-1)^{\oplus2}$ for every $d$ and the four cutting classes are classes of it.
+:::
+
+::: {.proof}
+
+By @lem:unigonal-restriction(iii) the restricted fan is the fan of [@ABE22, §4C, printed p. 14], which cuts the Coxeter chamber $P$ of $U\oplus E_8(-1)^{\oplus2}$ by the four hyperplanes $\beta_L^\perp,\gamma_L^\perp,\beta_R^\perp,\gamma_R^\perp$ into the nine cones $\sigma_{LR}$; $\sigma_{22}$ is the one used in @lem:rcop-refinement-criterion, whose facets lie on $\gamma_L^\perp$ and $\beta_L^\perp$. By @lem:unigonal-restriction(iv) each of the nine is a cone of $\mcf_{R_{\rcop},\eta}$ and not a slice. For the independence of $d$: $\bar T=\langle-2d\rangle\oplus U\oplus E_8(-1)^{\oplus2}$ at every such cusp (@lem:cusp-lattice-p-greater-one with $k=d$), so $t^\perp=U\oplus E_8(-1)^{\oplus2}$ independently of $d$, and $\beta_L,\gamma_L,\beta_R,\gamma_R$ are classes of that summand [@ABE22, §4C, printed p. 14]; a fan defined by classes of $t^\perp$ and by the Coxeter chamber of $t^\perp$ is the same fan for every $d$.
+:::
+
 ::: {.lemma #lem:unigonal-restriction title="What the restriction theorem gives at the cusp with $p_*=1$"}
 
 Let $\eta$ be the $0$-cusp of $F_{2d}$ with $p_*(\delta)=1$, so that $k=d$ (@lem:cusp-census), with boundary lattice $\bar T=\langle-2d\rangle\oplus U\oplus E_8(-1)^{\oplus2}$ and $t$ a generator of the $\langle-2d\rangle$ summand, $t^2=-2d$. Then: (i) the restriction of $\mcf_{R_{\rcop},\eta}$ to $t^\perp$ is a **fan**; (ii) $t^\perp\cap C^+$ is a union of cones of $\mcf_{R_{\rcop},\eta}$; (iii) that fan is the fan of [@ABE22, §4C, printed p. 14]; and (iv) each maximal cone of it is itself a cone of $\mcf_{R_{\rcop},\eta}$, not only a slice of a $19$-dimensional one. All four are [@AE23, Thm. 10.16, printed p. 38] with its proof.

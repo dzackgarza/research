@@ -149,6 +149,19 @@ def test_the_locus_probe_reproduces_its_record():
     assert "coble_679-locus-probe-run.txt" in page
 
 
+def test_the_fan_on_the_unigonal_hyperplane_is_the_same_for_every_d():
+    """The semifan on the unigonal hyperplane, from lem:unigonal-restriction.
+
+    The hyperplane is t^perp = U + E8(-1)^2 at every d, and AE23 Thm. 10.16 identifies
+    the restricted fan with ABE22's, which cuts the chamber by four hyperplanes into nine
+    cones.  So the restriction does not depend on d.
+    """
+    page = page_text()
+    assert "#lem:unigonal-hyperplane-fan" in page
+    assert "does not depend on $d$" in page
+    assert "nine cones" in page
+
+
 def test_what_the_unigonal_restriction_gives():
     """At the p_* = 1 cusp, AE23 Thm. 10.16 (printed p. 38) gives four things.
 
