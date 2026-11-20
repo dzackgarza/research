@@ -27,7 +27,8 @@ Here $\tdp$ is the lattice of [@AEGS25], and $\eta\colon T_\Co\injects\ten$ is t
 The quotient $F^K_{\En} = \bD(\ten)/\Gamma^K_{\En}$, with $\Gamma^K_{\En} = \Orth(\ten)$ the group $\Gamma_{\mathrm{Enr}}$ of [@AEGS25], has two $0$-cusps $(10,10,0)_1$, $(10,8,0)_1$ and two $1$-cusps $(8,8,0)_0$, $(8,6,0)_0$ [@AEGS25, §2]. The quotient $\fentwo = \bD(\ten)/\gent$, with $\gent = \Gamma^K_{\En}\intersect\Gamma_{\dP}$, has five $0$-cusps [@AEGS25, §3]. Throughout, $\Gamma_\En$ denotes the stable group $\widetilde\Orth^+(\ten)$, also written $\Orth^+(\ten)^*$ (@def:gamma-co-groups, @sec-heegner-line, @thm:normalization, @def:gamma-co-en).
 The group $\Gamma_\Co$ is the monodromy group of the family of unpolarized Coble surfaces that the family of unpolarized Enriques surfaces induces, and $\fco = \bD(T_\Co)/\Gamma_\Co$ (@def:gamma-co-groups).
 The equality $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ is @conj:gamma-co-stable: the sign half of $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$ is proved (@lem:monodromy-is-spinor-positive) and the discriminant half is open (@rmk:gamma-co-status), in the divisor form of @rmk:gamma-co-nodal-pair-proposal.
-The group $\Gamma_{\Co,2}$ of $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ is the monodromy group of the VHS of the degree-$2$ Coble family (@def:gamma-co-groups(5)). The group that the Enriques datum defines is $R_{\gent} = \bar\rho^{-1}(P)$, the image of the stabilizer of $\delta$ in $\gent$ (@prop:gamma-co-images(3)); it is not the monodromy group, and $\Gamma_{\Co,2} = R_{\gent}$ is false (@thm:coble-monodromy-versus-enriques(3)). The monodromy group lies in $R_{\gent}\intersect\Orth^+(T_\Co)$ (@thm:coble-monodromy-versus-enriques(4), from @lem:coble-monodromy-in-stabilizer conditional on (U) of @lem:coble-family-identification; (U) and (F) are D2 of research#786).
+The group $\Gamma_{\Co,2}$ of $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ is the monodromy group of the VHS of the degree-$2$ Coble family (@def:gamma-co-groups(5)). The group that the Enriques datum defines is $R_{\gent} = \bar\rho^{-1}(P)$, the image of the stabilizer of $\delta$ in $\gent$ (@prop:gamma-co-images(3)); it is not the monodromy group, and $\Gamma_{\Co,2} = R_{\gent}$ is false (@thm:coble-monodromy-versus-enriques(3)). The monodromy group lies in $R_{\gent}\intersect\Orth^+(T_\Co)$ (@thm:coble-monodromy-versus-enriques(4), from @lem:coble-monodromy-in-stabilizer conditional on (U) of @lem:coble-family-identification; (U) and (F) are D2 of research#786, and the definitions they ask for are @sec-coble-families-d2, with (U) supplied by @prop:d2-degree-two-supplies-U).
+The objects, bases, local systems of lattices and period maps of the two families on which $\Gamma_\Co$ and $\Gamma_{\Co,2}$ are taken are those of @sec-coble-families-d2: the unpolarized family with its three bases (@def:coble-family-unpolarized), whose period map on the first of them is the map of [@DK13, Prop. 3.2, printed p. 513] (@lem:d2a-period-map), and the degree-$2$ family over the discriminant divisor (@def:coble-family-degree-two), whose base is the whole of that divisor (@lem:degree-two-base-is-delta-two).
 The stable subgroup $\widetilde\Orth^+(T_\Co)$ is the kernel of the action on $A_{T_\Co}$ of each of the groups $\Gamma^{\mathrm{Hdg}}_\Co$ and $\Gamma^\theta_\Co$ of @sec-gamma-co-comparison, and both inclusions are strict, of index $\abs{W(E_8)} = 696\,729\,600$ (@prop:gamma-co-heegner-strict, @prop:theta-co-index).
 
 ::: {.remark title="The group $\Gamma_{\Co,2}$, explicitly"}
@@ -390,4 +391,215 @@ The second comparison has a criterion on its discriminant side. The inclusion $\
 The root lattices $R$ that arise from a singular type of plane sextic with simple singularities have been classified [@Ura88; @Yan96].
 The maximal rank of such an $R$ is $19$, and the number of such $R$ of rank $19$, $18$, $17$, $16$ is $519$, $987$, $975$, $782$ respectively [@YZZ25, §1; @Yan96, Thm. 2.1].
 
+:::
+
+## The two Coble families and their bases {#sec-coble-families-d2}
+
+Statements D2a and D2b of research#786 ask what the two families are whose variations of Hodge structure define $\Gamma_\Co$ and $\Gamma_{\Co,2}$.
+@def:gamma-co-groups defines both symbols as monodromy groups of a family, so what it presupposes is a base, a local system and a period map; this section supplies them.
+@def:coble-family-unpolarized states the moduli problem of unpolarized Coble surfaces, with the three bases a source describes; @def:coble-family-degree-two states the degree-$2$ one, and it is the definition that hypothesis (U) of @lem:coble-family-identification asks for, so that (U) holds by @prop:d2-degree-two-supplies-U.
+@rmk:d2-what-is-open records the steps that no source read supplies.
+Neither definition uses @conj:gamma-co-stable, and no statement here identifies $\Gamma_\Co$ or $\Gamma_{\Co,2}$ with a prescribed lattice group: the comparison of $\Gamma_\Co$ with a lattice group is research#780 and that of $\Gamma_{\Co,2}$ with one is @thm:coble-monodromy-versus-enriques.
+
+::: {.definition #def:coble-family-unpolarized title="D2a: the family of unpolarized Coble surfaces"}
+
+A *Coble surface* is a smooth rational projective surface $S$ with $\abs{-K_S}=\emptyset$ and $\abs{-2K_S}\neq\emptyset$ [@DK13, §3, printed p. 512].
+The examples that [@DK13, §3, printed p. 513] works with, and to which it restricts itself, are the blowups $S=\mathrm{Bl}_{p_1,\dots,p_{10}}\PP^2$ of the projective plane at the ten nodes $p_1,\dots,p_{10}$ of an irreducible plane sextic $Z$.
+For such an $S$ let $h$ be the class of a line and $E_1,\dots,E_{10}$ the classes of the exceptional curves.
+The proper transform $C\subset S$ of $Z$ has
+$$
+[C]=-2K_S=6h-\sum_{i=1}^{10}2E_i,\qquad C^2=36-4\cdot10=-4,
+$$
+and the double cover $\pi\colon X\to S$ branched along $C$ is a K3 surface with a covering involution $\iota$, $S=X/\iota$ [@DK13, §3, printed p. 513].
+
+The **moduli problem** is the category fibred in groupoids over complex schemes whose objects over a base $B$ are flat families $\mcs\to B$ of Coble surfaces together with the double covers $\mcx\to\mcs$ branched along the relative $\abs{-2K}$ curve; morphisms are Cartesian squares.
+A Coble surface is rational, so $h^{2,0}=0$ on each fibre and the Hodge structure in degree $2$ is of type $(1,1)$ throughout: the variation of Hodge structure of a family of Coble surfaces is trivial in degree $2$, and the one the monodromy group is taken on is that of the K3 *covers*, which the next two items record.
+
+The **base** is one of the following, and the choice among them is part of the definition.
+
+1. *Surfaces.* The coarse space $\mcm_\Co$ of @prop:coble-moduli-git, a locally closed subvariety of the GIT quotient of $(\PP^2)^{10}$ by $\PGL_3$ [@DK13, §3, printed p. 513]. It is the coarse space of the source, which constructs no stack over it; its period map is an isomorphism onto an open subset of $\bD(T_\Co)/\Orth(T_\Co)$ (@lem:d2a-period-map), and no family over it is constructed there.
+2. *Sextics.* The space $\mcm_{10A_1}$ of plane sextics of type $10A_1$ modulo $\SL_3$ (@not:sextic-singular-type). It is the quotient orbifold of $\bD(T_\Co)-\mch_{10A_1}$ by the arithmetic group $\Gamma_{10A_1}$ (@thm:occult-period-map-sextics), hence a Deligne--Mumford stack whose coarse space it is, and its period map is an isomorphism of orbifolds onto that quotient.
+3. *Sextics with ordered nodes.* The GIT quotient of $(\PP^2)^{10}$ by $\PGL_3$, the ten nodes being labelled $p_1,\dots,p_{10}$. It is a coarse space whose orbifold is $\bigl[(\PP^2)^{10}_{\mathrm{gen}}/\PGL_3\bigr]$, it is the space in which [@DK13, §3, printed p. 513] constructs $\mcm_\Co$ as a locally closed subvariety, and the labelling is what makes the eleven classes of the next item locally constant.
+
+The **local system of lattices** is defined on base 3. and pulled back along the maps of 2. and 1. to the others.
+On the family $\mcx\to B$ of K3 covers the sheaf $\bV\definedas R^2f_*\underline{\bZ}_\mcx$ modulo torsion is a local system of lattices with the cup product (@prop:primitive-cohomology-vhs(1)).
+Because the ten nodes are labelled, the class $H$ of the pullback of a line and the classes $r_1,\dots,r_{10}$ of the exceptional curves of the minimal resolution $X\to\bar X$ of the double cover of $\PP^2$ branched along $Z$ are the values of global sections of $\bV$: each is the class of a divisor on $\mcx$ flat over $B$.
+Their span is a primitive sublattice isometric to $M\definedas\generators{2}\oplus\generators{-2}^{\oplus 10}\cong S_\Co$ (@prop:coble-is-the-ten-nodal-sextic-type), and
+$$
+\bT\definedas\underline M^{\perp\bV}
+$$
+is a local system of lattices whose fibre is $T_\Co=M^{\perp\lkt}\cong\generators{2}\oplus E(2)$ (@prop:coble-period-domain(2), [@DK13, (3.6), printed p. 513]).
+This $\bT$ is the local system of lattices of the family; its rank is $11$ and its stalks have signature $(2,9)$.
+
+The **period map** is read in a marking, that is on the universal cover: fix a base point $s\in B$ and an isometry $\bT_s\iso T_\Co$; the isometry carries the class of $H^{2,0}(X_{\tilde b})$ to a point of $\bD(T_\Co)$, and the resulting map
+$$
+\widetilde\per\colon\widetilde B\too\bD(T_\Co)
+$$
+is holomorphic (@prop:lifted-period-map(4)) and equivariant for the monodromy representation of $\bT$ (@eq-period-map-equivariance); it induces
+$$
+\per\colon B\too\bD(T_\Co)/\Gamma_\Co .
+$$
+
+$\Gamma_\Co$ is the monodromy group of the family of @def:gamma-co-groups(1), that is: on bases 2. and 3. the group $\rho\qty{\pi_1(B,s)}$ of $\bT$ (@def:transport-and-monodromy), and on base 1. the monodromy group of the local system of lattices obtained by pulling the tautological local system of $\bD(T_\Co)/\Orth(T_\Co)$ back along $\per$.
+In each case it is a subgroup of $\Orth(T_\Co)$, and the three are related as @lem:coble-family-base-change says.
+:::
+
+::: {.lemma #lem:d2a-period-map title="The period map of base 1 is the map of Dolgachev--Kondo"}
+
+The map of [@DK13, Prop. 3.2, printed p. 513] from $\mcm_\Co$ to $\bD(N)/\Orth(N)$, $N=\generators 2\oplus E(2)$, is the period map of @def:coble-family-unpolarized on base 1: a Coble surface $S$ is carried to the Hodge structure $H^{2,0}(X)\iscontainedin H^2(X,\CC)$ of its K3 double cover, read through the isometry $T_\Co\cong N$ of [@DK13, (3.6), printed p. 513].
+It is an isomorphism onto an open subset.
+:::
+
+::: {.proof}
+
+[@DK13, §3, printed p. 513] defines the map as the one that "the Torelli-type theorem for algebraic K3 surfaces, due to Pyatetskii-Shapiro and Shafarevich, implies", applied to the K3 covers $X$ of @def:coble-family-unpolarized; the Torelli theorem identifies a K3 surface with the Hodge structure on $H^2$, and the period map of any family of K3 surfaces is the same assignment.
+The hypotheses are those of the citation: $X$ is an algebraic K3 surface, $M_X$ is the sublattice spanned by the classes $e_0,\dots,e_{10}$ and is isomorphic to $M=\generators 2\oplus\generators{-2}^{\oplus 10}$ [@DK13, §3, printed p. 513], and its orthogonal complement $N_X$ is isometric to $N$ (@prop:coble-period-domain(2)), so the Hodge structure is a point of $\bD(N)$.
+The last sentence is [@DK13, Prop. 3.2, printed p. 513].
+:::
+
+::: {.lemma #lem:coble-family-base-change title="Base change changes the monodromy group by a subgroup"}
+
+Let $p\colon B'\to B$ be a continuous map of arcwise connected, locally simply connected spaces, let $(\bL,\beta)$ be a local system of lattices on $B$, and let $s'\in B'$ with $p(s')=s$.
+Then the monodromy group of $p^{-1}\bL$ is $\rho\qty{p_*\pi_1(B',s')}$, the image in $\Aut(\bL_s,\beta_s)$ of the subgroup $p_*\pi_1(B',s')$ of $\pi_1(B,s)$.
+In particular it is contained in the monodromy group of $\bL$, and if $p$ is a covering of finite degree then it has finite index in it.
+:::
+
+::: {.proof}
+
+The pullback $p^{-1}\bL$ has stalk $\bL_{p(s')}$ at $s'$, and transport along a path $\gamma$ in $B'$ is transport along $p\circ\gamma$ in $B$: both are computed on sections over the interval, and $p$ carries a trivializing open set of $\bL$ to an open set on which $p^{-1}\bL$ is trivial.
+So the monodromy representation of $p^{-1}\bL$ is $\rho\circ p_*$ (@def:transport-and-monodromy).
+The remaining statements are those of the image of a subgroup under a group morphism, and, for a covering of finite degree, of the finite index of $\pi_1(B',s')$ in $\pi_1(B,s)$.
+:::
+
+::: {.lemma #lem:coble-family-labelled-monodromy title="The labelled family has monodromy in $\widetilde\Orth^+ (T_\Co)$"}
+
+On the base of @def:coble-family-unpolarized, item 3., the monodromy group of $\bT$ is contained in $\widetilde\Orth^+(T_\Co)$.
+:::
+
+::: {.proof}
+
+The eleven classes of the definition are values at $s$ of global sections of $\bV$, and $M$ is their span, primitive and nondegenerate of signature $(1,10)$ (@prop:coble-is-the-ten-nodal-sextic-type).
+So @cor:lattice-polarized-k3-monodromy applies: the restriction of the monodromy to $T=M^{\perp\lkt}$ takes values in $\widetilde\Orth^+(T)$.
+That group is $\Orth^+(T_\Co)\intersect\discriminantkernel{T_\Co}$, which is $\widetilde\Orth^+(T_\Co)$ (@def:gamma-co-groups(3)).
+:::
+
+::: {.lemma #lem:coble-family-sextic-monodromy title="The sextic base has monodromy $\Gamma_{10A_1}$"}
+
+On the base of @def:coble-family-unpolarized, item 2., the monodromy group of $\bT$ is $\Gamma_{10A_1}$, the image of $\Orth\qty{H^2(X;\bZ),\Delta,H}$ in $\Orth(T_\Co)$ restricted to the subgroup preserving a chosen component $\bD(T_\Co)$, and
+$$
+\widetilde\Orth^+(T_\Co)\iscontainedin\Gamma_{10A_1}\iscontainedin\Orth(T_\Co),
+$$
+the first inclusion being [@YZZ25, Prop. 3.2] together with [@YZZ25, §3.1].
+:::
+
+::: {.proof}
+
+By @thm:occult-period-map-sextics the period map of the family is an isomorphism of orbifolds of $\mcm_{10A_1}$ with $\Gamma_{10A_1}\backslash(\bD(T_\Co)-\mch_{10A_1})$.
+That quotient is a global quotient of a domain by $\Gamma_{10A_1}$, so its orbifold fundamental group is $\Gamma_{10A_1}$, and the local system $\bT$ is the flat bundle $\qty{\bD(T_\Co)-\mch_{10A_1}}\times T_\Co$ modulo $\Gamma_{10A_1}$; its monodromy group is the defining image of $\Gamma_{10A_1}$ in $\Orth(T_\Co)$.
+The period map is that of the variation of the family (@prop:lifted-period-map), so this is the monodromy group of the family.
+The inclusion $\widetilde\Orth^+(T_\Co)\iscontainedin\Gamma_{10A_1}$ is [@YZZ25, Prop. 3.2], which states that every isometry of $T_\Co$ acting trivially on $A_{T_\Co}$ lies in the group, as recorded in @thm:occult-period-map-sextics.
+:::
+
+::: {.remark #rmk:coble-family-three-bases title="The three bases give three groups, and no source compares them"}
+
+@lem:coble-family-labelled-monodromy puts the monodromy of base 3. inside $\widetilde\Orth^+(T_\Co)$ and @lem:coble-family-sextic-monodromy identifies that of base 2. with $\Gamma_{10A_1}$, which contains $\widetilde\Orth^+(T_\Co)$.
+The two are consistent with, and predict, that the labelled base of 3. is a finite cover of the sextic base of 2., @lem:coble-family-base-change then giving the containment; but no source read states that comparison, and neither statement gives the monodromy group of base 1.
+Which of the three the symbol $\Gamma_\Co$ denotes is therefore not fixed by a convention of the sources: it is what @qst:sextic-group-comparison asks, and @def:gamma-co-groups names the unpolarized family, that is base 1.
+
+The containment of @lem:coble-family-labelled-monodromy is not in tension with the open discriminant half of $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$ (@rmk:gamma-co-status): the lemma's base is the labelled one, on which the eleven classes are flat by construction, whereas the unpolarized family of @def:gamma-co-groups(1) carries no such labelling and a loop of it may carry one configuration of ten curves to another.
+:::
+
+::: {.definition #def:coble-family-degree-two title="D2b: the family of degree-$2$ Coble surfaces"}
+
+The objects are the Coble quotients of the degree-$2$ Enriques families of [@AEGS25, §2], with the marking that names the Coble lattice.
+Over a base $B$, an object is a tuple $\qty{\mcx\to B,\ \ien,\ \iota',\ \varphi}$ in which
+
+1. $\mcx\to B$ is a flat family of K3 surfaces, smooth over $B$, and $\ien$ is a fixed-point-free involution of it such that $\mcZ\definedas\mcx/\ien$ is a family of Enriques surfaces carrying an ample numerical polarization $[L_Z]$ of degree $2$, equivalently a $2$-divisible polarization $M=L_Z^{\tensor 2}$ of degree $8$ [@AEGS25, §1, printed p. 582];
+2. $\iota'$ is an involution of $\mcx$ over $B$ whose quotient $\mcs\definedas\mcx/\iota'$ is a family of rational Coble surfaces with a $\tfrac14(1,1)$-singularity [@AEGS25, §2.3, printed p. 587];
+3. the $\iota'$-invariant part $\qty{R^2f_*\underline{\bZ}_\mcx}^{\iota'}$ is a local system of lattices whose stalks are isometric to $S_\Co\definedas\generators{2}\oplus\generators{-2}^{\oplus 10}$; a *marking* is an isometry $\varphi$ onto it from the constant local system $\underline{S_\Co}$, whose images of the standard basis are written $e_0,e_1,\dots,e_{10}$. No global marking need exist: since $\iota'$ acts on $H^2$ of a fibre, the invariant local system may carry nontrivial monodromy, and a marking then exists on a finite pullback of the base. It is a comparison device and is not part of the objects.
+
+The fibre of the family is the Coble surface $S_b=X_b/\iota'_b$; it is singular, and blowing down the proper transform $C$ of the sextic in a smooth Coble surface produces it [@DK13, §1, printed p. 509], $C$ being the $(-4)$-curve of @def:coble-family-unpolarized.
+The invariant lattice is the one computed in [@DK13, §3, printed p. 513]: for the double cover $\pi\colon X\to S$ the invariant part of $H^2(X;\bZ)$ is $\pi^*H^2(S;\bZ)$, a primitive sublattice on which $\iota'$ acts trivially, and the classes $e_0,\dots,e_{10}$ of the line and of the ten exceptional curves are its values on a basis of $H^2(S;\bZ)$; they span a lattice isomorphic to $M=\generators 2\oplus\generators{-2}^{\oplus 10}=S_\Co$, with orthogonal complement $T_\Co$ (@prop:coble-period-domain(2)).
+
+The **base** is the discriminant divisor, written $\Delta$ in @lem:coble-family-identification and here $\Delta_2$ to distinguish it from the divisor of [@AEGS25, Def. 2.7].
+Let $\mcm_2$ be the moduli stack of Enriques surfaces with an ample numerical polarization of degree $2$; it is Deligne--Mumford and its coarse space is $\fentwo$ away from the discriminant [@AEGS25, §2.4, printed p. 588; §2.3, printed p. 587], and let $\overline{\mcm}_2$ be its KSBA compactification, with its universal family [@AEGS25, §5.3, printed p. 612].
+The base is
+$$
+\Delta\definedas\theset{x\in\mcm_2 \st \text{the K3 cover } X_x \text{ is nodal}}\iscontainedin\overline{\mcm}_2,
+$$
+a divisor whose image in the coarse space is
+$$
+\Delta_2\definedas\mch_{-2}/\gent=D_{R_-}/\gent\iscontainedin\fentwo=\bD(\ten)/\gent,\qquad
+\gent=\Orth(\ten)\intersect\Orth(\tdp),
+$$
+with $R_-=\theset{x\in\ten \st x^2=-2}$ [@Ste91, (2.10), printed p. 8] and $\gent$ the group of [@AEGS25, Def. 2.6, printed p. 587].
+Equivalently $\Delta_2$ is the image of the hyperplanes $\alpha^{\perp}$ for $\alpha\in\ten$ a $(-2)$-vector, that is the preimage of the divisor $\alpha^\perp$ of [@AEGS25, Def. 2.7, printed p. 587] under the finite map $\fentwo\to\bD(\ten)/\Orth(\ten)$ of [@AEGS25, Lem. 2.8, printed p. 587].
+It is an irreducible divisor (@lem:degree-two-base-is-delta-two(3)), and it is the whole of the base and not a proper sublocus of it (@lem:degree-two-base-is-delta-two(2)).
+
+The **family** over $\Delta$ is the restriction of the universal family of K3 surfaces with the Enriques involution over $\mcm_2$ and over its compactification: the universal family over the compactified moduli stack restricts to the closure $B$ of the image of $\fentwo$, and the normalization $B^\nu$ of $B$ is a compactification of $\fentwo$ admitting a universal family of pairs [@AEGS25, §5.3, printed p. 612].
+The Coble family is its quotient by $\iota'$.
+
+The **local system of lattices** is the $\delta^{\perp}$-part of the restriction to $\Delta$ of the local system with fibre $\ten$: at $x\in\Delta$ the class $\alpha_x$ of the node is a $(-2)$-vector of $\ten$, and
+$$
+\bT\definedas\underline{\alpha}^{\perp}\iscontainedin\underline{\ten}|_{\Delta}
+$$
+is a local system of lattices of rank $11$ and signature $(2,9)$ with fibre $\eta(T_\Co)=\delta^{\perp\ten}\cong T_\Co$ (@lem:primitive_embedding_eta).
+Geometrically it is the orthogonal complement in $R^2f_*\underline\bZ_\mcx$ of the invariant lattice $S_\Co$ of $\iota'$, which the marking of the objects identifies with $\underline{S_\Co}$.
+
+The **period map** is the restriction of the period map of $\fentwo$:
+$$
+\per_2\colon\Delta\iso\bD(\alpha^\perp)/\Stab_{\gent}(\alpha)\too\bD(T_\Co)/\Gamma_{\Co,2},
+$$
+the first isomorphism being the description of the divisor as the image of one hyperplane.
+
+$\Gamma_{\Co,2}$ is the monodromy group of $\bT$ on $\Delta$, that is $\rho\qty{\pi_1(\Delta,s)}\iscontainedin\Orth(T_\Co)$ (@def:gamma-co-groups(5)).
+:::
+
+::: {.lemma #lem:degree-two-base-is-delta-two title="Every point of $\Delta_2$ is a Coble surface's period, and conversely"}
+
+1. A point of $\fentwo$ lies in $\Delta_2$ exactly when the corresponding K3 cover carries a $(-2)$-class, that is exactly when its period is orthogonal to a vector $\alpha$ of $\ten$ with $\alpha^2=-2$.
+2. Every such point is the period of a quotient of a nodal K3 surface by an involution fixing a node, that is of a rational Coble surface with a $\tfrac14(1,1)$-singularity, and conversely every such quotient has such a period [@AEGS25, §2.3, printed p. 587].
+3. $\Delta_2$ is irreducible.
+:::
+
+::: {.proof}
+
+For (1), $\Delta_2=\mch_{-2}/\gent$ is by definition the union of the images of the hyperplanes $\alpha^\perp$ over the $(-2)$-vectors $\alpha\in\ten$ (@def:heegner-divisor), that is the set of periods orthogonal to one of them; a period orthogonal to $\alpha$ lies in the image of $\bD(\alpha^\perp)$, and the corresponding K3 surface has $\alpha$ in its Picard group.
+For (2), the first sentence is [@AEGS25, §2.3, printed p. 587], which states that $\alpha^{\perp}\iscontainedin\bD(\ten)/\Orth(\ten)$ parameterizes the quotients of nodal K3 surfaces by an involution fixing a node, these being the rational Coble surfaces with a $\tfrac14(1,1)$-singularity; the passage from $\bD(\ten)/\Orth(\ten)$ to $\fentwo$ is the finite map of [@AEGS25, Lem. 2.8, printed p. 587], so each point of $\Delta_2$ lies over a point of that divisor and inherits the surface.
+The converse is the same statement read backwards: a quotient of a nodal K3 surface by an involution fixing the node has the node's class in its Picard group, so its period is orthogonal to a $(-2)$-class.
+For (3), $\Orth(\ten)$ is transitive on the $(-2)$-vectors [@AEGS25, Def. 2.7, printed p. 587] and $\gent$ is transitive on them as well [@Ste91, (2.10) and the paragraph following it, printed p. 8], which is exactly the irreducibility of the image of the union of their hyperplanes in $\fentwo$.
+:::
+
+::: {.proposition #prop:d2-degree-two-supplies-U title="Hypothesis (U) of the family identification holds"}
+
+For the moduli problem of @def:coble-family-degree-two, hypothesis (U) of @lem:coble-family-identification is satisfied: the degree-$2$ Coble family over $\Delta$ and its marking are defined, its base is the restriction to $\Delta$ of the universal family over the moduli stack of degree-$2$ numerically polarized Enriques surfaces whose coarse space is $\fentwo$, $\Gamma_{\Co,2}$ is its monodromy group on the local system with fibre $T_\Co$, and on every fibre the covering involution $\iota'$ has invariant lattice $S_\Co$, spanned by the classes $e_0,\dots,e_{10}$.
+Consequently statement (F) of that lemma holds, and so does $\Gamma_{\Co,2}\iscontainedin R_{\gent}\intersect\Orth^+(T_\Co)$ of @thm:coble-monodromy-versus-enriques(4).
+:::
+
+::: {.proof}
+
+The objects, the base, the family, the marking and the local system are those of @def:coble-family-degree-two, clause by clause: clause 1 is the Enriques half, clause 2 the Coble quotient, clause 3 the invariant lattice with its marking, and the paragraph after them the computation of that lattice and the local system.
+The invariant lattice is computed in [@DK13, §3, printed p. 513]: the classes $e_0,\dots,e_{10}$ of the line and of the ten exceptional curves are the values on a basis of $H^2(S;\bZ)$ of the isomorphism $\pi^*$, so they span the invariant part $\qty{H^2(X;\bZ)}^{\iota'}=\pi^*H^2(S;\bZ)$ of the covering involution of the double cover $\pi\colon X\to S$, which is isomorphic to $M=\generators 2\oplus\generators{-2}^{\oplus 10}=S_\Co$.
+The two statements (F) and $\Gamma_{\Co,2}\iscontainedin R_{\gent}\intersect\Orth^+(T_\Co)$ are then the conclusions of @lem:coble-family-identification and of @thm:coble-monodromy-versus-enriques(4), whose only other hypothesis is (U).
+:::
+
+::: {.remark #rmk:degree-two-two-meanings title="The meanings of degree $2$"}
+
+The phrase occurs in three senses in the sources and in this book, and they are conditions on different objects.
+
+1. *The Enriques polarization.* That of @def:coble-family-degree-two: the degree is $L_Z^2=2$ of an ample numerical polarization of the Enriques quotient $Z=X/\ien$, equivalently $\deg M=8$ for $M=L_Z^{\tensor2}$ [@AEGS25, §1, printed p. 582]. It restricts the base: the Coble surfaces are the fibre of $\fentwo$ over the divisor $\Delta_2$, a codimension-one locus.
+2. *The plane model.* The degree is $H^2=2$ of the K3 double cover $X\to\PP^2$ itself, that is the statement that $X$ is a double plane whose branch sextic is $Z$ and whose Coble quotient is $S=\mathrm{Bl}_{10}\PP^2$ (@prop:coble-period-domain(1), @prop:coble-is-the-ten-nodal-sextic-type). It restricts nothing: every classical Coble surface has it, so on this reading the base is the whole of any of the three bases of @def:coble-family-unpolarized and not a divisor.
+3. *A class on the Coble surface.* @def:coble-polarization-classes states a degree-$2$ numerical polarization as a class $h_\Co\in K_S^{\perp\perp\Pic(S)}$ with $h_\Co^2=2$, of Enriques type --- the formula of [@Ste91, §2] applied to the Coble surface $S$ rather than to the Enriques quotient. @def:gamma-co-groups(5) names the family of Coble surfaces carrying that structure. No source read identifies the loci defined by 1. and by 3., and none states that a classical Coble surface carries such a class at all; the definition above uses 1., which is the reading whose base is $\Delta_2$ and the one research#786, D2b, states.
+
+Readings 1. and 2. are not interchangeable: reading 1. is a condition on the Enriques quotient, which is one quotient of the K3 surface and is not the Coble surface, whereas reading 2. is automatic, and a definition that used it would define the unpolarized moduli problem again under another name.
+:::
+
+::: {.remark #rmk:d2-what-is-open title="What no source read supplies"}
+
+1. **The local system of base 1.** @lem:d2a-period-map gives the period map of $\mcm_\Co$ as an isomorphism onto an open subset of $\bD(T_\Co)/\Orth(T_\Co)$, and [@DK13, printed p. 513] constructs no family over $\mcm_\Co$ and no local system; a coarse space does not determine monodromy. The local system of @def:coble-family-unpolarized on base 1 is therefore the pullback of the tautological one along the period map: that is a definition, not a theorem, and whether it is the local system of an actual family is open.
+2. **Which base is $\Gamma_\Co$.** Base 3. gives a subgroup of $\widetilde\Orth^+(T_\Co)$ (@lem:coble-family-labelled-monodromy) and base 2. gives $\Gamma_{10A_1}\supseteq\widetilde\Orth^+(T_\Co)$ (@lem:coble-family-sextic-monodromy); nothing read compares the two bases, and nothing read compares either with base 1. Hence the equality of any two of the three groups is open, and @qst:sextic-group-comparison is where that question sits. In particular the sentence of @def:gamma-co-groups(1) that the family of unpolarized Enriques surfaces *induces* the Coble family and its local system is not proved by anything read here: it is the comparison of base 1 with the induced Enriques family.
+3. **The marking of the degree-$2$ family.** @prop:d2-degree-two-supplies-U supplies (U), so (F) and the inclusion of @thm:coble-monodromy-versus-enriques(4) hold. What stays open is the reverse inclusion, @qst:coble-monodromy-equality, which no printed statement supplies; nothing in this section asserts it.
+4. **Which involution fixes the node.** [@AEGS25, §2.3, printed p. 587] names the involution only as one fixing a node, and its Diagram (2.1) on printed p. 584 carries three commuting involutions $\idp,\ien,\inik$ of the Enriques K3. The definition above takes $\iota'$ as part of the objects, subject to clause 3, and does not decide which of them it is.
+5. **Cantat--Dolgachev.** It is not among the sources read here. The definition of a Coble surface used above is [@DK13, §3, printed p. 512], which cites it; no statement of this section needs a page of it.
+6. **The compactified families.** Both definitions are stated over the open bases. Their extensions over the boundary, and which boundary strata are Coble, are not part of D2 and are not asserted.
 :::
