@@ -557,8 +557,8 @@ $$
 $$
 assigns to $Y$ the groupoid whose **objects** are triples $\qty{\mcs\xrightarrow{f}Y,\ \mcx\xrightarrow{\pi}\mcs,\ \iota}$ with:
 
-1. $f$ flat, proper and of finite presentation (@def:finite-presentation), whose geometric fibres are the surfaces $S=\Bl_{p_1,\dots,p_{10}}\PP^2$ of @lem:d2-unpolarised-family(1);
-2. $\pi$ the relative double cover branched along the relative divisor $-2K_{\mcs/Y}$, which exists because $-2K_{\mcs/Y}$ is a $2$-divisible Cartier divisor on a smooth family (@lem:d2-unpolarised-family(2));
+1. $f$ flat, proper and of finite presentation (@def:finite-presentation), whose geometric fibres are Coble surfaces in the sense of [@DZ99, Introduction]: nonsingular projective rational surfaces $S$ with $\abs{-K_S}=\emptyset$ and $\abs{-2K_S}\neq\emptyset$. This is the owner's class, and it strictly contains the classical subfamily $\Bl_{p_1,\dots,p_{10}}\PP^2$ of @lem:d2-unpolarised-family(1): [@DZ99, §2, Definition, Remark, and Example 2.6] treats Coble surfaces of Halphen type and nonminimal ones, and [@DZ99, §6, Proposition 6.4] the terminal ones;
+2. $\pi$ the relative double cover branched along the relative divisor $-2K_{\mcs/Y}$, which exists for every member of the widened class because $-2K_{\mcs/Y}=2(-K_{\mcs/Y})$ is $2$-divisible (@lem:d2-unpolarised-family(2) is the classical case), and is smooth when the branch divisor is;
 3. $\iota$ the covering involution of $\pi$;
 
 and whose **morphisms** $\qty{f,\pi,\iota}\to\qty{f',\pi',\iota'}$ over $Y$ are Cartesian squares over $Y$ commuting with $\pi$ and $\iota$. The **pullback** along $g\colon Y'\to Y$ is the fibre product $(-\times_Y Y')$, with the induced $\pi$ and $\iota$.
@@ -590,7 +590,7 @@ $$
 $$
 assigns to $Y$ the groupoid of triples $\qty{\mcs\xrightarrow{f}Y,\ \mcx\xrightarrow{\pi}\mcs,\ \iota}$ in which
 
-1. $f$ is flat and projective of finite presentation, and each geometric fibre is $\Bl_{p_1,\dots,p_{10}}\PP^2$ at the ten ordinary double points of an irreducible plane sextic of degree $6$ (@lem:d2-unpolarised-family(1));
+1. $f$ is flat and projective of finite presentation, and each geometric fibre is a Coble surface in the sense of [@DZ99, Introduction]: nonsingular, projective, rational, with $\abs{-K}=\emptyset$ and $\abs{-2K}\neq\emptyset$. The classical members $\Bl_{p_1,\dots,p_{10}}\PP^2$ of @lem:d2-unpolarised-family(1) are the subfamily D2a uses; the class here is the owner's and is strictly larger ([@DZ99, §2, Definition, Remark, and Example 2.6]);
 2. $\pi$ is the cyclic double cover branched along $-2K_{\mcs/Y}$, that is the $\mu_2$-torsor $\Spec_{\OO_\mcs}\qty(\OO_\mcs\oplus\OO_\mcs(-\mcD))$ for $\mcD$ with $\OO(2\mcD)=\OO(-2K_{\mcs/Y})$, which exists because $2$ is invertible on $S_0$ and the class $-K_{\mcs/Y}$ is integral (@lem:d2-unpolarised-family(2));
 3. $\iota$ is the involution of $\pi$;
 
@@ -605,7 +605,7 @@ $\mcM_\Co$ satisfies fppf descent, hence étale descent: isomorphisms are a shea
 
 ::: {.proof}
 
-Let $Y'\to Y$ be faithfully flat of finite presentation, with the two projections, and let an object over $Y'$ with a descent datum be given. The underlying schemes and the morphisms $f'$, $\pi'$, $\iota'$ descend to $Y$ by faithfully flat descent (SGA 1, Exposé VIII), the descended $f$ being flat and projective because both are local on the base and stable under base change. The condition of clause (1) is a condition on geometric fibres, so it is checked after $Y'\to Y$. The divisor $-2K_{\mcs/Y}$ is defined by the relative canonical sheaf of the descended $f$, and the $\mu_2$-torsor of clause (2) is $\Spec(\OO\oplus\OO(-\mcD))$, determined by that divisor and by the choice of $\mcD$ up to the sign of the second summand; so $\pi$ and $\iota$ descend with $f$. Isomorphisms are a subsheaf of the sheaf of isomorphisms of the underlying $Y$-schemes cut out by closed conditions, as in @lem:coble-moduli-functor-stack(1).
+Let $Y'\to Y$ be faithfully flat of finite presentation, with the two projections, and let an object over $Y'$ with a descent datum be given. The underlying schemes and the morphisms $f'$, $\pi'$, $\iota'$ descend to $Y$ by faithfully flat descent (SGA 1, Exposé VIII), the descended $f$ being flat and projective because both are local on the base and stable under base change. The condition of clause (1) — nonsingular, projective, rational, $\abs{-K}=\emptyset$, $\abs{-2K}\neq\emptyset$ — is a condition on geometric fibres, so it is checked after $Y'\to Y$; widening the class from the classical subfamily to the whole of [@DZ99, Introduction] changes nothing in this argument, because no step used the narrower description. The divisor $-2K_{\mcs/Y}$ is defined by the relative canonical sheaf of the descended $f$, and the $\mu_2$-torsor of clause (2) is $\Spec(\OO\oplus\OO(-\mcD))$, determined by that divisor and by the choice of $\mcD$ up to the sign of the second summand; so $\pi$ and $\iota$ descend with $f$. Isomorphisms are a subsheaf of the sheaf of isomorphisms of the underlying $Y$-schemes cut out by closed conditions, as in @lem:coble-moduli-functor-stack(1).
 :::
 
 ::: {.definition #def:enriques-partial-compactification title="The partial compactification of the Enriques stack by involutions with empty or curve fixed locus"}
