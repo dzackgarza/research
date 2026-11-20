@@ -231,6 +231,27 @@ $$[\Gamma_\Co(\bar B):\Gamma_\Co(B)]=\abs{\bar\rho\qty{\Gamma_\Co(\bar B)}}.$$
 That image is a subgroup of $\Theta$ (@prop:gamma-co-geometric-bound(2)), so the index divides $\abs{\Theta}=10!$. It equals $10!$ exactly when $\bar\rho(\Gamma_\Co(\bar B))=\Theta$, that is when the label permutations are all realized by the monodromy of the unlabelled family; that is not proved here (@rmk:gamma-co-orbifold-obstruction).
 :::
 
+::: {.lemma #lem:d2-monodromy-in-discriminant-kernel title="The forward inclusion from the lattice-polarized period theorem, and why the reverse is out of its reach"}
+
+Let $M=\generators{2}\oplus\generators{-2}^{\oplus10}$ be the second summand $S_\Co$ of $\lkt$ and $N=M^{\perp\lkt}=T_\Co$ (@prop:coble-period-domain(2), [@DK13, (3.6)]). Then:
+
+1. The monodromy group of the family of @def:coble-family-unpolarized on its labelled base satisfies
+$$\Gamma_\Co\subseteq \Orth(N)^*\cap\Orth^+(N)=\widetilde\Orth^+(T_\Co),$$
+where $\Orth(N)^*$ is the kernel of $\Orth(N)\to\Orth(A_N)$; this is [@Dol96, Prop. 3.3], whose hypotheses are those checked in the proof, applied through the marked period bijection of [@Dol96, Cor. 3.2].
+2. The reverse inclusion is not available from that theorem, and no statement about the quotient $\bD(N)/\Orth(N)^*$ is: $-\id$ acts trivially on $\bD(N)$, so it lies in the kernel of the action of $\Orth(N)^*$ on the period domain, and the quotient determines a monodromy group only modulo $\{\pm\id\}$.
+:::
+
+::: {.proof}
+
+1. The base $B$ of @def:coble-family-unpolarized(3) is the moduli space of $M$-polarized K3 surfaces *with the marking of $M$ fixed*: a point is a labelled ten-nodal sextic, the double cover $X_b$ is a K3 surface whose classes $e_0,\dots,e_{10}$ of @prop:coble-period-domain(1) are the labelled ones, and they generate $M$ primitively (@lem:d2-local-system(2)), so the pair $(X_b,M\subset H^2(X_b,\ZZ))$ is an $M$-polarized K3 surface with its polarization marked, and $B$ is the moduli of those by @lem:d2a-family-is-yzz.
+
+By [@Dol96, Cor. 3.2] the period map is a bijection between marked ample $M$-polarized K3 surfaces and the open period domain, and by [@Dol96, Prop. 3.3] the group by which the marked period domain is quotiented to give that moduli space is $\Gamma_M=\Orth(N)^*$, where $\Gamma(M)$ is the pointwise stabilizer of $M$ in $\Orth(\lkt)$ and $\Gamma_M$ its image in $\Orth(N)$. So the monodromy group of the family is contained in $\Orth(N)^*$.
+
+The hypothesis of [@Dol96, Cor. 3.2] is ampleness with respect to the polarization, that is the period point avoiding the hyperplanes of $(-2)$-vectors of $N$; the general member of the family has $\Pic(X_b)=M$ (@prop:coble-period-domain(1), @lem:d2-local-system(2)), so its period lies in that open set. The further containment in $\Orth^+(N)$ is @lem:monodromy-is-spinor-positive, the periods being single-valued on the connected base $B$ (@lem:d2-incidence-connected(2)).
+
+2. $\bD(N)$ is a domain of *lines*: a point is the line $H^{2,0}(X_b)\subset N\otimes\CC$ (@prop:coble-period-domain(1)). The isometry $-\id_N$ fixes every line, so it acts trivially on $\bD(N)$, and likewise on the domain of oriented positive $2$-planes used in [@Dol96]. Hence $\Orth(N)^*$ and $\Orth(N)^*/\{\pm\id\}$ have the same orbits and give the same quotient, and the deck group of the marked period domain over the moduli space is $\Orth(N)^*/\{\pm\id\}$. A monodromy group read off that quotient is therefore determined only modulo $\{\pm\id\}$, which is the statement of 2.
+:::
+
 ::: {.theorem #thm:gamma-co-is-stable title="G1: what is proved about the monodromy group of the unpolarized Coble family"}
 
 Let $V$ be the variety of labelled sextics of @not:d2-plane-sextic-base, whose quotient $B=V/\PGL_3$ is the labelled base of @def:coble-family-unpolarized, item 3., let $\bT$ be the local system of lattices of @lem:d2-local-system, of fibre $T_\Co$, and let
@@ -245,7 +266,7 @@ Accordingly $\fco=\bD(T_\Co)/\Gamma_\Co$ maps to $\bD(T_\Co)/\widetilde\Orth^+(T
 
 ::: {.proof}
 
-1. This is @lem:coble-family-labelled-monodromy; here is the same argument with the two halves named. The eleven classes $\varepsilon_0,\dots,\varepsilon_{10}$ are values of global sections of $\bV$ (@lem:d2-local-system(2)), so every $\rho(\gamma)$ fixes them and acts trivially on $M=\generators{2}\oplus\generators{-2}^{\oplus10}$ and hence on $A_M$. By @lem:coble-discriminant-actions-conjugate its discriminant action on $T_\Co$ is conjugate to its action on $A_M$, so it is trivial and $\rho(\gamma)\in\discriminantkernel{T_\Co}$; and $\rho(\gamma)\in\Orth^+(T_\Co)$ by @lem:monodromy-is-spinor-positive. Hence $\rho(\gamma)\in\widetilde\Orth^+(T_\Co)$.
+1. This is @lem:coble-family-labelled-monodromy, and independently @lem:d2-monodromy-in-discriminant-kernel(1); here is the same argument with the two halves named. The eleven classes $\varepsilon_0,\dots,\varepsilon_{10}$ are values of global sections of $\bV$ (@lem:d2-local-system(2)), so every $\rho(\gamma)$ fixes them and acts trivially on $M=\generators{2}\oplus\generators{-2}^{\oplus10}$ and hence on $A_M$. By @lem:coble-discriminant-actions-conjugate its discriminant action on $T_\Co$ is conjugate to its action on $A_M$, so it is trivial and $\rho(\gamma)\in\discriminantkernel{T_\Co}$; and $\rho(\gamma)\in\Orth^+(T_\Co)$ by @lem:monodromy-is-spinor-positive. Hence $\rho(\gamma)\in\widetilde\Orth^+(T_\Co)$.
 
 2. *The implication of 2.* If $\Gamma_\Co$ is all of $\widetilde\Orth^+(T_\Co)$ then $-\id\in\Gamma_\Co$, because $-\id\in\widetilde\Orth^+(T_\Co)$: it lies in $\Orth^+(T_\Co)$ by @lem:minus-identity-spinor-norm and in $\ker\bar\rho$ because $A_{T_\Co}\cong(\ZZ/2)^{11}$ (@prop:coble-discriminant-group).
 
