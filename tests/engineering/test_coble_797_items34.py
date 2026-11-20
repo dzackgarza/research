@@ -167,3 +167,23 @@ def test_iota_is_settled_as_isotropy_not_loop():
     # the loop reading is stated as smaller, by a quotient, and the transfer is flagged
     assert "isotropy" in body and "loop" in body
     assert "conditional" in body
+
+
+PSEUDO_AMPLE = "prop:d2a-family-is-pseudo-ample"
+SIGN_LOOP = "rmk:where-the-sign-is-a-loop"
+
+
+def test_the_family_is_pseudo_ample_so_dol96_thm_3_1_applies():
+    body = _block(MC.read_text(encoding="utf-8"), PSEUDO_AMPLE)
+    assert "nef and big" in body
+    assert "pseudo-ample" in body
+    assert "@Dol96, Thm. 3.1" in body
+    assert "chamber" in body
+
+
+def test_the_sign_reconciliation_names_both_moduli_problems():
+    body = _block(MC.read_text(encoding="utf-8"), SIGN_LOOP)
+    assert "@thm:coble-block-sign-in-w" in body
+    assert "@lem:d2-vanishing-reflections(4)" in body
+    assert "@thm:no-loop-carries-the-sign" in body
+    assert "two moduli problems" in body or "different moduli problems" in body
