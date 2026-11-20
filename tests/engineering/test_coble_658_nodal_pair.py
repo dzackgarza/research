@@ -113,7 +113,7 @@ def test_the_classical_model_cannot_host_the_witness():
     assert "they are not vanishing classes" in body
     assert "neither produced nor excluded by it" in body
     assert "(-4)$-Heegner divisor" in body
-    assert "the meridians to generate" in body
+    assert "(MG) the meridians of the Heegner divisors" in body
     assert "an input, not a result of this book" in body
     assert "cons:lefschetz-periods" in body
 
@@ -139,6 +139,18 @@ def test_the_cusp_correspondence_from_f_co_descends_under_the_lifting():
     assert "Ext}(\\Gamma_\\Co)\\subseteq\\Gamma_{\\En,2}" in block
     proof = page[start:start + 2000]
     assert "@cor:coble-lifting-under-conjecture" in proof
+
+
+def test_the_criterion_that_makes_a_period_computation_decisive():
+    """Item 1e is now an equivalence under two named hypotheses, plus one closed direction."""
+    lattices = (ROOT / "writing/coble/lattices-and-moduli/lattices.md").read_text(encoding="utf-8")
+    start = lattices.index("#rmk:gamma-co-nodal-pair-proposal")
+    body = lattices[start:lattices.index("\n:::", lattices.index("\n", start))]
+    assert "(PL) the local monodromy around" in body
+    assert "(MG) the meridians of the Heegner divisors" in body
+    assert "if and only if" in body or "\\iff" in body
+    assert "meets no Heegner divisor of positive square" in body
+    assert "Neither hypothesis is proved in this book" in body
 
 
 def _run_all() -> int:
