@@ -1,0 +1,59 @@
+
+==== B = I_{2,9}, 11 coordinates, 2048 classes ====
+Q-fibers (Q = 0,1,2,3): [ 528, 528, 496, 496 ]
+characteristic vectors w with b(w,x) = b(x,x): [ 2047 ]
+Q(w) = 1, so q(w) = 1/2
+H = {Q even} = w^perp has 1024 elements, dimension 10
+basis of H: [ 3, 5, 9, 17, 33, 65, 129, 257, 513, 1025 ]
+B = I_{2,9}: coordinate model of H checked on all 1024 vectors
+B = I_{2,9}: q|H-fibers [ 528, 496 ], Gauss sum 32 (plus type iff +2^5)
+B = I_{2,9}: generators (transvections with q(a) = 1): 496
+B = I_{2,9}: every generator preserves q
+B = I_{2,9}  level 1: |orbit| = 496, |target| = 496, equal = true
+B = I_{2,9}  level 2: |orbit| = 272, |target| = 272, equal = true
+B = I_{2,9}  level 3: |orbit| = 135, |target| = 135, equal = true
+B = I_{2,9}  level 4: |orbit| = 64, |target| = 64, equal = true
+B = I_{2,9}  level 5: |orbit| = 28, |target| = 28, equal = true
+B = I_{2,9}  level 6: |orbit| = 12, |target| = 12, equal = true
+B = I_{2,9}  level 7: |orbit| = 5, |target| = 5, equal = true
+B = I_{2,9}  level 8: |orbit| = 4, |target| = 4, equal = true
+B = I_{2,9}  level 9: |orbit| = 3, |target| = 3, equal = true
+B = I_{2,9}  level 10: |orbit| = 2, |target| = 2, equal = true
+B = I_{2,9}: chain verification true,  product of orbit lengths = 
+46998591897600
+B = I_{2,9}: cross-check by Schreier--Sims, |group| = 46998591897600
+B = I_{2,9}: |O(q)| = 46998591897600   (expected 46998591897600)
+
+==== K = I_{1,8}, 9 coordinates, 512 classes ====
+Q-fibers (Q = 0,1,2,3): [ 136, 136, 120, 120 ]
+characteristic vectors w with b(w,x) = b(x,x): [ 511 ]
+Q(w) = 1, so q(w) = 1/2
+H = {Q even} = w^perp has 256 elements, dimension 8
+basis of H: [ 3, 5, 9, 17, 33, 65, 129, 257 ]
+K = I_{1,8}: coordinate model of H checked on all 256 vectors
+K = I_{1,8}: q|H-fibers [ 136, 120 ], Gauss sum 16 (plus type iff +2^4)
+K = I_{1,8}: generators (transvections with q(a) = 1): 120
+K = I_{1,8}: every generator preserves q
+K = I_{1,8}  level 1: |orbit| = 135, |target| = 135, equal = true
+K = I_{1,8}  level 2: |orbit| = 64, |target| = 64, equal = true
+K = I_{1,8}  level 3: |orbit| = 28, |target| = 28, equal = true
+K = I_{1,8}  level 4: |orbit| = 12, |target| = 12, equal = true
+K = I_{1,8}  level 5: |orbit| = 5, |target| = 5, equal = true
+K = I_{1,8}  level 6: |orbit| = 4, |target| = 4, equal = true
+K = I_{1,8}  level 7: |orbit| = 3, |target| = 3, equal = true
+K = I_{1,8}  level 8: |orbit| = 2, |target| = 2, equal = true
+K = I_{1,8}: chain verification true,  product of orbit lengths = 348364800
+K = I_{1,8}: cross-check by Schreier--Sims, |group| = 348364800
+K = I_{1,8}: |O(q)| = 348364800   (expected 348364800)
+
+==== E_8/2E_8, q(y) = y^2/2 mod 2 ====
+q-fibers: [ 136, 120 ]
+Gauss sum sum (-1)^q = 16   (plus type iff +16)
+orthogonal hyperbolic pairs: [ [ 3, 6 ], [ 18, 34 ], [ 76, 78 ], [ 130, 208 ] 
+ ]
+standard plus-type count at m = 4: 2^7 + 2^3 = 136
+standard plus-type count at m = 5: 2^9 + 2^4 = 528
+
+==== summary ====
+|O(q_{T_Co})| = |O(q on B/2B)| = 46998591897600
+|O(q_{K(2)})| = |O(q on K/2K)| = |GO^+_8(2)| = 348364800
