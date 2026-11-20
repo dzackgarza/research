@@ -129,7 +129,7 @@ def test_no_page_asserts_the_equality_outside_the_conjecture():
     # the equality is now a theorem on the labelled base, and the page must say so
     lattices = (ROOT / "writing/coble/lattices-and-moduli/lattices.md").read_text(encoding="utf-8")
     assert "#thm:gamma-co-is-stable" in lattices
-    assert "\\Gamma_\\Co\\cdot\\theset{\\pm\\id}=\\widetilde\\Orth^+(T_\\Co)" in lattices
+    assert "\\Gamma_\\Co=\\widetilde\\Orth^+(T_\\Co)" in lattices
 
 
 def test_the_register_tracks_both_residues():

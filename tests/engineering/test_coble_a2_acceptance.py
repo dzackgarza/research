@@ -179,7 +179,7 @@ def test_a2_every_gamma_co_equality_is_named_with_its_base():
     # the equality is proved on the labelled base, and the page says so
     lattices = LATTICES.read_text()
     assert "#thm:gamma-co-is-stable" in lattices
-    assert "\\Gamma_\\Co\\cdot\\theset{\\pm\\id}=\\widetilde\\Orth^+(T_\\Co)" in lattices
+    assert "\\Gamma_\\Co=\\widetilde\\Orth^+(T_\\Co)" in lattices
     # no inclusion between Gamma_{Co,2} and Gamma_Co is asserted
     assert "no inclusion between it and $\\Gamma_\\Co$ is asserted" in PAGE.read_text()
 

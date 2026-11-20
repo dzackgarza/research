@@ -140,7 +140,7 @@ The equality
 $$
 \Gamma_\Co=\widetilde\Orth^+(T_\Co)
 $$
-was the stable-group conjecture of this chapter. It is a theorem on the base that @def:coble-family-unpolarized assigns to $\Gamma_\Co$: on the labelled base, $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ up to $\pm\id$ (@thm:gamma-co-is-stable). On the unlabelled base the group is strictly larger (@cor:gamma-co-inclusions(2)), and on the coarse space there is no family at all; the tautological local system of that quotient has monodromy $\Orth^+(T_\Co)$, which is not $\Gamma_\Co$ (@thm:gamma-co-is-full). Statements elsewhere in the book that were conditional on this equality therefore hold on the labelled base, and statements about the other two bases name their group.
+was the stable-group conjecture of this chapter. It is a theorem on the base that @def:coble-family-unpolarized assigns to $\Gamma_\Co$: on the labelled base, $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable). On the unlabelled base the group is strictly larger (@cor:gamma-co-inclusions(2)), and on the coarse space there is no family at all; the tautological local system of that quotient has monodromy $\Orth^+(T_\Co)$, which is not $\Gamma_\Co$ (@thm:gamma-co-is-full). Statements elsewhere in the book that were conditional on this equality therefore hold on the labelled base, and statements about the other two bases name their group.
 :::
 
 ::: {.remark #rmk:gamma-co-nodal-pair-proposal title="The $(-4)$-reflection: what is computed, and the three inputs that are missing"}
@@ -210,13 +210,30 @@ which is onto. Hence $\Gamma\subseteq\Gamma^{\mathrm{taut}}_\Co$, and the two in
 :::
 
 
+::: {.lemma #lem:gamma-co-labelled-index title="The labelled cover and the index $10!$"}
+
+Let $B\to\bar B$ be the cover of @lem:d2-labelling-cover, with the local system $\bT$ of @lem:d2-local-system and the monodromy groups
+$$\Gamma_\Co(B)=\rho\qty{\pi_1(B,s)},\qquad \Gamma_\Co(\bar B)=\rho\qty{\pi_1(\bar B,s)}$$
+of @lem:d2-local-system(4),(5), the base point of $B$ lying over that of $\bar B$. Then
+$$[\Gamma_\Co(\bar B):\Gamma_\Co(B)]=10!=3\,628\,800 .$$
+:::
+
+::: {.proof}
+
+$B\to\bar B$ is a principal $S_{10}$-bundle (@lem:d2-labelling-cover), so
+$$1\too\pi_1(B,s)\too\pi_1(\bar B,s)\too S_{10}\too1$$
+is exact; this is the statement of @lem:d2-local-system(5) that $\pi_1(B,s)$ is normal in $\pi_1(\bar B,s)$ with quotient $S_{10}$. The deck transformation $\sigma\in S_{10}$ permutes the ten labels, and its monodromy is the permutation of the classes $\varepsilon_1,\dots,\varepsilon_{10}$ of @lem:d2-local-system(2); a permutation of the labels acts faithfully on $A_M$ [@YZZ25, Lemma 6.7], so the action on the labels factors through the monodromy and the map
+$$\Gamma_\Co(\bar B)\too\pi_1(\bar B,s)/\pi_1(B,s)=S_{10}$$
+is well defined and onto. Its kernel is the image of $\pi_1(B,s)$, namely $\Gamma_\Co(B)$: an element of $\Gamma_\Co(\bar B)$ acts trivially on the labels exactly when it is the monodromy of a loop that lifts to $B$. Hence $\Gamma_\Co(\bar B)/\Gamma_\Co(B)\cong S_{10}$ and the index is $\abs{S_{10}}=10!$.
+:::
+
 ::: {.theorem #thm:gamma-co-is-stable title="G1: the monodromy group of the unpolarized Coble family is $\widetilde\Orth^+(T_\Co)$"}
 
 Let $V$ be the variety of labelled sextics of @not:d2-plane-sextic-base, whose quotient stack $[V/\SL_3]$ is the labelled base of @def:coble-family-unpolarized, item 3., let $\bT$ be the local system of lattices of @lem:d2-local-system, of fibre $T_\Co$, and let
 $$\rho\colon\pi_1(V,s)\too\Orth(T_\Co)$$
 be its monodromy representation, whose image is $\Gamma_\Co$ (@def:gamma-co-groups(1)). Then
-$$\Gamma_\Co\cdot\theset{\pm\id}=\widetilde\Orth^+(T_\Co).$$
-That is, the image of $\Gamma_\Co$ in $\Aut\qty(\bD(T_\Co)^+)=\Orth^+(T_\Co)/\theset{\pm\id}$ is the image of the stable subgroup, and $\fco=\bD(T_\Co)/\Gamma_\Co$ has the same coarse space as $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$.
+$$\Gamma_\Co=\widetilde\Orth^+(T_\Co).$$
+The image of $\Gamma_\Co$ in $\Aut\qty(\bD(T_\Co)^+)=\Orth^+(T_\Co)/\theset{\pm\id}$ is the image of the stable subgroup, and $\fco=\bD(T_\Co)/\Gamma_\Co$ has the same coarse space as $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$.
 :::
 
 ::: {.proof}
@@ -229,14 +246,18 @@ The moduli space of $M$-polarized K3 surfaces is constructed as $\bD(N)/\Orth(N)
 $$\widetilde\per_M\colon\widetilde V\too D_U$$
 is a homeomorphism onto $D_U$, being a lift of the homeomorphism $V\too U$ between the universal covers (@prop:lifted-period-map(4)); in particular $D_U$ is connected. So $D_U\too U$ is a covering with deck group $\Gamma/\theset{\pm\id}$, and $\pi_1(V,s)\too\Gamma/\theset{\pm\id}$ is onto.
 
-*The monodromy is that projection.* The period map is equivariant (@eq-period-map-equivariance): $\widetilde\per_M(\gamma\tilde b)=\rho(\gamma)\widetilde\per_M(\tilde b)$. A path in $\widetilde V$ from $\tilde b$ to $\gamma\tilde b$ projects to a loop of $V$ whose lift to $D_U$ runs from $\widetilde\per_M(\tilde b)$ to $\rho(\gamma)\widetilde\per_M(\tilde b)$; so $\rho(\gamma)$ is the deck transformation of $D_U\too U$ carrying one to the other, and every deck transformation arises from such a path. Hence $\rho\qty{\pi_1(V,s)}=\Gamma$ up to $\pm\id$, which is the display.
+*The monodromy is that projection.* The period map is equivariant (@eq-period-map-equivariance): $\widetilde\per_M(\gamma\tilde b)=\rho(\gamma)\widetilde\per_M(\tilde b)$. A path in $\widetilde V$ from $\tilde b$ to $\gamma\tilde b$ projects to a loop of $V$ whose lift to $D_U$ runs from $\widetilde\per_M(\tilde b)$ to $\rho(\gamma)\widetilde\per_M(\tilde b)$; so $\rho(\gamma)$ is the deck transformation of $D_U\too U$ carrying one to the other, and every deck transformation arises from such a path. Hence $\rho\qty{\pi_1(V,s)}\cdot\theset{\pm\id}=\Gamma$, which is the display up to the sign $\pm\id$; the sign is removed in the second proof.
+
+*Second proof, from D2a's own cover and no period map.* By @lem:coble-family-labelled-monodromy, $\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co)$. By @lem:gamma-co-labelled-index, $[\Gamma_\Co(\bar B):\Gamma_\Co(B)]=10!$, and by @thm:gamma-co-sextic-group, $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ and $[\Gamma_{10A_1}:\widetilde\Orth^+(T_\Co)]=10!$. Since $\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co)\subseteq\Gamma_{10A_1}$, the multiplicativity of the index gives
+$$[\widetilde\Orth^+(T_\Co):\Gamma_\Co(B)]=\frac{[\Gamma_{10A_1}:\Gamma_\Co(B)]}{[\Gamma_{10A_1}:\widetilde\Orth^+(T_\Co)]}=\frac{10!}{10!}=1,$$
+so $\Gamma_\Co(B)=\widetilde\Orth^+(T_\Co)$. This proof uses only the principal $S_{10}$-bundle of @lem:d2-labelling-cover, the flatness of the eleven classes (@lem:d2-local-system(2)) and the sextic-base theorem; no period map and no Torelli theorem enters.
 :::
 
 ::: {.proposition #prop:gamma-co-geometric-bound title="The discriminant image on each base"}
 
 Let $\Gamma_\Co$ be the monodromy group of the family of @def:coble-family-unpolarized.
 
-1. On the labelled base $B$, $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ up to $\pm\id$, so $\bar\rho(\Gamma_\Co)=\theset{1}$ (@thm:gamma-co-is-stable).
+1. On the labelled base $B$, $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$, so $\bar\rho(\Gamma_\Co)=\theset{1}$ (@thm:gamma-co-is-stable).
 2. On the unlabelled base $\bar B$, $\bar\rho(\Gamma_\Co(\bar B))\subseteq\Theta\definedas\gamma\,\bar\rho_M(\mathfrak S_{10})\,\gamma^{-1}$, where $\gamma\colon A_M\to A_N(-1)$ is the gluing isometry of @lem:coble-discriminant-actions-conjugate and $\mathfrak S_{10}$ permutes $e_1,\dots,e_{10}$ and fixes $e_0$. The group $\Theta$ is isomorphic to $\mathfrak S_{10}$, of order $10!$, and is a proper subgroup of $\Orth(q_{T_\Co})$ of index $2^{13}\cdot3\cdot17\cdot31=12\,951\,552$.
 3. On the coarse space $M_\Co$ there is no family (@rmk:d2-what-is-open(1)); the tautological local system of the quotient has monodromy $\Orth^+(T_\Co)$ (@thm:gamma-co-is-full), which is not $\Gamma_\Co$.
 :::
@@ -255,7 +276,7 @@ Let $T=10A_1$, so that $P=\generators{H}\oplus L$ with $L=A_1^{\oplus10}$ and $Q
 2. $\Gamma_{10A_1}=\Orth^+(T_\Co)\intersect\bar\rho^{-1}(\Theta)$.
 3. $[\Gamma_{10A_1}:\widetilde\Orth^+(T_\Co)]=|\Theta|=10!$ and
 $$[\Orth^+(T_\Co):\Gamma_{10A_1}]=\frac{\abs{\Orth(q_{T_\Co})}}{10!}=2^{13}\cdot3\cdot17\cdot31=12\,951\,552 .$$
-4. $\widetilde\Orth^+(T_\Co)\subsetneq\Gamma_{10A_1}\subsetneq\Orth^+(T_\Co)$; on the family of @def:coble-family-unpolarized the inclusion $\Gamma_\Co=\Gamma_\Co(B)\subseteq\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ of @lem:d2-local-system(5) has index $10!$.
+4. $\widetilde\Orth^+(T_\Co)\subsetneq\Gamma_{10A_1}\subsetneq\Orth^+(T_\Co)$; on the family of @def:coble-family-unpolarized the inclusion $\Gamma_\Co=\Gamma_\Co(B)\subseteq\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ of @lem:d2-local-system(5) has index $10!$ (@lem:gamma-co-labelled-index).
 :::
 
 ::: {.proof}
@@ -270,12 +291,12 @@ $$[\Orth^+(T_\Co):\Gamma_{10A_1}]=\frac{\abs{\Orth(q_{T_\Co})}}{10!}=2^{13}\cdot
 
 (3). By @thm:two-elementary-surjectivity the map $\bar\rho\colon\Orth(T_\Co)\to\Orth(q_{T_\Co})$ is onto, its hypotheses being that $T_\Co$ is even, indefinite and $2$-elementary, which it is: $T_\Co=\generators{2}\oplus E_{10}(2)$ of signature $(2,9)$ (@prop:coble-period-domain(2)). The kernel $\ker\bar\rho$ contains the reflection $s_\zeta$ in a primitive vector $\zeta$ of square $2$, and $s_\zeta\notin\Orth^+(T_\Co)$ (@prop:gamma-co-reflective-set(2)); so of the two cosets of $\ker\bar\rho$ over a class $g\in\Orth(q_{T_\Co})$ one lies in $\Orth^+$, and $\bar\rho$ maps $\Orth^+(T_\Co)$ onto $\Orth(q_{T_\Co})$. Hence $\Orth^+(T_\Co)\intersect\bar\rho^{-1}(\Theta)\to\Theta$ is onto with kernel $\Orth^+(T_\Co)\intersect\ker\bar\rho=\widetilde\Orth^+(T_\Co)$, so the first index is $|\Theta|=10!$, and the second is $|\Orth(q_{T_\Co})|/10!$ with $|\Orth(q_{T_\Co})|$ from @prop:coble-discriminant-group.
 
-(4). Both indices in (3) exceed $1$. The last clause is (2) together with @thm:gamma-co-is-stable, which gives $\Gamma_\Co(B)=\widetilde\Orth^+(T_\Co)$ up to $\pm\id$, and @lem:d2-local-system(5) for the containment.
+(4). Both indices in (3) exceed $1$. The last clause is @lem:gamma-co-labelled-index, which gives the index of $\Gamma_\Co(B)$ in $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ from the $S_{10}$-cover, with @lem:d2-local-system(5) for the containment; it does not use the labelled-base theorem.
 :::
 
 ::: {.corollary #cor:gamma-co-inclusions title="What G1 decides for the stable group"}
 
-1. *The labelled base, the base of $\Gamma_\Co$* (@def:coble-family-unpolarized). $\Gamma_\Co\cdot\theset{\pm\id}=\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable): the forward and the reverse inclusion both hold, so @conj:gamma-co-stable is true on this base, and $\fco$ has the coarse space of $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$. Every count stated for the stable quotient is therefore a count for $\fco$: $527$ $0$-cusps (@thm:coble-zero-cusp-count(2)) and $189\,720$ $1$-cusps (@thm:plane-fibre(3)).
+1. *The labelled base, the base of $\Gamma_\Co$* (@def:coble-family-unpolarized). $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable): the forward and the reverse inclusion both hold, so @conj:gamma-co-stable is true on this base, and $\fco$ has the coarse space of $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$. Every count stated for the stable quotient is therefore a count for $\fco$: $527$ $0$-cusps (@thm:coble-zero-cusp-count(2)) and $189\,720$ $1$-cusps (@thm:plane-fibre(3)).
 2. *The unlabelled base.* $\Gamma_\Co(\bar B)=\Gamma_{10A_1}=\Orth^+(T_\Co)\intersect\bar\rho^{-1}(\Theta)$ (@thm:gamma-co-sextic-group), so
 $$\widetilde\Orth^+(T_\Co)\subsetneq\Gamma_{10A_1}\subsetneq\Orth^+(T_\Co),\qquad[\Gamma_{10A_1}:\widetilde\Orth^+(T_\Co)]=10!,\qquad[\Orth^+(T_\Co):\Gamma_{10A_1}]=12\,951\,552 .$$
 The inclusion $\Gamma_\Co\subseteq\Gamma_\Co(\bar B)$ is @lem:d2-local-system(5), and its index is $10!$ by @thm:gamma-co-sextic-group(4).
@@ -293,7 +314,7 @@ So the answer to G1 depends on the base, and the base is part of D2a; on the lab
 
 ::: {.remark #rmk:gamma-co-status title="What is established about $\Gamma_\Co$"}
 
-On the labelled base of D2a, $\Gamma_\Co\cdot\theset{\pm\id}=\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable): the forward inclusion is @lem:coble-family-labelled-monodromy, and the reverse inclusion is the period-map argument of the theorem. So @conj:gamma-co-stable holds on the base the definition names, and $\fco=\bD(T_\Co)/\Gamma_\Co$ has the coarse space of $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$; every cusp count for the stable quotient is a count for $\fco$ (@cor:gamma-co-inclusions(1)).
+On the labelled base of D2a, $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable): the forward inclusion is @lem:coble-family-labelled-monodromy, and the reverse inclusion is the period-map argument of the theorem. So @conj:gamma-co-stable holds on the base the definition names, and $\fco=\bD(T_\Co)/\Gamma_\Co$ has the coarse space of $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$; every cusp count for the stable quotient is a count for $\fco$ (@cor:gamma-co-inclusions(1)).
 
 Three things are not settled here. The sign: whether $-\id_{T_\Co}\in\Gamma_\Co$ is not seen by the period map, which is constant on $\pm\id$; it is the question of @qst:b25-sign-holonomy and does not change $\fco$. The index: $\Gamma_\Co\subseteq\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ has index $10!$ (@thm:gamma-co-sextic-group(4)), so the comparison of bases 2 and 3 is settled as well. And the coarse quotient: its tautological group is $\Orth^+(T_\Co)$, not $\Gamma_\Co$ (@thm:gamma-co-is-full).
 :::
