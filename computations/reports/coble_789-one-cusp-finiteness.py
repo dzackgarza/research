@@ -19,10 +19,9 @@ Pi = <u,v> inside T_Co = delta^perp with
 and alpha = delta = e - f.  Here z = delta lies in u^perp and v^perp, so
 E_{u,delta}(delta) = delta + 2u and E_{v,delta}(delta) = delta + 2v.
 
-Inputs: AEGS, Nagoya Math. J. 259 (2025), Def. 2.3, printed p. 586 (T_En);
-Sterk, Math. Z. 207 (1991), (4.2.3), printed p. 16 (the cusp vector e');
-Gritsenko-Hulek-Sankaran, arXiv:0810.1614, section 3.1, Lemma 3.1,
-printed pp. 8-9 (the Eichler transvection).
+Inputs: AEGS, Nagoya Math. J. 259 (2025), Def. 2.3 (T_En);
+Sterk, Math. Z. 207 (1991), (4.2.3) (the cusp vector e');
+Gritsenko-Hulek-Sankaran, arXiv:0810.1614, section 3.1, Lemma 3.1 (the Eichler transvection).
 """
 from sage.all import matrix, vector, ZZ, QQ, block_diagonal_matrix, CartanMatrix
 

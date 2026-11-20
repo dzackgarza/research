@@ -10,10 +10,9 @@ computes, in exact arithmetic, its decomposition along
 and the q-values of the U(2)- and E8(2)-components, hence which of the four
 P-orbits of prop:coble-cong-point-stabilizer(2) the class lies in.
 
-Inputs: Sterk, Math. Z. 207 (1991), (4.2.3), printed p. 16, for the five
-representatives and their y_3, y_4; Dolgachev-Kondo, Izv. Math. 77 (2013), (3.6),
-printed p. 513, for T_Co = <2> + U(2) + E8(2); AEGS, Nagoya Math. J. 259 (2025),
-Def. 2.3, printed p. 586, for T_En.
+Inputs: Sterk, Math. Z. 207 (1991), (4.2.3), for the five
+representatives and their y_3, y_4; Dolgachev-Kondo, Izv. Math. 77 (2013), (3.6), for T_Co = <2> + U(2) + E8(2); AEGS, Nagoya Math. J. 259 (2025),
+Def. 2.3, for T_En.
 
 Output: for each k, the three components of eta_k/2 (h-part, U(2)-part,
 E8(2)-part), the q-value of each, and the size of the P-orbit.

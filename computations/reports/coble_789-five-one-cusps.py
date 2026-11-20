@@ -1,6 +1,6 @@
 """#789: the five remaining 1-cusps of F_En,2 and the (-2)-vectors in Pi^perp/Pi.
 
-Sterk (Math. Z. 207 (1991), 4.3.17, printed pp. 27-28) lists five further
+Sterk (Math. Z. 207 (1991), 4.3.17) lists five further
 1-cusp types {2,4,5}, {4,5}, {3,5}, {3,4}, {5,5}.  For each, this script
 takes the plane realised in computations/reports/coble_gammaEn2-planes-published.py
 and computes Pi^perp/Pi, its 16 vectors of square -2, and the reflection orbits
@@ -10,8 +10,8 @@ Output: for each type, det(Pi^perp/Pi) = 64, 16 vectors of square -2, and the
 orbit decomposition under the reflections in all of them: eight orbits of size
 two, i.e. the sixteen vectors are eight mutually orthogonal antipodal pairs.
 
-Inputs: AEGS, Nagoya Math. J. 259 (2025), Def. 2.3, printed p. 586 (T_En);
-Sterk, (4.2.3), printed p. 16 (the cusp vectors), 4.3.17, printed pp. 27-28
+Inputs: AEGS, Nagoya Math. J. 259 (2025), Def. 2.3 (T_En);
+Sterk, (4.2.3) (the cusp vectors), 4.3.17
 (the five types); the plane realisations are those of
 computations/reports/coble_gammaEn2-planes-published.py.
 """

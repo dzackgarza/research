@@ -9,10 +9,10 @@ Two checks, both exact integer arithmetic in SageMath:
 
 (B) The explicit isometry N of K = U + E8(2) with N(e-f) = e+f+a_1.
 
-Inputs: AEGS Def. 2.3 (printed p. 586) for T_En; Sterk (4.2.2)-(4.2.3) (printed p. 16)
-for the basis and delta; Sterk Prop. 2.7 (printed p. 6) for Gamma_{En,2} as the group
+Inputs: AEGS Def. 2.3 () for T_En; Sterk (4.2.2)-(4.2.3) ()
+for the basis and delta; Sterk Prop. 2.7 () for Gamma_{En,2} as the group
 preserving the decomposition of A_{T_En}; Gritsenko-Hulek, arXiv:0810.1614v1, section 3.1,
-Lemma 3.1 and the integrality assertion after (10), printed pp. 8-9, for the integrality
+Lemma 3.1 and the integrality assertion after (10), for the integrality
 of the transvection.
 """
 from sage.all import matrix, vector, ZZ, QQ, block_diagonal_matrix, CartanMatrix

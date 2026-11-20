@@ -120,6 +120,14 @@ Let $[\Pi]$ be one of the four $1$-cusps of $F_{\En,2}$ whose closure contains S
 Sterk computes the four one-dimensional boundary components (@def:coble-surface) whose closure contains the $0$-cusp $e$ [@Ste91, 4.3.5]: "These four classes are not distinguished by the isomorphism (@def:isomorphism-of-objects) type of $F^{\perp}/F$ ... In all cases we even (@def:form-axioms) find the same isomorphism type, namely $E_8(-2)$" [@Ste91, 4.3.5], and the four types are listed in [@Ste91, 4.3.16]. In the notation of this page $E_8(-2)$ is $E_8(2)$. Its Gram matrix is $-2C(E_8)$, with diagonal (@def:polarization-functors) entries $-4$ and off-diagonal entries $0$ or $2$, so for $x = \sum x_i\alpha_i$ one has $x^2 = -4\sum x_i^2+4\sum_{i<j,\ \alpha_i\cdot\alpha_j = 2}x_ix_j$, a multiple of $4$; in particular $-2$ does not occur. Since $\Pi$ is isotropic (@def:orthogonal-complement), the class of a vector $\alpha\perp\Pi$ in $\Pi^{\perp}/\Pi$ has square $\alpha^2$, so an $\alpha$ with $\alpha^2 = -2$ cannot exist. The fibre, which is the set of $\Stab_{\gent}(\Pi)$-orbits of such $\alpha$ (@thm:b2-one-cusps), is therefore empty. The case $\Pi = \langle e,e'\rangle$ of the type $\{1,2\}$ is checked directly in `computations/reports/coble_789-one-cusp-empty.py`: $\Pi^{\perp\ten} = \langle e,e'\rangle\oplus E_8(2)$.
 :::
 
+::: {.lemma #lem:minus-id-in-gent title="$-\id_{T_\En}$ lies in $\gent$ and identifies a lift with its negative"}
+The isometry $-\id_{T_\En}$ lies in $\gent$; it fixes every primitive isotropic subspace of $\ten$ and sends $\alpha$ to $-\alpha$. Hence, for a primitive isotropic plane $\Pi$, the lifts of the class $r\in\Pi^{\perp\ten}/\Pi$ and of the class $-r$ lie in one $\Stab_{\gent}(\Pi)$-orbit, and the fibre of @thm:b2-one-cusps over $[\Pi]$ is a set of orbits on the antipodal pairs $\{\pm\bar\alpha\}$, of which there are at most eight.
+:::
+
+::: {.proof}
+$\gent$ is the set of $g\in\Orth(\ten)$ whose induced map on $A_{\ten}$ preserves the decomposition $A_{U(2)}\oplus A_{E_8(2)}$ [@AEGS25, Def. 2.6; @Ste91, Prop. 2.7]. The group $A_{\ten}$ is $2$-torsion, so $-\id$ acts trivially on it, hence preserves the decomposition; so $-\id\in\gent$. It is scalar, so it fixes every subspace of $\ten$, in particular $\Pi$; and it sends a vector to its negative. So a lift of $r$ and a lift of $-r$ differ by an element of $\Stab_{\gent}(\Pi)$, and the map from the fibre to the set of pairs $\{\bar\alpha,-\bar\alpha\}$ is well defined. Since $\Pi$ is primitive, $\Pi^{\perp}/\Pi$ is torsion free, so $r\neq -r$ for a class with $r^2 = -2$; the pairs are two-element sets, and there are at most eight of them.
+:::
+
 ::: {.lemma #lem:divisibility-decides-one-cusp title="Divisibility of a $(-2)$-class in $\Pi^{\perp\ten}/\Pi$ decides its lifts"}
 Let $\Pi\subset\ten$ be a primitive isotropic plane, $L_0 \definedas \Pi^{\perp\ten}/\Pi$, let $r\in L_0$ have $r^2 = -2$, and let $\alpha\in\Pi^{\perp\ten}$ be a lift of $r$ with $\alpha^2 = -2$. For $w\in\Pi$ put $d_w\ZZ \definedas \{(\alpha,z) : z\in w^{\perp\ten}\}$. Then:
 
@@ -133,24 +141,22 @@ $1$. Since $\Pi\subset\Pi^{\perp}$ one has $\Pi^{\perp}\subset w^{\perp}$, so th
 $2$. By $1$ and the hypothesis $d_w = 1$ for every $w\in\Pi$, so for each such $w$ there is $z\in w^{\perp}$ with $(\alpha,z) = 1$; the transvection $E_{w,z}$ of @lem:one-cusp-fibre-finite lies in $\gent$, preserves $\Pi$ setwise and sends $\alpha$ to $\alpha-w$. Every vector of $\Pi$ is isotropic, so taking $w$ to run over a basis $u,v$ of $\Pi$ shows that $\alpha-u$ and $\alpha-v$ lie in the orbit, hence $\alpha-p$ lies in the orbit for every $p\in\Pi$. Any other lift of $r$ is $\alpha-p$ for some $p\in\Pi$. Hence one orbit.
 :::
 
-::: {.theorem #lem:five-one-cusps-nonempty title="The exact fibre over each of the other five $1$-cusps: $16$ points"}
+::: {.theorem #lem:five-one-cusps-nonempty title="The five remaining $1$-cusps: nonempty fibres, at most eight points each, seven in all"}
 Let $[\Pi]$ be one of Sterk's five further $1$-cusps, of types $\{2,4,5\}$, $\{4,5\}$, $\{3,5\}$, $\{3,4\}$ and $\{5,5\}$ [@Ste91, 4.3.17]. Then:
 
 1. $\Pi$ is primitive in $\ten$, and for a choice of a complementary basis the Gram matrix $G_0$ of $L_0 = \Pi^{\perp\ten}/\Pi$ is exact: its determinant is $64$, and $L_0$ has exactly $16$ vectors of square $-2$;
 2. every one of those $16$ classes has $\mathrm{div}_{L_0}$ equal to $1$, certified by an explicit $z\in\Pi^{\perp}$ with $(\alpha,z) = 1$;
-3. hence, by @lem:divisibility-decides-one-cusp, each class contributes exactly one orbit, and the fibre of the $1$-cusp map of @thm:b2-one-cusps over $[\Pi]$ has exactly $16$ points.
+3. hence, by @lem:divisibility-decides-one-cusp, all lifts of any one class form a single $\Stab_{\gent}(\Pi)$-orbit, so the fibre of @thm:b2-one-cusps over $[\Pi]$ is the set of orbits on the eight antipodal pairs (@lem:minus-id-in-gent) and has at most $8$ points;
+4. the total number of $1$-cusps of $D(T_\Co)/R$ over the five types is $7$, not the number of pairs: the $R$-orbits on the primitive isotropic planes of $T_\Co$ number $7$ (@cor:coble-heegner-integral-plane-descent, which applies to $R$ because $\ker\bar\rho\subseteq R$; @thm:cusp-lifting(4)). So the five fibres are nonempty sets of at most $8$ points with total $7$, that is either $(3,1,1,1,1)$ or $(2,2,1,1,1)$ in some order;
+5. which of the two distributions holds is not determined here: it is the number of orbits of $\Stab_{\gent}(\Pi)$ on the eight antipodal pairs, and the computation below decides only the classes and the lifts of a single class.
 :::
 
 ::: {.proof}
-The computation is `computations/reports/coble_789-one-cusp-divisibility.py`, whose transcript is printed beside it.
+$1$ and $2$ are `computations/reports/coble_789-one-cusp-divisibility.py`, whose transcript is printed beside it: for each of the five planes the run checks that $\{u,v\}$ has Smith form $[1,1]$, so $\Pi$ is primitive in $\ten$; takes a basis $K$ of the kernel of the two functionals $(\cdot,u),(\cdot,v)$, which is $\Pi^{\perp}$; expresses $u,v$ in that basis with integer coordinates $C$; exhibits a complement $R_0$ with $\det(C;R_0) = \pm1$, the certificate that $R_0$ together with $u,v$ is a basis of $\Pi^{\perp}$, so that $G_0 = R_0\,G_{\Pi^{\perp}}\,R_0^{\mathsf T}$ is the Gram matrix of $L_0$ and not of a finite-index sublattice; finds the sixteen vectors of square $-2$ by an exact rational $LDL^{\mathsf T}$ pruning, with no short-vector library call; and lifts each to an integral $\alpha$ with $\alpha\perp\Pi$, $\alpha^2 = -2$, solving $(\alpha,z) = 1$ by extended gcd.
 
-$1$. For each of the five planes the run checks that $\{u,v\}$ has Smith form $[1,1]$, so $\Pi$ is primitive in $\ten$; takes a basis $K$ of the kernel of the two functionals $(\cdot,u),(\cdot,v)$, which is $\Pi^{\perp}$; expresses $u,v$ in that basis with integer coordinates $C$; and exhibits a complement $R$ with $\det(C;R) = \pm1$. That determinant is the certificate that $R$ together with $u,v$ is a basis of $\Pi^{\perp}$, so $G_0 = R\,G_{\Pi^{\perp}}\,R^{\mathsf T}$ is the Gram matrix of $L_0$ and not of a finite-index sublattice. The run records $\det G_0 = 64$.
+$3$ is @lem:divisibility-decides-one-cusp(2), which gives one orbit per class, together with @lem:minus-id-in-gent, which identifies the classes $r$ and $-r$; the sixteen classes therefore fall into at most eight orbits, one for each antipodal pair.
 
-The sixteen vectors of square $-2$ are then found exhaustively and without a short-vector library call: with $A = -G_0$ positive definite and $A = L\,D\,L^{\mathsf T}$ its exact rational $LDL^{\mathsf T}$ decomposition (the run checks $L\,D\,L^{\mathsf T} = A$), one has $x^{\mathsf T}Ax = \sum_k D_k\bigl(\sum_{j\ge k}L_{jk}x_j\bigr)^2$, the $k$-th summand depends only on $x_k,\dots,x_7$, and the enumeration runs from $x_7$ down to $x_0$ pruning on the exact rational partial sum against $2$. Every branch is decided by exact rational comparisons, and the run reports $16$ in each case.
-
-$2$. For each of the sixteen classes the run lifts the class to an integral $\alpha$ with $\alpha\perp\Pi$ and $\alpha^2 = -2$, and solves the congruence $(\alpha,z) = 1$ over $z\in\Pi^{\perp}$ by extended gcd on the coefficients of a basis of $\Pi^{\perp}$; the solution is verified, not searched. It reports $\mathrm{div} = 1$ for all sixteen classes of all five planes.
-
-$3$ is @lem:divisibility-decides-one-cusp(2) applied to the sixteen classes. The sixteen classes are distinct in $L_0$, and the class of a lift is $\Stab_{\gent}(\Pi)$-invariant, so distinct classes give distinct orbits; hence exactly $16$.
+$4$ is @cor:coble-heegner-integral-plane-descent as used at the count of primitive isotropic plane orbits of $R$; the five types are those with nonempty fibre by $1$--$3$ and @lem:one-cusp-over-cusp-one-empty, and they partition the seven. $5$: a computation of the orbits on the pairs would be a computation of the image of $\Stab_{\gent}(\Pi)$ in $\Orth(L_0)$, which neither the present record nor any other on the page performs.
 :::
 
 ## The fibre over Sterk's cusp $2$: the smallest case
@@ -294,8 +300,9 @@ The fibres of $\Phi_0$ partition the $0$-cusps of $D(T_\Co)/R$: $\Phi_0$ is well
 
 ::: {.theorem #thm:cusp-diagram-tco title="The cusp diagram of $D(T_\Co)/R$"}
 1. *$0$-cusps.* There are four, written $0_2$, $0_3$, $0_4$, $0_5$, lying one over each of Sterk's $0$-cusps $2$, $3$, $4$, $5$, and none over cusp $1$ (@thm:cusp-fibres-four).
-2. *$1$-cusps.* A $1$-cusp of $D(T_\Co)/R$ lies over exactly one of Sterk's nine $1$-cusps, whose type is a subset $T\subset\{1,2,3,4,5\}$ [@AEGS25, Not. 3.1]. There are none over the four types $\{1,2\}$, $\{1,3\}$, $\{1,4\}$, $\{1,5\}$ (@lem:one-cusp-over-cusp-one-empty), and exactly $16$ over each of the five types $\{2,4,5\}$, $\{4,5\}$, $\{3,5\}$, $\{3,4\}$, $\{5,5\}$ (@lem:five-one-cusps-nonempty); $80$ in all.
-3. *Incidence.* For $k\in\{2,3,4,5\}$ the $0$-cusp $0_k$ lies in the closure of a $1$-cusp over $T$ exactly when $k\in T$. Hence $0_2$ is incident to the $16$ $1$-cusps over $\{2,4,5\}$; $0_3$ to the $32$ over $\{3,5\}$ and $\{3,4\}$; $0_4$ to the $48$ over $\{2,4,5\}$, $\{4,5\}$ and $\{3,4\}$; and $0_5$ to the $64$ over $\{2,4,5\}$, $\{4,5\}$, $\{3,5\}$ and $\{5,5\}$. There are $160$ incidence edges.
+2. *$1$-cusps.* A $1$-cusp of $D(T_\Co)/R$ lies over exactly one of Sterk's nine $1$-cusps, whose type is a subset $T\subset\{1,2,3,4,5\}$ [@AEGS25, Not. 3.1]. There are none over the four types $\{1,2\}$, $\{1,3\}$, $\{1,4\}$, $\{1,5\}$ (@lem:one-cusp-over-cusp-one-empty), and $7$ in all over the five types $\{2,4,5\}$, $\{4,5\}$, $\{3,5\}$, $\{3,4\}$, $\{5,5\}$, each of those five fibres being nonempty with at most $8$ points (@lem:five-one-cusps-nonempty).
+3. *Incidence.* For $k\in\{2,3,4,5\}$ the $0$-cusp $0_k$ lies in the closure of a $1$-cusp over $T$ exactly when $k\in T$. Consequently $0_2$ meets only the $1$-cusps over $\{2,4,5\}$, $0_3$ those over $\{3,5\}$ and $\{3,4\}$, $0_4$ those over $\{2,4,5\}$, $\{4,5\}$ and $\{3,4\}$, and $0_5$ those over $\{2,4,5\}$, $\{4,5\}$, $\{3,5\}$ and $\{5,5\}$.
+4. The number of incidence edges is not determined by $1$--$3$: it is $\sum_T \#\{1\text{-cusps over }T\}\cdot\#(T\cap\{2,3,4,5\})$, and the individual $\#\{1\text{-cusps over }T\}$ are the distribution left open in @lem:five-one-cusps-nonempty(5).
 :::
 
 ::: {.proof}
@@ -305,7 +312,7 @@ $1$ is @thm:cusp-fibres-four, and $2$ is @thm:b2-one-cusps with @lem:one-cusp-ov
 
 *Sufficiency in $3$.* Let $\Pi'$ be a primitive isotropic plane of $T_\Co$ representing a $1$-cusp of $D(T_\Co)/R$ over $T$, and let $k\in T$ with $k\neq1$. By [@AEGS25, Not. 3.1] the label $k$ is the label of some primitive isotropic line $\ell\subset\Pi$ of $\ten$; conjugating by an element of $\gent$ gives $\ell\subset\Pi'$, and $\ell\subset T_\Co$ because $\Pi'\subset T_\Co$. So the $R$-orbit of $\ell$ is a $0$-cusp of $D(T_\Co)/R$ over $k$, hence is $0_k$ by @thm:cusp-fibres-four, and it is incident to $[\Pi']_R$ because $\ell\subset\Pi'$.
 
-*The edge count.* The types containing $k$ are those listed, each carrying $16$ $1$-cusps by $2$; summing over $k$ gives $16(3+2+2+2+1) = 160$.
+$4$ is immediate from the incidence rule and the fact, recorded in @lem:five-one-cusps-nonempty(5), that the per-type numbers are not computed.
 :::
 
 ::: {.remark #rmk:certified-versus-printed-chamber title="The certified cusp-$2$ chamber and Sterk's printed roots"}
@@ -313,5 +320,5 @@ The ten walls of the certified chamber of @thm:ou-e8-transitive are $\alpha_1,\d
 :::
 
 ::: {.remark #rmk:cusp-fibre-what-remains title="Which input decides which fibre"}
-The fibre over Sterk's $0$-cusp $2$ is decided directly: the image of $\Stab_{\gent}(e')$ is the full orthogonal group of the cusp lattice [@Ste91, 4.3.6], that group is transitive on the $(-2)$-vectors (@thm:ou-e8-transitive), and the $\ZZ e'$-translates are absorbed by the transvections of @lem:ze-translates-in-gent. At Sterk's $0$-cusps $3$, $4$, $5$ the same argument does not apply, because the stabilizer image is the group generated by the printed reflections and the symmetries of their diagram, $\{\pm1\}W_k\rtimes S_k$ [@Ste91, 4.3.7--4.3.9], and $W_k$ is a proper subgroup of $W(K_k)$ of index $240$, $270$, $34\,560$ (@thm:sterk-reflection-subgroup-index); what decides those three fibres is the count of four $R$-orbits (@thm:four-r-orbits) together with @prop:fibres-three-four-five. The five $1$-cusp fibres are decided by @lem:five-one-cusps-nonempty, whose input is the explicit transvection computation of `computations/reports/coble_789-one-cusp-fibres.py` rather than any statement about the cusp stabilizer images.
+The fibre over Sterk's $0$-cusp $2$ is decided directly: the image of $\Stab_{\gent}(e')$ is the full orthogonal group of the cusp lattice [@Ste91, 4.3.6], that group is transitive on the $(-2)$-vectors (@thm:ou-e8-transitive), and the $\ZZ e'$-translates are absorbed by the transvections of @lem:ze-translates-in-gent. At Sterk's $0$-cusps $3$, $4$, $5$ the same argument does not apply, because the stabilizer image is the group generated by the printed reflections and the symmetries of their diagram, $\{\pm1\}W_k\rtimes S_k$ [@Ste91, 4.3.7--4.3.9], and $W_k$ is a proper subgroup of $W(K_k)$ of index $240$, $270$, $34\,560$ (@thm:sterk-reflection-subgroup-index); what decides those three fibres is the count of four $R$-orbits (@thm:four-r-orbits) together with @prop:fibres-three-four-five. The five $1$-cusp fibres are decided by @lem:five-one-cusps-nonempty, whose input is the divisibility computation of `computations/reports/coble_789-one-cusp-divisibility.py` rather than any statement about the cusp stabilizer images.
 :::
