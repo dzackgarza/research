@@ -526,9 +526,9 @@ Third, *the Deligne--Mumford property fails*, and it is not merely unproved: @le
 
 ::: {.definition #def:involution-stack title="The stack of $\mathrm{K3}$ surfaces with a nonsymplectic involution of type $(11,11,1)$"}
 
-On $S_0=\Spec\ZZ[1/2]$-schemes of finite presentation, let $\mathfrak{Inv}$ assign to $Y$ the groupoid of pairs $\qty{\mcx\xrightarrow{f}Y,\ \iota}$ with $f$ flat projective of finite presentation, each geometric fibre a $\mathrm{K3}$ surface, $\iota$ an involution of $\mcx$ over $Y$, and each geometric fibre satisfying:
+On $S_0=\Spec\ZZ[1/2]$-schemes of finite presentation (@def:finite-presentation), let $\mathfrak{Inv}$ assign to $Y$ the groupoid of pairs $\qty{\mcx\xrightarrow{f}Y,\ \iota}$ with $f$ flat projective of finite presentation, each geometric fibre a $\mathrm{K3}$ surface, $\iota$ an involution of $\mcx$ over $Y$, and each geometric fibre satisfying:
 
-1. the invariant lattice $H^2(X_b)^{\iota_b}$ is isometric to $M=\generators{2}\oplus\generators{-2}^{\oplus10}$, of $2$-elementary type $(11,11,1)$ (@prop:coble-period-domain(1)--(2), [@AE22, §2A]);
+1. the invariant lattice (@def:invariant_coinvariant_lattices) $H^2(X_b)^{\iota_b}$ is isometric to $M=\generators{2}\oplus\generators{-2}^{\oplus10}$, of $2$-elementary type $(11,11,1)$ (@prop:coble-period-domain(1)--(2), [@AE22, §2A]);
 2. $\operatorname{Fix}(\iota_b)$ is either empty or a smooth rational curve $R_b$ with $R_b^2=-2$;
 
 with morphisms the $\iota$-equivariant Cartesian squares and pullback the fibre product.
@@ -544,17 +544,17 @@ Let $S$ be a smooth projective rational surface and $m\geq1$. Then $H^0\qty(S,\o
 
 *On $\PP^2$.* The Euler sequence $0\to\Omega^1\to\OO(-1)^{\oplus3}\to\OO\to0$ embeds $\Omega^1$ in $\OO(-1)^{\oplus3}$, hence $\operatorname{Sym}^m\Omega^1$ in $\operatorname{Sym}^m\qty(\OO(-1)^{\oplus3})\cong\OO(-m)^{\oplus N}$, whose sections vanish for $m\geq1$. So $H^0\qty(\PP^2,\operatorname{Sym}^m\Omega^1)=0$.
 
-*Invariance under a blow-up.* Let $\pi\colon S'\to S$ be the blow-up at a point with exceptional curve $E$. Since $\pi$ is an isomorphism over $S\sm\theset{p}$, a section of $\operatorname{Sym}^m\Omega^1_{S'}$ restricts to a section over $S\sm\theset{p}$; conversely a section $\omega$ over $S\sm\theset{p}$ pulls back to $\pi^*\omega$, which is a section of $\operatorname{Sym}^m\Omega^1$ on $S'\sm E$ and extends across $E$ because $\omega$ extends across $p$, $S$ being smooth there. Both directions are inverse on sections, so
+*Invariance under a blow-up.* Let $\pi\colon S'\to S$ be the blow-up at a point with exceptional curve $E$. Since $\pi$ is an isomorphism (@def:isomorphism-of-objects) over $S\sm\theset{p}$, a section of $\operatorname{Sym}^m\Omega^1_{S'}$ restricts to a section over $S\sm\theset{p}$; conversely a section $\omega$ over $S\sm\theset{p}$ pulls back to $\pi^*\omega$, which is a section of $\operatorname{Sym}^m\Omega^1$ on $S'\sm E$ and extends across $E$ because $\omega$ extends across $p$, $S$ being smooth there. Both directions are inverse on sections, so
 $$H^0\qty(S',\operatorname{Sym}^m\Omega^1_{S'})\cong H^0\qty(S\sm\theset{p},\operatorname{Sym}^m\Omega^1_S)=H^0\qty(S,\operatorname{Sym}^m\Omega^1_S),$$
 the last equality because $S$ is smooth and a section over a dense open set of a vector bundle extends uniquely.
 
 *The Hirzebruch surfaces.* Let $F_n$ be the ruled surface $\PP\qty(\OO_{\PP^1}\oplus\OO_{\PP^1}(n))$ over $\PP^1$ with $n\neq1$, with cotangent sequence
 $$0\too f^*\Omega^1_{\PP^1}\too\Omega^1_{F_n}\too\Omega^1_{F_n/\PP^1}\too0 .$$
-A surjection onto a sheaf with no sections says nothing about the source, so the argument goes through the **filtration** of $\operatorname{Sym}^m\Omega^1_{F_n}$ induced by this extension: its graded pieces are
+A surjection onto a sheaf with no sections says nothing about the source (@def:globular-boundary), so the argument goes through the **filtration** of $\operatorname{Sym}^m\Omega^1_{F_n}$ induced by this extension: its graded pieces are
 $$\operatorname{Sym}^k\qty(f^*\Omega^1_{\PP^1})\tensor\operatorname{Sym}^{m-k}\qty(\Omega^1_{F_n/\PP^1}),\qquad k=0,1,\dots,m .$$
 On a fibre $F\cong\PP^1$ one has $f^*\Omega^1_{\PP^1}|_F=\OO$ and $\Omega^1_{F_n/\PP^1}|_F=\Omega^1_F=\OO(-2)$, so the $k$-th piece restricts to $\OO(-2(m-k))$:
 
-- for $k<m$ this has negative degree, so a section of the piece restricts to $0$ on **every** fibre, hence vanishes at every point of $F_n$ and is zero;
+- for $k<m$ this has negative degree (@def:graded-object), so a section of the piece restricts to $0$ on **every** fibre, hence vanishes at every point of $F_n$ and is zero;
 - for $k=m$ the piece is $f^*\OO_{\PP^1}(-2m)$, and $H^0\qty(F_n,f^*\OO(-2m))=H^0\qty(\PP^1,\OO(-2m))=0$.
 
 The graded pieces of the filtration therefore have no sections, and $H^0$ of an extension with both ends section-free is zero, so by induction along the filtration $H^0\qty(F_n,\operatorname{Sym}^m\Omega^1)=0$.
@@ -661,7 +661,7 @@ $$
 $$
 assigns to $Y$ the groupoid whose **objects** are triples $\qty{\mcs\xrightarrow{f}Y,\ \mcx\xrightarrow{\pi}\mcs,\ \iota}$ with:
 
-1. $f$ flat, proper and of finite presentation (@def:finite-presentation), whose geometric fibres are Coble surfaces $S$ in the sense of [@DZ99, Introduction] — nonsingular projective rational with $\abs{-K_S}=\emptyset$ and $\abs{-2K_S}\neq\emptyset$ — **with $\abs{-2K_S}$ consisting of a single curve $C$, smooth and hence irreducible**. Both halves of that condition are forced by the owner's object. Smoothness: the cover branched along a non-reduced member is neither normal nor a $\mathrm{K3}$ surface, so a non-reduced member is not admissible. A single component: the volume's Coble moduli is $F_{\Co}=F_{\Co,1}$, the $n=1$ case of $F_{\Co,n}$, where $\abs{-2K_S}=C_1+\cdots+C_n$ (@prop:coble-k3-cover); a smooth divisor with $n>1$ components has $\chi(\operatorname{Fix}\iota)=2n$ and invariant lattice of rank $10+n$, not the $M$ of type $(11,11,1)$ [@DZ99, §6, Proposition 6.4(2)];
+1. $f$ flat, proper and of finite presentation (@def:finite-presentation), whose geometric fibres are Coble surfaces $S$ in the sense of [@DZ99, Introduction] — nonsingular projective rational with $\abs{-K_S}=\emptyset$ and $\abs{-2K_S}\neq\emptyset$ — **with $\abs{-2K_S}$ consisting of a single curve $C$, smooth and hence irreducible**. Both halves of that condition are forced by the owner's object. Smoothness: the cover branched along a non-reduced member is neither normal nor a $\mathrm{K3}$ surface, so a non-reduced member is not admissible. A single component: the volume's Coble moduli is $F_{\Co}=F_{\Co,1}$, the $n=1$ case of $F_{\Co,n}$, where $\abs{-2K_S}=C_1+\cdots+C_n$ (@prop:coble-k3-cover); a smooth divisor with $n>1$ components has $\chi(\operatorname{Fix}\iota)=2n$ and invariant lattice (@def:invariant_coinvariant_lattices) of rank $10+n$, not the $M$ of type $(11,11,1)$ [@DZ99, §6, Proposition 6.4(2)];
 2. $\pi$ the relative double cover branched along $\mcC$, that single smooth member; since $\mcC=2\mcD$ for $\mcD=-\K_{\mcs/Y}$, the cover exists, is smooth because $\mcC$ is, its canonical class is $\pi^*(K_{\mcs/Y}+\mcD)=0$, so its fibres are $\mathrm{K3}$ surfaces [@DK13, §3], and their invariant lattice is $M$ of type $(11,11,1)$ because the fixed curve is a single smooth rational curve (@prop:coble-period-domain(1)--(2));
 3. $\iota$ the covering involution of $\pi$;
 
@@ -1704,11 +1704,11 @@ Let $\mcM$ be the stack of @def:coble-moduli-functor over $\CC$ with the analyti
 1. The map $i_*\colon\pi_1(\mcM^{\mathrm{gen}})\to\pi_1(\mcM)$ induced by the inclusion is **onto**.
 2. Consequently, for the local system $T_\Co$ on $\mcM$ and its restriction to $\mcM^{\mathrm{gen}}$, $\rho^{\mathrm{gen}}=\rho\circ i_*$ and
 $$\Gamma_\Co=\rho\qty(\pi_1(\mcM))=\rho^{\mathrm{gen}}\qty(\pi_1(\mcM^{\mathrm{gen}})).$$
-A computation on the generic substack therefore computes the global monodromy group, and no "enlargement" is involved.
+A computation on the generic substack therefore computes the global monodromy group (@def:transport-and-monodromy), and no "enlargement" is involved.
 :::
 
 ::: {.proof}
-1. A loop of $\mcM$ is a compact one-dimensional object and the complement $Z=\mcM\sm\mcM^{\mathrm{gen}}$ is a closed analytic substack of positive codimension, so the loop can be perturbed off $Z$ rel base point, and the perturbation is a homotopy of loops in $\mcM$; hence every class in $\pi_1(\mcM)$ has a representative lying in $\mcM^{\mathrm{gen}}$, which is exactly the surjectivity. For the scheme case this is [SGA 1, Exposé X, Corollaire 3.3], which states more: for $X$ locally noetherian and normal and $Z\subset X$ closed of codimension $\ge2$, the map $\pi_1(X\sm Z)\to\pi_1(X)$ is an isomorphism, and it is therefore onto under the weaker hypothesis of codimension $\ge1$ used here, the proof being the same perturbation.
+1. A loop (@def:based-loop) of $\mcM$ is a compact one-dimensional object and the complement $Z=\mcM\sm\mcM^{\mathrm{gen}}$ is a closed analytic substack of positive codimension, so the loop can be perturbed off $Z$ rel base point, and the perturbation is a homotopy of loops in $\mcM$; hence every class in $\pi_1(\mcM)$ has a representative lying in $\mcM^{\mathrm{gen}}$, which is exactly the surjectivity. For the scheme case this is [SGA 1, Exposé X, Corollaire 3.3], which states more: for $X$ locally noetherian and normal and $Z\subset X$ closed of codimension $\ge2$, the map $\pi_1(X\sm Z)\to\pi_1(X)$ is an isomorphism, and it is therefore onto under the weaker hypothesis of codimension $\ge1$ used here, the proof being the same perturbation.
 2. $\rho^{\mathrm{gen}}=\rho\circ i_*$ is the definition of the restriction of a local system; with $i_*$ onto by 1, the two images coincide.
 :::
 
@@ -1717,7 +1717,7 @@ A computation on the generic substack therefore computes the global monodromy gr
 ::: {.lemma #lem:the-special-isotropy-locus-is-proper title="The special-isotropy locus is a proper closed analytic substack, so its complement has positive codimension"}
 Let $G=\widetilde\Orth^+(T_\Co)$ act on $\bD=\bD(T_\Co)^+$, and let
 $$Z_{\mathrm{sp}}\definedas\bigcup_{g\in G,\ g\neq\pm\id}\Fix(g)$$
-be the locus of periods whose stabiliser is strictly larger than $\{\pm\id\}$. Then each $\Fix(g)$ is a proper closed analytic subset of $\bD$, the union is locally finite, $Z_{\mathrm{sp}}$ is a proper closed analytic subset, and its complement has positive codimension. Hence $\mcM^{\mathrm{gen}}$ has complement of positive codimension in $\mcM$, and @prop:the-generic-locus-sees-the-whole-group applies to it.
+be the locus of periods whose stabiliser is strictly larger than $\{\pm\id\}$. Then each $\Fix(g)$ is a proper closed analytic subset (@def:closed-analytic-subset) of $\bD$, the union is locally finite, $Z_{\mathrm{sp}}$ is a proper closed analytic subset, and its complement has positive codimension. Hence $\mcM^{\mathrm{gen}}$ has complement of positive codimension in $\mcM$, and @prop:the-generic-locus-sees-the-whole-group applies to it.
 :::
 
 ::: {.proof}
