@@ -534,6 +534,25 @@ On $S_0=\Spec\ZZ[1/2]$-schemes of finite presentation, let $\mathfrak{Inv}$ assi
 with morphisms the $\iota$-equivariant Cartesian squares and pullback the fibre product.
 :::
 
+::: {.proposition #prop:coble-stack-smooth-connected title="$\mcM_\Co$ is smooth, and connected on the classical subfamily; where the isotropy is larger"}
+
+1. *Smoothness.* Every geometric fibre $S_b$ is a rational surface, so $H^0(S_b,\Omega^1)=0$ and, by Serre duality $H^2(S_b,T_{S_b})\cong H^0(S_b,\Omega^1_{S_b})^*$, the obstruction space $H^2(S_b,T_{S_b})$ vanishes. Deformations of $S_b$ are therefore unobstructed, and $\mcM_\Co$ is a smooth stack at every point.
+2. *Connectedness on the classical subfamily.* $V$ is irreducible (@not:d2-plane-sextic-base), hence $B=V/\PGL_3$ and $\bar B=\qty[B/S_{10}]$ are connected; the classical objects are exactly the image of $\bar B$ (@prop:coble-plane-model-comparison(1)), so the piece of $\mcM_\Co$ carried by the classical subfamily is connected.
+3. *Connectedness of the whole functor.* Open. The essential surjectivity of @prop:coble-plane-model-comparison(1) is proved for the classical subfamily only, so nothing proved places an object with $n=1$ but not classical — if such exists, which is the open comparison of @rmk:coble-class-smooth-antinbicanonical — in the image of $\bar B$.
+4. *The larger-isotropy locus.* The points whose isotropy strictly contains $\theset{\id,\iota}$ are those whose period lies in a hyperplane fixed by an extra isometry; the image of $\Aut(S_b)$ in $\Orth(T_\Co)$ is finite (@lem:period-stabiliser-finite), so the locus is a countable union of proper closed analytic subsets of the period domain, one for each nontrivial element of the finitely many possible stabilisers. It is therefore nowhere dense, and it is not shown here to be closed or to be finite in number.
+:::
+
+::: {.proof}
+
+(1) Serre duality on a smooth projective surface gives $H^2(S,T_S)\cong H^0(S,\Omega^1_S\otimes K_S)^*$, and for a rational surface $H^0(S,\Omega^1_S)=0$, the space of holomorphic $1$-forms being a birational invariant that vanishes on $\PP^2$. With the obstruction space zero the deformation functor is unobstructed, so the stack is smooth by the standard criterion that a stack locally of finite presentation with vanishing obstruction spaces is formally smooth over $\CC$.
+
+(2) $V$ is irreducible (@not:d2-plane-sextic-base), the quotients of an irreducible space by an algebraic group action are irreducible, and the image of a connected space under an essentially surjective map of stacks is connected.
+
+(3) is the statement that no proof of essential surjectivity beyond the classical subfamily exists on the page; the widened class of @def:coble-moduli-functor is larger and its comparison with the classical one is @rmk:coble-class-smooth-antinbicanonical.
+
+(4) An isometry of $T_\Co$ fixing a period point is determined by its action on that point's Hodge structure, and the extra automorphisms occur exactly where the period lies in the fixed locus of a nontrivial isometry; each such fixed locus is a proper closed analytic subset, and there are countably many isometries. Their union is therefore meagre, and the claim that it is closed, or that finitely many of them occur on the Coble locus, is not proved.
+:::
+
 ::: {.lemma #lem:involution-stack title="$\mathfrak{Inv}$ is a stack, and the Coble stack sits in it"}
 
 1. $\mathfrak{Inv}$ satisfies fppf descent, hence étale descent, by the argument of @lem:enriques-partial-compactification-stack: the fibre conditions of @def:involution-stack are conditions on geometric fibres, and the involution descends as a morphism.
