@@ -271,13 +271,9 @@ Let $\mathcal S\to B$ be a family of Coble surfaces over a connected base, with 
 
 Transport is an isometry (@prop:local-system-of-lattices-monodromy), and it carries $D^+$ to $D^+$: the period map of the family is single-valued on the connected base, so $\rho(\gamma)$ permutes the components of $\bD(T_\Co)$ and fixes the one containing the periods (@eq-period-map-equivariance).
 
-*The component stabilizer, modulo the kernel.* The lattice $T_\Co$ carries the weight-$2$ Hodge structure of its K3 double cover and its $(1,1)$-part vanishes --- $T_\Co$ is transcendental --- so the case $h^{1,1}=0$ of @thm:period-domain-component-stabilizer applies (on the input of @lem:weight-two-positive-subspace): the image of $\Stab_{G_\bR}(D^+)$ in $\Orth(T_\Co\otimes\bR)/\theset{\pm\id}$ is the image of the identity component $G_\bR^\circ=\SO(T_\Co\otimes\bR)\intersect\Theta_\bR(T_\Co\otimes\bR)$. The kernel is taken because $-\id$ acts trivially on $\bD(T_\Co)$, every point being a line, and $-\id\notin\SO$ at odd rank, $T_\Co$ having rank $11$; so the stabilizer itself is
-$$\Stab_{G_\bR}(D^+) = G_\bR^\circ\cup(-\id)\,G_\bR^\circ,$$
-which is a subgroup because $-\id$ normalizes $G_\bR^\circ$ and squares to the identity.
-
-*Both pieces lie in the spinor kernel.* $G_\bR^\circ\subseteq\Theta_\bR$ by definition (@def:lattice-spinor-kernels), and
-$$\spinornorm_\bR(-\id_{T_\Co}) = [(-1)^2] = [1]$$
-by @lem:minus-identity-spinor-norm, the positive index of $T_\Co$ being $2$. So $\Stab_{G_\bR}(D^+)\subseteq\Theta_\bR(T_\Co\otimes\bR) = \Orth^+(T_\Co)$ (@conv:spinor-positive-subgroup), and $\rho(\gamma)$ lies there.
+*The component stabilizer.* The lattice $T_\Co$ carries the weight-$2$ Hodge structure of its K3 double cover, with Hodge numbers $h^{2,0}=1$ --- a holomorphic $2$-form is anti-invariant under the non-symplectic involution --- and $h^{1,1}=9$, the signature being $(2,9)$ (@prop:coble-transcendental). So the case $h^{m,m}>0$ of @thm:period-domain-component-stabilizer applies with $m=1$ and $\epsilon=1$, and
+$$\Stab_{G_\bR}(D^+)=\Theta_\bR(T_\Co\otimes\bR).$$
+By @conv:spinor-positive-subgroup this is $\Orth^+(T_\Co)$, and $\rho(\gamma)$ lies there.
 
 The conclusion is sharp and is not containment in $\SO$: a reflection $s_\delta$ in a vector of square $-2$ has $\det = -1$ and $\spinornorm_\bR(s_\delta) = [-\delta^2/2] = [1]$, so it lies in $\Orth^+$ and not in $\SO$, and @prop:monodromy-contains-root-reflections places such reflections in the geometric monodromy. What the lifting needs is the spinor condition, which is what this lemma gives.
 :::
