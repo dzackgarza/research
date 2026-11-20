@@ -102,6 +102,6 @@ assert m[(2, 4, 5)] == 1 and m[(5,)] == 2
 assert m[(3, 5)] == 2 and m[(3, 4)] == 1 and m[(4, 5)] == 1, dict(m)
 print("")
 print("conclusion: m = 1, 1, 2, 1, 2 for the types {2,4,5}, {4,5}, {3,5}, {3,4}, {5,5};")
-print("(the type {5,5} of Sterk AEGS Not. 3.1 is the label set {5}, its closure meeting 0_5 twice)")
+print("(the type {5,5} of Sterk AEGS Not. 3.1 is the label set {5}; its two plane\norbits each meet 0_5 once, which is the degree 2 that 0_5 gains from them)")
 print("degrees 0_2 = 1, 0_3 = 3, 0_4 = 3, 0_5 = 6; 13 edges.")
 print("This is the third alternative of thm:one-cusp-multiplicities(4).")

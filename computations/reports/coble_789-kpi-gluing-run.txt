@@ -1,0 +1,16 @@
+det Gram(A) = (-2)^8 = 256, det K_Pi = 64, so [K_Pi : A]^2 = 4
+type (2, 4, 5) eight orthogonal (-2)-lines; w = [0, 0, 0, 0, 0, 0, 0, 1] has dual coordinates ['1/2', '-1/2', '-1/2', '-1/2', '-1/2', '-1/2', '-1/2', '1/2'],
+            so the gluing class in A*/A has weight 8 of 8
+type (4, 5)    eight orthogonal (-2)-lines; w = [0, 0, 0, 1, 0, 0, 0, 0] has dual coordinates ['1/2', '1/2', '-1/2', '-1/2', '-1/2', '-1/2', '-1/2', '-1/2'],
+            so the gluing class in A*/A has weight 8 of 8
+type (3, 5)    eight orthogonal (-2)-lines; w = [0, 0, 0, 0, 0, 1, 0, 0] has dual coordinates ['1/2', '-1/2', '-1/2', '-1/2', '-1/2', '-1/2', '1/2', '1/2'],
+            so the gluing class in A*/A has weight 8 of 8
+type (3, 4)    eight orthogonal (-2)-lines; w = [0, 0, 0, 0, 0, 1, 0, 0] has dual coordinates ['-1/2', '1/2', '1/2', '1/2', '1/2', '1/2', '1/2', '-1/2'],
+            so the gluing class in A*/A has weight 8 of 8
+type (5, 5)    eight orthogonal (-2)-lines; w = [0, 0, 0, 1, 0, 0, 0, 0] has dual coordinates ['-1/2', '1/2', '1/2', '1/2', '-1/2', '-1/2', '-1/2', '-1/2'],
+            so the gluing class in A*/A has weight 8 of 8
+
+conclusion: K_Pi = A + ZZ*(l_1+...+l_8)/2 in each of the five cases, so
+O(K_Pi) permutes the eight antipodal pairs as the full symmetric group S_8
+and is transitive on them.  The orbits of the SUBGROUP
+im(Stab_{Gamma_En,2}(Pi)) are not computed here.
