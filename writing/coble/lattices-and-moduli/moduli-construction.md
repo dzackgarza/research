@@ -534,21 +534,38 @@ On $S_0=\Spec\ZZ[1/2]$-schemes of finite presentation, let $\mathfrak{Inv}$ assi
 with morphisms the $\iota$-equivariant Cartesian squares and pullback the fibre product.
 :::
 
+::: {.lemma #lem:sym-cotangent-birational title="$\mathrm{Sym}^m$ of the cotangent sheaf has no sections on a rational surface"}
+
+Let $S$ be a smooth projective rational surface and $m\geq1$. Then $H^0\qty(S,\operatorname{Sym}^m\Omega^1_S)=0$.
+
+:::
+
+::: {.proof}
+
+*On $\PP^2$.* The Euler sequence $0\to\Omega^1\to\OO(-1)^{\oplus3}\to\OO\to0$ embeds $\Omega^1$ in $\OO(-1)^{\oplus3}$, hence $\operatorname{Sym}^m\Omega^1$ in $\operatorname{Sym}^m\qty(\OO(-1)^{\oplus3})\cong\OO(-m)^{\oplus N}$, whose sections vanish for $m\geq1$. So $H^0\qty(\PP^2,\operatorname{Sym}^m\Omega^1)=0$.
+
+*Invariance under a blow-up.* Let $\pi\colon S'\to S$ be the blow-up at a point with exceptional curve $E$. Since $\pi$ is an isomorphism over $S\sm\theset{p}$, a section of $\operatorname{Sym}^m\Omega^1_{S'}$ restricts to a section over $S\sm\theset{p}$; conversely a section $\omega$ over $S\sm\theset{p}$ pulls back to $\pi^*\omega$, which is a section of $\operatorname{Sym}^m\Omega^1$ on $S'\sm E$ and extends across $E$ because $\omega$ extends across $p$, $S$ being smooth there. Both directions are inverse on sections, so
+$$H^0\qty(S',\operatorname{Sym}^m\Omega^1_{S'})\cong H^0\qty(S\sm\theset{p},\operatorname{Sym}^m\Omega^1_S)=H^0\qty(S,\operatorname{Sym}^m\Omega^1_S),$$
+the last equality because $S$ is smooth and a section over a dense open set of a vector bundle extends uniquely.
+
+*A rational surface.* Every rational surface is obtained from $\PP^2$ by a sequence of blow-ups and blow-downs, so the invariance gives $H^0\qty(S,\operatorname{Sym}^m\Omega^1_S)=H^0\qty(\PP^2,\operatorname{Sym}^m\Omega^1)=0$.
+:::
+
 ::: {.proposition #prop:coble-stack-smooth-connected title="$\mcM_\Co$ is smooth, and connected on the classical subfamily; where the isotropy is larger"}
 
 1. *Smoothness.* Every geometric fibre $S_b$ is a rational surface, so $H^0(S_b,\Omega^1)=0$ and, by Serre duality $H^2(S_b,T_{S_b})\cong H^0(S_b,\Omega^1_{S_b})^*$, the obstruction space $H^2(S_b,T_{S_b})$ vanishes. Deformations of $S_b$ are therefore unobstructed, and $\mcM_\Co$ is a smooth stack at every point.
 2. *Connectedness on the classical subfamily.* $V$ is irreducible (@not:d2-plane-sextic-base), hence $B=V/\PGL_3$ and $\bar B=\qty[B/S_{10}]$ are connected; the classical objects are exactly the image of $\bar B$ (@prop:coble-plane-model-comparison(1)), so the piece of $\mcM_\Co$ carried by the classical subfamily is connected.
-3. *Connectedness of the whole functor.* Open. The essential surjectivity of @prop:coble-plane-model-comparison(1) is proved for the classical subfamily only, so nothing proved places an object with $n=1$ but not classical — if such exists, which is the open comparison of @rmk:coble-class-smooth-antinbicanonical — in the image of $\bar B$.
+3. *Connectedness of the whole functor*, given the labelled step of research#797's items 3 and 4: if the period map of the labelled stack is onto $\bD(T_\Co)\sm Z$ and an equivalence onto an open part of $\qty[\qty(\bD(T_\Co)\sm Z)/G]$, then the labelled stack is connected, being the continuous image of the connected space $\bD(T_\Co)\sm Z$; and the map from the labelled stack to $\mcM_\Co$ is onto, every object admitting a labelling. A continuous image of a connected space is connected, so $\mcM_\Co$ is connected. **No plane-model argument is needed**, and the classical-subfamily restriction of @prop:coble-plane-model-comparison(1) is not used.
 4. *The larger-isotropy locus.* The points whose isotropy strictly contains $\theset{\id,\iota}$ are those whose period lies in a hyperplane fixed by an extra isometry; the image of $\Aut(S_b)$ in $\Orth(T_\Co)$ is finite (@lem:period-stabiliser-finite), so the locus is a countable union of proper closed analytic subsets of the period domain, one for each nontrivial element of the finitely many possible stabilisers. It is therefore nowhere dense, and it is not shown here to be closed or to be finite in number.
 :::
 
 ::: {.proof}
 
-(1) Serre duality on a smooth projective surface gives $H^2(S,T_S)\cong H^0(S,\Omega^1_S\otimes K_S)^*$, and for a rational surface $H^0(S,\Omega^1_S)=0$, the space of holomorphic $1$-forms being a birational invariant that vanishes on $\PP^2$. With the obstruction space zero the deformation functor is unobstructed, so the stack is smooth by the standard criterion that a stack locally of finite presentation with vanishing obstruction spaces is formally smooth over $\CC$.
+(1) Serre duality on a smooth projective surface gives $H^2(S,T_S)\cong H^0(S,\Omega^1_S\otimes K_S)^*$, so it suffices to show that $H^0(S,\Omega^1\otimes K_S)$ vanishes, and the vanishing of $H^0(\Omega^1)$ alone does **not** give it: tensoring by $K_S$ can create sections. The argument is instead: a nonzero section $s$ of $\Omega^1\otimes K_S$ has $s^2\neq0$ in $H^0\qty(S,\operatorname{Sym}^2\Omega^1\otimes 2K_S)$; the anti-bicanonical curve $C$ is a section of $\OO(-2K_S)$, so $s^2\cdot C$ is a nonzero section of $\operatorname{Sym}^2\Omega^1$; and that space has no sections on a rational surface by @lem:sym-cotangent-birational. Hence $H^0(S,\Omega^1\otimes K_S)=0$, the obstruction space vanishes, deformations are unobstructed, and the stack is smooth by the standard criterion that a stack locally of finite presentation with vanishing obstruction spaces is formally smooth over $\CC$.
 
 (2) $V$ is irreducible (@not:d2-plane-sextic-base), the quotients of an irreducible space by an algebraic group action are irreducible, and the image of a connected space under an essentially surjective map of stacks is connected.
 
-(3) is the statement that no proof of essential surjectivity beyond the classical subfamily exists on the page; the widened class of @def:coble-moduli-functor is larger and its comparison with the classical one is @rmk:coble-class-smooth-antinbicanonical.
+(3) The labelled stack is the image of the connected period domain under the period map, and the map to $\mcM_\Co$ forgetting the labelling is onto by construction, since a labelling is extra structure on an object and not a condition. So $\mcM_\Co$ is connected once the labelled step is granted, and the only input is that step.
 
 (4) An isometry of $T_\Co$ fixing a period point is determined by its action on that point's Hodge structure, and the extra automorphisms occur exactly where the period lies in the fixed locus of a nontrivial isometry; each such fixed locus is a proper closed analytic subset, and there are countably many isometries. Their union is therefore meagre, and the claim that it is closed, or that finitely many of them occur on the Coble locus, is not proved.
 :::
