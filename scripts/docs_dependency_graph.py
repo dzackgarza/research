@@ -200,10 +200,6 @@ DEFINING = frozenset({"definition", "construction", "notation", "convention"})
 def defined_terms(defines: str) -> list[str]:
     """The terms a `defines` attribute lists, in order: "a; b" is ["a", "b"]."""
     return [" ".join(t.split()) for t in defines.split(";") if t.strip()]
-# A span of this class holds words that read as a defined term but are meant in another
-# sense, as "right adjoints" of a functor beside the right adjoints of a pairing. The
-# uncited-use check skips them; the page renders them as plain text.
-OTHER_SENSE = "other-sense"
 
 
 class Kind(StrEnum):
@@ -301,9 +297,6 @@ def contents(elem: pf.Element, block_classes: set[str]) -> Contents:
         if isinstance(e, pf.Cite):
             found.cited.extend((c.id, pf.stringify(pf.Span(*c.suffix)).strip(" ,"))
                                for c in e.citations)
-            return
-        if isinstance(e, pf.Span) and OTHER_SENSE in e.classes:
-            words.append(" ")
             return
         if isinstance(e, pf.Str):
             words.append(e.text)

@@ -110,9 +110,9 @@ Q_f
 $$
 in $R\text{-}\mathbf{Mod}$ has torsion-free $Q_f$.
 Write $\operatorname{PrimEmb}(L,M)$ for the set of morphisms satisfying this condition.
-A subobject of $M$ (@def:subobject-relation) is *primitive* when any representing monomorphism has this [property]{.other-sense}.
+A subobject of $M$ (@def:subobject-relation) is *primitive* when any representing monomorphism has this property.
 
-Identities are primitive, and primitivity is [closed]{.other-sense} under composition.
+Identities are primitive, and primitivity is closed (@def:closed-monoidal) under composition.
 For primitive $f\colon L\to M$ and $g\colon M\to P$, the canonical cokernel maps fit into the short exact sequence (@def:exact-complex)
 $$
 0\too Q_f\too Q_{gf}\too Q_g\too0.
@@ -175,7 +175,7 @@ If $b_M$ is perfect (@def:polarization), it exists and equals $(b_M^\sharp)^{-1}
 ::: {.proposition #prop:adjoint-matrix title="The adjoint in coordinates"}
 
 Let $(M,b_M),(N,b_N)\in\mathcal B_{R,R}$ have finite free (@def:module-subcategories) underlying $R$-modules.
-Choose ordered [bases]{.other-sense} $B_M,B_N$ and write
+Choose ordered bases $B_M,B_N$ and write
 $$
 G_M\definedas[b_M]_{B_M},\qquad G_N\definedas[b_N]_{B_N},\qquad
 A\definedas[f]_{B_N\leftarrow B_M}.
@@ -207,31 +207,31 @@ $$
 \Hom_{\mathcal B_{R,W}}\qty{M(\lambda),N},
 $$
 where $M(\lambda)$ is the twist of @def:form-twist.
-An element of this Hom-set is a **similarity morphism of multiplier $\lambda$**. For $W=R$, finite free (@def:module-subcategories) $M,N$, and chosen [bases]{.other-sense} $B_M,B_N$, a morphism $f\in\operatorname{Sim}_\lambda(M,N)$ with matrix $A=[f]_{B_N\leftarrow B_M}$ satisfies $A^{\mathsf T}G_NA=\lambda G_M$.
-If $M$ and $N$ have equal [rank]{.other-sense} $n$, then $\det(A)^2\det(G_N)=\lambda^n\det(G_M)$.
+An element of this Hom-set is a **similarity morphism of multiplier $\lambda$**. For $W=R$, finite free (@def:module-subcategories) $M,N$, and chosen bases $B_M,B_N$, a morphism $f\in\operatorname{Sim}_\lambda(M,N)$ with matrix $A=[f]_{B_N\leftarrow B_M}$ satisfies $A^{\mathsf T}G_NA=\lambda G_M$.
+If $M$ and $N$ have equal rank $n$, then $\det(A)^2\det(G_N)=\lambda^n\det(G_M)$.
 :::
 
 ::: {.proposition #prop:embedding-index title="The index of an embedding"}
 
-Let $f\colon L\to M$ be a morphism of $\mathbf{Lat}_{\bZ}$ between lattices of the same [rank]{.other-sense} $n$.
+Let $f\colon L\to M$ be a morphism of $\mathbf{Lat}_{\bZ}$ between lattices of the same rank $n$.
 Then its cokernel (@def:kernel-cokernel) sequence
 $$
 0\too L\xrightarrow{f}M\too Q_f\too0
 $$
 has a finitely generated (@def:module-subcategories) torsion $\bZ$-module $Q_f$.
 Its cardinality is the index $[M:f(L)]$ of @def:index, and $\det(b_L)=[M:f(L)]^{2}\det(b_M)$.
-Choose ordered [bases]{.other-sense} $B_L,B_M$ and write $G_L=[b_L]_{B_L}$, $G_M=[b_M]_{B_M}$, and $A=[f]_{B_M\leftarrow B_L}$.
+Choose ordered bases $B_L,B_M$ and write $G_L=[b_L]_{B_L}$, $G_M=[b_M]_{B_M}$, and $A=[f]_{B_M\leftarrow B_L}$.
 Then $G_L=A^{\mathsf T}G_MA$ and $\abs{\det A}=[M:f(L)]$.
 Index $1$ holds exactly for the isometries.
 :::
 
 ::: {.proof}
 
-$Q_f$ is finitely generated because $L$ is, and torsion because $f$ is injective with $L,M$ of equal [rank]{.other-sense}, so $\rank Q_f=0$ over the domain $\bZ$.
+$Q_f$ is finitely generated because $L$ is, and torsion because $f$ is injective with $L,M$ of equal rank, so $\rank Q_f=0$ over the domain $\bZ$.
 
 For the matrix identity, apply the adjoint formula of @prop:adjoint-matrix: the identity $G_L=A^{\mathsf T}G_MA$ is the coordinate statement of $f^{*}b_M=b_L$, the condition for $f$ to be a morphism of $\mathbf{Lat}_\bZ$.
 Then $\det G_L=\det(A)^{2}\det G_M$, and by @def:determinant-class $\det b_L$ and $\det b_M$ are the classes of these determinants up to squares of units, so $\det(b_L)=\det(b_M)[M:f(L)]^{2}$ once $\abs{\det A}=[M:f(L)]$ is known.
-That last equality is the index formula for a map of free (@def:module-subcategories) $\bZ$-modules of equal [rank]{.other-sense}: $Q_f\cong\bZ^{n}/A\bZ^{n}$, of order $\abs{\det A}$.
+That last equality is the index formula for a map of free (@def:module-subcategories) $\bZ$-modules of equal rank: $Q_f\cong\bZ^{n}/A\bZ^{n}$, of order $\abs{\det A}$.
 
 Index $1$ is $\abs{\det A}=1$, that is $A\in\GL_n(\bZ)$, that is $A$ invertible over $\bZ$; and $G_L=A^{\mathsf T}G_MA$ with $A$ invertible is exactly $f\in O(L)$ by @prop:adjoint-matrix.
 :::
@@ -239,7 +239,7 @@ Index $1$ is $\abs{\det A}=1$, that is $A\in\GL_n(\bZ)$, that is $A$ invertible 
 ## Matrix realizations
 
 ::: {.proposition #prop:matrix-realizations title="Matrix realizations of isometry and automorphism groups"}
-Let $L\in\mathbf{Lat}_R$ with $U(L)$ free (@def:module-subcategories) of [rank]{.other-sense} $n$.
+Let $L\in\mathbf{Lat}_R$ with $U(L)$ free (@def:module-subcategories) of rank $n$.
 Choose an ordered basis (@def:based-module) $B_L$, let $c_{B_L}\colon U(L)\isoto R^n$ be the coordinate isomorphism (@def:isomorphism-of-objects), and write $G_L=[b_L]_{B_L}$.
 Conjugation by $c_{B_L}$ gives
 $$

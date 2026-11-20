@@ -86,7 +86,7 @@ $$
 R_Z=\tfrac12\rho^*B_W,\quad R_{Z'}=\tfrac12\rho'^*B_W,
 \qquad D_Z=\rho^*C_W,\quad D_{Z'}=\rho'^*C_W.
 $$
-The pair $(W,C_W+\tfrac{1+\eps}{2}B_W)$ is del Pezzo ADE and $Z'$ is its [index]{.other-sense}-one anticanonical cover. The quotient $Z$ has [index]{.other-sense} $2$:
+The pair $(W,C_W+\tfrac{1+\eps}{2}B_W)$ is del Pezzo ADE and $Z'$ is its index-one anticanonical cover. The quotient $Z$ has index (@def:index) $2$:
 $$
 2(K_Z+D_Z)\sim0,\qquad K_Z+D_Z\not\sim0.
 $$
@@ -100,9 +100,9 @@ The map $\rho'$ branches along $C_W$ and some isolated branch points of $\varphi
 
 ::: {.proof}
 
-The quotient diagram gives the divisor [pullbacks]{.other-sense}. Hurwitz gives the canonical identities. The involution $\iota_{\mathrm{Nik}}$ is symplectic, so its invariant canonical eigensheaf satisfies $\mathcal O_{Z'}(K_{Z'}+D_{Z'})\simeq\mathcal O_{Z'}$; the [index]{.other-sense}-one assertion follows from the ADE double-cover correspondence [@AT17, Lem. 2.3].
+The quotient diagram gives the divisor pullbacks (@def:pullback-square). Hurwitz gives the canonical identities. The involution $\iota_{\mathrm{Nik}}$ is symplectic, so its invariant canonical eigensheaf satisfies $\mathcal O_{Z'}(K_{Z'}+D_{Z'})\simeq\mathcal O_{Z'}$; the index-one assertion follows from the ADE double-cover correspondence [@AT17, Lem. 2.3].
 
-For either quotient $T$, the [norm]{.other-sense} of $K_X+D$ is $2(K_T+D_T)$, so $2(K_T+D_T)\sim0$. The eigensheaf decomposition is $\psi_{T*}\mathcal O_X=\mathcal O_T\oplus\mathcal A_T$, with $\mathcal A_T\not\simeq\mathcal O_T$ because $X$ is connected. The canonical eigensheaf is invariant for $Z'$ and anti-invariant for $Z$, hence $\mathcal O_Z(K_Z+D_Z)\simeq\mathcal A_Z$ is nontrivial.
+For either quotient $T$, the norm (@def:lattice-basic-invariants) of $K_X+D$ is $2(K_T+D_T)$, so $2(K_T+D_T)\sim0$. The eigensheaf decomposition is $\psi_{T*}\mathcal O_X=\mathcal O_T\oplus\mathcal A_T$, with $\mathcal A_T\not\simeq\mathcal O_T$ because $X$ is connected. The canonical eigensheaf is invariant for $Z'$ and anti-invariant for $Z$, hence $\mathcal O_Z(K_Z+D_Z)\simeq\mathcal A_Z$ is nontrivial.
 
 Finally, let $p\in\operatorname{Branch}(\varphi)\setminus C_W$ and let the two points over it in the anticanonical cover be $r_1,r_2$, interchanged by $\iota_{\mathrm{dP}}$. They coalesce in $Z$ exactly when $\iota_{\mathrm{En}}(r_1)=r_2$; as $\iota_{\mathrm{Nik}}=\iota_{\mathrm{dP}}\iota_{\mathrm{En}}$, this is exactly when they do not coalesce in $Z'$. This proves the complementary branching statement [@AEGS25, proof of Prop. 6.1].
 :::

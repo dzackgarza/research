@@ -25,13 +25,13 @@ It is [@CDL25, Table 5.1, p. 553] with the entries at $n=2$ and $n=10$ corrected
 
 ::: {.proposition #prop:coble-table-invariants title="Invariants of the Coble lattices"}
 
-Each row of the table satisfies $\rank M = 10+n$, $a(M)=12-n$, and $K_S^2=-n$, where $a=\dim_{\bF_2}(A_M/2A_M)$ is the generator [length]{.other-sense} of @def:p-elementary; and the orthogonal complement $N=M^{\perp\lkt}$ has [rank]{.other-sense} $22-(10+n)=12-n$ and is as listed.
+Each row of the table satisfies $\rank M = 10+n$, $a(M)=12-n$, and $K_S^2=-n$, where $a=\dim_{\bF_2}(A_M/2A_M)$ is the generator length of @def:p-elementary; and the orthogonal complement $N=M^{\perp\lkt}$ has rank $22-(10+n)=12-n$ and is as listed.
 
 :::
 
 ::: {.proof}
 
-The invariants of an orthogonal sum (@def:orthogonal-sum) are the sums of those of the summands: [ranks]{.other-sense} add, and $A_M$ is the orthogonal sum of the $A_{M_i}$ by @def:discriminant, so $a$ adds.
+The invariants of an orthogonal sum (@def:orthogonal-sum) are the sums of those of the summands: ranks add, and $A_M$ is the orthogonal sum of the $A_{M_i}$ by @def:discriminant, so $a$ adds.
 The summands needed are
 $$
 \rank,\ a\ \text{of}\ \ \mathrm{E}_8,\ \mathrm{E}_{10},\ \mathrm{U}:\ (8,0),\ (10,0),\ (2,0)
@@ -62,9 +62,9 @@ Row by row this gives
 
 So $a=12-n$ in every row, and $\rank M=10+n$.
 
-For the complement, $M$ is primitive (@def:primitive-embedding) in $\lkt$ of [rank]{.other-sense} $22$ and signature (@def:signature) $(3,19)$, so by @thm:orthogonal-decomposition $N$ has [rank]{.other-sense} $22-(10+n) = 12-n$ and signature $(2,\,19-(9+n)) = (2,10-n)$.
-The lattice $\latI_{2,m}$ has [rank]{.other-sense} $m+2$ and signature $(2,m)$, so the one of the listed shape with that [rank]{.other-sense} is $\latI_{2,10-n}(2)$: it has [rank]{.other-sense} $12-n$, signature $(2,10-n)$, and $a = 12-n$.
-The exception is the row with $\delta = 0$, where $N$ is not of that shape but $\mathrm{U}(2)^{\oplus 2}$: this is the row $n=8$, where $12-8 = 4$ is the [rank]{.other-sense} of $\mathrm{U}(2)^{\oplus 2}$ and $(2,10-8) = (2,2)$ its signature, so the [rank]{.other-sense} and signature formulas hold there too, and the parity is $0$ rather than $1$.
+For the complement, $M$ is primitive (@def:primitive-embedding) in $\lkt$ of rank $22$ and signature (@def:signature) $(3,19)$, so by @thm:orthogonal-decomposition $N$ has rank $22-(10+n) = 12-n$ and signature $(2,\,19-(9+n)) = (2,10-n)$.
+The lattice $\latI_{2,m}$ has rank $m+2$ and signature $(2,m)$, so the one of the listed shape with that rank is $\latI_{2,10-n}(2)$: it has rank $12-n$, signature $(2,10-n)$, and $a = 12-n$.
+The exception is the row with $\delta = 0$, where $N$ is not of that shape but $\mathrm{U}(2)^{\oplus 2}$: this is the row $n=8$, where $12-8 = 4$ is the rank of $\mathrm{U}(2)^{\oplus 2}$ and $(2,10-8) = (2,2)$ its signature, so the rank and signature formulas hold there too, and the parity is $0$ rather than $1$.
 Finally $K_S^2=-n$: since $-2K_S=C=C_1+\cdots+C_n$ with $C_i^2=-4$ and $C_i\cdot C_j=0$, $K_S^2=\tfrac14C^2=-\tfrac14\cdot4n=-n$, which is the entry in the $K_{\mathrm V}^2$ column, and $K_S^2=9-\abs{\Sigma}$ together with $K_S^2=-n$ fixes $\abs{\Sigma}=9+n$.
 :::
 

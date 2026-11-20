@@ -74,7 +74,7 @@ A Type III component is labelled by a Dynkin diagram $A_n$, $D_n$ or $E_n$, and 
 ::: {.definition #def:bcde-surfaces title="BCDE surfaces and the folding labels" defines="BCDE surface; folding label; type B component; type C component"}
 
 The **BCDE surfaces** are the quotients of ADE surfaces (@def:ade-surfaces) by involutions, and they correspond to the foldings (@def:folding-bc) of the ADE Dynkin diagrams.
-Type B components are the quotients by an [Enriques involution]{.other-sense} $\ien$, acting in suitable coordinates as $(x, y, z)\mapsto (\inverseof{x}, -y, -z)$; type C components are the quotients by the symplectic involution $\inik$.
+Type B components are the quotients by an Enriques involution $\ien$, acting in suitable coordinates as $(x, y, z)\mapsto (\inverseof{x}, -y, -z)$; type C components are the quotients by the symplectic involution $\inik$.
 The label
 $$
 \alpha : 2 = {}_2\beta \subset \gamma

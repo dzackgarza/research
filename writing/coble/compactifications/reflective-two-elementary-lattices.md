@@ -62,7 +62,7 @@ For $x = x_1 + x_2$ in an orthogonal direct sum, $x^2 = x_1^2 + x_2^2$, so the s
 ::: {.theorem #thm:coeven-duality title="Duality for coeven lattices"}
 
 If $S$ is even (@def:form-axioms) hyperbolic (@def:definiteness) $2$-elementary and coeven (@def:coeven-coodd) with invariants $(r, a, 0)$, then $S^{\dagger} = \dualof{S}(2)$ is again even hyperbolic and coeven, with invariants $(r, r - a, 0)$.
-The [Coxeter diagrams]{.other-sense} $\Gamma_r(S)$ and $\Gamma_r(S^{\dagger})$ correspond to each other with the short and long roots (@def:2elementary-roots) interchanged, and there is a bijection between the maximal parabolic subdiagrams (@def:parabolic-subdiagram) of the two.
+The Coxeter diagrams $\Gamma_r(S)$ and $\Gamma_r(S^{\dagger})$ correspond to each other with the short and long roots (@def:2elementary-roots) interchanged, and there is a bijection between the maximal parabolic subdiagrams (@def:parabolic-subdiagram) of the two.
 :::
 
 ::: {.proof}
@@ -381,7 +381,7 @@ This is [@Ale22, §3].
 
 ::: {.theorem #thm:coble-picard-parabolics title="The Coxeter diagram of $S_\Co$"}
 
-The [Coxeter diagram]{.other-sense} $\Gamma_r$ of $S_\Co = (11,11,1)_1$ has $12$ roots and trivial automorphism group (@def:endomorphism-monoid) $\Aut\Gamma_r = 1$.
+The Coxeter diagram $\Gamma_r$ of $S_\Co = (11,11,1)_1$ has $12$ roots and trivial automorphism group (@def:endomorphism-monoid) $\Aut\Gamma_r = 1$.
 It has exactly two maximal parabolic subdiagrams (@def:parabolic-subdiagram),
 $$
 \wE_8(2)\,\wA_1
@@ -429,7 +429,7 @@ For the three non-reflective rows of @cor:coble-table-reflectivity the boundary 
 | $n = 8$, $\delta = 1$ | $(18,4,1)$ | $(2,2,1)$ and $(2,2,0)$ |
 | $n = 9$ | $(19,3,1)$ | $(1,1,1) = \generators{2}$ |
 
-Each of these boundary lattices is a $2$-elementary hyperbolic lattice with $r + a \leqslant 18$, so it is two-reflective, hence reflective, with finite [Coxeter diagram]{.other-sense} [@Nik79b, Thm. 0.2.3 with the corollary following it, printed pp. 1403--1404; @AN06, Table 1, printed p. 52; @AE22, §3C, printed p. 11].
+Each of these boundary lattices is a $2$-elementary hyperbolic lattice with $r + a \leqslant 18$, so it is two-reflective, hence reflective, with finite Coxeter diagram [@Nik79b, Thm. 0.2.3 with the corollary following it, printed pp. 1403--1404; @AN06, Table 1, printed p. 52; @AE22, §3C, printed p. 11].
 For $n = 9$ the boundary lattice $\generators{2}$ has no roots, so the fan of the toroidal compactification (@def:toroidal-compactification) at such a cusp is the positive cone (@not:reflection-groups-sign-convention) itself.
 For $n = 1$ the table gives $(9,9,1)$, recovering the boundary lattice of the unique $0$-cusp of $F^{\mathrm{un}}_\Co$ (@thm:coble-cusp-chamber).
 For $n = 10$ the complement $N = \latI_{2,0}(2)$ is positive definite of rank $2$, the moduli space is zero-dimensional (@prop:type-iv-dimension), it is the unique point of [@AE22, §4C, printed p. 17], and there are no $0$-cusps.
@@ -449,7 +449,7 @@ So the target exists for every row with $n \leqslant 9$.
 
 The boundary lattices of the three non-reflective rows follow by substitution, and their ranks plus generator lengths (@def:anticanonical-pair) are $2(10-n) \leqslant 18$.
 For $n = 1$ the lattice $(9,9,1)$ differs from both exceptions of [@Nik79b, Thm. 0.2.3], having invariants distinct from $U \oplus E_8(2) = (10,8,0)$ and from $U \oplus E_8^{\oplus 2} \oplus A_1 = (19,1,1)$, so it is two-reflective.
-Every boundary lattice of the table is therefore two-reflective by [@Nik79b, Thm. 0.2.3 with the corollary following it, printed pp. 1403--1404], and its [Coxeter diagram]{.other-sense} is finite: the lattices with $g \geq 2$ were computed in [@AN06, Table 1, printed p. 52] and confirmed in [@AE22, §3C, printed p. 11].
+Every boundary lattice of the table is therefore two-reflective by [@Nik79b, Thm. 0.2.3 with the corollary following it, printed pp. 1403--1404], and its Coxeter diagram is finite: the lattices with $g \geq 2$ were computed in [@AN06, Table 1, printed p. 52] and confirmed in [@AE22, §3C, printed p. 11].
 :::
 
 ::: {.remark #rmk:coble-isotropic-types title="The fibration classes without the diagram"}

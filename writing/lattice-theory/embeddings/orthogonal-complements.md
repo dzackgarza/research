@@ -42,7 +42,7 @@ The displayed sequence is the defining cokernel (@def:kernel-cokernel) sequence 
 
 ::: {.proposition #prop:isotropic-complement-embedding title="Splitting an isotropic orthogonal complement"}
 
-Under the hypotheses of @prop:primitive-isotropic-complement, applying $U\colon\mathbf{BilMod}_{\bZ}\too\bZ\text{-}\mathbf{Mod}$ to its exact (@def:exact-complex) sequence gives a [split]{.other-sense} exact sequence, and $\qty{v^{\perp_L}}^{\mathrm{nd}}$ admits an embedding into $L$ in $\mathbf{Lat}_{\bZ}$.
+Under the hypotheses of @prop:primitive-isotropic-complement, applying $U\colon\mathbf{BilMod}_{\bZ}\too\bZ\text{-}\mathbf{Mod}$ to its exact (@def:exact-complex) sequence gives a split (@def:hyperbolic-plane) exact sequence, and $\qty{v^{\perp_L}}^{\mathrm{nd}}$ admits an embedding into $L$ in $\mathbf{Lat}_{\bZ}$.
 :::
 
 ::: {.proof}
@@ -146,7 +146,7 @@ A primitive totally isotropic sublattice $P\leq L$ determines the cusp lattice $
 
 ::: {.notation #not:isotropic-reduction-setup title="The data of an isotropic reduction" defines="data of an isotropic reduction; $V$; $W$; $M$; $Q$; $N$; $N_V$; $D(P)$; $H$"}
 
-Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ be integral and let $P\leq L$ be a primitive (@def:primitive-embedding) totally isotropic (@def:orthogonal-complement) sublattice of [rank]{.other-sense} $r\geq1$.
+Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ be integral and let $P\leq L$ be a primitive (@def:primitive-embedding) totally isotropic (@def:orthogonal-complement) sublattice of rank $r\geq1$.
 Put
 $$
 V\definedas P_{\bQ},
@@ -201,9 +201,9 @@ and the composite $V\too\Hom_{\bZ\text{-}\mathbf{Mod}}(L/M,\bQ)\too\Hom_{\bZ\tex
 
 For $v\in V\subseteq W$ one has $\beta_{L_{\bQ}}(v,M)=0$, so $\theta(v)$ is defined on classes and $\theta$ is $\bQ$-linear.
 If $\theta(v)=0$ then $v$ pairs trivially with $L$, hence with $L_{\bQ}$, so $v=0$ by nondegeneracy of $L_{\bQ}$; thus $\theta$ is injective.
-Both sides have [rank]{.other-sense} $r$, so $\theta$ is an isomorphism.
+Both sides have rank $r$, so $\theta$ is an isomorphism.
 
-The coefficient morphism $\bQ\too\bQ/\bZ$ is surjective and $L/M$ is free (@def:module-subcategories) of [rank]{.other-sense} $r$ by @prop:primitive-characterization, so a functional $L/M\too\bQ/\bZ$ lifts along a basis (@def:based-module) of $L/M$ to a functional $L/M\too\bQ$; the composite is therefore surjective.
+The coefficient morphism $\bQ\too\bQ/\bZ$ is surjective and $L/M$ is free (@def:module-subcategories) of rank $r$ by @prop:primitive-characterization, so a functional $L/M\too\bQ/\bZ$ lifts along a basis (@def:based-module) of $L/M$ to a functional $L/M\too\bQ$; the composite is therefore surjective.
 Its kernel consists of those $v\in V$ with $\beta_{L_{\bQ}}(v,L)\subseteq\bZ$, that is of $N\cap V=N_V$.
 :::
 
@@ -224,7 +224,7 @@ Then:
 
 *Item 2.* By item 1 the functional $\ell\mapsto\beta_{L_{\bQ}}(\tilde y,\ell)$ is integral on $M$, so its reduction modulo $\bZ$ vanishes on $M$ and it descends to a functional $\bar\lambda\colon L/M\too\bQ/\bZ$.
 By @lem:isotropic-reduction-pairing choose $u\in V$ with $\theta(u)\equiv-\bar\lambda$, that is $\beta_{L_{\bQ}}(u,\ell)\equiv-\beta_{L_{\bQ}}(\tilde y,\ell)\pmod{\bZ}$ for all $\ell\in L$; then $\tilde y+u\in N$.
-If $u,u'$ both have this [property]{.other-sense}, then $\beta_{L_{\bQ}}(u-u',L)\subseteq\bZ$, so $u-u'\in N\cap V=N_V$; conversely adding an element of $N_V$ preserves the [property]{.other-sense} because $\beta_{L_{\bQ}}(N_V,L)\subseteq\bZ$.
+If $u,u'$ both have this property, then $\beta_{L_{\bQ}}(u-u',L)\subseteq\bZ$, so $u-u'\in N\cap V=N_V$; conversely adding an element of $N_V$ preserves the property because $\beta_{L_{\bQ}}(N_V,L)\subseteq\bZ$.
 
 *Item 3.* Since $\tilde y\in W=V^{\perp}$ and $N_V\subseteq V$ one has $\beta_{L_{\bQ}}(\tilde y,N_V)=0$, and since $V$ is totally isotropic (@def:orthogonal-complement) one has $\beta_{L_{\bQ}}(u,N_V)=0$.
 Together with $\tilde y+u\in N$ this states $\tilde y+u\in H$.
@@ -307,7 +307,7 @@ $$
 
 ::: {.theorem #thm:isotropic-reduction-discriminant title="The discriminant form of an isotropic reduction: $A_Q\isoto D(P)^{\perp}/D(P)$"}
 
-Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ be integral, let $P\leq L$ be primitive (@def:primitive-embedding) totally isotropic (@def:orthogonal-complement) of [rank]{.other-sense} $r\geq1$, and adopt @not:isotropic-reduction-setup.
+Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ be integral, let $P\leq L$ be primitive (@def:primitive-embedding) totally isotropic (@def:orthogonal-complement) of rank $r\geq1$, and adopt @not:isotropic-reduction-setup.
 By @lem:isotropic-reduction-extension the prescription
 $$
 \varphi_P\colon
@@ -368,7 +368,7 @@ $$
 because $\tilde y\in W=V^{\perp}$ and $V$ is totally isotropic.
 Hence $\ell\in P^{\perp_L}=M$, and $y=[\tilde y]=[\ell]\in M/P=Q$, that is $y=0$ in $A_Q$.
 
-*Surjectivity.* The [target]{.other-sense} has $\cardinality{D(P)^{\perp}/D(P)}=\cardinality{A_L}/\cardinality{D(P)}^2$ by @lem:isotropic-subgroup-quotient-order, applied to the nondegenerate (@def:polarization) form of $A_L$ of @prop:discriminant-nondegenerate and the isotropic subgroup $D(P)$ of @not:isotropic-reduction-setup.
+*Surjectivity.* The target has $\cardinality{D(P)^{\perp}/D(P)}=\cardinality{A_L}/\cardinality{D(P)}^2$ by @lem:isotropic-subgroup-quotient-order, applied to the nondegenerate (@def:polarization) form of $A_L$ of @prop:discriminant-nondegenerate and the isotropic subgroup $D(P)$ of @not:isotropic-reduction-setup.
 With $\cardinality{D(P)}=[N_V:P]$ and @lem:isotropic-reduction-index this equals $\cardinality{A_Q}$.
 An injective morphism between finite groups of the same order is bijective.
 
@@ -392,7 +392,7 @@ The commutativity of the square follows, and restricting to $g\in\Stab_{\Orth(L)
 
 ::: {.corollary #cor:isotropic-reduction-stabilizer title="The exact image of the parabolic stabilizer, and the action on the subquotient"}
 
-Let the data and hypotheses be those of @thm:isotropic-reduction-discriminant, put $Q_0=\rho_L(\Orth(L))$ for the discriminant [representation]{.other-sense} $\rho_L$ of @def:discriminant-rep, and let
+Let the data and hypotheses be those of @thm:isotropic-reduction-discriminant, put $Q_0=\rho_L(\Orth(L))$ for the discriminant representation $\rho_L$ of @def:discriminant-rep, and let
 $$
 C\definedas\ker\qty(\Stab_{Q_0}\qty(D(P))\too\Aut\qty(D(P)^{\perp}/D(P))).
 $$

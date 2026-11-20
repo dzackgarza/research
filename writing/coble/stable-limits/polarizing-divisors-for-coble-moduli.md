@@ -59,18 +59,18 @@ Let $S$ be Picard-general (@def:picard-general-coble).
 Its class lies in $\Pic(X) = f^*\Pic(S)$, on which $\sigma$ acts trivially, so $\sigma(D)$ and $D$ have the same class, $D\cdot\sigma(D) = D^2<0$, and $\sigma(D) = D$.
 If $\sigma$ is the identity on $D$ then $D$ lies in the fixed locus of $\sigma$, and $D=\bar C$.
 Otherwise put $E\definedas f(D)$. Then $f^{-1}(E) = D\cup\sigma(D) = D$, and $f$ is unramified at the generic point of $D$, so $f^*E = D$ and $2E^2 = (f^*E)^2 = -2$, that is $E^2=-1$.
-The curve $E$ is irreducible and is not $C$, so $K_S\cdot E = -\tfrac12 C\cdot E\le0$. Adjunction on $S$ gives $2p_a(E)-2 = -1+K_S\cdot E$, so $K_S\cdot E$ is [odd]{.other-sense} and at least $-1$; hence $K_S\cdot E=-1$ and $p_a(E)=0$. So $E$ is a $(-1)$-curve.
+The curve $E$ is irreducible and is not $C$, so $K_S\cdot E = -\tfrac12 C\cdot E\le0$. Adjunction on $S$ gives $2p_a(E)-2 = -1+K_S\cdot E$, so $K_S\cdot E$ is odd and at least $-1$; hence $K_S\cdot E=-1$ and $p_a(E)=0$. So $E$ is a $(-1)$-curve.
 
 (2) Put $E'\definedas E-K_S$. Then $E'\cdot K_S = -1+1 = 0$, so $E'\in\Lambda$, and $E'^2 = -1+2-1 = 0$. The class $E'$ is not zero, because $E$ is effective and $K_S$ is not.
 For $x\in\Lambda\tensor\RR$ one has $x\cdot E = x\cdot E'$.
-The lattice $\Lambda$ has signature (@def:signature) $(1,9)$, so no vector of positive square is orthogonal to a nonzero isotropic vector: the form would be positive semidefinite (@def:calculus-real-positivity) on their span, of dimension $2$, and that span would [meet]{.other-sense} a negative definite (@def:definiteness) subspace of dimension $9$.
+The lattice $\Lambda$ has signature (@def:signature) $(1,9)$, so no vector of positive square is orthogonal to a nonzero isotropic vector: the form would be positive semidefinite (@def:calculus-real-positivity) on their span, of dimension $2$, and that span would meet a negative definite (@def:definiteness) subspace of dimension $9$.
 So $x\mapsto x\cdot E'$ has no zero on the connected set $\mathcal C_\Lambda$.
 At $x_A$ its value is $A\cdot E+(A\cdot K_S)(K_S\cdot E) = A\cdot E+\tfrac12A\cdot C>0$.
 
 (3) One has $f^*x\cdot\bar C = x\cdot C = -2x\cdot K_S = 0$ and $f^*x\cdot f^*E = 2x\cdot E>0$ by (2), and $(f^*x)^2 = 2x^2>0$.
 The class $f^*A$ is ample and $f^*x_A\cdot f^*A = 2(A^2+(A\cdot K_S)^2)>0$, so $f^*x_A$ lies in the component $\mathcal C_S$ of the positive cone of $\Pic(X)\tensor\RR$ that contains the ample cone (@lem:k3-positive-cone-component); $f^*\mathcal C_\Lambda$ is connected, so it lies in $\mathcal C_S$.
 A class of $\mathcal C_S$ that is nonnegative on every $(-2)$-curve is nef [@AE22, §4D, arXiv v2 p. 17], and by (1) the $(-2)$-curves are $\bar C$ and the curves $f^*E$. So $f^*x$ is nef.
-If $D$ is irreducible with $f^*x\cdot D=0$, then $D^2<0$ by the Hodge [index]{.other-sense} theorem, and by (1) and the two intersection numbers $D=\bar C$.
+If $D$ is irreducible with $f^*x\cdot D=0$, then $D^2<0$ by the Hodge index theorem, and by (1) and the two intersection numbers $D=\bar C$.
 
 (4) Let $G\iscontainedin S$ be a $(-2)$-curve. Then $G\neq C$ and $K_S\cdot G = 0$, so $G\cdot C = 0$ and $f$ is unramified over $G\cong\PP^1$. So $f^{-1}(G)$ is a disjoint union of two curves that $\sigma$ exchanges, each of square $-2$. By the proof of (1) every irreducible curve of negative square on $X$ is preserved by $\sigma$, which is a contradiction.
 :::
@@ -84,13 +84,13 @@ Let $S$ be Picard-general (@def:picard-general-coble). Then the group (@def:grou
 
 Let $g\in G_X$ and let $\omega$ span $H^{2,0}(X)$.
 The isometry $g$ preserves the real plane $(H^{2,0}\oplus H^{0,2})\intersect(T_X\tensor\RR)$, on which the form is positive definite (@def:definiteness), and its orthogonal complement in $T_X\tensor\RR$, on which the form is negative definite (@def:definiteness). So $g$ lies in a compact group and in the discrete group $\Orth(T_X)$, and has finite order.
-Let $g\omega = \zeta\omega$, with $\zeta$ a [primitive]{.other-sense} $m$-th root of unity, and let $K\iscontainedin T_X\tensor\QQ$ be the kernel (@def:kernel-cokernel) of $\Phi_m(g)$, for $\Phi_m$ the $m$-th cyclotomic polynomial.
+Let $g\omega = \zeta\omega$, with $\zeta$ a primitive $m$-th root of unity, and let $K\iscontainedin T_X\tensor\QQ$ be the kernel (@def:kernel-cokernel) of $\Phi_m(g)$, for $\Phi_m$ the $m$-th cyclotomic polynomial.
 Eigenvectors of an isometry for the eigenvalues $\mu,\mu'$ are orthogonal unless $\mu\mu'=1$, so the sum $K'$ of the kernels of the other cyclotomic factors is orthogonal to $K$ and to $\omega$.
 The integral classes of $K'$ are then of type $(1,1)$, so they lie in $\Pic(X)\intersect T_X = 0$.
-Hence $K = T_X\tensor\QQ$, the [characteristic]{.other-sense} polynomial of $g$ is a power of $\Phi_m$, and $\varphi(m)$ divides $\rank T_X = 11$.
+Hence $K = T_X\tensor\QQ$, the characteristic polynomial of $g$ is a power of $\Phi_m$, and $\varphi(m)$ divides $\rank T_X = 11$.
 Since $\varphi(m)$ is even for $m>2$, this gives $m\in\theset{1,2}$ and $g=\pm\id$.
 
-The involution $\sigma_*$ has invariant lattice $S_\Co$ (@prop:coble-invariant-lattice), which [meets]{.other-sense} $T_X$ in $0$. So $\sigma_*$ has no nonzero fixed vector in $T_X$, and it is $-\id$ there.
+The involution $\sigma_*$ has invariant lattice $S_\Co$ (@prop:coble-invariant-lattice), which meets $T_X$ in $0$. So $\sigma_*$ has no nonzero fixed vector in $T_X$, and it is $-\id$ there.
 :::
 
 ::: {.proposition #prop:coble-automorphisms title="The automorphism groups of a Picard-general Coble surface and of its K3 cover"}
@@ -193,7 +193,7 @@ Let $S$ be Picard-general (@def:picard-general-coble).
 (1) The class is $aK_S$ by @thm:coble-invariant-classes, and $K_S$ is primitive (@def:primitive-embedding) in $\Pic(S)$.
 For $a>0$, $h^0(aK_S)=0$ on the rational surface $S$.
 Let $a=-m<0$ and $D\in\abs{-mK_S}$. Then $D\cdot C = 2mK_S^2 = -2m<0$, so $C$ is a component of $D$ and $D-C\in\abs{-(m-2)K_S}$.
-By induction, $\abs{-mK_S}=\theset{\tfrac m2C}$ for even $m$, and $\abs{-mK_S}$ is empty for [odd]{.other-sense} $m$ because $\abs{-K_S}$ is empty (@def:coble-surface).
+By induction, $\abs{-mK_S}=\theset{\tfrac m2C}$ for even $m$, and $\abs{-mK_S}$ is empty for odd $m$ because $\abs{-K_S}$ is empty (@def:coble-surface).
 
 (2) The class of the divisor is $-mK_S$ with $m\ge0$ by @thm:coble-invariant-classes, and (1) gives the divisor.
 
@@ -220,7 +220,7 @@ The same finiteness holds for stable pairs, whose automorphism groups are finite
 Let $g\colon\mathcal X\to B$ be a smooth proper family of K3 surfaces over a connected complex manifold, with an involution $\sigma_B$ of $\mathcal X$ over $B$, such that every fibre $(X_b,\sigma_b)$ is the K3 cover of a Coble surface as in @not:coble-polarizing-setting.
 Suppose that $\mathcal X$ has a line bundle that is big and nef on every fibre.
 Then the period map (@def:period-map) $p\colon B\to\bD(T_\Co)/\Orth(T_\Co)$ factors through $\bD(T_\Co)/\Gamma'$ for a subgroup $\Gamma'\iscontainedin\Orth(T_\Co)$ that contains the discriminant kernel (@def:mm-integral-spinor-data) and whose index (@def:index) is divisible by $17\cdot31=527$.
-In particular $p$ is not birational, and if $p$ is generically finite and dominant its [degree]{.other-sense} is divisible by $527$.
+In particular $p$ is not birational, and if $p$ is generically finite and dominant its degree is divisible by $527$.
 :::
 
 ::: {.proof}
@@ -232,13 +232,13 @@ By @cor:lifting-unimodular the discriminant actions of $\mu_S(c)$ and $\mu_T(c)$
 
 The group (@def:group) $\mu_S(\pi_1(B,b))$ fixes $\lambda_b$, so it lies in $F\definedas\Stab_{\Orth(S_b)}(\lambda_b)$.
 The lattice $S_b$ has signature $(1,10)$ and $\lambda_b^2>0$, so $F$ acts faithfully on the negative definite (@def:definiteness) lattice $\lambda_b^{\perp}\intersect S_b$, and $F$ is finite.
-An element of prime order $\ell$ of $\mathrm{GL}_{11}(\ZZ)$ has a [primitive]{.other-sense} $\ell$-th root of unity among its eigenvalues, so $\ell-1\le11$. So $F$ has no element of order $17$ or $31$, and $\abs F$ is prime to $17\cdot31$.
+An element of prime order $\ell$ of $\mathrm{GL}_{11}(\ZZ)$ has a primitive $\ell$-th root of unity among its eigenvalues, so $\ell-1\le11$. So $F$ has no element of order $17$ or $31$, and $\abs F$ is prime to $17\cdot31$.
 Let $\bar F$ be the image of $F$ in $\Orth(q_{S_b})$ and $\Gamma'\iscontainedin\Orth(T_b)$ the preimage of $\gamma_q\bar F\gamma_q^{-1}$ under $\rho\colon\Orth(T_b)\to\Orth(q_{T_b})$.
 Then $\mu_T(\pi_1(B,b))\iscontainedin\Gamma'$ and $\ker\rho\iscontainedin\Gamma'$.
 The map $\rho$ is surjective (@thm:two-elementary-surjectivity) and $\abs{\Orth(q_{T_\Co})} = 2^{21}\cdot3^5\cdot5^2\cdot7\cdot17\cdot31$ (@prop:coble-discriminant-group), so $[\Orth(T_b):\Gamma'] = \abs{\Orth(q_{T_b})}/\abs{\bar F}$ is divisible by $17\cdot31$.
 
 On the universal cover of $B$ the local system $R^2g_*\ZZ$ is trivial, and the period map lifts to a map to $\bD(T_b)$ that is equivariant for $\mu_T$. So $p$ factors through $\bD(T_b)/\mu_T(\pi_1(B,b))$, and hence through $\bD(T_b)/\Gamma'$.
-Both $\Gamma'$ and $\Orth(T_b)$ contain $-\id$, and $\Orth(T_b)/\theset{\pm\id}$ acts effectively on $\bD(T_b)$, so $\bD(T_b)/\Gamma'\to\bD(T_b)/\Orth(T_b)$ has [degree]{.other-sense} $[\Orth(T_b):\Gamma']$.
+Both $\Gamma'$ and $\Orth(T_b)$ contain $-\id$, and $\Orth(T_b)/\theset{\pm\id}$ acts effectively on $\bD(T_b)$, so $\bD(T_b)/\Gamma'\to\bD(T_b)/\Orth(T_b)$ has degree $[\Orth(T_b):\Gamma']$.
 :::
 
 ## Polarizations as added structures
@@ -288,7 +288,7 @@ Let $\lambda = e_0 = f^*H$, of square $2$, and write $\Gamma_P\definedas\Gamma_{
 $$
 [\Orth(T_\Co):\Gamma_P] = \frac{2^{21}\cdot3^5\cdot5^2\cdot7\cdot17\cdot31}{10!} = 2^{13}\cdot3\cdot17\cdot31 = 12\,951\,552 .
 $$
-2. Let $F_2 = \bD(e_0^{\perp})/\theset{\gamma\in\Orth(\lkt)\st\gamma(e_0)=e_0}$ be the moduli space of polarized K3 surfaces of [degree]{.other-sense} $2$ [@AE23, Thm. 2.11, arXiv v3 p. 6]. The map $\bD(T_\Co)/\Gamma_P\to F_2$ is finite onto a [closed]{.other-sense} subset $Z_P$ and injective on the Picard-general (@def:picard-general-coble) periods. The general point of $Z_P$ is the double plane branched along an irreducible rational sextic with ten nodes.
+2. Let $F_2 = \bD(e_0^{\perp})/\theset{\gamma\in\Orth(\lkt)\st\gamma(e_0)=e_0}$ be the moduli space of polarized K3 surfaces of degree $2$ [@AE23, Thm. 2.11, arXiv v3 p. 6]. The map $\bD(T_\Co)/\Gamma_P\to F_2$ is finite onto a closed subset $Z_P$ and injective on the Picard-general (@def:picard-general-coble) periods. The general point of $Z_P$ is the double plane branched along an irreducible rational sextic with ten nodes.
 3. $\bD(T_\Co)/\Gamma_P$ has exactly five $0$-cusps. In the basis (@def:based-module) $[\tfrac12e_0],[\tfrac12f^*E_1],\dots,[\tfrac12f^*E_{10}]$ of $A_{S_\Co}$ they are the $S_{10}$-orbits of the nonzero isotropic classes (@def:descent-class) $\sum_ka_k[\,\cdot\,]$, $a_k\in\theset{0,1}$, namely those with $a_0=0$ and $4$ or $8$ further coordinates equal to $1$, and those with $a_0=1$ and $1$, $5$ or $9$ further coordinates equal to $1$; the orbits have $210$, $45$, $10$, $252$ and $10$ elements.
 :::
 
@@ -313,12 +313,12 @@ The class with coordinates $a_k$ has $q$-value $\tfrac12\bigl(a_0-\sum_{i\ge1}a_
 
 ::: {.proposition #prop:coble-degree-two-space title="The numerical polarization of degree $2$"}
 
-Let $h = F_1+F_2\in\mathcal C_\Lambda$ with $F_1,F_2\in\Lambda$, $F_i^2=0$ and $F_1\cdot F_2=1$, a degree-$2$ numerical [polarization]{.other-sense} (@def:coble-polarization-classes(2)), and $\lambda=\tilde h=f^*h$, of square $4$.
-Take the embedding $S_\Co\iscontainedin\lkt$ and the vector $\delta$ of @def:gamma-co-groups, so that $\delta$ is the class of $\bar C$, $S_\En = \delta^{\perp}\intersect S_\Co = f^*\Lambda$ and $T_\Co=\delta^{\perp}\intersect T_\En$, with $\tilde h$ the [polarization]{.other-sense} vector of [@AEGS25, Def. 2.5, arXiv v2 p. 6].
+Let $h = F_1+F_2\in\mathcal C_\Lambda$ with $F_1,F_2\in\Lambda$, $F_i^2=0$ and $F_1\cdot F_2=1$, a degree-$2$ numerical polarization (@def:coble-polarization-classes(2)), and $\lambda=\tilde h=f^*h$, of square $4$.
+Take the embedding $S_\Co\iscontainedin\lkt$ and the vector $\delta$ of @def:gamma-co-groups, so that $\delta$ is the class of $\bar C$, $S_\En = \delta^{\perp}\intersect S_\Co = f^*\Lambda$ and $T_\Co=\delta^{\perp}\intersect T_\En$, with $\tilde h$ the polarization vector of [@AEGS25, Def. 2.5, arXiv v2 p. 6].
 
 1. On a Picard-general (@def:picard-general-coble) surface $h$ is nef and big, and $C$ is the only irreducible curve on which it is zero.
 2. $\Gamma_{\tilde h} = R_{\gent}$, the restricted stabilizer of @def:gamma-co-groups(4). Its index in $\Orth(T_\Co)$ is $2^7\cdot17\cdot31 = 67\,456$, and $\bD(T_\Co)/R_{\gent}$ is the normalization of the Heegner divisor $\mch_{-2}/\gent$ of $\fentwo$ (@prop:gamma-co-images(3), @thm:normalization).
-3. On a Picard-general surface the degree-$2$ numerical [polarizations]{.other-sense} form $67\,456$ orbits of $\Aut(S)$.
+3. On a Picard-general surface the degree-$2$ numerical polarizations form $67\,456$ orbits of $\Aut(S)$.
 :::
 
 ::: {.proof}
@@ -333,7 +333,7 @@ Then $\gamma$ preserves $S_\En$ and $T_\En$, commutes with $I_\En$, and its rest
 Conversely an element of $\Stab_{\gent}(\delta)$ is the restriction of an isometry $\gamma$ of $\lkt$ that commutes with $I_\En$ and fixes $\tilde h$; it preserves $T_\Co=\delta^{\perp}\intersect T_\En$, hence $S_\Co$, so its restriction to $T_\Co$ lies in $\Gamma_{\tilde h}$.
 The index and the normalization are the cited statements.
 
-(3) is @prop:coble-polarized-moduli(3). Every degree-$2$ numerical [polarization]{.other-sense} $h' = F_1'+F_2'\in\mathcal C_\Lambda$ is nef by (1) and is of type $\tilde h$: the sublattice $\generators{F_1',F_2'}\cong U$ is unimodular, so $\Lambda$ is the orthogonal sum (@def:orthogonal-sum) of it and of an even unimodular negative definite (@def:definiteness) lattice of [rank]{.other-sense} $8$, which is $E_8$, as in the proof of [@AEGS25, Lemma 2.4, arXiv v2 p. 6]. So an isometry $u$ of $\Lambda$ carries $F_i'$ to $F_i$; it preserves $\mathcal C_\Lambda$ because $h',h\in\mathcal C_\Lambda$, and $\id_{\ZZ K_S}\perp u$ extends to an isometry of $\lkt$ that preserves $S_\Co$, because $b$ is surjective.
+(3) is @prop:coble-polarized-moduli(3). Every degree-$2$ numerical polarization $h' = F_1'+F_2'\in\mathcal C_\Lambda$ is nef by (1) and is of type $\tilde h$: the sublattice $\generators{F_1',F_2'}\cong U$ is unimodular, so $\Lambda$ is the orthogonal sum (@def:orthogonal-sum) of it and of an even unimodular negative definite (@def:definiteness) lattice of rank $8$, which is $E_8$, as in the proof of [@AEGS25, Lemma 2.4, arXiv v2 p. 6]. So an isometry $u$ of $\Lambda$ carries $F_i'$ to $F_i$; it preserves $\mathcal C_\Lambda$ because $h',h\in\mathcal C_\Lambda$, and $\id_{\ZZ K_S}\perp u$ extends to an isometry of $\lkt$ that preserves $S_\Co$, because $b$ is surjective.
 :::
 
 ::: {.remark #rmk:coble-half-pencil title="A half-pencil alone is not a polarization"}
@@ -363,18 +363,18 @@ So $j(e_0)$ is nonnegative on every $(-2)$-curve, it has square $2$ and $j(e_0)\
 
 Let $\oF_2^R$ be the KSBA compactification of $F_2$ for the ramification divisor (@thm:degree-two-k3-semifan), and let $Z_P\iscontainedin F_2$ be as in @prop:coble-plane-model-space.
 
-1. For a Picard-general (@def:picard-general-coble) surface, let $X\to\bar X$ be the contraction of the ten curves $f^*E_i$ and $\bar R\iscontainedin\bar X$ the image of $\bar C$. Then $\bar X$ is the double plane branched along $B$, $\bar R$ is the ramification divisor of $\bar X\to\PP^2$, its [pullback]{.other-sense} to $X$ is $\bar C+\sum_if^*E_i\in\abs{3e_0}$, and $(\bar X,\eps\bar R)$ is the pair that $\oF_2^R$ assigns to $(X,e_0)$. It is KSBA-stable, and so is the pair $\bigl(\PP^2,\tfrac{1+\eps}2B\bigr)$.
-2. The closure $\bar Z_P$ of $Z_P$ in $\oF_2^R$ is a [closed]{.other-sense} subset of a [projective]{.other-sense} variety whose points are KSBA-stable pairs, and $Z_P$ is open and dense in it.
+1. For a Picard-general (@def:picard-general-coble) surface, let $X\to\bar X$ be the contraction of the ten curves $f^*E_i$ and $\bar R\iscontainedin\bar X$ the image of $\bar C$. Then $\bar X$ is the double plane branched along $B$, $\bar R$ is the ramification divisor of $\bar X\to\PP^2$, its pullback to $X$ is $\bar C+\sum_if^*E_i\in\abs{3e_0}$, and $(\bar X,\eps\bar R)$ is the pair that $\oF_2^R$ assigns to $(X,e_0)$. It is KSBA-stable, and so is the pair $\bigl(\PP^2,\tfrac{1+\eps}2B\bigr)$.
+2. The closure $\bar Z_P$ of $Z_P$ in $\oF_2^R$ is a closed subset of a projective variety whose points are KSBA-stable pairs, and $Z_P$ is open and dense in it.
 :::
 
 ::: {.proof}
 
 (1) The linear system $\abs{e_0}$ gives the double cover of $\PP^2$ branched along $B$, which factors through the contraction of the curves on which $e_0$ is zero. By @lem:coble-k3-negative-curves(1) such a curve is $\bar C$ or $f^*E$, and $e_0\cdot\bar C = H\cdot C = 6$, while $e_0\cdot f^*E = 2H\cdot E$ is zero exactly for the ten curves $E_i$ that $S\to\PP^2$ contracts. The covering involution of the double plane lifts to $\sigma$, whose fixed curve is $\bar C$, so the ramification divisor is the image of $\bar C$.
 From $C = 6H-2\sum_iE_i$ one gets $3e_0 = f^*(\tfrac12C+\sum_iE_i) = \bar C+\sum_if^*E_i$.
-The divisor on $(X,e_0)$ is the [pullback]{.other-sense} of the ramification locus [@AE23, Ex. 9.20, arXiv v3 p. 33; @AET23, Thm. 1.2 and the paragraph before it, arXiv v3 p. 3].
+The divisor on $(X,e_0)$ is the pullback of the ramification locus [@AE23, Ex. 9.20, arXiv v3 p. 33; @AET23, Thm. 1.2 and the paragraph before it, arXiv v3 p. 3].
 A K3 surface with ADE singularities and an effective ample divisor gives a stable pair [@AEH24, §3A, arXiv v2 p. 7], and $(X,\eps R)$ is stable exactly when the branch pair is (@ex:degree-two-k3-branch-pair).
 
-(2) $\oF_2^R$ is [projective]{.other-sense} and its points are stable pairs [@AE23, Thm. 6.13, arXiv v3 p. 17], and it contains $F_2$ as an open subset because the ramification divisor is recognizable [@AE23, Prop. 6.12 and Ex. 9.20, arXiv v3 pp. 17, 33]. So $Z_P=\bar Z_P\intersect F_2$ is open in $\bar Z_P$.
+(2) $\oF_2^R$ is projective and its points are stable pairs [@AE23, Thm. 6.13, arXiv v3 p. 17], and it contains $F_2$ as an open subset because the ramification divisor is recognizable [@AE23, Prop. 6.12 and Ex. 9.20, arXiv v3 pp. 17, 33]. So $Z_P=\bar Z_P\intersect F_2$ is open in $\bar Z_P$.
 :::
 
 ::: {.remark #rmk:coble-plane-model-semitoroidal title="The published restriction statement, with its hypotheses checked"}
@@ -398,15 +398,15 @@ A second published statement applies to the divisor of (1): for a K3 surface wit
 
 Let $\overline{\fentwo}$ be the KSBA compactification (@def:ksba-compactification) of [@AEGS25, Def. 2.10, arXiv v2 p. 8], let $\overline{\fentwo}^{\mcf}$ be the semitoroidal compactification (@def:semitoroidal-compactification) that is its normalization [@AEGS25, Thm. 5.9, arXiv v2 p. 31], and let $\Delta_2\definedas\mch_{-2}/\gent\iscontainedin\fentwo$ be the Coble divisor.
 
-1. For an unnodal (@def:nodal-enriques-surface) surface $S$ with a degree-$2$ [polarization]{.other-sense} $h$, the pair $\bigl(S,\tfrac12C+\eps W\bigr)$ of @thm:coble-pair-ksba is KSBA-stable, where $W$ is the fixed curve of the deck transformation of the map given by $\abs{2h}$. A Picard-general (@def:picard-general-coble) surface is unnodal (@lem:coble-k3-negative-curves(4)).
-2. The image $\bar\Delta$ of the closure $W_\Delta$ of $\Delta_2$ in $\overline{\fentwo}^{\mcf}$ is a [closed]{.other-sense} subset of the [projective]{.other-sense} variety $\overline{\fentwo}$, whose points are KSBA-stable pairs (@def:ksba-compactification).
+1. For an unnodal (@def:nodal-enriques-surface) surface $S$ with a degree-$2$ polarization $h$, the pair $\bigl(S,\tfrac12C+\eps W\bigr)$ of @thm:coble-pair-ksba is KSBA-stable, where $W$ is the fixed curve of the deck transformation of the map given by $\abs{2h}$. A Picard-general (@def:picard-general-coble) surface is unnodal (@lem:coble-k3-negative-curves(4)).
+2. The image $\bar\Delta$ of the closure $W_\Delta$ of $\Delta_2$ in $\overline{\fentwo}^{\mcf}$ is a closed subset of the projective variety $\overline{\fentwo}$, whose points are KSBA-stable pairs (@def:ksba-compactification).
 3. The normalization of $W_\Delta$ is a normal compactification of $\bD(T_\Co)/R_{\gent}$, and it maps finitely onto $\bar\Delta$. This map is birational exactly when the map $\fentwo\to\overline{\fentwo}$ is generically injective on $\Delta_2$.
 :::
 
 ::: {.proof}
 
 (1) is @thm:coble-pair-ksba.
-(2) The normalization map is finite, so the image of the [closed]{.other-sense} set $W_\Delta$ is [closed]{.other-sense}, and it is the closure of the image of $\Delta_2$.
+(2) The normalization map is finite, so the image of the closed set $W_\Delta$ is closed, and it is the closure of the image of $\Delta_2$.
 (3) $\overline{\fentwo}^{\mcf}$ contains $\fentwo$ as an open subset, so $\Delta_2$ is open in $W_\Delta$, and the normalization of $W_\Delta$ contains the normalization of $\Delta_2$ as an open dense subset; the latter is $\bD(T_\Co)/R_{\gent}$ by @thm:normalization. The map to $\bar\Delta$ is the composite of two finite maps, and a finite surjective map of irreducible varieties is birational exactly when it is generically injective.
 :::
 
@@ -428,9 +428,9 @@ Let $\Gamma'\iscontainedin\Orth(T_\Co)$ be a subgroup that contains $\ker\rho$. 
 ::: {.proof}
 
 Put $\Gamma=\Orth(T_\Co)$ and $N=\ker\rho$, a normal subgroup of finite index (@def:index), and for a group (@def:group) $G$ between $N$ and $\Gamma$ let $A(G)$ be the graded ring of $G$-automorphic forms on $\bD(T_\Co)$.
-The Baily--Borel compactification of $\bD(T_\Co)/G$ is the [projective]{.other-sense} spectrum of $A(G)$, the forms of [degree]{.other-sense} $k$ being the sections of the $k$-th power of an ample line bundle on it [@Loo02, Thm. 2.4], as in the proof of @cor:looijenga-empty-arrangement. So $A(G)$ is a [finitely generated]{.other-sense} algebra.
+The Baily--Borel compactification of $\bD(T_\Co)/G$ is the projective spectrum of $A(G)$, the forms of degree $k$ being the sections of the $k$-th power of an ample line bundle on it [@Loo02, Thm. 2.4], as in the proof of @cor:looijenga-empty-arrangement. So $A(G)$ is a finitely generated algebra.
 The finite group $\Gamma/N$ acts on $A(N)$ with ring of invariants $A(\Gamma)$, so $A(N)$ is a finite module over $A(\Gamma)$, and so is its subring $A(\Gamma')$.
-A finite extension of graded rings induces a finite morphism of [projective]{.other-sense} spectra, and on $\bD(T_\Co)/\Gamma'$ it is the covering.
+A finite extension of graded rings induces a finite morphism of projective spectra, and on $\bD(T_\Co)/\Gamma'$ it is the covering.
 :::
 
 A semitoroidal compactification of $\bD(T_\Co)/\Gamma'$ maps to its Baily--Borel compactification (@cor:toroidal-to-baily-borel), and so to that of $F^{\mathrm{un}}_\Co$.

@@ -84,7 +84,7 @@ The class of $h/4$ has order $4$, so $A^\sharp_{T_{\Nod}}$ is not isomorphic to 
 
 3. Let $S$ be the nodal Enriques surface of a quartic symmetroid $D\subset\PP^3$, let $X$ be the nodal quartic double solid ramified in $D$, and let $X^+$ be a small resolution of $X$.
    Let $\mathcal A_S\subset D^b(S)$ be the orthogonal subcategory of the completely orthogonal exceptional collection $\theset{\mathcal O_S(-F_i^+)}_{i=1}^{10}$, where $F_i^+$ is a multiple fiber (@def:fiber-cofiber) of the $i$-th of the ten elliptic pencils on $S$.
-   There is a semiorthogonal decomposition $D^b(X^+) = \generators{\mathcal A_{X^+},\ \mathcal O_{X^+}(-h),\ \mathcal O_{X^+}}$, with $h$ the pullback (@def:pullback-square) of the [hyperplane class]{.other-sense} of $\PP^3$ and $\mathcal A_{X^+} = \generators{\mathcal O_{X^+}(-h),\mathcal O_{X^+}}^\perp$, and $\mathcal A_{X^+}\cong\mathcal A_S$ [@IK15, §1, Prop. 3.8 and Thm. 4.3].
+   There is a semiorthogonal decomposition $D^b(X^+) = \generators{\mathcal A_{X^+},\ \mathcal O_{X^+}(-h),\ \mathcal O_{X^+}}$, with $h$ the pullback (@def:pullback-square) of the hyperplane class (@def:coble-polarization-classes) of $\PP^3$ and $\mathcal A_{X^+} = \generators{\mathcal O_{X^+}(-h),\mathcal O_{X^+}}^\perp$, and $\mathcal A_{X^+}\cong\mathcal A_S$ [@IK15, §1, Prop. 3.8 and Thm. 4.3].
 
 4. Over $\CC$ the coarse moduli space of nodal Enriques surfaces is rational [@DK13, Thm. 6.4].
 :::

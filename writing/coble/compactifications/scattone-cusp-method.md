@@ -72,7 +72,7 @@ v^2 = w^2
 [v^*] = [w^*]\in A_L
 .
 $$
-Equivalently, the $\discriminantkernel{L}$-orbit of a primitive vector is determined by its [length]{.other-sense} together with the pair $\bigl(\div_L(v),\ v/\div_L(v)\bmod L\bigr)$ in the discriminant group (@def:group).
+Equivalently, the $\discriminantkernel{L}$-orbit of a primitive vector is determined by its length together with the pair $\bigl(\div_L(v),\ v/\div_L(v)\bmod L\bigr)$ in the discriminant group (@def:group).
 :::
 
 ::: {.proof}

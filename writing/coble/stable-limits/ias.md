@@ -60,7 +60,7 @@ Gluing two copies along their boundary,
 $$
 B(\lambda) = P(\lambda) \union P(\lambda)^{\opop},
 $$
-produces the integral affine sphere (@def:singular-integral-affine-surface) realizing the dual complex $\Gamma(\mcx_0)$; the equator along which the two copies are glued supports the integral affine [polarization]{.other-sense} $R_{\mathrm{IA}}$ [@AE23].
+produces the integral affine sphere (@def:singular-integral-affine-surface) realizing the dual complex $\Gamma(\mcx_0)$; the equator along which the two copies are glued supports the integral affine polarization $R_{\mathrm{IA}}$ [@AE23].
 :::
 
 ::: {#fig-moduli-degeneration .figure}
@@ -216,8 +216,8 @@ N=\langle f,g\rangle\oplus\check M
 \qquad
 \check M\cong f^\perp_N/\ZZ f.
 $$
-If $M$ has [rank]{.other-sense} $r$, then $\check M$ has signature (@def:signature) $(1,19-r)$ and
-[rank]{.other-sense} $20-r$.
+If $M$ has rank $r$, then $\check M$ has signature (@def:signature) $(1,19-r)$ and
+rank $20-r$.
 :::
 
 ::: {.proof}
@@ -229,7 +229,7 @@ x-\frac{(x,g)}m f-\frac{(x,f)}m g
 $$
 Thus $\langle f,g\rangle$ splits (@def:hyperbolic-plane) off integrally. In this decomposition,
 $f^\perp_N=\ZZ f\oplus\check M$. Subtracting signatures from
-$\operatorname{sig}(\lkt)=(3,19)$ gives the stated signature and [rank]{.other-sense}
+$\operatorname{sig}(\lkt)=(3,19)$ gives the stated signature and rank
 [@Dol96, Lemma 5.4 and §6].
 :::
 

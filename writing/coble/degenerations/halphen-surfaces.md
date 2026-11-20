@@ -5,12 +5,12 @@ part of the data. A fibration with a section is called Jacobian.
 
 ::: {.proposition #prop:halphen-surface-fibres title="Fibres of Halphen surfaces"}
 
-A relatively [minimal]{.other-sense} rational elliptic surface (@def:halphen-surface-index) $V$ is a **Halphen surface of [index]{.other-sense} $n$** if the class of its fibre is $-nK_V$.
-Every relatively [minimal]{.other-sense} rational elliptic surface is a Halphen surface of some [index]{.other-sense} $n$.
+A relatively minimal rational elliptic surface (@def:halphen-surface-index) $V$ is a **Halphen surface of index $n$** if the class of its fibre is $-nK_V$.
+Every relatively minimal rational elliptic surface is a Halphen surface of some index $n$.
 
-1. A Halphen surface of [index]{.other-sense} $1$ is a Jacobian rational elliptic surface: its fibration has no multiple fibres, equivalently it has a section.
+1. A Halphen surface of index $1$ is a Jacobian rational elliptic surface: its fibration has no multiple fibres, equivalently it has a section.
 
-2. A Halphen surface of [index]{.other-sense} $n\geq2$ has a unique multiple fibre $nF_1'$, of multiplicity $n$, and $\abs{-iK_V} = \theset{iF_1'}$ for $1\leq i\leq n-1$
+2. A Halphen surface of index $n\geq2$ has a unique multiple fibre $nF_1'$, of multiplicity $n$, and $\abs{-iK_V} = \theset{iF_1'}$ for $1\leq i\leq n-1$
 
 [@DZ99, §2.4].
 :::
@@ -19,7 +19,7 @@ Every relatively [minimal]{.other-sense} rational elliptic surface is a Halphen 
 
 ::: {.proposition #prop:enriques-elliptic-half-fibres title="The two half-fibres of an Enriques pencil"}
 Let $Z$ be a complex Enriques surface (@def:enriques-surface) and let $|E|$ be an elliptic pencil:
-a one-dimensional [complete]{.other-sense} linear system whose general member is a smooth
+a one-dimensional complete (@def:complete) linear system whose general member is a smooth
 curve of genus one. The pencil is basepoint-free and defines a genus-one
 fibration $Z\to\PP^1$. It has exactly two multiple fibres, both of
 multiplicity $2$. Write them as $2F_1$ and $2F_2$, where $F_i$ is the
@@ -66,9 +66,9 @@ attached to the fibre.
 Let $V$ be a terminal (@def:terminal-coble-surface) Coble surface of K3 type (@def:coble-surface).
 Then $V$ is isomorphic to one of the following:
 
-1. the blowup of a Halphen surface of [index]{.other-sense} $1$ at singular points of two simple reduced fibres;
+1. the blowup of a Halphen surface of index $1$ at singular points of two simple reduced fibres;
 
-2. the blowup of a Halphen surface of [index]{.other-sense} $2$ at singular points of one simple reduced fibre.
+2. the blowup of a Halphen surface of index $2$ at singular points of one simple reduced fibre.
 
 If the fibre is of type $\tilde A_1^*$ or $\tilde A_2^*$, the blowup is done twice or four times, respectively [@DK25, Prop. 9.1.4].
 In case 2 the fibre is of type $\tilde A_k$ with $k\leq8$, and in case 1 the two fibres are of types $\tilde A_k$ and $\tilde A_m$, or their degenerations $\tilde A_k^*$ and $\tilde A_m^*$, with $k + m\leq8$ [@DK25, proof of Cor. 9.1.5].
@@ -76,10 +76,10 @@ In case 2 the fibre is of type $\tilde A_k$ with $k\leq8$, and in case 1 the two
 
 ::: {.proposition #prop:coble-sextic-halphen-pencil title="The Halphen pencil of a Coble sextic"}
 
-Let $V$ be a terminal (@def:terminal-coble-surface) Coble surface (@def:coble-surface) of K3 type with $n = 1$, and let $W = V(F_6)$ be the irreducible plane sextic of @prop:coble-sextic-model, with $10$ [ordinary]{.other-sense} nodes or cusps, possibly infinitely near.
+Let $V$ be a terminal (@def:terminal-coble-surface) Coble surface (@def:coble-surface) of K3 type with $n = 1$, and let $W = V(F_6)$ be the irreducible plane sextic of @prop:coble-sextic-model, with $10$ ordinary nodes or cusps, possibly infinitely near.
 Choose $9$ of the $10$ double points of $W$.
-Then a plane cubic $V(F_3)$ passes through them, and the pencil $V(\lambda F_6 + \mu F_3^2)$ is a Halphen pencil of [index]{.other-sense} $2$.
-The minimal (@def:minimal-resolution) resolution of its [base]{.other-sense} points is a Halphen surface of [index]{.other-sense} $2$, and $V$ is the blowup of a singular point of an irreducible simple fibre of this pencil.
+Then a plane cubic $V(F_3)$ passes through them, and the pencil $V(\lambda F_6 + \mu F_3^2)$ is a Halphen pencil of index $2$.
+The minimal (@def:minimal-resolution) resolution of its base points is a Halphen surface of index $2$, and $V$ is the blowup of a singular point of an irreducible simple fibre of this pencil.
 
 Let $F$ be a reducible simple fibre of the pencil.
 The blowup of a singular point of $F$ is a non-terminal Coble surface of K3 type with $n = 1$, whose anti-bicanonical curve is the proper transform of $F$.
@@ -88,7 +88,7 @@ The blowup of the singular points of this curve is a terminal Coble surface of K
 
 ::: {.proposition #prop:terminal-coble-deformations title="Deformations of terminal Coble surfaces"}
 
-Let $k$ be the [base]{.other-sense} field, of [characteristic]{.other-sense} $p\neq2$.
+Let $k$ be the base field, of characteristic $p\neq2$.
 Let $V$ be a terminal (@def:terminal-coble-surface) Coble surface (@def:coble-surface) of K3 type with $K_V^2 = -n$ and anti-bicanonical curve $C$.
 Then
 $$
@@ -100,7 +100,7 @@ $$
 h^1(\Theta_{V/k}(-C)) = 10 - n
 .
 $$
-For $n = 1$ it is $9$, the number of moduli of general Halphen surfaces of [index]{.other-sense} $2$ [@DK25, Rem. 9.1.9].
+For $n = 1$ it is $9$, the number of moduli of general Halphen surfaces of index $2$ [@DK25, Rem. 9.1.9].
 :::
 
 ::: {.lemma #lem:coble_halphen_blowdown title="Cobles to Halphens"}
@@ -109,13 +109,13 @@ Let $X$ be a smooth rational surface with $\abs{-K_X} = \varnothing$, $K_X^2 = -
 Let $\pi_{E}\colon X \to Y$ be the blowing down of a $(-1)$-curve $E$.
 Then
 
-- $Y$ is a Halphen surface of [index]{.other-sense} 2;
+- $Y$ is a Halphen surface of index 2;
 
-- $C$ is the proper transform of the [fiber]{.other-sense} $F$ containing $y_{0}=\pi_{E}(E)$;
+- $C$ is the proper transform of the fiber $F$ containing $y_{0}=\pi_{E}(E)$;
 
-- the [fiber]{.other-sense} $F$ is irreducible, and $y_{0}$ is its unique singular point.
+- the fiber $F$ is irreducible, and $y_{0}$ is its unique singular point.
 
-Conversely, the blow-up of a singular point of an irreducible non-multiple [fiber]{.other-sense} of a Halphen surface of [index]{.other-sense} 2 is a surface $X$ with these properties [@CD12, Prop. 3.1].
+Conversely, the blow-up of a singular point of an irreducible non-multiple fiber of a Halphen surface of index 2 is a surface $X$ with these properties [@CD12, Prop. 3.1].
 :::
 
 ::: {.proof}
@@ -145,9 +145,9 @@ Thus $h^0(-K_Y) = 1$, and the unique effective divisor $F_0\in\abs{-K_Y}$ does n
 So $\abs{-2K_Y}$ contains the two linearly independent divisors $2F_0$ and $F$, and $h^0(-2K_Y)\geq2$.
 Since $K_Y^2 = 0$, the divisors $2F_0$ and $F$ are disjoint, and $\abs{-2K_Y}$ has no fixed components.
 It contains the reduced irreducible curve $F$, so it is an irreducible pencil.
-Thus $Y$ is a Halphen surface of [index]{.other-sense} $2$, $F$ is a fibre of its Halphen fibration through $y_0$, and $C$ is the proper transform of $F$.
+Thus $Y$ is a Halphen surface of index $2$, $F$ is a fibre of its Halphen fibration through $y_0$, and $C$ is the proper transform of $F$.
 
-Conversely, let $Y$ be a Halphen surface of [index]{.other-sense} $2$, let $F$ be an irreducible non-multiple fibre, let $y_0$ be a singular point of $F$, and let $\pi_E\colon X\to Y$ be the blowup of $y_0$.
+Conversely, let $Y$ be a Halphen surface of index $2$, let $F$ be an irreducible non-multiple fibre, let $y_0$ be a singular point of $F$, and let $\pi_E\colon X\to Y$ be the blowup of $y_0$.
 Then $K_X^2 = K_Y^2 - 1 = -1$.
 Since $F\in\abs{-2K_Y}$ and its singular point is blown up, $\abs{-2K_X}$ is not empty and contains the proper transform $C$ of $F$, which is a smooth rational curve.
 Since $C$ is irreducible and $C^2 = 4K_X^2 = -4 < 0$, every $D\in\abs{-2K_X}$ satisfies $D\cdot C = C^2 < 0$, so $C$ is a component of $D$ and $D - C\sim 0$ is effective; thus $\abs{-2K_X} = \theset{C}$.
@@ -156,6 +156,6 @@ The linear system $\abs{-K_X}$ is empty, because $\abs{-K_Y}$ consists of the un
 
 ::: {.conjecture #conj:coble-halphen-moduli-correspondence title="Coble and Halphen moduli"}
 
-The constructions of @lem:coble_halphen_blowdown and @prop:terminal-coble-halphen-blowup give a correspondence between the moduli spaces of Coble surfaces with $n$ boundary components and the moduli spaces of [index]{.other-sense} $2$ Halphen pencils on the $g=0$ line of Nikulin's diagram of $2$-elementary lattices, whose vertices are the triples $(r, a, \delta)$.
+The constructions of @lem:coble_halphen_blowdown and @prop:terminal-coble-halphen-blowup give a correspondence between the moduli spaces of Coble surfaces with $n$ boundary components and the moduli spaces of index $2$ Halphen pencils on the $g=0$ line of Nikulin's diagram of $2$-elementary lattices, whose vertices are the triples $(r, a, \delta)$.
 Under this correspondence the cusp diagrams of the two moduli spaces coincide.
 :::

@@ -165,7 +165,7 @@ Taking $v,w$ to be unit normals of $H_v, H_w$, the relative position of two hype
 
 ## Coxeter groups and Coxeter polytopes
 
-::: {.definition #def:coxeter-group defines="Coxeter group; $W(M)$; Coxeter system; rank"}
+::: {.definition #def:coxeter-group defines="Coxeter group; $W(M)$; Coxeter system; rank of a Coxeter system"}
 
 Let $M = (m_{ij})$ be a Coxeter matrix (@def:coxeter-matrix) on the finite set $S = \theset{s_1,\dots,s_n}$, so that $m_{ii} = 1$ and $m_{ij} = m_{ji}\in\theset{2,3,\dots}\union\theset{\infty}$ for $i\neq j$.
 The **Coxeter group** of $M$ is the group (@def:group) given by the presentation

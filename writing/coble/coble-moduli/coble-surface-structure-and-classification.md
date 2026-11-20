@@ -153,24 +153,24 @@ For a Coble surface (@def:coble-surface) $X$ the following are equivalent:
 
 ## Rational log Enriques surfaces of index 2
 
-::: {.definition #def:rational-log-enriques title="Rational log Enriques surface of index 2" defines="rational log [Enriques surface]{.other-sense} of index $2$"}
+::: {.definition #def:rational-log-enriques title="Rational log Enriques surface of index 2" defines="rational log Enriques surface of index $2$"}
 
-A **rational log [Enriques surface]{.other-sense} of index (@def:index) $2$** is a normal rational surface $\bar X$ with at worst quotient singularities such that $\OO(-2K_{\bar X}) \cong \OO_{\bar X}$ [@DZ99, §6, paragraph before Prop. 6.4].
+A **rational log Enriques surface of index (@def:index) $2$** is a normal rational surface $\bar X$ with at worst quotient singularities such that $\OO(-2K_{\bar X}) \cong \OO_{\bar X}$ [@DZ99, §6, paragraph before Prop. 6.4].
 :::
 
 ::: {.theorem #thm:coble-log-enriques-resolution title="Terminal Coble surfaces are resolutions of log Enriques surfaces"}
 
-1. The minimal (@def:minimal-resolution) resolution $X$ of a rational log [Enriques surface]{.other-sense} of index (@def:index) $2$ is a Coble surface (@def:coble-surface) with $h^0(-2K_X) = 1$. The unique member $D\in\abs{-2K_X}$ is reduced, and each connected component of $D$ is either a single $(-4)$-curve or a linear chain with dual graph
+1. The minimal (@def:minimal-resolution) resolution $X$ of a rational log Enriques surface of index (@def:index) $2$ is a Coble surface (@def:coble-surface) with $h^0(-2K_X) = 1$. The unique member $D\in\abs{-2K_X}$ is reduced, and each connected component of $D$ is either a single $(-4)$-curve or a linear chain with dual graph
 $$
 (-3) - (-2) - \cdots - (-2) - (-3)
 .
 $$
-Conversely, a Coble surface with these properties is the minimal resolution of a rational log [Enriques surface]{.other-sense} of index $2$.
+Conversely, a Coble surface with these properties is the minimal resolution of a rational log Enriques surface of index $2$.
 2. A Coble surface is terminal (@def:terminal-coble-surface) if and only if it has exactly one anti-bicanonical divisor $D$, and $D$ is reduced and a disjoint union of $(-4)$-curves.
 3. The minimal resolution of a rational normal surface with at worst singularities of type $\tfrac14(1,1)$ is a terminal Coble surface, and conversely.
 
 [@DZ99, Prop. 6.4]
-A terminal Coble surface is the minimal resolution of a maximum rational log [Enriques surface]{.other-sense} of index $2$ [@DZ99, Introduction].
+A terminal Coble surface is the minimal resolution of a maximum rational log Enriques surface of index $2$ [@DZ99, Introduction].
 :::
 
 ## Dolgachev-Kondo geometry of the degree 2 polarization

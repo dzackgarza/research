@@ -161,7 +161,7 @@ The limiting mixed Hodge structure of a degeneration is the subject of the nilpo
 
 For a one-parameter degeneration of polarized K3 surfaces over a punctured disk, the unipotent monodromy operator $T \in \Orth(T_{2d})$ and its nilpotent logarithm $N = \log T$ induce a canonical monodromy weight filtration $W^{\bullet}$.
 
-The [boundary components]{.other-sense} of $\bbcpt{\ftd}$ are classified by the nilpotency index (@def:index) of $N$:
+The boundary components of $\bbcpt{\ftd}$ are classified by the nilpotency index (@def:index) of $N$:
 
 - **Type $\latII$ degenerations (1-cusps)**: $N \neq 0$, $N^2 = 0$.
   The weight filtration is 3-step ($W_0 \subset W_1 \subset W_2 \subset W_3$), and $\Gr_2^W = I^\perp / I = \overline{T}_I$ has a pure polarized Hodge structure (@def:property-structure-stuff) of weight 2.

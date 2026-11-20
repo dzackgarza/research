@@ -143,7 +143,7 @@ The first term is even. The second term is even because every pairing in $E_8(2)
 
 Let $\mcm_{\mathrm{Enr}}\subset\Gamma_{\mathrm{Enr}}\backslash\bD(\ten)$ be the moduli space of Enriques surfaces (@def:enriques-surface) in the period quotient of [@CDL25, Thm. 5.9.8], with period lattice $\ten = U\oplus U(2)\oplus E_8(2)$, and let $\overline{\mcm}_{\mathrm{Enr}}$ be its Baily--Borel compactification. The complement $\mcm_{\mathrm{Cob}}\definedas\Gamma_{\mathrm{Enr}}\backslash\bD(\ten)\setminus\mcm_{\mathrm{Enr}}$ is an irreducible divisor, isomorphic to the moduli space of Coble surfaces (@def:coble-surface) of K3 type [@CDL25, Thm. 5.9.8(1)]. Let $X\definedas\overline{\SL_2(\bZ)\backslash\bH}$.
 
-1. The boundary $\overline{\mcm}_{\mathrm{Enr}}\setminus(\mcm_{\mathrm{Enr}}\cup\mcm_{\mathrm{Cob}})$ is the union of two curves that [meet]{.other-sense} in one point. They are the [boundary components]{.other-sense} of the two $\Gamma_{\mathrm{Enr}}$-orbits of primitive (@def:primitive-embedding) isotropic planes of $\ten$. The curve of an isotropic plane $P_1$ with $P_1^{\perp}/P_1\cong E_8(2)$ is the modular curve $X_0(2)$, and the other curve is $X$ [@CDL25, Thm. 5.9.8 and its proof].
+1. The boundary $\overline{\mcm}_{\mathrm{Enr}}\setminus(\mcm_{\mathrm{Enr}}\cup\mcm_{\mathrm{Cob}})$ is the union of two curves that meet in one point. They are the boundary components of the two $\Gamma_{\mathrm{Enr}}$-orbits of primitive (@def:primitive-embedding) isotropic planes of $\ten$. The curve of an isotropic plane $P_1$ with $P_1^{\perp}/P_1\cong E_8(2)$ is the modular curve $X_0(2)$, and the other curve is $X$ [@CDL25, Thm. 5.9.8 and its proof].
 2. The boundary of the closure of $\mcm_{\mathrm{Cob}}$ in $\overline{\mcm}_{\mathrm{Enr}}$ has exactly one $0$-dimensional component and exactly one $1$-dimensional component, and the $1$-dimensional component is isomorphic to $X$ [@CDL25, Cor. 5.9.10].
 3. The boundary curve of the isotropic plane $\tilde J$ of @lem:1_cusp_correspondence is $X$.
 :::
@@ -165,7 +165,7 @@ $$
 $$
 
 The first identification is forced: $(18,0,0)_1$ is the unique even unimodular lattice of its (indefinite (@def:definiteness)) signature.
-The second lattice is even, unimodular, and negative-definite of [rank]{.other-sense} $16$, and is thus determined only up to the two such isometry classes.
+The second lattice is even, unimodular, and negative-definite of rank $16$, and is thus determined only up to the two such isometry classes.
 
 Thus the embedding $\fco \injects \fttz$ induces the following maps on cusps:
 
@@ -199,16 +199,16 @@ Thus $\tilde w_2$ is odd, and we apply case (a) of [@AE22 Thm. 5.10].
 
 ::: {.proposition #prop:rank_16_cusp_D16}
 
-The negative-definite lattice $\tilde w_2^{\perp \tdp}/\tilde w_2 \cong (16,0,0)_0$ of @lem:cusp_map_dP is isometric to $D_{16}^+$; among the two even negative-definite unimodular lattices of [rank]{.other-sense} $16$, this specifies the $D_{16}^+$ class.
+The negative-definite lattice $\tilde w_2^{\perp \tdp}/\tilde w_2 \cong (16,0,0)_0$ of @lem:cusp_map_dP is isometric to $D_{16}^+$; among the two even negative-definite unimodular lattices of rank $16$, this specifies the $D_{16}^+$ class.
 :::
 
 ::: {.proof}
 
-The invariants $(r,a,\delta) = (16,0,0)$ do not by themselves determine the isometry class, since the even negative-definite unimodular lattices of [rank]{.other-sense} $16$ are exactly $E_8^{\oplus 2}$ and $D_{16}^+$.
-The root system (@def:root-system-base) of $E_8^{\oplus 2}$ has two orthogonal components, each of [rank]{.other-sense} $8$; the root system of $D_{16}^+$ is the irreducible system $D_{16}$.
-So it suffices to exhibit a chain of roots of $\tilde J^\perp/\tilde J$, where $\tilde J = \generators{\tilde w_1, \tilde w_2}$, in which consecutive roots are not orthogonal and which spans a sublattice of [rank]{.other-sense} greater than $8$.
+The invariants $(r,a,\delta) = (16,0,0)$ do not by themselves determine the isometry class, since the even negative-definite unimodular lattices of rank $16$ are exactly $E_8^{\oplus 2}$ and $D_{16}^+$.
+The root system (@def:root-system-base) of $E_8^{\oplus 2}$ has two orthogonal components, each of rank $8$; the root system of $D_{16}^+$ is the irreducible system $D_{16}$.
+So it suffices to exhibit a chain of roots of $\tilde J^\perp/\tilde J$, where $\tilde J = \generators{\tilde w_1, \tilde w_2}$, in which consecutive roots are not orthogonal and which spans a sublattice of rank greater than $8$.
 
-Label the simple roots of each $E_8$ summand as in Bourbaki, so that $\alpha_1 \perp \alpha_2$, as $\tilde w_2^2 = 0$ requires, and $\alpha_3$ [meets]{.other-sense} $\alpha_1$, as in the proof above.
+Label the simple roots of each $E_8$ summand as in Bourbaki, so that $\alpha_1 \perp \alpha_2$, as $\tilde w_2^2 = 0$ requires, and $\alpha_3$ meets $\alpha_1$, as in the proof above.
 Put $s = \alpha_3 + \alpha_4$ and $\tilde s = \tilde\alpha_3 + \tilde\alpha_4$.
 The twelve vectors
 
@@ -219,8 +219,8 @@ $$
 have square $-2$ and are orthogonal to $\tilde w_1 = e'$ and to $\tilde w_2 = 2e + 2f + \alpha_1 + \alpha_2 + \tilde\alpha_1 + \tilde\alpha_2$.
 Consecutive vectors in the list pair to $\pm 1$.
 Since $\tilde J$ is isotropic, it lies in the radical (@def:two-witnesses) of the form on $\tilde J^\perp$, so the images in $\tilde J^\perp/\tilde J$ are roots with the same pairings.
-The twelve vectors together with $\tilde J$ span a sublattice of [rank]{.other-sense} $14$, so the images span a sublattice of [rank]{.other-sense} $12$.
-The images therefore lie in one irreducible component of [rank]{.other-sense} at least $12$, and $\tilde J^\perp/\tilde J \not\cong E_8^{\oplus 2}$.
+The twelve vectors together with $\tilde J$ span a sublattice of rank $14$, so the images span a sublattice of rank $12$.
+The images therefore lie in one irreducible component of rank at least $12$, and $\tilde J^\perp/\tilde J \not\cong E_8^{\oplus 2}$.
 :::
 
 ## The orbit map on $0$-cusps {#sec-cusp-orbit-map}
@@ -240,16 +240,16 @@ $$\Stab_{\Gamma_\En}(\ZZ k) = \mathrm{Ext}\bigl(\widetilde\Orth^+(T_\Co)\bigr)\t
 
 ::: {.proof}
 
-*The two lattices and the gluing.* By [@AEGS25, Def. 2.3, printed p. 586], $\ten=U\oplus U(2)\oplus E_8(2)$ is the even (@def:form-axioms) $2$-elementary lattice $(12,10,0)_2$ of signature (@def:signature) $(2,10)$; by [@DK13, (3.6), printed p. 513], the Coble lattice is $T_\Co = \generators{2}\oplus\mathbb{E}(2) = \generators{h}\oplus U(2)\oplus E_8(2)$, where $\mathbb{E} = E_8\oplus U$ is the Enriques lattice (@def:enriques-lattice) of [@DK13, printed p. 510] --- of [rank]{.other-sense} $10$, unimodular, so $A_{\mathbb E} = 0$, and doubled to give the $U(2)\oplus E_8(2)$ summand. The lattice $T_\Co$ is the even $2$-elementary lattice of signature $(2,9)$ of the same display [@DK13, (3.6), printed p. 513]. In the notation of @lem:primitive_embedding_eta, $\eta$ sends $h$ to $\tilde e+\tilde f$ and is the identity on $U(2)\oplus E_8(2)$, the vectors $\tilde e,\tilde f$ being the isotropic (@def:orthogonal-complement) basis (@def:based-module) of $U$ with $\tilde e\cdot\tilde f = 1$. Then
+*The two lattices and the gluing.* By [@AEGS25, Def. 2.3, printed p. 586], $\ten=U\oplus U(2)\oplus E_8(2)$ is the even (@def:form-axioms) $2$-elementary lattice $(12,10,0)_2$ of signature (@def:signature) $(2,10)$; by [@DK13, (3.6), printed p. 513], the Coble lattice is $T_\Co = \generators{2}\oplus\mathbb{E}(2) = \generators{h}\oplus U(2)\oplus E_8(2)$, where $\mathbb{E} = E_8\oplus U$ is the Enriques lattice (@def:enriques-lattice) of [@DK13, printed p. 510] --- of rank $10$, unimodular, so $A_{\mathbb E} = 0$, and doubled to give the $U(2)\oplus E_8(2)$ summand. The lattice $T_\Co$ is the even $2$-elementary lattice of signature $(2,9)$ of the same display [@DK13, (3.6), printed p. 513]. In the notation of @lem:primitive_embedding_eta, $\eta$ sends $h$ to $\tilde e+\tilde f$ and is the identity on $U(2)\oplus E_8(2)$, the vectors $\tilde e,\tilde f$ being the isotropic (@def:orthogonal-complement) basis (@def:based-module) of $U$ with $\tilde e\cdot\tilde f = 1$. Then
 $$k^2 = (\tilde e-\tilde f)^2 = -2,\qquad k\cdot\eta(T_\Co) = 0,\qquad \ten/(\eta(T_\Co)\oplus\ZZ k)\cong U/(\ZZ(\tilde e+\tilde f)\oplus\ZZ(\tilde e-\tilde f))\cong\ZZ/2,$$
-so $\eta(T_\Co)\subseteq k^{\perp\ten}$ with both of [rank]{.other-sense} $11$ gives $\eta(T_\Co) = k^{\perp\ten}$, the vector $k$ is primitive (@def:primitive-embedding), and $\eta(T_\Co)\oplus\ZZ k$ has index (@def:index) two in $\ten$.
+so $\eta(T_\Co)\subseteq k^{\perp\ten}$ with both of rank $11$ gives $\eta(T_\Co) = k^{\perp\ten}$, the vector $k$ is primitive (@def:primitive-embedding), and $\eta(T_\Co)\oplus\ZZ k$ has index (@def:index) two in $\ten$.
 The gluing subgroup of [@Nik80, Prop. 1.5.1, printed p. 111] is generated by the class of $\tfrac12(\eta(h)+k) = \tilde e$, that is by $(h/2,k/2)$: the class $h/2$ lies in the dual of $T_\Co$ because $h^2 = 2$ and $h\perp E_{10}(2)$, the class $k/2$ generates $A_K\cong\ZZ/2$ because $k^2 = -2$, and $q_{T_\Co}(h/2)+q_K(k/2) = \frac12-\frac12\equiv0\pmod{2\ZZ}$ is the isotropy of $H$ that an overlattice (@def:overlattice) of index two requires. Under the two projections $p_{T_\Co}\colon H\to A_{T_\Co}$ and $p_K\colon H\to A_K$ the gluing isomorphism (@def:isomorphism-of-objects) is $\gamma = p_Kp_{T_\Co}^{-1}\colon h/2\mapsto k/2$, and $q_K\circ\gamma = -q_{T_\Co}$ on $H$.
 
 *Existence of the lift.* Apply [@Nik80, Cor. 1.5.2, printed p. 111] with $S_1 = S_2 = \eta(T_\Co)\subset\ten$, with the given $\varphi\in\Orth(T_\Co)$ and with $\psi = \id_K$: an extension of $\varphi$ to an automorphism of $\ten$ acting as $\psi$ on $K$ exists if and only if $\bar\psi\circ\gamma = \gamma\circ\bar\varphi$ on $H$, the bars denoting the discriminant actions. Since $A_K\cong\ZZ/2$ carries the nonzero value $q_K(k/2) = -\frac12$, its only isometry is the identity, so $\bar\psi = \id$ and the condition reads $\bar\varphi(h/2) = h/2$. For $\varphi\in\widetilde\Orth^+(T_\Co)$ the discriminant action is trivial on all of $A_{T_\Co}$, by the definition of $\widetilde\Orth$ as the kernel of (2.1) [@DK13, printed p. 511], so the condition holds and the lift $\mathrm{Ext}(\varphi)$ exists.
 
-*Uniqueness and the homomorphism [property]{.other-sense}.* Two automorphisms of $\ten$ that agree on $\eta(T_\Co)$ and fix $k$ agree on $\eta(T_\Co)\oplus\ZZ k$, a full-[rank]{.other-sense} sublattice, hence everywhere. So $\mathrm{Ext}(\varphi)$ is unique, $\mathrm{Ext}(\varphi)\mathrm{Ext}(\varphi')$ and $\mathrm{Ext}(\varphi\varphi')$ agree on $\eta(T_\Co)$ and fix $k$, so $\mathrm{Ext}$ is a homomorphism, and $\mathrm{res}\circ\mathrm{Ext} = \id$ holds by construction; in particular $\mathrm{Ext}$ is injective, and $\eta(\varphi v) = \mathrm{Ext}(\varphi)\eta(v)$ is the identity $\mathrm{Ext}(\varphi)\circ\eta = \eta\circ\varphi$.
+*Uniqueness and the homomorphism property.* Two automorphisms of $\ten$ that agree on $\eta(T_\Co)$ and fix $k$ agree on $\eta(T_\Co)\oplus\ZZ k$, a full-rank sublattice, hence everywhere. So $\mathrm{Ext}(\varphi)$ is unique, $\mathrm{Ext}(\varphi)\mathrm{Ext}(\varphi')$ and $\mathrm{Ext}(\varphi\varphi')$ agree on $\eta(T_\Co)$ and fix $k$, so $\mathrm{Ext}$ is a homomorphism, and $\mathrm{res}\circ\mathrm{Ext} = \id$ holds by construction; in particular $\mathrm{Ext}$ is injective, and $\eta(\varphi v) = \mathrm{Ext}(\varphi)\eta(v)$ is the identity $\mathrm{Ext}(\varphi)\circ\eta = \eta\circ\varphi$.
 
-*The lift lies in the stable group.* For $y\in\ten^\vee$ write $y = y_S+y_K$ with $y_S\in\eta(T_\Co)^\vee$ and $y_K\in K^\vee$, the dual splitting being that of the orthogonal splitting (@def:lattice-split) $\ten\otimes\QQ = \eta(T_\Co)\otimes\QQ\perp K\otimes\QQ$. Then $\mathrm{Ext}(\varphi)(y)-y = \varphi(y_S)-y_S$, which lies in $\eta(T_\Co)$ because $\bar\varphi = \id$; so $\mathrm{Ext}(\varphi)$ acts trivially on $A_\ten$ and lies in $\discriminantkernel{\ten}$. For the sign, the two $\Orth^+$ are the kernels of the real spinor [norm]{.other-sense} of @def:spinor-norm and @def:lattice-spinor-kernels; over $\RR$ the lift is $\varphi_\RR\perp\id_{K_\RR}$, so a Cartan--Dieudonné decomposition $\varphi_\RR = s_{u_1}\cdots s_{u_m}$ with $u_i\in\eta(T_\Co)\otimes\RR$ [@Mei13, Theorem 1.1] is one for $\mathrm{Ext}(\varphi)_\RR$ --- the reflection in $u_i$ does not see $K_\RR$, which is orthogonal to $u_i$ --- whence
+*The lift lies in the stable group.* For $y\in\ten^\vee$ write $y = y_S+y_K$ with $y_S\in\eta(T_\Co)^\vee$ and $y_K\in K^\vee$, the dual splitting being that of the orthogonal splitting (@def:lattice-split) $\ten\otimes\QQ = \eta(T_\Co)\otimes\QQ\perp K\otimes\QQ$. Then $\mathrm{Ext}(\varphi)(y)-y = \varphi(y_S)-y_S$, which lies in $\eta(T_\Co)$ because $\bar\varphi = \id$; so $\mathrm{Ext}(\varphi)$ acts trivially on $A_\ten$ and lies in $\discriminantkernel{\ten}$. For the sign, the two $\Orth^+$ are the kernels of the real spinor norm of @def:spinor-norm and @def:lattice-spinor-kernels; over $\RR$ the lift is $\varphi_\RR\perp\id_{K_\RR}$, so a Cartan--Dieudonné decomposition $\varphi_\RR = s_{u_1}\cdots s_{u_m}$ with $u_i\in\eta(T_\Co)\otimes\RR$ [@Mei13, Theorem 1.1] is one for $\mathrm{Ext}(\varphi)_\RR$ --- the reflection in $u_i$ does not see $K_\RR$, which is orthogonal to $u_i$ --- whence
 $$\spinornorm_\RR\bigl(\mathrm{Ext}(\varphi)\bigr) = \prod_{i=1}^m\Bigl[-\frac{u_i^2}{2}\Bigr] = \spinornorm_\RR(\varphi),$$
 and $\varphi\in\Orth^+$ exactly when $\mathrm{Ext}(\varphi)\in\Orth^+$. Both conditions being inherited, $\mathrm{Ext}$ lands in $\Gamma_\En$.
 
@@ -257,7 +257,7 @@ and $\varphi\in\Orth^+$ exactly when $\mathrm{Ext}(\varphi)\in\Orth^+$. Both con
 For the sign, $\gamma = \mathrm{Ext}(\varphi)$ is one extension of $\varphi$, so the identity of the previous paragraph gives $\spinornorm_\RR(\varphi) = \spinornorm_\RR(\gamma) = 1$.
 For the discriminant action, let $x\in A_{E_{10}(2)}\subseteq A_{T_\Co}$ and take its representative $\tilde x\in E_{10}(2)^\vee\subseteq T_\Co^\vee$, orthogonal to $h$; the functional $y$ on $\eta(T_\Co)\oplus\ZZ k$ with $y(\eta s) = \beta_{T_\Co}(\tilde x,s)$ and $y(k) = 0$ vanishes on $\eta(h)+k = 2\tilde e$, so it is integral on $\ten$. Since $\gamma\in\discriminantkernel{\ten}$, $\gamma y - y\in\ten$, and restricting to $\eta(T_\Co)$ gives $\bar\varphi^{\,-1}(x) = x$: the class of $(\gamma y)|_{\eta(T_\Co)} = y\circ\gamma^{-1}|_{\eta(T_\Co)}$ is $\bar\varphi^{\,-1}(x)$, the class of $y|_{\eta(T_\Co)}$ is $x$, and their difference lies in $\eta(T_\Co)$. So $\bar\varphi$ fixes every class of $A_{E_{10}(2)}$. It also fixes the class $h/2$: the vector $\tilde e = \tfrac12(\eta(h)+k)$ lies in $\ten^\vee$ because $\tilde e\cdot\ten\subseteq\ZZ$, so $\gamma\tilde e-\tilde e\in\ten$, and
 $$\gamma\tilde e-\tilde e = \tfrac12\bigl(\eta\varphi(h)-\eta(h)\bigr),\qquad \beta_\ten\bigl(\gamma\tilde e-\tilde e,\,k\bigr) = \beta_\ten(\tilde e,k)-\beta_\ten(\tilde e,k) = 0,$$
-using $\gamma k = k$; a vector of $\ten$ orthogonal to $k$ lies in $\ten\intersect k^{\perp\ten} = \eta(T_\Co)$, both sides having [rank]{.other-sense} $11$ and $k$ being primitive, so $\varphi(h)-h = 2(\gamma\tilde e-\tilde e)\in2T_\Co$, that is $\bar\varphi(h/2) = h/2$. As $A_{T_\Co} = A_{\generators{h}}\oplus A_{E_{10}(2)}$ is the discriminant group of the orthogonal splitting $T_\Co = \generators{h}\perp E_{10}(2)$, $\bar\varphi = \id$, so $\varphi\in\widetilde\Orth^+$, and $\gamma = \mathrm{Ext}(\varphi)$ by uniqueness. So $\mathrm{Ext}\bigl(\widetilde\Orth^+(T_\Co)\bigr) = \Stab_{\Gamma_\En}(k)$, and $\mathrm{res}$ carries $\Stab_{\Gamma_\En}(\eta(T_\Co))$ onto $\widetilde\Orth^+(T_\Co)$.
+using $\gamma k = k$; a vector of $\ten$ orthogonal to $k$ lies in $\ten\intersect k^{\perp\ten} = \eta(T_\Co)$, both sides having rank $11$ and $k$ being primitive, so $\varphi(h)-h = 2(\gamma\tilde e-\tilde e)\in2T_\Co$, that is $\bar\varphi(h/2) = h/2$. As $A_{T_\Co} = A_{\generators{h}}\oplus A_{E_{10}(2)}$ is the discriminant group of the orthogonal splitting $T_\Co = \generators{h}\perp E_{10}(2)$, $\bar\varphi = \id$, so $\varphi\in\widetilde\Orth^+$, and $\gamma = \mathrm{Ext}(\varphi)$ by uniqueness. So $\mathrm{Ext}\bigl(\widetilde\Orth^+(T_\Co)\bigr) = \Stab_{\Gamma_\En}(k)$, and $\mathrm{res}$ carries $\Stab_{\Gamma_\En}(\eta(T_\Co))$ onto $\widetilde\Orth^+(T_\Co)$.
 
 *The kernel of $\mathrm{res}$ and the line stabilizer.* Let $\gamma\in\Gamma_\En$ act trivially on $\eta(T_\Co)$. Then $\gamma(k) = \pm k$, since $K = \eta(T_\Co)^{\perp\ten}$ is preserved. If $\gamma(k) = k$ then $\gamma = \id$ by the uniqueness step; if $\gamma(k) = -k$ then $s_k\gamma$ fixes $k$ and acts trivially on $\eta(T_\Co)$, hence $s_k\gamma = \id$ and $\gamma = s_k$. Conversely $s_k\in\Gamma_\En$: it is the isometry $y\mapsto y+\beta_\ten(y,k)k$, integral because $k^2 = -2$, it acts trivially on $A_\ten$ because $\beta_\ten(y,k)k\in\ten$ for $y\in\ten^\vee$, and $\spinornorm_\RR(s_k) = [-k^2/2] = [1]$. So $\ker\mathrm{res} = \{1,s_k\}$. An element of $\Gamma_\En$ preserving the line $\ZZ k$ satisfies $\gamma(k) = \pm k$; in the first case $\gamma = \mathrm{Ext}(\mathrm{res}\,\gamma)$ and in the second $s_k\gamma = \mathrm{Ext}(\mathrm{res}\,\gamma)$, so $\Stab_{\Gamma_\En}(\ZZ k) = \mathrm{Ext}\bigl(\widetilde\Orth^+(T_\Co)\bigr)\generators{s_k}$ with trivial intersection, and $\generators{s_k}$ is centralized by the image because $s_{\gamma k} = \gamma s_k\gamma^{-1}$ and $\mathrm{Ext}(\varphi)k = k$. The product is thus direct.
 
@@ -273,7 +273,7 @@ Let $\mathcal S\to B$ be a family of Coble surfaces over a connected base, with 
 
 Transport is an isometry (@prop:local-system-of-lattices-monodromy), and it carries $D^+$ to $D^+$: the period map (@def:period-map) of the family is single-valued on the connected base, so $\rho(\gamma)$ permutes the components of $\bD(T_\Co)$ and fixes the one containing the periods (@eq-period-map-equivariance).
 
-*The component stabilizer.* The lattice $T_\Co$ carries the weight-$2$ Hodge [structure]{.other-sense} of its K3 double cover, with Hodge numbers $h^{2,0}=1$ --- a holomorphic $2$-form is anti-invariant under the non-symplectic involution --- and $h^{1,1}=9$, the signature being $(2,9)$ (@prop:coble-transcendental). So the case $h^{m,m}>0$ of @thm:period-domain-component-stabilizer applies with $m=1$ and $\epsilon=1$, and
+*The component stabilizer.* The lattice $T_\Co$ carries the weight-$2$ Hodge structure of its K3 double cover, with Hodge numbers $h^{2,0}=1$ --- a holomorphic $2$-form is anti-invariant under the non-symplectic involution --- and $h^{1,1}=9$, the signature being $(2,9)$ (@prop:coble-transcendental). So the case $h^{m,m}>0$ of @thm:period-domain-component-stabilizer applies with $m=1$ and $\epsilon=1$, and
 $$\Stab_{G_\bR}(D^+)=\Theta_\bR(T_\Co\otimes\bR).$$
 By @conv:spinor-positive-subgroup this is $\Orth^+(T_\Co)$, and $\rho(\gamma)$ lies there.
 
@@ -332,7 +332,7 @@ By @cor:coble-lifting-under-conjecture the homomorphism $\mathrm{Ext}\colon\Gamm
 
 ::: {.lemma #lem:meridian-kernel title="The reflections and Eichler transvections lie in the discriminant kernel"}
 
-Let $L$ be an integral lattice, $A_L = L^\vee/L$, and $\rho = \rho_L\colon\Orth(L)\too\Orth(A_L,q_L)$ the discriminant [representation]{.other-sense} of @def:discriminant-rep. Let $\Gamma\leq\Orth(L)$ be generated by elements of the two forms
+Let $L$ be an integral lattice, $A_L = L^\vee/L$, and $\rho = \rho_L\colon\Orth(L)\too\Orth(A_L,q_L)$ the discriminant representation of @def:discriminant-rep. Let $\Gamma\leq\Orth(L)$ be generated by elements of the two forms
 
 1. a reflection $s_\delta$ in a vector $\delta\in L$ with $\delta^2 = -2$, that is $s_\delta(x) = x - \frac{2(x,\delta)}{(\delta,\delta)}\delta$ (@def:spinor-norm);
 2. an Eichler transvection $\tau_{u,v}(x) \definedas x + (x\cdot u)v - (x\cdot v)u$, for $u,v\in L$ isotropic with $u\cdot v = 0$.
@@ -360,7 +360,7 @@ A subgroup $G\subseteq\Orth(\lkt)$ preserving both summands therefore acts trivi
 
 ::: {.proof}
 
-The isometry $g$ preserves $M\oplus N$ and $\lkt$, hence preserves the gluing subgroup, which is the graph $\theset{(x,\gamma x)\st x\in A_M}$ in $A_M\oplus A_N$. For $x\in A_M$ the class $(x,\gamma x)$ is in it, so $(\bar\psi x,\bar\varphi\gamma x)$ is in it as well, and the graph [meets]{.other-sense} the fibre over $\bar\psi x$ in one point: $\bar\varphi\gamma x = \gamma\bar\psi x$. That is $\bar\varphi\circ\gamma = \gamma\circ\bar\psi$, the displayed identity. For the last claim, $\bar\psi$ sends $[e_i/2]$ to $[e_j/2]\neq[e_i/2]$, because $e_j-e_i$ has a coordinate equal to $1$ and so does not lie in $2M$.
+The isometry $g$ preserves $M\oplus N$ and $\lkt$, hence preserves the gluing subgroup, which is the graph $\theset{(x,\gamma x)\st x\in A_M}$ in $A_M\oplus A_N$. For $x\in A_M$ the class $(x,\gamma x)$ is in it, so $(\bar\psi x,\bar\varphi\gamma x)$ is in it as well, and the graph meets the fibre over $\bar\psi x$ in one point: $\bar\varphi\gamma x = \gamma\bar\psi x$. That is $\bar\varphi\circ\gamma = \gamma\circ\bar\psi$, the displayed identity. For the last claim, $\bar\psi$ sends $[e_i/2]$ to $[e_j/2]\neq[e_i/2]$, because $e_j-e_i$ has a coordinate equal to $1$ and so does not lie in $2M$.
 :::
 
 ::: {.corollary #cor:gamma-co-lifting-criterion title="What decides the lifting for the monodromy group"}
@@ -386,11 +386,11 @@ Every vector in the image of $\Phi$ has divisibility (@def:lattice-divisibility)
 
 ::: {.proof}
 
-Divisibility is an isometry invariant, so it is constant on $\Gamma_\En$-orbits, and $\div_\ten(\tilde e) = 1$ because $\tilde e\cdot\tilde f = 1$. So it suffices to show that $\div_\ten(\eta(v))$ is [even]{.other-sense} for every primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) $v\in T_\Co$.
+Divisibility is an isometry invariant, so it is constant on $\Gamma_\En$-orbits, and $\div_\ten(\tilde e) = 1$ because $\tilde e\cdot\tilde f = 1$. So it suffices to show that $\div_\ten(\eta(v))$ is even for every primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) $v\in T_\Co$.
 
 Since $\ten = \eta(T_\Co) + \ZZ\tilde e$,
 $$\div_\ten(\eta(v)) = \gcd\bigl(\div_{T_\Co}(v),\ \beta_\ten(\eta(v),\tilde e)\bigr), \qquad \beta_\ten(\eta(v),\tilde e) = \tfrac12\beta_{T_\Co}(v,h),$$
-the second because $\tilde e = \tfrac12(h+k)$ with $\eta(v)\perp k$. Both entries of the gcd are [even]{.other-sense}. $\div_{T_\Co}$ is [even]{.other-sense} for every vector, since the Gram matrix of $T_\Co$ is [even]{.other-sense} entrywise; and if $v = ah + y$ with $y$ in the $U(2)\oplus E_8(2)$ summand, then $v^2 = 2a^2 + y^2$ with $y^2\equiv0 \pmod 4$, that summand being twice an [even]{.other-sense} lattice, so $v^2 = 0$ forces $a$ [even]{.other-sense}. Hence $\div_\ten(\eta(v))$ is [even]{.other-sense}, and since $\eta(v)$ is a primitive vector of a $2$-elementary lattice, it is $2$.
+the second because $\tilde e = \tfrac12(h+k)$ with $\eta(v)\perp k$. Both entries of the gcd are even. $\div_{T_\Co}$ is even for every vector, since the Gram matrix of $T_\Co$ is even entrywise; and if $v = ah + y$ with $y$ in the $U(2)\oplus E_8(2)$ summand, then $v^2 = 2a^2 + y^2$ with $y^2\equiv0 \pmod 4$, that summand being twice an even lattice, so $v^2 = 0$ forces $a$ even. Hence $\div_\ten(\eta(v))$ is even, and since $\eta(v)$ is a primitive vector of a $2$-elementary lattice, it is $2$.
 :::
 
 *The fibres of $\Phi$.* The fibre of $\Phi$ over the class $[\tilde w]$ consists of the classes $[v]$ with $\gamma\eta(v) = \tilde w$ for some $\gamma\in\Gamma_\En$. Put
@@ -431,7 +431,7 @@ $\Phi$ is onto the divisibility-$2$ locus if and only if every nonzero isotropic
 
 ::: {.proof}
 
-[Source]{.other-sense} and image. The [source]{.other-sense} of $\Phi$ has $527$ orbits (@thm:coble-zero-cusp-count(2)) and $\Phi$ is injective (@prop:cusp-map-injective), so the image has $527$ elements. By @prop:cusp-map-surjective-on-classes the classes of those $527$ vectors are exactly the $527$ nonzero isotropic classes of $A_{\ten}$; hence the image [meets]{.other-sense} each such class in exactly one $\Gamma_\En$-orbit.
+Source and image. The source of $\Phi$ has $527$ orbits (@thm:coble-zero-cusp-count(2)) and $\Phi$ is injective (@prop:cusp-map-injective), so the image has $527$ elements. By @prop:cusp-map-surjective-on-classes the classes of those $527$ vectors are exactly the $527$ nonzero isotropic classes of $A_{\ten}$; hence the image meets each such class in exactly one $\Gamma_\En$-orbit.
 
 The criterion. Every divisibility-$2$ vector has a nonzero isotropic class, and the class of a vector is invariant under $\Gamma_\En$, which acts trivially on $A_{\ten}$. So the divisibility-$2$ locus is the disjoint union, over the $527$ classes, of the orbits lying in each. The image already contributes one orbit to every class, so $\Phi$ is onto exactly when no class carries a second one, that is exactly when each class carries exactly one.
 :::
@@ -440,16 +440,16 @@ The criterion. Every divisibility-$2$ vector has a nonzero isotropic class, and 
 
 The classes of the vectors in the image of $\Phi$ are exactly the $527$ nonzero isotropic classes (@def:descent-class) of $A_{\ten}$: $v\mapsto[\eta(v)/2]$ is a bijection from the $\widetilde\Orth^+(T_\Co)$-orbits of primitive (@def:primitive-embedding) isotropic vectors of $T_\Co$ onto them.
 
-The statement is about classes and not about orbits. Whether every divisibility-$2$ $\Gamma_\En$-orbit [meets]{.other-sense} $\eta(T_\Co)$ --- equivalently, whether every divisibility-$2$ $0$-cusp of $\fen$ lies over a Coble $0$-cusp --- is a question about the orbits of $\Gamma_\En$ and is not implied by an equality of discriminant classes; it is recorded as open in @sec-enriques-coble-correspondence.
+The statement is about classes and not about orbits. Whether every divisibility-$2$ $\Gamma_\En$-orbit meets $\eta(T_\Co)$ --- equivalently, whether every divisibility-$2$ $0$-cusp of $\fen$ lies over a Coble $0$-cusp --- is a question about the orbits of $\Gamma_\En$ and is not implied by an equality of discriminant classes; it is recorded as open in @sec-enriques-coble-correspondence.
 :::
 
 ::: {.proof}
 
 *The image lies in the set.* For primitive isotropic $v\in T_\Co$, $\eta(v)$ is primitive of divisibility $2$ (@lem:divisibilityAlwaysTwoTco, @prop:cusp-map-not-onto), so $[\eta(v)/2]$ is defined, and it is isotropic because $v^2 = 0$. A class is $\Gamma_\En$-invariant, because $\Gamma_\En\subseteq\discriminantkernel{\ten}$ acts trivially on $A_\ten$, so $v\mapsto[\eta(v)/2]$ is well defined on orbits.
 
-*The image has $527$ elements.* $\Phi$ is injective (@prop:cusp-map-injective) and its [source]{.other-sense} is the set of $527$ orbits of $\widetilde\Orth^+(T_\Co)$ (@thm:coble-zero-cusp-count(2)).
+*The image has $527$ elements.* $\Phi$ is injective (@prop:cusp-map-injective) and its source is the set of $527$ orbits of $\widetilde\Orth^+(T_\Co)$ (@thm:coble-zero-cusp-count(2)).
 
-*The class separates them.* If $[\eta(v)/2] = [\eta(v')/2]$ then $\eta(v)-\eta(v')\in 2\ten$, so $v\equiv v'\pmod{2T_\Co}$ by primitivity of $\eta$ (@lem:primitive_embedding_eta), that is the classes $v^* = [v/2]$ and $v'^*$ of @prop:coble-primitive-isotropic-classes agree; by @thm:coble-zero-cusp-count(1) $v$ and $v'$ then lie in one $\widetilde\Orth^+(T_\Co)$-orbit. So distinct [source]{.other-sense} orbits give distinct classes, and the image [meets]{.other-sense} $527$ nonzero isotropic classes.
+*The class separates them.* If $[\eta(v)/2] = [\eta(v')/2]$ then $\eta(v)-\eta(v')\in 2\ten$, so $v\equiv v'\pmod{2T_\Co}$ by primitivity of $\eta$ (@lem:primitive_embedding_eta), that is the classes $v^* = [v/2]$ and $v'^*$ of @prop:coble-primitive-isotropic-classes agree; by @thm:coble-zero-cusp-count(1) $v$ and $v'$ then lie in one $\widetilde\Orth^+(T_\Co)$-orbit. So distinct source orbits give distinct classes, and the image meets $527$ nonzero isotropic classes.
 
 *There are exactly $527$.* $|A_{\ten}| = 2^{10}$ because $\det\ten = 2^{10}$ (@lem:primitive_embedding_eta's lattice) and the count of nonzero isotropic classes of $A_{\ten}$ is $527$, exactly as for $T_\Co$; both counts are computed from the Gram matrices in `computations/reports/coble_658-image-census-probe-run.txt`, the $T_\Co$ count reproducing the $527$ of @thm:coble-zero-cusp-count(2).
 

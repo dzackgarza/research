@@ -4,7 +4,7 @@
 
 ::: {.proposition #prop:double-cover-canonical-bundle title="Canonical bundle of a double cover"}
 
-Let $Y$ be a smooth [projective]{.other-sense} surface, let $B\subset Y$ be a smooth divisor, and let $\mcl$ be a line bundle on $Y$ with $\mcl^{\tensor 2}\cong\OO_Y(B)$.
+Let $Y$ be a smooth projective (@def:module-subcategories) surface, let $B\subset Y$ be a smooth divisor, and let $\mcl$ be a line bundle on $Y$ with $\mcl^{\tensor 2}\cong\OO_Y(B)$.
 Let $\pi\colon X\to Y$ be the double cover branched along $B$ and determined by $\mcl$.
 Then $\pi_*\OO_X\cong\OO_Y\oplus\inverseof{\mcl}$ and
 $$
@@ -25,7 +25,7 @@ Substituting $\mcl = -K_Y$ gives $K_X = \pi^*(K_Y - K_Y) = \OO_X$.
 Let $S$ be a terminal (@def:terminal-coble-surface) Coble surface of K3 type (@def:coble-surface) over $\CC$, with $\abs{-2K_S} = \theset{C}$ and $C = C_1+\cdots+C_n$ a disjoint union of $n$ smooth rational curves of square $-4$.
 Let $\mcl = \OO_S(-K_S)$, let $s\in H^0(\mcl^{\tensor_{\OO_S} 2})$ be a section with zero locus $C$, and let $f\colon X\to S$ be the double cover defined by $(\mcl, s)$.
 Then $X$ is a smooth K3 surface [@DK25, Prop. 9.1.1].
-For a general such $S$, $\Pic(X)$ is a $2$-elementary lattice of [rank]{.other-sense} $10+n$ whose discriminant group (@def:group) has [rank]{.other-sense} $12-n$ over $\FF_2$ [@CDL25, Sec. 5.4].
+For a general such $S$, $\Pic(X)$ is a $2$-elementary lattice of rank $10+n$ whose discriminant group (@def:group) has rank $12-n$ over $\FF_2$ [@CDL25, Sec. 5.4].
 :::
 
 ## Geometric involutions on the double cover
@@ -177,7 +177,7 @@ quotient of $U$ by $G$ has dimension $10$.
 
 ::: {.proof}
 The involution acts on the displayed monomial by $(-1)^{a+b}$, which gives
-the two sets of [exponent]{.other-sense} pairs. A [projective]{.other-sense} transformation of $\PP^1$
+the two sets of exponent pairs. A projective transformation of $\PP^1$
 commuting with $x\mapsto-x$ preserves its fixed set $\{0,\infty\}$,
 so it is $x\mapsto ax$ or $x\mapsto a/x$. Applying this to each factor,
 and adjoining their interchange, gives $G$. A general branch curve has
@@ -188,7 +188,7 @@ finite stabilizer, so the quotient dimension is $12-2=10$, as in
 ::: {.proposition #prop:horikawa-pair-volumes title="The branch, K3, and Enriques pairs"}
 Let $\pi\colon X\to Y=\PP^1\times\PP^1$ be a smooth member of this
 family, let $q\colon X\to Z$ be its Enriques quotient, and let $R$ be the
-ramification divisor of $\pi$. Put $R_Z=q(R)$ with its reduced [structure]{.other-sense}.
+ramification divisor of $\pi$. Put $R_Z=q(R)$ with its reduced structure (@def:property-structure-stuff).
 For $0<\epsilon\ll1$,
 $$
 \begin{aligned}
@@ -208,7 +208,7 @@ $\pi^*B=2R$. The map $q$ is étale and $q^*R_Z=R$
 [@AEGS25, §2.1], so $K_X=q^*K_Z$ and the second covering equality
 follows. On $Y$, $K_Y=(-2,-2)$ and $B=(4,4)$; hence
 $K_Y+(1+\epsilon)B/2=(2\epsilon,2\epsilon)$ has square $8\epsilon^2$.
-[Pullback]{.other-sense} multiplies intersections by the [degree]{.other-sense} of the cover, which
+Pullback (@def:pullback-square) multiplies intersections by the degree (@def:numerical-polarization) of the cover, which
 gives the remaining equalities.
 :::
 
@@ -266,7 +266,7 @@ $$
 \end{aligned}
 $$
 Because $\Idp$ and $\Ien$ are involutions, $\Idp\circ\Inik = \Ien = \Inik\circ\Idp$ and $\Ien\circ\Inik = \Idp = \Inik\circ\Ien$.
-So the four elements are [closed]{.other-sense} under composition, they commute, and every element has order at most $2$.
+So the four elements are closed (@def:closed-monoidal) under composition, they commute, and every element has order at most $2$.
 The three involutions are distinct and nontrivial: $\Idp$ and $\Ien$ send $(u_1, 0, 0, 0, 0)$ to $(-u_1, 0, 0, 0, 0)$ and $\Inik$ fixes it, and $\Idp$ sends $(0, 0, 0, \alpha_1, 0)$ to $(0, 0, 0, -\alpha_1, 0)$ while $\Ien$ sends it to $(0, 0, 0, 0, \alpha_1)$.
 A group (@def:group) of order $4$ in which every element has order at most $2$ is isomorphic to $\ZZ_2^2$.
 :::

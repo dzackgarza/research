@@ -3,7 +3,7 @@
 ::: {.definition #def:invariant_coinvariant_lattices title="Invariants and coinvariants of integral group actions" defines="$\epsilon_G$; augmentation ideal $J_G$; invariant lattice; $L^G$; geometric coinvariant lattice; $L_G$; translation submodule; $I_G L$; module coinvariants; $L_G^{\mathrm{mod}}$"}
 Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ and let $\rho\colon G\too\Orth(L)$ be an action of a finite group (@def:group). The homomorphism $\rho$ makes $L$ a left module over the integral group ring $\bZ[G]$, with augmentation $\epsilon_G\colon\bZ[G]\too\bZ$ and augmentation ideal $J_G\definedas\ker(\epsilon_G)$.
 
-The **invariant lattice** is the [evaluation]{.other-sense} sublattice $L^G\isoto\Hom_{\bZ[G]}(\bZ,L)\injects L$, with $\bZ$ carrying the trivial action. Its **geometric coinvariant lattice** is $L_G\definedas(L^G)^{\perp_L}$, the orthogonal complement of @def:orthogonal-complement.
+The **invariant lattice** is the evaluation (@def:dualizable-object) sublattice $L^G\isoto\Hom_{\bZ[G]}(\bZ,L)\injects L$, with $\bZ$ carrying the trivial action. Its **geometric coinvariant lattice** is $L_G\definedas(L^G)^{\perp_L}$, the orthogonal complement of @def:orthogonal-complement.
 
 The **translation submodule** is $I_G L\definedas J_G L\injects L$, the image of the group-ring multiplication $J_G\tensor_{\bZ[G]}L\too L$. The **module coinvariants** are $L_G^{\mathrm{mod}}\definedas\bZ\tensor_{\bZ[G]}L$, with their defining cokernel (@def:kernel-cokernel) sequence in $\bZ\text{-}\mathbf{Mod}$
 $$
@@ -14,13 +14,13 @@ $$
 ## Integral norm and coinvariant sequences {#sec-integral-coinvariants}
 
 ::: {.theorem #thm:invariants-coinvariants-integral title="Integral invariants, coinvariants, and splitting"}
-Let $G,L$ be as in @def:invariant_coinvariant_lattices, put $n\definedas\cardinality{G}$, and let the integral [norm]{.other-sense} $N_G\definedas\sum_{g\in G}\rho(g)$ factor as $\nu_G\colon L\too L^G\injects L$. Then
+Let $G,L$ be as in @def:invariant_coinvariant_lattices, put $n\definedas\cardinality{G}$, and let the integral norm $N_G\definedas\sum_{g\in G}\rho(g)$ factor as $\nu_G\colon L\too L^G\injects L$. Then
 $$
 L_G=\ker(\nu_G)=\Sat_L(I_G L),
 \qquad
 nL_G\subseteq I_G L\subseteq L_G.
 $$
-Both $L^G$ and $L_G$ are primitive (@def:primitive-embedding) and nondegenerate (@def:polarization). Writing $\kappa_G\colon I_G L\injects L_G$, the [norm]{.other-sense} induces the [complete]{.other-sense} exact (@def:exact-complex) sequence in $\bZ\text{-}\mathbf{Mod}$
+Both $L^G$ and $L_G$ are primitive (@def:primitive-embedding) and nondegenerate (@def:polarization). Writing $\kappa_G\colon I_G L\injects L_G$, the norm induces the complete exact (@def:exact-complex) sequence in $\bZ\text{-}\mathbf{Mod}$
 $$
 0\too\coker(\kappa_G)\too L_G^{\mathrm{mod}}
 \xrightarrow{\bar\nu_G}L^G
@@ -39,17 +39,17 @@ The modules $\coker(\kappa_G)$, $\coker(\nu_G)$ and $C_G$ are finite and annihil
 :::
 
 ::: {.proof}
-For $y\in L^G$, invariance of the pairing gives $\beta_L(N_Gx,y)=n\beta_L(x,y)$. This proves both nondegeneracy of the restriction to $L^G$ and $\ker\nu_G=(L^G)^{\perp_L}=L_G$. The [norm]{.other-sense} annihilates $I_G L$, while
+For $y\in L^G$, invariance of the pairing gives $\beta_L(N_Gx,y)=n\beta_L(x,y)$. This proves both nondegeneracy of the restriction to $L^G$ and $\ker\nu_G=(L^G)^{\perp_L}=L_G$. The norm annihilates $I_G L$, while
 $$
 n\id_L-N_G=\sum_{g\in G}(\id_L-\rho(g)).
 $$
 Thus $nL_G\subseteq I_G L\subseteq L_G$, proving the saturation (@def:saturation) identity and primitivity of $L_G$. The invariant lattice is primitive because it is the common kernel (@def:kernel-cokernel) of the maps $\rho(g)-\id_L$. Its orthogonal complement $L_G$ is nondegenerate because $L^G_\bQ$ is nondegenerate in $L_\bQ$.
 
-Passing the [norm]{.other-sense} through $L/I_G L$ gives $\ker\bar\nu_G=L_G/I_G L=\coker(\kappa_G)$ and $\coker\bar\nu_G=\coker(\nu_G)$. The displayed identity also yields $nL\subseteq L^G+L_G$, so $C_G$ is finite and $n$-torsion. Finally $\nu_G(s)=ns$ for $s\in L^G$, establishing the same annihilator for $\coker(\nu_G)$; that for $\coker(\kappa_G)$ follows from $nL_G\subseteq I_G L$.
+Passing the norm through $L/I_G L$ gives $\ker\bar\nu_G=L_G/I_G L=\coker(\kappa_G)$ and $\coker\bar\nu_G=\coker(\nu_G)$. The displayed identity also yields $nL\subseteq L^G+L_G$, so $C_G$ is finite and $n$-torsion. Finally $\nu_G(s)=ns$ for $s\in L^G$, establishing the same annihilator for $\coker(\nu_G)$; that for $\coker(\kappa_G)$ follows from $nL_G\subseteq I_G L$.
 :::
 
 ::: {.proposition #prop:group-augmentation-exact title="Derived augmentation sequences"}
-The augmentation sequence $0\too J_G\too\bZ[G]\xrightarrow{\epsilon_G}\bZ\too0$ is exact (@def:exact-complex) as a sequence of both left and right $\bZ[G]$-modules. It gives the [complete]{.other-sense} exact sequences in $\bZ\text{-}\mathbf{Mod}$
+The augmentation sequence $0\too J_G\too\bZ[G]\xrightarrow{\epsilon_G}\bZ\too0$ is exact (@def:exact-complex) as a sequence of both left and right $\bZ[G]$-modules. It gives the complete exact sequences in $\bZ\text{-}\mathbf{Mod}$
 $$
 0\too\operatorname{Tor}_1^{\bZ[G]}(\bZ,L)
 \too J_G\tensor_{\bZ[G]}L\xrightarrow{\mu_G}L
@@ -86,13 +86,13 @@ In particular the ideal $(n)$ is contained in the annihilators over $\bZ$ of all
 :::
 
 ::: {.proof}
-The first two modules are the kernel (@def:kernel-cokernel) and cokernel (@def:kernel-cokernel) of the [norm]{.other-sense} on module coinvariants (@def:invariant_coinvariant_lattices). The surjection $L\too\nu_G(L)/nL^G$ has kernel $L^G+L_G$: if $\nu_G(x)=ns$, then $x-s\in\ker\nu_G=L_G$, and the converse is immediate. This gives the isomorphism with $C_G$. The inclusions $nL^G\subseteq\nu_G(L)\subseteq L^G$ yield the remaining exact sequence and annihilator containments.
+The first two modules are the kernel (@def:kernel-cokernel) and cokernel (@def:kernel-cokernel) of the norm on module coinvariants (@def:invariant_coinvariant_lattices). The surjection $L\too\nu_G(L)/nL^G$ has kernel $L^G+L_G$: if $\nu_G(x)=ns$, then $x-s\in\ker\nu_G=L_G$, and the converse is immediate. This gives the isomorphism with $C_G$. The inclusions $nL^G\subseteq\nu_G(L)\subseteq L^G$ yield the remaining exact sequence and annihilator containments.
 :::
 
 ## Integral isotypic sublattices {#sec-integral-isotypic-sublattices}
 
 ::: {.definition #def:isotypic-sublattices title="Integral isotypic sublattices" defines="$\operatorname{Ann}_L(\mathfrak a)$; $\mathcal P_G$; integral isotypic sublattice; $L_{\mathfrak p}$"}
-For a two-sided ideal $\mathfrak a$ of the group (@def:group) ring $\bZ[G]$, let $\operatorname{Ann}_L(\mathfrak a)\injects L$ be its annihilator. Let $\mathcal P_G$ be the finite set of [minimal]{.other-sense} two-sided prime ideals of $\bZ[G]$. The **integral isotypic sublattice** indexed by $\mathfrak p\in\mathcal P_G$ is $L_{\mathfrak p}\definedas\operatorname{Ann}_L(\mathfrak p)$.
+For a two-sided ideal $\mathfrak a$ of the group (@def:group) ring $\bZ[G]$, let $\operatorname{Ann}_L(\mathfrak a)\injects L$ be its annihilator. Let $\mathcal P_G$ be the finite set of minimal (@def:minimal-resolution) two-sided prime ideals of $\bZ[G]$. The **integral isotypic sublattice** indexed by $\mathfrak p\in\mathcal P_G$ is $L_{\mathfrak p}\definedas\operatorname{Ann}_L(\mathfrak p)$.
 
 The quotient-ring morphisms assemble into the module exact (@def:exact-complex) sequence
 $$
@@ -108,7 +108,7 @@ $$
 \operatorname{Ann}_{\bZ}(\coker\Delta_G)
 \subseteq\operatorname{Ann}_{\bZ}\qty{\coker(U_{\mathrm{mod}}(j_\rho))}.
 $$
-The augmentation ideal $J_G$ is a [minimal]{.other-sense} two-sided prime and
+The augmentation ideal $J_G$ is a minimal (@def:minimal-resolution) two-sided prime and
 $$
 L_{J_G}=L^G,\qquad
 L_G=\Sat_L\qty{\sum_{\substack{\mathfrak p\in\mathcal P_G\\\mathfrak p\ne J_G}}L_{\mathfrak p}}.
@@ -119,7 +119,7 @@ Thus invariant lattices are trivial integral isotypic components, and geometric 
 ::: {.proof}
 The integral group (@def:group) ring is an order in the semisimple rational algebra $\bQ[G]$, so $\Delta_G$ is injective with finite cokernel. Let $d>0$ annihilate this cokernel. For each $\mathfrak p$, choose $a_{\mathfrak p}\in\bZ[G]$ mapping to $d$ in its factor and zero in all others. Since $\Delta_G$ is injective, $\sum_{\mathfrak p}a_{\mathfrak p}=d$ and $\mathfrak p\,a_{\mathfrak p}=0$. Consequently $a_{\mathfrak p}L\subseteq L_{\mathfrak p}$ and $dL\subseteq\sum L_{\mathfrak p}$, proving finite index (@def:index) and the annihilator containment. Each $L_{\mathfrak p}$ is saturated (@def:saturation) as an intersection of kernels (@def:kernel-cokernel) on the torsion-free module (@def:module-subcategories) $L$.
 
-Every simple rational $G$-module admits a $G$-invariant positive-definite rational symmetric form (@def:form-axioms) and hence is self-dual. Thus the group-ring involution $g\mapsto g^{-1}$ fixes each [minimal]{.other-sense} prime, making $a_{\mathfrak p}$ self-adjoint. For $x\in L_{\mathfrak p}$ and $y\in L_{\mathfrak q}$ with $\mathfrak p\ne\mathfrak q$, $a_{\mathfrak p}x=dx$ while $a_{\mathfrak p}y=0$, so $d\beta_L(x,y)=\beta_L(x,a_{\mathfrak p}y)=0$. This gives orthogonality; nondegeneracy follows because the components span $L_\bQ$.
+Every simple rational $G$-module admits a $G$-invariant positive-definite rational symmetric form (@def:form-axioms) and hence is self-dual. Thus the group-ring involution $g\mapsto g^{-1}$ fixes each minimal prime, making $a_{\mathfrak p}$ self-adjoint. For $x\in L_{\mathfrak p}$ and $y\in L_{\mathfrak q}$ with $\mathfrak p\ne\mathfrak q$, $a_{\mathfrak p}x=dx$ while $a_{\mathfrak p}y=0$, so $d\beta_L(x,y)=\beta_L(x,a_{\mathfrak p}y)=0$. This gives orthogonality; nondegeneracy follows because the components span $L_\bQ$.
 
 The quotient $\bZ[G]/J_G=\bZ$ identifies $L_{J_G}=L^G$. The other components lie in $L_G$. For $x\in L_G$, self-adjointness makes $a_{J_G}x\in L^G$ orthogonal to $L^G$, hence zero by @thm:invariants-coinvariants-integral. Thus $dx=\sum_{\mathfrak p\ne J_G}a_{\mathfrak p}x$, proving the asserted saturation equality.
 :::
@@ -193,7 +193,7 @@ is the trivial homomorphism.
 :::
 
 ::: {.proof}
-The fixed and orthogonal coinvariant lattices are primitive, nondegenerate (@def:polarization), mutually orthogonal, and have finite-index sum by @thm:invariants-coinvariants-integral. The unimodular gluing correspondence identifies their discriminant modules anti-isometrically and with the gluing cokernel $C_G$. The integral norm (@def:lattice-basic-invariants) identity gives $nC_G=0$, hence the annihilator and [length]{.other-sense} assertions.
+The fixed and orthogonal coinvariant lattices are primitive, nondegenerate (@def:polarization), mutually orthogonal, and have finite-index sum by @thm:invariants-coinvariants-integral. The unimodular gluing correspondence identifies their discriminant modules anti-isometrically and with the gluing cokernel $C_G$. The integral norm (@def:lattice-basic-invariants) identity gives $nC_G=0$, hence the annihilator and length assertions.
 
 The gluing graph is invariant under $G$ because $G$ preserves $L$. Its first projection identifies it with $A_{S,q}$, on which $G$ acts trivially because it fixes $S$ pointwise. Its other projection identifies it with $A_{T,q}$, so equivariance of the graph forces the action on that module to be trivial as well.
 :::

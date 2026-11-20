@@ -245,7 +245,7 @@ Let $P\iscontainedin\HH^n_L$ be a Coxeter polytope with finitely many walls (@no
 
 3. Let $M$ be a lattice of signature (@def:signature) $(2,n+1)$, let $I\iscontainedin M$ be a primitive isotropic sublattice of rank $1$, and let $L = I^{\perp M}/I$.
    Then $J\mapsto J/I$ is a bijection from the primitive totally isotropic sublattices $J\iscontainedin M$ of rank $2$ that contain $I$ onto the primitive isotropic sublattices of $L$ of rank $1$.
-   For an arithmetic group (@def:group) $\Gamma\leq\Orth(M)$ that preserves a connected component $D$ of the period domain of $M$, the rational [boundary component]{.other-sense} of each such $J$ contains that of $I$ in its boundary, and the $1$-cusps of $\bbcpt{D/\Gamma}$ incident to the $0$-cusp of $I$, in the sense of [@Sca87, (2.1.10)], are the $\Gamma$-orbits of these $J$.
+   For an arithmetic group (@def:group) $\Gamma\leq\Orth(M)$ that preserves a connected component $D$ of the period domain of $M$, the rational boundary component of each such $J$ contains that of $I$ in its boundary, and the $1$-cusps of $\bbcpt{D/\Gamma}$ incident to the $0$-cusp of $I$, in the sense of [@Sca87, (2.1.10)], are the $\Gamma$-orbits of these $J$.
 :::
 
 ::: {.proof}
@@ -270,7 +270,7 @@ The sublattice $I^{\perp M}$ is primitive in $M$, so $J$ is primitive in $M$ if 
 Conversely the preimage in $I^{\perp M}$ of a primitive isotropic sublattice $\ell\iscontainedin L$ of rank $1$ is a sublattice $J$ of rank $2$ containing $I$; the product of two vectors of $J$ equals the product of their images in $\ell$, which is $0$, so $J$ is totally isotropic, and it is primitive by the previous sentence.
 The two constructions are inverse to each other.
 
-The primitive totally isotropic sublattices of $M$ correspond to the rational [boundary components]{.other-sense} of $D$, compatibly with the action of $\Gamma$, and $E\iscontainedin E'$ if and only if the [boundary component]{.other-sense} of $E$ lies in the boundary of that of $E'$ [@Sca87, §2.1]; this gives the first assertion.
+The primitive totally isotropic sublattices of $M$ correspond to the rational boundary components of $D$, compatibly with the action of $\Gamma$, and $E\iscontainedin E'$ if and only if the boundary component of $E$ lies in the boundary of that of $E'$ [@Sca87, §2.1]; this gives the first assertion.
 The $0$-cusps and $1$-cusps of $\bbcpt{D/\Gamma}$ are the $\Gamma$-orbits of those of rank $1$ and $2$ [@Sca87, §2.1, (2.1.3)--(2.1.4)], and the $1$-cusp of $E$ is incident to the $0$-cusp of $I$ when every $\Gamma$-translate of $I$ lies in some $\Gamma$-translate of $E$ [@Sca87, (2.1.10)].
 Since $\gamma I\iscontainedin\gamma' E$ implies $\delta\gamma I\iscontainedin\delta\gamma' E$ for every $\delta\in\Gamma$, this holds if and only if $I\iscontainedin\gamma E$ for some $\gamma\in\Gamma$, that is, if and only if the $\Gamma$-orbit of $E$ contains a sublattice $J\containing I$.
 :::

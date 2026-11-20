@@ -34,9 +34,9 @@ b^r\colon B&\longrightarrow\Hom_R(A,W),
 &b&\longmapsto(a\mapsto b(a,b)).
 \end{aligned}
 $$
-Here the symbols in parentheses designate [evaluation]{.other-sense} of the original pairing; the adjoints are morphisms in $R\text{-}\mathbf{Mod}$.
+Here the symbols in parentheses designate evaluation (@def:dualizable-object) of the original pairing; the adjoints are morphisms in $R\text{-}\mathbf{Mod}$.
 
-The **left radical (@def:two-witnesses)**, **right radical**, **left coradical**, and **right coradical** are the kernels (@def:kernel-cokernel) and cokernels (@def:kernel-cokernel) in the [complete]{.other-sense} exact (@def:exact-complex) sequences
+The **left radical (@def:two-witnesses)**, **right radical**, **left coradical**, and **right coradical** are the kernels (@def:kernel-cokernel) and cokernels (@def:kernel-cokernel) in the complete exact (@def:exact-complex) sequences
 $$
 \begin{aligned}
 0&\too\radic_\ell(b)\too A\xrightarrow{b^\ell}\Hom_R(B,W)
@@ -81,7 +81,7 @@ $$
 A\xrightarrow{b^\ell}\Hom_R(B,W)
 \xrightarrow{\Hom_R(j,W)}\Hom_R(T,W).
 $$
-These yield order-reversing functors between the two module-subobject posets (@def:preorder-category) of @def:subobject-relation. They satisfy the Galois [connection]{.other-sense}
+These yield order-reversing functors between the two module-subobject posets (@def:preorder-category) of @def:subobject-relation. They satisfy the Galois connection
 $$
 S\subseteq{}^{\perp_A}T
 \quad\Longleftrightarrow\quad
@@ -106,7 +106,7 @@ S\tensor_R\Hom_R(A,W)
 \xrightarrow{\sim}
 \Hom_S(S\tensor_RA,S\tensor_RW)
 $$
-and the corresponding isomorphisms with $B$. They identify the adjoints after extension of scalars with the stated tensor products. Flatness preserves kernels and cokernels of the two [complete]{.other-sense} exact sequences. Faithfully flat scalar extension also reflects zero modules, yielding the last [equivalences]{.other-sense}.
+and the corresponding isomorphisms with $B$. They identify the adjoints after extension of scalars with the stated tensor products. Flatness preserves kernels and cokernels of the two complete exact sequences. Faithfully flat scalar extension also reflects zero modules, yielding the last equivalences.
 :::
 
 ## Perfectness depends on the value module {#sec-value-module-duality}

@@ -36,7 +36,7 @@ B \cong U\oplus U\oplus\latI_{0,7},
 T_\Co \cong U(2)^{\oplus 2}\oplus\latI_{0,7}(2) = U(2)^{\oplus 2}\oplus A_1^{\oplus 7}
 .
 $$
-In a decomposition $T_\Co = B(2)$ with $B = U\oplus U\oplus\latI_{0,7}$, an isotropic (@def:orthogonal-complement) basis (@def:based-module) vector $e$ of one [hyperbolic]{.other-sense} summand and the plane $J$ spanned by isotropic basis vectors of both have
+In a decomposition $T_\Co = B(2)$ with $B = U\oplus U\oplus\latI_{0,7}$, an isotropic (@def:orthogonal-complement) basis (@def:based-module) vector $e$ of one hyperbolic summand and the plane $J$ spanned by isotropic basis vectors of both have
 $$
 e^{\perp}/e \cong \latI_{1,8}(2) = (9,9,1)_1,
 \qquad
@@ -50,8 +50,8 @@ $$
 $B$ is unimodular, hence maximal by @lem:maximal-overlattice-exists.
 The lattice $U\oplus U\oplus\latI_{0,7}$ is unimodular of signature $(2,9)$ and odd (@def:two-elementary-isotropic-types), because $\latI_{0,7}$ is, so it is isometric to $\latI_{2,9}\cong B$ by @thm:indefinite-unimodular-classification; this exhibits $B$ in the shape required by @def:split-maximal.
 Twisting this isometry by $2$ gives the decomposition of $T_\Co = B(2)$, with $\latI_{0,7}(2) = \generators{-2}^{\oplus 7} = A_1^{\oplus 7}$.
-For the quotients, take $e$ to be an isotropic basis vector of the first [hyperbolic]{.other-sense} summand of $B\cong U\oplus U\oplus\latI_{0,7}$; then $e^{\perp B} = \ZZ e\oplus U\oplus\latI_{0,7}$ and $e^{\perp}/e\cong U\oplus\latI_{0,7}\cong\latI_{1,8}$, which is odd unimodular of signature $(1,8)$.
-Taking $J$ to be spanned by isotropic basis vectors of the two [hyperbolic]{.other-sense} summands gives $J^{\perp B} = J\oplus\latI_{0,7}$ and $J^{\perp}/J\cong\latI_{0,7}$.
+For the quotients, take $e$ to be an isotropic basis vector of the first hyperbolic summand of $B\cong U\oplus U\oplus\latI_{0,7}$; then $e^{\perp B} = \ZZ e\oplus U\oplus\latI_{0,7}$ and $e^{\perp}/e\cong U\oplus\latI_{0,7}\cong\latI_{1,8}$, which is odd unimodular of signature $(1,8)$.
+Taking $J$ to be spanned by isotropic basis vectors of the two hyperbolic summands gives $J^{\perp B} = J\oplus\latI_{0,7}$ and $J^{\perp}/J\cong\latI_{0,7}$.
 Twisting by $2$ and reading off invariants gives $\latI_{1,8}(2) = (9,9,1)$ of signature $(1,8)$ and $\latI_{0,7}(2) = \generators{-2}^{\oplus 7} = (7,7,1)$ of signature $(0,7)$.
 :::
 
@@ -85,7 +85,7 @@ Hence:
 
 ::: {.proof}
 
-$B$ is unimodular of [rank]{.other-sense} $11$ and $T_\Co = B(2)$ (@prop:tco-as-twist), so @prop:twisted-unimodular-discriminant gives the isomorphism and the formula $q_{T_\Co}(\pi(x/2)) = \tfrac12\beta_B(x,x)+2\ZZ$, which is $\tfrac12 Q(x+2B)$.
+$B$ is unimodular of rank $11$ and $T_\Co = B(2)$ (@prop:tco-as-twist), so @prop:twisted-unimodular-discriminant gives the isomorphism and the formula $q_{T_\Co}(\pi(x/2)) = \tfrac12\beta_B(x,x)+2\ZZ$, which is $\tfrac12 Q(x+2B)$.
 Multiplication by $\tfrac12$ is a bijection $\ZZ/4\ZZ\isoto\tfrac12\ZZ/2\ZZ$, so $q_{T_\Co}$ and $Q$ have the same fibers.
 Part 1 is the fiber over $0$.
 For part 2, a group automorphism $g$ preserves $q_{T_\Co}$ exactly when $Q\circ g = Q$, which is the condition that $g$ maps each fiber of $Q$ to itself.
@@ -110,7 +110,7 @@ and $\bar q$ is of plus type if and only if it has $2^{2m-1}+2^{m-1}$ zeros.
 ::: {.proof}
 
 Write $b$ for the polar form, $b(x,y) = \bar q(x+y)-\bar q(x)-\bar q(y)$.
-Let $W\subseteq V$ be a totally singular subspace of [maximal]{.other-sense} dimension $k$, the Witt index.
+Let $W\subseteq V$ be a totally singular subspace of maximal dimension $k$, the Witt index.
 For $x\in W^{\perp}$ and $w\in W$, $\bar q(x+w) = \bar q(x) + b(x,w) + \bar q(w) = \bar q(x)$, so $\bar q$ descends to a quadratic form on $W^{\perp}/W$.
 For $x\notin W^{\perp}$, the map $w\mapsto b(x,w)$ is a nonzero linear functional on $W$, and $\bar q(x+w) = \bar q(x)+b(x,w)$, so $\bar q$ takes each value on exactly half of the coset $x+W$ and the coset contributes $0$ to $\Sigma(\bar q)$.
 Hence
@@ -127,7 +127,7 @@ The zero count follows from $\#\inverseof{\bar q}(0)+\#\inverseof{\bar q}(1) = 2
 
 ::: {.lemma #lem:even-unimodular-mod-two-form title="The mod-$2$ form of an even unimodular lattice"}
 
-Let $M$ be an even (@def:form-axioms) unimodular lattice (@def:unimodular) of [rank]{.other-sense} $2m$, and define $\bar q_M\colon M/2M\to\bF_2$ by $\bar q_M(x+2M) = \tfrac12\beta_M(x,x)\bmod 2$.
+Let $M$ be an even (@def:form-axioms) unimodular lattice (@def:unimodular) of rank $2m$, and define $\bar q_M\colon M/2M\to\bF_2$ by $\bar q_M(x+2M) = \tfrac12\beta_M(x,x)\bmod 2$.
 Then $\bar q_M$ is a quadratic form with nondegenerate (@def:polarization) polar form, it is of plus type, and it has $2^{2m-1}+2^{m-1}$ zeros.
 In particular $\bar q_{U}$, $\bar q_{E_8}$ and $\bar q_{E_{10}}$ have $3$, $136$ and $528$ zeros.
 :::
@@ -142,7 +142,7 @@ The finite quadratic module $A_M$ is zero, so @thm:milgram applied to $M$ gives 
 The lattice $M(2)$ is even of the same signature, so @thm:milgram applied to $M(2)$ gives $\operatorname{Br}(A_{M(2)}) = 0$, that is, $\gamma(A_{M(2)}) = 1$ in @def:brown-invariant.
 Since $\exp(\pi i\,q_{M(2)}) = (-1)^{\bar q_M}$ and $\#A_{M(2)} = 2^{2m}$, this says $\Sigma(\bar q_M) = 2^m$.
 By @lem:f2-quadratic-gauss-sum, $\bar q_M$ is of plus type with $2^{2m-1}+2^{m-1}$ zeros.
-For $U$, $E_8$ and $E_{10}$ the [rank]{.other-sense} is $2$, $8$ and $10$, which gives $3$, $136$ and $528$.
+For $U$, $E_8$ and $E_{10}$ the rank is $2$, $8$ and $10$, which gives $3$, $136$ and $528$.
 :::
 
 ::: {.lemma #lem:weyl-E8-mod-two title="The reduction of $W(E_8)$ modulo $2$"}
@@ -165,7 +165,7 @@ The Dynkin diagram of $E_8$ is connected and the simple roots form a basis (@def
 Hence the kernel is $\theset{\pm\id_{E_8}}$, and the image has order $\tfrac12\abs{W(E_8)} = 348\,364\,800$.
 
 By @lem:even-unimodular-mod-two-form, $\bar q_{E_8}$ is a quadratic form of plus type on $\bF_2^8$ with nondegenerate (@def:polarization) polar form, so its isometry group is $\operatorname{GO}^+_8(2)$.
-Its order is $348\,364\,800$, by a full group construction from the Gram matrix of $E_8$ in `computations/reports/coble_orthogonal_group_orders.g`: the group is generated by the orthogonal transvections $\tau_a(x)=x+b(x,a)a$ for the $120$ classes with $q(a)=1$, every generator is checked to preserve $q$, and a basis is followed through an orbit--stabilizer chain in which the orbit of each basis vector under its current stabilizer is compared with the set of all vectors satisfying the same Gram data and independent of the preceding ones, so that generation of the whole isometry group is verified and not assumed; `computations/reports/coble_orthogonal_group_orders-run.txt` records the order, the $136$ zeros of $\bar q_{E_8}$ and four orthogonal [hyperbolic]{.other-sense} pairs. It agrees with the order formula $\abs{\operatorname{GO}^+_{2m}(q)} = 2N$, $N = q^{m(m-1)}(q^m-1)\prod_{i=1}^{m-1}(q^{2i}-1)$, at $q = 2$, $m = 4$ [@CCN+85, Tables 2 and 6]: $2\cdot2^{12}\cdot15\cdot3\cdot15\cdot63 = 348\,364\,800$.
+Its order is $348\,364\,800$, by a full group construction from the Gram matrix of $E_8$ in `computations/reports/coble_orthogonal_group_orders.g`: the group is generated by the orthogonal transvections $\tau_a(x)=x+b(x,a)a$ for the $120$ classes with $q(a)=1$, every generator is checked to preserve $q$, and a basis is followed through an orbit--stabilizer chain in which the orbit of each basis vector under its current stabilizer is compared with the set of all vectors satisfying the same Gram data and independent of the preceding ones, so that generation of the whole isometry group is verified and not assumed; `computations/reports/coble_orthogonal_group_orders-run.txt` records the order, the $136$ zeros of $\bar q_{E_8}$ and four orthogonal hyperbolic pairs. It agrees with the order formula $\abs{\operatorname{GO}^+_{2m}(q)} = 2N$, $N = q^{m(m-1)}(q^m-1)\prod_{i=1}^{m-1}(q^{2i}-1)$, at $q = 2$, $m = 4$ [@CCN+85, Tables 2 and 6]: $2\cdot2^{12}\cdot15\cdot3\cdot15\cdot63 = 348\,364\,800$.
 So the image, of order $\tfrac12\abs{W(E_8)} = 348\,364\,800$, is all of $\operatorname{GO}^+_8(2)$.
 :::
 
@@ -226,7 +226,7 @@ Given $g_0\in\Orth(A^0)$, extend it by $\bar h\mapsto\bar h$; the extension pres
 
 By @lem:even-unimodular-mod-two-form, $(A_{E_{10}(2)}, q_{E_{10}(2)})$ is the $10$-dimensional $\bF_2$-space $E_{10}/2E_{10}$ with the plus-type form $\bar q_{E_{10}}$, so its isometry group (@def:group) is $\operatorname{GO}^+_{10}(2)$.
 For $n = 2m$ and $q$ a prime power, $\abs{\operatorname{GO}^+_{2m}(q)} = 2N$ with $N = q^{m(m-1)}(q^m-1)\prod_{i=1}^{m-1}(q^{2i}-1)$ [@CCN+85, Tables 2 and 6]; at $q = 2$, $m = 5$ this is the order below.
-Its order is $46\,998\,591\,897\,600$, by the same full group construction in `computations/reports/coble_orthogonal_group_orders.g`: the $496$ orthogonal transvections $\tau_a$ with $q(a)=1$ generate the group, each is checked to preserve $q$, and the orbit--stabilizer chain verifies the generation level by level on a basis of $E_{10}/2E_{10}$; the transcript `computations/reports/coble_orthogonal_group_orders-run.txt` records the product of the orbit [lengths]{.other-sense}
+Its order is $46\,998\,591\,897\,600$, by the same full group construction in `computations/reports/coble_orthogonal_group_orders.g`: the $496$ orthogonal transvections $\tau_a$ with $q(a)=1$ generate the group, each is checked to preserve $q$, and the orbit--stabilizer chain verifies the generation level by level on a basis of $E_{10}/2E_{10}$; the transcript `computations/reports/coble_orthogonal_group_orders-run.txt` records the product of the orbit lengths
 $$
 2^{21}\cdot 3^5\cdot 5^2\cdot 7\cdot 17\cdot 31 = 46\,998\,591\,897\,600
 ,
@@ -267,7 +267,7 @@ By @thm:coble-isotropic-class-orbits, the nonzero isotropic classes form a singl
 
 ::: {.lemma #lem:stable-orthogonal-not-transitive title="The stable orthogonal group is not transitive on isotropic lines"}
 
-Let $B = U\oplus U\oplus\latI_{0,7}$ and $T_\Co = B(2)$ as in @prop:tco-split-maximal, and let $e, f$ be the isotropic basis (@def:based-module) vectors of the first [hyperbolic]{.other-sense} summand of $B$, so that in $T_\Co$ they are primitive (@def:primitive-embedding) isotropic vectors with $e\cdot f = 2$.
+Let $B = U\oplus U\oplus\latI_{0,7}$ and $T_\Co = B(2)$ as in @prop:tco-split-maximal, and let $e, f$ be the isotropic basis (@def:based-module) vectors of the first hyperbolic summand of $B$, so that in $T_\Co$ they are primitive (@def:primitive-embedding) isotropic vectors with $e\cdot f = 2$.
 Then no $g\in\widetilde\Orth^+(T_\Co)$ satisfies $g(\ZZ e) = \ZZ f$.
 So $\Orth^+(T_\Co)$ is transitive on the primitive isotropic vectors of $T_\Co$ (@thm:unpolarized-cusps) while the stable group (@def:group) $\widetilde\Orth^+(T_\Co)$ is not: $\ZZ e$ and $\ZZ f$ lie in different $\widetilde\Orth^+(T_\Co)$-orbits. Those two are the orbits of the classes $[e/2]$ and $[f/2]$, and the orbits of the stable group are indexed by the $527$ nonzero isotropic classes (@def:descent-class) of $A_{T_\Co}$ (@thm:coble-zero-cusp-count(2)), the fibre over one class being a single orbit (@thm:coble-integral-lifting-fibre(1), (2)); hence $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ has exactly $527$ $0$-cusps, and $\fco$ has $527$ of them under @conj:gamma-co-stable.
 :::
@@ -354,18 +354,18 @@ This is the same obstruction that @prop:tco-no-hyperbolic-plane records for $T_\
 
 ::: {.proposition #prop:zero-cusp-lattices title="The $0$-cusp lattices of $\fen$ and of $\fco$"}
 
-Let $T$ be $T_\En = U\perp U(2)\perp E_8(2)$ or $T_\Co = B(2)$ with $B = U\perp U\perp \I_{0,7}$, and let $v$ be a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) vector: the isotropic basis (@def:based-module) vector of a [hyperbolic]{.other-sense} summand in either case.
+Let $T$ be $T_\En = U\perp U(2)\perp E_8(2)$ or $T_\Co = B(2)$ with $B = U\perp U\perp \I_{0,7}$, and let $v$ be a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) vector: the isotropic basis (@def:based-module) vector of a hyperbolic summand in either case.
 Then the cusp lattice $v^{\perp T}/\generators{v}$ is
 
-1. for $T_\En$, $U(2)\oplus E_8(2)$: [rank]{.other-sense} $10$, determinant $-2^{10}$, signature $(1,9)$, even (@def:form-axioms) $2$-elementary with invariants $(r,a,\delta) = (10,10,0)$;
-2. for $T_\Co$, $U(2)\oplus\generators{-2}^{7} = \I_{1,8}(2)$: [rank]{.other-sense} $9$, determinant $2^{9}$, signature $(1,8)$, even $2$-elementary with invariants $(r,a,\delta) = (9,9,1)$.
+1. for $T_\En$, $U(2)\oplus E_8(2)$: rank $10$, determinant $-2^{10}$, signature $(1,9)$, even (@def:form-axioms) $2$-elementary with invariants $(r,a,\delta) = (10,10,0)$;
+2. for $T_\Co$, $U(2)\oplus\generators{-2}^{7} = \I_{1,8}(2)$: rank $9$, determinant $2^{9}$, signature $(1,8)$, even $2$-elementary with invariants $(r,a,\delta) = (9,9,1)$.
 :::
 
 ::: {.proof}
 
-In both cases $v$ spans a [hyperbolic]{.other-sense} summand and is orthogonal to the rest, so $v^{\perp T} = \generators{v}\perp (\text{the remaining summand})$ and the quotient by $\generators{v}$ drops the [hyperbolic]{.other-sense} direction: for $T_\En = U\perp U(2)\perp E_8(2)$ this leaves $U(2)\oplus E_8(2)$, and for $T_\Co = U(2)\oplus U(2)\oplus\I_{0,7}(2)$ from the splitting of @prop:tco-split-maximal it leaves $U(2)\oplus\I_{0,7}(2) = U(2)\oplus\generators{-2}^{7}$, which is $\I_{1,8}(2)$ because $U\oplus\generators{-1}^{7}$ is the odd (@def:two-elementary-isotropic-types) unimodular lattice (@def:unimodular) of signature $(1,8)$.
+In both cases $v$ spans a hyperbolic summand and is orthogonal to the rest, so $v^{\perp T} = \generators{v}\perp (\text{the remaining summand})$ and the quotient by $\generators{v}$ drops the hyperbolic direction: for $T_\En = U\perp U(2)\perp E_8(2)$ this leaves $U(2)\oplus E_8(2)$, and for $T_\Co = U(2)\oplus U(2)\oplus\I_{0,7}(2)$ from the splitting of @prop:tco-split-maximal it leaves $U(2)\oplus\I_{0,7}(2) = U(2)\oplus\generators{-2}^{7}$, which is $\I_{1,8}(2)$ because $U\oplus\generators{-1}^{7}$ is the odd (@def:two-elementary-isotropic-types) unimodular lattice (@def:unimodular) of signature $(1,8)$.
 
-Both lattices are twists $M(2)$ of a unimodular lattice $M$: $U(2)\oplus E_8(2) = (U\oplus E_8)(2)$ with $M = U\oplus E_8$ even of [rank]{.other-sense} $10$, and $\I_{1,8}(2)$ with $M = \I_{1,8}$ odd of [rank]{.other-sense} $9$.
+Both lattices are twists $M(2)$ of a unimodular lattice $M$: $U(2)\oplus E_8(2) = (U\oplus E_8)(2)$ with $M = U\oplus E_8$ even of rank $10$, and $\I_{1,8}(2)$ with $M = \I_{1,8}$ odd of rank $9$.
 Twisting preserves the signature, so the signatures are $(1,9)$ and $(1,8)$, and $\det M(2) = 2^{\rank M}\det M$ gives $2^{10}\cdot(-1) = -2^{10}$ and $2^{9}\cdot 1 = 2^9$.
 By @prop:twisted-unimodular-discriminant, $A_{M(2)}\cong(\ZZ/2\ZZ)^{\rank M}$, so both are $2$-elementary with $a = r$, that is $a = 10$ and $a = 9$, and the quadratic value module is $\ZZ/2\ZZ$ for $M$ even and $\tfrac12\ZZ/2\ZZ$ for $M$ odd.
 So $q$ is integral on $A_{(U\oplus E_8)(2)}$, giving $\delta = 0$, and takes the non-integral value $\tfrac12$ on the class of $\tfrac12 u$ for a unit vector $u$ of $\I_{1,8}$, giving $\delta = 1$.
@@ -386,13 +386,13 @@ in the basis (@def:based-module) $\eps_1,\dots,\eps_{10}$ of @sec-sterk-root-cou
 
 3. the chamber of $K_\Co$ has nine walls: in the negative-square convention a chain of eight nodes of norms $(-2,\dots,-2,-1)$ with seven label-$3$ edges and one label-$4$ edge at the end, and a ninth node of norm $-2$ joined to the third node of the chain by a label-$3$ edge --- the chain with a leaf at node $3$, which is the row $5\leq n\leq 9$ of [@Vin72, Table 5, article p. 31] at $n = 8$, and the Gram field is $\QQ[\sqrt2]$;
 
-4. the chamber of the second Enriques $0$-cusp lattice $U\oplus E_8(2) = \eta_2^{\perp}/\eta_2$ has ten walls: the list of item 2 with the coefficient of $\eps_2$ in the last root equal to $2$. Nine of them have norm $-4$ and $\eps_1-\eps_2$ has norm $-2$ and [meets]{.other-sense} the last root with label $4$; the chamber has two ideal vertices and Gram field $\QQ[\sqrt2]$, and, like the chamber of item 2, it has the $f$-vector $(10,45,120,210,252,210,120,45,10,1)$ of a $9$-simplex and finite covolume (@def:covolume), so both Enriques $0$-cusp lattices are reflective (@def:reflective-lattice).
+4. the chamber of the second Enriques $0$-cusp lattice $U\oplus E_8(2) = \eta_2^{\perp}/\eta_2$ has ten walls: the list of item 2 with the coefficient of $\eps_2$ in the last root equal to $2$. Nine of them have norm $-4$ and $\eps_1-\eps_2$ has norm $-2$ and meets the last root with label $4$; the chamber has two ideal vertices and Gram field $\QQ[\sqrt2]$, and, like the chamber of item 2, it has the $f$-vector $(10,45,120,210,252,210,120,45,10,1)$ of a $9$-simplex and finite covolume (@def:covolume), so both Enriques $0$-cusp lattices are reflective (@def:reflective-lattice).
 
 :::
 
 ::: {.proof}
 
-*The scaling lemma.* The form of $K(2)$ is $2b_K$, so an endomorphism $g$ satisfies $2b_K(gx,gy) = 2b_K(x,y)$ for all $x,y$ exactly when it is an isometry of $K$: $\Orth(K(2)) = \Orth(K)$ as subgroups of $\GL(K)$. The reflection $s_r(x) = x - 2\frac{b(x,r)}{b(r,r)}r$ is homogeneous of [degree]{.other-sense} $0$ in the form, so the reflection in $r$ is the same map for $K$ and for $K(2)$, and the wall it defines has norm $r^2$ in $K$ and $2r^2$ in $K(2)$. Hence the chambers correspond wall by wall, with the norms doubled.
+*The scaling lemma.* The form of $K(2)$ is $2b_K$, so an endomorphism $g$ satisfies $2b_K(gx,gy) = 2b_K(x,y)$ for all $x,y$ exactly when it is an isometry of $K$: $\Orth(K(2)) = \Orth(K)$ as subgroups of $\GL(K)$. The reflection $s_r(x) = x - 2\frac{b(x,r)}{b(r,r)}r$ is homogeneous of degree $0$ in the form, so the reflection in $r$ is the same map for $K$ and for $K(2)$, and the wall it defines has norm $r^2$ in $K$ and $2r^2$ in $K(2)$. Hence the chambers correspond wall by wall, with the norms doubled.
 
 *The Enriques chambers.* The walls, their norms and the Coxeter--Vinberg diagrams of items 2 and 4 are the simple roots of the two rank-$10$ quotient lattices in @sec-sterk-root-counts-and-computed-chambers; the ideal vertices, Gram fields and $f$-vectors are those of the $(10,10,0)_1$ and $(10,8,0)_1$ rows of @sec-coxiter-results-for-cusp-lattices.
 

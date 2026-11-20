@@ -155,7 +155,7 @@ In (3) the hyperboloid inside the nondegenerate (@def:polarization) space $(\RR^
 
 ## Subdiagrams and the inheritance of signature
 
-::: {.definition #def:coxeter-subdiagram defines="subdiagram; $\Sigma_I$; rank; $W_I$; standard parabolic subgroup"}
+::: {.definition #def:coxeter-subdiagram defines="subdiagram; $\Sigma_I$; rank of a subdiagram; $W_I$; standard parabolic subgroup"}
 
 Let $\Sigma$ be the Coxeter diagram (@def:coxeter-matrix) of the Coxeter system (@def:coxeter-group) $(W,S)$ and let $I\iscontainedin S$.
 The **subdiagram** $\Sigma_I$ is the induced diagram on $I$, with Coxeter matrix $M[I,I]$ and Gram form (@def:coxeter-gram-form) the principal submatrix $G[I,I]$.

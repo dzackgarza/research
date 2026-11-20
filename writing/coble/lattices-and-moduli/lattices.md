@@ -992,7 +992,7 @@ Use the four $M$-orbits $A$, $B$, $C$, $D$ of nonzero isotropic elements of $A_{
 4. For a plane $\varPi$ with label $\lambda$, the intersection of the image of $\Stab_{\gent}(\varPi)$ in $\GL(\varPi)$ with $\SL(\varPi)$ is $\Gamma^1(2)$ for $\lambda = \theset{1,t}$ [@Ste91, §4.3.16]; it is $\Gamma(2)$ for $\theset{2,4,5}$, $\Gamma^1(2)$ for $\theset{4,5}$, $\theset{3,5}$ and $\theset{3,4}$, and $\SL_2(\ZZ)$ for $\theset{5,5}$ [@Ste91, §4.3.17, and the proof of Prop. 4.7].
 5. The orbits of $\gent^+ = \gent\cap\Orth^+(\ten)$ on lines and on planes are the orbits of $\gent$.
 
-So the Baily--Borel compactification of $\fentwo$ has five $0$-dimensional and nine $1$-dimensional [boundary components]{.other-sense}, with the incidence of item 3 [@Ste91, §4.2, §4.4].
+So the Baily--Borel compactification of $\fentwo$ has five $0$-dimensional and nine $1$-dimensional boundary components, with the incidence of item 3 [@Ste91, §4.2, §4.4].
 :::
 
 ::: {.proof}
@@ -1016,7 +1016,7 @@ Subgroups of different orders are not $M$-equivalent, so there are nine orbits.
 For a plane with a vector of divisibility one, every primitive vector of divisibility two has the class $c$ (@prop:ten-plane-classes(2)), and such vectors exist, for example $e'\in\varPi_1$.
 For a plane without one, the classes of the primitive vectors are the three nonzero elements of $D(\varPi)$ (@prop:ten-plane-classes(3)).
 By item 1 the type of a vector is read off from the $M$-orbit of its class, which gives the labels.
-A $0$-dimensional [boundary component]{.other-sense} lies in the closure of a $1$-dimensional one exactly when the line is $\gent$-equivalent to a line in the plane [@Ste91, §4.4].
+A $0$-dimensional boundary component lies in the closure of a $1$-dimensional one exactly when the line is $\gent$-equivalent to a line in the plane [@Ste91, §4.4].
 The diagrams at the vectors of types $1$ to $5$ are those of [@Ste91, Figs. 5, 7, 9, 11, 13]; there are $4$, $2$, $3$, $4$ and $5$ of them, the number of labels that contain each type.
 The plane orbits are matched across types in [@Ste91, §4.3.6--4.3.9].
 The $\tilde E_8$ class at $e'$ is the class of $\ZZ e\oplus\ZZ e'$, the $\tilde E_8$ class at $e$ (§4.3.6), so its label is $\theset{1,2}$.
