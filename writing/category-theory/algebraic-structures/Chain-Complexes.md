@@ -35,7 +35,7 @@ Since kernels and cokernels are degreewise, monic, epic and exactness are checke
 
 Assume $\mca$ abelian for the remainder of the chapter.
 
-::: {.definition #def:homology title="Cycles, boundaries, and homology"}
+::: {.definition #def:homology title="Cycles, boundaries, and homology" defines="$n$-cycles; $n$-boundaries"}
 
 The *$n$-cycles* and *$n$-boundaries* of $C\in\mathbf{Ch}(\mca)$ are
 $$
@@ -51,7 +51,7 @@ $$
 [@Wei94, Def. 1.1.1]; a chain map sends cycles to cycles and boundaries to boundaries, which is what makes $H_n$ a functor [@Wei94, Ex. 1.1.2].
 :::
 
-::: {.definition #def:exact-complex title="Exactness"}
+::: {.definition #def:exact-complex title="Exactness" defines="exact at $n$; exact"}
 
 A complex $C$ is *exact at $n$* if $H_n(C)=0$, and *exact* if it is exact at every degree.
 Exactness at $n$ and exactness are isomorphism-invariant properties of objects of $\mathbf{Ch}(\mca)$ and therefore define replete full subcategories (@def:subcategory), the second being the intersection over $n\in\bZ$ of the first.
@@ -63,7 +63,7 @@ $$
 is the complex concentrated in degrees $2,1,0$ with $d_2=i$ and $d_1=p$, together with the assertion that this complex is exact: exactness at $2$ says $i$ is monic, exactness at $1$ says $\im i$ and $\ker p$ are the same subobject of $B$, and exactness at $0$ says $p$ is epic.
 :::
 
-::: {.definition #def:quasi-isomorphism title="Quasi-isomorphisms"}
+::: {.definition #def:quasi-isomorphism title="Quasi-isomorphisms" defines="quasi-isomorphism"}
 
 A chain map $u\colon C\to D$ is a *quasi-isomorphism* if $H_n(u)$ is an isomorphism for every $n$ [@Wei94, Def. 1.1.2].
 These are the weak equivalences of the model structure of @thm:projective-model-structure.
@@ -101,7 +101,7 @@ Applying it to the translate $[n]$ gives the sequence in every degree at once, a
 
 ## Translation, truncation, and the mapping cone {#sec-translation-cone}
 
-::: {.definition #def:translation title="Translation"}
+::: {.definition #def:translation title="Translation" defines="$p$th translate"}
 
 For $p\in\bZ$ the *$p$th translate* $C[p]$ of $C$ has $C[p]_n=C_{n+p}$ with differential $(-1)^pd^C$.
 Setting $f[p]_n=f_{n+p}$ on chain maps makes $[p]$ an isomorphism of categories $\mathbf{Ch}(\mca)\to\mathbf{Ch}(\mca)$ with inverse $[-p]$, and
@@ -126,7 +126,7 @@ and let $\tau_{<n}C=C/\tau_{\ge n}C$.
 Then $H_i(\tau_{\ge n}C)=H_i(C)$ for $i\ge n$ and vanishes for $i<n$, while $H_i(\tau_{<n}C)=H_i(C)$ for $i<n$ and vanishes for $i\ge n$ [@Wei94, 1.2.7].
 :::
 
-::: {.definition #def:mapping-cone title="The mapping cone"}
+::: {.definition #def:mapping-cone title="The mapping cone" defines="mapping cone"}
 
 Let $f\colon B\to C$ be a chain map.
 The *mapping cone* of $f$ is the complex with
@@ -148,7 +148,7 @@ and $f$ is a quasi-isomorphism if and only if $\cone(f)$ is exact [@Wei94, Cor. 
 Work in $\mathbf{Ch}(R\text{-}\mathbf{Mod})$.
 A $W$-valued bilinear form on an $R$-module $M$ is an element of $\Hom_R(M\tensor_RM,W)$ (@def:module-bilinear-form), and the form categories $\mathcal B_{R,W}$ of @def:form-categories are the categories of elements of the presheaves so obtained.
 
-::: {.definition #def:complex-tensor-product title="The tensor product of complexes"}
+::: {.definition #def:complex-tensor-product title="The tensor product of complexes" defines="tensor product complex"}
 
 For $C,D\in\mathbf{Ch}(R\text{-}\mathbf{Mod})$ the *tensor product complex* $C\tensor_RD$ has
 $$
@@ -172,7 +172,7 @@ commutes with the two differentials and is an isomorphism of complexes; it is th
 For $n\in\bZ$ write $W[n]$ for the complex with $W$ in degree $n$, the zero module in every other degree, and zero differentials.
 :::
 
-::: {.definition #def:complex-form title="Bilinear forms on a complex"}
+::: {.definition #def:complex-form title="Bilinear forms on a complex" defines="$W$-valued bilinear form of degree $n$ on $C$; symmetric"}
 
 Let $C\in\mathbf{Ch}(R\text{-}\mathbf{Mod})$.
 A *$W$-valued bilinear form of degree $n$ on $C$* is a chain map
@@ -302,7 +302,7 @@ For cycles $x,y$ with $\xi=[x]$ and $\eta=[y]$, this is the displayed identity.
 
 ## Resolutions {#sec-resolutions}
 
-::: {.definition #def:resolution title="Augmented complexes and resolutions"}
+::: {.definition #def:resolution title="Augmented complexes and resolutions" defines="left resolution; projective resolution; free resolution"}
 
 Let $M$ be an object of $\mca$.
 A *left resolution* of $M$ is a complex $P$ with $P_i=0$ for $i<0$ together with a morphism $\epsilon\colon P_0\to M$ for which the augmented complex
@@ -330,7 +330,7 @@ The homotopy is built by the same induction, from the observation that $d^Q_n\bi
 Only projectivity of the $P_n$, exactness of both augmented complexes and additivity are used; the $Q_n$ need not be projective.
 :::
 
-::: {.definition #def:syzygy title="Syzygies"}
+::: {.definition #def:syzygy title="Syzygies" defines="$i$th syzygy module"}
 
 Let
 $$
@@ -355,7 +355,7 @@ The proof uses exactness of the Koszul complex $K(x_1,\dots,x_r)$ on a regular s
 With those, the bound is $\Tor^R_i(M,k)\cong F_i\tensor_Rk$ for the minimal resolution $F$ of $M$, which vanishes for $i>r$ because $K(x)$ does, so $F_i=0$ for $i>r$.
 :::
 
-::: {.definition #def:minimal-resolution title="Minimal free resolutions"}
+::: {.definition #def:minimal-resolution title="Minimal free resolutions" defines="minimal"}
 
 Let $(R,\mathfrak m)$ be a local ring.
 A free resolution $F$ of $M$ is *minimal* if $\im\varphi_n\iscontainedin\mathfrak mF_{n-1}$ for every $n$, equivalently if every differential of $F\tensor_RR/\mathfrak m$ is zero [@Eis95, §19.1, Definition before Lem. 19.4].
@@ -364,7 +364,7 @@ For a finitely generated module over a local ring, and for a finitely generated 
 
 ## Derived functors, Ext, and Tor {#sec-derived-functors}
 
-::: {.definition #def:derived-functor title="Left and right derived functors"}
+::: {.definition #def:derived-functor title="Left and right derived functors" defines="right derived functors"}
 
 Let $F\colon\mca\to\mathcal B$ be a right exact functor of abelian categories and let $\mca$ have enough projectives.
 For $A\in\mca$ choose a projective resolution $P\to A$ and set

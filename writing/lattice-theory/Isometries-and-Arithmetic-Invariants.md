@@ -13,7 +13,7 @@ O(L)=\Aut(L).
 $$
 When nonempty, $\operatorname{Iso}(L,M)$ is an $(O(M),O(L))$-bitorsor: $O(M)$ acts on the left by postcomposition and $O(L)$ acts on the right by precomposition.
 
-::: {.definition #def:discriminant-rep title="Bilinear and quadratic discriminant representations"}
+::: {.definition #def:discriminant-rep title="Bilinear and quadratic discriminant representations" defines="bilinear discriminant representation"}
 
 Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ and $\varphi\in\Orth(L)$.
 Scalar extension gives $\varphi_\QQ\in\Orth(L_\QQ)$.
@@ -94,7 +94,7 @@ For $L\in\mathbf{Lat}_R^{\mathrm{nd}}$, $\radic(L)=0$; hence $\ker(Uf)=0$ and $U
 Faithfulness of the forgetful functor gives the monomorphism $U_{L,M}$, while $j_{L,M}$ is the defining inclusion of the primitive-embedding subobject.
 :::
 
-::: {.definition #def:primitive-embedding title="Primitive embeddings"}
+::: {.definition #def:primitive-embedding title="Primitive embeddings" defines="primitive embedding; primitive"}
 
 A morphism $f\colon L\to M$ of $\mathbf{Lat}_R^{\mathrm{nd}}$ is a *primitive embedding* when the cokernel sequence of $U(f)$ in $R\text{-}\mathbf{Mod}$
 $$
@@ -154,7 +154,7 @@ so $Q_{\jmath}$ has nonzero $2$-torsion and $\jmath\notin\operatorname{PrimEmb}(
 
 ## Adjoints, similarities and the index of an embedding {#sec-adjoint-similarity}
 
-::: {.definition #def:adjoint-morphism title="The adjoint of a module morphism"}
+::: {.definition #def:adjoint-morphism title="The adjoint of a module morphism" defines="adjoint"}
 
 Let $(M,b_M),(N,b_N)\in\mathcal B_{R,W}$ and let $f\in\Hom_{R\text{-}\mathbf{Mod}}(M,N)$.
 Write
@@ -198,7 +198,7 @@ For the isometry criterion: $f\in O(M)$ means $f^{*}=f^{-1}$, which in coordinat
 The displayed inverse is the same identity solved for $A^{-1}$.
 :::
 
-::: {.definition #def:similarity title="Similarity morphisms"}
+::: {.definition #def:similarity title="Similarity morphisms" defines="similarity morphism of multiplier $\lambda$"}
 
 For $(M,b_M),(N,b_N)\in\mathcal B_{R,W}$ and $\lambda\in R$, define
 $$
@@ -303,7 +303,7 @@ Fixing $\radic(M)$ pointwise is $a=\id$, and fixing it also as a set is what the
 
 ## Index
 
-::: {.definition #def:index title="Index of a subgroup"}
+::: {.definition #def:index title="Index of a subgroup" defines="index"}
 For a subgroup $H\le G$, the *index* $[G:H]$ is the cardinality of the set of left cosets $G/H$.
 If $G$ is finite, $[G:H]=\cardinality{G}/\cardinality{H}$.
 In an abelian category, the analogous cardinality of a cokernel is used only after the relevant monomorphism and finiteness hypotheses have been stated.
@@ -311,7 +311,7 @@ In an abelian category, the analogous cardinality of a cokernel is used only aft
 
 ## The genus
 
-::: {.definition #def:genus title="Genus and class set"}
+::: {.definition #def:genus title="Genus and class set" defines="genus groupoid; class set; class number"}
 
 Let $R$ be the ring of integers of a global field $K$ and let $L\in\mathbf{Lat}_R^{\mathrm{nd}}$.
 The **genus groupoid** $\operatorname{Gen}(L)\hookrightarrow\mathbf{Lat}_R^{\mathrm{nd},\simeq}$ is the full subgroupoid on lattices $M$ satisfying $M\otimes_RK_v\isoto L\otimes_RK_v$ for every place $v$ of $K$.

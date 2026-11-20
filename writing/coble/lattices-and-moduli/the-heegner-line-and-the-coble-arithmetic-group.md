@@ -1524,7 +1524,7 @@ $$
 
 ## The congruence comparison {#sec-congruence-comparison}
 
-::: {.definition #def:congruence-group title="The congruence group and block-compatibility"}
+::: {.definition #def:congruence-group title="The congruence group and block-compatibility" defines="congruence group; block-compatible"}
 
 Let
 $$

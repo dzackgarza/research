@@ -2,7 +2,7 @@
 
 ## Generic solutions {#sec-generic-solutions}
 
-::: {.definition #def:generic-solution title="Generic solution"}
+::: {.definition #def:generic-solution title="Generic solution" defines="generic solution; set"}
 
 A defining equation denotes its *generic solution*: the distinguished element of the object the equation presents.
 The generic cube root of $2$ is the class of $x$ in $\mathbb Q[x]/(x^3 - 2)$; the generic root of a monic separable polynomial is an element of its étale algebra.

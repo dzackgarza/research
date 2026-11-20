@@ -20,7 +20,7 @@ Categories of objects with chosen structure are instead described by their forge
 
 ## Subobjects {#sec-containment}
 
-::: {.definition #def:subobject-relation title="Subobjects as monomorphisms up to isomorphism"}
+::: {.definition #def:subobject-relation title="Subobjects as monomorphisms up to isomorphism" defines="subobject"}
 A *subobject* of $M\in C$ is an isomorphism class of monomorphisms $i\colon N\hookrightarrow M$.
 A representative of the subobject is a specific monomorphism.
 Two representatives $i\colon N\hookrightarrow M$ and $i'\colon N'\hookrightarrow M$ define the same subobject when there is an isomorphism $u\colon N\isoto N'$ with $i=i'\circ u$ [@MM12, I.5].
@@ -33,7 +33,7 @@ A construction that uses an embedding names a particular monomorphism.
 
 ## Fibers of a morphism {#sec-fibers}
 
-::: {.definition #def:fiber-over-point title="The fiber over a point"}
+::: {.definition #def:fiber-over-point title="The fiber over a point" defines="fiber of $f$ over $y$"}
 
 Let $C$ have a terminal object $1$ and the relevant pullbacks, let $f\colon X\to Y$, and let $y\colon 1\to Y$ be a point.
 The *fiber of $f$ over $y$* is the apex of the cartesian square

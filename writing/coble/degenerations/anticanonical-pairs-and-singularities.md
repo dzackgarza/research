@@ -2,7 +2,7 @@
 
 ## Anticanonical pairs and their charge
 
-::: {.definition #def:anticanonical-pair}
+::: {.definition #def:anticanonical-pair defines="anticanonical pair; length; labeled"}
 
 An **anticanonical pair** $(V, D)$ consists of a smooth rational surface $V$ and a divisor $D\in\abs{-K_V}$ that is a reduced cycle of rational curves $D = \sum_{i=1}^r D_i$, with $i$ taken mod $r$, together with an orientation of $D$.
 For $r\geq 2$, each $D_i$ is a smooth rational curve, and $D_i$ meets $D_{i\pm1}$ transversally.
@@ -11,7 +11,7 @@ The integer $r = r(D)$ is the **length** of $D$.
 The pair is **labeled** if the components of $D$ are indexed as above [@Fri15, Sec. 1].
 :::
 
-::: {.definition #def:charge}
+::: {.definition #def:charge defines="charge"}
 
 Let $V$ be a smooth surface and let $D$ be a reduced effective cycle of rational curves on $V$, with $r(D)$ irreducible components.
 The **charge** of $(V, D)$ is
@@ -38,7 +38,7 @@ Let $(V, D)$ be an anticanonical pair (@def:anticanonical-pair) whose divisor $D
 Moreover, $Q(V, D)\geq0$, and $Q(V, D) = 0$ if and only if $(V, D)$ is toric [@Fri15, Lem. 2.7].
 :::
 
-::: {.definition #def:toric-model-anticanonical title="Toric models of anticanonical pairs"}
+::: {.definition #def:toric-model-anticanonical title="Toric models of anticanonical pairs" defines="toric model"}
 
 A *toric model* of an anticanonical pair (@def:anticanonical-pair) $(V,D)$ is a diagram of pairs
 $$
@@ -97,7 +97,7 @@ $$
 
 ## Singularities in the minimal model program
 
-::: {.definition #def:discrepancy}
+::: {.definition #def:discrepancy defines="discrepancy"}
 
 Let $(X, D)$ be a normal pair with $K_X + D$ $\QQ$-Cartier, and let $f\colon Y \to X$ be a birational morphism from a normal variety $Y$.
 The **discrepancy** $a(E, X, D)$ of an $f$-exceptional prime divisor $E$ is defined by
@@ -113,7 +113,7 @@ $$
 [@KM98, Def. 2.28].
 :::
 
-::: {.definition #def:mmp-singularities}
+::: {.definition #def:mmp-singularities defines="terminal; canonical; Kawamata log terminal (klt); purely log terminal (plt); log canonical (lc)"}
 
 With discrepancies as in @def:discrepancy, write $D = \Sum_i a_i D_i$ with distinct prime divisors $D_i$.
 The pair $(X, D)$ is
@@ -131,7 +131,7 @@ The pair $(X, D)$ is
 [@KM98, Def. 2.34].
 :::
 
-::: {.definition #def:divisorial-log-terminal title="Divisorial log terminal pairs"}
+::: {.definition #def:divisorial-log-terminal title="Divisorial log terminal pairs" defines="divisorial log terminal (dlt)"}
 
 Let $X$ be a normal variety and let $D = \Sum_i a_i D_i$ be a sum of distinct prime divisors with $0\leq a_i\leq1$, such that $m(K_X + D)$ is Cartier for some $m > 0$.
 The pair $(X, D)$ is **divisorial log terminal (dlt)** if there is a closed subset $Z\subset X$ such that:
@@ -143,7 +143,7 @@ The pair $(X, D)$ is **divisorial log terminal (dlt)** if there is a closed subs
 [@KM98, Def. 2.37].
 :::
 
-::: {.definition #def:demi-normal-slc}
+::: {.definition #def:demi-normal-slc defines="demi-normal; semi-log canonical (slc)"}
 
 - A scheme $X$ is **demi-normal** if it satisfies Serre's condition $S_2$ and each of its codimension-$1$ points is a regular point or a node [@Kol23a, Def. 11.10].
 

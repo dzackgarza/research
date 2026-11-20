@@ -1,6 +1,6 @@
 # Integral affine structures {#sec-ias-degenerations}
 
-::: {.definition #def:singular_ias}
+::: {.definition #def:singular_ias defines="singular integral affine structure"}
 
 The dual complex $\Gamma(\mcx_0)$ of a Type III Kulikov model has a canonical *singular integral affine structure*: away from a finite singular set its charts map to $\RR^2$ with transition functions in $\operatorname{GL}_2(\bZ) \ltimes \RR^2$, and its singularities correspond to the components of positive charge, the non-toric anticanonical pairs (@def:anticanonical-pair).
 The total charge is $24$, which constrains the number and type of singularities; for instance one may have $24$ singularities of type $I_1$.
@@ -53,7 +53,7 @@ $\lambda$ records the monodromy direction.
 
 At Sterk cusp $1$, the Enriques involution acts freely on the Type III integral affine sphere by the antipodal map [@AEGS25, Prop. 4.8]. Its quotient is an integral affine $\RP^2$. Each singularity downstairs has two lifts of the same charge upstairs, so the quotient has total charge $12$. This gives the charge-$12$ model sought by viewing an Enriques degeneration as the quotient of its charge-$24$ K3 cover. The equivariant divisor-model construction and smoothing, including its period condition, are given in [@AEGS25, Thm. 4.6]; the stable pair follows by the descended ramification contraction [@AEGS25, Cor. 4.9].
 
-::: {.definition #def:symington_polytope}
+::: {.definition #def:symington_polytope defines="Symington polytope"}
 
 Given a monodromy invariant $\lambda$ with barycentric coordinates $\ell_i = \lambda \cdot \alpha_i$, the *Symington polytope* $P(\lambda)$ is the integral affine polygon determined by these coordinates [@Sym02].
 Gluing two copies along their boundary,
@@ -200,7 +200,7 @@ dictionary; the gluing periods and changes of model must also be tracked.
 
 ## Mirror lattices and the Enriques half-twist {#sec-mirror-lattices-half-twist}
 
-::: {.definition #def:admissible-mirror-cusp title="An admissible isotropic vector"}
+::: {.definition #def:admissible-mirror-cusp title="An admissible isotropic vector" defines="$m$-admissible"}
 Let $M\hookrightarrow\lkt$ be a primitive hyperbolic lattice and put
 $N=M^\perp$. A primitive isotropic vector $f\in N$ is *$m$-admissible*
 if $\operatorname{div}_N(f)=m$ and there is a primitive isotropic

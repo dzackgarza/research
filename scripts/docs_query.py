@@ -60,7 +60,7 @@ import docs_dependency_graph as ddg  # noqa: E402
 if TYPE_CHECKING:
     from txtai import Embeddings
 
-INDEX_VERSION = 4
+INDEX_VERSION = 5
 # The sentence-embedding model of the semantic half of `search` and `term`.
 EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 # Block kinds that assert something a proof establishes.
@@ -69,7 +69,6 @@ Row = dict[str, str | bool | int]
 PROVABLE = frozenset({"theorem", "lemma", "corollary", "proposition", "observation", "claim"})
 _OPEN = re.compile(r"^\s*(:{3,})\s*(\{.*\}|[\w-]+)\s*$")
 # A bold phrase with no mathematics in it.
-_BOLD = re.compile(r"\*\*([^*$]+?)\*\*")
 _CLOSE = re.compile(r"^\s*:{3,}\s*$")
 _CODE_FENCE = re.compile(r"^\s*(`{3,}|~{3,})")
 _HEADING = re.compile(r"^(#{1,6})\s+(.*?)\s*(?:\{([^}]*)\})?\s*$")
@@ -196,14 +195,6 @@ def load(project: Path, cache: Path | None) -> Index:
         lines = (project / chapter).read_text().splitlines()
         index.lines[file] = lines
         scan(file, lines, index.spans, index.headings)
-    # The defined terms of a block are the bold phrases of its statement, one word or
-    # more (the graph's uncited-use check reads only phrases of two or more words).
-    for ident, data in graph.nodes(data=True):
-        span = index.spans.get(ident)
-        if data.get("kind") in ddg.DEFINING and span is not None:
-            text = "\n".join(index.lines[span.file][span.start:span.end - 1])
-            terms = {" ".join(t.split()).strip(" .,;:") for t in _BOLD.findall(text)}
-            data["terms"] = "; ".join(sorted(t for t in terms if t))
     if cache is not None:
         cache.parent.mkdir(parents=True, exist_ok=True)
         cache.write_bytes(pickle.dumps((key, index)))
@@ -234,8 +225,8 @@ def record(index: Index, ident: str) -> Row:
         out["proved"] = bool(data.get("proved"))
         if data.get("label"):
             out["label"] = data["label"]
-        if data.get("terms"):
-            out["terms"] = data["terms"]
+        if data.get("defines"):
+            out["defines"] = data["defines"]
     else:
         out["work"] = data.get("work", "")
     return out
@@ -360,7 +351,7 @@ def cmd_tree(index: Index, args: argparse.Namespace) -> None:
 def document(index: Index, ident: str) -> str:
     """The text a block is searched by: its title, defined terms, statement and proof."""
     data = index.graph.nodes[ident]
-    parts = [data.get("title", ""), data.get("terms", "")]
+    parts = [data.get("title", ""), data.get("defines", "")]
     span = index.spans.get(ident)
     if span is not None:
         end = span.proof_end if span.proof_end is not None else span.end
@@ -408,7 +399,7 @@ def cmd_search(index: Index, args: argparse.Namespace) -> None:
 
 def cmd_term(index: Index, args: argparse.Namespace) -> None:
     emit(search_rows(index, args, sorted(ddg.DEFINING)), args.json,
-         ("score", "kind", "id", "location", "terms"))
+         ("score", "kind", "id", "location", "defines"))
 
 
 def cmd_where(index: Index, args: argparse.Namespace) -> None:

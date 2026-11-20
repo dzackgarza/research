@@ -4,7 +4,7 @@ Let $(W,S)$ be a Coxeter system with $S$ finite, presented by the orders $m(s,t)
 
 ## The canonical form {#sec-coxeter-form}
 
-::: {.definition #def:coxeter-form title="The form of a Coxeter system"}
+::: {.definition #def:coxeter-form title="The form of a Coxeter system" defines="canonical form; Coxeter graph"}
 
 The *canonical form* of $(W,S)$ is the symmetric bilinear form on $V$ with
 $$
@@ -80,7 +80,7 @@ Since $b$ is negative semidefinite with radical of rank $1$, the quotient $V/\ra
 And $W$ fixes $\radic(V)$ pointwise because it preserves $b$ and $\delta$ spans the radical: for $w\in W$, $b(w\delta-\delta,\text{-})=b(w\delta,w\text{-})-b(\delta,\text{-})=0$, so $w\delta-\delta\in\radic(V)$, and the action of $W$ on the line $\radic(V)$ is trivial because the only orthogonal maps of a one-dimensional space over $\RR$ with $b(\delta,\delta)=0$ are the identity.
 :::
 
-::: {.definition #def:hyperbolic-coxeter title="Hyperbolic Coxeter systems"}
+::: {.definition #def:hyperbolic-coxeter title="Hyperbolic Coxeter systems" defines="Lorentzian; hyperbolic Coxeter system; compact hyperbolic; The signature condition; The condition of [@Hum90, §6.8]"}
 
 Let $(W,S)$ be irreducible with $b$ nondegenerate, and set
 $$
@@ -121,7 +121,7 @@ Since $b$ has signature $(1,n-1,0)$, its restriction to a tangent space of the h
 
 ## Coxeter systems in a lattice {#sec-coxeter-in-lattice}
 
-::: {.definition #def:coxeter-system-in-lattice title="The category $\mathbf{Cox}_R$"}
+::: {.definition #def:coxeter-system-in-lattice title="The category $\mathbf{Cox}_R$" defines="Coxeter system in a lattice"}
 
 Let $R$ be a subring of $\mathbb R$ containing the entries $2\cos(\pi/m(s,t))$ of the Gram matrix of @def:coxeter-form, so that the canonical form takes values in $R$.
 

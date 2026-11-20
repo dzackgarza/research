@@ -38,10 +38,14 @@ Findings, each one a defect in the book:
   - a numbered block with no id (it is a node, keyed `<chapter>#<position>`, but
     nothing can cite it);
   - a pandoc warning while reading a chapter, such as an unclosed div;
+  - a defining block (definition, construction, notation, convention) with no
+    `defines` attribute. The attribute lists what the block defines, separated by
+    semicolons: `defines="even lattice; $L^\\#$"`. It is metadata and is not rendered;
   - a use with no citation: a logical block whose prose contains a term of two or
-    more words that a definition, construction, notation or convention sets in bold,
-    when no block that it reaches through citations defines that term. One-word terms
-    are not checked, because the same word has different senses in different parts;
+    more words that the `defines` of a defining block lists, when no block that it
+    reaches through citations defines that term. One-word terms and terms with
+    mathematics are not checked, because the same word has different senses in
+    different parts and a formula is not prose;
   - an unlocated citation: the proof of a logical block cites a whole work, or a chapter,
     section or page of one. If the proof rests on one result of that work, the citation
     must name it; if the proof only says where the argument comes from, the citation is
@@ -189,8 +193,13 @@ def cited_results(key: str, locator: str) -> list[str]:
 # neither blocks nor works.
 QUARTO_CROSSREF_PREFIXES = ("sec-", "fig-", "tbl-", "eq-")
 
-# Block kinds whose bold phrases are defined terms.
+# Block kinds that define terms, which their `defines` attribute lists.
 DEFINING = frozenset({"definition", "construction", "notation", "convention"})
+
+
+def defined_terms(defines: str) -> list[str]:
+    """The terms a `defines` attribute lists, in order: "a; b" is ["a", "b"]."""
+    return [" ".join(t.split()) for t in defines.split(";") if t.strip()]
 # A span of this class holds words that read as a defined term but are meant in another
 # sense, as "right adjoints" of a functor beside the right adjoints of a pairing. The
 # uncited-use check skips them; the page renders them as plain text.
@@ -203,6 +212,7 @@ class Kind(StrEnum):
     ORPHAN_PROOF = "orphan-proof"
     DUPLICATE_ID = "duplicate-id"
     MISSING_ID = "missing-id"
+    MISSING_DEFINES = "missing-defines"
     UNCITED_TERM = "uncited-term"
     PARSE_WARNING = "parse-warning"
     UNLOCATED_CITATION = "unlocated-citation"
@@ -277,8 +287,6 @@ class Contents:
     cited: list[tuple[str, str]] = dataclasses.field(default_factory=list)
     # The prose words, lowercased; mathematics and citations are left out.
     text: str = ""
-    # The bold phrases (`**term**`) that contain no mathematics, lowercased.
-    terms: set[str] = dataclasses.field(default_factory=set)
 
 
 def contents(elem: pf.Element, block_classes: set[str]) -> Contents:
@@ -305,11 +313,6 @@ def contents(elem: pf.Element, block_classes: set[str]) -> Contents:
             words.append(" \u00a4 ")
         elif isinstance(e, (pf.Space, pf.SoftBreak, pf.LineBreak)):
             words.append(" ")
-        elif isinstance(e, pf.Strong) and not any(
-                isinstance(m, pf.Math) for m in _descendants(e)):
-            term = " ".join(pf.stringify(e).lower().split()).strip(" .,;:")
-            if re.search(r"[a-z]{3}", term) and " " in term:
-                found.terms.add(term)
         for child in children(e):
             walk(child)
 
@@ -369,7 +372,7 @@ def build(project: Path) -> tuple[nx.DiGraph, list[Finding]]:
     findings: list[Finding] = []
     # (source id, cited id, part) in reading order; resolved once every block is known
     citations: list[tuple[str, str, str, str]] = []
-    # Each block's prose (statement and proof), and each bold term's defining blocks.
+    # Each block's prose (statement and proof), and each defined term's defining blocks.
     prose: dict[str, str] = {}
     definers: dict[str, set[str]] = {}
 
@@ -406,8 +409,13 @@ def build(project: Path) -> tuple[nx.DiGraph, list[Finding]]:
                         citations.append((chapter, ident, cited, locator, "statement"))
                     prose[ident] = found.text
                     if graph.nodes[ident]["kind"] in DEFINING:
-                        for term in found.terms:
-                            definers.setdefault(term, set()).add(ident)
+                        terms = defined_terms(block.attributes.get("defines", ""))
+                        graph.nodes[ident]["defines"] = "; ".join(terms)
+                        if not terms:
+                            findings.append(Finding(Kind.MISSING_DEFINES, chapter, (ident,)))
+                        for term in terms:
+                            if "$" not in term and " " in term and re.search(r"[a-z]{3}", term):
+                                definers.setdefault(term.lower(), set()).add(ident)
                     previous = ident
                 elif isinstance(block, pf.Div) and "proof" in block.classes:
                     if previous is None:
@@ -473,7 +481,7 @@ def uncited_terms(graph: nx.DiGraph, prose: dict[str, str],
                   definers: dict[str, set[str]]) -> list[Finding]:
     """Uses of a defined term by a block that cites none of the blocks defining it.
 
-    A defining block names its term in bold. A block of the logical development whose
+    A defining block lists its terms in `defines`. A block of the logical development whose
     prose contains that term (or its plural), that defines it nowhere itself and that
     cites none of its defining blocks, uses the definition without a citation, which the
     citation edges cannot show.

@@ -15,7 +15,7 @@ $$
 are isomorphisms.
 :::
 
-::: {.definition #def:transport-and-monodromy title="Transport and the monodromy representation"}
+::: {.definition #def:transport-and-monodromy title="Transport and the monodromy representation" defines="transport along $\gamma$; monodromy representation"}
 
 The *transport along $\gamma$* is the composite
 $$
@@ -47,7 +47,7 @@ Statement (3) follows from (1) and (2).
 
 ## Local systems of lattices {#sec-local-systems-of-lattices-definition}
 
-::: {.definition #def:local-system-of-lattices title="Local system of lattices"}
+::: {.definition #def:local-system-of-lattices title="Local system of lattices" defines="local system of lattices; morphism"}
 
 A *local system of lattices* on $B$ is a pair $(\bL,\beta)$ in which $\bL$ is a local system on $B$ whose stalks are finitely generated free abelian groups and
 $$
@@ -113,7 +113,7 @@ A local system with trivial monodromy representation is constant [@Voi07, Coroll
 
 In this section $(\bL,\beta)$ is a local system of lattices on $B$ whose stalks are symmetric and nondegenerate.
 
-::: {.definition #def:orientation-sheaf title="Sheaves of orientation classes of a local system of lattices"}
+::: {.definition #def:orientation-sheaf title="Sheaves of orientation classes of a local system of lattices" defines="sheaf of orientation classes of maximal positive-definite subspaces"}
 
 For $b\in B$, let $\operatorname{Or}^+_b$ be the two-element set of positive orientation classes of $\bL_b\tensor\RR$ (@def:orientation-classes).
 By @prop:local-system-of-lattices-monodromy, the transport along a path $\gamma$ induces a bijection $\gamma^*\colon\operatorname{Or}^+_{\gamma(0)}\to\operatorname{Or}^+_{\gamma(1)}$.
@@ -156,7 +156,7 @@ Neither $\operatorname{Or}^+_{\bL}$ nor $\operatorname{Or}^-_{\bL}$ has a global
 
 ## Polarized variations of Hodge structure {#sec-polarized-vhs}
 
-::: {.definition #def:polarized-integral-vhs title="Polarized integral variation of Hodge structure"}
+::: {.definition #def:polarized-integral-vhs title="Polarized integral variation of Hodge structure" defines="Hodge structure of weight $k$ on $L$ polarized by $Q$; Hodge numbers; polarized integral variation of Hodge structure of weight $k$"}
 
 Let $k$ be an integer and let $(L,Q)$ be a $\ZZ$-lattice with $Q$ nondegenerate, symmetric if $k$ is even and alternating if $k$ is odd.
 A *Hodge structure of weight $k$ on $L$ polarized by $Q$* is a decreasing filtration $F^\bullet$ of $L_\CC$ by complex subspaces such that the subspaces
@@ -504,7 +504,7 @@ Since $\Lambda$ is unimodular, $\lambda=\beta(x,-)$ for some $x\in\Lambda$.
 Then $\beta(x_T-y,t)=0$ for every $t\in T$, and $T$ is nondegenerate, so $x_T=y$.
 :::
 
-::: {.definition #def:pointwise-stabilizer-of-sublattice title="Pointwise stabilizer of a sublattice"}
+::: {.definition #def:pointwise-stabilizer-of-sublattice title="Pointwise stabilizer of a sublattice" defines="pointwise stabilizer"}
 
 The *pointwise stabilizer* of $S$ in $\Orth(\Lambda)$ is the subgroup
 $$

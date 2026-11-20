@@ -63,7 +63,7 @@ and an equatorial vertex gives a birational map $V_i\to\bar V_i$.
 The numerical dimension of $C_{g,i}$ on these components is respectively
 $0$, $1$, and $2$ [@AE22, Lemma 9.7].
 
-::: {.definition #def:pumpkin-model title="Pumpkin type"}
+::: {.definition #def:pumpkin-model title="Pumpkin type" defines="pumpkin type"}
 A stable surface is of *pumpkin type* if its normalized components
 $\bar V_i$ have two boundary sides
 $\bar D_{i,\mathrm{left}}+\bar D_{i,\mathrm{right}}$, glued cyclically,
@@ -71,7 +71,7 @@ and every side joins the same two points, the north and south poles
 [@AE22, Definition 9.8].
 :::
 
-::: {.definition #def:smashed-pumpkin-model title="Smashed-pumpkin type"}
+::: {.definition #def:smashed-pumpkin-model title="Smashed-pumpkin type" defines="smashed pumpkin"}
 A *smashed pumpkin* is the stable surface obtained from a pumpkin by
 contracting a short side, thereby identifying the two poles
 [@AE22, Definition 9.8].

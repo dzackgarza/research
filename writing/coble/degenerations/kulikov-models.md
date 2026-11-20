@@ -2,7 +2,7 @@
 
 ## Kulikov degenerations
 
-::: {.definition #def:kulikov-model title="Kulikov models"}
+::: {.definition #def:kulikov-model title="Kulikov models" defines="Kulikov model; semistable; $K$-trivial"}
 
 A *Kulikov model* is a degeneration $\mcx \to \Delta$ of K3 surfaces where:
 
@@ -28,7 +28,7 @@ Let $\pi\colon X\to\Delta$ be a proper flat morphism from a complex manifold $X$
 Here a modification of $\pi$ is a degeneration $\pi'\colon X'\to\Delta$ with a bimeromorphic map $X \dashrightarrow X'$ over $\Delta$ that is biholomorphic away from $X_0$ and $X_0'$.
 :::
 
-::: {.definition #def:kulikov-types title="Type I, II, III Kulikov degenerations"}
+::: {.definition #def:kulikov-types title="Type I, II, III Kulikov degenerations" defines="log monodromy; Type $\latI$; Type $\latII$; Type $\mathrm{III}$"}
 
 Let $T$ be the unipotent Picard--Lefschetz monodromy of a Kulikov model and let $N = \log T$ be the associated *log monodromy* operator, a nilpotent endomorphism.
 Depending on the nilpotency index of $N$, Kulikov models are classified into three types [@Kul77, Thm. II]:
@@ -86,7 +86,7 @@ At a positive-charge vertex the pseudofan needs a monodromy direction in additio
 
 ![Stars of two adjacent vertices, giving surfaces glued along one double curve.](/rendered/IASgluing.jpg){#fig-kulikov-adjacent-stars}
 
-::: {.definition #def:d-semistability title="$d$-semistability of a Type III surface"}
+::: {.definition #def:d-semistability title="$d$-semistability of a Type III surface" defines="$d$-semistable"}
 
 For a normal crossings Type III surface $X_0$, its infinitesimal smoothing sheaf is
 $$

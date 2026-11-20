@@ -5,7 +5,7 @@ Throughout, $S$, $T$, and $L$ denote nondegenerate integral lattices. The notati
 
 ## Primitive and saturated sublattices
 
-::: {.definition #def:saturation title="Saturation"}
+::: {.definition #def:saturation title="Saturation" defines="saturation; saturated"}
 
 Let $\iota\colon S\injects L$ be a morphism of lattices, let
 $\iota_\QQ\colon S_\QQ\injects L_\QQ$ be its base change along $\ZZ\to\QQ$, and let
@@ -108,7 +108,7 @@ $\Orth(S)$-action.
 
 ## Overlattices and gluing
 
-::: {.definition #def:overlattice title="Overlattices and their discriminant subobjects"}
+::: {.definition #def:overlattice title="Overlattices and their discriminant subobjects" defines="overlattice"}
 
 An **overlattice** of a lattice $S$ is a lattice morphism
 $\iota\colon S\injects L$ whose cokernel $H_\iota$ is finite length, with exact sequence
@@ -245,7 +245,7 @@ This is the primitive-embedding gluing construction of [@Nik80, §1.4--1.5].
 
 ## Splitting of unimodular sublattices
 
-::: {.definition #def:lattice-split title="Orthogonal splitting"}
+::: {.definition #def:lattice-split title="Orthogonal splitting" defines="splits"}
 
 Let $\iota_S\colon S\injects L$ be a primitive embedding, and let
 $\iota_T\colon T\injects L$ represent its orthogonal-complement subobject.
@@ -345,7 +345,7 @@ Since $P$ is unimodular, @prop:unimodular-splits gives $L\cong P\oplus P^{\perp 
 
 ## Maximal and split maximal lattices
 
-::: {.definition #def:maximal-lattice title="Maximal lattices"}
+::: {.definition #def:maximal-lattice title="Maximal lattices" defines="maximal"}
 
 An even lattice $L'$ is **maximal** if $A_{L',q}$ has no nonzero isotropic quadratic subobject
 $(H,0)\injects A_{L',q}$.
@@ -373,7 +373,7 @@ Its corresponding even overlattice admits no proper even overlattice, hence is m
 For a unimodular lattice $A_{L,q}=0$, so the zero subobject is maximal.
 :::
 
-::: {.definition #def:split-maximal title="Maximal lattices with two hyperbolic summands"}
+::: {.definition #def:split-maximal title="Maximal lattices with two hyperbolic summands" defines="split maximal; $U^{\oplus2}$-decomposable"}
 
 A maximal lattice $L'$ of signature $(2,n)$ is **$U^{\oplus2}$-decomposable** if
 $U^{\oplus2}\oplus L_0\isoto L'$ for some lattice $L_0$.
@@ -411,7 +411,7 @@ two displayed hyperbolic summands, and the Attwell-Duval criterion gives the sec
 orbit statement.
 :::
 
-::: {.definition #def:characteristic-vector title="Characteristic vectors"}
+::: {.definition #def:characteristic-vector title="Characteristic vectors" defines="characteristic"}
 
 A vector $c$ of a unimodular lattice $L$ is **characteristic** if $c\cdot x\equiv x^2\pmod 2$ for every
 $x\in L$.

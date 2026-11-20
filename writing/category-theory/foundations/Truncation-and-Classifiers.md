@@ -70,7 +70,7 @@ Its objects are exactly the $D\in\mcd$ for which $F(D)$ satisfies the stated pro
 
 ## Classifying objects and families {#sec-axiom-classifiers-general}
 
-::: {.definition #def:classifying-object title="Classifying objects and universal families"}
+::: {.definition #def:classifying-object title="Classifying objects and universal families" defines="represented; universal family"}
 A functor $H\colon\mcc^{\opop}\to\mcs$ is *represented* by $B\in\mcc$ when there is a natural equivalence
 $$
 \eta\colon H(-)\simeq\operatorname{Map}_{\mcc}(-,B).

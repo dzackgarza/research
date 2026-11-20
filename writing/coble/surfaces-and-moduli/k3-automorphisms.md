@@ -33,7 +33,7 @@ itself need not be smooth [@Muk88, Prop. 8.10].
 
 ## Gluing and the automorphism group
 
-::: {.notation #not:k3-automorphism-data title="Lattice data of a K3 surface"}
+::: {.notation #not:k3-automorphism-data title="Lattice data of a K3 surface" defines="Hodge isometry"}
 
 Let $X$ be a $K3$ surface (@def:k3-surface).
 Put $L\definedas H^2(X;\ZZ)$ with its cup-product pairing; it is even and unimodular by @prop:k3-lattice.

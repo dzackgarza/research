@@ -16,7 +16,7 @@ notes: |-
 
 ## Periods and the period map
 
-::: {.definition #def:period-map title="Period matrix and period map"}
+::: {.definition #def:period-map title="Period matrix and period map" defines="period matrix; period map; projective period map; The general period matrix and period map; Specialization to the one-form case ($p = 1$, Calabi–Yau varieties)"}
 
 Let $\pi \colon \mathcal{X} \to M$ be a smooth projective (or compact Kähler) family of complex $m$-dimensional varieties over a connected complex quasi-projective variety (or complex manifold) $M$.
 Fix a reference fiber $X = X_{t_0} = \inverseof{\pi}(t_0)$, and let $\{\Sigma_0, \dots, \Sigma_{k-1}\} \subset H_m(X, \ZZ)/\mathrm{tors}$ be an integral basis of the middle homology modulo torsion, where $k = b_m(X)$ is the middle Betti number.

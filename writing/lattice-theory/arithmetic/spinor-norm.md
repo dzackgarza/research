@@ -193,7 +193,7 @@ It equals $+1$ on the diagonal and changes sign when $o'$ is replaced by $-o'$.
 Hence $c=+1$ exactly on the two components of the product that meet the diagonal.
 :::
 
-::: {.definition #def:orientation-classes title="Orientation classes of maximal positive-definite subspaces"}
+::: {.definition #def:orientation-classes title="Orientation classes of maximal positive-definite subspaces" defines="positive orientation classes; preserves the positive orientation classes; negative orientation classes"}
 
 The two components of $\widetilde\Gr^+(V)$ are the *positive orientation classes* of $V$.
 An isometry $g\in\Orth(V)$ *preserves the positive orientation classes* when it maps each of them to itself.

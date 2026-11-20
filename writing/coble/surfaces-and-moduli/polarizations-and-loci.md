@@ -2,7 +2,7 @@
 
 ## Numerical polarizations
 
-::: {.definition #def:numerical-polarization title="Numerical polarization"}
+::: {.definition #def:numerical-polarization title="Numerical polarization" defines="numerical polarization; degree"}
 
 A **numerical polarization** $[h]$ on an algebraic surface $Z$ --- for instance an Enriques surface (@def:enriques-surface) --- is the numerical class of $h \definedas c_1(\mcl)$ for an ample line bundle $\mcl\in\Pic(Z)$, often written $[\mcl]$.
 The **degree** of $[h]$ is its self-intersection $h^2$, computed in $\Num(Z)$.
@@ -103,7 +103,7 @@ Then the K3 surface $X$ has two commuting involutions: the fixed-point-free **En
 The surface $X$ and both involutions are determined by the pair $(Z,[\mcl_Z])$ [@AEGS25, §2.1, Rem. 2.2].
 :::
 
-::: {.definition #def:nl-locus-enriques title="Noether–Lefschetz locus \\mathrm{NL}_{S_{\\mathrm{En}}}"}
+::: {.definition #def:nl-locus-enriques title="Noether–Lefschetz locus \\mathrm{NL}_{S_{\\mathrm{En}}}" defines="Noether–Lefschetz locus; invariant; Noether–Lefschetz closure"}
 
 The moduli space $\fentwo$ of degree-$2$ numerically polarized Enriques surfaces (@def:enriques-surface) maps to the K3 moduli space $\fttz$ via the canonical morphism $j$ of @lem:fen2_normalization. Its map to the scheme-theoretic image is the normalization; an embedding is not asserted. The image lies in the **Noether–Lefschetz locus** $\mathrm{NL}_{S_{\mathrm{En}}}$ defined by the primitive embedding of the **invariant** (algebraic) lattice of $\ien$,
 $$
@@ -160,7 +160,7 @@ An even unimodular lattice of signature $(1,9)$ is isometric to $E_{10}$ by the 
 Finally $C = -2K_S = 6H - 2\Sum_i E_i$ by the description of $K_S$.
 :::
 
-::: {.definition #def:coble-polarization-classes title="The hyperplane class and the degree-2 numerical polarization"}
+::: {.definition #def:coble-polarization-classes title="The hyperplane class and the degree-2 numerical polarization" defines="}h_\Co$ lies in $f^{; hyperplane class; degree-$2$ [numerical polarization]{.other-sense}; chamber"}
 
 Let $f\colon X\to S$ be the K3 double cover.
 

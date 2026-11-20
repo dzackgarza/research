@@ -4,7 +4,7 @@ Throughout, $\mcc$ is a category and $J$ is a small category, the *shape* of the
 
 ## Diagrams and cones {#sec-diagrams-cones}
 
-::: {.definition #def:diagram title="Diagrams and the diagonal functor"}
+::: {.definition #def:diagram title="Diagrams and the diagonal functor" defines="diagram of shape $J$; constant functor; diagonal functor"}
 
 A *diagram of shape $J$* in $\mcc$ is a functor $D\colon J\to\mcc$.
 For an object $c\in\mcc$, the *constant functor* $\Delta c\colon J\to\mcc$ sends every object of $J$ to $c$ and every morphism of $J$ to $\id_c$.
@@ -15,7 +15,7 @@ $$
 [@Rie16, Definition 3.1.1].
 :::
 
-::: {.definition #def:cone title="Cones and cocones"}
+::: {.definition #def:cone title="Cones and cocones" defines="cone over $D$ with apex $c$; legs; cocone under $D$ with nadir $c$; category of cones over $D$"}
 
 A *cone over $D$ with apex $c$* is a natural transformation $\lambda\colon\Delta c\Rightarrow D$.
 Its components $\lambda_j\colon c\to D(j)$ are its *legs*, and naturality says that
@@ -35,7 +35,7 @@ The category of elements $\int_{\mcc}\operatorname{Cone}(-,D)$ of @def:category-
 
 ## Limits {#sec-limits}
 
-::: {.definition #def:limit title="Limits and colimits"}
+::: {.definition #def:limit title="Limits and colimits" defines="limit of $D$; limit cone; colimit"}
 
 A *limit of $D$* is a representation of $\operatorname{Cone}(-,D)$ (@def:representable-presheaf): an object $\lim D$ together with a cone $\lambda\colon\Delta\lim D\Rightarrow D$ inducing a natural isomorphism
 $$
@@ -106,7 +106,7 @@ X\amalg_Z Y
 
 ## Shape categories {#sec-shape-categories}
 
-::: {.definition #def:preorder-category title="Preorders and thin categories"}
+::: {.definition #def:preorder-category title="Preorders and thin categories" defines="preorder; poset"}
 
 A *preorder* is a category $P$ with at most one morphism $p\to p'$ for each pair of objects.
 Writing $p\leq p'$ when such a morphism exists gives a reflexive transitive relation on the objects, and every reflexive transitive relation arises this way from a unique preorder.
@@ -116,7 +116,7 @@ A preorder is a *poset* when the relation is antisymmetric, so that $p\leq p'$ a
 The shapes for products, pullbacks, pushouts, and towers are posets.
 The parallel pair is not a preorder, since it has two distinct morphisms between the same pair of objects; it is obtained instead by the following construction.
 
-::: {.definition #def:free-category title="Free categories on graphs"}
+::: {.definition #def:free-category title="Free categories on graphs" defines="directed graph; free category"}
 
 A *directed graph* $G$ consists of a set $O$ of vertices, a set $A$ of edges, and functions $\del_0,\del_1\colon A\to O$ assigning to each edge its source and target; a morphism of graphs is a pair of functions commuting with $\del_0$ and $\del_1$.
 Every category $\mcc$ has an underlying graph $U\mcc$ with the same objects and morphisms, and this defines $U\colon\mathbf{Cat}\to\mathbf{Grph}$.
@@ -143,7 +143,7 @@ A commutative square is presented by the four-edge square graph with the relatio
 
 ## Existence {#sec-completeness}
 
-::: {.definition #def:complete title="Complete and cocomplete categories"}
+::: {.definition #def:complete title="Complete and cocomplete categories" defines="complete; cocomplete; bicomplete; finitely complete; finitely cocomplete"}
 
 $\mcc$ is *complete* when every diagram of small shape has a limit, *cocomplete* when every such diagram has a colimit, and *bicomplete* when both hold.
 It is *finitely complete* when every diagram of finite shape has a limit, and *finitely cocomplete* dually.
@@ -174,7 +174,7 @@ Completeness is a stronger hypothesis than finite completeness, and a small cate
 
 ## Preservation, reflection, and creation {#sec-preservation}
 
-::: {.definition #def:preserve-reflect-create title="Preservation, reflection, and creation of limits"}
+::: {.definition #def:preserve-reflect-create title="Preservation, reflection, and creation of limits" defines="preserves; reflects; creates"}
 
 Let $F\colon\mcc\to\mcd$ and fix a class of diagrams in $\mcc$.
 $F$ *preserves* those limits when the image of a limit cone over $K$ is a limit cone over $FK$.
@@ -187,7 +187,7 @@ If $F$ creates limits of a class of diagrams and $\mcd$ has those limits, then $
 
 ## Kan extensions {#sec-kan}
 
-::: {.definition #def:kan-extension title="Right and left Kan extensions"}
+::: {.definition #def:kan-extension title="Right and left Kan extensions" defines="right Kan extension of $T$ along $K$; left Kan extension"}
 
 Let $K\colon M\to\mcc$ and $T\colon M\to\mca$ be functors, and let $\mca^{K}\colon\mca^{\mcc}\to\mca^{M}$ be the functor given by precomposition with $K$.
 A *right Kan extension of $T$ along $K$* is a pair

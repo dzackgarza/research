@@ -2,7 +2,7 @@
 
 Fix a commutative ring $R$ and let $M,W\in R\text{-}\mathbf{Mod}$.
 
-::: {.definition #def:R-quadratic-maps title="Quadratic maps of modules"}
+::: {.definition #def:R-quadratic-maps title="Quadratic maps of modules" defines="$R$-quadratic; homogeneous quadratic"}
 
 For a map $q\colon M\to W$, define its cross-effect and its second scalar cross-action by
 $$
@@ -17,7 +17,7 @@ $$
 The map $q$ is **$R$-quadratic** when $d_q$ is $R$-bilinear and $q_{[r]}$ is a morphism in $R\text{-}\mathbf{Mod}$ for every $r\in R$. It is **homogeneous quadratic** when $q_{[r]}=0$ for every $r\in R$. Denote the corresponding $R$-modules of maps by $\operatorname{RQuad}_R(M,W)$ and $\operatorname{HQuad}_R(M,W)$, respectively.
 :::
 
-::: {.definition #def:quadratic-representing-modules title="Universal quadratic modules"}
+::: {.definition #def:quadratic-representing-modules title="Universal quadratic modules" defines="universal $R$-quadratic module; degree-two divided-power module"}
 
 The **universal $R$-quadratic module** $P_R^2(M)$ and the **degree-two divided-power module** $\Gamma_R^2(M)$ are the representing objects in $R\text{-}\mathbf{Mod}$ for the two functors of @def:R-quadratic-maps. Their universal quadratic maps are $p_M\colon M\to P_R^2(M)$ and $\gamma_M\colon M\to\Gamma_R^2(M)$, with natural isomorphisms
 $$

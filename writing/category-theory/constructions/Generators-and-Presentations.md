@@ -4,7 +4,7 @@ Fix a commutative ring $R$.
 
 ## Generating frames {#sec-generating-frames}
 
-::: {.definition #def:generating-frame title="Generating frames"}
+::: {.definition #def:generating-frame title="Generating frames" defines="generating frame"}
 
 Fix a set $I$ and write $R^{(I)}$ for the free $R$-module on $I$.
 The comma category $\bigl(R^{(I)}\downarrow R\text{-}\mathbf{Mod}\bigr)$ has objects the pairs $(M,s)$ with $s\colon R^{(I)}\to M$ an $R$-linear map, and a morphism $(M,s)\to(N,t)$ is an $R$-linear map $f\colon M\to N$ satisfying $fs=t$.
@@ -56,7 +56,7 @@ The coordinatized one is the setting for matrix calculus: a morphism there has a
 The basis case of the pair is @def:based-module and @prop:basis-is-structure.
 :::
 
-::: {.definition #def:cyclic-module title="Cyclic and finitely generated modules"}
+::: {.definition #def:cyclic-module title="Cyclic and finitely generated modules" defines="cyclic; finitely generated"}
 
 An $R$-module $M$ is *cyclic* if it admits a generating frame indexed by a one-element set, and *finitely generated* if it admits one indexed by a finite set.
 A cyclic module is isomorphic to $R/\Ann_R(x)$ for the image $x$ of the standard generator, and the cyclic modules form a replete full subcategory of the finitely generated ones.
@@ -72,7 +72,7 @@ Over $R=\bZ$: the module $\bZ$ is finitely generated and has infinite underlying
 
 ## Presentations {#sec-presentations}
 
-::: {.definition #def:finite-presentation title="Finite presentations"}
+::: {.definition #def:finite-presentation title="Finite presentations" defines="finite presentation; finitely presented"}
 
 A *finite presentation* of an $R$-module $M$ is an exact sequence
 $$
@@ -147,7 +147,7 @@ Both chain maps lift $f$, so they are chain homotopic by @thm:resolution-compari
 A chain homotopy $s$ satisfies $f_0-f_0'=d^Q_1s_0$ in degree $0$, because $P_{-1}=0$, and this is the last assertion with $h_0=s_0$.
 :::
 
-::: {.definition #def:fp-n title="Modules of type $FP_n$"}
+::: {.definition #def:fp-n title="Modules of type $FP_n$" defines="type $FP_n$"}
 
 For $n\ge0$, an $R$-module $M$ is of *type $FP_n$* if it admits a projective resolution (@def:resolution)
 $$

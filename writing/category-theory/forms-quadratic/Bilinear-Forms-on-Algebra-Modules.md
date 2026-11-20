@@ -5,7 +5,7 @@ The tensor-hom adjunction of $R\text{-}\mathbf{Mod}$ identifies $R$-bilinear map
 
 ## Associative unital $R$-algebras {#sec-r-algebras}
 
-::: {.definition #def:r-algebra title="Associative unital $R$-algebras"}
+::: {.definition #def:r-algebra title="Associative unital $R$-algebras" defines="associative unital $R$-algebra"}
 
 An *associative unital $R$-algebra* is a monoid in $(R\text{-}\mathbf{Mod},\tensor_R,R)$: an $R$-module $A$ together with $R$-linear maps
 $$
@@ -26,7 +26,7 @@ Write $R\text{-}\mathbf{CAlg}$ for the full subcategory of $R\text{-}\mathbf{Alg
 
 ## Module bilinear forms and algebra bilinear forms {#sec-two-homs}
 
-::: {.definition #def:module-bilinear-form title="Module bilinear forms"}
+::: {.definition #def:module-bilinear-form title="Module bilinear forms" defines="module bilinear form"}
 
 A *module bilinear form* on an $R$-module $M$, with values in $R$, is an element of
 $$
@@ -36,7 +36,7 @@ The tensor product is the tensor product of $R$-modules.
 By the tensor-hom adjunction this Hom-module is $\Bil_{R,R}(M)$ (@def:form-presheaves).
 :::
 
-::: {.definition #def:algebra-bilinear-form title="Algebra bilinear forms"}
+::: {.definition #def:algebra-bilinear-form title="Algebra bilinear forms" defines="algebra bilinear form"}
 
 Let $A$ be an associative unital $R$-algebra.
 The tensor product $A\tensor_R A$ in $R\text{-}\mathbf{Alg}$ is the monoid in $R\text{-}\mathbf{Mod}$ whose underlying module is $U(A)\tensor_R U(A)$ and whose multiplication is
@@ -53,7 +53,7 @@ The tensor product in this Hom is the tensor product of $R$-algebras.
 
 The forgetful functor $U$ sends an algebra bilinear form $\phi$ to a module bilinear form $U(\phi)$ on $U(A)$, using $U(A\tensor_R A)\cong U(A)\tensor_R U(A)$.
 
-::: {.definition #def:algebra-generating-set title="Algebra generating sets and module bases"}
+::: {.definition #def:algebra-generating-set title="Algebra generating sets and module bases" defines="generates $A$ as a unital $R$-algebra"}
 
 Let $A$ be an associative unital $R$-algebra.
 The free unital associative $R$-algebra $R\langle S\rangle$ on a set $S$ represents $A\mapsto\mathbf{Set}(S,A)$: a function $S\to A$ of underlying sets extends uniquely to a homomorphism $R\langle S\rangle\to A$ in $R\text{-}\mathbf{Alg}$.
@@ -69,7 +69,7 @@ The polynomial ring $R[x]$ is generated as a unital $R$-algebra by $\{x\}$, and 
 
 ## Associative bilinear forms {#sec-associative-forms}
 
-::: {.definition #def:associative-bilinear-form title="Associative bilinear forms"}
+::: {.definition #def:associative-bilinear-form title="Associative bilinear forms" defines="associative"}
 Let $B$ be a module bilinear form on $U(A)$.
 The form $B$ is *associative* if
 $$
@@ -103,7 +103,7 @@ Applying it with $x=1_A$ gives $B(1_A,y)=B(1_A,y\,1_A)=B(y,1_A)=\eps(y)$, so the
 From (2) to (1): if $B(x,y)=\eps(xy)$ then $B(xy,z)=\eps((xy)z)=\eps(x(yz))=B(x,yz)$, which is associativity by @def:associative-bilinear-form.
 :::
 
-::: {.definition #def:frobenius-form title="Frobenius forms"}
+::: {.definition #def:frobenius-form title="Frobenius forms" defines="Frobenius form"}
 A linear form $\eps\colon A\to R$ is a *Frobenius form* when $(x,y)\mapsto\eps(xy)$ is perfect in the sense of @def:polarization: both adjoint maps $A\to\Hom_R(A,R)$ are isomorphisms [@nlab:frobenius_algebra].
 :::
 

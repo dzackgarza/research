@@ -7,7 +7,7 @@ A $\Sigma$-algebra in $\mathbf{Set}$ is a set $X$ together with one function $X^
 A homomorphism is a function preserving every operation.
 Equations between $\Sigma$-terms define a full subcategory of $\Sigma$-algebras.
 
-::: {.definition #def:operation-categories title="Magmas"}
+::: {.definition #def:operation-categories title="Magmas" defines="magma"}
 
 A *magma* is a set $X$ with a binary operation $\mu\colon X\times X\to X$.
 A magma homomorphism $f\colon X\to Y$ satisfies
@@ -18,7 +18,7 @@ The resulting category is denoted $\mathbf{Mag}$.
 The forgetful functor $\mathbf{Mag}\to\mathbf{Set}$ is faithful and is not full.
 :::
 
-::: {.definition #def:operation-axioms title="Associativity and commutativity"}
+::: {.definition #def:operation-axioms title="Associativity and commutativity" defines="associative; commutative"}
 
 A magma is *associative* if
 $$
@@ -30,7 +30,7 @@ It is *commutative* if $\mu=\mu\circ\tau$, where $\tau(x,y)=(y,x)$.
 These are isomorphism-invariant properties of magmas and define replete full subcategories of $\mathbf{Mag}$.
 :::
 
-::: {.definition #def:semigroup-monoid title="Semigroups and monoids"}
+::: {.definition #def:semigroup-monoid title="Semigroups and monoids" defines="semigroup; monoid"}
 
 A *semigroup* is an associative magma.
 A *monoid* is a tuple $(X,\mu,e)$ consisting of a semigroup and a chosen element $e\in X$ such that
@@ -44,7 +44,7 @@ The functor $\mathbf{Mon}\to\mathbf{Semigrp}$ is faithful and is not full: a sem
 Thus the unit is chosen structure, while the unit laws are properties of the pointed semigroup.
 :::
 
-::: {.definition #def:group title="Groups"}
+::: {.definition #def:group title="Groups" defines="group"}
 
 A *group* is a monoid $(G,\mu,e)$ for which every $g\in G$ has an inverse.
 The inverse is unique and is preserved by every monoid homomorphism.

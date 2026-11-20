@@ -1,6 +1,6 @@
 # Higher categories and universes {#sec-higher-categories-universes}
 
-::: {.definition #def:universe title="Universe and decoded objects"}
+::: {.definition #def:universe title="Universe and decoded objects" defines="$\mcu$-small"}
 
 Work in an external cartesian closed $(\infty,\infty)$-category $\mck$ with pullbacks and terminal object $*$.
 Fix a monoidal closed $(\infty,\infty)$-category $\mcu$ internal to $\mck$, and use its canonical self-enrichment.
@@ -84,7 +84,7 @@ Its external decoding, denoted $[x,y]_{\mcu}$, is defined by the cartesian squar
 The size convention, the universe fibration, and the decoding functor are interpreted in the fixed external category $\mck$.
 :::
 
-::: {.definition #def:family-classifier title="Families and classifiers"}
+::: {.definition #def:family-classifier title="Families and classifiers" defines="family over $b$; $\mathcal M$-family over $b$; classifier for $\mathcal M$"}
 
 For points $b,c\colon *\to\mcu$, a *family over $b$* is a $1$-cell
 $$
@@ -229,7 +229,7 @@ When $C=\mathbf{Cat}_{\infty,\infty}$, such a point is itself the classifying po
 More generally, a functor $R\colon C\to\mathbf{Cat}_{\infty,\infty}$ sends a point $x\colon *\to C$ to the classifying point $R\circ x$ of a higher category.
 :::
 
-::: {.definition #def:grothendieck-construction title="Categorical families and categories of elements"}
+::: {.definition #def:grothendieck-construction title="Categorical families and categories of elements" defines="\to B$, the fiber over $s$ is $\int_; \too\int_"}
 
 Let $G\colon c\to b$ be a family in $\mcu$, and write
 $$
@@ -369,7 +369,7 @@ Passing from $C$ to a local hom-object therefore lowers the dimension of every c
 Apply the adjunction characterizing the internal hom (@def:internal-hom) twice and the universal property of the coproduct.
 :::
 
-::: {.definition #def:globular-boundary title="Sources and targets"}
+::: {.definition #def:globular-boundary title="Sources and targets" defines="source; target"}
 
 A $1$-cell $f\colon *\to[x,y]_C$ has *source* $x$ and *target* $y$; an $(n+1)$-cell, being a $1$-cell of an iterated hom-object $[u,v]^{(n)}_C$, has source $u$ and target $v$.
 Source and target are defined for cells of positive dimension only, and $0$-cells have neither.
@@ -382,7 +382,7 @@ $$
 since $s(\xi)$ and $t(\xi)$ are parallel cells of the same iterated hom-object.
 :::
 
-::: {.definition #def:equivalence-of-categories title="Equivalences"}
+::: {.definition #def:equivalence-of-categories title="Equivalences" defines="structure of reversibility; invertible"}
 
 A *structure of reversibility* is a family $\mcr$ of positive-dimensional cells in the iterated hom-objects such that, for every cell
 $$
@@ -436,7 +436,7 @@ is the underlying homotopy type obtained by inverting every morphism.
 The right adjoint $C\mapsto C^\simeq$ is the core obtained by retaining every object and only the equivalences [@Lur18c, Tags 01DQ and 02F5].
 :::
 
-::: {.definition #def:bicomplete-cat-infinity title="Limits, loops, and suspensions"}
+::: {.definition #def:bicomplete-cat-infinity title="Limits, loops, and suspensions" defines="\times_X"}
 
 The higher category $\mathbf{Cat}_{\infty,\infty}$ has an initial object $\varnothing$ and a terminal object $*$, and it is bicomplete.
 For a pointed higher category $(X,x)$, where $x\colon *\to X$, define
@@ -463,7 +463,7 @@ A
 The two coprojections $*\to\Sigma A$ make $\Sigma A$ bipointed.
 :::
 
-::: {.definition #def:spheres title="Spheres"}
+::: {.definition #def:spheres title="Spheres" defines="\from\varnothing\to; \amalg"}
 
 Define
 $$
@@ -549,7 +549,7 @@ $$
 is the higher category of functors $[n]\to C$ and their higher cells.
 :::
 
-::: {.definition #def:mapping-spaces title="Walking-arrow presentation and mapping types"}
+::: {.definition #def:mapping-spaces title="Walking-arrow presentation and mapping types" defines="t^"}
 
 Precomposition with $s$ and $t$ gives
 $$
@@ -591,14 +591,14 @@ $$
 $$
 :::
 
-::: {.definition #def:initial-terminal title="Initial, terminal, and contractible objects"}
+::: {.definition #def:initial-terminal title="Initial, terminal, and contractible objects" defines="contractible"}
 
 An object $t\colon*\to C$ is terminal if $\operatorname{Map}_C(x,t)$ is contractible for every $x\colon*\to C$.
 An object $i\colon*\to C$ is initial if $\operatorname{Map}_C(i,x)$ is contractible for every $x\colon*\to C$.
 A higher category is *contractible* when it is equivalent to $*$.
 :::
 
-::: {.definition #def:truncated title="Truncated objects and morphisms"}
+::: {.definition #def:truncated title="Truncated objects and morphisms" defines="$n$-truncated"}
 
 Let $C$ be a higher category.
 For an integer $n\geq-2$, an object $X\colon*\to C$ is *$n$-truncated* if $\operatorname{Map}_C(Y,X)$ is an $n$-truncated type for every $Y\colon*\to C$.
@@ -628,7 +628,7 @@ A $(-2)$-truncated type is contractible, a $(-1)$-truncated type is empty or con
 When the inclusion of $n$-truncated objects of $C$ is reflective, write its reflector as $\tau_{\leq n}^C$.
 :::
 
-::: {.definition #def:infinity-category-universe title="The truncation tower"}
+::: {.definition #def:infinity-category-universe title="The truncation tower" defines="$n$-category structure"}
 
 For each integer $n\geq-2$, assume an idempotent truncation endomorphism
 $$
@@ -718,7 +718,7 @@ Both $\varnothing$ and $*$ are $(-1)$-truncated: $\operatorname{Map}(Y,*)$ is co
 So $\mathbf{Cat}_{-1}$ contains the two truth values $\varnothing$ and $*$, and the map $\mathbf{Cat}_{-2}\to\mathbf{Cat}_{-1}$ of the tower is the inclusion of $*$.
 :::
 
-::: {.definition #def:equivalence-of-objects title="Equivalence of objects"}
+::: {.definition #def:equivalence-of-objects title="Equivalence of objects" defines="equivalence"}
 
 Let $C$ be a higher category and let $X,Y\colon*\to C$ be objects.
 A morphism $f\colon X\to Y$ is an *equivalence* if the cell $f\colon*\to[X,Y]_C$ is invertible in the sense of @def:equivalence-of-categories.
@@ -730,7 +730,7 @@ be the union of the components that consist of equivalences.
 Write $X\simeq Y$ for the claim that $\operatorname{Equiv}_C(X,Y)$ is nonempty.
 :::
 
-::: {.definition #def:isomorphism-of-objects title="Isomorphisms and $n$-equivalences"}
+::: {.definition #def:isomorphism-of-objects title="Isomorphisms and $n$-equivalences" defines="$0$-equivalence; $n$-equivalence; isomorphism"}
 
 Let $C$ be a higher category and let $f\colon x\to y$ be a cell of $C$, with $x,y$ in an iterated hom-object of $C$.
 Define the $n$-equivalences by induction on $n\geq0$ [@OR23, Definitions 1.1.8 and 1.4.3]:

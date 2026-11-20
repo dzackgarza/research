@@ -1,6 +1,6 @@
 # Categorical constructions {#sec-constructions}
 
-::: {.definition #def:groupoid-cardinality title="Groupoid cardinality"}
+::: {.definition #def:groupoid-cardinality title="Groupoid cardinality" defines="essentially finite; groupoid cardinality"}
 
 An ordinary groupoid $\mathcal G$ is **essentially finite** when $\pi_0(\mathcal G)$ is finite and $\Aut_{\mathcal G}(x)$ is finite for every $x\in\mathcal G$.
 Its **groupoid cardinality** is
@@ -13,7 +13,7 @@ $$
 $$
 :::
 
-::: {.definition #def:category-of-elements title="Category of elements"}
+::: {.definition #def:category-of-elements title="Category of elements" defines="category of elements"}
 
 Let $F\colon C^{\opop}\to\mathbf{Set}$ be a presheaf.
 Its *category of elements* $\int_C F$ has objects $(c,x)$ with $x\in F(c)$.
@@ -32,7 +32,7 @@ For a pseudofunctor $F\colon C^{\opop}\to\mathbf{Cat}$, the Grothendieck constru
 The category of elements is its $\mathbf{Set}$-valued special case [@nlab:grothendieck_construction].
 A general forgetful functor need not arise from a category of elements.
 
-::: {.definition #def:subcategory title="Subobjects, full and replete subcategories"}
+::: {.definition #def:subcategory title="Subobjects, full and replete subcategories" defines="subobject; full subcategory; replete"}
 
 A *subobject* of $Y\in\mcc$ is a monomorphism $m:X\to Y$ in $\mcc$; the datum is the arrow $m$, not merely the domain $X$ [@Lur18c, Tag 04VD].
 Equivalently, $m$ is a subterminal object of the slice $\mcc_{/Y}$, and if the relevant pullback exists, $m$ is monic exactly when the diagonal $\Delta_m:X\to X\times_Y X$ is an equivalence.
@@ -48,7 +48,7 @@ It is *replete* if every object of $\mcc$ equivalent to an object of $\mcd$ also
 An isomorphism-invariant property of objects of $\mcc$ defines a replete full subcategory [@The25, Tag 001D; @nlab:replete_subcategory].
 :::
 
-::: {.definition #def:concrete-category title="Concrete categories"}
+::: {.definition #def:concrete-category title="Concrete categories" defines="concrete category"}
 
 A *concrete category* is a category $C$ equipped with a faithful functor $U\colon C\to\mathbf{Set}$.
 The set $U(X)$ is the underlying set of $X$.
@@ -62,7 +62,7 @@ Invertibility is asked of the morphism, by exhibiting a two-sided inverse in $C$
 
 ## Comma categories and universal arrows {#sec-comma}
 
-::: {.definition #def:comma-category title="Comma categories"}
+::: {.definition #def:comma-category title="Comma categories" defines="comma category"}
 
 Let $T\colon\mathcal E\to\mcc$ and $S\colon\mcd\to\mcc$ be functors.
 The *comma category* $(T\downarrow S)$ has as objects the triples $\langle e,d,f\rangle$ with $e\in\mathcal E$, $d\in\mcd$, and $f\colon Te\to Sd$ in $\mcc$, and as morphisms $\langle e,d,f\rangle\to\langle e',d',f'\rangle$ the pairs $\langle k\colon e\to e',\,h\colon d\to d'\rangle$ with
@@ -76,7 +76,7 @@ Taking $T$ or $S$ to be a functor $\mathbf 1\to\mcc$, that is an object of $\mcc
 
 For a $1$-category $C$, the arrow category is also $[[1],C]$, and evaluation at the source and target gives a functor to $C\times C$.
 
-::: {.definition #def:universal-arrow title="Universal arrows"}
+::: {.definition #def:universal-arrow title="Universal arrows" defines="universal from $c$ to $S$"}
 
 Let $S\colon\mcd\to\mcc$ and $c\in\mcc$.
 A morphism $u\colon c\to Sr$ is *universal from $c$ to $S$* when, for every $d\in\mcd$ and every $f\colon c\to Sd$, there is a unique $g\colon r\to d$ with $Sg\circ u=f$.
@@ -89,7 +89,7 @@ The corepresenting objects listed in @def:element-functor are the values of the 
 
 ## Additive and abelian categories {#sec-abelian}
 
-::: {.definition #def:preadditive title="Preadditive and additive categories"}
+::: {.definition #def:preadditive title="Preadditive and additive categories" defines="preadditive category; zero morphisms; zero object; biproduct diagram; additive category"}
 
 A *preadditive category*, or $\mathbf{Ab}$-category, is a category $\mca$ in which each $\Hom_{\mca}(b,c)$ is an abelian group and composition is bilinear.
 Its zero elements are the *zero morphisms* $0\colon b\to c$, and a composite with a zero morphism is zero.
@@ -109,13 +109,13 @@ Two objects of $\mca$ have a product exactly when they have a biproduct, exactly
 An *additive category* is a preadditive category with a zero object and a biproduct for each pair of objects [@Mac98, §VIII.2].
 :::
 
-::: {.definition #def:kernel-cokernel title="Kernels and cokernels"}
+::: {.definition #def:kernel-cokernel title="Kernels and cokernels" defines="kernel; cokernel"}
 
 In a category with a zero object, the *kernel* of $f\colon a\to b$ is the equalizer of the pair $f,0\colon a\to b$: a morphism $k\colon s\to a$ with $fk=0$ through which every $h$ with $fh=0$ factors uniquely.
 The *cokernel* is the coequalizer of the same pair [@Mac98, §VIII.1].
 :::
 
-::: {.definition #def:abelian-category title="Abelian categories"}
+::: {.definition #def:abelian-category title="Abelian categories" defines="abelian category"}
 
 An *abelian category* is an additive category in which every morphism has a kernel and a cokernel and, for every morphism $f$, the canonical map
 $$
@@ -197,13 +197,13 @@ $$
 Consequently, the fiber of $\pi_0(E)\to\pi_0(B)$ need not equal $\pi_0(F)$ [@May99, Ch. 9 §3, last display].
 A set-valued invariant formed from this sequence must specify whether it uses the fiber after $\pi_0$ or the components of the homotopy fiber.
 
-::: {.definition #def:generalized-element title="Generalized elements"}
+::: {.definition #def:generalized-element title="Generalized elements" defines="generalized element"}
 
 A *generalized element* of $X\in C$ with domain $T$ is a morphism $T\to X$.
 For a presheaf $F\colon C^{\opop}\to\mathbf{Set}$, an element $x\in F(T)$ is an object $(T,x)$ of $\int_C F$.
 :::
 
-::: {.definition #def:representable-presheaf title="Representable presheaves"}
+::: {.definition #def:representable-presheaf title="Representable presheaves" defines="representation; universal element; representable"}
 
 Let $C$ be locally small and let $F\colon C^{\opop}\to\mathbf{Set}$ be a presheaf.
 A **representation** of $F$ is a pair $(X,u)$ with $X\in C$ and $u\in F(X)$ for which the maps
@@ -259,7 +259,7 @@ For every presheaf $F\colon C^{\opop}\to\mathbf{Set}$, use the category of eleme
 Thus the projection $\int_C F\to C$ is a discrete fibration; no additional opposite category is taken after forming $\int_C F$.
 :::
 
-::: {.definition #def:smooth-manifold title="Smooth manifolds as locally ringed spaces"}
+::: {.definition #def:smooth-manifold title="Smooth manifolds as locally ringed spaces" defines="smooth atlas; smooth manifold"}
 
 Let $\mathsf{LRS}_{\bR}$ denote the category of locally $\bR$-ringed spaces: topological spaces equipped with a sheaf of $\bR$-algebras whose stalks are local rings [@nlab:locally_ringed_space].
 The standard local model of dimension $n$ is
@@ -286,7 +286,7 @@ The two projections $\pi_1, \pi_2\colon U \times_X U \to U$ encode the transitio
 The coequalizer condition forces $X$ to be the colimit obtained from charts glued along their transitions: the classical manifold, recovered without point-set intersections.
 :::
 
-::: {.definition #def:scheme-as-lrs title="Schemes as locally ringed spaces"}
+::: {.definition #def:scheme-as-lrs title="Schemes as locally ringed spaces" defines="Zariski atlas; scheme"}
 
 The smooth manifold definition of @def:smooth-manifold transfers to algebraic geometry by substituting the ambient category and local models.
 
@@ -310,7 +310,7 @@ The coequalizer is essential in algebraic geometry because the intersection of t
 The fibered product $U \times_X U$ encodes the scheme-theoretic intersections of the affine covers without requiring the intersections themselves to be local models.
 :::
 
-::: {.definition #def:grothendieck-topology-generalization title="Generalization by Grothendieck topology"}
+::: {.definition #def:grothendieck-topology-generalization title="Generalization by Grothendieck topology" defines="$\mca$-atlas"}
 
 The formulation of @def:smooth-manifold and @def:scheme-as-lrs admits a uniform generalization.
 Fix a category $\mcc$ of locally ringed spaces, a class $\mcl$ of local models, and a class $\mca$ of admissible morphisms.

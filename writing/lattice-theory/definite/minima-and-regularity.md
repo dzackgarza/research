@@ -40,7 +40,7 @@ satisfies $M^{\mathsf T}GM=G$, hence $M\in\Orth(L)$.
 Its real eigenvalue $3+2\sqrt2>1$ implies that $M$ has infinite order; therefore $\Orth(L)$ and the orbit $\theset{M^ne_1\st n\in\bZ}\subseteq L[1]$ are infinite.
 :::
 
-::: {.definition #def:definite-minimum-shell title="Minimum, minimal vectors, and kissing number"}
+::: {.definition #def:definite-minimum-shell title="Minimum, minimal vectors, and kissing number" defines="minimum; minimal shell; kissing number"}
 
 Let $L$ be definite.
 The **minimum** is
@@ -62,7 +62,7 @@ $$
 $$
 :::
 
-::: {.definition #def:voronoi-perfect-lattice title="Voronoi-perfect lattices"}
+::: {.definition #def:voronoi-perfect-lattice title="Voronoi-perfect lattices" defines="Voronoi-perfect"}
 
 Let $L$ be definite.
 For $v\in L_\bQ$, let $v^{\otimes2}\in\operatorname{Sym}^2_\bQ(L_\bQ)$ be the corresponding rank-one symmetric tensor.
@@ -76,7 +76,7 @@ $$
 Equivalently, the values of the quadratic form on the minimal shell (@def:definite-minimum-shell) determine the form up to scale [@Mar03, Ch. 4].
 :::
 
-::: {.definition #def:regular-ternary-lattice title="Regular and spinor-regular ternary lattices"}
+::: {.definition #def:regular-ternary-lattice title="Regular and spinor-regular ternary lattices" defines="regular; spinor regular"}
 
 Let $L$ be a positive-definite integral ternary lattice, and let $\mathfrak s_L$ be the spinor genus containing $[L]$ in the partition of @def:spinor-genus-partition.
 The lattice $L$ is **regular** when

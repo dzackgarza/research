@@ -1,6 +1,6 @@
 # Levels, modularity, and discriminant characters {#sec-lattice-levels-characters}
 
-::: {.definition #def:lattice-level title="Arithmetic level"}
+::: {.definition #def:lattice-level title="Arithmetic level" defines="quadratic level; bilinear denominator"}
 
 Let $L$ be a nondegenerate integral lattice.
 Its **quadratic level** is
@@ -26,7 +26,7 @@ N_q(L)\in\theset{N_b(L),\,2N_b(L)}.
 $$
 :::
 
-::: {.definition #def:modular-lattice-global title="$N$-modular lattices"}
+::: {.definition #def:modular-lattice-global title="$N$-modular lattices" defines="$N$-modular"}
 
 Let $L$ be a nondegenerate integral lattice and $N>0$.
 The lattice is **$N$-modular** when there exists an isometry

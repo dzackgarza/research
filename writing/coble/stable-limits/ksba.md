@@ -411,7 +411,7 @@ Two qualifications belong with that. The enumeration is exhaustive over the subg
 
 ## The dictionary from the contracted curve to the boundary lattice
 
-::: {.definition #def:coble-marking-dictionary title="The marked root of a degeneration at a marked cusp"}
+::: {.definition #def:coble-marking-dictionary title="The marked root of a degeneration at a marked cusp" defines="vanishing class; marked root"}
 
 Let $[I]$ be a marked $0$-cusp, $\eta_I$ a representative of its isotropic line, and $K_I = \eta_I^{\perp\ten}/\ZZ\eta_I$; let $\delta$ be the Heegner vector of @lem:coble-heegner-vector, so that $\delta^{\perp\ten} = T_\Co$.
 Let $\xi$ be a degeneration at $[I]$ whose general member is a smooth degree-two Enriques pair, whose K3 cover is $X$, whose KSBA limit is $(\bar S,\eps R_{\bar S})$, and which meets the Coble locus transversally at the parameter $0$, where the K3 cover acquires its ordinary double point.

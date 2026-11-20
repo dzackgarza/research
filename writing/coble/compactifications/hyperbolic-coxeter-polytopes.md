@@ -8,7 +8,7 @@ Roots are negative-definite directions, so a mirror $H_v = v^{\perp}\intersect\H
 
 ## The Tits cone
 
-::: {.definition #def:tits-cone}
+::: {.definition #def:tits-cone defines="closed fundamental chamber; Tits cone"}
 
 Let $(W,S)$ be a Coxeter system (@def:coxeter-group) with Gram form $G$ (@def:coxeter-gram-form) on $V \definedas \RR^S$ and simple roots $\theset{\alpha_s}_{s\in S}$, and let $W$ act on the dual space $V^*$ by the contragredient of its action on $V$.
 The **closed fundamental chamber** is
@@ -125,7 +125,7 @@ By the choice of $I$ this gives $J = I$.
 
 ## Covolume, compactness, and finite volume
 
-::: {.definition #def:covolume}
+::: {.definition #def:covolume defines="covolume"}
 
 Let $\Gamma\leq\Isom(\HH^n_L)$ be a discrete subgroup.
 Its **covolume** is the hyperbolic volume $\vol(\HH^n_L/\Gamma)$ of the quotient orbifold.

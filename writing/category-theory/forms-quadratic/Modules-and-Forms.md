@@ -38,7 +38,7 @@ For $W=A$ the isomorphism $B\tensor_AA\cong B$ rewrites this as $b_B(c\tensor_A 
 
 ## Module properties {#sec-module-properties}
 
-::: {.definition #def:module-subcategories title="Standard subcategories of modules"}
+::: {.definition #def:module-subcategories title="Standard subcategories of modules" defines="torsion; torsion-free"}
 The following isomorphism-invariant properties define replete full subcategories of $R\text{-}\mathbf{Mod}$:
 
 - finitely generated: some $R^n\twoheadrightarrow M$ is surjective;
@@ -53,7 +53,7 @@ If $R$ is an integral domain, $M$ is *torsion* when every element is annihilated
 Over a general ring, a torsion subcategory is used only after a torsion theory has been specified.
 :::
 
-::: {.definition #def:based-module title="Bases"}
+::: {.definition #def:based-module title="Bases" defines="basis; based"}
 
 Fix a set $I$.
 A *basis* of an $R$-module $M$ indexed by $I$ is an isomorphism $e\colon R^{(I)}\xrightarrow{\ \sim\ }M$, and a *based* module is a pair $(M,e)$.
@@ -91,7 +91,7 @@ A basis is the case of a generating frame whose structure map is an isomorphism.
 A basis is structure and not a property: two bases of one module are related by an element of GL_n, which is a torsor and not a truth value. The proof is the argument of @def:property-structure-stuff applied to the forgetful functor from modules-with-basis.
 :::
 
-::: {.definition #def:free-module-orientation title="Orientation of a free module"}
+::: {.definition #def:free-module-orientation title="Orientation of a free module" defines="orientation; orientation modulo $U$"}
 
 Let $R$ be a commutative ring and let $M$ be a free $R$-module of finite rank $n$.
 The top exterior power $\det(M)\definedas\bigwedge^n M$ is a free $R$-module of rank $1$.

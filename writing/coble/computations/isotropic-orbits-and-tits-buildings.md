@@ -29,7 +29,7 @@ A totally isotropic subspace $W$ meets $N$ only in $0$, because every nonzero ve
 Hence $\dim W\leq\dim(T\tensor\RR)-\dim N = 2$.
 :::
 
-::: {.definition #def:signature-two-tits-building title="The Tits building of a lattice of signature $(2,n)$"}
+::: {.definition #def:signature-two-tits-building title="The Tits building of a lattice of signature $(2,n)$" defines="Tits building"}
 
 Let $T$ be a nondegenerate lattice of signature $(2,n)$.
 The **Tits building** of $T$ is the bipartite graph whose vertices are the primitive isotropic lines and the primitive totally isotropic planes of $T$, with an edge from a line $I$ to a plane $J$ when $I\subset J$.

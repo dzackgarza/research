@@ -21,7 +21,7 @@ A counting problem about primitive isotropic vectors of an indefinite lattice is
 
 ## The mechanism {#sec-descent-mechanism}
 
-::: {.definition #def:descent-class title="The descent class of a primitive vector"}
+::: {.definition #def:descent-class title="The descent class of a primitive vector" defines="descent class"}
 
 Let $L$ be an even nondegenerate lattice with discriminant group $A_L=L^\sharp/L$ and discriminant form $q_L$.
 For a nonzero $v\in L$ the divisibility $\div_L(v)$ of @def:lattice-divisibility is a positive integer, and
@@ -733,7 +733,7 @@ $$
 for its discriminant kernel and for the group of sign values attained by its elements; the sign values attained in the discriminant kernel of $\Gamma$ are the elements of $\Sigma_\Gamma(\kappa)$. When $L$ is even there is a second, quadratic discriminant representation $\rho_{L,q}$, and then $K_\Gamma=\Gamma\intersect\ker\rho_{L,q}$ as well, because $\rho_L=j_q\circ\rho_{L,q}$ with $j_q$ injective; for odd $L$ only the bilinear form is available, and $K_\Gamma$ is the displayed kernel of $\rho_L$.
 :::
 
-::: {.definition #def:graph-character title="Graph characters of congruence data"}
+::: {.definition #def:graph-character title="Graph characters of congruence data" defines="graph character"}
 
 Assume $m\geq1$ with $mM\subseteq L$, so that $\pi_m$ of @def:stabilizer-congruence-data is defined, and put $N_m\definedas\bar K_m\intersect\Stab_G(L)$ for the congruence kernel inside the stabilizer. A character $\chi\colon\Stab_G(L)\to\theset{\pm1}$ is a **graph character** of the data at $m$ when $\chi(N_m)=1$, equivalently when $\chi$ is constant on the cosets of $N_m$, equivalently when $\chi=\bar\chi\circ\pi_m$ on $\Stab_G(L)$ for a character $\bar\chi$ of the finite group $\bar H_m=\pi_m\qty(\Stab_G(L))$.
 

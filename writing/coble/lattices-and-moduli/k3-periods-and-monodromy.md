@@ -34,7 +34,7 @@ of dimension $19$.
 
 ## Families and their period maps
 
-::: {.definition #def:k3-moduli-functors title="K3 families, markings, periods, and monodromy"}
+::: {.definition #def:k3-moduli-functors title="K3 families, markings, periods, and monodromy" defines="marked K3 functor"}
 
 Let
 $$

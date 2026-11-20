@@ -126,7 +126,7 @@ What it got wrong is the uniqueness: the boundary lattice is $(9,9,1)_1$ at all 
 
 ## Terminal Coble surfaces
 
-::: {#def:terminal-coble-surface .definition title="Terminal"}
+::: {#def:terminal-coble-surface .definition title="Terminal" defines="terminal"}
 
 A Coble surface (@def:coble-surface) is **terminal** when it is not the image of any birational but not biregular morphism from another Coble surface.
 The $n=1$ case, the blowup of a plane sextic at $N=10$ ordinary double points (some possibly infinitely near), is terminal.

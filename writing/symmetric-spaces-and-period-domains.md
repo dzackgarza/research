@@ -61,7 +61,7 @@ Write $G^0$ for the identity component of a real Lie group. For block diagonal g
 
 ## Homogeneous spaces and Grassmannians {#sec-hsd-grassmannians}
 
-:::{.definition #def:hsd-symmetric-space title="Symmetric spaces"}
+:::{.definition #def:hsd-symmetric-space title="Symmetric spaces" defines="symmetric; Hermitian symmetric"}
 A connected Riemannian manifold is *symmetric* if every point $x$ admits an isometry $s_x$ with $s_x(x)=x$ and $(ds_x)_x=-1$. It is *Hermitian symmetric* if it is Hermitian and each $s_x$ can be chosen holomorphic [@Hel01, §IV.3 and §VIII.4; @Viv14, Definition 2.4].
 :::
 
@@ -148,7 +148,7 @@ An orientation on the graph is specified by an orientation of its projection ont
 
 ### Isotropic Grassmannians and complex structures
 
-:::{.definition #def:hsd-isotropic-grassmannians title="Isotropic Grassmannians"}
+:::{.definition #def:hsd-isotropic-grassmannians title="Isotropic Grassmannians" defines="Lagrangian Grassmannian"}
 For a nondegenerate symmetric form $b$ on $V$, write $\operatorname{OGr}_k(V,b)=\{W\in\operatorname{Gr}_k(V):b|_{W\times W}=0\}$. For an alternating form $\omega$, use $\operatorname{SGr}_k(V,\omega)$ for the same condition. In symplectic dimension $2n$, $\operatorname{LGr}(V,\omega)=\operatorname{SGr}_n(V,\omega)$ is the *Lagrangian Grassmannian*.
 :::
 
@@ -341,7 +341,7 @@ Indeed, a first-order graph is a map $F\to V/F$, and $\det Q\otimes\det S\cong\d
 The split real orthogonal group $\operatorname O(g,g)$ does not give type $II_g$ by selecting positive maximal complex isotropics: if $z=x+iy$ is complex isotropic and $\beta(z,\bar z)>0$, then $x,y$ span a positive real two-plane, and a positive complex $g$-plane would require a positive real $2g$-plane in signature $(g,g)$. Type $II_g$ has real form $\operatorname{SO}^*(2g)$, as in the table [@Viv14, §3.2].
 :::
 
-:::{.definition #def:hsd-tube-type title="Tube domains"}
+:::{.definition #def:hsd-tube-type title="Tube domains" defines="tube domain; of tube type"}
 A *tube domain* is $V+iC\subset V_{\mathbb C}$, where $V$ is a real vector space and $C\subset V$ is an open cone. A bounded symmetric domain is *of tube type* if it is biholomorphic to such a domain.
 :::
 
@@ -633,11 +633,11 @@ are removed [@Huy16, Ch. 7; @GHS13, Thm. 2.9].
 
 ## Arithmetic quotients and boundary components {#sec-hsd-arithmetic-boundary}
 
-:::{.definition #def:hsd-arithmetic-subgroup title="Arithmetic subgroups"}
+:::{.definition #def:hsd-arithmetic-subgroup title="Arithmetic subgroups" defines="arithmetic"}
 Let $G$ be a linear algebraic group over $\mathbb Q$ with a fixed faithful rational representation $G\hookrightarrow\operatorname{GL}_m$. Put $G(\mathbb Z)=G(\mathbb Q)\cap\operatorname{GL}_m(\mathbb Z)$. A subgroup $\Gamma\subset G(\mathbb Q)$ is *arithmetic* if it is commensurable with $G(\mathbb Z)$. This condition is independent of the chosen faithful rational representation [@BB66, 3.1].
 :::
 
-:::{.definition #def:hsd-parabolic-subgroup title="Parabolic subgroups"}
+:::{.definition #def:hsd-parabolic-subgroup title="Parabolic subgroups" defines="parabolic"}
 For a connected reductive algebraic group $G$ over $\mathbb Q$, a subgroup $P\subset G$ is *parabolic* if $G/P$ is projective. A rational parabolic is one defined over $\mathbb Q$. In $\operatorname{SL}_2$, the stabilizer of a line is parabolic; for the upper-triangular subgroup $B$, the map $gB\mapsto g\langle e_1\rangle$ identifies $\operatorname{SL}_2(\mathbb Q)/B(\mathbb Q)$ with $\mathbb P^1(\mathbb Q)$ [@DS05, §1.5].
 :::
 
@@ -649,7 +649,7 @@ F_L(\Gamma)&=\Gamma\backslash\Omega_L^+.
 
 This is a locally symmetric arithmetic quotient. Baily–Borel theory makes it a quasiprojective variety with a canonical projective compactification [@BB66]. If $\Gamma$ is torsion-free, its properly discontinuous action makes $F_L(\Gamma)$ a complex manifold. In general, finite stabilizers give local analytic models that are finite quotients of a complex ball [@GHS13, §5.1].
 
-::: {.definition #def:hsd-orthogonal-modular-form title="Orthogonal modular form"}
+::: {.definition #def:hsd-orthogonal-modular-form title="Orthogonal modular form" defines="modular form of weight $k$ and character $\chi$"}
 Suppose $n\geq3$, and let $\widetilde\Omega_L^+\subset L\otimes\mathbb C$
 be the inverse image of $\Omega_L^+$ under projectivization, with the zero
 vector removed. A *modular form of weight $k$ and character $\chi$* for a

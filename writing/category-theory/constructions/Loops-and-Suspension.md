@@ -110,7 +110,7 @@ $$
 \operatorname{Map}_*(X,\Omega Y).
 $$
 
-::: {.definition #def:fiber-sequence title="Fiber sequences"}
+::: {.definition #def:fiber-sequence title="Fiber sequences" defines="fiber sequence"}
 
 A composable pair $F\to E\to B$ is a *fiber sequence* when $F$ is equivalent to the homotopy fiber over a specified basepoint of $B$.
 Applying homotopy groups gives the long exact sequence.

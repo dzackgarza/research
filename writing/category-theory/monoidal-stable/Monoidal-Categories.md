@@ -4,7 +4,7 @@ A tensor product on a category is chosen structure on it (@def:chosen-structure)
 
 ## Monoidal, braided, and symmetric structures {#sec-monoidal-categories}
 
-::: {.definition #def:monoidal-category title="Monoidal categories"}
+::: {.definition #def:monoidal-category title="Monoidal categories" defines="monoidal category; strict"}
 
 A *monoidal category* is a tuple $\langle B,\otimes,e,\alpha,\lambda,\varrho\rangle$ consisting of a category $B$, a bifunctor $\tensor\colon B\times B\to B$, an object $e\in B$, and natural isomorphisms
 $$
@@ -44,7 +44,7 @@ Dually, finite coproducts and an initial object give the *cocartesian* structure
 For a commutative ring $R$, the tensor product and the direct sum give two different monoidal structures on $R\text{-}\mathbf{Mod}$, namely $(R\text{-}\mathbf{Mod},\tensor_R,R)$ and $(R\text{-}\mathbf{Mod},\oplus,0)$, and a statement about "the" monoidal structure names which one it uses.
 :::
 
-::: {.definition #def:braided-symmetric title="Braided and symmetric structures"}
+::: {.definition #def:braided-symmetric title="Braided and symmetric structures" defines="braiding; symmetric"}
 
 A *braiding* on a monoidal category is a natural isomorphism $\gamma_{a,b}\colon a\tensor b\cong b\tensor a$ satisfying the two hexagon conditions relating $\gamma$ to $\alpha$.
 A monoidal category is *symmetric* when it is equipped with a braiding satisfying
@@ -58,7 +58,7 @@ These conditions again imply that all diagrams built from $\alpha,\lambda,\varrh
 A cartesian or cocartesian monoidal structure is symmetric, with $\gamma$ the isomorphism commuting with the projections or injections.
 :::
 
-::: {.definition #def:closed-monoidal title="Closed structure and internal hom"}
+::: {.definition #def:closed-monoidal title="Closed structure and internal hom" defines="closed; internal hom; dual object"}
 
 A monoidal category $V$ is *closed* when it is symmetric and each functor $-\tensor b\colon V\to V$ has a specified right adjoint $[b,-]\colon V\to V$,
 $$
@@ -75,7 +75,7 @@ The value $[b,c]$ is the *internal hom*. For a commutative ring $R$, $(R\text{-}
 The *dual object* of $a$ in a closed monoidal category is $[a,e]$; that the canonical morphism $a\to[[a,e],e]$ is an isomorphism is a hypothesis on $a$, stated where it is used.
 :::
 
-::: {.definition #def:dualizable-object title="Dualizable objects"}
+::: {.definition #def:dualizable-object title="Dualizable objects" defines="dualizable; dual; coevaluation; evaluation"}
 
 Let $\langle V,\tensor,e\rangle$ be a symmetric monoidal category (@def:braided-symmetric), with $\alpha,\lambda,\varrho$ suppressed from the notation by @thm:coherence.
 An object $a\in V$ is *dualizable* when there exist an object $a^\vee$, the *dual* of $a$, and morphisms
@@ -136,7 +136,7 @@ Hence the $R$-linear map $\varepsilon_A$ is bijective, and so an isomorphism.
 
 ## Internal algebraic objects {#sec-internal-objects}
 
-::: {.definition #def:monoid-object title="Monoid objects"}
+::: {.definition #def:monoid-object title="Monoid objects" defines="monoid in a monoidal category"}
 
 A *monoid in a monoidal category* $\langle B,\otimes,e\rangle$ is a triple $\langle c,\mu,\eta\rangle$ consisting of an object $c\in B$ and morphisms
 $$
@@ -167,7 +167,7 @@ For a commutative ring $R$, a monoid in $(R\text{-}\mathbf{Mod},\tensor_R,R)$ is
 A monoid in the strict monoidal category of endofunctors of a category, with $\tensor$ composition, is a monad [@Mac98, §VII.3 and §VI.1].
 :::
 
-::: {.definition #def:group-object title="Group objects"}
+::: {.definition #def:group-object title="Group objects" defines="group object"}
 
 Let $\mcc$ have finite products and a terminal object $1$.
 A *group object* of $\mcc$ is a monoid $\langle c,\mu,\eta\rangle$ for the cartesian structure together with a morphism $\zeta\colon c\to c$ such that

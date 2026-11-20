@@ -141,7 +141,7 @@ Indeed, projection from the pullback has the same kernel as the field Clifford m
 
 ## Algebraic spinor morphisms and their kernels
 
-::: {.definition #def:integral-clifford-lifting-subgroup title="Integral Clifford lifting subgroup"}
+::: {.definition #def:integral-clifford-lifting-subgroup title="Integral Clifford lifting subgroup" defines="integral lifting subgroup"}
 
 For the norm-one Clifford map $p\colon G\to O(q)$ over an arbitrary ring, define the *integral lifting subgroup*
 $$
@@ -150,7 +150,7 @@ $$
 With $I$ and $K$ as in @prop:clifford-lift-obstruction, this is the inverse image of the trivial torsor under the pointed-set map $\delta\colon I(R)\to H^1_{\mathrm{fppf}}(R,K)$. Its domain consists of the isometries admitting fppf-local lifts.
 :::
 
-::: {.definition #def:algebraic-spinor-kernels title="Full algebraic spinor kernel"}
+::: {.definition #def:algebraic-spinor-kernels title="Full algebraic spinor kernel" defines="full algebraic spinor kernel"}
 
 For $M$ free of finite rank with perfect polar form, the *full algebraic spinor kernel* is
 $$
@@ -158,7 +158,7 @@ K_R(M)=\ker\bigl(\theta_R\colon O(M,q)(R)\to\operatorname{Disc}(R)\bigr).
 $$
 :::
 
-::: {.definition #def:even-algebraic-spinor-kernel title="Even algebraic spinor kernel"}
+::: {.definition #def:even-algebraic-spinor-kernel title="Even algebraic spinor kernel" defines="even algebraic spinor kernel"}
 
 For $M$ free of finite rank with perfect polar form, the *even algebraic spinor kernel* is
 $$

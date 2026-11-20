@@ -5,7 +5,7 @@ Lattices, unimodularity, dual lattices, and discriminant modules are those of @s
 
 ## The hyperbolic form on a module and its dual {#sec-hyperbolic-form}
 
-::: {.definition #def:hyperbolic-form title="Hyperbolic forms"}
+::: {.definition #def:hyperbolic-form title="Hyperbolic forms" defines="hyperbolic form"}
 
 Let $M$ be an $R$-module and write $M^{*}=\Hom_R(M,R)$.
 The *hyperbolic form* on $M\oplus M^{*}$ is
@@ -108,7 +108,7 @@ $$
 between the cores of @def:core.
 :::
 
-::: {.definition #def:lagrangian title="Lagrangians and metabolic forms"}
+::: {.definition #def:lagrangian title="Lagrangians and metabolic forms" defines="lagrangian; metabolic"}
 
 Let $(M,b)$ be an object of $\mathcal B_{R,R}$ and let $N\iscontainedin M$ be a submodule.
 Write
@@ -119,7 +119,7 @@ A *lagrangian* of $(M,b)$ is a direct summand $N\iscontainedin M$ with $N=N^{\pe
 The form $(M,b)$ is *metabolic* if it admits a lagrangian [@MH73, §I.6; @Ran98, Def. 20.1].
 :::
 
-::: {#not:split-and-metabolic .notation title="Split and metabolic"}
+::: {#not:split-and-metabolic .notation title="Split and metabolic" defines="split; metabolic"}
 [@MH73, Def. I.6.1] calls a metabolic form *split*; the term *metabolic* is due to Knebusch [@MH73, §I.6].
 :::
 
@@ -169,7 +169,7 @@ This is the standard construction of the additive inverse in $W(R)$: the diagona
 
 ## Hyperbolic stabilization {#sec-hyperbolic-stabilization}
 
-::: {.definition #def:hyperbolic-stabilization title="Orthogonal sum with a fixed object"}
+::: {.definition #def:hyperbolic-stabilization title="Orthogonal sum with a fixed object" defines="hyperbolic stabilization"}
 
 With the orthogonal sum of @def:orthogonal-sum, an object $M$ of $\mathcal B_{R,R}$ defines
 $$
@@ -271,7 +271,7 @@ In particular $\langle1\rangle$ is unimodular over every commutative ring.
 Over $R=\bZ/4\bZ$ the form $\langle2\rangle$ has $\ker b_2^{\sharp}=2\bZ/4\bZ$, so it is degenerate.
 :::
 
-::: {.definition #def:witt-class title="Witt equivalence"}
+::: {.definition #def:witt-class title="Witt equivalence" defines="Witt class"}
 
 Let $R$ be a Dedekind domain.
 Two unimodular $R$-lattices $X$ and $X'$ have the same *Witt class*, written $X\sim X'$, if there are metabolic unimodular $R$-lattices $Y$ and $Y'$ with

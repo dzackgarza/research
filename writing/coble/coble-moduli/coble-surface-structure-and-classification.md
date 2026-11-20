@@ -56,7 +56,7 @@ In particular, does every Coble surface of rational type in the sense of @def:co
 
 ## The Coble-Mukai lattice
 
-::: {.definition #def:coble-mukai-lattice title="Coble-Mukai lattice"}
+::: {.definition #def:coble-mukai-lattice title="Coble-Mukai lattice" defines="Coble-Mukai lattice"}
 
 Let $S$ be a terminal Coble surface (@def:coble-surface) of K3 type with boundary components $C_1,\ldots,C_n$, and let $\beta_i\in\Pic(S)$ be the class of $C_i$.
 Let $\widetilde{\Pic}(S)$ be the $\ZZ$-submodule of $\Pic(S)_\QQ$ spanned by $\Pic(S)$ and $\tfrac12\beta_1,\ldots,\tfrac12\beta_n$.
@@ -109,7 +109,7 @@ Is $\CM(S)$ rather than $S_{\Co}$ the natural home for the action of $\Gamma_{\C
 
 ## The Dolgachev-Zhang classification
 
-::: {.definition #def:coble-elliptic-rational-type title="Elliptic and rational types"}
+::: {.definition #def:coble-elliptic-rational-type title="Elliptic and rational types" defines="elliptic type with respect to $E$; rational type with respect to $E$; elliptic type; rational type"}
 
 Let $X$ be a Coble surface (@def:coble-surface), let $E$ be a $(-1)$-curve on $X$ with blowdown $\pi\colon X\to Y$, and assume that $p_a(-2K_X + 2E) = 1$.
 Write $\abs{-2K_X + 2E} = \abs{M} + P$, where $\abs{M}$ is the mobile part and $P$ is the fixed part.
@@ -153,7 +153,7 @@ For a Coble surface (@def:coble-surface) $X$ the following are equivalent:
 
 ## Rational log Enriques surfaces of index 2
 
-::: {.definition #def:rational-log-enriques title="Rational log Enriques surface of index 2"}
+::: {.definition #def:rational-log-enriques title="Rational log Enriques surface of index 2" defines="rational log [Enriques surface]{.other-sense} of index $2$"}
 
 A **rational log [Enriques surface]{.other-sense} of index $2$** is a normal rational surface $\bar X$ with at worst quotient singularities such that $\OO(-2K_{\bar X}) \cong \OO_{\bar X}$ [@DZ99, §6, paragraph before Prop. 6.4].
 :::

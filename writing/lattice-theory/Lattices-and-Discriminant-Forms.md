@@ -2,7 +2,7 @@
 
 Let $R$ be a Dedekind domain with fraction field $K$; the main case is $R=\bZ$ and $K=\bQ$.
 
-::: {.definition #def:lattice title="Lattices"}
+::: {.definition #def:lattice title="Lattices" defines="lattice"}
 
 An $R$-**lattice** is a bilinear module $(L,R,\beta_L)$ whose underlying $R$-module is finitely generated projective.
 Write $\mathbf{Lat}_R\hookrightarrow\mathcal B_{R,R}$ for the replete full subcategory of @def:form-categories on these objects, and $\mathbf{Lat}_R^{\mathrm{nd}}\hookrightarrow\mathbf{Lat}_R$ for the replete full subcategory cut out by nondegeneracy in @def:polarization.
@@ -41,7 +41,7 @@ since $\bR$ is flat over $\bZ$.
 
 
 
-::: {.definition #def:even-lattice title="Even lattices"}
+::: {.definition #def:even-lattice title="Even lattices" defines="even"}
 
 An $R$-lattice $L$ is **even** when $\beta_L$ is even in the sense of @def:form-axioms.
 Write $\mathbf{EvenLat}_R\hookrightarrow\mathbf{Lat}_R$ for the corresponding replete full subcategory.
@@ -92,7 +92,7 @@ $$
 The root lattices are objects of $\mathbf{Def}_{\bZ}^{-}$.
 :::
 
-::: {.definition #def:metric-dual title="Metric $I$-duals"}
+::: {.definition #def:metric-dual title="Metric $I$-duals" defines="metric $I$-dual; $I$-integral structure; $I$-integral"}
 
 Let $L\in\mathbf{Lat}_R^{\mathrm{nd}}$ and let $I\injects K$ be a nonzero fractional ideal.
 The coefficient exact sequence is
@@ -160,7 +160,7 @@ A_L^\sharp\definedas A_L^{\# R}.
 $$
 :::
 
-::: {.definition #def:unimodular title="$I$-modular and unimodular lattices"}
+::: {.definition #def:unimodular title="$I$-modular and unimodular lattices" defines="$I$-modular"}
 
 An $I$-integral lattice $L$ is **$I$-modular** when $A_L^{\# I}=0$.
 Equivalently, its defining exact sequence is
@@ -172,7 +172,7 @@ For $I=R$ set $\mathbf{Unimod}_R\definedas\mathbf{ModLat}_{R,R}$.
 :::
 
 
-::: {.definition #def:discriminant title="Bilinear and quadratic discriminant forms"}
+::: {.definition #def:discriminant title="Bilinear and quadratic discriminant forms" defines="bilinear discriminant form; quadratic discriminant form"}
 
 Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ be integral.
 Let $N_b(L)=\exp\qty{A_L^\sharp}$ be the bilinear denominator of @def:lattice-level.
@@ -249,7 +249,7 @@ If $L$ is even, then $J_L=2\bZ$, so this recovers the usual
 $\tfrac2{N_q(L)}\bZ/2\bZ$-valued refinement [@Nik80, §1.1].
 :::
 
-::: {.definition #def:discbil title="Discriminant bilinear forms"}
+::: {.definition #def:discbil title="Discriminant bilinear forms" defines="discriminant bilinear forms"}
 
 The **discriminant bilinear forms** are the objects of
 $\mathbf{BilMod}_{\bZ}$ isomorphic to $A_L$ for some
@@ -263,7 +263,7 @@ $$
 for the full subgroupoid spanned by these cokernels.
 :::
 
-::: {.definition #def:discquad title="Discriminant quadratic forms"}
+::: {.definition #def:discquad title="Discriminant quadratic forms" defines="discriminant quadratic forms"}
 
 The **discriminant quadratic forms** are the objects isomorphic to
 $A_{L,q}$ for some $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$.
@@ -292,7 +292,7 @@ $$
 
 ## Elementary lattices {#sec-elementary-lattices}
 
-::: {.definition #def:p-elementary title="$p$-elementary lattices"}
+::: {.definition #def:p-elementary title="$p$-elementary lattices" defines="$p$-elementary"}
 
 Let $p$ be a prime and let $S\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$.
 The lattice $S$ is **$p$-elementary** when the $\bZ$-module $A_S^\sharp$ is $p$-elementary.

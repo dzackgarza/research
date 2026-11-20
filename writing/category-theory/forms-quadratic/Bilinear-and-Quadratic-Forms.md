@@ -81,7 +81,7 @@ The category-of-elements presentations of $\mathcal B_{R,W}$ and $\mcq_{R,W}$ ar
 Kernel, cokernel, image, and exact-sequence notation below is always taken in the explicitly named form category.
 :::
 
-::: {.definition #def:form-axioms title="Symmetry, alternation, and evenness"}
+::: {.definition #def:form-axioms title="Symmetry, alternation, and evenness" defines="symmetric; skew-symmetric; alternating; even"}
 
 Let $U\colon R\text{-}\mathbf{Mod}\to\mathbf{Set}$ be the forgetful functor and let
 $$
@@ -126,7 +126,7 @@ The converse holds when multiplication by $2$ on $W$ is a monomorphism.
 When multiplication by $2$ is an epimorphism, every bilinear form is even.
 :::
 
-::: {.definition #def:polarization title="Adjoints, radicals, and nondegeneracy"}
+::: {.definition #def:polarization title="Adjoints, radicals, and nondegeneracy" defines="nondegenerate; perfect"}
 
 For a bilinear module $(M,W,b)$ define
 $$
@@ -203,7 +203,7 @@ The quadratic form category has the analogous orthogonal sum.
 
 ## Orthogonality {#sec-orthogonality}
 
-::: {.definition #def:orthogonal-complement title="Left and right orthogonal complements"}
+::: {.definition #def:orthogonal-complement title="Left and right orthogonal complements" defines="left orthogonal complement; right orthogonal complement; isotropic"}
 
 Let $(M,W,b)$ be a bilinear module and let $\iota\colon T\injects M$ be a monomorphism of $R$-modules.
 Define
@@ -322,7 +322,7 @@ Applying the order-reversing map to $S\subseteq S^{\perp\perp}$ gives $S^{\perp\
 Hence $S^\perp=S^{\perp\perp\perp}$.
 :::
 
-::: {.definition #def:nondegenerate-reduction title="Nondegenerate reduction"}
+::: {.definition #def:nondegenerate-reduction title="Nondegenerate reduction" defines="nondegenerate-reduction endofunctor"}
 
 Let $B$ be a symmetric bilinear module and let
 $$
@@ -417,7 +417,7 @@ $$
 by bilinearity; and conversely an invertible $P$ defines a second basis $e'$ of the same form, so congruent matrices are the Gram matrices of one form in two bases [@MH73, I §2.3].
 :::
 
-::: {.definition #def:cartan-matrix title="The Cartan matrix"}
+::: {.definition #def:cartan-matrix title="The Cartan matrix" defines="Cartan matrix; Cartan integers"}
 
 Let $b$ be a symmetric bilinear form on $M$ with values in $R$, and let $\alpha_1,\dots,\alpha_\ell$ be an ordered family in $M$ with each $b(\alpha_j,\alpha_j)$ invertible in $R$.
 The *Cartan matrix* of the family is
@@ -535,7 +535,7 @@ $$
 The Gram matrix is the Kronecker product because $(b_M\tensor b_N)(e_i\tensor f_a,e_j\tensor f_b)=b_M(e_i,e_j)b_N(f_a,f_b)$ by @def:form-tensor, and the determinant identity follows from $\det(A\tensor B)=\det(A)^{n}\det(B)^{m}$ [@MH73, I §5.3], which is the multiplicativity of the determinant applied to the factorization $A\tensor B=(A\tensor I_n)(I_m\tensor B)$.
 :::
 
-::: {.definition #def:form-twist title="Twisting"}
+::: {.definition #def:form-twist title="Twisting" defines="twist; }b_N=b_M$ and hence $f^{"}
 
 For $\lambda\in R$ the *twist* $b(\lambda)$ of $(M,b)$ is the form $\lambda b$ on the same module, written $M(\lambda)$.
 Its Gram matrix in a basis is $\lambda G$, its adjoint maps are $\lambda\,b^{\sharp}$ and $\lambda\,{}^{\sharp}b$, and on a free module of rank $n$
@@ -609,7 +609,7 @@ For degenerate $b$, let $N$ be a complement of $\radic(V)$.
 Every pairing with $\radic(V)$ vanishes, so $V\cong\radic(V)\perp N$; the restriction $b|_N$ is perfect, because an element of $N$ pairing to zero with $N$ pairs to zero with all of $V$; and the perfect case applied to $N$ gives $V\cong V^{+}\perp V^{-}\perp\radic(V)$ and $p+q+r=\dim V$.
 :::
 
-::: {.definition #def:definiteness title="Definiteness"}
+::: {.definition #def:definiteness title="Definiteness" defines="degenerate; positive definite; negative definite; definite; indefinite; hyperbolic; parabolic"}
 
 Let $b$ be a symmetric bilinear form of signature $(p,q,r)$ and set $n=p+q+r$.
 Then $b$ is
@@ -633,7 +633,7 @@ Root lattices are taken negative definite here, so the forms on $A_n$, $D_n$ and
 
 ## Isotropy and Witt decomposition {#sec-witt}
 
-::: {.definition #def:hyperbolic-plane title="Rank one forms, the hyperbolic plane, and split forms"}
+::: {.definition #def:hyperbolic-plane title="Rank one forms, the hyperbolic plane, and split forms" defines="hyperbolic plane; split"}
 
 For a unit $u\in R^{\bullet}$ write $\langle u\rangle$ for the free module of rank $1$ on a generator $e$ with $b(e,e)=u$.
 Then $\langle u\rangle\cong\langle u'\rangle$ if and only if $u'=\alpha^{2}u$ for some $\alpha\in R^{\bullet}$ [@MH73, I §2.4].
@@ -648,7 +648,7 @@ A perfect symmetric form $b$ on $M$ is *split* if $M$ has a direct summand $N$ w
 Over a ring whose finitely generated projective modules are free and in which $2$ is a unit, a split form is an orthogonal sum of hyperbolic planes, which is @thm:metabolic-is-hyperbolic; this applies to a field of characteristic other than $2$.
 :::
 
-::: {.definition #def:witt-index title="Witt index"}
+::: {.definition #def:witt-index title="Witt index" defines="Witt index"}
 
 The *Witt index* $i(V)$ of a perfect symmetric form on a finite-dimensional vector space $V$ over a field is the greatest dimension of a totally isotropic subspace.
 It satisfies

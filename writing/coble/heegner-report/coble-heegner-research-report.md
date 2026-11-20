@@ -103,12 +103,12 @@ An Enriques surface is a smooth projective surface $Z$ with $2K_Z\sim0$, $K_Z\no
 The word **Coble surface** is used in two closely related senses in the literature.
 To remove ambiguity, this report uses the following notation.
 
-::: {.definition #def:singular-coble title="singular Coble quotient"}
+::: {.definition #def:singular-coble title="singular Coble quotient" defines="singular Coble quotient"}
 A *singular Coble quotient* is a normal rational surface $V^\sharp$ obtained as the quotient of a K3 surface $X^\sharp$ with one $A_1$-singularity by a nonsymplectic involution that fixes the singular point and is otherwise free in codimension one.
 The quotient has one singularity of type $\frac{1}{4}(1,1)$.
 :::
 
-::: {.definition #def:resolved-coble title="resolved Coble surface"}
+::: {.definition #def:resolved-coble title="resolved Coble surface" defines="resolved Coble surface"}
 The *resolved Coble surface* (@def:coble-surface) $\wV$ is the minimal resolution of $V^\sharp$.
 It is a smooth rational surface satisfying
 
@@ -1339,7 +1339,7 @@ The sizes are @tbl-finite-vector-orbits and @tbl-finite-plane-orbits.
 
 : Finite totally singular plane orbits. {#tbl-finite-plane-orbits}
 
-::: {.definition #def:plane-star title="Stars of an order-$4$ isotropic subgroup"}
+::: {.definition #def:plane-star title="Stars of an order-$4$ isotropic subgroup" defines="star"}
 Let $J$ be an order-$4$ isotropic subgroup and let $V = J^{\perp}/J$, the perpendicular taken in $A_{S_\En}$.
 A **star** of $J$ is a set of seven nonsingular vectors of $V$ that are pairwise non-orthogonal.
 :::

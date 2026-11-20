@@ -28,7 +28,7 @@ LUA = 'local ref_prefixes = { thm = true, lem = true, def = true }\n'
 ONE = """\
 # Apples {#sec-apples}
 
-::: {.definition #def:a title="The form $D_{16}$"}
+::: {.definition #def:a title="The form $D_{16}$" defines="apple; round fruit"}
 An **apple** is a **round fruit**.
 :::
 
@@ -76,7 +76,7 @@ def test_list_gives_each_block_its_line(tmp_path):
     rows = {r["id"]: r for r in json.loads(query(tmp_path, "list", "--json"))}
     # A title holding braces, as $D_{16}$, does not hide the block's id.
     assert rows["def:a"]["location"] == "one.md:3"
-    assert rows["def:a"]["terms"] == "apple; round fruit"
+    assert rows["def:a"]["defines"] == "apple; round fruit"
     assert rows["thm:c"]["location"] == "two.md:3"
     assert rows["lem:b"]["proved"] and not rows["thm:c"]["proved"]
 

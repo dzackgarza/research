@@ -60,7 +60,7 @@ points. Smoothness is essential to this line count.
 
 ## $K3$ surfaces
 
-::: {.definition #def:k3-surface title="K3 surface"}
+::: {.definition #def:k3-surface title="K3 surface" defines="$K3$ surface"}
 
 A **$K3$ surface** is a smooth, projective, geometrically integral surface $X$ over $k = \CC$ such that its canonical bundle is trivial,
 $$
@@ -98,7 +98,7 @@ It is even, unimodular, of signature $(3, 19)$ [@Huy16, Prop. 1.3.5].
 If $E_8$ denotes the positive-definite root lattice, the K3 lattice is written $U^3\oplus E_8(-1)^2$.
 :::
 
-::: {.definition #def:marked-k3-surface title="Marked K3 surface"}
+::: {.definition #def:marked-k3-surface title="Marked K3 surface" defines="marked $K3$ surface"}
 
 A **marked $K3$ surface** is a pair $(X, \varphi)$ of a $K3$ surface $X$ and an isometry
 $$
@@ -305,7 +305,7 @@ of a positive line bundle $L$ by the Lefschetz $(1,1)$ theorem.
 Then $c_1(L)^2>0$, so $X$ is projective [@BHPV04, Ch. IV, Thm. 6.2].
 :::
 
-::: {.definition #def:enriques-surface title="Enriques surface"}
+::: {.definition #def:enriques-surface title="Enriques surface" defines="Enriques surface; Enriques involution"}
 
 An **Enriques surface** is a non-rational algebraic surface $Z$ of Kodaira dimension $\kappa(Z) = 0$ for which
 $$
@@ -400,7 +400,7 @@ The group $\Gamma^K_{\En}$ contains an isometry that exchanges the two component
 The root lattices $A_n$, $D_n$ and $E_n$ here are negative definite, with roots of square $-2$; see @def:root-lattice and @def:lattice-En.
 :::
 
-::: {.definition #def:ade-surface title="ADE surface"}
+::: {.definition #def:ade-surface title="ADE surface" defines="$ADE$ surface"}
 
 An **$ADE$ surface** is a normal surface $(Y, C)$ with reduced boundary $C$ given by one of the explicit constructions of [@AT17, Sec. 3, Def. 3.1].
 
@@ -412,7 +412,7 @@ The $ADE$ surfaces are of type III in the sense of [@AT17, Lem. 2.5], so the pai
 The construction associates to each $ADE$ surface a shape: a decorated $ADE$ Dynkin diagram, and the $ADE$ root lattice obtained by deleting the decorations [@AT17, Sec. 3].
 :::
 
-::: {.definition #def:priming title="Priming"}
+::: {.definition #def:priming title="Priming" defines="priming"}
 
 Let $(Y, C)$ be an $ADE$ surface, let $P_1, \dots, P_k$ be distinct points of $C$ that are nonsingular on $Y$ and on $C$, and choose ideals $I_i \simeq (y, x^2)$ supported at $P_i$ and transverse to $C$.
 Let $Y'\to Y$ be the weighted blowup at $\prod_i I_i$, let $C'$ be the strict transform of $C$, and let $L_0 = -2(K_{Y'} + C')$.
@@ -420,7 +420,7 @@ Assume that $L_0$ is big, nef and semiample.
 The **priming** of $(Y, C)$ is the pair obtained by composing the blowup with the contraction given by $\abs{N L_0}$ for $N\gg 0$, with boundary the strict transform of $C$ [@AT17, Def. 3.13].
 :::
 
-::: {.definition #def:folding-bc title="Folding"}
+::: {.definition #def:folding-bc title="Folding" defines="folding"}
 
 A **folding** passes from a simply-laced $ADE$ diagram to a non-simply-laced $BC$ diagram by taking the quotient by a diagram automorphism $\tau$ [@AT17; @AET23].
 :::

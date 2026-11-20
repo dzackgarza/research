@@ -63,7 +63,7 @@ The determinant of the twisted adjoint is $m^{\rank L}$ times the determinant of
 
 ## The genus, class set, and spinor genera
 
-::: {.definition #def:spinor-genus-partition title="Spinor genera"}
+::: {.definition #def:spinor-genus-partition title="Spinor genera" defines="spinor genus"}
 
 Let $R$ be the ring of integers of a global field $K$, let
 $L\in\mathbf{Lat}_R^{\mathrm{nd}}$, put $V\definedas L\tensor_RK$, and let
@@ -151,14 +151,14 @@ This is [@CS10, Ch. 15, Thm. 14].
 :::
 ## Mass
 
-::: {.definition #def:mass title="Mass of a lattice genus"}
+::: {.definition #def:mass title="Mass of a lattice genus" defines="mass"}
 
 When the genus groupoid (@def:genus) $\operatorname{Gen}(L)$ is essentially finite in the sense of @def:groupoid-cardinality, its **mass** is the groupoid cardinality
 $m(L)\definedas\cardinality{\operatorname{Gen}(L)}$.
 :::
 ## Brown invariant and Milgram's formula
 
-::: {.definition #def:brown-invariant title="Brown invariant"}
+::: {.definition #def:brown-invariant title="Brown invariant" defines="Brown invariant"}
 
 Let $(A,q)$ be a nondegenerate finite quadratic module with $q\colon A\too\bQ/2\bZ$.
 Its normalized Gauss sum is

@@ -4,7 +4,7 @@ Let $L$ be a nondegenerate indefinite even integral lattice of rank at least $3$
 
 ## Adelic determinant and spinor data
 
-::: {.definition #def:mm-adelic-det-spinor title="Adelic determinant–spinor character"}
+::: {.definition #def:mm-adelic-det-spinor title="Adelic determinant–spinor character" defines="adelic determinant–spinor group"}
 
 For each prime $p$, write
 $$
@@ -57,7 +57,7 @@ In particular, $K_L=\Gamma_\bQ\cap\Sigma(L)$ inside $\Gamma_{\mathbb A_f}$ [@MM0
 
 ## The obstruction and genus groups
 
-::: {.definition #def:mm-obstruction-group title="Miranda–Morrison group"}
+::: {.definition #def:mm-obstruction-group title="Miranda–Morrison group" defines="Miranda–Morrison obstruction group"}
 
 Define the **Miranda–Morrison obstruction group** $\operatorname{MM}(L)$ by the cokernel sequence in $\mathbf{Ab}$
 $$
@@ -70,7 +70,7 @@ $$
 Thus $\operatorname{MM}(L)$ retains the adelic determinant–spinor obstruction after rational and discriminant-trivial integral isometries are accounted for.
 :::
 
-::: {.definition #def:mm-genus-group title="Genus group"}
+::: {.definition #def:mm-genus-group title="Genus group" defines="genus group"}
 
 Define the **genus group** $g(L)$ by the cokernel sequence in $\mathbf{Ab}$
 $$

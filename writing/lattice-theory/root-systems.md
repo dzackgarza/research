@@ -6,7 +6,7 @@ The symbols $A_n,D_n,E_n$ denote negative-definite root lattices. Coordinate rea
 
 ## General root lattices
 
-::: {.definition #def:root-lattice title="Simply-laced root lattices"}
+::: {.definition #def:root-lattice title="Simply-laced root lattices" defines="norm-$(-2)$ roots; simple system; root-span morphism; simply-laced root lattice"}
 Let $L$ be a negative-definite integral lattice. Its **norm-$(-2)$ roots** are $R(L)\definedas L[-2]$ in the norm-shell notation of @def:lattice-basic-invariants. A **simple system** $\Phi(L)$ is a basis of the rational span of $R(L)$ consisting of roots such that every root is an integral combination of $\Phi(L)$ with coefficients either all nonnegative or all nonpositive. The **root-span morphism** is
 $$
 \begin{aligned}
@@ -53,7 +53,7 @@ If every simple root has norm $-2$, then $A=-G$.
 The defining Cartan identity $A_{ij}\alpha_j^2=2G_{ij}$ and the symmetry of $G$ give the assertions.
 :::
 
-::: {.definition #def:root-system-base title="Root systems and their bases"}
+::: {.definition #def:root-system-base title="Root systems and their bases" defines="root system; base"}
 
 Let $E$ be a finite-dimensional real vector space with a positive-definite inner product $(-\mid-)$, and for $\alpha\neq0$ let $\sigma_\alpha(x)\definedas x-\langle x,\alpha\rangle\alpha$ with $\langle x,\alpha\rangle\definedas 2(x\mid\alpha)/(\alpha\mid\alpha)$. A **root system** in $E$ is a subset $\Phi\subseteq E$ such that
 
@@ -268,7 +268,7 @@ The remaining finite reflection groups $H_3$, $H_4$ and $I_2(p)$ for $p\notin\th
 The finite crystallographic Coxeter systems are the spherical ones whose orders lie in {2,3,4,6}, so the statement is the intersection of @thm:ADE-root-lattice-classification with @def:crystallographic-coxeter; the proof is that intersection, performed on the list.
 :::
 
-::: {.definition #def:root-system-Bn-Cn}
+::: {.definition #def:root-system-Bn-Cn defines="short roots; long roots"}
 
 The root set $R(B_n)$ is equipped with the monomorphism $\iota_{B_n}\colon R(B_n)\injects U(\ZZ^n)$ in $\mathbf{Set}$ whose image consists of the **short roots** $\pm e_i$ for $1\leq i\leq n$ together with the **long roots** $\pm e_i\pm e_j$ for $1\leq i<j\leq n$.
 Thus $\cardinality{R(B_n)}=2n^2$, with $2n$ short and $2n(n-1)$ long roots.
@@ -288,7 +288,7 @@ $$
 $$
 :::
 
-::: {.definition #def:root-system-F4 title="The root system $F_4$"}
+::: {.definition #def:root-system-F4 title="The root system $F_4$" defines="long roots; short roots"}
 Equip $\bQ^4$ with the negative standard form. The root system $F_4$ consists of the $24$ **long roots**
 $$
 \theset{\pm e_i\pm e_j\st1\le i<j\le4}
@@ -308,7 +308,7 @@ $$
 $$
 :::
 
-::: {.definition #def:root-system-G2 title="The root system $G_2$"}
+::: {.definition #def:root-system-G2 title="The root system $G_2$" defines="short roots; long roots"}
 Equip $\bZ^3$ with the negative standard form and let $\Sigma\colon\bZ^3\too\bZ$ be the coordinate-sum morphism. Its kernel is the trace-zero lattice in the exact sequence
 $$
 0\too\bZ^3_\Delta\too\bZ^3\xrightarrow{\Sigma}\bZ\too0.

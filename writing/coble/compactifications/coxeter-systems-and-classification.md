@@ -7,7 +7,7 @@ Simple roots are negative-definite directions of norm $-2$, following the algebr
 
 ## Coxeter matrices and their Gram forms
 
-::: {.definition #def:coxeter-matrix}
+::: {.definition #def:coxeter-matrix defines="Coxeter matrix; Coxeter diagram"}
 
 Let $S$ be a finite set.
 A **Coxeter matrix** on $S$ is a symmetric matrix $M = (m_{st})_{s,t\in S}$ with
@@ -48,7 +48,7 @@ For $m=3$, the roots of $A_2$ meet at angle $2\pi/3$, while their perpendicular 
 
 ![The simple roots and reflecting mirrors of $A_2$.](/rendered/A2RootSystem.png){#fig-coxeter-a2-roots-mirrors}
 
-::: {.definition #def:coxeter-gram-form title="The Gram form of a Coxeter matrix"}
+::: {.definition #def:coxeter-gram-form title="The Gram form of a Coxeter matrix" defines="Gram form"}
 
 Let $M$ be a Coxeter matrix on $S$.
 The **Gram form** of $M$ is the symmetric bilinear form $G(M)$ on the real vector space $\RR^S$ with basis $\theset{\alpha_s}_{s\in S}$ determined by
@@ -90,7 +90,7 @@ m & 2 & 3 & 4 & 5 & 6 & \infty \\\hline
 $$
 :::
 
-::: {#not:schlafli-matrix-normalization .notation title="The opposite normalization"}
+::: {#not:schlafli-matrix-normalization .notation title="The opposite normalization" defines="Schläfli matrix"}
 
 Much of the reflection-group literature normalizes simple roots to $\alpha_s^2 = +2$ and attaches to $M$ the **Schläfli matrix** $C_{st} = -2\cos(\pi/m_{st})$, with $C_{ss} = 2$.
 Then $C = -G(M)$, and the definiteness conditions of @def:coxeter-system-type are read with the opposite sign: a spherical system has $C$ positive definite.
@@ -98,7 +98,7 @@ Then $C = -G(M)$, and the definiteness conditions of @def:coxeter-system-type ar
 
 ## Classification by definiteness
 
-::: {.definition #def:coxeter-system-type}
+::: {.definition #def:coxeter-system-type defines="spherical; euclidean; hyperbolic; elliptic; parabolic"}
 
 Let $(W,S)$ be an irreducible Coxeter system (@def:coxeter-group) of rank $n$ with Coxeter matrix (@def:coxeter-matrix) $M$ and Gram form (@def:coxeter-gram-form) $G = G(M)$.
 Say that $(W,S)$, or $M$, is
@@ -155,7 +155,7 @@ In (3) the hyperboloid inside the nondegenerate space $(\RR^S,G)$ is the model o
 
 ## Subdiagrams and the inheritance of signature
 
-::: {.definition #def:coxeter-subdiagram}
+::: {.definition #def:coxeter-subdiagram defines="subdiagram; rank; standard parabolic subgroup"}
 
 Let $\Sigma$ be the Coxeter diagram (@def:coxeter-matrix) of the Coxeter system (@def:coxeter-group) $(W,S)$ and let $I\iscontainedin S$.
 The **subdiagram** $\Sigma_I$ is the induced diagram on $I$, with Coxeter matrix $M[I,I]$ and Gram form (@def:coxeter-gram-form) the principal submatrix $G[I,I]$.
@@ -314,7 +314,7 @@ whose coefficients at $\alpha_1,\dots,\alpha_8$ are those of the highest root of
 
 ## Crystallographic Coxeter systems
 
-::: {.definition #def:crystallographic-coxeter}
+::: {.definition #def:crystallographic-coxeter defines="crystallographic"}
 
 A Coxeter matrix (@def:coxeter-matrix) $M$ on $S$ is **crystallographic** if $m_{st}\in\theset{2,3,4,6,\infty}$ for all $s\neq t$.
 :::
@@ -348,7 +348,7 @@ For $m_{st} = 6$ the same rescaling by $\sqrt3$ gives norms $-2$ and $-6$ with p
 For $m_{st}\in\theset{2,3}$ the entries $0$ and $1$ are already integral, and the simply-laced diagrams need no rescaling.
 :::
 
-::: {.definition #def:coxeter-base-field}
+::: {.definition #def:coxeter-base-field defines="field of definition"}
 
 Let $M$ be a Coxeter matrix (@def:coxeter-matrix) on $S$.
 Its **field of definition** is the subfield
