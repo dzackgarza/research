@@ -233,12 +233,18 @@ For (3). By definition $\gent = \rho^{-1}(M)$, so a $g = \varphi\oplus\id\in\Ort
 
 ::: {.lemma #lem:coble-family-identification title="The family identification (F) from the universal family over the Heegner divisor"}
 
-Let $\Delta\subset F_{\En,2}$ be the discriminant divisor, and let $\mathcal X_\Delta\to\Delta$ be the restriction to $\Delta$ of the universal family of K3 surfaces with the Enriques involution over the moduli stack of degree-$2$ numerically polarized Enriques surfaces, whose coarse space is $F_{\En,2}$ [@AEGS25, introduction, printed p. 583, printed p. 612, and Defs. 2.5--2.7, printed p. 587]; let $\mathcal S_\Delta\to\Delta$ be its quotient family of Coble surfaces, and let $\Gamma_{\Co,2}$ be its monodromy group on the local system with fibre $T_\Co$ (@def:gamma-co-groups(5)). Then that local system is the $\delta^{\perp}$-part of the restriction to $\Delta$ of the local system with fibre $T_\En$: that is (F).
+In the situation of @lem:coble-monodromy-in-stabilizer, assume
+
+(U) the degree-$2$ Coble family over $\Delta$ and its marking are defined: the family is the restriction to $\Delta$ of the universal family of K3 surfaces with the Enriques involution over the moduli stack of degree-$2$ numerically polarized Enriques surfaces, whose coarse space is $F_{\En,2}$ [@AEGS25, introduction, printed p. 583, printed p. 612, and Defs. 2.5--2.7, printed p. 587]; $\Gamma_{\Co,2}$ is its monodromy group on the local system with fibre $T_\Co$ (@def:gamma-co-groups(5)); and on every fibre the covering involution has invariant lattice $S_\Co$, spanned by the classes of $E_0,\dots,E_{10}$ [@DK13, §3, printed p. 513].
+
+Then (F) holds: the local system with fibre $T_\Co$ is the $\delta^{\perp}$-part of the restriction to $\Delta$ of the local system with fibre $T_\En$.
+
+(U) is **not available in this book**: no definition of the degree-$2$ Coble family, or of its marking, is given here, and supplying them is D2 of research#786. The ambient half is AEGS's universal family of Enriques surfaces over the moduli stack, quoted in the proof; the Coble half is the quotient over $\Delta$, which is what the missing definition has to make into a moduli functor.
 :::
 
 ::: {.proof}
 
-*The family is the restriction of the universal one.* [@AEGS25, printed p. 612] constructs it: "Consider the universal family $(X,\epsilon R)\to F(2,2,0)$ of KSBA-stable pairs over the compactified moduli stack. ... the pullback of the universal family $(X_B,\epsilon R_B)\to B$ is a family whose general fiber is a pair $(X,\epsilon R)$ of an Enriques K3 surface ... Taking the quotient gives a family $(Z,\epsilon R_Z)\to B$ over a compact base, extending the universal family of Enriques surfaces ... By Lemma 2.8, the normalization $B^\nu$ of $B$ is a compactification of $F_{\En,2}$ admitting a universal family of pairs. So we have a classifying morphism $B^\nu\to F_{\En,2}$." Over the preimage of $\Delta$ the K3 fibres are nodal, and their quotients are the Coble surfaces [@AEGS25, the paragraph after Def. 2.7, printed p. 587]. That is the family of the lemma at the level of the finite cover $B^\nu$; read on the moduli stack, of which $F_{\En,2}$ is the coarse space, it is the universal family, and $\Gamma_{\Co,2}$ is the monodromy of that family.
+*The ambient family.* [@AEGS25, printed p. 612] constructs it: "Consider the universal family $(X,\epsilon R)\to F(2,2,0)$ of KSBA-stable pairs over the compactified moduli stack. ... the pullback of the universal family $(X_B,\epsilon R_B)\to B$ is a family whose general fiber is a pair $(X,\epsilon R)$ of an Enriques K3 surface ... Taking the quotient gives a family $(Z,\epsilon R_Z)\to B$ over a compact base, extending the universal family of Enriques surfaces ... By Lemma 2.8, the normalization $B^\nu$ of $B$ is a compactification of $F_{\En,2}$ admitting a universal family of pairs. So we have a classifying morphism $B^\nu\to F_{\En,2}$." Over the preimage of $\Delta$ the K3 fibres are nodal, and their quotients are the Coble surfaces [@AEGS25, the paragraph after Def. 2.7, printed p. 587]. That is the family of the lemma at the level of the finite cover $B^\nu$; read on the moduli stack, of which $F_{\En,2}$ is the coarse space, it is the universal family, and $\Gamma_{\Co,2}$ is the monodromy of that family.
 
 *The fibre marking.* On a fibre the covering involution has invariant lattice $M_X = S_\Co$, spanned by the classes of $E_0,\dots,E_{10}$, and anti-invariant lattice $N_X = T_\Co$ [@DK13, (3.6), printed p. 513; @prop:coble-cover-marking].
 
@@ -248,7 +254,7 @@ Let $\Delta\subset F_{\En,2}$ be the discriminant divisor, and let $\mathcal X_\
 :::
 
 ::: {.remark #rmk:coble-family-identification-status title="Where the two halves of the identification come from"}
-The family is [@AEGS25, printed p. 612], at the level recorded in @rmk:coble-universal-family-level; the fibre marking is [@DK13, §3, printed p. 513] and @prop:coble-cover-marking. The one thing neither paper writes as a single statement is the pair for $\Delta$: [@AEGS25, printed p. 587] identifies the *points* of $\Delta$ with the Coble quotients and [@DK13, printed p. 513] describes the covers fibre by fibre. The rank of the period lattice, $11$ [@DK13, (3.6), printed p. 513], is the rank of the classical family, which is what makes the identification the right one.
+The ambient family is [@AEGS25, printed p. 612], at the level recorded in @rmk:coble-universal-family-level; the fibre marking is [@DK13, §3, printed p. 513] and @prop:coble-cover-marking. Neither is a definition of the degree-$2$ Coble family as a moduli functor, which is (U) and is D2 of research#786. The one thing neither paper writes as a single statement is the pair for $\Delta$: [@AEGS25, printed p. 587] identifies the *points* of $\Delta$ with the Coble quotients and [@DK13, printed p. 513] describes the covers fibre by fibre. The rank of the period lattice, $11$ [@DK13, (3.6), printed p. 513], is the rank of the classical family, which is what makes the identification the right one.
 :::
 
 ::: {.remark #rmk:coble-universal-family-level title="At which level the universal family over $F_{\En,2}$ exists"}
@@ -263,7 +269,7 @@ Let $\Delta\subset F_{\En,2} = \bD(T_\En)/\gent$ be the discriminant divisor, th
 
 (F) the local system with fibre $T_\Co$ of that family is the $\delta^{\perp}$-part of the restriction to $\Delta$ of the local system with fibre $T_\En$.
 
-The identification of the points of $\Delta$ with the Coble quotients is [@AEGS25, printed p. 587]; (F) is the family-level statement, and it is @lem:coble-family-identification. Under (F),
+The identification of the points of $\Delta$ with the Coble quotients is [@AEGS25, printed p. 587]; (F) is the family-level statement, and it is @lem:coble-family-identification under its hypothesis (U), which is D2 of research#786. Under (F),
 $$\Gamma_{\Co,2}\subseteq R_{\gent}.$$
 :::
 
@@ -294,7 +300,7 @@ R = (R\intersect\Orth^+(T_\Co))\sqcup s_\zeta\,(R\intersect\Orth^+(T_\Co)),
 [\Orth(T_\Co):R\intersect\Orth^+(T_\Co)] = 134\,912.
 $$
 3. $\Gamma_{\Co,2}\neq R$: the equality $\Gamma_{\Co,2} = R_{\gent}$ is false.
-4. $\Gamma_{\Co,2}\subseteq R\intersect\Orth^+(T_\Co) = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co) = \Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2}$: the second inclusion is @lem:coble-monodromy-in-stabilizer (with (F) proved in @lem:coble-family-identification), the first is (1), and the equalities are @prop:direct-eq-heegner. For the degree-$2$ Coble data of @prop:one-node-family the reverse inclusion holds as well, so there the orbifold monodromy group equals $R\intersect\Orth^+(T_\Co)$ (@prob:B25, @thm:sign-is-isotropy), the loop monodromy over the coarse moduli space being its quotient by $\theset{\pm\id}$ (@thm:no-loop-carries-the-sign).
+4. $\Gamma_{\Co,2}\subseteq R\intersect\Orth^+(T_\Co) = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co) = \Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2}$: the second inclusion is @lem:coble-monodromy-in-stabilizer, conditional on (U) of @lem:coble-family-identification, the first is (1), and the equalities are @prop:direct-eq-heegner. For the degree-$2$ Coble data of @prop:one-node-family the reverse inclusion holds as well, so there the orbifold monodromy group equals $R\intersect\Orth^+(T_\Co)$ (@prob:B25, @thm:sign-is-isotropy), the loop monodromy over the coarse moduli space being its quotient by $\theset{\pm\id}$ (@thm:no-loop-carries-the-sign).
 :::
 
 ::: {.proof}
@@ -310,7 +316,7 @@ For (4). The inclusion $\Gamma_{\Co,2}\subseteq R_{\gent}$ is @lem:coble-monodro
 
 ::: {.question #qst:coble-monodromy-equality title="Is the monodromy of the degree-$2$ Coble family the whole arithmetic model?"}
 
-Is $\Gamma_{\Co,2} = R_{\gent}\intersect\Orth^+(T_\Co)$? The inclusion $\Gamma_{\Co,2}\subseteq R_{\gent}\intersect\Orth^+(T_\Co)$ is @thm:coble-monodromy-versus-enriques(4), from @lem:coble-monodromy-in-stabilizer, with (F) proved in @lem:coble-family-identification. The reverse inclusion is the assertion that every congruence isometry of $T_\Co$ in $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ is realised by monodromy; by @lem:coble-monodromy-reverse-reduction it is equivalent to $\bar\rho(\Gamma_{\Co,2}) = P$ and $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_{\Co,2}$. It holds for the degree-$2$ Coble data of the direct construction, where it is @prob:B25, whose proof rests on the period computation of @prob:B24 and not on a printed theorem; no printed statement supplies it for the degree-$2$ Coble family of @lem:coble-monodromy-in-stabilizer, and it is the degree-$2$ analogue of the reverse inclusion of @conj:gamma-co-stable. The equality $R_{\gent} = \Gamma_{\Co,2}$ of research#779 is false either way (@thm:coble-monodromy-versus-enriques(3)).
+Is $\Gamma_{\Co,2} = R_{\gent}\intersect\Orth^+(T_\Co)$? The inclusion $\Gamma_{\Co,2}\subseteq R_{\gent}\intersect\Orth^+(T_\Co)$ is @thm:coble-monodromy-versus-enriques(4), from @lem:coble-monodromy-in-stabilizer, conditional on (U) of @lem:coble-family-identification; (U) and (F) are D2 of research#786. The reverse inclusion is the assertion that every congruence isometry of $T_\Co$ in $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ is realised by monodromy; by @lem:coble-monodromy-reverse-reduction it is equivalent to $\bar\rho(\Gamma_{\Co,2}) = P$ and $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_{\Co,2}$. It holds for the degree-$2$ Coble data of the direct construction, where it is @prob:B25, whose proof rests on the period computation of @prob:B24 and not on a printed theorem; no printed statement supplies it for the degree-$2$ Coble family of @lem:coble-monodromy-in-stabilizer, and it is the degree-$2$ analogue of the reverse inclusion of @conj:gamma-co-stable. The equality $R_{\gent} = \Gamma_{\Co,2}$ of research#779 is false either way (@thm:coble-monodromy-versus-enriques(3)).
 :::
 
 ::: {.lemma #lem:coble-monodromy-reverse-reduction title="The reverse inclusion splits into a discriminant surjectivity and the stable group"}
