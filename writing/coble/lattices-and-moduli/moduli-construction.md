@@ -524,6 +524,32 @@ Third, *the Deligne--Mumford property fails*, and it is not merely unproved: @le
 
 @def:coble-family-unpolarized describes a class of families and then chooses a parameter space; it states no functor and no property of that parameter space as a moduli object. This section states the functor and proves the one property of it that needs no comparison with $B$.
 
+::: {.definition #def:involution-stack title="The stack of $\mathrm{K3}$ surfaces with a nonsymplectic involution of type $(11,11,1)$"}
+
+On $S_0=\Spec\ZZ[1/2]$-schemes of finite presentation, let $\mathfrak{Inv}$ assign to $Y$ the groupoid of pairs $\qty{\mcx\xrightarrow{f}Y,\ \iota}$ with $f$ flat projective of finite presentation, each geometric fibre a $\mathrm{K3}$ surface, $\iota$ an involution of $\mcx$ over $Y$, and each geometric fibre satisfying:
+
+1. the invariant lattice $H^2(X_b)^{\iota_b}$ is isometric to $M=\generators{2}\oplus\generators{-2}^{\oplus10}$, of $2$-elementary type $(11,11,1)$ (@prop:coble-period-domain(1)--(2), [@AE22, §2A]);
+2. $\operatorname{Fix}(\iota_b)$ is either empty or a smooth rational curve $R_b$ with $R_b^2=-2$;
+
+with morphisms the $\iota$-equivariant Cartesian squares and pullback the fibre product.
+:::
+
+::: {.lemma #lem:involution-stack title="$\mathfrak{Inv}$ is a stack, and the Coble stack sits in it"}
+
+1. $\mathfrak{Inv}$ satisfies fppf descent, hence étale descent, by the argument of @lem:enriques-partial-compactification-stack: the fibre conditions of @def:involution-stack are conditions on geometric fibres, and the involution descends as a morphism.
+2. The assignment $(S\to Y,\ X\to S,\ \iota)\mapsto(X\to Y,\ \iota)$ of @def:coble-moduli-functor-z is a morphism $\mcM_\Co\to\mathfrak{Inv}$ which is **fully faithful**: an isomorphism of $(X,\iota)$ with $(X',\iota')$ over $Y$ is the same datum as an isomorphism of the quotients $S=X/\iota$ with $S'=X'/\iota'$ compatible with the covers, because the quotient, the cover and its involution are determined by one another.
+3. Its essential image over $Y$ is the locus of objects whose fixed locus is nonempty and whose quotient $X/\iota$ is a Coble surface in the narrowed sense of @rmk:coble-class-smooth-antinbicanonical — that is, the image of $R_b$ in $S_b$ is a smooth member of $\abs{-2K_{S_b}}$. So $\mcM_\Co$ is the closed-and-open piece of $\mathfrak{Inv}$ where the involution has a fixed curve, and the piece where it is free is the Enriques locus of @def:enriques-partial-compactification.
+:::
+
+::: {.proof}
+
+(1) The geometric fibre conditions are checked after the cover; $f$ being flat and projective is local and base-change stable; $\iota$ descends as a morphism because morphisms of schemes descend (SGA 1, Exposé VIII), and the equations $\iota^2=\id$ and $f\iota=f$ hold after descent.
+
+(2) An isomorphism $\varphi\colon(X,\iota)\to(X',\iota')$ over $Y$ induces $X/\iota\to X'/\iota'$ over $Y$, and two such $\varphi$ inducing the same map on the quotients differ by an element of $\theset{\id,\iota}$, which is the identity on the quotient; conversely a Cartesian square of the quotients commuting with the covers and involutions is an isomorphism of $X$ with $X'$ commuting with $\iota$, since $X\to S$ is the relative double cover and is determined by $(S,\iota)$. Hence the map on isomorphism groupoids is a bijection.
+
+(3) That the quotient of an involution with a smooth fixed curve of square $-2$ is a Coble surface with a smooth anti-bicanonical member is the computation of @def:coble-moduli-functor(2); the converse is the same computation read backwards. The free locus is the Enriques case of @def:enriques-partial-compactification(1).
+:::
+
 ::: {.lemma #lem:d0-coble-stack-in-involution-stack title="The Coble stack inside the moduli of $\mathrm{K3}$ surfaces with a nonsymplectic involution of type $(11,11,1)$"}
 
 Let $\mcM_\Co$ be the functor of @def:coble-moduli-functor, a stack by @lem:coble-moduli-functor-stack, and let $\mathfrak{Inv}$ be the moduli of $\mathrm{K3}$ surfaces with a nonsymplectic involution of invariant lattice of type $(11,11,1)$ in the sense of [@AE22, §2A] and [@AE22, §2C]. Then:
