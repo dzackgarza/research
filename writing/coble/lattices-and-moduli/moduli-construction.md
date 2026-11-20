@@ -548,7 +548,16 @@ Let $S$ be a smooth projective rational surface and $m\geq1$. Then $H^0\qty(S,\o
 $$H^0\qty(S',\operatorname{Sym}^m\Omega^1_{S'})\cong H^0\qty(S\sm\theset{p},\operatorname{Sym}^m\Omega^1_S)=H^0\qty(S,\operatorname{Sym}^m\Omega^1_S),$$
 the last equality because $S$ is smooth and a section over a dense open set of a vector bundle extends uniquely.
 
-*The Hirzebruch surfaces.* Let $F_n$ be the ruled surface $\PP\qty(\OO_{\PP^1}\oplus\OO_{\PP^1}(n))$ over $\PP^1$ with $n\neq1$. Its cotangent sheaf sits in $0\to f^*\Omega^1_{\PP^1}\to\Omega^1_{F_n}\to\Omega^1_{F_n/\PP^1}\to0$, and on a fibre $F\cong\PP^1$ the relative quotient is $\Omega^1_{F_n/\PP^1}|_F\cong\Omega^1_{\PP^1}=\OO(-2)$; since $\operatorname{Sym}^m$ is right exact, $\operatorname{Sym}^m\Omega^1_{F_n}|_F$ surjects onto $\OO(-2m)$, which has no sections. A nonzero section of $\operatorname{Sym}^m\Omega^1_{F_n}$ restricts nontrivially to a general fibre — its zero divisor cannot contain a general member of the pencil — so $H^0\qty(F_n,\operatorname{Sym}^m\Omega^1)=0$.
+*The Hirzebruch surfaces.* Let $F_n$ be the ruled surface $\PP\qty(\OO_{\PP^1}\oplus\OO_{\PP^1}(n))$ over $\PP^1$ with $n\neq1$, with cotangent sequence
+$$0\too f^*\Omega^1_{\PP^1}\too\Omega^1_{F_n}\too\Omega^1_{F_n/\PP^1}\too0 .$$
+A surjection onto a sheaf with no sections says nothing about the source, so the argument goes through the **filtration** of $\operatorname{Sym}^m\Omega^1_{F_n}$ induced by this extension: its graded pieces are
+$$\operatorname{Sym}^k\qty(f^*\Omega^1_{\PP^1})\tensor\operatorname{Sym}^{m-k}\qty(\Omega^1_{F_n/\PP^1}),\qquad k=0,1,\dots,m .$$
+On a fibre $F\cong\PP^1$ one has $f^*\Omega^1_{\PP^1}|_F=\OO$ and $\Omega^1_{F_n/\PP^1}|_F=\Omega^1_F=\OO(-2)$, so the $k$-th piece restricts to $\OO(-2(m-k))$:
+
+- for $k<m$ this has negative degree, so a section of the piece restricts to $0$ on **every** fibre, hence vanishes at every point of $F_n$ and is zero;
+- for $k=m$ the piece is $f^*\OO_{\PP^1}(-2m)$, and $H^0\qty(F_n,f^*\OO(-2m))=H^0\qty(\PP^1,\OO(-2m))=0$.
+
+The graded pieces of the filtration therefore have no sections, and $H^0$ of an extension with both ends section-free is zero, so by induction along the filtration $H^0\qty(F_n,\operatorname{Sym}^m\Omega^1)=0$.
 
 *A rational surface.* Every minimal rational surface is $\PP^2$ or a Hirzebruch surface $F_n$ with $n\neq1$ [@Bea96, Chapter III, the classification of minimal rational surfaces], and every rational surface is obtained from one of them by a sequence of blow-ups. The invariance under blow-ups above and the two computations give $H^0\qty(S,\operatorname{Sym}^m\Omega^1_S)=0$.
 :::
