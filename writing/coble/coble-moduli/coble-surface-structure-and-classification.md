@@ -104,7 +104,7 @@ So its orthogonal complement has rank $10$ and signature $(1,9)$.
 
 ::: {.question #qst:coble-mukai-naturality title="Is the Coble--Mukai lattice the natural home for the group action?"}
 
-Is $\CM(S)$ rather than $S_{\Co}$ the natural home for the action of $\Gamma_{\Co}$, the monodromy group of @def:coble-family-unpolarized(3), and how are the two related?
+Is $\CM(S)$ rather than $S_{\Co}$ the natural home for the action of $\Gamma_{\Co}$, the monodromy group of the VHS on the universal family over the moduli stack of Coble surfaces (@def:gamma-co-groups(1)), and how are the two related?
 :::
 
 ## The Dolgachev-Zhang classification

@@ -1,0 +1,95 @@
+research#797 (D0, restated as a research programme) -- items 3 and 4, item by item
+
+Body read: the restated body of 2026-11-20 and its correction comment
+(issuecomment-7040126022): Gamma_Co is by definition the monodromy of the VHS on the
+universal family over the Coble moduli stack, and nothing weakens that definition.
+Commit: this commit, on top of 25a13d4a99.  Line numbers are those of this commit.
+
+ITEM 3. The quotient-stack presentations: for unpolarized K3 surfaces, and then for
+S-polarized K3 surfaces, write the stack as F_S = [Otilde+(T) \ D_T], from
+Dolgachev's lattice-polarized theory cited by number, with the hypotheses checked.
+VERDICT: MET for the S-polarized marked case; NOT MET for the unpolarized half,
+which is reduced and named below.
+
+  moduli-construction.md:1024, prop:quotient-stack-of-periods.  M even of signature
+  (1,t), t <= 19, primitively embedded in the K3 lattice L, N = M^perp.  Under
+  (i) K_M a fine moduli space for marked M-polarized K3 surfaces [@Dol96, §3],
+  (ii) the period map bijective on the ample locus [@Dol96, Cor. 3.2] and surjective
+  with fibre W_pi(N) on the pseudo-ample one [@Dol96, Thm. 3.1], (iii)
+  Gamma_M = O(N)* [@Dol96, Prop. 3.3], the ample moduli stack is
+  [O(N)* \ D^o_M] and the pseudo-ample one [O(N)* \ D_M]; and if N contains an
+  m-admissible isotropic vector with m <= 2 then O(N)* is transitive on the two
+  components and the stack is [O(N)^{+,*} \ D^+_M] [@Dol96, Prop. 5.6].
+  The proof supplies the step the source does not state: the markings of a fixed
+  M-polarized K3 are a Gamma(M)-torsor, so the moduli stack is [K_M / Gamma(M)], and
+  the period map identifies that with [O(N)* \ D_M].  The pseudo-ample fibre
+  W_pi(N) lies in Gamma(M), so surjectivity in place of bijectivity does not change
+  the quotient.
+
+  Hypotheses checked for the Coble lattice, M = S_Co, N = T_Co
+  (moduli-construction.md:1048-1052):
+  - even, signature (1,10), t = 10 <= 19: @prop:coble-period-domain(1)--(2);
+  - primitive embedding: explicit, @prop:coble-transcendental;
+  - (i), (ii), (iii): [@Dol96, §3], [@Dol96, Cor. 3.2 with Thm. 3.1], [@Dol96,
+    Prop. 3.3], the last unconditional;
+  - 2-admissible vector: the summand U(2) of T_Co has basis e, f with e^2 = f^2 = 0
+    and e.f = 2, so div(e) = div(f) = 2 and e is 2-admissible; [@Dol96, Prop. 5.6]
+    applies with m = 2.
+  Hence F_S = [Otilde+(T_Co) \ D(T_Co)^+], the presentation item 3 asks for.
+
+  NOT MET, reduced: the hypotheses are not all supplied for the Coble lattice.
+  [@Dol96, Prop. 5.1] gives condition (U), uniqueness of the primitive embedding,
+  under l(A(M)) <= 20 - t, and for M = S_Co, l(A(M)) = 11 > 20 - 10 = 10
+  (moduli-construction.md:1054).  (U) is not needed for the marked theory, which is
+  what the labelled base of def:coble-family-unpolarized uses; it is owed for the
+  unmarked reading of K_M.
+
+  NOT MET, reduced: the unpolarized case M = 0 (moduli-construction.md:1056).
+  [@Dol96, §3] requires M of signature (1,t) and does not cover M = 0.  The inputs
+  needed are the global Torelli theorem for K3 surfaces and the surjectivity of
+  their period map, each by numbered statement; no numbered statement of either has
+  been read in this repository.  This is the reduction the body allows.
+
+ITEM 4. Monodromy from a local system on a stack: 1 -> K_L -> pi_1(X) -> Mon(L) -> 1
+with the Galois correspondence on stacks, cited by number; from this, Otilde+(T) is
+the monodromy of the VHS on the universal family over F_S.
+VERDICT: MET for the quotient-stack case, which is the case both presentations of
+item 3 have; NOT MET for the general statement on an arbitrary stack, reduced below.
+
+  moduli-construction.md:1058-1060: the exact sequence is the first isomorphism
+  theorem for rho: pi_1(X,x) -> Aut(T), with Mon(L) = rho(pi_1(X,x)) and K_L its
+  kernel.
+  moduli-construction.md:1068, cor:monodromy-of-the-tautological-system, from
+  lattices.md, lem:orbifold-monodromy-of-a-quotient: for U = D~/Gamma with the
+  tautological system (D~ x T)/Gamma the monodromy representation is
+  (g, gamma~) -> g, with image Gamma and kernel pi_1(D~), so
+  1 -> pi_1(D~) -> pi_1^orb(U) -> Gamma -> 1 is exact.  Applied to
+  F_S = [Otilde+(T_Co) \ D(T_Co)^+], the tautological system has monodromy
+  Otilde+(T_Co) itself, and nontrivial stabilisers do not shrink the image: they make
+  orbifold points.
+
+  NOT MET, reduced: the identification of that tautological system with the local
+  system of the VHS on the universal family over M_Co.  It needs the universal family
+  (item 1) and the pushforward/pullback of item 6.  The Galois correspondence for
+  covering stacks of an arbitrary stack is also not read in this repository, so the
+  covering-stack half of item 4 rests on the orbifold case only.
+
+DEFINITION (the body's first paragraph, not an item)
+  lattices.md:116, def:gamma-co-groups(1), defines Gamma_Co as the monodromy of the
+  VHS on the universal family over the moduli stack; the labelled base B is a
+  presentation, and its group is written Gamma_Co(B).
+  lattices.md:307, thm:gamma-co-is-stable, proves the inclusion for Gamma_Co(B) and
+  states that neither Gamma_Co(B) = Otilde+(T_Co) nor Gamma_Co = Otilde+(T_Co) is
+  proved.  Sentences on nine pages that called Gamma_Co the monodromy of one chosen
+  family are replaced; prop:coble-plane-model-comparison(4) keeps the owner's wording
+  of 25a13d4a99 and gains the notation Gamma_Co(B).
+
+CHECKS AT THIS COMMIT
+  python3 scripts/docs_check.py --source   29 findings, all "citation is in no
+    bibliography", none on the touched pages (parent: 29).
+  tests/engineering/test_coble_780_arrangement_classes.py   3/3 run directly; pytest
+    cannot run here (tests/conftest.py needs sage_extensions, absent).
+
+NEXT
+  (U) for S_Co, and the unpolarized half of item 3: the global Torelli theorem and
+  the surjectivity of the period map, by numbered statement.  Then item 5.

@@ -139,7 +139,7 @@ Four groups act on the period domain of the Coble lattice, and every statement a
 | group | what defines it | source |
 | --- | --- | --- |
 | $\Gamma^{\mathrm{un}}_\Co = \Orth(T_\Co)$ | the moduli space of Coble surfaces is an open subset of $\bD(N)/\Orth(N)$, $N = \generators{2}\oplus E(2) = T_\Co$ | [@DK13, (3.6), Prop. 3.2, p. 513] |
-| $\Gamma_\Co$ | the monodromy group of the family of unpolarized Coble surfaces, which the family of unpolarized Enriques surfaces with monodromy group $\Gamma_\En = \widetilde\Orth^+(T_\En)$ induces | @def:gamma-co-groups, @def:coble-family-unpolarized |
+| $\Gamma_\Co$ | the monodromy group of the VHS on the universal family over the moduli stack of Coble surfaces; $\Gamma_\Co(B)$ is its value on the labelled presentation, whose local system the family of unpolarized Enriques surfaces with monodromy group $\Gamma_\En = \widetilde\Orth^+(T_\En)$ induces | @def:gamma-co-groups, @def:coble-family-unpolarized, @def:coble-moduli-functor |
 | $\Gamma_{\Co,2}$ | the monodromy group of the VHS of the degree-$2$ Coble family (@def:gamma-co-groups(5)); the arithmetic group computed in this book is $R_{\gent} = \Gamma^{\mathrm{cong}}_{\Co,2} = \bar\rho^{-1}(P)$, the image of $\Stab_{\gent}(\delta)$ in $\Orth(\delta^{\perp})$ for $\delta$ the $(-2)$-vector of $T_\En$ with $\delta^{\perp T_\En} = T_\Co$, and it is not the monodromy group (@thm:coble-monodromy-versus-enriques(3)) | @def:coble-family-degree-two, [@AEGS25, Def. 2.6], [@Ste91, Prop. 2.7] |
 | $\widetilde\Orth^+(T_\Co)$ | the stable subgroup $\Orth^+(T_\Co)\intersect\ker\bar\rho$, equal to the image of $\Stab_{\Gamma_\En}(\delta)$ (@prop:gamma-co-images(1)) | [@DK13, (2.1)] |
 
