@@ -771,6 +771,29 @@ So $\Gamma_\Co$ is a quotient of the labelled monodromy group by a subgroup of t
 (4) is (1)--(3): the monodromy group of the quotient is the image of the cover modulo the image of the kernel, and $\rho(N)\subseteq\theset{1,-\id}$.
 :::
 
+::: {.proposition #prop:gamma-co-on-the-coble-stack title="The statement for $\mcM_\Co$, given the labelled result, with the special-member case open"}
+
+Assume:
+
+- **(L)** the labelled period map is fully faithful onto its image and the monodromy of the tautological system on that image is $\widetilde\Orth^+(T_\Co)$, so that the labelled monodromy is all of $\widetilde\Orth^+(T_\Co)$; this is the content of research#797's items 3 and 4, proved on that branch and not on this tree, and it contains the open equality of @thm:gamma-co-is-stable(2);
+- **(S)** the comparison $\bar B\to\mcM_\Co$ is a smooth cover (@prop:coble-stack-as-quotient).
+
+Then, with $N$ and $F_b$ as in @prop:pi1-of-the-plane-model-quotient:
+
+1. $\Gamma_\Co=\widetilde\Orth^+(T_\Co)/\rho(N)$, with $\rho(N)\subseteq F_b\cap\widetilde\Orth^+(T_\Co)$ and $F_b$ the finite image of $\Aut(S_b)$ in $\Orth(T_\Co)$ (@prop:pi1-of-the-plane-model-quotient(3)--(4)).
+2. *At a general member*, where $\Aut(S_b)=W_{10}(2)$ and $F_b=\theset{\pm\id}$ (@prop:pi1-of-the-plane-model-quotient(3)), either $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ or $\Gamma_\Co=\widetilde\Orth^+(T_\Co)/\theset{\pm\id}$. The equality @conj:gamma-co-stable is the first alternative, and it holds exactly when $\rho(N)=1$.
+3. *At a special member* $F_b$ may strictly contain $\theset{\pm\id}$, and the part of $F_b$ outside $\widetilde\Orth^+(T_\Co)$ is not excluded by anything proved here; whether a plane-model loop realises such an element is open, and it is a question about the isotropy at that member, not about the labelled stack.
+:::
+
+::: {.proof}
+
+(1) is @prop:pi1-of-the-plane-model-quotient(4) with (L) substituted for the labelled monodromy: the display there reads $\Gamma_\Co=\rho\qty(\pi_1(\mcM^{\mathrm{lab},S_{10}}_\Co))/\rho(N)$, and (L) identifies the numerator with $\widetilde\Orth^+(T_\Co)$. That $\rho(N)\subseteq F_b$ is @prop:pi1-of-the-plane-model-quotient(3), and the intersection with $\widetilde\Orth^+$ is (L)'s own containment, since the numerator lies in it.
+
+(2) At a general member @prop:pi1-of-the-plane-model-quotient(3) gives $F_b=\theset{\pm\id}\subseteq\widetilde\Orth^+(T_\Co)$, so $\rho(N)$ is $1$ or $\theset{\pm\id}$, and the two alternatives of the display are the two cases.
+
+(3) is the statement that nothing proved constrains $F_b$ beyond finiteness at a special member; it is recorded as open rather than assumed away.
+:::
+
 ::: {.remark #rmk:universal-object-of-the-coble-stack title="The universal object over the stack, and why no family over a scheme presents it"}
 
 Item 1 of research#797 asks for the universal family over the Coble stack, and item 2 for that over the partial compactification. Two different things are at stake.

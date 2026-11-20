@@ -1,0 +1,60 @@
+research#797 -- the six items of the programme, item by item, at this commit
+
+Paths are relative to the repository root; line numbers are those of this commit.
+Every claim below is either a label on the page or an explicit statement that the
+item is open.  Nothing here is a new answer.
+
+ITEM 1. The Coble moduli functor over Spec Z[1/N], its descent, stack, Deligne-Mumford
+property and universal family.
+  MET: N = 2 and the functor on Z[1/2]-schemes (def:coble-moduli-functor-z); fppf and
+  etale descent (lem:coble-moduli-functor-fppf); the analytic version
+  (def:coble-moduli-functor, lem:coble-moduli-functor-stack).
+  SETTLED NEGATIVELY: the Deligne-Mumford property.  Aut(S) = W_10(2) is infinite and
+  discrete (CD12 Section 5, the theorem labelled autocoble and the closing remark of
+  the subsection), so the stack is not locally of finite type, is not Deligne-Mumford
+  in the standard sense, and is not separated; its inertia is discrete
+  (rmk:coble-automorphisms-infinite(1)-(3)).
+  NOT MET: algebraicity, and the universal family as a family over a scheme.  The
+  tautological universal object exists and the family over Bbar presents it without
+  representing it (rmk:universal-object-of-the-coble-stack(1)-(2)).
+
+ITEM 2. The Enriques and lattice-polarized K3 functors and the maps between them.
+  MET: the partial compactification over Z[1/2] (def:enriques-partial-compactification,
+  lem:enriques-partial-compactification-stack); the Coble stack as its boundary divisor
+  over delta-perp, with the fixed-curve normal data (lem:coble-is-the-boundary-divisor);
+  the refutation of a morphism from the Coble stack to the smooth Enriques stack, with
+  the boundary relation of DK13 Section 1 (rmk:coble-enriques-not-a-map).
+  PARTIAL: the map to the K3-with-involution moduli is stated for the Coble component
+  (lem:d0-coble-stack-in-involution-stack) and not for the Enriques one.
+  NOT MET: a functor of Enriques surfaces with its stack property and universal
+  family; the two-lattice structure of the partial compactification is not yet on the
+  page.
+
+ITEM 3. Quotient-stack presentations of the unpolarized and S-polarized K3 stacks.
+  NOT ON THIS TREE.  The labelled period-map theorem and the marking-group proposition
+  are proved on the item-3/4 branch and are absent from this tree; the unpolarized case
+  is expressly left unproved on the page.
+
+ITEM 4. Monodromy from a local system on a stack.
+  The general exact-sequence statement is on the page; the identification of the
+  tautological system with the universal family's VHS is not.
+
+ITEM 5. Torelli.
+  NOT MET.  The coarse statement is DK13 Proposition 3.2; the stack-level statement is
+  defective as reviewed (object injectivity and a differential do not identify inertia;
+  no ample class is constructed where BHPV04 Chapter VIII Theorem 11.1 needs one; the
+  step from a constructible image to a proper closed analytic complement is not proved).
+
+ITEM 6. Pushing, pulling and restricting the VHS; Gamma_Co and Gamma_{Co,2}.
+  REDUCED for Gamma_Co: prop:gamma-co-from-the-labelled-stack gives
+  Gamma_Co <= Otilde^+(T_Co) and reduces the equality to the labelled statement;
+  prop:pi1-of-the-plane-model-quotient computes the plane-model quotient and bounds its
+  image memberwise; prop:gamma-co-on-the-coble-stack is the combined statement,
+  conditional on (L) and (S), with the alternative Gamma_Co = Otilde^+/{+-1} at a
+  general member and the special-member case open.
+  NOT MET: the identification itself, and any statement for Gamma_{Co,2}.
+
+WHAT WOULD FINISH IT.  Two inputs, both single: (i) the labelled equality, which is
+the connectedness of the period image on the labelled stack; (ii) rho(N) = 1, a
+statement about one plane-model loop at a general member.  Everything else in the
+item-6 chain is conditional on those two and is stated as such.
