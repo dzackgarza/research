@@ -747,12 +747,17 @@ Let $\mcM^{\mathrm{lab},S_{10}}_\Co=\qty[\mcM^{\mathrm{lab}}_\Co/S_{10}]$ be the
 
 1. *Surjectivity.* $\pi_1\qty(\mcM^{\mathrm{lab},S_{10}}_\Co,s)\to\pi_1(\mcM_\Co,s)$ is surjective, because the map of stacks is essentially surjective and smooth (@prop:coble-plane-model-comparison(1)).
 2. *The kernel.* Its kernel is the normal closure $N$ of the paths that join a plane presentation to a plane-model transform of it: the quadratic Cremona identifications of @prop:coble-plane-model-comparison(3) and the Bertini automorphisms of @prop:coble-plane-model-comparison(2), each read as a path in $\mcM^{\mathrm{lab},S_{10}}_\Co$ whose two ends are the same object of $\mcM_\Co$.
-3. *The image.* The monodromy of such a path is an isomorphism of one object of $\mcM_\Co$ with itself, that is an element of the isotropy $\theset{\id,\iota}$; so
-$$\rho(N)\ \subseteq\ \rho\qty(\theset{\id,\iota})\ =\ \theset{1,-\id_{T_\Co}},$$
-using that $\iota$ acts as $-\id$ on $T_\Co$ (@prop:coble-transcendental). In particular the relabelling paths lie in $N$ and have trivial image, by @prop:gamma-co-from-the-labelled-stack(3).
+3. *The image, memberwise.* The monodromy of such a path is an isomorphism of one object of $\mcM_\Co$ with itself, so its image is the action on $T_\Co$ of an element of the isotropy $\Aut(S_b)$, and
+$$\rho(N)\ \subseteq\ F_b\definedas\operatorname{im}\qty(\Aut(S_b)\too\Orth(T_\Co)).$$
+$F_b$ is finite, being a subgroup of the period stabiliser (@lem:period-stabiliser-finite), and it **need not be $\theset{\pm\id}$**: the isotropy is the whole of $\Aut(S_b)$, not only the covering involution. Two cases:
+
+- at a *general* member, $\Aut(S_b)=W_{10}(2)$ [@CD12, §5, the closing remark of the subsection], which acts trivially on $E_{10}/2E_{10}$ and hence, by @lem:coble-discriminant-actions-conjugate, trivially on $A_{T_\Co}$; so $F_b\subseteq\widetilde\Orth^+(T_\Co)$, and $F_b=\theset{\pm\id}$ exactly when the period stabiliser is no larger, which is the generic situation;
+- at a *special* member the isotropy is larger, and $F_b$ can be larger; its part outside $\widetilde\Orth^+(T_\Co)$ is not excluded by anything proved here.
+
+The relabelling paths lie in $N$ with trivial image in every case (@prop:gamma-co-from-the-labelled-stack(3)), and $\iota_b$ contributes $-\id$ to $F_b$ at every member (@prop:coble-transcendental).
 4. *Conclusion.*
-$$\Gamma_\Co=\rho\qty(\pi_1(\mcM_\Co,s))=\rho\qty(\pi_1(\mcM^{\mathrm{lab},S_{10}}_\Co,s))\big/\rho(N),$$
-so $\Gamma_\Co$ is a **quotient** of the labelled monodromy group by a subgroup of $\theset{1,-\id}$, and in particular $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable(1)). The equality $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ — @conj:gamma-co-stable — holds exactly when the labelled monodromy is all of $\widetilde\Orth^+(T_\Co)$ **and** $\rho(N)=1$; neither is proved, and the plane-model step can only shrink the group, never enlarge it.
+$$\Gamma_\Co=\rho\qty(\pi_1(\mcM_\Co,s))=\rho\qty(\pi_1(\mcM^{\mathrm{lab},S_{10}}_\Co,s))\big/\rho(N),\qquad \rho(N)\subseteq F_b .$$
+So $\Gamma_\Co$ is a quotient of the labelled monodromy group by a subgroup of the finite group $F_b$, and at a general member by a subgroup of $\theset{\pm\id}$. Combined with the labelled statement, in which the period map of the labelled stack is fully faithful onto its image and the monodromy of the tautological system is $\widetilde\Orth^+(T_\Co)$, this gives: *if* the labelled monodromy is all of $\widetilde\Orth^+(T_\Co)$ — the open equality of @thm:gamma-co-is-stable(2) — *then* $\Gamma_\Co=\widetilde\Orth^+(T_\Co)/\rho(N)$ with $\rho(N)\subseteq F_b\cap\widetilde\Orth^+(T_\Co)$, so at a general member $\Gamma_\Co$ is $\widetilde\Orth^+(T_\Co)$ or $\widetilde\Orth^+(T_\Co)/\theset{\pm\id}$. The equality @conj:gamma-co-stable needs, in addition, $\rho(N)=1$; neither input is proved, and the plane-model step can only shrink the labelled group.
 :::
 
 ::: {.proof}
