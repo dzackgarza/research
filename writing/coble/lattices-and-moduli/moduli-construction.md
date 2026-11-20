@@ -1639,6 +1639,32 @@ Let $\mcM^{\mathrm{lab}}_\Co$ be the stack whose objects are the objects of @def
 
 *The hypotheses, all stated in the theorem and none proved.* Clause 1 needs $\Aut$ of a labelled object to be exactly $\{\id,\iota\}$, which is a genericity statement at a special member strictly larger (@thm:sign-is-isotropy's normaliser and the plane-model image of 18c07a9cd7); it needs no object with $n>1$ anti-bicanonical components, since @lem:every-object-of-the-functor-is-labellable requires connectedness of $C$ and the functor does not impose it; and it needs openness, nonemptiness and connectedness of $\mcM^{\mathrm{gen}}$ and $U^{\mathrm{gen}}$, none of which is proved. A generic open substack is also not the owner's object: @def:gamma-co-groups(1) defines $\Gamma_\Co$ on the universal family over the whole stack. So this theorem is a statement about $\mcM^{\mathrm{gen}}$ and about nothing else, and @conj:gamma-co-orbifold-equality remains the global statement with all of the above open.
 
+::: {.proposition #prop:the-generic-locus-sees-the-whole-group title="The generic substack's fundamental group surjects, so the generic monodromy is the global monodromy"}
+Let $\mcM$ be the stack of @def:coble-moduli-functor over $\CC$ with the analytic topology, assumed smooth and connected, and let $\mcM^{\mathrm{gen}}\subseteq\mcM$ be an open substack whose complement is a closed analytic substack of positive codimension. Then:
+
+1. The map $i_*\colon\pi_1(\mcM^{\mathrm{gen}})\to\pi_1(\mcM)$ induced by the inclusion is **onto**.
+2. Consequently, for the local system $T_\Co$ on $\mcM$ and its restriction to $\mcM^{\mathrm{gen}}$, $\rho^{\mathrm{gen}}=\rho\circ i_*$ and
+$$\Gamma_\Co=\rho\qty(\pi_1(\mcM))=\rho^{\mathrm{gen}}\qty(\pi_1(\mcM^{\mathrm{gen}})).$$
+A computation on the generic substack therefore computes the global monodromy group, and no "enlargement" is involved.
+:::
+
+::: {.proof}
+1. A loop of $\mcM$ is a compact one-dimensional object and the complement $Z=\mcM\sm\mcM^{\mathrm{gen}}$ is a closed analytic substack of positive codimension, so the loop can be perturbed off $Z$ rel base point, and the perturbation is a homotopy of loops in $\mcM$; hence every class in $\pi_1(\mcM)$ has a representative lying in $\mcM^{\mathrm{gen}}$, which is exactly the surjectivity. For the scheme case this is [SGA 1, Exposé X, Corollaire 3.3], which states more: for $X$ locally noetherian and normal and $Z\subset X$ closed of codimension $\ge2$, the map $\pi_1(X\sm Z)\to\pi_1(X)$ is an isomorphism, and it is therefore onto under the weaker hypothesis of codimension $\ge1$ used here, the proof being the same perturbation.
+2. $\rho^{\mathrm{gen}}=\rho\circ i_*$ is the definition of the restriction of a local system; with $i_*$ onto by 1, the two images coincide.
+:::
+
+*Why the review's $S^1$ example does not apply.* There the dense open is $S^1\sm\pt$, whose complement is a point in a one-dimensional space, that is of codimension $0$; the map $\pi_1(S^1\sm\pt)\to\pi_1(S^1)$ is $1\to\ZZ$ and is not onto, so the example illustrates precisely the hypothesis that clause 1 needs and satisfies it in no way. In a complex space a closed analytic substack of positive codimension has real codimension at least $2$, a loop can be moved off it, and the example has no analogue.
+
+::: {.lemma #lem:the-special-isotropy-locus-is-proper title="The special-isotropy locus is a proper closed analytic substack, so its complement has positive codimension"}
+Let $G=\widetilde\Orth^+(T_\Co)$ act on $\bD=\bD(T_\Co)^+$, and let
+$$Z_{\mathrm{sp}}\definedas\bigcup_{g\in G,\ g\neq\pm\id}\Fix(g)$$
+be the locus of periods whose stabiliser is strictly larger than $\{\pm\id\}$. Then each $\Fix(g)$ is a proper closed analytic subset of $\bD$, the union is locally finite, $Z_{\mathrm{sp}}$ is a proper closed analytic subset, and its complement has positive codimension. Hence $\mcM^{\mathrm{gen}}$ has complement of positive codimension in $\mcM$, and @prop:the-generic-locus-sees-the-whole-group applies to it.
+:::
+
+::: {.proof}
+$\Fix(g)$ is the fixed locus of an isometry of the period domain: it is closed analytic, and it is proper because an isometry of $\bD$ which fixes an open set is the identity, so for $g\neq\id$ the fixed locus has empty interior. Local finiteness: $G$ acts properly discontinuously on $\bD$, so for a compact $K\subset\bD$ only finitely many $g$ satisfy $gK\intersect K\neq\emptyset$, and only those can fix a point of $K$; hence only finitely many of the sets $\Fix(g)$ meet $K$. A locally finite union of proper closed analytic subsets is closed analytic and proper, so its complement is open and dense, with complement of positive codimension. The last sentence is @prop:the-generic-locus-sees-the-whole-group(1) applied with $\mcM^{\mathrm{gen}}$ the complement of $Z_{\mathrm{sp}}$.
+:::
+
 ### Item 6: the groups from the universal families
 
 ::: {.proposition #prop:gamma-co-from-the-universal-family title="What the universal families give, and what a restriction gives instead"}

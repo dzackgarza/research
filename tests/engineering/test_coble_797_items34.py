@@ -271,3 +271,25 @@ def test_the_labelled_equality_and_its_hypothesis():
     tail = text[text.index("#" + LABELLED_EQ):]
     assert "gen" in body
     assert "not* a computation of the global group" in tail or "not a computation" in tail
+
+
+SURJ = "prop:the-generic-locus-sees-the-whole-group"
+SPEC = "lem:the-special-isotropy-locus-is-proper"
+
+
+def test_the_generic_group_is_the_global_group():
+    text = MC.read_text(encoding="utf-8")
+    body = _block(text, SURJ)
+    assert "onto" in body or "onto" in text[text.index("#" + SURJ):text.index("#" + SURJ) + 4000]
+    tail = text[text.index("#" + SURJ):]
+    # the citation and the S^1 check are in the proof and the trailing paragraph
+    assert "SGA 1" in tail[:4000]
+    assert "S^1" in tail[:6000] and "codimension $0$" in tail[:6000]
+    assert "Gamma_\\Co" in tail[:2000]
+
+
+def test_the_special_locus_is_proper_and_closed():
+    text = MC.read_text(encoding="utf-8")
+    tail = text[text.index("#" + SPEC):]
+    assert "properly discontinuously" in tail[:3000]
+    assert "positive codimension" in tail[:3000]
