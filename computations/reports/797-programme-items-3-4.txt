@@ -153,3 +153,31 @@ RESTATED AS NUMBERED STATEMENTS (this commit)
   the exact sequence is a corollary of Theorem 18.19 and not a statement in the paper.
   A guard test pins both statements and forbids a doubled control sequence in either:
   tests/engineering/test_coble_797_items34.py, 3/3 run directly.
+
+ITEM 5 (this commit, on the same page)
+  prop:torelli-for-the-coble-lattice (moduli-construction.md:1192) states the Torelli
+  statement the presentation needs and decides the route:
+  - Route (b), the transfer along X -> X/iota, supplies it at the level of coarse
+    spaces: [@DK13, Prop. 3.2] states M_Co is isomorphic to an open subset of
+    D(N)/O(N) for N = <2> + E(2), deduced there from the Torelli theorem for algebraic
+    K3 surfaces, and the transfer is the argument of [@DK13, §5], carried out there for
+    M = U + D_9 and concluded as [@DK13, Thm. 5.2]: the marking fixes the involution,
+    equal periods give a marking-preserving Hodge isometry, Torelli gives an isomorphism
+    commuting with the involutions, and it descends to the quotients.
+  - Route (a) has no object: the Coble periods are the quotient of the (-2)-Heegner
+    divisor of the Enriques period domain ([@DK13, the paragraph after Prop. 3.2]), so
+    the Enriques moduli is the complement and a Torelli statement there restricts to
+    nothing; the monodromy step it would need is the one already recorded as failing in
+    rmk:d2-routes-for-the-equality(3).
+  - What route (b) leaves open is stated: surjectivity onto D(T_Co), and the
+    identification of stabilisers with automorphism groups.
+  lem:coble-deformations-are-not-all-of-Def-S (moduli-construction.md:1205): the
+  equivariant deformations are 9-dimensional and NOT all of Def(S).  h^1(S,Theta_S)=12
+  follows from Riemann-Roch chi(Theta_S) = (7K^2 - 5e)/6 with K^2 = -1, e = 13 and the
+  vanishing of h^0 and h^2; the map 9 -> 12 is neither injective-on-the-nose nor
+  surjective, and the Coble locus has codimension 3 in Def(S).
+  One repair: \rk is not a macro of the book's corpus; the two occurrences are written
+  \rank, and the existing gate for that spelling
+  (tests/engineering/test_coble_a29_acceptance.py, test_a2) passes.
+  tests/engineering/test_coble_797_items34.py now has five assertions, all passing
+  when run directly.
