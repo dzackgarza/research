@@ -257,6 +257,16 @@ Two basic examples of recognizable divisors:
 
 :::
 
+::: {.lemma #lem:unigonal-restriction title="What the restriction theorem gives at the cusp with $p_*=1$"}
+
+Let $\eta$ be the $0$-cusp of $F_{2d}$ with $p_*(\delta)=1$, so that $k=d$ (@lem:cusp-census), with boundary lattice $\bar T=\langle-2d\rangle\oplus U\oplus E_8(-1)^{\oplus2}$ and $t$ a generator of the $\langle-2d\rangle$ summand, $t^2=-2d$. Then: (i) the restriction of $\mcf_{R_{\rcop},\eta}$ to $t^\perp$ is a **fan**; (ii) $t^\perp\cap C^+$ is a union of cones of $\mcf_{R_{\rcop},\eta}$; (iii) that fan is the fan of [@ABE22, §4C, printed p. 14]; and (iv) each maximal cone of it is itself a cone of $\mcf_{R_{\rcop},\eta}$, not only a slice of a $19$-dimensional one. All four are [@AE23, Thm. 10.16, printed p. 38] with its proof.
+:::
+
+::: {.proof}
+
+The cusp with $p_*(\delta)=1$ is the one the unigonal locus meets (@lem:unigonal-locus-cusp-support), and its boundary lattice is $\langle-2d\rangle\oplus U\oplus E_8(-1)^{\oplus2}$ with $k=d$ (@lem:cusp-lattice-p-greater-one). [@AE23, Thm. 10.16, printed p. 38] states that the restriction of $\mcf_{R_{\rcop}}$ to $\langle-2d\rangle^\perp$ is a fan and that $\langle-2d\rangle^\perp\cap C_\delta^+$ is a union of cones of $\mcf_{R_{\rcop}}$, which are (i) and (ii) for $t^\perp=\langle-2d\rangle^\perp$; its proof identifies that restriction with the fan of [@ABE22, §4C, printed p. 14], which is (iii), and shows that each of its maximal cones is a cone of $\mcf_{R_{\rcop}}$ rather than only a slice, which is (iv).
+:::
+
 ::: {.lemma #lem:f2-argument-does-not-transfer title="The $F_2$ determination does not transfer to the cusps with $p_*>1$ and $k=1$"}
 
 Let $\eta$ be a $0$-cusp of $F_{N^2}$ with $N\ge2$ whose class $\{\pm q\}$ is a unit modulo $N$, so that $p_*(\delta)>1$ and $k=d/p_*^2=1$ (@lem:cusp-census). Then: (1) the boundary lattice of $\eta$ is $\langle-2\rangle\oplus U\oplus E_8(-1)^{\oplus2}$, the lattice of the $F_2$ cusp, and its Coxeter fan is the printed fan of twenty-four $(-2)$-roots [@AET23, Def. 4.1 and Fig. 1, printed pp. 21--22]; and (2) the unigonal locus meets only the $0$-cusp with $p_*=1$ (@lem:unigonal-locus-cusp-support), so [@AE23, Thm. 10.16, printed p. 38], whose assertion is a restriction to $\langle-2d\rangle^\perp$ on the unigonal locus, yields nothing at $\eta$. Consequently the argument of @lem:f2-cusp-is-the-refinement-case **does not transfer**: no analogue of the nine-cone fan is recorded on the unigonal hyperplane of $\bar T$ at such a cusp, and no cone of $\mcf_{R_{\rcop},\eta}$ is recorded there in the sources read.

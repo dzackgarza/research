@@ -149,6 +149,21 @@ def test_the_locus_probe_reproduces_its_record():
     assert "coble_679-locus-probe-run.txt" in page
 
 
+def test_what_the_unigonal_restriction_gives():
+    """At the p_* = 1 cusp, AE23 Thm. 10.16 (printed p. 38) gives four things.
+
+    The restriction to t^perp is a fan, t^perp cap C^+ is a union of cones of F_rc, that
+    fan is ABE22's (Section 4C, printed p. 14), and each of its maximal cones is itself a
+    cone of F_rc and not a slice.  This is the theorem the F_2 case uses and the
+    k = 1 cusps with p_* > 1 lack.
+    """
+    page = page_text()
+    assert "#lem:unigonal-restriction" in page
+    assert "is a union of cones of" in page
+    assert "not only a slice of a $19$-dimensional cone" in page
+    assert "Thm. 10.16, printed p. 38" in page
+
+
 def test_the_f2_argument_does_not_transfer_to_the_k_one_cusps():
     """The next cusp: same boundary lattice, but no unigonal restriction there.
 
