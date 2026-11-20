@@ -307,3 +307,16 @@ def test_the_assembled_theorem_lists_every_input_with_its_status():
     # the SGA 1 statement is kept exact: isomorphism at codimension two, surjectivity used
     assert "SGA 1" in tail[:8000]
     assert "isomorphism" in tail[:8000]
+
+
+CHAMBER_INJ = "lem:pseudo-ample-injectivity-from-the-chamber"
+
+
+def test_injectivity_comes_from_the_chamber_not_from_an_ample_class():
+    text = MC.read_text(encoding="utf-8")
+    tail = text[text.index("#" + CHAMBER_INJ):]
+    assert "chamber replaces the ample class" in tail[:1200]
+    assert "BHPV04, Ch. VIII, Thm. 11.1" in tail[:4000]
+    # and the ledger no longer carries the chamber item as owed
+    led = text[text.index("#thm:gamma-co-is-the-stack-monodromy"):]
+    assert "only item still owed" in led[:6000]

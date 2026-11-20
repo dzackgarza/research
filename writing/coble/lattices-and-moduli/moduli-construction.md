@@ -1702,7 +1702,7 @@ $$\Gamma_\Co=\rho\qty(\pi_1(\mcM_\Co))=\widetilde\Orth^+(T_\Co).$$
 | [@Dol96, Prop. 3.3] | $\Gamma_M=\Orth(T_\Co)^*$ | cited |
 | @lem:every-object-of-the-functor-is-labellable | a marking of $M$, preserved by $\iota$ | proved, on the $n=1$ class the functor now states |
 | @prop:the-coble-locus-in-the-period-domain | $Z$ closed analytic, $\bD\sm Z$ open and connected | proved |
-| @thm:coble-period-map-of-the-stack(2) | injectivity on objects, isomorphisms $=$ automorphisms of a member | read as proved; its strong Torelli input is the *owed* chamber/ample-class step (finding (ii)) |
+| @thm:coble-period-map-of-the-stack(2) | injectivity on objects, isomorphisms $=$ automorphisms of a member | proved, with @lem:pseudo-ample-injectivity-from-the-chamber supplying the strong Torelli hypothesis from the chamber |
 | @thm:coble-period-map-of-the-stack(3) | local Torelli | proved |
 | @prop:coble-quotient-presentation | the presentation $\qty[\widetilde\Orth^+(T_\Co)\backslash\bD]$ | proved given (U) and the component computation |
 | @prop:coble-monodromy-is-the-marking-group(1)--(3) | the equivalence on the generic substack, the torsor, the tautological system | proved, conditional on the isotropy hypothesis |
@@ -1710,12 +1710,22 @@ $$\Gamma_\Co=\rho\qty(\pi_1(\mcM_\Co))=\widetilde\Orth^+(T_\Co).$$
 | @lem:orbifold-monodromy-of-a-quotient | tautological monodromy has image all of $G$ | proved |
 | @lem:the-special-isotropy-locus-is-proper | the special-isotropy locus is proper closed analytic | proved |
 | @prop:the-generic-locus-sees-the-whole-group(1) | $\pi_1(\mcM^{\mathrm{gen}})\to\pi_1(\mcM_\Co)$ onto | proved, given smoothness and connectedness of $\mcM_\Co$ |
-| smoothness and connectedness of $\mcM_\Co$ | the hypotheses of the surjectivity | **owed**, kof5's |
+| smoothness and connectedness of $\mcM_\Co$ | the hypotheses of the surjectivity | **owed**, kof5's, and it is the only item still owed |
 
 *The SGA 1 statement, kept exact.* [SGA 1, Exposé X, Corollaire 3.3] states that for $X$ locally noetherian and normal and $Z\subset X$ closed of codimension at least $2$, the map $\pi_1(X\sm Z)\to\pi_1(X)$ is an **isomorphism**. What is used here is only surjectivity, and under the weaker hypothesis of positive codimension; the proof is the perturbation of a compact loop off a nowhere dense closed analytic subset, and the citation is recorded in that weaker form, not as an isomorphism available at codimension one.
 
-*What remains owed, and it is not nothing.* Two inputs above are not proved: smoothness and connectedness of $\mcM_\Co$ (kof5's, in progress), and the chamber/ample-class step that @thm:coble-period-map-of-the-stack(2) uses for injectivity (finding (ii) of the review, 42fp's). Until both are in, this theorem is proved from its inputs but not unconditional, and the page says so rather than presenting the chain as closed.
+*What remains owed.* One item only: smoothness and connectedness of $\mcM_\Co$, which the ledger marks as kof5's. The chamber/ample-class step that @thm:coble-period-map-of-the-stack(2) needed for injectivity is supplied by @lem:pseudo-ample-injectivity-from-the-chamber -- the chamber, not $e_0$, is what enters strong Torelli -- so nothing else is owed. Until smoothness and connectedness are in, this theorem is proved from its inputs but not unconditional.
 :::
+
+::: {.lemma #lem:pseudo-ample-injectivity-from-the-chamber title="Injectivity for marked pseudo-ample $M$-polarized $\mathrm{K3}$ surfaces, with the chamber in place of the ample class"}
+Let $(X,j,\varphi)$ and $(X',j',\varphi')$ be two marked pseudo-ample $M$-polarized $\mathrm{K3}$ surfaces with the same period $\pi$ and the same chamber $\Delta^+_\pi$. Then there is an isomorphism $f\colon X'\iso X$ with $f^*=\varphi^{-1}\circ\varphi'$, and it is unique.
+:::
+
+::: {.proof}
+Under the markings both $H^2$ are identified with $L$, so the two Hodge structures on $L$ coincide, and $\phi\definedas\varphi^{-1}\circ\varphi'$ is a Hodge isometry. It remains to see that $\phi$ satisfies the hypothesis of the strong Torelli theorem, and this is where the chamber replaces the ample class: an ample class need not exist in $M$, since $e_0=f^*\OO_{\PP^2}(1)$ is nef and not ample (@lem:d2-arrangement-classes(2)), but the Kähler cone does not need one -- it is the chamber of the positive cone of $H^{1,1}(X,\RR)$ cut out by the effective $(-2)$-classes, and the chamber $\Delta^+_\pi$ *is* that choice of signs, by definition of the data $(V^+_\pi,\Delta^+_\pi)$ that [@Dol96, Thm. 3.1] attaches to a period. The chamber is a function of the marked period (@lem:chamber-from-marked-period), so $\phi$, being a Hodge isometry fixing $\pi$, carries $\Delta^+_\pi$ to itself and hence carries the Kähler cone of $X'$ onto that of $X$. A Kähler class $\omega$ of $X'$ is then carried to the Kähler class $\phi(\omega)$ of $X$, and the strong Torelli theorem [@BHPV04, Ch. VIII, Thm. 11.1] in its ample form applies to the pair $(\omega,\phi(\omega))$: it produces an isomorphism $f\colon X'\iso X$ with $f^*=\phi$. So the pseudo-ample hypothesis is no obstruction, the ample class being supplied by the chamber rather than by $e_0$. Uniqueness is the faithfulness of the action on $H^2$.
+:::
+
+*What this closes.* @thm:coble-period-map-of-the-stack(2)'s injectivity uses exactly this: two labelled objects with the same period have the same chamber (the marking determines it), so they are isomorphic, and the isomorphisms between them are the automorphisms of either. The chamber/ample-class item of @thm:gamma-co-is-the-stack-monodromy's ledger is therefore supplied by @lem:pseudo-ample-injectivity-from-the-chamber, and is no longer owed.
 
 ### Item 6: the groups from the universal families
 
