@@ -1602,7 +1602,7 @@ Let $M=S_\Co=\generators{2}\oplus\generators{-2}^{\oplus10}$ and let $X_b\to S_b
 
 1. $j\colon M\injects\Pic(X_b)$, $e_0\mapsto e_0$, $e_i\mapsto e_i$, is a primitive embedding of lattices, so $(X_b,j)$ is an $M$-polarized $\mathrm{K3}$ surface in the sense of [@Dol96, §1].
 2. $e_0$ is nef and big.
-3. Hence $j\qty(C(M)^+)\intersect\Pic(X_b)^+\neq\emptyset$, that is $(X_b,j)$ is *pseudo-ample* $M$-polarized [@Dol96, §1].
+3. **Open.** The step from 2 to pseudo-ampleness does not follow, and is recorded here as the defect it is: pseudo-ampleness requires $j(C(M)^+)\intersect\Pic(X_b)^+\neq\emptyset$ in the sense of [@Dol96, §1], whose $C(M)^+$ asks for strict positivity against the chosen positive roots, whereas $e_0\cdot e_i=0$ for every one of the ten classes $e_i$ of @lem:d2-local-system(2). So $e_0\notin C(M)^+$, and being nef and big does not place it there; whether some other class of $\Pic(X_b)^+$ meets the image $j(C(M)^+)$ is not decided. The candidate $4e_0-\tsum_{i}e_i$ would need positivity against every relevant curve, which no argument on the page supplies.
 4. The marked period determines the chamber $(V^+_\pi,\Delta^+_\pi)$ that [@Dol96, Thm. 3.1] uses for its fibre description.
 :::
 
