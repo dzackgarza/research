@@ -313,7 +313,8 @@ $$
 (3,3,6) & \text{if } m_{\{3,5\}} = 2,
 \end{cases}
 $$
-with $13$ incidence edges in each case. Which case occurs is not decided by the counts of $2$ and $3$.
+with $13$ incidence edges in each case;
+5. the third case occurs: $m_{\{3,5\}} = 2$, $m_{\{3,4\}} = m_{\{4,5\}} = 1$. So the multiplicities are $(1,1,2,1,2)$ for the types $(\{2,4,5\},\{4,5\},\{3,5\},\{3,4\},\{5,5\})$, and the degrees of the four $0$-cusps are $1,3,3,6$ for $0_2,0_3,0_4,0_5$, with $13$ incidence edges.
 :::
 
 ::: {.proof}
@@ -324,13 +325,15 @@ $2$. The left sum counts the $1$-cusps of $D(T_\Co)/R$, that is the $R$-orbits o
 $3$. Put $e_T \definedas m_T - 1\geq0$ on the five types with nonempty fibre; by $2$, $\sum e_T = 7-5 = 2$ and $\sum e_T\abs{T\cap\{2,3,4,5\}} = 13-10 = 3$. The five weights are $3,2,2,2,1$ for $T = \{2,4,5\},\{4,5\},\{3,5\},\{3,4\},\{5,5\}$. Two units of excess with total weight $3$ must sit one on a type of weight $2$ and one on the type of weight $1$: a single type carrying both units would contribute twice its weight, which is even and not $3$, and two units on two types of weight $2$ contribute $4$. So $e_{\{5,5\}} = 1$, $e_{\{2,4,5\}} = 0$, and exactly one of the three remaining $e$'s equals $1$. Since each $m_T$ is the cardinality of the fibre over $T$ (@thm:b2-one-cusps), each nonempty fibre has one or two points.
 
 $4$ is the incidence rule of @thm:cusp-diagram-tco(3) read with the multiplicities of $3$: the degree of $0_k$ is $\sum_{T\ni k}m_T$, and the three possibilities for the middle weights give the three triples displayed; the total is $\sum_T m_T\abs{T\cap\{2,3,4,5\}} = 13$ in each case by $2$.
+
+$5$. The record `computations/reports/coble_gco_plane-orbits-run.txt` prints, for each of the seven $R$-orbits of primitive isotropic planes of $T_\Co$, the discriminant-orbit sizes of the nonzero classes of the primitive lines in that plane: $(2,135,270)$, $(135)$, $(120,135)$, $(135)$, $(120,135)$, $(120,270)$, $(135,270)$. By @thm:orbit-per-cusp the $P$-orbit of $[\eta_k/2]$ has size $2$, $120$, $270$, $135$ for $k = 2,3,4,5$, so the size list is the set of Sterk labels of the plane's lines, that is its type [@AEGS25, Not. 3.1]. The seven planes are therefore of types $\{2,4,5\}$, $\{5\}$, $\{3,5\}$, $\{5\}$, $\{3,5\}$, $\{3,4\}$, $\{4,5\}$, where $\{5\}$ is Sterk's $\{5,5\}$, whose closure meets $0_5$ twice. So $m$ is $1,1,2,1,2$ on $(\{2,4,5\},\{4,5\},\{3,5\},\{3,4\},\{5,5\})$, which is the third alternative of $3$ and $4$; the computation is `computations/reports/coble_789-one-cusp-multiplicities.py`, which reads that record, applies the dictionary, and checks the totals $7$ and $13$.
 :::
 
 ::: {.theorem #thm:cusp-diagram-tco title="The cusp diagram of $D(T_\Co)/R$"}
 1. *$0$-cusps.* There are four, written $0_2$, $0_3$, $0_4$, $0_5$, lying one over each of Sterk's $0$-cusps $2$, $3$, $4$, $5$, and none over cusp $1$ (@thm:cusp-fibres-four).
 2. *$1$-cusps.* A $1$-cusp of $D(T_\Co)/R$ lies over exactly one of Sterk's nine $1$-cusps, whose type is a subset $T\subset\{1,2,3,4,5\}$ [@AEGS25, Not. 3.1]. There are none over the four types $\{1,2\}$, $\{1,3\}$, $\{1,4\}$, $\{1,5\}$ (@lem:one-cusp-over-cusp-one-empty), and $7$ in all over the five types $\{2,4,5\}$, $\{4,5\}$, $\{3,5\}$, $\{3,4\}$, $\{5,5\}$: the fibre over $\{2,4,5\}$ is a single point, that over $\{5,5\}$ has two points, and exactly one of the fibres over $\{4,5\}$, $\{3,5\}$, $\{3,4\}$ has two points while the other two are single points (@thm:one-cusp-multiplicities).
 3. *Incidence.* For $k\in\{2,3,4,5\}$ the $0$-cusp $0_k$ lies in the closure of a $1$-cusp over $T$ exactly when $k\in T$. Consequently $0_2$ meets only the $1$-cusps over $\{2,4,5\}$, $0_3$ those over $\{3,5\}$ and $\{3,4\}$, $0_4$ those over $\{2,4,5\}$, $\{4,5\}$ and $\{3,4\}$, and $0_5$ those over $\{2,4,5\}$, $\{4,5\}$, $\{3,5\}$ and $\{5,5\}$.
-4. The number of incidence edges is $\sum_T m_T\,\#(T\cap\{2,3,4,5\}) = 13$, and the degrees of the four $0$-cusps are the three alternatives listed in @thm:one-cusp-multiplicities(4).
+4. The number of incidence edges is $\sum_T m_T\,\#(T\cap\{2,3,4,5\}) = 13$, and the degrees of $0_2$, $0_3$, $0_4$, $0_5$ are $1$, $3$, $3$, $6$ (@thm:one-cusp-multiplicities(5)).
 :::
 
 ::: {.proof}
