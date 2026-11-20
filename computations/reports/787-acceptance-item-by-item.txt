@@ -75,6 +75,14 @@ CHECKS RUN AT THIS COMMIT
   available in this container.
 
 NEXT
-  One lemma, the one every index argument of U2 rests on: S_10 acts freely on B = V/SL_3.
-  The shape a proof must exclude is the review's: sigma[v] = [v] with sigma v = g v for
-  some g in PGL_3 and sigma v != v.
+  One lemma: PGL_3 acts freely and properly on V, so that B = V/PGL_3 is an honest space
+  carrying the family, with Gamma_Co = rho(pi_1(B)) = rho(pi_1(V)).  Freeness: a
+  non-identity projectivity of P^2 fixes three points, or a line together with one point
+  (eigenvalue classification, Jordan case included), and a line carries at most three
+  nodes of an irreducible sextic (else Z.L >= 8 > 6 gives L contained in Z), so at most
+  four of the ten labelled nodes are fixed.  Properness: three non-collinear points exist,
+  the three lines they span carry at most six of the ten points, so four of them have no
+  three collinear, and a projectivity is determined continuously by the images of four
+  such points.  This supersedes the stack reading of the labelled base and is the base the
+  issue asks for.  The review's U2 then reduces to the separate fact that S_10 does not
+  act freely on B (the shape sigma[v] = [v] with sigma v = g v, sigma v != v).
