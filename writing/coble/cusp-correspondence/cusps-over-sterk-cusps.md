@@ -73,31 +73,31 @@ $(2)$ Let $\mathcal Y_k$ be the set of primitive isotropic lines $\ell\subset T_
 $$
 \Psi_k\colon\tilde Y_k\longrightarrow L_k\definedas\{\alpha\in\ten : \alpha^2 = -2,\ \alpha\perp e_k\},\qquad \gamma\longmapsto \gamma^{-1}\delta .
 $$
-The target (@def:globular-boundary) is right: $(\gamma^{-1}\delta)\cdot e_k = \delta\cdot(\gamma e_k) = 0$ because $\gamma e_k\in T_\Co = \delta^{\perp}$, and $\delta^2 = -2$. The map is invariant under left multiplication by $R = \Stab_{\gent}(\delta)$, because $(r\gamma)^{-1}\delta = \gamma^{-1}r^{-1}\delta = \gamma^{-1}\delta$; and it is equivariant for right multiplication by $s\in\Stab_{\gent}(e_k)$, with $s e_k = \pm e_k$, acting on $L_k$ by $\alpha\mapsto s^{-1}\alpha$, which preserves $L_k$ because $(s^{-1}\alpha)\cdot e_k = \alpha\cdot(s e_k) = \pm\alpha\cdot e_k = 0$. It is surjective: for $\alpha\in L_k$, transitivity of $\gent$ on the $(-2)$-vectors of $\ten$ [@Ste91, 2.10] gives $\gamma\in\gent$ with $\gamma\alpha = \delta$, and then $\gamma e_k\perp\delta$ and $\Psi_k(\gamma) = \gamma^{-1}\delta = \alpha$. It is injective on $R$-orbits: if $\gamma^{-1}\delta = \gamma'^{-1}\delta$ then $\gamma'\gamma^{-1}\delta = \delta$, so $\gamma'\gamma^{-1}\in R$ and $\gamma'$ lies in the $R$-orbit of $\gamma$. Hence $\Psi_k$ induces a bijection
+The target (@def:globular-boundary) is right: $(\gamma^{-1}\delta)\cdot e_k = \delta\cdot(\gamma e_k) = 0$ because $\gamma e_k\in T_\Co = \delta^{\perp}$, and $\delta^2 = -2$. The map is invariant under left multiplication by $R = \Stab_{\gent}(\delta)$, because $(r\gamma)^{-1}\delta = \gamma^{-1}r^{-1}\delta = \gamma^{-1}\delta$; and it is equivariant for right multiplication by $s\in\Stab_{\gent}(e_k)$, with $s e_k = \pm e_k$, acting on $L_k$ by $\alpha\mapsto s^{-1}\alpha$, which preserves $L_k$ because $(s^{-1}\alpha)\cdot e_k = \alpha\cdot(s e_k) = \pm\alpha\cdot e_k = 0$. It is surjective: for $\alpha\in L_k$, transitivity of $\gent$ on the $(-2)$-vectors of $\ten$ [@Ste91, 2.10] gives $\gamma\in\gent$ with $\gamma\alpha = \delta$, and then $\gamma e_k\perp\delta$ and $\Psi_k(\gamma) = \gamma^{-1}\delta = \alpha$. It is injective (@def:injective-map) on $R$-orbits: if $\gamma^{-1}\delta = \gamma'^{-1}\delta$ then $\gamma'\gamma^{-1}\delta = \delta$, so $\gamma'\gamma^{-1}\in R$ and $\gamma'$ lies in the $R$-orbit of $\gamma$. Hence $\Psi_k$ induces a bijection
 $$
 R\backslash\tilde Y_k/\Stab_{\gent}(e_k)\ \cong\ \Stab_{\gent}(e_k)\backslash L_k,
 $$
 and the left-hand side is $R\backslash\mathcal Y_k$, the fibre.
 
-$(3)$ The $0$-cusps of $F_{\En,2}$ are the $\gent$-orbits of primitive isotropic lines, and Sterk's five representatives exhaust them [@Ste91, (4.2.3)], so the cusp set of $F_{\En,2}$ is the disjoint union of the five orbits and (2) applies over each. For the second bijection, send the $R$-orbit of $\ell$ to the $\gent$-orbit of $(\ell,\delta)$, and the $\gent$-orbit of $(\ell,\alpha)$ to the $R$-orbit of $\gamma\ell$, where $\gamma\in\gent$ is any element with $\gamma\alpha = \delta$; that $\gamma\ell\subset T_\Co$ and that its $R$-orbit does not depend on $\gamma$ are the computations of (2), and the two assignments are inverse by construction.
+$(3)$ The $0$-cusps of $F_{\En,2}$ are the $\gent$-orbits of primitive isotropic lines, and Sterk's five representatives exhaust them [@Ste91, (4.2.3)], so the cusp set of $F_{\En,2}$ is the disjoint union of the five orbits (@def:group-orbit) and (2) applies over each. For the second bijection, send the $R$-orbit of $\ell$ to the $\gent$-orbit of $(\ell,\delta)$, and the $\gent$-orbit of $(\ell,\alpha)$ to the $R$-orbit of $\gamma\ell$, where $\gamma\in\gent$ is any element with $\gamma\alpha = \delta$; that $\gamma\ell\subset T_\Co$ and that its $R$-orbit does not depend on $\gamma$ are the computations of (2), and the two assignments are inverse by construction.
 :::
 
 ::: {.theorem #thm:b2-one-cusps title="B2 for $1$-cusps"}
-The same statement with "line" replaced by "plane": the $1$-cusps of $D(T_\Co)/R$ are the $\gent$-orbits of pairs $(\Pi,\alpha)$ in which $\Pi\subset\ten$ is a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) plane and $\alpha\in\ten$ is a $(-2)$-vector with $\alpha\perp\Pi$; the fibre over Sterk's $1$-cusp $[\Pi]$ is the set of $\Stab_{\gent}(\Pi)$-orbits of $(-2)$-vectors $\alpha\perp\Pi$, the stabilizer being taken in the plane $[\Pi]$.
+The same statement with "line" replaced by "plane": the $1$-cusps of $D(T_\Co)/R$ are the $\gent$-orbits of pairs $(\Pi,\alpha)$ in which $\Pi\subset\ten$ is a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) plane and $\alpha\in\ten$ is a $(-2)$-vector with $\alpha\perp\Pi$; the fibre over Sterk's $1$-cusp $[\Pi]$ is the set of $\Stab_{\gent}(\Pi)$-orbits of $(-2)$-vectors $\alpha\perp\Pi$, the stabilizer (@def:group-orbit) being taken in the plane $[\Pi]$.
 
 For such a $\Pi$ the quotient $\Pi^{\perp\ten}/\Pi$ is negative definite (@def:definiteness), so there are finitely many $(-2)$-classes in $\Pi^{\perp\ten}/\Pi$; that the fibre itself is finite is @lem:one-cusp-fibre-finite.
 :::
 
 ::: {.proof}
-Every step of the proof of @thm:b2-zero-cusps uses only that $\ell$ is a primitive isotropic subspace of $\ten$ and that a primitive isotropic subspace of $T_\Co$ is one of $\ten$ (@lem:primitivity-tco-in-ten), so it applies verbatim to primitive isotropic planes. The identification of the $1$-cusps of $F_{\En,2}$ with the $\gent$-orbits of primitive isotropic planes is [@AEGS25, Def. 2.9]; Sterk's nine $1$-cusps are [@Ste91, §4.3]. The quotient $\Pi^{\perp}/\Pi$ has signature (@def:signature) $(0,8)$, because $\Pi$ is a maximal isotropic plane in a lattice of signature $(2,10)$, so a negative definite integral lattice has finitely many vectors of a given norm (@def:lattice-basic-invariants) --- finitely many $(-2)$-classes, but not yet finitely many orbits on their lifts; the lifts are controlled by @lem:one-cusp-fibre-finite below.
+Every step of the proof of @thm:b2-zero-cusps uses only that $\ell$ is a primitive isotropic subspace (@def:isotropic-subspace) of $\ten$ and that a primitive isotropic subspace of $T_\Co$ is one of $\ten$ (@lem:primitivity-tco-in-ten), so it applies verbatim to primitive isotropic planes. The identification of the $1$-cusps of $F_{\En,2}$ with the $\gent$-orbits of primitive isotropic planes is [@AEGS25, Def. 2.9]; Sterk's nine $1$-cusps are [@Ste91, §4.3]. The quotient $\Pi^{\perp}/\Pi$ has signature (@def:signature) $(0,8)$, because $\Pi$ is a maximal isotropic plane in a lattice of signature $(2,10)$, so a negative definite integral lattice has finitely many vectors of a given norm (@def:lattice-basic-invariants) --- finitely many $(-2)$-classes, but not yet finitely many orbits (@def:group-orbit) on their lifts; the lifts are controlled by @lem:one-cusp-fibre-finite below.
 :::
 
 ::: {.lemma #lem:one-cusp-fibre-finite title="The fibre over a $1$-cusp is finite"}
-Let $\Pi\subset\ten$ be a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) plane with a basis (@def:based-module) $u,v$ of isotropic vectors, and let $\alpha\in\ten$ have $\alpha^2 = -2$ and $\alpha\perp\Pi$. For $z\in u^{\perp\ten}$ the Eichler transvection
+Let $\Pi\subset\ten$ be a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) plane with a basis (@def:based-module) $u,v$ of isotropic vectors (@def:isotropic-subspace), and let $\alpha\in\ten$ have $\alpha^2 = -2$ and $\alpha\perp\Pi$. For $z\in u^{\perp\ten}$ the Eichler transvection
 $$
 E_{u,z}(x) \definedas x+(x,u)z-(x,z)u-\tfrac{z^2}{2}(x,u)u
 $$
-lies in $\gent$, fixes $\Pi$ setwise, and acts on $\Pi^{\perp\ten}$ by $x\mapsto x-(x,z)u$. The set of values $(\alpha,z)$, $z\in u^{\perp\ten}$, is an ideal $d_u\ZZ$ with $d_u\mid 2$, so the $\Stab_{\gent}(\Pi)$-orbit of $\alpha$ contains $\alpha+2u$; symmetrically it contains $\alpha+2v$. Hence that orbit contains $\alpha+2\Pi$ and $\Stab_{\gent}(\Pi)$ has at most four orbits on the lifts $\alpha+\Pi$, so the fibre over any $1$-cusp is finite.
+lies in $\gent$, fixes $\Pi$ setwise, and acts on $\Pi^{\perp\ten}$ by $x\mapsto x-(x,z)u$. The set of values $(\alpha,z)$, $z\in u^{\perp\ten}$, is an ideal $d_u\ZZ$ with $d_u\mid 2$, so the $\Stab_{\gent}(\Pi)$-orbit of $\alpha$ contains $\alpha+2u$; symmetrically it contains $\alpha+2v$. Hence that orbit (@def:group-orbit) contains $\alpha+2\Pi$ and $\Stab_{\gent}(\Pi)$ has at most four orbits on the lifts $\alpha+\Pi$, so the fibre over any $1$-cusp is finite.
 :::
 
 ::: {.proof}
@@ -130,7 +130,7 @@ Let $\Pi\subset\ten$ be a primitive isotropic plane, $L_0 \definedas \Pi^{\perp\
 ::: {.proof}
 $1$. Since $\Pi\subset\Pi^{\perp}$ one has $\Pi^{\perp}\subset w^{\perp}$, so the set of values over $w^{\perp}$ contains the set over $\Pi^{\perp}$ and its gcd divides that one. The values over $\Pi^{\perp}$ depend only on the class, because $(\alpha,p) = 0$ for $p\in\Pi$ as $\alpha\perp\Pi$; their gcd is $\mathrm{div}_{L_0}(r)$.
 
-$2$. By $1$ and the hypothesis $d_w = 1$ for every $w\in\Pi$, so for each such $w$ there is $z\in w^{\perp}$ with $(\alpha,z) = 1$; the transvection $E_{w,z}$ of @lem:one-cusp-fibre-finite lies in $\gent$, preserves $\Pi$ setwise and sends $\alpha$ to $\alpha-w$. Every vector of $\Pi$ is isotropic, so taking $w$ to run over a basis $u,v$ of $\Pi$ shows that $\alpha-u$ and $\alpha-v$ lie in the orbit, hence $\alpha-p$ lies in the orbit for every $p\in\Pi$. Any other lift of $r$ is $\alpha-p$ for some $p\in\Pi$. Hence one orbit.
+$2$. By $1$ and the hypothesis $d_w = 1$ for every $w\in\Pi$, so for each such $w$ there is $z\in w^{\perp}$ with $(\alpha,z) = 1$; the transvection $E_{w,z}$ of @lem:one-cusp-fibre-finite lies in $\gent$, preserves $\Pi$ setwise and sends $\alpha$ to $\alpha-w$. Every vector of $\Pi$ is isotropic, so taking $w$ to run over a basis $u,v$ of $\Pi$ shows that $\alpha-u$ and $\alpha-v$ lie in the orbit (@def:group-orbit), hence $\alpha-p$ lies in the orbit for every $p\in\Pi$. Any other lift of $r$ is $\alpha-p$ for some $p\in\Pi$. Hence one orbit.
 :::
 
 ::: {.theorem #lem:five-one-cusps-nonempty title="The exact fibre over each of the other five $1$-cusps: $16$ points"}
@@ -138,7 +138,7 @@ Let $[\Pi]$ be one of Sterk's five further $1$-cusps, of types $\{2,4,5\}$, $\{4
 
 1. $\Pi$ is primitive in $\ten$, and for a choice of a complementary basis the Gram matrix $G_0$ of $L_0 = \Pi^{\perp\ten}/\Pi$ is exact: its determinant is $64$, and $L_0$ has exactly $16$ vectors of square $-2$;
 2. every one of those $16$ classes has $\mathrm{div}_{L_0}$ equal to $1$, certified by an explicit $z\in\Pi^{\perp}$ with $(\alpha,z) = 1$;
-3. hence, by @lem:divisibility-decides-one-cusp, each class contributes exactly one orbit, and the fibre of the $1$-cusp map of @thm:b2-one-cusps over $[\Pi]$ has exactly $16$ points.
+3. hence, by @lem:divisibility-decides-one-cusp, each class contributes exactly one orbit (@def:group-orbit), and the fibre of the $1$-cusp map of @thm:b2-one-cusps over $[\Pi]$ has exactly $16$ points.
 :::
 
 ::: {.proof}
@@ -199,7 +199,7 @@ N = \begin{pmatrix}
 0&0&0&0&0&0&0&0&0&-1
 \end{pmatrix}
 $$
-satisfies $N^{\mathsf T}GN = G$, $\det N = -1$ and $N(e-f) = e+f+\alpha_1$. Hence $e-f$ and $e+f+\alpha_1$ lie in one $\Orth(K)$-orbit, and the two orbits of @thm:ou-e8-transitive cannot be separated by the invariants that separate these two vectors.
+satisfies $N^{\mathsf T}GN = G$, $\det N = -1$ and $N(e-f) = e+f+\alpha_1$. Hence $e-f$ and $e+f+\alpha_1$ lie in one $\Orth(K)$-orbit, and the two orbits (@def:group-orbit) of @thm:ou-e8-transitive cannot be separated by the invariants that separate these two vectors.
 :::
 
 ::: {.proof}
@@ -252,11 +252,11 @@ At cusp $3$ the representative is $e'+f'+y_3$ and the record's cusp-$3$ section 
 :::
 
 ::: {.theorem #thm:four-r-orbits title="$R$ has exactly four orbits on the primitive isotropic lines of $T_\Co$"}
-The subgroup $R$ has exactly four orbits on the primitive isotropic lines of $T_\Co$, of discriminant-class sizes $2$, $135$, $270$ and $120$. Hence $D(T_\Co)/R$ has exactly four $0$-cusps.
+The subgroup $R$ has exactly four orbits (@def:group-orbit) on the primitive isotropic lines of $T_\Co$, of discriminant-class sizes $2$, $135$, $270$ and $120$. Hence $D(T_\Co)/R$ has exactly four $0$-cusps.
 :::
 
 ::: {.proof}
-Every primitive vector of $T_\Co$ has divisibility $2$ (@lem:divisibilityAlwaysTwoTco), so $v\mapsto[v/2]$ maps the primitive isotropic vectors of $T_\Co$ to the $527$ nonzero isotropic classes of $A_{T_\Co}$, and the map is a bijection from the $\ker\bar\rho$-orbits of primitive isotropic vectors onto those classes [@thm:coble-zero-cusp-count(1)]. For a subgroup $\Gamma$ with $\ker\bar\rho\subseteq\Gamma\subseteq\Orth(T_\Co)$ the $\Gamma$-orbits on primitive isotropic vectors correspond to the $\bar\rho(\Gamma)$-orbits on the classes, because the fibre over a class is a single $\ker\bar\rho$-orbit [@thm:coble-zero-cusp-count, proof, paragraph "Intermediate groups"]. Here $R = \bar\rho^{-1}(P)$ [@prop:gamma-co-images(3)], so $\bar\rho(R) = P$, and $P = \Orth(q_{U(2)})\times\Orth(q_{E_8(2)})$ has exactly four orbits on the $527$ nonzero isotropic classes, of sizes $2$, $135$, $270$ and $120$ [@prop:coble-cong-point-stabilizer(2)]. A count of $0$-cusps names its group [@def:gamma-co-groups], and this is the count for $R$.
+Every primitive vector of $T_\Co$ has divisibility $2$ (@lem:divisibilityAlwaysTwoTco), so $v\mapsto[v/2]$ maps the primitive isotropic vectors (@def:isotropic-subspace) of $T_\Co$ to the $527$ nonzero isotropic classes of $A_{T_\Co}$, and the map is a bijection from the $\ker\bar\rho$-orbits of primitive isotropic vectors onto those classes [@thm:coble-zero-cusp-count(1)]. For a subgroup $\Gamma$ with $\ker\bar\rho\subseteq\Gamma\subseteq\Orth(T_\Co)$ the $\Gamma$-orbits on primitive isotropic vectors correspond to the $\bar\rho(\Gamma)$-orbits on the classes, because the fibre over a class is a single $\ker\bar\rho$-orbit [@thm:coble-zero-cusp-count, proof, paragraph "Intermediate groups"]. Here $R = \bar\rho^{-1}(P)$ [@prop:gamma-co-images(3)], so $\bar\rho(R) = P$, and $P = \Orth(q_{U(2)})\times\Orth(q_{E_8(2)})$ has exactly four orbits on the $527$ nonzero isotropic classes, of sizes $2$, $135$, $270$ and $120$ [@prop:coble-cong-point-stabilizer(2)]. A count of $0$-cusps names its group [@def:gamma-co-groups], and this is the count for $R$.
 :::
 
 ::: {.theorem #thm:orbit-per-cusp title="Which $R$-orbit lies over which Sterk cusp"}
@@ -267,7 +267,7 @@ k & 2 & 3 & 4 & 5\\ \hline
 \text{size of the }P\text{-orbit of }[\eta_k] & 2 & 120 & 270 & 135
 \end{array}
 $$
-Because $v\mapsto[v/2]$ is a bijection from the $R$-orbits on primitive isotropic lines of $T_\Co$ onto the $P$-orbits on the $527$ nonzero isotropic classes [@thm:coble-zero-cusp-count(1), with $\bar\rho(R) = P$ by @prop:gamma-co-images(3)], the $R$-orbit lying over Sterk's cusp $k$ is the orbit of $[\eta_k]$, and the four $R$-orbits of @thm:four-r-orbits are exactly the four cusps' orbits.
+Because $v\mapsto[v/2]$ is a bijection from the $R$-orbits on primitive isotropic lines of $T_\Co$ onto the $P$-orbits on the $527$ nonzero isotropic classes [@thm:coble-zero-cusp-count(1), with $\bar\rho(R) = P$ by @prop:gamma-co-images(3)], the $R$-orbit lying over Sterk's cusp $k$ is the orbit (@def:group-orbit) of $[\eta_k]$, and the four $R$-orbits of @thm:four-r-orbits are exactly the four cusps' orbits.
 :::
 
 ::: {.proof}
@@ -281,7 +281,7 @@ k & \text{component in } U(2) & q & \text{component in } E_8(2) & q\\ \hline
 5 & 0 & 0 & y_4/2 & -2
 \end{array}
 $$
-the last line because $\eta_5/2 = h+y_4/2$ and $h\in T_\Co$. Each total $q$ is $0$ modulo $2\ZZ$, as it must be for an isotropic vector. The three nonzero classes of $A_{U(2)}$ are $u_1,u_2,u_3$ with $q$-values $0,0,1$, and the $E_8(2)$-classes of value $0$ and $1$ are the sets $E_0$ of size $135$ and $E_1$ of size $120$ [@prop:coble-cong-point-stabilizer(2), proof]. So $[\eta_2] = (u_1\text{ or }u_2,\,0)$ lies in $\{u_1,u_2\}$ of size $2$; $[\eta_3] = (u_3,\,E_1)$ in the orbit of size $120$; $[\eta_4] = (u_1\text{ or }u_2,\,E_0)$ in the orbit of size $270$; and $[\eta_5] = (0,\,E_0)$ in the orbit of size $135$. The computation is `computations/reports/coble_789-cusp-classes.py`, whose transcript `-run.txt` prints, for each $k$, the components and the orbit.
+the last line because $\eta_5/2 = h+y_4/2$ and $h\in T_\Co$. Each total $q$ is $0$ modulo $2\ZZ$, as it must be for an isotropic vector (@def:isotropic-subspace). The three nonzero classes of $A_{U(2)}$ are $u_1,u_2,u_3$ with $q$-values $0,0,1$, and the $E_8(2)$-classes of value $0$ and $1$ are the sets $E_0$ of size $135$ and $E_1$ of size $120$ [@prop:coble-cong-point-stabilizer(2), proof]. So $[\eta_2] = (u_1\text{ or }u_2,\,0)$ lies in $\{u_1,u_2\}$ of size $2$; $[\eta_3] = (u_3,\,E_1)$ in the orbit of size $120$; $[\eta_4] = (u_1\text{ or }u_2,\,E_0)$ in the orbit of size $270$; and $[\eta_5] = (0,\,E_0)$ in the orbit of size $135$. The computation is `computations/reports/coble_789-cusp-classes.py`, whose transcript `-run.txt` prints, for each $k$, the components and the orbit.
 :::
 
 ::: {.theorem #thm:cusp-fibres-four title="The $0$-cusps of $D(T_\Co)/R$ lie one over each of Sterk's cusps $2,3,4,5$"}
@@ -289,7 +289,7 @@ The map $\Phi_0$ of @thm:b2-zero-cusps has empty fibre over Sterk's cusp $1$ (@p
 :::
 
 ::: {.proof}
-The fibres of $\Phi_0$ partition the $0$-cusps of $D(T_\Co)/R$: $\Phi_0$ is well defined by @thm:b2-zero-cusps(1), and the cusp set of $F_{\En,2}$ is the disjoint union of the five orbits of Sterk's representatives. The fibre over cusp $1$ is empty (@prop:fibre-cusp-one-empty). For $k = 2,3,4,5$ the representative $\eta_k$ is a primitive isotropic vector of $T_\Co$, so its $R$-orbit is a $0$-cusp of $D(T_\Co)/R$ lying over cusp $k$; by @thm:orbit-per-cusp the four classes $[\eta_k]$ lie in four distinct $P$-orbits, hence the four $R$-orbits are distinct, and by @thm:four-r-orbits there are exactly four of them. So each of the four fibres over $2,3,4,5$ contains exactly one of the four $R$-orbits.
+The fibres of $\Phi_0$ partition the $0$-cusps of $D(T_\Co)/R$: $\Phi_0$ is well defined by @thm:b2-zero-cusps(1), and the cusp set of $F_{\En,2}$ is the disjoint union of the five orbits (@def:group-orbit) of Sterk's representatives. The fibre over cusp $1$ is empty (@prop:fibre-cusp-one-empty). For $k = 2,3,4,5$ the representative $\eta_k$ is a primitive isotropic vector (@def:isotropic-subspace) of $T_\Co$, so its $R$-orbit is a $0$-cusp of $D(T_\Co)/R$ lying over cusp $k$; by @thm:orbit-per-cusp the four classes $[\eta_k]$ lie in four distinct $P$-orbits, hence the four $R$-orbits are distinct, and by @thm:four-r-orbits there are exactly four of them. So each of the four fibres over $2,3,4,5$ contains exactly one of the four $R$-orbits.
 :::
 
 ::: {.theorem #thm:cusp-diagram-tco title="The cusp diagram of $D(T_\Co)/R$"}

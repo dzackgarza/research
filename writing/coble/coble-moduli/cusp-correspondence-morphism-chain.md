@@ -14,9 +14,9 @@ tags:
 
 ::: {.proposition #prop:fen2-forgetful-maps title="The two morphisms out of $\fentwo$"}
 
-Let $\fttz=\bD(\tdp)/\Gamma_\dP$ be the moduli space of K3 surfaces of degree $4$ with a del Pezzo involution [@AEGS25, §1, Def. 2.7, printed p. 587].
+Let $\fttz=\bD(\tdp)/\Gamma_\dP$ be the moduli space of K3 surfaces of degree (@def:graded-object) $4$ with a del Pezzo involution [@AEGS25, §1, Def. 2.7, printed p. 587].
 
-1. The inclusion $\bD(T_\En)\subset\bD(\tdp)$ induces a finite, generically injective morphism $\fentwo\to\fttz$, and $\fentwo$ is the normalization of a closed subvariety of $\fttz$ [@AEGS25, Lemma 2.8, printed p. 587].
+1. The inclusion $\bD(T_\En)\subset\bD(\tdp)$ induces a finite, generically injective (@def:injective-map) morphism $\fentwo\to\fttz$, and $\fentwo$ is the normalization of a closed subvariety of $\fttz$ [@AEGS25, Lemma 2.8, printed p. 587].
 2. The inclusion $\gent\subseteq\Gamma^K_\En$ of a subgroup of finite index (@def:index) induces a morphism $\fentwo\to F_{(10,10,0)}=\bD(T_\En)/\Gamma^K_\En$ of degree $2^7\cdot17\cdot31$ [@AEGS25, §2.3; @Ste91, Rem. 2.12, printed p. 8].
 :::
 
@@ -29,7 +29,7 @@ $$
 \tilde\eta: \bbcpt{\fco} \to \bbcpt{\fttz} .
 $$
 The stratification of $\partial\bbcpt{F^{\mathrm{un}}_\Co}$ is obtained by applying the mirror moves (@def:mirror-move) of [@AE22] to $S_{\Co} = (11,11,1)_1$.
-On $0$-cusps, $\eta$ induces an injective map from the $527$ $0$-cusps of the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ (@thm:coble-zero-cusp-count(2), the cusps being the nonzero isotropic classes (@def:descent-class), the fibre over one class being a single $\widetilde\Orth^+(T_\Co)$-orbit by @thm:coble-integral-lifting-fibre(1), (2)) to the $0$-cusps of $\fen$ of divisibility $2$: the orbit map is defined because the embedding is equivariant, $\eta(\varphi v) = \mathrm{Ext}(\varphi)\eta(v)$ (@thm:coble-strong-lifting); it is injective (@prop:cusp-map-injective) and it misses the divisibility-$1$ cusps (@prop:cusp-map-not-onto).
+On $0$-cusps, $\eta$ induces an injective map (@def:injective-map) from the $527$ $0$-cusps of the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ (@thm:coble-zero-cusp-count(2), the cusps being the nonzero isotropic classes (@def:descent-class), the fibre over one class being a single $\widetilde\Orth^+(T_\Co)$-orbit by @thm:coble-integral-lifting-fibre(1), (2)) to the $0$-cusps of $\fen$ of divisibility $2$: the orbit (@def:group-orbit) map is defined because the embedding is equivariant, $\eta(\varphi v) = \mathrm{Ext}(\varphi)\eta(v)$ (@thm:coble-strong-lifting); it is injective (@def:injective-map) (@prop:cusp-map-injective) and it misses the divisibility-$1$ cusps (@prop:cusp-map-not-onto).
 :::
 
 ## The two cusp identifications
@@ -49,7 +49,7 @@ Every $0$-cusp of $\fentwo$ over the image in $F^K_\En$ of the $0$-cusp $(9,9,1)
 
 ::: {.proof}
 
-The morphism $\fentwo\to F^K_\En$ of @prop:fen2-forgetful-maps sends the $0$-cusp of a primitive (@def:primitive-embedding) isotropic vector $e\in\ten$ to the $0$-cusp of the same vector $e$, so it preserves the lattice $e^{\perp}/e$. By @lem:w1_perp_calculation the image of $(9,9,1)_1$ is the $0$-cusp $(10,8,0)_1$ of $F^K_\En$. By @prop:fen2-zero-cusp-lattices the cusps of $\fentwo$ with $e^{\perp}/e=(10,8,0)_1$ are cusps $2$ to $5$. Their dual complexes are listed in @ex:fen2_five_cusps.
+The morphism $\fentwo\to F^K_\En$ of @prop:fen2-forgetful-maps sends the $0$-cusp of a primitive (@def:primitive-embedding) isotropic vector (@def:isotropic-subspace) $e\in\ten$ to the $0$-cusp of the same vector $e$, so it preserves the lattice $e^{\perp}/e$. By @lem:w1_perp_calculation the image of $(9,9,1)_1$ is the $0$-cusp $(10,8,0)_1$ of $F^K_\En$. By @prop:fen2-zero-cusp-lattices the cusps of $\fentwo$ with $e^{\perp}/e=(10,8,0)_1$ are cusps $2$ to $5$. Their dual complexes are listed in @ex:fen2_five_cusps.
 :::
 
 ::: {.lemma #lem:cusp-map-of-a-period-lattice-embedding title="The $0$-cusp of an isotropic line is the point that line names, and it is functorial"}
@@ -64,11 +64,11 @@ Let $\iota\colon T\injects T'$ be a primitive (@def:primitive-embedding) embeddi
 
 Choose $u\in T_\QQ$ with $(v,u)=1$, possible because $v\neq0$ and the form is nondegenerate (@def:polarization) over $\QQ$, and put $K=\generators{v,u}^{\perp T_\QQ}$ and $K'=\generators{\iota v,\iota u}^{\perp T'_\QQ}$. Then $K$ has signature $(1,n-1)$, $K'$ has signature $(1,n'-1)$ and $K\subset K'$. By @cons:hsd-tube-coordinates, applied to the hyperbolic plane (@def:hyperbolic-plane) $\generators{v,u}$,
 $$\bD(T)=\{z\in K_\CC:\operatorname{Im}z\in C\},\qquad \bD(T')=\{z\in K'_\CC:\operatorname{Im}z\in C'\},$$
-where $C$ is a component of $\{y\in K_\RR:y^2>0\}$ and $C'$ is a component of $\{y\in K'_\RR:y^2>0\}$ chosen so that $C=C'\intersect K_\RR$; the period of $z=x+iy$ is $[w(z)]$ with $w(z)=u+z-\tfrac12(z,z)v$. The projection $K\to\ell^{\perp T_\QQ}/\QQ v$ is an isomorphism (@def:isomorphism-of-objects), so $K$ is the cusp cone of $[\ell]$ in the sense of @rmk:hsd-toroidal and $C$ is one of its two positive cones (@not:reflection-groups-sign-convention).
+where $C$ is a component of $\{y\in K_\RR:y^2>0\}$ and $C'$ is a component of $\{y\in K'_\RR:y^2>0\}$ chosen so that $C=C'\intersect K_\RR$; the period of $z=x+iy$ is $[w(z)]$ with $w(z)=u+z-\tfrac12(z,z)v$. The projection $K\to\ell^{\perp T_\QQ}/\QQ v$ is an isomorphism (@def:isomorphism-of-objects), so $K$ is the cusp cone (@def:closed-cone) of $[\ell]$ in the sense of @rmk:hsd-toroidal and $C$ is one of its two positive cones (@not:reflection-groups-sign-convention).
 
 For $y_0\in C$ and $t>0$ put $z_t=i t y_0$. Then $w(z_t)=u+i t y_0+\tfrac12t^2y_0^2\,v$, so $[w(z_t)]\to[v]$ in $\PP(T_\CC)$ as $t\to\infty$. The points $w(z_t)$ lie, for $t$ large, in a Siegel domain at $[\ell]$ and in one at $[\iota(\ell)]$, since $\operatorname{Im}z_t=t y_0\in C\subset C'$ and $(t y_0,w)\to\infty$ for $w$ in the interior of the cone; by [@BB66, Lemma 4.7, printed p. 481; §4.8, printed p. 482] they lie in the closure of a fundamental set for $\Gamma$, respectively for $\Gamma'$, and by [@BB66, Thm. 4.9(i), printed p. 482; Prop. 4.10, printed p. 483] the Satake topology agrees with the natural topology on that closure. Hence the images of $w(z_t)$ converge to the $0$-cusp $[\ell]$ in $\bbcpt{\bD(T)/\Gamma}$ and to the $0$-cusp $[\iota(\ell)]$ in $\bbcpt{\bD(T')/\Gamma'}$.
 
-By [@Ste91, §4.1, printed p. 15] the boundary components of $\bD(T)$ are the sets $F_I=\PP(I_\CC)\intersect\overline{\bD(T)}$ for the nonzero isotropic subspaces $I\subset T_\RR$, and $F_I$ is a singleton when $\dim I=1$; by [@Ste91, §4.2, printed p. 15] and [@AEGS25, Def. 2.9, printed p. 588] the zero-dimensional boundary components of $\bD(T)/\Gamma$ are the $\Gamma$-orbits of primitive isotropic lines. The point $[v]$ lies in $\overline{\bD(T)}$ by the previous paragraph, so $F_\ell=\{[v]\}$: the $0$-cusp is the point that the line names. The lattice $\ell^{\perp T}/\ell$ has signature $(1,n-1)$, so it carries no positive $2$-plane at all; it is the cusp cone of the toroidal compactification (@def:toroidal-compactification) at $[\ell]$ (@rmk:hsd-toroidal), not a period domain, and in particular not the boundary component.
+By [@Ste91, §4.1, printed p. 15] the boundary components of $\bD(T)$ are the sets $F_I=\PP(I_\CC)\intersect\overline{\bD(T)}$ for the nonzero isotropic subspaces (@def:isotropic-subspace) $I\subset T_\RR$, and $F_I$ is a singleton when $\dim I=1$; by [@Ste91, §4.2, printed p. 15] and [@AEGS25, Def. 2.9, printed p. 588] the zero-dimensional boundary components of $\bD(T)/\Gamma$ are the $\Gamma$-orbits of primitive isotropic lines. The point $[v]$ lies in $\overline{\bD(T)}$ by the previous paragraph, so $F_\ell=\{[v]\}$: the $0$-cusp is the point that the line names. The lattice $\ell^{\perp T}/\ell$ has signature $(1,n-1)$, so it carries no positive $2$-plane at all; it is the cusp cone of the toroidal compactification (@def:toroidal-compactification) at $[\ell]$ (@rmk:hsd-toroidal), not a period domain, and in particular not the boundary component.
 
 Finally, $\Phi$ is continuous and agrees with the inclusion on the dense open $\bD(T)/\Gamma$, so
 $$\Phi([\ell])=\lim_{t\to\infty}\Phi([w(z_t)])=\lim_{t\to\infty}[w(z_t)]=[\iota(\ell)].$$
@@ -81,11 +81,11 @@ Then:
 
 1. **Cusp $1$ carries no Coble $0$-cusp.** $(\eta_1,\delta) = -1$, so $\eta_1\notin T_\Co$.
 2. **Each of cusps $2$, $3$, $4$, $5$ carries one, and all four have the same boundary lattice.** For $k=2,3,4,5$ the vector $\eta_k$ is primitive (@def:primitive-embedding) and isotropic with $(\eta_k,\delta) = 0$ and $\div_{\ten}(\eta_k) = 2$, and the lattice $\eta_k^{\perp T_\Co}/\ZZ\eta_k$ is even of rank $9$, determinant $2^9$, signature $(1,8)$ and invariants $(r,a,\delta) = (9,9,1)$, hence is $(9,9,1)_1$ (@thm:two-elementary-classification).
-   So each of Sterk's cusps $2$ to $5$ carries a $0$-cusp of $F_{\Co,2}$ with boundary lattice $(9,9,1)_1$, by @thm:coble-pair-semifan(0) and @lem:cusp-map-of-a-period-lattice-embedding; and since $\Gamma_{\Co,2}\subseteq\Orth(T_\Co)$ and $\Orth(T_\Co)$ is transitive on primitive isotropic vectors (@thm:unpolarized-cusps), the four sit over the one $0$-cusp $(9,9,1)_1$ of $F^{\mathrm{un}}_\Co$.
+   So each of Sterk's cusps $2$ to $5$ carries a $0$-cusp of $F_{\Co,2}$ with boundary lattice $(9,9,1)_1$, by @thm:coble-pair-semifan(0) and @lem:cusp-map-of-a-period-lattice-embedding; and since $\Gamma_{\Co,2}\subseteq\Orth(T_\Co)$ and $\Orth(T_\Co)$ is transitive on primitive isotropic vectors (@def:isotropic-subspace) (@thm:unpolarized-cusps), the four sit over the one $0$-cusp $(9,9,1)_1$ of $F^{\mathrm{un}}_\Co$.
    **The boundary lattice therefore singles out no cusp**: the identification of the Coble $0$-cusp with cusp $2$ alone is false in this reading.
-3. **The chamber singles out cusp $2$.** Restricted to $\delta^\perp$, the facet at Sterk cusp $2$ is the Coble chamber of @thm:coble-cusp-chamber: nine walls (@not:coxeter-polytope-faces) forming a tree with arms of lengths $1$, $2$ and $5$ at its branch vertex, eight walls of square $-4$ and one of square $-2$ at the end of the long arm, every bond of label $3$ except the last bond of the long arm, of label $4$.
+3. **The chamber singles out cusp $2$.** Restricted to $\delta^\perp$, the facet (@def:facet-maximal-face) at Sterk cusp $2$ is the Coble chamber of @thm:coble-cusp-chamber: nine walls (@not:coxeter-polytope-faces) forming a tree with arms of lengths $1$, $2$ and $5$ at its branch vertex, eight walls of square $-4$ and one of square $-2$ at the end of the long arm, every bond of label $3$ except the last bond of the long arm, of label $4$.
    At cusps $3$, $4$ and $5$ the same construction gives $11$, $10$ and $13$ distinct walls, and at each of the three every one of them is a facet of the restricted chamber.
-   Two cones with different numbers of facets are not isometric, so cusp $2$ is the unique cusp of $\fentwo$ whose local reflection data are the Coble $0$-cusp's, and this is the sense in which the Coble $0$-cusp is Sterk cusp $2$.
+   Two cones (@def:closed-cone) with different numbers of facets are not isometric, so cusp $2$ is the unique cusp of $\fentwo$ whose local reflection data are the Coble $0$-cusp's, and this is the sense in which the Coble $0$-cusp is Sterk cusp $2$.
 4. **Cusp $2$ is also the unique one of divisibility $2$ in $\tdp$.** $\div_{\tdp}(\eta_2) = 2$ while $\div_{\tdp}(\eta_k) = 1$ for $k = 3,4,5$, so cusp $2$ alone maps to the $(18,0,0)_1$ cusp of $\bbcpt{\fttz}$ and cusps $3$, $4$, $5$ to $(18,2,0)_1$ ([@AEGS25, §3.1, printed p. 589; Lem. 3.2, printed p. 590; §3.8 with Lems. 3.9--3.10, printed pp. 594--595]).
    Its vector is $\eta_2 = e' = v_1$ of @lem:divisibilityTcoOne, the $U(2)$ generator of $T_\Co$.
 5. **The check proposed for the old form of the claim tests nothing.** All of cusps $2$ to $5$ have $\Gamma(\mcz_0) = \Dc^2$ (@ex:fen2_five_cusps, from [@AEGS25, Prop. 4.8(1)--(2), printed pp. 603--604]), so every Coble $0$-cusp is of $\Dc^2$-type; cusp $1$, the only $\RP^2$-type cusp, carries none by (1). The $\Dc^2$-type consistency check is a consequence of divisibility $2$ in $\ten$ and of (1), and it cannot distinguish cusp $2$ from cusps $3$, $4$, $5$.
@@ -129,5 +129,5 @@ What it got wrong is the uniqueness: the boundary lattice is $(9,9,1)_1$ at all 
 ::: {#def:terminal-coble-surface .definition title="Terminal" defines="terminal Coble surface"}
 
 A Coble surface (@def:coble-surface) is **terminal** when it is not the image of any birational but not biregular morphism from another Coble surface.
-The $n=1$ case, the blowup of a plane sextic at $N=10$ ordinary double points (some possibly infinitely near), is terminal.
+The $n=1$ case, the blowup of a plane sextic at $N=10$ ordinary double points (@def:ordinary-double-point) (some possibly infinitely near), is terminal.
 :::

@@ -100,7 +100,7 @@ The other entries of @tbl-coble-lattices are those of [@CDL25, Table 5.1, p. 553
    .
    $$
 2. By [@CDL25, (5.4.1), p. 552], $K_{\mathrm V}^2 = 9-N = -n$, so $n=10$ gives $N = 19$.
-   This agrees with [@CDL25, Example 5.4.4 (2), p. 553], where the blowup of the $15$ intersection points of the ten lines on a quintic del Pezzo surface has $N=19$ and realizes the bottom row of the table.
+   This agrees with [@CDL25, Example 5.4.4 (2), p. 553], where the blowup of the $15$ intersection points of the ten lines on a quintic del Pezzo surface (@def:degree-of-del-pezzo-surface) has $N=19$ and realizes the bottom row of the table.
    The lattices $\generators{2}^{\oplus 2}$ and $\latI_{2,0}(2)$ have the same Gram matrix $\diag(2,2)$.
 
 :::

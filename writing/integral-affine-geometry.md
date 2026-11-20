@@ -51,13 +51,13 @@ $$
 For an irreducible nodal $D$, the formula is $Q(V,D)=11-D^2$; for smooth $D$, it is $12\chi(\mathcal O_V)-D^2$ [@AE23, Def. 3.7; @Eng18, Def. 2.6]. We use the first formula only with its stated hypothesis.
 
 ::: {.definition #def:ias-pseudofan title="Pseudofan" defines="pseudofan; $\mathcal F(V,D)$"}
-The *pseudofan* $\mathcal F(V,D)$ is the cone on the dual cycle of $D$, triangulated by its cone edges. The radial edge associated with $D_i$ has negative self-intersection $d_i=-D_i^2$ when $r>1$, and $d_i=2-D_i^2$ when $r=1$. These weights determine the integral affine structure (@def:property-structure-stuff) away from the cone point [@Eng18, Def. 3.8].
+The *pseudofan* $\mathcal F(V,D)$ is the cone (@def:closed-cone) on the dual cycle of $D$, triangulated by its cone edges. The radial edge associated with $D_i$ has negative self-intersection $d_i=-D_i^2$ when $r>1$, and $d_i=2-D_i^2$ when $r=1$. These weights determine the integral affine structure (@def:property-structure-stuff) away from the cone point [@Eng18, Def. 3.8].
 :::
 
 The atlas extends over the cone point precisely for a toric pair [@Eng18, Prop. 3.9]. Thus a non-toric pair contributes a singular local model. Corner blowups of the pair subdivide its pseudofan without changing charge. A corner blowup equivalence class records this choice of toric subdivision; it does not identify every pair with the same boundary cycle [@Eng18, Def. 3.8 and Props. 3.9–3.13].
 
 ::: {.definition #def:corner-blowup-class title="Corner blowup equivalence" defines="corner blowup equivalent; corner blowup equivalence class; cbec"}
-Two pseudofans (@def:ias-pseudofan) are *corner blowup equivalent* when finite sequences of corner blowups and their inverses, with each inverse contracting a boundary $(-1)$-curve, connect them. The source (@def:globular-boundary) notes call an equivalence (@def:equivalence-of-objects) class a *corner blowup equivalence class* (*cbec*). It retains the singular affine germ at the cone point while changing its triangulated presentation [@Eng18, §3].
+Two pseudofans (@def:ias-pseudofan) are *corner blowup equivalent* when finite sequences of corner blowups and their inverses, with each inverse contracting a boundary $(-1)$-curve, connect them. The source (@def:globular-boundary) notes call an equivalence (@def:equivalence-of-objects) class a *corner blowup equivalence class* (*cbec*). It retains the singular affine germ at the cone (@def:closed-cone) point while changing its triangulated presentation [@Eng18, §3].
 :::
 
 ## Type III spheres {#sec-type-iii-ias}

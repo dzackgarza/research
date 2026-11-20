@@ -43,7 +43,7 @@ For each $t \in M$, let $\{\omega_1(t), \dots, \omega_p(t)\}$ be a basis of a ho
    $$
    \omega_i \;=\; \int_{\Sigma_i} \Omega \qquad (i = 0, \dots, k-1).
    $$
-   Since $\Omega$ is determined up to an arbitrary non-zero constant $\lambda \in \unitsof{\CC}$, the period integrals are determined up to scalar multiplication, and their totality defines a well-defined point $P_X$ in projective space $\PP^{k-1}(\CC)$:
+   Since $\Omega$ is determined up to an arbitrary non-zero constant $\lambda \in \unitsof{\CC}$, the period integrals are determined up to scalar multiplication, and their totality defines a well-defined point $P_X$ in projective space (@def:projective-morphism-of-schemes) $\PP^{k-1}(\CC)$:
    $$
    P_X \;=\; [\omega_0 : \dots : \omega_{k-1}] \;\in\; \PP^{k-1}.
    $$
@@ -78,7 +78,7 @@ Let $k$ have characteristic $0$ and let $f\in k[x_0,\dots,x_{n-1},t]$ present a 
 
 4. Compute the indicial polynomial of $\mathcal L$ at $t = 0$.
    Its roots are the exponents $\alpha_1,\dots,\alpha_\mu$.
-   Its degree (@def:numerical-polarization) equals $\mu$ exactly when $t = 0$ is a regular singular point, so checking that degree is checking the hypothesis under which the remaining steps are valid.
+   Its degree (@def:graded-object) (@def:numerical-polarization) equals $\mu$ exactly when $t = 0$ is a regular singular point, so checking that degree is checking the hypothesis under which the remaining steps are valid.
 
 5. Let $R$ be the Jordan form over $\overline{\QQ}$ of the companion matrix of the monic indicial polynomial, and let $R = R_s + R_n$ be its Jordan decomposition into commuting semisimple and nilpotent parts.
 

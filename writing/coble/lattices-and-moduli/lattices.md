@@ -44,7 +44,7 @@ Since $\coker \eta$ is torsionfree, $\eta$ is a primitive embedding.
 ::: {.proof}
 
 The map is well defined and isometric: $h$ has square $2$ and $\tilde e+\tilde f$ has square $2$, since $\tilde e,\tilde f$ are the isotropic (@def:orthogonal-complement) basis of $U$ with $\tilde e\cdot\tilde f=1$; and $\eta$ is the identity on $E_{10}(2)$, which is an orthogonal summand of both sides.
-So $\eta$ is a morphism of lattices of $\mathbf{Lat}_{\bZ}$, and it is injective because it is injective on each summand.
+So $\eta$ is a morphism of lattices of $\mathbf{Lat}_{\bZ}$, and it is injective (@def:injective-map) because it is injective on each summand.
 
 For primitivity, $\eta(T_{\Co})=\bZ(\tilde e+\tilde f)\oplus E_{10}(2)$, so
 $$
@@ -125,11 +125,11 @@ $$
 \widetilde\Orth^+(T_\Co) = \Orth^+(T_\Co)\intersect\ker\bar\rho,
 $$
 $\bar\rho$ being the discriminant representation (@def:discriminant-rep) of $T_\Co$ and $\ker\bar\rho$ the group $\ker\bigl(\Orth(L)\to\Orth(A_L)\bigr)$ of [@DK13, (2.1)].
-4. For $\Gamma$ one of $\Gamma_\En$, $\Gamma^K_\En$, $\gent$, the restricted stabilizer
+4. For $\Gamma$ one of $\Gamma_\En$, $\Gamma^K_\En$, $\gent$, the restricted stabilizer (@def:group-orbit)
 $$
 R_\Gamma\definedas \text{the image of } \Stab_{\Gamma}(\delta) \text{ in } \Orth(\delta^{\perp T_\En}) = \Orth(T_\Co).
 $$
-5. $\Gamma_{\Co,2}\leq\Orth(T_\Co)$ is the monodromy group of the VHS of the degree-$2$ Coble family: the image of the monodromy representation (@def:transport-and-monodromy) of the local system of lattices with fibre $T_\Co$ (@def:local-system-of-lattices) of the family of Coble surfaces carrying a degree-$2$ numerical polarization (@def:coble-polarization-classes); the family, with its objects, its base and its period map, is @def:coble-family-degree-two. It is defined by the family and is not a lattice group. Put $F_{\Co,2}\definedas\bD(T_\Co)/\Gamma_{\Co,2}$. The group $R_{\gent} = \bar\rho^{-1}(P)$ of (4) and @prop:gamma-co-images(3) is the restricted Enriques stabilizer; the comparison of $\Gamma_{\Co,2}$ with it is @thm:coble-monodromy-versus-enriques, and the arithmetic group that contains $\Gamma_{\Co,2}$ is $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co) = \Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2}$ (@thm:coble-monodromy-versus-enriques(4)).
+5. $\Gamma_{\Co,2}\leq\Orth(T_\Co)$ is the monodromy group of the VHS of the degree-$2$ Coble family: the image of the monodromy representation (@def:transport-and-monodromy) of the local system of lattices with fibre $T_\Co$ (@def:local-system-of-lattices) of the family of Coble surfaces carrying a degree-$2$ numerical polarization (@def:coble-polarization-classes); the family, with its objects, its base and its period map, is @def:coble-family-degree-two. It is defined by the family and is not a lattice group. Put $F_{\Co,2}\definedas\bD(T_\Co)/\Gamma_{\Co,2}$. The group $R_{\gent} = \bar\rho^{-1}(P)$ of (4) and @prop:gamma-co-images(3) is the restricted Enriques stabilizer; the comparison of $\Gamma_{\Co,2}$ with it is @thm:coble-monodromy-versus-enriques, and the arithmetic group (@def:arithmetic-group) that contains $\Gamma_{\Co,2}$ is $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co) = \Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2}$ (@thm:coble-monodromy-versus-enriques(4)).
 
 A statement about a quotient of $\bD(T_\Co)$ names the group it uses; in particular every count of cusps names its group.
 :::
@@ -212,7 +212,7 @@ which is onto. Hence $\Gamma\subseteq\Gamma^{\mathrm{taut}}_\Co$, and the two in
 
 Let $B=V/\PGL_3$ and $\bar B=[V/(\SL_3\times S_{10})]$ be the labelled and unlabelled bases of @def:coble-family-unpolarized(2)--(3), with the local system $\bT$ of @lem:d2-local-system and the monodromy groups
 $$\Gamma_\Co(B)=\rho\qty{\pi_1(B,s)},\qquad \Gamma_\Co(\bar B)=\rho\qty{\pi_1(\bar B,s)}$$
-of @lem:d2-local-system(4),(5), the base point of $B$ lying over that of $\bar B$. Then
+of @lem:d2-local-system(4),(5), the base point (@def:complete-linear-system) of $B$ lying over that of $\bar B$. Then
 1. $\Gamma_\Co(B)=\Gamma_\Co(\bar B)\cap\ker\bar\rho$.
 2. $[\Gamma_\Co(\bar B):\Gamma_\Co(B)]=\abs{\bar\rho\qty{\Gamma_\Co(\bar B)}}$.
 This index is a divisor of $10!=3\,628\,800$ by @prop:gamma-co-geometric-bound(2); it equals $10!$ only if $\bar\rho(\Gamma_\Co(\bar B))=\Theta$, which is not proved (@rmk:gamma-co-orbifold-obstruction).
@@ -249,15 +249,15 @@ By [@Dol96, Cor. 3.2] the period map is a bijection between marked ample $M$-pol
 
 The hypothesis of [@Dol96, Cor. 3.2] is ampleness with respect to the polarization, that is the period point avoiding the hyperplanes of $(-2)$-vectors of $N$; the general member of the family has $\Pic(X_b)=M$ (@prop:coble-period-domain(1), @lem:d2-local-system(2)), so its period lies in that open set. The further containment in $\Orth^+(N)$ is @lem:monodromy-is-spinor-positive, the periods being single-valued on the connected base $B$ (@lem:d2-incidence-connected(2)).
 
-2. $\bD(N)$ is a domain of *lines*: a point is the line $H^{2,0}(X_b)\subset N\otimes\CC$ (@prop:coble-period-domain(1)). The isometry $-\id_N$ fixes every line, so it acts trivially on $\bD(N)$, and likewise on the domain of oriented positive $2$-planes used in [@Dol96]. Hence $\Orth(N)^*$ and $\Orth(N)^*/\{\pm\id\}$ have the same orbits and give the same quotient, and the deck group of the marked period domain over the moduli space is $\Orth(N)^*/\{\pm\id\}$. A monodromy group read off that quotient is therefore determined only modulo $\{\pm\id\}$, which is the statement of 2.
+2. $\bD(N)$ is a domain of *lines*: a point is the line $H^{2,0}(X_b)\subset N\otimes\CC$ (@prop:coble-period-domain(1)). The isometry $-\id_N$ fixes every line, so it acts trivially on $\bD(N)$, and likewise on the domain of oriented positive $2$-planes used in [@Dol96]. Hence $\Orth(N)^*$ and $\Orth(N)^*/\{\pm\id\}$ have the same orbits (@def:group-orbit) and give the same quotient, and the deck group of the marked period domain over the moduli space is $\Orth(N)^*/\{\pm\id\}$. A monodromy group read off that quotient is therefore determined only modulo $\{\pm\id\}$, which is the statement of 2.
 :::
 
 ::: {.lemma #lem:d2-vanishing-reflections title="The vanishing cycles, the Coble degeneration that produces them, and $\Gamma_\Co=W(T_\Co)$"}
 
-Let $T_\Co=\generators{h}\oplus E_{10}(2)$ with $h^2=2$ (@def:gamma-co-groups), and let $W(T_\Co)=\generators{s_v : v\in T_\Co,\ v^2=-2}$ be the short-root reflection group of @prop:gamma-co-reflective-set(1). Then:
+Let $T_\Co=\generators{h}\oplus E_{10}(2)$ with $h^2=2$ (@def:gamma-co-groups), and let $W(T_\Co)=\generators{s_v : v\in T_\Co,\ v^2=-2}$ be the short-root reflection group (@def:reflection-group) of @prop:gamma-co-reflective-set(1). Then:
 
 1. The vectors of square $-2$ in $T_\Co$ are exactly the vectors $\pm h+v$ with $v\in E_{10}(2)$ of square $-4$; every one of them has divisibility $2$ and its reflection lies in $\widetilde\Orth^+(T_\Co)$ (@prop:gamma-co-reflective-set(1)).
-2. For every such $\delta$ the hyperplane $\delta^{\perp}$ is one of the components of the discriminant of the family [@YZZ25, Thm. 3.4, and $\calH_T$ as defined in @YZZ25, §3.3]: it does **not** meet the period image of @def:coble-family-unpolarized, and the base of the family is exactly its complement. The degeneration whose meridian is $\delta$ is the following one. *On the sextic side:* the plane sextic acquires an **eleventh ordinary double point**, the ten labelled nodes persisting, so the family leaves its base by the boundary divisor along which the sextic has eleven nodes. *On the Coble side:* the Coble surface $S=\Bl_{p_1,\dots,p_{10}}\PP^2$ stays smooth, its branch curve $-2K_S$, the proper transform of the sextic, acquires an ordinary double point at the eleventh node, and the K3 double cover acquires exactly the corresponding node; that node is the Picard--Lefschetz singularity, and $\delta$ is the class of the rational curve that resolves it.
+2. For every such $\delta$ the hyperplane $\delta^{\perp}$ is one of the components of the discriminant of the family [@YZZ25, Thm. 3.4, and $\calH_T$ as defined in @YZZ25, §3.3]: it does **not** meet the period image of @def:coble-family-unpolarized, and the base of the family is exactly its complement. The degeneration whose meridian is $\delta$ is the following one. *On the sextic side:* the plane sextic acquires an **eleventh ordinary double point (@def:ordinary-double-point)**, the ten labelled nodes persisting, so the family leaves its base by the boundary divisor along which the sextic has eleven nodes. *On the Coble side:* the Coble surface $S=\Bl_{p_1,\dots,p_{10}}\PP^2$ stays smooth, its branch curve $-2K_S$, the proper transform (@def:strict-transform) of the sextic, acquires an ordinary double point at the eleventh node, and the K3 double cover acquires exactly the corresponding node; that node is the Picard--Lefschetz singularity, and $\delta$ is the class of the rational curve that resolves it.
 3. Each meridian acts by its reflection, so
 $$\Gamma_\Co=W(T_\Co).$$
 In particular $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$ (@prop:gamma-co-reflective-set(1)), and $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ holds exactly when $W(T_\Co)=\widetilde\Orth^+(T_\Co)$, that is when the index of @qst:gamma-co-reflection-index is $1$.
@@ -337,25 +337,25 @@ Let $\Gamma_\Co$ be the monodromy group of the family of @def:coble-family-unpol
 
 ::: {.proof}
 
-(1) is @thm:gamma-co-is-stable. For (2), a point of $\bar B$ is a sextic together with its ten nodes as a set (@not:d2-plane-sextic-base), so the class $e_0=f^*H$ of the pullback of a line is the value of a global section of $\bV|_{\bar B}$, while the ten classes $e_1,\dots,e_{10}$ are permuted. A monodromy operator therefore fixes $e_0$ and acts on $M$ by an element of $\mathfrak S_{10}$, and @lem:coble-discriminant-actions-conjugate gives $\bar\rho(\Gamma_\Co(\bar B))\subseteq\gamma\bar\rho_M(\mathfrak S_{10})\gamma^{-1}$. That $\Theta\cong\mathfrak S_{10}$, and its index, is the computation of the same paragraph: the classes $[e_i/2]$, $i\ge1$, are permuted among themselves and $[e_0/2]$ is fixed, so $\mathfrak S_{10}\to\Orth(q_M)$ is injective, $|\Theta|=10!$, and $[\Orth(q_{T_\Co}):\Theta]=\abs{\Orth(q_{T_\Co})}/10!=2^{13}\cdot3\cdot17\cdot31$ by @prop:coble-discriminant-group. The proof of (2) uses neither (1) nor @thm:gamma-co-is-stable, so the use of $\Theta$ in @thm:gamma-co-sextic-group is not circular. (3) is @thm:gamma-co-is-full and @rmk:d2-what-is-open(1).
+(1) is @thm:gamma-co-is-stable. For (2), a point of $\bar B$ is a sextic together with its ten nodes as a set (@not:d2-plane-sextic-base), so the class $e_0=f^*H$ of the pullback of a line is the value of a global section of $\bV|_{\bar B}$, while the ten classes $e_1,\dots,e_{10}$ are permuted. A monodromy operator therefore fixes $e_0$ and acts on $M$ by an element of $\mathfrak S_{10}$, and @lem:coble-discriminant-actions-conjugate gives $\bar\rho(\Gamma_\Co(\bar B))\subseteq\gamma\bar\rho_M(\mathfrak S_{10})\gamma^{-1}$. That $\Theta\cong\mathfrak S_{10}$, and its index, is the computation of the same paragraph: the classes $[e_i/2]$, $i\ge1$, are permuted among themselves and $[e_0/2]$ is fixed, so $\mathfrak S_{10}\to\Orth(q_M)$ is injective (@def:injective-map), $|\Theta|=10!$, and $[\Orth(q_{T_\Co}):\Theta]=\abs{\Orth(q_{T_\Co})}/10!=2^{13}\cdot3\cdot17\cdot31$ by @prop:coble-discriminant-group. The proof of (2) uses neither (1) nor @thm:gamma-co-is-stable, so the use of $\Theta$ in @thm:gamma-co-sextic-group is not circular. (3) is @thm:gamma-co-is-full and @rmk:d2-what-is-open(1).
 :::
 
 ::: {.lemma #lem:d2a-family-is-yzz title="The D2a family is the family $X_F$ of Yu--Zheng--Zhong"}
 
-Let $\bar B$ be the unlabelled base of @def:coble-family-unpolarized(2), let $\mcx\to\mcs\to\bar B$ be the family of @lem:d2-unpolarised-family(3), and let $\bT$ be the local system of @lem:d2-local-system. Let $T=10A_1$, let $\mcv_T$ be the space of sextics of type $T$ and $\mcm_T=\mcv_T/\PGL_3$ [@YZZ25, §2.1], and let $Q_F=P_F^{\perp\Lambda_F}$ be the local system of [@YZZ25, §3.1]. Then the family $\mcx\to\mcs\to\bar B$ and the family $X_F\to\mcv_T$ of [@YZZ25, §2.3] have the same base up to labelling, the same fibres, and stalkwise the same lattice with the same generators; the local system $\bT$ has stalk $Q_F$ and the generating classes $H_F,\ell_1,\dots,\ell_{10}$ of [@YZZ25, §3.1]. What is *not* asserted is an identification of the two as equivariant local systems over the orbifold points; that is @rmk:gamma-co-orbifold-obstruction, and it is what the next theorem would need.
+Let $\bar B$ be the unlabelled base of @def:coble-family-unpolarized(2), let $\mcx\to\mcs\to\bar B$ be the family of @lem:d2-unpolarised-family(3), and let $\bT$ be the local system of @lem:d2-local-system. Let $T=10A_1$, let $\mcv_T$ be the space of sextics of type $T$ and $\mcm_T=\mcv_T/\PGL_3$ [@YZZ25, §2.1], and let $Q_F=P_F^{\perp\Lambda_F}$ be the local system of [@YZZ25, §3.1]. Then the family $\mcx\to\mcs\to\bar B$ and the family $X_F\to\mcv_T$ of [@YZZ25, §2.3] have the same base up to labelling, the same fibres, and stalkwise the same lattice with the same generators; the local system $\bT$ has stalk (@def:stalk) $Q_F$ and the generating classes $H_F,\ell_1,\dots,\ell_{10}$ of [@YZZ25, §3.1]. What is *not* asserted is an identification of the two as equivariant local systems over the orbifold points; that is @rmk:gamma-co-orbifold-obstruction, and it is what the next theorem would need.
 :::
 
 ::: {.proof}
 
 *The bases.* A point of $\bar B$ is an irreducible plane sextic with its ten nodes as a set (@not:d2-plane-sextic-base), that is a sextic of the irreducible type $T=10A_1$; a sextic of type $T$ determines its singular set, so forgetting the labelling is a surjection $V\to\mcv_T$ whose fibres are the $10!$ orderings of the nodes, and quotienting by $S_{10}$ and $\PGL_3$ identifies $\bar B$ with $\mcm_T$.
 
-*The fibres.* For a sextic $Z$ of type $T$, [@YZZ25, §2.3] defines $X_F$ as the minimal resolution of the double cover of $\PP^2$ branched along $Z$. The fibre of @lem:d2-unpolarised-family(1) is the double cover of $\Bl_{p_1,\dots,p_{10}}\PP^2$ branched along the proper transform $C_b$ of $Z$. At a node of $Z$ the double cover has local equation $z^2=xy$, an $A_1$ singularity; blowing up the node replaces it by the exceptional curve, along which the proper transform of $Z$ is smooth of self-intersection $-4$, and the double cover branched along it is smooth there, the exceptional curve lifting to a $(-2)$-curve. That is the minimal resolution of the $A_1$ point, and the minimal resolution is unique, so the two constructions give the same K3 surface with the same covering involution and the same proper transform of $Z$.
+*The fibres.* For a sextic $Z$ of type $T$, [@YZZ25, §2.3] defines $X_F$ as the minimal resolution (@def:minimal-resolution-of-surface-singularity) of the double cover of $\PP^2$ branched along $Z$. The fibre of @lem:d2-unpolarised-family(1) is the double cover of $\Bl_{p_1,\dots,p_{10}}\PP^2$ branched along the proper transform (@def:strict-transform) $C_b$ of $Z$. At a node of $Z$ the double cover has local equation $z^2=xy$, an $A_1$ singularity; blowing up the node replaces it by the exceptional curve, along which the proper transform of $Z$ is smooth of self-intersection $-4$, and the double cover branched along it is smooth there, the exceptional curve lifting to a $(-2)$-curve. That is the minimal resolution of the $A_1$ point, and the minimal resolution is unique, so the two constructions give the same K3 surface with the same covering involution and the same proper transform of $Z$.
 
 *The local systems.* [@YZZ25, §3.1] puts $P_F=\generators{H_F}\oplus L_F$, with $L_F=A_1^{\oplus10}$ generated by the classes of the ten exceptional curves of the resolution and $H_F$ the class of the pullback of a line, and $Q_F=P_F^{\perp\Lambda_F}$. The span $\bM$ of @lem:d2-local-system(2) is generated by the class $\varepsilon_0$ of the pullback of a line and the classes $\varepsilon_1,\dots,\varepsilon_{10}$ of the ten exceptional curves, and $\bT=\bM^{\perp}$. By the identification of the fibres the two generating sets are the same classes of $H^2(X_F)$, so $P_F=\bM$ and $Q_F=\bT$.
 
 The proof stops at the stalk, and that is all that is used. Two remarks on why the remaining comparisons are not needed for what this book proves.
 
-*The labelled base has no isotropy to compare.* $\PGL_3$ acts freely on $V$ and $B=V/\PGL_3$ is a space (@lem:d2-plane-sextic-freeness(2)--(3)); on $B$ the local system $\bT$ is an ordinary local system of lattices, its monodromy is $\rho(\pi_1(B,s))$, and there is no stabilizer acting on a fibre to identify. Every statement this book makes about $\Gamma_\Co$ is a statement about $B$ (@def:coble-family-unpolarized(3), @lem:d2a-family-is-yzz).
+*The labelled base has no isotropy to compare.* $\PGL_3$ acts freely on $V$ and $B=V/\PGL_3$ is a space (@lem:d2-plane-sextic-freeness(2)--(3)); on $B$ the local system $\bT$ is an ordinary local system of lattices, its monodromy is $\rho(\pi_1(B,s))$, and there is no stabilizer (@def:group-orbit) acting on a fibre to identify. Every statement this book makes about $\Gamma_\Co$ is a statement about $B$ (@def:coble-family-unpolarized(3), @lem:d2a-family-is-yzz).
 
 *On the unlabelled base the comparison is not made, and nothing below needs it.* At a sextic carrying a projectivity that permutes its nodes, the image of that projectivity is an orbifold point of $\bar B$, and comparing the two families there would require the isotropy actions on the stalk to agree — the comparison that @rmk:gamma-co-orbifold-obstruction shows is obstructed. The only statement about $\bar B$ that this book uses is the containment $\Gamma_\Co(\bar B)\subseteq\Gamma_{10A_1}$, which is read off the permuted classes and needs no isotropy (@prop:gamma-co-geometric-bound(2)).
 :::
@@ -364,7 +364,7 @@ The proof stops at the stalk, and that is all that is used. Two remarks on why t
 
 Let $T=10A_1$, so that $P=\generators{H}\oplus L$ with $L=A_1^{\oplus10}$ and $Q=P^{\perp\Lkt}=T_\Co$ (@thm:occult-period-map-sextics, @lem:ten-a1-permutation-forces-strictness), and let $\Gamma_{10A_1}\le\Orth(T_\Co)$ be the group of [@YZZ25, §3.1] for that type: the image of $\Orth(\Lkt,\Delta,H)\to\Orth(Q)$, restricted to the subgroup preserving the component $\bD(Q)$. Let $\Theta\le\Orth(q_{T_\Co})$ be the image of the permutations of $e_1,\dots,e_{10}$ fixing $e_0$ (@prop:gamma-co-geometric-bound(2)). Then:
 
-0. The unlabelled base $\bar B$ of @def:coble-family-unpolarized is the moduli stack of sextics of irreducible type $T=10A_1$, with coarse space $\mathcal M_T$, and the stalk of the local system $\bT$ of @lem:d2-local-system is the lattice $Q_F$ of [@YZZ25, §3.1] (@lem:d2a-family-is-yzz). The *group* identity $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ is **not** a consequence of this, for the reason recorded in @rmk:gamma-co-orbifold-obstruction; what holds is $\Gamma_\Co(\bar B)\subseteq\Gamma_{10A_1}$ (@prop:gamma-co-geometric-bound(2)), with the index of $\Gamma_\Co$ in $\Gamma_\Co(\bar B)$ equal to $\abs{\bar\rho(\Gamma_\Co(\bar B))}$ (@lem:gamma-co-labelled-index).
+0. The unlabelled base $\bar B$ of @def:coble-family-unpolarized is the moduli stack of sextics of irreducible type $T=10A_1$, with coarse space $\mathcal M_T$, and the stalk (@def:stalk) of the local system $\bT$ of @lem:d2-local-system is the lattice $Q_F$ of [@YZZ25, §3.1] (@lem:d2a-family-is-yzz). The *group* identity $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ is **not** a consequence of this, for the reason recorded in @rmk:gamma-co-orbifold-obstruction; what holds is $\Gamma_\Co(\bar B)\subseteq\Gamma_{10A_1}$ (@prop:gamma-co-geometric-bound(2)), with the index of $\Gamma_\Co$ in $\Gamma_\Co(\bar B)$ equal to $\abs{\bar\rho(\Gamma_\Co(\bar B))}$ (@lem:gamma-co-labelled-index).
 1. $\Theta\cong\mathfrak S_{10}$ and $|\Theta|=10!=3\,628\,800$.
 2. $\Gamma_{10A_1}=\Orth^+(T_\Co)\intersect\bar\rho^{-1}(\Theta)$.
 3. $[\Gamma_{10A_1}:\widetilde\Orth^+(T_\Co)]=|\Theta|=10!$ and
@@ -378,7 +378,7 @@ $$[\Orth^+(T_\Co):\Gamma_{10A_1}]=\frac{\abs{\Orth(q_{T_\Co})}}{10!}=2^{13}\cdot
 
 *What the period theorem does give.* By [@YZZ25, Thm. 3.4] the period map induces an isomorphism $\mathcal M_T\cong\Gamma_T\backslash(\bD_T-\mathcal H_T)$ of *coarse spaces*, and by [@YZZ25, Prop. 6.6] with [@YZZ25, Prop. 6.5] the period map preserves orbifold structures on the quotient $P\Gamma_T\backslash(\bD_T-\mathcal H_T)$ of [@YZZ25, Thm. 1.1].
 
-*What it does not give, and why.* $P\Gamma_T=\Gamma_T/\{\pm\id\}$, and [@YZZ25, §6.1] states that $P\Gamma_T\backslash(\bD_T-\mathcal H_T)$ is a *different orbifold* from $\Gamma_T\backslash(\bD_T-\mathcal H_T)$: $-\id$ acts trivially on $\bD_T$, so it lies in every point stabilizer of the second and in none of the first. The lattice local system cannot be carried across that comparison either, because $-\id$ acts on the fibre $Q_F=T_\Co$ as $-\id$ (@prop:coble-discriminant-group) and not as the identity; an orbifold local system with fibre $Q_F$ therefore does not descend to $P\Gamma_T\backslash(\bD_T-\mathcal H_T)$. So the cited orbifold statement is a statement about the *period*, and it does not identify the monodromy group of $\bT$ with $\Gamma_T$. This is the one step of the labelled-base determination that is not available from the sources at hand, and it is recorded as @qst:gamma-co-sign-is-realised.
+*What it does not give, and why.* $P\Gamma_T=\Gamma_T/\{\pm\id\}$, and [@YZZ25, §6.1] states that $P\Gamma_T\backslash(\bD_T-\mathcal H_T)$ is a *different orbifold* from $\Gamma_T\backslash(\bD_T-\mathcal H_T)$: $-\id$ acts trivially on $\bD_T$, so it lies in every point stabilizer (@def:group-orbit) of the second and in none of the first. The lattice local system cannot be carried across that comparison either, because $-\id$ acts on the fibre $Q_F=T_\Co$ as $-\id$ (@prop:coble-discriminant-group) and not as the identity; an orbifold local system with fibre $Q_F$ therefore does not descend to $P\Gamma_T\backslash(\bD_T-\mathcal H_T)$. So the cited orbifold statement is a statement about the *period*, and it does not identify the monodromy group of $\bT$ with $\Gamma_T$. This is the one step of the labelled-base determination that is not available from the sources at hand, and it is recorded as @qst:gamma-co-sign-is-realised.
 
 (1) is @prop:gamma-co-geometric-bound(2).
 
@@ -449,11 +449,11 @@ and its pairing with itself is $0$ in $\QQ/\ZZ$ for the same reason. So $A_{T_\E
 $$
 b\bigl(z,(h/2,\delta/2)\bigr) = a\,b(h/2,h/2) + b(y,h/2) + c\,b(\delta/2,\delta/2) = \tfrac{a-c}{2}
 $$
-vanishes in $\QQ/\ZZ$, that is exactly when $a = c$; the middle term vanishes because $b(A_{E_{10}(2)},[h/2]) = 0$, $T_\Co = \generators{h}\perp E_{10}(2)$ being an orthogonal sum. This is the set displayed in (1). For such a $z$ one has $z - a(h/2,\delta/2) = (0,y,0)$ with $a(h/2,\delta/2)\in H$, so $[z] = [(0,y,0)]$, and every class of $H^{\perp}/H$ is of this form. The map is injective on these representatives: if $(0,y,0)\in H$, then $y$ is the $A_{E_{10}(2)}$-coordinate of $0$ or of $(h/2,\delta/2)$, and in both cases $y = 0$. Hence $\kappa$ is a bijection.
+vanishes in $\QQ/\ZZ$, that is exactly when $a = c$; the middle term vanishes because $b(A_{E_{10}(2)},[h/2]) = 0$, $T_\Co = \generators{h}\perp E_{10}(2)$ being an orthogonal sum. This is the set displayed in (1). For such a $z$ one has $z - a(h/2,\delta/2) = (0,y,0)$ with $a(h/2,\delta/2)\in H$, so $[z] = [(0,y,0)]$, and every class of $H^{\perp}/H$ is of this form. The map is injective (@def:injective-map) on these representatives: if $(0,y,0)\in H$, then $y$ is the $A_{E_{10}(2)}$-coordinate of $0$ or of $(h/2,\delta/2)$, and in both cases $y = 0$. Hence $\kappa$ is a bijection.
 
 *(2)* $q_{T_\En}(\kappa(y)) = q_S(0,y,0) = q_{T_\Co}(y) = q_{E_{10}(2)}(y)$, the middle term because $q_{T_\En}$ is induced by $q_S$ on $H^{\perp}$ and $(0,y,0)\in H^{\perp}$, the last because $T_\Co = \generators{h}\perp E_{10}(2)$ is an orthogonal sum.
 
-*(3)* Since $U$ is unimodular, $T_\En^* = U\oplus U(2)^*\oplus E_8(2)^*$, so the classes modulo $T_\En$ of $U(2)^*$ and of $E_8(2)^*$ are the two summands of $A_{T_\En} = A_{U(2)}\perp A_{E_8(2)}$. For $y\in A_{U(2)}$ or $y\in A_{E_8(2)}$ one has $y\in E_{10}(2)^* = U(2)^*\oplus E_8(2)^*\subseteq T_\Co^*\cap T_\En^*$, the $U(2)^*\oplus E_8(2)^*$ summand being common to $T_\Co^* = \generators{h/2}\oplus E_{10}(2)^*$ and to $T_\En^* = U\oplus E_{10}(2)^*$, and the class of $y$ modulo $T_\En$ is $\kappa(y) = [(0,y,0)]$; so $\kappa$ maps the two summands of $A_{E_{10}(2)}$ onto those of $A_{T_\En}$ and conjugates $\Orth(q_{U(2)})\times\Orth(q_{E_8(2)})$ to the same product. For the last clause, $A_{T_\Co} = \generators{[h/2]}\perp A^0$ with $A^0 = A_{E_{10}(2)}$, so restriction is an isomorphism $\Orth(q_{T_\Co})\iso\Orth(q_{A^0})$, and it carries the stabilizer $P$ of the decomposition $[h/2]^{\perp} = A_{U(2)}\oplus A_{E_8(2)}$ to $\Orth(q_{U(2)})\times\Orth(q_{E_8(2)})$ (@lem:coble-discriminant-blocks(3), (4)).
+*(3)* Since $U$ is unimodular, $T_\En^* = U\oplus U(2)^*\oplus E_8(2)^*$, so the classes modulo $T_\En$ of $U(2)^*$ and of $E_8(2)^*$ are the two summands of $A_{T_\En} = A_{U(2)}\perp A_{E_8(2)}$. For $y\in A_{U(2)}$ or $y\in A_{E_8(2)}$ one has $y\in E_{10}(2)^* = U(2)^*\oplus E_8(2)^*\subseteq T_\Co^*\cap T_\En^*$, the $U(2)^*\oplus E_8(2)^*$ summand being common to $T_\Co^* = \generators{h/2}\oplus E_{10}(2)^*$ and to $T_\En^* = U\oplus E_{10}(2)^*$, and the class of $y$ modulo $T_\En$ is $\kappa(y) = [(0,y,0)]$; so $\kappa$ maps the two summands of $A_{E_{10}(2)}$ onto those of $A_{T_\En}$ and conjugates $\Orth(q_{U(2)})\times\Orth(q_{E_8(2)})$ to the same product. For the last clause, $A_{T_\Co} = \generators{[h/2]}\perp A^0$ with $A^0 = A_{E_{10}(2)}$, so restriction is an isomorphism $\Orth(q_{T_\Co})\iso\Orth(q_{A^0})$, and it carries the stabilizer (@def:group-orbit) $P$ of the decomposition $[h/2]^{\perp} = A_{U(2)}\oplus A_{E_8(2)}$ to $\Orth(q_{U(2)})\times\Orth(q_{E_8(2)})$ (@lem:coble-discriminant-blocks(3), (4)).
 
 *(4)* Let $y\in A_{E_{10}(2)}$, represented by the functional that is $y$ on $E_{10}(2)$ and vanishes on $\generators{h}$ and on $\delta$. That representative lies in $E_{10}(2)^* = U(2)^*\oplus E_8(2)^*$, which is a summand of $T_\Co^* = \generators{h/2}\oplus E_{10}(2)^*$ and of $T_\En^* = U\oplus E_{10}(2)^*$; so $y$ may be read indifferently as a class of $A_{T_\Co}$ or of $A_{T_\En}$. The discriminant action of $g$ is $[x]\mapsto[g(x)]$ on $T_\En^*$. Since $g$ restricts to $\varphi$ on $T_\Co$ and fixes $\delta$, the functionals $g(y)$ and $\bar\rho_{T_\Co}(\varphi)(y)$ agree on $T_\Co$ and both vanish on $\delta$, hence are equal; note also that $\bar\rho_{T_\Co}(\varphi)$ preserves $A_{E_{10}(2)} = [h/2]^{\perp}$, because it fixes $[h/2]$. So
 $$
@@ -466,7 +466,7 @@ which is the displayed identity. Its last clause is then immediate, and $\bar\rh
 With $\delta$, $H$ and $R_\Gamma$ as in @def:gamma-co-groups, and $\bar\rho$ the discriminant representation (@def:discriminant-rep) of $T_\Co$:
 
 1. $R_{\Gamma_\En} = \widetilde\Orth^+(T_\Co)$.
-2. $R_{\Gamma^K_\En}$ is the stabilizer in $\Orth(T_\Co)$ of the class $[h/2]$ of $A_{T_\Co}$, and that stabilizer is all of $\Orth(T_\Co)$, because $[h/2]$ is the characteristic class of $q_{T_\Co}$:
+2. $R_{\Gamma^K_\En}$ is the stabilizer (@def:group-orbit) in $\Orth(T_\Co)$ of the class $[h/2]$ of $A_{T_\Co}$, and that stabilizer is all of $\Orth(T_\Co)$, because $[h/2]$ is the characteristic class of $q_{T_\Co}$:
 $$
 R_{\Gamma^K_\En} = \theset{\varphi\in\Orth(T_\Co)\ \mid\ \bar\rho(\varphi)(h/2) = h/2} = \Orth(T_\Co).
 $$
@@ -488,7 +488,7 @@ as the invariant $a = 10$ of $T_\En = (12,10,0)_2$ requires.
 *Step 1: the discriminant form of $T_\Co$, and its characteristic class.* On the orthogonal decomposition $A_{T_\Co} = \generators{h/2}\perp A_{U(2)}\perp A_{E_8(2)}$, which is orthogonal because $T_\Co = \generators{h}\perp E_{10}(2)$ is, the values of $q$ are these:
 
 - $q(h/2) = h^2/4 = 1/2$, and $b(h/2,h/2) = 1/2$;
-- on $A_{U(2)}$, with the classes of $e'/2$ and $f'/2$ for the isotropic basis $e',f'$ of $U(2)$, $(e',f') = 2$: $q(e'/2) = q(f'/2) = 0$ and $q((e'+f')/2) = (e'+f')^2/4 = 1$, so $q\bmod1$ vanishes on this block and its two nonzero values are $0$ and $1$, both integers;
+- on $A_{U(2)}$, with the classes of $e'/2$ and $f'/2$ for the isotropic basis (@def:isotropic-basis-hyperbolic-plane) $e',f'$ of $U(2)$, $(e',f') = 2$: $q(e'/2) = q(f'/2) = 0$ and $q((e'+f')/2) = (e'+f')^2/4 = 1$, so $q\bmod1$ vanishes on this block and its two nonzero values are $0$ and $1$, both integers;
 - on $A_{E_8(2)}$, with the classes of $\alpha_i/2$ for a basis $\alpha_i$ of $E_8$: $q(y/2) = y^2/2\in\bZ$ for every $y\in E_8$, so $q\bmod1$ vanishes here too, and $q$ on this block is the quadratic form $y\mapsto y^2/2\bmod 2\bZ$ of $E_8/2E_8$.
 
 That $q$ takes values in $\tfrac12\bZ/2\bZ\cong\bZ/4$ and that the class $w$ below exists and is unique are Nikulin's statements for every even $2$-elementary lattice, and are why the argument needs $2$-elementarity: if $L$ is even and $2$-elementary then $2x\in L$ for $x\in L^*$, hence $q(x) = x^2$ lies in $\tfrac12\bZ/2\bZ$; $x\mapsto q(x)\bmod1$ is therefore a linear function $A_L\to\tfrac12\bZ/\bZ$, and since $b$ is nondegenerate there is a *unique* $w$ with $b(w,x)\equiv q(x)\pmod1$ for all $x$, the characteristic element of $q$; it is additive over orthogonal sums, $w_{q_1\oplus q_2} = w_{q_1}\oplus w_{q_2}$, and it is $0$ exactly when $q$ is $\bZ$-valued [@Nik80, §3.9--150]. Applied to $q_{T_\Co} = q_{\generators{h/2}}\oplus q_{E_{10}(2)}$ this gives $w = [h/2]$ in one line: $q(h/2) = h^2/4 = 1/2 = b(h/2,h/2)$ makes $[h/2]$ the characteristic element of the first summand, and $q_{E_{10}(2)}$ is $\bZ$-valued, $q(y/2) = y^2/2\in\bZ$ for $y\in E_{10}$, so its characteristic element is $0$. Hence for every isometry $\sigma$ of $(A_{T_\Co},q)$ and every $x$,
@@ -497,7 +497,7 @@ b(\sigma(h/2),x) = b(h/2,\sigma^{-1}x)\equiv q(\sigma^{-1}x) = q(x)\equiv b(h/2,
 $$
 and nondegeneracy of $b$ gives $\sigma(h/2) = h/2$: every isometry of $q_{T_\Co}$ fixes $[h/2]$. This is the case $k = [h/2]$ of @lem:coble-discriminant-blocks(3), which proves the same thing for every form of the shape $\bZ k\perp A^0$; the argument is repeated here because (1) and (3) both use it, and because the vanishing of $q\bmod1$ has to be checked on the two blocks separately, with a different reason in each.
 
-*Step 2: which isometries of $T_\Co$ lift over $\delta$.* Let $g\in\Orth(T_\En)$ fix $\delta$. Then $g$ preserves $\delta^{\perp T_\En} = \eta(T_\Co)$, so after scalar extension $g = \varphi\oplus\id_{\generators{\delta}}$ with $\varphi = \restrictionof{g}{T_\Co}$; in particular the restriction map $\Stab_{\Orth(T_\En)}(\delta)\to\Orth(T_\Co)$ is injective. And $\varphi\oplus\id$ preserves the overlattice $T_\En$ exactly when $(\bar\rho(\varphi)\oplus\id)(H) = H$ (@thm:automorphism-lifting-criterion, which is [@Nik80, Cor. 1.5.2] applied to the gluing datum of @def:gluing-datum-of-a-pair). The elements of $H$ are $0$ and $(h/2,\delta/2)$, and the second coordinate of $(\bar\rho(\varphi)\oplus\id)(h/2,\delta/2)$ is $\delta/2\neq0$, so the condition is $\bar\rho(\varphi)(h/2) = h/2$. Conversely that condition makes $\varphi\oplus\id$ preserve $H$, hence extend to an isometry of $T_\En$, which fixes $\delta$. So $\varphi$ extends to an isometry of $T_\En$ fixing $\delta$, uniquely, exactly when it fixes $[h/2]$; on discriminant groups, $\varphi\oplus\id$ acts by $\bar\rho(\varphi)$ on $A_{E_{10}(2)}$, which $\kappa$ identifies with the whole of $A_{T_\En}$ (@lem:gluing-discriminant-identification(4)).
+*Step 2: which isometries of $T_\Co$ lift over $\delta$.* Let $g\in\Orth(T_\En)$ fix $\delta$. Then $g$ preserves $\delta^{\perp T_\En} = \eta(T_\Co)$, so after scalar extension $g = \varphi\oplus\id_{\generators{\delta}}$ with $\varphi = \restrictionof{g}{T_\Co}$; in particular the restriction map $\Stab_{\Orth(T_\En)}(\delta)\to\Orth(T_\Co)$ is injective (@def:injective-map). And $\varphi\oplus\id$ preserves the overlattice $T_\En$ exactly when $(\bar\rho(\varphi)\oplus\id)(H) = H$ (@thm:automorphism-lifting-criterion, which is [@Nik80, Cor. 1.5.2] applied to the gluing datum of @def:gluing-datum-of-a-pair). The elements of $H$ are $0$ and $(h/2,\delta/2)$, and the second coordinate of $(\bar\rho(\varphi)\oplus\id)(h/2,\delta/2)$ is $\delta/2\neq0$, so the condition is $\bar\rho(\varphi)(h/2) = h/2$. Conversely that condition makes $\varphi\oplus\id$ preserve $H$, hence extend to an isometry of $T_\En$, which fixes $\delta$. So $\varphi$ extends to an isometry of $T_\En$ fixing $\delta$, uniquely, exactly when it fixes $[h/2]$; on discriminant groups, $\varphi\oplus\id$ acts by $\bar\rho(\varphi)$ on $A_{E_{10}(2)}$, which $\kappa$ identifies with the whole of $A_{T_\En}$ (@lem:gluing-discriminant-identification(4)).
 
 *Step 3: part (2).* By Step 1 every isometry of $q_{T_\Co}$ fixes $[h/2]$, and by @thm:two-elementary-surjectivity ([@Nik80, Thm. 3.6.3]) the map $\bar\rho\colon\Orth(T_\Co)\to\Orth(q_{T_\Co})$ is onto, its hypotheses being exactly that $T_\Co$ is even, indefinite and $2$-elementary, which the table gives; $T_\Co$ is moreover the case $a = t_{(+)}+t_{(-)}$ of the proof of the theorem, $11 = 2+9$, where Nikulin reduces to the orthogonal summand $u_+^{(2)}(2)$ or $\upsilon_+^{(2)}(2)$ that $q_{T_\Co}$ has in its $U(2)$ block [@Nik80, Thm. 3.6.3]. So every $\varphi\in\Orth(T_\Co)$ satisfies the condition of Step 2, and
 $$
@@ -511,11 +511,11 @@ $$
 $$
 because a reflection $s_w$ with $w\in T_\Co\tensor\bR$ acts on $T_\En\tensor\bR$ as the reflection in the same vector, with the same value $\spinornorm_\bR(s_w) = [-\tfrac12w^2]$ [@def:spinor-norm], and $\varphi\perp\psi = (\varphi\perp\id)(\id\perp\psi)$. So $\spinornorm_\bR(g) = \spinornorm_\bR(\varphi)\cdot\spinornorm_\bR(\id) = \spinornorm_\bR(\varphi)$, and $g\in\Orth^+(T_\En)$ exactly when $\varphi\in\Orth^+(T_\Co)$.
 
-The sign is not read off positive definite subspaces, and the tempting argument that it is, is false: $\delta^2<0$ does not place every maximal positive definite subspace of $T_\En\tensor_\bR$ inside $\delta^{\perp}$, since $\eta(h)$ and $e'+f'+\delta$ span a positive definite plane --- of the maximal dimension $2$ --- with $(\eta(h),e'+f'+\delta) = 0$ and $(e'+f'+\delta,\delta) = -2$. What is true is the spinor statement above, and it is what the proof uses. So restriction carries $\Stab_{\Gamma_\En}(\delta)$ into $\widetilde\Orth^+(T_\Co)$; conversely, for $\varphi\in\widetilde\Orth^+(T_\Co)$ the element $\varphi\oplus\id$ lies in $\Stab_{\Gamma_\En}(\delta)$ by the two characterizations just proved. That is (1).
+The sign is not read off positive definite subspaces, and the tempting argument that it is, is false: $\delta^2<0$ does not place every maximal positive definite subspace (@def:maximal-positive-definite-subspace) of $T_\En\tensor_\bR$ inside $\delta^{\perp}$, since $\eta(h)$ and $e'+f'+\delta$ span a positive definite plane --- of the maximal dimension $2$ --- with $(\eta(h),e'+f'+\delta) = 0$ and $(e'+f'+\delta,\delta) = -2$. What is true is the spinor statement above, and it is what the proof uses. So restriction carries $\Stab_{\Gamma_\En}(\delta)$ into $\widetilde\Orth^+(T_\Co)$; conversely, for $\varphi\in\widetilde\Orth^+(T_\Co)$ the element $\varphi\oplus\id$ lies in $\Stab_{\Gamma_\En}(\delta)$ by the two characterizations just proved. That is (1).
 
 *Step 5: part (3).* By @prop:sterk-group-identification(2), $\gent = \rho^{-1}(M)$ with $M = \Orth(q_{U(2)})\times\Orth(q_{E_8(2)})$ the subgroup of $\Orth(A_{T_\En},q)$ preserving the decomposition, the identification of $\gent$ with the group of [@AEGS25, Def. 2.6] being @prop:sterk-group-identification(1) and the description by the two summands being [@Ste91, Prop. 2.7]. So $g = \varphi\oplus\id$ fixing $\delta$ lies in $\gent$ exactly when $\bar\rho(\varphi)$ preserves $A_{U(2)}$ and $A_{E_8(2)}$, the summands of $A_{T_\En}$ being $\kappa$ of the summands of $A_{E_{10}(2)}$ (@lem:gluing-discriminant-identification(3)). Every $\sigma\in\Orth(q_{T_\Co})$ fixes $w = [h/2]$ (Step 1), hence preserves $w^{\perp} = A_{U(2)}\oplus A_{E_8(2)}$, of dimension $10$; so restriction $\Orth(q_{T_\Co})\to\Orth(w^{\perp},q|_{w^{\perp}})$ is defined, and it is injective because an isometry fixing $w^{\perp}$ pointwise fixes $w$ too, $A_{T_\Co} = \generators{w}\oplus w^{\perp}$. The condition is therefore $\bar\rho(\varphi)\in P$, where $P$ is the stabilizer in $\Orth(q_{T_\Co})$ of the decomposition $w^{\perp} = A_{U(2)}\oplus A_{E_8(2)}$, and $P = \Orth(q_{U(2)})\times\Orth(q_{E_8(2)})$ by @lem:coble-discriminant-blocks(4). So $R_{\gent} = \bar\rho^{-1}(P)$, and it contains $\ker\bar\rho$.
 
-*Step 6: the index.* Because $\bar\rho$ is onto (Step 3), $[\Orth(T_\Co):R_{\gent}] = [\Orth(q_{T_\Co}):P]$, and by orbit--stabilizer the latter is the number of elements in the orbit of the decomposition $D\colon w^{\perp} = A_{U(2)}\oplus A_{E_8(2)}$. Let $N$ be the number of decompositions of $w^{\perp}$ into a $2$-dimensional summand isometric to $A_{U(2)}$ and an $8$-dimensional one isometric to $A_{E_8(2)}$; the orbit lies in that set, so $[\Orth(q_{T_\Co}):P]\leq N$. The two are computed separately, and they agree.
+*Step 6: the index.* Because $\bar\rho$ is onto (Step 3), $[\Orth(T_\Co):R_{\gent}] = [\Orth(q_{T_\Co}):P]$, and by orbit--stabilizer the latter is the number of elements in the orbit (@def:group-orbit) of the decomposition $D\colon w^{\perp} = A_{U(2)}\oplus A_{E_8(2)}$. Let $N$ be the number of decompositions of $w^{\perp}$ into a $2$-dimensional summand isometric to $A_{U(2)}$ and an $8$-dimensional one isometric to $A_{E_8(2)}$; the orbit lies in that set, so $[\Orth(q_{T_\Co}):P]\leq N$. The two are computed separately, and they agree.
 
 *(i) $N = 67\,456$.* On $w^{\perp}$ the form $q$ is $\bZ$-valued (Step 1), so $(w^{\perp},q)$ is a quadratic space over $\bF_2$, and it is of plus type: $528$ of its classes have $q = 0$, the zero class included, and $496$ have $q = 1$ (@lem:coble-discriminant-blocks(2), whose count $3\cdot136+1\cdot120 = 528$ is this one). A $2$-dimensional subspace of $w^{\perp}$ is isometric to $A_{U(2)}$ exactly when it is spanned by classes $a,b$ with $q(a) = q(b) = 0$ and $b(a,b) = 1/2$, for then $q(a+b) = 1$ and $b$ is nondegenerate on the span. There are $527$ choices for $a$; for fixed $a$ the classes with $b(a,b) = 1/2$ form an affine hyperplane of order $2^9 = 512$, and the translation $b\mapsto b+a$ preserves it and sends $q(b)$ to $q(b)+q(a)+b(a,b) = q(b)+1$, so exactly $256$ of them have $q(b) = 0$; each subspace is counted twice, through its two classes of value $0$. Hence
 $$
@@ -523,7 +523,7 @@ N = \frac{527\cdot 256}{2} = 527\cdot 128 = 2^7\cdot17\cdot31 = 67\,456 .
 $$
 The orthogonal complement of such a subspace is a plus space of dimension $8$, that is $A_{E_8(2)}$ up to isometry, so every such subspace is one of the decompositions counted by $N$.
 
-*(ii) $\abs{\Orth(q_{T_\Co})}/\abs{P} = 2^7\cdot17\cdot31$.* Here $\Orth(q_{T_\Co})\cong\Orth(w^{\perp},q)$ is the orthogonal group of a hyperbolic space of dimension $10$, and $P = \Orth(q_{U(2)})\times\Orth(q_{E_8(2)})$. The restriction is an isomorphism, not only an injection: an isometry of $w^{\perp}$ extends by $w\mapsto w$, and that is an isometry because $\generators{w}\perp w^{\perp} = A_{T_\Co}$. Both orders are counts of ordered hyperbolic bases, an isometry of a hyperbolic space being determined by, and determining, the image of one fixed hyperbolic basis, and in dimension $2m$ the first hyperbolic pair can be chosen in $(2^{2m-1}+2^{m-1}-1)\cdot2^{2m-2}$ ways. This gives $\abs{\Orth(q_{U(2)})} = 2$, then $\abs{\Orth(q_{E_8(2)})} = 2\cdot(9\cdot4)\cdot(35\cdot16)\cdot(135\cdot64) = 348\,364\,800$, then $\abs{P} = 2\cdot 348\,364\,800 = 696\,729\,600 = \abs{W(E_8)}$ and $\abs{\Orth(q_{T_\Co})} = 527\cdot256\cdot 348\,364\,800 = 46\,998\,591\,897\,600 = 2^{21}3^55^27\cdot17\cdot31$, so that
+*(ii) $\abs{\Orth(q_{T_\Co})}/\abs{P} = 2^7\cdot17\cdot31$.* Here $\Orth(q_{T_\Co})\cong\Orth(w^{\perp},q)$ is the orthogonal group of a hyperbolic space of dimension $10$, and $P = \Orth(q_{U(2)})\times\Orth(q_{E_8(2)})$. The restriction is an isomorphism, not only an injection: an isometry of $w^{\perp}$ extends by $w\mapsto w$, and that is an isometry because $\generators{w}\perp w^{\perp} = A_{T_\Co}$. Both orders are counts of ordered hyperbolic bases, an isometry of a hyperbolic space being determined by, and determining, the image of one fixed hyperbolic basis, and in dimension $2m$ the first hyperbolic pair (@def:isotropic-basis-hyperbolic-plane) can be chosen in $(2^{2m-1}+2^{m-1}-1)\cdot2^{2m-2}$ ways. This gives $\abs{\Orth(q_{U(2)})} = 2$, then $\abs{\Orth(q_{E_8(2)})} = 2\cdot(9\cdot4)\cdot(35\cdot16)\cdot(135\cdot64) = 348\,364\,800$, then $\abs{P} = 2\cdot 348\,364\,800 = 696\,729\,600 = \abs{W(E_8)}$ and $\abs{\Orth(q_{T_\Co})} = 527\cdot256\cdot 348\,364\,800 = 46\,998\,591\,897\,600 = 2^{21}3^55^27\cdot17\cdot31$, so that
 $$
 \frac{\abs{\Orth(q_{T_\Co})}}{\abs{P}} = 2^7\cdot17\cdot31 = 67\,456 .
 $$
@@ -606,7 +606,7 @@ $$\Gamma_{\Co,2}\subseteq R_{\gent}.$$
 
 *The monodromy preserves the line $\ZZ\delta$.* Transport is an isometry of $T_\En$, and the period map is equivariant, $\Phi(\gamma\tilde b) = \rho(\gamma)\Phi(\tilde b)$ (@eq-period-map-equivariance), so $\rho(\gamma)$ carries the image $\Phi(\widetilde\Delta)$ of the period map to itself. Its image is open in $\bD(T_\Co)$ by the previous paragraph. For an isometry $g$ one has $g\,\bD(\delta^{\perp}) = \bD((g\delta)^{\perp})$; the two closed analytic hypersurfaces $\bD(\delta^{\perp})$ and $\bD((\rho(\gamma)\delta)^{\perp})$ of $\bD(T_\En)$ meet in the nonempty open subset $\Phi(\widetilde\Delta)$, hence coincide, so $(\rho(\gamma)\delta)^{\perp} = \delta^{\perp}$ and $\rho(\gamma)\delta = \pm\delta$.
 
-*The image lies in $R_{\gent}$.* Hence $\rho(\gamma)$ lies in the line stabilizer $\Stab_{\gent}(\ZZ\delta)$, and its restriction to $\delta^{\perp} = T_\Co$ is the image of an element of that stabilizer. The line stabilizer and the vector stabilizer have the same image in $\Orth(T_\Co)$: if $\rho(\gamma)\delta = -\delta$ then $s_\delta\rho(\gamma)$ fixes $\delta$, and $s_\delta$ acts as the identity on $\delta^{\perp}$; and $s_\delta\in\ker\rho_{T_\En}\subseteq\gent$, because $\delta$ lies in the unimodular summand $U$ of $T_\En$ and $s_\delta$ therefore acts trivially on $A_{T_\En}$. So the image of $\Stab_{\gent}(\ZZ\delta)$ is the image of $\Stab_{\gent}(\delta)$, which is $R_{\gent}$ (@def:gamma-co-groups, @prop:gamma-co-images(3)).
+*The image lies in $R_{\gent}$.* Hence $\rho(\gamma)$ lies in the line stabilizer (@def:group-orbit) $\Stab_{\gent}(\ZZ\delta)$, and its restriction to $\delta^{\perp} = T_\Co$ is the image of an element of that stabilizer. The line stabilizer and the vector stabilizer have the same image in $\Orth(T_\Co)$: if $\rho(\gamma)\delta = -\delta$ then $s_\delta\rho(\gamma)$ fixes $\delta$, and $s_\delta$ acts as the identity on $\delta^{\perp}$; and $s_\delta\in\ker\rho_{T_\En}\subseteq\gent$, because $\delta$ lies in the unimodular summand $U$ of $T_\En$ and $s_\delta$ therefore acts trivially on $A_{T_\En}$. So the image of $\Stab_{\gent}(\ZZ\delta)$ is the image of $\Stab_{\gent}(\delta)$, which is $R_{\gent}$ (@def:gamma-co-groups, @prop:gamma-co-images(3)).
 :::
 
 ::: {.theorem #thm:coble-monodromy-versus-enriques title="The monodromy of the degree-$2$ Coble family against the Enriques stabilizer"}
@@ -615,7 +615,7 @@ Let $\Gamma_{\Co,2}$ be the monodromy group of @def:gamma-co-groups(5), and let
 $$
 R\definedas R_{\gent} = \bar\rho^{-1}(P)\leq\Orth(T_\Co)
 $$
-be the image of $\Stab_{\gent}(\delta)$ in $\Orth(T_\Co)$, with $P$ the stabilizer of the decomposition $[h/2]^{\perp} = A_{U(2)}\oplus A_{E_8(2)}$ (@prop:gamma-co-images(3)). Let $\zeta\in T_\Co$ be a primitive vector of square $2$ and $s_\zeta$ its reflection (@prop:gamma-co-reflective-set).
+be the image of $\Stab_{\gent}(\delta)$ in $\Orth(T_\Co)$, with $P$ the stabilizer (@def:group-orbit) of the decomposition $[h/2]^{\perp} = A_{U(2)}\oplus A_{E_8(2)}$ (@prop:gamma-co-images(3)). Let $\zeta\in T_\Co$ be a primitive vector of square $2$ and $s_\zeta$ its reflection (@prop:gamma-co-reflective-set).
 
 1. $\Gamma_{\Co,2}\subseteq\Orth^+(T_\Co)$.
 2. $s_\zeta\in\ker\bar\rho\subseteq R$ and $s_\zeta\notin\Orth^+(T_\Co)$ (@prop:gamma-co-reflective-set(2)). Hence $R\not\subseteq\Orth^+(T_\Co)$,
@@ -686,7 +686,7 @@ The cusp counts of $\fco$ are the counts for the stable subgroup: $\fco=\bD(T_\C
 
 ::: {.theorem #thm:normalization}
 
-Let $\Gamma$ be one of $\Gamma_\En = \widetilde\Orth^+(T_\En)$, $\Gamma^K_\En = \Orth(T_\En)$, $\gent$, and let $R_\Gamma$ be the restricted stabilizer of @def:gamma-co-groups, identified in @prop:gamma-co-images. Write $F^{\Gamma}_\Co\definedas\bD(T_\Co)/R_\Gamma$. Then the map induced by the embedding $\eta$ of @lem:primitive_embedding_eta,
+Let $\Gamma$ be one of $\Gamma_\En = \widetilde\Orth^+(T_\En)$, $\Gamma^K_\En = \Orth(T_\En)$, $\gent$, and let $R_\Gamma$ be the restricted stabilizer (@def:group-orbit) of @def:gamma-co-groups, identified in @prop:gamma-co-images. Write $F^{\Gamma}_\Co\definedas\bD(T_\Co)/R_\Gamma$. Then the map induced by the embedding $\eta$ of @lem:primitive_embedding_eta,
 $$
 f^{\Gamma}\colon F^{\Gamma}_\Co = \bD(T_\Co)/R_\Gamma \too \bD(\ten)/\Gamma,
 $$
@@ -722,7 +722,7 @@ A proper primitive sublattice $S\subsetneq T_\Co$ of signature $(2,\ast)$ cuts o
 So the set of $x\in\bD(T_\Co)$ with $T(x) = T_\Co$ is the complement of countably many proper closed analytic subsets, hence dense.
 For such an $x$ the fibre computation allows only $M' = T_\Co$: one has $T_\Co = T(x)\iscontainedin M'$ with both primitive of rank $11$.
 The fibre through $x$ is therefore a single point.
-The locus where a finite morphism of irreducible varieties has more than its generic number of preimages is a proper closed subset, and a dense set is not contained in one, so $f^{\Gamma}$ has degree $1$ and is birational.
+The locus where a finite morphism of irreducible varieties has more than its generic number of preimages is a proper closed subset (@def:closed-subset), and a dense set is not contained in one, so $f^{\Gamma}$ has degree (@def:graded-object) $1$ and is birational.
 
 Finally $F^{\Gamma}_\Co$ is normal, being the quotient of a bounded symmetric domain by a properly discontinuous group of automorphisms.
 A finite birational morphism from a normal variety onto a reduced irreducible variety is its normalization, so $F^{\Gamma}_\Co$ is the normalization of $Z$.
@@ -745,7 +745,7 @@ Identify $\ten = U\oplus U(2)\oplus E_8(2)$ with the lattice $L_- = \mathbf H\op
 
 ::: {.proof}
 
-(1) The group $\Gamma$ of [@Ste91, Prop. 2.7] is the image in $\Orth(L_-)$ of the isometries of the K3 lattice that commute with the Enriques involution (@def:enriques-surface) and fix the polarization vector, and $\gent$ is the image in $\Orth(\ten)$ of the same group [@AEGS25 Def. 2.6].
+(1) The group $\Gamma$ of [@Ste91, Prop. 2.7] is the image in $\Orth(L_-)$ of the isometries of the K3 lattice that commute with the Enriques involution (@def:enriques-surface) and fix the polarization vector (@def:polarization-vector), and $\gent$ is the image in $\Orth(\ten)$ of the same group [@AEGS25 Def. 2.6].
 The description by the two summands is [@Ste91, Prop. 2.7].
 
 (2) Because $U$ is unimodular, $A_{\ten} = A_{U(2)}\perp A_{E_8(2)}$, and an isometry of $q_{\ten}$ preserves both summands exactly when it is a pair of isometries of the summands.
@@ -777,7 +777,7 @@ This is the index computed in [@Ste91, Rem. 2.12].
 
 ::: {.proposition #prop:ten-plane-classes title="The two classes of primitive isotropic planes of $\ten$"}
 
-Write $e,f$ for the isotropic basis (@def:based-module) of $U$ and $e',f'$ for that of $U(2)$, with $(e,f) = 1$ and $(e',f') = 2$.
+Write $e,f$ for the isotropic basis (@def:isotropic-basis-hyperbolic-plane) (@def:based-module) of $U$ and $e',f'$ for that of $U(2)$, with $(e,f) = 1$ and $(e',f') = 2$.
 Identify the summand $E_8(2)$ with $E_8 = \theset{y_0\in\ZZ^8\cup(\ZZ^8+s) \st \textstyle\sum_i y_{0,i}\in2\ZZ}$, $s = \tfrac12(1,\dots,1)$ [@CS10, Ch. 4, §8.1], so that $y\leftrightarrow y_0$ and $(y,y') = -2\,y_0\cdot y_0'$.
 Let $\alpha\in E_8(2)$ correspond to $2e_1$, and put $z\definedas 2e+2f+\alpha$.
 For a primitive totally isotropic plane $\varPi\subseteq\ten$ let $D(\varPi)\leq A_{\ten}$ be the image of $\varPi_\QQ\cap\ten^*$, as in @not:isotropic-reduction-setup.
@@ -833,7 +833,7 @@ Let $d\in A$ be isotropic and nonzero, and for $c\in d^\perp$ define
 $$
 T_{d,c}(a)\definedas a+\beta_q(a,d)\,c+\bigl(\beta_q(a,c)+q(c)\,\beta_q(a,d)\bigr)\,d .
 $$
-Let $\eta\in\ten$ be a primitive isotropic vector of divisibility (@def:lattice-divisibility) two with $[\eta/2] = d$.
+Let $\eta\in\ten$ be a primitive isotropic vector (@def:isotropic-subspace) of divisibility (@def:lattice-divisibility) two with $[\eta/2] = d$.
 
 1. For $w\in\ten^*$ with $(w,\eta) = 0$, the Eichler--Siegel transvection $E_{\eta,w}$ of @def:eichler-siegel lies in $\Orth(\ten)$, fixes $\eta$, maps every primitive totally isotropic plane that contains $\eta$ onto itself, and satisfies $\rho(E_{\eta,w}) = T_{d,[w]}$.
 2. Every $c\in d^\perp$ is $[w]$ for some $w\in\ten^*$ with $(w,\eta) = 0$.
@@ -927,7 +927,7 @@ $$
 
 For $g\in\Orth(\ten)$ one has $c(g\ZZ v) = \rho(g)\,c(\ZZ v)$, because $g$ preserves divisibility (@def:lattice-divisibility).
 By [@Ste91, Prop. 4.5] there is $g\in\Orth(\ten)$ with $g\ZZ v_0 = \ZZ v$ for $v_0 = e$ or $v_0 = e'$.
-Conjugation by $g$ carries $\Stab_{\Orth(\ten)}(\ZZ v_0)$ to $\Stab_{\Orth(\ten)}(\ZZ v)$, and conjugation by $\rho(g)$ carries the stabilizer of $c(\ZZ v_0)$ to the stabilizer of $c(\ZZ v)$.
+Conjugation by $g$ carries $\Stab_{\Orth(\ten)}(\ZZ v_0)$ to $\Stab_{\Orth(\ten)}(\ZZ v)$, and conjugation by $\rho(g)$ carries the stabilizer (@def:group-orbit) of $c(\ZZ v_0)$ to the stabilizer of $c(\ZZ v)$.
 The first equality holds for $v_0$ by @lem:ten-base-stabilizers, because $c(\ZZ e) = 0$ and $c(\ZZ e') = d_1$.
 
 For the second, the inclusion $\subseteq$ is clear.
@@ -1018,7 +1018,7 @@ Then $h^{-1}\rho(g)$ stabilizes $D(\varPi)$, so $h^{-1}\rho(g) = \rho(s)$ with $
 Let $M = \rho(\gent)$ as in @prop:sterk-group-identification.
 Use the four $M$-orbits $A$, $B$, $C$, $D$ of nonzero isotropic elements of $A_{\ten}$ and the five $M$-orbits $AAA$, $ABC$, $ACC$, $ADD$, $CCD$ of isotropic subgroups of order $4$ of @ex:gco-finite-orbits, with $[e'/2]$, $[f'/2]$, $[(e'+f')/2]$ in place of $[u_0/2]$, $[w_0/2]$, $[h/2]$.
 
-1. The primitive isotropic lines of $\ten$ form five $\gent$-orbits, the orbits of the vectors of [@Ste91, Prop. 4.2.3]:
+1. The primitive isotropic lines of $\ten$ form five $\gent$-orbits, the orbits (@def:group-orbit) of the vectors of [@Ste91, Prop. 4.2.3]:
 
    | type | representative | class $c(\ZZ v)$ | $M$-orbit of the class |
    | :--- | :--- | :--- | :--- |
@@ -1032,7 +1032,7 @@ Use the four $M$-orbits $A$, $B$, $C$, $D$ of nonzero isotropic elements of $A_{
 2. The primitive totally isotropic planes of $\ten$ form nine $\gent$-orbits.
    Four contain a vector of divisibility one; for them $D(\varPi) = \generators{c}$ with $c$ in $B$, $D$, $C$ or $A$.
    Five contain no vector of divisibility one; for them $D(\varPi)$ lies in $ABC$, $ACC$, $ADD$, $CCD$ or $AAA$.
-3. Label a plane by the types of the primitive isotropic vectors it contains, as in [@Ste91, §4.3.15].
+3. Label a plane by the types of the primitive isotropic vectors (@def:isotropic-subspace) it contains, as in [@Ste91, §4.3.15].
    The labels of the nine orbits of item 2 are, in the order listed there, $\theset{1,2}$, $\theset{1,3}$, $\theset{1,4}$, $\theset{1,5}$ and $\theset{2,4,5}$, $\theset{4,5}$, $\theset{3,5}$, $\theset{3,4}$, $\theset{5,5}$.
    A plane orbit is incident to a line orbit of type $t$ exactly when $t$ occurs in its label.
    For a primitive isotropic $v$, the planes containing $v$ correspond to the isotropic lines of $v^\perp/\ZZ v$, and their $\Stab_{\gent}(v)$-orbits correspond to the parabolic subdiagrams (@def:elliptic-subdiagram) of rank $8$, modulo symmetry, of the Vinberg diagram of the reflection subgroup of the image of $\Stab_{\gent}(v)$ in $\Orth(v^\perp/\ZZ v)$ [@Ste91, §4.3.1--4.3.3].
@@ -1095,7 +1095,7 @@ The planes of [@Ste91, §4.3.16] are the planes $\ZZ e\oplus\ZZ v$ with $v$ of t
 ::: {.lemma #lem:spinor-orbit-agreement title="When the orbits of a subgroup and of its spinor-positive half agree"}
 
 Let $L$ be a lattice for which $\Orth^+(L)$ of @def:lattice-spinor-kernels has index (@def:index) two in $\Orth(L)$, let $\Gamma\leq\Orth(L)$ satisfy $\Gamma\not\subseteq\Orth^+(L)$, put $\Gamma^+=\Gamma\intersect\Orth^+(L)$, and let $X$ be a $\Gamma$-set.
-Then $\Gamma$ and $\Gamma^+$ have the same orbits on $X$ if and only if $\Stab_\Gamma(x)\not\subseteq\Orth^+(L)$ for every $x\in X$.
+Then $\Gamma$ and $\Gamma^+$ have the same orbits (@def:group-orbit) on $X$ if and only if $\Stab_\Gamma(x)\not\subseteq\Orth^+(L)$ for every $x\in X$.
 :::
 
 ::: {.proof}
@@ -1117,13 +1117,13 @@ Every $\Gamma$-orbit is therefore a single $\Gamma^+$-orbit.
 Let $N=\ten=U\oplus U(2)\oplus E_8(2)$ with signature $(2,10)$, let $\rho$ be its quadratic discriminant representation (@def:discriminant-rep) and $\widetilde\Orth(N)=\ker\rho$ its discriminant kernel (@def:mm-integral-spinor-data), and let $\Gamma\leq\Orth(N)$ be a subgroup with $\widetilde\Orth(N)\subseteq\Gamma$.
 Every preimage $\rho^{-1}(M)$ with $M\leq\Orth(A_\ten,q_\ten)$ is of this form.
 Put $\Gamma^+=\Gamma\intersect\Orth^+(N)$.
-Then $\Gamma$ and $\Gamma^+$ have the same orbits on
+Then $\Gamma$ and $\Gamma^+$ have the same orbits (@def:group-orbit) on
 
 1. the primitive isotropic lines of $N$;
 2. the primitive isotropic planes of $N$;
 3. the flags $\ell\subset P$ consisting of a primitive isotropic line contained in a primitive isotropic plane.
 
-For the lines the same holds for primitive isotropic vectors: $-\id_N$ lies in $\ker\rho$ and in $\Orth^+(N)$, being level two because $A_\ten$ is annihilated by $2$ and spinor-positive by @lem:minus-identity-spinor-norm at positive index two, so $-\id_N\in\Gamma\intersect\Gamma^+$ and the two generators of a line lie in one orbit of both groups.
+For the lines the same holds for primitive isotropic vectors (@def:isotropic-subspace): $-\id_N$ lies in $\ker\rho$ and in $\Orth^+(N)$, being level two because $A_\ten$ is annihilated by $2$ and spinor-positive by @lem:minus-identity-spinor-norm at positive index (@def:maximal-positive-definite-subspace) two, so $-\id_N\in\Gamma\intersect\Gamma^+$ and the two generators of a line lie in one orbit of both groups.
 :::
 
 ::: {.proof}
@@ -1165,7 +1165,7 @@ By @prop:ten-plane-classes(1), $P_1 = \varPi_1$ and $P_2 = \varPi_2$ represent t
 For a plane $P$ choose $g$ with $gP_1=P$ or with $gP_2=P$, and put $k\definedas g\sigma_Ug^{-1}$ in the first case and $k\definedas g\tau g^{-1}$ in the second; then $k\in\ker\rho\setminus\Orth^+(N)$ and $k$ stabilizes $P$.
 
 *Conclusion.*
-The hypotheses of @lem:spinor-orbit-agreement are met: $\Orth^+(\ten)$ has index two in $\Orth(\ten)$, because $\spinornorm_\bR$ is a homomorphism from $\Orth(\ten)$ to $\{\pm1\}$ with kernel $\Orth^+(\ten)$ and it is onto, $\sigma_U$ being an integral isometry of $\ten$ with $\spinornorm_\bR(\sigma_U)=-1$; and at every primitive isotropic line and at every primitive isotropic plane the stabilizer inside $\Gamma$ meets $\Gamma\setminus\Orth^+(\ten)$.
+The hypotheses of @lem:spinor-orbit-agreement are met: $\Orth^+(\ten)$ has index two in $\Orth(\ten)$, because $\spinornorm_\bR$ is a homomorphism from $\Orth(\ten)$ to $\{\pm1\}$ with kernel $\Orth^+(\ten)$ and it is onto, $\sigma_U$ being an integral isometry of $\ten$ with $\spinornorm_\bR(\sigma_U)=-1$; and at every primitive isotropic line and at every primitive isotropic plane the stabilizer (@def:group-orbit) inside $\Gamma$ meets $\Gamma\setminus\Orth^+(\ten)$.
 Items 1 and 2 follow on those two sets.
 Item 3 is @thm:enriques-flag-witnesses, which produces such a $k$ for every flag, after which the same lemma gives item 3.
 :::
@@ -1183,7 +1183,7 @@ Then $\Lambda\leq\Gamma(2)$, and for a primitive (@def:primitive-embedding) $(a,
 
 1. there is $\lambda\in\Lambda$ with $\lambda(a,c)$ equal to $\pm(1,0)$ if $a$ is odd and $c$ even (@def:form-axioms), to $\pm(0,1)$ if $a$ is even and $c$ odd, and to $\pm(1,1)$ if $a$ and $c$ are both odd;
 2. every element of $\Gamma(2)$ is congruent to the identity modulo $2$ and therefore preserves the class of a vector modulo $2$ and sign, so the $\Gamma(2)$-orbits on $\PP^1(\bZ)$ are exactly the three classes $[1:0]$, $[0:1]$, $[1:1]$, and each of them is a single $\Lambda$-orbit of primitive vectors;
-3. $\mu$ is not congruent to the identity modulo $2$; it carries $[1:0]$ to $[1:1]$, and fixes $[0:1]$; and every element of $\generators{\Lambda,\mu}$ preserves the parity of the first coordinate, so that $\generators{\Lambda,\mu}$ has exactly two orbits on $\PP^1(\bZ)$, the primitive lines $[a:c]$ with $a$ odd and those with $a$ even.
+3. $\mu$ is not congruent to the identity modulo $2$; it carries $[1:0]$ to $[1:1]$, and fixes $[0:1]$; and every element of $\generators{\Lambda,\mu}$ preserves the parity of the first coordinate, so that $\generators{\Lambda,\mu}$ has exactly two orbits (@def:group-orbit) on $\PP^1(\bZ)$, the primitive lines $[a:c]$ with $a$ odd and those with $a$ even.
 
 :::
 
@@ -1223,7 +1223,7 @@ Passing to lines changes nothing, since $-\id$ acts trivially on $\PP^1(\bZ)$; a
 $\mu\equiv\begin{pmatrix}1&0\\1&1\end{pmatrix}\not\equiv\id\pmod 2$, and $\mu(a,c)=(a,\,a+c)$.
 For $a$ odd the second coordinate changes parity, so $\mu[1:0]=[1:1]$ and $\mu[1:1]=[1:0]$; for $a$ even $\mu$ fixes the vector $(0,c)$.
 Hence $\mu$ preserves the parity of the first coordinate, and so do $A$, $B$ and $-\id$, so every element of $\generators{\Lambda,\mu}$ does.
-Within the odd part $\Lambda$ is transitive on $[1:0]$ and on $[1:1]$ by item 2 and $\mu$ exchanges them, and within the even part $\Lambda$ is transitive on $[0:1]$; hence these two sets are exactly the orbits.
+Within the odd part (@def:even-odd-part-reflection-group) $\Lambda$ is transitive on $[1:0]$ and on $[1:1]$ by item 2 and $\mu$ exchanges them, and within the even part (@def:even-odd-part-reflection-group) $\Lambda$ is transitive on $[0:1]$; hence these two sets are exactly the orbits.
 
 :::
 
@@ -1258,7 +1258,7 @@ Let $N=\ten=U\oplus U(2)\oplus E_8(2)$, with $e,f$ the hyperbolic basis of $U$, 
 Put $\alpha\definedas r_1+r_2$ and $z\definedas 2e+2f+\alpha$.
 Then $\alpha^2=-8$, the vector $z$ is primitive isotropic of divisibility (@def:lattice-divisibility) $2$, and $\beta(x,\alpha)\in2\bZ$ for every $x\in N$.
 
-Write $E_{a,w}$ in the notation of @def:eichler-siegel — $a$ the isotropic vector, $w$ the vector orthogonal to it — so that
+Write $E_{a,w}$ in the notation of @def:eichler-siegel — $a$ the isotropic vector (@def:isotropic-subspace), $w$ the vector orthogonal to it — so that
 $$
 E_{a,w}(x)=x+\beta(x,a)w-\beta(x,w)a
 $$
@@ -1348,7 +1348,7 @@ $\beta(x,a)\beta(w,y)-\beta(x,w)\beta(a,y)+\beta(y,a)\beta(x,w)-\beta(y,w)\beta(
 $\beta(x,a)\beta(y,a)\beta(w,w)-\beta(x,a)\beta(y,w)\beta(w,a)-\beta(x,w)\beta(y,a)\beta(a,w)+\beta(x,w)\beta(y,w)\beta(a,a)$, which vanishes because $a$ and $w$ are isotropic and orthogonal.
 So $\sigma^{(i)}_t\in\Orth(N_\bR)$ for every $t$, and $\sigma^{(i)}_s\sigma^{(i)}_t=\sigma^{(i)}_{s+t}$ because $\sigma^{(i)}_t$ fixes both $a$ and $w$ and preserves the two pairings $\beta(\cdot,a)$, $\beta(\cdot,w)$.
 Thus $\sigma^{(i)}_1=E_i$ lies in a one-parameter subgroup of $\Orth(N_\bR)$, and $t\mapsto\spinornorm_\bR(\sigma^{(i)}_t)$ is a homomorphism from $(\bR,+)$ to a group of exponent two, hence trivial; so $\spinornorm_\bR(E_i)=1$, which is also the statement of @lem:unipotent-spinor-trivial.
-For the two sign changes, @lem:minus-identity-spinor-norm gives $\spinornorm_\bR(-\id_U)=[(-1)^1]$ and $\spinornorm_\bR(-\id_{U(2)})=[(-1)^1]$, the summands having positive index one, and the spinor norm of an orthogonal sum (@def:orthogonal-sum) is the product of the spinor norms of its summands, since a reflection of a summand is the corresponding reflection of the sum; so both have spinor norm $-1$.
+For the two sign changes, @lem:minus-identity-spinor-norm gives $\spinornorm_\bR(-\id_U)=[(-1)^1]$ and $\spinornorm_\bR(-\id_{U(2)})=[(-1)^1]$, the summands having positive index (@def:maximal-positive-definite-subspace) one, and the spinor norm of an orthogonal sum (@def:orthogonal-sum) is the product of the spinor norms of its summands, since a reflection of a summand is the corresponding reflection of the sum; so both have spinor norm $-1$.
 
 *The planes.*
 From the displayed images: $E_1(e)=e+e'$ and $E_1(e')=e'$ give $E_1^2(e)=e+2e'$, and $E_2(e')=e'+2e$; all three stabilize $P_1$.
@@ -1411,7 +1411,7 @@ So every primitive line of $P_2$ is the image of one of these three under an ele
 Let $\ell\subset P$ be a flag.
 By [@Ste91, 4.6] there are exactly two $\Orth(N)$-classes of primitive isotropic planes, represented by $P_1$ and $P_2$ (@prop:ten-plane-classes(1)), so there is $g\in\Orth(N)$ with $gP_1=P$ or with $gP_2=P$.
 Then $g^{-1}\ell$ is a primitive isotropic line of that representative plane, hence has a witness $k$ by the two paragraphs above, and $gkg^{-1}\in\ker\rho$ has spinor norm $-1$ and fixes $P$ and $\ell$.
-Since every witness lies in $\ker\rho\subseteq\Gamma$, the stabilizer inside $\Gamma$ of each of these objects meets $\Gamma\setminus\Orth^+(N)$.
+Since every witness lies in $\ker\rho\subseteq\Gamma$, the stabilizer (@def:group-orbit) inside $\Gamma$ of each of these objects meets $\Gamma\setminus\Orth^+(N)$.
 
 :::
 
@@ -1420,7 +1420,7 @@ Since every witness lies in $\ker\rho\subseteq\Gamma$, the stabilizer inside $\G
 Let $N = \ten$, let $M\leq\Orth(A_\ten,q_\ten)$ and $\Gamma=\rho^{-1}(M)$, so that $\rho(\Gamma)=M$ by @thm:two-elementary-surjectivity; put $\Gamma^+=\Gamma\intersect\Orth^+(N)$, and let $\tau_0$ be as in @lem:enriques-level-two-transvections.
 
 1. $\Gamma = \Gamma^+\sqcup\Gamma^+\tau_0$, so $\Gamma^+$ has index two in $\Gamma$, and $\rho(\Gamma^+)=\rho(\Gamma)=M$.
-2. $\Gamma$ and $\Gamma^+$ have the same orbits on primitive isotropic lines, on primitive isotropic planes and on flags.
+2. $\Gamma$ and $\Gamma^+$ have the same orbits (@def:group-orbit) on primitive isotropic lines, on primitive isotropic planes and on flags.
    On a $\Gamma$-set $X$ their orbits agree exactly when $\Stab_\Gamma(x)$ meets $\Gamma\setminus\Orth^+(N)$ for every $x\in X$.
 :::
 

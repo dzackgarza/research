@@ -49,7 +49,7 @@ The following isomorphism-invariant properties define replete (@def:subcategory)
 
 - finitely generated projective: both of the first two conditions hold.
 
-If $R$ is an integral domain, $M$ is *torsion* when every element is annihilated by a nonzero element of $R$, and *torsion-free* when multiplication by every nonzero element of $R$ is injective.
+If $R$ is an integral domain, $M$ is *torsion* when every element is annihilated by a nonzero element of $R$, and *torsion-free* when multiplication by every nonzero element of $R$ is injective (@def:injective-map).
 Over a general ring, a torsion subcategory is used only after a torsion theory has been specified.
 :::
 
@@ -100,6 +100,6 @@ $$
 \omega\colon R\xrightarrow{\ \sim\ }\det(M).
 $$
 Fix a subgroup of units $U\le R^\times$.
-An *orientation modulo $U$* is an orbit of such isomorphisms under the action of $U$ by scalar multiplication.
+An *orientation modulo $U$* is an orbit (@def:group-orbit) of such isomorphisms under the action of $U$ by scalar multiplication.
 Two ordered bases (@def:based-module) $(e_1,\dots,e_n)$ and $(f_1,\dots,f_n)$ of $M$ determine the same orientation modulo $U$ if and only if the change-of-basis matrix $A\in\GL_n(R)$, defined by $f_j=\Sum_{i=1}^n A_{ij}e_i$, satisfies $\det(A)\in U$.
 :::

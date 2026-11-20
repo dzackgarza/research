@@ -27,7 +27,7 @@ is exact in $\mca$ [@Wei94, Thm. 1.2.3, Ex. 1.2.4].
 ::: {.proof}
 
 This is [@Wei94, Thm. 1.2.3 and Ex. 1.2.4].
-The reason it transfers is that every construction involved is degreewise: kernels (@def:kernel-cokernel) and cokernels (@def:kernel-cokernel) of a chain map (@def:chain-complexes) are taken in each degree with the restricted differentials, which are well defined because $f$ intertwines them, and $\operatorname{Coim}\to\operatorname{Im}$ is degreewise the isomorphism (@def:isomorphism-of-objects) of the abelian base (@def:abelian-category) and hence, by the degreewise criterion for a chain map to be an isomorphism, one of complexes.
+The reason it transfers is that every construction involved is degreewise: kernels (@def:kernel-cokernel) and cokernels (@def:kernel-cokernel) of a chain map (@def:chain-complexes) are taken in each degree (@def:graded-object) with the restricted differentials, which are well defined because $f$ intertwines them, and $\operatorname{Coim}\to\operatorname{Im}$ is degreewise the isomorphism (@def:isomorphism-of-objects) of the abelian base (@def:abelian-category) and hence, by the degreewise criterion for a chain map to be an isomorphism, one of complexes.
 Since kernels and cokernels are degreewise, monic, epic and exactness are checked in each degree, which is the second assertion.
 :::
 
@@ -53,7 +53,7 @@ $$
 
 ::: {.definition #def:exact-complex title="Exactness" defines="exact at $n$; exact; short exact sequence"}
 
-A complex $C$ is *exact at $n$* if $H_n(C)=0$, and *exact* if it is exact at every degree.
+A complex $C$ is *exact at $n$* if $H_n(C)=0$, and *exact* if it is exact at every degree (@def:graded-object).
 Exactness at $n$ and exactness are isomorphism-invariant properties of objects of $\mathbf{Ch}(\mca)$ and therefore define replete full subcategories (@def:subcategory), the second being the intersection over $n\in\bZ$ of the first.
 
 A short exact sequence
@@ -96,7 +96,7 @@ Z_{n-1}(B) \arrow[r] &
 Z_{n-1}(C) & {}
 ```
 whose rows are exact by @thm:chain-complexes-abelian and whose two ends the snake lemma of @thm:diagram-lemmas identifies as $H_n(C)$ and $H_{n-1}(A)$.
-Applying it to the translate $[n]$ gives the sequence in every degree at once, and naturality is functoriality of the snake lemma.
+Applying it to the translate $[n]$ gives the sequence in every degree (@def:graded-object) at once, and naturality is functoriality of the snake lemma.
 :::
 
 ## Translation, truncation, and the mapping cone {#sec-translation-cone}
@@ -164,18 +164,18 @@ $$
 \qquad
 \tau(x\tensor_R y)=(-1)^{pq}\,y\tensor_R x,
 $$
-commutes with the two differentials and is an isomorphism (@def:isomorphism-of-objects) of complexes; it is the symmetry of @def:braided-symmetric for this tensor product.
+commutes (@def:commutative-diagram) with the two differentials and is an isomorphism (@def:isomorphism-of-objects) of complexes; it is the symmetry of @def:braided-symmetric for this tensor product.
 :::
 
 ::: {.definition #def:value-complex title="Value complexes" defines="value complex; $W[n]$"}
 
-For $n\in\bZ$ write $W[n]$ for the complex with $W$ in degree $n$, the zero module in every other degree, and zero differentials.
+For $n\in\bZ$ write $W[n]$ for the complex with $W$ in degree (@def:graded-object) $n$, the zero module in every other degree, and zero differentials.
 :::
 
 ::: {.definition #def:complex-form title="Bilinear forms on a complex" defines="$W$-valued bilinear form of degree $n$ on $C$"}
 
 Let $C\in\mathbf{Ch}(R\text{-}\mathbf{Mod})$.
-A *$W$-valued bilinear form of degree $n$ on $C$* is a chain map (@def:chain-complexes)
+A *$W$-valued bilinear form of degree (@def:graded-object) $n$ on $C$* is a chain map (@def:chain-complexes)
 $$
 \beta\colon C\tensor_RC\too W[n].
 $$
@@ -202,7 +202,7 @@ $$
 ::: {.proposition #prop:complex-form-adjoint title="The adjoint chain map and the $n$-dual"}
 
 Let $W=R$ with the identity involution, and let $C^{n-*}$ be the $n$-dual complex of @def:n-dual-complex, so that $(C^{n-*})_r=\Hom_R(C_{n-r},R)$ with differential $(-1)^r(d^C)^{*}$.
-For a bilinear form $\beta$ of degree (@def:complex-form) $n$ on $C$ set
+For a bilinear form $\beta$ of degree (@def:graded-object) (@def:complex-form) $n$ on $C$ set
 $$
 \beta^{\sharp}_r\colon C_r\too(C^{n-*})_r,
 \qquad
@@ -225,7 +225,7 @@ $$
 \bigl((-1)^r(d^C)^{*}\beta^{\sharp}_r(x)\bigr)(y)=(-1)^{2r}\beta_{r,n-r}(x,d^Cy),
 $$
 the second because the differential of the $n$-dual is $(-1)^r(d^C)^{*}$ by @def:n-dual-complex, and because $(-1)^r\beta^\sharp_r(x)$ evaluates at $y$ as $(-1)^r$ times $\beta^{\sharp}_r(x)(d^Cy)=(-1)^r\beta_{r,n-r}(x,d^Cy)$.
-So $\beta^{\sharp}$ commutes with the differentials exactly when
+So $\beta^{\sharp}$ commutes (@def:commutative-diagram) with the differentials exactly when
 $$
 (-1)^{r-1}\beta_{r-1,n-r+1}(d^Cx,y)=(-1)^{2r}\beta_{r,n-r}(x,d^Cy),
 $$
@@ -236,7 +236,7 @@ A chain map $\beta^{\sharp}$ is a chain equivalence exactly when it is a quasi-i
 
 ::: {.proposition #prop:form-on-homology title="The induced pairing on homology"}
 
-Let $\beta$ be a $W$-valued bilinear form of degree (@def:complex-form) $n$ on $C$ and let $p+q=n$.
+Let $\beta$ be a $W$-valued bilinear form of degree (@def:graded-object) (@def:complex-form) $n$ on $C$ and let $p+q=n$.
 The assignment
 $$
 \bar\beta_{p,q}\bigl([x],[y]\bigr)=\beta_{p,q}(x,y)
@@ -269,7 +269,7 @@ Then $b_p=0$ for every $p$.
 
 ::: {.proof}
 
-Apply the hypothesis in degree $p$, then in degree $p-1$ to the vectors $d^Cx,d^Cy\in C_{p-1}$, which is where that instance of the hypothesis lives; for $x,y\in C_p$,
+Apply the hypothesis in degree (@def:graded-object) $p$, then in degree $p-1$ to the vectors $d^Cx,d^Cy\in C_{p-1}$, which is where that instance of the hypothesis lives; for $x,y\in C_p$,
 $$
 b_p(x,y)=b_{p-1}(d^Cx,d^Cy)=b_{p-2}\bigl((d^C)^2x,(d^C)^2y\bigr)=b_{p-2}(0,0)=0,
 $$
@@ -280,7 +280,7 @@ the last step because $(d^C)^2=0$ and a bilinear form vanishes on a pair with a 
 
 Let $C\in\mathbf{Ch}(R\text{-}\mathbf{Mod})$ and let $n=2m$.
 
-1. If $C$ is concentrated in degree $m$, then $(C\tensor_RC)_n=C_m\tensor_RC_m$, the compatibility condition of @def:complex-form is vacuous, and a $W$-valued bilinear form of degree $n$ on $C$ is a $W$-valued bilinear form on the module $C_m$ in the sense of @def:form-presheaves.
+1. If $C$ is concentrated in degree (@def:graded-object) $m$, then $(C\tensor_RC)_n=C_m\tensor_RC_m$, the compatibility condition of @def:complex-form is vacuous, and a $W$-valued bilinear form of degree $n$ on $C$ is a $W$-valued bilinear form on the module $C_m$ in the sense of @def:form-presheaves.
 
 2. For every $C$, a symmetric form $\beta$ of degree $n$ induces on $H_m(C)$ a pairing satisfying
 $$
@@ -325,7 +325,7 @@ Every morphism $f'\colon M\to N$ lifts to a chain map (@def:chain-complexes) $f\
 ::: {.proof}
 
 This is [@Wei94, Thm. 2.2.6].
-The lift is built degree by degree: $f_0$ lifts $f'\epsilon$ along the epimorphism $\eta$ because $P_0$ is projective (@def:module-subcategories), and $f_n$ lifts $f_{n-1}d^P_n$ along $Q_n\twoheadrightarrow\operatorname{im}d^Q_n$ for the same reason, the composite landing in $\ker d^Q_{n-1}=\operatorname{im}d^Q_n$ by exactness of $Q$ and $d^Pd^P=0$.
+The lift is built degree (@def:graded-object) by degree: $f_0$ lifts $f'\epsilon$ along the epimorphism $\eta$ because $P_0$ is projective (@def:module-subcategories), and $f_n$ lifts $f_{n-1}d^P_n$ along $Q_n\twoheadrightarrow\operatorname{im}d^Q_n$ for the same reason, the composite landing in $\ker d^Q_{n-1}=\operatorname{im}d^Q_n$ by exactness of $Q$ and $d^Pd^P=0$.
 The homotopy is built by the same induction, from the observation that $d^Q_n\bigl(f_n-g_n-s_{n-1}d^P_n\bigr)=0$, so the difference lifts again.
 Only projectivity of the $P_n$, exactness of both augmented complexes and additivity are used; the $Q_n$ need not be projective.
 :::
@@ -352,7 +352,7 @@ Every finitely generated (@def:module-subcategories) graded $R$-module has a gra
 
 This is [@Eis95, Thm. 1.13].
 The proof uses exactness of the Koszul complex $K(x_1,\dots,x_r)$ on a regular sequence, which makes it a free resolution of $k$ of length $r$ [@Eis95, Cor. 17.5], and the coincidence of the minimal (@def:minimal-resolution) resolution with the computation of Tor [@Eis95, Cor. 19.5].
-With those, the bound is $\Tor^R_i(M,k)\cong F_i\tensor_Rk$ for the minimal resolution $F$ of $M$, which vanishes for $i>r$ because $K(x)$ does, so $F_i=0$ for $i>r$.
+With those, the bound is $\Tor^R_i(M,k)\cong F_i\tensor_Rk$ for the minimal resolution (@def:minimal-resolution-of-surface-singularity) $F$ of $M$, which vanishes for $i>r$ because $K(x)$ does, so $F_i=0$ for $i>r$.
 :::
 
 ::: {.definition #def:minimal-resolution title="Minimal free resolutions" defines="minimal free resolution"}
@@ -372,7 +372,7 @@ $$
 L_iF(A)=H_i\bigl(F(P)\bigr).
 $$
 A second projective resolution gives a canonically isomorphic object, and the lift of @thm:resolution-comparison makes each $L_iF$ a functor $\mca\to\mathcal B$ [@Wei94, §2.4, Lem. 2.4.1, Lem. 2.4.4].
-For a left exact $F$ and an $\mca$ with enough injectives, the *right derived functors* $R^iF$ are defined dually from injective resolutions [@Wei94, §2.5].
+For a left exact $F$ and an $\mca$ with enough injectives (@def:injective-map), the *right derived functors* $R^iF$ are defined dually from injective resolutions [@Wei94, §2.5].
 :::
 
 ::: {.definition #def:ext-tor title="Ext and Tor" defines="Ext; $\Ext^i_R$; Tor; $\Tor^R_n$"}

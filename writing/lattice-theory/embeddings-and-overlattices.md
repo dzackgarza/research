@@ -97,7 +97,7 @@ For a fixed target (@def:globular-boundary) $L$, write
 $\Emb(S,L)\definedas\operatorname{PrimEmb}(S,L)$ for the set of primitive embedding morphisms.
 Postcomposition by $\Orth(L)$ gives the fixed-target isomorphism (@def:isomorphism-of-objects) classes
 $\Orth(L)\backslash\Emb(S,L)$.
-The commuting right action of $\Orth(S)$ gives the primitive-subobject (@def:subobject-relation) orbit set
+The commuting right action of $\Orth(S)$ gives the primitive-subobject (@def:subobject-relation) orbit (@def:group-orbit) set
 $\Orth(L)\backslash\Emb(S,L)/\Orth(S)$.
 
 Nikulin's primitive-embedding classification [@Nik80 Prop. 1.15.1] classifies the
@@ -326,7 +326,7 @@ $$
 
 ::: {.proof}
 
-Let $e\in L$ be a primitive isotropic vector.
+Let $e\in L$ be a primitive isotropic vector (@def:isotropic-subspace).
 By @lem:unimodular-divisibility choose $w\in L$ with $\beta_L(e, w) = 1$, and set $k\definedas w^2$.
 The sublattice $P\definedas\generators{e, w}$ has Gram matrix $\begin{bmatrix}0 & 1\\ 1 & k\end{bmatrix}$ of determinant $-1$, hence $P$ is a rank-$2$ unimodular sublattice, and it is primitive since a unimodular sublattice is saturated by the primitive-sublattice characterization (@prop:primitive-characterization).
 The isometry type of $P$ is governed by the parity of $k = w^2$: the Gram matrix $\begin{bmatrix}0 & 1\\ 1 & k\end{bmatrix}$ gives $P\cong U$ when $k$ is even and $P\cong\latI_{1, 1}$ (the odd rank-$2$ unimodular hyperbolic lattice (@not:reflection-groups-sign-convention)) when $k$ is odd.
@@ -408,7 +408,7 @@ Let $L'$ be an *even* (@def:form-axioms) maximal (@def:maximal-lattice) $U^{\opl
 
 Both statements are in [@Daw22 §3.1]: Algorithm 3.3 constructs $\tau(x,y)$ from the
 two displayed hyperbolic (@def:hyperbolic-plane) summands, and the Attwell-Duval criterion gives the second
-orbit statement.
+orbit (@def:group-orbit) statement.
 :::
 
 ::: {.definition #def:characteristic-vector title="Characteristic vectors" defines="characteristic vector"}
@@ -429,7 +429,7 @@ Let $e_1,\dots,e_{p+q}$ be the standard orthogonal basis (@def:based-module), wi
 $i>p$, and let $c=\sum_ic_ie_i$ be characteristic. For $x=e_i$ the condition reads $\pm c_i\equiv\pm1\pmod 2$,
 so every $c_i$ is odd and $c_i^2\equiv1\pmod 8$. Hence
 $c^2=\sum_{i\leq p}c_i^2-\sum_{i>p}c_i^2\equiv p-q\pmod 8$; this is the case $L=\latI_{p,q}$ of van der
-Blij's congruence $c^2\equiv\sigma(L)\pmod 8$ [@Nik80, §1.9]. An isotropic vector has square $0$, so it is
+Blij's congruence $c^2\equiv\sigma(L)\pmod 8$ [@Nik80, §1.9]. An isotropic vector (@def:isotropic-subspace) has square $0$, so it is
 not characteristic when $p-q\not\equiv0\pmod 8$.
 :::
 
@@ -444,7 +444,7 @@ James' integral Witt theorem [@Jam68, Theorem, p. 303]: for $L$ unimodular, an i
 sublattices $J$, $K$ with $r(L)-\abs{\fs(L)}\geq2(r(J)+1)$ extends to an isometry of $L$ if and only
 if it carries characteristic vectors (@def:characteristic-vector) to characteristic vectors. For $B=\latI_{2,9}$ one has
 $r-\abs{\fs}=11-7=4=2(1+1)$, so the inequality holds for a primitive rank-one $J$ with equality, and
-it is the only hypothesis besides the characteristic clause. Given two primitive isotropic vectors $v$,
+it is the only hypothesis besides the characteristic clause. Given two primitive isotropic vectors (@def:isotropic-subspace) $v$,
 $w$, the isometry $\langle v\rangle\to\langle w\rangle$, $v\mapsto w$, therefore extends provided
 neither line is characteristic. Neither is, by @lem:characteristic-vectors-of-Ipq, since
 $2-9=-7\not\equiv0\pmod 8$; so the clause is vacuous and the isometry extends.
@@ -473,7 +473,7 @@ $l^{\perp L}=l\perp M$, so $l^{\perp L}/l\cong M$. Moreover:
 
 By @cor:hyperbolic-splitting, $L$ being odd, $L=P\perp M$ with $l\subset P\cong\latI_{1,1}$, and $M$ is
 unimodular of signature $(p-1,q-1)$ because $P$ is unimodular of signature $(1,1)$. Let $e,f$ be an
-orthogonal basis (@def:based-module) of $P$ with $e^2=1$, $f^2=-1$. The primitive isotropic vectors of $P$ are $\pm(e\pm f)$,
+orthogonal basis (@def:based-module) of $P$ with $e^2=1$, $f^2=-1$. The primitive isotropic vectors (@def:isotropic-subspace) of $P$ are $\pm(e\pm f)$,
 so after replacing $f$ by $-f$ one has $l=\ZZ(e+f)$. An element $ae+bf+m$ with $m\in M$ is orthogonal to
 $l$ exactly when $a=b$, so $l^{\perp L}=l\perp M$.
 
@@ -503,7 +503,7 @@ and $v=\pm(e+f)$, $v'=\pm(e'+f')$ in orthogonal bases of $P$ and $P'$ as there. 
 $e\mapsto e'$, $f\mapsto f'$ and an isometry $M\to M'$ together give $g\in\Orth(L)$ with $g(\ZZ v)=\ZZ v'$.
 So $\Orth(L)$ is transitive on lines.
 
-By @lem:minus-identity-spinor-norm, $-\id_L\notin\Orth^+(L)$, since the positive index is $1$, and
+By @lem:minus-identity-spinor-norm, $-\id_L\notin\Orth^+(L)$, since the positive index (@def:maximal-positive-definite-subspace) is $1$, and
 $\Orth^+(L)$ has index (@def:index) $2$ in $\Orth(L)$. Hence for $g$ carrying $\ZZ v$ to $\ZZ v'$, either $g$ or $-g$ lies
 in $\Orth^+(L)$, and $-g$ also carries $\ZZ v$ to $\ZZ v'$. So $\Orth^+(L)$ is transitive on lines too.
 :::
@@ -514,9 +514,9 @@ Let $L$ be $\latI_{1,8}$ or $\latI_{1,8}(2)$, of signature $(1,8)$, and fix a co
 For a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) $v\in L$ the sign of $\beta_\bR(v,e)$ is independent of the choice of $e\in C^+$, because $\beta_\bR(v,-)$ has no zero on $C^+$ --- a zero would put the isotropic $v$ in the negative definite (@def:definiteness) hyperplane $e^{\perp}$ --- and $C^+$ is connected; call that sign the **side** of $v$.
 Then
 
-1. $\Orth(L)$ acts transitively on the primitive isotropic vectors of $L$;
+1. $\Orth(L)$ acts transitively on the primitive isotropic vectors (@def:isotropic-subspace) of $L$;
 
-2. $\Orth^+(L)$ has exactly two orbits on them, the vectors of side $+1$ and the vectors of side $-1$; $-\id_L$ lies in $\Orth(L)\setminus\Orth^+(L)$ and exchanges the two;
+2. $\Orth^+(L)$ has exactly two orbits (@def:group-orbit) on them, the vectors of side $+1$ and the vectors of side $-1$; $-\id_L$ lies in $\Orth(L)\setminus\Orth^+(L)$ and exchanges the two;
 
 3. every $g\in\Orth(L)$ carrying a vector of side $+1$ to a vector of side $+1$ lies in $\Orth^+(L)$.
 
@@ -528,7 +528,7 @@ Twisting by $2$ preserves the module, the isometry group (@def:group) as a subgr
 
 (1) By @prop:rank-nine-line-transitivity there is $g\in\Orth(L)$ with $g(\bZ v)=\bZ v'$, that is $g(v)=\pm v'$; composing with $-\id_L$, which lies in $\Orth(L)$, gives the sign.
 
-(2) By @lem:minus-identity-spinor-norm, $\spinornorm_\bR(-\id_L)=[(-1)^1]=-1$ because the positive index is $1$, so $-\id_L\notin\Orth^+(L)$ and $\Orth(L)=\Orth^+(L)\cup(-\id_L)\Orth^+(L)$.
+(2) By @lem:minus-identity-spinor-norm, $\spinornorm_\bR(-\id_L)=[(-1)^1]=-1$ because the positive index (@def:maximal-positive-definite-subspace) is $1$, so $-\id_L\notin\Orth^+(L)$ and $\Orth(L)=\Orth^+(L)\cup(-\id_L)\Orth^+(L)$.
 Hence $\Orth(L)\cdot v=\Orth^+(L)\cdot v\cup\Orth^+(L)\cdot(-v)$, and by (1) there are at most two $\Orth^+(L)$-orbits.
 There are at least two: $\Orth^+(L)$ preserves each component of $C^+$ by @prop:spinor-plus-cone-components, so for $g\in\Orth^+(L)$ and $e\in C^+$ one has $ge\in C^+$ and
 $$
@@ -573,8 +573,8 @@ with $g(l)=l'$. Put $\sigma'=\id_{P'}\perp(-\id_{M'})$. It fixes $l'$, and $\sig
 As $\Orth^+(B)$ has index (@def:index) $2$ in $\Orth(B)$, one of $g$ and $\sigma'g$ lies in $\Orth^+(B)$ and carries $l$
 to $l'$.
 
-For primitive isotropic vectors $v,v'$, an element $g\in\Orth^+(B)$ with $g(\ZZ v)=\ZZ v'$ has $g(v)=\pm v'$,
-and $-\id_B\in\Orth^+(B)$ by @lem:minus-identity-spinor-norm, since the positive index is $2$.
+For primitive isotropic vectors (@def:isotropic-subspace) $v,v'$, an element $g\in\Orth^+(B)$ with $g(\ZZ v)=\ZZ v'$ has $g(v)=\pm v'$,
+and $-\id_B\in\Orth^+(B)$ by @lem:minus-identity-spinor-norm, since the positive index (@def:maximal-positive-definite-subspace) is $2$.
 :::
 
 ::: {.theorem #thm:plane-transitivity-tco title="Primitive isotropic planes of $T_\Co$"}
@@ -640,7 +640,7 @@ Unimodularity of $L$ gives an isometry $A_{S,q}\isoto A_{T,q}(-1)$.
 The signature (@def:signature) of $T$ together with $A_{T,q}$ is therefore fixed, so $T$ belongs to a fixed genus; that genus contains finitely many integral isometry classes.
 
 For each such $T$, the set $\operatorname{Iso}\qty{A_{S,q},A_{T,q}(-1)}$ is finite because the discriminant modules $A_S^\sharp$ and $A_T^\sharp$ have finite cardinality.
-Nikulin's equivalence relation on these gluing data (@cons:embedding-gluing-data) is induced by isometries of the target (@def:globular-boundary) and complement [@Nik80, Prop. 1.15.1].
+Nikulin's equivalence relation (@def:equivalence-relation) on these gluing data (@cons:embedding-gluing-data) is induced by isometries of the target (@def:globular-boundary) and complement [@Nik80, Prop. 1.15.1].
 Hence only finitely many $\Orth(L)$-orbits of primitive embeddings (@def:primitive-embedding) occur.
 :::
 

@@ -14,7 +14,7 @@ For $R$ a Dedekind domain, the lattice category $\mathbf{Lat}_R$ of @def:lattice
 
 Let $f\colon(M,b_M)\to(N,b_N)$ be a morphism of $\mathcal B_{R,W}$.
 Then $\ker f\iscontainedin\ker b_M^{\sharp}$, with $b_M^{\sharp}$ the adjoint map of @def:polarization.
-If $b_M$ is nondegenerate then $f$ is injective.
+If $b_M$ is nondegenerate then $f$ is injective (@def:injective-map).
 In particular every morphism of $\mathbf{Lat}_R^{\mathrm{nd}}$ is injective, hence a monomorphism.
 :::
 
@@ -119,7 +119,7 @@ For (1), an inverse of $M$ is a lattice $N$ with $M\perp N\cong0$.
 An isomorphism of lattices is in particular an isomorphism of underlying modules, and $M\oplus N=0$ forces $M=0$.
 The class of the zero lattice is zero in $W(R)$ by @prop:metabolic-witt-trivial, its lagrangian being $0$.
 
-For (2), if $b_M=0$ then $b_M^{\sharp}=0$, and the zero map is injective only from the zero module, so $M=0$.
+For (2), if $b_M=0$ then $b_M^{\sharp}=0$, and the zero map is injective (@def:injective-map) only from the zero module, so $M=0$.
 :::
 
 ::: {.theorem #thm:form-no-terminal title="Terminal objects"}

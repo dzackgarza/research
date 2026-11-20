@@ -18,6 +18,18 @@ $$
 $$
 Gordan's lemma makes $S_\sigma$ finitely generated. The monomial $\chi^m$ corresponds to $m\in S_\sigma$, with $\chi^m\chi^{m'}=\chi^{m+m'}$ [@Ful93, §1.2, Prop. 1; @CLS11, Prop. 1.2.17 and Thm. 1.2.18]. A face $\tau=\sigma\cap m^\perp$, with $m\in S_\sigma$, gives the open immersion $U_\tau\simeq (U_\sigma)_{\chi^m}\hookrightarrow U_\sigma$. For a fan $\Sigma$, glue its $U_\sigma$ along these face opens. The result $X_\Sigma$ is a normal toric variety, and its dense torus is $\operatorname{Spec}\mathbb C[M]$ [@Ful93, §1.4 and §2.1].
 
+::: {.definition #def:maximal-cone-of-fan title="Maximal cone of a fan" defines="maximal cone of a fan; maximal cone"}
+Let $\Sigma$ be a fan in $N_{\mathbb R}$. A cone (@def:closed-cone) $\sigma\in\Sigma$ is a **maximal cone** of $\Sigma$ when it is not a proper subset of another cone of $\Sigma$. Equivalently, $\sigma$ is not a face of another cone of $\Sigma$, because every face of a cone of $\Sigma$ is a cone of $\Sigma$ and a cone contained in another cone of $\Sigma$ is a face of it [@CLS11, §4.2, before Prop. 4.2.2].
+:::
+
+::: {.definition #def:refinement-coarsening-of-fan title="Refinement and coarsening of a fan" defines="refinement of a fan; coarsening of a fan; strict coarsening"}
+Let $\Sigma$ be a fan in $N_{\mathbb R}$. A fan $\Sigma'$ **refines** $\Sigma$ when every cone (@def:closed-cone) of $\Sigma'$ is contained in a cone of $\Sigma$ and $|\Sigma'|=|\Sigma|$. Then every cone of $\Sigma$ is a union of cones of $\Sigma'$, and $\Sigma$ is a **coarsening** of $\Sigma'$; the coarsening is **strict** when $\Sigma\neq\Sigma'$ [@CLS11, §3.3, "Refinements of Fans and Blowups"].
+:::
+
+::: {.definition #def:complete-toric-variety title="Complete fan and complete toric variety" defines="complete fan; complete toric variety"}
+A fan $\Sigma$ in $N_{\mathbb R}$ is **complete** when its support $|\Sigma|=\bigcup_{\sigma\in\Sigma}\sigma$ is all of $N_{\mathbb R}$. A **complete toric variety** is a toric variety $X_\Sigma$ whose fan $\Sigma$ is complete. Completeness of $\Sigma$ is equivalent to compactness of $X_\Sigma$ in the classical topology [@CLS11, Def. 3.1.18(c) and Thm. 3.1.19(c); @Ful93, §2.4].
+:::
+
 A cone is *strongly convex* when $\sigma\cap(-\sigma)=\{0\}$. This condition makes $\sigma^\vee$ full dimensional. A cone is *simplicial* when its rays are linearly independent. It is *regular* when its primitive ray generators extend to a basis of $N$; the affine toric chart is smooth exactly in this case. Thus full dimension of the dual tests strong convexity, while regularity tests smoothness [@CLS11, §§1.2, 3.1].
 
 For a full-dimensional two-dimensional cone $\sigma=\operatorname{Cone}(v_1,v_2)$, the rows of the inverse of the matrix with columns $v_1,v_2$ give real generators of $\sigma^\vee$ up to positive scale. One must clear denominators and divide each generator to its primitive lattice vector. For example,
@@ -70,6 +82,10 @@ M\longrightarrow\operatorname{Div}_T(X_\Sigma)
 =\sum_{\rho\in\Sigma(1)}\langle m,u_\rho\rangle D_\rho.
 $$
 The first map is injective when the ray generators span $N_{\mathbb R}$; otherwise a character can be invertible on all of $X_\Sigma$ and have zero divisor. The matrix of primitive ray generators therefore computes the class group, including its torsion [@CLS11, §4.1].
+
+::: {.definition #def:facet-maximal-face title="Facet of a polytope" defines="maximal face of a polytope; maximal face; facet"}
+Let $P$ be a polytope. A face of $P$ is a set $P\cap\{x:cx=c_0\}$ for a valid inequality $cx\leq c_0$ of $P$; it is proper when it differs from $P$. A **maximal face** of $P$ is a proper face not contained in another proper face. Such a face is a **facet**, and the facets of $P$ are exactly its faces of dimension $\dim P-1$ [@Zie95, §2.1].
+:::
 
 For a smooth complete $n$-dimensional toric variety, the divisor sequence gives
 $$
@@ -131,6 +147,10 @@ $$
 This is the dual of the cone of directions from $F$ into $P$.
 
 ## Toric models of anticanonical pairs
+
+::: {.definition #def:maximally-degenerate-family title="Maximally degenerate family" defines="maximally degenerate family; maximally degenerate; maximal degeneration"}
+Let $\pi:X\to\Delta$ be a degeneration of $d$-dimensional varieties with unipotent monodromy $T$ on the fiber (@def:fiber-cofiber) cohomology $H^d(X_s;\mathbb Q)$, and put $N=\log T$. The monodromy weight filtration of $N$ is the weight filtration of the limit mixed Hodge structure (@def:property-structure-stuff), and $N^{d+1}=0$. The family is **maximally degenerate** when this filtration has maximal length, that is, when $N^d\neq0$ [@CK99, §5.2, remarks after Def. 5.2.2]. For a degeneration of K3 surfaces ($d=2$), this is Type III: $N^2\neq0$ and $H^2=W_4\supset W_2\supset W_0$ with $W_0=\operatorname{Im}N^2$ of dimension one [@FS86, §1]. For a degeneration of principally polarized abelian varieties, it is the condition $W_{-2}=W_{-1}$ on the limit mixed Hodge structure [@EFS25, Def. 2.13].
+:::
 
 A Type III Kulikov component is an anticanonical pair $(V,D)$: $K_V+D\sim0$. A toric model is a span
 $$

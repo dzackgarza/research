@@ -28,7 +28,7 @@ h_M^{\sharp}\colon M\oplus M^{*}\too M^{*}\oplus M^{**},
 \qquad
 h_M^{\sharp}(x,\varphi)=\bigl(\varphi,\operatorname{can}_M(x)\bigr).
 $$
-Hence $h_M$ is nondegenerate if and only if $\operatorname{can}_M$ is injective, and perfect if and only if $\operatorname{can}_M$ is an isomorphism.
+Hence $h_M$ is nondegenerate if and only if $\operatorname{can}_M$ is injective (@def:injective-map), and perfect if and only if $\operatorname{can}_M$ is an isomorphism.
 :::
 
 ::: {.proof}
@@ -49,7 +49,7 @@ For a finitely generated projective (@def:module-subcategories) $R$-module $M$, 
 
 ::: {.proof}
 
-Evaluation commutes with finite biproducts (@def:preadditive): $\operatorname{can}_{M\oplus M'}=\operatorname{can}_M\oplus\operatorname{can}_{M'}$, since a functional on a biproduct is a pair of functionals and evaluation is componentwise.
+Evaluation commutes (@def:commutative-diagram) with finite biproducts (@def:preadditive): $\operatorname{can}_{M\oplus M'}=\operatorname{can}_M\oplus\operatorname{can}_{M'}$, since a functional on a biproduct is a pair of functionals and evaluation is componentwise.
 For a free (@def:module-subcategories) module of finite rank, $\operatorname{can}_{R^{n}}\colon R^{n}\to(R^{n})^{**}\cong R^{n}$ is the identity, because a functional is determined by its values on a basis (@def:based-module) and evaluation against the dual basis returns those values.
 
 A finitely generated projective module is a summand of a finitely generated (@def:module-subcategories) free module, $M\oplus M'\cong R^{n}$.
@@ -125,7 +125,7 @@ The form $(M,b)$ is *metabolic* if it admits a lagrangian [@MH73, §I.6; @Ran98,
 
 ::: {.proposition #prop:hyperbolic-metabolic title="Hyperbolic forms are metabolic"}
 
-Let $M$ be an $R$-module for which $\operatorname{can}_M$ is injective.
+Let $M$ be an $R$-module for which $\operatorname{can}_M$ is injective (@def:injective-map).
 Then $0\oplus M^{*}$ is a lagrangian of $H(M)$.
 :::
 
@@ -279,13 +279,13 @@ $$
 X\perp Y\;\cong\;X'\perp Y'
 $$
 [@MH73, Def. I.7.1].
-That $\sim$ is an equivalence relation, and that it is compatible with orthogonal sum (@def:orthogonal-sum) and with tensor product, is @lem:witt-equivalence.
+That $\sim$ is an equivalence relation (@def:equivalence-relation), and that it is compatible with orthogonal sum (@def:orthogonal-sum) and with tensor product, is @lem:witt-equivalence.
 :::
 
 ::: {.lemma #lem:witt-equivalence title="Witt equivalence is a congruence"}
 
 Let $R$ be a Dedekind domain.
-Witt equivalence (@def:witt-class) is an equivalence relation on isometry classes of unimodular $R$-lattices, and it is a congruence: if $X\sim X'$ and $Z\sim Z'$ then $X\perp Z\sim X'\perp Z'$ and $X\otimes Z\sim X'\otimes Z'$ [@MH73, Lem. I.7.2].
+Witt equivalence (@def:witt-class) is an equivalence relation (@def:equivalence-relation) on isometry classes of unimodular $R$-lattices, and it is a congruence: if $X\sim X'$ and $Z\sim Z'$ then $X\perp Z\sim X'\perp Z'$ and $X\otimes Z\sim X'\otimes Z'$ [@MH73, Lem. I.7.2].
 :::
 
 ::: {.proof}

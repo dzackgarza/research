@@ -112,7 +112,7 @@ in $R\text{-}\mathbf{Mod}$ has torsion-free $Q_f$.
 Write $\operatorname{PrimEmb}(L,M)$ for the set of morphisms satisfying this condition.
 A subobject of $M$ (@def:subobject-relation) is *primitive* when any representing monomorphism has this property.
 
-Identities are primitive, and primitivity is closed under composition.
+Identities are primitive, and primitivity is closed under composition (@def:closed-under-composition).
 For primitive $f\colon L\to M$ and $g\colon M\to P$, the canonical cokernel maps fit into the short exact sequence (@def:exact-complex)
 $$
 0\too Q_f\too Q_{gf}\too Q_g\too0.
@@ -227,7 +227,7 @@ Index $1$ holds exactly for the isometries.
 
 ::: {.proof}
 
-$Q_f$ is finitely generated because $L$ is, and torsion because $f$ is injective with $L,M$ of equal rank, so $\rank Q_f=0$ over the domain $\bZ$.
+$Q_f$ is finitely generated because $L$ is, and torsion because $f$ is injective (@def:injective-map) with $L,M$ of equal rank, so $\rank Q_f=0$ over the domain $\bZ$.
 
 For the matrix identity, apply the adjoint formula of @prop:adjoint-matrix: the identity $G_L=A^{\mathsf T}G_MA$ is the coordinate statement of $f^{*}b_M=b_L$, the condition for $f$ to be a morphism of $\mathbf{Lat}_\bZ$.
 Then $\det G_L=\det(A)^{2}\det G_M$, and by @def:determinant-class $\det b_L$ and $\det b_M$ are the classes of these determinants up to squares of units, so $\det(b_L)=\det(b_M)[M:f(L)]^{2}$ once $\abs{\det A}=[M:f(L)]$ is known.

@@ -38,7 +38,7 @@ By @prop:coble-table-invariants, $r = 10+n$ and $a = 12-n$, so $22-r-a = 0$ and 
 ::: {.proposition #prop:coble-families-in-enriques-moduli title="Each Coble family lies in the Coble divisor of Enriques moduli"}
 
 For each lattice $M$ of rank $10+n$ in @tbl-coble-lattices, the moduli functor of $M$-polarized K3 surfaces of [@CDL25, §5.4] embeds into the moduli functor of $E_{10}(2)$-polarized K3 surfaces.
-Its image is an open subset of an irreducible closed subset of codimension $n-1$ of the quotient $\Gamma^\sharp_{\mathrm{Enr}}\backslash\mch(-2)$ of the $(-2)$-Heegner divisor of the Enriques period domain, and it is a coarse moduli space of Coble surfaces (@def:coble-surface) with $n$ boundary components [@CDL25, §5.4, Prop. 5.4.6 and the paragraph after it].
+Its image is an open subset of an irreducible closed subset (@def:closed-subset) of codimension $n-1$ of the quotient $\Gamma^\sharp_{\mathrm{Enr}}\backslash\mch(-2)$ of the $(-2)$-Heegner divisor of the Enriques period domain, and it is a coarse moduli space of Coble surfaces (@def:coble-surface) with $n$ boundary components [@CDL25, §5.4, Prop. 5.4.6 and the paragraph after it].
 For $n = 1$, the image under the period map (@def:period-map) is an open subset of $\mcm_{\mathrm{Coble}}$, and the coarse moduli space is the coarse moduli space of marked Coble surfaces with $n = 1$ [@CDL25, Prop. 5.4.6].
 
 :::
@@ -126,7 +126,7 @@ Consequently:
 
 ::: {.proof}
 
-The complement column of @tbl-coble-lattices is @prop:coble-table-invariants, namely $N_n = \latI_{2,10-n}(2)$ in the ten rows with $\delta = 1$, and $N_n = U(2)^{\oplus 2} = (U^{\oplus 2})(2)$ in the row $(18,4,0)$, whose negative index is $10 - 8 = 2$.
+The complement column of @tbl-coble-lattices is @prop:coble-table-invariants, namely $N_n = \latI_{2,10-n}(2)$ in the ten rows with $\delta = 1$, and $N_n = U(2)^{\oplus 2} = (U^{\oplus 2})(2)$ in the row $(18,4,0)$, whose negative index (@def:negative-index) is $10 - 8 = 2$.
 The lattice $\latI_{2,10-n}$ is odd unimodular of signature $(2, 10-n)$ and $U^{\oplus 2}$ is even (@def:form-axioms) unimodular of signature $(2,2)$, so in each row $N_n = B_n(2)$ with $B_n$ unimodular of that signature.
 
 (1) For a unimodular $B$ the dual of $T = B(2)$ is $\tfrac12 B$: the form of $T$ is $2b_B$, its inverse form is $\tfrac12 b_B^{-1}$, and in a basis (@def:based-module) of $B$ the matrix of $b_B^{-1}$ is unimodular; so
@@ -141,13 +141,13 @@ An isometry of $T$ is an isometry of $B$, because the two forms differ by the sc
 
 ::: {.theorem #thm:coble-n-boundaries-verdict title="Verdict on the boundary conjecture"}
 
-The conjecture was that the Baily--Borel boundaries of all ten families are computable by the techniques used at $n = 1$, which were three: the reduction of the cusp orbits through the discriminant kernel, a computation on the finite group $A_N$ (@thm:coble-zero-cusp-count); Vinberg's algorithm at each cusp, which produces the chamber and its diagram (@cor:vinberg-terminates-reflective); and the Tits incidence between the orbits of lines and of planes (@prop:coble-arithmetic-flag-incidence).
+The conjecture was that the Baily--Borel boundaries of all ten families are computable by the techniques used at $n = 1$, which were three: the reduction of the cusp orbits (@def:group-orbit) through the discriminant kernel, a computation on the finite group $A_N$ (@thm:coble-zero-cusp-count); Vinberg's algorithm at each cusp, which produces the chamber and its diagram (@cor:vinberg-terminates-reflective); and the Tits incidence between the orbits of lines and of planes (@prop:coble-arithmetic-flag-incidence).
 
 1. The structural input of the first step transfers to every row: by @prop:coble-n-twist-form the period lattice $N_n$ is a twist $B_n(2)$ of a unimodular lattice, so its discriminant group, its quadratic form and its discriminant representation (@def:discriminant-rep) have the same description as at $n = 1$.
    What does not transfer with it is the pair of statements that the $n = 1$ computation uses to identify the fibres over the classes, and those are stated only for $B = \latI_{2,9}$ (@lem:I29-plus-line-transitivity, @lem:cusp-vector-stabilizer-image); for another row they must be proved again, and no row of this chapter proves them.
 2. The second step fails in three rows: for $M = (17,5,1)$, $(18,4,1)$ and $(19,3,1)$ the group $W_r(M)$ has infinite index (@thm:nonreflective-r-plus-a-22), Vinberg's algorithm does not terminate (@cor:vinberg-terminates-reflective), and the reflection semifan (@def:semitoroidal-compactification) of $W_r(M)$ is not a fan (@def:coxeter-semifan, from [@AE22, Def. 3.5, printed p. 10]).
    These three families have no chamber at any cusp, so no boundary diagram of them is computed by the $n = 1$ technique; what replaces it is the mirror-move classification of their $0$-cusps and boundary lattices (@prop:coble-table-cusp-boundary-lattices), which is an application of [@AE22, Def. 5.6 and Thm. 5.8, printed p. 23] and not of the $n = 1$ technique.
-3. Two rows have no boundary of the shape the comparison needs: for $n = 9$ the lattice $N_9 = \latI_{2,1}(2)$ has negative index one, so it has primitive isotropic vectors and no primitive isotropic plane, and $F_{\Co,9}$ has no $1$-cusp and no Tits edge; for $n = 10$ the lattice $N_{10} = \latI_{2,0}(2)$ is positive definite, $\bD(N_{10})$ is one point, the family is zero-dimensional and it has no $0$-cusp (@prop:coble-table-cusp-boundary-lattices, with @prop:type-iv-dimension).
+3. Two rows have no boundary of the shape the comparison needs: for $n = 9$ the lattice $N_9 = \latI_{2,1}(2)$ has negative index (@def:negative-index) one, so it has primitive isotropic vectors (@def:isotropic-subspace) and no primitive isotropic plane, and $F_{\Co,9}$ has no $1$-cusp and no Tits edge; for $n = 10$ the lattice $N_{10} = \latI_{2,0}(2)$ is positive definite, $\bD(N_{10})$ is one point, the family is zero-dimensional and it has no $0$-cusp (@prop:coble-table-cusp-boundary-lattices, with @prop:type-iv-dimension).
 
 So the conjecture is false as stated.
 The ten families, which are the ten values of $n$, fall into four classes, each named by its values of $n$:
@@ -163,8 +163,8 @@ A family that fails for two reasons is named under both reasons and counted once
 ::: {.proof}
 
 (1) is @prop:coble-n-twist-form(1) and the observation that @lem:I29-plus-line-transitivity and @lem:cusp-vector-stabilizer-image are statements about $\latI_{2,9}$.
-(2) is the cited non-reflectivity together with @cor:vinberg-terminates-reflective and @def:coxeter-semifan, from [@AE22, Def. 3.5, printed p. 10]; a Coxeter chamber is the fundamental domain of $W_r$, which does not exist when $W_r$ has infinite index.
-(3) the negative index of $N_9$ is one by @prop:coble-table-invariants, so a totally isotropic subspace has dimension at most one; the statement about $n = 10$ is the last sentence of @prop:coble-table-cusp-boundary-lattices.
+(2) is the cited non-reflectivity together with @cor:vinberg-terminates-reflective and @def:coxeter-semifan, from [@AE22, Def. 3.5, printed p. 10]; a Coxeter chamber is the fundamental domain (@def:fundamental-domain) of $W_r$, which does not exist when $W_r$ has infinite index.
+(3) the negative index of $N_9$ is one by @prop:coble-table-invariants, so a totally isotropic subspace (@def:isotropic-subspace) has dimension at most one; the statement about $n = 10$ is the last sentence of @prop:coble-table-cusp-boundary-lattices.
 :::
 
 ### The ramification divisor {#sec-coble-n-recognizable}

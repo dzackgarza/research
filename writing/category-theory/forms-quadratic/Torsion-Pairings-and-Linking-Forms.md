@@ -37,7 +37,7 @@ is exact, and $T^\dagger$ has the same finite length as $T$ at each nonzero prim
 :::
 
 ::: {.proof}
-The divisible module $K/R$ is injective over the Dedekind domain $R$, so $\Hom_R(-,K/R)$ is exact. Localization decomposes a finite-length module into its primary components. Over the discrete valuation ring $R_{\mathfrak p}$ the dual of $R_{\mathfrak p}/\mathfrak p^e R_{\mathfrak p}$ is $\mathfrak p^{-e}R_{\mathfrak p}/R_{\mathfrak p}$, which has the same length and is isomorphic to the original cyclic module (@def:cyclic-module). Evaluation (@def:dualizable-object) identifies each component with its double dual. These componentwise isomorphisms give the natural biduality isomorphism $\eta_T$.
+The divisible module $K/R$ is injective (@def:injective-map) over the Dedekind domain $R$, so $\Hom_R(-,K/R)$ is exact. Localization decomposes a finite-length module into its primary components. Over the discrete valuation ring $R_{\mathfrak p}$ the dual of $R_{\mathfrak p}/\mathfrak p^e R_{\mathfrak p}$ is $\mathfrak p^{-e}R_{\mathfrak p}/R_{\mathfrak p}$, which has the same length and is isomorphic to the original cyclic module (@def:cyclic-module). Evaluation (@def:dualizable-object) identifies each component with its double dual. These componentwise isomorphisms give the natural biduality isomorphism $\eta_T$.
 :::
 
 ::: {.proposition #prop:torsion-perfectness title="Nondegenerate linking pairings are perfect"}
@@ -55,7 +55,7 @@ $$
 :::
 
 ::: {.proof}
-The modules $T$ and $T^\dagger$ have identical finite lengths at every prime by @prop:torsion-duality-exact. An injective morphism between them must have zero cokernel, and a surjective morphism must have zero kernel. Symmetry identifies the two adjoints of @def:pairing-adjoints, proving the equivalence (@def:equivalence-of-objects) with nondegeneracy.
+The modules $T$ and $T^\dagger$ have identical finite lengths at every prime by @prop:torsion-duality-exact. An injective (@def:injective-map) morphism between them must have zero cokernel, and a surjective morphism must have zero kernel. Symmetry identifies the two adjoints of @def:pairing-adjoints, proving the equivalence (@def:equivalence-of-objects) with nondegeneracy.
 :::
 
 ## Discriminant forms as categorical cokernels {#sec-torsion-discriminants}

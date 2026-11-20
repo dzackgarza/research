@@ -8,7 +8,7 @@ part of the data. A fibration with a section is called Jacobian.
 A relatively minimal rational elliptic surface (@def:halphen-surface-index) $V$ is a **Halphen surface of index (@def:index) $n$** if the class of its fibre is $-nK_V$.
 Every relatively minimal rational elliptic surface is a Halphen surface of some index $n$.
 
-1. A Halphen surface of index $1$ is a Jacobian rational elliptic surface: its fibration has no multiple fibres, equivalently it has a section.
+1. A Halphen surface of index $1$ is a Jacobian rational elliptic surface: its fibration has no multiple fibres (@def:multiple-fibre), equivalently it has a section.
 
 2. A Halphen surface of index $n\geq2$ has a unique multiple fibre $nF_1'$, of multiplicity $n$, and $\abs{-iK_V} = \theset{iF_1'}$ for $1\leq i\leq n-1$
 
@@ -19,9 +19,9 @@ Every relatively minimal rational elliptic surface is a Halphen surface of some 
 
 ::: {.proposition #prop:enriques-elliptic-half-fibres title="The two half-fibres of an Enriques pencil"}
 Let $Z$ be a complex Enriques surface (@def:enriques-surface) and let $|E|$ be an elliptic pencil:
-a one-dimensional complete linear system whose general member is a smooth
+a one-dimensional complete linear system (@def:complete-linear-system) whose general member is a smooth
 curve of genus one. The pencil is basepoint-free and defines a genus-one
-fibration $Z\to\PP^1$. It has exactly two multiple fibres, both of
+fibration $Z\to\PP^1$. It has exactly two multiple fibres (@def:multiple-fibre), both of
 multiplicity $2$. Write them as $2F_1$ and $2F_2$, where $F_i$ is the
 reduced half-fibre. Then
 $$
@@ -79,10 +79,10 @@ In case 2 the fibre is of type $\tilde A_k$ with $k\leq8$, and in case 1 the two
 Let $V$ be a terminal (@def:terminal-coble-surface) Coble surface (@def:coble-surface) of K3 type with $n = 1$, and let $W = V(F_6)$ be the irreducible plane sextic of @prop:coble-sextic-model, with $10$ ordinary nodes or cusps, possibly infinitely near.
 Choose $9$ of the $10$ double points of $W$.
 Then a plane cubic $V(F_3)$ passes through them, and the pencil $V(\lambda F_6 + \mu F_3^2)$ is a Halphen pencil of index (@def:index) $2$.
-The minimal resolution of its base points is a Halphen surface of index $2$, and $V$ is the blowup of a singular point of an irreducible simple fibre of this pencil.
+The minimal resolution (@def:minimal-resolution-of-surface-singularity) of its base points (@def:complete-linear-system) is a Halphen surface of index $2$, and $V$ is the blowup of a singular point of an irreducible simple fibre of this pencil.
 
 Let $F$ be a reducible simple fibre of the pencil.
-The blowup of a singular point of $F$ is a non-terminal Coble surface of K3 type with $n = 1$, whose anti-bicanonical curve is the proper transform of $F$.
+The blowup of a singular point of $F$ is a non-terminal Coble surface of K3 type with $n = 1$, whose anti-bicanonical curve is the proper transform (@def:strict-transform) of $F$.
 The blowup of the singular points of this curve is a terminal Coble surface of K3 type whose number $n$ of boundary components is the number of components of $F$ [@DK25, Ex. 9.1.7].
 :::
 
@@ -111,7 +111,7 @@ Then
 
 - $Y$ is a Halphen surface of index (@def:index) 2;
 
-- $C$ is the proper transform of the fiber (@def:fiber-cofiber) $F$ containing $y_{0}=\pi_{E}(E)$;
+- $C$ is the proper transform (@def:strict-transform) of the fiber (@def:fiber-cofiber) $F$ containing $y_{0}=\pi_{E}(E)$;
 
 - the fiber $F$ is irreducible, and $y_{0}$ is its unique singular point.
 
@@ -151,7 +151,7 @@ Conversely, let $Y$ be a Halphen surface of index $2$, let $F$ be an irreducible
 Then $K_X^2 = K_Y^2 - 1 = -1$.
 Since $F\in\abs{-2K_Y}$ and its singular point is blown up, $\abs{-2K_X}$ is not empty and contains the proper transform $C$ of $F$, which is a smooth rational curve.
 Since $C$ is irreducible and $C^2 = 4K_X^2 = -4 < 0$, every $D\in\abs{-2K_X}$ satisfies $D\cdot C = C^2 < 0$, so $C$ is a component of $D$ and $D - C\sim 0$ is effective; thus $\abs{-2K_X} = \theset{C}$.
-The linear system $\abs{-K_X}$ is empty, because $\abs{-K_Y}$ consists of the unique multiple fibre $F_0$ of $Y$, and $F_0$ does not pass through $y_0$.
+The linear system $\abs{-K_X}$ is empty, because $\abs{-K_Y}$ consists of the unique multiple fibre (@def:multiple-fibre) $F_0$ of $Y$, and $F_0$ does not pass through $y_0$.
 :::
 
 ::: {.conjecture #conj:coble-halphen-moduli-correspondence title="Coble and Halphen moduli"}

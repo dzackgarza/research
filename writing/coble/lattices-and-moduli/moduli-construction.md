@@ -63,7 +63,7 @@ The vertical map is $F_{\Co}\to F_{\Co,2}$, finite of degree $[\Gamma_{\Co,2}:\G
 ::: {.proposition #prop:coble-moduli-git title="The GIT construction of the Coble moduli space"}
 
 1. The moduli space $\mcm_\Co$ of blowups of $\PP^2$ at the ten nodes of an irreducible plane sextic is a locally closed subvariety of the GIT quotient of the variety $(\PP^2)^{10}$ of $10$-tuples of points in $\PP^2$ by $\PGL_3$ [@DK13, §3].
-2. A general point of $(\PP^2)^{10}$ has trivial stabilizer in $\PGL_3$, so its $\PGL_3$-orbit has dimension $\dim\PGL_3 = 3^2-1 = 8$ and codimension
+2. A general point of $(\PP^2)^{10}$ has trivial stabilizer (@def:group-orbit) in $\PGL_3$, so its $\PGL_3$-orbit has dimension $\dim\PGL_3 = 3^2-1 = 8$ and codimension
 $$
 \dim (\PP^2)^{10} - \dim \PGL_3 = 2\cdot 10 - 8 = 12
 .
@@ -78,7 +78,7 @@ For (2), a general $10$-tuple contains four points $q_1, \ldots, q_4$, no three 
 Choose coordinates with $q_1 = [1:0:0]$, $q_2 = [0:1:0]$, $q_3 = [0:0:1]$ and $q_4 = [1:1:1]$.
 A matrix $g\in\GL_3$ that fixes the lines spanned by the first three standard basis (@def:based-module) vectors is diagonal.
 If $g$ also fixes the line spanned by $(1,1,1)$, its diagonal entries are equal, so $g$ is a scalar and its class in $\PGL_3$ is the identity.
-So the stabilizer is trivial, and the orbit map $\PGL_3\to(\PP^2)^{10}$ has image of dimension $\dim\PGL_3$.
+So the stabilizer is trivial, and the orbit (@def:group-orbit) map $\PGL_3\to(\PP^2)^{10}$ has image of dimension $\dim\PGL_3$.
 
 :::
 
@@ -88,7 +88,7 @@ So the stabilizer is trivial, and the orbit map $\PGL_3\to(\PP^2)^{10}$ has imag
 
 Let $Y = \PP^1\times\PP^1$ with the involution $\tau(x,y) = (-x,-y)$, and let $B\in\abs{-2K_Y}$ be a $\tau$-invariant divisor with at worst ADE singularities that does not pass through the four points with $x, y\in\theset{0,\infty}$ fixed by $\tau$.
 
-1. The double cover $\pi\colon X\to Y$ branched in $B$ is a K3 surface with a del Pezzo involution $\idp$ such that $Y = X/\idp$. The involution $\tau$ lifts to a basepoint-free involution $\ien$ of $X$ that commutes with $\idp$, and $Z = X/\ien$ is an Enriques surface (@def:enriques-surface) [@AEGS25, §2.1].
+1. The double cover $\pi\colon X\to Y$ branched in $B$ is a K3 surface with a del Pezzo involution $\idp$ such that $Y = X/\idp$. The involution $\tau$ lifts to a basepoint-free involution $\ien$ of $X$ that commutes (@def:commutative-diagram) with $\idp$, and $Z = X/\ien$ is an Enriques surface (@def:enriques-surface) [@AEGS25, §2.1].
 2. Certain mildly singular $\tau$-invariant equations $f(x,y)$ of bidegree $(4,4)$ that vanish at a torus-fixed point correspond to Coble surfaces (@def:coble-surface), which are $\ZZ/2$ quotients of nodal K3 surfaces [@AEGS25, §2.1; @Hor77].
 3. There is a unique $(-2)$-vector $\alpha\in\ten$ modulo $\Orth(\ten)$. The divisor $\Delta = \alpha^\perp\iscontainedin\bD(\ten)/\Orth(\ten)$ parametrizes quotients of nodal K3 surfaces by an involution that fixes a node. These are rational Coble surfaces with a $\tfrac14(1,1)$ singularity [@AEGS25, §2.3].
 
@@ -104,7 +104,7 @@ Let $\lkt = U^3 \oplus E_8^2$ be the canonical K3 lattice.
 Let $T$ be a lattice of signature (@def:signature) $(2,n)$ with $n\geq1$, and let $\Omega_T$ be the set of @def:period-component-character.
 It has two connected components.
 Fix one of them and call it $\bD(T)$.
-By @prop:period-spinor-character, the group (@def:group) $\Orth^+(T)$ of @def:lattice-spinor-kernels is the stabilizer of $\bD(T)$ in $\Orth(T)$.
+By @prop:period-spinor-character, the group (@def:group) $\Orth^+(T)$ of @def:lattice-spinor-kernels is the stabilizer (@def:group-orbit) of $\bD(T)$ in $\Orth(T)$.
 For a subgroup $\Gamma\iscontainedin\Orth(T)$, write
 $$
 \bD(T)/\Gamma\definedas\bD(T)/\qty{\Gamma\intersect\Orth^+(T)},
@@ -130,7 +130,7 @@ Let $g\in\Gamma$ exchange the two components.
 Every $\Gamma$-orbit in $\Omega_T$ meets $\bD(T)$: a point of the other component is mapped into $\bD(T)$ by $g$.
 Let $x,y\in\bD(T)$ and $\gamma\in\Gamma$ with $\gamma x=y$.
 The isometry $\gamma$ is a homeomorphism of $\Omega_T$, so it maps the component $\bD(T)$ of $x$ onto the component of $y$, which is $\bD(T)$.
-Hence $\gamma\in\Gamma\intersect\Orth^+(T)$, and the map of orbit sets is injective.
+Hence $\gamma\in\Gamma\intersect\Orth^+(T)$, and the map of orbit (@def:group-orbit) sets is injective (@def:injective-map).
 The last statement is the case $\Gamma=\Orth(T)$: the component character $\Orth(T)\to\theset{\pm1}$ of @def:period-component-character is surjective, and its kernel (@def:kernel-cokernel) is $\Orth^+(T)$.
 :::
 
@@ -195,7 +195,7 @@ The group (@def:group) $\Orth(\ten)$ is the group $\Gamma^K_\En$ of the opening 
 1. The period point of the K3 cover of an Enriques surface does not lie in $\mch_{-2}$.
    The quotient $\bD(\ten)/\Orth(\ten)$ is a normal quasi-projective variety of dimension $10$, and $\qty{\bD(\ten)\sm\mch_{-2}}/\Orth(\ten)$ is the moduli space $\mcm_\En$ of Enriques surfaces [@DK13, §3].
 2. There are two $\Orth(\ten)$-orbits of $(-4)$-vectors in $\ten$ [@AEGS25, §2.3].
-   One orbit consists of the vectors $\delta$ with $\delta^{\perp\ten}\cong T_\Nod = U\oplus\generators{4}\oplus E_8(2)$; let $\mch^{\mathrm{nod}}_{-4}\iscontainedin\mch_{-4}$ be the union of their hyperplanes.
+   One orbit (@def:group-orbit) consists of the vectors $\delta$ with $\delta^{\perp\ten}\cong T_\Nod = U\oplus\generators{4}\oplus E_8(2)$; let $\mch^{\mathrm{nod}}_{-4}\iscontainedin\mch_{-4}$ be the union of their hyperplanes.
    The divisor $\mcm^{\mathrm{nod}}_\En \definedas \qty{\mch^{\mathrm{nod}}_{-4}\sm\mch_{-2}}/\Orth(\ten)$ parametrizes nodal (@def:nodal-enriques-surface) Enriques surfaces [@AEGS25, §2.3].
    The quotient $\bD(T_\Nod)/\Orth(T_\Nod)$ is a quasi-projective variety of dimension $9$, and $\mcm^{\mathrm{nod}}_\En$ is birationally isomorphic to it [@DK13, §3, Prop. 3.1].
    The other orbit gives the divisor of unigonal Enriques surfaces (@prop:coble-and-unigonal-heegner-divisors).
@@ -212,7 +212,7 @@ The quotient by $\Orth(\ten)$ of the union $\mch_{-2}$ of the hyperplanes of the
 
 ::: {.proposition #prop:coble-period-domain title="The period domain of Coble surfaces"}
 
-Let $C\iscontainedin\PP^2$ be an irreducible plane sextic with ten nodes $p_1, \ldots, p_{10}$, let $S$ be the blowup of $\PP^2$ at $p_1, \ldots, p_{10}$, and let $X$ be the double cover of $S$ branched along the proper transform of $C$.
+Let $C\iscontainedin\PP^2$ be an irreducible plane sextic with ten nodes $p_1, \ldots, p_{10}$, let $S$ be the blowup of $\PP^2$ at $p_1, \ldots, p_{10}$, and let $X$ be the double cover of $S$ branched along the proper transform (@def:strict-transform) of $C$.
 Let $E_0$ be the pullback to $X$ of a line in $\PP^2$, and let $E_1, \ldots, E_{10}$ be the inverse images in $X$ of the exceptional curves over $p_1, \ldots, p_{10}$.
 
 1. $X$ is a K3 surface, and the classes $e_0, e_1, \ldots, e_{10}$ of $E_0, E_1, \ldots, E_{10}$ span a sublattice of $\Pic(X)$ isometric to
@@ -267,7 +267,7 @@ $$
 \mcm_T \definedas \PP\mcv_T \modmod \SL_3
 $$
 for the moduli space of such curves, the quotient being taken in the sense of geometric invariant theory [@YZZ25 §2.1].
-Let $\wh X$ be the double cover of $\PP^2$ branched along $Z$, let $X$ be its minimal resolution --- a K3 surface --- and let $H\in\Pic(X)$ be the pullback of the line class, so $H^2 = 2$.
+Let $\wh X$ be the double cover of $\PP^2$ branched along $Z$, let $X$ be its minimal resolution (@def:minimal-resolution-of-surface-singularity) --- a K3 surface --- and let $H\in\Pic(X)$ be the pullback of the line class, so $H^2 = 2$.
 The exceptional curves of $X\to\wh X$ span a copy $L\iscontainedin\Pic(X)$ of the root lattice $R$, with the exceptional classes as a base (@def:root-system-base) $\Delta$.
 Write $P$ for the primitive (@def:primitive-embedding) hull of $\generators H\oplus L$ in $H^2(X;\ZZ)$ and $Q \definedas P^{\perp H^2(X;\ZZ)}$, of signatures (@def:signature) $(1,\rank R)$ and $(2, 19 - \rank R)$ [@YZZ25 §2.3].
 For a general member of $\mcv_T$ one has $\Pic(X) = P$ [@YZZ25 §3.3].
@@ -295,12 +295,12 @@ Taking orthogonal complements in $\lkt$ gives $Q = T_\Co$, and the polarized-K3 
 
 ::: {.proposition #prop:sextic-cover-involution-on-root-lattice title="The covering involution on the root lattice"}
 
-In the setting of @not:sextic-singular-type, let $\iota$ be the covering involution of $X$, let $p\colon X\to S = X/\iota$ be the quotient map, and let $f\colon S\to\PP^2$ be the minimal blowup such that the strict transform of $Z$ is smooth.
+In the setting of @not:sextic-singular-type, let $\iota$ be the covering involution of $X$, let $p\colon X\to S = X/\iota$ be the quotient map, and let $f\colon S\to\PP^2$ be the minimal blowup such that the strict transform (@def:strict-transform) of $Z$ is smooth.
 Then $H^2(S,\ZZ)\cong\generators{f^*h}\oplus\Lambda_S$, where $h$ is the class of a line and $\Lambda_S$ is the lattice that arises from the blowup $f$ [@YZZ25, §5.2].
 Let $L^\iota$ be the sublattice of $L$ fixed by $\iota$.
 
 1. $\iota = -w_0(L)$ as automorphisms of $L$, where $w_0(L)$ is the longest element of $W(L)$ with respect to $\Delta$ [@YZZ25, §5.2].
-2. The map $p^*\colon H^2(S,\ZZ)(2)\to H^2(X,\ZZ)$ is an injective morphism of lattices that maps $f^*h$ to $H$, and it induces a finite-index extension $\Lambda_S(2)\injects L^\iota$ [@YZZ25, §5.3].
+2. The map $p^*\colon H^2(S,\ZZ)(2)\to H^2(X,\ZZ)$ is an injective (@def:injective-map) morphism of lattices that maps $f^*h$ to $H$, and it induces a finite-index extension $\Lambda_S(2)\injects L^\iota$ [@YZZ25, §5.3].
 3. $L^\iota/\Lambda_S(2)\cong(\ZZ/2)^m$, where $m$ is the number of exceptional curves of $S$ that lie in the branch locus of $p$ [@YZZ25, §5.3].
 4. If $Z$ has only singularities of types $A_1$, $D_{2n}$ with $n\geq 2$, $E_7$ and $E_8$, then $L^\iota = L$. If $Z$ has only singularities of type $A_1$, then $\Lambda_S(2)\cong L$ as lattices [@YZZ25, §5.3].
 
@@ -329,7 +329,7 @@ This is [@YZZ25, Prop. 3.2, Thms. 3.3, 3.4 and 4.11, Prop. 6.6].
 
 ::: {.theorem #thm:git-equals-looijenga title="The GIT compactification is a Looijenga compactification"}
 
-Let $\Lambda_1 \definedas H^{\perp\lkt}$, of signature (@def:signature) $(2,19)$ with $A_{\Lambda_1}\cong\ZZ/2$, and let $\Gamma_1$ be the arithmetic group (@def:group) of the degree-$2$ K3 moduli space $\Gamma_1\backslash D(\Lambda_1)$.
+Let $\Lambda_1 \definedas H^{\perp\lkt}$, of signature (@def:signature) $(2,19)$ with $A_{\Lambda_1}\cong\ZZ/2$, and let $\Gamma_1$ be the arithmetic group (@def:arithmetic-group) (@def:group) of the degree-$2$ K3 moduli space $\Gamma_1\backslash D(\Lambda_1)$.
 The roots of $\Lambda_1$ fall into two $\Gamma_1$-orbits, of divisibility (@def:lattice-divisibility) $1$ and $2$, cutting out arrangements $\mch_\Delta$ and $\mch_\infty$; the roots of $L$ all have divisibility $1$, so they contribute to $\mch_\Delta$ only [@YZZ25 §4.1, §4.2].
 Set
 $$
@@ -368,7 +368,7 @@ $$
 
 Let $\Lambda_1 = H^{\perp\lkt}$ with $A_{\Lambda_1}\cong\ZZ/2$ (@thm:git-equals-looijenga), let $P\definedas\generators{r_1,\dots,r_{10}}\cong A_1^{\oplus 10}$ be the span of the ten classes $r_i$ with $r_i^2 = -2$, and let $Q\definedas P^{\perp\Lambda_1}$ be the lattice $T_\Co$ of @thm:occult-period-map-sextics [@YZZ25, §3.1]. Then $\abs{A_P} = 2^{10}$, $\abs{A_Q} = 2^{11}$ and
 $$[\Lambda_1 : P\oplus Q]^2 = \frac{\abs{A_P}\abs{A_Q}}{\abs{A_{\Lambda_1}}} = 2^{20},$$
-so the gluing subgroup $H_0 = \Lambda_1/(P\oplus Q)\leq A_P\oplus A_Q$ has order $2^{10} = \abs{A_P}$ and, its projection to $A_P$ being injective [@Nik80, Prop. 1.5.1], it projects isomorphically onto $A_P$.
+so the gluing subgroup $H_0 = \Lambda_1/(P\oplus Q)\leq A_P\oplus A_Q$ has order $2^{10} = \abs{A_P}$ and, its projection to $A_P$ being injective (@def:injective-map) [@Nik80, Prop. 1.5.1], it projects isomorphically onto $A_P$.
 If some $g\in\Gamma_W$ acts nontrivially on $A_P$ --- in particular if its signed permutation of the ten classes is not a diagonal change of signs, so that it carries $r_i$ to $\pm r_j$ with $i\neq j$ --- then $\Gamma_{10A_1}\not\subseteq\discriminantkernel{T_\Co}$, and the inclusion $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_{10A_1}$ is strict.
 :::
 
@@ -415,8 +415,8 @@ Let $\abs{\OO_{\PP^2}(6)}$ be the linear system of plane sextics and put
 $$
 V\definedas\theset{(Z;p_1,\dots,p_{10})\in\abs{\OO_{\PP^2}(6)}\times(\PP^2)^{10}\ \st\ p_1,\dots,p_{10}\ \text{are distinct},\ Z\ \text{is irreducible},\ \operatorname{Sing}Z=\{p_1,\dots,p_{10}\}\ \text{and each } p_i\ \text{is an ordinary double point}} .
 $$
-This is a locally closed analytic subset of a product of projective spaces: irreducibility is open, and so is the conjunction "the $p_i$ are distinct ordinary double points and there is no other singular point", the last because ordinary double points persist under small deformation of $Z$ (the equations $Z=\partial_xZ=\partial_yZ=0$ have invertible Jacobian, the Hessian, at an ordinary double point).
-The effective group (@def:group) is $\PGL_3=\SL_3/\mu_3$: the scalars $\mu_3$ are the kernel (@def:kernel-cokernel) of $\SL_3\to\PGL_3$ and act trivially on both factors, so $\SL_3$ acts through $\PGL_3$ and $V/\SL_3=V/\PGL_3$; freeness is a statement about $\PGL_3$. The action of $\PGL_3$ on $V$ is free, and the $\SL_3$-stabilizer of every point of $V$ is $\mu_3$: the fixed points of a non-identity projectivity lie in the union of a line and a point, a line carries at most three nodes of $Z$, and no non-identity projectivity fixes all ten nodes (@lem:d2-plane-sextic-freeness(1)--(2)). $S_{10}$ acts on the second factor and commutes with $\PGL_3$.
+This is a locally closed analytic subset of a product of projective spaces (@def:projective-morphism-of-schemes): irreducibility is open, and so is the conjunction "the $p_i$ are distinct ordinary double points (@def:ordinary-double-point) and there is no other singular point", the last because ordinary double points persist under small deformation of $Z$ (the equations $Z=\partial_xZ=\partial_yZ=0$ have invertible Jacobian, the Hessian, at an ordinary double point).
+The effective group (@def:group) is $\PGL_3=\SL_3/\mu_3$: the scalars $\mu_3$ are the kernel (@def:kernel-cokernel) of $\SL_3\to\PGL_3$ and act trivially on both factors, so $\SL_3$ acts through $\PGL_3$ and $V/\SL_3=V/\PGL_3$; freeness is a statement about $\PGL_3$. The action of $\PGL_3$ on $V$ is free, and the $\SL_3$-stabilizer of every point of $V$ is $\mu_3$: the fixed points of a non-identity projectivity lie in the union of a line and a point, a line carries at most three nodes of $Z$, and no non-identity projectivity fixes all ten nodes (@lem:d2-plane-sextic-freeness(1)--(2)). $S_{10}$ acts on the second factor and commutes (@def:commutative-diagram) with $\PGL_3$.
 Write
 $$B\definedas V/\PGL_3,\qquad \bar B\definedas[V/(\SL_3\times S_{10})]=[B/S_{10}]$$
 so that $B$ is a complex analytic space and $V\to B$ is a principal $\PGL_3$-bundle (@lem:d2-plane-sextic-freeness(3)), while $\bar B$ is the quotient stack of $B$ by the finite group $S_{10}$, whose coarse space is $V/(\SL_3\times S_{10})$; $B\to\bar B$ is the quotient by $S_{10}$ (@lem:d2-labelling-cover).
@@ -440,7 +440,7 @@ Let $V$ and $B=V/\PGL_3$ be as in @not:d2-plane-sextic-base.
 
 (2) If four nodes lay on a line $L$, then $Z\cdot L\ge4\cdot2=8>6=\deg Z$, so $L$ is a component of $Z$ by Bézout, against the irreducibility of $Z$; hence a line carries at most three nodes. By (1) a non-identity projectivity fixes at most three nodes on $L$ and at most one at $P$, so at most four of the ten and never all ten; hence the $\PGL_3$-stabilizer of a point of $V$ is trivial. The kernel of $\SL_3\to\PGL_3$ is $\mu_3$ and acts trivially, so the $\SL_3$-stabilizer is $\mu_3$.
 
-(3) Three non-collinear nodes exist, since at most three lie on a line. For three non-collinear nodes $A,B,C$ the lines $AB$, $AC$, $BC$ carry at most three nodes each and contain $A,B,C$ twice each, so at most $3+3+3-3=6$ nodes lie on them and a fourth node $D$ lies outside; then $A,B,C,D$ have no three collinear. For a four-element subset $I$ of the labels let $V_I\subset V$ be the open set of configurations whose $I$-indexed nodes have no three collinear, fix a projective frame $q_1,\dots,q_4$, and let $S_I\subset V_I$ be the closed subset of configurations whose $I$-indexed nodes are $q_1,\dots,q_4$. The map $\PGL_3\times S_I\to V_I$, $(g,s)\mapsto g\cdot s$, is a bijection: a configuration $v\in V_I$ has a unique projectivity $g_v$ carrying its $I$-indexed nodes to $q_1,\dots,q_4$, because a projectivity is determined by the images of four points with no three collinear, and $v=g_v^{-1}(g_vv)$ with $g_vv\in S_I$. It is a homeomorphism because $v\mapsto g_v$ is given by solving a linear system whose determinant is nonzero on $V_I$. The composites $S_I\to V_I\to B$ are therefore charts; they cover $B$ by the first paragraph, and their transition maps are restrictions of the $\PGL_3$-action, hence analytic. So $B$ is a complex analytic space and $V\to B$ is a principal $\PGL_3$-bundle.
+(3) Three non-collinear nodes exist, since at most three lie on a line. For three non-collinear nodes $A,B,C$ the lines $AB$, $AC$, $BC$ carry at most three nodes each and contain $A,B,C$ twice each, so at most $3+3+3-3=6$ nodes lie on them and a fourth node $D$ lies outside; then $A,B,C,D$ have no three collinear. For a four-element subset $I$ of the labels let $V_I\subset V$ be the open set of configurations whose $I$-indexed nodes have no three collinear, fix a projective frame $q_1,\dots,q_4$, and let $S_I\subset V_I$ be the closed subset (@def:closed-subset) of configurations whose $I$-indexed nodes are $q_1,\dots,q_4$. The map $\PGL_3\times S_I\to V_I$, $(g,s)\mapsto g\cdot s$, is a bijection: a configuration $v\in V_I$ has a unique projectivity $g_v$ carrying its $I$-indexed nodes to $q_1,\dots,q_4$, because a projectivity is determined by the images of four points with no three collinear, and $v=g_v^{-1}(g_vv)$ with $g_vv\in S_I$. It is a homeomorphism because $v\mapsto g_v$ is given by solving a linear system whose determinant is nonzero on $V_I$. The composites $S_I\to V_I\to B$ are therefore charts; they cover $B$ by the first paragraph, and their transition maps are restrictions of the $\PGL_3$-action, hence analytic. So $B$ is a complex analytic space and $V\to B$ is a principal $\PGL_3$-bundle.
 
 (4) The family and $\bT$ are $\PGL_3$-equivariant (@lem:d2-unpolarised-family(3)), so they descend to the base $B$ of the principal bundle $V\to B$. A loop of $B$ lifts to a path of $V$ by local triviality and compactness of $[0,1]$; the lift ends at $gs$ for some $g\in\PGL_3$, and since $\PGL_3$ is connected a path from $e$ to $g$ turns it into a loop of $V$ over the given loop. Hence $\pi_1(V,s)\to\pi_1(B,[s])$ is surjective. The monodromy group (@def:k3-moduli-functors) of the descended system on $B$ is $\rho\qty{\pi_1(B,[s])}$, and its pullback to $V$ is $\bT$, so it equals $\rho\qty{\pi_1(V,s)}$, which is $\Gamma_\Co$ (@lem:d2a-monodromy-of-the-stack).
 :::
@@ -455,13 +455,13 @@ In the notation of @not:d2-plane-sextic-base, let $U\subset(\PP^2)^{10}$ be the 
 
 ::: {.proof}
 
-(1) *Finiteness.* For $p=(p_1,\dots,p_{10})\in U$ the fibre $\pi^{-1}(p)$ is the set of sextics $Z$ with $\operatorname{Sing}Z$ equal to $\{p_1,\dots,p_{10}\}$ as a set and each $p_i$ an ordinary double point. A sextic has $h^0(\OO_{\PP^2}(6))=28$; the condition that $Z$ pass through $p_i$ with multiplicity at least $2$ is three linear conditions (the value and the two first derivatives at $p_i$), so the sextics with all ten $p_i$ as singular points form a projective linear subspace of dimension at least $28-1-30=-3$, that is the empty set or a single point, and in either case $\pi^{-1}(p)$ is finite. A quasi-finite morphism of varieties of finite type over $\CC$ is finite, so $\pi$ is finite.
+(1) *Finiteness.* For $p=(p_1,\dots,p_{10})\in U$ the fibre $\pi^{-1}(p)$ is the set of sextics $Z$ with $\operatorname{Sing}Z$ equal to $\{p_1,\dots,p_{10}\}$ as a set and each $p_i$ an ordinary double point (@def:ordinary-double-point). A sextic has $h^0(\OO_{\PP^2}(6))=28$; the condition that $Z$ pass through $p_i$ with multiplicity at least $2$ is three linear conditions (the value and the two first derivatives at $p_i$), so the sextics with all ten $p_i$ as singular points form a projective linear subspace of dimension at least $28-1-30=-3$, that is the empty set or a single point, and in either case $\pi^{-1}(p)$ is finite. A quasi-finite morphism of varieties of finite type over $\CC$ is finite, so $\pi$ is finite.
 
-*Birationality.* Over the generic point $\pi$ is injective by the same count, and the set of $p\in U$ over which there is a sextic at all is dense, so $\pi$ is birational onto its image, which is $U$ by definition.
+*Birationality.* Over the generic point $\pi$ is injective (@def:injective-map) by the same count, and the set of $p\in U$ over which there is a sextic at all is dense, so $\pi$ is birational onto its image, which is $U$ by definition.
 
 (2) *Irreducibility of $U$.* The sextics with exactly ten ordinary double points are the image of the irreducible variety of degree-$6$ morphisms $\PP^1\to\PP^2$ whose image has exactly ten nodes: a rational sextic has arithmetic genus $10$, and ten ordinary double points account for the whole of it, so such a morphism is birational onto a ten-nodal sextic; conversely the normalization of a ten-nodal sextic is $\PP^1$ (@lem:d2-plane-sextic-freeness(2)). That image is irreducible, being the image of an irreducible variety, and it is $U$ up to the ordering of the labels, which is a union of finitely many copies of it; so $U$ is irreducible.
 
-*Irreducibility of $V$.* The morphism $\pi$ is finite and birational with $U$ irreducible. Were $V=V_1\cup V_2$ a union of two proper closed subsets, then $U=\pi(V_1)\cup\pi(V_2)$, so $U=\pi(V_1)$ by irreducibility; but $\pi$ is birational, so $\pi^{-1}$ of a dense open subset of $U$ is a dense open subset of $V$ contained in $V_1$, forcing $V_1=V$. So $V$ is irreducible, hence connected.
+*Irreducibility of $V$.* The morphism $\pi$ is finite and birational with $U$ irreducible. Were $V=V_1\cup V_2$ a union of two proper closed subsets (@def:closed-subset), then $U=\pi(V_1)\cup\pi(V_2)$, so $U=\pi(V_1)$ by irreducibility; but $\pi$ is birational, so $\pi^{-1}$ of a dense open subset of $U$ is a dense open subset of $V$ contained in $V_1$, forcing $V_1=V$. So $V$ is irreducible, hence connected.
 
 *$B$ and $\bar B$.* $B=V/\PGL_3$ is a quotient of a connected space, hence connected, and $\bar B=[B/S_{10}]$ has $B$ as a smooth cover, so it is connected.
 :::
@@ -472,7 +472,7 @@ The action of $S_{10}$ on $B=V/\PGL_3$ is not free. The sextic
 $$
 G=4x^6-12x^5y-12x^5z-3x^4y^2+30x^4yz+13x^4z^2+26x^3y^3-12x^3y^2z-26x^3yz^2-6x^3z^3-3x^2y^4-12x^2y^3z+39x^2y^2z^2+9x^2yz^3+x^2z^4-12xy^5+30xy^4z-26xy^3z^2+9xy^2z^3-xyz^4+4y^6-12y^5z+13y^4z^2-6y^3z^3+y^2z^4
 $$
-is irreducible and has exactly the ten ordinary double points
+is irreducible and has exactly the ten ordinary double points (@def:ordinary-double-point)
 $$
 [0:0:1],\ [1:0:1],\ [0:1:1],\ [-1:-1:1],\ [1:0:2],\ [0:1:2],\ [-1:-1:2],\ [1:2:0],\ [-2:-1:0],\ [1:-1:0],
 $$
@@ -509,9 +509,9 @@ The labelling of the ten exceptional curves is not part of the objects: the labe
 
 The family over $B$ is the descent of @lem:d2-unpolarised-family(2) along the principal bundle $V\to B$ (@lem:d2-plane-sextic-freeness(4)), and its local system is @lem:d2-local-system.
 
-**The fibres** are the surfaces $S_b=\Bl_{p_1,\dots,p_{10}}\PP^2$ for $b=(Z;p_1,\dots,p_{10})$, with $C_b$ the proper transform of $Z$; then $[C_b]=-2K_{S_b}$, $C_b^2=-4$, and the double cover of $S_b$ branched along $C_b$ is a K3 surface $X_b$ with covering involution $\iota_b$ (@lem:d2-unpolarised-family(1)).
+**The fibres** are the surfaces $S_b=\Bl_{p_1,\dots,p_{10}}\PP^2$ for $b=(Z;p_1,\dots,p_{10})$, with $C_b$ the proper transform (@def:strict-transform) of $Z$; then $[C_b]=-2K_{S_b}$, $C_b^2=-4$, and the double cover of $S_b$ branched along $C_b$ is a K3 surface $X_b$ with covering involution $\iota_b$ (@lem:d2-unpolarised-family(1)).
 
-**The local system of lattices** is $\bT$ of @lem:d2-local-system: the orthogonal complement in $R^2f_*\underline{\ZZ}_{\mcx}$ modulo torsion of the span of the classes of the pullback of a line and of the ten exceptional curves. Its fibre is $T_\Co$, its rank is $11$, and its stalks have signature $(2,9)$.
+**The local system of lattices** is $\bT$ of @lem:d2-local-system: the orthogonal complement in $R^2f_*\underline{\ZZ}_{\mcx}$ modulo torsion of the span of the classes of the pullback of a line and of the ten exceptional curves. Its fibre is $T_\Co$, its rank is $11$, and its stalks (@def:stalk) have signature $(2,9)$.
 
 **The group.** $\Gamma_\Co\leq\Orth(T_\Co)$ is the monodromy group (@def:k3-moduli-functors) of $\bT$ (@lem:d2-local-system) on the labelled base $B$: the image of the monodromy representation (@def:transport-and-monodromy) of $\bT$ (@def:local-system-of-lattices) on $\pi_1(B,s)$. By @lem:d2-plane-sextic-freeness(4) it is also $\rho\qty{\pi_1(V,s)}$, and it is a subgroup of $\Orth(T_\Co)$ because $\bT$ is a local system of lattices with fibre $T_\Co$ and transport along a path is an isometry (@prop:local-system-of-lattices-monodromy). Put $\fco\definedas\bD(T_\Co)/\Gamma_\Co$.
 :::
@@ -520,14 +520,14 @@ The family over $B$ is the descent of @lem:d2-unpolarised-family(2) along the pr
 
 Let $b=(Z;p_1,\dots,p_{10})\in V$ and $S_b=\Bl_{p_1,\dots,p_{10}}\PP^2$, with $H$ the class of the pullback of a line and $E_1,\dots,E_{10}$ the classes of the exceptional curves.
 
-1. $S_b$ is a Coble surface, $[C_b]=-2K_{S_b}=6H-\sum_{i=1}^{10}2E_i$ for $C_b\subset S_b$ the proper transform of $Z$, $C_b^2=-4$, $\abs{-2K_{S_b}}=\{C_b\}$, that is $h^0(-2K_{S_b})=1$, and the double cover $\pi_b\colon X_b\to S_b$ branched along $C_b$ is a K3 surface with a covering involution $\iota_b$.
+1. $S_b$ is a Coble surface, $[C_b]=-2K_{S_b}=6H-\sum_{i=1}^{10}2E_i$ for $C_b\subset S_b$ the proper transform (@def:strict-transform) of $Z$, $C_b^2=-4$, $\abs{-2K_{S_b}}=\{C_b\}$, that is $h^0(-2K_{S_b})=1$, and the double cover $\pi_b\colon X_b\to S_b$ branched along $C_b$ is a K3 surface with a covering involution $\iota_b$.
 2. Over $V$ there are: the universal sextic $Z_V\subset\PP^2_V$, ten disjoint sections $\sigma_1,\dots,\sigma_{10}$ given by the $p_i$, the blowup $q\colon\mcs_V\definedas\Bl_{\sigma_1,\dots,\sigma_{10}}\PP^2_V\to V$, the exceptional divisors $\mcE_1,\dots,\mcE_{10}$, the pullback $\mcH$ of $\OO_{\PP^2}(1)$, and the proper transform $\mcC_V$ of $Z_V$. The morphism $\mcs_V\to V$ is smooth, projective and flat with fibre $S_b$, the divisor $\mcC_V$ is a Cartier divisor with $\mcC_V=-2K_{\mcs_V/V}$, and $\OO(\mcC_V)=\OO(2\mcD_V)$ for $\mcD_V\definedas3\mcH-\sum_i\mcE_i$. Hence the cyclic double cover $\mcx_V\to\mcs_V$ branched along $\mcC_V$ exists, is smooth and projective over $V$, and has fibre $X_b$; its covering involution $\iota_V$ restricts to $\iota_b$.
-3. The morphisms and divisors of 2. are $\SL_3$-equivariant for the action on $V$ of @not:d2-plane-sextic-base, and the $S_{10}$-action of that notation, which permutes $\sigma_1,\dots,\sigma_{10}$ and commutes with $\SL_3$, sends $\mcE_i$ to $\mcE_{\sigma^{-1}(i)}$ and $\mcH$ to $\mcH$; hence they define the same data over the space $B=V/\PGL_3$ (@lem:d2-plane-sextic-freeness(3)--(4)) and over the quotient stack $\bar B=[B/S_{10}]$, the labelled and unlabelled bases of @def:coble-family-unpolarized(2)--(3).
+3. The morphisms and divisors of 2. are $\SL_3$-equivariant for the action on $V$ of @not:d2-plane-sextic-base, and the $S_{10}$-action of that notation, which permutes $\sigma_1,\dots,\sigma_{10}$ and commutes (@def:commutative-diagram) with $\SL_3$, sends $\mcE_i$ to $\mcE_{\sigma^{-1}(i)}$ and $\mcH$ to $\mcH$; hence they define the same data over the space $B=V/\PGL_3$ (@lem:d2-plane-sextic-freeness(3)--(4)) and over the quotient stack $\bar B=[B/S_{10}]$, the labelled and unlabelled bases of @def:coble-family-unpolarized(2)--(3).
 :::
 
 ::: {.proof}
 
-(1) $S_b$ is nonsingular, projective and rational. The class $-K_{S_b}=3H-\sum_iE_i$ has no effective representative: if $D$ were an effective divisor of that class, then $D$ is not a component of $Z$ (a curve of degree $3$ is not a sextic), so $Z\cdot D$ is defined and is at least $\sum_i2\operatorname{mult}_{p_i}D\ge20$, while $Z\cdot D = 6\cdot3=18$ by Bézout; so $\abs{-K_{S_b}}=\emptyset$. And $\abs{-2K_{S_b}}\ni C_b\neq\emptyset$ because $[C_b]=6H-2\sum_iE_i=-2K_{S_b}$. So $S_b$ is a Coble surface in the sense of [@DZ99, Introduction]. $C_b$ is the proper transform of the irreducible curve $Z$, hence irreducible, and $C_b^2=36-4\cdot10=-4$. The double cover branched along $C_b$ is a K3 surface with a covering involution: it is smooth because $C_b$ is, and its canonical class is $\pi_b^*(K_{S_b}+\tfrac12C_b)=0$, so it is a K3 surface, as in [@DK13, §3]. And $\abs{-2K_{S_b}}=\{C_b\}$: a section of $\OO_{S_b}(6H-2\sum_iE_i)$ is a plane sextic $Z'$ with $\operatorname{mult}_{p_i}Z'\ge2$ at each $i$, and if $Z'\neq Z$ then $Z\cdot Z'=36$ by Bézout while the ten points contribute intersection multiplicity at least $4$ each, that is at least $40$, a contradiction; so $Z'=Z$, the class $-2K_{S_b}$ has the single effective divisor $C_b$, and $h^0(-2K_{S_b})=1$.
+(1) $S_b$ is nonsingular, projective and rational. The class $-K_{S_b}=3H-\sum_iE_i$ has no effective representative: if $D$ were an effective divisor of that class, then $D$ is not a component of $Z$ (a curve of degree (@def:graded-object) $3$ is not a sextic), so $Z\cdot D$ is defined and is at least $\sum_i2\operatorname{mult}_{p_i}D\ge20$, while $Z\cdot D = 6\cdot3=18$ by Bézout; so $\abs{-K_{S_b}}=\emptyset$. And $\abs{-2K_{S_b}}\ni C_b\neq\emptyset$ because $[C_b]=6H-2\sum_iE_i=-2K_{S_b}$. So $S_b$ is a Coble surface in the sense of [@DZ99, Introduction]. $C_b$ is the proper transform of the irreducible curve $Z$, hence irreducible, and $C_b^2=36-4\cdot10=-4$. The double cover branched along $C_b$ is a K3 surface with a covering involution: it is smooth because $C_b$ is, and its canonical class is $\pi_b^*(K_{S_b}+\tfrac12C_b)=0$, so it is a K3 surface, as in [@DK13, §3]. And $\abs{-2K_{S_b}}=\{C_b\}$: a section of $\OO_{S_b}(6H-2\sum_iE_i)$ is a plane sextic $Z'$ with $\operatorname{mult}_{p_i}Z'\ge2$ at each $i$, and if $Z'\neq Z$ then $Z\cdot Z'=36$ by Bézout while the ten points contribute intersection multiplicity at least $4$ each, that is at least $40$, a contradiction; so $Z'=Z$, the class $-2K_{S_b}$ has the single effective divisor $C_b$, and $h^0(-2K_{S_b})=1$.
 
 (2) The ten sections are disjoint because the $p_i$ are distinct, so their union is a closed submanifold of $\PP^2_V$ and its blowup $q$ exists and is smooth and projective over $V$; blowing up a smooth centre commuting with a smooth morphism preserves smoothness of the morphism, so $\mcs_V\to V$ is smooth, and its fibre at $b$ is $S_b$ by construction. On the fibre the proper transform of $Z_b$ has class $6H-2\sum_iE_i$, which is $-2K_{S_b}$ by (1), and $K_{\mcs_V/V}=-3\mcH+\sum_i\mcE_i$ by the blowup formula; so $\mcC_V=-2K_{\mcs_V/V}$. The line bundle $\OO(\mcD_V)$ satisfies $\OO(\mcD_V)^{\tensor2}=\OO(\mcC_V)$, so $\mcC_V$ is $2$-divisible in $\Pic(\mcs_V)$, and a $2$-divisible Cartier divisor on a smooth family is the branch divisor of a cyclic double cover [@EV92, §3, Chapter I]; the total space is smooth because $\mcC_V$ is, and it is projective over $V$ because $\OO(\mcD_V)$ is relatively ample after twisting by $q^*\OO(1)$.
 
@@ -538,12 +538,12 @@ Let $b=(Z;p_1,\dots,p_{10})\in V$ and $S_b=\Bl_{p_1,\dots,p_{10}}\PP^2$, with $H
 
 Let $p\colon B'\to B$ be a continuous map of arcwise connected, locally simply connected spaces, let $(\bL,\beta)$ be a local system of lattices (@def:local-system-of-lattices) on $B$, and let $s'\in B'$ with $p(s')=s$.
 Then the monodromy group (@def:k3-moduli-functors) of $p^{-1}\bL$ is $\rho\qty{p_*\pi_1(B',s')}$, the image in $\Aut(\bL_s,\beta_s)$ of the subgroup $p_*\pi_1(B',s')$ of $\pi_1(B,s)$.
-In particular it is contained in the monodromy group (@def:k3-moduli-functors) of $\bL$, and if $p$ is a covering of finite degree then it has finite index (@def:index) in it.
+In particular it is contained in the monodromy group (@def:k3-moduli-functors) of $\bL$, and if $p$ is a covering of finite degree (@def:graded-object) then it has finite index (@def:index) in it.
 :::
 
 ::: {.proof}
 
-The pullback $p^{-1}\bL$ has stalk $\bL_{p(s')}$ at $s'$, and transport along a path $\gamma$ in $B'$ is transport along $p\circ\gamma$ in $B$: both are computed on sections over the interval, and $p$ carries a trivializing open set of $\bL$ to an open set on which $p^{-1}\bL$ is trivial.
+The pullback $p^{-1}\bL$ has stalk (@def:stalk) $\bL_{p(s')}$ at $s'$, and transport along a path $\gamma$ in $B'$ is transport along $p\circ\gamma$ in $B$: both are computed on sections over the interval, and $p$ carries a trivializing open set of $\bL$ to an open set on which $p^{-1}\bL$ is trivial.
 So the monodromy representation of $p^{-1}\bL$ is $\rho\circ p_*$ (@def:transport-and-monodromy).
 The remaining statements are those of the image of a subgroup under a group morphism, and, for a covering of finite degree, of the finite index of $\pi_1(B',s')$ in $\pi_1(B,s)$.
 :::
@@ -619,14 +619,14 @@ is exact.
 
 1. $B$ is connected (@lem:d2-incidence-connected(2)), so any two of its points are joined by a path; take the endpoints $s$ and $\sigma s$. This is the whole content of the clause, and it is not a formality: a *constant* path joins $s$ to $\sigma s$ only when $\sigma s=s$, so surjectivity in 2. cannot be read off the constant loop.
 
-2. An orbifold loop of $\bar B$ at $[s]$ is a pair $(\sigma,\tilde\gamma)$ with $\tilde\gamma$ a path of $B$ from $s$ to $\sigma s$ --- this is the loop model of @lem:orbifold-monodromy-of-a-quotient, which is the groupoid model of $[B/S_{10}]$ --- and such a pair exists for every $\sigma$ by 1. The class of $(\sigma,\tilde\gamma)$ depends only on $\sigma$ and on the homotopy class of $\tilde\gamma$ rel endpoints, and composition is $(\sigma,\tilde\gamma)(\sigma',\tilde\delta)=(\sigma\sigma',\tilde\gamma*(\sigma\tilde\delta))$, so the induced map to $S_{10}$ is a homomorphism; it is onto by 1. A loop in the kernel has $\sigma=e$, so it is a pair $(e,\tilde\gamma)$ with $\tilde\gamma$ a loop of $B$ at $s$: the kernel is the image of $\pi_1(B,s)$. A loop of $B$ that becomes null-homotopic in $\bar B$ is null-homotopic in $B$, because $B\to\bar B$ is the quotient by the finite group $S_{10}$ and a null-homotopy of the image lifts at the loop. So $\pi_1(B,s)\to\pi_1(\bar B,[s])$ is injective with that image, and the sequence is exact.
+2. An orbifold loop of $\bar B$ at $[s]$ is a pair $(\sigma,\tilde\gamma)$ with $\tilde\gamma$ a path of $B$ from $s$ to $\sigma s$ --- this is the loop model of @lem:orbifold-monodromy-of-a-quotient, which is the groupoid model of $[B/S_{10}]$ --- and such a pair exists for every $\sigma$ by 1. The class of $(\sigma,\tilde\gamma)$ depends only on $\sigma$ and on the homotopy class of $\tilde\gamma$ rel endpoints, and composition is $(\sigma,\tilde\gamma)(\sigma',\tilde\delta)=(\sigma\sigma',\tilde\gamma*(\sigma\tilde\delta))$, so the induced map to $S_{10}$ is a homomorphism; it is onto by 1. A loop in the kernel has $\sigma=e$, so it is a pair $(e,\tilde\gamma)$ with $\tilde\gamma$ a loop of $B$ at $s$: the kernel is the image of $\pi_1(B,s)$. A loop of $B$ that becomes null-homotopic in $\bar B$ is null-homotopic in $B$, because $B\to\bar B$ is the quotient by the finite group $S_{10}$ and a null-homotopy of the image lifts at the loop. So $\pi_1(B,s)\to\pi_1(\bar B,[s])$ is injective (@def:injective-map) with that image, and the sequence is exact.
 :::
 
 ::: {.lemma #lem:d2-labelling-cover title="The labels are a principal $S_{10}$-bundle of stacks"}
 
 Let $B=V/\PGL_3$ and $\bar B=[B/S_{10}]=[V/(\SL_3\times S_{10})]$ be the labelled and unlabelled bases of @def:coble-family-unpolarized(2)--(3). Then the quotient map $p\colon B\to\bar B$ is a principal $S_{10}$-bundle in the category of stacks: the morphism
 $$S_{10}\times B\too B\times_{\bar B}B,\qquad (\sigma,b)\longmapsto (b,\sigma b)$$
-is an equivalence, and $p$ is finite étale of degree $10!=3\,628\,800$. In particular
+is an equivalence, and $p$ is finite étale of degree (@def:graded-object) $10!=3\,628\,800$. In particular
 Consequently the fundamental-group sequence of @lem:d2-label-lift(2) applies. The induced map of coarse spaces $V/\PGL_3\to V/(\SL_3\times S_{10})$ is not asserted to be a covering: the statement proved here is about the quotient stack, and no freeness of the $S_{10}$-action on $B$ is used.
 :::
 
@@ -659,7 +659,7 @@ Let $S=\Bl_{p_1,\dots,p_{10}}\PP^2$ be a classical Coble surface, $f\colon X\to 
 
 1. $f^*\colon\Pic(S)\to H^2(X)$ doubles the form, $f^*(x)\cdot f^*(y)=2\,x\cdot y$; its image is $S_\Co$; and $f^*(K_S^{\perp})$ is the orthogonal complement of $f^*H$ in $S_\Co$, of rank $10$, isometric to $U(2)\oplus E_8(2)$.
 2. Let $h_\Co\in K_S^{\perp}$ be a degree-$2$ numerical polarization of @def:coble-polarization-classes(2), $h_\Co=F_1+F_2$ with $F_i^2=0$ and $F_1\cdot F_2=1$. Then $\tilde h\definedas f^*h_\Co$ has $\tilde h^2=4$, $\tilde h=f^*F_1+f^*F_2$ with $(f^*F_i)^2=0$ and $f^*F_1\cdot f^*F_2=2$, and $f^*$ identifies the sublattice $\generators{F_1,F_2}\cong U$ with $\generators{f^*F_1,f^*F_2}\cong U(2)$.
-3. Consequently $\tilde h$ is the polarization vector $h=e+f$ of [@AEGS25, Def. 2.5], $e,f$ the basis (@def:based-module) of $U(2)$ with $e^2=f^2=0$ and $e\cdot f=2$: the degree-$2$ numerical polarization $h_\Co$ of the Coble surface and the degree-$2$ polarization vector that [@AEGS25, Def. 2.5] fixes are the same vector of $S_\Co$, namely $f^*(h_\Co)$.
+3. Consequently $\tilde h$ is the polarization vector (@def:polarization-vector) $h=e+f$ of [@AEGS25, Def. 2.5], $e,f$ the basis (@def:based-module) of $U(2)$ with $e^2=f^2=0$ and $e\cdot f=2$: the degree-$2$ numerical polarization $h_\Co$ of the Coble surface and the degree-$2$ polarization vector that [@AEGS25, Def. 2.5] fixes are the same vector of $S_\Co$, namely $f^*(h_\Co)$.
 4. No automorphism $g$ of $X$ with $g\circ\iota'=\iota'\circ g$ has $H^2(X)^g=f^*(K_S^{\perp})$: the invariant lattice $S_\En$ is not the invariant lattice of an effective involution of $X$ commuting with $\iota'$, so the two degree-$2$ structures are compared through $f^*$ and not through a second involution of the same K3.
 :::
 
@@ -668,15 +668,15 @@ Let $S=\Bl_{p_1,\dots,p_{10}}\PP^2$ be a classical Coble surface, $f\colon X\to 
 (1) For a divisor class $x$ on $S$, $f^*(x)\cdot f^*(y)=2\,x\cdot y$ by the projection formula and $\deg f=2$. The image is $S_\Co\cong M$ by [@DK13, §3], where the classes $e_0,\dots,e_{10}$ of $f^*H,f^*E_1,\dots,f^*E_{10}$ generate it. Since $H\cdot K_S^{\perp}=0$, the image $f^*(K_S^{\perp})$ is orthogonal to $f^*H=e_0$; it has rank $10$ and $S_\Co$ has rank $11$, so it equals $e_0^{\perp}\cap S_\Co$. Its isometry class is that of $K_S^{\perp}(2)\cong E_{10}(2)=U(2)\oplus E_8(2)$ (@prop:canonical-perp-is-e10).
 (2) is the computation of (1) applied to $F_1,F_2$: $F_i^2=0$ gives $(f^*F_i)^2=0$, and $F_1\cdot F_2=1$ gives $f^*F_1\cdot f^*F_2=2$; $h_\Co^2=(F_1+F_2)^2=2$ gives $\tilde h^2=4$.
 (3) In $U(2)$ with basis $e,f$ one has $e^2=f^2=0$, $e\cdot f=2$ and $(e+f)^2=4$, which is (2) under the isometry $\generators{f^*F_1,f^*F_2}\cong U(2)$; the vector $h=e+f\in U(2)=S_{\dP}\subset S_\En$ is the one [@AEGS25, Def. 2.5] fixes as the polarization in both of its period problems, and $S_\En=U(2)\oplus E_8(2)$ is the lattice of (1).
-(4) Put $M\definedas H^2(X)^{\iota'}=f^*H^2(S)$, of rank $11$. The class $[R]$ of the ramification curve $R\subset X$ of $f$ is $f^*(-K_S)$: indeed $f^*C_b=2R$ with $C_b=-2K_{S_b}$ (@lem:d2-unpolarised-family(1)), so $R=f^*(-K_S)$, $R^2=2(-K_S)^2=-2$, and $R\cdot f^*(K_S^{\perp})=2(-K_S)\cdot K_S^{\perp}=0$. Hence $f^*(K_S^{\perp})$ and $[R]$ are orthogonal sublattices of $M$ of ranks $10$ and $1$, and their ranks sum to $\mathrm{rk}M$, so they span $M$. An automorphism $g$ with $g\circ\iota'=\iota'\circ g$ preserves $M=H^2(X)^{\iota'}$, and $H^2(X)^g=f^*(K_S^{\perp})$ forces $g^*=-1$ on the orthogonal complement of $f^*(K_S^{\perp})$ in $M$, that is $g^*[R]=-[R]$. Since $H^2(X)$ is unimodular and $g$ is an involution, $g_*=(g^*)^{-1}=g^*$, so for the nef and big class $e_0=f^*H$ one has $(g^*e_0)\cdot R=e_0\cdot(g_*R)=e_0\cdot(-R)=-2\,H\cdot(-K_S)=-6<0$, while $R$ is an effective curve; so $g^*e_0$ is not nef, and $g^*$ cannot be induced by an automorphism, which carries the nef cone to itself.
+(4) Put $M\definedas H^2(X)^{\iota'}=f^*H^2(S)$, of rank $11$. The class $[R]$ of the ramification curve $R\subset X$ of $f$ is $f^*(-K_S)$: indeed $f^*C_b=2R$ with $C_b=-2K_{S_b}$ (@lem:d2-unpolarised-family(1)), so $R=f^*(-K_S)$, $R^2=2(-K_S)^2=-2$, and $R\cdot f^*(K_S^{\perp})=2(-K_S)\cdot K_S^{\perp}=0$. Hence $f^*(K_S^{\perp})$ and $[R]$ are orthogonal sublattices of $M$ of ranks $10$ and $1$, and their ranks sum to $\mathrm{rk}M$, so they span $M$. An automorphism $g$ with $g\circ\iota'=\iota'\circ g$ preserves $M=H^2(X)^{\iota'}$, and $H^2(X)^g=f^*(K_S^{\perp})$ forces $g^*=-1$ on the orthogonal complement of $f^*(K_S^{\perp})$ in $M$, that is $g^*[R]=-[R]$. Since $H^2(X)$ is unimodular and $g$ is an involution, $g_*=(g^*)^{-1}=g^*$, so for the nef and big class $e_0=f^*H$ one has $(g^*e_0)\cdot R=e_0\cdot(g_*R)=e_0\cdot(-R)=-2\,H\cdot(-K_S)=-6<0$, while $R$ is an effective curve; so $g^*e_0$ is not nef, and $g^*$ cannot be induced by an automorphism, which carries the nef cone (@def:nef-cone) to itself.
 :::
 
 ::: {.lemma #lem:d2b-polarization-is-a-class title="The degree-$2$ datum is a class: the decomposition is a case, not a definition"}
 
-1. Let $X$ be an Enriques surface and $h\in E\definedas K_X^{\perp}\isoto U\oplus E_8$ a nef class with $h^2=2$. Then $h=F_1+F_2$ with $F_1,F_2$ nef, $F_i^2=0$, $F_1\cdot F_2=1$, or $h=2F_1+R$ with $F_1^2=0$ and $R$ a $(-2)$-curve [@CD89, Cor. 4.5.1], quoted in [@DK13, §7], where $h$ is called *non-degenerate* in the first case and *degenerate* otherwise.
+1. Let $X$ be an Enriques surface and $h\in E\definedas K_X^{\perp}\isoto U\oplus E_8$ a nef class (@def:nef-cone) with $h^2=2$. Then $h=F_1+F_2$ with $F_1,F_2$ nef, $F_i^2=0$, $F_1\cdot F_2=1$, or $h=2F_1+R$ with $F_1^2=0$ and $R$ a $(-2)$-curve [@CD89, Cor. 4.5.1], quoted in [@DK13, §7], where $h$ is called *non-degenerate* in the first case and *degenerate* otherwise.
 2. In the degenerate case $F_1\cdot R=1$ and $h\cdot R=0$. In particular $h$ is not ample, and $X$ carries a $(-2)$-curve.
 3. The dichotomy is stated for Enriques surfaces, and for Coble surfaces the source treats only the unnodal case, where by (2) the degenerate alternative cannot occur [@DK13, §8]. A moduli problem of degree-$2$ polarized Coble surfaces therefore does not have the nondegenerate decomposition available as a definition, and the datum is the class: a nef $h_\Co\in K_S^{\perp}$ with $h_\Co^2=2$ (@def:coble-polarization-classes(2), and item 2 of @def:coble-family-degree-two).
-4. The degenerate locus of the base of @def:coble-family-unpolarized is not empty: at a point whose sextic has three collinear nodes, the proper transform of the line through them is a $(-2)$-curve with class $R=H-E_1-E_2-E_3\in K_S^{\perp}$ (@lem:d2-s10-not-free).
+4. The degenerate locus of the base of @def:coble-family-unpolarized is not empty: at a point whose sextic has three collinear nodes, the proper transform (@def:strict-transform) of the line through them is a $(-2)$-curve with class $R=H-E_1-E_2-E_3\in K_S^{\perp}$ (@lem:d2-s10-not-free).
 :::
 
 ::: {.proof}
@@ -697,7 +697,7 @@ hence $F_1\cdot R=1$ and $h\cdot R=0$. Since $R$ is an effective curve meeting $
 **The objects.** Over a complex space $Y$, an object is a tuple $\qty{\mcs\to Y,\ \mcx\to\mcs,\ \tilde h}$ in which
 
 1. $\mcs\to Y$ is an object of @def:coble-family-unpolarized, with its K3 double cover $\mcx\to\mcs$ and involution $\iota$;
-2. $\tilde h$ is a global section of the local system of lattices $f^*(K^\perp)$ of @lem:d2-degree-two-polarization(1) whose value at every $y\in Y$ is the pullback $\tilde h_y=f^*h_{\Co,y}$ of a nef class $h_{\Co,y}\in K_{S_y}^{\perp}$ with $h_{\Co,y}^2=2$: a degree-$2$ numerical polarization in the sense of @def:coble-polarization-classes(2), with the polarization a *class* and not a decomposition (@lem:d2-degree-two-polarization(2), @lem:d2b-polarization-is-a-class).
+2. $\tilde h$ is a global section of the local system of lattices $f^*(K^\perp)$ of @lem:d2-degree-two-polarization(1) whose value at every $y\in Y$ is the pullback $\tilde h_y=f^*h_{\Co,y}$ of a nef class (@def:nef-cone) $h_{\Co,y}\in K_{S_y}^{\perp}$ with $h_{\Co,y}^2=2$: a degree-$2$ numerical polarization in the sense of @def:coble-polarization-classes(2), with the polarization a *class* and not a decomposition (@lem:d2-degree-two-polarization(2), @lem:d2b-polarization-is-a-class).
 
 The section is part of the objects and is not a marking: it is the polarization. On the locus where $h_{\Co,y}$ is nondegenerate it splits as $F_1+F_2$ with $F_i$ nef and $F_i^2=0$, and then $\tilde h_y=f^*F_1+f^*F_2$ is the vector $h=e+f$ of [@AEGS25, Def. 2.5] (@lem:d2-degree-two-polarization(3), @lem:d2b-polarization-is-a-class(2)); on the degenerate locus it does not (@lem:d2b-polarization-is-a-class(3)), and that case is part of this moduli problem.
 
@@ -707,12 +707,12 @@ The section is part of the objects and is not a marking: it is the polarization.
 
 **The local system of lattices** is $\bT$ of @lem:d2-local-system, the orthogonal complement of $\bM$ in $R^2f_*\underline\ZZ_\mcx$ modulo torsion; the polarization is a section of $\bM$, so $\bT$ is the same system for the polarized and the unpolarized family, and its fibre is $T_\Co$.
 
-**The group.** $\Gamma_{\Co,2}\leq\Orth(T_\Co)$ is the image of the monodromy representation of $\bT$ (@def:gamma-co-groups(5)). It is a subgroup of $\Orth^+(T_\Co)$, unconditionally, because the family of this definition forgets to a family of Coble surfaces (@lem:d2b-forgets-to-d2a(1)--(2)); the further containment in the restricted stabilizer $R_{\gent}$ is @lem:d2-degree-two-base(3). Put $F_{\Co,2}\definedas\bD(T_\Co)/\Gamma_{\Co,2}$.
+**The group.** $\Gamma_{\Co,2}\leq\Orth(T_\Co)$ is the image of the monodromy representation of $\bT$ (@def:gamma-co-groups(5)). It is a subgroup of $\Orth^+(T_\Co)$, unconditionally, because the family of this definition forgets to a family of Coble surfaces (@lem:d2b-forgets-to-d2a(1)--(2)); the further containment in the restricted stabilizer (@def:group-orbit) $R_{\gent}$ is @lem:d2-degree-two-base(3). Put $F_{\Co,2}\definedas\bD(T_\Co)/\Gamma_{\Co,2}$.
 :::
 
 ::: {.lemma #lem:d2-degree-two-base title="The period image of the degree-$2$ family is all of $\Delta_2$, up to normalization"}
 
-Let $R_{\gent}$ be the restricted stabilizer of @def:gamma-co-groups and $\Gamma_{\tilde h}$ the group (@def:group) of pairs of type $\tilde h$ of @prop:coble-polarized-moduli, and $\Delta_2=\mch_{-2}/\gent\subset\fentwo=\bD(\ten)/\gent$.
+Let $R_{\gent}$ be the restricted stabilizer (@def:group-orbit) of @def:gamma-co-groups and $\Gamma_{\tilde h}$ the group (@def:group) of pairs of type $\tilde h$ of @prop:coble-polarized-moduli, and $\Delta_2=\mch_{-2}/\gent\subset\fentwo=\bD(\ten)/\gent$.
 
 1. $\Gamma_{\tilde h}=R_{\gent}$ [@prop:coble-degree-two-space(2)], so $\bD(T_\Co)/\Gamma_{\tilde h}=\bD(T_\Co)/R_{\gent}$ is the moduli space of pairs $(S,h_\Co)$ of @def:coble-family-degree-two and, by @thm:normalization with $\Gamma=\gent$, it is the normalization of $\Delta_2$: the map $\bD(T_\Co)/R_{\gent}\to\fentwo$ is finite, its image is $\Delta_2$, and it is birational.
 2. Hence $\Delta_2$ is the image of the period map of @def:coble-family-degree-two up to normalization, and no proper sublocus of $\Delta_2$ contains it: the period map of the family lands in $\bD(T_\Co)/\Gamma_{\Co,2}\to\bD(T_\Co)/R_{\gent}$, and the composite with $\bD(T_\Co)/R_{\gent}\to\Delta_2\hookrightarrow\fentwo$ is finite and surjective by (1). This is a statement about the image; the marked space is $\bD(T_\Co)/\Gamma_{\Co,2}$, which is not $\bD(T_\Co)/R_{\gent}$ (@lem:d2b-forgets-to-d2a(4)).

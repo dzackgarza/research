@@ -81,7 +81,7 @@ Enough projectives (@def:module-subcategories) is not used; the statement is for
 
 Let $F\colon\mcc\to\mca$ be left adjoint (@def:pairing-adjoints) to $U\colon\mca\to\mcc$.
 The composite $\bot=FU$, with counit $\eps\colon\bot\Rightarrow\id_{\mca}$ and comultiplication built from the unit, is a comonad on $\mca$ [@Wei94, Def. 8.6.1, Main Application 8.6.2].
-For an object $X$ of $\mca$ the associated augmented simplicial object has $\bot^{\,n+1}X$ in degree $n$, with faces and degeneracies from $\eps$ and the unit, and its chain complex (@def:chain-complexes) is a resolution of $X$ [@Wei94, §8.6].
+For an object $X$ of $\mca$ the associated augmented simplicial object has $\bot^{\,n+1}X$ in degree (@def:graded-object) $n$, with faces and degeneracies from $\eps$ and the unit, and its chain complex (@def:chain-complexes) is a resolution of $X$ [@Wei94, §8.6].
 For $\mca=A\text{-}\mathbf{Mod}$ and $F$ the free (@def:module-subcategories) module functor this is the bar resolution, and it computes the derived functors of an additive functor out of $\mca$.
 :::
 
@@ -111,7 +111,7 @@ $L^{0}_{U}(A,\epsilon)$ is the Witt group (@def:group) of nonsingular $\epsilon$
 ::: {.proof}
 
 This is [@Ran98, Ex. 20.11].
-In dimension $0$ a Poincaré complex of @def:poincare-complex is a chain complex (@def:chain-complexes) concentrated in degree $0$ together with a symmetric or quadratic structure (@def:property-structure-stuff) whose component $\phi_0\colon C^0\to C_0$ is a chain equivalence (@def:equivalence-of-objects), which is exactly a nonsingular form on $C_0$ in the sense of @def:polarization; cobordism of such complexes is Witt equivalence of @def:witt-class, and the intermediate $L$-group is the quotient by the forms admitting a lagrangian, which is @def:lagrangian.
+In dimension $0$ a Poincaré complex of @def:poincare-complex is a chain complex (@def:chain-complexes) concentrated in degree (@def:graded-object) $0$ together with a symmetric or quadratic structure (@def:property-structure-stuff) whose component $\phi_0\colon C^0\to C_0$ is a chain equivalence (@def:equivalence-of-objects), which is exactly a nonsingular form on $C_0$ in the sense of @def:polarization; cobordism of such complexes is Witt equivalence of @def:witt-class, and the intermediate $L$-group is the quotient by the forms admitting a lagrangian, which is @def:lagrangian.
 A hyperbolic form (@def:hyperbolic-form) admits a lagrangian, so its class in $L^0$ is zero, as is its Witt class by @prop:metabolic-witt-trivial.
 :::
 
@@ -134,7 +134,7 @@ Then $C_{+}(\mca)$ is a model category (@def:model-category) in which
 
 - the fibrations are the epimorphisms, and
 
-- the cofibrations are the injective maps $i$ for which $\coker i$ has a projective object of $\mca$ in each degree
+- the cofibrations are the injective maps (@def:injective-map) $i$ for which $\coker i$ has a projective object of $\mca$ in each degree (@def:graded-object)
 
 [@Qui67, Ch. I §1, Ex. B].
 The cofibrant replacement of an object of $\mca$ concentrated in degree $0$ is a projective resolution (@def:resolution) of that object.
@@ -144,7 +144,7 @@ The cofibrant replacement of an object of $\mca$ concentrated in degree $0$ is a
 
 The model structure (@def:property-structure-stuff) is [@Qui67, Ch. I §1, Ex. B]; the axioms are checked there for the three classes named.
 
-A cofibrant object is one for which $\varnothing\to C$ is a cofibration, that is, injective with a projective cokernel (@def:kernel-cokernel) in each degree; a complex concentrated in degree $0$ in $\mca$ is not cofibrant in general, because its cokernel is the object itself and need not be projective.
+A cofibrant object is one for which $\varnothing\to C$ is a cofibration, that is, injective (@def:injective-map) with a projective cokernel (@def:kernel-cokernel) in each degree; a complex concentrated in degree $0$ in $\mca$ is not cofibrant in general, because its cokernel is the object itself and need not be projective.
 A cofibrant replacement $P\to A$ is a degreewise map from such a $P$ to $A$ in degree $0$ and to $0$ elsewhere, a weak equivalence by hypothesis; being a degreewise epimorphism with projective terms it is a projective resolution of $A$, and exactness of the augmented complex is the vanishing of homology above degree $0$ required by the weak equivalence.
 :::
 
@@ -215,7 +215,7 @@ Free (@def:module-subcategories) generation by the sphere spectrum is [@Lur09, C
 ::: {.theorem #thm:derived-category-heart title="The derived $\infty$-category"}
 
 Let $\mca$ be an abelian category (@def:abelian-category) with enough projectives (@def:module-subcategories).
-Then $\mcd^{-}(\mca)$ is a stable $\infty$-category, the subcategories of complexes with vanishing homology (@def:homology) in negative and in positive degrees determine a $t$-structure on it, and its heart is equivalent to the nerve of $\mca$ [@Lur09, Prop. 13.10].
+Then $\mcd^{-}(\mca)$ is a stable $\infty$-category, the subcategories of complexes with vanishing homology (@def:homology) in negative and in positive degrees (@def:graded-object) determine a $t$-structure on it, and its heart is equivalent to the nerve of $\mca$ [@Lur09, Prop. 13.10].
 :::
 
 ::: {.proof}

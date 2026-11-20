@@ -675,8 +675,8 @@ This is [@MH73, III §1.1 and §1.7].
 Existence does not need $2$ to be a unit: if $v$ is isotropic (@def:orthogonal-complement) and $b(v,w)=\lambda\neq0$, then $P=\langle v,w\rangle$ has Gram matrix with determinant $-1$, a unit in every ring, so $P$ splits off by @thm:orthogonal-decomposition, and the line $\langle v\rangle$ is a lagrangian (@def:lagrangian) of $P$ because $b(v,\alpha v+\beta w)=\beta\lambda$ vanishes exactly on $\langle v\rangle$ — whatever $b(w,w)$ is.
 So the induction produces $S\perp A$ with $A$ anisotropic over any field.
 
-The proof uses (i) that $i(V)=i(S)$ when $A$ is anisotropic, which is Witt's extension theorem applied to a maximal totally isotropic subspace [@MH73, III §1.2], and (ii) the uniqueness of the anisotropic representative of a Witt class, which [@MH73, III Thm. 1.7] proves for every field, characteristic $2$ included.
-Clause (i) needs the hypothesis on $A$: $\langle1\rangle\perp\langle-1\rangle$ is hyperbolic (@def:definiteness) with index (@def:witt-index) $1$, while neither summand contains an isotropic vector.
+The proof uses (i) that $i(V)=i(S)$ when $A$ is anisotropic, which is Witt's extension theorem applied to a maximal totally isotropic subspace (@def:isotropic-subspace) [@MH73, III §1.2], and (ii) the uniqueness of the anisotropic representative of a Witt class, which [@MH73, III Thm. 1.7] proves for every field, characteristic $2$ included.
+Clause (i) needs the hypothesis on $A$: $\langle1\rangle\perp\langle-1\rangle$ is hyperbolic (@def:definiteness) with index (@def:witt-index) $1$, while neither summand contains an isotropic vector (@def:isotropic-subspace).
 :::
 
 ::: {.example #ex:witt-index-over-Q title="Witt index and signature"}

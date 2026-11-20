@@ -125,7 +125,7 @@ Adding an orientation (@def:free-module-orientation) gives $\operatorname{Gr}_k^
 &\cong\frac{\operatorname O(p,q)}{\operatorname{SO}(k)\times\operatorname O(p-k,q)}.
 \end{align*}
 
-In particular, the stabilizer of the standard maximal positive subspace $\mathbb R^p\oplus0$ is $\operatorname O(p)\times\operatorname O(q)$. For $p,q>0$, the oriented maximal positive Grassmannian has two components, each isomorphic to
+In particular, the stabilizer (@def:group-orbit) of the standard maximal positive subspace $\mathbb R^p\oplus0$ is $\operatorname O(p)\times\operatorname O(q)$. For $p,q>0$, the oriented maximal positive Grassmannian has two components, each isomorphic to
 
 \begin{align*}
 \frac{\operatorname{SO}^0(p,q)}{\operatorname{SO}(p)\times\operatorname{SO}(q)}.
@@ -342,7 +342,7 @@ The split real orthogonal group $\operatorname O(g,g)$ does not give type $II_g$
 :::
 
 :::{.definition #def:hsd-tube-type title="Tube domains" defines="tube domain; tube type"}
-A *tube domain* is $V+iC\subset V_{\mathbb C}$, where $V$ is a real vector space and $C\subset V$ is an open cone. A bounded symmetric domain is *of tube type* if it is biholomorphic to such a domain.
+A *tube domain* is $V+iC\subset V_{\mathbb C}$, where $V$ is a real vector space and $C\subset V$ is an open cone (@def:closed-cone). A bounded symmetric domain is *of tube type* if it is biholomorphic to such a domain.
 :::
 
 The irreducible tube types are $I_{n,n}$, $II_{2n}$, $III_n$, $IV_n$ for $n\ne2$, and $VI$ [@Viv14, Corollary 4.45]. The product $IV_2$ is also of tube type. In BDI this is the Hermitian case, where one signature index is two.
@@ -634,11 +634,11 @@ are removed [@Huy16, Ch. 7; @GHS13, Thm. 2.9].
 ## Arithmetic quotients and boundary components {#sec-hsd-arithmetic-boundary}
 
 :::{.definition #def:hsd-arithmetic-subgroup title="Arithmetic subgroups" defines="$G(\mathbb Z)$; arithmetic subgroup"}
-Let $G$ be a linear algebraic group (@def:group) over $\mathbb Q$ with a fixed faithful rational representation $G\hookrightarrow\operatorname{GL}_m$. Put $G(\mathbb Z)=G(\mathbb Q)\cap\operatorname{GL}_m(\mathbb Z)$. A subgroup $\Gamma\subset G(\mathbb Q)$ is *arithmetic* if it is commensurable with $G(\mathbb Z)$. This condition is independent of the chosen faithful rational representation [@BB66, 3.1].
+Let $G$ be a linear algebraic group (@def:group) over $\mathbb Q$ with a fixed faithful rational representation (@def:faithful-rational-representation) $G\hookrightarrow\operatorname{GL}_m$. Put $G(\mathbb Z)=G(\mathbb Q)\cap\operatorname{GL}_m(\mathbb Z)$. A subgroup $\Gamma\subset G(\mathbb Q)$ is *arithmetic* if it is commensurable with $G(\mathbb Z)$. This condition is independent of the chosen faithful rational representation [@BB66, 3.1].
 :::
 
 :::{.definition #def:hsd-parabolic-subgroup title="Parabolic subgroups" defines="parabolic subgroup; rational parabolic"}
-For a connected reductive algebraic group (@def:group) $G$ over $\mathbb Q$, a subgroup $P\subset G$ is *parabolic (@def:hsd-parabolic-subgroup)* if $G/P$ is projective. A rational parabolic is one defined over $\mathbb Q$. In $\operatorname{SL}_2$, the stabilizer of a line is parabolic; for the upper-triangular subgroup $B$, the map $gB\mapsto g\langle e_1\rangle$ identifies $\operatorname{SL}_2(\mathbb Q)/B(\mathbb Q)$ with $\mathbb P^1(\mathbb Q)$ [@DS05, §1.5].
+For a connected reductive algebraic group (@def:group) $G$ over $\mathbb Q$, a subgroup $P\subset G$ is *parabolic (@def:hsd-parabolic-subgroup)* if $G/P$ is projective. A rational parabolic is one defined over $\mathbb Q$. In $\operatorname{SL}_2$, the stabilizer (@def:group-orbit) of a line is parabolic; for the upper-triangular subgroup $B$, the map $gB\mapsto g\langle e_1\rangle$ identifies $\operatorname{SL}_2(\mathbb Q)/B(\mathbb Q)$ with $\mathbb P^1(\mathbb Q)$ [@DS05, §1.5].
 :::
 
 Let $\operatorname O(L)^+$ be the subgroup preserving $\Omega_L^+$. For an arithmetic subgroup $\Gamma\subset\operatorname O(L_{\mathbb Q})\cap\operatorname O^+(L_{\mathbb R})$, put
@@ -660,7 +660,7 @@ f(tz)=t^{-k}f(z),\qquad f(\gamma z)=\chi(\gamma)f(z)
 \quad(t\in\mathbb C^*,\ \gamma\in\Gamma).
 \]
 Write $M_k(\Gamma,\chi)$ for this vector space. The homogeneity condition is
-on the affine cone, not on its projectivization [@GHS13, Definition 6.4].
+on the affine cone (@def:closed-cone), not on its projectivization [@GHS13, Definition 6.4].
 :::
 
 For $n\geq3$, Koecher's principle supplies holomorphy at the rational

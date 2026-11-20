@@ -47,7 +47,7 @@ Let $L$, $M$, $N$ and $h\colon(H,0)\injects A_{M\perp N}$ be as in @def:gluing-d
 $\varphi_M\in\Orth(M)$ and $\varphi_N\in\Orth(N)$.
 Put $\psi\definedas\varphi_M\perp\varphi_N$ and $\bar\psi\definedas\rho_{M\perp N}(\psi)\in\Orth(A_{M\perp N})$.
 Then $\psi$ extends to an isometry of $L$ if and only if there exists
-$u\in\Aut_{\bZ\text{-}\mathbf{Mod}}(H)$ for which the following square commutes:
+$u\in\Aut_{\bZ\text{-}\mathbf{Mod}}(H)$ for which the following square commutes (@def:commutative-diagram):
 
 ```tikzcd
 H \arrow[r,"u"] \arrow[d,"h"'] & H \arrow[d,"h"] \\
@@ -78,7 +78,7 @@ In that case $\restrictionof{\psi_\QQ}{L}$ is the required isometry.
 
 With the notation of @thm:automorphism-lifting-criterion, fix $\varphi_N=\id_N$ and let
 $\Gamma\injects\Orth(M)$ be a subgroup morphism.
-Let $\Stab_{\Orth(A_M)}(h)\injects\Orth(A_M)$ be the stabilizer of the bilinear gluing subobject
+Let $\Stab_{\Orth(A_M)}(h)\injects\Orth(A_M)$ be the stabilizer (@def:group-orbit) of the bilinear gluing subobject
 $h\colon(H,0)\injects A_{M\perp N}$ under the action through the first summand of the common-value isometry of @prop:discriminant-orthogonal-sum.
 The stabilizer $\Stab_\Gamma(h)$ is the pullback in $\mathbf{Grp}$
 
@@ -139,7 +139,7 @@ $$
 [\Gamma:\Stab_\Gamma(h)]
 =[I_\Gamma:I_\Gamma\cap J_h]<\infty.
 $$
-The displayed coset sets are groups only when the corresponding stabilizers are normal.
+The displayed coset sets are groups only when the corresponding stabilizers (@def:group-orbit) are normal.
 :::
 
 ::: {.proof}

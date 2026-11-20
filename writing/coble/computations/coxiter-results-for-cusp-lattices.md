@@ -41,7 +41,7 @@ At rank $9$ the Sterk 1 diagram has $4$ spherical subdiagrams of type $A_1 \oplu
 ::: {.proposition #prop:aegs-coxeter-ray-counts title="Rays of the Coxeter fans and of the semifans"}
 
 For $k = 1,\dots,5$ let $G^k$ be the folded Coxeter--Vinberg diagram (@def:coxeter-vinberg-diagram) of the $0$-cusp $k$ of $\fentwo$, and let $\Gamma_k = \operatorname{Aut}(G^k)\ltimes W(G^k)$ be the group induced on $e^{\perp}/e$.
-The Type II rays of the Coxeter fan correspond to the maximal parabolic subdiagrams (@def:parabolic-subdiagram) of $G^k$, and the Type III cones to its elliptic subdiagrams (@def:elliptic-subdiagram) [@AEGS25, §5.1].
+The Type II rays of the Coxeter fan correspond to the maximal parabolic subdiagrams (@def:parabolic-subdiagram) of $G^k$, and the Type III cones (@def:closed-cone) to its elliptic subdiagrams (@def:elliptic-subdiagram) [@AEGS25, §5.1].
 The numbers of Type II and Type III rays modulo $\Gamma_k$ are $4+4$, $2+8$, $3+15$, $4+12$, $5+17$ for $k = 1,\dots,5$ [@AEGS25, Lem. 5.2].
 After removal of every subdiagram (@def:coxeter-subdiagram) with a connected component of irrelevant roots (@def:generalized-coxeter-semifan), the numbers of Type II and Type III divisors at the cusps of the semitoroidal compactification (@def:semitoroidal-compactification) are $2+0$, $2+7$, $2+7$, $4+7$, $3+0$ [@AEGS25, Lem. 5.8].
 :::

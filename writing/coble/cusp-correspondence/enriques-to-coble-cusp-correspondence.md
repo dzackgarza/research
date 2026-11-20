@@ -3,7 +3,7 @@
 
 ::: {.theorem #thm:cusp_correspondence}
 
-Let $\eta\colon T_\Co\injects\ten$ be the primitive embedding (@def:primitive-embedding), $v_1, v_2$ the isotropic vectors of @lem:divisibilityTcoOne and $\tilde J = \generators{\eta(v_1), \eta(v_2)}$. Then $\tilde J$ is an isotropic plane, $\eta(v_1)$ is isotropic with $\div_\ten(\eta(v_1)) = 2$, and
+Let $\eta\colon T_\Co\injects\ten$ be the primitive embedding (@def:primitive-embedding), $v_1, v_2$ the isotropic vectors (@def:isotropic-subspace) of @lem:divisibilityTcoOne and $\tilde J = \generators{\eta(v_1), \eta(v_2)}$. Then $\tilde J$ is an isotropic plane, $\eta(v_1)$ is isotropic with $\div_\ten(\eta(v_1)) = 2$, and
 $$\eta(v_1)^{\perp\ten}/\eta(v_1)\cong(10,8,0)_1, \qquad \tilde J^{\perp\ten}/\tilde J\cong(8,6,0)_0,$$
 the boundary lattices of the $0$-cusp $(10,8,0)_1$ and the $1$-cusp $(8,6,0)_0$ of the Enriques cusp diagram; while
 $$v_1^{\perp T_\Co}/v_1\cong(9,9,1)_1, \qquad J^{\perp T_\Co}/J\cong(7,7,1)_0$$
@@ -61,7 +61,7 @@ We then have $\div_{\ten}(w_1) = 2$.
 ::: {.proof}
 
 By @lem:divisibilityAlwaysTwoTco, $v_1$ has divisibility $2$ in $T_\Co$; moreover it is isotropic.
-By @thm:unpolarized-cusps and @prop:tco-split-maximal, $\Orth^+(T_\Co)$ is transitive on primitive (@def:primitive-embedding) isotropic vectors, with quotient $\latI_{1,8}(2)$ at any of them, so $v_1$ represents *the* $0$-cusp of $F^{\mathrm{un}}_\Co$ and $$(v_1)^{\perp T_\Co}/v_1 \cong \latI_{1,8}(2) = (9,9,1) \cong \generators{2} \oplus E_8(2).$$ The stable group (@def:group) $\widetilde\Orth^+(T_\Co)$ has $527$ orbits of primitive isotropic vectors (@thm:coble-zero-cusp-count(2), one orbit per nonzero isotropic class (@def:descent-class) by @thm:coble-integral-lifting-fibre(1), (2)); they lie in one $\Orth^+(T_\Co)$-orbit, so all $527$ $0$-cusps of the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ have boundary lattice $\latI_{1,8}(2)$.
+By @thm:unpolarized-cusps and @prop:tco-split-maximal, $\Orth^+(T_\Co)$ is transitive on primitive (@def:primitive-embedding) isotropic vectors (@def:isotropic-subspace), with quotient $\latI_{1,8}(2)$ at any of them, so $v_1$ represents *the* $0$-cusp of $F^{\mathrm{un}}_\Co$ and $$(v_1)^{\perp T_\Co}/v_1 \cong \latI_{1,8}(2) = (9,9,1) \cong \generators{2} \oplus E_8(2).$$ The stable group (@def:group) $\widetilde\Orth^+(T_\Co)$ has $527$ orbits (@def:group-orbit) of primitive isotropic vectors (@thm:coble-zero-cusp-count(2), one orbit per nonzero isotropic class (@def:descent-class) by @thm:coble-integral-lifting-fibre(1), (2)); they lie in one $\Orth^+(T_\Co)$-orbit, so all $527$ $0$-cusps of the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ have boundary lattice $\latI_{1,8}(2)$.
 
 Since $\tilde e' \tilde f' = 2$, and $\tilde e'$ is orthogonal to the remaining generators of $\ten$, we have
 
@@ -87,7 +87,7 @@ The 0-cusp $(9,9,1)_1$ in $F^{\mathrm{un}}_\Co$ maps to the 0-cusp $(10, 8, 0)_1
 
 ::: {.proof}
 
-The cusp correspondence follows from computing the lattice $w_1^{\perp \ten}/w_1$ under the primitive embedding (@def:primitive-embedding) $\eta$, since $\eta(v_1) = w_1$ and $v_1$ is the isotropic vector corresponding to $(9,9,1)_1$ in $F^{\mathrm{un}}_\Co$:
+The cusp correspondence follows from computing the lattice $w_1^{\perp \ten}/w_1$ under the primitive embedding (@def:primitive-embedding) $\eta$, since $\eta(v_1) = w_1$ and $v_1$ is the isotropic vector (@def:isotropic-subspace) corresponding to $(9,9,1)_1$ in $F^{\mathrm{un}}_\Co$:
 
 $$
 {(\tilde e')^{\perp \ten} \over \generators{\tilde e'}} =
@@ -150,7 +150,7 @@ Let $\mcm_{\mathrm{Enr}}\subset\Gamma_{\mathrm{Enr}}\backslash\bD(\ten)$ be the 
 
 ::: {.proof}
 
-Items 1 and 2 are the cited results. For item 3, $\tilde J^{\perp}/\tilde J\cong(8,6,0)_0$ by @lem:1_cusp_correspondence. Its discriminant group (@def:group) has order $2^6$, and the discriminant group of $E_8(2)$ has order $2^8$. So $\tilde J$ is not in the orbit of $P_1$, and by item 1 its boundary curve is $X$.
+Items 1 and 2 are the cited results. For item 3, $\tilde J^{\perp}/\tilde J\cong(8,6,0)_0$ by @lem:1_cusp_correspondence. Its discriminant group (@def:group) has order $2^6$, and the discriminant group of $E_8(2)$ has order $2^8$. So $\tilde J$ is not in the orbit (@def:group-orbit) of $P_1$, and by item 1 its boundary curve is $X$.
 :::
 
 ::: {.lemma #lem:cusp_map_dP}
@@ -232,7 +232,7 @@ $$\Phi\colon\widetilde\Orth^+(T_\Co)\backslash\{\text{primitive isotropic vector
 
 ::: {.theorem #thm:coble-strong-lifting title="The strong lifting over the Coble sublattice"}
 
-1. For every $\varphi\in\widetilde\Orth^+(T_\Co)$ there is exactly one $\mathrm{Ext}(\varphi)\in\Orth(\ten)$ with $\mathrm{Ext}(\varphi)\circ\eta = \eta\circ\varphi$ and $\mathrm{Ext}(\varphi)(k) = k$, and it lies in $\Gamma_\En$. The assignment is a group (@def:group) homomorphism $\mathrm{Ext}\colon\widetilde\Orth^+(T_\Co)\to\Gamma_\En$ with $\mathrm{res}\circ\mathrm{Ext} = \id$, where $\mathrm{res}(\gamma)\definedas\eta^{-1}\gamma\eta$ for $\gamma\in\Orth(\ten)$ preserving $\eta(T_\Co)$; hence $\mathrm{Ext}$ is injective and $\eta$ is $\mathrm{Ext}$-equivariant, $\eta(\varphi v) = \mathrm{Ext}(\varphi)\,\eta(v)$.
+1. For every $\varphi\in\widetilde\Orth^+(T_\Co)$ there is exactly one $\mathrm{Ext}(\varphi)\in\Orth(\ten)$ with $\mathrm{Ext}(\varphi)\circ\eta = \eta\circ\varphi$ and $\mathrm{Ext}(\varphi)(k) = k$, and it lies in $\Gamma_\En$. The assignment is a group (@def:group) homomorphism $\mathrm{Ext}\colon\widetilde\Orth^+(T_\Co)\to\Gamma_\En$ with $\mathrm{res}\circ\mathrm{Ext} = \id$, where $\mathrm{res}(\gamma)\definedas\eta^{-1}\gamma\eta$ for $\gamma\in\Orth(\ten)$ preserving $\eta(T_\Co)$; hence $\mathrm{Ext}$ is injective (@def:injective-map) and $\eta$ is $\mathrm{Ext}$-equivariant, $\eta(\varphi v) = \mathrm{Ext}(\varphi)\,\eta(v)$.
 2. $\mathrm{Ext}\bigl(\widetilde\Orth^+(T_\Co)\bigr) = \theset{\gamma\in\Gamma_\En \st \gamma(k) = k} = \Stab_{\Gamma_\En}(k)$; the image of $\mathrm{res}\colon\Stab_{\Gamma_\En}(\eta(T_\Co))\to\Orth(T_\Co)$ is $\widetilde\Orth^+(T_\Co)$, and its kernel (@def:kernel-cokernel) is $\{1,s_k\}$, $s_k$ the reflection in $k$. Hence
 $$\Stab_{\Gamma_\En}(\ZZ k) = \mathrm{Ext}\bigl(\widetilde\Orth^+(T_\Co)\bigr)\times\generators{s_k}\cong\widetilde\Orth^+(T_\Co)\times\ZZ/2.$$
 3. The map $\Phi$ is well defined.
@@ -253,7 +253,7 @@ The gluing subgroup of [@Nik80, Prop. 1.5.1, printed p. 111] is generated by the
 $$\spinornorm_\RR\bigl(\mathrm{Ext}(\varphi)\bigr) = \prod_{i=1}^m\Bigl[-\frac{u_i^2}{2}\Bigr] = \spinornorm_\RR(\varphi),$$
 and $\varphi\in\Orth^+$ exactly when $\mathrm{Ext}(\varphi)\in\Orth^+$. Both conditions being inherited, $\mathrm{Ext}$ lands in $\Gamma_\En$.
 
-*The stabilizer comparison.* Let $\gamma\in\Gamma_\En$ fix $k$. It then preserves $k^{\perp\ten} = \eta(T_\Co)$, so $\varphi = \mathrm{res}(\gamma)\in\Orth(T_\Co)$ is defined, and $\gamma = \mathrm{Ext}(\varphi)$ will follow from $\varphi\in\widetilde\Orth^+(T_\Co)$ and uniqueness both ways.
+*The stabilizer (@def:group-orbit) comparison.* Let $\gamma\in\Gamma_\En$ fix $k$. It then preserves $k^{\perp\ten} = \eta(T_\Co)$, so $\varphi = \mathrm{res}(\gamma)\in\Orth(T_\Co)$ is defined, and $\gamma = \mathrm{Ext}(\varphi)$ will follow from $\varphi\in\widetilde\Orth^+(T_\Co)$ and uniqueness both ways.
 For the sign, $\gamma = \mathrm{Ext}(\varphi)$ is one extension of $\varphi$, so the identity of the previous paragraph gives $\spinornorm_\RR(\varphi) = \spinornorm_\RR(\gamma) = 1$.
 For the discriminant action, let $x\in A_{E_{10}(2)}\subseteq A_{T_\Co}$ and take its representative $\tilde x\in E_{10}(2)^\vee\subseteq T_\Co^\vee$, orthogonal to $h$; the functional $y$ on $\eta(T_\Co)\oplus\ZZ k$ with $y(\eta s) = \beta_{T_\Co}(\tilde x,s)$ and $y(k) = 0$ vanishes on $\eta(h)+k = 2\tilde e$, so it is integral on $\ten$. Since $\gamma\in\discriminantkernel{\ten}$, $\gamma y - y\in\ten$, and restricting to $\eta(T_\Co)$ gives $\bar\varphi^{\,-1}(x) = x$: the class of $(\gamma y)|_{\eta(T_\Co)} = y\circ\gamma^{-1}|_{\eta(T_\Co)}$ is $\bar\varphi^{\,-1}(x)$, the class of $y|_{\eta(T_\Co)}$ is $x$, and their difference lies in $\eta(T_\Co)$. So $\bar\varphi$ fixes every class of $A_{E_{10}(2)}$. It also fixes the class $h/2$: the vector $\tilde e = \tfrac12(\eta(h)+k)$ lies in $\ten^\vee$ because $\tilde e\cdot\ten\subseteq\ZZ$, so $\gamma\tilde e-\tilde e\in\ten$, and
 $$\gamma\tilde e-\tilde e = \tfrac12\bigl(\eta\varphi(h)-\eta(h)\bigr),\qquad \beta_\ten\bigl(\gamma\tilde e-\tilde e,\,k\bigr) = \beta_\ten(\tilde e,k)-\beta_\ten(\tilde e,k) = 0,$$
@@ -273,7 +273,7 @@ Let $\mathcal S\to B$ be a family of Coble surfaces over a connected base, with 
 
 Transport is an isometry (@prop:local-system-of-lattices-monodromy), and it carries $D^+$ to $D^+$: the period map (@def:period-map) of the family is single-valued on the connected base, so $\rho(\gamma)$ permutes the components of $\bD(T_\Co)$ and fixes the one containing the periods (@eq-period-map-equivariance).
 
-*The component stabilizer.* The lattice $T_\Co$ carries the weight-$2$ Hodge structure of its K3 double cover, with Hodge numbers $h^{2,0}=1$ --- a holomorphic $2$-form is anti-invariant under the non-symplectic involution --- and $h^{1,1}=9$, the signature being $(2,9)$ (@prop:coble-transcendental). So the case $h^{m,m}>0$ of @thm:period-domain-component-stabilizer applies with $m=1$ and $\epsilon=1$, and
+*The component stabilizer (@def:group-orbit).* The lattice $T_\Co$ carries the weight-$2$ Hodge structure of its K3 double cover, with Hodge numbers $h^{2,0}=1$ --- a holomorphic $2$-form is anti-invariant under the non-symplectic involution --- and $h^{1,1}=9$, the signature being $(2,9)$ (@prop:coble-transcendental). So the case $h^{m,m}>0$ of @thm:period-domain-component-stabilizer applies with $m=1$ and $\epsilon=1$, and
 $$\Stab_{G_\bR}(D^+)=\Theta_\bR(T_\Co\otimes\bR).$$
 By @conv:spinor-positive-subgroup this is $\Orth^+(T_\Co)$, and $\rho(\gamma)$ lies there.
 
@@ -299,9 +299,9 @@ Then (1) and (2) are equivalent, and, given (1), (3) is equivalent to the equali
 ::: {.proof}
 
 Assume (2). Then $\Gamma_\Co$ is a subgroup of $\widetilde\Orth^+(T_\Co)$ and @rmk:coble-strong-lifting-group gives (1), the theorem applying verbatim to every subgroup.
-Conversely, a lift $\gamma\in\Gamma_\En$ of $\varphi$ lies in $\discriminantkernel{\ten}$, and $\gamma\circ\eta = \eta\circ\varphi$ with $\gamma(k)=k$ makes it preserve $\eta(T_\Co)$; the two arguments of the stabilizer comparison in the proof of @thm:coble-strong-lifting --- on the classes of $A_{E_{10}(2)}$ and on the class $h/2$ --- conclude $\bar\rho_{T_\Co}(\varphi) = \id$ from exactly those three facts. So (1) places $\Gamma_\Co$ in $\discriminantkernel{T_\Co}$, and with the sign of @lem:monodromy-is-spinor-positive it gives (2).
+Conversely, a lift $\gamma\in\Gamma_\En$ of $\varphi$ lies in $\discriminantkernel{\ten}$, and $\gamma\circ\eta = \eta\circ\varphi$ with $\gamma(k)=k$ makes it preserve $\eta(T_\Co)$; the two arguments of the stabilizer (@def:group-orbit) comparison in the proof of @thm:coble-strong-lifting --- on the classes of $A_{E_{10}(2)}$ and on the class $h/2$ --- conclude $\bar\rho_{T_\Co}(\varphi) = \id$ from exactly those three facts. So (1) places $\Gamma_\Co$ in $\discriminantkernel{T_\Co}$, and with the sign of @lem:monodromy-is-spinor-positive it gives (2).
 
-For (3), assume (1). The image $\mathrm{Ext}(\Gamma_\Co)$ is a subgroup of $\Stab_{\Gamma_\En}(k) = \mathrm{Ext}(\widetilde\Orth^+(T_\Co))$ by (2) and @thm:coble-strong-lifting(2), and $\mathrm{Ext}$ is injective, so $\mathrm{Ext}(\Gamma_\Co) = \mathrm{Ext}(\widetilde\Orth^+(T_\Co))$ holds exactly when $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$. The reverse implication is that theorem again. (Without (1) the group $\mathrm{Ext}(\Gamma_\Co)$ is not defined, which is why (3) is stated under it.)
+For (3), assume (1). The image $\mathrm{Ext}(\Gamma_\Co)$ is a subgroup of $\Stab_{\Gamma_\En}(k) = \mathrm{Ext}(\widetilde\Orth^+(T_\Co))$ by (2) and @thm:coble-strong-lifting(2), and $\mathrm{Ext}$ is injective (@def:injective-map), so $\mathrm{Ext}(\Gamma_\Co) = \mathrm{Ext}(\widetilde\Orth^+(T_\Co))$ holds exactly when $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$. The reverse implication is that theorem again. (Without (1) the group $\mathrm{Ext}(\Gamma_\Co)$ is not defined, which is why (3) is stated under it.)
 :::
 
 ::: {.corollary #cor:coble-lifting-under-conjecture title="The $\Gamma_\Co$ form of the strong lifting, under the book's own conjecture"}
@@ -327,7 +327,7 @@ and its image lies in the $\Gamma_{\En,2}$-orbits of $\ten$ as soon as $\mathrm{
 
 ::: {.proof}
 
-By @cor:coble-lifting-under-conjecture the homomorphism $\mathrm{Ext}\colon\Gamma_\Co\to\Gamma_\En$ exists with $\mathrm{Ext}(\varphi)\circ\eta = \eta\circ\varphi$ for every $\varphi\in\Gamma_\Co$, and $\mathrm{res}\circ\mathrm{Ext} = \id$. So $\eta$ carries the $\Gamma_\Co$-orbit of a primitive (@def:primitive-embedding) isotropic $v$ into the $\mathrm{Ext}(\Gamma_\Co)$-orbit of $\eta(v)$, and the assignment is independent of the representative: replacing $v$ by $\varphi v$ replaces $\eta(v)$ by $\mathrm{Ext}(\varphi)\eta(v)$, which is in the same $\mathrm{Ext}(\Gamma_\Co)$-orbit, $\mathrm{Ext}$ being a homomorphism. The last clause is the definition of the orbits of a subgroup of $\Orth(\ten)$ containing $\mathrm{Ext}(\Gamma_\Co)$.
+By @cor:coble-lifting-under-conjecture the homomorphism $\mathrm{Ext}\colon\Gamma_\Co\to\Gamma_\En$ exists with $\mathrm{Ext}(\varphi)\circ\eta = \eta\circ\varphi$ for every $\varphi\in\Gamma_\Co$, and $\mathrm{res}\circ\mathrm{Ext} = \id$. So $\eta$ carries the $\Gamma_\Co$-orbit of a primitive (@def:primitive-embedding) isotropic $v$ into the $\mathrm{Ext}(\Gamma_\Co)$-orbit of $\eta(v)$, and the assignment is independent of the representative: replacing $v$ by $\varphi v$ replaces $\eta(v)$ by $\mathrm{Ext}(\varphi)\eta(v)$, which is in the same $\mathrm{Ext}(\Gamma_\Co)$-orbit, $\mathrm{Ext}$ being a homomorphism. The last clause is the definition of the orbits (@def:group-orbit) of a subgroup of $\Orth(\ten)$ containing $\mathrm{Ext}(\Gamma_\Co)$.
 :::
 
 ::: {.lemma #lem:meridian-kernel title="The reflections and Eichler transvections lie in the discriminant kernel"}
@@ -416,7 +416,7 @@ is defined, and isotropic because $x^2 = 0$. Then $\gamma(x/2) = x'/2$, and $\ga
 
 ::: {.proposition #prop:cusp-map-injective}
 
-The orbit map $\Phi$ is injective: if $v, v'$ are primitive (@def:primitive-embedding) isotropic vectors of $T_\Co$ and $\eta(v)$, $\eta(v')$ lie in one $\Gamma_\En$-orbit, then $v$ and $v'$ lie in one $\widetilde\Orth^+(T_\Co)$-orbit.
+The orbit (@def:group-orbit) map $\Phi$ is injective (@def:injective-map): if $v, v'$ are primitive (@def:primitive-embedding) isotropic vectors (@def:isotropic-subspace) of $T_\Co$ and $\eta(v)$, $\eta(v')$ lie in one $\Gamma_\En$-orbit, then $v$ and $v'$ lie in one $\widetilde\Orth^+(T_\Co)$-orbit.
 :::
 
 ::: {.proof}
@@ -426,28 +426,28 @@ By @prop:cusp-map-separates-mod-two, $v\equiv v'\pmod{2T_\Co}$, so $\tfrac12 v -
 
 ::: {.proposition #prop:cusp-map-onto-criterion title="Surjectivity of $\Phi$ is an orbit count per class"}
 
-$\Phi$ is onto the divisibility-$2$ locus if and only if every nonzero isotropic class (@def:descent-class) of $A_{\ten}$ carries exactly one $\Gamma_\En$-orbit of primitive (@def:primitive-embedding) isotropic vectors of divisibility $2$.
+$\Phi$ is onto the divisibility-$2$ locus if and only if every nonzero isotropic class (@def:descent-class) of $A_{\ten}$ carries exactly one $\Gamma_\En$-orbit of primitive (@def:primitive-embedding) isotropic vectors (@def:isotropic-subspace) of divisibility $2$.
 :::
 
 ::: {.proof}
 
-Source and image. The source of $\Phi$ has $527$ orbits (@thm:coble-zero-cusp-count(2)) and $\Phi$ is injective (@prop:cusp-map-injective), so the image has $527$ elements. By @prop:cusp-map-surjective-on-classes the classes of those $527$ vectors are exactly the $527$ nonzero isotropic classes of $A_{\ten}$; hence the image meets each such class in exactly one $\Gamma_\En$-orbit.
+Source and image. The source of $\Phi$ has $527$ orbits (@def:group-orbit) (@thm:coble-zero-cusp-count(2)) and $\Phi$ is injective (@def:injective-map) (@prop:cusp-map-injective), so the image has $527$ elements. By @prop:cusp-map-surjective-on-classes the classes of those $527$ vectors are exactly the $527$ nonzero isotropic classes of $A_{\ten}$; hence the image meets each such class in exactly one $\Gamma_\En$-orbit.
 
 The criterion. Every divisibility-$2$ vector has a nonzero isotropic class, and the class of a vector is invariant under $\Gamma_\En$, which acts trivially on $A_{\ten}$. So the divisibility-$2$ locus is the disjoint union, over the $527$ classes, of the orbits lying in each. The image already contributes one orbit to every class, so $\Phi$ is onto exactly when no class carries a second one, that is exactly when each class carries exactly one.
 :::
 
 ::: {.proposition #prop:cusp-map-surjective-on-classes title="The divisibility-$2$ classes are exactly the classes of the image of $\Phi$"}
 
-The classes of the vectors in the image of $\Phi$ are exactly the $527$ nonzero isotropic classes (@def:descent-class) of $A_{\ten}$: $v\mapsto[\eta(v)/2]$ is a bijection from the $\widetilde\Orth^+(T_\Co)$-orbits of primitive (@def:primitive-embedding) isotropic vectors of $T_\Co$ onto them.
+The classes of the vectors in the image of $\Phi$ are exactly the $527$ nonzero isotropic classes (@def:descent-class) of $A_{\ten}$: $v\mapsto[\eta(v)/2]$ is a bijection from the $\widetilde\Orth^+(T_\Co)$-orbits of primitive (@def:primitive-embedding) isotropic vectors (@def:isotropic-subspace) of $T_\Co$ onto them.
 
-The statement is about classes and not about orbits. Whether every divisibility-$2$ $\Gamma_\En$-orbit meets $\eta(T_\Co)$ --- equivalently, whether every divisibility-$2$ $0$-cusp of $\fen$ lies over a Coble $0$-cusp --- is a question about the orbits of $\Gamma_\En$ and is not implied by an equality of discriminant classes; it is recorded as open in @sec-enriques-coble-correspondence.
+The statement is about classes and not about orbits (@def:group-orbit). Whether every divisibility-$2$ $\Gamma_\En$-orbit meets $\eta(T_\Co)$ --- equivalently, whether every divisibility-$2$ $0$-cusp of $\fen$ lies over a Coble $0$-cusp --- is a question about the orbits of $\Gamma_\En$ and is not implied by an equality of discriminant classes; it is recorded as open in @sec-enriques-coble-correspondence.
 :::
 
 ::: {.proof}
 
 *The image lies in the set.* For primitive isotropic $v\in T_\Co$, $\eta(v)$ is primitive of divisibility $2$ (@lem:divisibilityAlwaysTwoTco, @prop:cusp-map-not-onto), so $[\eta(v)/2]$ is defined, and it is isotropic because $v^2 = 0$. A class is $\Gamma_\En$-invariant, because $\Gamma_\En\subseteq\discriminantkernel{\ten}$ acts trivially on $A_\ten$, so $v\mapsto[\eta(v)/2]$ is well defined on orbits.
 
-*The image has $527$ elements.* $\Phi$ is injective (@prop:cusp-map-injective) and its source is the set of $527$ orbits of $\widetilde\Orth^+(T_\Co)$ (@thm:coble-zero-cusp-count(2)).
+*The image has $527$ elements.* $\Phi$ is injective (@def:injective-map) (@prop:cusp-map-injective) and its source is the set of $527$ orbits of $\widetilde\Orth^+(T_\Co)$ (@thm:coble-zero-cusp-count(2)).
 
 *The class separates them.* If $[\eta(v)/2] = [\eta(v')/2]$ then $\eta(v)-\eta(v')\in 2\ten$, so $v\equiv v'\pmod{2T_\Co}$ by primitivity of $\eta$ (@lem:primitive_embedding_eta), that is the classes $v^* = [v/2]$ and $v'^*$ of @prop:coble-primitive-isotropic-classes agree; by @thm:coble-zero-cusp-count(1) $v$ and $v'$ then lie in one $\widetilde\Orth^+(T_\Co)$-orbit. So distinct source orbits give distinct classes, and the image meets $527$ nonzero isotropic classes.
 

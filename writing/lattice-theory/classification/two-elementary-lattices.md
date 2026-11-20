@@ -83,7 +83,7 @@ This is [@Nik80, Thm. 3.6.3].
 ::: {.corollary #cor:twoelementary-complement-lifting title="Extension of isometries across a $2$-elementary complement"}
 Let $L$ be even unimodular, let $\iota_S\colon S\injects L$ be a primitive embedding of nondegenerate (@def:polarization) lattices, and let $T=S^{\perp_L}$ be indefinite (@def:definiteness) and $2$-elementary. Every $\varphi\in\Orth(S)$ extends to an isometry of $L$ preserving the embedded sublattice $S$.
 
-Writing $\Stab_{\Orth(L)}(S)$ for the stabilizer of $\iota_S(S)$, the restriction and extension morphisms give the exact group (@def:group) sequence
+Writing $\Stab_{\Orth(L)}(S)$ for the stabilizer (@def:group-orbit) of $\iota_S(S)$, the restriction and extension morphisms give the exact group (@def:group) sequence
 $$
 1\too\widetilde\Orth(T)
 \longrightarrow\Stab_{\Orth(L)}(S)
@@ -120,7 +120,7 @@ Then exactly one of the following holds [@AE22, Prop. 5.5]:
 
 3. If $v$ is even characteristic, $S\isoto\latI_{1,1}(2)\perp\qty{v^{\perp_S}}^{\mathrm{nd}}$, necessarily $\delta=1$, and $\qty{v^{\perp_S}}^{\mathrm{nd}}$ has invariants $(r-2,a-2,0)$.
 
-Conversely, a primitive (@def:primitive-embedding) isotropic vector of a given one of the three types exists in $S$ if and only if an even $2$-elementary lattice with the corresponding invariants and signature $(n_+-1,n_--1)$ exists [@AE22, Prop. 5.5].
+Conversely, a primitive (@def:primitive-embedding) isotropic vector (@def:isotropic-subspace) of a given one of the three types exists in $S$ if and only if an even $2$-elementary lattice with the corresponding invariants and signature $(n_+-1,n_--1)$ exists [@AE22, Prop. 5.5].
 Two primitive isotropic vectors $v_1,v_2$ of the same type lie in one $\Orth(S)$-orbit if and only if $\qty{v_1^{\perp_S}}^{\mathrm{nd}}\cong\qty{v_2^{\perp_S}}^{\mathrm{nd}}$.
 If $n_+\geq2$ and $n_-\geq2$, the vectors of each type form a single $\Orth(S)$-orbit.
 
@@ -132,6 +132,6 @@ In every case $\qty{v^{\perp_S}}^{\mathrm{nd}}$ is even of rank $r-2$ and signat
 The splittings and the existence statement are [@AE22, Prop. 5.5].
 If $g\in\Orth(S)$ maps $v_1$ to $v_2$, then $g$ maps $v_1^{\perp_S}$ onto $v_2^{\perp_S}$ and $\generators{v_1}_{\bZ}$ onto $\generators{v_2}_{\bZ}$, so it induces an isometry of the nondegenerate reductions.
 Conversely, write $S=H_i\perp K_i$ with $v_i\in H_i$ and $K_i\cong\qty{v_i^{\perp_S}}^{\mathrm{nd}}$, where $H_1\cong H_2$ is $U$, $U(2)$ or $\latI_{1,1}(2)$ according to the common type.
-The primitive isotropic vectors of each of these three rank-$2$ lattices form one orbit under its orthogonal group (@def:group), so an isometry $H_1\to H_2$ mapping $v_1$ to $v_2$ and an isometry $K_1\to K_2$ combine to an element of $\Orth(S)$ mapping $v_1$ to $v_2$ [@AE22, proof of Prop. 5.5].
+The primitive isotropic vectors of each of these three rank-$2$ lattices form one orbit (@def:group-orbit) under its orthogonal group (@def:group), so an isometry $H_1\to H_2$ mapping $v_1$ to $v_2$ and an isometry $K_1\to K_2$ combine to an element of $\Orth(S)$ mapping $v_1$ to $v_2$ [@AE22, proof of Prop. 5.5].
 If $n_+\geq2$ and $n_-\geq2$, the two reductions are indefinite even $2$-elementary lattices with the same signature and invariants, so they are isometric by @thm:two-elementary-classification.
 :::

@@ -35,7 +35,7 @@ of @prop:enriques-involution-extends(2), from the normalization $\normalize{B}$ 
 
 The normalization of the KSBA compactification (@def:ksba-compactification) dominates its Baily–Borel compactification: at a Type II boundary point, the elliptic modulus can be recovered from the slc Enriques pair. Either its double curve is elliptic, or it is a rational curve with four distinguished $A_1$ points. In the latter case, the double cover of $\PP^1$ branched at those points has the required $j$-invariant [@AEGS25, proof of Thm. 5.9; @AET23, Thm. 3.17].
 
-The normalized KSBA space therefore lies between the semitoroidal compactification (@def:semitoroidal-compactification) determined by the folded semifans $\semifan{F}_k$ and Baily–Borel. The semitoroidal comparison theorem makes its semifans coarsenings $\semifan{G}_k$ of the $\semifan{F}_k$ [@AE23, Thm. 7.18]. If a maximal (@def:maximal-lattice) cone were lost in a strict coarsening, a codimension-one cone of some $\semifan{F}_k$ would parametrize a one-dimensional family of K3 pairs with fewer than the maximal number of double curves while their Enriques quotients had the maximal number. The explicit quotient models have the maximal number of double curves exactly when their K3 covers do [@AEGS25, Prop. 4.8, Cor. 4.9]. Thus the maximal cones remain distinct, and the classifying morphism is finite by the semitoroidal cone comparison [@AEGS25, proof of Thm. 5.9].
+The normalized KSBA space therefore lies between the semitoroidal compactification (@def:semitoroidal-compactification) determined by the folded semifans $\semifan{F}_k$ and Baily–Borel. The semitoroidal comparison theorem makes its semifans coarsenings $\semifan{G}_k$ of the $\semifan{F}_k$ [@AE23, Thm. 7.18]. If a maximal (@def:maximal-lattice) cone (@def:closed-cone) were lost in a strict coarsening (@def:refinement-coarsening-of-fan), a codimension-one cone of some $\semifan{F}_k$ would parametrize a one-dimensional family of K3 pairs with fewer than the maximal number of double curves while their Enriques quotients had the maximal number. The explicit quotient models have the maximal number of double curves exactly when their K3 covers do [@AEGS25, Prop. 4.8, Cor. 4.9]. Thus the maximal cones (@def:maximal-cone-of-fan) remain distinct, and the classifying morphism is finite by the semitoroidal cone comparison [@AEGS25, proof of Thm. 5.9].
 :::
 
 ::: {.proposition #prop:enriques-semifan-coarsening title="The semifans of the normalized KSBA compactification"}
@@ -44,7 +44,7 @@ Let $\semitorfan = \theset{\semifan{F}_k}_{k=1}^5$ be the generalized Coxeter se
 
 1. The normalization $\normksbacpt{\fentwo}$ dominates the Baily--Borel compactification $\bbcpt{\fentwo}$, and it is the semitoroidal compactification (@def:semitoroidal-compactification) for a collection of semifans $\semifan{G}_k$ that coarsen the $\semifan{F}_k$.
 
-2. If the maximal (@def:maximal-lattice) cones of the $\semifan{G}_k$ are the maximal cones of the $\semifan{F}_k$, then $\phi$ is finite.
+2. If the maximal (@def:maximal-lattice) cones (@def:closed-cone) of the $\semifan{G}_k$ are the maximal cones (@def:maximal-cone-of-fan) of the $\semifan{F}_k$, then $\phi$ is finite.
 
 3. A degeneration of $(\mcz, \eps\mcr_\mcz)$ has the maximal number of double curves if and only if the corresponding degeneration of $(\mcx, \eps\mcr)$ does.
 

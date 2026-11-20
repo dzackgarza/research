@@ -80,7 +80,7 @@ An isometry $g$ preserves $L^\sharp$ and carries $X_\QQ$ to $(gX)_\QQ$, so it ca
 :::
 
 ::: {.theorem #thm:descent-double-coset title="The orbit fibre over one discriminant datum: the actual double cosets"}
-Let $L$ be even (@def:form-axioms) and nondegenerate (@def:polarization), and let $Q=\rho_{L,q}(\Orth(L))$. Fix an actual integral object $x$ of one of the kinds above—primitive (@def:primitive-embedding) vector, unoriented line, plane, or flag—and let $D(x)$ be its matching finite datum: a class for a vector, a cyclic subgroup for a line, an isotropic (@def:orthogonal-complement) subgroup for a plane, or a chain of isotropic subgroups for a flag. Choose the full integral orbit $\mathcal X=\Orth(L)\cdot x$, and put $D=D(x)$. Put
+Let $L$ be even (@def:form-axioms) and nondegenerate (@def:polarization), and let $Q=\rho_{L,q}(\Orth(L))$. Fix an actual integral object $x$ of one of the kinds above—primitive (@def:primitive-embedding) vector, unoriented line, plane, or flag—and let $D(x)$ be its matching finite datum: a class for a vector, a cyclic subgroup for a line, an isotropic (@def:orthogonal-complement) subgroup for a plane, or a chain of isotropic subgroups for a flag. Choose the full integral orbit (@def:group-orbit) $\mathcal X=\Orth(L)\cdot x$, and put $D=D(x)$. Put
 $$ F=\Stab_Q(D),\qquad \mathcal G_D=\rho_{L,q}^{-1}(F). $$
 If the orbit-fibre $\mathcal F_{\mathcal X}(D)=\{y\in\mathcal X:D(y)=D\}$ is nonempty, then $\mathcal G_D$ acts transitively on it. Thus $\mathcal F_{\mathcal X}(D)$ is the single orbit $\mathcal G_D\cdot x$, even when several integral objects of this fixed type have the same finite datum.
 
@@ -95,7 +95,7 @@ $$ (q^{-1}Hq\cap F)\bigl\backslash F\bigl/S. $$
 ::: {.proof}
 Let $y\in\mathcal F_{\mathcal X}(D)$. Since $\mathcal X$ is one $\Orth(L)$-orbit, some $g\in\Orth(L)$ satisfies $gx=y$. Equivariance gives $\rho_{L,q}(g)D=D$, hence $g\in\mathcal G_D$. Therefore $\mathcal G_D$ acts transitively on the fibre.
 
-The full group (@def:group) $\Gamma$ need not preserve the fibre over $D$. Its subgroup $\Gamma_D=\Gamma\cap\mathcal G_D$ does, and the transitive $\mathcal G_D$-action on that fibre has stabilizer $\mathcal G_D(x)$. Thus the $\Gamma_D$-orbits are the displayed double cosets. If $K\subseteq\Gamma$, reduction modulo $K$ is faithful on these double cosets: the group $\mathcal G_D$ is $\rho^{-1}(F)$, $\Gamma\cap\mathcal G_D$ is $\rho^{-1}(H\cap F)$, and $\mathcal G_D(x)$ maps to $S$. Conjugation by $\widetilde q$ identifies the new fibre with the old one and replaces $H$ by $q^{-1}Hq$; the order of a double-coset family is therefore independent of the chosen representative and lift. To classify the orbits of the **full** $\Gamma$ on $\mathcal X$, take one datum from each $H$-orbit on the finite data attained by $\mathcal X$ and use the corresponding fibre-orbit sets, as in @cor:descent-finite-orbit-sum.
+The full group (@def:group) $\Gamma$ need not preserve the fibre over $D$. Its subgroup $\Gamma_D=\Gamma\cap\mathcal G_D$ does, and the transitive $\mathcal G_D$-action on that fibre has stabilizer (@def:group-orbit) $\mathcal G_D(x)$. Thus the $\Gamma_D$-orbits are the displayed double cosets. If $K\subseteq\Gamma$, reduction modulo $K$ is faithful on these double cosets: the group $\mathcal G_D$ is $\rho^{-1}(F)$, $\Gamma\cap\mathcal G_D$ is $\rho^{-1}(H\cap F)$, and $\mathcal G_D(x)$ maps to $S$. Conjugation by $\widetilde q$ identifies the new fibre with the old one and replaces $H$ by $q^{-1}Hq$; the order of a double-coset family is therefore independent of the chosen representative and lift. To classify the orbits of the **full** $\Gamma$ on $\mathcal X$, take one datum from each $H$-orbit on the finite data attained by $\mathcal X$ and use the corresponding fibre-orbit sets, as in @cor:descent-finite-orbit-sum.
 :::
 
 ::: {.corollary #cor:descent-finite-orbit-sum title="The sum over finite orbits"}
@@ -139,10 +139,10 @@ Then $C\subseteq J$, both are isotropic, and for every $g\in\Orth(L)$
 $$ D(g\ell)=\rho_{L,q}(g)(C),\qquad D(gP)=\rho_{L,q}(g)(J). $$
 So the forgetting maps $\pi_\ell\colon y\mapsto\ell$ and $\pi_P\colon y\mapsto P$ commute with the datum: the data of $\pi_\ell y$ and of $\pi_P y$ are the two components of $D(y)$, for every flag $y$.
 
-Consequently $\pi_\ell$ and $\pi_P$ carry the full flag orbit $\mathcal X_{\mathrm{fl}}=\Orth(L)\cdot x$ onto the line orbit $\mathcal X_\ell=\Orth(L)\cdot\ell$ and the plane orbit $\mathcal X_P=\Orth(L)\cdot P$ respectively, $\Orth(L)$-equivariantly, and their fibres over full-orbit points are
+Consequently $\pi_\ell$ and $\pi_P$ carry the full flag orbit (@def:group-orbit) $\mathcal X_{\mathrm{fl}}=\Orth(L)\cdot x$ onto the line orbit $\mathcal X_\ell=\Orth(L)\cdot\ell$ and the plane orbit $\mathcal X_P=\Orth(L)\cdot P$ respectively, $\Orth(L)$-equivariantly, and their fibres over full-orbit points are
 $$ \pi_\ell^{-1}(\ell')=\Stab_{\Orth(L)}(\ell')\cdot P',\qquad \pi_P^{-1}(P')=\Stab_{\Orth(L)}(P')\cdot\ell', $$
-for any plane $P'$ with $(\ell'\subset P')\in\mathcal X_{\mathrm{fl}}$ and any line $\ell'$ with $(\ell'\subset P')\in\mathcal X_{\mathrm{fl}}$; that is, a fibre is one stabilizer orbit of incident objects occurring in the flag orbit, not the set of all planes through $\ell'$ or all lines in $P'$.
-So $\pi_\ell$ is injective exactly when those orbits are singletons.
+for any plane $P'$ with $(\ell'\subset P')\in\mathcal X_{\mathrm{fl}}$ and any line $\ell'$ with $(\ell'\subset P')\in\mathcal X_{\mathrm{fl}}$; that is, a fibre is one stabilizer (@def:group-orbit) orbit of incident objects occurring in the flag orbit, not the set of all planes through $\ell'$ or all lines in $P'$.
+So $\pi_\ell$ is injective (@def:injective-map) exactly when those orbits are singletons.
 
 :::
 
@@ -196,7 +196,7 @@ For the restriction statement: by @lem:flag-datum-compatibility the forgetting m
 Let $L$ be integral and nondegenerate (@def:polarization), let $\ell=\ZZ v$ be a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) line with $v$ primitive, and let $C=D(\ell)$.
 Then
 $$ C=0\quad\Longleftrightarrow\quad \div_L(v)=1 . $$
-Consequently a primitive isotropic plane $P$ realizes the zero line datum exactly when it contains a primitive isotropic vector of divisibility (@def:lattice-divisibility) one, which is not implied by $0\subseteq D(P)$.
+Consequently a primitive isotropic plane $P$ realizes the zero line datum exactly when it contains a primitive isotropic vector (@def:isotropic-subspace) of divisibility (@def:lattice-divisibility) one, which is not implied by $0\subseteq D(P)$.
 :::
 
 ::: {.proof}
@@ -213,7 +213,7 @@ For the last sentence: $0\subseteq D(P)$ holds for every plane because $D(P)$ is
 Let $A,B\leq\Orth(L)$ be subgroups with $\ker\rho_{L,q}\subseteq A$.
 Then
 $$ \rho_{L,q}(A\intersect B)=\rho_{L,q}(A)\intersect\rho_{L,q}(B). $$
-In particular, for a flag $x=(\ell\subset P)$ the flag stabilizer image
+In particular, for a flag $x=(\ell\subset P)$ the flag stabilizer (@def:group-orbit) image
 $$ S_{C,J}\definedas\rho_{L,q}\qty(\Stab_{\Orth(L)}(P)\intersect\Stab_{\Orth(L)}(\ell)) $$
 satisfies
 $$ S_{C,J}\subseteq\rho_{L,q}\qty(\Stab_{\Orth(L)}(P))\intersect\rho_{L,q}\qty(\Stab_{\Orth(L)}(\ell)), $$
@@ -251,12 +251,12 @@ If moreover $\ker\rho_{L,q}\subseteq\Gamma$, then $\rho_{L,q}\qty(\Gamma_{P,C})=
 
 *Item 1.*
 The flags whose plane lies in $\Gamma P$ are $\Gamma\cdot\theset{(\ell\subset P)\st\ell\in\Pi_1(P)}$, and every $\Gamma$-orbit in that set meets the displayed set, since a flag with plane $gP$ is the image under $g$ of a flag over $P$.
-Two members $(\ell\subset P)$ and $(\ell'\subset P)$ lie in one $\Gamma$-orbit exactly when some $g\in\Gamma$ satisfies $gP=P$ and $g\ell=\ell'$, that is $g\in\Stab_\Gamma(P)$; so the orbits correspond to the $\Stab_\Gamma(P)$-orbits on $\Pi_1(P)$.
+Two members $(\ell\subset P)$ and $(\ell'\subset P)$ lie in one $\Gamma$-orbit exactly when some $g\in\Gamma$ satisfies $gP=P$ and $g\ell=\ell'$, that is $g\in\Stab_\Gamma(P)$; so the orbits (@def:group-orbit) correspond to the $\Stab_\Gamma(P)$-orbits on $\Pi_1(P)$.
 
 *Item 2.*
 By @lem:chain-stabilizer the group (@def:group) $\Gamma_{(C,J)}$ acts on $\Phi(C,J)$ and on $\Sigma_2(J)$, so both orbit sets are defined, and the planes of $\Phi(C,J)$ lie in $\Sigma_2(J)$.
 Fix $\mathcal R\in\Gamma_{(C,J)}\backslash\Sigma_2(J)$ and $P\in\mathcal R$; a flag of $\Phi(C,J)$ whose plane lies in $\mathcal R$ is $g(\ell\subset P)$ for some $g\in\Gamma_{(C,J)}$ and some $\ell\in\Pi_1^C(P)$, and two such flags $(\ell\subset P)$, $(\ell'\subset P)$ lie in one $\Gamma_{(C,J)}$-orbit exactly when some $g\in\Gamma_{(C,J)}$ satisfies $gP=P$ and $g\ell=\ell'$.
-The elements of $\Gamma_{(C,J)}$ fixing $P$ are the elements of $\Gamma\cap\rho_{L,q}^{-1}(F_{C,J})$ fixing $P$, and for $g\in\Stab_\Gamma(P)$ one has $\rho_{L,q}(g)(J)=D(gP)=D(P)=J$ by @lem:flag-datum-compatibility, automatically; so that stabilizer is $\Stab_\Gamma(P)\intersect\rho_{L,q}^{-1}(\Stab_Q(C))=\Gamma_{P,C}$, and its orbits on $\Pi_1^C(P)$ are the pieces of the fibre over $\mathcal R$.
+The elements of $\Gamma_{(C,J)}$ fixing $P$ are the elements of $\Gamma\cap\rho_{L,q}^{-1}(F_{C,J})$ fixing $P$, and for $g\in\Stab_\Gamma(P)$ one has $\rho_{L,q}(g)(J)=D(gP)=D(P)=J$ by @lem:flag-datum-compatibility, automatically; so that stabilizer (@def:group-orbit) is $\Stab_\Gamma(P)\intersect\rho_{L,q}^{-1}(\Stab_Q(C))=\Gamma_{P,C}$, and its orbits on $\Pi_1^C(P)$ are the pieces of the fibre over $\mathcal R$.
 Distinct $\mathcal R$ give disjoint pieces because the plane of a flag determines its plane orbit.
 
 *Item 3.*
@@ -269,13 +269,13 @@ then to the pair $\Gamma$, which contains $\ker\rho_{L,q}$ by hypothesis, and th
 
 ::: {.proposition #prop:line-plane-incidence title="The incidence criterion in data-orbit form"}
 
-Let $\Gamma\leq\Orth(L)$, let $\mathcal P=\Gamma P_0$ be a $\Gamma$-orbit of primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) planes and $\mathcal L=\Gamma\ell_0$ a $\Gamma$-orbit of primitive isotropic lines; put $J\definedas D(P_0)$, $C\definedas D(\ell_0)$ and $\bar\rho\definedas\rho_{L,q}(\Gamma)$, and let $\bar C\definedas\bar\rho\cdot C$ be the orbit of $C$ under $\bar\rho$ on the subgroups of $A_L$.
+Let $\Gamma\leq\Orth(L)$, let $\mathcal P=\Gamma P_0$ be a $\Gamma$-orbit of primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) planes and $\mathcal L=\Gamma\ell_0$ a $\Gamma$-orbit of primitive isotropic lines; put $J\definedas D(P_0)$, $C\definedas D(\ell_0)$ and $\bar\rho\definedas\rho_{L,q}(\Gamma)$, and let $\bar C\definedas\bar\rho\cdot C$ be the orbit (@def:group-orbit) of $C$ under $\bar\rho$ on the subgroups of $A_L$.
 Say that $\mathcal P$ and $\mathcal L$ are **incident** when a plane of $\mathcal P$ contains a line of $\mathcal L$.
 
 1. **(Necessity.)** If $\mathcal P$ and $\mathcal L$ are incident, then some $C'\in\bar C$ satisfies $C'\subseteq J$.
 2. **(Sufficiency.)** Suppose that any two primitive isotropic lines with the same datum are $\Gamma$-equivalent, in the sense that for subgroups $C'$ and primitive isotropic lines $\ell_1,\ell_2$ with $D(\ell_1)=D(\ell_2)=C'$ there is $g\in\Gamma$ with $g\ell_1=\ell_2$; equivalently, each attained datum fibre $\Sigma_1(C')$ lies in a single $\Gamma$-orbit.
 If some primitive isotropic line $\ell\subset P_0$ has $D(\ell)\in\bar C$, then $\mathcal P$ and $\mathcal L$ are incident.
-3. **(The zero datum.)** For $C=0$ the second requirement of item 2 is the existence of a primitive isotropic vector of divisibility (@def:lattice-divisibility) one in $P_0$, by @lem:zero-datum-divisibility; the containment $0\subseteq J$, true for every plane, does not supply it.
+3. **(The zero datum.)** For $C=0$ the second requirement of item 2 is the existence of a primitive isotropic vector (@def:isotropic-subspace) of divisibility (@def:lattice-divisibility) one in $P_0$, by @lem:zero-datum-divisibility; the containment $0\subseteq J$, true for every plane, does not supply it.
 :::
 
 ::: {.proof}
@@ -302,7 +302,7 @@ That is @lem:zero-datum-divisibility, which identifies the datum $0$ with divisi
 1. Let $L=T_\En$ of @sec-lattices, $\Gamma=\Gamma_{\En,2}=\rho^{-1}(M)$ and $\Gamma^+=\Gamma\intersect\Orth^+(L)$. Then $Q=\Orth(A_L,q_L)$, $\ker\rho\subseteq\Gamma$, and:
    a. for a primitive isotropic line $\ell=\ZZ v$, $S=\rho(\Stab_{\Orth(L)}(\ell))=\Stab_Q(D(\ell))$;
    b. for every primitive isotropic plane $P$, $S=\rho(\Stab_{\Orth(L)}(P))=F=\Stab_Q(D(P))$, so the planes over each $M$-orbit of discriminant images form one $\Gamma$-orbit;
-   c. $\Gamma$ and $\Gamma^+$ have the same orbits on primitive isotropic lines, on primitive isotropic planes and on flags;
+   c. $\Gamma$ and $\Gamma^+$ have the same orbits (@def:group-orbit) on primitive isotropic lines, on primitive isotropic planes and on flags;
    d. the divisibility-one line orbit is incident exactly to the four plane orbits of [@Ste91, §4.3.16], although $0\subseteq D(P)$ for all nine plane orbits.
 2. Let $L=T_\Co=B(2)$ with $B=U_1\perp U_2\perp\generators{-1}^{7}$, $\Gamma=\ker\rho$ and $\Gamma^+=\widetilde\Orth^+(T_\Co)=\ker\rho\intersect\Orth^+(B)$. Then $Q=\Orth(q)$, and:
    a. $\rho(\widetilde\Orth^+(T_\Co))=1$, so $\Gamma_{(C,J)}=\widetilde\Orth^+(T_\Co)$ for every chain $(C,J)$ of @lem:chain-stabilizer;
@@ -314,7 +314,7 @@ That is @lem:zero-datum-divisibility, which identifies the datum $0$ with divisi
 ::: {.proof}
 
 Part 1. The group $Q$ is $\Orth(A_L,q_L)$ by @thm:two-elementary-surjectivity, and $\ker\rho\subseteq\Gamma$ is @prop:sterk-group-identification(2).
-Item a is @lem:line-stabilizer-image; since $A_L$ has exponent two, the stabilizer of a class $c$ is the stabilizer of the subgroup $\generators{c}$.
+Item a is @lem:line-stabilizer-image; since $A_L$ has exponent two, the stabilizer (@def:group-orbit) of a class $c$ is the stabilizer of the subgroup $\generators{c}$.
 Item b is @thm:enriques-integral-plane-stabilizers, and the orbit statement is then @thm:descent-double-coset with $(H\cap F)\backslash F/S=(H\cap F)\backslash F/F$, one double coset.
 Item c is @thm:enriques-spinor-orbit-agreement.
 Item d is items 1, 3 and 4 of @thm:enriques-degree-two-arithmetic together with @lem:zero-datum-divisibility: the line orbit of type $1$ is the divisibility-one orbit, and the plane orbits whose labels contain $1$ are the four planes of [@Ste91, §4.3.16].
@@ -330,11 +330,11 @@ Item d is item 2 of @prop:coble-arithmetic-flag-incidence, which is item 2 of @p
 ## The stabilizer's discriminant image is a congruence quotient {#sec-descent-congruence}
 
 ::: {.corollary #cor:coble-heegner-integral-plane-descent title="Integral plane and flag orbits for the Coble Heegner subgroup"}
-Let $T_\Co=B(2)$ and let $G_\Co\leq\Orth(q_{T_\Co})$ be the finite image of @thm:coble-heegner-finite-orbits. Put $\Gamma=\rho_{T_\Co}^{-1}(G_\Co)$. Then $\Gamma$ has seven orbits of primitive isotropic planes and thirteen orbits of incident primitive isotropic line-plane flags. The same numbers hold for $\Gamma\intersect\Orth^+(T_\Co)$.
+Let $T_\Co=B(2)$ and let $G_\Co\leq\Orth(q_{T_\Co})$ be the finite image of @thm:coble-heegner-finite-orbits. Put $\Gamma=\rho_{T_\Co}^{-1}(G_\Co)$. Then $\Gamma$ has seven orbits (@def:group-orbit) of primitive isotropic planes and thirteen orbits of incident primitive isotropic line-plane flags. The same numbers hold for $\Gamma\intersect\Orth^+(T_\Co)$.
 :::
 
 ::: {.proof}
-The kernel inclusion $\ker\rho_{T_\Co}\subseteq\Gamma$ is immediate from the definition of $\Gamma$. By @thm:cusp-lifting(2), the integral plane orbits are the $G_\Co$-orbits of pairs $(J,s)$ consisting of an order-$4$ isotropic subgroup and one of its eight stars (@def:plane-star); by @thm:cusp-lifting(3), the flag orbits are the $G_\Co$-orbits of triples $(J,s,c)$ with $0\neq c\in J$. The exact finite enumeration in `computations/reports/coble_gco_plane-orbits.py` and `computations/reports/coble_gco_plane-orbits-run.txt`, cited in the proof of @thm:cusp-lifting, gives respectively seven and thirteen orbits. The spinor-negative stabilizers constructed in @thm:cusp-lifting(4) show that neither orbit set splits upon intersection with $\Orth^+(T_\Co)$. This is @thm:coble-integral-lifting-fibre(1) at $\Gamma=\rho^{-1}(G_\Co)$, and its item 2 is the step that lets the count be read off the finite $G_\Co$-orbits: the integral stabilizer of a plane or of a flag realizes the whole finite stabilizer of its datum, so the double quotient of the fibre is one point per datum.
+The kernel inclusion $\ker\rho_{T_\Co}\subseteq\Gamma$ is immediate from the definition of $\Gamma$. By @thm:cusp-lifting(2), the integral plane orbits are the $G_\Co$-orbits of pairs $(J,s)$ consisting of an order-$4$ isotropic subgroup and one of its eight stars (@def:plane-star); by @thm:cusp-lifting(3), the flag orbits are the $G_\Co$-orbits of triples $(J,s,c)$ with $0\neq c\in J$. The exact finite enumeration in `computations/reports/coble_gco_plane-orbits.py` and `computations/reports/coble_gco_plane-orbits-run.txt`, cited in the proof of @thm:cusp-lifting, gives respectively seven and thirteen orbits. The spinor-negative stabilizers (@def:group-orbit) constructed in @thm:cusp-lifting(4) show that neither orbit set splits upon intersection with $\Orth^+(T_\Co)$. This is @thm:coble-integral-lifting-fibre(1) at $\Gamma=\rho^{-1}(G_\Co)$, and its item 2 is the step that lets the count be read off the finite $G_\Co$-orbits: the integral stabilizer of a plane or of a flag realizes the whole finite stabilizer of its datum, so the double quotient of the fibre is one point per datum.
 :::
 
 The five orbits of $G_\Co$ on *undecorated* finite isotropic planes in @tbl-finite-plane-orbits are not five integral plane orbits: the integral fibre over each finite plane has eight star choices by @lem:plane-stars, and the arithmetic group acts on those choices. In particular the seven integral plane orbits above do not follow from the five-row table without this stabilizer-image calculation. These statements concern $\rho^{-1}(G_\Co)$, identified with $R_{\gent}$ in @prop:coble-cong-point-stabilizer, and not the geometric monodromy group $\Gamma_\Co$ (@def:gamma-co-groups); the latter's equality with the stable group is @thm:gamma-co-is-stable.
@@ -447,7 +447,7 @@ The exponents of the definition are $e_1=\exp(M/L)=2$ and $e_2=\exp\qty(L^\sharp
 
 ::: {.lemma #lem:orbit-permutation-not-module-action title="The action on the orbit of submodules is not the module action"}
 
-Let $m\geq1$ with $mM\subseteq L$, let $\Sigma_m\definedas\pi_m(G)\bar L_m$ be the orbit of $\bar L_m$ in $M/mM$ under the finite image $\pi_m(G)$, and let
+Let $m\geq1$ with $mM\subseteq L$, let $\Sigma_m\definedas\pi_m(G)\bar L_m$ be the orbit (@def:group-orbit) of $\bar L_m$ in $M/mM$ under the finite image $\pi_m(G)$, and let
 $$ \sigma_m\colon G\too\Sym(\Sigma_m) $$
 be the action on that orbit, with kernel (@def:kernel-cokernel) $\kappa_m\definedas\ker\sigma_m$.
 Then:
@@ -522,7 +522,7 @@ Finally $e_1e_2M=e_2\qty(e_1M)\subseteq e_2L$ because $e_1M\subseteq L$, and for
 ::: {.theorem #thm:stabilizer-discriminant-image title="The discriminant image of an integral stabilizer, computed from one finite quotient"}
 
 Let $m\geq1$ satisfy $mM\subseteq e_2L$, so that @cor:stabilizer-modulus gives $\bar K_m\subseteq\Stab_G(L)\intersect\ker\rho_L$.
-Let $\bar H_m=\Stab_{\pi_m(G)}(\bar L_m)$ be the orbit-point stabilizer of $\bar L_m$ inside the finite image $\pi_m(G)\leq\Aut_{\bZ}(M/mM)$ of the module action: the stabilizer is taken in that image, not in $\Aut_{\bZ}(M/mM)$ and not in the permutation image of $\pi_m(G)$ on the orbit of $\bar L_m$.
+Let $\bar H_m=\Stab_{\pi_m(G)}(\bar L_m)$ be the orbit-point stabilizer (@def:group-orbit) of $\bar L_m$ inside the finite image $\pi_m(G)\leq\Aut_{\bZ}(M/mM)$ of the module action: the stabilizer is taken in that image, not in $\Aut_{\bZ}(M/mM)$ and not in the permutation image of $\pi_m(G)$ on the orbit (@def:group-orbit) of $\bar L_m$.
 Then:
 
 1. $\Stab_G(L)=G\intersect\pi_m^{-1}(\bar H_m)$, so the integral stabilizer is the exact preimage of the finite orbit-point stabilizer;
@@ -551,7 +551,7 @@ For item 4, use item 1: an element of $G$ preserving $L$ restricts to an isometr
 
 ::: {.theorem #thm:discriminant-transport-functor title="The discriminant isometries of the orbit lattices form a functor of the action groupoid"}
 
-Let $\mathcal O=G\cdot L$ be the orbit of $L$ under $G$, regarded as the object set of the translation groupoid $G\ltimes\mathcal O$, whose morphisms $L_0\to L_1$ are the elements $g\in G$ with $gL_0=L_1$.
+Let $\mathcal O=G\cdot L$ be the orbit (@def:group-orbit) of $L$ under $G$, regarded as the object set of the translation groupoid $G\ltimes\mathcal O$, whose morphisms $L_0\to L_1$ are the elements $g\in G$ with $gL_0=L_1$.
 For $g\in G$ and a full lattice $L_0\subseteq V$:
 
 1. $(gL_0)^\sharp=g\qty(L_0^\sharp)$, and
@@ -579,7 +579,7 @@ For $L_0\in\mathcal O$ write $e_2(L_0)\definedas\exp\qty(L_0^\sharp/(L_0^\sharp\
 2. $\rho_{L_0}(\Stab_G(L_0))=\Phi_{L_0,m}\bigl(\Stab_{\pi_m(G)}(\bar L_{0,m})\bigr)$;
 3. for $g\in G$, $\rho_{gL_0}(\Stab_G(gL_0))=\alpha_g(L_0)\rho_{L_0}(\Stab_G(L_0))\alpha_g(L_0)^{-1}$, and $\Stab_G(gL_0)=g\Stab_G(L_0)g^{-1}$.
 
-In particular $e_2(L_0)=e_2(L)$ for every $L_0\in\mathcal O$, and the finite quotient $\pi_m(G)$ computes the discriminant image of the stabilizer at every lattice of the orbit at once.
+In particular $e_2(L_0)=e_2(L)$ for every $L_0\in\mathcal O$, and the finite quotient $\pi_m(G)$ computes the discriminant image of the stabilizer (@def:group-orbit) at every lattice of the orbit (@def:group-orbit) at once.
 :::
 
 ::: {.proof}
@@ -594,7 +594,7 @@ For item 3, $\Stab_G(gL_0)=g\Stab_G(L_0)g^{-1}$ is immediate, and @thm:discrimin
 Let $m\geq1$ with $mM\subseteq L$, and let $\mathcal O=G\cdot L$.
 Then $mM\subseteq L_0$ for every $L_0\in\mathcal O$, and the map
 $$ \mathcal O\too\qty{\text{submodules of }M/mM},\qquad L_0\longmapsto\bar L_{0,m}\definedas L_0/mM $$
-is injective.
+is injective (@def:injective-map).
 :::
 
 ::: {.proof}
@@ -620,7 +620,7 @@ Since $mM\subseteq e_2L\subseteq L$, @lem:orbit-reduction-injective identifies $
 
 ::: {.lemma #lem:schreier-stabilizer title="Schreier generators for the stabilizer of a point"}
 
-Let a group (@def:group) $G$ act on a set $\Sigma$, let $S\subseteq G$ satisfy $G=\generators{S}$ and $S^{-1}=S$, let $\alpha\in\Sigma$, and for each $\beta$ in the orbit $G\alpha$ choose $t_\beta\in G$ with $t_\beta\alpha=\beta$ and $t_\alpha=\id$.
+Let a group (@def:group) $G$ act on a set $\Sigma$, let $S\subseteq G$ satisfy $G=\generators{S}$ and $S^{-1}=S$, let $\alpha\in\Sigma$, and for each $\beta$ in the orbit (@def:group-orbit) $G\alpha$ choose $t_\beta\in G$ with $t_\beta\alpha=\beta$ and $t_\alpha=\id$.
 Then
 $$ \Stab_G(\alpha)=\generators{t_{s\beta}^{-1}\,s\,t_\beta\st s\in S,\ \beta\in G\alpha}. $$
 :::
@@ -645,7 +645,7 @@ So $g$ lies in the displayed subgroup.
 ::: {.theorem #thm:schreier-discriminant-image title="The Schreier elements give the discriminant image of the stabilizer"}
 
 Take the data of @def:stabilizer-congruence-data with $m\geq1$ and $mM\subseteq L$, and let $S\subseteq G$ be a finite symmetric generating set: $G=\generators{S}$, $S^{-1}=S$ and $\abs{S}<\infty$.
-Let $\Sigma_m$ be the orbit of $\bar L_m$ in the finite module $M/mM$ under $\pi_m(G)$.
+Let $\Sigma_m$ be the orbit (@def:group-orbit) of $\bar L_m$ in the finite module $M/mM$ under $\pi_m(G)$.
 For each $p\in\Sigma_m$ choose $t_p\in G$ with $\pi_m(t_p)\bar L_m=p$ and $t_{\bar L_m}=\id$, and put $L_p\definedas t_pL$; by @lem:orbit-reduction-injective the lattice $L_p$ depends only on $p$.
 For $s\in S$ and $p\in\Sigma_m$, with $sp$ denoting the image of $p$ under $\pi_m(s)$, put
 $$ k_{s,p}\definedas t_{sp}^{-1}\,s\,t_p. $$
@@ -662,7 +662,7 @@ a composite of discriminant isometries between integral lattices of the orbit $\
 
 For item 1, $\pi_m(k_{s,p})$ carries $\bar L_m$ to $\pi_m(t_{sp})^{-1}\pi_m(s)p=\pi_m(t_{sp})^{-1}(sp)=\bar L_m$; so $k_{s,p}\in\Stab_G(\bar L_m)$, which is $\Stab_G(L)$ by @lem:congruence-stabilizer-preimage at the modulus $m$ with $mM\subseteq L$.
 
-Item 2 is @lem:schreier-stabilizer applied to the action of $G$ on the orbit $\Sigma_m$ of $\bar L_m$: the displayed elements there are exactly the $k_{s,p}$, the orbit of $\bar L_m$ is $\Sigma_m$, and its stabilizer is $\Stab_G(L)$ by item 1.
+Item 2 is @lem:schreier-stabilizer applied to the action of $G$ on the orbit $\Sigma_m$ of $\bar L_m$: the displayed elements there are exactly the $k_{s,p}$, the orbit of $\bar L_m$ is $\Sigma_m$, and its stabilizer (@def:group-orbit) is $\Stab_G(L)$ by item 1.
 
 For item 3, the lattices $L_{sp}=st_pL$ and $t_{sp}L$ lie in $\mathcal O$, so both contain $mM$ by @lem:orbit-reduction-injective, and both reduce to the submodule $sp$; that lemma then gives $L_{sp}=t_{sp}L$.
 Since $k_{s,p}$ stabilizes $L$, $\rho_L(k_{s,p})=\alpha_{k_{s,p}}(L)$ by item 3 of @thm:discriminant-transport-functor, and functoriality of $\alpha$ along $L\xrightarrow{t_p}L_p\xrightarrow{s}L_{sp}\xrightarrow{t_{sp}^{-1}}L$ gives
@@ -680,7 +680,7 @@ Let $m\geq1$ with $mM\subseteq e_2L$ and let $\spinornorm_\bR\colon\Orth(V_\bR)\
 $$ \sigma_U=-\id_U\oplus\id_{U(2)}\oplus\id_{E_8(2)}\in\Orth(N) $$
 satisfies $\sigma_U\equiv\id\pmod{2N}$ and $\spinornorm_\bR(\sigma_U)=-1$.
 Consequently two lifts of one element of $\bar H_2$ can carry opposite spinor signs, and no function of the congruence class alone returns the spinor norm of an element of $\Stab_G(L)$.
-3. For every $\Gamma\leq\Orth(N)$ with $\ker\rho\subseteq\Gamma$, the groups $\Gamma$ and $\Gamma^+=\Gamma\intersect\Orth^+(N)$ have the same orbits on primitive isotropic lines, on primitive isotropic planes and on flags, and each such object has a spinor-negative element of $\ker\rho$ in its stabilizer.
+3. For every $\Gamma\leq\Orth(N)$ with $\ker\rho\subseteq\Gamma$, the groups $\Gamma$ and $\Gamma^+=\Gamma\intersect\Orth^+(N)$ have the same orbits (@def:group-orbit) on primitive isotropic lines, on primitive isotropic planes and on flags, and each such object has a spinor-negative element of $\ker\rho$ in its stabilizer (@def:group-orbit).
 :::
 
 ::: {.proof}
@@ -688,7 +688,7 @@ Consequently two lifts of one element of $\bar H_2$ can carry opposite spinor si
 Item 1 is the factorization criterion: $\spinornorm_\bR$ restricted to $\Stab_G(L)$ induces a map on the cosets of $\Stab_G(L)\intersect\bar K_m$ exactly when it is constant on each such coset, that is trivial on that kernel.
 
 For item 2, $\sigma_U$ negates $U$ and fixes the other two summands, so $\sigma_U-\id$ is $-2$ on $U$ and zero elsewhere, and $(\sigma_U-\id)(N)\subseteq 2N$ because $2U\subseteq 2N$; that is $\sigma_U\in\bar K_2$.
-Its spinor norm is $\spinornorm_\bR(-\id_U)=[(-1)^1]=-1$ by @lem:minus-identity-spinor-norm, the summand $U$ having positive index one, and the spinor norm of an orthogonal sum (@def:orthogonal-sum) is the product of those of the summands.
+Its spinor norm is $\spinornorm_\bR(-\id_U)=[(-1)^1]=-1$ by @lem:minus-identity-spinor-norm, the summand $U$ having positive index (@def:maximal-positive-definite-subspace) one, and the spinor norm of an orthogonal sum (@def:orthogonal-sum) is the product of those of the summands.
 The choice $L=M=N$, $m=2$ satisfies $mM\subseteq e_2L$ because $e_2=\exp(N^\sharp/N)=2$ and $2N\subseteq 2N$.
 At that modulus $\bar K_2$ meets $\Stab_G(L)$ whenever $\sigma_U\in G$, and $\sigma_U\in\Orth(N)$; so with $G=\Orth(N)$ the sign is not a function of $\pi_2(g)$, while $\rho_N$ is one by @cor:stabilizer-modulus.
 
@@ -730,12 +730,12 @@ K_\Gamma\definedas\Gamma\intersect\ker\rho_L,
 \qquad
 \Sigma_\Gamma(\kappa)\definedas\epsilon\qty(K_\Gamma)\leq\theset{\pm1}^2
 $$
-for its discriminant kernel (@def:mm-integral-spinor-data) and for the group of sign values attained by its elements; the sign values attained in the discriminant kernel of $\Gamma$ are the elements of $\Sigma_\Gamma(\kappa)$. When $L$ is even there is a second, quadratic discriminant representation $\rho_{L,q}$, and then $K_\Gamma=\Gamma\intersect\ker\rho_{L,q}$ as well, because $\rho_L=j_q\circ\rho_{L,q}$ with $j_q$ injective; for odd $L$ only the bilinear form is available, and $K_\Gamma$ is the displayed kernel of $\rho_L$.
+for its discriminant kernel (@def:mm-integral-spinor-data) and for the group of sign values attained by its elements; the sign values attained in the discriminant kernel of $\Gamma$ are the elements of $\Sigma_\Gamma(\kappa)$. When $L$ is even there is a second, quadratic discriminant representation $\rho_{L,q}$, and then $K_\Gamma=\Gamma\intersect\ker\rho_{L,q}$ as well, because $\rho_L=j_q\circ\rho_{L,q}$ with $j_q$ injective (@def:injective-map); for odd $L$ only the bilinear form is available, and $K_\Gamma$ is the displayed kernel of $\rho_L$.
 :::
 
 ::: {.definition #def:graph-character title="Graph characters of congruence data" defines="$N_m$; graph character"}
 
-Assume $m\geq1$ with $mM\subseteq L$, so that $\pi_m$ of @def:stabilizer-congruence-data is defined, and put $N_m\definedas\bar K_m\intersect\Stab_G(L)$ for the congruence kernel (@def:kernel-cokernel) inside the stabilizer. A character $\chi\colon\Stab_G(L)\to\theset{\pm1}$ is a **graph character** of the data at $m$ when $\chi(N_m)=1$, equivalently when $\chi$ is constant on the cosets of $N_m$, equivalently when $\chi=\bar\chi\circ\pi_m$ on $\Stab_G(L)$ for a character $\bar\chi$ of the finite group (@def:group) $\bar H_m=\pi_m\qty(\Stab_G(L))$.
+Assume $m\geq1$ with $mM\subseteq L$, so that $\pi_m$ of @def:stabilizer-congruence-data is defined, and put $N_m\definedas\bar K_m\intersect\Stab_G(L)$ for the congruence kernel (@def:kernel-cokernel) inside the stabilizer (@def:group-orbit). A character $\chi\colon\Stab_G(L)\to\theset{\pm1}$ is a **graph character** of the data at $m$ when $\chi(N_m)=1$, equivalently when $\chi$ is constant on the cosets of $N_m$, equivalently when $\chi=\bar\chi\circ\pi_m$ on $\Stab_G(L)$ for a character $\bar\chi$ of the finite group (@def:group) $\bar H_m=\pi_m\qty(\Stab_G(L))$.
 
 Two objects are involved here and they must not be confused. The element $\pi_m(g)$ of $\bar H_m$ is a group element; the vertex $\pi_m(g)\bar L_m$ is a point of the finite action on $M/mM$. For $g\in\Stab_G(L)$ one has $gL=L$, hence $\pi_m(g)\bar L_m=\overline{gL}_m=\bar L_m$: the vertex is the constant $\bar L_m$ on the whole stabilizer, a function of the vertex alone is constant there, and the vertex records only the subgroup $\bar H_m$ that fixes it. A graph character is a function of the group element $\pi_m(g)$, and its triviality on $N_m$ is a condition on that element.
 :::
@@ -752,8 +752,8 @@ $$
 \spinornorm_\bR(t_{sp})^{-1}\spinornorm_\bR(s)\spinornorm_\bR(t_p)
 ).
 $$
-The last two entries are values of characters at the three rational isometries $t_{sp},s,t_p\in G\leq\Orth(V)$, each taken in its own domain $\Orth(V)$ and $\Orth(V_\bR)$. The first entry is a composite of the transports $\alpha$ of @thm:discriminant-transport-functor between the three lattices $L$, $L_p=t_pL$ and $L_{sp}=t_{sp}L$ of the orbit, its factors being isometries $A_L\to A_{L_p}$, $A_{L_p}\to A_{L_{sp}}$ and $A_{L_{sp}}\to A_L$ of distinct discriminant groups. No factor of that composite is $\rho_L$ of a rational transporter: $\rho_L(s)$ is defined only when $sL=L$ and $\rho_L(t_p)$ only when $t_pL=L$, and neither needs to hold. What a non-integral $g\in G$ has is the transport $\alpha_g(L)\colon A_L\to A_{gL}$ between two distinct discriminant modules, not an endomorphism of $A_L$.
-2. $\kappa_L\qty(\Stab_G(L))=\generators{\kappa_L(k_{s,p})\st s\in S,\ p\in\Sigma_m}$: the joint image of the stabilizer is generated by the joint images of the loops.
+The last two entries are values of characters at the three rational isometries $t_{sp},s,t_p\in G\leq\Orth(V)$, each taken in its own domain $\Orth(V)$ and $\Orth(V_\bR)$. The first entry is a composite of the transports $\alpha$ of @thm:discriminant-transport-functor between the three lattices $L$, $L_p=t_pL$ and $L_{sp}=t_{sp}L$ of the orbit (@def:group-orbit), its factors being isometries $A_L\to A_{L_p}$, $A_{L_p}\to A_{L_{sp}}$ and $A_{L_{sp}}\to A_L$ of distinct discriminant groups. No factor of that composite is $\rho_L$ of a rational transporter: $\rho_L(s)$ is defined only when $sL=L$ and $\rho_L(t_p)$ only when $t_pL=L$, and neither needs to hold. What a non-integral $g\in G$ has is the transport $\alpha_g(L)\colon A_L\to A_{gL}$ between two distinct discriminant modules, not an endomorphism of $A_L$.
+2. $\kappa_L\qty(\Stab_G(L))=\generators{\kappa_L(k_{s,p})\st s\in S,\ p\in\Sigma_m}$: the joint image of the stabilizer (@def:group-orbit) is generated by the joint images of the loops.
 3. For a word $k=k_{s_r,p_r}\cdots k_{s_1,p_1}$ in the loops, $\kappa_L(k)=\kappa_L(k_{s_r,p_r})\cdots\kappa_L(k_{s_1,p_1})$. In particular the sign part is multiplicative along words, and two loops with $\rho_L(k_1)\rho_L(k_2)=\id$ have $k_1k_2\in K_{\Stab_G(L)}$ with $\epsilon(k_1k_2)=\epsilon(k_1)\epsilon(k_2)$.
 :::
 
@@ -788,7 +788,7 @@ Item 3 is the definitions of $\kappa_L$ and of a graph character.
 
 Let $\Gamma\leq\Orth(L)$, let $K_\Gamma$ and $\Sigma_\Gamma(\kappa)$ be as in @def:joint-character, and let $\epsilon=(\det,\spinornorm_\bR)$.
 
-1. The identity-discriminant fibre of the joint image is the joint image of the discriminant kernel (@def:mm-integral-spinor-data), and the two occurrences of $\theset{\id}$ in the display below are the same object inside the codomain $\Orth(A_L)\times\theset{\pm1}^2$:
+1. The identity-discriminant fibre of the joint image is the joint image of the discriminant kernel (@def:mm-integral-spinor-data), and the two occurrences of $\theset{\id}$ in the display below are the same object inside the codomain (@def:codomain-of-a-map) $\Orth(A_L)\times\theset{\pm1}^2$:
 $$
 \kappa_L(\Gamma)\intersect\qty(\theset{\id}\times\theset{\pm1}^2)=\kappa_L\qty(K_\Gamma)=\theset{\id}\times\Sigma_\Gamma(\kappa),
 $$
@@ -796,7 +796,7 @@ the last member being a subgroup of $\Orth(A_L)\times\theset{\pm1}^2$ and not a 
 2. $\Sigma_\Gamma(\kappa)$ is one of the five subgroups $\theset{1}$, $\generators{(-1,1)}$, $\generators{(1,-1)}$, $\generators{(-1,-1)}$ and $\theset{\pm1}^2$ of $\theset{\pm1}^2$, with the readings:
    - $\Sigma_\Gamma(\kappa)=\theset{1}$: the discriminant kernel of $\Gamma$ attains no sign, so both signs are functions of the discriminant image on $\Gamma\cap\ker\rho_L$;
    - $\generators{(-1,1)}$: a kernel element of determinant $-1$ and positive spinor norm, such as a reflection $s_w$ in a vector $w\in L$ of negative square with $\rho_L(s_w)=\id$ (@ex:joint-character-sign-witness takes $w=a$);
-   - $\generators{(1,-1)}$: a kernel element of determinant $1$ and negative spinor norm, such as $-\id$ on a unimodular hyperbolic plane (@def:hyperbolic-plane) summand $U$, of positive index one, with every other summand fixed (@lem:minus-identity-spinor-norm and @lem:split-isometry-spinor-norm), realized at $T_\En$ by $\sigma_U$ (@prop:spinor-congruence-obstruction(2)) and in @ex:joint-character-sign-witness by $\sigma=-\id_U$;
+   - $\generators{(1,-1)}$: a kernel element of determinant $1$ and negative spinor norm, such as $-\id$ on a unimodular hyperbolic plane (@def:hyperbolic-plane) summand $U$, of positive index (@def:maximal-positive-definite-subspace) one, with every other summand fixed (@lem:minus-identity-spinor-norm and @lem:split-isometry-spinor-norm), realized at $T_\En$ by $\sigma_U$ (@prop:spinor-congruence-obstruction(2)) and in @ex:joint-character-sign-witness by $\sigma=-\id_U$;
    - $\generators{(-1,-1)}$: a kernel element negative in both signs, as $s_a\sigma$ is in @ex:joint-character-sign-witness;
    - $\theset{\pm1}^2$: the two signs are independent on the discriminant kernel, as they are for $\Gamma=\Orth(L)$ at $L=U\perp A_1\perp A_1$ (@ex:joint-character-sign-witness).
 3. With the Schreier data of @thm:schreier-joint-image and $\Gamma=\Stab_G(L)$, the group $\Sigma_\Gamma(\kappa)$ is not in general generated by the sign parts of the individual loops (@def:loops-suspension) $k_{s,p}$; it is the set of sign parts of those words in the loops whose discriminant part is the identity, that is
@@ -807,12 +807,12 @@ A product of two loops is a kernel-sign witness whose factors both lie outside $
 $$
 \rho_L(k_1)=\rho_L(k_2)^{-1}\neq\id,\qquad \epsilon(k_1)\neq\epsilon(k_2).
 $$
-The first condition says $k_1k_2\in K_\Gamma$ together with $k_1,k_2\notin K_\Gamma$, and the second says $\epsilon(k_1k_2)=\epsilon(k_1)\epsilon(k_2)\neq1$, because the elements of $\theset{\pm1}^2$ are their own inverses, so that $\epsilon(k_1)\epsilon(k_2)=1$ holds exactly when $\epsilon(k_1)=\epsilon(k_2)$. The requirement $\rho_L(k_1)\neq\id$ cannot be dropped. At the lattice of @ex:joint-character-sign-witness with $M=L$, $m=2$ and $G_0=\generators{s_a,\sigma}$, both generators act trivially on $L/2L$, so the Schreier orbit is one point and the loops are the three elements of the symmetric set $\theset{s_a,\sigma,s_a\sigma}$; the pair $k_1=s_a$, $k_2=\sigma$ has $\rho_L(k_1)=\rho_L(k_2)=\id$, mutually inverse discriminant components, and different sign pairs, yet both factors already lie in the discriminant kernel, so it exhibits no product phenomenon at all. Individual loops, and in particular the elements of the chosen generating set $S$, need not supply a witness; @ex:joint-character-sign-witness is an instance in which none of them does.
+The first condition says $k_1k_2\in K_\Gamma$ together with $k_1,k_2\notin K_\Gamma$, and the second says $\epsilon(k_1k_2)=\epsilon(k_1)\epsilon(k_2)\neq1$, because the elements of $\theset{\pm1}^2$ are their own inverses, so that $\epsilon(k_1)\epsilon(k_2)=1$ holds exactly when $\epsilon(k_1)=\epsilon(k_2)$. The requirement $\rho_L(k_1)\neq\id$ cannot be dropped. At the lattice of @ex:joint-character-sign-witness with $M=L$, $m=2$ and $G_0=\generators{s_a,\sigma}$, both generators act trivially on $L/2L$, so the Schreier orbit (@def:group-orbit) is one point and the loops are the three elements of the symmetric set $\theset{s_a,\sigma,s_a\sigma}$; the pair $k_1=s_a$, $k_2=\sigma$ has $\rho_L(k_1)=\rho_L(k_2)=\id$, mutually inverse discriminant components, and different sign pairs, yet both factors already lie in the discriminant kernel, so it exhibits no product phenomenon at all. Individual loops, and in particular the elements of the chosen generating set $S$, need not supply a witness; @ex:joint-character-sign-witness is an instance in which none of them does.
 :::
 
 ::: {.proof}
 
-*Item 1.* For $g\in\Gamma$ the first coordinate of $\kappa_L(g)$ is $\rho_L(g)$, which is $\id$ exactly when $g\in K_\Gamma$; so the intersection is $\kappa_L(K_\Gamma)$, and on it the first coordinate is constant, the two descriptions of $\Sigma_\Gamma$ agree, and the projection to the signs is injective and onto.
+*Item 1.* For $g\in\Gamma$ the first coordinate of $\kappa_L(g)$ is $\rho_L(g)$, which is $\id$ exactly when $g\in K_\Gamma$; so the intersection is $\kappa_L(K_\Gamma)$, and on it the first coordinate is constant, the two descriptions of $\Sigma_\Gamma$ agree, and the projection to the signs is injective (@def:injective-map) and onto.
 
 *Item 2.* A subgroup of $\theset{\pm1}^2$ is one of the five listed. The readings: the first is the definition; for the second, a reflection $s_w$ has $\det=-1$ and $\spinornorm_\bR(s_w)=[-\beta(w,w)/2]$ (@def:spinor-norm), which is $[1]$ for $w^2<0$; for the third, $-\id$ on a summand of signature $(1,1)$ with the other summands fixed has determinant $(-1)^2=1$ and spinor norm $[(-1)^1]=-1$ by @lem:minus-identity-spinor-norm for that summand and @lem:split-isometry-spinor-norm for the rest; the last two are computations of @ex:joint-character-sign-witness.
 
@@ -823,7 +823,7 @@ The first condition says $k_1k_2\in K_\Gamma$ together with $k_1,k_2\notin K_\Ga
 
 Let a group $A$ act transitively on a set $\Omega$, let $\omega_0\in\Omega$ and $B\definedas\Stab_A(\omega_0)$, let $A'\leq A$ be a subgroup, and let $K$ be a normal subgroup of $A$.
 
-1. Every $A'$-orbit is contained in an $A'K$-orbit, so the orbit sets are related by a surjection $A'\backslash\Omega\twoheadrightarrow A'K\backslash\Omega$; under the identification $\Omega\cong A/B$ this is the comparison of the double-coset families $A'\backslash A/B$ and $A'K\backslash A/B$.
+1. Every $A'$-orbit is contained in an $A'K$-orbit, so the orbit (@def:group-orbit) sets are related by a surjection $A'\backslash\Omega\twoheadrightarrow A'K\backslash\Omega$; under the identification $\Omega\cong A/B$ this is the comparison of the double-coset families $A'\backslash A/B$ and $A'K\backslash A/B$.
 2. That surjection is a bijection if and only if
 $$
 K\subseteq A'\cdot\Stab_A(\omega)\qquad\text{for every }\omega\in\Omega,
@@ -851,7 +851,7 @@ Let $L$ be even, let $\Gamma_1\leq\Gamma\leq\Orth(L)$, and let $x$ be an object 
 $$
 A\definedas\rho_{L,q}^{-1}(F),\qquad A_1\definedas\Gamma_1\intersect A,\qquad B\definedas\Stab_A(x),\qquad K\definedas\ker\rho_{L,q},
 $$
-so that $A$ acts transitively on $\mathcal F_{\mathcal X}(D)$ with point stabilizer $B$, the fibre being in bijection with $A/B$ (@thm:descent-double-coset). Put
+so that $A$ acts transitively on $\mathcal F_{\mathcal X}(D)$ with point stabilizer (@def:group-orbit) $B$, the fibre being in bijection with $A/B$ (@thm:descent-double-coset). Put
 $$
 J_1\definedas\kappa_{L,q}\qty(A_1),\qquad
 J_D\definedas\kappa_{L,q}\qty(A),\qquad
@@ -864,7 +864,7 @@ subgroups of $\Orth(A_{L,q})\times\theset{\pm1}^2$. Assume $E_L\subseteq\Gamma_1
 $$
 1\too\theset{\id}\times\Sigma_{\Orth(L)}(\kappa)\too J_D\too F\too1
 $$
-of the discriminant stabilizer by the signs in the discriminant kernel (@def:mm-integral-spinor-data). This projection is injective exactly when that kernel is trivial, that is when no element of $\ker\rho_{L,q}$ has a nontrivial sign, so $J_D$ is not isomorphic to $F$ in general (@ex:joint-fibre-absorption); the same caveat applies to the projections of $J_1$ and $J_x$ onto the discriminant groups.
+of the discriminant stabilizer by the signs in the discriminant kernel (@def:mm-integral-spinor-data). This projection is injective (@def:injective-map) exactly when that kernel is trivial, that is when no element of $\ker\rho_{L,q}$ has a nontrivial sign, so $J_D$ is not isomorphic to $F$ in general (@ex:joint-fibre-absorption); the same caveat applies to the projections of $J_1$ and $J_x$ onto the discriminant groups.
 3. **When the discriminant double cosets suffice.** Suppose $\ker\rho_{L,q}\subseteq\Gamma_1$. Then $K\subseteq\Gamma_1\intersect A=A_1$, hence $\kappa_{L,q}(K)\subseteq J_1$; write $\Sigma\definedas\theset{\id}\times\Sigma_{\Orth(L)}(\kappa)=\kappa_{L,q}(K)$, a subgroup of the product $\Orth(A_{L,q})\times\theset{\pm1}^2$, and take every quotient in this item in that product. Reduction modulo $\Sigma$ is a bijection of double-coset sets
 $$
 J_1\backslash J_D/J_x\ \xrightarrow{\ \sim\ }\ (J_1/\Sigma)\backslash(J_D/\Sigma)\big/\qty(J_x\Sigma/\Sigma),
@@ -873,7 +873,7 @@ and the three quotient groups are the discriminant ones,
 $$
 J_1/\Sigma\cong\rho_{L,q}(\Gamma_1)\intersect F,\qquad J_D/\Sigma\cong F,\qquad (J_x\Sigma)/\Sigma\cong S ,
 $$
-so that under this hypothesis the joint formula of item 1 *is* the discriminant formula $\qty(\rho_{L,q}(\Gamma_1)\intersect F)\backslash F/S$ of @thm:descent-double-coset applied to $\Gamma_1$. The three statements of the second display are isomorphisms of the quotients by $\Sigma$; they are not isomorphisms $J_D\cong F$, $J_1\cong\rho_{L,q}(\Gamma_1)\intersect F$, $J_x\cong S$ of the unquotiented groups, and @ex:joint-fibre-absorption shows the difference. When $\ker\rho_{L,q}\nsubseteq\Gamma_1$, the discriminant formula — which is the formula for the group $A_1K\subseteq A$ containing the kernel — counts the orbits of that larger group; whether the two counts nevertheless agree at one fixed fibre is item 4.
+so that under this hypothesis the joint formula of item 1 *is* the discriminant formula $\qty(\rho_{L,q}(\Gamma_1)\intersect F)\backslash F/S$ of @thm:descent-double-coset applied to $\Gamma_1$. The three statements of the second display are isomorphisms of the quotients by $\Sigma$; they are not isomorphisms $J_D\cong F$, $J_1\cong\rho_{L,q}(\Gamma_1)\intersect F$, $J_x\cong S$ of the unquotiented groups, and @ex:joint-fibre-absorption shows the difference. When $\ker\rho_{L,q}\nsubseteq\Gamma_1$, the discriminant formula — which is the formula for the group $A_1K\subseteq A$ containing the kernel — counts the orbits (@def:group-orbit) of that larger group; whether the two counts nevertheless agree at one fixed fibre is item 4.
 4. **The fixed-fibre condition.** The family the discriminant formula computes is $A_1K\backslash A/B$, while the joint family is $A_1\backslash A/B$. By @lem:joint-fibre-comparison applied to $\Omega=\mathcal F_{\mathcal X}(D)\cong A/B$ and $B=\Stab_A(x)$, the comparison map from the joint family to the discriminant family is a bijection if and only if
 $$
 K\subseteq A_1\qty(aBa^{-1})\qquad\text{for every }a\in A=\rho_{L,q}^{-1}(F),
@@ -909,7 +909,7 @@ Here $s$ has determinant $-1$ and spinor norm $[-\beta(e-f,e-f)/2]=[1]=1$ becaus
 
 ::: {.corollary #cor:sign-sensitive-splitting title="Sign-sensitive splitting of one orbit"}
 
-Let $L$ be even, let $\Gamma\leq\Orth(L)$ satisfy $\ker\rho_L\subseteq\Gamma$, and let $\beta$ be a character of $\theset{\pm1}^2$ with $\Gamma_1\definedas\theset{g\in\Gamma\st\beta(\epsilon(g))=1}$ of index two in $\Gamma$. For an object $x$ of @sec-descent-fibre with datum $D$ and nonempty fibre $\mathcal F_{\mathcal X}(D)$, every $\Gamma$-orbit $\mathcal O\subseteq\mathcal F_{\mathcal X}(D)$ is the union of one or two $\Gamma_1$-orbits, and it is two exactly when $\Stab_\Gamma(x_{\mathcal O})\subseteq\Gamma_1$, equivalently when no element of the stabilizer has $\beta\circ\epsilon=-1$. Since the stabilizer's sign data are the finite group $\kappa_{L,q}\qty(\Stab_\Gamma(x_{\mathcal O}))$, that test is decided on a finite group. Consequently
+Let $L$ be even, let $\Gamma\leq\Orth(L)$ satisfy $\ker\rho_L\subseteq\Gamma$, and let $\beta$ be a character of $\theset{\pm1}^2$ with $\Gamma_1\definedas\theset{g\in\Gamma\st\beta(\epsilon(g))=1}$ of index two in $\Gamma$. For an object $x$ of @sec-descent-fibre with datum $D$ and nonempty fibre $\mathcal F_{\mathcal X}(D)$, every $\Gamma$-orbit $\mathcal O\subseteq\mathcal F_{\mathcal X}(D)$ is the union of one or two $\Gamma_1$-orbits, and it is two exactly when $\Stab_\Gamma(x_{\mathcal O})\subseteq\Gamma_1$, equivalently when no element of the stabilizer (@def:group-orbit) has $\beta\circ\epsilon=-1$. Since the stabilizer's sign data are the finite group $\kappa_{L,q}\qty(\Stab_\Gamma(x_{\mathcal O}))$, that test is decided on a finite group. Consequently
 $$
 \#\qty(\Gamma_1\text{-orbits in }\mathcal F_{\mathcal X}(D))
 =\#\qty(\Gamma\text{-orbits in }\mathcal F_{\mathcal X}(D))
@@ -917,7 +917,7 @@ $$
 $$
 where the $\Gamma$-orbits are counted by @thm:descent-double-coset and the $\Gamma_1$-orbits by @thm:joint-double-coset.
 
-The case of the second-factor character $\beta(d,s)=s$ of $\theset{\pm1}^2$, so that $\Gamma_1=\Gamma\intersect\ker\spinornorm_\bR$, is @prop:descent-spinor-fibre: the $\Gamma$-orbit stays one $\Gamma_1$-orbit when its stabilizer contains a spinor-negative element. The joint image adds that this is a decision on a finite group and that the orbits which do split are the ones counted by the second term.
+The case of the second-factor character $\beta(d,s)=s$ of $\theset{\pm1}^2$, so that $\Gamma_1=\Gamma\intersect\ker\spinornorm_\bR$, is @prop:descent-spinor-fibre: the $\Gamma$-orbit stays one $\Gamma_1$-orbit when its stabilizer contains a spinor-negative element. The joint image adds that this is a decision on a finite group and that the orbits (@def:group-orbit) which do split are the ones counted by the second term.
 :::
 
 ::: {.proof}
@@ -979,7 +979,7 @@ At the Enriques lattice the sufficient condition of @thm:joint-double-coset(3) f
 ## Supporting lift theorems {#sec-descent-eichler}
 
 ::: {.proposition #prop:descent-eichler title="Eichler filling"}
-Let $L\cong U\perp U_1\perp L_0$, with $U_1$ a second hyperbolic plane (@def:hyperbolic-plane). If $v,v'\in L$ are primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) with $v^*=v'^*$ in $A_L$, then there is $g\in\widetilde{\SO}^+(L)$ with $g(v)=v'$. Consequently, for every $\Gamma\leq\Orth(L)$ with $\widetilde{\SO}^+(L)\subseteq\Gamma$, the primitive isotropic vectors with a fixed descent class (@def:descent-class) form one $\Gamma$-orbit.
+Let $L\cong U\perp U_1\perp L_0$, with $U_1$ a second hyperbolic plane (@def:hyperbolic-plane). If $v,v'\in L$ are primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) with $v^*=v'^*$ in $A_L$, then there is $g\in\widetilde{\SO}^+(L)$ with $g(v)=v'$. Consequently, for every $\Gamma\leq\Orth(L)$ with $\widetilde{\SO}^+(L)\subseteq\Gamma$, the primitive isotropic vectors (@def:isotropic-subspace) with a fixed descent class (@def:descent-class) form one $\Gamma$-orbit.
 :::
 
 ::: {.proof}

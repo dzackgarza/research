@@ -36,7 +36,7 @@ If $E$ is a component of $C$, then $E$ is a boundary component and $E^2 = -4$ by
 ::: {.theorem #thm:coble-aut-lattice title="Coble's theorem, lattice form"}
 
 Let $S$ be the blowup of $\PP^2$ at the ten nodes of an irreducible rational plane sextic whose singular points are ordinary nodes, and let $M_S \definedas K_S^{\perp\, \Pic(S)}$.
-The Cremona equivalence class of such a sextic is the union of finitely many projective equivalence classes.
+The Cremona equivalence class (@def:equivalence-relation) of such a sextic is the union of finitely many projective equivalence classes.
 Then $\Aut(S)$ is isomorphic to a subgroup of finite index (@def:index) in $\Orth(M_S)$.
 For a general such sextic, this subgroup is isomorphic to the congruence subgroup of level $2$ of $\Orth(M_S)/\theset{\pm1}$, and $\Orth(M_S)/\theset{\pm1}$ is isomorphic to the Weyl group (@def:weyl-group) $W(E_{10})$ [@DZ99, Introduction].
 :::
@@ -122,7 +122,7 @@ A Coble surface is of **elliptic type** if it is of Halphen type or of Jacobian 
 A Coble surface (@def:coble-surface) of elliptic type (@def:coble-elliptic-rational-type) admits a birational morphism onto a surface $Y$ such that $\abs{-K_Y}$ has exactly one member and a general member of the mobile part of $\abs{-2K_Y}$ is a smooth elliptic curve.
 It is obtained in one of two ways:
 
-- **Halphen type**: as a blowup of singular points, and their infinitely near points, of a non-multiple fibre of a minimal (@def:minimal-resolution) rational elliptic surface (@def:halphen-surface-index) with one multiple fibre, of multiplicity $2$;
+- **Halphen type**: as a blowup of singular points, and their infinitely near points, of a non-multiple fibre of a minimal (@def:minimal-resolution) rational elliptic surface (@def:halphen-surface-index) with one multiple fibre (@def:multiple-fibre), of multiplicity $2$;
 
 - **Jacobian type**: as a blowdown of some disjoint sections, and possibly of components of one fibre, of a non-minimal rational elliptic surface with a section.
 
@@ -146,7 +146,7 @@ For a Coble surface (@def:coble-surface) $X$ the following are equivalent:
 
 1. $\abs{-2K_X}$ contains a reduced divisor;
 
-2. there is a double cover $\tilde X \to X$ with $\tilde X$ a K3 surface with at most ordinary double points.
+2. there is a double cover $\tilde X \to X$ with $\tilde X$ a K3 surface with at most ordinary double points (@def:ordinary-double-point).
 
 [@DZ99, Lem. 6.2]
 :::
@@ -165,7 +165,7 @@ $$
 (-3) - (-2) - \cdots - (-2) - (-3)
 .
 $$
-Conversely, a Coble surface with these properties is the minimal resolution of a rational log Enriques surface of index $2$.
+Conversely, a Coble surface with these properties is the minimal resolution (@def:minimal-resolution-of-surface-singularity) of a rational log Enriques surface of index $2$.
 2. A Coble surface is terminal (@def:terminal-coble-surface) if and only if it has exactly one anti-bicanonical divisor $D$, and $D$ is reduced and a disjoint union of $(-4)$-curves.
 3. The minimal resolution of a rational normal surface with at worst singularities of type $\tfrac14(1,1)$ is a terminal Coble surface, and conversely.
 
@@ -177,8 +177,8 @@ A terminal Coble surface is the minimal resolution of a maximum rational log Enr
 
 ::: {.proposition #prop:coble-degree-two-branch-geometry title="The branch geometry of a degree 2 polarization"}
 
-Let $S$ be a Coble surface (@def:coble-surface) with no $(-2)$-curves, and let $h = [F_1 + F_2] \in \Pic(S)$ be a polarization (@def:polarization-functors) of degree (@def:numerical-polarization) $2$.
-Then $\abs{2h}$ defines a morphism $\phi_h\colon S \to \PP^4$ whose image $\mathsf{D}$ is a $4$-nodal quartic del Pezzo surface.
+Let $S$ be a Coble surface (@def:coble-surface) with no $(-2)$-curves, and let $h = [F_1 + F_2] \in \Pic(S)$ be a polarization (@def:polarization-functors) of degree (@def:graded-object) (@def:numerical-polarization) $2$.
+Then $\abs{2h}$ defines a morphism $\phi_h\colon S \to \PP^4$ whose image $\mathsf{D}$ is a $4$-nodal quartic del Pezzo surface (@def:degree-of-del-pezzo-surface).
 Let $\sigma$ be its deck transformation, and let $C \in \abs{-2K_S}$ be the anti-bicanonical curve.
 
 1. $\Fix(\sigma)$ is the union of a smooth curve $\bar W$ of genus $4$ and three isolated points.
@@ -191,7 +191,7 @@ So a Coble surface is obtained as a degeneration of an Enriques surface (@def:en
 
 ::: {.proposition #prop:cuspidal-quintics-enriques title="Cuspidal quintics and Enriques surfaces"}
 
-Let $\mcm_{\cusp}$ be the moduli space of cuspidal plane quintics, the GIT quotient of the projective space of cuspidal plane quintics by $\PGL_3$.
+Let $\mcm_{\cusp}$ be the moduli space of cuspidal plane quintics, the GIT quotient of the projective space (@def:projective-morphism-of-schemes) of cuspidal plane quintics by $\PGL_3$.
 Then $\mcm_{\cusp}$ is a rational variety, birationally isomorphic to the moduli space $\mcm_{\En}$ of Enriques surfaces (@def:enriques-surface) [@DK13, §4].
 The locus $\mcm'_{5,\cusp}$ of @thm:coble-moduli-rational is a rational variety of dimension $9$ [@DK13, Thm. 4.1].
 :::

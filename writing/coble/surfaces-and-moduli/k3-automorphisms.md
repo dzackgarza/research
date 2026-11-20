@@ -92,7 +92,7 @@ So $H^{2,0}(X)$ is orthogonal to $S\tensor\CC$, that is, $H^{2,0}(X)\iscontained
 Then $\sigma^2=0$ and $\sigma\cdot\bar\sigma>0$ [@MS24, §2.2], so the pairing is nondegenerate on $H^{2,0}(X)\oplus H^{0,2}(X)$.
 By type, $H^{1,1}(X)$ is orthogonal to that sum, and the dimensions are $2$ and $20$ [@PS24, Proposition 19.1.1].
 Hence $H^{1,1}(X)=(H^{2,0}(X)\oplus H^{0,2}(X))^\perp$.
-An isometry $g$ of $L$ commutes with complex conjugation on $L\tensor\CC$.
+An isometry $g$ of $L$ commutes (@def:commutative-diagram) with complex conjugation on $L\tensor\CC$.
 So if $g_\CC$ preserves $H^{2,0}(X)$, it preserves $H^{0,2}(X)=\overline{H^{2,0}(X)}$ and the orthogonal complement $H^{1,1}(X)$.
 :::
 
@@ -108,7 +108,7 @@ If $\rho\geq2$, then $\Orth^+(S)$ is the group $\Orth^+(S)$ of @prop:spinor-plus
 Put $P\definedas\theset{x\in S\tensor\RR\st x^2>0}$, and let $P_0$ be the component of $P$ that contains the connected set $\Amp(X)$ (@def:ample-cone).
 The set $P$ has exactly the two components $P_0$ and $-P_0$.
 For $\rho=1$ this holds because $S\tensor\RR$ is a line.
-For $\rho\geq2$, $S$ has signature (@def:signature) $(1,\rho-1)$ by @prop:k3-ns-transcendental, so $P$ has two components by @prop:spinor-plus-cone-components, each preserved by $\Orth^+(S)$; and $-\id_S\notin\Orth^+(S)$ by @lem:minus-identity-spinor-norm because the positive index of $S$ is $1$, so $-\id_S$ exchanges them.
+For $\rho\geq2$, $S$ has signature (@def:signature) $(1,\rho-1)$ by @prop:k3-ns-transcendental, so $P$ has two components by @prop:spinor-plus-cone-components, each preserved by $\Orth^+(S)$; and $-\id_S\notin\Orth^+(S)$ by @lem:minus-identity-spinor-norm because the positive index (@def:maximal-positive-definite-subspace) of $S$ is $1$, so $-\id_S$ exchanges them.
 
 The positive cone $C_X$ is a connected component of the open set of classes of positive square in $H^{1,1}(X)\intersect H^2(X;\RR)$ [@PS24, §19.1].
 So $\mathcal C_S=C_X\intersect P$ is open and closed in $P$, and it is a union of components of $P$.
@@ -116,7 +116,7 @@ It contains $\Amp(X)$ [@PS24, §19.1], so $P_0\iscontainedin\mathcal C_S$.
 
 A reflection $s_r$ with $r^2<0$ preserves each component of $P$ (proof of @prop:spinor-plus-cone-components), so $W(S)$ preserves $P_0$ and $-P_0$.
 Suppose $-P_0\iscontainedin\mathcal C_S$, and let $x\in-P_0$.
-The closure of $\Amp(X)$ is a fundamental domain for $W(S)$ on $\mathcal C_S$ [@PS24, Proposition 19.1.3(2)], so $wx$ lies in the closure of $\Amp(X)$ for some $w\in W(S)$.
+The closure of $\Amp(X)$ is a fundamental domain (@def:fundamental-domain) for $W(S)$ on $\mathcal C_S$ [@PS24, Proposition 19.1.3(2)], so $wx$ lies in the closure of $\Amp(X)$ for some $w\in W(S)$.
 The closure of $\Amp(X)$ meets $P$ only in $P_0$, because $P_0$ is closed in $P$.
 But $wx\in-P_0$, which is disjoint from $P_0$.
 This contradiction gives $\mathcal C_S=P_0$.
@@ -224,7 +224,7 @@ Hence $\rho_{S,q}(g)=\rho_{S,q}(wg)=a(wg)$.
 ::: {.lemma #lem:k3-sign-structure title="Positive sign structures on the Néron–Severi lattice"}
 
 In @not:k3-automorphism-data, suppose $\rho\geq2$.
-Then the subgroup of $\Orth(S)$ that preserves positive sign structures [@AD15, §3.7] is $\Orth^+(S)$.
+Then the subgroup of $\Orth(S)$ that preserves positive sign structures (@def:positive-sign-structure) [@AD15, §3.7] is $\Orth^+(S)$.
 :::
 
 ::: {.proof}
@@ -232,7 +232,7 @@ Then the subgroup of $\Orth(S)$ that preserves positive sign structures [@AD15, 
 A positive sign structure on $S$ is an orientation (@def:free-module-orientation) of a maximal (@def:maximal-lattice) positive-definite subspace of $S\tensor\RR$, and $\det_+\colon\Orth(S)\to\theset{\pm1}$ records whether an isometry preserves or reverses it [@AD15, §3.7].
 The same definition gives a homomorphism $\det_+\colon\Orth(S\tensor\RR)\to\theset{\pm1}$.
 Let $w\in S\tensor\RR$ with $w^2\neq0$.
-If $w^2<0$, then $w^\perp$ has signature (@def:signature) $(1,\rho-2)$, so it contains a maximal positive-definite subspace, which $s_w$ fixes; hence $\det_+(s_w)=1$.
+If $w^2<0$, then $w^\perp$ has signature (@def:signature) $(1,\rho-2)$, so it contains a maximal positive-definite subspace (@def:maximal-positive-definite-subspace), which $s_w$ fixes; hence $\det_+(s_w)=1$.
 If $w^2>0$, then $\RR w$ is a maximal positive-definite subspace and $s_w(w)=-w$; hence $\det_+(s_w)=-1$.
 The character $\chi$ of the proof of @prop:spinor-plus-cone-components takes the same values on these reflections.
 The reflections generate $\Orth(S\tensor\RR)$ by the Cartan–Dieudonné theorem, so $\det_+=\chi$ on $\Orth(S)$.
@@ -242,7 +242,7 @@ So $\ker\det_+=\ker\chi$, which is $\Orth^+(S)$ by @prop:spinor-plus-cone-compon
 ::: {.theorem #thm:signed-miranda-morrison title="The signed Miranda–Morrison sequence"}
 
 Let $N$ be a nondegenerate (@def:polarization), indefinite (@def:definiteness), even lattice (@def:even-lattice) of rank at least $3$.
-Let $\Orth^+(N)$ be the subgroup of $\Orth(N)$ that preserves positive sign structures, and let $g(N)$ be the genus group (@def:mm-genus-group) of $N$.
+Let $\Orth^+(N)$ be the subgroup of $\Orth(N)$ that preserves positive sign structures (@def:positive-sign-structure), and let $g(N)$ be the genus group (@def:mm-genus-group) of $N$.
 There is a group (@def:group) $\operatorname{MM}^+(N)$ and an exact (@def:exact-complex) sequence of groups
 $$
 \Orth^+(N)\xrightarrow{\rho_{N,q}}\Orth(A_{N,q})\xrightarrow{e_N^+}\operatorname{MM}^+(N)\too g(N)\too1.
@@ -322,7 +322,7 @@ The pairs with $t\in G_X$ form $P_S\times_Q G_X$, which is $\Aut(X)$ by @thm:k3-
 ::: {.proposition #prop:k3-aut-elliptic-rank-two title="Elliptic K3 surfaces of Picard rank two"}
 
 In @not:k3-automorphism-data, suppose $X$ is elliptic and $\rho=2$.
-Then $a\colon P_S\to Q$ is injective, so $A_1=1$ and $f\mapsto f_*|_T$ embeds $\Aut(X)$ in $G_X$ with image $b|_{G_X}^{-1}(a(P_S))$ [@MS24, Proposition 3.10 and its proof].
+Then $a\colon P_S\to Q$ is injective (@def:injective-map), so $A_1=1$ and $f\mapsto f_*|_T$ embeds $\Aut(X)$ in $G_X$ with image $b|_{G_X}^{-1}(a(P_S))$ [@MS24, Proposition 3.10 and its proof].
 :::
 
 ## Computing the pullback
@@ -357,7 +357,7 @@ In @cons:k3-aut-group-generators:
 
 ::: {.proof}
 
-(1) The action of $P_S$ on $H$ is transitive, and the stabilizer of $1$ is $\ker a=N$; so $[P_S:N]=\abs{H}$.
+(1) The action of $P_S$ on $H$ is transitive, and the stabilizer (@def:group-orbit) of $1$ is $\ker a=N$; so $[P_S:N]=\abs{H}$.
 @lem:schreier-stabilizer, applied to this action with the point $1$ and the elements $r_h$, gives $N=\generators{Y_N}$.
 
 (2) A pair $(s,t)$ in the fibre product has $b(t)=a(s)\in H$, so $t\in K$.
@@ -400,7 +400,7 @@ It is onto: by @prop:k3-aut-pullback-group-generators (2), $F/(N\times\theset{1}
 Let $N'\le F'$ be the subgroup generated by $Y_N$.
 Conjugation by $u$ maps $N'$ into $N'$, and so does conjugation by $u^{-1}=u^{m-1}\omega_0^{-1}$; so $N'$ is normal, and $F'=\bigcup_{0\le k<m}N'u^k$.
 The homomorphism $\pi$ maps $N'u^k$ into $N\times\theset{t^k}$, and these sets are disjoint for $0\le k<m$; so $\ker\pi\iscontainedin N'$.
-The composite of $\generators{Y_N\st R}\to N'$ with $\pi|_{N'}$ is the given isomorphism onto $N\times\theset{1}$, so $\pi|_{N'}$ is injective.
+The composite of $\generators{Y_N\st R}\to N'$ with $\pi|_{N'}$ is the given isomorphism onto $N\times\theset{1}$, so $\pi|_{N'}$ is injective (@def:injective-map).
 Hence $\pi$ is an isomorphism, and $F\cong\Aut(X)$ by @thm:k3-aut-fibre-product.
 If $K=1$, then $F=N\times\theset{1}$ by @prop:k3-aut-pullback-group-generators (2).
 :::

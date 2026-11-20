@@ -202,7 +202,7 @@ $$
 $$
 So $\phi$ is determined by the pair, and $\chi_L(1_A)=\phi(1_A\tensor_R1_A)=1_R$ by unitality of $\phi$.
 
-Each $\chi$ is multiplicative, because the tensor product is that of $R\text{-}\mathbf{Alg}$ and the codomain $R$ is commutative:
+Each $\chi$ is multiplicative, because the tensor product is that of $R\text{-}\mathbf{Alg}$ and the codomain (@def:codomain-of-a-map) $R$ is commutative:
 $$
 \chi_L(ab)=\phi\bigl(ab\tensor_R1_A\bigr)=\phi\bigl(\iota_L(a)\iota_L(b)\bigr)=\phi(\iota_La)\phi(\iota_Lb)=\chi_L(a)\chi_L(b),
 $$

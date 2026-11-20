@@ -37,7 +37,7 @@ Hence a generating frame (@def:generating-frame) is a chosen object of a fibre o
 :::
 
 ::: {.proof}
-A morphism of $\operatorname{GenFrame}_I(R)$ is an $R$-linear map subject to a condition, so $U_I$ is injective on morphisms and faithful.
+A morphism of $\operatorname{GenFrame}_I(R)$ is an $R$-linear map subject to a condition, so $U_I$ is injective (@def:injective-map) on morphisms and faithful.
 It is not full: for $I$ a one-element set, $M=N=R$ and $s=t=\id_R$, multiplication by $r\in R$ is a morphism $(R,s)\to(R,t)$ only when $r=1$.
 A morphism $(M,s)\to(M,s')$ over $\id_M$ is the identity of $M$ together with the requirement $s=s'$, so the fibre has no morphisms other than identities.
 :::
@@ -138,7 +138,7 @@ In particular $A_0-A_0'=d_Nh_0$ for some $R$-linear map $h_0\colon R^{n}\to R^{m
 ::: {.proof}
 
 The extensions exist: by @def:resolution the modules $\ker d_M$ and $\ker d_N$ have projective resolutions, and splicing them onto the presentations gives $P$ and $Q$.
-The pair $(A_1,A_0)$ is a chain map $P\to Q$ in degrees (@def:chain-complexes) $0$ and $1$ over $f$, because the two squares of @def:presentation-category commute.
+The pair $(A_1,A_0)$ is a chain map $P\to Q$ in degrees (@def:graded-object) (@def:chain-complexes) $0$ and $1$ over $f$, because the two squares of @def:presentation-category commute.
 For degree $2$, the composite $A_1d^P_2$ satisfies $d_NA_1d^P_2=A_0d_Md^P_2=0$, so it lands in $\ker d_N=\im d^Q_2$, by exactness of $Q$.
 Since $P_2$ is projective (@def:module-subcategories), it lifts along $Q_2\twoheadrightarrow\im d^Q_2$ to $f_2$ with $d^Q_2f_2=A_1d^P_2$.
 The higher degrees follow by the same induction as in the proof of @thm:resolution-comparison.
@@ -155,7 +155,7 @@ $$
 $$
 in which $P_i$ is finitely generated (@def:module-subcategories) for $0\le i\le n$.
 Type $FP_0$ is finite generation and type $FP_1$ is finite presentation (@def:finite-presentation).
-A chosen partial resolution finitely generated through degree (@def:resolution) $n$ is structure (@def:property-structure-stuff) on $M$; type $FP_n$ is the property (@def:property-structure-stuff) asserting that one exists.
+A chosen partial resolution finitely generated through degree (@def:graded-object) (@def:resolution) $n$ is structure (@def:property-structure-stuff) on $M$; type $FP_n$ is the property (@def:property-structure-stuff) asserting that one exists.
 :::
 
 ## Automorphisms acting on frames {#sec-frames-and-automorphisms}
@@ -163,7 +163,7 @@ A chosen partial resolution finitely generated through degree (@def:resolution) 
 ::: {.proposition #prop:automorphisms-act-on-frames title="The action on the fibre"}
 Let $I$ be a set and let $M$ be an $R$-module.
 Precomposition, $(M,s)\cdot u=(M,su)$ for $u$ in the automorphism group $\Aut_R\bigl(R^{(I)}\bigr)$ of @def:endomorphism-monoid, is a right action of $\Aut_R\bigl(R^{(I)}\bigr)$ on the fibre $U_I^{-1}(M)$ of @prop:generating-frame-is-structure.
-The stabilizer of $(M,s)$ is the subgroup of those $u$ with $(u-\id)\bigl(R^{(I)}\bigr)\subseteq\ker s$.
+The stabilizer (@def:group-orbit) of $(M,s)$ is the subgroup of those $u$ with $(u-\id)\bigl(R^{(I)}\bigr)\subseteq\ker s$.
 If $s$ and $s'$ are both isomorphisms (@def:isomorphism-of-objects), then $u=s^{-1}s'$ is the unique element with $su=s'$.
 :::
 

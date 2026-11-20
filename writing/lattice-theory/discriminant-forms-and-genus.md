@@ -6,6 +6,76 @@ Throughout, $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$.
 Write $A_L$ and $A_{L,q}$ for the bilinear and quadratic discriminant objects of @def:discriminant.
 :::
 
+::: {.definition #def:rank-of-free-module title="Rank of a free module" defines="rank of a free module"}
+
+Let $R$ be a commutative ring with identity.
+Any two bases (@def:based-module) of a free $R$-module have the same cardinality [@Hun74, Ch. IV, Cor. 2.12].
+This cardinality is the **rank** of the free module (@def:module-subcategories) [@Hun74, Ch. IV, Def. 2.8].
+:::
+
+::: {.definition #def:module-of-finite-length title="Module of finite length" defines="module of finite length; length of a module"}
+
+A module $M$ over a ring is **of finite length** if $M=0$ or $M$ admits a finite filtration $M=M_1\supset M_2\supset\cdots\supset M_r=0$ in which each quotient $M_i/M_{i+1}$ is simple, meaning nonzero with no submodules other than $0$ and itself.
+By the Jordan–Hölder theorem the number $r$ of steps of such a filtration is uniquely determined by $M$; it is the **length** of $M$ [@Lan05, Ch. III, §8].
+:::
+
+::: {.definition #def:exponent-of-abelian-group title="Exponent of a finite abelian group" defines="exponent of a finite abelian group; exponent of a group"}
+
+Let $A$ be an abelian group (@def:group), written additively.
+A positive integer $m$ is an exponent of $A$ if $mx=0$ for every $x\in A$ [@Lan05, Ch. I, §4].
+For a finite abelian group $A$, the **exponent** of $A$ is the least positive integer $n$ with $na=0$ for every $a\in A$.
+:::
+
+::: {.definition #def:split-short-exact-sequence title="Split short exact sequence" defines="split short exact sequence; split exact sequence"}
+
+Let $0\to A\xrightarrow{f}B\xrightarrow{g}C\to0$ be a short exact sequence (@def:exact-complex) of modules (@def:modules-over-ring).
+The sequence is **split** if there is a homomorphism $\varphi\colon C\to B$ with $g\circ\varphi=\mathrm{id}_C$.
+In that case $B=\operatorname{Im}f\oplus\operatorname{Im}\varphi$ and $B\cong A\oplus C$ [@Lan05, Ch. III, §3, Prop. 3.2].
+Equivalently, $B=f(A)\oplus C'$ for the submodule $C'=\operatorname{Im}\varphi\cong C$.
+:::
+
+::: {.definition #def:characteristic-of-field title="Characteristic of a field" defines="characteristic of a field"}
+
+Let $K$ be a field.
+The ring homomorphism $\mathbb Z\to K$, $n\mapsto n\cdot1$, has kernel (@def:kernel-cokernel) $n_0\mathbb Z$ for a unique integer $n_0\ge0$.
+The **characteristic** of $K$ is $n_0$: the least $n>0$ with $n\cdot1=0$ in $K$ if such $n$ exists, and $0$ otherwise.
+It is $0$ or a prime number $p$ [@Lan05, Ch. II, §1].
+:::
+
+::: {.definition #def:algebraically-closed-field title="Algebraically closed field" defines="algebraically closed field"}
+
+A field $k$ is **algebraically closed** if every polynomial in $k[X]$ of degree (@def:graded-object) $\ge1$ has a root in $k$ [@Lan05, Ch. IV, §1].
+:::
+
+::: {.definition #def:degree-of-polynomial title="Degree of a polynomial" defines="degree of a polynomial"}
+
+For a nonzero polynomial $f=\sum_{i=0}^{n}a_iX^i$ with $a_n\ne0$, the **degree (@def:graded-object)** of $f$ is $n$, the largest exponent occurring in $f$ [@Lan05, Ch. II, §3].
+:::
+
+::: {.definition #def:degree-of-field-extension title="Degree of a field extension" defines="degree of a field extension; $[E:F]$"}
+
+For an extension field $E$ of a field $F$, the **degree (@def:graded-object)** $[E:F]$ is the dimension of $E$ as a vector space over $F$, possibly infinite [@Lan05, Ch. V, §1].
+:::
+
+::: {.definition #def:primitive-root-of-unity title="Primitive root of unity" defines="primitive root of unity; primitive $m$-th root of unity; $m$-th root of unity"}
+
+Let $k$ be a field.
+An element $\zeta\in k$ with $\zeta^m=1$ for some integer $m\ge1$ is an $m$-th root of unity.
+If $m$ is not divisible by the characteristic of $k$ (@def:characteristic-of-field), the $m$-th roots of unity in an algebraic closure of $k$ form a cyclic group (@def:group) of order $m$, and a generator of it is a **primitive $m$-th root of unity**, that is, an $m$-th root of unity of exact (@def:exact-complex) multiplicative order $m$ [@Lan05, Ch. VI, §3].
+:::
+
+::: {.definition #def:minimal-prime-ideal title="Minimal prime ideal" defines="minimal prime ideal"}
+
+A prime ideal of a commutative (@def:operation-axioms) ring $A$ is a **minimal prime ideal** if it is a minimal element, for inclusion, of the set of prime ideals of $A$.
+If $A\ne0$, this set has minimal elements [@AM18, Ch. 1, Ex. 8].
+:::
+
+::: {.definition #def:integrally-closed-ring title="Integrally closed domain" defines="integrally closed ring; integrally closed domain"}
+
+An element of the field of fractions $K$ of an integral domain $A$ is integral over $A$ if it satisfies a monic polynomial with coefficients in $A$.
+The domain $A$ is **integrally closed** if every element of $K$ integral over $A$ lies in $A$ [@AM18, Ch. 5].
+:::
+
 ::: {.definition #def:coble-discriminant-forms title="Length of a lattice" defines="length of a finite $\bZ$-module; $\ell(A)$; length of a lattice; $\ell(L)$"}
 
 For a finite $\bZ$-module $A$, let $\ell(A)$ be the minimal cardinality of a set of module generators of $A$ [@Nik80, §1.9].

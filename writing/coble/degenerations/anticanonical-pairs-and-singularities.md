@@ -44,7 +44,7 @@ A *toric model* of an anticanonical pair (@def:anticanonical-pair) $(V,D)$ is a 
 $$
 (V,D) \longleftarrow (V',D') \longrightarrow (\bar V,\bar D),
 $$
-where $(\bar V,\bar D)$ is a smooth toric surface with its toric boundary, $V'\to V$ is a sequence of corner blowups at nodes of $D$, and $V'\to\bar V$ is the contraction of the exceptional curves of a sequence of interior blowups at smooth points of the boundary. The boundary on the corner blowup is the reduced inverse image; on an interior blowup it is the strict transform [@AE22, §6.1].
+where $(\bar V,\bar D)$ is a smooth toric surface with its toric boundary, $V'\to V$ is a sequence of corner blowups at nodes of $D$, and $V'\to\bar V$ is the contraction of the exceptional curves of a sequence of interior blowups at smooth points of the boundary. The boundary on the corner blowup is the reduced inverse image; on an interior blowup it is the strict transform (@def:strict-transform) [@AE22, §6.1].
 
 The diagram gives a birational map $V\dashrightarrow\bar V$ through their common model $V'$. The intermediate $V'$ need not be toric: its map to the toric surface contracts curves created by interior blowups. Thus “toric model” names the toric target (@def:globular-boundary) of the diagram, rather than every surface in it [@AE22, §6.1].
 :::
@@ -134,7 +134,7 @@ The pair $(X, D)$ is
 ::: {.definition #def:divisorial-log-terminal title="Divisorial log terminal pairs" defines="divisorial log terminal (dlt) pair"}
 
 Let $X$ be a normal variety and let $D = \Sum_i a_i D_i$ be a sum of distinct prime divisors with $0\leq a_i\leq1$, such that $m(K_X + D)$ is Cartier for some $m > 0$.
-The pair $(X, D)$ is **divisorial log terminal (@def:divisorial-log-terminal) (dlt)** if there is a closed subset $Z\subset X$ such that:
+The pair $(X, D)$ is **divisorial log terminal (@def:divisorial-log-terminal) (dlt)** if there is a closed subset (@def:closed-subset) $Z\subset X$ such that:
 
 1. $X\sm Z$ is smooth and $D|_{X\sm Z}$ is an snc divisor;
 

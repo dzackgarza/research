@@ -70,7 +70,7 @@ Let $L$ be a negative-definite even lattice with $R(L)\neq\emptyset$, and let $V
 $$
 P(R(L))=\theset{x\in V\st (x\mid\alpha)\in\bZ\ \text{for all }\alpha\in R(L)}
 $$
-of $\bZ R(L)$ in $V$. So the connection index (@def:index) of $R(L)$ is $[P(R(L)):\bZ R(L)]$. A simple system of $L$ (@def:root-lattice) is a base of $R(L)$.
+of $\bZ R(L)$ in $V$. So the connection index (@def:connection-index) (@def:index) of $R(L)$ is $[P(R(L)):\bZ R(L)]$. A simple system of $L$ (@def:root-lattice) is a base of $R(L)$.
 :::
 
 ::: {.proof}
@@ -214,17 +214,17 @@ Let $k\in\theset{1,2}$, let $P\leq E_8$ be a sublattice isometric to $A_k$, and 
 :::
 
 ::: {.proof}
-Work in the twist (@def:form-twist) $E_8(-1)$ with $(x\mid y)=-\beta(x,y)$, as in @lem:norm-two-root-system. The roots of $E_8(-1)$ form the root system $R_8$ of type $E_8$ [@Bou08, Ch. VI §4 no. 10]. The lattice $M$ is even and negative definite (@def:definiteness), and $R(M)=R_8\cap P^\perp$. For a reduced irreducible root system of rank $l$ with $N$ roots, the Coxeter number is $h=N/l$, and its values are $l+1$ for $A_l$, $2l-2$ for $D_l$, and $12$, $18$, $30$ for $E_6$, $E_7$, $E_8$ [@Bou08, Ch. VI §4 no. 7; @Bou08, Ch. VI §4 no. 8; @Bou08, Ch. VI §4 no. 10; @Bou08, Ch. VI §4 no. 11; @Bou08, Ch. VI §4 no. 12, item (III)]. A simply-laced root system whose irreducible components have ranks $l_i$ and Coxeter numbers $h_i$ therefore has $\sum_il_ih_i$ roots.
+Work in the twist (@def:form-twist) $E_8(-1)$ with $(x\mid y)=-\beta(x,y)$, as in @lem:norm-two-root-system. The roots of $E_8(-1)$ form the root system $R_8$ of type $E_8$ [@Bou08, Ch. VI §4 no. 10]. The lattice $M$ is even and negative definite (@def:definiteness), and $R(M)=R_8\cap P^\perp$. For a reduced irreducible root system of rank $l$ with $N$ roots, the Coxeter number (@def:coxeter-exponent) is $h=N/l$, and its values are $l+1$ for $A_l$, $2l-2$ for $D_l$, and $12$, $18$, $30$ for $E_6$, $E_7$, $E_8$ [@Bou08, Ch. VI §4 no. 7; @Bou08, Ch. VI §4 no. 8; @Bou08, Ch. VI §4 no. 10; @Bou08, Ch. VI §4 no. 11; @Bou08, Ch. VI §4 no. 12, item (III)]. A simply-laced root system whose irreducible components have ranks $l_i$ and Coxeter numbers $h_i$ therefore has $\sum_il_ih_i$ roots.
 
 *The case $k=1$.* Let $P=\bZ a$. The root system $R_8$ is irreducible with all roots of the same length (@def:lattice-basic-invariants), so exactly $4\cdot30-6=114$ roots are not orthogonal to $a$ [@Bou08, Ch. VI §1 no. 11, Prop. 32]. So $R(M)$ has $240-114=126$ roots and rank at most $7$. Among the simply-laced types of rank at most $7$, the largest Coxeter number is $18$, attained only by $E_7$, so $\sum_il_ih_i\le18\cdot7=126$ with equality only when $R(M)$ is irreducible of type $E_7$.
 
-*The case $k=2$.* Let $P=\bZ a\oplus\bZ b$ with roots $a,b$ and $(a\mid b)=-1$. By the case $k=1$, $R_a\definedas R_8\cap a^\perp$ is irreducible of type $E_7$ and spans $V_a\definedas a^\perp$. For an irreducible finite reflection group (@def:group) with Coxeter number $h$, the unit normals $u$ of its reflecting hyperplanes satisfy $\sum_u(x\mid u)^2=h(x\mid x)$ [@Bou08, Ch. V §6 no. 2, Cor. of Th. 1]. For $R_a$ the unit normals are the $c/\sqrt2$ with $c\in R_a$, and $h=18$, so
+*The case $k=2$.* Let $P=\bZ a\oplus\bZ b$ with roots $a,b$ and $(a\mid b)=-1$. By the case $k=1$, $R_a\definedas R_8\cap a^\perp$ is irreducible of type $E_7$ and spans $V_a\definedas a^\perp$. For an irreducible finite reflection group (@def:reflection-group) (@def:group) with Coxeter number $h$, the unit normals $u$ of its reflecting hyperplanes satisfy $\sum_u(x\mid u)^2=h(x\mid x)$ [@Bou08, Ch. V §6 no. 2, Cor. of Th. 1]. For $R_a$ the unit normals are the $c/\sqrt2$ with $c\in R_a$, and $h=18$, so
 $$
 \sum_{c\in R_a}(x\mid c)^2=36\,(x\mid x)\qquad(x\in V_a).
 $$
 The vector $x=b+\tfrac12a$ lies in $V_a$ and has $(x\mid x)=\tfrac32$, so the sum is $54$. For $c\in R_a$ one has $(x\mid c)=(b\mid c)$. This is an integer with $\abs{(b\mid c)}\le1$, because $c\neq\pm b$ (as $(b\mid a)\neq0$) and $\abs{(b\mid c)}<2$ for non-proportional roots of square length $2$. So exactly $54$ roots of $R_a$ are not orthogonal to $b$, and $R(M)=R_a\cap b^\perp$ has $126-54=72$ roots and rank at most $6$. Among the simply-laced types of rank at most $6$, the largest Coxeter number is $12$, attained only by $E_6$, so $\sum_il_ih_i\le12\cdot6=72$ with equality only when $R(M)$ is irreducible of type $E_6$.
 
-*The lattice.* In both cases $R(M)$ has rank $8-k=\rank M$, so $Q\definedas\bZ R(M)$ has finite index (@def:index) in $M$. Let $Q^\#$ and $M^\#$ be the dual lattices in $M\tensor\bQ$. Then $Q\subseteq M\subseteq M^\#\subseteq Q^\#$, and $Q^\#=P(R(M))$ by @lem:norm-two-root-system. So $[Q^\#:Q]$ is the connection index of $R(M)$, which is $2$ for $E_7$ and $3$ for $E_6$ [@Bou08, Ch. VI §4 no. 11; @Bou08, Ch. VI §4 no. 12, item (VIII)]. This index is prime. If $Q\neq M$, then $M=Q^\#$, so $M^\#=Q^{\#\#}=Q\subsetneq M$, which contradicts $M\subseteq M^\#$. So $M=Q$ is generated by its roots, and it is a simply-laced root lattice with root system of type $E_{8-k}$.
+*The lattice.* In both cases $R(M)$ has rank $8-k=\rank M$, so $Q\definedas\bZ R(M)$ has finite index (@def:index) in $M$. Let $Q^\#$ and $M^\#$ be the dual lattices in $M\tensor\bQ$. Then $Q\subseteq M\subseteq M^\#\subseteq Q^\#$, and $Q^\#=P(R(M))$ by @lem:norm-two-root-system. So $[Q^\#:Q]$ is the connection index (@def:connection-index) of $R(M)$, which is $2$ for $E_7$ and $3$ for $E_6$ [@Bou08, Ch. VI §4 no. 11; @Bou08, Ch. VI §4 no. 12, item (VIII)]. This index is prime. If $Q\neq M$, then $M=Q^\#$, so $M^\#=Q^{\#\#}=Q\subsetneq M$, which contradicts $M\subseteq M^\#$. So $M=Q$ is generated by its roots, and it is a simply-laced root lattice with root system of type $E_{8-k}$.
 :::
 
 ::: {.example #ex:E8-roots}
@@ -259,8 +259,8 @@ Each of the following root systems has roots of two lengths. The lattice of each
 
 ::: {.proposition #prop:finite-crystallographic-coxeter-classification title="Crystallographic finite Coxeter systems"}
 
-A finite Coxeter system is crystallographic in the sense of @def:crystallographic-coxeter if and only if every Coxeter exponent satisfies $m_{ij}\in\theset{2,3,4,6}$.
-The remaining finite reflection groups (@def:group) $H_3$, $H_4$ and $I_2(p)$ for $p\notin\theset{2,3,4,6}$ preserve no lattice of full rank (@thm:crystallographic-lattice), and so are finite Coxeter systems that are the Weyl group (@def:weyl-group) of no root system (@def:root-system-base) in a lattice; their Gram forms are defined over the real number fields of @ex:noncrystallographic-base-rings rather than over $\ZZ$.
+A finite Coxeter system is crystallographic in the sense of @def:crystallographic-coxeter if and only if every Coxeter exponent (@def:coxeter-exponent) satisfies $m_{ij}\in\theset{2,3,4,6}$.
+The remaining finite reflection groups (@def:reflection-group) (@def:group) $H_3$, $H_4$ and $I_2(p)$ for $p\notin\theset{2,3,4,6}$ preserve no lattice of full rank (@thm:crystallographic-lattice), and so are finite Coxeter systems that are the Weyl group (@def:weyl-group) of no root system (@def:root-system-base) in a lattice; their Gram forms are defined over the real number fields of @ex:noncrystallographic-base-rings rather than over $\ZZ$.
 :::
 
 ::: {.proof}

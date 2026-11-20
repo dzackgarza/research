@@ -185,13 +185,13 @@ W_s
 H^2(X_s,\RR)
 $$
 is positive definite (@def:definiteness) for the cup-product form.
-The lattice $\lkt$ has signature $(3,19)$, so $W_s$ is a maximal positive-definite subspace, and the ordered basis (@def:based-module)
+The lattice $\lkt$ has signature $(3,19)$, so $W_s$ is a maximal positive-definite subspace (@def:maximal-positive-definite-subspace), and the ordered basis (@def:based-module)
 $$
 \qty{\Re\omega_s,\Im\omega_s,H_s}
 $$
 defines a positive orientation class $o_s$ of $H^2(X_s,\RR)$ (@def:orientation-classes).
 
-This class is independent of the choices: replacing $\omega_s$ by $a\omega_s$ with $a\in\CC^*$ acts orientation-preservingly on the real plane $H^{2,0}(X_s)\oplus H^{0,2}(X_s)$, and the Kähler cone is connected.
+This class is independent of the choices: replacing $\omega_s$ by $a\omega_s$ with $a\in\CC^*$ acts orientation-preservingly on the real plane $H^{2,0}(X_s)\oplus H^{0,2}(X_s)$, and the Kähler cone (@def:closed-cone) is connected.
 In a local trivialization of $\bV_f$, the Hodge line and a Kähler class vary continuously, so $(o_s)_{s\in S}$ is a global section of the sheaf $\operatorname{Or}^+_{\bV_f}$ of @def:orientation-sheaf.
 By @prop:orientation-sheaf-section, $\rho_{f,s_0}$ takes values in $\Orth^+\qty{H^2(X_{s_0},\ZZ)}$.
 The marking $\eta_{s_0}$ is an isometry, so conjugation by $\eta_{s_0}$ maps $\Orth^+\qty{H^2(X_{s_0},\ZZ)}$ onto $\Orth^+(\lkt)$ (@def:lattice-spinor-kernels).

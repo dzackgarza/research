@@ -109,7 +109,7 @@ The quotient has one singularity of type $\frac{1}{4}(1,1)$.
 :::
 
 ::: {.definition #def:resolved-coble title="resolved Coble surface" defines="resolved Coble surface; $\wV$"}
-The *resolved Coble surface* (@def:coble-surface) $\wV$ is the minimal resolution of $V^\sharp$.
+The *resolved Coble surface* (@def:coble-surface) $\wV$ is the minimal resolution (@def:minimal-resolution-of-surface-singularity) of $V^\sharp$.
 It is a smooth rational surface satisfying
 
 \[
@@ -273,7 +273,7 @@ Let $\Gamma^K_{\mathrm{En}}=O(T_{\mathrm{En}})$, so that $\mcf_{(10,10,0)}=\bD(T
 
 1. Up to $\Gamma^K_{\mathrm{En}}$ there is a unique $(-2)$-vector $\alpha\in T_{\mathrm{En}}$. The discriminant divisor $\Delta=\alpha^\perp\subset\bD(T_{\mathrm{En}})/\Gamma^K_{\mathrm{En}}$ parameterizes quotients of nodal K3 surfaces by an involution that fixes a node. These quotients are rational Coble surfaces (@def:coble-surface) with a $\frac{1}{4}(1,1)$ singularity.
 
-2. There are two $\Gamma^K_{\mathrm{En}}$-orbits of $(-4)$-vectors $\beta\in T_{\mathrm{En}}$. The divisor of the vector with $\beta^\perp\cong\langle4\rangle\oplus U\oplus E_8(2)$ parameterizes nodal Enriques surfaces (@def:nodal-enriques-surface) (@def:enriques-surface). The divisor of the other orbit parameterizes the unigonal Enriques surfaces, which are double covers of $\bP(1,1,2)$.
+2. There are two $\Gamma^K_{\mathrm{En}}$-orbits of $(-4)$-vectors $\beta\in T_{\mathrm{En}}$. The divisor of the vector with $\beta^\perp\cong\langle4\rangle\oplus U\oplus E_8(2)$ parameterizes nodal Enriques surfaces (@def:nodal-enriques-surface) (@def:enriques-surface). The divisor of the other orbit (@def:group-orbit) parameterizes the unigonal Enriques surfaces, which are double covers of $\bP(1,1,2)$.
 
 3. On the unigonal Heegner divisor of $\mcf_{\mathrm{En},2}$, the projective diagram of @sec-aegs-projective is replaced by the diagram with $(Y,L)=(\bP(1,1,2),\mathcal O(4))$, a singular quadric.
 
@@ -332,7 +332,7 @@ The curve $B=(f=0)$ has an ordinary node at $p$ if and only if $a_{00}=0$ and $a
 ::: {.proof}
 The first condition says that $p\in B$.
 Invariance kills the linear part.
-The second condition says that the quadratic tangent cone is nondegenerate (@def:polarization).
+The second condition says that the quadratic tangent cone (@def:closed-cone) is nondegenerate (@def:polarization).
 This is the analytic criterion for an ordinary plane node.
 :::
 
@@ -381,7 +381,7 @@ $$
 X^\sharp_{\mathrm{an}}\cong\{xy-z^2=0\}\subseteq\bC^3
 $$
 at the preimage of the node.
-The map $\bA^2_{u,v}\to\{xy-z^2=0\}$, $(u,v)\mapsto(u^2,v^2,uv)$, is surjective with fibres the orbits of $(u,v)\mapsto(-u,-v)$, so $\{xy-z^2=0\}\cong\bA^2_{u,v}/\{\pm1\}$.
+The map $\bA^2_{u,v}\to\{xy-z^2=0\}$, $(u,v)\mapsto(u^2,v^2,uv)$, is surjective with fibres the orbits (@def:group-orbit) of $(u,v)\mapsto(-u,-v)$, so $\{xy-z^2=0\}\cong\bA^2_{u,v}/\{\pm1\}$.
 
 The involution $\iota_{\Co}$ does not act here as the deck transformation $\iota_{\mathrm{dP}} = (x,y,-z)$ of the double cover, whose fixed locus through the node is the pair of branches $\{uv = 0\}$ of the branch curve, but as $(x,y,z)\mapsto(-x,-y,-z)$, which preserves $\{xy = z^2\}$ because $(-x)(-y) = (-z)^2$.
 On $\bA^2_{u,v}$ this is $(u,v)\mapsto(iu,iv)$: the unique lift, since $z=uv$ must change sign while $x=u^2$ and $y=v^2$ are fixed, and $iu$ and $iv$ retain the correct squares.
@@ -635,7 +635,7 @@ The lattice $\latI_{1,10}(2) = S_\Co$ is even and $2$-elementary with the same s
 
 ::: {.proposition #prop:one-node-period-image title="the period map of the one-node family"}
 Let $B$ be the one-node locus of @prop:one-node-family.
-Let $\Gamma_{\mathrm{lab}}\subseteq\Orth(T_\Co)$ be the image of the stabilizer in $\Orth(\lkt)$ of the labels $(S_\Co,S_{\mathrm{dP}},H,\alpha)$, and let
+Let $\Gamma_{\mathrm{lab}}\subseteq\Orth(T_\Co)$ be the image of the stabilizer (@def:group-orbit) in $\Orth(\lkt)$ of the labels $(S_\Co,S_{\mathrm{dP}},H,\alpha)$, and let
 $$\mathcal P\colon B\too\Gamma_{\mathrm{lab}}\backslash\bD(T_\Co)$$
 be the period map (@def:period-map) of the family.
 Let $G$ be the stabilizer of the point $p$ of @prop:one-node-family in the centralizer of $\tau$ in $\Aut(Y)$.
@@ -659,17 +659,17 @@ Each involution acts by $+1$ on its invariant lattice and by $-1$ on the orthogo
 Let $\sigma\colon\widehat Y=\Bl_{p_0}Y\to Y$ be the blow-up and $e$ its exceptional curve.
 By part (1) of @lem:face-at-H, $\alpha_b = \widehat\pi_b^*e$, and $H_b = \widehat\pi_b^*\sigma^*\OO_Y(1,1)$, so
 $$2H_b-\alpha_b = \widehat\pi_b^*\bigl(\sigma^*\OO_Y(2,2)-e\bigr) = \widehat\pi_b^*(-K_{\widehat Y}).$$
-The surface $\widehat Y$ is a del Pezzo surface of degree $7$, so $-K_{\widehat Y}$ is ample, and $\widehat\pi_b$ is finite, so $2H_b-\alpha_b$ is ample.
+The surface $\widehat Y$ is a del Pezzo surface (@def:degree-of-del-pezzo-surface) of degree (@def:graded-object) $7$, so $-K_{\widehat Y}$ is ample, and $\widehat\pi_b$ is finite, so $2H_b-\alpha_b$ is ample.
 The isometry $g$ carries $2H_b-\alpha_b$ to the ample class $2H_{b'}-\alpha_{b'}$, so by the strong Torelli theorem [@BHPV04, Ch. VIII, Thm. 11.1] $g = \varphi^*$ for an isomorphism $\varphi\colon\widehat X_{b'}\to\widehat X_b$.
 The action of the automorphism group (@def:endomorphism-monoid) of a K3 surface on its second cohomology is faithful, so $\varphi$ conjugates $\widehat\iota_{\mathrm{dP},b'}$ to $\widehat\iota_{\mathrm{dP},b}$ and $\widehat\iota_{\Co,b'}$ to $\widehat\iota_{\Co,b}$.
-So $\varphi$ descends to an automorphism of $\widehat X_b/\widehat\iota_{\mathrm{dP},b} = \widehat Y$ that commutes with $\tau$, carries the branch curve of $b'$ to the branch curve of $b$, and preserves $e$ because $g(\alpha_b)=\alpha_{b'}$.
+So $\varphi$ descends to an automorphism of $\widehat X_b/\widehat\iota_{\mathrm{dP},b} = \widehat Y$ that commutes (@def:commutative-diagram) with $\tau$, carries the branch curve of $b'$ to the branch curve of $b$, and preserves $e$ because $g(\alpha_b)=\alpha_{b'}$.
 It therefore descends to an element of $G$ that carries $b'$ to $b$.
 Conversely, an element of $G$ that carries $b'$ to $b$ lifts to an isomorphism $\widehat X_{b'}\to\widehat X_b$ that commutes with both involutions and preserves $H$ and $\alpha$, so $\mathcal P(b) = \mathcal P(b')$.
 This proves (1).
 
 *The image.* The identity component of the centralizer of $\tau$ in $\Aut(Y)$ is the product of the diagonal tori of the two factors $\mathrm{PGL}_2$, which fixes each $\tau$-fixed point.
 So $\dim G = 2$, and by (1) every fibre of $\mathcal P$ has dimension at most $2$.
-By @prop:one-node-connected, $B$ is a nonempty open subset of a projective space of dimension $11$, so the closure of the image of $\mathcal P$ has dimension at least $11-2 = 9$.
+By @prop:one-node-connected, $B$ is a nonempty open subset of a projective space (@def:projective-morphism-of-schemes) of dimension $11$, so the closure of the image of $\mathcal P$ has dimension at least $11-2 = 9$.
 The target has dimension $\rank T_\Co-2 = 9$, so the closure of the image is a component of the target.
 By Chevalley's theorem the image is constructible, so it contains a nonempty Zariski-open subset of that component.
 By generic smoothness in characteristic $0$, the differential of $\mathcal P$ has rank $9$ on a dense open subset of $B$.
@@ -692,7 +692,7 @@ Hence the chamber clause of @prob:coble-rigidity is false, and that problem with
 ::: {.proof}
 *The chamber, in the corpus's definition.*
 By @def:coble-polarization-classes, part 3, the chamber of a member is the component of $\mathcal C_b\setminus\bigcup_{\delta\in\Delta_b}\delta^\perp$ containing the ample cone, inside $\Pic(\widehat X_b)\tensor\RR$, where $\Delta_b$ is the set of effective classes of square $-2$.
-So $\mathfrak c_b$ is open in $\Pic(\widehat X_b)\tensor\RR$ and every facet of it lies in $\delta^\perp$ for some $\delta\in\Delta_b$, with normal $\pm\delta$: two primitive classes defining the same hyperplane are proportional.
+So $\mathfrak c_b$ is open in $\Pic(\widehat X_b)\tensor\RR$ and every facet (@def:facet-maximal-face) of it lies in $\delta^\perp$ for some $\delta\in\Delta_b$, with normal $\pm\delta$: two primitive classes defining the same hyperplane are proportional.
 An isometry $\gamma$ with $\gamma\mathfrak c_{b_0}=\mathfrak c_{b_\star}$ therefore has $\gamma(\Pic(\widehat X_{b_0})\tensor\RR)=\Pic(\widehat X_{b_\star})\tensor\RR$, a chamber being open in its own linear span.
 
 *The invariant.*
@@ -712,9 +712,9 @@ $$f_\star=8x^4y^4+7x^4y^2+6x^4+5x^3y^3+4x^3y+3x^2y^4+2x^2y^2+3x^2-13xy^3-28xy-10
 Both are $\tau$-invariant, both vanish at $p$ with nondegenerate (@def:polarization) quadratic part, $2x^2+7xy-5y^2$ and $3x^2-28xy+13y^2$, and both branch curves are smooth away from $p$: the Jacobian ideal (@cons:pf-from-jacobian) is $\generators{x,y}$ in the chart at $p$ and the unit ideal in each of the other three charts of $\PP^1\times\PP^1$.
 So both are members of @prop:one-node-family and the tuples attached to them by @prop:tuple-of-the-construction satisfy the five conditions.
 
-For $b_0$ the $y$-discriminant of $f_0$ is $x^2$ times a squarefree polynomial of degree $22$ coprime to $x^2-1$, the $x$-discriminant is $y^2$ times a squarefree polynomial of degree $22$, and the leading $x$-coefficient is the squarefree $5y^4-2y^2+3$.
+For $b_0$ the $y$-discriminant of $f_0$ is $x^2$ times a squarefree polynomial of degree (@def:graded-object) $22$ coprime to $x^2-1$, the $x$-discriminant is $y^2$ times a squarefree polynomial of degree $22$, and the leading $x$-coefficient is the squarefree $5y^4-2y^2+3$.
 A ruling whose fibre is not reduced gives a multiple root of the relevant discriminant, and a simple root of a discriminant which is otherwise squarefree means exactly one double point, that is a nodal fibre; so every ruling of either fibration away from the node's has an irreducible nodal fibre.
-The ruling through $p$ is $F_1=\set{x=0}$, and its strict transform $\widetilde F_1$ in $\Bl_pY$ satisfies $h_1=[\widetilde F_1]+[e]$; applying $\widehat\pi_b^*$ and using $\widehat\pi_b^*e=D_b$ (@lem:face-at-H, part 1) gives $L_1=\widehat\pi_b^*\widetilde F_1+D_b$, so that fibre is $\widehat\pi_b^*F_1=(L_1-D_b)+D_b$, with $H_b$-degrees $2$ and $0$, and the fibres at $x=\infty$ and at $y=\infty$ are smooth elliptic.
+The ruling through $p$ is $F_1=\set{x=0}$, and its strict transform (@def:strict-transform) $\widetilde F_1$ in $\Bl_pY$ satisfies $h_1=[\widetilde F_1]+[e]$; applying $\widehat\pi_b^*$ and using $\widehat\pi_b^*e=D_b$ (@lem:face-at-H, part 1) gives $L_1=\widehat\pi_b^*\widetilde F_1+D_b$, so that fibre is $\widehat\pi_b^*F_1=(L_1-D_b)+D_b$, with $H_b$-degrees $2$ and $0$, and the fibres at $x=\infty$ and at $y=\infty$ are smooth elliptic.
 None of those fibres contributes a component of $H_b$-degree $1$, so $\nu(b_0)=0$.
 
 For $b_\star$ the $y$-discriminant is $x^2(x-1)^2(x+1)^2$ times a squarefree polynomial of degree $18$ that does not vanish at $x=0,1,-1$, the $x$-discriminant is $y^2$ times a squarefree polynomial of degree $22$, the leading $x$-coefficient is the squarefree $8y^4+7y^2+6$, and $f_\star(1,y)=(y-1)^2(y-3)^2$ and $f_\star(-1,y)=(y+1)^2(y+3)^2$.
@@ -804,7 +804,7 @@ After contracting the full $L$-null configuration, its descent is ample.
 
 ::: {.proof}
 
-Against the fixed curve: $\psi^*L=H$ and $\psi^*C=2E$, so $2\,L\cdot C=\psi^*L\cdot\psi^*C=H\cdot(2E)=2\,H\cdot E=0$, whence $L\cdot C=0$; and $H^2 = (\psi^*L)^2 = \deg\psi\cdot L^2 = 2\,L^2$ (pullback (@def:pullback-square) by a finite morphism of degree (@def:numerical-polarization) $\deg\psi$ scales squares by $\deg\psi$, and here $H^2 = 4$), so $L^2 = H^2/\deg\psi = 2$, using that $\psi$ has degree $2$, being the quotient by the involution $\iota_{\Co}$.
+Against the fixed curve: $\psi^*L=H$ and $\psi^*C=2E$, so $2\,L\cdot C=\psi^*L\cdot\psi^*C=H\cdot(2E)=2\,H\cdot E=0$, whence $L\cdot C=0$; and $H^2 = (\psi^*L)^2 = \deg\psi\cdot L^2 = 2\,L^2$ (pullback (@def:pullback-square) by a finite morphism of degree (@def:graded-object) (@def:numerical-polarization) $\deg\psi$ scales squares by $\deg\psi$, and here $H^2 = 4$), so $L^2 = H^2/\deg\psi = 2$, using that $\psi$ has degree $2$, being the quotient by the involution $\iota_{\Co}$.
 
 Not ample: an ample class meets every curve positively, and $L\cdot C=0$ with $C$ a curve.
 
@@ -844,7 +844,7 @@ If $D\in|-2K_{\wV}|$, then $\psi^*D\in|2E|$.
 Since $E^2=-2$, every effective divisor linearly equivalent to $2E$ contains $E$; iterating gives $|2E|=\{2E\}$.
 Thus $D=C$.
 If $D\in|-K_{\wV}|$, then $\psi^*D\in|E|=\{E\}$.
-The pullback of a divisor from the quotient has even (@def:form-axioms) multiplicity along a branch component, so this is impossible.
+The pullback of a divisor (@def:pullback-of-divisor) from the quotient has even (@def:form-axioms) multiplicity along a branch component, so this is impossible.
 
 If the invariant branch curve has ordinary nodes at $k$ distinct fixed points, the same argument gives $|-2K_{\wV}| =\{C_1+\cdots+C_k\}$, where the $C_i$ are disjoint rational $(-4)$-curves.
 Thus $n=1$ on the generic Heegner divisor but not on its higher-codimension multiple-node loci.
@@ -881,13 +881,13 @@ p_a(R_{\wV})=4.
 ::: {.proof}
 Pulling back $2L+K_{\wV}$ gives $2H-E=\wR$, and $R_{\wV}=\psi_*\wR$ is the divisor on $\wV$ whose pullback (@def:pullback-square) is that class.
 
-For the self-intersection, $H=\pi^*\OO_Y(1,1)$ and $H\cdot E=0$ because $E$ is the exceptional curve of the minimal resolution of the $A_1$ point, hence contracts to a point of $Y$, so $\pi_*E=0$ and $H\cdot E=\OO_Y(1,1)\cdot\pi_*E=0$.
+For the self-intersection, $H=\pi^*\OO_Y(1,1)$ and $H\cdot E=0$ because $E$ is the exceptional curve of the minimal resolution (@def:minimal-resolution-of-surface-singularity) of the $A_1$ point, hence contracts to a point of $Y$, so $\pi_*E=0$ and $H\cdot E=\OO_Y(1,1)\cdot\pi_*E=0$.
 So
 $$
 \wR^2=(2H-E)^2=4H^2-4\,H\cdot E+E^2=4\cdot4-0+E^2 .
 $$
 And $E^2=-2$ because $E$ is the exceptional curve of a minimal resolution of a node, so the calculation is $\wR^2=16-0-2=14$.
-Then $R_{\wV}^2=\wR^2/\deg\psi=14/2=7$, because $\psi$ is $2$-to-$1$ and self-intersections of divisors pulled back along a finite map of degree $d$ scale by $d$.
+Then $R_{\wV}^2=\wR^2/\deg\psi=14/2=7$, because $\psi$ is $2$-to-$1$ and self-intersections of divisors pulled back along a finite map of degree (@def:graded-object) $d$ scale by $d$.
 
 For the remaining numbers: $C=\psi(E)$ has pullback $2E$, so $C^2=(2E)^2/2=4\cdot(-2)/2=-4$, consistent with $C=-2K_{\wV}$; and $R_{\wV}\cdot C=\wR\cdot\psi^*C/2=\wR\cdot2E/2=(2H-E)\cdot E=-E^2=2$.
 Adjunction on $C\cong\PP^1$ then gives $K_{\wV}\cdot C=-2-C^2=-2+4=2$, consistent with $C=-2K_{\wV}$; and since $C=-2K_{\wV}$ the canonical class against $R_{\wV}$ is
@@ -1051,7 +1051,7 @@ Dropping the degree-$4$ polarization (@def:numerical-polarization) and the del P
 \]
 
 The corresponding geometric monodromy group is defined from the direct unpolarized Coble moduli stack.
-The expected equality $\Gamma_{\Co}^{\mathrm{dir}}=O^+(T_{\Co})$ is compatible with the full stabilizer lemma below, but it remains a geometric monodromy statement until the direct period theorem is proved.
+The expected equality $\Gamma_{\Co}^{\mathrm{dir}}=O^+(T_{\Co})$ is compatible with the full stabilizer (@def:group-orbit) lemma below, but it remains a geometric monodromy statement until the direct period theorem is proved.
 The group $\Gamma_\Co$ of @def:gamma-co-groups, the monodromy group of @def:coble-family-unpolarized, is $\widetilde\Orth^+(T_\Co)$ on the labelled base (@thm:gamma-co-is-stable); no relation between $\Gamma_{\Co}^{\mathrm{dir}}$ and $\Gamma_\Co$ is established.
 :::
 
@@ -1154,7 +1154,7 @@ The two choices of sign of the action on the line $\ZZ\alpha$ are the two extens
 
 *The kernel.*
 The kernel of the restriction is the subgroup of $\Stab_{O^+(T_{\En})}(\bZ\alpha)$ acting trivially on $\alpha^{\perp}$.
-Such an isometry preserves $\alpha$ (the stabilizer condition) and the whole of $T_{\Co}$, and acts trivially there; it therefore acts by a scalar on the rank-one complement $\bZ\alpha$, and being an isometry with $\alpha^2=-2$ the only scalars are $\pm1$.
+Such an isometry preserves $\alpha$ (the stabilizer (@def:group-orbit) condition) and the whole of $T_{\Co}$, and acts trivially there; it therefore acts by a scalar on the rank-one complement $\bZ\alpha$, and being an isometry with $\alpha^2=-2$ the only scalars are $\pm1$.
 The scalar $+1$ is the identity, and the scalar $-1$ is the reflection $w_\alpha$ in the root $\alpha$.
 So the kernel is $\langle w_\alpha\rangle$, of order $2$.
 :::
@@ -1252,7 +1252,7 @@ The arithmetic group $\Gamma_e$, not the full orthogonal group of $\oT_e$, is th
 ### The unpolarized Coble boundary {#sec-unpolarized-cusps}
 
 ::: {.theorem #thm:unpolarized-cusps title="unpolarized Coble cusps"}
-The quotient $O^+(T_{\Co})\backslash\bD_{\Co}$ has one orbit of primitive isotropic lines and one orbit of primitive isotropic planes.
+The quotient $O^+(T_{\Co})\backslash\bD_{\Co}$ has one orbit (@def:group-orbit) of primitive isotropic lines and one orbit of primitive isotropic planes.
 For representatives $e$ and $J$,
 
 \[
@@ -1348,7 +1348,7 @@ A **star** of $J$ is a set of seven nonsingular vectors of $V$ that are pairwise
 Let $J$ be an order-$4$ isotropic subgroup and $F = \Stab_{\Orth(q)}(J)$.
 
 1. $J$ has eight stars (@def:plane-star), and $F$ permutes them transitively.
-2. For a primitive isotropic plane $P$ with $J(P) = J$, the group $\rho(\Stab_{\Orth(B)}(P))$ is the stabilizer in $F$ of exactly one star $s(P)$, and $s(gP) = \rho(g)\,s(P)$ for $g\in\Orth(B)$.
+2. For a primitive isotropic plane $P$ with $J(P) = J$, the group $\rho(\Stab_{\Orth(B)}(P))$ is the stabilizer (@def:group-orbit) in $F$ of exactly one star $s(P)$, and $s(gP) = \rho(g)\,s(P)$ for $g\in\Orth(B)$.
 3. The map $P\mapsto s(P)$ induces a bijection from the eight $\ker\rho$-orbits of primitive isotropic planes over $J$ onto the eight stars of $J$.
 :::
 
@@ -1356,7 +1356,7 @@ Let $J$ be an order-$4$ isotropic subgroup and $F = \Stab_{\Orth(q)}(J)$.
 In the coordinates of @thm:coble-plane-stabilizer-image(4), $V$ is the six-dimensional plus-type space $V_6$ of even-weight classes $\sum c_i\bar d_i$, and $\beta(x,y)$ is the parity of the number of common coordinates.
 The nonsingular vectors of $V_6$ are the $21$ classes of weight $2$ and the $7$ classes of weight $6$. Label them by the $28$ two-element subsets of $\{1,\dots,8\}$: the weight-$2$ class $\bar d_i+\bar d_j$ corresponds to $\{i,j\}$, and the weight-$6$ class missing $\bar d_i$ corresponds to $\{i,8\}$. Directly from the common-coordinate formula for $\beta$, two distinct nonsingular vectors have $\beta=1$ exactly when their two-element labels intersect. Thus a star is a collection of seven pairwise intersecting two-element subsets of an eight-element set. Such a collection must be the seven pairs containing a fixed label: indeed, if it contains $\{i,j\}$ and $\{i,k\}$ but not every pair contains $i$, a pair meeting both must be $\{j,k\}$, after which every pair meeting all three is one of these three. Hence there are exactly eight stars $s_i$, one for each label $i=1,\dots,8$.
 
-The stabilizer $F=\Stab_{\Orth(q)}(J)$ acts on $V_6$ through its full Levi quotient $\Orth^+(6,2)$ (@thm:coble-plane-stabilizer-image(4)). Each isometry preserves $\beta$ and hence permutes the eight maximal seven-cliques, giving a homomorphism $\Orth^+(6,2)\to S_8$. This homomorphism is injective: every nonsingular vector is the unique intersection of the two distinct stars indexed by its pair label, so an isometry fixing all stars fixes all $28$ nonsingular vectors; the weight-$2$ vectors span $V_6$, so it is the identity. Since $\abs{\Orth^+(6,2)}=8!$ by the exceptional isomorphism in @thm:coble-plane-stabilizer-image(4), the homomorphism is onto $S_8$. In particular $F$ acts transitively on the eight stars.
+The stabilizer $F=\Stab_{\Orth(q)}(J)$ acts on $V_6$ through its full Levi quotient $\Orth^+(6,2)$ (@thm:coble-plane-stabilizer-image(4)). Each isometry preserves $\beta$ and hence permutes the eight maximal seven-cliques, giving a homomorphism $\Orth^+(6,2)\to S_8$. This homomorphism is injective (@def:injective-map): every nonsingular vector is the unique intersection of the two distinct stars indexed by its pair label, so an isometry fixing all stars fixes all $28$ nonsingular vectors; the weight-$2$ vectors span $V_6$, so it is the identity. Since $\abs{\Orth^+(6,2)}=8!$ by the exceptional isomorphism in @thm:coble-plane-stabilizer-image(4), the homomorphism is onto $S_8$. In particular $F$ acts transitively on the eight stars.
 
 The image $S=\rho(\Stab_{\Orth(B)}(P))$ of the standard plane acts on $V_6$ through the coordinate permutations $S_7$, because its unipotent radical acts trivially on $J^{\perp}/J$; this is precisely the subgroup fixing label $8$ and permuting labels $1,\dots,7$. Since $S$ contains the full unipotent radical of $F$ and its Levi image is $S_3\times S_7$ (@thm:coble-plane-stabilizer-image(3), (4)), it equals the full stabilizer of $s_8$ in $F$.
 So each primitive isotropic plane $P$ determines one star $s(P)$ of $J(P)$, the star fixed by $\rho(\Stab_{\Orth(B)}(P))$, and $s(gP) = \rho(g)\,s(P)$.
@@ -1379,15 +1379,15 @@ For a nonsingular class $x\in V$, take its coordinate vector $v\in\{0,1\}^{11}$.
 The executable certificate `computations/reports/coble_full_discriminant_root_lifts.py` constructs all $496$ roots, verifies the Gram identity and determinant of every integral reflection, and checks its reduction on all eleven coordinate basis vectors. It also supplies an explicit integral unimodular matrix $M$ of determinant $-1$ with $M\,\operatorname{diag}(1,1,-1,\ldots,-1)M^T=\langle1
 angle\oplus U\oplus E_8(-1)$, thereby transporting **every** root and reflection to the actual standard $T_\Co$ basis and verifying their integral Gram identities there. Finally it verifies that the $527$ nonzero singular classes span $V$ and computes the generated permutation group's order by Schreier--Sims. The returned order equals the full orthogonal-group order above, so these reflections generate the entire finite discriminant image. In fact, the certificate also checks that the ten parity masks $(1836,269,54,418,354,390,649,562,650,957)$ already generate the same group through their explicitly constructed integral root reflections. Thus these ten integral reflections suffice for every finite-image word lift; this asserts no generation of the integral discriminant kernel (@def:mm-integral-spinor-data). The executed output is `computations/reports/coble_full_discriminant_root_lifts-run.txt`. This constructs lifts of the *finite image*, not generators of $\ker\rho$.
 
-The same executable constructs a Schreier orbit tree on all $527$ nonzero singular discriminant classes using only these ten integral reflections. Starting from a primitive isotropic basis vector of $U$, each tree path gives a product of explicit standard-basis integral reflection matrices carrying it to a primitive integral isotropic vector in the prescribed discriminant class. All $527$ resulting integral vectors are checked for exact norm zero, primitivity, and reduction modulo $2$; a sample word is checked by multiplying the integral matrices and verifying exact equality of its image with the constructed vector. The complete machine-readable certificate `computations/reports/coble_singular_integral_representatives.json` records the standard Gram matrix, ten integral generator roots, and for every class its integral vector and generator word. An independent pure-integer replay checked all $527$ word products and their norm and primitivity. Thus every nonzero singular discriminant class has a constructively certified primitive integral isotropic representative. This does not supply transporters between arbitrary prescribed integral isotropic vectors or flags: the latter additionally requires the stabilizer-fibre theorem and its integral witnesses.
+The same executable constructs a Schreier orbit (@def:group-orbit) tree on all $527$ nonzero singular discriminant classes using only these ten integral reflections. Starting from a primitive isotropic basis (@def:isotropic-basis-hyperbolic-plane) vector of $U$, each tree path gives a product of explicit standard-basis integral reflection matrices carrying it to a primitive integral isotropic vector (@def:isotropic-subspace) in the prescribed discriminant class. All $527$ resulting integral vectors are checked for exact norm zero, primitivity, and reduction modulo $2$; a sample word is checked by multiplying the integral matrices and verifying exact equality of its image with the constructed vector. The complete machine-readable certificate `computations/reports/coble_singular_integral_representatives.json` records the standard Gram matrix, ten integral generator roots, and for every class its integral vector and generator word. An independent pure-integer replay checked all $527$ word products and their norm and primitivity. Thus every nonzero singular discriminant class has a constructively certified primitive integral isotropic representative. This does not supply transporters between arbitrary prescribed integral isotropic vectors or flags: the latter additionally requires the stabilizer-fibre theorem and its integral witnesses.
 :::
 
 ::: {.lemma #lem:coble-explicit-vector-parabolic-image title="Explicit integral root section of the isotropic-vector parabolic image"}
-Let $B=\latI_{2,9}$ and $u=e_0+e_2$, with $e_0^2=1$ and $e_2^2=-1$. Write $c=u\bmod2\in V$. Every one of the $240$ nonsingular $x\in V\intersect c^\perp$ admits an integral norm-$\pm2$ lift $r_x\in u^\perp$ in its parity class. The integral reflections $s_{r_x}$ fix $u$ *exactly*, and their finite reductions generate the entire stabilizer $\Stab_{\Orth(q)}(c)$ of order $89\,181\,388\,800$. In particular,
+Let $B=\latI_{2,9}$ and $u=e_0+e_2$, with $e_0^2=1$ and $e_2^2=-1$. Write $c=u\bmod2\in V$. Every one of the $240$ nonsingular $x\in V\intersect c^\perp$ admits an integral norm-$\pm2$ lift $r_x\in u^\perp$ in its parity class. The integral reflections $s_{r_x}$ fix $u$ *exactly*, and their finite reductions generate the entire stabilizer (@def:group-orbit) $\Stab_{\Orth(q)}(c)$ of order $89\,181\,388\,800$. In particular,
 \[
 \rho(\Stab_{\Orth(B)}(u))=\Stab_{\Orth(q)}(c).
 \]
-In fact, the ten root parity classes $(1919,215,58,359,311,335,591,538,2016,594)$ already generate this full finite stabilizer image, as the same exact Schreier--Sims computation verifies. The construction supplies a ten-generator finite-image word section using actual integral isometries that fix the prescribed primitive isotropic vector. As an executable word-lifting witness, the certificate factors an additional stabilizer symmetry through these ten generators using the exact permutation-group word problem, multiplies the corresponding integral reflection matrices, checks that the resulting matrix fixes $u$ exactly, and verifies its reduction on every singular discriminant class. The independent integer regression verifies the complete reduced matrix on an integral basis and exact vector fixing.
+In fact, the ten root parity classes $(1919,215,58,359,311,335,591,538,2016,594)$ already generate this full finite stabilizer image, as the same exact Schreier--Sims computation verifies. The construction supplies a ten-generator finite-image word section using actual integral isometries that fix the prescribed primitive isotropic vector (@def:isotropic-subspace). As an executable word-lifting witness, the certificate factors an additional stabilizer symmetry through these ten generators using the exact permutation-group word problem, multiplies the corresponding integral reflection matrices, checks that the resulting matrix fixes $u$ exactly, and verifies its reduction on every singular discriminant class. The independent integer regression verifies the complete reduced matrix on an integral basis and exact vector fixing.
 :::
 
 ::: {.proof}
@@ -1403,11 +1403,11 @@ These eight primitive integral isotropic planes have the same order-four discrim
 :::
 
 ::: {.proof}
-Each $r_i$ has square $8-6=2$, so its reflection is integral. Its mod-two class is $w_i=\sum_{j\ne i}d_j$, orthogonal to $J_0$; thus $s_{r_i}$ fixes $J_0$ modulo two. The planes $P_i$ are primitive and isotropic because they are images of $P_0$ under integral isometries. In $J_0^\perp/J_0$, the intrinsic star (@def:plane-star) of $P_0$ is $s_0=\{w_1,\ldots,w_7\}$ (@lem:plane-stars). The image star $s_i=s_{w_i}(s_0)$ consists of $w_i$ and the six classes $w_i+w_j=d_i+d_j$ for $j\ne i$. Thus $s_i$ has exactly one weight-six class, namely $w_i$, while $s_0$ has seven; the eight stars are pairwise distinct. By @lem:plane-stars(3), they exhaust the eight integral $\ker\rho$-orbits above $J_0$. The ten reflections generate the full finite orthogonal image by @lem:coble-full-finite-image-root-lifts; this group acts transitively on the $23\,715$ totally singular two-planes, and its finite Schreier orbit tree is explicitly computed in `computations/reports/coble_plane_integral_star_section.py`. Transporting each of the eight seed planes along its tree words preserves primitivity, isotropy, and distinctness of the intrinsic stars. In each primitive rank-two plane, $a,b,a+b$ are primitive and represent the three nonzero discriminant classes; by @thm:cusp-lifting(3), their flags exhaust the three distinct stable-kernel flag orbits above the plane class. The compact certificate `computations/reports/coble_plane_integral_star_section.json` records the eight standard-basis seed planes, their eight distinct finite stars, a word for every finite plane, and the three line coefficients. Its independent integer replay checks all $23\,715$ words and their integral isotropic images, verifies eight pairwise distinct transported finite stars over **each** of the $23\,715$ finite planes, and checks the primitive isotropic seed flags.
+Each $r_i$ has square $8-6=2$, so its reflection is integral. Its mod-two class is $w_i=\sum_{j\ne i}d_j$, orthogonal to $J_0$; thus $s_{r_i}$ fixes $J_0$ modulo two. The planes $P_i$ are primitive and isotropic because they are images of $P_0$ under integral isometries. In $J_0^\perp/J_0$, the intrinsic star (@def:plane-star) of $P_0$ is $s_0=\{w_1,\ldots,w_7\}$ (@lem:plane-stars). The image star $s_i=s_{w_i}(s_0)$ consists of $w_i$ and the six classes $w_i+w_j=d_i+d_j$ for $j\ne i$. Thus $s_i$ has exactly one weight-six class, namely $w_i$, while $s_0$ has seven; the eight stars are pairwise distinct. By @lem:plane-stars(3), they exhaust the eight integral $\ker\rho$-orbits above $J_0$. The ten reflections generate the full finite orthogonal image by @lem:coble-full-finite-image-root-lifts; this group acts transitively on the $23\,715$ totally singular two-planes, and its finite Schreier orbit (@def:group-orbit) tree is explicitly computed in `computations/reports/coble_plane_integral_star_section.py`. Transporting each of the eight seed planes along its tree words preserves primitivity, isotropy, and distinctness of the intrinsic stars. In each primitive rank-two plane, $a,b,a+b$ are primitive and represent the three nonzero discriminant classes; by @thm:cusp-lifting(3), their flags exhaust the three distinct stable-kernel flag orbits above the plane class. The compact certificate `computations/reports/coble_plane_integral_star_section.json` records the eight standard-basis seed planes, their eight distinct finite stars, a word for every finite plane, and the three line coefficients. Its independent integer replay checks all $23\,715$ words and their integral isotropic images, verifies eight pairwise distinct transported finite stars over **each** of the $23\,715$ finite planes, and checks the primitive isotropic seed flags.
 :::
 
 ::: {.lemma #lem:coble-explicit-plane-parabolic-image title="Twenty-one integral generators for the complete Coble plane-parabolic image"}
-In the decomposition $B=U_1\oplus U_2\oplus\generators{-1}^{7}$ of @lem:coble-eight-integral-plane-seeds, the finite image of the integral stabilizer of $P_0=\ZZ e_1+\ZZ e_2$ is generated by the reductions of the following $21$ explicitly integral isometries: twelve Eichler transvections $t(e_k,d_j+d_7)$ ($k=1,2$, $j=1,\ldots,6$), the central shear $x\mapsto x+(x,e_1)e_2-(x,e_2)e_1$, six reflections $s_{d_j-d_{j+1}}$ ($j=1,\ldots,6$), and the two isometries extending the elementary interchange and shear of the $\ZZ$-basis $(e_1,e_2)$ by the inverse-transpose action on $(f_1,f_2)$. Their reductions generate a group of order
+In the decomposition $B=U_1\oplus U_2\oplus\generators{-1}^{7}$ of @lem:coble-eight-integral-plane-seeds, the finite image of the integral stabilizer (@def:group-orbit) of $P_0=\ZZ e_1+\ZZ e_2$ is generated by the reductions of the following $21$ explicitly integral isometries: twelve Eichler transvections $t(e_k,d_j+d_7)$ ($k=1,2$, $j=1,\ldots,6$), the central shear $x\mapsto x+(x,e_1)e_2-(x,e_2)e_1$, six reflections $s_{d_j-d_{j+1}}$ ($j=1,\ldots,6$), and the two isometries extending the elementary interchange and shear of the $\ZZ$-basis $(e_1,e_2)$ by the inverse-transpose action on $(f_1,f_2)$. Their reductions generate a group of order
 \[
 247\,726\,080=\frac{\abs{\Orth(q)}}{23\,715\cdot8}
 =\abs{\rho(\Stab_{\Orth(B)}(P_0))}.
@@ -1430,18 +1430,18 @@ It uses only the ten integral generators of the full finite discriminant image, 
 :::
 
 ::: {.proof}
-Let $W_J$ be the integral reflection word transporting the base finite plane to $J$, let $s_i$ transport the base integral plane to the seed of the required star (@def:plane-star), and let $h_t$ be the integral $\GL_2$ extension carrying $e_1$ to the selected one of $e_1,e_2,e_1+e_2$. Let $W_c$ be the integral reflection word carrying the base primitive isotropic vector $e_1$ to $u_c$. Then
+Let $W_J$ be the integral reflection word transporting the base finite plane to $J$, let $s_i$ transport the base integral plane to the seed of the required star (@def:plane-star), and let $h_t$ be the integral $\GL_2$ extension carrying $e_1$ to the selected one of $e_1,e_2,e_1+e_2$. Let $W_c$ be the integral reflection word carrying the base primitive isotropic vector (@def:isotropic-subspace) $e_1$ to $u_c$. Then
 \[
 g=W_Js_ih_tW_c^{-1}\in\Orth(B),\qquad g(u_c)=v_{J,s,c}.
 \]
-Since both vectors have discriminant class $c$, the finite element $\rho(g)$ fixes $c$. Conjugating by $W_c$ identifies this finite stabilizer with the stabilizer of the base class. By @lem:coble-explicit-vector-parabolic-image, its full image is generated by ten explicit integral reflections fixing $e_1$ exactly. Factor $\rho(W_c^{-1}gW_c)$ as a word in these ten finite generators, replace each by its integral reflection, and conjugate the resulting integral matrix by $W_c$. This gives $h\in\Stab_{\Orth(B)}(u_c)$ with $\rho(h)=\rho(g)$. Therefore $k=gh^{-1}$ is integral, has trivial discriminant action, and maps $u_c$ to $v_{J,s,c}$. If the normalized real spinor sign is negative, multiply $k$ on the left by the established spinor-negative element of $\ker\rho\intersect\Stab(v_{J,s,c})$ to obtain the positive-sign transporter. The executable `computations/reports/coble_plane_integral_star_section.py` constructs and checks a nontrivial sample of both $g$ and $k$, including the finite stabilizer word, exact integral Gram identities, equality $k(u_c)=v_{J,s,c}$, and the identity reduction of the full $11\times11$ matrix modulo $2$. The independent permanent regression reconstructs these matrices from the recorded generator words and verifies the same assertions.
+Since both vectors have discriminant class $c$, the finite element $\rho(g)$ fixes $c$. Conjugating by $W_c$ identifies this finite stabilizer (@def:group-orbit) with the stabilizer of the base class. By @lem:coble-explicit-vector-parabolic-image, its full image is generated by ten explicit integral reflections fixing $e_1$ exactly. Factor $\rho(W_c^{-1}gW_c)$ as a word in these ten finite generators, replace each by its integral reflection, and conjugate the resulting integral matrix by $W_c$. This gives $h\in\Stab_{\Orth(B)}(u_c)$ with $\rho(h)=\rho(g)$. Therefore $k=gh^{-1}$ is integral, has trivial discriminant action, and maps $u_c$ to $v_{J,s,c}$. If the normalized real spinor sign is negative, multiply $k$ on the left by the established spinor-negative element of $\ker\rho\intersect\Stab(v_{J,s,c})$ to obtain the positive-sign transporter. The executable `computations/reports/coble_plane_integral_star_section.py` constructs and checks a nontrivial sample of both $g$ and $k$, including the finite stabilizer word, exact integral Gram identities, equality $k(u_c)=v_{J,s,c}$, and the identity reduction of the full $11\times11$ matrix modulo $2$. The independent permanent regression reconstructs these matrices from the recorded generator words and verifies the same assertions.
 The same executable accepts three positional indices selecting any of the $569\,160$ constructed flags, and returns its exact integral kernel transporter without overwriting the canonical certificate. The finite word is obtained directly from GAP's free-group epimorphism as an integer-pair sequence; parsing the displayed word would be invalid because it can contain parenthesized subwords and powers. The permanent regression also executes a distinct nondefault flag request and verifies that its kernel matrix fixes the discriminant group pointwise. This is an executable construction of the transporter for arbitrary requested indices, not a precomputed table of all transporter matrices. For the spinor-positive refinement, start with $\tau_0=-\id_{U_2}\oplus\id_{U_1\perp D}$, which fixes $e_1$, reduces to the identity modulo $2$, and reverses the orientation (@def:orientation-classes) of the positive two-plane. Conjugate $\tau_0$ by $W_Js_ih_t$ to obtain an integral kernel element $\tau_{J,s,c}$ fixing the selected flag vector. The normalized real spinor sign of any integral isometry of $I_{2,9}$ is the sign of the determinant of the upper-left $2\times2$ block in diagonal coordinates: projection of an oriented positive two-plane to the fixed positive coordinate plane is invertible. Thus the executable decides the sign of $k$ exactly and returns either $k$ or $\tau_{J,s,c}k$, verifying that the selected kernel transporter has positive real spinor sign, preserves the full integral Gram, reduces to the identity modulo $2$, and sends $u_c$ to $v_{J,s,c}$.
 :::
 
 ::: {.theorem #thm:cusp-lifting title="Integral cusp lifting"}
 Let $\Gamma$ be a group with $\widetilde\Orth^+(T_\Co)\subseteq\Gamma\subseteq\Orth(T_\Co)$, and let $H = \rho_{T_\Co}(\Gamma)$.
 
-1. The map $\Gamma v\mapsto H\cdot[v/2]$ is a bijection from the $\Gamma$-orbits of primitive isotropic vectors of $T_\Co$, which are also its orbits of primitive isotropic lines, onto the $H$-orbits of nonzero isotropic classes of $A_{T_\Co}$.
+1. The map $\Gamma v\mapsto H\cdot[v/2]$ is a bijection from the $\Gamma$-orbits of primitive isotropic vectors (@def:isotropic-subspace) of $T_\Co$, which are also its orbits (@def:group-orbit) of primitive isotropic lines, onto the $H$-orbits of nonzero isotropic classes of $A_{T_\Co}$.
 2. The map $\Gamma P\mapsto H\cdot(J(P),s(P))$ is a bijection from the $\Gamma$-orbits of primitive isotropic planes onto the $H$-orbits of pairs $(J,s)$ of an order-$4$ isotropic subgroup $J$ and a star (@def:plane-star) $s$ of $J$.
 3. The map $\Gamma(L\subset P)\mapsto H\cdot(J(P),s(P),[v_L/2])$, with $v_L$ a primitive vector of $L$, is a bijection from the $\Gamma$-orbits of flags of a primitive isotropic line in a primitive isotropic plane onto the $H$-orbits of triples $(J,s,c)$ with $c$ a nonzero element of $J$.
 4. Parts 1–3 hold with $\Gamma\intersect\Orth^+(T_\Co)$ in place of $\Gamma$, using its own finite image $H^+\definedas\rho(\Gamma\intersect\Orth^+(T_\Co))$. If $\ker\rho\subseteq\Gamma$, then $H^+=H$.
@@ -1451,13 +1451,13 @@ For $\rho_{T_\Co}^{-1}(G_\Co)$ they are $4$, $7$ and $13$.
 :::
 
 ::: {.proof}
-The $\widetilde\Orth^+(T_\Co)$-orbits on vectors, planes and flags coincide with the $\ker\rho$-orbits by the spinor-negative stabilizer witnesses below. Since $\widetilde\Orth^+(T_\Co)\subseteq\Gamma$, each part therefore reduces to the $\ker\rho$-orbits over a fixed finite datum, even when $\Gamma$ does not contain $\ker\rho$.
+The $\widetilde\Orth^+(T_\Co)$-orbits on vectors, planes and flags coincide with the $\ker\rho$-orbits by the spinor-negative stabilizer (@def:group-orbit) witnesses below. Since $\widetilde\Orth^+(T_\Co)\subseteq\Gamma$, each part therefore reduces to the $\ker\rho$-orbits over a fixed finite datum, even when $\Gamma$ does not contain $\ker\rho$.
 Part 1: every nonzero isotropic class is $[v/2]$ for a primitive isotropic $v$, the zero class is not, and $\rho(\Stab_{\Orth(B)}(v)) = \Stab_{\Orth(q)}([v/2])$ (@lem:isotropic-classes-lift, @lem:cusp-vector-stabilizer-image(1)), so each fibre is one $\ker\rho$-orbit. Since $-\id\in\ker\rho$ and its normalized real spinor norm on $B$ of signature $(2,9)$ is $(-1)^2=1$ (write $-\id$ as the product of reflections in an orthogonal basis, with two positive and nine negative vectors), vector orbits are line orbits also for $\widetilde\Orth^+(T_\Co)$.
 Part 2 is @lem:plane-stars(3).
 Part 3: two flags with the same triple lie on planes in one $\widetilde\Orth^+(T_\Co)$-orbit by part 2 and the spinor stabilizer witness below, and with the plane fixed, the line action of $\Stab_{\widetilde\Orth^+(T_\Co)}(P)$ in the proof of @prop:coble-arithmetic-flag-incidence carries one line of class $c$ to the other.
 Part 4: the spinor witnesses of @lem:cusp-vector-stabilizer-image(2) and @thm:coble-plane-stabilizer-image(5) lie in $\ker\rho$, lie outside $\Orth^+(T_\Co)$, and stabilize the vector and the plane, respectively. For flags, use the standard plane $P=\generators{e_1,e_2}$ and the line $L=\ZZ e_2$. The element $\tau=-\id_{U_1}\oplus\id_{U_2\perp D}$ of the proof of @thm:coble-plane-stabilizer-image(5) fixes $e_2$, preserves $P$, belongs to $\ker\rho$ and has spinor norm $-1$. The integral Levi $GL_2(\ZZ)$ in @thm:coble-plane-stabilizer-image(1) acts transitively on primitive lines of $P$, and @thm:plane-transitivity-tco carries every primitive isotropic plane to $P$. Conjugating $\tau$ therefore supplies a spinor-negative element of $\ker\rho$ stabilizing each flag. Consequently no $\ker\rho$-orbit of vectors, planes or flags splits on intersection with $\Orth^+(T_\Co)$. The subgroup $\Gamma^+=\Gamma\intersect\Orth^+(T_\Co)$ contains $\widetilde\Orth^+(T_\Co)$, so parts 1–3 apply to it with image $H^+$. When $\ker\rho\subseteq\Gamma$, the fixed spinor-negative element $\tau\in\ker\rho\subseteq\Gamma$ implies $H^+=H$: for any $g\in\Gamma$ of negative spinor norm, $g\tau\in\Gamma^+$ and $\rho(g\tau)=\rho(g)$. Without this additional containment, equality of $H^+$ and $H$ is not asserted.
 For $\widetilde\Orth^+(T_\Co)$ the group $H$ is trivial.
-For $\rho^{-1}(G_\Co)$ the vector count is @tbl-finite-vector-orbits. The finite $G_\Co$-action on pairs $(J,s)$ has seven orbits of sizes $2160, 3150, 7560, 9450, 22680, 69120, 75600$; its action on triples $(J,s,c)$ has thirteen orbits of sizes $2160, 2160, 2160, 7560, 9450, 15120, 22680, 28350, 45360, 69120, 75600, 138240, 151200$. The independent enumeration in `computations/reports/coble_gco_plane-orbits.py`, with its output in `computations/reports/coble_gco_plane-orbits-run.txt`, constructs the $G_\Co$-generators as reductions of the nine root reflections, enumerates the $23715$ totally singular planes and eight stars of each plane, and computes these two orbit decompositions. The sums $189720$ and $569160$ independently check the cardinalities of the pair and triple sets. Independently of orbit enumeration, the same script constructs the permutation group generated by these nine reflections on the $527$ nonzero isotropic vectors. The vectors span the full ten-dimensional space over $\F_2$ (checked by exact rank), so this permutation representation is faithful; its Schreier--Sims order is $696\,729\,600$. All four orbit families (vectors, undecorated planes, decorated planes, flags) have orbit lengths dividing that computed group order, as checked by the script. This independently certifies the order of the *generated* finite action, rather than inferring it from the observed orbit partitions, and agrees with the independently proved order and generator identification of $G_\Co$ in @thm:coble-heegner-finite-orbits(1), (2). These are finite-action records, not an assertion that the public integral-lattice entry point or the lattice-database card has returned the corresponding cusp representatives. The double-quotient form of parts 1--3, with the spinor hypothesis of part 4 separated from the kernel containment $\ker\rho\iscontainedin\Gamma$, is @thm:coble-integral-lifting-fibre, whose item 4 states the counts for the three subgroups above.
+For $\rho^{-1}(G_\Co)$ the vector count is @tbl-finite-vector-orbits. The finite $G_\Co$-action on pairs $(J,s)$ has seven orbits of sizes $2160, 3150, 7560, 9450, 22680, 69120, 75600$; its action on triples $(J,s,c)$ has thirteen orbits of sizes $2160, 2160, 2160, 7560, 9450, 15120, 22680, 28350, 45360, 69120, 75600, 138240, 151200$. The independent enumeration in `computations/reports/coble_gco_plane-orbits.py`, with its output in `computations/reports/coble_gco_plane-orbits-run.txt`, constructs the $G_\Co$-generators as reductions of the nine root reflections, enumerates the $23715$ totally singular planes and eight stars of each plane, and computes these two orbit decompositions. The sums $189720$ and $569160$ independently check the cardinalities of the pair and triple sets. Independently of orbit enumeration, the same script constructs the permutation group generated by these nine reflections on the $527$ nonzero isotropic vectors. The vectors span the full ten-dimensional space over $\F_2$ (checked by exact rank), so this permutation representation (@def:permutation-representation) is faithful; its Schreier--Sims order is $696\,729\,600$. All four orbit families (vectors, undecorated planes, decorated planes, flags) have orbit lengths dividing that computed group order, as checked by the script. This independently certifies the order of the *generated* finite action, rather than inferring it from the observed orbit partitions, and agrees with the independently proved order and generator identification of $G_\Co$ in @thm:coble-heegner-finite-orbits(1), (2). These are finite-action records, not an assertion that the public integral-lattice entry point or the lattice-database card has returned the corresponding cusp representatives. The double-quotient form of parts 1--3, with the spinor hypothesis of part 4 separated from the kernel containment $\ker\rho\iscontainedin\Gamma$, is @thm:coble-integral-lifting-fibre, whose item 4 states the counts for the three subgroups above.
 :::
 
 ### Necessary restrictions on maps to Enriques cusps {#sec-possible-cusp-images}
@@ -1470,7 +1470,7 @@ Let $e$ be a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-com
 :::
 
 ::: {.proof}
-The sublattice $T_\Co$ is primitive in $T_\En$, being an orthogonal complement, so $e$ and $J$ are primitive and isotropic in $T_\En$. Since $e, J\subset\alpha^{\perp}$, the root $\alpha$ lies in $e^{\perp T_\En}$ and in $J^{\perp T_\En}$. Adding an isotropic vector orthogonal to $\alpha$ does not change $\alpha^2$, so the class of $\alpha$ in each quotient has square $-2$.
+The sublattice $T_\Co$ is primitive in $T_\En$, being an orthogonal complement, so $e$ and $J$ are primitive and isotropic in $T_\En$. Since $e, J\subset\alpha^{\perp}$, the root $\alpha$ lies in $e^{\perp T_\En}$ and in $J^{\perp T_\En}$. Adding an isotropic vector (@def:isotropic-subspace) orthogonal to $\alpha$ does not change $\alpha^2$, so the class of $\alpha$ in each quotient has square $-2$.
 The hyperbolic lattice (@not:reflection-groups-sign-convention) of the Enriques $0$-cusp $1$ has all norms (@def:lattice-basic-invariants) divisible by $4$, so it has no vector of square $-2$.
 The double-rectangle cusps $12,\ 13,\ 14,\ 15,\ 245$ lie over the segment-flipping $1$-cusp, whose negative quotient is $E_8(2)$ [@AEGS25, Fig. 4], and $E_8(2)$ has all norms divisible by $4$.
 :::
@@ -1511,7 +1511,7 @@ r_8^2=-2.
 \]
 
 ::: {.theorem #thm:unpolarized-coxeter title="unpolarized Coble Coxeter chamber"}
-A fundamental chamber (@cons:chamber-cone) for the reflection group (@def:group) of $I_{1,8}(2)$ is defined, for
+A fundamental chamber (@cons:chamber-cone) for the reflection group (@def:reflection-group) (@def:group) of $I_{1,8}(2)$ is defined, for
 
 \[
 x=aH_0-\Sum_{i=1}^8b_iE_i,
@@ -1610,16 +1610,16 @@ The chosen roots are $\alpha_{10}$, $\alpha_0$, $\alpha_6$, and $\alpha_{16}$, r
 Whether the displayed walls form a complete simple system is @prob:coxeter-completeness.
 
 ::: {.theorem #thm:one-cusp-lattice title="one cusp lattice for every $0$-cusp of $\bD(T_\Co)$"}
-Let $\Gamma\le\Orth(T_\Co)$ be any arithmetic subgroup (@def:hsd-arithmetic-subgroup) and let $e$ be a primitive isotropic vector of $T_\Co$ whose line is a $0$-cusp of $\bD(T_\Co)/\Gamma$.
+Let $\Gamma\le\Orth(T_\Co)$ be any arithmetic subgroup (@def:hsd-arithmetic-subgroup) and let $e$ be a primitive isotropic vector (@def:isotropic-subspace) of $T_\Co$ whose line is a $0$-cusp of $\bD(T_\Co)/\Gamma$.
 Then
 $$e^{\perp}/\bZ e\cong I_{1,8}(2).$$
-In particular the four $0$-cusps of $F_{\Co,2}$ and the one $0$-cusp of $F^{\mathrm{un}}_{\Co}$ have one and the same cusp lattice, and the Coxeter data by which they differ are the images $\Gamma_e\le\Orth(I_{1,8}(2))$ of their stabilizers, not the lattice.
+In particular the four $0$-cusps of $F_{\Co,2}$ and the one $0$-cusp of $F^{\mathrm{un}}_{\Co}$ have one and the same cusp lattice, and the Coxeter data by which they differ are the images $\Gamma_e\le\Orth(I_{1,8}(2))$ of their stabilizers (@def:group-orbit), not the lattice.
 :::
 
 ::: {.proof}
 By @prop:tco-as-twist, $T_\Co=I_{2,9}(2)$, and $O^+(T_\Co)$ is transitive on the primitive isotropic vectors of $T_\Co$ (@thm:unpolarized-cusps, whose proof is @lem:I29-plus-line-transitivity).
 So there is an isometry $g$ of $T_\Co$ with $g(e)=e_0$ for the representative $e_0$ of @thm:unpolarized-cusps; it carries $\bZ e$ onto $\bZ e_0$ and hence induces an isometry $e^{\perp}/\bZ e\to e_0^{\perp}/\bZ e_0$, which is $I_{1,8}(2)$ by that theorem.
-The cusp lattice therefore depends on no orbit, and in particular on no arithmetic group.
+The cusp lattice therefore depends on no orbit (@def:group-orbit), and in particular on no arithmetic group (@def:arithmetic-group).
 :::
 
 ::: {.remark title="what this fixes in @prob:coxeter-completeness, and what it leaves"}
@@ -1629,20 +1629,20 @@ Items 2 to 5 are therefore four problems on one diagram rather than one problem 
 At the one $0$-cusp of $F^{\mathrm{un}}_\Co$, whose group is $\Orth(T_\Co)$, the full reflection group's chamber is @thm:unpolarized-coxeter and its rank-$8$ elliptic subdiagrams are @tbl-unpolarized-elliptic, so the Type III cones are determined there and the comparison with the labelled cusps is a comparison of subgroups.
 
 ::: {.lemma #lem:cusp-image-is-finite title="the cusp stabilizer image is a congruence subgroup, fixed by a finite datum"}
-Let $\eta$ be a primitive isotropic vector of $T_\Co$ of divisibility $2$ and let $K=\eta^{\perp}/\bZ\eta$.
+Let $\eta$ be a primitive isotropic vector (@def:isotropic-subspace) of $T_\Co$ of divisibility $2$ and let $K=\eta^{\perp}/\bZ\eta$.
 The image $\Gamma_e$ of $\Stab_{R_{\gent}}(\eta)$ in $\Orth(K)$ is a congruence subgroup: it is the set of $\bar g\in\Orth(K)$ having a lift $\tilde g\in\Orth(T_\Co)$ that fixes $\eta$ and satisfies $\rho_{T_\Co}(\tilde g)\in P$, and the lifts of a fixed $\bar g$ have discriminant actions forming one coset of the finite group $\rho_{T_\Co}(\ker(\Orth(T_\Co)\to\Orth(K)))$.
-Consequently $\Gamma_e$ is determined by a finite computation on $O(A_{T_\Co})$, not by a stabilizer computation in the infinite group $R_{\gent}$.
+Consequently $\Gamma_e$ is determined by a finite computation on $O(A_{T_\Co})$, not by a stabilizer (@def:group-orbit) computation in the infinite group $R_{\gent}$.
 :::
 
 ::: {.proof}
 $R_{\gent}=\rho_{T_\Co}^{-1}(P)$ (@prop:gamma-co-images(3)), so every element of $\Stab_{R_{\gent}}(\eta)$ has discriminant action in $P$; conversely an isometry of $T_\Co$ fixing $\eta$ whose discriminant action lies in $P$ lies in $R_{\gent}$. Hence the image is exactly the set of $\bar g\in\Orth(K)$ admitting such a lift.
 Lifts exist: the section $g\mapsto\id_{U(2)}\oplus g$ of @prop:cusp-stabilizer-orthogonal-coble(2) inverts the restriction on $\Orth(K_I)$, so the image of $\Stab_{\Orth(T_\Co)}(\eta)$ is all of $\Orth(K)$.
-Two lifts of one $\bar g$ differ by an element of the kernel of $\Orth(T_\Co)\to\Orth(K)$; such an element fixes $K\otimes\bQ$ and therefore acts on its orthogonal complement, the $U(2)$ summand of $T_\Co=\langle h\rangle\oplus U(2)\oplus E_8(2)$, preserving its integral structure, and that group is finite: a unipotent $f\mapsto f+ke$ or $e\mapsto e+kf$ moves a basis vector to one of square $4k$, so it is integral only for $k=0$, and what remains is the finite group of signed permutations of the two isotropic basis vectors.
+Two lifts of one $\bar g$ differ by an element of the kernel of $\Orth(T_\Co)\to\Orth(K)$; such an element fixes $K\otimes\bQ$ and therefore acts on its orthogonal complement, the $U(2)$ summand of $T_\Co=\langle h\rangle\oplus U(2)\oplus E_8(2)$, preserving its integral structure, and that group is finite: a unipotent $f\mapsto f+ke$ or $e\mapsto e+kf$ moves a basis vector to one of square $4k$, so it is integral only for $k=0$, and what remains is the finite group of signed permutations of the two isotropic basis (@def:isotropic-basis-hyperbolic-plane) vectors.
 Since $\rho_{T_\Co}$ is a homomorphism, the discriminant actions of the lifts of $\bar g$ are one coset of the image of that kernel, which is finite.
 :::
 
 ::: {.lemma #lem:root-reflections-in-the-labelled-cusp title="the $(-2)$-reflections of the cusp lattice lie in the image at every labelled cusp"}
-Let $\eta$ be a primitive isotropic vector of $T_\Co$ of divisibility $2$, put $K=\eta^{\perp}/\bZ\eta$, and let $r\in K$ have $r^2=-2$.
+Let $\eta$ be a primitive isotropic vector (@def:isotropic-subspace) of $T_\Co$ of divisibility $2$, put $K=\eta^{\perp}/\bZ\eta$, and let $r\in K$ have $r^2=-2$.
 Then the reflection $s_r$ is an integral isometry of $K$, it acts trivially on the discriminant group $A_K$, and it lies in $\Gamma_e$ for every subgroup $\Gamma=\rho_{T_\Co}^{-1}(Q)$ with $\id\in Q\le O(A_{T_\Co})$ — in particular for $R_{\gent}$.
 Hence the image at a labelled $0$-cusp contains the group $W^{(-2)}(K)$ generated by the reflections in the $(-2)$-vectors of the cusp lattice, and what the $P$-condition can still exclude is the $(-4)$-reflections alone.
 :::
@@ -1655,7 +1655,7 @@ Since $\ker\rho_{T_\Co}\subseteq\Gamma$, the lift lies in $\Gamma$, and $s_r$ li
 :::
 
 ::: {.lemma #lem:cusp-image-is-the-stabilizer-of-a-class title="the image of the labelled cusp stabilizer is the stabilizer of one class of $A_K$"}
-Let $\eta$ be the primitive isotropic vector $e$ of the $U(2)$ summand of $T_\Co=\langle h\rangle\oplus U(2)\oplus E_8(2)$, so that $K=\eta^{\perp}/\bZ\eta=\langle h\rangle\oplus E_8(2)$ (@prop:cusp-stabilizer-orthogonal-coble(1)), and let $\Gamma_e$ be the image of $\Stab_{R_{\gent}}(\eta)$ in $\Orth(K)$.
+Let $\eta$ be the primitive isotropic vector (@def:isotropic-subspace) $e$ of the $U(2)$ summand of $T_\Co=\langle h\rangle\oplus U(2)\oplus E_8(2)$, so that $K=\eta^{\perp}/\bZ\eta=\langle h\rangle\oplus E_8(2)$ (@prop:cusp-stabilizer-orthogonal-coble(1)), and let $\Gamma_e$ be the image of $\Stab_{R_{\gent}}(\eta)$ in $\Orth(K)$.
 Then
 $$
 \Gamma_e=\rho_K^{-1}\bigl(\Stab_{\Orth(q_K)}(e_0)\bigr),\qquad e_0\definedas[h/2]\in A_K,
@@ -1982,7 +1982,7 @@ The normalization of the closure of $T_N$ in $X_\torfan$ is the toric variety as
 
 This is standard in toric geometry; the saturation (@def:saturation) hypothesis enters in the last step.
 
-The $T_M$-orbits of $X_\torfan$ correspond to the cones of $\torfan$, and the closure of $T_N$ meets exactly those orbits whose cone meets $N_\bR$ in a full-dimensional subset — that is, the closure is the union of the $T_N$-orbits indexed by the intersections $\sigma\cap N_\bR$.
+The $T_M$-orbits of $X_\torfan$ correspond to the cones (@def:closed-cone) of $\torfan$, and the closure of $T_N$ meets exactly those orbits (@def:group-orbit) whose cone meets $N_\bR$ in a full-dimensional subset — that is, the closure is the union of the $T_N$-orbits indexed by the intersections $\sigma\cap N_\bR$.
 Each such intersection is a cone in $N_\bR$ because $\sigma$ is a cone and $N_\bR\subseteq M_\bR$ is a linear subspace, and the intersections are closed under taking faces, so they form the fan $\torfan|_{N_\bR}$.
 The toric variety of that fan is normal by construction, and it is the closure up to normalization; the two agree because $N$ is saturated in $M$, which is what makes $M/N$ torsion-free so that the intersections above are the faces of a genuine fan with saturated cones rather than only a rational polyhedral subdivision.
 :::
@@ -2287,7 +2287,7 @@ Compute the simultaneous eigenspaces of the Klein-four action, their primitive c
 :::
 
 ::: {.theorem #prob:B24 title="B2.4. Direct global Torelli theorem — the period image, decided"}
-Let $p$ be the period map of the direct one-node construction into the component of $\bD(T_\Co)$ modulo $\Gamma_{\mathrm{lab}}$, the image in $\Orth(T_\Co)$ of the stabilizer in $\Orth(\lkt)$ of the labels $(I_\Co,I_{\mathrm{dP}},H,\alpha)$. Then the complement of $\mathrm{im}(p)$ is a union of Heegner divisors of $T_\Co$:
+Let $p$ be the period map of the direct one-node construction into the component of $\bD(T_\Co)$ modulo $\Gamma_{\mathrm{lab}}$, the image in $\Orth(T_\Co)$ of the stabilizer (@def:group-orbit) in $\Orth(\lkt)$ of the labels $(I_\Co,I_{\mathrm{dP}},H,\alpha)$. Then the complement of $\mathrm{im}(p)$ is a union of Heegner divisors of $T_\Co$:
 1. no period of the construction lies on a wall (@not:coxeter-polytope-faces) $\delta^\perp$ with $\delta\in T_\Co$ of square $-2$;
 2. each of the $121$ classes whose glued image is the level $\set{q_{T_\Co} = 1}$ carries a wall that the image misses, and the single class $\eta_0$ of the other level $\set{q_{T_\Co} = 1/2}$ that the pinned gluing $\gamma_\Co$ could charge (@def:charge) carries no vector of norm $-2$, $-4$, $-6$ or $-8$, so no divisor of that level is excluded.
 
@@ -2303,7 +2303,7 @@ So the marked direct Coble moduli stack is the complement of that subarrangement
 
 ::: {.lemma #lem:chamber-from-marked-period title="The chamber is a function of the marked period"}
 
-In the situation of @prop:one-node-family, let $(X_b,\psi_b)$ and $(X_{b'},\psi_{b'})$ be marked tuples of the construction whose periods agree as points of $\bD(T_\Co)$ after transport by the markings. Then the two marked tuples are isomorphic, and their chambers — the nef cones of the two surfaces, transported by the markings — coincide.
+In the situation of @prop:one-node-family, let $(X_b,\psi_b)$ and $(X_{b'},\psi_{b'})$ be marked tuples of the construction whose periods agree as points of $\bD(T_\Co)$ after transport by the markings. Then the two marked tuples are isomorphic, and their chambers — the nef cones (@def:nef-cone) of the two surfaces, transported by the markings — coincide.
 :::
 
 ::: {.proof}
@@ -2332,7 +2332,7 @@ So $g$ acts on $A_{S_\Co}\oplus A_{T_\Co}$ as $(-\id,\id)=(\id,\id)$, that is tr
 
 *The labels.*
 $I_\Co$ acts by $+\id$ on $S_\Co$ and by $-\id$ on $T_\Co$ (@cons:reflection-twist, @prop:coble-transcendental), and $g$ acts by the same two scalars, so $gI_\Co=I_\Co g$.
-$I_{\mathrm{dP}}$ commutes with $I_\Co$, hence preserves each of the two lattices, and $g$ is a scalar on each, so $gI_{\mathrm{dP}}=I_{\mathrm{dP}}g$.
+$I_{\mathrm{dP}}$ commutes (@def:commutative-diagram) with $I_\Co$, hence preserves each of the two lattices, and $g$ is a scalar on each, so $gI_{\mathrm{dP}}=I_{\mathrm{dP}}g$.
 $H$ and $\alpha$ lie in $S_\Co$, both being fixed by $I_\Co$ (@sec-labeled-lattice-data), and $g$ is the identity on $S_\Co$, so $gH=H$ and $g\alpha=\alpha$.
 For the chamber: at this member $\Delta_b\subseteq S_{\Co,b}$ and $\mcc_b$ is cut out of $\mathcal C_b$ by the sign conditions of @thm:chamber-pinned-by-labels, parts (1) and (2), and $g$ is the identity on $S_{\Co,b}$, hence on $\mathcal C_b\subseteq\Pic(\widehat X_b)\otimes\RR$, so it preserves $\mcc_b$; that is part (3) of the same theorem applied to $\id\in\Orth(S_{\Co,b})$, whose hypothesis at $H_b$ and $\alpha_b$ it meets.
 So $g\in Z$, and its image in $\Orth(T_\Co)$ is $-\id_{T_\Co}$.
@@ -2341,7 +2341,7 @@ So $g\in Z$, and its image in $\Orth(T_\Co)$ is $-\id_{T_\Co}$.
 By @lem:minus-identity-spinor-norm, $\spinornorm_\bR(-\id_L) = [(-1)^p]$ for a lattice of signature $(p,q)$, so $-\id_L\in\Orth^+(L)$ exactly when $p$ is even.
 Here $T_\Co$ has signature $(2,9)$ (@prop:coble-transcendental), so $p = 2$ and $-\id_{T_\Co}\in\Theta_\bR(T_\Co) = \Orth^+(T_\Co)$ (@def:lattice-spinor-kernels).
 The same conclusion reads off the orientation (@def:orientation-classes) classes, without the spinor norm: on a positive definite $2$-plane $W$ the isometry $-\id$ has $\det(-\id|_W) = (-1)^2 = 1 > 0$, so it preserves the positive orientation classes (@def:orientation-classes), which is $\Orth^+$ by @prop:spinor-norm-orientation-classes(4).
-The criterion by cone components must not be transported here: [@AEGS25, §5.1, printed p. 609] defines $O^+(\Lambda)$ for a hyperbolic lattice of rank $r$ and signature $(1,r-1)$, where $C$ is one of the two halves of $\set{v\in\Lambda_\RR: v^2>0}$, and @prop:spinor-plus-cone-components proves the agreement of that reading with $\Theta_\bR$ for signature $(1,n)$ only.
+The criterion by cone (@def:closed-cone) components must not be transported here: [@AEGS25, §5.1, printed p. 609] defines $O^+(\Lambda)$ for a hyperbolic lattice of rank $r$ and signature $(1,r-1)$, where $C$ is one of the two halves of $\set{v\in\Lambda_\RR: v^2>0}$, and @prop:spinor-plus-cone-components proves the agreement of that reading with $\Theta_\bR$ for signature $(1,n)$ only.
 For signature $(2,9)$ the set $\set{v: v^2>0}$ is connected — $t\mapsto(\cos t,\sin t,0,\dots,0)$ joins a vector of square $1$ to its negative inside it — so there are no two halves for $-\id$ to exchange, and the cone reading has no content here.
 :::
 
@@ -2374,11 +2374,11 @@ The deck group of the marking cover and the geometric monodromy group of @def:ge
 
 *$O$ is connected.* By @prob:B24 the complement of $\mathrm{im}(p)$ is a union of Heegner divisors, so $O$ is the complement in the component of $\bD(T_\Co)$ of a union of walls (@not:coxeter-polytope-faces); that union is locally finite, each compact subset of the domain meeting only the walls of the classes whose periods satisfy a bound, and the complement of a locally finite union of proper closed analytic subsets of a connected complex manifold is connected and dense. It is $\Gamma_{\mathrm{lab}}$-invariant as a preimage.
 
-*The two covers.* Two markings with the same period differ by a label-preserving isometry acting trivially on $\bD(T_\Co)$. Since $I_\Co$ acts by $-1$ on $T_\Co$, the element $-\id_{T_\Co}$ lies in $\Gamma_{\mathrm{lab}}$ — it pairs with $\id_{S_\Co}$ through the glue, $-\id = \id$ on the $2$-torsion of $A_{T_\Co}$ — and it acts trivially on the period domain, so the period cover $O\to O/\Gamma_{\mathrm{lab}} = \mathfrak M$ has deck group $\Gamma_{\mathrm{lab}}/\{\pm1\}$ and not $\Gamma_{\mathrm{lab}}$. The marking cover is the $\{\pm1\}$-cover of $O$ above it, of degree $\abs{\Gamma_{\mathrm{lab}}}$ over $\mathfrak M$; it trivializes $T_\Co$, since a marking is an isometry of $H^2$ carrying the labels, and the monodromy is the deck group of *that* cover.
+*The two covers.* Two markings with the same period differ by a label-preserving isometry acting trivially on $\bD(T_\Co)$. Since $I_\Co$ acts by $-1$ on $T_\Co$, the element $-\id_{T_\Co}$ lies in $\Gamma_{\mathrm{lab}}$ — it pairs with $\id_{S_\Co}$ through the glue, $-\id = \id$ on the $2$-torsion of $A_{T_\Co}$ — and it acts trivially on the period domain, so the period cover $O\to O/\Gamma_{\mathrm{lab}} = \mathfrak M$ has deck group $\Gamma_{\mathrm{lab}}/\{\pm1\}$ and not $\Gamma_{\mathrm{lab}}$. The marking cover is the $\{\pm1\}$-cover of $O$ above it, of degree (@def:graded-object) $\abs{\Gamma_{\mathrm{lab}}}$ over $\mathfrak M$; it trivializes $T_\Co$, since a marking is an isometry of $H^2$ carrying the labels, and the monodromy is the deck group of *that* cover.
 
 *What that leaves, and what answers it.* Over the coarse moduli space the monodromy is $\Gamma_{\mathrm{lab}}/\{\pm1\}$ and no loop carries $-\id_{T_\Co}$ (@thm:no-loop-carries-the-sign), while the orbifold monodromy of @def:geometric-monodromy is $\Gamma_{\mathrm{lab}}$ itself, the sign being the isotropy $I_\Co$ that every member carries (@thm:sign-is-isotropy):
 $$\Gamma^{\mathrm{geom}}_{\Co,2} = \Gamma^{\mathrm{dir}}_{\Co,2},$$
-and the quotient branch is the same statement read over the coarse space. The two branches an earlier form of this paragraph carried are that distinction, not two unknowns. What @prob:B24 does not supply is the word itself: it identifies which walls the image meets (@def:replete-full-meet), hence which reflections the Heegner loops carry. The word is supplied by the arithmetic of @thm:coble-block-sign-in-w, which puts $\iota$ in $W(T_\Co)$; what it does not supply is the loop. Three facts about the ambiguity are established, and they are what the question starts from. First, it is genuine and internal to the label group, not a defect of the notation: $\iota\definedas\id_{S_\Co}\oplus(-\id_{T_\Co})$ is the involution $I_\Co$, it lies in $\Gamma^{\mathrm{dir}}_{\Co,2} = \rho_{T_\Co}^{-1}(P)\intersect\Orth^+(T_\Co)$ (@lem:minus-id-in-direct-group, part 1, and @prop:direct-eq-heegner), and it lies in $\Orth^+(T_\Co)$ because $\spinornorm_\bR(-\id_L) = [(-1)^p]$ with $p = 2$ (@lem:minus-identity-spinor-norm), equivalently because $\det(-1|_W) = (-1)^2 = 1$ on a positive $2$-plane (@prop:spinor-norm-orientation-classes(4)); so it is an element of the group the monodromy is asserted to equal, and the dichotomy asks which subgroup of that group is realized. Second, $\iota$ is not the square of any isometry of $\lkt$: from $g^2 = \iota$ one gets $g\iota = g\,g^2 = g^3 = g^2g = \iota g$, so $g$ preserves the two eigenspaces $S_\Co$ and $T_\Co$, and $g|_{T_\Co}$ is then an orthogonal complex structure (@def:calculus-module-complex-structure) on a space of signature $(2,9)$, which pairs positive vectors with positive and negative with negative and so forces both ranks even, against $9$. The sign therefore cannot arise as the square of an orbifold stabiliser, which is how $-1$ does enter the monodromy of the elliptic curves, where the local monodromy (@def:transport-and-monodromy) at $j=i$ has order $4$. Third, the branch "no loop carries it" is false one level up, where it can be checked: under the identification of the monodromy group of the degree-$2$ numerically polarized Enriques space with $\Gamma_{\En,2}$ that the corpus records (`writing/dissertation/sections/1-part-combinatorial/3-chapter-enriques-k3/475-our-cusps.md`:126, [@Ste91]) and uses in @def:gamma-co-groups, that group contains $I_\En$ itself — it commutes with $I_\En$ and fixes $h\in S_\En$ — and its image in $\Orth(T_\En)$ is $-\id_{T_\En}$; and that containment is of the group and not of the loop monodromy: the inference from the one to the other is what @thm:no-loop-carries-the-sign blocks in the Coble case, and it blocks it one level up for the same reason, where $I_\En$ is the isotropy of that moduli stack and $\delta^{\perp T_\En} = \eta(T_\Co)$ is the sublattice on which it acts by $-1$. That isotropy is not a loop of $\mathfrak M$, and the Coble statement does not follow from it, on the labelled base $\Gamma_\Co$ and $\widetilde\Orth^+(T_\Co)$ being equal up to $\pm\id$ (@thm:gamma-co-is-stable). So the two-element question that @qst:b25-sign-holonomy posed is answered on both readings it can be read in: the sign is in the orbifold group through the isotropy and in no loop, and $\epsilon$ is a word too (@thm:coble-block-sign-in-w).
+and the quotient branch is the same statement read over the coarse space. The two branches an earlier form of this paragraph carried are that distinction, not two unknowns. What @prob:B24 does not supply is the word itself: it identifies which walls the image meets (@def:replete-full-meet), hence which reflections the Heegner loops carry. The word is supplied by the arithmetic of @thm:coble-block-sign-in-w, which puts $\iota$ in $W(T_\Co)$; what it does not supply is the loop. Three facts about the ambiguity are established, and they are what the question starts from. First, it is genuine and internal to the label group, not a defect of the notation: $\iota\definedas\id_{S_\Co}\oplus(-\id_{T_\Co})$ is the involution $I_\Co$, it lies in $\Gamma^{\mathrm{dir}}_{\Co,2} = \rho_{T_\Co}^{-1}(P)\intersect\Orth^+(T_\Co)$ (@lem:minus-id-in-direct-group, part 1, and @prop:direct-eq-heegner), and it lies in $\Orth^+(T_\Co)$ because $\spinornorm_\bR(-\id_L) = [(-1)^p]$ with $p = 2$ (@lem:minus-identity-spinor-norm), equivalently because $\det(-1|_W) = (-1)^2 = 1$ on a positive $2$-plane (@prop:spinor-norm-orientation-classes(4)); so it is an element of the group the monodromy is asserted to equal, and the dichotomy asks which subgroup of that group is realized. Second, $\iota$ is not the square of any isometry of $\lkt$: from $g^2 = \iota$ one gets $g\iota = g\,g^2 = g^3 = g^2g = \iota g$, so $g$ preserves the two eigenspaces $S_\Co$ and $T_\Co$, and $g|_{T_\Co}$ is then an orthogonal complex structure (@def:calculus-module-complex-structure) on a space of signature $(2,9)$, which pairs positive vectors with positive and negative with negative and so forces both ranks even, against $9$. The sign therefore cannot arise as the square of an orbifold stabiliser, which is how $-1$ does enter the monodromy of the elliptic curves, where the local monodromy (@def:transport-and-monodromy) at $j=i$ has order $4$. Third, the branch "no loop carries it" is false one level up, where it can be checked: under the identification of the monodromy group of the degree-$2$ numerically polarized Enriques space with $\Gamma_{\En,2}$ that the corpus records (`writing/dissertation/sections/1-part-combinatorial/3-chapter-enriques-k3/475-our-cusps.md`:126, [@Ste91]) and uses in @def:gamma-co-groups, that group contains $I_\En$ itself — it commutes (@def:commutative-diagram) with $I_\En$ and fixes $h\in S_\En$ — and its image in $\Orth(T_\En)$ is $-\id_{T_\En}$; and that containment is of the group and not of the loop monodromy: the inference from the one to the other is what @thm:no-loop-carries-the-sign blocks in the Coble case, and it blocks it one level up for the same reason, where $I_\En$ is the isotropy of that moduli stack and $\delta^{\perp T_\En} = \eta(T_\Co)$ is the sublattice on which it acts by $-1$. That isotropy is not a loop of $\mathfrak M$, and the Coble statement does not follow from it, on the labelled base $\Gamma_\Co$ and $\widetilde\Orth^+(T_\Co)$ being equal up to $\pm\id$ (@thm:gamma-co-is-stable). So the two-element question that @qst:b25-sign-holonomy posed is answered on both readings it can be read in: the sign is in the orbifold group through the isotropy and in no loop, and $\epsilon$ is a word too (@thm:coble-block-sign-in-w).
 :::
 
 ::: {.question #qst:b25-sign-holonomy title="The sign holonomy of the direct Coble stack"}
@@ -2400,7 +2400,7 @@ Then the monodromy of $T_\Co$ over $\mathfrak M$ is $\Gamma^{\mathrm{dir}}_{\Co,
 ::: {.proof}
 *The marked moduli is the period image.*
 Let $\widetilde{\mathfrak M}$ be the set of isomorphism classes of marked tuples — tuples $(X_b,\iota_{\Co,b},H_b,\alpha_b;\psi)$ with $\psi\colon H^2(\widehat X_b,\ZZ)\to\lkt$ carrying the labels to the standard ones.
-Its period map to $\bD(T_\Co)$ is injective: two marked tuples with the same period differ by a Hodge isometry $g$ carrying the ample class $A=2H-\alpha$, which is a label, to the ample class, hence carrying the fundamental chamber to the fundamental chamber, and the Global Torelli theorem [@AN06, printed p. 25] — in the form that a period isomorphism preserving $H^{2,0}$ and the fundamental chamber is induced by a unique isomorphism of the surfaces — makes $g=\varphi^*$ for an isomorphism $\varphi$ intertwining the markings.
+Its period map to $\bD(T_\Co)$ is injective (@def:injective-map): two marked tuples with the same period differ by a Hodge isometry $g$ carrying the ample class $A=2H-\alpha$, which is a label, to the ample class, hence carrying the fundamental chamber to the fundamental chamber, and the Global Torelli theorem [@AN06, printed p. 25] — in the form that a period isomorphism preserving $H^{2,0}$ and the fundamental chamber is induced by a unique isomorphism of the surfaces — makes $g=\varphi^*$ for an isomorphism $\varphi$ intertwining the markings.
 This is @lem:chamber-from-marked-period, and it holds at every member of the construction, the ample class being a label and not a datum of a general member.
 
 *The image and its connectedness.*
@@ -2422,7 +2422,7 @@ not $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm\id\}$.
 ::: {.proof}
 *The automorphisms.*
 $I_\Co$ and $I_{\mathrm{dP}}$ are automorphisms of every member of the construction (@prop:tuple-of-the-construction).
-They commute with each other and fix $H$ and $\alpha$ (@sec-labeled-lattice-data), and each commutes with both label involutions, so each is an automorphism of the labelled object; with the identity and the product they form $(\bZ/2)^2$.
+They commute with each other and fix $H$ and $\alpha$ (@sec-labeled-lattice-data), and each commutes (@def:commutative-diagram) with both label involutions, so each is an automorphism of the labelled object; with the identity and the product they form $(\bZ/2)^2$.
 
 *Their action on $T_\Co$.*
 $T_\Co=\alpha^{\perp}_{T_\En}$ and $I_\Co=w_\alpha I_\En$ acts there as $I_\En$, which is $-1$ on $T_\En$; so $I_\Co$ acts on $T_\Co$ by $-1$ (@cons:reflection-twist, @prop:coble-transcendental).
@@ -2678,7 +2678,7 @@ $$
 H=\bar\delta^\perp,\qquad
 \bar S=(\delta^\perp\cap e^\perp)/\ZZ e=H\cap\bar T,
 $$
-a primitive corank-one sublattice of $\bar T$. Let $W$ be a reflection group on $\bar T$, let $C$ be a chamber (@cons:chamber-cone) for $W$ cut out by a diagram $G$, and let $\F^{\mathrm{gen}}(I\sqcup J)$ be its generalized Coxeter semifan (@def:generalized-coxeter-semifan) in the sense of [@AEGS25, §5.2], printed p. 610. Write $C_\delta=C\cap H_\RR$ and let $W_\delta$ be generated by the integral reflections of $\bar S$ whose mirrors (@not:hyperbolic-polytope-setting) bound $C_\delta$ in the interior of its positive cone (@not:reflection-groups-sign-convention).
+a primitive corank-one sublattice of $\bar T$. Let $W$ be a reflection group (@def:reflection-group) on $\bar T$, let $C$ be a chamber (@cons:chamber-cone) for $W$ cut out by a diagram $G$, and let $\F^{\mathrm{gen}}(I\sqcup J)$ be its generalized Coxeter semifan (@def:generalized-coxeter-semifan) in the sense of [@AEGS25, §5.2], printed p. 610. Write $C_\delta=C\cap H_\RR$ and let $W_\delta$ be generated by the integral reflections of $\bar S$ whose mirrors (@not:hyperbolic-polytope-setting) bound $C_\delta$ in the interior of its positive cone (@not:reflection-groups-sign-convention).
 
 **Case A: $\bar\delta$ is not a mirror of $W$.** Assume
 
@@ -2702,13 +2702,13 @@ In either case, the following two conclusions hold:
 In Case B, moreover:
 
 3. $\F^{\mathrm{gen}}(I\sqcup J)\cap H_\RR$ is the generalized Coxeter semifan of $C_\delta$, with the relevance inherited from $I\sqcup J$; and
-4. its Type II rays and Type III cones are the maximal parabolic (@def:definiteness) and elliptic faces of $C_\delta$, respectively, in the sense of [@AEGS25, Def. 5.1], printed p. 609, and its Type II coarsening is governed by the irrelevant components in [@AEGS25, Lem. 5.7], printed p. 611.
+4. its Type II rays and Type III cones (@def:closed-cone) are the maximal parabolic (@def:definiteness) and elliptic faces of $C_\delta$, respectively, in the sense of [@AEGS25, Def. 5.1], printed p. 609, and its Type II coarsening is governed by the irrelevant components in [@AEGS25, Lem. 5.7], printed p. 611.
 :::
 
 ::: {.proof}
 For every $\alpha$ not proportional to $\bar\delta$, $\alpha^\perp\cap H_\RR$ is the hyperplane in $H_\RR$ cut by the orthogonal projection of $\alpha$ to $H_\QQ$. This proves (1), since a wall must meet the interior of the positive cone to contribute a bounding hyperplane of $C_\delta$.
 
-In Case A, (A1) makes each of these hyperplanes the mirror of an integral reflection of $\bar S$, and (A2) is Vinberg's cell criterion: a convex polyhedron whose dihedral angles are submultiples of $\pi$ is a fundamental chamber for the group generated by the reflections in its walls ([@Vin67], §1, printed p. 430, conditions $(\beta)$ and $(\beta')$). Since $C_\delta$ is the intersection of the corresponding half-spaces, this proves (2). No global identification of the restricted arrangement with the $W_\delta$-chambers is asserted in Case A: such an identification is proved below only in Case B, where every generator of $W_\delta$ is induced by an element of the stabilizer of $H_\RR$ in $W$.
+In Case A, (A1) makes each of these hyperplanes the mirror of an integral reflection of $\bar S$, and (A2) is Vinberg's cell criterion: a convex polyhedron whose dihedral angles are submultiples of $\pi$ is a fundamental chamber for the group generated by the reflections in its walls ([@Vin67], §1, printed p. 430, conditions $(\beta)$ and $(\beta')$). Since $C_\delta$ is the intersection of the corresponding half-spaces, this proves (2). No global identification of the restricted arrangement with the $W_\delta$-chambers is asserted in Case A: such an identification is proved below only in Case B, where every generator of $W_\delta$ is induced by an element of the stabilizer (@def:group-orbit) of $H_\RR$ in $W$.
 
 It remains to prove (2) and (3) in Case B. Put $K=\Stab_W(H_\RR)$ and let $\alpha\neq\pm\bar\delta$ be a wall of $C$. Suppose first that $\alpha\perp\bar\delta$. Then $s_\alpha\in K$ restricts to reflection of $H_\RR$ in $\alpha^\perp\cap H_\RR$. If $\alpha$ is not orthogonal to $\bar\delta$ but the two hyperplanes meet in the positive cone, write their angle as $\pi/(2k)$ by (B2). On $P=\RR\bar\delta+\RR\alpha$, the product $s_{\bar\delta}s_\alpha$ is rotation through $\pi/k$. Consequently
 $$
@@ -2720,14 +2720,14 @@ By (B3) all these reflections are integral on $\bar S$, and by (B4), with the sa
 
 Let $\mathcal H$ be the set of hyperplanes of $H_\RR$ obtained by intersecting it with mirrors of $W$. The two constructions above place every initial wall of $W_\delta$ in $\mathcal H$ and every generating reflection of $W_\delta$ in the restriction of $K$. Since $K$ preserves $\mathcal H$, every $W_\delta$-wall belongs to $\mathcal H$, and every $W_\delta$-image of $C_\delta$ has no hyperplane of $\mathcal H$ through its interior. Indeed, such a hyperplane would pull back to one through the interior of $C_\delta$, hence to a wall of $W$ through the interior of $C$.
 
-Let $D$ be a $W$-chamber whose intersection with $H_\RR$ meets the interior of some $W_\delta$-chamber $D'$. Every wall of $D'$ is a mirror of $W$, so $D$ lies entirely in the closed half-space of each such wall selected by their common interior point. Hence $D\cap H_\RR\subseteq D'$. Since no hyperplane of $\mathcal H$ crosses the interior of $D'$, also $D'\subseteq D\cap H_\RR$. It follows that $D'=D\cap H_\RR$. The Vinberg tiling by $W_\delta$ covers the positive cone of $\bar S$, so every original chamber intersection arises in this way. Therefore the maximal cones of $\F^{\mathrm{cox}}\cap H_\RR$ and of the Coxeter semifan (@def:coxeter-semifan) of $W_\delta$ are identical, not merely combinatorially similar. Intersecting with the rational closure preserves this identification of their supports.
+Let $D$ be a $W$-chamber whose intersection with $H_\RR$ meets the interior of some $W_\delta$-chamber $D'$. Every wall of $D'$ is a mirror of $W$, so $D$ lies entirely in the closed half-space (@def:closed-half-space) of each such wall selected by their common interior point. Hence $D\cap H_\RR\subseteq D'$. Since no hyperplane of $\mathcal H$ crosses the interior of $D'$, also $D'\subseteq D\cap H_\RR$. It follows that $D'=D\cap H_\RR$. The Vinberg tiling by $W_\delta$ covers the positive cone of $\bar S$, so every original chamber intersection arises in this way. Therefore the maximal cones (@def:maximal-cone-of-fan) of $\F^{\mathrm{cox}}\cap H_\RR$ and of the Coxeter semifan (@def:coxeter-semifan) of $W_\delta$ are identical, not merely combinatorially similar. Intersecting with the rational closure preserves this identification of their supports.
 
-Finally (B1) excludes the deleted mirror itself from the irrelevant roots, and (B5) assigns a unique relevance to every remaining restricted wall. Deleting an original face given by a set of irrelevant walls therefore deletes precisely the face with the same walls in $C_\delta$. Intersection commutes with taking these wall faces, so it identifies the generalized coarsenings and proves (3).
+Finally (B1) excludes the deleted mirror itself from the irrelevant roots, and (B5) assigns a unique relevance to every remaining restricted wall. Deleting an original face given by a set of irrelevant walls therefore deletes precisely the face with the same walls in $C_\delta$. Intersection commutes (@def:commutative-diagram) with taking these wall faces, so it identifies the generalized coarsenings and proves (3).
 :::
 
 
 ::: {.proposition #prop:semifan-restriction-obstruction title="The hypothesis of Case A is not automatic"}
-Let $\bar T = U\oplus A_3$ with simple roots $\alpha_1,\alpha_2,\alpha_3$ of the $A_3$ summand, and $\bar\delta = \alpha_2$. Then $\bar S = U\oplus\langle\alpha_1-\alpha_3,\ \alpha_2+2\alpha_3\rangle$ has signature (@def:signature) $(1,2)$, and the wall (@not:coxeter-polytope-faces) cut by $\alpha_1$ is not reflective (@def:reflective-lattice) in $\bar S$: no multiple of the projection $\alpha_1+\tfrac12\alpha_2$ that lies in $\bar S$ has an integral reflection there. So the reflectivity condition (A1) fails and the restricted cone is not cut out by reflections of $\bar S$.
+Let $\bar T = U\oplus A_3$ with simple roots $\alpha_1,\alpha_2,\alpha_3$ of the $A_3$ summand, and $\bar\delta = \alpha_2$. Then $\bar S = U\oplus\langle\alpha_1-\alpha_3,\ \alpha_2+2\alpha_3\rangle$ has signature (@def:signature) $(1,2)$, and the wall (@not:coxeter-polytope-faces) cut by $\alpha_1$ is not reflective (@def:reflective-lattice) in $\bar S$: no multiple of the projection $\alpha_1+\tfrac12\alpha_2$ that lies in $\bar S$ has an integral reflection there. So the reflectivity condition (A1) fails and the restricted cone (@def:closed-cone) is not cut out by reflections of $\bar S$.
 
 The example $U\oplus A_2$ with $\bar\delta = \alpha_1$ does **not** obstruct: the projection of $\alpha_2$ is $\tfrac12 v$ with $v = \alpha_1+2\alpha_2$ of square $-6$, the two have the same wall $v^{\perp}$ in $\bar S = U\oplus\ZZ v$, and $v\cdot\bar S = 6\ZZ$ makes $s_v(x) = x+\tfrac13(x\cdot v)v$ integral. That is why (H1) is a condition on walls and not on the vectors themselves.
 :::
@@ -2777,7 +2777,7 @@ $$
 5&12&13&62&6&7&2&1
 \end{array}
 $$
-Thus every intersecting pair of induced walls has angle $\pi/2$, $\pi/3$, or $\pi/4$. Exactly one of the nine facets is the nine-wall chamber of @thm:coble-cusp-chamber: the facet at node $10$ of cusp $2$. Its bonds are
+Thus every intersecting pair of induced walls has angle $\pi/2$, $\pi/3$, or $\pi/4$. Exactly one of the nine facets (@def:facet-maximal-face) is the nine-wall chamber of @thm:coble-cusp-chamber: the facet at node $10$ of cusp $2$. Its bonds are
 $$
 1-2,\quad 2-3,\quad 1-4,\quad 1-5,\quad 5-6,\quad 6-7,\quad 7-8,\quad 8-9,
 $$
@@ -2833,7 +2833,7 @@ The perpendicular is even because $T_{\En}$ is even, and it has signature $(p,q)
 :::
 
 ::: {.theorem #thm:coble-restricted-semifan title="The restricted Coxeter semifan at cusp 2 is the marked Coble semifan"}
-Let $\eta$ be the cusp-$2$ isotropic vector, let $\delta=r_{10}$, let $C_\delta$ be the facet of the AEGS cusp-$2$ chamber computed in @prop:facet-angles-aegs, and put
+Let $\eta$ be the cusp-$2$ isotropic vector (@def:isotropic-subspace), let $\delta=r_{10}$, let $C_\delta$ be the facet (@def:facet-maximal-face) of the AEGS cusp-$2$ chamber computed in @prop:facet-angles-aegs, and put
 $$
 \bar S=(\delta^\perp\cap\eta^\perp)/\ZZ\eta .
 $$
@@ -2856,7 +2856,7 @@ The exact representatives give $\bar S=\ZZ(e+f)\oplus E_8(2)$ in the basis used 
 
 All hypotheses of Case B of @thm:semifan-restriction hold. The mirror (@not:hyperbolic-polytope-setting) $r_{10}$ is on the boundary of AEGS Figure 7's folded triangle, hence relevant by Definition 5.4. Its only nonorthogonal incidence is the double bond $9-10$, which has the even label $4$. The projected roots are reflective (@def:reflective-lattice) by the preceding paragraph. @prop:facet-angles-aegs gives only $\pi/2,\pi/3,\pi/4$ as intersecting induced angles, with no parallel pair at this candidate. Relevance is collision-free because the nine restricted hyperplanes are distinct. Therefore $C_\delta$ is a fundamental chamber of $W_\delta$, and intersection is the generalized Coxeter semifan with the inherited marking.
 
-Now let $W_\delta$ be generated by these nine projected reflections. Their Gram matrix in the displayed AN order is exactly that of @thm:coble-cusp-chamber, namely a chain $v_1-\cdots-v_8$ with $v_7-v_8$ double and $v_8$ open, and the additional $v_9$ attached to $v_3$. Mapping the nine projected normals to the corresponding normals of the AN chamber preserves all pairings; it therefore induces an isometry between their real spans and identifies the two simplicial chamber cones. In particular, $C_\delta$ and the AN chamber have the same finite hyperbolic volume, the AN chamber being of finite volume by @thm:coble-cusp-chamber's source in [@AN06, Table 1]. Also $W_\delta\subseteq W^{(2,4)}(\bar S)$ by the checked squares and divisibilities. The fundamental-covolumes of the two groups are the volumes of these chambers, so
+Now let $W_\delta$ be generated by these nine projected reflections. Their Gram matrix in the displayed AN order is exactly that of @thm:coble-cusp-chamber, namely a chain $v_1-\cdots-v_8$ with $v_7-v_8$ double and $v_8$ open, and the additional $v_9$ attached to $v_3$. Mapping the nine projected normals to the corresponding normals of the AN chamber preserves all pairings; it therefore induces an isometry between their real spans and identifies the two simplicial chamber cones (@def:closed-cone). In particular, $C_\delta$ and the AN chamber have the same finite hyperbolic volume (@def:hyperbolic-volume), the AN chamber being of finite volume by @thm:coble-cusp-chamber's source in [@AN06, Table 1]. Also $W_\delta\subseteq W^{(2,4)}(\bar S)$ by the checked squares and divisibilities. The fundamental-covolumes of the two groups are the volumes of these chambers, so
 $$
 [W^{(2,4)}(\bar S):W_\delta]
  =\frac{\operatorname{vol}(C_\delta)}

@@ -2,6 +2,89 @@
 
 All surfaces are over $\CC$.
 
+::: {.definition #def:smooth-projective-surface title="Smooth projective surface" defines="smooth projective surface; nonsingular projective surface"}
+
+A **smooth projective surface** is a nonsingular projective variety of dimension $2$ over $\CC$ [@Har77, Ch. V, Sect. 1].
+:::
+
+::: {.definition #def:complete-linear-system title="Complete linear system" defines="complete linear system; base point; base-point-free linear system"}
+
+Let $X$ be a smooth projective variety and $D_0$ a divisor on $X$.
+The **complete linear system** $|D_0|$ is the set of all effective divisors linearly equivalent to $D_0$ [@Har77, Ch. II, Sect. 7, definition before Lem. 7.8].
+A point $P\in X$ is a **base point** of a linear system if $P$ lies in the support of every divisor of the system, and a linear system is **base-point-free** if it has no base point [@Har77, Ch. II, Sect. 7, Lem. 7.8].
+:::
+
+::: {.definition #def:pullback-of-divisor title="Pullback of a divisor" defines="pullback of a divisor; inverse image of a divisor"}
+
+Let $f\colon S\to X$ be a morphism of smooth varieties.
+The inverse image of an invertible sheaf gives a homomorphism $f^*\colon\Pic X\to\Pic S$.
+If $f$ is surjective, the **pullback (@def:pullback-square)** $f^*D$ of a divisor $D$ on $X$ is the divisor on $S$ with $f^*\OO_X(D)=\OO_S(f^*D)$ [@Bea96, Fact I.1].
+:::
+
+::: {.definition #def:intersection-number-divisor-curve title="Intersection number of a divisor and a curve" defines="intersection number of a divisor and a curve; $D\cdot C$"}
+
+Let $S$ be a smooth projective surface (@def:smooth-projective-surface), $C\subset S$ a nonsingular irreducible curve, and $D$ a divisor on $S$.
+The **intersection number** $D\cdot C$ is the degree (@def:graded-object) of the restriction of the line bundle $\OO_S(D)$ to $C$:
+$$
+D\cdot C=\deg\bigl(\OO_S(D)|_C\bigr)
+$$
+[@Bea96, Lem. I.6; @Har77, Ch. V, Lem. 1.3].
+:::
+
+::: {.definition #def:strict-transform title="Strict transform" defines="strict transform; proper transform"}
+
+Let $\pi\colon\widetilde X\to X$ be the blow-up of $X$ along a closed subscheme with exceptional locus $E$, and let $Y\subset X$ be a closed subvariety.
+The **strict transform** $\widetilde Y$ of $Y$ is the closure of $\pi^{-1}(Y\setminus\pi(E))$ in $\widetilde X$ [@Har77, Ch. II, Sect. 7, Def. 7.15 and Ex. 7.15.1].
+:::
+
+::: {.definition #def:resolution-of-base-points-of-a-pencil title="Resolution of the base points of a pencil" defines="resolution of base points of a pencil; elimination of indeterminacy"}
+
+Let $P$ be a pencil on a smooth projective surface (@def:smooth-projective-surface), that is, a linear system of dimension $1$ with no fixed component, defining a rational map $\varphi\colon S\dashrightarrow\PP^1$.
+A **resolution of the base points (@def:complete-linear-system)** of $P$ is a composite $\eta\colon S'\to S$ of finitely many blow-ups at base points, together with a morphism $f\colon S'\to\PP^1$ such that $f=\varphi\circ\eta$ [@Bea96, Thm. II.7].
+:::
+
+::: {.definition #def:relatively-minimal-fibration title="Relatively minimal fibration" defines="relatively minimal fibration"}
+
+A fibration $f\colon X\to B$ from a smooth surface is **relatively minimal** if no fibre contains a $(-1)$-curve [@BHPV04, Ch. III, Sect. 8].
+:::
+
+::: {.definition #def:multiple-fibre title="Multiple fibre" defines="multiple fibre; multiple fibre of an elliptic fibration"}
+
+Let $f\colon X\to B$ be a fibration from a smooth surface.
+A singular fibre $X_s=\sum n_iC_i$ is a **multiple fibre** of multiplicity $n$ if $n=\gcd\{n_i\}>1$.
+Then $X_s=n\cdot F$ for an effective divisor $F$ [@BHPV04, Ch. III, Sect. 8].
+:::
+
+::: {.definition #def:ordinary-double-point title="Ordinary double point" defines="ordinary double point; node of a surface; $A_1$ singularity"}
+
+An **ordinary double point** of a surface is the singularity of type $A_1$, with local equation
+$$
+x^2+y^2+z^2=0
+$$
+[@Dol12, Thm. 8.2.28 for $n=1$; @BHPV04, Ch. VIII, Sect. 16].
+:::
+
+::: {.definition #def:minimal-resolution-of-surface-singularity title="Minimal resolution of a surface singularity" defines="minimal resolution of a surface singularity; minimal resolution"}
+
+A resolution of singularities $\pi\colon Y\to X$ of a normal surface $X$ is **minimal** if $\pi$ contracts no $(-1)$-curve of $Y$; every normal surface has a unique minimal resolution [@BHPV04, Ch. III, Sect. 6, Thm. 6.2].
+:::
+
+::: {.definition #def:degree-of-del-pezzo-surface title="Degree of a del Pezzo surface" defines="degree of a del Pezzo surface; del Pezzo surface"}
+
+A **del Pezzo surface** is a normal surface $S$ whose canonical sheaf $\omega_S$ is invertible, with $\omega_S^{-1}$ ample and all singularities rational double points [@Dol12, Def. 8.1.12].
+Its **degree (@def:graded-object)** is the self-intersection number $d=K_S^2$ [@Dol12, Def. 8.1.16].
+:::
+
+::: {.definition #def:complete-intersection-variety title="Complete intersection" defines="complete intersection; strict complete intersection"}
+
+A variety $Y\subset\PP^n$ of dimension $r$ is a (strict) **complete intersection** if its homogeneous ideal $I(Y)$ can be generated by $n-r$ elements, the codimension of $Y$ [@Har77, Ch. I, Ex. 2.17].
+:::
+
+::: {.definition #def:nondegenerate-projective-variety title="Nondegenerate projective variety" defines="nondegenerate projective variety; nondegenerate variety"}
+
+A variety $X\subset\PP^n$ is **nondegenerate (@def:polarization)** if it spans $\PP^n$, that is, if $X$ is contained in no hyperplane [@Har92, Lecture 11].
+:::
+
 ## Kodaira dimension and minimal surfaces
 
 For a smooth projective surface $S$, put $P_m(S)=h^0(S,mK_S)$.
@@ -209,7 +292,7 @@ $X\to\PP^1$ if and only if $\NS(X)$ contains a nonzero class $v$
 with $v^2=0$. In the forward direction the fibre gives such a class.
 Conversely, Riemann--Roch makes one of $v,-v$ effective. Reflections
 in effective $(-2)$-classes move an effective primitive (@def:primitive-embedding) isotropic class (@def:descent-class)
-to the nef cone; its complete linear system is a basepoint-free
+to the nef cone (@def:nef-cone); its complete linear system (@def:complete-linear-system) is a basepoint-free
 genus-one pencil [@Huy16, Prop. 11.1.3 and Rem. 8.2.13].
 The statement concerns a genus-one fibration. A section, which makes
 it Jacobian, is additional data.
@@ -299,7 +382,7 @@ Average a Kähler class over $\langle g\rangle$. The invariant real
 subspace of $H^2(X,\RR)$ is of type $(1,1)$, since the invariant
 subspaces of $H^{2,0}$ and $H^{0,2}$ vanish. The invariant subspace is
 defined over $\QQ$, so it contains a rational class arbitrarily close
-to the averaged Kähler class. Openness of the Kähler cone makes that
+to the averaged Kähler class. Openness of the Kähler cone (@def:closed-cone) makes that
 rational class Kähler. An integral multiple is the first Chern class
 of a positive line bundle $L$ by the Lefschetz $(1,1)$ theorem.
 Then $c_1(L)^2>0$, so $X$ is projective [@BHPV04, Ch. IV, Thm. 6.2].
@@ -407,7 +490,7 @@ An **$ADE$ surface** is a normal surface $(Y, C)$ with reduced boundary $C$ give
 1. The $ADE$ surfaces of pure shape are toric. They are defined by the polytopes of [@AT17, Sec. 3A, Def. 3.5, Table 1].
 2. The $ADE$ surfaces of primed shape are obtained from surfaces of pure shape by priming (@def:priming; [@AT17, Sec. 3C, Def. 3.15]).
 
-Each $ADE$ surface is a log del Pezzo surface of index (@def:index) $2$: the pair $(Y, C)$ is log canonical, and the divisor $-2(K_Y + C)$ is Cartier and ample [@AT17, Def. 3.1].
+Each $ADE$ surface is a log del Pezzo surface (@def:degree-of-del-pezzo-surface) of index (@def:index) $2$: the pair $(Y, C)$ is log canonical, and the divisor $-2(K_Y + C)$ is Cartier and ample [@AT17, Def. 3.1].
 The $ADE$ surfaces are of type III in the sense of [@AT17, Lem. 2.5], so the pair $(Y, C)$ is not klt [@AT17, Def. 3.1, Lem. 2.5].
 The construction associates to each $ADE$ surface a shape: a decorated $ADE$ Dynkin diagram, and the $ADE$ root lattice obtained by deleting the decorations [@AT17, Sec. 3].
 :::
@@ -415,7 +498,7 @@ The construction associates to each $ADE$ surface a shape: a decorated $ADE$ Dyn
 ::: {.definition #def:priming title="Priming" defines="priming"}
 
 Let $(Y, C)$ be an $ADE$ surface, let $P_1, \dots, P_k$ be distinct points of $C$ that are nonsingular on $Y$ and on $C$, and choose ideals $I_i \simeq (y, x^2)$ supported at $P_i$ and transverse to $C$.
-Let $Y'\to Y$ be the weighted blowup at $\prod_i I_i$, let $C'$ be the strict transform of $C$, and let $L_0 = -2(K_{Y'} + C')$.
+Let $Y'\to Y$ be the weighted blowup at $\prod_i I_i$, let $C'$ be the strict transform (@def:strict-transform) of $C$, and let $L_0 = -2(K_{Y'} + C')$.
 Assume that $L_0$ is big, nef and semiample.
 The **priming** of $(Y, C)$ is the pair obtained by composing the blowup with the contraction given by $\abs{N L_0}$ for $N\gg 0$, with boundary the strict transform of $C$ [@AT17, Def. 3.13].
 :::
@@ -450,7 +533,7 @@ $$
 K_Y^2 = (-2\ell_1 - 2\ell_2)^2 = 8\,(\ell_1\cdot\ell_2) = 8
 ,
 $$
-so that $Y$ is a del Pezzo surface of degree $8$.
+so that $Y$ is a del Pezzo surface (@def:degree-of-del-pezzo-surface) of degree (@def:graded-object) $8$.
 :::
 
 ## The toric surface $W$
@@ -458,7 +541,7 @@ so that $Y$ is a del Pezzo surface of degree $8$.
 ::: {.proposition #prop:toric-surface-w title="The toric surface $W$"}
 
 Let $Y = \PP^1\times\PP^1$ and let $\tau\colon (x, y)\mapsto(-x, -y)$ be the coordinate involution, which has $4$ fixed points.
-The quotient $W = Y/\tau$ is a quartic del Pezzo surface with four $A_1$ singularities.
+The quotient $W = Y/\tau$ is a quartic del Pezzo surface (@def:degree-of-del-pezzo-surface) with four $A_1$ singularities.
 Both $Y$ and $W$ are toric, for the same polytope
 $$
 Q_{4, 4} \definedas [0, 4]^2

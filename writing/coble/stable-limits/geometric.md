@@ -45,21 +45,21 @@ $$
 f_i = 3e_0 - (e_1 + \cdots + e_{10}) + e_i
 ,
 $$
-the class of the proper transform of a plane cubic through the nine double points $p_j$, $j \neq i$.
+the class of the proper transform (@def:strict-transform) of a plane cubic through the nine double points $p_j$, $j \neq i$.
 For $i \neq j$, the linear system $\abs{2f_i + 2f_j}$ defines a degree-$2$ map
 $$
 \phi_{ij}\colon S \to D
 $$
-onto a quartic del Pezzo surface $D$ with four ordinary double points.
+onto a quartic del Pezzo surface (@def:degree-of-del-pezzo-surface) $D$ with four ordinary double points (@def:ordinary-double-point).
 The map $\phi_{ij}$ is not finite: it contracts $C$ to one of the four double points of $D$.
 The deck transformation of $\phi_{ij}$ is a biregular automorphism of $S$ [@Dol17, Sec. 5.1].
 :::
 
 ::: {.proposition #prop:polarized-enriques-double-cover title="The double cover defined by a degree-$2$ numerical polarization"}
 
-Let $Z$ be an Enriques surface (@def:enriques-surface) with $ADE$ singularities, and let $[\mcl_Z]\in\Pic(Z)/\ZZ_2$ be an ample numerical polarization (@def:numerical-polarization) of degree $2$.
+Let $Z$ be an Enriques surface (@def:enriques-surface) with $ADE$ singularities, and let $[\mcl_Z]\in\Pic(Z)/\ZZ_2$ be an ample numerical polarization (@def:numerical-polarization) of degree (@def:graded-object) $2$.
 Let $\mathcal{M} = \mcl_Z^{\tensor_{\OO_Z} 2}$, a $2$-divisible polarization (@def:polarization-functors) of degree $8$.
-Then $\abs{\mathcal{M}}$ is basepoint-free and defines a double cover $\rho\colon Z\to W$ onto a quartic del Pezzo surface $W$ with singularities of type $4A_1$ or $A_3 + 2A_1$.
+Then $\abs{\mathcal{M}}$ is basepoint-free and defines a double cover $\rho\colon Z\to W$ onto a quartic del Pezzo surface (@def:degree-of-del-pezzo-surface) $W$ with singularities of type $4A_1$ or $A_3 + 2A_1$.
 The ramification divisor $R_Z\in\abs{\mathcal{M}}$ of $\rho$ is ample, and the pair $(Z, \eps R_Z)$ is log canonical for $0 < \eps \ll 1$ [@AEGS25, Sec. 1].
 :::
 

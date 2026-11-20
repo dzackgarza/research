@@ -41,7 +41,7 @@ L_{\Kthree,2d}^{(m)}\definedas\generators{-2d}\oplus U^2\oplus E_8^m,
 \qquad
 L_{\Kthree,2d}\definedas L_{\Kthree,2d}^{(2)}.
 $$
-The distinguished case $m=2$ has signature (@def:signature) $(2,19)$ and is called the **degree $2d$ K3 lattice (@def:degree-2d-k3-lattice)**.
+The distinguished case $m=2$ has signature (@def:signature) $(2,19)$ and is called the **degree (@def:graded-object) $2d$ K3 lattice (@def:degree-2d-k3-lattice)**.
 :::
 
 ::: {.proposition #prop:degree-2d-k3-complement title="The degree-$2d$ orthogonal complement"}

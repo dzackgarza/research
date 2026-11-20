@@ -6,7 +6,7 @@ The degree-six polarized Enriques model arising from Enriques' original construc
 
 ::: {.theorem #thm:fen2_main title="Compactification of $\fentwo$"}
 
-Let $\ksbacpt{\fentwo}$ denote the KSBA compactification (@def:ksba-compactification) of the moduli space $\fentwo$ of numerically polarized Enriques surfaces (@def:enriques-surface) of degree (@def:numerical-polarization) $2$.
+Let $\ksbacpt{\fentwo}$ denote the KSBA compactification (@def:ksba-compactification) of the moduli space $\fentwo$ of numerically polarized Enriques surfaces (@def:enriques-surface) of degree (@def:graded-object) (@def:numerical-polarization) $2$.
 Let $\semitorfan = \theset{\semifan{F}_k}_{k=1}^5$ be the collection of folded semifans for the $0$-cusps.
 
 1. The normalization $\normksbacpt{\fentwo}$ is isomorphic to the semitoroidal compactification (@def:semitoroidal-compactification) $\semifancpt{\fentwo}{\semitorfan}$ [@AEGS25, Thm. 1.1].
@@ -174,12 +174,12 @@ The folded diagram $G(\overline{T}_{\mathrm{dP}})^J$ of the Coxeter--Vinberg dia
 
 2. The five involutions $J$ of @cons:fen2-cusp-involutions give the folded diagrams of the five $0$-cusps, in Sterk's numbering [@AEGS25, Lem. 3.9, Lem. 3.10].
 
-3. These five folded diagrams are precisely the Coxeter--Vinberg diagrams of the reflection groups $W(\Gamma_{\mathrm{En},2,e})$, for the isotropic vectors $e\in\ten$ up to $\Gamma_{\mathrm{En},2}$ [@AEGS25, Cor. 3.12].
+3. These five folded diagrams are precisely the Coxeter--Vinberg diagrams of the reflection groups (@def:reflection-group) $W(\Gamma_{\mathrm{En},2,e})$, for the isotropic vectors (@def:isotropic-subspace) $e\in\ten$ up to $\Gamma_{\mathrm{En},2}$ [@AEGS25, Cor. 3.12].
 :::
 
 ::: {.proof}
 
-The root-folding criterion @lem:root-folding-tdp identifies the folded walls (@not:coxeter-polytope-faces) with root hyperplanes of $\overline T_{\mathrm{En}}$. Intersecting a chamber of the ambient reflection group with $\overline T_{\mathrm{En}}\otimes\RR$ gives the chamber in (1): the hyperplane of $\alpha$ restricts to that of $\alpha+J\alpha$ when $J\alpha\ne\alpha$, and a nonempty wall has negative folded norm. At cusp $2$, the orbit sums $\alpha_k+\alpha_{20-k}$, $1\le k\le8$, span $E_8(2)$, while $\alpha_{10}$ and the isotropic vector of the diagram relation span an orthogonal $U$ [@AEGS25, proof of Lem. 3.9]. For cusp $1$, the folded diagram contains $\widetilde E_8(2)$: half its null root and the disjoint simple root span $U(2)$ orthogonal to $E_8(2)$. At cusp $3$, the $E_7A_1(2)$ subsystem has index (@def:index) $2$ in $E_8(2)$, while half the null root of $\widetilde A_1(2)$ and its disjoint root span $U$. The diagrams at cusps $4$ and $5$ start from $\widetilde D_8(2)$ and $\widetilde A_7\widetilde A_1(2)$, respectively [@AEGS25, proofs of Lems. 3.9–3.10, printed pp. 594–595].
+The root-folding criterion @lem:root-folding-tdp identifies the folded walls (@not:coxeter-polytope-faces) with root hyperplanes of $\overline T_{\mathrm{En}}$. Intersecting a chamber of the ambient reflection group with $\overline T_{\mathrm{En}}\otimes\RR$ gives the chamber in (1): the hyperplane of $\alpha$ restricts to that of $\alpha+J\alpha$ when $J\alpha\ne\alpha$, and a nonempty wall has negative folded norm. At cusp $2$, the orbit (@def:group-orbit) sums $\alpha_k+\alpha_{20-k}$, $1\le k\le8$, span $E_8(2)$, while $\alpha_{10}$ and the isotropic vector of the diagram relation span an orthogonal $U$ [@AEGS25, proof of Lem. 3.9]. For cusp $1$, the folded diagram contains $\widetilde E_8(2)$: half its null root and the disjoint simple root span $U(2)$ orthogonal to $E_8(2)$. At cusp $3$, the $E_7A_1(2)$ subsystem has index (@def:index) $2$ in $E_8(2)$, while half the null root of $\widetilde A_1(2)$ and its disjoint root span $U$. The diagrams at cusps $4$ and $5$ start from $\widetilde D_8(2)$ and $\widetilde A_7\widetilde A_1(2)$, respectively [@AEGS25, proofs of Lems. 3.9–3.10, printed pp. 594–595].
 
 Each $J$ lifts to $\tdp$ by @lem:enriques-folding-lifts, so the five chambers correspond to Enriques cusp reflection groups. Sterk's classification gives exactly five $0$-cusps [@Ste91, §4.3]; hence the list is exhaustive [@AEGS25, proof of Cor. 3.12].
 :::

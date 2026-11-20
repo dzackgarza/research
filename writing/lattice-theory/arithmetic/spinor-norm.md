@@ -182,7 +182,7 @@ $$
 -\beta(\phi x,\phi x)<\beta(x,x)
 \qquad\text{for all }0\neq x\in W_0,
 $$
-which says that $\phi$ has operator norm (@def:lattice-basic-invariants) less than $1$ for the Euclidean norms $\beta|_{W_0}$ and $-\beta|_{W_0^\perp}$.
+which says that $\phi$ has operator norm (@def:operator-norm) (@def:lattice-basic-invariants) less than $1$ for the Euclidean norms $\beta|_{W_0}$ and $-\beta|_{W_0^\perp}$.
 The map $W\mapsto\phi_W$ is therefore a homeomorphism from $\Gr^+(V)$ onto an open ball of $\Hom_\bR(W_0,W_0^\perp)$.
 A covering of a contractible space is trivial, so $\widetilde\Gr^+(V)$ has two components, and they are exchanged by $(W,o)\mapsto(W,-o)$.
 
@@ -212,7 +212,7 @@ $$
 
 ::: {.proof}
 
-An isometry $g$ maps a maximal positive-definite subspace $W$ with orientation (@def:free-module-orientation) $o$ to the maximal positive-definite subspace $gW$ with orientation $g_*o$.
+An isometry $g$ maps a maximal positive-definite subspace (@def:maximal-positive-definite-subspace) $W$ with orientation (@def:free-module-orientation) $o$ to the maximal positive-definite subspace $gW$ with orientation $g_*o$.
 This is an action of $\Orth(V)$ on $\widetilde\Gr^+(V)$ by homeomorphisms, so $\Orth(V)$ acts on the two-element set of components.
 
 For (1), let $o$ be an orientation of $W$.

@@ -69,7 +69,7 @@ For a definite (@def:definiteness) form, negate if necessary and choose an LLL-r
 $$\prod_i\|b_i\|^2\le2^{n(n-1)/2}D.$$
 Every squared length is a positive integer, hence at least one; each is at most the product. Cauchy–Schwarz bounds every Gram entry by $F(n,D)$.
 
-For an indefinite (@def:definiteness) form of rank at least three, Li–Margulis [@LM16b, §2.3, Lemma 13 and Appendix] give an explicit compact subset of unimodular Euclidean lattice space with minimum (@def:definite-minimum-shell) at least $E_n^{-1}$ meeting the relevant closed orthogonal orbit. Minkowski's second theorem gives independent vectors of lengths less than $L_n$ [@Hen02, Theorem 1.3]. To see the bound, if the successive minima are $\lambda_i$, the unit-ball volume estimate gives $\prod\lambda_i\le n^{n/2}$, while every $\lambda_i\ge E_n^{-1}$.
+For an indefinite (@def:definiteness) form of rank at least three, Li–Margulis [@LM16b, §2.3, Lemma 13 and Appendix] give an explicit compact subset of unimodular Euclidean lattice space with minimum (@def:definite-minimum-shell) at least $E_n^{-1}$ meeting the relevant closed orthogonal orbit (@def:group-orbit). Minkowski's second theorem gives independent vectors of lengths less than $L_n$ [@Hen02, Theorem 1.3]. To see the bound, if the successive minima are $\lambda_i$, the unit-ball volume estimate gives $\prod\lambda_i\le n^{n/2}$, while every $\lambda_i\ge E_n^{-1}$.
 
 The independent vectors generate a sublattice of index (@def:index) $d\le L_n^n$ by Hadamard. If $d>1$, reduce a vector from a nonzero quotient coset to $w=\sum c_iv_i$ with $|c_i|\le1/2$. Replace a $v_j$ for which $c_j\ne0$ by $w$. The new index is $|c_j|d\le d/2$, and the largest length grows by at most a factor $n$. After at most $\log_2d$ replacements these vectors form a basis. Since $n\le2^n$, their lengths are at most $L_nn^{\log_2d}\le L_nd^n\le L_n^{n^2+1}<R_n$. A column sign adjusts the determinant. In the normalized expression $G=D^{1/n}g^TJg$, each Gram coefficient at that orbit point is bounded by $nR_n^2D^{1/n}\le I(n,D)$.
 
@@ -167,7 +167,7 @@ The image of $X$ need not be primitive (@def:primitive-embedding).
 
 Complete $X$ to $\gamma$ as in @prop:integral-completion-bound; for $m=n$ take $\gamma=X$. Put $H=\gamma^TG\gamma$, $d=|\det\gamma|\le a$, and $P=\gamma^{-1}\bZ^n$. The lattice $dP$ has a column Hermite basis (@def:based-module) $B$ with entries at most $d$; $\beta=B/d$ is a basis of $P$ with $\|\beta\|_\infty\le1$ and $\beta^{-1}$ integral with entries bounded by $d(n-1)!$. Since $V=\gamma\beta$ is unimodular,
 $$J=\beta^TH\beta=V^TGV,\qquad \|J\|_\infty\le n^2C.$$
-Choose $U$ from @prop:calderon-equivalence-bound with $U^TGU=J$. If $E$ selects the first $m$ columns, $X'=U\beta^{-1}E$ is integral, has Gram matrix $A$, and obeys (5). Moreover $g=UV^{-1}\in O(G,\bZ)$ and $gX=X'$. This last identity proves the orbit assertion, not only existence of some bounded embedding.
+Choose $U$ from @prop:calderon-equivalence-bound with $U^TGU=J$. If $E$ selects the first $m$ columns, $X'=U\beta^{-1}E$ is integral, has Gram matrix $A$, and obeys (5). Moreover $g=UV^{-1}\in O(G,\bZ)$ and $gX=X'$. This last identity proves the orbit (@def:group-orbit) assertion, not only existence of some bounded embedding.
 :::
 
 The bound (5) is vast but finite and fully evaluated. It does not make the box polynomial in input *bit length*. For $A=H^{\oplus r}$ it gives a complete integral hyperbolic-summand decision when combined with @prop:hyperbolic-summand-splits.
@@ -195,7 +195,7 @@ For $U(4)\to U$, the images $e\mapsto4e$, $f\mapsto f$ give a nonprimitive embed
 
 ::: {.proposition #prop:nonsplit-binary-orbit-bound title="A norm-orbit bound in an anisotropic binary target"}
 
-Let $G$ be indefinite (@def:definiteness) binary with nonsquare discriminant and let $A$ be nondegenerate (@def:polarization) integral of rank $m=1$ or $2$. Put $\alpha=A_{11}$ and $h=\|G\|_\infty$. If $\alpha=0$, no embedding exists. Otherwise let $v_1,\ldots,v_s$ be a finite transversal for vectors of square $\alpha$ modulo $O(G,\bZ)$, and put $V=\max_{k,i}|(v_k)_i|$, with $V=0$ for an empty transversal. Every embedding orbit meets the box of radius
+Let $G$ be indefinite (@def:definiteness) binary with nonsquare discriminant and let $A$ be nondegenerate (@def:polarization) integral of rank $m=1$ or $2$. Put $\alpha=A_{11}$ and $h=\|G\|_\infty$. If $\alpha=0$, no embedding exists. Otherwise let $v_1,\ldots,v_s$ be a finite transversal for vectors of square $\alpha$ modulo $O(G,\bZ)$, and put $V=\max_{k,i}|(v_k)_i|$, with $V=0$ for an empty transversal. Every embedding orbit (@def:group-orbit) meets the box of radius
 $$B=V\quad(m=1),\qquad B=(|A_{12}|+2h|\det A|)V\quad(m=2).$$
 :::
 
@@ -214,7 +214,7 @@ In $\langle1,-2\rangle$, the vectors $(1,0)$, $(0,1)$ and $(2,0)$ have squares $
 
 ::: {.proposition #prop:invariant-embedding-filter title="Finite search with an invariant condition"}
 
-Let $P$ be a decidable predicate on $\operatorname{Emb}_{\bZ}(T,L)$ such that $P(g\circ j)=P(j)$ for all $g\in O(L,\bZ)$. In each nondegenerate (@def:polarization) regime above, the $P$-locus is empty if and only if its intersection with the corresponding finite orbit box is empty.
+Let $P$ be a decidable predicate on $\operatorname{Emb}_{\bZ}(T,L)$ such that $P(g\circ j)=P(j)$ for all $g\in O(L,\bZ)$. In each nondegenerate (@def:polarization) regime above, the $P$-locus is empty if and only if its intersection with the corresponding finite orbit (@def:group-orbit) box is empty.
 :::
 
 ::: {.proof}

@@ -23,7 +23,7 @@ notes: |-
    Confirm 2-elementarity and read off $(r,a,\delta)$, computing $\delta$ by the diagonal test on the discriminant quadratic form (@def:discquad).
 
 2. **Find the roots** by Vinberg's algorithm, or write them down by hand and verify with `root_intersection_matrix`, which asserts that the Gram matrix is symmetric with diagonal contained in $\{-2,-4\}$.
-   The polyhedral presentation of the resulting chamber (@cons:chamber-cone), and the test deciding whether the accepted roots bound a finite-volume hyperbolic polyhedron, are in [fundamental chamber polyhedra](#sec-fundamental-chamber-polyhedra).
+   The polyhedral presentation of the resulting chamber (@cons:chamber-cone), and the test deciding whether the accepted roots bound a finite-volume hyperbolic polyhedron (@def:hyperbolic-polyhedron), are in [fundamental chamber polyhedra](#sec-fundamental-chamber-polyhedra).
 
 3. **Run CoxIter** on the diagram for the $f$-vector, a finite-covolume certificate, the count of vertices at infinity, and the growth series.
 
@@ -31,7 +31,7 @@ notes: |-
    The rank of the $+1$-eigenspace is the number of independent edge-length parameters.
    Check that each $s$ is actually a root: see the Sterk 4 case in [root vectors and folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams), where an invariant vector is not a root and must be dropped.
 
-5. **Enumerate maximal elliptic subdiagrams (@def:elliptic-subdiagram) up to symmetry.** All vertex subsets, filtered to connected with definite (@def:definiteness) Gram; maximal under inclusion via `Poset(subgraphs, subset).maximal_elements()`; then `Aut(Gamma).orbit(vertices, action="OnSets")`, canonicalizing each orbit as a sorted tuple of tuples in a set; label the representative by `M.is_similar(M_type)` against `get_all_rank_n_types(n)`, joining components with direct sums.
+5. **Enumerate maximal elliptic subdiagrams (@def:elliptic-subdiagram) up to symmetry.** All vertex subsets, filtered to connected with definite (@def:definiteness) Gram; maximal under inclusion via `Poset(subgraphs, subset).maximal_elements()`; then `Aut(Gamma).orbit(vertices, action="OnSets")`, canonicalizing each orbit (@def:group-orbit) as a sorted tuple of tuples in a set; label the representative by `M.is_similar(M_type)` against `get_all_rank_n_types(n)`, joining components with direct sums.
    The definiteness tests that decide each type, and the monotonicity that prunes the subset search, are in [lattice algorithms by signature (@def:signature)](#sec-lattice-algorithms-by-signature).
 
 6. **Enumerate isotropic (@def:orthogonal-complement) orbits** with the function `vector_orbit_representatives` of `sage-indefinite-port`, using $\div(v)$ and $v^\perp/v$ as separating invariants, matched against the table of $2$-elementary lattices keyed by $(r,a,\delta)$ [@Nik79b].

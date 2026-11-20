@@ -17,7 +17,7 @@ $$
 
 ::: {.definition #def:cone title="Cones and cocones" defines="cone over $D$ with apex $c$; legs; cocone under $D$ with nadir $c$; category of cones over $D$"}
 
-A *cone over $D$ with apex $c$* is a natural transformation $\lambda\colon\Delta c\Rightarrow D$.
+A *cone (@def:closed-cone) over $D$ with apex $c$* is a natural transformation $\lambda\colon\Delta c\Rightarrow D$.
 Its components $\lambda_j\colon c\to D(j)$ are its *legs*, and naturality says that
 $$
 D(u)\circ\lambda_j=\lambda_k
@@ -37,7 +37,7 @@ The category of elements $\int_{\mcc}\operatorname{Cone}(-,D)$ of @def:category-
 
 ::: {.definition #def:limit title="Limits and colimits" defines="limit of $D$; limit cone; colimit"}
 
-A *limit of $D$* is a representation of $\operatorname{Cone}(-,D)$ (@def:representable-presheaf): an object $\lim D$ together with a cone $\lambda\colon\Delta\lim D\Rightarrow D$ inducing a natural isomorphism (@def:isomorphism-of-objects)
+A *limit of $D$* is a representation of $\operatorname{Cone}(-,D)$ (@def:representable-presheaf): an object $\lim D$ together with a cone (@def:closed-cone) $\lambda\colon\Delta\lim D\Rightarrow D$ inducing a natural isomorphism (@def:isomorphism-of-objects)
 $$
 \Hom_{\mcc}(-,\lim D)\;\cong\;\operatorname{Cone}(-,D).
 $$
@@ -82,7 +82,7 @@ X \arrow[r,"f"'] & Z
 \end{tikzcd}
 ```
 
-The leg at $Z$ is the common composite $fp=gq$, so a cone with apex $W$ is a pair $(h\colon W\to X,\;k\colon W\to Y)$ with $fh=gk$, and the universal property (@def:property-structure-stuff) is the bijection
+The leg at $Z$ is the common composite $fp=gq$, so a cone (@def:closed-cone) with apex $W$ is a pair $(h\colon W\to X,\;k\colon W\to Y)$ with $fh=gk$, and the universal property (@def:property-structure-stuff) is the bijection
 $$
 \Hom_{\mcc}(W,X\times_ZY)
 \;\cong\;
@@ -178,7 +178,7 @@ Completeness is a stronger hypothesis than finite completeness, and a small cate
 
 Let $F\colon\mcc\to\mcd$ and fix a class of diagrams in $\mcc$.
 $F$ *preserves* those limits when the image of a limit cone (@def:limit) over $K$ is a limit cone over $FK$.
-$F$ *reflects* them when a cone over $K$ whose image is a limit cone over $FK$ is already a limit cone.
+$F$ *reflects* them when a cone (@def:closed-cone) over $K$ whose image is a limit cone over $FK$ is already a limit cone.
 $F$ *creates* them when, whenever $FK$ has a limit in $\mcd$, some limit cone over $FK$ lifts to a limit cone over $K$, and $F$ reflects those limits.
 The dual conditions define preservation, reflection, and creation of colimits (@def:limit) [@Rie16, Definition 3.3.1].
 
@@ -215,7 +215,7 @@ the limit over the comma category $(c\downarrow K)$ of @def:comma-category, and 
 
 ::: {.theorem #thm:limits-as-kan title="Limits as Kan extensions"}
 
-Let $!\colon J\to\mathbf 1$ be the unique functor to the terminal category.
+Let $!\colon J\to\mathbf 1$ be the unique functor to the terminal category (@def:terminal-category).
 A functor $\mathbf 1\to\mca$ is an object of $\mca$, and a natural transformation $T\Rightarrow S\circ{!}$ is a cocone under $T$ with nadir the object $S$.
 Hence the left Kan extension (@def:kan-extension) $\operatorname{Lan}_{!}T$ is the colimit (@def:limit) of $T$, with its universal transformation the colimit cocone, and dually $\operatorname{Ran}_{!}T$ is the limit of $T$ [@Mac98, §X.7].
 :::

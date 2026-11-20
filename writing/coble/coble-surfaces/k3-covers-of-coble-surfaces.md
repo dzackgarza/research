@@ -50,7 +50,7 @@ For a general $S$ the second inclusion is an equality.
 
 ::: {.proof}
 
-By @prop:blowup-geometric-basis (3), $f^*$ is injective with image $f^*\Pic(S)\cong\latI_{1,N}(2)$.
+By @prop:blowup-geometric-basis (3), $f^*$ is injective (@def:injective-map) with image $f^*\Pic(S)\cong\latI_{1,N}(2)$.
 By @prop:coble-k3-cover (2), $\rank\Pic(S) = \rho(S) = 10+n$, so $\rank f^*\Pic(S) = 10+n$.
 By @prop:coble-k3-cover (5), $f^*\Pic(S)$ has finite index (@def:index) in $M$, so $\rank M = 10+n$.
 Since $\latI_{1,N}$ is unimodular, @prop:scaled-discriminant-ses gives $A_{\latI_{1,N}(2)}\cong(\bZ/2)^{N+1}$, so $\abs{\det f^*\Pic(S)} = 2^{N+1}$.
@@ -99,9 +99,9 @@ $$
 ,
 $$
 and combining $\chi(\OO_X) = 1 - h^1(\OO_X) + h^2(\OO_X)$ with $h^1(\OO_X) = 0$ gives $p_g(X) = h^2(\OO_X) = 1$.
-A smooth projective surface with $\omega_X\cong\OO_X$ and $h^1(\OO_X) = 0$ is a K3 surface, which is the first claim.
+A smooth projective surface (@def:smooth-projective-surface) with $\omega_X\cong\OO_X$ and $h^1(\OO_X) = 0$ is a K3 surface, which is the first claim.
 
-For the intersection numbers, $\pi$ is finite of degree $2$, so $\pi_*\pi^{*} = 2$ on divisor classes, and the projection formula gives
+For the intersection numbers, $\pi$ is finite of degree (@def:graded-object) $2$, so $\pi_*\pi^{*} = 2$ on divisor classes, and the projection formula gives
 $$
 \pi^{*}D\cdot\pi^{*}D' = D\cdot\pi_*\pi^{*}D' = D\cdot 2D' = 2(D\cdot D')
 .
@@ -112,7 +112,7 @@ $$
 
 Let $f: X\to S$ be the K3 double cover (@not:coble-ten-point-blowup) of a terminal (@def:terminal-coble-surface) Coble surface (@def:coble-surface) of K3 type with $n = 1$, and let $\sigma$ be the covering involution.
 Write $\Pic(S) = \generators{H, E_1, \ldots, E_{10}} \cong \latI_{1, 10}$, where $H$ is the pullback of a line and the $E_i$ are the exceptional curves of $S = \Bl_{p_1, \ldots, p_{10}} \PP^2$, so that $H^2 = 1$, $E_i^2 = -1$, and $H\cdot E_i = E_i\cdot E_j = 0$ for $i\neq j$.
-Then $f^*: \Pic(S)\to \Pic(X)$ is injective, its image
+Then $f^*: \Pic(S)\to \Pic(X)$ is injective (@def:injective-map), its image
 $$
 S_\Co \definedas f^*\Pic(S) = \generators{f^*H, f^*E_1, \ldots, f^*E_{10}}
 $$
@@ -126,7 +126,7 @@ $$
 ::: {.proof}
 
 If $f^*D = 0$ then $2D = f_* f^* D = 0$, and $\Pic(S)\cong\latI_{1, 10}$ is torsion-free, so $D = 0$; thus $f^*$ is injective.
-As $f$ has degree $2$, one has $f_* f^* = 2$, and the projection formula gives, for all $D, D'\in\Pic(S)$,
+As $f$ has degree (@def:graded-object) $2$, one has $f_* f^* = 2$, and the projection formula gives, for all $D, D'\in\Pic(S)$,
 $$
 \qty{f^*D \cdot f^*D'} = D \cdot f_* f^* D' = D\cdot 2D' = 2\qty(D\cdot D')
 .
@@ -181,7 +181,7 @@ Let $e_0\in\Pic(S)$ be the pullback of the class of a line in $\PP^2$, and for $
 
 1. The classes $e_0, e_1, \ldots, e_N$ form a basis (@def:based-module) of $\Pic(S)$ with $e_0^2 = 1$, $e_i^2 = -1$ for $i\geq 1$, and $e_i\cdot e_j = 0$ for $i\neq j$. So $\Pic(S)\cong\latI_{1,N}$, and $\rho(S) = N+1$.
 2. $K_S = -3e_0 + e_1 + \cdots + e_N$.
-3. If $S$ is a terminal (@def:terminal-coble-surface) Coble surface (@def:coble-surface) of K3 type and $f\colon X\to S$ is the double cover of @prop:coble-k3-cover, then $f^*$ is injective and $f^*\Pic(S)\cong\latI_{1,N}(2)$, with basis $f^*e_0,\dots,f^*e_N$.
+3. If $S$ is a terminal (@def:terminal-coble-surface) Coble surface (@def:coble-surface) of K3 type and $f\colon X\to S$ is the double cover of @prop:coble-k3-cover, then $f^*$ is injective (@def:injective-map) and $f^*\Pic(S)\cong\latI_{1,N}(2)$, with basis $f^*e_0,\dots,f^*e_N$.
 
 A choice of such a basis is a marking of $S$, and it defines an isomorphism (@def:isomorphism-of-objects) of lattices $\Pic(S)\to\latI_{1,N}$ [@CDL25, §5.4, p. 552].
 

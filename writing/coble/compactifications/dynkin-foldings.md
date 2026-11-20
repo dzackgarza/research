@@ -12,7 +12,7 @@ Root lattices are negative definite (@def:definiteness) and roots have norm $-2$
 Let $(X_N, r)$ be one of $(D_{n+1}, 2)$, $(A_{2n-1}, 2)$, $(E_6, 2)$ or $(D_4, 3)$, and let $\mu$ be the diagram automorphism of order $r$ of the simple Lie algebra $\mathfrak{g}(X_N)$.
 Then the fixed point subalgebra $\mathfrak{g}(X_N)^{\mu}$ is the simple Lie algebra of type $B_n$, $C_n$, $F_4$ or $G_2$, respectively.
 The simple roots of $X_N$ fixed by $\mu$ are long simple roots of $\mathfrak{g}(X_N)^{\mu}$, and the sum of the simple roots in a $\mu$-orbit of size $r$ is $r$ times a short simple root.
-So the orbit sums of the simple roots of $X_N$ are the simple coroots $\Pi_\ell \cup r\Pi_s$ of $\mathfrak{g}(X_N)^{\mu}$ [@Kac90, Prop. 7.9(b), (e), (f)].
+So the orbit (@def:group-orbit) sums of the simple roots of $X_N$ are the simple coroots $\Pi_\ell \cup r\Pi_s$ of $\mathfrak{g}(X_N)^{\mu}$ [@Kac90, Prop. 7.9(b), (e), (f)].
 :::
 
 ::: {.proof}
@@ -36,7 +36,7 @@ $$
 $$
 
 Each folded root corresponds to a folded node in the Dynkin diagram.
-For an involution $I$, the orbit $[\alpha_i]$ is $\theset{\alpha_i}$ or $\theset{\alpha_i, I(\alpha_i)}$, so $\beta_{[\alpha_i]} = \alpha_i$ if $I(\alpha_i) = \alpha_i$ and $\beta_{[\alpha_i]} = \alpha_i + I(\alpha_i)$ otherwise.
+For an involution $I$, the orbit (@def:group-orbit) $[\alpha_i]$ is $\theset{\alpha_i}$ or $\theset{\alpha_i, I(\alpha_i)}$, so $\beta_{[\alpha_i]} = \alpha_i$ if $I(\alpha_i) = \alpha_i$ and $\beta_{[\alpha_i]} = \alpha_i + I(\alpha_i)$ otherwise.
 :::
 
 ## Examples

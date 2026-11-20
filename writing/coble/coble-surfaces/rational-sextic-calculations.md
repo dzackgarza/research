@@ -8,7 +8,7 @@ Then $C$ is a rational curve if and only if it has exactly ten $A_1$ singulariti
 
 ::: {.proof}
 
-Recall the genus–degree (@def:numerical-polarization) formula for singular plane curves:
+Recall the genus–degree (@def:graded-object) (@def:numerical-polarization) formula for singular plane curves:
 
 $$
 p_a(C) = {1\over 2}(d-1)(d-2) - \Sum_p \delta_p
@@ -22,7 +22,7 @@ Thus $g = 0$ if and only if $k = 10$.
 
 ::: {.proposition #prop:rational-sextic-severi title="The Severi variety of rational sextics"}
 
-1. Let $S_{6,0}\iscontainedin\PP^{27}$ be the Severi variety of rational plane sextics. It is irreducible of dimension $17$ and degree (@def:numerical-polarization) $26312976$. Its general member has exactly $10$ nodes, and the set of these $10$ nodes determines the curve [@BHO+12, §4, proof of Thm. 2].
+1. Let $S_{6,0}\iscontainedin\PP^{27}$ be the Severi variety of rational plane sextics. It is irreducible of dimension $17$ and degree (@def:graded-object) (@def:numerical-polarization) $26312976$. Its general member has exactly $10$ nodes, and the set of these $10$ nodes determines the curve [@BHO+12, §4, proof of Thm. 2].
 2. There is a rational cuspidal plane sextic over $\CC$ whose only singular point is a cusp with multiplicity sequence $[5]$ [@GK20, Thm. 1.1, Thm. 3.1]. It does not have ten $A_1$ singularities.
 
 :::
@@ -30,7 +30,7 @@ Thus $g = 0$ if and only if $k = 10$.
 ::: {.proposition #prop:coble-canonical-class title="Canonical class of the blowup of the ten nodes"}
 
 Let $W\subset \PP^2$ be an irreducible sextic whose singular points are exactly ten $A_1$ singularities $p_1, \ldots, p_{10}$.
-Let $\pi\colon S\to\PP^2$ be the blowup of $p_1, \ldots, p_{10}$, with geometric basis (@def:based-module) $e_0, \ldots, e_{10}$ as in @prop:blowup-geometric-basis, and let $C$ be the proper transform of $W$.
+Let $\pi\colon S\to\PP^2$ be the blowup of $p_1, \ldots, p_{10}$, with geometric basis (@def:based-module) $e_0, \ldots, e_{10}$ as in @prop:blowup-geometric-basis, and let $C$ be the proper transform (@def:strict-transform) of $W$.
 Then
 $$
 K_S = -3e_0 + \Sum_{k=1}^{10} e_k,
@@ -103,7 +103,7 @@ Choose representatives $\tilde p_i\in\CC^3\setminus\theset{0}$ of the points $p_
 The thirty conditions form the linear map $M(\tilde p_1, \ldots, \tilde p_{10})\colon H^0\bigl(\PP^2, \OO_{\PP^2}(6)\bigr)\cong\CC^{28}\to\CC^{30}$ that sends $F$ to the values of $\del_x F$, $\del_y F$, $\del_z F$ at the $\tilde p_i$.
 A sextic singular at all ten points is a nonzero vector of its kernel (@def:kernel-cokernel), and the kernel is nonzero if and only if the rank is at most $27$.
 
-The partial derivatives are homogeneous of degree (@def:numerical-polarization) $5$, so replacing $\tilde p_i$ by $\lambda\tilde p_i$ multiplies three rows by $\lambda^5$ and does not change the rank.
+The partial derivatives are homogeneous of degree (@def:graded-object) (@def:numerical-polarization) $5$, so replacing $\tilde p_i$ by $\lambda\tilde p_i$ multiplies three rows by $\lambda^5$ and does not change the rank.
 The locus where the rank is $28$ is the complement of the common zero set of the $28\times 28$ minors, which are polynomials in the coordinates of the $\tilde p_i$; it therefore descends to a Zariski-open subset $\mathcal U\iscontainedin(\PP^2)^{10}$.
 The subset $\mathcal U$ is nonempty by @ex:sextic-node-conditions-rank.
 :::
@@ -148,7 +148,7 @@ The second statement is @prop:rational-sextic-severi (1).
 
 ::: {.proposition #prop:hessian-rank-at-singular-point title="Hessian rank at a singular point"}
 
-Let $k$ be a field, let $F\in k[x_0, x_1, x_2]$ be homogeneous of degree (@def:numerical-polarization) $n$, and let $p\in k^3$ be nonzero with
+Let $k$ be a field, let $F\in k[x_0, x_1, x_2]$ be homogeneous of degree (@def:graded-object) (@def:numerical-polarization) $n$, and let $p\in k^3$ be nonzero with
 $$
 \del_j F(p) = 0
 \qquad\text{for } j = 0, 1, 2

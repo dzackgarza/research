@@ -14,7 +14,7 @@ $$
 \qquad
 \varrho_a\colon a\tensor e\;\cong\;a,
 $$
-such that the pentagon diagram in $\alpha$ commutes for all $a,b,c,d$, the triangle
+such that the pentagon diagram in $\alpha$ commutes (@def:commutative-diagram) for all $a,b,c,d$, the triangle
 $$
 (1\tensor\lambda_c)\circ\alpha_{a,e,c}
 =\varrho_a\tensor 1_c
@@ -26,7 +26,7 @@ The category is *strict* when $\tensor$ is associative (@def:operation-axioms) a
 
 ::: {.theorem #thm:coherence title="Coherence"}
 
-In a monoidal category (@def:monoidal-category), every diagram built from instances of $\alpha$, $\lambda$, $\varrho$, identities, and $\tensor$ commutes; equivalently, every monoidal category is monoidally equivalent to a strict (@def:monoidal-category) one [@Mac98, §VII.2].
+In a monoidal category (@def:monoidal-category), every diagram built from instances of $\alpha$, $\lambda$, $\varrho$, identities, and $\tensor$ commutes (@def:commutative-diagram); equivalently, every monoidal category is monoidally equivalent to a strict (@def:monoidal-category) one [@Mac98, §VII.2].
 :::
 
 ::: {.proof}

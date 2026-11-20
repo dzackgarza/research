@@ -4,6 +4,24 @@ We formulate connections, curvature, complex structures, and metrics as maps of 
 
 We use ordinary tensor products and classical schemes. A smooth manifold $M$ is regarded as the locally ringed space $(M,C^\infty_M)$; manifolds are Hausdorff and second countable. Algebraic base change and smooth complexification are specified separately below.
 
+## Preliminary notions {#sec-calculus-preliminaries}
+
+::: {.definition #def:closed-subset title="Closed subset" defines="closed subset; closed set"}
+A subset $A$ of a topological space $X$ is *closed* if $X-A$ is open [@Mun00, §17].
+:::
+
+::: {.definition #def:projective-morphism-of-schemes title="Projective space and projective morphism" defines="projective space; projective $n$-space; projective morphism of schemes; projective morphism"}
+For a scheme (@def:scheme-as-lrs) $Y$, *projective $n$-space over $Y$* is $\mathbf P^n_Y=\mathbf P^n_{\mathbf Z}\times_{\operatorname{Spec}\mathbf Z}Y$. A morphism $f\colon X\to Y$ of schemes is *projective* if it factors as a closed immersion $X\to\mathbf P^n_Y$ for some $n$ followed by the projection $\mathbf P^n_Y\to Y$ [@Har77, Chapter II, §4].
+:::
+
+::: {.definition #def:degree-of-finite-morphism title="Degree of a finite morphism of curves" defines="degree of a finite morphism; degree of a finite morphism of curves"}
+For a finite morphism $f\colon X\to Y$ of curves, the *degree (@def:graded-object)* of $f$ is the degree $[K(X):K(Y)]$ of the field extension of function fields [@Har77, Chapter II, §6].
+:::
+
+::: {.definition #def:algebraic-monodromy-group title="Algebraic monodromy group" defines="algebraic monodromy group"}
+For a family of polarized K3 surfaces over $S$ with monodromy representation (@def:transport-and-monodromy) $\rho\colon\pi_1(S,t)\to\mathrm O(H^2(X_t,\mathbb Q))$, the *algebraic monodromy group* is the Zariski closure $\overline{\mathrm{Im}(\rho)}\subset\mathrm O(H^2(X_t,\mathbb Q))$ [@Huy16, Chapter 4, §4.3].
+:::
+
 ## Differentials and tangent sheaves {#sec-calculus-differentials}
 
 Let $f:X\to S$ be a morphism of schemes. Write $\mathcal A=\mathcal O_X$ and $\mathcal R=f^{-1}\mathcal O_S$, with its structural homomorphism to $\mathcal A$. Sections in a formula are taken over a common open subset of $X$. For an $\mathcal A$-module $\mathcal E$, write $\mathcal E_x$ for its stalk and $\mathcal E(x)=\mathcal E_x\otimes_{\mathcal O_{X,x}}\kappa(x)$ for its fiber.
@@ -411,7 +429,7 @@ A complex structure (@def:calculus-module-complex-structure) $J$ is equivalent t
 :::
 
 :::{.proof title="The relation for multiplication by i"}
-The presentation $\mathcal A_{\mathbb C}=\mathcal A[t]/(t^2+1)$ identifies an action with an endomorphism satisfying $J^2+1=0$. A module map respects the action precisely when it commutes with the image of $t$. $\square$
+The presentation $\mathcal A_{\mathbb C}=\mathcal A[t]/(t^2+1)$ identifies an action with an endomorphism satisfying $J^2+1=0$. A module map respects the action precisely when it commutes (@def:commutative-diagram) with the image of $t$. $\square$
 :::
 
 :::{.definition #def:calculus-conjugate title="Conjugate module" defines="conjugate module; $\overline{\mathcal F}$"}
@@ -534,7 +552,7 @@ Integrability is equivalent to $d=\partial+\bar\partial$ on all complex differen
 
 For $\alpha\in\mathcal A^{1,0}$ and $v,w\in\mathcal T^{0,1}$, the exterior derivative formula gives $d\alpha(v,w)=-\alpha([v,w])$. Thus bracket closure is equivalent to the vanishing of the $(0,2)$-component of $d\alpha$ for all such $\alpha$.
 
-Complex conjugation gives the corresponding vanishing of the $(2,0)$-component on $\mathcal A^{0,1}$. Functions and one-forms generate the exterior algebra locally, so the graded Leibniz rule gives $d=\partial+\bar\partial$ in every degree. The converse follows by applying this equality to one-forms.
+Complex conjugation gives the corresponding vanishing of the $(2,0)$-component on $\mathcal A^{0,1}$. Functions and one-forms generate the exterior algebra locally, so the graded Leibniz rule gives $d=\partial+\bar\partial$ in every degree (@def:graded-object). The converse follows by applying this equality to one-forms.
 
 Separate the distinct bidegrees in $0=d^2=\partial^2+\partial\bar\partial+\bar\partial\partial+\bar\partial^2$. Each component vanishes. $\square$
 :::

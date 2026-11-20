@@ -5,7 +5,7 @@
 ::: {.definition #def:numerical-polarization title="Numerical polarization" defines="numerical polarization; degree of a numerical polarization"}
 
 A **numerical polarization** $[h]$ on an algebraic surface $Z$ --- for instance an Enriques surface (@def:enriques-surface) --- is the numerical class of $h \definedas c_1(\mcl)$ for an ample line bundle $\mcl\in\Pic(Z)$, often written $[\mcl]$.
-The **degree** of $[h]$ is its self-intersection $h^2$, computed in $\Num(Z)$.
+The **degree (@def:graded-object)** of $[h]$ is its self-intersection $h^2$, computed in $\Num(Z)$.
 :::
 
 An ample numerical polarization differs from a *numerical
@@ -98,7 +98,7 @@ polarized by $U(2)$, of rank two, and
 
 ::: {.proposition #prop:enriques-cover-two-involutions title="The two involutions on the K3 cover of a degree-$2$ polarized Enriques surface"}
 
-Let $Z$ be an Enriques surface (@def:enriques-surface) with a numerical polarization (@def:numerical-polarization) $[\mcl_Z]$ of degree $2$, and let $\pi\colon X\to Z$ be its canonical double cover.
+Let $Z$ be an Enriques surface (@def:enriques-surface) with a numerical polarization (@def:numerical-polarization) $[\mcl_Z]$ of degree (@def:graded-object) $2$, and let $\pi\colon X\to Z$ be its canonical double cover.
 Then the K3 surface $X$ has two commuting involutions: the fixed-point-free **Enriques involution** $\ien$, which is the deck transformation of $\pi$, and the **del Pezzo involution** $\idp$.
 The surface $X$ and both involutions are determined by the pair $(Z,[\mcl_Z])$ [@AEGS25, §2.1, Rem. 2.2].
 :::

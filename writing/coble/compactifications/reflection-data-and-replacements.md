@@ -58,9 +58,9 @@ Let
 $$
 T_\Co = \generators{h}\oplus U(2)\oplus E_8(2)
 $$
-be the decomposition of [@DK13, (3.6), printed p. 513], with $h^2 = 2$ and $e,f$ the isotropic basis of $U(2)$, $(e,f) = 2$. Put $\eta \definedas e$ and $K_I \definedas \generators{h}\oplus E_8(2)$. Then:
+be the decomposition of [@DK13, (3.6), printed p. 513], with $h^2 = 2$ and $e,f$ the isotropic basis (@def:isotropic-basis-hyperbolic-plane) of $U(2)$, $(e,f) = 2$. Put $\eta \definedas e$ and $K_I \definedas \generators{h}\oplus E_8(2)$. Then:
 
-1. $\eta$ is a primitive isotropic vector, $\eta^{\perp T_\Co} = \ZZ\eta\oplus K_I$, and the quotient $\eta^{\perp}/\ZZ\eta$ is $K_I$, of rank $9$, determinant $2^9$ and signature $(1,8)$ --- the lattice $(9,9,1)_1$ of the boundary of this cusp;
+1. $\eta$ is a primitive isotropic vector (@def:isotropic-subspace), $\eta^{\perp T_\Co} = \ZZ\eta\oplus K_I$, and the quotient $\eta^{\perp}/\ZZ\eta$ is $K_I$, of rank $9$, determinant $2^9$ and signature $(1,8)$ --- the lattice $(9,9,1)_1$ of the boundary of this cusp;
 2. $g\mapsto\id_{U(2)}\oplus g$ carries $\Orth(K_I)$ into $\Stab_{\Orth(T_\Co)}(\eta)$ and inverts the restriction map, so the image of $\Stab_{\Orth(T_\Co)}(\eta)$ in $\Orth(K_I)$ is all of $\Orth(K_I)$;
 3. every root of $K_I$ has divisibility $2$ and its reflection is an integral isometry of $K_I$, so $W^{(2,4)}(K_I)\leq\Orth(K_I)$; consequently the image contains $W^{(2,4)}(K_I)$.
 
@@ -105,7 +105,7 @@ In the notation of @prop:cusp-stabilizer-orthogonal-coble let $\rho$ be the disc
 *Item 1.* For an orthogonal direct sum $L = L_1\perp L_2$ of lattices the dual lattices split, $L^* = L_1^*\oplus L_2^*$, so $A_L = A_{L_1}\oplus A_{L_2}$; here the orders are $4\cdot512 = 2048 = \abs{\det T_\Co}$, and $A_{T_\Co}$ is $2$-elementary of order $2^{11}$.
 $\hat g$ is the identity on the $U(2)$ summand, so it acts trivially on $A_{U(2)}$, and its action on $A_{K_I}$ is $\rho_{K_I}(g)$.
 
-*Item 2.* Each of $U(2)$ and $K_I$ has signature $(1,\ast)$, so a maximal positive definite subspace of each is the line its positive cone (@not:reflection-groups-sign-convention) spans, and the positive $2$-plane of $T_\Co$ is the orthogonal sum of those two lines. $\hat g$ acts on the line of $U(2)$ as the identity and on the line of $K_I$ as $g$ does, so it preserves the two halves of the positive cone of $T_\Co$ exactly when $g$ preserves those of $K_I$. That sign is the same datum as membership in $\Orth^+$ (@def:spinor-norm), hence the equivalence.
+*Item 2.* Each of $U(2)$ and $K_I$ has signature $(1,\ast)$, so a maximal positive definite subspace (@def:maximal-positive-definite-subspace) of each is the line its positive cone (@not:reflection-groups-sign-convention) spans, and the positive $2$-plane of $T_\Co$ is the orthogonal sum of those two lines. $\hat g$ acts on the line of $U(2)$ as the identity and on the line of $K_I$ as $g$ does, so it preserves the two halves of the positive cone of $T_\Co$ exactly when $g$ preserves those of $K_I$. That sign is the same datum as membership in $\Orth^+$ (@def:spinor-norm), hence the equivalence.
 
 *Item 3.* Combine items 1 and 2.
 

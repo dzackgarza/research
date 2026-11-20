@@ -18,7 +18,7 @@ notes: |-
 ::: {.construction #cons:chamber-cone title="The chamber of a root set" defines="$R$; chamber of a root set; $C$"}
 
 Let $L$ be a hyperbolic lattice with bilinear form $\beta_L$ and Gram matrix $G$ in a chosen basis (@def:based-module), and let $R = \theset{r_1,\dots,r_k}\subset L$ be a set of roots.
-The cone they bound is
+The cone (@def:closed-cone) they bound is
 $$
 C \definedas \theset{\, x\in L_\RR \;:\; \beta_L(r_i, x)\geq 0 \ \textfor i = 1,\dots,k \,}
 \iscontainedin L_\RR ,
@@ -28,13 +28,13 @@ and $C\intersect\HH^n_L$ is the polytope $P$ of @thm:coxeter-type-and-geometry(3
 
 ::: {.lemma #lem:chamber-cone-apex title="The cone has apex the origin"}
 
-The set $C$ of @cons:chamber-cone is a polyhedral cone with apex $0$.
+The set $C$ of @cons:chamber-cone is a polyhedral cone (@def:closed-cone) with apex $0$.
 When $C$ is pointed, its only vertex as a polyhedron is $0$, which is not a point of $\HH^n_L$.
 :::
 
 ::: {.proof}
 
-Every hyperplane $\beta_L(r_i,-) = 0$ passes through $0$, and $C$ is the intersection of the corresponding closed half-spaces, so $C$ is a polyhedral cone with apex $0$.
+Every hyperplane $\beta_L(r_i,-) = 0$ passes through $0$, and $C$ is the intersection of the corresponding closed half-spaces (@def:closed-half-space), so $C$ is a polyhedral cone with apex $0$.
 A pointed polyhedral cone has $0$ as its only vertex.
 Every point $v$ of $\HH^n_L$ has $v^2 = 1$ (@def:hyperbolic-model), and $0^2 = 0$.
 :::
@@ -57,7 +57,7 @@ The rays with $v^2 > 0$ are the ordinary vertices and the rays with $v^2 = 0$ th
 ::: {.proof}
 
 *The three conditions are necessary.*
-If some extremal ray generator $v$ of $C$ had $v^2<0$, then $v$ is a null direction of $C$ on which the hyperplane $v^{\perp}$ cuts $C$ in a face, and the ray recedes outside the closed positive cone $\overline{C_L^+}$; the intersection $C\cap\HH^n_L$ then has infinite volume in that direction, since a polyhedral cone meeting the hyperboloid in a receding ray contains a region of the form ray $\times$ ball.
+If some extremal ray generator $v$ of $C$ had $v^2<0$, then $v$ is a null direction of $C$ on which the hyperplane $v^{\perp}$ cuts $C$ in a face, and the ray recedes outside the closed positive cone $\overline{C_L^+}$; the intersection $C\cap\HH^n_L$ then has infinite volume in that direction, since a polyhedral cone (@def:closed-cone) meeting the hyperboloid in a receding ray contains a region of the form ray $\times$ ball.
 Condition (2) is what makes $C$ lie on one side of the hyperplane perpendicular to a timelike vector, without which the identification of $C\cap\HH^n_L$ with a polyhedron in the projective model fails.
 Condition (3) is needed because a nontrivial lineality space means $C$ contains a line, and a line in $\overline{C_L^+}$ is null, again giving infinite volume.
 
@@ -76,7 +76,7 @@ By @thm:coxeter-polytope-volume(2) the polytope is compact exactly when it has n
 
 From the presentation of @cons:chamber-cone one reads off:
 
-- the extremal rays and the facets, with the incidence between them, the facets being the walls (@not:coxeter-polytope-faces) indexed by $R$;
+- the extremal rays and the facets (@def:facet-maximal-face), with the incidence between them, the facets being the walls (@not:coxeter-polytope-faces) indexed by $R$;
 
 - a primitive integral generator of each ray, obtained by clearing denominators by their least common multiple and dividing by the greatest common divisor of the resulting entries;
 
@@ -100,7 +100,7 @@ $$
 t(v,w) \definedas \frac{4\,\beta_L(v,w)^2}{v^2\, w^2} = 4\,g_{vw}^2 ,
 $$
 where $g_{vw}$ is the normalized pairing of @def:coxeter-vinberg-diagram.
-For a bond of Coxeter exponent (@def:coxeter-matrix) $m$ one has $t = 4\cos^2(\pi/m)$, so
+For a bond of Coxeter exponent (@def:coxeter-exponent) (@def:coxeter-matrix) $m$ one has $t = 4\cos^2(\pi/m)$, so
 $$
 m = 2,\ 3,\ 4,\ 6,\ \infty
 \quad\longleftrightarrow\quad
@@ -112,7 +112,7 @@ and $t > 4$ is the ultraparallel case, with $t = 4\cosh^2 d$ for $d$ the distanc
 ::: {.proposition #prop:bond-invariant-rational title="The bond invariant is rational"}
 
 Let $v,w$ be roots of an integral lattice $L$ with $v^2,w^2\neq0$.
-Then $t(v,w)\in\QQ$, and $v,w$ do not span a bond of Coxeter exponent (@def:coxeter-matrix) $5$.
+Then $t(v,w)\in\QQ$, and $v,w$ do not span a bond of Coxeter exponent (@def:coxeter-exponent) (@def:coxeter-matrix) $5$.
 For $v^2 = -2$, $w^2 = -4$ and $\beta_L(v,w) = \pm1$ the normalized pairing $g_{vw} = \pm1/(2\sqrt2)$ is irrational.
 :::
 

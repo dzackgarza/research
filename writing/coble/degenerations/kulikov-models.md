@@ -149,7 +149,7 @@ The map $N\colon V/\operatorname{Ker}N\to\operatorname{Im}N$ is an isomorphism, 
 Since $N\neq0$, $\Gr^W_1 = \operatorname{Im}N\neq0$, and so $\Gr^W_3\cong\Gr^W_1\neq0$.
 The operator $N$ is skew-symmetric for the cup product, because it is the logarithm of the isometry $T$ [@FS86, proof of Lem. 1.1].
 So $(Nx\cdot Ny) = -(x\cdot N^2y) = 0$ for all $x, y$, and $\operatorname{Im}N$ is totally isotropic.
-By @prop:k3-lattice the cup product on $V\tensor\RR$ has signature (@def:signature) $(3,19)$, so a totally isotropic subspace has dimension at most $3$.
+By @prop:k3-lattice the cup product on $V\tensor\RR$ has signature (@def:signature) $(3,19)$, so a totally isotropic subspace (@def:isotropic-subspace) has dimension at most $3$.
 Thus $\dim\Gr^W_2 = \dim\operatorname{Ker}N - \dim\operatorname{Im}N = 22 - 2\dim\operatorname{Im}N\geq16$.
 
 Type $\mathrm{III}$: $\dim W_0 = 1$ and $W_2 = W_0^\perp$ has dimension $21$, so $\Gr^W_0$, $\Gr^W_2$ and $\Gr^W_4$ have dimensions $1$, $20$ and $1$.
@@ -173,9 +173,9 @@ The boundary components of $\bbcpt{\ftd}$ are classified by the nilpotency index
 
 ::: {.proof}
 
-The limiting mixed Hodge structure is constructed by the nilpotent orbit theorem [@Sch73, Thm. 4.9], and the nilpotency index of $N$ determines the type of the degeneration by Kulikov's classification [@Kul77, Thm. II].
+The limiting mixed Hodge structure is constructed by the nilpotent orbit (@def:group-orbit) theorem [@Sch73, Thm. 4.9], and the nilpotency index of $N$ determines the type of the degeneration by Kulikov's classification [@Kul77, Thm. II].
 
-For a degeneration of type II the monodromy is unipotent with $N\neq0$, $N^2=0$, so the weight filtration has the three steps $0\subset W_1\subset W_2\subset W_3$ with $\Gr^W_i=0$ otherwise; the primitive (@def:primitive-embedding) part of $H^2$ contributing to $\Gr^W_2$ is annihilated by $N$ and by its transpose, hence is the orthogonal complement of the isotropic subspace $I$ of the special fibre, quotiented by $I$ itself, which is $\overline{T}_I$ of the boundary lattice.
+For a degeneration of type II the monodromy is unipotent with $N\neq0$, $N^2=0$, so the weight filtration has the three steps $0\subset W_1\subset W_2\subset W_3$ with $\Gr^W_i=0$ otherwise; the primitive (@def:primitive-embedding) part of $H^2$ contributing to $\Gr^W_2$ is annihilated by $N$ and by its transpose, hence is the orthogonal complement of the isotropic subspace (@def:isotropic-subspace) $I$ of the special fibre, quotiented by $I$ itself, which is $\overline{T}_I$ of the boundary lattice.
 So the pure Hodge structure of weight $2$ on $\Gr^W_2$ is the one on $\overline{T}_I$, and by @def:signature its signature is $(2-k,n-k)$ for $\rank I=k$.
 For type III the index is $3$ and the weight filtration has the maximal length (@prop:weight-filtration-by-type).
 The dual complex of the central fibre is a triangulation of $S^2$ [@Kul77, Thm. II].

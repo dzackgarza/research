@@ -32,8 +32,8 @@ The normalization $\normalize{B}$ is the semitoroidal compactification of $B$ in
 This gives a family of KSBA-stable pairs over the induced compactification of $\fentwo$, whose normalization is the semitoroidal compactification for the collection $\semitorfan$ of @prop:enriques-semifan-coarsening [@AEGS25, Def. 5.3, Lem. 5.5].
 
 It remains to show that $\normalize{B}\to\ksbacpt{\fentwo}$ is finite.
-By @prop:enriques-semifan-coarsening(1,2), it suffices to show that the maximal cones of the coarsening $\semifan{G}_k$ are the maximal cones of $\semifan{F}_k$.
-If the coarsening were strict, a codimension-one cone of some $\semifan{F}_k$ would parametrize a $1$-dimensional family of pairs $(X, \eps R)$ that are not maximally degenerate, whose Enriques quotients $(Z, \eps R_Z)$ have the maximal number of double curves.
+By @prop:enriques-semifan-coarsening(1,2), it suffices to show that the maximal cones (@def:maximal-cone-of-fan) of the coarsening $\semifan{G}_k$ are the maximal cones of $\semifan{F}_k$.
+If the coarsening were strict, a codimension-one cone (@def:closed-cone) of some $\semifan{F}_k$ would parametrize a $1$-dimensional family of pairs $(X, \eps R)$ that are not maximally degenerate (@def:maximally-degenerate-family), whose Enriques quotients $(Z, \eps R_Z)$ have the maximal number of double curves.
 This contradicts @prop:enriques-semifan-coarsening(3).
 The toroidal and strictly semitoroidal cusps are given by [@AEGS25, Lem. 5.7].
 :::

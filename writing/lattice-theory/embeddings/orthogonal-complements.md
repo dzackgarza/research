@@ -42,7 +42,7 @@ The displayed sequence is the defining cokernel (@def:kernel-cokernel) sequence 
 
 ::: {.proposition #prop:isotropic-complement-embedding title="Splitting an isotropic orthogonal complement"}
 
-Under the hypotheses of @prop:primitive-isotropic-complement, applying $U\colon\mathbf{BilMod}_{\bZ}\too\bZ\text{-}\mathbf{Mod}$ to its exact (@def:exact-complex) sequence gives a split exact sequence, and $\qty{v^{\perp_L}}^{\mathrm{nd}}$ admits an embedding into $L$ in $\mathbf{Lat}_{\bZ}$.
+Under the hypotheses of @prop:primitive-isotropic-complement, applying $U\colon\mathbf{BilMod}_{\bZ}\too\bZ\text{-}\mathbf{Mod}$ to its exact (@def:exact-complex) sequence gives a split exact sequence (@def:split-short-exact-sequence), and $\qty{v^{\perp_L}}^{\mathrm{nd}}$ admits an embedding into $L$ in $\mathbf{Lat}_{\bZ}$.
 :::
 
 ::: {.proof}
@@ -181,7 +181,7 @@ D(P)=\frac{N_V+L}{L}\cong\frac{N_V}{N_V\cap L}=\frac{N_V}{P},
 \cardinality{D(P)}=[N_V:P],
 $$
 the middle isomorphism (@def:isomorphism-of-objects) being Noether's, with $N_V\cap L=N\cap V\cap L=P$ because $L\cap V=P$.
-The subgroup is determined by $V$ alone, and it is totally isotropic: every class of $D(P)$ has a representative in the totally isotropic subspace $V$, so $\beta_{L_{\bQ}}$ vanishes on $V\times V$ and, when $L$ is even (@def:form-axioms), $q_{A_L}$ vanishes there as well.
+The subgroup is determined by $V$ alone, and it is totally isotropic: every class of $D(P)$ has a representative in the totally isotropic subspace (@def:isotropic-subspace) $V$, so $\beta_{L_{\bQ}}$ vanishes on $V\times V$ and, when $L$ is even (@def:form-axioms), $q_{A_L}$ vanishes there as well.
 
 :::
 
@@ -200,7 +200,7 @@ and the composite $V\too\Hom_{\bZ\text{-}\mathbf{Mod}}(L/M,\bQ)\too\Hom_{\bZ\tex
 ::: {.proof}
 
 For $v\in V\subseteq W$ one has $\beta_{L_{\bQ}}(v,M)=0$, so $\theta(v)$ is defined on classes and $\theta$ is $\bQ$-linear.
-If $\theta(v)=0$ then $v$ pairs trivially with $L$, hence with $L_{\bQ}$, so $v=0$ by nondegeneracy of $L_{\bQ}$; thus $\theta$ is injective.
+If $\theta(v)=0$ then $v$ pairs trivially with $L$, hence with $L_{\bQ}$, so $v=0$ by nondegeneracy of $L_{\bQ}$; thus $\theta$ is injective (@def:injective-map).
 Both sides have rank $r$, so $\theta$ is an isomorphism.
 
 The coefficient morphism $\bQ\too\bQ/\bZ$ is surjective and $L/M$ is free (@def:module-subcategories) of rank $r$ by @prop:primitive-characterization, so a functional $L/M\too\bQ/\bZ$ lifts along a basis (@def:based-module) of $L/M$ to a functional $L/M\too\bQ$; the composite is therefore surjective.
@@ -292,7 +292,7 @@ $$
 \qquad
 \Psi(a)=\beta(a,\cdot)|_D,
 $$
-is additive, and its kernel (@def:kernel-cokernel) is $D^{\perp}$ by the definition of $D^{\perp}$; write $\Phi\colon A/D^{\perp}\to\Hom(D,\bQ/\bZ)$ for the induced map on the quotient, which is therefore well defined and injective.
+is additive, and its kernel (@def:kernel-cokernel) is $D^{\perp}$ by the definition of $D^{\perp}$; write $\Phi\colon A/D^{\perp}\to\Hom(D,\bQ/\bZ)$ for the induced map on the quotient, which is therefore well defined and injective (@def:injective-map).
 For surjectivity, let $\lambda\colon D\too\bQ/\bZ$ be a homomorphism; since $\bQ/\bZ$ is a divisible group, $\lambda$ extends to a homomorphism $\Lambda\colon A\too\bQ/\bZ$, and nondegeneracy of $\beta$ on the finite group $A$ provides $a\in A$ with $\Lambda=\beta(a,\cdot)$, that is $\Phi(\bar a)=\lambda$.
 Hence $\Phi$ is an isomorphism and $\cardinality{A/D^{\perp}}=\cardinality{D^{\vee}}=\cardinality{D}$.
 
@@ -340,7 +340,7 @@ A_Q &\xrightarrow{\ \varphi_P\ } & D(P)^{\perp}/D(P)\\
 A_{gQ} &\xrightarrow{\ \varphi_{gP}\ } & D(gP)^{\perp}/D(gP)
 \end{aligned}
 $$
-commutes, where $\bar g_Q$ is the isometry of $Q$ induced by $g$ and $\bar g_D$ is the map of subquotients
+commutes (@def:commutative-diagram), where $\bar g_Q$ is the isometry of $Q$ induced by $g$ and $\bar g_D$ is the map of subquotients
 $$
 \bar g_D\colon D(P)^{\perp}/D(P)\longrightarrow D(gP)^{\perp}/D(gP),
 \qquad
@@ -370,7 +370,7 @@ Hence $\ell\in P^{\perp_L}=M$, and $y=[\tilde y]=[\ell]\in M/P=Q$, that is $y=0$
 
 *Surjectivity.* The target (@def:globular-boundary) has $\cardinality{D(P)^{\perp}/D(P)}=\cardinality{A_L}/\cardinality{D(P)}^2$ by @lem:isotropic-subgroup-quotient-order, applied to the nondegenerate (@def:polarization) form of $A_L$ of @prop:discriminant-nondegenerate and the isotropic subgroup $D(P)$ of @not:isotropic-reduction-setup.
 With $\cardinality{D(P)}=[N_V:P]$ and @lem:isotropic-reduction-index this equals $\cardinality{A_Q}$.
-An injective morphism between finite groups of the same order is bijective.
+An injective (@def:injective-map) morphism between finite groups of the same order is bijective.
 
 *The bilinear form.* Write $\hat y=\tilde y+u$ and $\hat y'=\tilde y'+u'$ as above, so $\hat y-\tilde y\in V$ and $\hat y'-\tilde y'\in V$.
 Here $u,u'\in V=W^{\perp_{L_{\bQ}}}$, so $\beta_{L_{\bQ}}(\tilde y,u')=0$ and $\beta_{L_{\bQ}}(u,\tilde y')=0$; and $V$ is totally isotropic, so $\beta_{L_{\bQ}}(u,u')=0$.
@@ -387,7 +387,7 @@ Hence $q_{A_L}(\varphi_P(y))=\hat y^2\bmod2\bZ=y^2\bmod2\bZ=q_{A_Q}(y)$.
 
 *Naturality.* Let $g\in\Orth(L)$ and let $\hat y\in H$ represent $\varphi_P(y)$. Then $g\hat y\in L^{\#}$, and $g\hat y-g\tilde y=gu\in gV$, while $g\tilde y\in gW$ lifts $\bar g_Q y$; by the choice independence of @lem:isotropic-reduction-extension the class of $g\hat y$ is $\varphi_{gP}(\bar g_Qy)$.
 Its image modulo $D(gP)$ is $\rho_L(g)\qty(\hat y+D(P))$, because $g$ preserves $N$ and carries $V=P_{\bQ}$ to $(gP)_{\bQ}$, so $g(N_V)=L^{\#}\cap(gP)_{\bQ}$ and $\rho_L(g)D(P)=D(gP)$.
-The commutativity of the square follows, and restricting to $g\in\Stab_{\Orth(L)}(P)$ gives the stabilizer statement.
+The commutativity of the square follows, and restricting to $g\in\Stab_{\Orth(L)}(P)$ gives the stabilizer (@def:group-orbit) statement.
 :::
 
 ::: {.corollary #cor:isotropic-reduction-stabilizer title="The exact image of the parabolic stabilizer, and the action on the subquotient"}
@@ -398,7 +398,7 @@ C\definedas\ker\qty(\Stab_{Q_0}\qty(D(P))\too\Aut\qty(D(P)^{\perp}/D(P))).
 $$
 Then:
 
-1. the image of $\Stab_{\Orth(L)}(P)$ in $\Orth(A_L)$ is exactly $\rho_L(\Stab_{\Orth(L)}(P))$, and it is contained in $\Stab_{Q_0}(D(P))$; it consists of those elements of the finite stabilizer that are realised by an integral isometry preserving $P$;
+1. the image of $\Stab_{\Orth(L)}(P)$ in $\Orth(A_L)$ is exactly $\rho_L(\Stab_{\Orth(L)}(P))$, and it is contained in $\Stab_{Q_0}(D(P))$; it consists of those elements of the finite stabilizer (@def:group-orbit) that are realised by an integral isometry preserving $P$;
 2. for $g\in\Stab_{\Orth(L)}(P)$ let $\bar g_D$ be the automorphism of $D(P)^{\perp}/D(P)$ induced by $\rho_L(g)$ through the representative action
    $$
    \bar g_D\qty(c+D(P))=\rho_L(g)(c)+D(P),
@@ -408,7 +408,7 @@ Then:
    \bar g_Q=\varphi_P^{-1}\circ\bar g_D\circ\varphi_P,
    $$
    so $\Stab_{\Orth(L)}(P)\too\Orth(A_Q)$ has the same kernel (@def:kernel-cokernel) as $\Stab_{\Orth(L)}(P)\too\Aut(D(P)^{\perp}/D(P))$, namely $\Stab_{\Orth(L)}(P)\cap\rho_L^{-1}(C)$;
-3. the kernel of $\Stab_{\Orth(L)}(P)\too\Orth(A_Q)$ contains $\Stab_{\Orth(L)}(P)\cap\widetilde\Orth(L)$, where $\widetilde\Orth(L)=\ker\rho_L$ is the discriminant kernel (@def:mm-integral-spinor-data) of @def:discriminant-rep; so the map of item 2 is injective exactly when $\Stab_{\Orth(L)}(P)\cap\rho_L^{-1}(C)=1$, and it is not injective when $\Stab_{\Orth(L)}(P)\cap\widetilde\Orth(L)\neq1$.
+3. the kernel of $\Stab_{\Orth(L)}(P)\too\Orth(A_Q)$ contains $\Stab_{\Orth(L)}(P)\cap\widetilde\Orth(L)$, where $\widetilde\Orth(L)=\ker\rho_L$ is the discriminant kernel (@def:mm-integral-spinor-data) of @def:discriminant-rep; so the map of item 2 is injective (@def:injective-map) exactly when $\Stab_{\Orth(L)}(P)\cap\rho_L^{-1}(C)=1$, and it is not injective when $\Stab_{\Orth(L)}(P)\cap\widetilde\Orth(L)\neq1$.
 :::
 
 ::: {.proof}

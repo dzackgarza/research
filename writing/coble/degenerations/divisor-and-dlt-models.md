@@ -35,7 +35,7 @@ $$
 holds.
 
 The quotient $Y = X/\iota$ has branch divisor $B$ and image boundary $C = \pi(D)$, where $\pi\colon X \to Y$ is the quotient map.
-The pair $(Y, C)$ is a log del Pezzo surface of index (@def:index) at most $2$, satisfying
+The pair $(Y, C)$ is a log del Pezzo surface (@def:degree-of-del-pezzo-surface) of index (@def:index) at most $2$, satisfying
 $$
 K_X + D + \eps R = \pi^*\left( K_Y + C + \frac{1+\eps}{2}B \right)
 ,
@@ -81,7 +81,7 @@ The geometry is encoded by an *integral-affine divisor* $R_{\IA} \subset \Gamma(
 The conjecture was that, among divisor models (@def:coble-divisor-model) $(\mcx,\mcr)\to C$ with a *fixed* Picard--Lefschetz monodromy, the pair $(\Gamma(\mcx_0),R_{\IA})$ determines the KSBA stable limit of $(\mcx_t,\eps\mcr_t)$.
 
 1. The constancy half is a theorem: $(\Gamma(\mcx_0),R_{\IA})$ can be chosen to be the same for all degenerations with a fixed Picard--Lefschetz transform [@AEGS25, §4.1, printed p. 599, after @AE23, Theorem 8.11(5)].
-2. What those data determine is the *combinatorial type* of the limit, and with it the stratum. The cones of a semifan (@def:semitoroidal-compactification) are, by construction, the collections of Picard--Lefschetz transformations for which $(\Gamma(\mcx_0),R_{\IA})$ determines a KSBA-stable pair (@def:ksba-compactification) of a fixed combinatorial type [@AEGS25, §4.1, printed p. 599, after @AE23, Corollary 8.13 and Theorem 9.3], and a stratum of the compactification is a cone.
+2. What those data determine is the *combinatorial type* of the limit, and with it the stratum. The cones (@def:closed-cone) of a semifan (@def:semitoroidal-compactification) are, by construction, the collections of Picard--Lefschetz transformations for which $(\Gamma(\mcx_0),R_{\IA})$ determines a KSBA-stable pair (@def:ksba-compactification) of a fixed combinatorial type [@AEGS25, §4.1, printed p. 599, after @AE23, Corollary 8.13 and Theorem 9.3], and a stratum of the compactification is a cone.
 3. The determination of the limit itself fails, and at a $1$-cusp the reason is a count. The boundary component (@def:coble-surface) of a $1$-cusp of $\overline{\mathcal F}^{BB}_{\En,2}$ is a half-plane [@Ste91, §4.1, printed p. 15], computed as $H/\Gamma^1(2)$ and, in the remaining cases, as $H/\Gamma'$ with $\Gamma'$ containing the level $2$ subgroup of $SL_2(\mathbb{Z})$ [@Ste91, §4.3.16 and §4.3.17, printed p. 27]; uncountably many values of the classical $j$ therefore occur over one cusp, and each is a KSBA stable limit [@AEGS25, §5.3, printed p. 611] whose $j$ the limit itself carries [@AEGS25, proof of Theorem 5.9, printed p. 612]. Against that, a monodromy invariant at a fixed cusp is a class in $J/\ZZ e$, of rank one, hence countably many, and every one of them is admissible because $J$ is totally isotropic (@def:orthogonal-complement). Were each $\lambda$ attached to a single $j$, the $j$ realised over the cusp would be countable. So one $\lambda$ occurs at two different $j$; the two limits have the same $(\Gamma(\mcx_0),R_{\IA})$ by (1) and are non-isomorphic. The lattice premises of the count are `computations/reports/coble_678-lambda-versus-j-run.txt`, with its script.
 4. So the data determine the stratum and not the point, and computing $B(\lambda)$ computes a candidate of the limit's combinatorial type. The hinge of the divisor-model method is (1) with (2), which is a theorem; the forward direction to the limit is false, and (3) is why.
 

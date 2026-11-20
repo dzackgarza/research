@@ -35,7 +35,7 @@ $$
 
 ::: {.proof}
 
-Tensor an orthogonal splitting (@def:lattice-split) with $\bQ$ and then $\bR$. The rational span of one isotropic (@def:orthogonal-complement) vector in each integral hyperbolic plane (@def:hyperbolic-plane) is totally isotropic. A totally isotropic subspace of $L_{\bR}=V^+\perp V^-$ meets (@def:replete-full-meet) either definite (@def:definiteness) summand trivially, so both projections from it are injective. Its dimension is at most $n_+$ and $n_-$. Nondegeneracy matters: a radical (@def:two-witnesses) is totally isotropic but contributes no sign to the signature.
+Tensor an orthogonal splitting (@def:lattice-split) with $\bQ$ and then $\bR$. The rational span of one isotropic (@def:orthogonal-complement) vector in each integral hyperbolic plane (@def:hyperbolic-plane) is totally isotropic. A totally isotropic subspace (@def:isotropic-subspace) of $L_{\bR}=V^+\perp V^-$ meets (@def:replete-full-meet) either definite (@def:definiteness) summand trivially, so both projections from it are injective (@def:injective-map). Its dimension is at most $n_+$ and $n_-$. Nondegeneracy matters: a radical (@def:two-witnesses) is totally isotropic but contributes no sign to the signature.
 :::
 
 ## Radical reduction {#sec-hyperbolic-radical}
