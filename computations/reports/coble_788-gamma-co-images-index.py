@@ -19,6 +19,8 @@ E_8 is negative definite in the corpus, so E_8(2) has alpha_i^2 = -4 and
 q_{E_8(2)}(alpha_i/2) = -1 mod 2Z.  Replacing q by -q preserves Orth(q) and {q = 0}, so
 every count below is convention independent; part 8 runs the other sign as a check.
 """
+from itertools import product
+
 IDX_W = 0
 N = 11
 SIZE = 1 << N
@@ -89,6 +91,51 @@ MASK = [mask_of(x) for x in range(SIZE)]
 V_MASK = sum(1 << x for x in range(SIZE) if not (x & 1))
 S0 = sum(1 << x for x in range(SIZE) if VAL[x] % 4 == 0)
 S1 = sum(1 << x for x in range(SIZE) if VAL[x] % 4 == 2)
+
+
+def block_isometry_counts():
+    """|Orth(q)| for the U(2) block and for U(2)+U(2), by enumeration of GL(n,2).
+
+    This is the direct check that the group used in parts 4-6 is the isometry group of
+    q: A -> Q/2Z, not the (larger) group preserving only the polar form b.
+    """
+    def lin(M, n, x):
+        out = 0
+        for i, row in enumerate(M):
+            if bin(row & x).count("1") % 2:
+                out |= 1 << i
+        return out
+
+    def invertible(M, n):
+        return len({lin(M, n, x) for x in range(1 << n)}) == (1 << n)
+
+    def v2(x):
+        return (2 * ((x & 1) * ((x >> 1) & 1))) % 4
+
+    def B2(x, y):
+        return (((x & 1) * ((y >> 1) & 1)) + (((x >> 1) & 1) * (y & 1))) % 2
+
+    n2 = 0
+    for M in product(range(4), repeat=2):
+        if invertible(M, 2) and all(v2(lin(M, 2, x)) == v2(x) for x in range(4)):
+            n2 += 1
+
+    def v4(x):
+        return (2 * ((x & 1) * ((x >> 1) & 1)) + 2 * (((x >> 2) & 1) * ((x >> 3) & 1))) % 4
+
+    def B4(x, y):
+        return (((x & 1) * ((y >> 1) & 1)) + (((x >> 1) & 1) * (y & 1))
+                + (((x >> 2) & 1) * ((y >> 3) & 1)) + (((x >> 3) & 1) * ((y >> 2) & 1))) % 2
+
+    n4 = nB = 0
+    for M in product(range(16), repeat=4):
+        if not invertible(M, 4):
+            continue
+        if all(v4(lin(M, 4, x)) == v4(x) for x in range(16)):
+            n4 += 1
+        if all(B4(lin(M, 4, x), lin(M, 4, y)) == B4(x, y) for x in range(16) for y in range(16)):
+            nB += 1
+    return n2, n4, nB
 
 
 def main():
@@ -211,6 +258,14 @@ def main():
     print("   under q -> -q on the E_10(2) part: #{q=0} = %d, #{q=1} = %d, subspaces = %d"
           % (n0b, n1b, pairsb // 2))
     print("   unchanged: %s" % ((n0b, n1b, pairsb // 2) == (n0, n1, n)))
+    print()
+    print("9. the group used is the isometry group of q, not that of its polar form")
+    n2, n4, nB = block_isometry_counts()
+    print("   enumerating GL(2,2) = 6 maps: |Orth(q_{U(2)})| = %d" % n2)
+    print("   enumerating GL(4,2) = 20160 maps: |Orth(q_{U(2)} + q_{U(2)})| = %d," % n4)
+    print("   |{maps preserving only the polar form b}| = %d = |Sp(4,2)|" % nB)
+    print("   so an isometry of q is an isometry of (b,q), and the larger group of the")
+    print("   polar form is not the one used in parts 4-6.")
 
 
 def _nondeg():

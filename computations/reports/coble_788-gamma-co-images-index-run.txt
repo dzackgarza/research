@@ -58,3 +58,10 @@ provenance
 8. the other sign for E_8: the counts must not move
    under q -> -q on the E_10(2) part: #{q=0} = 528, #{q=1} = 496, subspaces = 67456
    unchanged: True
+
+9. the group used is the isometry group of q, not that of its polar form
+   enumerating GL(2,2) = 6 maps: |Orth(q_{U(2)})| = 2
+   enumerating GL(4,2) = 20160 maps: |Orth(q_{U(2)} + q_{U(2)})| = 72,
+   |{maps preserving only the polar form b}| = 720 = |Sp(4,2)|
+   so an isometry of q is an isometry of (b,q), and the larger group of the
+   polar form is not the one used in parts 4-6.
