@@ -200,12 +200,32 @@ def test_a2_the_four_groups_are_named_with_their_rows():
 def test_a3_subgroup_hypothesis_is_the_row_s_group():
     text = parens_normalised(PAGE.read_text())
     section = text[text.index("{#sec-plane-flag-rows}"):]
-    # the subgroup hypothesis: rho^{-1}(P) = Gamma_{Co,2}, the entry point's group
-    assert "\\rho_{T_\\Co}^{-1}\\pqty{\\Stab_{\\Orth(q_{T_\\Co})}\\bigl(A_{U(2)}\\bigr)} = \\rho_{T_\\Co}^{-1}(P)" in text
+    # the subgroup hypothesis: rho^{-1}(P) = Gamma^{cong}_{Co,2} = R_{gent}, the entry point's
+    # group.  The row builds this arithmetic group; the monodromy group Gamma_{Co,2} is related
+    # to it by the containment of thm:coble-monodromy-versus-enriques(4) and by
+    # qst:coble-monodromy-equality, never by an unconditional equality, which item (3) refutes.
+    assert "\\rho_{T_\\Co}^{-1}\\pqty{\\Stab_{\\Orth(q_{T_\\Co})}\\bigl(A_{U(2)}\\bigr)} = \\rho_{T_\\Co}^{-1}(P) = \\Gamma^{\\mathrm{cong}}_{\\Co,2} = R_{\\gent}" in text
     assert "discriminant_point_stabilizer(point)" in section
-    assert "\\Gamma_{\\Co,2} = R_{\\gent}" in section
+    assert "\\Gamma_{\\Co,2} = R_{\\gent}\\intersect\\Orth^+(T_\\Co)" in section
+    assert "@qst:coble-monodromy-equality" in section
     # the fibre hypothesis: [F:S] = 8, the index the plane count is built from
     assert "[F:S] = 8" in section or "[F:S]=8" in section or "index is $8$" in section
+
+
+def test_a3_no_unconditional_identity_of_the_monodromy_and_arithmetic_groups():
+    """The equality Gamma_{Co,2} = R_{gent} is refuted; only the containment is asserted.
+
+    thm:coble-monodromy-versus-enriques(3) refutes the equality, and (4) proves the
+    containment.  A page that writes the equality says something false about the monodromy
+    group; the one place the string may occur is inside the conditional of
+    qst:coble-monodromy-equality, which names R_{gent} cap O^+, not R_{gent}.
+    """
+    text = PAGE.read_text()
+    unconditional = re.compile(r"\\Gamma_\{\\Co,2\}\s*=\s*R_\{\\gent\}(?!\\intersect)")
+    hits = [f"{n}: {line.strip()[:120]}"
+            for n, line in enumerate(text.splitlines(), 1)
+            if unconditional.search(line)]
+    assert not hits, hits
 
 
 def test_a3_no_integral_orbit_count_from_a_finite_containment():
