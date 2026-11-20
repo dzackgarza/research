@@ -1,0 +1,11 @@
+u^2 = 0  v^2 = 0  u.v = 0
+delta^2 = -2  delta.u = 0  delta.v = 0
+E_{u,delta}: M^T G M = G: True, det = 1
+   fixes the basis vector: True   image of the other basis vector: [0, 0, 1, 2, -4, -5, -7, -10, -8, -6, -4, -2]
+   image of delta: [5, 3, 2, -4, 0, 0, 0, 0, 0, 0, 0, 0]  expected delta + 2*(its basis vector)
+   acts trivially on A_{T_En}: True
+E_{v,delta}: M^T G M = G: True, det = 1
+   fixes the basis vector: True   image of the other basis vector: [2, 2, 1, -2, 0, 0, 0, 0, 0, 0, 0, 0]
+   image of delta: [1, -1, 2, 4, -8, -10, -14, -20, -16, -12, -8, -4]  expected delta + 2*(its basis vector)
+   acts trivially on A_{T_En}: True
+expected delta + 2u: [5, 3, 2, -4, 0, 0, 0, 0, 0, 0, 0, 0]  expected delta + 2v: [1, -1, 2, 4, -8, -10, -14, -20, -16, -12, -8, -4]

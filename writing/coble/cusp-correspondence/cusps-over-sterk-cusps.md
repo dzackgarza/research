@@ -43,7 +43,7 @@ If $v\in T_\Co$ is primitive in $T_\Co$, it is primitive in $\ten$.
 Suppose $v = mw$ with $w\in\ten$ and $m>1$. Since $v\in T_\Co = \delta^{\perp\ten}$, $0 = v\cdot\delta = m\,(w\cdot\delta)$, hence $w\cdot\delta = 0$ and $w\in\delta^{\perp\ten} = T_\Co$. So $v$ is not primitive in $T_\Co$.
 :::
 
-Consequently a primitive isotropic line or plane of $T_\Co$ is a primitive isotropic line or plane of $\ten$, and a $\gent$-orbit of such objects of $\ten$ that meets $T_\Co$ consists of objects of $T_\Co$. This is what makes the forgetful map on cusps below well defined.
+Consequently a primitive isotropic line or plane of $T_\Co$ is a primitive isotropic line or plane of $\ten$. This, and $R\leq\gent$, is what makes the forgetful map on cusps below well defined; a $\gent$-orbit of lines or planes of $\ten$ need not however preserve $\delta^{\perp}=T_\Co$, and none of the arguments below uses such a statement.
 
 ## The correspondence
 
@@ -85,11 +85,31 @@ $(3)$ The $0$-cusps of $F_{\En,2}$ are the $\gent$-orbits of primitive isotropic
 ::: {.theorem #thm:b2-one-cusps title="B2 for $1$-cusps"}
 The same statement with "line" replaced by "plane": the $1$-cusps of $D(T_\Co)/R$ are the $\gent$-orbits of pairs $(\Pi,\alpha)$ in which $\Pi\subset\ten$ is a primitive isotropic plane and $\alpha\in\ten$ is a $(-2)$-vector with $\alpha\perp\Pi$; the fibre over Sterk's $1$-cusp $[\Pi]$ is the set of $\Stab_{\gent}(\Pi)$-orbits of $(-2)$-vectors $\alpha\perp\Pi$, the stabilizer being taken in the plane $[\Pi]$.
 
-For such a $\Pi$ the quotient $\Pi^{\perp\ten}/\Pi$ is negative definite, so the set of $(-2)$-vectors perpendicular to $\Pi$ modulo $\Pi$ is finite and the fibre is a finite set.
+For such a $\Pi$ the quotient $\Pi^{\perp\ten}/\Pi$ is negative definite, so there are finitely many $(-2)$-classes in $\Pi^{\perp\ten}/\Pi$; that the fibre itself is finite is @lem:one-cusp-fibre-finite.
 :::
 
 ::: {.proof}
-Every step of the proof of @thm:b2-zero-cusps uses only that $\ell$ is a primitive isotropic subspace of $\ten$ and that a primitive isotropic subspace of $T_\Co$ is one of $\ten$ (@lem:primitivity-tco-in-ten), so it applies verbatim to primitive isotropic planes. The identification of the $1$-cusps of $F_{\En,2}$ with the $\gent$-orbits of primitive isotropic planes is [@AEGS25, Def. 2.9, printed p. 588]; Sterk's nine $1$-cusps are [@Ste91, §4.3, printed pp. 17--25]. The quotient $\Pi^{\perp}/\Pi$ has signature $(0,8)$, because $\Pi$ is a maximal isotropic plane in a lattice of signature $(2,10)$; a negative definite integral lattice has finitely many vectors of a given norm.
+Every step of the proof of @thm:b2-zero-cusps uses only that $\ell$ is a primitive isotropic subspace of $\ten$ and that a primitive isotropic subspace of $T_\Co$ is one of $\ten$ (@lem:primitivity-tco-in-ten), so it applies verbatim to primitive isotropic planes. The identification of the $1$-cusps of $F_{\En,2}$ with the $\gent$-orbits of primitive isotropic planes is [@AEGS25, Def. 2.9, printed p. 588]; Sterk's nine $1$-cusps are [@Ste91, §4.3, printed pp. 17--25]. The quotient $\Pi^{\perp}/\Pi$ has signature $(0,8)$, because $\Pi$ is a maximal isotropic plane in a lattice of signature $(2,10)$, so a negative definite integral lattice has finitely many vectors of a given norm --- finitely many $(-2)$-classes, but not yet finitely many orbits on their lifts; the lifts are controlled by @lem:one-cusp-fibre-finite below.
+:::
+
+::: {.lemma #lem:one-cusp-fibre-finite title="The fibre over a $1$-cusp is finite"}
+Let $\Pi\subset\ten$ be a primitive isotropic plane with a basis $u,v$ of isotropic vectors, and let $\alpha\in\ten$ have $\alpha^2 = -2$ and $\alpha\perp\Pi$. For $z\in u^{\perp\ten}$ the Eichler transvection
+$$
+E_{u,z}(x) \definedas x+(x,u)z-(x,z)u-\tfrac{z^2}{2}(x,u)u
+$$
+lies in $\gent$, fixes $\Pi$ setwise, and acts on $\Pi^{\perp\ten}$ by $x\mapsto x-(x,z)u$. The set of values $(\alpha,z)$, $z\in u^{\perp\ten}$, is an ideal $d_u\ZZ$ with $d_u\mid 2$, so the $\Stab_{\gent}(\Pi)$-orbit of $\alpha$ contains $\alpha+2u$; symmetrically it contains $\alpha+2v$. Hence that orbit contains $\alpha+2\Pi$ and $\Stab_{\gent}(\Pi)$ has at most four orbits on the lifts $\alpha+\Pi$, so the fibre over any $1$-cusp is finite.
+:::
+
+::: {.proof}
+*Integrality and membership in $\gent$.* The vector $E_{u,z}(x)-x = (x,u)z-(x,z)u-\tfrac{z^2}{2}(x,u)u$ lies in $\ten$ for $x\in\ten$ because all three coefficients are integers, and $E_{u,z}(y)-y\in\ten$ for $y\in\ten^\vee$ for the same reason with $(y,u),(y,z)\in\ZZ$; so $E_{u,z}$ acts trivially on $A_{\ten}$ and lies in $\ker\rho_{\ten}\subseteq\gent$. The transformation is the Eichler transvection of [@GHS08, §3.1, Lemma 3.1 and the integrality assertion after (10), printed pp. 8--9], of which the $E$ of @lem:ze-translates-in-gent is the case $u = e'$, $z = e$; the computation is `computations/reports/coble_789-one-cusp-finiteness.py`.
+
+*It preserves $\Pi$.* $E_{u,z}(u) = u+(u,u)z-(u,z)u-\tfrac{z^2}{2}(u,u)u = u$ because $u^2 = 0$ and $z\cdot u = 0$, and $E_{u,z}(v) = v-(v,z)u\in\Pi$.
+
+*It translates.* For $x\in\Pi^{\perp}$ one has $(x,u) = 0$, so $E_{u,z}(x) = x-(x,z)u$.
+
+*The ideal.* Since $\alpha,z\in\ten$ the value $(\alpha,z)$ is an integer; the set of them is a subgroup of $\ZZ$, say $d_u\ZZ$. Because $\alpha\in\Pi^{\perp}\subset u^{\perp}$ one has $(\alpha,\alpha) = -2\in d_u\ZZ$, so $d_u\mid 2$. Hence $2u\in d_u\ZZ\cdot u$ and the orbit contains $\alpha+2u$; the same argument with $v$ in place of $u$ gives $\alpha+2v$.
+
+*Finiteness.* The orbit of $\alpha$ therefore contains $\alpha+2\Pi$, so the orbits on the lifts of a $(-2)$-class are a quotient of $\Pi/2\Pi\cong(\ZZ/2)^2$ and number at most four. The $(-2)$-classes of $\Pi^{\perp}/\Pi$ are finite because that lattice is negative definite. So the fibre is finite.
 :::
 
 ## The fibre over Sterk's cusp $2$: the smallest case
@@ -156,7 +176,7 @@ Then $E\in\gent$, $E(e') = e'$, $E(\delta) = \delta+e'$ and $E^k(\delta) = \delt
 ::: {.proof}
 *Integrality.* On the basis $e,f,e',f',\alpha_1,\dots,\alpha_8$ of $\ten$ one has $E(e) = e$, $E(f) = f-e'$, $E(e') = e'$, $E(f') = f'+2e$ and $E(\alpha_i) = \alpha_i$, all integral. This is the case $\eta = e'$, $a = e$ of the Eichler transformation of [@GHS08, §3.1, Lemma 3.1 and the integrality assertion after (10), printed pp. 8--9], as quoted in @lem:cusp-root-lift-independence; the computation is `computations/reports/coble_789-transvection-and-isometry.py`.
 
-*Isometry.* Expanding $(E x,E y)$ for $x,y\in\ten$ with $e^2 = (e')^2 = 0$ and $e\cdot e' = 1$, the correction terms cancel in pairs and $(Ex,Ey) = (x,y)$.
+*Isometry.* Expanding $(E x,E y)$ for $x,y\in\ten$ with $e^2 = (e')^2 = e\cdot e' = 0$ (the sum $U\oplus U(2)\oplus E_8(2)$ is orthogonal, so $e$ and $e'$ are perpendicular), the correction terms cancel in pairs: $(Ex,Ey)-(x,y) = (x,e)(y,e')-(y,e)(x,e')+(x,e')(e,y)-(x,e)(e',y)$, and this vanishes because $(e,y) = (y,e)$ and $(e',y) = (y,e')$.
 
 *The translates.* $(\delta,e') = 0$ and $(\delta,e) = -1$, so $E(\delta) = \delta+e'$; $E$ is linear and fixes $e'$, so $E^k(\delta) = \delta+k e'$ for $k\geq 0$, and $E^{-1}$ gives the negative multiples.
 
@@ -164,7 +184,7 @@ Then $E\in\gent$, $E(e') = e'$, $E(\delta) = \delta+e'$ and $E^k(\delta) = \delt
 :::
 
 ::: {.corollary #cor:fibre-cusp-two title="The fibre over Sterk's cusp $2$ is a single point"}
-The fibre of $\Phi_0$ over Sterk's cusp $2$ is a single point, represented by the $(-2)$-vector $\delta = e-f$ and by the primitive isotropic line $\ZZ\delta$ of $T_\Co$.
+The fibre of $\Phi_0$ over Sterk's cusp $2$ is a single point, represented by the pair $(\ZZ e',\,\delta)$: by the $(-2)$-vector $\delta = e-f$ of $\ten$, and by the primitive isotropic line $\ZZ e'$ of $T_\Co$ that the pair carries. (The vector $\delta$ itself is not a vector of $T_\Co$: $\delta^2 = -2\neq0$.)
 :::
 
 ::: {.proof}
