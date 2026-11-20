@@ -23,7 +23,13 @@ WHAT THIS RUN CERTIFIES, for each of Sterk's five 1-cusp types
       E^T G E = G, fixes w, preserves Pi, and sends alpha to alpha - w.
 
 Since translations by u and v generate Pi, (5) puts all of alpha + Pi in one
-Stab(Pi)-orbit, and (3), (4) then give exactly 16 orbits: one per class.
+Stab(Pi)-orbit, so each of the 16 classes contributes ONE orbit; this says
+nothing about how the classes group together.  It does not, in particular,
+give 16 orbits: -id lies in Gamma_En,2 and sends alpha to -alpha, so the
+classes r and -r are identified, and the fibre over the 1-cusp has at most
+eight points, one per antipodal pair {r, -r}.  The number of orbits actually
+attained is NOT computed here; it is decided on the page by the volume's
+plane-orbit record (thm:one-cusp-multiplicities).
 
 Inputs: AEGS, Nagoya Math. J. 259 (2025), Def. 2.3 (T_En); Sterk, Math. Z.
 207 (1991), 4.2.3 (the cusp vectors) and 4.3.17 (the five 1-cusp types);

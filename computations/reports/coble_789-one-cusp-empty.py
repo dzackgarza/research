@@ -8,8 +8,8 @@ Pi^perp/Pi is E8(2), whose Gram matrix has diagonal -4 and off-diagonal 0 or 2,
 so every square is divisible by 4 and there is no (-2)-vector.
 
 Inputs: AEGS, Nagoya Math. J. 259 (2025), Def. 2.3 (T_En);
-Sterk, (4.2.3) (the cusp vectors e, e'), and 4.3.5, printed
-p. 20 (the common quotient type).
+Sterk, (4.2.3) (the cusp vectors e, e'), and 4.3.5 (the common quotient
+type).
 """
 import itertools
 from sage.all import matrix, vector, ZZ, block_diagonal_matrix, CartanMatrix
