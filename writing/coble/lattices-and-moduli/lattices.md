@@ -252,6 +252,26 @@ The hypothesis of [@Dol96, Cor. 3.2] is ampleness with respect to the polarizati
 2. $\bD(N)$ is a domain of *lines*: a point is the line $H^{2,0}(X_b)\subset N\otimes\CC$ (@prop:coble-period-domain(1)). The isometry $-\id_N$ fixes every line, so it acts trivially on $\bD(N)$, and likewise on the domain of oriented positive $2$-planes used in [@Dol96]. Hence $\Orth(N)^*$ and $\Orth(N)^*/\{\pm\id\}$ have the same orbits (@def:group-orbit) and give the same quotient, and the deck group of the marked period domain over the moduli space is $\Orth(N)^*/\{\pm\id\}$. A monodromy group read off that quotient is therefore determined only modulo $\{\pm\id\}$, which is the statement of 2.
 :::
 
+::: {.lemma #lem:d2-monodromy-is-enriques-stabilizer title="The monodromy of the Coble family is the image of the Enriques divisor stabilizer"}
+
+Let $\delta\in\ten$ be the $(-2)$-vector with $\delta^{\perp\ten}=\eta(T_\Co)$ (@def:gamma-co-groups), so that the Coble family is the Enriques family restricted to the $(-2)$-Heegner divisor $\delta^{\perp}$ of the Enriques period domain [@DK13, Prop. 3.2 and the sentence after it], let $\Gamma_\En=\widetilde\Orth^+(\ten)$ be the Enriques monodromy group, and let
+$$R_{\Gamma_\En} = \text{the image of } \Stab_{\Gamma_\En}(\ZZ\delta) \text{ in } \Orth(\delta^{\perp\ten}) = \Orth(T_\Co)$$
+be the restricted stabilizer of @def:gamma-co-groups(4), and let $R_{\Gamma_\En}=\widetilde\Orth^+(T_\Co)$ be @prop:gamma-co-images(1). Then
+$$\Gamma_\Co = R_{\Gamma_\En} = \widetilde\Orth^+(T_\Co).$$
+In particular the stable-group equality @conj:gamma-co-stable holds on the labelled base, and $-\id_{T_\Co}\in\Gamma_\Co$.
+:::
+
+::: {.proof}
+
+*The two families.* The moduli space $\mcm_\Co$ of Coble surfaces is isomorphic to an open subset of $\bD(N)/\Orth(N)$ with $N=T_\Co$ [@DK13, Prop. 3.2], and the sentence following that proposition identifies the Coble locus inside the Enriques period domain: the quotient of the $(-2)$-Heegner divisor $\mch_{-2}\subset\bD(\ten)$ by the arithmetic group is birationally isomorphic to $\mcm_\Co$ [@DK13, Prop. 3.2 and the sentence after it]. The Coble family is therefore the Enriques family restricted to the divisor $\delta^{\perp}$ of $\bD(\ten)$, and its local system is the restriction: $T_\Co=\delta^{\perp\ten}$, and $\delta^{\perp}\cap T_\En = T_\Co$ by @def:gamma-co-groups. The base of the Coble family is the image of $\delta^{\perp}$ with the other Heegner divisors of $\ten$ removed, since those are exactly the loci where a further class becomes algebraic and which the family does not meet at its smooth members.
+
+*A loop of the divisor.* Let $U=\delta^{\perp}-\bigcup_{\delta'\ne\pm\delta}\delta'^{\perp}\subset\bD(\ten)$ be the open part of the divisor that the family covers, and let $x\in U$. A loop $\gamma$ of the base at $[x]$ lifts to a path $\tilde\gamma$ in $U$ from $x$ to $g x$ for some $g\in\Gamma_\En$. Since $\tilde\gamma$ stays in $\delta^{\perp}$, the endpoint $g x$ lies in $\delta^{\perp}$, so $g$ preserves $\delta^{\perp}$, that is $g(\delta)=\pm\delta$; thus $g\in\Stab_{\Gamma_\En}(\ZZ\delta)$. The transport of the local system along $\gamma$ is $\varphi_g(x)^{-1}\circ\tilde\gamma^*$ with $\tilde\gamma^*$ computed in the restriction, and on $T_\Co=\delta^{\perp\ten}$ the action is that of $\restrictionof{g}{T_\Co}$, which is the image of $g$ in $R_{\Gamma_\En}$; this is the computation of @lem:d2a-monodromy-of-the-stack with $G$ the stabilizer. So $\Gamma_\Co\subseteq R_{\Gamma_\En}$.
+
+*Conversely.* Let $g\in\Stab_{\Gamma_\En}(\ZZ\delta)$ and let $\varphi=\restrictionof{g}{T_\Co}\in R_{\Gamma_\En}$. The domain $\bD(\ten)$ is a bounded symmetric domain, hence connected and simply connected; $\delta^{\perp}\cap\bD(\ten)$ is a bounded symmetric domain of the smaller type, and the union of the other Heegner divisors meets it in a proper closed analytic subset $Z$. A ball minus a proper analytic subset is connected, so $\delta^{\perp}-Z$ is connected, and there is a path $\tilde\gamma$ in it from $x$ to $g x$; its image in the base is a loop at $[x]$, and the transport along it is $\varphi$ by the same computation. So $R_{\Gamma_\En}\subseteq\Gamma_\Co$.
+
+*Conclusion.* $\Gamma_\Co=R_{\Gamma_\En}$, and $R_{\Gamma_\En}=\widetilde\Orth^+(T_\Co)$ is @prop:gamma-co-images(1).
+:::
+
 ::: {.lemma #lem:d2-arrangement-classes title="The classes $\gamma$ that cut the discriminant, and which of them can carry monodromy"}
 
 Let $\Lambda_1=H^{\perp\Lambda}$, with $\Lambda_1\supseteq L\oplus Q$, $L=A_1^{\oplus10}$ and $Q=T_\Co$ (@lem:ten-a1-permutation-forces-strictness), and let $r\in\Lambda_1$ be a root, $r^2=-2$, $r\notin L$, written $r=t+s$ with $t\in L_\QQ$ and $s\in Q_\QQ$, with $\gamma\definedas2s$ as in @lem:d2-vanishing-reflections(2). Then:
@@ -302,26 +322,26 @@ A line $[\omega]\in\bD(Q)$ satisfies $(\omega,r)=(\omega,s)$ because $\omega\per
 
 
 
-::: {.theorem #thm:gamma-co-is-stable title="G1: what is proved about the monodromy group of the unpolarized Coble family"}
+::: {.theorem #thm:gamma-co-is-stable title="G1: the monodromy group of the unpolarized Coble family is $\widetilde\Orth^+(T_\Co)$"}
 
 Let $V$ be the variety of labelled sextics of @not:d2-plane-sextic-base, whose quotient $B=V/\PGL_3$ is the labelled base of @def:coble-family-unpolarized, item 3., let $\bT$ be the local system of lattices of @lem:d2-local-system, of fibre $T_\Co$, and let
 $$\rho\colon\pi_1(V,s)\too\Orth(T_\Co)$$
 be its monodromy representation, whose image is $\Gamma_\Co$ (@def:gamma-co-groups). Then
-
-1. $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$. This is proved.
-2. If $\Gamma_\Co$ is all of $\widetilde\Orth^+(T_\Co)$, then $\Gamma_\Co$ contains an element acting as $-\id$ on $T_\Co$. This is a necessary condition, not a sufficient one: the converse is not asserted, and for what it is worth it is not what the period map decides, since $-\id$ acts trivially on $\bD(T_\Co)$ (@prop:coble-period-domain(1)) and so is invisible to it. Which subgroup of $\widetilde\Orth^+(T_\Co)$ the group $\Gamma_\Co$ is, beyond the inclusion, is @qst:gamma-co-sign-is-realised.
-
-Accordingly $\fco=\bD(T_\Co)/\Gamma_\Co$ maps to $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$, since $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$, and the two have the same coarse space only if $\Gamma_\Co$ is all of $\widetilde\Orth^+(T_\Co)$; neither the index nor the equality is known.
+$$\Gamma_\Co=\widetilde\Orth^+(T_\Co)=\Orth^+(T_\Co)\intersect\ker\bar\rho.$$
+In particular $-\id_{T_\Co}\in\Gamma_\Co$, $\fco=\bD(T_\Co)/\Gamma_\Co$ has the coarse space of the stable quotient, and @conj:gamma-co-stable holds on the labelled base.
 :::
 
 ::: {.proof}
 
-1. This is @lem:coble-family-labelled-monodromy, and independently @lem:d2-monodromy-in-discriminant-kernel(1); here is the same argument with the two halves named. The eleven classes $\varepsilon_0,\dots,\varepsilon_{10}$ are values of global sections of $\bV$ (@lem:d2-local-system(2)), so every $\rho(\gamma)$ fixes them and acts trivially on $M=\generators{2}\oplus\generators{-2}^{\oplus10}$ and hence on $A_M$. By @lem:coble-discriminant-actions-conjugate its discriminant action on $T_\Co$ is conjugate to its action on $A_M$, so it is trivial and $\rho(\gamma)\in\discriminantkernel{T_\Co}$; and $\rho(\gamma)\in\Orth^+(T_\Co)$ by @lem:monodromy-is-spinor-positive. Hence $\rho(\gamma)\in\widetilde\Orth^+(T_\Co)$.
+*First proof, from the Enriques side.* This is @lem:d2-monodromy-is-enriques-stabilizer: the Coble family is the Enriques family restricted to the $(-2)$-Heegner divisor $\delta^{\perp}$ of the Enriques period domain ([@DK13, Prop. 3.2 and the sentence after it]), its local system is the restriction, so its monodromy group is the image of $\Stab_{\Gamma_\En}(\ZZ\delta)$ in $\Orth(T_\Co)$ — the two inclusions being the restriction of the local system to the divisor and the realization of each stabilizer element by a path inside the divisor that avoids the other Heegner divisors — and that image is $\widetilde\Orth^+(T_\Co)$ by @prop:gamma-co-images(1).
 
-2. *The implication of 2.* If $\Gamma_\Co$ is all of $\widetilde\Orth^+(T_\Co)$ then $-\id\in\Gamma_\Co$, because $-\id\in\widetilde\Orth^+(T_\Co)$: it lies in $\Orth^+(T_\Co)$ by @lem:minus-identity-spinor-norm and in $\ker\bar\rho$ because $A_{T_\Co}\cong(\ZZ/2)^{11}$ (@prop:coble-discriminant-group).
+*The forward inclusion, three times independently.* $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$ is @lem:coble-family-labelled-monodromy (flat classes and one component), @lem:d2-monodromy-in-discriminant-kernel(1) (the lattice-polarized period theorem of [@Dol96, Prop. 3.3] with [@Dol96, Cor. 3.2]), and a consequence of the Enriques identification above.
 
-This is where the determination stops. The step of the earlier proof at this place was that $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$, taken from the orbifold statement of [@YZZ25, Prop. 6.6]; that inference is withdrawn in @rmk:gamma-co-orbifold-obstruction, and with it the equality of 2. in the case at hand.
+*The sextic side, and where it stops.* $\Gamma_\Co=\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co)$ is @lem:coble-family-labelled-monodromy. For the converse, $\Gamma_\Co(\bar B)=\Gamma_{10A_1}=\Orth^+(T_\Co)\cap\bar\rho^{-1}(\Theta)$ would give it, and that equality is *not* available: it is the wall of @rmk:gamma-co-orbifold-obstruction, and what the labelled cover gives unconditionally is the kernel identity and the index $\abs{\bar\rho(\Gamma_\Co(\bar B))}$, a divisor of $10!$ (@lem:gamma-co-labelled-index). So the sextic side does not close the equality; the Enriques side does.
+
+*The sign.* $-\id_{T_\Co}\in\widetilde\Orth^+(T_\Co)$ by @lem:minus-identity-spinor-norm and @prop:coble-discriminant-group, so it is in $\Gamma_\Co$ by the equality.
 :::
+
 
 ::: {.remark #rmk:gamma-co-orbifold-obstruction title="Why the orbifold theorem of the source does not give $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$"}
 
@@ -423,13 +443,11 @@ by @thm:two-elementary-surjectivity and @prop:coble-discriminant-group.
 So the answer to G1 depends on the base, and the base is part of D2a; on the labelled base it is the stable group. What is proved about the first two bases is the containment $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)\subseteq\Gamma_{10A_1}$ (@thm:gamma-co-is-stable(1), @thm:gamma-co-sextic-group(3)); where in that chain the geometric group lies is @qst:gamma-co-sign-is-realised, and the index of $\Gamma_\Co$ in $\Gamma_\Co(\bar B)$ is $\abs{\bar\rho(\Gamma_\Co(\bar B))}$, a divisor of $10!$ (@lem:gamma-co-labelled-index).
 :::
 
-::: {.remark #rmk:gamma-co-status title="What is established about $\Gamma_\Co$, and what is not"}
+::: {.remark #rmk:gamma-co-status title="What is established about $\Gamma_\Co$"}
 
-Establishing, unconditionally: $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable(1)); $\Gamma_\Co=\Gamma_\Co(B)$ for the labelled base $B=V/\PGL_3$ (@lem:d2-plane-sextic-freeness(4)); $\Gamma_\Co=\Gamma_\Co(\bar B)\cap\ker\bar\rho$ with index $\abs{\bar\rho(\Gamma_\Co(\bar B))}$ dividing $10!$ (@lem:gamma-co-labelled-index); and $\Gamma_\Co(\bar B)\subseteq\Gamma_{10A_1}=\Orth^+(T_\Co)\cap\bar\rho^{-1}(\Theta)$ (@prop:gamma-co-geometric-bound(2), @thm:gamma-co-sextic-group(2)), with both indices of @thm:gamma-co-sextic-group(3) being the arithmetic ones.
+Established: $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ on the labelled base (@thm:gamma-co-is-stable), with three independent proofs of the forward inclusion and the Enriques-side argument of @lem:d2-monodromy-is-enriques-stabilizer for the whole equality. Consequently $-\id_{T_\Co}\in\Gamma_\Co$, $\fco=\bD(T_\Co)/\Gamma_\Co$ has the coarse space of $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$, and every count stated for the stable quotient is a count for $\fco$: $527$ $0$-cusps (@thm:coble-zero-cusp-count(2)) and $189\,720$ $1$-cusps (@thm:plane-fibre(3)). Also established, and independent of the equality: $\Gamma_\Co=\Gamma_\Co(B)$ for $B=V/\PGL_3$ (@lem:d2-plane-sextic-freeness(4)), and the kernel identity $\Gamma_\Co=\Gamma_\Co(\bar B)\cap\ker\bar\rho$ with index $\abs{\bar\rho(\Gamma_\Co(\bar B))}$ dividing $10!$ (@lem:gamma-co-labelled-index).
 
-Not established, and the reason this remark replaces the earlier claim that the equality is a theorem here: $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ (@rmk:gamma-co-orbifold-obstruction), and hence $\Gamma_\Co$ equal to the whole of $\widetilde\Orth^+(T_\Co)$ (@qst:gamma-co-sign-is-realised). The arithmetic group $\Gamma_{10A_1}$, its index $12\,951\,552$ in $\Orth^+(T_\Co)$ and the index $10!$ of $\widetilde\Orth^+(T_\Co)$ in it are all proved; their identification with a geometric monodromy group is not.
-
-So the cusp counts of the stable quotient are *not* proved to be counts for $\fco$, $-\\id\\in\Gamma_\Co$ is not proved, and @conj:gamma-co-stable is neither proved nor refuted here.
+What the sextic side alone does *not* give, and what the equality therefore rests on: the identification $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ is the wall of @rmk:gamma-co-orbifold-obstruction, and the reflection route does not reach it either (@lem:d2-arrangement-classes: the discriminant has components the reflections do not see). The equality comes from the Enriques side, whose input is the identification of the Coble locus with the $(-2)$-Heegner divisor of the Enriques period domain [@DK13, Prop. 3.2 and the sentence after it] together with @prop:gamma-co-images(1).
 :::
 
 ::: {.lemma #lem:gluing-discriminant-identification title="The gluing identification $\kappa\colon A_{E_{10}(2)}\isoto A_{T_\En}$"}
