@@ -1,0 +1,84 @@
+provenance
+  sympy 1.14.0, exact rational arithmetic
+  python 3.12.14
+  no sage and no sage-extensions
+  the parametrization and the pencil: the transcription in the proof of
+  @thm:coble-arrangement-nonempty, from [@Dol18, Sec. 7, pp. 13--14]
+
+1. the two transcriptions of the pencil, and the parametrization
+   with one z^5:  27*x**5*z + 5*x**3*y**3 + 150*x**2*y**2*z**2 - 120*x*y*z**4 + 27*y**5*z + 32*z**6
+   with two z^5: 27*x**5*z + 5*x**3*y**3 + 150*x**2*y**2*z**2 - 120*x*y*z**4 + 27*y**5*z + 59*z**6
+   the difference: 27*z**6
+   F(f) for the corrected member: 0
+   F(f) for the member as the page had it: 421875*u**18*v**18
+
+2. the implicit equation of the parametrized curve, found without using the pencil
+   the linear system: 37 equations in 28 unknowns, rank 27
+   nullspace dimension 1, so the curve is the unique sextic through the parametrized map
+   implicit equation: 27*x**5*z + 5*x**3*y**3 + 150*x**2*y**2*z**2 - 120*x*y*z**4 + 27*y**5*z + 32*z**6
+   equal to the corrected pencil member: True
+   irreducible factors: (1, [(27*x**5*z + 5*x**3*y**3 + 150*x**2*y**2*z**2 - 120*x*y*z**4 + 27*y**5*z + 32*z**6, 1)])
+
+3. the map is birational onto that curve
+   gcd(f_0, f_1) = Poly(1, u, v, domain='ZZ'), so the three forms have no common projective zero
+   the map has degree 6 and the image has degree 6, so the map is birational
+   arithmetic genus of a smooth sextic (d-1)(d-2)/2 = 10
+   the image is rational, so its singularities have total delta = 10
+
+4. the singular scheme in the chart z = 1
+   f = 27*x**5 + 5*x**3*y**3 + 150*x**2*y**2 - 120*x*y + 27*y**5 + 32
+   lex Groebner basis leading monomials: [(1, 0), (0, 10)]
+   degree of the singular scheme in the chart z = 1: 10
+   the elimination gives x as a polynomial in y: x = -y**9/1760 - 987*y**4/440  (coefficient of x: 1760)
+   the y-coordinates are the roots of: (y**2 + 6*y + 4)*(y**4 - 8*y**3 + 24*y**2 + 8*y + 16)*(y**4 + 2*y**3 + 24*y**2 - 32*y + 16)
+   factorization: (1, [(y**2 + 6*y + 4, 1), (y**4 - 8*y**3 + 24*y**2 + 8*y + 16, 1), (y**4 + 2*y**3 + 24*y**2 - 32*y + 16, 1)])
+   each factor is squarefree: True
+   total degree of the factors: 10
+
+5. each of the ten points is an ordinary node, decided point by point
+   At a singular point of f the lowest term has degree at least 2; the point is an
+   ordinary node exactly when that lowest term is a nondegenerate quadratic form, whose
+   two factors are then distinct linear forms and give the two smooth branches.  For a
+   singular point of a plane curve the quadratic part is nondegenerate exactly when the
+   Hessian determinant f_xx f_yy - f_xy^2 is nonzero there, so the check is that
+   determinant, evaluated at each point in the number field Q[y]/(its factor).
+   f_xx f_yy - f_xy^2 = 16200*x**6*y + 162000*x**5 - 1125*x**4*y**4 + 255600*x**3*y**3 - 259200*x**2*y**2 + 16200*x*y**6 + 144000*x*y + 162000*y**5 - 14400
+   factor of degree 2: 2 points; the Hessian determinant there is nonzero in Q[y]/(g),
+     so every point over this factor has a nondegenerate quadratic part
+   factor of degree 4: 4 points; the Hessian determinant there is nonzero in Q[y]/(g),
+     so every point over this factor has a nondegenerate quadratic part
+   factor of degree 4: 4 points; the Hessian determinant there is nonzero in Q[y]/(g),
+     so every point over this factor has a nondegenerate quadratic part
+   the ten points are accounted for: 10
+   hence each of the ten singular points is an ordinary node, and with the ten distinct
+   points and total delta 10 of section 3 no singular point is left over
+   (the multiplicity and Milnor-number totals are consistent with this and are not
+    needed: the earlier printed argument used the inequality delta_p <= m(m-1)/2, which
+    is the wrong way round -- the correct inequality is delta_p >= m(m-1)/2 -- and this
+    computation replaces it)
+
+6. the two points at infinity
+   F(x,y,0) = 5*x**3*y**3, so z = 0 meets the curve at (1:0:0) and (0:1:0) only
+   chart x = 1: F(1,y,z) = 27*y**5*z + 5*y**3 + 150*y**2*z**2 - 120*y*z**4 + 32*z**6 + 27*z
+     its linear term at (y,z) = (0,0) is 27*z, nonzero, so (1:0:0) is smooth
+   chart y = 1: F(x,1,z) = 27*x**5*z + 5*x**3 + 150*x**2*z**2 - 120*x*z**4 + 32*z**6 + 27*z
+     likewise smooth at (0:1:0), so all ten singularities lie in the chart z = 1
+
+7. the double plane w^2 = F
+   at an ordinary node a linear change makes F = x*y + (terms of degree >= 3), and then
+   w^2 - F = w^2 - x*y + (higher) has quadratic part w^2 - x*y, whose matrix
+     [[1, 0, 0], [0, 0, -1/2], [0, -1/2, 0]], determinant -1/4
+   is nondegenerate, so the surface has an ordinary double point (A_1) over the node
+
+8. the marking
+   the minimal resolution of the double plane is a K3 (the branch curve is a sextic),
+   and the ten nodes give ten disjoint (-2)-curves E_1..E_10 over them; with e_0 = f^*H
+   of square 2 and H.E_i = 0, the classes e_0, e_1..e_10 span <2> + <-2>^10 = S_Co,
+   which is the marking of @prop:coble-cover-marking and of @thm:theta-co-coordinates.
+
+9. not decided here
+   that this curve is Dolgachev's Winger curve as printed: the pencil and the
+   parametrization are the pages' transcriptions of [@Dol18, Sec. 7, pp. 13--14], whose
+   source is not in tmp/sources.  What is decided is that the parametrized curve is an
+   irreducible rational plane sextic with exactly ten ordinary nodes, and that its double
+   plane has an A_1 point over each.

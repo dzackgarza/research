@@ -1,0 +1,16 @@
+B=I_{2,9}: 496 integral norm +/-2 root reflections constructed and checked
+unimodular change to <1> + U + E8(-1): determinant -1
+all 496 integral reflection matrices verified in the standard T_Co basis
+finite even-norm discriminant space: 527 nonzero singular, 496 nonsingular
+faithful finite permutation image order: 46998591897600
+full O^+(10,2) order: 46998591897600
+ten integral root reflections generate the full finite image: (1836, 269, 54, 418, 354, 390, 649, 562, 650, 957)
+exact-vector stabilizer integral root image order: 89181388800
+integral norm-two vector-stabilizer roots: 240
+ten integral vector-stabilizer roots generate full parabolic image: (1919, 215, 58, 359, 311, 335, 591, 538, 2016, 594)
+exact integral finite-stabilizer sample word: 2039 [(7, -1), (8, -1), (7, -1), (2, 1), (4, 1), (8, 1), (6, -1), (5, -1), (6, -1), (7, -1), (8, -1), (4, -1), (2, -1)]
+ten standard-basis integral roots: ((0, -1, -1, 2, 4, 5, 7, 6, 5, 3, 2), (0, -1, -1, 3, 4, 6, 8, 7, 6, 4, 2), (-2, 1, 0, -1, 0, 0, -1, 0, -1, -1, -1), (-2, 1, 1, -2, -2, -2, -5, -4, -4, -2, -1), (-2, 1, 1, -1, -1, 0, -2, -2, -3, -2, -1), (-2, 1, 0, -1, -1, 0, -2, -1, -1, 0, 0), (0, -1, 0, 0, 1, 1, 2, 2, 2, 2, 1), (-2, 1, 1, -3, -2, -3, -5, -4, -4, -3, -2), (-2, 0, 1, -2, -1, -1, -2, -1, -1, 0, 0), (-2, 1, 1, -2, -1, -1, -3, -2, -2, -1, -1))
+singular discriminant classes reached by integral root words: 527
+primitive integral isotropic vector representatives certified: 527
+sample integral transporter word (zero-based generator indices): (0, 1, 4, 6, 7, 8, 6)
+published exact integral representatives: computations/reports/coble_singular_integral_representatives.json

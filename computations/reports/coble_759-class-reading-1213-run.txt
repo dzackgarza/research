@@ -1,0 +1,29 @@
+[    4.0s] T_Co: rank 11, det -2048
+[    0.1s] r12 [1, 3, 3, -2, 1, 2, 2, 1, 0, 0, 0] ; r13 [1, 3, 4, -2, 2, 3, 4, 3, 2, 1, 0] ; eta_5 [2, 0, 0, -4, -5, -7, -10, -8, -6, -4, -2] ; squares -2, -2, 0; all orthogonal
+[    0.1s] s_{r13}: isometry True, s(r13) = -r13 True, s(eta_5) = eta_5 True, det -1
+[    0.1s] s_{r13+eta_5}: isometry True, fixes eta_5 True, det -1
+[    0.1s] shear sigma = s_{r13+eta_5} s_{r13}: isometry True, fixes eta_5 True, in Gamma_Co,2 True
+[    0.1s]    sigma(r13 +  0 eta_5) == r13 +  2 eta_5 : True
+[    0.1s]    sigma(r13 +  1 eta_5) == r13 +  3 eta_5 : True
+[    0.1s]    sigma(r13 +  2 eta_5) == r13 +  4 eta_5 : True
+[    0.1s]    sigma(r13 + -1 eta_5) == r13 +  1 eta_5 : True
+[    4.2s] A_{T_Co}: 2048 classes; the point A_{U(2)}: 4 classes
+[    4.3s] psi for r13 + eta_5               : isometry True, psi(r12) == t True, psi(delta) fixed True, psi in Gamma_Co,2 False
+[    4.3s] psi for r13 - eta_5               : isometry True, psi(r12) == t True, psi(delta) fixed True, psi in Gamma_Co,2 False
+[    4.3s] psi for r13 (the vector reading)  : isometry True, psi(r12) == t True, psi(delta) fixed True, psi in Gamma_Co,2 False
+[    4.3s] calling vector_stabilizer_generators(r12) ...
+[   28.4s] generators of Stab_Orth(T_Co)(r12): 53 returned, 53 verified
+[   59.9s] the searches, on one family of 53 generators:
+[   60.3s]    r13 + eta_5               : orbit  18360 subspaces, target reached at depth  5: False
+[   60.7s]    r13 - eta_5               : orbit  18360 subspaces, target reached at depth  5: False
+[   61.4s]    r13 (the vector reading)  : orbit  18360 subspaces, target reached at depth  5: False
+
+VERDICT: the class reading Q is decided, negatively.  By the reduction above, an element
+of Gamma_Co,2 keeping the cusp line and carrying the class of r_12 to that of r_13 would
+give one of the two targets tested, and neither is in the Gamma_Co,2-orbit of r_12; so
+no such element exists, the classes of 12 and 13 in K_5 are in different orbits of the
+image of Gamma_Co,2 in Orth(K_5), and the three admissible roots of cusp 5 are two
+Gamma_Co,2-orbits in this reading as well.
+
+elapsed 61 s
+PYEXIT=0

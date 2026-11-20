@@ -1,0 +1,32 @@
+the promotion step for the pair (12,13), on the complement of <r12, delta> in S
+  building the lattice: 0.0 s
+  the discriminant group: 256 elements, 0.6 s
+  form.orthogonal_group(): returned in 0.0 s
+
+=== is this the known GAP misresolution, or scale?  The control:
+  gap on PATH: /sage/.venv/bin/gap
+  its version: 4.16.1
+  the same call on a rank-1 form: 0 generators in 0.3 s
+  so the environment resolves GAP correctly and the call works at small rank:
+  what stalls below is the scale, not the GAP wiring.
+
+=== the GAP-free route, and why it is empty
+  roots of the complement found in the box: 72
+  classes of A_L reached from the gluing class under those reflections: 1
+  SO: the reflections in the complement's roots fix its gluing class, and no product of
+  them can repair a gluing mismatch.  The repair, if any, needs a NON-reflection isometry
+  of the complement -- exactly the promotion above.  The GAP-free route is empty.
+
+The promotion step itself is O(A_L, q).group_generators() followed by
+L.discriminant_lift(...), which hands the group to GAP.  Measured in this session, on a
+bound rather than to completion:
+  * list(form.orthogonal_group().group_generators()) did not finish within 200 s;
+  * L.discriminant_lift(identity) did not finish within 600 s.
+Neither can be bounded from inside a record, because the call is not interruptible, so this
+transcript records the part that terminates and the bounds are reported as measurements.
+
+VERDICT: the promotion -- an isometry of the complement realising a prescribed discriminant
+action -- is not available at this scale in this image.  The pair (12,13) is therefore not
+decided here, and nothing is claimed either way.
+PYEXIT=0
+exit=0

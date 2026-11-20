@@ -171,3 +171,31 @@ cp: cannot create regular file '.../writing/.book/_site/category-theory/': Not a
 Observed on 2026-11-10 with `just docs-lint coble/lattices-and-moduli/local-systems-of-lattices-and-monodromy.md`: `_site` held only `coble/`, `index.html`, `search.json` and `site_libs/` afterwards. A cross-reference to an anchor on a page that was not rendered in the same run (`@sec-orientation-characters`) is also reported as unresolved, although the source check passes.
 
 `just docs-deploy` rebuilds the full site. To check a page's source, run `python3 scripts/docs_check.py --source` alone; it does not touch `_site`.
+
+## The post-render copy dereferences symlinks, so one broken one fails a good render
+
+The post-render step copies `data`, `coble/reference`, `coble/papers` and the
+CategoryTheory diagram into `_site` with `cp -RL`, so it follows symlinks. A tracked
+symlink in one of those trees whose target is missing therefore fails the run *after*
+the whole book has rendered, and the gate reports it as a render failure:
+
+```
+cp: cannot stat 'coble/reference/aegs-pars.svg': No such file or directory
+docs-check: `quarto render` failed on pass 1 (exit 1)
+```
+
+That is what happened on 2026-11-18: `writing/coble/reference/aegs-pars.svg` and
+`aegs-par2.svg` were tracked symlinks to `/home/dzack/.pandoc/figures/vector/aegs-paper/`,
+an absolute path outside this repository, and the two files named there are in no
+version control — `pandoc-config` tracks no `aegs-paper/*par*` file, and every PDF in
+that directory is a 130-byte Git LFS pointer on this machine, which is also why
+`scripts/docs_figures.py` stops at `A2RootSystem.png is an unresolved Git LFS pointer`.
+
+Both symlinks are gone as of research#672: the page that embedded them names the printed
+panels instead ([@AEGS25, Figures 7 and 8, printed pp. 594--595]), which is what
+`writing/toric-geometry.md` does for the two TikZ sources that exist in no figure tree
+(research#765). A figure for the book is either a file this repository holds or a printed
+statement; a path into `~/.pandoc` is neither, and after this it fails a clone's gate.
+
+Read the message before believing a render is broken: the html of every chapter is in
+`_site` when this fires, which is how the pages of research#672 were checked.

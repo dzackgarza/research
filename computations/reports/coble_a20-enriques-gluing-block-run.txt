@@ -1,0 +1,72 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions: /repos/sage-extensions/src/sage_extensions/__init__.py
+
+the two lattices
+  S_En = C(2):        rank 10, signature (1, 9), determinant -1024
+  T_En = U + U(2) + E8(2): rank 12, signature (2, 10), determinant 1024
+
+the discriminant forms
+  |A_{S_En}| = 1024, |A_{T_En}| = 1024
+  A_{S_En}.is_anti_isometric(A_{T_En}) = True
+
+the block decompositions, as subgroups of the discriminant groups
+  S_En:  U(2) block  order   4, q-values ['[0] in Fraction Field of Integer Ring / (2)Integer Ring', '[1] in Fraction Field of Integer Ring / (2)Integer Ring']
+  S_En:  E8(2) block order 256, q-values ['[0] in Fraction Field of Integer Ring / (2)Integer Ring', '[1] in Fraction Field of Integer Ring / (2)Integer Ring']
+  T_En:  U(2) block  order   4, q-values ['[0] in Fraction Field of Integer Ring / (2)Integer Ring', '[1] in Fraction Field of Integer Ring / (2)Integer Ring']
+  T_En:  E8(2) block order 256, q-values ['[0] in Fraction Field of Integer Ring / (2)Integer Ring', '[1] in Fraction Field of Integer Ring / (2)Integer Ring']
+  orders 4 and 256, multiplying to 1024 on each side
+
+=== (a) is the splitting A_{S_En} = A_{U(2)} + A_{E8(2)} invariant under O(q_{S_En})?
+  orbits of O(q_{S_En}) on the 1024 classes: 3, sizes [1, 496, 527]   (14 s)
+  orbits meeting the U(2) block: 3
+    orbit of size   1: 1 of its classes inside the U(2) block
+    orbit of size 496: 1 of its classes inside the U(2) block
+    orbit of size 527: 2 of its classes inside the U(2) block
+  the decomposition is O(q_{S_En})-invariant: False
+
+  witness, in one orbit of size 496:
+    x = [0] + [1]   (inside the U(2) block, q = 1)
+    y = [2] + [4] + [7] + [9]   (outside the U(2) block, q = 1)
+  so some isometry of q_{S_En} carries a class of the U(2) block out of it, and
+  block-compatibility is not a property of the pair of forms.
+
+=== (b) is the Enriques gluing gamma = A_{S_En}.isometry_to(A_{T_En}(-1)) block-compatible?
+  q_{T_En}(-1) on the U(2) block: ['[0] in Fraction Field of Integer Ring / (2)Integer Ring', '[1] in Fraction Field of Integer Ring / (2)Integer Ring']
+  built: OwnedTorsionFormIsometryMor_with_category_with_category.element_class
+  isometry-to-the-twist check q_{T_En(-1)}(gamma z) = q_{S_En}(z) on all 259 classes of the
+    two blocks: True   (q_{T_En(-1)} = -q_{T_En}, so this is q_{T_En}(gamma z) = -q_{S_En}(z))
+  gamma is a typed isometry of torsion forms, hence bijective; the order of each image
+  below is the check that it is injective where it matters.
+
+  where the images land
+    gamma(U(2) block)    order   4   inside the U(2) block: False   inside the E8(2) block: False
+    gamma(E8(2) block)   order 256   inside the U(2) block: False   inside the E8(2) block: False
+    gamma(U(2))  == A_{U(2)} of T_En : False
+    gamma(E8(2)) == A_{E8(2)} of T_En: False
+  block-compatible on this gamma: False
+
+=== (c) a block-compatible anti-isometry exists, and it is not a computation
+  A_{S_En} and A_{T_En} are both the orthogonal sum of the SAME two forms, A_{U(2)} and
+  A_{E8(2)}: S_En = U(2) + E8(2) and T_En = U + U(2) + E8(2) with U unimodular, so the sum
+  of the identity map of each summand is an isometry A_{S_En} -> A_{T_En} carrying the
+  U(2) block onto the U(2) block (lem:coble-discriminant-blocks).  Nothing is computed
+  for it; printed below are the two facts it rests on, which the run above establishes:
+    the two blocks have orders 4 and 256 on each side, multiplying to 1024;
+    q_{T_En(-1)} = q_{T_En} on the 259 classes of both blocks: True, so an isometry of the
+      forms is an anti-isometry in the sense of prop:gamma-en-two-gluing, q_{T_En} o gamma
+      = -q_{S_En} (every value of a 2-elementary form lies in 1/2 ZZ/ZZ, where q = -q).
+
+=== what the three parts say together
+  (a) The splitting of A_{S_En} is not invariant under O(q_{S_En}) (witness above), so a block-compatible
+      anti-isometry and a non-block-compatible one both exist, and gamma(A_{U(2)}) is a
+      property of the chosen anti-isometry: the pair of forms does not determine it.
+  (b) The isometry the provider constructs is NOT block-compatible.  That is a fact about the
+      construction it performs, not about the gluing of the marked embedding S_En in L_K3:
+      nothing computed here relates that gluing to the constructed map, and by (a) nothing
+      on the abstract forms could single out a block-compatible one anyway.
+  (c) A block-compatible anti-isometry exists, so the hypothesis of
+      prop:gamma-cong-eq-heegner(2) is satisfiable, and by (a) it is not automatic: it is a
+      genuine choice among anti-isometries of one fixed pair of forms.  Which choice the
+      gluing of the marked embedding makes is the labeled-embedding data of
+      prob:coble-rigidity, and that is what item 1 of #663 leaves open.

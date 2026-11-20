@@ -1,0 +1,17 @@
+y3^2 = -4   y4^2 = -8
+cusp 2: eta = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], eta^2 = 0
+   h-part [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] (in the lattice? True), U(2)-part [0, 1/2, 0, 0, 0, 0, 0, 0, 0, 0, 0], E8-part [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+   q(U(2)-part) = 0, q(E8-part) = 0, total q = 0 (in 2Z? True)
+   U(2) class kind: u_1 or u_2 (q=0)   E8 class q: 0   P-orbit: {u_1,u_2}, size 2
+cusp 3: eta = [0, 1, 1, -2, -3, -4, -6, -5, -4, -3, -2], eta^2 = 0
+   h-part [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] (in the lattice? True), U(2)-part [0, 1/2, 1/2, 0, 0, 0, 0, 0, 0, 0, 0], E8-part [0, 0, 0, -1, -3/2, -2, -3, -5/2, -2, -3/2, -1]
+   q(U(2)-part) = 1, q(E8-part) = -1, total q = 0 (in 2Z? True)
+   U(2) class kind: u_3 (q=1)   E8 class q: 1   P-orbit: {(u_3,e'): e' in E_1}, size 120
+cusp 4: eta = [0, 2, 1, -4, -5, -7, -10, -8, -6, -4, -2], eta^2 = 0
+   h-part [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] (in the lattice? True), U(2)-part [0, 1, 1/2, 0, 0, 0, 0, 0, 0, 0, 0], E8-part [0, 0, 0, -2, -5/2, -7/2, -5, -4, -3, -2, -1]
+   q(U(2)-part) = 2, q(E8-part) = -2, total q = 0 (in 2Z? True)
+   U(2) class kind: u_1 or u_2 (q=0)   E8 class q: 0   P-orbit: {(u_1,e),(u_2,e): e in E_0}, size 270
+cusp 5: eta = [2, 0, 0, -4, -5, -7, -10, -8, -6, -4, -2], eta^2 = 0
+   h-part [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] (in the lattice? True), U(2)-part [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], E8-part [0, 0, 0, -2, -5/2, -7/2, -5, -4, -3, -2, -1]
+   q(U(2)-part) = 0, q(E8-part) = -2, total q = -2 (in 2Z? True)
+   U(2) class kind: 0   E8 class q: 0   P-orbit: {(0,e): e in E_0}, size 135

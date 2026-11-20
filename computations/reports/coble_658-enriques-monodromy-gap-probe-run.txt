@@ -1,0 +1,14 @@
+the book's clause (lattices.md, def:gamma-co-groups item 1):
+  The family of unpolarized Enriques surfaces, whose local system of lattices has fibre $T_\En$ and monodromy group $\Gamma_\En$, induces this family and its local system. Put $\fco\definedas\bD(T_\Co)/\Gamma_\Co$.
+  carries a citation: False
+
+and one sentence earlier Gamma_En is defined as the stable group: True
+
+the citation attached to the preceding sentence: [@AEGS25, Def. 2.6], printed p. 587
+  its text: Additionally, define \Gamma_\mathrm{En} = O(T_\mathrm{En}) and \Gamma_\mathrm{dP} = O(T_\mathrm{dP})
+  which is the FULL orthogonal group O(T_En) -- the book's Gamma^K_En, whose quotient
+  D(T_En)/O(T_En) is F(10,10,0) by [@AEGS25, Def. 2.7], printed p. 587.
+
+verdict: REFUTED.  No cited source identifies the monodromy of the unpolarized Enriques family
+  with O~+(T_En); the book's clause is an assumption of the same shape as conj:gamma-co-stable,
+  so the Enriques case gives no footing for item 1e.

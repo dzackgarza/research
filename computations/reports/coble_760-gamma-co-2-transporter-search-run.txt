@@ -1,0 +1,14 @@
+[   24.6s] verified generators of Stab_{O(T_Co)}(r12): 49
+[   24.6s] the library's Gram and mine agree: True (det -2048)
+[    0.0s] squares: r12 -2 r13 -2 eta 0
+[    0.0s] the point A_{U(2)}: 4 classes
+[    0.0s]   calibration identity  in Gamma_Co,2: True
+[    0.0s]   calibration -identity in Gamma_Co,2: True
+[    0.0s] g|T_Co: keeps the line True, moves [12]->[13] True, in Gamma_Co,2 False
+[    0.0s] depth 1: 49 words, 4 pass the cheap tests, found False
+[    0.1s] depth 2: 2401 words, 20 pass the cheap tests, found False
+[    3.3s] depth 3: 117649 words, 122 pass the cheap tests, found False
+
+[    3.3s] no transporter of word length <= 3 in the 49 stabilizer generators
+[    3.3s] (the family the provider returns varies between runs -- 44, 48, 52 in three runs -- and
+PYEXIT=0

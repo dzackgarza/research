@@ -1,0 +1,10 @@
+the page carries the orbit list [1, 2, 120, 135, 270]: True
+the page carries the order |W(E_8)| = 696,729,600:      True
+orbit lengths sum to |A_{T_Co}| - 1 = 527: True
+and |O(q_{T_Co})| / [O(T_Co) : R_{gent}] = 696729600 = |W(E_8)|, so G_Co and P have the same order
+
+verdict: the dichotomy holds.  rho(Gamma_Co) is either trivial -- item 1e -- or contains an
+  element moving a nonzero isotropic class, in which case the item fails.  The book's computed
+  group G_Co has nontrivial orbits (2, 120, 135, 270 on the nonzero classes), so if the
+  monodromy's image were G_Co the item would be FALSE.  Which alternative holds is not decided
+  here.

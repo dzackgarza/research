@@ -1,0 +1,112 @@
+K = <h> + E_8(2) = I_{1,8}(2) = <2>_H0 + <-2>_{E_1..E_8}, A_K = (Z/2)^9,
+q(m) = (m_0 - m_1 - ... - m_8)/2 mod 2Z,  b(m,k) = m_0k_0 - sum m_ik_i mod 2
+  value profile of q over the 512 classes: {0: 136, 1: 136, 2: 120, 3: 120}  (in Z/4, level 1 = q = 1/2)
+
+=== A. a reflection lies in Gamma_e exactly when it fixes e_0 = [h/2] ===
+  A lift of a bar g in O(K) is sigma(bar g) = id_{U(2)} + bar g, and its discriminant
+  action on A_{T_Co} = A_<h> + A_{U(2)} + A_{E_8(2)} is (id on A_{U(2)}, rho_K(bar g)).
+  P = O(q_{U(2)}) x O(q_{E_8(2)}) acts trivially on A_<h>, so the condition 'action in P'
+  is exactly 'rho_K(bar g) fixes e_0', with no action prescribed on the U(2) block.
+  Two lifts differ by ker(Orth(T_Co) -> Orth(K)), which is trivial on K and hence on
+  A_K, so every lift of a given bar g acts the same way there (lem:cusp-image-is-finite).
+
+  the cusp's h is a primitive vector of square 2 with h^perp = E_8(2);
+  taking h = 3H_0 - E_1 - ... - E_8 (square 2), the class [h/2] is
+  (1, 1, 1, 1, 1, 1, 1, 1, 1) -- the all-ones class.
+
+  The action on A_K is computed, not paraphrased: s_r maps a class [v] with v in (1/2)K
+  to [v - 2(v,r)/(r,r) . r], and the class is fixed exactly when that shift lies in K.
+
+    r = [1, -1, -1, -1, 0, 0, 0, 0, 0], square -4:  fixes e_0: True;  classes of A_K it moves: 256
+    r = [0, 1, -1, 0, 0, 0, 0, 0, 0], square -4:  fixes e_0: True;  classes of A_K it moves: 256
+    r = [0, 0, 0, 0, 0, 0, 0, 0, 1], square -2:  fixes e_0: True;  classes of A_K it moves: 0
+    r = [3, -2, -2, -1, -1, 0, 0, 0, 0], square -2:  fixes e_0: True;  classes of A_K it moves: 0
+  For a (-4)-root the shift of [h/2] is ((h,r)/4) r, so it fixes e_0 exactly when 4
+  divides (h,r), that is exactly when b([r/2],e_0) = 0; for a (-2)-root the shift is
+  ((h,r)/2) r with (h,r) even, so it always lies in K and e_0 is always fixed -- which
+  is the triviality of a (-2)-reflection on A_K recorded in
+  lem:root-reflections-in-the-labelled-cusp.
+
+=== B. e_0 is the only class of square 1/2 whose orthogonal complement is E_8(-2) ===
+  First the two complements.  Their roots of smallest square separate them: E_8(-2) has
+  square -2 vectors NONE and 240 vectors of square -4, while <-2>^8 has 16 of square -2.
+  A vector v = aH_0 - sum b_j E_j lies in w^perp when (v,w) = 0.
+  For w = 3H_0 - E_1 - ... - E_8 a root of w^perp has sum b_j = 3a and sum b_j^2 = a^2+1,
+  so (sum b_j)^2 <= 8 sum b_j^2 gives 9a^2 <= 8a^2+8, that is |a| <= 2: the box below
+  is exhaustive.  For w = H_0 the first condition reads a = 0.
+    complement of 3H_0 - E_1 - ... - E_8:   0 vectors of square -2,  240 of square -4
+    complement of H_0                   :  16 vectors of square -2,  112 of square -4
+  so the complement of h has the root count of E_8(-2) and that of H_0 that of <-2>^8; the
+  discriminant forms below say which lattice each is, and they are not the same one.
+  For h of square 2 with h^perp = E_8(2), K = Zh + h^perp is a direct sum, so
+  A_K = <e_0> + e_0^perp with q(e_0) = 1/2 and e_0^perp the discriminant form of E_8(-2).
+  classes of square 1/2: 136;  with the E_8(-2) complement: 1
+  and it is [(1, 1, 1, 1, 1, 1, 1, 1, 1)]
+  which is the class of [h/2] computed in Part A.  So e_0 is pinned by the lattice.
+
+=== C. every root of K has an even number of odd coordinates, so fixes e_0 ===
+  Let r = a H_0 - sum b_i E_i be a primitive root, so 2 dwv(r)/r^2 is an integer;
+  for primitive r the divisibility is 2, hence 4/r^2 in Z and r^2 is -2 or -4.
+  The (-2)-roots need no parity argument: their reflections are trivial on A_K.
+  For a (-4)-root, a^2 - sum b_i^2 = -2.  For a even, sum b_i^2 = 2 mod 4, so the number
+  of odd b_i is 2 or 6; for a odd, a^2 = 1 mod 8 gives sum b_i^2 = 3 mod 4, so that
+  number is 3 or 7.  In either case a + #{i : b_i odd} is even, and
+  (h,r) = 2(3a - sum b_i) is divisible by 4 exactly when that number is even.
+  Exhaustive check over the patterns with |a| <= 4 and |b_i| <= 4 (the parity of the
+  number of odd coordinates does not depend on the signs or the order):
+    primitive (-4)-root patterns tested: 23
+    with an odd number of odd coordinates: 0   []
+  Every (-4)-root pattern has an even number, so b([r/2], e_0) = 0 and (h,r) is divisible by 4.
+
+=== D. the image contains every reflection, so the labelled chamber is the unpolarized one ===
+  The (-2)-reflections act trivially on A_K (lem:root-reflections-in-the-labelled-cusp),
+  so they fix e_0; the (-4)-reflections fix e_0 by Part C.  Hence every reflection of
+  W(K) lies in Gamma_e, W_e = W(K), and the chamber of W_e containing the unpolarized
+  chamber is that chamber: the labelled diagram is the nine-node Coble diagram of
+  thm:unpolarized-coexeter, with the branch point, at every cusp where eta is the
+  isotropic vector e of the fixed decomposition.
+
+  the nine simple roots, by the criterion of Part A:
+    r_0  square -4  class (1, 1, 1, 1, 0, 0, 0, 0, 0)  b([r/2],e_0) = 0  in
+    r_1  square -4  class (0, 1, 1, 0, 0, 0, 0, 0, 0)  b([r/2],e_0) = 0  in
+    r_2  square -4  class (0, 0, 1, 1, 0, 0, 0, 0, 0)  b([r/2],e_0) = 0  in
+    r_3  square -4  class (0, 0, 0, 1, 1, 0, 0, 0, 0)  b([r/2],e_0) = 0  in
+    r_4  square -4  class (0, 0, 0, 0, 1, 1, 0, 0, 0)  b([r/2],e_0) = 0  in
+    r_5  square -4  class (0, 0, 0, 0, 0, 1, 1, 0, 0)  b([r/2],e_0) = 0  in
+    r_6  square -4  class (0, 0, 0, 0, 0, 0, 1, 1, 0)  b([r/2],e_0) = 0  in
+    r_7  square -4  class (0, 0, 0, 0, 0, 0, 0, 1, 1)  b([r/2],e_0) = 0  in
+    r_8  square -2  class (0, 0, 0, 0, 0, 0, 0, 0, 1)  b([r/2],e_0) = 1  in (acts trivially on A_K)
+
+=== E. why the earlier census differed: [H_0/2] is not [h/2] ===
+  the class of H_0/2 is (1, 0, 0, 0, 0, 0, 0, 0, 0); its orthogonal complement has profile
+    {0: 72, 1: 64, 2: 56, 3: 64} with delta (0, 1, 1, 1, 1, 1, 1, 1, 1)  -- the form of <-2>^8, not of E_8(-2)
+  and q of it is 1/2, so it passes the first test and fails the second: its complement
+  is the form of <-2>^8, whose delta is nonzero, not the form of E_8(-2).
+  H_0's complement in K is <-2>^8 and h's is E_8(2); the two rank-8 lattices have
+  different discriminant forms, (a,delta) = (8,1) against (8,0), so they are not
+  isometric and no isometry of K carries H_0 to h.  The criterion computed against
+  [H_0/2] is therefore a criterion for a class that is not the cusp's, and its verdicts
+  differ from the ones above:
+
+  root  square  b([r/2],[H_0/2])   with [H_0/2]  with [h/2] = e_0
+  r_0       -4                 1            OUT                in
+  r_1       -4                 0             in                in
+  r_2       -4                 0             in                in
+  r_3       -4                 0             in                in
+  r_4       -4                 0             in                in
+  r_5       -4                 0             in                in
+  r_6       -4                 0             in                in
+  r_7       -4                 0             in                in
+  r_8       -2                 0   in (trivial)      in (trivial)
+
+  That is the whole of the discrepancy: the earlier record's 'a even' is 'b(.,[H_0/2]) = 0',
+  and the cusp's class is [h/2], for which every root is in.
+
+=== verdict ===
+  At a labelled cusp, that is for a representative eta that is the isotropic vector e of the
+  fixed decomposition T_Co = <h> + U(2) + E_8(2), the image Gamma_e of the cusp stabilizer is
+  rho_K^{-1}(Stab(e_0)) with e_0 = [h/2] the unique class of square 1/2 whose orthogonal
+  complement carries the E_8(-2) form.  Every root of K fixes e_0, so Gamma_e contains every
+  reflection of the cusp lattice, W_e = W(K), and the labelled chamber is the unpolarized
+  chamber of thm:unpolarized-coexeter: the nine-node Coble diagram, no node deleted.
+  No provider call: the lattice, its discriminant form and every number here are in this file.

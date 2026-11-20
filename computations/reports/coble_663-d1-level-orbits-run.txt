@@ -1,0 +1,13 @@
+T_Co: rank 11, det = -2048 (want -2048)
+       diagonal blocks: <2> gives +1, U(2) gives (1,1), E8(2) = 2 E8(-1) gives (0,8);
+       so signature (2,9) and det 2 * (-4) * 2^8 = -2048
+q histogram mod 2Z: {'0': 528, '1/2': 528, '1': 496, '3/2': 496}
+level set {q = 1}: 496 classes
+generators: the swap plus 120 orthogonal transvections of the E8(2) block
+orbits on the level set: 4 sizes: [240, 135, 120, 1]
+subsets of those sizes summing to 121: [(120, 1)]
+
+For (D1): 121 < 496, and the 121 classes are the image under the gluing of the level set of
+q_{S_Co} that carries a vector of square -4, so they are stable under P.  A stable subset of
+a finite set with a stable complement leaves orbits of the complement untouched, and the
+walls of such an orbit are met by the image: (D1)'s (-4) half fails on 496 - 121 = 375 classes.

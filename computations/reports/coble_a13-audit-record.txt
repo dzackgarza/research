@@ -1,0 +1,199 @@
+# The #81 fresh-context language audit: what was asked, what was available, what it found
+
+## The instrument was supplied on 2026-11-19 and the audit was run as specified
+
+The priming file was placed at tmp/sources/mathematical-auditor-priming.md (the vault copy of
+the path below, which this VM cannot reach through the .agents symlink).  The audit was then run
+as the priming's usage contract requires: a fresh-context agent that received ONLY the priming
+prompt and the artifact paths -- no summary of the text under audit -- and returned five flags
+plus a reach list of the terms it verified as standard.  Its dispositions, each fixed at the
+source or rejected with a citation:
+
+  F1 "horizontal folding" (register note title and body).  UPHELD as coinage: a folding of a
+     Coxeter diagram is folding by a diagram automorphism with orbit sums as folded roots
+     [@Bou08, Ch. 6 Sec. 4], and "horizontal" belongs to period maps, not to diagrams.  FIXED:
+     the note is retitled "The folding conjecture for theta_Co, resolved", the phrase is marked
+     as quoted from the retired entry, and the note says the term is not standard.
+  F2 "generator length a = 11" (proof of thm:theta-co-coordinates).  UPHELD: the invariant is
+     Nikulin's a = dim_{F2} A_L, the number of generators of the discriminant group [@Nik80,
+     Thm. 3.6.2]; "length" in lattice theory means the norm or a different generator count.
+     FIXED to "the number a = dim_{F2} A_L = 11 of generators of the discriminant group".
+     The same phrase stands in lattice-theory/classification/two-elementary-lattices.md, which
+     is another unit's page; it is named in the report rather than edited here.
+  F3 "component" for a coset of Orth^+ (parts 1-2 of thm:gamma-co-2-comparison and the
+     comparison transcript).  UPHELD as misuse: Orth(T_Co) is discrete and the objects are the
+     two cosets of the spinor kernel Orth^+(T_Co) (spinor norm: O'Meara, Introduction to Quadratic
+     Forms, Ch. 5; this bibliography has no key for it, so it is named here and not cited on a
+     page).  FIXED to "the condition
+     phi in Orth^+(T_Co)", "the two descriptions differ by one coset", "that is two cosets of
+     Orth^+(T_Co)".
+  F4 "the boundary lattice of the Coble 0-cusp" (part 2 of thm:diagram-roots-coordinates).
+     PARTLY UPHELD: in this corpus "boundary lattice" is eta^perp/eta for an isotropic eta, a
+     different object, so the phrase collides even though the lattice meant is the source's
+     T_bar_dP.  FIXED to "the lattice T_bar_dP = U + E8^2 = (18,0,0)_1 of the 0-cusp to which
+     the Coble 0-cusp maps (@lem:cusp_map_dP)".
+  F5 "the corner of the slot" (theta transcript, two lines).  UPHELD for "corner": a summand
+     of a lattice has no corner, and the object is the vector H of square 4.  "Slot" is
+     retained where it is this program's own label for the del Pezzo summand, defined at
+     @prop:del-pezzo-placement.  FIXED to "the sum of the hyperbolic basis e = e_2+e_4,
+     f = e_3+e_5 of the summand Delta(U_2,U_3) = U(2)".
+
+## The second, third and fourth fresh-context auditors (same swarm, same session)
+
+Three further members audited the same artifacts independently.  Their new flags, and the
+dispositions:
+
+  F6 "bonds" (edges of a Coxeter diagram; thm:diagram-roots-coordinates).  REJECTED with a
+     citation: "bond" is Bourbaki's own word for the edge of a Coxeter/Dynkin graph -- "the nodes
+     and bonds in the following way", Ch. VI Sec. 4, printed p. 208, deposited at
+     tmp/sources/bourbaki-lie-groups-chapters-4-6-2008.pdf -- and the word is the corpus's
+     throughout.  The citation is now given where the theorem uses the word.
+
+  F7 "E_8(2)" against "E_8(-1)(2)" for one and the same block.  UPHELD as an inconsistency, with
+     the correction running the auditors' way round from their proposal: in this corpus E_8 is
+     the NEGATIVE definite lattice (:1308 "where E_8 is negative definite in that definition's
+     convention"; :1417), so E_8(2) is the right spelling and E_8(-1)(2) the wrong one.  FIXED:
+     the three occurrences of E_8(-1)(2) are E_8(2), the sentence said the block is negative
+     definite of Gram diag(-4) by @def:enriques-lattice --- FALSE, corrected below --- and the
+     theta transcript prints E8(2).
+
+  F8 "saturated kernels" (the remark and the library record).  UPHELD: the compound is no
+     source's noun, though "saturated" is standard for "primitive".  FIXED to the invariant
+     lattices ker(theta_Co +- 1), each taken as a primitive sublattice with its inclusion.
+
+  F9 "the correspondence of the two copies" (register note).  UPHELD: the object is an
+     automorphism of the diagram.  FIXED to "an automorphism of the diagram: node k to node 18-k".
+
+  F10 "slot" (all three auditors, as an engineering noun on a summand).  PARTLY ACCEPTED: the
+     word is this program's own label for the del Pezzo summand, introduced at
+     @prop:del-pezzo-placement, and it is kept there; it is removed from the two transcript lines
+     where it stood for the summand in general, which now name Delta(U_2,U_3) = U(2).  The label's
+     introduction on the page is named here for that page's owner rather than rewritten from this
+     issue.
+
+## The required instrument, and its path
+
+research#81 requires, before any correction ships:
+
+    Run fresh-context invented-language audits (.agents/references/mathematical-auditor-priming.md)
+    after processing any correction
+
+The file is NOT AVAILABLE in this environment.  Its paths:
+
+    in-repo path        .agents/references/mathematical-auditor-priming.md
+    .agents is a symlink to
+                        /home/dzack/.agent-memory-vault/projects/github__dzackgarza__research
+    resolved path       /home/dzack/.agent-memory-vault/projects/github__dzackgarza__research/references/mathematical-auditor-priming.md
+
+    $ ls -la .agents
+    lrwxrwxrwx 1 projects projects 73 .agents -> /home/dzack/.agent-memory-vault/projects/...
+    $ ls /home/dzack
+    ls: cannot access '/home/dzack': No such file or directory
+    $ ls .agents/references
+    ls: cannot access '.agents/references': No such file or directory
+
+The vocabulary reference that CONTRIBUTING.md names beside it, terminology-dictionary.md, is
+absent through the same dangling symlink.
+
+## What was done instead, and its limits
+
+The audit was run by hand: every noun and every numeric claim in the six theorems and the seven
+records of #656 was read against the page's own definitions and against the cited sources'
+statement numbers.  This is NOT a fresh-context audit -- the reader is the author of the text
+under review -- and nothing in this repository should be read as claiming otherwise.
+
+## What it found, and what was done
+
+1. @thm:coble-explicit-sextic identified the minimal resolution of the double plane with the
+   surface X of @prop:coble-cover-marking only implicitly, deriving E_i^2 = -2 by adjunction in
+   that proposition's notation.  FIXED: the blowup separates the two branches at each node, the
+   double cover of Bl_10 P^2 branched along the proper transform is that resolution, it is X,
+   and e_0^2 = 2H^2, e_i^2 = 2E_i^2 by the projection formula.
+
+2. @thm:chain-matrices displayed M_{En->dP} as the malformed (I_12 ; 0|-I_8) with only a
+   gesture at the ordering.  FIXED: the 4 x 3 block matrix with blocks I_2, I_2, I_8, -I_8, and
+   the row and column block sizes of all three matrices are printed.
+
+## Defects found by the reviewer of record, and fixed in the same commit
+
+3. A printed proof error, found on review: the ten-node argument in @thm:coble-explicit-sextic
+   used delta_p <= m_p(m_p-1)/2, the reverse of the true inequality delta_p >= m_p(m_p-1)/2, so
+   the auxiliary multiplicity argument did not stand.  REPLACED by a point-by-point decision:
+   the Hessian determinant f_xx f_yy - f_xy^2 is evaluated at each of the ten points in the
+   number field Q[y]/(g) for each irreducible factor g, and is nonzero on all of them, so each
+   point has a nondegenerate quadratic part and hence is an ordinary node.  The record
+   coble_explicit-sextic-run.txt prints the three evaluations and the count of ten.
+
+4. A checker defect, not a lattice error: coble_a13-diagram-roots.py built its expected
+   -Cartan(E8) with one orientation of each edge, so its comparison printed False while the E8
+   Gram matrices were right (the block checks further down printed True).  FIXED: the expected
+   matrix is built symmetrically from the Bourbaki edge list, and the record prints True.
+
+5. A cross-reference defect: coble_a13-chain-matrices.py said ker(theta_Co + 1) where T_Co is
+   ker(theta_Co - 1), and its last section cited @qst:coble-explicit-equations, an anchor that
+   the sextic theorem replaced.  FIXED in both the docstring and the printed section.
+
+## The stale acceptance test
+
+The test committed with the theorems asserted strings from the register as it stood then
+("#qst:coble-embedding-matrices", "the matrices of the chain of primitive embeddings"); two
+later commits of this issue replaced that question with a remark and one of the references with
+a theorem, and the test was not re-run, so it failed on main while the transcript-reproduction
+half still passed.  FIXED: the register test now asserts the register's current state, and the
+reproduction test covers all six provider-free records rather than the first four.  A test for
+the library construction record is added in two parts: one checks the calls it makes and the
+invariants its transcript prints, and one re-runs it and compares the transcript, skipping with
+a named reason where the interpreter has no sage.all.  Run under the Sage interpreter of the
+adopted image, both pass (100 s, the re-run included).
+
+## Correction to F7, from the review of 2026-11-19
+
+F7's disposition about the SPELLING stands: in this corpus $E_8$ is the negative definite lattice
+(@def:enriques-lattice), so $E_8(2)$ names the block and $E_8(-1)(2)$ does not.  What that
+disposition also introduced was false.  The block spanned by $e_{6+k}-e_{14+k}$, $k = 0,\dots,7$,
+has the Gram matrix $-2\,\mathrm{Cartan}(E_8)$ --- diagonal entries $-4$, off-diagonal entries $0$
+or $2$, determinant $2^8 = 256$ --- and not $\mathrm{diag}(-4^{\times8})$, which is a different
+lattice, of determinant $4^8 = 65536$; the inner-product formula written with it carried an extra
+factor $2$.  The provider-free record printed only the DIAGONAL of that block, which is how the
+misreading entered.  It now prints the $8\times8$ block and its determinant
+(`computations/reports/coble_a13-theta-coordinates-run.txt:89-97`, and the same for $T_\Co$ at
+`:103-111`), and the page's Gram paragraph at
+`writing/coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md:583` and
+`:604` states the block by that matrix.
+
+## The re-audit of research#770's corrections to @thm:gamma-co-coordinates
+
+research#770's comment 7006157649 supplied the corrected item 3, the corrected item 5, the
+notation, and the corrected record docstring.  The corrections landed on 2026-11-19 in commit
+31711851d4d1c880af83d3397d1bcc378e766fbd, and the landed text was then read against that
+comment statement by statement.
+
+  - 626 defines Delta(V_1,V_2) and Delta^-(V_1,V_2) as the diagonal and antidiagonal copies
+    of V_1 + V_2 in a doubled sum, and Delta(V) := Delta(V, iota V), Delta^-(V) :=
+    Delta^-(V, iota V) for V = U_2 and V = E_{8,1}, with iota the identification e_2 -> e_4,
+    e_3 -> e_5, e_{6+k} -> e_{14+k}.
+  - 638 quantifies over w in U_2 and w in E_{8,1}, with (w,+-w) = w +- iota(w).  The printed
+    quantifier over U_2 + U_3, ill-typed because iota is not defined on U_3, is gone.
+  - 675 states |U_2/2U_2| = 4 = |A_{Delta(U_2,U_3)}|, because Delta(U_2,U_3) = U(2) has
+    determinant -4, and |E_{8,1}/2E_{8,1}| = 2^8 = |A_{E_8(2)}|, because det E_8(2) = 2^8,
+    and cites the gluing as the graph of an anti-isometry to Nikulin, Prop. 1.5.1 and
+    Cor. 1.5.2, printed p. 111.
+  - 652 (item 5) and 677 state the value of the marked class as
+    -q_{S_Co}(H/2) = -H^2/4 = -1 (mod 2Z), and its square as
+    ((e_2+e_3-e_4-e_5)/2)^2 = 1 = -1 = -q_{S_Co}(H/2) (mod 2Z).  The false rational
+    equality ((e_2+e_3-e_4-e_5)/2)^2 = -1 is gone.
+  - docstring lines 17-23 of coble_a13-gluing-anti-isometry.py read "For w in U_2 or in E8_1,
+    write (w,+-w) = w +- iota(w)" and "alpha/2 + beta/2 = e_0".  The record was re-run after
+    the edit, and the fresh transcript is byte-identical to the committed one, whose section 4
+    prints the gluing vector + e_0; the values in its sections 3-7 are unchanged, as the
+    comment states they should be.
+
+Verdict: the landed text matches comment 7006157649's corrected statements; no formula
+differs.  The fresh-context read reported as item 8 in that comment was made on those
+statements; this entry records the landing check against the comment, not a second
+fresh-context audit.
+
+The checks run for this landing: `tests/engineering/test_coble_a13_acceptance.py` (46 passed,
+1 skipped, the Sage-image test) and `scripts/docs_check.py --source`, whose only findings are
+the pre-existing ones -- 24 unresolved bibliography keys and the pre-existing `\rk` at
+`the-heegner-line-and-the-coble-arithmetic-group.md:3163` -- none on a corrected line.

@@ -1,0 +1,40 @@
+provider: /workspace/nucleus/work/projects/p-9fcb4ed7f4b64e008de2ee29a7197bf4/repo/.scratch/sage-extensions
+provider commit: 6b8f7d2b382c9235787267e3f2eac9d74d11e447
+
+=== 1. the isotropic marking dispatch: which markings have a library-owned slot
+lattices.py:2872
+  :2876   (:meth:`_isotropic_line_stabilizer_generators`) and rank two the block
+  :2877   family (:meth:`_isotropic_plane_parabolic_generators`).  Any other
+  :2881   plane = self._isotropic_plane_parabolic_generators(marked)
+  :2884   return self._isotropic_line_stabilizer_generators(marked)
+  :2902   return None
+  :2908   return None
+  :2910   return None
+  :2912   return None
+  :2916   return None
+  :2922   return None
+  :2925   return None
+  :2931   return None
+  the two slots are defined at :2934 (plane) and :2955 (line)
+  a slot for a primitive vector (a pointed marking) in this dispatch: False
+
+=== 2. the call item 1 uses, and what its docstring says for an indefinite lattice
+  :4875   def vector_stabilizer_generators(self, element):
+  :4885   indefinite ``L`` the generators are the marked-diagram decision's own
+  :4886   (``sage-indefinite-port``), and the apex stabilizer is discarded, so it
+  :4887   is not constructed: forming it costs a pointwise stabilizer of the
+  :4888   pointed marking's arrow, and an indefinite lattice has no finite
+
+=== 3. the family behind it, and the provider's own word for it
+  :4738   fibres. For every other indefinite ``L``, ``sage_indefinite_port``
+  :4739   computes generators. All answers are untrusted
+
+=== verdict
+a library-owned stabilizer of a primitive vector in an indefinite lattice, as for lines and planes: ABSENT at this commit
+the operation is owned by sage-extensions#603 (Certified generators of the stabilizer of a
+vector in an indefinite lattice), open at the time of this record.
+consumer: writing/coble/stable-limits/ksba.md @rmk:coble-root-orbits-cusp-five and
+@thm:no-moduli-loss, whose cusp-5 step is exhaustive only over the family this call returns
+(`computations/reports/coble_760-vector-stabilizer-certification-run.txt`).
+PROBE_EXIT=0
+PYEXIT=0

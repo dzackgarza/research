@@ -1,0 +1,24 @@
+# the expressibility probe behind item 3 of research#760
+# command: /opt/lean/bin/lean computations/reports/coble_760-lean-expressibility-probe.lean
+# Lean 4.33.1, narrowed imports (cones, rays, quadratic forms)
+
+ConvexCone : (R : Type u_1) →
+  (M : Type u_2) → [Semiring R] → [PartialOrder R] → [AddCommMonoid M] → [SMul R M] → Type u_2
+PointedCone : (R : Type u_1) →
+  (E : Type u_2) →
+    [inst : Semiring R] →
+      [inst_1 : PartialOrder R] → [IsOrderedRing R] → [inst_3 : AddCommMonoid E] → [Module R E] → Type u_2
+Module.Ray : (R : Type u_1) →
+  [inst : CommSemiring R] →
+    [inst_1 : PartialOrder R] →
+      [IsStrictOrderedRing R] → (M : Type u_2) → [inst_3 : AddCommMonoid M] → [Module R M] → Type u_2
+computations/reports/coble_760-lean-expressibility-probe.lean:17:8: error(lean.unknownIdentifier): Unknown identifier `Semifan`
+computations/reports/coble_760-lean-expressibility-probe.lean:18:8: error(lean.unknownIdentifier): Unknown identifier `Fan`
+computations/reports/coble_760-lean-expressibility-probe.lean:19:8: error(lean.unknownIdentifier): Unknown identifier `Chamber`
+computations/reports/coble_760-lean-expressibility-probe.lean:20:8: error(lean.unknownIdentifier): Unknown identifier `Irrelevant`
+computations/reports/coble_760-lean-expressibility-probe.lean:25:20: warning: Variable name `mirrors` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _mirrors
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`

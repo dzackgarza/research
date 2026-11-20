@@ -1,0 +1,16 @@
+== p=11 d=1 both graphs
+p = 11, d = 1, y = A(x)/B(x): 0 curves with split preimage
+p = 11, d = 1, x = A(y)/B(y): 0 curves with split preimage
+== p=11 d=2 both graphs
+p = 11, d = 2, y = A(x)/B(x): 0 curves with split preimage
+  x = A(y)/B(y): A = 4*t^2 + 5*t + 1, B = 9*t^2 + 9*t + 5, restriction = (t + 3)^2 * (t + 6)^2 * (t^4 + 7*t^3 + 6*t^2 + 9*t + 5)^2
+  x = A(y)/B(y): A = 4*t^2 + 6*t + 1, B = 2*t^2 + 9*t + 6, restriction = (t + 5)^2 * (t + 8)^2 * (t^4 + 4*t^3 + 6*t^2 + 2*t + 5)^2
+p = 11, d = 2, x = A(y)/B(y): 2 curves with split preimage
+== p=13 d=2 graph x = A(y)/B(y)
+p = 13, d = 2, x = A(y)/B(y): 0 curves with split preimage
+== p=17 d=2 graph x = A(y)/B(y)
+  x = A(y)/B(y): A = 2*t^2 + 6*t + 1, B = 7*t^2 + 14*t + 16, restriction = (13) * (t + 11)^2 * (t^5 + 16*t^4 + 5*t^3 + 3*t^2 + 4*t + 1)^2
+  x = A(y)/B(y): A = 3*t^2 + 6*t + 1, B = 11*t^2 + 15*t + 7, restriction = (16) * t^2 * (t^2 + 13*t + 11)^2 * (t^3 + 11*t^2 + 3*t + 7)^2
+  x = A(y)/B(y): A = 2*t^2 + 11*t + 1, B = 10*t^2 + 14*t + 1, restriction = (13) * (t + 6)^2 * (t^5 + t^4 + 5*t^3 + 14*t^2 + 4*t + 16)^2
+  x = A(y)/B(y): A = 3*t^2 + 11*t + 1, B = 6*t^2 + 15*t + 10, restriction = (16) * t^2 * (t^2 + 4*t + 11)^2 * (t^3 + 6*t^2 + 3*t + 10)^2
+p = 17, d = 2, x = A(y)/B(y): 4 curves with split preimage

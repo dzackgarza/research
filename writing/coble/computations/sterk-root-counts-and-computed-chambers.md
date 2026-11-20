@@ -26,14 +26,14 @@ $$
 \eta_4 = e'+2f'+\alpha,\quad
 \eta_5 = 2e+2f+\alpha,
 $$
-with $\omega = 2w_8$ and $\alpha = 2w_1$ in the dual basis ([Coble lattice isotropic candidates](#sec-coble-lattice-isotropic-candidates)) [@Ste91, Prop. 4.2.3].
+with $\omega = 2w_8$ and $\alpha = 2w_1$ in the dual basis ([Coble lattice isotropic candidates](#sec-coble-lattice-isotropic-candidates)) [@Ste91, Prop. 4.2.3, printed p. 16].
 Each quotient $\eta_j^{\perp}/\eta_j$ is a hyperbolic lattice of rank $10$, so it determines a copy of $\HH^9$ (@def:hyperbolic-model), and
 $$
 \eta_1^{\perp}/\eta_1 \cong U(2)\oplus E_8(2) = E_{10}(2),
 \qquad
 \eta_j^{\perp}/\eta_j \cong U\oplus E_8(2) \quad (j = 2,3,4,5)
 $$
-[@Ste91, Lem. 4.3.4].
+[@Ste91, Lem. 4.3.4, printed p. 18].
 These lattices are even and $2$-elementary (@def:p-elementary) of types $(10,10,0)$ and $(10,8,0)$ respectively.
 :::
 
@@ -213,7 +213,7 @@ Here $\sqrt2 = 2\cos(\pi/4)$ comes from the label-$4$ bonds of these diagrams.
 
 ## The criterion of the source, and the five diagrams compared
 
-Sterk describes each of his five diagrams as the diagram of the reflection subgroup of $G_v$ (4.3.5--4.3.9, pp. 19--24), with $G_v = \rho(\Stab_\Gamma(v))$ for $\Gamma = \gent$ and $v$ his isotropic representative. In the notation of [@AEGS25] that group is $\Gamma_{\En,2,v}$: with $\Gamma^K_\En = \Orth(T_\En)$ the group that [@AEGS25, Def. 2.6] writes $\Gamma_\En$, $\Gamma_\dP = \Orth(T_\dP)$ and $\gent = \Gamma^K_\En\cap\Gamma_\dP$ (Definition 2.6), the stabilizer of a primitive isotropic $v$ fits into
+Sterk describes each of his five diagrams as the diagram of the reflection subgroup of $G_v$ (4.3.5--4.3.9, pp. 19--24), with $G_v = \rho(\Stab_\Gamma(v))$ for $\Gamma = \gent$ and $v$ his isotropic representative. In the notation of [@AEGS25] that group is $\Gamma_{\En,2,v}$: with $\Gamma^K_\En = \Orth(T_\En)$ the group that [@AEGS25, Def. 2.6, printed p. 587] writes $\Gamma_\En$, $\Gamma_\dP = \Orth(T_\dP)$ and $\gent = \Gamma^K_\En\cap\Gamma_\dP$ (Definition 2.6), the stabilizer of a primitive isotropic $v$ fits into
 $$
 0 \to U_v \to \Stab_{\gent}(v) \to \Gamma_{\En,2,v} \to 0,
 $$
@@ -238,7 +238,7 @@ Let $\eta_1,\dots,\eta_5$ be the representatives Sterk uses in 4.3.5--4.3.9, put
 
 - the five cusps are the five $M$-orbits of isotropic classes of $A_{T_\En}$, of sizes $1,\,2,\,120,\,270,\,135$ for $j = 1,\dots,5$; his representative and the representative written on this page lie in the same orbit at every $j$; and the class stabilizers have orders $696\,729\,600$, $348\,364\,800$, $5\,806\,080$, $2\,580\,480$, $5\,160\,960$;
 - every vector of every $R_j$ lies in $\eta_j^\perp$ and has square in $\set{-2,-4}$, and its reflection is an integral isometry of $T_\En$ --- the divisibility in $T_\En$ of a $(-4)$-root is $2$ and that of a $(-2)$-root $1$ --- so it is a root of $T_\En$ and a member of the generating set of @lem:sterk-reflection-lift-criterion(1) at its own cusp;
-- the Coxeter--Vinberg diagram (@def:coxeter-vinberg-diagram) of $W(G_v)$ at cusp $j$ is the folded diagram $G(\bar T_\dP)^{J_j}$ of [@AEGS25, Cor. 3.12], folded from the two diagrams $G(\bar T_\dP)$ of their Fig. 5: $J_2$ is the reflection $J\colon\alpha_k\mapsto\alpha_{20-k}$ on the diagram of $(18,0,0)_1$ in their Lemma 3.9, with the folded diagram in their Fig. 7, and $J_1, J_3, J_4, J_5$ are the four involutions of the diagram of $(18,2,0)_1$ in their Lemma 3.10, with the folded diagrams in their Fig. 8; their Corollary 3.12 states that these five folded diagrams are exactly the diagrams of the five groups $W(\Gamma_{\En,2,e})$, and §3.8 states that they are the diagrams Sterk computed;
+- the Coxeter--Vinberg diagram (@def:coxeter-vinberg-diagram) of $W(G_v)$ at cusp $j$ is the folded diagram $G(\bar T_\dP)^{J_j}$ of [@AEGS25, Cor. 3.12], folded from the two diagrams $G(\bar T_\dP)$ of their Fig. 5, printed p. 592: $J_2$ is the reflection $J\colon\alpha_k\mapsto\alpha_{20-k}$ on the diagram of $(18,0,0)_1$ in their Lemma 3.9, printed p. 594, with the folded diagram in their Fig. 7, printed p. 594, and $J_1, J_3, J_4, J_5$ are the four involutions of the diagram of $(18,2,0)_1$ in their Lemma 3.10, printed p. 594, with the folded diagrams in their Fig. 8, printed p. 595; their Corollary 3.12, printed p. 595, states that these five folded diagrams are exactly the diagrams of the five groups $W(\Gamma_{\En,2,e})$, and §3.8, printed p. 594, states that they are the diagrams Sterk computed;
 - against his printed roots the identification holds in every invariant the record computes:
 
 | $j$ | Sterk's figure | $\abs{R_j}$ | certified at $k = 0$ | certified only at $k\neq0$ | weights | finite $+$ ideal vertices | $f_0$ of the recorded CoxIter run |

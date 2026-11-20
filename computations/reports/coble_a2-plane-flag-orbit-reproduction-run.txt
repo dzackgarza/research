@@ -1,0 +1,11 @@
+nonzero isotropic classes of A: 527 (527)
+isotropic 2-planes: 23715 (23715)
+stars of each J: 8 (8)
+decorated planes: 189720 (189720)
+G_Co-orbits of decorated planes: 7 (7)
+  sizes: [75600, 69120, 22680, 9450, 7560, 3150, 2160]
+flags: 569160 (569160)
+G_Co-orbits of flags: 13 (13)
+  sizes: [151200, 138240, 75600, 69120, 45360, 28350, 22680, 15120, 9450, 7560, 2160, 2160, 2160]
+reproduced: 7 decorated-plane orbits and 13 flag orbits
+PYEXIT=0

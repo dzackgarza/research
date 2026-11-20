@@ -1,29 +1,147 @@
 provenance
-  Sage: 11.0.beta5, checkout 281da26ffdce
-  sage-extensions: .scratch/se-provider-15db925b/src, pin 15db925b0c92
+  Sage 11.0.beta5, runtime checkout 281da26ffd
+  provider /repo/.scratch/sage-extensions/src/sage_extensions/__init__.py (sage-extensions main 1488acf)
+  invoked as in the docstring; the repository is bound read-write at /repo
 
-the lattices, with the source that fixes each
-  L_K3 = 3U + 2E8(-1)    rank 22  signature (3, 19)   det      -1  even True   AGREE True
-  S_Co = C_S(2)          rank 11  signature (1, 10)   det    2048  even True   AGREE True
-  T_Co = B(2)            rank 11  signature (2, 9)    det   -2048  even True   AGREE True
-  S_En = C(2)            rank 10  signature (1, 9)    det   -1024  even True   AGREE True
+1. L_K3 = 3U + 2E8(-1) = II_{3,19}, in its standard basis
+   rank 22, determinant -1, even True, signature (3, 19)
+  [  0.4s] L_K3 built
 
-the two orthogonal sums and the glue that #276 will supply
-  S_Co + T_Co    rank 22, signature (3, 19), det -4194304 = -2^22, even True
-      |A_{S}| = 2048, and the overlattice index would be 2048, giving det(overlattice) = -1
-      constructors present on the sum: overlattice True, even_overlattice_inclusions True
+2. the four summands: Gram data, and the source that fixes each type
+   S_Co = C_S(2) with C_S = <-1> + U + E8(-1);  T_Co = B(2) with B = <1> + U + E8(-1);
+   S_En = C(2) with C = U + E8(-1);  T_En = S_En^perp inside L_K3
+   S_Co  rank 11  det   2048  sig (1, 10)    even True   |A| = 2048  det from the embedding == recorded det True
+         isometric to the abstract S_Co: True
+         Gram matrix in the embedding's basis (11 x 11):
+           [ -2,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0]
+           [  0,   0,   2,   0,   0,   0,   0,   0,   0,   0,   0]
+           [  0,   2,   0,   0,   0,   0,   0,   0,   0,   0,   0]
+           [  0,   0,   0,  -4,   0,   2,   0,   0,   0,   0,   0]
+           [  0,   0,   0,   0,  -4,   0,   2,   0,   0,   0,   0]
+           [  0,   0,   0,   2,   0,  -4,   2,   0,   0,   0,   0]
+           [  0,   0,   0,   0,   2,   2,  -4,   2,   0,   0,   0]
+           [  0,   0,   0,   0,   0,   0,   2,  -4,   2,   0,   0]
+           [  0,   0,   0,   0,   0,   0,   0,   2,  -4,   2,   0]
+           [  0,   0,   0,   0,   0,   0,   0,   0,   2,  -4,   2]
+           [  0,   0,   0,   0,   0,   0,   0,   0,   0,   2,  -4]
+   T_Co  rank 11  det  -2048  sig (2, 9)     even True   |A| = 2048  det from the embedding == recorded det True
+         isometric to the abstract T_Co: True
+         Gram matrix in the embedding's basis (11 x 11):
+           [  2,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0]
+           [  0,   0,   2,   0,   0,   0,   0,   0,   0,   0,   0]
+           [  0,   2,   0,   0,   0,   0,   0,   0,   0,   0,   0]
+           [  0,   0,   0,  -4,   0,   2,   0,   0,   0,   0,   0]
+           [  0,   0,   0,   0,  -4,   0,   2,   0,   0,   0,   0]
+           [  0,   0,   0,   2,   0,  -4,   2,   0,   0,   0,   0]
+           [  0,   0,   0,   0,   2,   2,  -4,   2,   0,   0,   0]
+           [  0,   0,   0,   0,   0,   0,   2,  -4,   2,   0,   0]
+           [  0,   0,   0,   0,   0,   0,   0,   2,  -4,   2,   0]
+           [  0,   0,   0,   0,   0,   0,   0,   0,   2,  -4,   2]
+           [  0,   0,   0,   0,   0,   0,   0,   0,   0,   2,  -4]
+   S_En  rank 10  det  -1024  sig (1, 9)     even True   |A| = 1024  det from the embedding == recorded det True
+         isometric to the abstract S_En: True
+         Gram matrix in the embedding's basis (10 x 10):
+           [  0,   2,   0,   0,   0,   0,   0,   0,   0,   0]
+           [  2,   0,   0,   0,   0,   0,   0,   0,   0,   0]
+           [  0,   0,  -4,   0,   2,   0,   0,   0,   0,   0]
+           [  0,   0,   0,  -4,   0,   2,   0,   0,   0,   0]
+           [  0,   0,   2,   0,  -4,   2,   0,   0,   0,   0]
+           [  0,   0,   0,   2,   2,  -4,   2,   0,   0,   0]
+           [  0,   0,   0,   0,   0,   2,  -4,   2,   0,   0]
+           [  0,   0,   0,   0,   0,   0,   2,  -4,   2,   0]
+           [  0,   0,   0,   0,   0,   0,   0,   2,  -4,   2]
+           [  0,   0,   0,   0,   0,   0,   0,   0,   2,  -4]
+   T_En  rank 12  det   1024  sig (2, 10)    even True   |A| = 1024
+         isometric to U + U(2) + E8(-2): True
+         Gram matrix in the embedding's basis (12 x 12):
+           [  0,   1,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0]
+           [  1,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0]
+           [  0,   0,   0,   2,   0,   0,   0,   0,   0,   0,   0,   0]
+           [  0,   0,   2,   0,   0,   0,   0,   0,   0,   0,   0,   0]
+           [  0,   0,   0,   0,  -4,   0,   2,   0,   0,   0,   0,   0]
+           [  0,   0,   0,   0,   0,  -4,   0,   2,   0,   0,   0,   0]
+           [  0,   0,   0,   0,   2,   0,  -4,   2,   0,   0,   0,   0]
+           [  0,   0,   0,   0,   0,   2,   2,  -4,   2,   0,   0,   0]
+           [  0,   0,   0,   0,   0,   0,   0,   2,  -4,   2,   0,   0]
+           [  0,   0,   0,   0,   0,   0,   0,   0,   2,  -4,   2,   0]
+           [  0,   0,   0,   0,   0,   0,   0,   0,   0,   2,  -4,   2]
+           [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   2,  -4]
+   the complement identities, by rank and determinant:
+     rank S_Co = 11, rank T_Co = 11, sum = 22 = rank L_K3; det S_Co . det T_Co = 2048 . -2048 = -4194304
+     rank S_En = 10, rank T_En = 12, sum = 22 = rank L_K3; det S_En . det T_En = -1024 . 1024 = -1048576
+  [  5.7s] the four summands
 
-the glue as a graph, and where the construction stops
-  an anti-isometry A_{S_Co} -> A_{T_Co}(-1) is built: OwnedTorsionFormIsometryMor_with_category_with_category.element_class
-  it is *an* anti-isometry, not the one induced by the marked embedding: that needs
-  sage-extensions#276, whose specimen is exactly the S_En + T_En case above.
-  the graph {(x, gamma(x))} needs a class of A_{S+T} from a pair of classes of A_S, A_T;
-  that pairing is what #276 supplies, and no operation in this build returns it.
+3. the primitive embedding (S_Co, T_Co) in L_K3 and its overlattice, index 2048
+   G = S + T: rank 22, det -4194304 = det S . det T = 2048 . -2048, even True, sig (3, 19)
+   |A_S| = 2048, |A_T| = 2048, product = 4194304 = -det G; [L_K3 : G] should be |A_S| = 2048
+   Gram(G) from the concrete embedding equals B^T GL B: True
+   the two summands are orthogonal, so G is the orthogonal sum S perp T: the off-diagonal block is zero
+   the 22 glue classes: [2e_i] for the ambient basis, div_G(2e_i) = 2 for all i
+   overlattice: index 2048; codomain rank 22, det -1, even True, sig (3, 19), unimodular True,
+     isometric to L_K3 = II_{3,19}: True
+     index / |A_S| = 2048 / 2048 = 1, so the index is the discriminant order
+   the glue subgroup of A_{S+T}: 2048 classes (2^11), and |A_S| = 2048, |A_T| = 2048
+   the projection of the glue to A_S is injective: True (2048 distinct images)
+   q_S(x) + q_T(gamma x) = 0 on all 2048 glue classes: True
+   b_S(x,y) + b_T(gamma x, gamma y) = 0 in Q/Z on the 144 tested pairs of a spanning set: True
+   cross-check against the owner's q on A_{S+T} (values in Fraction Field of Integer Ring / (2)Integer Ring), on the 22 generators: True
+     e.g. q([2e_0]) = [0] in Fraction Field of Integer Ring / (2)Integer Ring by the owner, and 0 from the two summands, that is 0 mod 2
+   the graph of the anti-isometry gamma: A_S -> A_T(-1), as classes of A_S
+   (a class of A_S is the half-integer vector z/2 with |z| = 11; gamma(z/2) = v/2):
+   22 of the 22 ambient basis vectors have nonzero class in A_{S+T}; the first six:
+     e_0  z = 10000000000  q_S = -1/2   gamma -> v = 10000000000  q_T = 1/2    sum = 0
+     e_1  z = 10000000000  q_S = -1/2   gamma -> v = 10000000000  q_T = 1/2    sum = 0
+     e_2  z = 01000000000  q_S = 0      gamma -> v = 01000000000  q_T = 0      sum = 0
+     e_3  z = 00100000000  q_S = 0      gamma -> v = 00100000000  q_T = 0      sum = 0
+     e_4  z = 01000000000  q_S = 0      gamma -> v = 01000000000  q_T = 0      sum = 0
+     e_5  z = 00100000000  q_S = 0      gamma -> v = 00100000000  q_T = 0      sum = 0
+     in this marking the glue is the diagonal: v = u for 2047 of the 2047 nonzero classes
+     all 2048 classes: q_S + q_T = 0 mod 2, and the 144 pairs of a spanning set have b_S + b_T = 0 in Q/Z
+  [ 28.2s] pair S_Co done
 
-  delta in T_En with delta^perp = T_Co needs sage-extensions#279.
+4. the primitive embedding (S_En, T_En) in L_K3 and its overlattice, index 1024
+   G = S + T: rank 22, det -1048576 = det S . det T = -1024 . 1024, even True, sig (3, 19)
+   |A_S| = 1024, |A_T| = 1024, product = 1048576 = -det G; [L_K3 : G] should be |A_S| = 1024
+   Gram(G) from the concrete embedding equals B^T GL B: True
+   the two summands are orthogonal, so G is the orthogonal sum S perp T: the off-diagonal block is zero
+   the 22 glue classes: [2e_i] for the ambient basis, div_G(2e_i) = 2 for all i
+   overlattice: index 1024; codomain rank 22, det -1, even True, sig (3, 19), unimodular True,
+     isometric to L_K3 = II_{3,19}: True
+     index / |A_S| = 1024 / 1024 = 1, so the index is the discriminant order
+   the glue subgroup of A_{S+T}: 1024 classes (2^10), and |A_S| = 1024, |A_T| = 1024
+   the projection of the glue to A_S is injective: True (1024 distinct images)
+   q_S(x) + q_T(gamma x) = 0 on all 1024 glue classes: True
+   b_S(x,y) + b_T(gamma x, gamma y) = 0 in Q/Z on the 144 tested pairs of a spanning set: True
+   cross-check against the owner's q on A_{S+T} (values in Fraction Field of Integer Ring / (2)Integer Ring), on the 22 generators: True
+     e.g. q([2e_0]) = [0] in Fraction Field of Integer Ring / (2)Integer Ring by the owner, and 0 from the two summands, that is 0 mod 2
+   the graph of the anti-isometry gamma: A_S -> A_T(-1), as classes of A_S
+   (a class of A_S is the half-integer vector z/2 with |z| = 10; gamma(z/2) = v/2):
+   20 of the 22 ambient basis vectors have nonzero class in A_{S+T}; the first six:
+     e_2  z = 1000000000  q_S = 0      gamma -> v = 001000000000  q_T = 0      sum = 0
+     e_3  z = 0100000000  q_S = 0      gamma -> v = 000100000000  q_T = 0      sum = 0
+     e_4  z = 1000000000  q_S = 0      gamma -> v = 001000000000  q_T = 0      sum = 0
+     e_5  z = 0100000000  q_S = 0      gamma -> v = 000100000000  q_T = 0      sum = 0
+     e_6  z = 0010000000  q_S = -1     gamma -> v = 000010000000  q_T = -1     sum = -2
+     e_7  z = 0001000000  q_S = -1     gamma -> v = 000001000000  q_T = -1     sum = -2
+     A_S and A_T have ranks 10 and 12 here, so the two coordinate vectors are not comparable
+     all 1024 classes: q_S + q_T = 0 mod 2, and the 144 pairs of a spanning set have b_S + b_T = 0 in Q/Z
+  [ 50.5s] pair S_En done
 
-RESULT: L_K3 and the three summand lattices are built and agree with their recorded
-  invariants (ranks 22, 11, 11, 10; signatures (3,19), (1,10), (2,9), (1,9); determinants
-  1, 2048, -2048, -1024; all even).  The orthogonal sums are built with det = -2^22 and
-  -2^20 and the recorded indices 2^11 and 2^10 divide them correctly.  The overlattices,
-  the complement T_En, gamma and delta are deferred to sage-extensions#276 and #279.
+5. not built here, and named rather than substituted
+   * delta in T_En with delta^perp = T_Co: sage-extensions#279 (`vectors_of_square_with_complement`).
+   * `even_overlattice_inclusions` is not used: it enumerates every even overlattice of
+     G, and here the glue is read off the embedding rather than searched for, so
+     `overlattice(*glue classes)` constructs the object and the inclusion is then checked;
+     the owner operations used are primitive_sublattice_from, orthogonal_complement,
+     div, divided_discriminant_class, overlattice, discriminant_module().q, is_isometric_to.
+   * gamma as a TYPED morphism of torsion forms A_S -> A_T(-1), with composition,
+     inverse and quadratic agreement as methods: sage-extensions#276 (`gluing_anti_isometry`).
+     Its values are not in doubt: they are the graph printed in parts 3 and 4, read off
+     the two embeddings.  #276 supplies the arrow, and above is the map it has to be.
+
+RESULT: L_K3 = II_{3,19} and the four summand lattices are built with their invariants;
+  both primitive embeddings are realised in one copy of L_K3; the S_Co + T_Co overlattice
+  has index 2048 and the S_En + T_En overlattice index 1024, each equal to |A_S|, each
+  unimodular, even, of signature (3,19) and isometric to II_{3,19}; and the glue of each is
+  the graph of an anti-isometry on all 2^11, respectively 2^10, classes.
+  [50.5s]

@@ -1,0 +1,41 @@
+[    2.7s] === (1) what the library has, on the side this page computes with
+[    3.2s]     Coble.rank_ten_diagram() -> RootedCoxeterDiagrams.parent_class[_FiniteDigraphEngine].ObjectType
+[    3.2s]     its vertices: n/a
+[    3.2s]     its public attributes (146): Aut, CartesianProduct, ElementType, End, Hom, Mor, algebra, ambient_category, an_element, base, base_ring, cardinality, cartesian_product, categories, category, coerce, coerce_embedding, coerce_map_from, component_scaled_cartan_types, condition_set, connected_component_vertex_sets, connected_components, construction, convert_map_from ...
+[    3.2s]     a cusp record is L.Aut().cusps(rank); its documented contents, from src/sage_extensions/categories/lattices.py:9864:
+[    3.2s]       "The finite ordered result retains each representative, its parabolic subgroup and
+[    3.2s]        stabilizer generators, and transporter witnesses for membership."
+[    3.2s] 
+[    3.2s] === (2) the operations the conjecture needs, and the failure of each expression
+[    3.3s]     Coble.rank_ten_diagram().semifan()                   -> AttributeError: 'RootedCoxeterDiagrams.parent_class[_FiniteDigraphEngine].ObjectType' object has no attribute 'semifan'
+[    3.3s]       it would return: the restricted Enriques semifan at a cusp, as cones
+[    3.5s]     Coble.rank_ten_diagram().cones()                     -> AttributeError: 'RootedCoxeterDiagrams.parent_class[_FiniteDigraphEngine].ObjectType' object has no attribute 'cones'
+[    3.5s]       it would return: its cones
+[    3.6s]     Coble.rank_ten_diagram().stable_pairs()              -> AttributeError: 'RootedCoxeterDiagrams.parent_class[_FiniteDigraphEngine].ObjectType' object has no attribute 'stable_pairs'
+[    3.6s]       it would return: the limit stable pair of a degeneration, from lattice data
+[    3.7s]     Coble.rank_ten_diagram().marked_root()               -> AttributeError: 'RootedCoxeterDiagrams.parent_class[_FiniteDigraphEngine].ObjectType' object has no attribute 'marked_root'
+[    3.7s]       it would return: the marked root of a stable pair, as a class in K_I
+[    3.7s] 
+[    3.7s] === (3) the same names, searched for in the whole package
+[    3.9s]     scanned 318 python files under /repo/.scratch/se-main/src
+[    3.9s]     semifan        occurrences: 0
+[    3.9s]     ksba           occurrences: 0
+[    3.9s]     stable pair    occurrences: 0
+[    3.9s]     stable_pair    occurrences: 0
+[    3.9s]     limit pair     occurrences: 0
+[    3.9s]     marked root    occurrences: 0
+
+VERDICT: the two operations conj:no_moduli_loss needs are absent, and absent in different
+degrees.  The semifan as cones is absent from an object that exists (the folded Coxeter
+diagram, src/sage_extensions/categories/coxeter_diagrams.py:374, built at :2173), so it is
+an operation to add.  The limit pair is absent from the package altogether: no name in it
+refers to a stable pair, a KSBA compactification or a marked root, and a cusp record retains
+only representatives, parabolics, stabilizers and transporters
+(src/sage_extensions/categories/lattices.py:9864), so it is an object to build and not a
+method to add.  What that costs the conjecture is stated on the page: with the roots 12 and
+13 inequivalent (coble_759-gamma-co-2-orbit-1213-run.txt) and their faces equal
+(thm:face-irrelevant-marking), the remaining question is whether their limit pairs are
+isomorphic, and no expression in this image returns a limit pair.
+
+elapsed 3 s
+PYEXIT=0

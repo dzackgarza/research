@@ -184,3 +184,22 @@ For a polarization $h$ of an Enriques surface (@def:enriques-surface), let $\Gam
 3. The $0$- and $1$-dimensional cusps of $\mathcal M_{\En,h}$ are the $\Gamma_h^+$-orbits of primitive isotropic lines and planes of $\ten$, and $\Gamma_h^+\backslash\mathcal B(\ten)$ is computed for every $h$ [@SH23, §3.6, Tables 1 and 2].
 :::
 
+::: {.corollary #cor:sh23-full-preimage-positive-comparison title="Full discriminant preimages compute the polarized Enriques cusp orbits"}
+
+For each polarization $h$ in the families of @thm:sh23-enriques-moduli-groups, let $M_h\leq\Orth(A_{\ten},q_{\ten})$ denote the finite discriminant image defining the associated full arithmetic preimage $\Gamma_h=\rho^{-1}(M_h)$, and put $\Gamma_h^+=\Gamma_h\intersect\Orth^+(\ten)$. Then the natural maps
+$$
+\Gamma_h^+\backslash\mathcal I_k(\ten)\longrightarrow\Gamma_h\backslash\mathcal I_k(\ten),\qquad k=1,2,
+$$
+and
+$$
+\Gamma_h^+\backslash\mathcal F_{1,2}(\ten)\longrightarrow\Gamma_h\backslash\mathcal F_{1,2}(\ten)
+$$
+are bijections, where $\mathcal I_k$ denotes primitive totally isotropic rank-$k$ sublattices and $\mathcal F_{1,2}$ their incident flags. Moreover $\rho(\Gamma_h^+)=\rho(\Gamma_h)=M_h$. Thus a public computation using the *full* discriminant preimage $\Gamma_h$ can be compared to the $\Gamma_h^+$ cusp tables of [@SH23, §3.6] without an additional factor of two, provided the finite image is the **actual** polarization-family image $M_h$ rather than a stabilizer of one discriminant class.
+
+:::
+
+::: {.proof}
+
+Apply @cor:enriques-preimage-vs-positive with $N=\ten$ and $M=M_h$. Its first item gives the equality of finite images; its second gives the two orbit bijections for lines and planes and, by @thm:enriques-flag-witnesses, for flags. The hypothesis that the group is the full discriminant preimage is essential: the argument uses the spinor-negative elements of $\ker\rho$ in every object stabilizer, and therefore does not apply to an arbitrary proper subgroup with the same finite image. The same distinction prevents replacing $M_h$ by a single-class stabilizer when forming the public arithmetic group.
+
+:::

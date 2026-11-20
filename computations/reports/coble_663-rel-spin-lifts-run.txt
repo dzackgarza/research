@@ -1,0 +1,15 @@
+research#663 / #766 (REL): rational spin lifts in the Clifford algebra
+========================================================================
+script sha256: 803e5280047d51c9b49f56aabfd7c4001d97c1d75aa6c3d3d8679b9a8ab280fa
+
+1. x_delta = r1...r8/16 in B0 = <1>+U+E8(-1):
+   x x^t = 1: True;  x b x^{-1} = delta_E8(b) on all 11 basis vectors of B0: True
+   x_delta == f1 f2 ... f8 (product of the D8 coordinate vectors): True
+   denominators of x_delta in the basis of C(B0) derived from the lattice basis: [1]
+   x_delta lies in the integral Clifford algebra C(B0): True
+
+2. u b u^{-1} = -s_u(b) for u = r1 and every basis vector b: True
+
+3. x_v = E1...E11 E3 in diag(1,1,-1^9): x x^t = 1 and x b x^{-1} = -s_v(b) on all basis vectors: True
+
+4. a = f1 f2, b = f2 f3 in Spin, both stabilize B0, and [a, b] = a b a^{-1} b^{-1} = -1: True

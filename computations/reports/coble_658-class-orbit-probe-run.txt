@@ -1,0 +1,17 @@
+T_En = U + U(2) + E8(2), rank 12
+w = 2e~ + e~': square, divisibility            (0, 2)
+e~': square, divisibility                      (0, 2)
+(w/2) - (e~'/2) lies in T_En                   True
+e~' . k                                        0
+
+isotropic vectors with small coefficients      112
+transvections examined                         9
+
+CERTIFICATE: the transvection with u = (-2, -2, -2, 1)
+                               v = (-1, 0, -1, 0)
+  carries e~' to --w, is integral True, an isometry True, acts trivially on A_{T_En} True
+  and w . g(k) = 0 with g(k) of square -2
+
+verdict: the class of w = 2e~ + e~' IS in the image of Phi.
+  g lies in ker(rho_{T_En}) and g(k) lies in the orbit of k under the discriminant kernel, so w
+  is orthogonal to an element of that orbit -- the criterion of sec-enriques-coble-correspondence.

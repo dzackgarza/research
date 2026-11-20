@@ -1,0 +1,67 @@
+provenance
+  python 3, exact integer arithmetic, no library, no sage, no sage-extensions
+  objects: @def:gamma-co-groups, @prop:gamma-co-images, @lem:primitive_embedding_eta
+
+1. A_{T_Co} = (Z/2)^11 and its quadratic form
+   |A| = 2048 = 2^11
+   q takes the values [0, 1, 2, 3] (as v/2, v in Z/4), i.e. q in {0, 1/2, 1, 3/2}
+   the quadratic-form relation v(x+y) = v(x)+v(y)+2B(x,y) mod 4: violations = 0
+   B nondegenerate over F_2: True
+
+2. the characteristic class
+   B(w,x) = v(x) mod 2 for all x (i.e. b(w,x) = q(x) mod 1): True
+   q(h/2) = 1/2, q(e/2) = q(f/2) = 0, q((e+f)/2) = 1, q(alpha_i/2) = 1
+   q is Z-valued on A_{E_10(2)} = A_{U(2)} + A_{E_8(2)}, so q mod 1 = 0 there: True
+
+3. the hyperbolic space V = [h/2]^perp = A_{U(2)} + A_{E_8(2)}
+   |V| = 1024 = 2^10; q is Z-valued on V: True
+   #{q = 0 on V} = 528 (including 0), #{q = 1 on V} = 496
+   plus type: 2^9 + 2^5 - 2^4 = 528; minus type would give 2^9 - 2^5 + 2^4 = 496
+   #{q=0 in a plus space of dim 2m}: a_m = 2^(2m-2) + 2 a_{m-1}, a_1 = 3 -> [3, 10, 36, 136, 528]
+
+4. the count of 2-dimensional summands isometric to A_{U(2)}
+   ordered pairs (a,b) in V with q(a) = q(b) = 0, b(a,b) = 1/2: 134912
+   each such subspace {0,a,b,a+b} is met by exactly 2 of them, so the number of
+   2-dimensional subspaces isometric to A_{U(2)} is 67456
+   = (N0 * 2^8)/2 with N0 = 527 nonzero singular vectors of V: 67456
+   subspaces checked: 67456; those whose perp in V is not a plus space of dim 8: 0
+
+5. |Orth(q_{T_Co})| and |P| by the count of ordered hyperbolic bases
+   an isometry of a hyperbolic space is determined by, and determines, the image of a
+   fixed hyperbolic basis, so |Orth| = #(ordered hyperbolic bases); in dimension 2m a
+   first hyperbolic pair can be chosen in (2^(2m-1)+2^(m-1)-1)*2^(2m-2) ways
+     dim  4: 9 * 4 * 2 = 72
+     dim  6: 35 * 16 * 72 = 40320
+     dim  8: 135 * 64 * 40320 = 348364800
+     dim 10: 527 * 256 * 348364800 = 46998591897600
+   |Orth(q_{T_Co})| = |Orth^+(10,2)| = 46998591897600
+   |Orth(q_{U(2)})| = 2 (brute force: the identity and the swap of e/2, f/2)
+   |Orth(q_{E_8(2)})| = 348364800
+   |P| = |Orth(q_{U(2)})| * |Orth(q_{E_8(2)})| = 696729600
+   |Orth(q)|/|P| = 67456, and the count of part 4 equals it: True
+
+6. the index, exactly
+   [Orth(T_Co) : R] = [Orth(q) : P] = 67456
+   = 2^7 * 17 * 31 = 128 * 17 * 31 = 67456
+   527 = 2^9 + 2^4 - 1 = 17 * 31: True
+   |Orth(q)| = 2^21*3^5*5^2*7*17*31: True
+   |P| = 2^14*3^5*5^2*7 = |W(E_8)| = 696729600: True
+
+7. the two indices [Orth(T_Co) : R] and [Orth^+(T_Co) : R cap Orth^+]
+   -id lies in ker rho-bar and preserves the decomposition, so -id lies in R, and
+   p = 2 is even, so -id lies in Orth^+(T_Co) [@lem:minus-identity-spinor-norm].
+   s_zeta (zeta^2 = 2) has spinor norm -1 [@prop:gamma-co-reflective-set(2)], lies in
+   ker rho_{T_En} and fixes delta [@thm:gamma-co-2-comparison(5)], so s_zeta lies in R
+   and outside Orth^+(T_Co). Hence R*Orth^+ = Orth(T_Co) and
+   [Orth(T_Co) : R] = [Orth^+(T_Co) : R cap Orth^+(T_Co)] = 67456.
+
+8. the other sign for E_8: the counts must not move
+   under q -> -q on the E_10(2) part: #{q=0} = 528, #{q=1} = 496, subspaces = 67456
+   unchanged: True
+
+9. the group used is the isometry group of q, not that of its polar form
+   enumerating GL(2,2) = 6 maps: |Orth(q_{U(2)})| = 2
+   enumerating GL(4,2) = 20160 maps: |Orth(q_{U(2)} + q_{U(2)})| = 72,
+   |{maps preserving only the polar form b}| = 720 = |Sp(4,2)|
+   so an isometry of q is an isometry of (b,q), and the larger group of the
+   polar form is not the one used in parts 4-6.

@@ -1,0 +1,25 @@
+provenance
+  Sage: 11.0.beta5
+  sage-indefinite-port: /repos/sage-indefinite-port/src/sage_indefinite_port
+  sage-extensions:      /repos/sage-extensions/src/sage_extensions
+
+T_En: rank 12, det 1024, signature (2, 10)
+|A| = 1024, isotropic classes 528
+
+the nine isometries of T_En
+  s_(e-f): square of (e-f) = -4
+  eight root reflections in E8(2): squares [-4, -4, -4, -4, -4, -4, -4, -4]
+
+their discriminant images: built in 8 s
+|O(A_T,q)| = 46998591897600
+|M| = 696729600   (|W(E8)| = 696729600: True)
+
+Gamma_En,2 = T.Aut().discriminant_preimage(M)
+  built in 0 s: {g in Orthogonal group O(Integral lattice of rank 12 and signature (2, 10)) : rho_L(g) lies in a subgroup given by its own generators}
+  character data retained: True
+
+rank 2
+  Gamma_En,2 isotropic_orbit_representatives(2) -> 9   (397 s)
+  O(T_En)    isotropic_orbit_representatives(2) -> 2   (0 s)
+  published: 9
+

@@ -1,0 +1,12 @@
+T_Co = <2> + U(2) + E8(2), rank 11
+wall meridian s_d (d = h + a_1):      isometry True, acts trivially on A True
+cusp meridian tau_{e', 2h+a_1+a_3}:   isometry True, acts trivially on A True
+
+the swap s of e', f':                 isometry True, acts trivially on A False
+  preserves the E8(2) part of A_{T_Co}: True   (so rho(s) lies in P)
+
+verdict: REFUTED.  The meridians lie in ker(rho) cap O^+ = O~+(T_Co), while the swap lies in
+  rho^{-1}(P) = Gamma_{Co,2} and outside O~+(T_Co); so the meridians do not generate
+  Gamma_{Co,2}, and the claim that they generate the monodromy of a Coble-type family is
+  false for the polarized one.  Item 1e's generation statement for Gamma_Co needs its own
+  proof; nothing follows for it from the polarized family.

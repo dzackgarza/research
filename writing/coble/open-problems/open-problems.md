@@ -16,33 +16,34 @@ this inverse question from the archived Enriques meeting notes.
 
 ## Lattice-theoretic gaps
 
-::: {.question #qst:coble-embedding-matrices title="Open problem: explicit primitive embedding matrices"}
+::: {.remark title="The embedding matrices of the chain"}
 
-1. Write, in coordinate bases, the matrices of the chain of primitive embeddings
-   $$
-   T_\Co \injects \ten \injects \tdp \injects \lkt
-   $$
-   of @lem:sequence_of_embeddings and @lem:primitive_embedding_eta, and the equations of the sextic $C$ and its double plane (@qst:coble-explicit-equations) in the same bases.
-2. Write the $22\times 22$ matrix of the involution $\theta_\Co$ of @prop:theta-co-exists on the standard basis of $\lkt\cong U^{3}\oplus E_8^{2}$, and the polarization classes and the roots of the Coxeter diagram in that basis.
+The matrices of the chain $T_\Co\injects\ten\injects\tdp\injects\lkt$, in the standard basis of the marking of @thm:theta-co-coordinates, are @thm:chain-matrices: the four bases, the three block inclusion matrices, their primitivity, and the identification of the first step with $\eta$ and of the composite with the display of @lem:sequence_of_embeddings. What that theorem does not give is the equations of the sextic $C$ and of its double plane, which is @thm:coble-explicit-sextic; a basis of $H^2$ determines no equation, so the two questions were never one.
 :::
 
-::: {.conjecture #conj:horizontal-folding title="The horizontal folding involution"}
+::: {.remark title="The folding conjecture for $\theta_\Co$, resolved"}
 
-The involution $\theta_\Co$ of @prop:theta-co-exists, with $\lkt^{\theta_\Co} = T_\Co$ and $\lkt^{-\theta_\Co} = S_\Co$, induces on roots the *horizontal folding* of the $(18,0,0)_1$ Coxeter--Vinberg diagram (@def:coxeter-vinberg-diagram) (@def:folded-root), and it exchanges the polarization classes $h_\En$ and $h_\Co$.
+The entry that stood here, whose wording this note quotes, conjectured two things about $\theta_\Co$: that it induces the "horizontal folding" of the $(18,0,0)_1$ Coxeter--Vinberg diagram (@def:coxeter-vinberg-diagram) in the sense of @def:folded-root, and that it exchanges the polarization classes $h_\En$ and $h_\Co$. The first phrase is no standard term -- a folding of a Coxeter diagram is folding by a diagram automorphism, whose folded roots are the orbit sums of @def:folded-root [@Bou08, Ch. 6 §4] -- and the second has no content, the two classes being one. Both are decided by @thm:diagram-roots-coordinates, and this note stays here because the second cannot be stated that way.
+
+*The folding.* @def:folded-root asks for an involution preserving a root system inside its own lattice, the folded roots being the orbit sums. $\theta_\Co$ preserves no copy of $(18,0,0)_1$ in $\lkt$: it carries the copy $W = U_2\oplus E_{8,1}\oplus E_{8,2}$ onto the second one $W' = U_3\oplus E_{8,1}\oplus E_{8,2}$. What the involution induces is an automorphism of the diagram: $I_\Co = -\theta_\Co$ carries the nineteen roots of the diagram in $W$ to the nineteen roots of the diagram in $W'$, node $k$ to node $18-k$, which is the reflection $J\colon\alpha_k\mapsto\alpha_{20-k}$ of [@AEGS25, Lemma 3.9, printed p. 594], and the folded roots are the ten of the cusp-$2$ diagram [@AEGS25, Fig. 7, printed p. 594]. That is the precise content of "the folding is realized by the Coble involution"; the folded root system inside a single copy is the one of $J$, not one of $\theta_\Co$.
+
+*The polarization classes.* $\tilde h_\Co$ and $h_\En$ are one class: $\tilde h_\Co = H$ (@prop:coble-cover-marking) and $H = h$ (@prop:coble-enriques-ambient-isometry(3)). So there are not two classes for an involution to exchange. Read literally as $\theta_\Co(h_\En) = h_\Co$ the clause asserts $\theta_\Co(H) = H$, and that is false, $H\in S_\Co$ being an eigenvector of $\theta_\Co$ with eigenvalue $-1$. With the covering involution in place of $\theta_\Co$ the clause is true and empty: $I_\Co(H) = H = h_\Co$.
 :::
 
 ## Isotropic orbits, cusps, and reflection groups
 
 ::: {#qst:coble-stable-limit-cusps .question title="Open problem: the 0-cusps that carry the Coble stable limits"}
 
-Which of the $527$ $0$-cusps of the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ (@thm:cusp-lifting) carry the Coble stable limits?
+Which of the $527$ $0$-cusps of the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ (@thm:coble-zero-cusp-count(2), the cusps being the classes themselves by @thm:coble-integral-lifting-fibre(1)) carry the Coble stable limits?
 :::
 
 ::: {.question #qst:gamma-co-generators title="Open problem: the stable group $\widetilde\Orth^+(T_\Co)$"}
 
 1. Give a finite set of matrices that generates $\widetilde\Orth^+(T_\Co)$.
-2. Are the subgroups $\gamma(A_{U(2)})$ and $\gamma_\Co(A_{U(2)})$ of $A_{T_\Co}$ equal, and is either of them $A_{U(2)}$, that is, is $\gamma$ or $\gamma_\Co$ block-compatible (@def:congruence-group)? By @prop:gamma-cong-eq-heegner, $\rho_{T_\Co}(\Gamma^{\mathrm{Hdg}}_\Co)$ and $\rho_{T_\Co}(\Gamma^\theta_\Co)$ are their stabilizers in $\Orth(q_{T_\Co})$.
-3. Let $W(T_\Co)$ be the group generated by the reflections in the vectors of square $-2$ of $T_\Co$; these are the reflections in $\widetilde\Orth^+(T_\Co)$ (@prop:gamma-co-reflective-set). What is the index $[\widetilde\Orth^+(T_\Co) : W(T_\Co)]$?
+2. Let $W(T_\Co)$ be the group generated by the reflections in the vectors of square $-2$ of $T_\Co$; these are the reflections in $\widetilde\Orth^+(T_\Co)$ (@prop:gamma-co-reflective-set). What is the index $[\widetilde\Orth^+(T_\Co) : W(T_\Co)]$? The unrestricted form, $\ker\rho_{T_\Co} = W(T_\Co)$, is false, by the reflection in the $\langle 2\rangle$ summand (@prop:kernel-exceeds-short-roots), which lies in the kernel and outside $\Orth^+$; so what remains is the index inside $\widetilde\Orth^+(T_\Co)$, and @qst:gamma-co-reflection-index names what would settle it: a finite presentation of $W(T_\Co)$ with its chamber.
+3. **Met, as a sufficient condition satisfied.** Does $\rho_{T_\Co}$ admit a section $\sigma\colon P\too\Gamma^{\mathrm{cong}}_{\Co,2}$ whose image normalizes $W(T_\Co)$ and is a homomorphism modulo $W(T_\Co)$, that is, with $\sigma(p)w\sigma(p)^{-1}\in W(T_\Co)$ and $\sigma(p)\sigma(q)\sigma(pq)^{-1}\in W(T_\Co)$ for all $p,q\in P$ and $w\in W(T_\Co)$? The candidate of this item works. $H_0=\langle\tau\rangle\times W(E_8)\subseteq\Orth(T_\Co)$ — $\tau$ the swap of the two isotropic generators of the $U(2)$ summand and $W(E_8)$ acting on $E_8(2)$ — maps onto $P$: the mod-$2$ image of $W(E_8)$ on $E_8/2E_8$ has order $348\,364\,800=\abs{\Orth(q_{E_8(2)})}$ with kernel of order $2$, so $\abs{\rho(H_0)} = 2\cdot 348\,364\,800 = \abs P$ (`computations/reports/coble_rel_block_diagonal_section-run.txt`). Its kernel is $H_0\intersect\ker\rho_{T_\Co} = \langle-1\rangle$, the block-diagonal $-1$ on $E_8(2)$, and that element is $\delta_{E_8}$, which lies in $W(T_\Co)$ (@thm:coble-block-sign-in-w). Hence $H_0\subseteq\Gamma^{\mathrm{cong}}_{\Co,2}$, and any section $\sigma\colon P\to H_0$ of $\rho_{T_\Co}|_{H_0}$ satisfies $\sigma(p)\sigma(q)\sigma(pq)^{-1}\in H_0\intersect\ker\rho_{T_\Co}\subseteq W(T_\Co)$ (@cor:coble-rel-section); the normalization clause costs nothing, $W(T_\Co)$ being normal in $\Orth(T_\Co)$ because $gs_rg^{-1}=s_{gr}$. This is a sufficient condition and not an equivalence, a section outside $H_0$ not being covered by the argument. It is a strengthening of the item as this page carried it: the membership query that the item named as missing is answered by @thm:coble-block-sign-in-w, and the level-two shadow that was computed for it (@prop:level-two-shadow-consistent-with-both-answers, `computations/reports/coble_663-rel-level2-shadow-run.txt`) is consistent with the now-proved answer. What the item does not answer is item 2, the index of $W(T_\Co)$ in $\widetilde\Orth^+(T_\Co)$: its finiteness is proved and its value is open (@qst:gamma-co-reflection-index).
+
+What this question asked about the two gluings — whether $\gamma$ or $\gamma_\Co$ is block-compatible — is decided affirmatively for both, on the marked embeddings: @prop:coble-block-compatibility, and with it @cor:gamma-hdg-is-congruence.
 :::
 
 ::: {.question #qst:distinguished-elliptic-fibration title="Open problem: the elliptic fibration distinguished by the Coble structure"}
@@ -128,8 +129,9 @@ Consequently the GIT compactification is the proper Looijenga model for this non
 
 Dolgachev places the Winger curve at $(\lambda:\mu)=(27,5)$ in the pencil
 $$
-\mu(xy+z^2)^3+\lambda z(x^5+y^5+z^5+5x^2y^2z-5xyz^3+z^5)
+\mu(xy+z^2)^3+\lambda z(x^5+y^5+z^5+5x^2y^2z-5xyz^3)
 $$
+(the quintic's $z^5$ appears once; the transcription that stood here carried it twice, and the member with the duplicate does not contain the parametrized curve at all, while the member above has it as its implicit equation — @thm:coble-explicit-sextic and its record, where both are printed)
 and, in his coordinates $(x,y,z)=(A_1,A_2,A_0)$, parametrizes it by
 $$
 [u:v]\longmapsto[-v^6+3u^5v:\;u^6+3uv^5:\;-5u^3v^3]
@@ -169,7 +171,7 @@ In particular the **double smooth cubic is excluded**, rather than assigned to e
 
 **(2) Is the Looijenga semifan the Coxeter semifan of a reflection group? Yes.** @thm:coble-looijenga-coxeter identifies every hyperplane as a pure root. At each $0$-cusp, only roots orthogonal to the cusp line contribute; their boundary traces are primitive $(-2)$-roots and are exactly the mirrors of the reflection group they generate. The induced semifan is therefore Coxeter. This reflection group has only $(-2)$-mirrors; the full $W^{(2,4)}$-Coxeter semifan of @thm:coble-coxeter-semifan additionally has $(-4)$-mirrors.
 
-**(3) Does the Looijenga semifan refine or coarsen the KSBA semifan, or are they incomparable? Open.** The Coble KSBA semifan to which the comparison applies has not yet been formed: @thm:coble-coxeter-semifan explicitly leaves the generalized semifan unformed because the divisor of the Coble stable pair is undefined, and @warn:coble-marking records the missing dictionary from the nine simple roots to curves on the Coble surface. A comparison requires the universal stable pair, the relevance marking of the roots, and the resulting cones of combinatorial constancy; the nonemptiness of $\mch^{*}_{10A_1}$ supplies none of these data. The arithmetic layer of the relevance marking is supplied by @thm:coble-cusp-admissibility: it decides, at every cusp of $\fentwo$, which roots of the folded diagrams are traces of the Coble root, and which cusps and incidences carry that marking. No refinement, coarsening, or incomparability is asserted.
+**(3) Does the Looijenga semifan refine or coarsen the KSBA semifan, or are they incomparable? Open.** The Coble KSBA semifan to which this comparison applies has not been formed: it is a theorem at the four $0$-cusps of $F_{\Co,2}$, with the marking inherited by restriction (@thm:coble-pair-semifan), and it is not formed at the one $0$-cusp of $F^{\mathrm{un}}_\Co$, where @thm:coble-coxeter-semifan leaves the generalized semifan unformed and @warn:coble-marking records the missing dictionary from the nine simple roots to curves on the Coble surface; the quotient $\Gamma_{10A_1}\backslash\bD(T_\Co)$ of this question is neither of the two. A comparison requires the universal stable pair, the relevance marking of the roots, and the resulting cones of combinatorial constancy; the nonemptiness of $\mch^{*}_{10A_1}$ supplies none of these data. The arithmetic layer of the relevance marking is supplied by @thm:coble-cusp-admissibility: it decides, at every cusp of $\fentwo$, which roots of the folded diagrams are traces of the Coble root, and which cusps and incidences carry that marking. No refinement, coarsening, or incomparability is asserted.
 :::
 
 ::: {.proof}
@@ -253,7 +255,39 @@ Stable limits of Coble surfaces arise as $S_2$-quotients of nodal K3 surfaces, p
 
 ## Foundational equations and computational verification
 
-::: {.question #qst:coble-explicit-equations title="Open problem: explicit equations for the Coble curve and its K3 cover"}
+::: {.theorem #thm:coble-explicit-sextic title="The ten-nodal sextic and its double plane, explicitly"}
 
-Give an explicit equation $F(x,y,z) = 0$ of an irreducible rational plane sextic $C$ with ten nodes $p_1,\dots,p_{10}$ (@lem:rational_sextic_ten_nodes, @lem:coble_halphen_blowdown), as the image of $\PP^1$ under a degree-$6$ map $(s:t)\mapsto[f_0:f_1:f_2]$, together with the double plane $w^2 = F(x,y,z)$ in $\PP(1,1,1,3)$, whose ten $A_1$ singularities lie over the nodes $p_m$.
+The image of
+$$
+\varphi\colon\PP^1\too\PP^2,\qquad [u:v]\mapsto[-v^6+3u^5v:\;u^6+3uv^5:\;-5u^3v^3]
+$$
+is the irreducible plane sextic
+$$
+F = 27x^5z+5x^3y^3+150x^2y^2z^2-120xyz^4+27y^5z+32z^6,
+$$
+which is the member at $(\lambda:\mu)=(27:5)$ of the pencil $\mu(xy+z^2)^3+\lambda z(x^5+y^5+z^5+5x^2y^2z-5xyz^3)$ of [@Dol18, §7, pp. 13--14], read with the correction recorded in the proof of @thm:coble-arrangement-nonempty; $\varphi$ is birational onto it.
+
+The sextic has exactly ten singular points, all ordinary nodes. They lie in the chart $z = 1$; their $y$-coordinates are the roots of
+$$
+(y^2+6y+4)\,(y^4-8y^3+24y^2+8y+16)\,(y^4+2y^3+24y^2-32y+16),
+$$
+and for each such $y$ the $x$-coordinate is $x = -(y^9+3948y^4)/1760$. The two points at infinity, $(1:0:0)$ and $(0:1:0)$, are smooth, the line $z = 0$ being a three-fold tangent at each.
+
+The double plane
+$$
+w^2 = F(x,y,z)\qquad\text{in }\PP(1,1,1,3)
+$$
+has an ordinary double point over each of the ten nodes. Blowing up the ten nodes separates the two branches of $F$ at each, so the double cover of $\Bl_{10}\PP^2$ branched along the proper transform of $F$ is the minimal resolution of the double plane; that cover is the surface $X$ of @prop:coble-cover-marking, whose proof computes its classes, and it has $K = 0$. Over the exceptional curve $E_i\subset\Bl_{10}\PP^2$ the cover is branched exactly at the two points where $E_i$ meets the proper transform, so $f^{-1}(E_i)\to E_i$ is a double cover of $\PP^1$ branched at two points, hence a $\PP^1$, and the ten $f^*E_i$ together with $f^*H$ are the eleven classes $e_0,e_1,\dots,e_{10}$ that proposition names, with $e_0^2 = 2H^2 = 2$ and $e_i^2 = 2E_i^2 = -2$ by the projection formula (@prop:double-cover-is-k3), all mutually orthogonal. This sextic is therefore a plane model of the marked Coble cover, and its ten nodes are the ten $(-2)$-classes of the marking of @thm:theta-co-coordinates.
+:::
+
+::: {.proof}
+
+Every value below is in `computations/reports/coble_explicit-sextic-run.txt`.
+
+**The curve and its equation.** Substituting the three forms into $F$ gives $0$, so the image lies on $F = 0$; and the sextics through the image form a one-dimensional space, since the $37$ coefficient equations in the $28$ coefficients of a degree-$6$ form have rank $27$ — so $F$ is the implicit equation of the image, found without using the pencil at all, and it coincides with the pencil member. $F$ is irreducible of degree $6$, and $\gcd(f_0,f_1) = 1$ gives the three forms no common zero, so the degree-$6$ map is birational onto a degree-$6$ curve. That curve is rational, so the sum of the $\delta$-invariants of its singularities is $(6-1)(6-2)/2 = 10$.
+
+**The ten nodes.** Dehomogenize at $z = 1$ and let $I$ be the ideal of $f, f_x, f_y$ there. Its lexicographic Gröbner basis has leading monomials $x$ and $y^{10}$, so $I$ is zero-dimensional of degree $10$ — the number of standard monomials — and the elimination gives $x = -(y^9+3948y^4)/1760$ as a polynomial in $y$, with the $y$-coordinates the roots of the displayed product of three squarefree factors of degrees $2$, $4$, $4$. Hence there are exactly ten distinct singular points, and no more. That they are ordinary nodes is decided point by point: at a singular point of a plane curve the lowest term of the local expansion has degree at least $2$, and the point is a node exactly when that term is a nondegenerate quadratic form, whose two factors are then distinct linear forms and give the two smooth branches; the quadratic part is nondegenerate exactly when the Hessian determinant $f_{xx}f_{yy}-f_{xy}^2$ is nonzero there. The record evaluates that determinant at each point, in the number field $\Q[y]/(g)$ for each irreducible factor $g$ of the degree-$10$ polynomial, and finds it nonzero on all three factors — so every one of the ten points has a nondegenerate quadratic part, hence is an ordinary node. With $\sum_p\delta_p = 10$ from rationality and ten distinct singular points of $\delta\geq1$ each, no singular point is unaccounted for.
+**The two points at infinity.** $F(x,y,0) = 5x^3y^3$, so $z = 0$ meets the curve only at $(1:0:0)$ and $(0:1:0)$, and in the charts $x = 1$ and $y = 1$ the linear terms at those points are $27z\neq0$: both are smooth, and all ten singularities lie in the chart $z = 1$.
+
+**The double plane.** At an ordinary node a linear change of coordinates makes $F = xy + (\text{terms of degree}\geq3)$, so the surface $w^2 = F$ has the quadratic part $w^2-xy$ there, whose matrix $\begin{pmatrix}1&0&0\\0&0&-\frac12\\0&-\frac12&0\end{pmatrix}$ has determinant $-\frac14$: a nondegenerate quadric cone, that is an ordinary double point. The double plane has $K = \pi^*(K_{\PP^2}+3H) = 0$, the branch curve being $6H$, and resolving an ordinary double point is crepant, so the minimal resolution has $K = 0$; its exceptional curve over the $i$-th node is $f^{-1}(E_i)$, a $\PP^1$ as computed above, and adjunction $2g-2 = E^2+E\cdot K$ gives it square $-2$, in agreement with $2E_i^2 = -2$. The pullback of a line has square $2\cdot1 = 2$ by the projection formula. These eleven classes are mutually orthogonal, and they are the ones @prop:coble-cover-marking names.
 :::

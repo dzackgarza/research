@@ -1,0 +1,80 @@
+the reflection orbits of Sterk's cusp-5 roots 12, 13, 14 in the boundary lattice K_5
+Sage 11.0.beta5; exact ZZ/QQ linear algebra
+eta_5: eta^2 = 0, div = 2, eta.delta = 0; delta^2 = -2
+printed roots 1..14: squares [-4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -2, -2, -2, -2]
+orthogonal to eta_5: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+orthogonal to delta: [1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 14]
+
+=== the classes, independent of the lift
+  label 12: class [3, 3, -24]..., square -2, unchanged by r -> r + k eta for k = +-1, +-2
+  label 13: class [3, 4, -28]..., square -2, unchanged by r -> r + k eta for k = +-1, +-2
+  label 14: class [2, 3, -20]..., square -2, unchanged by r -> r + k eta for k = +-1, +-2
+  the three classes are distinct: True
+
+class map: S = (10/1) x 12 with denominator 3, integral on eta_5^perp, kills eta_5, inverts the inclusion of K_5
+
+generator sets: (A) labels [1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 14], (B) labels [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+=== (0) why the reflection route is closed: the square-(-2) roots are pairwise orthogonal
+         label 11 label 12 label 13 label 14
+label 11       -2        0        0        0
+label 12        0       -2        0        0
+label 13        0        0       -2        0
+label 14        0        0        0       -2
+  labels 12, 13, 14 are orthogonal to delta and to eta_5: True
+  label 11 is the marking line: eta_5-orthogonal True, delta-orthogonal False
+  pair (12, 13): u.v = 0, (u+v)^2 = -4, (u-v)^2 = -4, so neither sum nor difference is a root
+  pair (12, 14): u.v = 0, (u+v)^2 = -4, (u-v)^2 = -4, so neither sum nor difference is a root
+  pair (13, 14): u.v = 0, (u+v)^2 = -4, (u-v)^2 = -4, so neither sum nor difference is a root
+  hence a reflection in any of these roots, or in any sum or difference of two of them,
+  fixes the other two classes up to sign: no product of such reflections carries one of
+  the three classes to another, and the orbit counts of (A) below are the orbit of a class
+  that only a non-reflection isometry of K_5 can move to a sibling.
+
+=== (A) the eleven printed roots orthogonal to delta and eta_5
+  orbit of label 12: at least 20001 classes, closed: False; contains 12:True 13:False 14:False
+  orbit of label 13: at least 20001 classes, closed: False; contains 12:False 13:True 14:False
+  orbit of label 14: at least 20001 classes, closed: False; contains 12:False 13:False 14:True
+  distinct orbits met among the three classes: 3
+
+=== (B) all fourteen printed roots of cusp 5, to depth 4 (a different group: three of
+    these reflections move delta)
+  from label 12:
+    depth 1: frontier 3, total 4
+    depth 2: frontier 7, total 11
+    depth 3: frontier 19, total 30
+    depth 4: frontier 60, total 90
+  orbit of label 12: at least 90 classes, closed: False; contains 12:True 13:False 14:False
+  from label 13:
+    depth 1: frontier 3, total 4
+    depth 2: frontier 7, total 11
+    depth 3: frontier 19, total 30
+    depth 4: frontier 60, total 90
+  orbit of label 13: at least 90 classes, closed: False; contains 12:False 13:True 14:False
+  from label 14:
+    depth 1: frontier 3, total 4
+    depth 2: frontier 7, total 11
+    depth 3: frontier 19, total 30
+    depth 4: frontier 60, total 90
+  orbit of label 14: at least 90 classes, closed: False; contains 12:False 13:False 14:True
+  distinct orbits met among the three classes: 3
+
+=== the verdict
+(A) the eleven reflections that fix both delta and the cusp line are elements of
+    Gamma_Co,2.  The orbits they generate are NOT small: each runs past the cap above,
+    so they are reported as reached, not as closed, and their sizes are lower bounds.
+    This corrects an earlier reading of a depth-limited search (90 and 288 classes at
+    depth 6) as if the orbits were small: they are not, and no closure is known.
+(B) the fourteen printed reflections generate the largest reflection group available in
+    K_5, but three of them move delta, so they are not in Gamma_Co,2; the counts above
+    say how far that larger group reaches and are reported as reached, not as closed,
+    unless closed is True.
+The orbits under Gamma_Co,2 itself are not merely uncomputed here: no operation in the
+library decides them.  computations/reports/coble_760-orbit-decision-probe-run.txt
+prints the exposed operations -- primitive_orbit_series and discriminant_orbit_series,
+with primitive_orbit_series(bound=4) not returning in 600 s, PROBE_EXIT=124 -- and
+fundamental_domain, reduce, normal_form and orbit_invariants all absent on a stabilizer
+subgroup.  That operation is sage-extensions#370; its call fails in this image as #389.
+elapsed 130 s
+PYEXIT=0
+exit=0

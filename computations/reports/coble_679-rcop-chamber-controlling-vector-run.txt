@@ -1,0 +1,2 @@
+[    0.1s] N rank 19, controlling vector x = e+f with x^2 = 2
+[ 1500.0s] the walk with the controlling vector did not finish in 1500 s

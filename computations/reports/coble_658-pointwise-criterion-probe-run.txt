@@ -1,0 +1,9 @@
+cor:lifting-unimodular: bar-phi o gamma = gamma o bar-psi     True
+lem:coble-discriminant-actions-conjugate: bar-phi = gamma bar-psi gamma^{-1}   True
+
+substituting bar-psi = 1 (S_Co fixed pointwise): bar-phi = gamma o gamma^{-1} = 1.
+
+verdict: the lemma holds.  An isometry fixing S_Co pointwise acts trivially on A_{T_Co}, so the
+  monodromy of a family whose local system fixes S_Co pointwise lies in ker(rho_{T_Co}) -- item 1e
+  for a MARKED family.  It does not cover the unmarked family, where only H and alpha are fixed:
+  the swap of e' and f' fixes h and has rho != 1, so fixing two classes is not enough.

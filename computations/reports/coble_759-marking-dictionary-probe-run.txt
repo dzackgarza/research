@@ -1,0 +1,53 @@
+the paper, and the version of the text read
+ COMPACT MODULI OF ENRIQUES SURFACES WITH A
+ NUMERICAL POLARIZATION OF DEGREE 2
+
+
+
+
+
+=== (1) the identification of the two compactifications, on the Enriques side
+  56:Theorem 1.1. The normalization of F En,2 is a semitoroidal compactification F En,2
+  57-corresponding to a collection F = {Fk }k=1,2,3,4,5 of explicit semifans, one for each
+  58-                                                                           cox
+  59-0-cusp of FEn,2 , and it is dominated by a toroidal compactification F En,2 for a
+  60-collection Fcox = {Fkcox }k=1,2,3,4,5 of Coxeter fans.
+
+=== (2) what determines the combinatorial type of the stable limit
+  906:   In turn, the combinatorial data of (Γ(X0 ), RIA ) determines the combinatorial
+  907-type of the KSBA stable limit of the degeneration (X 0 , ϵR0 ) by [AE23, Cor. 8.13].
+  908-Then [AE23, Thm. 9.3] gives an algorithm to determine FR : Its cones are given by
+
+=== (3) the dictionary it proves: subdiagram -> union of ADE surfaces
+  1973:   For an elliptic subdiagram G ⊂ Gr (18, 2, 0), each relevant component (i.e. not
+  1974-lying entirely in the interior of the square) gives an ADE surface. Then the corre-
+  1975-sponding KSBA degeneration is their union glued along double curves. The ADE
+  1976-surfaces are obtained by smoothing some of the double curves in the maximal de-
+
+=== (4) what it says about Coble surfaces, exhaustively
+  193:spond to Coble surfaces, which are S2 -quotients of nodal K3 surfaces.
+  293:surfaces by an involution fixing a node. These are rational Coble surfaces with a
+
+=== (5) the checks that carry the verdict
+  Coble              occurrences: 2
+  marked root        occurrences: 0
+  Coble root         occurrences: 0
+  Heegner            occurrences: 1
+  Delta_Co           occurrences: 0
+  delta              occurrences: 0
+  boundary lattice   occurrences: 0
+  Gamma_Co           occurrences: 0
+
+VERDICT: AEGS25 supplies two statements that bear on the passage between stable pairs and
+lattice data, and neither is (a) or (b) of #759.
+  Thm. 1.1 identifies the normalization of the KSBA compactification of F_En,2 with a
+  semitoroidal compactification, i.e. it identifies two compactifications of ONE period
+  space; the Coble root delta is not a datum of that space, and the paper never mentions it.
+  The determination it proves runs the other way for our purpose: monodromy invariant lambda,
+  then the elliptic subdiagram G, then the combinatorial TYPE of the stable limit, a union of
+  ADE surfaces glued along double curves.  A combinatorial type is coarser than a marked root:
+  at cusp 5 all three admissible roots cut one cone (@thm:face-irrelevant-marking), so they
+  share the type and the type cannot separate them.
+  What is missing is unchanged and is named on the page: a statement that carries an
+  isomorphism of pairs to an element of Gamma_Co,2 acting on the marked roots.
+PYEXIT=0

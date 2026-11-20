@@ -1,0 +1,26 @@
+the fourteen roots modulo 2 (a necessary condition for a lift):
+  label  1 -> (0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0)
+  label  2 -> (0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0)
+  label  3 -> (0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0)
+  label  4 -> (0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0)
+  label  5 -> (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0)
+  label  6 -> (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)
+  label  7 -> (0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0)
+  label  8 -> (0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0)
+  label  9 -> (0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0)
+  label 10 -> (0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1)
+  label 11 -> (1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+  label 12 -> (1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0)
+  label 13 -> (1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0)
+  label 14 -> (1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0)
+
+pairs of roots congruent modulo 2: {7: [9]}
+
+  sigma [8, 6, 5, 4, 3, 2, 7, 1, 9, 10, 11, 12, 14, 13]: mod-2 congruences preserved: True
+  sigma [1, 10, 8, 6, 5, 4, 9, 3, 7, 2, 14, 13, 12, 11]: mod-2 congruences preserved: True
+
+VERDICT: no mod-2 obstruction to either permutation.  Only labels 7 and 9 are congruent
+modulo 2 among the fourteen roots, and both permutations respect that relation, so this
+necessary condition is satisfied and the lift question is untouched by it.  The lift itself
+remains the open input for item 7, together with the reduction for the remaining pair.
+PYEXIT=0

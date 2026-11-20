@@ -1,0 +1,153 @@
+provenance
+  sympy 1.14.0, exact integer and rational arithmetic, 22x22 matrices
+  python 3.12.14
+  no sage and no sage-extensions: every quantity below is an integer or a rational
+  model: writing/coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md,
+         @prop:coble-enriques-ambient-isometry (blocks, J_Co, S_Co) and @prop:theta-co-exists
+
+1. L = U^3 + E8(-1)^2 in the standard basis e_0, ..., e_21
+   blocks: U_1 = <e_0,e_1>, U_2 = <e_2,e_3>, U_3 = <e_4,e_5>,
+           E8_1 = <e_6..e_13>, E8_2 = <e_14..e_21>, Gram = -Cartan(E8) (Bourbaki numbering)
+     L      rank 22, det -1, even True, signature (3, 19), SNF [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], coparity delta = 0
+   the Gram matrix G:
+     0:  0  1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+     1:  1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+     2:  0  0  0  1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+     3:  0  0  1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+     4:  0  0  0  0  0  1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+     5:  0  0  0  0  1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+     6:  0  0  0  0  0  0 -2  0  1  0  0  0  0  0  0  0  0  0  0  0  0  0
+     7:  0  0  0  0  0  0  0 -2  0  1  0  0  0  0  0  0  0  0  0  0  0  0
+     8:  0  0  0  0  0  0  1  0 -2  1  0  0  0  0  0  0  0  0  0  0  0  0
+     9:  0  0  0  0  0  0  0  1  1 -2  1  0  0  0  0  0  0  0  0  0  0  0
+    10:  0  0  0  0  0  0  0  0  0  1 -2  1  0  0  0  0  0  0  0  0  0  0
+    11:  0  0  0  0  0  0  0  0  0  0  1 -2  1  0  0  0  0  0  0  0  0  0
+    12:  0  0  0  0  0  0  0  0  0  0  0  1 -2  1  0  0  0  0  0  0  0  0
+    13:  0  0  0  0  0  0  0  0  0  0  0  0  1 -2  0  0  0  0  0  0  0  0
+    14:  0  0  0  0  0  0  0  0  0  0  0  0  0  0 -2  0  1  0  0  0  0  0
+    15:  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 -2  0  1  0  0  0  0
+    16:  0  0  0  0  0  0  0  0  0  0  0  0  0  0  1  0 -2  1  0  0  0  0
+    17:  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  1  1 -2  1  0  0  0
+    18:  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  1 -2  1  0  0
+    19:  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  1 -2  1  0
+    20:  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  1 -2  1
+    21:  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  1 -2
+
+2. the Enriques involution I_En of [@AEGS25, Def. 2.3, printed p. 586]
+   integral True, I_En^2 = 1 True, I_En^T G I_En = G True, det 1
+   eigenspace ranks: +1 -> 10, -1 -> 12  (S_En = U(2)+E8(2) has rank 10, T_En rank 12)
+
+3. alpha = e_0 - e_1, beta = e_0 + e_1, and the reflection w = s_alpha
+   alpha^2 = -2, beta^2 = 2, alpha.beta = 0, det of their Gram matrix -4,
+   so <alpha,beta> = diag(-2,2) is a sublattice of index 2 in U_1; both are primitive in L
+   w = 1 - (2/alpha^2) alpha (G alpha)^T, alpha^2 = -2: integral True, w^2 = 1 True, w^T G w = G True, det -1
+   w(alpha) = -alpha True, w(beta) = beta True
+
+4. J_Co = w . I_En and theta_Co = -J_Co
+   J_Co     integral True, involution True, isometry True, det -1, trace 0
+   theta_Co integral True, involution True, isometry True, det -1, trace 0
+   theta_Co = -J_Co True
+   theta_Co is a signed permutation matrix True
+
+5. the matrix of theta_Co in the standard basis e_0, ..., e_21
+   entry (i,j) = coefficient of e_i in theta_Co(e_j)
+     0  1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+     1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+     0  0  0  0 -1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+     0  0  0  0  0 -1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+     0  0 -1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+     0  0  0 -1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+     0  0  0  0  0  0  0  0  0  0  0  0  0  0 -1  0  0  0  0  0  0  0
+     0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 -1  0  0  0  0  0  0
+     0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 -1  0  0  0  0  0
+     0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 -1  0  0  0  0
+     0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 -1  0  0  0
+     0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 -1  0  0
+     0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 -1  0
+     0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 -1
+     0  0  0  0  0  0 -1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+     0  0  0  0  0  0  0 -1  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+     0  0  0  0  0  0  0  0 -1  0  0  0  0  0  0  0  0  0  0  0  0  0
+     0  0  0  0  0  0  0  0  0 -1  0  0  0  0  0  0  0  0  0  0  0  0
+     0  0  0  0  0  0  0  0  0  0 -1  0  0  0  0  0  0  0  0  0  0  0
+     0  0  0  0  0  0  0  0  0  0  0 -1  0  0  0  0  0  0  0  0  0  0
+     0  0  0  0  0  0  0  0  0  0  0  0 -1  0  0  0  0  0  0  0  0  0
+     0  0  0  0  0  0  0  0  0  0  0  0  0 -1  0  0  0  0  0  0  0  0
+
+6. the two eigenspace bases
+   (+1)-part: beta = e_0+e_1, e_2-e_4, e_3-e_5, e_{6+k}-e_{14+k} (k = 0..7)
+     each is fixed by theta_Co True
+   (-1)-part: alpha = e_0-e_1, e_2+e_4, e_3+e_5, e_{6+k}+e_{14+k} (k = 0..7)
+     each is negated by theta_Co True
+   rank(theta_Co - 1) = 11 and rank(theta_Co + 1) = 11, so both eigenspaces have rank 11
+   the 22 announced vectors are independent and span a sublattice of index 2048 in L
+
+7. the Gram matrices of the two eigenspaces
+   S_Co = ker(theta_Co + 1), basis alpha, e_2+e_4, e_3+e_5, e_{6+k}+e_{14+k}:
+     <alpha>    [[-2]]
+     U(2)       [[0, 2], [2, 0]]
+     E8(2)      its 8x8 Gram block, of determinant 256 (not diag: off-diagonal 2's):
+       [-4, 0, 2, 0, 0, 0, 0, 0]
+       [0, -4, 0, 2, 0, 0, 0, 0]
+       [2, 0, -4, 2, 0, 0, 0, 0]
+       [0, 2, 2, -4, 2, 0, 0, 0]
+       [0, 0, 0, 2, -4, 2, 0, 0]
+       [0, 0, 0, 0, 2, -4, 2, 0]
+       [0, 0, 0, 0, 0, 2, -4, 2]
+       [0, 0, 0, 0, 0, 0, 2, -4]
+     S_Co   rank 11, det 2048, even True, signature (1, 10), SNF [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2], coparity delta = 1
+     the three blocks are pairwise orthogonal True
+   T_Co = ker(theta_Co - 1), basis beta, e_2-e_4, e_3-e_5, e_{6+k}-e_{14+k}:
+     <beta>     [[2]]
+     U(2)       [[0, 2], [2, 0]]
+     E8(2)      its 8x8 Gram block, of determinant 256 (not diag: off-diagonal 2's):
+       [-4, 0, 2, 0, 0, 0, 0, 0]
+       [0, -4, 0, 2, 0, 0, 0, 0]
+       [2, 0, -4, 2, 0, 0, 0, 0]
+       [0, 2, 2, -4, 2, 0, 0, 0]
+       [0, 0, 0, 2, -4, 2, 0, 0]
+       [0, 0, 0, 0, 2, -4, 2, 0]
+       [0, 0, 0, 0, 0, 2, -4, 2]
+       [0, 0, 0, 0, 0, 0, 2, -4]
+     T_Co   rank 11, det -2048, even True, signature (2, 9), SNF [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2], coparity delta = 1
+     the three blocks are pairwise orthogonal True
+
+8. the index, the gluing, and the two invariants that decide the types
+   [L : S_Co + T_Co] = 2048 = 2^11
+   |det S_Co| * |det T_Co| = 4194304 = 2048^2 True
+   thus S_Co is (r,a,delta) = (11, 11, 1) of signature (1, 10), and T_Co is (11, 11, 1) of signature (2, 9):
+   by [@Nik80, Thm. 3.6.2, printed p. 144] the first is <2> + <-2>^10 = I_{1,10}(2) and the
+   second is <2> + U(2) + E8(2), the two lattices of @prop:coble-invariant-lattice and
+   @prop:theta-co-exists.
+
+9. the marked classes of the Coble tuple in this marking
+   H = e_2+e_3+e_4+e_5, the sum of the hyperbolic basis e = e_2+e_4, f = e_3+e_5 of
+   the summand Delta(U_2,U_3) = U(2) of S_Co:
+     H^2 = 4, alpha^2 = -2, H.alpha = 0
+     theta_Co(H) = -H True, theta_Co(alpha) = -alpha True
+     theta_Co negates the summand Delta(U_2,U_3): theta_Co(e_2+e_4) = -(e_2+e_4) True
+
+10. the reversed sign assignment, and one nearby perturbation, both fail
+    J_Co = -theta_Co has the same two eigenspaces with the signs reversed; an isometry
+    g with g theta_Co g^-1 = J_Co would carry the (+1)-eigenspace of theta_Co, of
+    signature (2, 9), to that of J_Co, of signature (1, 10), and an isometry preserves
+    signatures, so no such g exists: theta_Co and J_Co are not conjugate, and the sign
+    is not a choice of marking.
+    I_En alone has (+1)-rank 10, not 11.
+    keep everything and change the U_1 block of theta_Co from the swap e_0<->e_1 to
+    its negative -swap (still an integral isometry of order two, still of rank 11 each):
+      integral True, involution True, isometry True
+      eigenspace ranks +1 -> 11, -1 -> 11
+      its (+1)-eigenspace is spanned by alpha, e_2-e_4, e_3-e_5, e_{6+k}-e_{14+k}:
+     pert + rank 11, det 2048, even True, signature (1, 10), SNF [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2], coparity delta = 1
+      its (-1)-eigenspace is spanned by beta, e_2+e_4, e_3+e_5, e_{6+k}+e_{14+k}:
+     pert - rank 11, det -2048, even True, signature (2, 9), SNF [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2], coparity delta = 1
+      so the perturbation exchanges the two eigenspace types: its (+1)-eigenspace is
+      <alpha>+U(2)+E8(2), of signature (1,10), which is S_Co and not T_Co, and it
+      fixes alpha instead of negating it.  It fails the eigenspace claim.
+
+11. what is not computed here
+    the isometry classes of the two eigenspaces are decided by [@Nik80, Thm. 3.6.2,
+    printed p. 144] from the (r, a, delta) and the signature printed above, not by this
+    transcript; the polarization classes h_Co and h_En and the roots of the (18,0,0)_1
+    diagram in this basis are A13's second and third items and are not touched here.

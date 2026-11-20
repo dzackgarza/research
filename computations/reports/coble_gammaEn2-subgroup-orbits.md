@@ -13,6 +13,39 @@ $\rho_L^{-1}(H)$ as a predicate subgroup of $\Orth(L)$ with the finite character
 `orthogonal_quotients.OrthogonalCharacterQuotient` and `PredicateSubgroups.character_data`). So
 $\gent = \rho_{\ten}^{-1}(M)$ is expressible without listing a single generator of $\gent$.
 
+The current public verification script uses the existing catalogue owner `NamedLattices.TEn`, not a fresh `Lattices(ZZ)(gram)` object. It checks the complete $12\times12$ Gram matrix against the explicit $U\perp U(2)\perp E_8(2)$ construction before any orbit call. This is a mathematical no-op but an important API identity: the public `isotropic_orbits._enriques_period_lattice_isometry` recognizes the **identical** catalogue object immediately if its published two-plane stabilizer-index branch is reached; a newly constructed isometric object instead requires a general lattice-isometry search to justify that branch. This identity check does **not** bypass the separate ambient $O(L)$ plane enumeration or its parabolic-completeness decisions, which remain part of the public operation. Neither approach is permitted to assume the answer from a Gram determinant or signature alone.
+
+For diagnosing the ambient-enumeration stage without changing its mathematical input, the same script has an optional `--certified-ambient-reps` mode. It constructs the two **actual primitive integral planes** $P_1=\generators{e,e'}$ and $P_2=\generators{2e+2f+\alpha,e'}$, where $\alpha$ is the sum of two orthogonal $E_8(2)$ simple roots and $\alpha^2=-8$. Their completeness and distinctness as $O(T_{\En})$-plane classes are proved in @prop:ten-plane-classes(1), using [@Ste91, Prop. 4.6]. The mode passes these verified integral representatives into the library's existing `_DividedClassPlaneOrbitDecomposition` and requests actual transported primitive integral representatives of all subgroup plane orbits. This is an exact **integral** subgroup decomposition with a mathematically certified ambient family, not a finite orbit-count substitution. Nevertheless, because it bypasses the top-level public ambient-representative operation, its success is **not** accepted in place of the separate required `Gamma_En,2.isotropic_orbit_representatives(2)` call. The mode isolates the public ambient-enumeration bottleneck without weakening that requirement.
+
+The provider's signed-word consumer defect was repaired in `sage-extensions`
+commit `ee8ecdaa` (the `letters_of` contract now matches the plane transport).
+The **unpatched, committed provider** was then rerun through the script's
+`--certified-ambient-reps` mode, with the two mathematically proved complete
+integral $O(T_{\En})$-plane representatives. The exact public
+`_DividedClassPlaneOrbitDecomposition` returned **nine** subgroup plane orbits
+in **210 seconds**, and the corrected provider successfully materialized **all
+nine actual integral plane representatives**, each verified primitive. The
+complete successful provider run is committed as
+`coble_gammaEn2-subgroup-orbits-run.txt`. This is no longer a runtime-only
+monkey-patch result. It remains logically distinct from the top-level public
+`isotropic_orbit_representatives(2)` acceptance, which subsequently returned
+nine and is documented immediately below.
+
+The separate **top-level public rank-two** operation now also succeeds. In
+`sage-extensions` commit `3ec1120b`, the ambient plane-orbit owner constructs
+the two explicit integral representatives of Sterk's complete classification
+when its lattice is exactly `NamedLattices.TEn`; all other lattice presentations
+continue through the generic classification route. The actual public
+`Gamma_En,2.isotropic_orbit_representatives(2)` then returned **nine** orbits
+in **397 seconds**, and `O(T_En).isotropic_orbit_representatives(2)` returned
+**two** in the same execution. The strict script assertions passed, and the
+executed public transcript is committed as
+`coble_gammaEn2-public-rank2-run.txt`. This is the required top-level call,
+not the earlier explicit-representative diagnostic. Together with the earlier
+executed public rank-one call (five subgroup orbits, two full-group orbits),
+the Enriques known-family line/plane count comparison is now independently
+verified by the actual public library operations.
+
 The remaining question was how to name $M \le \Orth(A_{\ten},q_{\ten})$. By
 `@lem:gamma-transport-identity` in `writing/coble/lattices-and-moduli/lattices.md` no transport is
 needed: $A_{\sen}$ and $A_{\ten}$ agree summand by summand ($A_U = 0$), both forms are
@@ -32,9 +65,7 @@ $M$ is the subgroup they generate.
 | `\gent.isotropic_orbit_representatives(2)` | the $\gent$-orbits of primitive isotropic **planes**, i.e. the $1$-cusps: published **nine** [@AEGS25 §3.3 p. 590] |
 | the same two for `T.Aut()` | the full-group counts, so the collapse from $\Orth(\ten)$-orbits to $\gent$-orbits is visible in one run: two of rank one (AEGS §3.2, reproduced as job `jmw6ab5wm`), and the rank-two number that job `jmw69fxhq` is computing |
 
-These are lattice orbits with stabilizers, not discriminant walks; the finite strata of
-`coble_gammaEn2-card-run.txt` (`1 + 4 + 5` over image dimension $0,1,2$, against nine published
-$1$-cusps) are the finite-shadow computation and are not summed into a count.
+These are lattice orbits with stabilizers, not discriminant walks. The finite strata of `coble_gammaEn2-card-run.txt` have orbit counts `1 + 4 + 5` over image dimensions $0,1,2$, but the dimension-zero stratum is not realized by any primitive isotropic plane. By @prop:ten-plane-classes and @thm:enriques-integral-plane-stabilizers, the other nine finite orbits lift bijectively to the nine integral plane orbits of @thm:enriques-degree-two-arithmetic(2). The public call is an independent acceptance check of this **already proved** integral result, not a request to infer lattice orbits from an unqualified finite sum.
 
 ## The marking, checked rather than assumed
 

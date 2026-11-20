@@ -1,0 +1,7 @@
+e^2 = 0  e'^2 = 0  e.e' = 0  e.a_i = [0, 0, 0, 0, 0, 0, 0, 0]  e'.a_i = [0, 0, 0, 0, 0, 0, 0, 0]
+<e,e'> is orthogonal to E8(2): True
+Pi^perp = {a e + c e' + y}: verified on the box
+E8(2) Gram diagonal: [-4, -4, -4, -4, -4, -4, -4, -4]
+E8(2) off-diagonal entries: [0, 2]
+every square divisible by 4 on [-2,2]^8: True
+no (-2)-vector in E8(2): a square is -4*sum x_i^2 + 4*sum_{i<j, E8_ij=2} x_i x_j, a multiple of 4

@@ -1,0 +1,20 @@
+pairings: r12.r13 = 0, r12.delta = 0, r13.delta = 0; each square -2
+P = sat.span(r12, r13, delta): rank 3
+P^perp: rank 9, det -512;  det P = -8, det P * det P^perp = 4096, det T_En = 1024
+index^2 of P + P^perp: 4 -> index 2
+
+RESULT: P is not a direct summand (index 4); the identity extension is not available and
+the gluing question for this pair is open.
+
+=== the same question inside the rank-10 span S of the fourteen roots
+T_En = S + S^perp with index 1 (coble_759-lift-1314-run.txt), so an isometry of S extends;
+the class of r12 maps to the class of r13 exactly, since S meets S^perp in 0 and eta lies
+in S^perp.  So the pair is decided by whether <r12, r13> is a direct summand of S:
+  S: rank 10, det -256;  P = sat.span(r12, r13): rank 2, det 4;  P^perp in S: rank 8, det -256
+  index^2 of P + P^perp in S: 4 -> index 2
+  RESULT: not a direct summand of S either, so the construction fails at rank 10 as well.
+  What remains is a gluing extension inside S, or a transporter for a family with
+  nontrivial pointwise orthogonal stabilizer, which the library does not provide
+  (coble_759-transporter-1213-run.txt).
+PYEXIT=0
+exit=0

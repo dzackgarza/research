@@ -1,0 +1,83 @@
+research#658, item 1f: the input that is missing, and the two routes that were checked
+
+Item 1f asks whether Phi is onto the divisibility-2 locus, i.e. whether every divisibility-2
+Gamma_En-orbit of primitive isotropic vectors of T_En meets eta(T_Co) = k^perp.  The page states
+the class-level result it can prove (prop:cusp-map-surjective-on-classes) and leaves the orbit
+question open.  This note records the two routes examined and why neither is available on main.
+
+ROUTE (a): transitivity of Gamma_En on the primitive isotropic vectors.  REFUTED, with a
+computation: T_En = U + U(2) + E8(2) is not unimodular (rank 12, det 2^10, A = (Z/2)^10), so
+cor:hyperbolic-splitting does not apply; and Gamma_En = O~^+(T_En) acts through O(A), so its
+orbits are refined by the discriminant class v |-> v*.  See
+coble_658-ten-transitivity-probe-run.txt.
+
+ROUTE (b): the fibre over one discriminant class is a single orbit, as thm:coble-integral-lifting-fibre
+proves for T_Co, and then one asks whether each such fibre contains a vector orthogonal to a root
+in the Gamma_En-orbit of k.  This is the route that would settle 1f positively, and it does not
+transfer as stated: thm:coble-integral-lifting-fibre is a theorem about T_Co = B(2) with B = I_{2,9},
+and its proof uses A_{T_Co} = B/2B and Orth(T_Co) = Orth(B).  T_En is U + B_0(2) with
+B_0 = U + E8, i.e. it has a *unimodular* summand U beside the doubled part, so it is not B(2) for
+any integral B and the 2-adic lifting step does not apply verbatim.  What the analogue would need is
+a fibre-singleton statement for a lattice of the shape U + B_0(2), together with the existence, in
+each nonzero isotropic class, of a divisibility-2 primitive isotropic representative orthogonal to a
+root in the orbit of k.
+
+A candidate tool for route (b) is thm:eichler-criterion (the book's form of the Eichler criterion,
+[@GHS08, Prop. 3.3(i)]), which gives transitivity on primitive vectors of equal norm and equal
+discriminant class.  Two things must be checked before it can be used: whether its "second
+hyperbolic plane" U_1 covers the scaled plane U(2) that T_En actually contains, and whether
+E8(2) + U(2) supplies isotropic representatives in every nonzero isotropic class.  Neither check has
+been made, and the printed form of [@GHS08, Prop. 3.3(i)] is not held here; that is the input this
+route is missing.
+
+ROUTE (c): cite an orbit theorem from the held literature.  Closed as well.  The one held source on
+orbits of vectors under orthogonal groups is [@Daw22] (`tmp/sources/dawes-2022-arxiv-2205.10601-orbits-in-lattices.pdf`),
+and it states *algorithms* -- Algorithms 2.1, 2.2 and 2.3 for finding orbits of vectors for certain
+subgroups of O(L), with software, and Algorithms 3.2 and 3.4 for Tits buildings in signature (2,n) --
+not a closed form for a prescribed lattice and subgroup.  Running it is the missing computation, and
+the book's own records say the subgroup-orbit operation is not available in the provider
+(sage-extensions#286, cited at rmk:gamma-co-counts: "no count on this page is read off it").  Withdrawn
+below, after one turn, is the further claim that this would reduce 1f to a class-level statement.
+
+WITHDRAWN, 2026-11-19, after one turn: an argument that "for a divisibility-2 vector v = 2x and k of
+divisibility 1, beta(v,k) = 2 beta(x,k) is even and, since beta(.,k) is onto, a vector of the same
+*class* can be chosen orthogonal to k, so the class-level obstruction vanishes and 1f reduces to the
+fibre-singleton statement".  The step is false: adding 2w preserves the class but not isotropy,
+since (v + 2w)^2 = 4(v.w) + 4 w^2 is not zero in general.  What survives is the parity statement
+alone -- beta(v,k) is even for divisibility-2 v -- which does not produce an orthogonal vector inside
+an orbit.  So there is no class-level reduction of 1f: it is an orbit computation for Gamma_En on the
+divisibility-2 primitive isotropic vectors, and the fibre-singleton statement is one way to get it,
+not an equivalent form of it.
+
+ROUTE (d): separate the orbits by the isometry class of v^perp/<v>.  Discarded, and the reason is
+worth keeping because it is the obvious first idea.  For a primitive isotropic v of divisibility d in
+a lattice L, the determinant of v^perp/<v> is det(L)/d^2, so it is determined by the class and cannot
+distinguish two vectors in it: the test is vacuous before it is run.  The attempt made here also
+showed the implementation route is not a shortcut -- a hand-written quotient returned -1024 for a
+lattice whose formula value is 256, because the step that quotients by Z v dropped an HNF generator
+instead of computing the quotient.  That probe was deleted rather than committed, per the rule that
+half-run probes stay out of this directory.
+
+What route (d) leaves: the finer invariants of v^perp/<v> -- its discriminant form, parity and root
+system -- on a correctly saturated quotient.  Any such code should first reproduce the known T_Co
+count (one kernel orbit per isotropic class, hence 527), where the answer is on the page, before it is
+pointed at T_En.
+
+A NOTE ON THE TOOL ITSELF: the Eichler transvection group of @def:eichler-group is generated by
+transvections E_{e,a} at primitive isotropic e with div_L(e) = 1.  Every nonzero vector of T_Co has
+divisibility 2, so E(T_Co) is the trivial group by that definition -- the book's 527 count cannot have
+come from it and did not (it uses thm:cusp-lifting and the plane-stabilizer images).  T_En does have
+divisibility-1 isotropic vectors, in its U summand, so E(T_En) is nontrivial; but the transitivity
+criterion the book has, thm:eichler-criterion, still requires a second hyperbolic plane
+(prop:ten-no-second-plane), so neither lattice's count follows from it.
+
+AND THE ONE-PLANE TRANSITIVITY THAT WOULD SUFFICE IS NOT IN THE HELD SOURCES EITHER.  What 1f needs is
+transitivity on the primitive isotropic vectors of one class, and the strength that would give it with
+a single hyperbolic plane.  The closest held statement is Sterk 1991, Remark 2.5, citing Cossec
+(Proposition 1.6.1): O(H + E_8(-1)) acts transitively on the *exceptional sequences* -- sequences
+(f_1,...,f_r) of isotropic vectors with (f_i, f_j) = 1 for i != j, r < 9.  That is a statement about
+sequences with pairwise pairing 1, not about the fibre of the class map, and it is about the Enriques
+lattice rather than T_En.  So it does not give 1f.
+
+STATE: item 1f is NOT MET.  The class-level proposition is proved and the orbit question is open and
+recorded as open; no page claims surjectivity onto the divisibility-2 locus.

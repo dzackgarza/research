@@ -1,0 +1,18 @@
+T_En = U + U(2) + E8(2), rank 12
+k = e~ - f~                  square  -2  divisibility 1  primitive True
+delta = e~ - f~ + f~'        square  -2  divisibility 1  primitive True
+w = 2e~ + e~'                square   0  divisibility 2  primitive True
+w . delta = 0   (the cheap test: orthogonal to a (-2)-vector)
+e~'                          square   0  divisibility 2  primitive True
+e~' . k = 0   (orthogonal to k itself, so its class is in the image)
+w . k = -2   (the witness is not orthogonal to k, only to delta)
+
+the (-2)-vectors of T_En are infinite in number: with v = a e~ + b f~ + y and y^2 in 4Z,
+v^2 = 2ab + y^2 = -2 forces ab odd, which has solutions for every odd a.
+
+AEGS25, printed p. 587 (after Namikawa, Math. Ann. 270 (1985), Thm. 2.13): there is a
+unique (-2)-vector of T_En modulo O(T_En).  So k and delta lie in one O(T_En)-orbit, no
+O(T_En)-invariant refines the cheap test, and the image of Phi is decided exactly by:
+  is O~+(T_En) = ker(rho) cap O^+ transitive on the (-2)-vectors of T_En?
+verdict: undecided -- the deciding input is a generating set of Gamma_En shown to move k
+to delta; no enumeration of (-2)-vectors can decide it, they are infinite in number.

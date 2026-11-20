@@ -1,0 +1,59 @@
+the face of the restricted Enriques semifan cut by an admissible Coble root
+Sage 11.0.beta5; exact ZZ/QQ linear algebra; library sage-extensions at commit 1488acf
+T_En Gram determinant 1024; delta = e - f, delta^2 = -2; T_Co = delta^perp
+
+=== (1) the printed order against the library's vertex order r_0, ..., r_{n-1}
+cusp 3: 12 printed roots; Gram of the printed order = Gram of the library order: True
+        irrelevant vertices in the library order: r9,10,11
+        the printed labels of those vertices, under every matching: [10, 11, 12]
+        label 10 = r9 = the sum of the printed Figure 5 nodes [16, 18]
+        label 11 = r10 = the sum of the printed Figure 5 nodes [21, 19, 19]
+        label 12 = r11 = the sum of the printed Figure 5 nodes [21, 17, 17]
+cusp 4: 11 printed roots; Gram of the printed order = Gram of the library order: True
+        irrelevant vertices in the library order: r9,10
+        the printed labels of those vertices, under every matching: [10, 11]
+        label 10 = r9 = the sum of the printed Figure 5 nodes [16, 19]
+        label 11 = r10 = the sum of the printed Figure 5 nodes [17, 18]
+cusp 5: 14 printed roots; Gram of the printed order = Gram of the library order: False
+        the orders differ; permutations of the library order carrying one labelled Gram to the other: 8
+        irrelevant vertices in the library order: r8,9,10,11,12,13
+        the printed labels of those vertices, under every matching: [7, 9, 11, 12, 13, 14]
+        label  7 = r12 = the sum of the printed Figure 5 nodes [20]
+        label  9 = r13 = the sum of the printed Figure 5 nodes [21]
+        label 11 = r8 = the sum of the printed Figure 5 nodes [16]
+        label 12 = r9 = the sum of the printed Figure 5 nodes [17]
+        label 13 = r10 = the sum of the printed Figure 5 nodes [18]
+        label 14 = r11 = the sum of the printed Figure 5 nodes [19]
+
+=== (2) the admissible T_Co-roots, their classes in K_I, and their faces
+cusp 3: eta_j . delta = 0; walls in T_Co at printed labels [1, 2, 3, 4, 5, 6, 7, 9, 12]; admissible roots [12]
+        label 12: r^2 = -2, (r, delta) = 0, (r, eta_j) = 0; in the irrelevant set: True
+        one admissible root: no pair exists, so the map is injective here and carries no information about the marking
+        the face of F_3 cut by r^perp: {label 12: the maximal cone M}
+
+cusp 4: eta_j . delta = 0; walls in T_Co at printed labels [1, 2, 3, 4, 5, 6, 7, 9, 10]; admissible roots [10]
+        label 10: r^2 = -2, (r, delta) = 0, (r, eta_j) = 0; in the irrelevant set: True
+        one admissible root: no pair exists, so the map is injective here and carries no information about the marking
+        the face of F_4 cut by r^perp: {label 10: the maximal cone M}
+
+cusp 5: eta_j . delta = 0; walls in T_Co at printed labels [1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 14]; admissible roots [12, 13, 14]
+        label 12: r^2 = -2, (r, delta) = 0, (r, eta_j) = 0; in the irrelevant set: True
+        label 13: r^2 = -2, (r, delta) = 0, (r, eta_j) = 0; in the irrelevant set: True
+        label 14: r^2 = -2, (r, delta) = 0, (r, eta_j) = 0; in the irrelevant set: True
+        labels 12 and 13: same class in K_I: False   (rank of (eta, difference) = 2)
+        labels 12 and 14: same class in K_I: False   (rank of (eta, difference) = 2)
+        labels 13 and 14: same class in K_I: False   (rank of (eta, difference) = 2)
+        3 admissible roots, pairwise distinct classes in K_I, so pairwise inequivalent under Gamma_Co,2
+        the face of F_5 cut by r^perp: {label 12: the maximal cone M, label 13: the maximal cone M, label 14: the maximal cone M}
+
+=== (3) the verdict of #760 at each marked cusp
+cusp 3: 1 admissible T_Co-roots, 1 of them irrelevant ([12])
+cusp 4: 1 admissible T_Co-roots, 1 of them irrelevant ([10])
+cusp 5: 3 admissible T_Co-roots, 3 of them irrelevant ([12, 13, 14])
+
+at cusp 5 the three admissible T_Co-roots are pairwise inequivalent under Gamma_Co,2 and each
+cuts the maximal cone M = union over h in W^irr of h(C) of F_5, one and the same cone: the map
+from Gamma_Co,2-orbits of admissible roots to faces of F_5 is not injective, and the statement
+of #760 fails there.
+elapsed 9 s
+PYEXIT=0

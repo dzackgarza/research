@@ -1,0 +1,90 @@
+research#658, item 1e: the input that is missing, and what was checked
+
+Item 1e asks whether Gamma_Co <= ker rho_{T_Co}.  The proposal rmk:gamma-co-nodal-pair-proposal
+(lattices.md) reduces it to one geometric statement and names three gaps.  This note records what
+was searched for the first of them, so that the next session does not repeat the search and does
+not mistake a neighbour for the input.
+
+THE INPUT NEEDED (either of two, and only these two will do):
+
+  (i) a printed statement, by authors, number and page, that the local monodromy of a degeneration
+      of surfaces acquiring two ordinary double points at once is the product of the two
+      commuting Picard--Lefschetz transformations in the vanishing classes; or
+  (ii) a computed loop: an explicit family of Coble surfaces over a punctured disc whose monodromy
+      on T_Co is computed to be s_e, with the computation on main.
+
+WHAT WAS CHECKED IN tmp/sources.  Two passes: first the markdown conversions (not stubs: AEGS25 has
+2432 lines, Sterk 1991 has 1526, DK13 has 499), then -- because a conversion can be partial -- every
+PDF, converted with pdftotext: 28 PDFs, 28 conversions, all searched.
+
+  - no occurrence of "vanishing cycle" or of a Picard--Lefschetz formula in any held conversion;
+  - DK13 contains no occurrence of "monodromy" at all -- it computes no monodromy anywhere, so its
+    Prop. 3.2 and (3.6) cannot supply (i);
+  - AEGS25's Picard--Lefschetz material (its lines 1036-1060) is about the Picard--Lefschetz
+    transforms of Kulikov degenerations of K3 surfaces and their combinatorial types; it is not a
+    statement about a family of Coble surfaces acquiring two ordinary nodes at once;
+  - the derivation that computations/reports/smwo_direct-period.md cites for the two-node product,
+    .ultramath/smw0o7jbf/m5/A20-direct-period-theorem.md sec. 6.1(b), is not on main
+    (`git cat-file -e omm/main:...` fails), so it is not an input the book may cite.
+
+The full-PDF pass adds the following, and it is the strongest form of the negative available here:
+seven held documents contain a Picard--Lefschetz formula at all -- Sterk's 1988 thesis, Shah 1980,
+Nikulin 1979, Alexeev--Engel 2022 and 2023, Alexeev--Engel--Thompson 2023, Yu--Zheng 2023 -- and
+none of them states the monodromy of a degeneration acquiring two ordinary double points at once.
+A search of all 28 conversions for "simultaneous", for "two nodes" beside monodromy, and for a
+"product of ... reflections", returns nothing on point; the classical statements are the one-node
+formula, whose hypothesis is that the critical values are distinct.
+
+A FOURTH HELD SOURCE, CHECKED FOR THE MODULI STATEMENT: [@DZ01], Dolgachev--Zhang, Coble rational
+surfaces, held as tmp/sources/dolgachev-zhang-2001-coble-rational-surfaces.pdf (2594 lines of
+pdftotext).  It is the standard reference on the geometry the book's Coble surfaces belong to --
+Lemma 6.2 there characterises the Coble surfaces of K3-type as those whose double cover is a K3 with
+at worst ordinary double points, which is exactly the book's construction -- but it contains no
+occurrence of "moduli", "period", "Torelli" or "deformation" at all: it is a classification paper,
+not a moduli paper.  So it cannot supply the statement of which Heegner divisors form the
+discriminant, which is what 1e now needs.
+
+  Caveat on that source: its pdftotext conversion drops minus signs (K_X^2 = -1 prints as "KX2 =
+  1"), so it is usable for word searches and not for symbol searches; nothing above relies on a
+  symbol search in it.
+
+ROUTE (e): settle the moduli identification by a dimension count.  Checked, and it does not close the
+gap.  The space of tau-invariant bidegree-(4,4) forms on P^1 x P^1 is spanned by the monomials x^i y^j
+with i + j even, i, j in {0,...,4}, of which there are 13; the condition f(p) = 0 at the tau-fixed
+point p removes one, leaving 12, or 11 projectively.  (The two derivative conditions are automatic:
+tau acts on the cotangent space at a fixed point by -1, so an invariant f has df(p) = 0 for free.)
+The moduli space is 9-dimensional (DK13, Prop. 3.2, printed p. 513).  So the parameter space is
+strictly larger than the moduli, the period map has positive-dimensional fibres, and the count says
+nothing about whether the image lies in the classical open subset.  A dimension count cannot decide
+gap 2; only the periods themselves can.
+
+AND GAP 2 IS SUBSTANTIVE, WHICH [@DZ01] CONFIRMS: the reviewer's objection is not a formality.  [@DZ01]
+states that the classical construction does not exhaust the class -- "This makes some (not all, as we
+shall see) Coble surfaces ..." and, later, that the corresponding statement "cannot be extended to all
+Coble surfaces" (Example 6.10).  So identifying the one-node members with the classical ones is a real
+question about periods, not a convention.
+
+  Caveat on the citation: the two passages are on one page of the PDF conversion, whose pagination
+  does not match the journal's, so no printed page is given here.  Under the standing rule the
+  statement may not be written into a page of the book until the printed page is read; what it is used
+  for here is the internal note that the gap is substantive.
+
+CANDIDATES TO OBTAIN -- named as candidates, not cited, because no printed page has been seen:
+
+  - SGA 7 II, the Picard--Lefschetz exposé (Deligne--Katz);
+  - Lamotke, The topology of complex projective varieties after S. Lefschetz, Topology 20 (1981);
+  - Voisin, Hodge Theory and Complex Algebraic Geometry II, sec. 3 (its Thm. 3.16 is one node,
+    not two).
+
+  None of these is held in tmp/sources.  Under the standing rule, none may be written as a citation
+  until its printed page is read; naming them here is a to-do list, not a reference.
+
+THE OTHER TWO ROUTES THAT WOULD SETTLE THE ITEM:
+
+  - prove the containment G1 <= Gamma_Co (the proposal's gaps 2 and 3), which with the lattice
+    computation would refute the conjecture; or
+  - prove Gamma_Co <= O~^+(T_Co) directly, which would settle item 1e the other way and restore the
+    conjecture as a theorem.  Nothing in this repository does either.
+
+Until one of these exists on main, item 1e stays NOT MET, and no page may state that the conjecture
+is false: conj:gamma-co-stable is open and rmk:gamma-co-status says so.

@@ -1,0 +1,21 @@
+[   87.4s] Gamma_Co,2 built
+[   87.5s]    label  1: q=-4, (.,eta5)=0 -> not an admissible root
+[   87.5s]    label  2: q=-4, (.,eta5)=0 -> not an admissible root
+[   87.5s]    label  3: q=-4, (.,eta5)=0 -> not an admissible root
+[   87.5s]    label  4: q=-4, (.,eta5)=0 -> not an admissible root
+[   87.5s]    label  5: q=-4, (.,eta5)=0 -> not an admissible root
+[   87.5s]    label  6: q=-4, (.,eta5)=0 -> not an admissible root
+[   87.5s]    label  7: q=-4, (.,eta5)=0 -> not an admissible root
+[   87.5s]    label  8: q=-4, (.,eta5)=0 -> not an admissible root
+[   87.5s]    label  9: not in T_Co
+[   87.5s]    label 10: not in T_Co
+[   87.5s]    label 11: not in T_Co
+[  203.2s]    label 12: q=-2, (.,eta5)=0 -> certified in G_v: True
+[  203.2s]    label 13: q=-2, (.,eta5)=0 -> certified in G_v: True
+[  203.3s]    label 14: q=-2, (.,eta5)=0 -> certified in G_v: True
+[  203.3s] certified: [12, 13, 14]
+[  203.3s]    depth 1: orbit 2, found False
+[  203.3s]    depth 2: orbit 2, found False
+
+not reached in the bound
+PYEXIT=0

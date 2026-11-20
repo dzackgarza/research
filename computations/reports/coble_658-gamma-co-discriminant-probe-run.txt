@@ -1,0 +1,12 @@
+T_Co: rank 11, determinant -2048 (want -2048)
+control 1, s_r for r = h + a_1 of square -2: isometry True, acts trivially on A_{T_Co} True
+control 2, the swap e' <-> f' of the U(2) block: isometry True, acts trivially on A_{T_Co} False
+the probe therefore returns both answers on known elements; the two controls lie on opposite sides.
+
+generators of Gamma_Co on record: 0
+verdict: undecided
+  The record contains no element of Gamma_Co except through conj:gamma-co-stable, so the
+  half of item 1 that is not the sign cannot be decided here.  Supply generators as
+  integral 11x11 matrices preserving G_TCO and this probe returns 'inclusion-holds' or
+  'excluding' with the offending indices; prop:gamma-co-strong-lifting then gives the
+  Gamma_Co form of thm:coble-strong-lifting or refutes it.

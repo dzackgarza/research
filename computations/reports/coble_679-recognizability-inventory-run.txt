@@ -1,0 +1,50 @@
+version-controlled deposits read: 8
+  writing/coble/papers/AB19/elliptic_k3.tex
+  writing/coble/papers/ABE22/el-arxiv-final.tex
+  writing/coble/papers/AE22/2el.tex
+  writing/coble/papers/AE23a/flex-arXiV-Sep29.tex
+  writing/coble/papers/Kim20/file1806.tex
+  writing/coble/papers/YZZ25/sextic20250904.tex
+  writing/coble/papers/YZZ25/sextic20250904_expanded.tex
+  writing/coble/papers/YZZ25/sextic20250904_wrapped.tex
+
+lines speaking of recognizability: 9
+  writing/coble/papers/AE22/2el.tex:3364  [fixed locus of an involution]
+      fixed locus of an involution is a so-called ``recognizable divisor."
+  writing/coble/papers/AE22/2el.tex:3373  [a meta-statement about recognizability]
+      Furthermore, recognizability ensures
+  writing/coble/papers/AE22/2el.tex:3379  [a meta-statement about recognizability]
+      properties of recognizability hold, in particular, the existence of a combinatorially
+  writing/coble/papers/AE23a/flex-arXiV-Sep29.tex:120  [a meta-statement about recognizability]
+      called {\it recognizability}. Thus, the search for modular toroidal compactifications
+  writing/coble/papers/AE23a/flex-arXiV-Sep29.tex:123  [a meta-statement about recognizability]
+      are recognizable.
+  writing/coble/papers/AE23a/flex-arXiV-Sep29.tex:128  [a meta-statement about recognizability]
+      and was proven to be recognizable in \cite{alexeev2021compact}.
+  writing/coble/papers/AE23a/flex-arXiV-Sep29.tex:144  [flex divisor]
+      Our first result hints towards a positive answer on the question of whether $R_{\rm flex}$ is recognizable.
+  writing/coble/papers/AE23a/flex-arXiV-Sep29.tex:168  [constant cycle curve]
+      is a constant cycle curve, then it is recognizable. \end{conjecture}
+  writing/coble/papers/AE23a/flex-arXiV-Sep29.tex:170  [a meta-statement about recognizability]
+      A resolution of this conjecture would unify various results about recognizable divisors, such
+
+counts by subject (the last row collects the lines that state the notion rather than a divisor):
+  a meta-statement about recognizability 6
+  constant cycle curve                 1
+  fixed locus of an involution         1
+  flex divisor                         1
+
+Conclusion.  In the version-controlled deposits, recognizability is asserted for the
+fixed locus of a nonsymplectic involution and for the ramification divisor; for the flex
+divisor AE23a states it as a conjecture; and for a divisor built from a section and the
+fibres of an elliptic fibration -- ABE22's s + m sum f_i, the unit's only candidate --
+nothing states it either way, ABE22 itself included, whose paper does not use the word.  So question 1 of @qst:recognizable-semifan cannot be settled
+from these deposits, and the input it needs is a recognizability proof for that divisor.
+
+One further datum the inventory records: AE23a states of the rational-curve divisor that
+it "was proven to be recognizable in" AE23, so the unit's citation of AE23 for that fact
+has a deposited witness; AE23 itself is not deposited.
+
+Not read by design: tmp/sources (local copies and text extracts, not version controlled)
+and the PDFs (binary).  AEGS25 states that the ramification divisor is recognizable; that
+is cited on the page from the deposited PDF and is not part of this reproducible scan.

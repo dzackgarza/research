@@ -95,7 +95,7 @@ The unique maximal parabolic subdiagram $\wB_7(2)$ of $(9, 9, 1)_1$, correspondi
 
 By @thm:coble-cusp-chamber, exactly one of the nine one-node deletions of the Coxeter diagram $G_{(9, 9, 1)_1}$ is parabolic, and it has type $\tilde B_7(2)$ (@fig-coble-cusp-9-9-1-parabolics).
 So, for the group $\Orth^+(T_\Co)$, the $0$-cusp represented by $v_0$ is incident to exactly one $1$-cusp, and its boundary lattice is $(7,7,1)_0$.
-For the stable group $\widetilde\Orth^+(T_\Co)$, the primitive isotropic lines of $T_\Co$ form $527$ orbits, one for each nonzero isotropic class of $A_{T_\Co}$ (@thm:cusp-lifting).
+For the stable group $\widetilde\Orth^+(T_\Co)$, the primitive isotropic lines of $T_\Co$ form $527$ orbits, one for each nonzero isotropic class of $A_{T_\Co}$ (@thm:coble-zero-cusp-count(2), one orbit per class by @thm:coble-integral-lifting-fibre(1), (2)).
 At cusp $2$ of $\fentwo$, the facet of the unique white node $r_{10}$ has the nine-wall diagram $G_{(9,9,1)_1}$ with the induced bond $8-9$ double (@prop:facet-angles-aegs), and all nine white candidates of [@AEGS25, Fig. 7; @AEGS25, Fig. 8], have perpendicular lattice $T_\Co$ (@prop:cusp-white-root-complements).
 
 :::
@@ -114,9 +114,7 @@ The one-cusps incident to a zero-cusp of $\fentwo$ are represented by maximal pa
 
 The blue subdiagram in each published panel is the invariant maximal parabolic; the panel label identifies the incident one-cusp, and the adjacent folded diagram gives its Enriques parabolic type. Crosses mark reflection roots. The two degree-four K3 one-cusp types $E_8D_8$ and $D_{16}$ have no symmetric maximal parabolic under these involutions, so they have no preimage one-cusp in $\fentwo$ [@AEGS25, §3D].
 
-![The two invariant maximal parabolics and folded types at Sterk cusp 2, from the source vector figure.](/coble/reference/aegs-par2.svg){#fig-sterk-one-cusps-2}
-
-![The invariant maximal parabolics and folded types at Sterk cusps 1, 3, 4, and 5, from the source vector figure.](/coble/reference/aegs-pars.svg){#fig-sterk-one-cusps-1345}
+The source's own vector figure prints the two invariant maximal parabolics and the folded type at cusp $2$ [@AEGS25, Figure 7, printed p. 594], and the four at cusps $1$, $3$, $4$ and $5$ [@AEGS25, Figure 8, printed p. 595]; those two panels are not reproduced here, because the SVG files this page used to embed were symlinks to `~/.pandoc/figures/vector/aegs-paper/`, a path outside this repository that holds no such file in any version control (research#672). The panels' content is used below only through the folded diagrams, which are drawn from the printed root data in @prop:facet-angles-aegs.
 
 ::: {#fig-k3-cusp-18-2-0-vinberg .figure}
 \begin{tikzpicture}
@@ -164,15 +162,22 @@ This equality is the lattice relation behind the $2\widetilde E_8$ parabolic and
 
 The isotropic vectors that represent the cusps of @fig-sterk-cusp-diagram have the following divisibilities in $\ten$ and in $T_{\Kthree}$.
 
-| Sterk Cusp | Vector | $\mathrm{div}_{\ten}$ | $\mathrm{div}_{T_{\Kthree}}$ |
+| Sterk Cusp | Vector, in the coordinates of $\ten = U\oplus U(2)\oplus E_8(2)$ | $\mathrm{div}_{\ten}$ | $\mathrm{div}_{T_{\Kthree}}$ |
 | :--------- | :------------------------------- | :--------------------- | :------------------------------- |
 | 1 | $e$ | 1 | 1 |
 | 2 | $e'$ | 2 | 2 |
-| 3 | $e' + f' + \overline{\alpha}_8$ | 2 | 1 |
-| 4 | $2e' + f' + \overline{\alpha}_1$ | 2 | 1 |
-| 5 | $2e + 2f + \overline{\alpha}_1$ | 2 | 1 |
+| 3 | $e' + f' + y_3$ | 2 | 1 |
+| 4 | $2e' + f' + y_4$ | 2 | 1 |
+| 5 | $2e + 2f + y_4$ | 2 | 1 |
+
+with $y_3 = -(2\alpha_1+3\alpha_2+4\alpha_3+6\alpha_4+5\alpha_5+4\alpha_6+3\alpha_7+2\alpha_8)$, the negative of the highest root of $E_8$, and $y_4 = -(4\alpha_1+5\alpha_2+7\alpha_3+10\alpha_4+8\alpha_5+6\alpha_6+4\alpha_7+2\alpha_8)$.
 
 : Isotropic vectors in $\fentwo$ and their divisibilities.
+
+The coordinates are the lattice database's own, printed for `Sterk.selected_isotropic_vectors()` in the basis $(a_1,\dots,a_8,e,e',f,f')$ of $\ten$ [@Ste91, (4.2.2)--(4.2.3), printed p. 16], and the same vectors stand beside the wall Gram matrices in the transcript of @prop:facet-angles-aegs; $y_3$ has square $-2$ as a vector of $E_8$, hence $-4$ in $E_8(2)$, and $y_4$ has square $-4$, hence $-8$, so $e'+f'$ of square $4$ and $2e'+f'$ and $2e+2f$ of square $8$ make the four vectors isotropic.
+Cusp $4$ has two printed representatives: the table gives the one its chamber is drawn at, $2e'+f'+y_4$, which is `Sterk.sterk4_cusp_vector()`, while `Sterk.selected_isotropic_vectors()` returns (4.2.3)'s $e'+2f'+y_4$; both have the divisibilities tabulated here and isometric reductions.
+An earlier printing of this table named $y_3$ by the single root $\overline\alpha_8$, which is of square $-4$ and does not make $e'+f'+\overline\alpha_8$ isotropic; the vectors above are the library's.
+The two divisibilities, and the reduction at each cusp, are computed in `computations/reports/coble_672-zero-cusp-sterk-two-run.txt`.
 :::
 
 ::: {#fig-220-cusp-diagram .figure}

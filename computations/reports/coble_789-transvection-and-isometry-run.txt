@@ -1,0 +1,23 @@
+(A) E(e')=e': True
+(A) E(delta)=delta+e': True
+(A) E^T G E = G: True  det E = 1
+    E^1(delta) = delta + 1 e': True
+    E^2(delta) = delta + 2 e': True
+    E^3(delta) = delta + 3 e': True
+    E^4(delta) = delta + 4 e': True
+    E^5(delta) = delta + 5 e': True
+(A) E acts trivially on A_{T_En} (E(y)-y integral for a basis of the dual): True
+(B) B G_K B^T equals -2 Cartan(E8): True
+(B) N^T G_K N = G_K: True  det N = -1
+(B) N(e-f) = e+f+a_1: True
+(B) the matrix N, rows:
+    [2, 1, -4, 0, 2, 0, 0, 0, 0, 0]
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    [1, 0, -1, 0, 0, 0, 0, 0, 0, 0]
+    [0, 0, 0, -1, 0, 0, 0, 0, 0, 0]
+    [0, 0, 0, 0, -1, 0, 0, 0, 0, 0]
+    [0, 0, 0, 0, 0, -1, 0, 0, 0, 0]
+    [0, 0, 0, 0, 0, 0, -1, 0, 0, 0]
+    [0, 0, 0, 0, 0, 0, 0, -1, 0, 0]
+    [0, 0, 0, 0, 0, 0, 0, 0, -1, 0]
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, -1]

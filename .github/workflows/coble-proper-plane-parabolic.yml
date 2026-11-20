@@ -1,0 +1,52 @@
+name: Coble exact integral plane parabolic and finite cosets
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  certify:
+    name: Verify 28 parabolic generators, 26 kernel generators and eight F/S cosets
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    container:
+      image: ghcr.io/dzackgarza/sage@sha256:12e5716067b5cf2fd34c00e9ba97e9c09d51a70664de817f4ae29743b64c5f61
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ github.token }}
+      options: --user root
+    steps:
+      - uses: actions/checkout@v4
+      - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Reproduce exact integral parabolic and finite F/S certificates
+        shell: bash
+        run: |
+          set -euo pipefail
+          /sage/.venv/bin/sage -c 'import pytest; raise SystemExit(pytest.main([
+            "-q",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_complete_integral_plane_parabolic_generators",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_even_neighbor_has_kneser_local_ranks",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_ambient_twenty_one_integral_generators",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_ambient_standard_generator_certificate",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_ambient_generators_are_public_integral_isometry_morphisms",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_level_two_eichler_squares_fail_normal_generation",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_level_two_relation_words_are_public_kernel_morphisms",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_eichler_normal_relations_have_rank_54_at_level_eight",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_eichler_squares_generate_every_odd_modulus_image",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_nineteen_relations_generate_the_full_kernel_modulo_sixteen",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_fifty_six_ordinary_elements_span_kernel_modulo_sixteen",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_fifty_six_ordinary_elements_are_public_kernel_morphisms",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_positive_schreier_generators_are_public_positive_kernel_morphisms",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_fifty_five_positive_elements_span_kernel_modulo_sixteen",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_positive_fifty_five_odd_local_certificate",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_fifty_six_mod_three_full_orthogonal_image_certificate",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_fifty_six_unipotent_lie_lattice_is_full_away_from_two",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_fifty_six_small_odd_local_images_are_full",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_fifty_six_contains_all_nineteen_eichler_normal_relations",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_coble_level_two_eichler_squares_fail_normal_generation",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_level_two_integral_plane_parabolic_kernel_generators",
+            "tests/engineering/test_coble_integral_plane_star_section.py::test_proper_integral_plane_stabilizer_image",
+          ]))'

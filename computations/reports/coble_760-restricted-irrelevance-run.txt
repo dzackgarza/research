@@ -1,0 +1,26 @@
+relevance in the restricted semifan at the marked cusps
+(the restricted diagram keeps the walls orthogonal to the Coble root; its irrelevant roots are
+the Enriques irrelevant ones among those walls)
+
+cusp 3
+   walls in T_Co (orthogonal to delta): [1, 2, 3, 4, 5, 6, 7, 9, 12]
+   Enriques irrelevant printed labels : [10, 11, 12]
+   irrelevant in the RESTRICTED diagram: [12]
+   admissible roots                  : [12]  -> all irrelevant after restriction: True
+
+cusp 4
+   walls in T_Co (orthogonal to delta): [1, 2, 3, 4, 5, 6, 7, 9, 10]
+   Enriques irrelevant printed labels : [10, 11]
+   irrelevant in the RESTRICTED diagram: [10]
+   admissible roots                  : [10]  -> all irrelevant after restriction: True
+
+cusp 5
+   walls in T_Co (orthogonal to delta): [1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 14]
+   Enriques irrelevant printed labels : [7, 9, 11, 12, 13, 14]
+   irrelevant in the RESTRICTED diagram: [7, 12, 13, 14]
+   admissible roots                  : [12, 13, 14]  -> all irrelevant after restriction: True
+
+VERDICT: at each marked cusp the admissible T_Co-roots are irrelevant in the restricted
+diagram as well, so the theorem's conclusion holds for the semifan the issue names and not
+only for the Enriques one it was proved from.
+PYEXIT=0

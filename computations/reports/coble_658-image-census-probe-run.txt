@@ -1,0 +1,10 @@
+T_En = U + U(2) + E8(2), rank 12
+classes of A_{T_En}: 1024 (want 1024, the determinant 2^10)
+nonzero isotropic classes: 527
+(-2)-vectors enumerated (bounded box): 3870
+nonzero isotropic classes with a representative orthogonal to one of them: 527 of 527
+
+reading: a class counted here can lie over a Coble cusp once O~+(T_En) is transitive on the
+(-2)-vectors; for the recorded witness that is settled the affirmative way by an explicit
+transvection (coble_658-stabilizer-image-probe.py).  The remaining 0 are not excluded: the
+probe tests orthogonality to a (-2)-vector inside a bounded box, and nothing beyond it.

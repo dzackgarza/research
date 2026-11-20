@@ -1,0 +1,22 @@
+complement determinant inside S: r12 -> -256, r13 -> -256
+gluing class in the (r, delta) coordinates, as p/2 mod Z^2:
+  r12: (1/2, 1/2)
+  r13: (1/2, 1/2)
+
+the classes are equal mod Z^2: True
+
+RESULT: the P side obstructs nothing -- the gluing classes agree in (Q/Z)^2 -- so the pair
+is reduced to whether an isometry of the two complements (which exist, and which the
+library exhibits explicitly) carries one complement gluing class onto the other.  That
+comparison is not made here.
+
+
+=== (2) the norm of the gluing element, the pointed lattice's own invariant
+The gluing element of the pointed lattice (S; r, delta) is h = (p/2, l/2) in A_P + A_L, and
+q(h) = q_P(p/2) + q_L(l/2) is an invariant of that pointed lattice:
+  label 12: q_P(p/2) = -1, q_L(l/2) = -3, sum = -4 (mod 2Z: 0)
+  label 13: q_P(p/2) = -1, q_L(l/2) = -3, sum = -4 (mod 2Z: 0)
+  label 14: q_P(p/2) = -1, q_L(l/2) = -3, sum = -4 (mod 2Z: 0)
+  the three agree, so this invariant separates nothing either.
+PYEXIT=0
+exit=0

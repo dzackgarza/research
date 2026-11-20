@@ -1,0 +1,5 @@
+type (2, 4, 5): det 64, 16 vectors of square -2, reflection orbits [2, 2, 2, 2, 2, 2, 2, 2]
+type (4, 5): det 64, 16 vectors of square -2, reflection orbits [2, 2, 2, 2, 2, 2, 2, 2]
+type (3, 5): det 64, 16 vectors of square -2, reflection orbits [2, 2, 2, 2, 2, 2, 2, 2]
+type (3, 4): det 64, 16 vectors of square -2, reflection orbits [2, 2, 2, 2, 2, 2, 2, 2]
+type (5, 5): det 64, 16 vectors of square -2, reflection orbits [2, 2, 2, 2, 2, 2, 2, 2]

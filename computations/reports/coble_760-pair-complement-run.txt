@@ -1,0 +1,14 @@
+label 12: sat<delta,r> Gram [-2, -2, -2, -4] det 4 | complement rank 10, det   1024
+label 13: sat<delta,r> Gram [-2, -2, -2, -4] det 4 | complement rank 10, det   1024
+label 14: sat<delta,r> Gram [-2, -2, -2, -4] det 4 | complement rank 10, det   1024
+
+labels 12,13: complements of <delta,r> isometric -> True  (0.2 s)
+labels 12,14: complements of <delta,r> isometric -> True  (0.0 s)
+labels 13,14: complements of <delta,r> isometric -> True  (0.0 s)
+
+VERDICT: the complements of the saturated pair <delta, r> are isometric for all three roots,
+so this last delta-sensitive invariant does not separate root 12 from 13.  Every invariant
+computable on the data of one or two vectors is exhausted; what remains is the orbit under
+the infinite stabilizer of eta_5 in Gamma_Co,2, which is sage-extensions#370.
+elapsed 0 s
+PYEXIT=0

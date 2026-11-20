@@ -1,0 +1,11 @@
+# the Lean check behind item 3 of research#760: which of the notions the statement needs exist
+# command: /opt/lean/bin/lean computations/reports/coble_760-lean-declaration-probe.lean
+# Lean 4.33.1; imports narrowed to the Coxeter and quadratic-form modules (see the file header)
+
+@CoxeterSystem : {B : Type u_1} → CoxeterMatrix B → (W : Type u_2) → [Group W] → Type (max u_1 u_2)
+CoxeterMatrix : Type u_1 → Type u_1
+QuadraticForm : (R : Type u_1) →
+  (M : Type u_2) → [inst : CommSemiring R] → [inst_1 : AddCommMonoid M] → [Module R M] → Type (max u_1 u_2)
+LinearMap.BilinForm : (R : Type u_1) →
+  [inst : CommSemiring R] → (M : Type u_2) → [inst_1 : AddCommMonoid M] → [Module R M] → Type (max u_1 u_2)
+computations/reports/coble_760-lean-declaration-probe.lean:16:8: error(lean.unknownIdentifier): Unknown identifier `Semifan`

@@ -437,7 +437,7 @@ For $n = 10$ the complement $N = \latI_{2,0}(2)$ is positive definite of rank $2
 
 ::: {.proof}
 
-By @def:mirror-move, equivalently [@AE22, Def. 5.6 and Thm. 5.8, printed pp. 22--23], the $\Orth(N)$-orbits of primitive isotropic vectors of $N$ correspond to the mirror moves from $M$, and a move is possible exactly when its target exists as an even $2$-elementary lattice with the target's signature and invariants (@thm:two-elementary-classification).
+By @def:mirror-move, equivalently [@AE22, Def. 5.6 and Thm. 5.8, printed p. 23], the $\Orth(N)$-orbits of primitive isotropic vectors of $N$ correspond to the mirror moves from $M$, and a move is possible exactly when its target exists as an even $2$-elementary lattice with the target's signature and invariants (@thm:two-elementary-classification).
 The move replaces $N$ with $\overline{T}_\eta = \eta^{\perp N}/\eta$ for a primitive isotropic $\eta \in N$ of the specified type, and the target invariants are $(20 - \rank M,\, a(M) - 2\varepsilon,\, \delta')$ for the even moves and $(20 - \rank M,\, a(M),\, \delta)$ for the odd move.
 Substituting $\rank M = 10+n$ and $a(M) = 12-n$ gives targets of ranks $10-n$ and signatures $(1,\, 9-n)$, empty for $n = 10$, where $N$ is positive definite.
 

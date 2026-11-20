@@ -1,0 +1,19 @@
+public source edges verified against workflow log: 13
+public integral plane Gram and primitive-minor checks: 7
+public plane types computed directly from integral representatives: {0: 'ABC', 1: 'CCD', 2: 'ACC', 3: 'ADD', 4: 'AAA', 5: 'ADD', 6: 'AAA'}
+public integral line isotropy and primitivity checks: 4
+public line types computed directly from integral representatives: {0: 'B', 1: 'D', 2: 'A', 3: 'C'}
+public edge witness line-in-plane inclusions checked: 13
+public edge witness discriminant types match both endpoints: 13
+finite source edges verified against committed transcript: 13
+public edges: 13 finite edges: 13
+graph isomorphisms: 4
+integral star run uses exact published workflow log: True
+graph isomorphisms compatible with integral quotient stars: 1
+public line index -> finite vector orbit size: {0: 2, 1: 120, 2: 135, 3: 270}
+public plane index -> finite decorated-plane orbit size: {0: 2160, 1: 69120, 2: 75600, 3: 22680, 4: 9450, 5: 7560, 6: 3150}
+mapped public edge set equals finite edge set: True
+distinct finite-plane type assignments: 1
+public plane index -> graph-inferred finite-plane type: {0: 'ABC', 1: 'CCD', 2: 'ACC', 3: 'ADD', 4: 'AAA', 5: 'ADD', 6: 'AAA'}
+direct integral discriminant types equal graph-inferred types: True
+direct integral line types equal graph-inferred types: True

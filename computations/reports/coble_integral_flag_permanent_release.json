@@ -1,0 +1,269 @@
+{
+  "schema": "coble-integral-flag-permanent-release-v1",
+  "release_url": "https://github.com/dzackgarza/research/releases/tag/coble-integral-flags-v1",
+  "release_id": 449389007,
+  "tag": "coble-integral-flags-v1",
+  "source_commit": "c08aeb6baa98cfcd2a39c46141432f4ce9c92661",
+  "source_workflow": 44170494099,
+  "source_artifact_id": 14371631974,
+  "total_edges": 569160,
+  "total_archive_bytes": 541965486,
+  "assets": [
+    {
+      "index": 0,
+      "name": "shard-0.jsonl.gz",
+      "asset_id": 761311572,
+      "bytes": 16922621,
+      "sha256": "92748124f5bed7ef1885f14d1864de7b4251f0a8f5f2d115c7b9860256b85809",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-0.jsonl.gz"
+    },
+    {
+      "index": 1,
+      "name": "shard-1.jsonl.gz",
+      "asset_id": 761311576,
+      "bytes": 17020522,
+      "sha256": "15a8fe35862cac9d95223e982ffe19ace79d6dda751d4ce3cf011214a095fc0e",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-1.jsonl.gz"
+    },
+    {
+      "index": 2,
+      "name": "shard-2.jsonl.gz",
+      "asset_id": 761311759,
+      "bytes": 16992405,
+      "sha256": "1091e8527e7dad139d8e68b0a007d684e3767c6716a60fa93be388ba88eac405",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-2.jsonl.gz"
+    },
+    {
+      "index": 3,
+      "name": "shard-3.jsonl.gz",
+      "asset_id": 761311912,
+      "bytes": 16857295,
+      "sha256": "c456e6d70e9518bd02a2d1bc563e27dfe6527f81308fdc8a88a31eb630388767",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-3.jsonl.gz"
+    },
+    {
+      "index": 4,
+      "name": "shard-4.jsonl.gz",
+      "asset_id": 761311963,
+      "bytes": 16792101,
+      "sha256": "3e0ee4b3345cde9e4ba4a291f742443ca5922da8b1ec4284d56eb17c77dd5a5f",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-4.jsonl.gz"
+    },
+    {
+      "index": 5,
+      "name": "shard-5.jsonl.gz",
+      "asset_id": 761311971,
+      "bytes": 16963596,
+      "sha256": "fdfdd420047de5de1d341fe6a09916f350613e1f2996c2f866322185ac38d2c0",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-5.jsonl.gz"
+    },
+    {
+      "index": 6,
+      "name": "shard-6.jsonl.gz",
+      "asset_id": 761311970,
+      "bytes": 16965215,
+      "sha256": "6ed74c9222fa1beca22a9b727bf9b73a9038728887989b70fbe74780dbe25fcd",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-6.jsonl.gz"
+    },
+    {
+      "index": 7,
+      "name": "shard-7.jsonl.gz",
+      "asset_id": 761311983,
+      "bytes": 16855952,
+      "sha256": "94d388ec755ac7db8c9331cef4def3e22cb3f814ffda734e55ca5c81eb4cc0d9",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-7.jsonl.gz"
+    },
+    {
+      "index": 8,
+      "name": "shard-8.jsonl.gz",
+      "asset_id": 761311987,
+      "bytes": 16891445,
+      "sha256": "425127d23ef5fd23f07467953e094073c0cee62cf11222a7d10663711c1f8b7b",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-8.jsonl.gz"
+    },
+    {
+      "index": 9,
+      "name": "shard-9.jsonl.gz",
+      "asset_id": 761312001,
+      "bytes": 16782367,
+      "sha256": "a8fef4d71840ce5a803620b4dcfbc6e8d38a72a6104c5928e4cbc750842a1516",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-9.jsonl.gz"
+    },
+    {
+      "index": 10,
+      "name": "shard-10.jsonl.gz",
+      "asset_id": 761311574,
+      "bytes": 16835127,
+      "sha256": "c7ba53d5e604d09249a9059a430abcced9f8c34d4feeb88e4ea1f47c0b8fe852",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-10.jsonl.gz"
+    },
+    {
+      "index": 11,
+      "name": "shard-11.jsonl.gz",
+      "asset_id": 761311573,
+      "bytes": 16954347,
+      "sha256": "3f7c7e928aa3fc36b7f16cace8fe8096c4f52b41af873a12bddad14844650751",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-11.jsonl.gz"
+    },
+    {
+      "index": 12,
+      "name": "shard-12.jsonl.gz",
+      "asset_id": 761311575,
+      "bytes": 16967258,
+      "sha256": "0c05dbedbde2d66a17533b1ec91109c7cf3ccc868ad3c3cdf8dd74492162fd81",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-12.jsonl.gz"
+    },
+    {
+      "index": 13,
+      "name": "shard-13.jsonl.gz",
+      "asset_id": 761311682,
+      "bytes": 16999304,
+      "sha256": "d9886b40bfbddd71646f441170c07377f4fc67eb8a850ed1be26fc2ffc21a60d",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-13.jsonl.gz"
+    },
+    {
+      "index": 14,
+      "name": "shard-14.jsonl.gz",
+      "asset_id": 761311679,
+      "bytes": 17050799,
+      "sha256": "0d0480987c75a9d204b803cef18419f519c42885eff10dbe6f1d1e40bc6dc490",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-14.jsonl.gz"
+    },
+    {
+      "index": 15,
+      "name": "shard-15.jsonl.gz",
+      "asset_id": 761311689,
+      "bytes": 16900092,
+      "sha256": "6e57508c389ee245a815774e9ee8b97ccda3b6ec1a8f200a1e1e4ad369c1de1b",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-15.jsonl.gz"
+    },
+    {
+      "index": 16,
+      "name": "shard-16.jsonl.gz",
+      "asset_id": 761311686,
+      "bytes": 16987418,
+      "sha256": "d46fb9d74436e3ac23eed765f980e37c74ed969658b45b394cb2873fc609d7a9",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-16.jsonl.gz"
+    },
+    {
+      "index": 17,
+      "name": "shard-17.jsonl.gz",
+      "asset_id": 761311688,
+      "bytes": 16965609,
+      "sha256": "df45427f6e5dcc3f412b37c3422067f8eb5d4c9d5c874434e79374210fc66d14",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-17.jsonl.gz"
+    },
+    {
+      "index": 18,
+      "name": "shard-18.jsonl.gz",
+      "asset_id": 761311764,
+      "bytes": 16940798,
+      "sha256": "d8c69a0ebe81687e0a00d91bec2539cb25075100dfce4f325546d7a822c4453a",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-18.jsonl.gz"
+    },
+    {
+      "index": 19,
+      "name": "shard-19.jsonl.gz",
+      "asset_id": 761311760,
+      "bytes": 16947082,
+      "sha256": "cf17daaecc63c5b1e4c8873657355d39b256219dca35544e5686535747e07b2a",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-19.jsonl.gz"
+    },
+    {
+      "index": 20,
+      "name": "shard-20.jsonl.gz",
+      "asset_id": 761311768,
+      "bytes": 16895956,
+      "sha256": "776712c3d38a6c99c4579edcb71119104c9d3ad7cfaf5a2fbdd24835c7760133",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-20.jsonl.gz"
+    },
+    {
+      "index": 21,
+      "name": "shard-21.jsonl.gz",
+      "asset_id": 761311767,
+      "bytes": 16946186,
+      "sha256": "deb8883b58389d73b5518995b15134dbc8153f4c8ea1660fd81021b42dec8321",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-21.jsonl.gz"
+    },
+    {
+      "index": 22,
+      "name": "shard-22.jsonl.gz",
+      "asset_id": 761311829,
+      "bytes": 17004932,
+      "sha256": "0193e7dd00892454c48951472ce2cbdc724bce6d77711aa9e40e9b2f9ff3ec8d",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-22.jsonl.gz"
+    },
+    {
+      "index": 23,
+      "name": "shard-23.jsonl.gz",
+      "asset_id": 761311834,
+      "bytes": 16992825,
+      "sha256": "69c7b6e57f9c9ca84d28ad8c5cfc264cfdeaaa129b4fe8fbcf78dff56dcb2e1f",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-23.jsonl.gz"
+    },
+    {
+      "index": 24,
+      "name": "shard-24.jsonl.gz",
+      "asset_id": 761311838,
+      "bytes": 16995246,
+      "sha256": "f8b1fd5bb2ef43de310f4daa5a93de94b441a8b1be0ff41e0dc9650b68022a89",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-24.jsonl.gz"
+    },
+    {
+      "index": 25,
+      "name": "shard-25.jsonl.gz",
+      "asset_id": 761311847,
+      "bytes": 16989324,
+      "sha256": "3d1b2482cc5610294a2ed246ecc984b4235ff4d23dfabf3ff8b43db7f0913b18",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-25.jsonl.gz"
+    },
+    {
+      "index": 26,
+      "name": "shard-26.jsonl.gz",
+      "asset_id": 761311848,
+      "bytes": 17041323,
+      "sha256": "20ad6ac75b868493b4eae2d04d601d0425870e3a9e8fab51faa78654a84d13c8",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-26.jsonl.gz"
+    },
+    {
+      "index": 27,
+      "name": "shard-27.jsonl.gz",
+      "asset_id": 761311878,
+      "bytes": 17025716,
+      "sha256": "0bddee57eb013dbe5c583d823e470e372bd523147488be0d8a60e48a478978ec",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-27.jsonl.gz"
+    },
+    {
+      "index": 28,
+      "name": "shard-28.jsonl.gz",
+      "asset_id": 761311890,
+      "bytes": 16912852,
+      "sha256": "e5f77cf05134fcbfa402c7473247f90a749a167905c4985dd4dc03a7515b06cd",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-28.jsonl.gz"
+    },
+    {
+      "index": 29,
+      "name": "shard-29.jsonl.gz",
+      "asset_id": 761311903,
+      "bytes": 16849813,
+      "sha256": "32f93ec661cd1e8e57adb4c2db574208b6c8f47f35cf501ae2752a42eb6fedf7",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-29.jsonl.gz"
+    },
+    {
+      "index": 30,
+      "name": "shard-30.jsonl.gz",
+      "asset_id": 761311934,
+      "bytes": 16963227,
+      "sha256": "1bd42c24ddaf6b6d67c6088a5c84423d0ad986cc5bb435ed95d6e3b7054d340e",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-30.jsonl.gz"
+    },
+    {
+      "index": 31,
+      "name": "shard-31.jsonl.gz",
+      "asset_id": 761311944,
+      "bytes": 16756733,
+      "sha256": "d932e1fa94907cbfba2508afe8772eacd37f94f58df433926ddd79eeccef9062",
+      "download_url": "https://github.com/dzackgarza/research/releases/download/coble-integral-flags-v1/shard-31.jsonl.gz"
+    }
+  ]
+}

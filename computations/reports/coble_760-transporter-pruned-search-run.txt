@@ -1,0 +1,20 @@
+[    0.0s] generators: 52; g|T_Co keeps the line True, moves the class True, in Gamma_Co,2 False
+[    0.1s] depth 1: survivors 6, found False
+[    0.1s] depth 2: survivors 23, found False
+[    0.1s] depth 3: survivors 77, found False
+[    0.4s] depth 4: survivors 233, found False
+[    1.0s] depth 5: survivors 645, found False
+[    2.7s] depth 6: survivors 1632, found False
+[    6.7s] depth 7: survivors 3738, found False
+[   15.2s] depth 8: survivors 7602, found False
+[   31.4s] depth 9: survivors 13730, found False
+[   59.4s] depth 10: survivors 22088, found False
+[  102.9s] depth 11: survivors 31514, found False
+[  161.3s] depth 12: survivors 40370, found False
+[  232.6s] depth 13: survivors 46918, found False
+[  314.5s] depth 14: survivors 50404, found False
+[  400.5s] depth 15: survivors 51617, found False
+[  487.0s] depth 16: survivors 51830, found False
+
+[  487.0s] no transporter found within the pruned search to the recorded depth
+PYEXIT=0

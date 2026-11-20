@@ -1,0 +1,411 @@
+"""Eight explicit integral Coble plane stars over all 23715 finite planes.
+
+Run without arguments to regenerate the canonical certificate, or request
+one exact integral kernel transporter without overwriting the certificate:
+    sage computations/reports/coble_plane_integral_star_section.py 100 3 1
+
+For streaming batches, supply JSONL triples [plane_index,seed_index,flag_index]:
+    sage computations/reports/coble_plane_integral_star_section.py batch requests.jsonl
+The exact finite parabolic word epimorphism is built once per batch, and
+transporter matrices are emitted one at a time without accumulating them.
+
+For a compressed exact-certificate shard (optional last argument is a
+diagnostic record limit, not a complete certificate). The transcript contains
+the original line/plane indices and exact integral transporter matrices:
+    sage computations/reports/coble_plane_integral_star_section.py shard 0 8 shard-0.jsonl.gz
+Independently audit a completed shard (the final count/digest trailer is required):
+    python3 computations/reports/coble_kernel_public_incidence_audit.py --shard shard-0.jsonl.gz
+After all shard indices have been generated, certify their disjoint union:
+    python3 computations/reports/coble_kernel_public_incidence_audit.py --shards shard-*.jsonl.gz
+For a deliberately truncated diagnostic, use --allow-incomplete on the auditor;
+this does not certify the missing edges or the public library operation.
+"""
+import argparse
+import gzip
+from io import TextIOWrapper
+import hashlib
+import json
+import sys
+from collections import deque
+from itertools import combinations, islice, product
+from math import gcd
+from pathlib import Path
+from sage.all import ZZ, PermutationGroup, diagonal_matrix, identity_matrix, libgap, matrix, vector
+
+folder=Path('computations/reports')
+data=json.loads((folder/'coble_singular_integral_representatives.json').read_text())
+change=matrix(ZZ,data['standard_to_diagonal']); to_standard=change.inverse()
+roots=[change*vector(ZZ,r) for r in data['generator_roots_standard']]
+signs=(1,1)+(-1,)*9
+pair=lambda a,b:sum(signs[i]*a[i]*b[i] for i in range(11))
+mask=lambda v:sum((int(x)&1)<<i for i,x in enumerate(v))
+def reflect(v,r):
+ n=pair(r,r);assert abs(n)==2
+ return v-(2//n)*pair(v,r)*r
+def plane_key(a,b):
+ x,y=mask(a),mask(b);assert x and y and x!=y
+ return tuple(sorted((x,y,x^y)))
+def primitive(a,b):
+ return gcd(*(int(a[i]*b[j]-a[j]*b[i]) for i,j in combinations(range(11),2)))==1
+unit=lambda i:vector(ZZ,[int(i==j) for j in range(11)])
+e1=unit(0)+unit(2);f1=unit(0)+unit(3)
+e2=unit(1)+unit(4);f2=unit(1)+unit(5)
+d=[unit(0)+unit(2)+unit(3),unit(1)+unit(4)+unit(5)]+[unit(i) for i in range(6,11)]
+assert pair(e1,f1)==pair(e2,f2)==1
+assert all(pair(x,x)==-1 for x in d)
+assert all(pair(x,y)==0 for x,y in combinations(d,2))
+assert all(pair(x,y)==0 for x in d for y in (e1,f1,e2,f2))
+base=[(e1,e2)]
+seed_roots=[]
+for i in range(7):
+ r=2*(e1+f1)+sum((d[j] for j in range(7) if j!=i),vector(ZZ,11))
+ assert pair(r,r)==2
+ seed_roots.append(r)
+ base.append((reflect(e1,r),reflect(e2,r)))
+J0=plane_key(e1,e2)
+assert len(base)==8 and all(plane_key(a,b)==J0 and primitive(a,b) and pair(a,a)==pair(a,b)==pair(b,b)==0 for a,b in base)
+flag_coefficients=((1,0),(0,1),(1,1))
+assert all(all(gcd(*map(int,u*a+v*b))==1 and pair(u*a+v*b,u*a+v*b)==0
+               for u,v in flag_coefficients) for a,b in base)
+a,b=mask(e1),mask(e2)
+coset=lambda x:min(x,x^a,x^b,x^a^b)
+w=[mask(sum((d[j] for j in range(7) if j!=i),vector(ZZ,11))) for i in range(7)]
+stars=[frozenset(map(coset,w))]
+for x in w:
+ stars.append(frozenset(coset(y^(x if (x&y).bit_count()%2 else 0)) for y in w))
+assert len(set(stars))==8 and all(len(s)==7 for s in stars)
+# Independently reconstruct each star from the *integral* negative-definite
+# quotient basis of its seed plane. A seed reflection carries the seven
+# norm-minus-one basis vectors d_i to an orthogonal norm-minus-one basis of
+# the new P^perp/P; their six-fold sums are the seven characteristic star
+# classes. This rules out a merely formal permutation of the eight labels.
+for seed_index,root in enumerate(seed_roots):
+ negative_units=[reflect(x,root) for x in d]
+ assert all(pair(x,x)==-1 for x in negative_units)
+ assert all(pair(x,y)==0 for x,y in combinations(negative_units,2))
+ integral_star=frozenset(coset(mask(sum((negative_units[j]
+                       for j in range(7) if j!=i),vector(ZZ,11))))
+                       for i in range(7))
+ assert integral_star==stars[seed_index+1]
+root_masks=[mask(r) for r in roots]
+parent={J0:None}; queue=deque([J0])
+while queue:
+ J=queue.popleft()
+ for i,x in enumerate(root_masks):
+  K=tuple(sorted(y^(x if (x&y).bit_count()%2 else 0) for y in J))
+  if K not in parent:
+   parent[K]=(J,i);queue.append(K)
+assert len(parent)==23715
+rows=[]
+for J in sorted(parent):
+ word=[];cur=J
+ while cur!=J0:
+  cur,i=parent[cur];word.append(i)
+ rows.append({'finite_plane_masks':list(J),'word_from_base':list(reversed(word))})
+
+# Exact *finite discriminant image* of the integral stabilizer of P0,
+# not the entire integral stabilizer: its GL2(Z) and S7 Levi images,
+# twelve Eichler transvections and one central shear suffice modulo 2.
+# The seven negative-quotient sign changes are invisible modulo 2, but
+# essential for the full integral parabolic generating family; see
+# coble_complete_plane_parabolic_generators.py and its 28-matrix artifact.
+diagonal_gram=diagonal_matrix(ZZ,signs)
+T=matrix(ZZ,[e1,f1,e2,f2,*d]).transpose()
+assert abs(T.det())==1
+coordinate_vectors=identity_matrix(ZZ,11).columns()
+
+def from_action(action):
+ g=matrix(ZZ,[action(x) for x in coordinate_vectors]).transpose()
+ assert g.transpose()*diagonal_gram*g==diagonal_gram and abs(g.det())==1
+ return g
+
+def eichler(e,a,x):
+ assert pair(e,a)==0 and pair(a,a)%2==0
+ return x+pair(x,e)*a-pair(x,a)*e-(pair(a,a)//2)*pair(x,e)*e
+
+stabilizer_generators=[]
+for e in (e1,e2):
+ for j in range(6):
+  a=d[j]+d[6]
+  stabilizer_generators.append(from_action(lambda x,e=e,a=a:eichler(e,a,x)))
+stabilizer_generators.append(from_action(lambda x:x+pair(x,e1)*e2-pair(x,e2)*e1))
+for j in range(6):
+ r=d[j]-d[j+1]
+ stabilizer_generators.append(from_action(lambda x,r=r:reflect(x,r)))
+A=identity_matrix(ZZ,11)
+A[:,0]=vector(ZZ,[0,0,1,0]+[0]*7)
+A[:,1]=vector(ZZ,[0,0,0,1]+[0]*7)
+A[:,2]=vector(ZZ,[1,0,0,0]+[0]*7)
+A[:,3]=vector(ZZ,[0,1,0,0]+[0]*7)
+stabilizer_generators.append(T*A*T.inverse())
+A=identity_matrix(ZZ,11)
+A[:,0]=vector(ZZ,[1,0,1,0]+[0]*7)
+A[:,3]=vector(ZZ,[0,-1,0,1]+[0]*7)
+stabilizer_generators.append(T*A*T.inverse())
+assert len(stabilizer_generators)==21
+for g in stabilizer_generators:
+ assert g.transpose()*diagonal_gram*g==diagonal_gram and abs(g.det())==1
+ p,q=T.inverse()*g*e1,T.inverse()*g*e2
+ assert all(p[i]==q[i]==0 for i in range(11) if i not in (0,2))
+ assert abs(p[0]*q[2]-p[2]*q[0])==1
+singular=sorted(r['mask_diagonal'] for r in data['representatives'])
+positions={x:i+1 for i,x in enumerate(singular)}
+permutations=[]
+for g in stabilizer_generators:
+ permutations.append([positions[mask(g*vector(ZZ,[(x>>i)&1 for i in range(11)]))]
+                      for x in singular])
+stabilizer_image_order=int(PermutationGroup(permutations).order())
+assert stabilizer_image_order==46998591897600//189720==247726080
+
+def word_matrix(word):
+ g=identity_matrix(ZZ,11)
+ for i in word:
+  r=change*vector(ZZ,data['generator_roots_standard'][i])
+  g=from_action(lambda x,r=r:reflect(x,r))*g
+ return to_standard*g*change
+
+# One-time exact finite-group and integral-generator setup. Reuse the GAP
+# epimorphism across all requested edges; rebuilding it per edge would make
+# the complete 569160-edge computation impractical.
+line_rows_by_mask={r['mask_diagonal']:r for r in data['representatives']}
+parabolic_masks=data['vector_stabilizer_ten_masks']
+parabolic_permutations=[
+ [positions[y^(x if (x&y).bit_count()%2 else 0)] for y in singular]
+ for x in parabolic_masks]
+parabolic_group=PermutationGroup(parabolic_permutations,canonicalize=False)
+assert int(parabolic_group.order())==89181388800
+epimorphism=libgap.EpimorphismFromFreeGroup(parabolic_group._libgap_())
+parabolic_reflections=[]
+for root in data['vector_stabilizer_ten_roots_standard']:
+ r=change*vector(ZZ,root)
+ parabolic_reflections.append(to_standard*from_action(lambda x,r=r:reflect(x,r))*change)
+u0=to_standard*e1
+standard_gram=matrix(ZZ,data['standard_gram'])
+seed_maps=[identity_matrix(ZZ,11)]+[
+ to_standard*from_action(lambda x,r=r:reflect(x,r))*change for r in seed_roots]
+flag_maps=[identity_matrix(ZZ,11),to_standard*stabilizer_generators[-2]*change,
+           to_standard*stabilizer_generators[-1]*change]
+tau_coordinates=identity_matrix(ZZ,11)
+tau_coordinates[2,2]=tau_coordinates[3,3]=-1
+tau_base=to_standard*T*tau_coordinates*T.inverse()*change
+line_word_cache={}
+plane_word_cache={'index':None,'matrix':None}
+seed_flag_maps=[[seed_maps[s]*flag_maps[f] for f in range(3)] for s in range(8)]
+
+def construct_flag_transporter(sample_plane_index, sample_seed_index, sample_flag_index):
+ """Return an exact integral kernel and positive-spinor flag transporter."""
+ assert -len(rows)<=sample_plane_index<len(rows)
+ assert 0<=sample_seed_index<8 and 0<=sample_flag_index<3
+ sample_plane=rows[sample_plane_index]
+ if plane_word_cache['index']!=sample_plane_index:
+  plane_word_cache['index']=sample_plane_index
+  plane_word_cache['matrix']=word_matrix(sample_plane['word_from_base'])
+ sample_plane_word=plane_word_cache['matrix']
+ flag_conjugator=sample_plane_word*seed_flag_maps[sample_seed_index][sample_flag_index]
+ sample_flag=flag_conjugator*u0
+ sample_line_mask=mask(change*sample_flag)
+ sample_line_row=line_rows_by_mask[sample_line_mask]
+ if sample_line_mask not in line_word_cache:
+  line_word=word_matrix(sample_line_row['word_from_base'])
+  line_word_cache[sample_line_mask]=(line_word,line_word.inverse())
+ sample_line_inverse=line_word_cache[sample_line_mask][1]
+ sample_transporter=flag_conjugator*sample_line_inverse
+ assert sample_transporter*vector(ZZ,sample_line_row['vector_standard'])==sample_flag
+ assert sample_transporter.transpose()*standard_gram*sample_transporter==standard_gram
+ assert abs(sample_transporter.det())==1
+
+ # Correct the ambient transporter by an exact integral vector-parabolic
+ # word with the same finite image. The quotient is an actual integral
+ # discriminant-kernel transporter of the displayed line into its plane.
+ base_correction=sample_line_inverse*flag_conjugator
+ # This ambient matrix need only fix the *discriminant class* of u0.
+ # Its finite reduction is in the vector parabolic; the integral word
+ # constructed below fixes u0 exactly.
+ assert mask(change*base_correction*u0)==mask(change*u0)
+ diagonal_correction=change*base_correction*to_standard
+ # The discriminant action is linear over F_2. Form its eleven column masks
+ # once; constructing 527 Sage vectors and multiplying 527 integral matrices
+ # per flag is unnecessary and dominated the hot loop.
+ correction_columns=[sum((int(diagonal_correction[i,j])&1)<<i for i in range(11))
+                     for j in range(11)]
+ target_permutation=[]
+ for x in singular:
+  image=0
+  for j in range(11):
+   if (x>>j)&1:
+    image^=correction_columns[j]
+  target_permutation.append(positions[image])
+ target=parabolic_group(target_permutation)
+ # Obtain the free-group word in GAP's unambiguous integer-pair format.
+ # Parsing Sage's display string is invalid: it can contain parenthesized
+ # subwords and powers, not just a product of individual generators.
+ free_word=libgap.PreImagesRepresentative(epimorphism,target._libgap_())
+ representation=list(map(int,libgap.ExtRepOfObj(free_word).sage()))
+ assert len(representation)%2==0
+ correction_word=[(representation[i]-1,representation[i+1])
+                  for i in range(0,len(representation),2)]
+ parabolic_word_matrix=identity_matrix(ZZ,11)
+ word_permutation=parabolic_group.one()
+ for index,exponent in correction_word:
+  word_permutation*=parabolic_group.gen(index)**exponent
+  reflection=parabolic_reflections[index]
+  # Sage permutation products act in the opposite order to column
+  # matrix products: apply the next factor on the left.
+  parabolic_word_matrix=reflection**exponent*parabolic_word_matrix
+ assert parabolic_word_matrix*u0==u0
+ assert word_permutation==target
+ assert all((int(a-b)&1)==0 for a,b in zip(
+  (change*parabolic_word_matrix*to_standard).list(),diagonal_correction.list()))
+ # (A L^-1)(L P L^-1)^-1 = A P^-1 L^-1. This avoids constructing
+ # and inverting a large conjugate for every one of the 569160 flags.
+ sample_kernel_transporter=flag_conjugator*parabolic_word_matrix.inverse()*sample_line_inverse
+ assert sample_kernel_transporter*vector(ZZ,sample_line_row['vector_standard'])==sample_flag
+ assert sample_kernel_transporter.transpose()*standard_gram*sample_kernel_transporter==standard_gram
+ assert all((int(sample_kernel_transporter[i,j])&1)==int(i==j)
+            for i in range(11) for j in range(11))
+
+ # Explicit spinor-negative kernel element fixing the chosen flag.
+ # On U1+U2+D, -id on U2 fixes e1 and reduces to identity modulo 2.
+ # Conjugate it through the integral seed/flag/plane transporter.
+ tau_flag=flag_conjugator*tau_base*flag_conjugator.inverse()
+ assert tau_flag*sample_flag==sample_flag
+ assert tau_flag.transpose()*standard_gram*tau_flag==standard_gram
+ assert all((int(tau_flag[i,j])&1)==int(i==j)
+            for i in range(11) for j in range(11))
+
+ # In diagonal signature (2,9), the normalized real spinor sign is
+ # the orientation of the projected positive two-plane: the sign of
+ # the determinant of the upper-left 2x2 block. This determinant cannot
+ # vanish because an isometry maps positive planes to positive planes.
+ kernel_diagonal=change*sample_kernel_transporter*to_standard
+ tau_diagonal=change*tau_flag*to_standard
+ kernel_minor=kernel_diagonal[0,0]*kernel_diagonal[1,1]-kernel_diagonal[0,1]*kernel_diagonal[1,0]
+ tau_minor=tau_diagonal[0,0]*tau_diagonal[1,1]-tau_diagonal[0,1]*tau_diagonal[1,0]
+ assert kernel_minor!=0 and tau_minor<0
+ kernel_spinor_sign=1 if kernel_minor>0 else -1
+ positive_kernel=(sample_kernel_transporter if kernel_spinor_sign==1 else
+                  tau_flag*sample_kernel_transporter)
+ positive_diagonal=change*positive_kernel*to_standard
+ positive_minor=(positive_diagonal[0,0]*positive_diagonal[1,1]-
+                 positive_diagonal[0,1]*positive_diagonal[1,0])
+ assert positive_minor>0
+ assert positive_kernel*vector(ZZ,sample_line_row['vector_standard'])==sample_flag
+ assert positive_kernel.transpose()*standard_gram*positive_kernel==standard_gram
+ assert all((int(positive_kernel[i,j])&1)==int(i==j)
+            for i in range(11) for j in range(11))
+ output=folder/'coble_plane_integral_star_section.json'
+ sample_record={
+  'finite_plane_masks':sample_plane['finite_plane_masks'],
+  'seed_index':sample_seed_index,
+  'flag_index':sample_flag_index,
+  'line_mask_diagonal':sample_line_mask,
+  'flag_vector_standard':list(map(int,sample_flag)),
+  'matrix_standard':[list(map(int,row)) for row in sample_transporter.rows()],
+  'parabolic_correction_word':[list(factor) for factor in correction_word],
+  'kernel_matrix_standard':[
+   list(map(int,row)) for row in sample_kernel_transporter.rows()],
+  'kernel_real_spinor_sign':kernel_spinor_sign,
+  'spinor_flip_matrix_standard':[list(map(int,row)) for row in tau_flag.rows()],
+  'positive_kernel_matrix_standard':[list(map(int,row)) for row in positive_kernel.rows()]}
+ return sample_record
+
+# The canonical invocation retains the complete finite-plane section. A batch
+# request file is JSONL, one [plane_index,seed_index,flag_index] per line.
+# Each request is processed and emitted independently, without storing all
+# 569160 transporter matrices or overwriting the canonical certificate.
+raw_args=(sys.argv[1:] if sys.argv[0].endswith('coble_plane_integral_star_section.py') else [])
+output=folder/'coble_plane_integral_star_section.json'
+if raw_args and raw_args[0]=='shard':
+ assert len(raw_args) in (4,5)
+ shard_index,shard_count=int(raw_args[1]),int(raw_args[2])
+ assert shard_count>0 and 0<=shard_index<shard_count
+ limit=int(raw_args[4]) if len(raw_args)==5 else None
+ assert limit is None or limit>0
+ output_path=Path(raw_args[3])
+ assert output_path!=output
+ line_certificate=folder/'coble_singular_integral_representatives.json'
+ plane_certificate=folder/'coble_plane_integral_star_section.json'
+ expected_edges=24*len(range(shard_index,len(rows),shard_count))
+ header={'schema':'coble-exact-kernel-transport-shard-v1',
+         'shard_index':shard_index,'shard_count':shard_count,
+         'expected_edges':expected_edges,'complete':False,
+         'line_certificate_sha256':hashlib.sha256(line_certificate.read_bytes()).hexdigest(),
+         'plane_certificate_sha256':hashlib.sha256(plane_certificate.read_bytes()).hexdigest()}
+ count=0
+ digest=hashlib.sha256()
+ requests=product(range(shard_index,len(rows),shard_count),range(8),range(3))
+ if limit is not None:
+  requests=islice(requests,limit)
+ # A zero timestamp and empty embedded filename make the compressed
+ # certificate byte-for-byte reproducible, not merely its JSONL payload.
+ with output_path.open('xb') as raw, gzip.GzipFile(
+  filename='',mode='wb',fileobj=raw,mtime=0
+ ) as compressed, TextIOWrapper(compressed,encoding='utf-8') as stream:
+  stream.write(json.dumps(header,separators=(',',':'))+'\n')
+  for plane_index,seed_index,flag_index in requests:
+   record=construct_flag_transporter(plane_index,seed_index,flag_index)
+   compact={'plane_index':plane_index,'seed_index':seed_index,'flag_index':flag_index,
+            'line_mask_diagonal':record['line_mask_diagonal'],
+            'flag_vector_standard':record['flag_vector_standard'],
+            'parabolic_correction_word':record['parabolic_correction_word'],
+            'kernel_real_spinor_sign':record['kernel_real_spinor_sign'],
+            'kernel_matrix_standard':record['kernel_matrix_standard'],
+            'spinor_flip_matrix_standard':record['spinor_flip_matrix_standard'],
+            'positive_kernel_matrix_standard':record['positive_kernel_matrix_standard'],
+            'positive_kernel_matrix_sha256':hashlib.sha256(json.dumps(
+             record['positive_kernel_matrix_standard'],separators=(',',':')
+            ).encode()).hexdigest()}
+   encoded=json.dumps(compact,separators=(',',':')).encode()+b'\n'
+   digest.update(encoded)
+   stream.write(encoded.decode())
+   count+=1
+  stream.write(json.dumps({'trailer':'coble-exact-kernel-transport-shard-v1',
+                           'records':count,'records_sha256':digest.hexdigest(),
+                           'complete':limit is None and count==expected_edges},
+                          separators=(',',':'))+'\n')
+ assert count==(min(expected_edges,limit) if limit is not None else expected_edges)
+ print('exact integral kernel transporter shard:',shard_index,shard_count,
+       'records',count,'expected',expected_edges,'complete',limit is None,
+       'output',output_path)
+elif raw_args and raw_args[0]=='batch':
+ assert len(raw_args)==2
+ with Path(raw_args[1]).open() as stream:
+  for request in stream:
+   if not request.strip():
+    continue
+   triple=json.loads(request)
+   assert isinstance(triple,list) and len(triple)==3
+   record=construct_flag_transporter(*map(int,triple))
+   print('requested integral kernel transporter:',json.dumps(record,separators=(',',':')),flush=True)
+else:
+ parser=argparse.ArgumentParser(description=__doc__)
+ parser.add_argument('plane_index',nargs='?',type=int,default=-1)
+ parser.add_argument('seed_index',nargs='?',type=int,default=7)
+ parser.add_argument('flag_index',nargs='?',type=int,default=2)
+ arguments=parser.parse_args(raw_args)
+ sample_plane_index=arguments.plane_index
+ sample_seed_index=arguments.seed_index
+ sample_flag_index=arguments.flag_index
+ record=construct_flag_transporter(sample_plane_index,sample_seed_index,sample_flag_index)
+ if (sample_plane_index,sample_seed_index,sample_flag_index)==(-1,7,2):
+  output.write_text(json.dumps({'source':'coble_singular_integral_representatives.json',
+  'base_planes_standard':[[list(map(int,to_standard*a)),list(map(int,to_standard*b))] for a,b in base],
+  'seed_reflection_roots_standard':[list(map(int,to_standard*r)) for r in seed_roots],
+  'base_stars_quotient_classes':[sorted(s) for s in stars],
+  'plane_stabilizer_generators_standard':[
+   [list(map(int,row)) for row in (to_standard*g*change).rows()]
+   for g in stabilizer_generators],
+  'plane_stabilizer_finite_image_order':stabilizer_image_order,
+  'base_spinor_flip_standard':[list(map(int,row)) for row in tau_base.rows()],
+  'ambient_transporter_sample':record,
+  'flag_line_coefficients':[list(c) for c in flag_coefficients],
+  'finite_plane_transports':rows},separators=(',',':'))+'\n')
+ print('finite planes:',len(rows),'distinct integral stars per plane:',len(set(stars)))
+ print('integral plane representatives:',len(rows)*len(base),'compact certificate:',output)
+ print('integral flag representatives specified by words:',len(rows)*len(base)*len(flag_coefficients))
+ print('exact integral plane stabilizer finite image order:',stabilizer_image_order)
+ print('exact integral ambient line-to-flag transporter sample:',record['line_mask_diagonal'])
+ print('exact integral kernel line-to-flag transporter word length:',len(record['parabolic_correction_word']))
+ print('exact positive-spinor kernel transporter verified:',True)
+ if (sample_plane_index,sample_seed_index,sample_flag_index)!=(-1,7,2):
+  print('requested integral kernel transporter:',json.dumps(record,separators=(',',':')))

@@ -1,0 +1,24 @@
+the Gamma_Co,2-orbits of the three admissible roots at cusp 5, by sage-extensions#370
+Sage 11.0.beta5; sage-extensions at commit 1488acf
+
+roots 12, 13, 14 transported into T_Co: squares [-2, -2, -2], all primitive True
+[    0.1s] building Gamma_Co,2 by discriminant_point_stabilizer on T_Co
+[   92.2s] Gamma_Co,2 built
+[   92.3s] K_5 rank 9; the cusp vector is the line, its class is zero: True
+the acting family: 35 generators of the line stabilizer, reduced to K_5
+[   99.4s] calling root_class_orbits
+returned 3 orbits:
+   1 class(es): ['12']
+   1 class(es): ['13']
+   1 class(es): ['14']
+
+the exhibited element the acting family misses:
+   g_{13<->14}: integral True, isometry True, in Gent True
+   fixes delta True, fixes eta_5 True, swaps the lifts of 13 and 14 True
+   so its reduction lies in G_v and joins the classes of 13 and 14, which the call separates
+
+VERDICT: three singleton orbits are not a decision.  The orbit call exists (#370, closed);
+what is missing is a complete generating family at a primitive isotropic line, the certificate
+sage-extensions#312 reports as False.  The pair (12,13) is not decided by this run.
+
+PYEXIT=0

@@ -1,0 +1,12 @@
+generic degree-two K3:  Picard group = <L>, rank 1
+elliptic K3 with section: U + <-2> inside Pic, rank 3
+so the surfaces carrying (s, f) form a proper locus F in F_2: rank 3 > 1
+
+positivity of D = s + m (sum f_i) = s + 24 m f on the two curve classes of U + <-2>:
+  m = 1:  D.f = 1 > 0,  D.s = 22 > 0
+  m = 2:  D.f = 1 > 0,  D.s = 46 > 0
+  m = 3:  D.f = 1 > 0,  D.s = 70 > 0
+
+Conclusion.  ABE22's divisor is a polarizing divisor on the elliptic locus F and not on
+F_2, so the question whether a recognizable divisor can fail (W) has to be posed for F;
+on F_2 the very general surface has Picard rank one and carries no such divisor.

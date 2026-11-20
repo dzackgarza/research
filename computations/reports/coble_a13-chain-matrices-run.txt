@@ -1,0 +1,133 @@
+provenance
+  sympy 1.14.0, exact integer and rational arithmetic
+  python 3.12.14
+  no sage and no sage-extensions
+  marking: @thm:theta-co-coordinates and @thm:gamma-co-coordinates
+  chain: @lem:sequence_of_embeddings, @lem:primitive_embedding_eta
+
+I_En      integral True, involution True, isometry True
+I_dP      integral True, involution True, isometry True
+theta_Co  integral True, involution True, isometry True
+
+1. the four bases, in the standard basis e_0..e_21
+   T_Co  11 vectors: + e_0 + e_1, + e_2 - e_4, + e_3 - e_5, + e_6 - e_14, + e_7 - e_15, + e_8 - e_16, + e_9 - e_17, + e_10 - e_18, + e_11 - e_19, + e_12 - e_20, + e_13 - e_21
+   T_En  12 vectors: + e_0, + e_1, + e_2 - e_4, + e_3 - e_5, + e_6 - e_14, + e_7 - e_15, + e_8 - e_16, + e_9 - e_17, + e_10 - e_18, + e_11 - e_19, + e_12 - e_20, + e_13 - e_21
+   T_dP  20 vectors: + e_0, + e_1, + e_2 - e_4, + e_3 - e_5, + e_6, + e_7, + e_8, + e_9, + e_10, + e_11, + e_12, + e_13, + e_14, + e_15, + e_16, + e_17, + e_18, + e_19, + e_20, + e_21
+   lkt   22 vectors: + e_0, + e_1, + e_2, + e_3, + e_4, + e_5, + e_6, + e_7, + e_8, + e_9, + e_10, + e_11, + e_12, + e_13, + e_14, + e_15, + e_16, + e_17, + e_18, + e_19, + e_20, + e_21
+
+2. each lattice is the eigenspace of its involution
+   T_Co : every basis vector is a +1-eigenvector of theta_Co: True; rank of that eigenspace 11 = 11
+   T_En : every basis vector is a -1-eigenvector of I_En: True; rank of that eigenspace 12 = 12
+   T_dP : every basis vector is a -1-eigenvector of I_dP: True; rank of that eigenspace 20 = 20
+   S_dP  : Delta(U_2,U_3), every basis vector a +1-eigenvector of I_dP: True; rank 2
+   the containments:
+     T_Co subset of T_En: True
+     T_En subset of T_dP: True
+     T_dP subset of lkt: True
+
+3. the three inclusion matrices, and the composite
+   T_Co -> T_En  (12x11)  integral True, shape 12x11
+   T_En -> T_dP  (20x12)  integral True, shape 20x12
+   T_dP -> lkt   (22x20)  integral True, shape 22x20
+   T_Co -> lkt   (22x11)  integral True, shape 22x11
+   T_Co -> T_En:
+      1  0  0  0  0  0  0  0  0  0  0
+      1  0  0  0  0  0  0  0  0  0  0
+      0  1  0  0  0  0  0  0  0  0  0
+      0  0  1  0  0  0  0  0  0  0  0
+      0  0  0  1  0  0  0  0  0  0  0
+      0  0  0  0  1  0  0  0  0  0  0
+      0  0  0  0  0  1  0  0  0  0  0
+      0  0  0  0  0  0  1  0  0  0  0
+      0  0  0  0  0  0  0  1  0  0  0
+      0  0  0  0  0  0  0  0  1  0  0
+      0  0  0  0  0  0  0  0  0  1  0
+      0  0  0  0  0  0  0  0  0  0  1
+   T_En -> T_dP:
+      1  0  0  0  0  0  0  0  0  0  0  0
+      0  1  0  0  0  0  0  0  0  0  0  0
+      0  0  1  0  0  0  0  0  0  0  0  0
+      0  0  0  1  0  0  0  0  0  0  0  0
+      0  0  0  0  1  0  0  0  0  0  0  0
+      0  0  0  0  0  1  0  0  0  0  0  0
+      0  0  0  0  0  0  1  0  0  0  0  0
+      0  0  0  0  0  0  0  1  0  0  0  0
+      0  0  0  0  0  0  0  0  1  0  0  0
+      0  0  0  0  0  0  0  0  0  1  0  0
+      0  0  0  0  0  0  0  0  0  0  1  0
+      0  0  0  0  0  0  0  0  0  0  0  1
+      0  0  0  0 -1  0  0  0  0  0  0  0
+      0  0  0  0  0 -1  0  0  0  0  0  0
+      0  0  0  0  0  0 -1  0  0  0  0  0
+      0  0  0  0  0  0  0 -1  0  0  0  0
+      0  0  0  0  0  0  0  0 -1  0  0  0
+      0  0  0  0  0  0  0  0  0 -1  0  0
+      0  0  0  0  0  0  0  0  0  0 -1  0
+      0  0  0  0  0  0  0  0  0  0  0 -1
+   T_dP -> lkt:
+      1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+      0  1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+      0  0  1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+      0  0  0  1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+      0  0 -1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+      0  0  0 -1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+      0  0  0  0  1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+      0  0  0  0  0  1  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+      0  0  0  0  0  0  1  0  0  0  0  0  0  0  0  0  0  0  0  0
+      0  0  0  0  0  0  0  1  0  0  0  0  0  0  0  0  0  0  0  0
+      0  0  0  0  0  0  0  0  1  0  0  0  0  0  0  0  0  0  0  0
+      0  0  0  0  0  0  0  0  0  1  0  0  0  0  0  0  0  0  0  0
+      0  0  0  0  0  0  0  0  0  0  1  0  0  0  0  0  0  0  0  0
+      0  0  0  0  0  0  0  0  0  0  0  1  0  0  0  0  0  0  0  0
+      0  0  0  0  0  0  0  0  0  0  0  0  1  0  0  0  0  0  0  0
+      0  0  0  0  0  0  0  0  0  0  0  0  0  1  0  0  0  0  0  0
+      0  0  0  0  0  0  0  0  0  0  0  0  0  0  1  0  0  0  0  0
+      0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  1  0  0  0  0
+      0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  1  0  0  0
+      0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  1  0  0
+      0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  1  0
+      0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  1
+   the composite equals the direct matrix: M3*M2*M1 = M13 True
+
+4. each step is primitive: the Smith normal form of its inclusion matrix is trivial
+   T_Co -> T_En  rank 11, SNF [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], all one: True (cokernel torsion-free, so primitive)
+   T_En -> T_dP  rank 12, SNF [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], all one: True (cokernel torsion-free, so primitive)
+   T_dP -> lkt   rank 20, SNF [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], all one: True (cokernel torsion-free, so primitive)
+
+5. the invariants of the four members
+   T_Co  rank 11, det  -2048, even True, signature (2, 9), SNF multiplicities {2: 11}
+   T_En  rank 12, det   1024, even True, signature (2, 10), SNF multiplicities {1: 2, 2: 10}
+   T_dP  rank 20, det      4, even True, signature (2, 18), SNF multiplicities {1: 18, 2: 2}
+   lkt   rank 22, det     -1, even True, signature (3, 19), SNF multiplicities {1: 22}
+
+6. the two displayed embeddings of the lemmas
+   eta: h -> beta = e_0+e_1 and the identity on E_10(2) = Delta^-(U_2,U_3)+Delta^-(E8):
+     the T_Co -> T_En matrix is the identity on the last ten coordinates and
+     (1,1) on the first two: True
+   the sequence's display (h,x,y) -> (e~+f~, x, (y,y)) into U (+) U(2) (+) E8^2:
+     T_Co -> T_dP sends y_k to (y_k, -y_k), not to (y_k, y_k); the isometry
+     sigma = diag(1 on U_1,U_2,U_3; -1 on E8_2) carries one to the other:
+     sigma is an isometry of lkt: True, it preserves T_dP: True
+     the composite's images, in the standard basis, and their images under sigma:
+       + e_0 + e_1                  -> + e_0 + e_1            sigma of it + e_0 + e_1           
+       + e_2 - e_4                  -> + e_2 - e_4            sigma of it + e_2 - e_4           
+       + e_3 - e_5                  -> + e_3 - e_5            sigma of it + e_3 - e_5           
+       + e_6 - e_14                 -> + e_6 - e_14           sigma of it + e_6 + e_14          
+       + e_7 - e_15                 -> + e_7 - e_15           sigma of it + e_7 + e_15          
+       + e_8 - e_16                 -> + e_8 - e_16           sigma of it + e_8 + e_16          
+       + e_9 - e_17                 -> + e_9 - e_17           sigma of it + e_9 + e_17          
+       + e_10 - e_18                -> + e_10 - e_18          sigma of it + e_10 + e_18         
+       + e_11 - e_19                -> + e_11 - e_19          sigma of it + e_11 + e_19         
+       + e_12 - e_20                -> + e_12 - e_20          sigma of it + e_12 + e_20         
+       + e_13 - e_21                -> + e_13 - e_21          sigma of it + e_13 + e_21         
+     sigma carries beta to beta = e~+f~, fixes the Delta^-(U_2,U_3) classes, and sends
+     (y_k,-y_k) to (y_k,y_k), which is the lemma's display (h,x,y) -> (e~+f~, x, (y,y)):
+       sigma(beta) = beta: True
+       sigma fixes e_2-e_4 and e_3-e_5: True
+       sigma(e_{6+k}-e_{14+k}) = e_{6+k}+e_{14+k} for k = 0..7: True
+
+7. the quotient ranks, and what stays open
+   ranks of the cokernels: T_En/T_Co 1, T_dP/T_En 8, lkt/T_dP 2
+   the equations of the sextic C and its double plane in these bases are not touched
+   here: they are @thm:coble-explicit-sextic, which works in the plane model, a basis of
+   H^2 determining no equation.

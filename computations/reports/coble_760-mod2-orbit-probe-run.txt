@@ -1,0 +1,29 @@
+the mod-2 orbit of the cusp-5 labels, under the Gent elements this record can build
+Sage 11.0.beta5; exact integer linear algebra over T_En = U + U(2) + E8(-2)
+Gamma(2) = ker(O(T_En) -> O(T_En/2T_En)) is contained in ker rho, hence in Gent
+
+generators checked and accepted as Gent elements: 23
+   s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, e8_0, e8_1, e8_2, e8_3, e8_4, e8_5, e8_6, e8_7, swap_u2
+reflections rejected by the summand test (not used): none
+
+=== the orbits
+   orbit of the class of label 12: 512 classes
+   orbit of the class of label 13: 512 classes
+   orbit of the class of label 14: 512 classes
+   class of 13 in the orbit of 12: False
+   class of 14 in the orbit of 12: False
+   class of 14 in the orbit of 13: True
+
+=== what this does and does not decide
+H is a subgroup of Gent, so each orbit above is contained in the corresponding Gent-orbit, and
+the classes of 13 and 14 lying in one H-orbit agrees with their being one Gamma_Co,2-orbit
+(coble_760-gent-membership-run.txt).  The failure of the class of 13 to appear in the orbit of
+12 is therefore one-sided: it shows that no product of these twenty-three elements carries r12
+to r13, and not that Gent contains none.
+The decisive group is the image of Gent in O(T_En/2T_En), G_g = {sigma : rho(sigma) in M}; its
+orbit of the class of 12 decides the pair.  Equivalently the pair is decided by whether the
+image of a transporter g lies in M . rho(Stab_O(r12) cap Stab_O(delta) cap Stab_O(Z eta_5)).
+The provider returns stabilizer generators for a single vector; the intersection is built as a
+predicate and not resolved into generators (coble_760-transporter-in-gent-run.txt).
+
+PYEXIT=0

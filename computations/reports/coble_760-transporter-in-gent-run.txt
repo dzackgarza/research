@@ -1,0 +1,23 @@
+the transporter the pair (12,13) admits, and the one that is still missing
+Sage 11.0.beta5; sage-extensions at commit 1488acf on the local checkout
+
+(1) Stab_{O(T_En)}(r12): 55 generators returned, 55 verified (integral, form-preserving, fixing r12)
+
+(2) the witness g of coble_760-witness-12-13: isometry True, in Gent False
+    A_{U(2)} has 4 classes; the target rho(g)^{-1}(A_{U(2)}) has 4
+    subspace orbit: 7547 classes of the Grassmannian reached at depth 3; target reached: True
+    word (13, 13, 2) (length 3): h integral True, isometry True, h(r12) == r13 True, in Gent True
+    so roots 12 and 13 lie in one Gent-orbit: the pair is not separated by Gent
+    h(delta) == delta: False    h(eta_5) == +-eta_5: False
+    h therefore lies outside Stab_Gent(delta), whose image is Gamma_Co,2 = R_Gent, and
+    outside the stabilizer of the eta_5 line: it does not decide the K_5 classes.
+
+(3) the intersection whose generators are missing
+    Aut.stabilizer(r12).stabilizer(delta).stabilizer(eta_5) builds a IntersectionSubgroups.parent_class
+    group_generators() raises ValueError: {g in Orthogonal group O(Integral lattice of rank 12 and signature (2, 10)) : g lies in every selected subgroup} has no chosen resolution relative to Category of groups
+
+    That is the missing unit: generators of Stab_O(r12) cap Stab_O(delta) cap Stab_O(Z eta_5).
+    With them the subspace-orbit test that produced (2) decides the pair, by the same argument:
+    the target is rho(g)^{-1}(A_{U(2)}) in A_{T_En}, reached by a word in the stabilizer's images.
+
+PYEXIT=0

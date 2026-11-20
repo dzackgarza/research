@@ -1,0 +1,77 @@
+K = I_{1,8}(2) = Z H_0 + Z E_1 + ... + Z E_8,  H_0^2 = 2,  E_i^2 = -2,
+vectors in the coordinates of that basis; (c,d) = 2 c_0 d_0 - 2 sum c_i d_i.
+
+=== A. the notation, and the sign of the pairings between simple roots ===
+  r_0 = H_0 - E_1 - E_2 - E_3, square -4
+  (x, r_0) = 2(a - b_1 - b_2 - b_3) identically, and at a = b_1 + b_2 + b_3 = 5 it is 0,
+  so r_0 is the vector cutting the printed inequality a >= b_1 + b_2 + b_3.  The pairing
+  (r_0, r_3) = 2 is POSITIVE, and so is (r_1, r_2) = 2.
+  That is ordinary here and is not a defect: the chamber lies in the positive cone and
+  these are its inward normals, so two walls can meet at an obtuse dihedral angle.  A
+  single bond is decided by 2(r_i,r_j)^2/(r_i^2 r_j^2) = 1/2, which both pairs have.
+
+=== B. the (-4)-roots: an even a-coordinate is exactly the E_8(2) support ===
+  A (-4)-root has a^2 - sum b_i^2 = -2 with gcd(a, b_1..b_8) = 1, since a prime square
+  cannot divide -2; so its divisibility is 2 and its reflection is integral.  The class
+  of r/2 has a/2 as its A_<h> coordinate, so it meets A_<h> exactly when a is odd.
+  For a odd, a^2 = 1 mod 8, so sum b_i^2 = a^2 + 2 = 3 mod 8 and SOME b_i is odd.
+  Hence: every (-4)-root with a odd is mixed, and none with a odd sits in A_<h>.
+
+  a parity   support of [r/2]  mixed?  patterns
+      even         A_{E_8(2)}   False  15 up to the signs and the order of the b_i, |a| <= 4
+       odd              mixed    True  8 up to the signs and the order of the b_i, |a| <= 4
+  => a (-4)-root's reflection lies in Gamma_e iff its a-coordinate is even.
+     r_1, ..., r_7 have a = 0 and do; H_0 - E_1 - E_2 - E_3 has a = 1 and does not.
+     That is the earlier census record's verdict; here the criterion is stated once
+     for every (-4)-root instead of root by root.
+
+=== C. the eight retained simple roots are a B_8 system ===
+  Cartan matrix 2(r_i,r_j)/r_i^2:
+     r_1    2  -1   0   0   0   0   0   0
+     r_2   -1   2  -1   0   0   0   0   0
+     r_3    0  -1   2  -1   0   0   0   0
+     r_4    0   0  -1   2  -1   0   0   0
+     r_5    0   0   0  -1   2  -1   0   0
+     r_6    0   0   0   0  -1   2  -1   0
+     r_7    0   0   0   0   0  -1   2  -1
+     r_8    0   0   0   0   0   0  -2   2
+  leading principal minors: 2, 3, 4, 5, 6, 7, 8, 2
+  all positive, so positive definite; the off-diagonal is -1 along a chain and the
+  last node pairs -2, so the diagram is B_8 and the group is finite.  A finite
+  reflection group's chamber is the intersection of its retained half-spaces, so
+  chamber<s_{r_1},...,s_{r_8}> = {b_1 >= ... >= b_8 >= 0}: no condition on a at all,
+  which strictly contains the unpolarized chamber.
+
+=== D. a (-2)-root of Gamma_e whose wall leaves the parabolic chamber ===
+  rho = 3H_0 - 2E_1 - 2E_2 - E_3 - E_4:  square -2, divisibility 2,
+  integral reflection on a basis: True, classes of A_K moved across the decomposition: 0.
+  A (-2)-root has gcd(a, b_1..b_8) = 1, else a prime square divides
+  sum b_i^2 - a^2 = 1; hence divisibility 2, hence its reflection is trivial on A_K
+  and lies in Gamma_e at every labelled cusp (lem:root-reflections-in-the-labelled-cusp).
+
+  (x, rho) = 2(3a - 2b_1 - 2b_2 - b_3 - b_4).  On a >= b_1 + b_2 + b_3,
+    3a - 2b_1 - 2b_2 - b_3 - b_4 >= b_1 + b_2 + 2b_3 - b_4 >= b_1 + b_2 + b_3,
+  so (x, rho) > 0 on the interior of the unpolarized chamber.
+  witness 16/5H_0 - 2E_1 - 2E_2 - E_3 - E_4 - 1/10E_5 - 1/10E_6 - 1/10E_7 - 1/10E_8,
+  i.e. a = 16/5 and b = (2, 2, 1, 1, 1/10, 1/10, 1/10, 1/10):
+    every b-coordinate is positive, so p is in the INTERIOR of the parabolic chamber,
+    parabolic chamber True,  unpolarized chamber False,
+    (p,p) = 2/5 > 0, so p is a point of the parabolic chamber inside the cone,
+    (p, rho) = -4/5 < 0, while (x, rho) > 0 on the unpolarized chamber.
+  s_rho fixes rho^perp pointwise, so no labelled chamber straddles it; the labelled
+  chamber contains the unpolarized one and lies on the positive side.  Hence p is
+  outside the labelled chamber, and the labelled chamber is a proper subregion of
+  chamber<s_{r_1},...,s_{r_8}>.
+
+  The same point also separates that chamber from the two unpolarized ones: s_{r_0}(p) =
+  7/5H_0 - 1/5E_1 - 1/5E_2 + 4/5E_3 - E_4 - 1/10E_5 - 1/10E_6 - 1/10E_7 - 1/10E_8,
+  whose b-coordinates ['1/5', '1/5', '-4/5', '1', '1/10', '1/10', '1/10', '1/10'] are not ordered,
+  so s_{r_0}(p) is outside the unpolarized chamber, and p is too.  Hence
+    {b_1 >= ... >= b_8 >= 0}  is strictly larger than  C  u  s_{r_0}(C),
+  and the chamber of the eight retained roots is not the union of those two chambers.
+
+=== verdict ===
+  The eight retained nodes are walls of the labelled chamber, and they do not bound it:
+  its simple system strictly contains r_1, ..., r_8.  So the labelled diagram is not the
+  unpolarized diagram with the node rho_0 deleted, at any labelled cusp, and it is the
+  (-2)-part, which lies in Gamma_e unconditionally, that defeats the deletion.

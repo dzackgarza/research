@@ -129,7 +129,7 @@ To determine the stratification of \( \overline{ F_{\Co} }^{\operatorname{BB}} \
 Application of the mirror move algorithm to $S_{\Co} = (11, 11, 1)_1$.
 :::
 Using this, I have constructed the incidence diagram that represents \( \del \overline{ F_{\Co} }^{\operatorname{BB}} \), which is shown in @fig:coble-cusp-diagram-detailed.
-Using lattice theoretic techniques, and in particular an invariant called the *divisibility*, I have determined that \( \eta \) induces the correspondence \( \del \overline{ F_{\Co} }^{\operatorname{BB}}\to \del \overline{ F_{\En} }^{\operatorname{BB}} \) depicted in @fig:enriques-coble-correspondence-statement, which has allowed me to determine that Coble degenerations are *\( \Dc^2 \)-type*, as opposed to *\( {\RP}^2 \)-type*, an essential ingredient for later constructing the correct divisorial log terminal (dlt) models of KSBA degenerations.
+Using lattice theoretic techniques, and in particular an invariant called the *divisibility*, I have determined that \( \eta \) induces the correspondence \( \del \overline{ F_{\Co} }^{\operatorname{BB}}\to \del \overline{ F_{\En} }^{\operatorname{BB}} \) depicted in @fig:enriques-coble-correspondence, which has allowed me to determine that Coble degenerations are *\( \Dc^2 \)-type*, as opposed to *\( {\RP}^2 \)-type*, an essential ingredient for later constructing the correct divisorial log terminal (dlt) models of KSBA degenerations.
 
 ::: {#fig:coble-cusp-diagram-detailed .figure}
 \input{tikz/fig_Cusp_Diagram_Co.tex}
@@ -139,7 +139,7 @@ Rounded nodes indicate points added in the boundary of the compactification $\ov
 Solid arrows $A\to B$ indicate that a point $A$ is contained in the closure of a curve $B$.
 :::
 
-::: {#fig:enriques-coble-correspondence-statement .figure}
+::: {#fig:enriques-coble-correspondence .figure}
 \input{tikz/fig_Cusp_Correspondence_Co_En.tex}
 
 The cusp correspondence $\eta: \overline{  F_{\Co} }^{\operatorname{BB}} \to \overline{  F_{\En}  }^{\operatorname{BB}}$.
@@ -152,7 +152,7 @@ I have extended \( \eta \) to a morphism \( \tilde \eta: \overline{  F_{\Co} }^{
 I determined that that the Coble cusps correspond to \( U\oplus E_8^2 \), the lattice with invariants \( (18, 0, 0)_1 \) in @fig:220-cusps-diagram.
 Using our previous work in [@AEGS25], I am working on a correspondence between \( \fco \) and \( F_{\En, 2} \) in order to construct KSBA degenerations.
 The cusp diagram for \( F_{\En, 2} \) was first given by [@Ste91], and I have computed that the Coble 0-cusp corresponds with cusp 2 of @fig:sterk-cusp-diagram.
-This correspondence requires studying a separate period domain \( D_{\Co}/\Gamma \) for a certain subgroup \( \Gamma_{\Co} \leq {\Orth}(T_{\Co}) \) and classifying orbits of isotropic vectors under this subgroup.
+This correspondence requires studying a separate period domain \( D_{\Co}/\Gamma \) for the subgroup \( \Gamma_{\Co} \leq {\Orth}(T_{\Co}) \) of @def:coble-family-unpolarized(3), the monodromy group of the family of unpolarized Coble surfaces, and classifying orbits of isotropic vectors under it.
 
 Toward this end, I have been working on adapting the techniques of [@Ste91] and [@Sca87] to new lattices.
 This has involved a careful study of the discriminant groups \( A_{T_{\Co}} \) and \( A_{T_{\En}} \) of the Coble and Enriques lattices, and finding techniques to reduce classification of orbits of isotropic vectors in \( T_{\Co} \) to finite, computable problems in \( A_{T_{\Co}} \). This has also involved explicit constructions of *Eichler transformations* which prove that vectors satisfying certain numerical properties are in the same \( \Gamma_{\Co} \)-orbit.

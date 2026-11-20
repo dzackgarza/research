@@ -1,0 +1,87 @@
+Which Sterk cusp carries the Coble 0-cusp: the boundary lattice against the chamber
+Sage 11.0.beta5, python 3.14.10, sage_extensions built from the checkout at .scratch/sage-extensions
+every lattice below is a library object; no Gram matrix is typed in this file
+
+=== part A. the three period lattices, and the sums of their named summands
+  T_Co = NamedLattices.Tco rank 11  det -2048  signature (2, 9)  even True
+  T_En = NamedLattices.TEn rank 12  det 1024  signature (2, 10)  even True
+  T_dP = NamedLattices.TdP rank 20  det 4  signature (2, 18)  even True
+  T_Co is <2> + U(2) + E8(2)        : True
+  T_En is U + U(2) + E8(2)          : True
+  T_dP is U + U(2) + E8 + E8        : True
+
+=== part B. delta = e - f, and T_Co = delta^perp, decided by the library
+  delta = e - f: square -2, divisibility Ideal (1) of Integer Ring, isotropic? False
+  delta^perp in T_En: rank 11, det -2048, signature (2, 9), even True
+  delta^perp is T_Co                : True
+
+=== part C. Sterk's five cusp vectors, from the library, and their Coble 0-cusps
+  the vectors are Sterk.selected_isotropic_vectors(); coordinates in the T_En basis
+  coordinate order: (a1, a2, a3, a4, a5, a6, a7, a8, e, ep, f, fp)
+  Sterk_1  coords [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]           square 0  (w, delta) -1  div_T_En Ideal (1) of Integer Ring  line rank 1 (admitted: primitive and totally isotropic)
+           not a vector of T_Co = delta^perp, so no 0-cusp of F_Co,2 over this cusp
+  Sterk_2  coords [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]           square 0  (w, delta) 0  div_T_En Ideal (2) of Integer Ring  line rank 1 (admitted: primitive and totally isotropic)
+           delta^perp cap w^perp: rank 10, nondegenerate False; its radical quotient is the boundary lattice of the Coble 0-cusp at this cusp
+             boundary lattice: rank 9  det 512  signature (1, 8)  even True  2-elementary True  invariants (9, 9, 1)
+           is <2> + E8(2) = (9,9,1)_1: True
+  Sterk_3  coords [-2, -3, -4, -6, -5, -4, -3, -2, 0, 1, 0, 1]   square 0  (w, delta) 0  div_T_En Ideal (2) of Integer Ring  line rank 1 (admitted: primitive and totally isotropic)
+           delta^perp cap w^perp: rank 10, nondegenerate False; its radical quotient is the boundary lattice of the Coble 0-cusp at this cusp
+             boundary lattice: rank 9  det 512  signature (1, 8)  even True  2-elementary True  invariants (9, 9, 1)
+           is <2> + E8(2) = (9,9,1)_1: True
+  Sterk_4  coords [-4, -5, -7, -10, -8, -6, -4, -2, 0, 1, 0, 2]  square 0  (w, delta) 0  div_T_En Ideal (2) of Integer Ring  line rank 1 (admitted: primitive and totally isotropic)
+           delta^perp cap w^perp: rank 10, nondegenerate False; its radical quotient is the boundary lattice of the Coble 0-cusp at this cusp
+             boundary lattice: rank 9  det 512  signature (1, 8)  even True  2-elementary True  invariants (9, 9, 1)
+           is <2> + E8(2) = (9,9,1)_1: True
+  Sterk_5  coords [-4, -5, -7, -10, -8, -6, -4, -2, 2, 0, 2, 0]  square 0  (w, delta) 0  div_T_En Ideal (2) of Integer Ring  line rank 1 (admitted: primitive and totally isotropic)
+           delta^perp cap w^perp: rank 10, nondegenerate False; its radical quotient is the boundary lattice of the Coble 0-cusp at this cusp
+             boundary lattice: rank 9  det 512  signature (1, 8)  even True  2-elementary True  invariants (9, 9, 1)
+           is <2> + E8(2) = (9,9,1)_1: True
+
+=== part D. cusp 4 has two printed representatives; the library records both
+  cusp 4 (4.2.3)  coords [-4, -5, -7, -10, -8, -6, -4, -2, 0, 1, 0, 2]  square 0  (w, delta) 0
+           boundary lattice rank 9 det 512 invariants (9, 9, 1) ; is <2> + E8(2): True
+  cusp 4 chamber  coords [-4, -5, -7, -10, -8, -6, -4, -2, 0, 2, 0, 1]  square 0  (w, delta) 0
+           boundary lattice rank 9 det 512 invariants (9, 9, 1) ; is <2> + E8(2): True
+  the two representatives have isometric reductions, so the cusp's boundary lattice is independent of the choice (tests/lattices/test_cusp_lattices.sage asserts it as well)
+
+=== part E. the F(2,2,0) side, through the library's T_En -> T_dP embedding
+  Sterk_1  div_T_dP Ideal (1) of Integer Ring reduction rank 18  invariants (18, 2, 0)  = U + E8^2 (18,0,0): False  = U(2) + E8^2 (18,2,0): True
+  Sterk_2  div_T_dP Ideal (2) of Integer Ring reduction rank 18  invariants (18, 0, 0)  = U + E8^2 (18,0,0): True   = U(2) + E8^2 (18,2,0): False
+  Sterk_3  div_T_dP Ideal (1) of Integer Ring reduction rank 18  invariants (18, 2, 0)  = U + E8^2 (18,0,0): False  = U(2) + E8^2 (18,2,0): True
+  Sterk_4  div_T_dP Ideal (1) of Integer Ring reduction rank 18  invariants (18, 2, 0)  = U + E8^2 (18,0,0): False  = U(2) + E8^2 (18,2,0): True
+  Sterk_5  div_T_dP Ideal (1) of Integer Ring reduction rank 18  invariants (18, 2, 0)  = U + E8^2 (18,0,0): False  = U(2) + E8^2 (18,2,0): True
+
+=== part F. the walls at the five cusps, projected to delta^perp, and the restricted chamber
+  walls: Sterk.cusp_roots_in_TEn(name) -- Sterk (1991) 4.3.6 (Fig. 6, p. 21), 4.3.7 (Fig. 8,
+         p. 22), 4.3.8 (Fig. 10, p. 23), 4.3.9 (Fig. 12, p. 24); card 029J's cusp_chambers row
+  delta^2 = -2; coordinates are the library's to_vector, the form is TEn.b on the twelve named generators
+  the printed table as a library diagram: vertices 9, hyperbolic True, form rank 9
+  Sterk_2  4.3.6, Fig. 6, p. 21 printed 10  multiples of delta [10]  projected  9  proportional pairs []
+           squares ['-2', '-4', '-4', '-4', '-4', '-4', '-4', '-4', '-4']
+           pairs whose span is degenerate, b(x,y)^2 = q(x)q(y), with (printed indices, q(x), b(x,y), q(y)): none
+           ->  9 distinct walls; their cone: form rank 9, dim 9, lines 0, extreme rays 9
+  Sterk_3  4.3.7, Fig. 8, p. 22 printed 12  multiples of delta [8]  projected 11  proportional pairs []
+           squares ['-2', '-2', '-2', '-4', '-4', '-4', '-4', '-4', '-4', '-4', '-4']
+           pairs whose span is degenerate, b(x,y)^2 = q(x)q(y), with (printed indices, q(x), b(x,y), q(y)): [(10, 11, -2, 2, -2)]
+           -> 11 distinct walls; their cone: form rank 9, dim 9, lines 0, extreme rays 11
+  Sterk_4  4.3.8, Fig. 10, p. 23 printed 11  multiples of delta [8]  projected 10  proportional pairs []
+           squares ['-2', '-2', '-4', '-4', '-4', '-4', '-4', '-4', '-4', '-4']
+           pairs whose span is degenerate, b(x,y)^2 = q(x)q(y), with (printed indices, q(x), b(x,y), q(y)): none
+           -> 10 distinct walls; their cone: form rank 9, dim 9, lines 0, extreme rays 10
+  Sterk_5  4.3.9, Fig. 12, p. 24 printed 14  multiples of delta [9]  projected 13  proportional pairs []
+           squares ['-2', '-2', '-2', '-2', '-2', '-4', '-4', '-4', '-4', '-4', '-4', '-4', '-4']
+           pairs whose span is degenerate, b(x,y)^2 = q(x)q(y), with (printed indices, q(x), b(x,y), q(y)): [(8, 14, -2, 2, -2), (10, 14, -2, 2, -2)]
+           -> 13 distinct walls; their cone: form rank 9, dim 9, lines 0, extreme rays 13
+  cusp 2's facet as a library diagram: vertices 9, hyperbolic True, form rank 9
+  its bond list, read from coxeter_entry (i, j, m for m != 2):
+    [(1, 3, 3), (2, 4, 3), (3, 4, 3), (4, 5, 3), (5, 6, 3), (6, 7, 3), (7, 8, 3), (8, 9, 4)]
+  the printed table's bond list:
+    [(1, 3, 3), (2, 4, 3), (3, 4, 3), (4, 5, 3), (5, 6, 3), (6, 7, 3), (7, 8, 3), (8, 9, 4)]
+  the two Coxeter matrices agree entry by entry: True
+  hence cusp 2's facet, as the library computes it, IS the Coble chamber of @thm:coble-cusp-chamber
+
+  the four counts: distinct walls / facets of the restricted chamber
+    Sterk_2   9 distinct walls,  9 facets
+    Sterk_3  11 distinct walls, 11 facets
+    Sterk_4  10 distinct walls, 10 facets
+    Sterk_5  13 distinct walls, 13 facets

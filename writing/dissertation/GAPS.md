@@ -4,6 +4,8 @@ What was noticed while moving the dissertation from LaTeX back to Markdown, with
 The open items are work units in the [issue tree](https://github.com/dzackgarza/research/issues/46): #721, #722, #723 and #724. None of them blocks the build, which compiles with no LaTeX errors.
 What has since been settled is listed at the end, so that a reader can tell "resolved" from "never noticed".
 
+A convention on the group $\Gamma_{\mathrm{Co}}$, whose definition moved under this ledger. The book now defines $\Gamma_{\mathrm{Co}}$ as the monodromy group of the family of unpolarized Coble surfaces (@def:gamma-co-groups(1)), not as the subgroup $\Orth^+(T_{\mathrm{Co}})\cap\ker\rho$, and the two are related only conjecturally (@conj:gamma-co-stable; the sign half of $\Gamma_{\mathrm{Co}}\subseteq\widetilde\Orth^+(T_{\mathrm{Co}})$ is proved by @lem:monodromy-is-spinor-positive, and the discriminant half is open, @rmk:gamma-co-status). An entry below that was written under the earlier convention --- one that has $\Gamma_{\mathrm{Co}}$ act trivially on $A_{T_{\mathrm{Co}}}$, or on the isotropic classes of $A_{T_{\mathrm{Co}}}$, or that writes an orbit set $\Gamma_{\mathrm{Co}}\backslash I(T_{\mathrm{Co}})$ --- is to be read with $\widetilde\Orth^+(T_{\mathrm{Co}})$ in the place of $\Gamma_{\mathrm{Co}}$, unless it says otherwise. Where the distinction decides the assertion, it is flagged in place; the strong lifting is the entry where it does (@rmk:coble-strong-lifting-group).
+
 ## Possibly missing content
 
 - [[450-scattone|Scattone boundary analysis]] carries
@@ -965,7 +967,7 @@ What has since been settled is listed at the end, so that a reader can tell "res
   cusp group, i.e. the $\Gamma_k$ of the next paragraph, and differs from $\Gamma_{\En,2}$ only by
   the $e$.  $\Gamma_{2d}$ is the degree-$2d$ K3 group of the Scattone chapter, settled in an earlier
   entry as the stable orthogonal group $\widetilde O^+(T_{2d})$.  $\Gamma_\Co$ is the Heegner
-  chapter's subgroup of $\Orth(A_{T_\Co}, q)$.  A bare $\Gamma$ belongs to the hypotheses of the cusp
+  chapter's monodromy group of the family of unpolarized Coble surfaces, a subgroup of $\Orth(T_\Co)$ (@def:gamma-co-groups(1), @def:coble-family-unpolarized); the subgroup of $\Orth(A_{T_\Co}, q)$ is where its discriminant image lies (@cor:gamma-co-lifting-criterion).  A bare $\Gamma$ belongs to the hypotheses of the cusp
   correspondence and should not be read as any one of the four.
   The lemma numbers, reconciled against the version of record.  The retained e-print's source order
   and the published numbering disagree by one in Section 3: assembling the e-print's numbered
@@ -1017,40 +1019,70 @@ What has since been settled is listed at the end, so that a reader can tell "res
   The equivariance obligation at the Coble-Enriques cusps, and its resolution.  The cusp
   correspondence first asserted a bijection of Gamma-orbits and was then downgraded to a statement
   about representatives, with the equivariance recorded as an open obligation: for every
-  phi in Gamma_Co, an isometry phi~ of T_En with phi~ eta = eta phi.  That obligation was already
-  discharged in the book, and the downgrade was a cross-chapter contradiction rather than a missing
-  theorem: the stabilizer step of thm:normalization proves both directions, and the cusp proof now
-  cites it instead of claiming the homomorphism absent.  The exact content, with the kernel checked
+  phi in Gamma_Co, an isometry phi~ of T_En with phi~ eta = eta phi.  The obligation is discharged for
+  the stable group by thm:coble-strong-lifting: the section Ext with res o Ext = id, its image
+  Ext(O~+(T_Co)) = Stab_{Gamma_En}(k), the kernel {1, s_k} of res, and the direct product for the line
+  stabilizer, resting on Nikulin's extension criterion (Prop. 1.5.1 and Cor. 1.5.2, printed p. 111) and
+  on the published descriptions of the two lattices, so the earlier route through the stabilizer step of
+  thm:normalization is superseded.  For Gamma_Co itself the obligation stays conditional: the section is
+  stated for O~+(T_Co) and the equality Gamma_Co = O~+(T_Co) is a theorem on the labelled base
+  (thm:gamma-co-is-stable), so the section applies to the monodromy group.
+
+  What the conditionality reduces to, so that it is not left as a bare unknown.  The forward
+  inclusion fails as soon as the parameter space of the family meets a Heegner divisor of square
+  $-4$ in $T_{\mathrm{Co}}$: a loop around such a divisor carries the reflection $s_\delta$, which
+  lies in $\mathrm{O}^+(T_{\mathrm{Co}})$ and outside the discriminant kernel
+  (@prop:gamma-co-reflective-set(3), @rmk:gamma-co-nodal-pair-proposal).  Two inputs are therefore
+  missing, and both are named rather than assumed: a printed statement of the Picard--Lefschetz
+  identification, which @prop:monodromy-contains-root-reflections takes as a hypothesis and
+  @cons:lefschetz-periods states without a source; and the answer to which Heegner divisors of
+  $T_{\mathrm{Co}}$ the parameter space meets, which neither [@DK13, Prop. 3.2, printed p. 513] (an
+  open-subset statement that constrains no Heegner divisor) nor [@DZ01] (a classification paper,
+  with no moduli, period or deformation statement) decides.  The routes closed, with their records,
+  are: the Eichler criterion, which needs two hyperbolic planes and neither $T_{\mathrm{Co}}$ nor
+  $T_{\mathrm{En}}$ has them (@prop:tco-no-hyperbolic-plane, @prop:ten-no-second-plane);
+  transitivity of $\Gamma_{\mathrm{En}}$ on the primitive isotropic vectors of $T_{\mathrm{En}}$,
+  false because that lattice is $2$-elementary (`coble_658-ten-transitivity-probe-run.txt`); and
+  reading the collision of two nodes in [@DK13]'s classical model as producing a class of square
+  $-4$ in $T_{\mathrm{Co}}$, which fails because the classes $e_0,\dots,e_{10}$ are algebraic on
+  every member and vanish on none.
+  The exact content, with the kernel checked
   because that is where it is easy to be wrong: K = T_Co^{perp T_En} = Z k with k = e~ - f~ and
   k^2 = -2; the gluing group is H = <(h/2, k/2)> in A_{T_Co} + A_K, of order 2 and isotropic because
-  q(h/2) + q_K(k/2) = 1/2 - 1/2 = 0; every phi in Gamma_Co preserves H as phi + id_K, since phi-bar is
-  the identity on A_{T_Co}, and so extends to T_En by thm:automorphism-lifting-criterion, and the
-  extension lies in Gamma_En.  Hence Ext: Gamma_Co -> Stab_{Gamma_En}(T_Co), phi |-> the extension
-  fixing k.  Ext is injective, restriction is a left inverse, and restriction is not injective: its
+  q(h/2) + q_K(k/2) = 1/2 - 1/2 = 0; every phi in O~+(T_Co) preserves H as phi + id_K, since phi-bar is
+  the identity on A_{T_Co}, and so extends to T_En by Nikulin's extension criterion, which is
+  thm:coble-strong-lifting's own step and not thm:automorphism-lifting-criterion read through
+  thm:normalization, and the extension lies in Gamma_En.  Hence Ext: O~+(T_Co) -> Stab_{Gamma_En}(T_Co),
+  phi |-> the extension fixing k.  Here is where the monodromy group stops: "phi-bar is the identity on
+  A_{T_Co}" is the unproved inclusion Gamma_Co <= O~+(T_Co), and nothing below may be read for Gamma_Co
+  without it.  Ext is injective, restriction is a left inverse, and restriction is not injective: its
   kernel is {1, s_k}, the reflection in the (-2)-vector k, which fixes T_Co pointwise and negates k.
-  So the stabilizer of the vector k is Ext(Gamma_Co) and the stabilizer of the line Z k is
-  Ext(Gamma_Co) x <s_k>; the equivariant assignment is the section fixing k, not restriction.  With
+  So the stabilizer of the vector k is Ext(O~+(T_Co)) and the stabilizer of the line Z k is
+  Ext(O~+(T_Co)) x <s_k>; the equivariant assignment is the section fixing k, not restriction.  With
   it, eta(phi v) = Ext(phi) eta(v), so the object map descends to a map of orbit sets
-  Gamma_Co\I(T_Co) -> Gamma_En\I(T_En).  That is the first step and it is now written down in the
-  chapter.
-  The 0-cusp orbit map: fibre, image, and the two things settled.  With Phi: Gamma_Co\I(T_Co) ->
-  Gamma_En\I(T_En), v |-> [eta(v)], and the stable groups fixed on both sides (Gamma_Co =
-  Orth^+(T_Co)^*, Gamma_En = Orth^+(T_En)^*; AEGS25's larger Gamma^K_En = Orth(T_En) is a different
-  group and now written with the K), the fibre over a target class [w~] is the double-coset set
-  Stab_{Gamma_En}(w~) \ Y / Ext(Gamma_Co) with Y = {gamma : gamma^{-1}w~ in eta(T_Co)} -- stabilizer on
-  the LEFT, Ext(Gamma_Co) on the RIGHT, the two actions being v_{h gamma} = v_gamma and
+  O~+(T_Co)\I(T_Co) -> Gamma_En\I(T_En).  That is the first step and it is now written down in the
+  chapter for the stable group; under conj:gamma-co-stable the same sentences hold with Gamma_Co.
+  The 0-cusp orbit map: fibre, image, and the two things settled.  With Phi: O~+(T_Co)\I(T_Co) ->
+  Gamma_En\I(T_En), v |-> [eta(v)], and the stable groups fixed on both sides (O~+(T_Co) =
+  Orth^+(T_Co)^* intersect ker rho_{T_Co}, Gamma_En = Orth^+(T_En)^*; AEGS25's larger
+  Gamma^K_En = Orth(T_En) is a different group and now written with the K), the fibre over a target
+  class [w~] is the double-coset set
+  Stab_{Gamma_En}(w~) \ Y / Ext(O~+(T_Co)) with Y = {gamma : gamma^{-1}w~ in eta(T_Co)} -- stabilizer on
+  the LEFT, Ext(O~+(T_Co)) on the RIGHT, the two actions being v_{h gamma} = v_gamma and
   v_{gamma Ext(phi)} = phi^{-1}v_gamma, with the converse giving the double cosets exactly.  The earlier
   Gamma_Co\Y/Stab was the reversed expression and is gone; nothing derives from it.
   Two results on the 0-cusp map, both by all-vector arguments rather than by sampling.  Surjectivity
   fails: every primitive isotropic v of T_Co has div_En(eta(v)) even, hence 2, so the divisibility-1
-  cusp with boundary lattice (10,10,0)_1 is missed (prop:cusp-map-not-onto).  And injectivity is
-  reduced: because a Gamma_En element acts trivially on A_T_En, the class
+  cusp with boundary lattice (10,10,0)_1 is missed (prop:cusp-map-not-onto).  And injectivity holds, in two
+  steps: because a Gamma_En element acts trivially on A_T_En, the class
   x-bar = x/2 in A_T_En of a divisibility-2 vector is Gamma_En-invariant, so eta(v) and eta(v') in one
-  Gamma_En-orbit force v = v' mod 2T_Co (prop:cusp-map-separates-mod-two); a fibre therefore draws its
-  representatives from a single class in T_Co/2T_Co, and the residue of the injectivity question is one
-  mod-2 class.  The same argument separates the two Coble 0-cusps the book knows: e' and f', the
-  isotropic generators of the U(2) summand, are in different Gamma_Co-orbits (@lem:stable-orthogonal-
-  not-transitive) and incongruent mod 2, so their images are distinct -- Phi does not collapse them.
+  Gamma_En-orbit force v = v' mod 2T_Co (prop:cusp-map-separates-mod-two); and congruence mod 2T_Co is
+  exactly equality of the classes v* = [v/2], on which thm:coble-zero-cusp-count(1) gives one
+  discriminant-kernel orbit per class.  So each fibre is a single orbit
+  (prop:cusp-map-injective), and no injectivity residue is left.  The same argument separates the two Coble 0-cusps the book knows: e' and f', the
+  isotropic generators of the U(2) summand, are in different O~+(T_Co)-orbits
+  (@lem:stable-orthogonal-not-transitive, whose group is the stable one) and incongruent mod 2, so their
+  images are distinct -- Phi does not collapse them.
   What is a finite check and what is not: the divisibility identity
   div_En(eta(v)) = gcd(div_Co(v), beta_Co(v,h)/2), the evenness of both entries, the mod-4 vanishing
   that forces a even, and the class separation of e' and f' are verified on and for the representatives
@@ -1286,24 +1318,31 @@ What has since been settled is listed at the end, so that a reader can tell "res
   The same mismatch sits one level down, in the book's own theorem: thm:split-maximal-isotropic-
   transitivity is stated without a parity hypothesis, proved by citation to Dawes §3.1, and applied in
   this chapter to the odd B, so it now carries an explicit caveat and the applications to B inherit the
-  gap.  What survives is one-directional: since Gamma_Co fixes every class of A_{T_Co}, vectors in
-  different classes lie in different orbits, so the finite count is a lower bound for the integral one
+  gap.  What survives is one-directional: for a group that fixes every class of A_{T_Co} -- which
+  O~+(T_Co) does, and Gamma_Co does under conj:gamma-co-stable, its discriminant action being otherwise
+  unknown -- vectors in different classes lie in different orbits, so the finite count is a lower bound
+  for the integral one
   and never an upper one.
   Consequence for the cusp correspondence, stated rather than glossed: the mod-2 invariant of
   prop:cusp-map-separates-mod-two is the discriminant class v*, since for divisibility 2 the class of v/2
   is v*, so the fibre question is a question about the group studied in the discriminant-orbits section
-  and not a new invariant; and injectivity is *not* concluded, because lifting a rho(Gamma_Co)-orbit back
-  to a Gamma_Co-orbit is precisely the step the audited theorem would have supplied.  Surjectivity onto
+  and not a new invariant; and injectivity *is* concluded, without the descent that the audited theorem
+  would have supplied: thm:coble-zero-cusp-count(1) is that descent, one discriminant-kernel orbit per
+  isotropic class, so the stable group needs nothing from [@Daw22] here (prop:cusp-map-injective).  What
+  is not concluded is the same statement for Gamma_Co, the monodromy group: the map proved injective has
+  O~+(T_Co) on the source, and Gamma_Co = O~+(T_Co) on the labelled base (thm:gamma-co-is-stable), so the two agree.  Surjectivity onto
   the divisibility-2 locus is a further, independent question, stated in the chapter as: does some
   Gamma_En element carry a divisibility-2 primitive isotropic w~ into eta(T_Co) = k^perp, equivalently is
-  beta(w~, gamma^{-1}k) = 0 for some (-2)-vector in the Gamma_En-orbit of k.  Neither implies the other.  Whether every divisibility-2 Gamma_En-orbit
-  meets eta(T_Co) is the same open question as injectivity seen from the target.  All of this is about
+  beta(w~, gamma^{-1}k) = 0 for some (-2)-vector in the Gamma_En-orbit of k.  Neither implies the other.
+  Whether every divisibility-2 Gamma_En-orbit meets eta(T_Co) is now the whole of the residue, and it is
+  a question about the target.  All of this is about
   rank-1 isotropic lines, i.e. 0-cusps; the rank-2 (plane, 1-cusp) fibre is a separate question and
   nothing here is asserted about it.
   Finally, the two maps must not be conflated in the manuscript: the arrow of the correspondence figure
   records a matching of boundary-lattice *types* at the displayed representatives, which is what the
-  lemmas prove, while the stable cusp-orbit map is Phi, defined and equivariant, not onto, and injective
-  only up to the mod-2 refinement.  The chapter now says so, and no bijection claim survives anywhere:
+  lemmas prove, while the stable cusp-orbit map is Phi, defined and equivariant (thm:coble-strong-lifting),
+  not onto (prop:cusp-map-not-onto) and injective (prop:cusp-map-injective).  The chapter now says so, and
+  no bijection claim survives anywhere:
   the original statement is refuted, not merely weakened.
   Two prose corrections went with it.  The target of the map is the ambient quotient
   B(T_En)/Gamma_En and not the moduli space F_En = (B(T_En) minus H_{-2})/Gamma_En of
@@ -1539,7 +1578,7 @@ The check is the one each item names, run over `sections/`.
 
 - **Every statement block has a proof block.** The twenty-nine theorem, lemma, proposition and corollary blocks that had none now carry one, in the form the book's chapters use: a short derivation where the statement follows from the definitions on the page, and a one- or two-sentence citing block where it is quoted from the literature. Nothing was padded and no statement was weakened to make a proof easier.
 
-  Three of them were not proofs waiting to be written but claims of a different status, and are now labelled as such. The Noether--Lefschetz non-normality discussion is a remark whose three mechanisms are recorded as observed rather than proved, and its second item no longer asserts that a non-snc intersection of divisors makes a variety non-normal, which is false. The determination of the KSBA limit by its dual complex is a conjecture, and it now says which direction is established (from the divisor model to the data) and that neither properness of the KSBA functor nor the invariance of dual complexes supplies the other. Zariski's Main Theorem is stated in the finite form — a finite birational morphism onto a normal variety is an isomorphism — and proved by integral closure, because that is the case the classifying map uses and the previous list of four hypotheses included normality of the source and properness of the target, neither of which appears in any form of the theorem. The quasi-finite form, which concludes only an open immersion, is recorded with it as the classical statement and is cited at [@Har77, §V.5]; `Har77` and `Mum70` were the citations before, and neither carries the theorem in this bibliography, the `Mum70` entry being *Varieties defined by quadratic equations*.
+  Three of them were not proofs waiting to be written but claims of a different status, and are now labelled as such. The Noether--Lefschetz non-normality discussion is a remark whose three mechanisms are recorded as observed rather than proved, and its second item no longer asserts that a non-snc intersection of divisors makes a variety non-normal, which is false. The determination of the KSBA limit by its dual complex is a conjecture, and it now says which direction is established (from the divisor model to the data) and that neither properness of the KSBA functor nor the invariance of dual complexes supplies the other. Superseded (research#678): the determination of the *combinatorial type* of the limit by $\lambda$ and the data is a theorem of the literature, [@AEGS25, §4.1, printed p. 599, after @AE23, Corollary 8.13], and the reading in which the data determine the pair itself is false, refuted at a $1$-cusp by counting the monodromy invariants against the $j$-invariants; both are recorded as @thm:ia-data-verdict (1)--(3) with `computations/reports/coble_678-lambda-versus-j-run.txt`, and the unavailability sentence that stood in the divisor-models chapter is withdrawn with them. Zariski's Main Theorem is stated in the finite form — a finite birational morphism onto a normal variety is an isomorphism — and proved by integral closure, because that is the case the classifying map uses and the previous list of four hypotheses included normality of the source and properness of the target, neither of which appears in any form of the theorem. The quasi-finite form, which concludes only an open immersion, is recorded with it as the classical statement and is cited at [@Har77, §V.5]; `Har77` and `Mum70` were the citations before, and neither carries the theorem in this bibliography, the `Mum70` entry being *Varieties defined by quadratic equations*.
 
 - **Six Nikulin citations.** The tree cited `@Nik79` for Witt's analogue, the surjectivity of $\Orth(T)\to\Orth(q_T)$, and the discriminant theory. In the shared bibliography `Nik79` is *Finite groups of automorphisms of Kählerian K3 surfaces*; those results are in *Integral symmetric bilinear forms and some of their applications*, which is `Nik80`. The six sites now cite `@Nik80`, and `@Nik79` is left to the automorphism paper, which the research statement uses it for.
 

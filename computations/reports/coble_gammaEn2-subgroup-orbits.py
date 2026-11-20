@@ -50,7 +50,7 @@ import sage_indefinite_port  # noqa: E402
 
 from sage.all import CartanMatrix, ZZ, block_diagonal_matrix, matrix  # noqa: E402
 from sage.version import version as SAGE_VERSION  # noqa: E402
-from sage_extensions.all import Lattices  # noqa: E402
+from sage_extensions.catalogue import NamedLattices  # noqa: E402
 
 print('provenance')
 print('  Sage: %s' % SAGE_VERSION)
@@ -60,7 +60,13 @@ print('')
 
 U = matrix(ZZ, [[0, 1], [1, 0]])
 E8 = -CartanMatrix(['E', 8])
-T = Lattices(ZZ)([list(r) for r in block_diagonal_matrix(U, 2 * U, 2 * E8).rows()])
+# Use the existing canonical owner object rather than constructing an
+# isometric but distinct lattice. The public orbit engine recognizes this
+# exact named object when applying the proved Enriques plane stabilizer
+# indices; a fresh unnamed object needlessly invokes an expensive generic
+# isometry search before that theorem can be used.
+T = NamedLattices.TEn
+assert matrix(ZZ, 12, 12, lambda i, j: T.gram_tensor()[i, j]) == block_diagonal_matrix(U, 2 * U, 2 * E8)
 A = T.discriminant_quadratic_form()
 print('T_En: rank %d, det %s, signature %s' % (T.rank(), T.determinant(), T.signature_pair()))
 print('|A| = %d, isotropic classes %d' % (int(A.cardinality()), len(list(A.isotropic_elements()))))
@@ -87,6 +93,8 @@ O_T = A.orthogonal_group()
 print('|O(A_T,q)| = %d' % int(O_T.order()))
 M = O_T.subgroup(images)
 print('|M| = %d   (|W(E8)| = 696729600: %s)' % (int(M.order()), int(M.order()) == 696729600))
+assert int(M.order()) == 696729600
+assert int(O_T.order()) // int(M.order()) == 67456
 print('')
 
 print('Gamma_En,2 = T.Aut().discriminant_preimage(M)')
@@ -94,19 +102,48 @@ start = time.time()
 preimage = T.Aut().discriminant_preimage(M)
 print('  built in %.0f s: %s' % (time.time() - start, str(preimage)[:160]))
 print('  character data retained: %s' % (preimage.character_data_is_complete(),))
+assert bool(preimage.character_data_is_complete())
 print('')
 
-for rank, published in ((1, 5), (2, 9)):
+if '--certified-ambient-reps' in sys.argv:
+    # Independent integral subgroup decomposition using the two explicitly
+    # proved complete ambient O(T_En)-plane representatives of
+    # prop:ten-plane-classes (Sterk, Prop. 4.6). This invokes the library's
+    # actual divided-class orbit decomposition and transports its integral
+    # representatives; it does NOT replace the public top-level orbit call.
+    from sage_extensions.categories.isotropic_orbits import _DividedClassPlaneOrbitDecomposition
+
+    alpha = roots[0] + roots[1]
+    z = 2 * basis[0] + 2 * basis[1] + alpha
+    assert alpha.q() == -8 and z.q() == 0
+    P1 = T.primitive_isotropic_subobject(basis[0], basis[2])
+    P2 = T.primitive_isotropic_subobject(z, basis[2])
+    assert bool(P1.is_primitive()) and bool(P2.is_primitive())
+    print('explicit ambient plane representatives: P1=<e,e_prime>, P2=<2e+2f+alpha,e_prime>')
+    print('  both primitive and totally isotropic:', True)
+    start = time.time()
+    decomposition = _DividedClassPlaneOrbitDecomposition(preimage, (P1, P2))
+    orbits = tuple(decomposition.orbits())
+    print('  exact integral divided-class subgroup plane orbits:', len(orbits),
+          '(%0.f s)' % (time.time() - start))
+    assert len(orbits) == 9
+    for index, orbit in enumerate(orbits):
+        plane = orbit.representative()
+        assert bool(plane.is_primitive())
+        print('  integral plane orbit %d: primitive=%s divided classes=%s' %
+              (index, plane.is_primitive(), orbit.divided_classes()))
+    print('  all nine integral subgroup plane representatives materialized:', True)
+    sys.exit(0)
+
+for rank, published in (((2, 9),) if '--rank2-only' in sys.argv else ((1, 5), (2, 9))):
     print('rank %d' % rank)
     for label, group in (('Gamma_En,2', preimage), ('O(T_En)', T.Aut())):
         start = time.time()
-        try:
-            reps = group.isotropic_orbit_representatives(rank)
-            count = reps.cardinality() if hasattr(reps, 'cardinality') else len(list(reps))
-            print('  %-10s isotropic_orbit_representatives(%d) -> %s   (%.0f s)'
-                  % (label, rank, count, time.time() - start))
-        except Exception as exc:
-            print('  %-10s FAILED %s   (%.0f s): %s' % (label, type(exc).__name__, time.time() - start,
-                                                        str(exc)[:300]))
+        reps = group.isotropic_orbit_representatives(rank)
+        count = reps.cardinality() if hasattr(reps, 'cardinality') else len(list(reps))
+        print('  %-10s isotropic_orbit_representatives(%d) -> %s   (%.0f s)'
+              % (label, rank, count, time.time() - start))
+        expected = published if label == 'Gamma_En,2' else 2
+        assert int(count) == expected, (label, rank, count, expected)
     print('  published: %d' % published)
     print('')

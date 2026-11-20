@@ -1,0 +1,12 @@
+g integral: True
+det g: -1
+g^T G g == G: True
+g(delta) == delta: True
+g(eta) == eta: True
+g(r12) == r13: True  g(r13) == r12: True
+g fixes every irrelevant free direction? (r14): True
+
+delta is the root of printed label 11: True
+so g is in Gamma_Co,2 = Stab_O(T_En)(Z delta) and fixes eta_5: it is in the acting group
+and it carries the class of root 12 to the class of root 13.
+PYEXIT=0

@@ -1,0 +1,8 @@
+sources scanned: 41 files in tmp/sources
+
+candidate statements of a monodromy group for the Coble or Enriques family: 0
+
+verdict: no source held in tmp/sources states the monodromy group of the moduli of Coble surfaces,
+  or of unpolarized Enriques surfaces.  The candidates above are the only lines that mention a
+  monodromy group together with one of the two families, and none of them is such a statement.
+  Item 1e's remaining input is therefore external to this repository.

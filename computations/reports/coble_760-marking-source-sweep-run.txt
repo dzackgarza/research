@@ -1,0 +1,76 @@
+every source held, searched for a dictionary from cusp-lattice roots to curves of S
+corpus: tmp/sources
+
+FILE                                                         COBLE    ROOT   CURVE VERDICT
+aegs-2025-compact-moduli-of-enriques-surfaces-of-degree-2.md       2      55      41 HAS 1 root/curve line(s)
+      --- the lines, so the lead can be judged without opening the file:
+aegs-2025-compact-moduli-of-enriques-surfaces-of-degree-2.pdf       2      54      41 HAS 1 root/curve line(s)
+      --- the lines, so the lead can be judged without opening the file:
+alexeev-engel-2022-arxiv-2208.10383v2.pdf                        0      43      92 no root/curve line
+alexeev-engel-thompson-2023-arxiv-1903.09742v3.pdf               0      22      98 no root/curve line
+alexeev-nikulin-2006-del-pezzo-and-k3-surfaces-msj-memoirs-15.md       0     182     153 HAS 15 root/curve line(s)
+      --- the lines, so the lead can be judged without opening the file:
+      81:The classification of non-singular del Pezzo surfaces is classical and well known. One of the striking features of the theory is that their geometr
+      312:the set $\Delta ^ { ( 2 ) } ( S )$ of all $( - 2 )$ -roots of $S = ( S _ { X } ) _ { + }$ 34 the subset of $( - 2 )$ -roots of $S = \left( S _ { X
+      349:The proof was by comparing two long lists. The reflection subgroups were conveniently classified by Coxeter $\scriptstyle [ \mathbf { C o x } 3 4 
+alexeev-nikulin-2006-del-pezzo-and-k3-surfaces-msj-memoirs-15.pdf       0     261     254 HAS 1 root/curve line(s)
+      --- the lines, so the lead can be judged without opening the file:
+      6648:agrams of exceptional curves. Moreover, the classification in terms of root
+bourbaki-lie-groups-chapters-4-6-2008.pdf                        0     577       0 no root/curve line
+chen-coskun-2011-stable-maps.pdf                                 0       0     117 no root/curve line
+coble-public-plane-incidence-records.md                         23       1       0 no root/curve line
+davis-2008-geometry-topology-coxeter-groups.pdf                  0      36      98 no root/curve line
+dawes-2022-arxiv-2205.10601-orbits-in-lattices.pdf               0       1       2 no root/curve line
+dolgachev-kondo-2013-coble-surfaces-izv-math.md                 21       1      30 HAS 1 root/curve line(s)
+      --- the lines, so the lead can be judged without opening the file:
+      95:Next we consider nodal Enriques surfaces, that is, Enriques surfaces containing a smooth rational curve $( ( - 2 ) \mathrm { - c u r v e }$ , for s
+dolgachev-kondo-2013-coble-surfaces-izv-math.pdf                33       2      60 no root/curve line
+dolgachev-zhang-2001-coble-rational-surfaces.pdf               154       3     165 no root/curve line
+dutour-sikiric-hulek-2023-arxiv-2302.01679.md                    0      11       5 no root/curve line
+dutour-sikiric-hulek-2023-arxiv-2302.01679.pdf                   0      14       5 no root/curve line
+fulton-pandharipande-stable-maps.pdf                             0       0     109 no root/curve line
+gritsenko-hulek-sankaran-2008-arxiv-0810.1614v1.md               0       2       0 no root/curve line
+gritsenko-hulek-sankaran-2008-arxiv-0810.1614v1.pdf              0       2       0 no root/curve line
+nikulin-1979-factor-groups-2-reflections.pdf                     0      30     105 HAS 1 root/curve line(s)
+      --- the lines, so the lead can be judged without opening the file:
+      8737:                                                                  c) A negative definite or one-dimensional, degenerate sublattice K \subset S_X 
+nikulin-1980-integral-symmetric-bilinear-forms.md                0       2      15 no root/curve line
+nikulin-1980-integral-symmetric-bilinear-forms.pdf               0       2      26 no root/curve line
+research-discriminant-descent-26f2c982.md                        4       0       0 no root/curve line
+sage-extensions-357-provenance.md                                2       0       0 no root/curve line
+shah-1980-complete-moduli-k3-degree-2.pdf                        0       1      60 no root/curve line
+sterk-1988-thesis.pdf                                            0      32     150 HAS 1 root/curve line(s)
+      --- the lines, so the lead can be judged without opening the file:
+sterk-1991-compactifications-of-the-period-space-of-enriques-surfaces-i.md       0      12      23 no root/curve line
+sterk-1991-compactifications-of-the-period-space-of-enriques-surfaces-i.pdf       0      13      27 HAS 1 root/curve line(s)
+      --- the lines, so the lead can be judged without opening the file:
+      626:Droots inL+" In fact, if Y is nodal with C ~ Y a nodal curve, then g - l ( c ) = B + I ( B ) ,
+sterk-1991-period-space-i.pdf                                    0      13      27 HAS 1 root/curve line(s)
+      --- the lines, so the lead can be judged without opening the file:
+      626:Droots inL+" In fact, if Y is nodal with C ~ Y a nodal curve, then g - l ( c ) = B + I ( B ) ,
+vinberg-1967-discrete-groups-generated-by-reflections.md         0       0       0 no root/curve line
+vinberg-1967-discrete-groups-generated-by-reflections.pdf        0       0       0 no root/curve line
+vinberg-1972-groups-of-units-of-certain-quadratic-forms.pdf       0       0       0 no root/curve line
+vinberg-1975-some-arithmetical-discrete-groups-in-lobacevskii-spaces.pdf       0       0       0 no root/curve line
+vinberg-1985-hyperbolic-groups-of-reflections.pdf                0       0       0 no root/curve line
+vinberg-kaplinskaja-1978-the-groups-o18-1-and-o19-1.pdf          0       0       0 no root/curve line
+yu-zheng-2023-arxiv-1809.06589v2.pdf                             1       8      74 no root/curve line
+yu-zheng-zhong-2025-arxiv-2505.16727.md                          0      37      70 HAS 10 root/curve line(s)
+      --- the lines, so the lead can be judged without opening the file:
+      24:For a root lattice $R = \oplus _ { i = 1 } ^ { l } R _ { i }$ with each $R _ { i }$ irreducible of type ADE, we consider sextic curves with exactly
+      26:Next, we formulate our main theorem. Fix any singular type $T$ with associated root lattice $R$ and let $Z$ be a sextic curve of type $T .$ . Let X
+      56:Here $\mathbb { D } _ { 1 }$ and $\Gamma _ { 1 }$ are the type IV domain and monodromy group associated with smooth sextic curves (i.e. T is the sm
+yu-zheng-zhong-2025-arxiv-2505.16727.pdf                         0      45     115 HAS 4 root/curve line(s)
+      --- the lines, so the lead can be judged without opening the file:
+      141:sextic curves (i.e. T is the smooth type), and H∞ is the Heegner divisor defined by roots of
+      465:certain ADE type. Conversely, any rational curve in X that defines a root in L is contracted
+      1017:middle curve. Hence the projection of βi (also βl′ ) to the root lattice of type A2n−1 is the
+
+files swept: 38; files with a root/curve line: 11
+
+The dictionary the page needs is narrower than a root/curve line: it identifies the NINE
+simple roots of the cusp chamber with curves of the Coble surface.  The three sources that
+describe Coble surfaces at length are scored above (AN06, DK13, DZ01) and each was read at the
+relevant section in coble_760-cusp-marking-search-run.txt; a root/curve line elsewhere in this
+corpus would be a lead, not the marking.
+PYEXIT=0

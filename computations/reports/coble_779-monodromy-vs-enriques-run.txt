@@ -1,0 +1,28 @@
+provenance
+  python 3.12, exact integer and rational arithmetic; no sage, no sage-extensions
+  T_Co = <h> + U(2) + E_8(2), h^2 = 2, U(2) Gram [[0,2],[2,0]], E_8(2) = -2*Cartan(E_8)
+
+1. the lattice
+  rank 11  signature (2,9) check via inertia below
+  h^2 = 2  e'^2 = 0  f'^2 = 0  e'.f' = 2
+  y^2 = -8
+  signature (numerical eigenvalues) = (2, 9) = (1 for <h>) + (1,1 for U(2)) + (0,8 for E_8(2))
+  det = -2048
+
+2. the two isometries
+  s_zeta integral isometry: True  involution: True
+  tau    integral isometry: True  involution: True
+  s_zeta(h) = [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  tau(e') = [0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0]  tau(f') = [0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0]
+  delta is not a vector of this model; s_zeta fixes it in the marking of
+  @thm:theta-co-coordinates (computations/reports/coble_a13-heegner-comparison-run.txt, sec. 2)
+
+3. discriminant action: triviality on A_{T_Co}
+  s_zeta acts trivially on A_{T_Co} (checked on the 11 dual generators): True
+  tau acts trivially on A_{T_Co} (checked on the 11 dual generators): True
+
+4. the witnesses
+  e' primitive isotropic: True ; s_zeta(e') = e': True
+  w = 2h + y: w^2 = 0  e'.w = 0
+  the plane <e',w> is primitive: any a e' + b(2h+y) in T_Co has a,b in Z
+    (h-coordinate is 2b, E_8-coordinate is b*y with y primitive, U(2)-coordinate is a)
+  tau fixes the plane: tau(e') = -e', tau(w) = w: True

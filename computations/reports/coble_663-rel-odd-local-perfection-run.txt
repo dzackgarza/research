@@ -1,0 +1,19 @@
+research#663 (REL): the odd-local perfection input of the repaired Step 3
+============================================================================================
+script sha256: 95386672db40a6f7ee428e61cd0400f3098a53c67a7b588f13753ee7d784cfeb
+source sha256: 9708165fc7b7e0d5fa27c613260030935bd63146e5e1257d2dca78063886ace1
+
+G_ell = Spin(Z_ell) is perfect if every finite congruence quotient is: the mod-ell quotient is
+the finite simply connected Chevalley group Spin_11(F_ell) (perfect), and each principal
+congruence layer is the adjoint module so_11(F_ell), whose coinvariants vanish.
+
+adjoint coinvariants, exact rank over F_ell:
+  ell =  3: rank 55 of 55  -> no nonzero coinvariants
+  ell =  5: rank 55 of 55  -> no nonzero coinvariants
+  ell =  7: rank 55 of 55  -> no nonzero coinvariants
+  ell = 11: rank 55 of 55  -> no nonzero coinvariants
+  ell = 13: rank 55 of 55  -> no nonzero coinvariants
+
+For ell >= 17 the same vanishing is the irreducibility of the adjoint module
+(@thm:coble-fifty-six-all-odd-prime-powers); no computation is used there.
+The rank-55 layer computations of W at odd ell are NOT used by the repaired Step 3.
