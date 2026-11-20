@@ -557,8 +557,8 @@ $$
 $$
 assigns to $Y$ the groupoid whose **objects** are triples $\qty{\mcs\xrightarrow{f}Y,\ \mcx\xrightarrow{\pi}\mcs,\ \iota}$ with:
 
-1. $f$ flat, proper and of finite presentation (@def:finite-presentation), whose geometric fibres are Coble surfaces in the sense of [@DZ99, Introduction]: nonsingular projective rational surfaces $S$ with $\abs{-K_S}=\emptyset$ and $\abs{-2K_S}\neq\emptyset$. This is the owner's class, and it strictly contains the classical subfamily $\Bl_{p_1,\dots,p_{10}}\PP^2$ of @lem:d2-unpolarised-family(1): [@DZ99, §2, Definition, Remark, and Example 2.6] treats Coble surfaces of Halphen type and nonminimal ones, and [@DZ99, §6, Proposition 6.4] the terminal ones;
-2. $\pi$ the relative double cover branched along the relative divisor $-2K_{\mcs/Y}$, which exists for every member of the widened class because $-2K_{\mcs/Y}=2(-K_{\mcs/Y})$ is $2$-divisible (@lem:d2-unpolarised-family(2) is the classical case), and is smooth when the branch divisor is;
+1. $f$ flat, proper and of finite presentation (@def:finite-presentation), whose geometric fibres are Coble surfaces $S$ in the sense of [@DZ99, Introduction] — nonsingular projective rational with $\abs{-K_S}=\emptyset$ and $\abs{-2K_S}\neq\emptyset$ — **whose linear system $\abs{-2K_S}$ contains a smooth member** $C$. The smoothness is not decoration: the owner's object is the Coble surface *with its $\mathrm{K3}$ double cover*, and the cover branched along a non-reduced member is neither normal nor a $\mathrm{K3}$ surface, so those members are excluded here;
+2. $\pi$ the relative double cover branched along the smooth relative member $\mcC\in\abs{-2K_{\mcs/Y}}$; since $\mcC=2\mcD$ for $\mcD=-\K_{\mcs/Y}$, the cover exists, is smooth because $\mcC$ is, and its canonical class is $\pi^*(K_{\mcs/Y}+\mcD)=0$, so its fibres are $\mathrm{K3}$ surfaces [@DK13, §3] (@lem:d2-unpolarised-family(1)--(2) is the classical case);
 3. $\iota$ the covering involution of $\pi$;
 
 and whose **morphisms** $\qty{f,\pi,\iota}\to\qty{f',\pi',\iota'}$ over $Y$ are Cartesian squares over $Y$ commuting with $\pi$ and $\iota$. The **pullback** along $g\colon Y'\to Y$ is the fibre product $(-\times_Y Y')$, with the induced $\pi$ and $\iota$.
@@ -590,11 +590,18 @@ $$
 $$
 assigns to $Y$ the groupoid of triples $\qty{\mcs\xrightarrow{f}Y,\ \mcx\xrightarrow{\pi}\mcs,\ \iota}$ in which
 
-1. $f$ is flat and projective of finite presentation, and each geometric fibre is a Coble surface in the sense of [@DZ99, Introduction]: nonsingular, projective, rational, with $\abs{-K}=\emptyset$ and $\abs{-2K}\neq\emptyset$. The classical members $\Bl_{p_1,\dots,p_{10}}\PP^2$ of @lem:d2-unpolarised-family(1) are the subfamily D2a uses; the class here is the owner's and is strictly larger ([@DZ99, §2, Definition, Remark, and Example 2.6]);
+1. $f$ is flat and projective of finite presentation, and each geometric fibre is a Coble surface in the sense of [@DZ99, Introduction] — nonsingular, projective, rational, $\abs{-K}=\emptyset$, $\abs{-2K}\neq\emptyset$ — **whose $\abs{-2K}$ contains a smooth member** $\mcC$; the classical members $\Bl_{p_1,\dots,p_{10}}\PP^2$ of @lem:d2-unpolarised-family(1), where $\abs{-2K}$ is a single smooth rational curve, are the subfamily D2a uses;
 2. $\pi$ is the cyclic double cover branched along $-2K_{\mcs/Y}$, that is the $\mu_2$-torsor $\Spec_{\OO_\mcs}\qty(\OO_\mcs\oplus\OO_\mcs(-\mcD))$ for $\mcD$ with $\OO(2\mcD)=\OO(-2K_{\mcs/Y})$, which exists because $2$ is invertible on $S_0$ and the class $-K_{\mcs/Y}$ is integral (@lem:d2-unpolarised-family(2));
 3. $\iota$ is the involution of $\pi$;
 
 with morphisms the Cartesian squares over $Y$ commuting with $\pi$ and $\iota$, and pullback the fibre product. The number $N=2$ is the only one needed: the node condition is defined over $\ZZ$, the ordinary-double-point condition is the nonvanishing of the Hessian determinant, the divisor $-2K_{\mcs/Y}$ is defined by the relative canonical sheaf, and the cover of (2) is a $\mu_2$-torsor precisely because $2\in\OO_{S_0}^{\times}$.
+:::
+
+::: {.remark #rmk:coble-class-smooth-antinbicanonical title="Which Coble surfaces the functor admits, and the question whether this is the classical class"}
+
+@def:coble-moduli-functor and @def:coble-moduli-functor-z admit the Coble surfaces of [@DZ99, Introduction] whose $\abs{-2K}$ contains a smooth member — exactly those whose double cover branched along that member is a $\mathrm{K3}$ surface [@DK13, §3], which is the owner's object.
+
+Whether this is again the classical class $\Bl_{p_1,\dots,p_{10}}\PP^2$ is a separate question, and it is [@DZ99, §6, Proposition 6.4]: if every Coble surface with a smooth anti-bicanonical member is classical, then the widened functor and the classical subfamily have the same objects and the widening was a no-op in content, with the definitions differing only in how the class is named. That is being checked; until it is, the functor is the wider of the two and the pages that assert essential surjectivity onto the classical subfamily (@prop:coble-plane-model-comparison(1)) are assertions about the subfamily only.
 :::
 
 ::: {.lemma #lem:coble-moduli-functor-fppf title="$\mcM_\Co$ is a stack for the fppf topology over $S_0$"}
