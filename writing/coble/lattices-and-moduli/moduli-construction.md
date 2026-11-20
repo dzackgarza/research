@@ -1545,6 +1545,19 @@ Two steps would give @conj:gamma-co-orbifold-equality outright. Neither is close
 **What that leaves.** Over that open locus the orbifold argument gives the equality, and there the monodromy group is the full group; globally it does not. So @conj:gamma-co-orbifold-equality stays a conjecture, blocked by exactly two statements: the structure theorem for Coble surfaces, and the description of the stabiliser at the special members of the period domain.
 :::
 
+::: {.remark #rmk:which-coble-surfaces-have-a-plane-model title="Which Coble surfaces are blow-ups of the ten nodes of a plane sextic: the subclass the period map reaches"}
+The reconstruction that @rmk:the-two-steps-and-where-they-fail needs is not available as a general statement, and the literature says why.
+
+[@DZ99, Rem. 2.9] divides Coble surfaces into two classes, those of *elliptic type* and those of *rational type*, according to the mobile part of $\abs{-2K}$; the classical surfaces of @def:coble-family-unpolarized -- blow-ups of $\PP^2$ at the ten nodes of an irreducible rational plane sextic of degree $6$ -- are the ones whose anti-bicanonical system contains a reduced divisor, and the surfaces with $h^0(-2K)=1$ and the unique member reduced are the Coble surfaces of K3 type ([@DZ99, Prop. 6.4(1)]). The class is strictly larger: [@DZ99] notes that for each $n$ there are Coble surfaces of rational type admitting no birational morphism to the minimal ruled surface $F_n$, hence no plane model at all, and [@DZ99, Ex. 6.10] exhibits a Coble surface on which the finiteness of negative rational curves modulo automorphisms fails, so it is not one of the classical ones either.
+
+Consequently the two objects on this page are different classes:
+
+- @def:coble-family-unpolarized defines a Coble surface as a nonsingular projective rational surface with $\abs{-K}=\emptyset$ and $\abs{-2K}\neq\emptyset$ --- [@DZ99, Introduction] --- which is the whole class;
+- @def:coble-moduli-functor admits as objects the families whose geometric fibres are the surfaces $\Bl_{p_1,\dots,p_{10}}\PP^2$ of @lem:d2-unpolarised-family(1), which is the classical subclass, the one with a plane model and with the ten classes of @lem:d2-local-system(2) present as the exceptional curves.
+
+So step 1 of @rmk:the-two-steps-and-where-they-fail produces a Coble surface in the *whole* class, and the functor's objects are only the classical ones. The period map of the D2a family therefore reaches the classical subclass, and a Coble surface without a plane model has a period in $\bD\sm Z$ that no object of @def:coble-moduli-functor realises. Surjectivity onto $\bD\sm Z$ is not a statement about the functor as defined; it would require either restricting the target to the classical locus or extending the functor to all Coble surfaces. The second is a change to the functor's definition, which this page does not make: it is recorded here as the coordination the finding asks for, and until it is made the correct statement is the restricted one, that the period map reaches the classical Coble surfaces.
+:::
+
 ### Item 6: the groups from the universal families
 
 ::: {.proposition #prop:gamma-co-from-the-universal-family title="What the universal families give, and what a restriction gives instead"}

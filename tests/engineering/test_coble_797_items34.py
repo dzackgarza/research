@@ -228,3 +228,15 @@ def test_the_first_failing_step_is_named():
     assert "not" in body
     # and the second failure, the special-member isotropy
     assert "special member" in body
+
+
+PLANE_MODEL = "rmk:which-coble-surfaces-have-a-plane-model"
+
+
+def test_the_subclass_with_a_plane_model_is_named():
+    body = _block(MC.read_text(encoding="utf-8"), PLANE_MODEL)
+    assert "@DZ99, Rem. 2.9" in body
+    assert "classical" in body
+    assert "not" in body
+    # the coordination the finding asks for is recorded rather than performed silently
+    assert "coordination" in body
