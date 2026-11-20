@@ -106,6 +106,55 @@ def test_the_cusp_five_orbits_are_the_arithmetic_groups():
     assert "$R_{\\gent}$-orbits" in text
 
 
+def test_no_page_infers_r_gent_from_the_full_stabilizer():
+    """R_gent is the image of Stab_{Gent}(delta), not of Stab_{O(T_En)}(delta).
+
+    Gent = rho^{-1}(M) is the summand-preserving subgroup of O(T_En)
+    (prop:sterk-group-identification(2)), so an isometry that fixes delta but is not
+    checked to preserve the two summands of A_{T_En} lies only in the image of the full
+    stabilizer, which strictly contains R_gent (prop:gamma-co-images(3)).  Two valid
+    criteria remain: membership in Gent, and membership in ker(rho_{T_En}), the second
+    because a reflection in a vector of the lattice is discriminant-trivial.
+    """
+    text = KSBA.read_text()
+    for phrase in ("so its restriction to $T_\\Co$ lies in $R_{\\gent}$ (@prop:gamma-co-images(3))",
+                   "that is in $R_{\\gent}$",
+                   "and preserving both summands, so its restriction"):
+        assert phrase not in text, phrase
+    # the replacement names the criterion that decides it
+    assert "\\ker\\rho_{T_\\En}\\subseteq\\gent" in text or "\\ker\\rho\\subseteq\\gent" in text
+
+
+def test_no_page_reads_discriminant_triviality_as_monodromy_membership():
+    """ker(rho-bar) <= R_gent is proved (prop:gamma-co-images(3)); Gamma_{Co,2} >= ker is not.
+
+    The reverse inclusion is qst:coble-monodromy-equality, so a page may not infer that an
+    isometry acting trivially on A_{T_Co} lies in Gamma_{Co,2}.  What it may infer is
+    membership in R_gent, and then membership in Gamma_{Co,2} only by the containment of
+    thm:coble-monodromy-versus-enriques(4), which runs the other way.
+    """
+    text = KSBA.read_text()
+    assert "so $s_m\\in\\Gamma_{\\Co,2}$" not in text
+    assert "$s_m\\in\\ker\\bar\\rho\\subseteq R_{\\gent}$" in text
+
+
+def test_the_shear_is_placed_in_the_arithmetic_group_corpus_wide():
+    """The same inference outside ksba.md: the shear is discriminant-trivial, hence in R_gent."""
+    sites = []
+    for path in sorted(WRITING.rglob("*.md")):
+        if ".book" in path.parts or ".assets" in path.parts:
+            continue
+        for n, line in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+            if "\\Gamma_{\\Co,2}" not in line:
+                continue
+            if "not in $\\Gamma_{\\Co,2}$" in line:
+                continue  # a sentence that denies the membership is the corrected form
+            if re.search(r"(shear|reflection in a vector|trivially on .?A_|ker\\bar\\rho)"
+                         r"[^.;]{0,160}\\Gamma_{\\Co,2}", line):
+                sites.append(f"{path.relative_to(ROOT)}:{n}")
+    assert not sites, sites
+
+
 def _run_all() -> int:
     tests = [(n, f) for n, f in sorted(globals().items())
              if n.startswith("test_") and callable(f)]
