@@ -6,8 +6,10 @@ constraints stated around it:
   A1  the chapter's plane/flag application using the actual group constructions,
       public entry points, counted objects and records;
   A2  the group bookkeeping --- ``Gamma_Co = Otilde^+(T_Co)`` conjectural, neither
-      inclusion asserted, ``F^un_Co`` the ``Orth(T_Co)`` row, ``Gamma_{Co,2}`` the
-      restricted stabilizer image with no inclusion against ``Gamma_Co``;
+      inclusion asserted, ``F^un_Co`` the ``Orth(T_Co)`` row, ``R_gent`` the
+      restricted stabilizer image and ``Gamma_{Co,2}`` the monodromy group, related
+      to it by the containment of thm:coble-monodromy-versus-enriques(4) and by
+      qst:coble-monodromy-equality, with no inclusion against ``Gamma_Co``;
   A3  the exact subgroup and fibre hypotheses connected to the public rows,
       never finite containment read as arithmetic flag transitivity;
   A4  the page's stale claim that every plane row is still uncomputed reconciled;
