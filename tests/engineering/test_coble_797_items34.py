@@ -114,3 +114,18 @@ def test_item6_the_two_maps_and_what_each_does_to_the_local_system():
     assert "upper bound" in body
     # the K3 map is a quotient and does not move the local system
     assert "sub-local-system" in body
+
+
+MONODROMY_IS_G = "prop:coble-monodromy-is-the-marking-group"
+
+
+def test_the_monodromy_of_the_labelled_stack_is_the_marking_group():
+    body = _block(MC.read_text(encoding="utf-8"), MONODROMY_IS_G)
+    assert "G$-torsor" in body or "torsor" in body
+    assert "1\\too\\pi_1(U)" in body or "pi_1(U)" in body
+    assert "\\widetilde\\Orth^+(T_\\Co)" in body
+    # the conditional is stated, and the one missing input is named rather than assumed
+    assert "If $U$ is connected" in body or "if $U$ is connected" in body
+    text = MC.read_text(encoding="utf-8")
+    tail = text[text.index("#" + MONODROMY_IS_G):]
+    assert "Where this stops" in tail and "Departure" in tail

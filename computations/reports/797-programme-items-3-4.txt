@@ -234,3 +234,31 @@ ITEM 6, THE MAPS (this commit)
      system: the Coble system is the iota-anti-invariant summand T_Co of the K3 system
      (@lem:d2-local-system(3)), so a sub-local-system, not a pullback or pushforward.
   The test file now has eight assertions, all passing when run directly.
+
+THE TORSOR ARGUMENT FOR Gamma_Co, AND WHERE IT STOPS (this commit)
+  prop:coble-monodromy-is-the-marking-group (moduli-construction.md) records the
+  argument the brief proposes, with each step decided:
+  (1) CONNECTEDNESS: fails as stated.  U connected is not a consequence of U being
+      D minus a closed analytic subset -- the image's complement is not known to be
+      analytic -- but it follows from U containing the ample locus, which is connected
+      and dense (complement of a countable union of proper closed analytic subsets) and
+      whose supersets that are open are connected.  So (1) reduces to: every
+      M-polarized K3 whose period lies in the ample locus is a labelled Coble cover,
+      i.e. the reconstruction step (a3) of rmk:d2-marked-moduli-and-the-sign.
+  (2) TORSOR AND NOOHI: proved, conditional on U connected.  U -> [U/G] is a G-torsor
+      (U x_[U/G] U = G x U), a covering of topological stacks in the sense of Noohi
+      Def. 18.10, and Thm. 18.19 with Cor. 18.20 give
+      1 -> pi_1(U) -> pi_1([U/G]) -> G -> 1.
+      A correction to the brief: "G transitive on pi_0(U)" does NOT suffice; for g in G
+      the surjectivity needs a path of U from x to gx, so connectedness is used.
+  (3) DESCENT: proved.  The local system is the pullback of the tautological system, and
+      the latter's monodromy is (g, gamma~) -> g with image G
+      (lem:orbifold-monodromy-of-a-quotient).
+  CONCLUSION: Gamma_Co(B) = Otilde^+(T_Co) follows, but only once (1) holds.  It is
+  therefore NOT proved here, and the single missing input is named: the fixed-locus
+  criterion for sigma = id_M + (-id_T_Co), whose invariant lattice M has rank 11 rather
+  than the Enriques rank 10, so that X/sigma is a Coble surface and not an Enriques one.
+  No numbered statement of that criterion has been read in this repository.  The
+  departure note records what would follow if it held, and why this route bypasses the
+  three recorded failed routes (none of them had the stack-level period map as an
+  equivalence).
