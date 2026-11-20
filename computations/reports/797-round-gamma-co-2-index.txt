@@ -1,0 +1,82 @@
+research#797, round report: the monodromy of the degree-2 family is not the
+restricted stabilizer.
+Base read: dee71cfcef (remote main). This commit carries the landing.
+The D0 rubric (functor, stack, algebraicity, DM, coarse space) lives in
+computations/reports/797-acceptance-item-by-item.txt and is untouched here; what
+follows reports the item-6 statement this round decided.
+
+ITEM 6 OF THE ISSUE BODY. "Pushing, pulling and restricting the VHS along the
+maps of item 2, so that Gamma_Co and Gamma_{Co,2} are defined from the universal
+families and identified with explicit lattice groups, giving quotient
+presentations of the Coble stacks."
+VERDICT: NOT MET. One of its three parts is decided, in the negative, this
+commit; the identification remains open.
+
+6a. Gamma_Co = Otilde^+(T_Co) in the orbifold reading.
+    MET at dee71cfcef, not re-proved this round:
+    thm:gamma-co-is-the-orbifold-monodromy, moduli-construction.md:1403.
+
+6b. The comparison of Gamma_{Co,2} with the restricted stabilizer.
+    SETTLED, in the negative, in this commit:
+    prop:coble-monodromy-equality-false, lattices.md:695.
+      Gamma_{Co,2} <= Gamma_{10A1}                       prop:d2b-index-exact(3)
+      [O^+ : Gamma_{10A1}] = 2^13*3*17*31 = 12,951,552  thm:gamma-co-sextic-group(3)
+      [O^+ : R_gent cap O^+] = 2^7*17*31 = 67,456       prop:gamma-co-images(3)
+    A subgroup of index 67,456 is not contained in one of index 12,951,552, so
+    R_gent cap O^+ is not contained in Gamma_{10A1}; since Gamma_{Co,2} is,
+    Gamma_{Co,2} != R_gent cap O^+.
+    Sharpened, under (U) of lem:coble-family-identification:
+      [R_gent cap O^+ : Gamma_{Co,2}] >= |P|/|Theta| = 192
+      [R_gent : Gamma_{Co,2}] >= 384
+    (lattices.md:695-716). Arithmetic:
+    computations/reports/coble_797-index-of-gamma-co-2.py and its -run.txt.
+    qst:coble-monodromy-equality is answered in the negative (lattices.md:692),
+    and the reverse inclusion of lem:coble-monodromy-reverse-reduction fails.
+
+6c. Gamma_{Co,2} identified with an explicit lattice group.
+    NOT MET, and open. What is proved: Gamma_{Co,2} <= O^+(T_Co)
+    (thm:coble-monodromy-versus-enriques(1)), Gamma_{Co,2} <= Gamma_{10A1}
+    (prop:d2b-index-exact(3)), and, under (U), Gamma_{Co,2} <= R_gent cap O^+
+    (thm:coble-monodromy-versus-enriques(4)). The candidate Otilde^+(T_Co) is
+    not decided on the page; it is the next lemma.
+
+CONSEQUENCES APPLIED. Every site that passed a count of R_gent to F_{Co,2}
+"only under" the question, now that the question is false:
+   lattices.md:604, 692, 758, 762
+   moduli-construction.md:59, 1181, 1204, 1430
+   the-heegner-line-and-the-coble-arithmetic-group.md:2859, 2886
+   cusp-diagram-calculations.md:242, 304
+   cusps-over-sterk-cusps.md:3
+   lattice-and-diagram-conventions.md:147
+The four- and seven-cusp counts are counts for R_gent and for
+R_gent cap O^+(T_Co); they are not counts for Gamma_{Co,2} or F_{Co,2}.
+
+DEPARTURE, stated as one. The handoff predicted Gamma_{Co,2} = R_gent cap
+O^+(T_Co) and, on that prediction, that the four cusps of R_gent would become the
+four cusps of F_{Co,2}. The prediction is false, and it contradicts
+qst:coble-monodromy-equality, the statement it was to prove: the two groups
+differ by an index of at least 192 in R_gent cap O^+, and the cusp count of
+F_{Co,2} is not four by this route. The count of F_{Co,2} is at most 527 (the
+Otilde^+ count, thm:coble-zero-cusp-count(2)) whenever
+Otilde^+(T_Co) <= Gamma_{Co,2}; the exact value is 6c.
+
+FLAGS, not repaired this round.
+   (i) moduli-construction.md:1101-1110, lem:d2b-family-over-the-labelled-base(4)
+       concludes "hence Otilde^+(T_Co) <= Gamma_{Co,2} <= Gamma_Co(Bbar)" and
+       cites @thm:gamma-co-is-stable for "Gamma_Co = Otilde^+(T_Co)". That
+       theorem's item (2) says the equality is not proved (lattices.md:320-321),
+       and moduli-construction.md:400, written after it, says the same input is
+       false for the loop reading and that the containment is not asserted. The
+       conclusion may be true but this proof of it is not; repairing it changes
+       prop:d2b-index-exact(2)-(4), which quote the containment, so it is left
+       for the round that decides 6c.
+   (ii) open-questions.md:8325 still words the 13 ~ 14 question as resting on
+        qst:coble-monodromy-equality being open. research#760 owns the sentence.
+   (iii) ksba.md:406, 409, 563 carry Gamma_{Co,2} relations on the containment of
+         (i). research#779 owns those lines.
+
+CHECKS RUN.
+  python3 scripts/docs_check.py --source: 29 findings, all pre-existing citation
+  keys on lattice-theory and open-problems pages, none on a page touched here.
+  The engineering pytest suite was not run: it needs sage_extensions, which this
+  checkout does not carry, so nothing is claimed about it.

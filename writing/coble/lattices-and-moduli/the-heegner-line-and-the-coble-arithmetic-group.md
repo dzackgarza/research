@@ -2856,7 +2856,7 @@ $$
 ,$$
 the three equalities after $\rho_{T_\Co}^{-1}(P)$ being @def:congruence-group and @prop:gamma-co-images(3); this is the arithmetic group $R_{\gent}$, not the monodromy group $\Gamma_{\Co,2}$ of @def:gamma-co-groups(5), which is compared with it in @thm:coble-monodromy-versus-enriques.
 2. The orbits of $P$ on the $527$ nonzero isotropic classes of $A_{T_\Co}$ are four, of sizes $2$, $135$, $270$ and $120$.
-3. Hence $\bD(T_\Co)/(R_{\gent}\intersect\Orth^+(T_\Co))$ has exactly four $0$-cusps, and $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ has exactly four $0$-cusps when @qst:coble-monodromy-equality holds (@rmk:coble-monodromy-counts). The four lie one over each of Sterk's cusps $2,3,4,5$ and none over cusp $1$ (@thm:four-r-orbits, @thm:orbit-per-cusp, @thm:cusp-fibres-four), and the same group has $7$ orbits on the primitive isotropic planes, as the plane count of this page gives, none over the four $1$-cusp types containing $1$ and distributed over the five others as @thm:one-cusp-multiplicities gives: one over $\{2,4,5\}$, one over $\{4,5\}$, two over $\{3,5\}$, one over $\{3,4\}$ and two over $\{5,5\}$; the incidence is $0_k\rightsquigarrow T$ exactly when $k\in T$, with degrees $1,3,3,6$ and $13$ edges (@thm:cusp-diagram-tco).
+3. Hence $\bD(T_\Co)/(R_{\gent}\intersect\Orth^+(T_\Co))$ has exactly four $0$-cusps, and $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ does not: that would need @qst:coble-monodromy-equality, which is false (@prop:coble-monodromy-equality-false, @rmk:coble-monodromy-counts). The four lie one over each of Sterk's cusps $2,3,4,5$ and none over cusp $1$ (@thm:four-r-orbits, @thm:orbit-per-cusp, @thm:cusp-fibres-four), and the same group has $7$ orbits on the primitive isotropic planes, as the plane count of this page gives, none over the four $1$-cusp types containing $1$ and distributed over the five others as @thm:one-cusp-multiplicities gives: one over $\{2,4,5\}$, one over $\{4,5\}$, two over $\{3,5\}$, one over $\{3,4\}$ and two over $\{5,5\}$; the incidence is $0_k\rightsquigarrow T$ exactly when $k\in T$, with degrees $1,3,3,6$ and $13$ edges (@thm:cusp-diagram-tco).
 :::
 
 ::: {.proof}
@@ -2883,7 +2883,7 @@ Let $B = \latI_{2,9}$, $T_\Co = B(2)$, $K = \ker\rho_{T_\Co}$, and in the notati
 
 1. one orbit (@def:group-orbit) under each of $O$, $SO$, $O^+$ and $SO^+$;
 2. $189\,720$ orbits under $K$ and under each of $K\intersect SO$, $K\intersect O^+$ and $K\intersect SO^+$;
-3. seven orbits under $R_{\gent}\intersect\Orth^+(T_\Co)$, and under $\Gamma_{\Co,2}$ exactly when @qst:coble-monodromy-equality holds;
+3. seven orbits under $R_{\gent}\intersect\Orth^+(T_\Co)$, and not under $\Gamma_{\Co,2}$, which would need @qst:coble-monodromy-equality (@prop:coble-monodromy-equality-false);
 
 and the count for $\Gamma_\Co$ is $189\,720$, since $\Gamma_\Co$ is the stable group on the labelled base (@thm:gamma-co-is-stable). Each count is proved on the page, and each is also the integer a public row returns: the proof lists the call that builds each group and the record that prints its number.
 :::

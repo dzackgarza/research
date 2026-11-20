@@ -1,0 +1,19 @@
+|O(q_Tco)|                   = 46998591897600
+[O(q):P] = 2^7*17*31        = 67456   (index of R_gent cap O^+ in O^+)
+|P| = |O(q)|/[O(q):P]       = 696729600   (= [R_gent cap O^+ : Otilde^+])
+|Theta| = 10!               = 3628800
+[O^+:Gamma_10A1] = |O(q)|/10! = 12951552 = 2^13*3*17*31
+ratio |P|/10!               = 192   (exact: True)
+
+The refutation:  Gamma_{Co,2} <= Gamma_10A1  (prop:d2b-index-exact(3)).
+If Gamma_{Co,2} = R_gent cap O^+, then R_gent cap O^+ <= Gamma_10A1.
+For subgroups of a group, A <= B implies [G:B] <= [G:A]; here that would give
+    [O^+:Gamma_10A1] = 12951552  <=  [O^+:R_gent cap O^+] = 67456,
+which is FALSE: 12951552 > 67456.
+Hence R_gent cap O^+ is NOT contained in Gamma_10A1, and the equality is false.
+
+The sharpened index, under (U) (Gamma_{Co,2} <= R_gent cap O^+):
+    [R_gent cap O^+ : Gamma_{Co,2}] >= |P|/|Theta| = 192
+    and [R_gent : Gamma_{Co,2}] >= 2*192 = 384
+
+Coincidence worth recording: |P| = 696 729 600 = |W(E_8)|.
