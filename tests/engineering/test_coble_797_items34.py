@@ -143,3 +143,24 @@ def test_the_monodromy_of_the_labelled_stack_is_the_marking_group():
     text = MC.read_text(encoding="utf-8")
     tail = text[text.index("#" + MONODROMY_IS_G):]
     assert "What this settles" in tail and "@lem:every-ample-m-polarized-k3-is-a-coble-cover" in tail
+
+
+FINAL = "thm:gamma-co-is-the-orbifold-monodromy"
+IOTA = "rmk:is-iota-a-loop"
+
+
+def test_the_final_group_is_assembled_from_the_three_parts():
+    body = _block(MC.read_text(encoding="utf-8"), FINAL)
+    assert "\\Gamma_\\Co=\\widetilde\\Orth^+(T_\\Co)" in body
+    text = MC.read_text(encoding="utf-8")
+    proof = text[text.index("#" + FINAL):]
+    for need in ["prop:coble-monodromy-is-the-marking-group", "prop:gamma-co-from-the-labelled-stack",
+                 "Theorem 18.19", "W_{10}(2)"]:
+        assert need in proof[:6000], need
+
+
+def test_iota_is_settled_as_isotropy_not_loop():
+    body = _block(MC.read_text(encoding="utf-8"), IOTA)
+    assert "@thm:sign-is-isotropy" in body
+    assert "@thm:no-loop-carries-the-sign" in body
+    assert "index-two" in body or "index two" in body
