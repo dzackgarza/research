@@ -112,6 +112,14 @@ lies in $\gent$, fixes $\Pi$ setwise, and acts on $\Pi^{\perp\ten}$ by $x\mapsto
 *Finiteness.* The orbit of $\alpha$ therefore contains $\alpha+2\Pi$, so the orbits on the lifts of a $(-2)$-class are a quotient of $\Pi/2\Pi\cong(\ZZ/2)^2$ and number at most four. The $(-2)$-classes of $\Pi^{\perp}/\Pi$ are finite because that lattice is negative definite. So the fibre is finite.
 :::
 
+::: {.lemma #lem:one-cusp-over-cusp-one-empty title="The four $1$-cusps over Sterk's cusp $1$ have empty fibre"}
+Let $[\Pi]$ be one of the four $1$-cusps of $F_{\En,2}$ whose closure contains Sterk's $0$-cusp $1$. Then $\Pi^{\perp\ten}/\Pi\cong E_8(2)$, every vector of which has square divisible by $4$; hence no $(-2)$-vector of $\ten$ is perpendicular to $\Pi$, and the fibre of the $1$-cusp map of @thm:b2-one-cusps over $[\Pi]$ is empty.
+:::
+
+::: {.proof}
+Sterk computes the four one-dimensional boundary components whose closure contains the $0$-cusp $e$ [@Ste91, 4.3.5, printed pp. 19--20]: "These four classes are not distinguished by the isomorphism type of $F^{\perp}/F$ ... In all cases we even find the same isomorphism type, namely $E_8(-2)$" [@Ste91, 4.3.5, printed p. 20], and the four types are listed in [@Ste91, 4.3.16, printed p. 27]. In the notation of this page $E_8(-2)$ is $E_8(2)$. Its Gram matrix is $-2C(E_8)$, with diagonal entries $-4$ and off-diagonal entries $0$ or $2$, so for $x = \sum x_i\alpha_i$ one has $x^2 = -4\sum x_i^2+4\sum_{i<j,\ \alpha_i\cdot\alpha_j = 2}x_ix_j$, a multiple of $4$; in particular $-2$ does not occur. Since $\Pi$ is isotropic, the class of a vector $\alpha\perp\Pi$ in $\Pi^{\perp}/\Pi$ has square $\alpha^2$, so an $\alpha$ with $\alpha^2 = -2$ cannot exist. The fibre, which is the set of $\Stab_{\gent}(\Pi)$-orbits of such $\alpha$ (@thm:b2-one-cusps), is therefore empty. The case $\Pi = \langle e,e'\rangle$ of the type $\{1,2\}$ is checked directly in `computations/reports/coble_789-one-cusp-empty.py`: $\Pi^{\perp\ten} = \langle e,e'\rangle\oplus E_8(2)$.
+:::
+
 ## The fibre over Sterk's cusp $2$: the smallest case
 
 At Sterk's cusp $2$ the stabilizer is the whole orthogonal group of the cusp lattice, so the fibre is decided without any information about the other cusps. Cusp $1$ is the other extreme: it carries no $(-2)$-vector at all.
