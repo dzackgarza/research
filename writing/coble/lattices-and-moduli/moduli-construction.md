@@ -509,6 +509,43 @@ and $F_S=(D_S-\Delta)/\Gamma_\rho$ is *the coarse space* of $\mathrm{K3}$ surfac
 *Deligne--Mumford.* Let $\underline{\mathrm{Cob}}$ be the functor of research#797: over a scheme or complex space $Y$, objects are flat families $S\to Y$ of Coble surfaces together with the relative double cover $X\to S$ branched along the relative divisor $-2K_{S/Y}$ and its involution, and morphisms are isomorphisms of such families commuting with pullback. Two of its properties can be settled without the functor's formal construction. First, its *automorphism groups are finite on the locus where the polarization is ample*: an automorphism of an object preserves $H=f^*\OO_{\PP^2}(1)$, which is ample on every member of the family of @def:coble-family-unpolarized (it is a finite pullback of $\OO(1)$), and an automorphism of a $\mathrm{K3}$ surface fixing an ample class is the identity on cohomology and hence, by the faithfulness of the action on $H^2$, the identity. So on the open subfunctor where $H$ is ample, the diagonal is unramified and the stack is Deligne--Mumford, with coarse space the quotient named above. Second, *off that locus it need not be*: a member with $H$ merely nef can have an infinite automorphism group, and an isotrivial family then has infinite stabilizers, so the Deligne--Mumford property must be stated for the ample locus only — which is the locus the family of @def:coble-family-unpolarized occupies.
 :::
 
+## The moduli functor of Coble surfaces {#sec-coble-moduli-functor}
+
+@def:coble-family-unpolarized describes a class of families and then chooses a parameter space; it states no functor and no property of that parameter space as a moduli object. This section states the functor and proves the one property of it that needs no comparison with $B$.
+
+::: {.definition #def:coble-moduli-functor title="The moduli functor of Coble surfaces"}
+
+Let $\mathfrak{C}$ be the category of complex spaces. The functor
+$$
+\mcM_\Co\colon\mathfrak{C}^{\mathrm{op}}\too\mathfrak{Grpd}
+$$
+assigns to $Y$ the groupoid whose **objects** are triples $\qty{\mcs\xrightarrow{f}Y,\ \mcx\xrightarrow{\pi}\mcs,\ \iota}$ with:
+
+1. $f$ flat, proper and of finite presentation, whose geometric fibres are the surfaces $S=\Bl_{p_1,\dots,p_{10}}\PP^2$ of @lem:d2-unpolarised-family(1);
+2. $\pi$ the relative double cover branched along the relative divisor $-2K_{\mcs/Y}$, which exists because $-2K_{\mcs/Y}$ is a $2$-divisible Cartier divisor on a smooth family (@lem:d2-unpolarised-family(2));
+3. $\iota$ the covering involution of $\pi$;
+
+and whose **morphisms** $\qty{f,\pi,\iota}\to\qty{f',\pi',\iota'}$ over $Y$ are Cartesian squares over $Y$ commuting with $\pi$ and $\iota$. The **pullback** along $g\colon Y'\to Y$ is the fibre product $(-\times_Y Y')$, with the induced $\pi$ and $\iota$.
+:::
+
+::: {.lemma #lem:coble-moduli-functor-stack title="$\mcM_\Co$ is a stack"}
+
+$\mcM_\Co$ is a stack for the étale topology on $\mathfrak{C}$, hence also for the analytic topology.
+
+1. *Isomorphisms are a sheaf.* For two objects over $Y$ the isomorphisms form a subsheaf of the sheaf of isomorphisms of the underlying families of spaces, cut out by the equations expressing the commutativity with $\pi$ and $\iota$; a map of complex spaces is determined by its restrictions to an open cover.
+2. *Objects descend.* Let $Y'\to Y$ be étale and surjective with its two projections, and let an object over $Y'$ with a descent datum be given. The underlying spaces $\mcs'$ and $\mcx'$ and the morphisms $f'$, $\pi'$, $\iota'$ descend to $Y$ by faithfully flat descent for complex spaces (SGA 1, Exposé VIII, *Descente fidèlement plate*); the descended $f$ is flat and proper because these are local on the base and stable under base change.
+3. *The fibre condition and the branch divisor descend.* Being a blowup of $\PP^2$ at the ten nodes of an irreducible ten-nodal sextic is a condition on each geometric fibre, hence checked after the étale cover. The divisor $-2K_{\mcs/Y}$ is defined by the relative canonical sheaf, so it descends with $f$; and the double cover of (2) is $\Spec_{\OO_\mcs}\qty(\OO_\mcs\oplus\OO_\mcs(-\mcD))$ for any $\mcD$ with $\OO(2\mcD)=\OO(-2K_{\mcs/Y})$, which is canonical in $\mcD$ up to the sign of the summand, so it and its involution are determined by the descended family.
+:::
+
+::: {.proof}
+
+(1) is the sheaf property of the presheaf of isomorphisms of two spaces over $Y$, restricted by closed conditions.
+
+(2) SGA 1, Exposé VIII, is the descent statement for faithfully flat morphisms of finite presentation; an étale surjection is such a morphism, and the effectivity of the descent datum is its conclusion for the pair of spaces and the morphisms between them. Flatness and properness of the descended morphism are local on the base in the étale topology.
+
+(3) A geometric fibre of $f$ is a geometric fibre of $f'$ with the same base change, so the first condition is unaffected. For the second, $K_{\mcs/Y}$ is $\det\Omega^1_{\mcs/Y}$ in the smooth case and is computed from the descended $f$; the cyclic cover construction is @lem:d2-unpolarised-family(2), whose input is the class of $\mcD$ with $\OO(2\mcD)=\OO(-2K_{\mcs/Y})$.
+:::
+
 ::: {.definition #def:coble-family-unpolarized title="D2a: the family of unpolarized Coble surfaces" defines="unlabelled base; labelled base; $\Gamma_\Co$; $\fco$"}
 
 A *Coble surface* is a nonsingular projective rational surface $S$ with $\abs{-K_S}=\emptyset$ and $\abs{-2K_S}\neq\emptyset$ [@DZ99, Introduction; @DK13, §3].
