@@ -1,0 +1,14 @@
+research(#797): the algebraicity cell names the hypothesis it rests on
+
+Item 6 of rmk:stacks-line-by-line said "algebraicity and boundedness over
+Z[1/2]: open" and stopped. It now says which input is missing: the quotient
+presentation prop:coble-stack-as-quotient is conditional on the comparison
+prop:coble-plane-model-comparison being a smooth cover, and only its essential
+surjectivity is proved there; and the base Bbar is complex, so that
+identification would not by itself be a statement over Z[1/2].
+
+No new mathematics and no new claim: the sentence reports the state of the two
+results the page already has. Pandoc parses; docs_check --source reports no
+finding on this page.
+
+policy c2291c7ab917bf86978a564337f00d5f
