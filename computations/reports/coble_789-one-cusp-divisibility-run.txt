@@ -1,0 +1,30 @@
+=== type (2, 4, 5)
+   Pi primitive (Smith [1,1]); complement unimodular; quotient rank 8 det 64
+   vectors of square -2, exhaustive by exact Cholesky pruning: 16
+   every class: divisibility 1 witnessed in Pi^perp, and
+   the transvection is an integral isometry fixing w, preserving Pi,
+   with alpha |-> alpha - w: True
+=== type (4, 5)
+   Pi primitive (Smith [1,1]); complement unimodular; quotient rank 8 det 64
+   vectors of square -2, exhaustive by exact Cholesky pruning: 16
+   every class: divisibility 1 witnessed in Pi^perp, and
+   the transvection is an integral isometry fixing w, preserving Pi,
+   with alpha |-> alpha - w: True
+=== type (3, 5)
+   Pi primitive (Smith [1,1]); complement unimodular; quotient rank 8 det 64
+   vectors of square -2, exhaustive by exact Cholesky pruning: 16
+   every class: divisibility 1 witnessed in Pi^perp, and
+   the transvection is an integral isometry fixing w, preserving Pi,
+   with alpha |-> alpha - w: True
+=== type (3, 4)
+   Pi primitive (Smith [1,1]); complement unimodular; quotient rank 8 det 64
+   vectors of square -2, exhaustive by exact Cholesky pruning: 16
+   every class: divisibility 1 witnessed in Pi^perp, and
+   the transvection is an integral isometry fixing w, preserving Pi,
+   with alpha |-> alpha - w: True
+=== type (5, 5)
+   Pi primitive (Smith [1,1]); complement unimodular; quotient rank 8 det 64
+   vectors of square -2, exhaustive by exact Cholesky pruning: 16
+   every class: divisibility 1 witnessed in Pi^perp, and
+   the transvection is an integral isometry fixing w, preserving Pi,
+   with alpha |-> alpha - w: True

@@ -120,18 +120,37 @@ Let $[\Pi]$ be one of the four $1$-cusps of $F_{\En,2}$ whose closure contains S
 Sterk computes the four one-dimensional boundary components (@def:coble-surface) whose closure contains the $0$-cusp $e$ [@Ste91, 4.3.5]: "These four classes are not distinguished by the isomorphism (@def:isomorphism-of-objects) type of $F^{\perp}/F$ ... In all cases we even (@def:form-axioms) find the same isomorphism type, namely $E_8(-2)$" [@Ste91, 4.3.5], and the four types are listed in [@Ste91, 4.3.16]. In the notation of this page $E_8(-2)$ is $E_8(2)$. Its Gram matrix is $-2C(E_8)$, with diagonal (@def:polarization-functors) entries $-4$ and off-diagonal entries $0$ or $2$, so for $x = \sum x_i\alpha_i$ one has $x^2 = -4\sum x_i^2+4\sum_{i<j,\ \alpha_i\cdot\alpha_j = 2}x_ix_j$, a multiple of $4$; in particular $-2$ does not occur. Since $\Pi$ is isotropic (@def:orthogonal-complement), the class of a vector $\alpha\perp\Pi$ in $\Pi^{\perp}/\Pi$ has square $\alpha^2$, so an $\alpha$ with $\alpha^2 = -2$ cannot exist. The fibre, which is the set of $\Stab_{\gent}(\Pi)$-orbits of such $\alpha$ (@thm:b2-one-cusps), is therefore empty. The case $\Pi = \langle e,e'\rangle$ of the type $\{1,2\}$ is checked directly in `computations/reports/coble_789-one-cusp-empty.py`: $\Pi^{\perp\ten} = \langle e,e'\rangle\oplus E_8(2)$.
 :::
 
-::: {.theorem #lem:five-one-cusps-nonempty title="The exact fibre over each of the other five $1$-cusps: $16$ points"}
-Let $[\Pi]$ be one of Sterk's five further $1$-cusps, of types $\{2,4,5\}$, $\{4,5\}$, $\{3,5\}$, $\{3,4\}$ and $\{5,5\}$ [@Ste91, 4.3.17], and let $u,v$ be a basis (@def:based-module) of isotropic (@def:orthogonal-complement) vectors of $\Pi$. Then:
+::: {.lemma #lem:divisibility-decides-one-cusp title="Divisibility of a $(-2)$-class in $\Pi^{\perp\ten}/\Pi$ decides its lifts"}
+Let $\Pi\subset\ten$ be a primitive isotropic plane, $L_0 \definedas \Pi^{\perp\ten}/\Pi$, let $r\in L_0$ have $r^2 = -2$, and let $\alpha\in\Pi^{\perp\ten}$ be a lift of $r$ with $\alpha^2 = -2$. For $w\in\Pi$ put $d_w\ZZ \definedas \{(\alpha,z) : z\in w^{\perp\ten}\}$. Then:
 
-1. $\Pi^{\perp\ten}/\Pi$ is an even (@def:form-axioms) negative definite (@def:definiteness) lattice of rank $8$ and determinant $64$, with exactly $16$ vectors of square $-2$, forming eight mutually orthogonal antipodal pairs.
-2. For every integral lift $\alpha$ of a $(-2)$-class with $\alpha^2 = -2$ one has $d_u = d_v = d_{u+v} = 1$, where $d_w\ZZ \definedas \{(\alpha,z) : z\in w^{\perp\ten}\}$.
-3. Consequently $\Stab_{\gent}(\Pi)$ is transitive on the lifts of each $(-2)$-class, and the fibre of the $1$-cusp map of @thm:b2-one-cusps over $[\Pi]$ has exactly $16$ points.
+1. $d_w$ divides $\mathrm{div}_{L_0}(r) \definedas \gcd\{(\alpha,z) : z\in\Pi^{\perp\ten}\}$;
+2. if $\mathrm{div}_{L_0}(r) = 1$ then $\Stab_{\gent}(\Pi)$ is transitive on the lifts of $r$, so the lift contributes exactly one point to the fibre of @thm:b2-one-cusps over $[\Pi]$.
 :::
 
 ::: {.proof}
-$1$ is `computations/reports/coble_789-five-one-cusps.py`: saturated (@def:saturation) kernels (@def:kernel-cokernel) and Smith complements give the quotient Gram matrix, its determinant is $64$, Sage's complete positive-definite short-vector enumeration returns sixteen vectors of square $-2$, and the reflections in them have orbits of size two, so the sixteen are eight antipodal pairs $\{\pm r\}$ with distinct pairs mutually orthogonal.
+$1$. Since $\Pi\subset\Pi^{\perp}$ one has $\Pi^{\perp}\subset w^{\perp}$, so the set of values over $w^{\perp}$ contains the set over $\Pi^{\perp}$ and its gcd divides that one. The values over $\Pi^{\perp}$ depend only on the class, because $(\alpha,p) = 0$ for $p\in\Pi$ as $\alpha\perp\Pi$; their gcd is $\mathrm{div}_{L_0}(r)$.
 
-$2$ and $3$. A vector $z\in u^{\perp}$ gives the Eichler transvection $E_{u,z}$ of @lem:one-cusp-fibre-finite, which lies in $\gent$, preserves $\Pi$ setwise, and acts on $\Pi^{\perp}$ by $x\mapsto x-(x,z)u$; hence the $\Stab_{\gent}(\Pi)$-orbit of $\alpha$ contains $\alpha-(\alpha,z)u$ for every $z\in u^{\perp}$. The set of values is an ideal $d_u\ZZ$ containing $(\alpha,\alpha) = -2$, so $d_u\mid2$. The computation `computations/reports/coble_789-one-cusp-fibres.py` lifts each of the sixteen classes to an integral $\alpha$ with $\alpha^2 = -2$ and computes $d_u$, $d_v$, $d_{u+v}$ as the gcd of the pairings over a saturated basis of $w^{\perp}$: for each of the five planes and each of the sixteen classes the triple is $(1,1,1)$. So the orbit of $\alpha$ contains $\alpha-u$, $\alpha-v$ and $\alpha-(u+v)$, hence all of $\alpha+\Pi$. Since reduction modulo $\Pi$ is $\Stab_{\gent}(\Pi)$-invariant, each class carries exactly one orbit, and the sixteen classes give sixteen orbits.
+$2$. By $1$ and the hypothesis $d_w = 1$ for every $w\in\Pi$, so for each such $w$ there is $z\in w^{\perp}$ with $(\alpha,z) = 1$; the transvection $E_{w,z}$ of @lem:one-cusp-fibre-finite lies in $\gent$, preserves $\Pi$ setwise and sends $\alpha$ to $\alpha-w$. Every vector of $\Pi$ is isotropic, so taking $w$ to run over a basis $u,v$ of $\Pi$ shows that $\alpha-u$ and $\alpha-v$ lie in the orbit, hence $\alpha-p$ lies in the orbit for every $p\in\Pi$. Any other lift of $r$ is $\alpha-p$ for some $p\in\Pi$. Hence one orbit.
+:::
+
+::: {.theorem #lem:five-one-cusps-nonempty title="The exact fibre over each of the other five $1$-cusps: $16$ points"}
+Let $[\Pi]$ be one of Sterk's five further $1$-cusps, of types $\{2,4,5\}$, $\{4,5\}$, $\{3,5\}$, $\{3,4\}$ and $\{5,5\}$ [@Ste91, 4.3.17]. Then:
+
+1. $\Pi$ is primitive in $\ten$, and for a choice of a complementary basis the Gram matrix $G_0$ of $L_0 = \Pi^{\perp\ten}/\Pi$ is exact: its determinant is $64$, and $L_0$ has exactly $16$ vectors of square $-2$;
+2. every one of those $16$ classes has $\mathrm{div}_{L_0}$ equal to $1$, certified by an explicit $z\in\Pi^{\perp}$ with $(\alpha,z) = 1$;
+3. hence, by @lem:divisibility-decides-one-cusp, each class contributes exactly one orbit, and the fibre of the $1$-cusp map of @thm:b2-one-cusps over $[\Pi]$ has exactly $16$ points.
+:::
+
+::: {.proof}
+The computation is `computations/reports/coble_789-one-cusp-divisibility.py`, whose transcript is printed beside it.
+
+$1$. For each of the five planes the run checks that $\{u,v\}$ has Smith form $[1,1]$, so $\Pi$ is primitive in $\ten$; takes a basis $K$ of the kernel of the two functionals $(\cdot,u),(\cdot,v)$, which is $\Pi^{\perp}$; expresses $u,v$ in that basis with integer coordinates $C$; and exhibits a complement $R$ with $\det(C;R) = \pm1$. That determinant is the certificate that $R$ together with $u,v$ is a basis of $\Pi^{\perp}$, so $G_0 = R\,G_{\Pi^{\perp}}\,R^{\mathsf T}$ is the Gram matrix of $L_0$ and not of a finite-index sublattice. The run records $\det G_0 = 64$.
+
+The sixteen vectors of square $-2$ are then found exhaustively and without a short-vector library call: with $A = -G_0$ positive definite and $A = L\,D\,L^{\mathsf T}$ its exact rational $LDL^{\mathsf T}$ decomposition (the run checks $L\,D\,L^{\mathsf T} = A$), one has $x^{\mathsf T}Ax = \sum_k D_k\bigl(\sum_{j\ge k}L_{jk}x_j\bigr)^2$, the $k$-th summand depends only on $x_k,\dots,x_7$, and the enumeration runs from $x_7$ down to $x_0$ pruning on the exact rational partial sum against $2$. Every branch is decided by exact rational comparisons, and the run reports $16$ in each case.
+
+$2$. For each of the sixteen classes the run lifts the class to an integral $\alpha$ with $\alpha\perp\Pi$ and $\alpha^2 = -2$, and solves the congruence $(\alpha,z) = 1$ over $z\in\Pi^{\perp}$ by extended gcd on the coefficients of a basis of $\Pi^{\perp}$; the solution is verified, not searched. It reports $\mathrm{div} = 1$ for all sixteen classes of all five planes.
+
+$3$ is @lem:divisibility-decides-one-cusp(2) applied to the sixteen classes. The sixteen classes are distinct in $L_0$, and the class of a lift is $\Stab_{\gent}(\Pi)$-invariant, so distinct classes give distinct orbits; hence exactly $16$.
 :::
 
 ## The fibre over Sterk's cusp $2$: the smallest case

@@ -1,0 +1,21 @@
+Comment intended for dzackgarza/research#787 (the issue connector is read-only and
+cannot post, so the text is committed here for the orchestrator to paste).
+
+---
+
+Two test failures are pre-existing on main, not caused by #787's pages, and are
+recorded here rather than repaired (one line each, with the failing assertion):
+
+test_coble_658_no_stale_text.py :: test_the_pages_point_at_the_divisor_form --
+  `assert not missing, missing` fails because "rmk:gamma-co-nodal-pair-proposal" is
+  absent from writing/coble/lattices-and-moduli/moduli-construction.md and from
+  writing/coble/reference-tables/lattice-and-diagram-conventions.md; reproduced on a
+  clean worktree of f96fa45eeb.
+
+test_coble_658_page_invariants.py :: test_every_reference_resolves --
+  `assert not offenders, offenders` lists four references to
+  not:reflection-groups-sign-convention from reflection-data-and-replacements.md,
+  coble-heegner-research-report.md and (twice) ksba.md, because the anchor's block is
+  written `{#not:reflection-groups-sign-convention .notation}` at
+  reflection-groups-and-vinberg.md:3 while the test's scanner matches only
+  `{.class #id}`; reproduced identically on a clean worktree of f96fa45eeb.

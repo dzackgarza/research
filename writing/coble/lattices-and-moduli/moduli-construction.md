@@ -466,9 +466,31 @@ In the notation of @not:d2-plane-sextic-base, let $U\subset(\PP^2)^{10}$ be the 
 *$B$ and $\bar B$.* $B=V/\PGL_3$ is a quotient of a connected space, hence connected, and $\bar B=[B/S_{10}]$ has $B$ as a smooth cover, so it is connected.
 :::
 
+::: {.lemma #lem:d2-s10-not-free title="The $S_{10}$-action on the labelled base is not free"}
+
+The action of $S_{10}$ on $B=V/\PGL_3$ is not free. The sextic
+$$
+G=4x^6-12x^5y-12x^5z-3x^4y^2+30x^4yz+13x^4z^2+26x^3y^3-12x^3y^2z-26x^3yz^2-6x^3z^3-3x^2y^4-12x^2y^3z+39x^2y^2z^2+9x^2yz^3+x^2z^4-12xy^5+30xy^4z-26xy^3z^2+9xy^2z^3-xyz^4+4y^6-12y^5z+13y^4z^2-6y^3z^3+y^2z^4
+$$
+is irreducible and has exactly the ten ordinary double points
+$$
+[0:0:1],\ [1:0:1],\ [0:1:1],\ [-1:-1:1],\ [1:0:2],\ [0:1:2],\ [-1:-1:2],\ [1:2:0],\ [-2:-1:0],\ [1:-1:0],
+$$
+and it is invariant under the projectivity $R$ of order $3$ with matrix
+$$
+R=\begin{pmatrix}0&-1&0\\1&-1&0\\0&0&1\end{pmatrix},
+$$
+which permutes the ten points by the cycle $(A\,B\,C)(A'\,B'\,C')(X\,Y\,Z)$ and fixes $[0:0:1]$. Hence the class in $B$ of the labelled sextic is fixed by that $3$-cycle of $S_{10}$, and $S_{10}$ does not act freely on $B$; in particular the map of coarse spaces $B\to V/(\SL_3\times S_{10})$ is not a covering.
+:::
+
+::: {.proof}
+
+The ten points are the vertices $A=[1:0:1]$, $B=[0:1:1]$, $C=[-1:-1:1]$ and $A'=[1:0:2]$, $B'=[0:1:2]$, $C'=[-1:-1:2]$ of two triangles in perspective from the centre $[0:0:1]$, together with the intersections $X=BC\intersect B'C'$, $Y=CA\intersect C'A'$, $Z=AB\intersect A'B'$ of corresponding sides. The projectivity $R$ cycles $A,B,C$ and $A',B',C'$ and fixes the centre, so it permutes the ten points. The thirty conditions that the sextic have a double point at each of the ten points form a $30\times28$ matrix over $\QQ$; the computation `computations/reports/coble_787-s10-symmetric-sextic.py`, recorded in `computations/reports/coble_787-s10-symmetric-sextic-run.txt`, verifies in exact rational arithmetic that the ten points are distinct, that the matrix has rank $27$, that its one-dimensional kernel is spanned by $G$, that $G$ is irreducible over $\QQ$, that each of the ten points is an ordinary double point (the $2\times2$ Hessian of a dehomogenized equation is nonsingular there), and that $G\circ R=G$. An irreducible plane sextic has arithmetic genus $10$, and ten ordinary double points account for all of it, so $G$ has no further singular point and the ten points are its nodes. Since $G$ is invariant, $R$ carries the labelled sextic to the relabelling of its nodes by the cycle $(A\,B\,C)(A'\,B'\,C')(X\,Y\,Z)\neq e$, so that permutation fixes the class of the labelled sextic in $B$.
+:::
+
 ::: {.remark #qst:s10-free-on-B title="Freeness of $S_{10}$ on the labelled base, and why the index does not need it"}
 
-The action of $S_{10}$ on $B$ need not be free: a labelled ten-nodal sextic $(Z;p_1,\dots,p_{10})$ together with a projectivity $g$ with $gZ=Z$ and $gp_i=p_{\sigma(i)}$ for some $\sigma\neq e$ would be a fixed point. The index of $\Gamma_\Co$ in $\Gamma_\Co(\bar B)$ is nevertheless $10!$, because $\bar B$ is read as the quotient stack $[B/S_{10}]$: @lem:d2-labelling-cover gives the principal $S_{10}$-bundle of stacks $B\to[B/S_{10}]$ and the exact sequence, and @lem:gamma-co-labelled-index computes the index from it, with the faithfulness of the label action on $A_M$. No freeness of the $S_{10}$-action on $B$ is used, and the coarse map $B\to V/(\SL_3\times S_{10})$ is not asserted to be a covering.
+The action of $S_{10}$ on $B$ is not free (@lem:d2-s10-not-free): a labelled ten-nodal sextic $(Z;p_1,\dots,p_{10})$ together with a projectivity $g$ with $gZ=Z$ and $gp_i=p_{\sigma(i)}$ for some $\sigma\neq e$ is a fixed point, and one is exhibited there. The index of $\Gamma_\Co$ in $\Gamma_\Co(\bar B)$ is nevertheless $10!$, because $\bar B$ is read as the quotient stack $[B/S_{10}]$: @lem:d2-labelling-cover gives the principal $S_{10}$-bundle of stacks $B\to[B/S_{10}]$ and the exact sequence, and @lem:gamma-co-labelled-index computes the index from it, with the faithfulness of the label action on $A_M$. No freeness of the $S_{10}$-action on $B$ is used, and the coarse map $B\to V/(\SL_3\times S_{10})$ is not asserted to be a covering.
 :::
 
 ::: {.definition #def:coble-family-unpolarized title="D2a: the family of unpolarized Coble surfaces" defines="unlabelled base; labelled base; $\Gamma_\Co$; $\fco$"}
@@ -533,24 +555,13 @@ Let $\mcx\to\mcs\to B$ be the family of @lem:d2-unpolarised-family(3).
 1. $\bV\definedas R^2f_*\underline{\ZZ}_\mcx$ modulo torsion is a local system of lattices with the cup product (@prop:primitive-cohomology-vhs(1)), of rank $22$ and signature $(3,19)$.
 2. The classes $\varepsilon_0$ of $\mcH$, and $\varepsilon_1,\dots,\varepsilon_{10}$ of $\mcE_1,\dots,\mcE_{10}$, are values of global sections of $\bV$, and their span $\bM$ is a local system of lattices with fibre $M=\generators{2}\oplus\generators{-2}^{\oplus10}\cong S_\Co$, primitive (@def:primitive-embedding) in $\bV$ and of signature $(1,10)$ (@prop:coble-is-the-ten-nodal-sextic-type).
 3. $\bT\definedas\bM^{\perp\bV}$ is a local system of lattices with fibre $T_\Co=M^{\perp\lkt}\cong\generators{2}\oplus E(2)$ (@prop:coble-period-domain(2), [@DK13, (3.6)]), of rank $11$ and signature $(2,9)$.
-Let $B=V/\PGL_3$ and $\bar B=[B/S_{10}]=[V/(\SL_3\times S_{10})]$ be the labelled and unlabelled bases of @def:coble-family-unpolarized(2)--(3). Then the quotient map $p\colon B\to\bar B$ is a principal $S_{10}$-bundle in the category of stacks: the morphism
-$$S_{10}\times B\too B\times_{\bar B}B,\qquad (\sigma,b)\longmapsto (b,\sigma b)$$
-is an equivalence (@def:equivalence-of-objects), and $p$ is finite étale of degree $10!=3\,628\,800$. In particular
-$$1\too\pi_1(B,s)\too\pi_1(\bar B,p(s))\too S_{10}\too1$$
-is exact (@def:exact-complex) for every $s\in B$. The induced map of coarse spaces $V/\PGL_3\to V/(\SL_3\times S_{10})$ is not asserted to be a covering: the statement proved here is about the quotient stack, and no freeness of the $S_{10}$-action on $B$ is used.
+4. $\Gamma_\Co=\rho\qty{\pi_1(B,s)}$ is a subgroup of $\Orth(T_\Co)$ (@lem:d2-plane-sextic-freeness(4)), and it lies in $\Orth^+(T_\Co)$ (@lem:monodromy-is-spinor-positive).
+5. On $\bar B$ the same construction gives a local system of lattices with fibre $T_\Co$ and monodromy group $\Gamma_\Co(\bar B)$ containing $\Gamma_\Co$, of index $10!$ (@lem:gamma-co-labelled-index); the classes $\varepsilon_i$ are permuted by the elements of $S_{10}$ and fixed by no other generator.
 :::
 
 ::: {.proof}
 
-*The fibre product.* The two actions commute, so $[B/S_{10}]\cong[V/(\SL_3\times S_{10})]$, and it suffices to prove the statement for the quotient map $X\to[X/H]$ of a stack $X$ by a finite group (@def:group) $H$. An object of $X\times_{[X/H]}X$ over a test space $T$ is a pair $(x,x')$ of objects of $X(T)$ together with an isomorphism (@def:isomorphism-of-objects) of their images in $[X/H](T)$; such an isomorphism is an $H$-arrow; an $H$-equivariant automorphism of the trivial $H$-torsor is right multiplication by an $h\in H$, so the arrow determines $h$, and $x'\cong hx$. So the fibre product is $H\times X$ and the displayed morphism is an equivalence; $X\to[X/H]$ is then a torsor under $H$, hence finite étale of degree $\abs{H}$.
-
-*The exact sequence.* A loop of $\bar B$ at $[s]$ is represented, in the loop model of @lem:orbifold-monodromy-of-a-quotient (which is the groupoid model of the quotient and applies verbatim to a stack $X$ in place of $\widetilde U$), by a pair $(\sigma,\tilde\gamma)$ with $\sigma\in S_{10}$ and $\tilde\gamma$ a path in $B$ from $s$ to $\sigma s$. Such a path exists for every $\sigma$, and this is where the connectedness of $B$ is used: $B$ is connected (@lem:d2-incidence-connected(2)), so there is a path in $B$ joining $s$ to $\sigma s$, and its image in $\bar B$ is a loop at $[s]$ representing $\sigma$. The constant path represents the identity only, so it is not the constant path but connectivity that gives surjectivity.
-
-The assignment $[(\sigma,\tilde\gamma)]\mapsto\sigma$ is well defined and a homomorphism to $S_{10}$, because loops (@def:loops-suspension) compose by $(\sigma,\tilde\gamma)(\sigma',\tilde\delta)=(\sigma\sigma',\tilde\gamma*(\sigma\tilde\delta))$ and homotopic loops have the same endpoint; it is onto by the preceding paragraph.
-
-*Injectivity at the left.* A loop of $\bar B$ lying in the kernel (@def:kernel-cokernel) is a pair $(e,\tilde\gamma)$, that is a loop of $B$ at $s$, so the kernel is the image of $\pi_1(B,s)$. Conversely a loop of $B$ that becomes null-homotopic in $\bar B$ is null-homotopic in $B$: $B\to\bar B$ is a torsor under the finite group $S_{10}$, hence a covering in the orbifold sense, so a null-homotopy of its image lifts to $B$ starting at the given loop. Hence $\pi_1(B,s)\to\pi_1(\bar B,[s])$ is injective with image the kernel, and the sequence is exact.
-
-*The coarse spaces.* What is used above is the quotient stack, not its coarse space. A projectivity $g$ with $gZ=Z$ and $gp_i=p_{\sigma(i)}$ carries $(Z;p_1,\dots,p_{10})$ to $\sigma(Z;p_1,\dots,p_{10})$ in $V$, so it makes the image of $(Z;p_1,\dots,p_{10})$ in $B$ fixed by $\sigma$ in the stack sense; this is an orbifold point of $[B/S_{10}]$, and it does not affect the torsor statement, which is a statement about quotient stacks. No freeness of the $S_{10}$-action on $B$ is used above.
+(1) is [@prop:primitive-cohomology-vhs(1)], the fibres being K3 surfaces by @lem:d2-unpolarised-family(1). (2) Each $\mcE_i$ is a relative divisor, so its class is a global section of $\bV$; so is $\mcH$. The fibre of the span is spanned by the classes $e_0,\dots,e_{10}$ of [@DK13, §3], which is $M$ there, primitive in $L_{\mathrm{K3}}$ and of signature $(1,10)$; primitivity is an open condition on the fibre, so the span is primitive throughout (@prop:coble-is-the-ten-nodal-sextic-type). (3) is the orthogonal complement of (2) in (1). (4) Transport is an isometry (@prop:local-system-of-lattices-monodromy), and the monodromy of a family over a connected base lies in one component of the orthogonal group, the one preserving the period (@lem:monodromy-is-spinor-positive). (5) The map of quotient stacks $B\to\bar B$ is a principal $S_{10}$-bundle of stacks (@lem:d2-labelling-cover), so $\pi_1(B)$ is a normal subgroup of $\pi_1(\bar B)$ with quotient $S_{10}$, the pullback $\bT|_B$ is the system of $\bar B$ pulled back, and its monodromy is the restriction of that of $\bar B$ (@lem:coble-family-base-change); the index is $\abs{S_{10}}=10!$. The action of a permutation of the labels on the classes $\varepsilon_i$ is the permutation of the corresponding sections, and $\PGL_3$ acts trivially on the cohomology classes of the fibre.
 :::
 
 
@@ -594,15 +605,38 @@ So @cor:lattice-polarized-k3-monodromy applies: the restriction of the monodromy
 That group is $\Orth^+(T_\Co)\intersect\discriminantkernel{T_\Co}$, which is $\widetilde\Orth^+(T_\Co)$ (@def:gamma-co-groups, @prop:gamma-co-images(1)).
 :::
 
-::: {.lemma #lem:d2-labelling-cover title="The labels are a principal $S_{10}$-bundle of stacks"}
+::: {.lemma #lem:d2-label-lift title="A path from $s$ to every $S_{10}$-translate, and the fundamental-group sequence"}
 
-4. $\Gamma_\Co=\rho\qty{\pi_1(B,s)}$ is a subgroup of $\Orth(T_\Co)$ (@lem:d2-plane-sextic-freeness(4)), and it lies in $\Orth^+(T_\Co)$ (@lem:monodromy-is-spinor-positive).
-5. On $\bar B$ the same construction gives a local system of lattices with fibre $T_\Co$ and monodromy group (@def:k3-moduli-functors) $\Gamma_\Co(\bar B)$ containing $\Gamma_\Co$, of index $10!$ (@lem:gamma-co-labelled-index); the classes $\varepsilon_i$ are permuted by the elements of $S_{10}$ and fixed by no other generator.
+Let $B=V/\PGL_3$ be the labelled base, a connected complex analytic space on which $S_{10}$ acts (@not:d2-plane-sextic-base, @lem:d2-incidence-connected(2)), let $\bar B=[B/S_{10}]$ be the quotient stack, and let $s\in B$ map to $[s]\in\bar B$. Then:
+
+1. For every $\sigma\in S_{10}$ there is a path of $B$ from $s$ to $\sigma s$.
+2. The assignment that sends an orbifold loop $(\sigma,\tilde\gamma)$ of $\bar B$ at $[s]$ to $\sigma$ is a surjective homomorphism $\pi_1(\bar B,[s])\to S_{10}$ whose kernel is the image of $\pi_1(B,s)$; in particular
+$$1\too\pi_1(B,s)\too\pi_1(\bar B,[s])\too S_{10}\too1$$
+is exact.
 :::
 
 ::: {.proof}
 
-(1) is [@prop:primitive-cohomology-vhs(1)], the fibres being K3 surfaces by @lem:d2-unpolarised-family(1). (2) Each $\mcE_i$ is a relative divisor, so its class is a global section of $\bV$; so is $\mcH$. The fibre of the span is spanned by the classes $e_0,\dots,e_{10}$ of [@DK13, §3], which is $M$ there, primitive (@def:primitive-embedding) in $L_{\mathrm{K3}}$ and of signature $(1,10)$; primitivity is an open condition on the fibre, so the span is primitive throughout (@prop:coble-is-the-ten-nodal-sextic-type). (3) is the orthogonal complement of (2) in (1). (4) Transport is an isometry (@prop:local-system-of-lattices-monodromy), and the monodromy of a family over a connected base lies in one component of the orthogonal group, the one preserving the period (@lem:monodromy-is-spinor-positive). (5) The map of quotient stacks $B\to\bar B$ is a principal $S_{10}$-bundle of stacks (@lem:d2-labelling-cover), so $\pi_1(B)$ is a normal subgroup of $\pi_1(\bar B)$ with quotient $S_{10}$, the pullback $\bT|_B$ is the system of $\bar B$ pulled back, and its monodromy is the restriction of that of $\bar B$ (@lem:coble-family-base-change); the index is $\abs{S_{10}}=10!$. The action of a permutation of the labels on the classes $\varepsilon_i$ is the permutation of the corresponding sections, and $\PGL_3$ acts trivially on the cohomology classes of the fibre.
+1. $B$ is connected (@lem:d2-incidence-connected(2)), so any two of its points are joined by a path; take the endpoints $s$ and $\sigma s$. This is the whole content of the clause, and it is not a formality: a *constant* path joins $s$ to $\sigma s$ only when $\sigma s=s$, so surjectivity in 2. cannot be read off the constant loop.
+
+2. An orbifold loop of $\bar B$ at $[s]$ is a pair $(\sigma,\tilde\gamma)$ with $\tilde\gamma$ a path of $B$ from $s$ to $\sigma s$ --- this is the loop model of @lem:orbifold-monodromy-of-a-quotient, which is the groupoid model of $[B/S_{10}]$ --- and such a pair exists for every $\sigma$ by 1. The class of $(\sigma,\tilde\gamma)$ depends only on $\sigma$ and on the homotopy class of $\tilde\gamma$ rel endpoints, and composition is $(\sigma,\tilde\gamma)(\sigma',\tilde\delta)=(\sigma\sigma',\tilde\gamma*(\sigma\tilde\delta))$, so the induced map to $S_{10}$ is a homomorphism; it is onto by 1. A loop in the kernel has $\sigma=e$, so it is a pair $(e,\tilde\gamma)$ with $\tilde\gamma$ a loop of $B$ at $s$: the kernel is the image of $\pi_1(B,s)$. A loop of $B$ that becomes null-homotopic in $\bar B$ is null-homotopic in $B$, because $B\to\bar B$ is the quotient by the finite group $S_{10}$ and a null-homotopy of the image lifts at the loop. So $\pi_1(B,s)\to\pi_1(\bar B,[s])$ is injective with that image, and the sequence is exact.
+:::
+
+::: {.lemma #lem:d2-labelling-cover title="The labels are a principal $S_{10}$-bundle of stacks"}
+
+Let $B=V/\PGL_3$ and $\bar B=[B/S_{10}]=[V/(\SL_3\times S_{10})]$ be the labelled and unlabelled bases of @def:coble-family-unpolarized(2)--(3). Then the quotient map $p\colon B\to\bar B$ is a principal $S_{10}$-bundle in the category of stacks: the morphism
+$$S_{10}\times B\too B\times_{\bar B}B,\qquad (\sigma,b)\longmapsto (b,\sigma b)$$
+is an equivalence, and $p$ is finite étale of degree $10!=3\,628\,800$. In particular
+Consequently the fundamental-group sequence of @lem:d2-label-lift(2) applies. The induced map of coarse spaces $V/\PGL_3\to V/(\SL_3\times S_{10})$ is not asserted to be a covering: the statement proved here is about the quotient stack, and no freeness of the $S_{10}$-action on $B$ is used.
+:::
+
+::: {.proof}
+
+*The fibre product.* The two actions commute, so $[B/S_{10}]\cong[V/(\SL_3\times S_{10})]$, and it suffices to prove the statement for the quotient map $X\to[X/H]$ of a stack $X$ by a finite group $H$. An object of $X\times_{[X/H]}X$ over a test space $T$ is a pair $(x,x')$ of objects of $X(T)$ together with an isomorphism of their images in $[X/H](T)$; such an isomorphism is an $H$-arrow; an $H$-equivariant automorphism of the trivial $H$-torsor is right multiplication by an $h\in H$, so the arrow determines $h$, and $x'\cong hx$. So the fibre product is $H\times X$ and the displayed morphism is an equivalence; $X\to[X/H]$ is then a torsor under $H$, hence finite étale of degree $\abs{H}$.
+
+*The exact sequence.* The fibre product above shows that $B\to\bar B$ is a torsor under the finite group $S_{10}$, and a quotient of a locally compact space by a finite group has the path-lifting and homotopy-lifting properties. With those two properties the fundamental-group sequence, including the existence of a path from $s$ to $\sigma s$ for each $\sigma$, is @lem:d2-label-lift(2), whose hypotheses are the connectedness of $B$ (@lem:d2-incidence-connected(2)) and the description of $\bar B$ as $[B/S_{10}]$.
+
+*The coarse spaces.* What is used above is the quotient stack, not its coarse space. A projectivity $g$ with $gZ=Z$ and $gp_i=p_{\sigma(i)}$ carries $(Z;p_1,\dots,p_{10})$ to $\sigma(Z;p_1,\dots,p_{10})$ in $V$, so it makes the image of $(Z;p_1,\dots,p_{10})$ in $B$ fixed by $\sigma$ in the stack sense; this is an orbifold point of $[B/S_{10}]$, and it does not affect the torsor statement, which is a statement about quotient stacks. No freeness of the $S_{10}$-action on $B$ is used above.
 :::
 
 ::: {.lemma #lem:d2a-period-map title="The period map of the base is the map of Dolgachev--Kondo"}
@@ -637,30 +671,51 @@ Let $S=\Bl_{p_1,\dots,p_{10}}\PP^2$ be a classical Coble surface, $f\colon X\to 
 (4) Put $M\definedas H^2(X)^{\iota'}=f^*H^2(S)$, of rank $11$. The class $[R]$ of the ramification curve $R\subset X$ of $f$ is $f^*(-K_S)$: indeed $f^*C_b=2R$ with $C_b=-2K_{S_b}$ (@lem:d2-unpolarised-family(1)), so $R=f^*(-K_S)$, $R^2=2(-K_S)^2=-2$, and $R\cdot f^*(K_S^{\perp})=2(-K_S)\cdot K_S^{\perp}=0$. Hence $f^*(K_S^{\perp})$ and $[R]$ are orthogonal sublattices of $M$ of ranks $10$ and $1$, and their ranks sum to $\mathrm{rk}M$, so they span $M$. An automorphism $g$ with $g\circ\iota'=\iota'\circ g$ preserves $M=H^2(X)^{\iota'}$, and $H^2(X)^g=f^*(K_S^{\perp})$ forces $g^*=-1$ on the orthogonal complement of $f^*(K_S^{\perp})$ in $M$, that is $g^*[R]=-[R]$. Since $H^2(X)$ is unimodular and $g$ is an involution, $g_*=(g^*)^{-1}=g^*$, so for the nef and big class $e_0=f^*H$ one has $(g^*e_0)\cdot R=e_0\cdot(g_*R)=e_0\cdot(-R)=-2\,H\cdot(-K_S)=-6<0$, while $R$ is an effective curve; so $g^*e_0$ is not nef, and $g^*$ cannot be induced by an automorphism, which carries the nef cone to itself.
 :::
 
+::: {.lemma #lem:d2b-polarization-is-a-class title="The degree-$2$ datum is a class: the decomposition is a case, not a definition"}
+
+1. Let $X$ be an Enriques surface and $h\in E\definedas K_X^{\perp}\isoto U\oplus E_8$ a nef class with $h^2=2$. Then $h=F_1+F_2$ with $F_1,F_2$ nef, $F_i^2=0$, $F_1\cdot F_2=1$, or $h=2F_1+R$ with $F_1^2=0$ and $R$ a $(-2)$-curve [@CD89, Cor. 4.5.1], quoted in [@DK13, §7], where $h$ is called *non-degenerate* in the first case and *degenerate* otherwise.
+2. In the degenerate case $F_1\cdot R=1$ and $h\cdot R=0$. In particular $h$ is not ample, and $X$ carries a $(-2)$-curve.
+3. The dichotomy is stated for Enriques surfaces, and for Coble surfaces the source treats only the unnodal case, where by (2) the degenerate alternative cannot occur [@DK13, §8]. A moduli problem of degree-$2$ polarized Coble surfaces therefore does not have the nondegenerate decomposition available as a definition, and the datum is the class: a nef $h_\Co\in K_S^{\perp}$ with $h_\Co^2=2$ (@def:coble-polarization-classes(2), and item 2 of @def:coble-family-degree-two).
+4. The degenerate locus of the base of @def:coble-family-unpolarized is not empty: at a point whose sextic has three collinear nodes, the proper transform of the line through them is a $(-2)$-curve with class $R=H-E_1-E_2-E_3\in K_S^{\perp}$ (@lem:d2-s10-not-free).
+:::
+
+::: {.proof}
+
+(1) is the cited dichotomy, in the form in which [@DK13, §7] states it.
+
+(2) By (1) $h=2F_1+R$ with $F_1^2=0$ and $R^2=-2$, so
+$$h^2=4F_1\cdot R+R^2=4F_1\cdot R-2=2,\qquad h\cdot R=2F_1\cdot R+R^2=2F_1\cdot R-2,$$
+hence $F_1\cdot R=1$ and $h\cdot R=0$. Since $R$ is an effective curve meeting $h$ in $0$, $h$ is not ample. The deposited extraction of [@DK13, §7] prints $F_1\cdot R=0$ at this point, which with $R^2=-2$ gives $h^2=-2$; the two displayed equations are what the stated hypotheses $h^2=2$ and $R^2=-2$ force, and they are what is used below. The arithmetic is verified on the lattice $E$ by `computations/reports/coble_787-degenerate-polarization.py`, recorded in `computations/reports/coble_787-degenerate-polarization-run.txt`.
+
+(3) is a statement about the two cited sources: the dichotomy of (1) is [@CD89, Cor. 4.5.1] for Enriques surfaces, and the Coble case is treated in [@DK13, §8] under the hypothesis that $S$ has no $(-2)$-curve, which by (2) excludes the degenerate alternative. Nothing read supplies the dichotomy for a nodal Coble surface, so a definition that required the nondegenerate decomposition would exclude a case that no theorem excludes.
+
+(4) Let $p_1,p_2,p_3$ be collinear nodes and $L$ the line they span. Since $L$ is a line and $\deg Z=6$, $L$ is not a component of $Z$, so its proper transform is a curve $R\subset S$ with class $H-E_1-E_2-E_3$; then $R^2=1-3=-2$ and $R\cdot K_S=-3+3=0$, so $R$ is a $(-2)$-curve with class in $K_S^{\perp}$. The sextic of @lem:d2-s10-not-free has exactly three nodes on the line $z=0$; the computation cited in (2) verifies that the three are collinear and that $R^2=-2$ and $R\cdot K_S=0$.
+:::
+
 ::: {.definition #def:coble-family-degree-two title="D2b: the family of degree-$2$ polarized Coble surfaces" defines="degree-$2$ polarized Coble surface; $\Delta_2$; $\Gamma_{\Co,2}$; $F_{\Co,2}$"}
 
 **The objects.** Over a complex space $Y$, an object is a tuple $\qty{\mcs\to Y,\ \mcx\to\mcs,\ \tilde h}$ in which
 
 1. $\mcs\to Y$ is an object of @def:coble-family-unpolarized, with its K3 double cover $\mcx\to\mcs$ and involution $\iota$;
-2. $\tilde h$ is a global section of the local system of lattices $f^*(K^\perp)$ of @lem:d2-degree-two-polarization(1), whose value at every $y\in Y$ is the pullback of a degree-$2$ numerical polarization of $S_y$ in the sense of @def:coble-polarization-classes(2): $\tilde h_y=f^*F_1+f^*F_2$ with $F_i^2=0$, $F_1\cdot F_2=1$, $\tilde h_y^2=4$, and $F_1,F_2$ nef.
+2. $\tilde h$ is a global section of the local system of lattices $f^*(K^\perp)$ of @lem:d2-degree-two-polarization(1) whose value at every $y\in Y$ is the pullback $\tilde h_y=f^*h_{\Co,y}$ of a nef class $h_{\Co,y}\in K_{S_y}^{\perp}$ with $h_{\Co,y}^2=2$: a degree-$2$ numerical polarization in the sense of @def:coble-polarization-classes(2), with the polarization a *class* and not a decomposition (@lem:d2-degree-two-polarization(2), @lem:d2b-polarization-is-a-class).
 
-By @lem:d2-degree-two-polarization(3) this is the same datum as a global section $h$ of the local system with fibre $S_\En=U(2)\oplus E_8(2)$ whose value is the vector $h=e+f$ of [@AEGS25, Def. 2.5]; the section is part of the objects and is not a marking: it is the polarization.
+The section is part of the objects and is not a marking: it is the polarization. On the locus where $h_{\Co,y}$ is nondegenerate it splits as $F_1+F_2$ with $F_i$ nef and $F_i^2=0$, and then $\tilde h_y=f^*F_1+f^*F_2$ is the vector $h=e+f$ of [@AEGS25, Def. 2.5] (@lem:d2-degree-two-polarization(3), @lem:d2b-polarization-is-a-class(2)); on the degenerate locus it does not (@lem:d2b-polarization-is-a-class(3)), and that case is part of this moduli problem.
 
 **The fibres** are the Coble surfaces $S_y$ of @def:coble-family-unpolarized with their degree-$2$ numerical polarization $h_{\Co,y}$; the K3 cover $X_y$ is a K3 surface with a marked class $\tilde h_y$ of square $4$.
 
-**The base** is $\Delta_2\subset\fentwo$, the image of the hyperplanes $\alpha^{\perp}$ for $\alpha\in\ten$ a $(-2)$-vector, which is the whole base and not a sublocus of it (@lem:d2-degree-two-base).
+**The base** of a family is the base over which it lives, and every such base carries the underlying unpolarized family and maps to $\bar B$ (@lem:d2b-forgets-to-d2a(1)--(2)). The base is compared with the D2a base through that forgetful morphism and the period maps, and its marked period space is $\bD(T_\Co)/\Gamma_{\Co,2}$; the divisor $\Delta_2\subset\fentwo$, the image of the hyperplanes $\alpha^{\perp}$ for $\alpha\in\ten$ a $(-2)$-vector, is the image of that period space under the quotient by $R_{\gent}$ (@lem:d2-degree-two-base(2), @lem:d2b-forgets-to-d2a(4)) and not the marked space itself.
 
 **The local system of lattices** is $\bT$ of @lem:d2-local-system, the orthogonal complement of $\bM$ in $R^2f_*\underline\ZZ_\mcx$ modulo torsion; the polarization is a section of $\bM$, so $\bT$ is the same system for the polarized and the unpolarized family, and its fibre is $T_\Co$.
 
-**The group (@def:group).** $\Gamma_{\Co,2}\leq\Orth(T_\Co)$ is the image of the monodromy representation of $\bT$ (@def:gamma-co-groups). It is a subgroup of the restricted stabilizer $R_{\gent}$ of @def:gamma-co-groups (@lem:d2-degree-two-base(3)). Put $F_{\Co,2}\definedas\bD(T_\Co)/\Gamma_{\Co,2}$.
+**The group.** $\Gamma_{\Co,2}\leq\Orth(T_\Co)$ is the image of the monodromy representation of $\bT$ (@def:gamma-co-groups(5)). It is a subgroup of $\Orth^+(T_\Co)$, unconditionally, because the family of this definition forgets to a family of Coble surfaces (@lem:d2b-forgets-to-d2a(1)--(2)); the further containment in the restricted stabilizer $R_{\gent}$ is @lem:d2-degree-two-base(3). Put $F_{\Co,2}\definedas\bD(T_\Co)/\Gamma_{\Co,2}$.
 :::
 
-::: {.lemma #lem:d2-degree-two-base title="The base of D2b is all of $\Delta_2$"}
+::: {.lemma #lem:d2-degree-two-base title="The period image of the degree-$2$ family is all of $\Delta_2$, up to normalization"}
 
 Let $R_{\gent}$ be the restricted stabilizer of @def:gamma-co-groups and $\Gamma_{\tilde h}$ the group (@def:group) of pairs of type $\tilde h$ of @prop:coble-polarized-moduli, and $\Delta_2=\mch_{-2}/\gent\subset\fentwo=\bD(\ten)/\gent$.
 
 1. $\Gamma_{\tilde h}=R_{\gent}$ [@prop:coble-degree-two-space(2)], so $\bD(T_\Co)/\Gamma_{\tilde h}=\bD(T_\Co)/R_{\gent}$ is the moduli space of pairs $(S,h_\Co)$ of @def:coble-family-degree-two and, by @thm:normalization with $\Gamma=\gent$, it is the normalization of $\Delta_2$: the map $\bD(T_\Co)/R_{\gent}\to\fentwo$ is finite, its image is $\Delta_2$, and it is birational.
-2. Hence $\Delta_2$ is the coarse space of @def:coble-family-degree-two up to normalization, and in particular it is the whole base: the period map (@def:period-map) of the family lands in $\bD(T_\Co)/\Gamma_{\Co,2}\to\bD(T_\Co)/R_{\gent}$, whose image is $\Delta_2$, and no proper sublocus of $\Delta_2$ contains it.
+2. Hence $\Delta_2$ is the image of the period map of @def:coble-family-degree-two up to normalization, and no proper sublocus of $\Delta_2$ contains it: the period map of the family lands in $\bD(T_\Co)/\Gamma_{\Co,2}\to\bD(T_\Co)/R_{\gent}$, and the composite with $\bD(T_\Co)/R_{\gent}\to\Delta_2\hookrightarrow\fentwo$ is finite and surjective by (1). This is a statement about the image; the marked space is $\bD(T_\Co)/\Gamma_{\Co,2}$, which is not $\bD(T_\Co)/R_{\gent}$ (@lem:d2b-forgets-to-d2a(4)).
 3. $\Gamma_{\Co,2}\leq R_{\gent}\cap\Orth^+(T_\Co)$.
 4. $\Delta_2$ is irreducible.
 :::
@@ -671,6 +726,35 @@ Let $R_{\gent}$ be the restricted stabilizer of @def:gamma-co-groups and $\Gamma
 (2) A moduli problem whose marked period space is the normalization of a variety has that variety as its coarse space up to normalization; the composite $\bD(T_\Co)/R_{\gent}\to\Delta_2\hookrightarrow\fentwo$ is finite and surjective by (1), so its image is all of $\Delta_2$ and not a proper sublocus.
 (3) A monodromy operator of the family of @def:coble-family-degree-two preserves the local system $\bM$ of @lem:d2-local-system(2) and its section $\tilde h$, so its image in $\Orth(T_\Co)$ is the restriction of an isometry $\gamma$ of $\lkt$ with $\gamma(S_\Co)=S_\Co$ and $\gamma(\tilde h)=\tilde h$, that is an element of $\Gamma_{\tilde h}=R_{\gent}$; and it lies in $\Orth^+(T_\Co)$ by @lem:d2-local-system(4).
 (4) $\Delta_2$ is the image of the irreducible $\bD(T_\Co)$ under a finite morphism, hence irreducible; equivalently $\gent$ is transitive on the $(-2)$-vectors of $\ten$ [@Ste91, (2.10) and the paragraph after it].
+:::
+
+::: {.lemma #lem:d2b-forgets-to-d2a title="The degree-$2$ family is the unpolarized family with a flat section, and $\Delta_2$ is its period image"}
+
+Let $Y$ be a connected complex space, $y\in Y$, and let $\qty{\mcs\to Y,\ \mcx\to\mcs,\ \iota,\ \tilde h}$ be an object of @def:coble-family-degree-two.
+
+1. Dropping $\tilde h$ leaves an object of @def:coble-family-unpolarized over the same $Y$, with the same K3 cover, the same $\iota$ and the same local system $\bT$ of @lem:d2-local-system. Hence the two monodromy representations $\pi_1(Y,y)\to\Orth(T_\Co)$ coincide, and the monodromy group of a degree-$2$ family over $Y$ is the monodromy group of the underlying unpolarized family.
+2. The underlying unpolarized family is the pullback of the family of @lem:d2-unpolarised-family along a morphism $Y\to\bar B$ classifying it, so
+$$
+\rho\qty{\pi_1(Y,y)}\subseteq\rho\qty{\pi_1(\bar B,p(y))}=\Gamma_\Co(\bar B),
+$$
+and in particular $\Gamma_{\Co,2}\subseteq\Orth^+(T_\Co)$.
+3. Read as the orbifold $\bD(T_\Co)/R_{\gent}$ of @lem:d2-degree-two-base(1), $\Delta_2$ carries no family of Coble surfaces whose local system is the tautological one: the tautological system has monodromy $R_{\gent}$ (@lem:orbifold-monodromy-of-a-quotient), and $R_{\gent}$ contains $s_\zeta\notin\Orth^+(T_\Co)$ (@thm:coble-monodromy-versus-enriques(2)), whereas the monodromy of every family of Coble surfaces lies in $\Orth^+(T_\Co)$ (@lem:monodromy-is-spinor-positive).
+4. Hence the two bases are compared by the forgetful morphism of (1)--(2) and by the period maps
+$$
+\bD(T_\Co)/\Gamma_{\Co,2}\too\bD(T_\Co)/R_{\gent}\too\fentwo ,
+$$
+and not by an identification: the marked period space of the degree-$2$ family is $\bD(T_\Co)/\Gamma_{\Co,2}$, and $\Delta_2$ is its image under the quotient by $R_{\gent}$.
+:::
+
+::: {.proof}
+
+(1) is the first item of @def:coble-family-degree-two: an object of that definition consists of an object $\mcs\to Y$ of @def:coble-family-unpolarized together with the section $\tilde h$. The local system $\bT$ of @lem:d2-local-system is built from $\mcx\to\mcs\to Y$ and the eleven relative divisors alone, so it is the same local system for the two structures, and transport along a loop of $Y$ (@def:transport-and-monodromy) is computed from $\bT$ alone; hence the two monodromy representations are the same map.
+
+(2) By the moduli property recorded in @lem:d2-unpolarised-family(3), $\bar B$ is the moduli stack of the objects of @def:coble-family-unpolarized, so the underlying object is the pullback of the universal family along a morphism $p\colon Y\to\bar B$. The argument of @lem:coble-family-base-change applies with the stack $\bar B$ in place of the space $B$: the pullback is trivialized over the inverse image of a trivializing open set of the universal family, and transport along a loop $\gamma$ of $Y$ is transport along $p\circ\gamma$, both being read on sections over the interval (@def:transport-and-monodromy). So the monodromy group is the image of $p_*\pi_1(Y,y)$ in that of $\bar B$, which is the display. The inclusion in $\Orth^+(T_\Co)$ is @lem:monodromy-is-spinor-positive applied to the underlying family, whose periods lie in one component because $Y$ is connected.
+
+(3) By @lem:orbifold-monodromy-of-a-quotient the monodromy representation of the tautological local system of $\bD(T_\Co)/R_{\gent}$ is the projection $\pi_1^{\mathrm{orb}}\to R_{\gent}$, so its image is $R_{\gent}$. By @thm:coble-monodromy-versus-enriques(2) there is a primitive $\zeta\in T_\Co$ of square $2$ with $s_\zeta\in R_{\gent}$ and $s_\zeta\notin\Orth^+(T_\Co)$. A family of Coble surfaces over that orbifold with the tautological system as its $\bT$ would have monodromy group $R_{\gent}$ by (1), against @lem:monodromy-is-spinor-positive, which puts the monodromy of every Coble family in $\Orth^+(T_\Co)$.
+
+(4) By (1) and (2) the forgetful morphism and the period maps are the only comparison available. The period map of the degree-$2$ family lands in $\bD(T_\Co)/\Gamma_{\Co,2}$ by the definition of $\Gamma_{\Co,2}$ as the monodromy group (@def:gamma-co-groups(5), @eq-period-map-equivariance), and the second arrow is the quotient by the subgroup $R_{\gent}$ of @lem:d2-degree-two-base(1); the composite is finite with image $\Delta_2$ (@lem:d2-degree-two-base(2)). Since $\Gamma_{\Co,2}\subseteq\Orth^+(T_\Co)$ by (2) and $s_\zeta\in R_{\gent}$ lies outside $\Orth^+(T_\Co)$, $\Gamma_{\Co,2}\neq R_{\gent}$, which is @thm:coble-monodromy-versus-enriques(3); so the first arrow is not an isomorphism and $\Delta_2$ is the image, not the marked space.
 :::
 
 ::: {.remark #rmk:d2-degree-two-vs-DK13 title="The moduli space $\mcm_\Co(2)$ of Dolgachev--Kondo"}
@@ -706,5 +790,5 @@ Five corrections to the earlier form of this section, each at its file and line 
 2. *The labels are a torsor of stacks, not a principal bundle of coarse spaces.* The finite-cover statement, formerly introduced without proof, is @lem:d2-labelling-cover, which proves the torsor statement for the quotient stacks and records that the induced map of coarse spaces is not a covering.
 3. *The degree-$2$ object is the Coble polarization.* The earlier definition took an ample degree-$2$ class on the Enriques quotient instead of the class $h_\Co\in K_S^{\perp}$ of @def:coble-polarization-classes(2); @lem:d2-degree-two-polarization proves that the two are the same class on the K3 cover, so the definition can and now does use the Coble class, which is the one @def:gamma-co-groups names.
 4. *The base is $\Delta_2$ by normalization, not by inheritance.* The earlier proof applied the pointwise description of the divisor in the full quotient $\bD(\ten)/\Orth(\ten)$ through the finite map $\fentwo\to\bD(\ten)/\Orth(\ten)$ in the wrong direction; @lem:d2-degree-two-base now identifies the two period spaces directly, through @thm:normalization and @prop:coble-degree-two-space(2).
-5. *The reverse inclusion does not use a period map, and the label cover is a torsor of stacks.* The earlier proof of $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_\Co$ applied a period map $\per_M\colon V\to\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ and asserted that it is injective; it is not, since $\PGL_3$-orbits in $V$ give isomorphic $M$-marked K3 covers. The earlier form of @lem:d2-labelling-cover then asserted a principal $S_{10}$-bundle of the coarse spaces $B\to\bar B$, which need not be a covering: a projectivity carrying a sextic to itself and permuting its nodes identifies two points of $B$ over one point of $\bar B$. @lem:d2-labelling-cover now proves the torsor statement for the quotient stacks, @lem:gamma-co-labelled-index gives $\Gamma_\Co(B)=\Gamma_\Co(\bar B)\cap\ker\bar\rho$ and the index $10!$, and @thm:gamma-co-is-stable obtains the reverse inclusion from $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ (@thm:gamma-co-sextic-group), which is the period isomorphism on the unlabelled base.
+5. *The label cover is a torsor of stacks, and the reverse inclusion is not proved.* The earlier proof of $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_\Co$ applied a period map $\per_M\colon V\to\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ and asserted that it is injective; it is not, since $\PGL_3$-orbits in $V$ give isomorphic $M$-marked K3 covers. The earlier form of @lem:d2-labelling-cover then asserted a principal $S_{10}$-bundle of the coarse spaces $B\to\bar B$, which need not be a covering: a projectivity carrying a sextic to itself and permuting its nodes identifies two points of $B$ over one point of $\bar B$. @lem:d2-labelling-cover now proves the torsor statement for the quotient stacks, and @lem:d2-label-lift proves the fundamental-group sequence from the connectedness of $B$ (@lem:d2-incidence-connected). What those give is the kernel identity $\Gamma_\Co(B)=\Gamma_\Co(\bar B)\cap\ker\bar\rho$ and the index $\abs{\bar\rho(\Gamma_\Co(\bar B))}$, a divisor of $10!$ (@lem:gamma-co-labelled-index); they do not give the reverse inclusion, which is open (@thm:gamma-co-is-stable, @qst:gamma-co-sign-is-realised).
 :::
