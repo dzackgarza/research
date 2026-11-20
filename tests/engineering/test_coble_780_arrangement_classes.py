@@ -2,10 +2,12 @@
 
 lem:d2-vanishing-reflections shows H_T is strictly larger than the square-(-2)
 arrangement (the isotropic class e-perp).  This lemma classifies the gamma that occur
-(gamma = 2s with lambda = 2t in L and lambda^2 + gamma^2 = -8) and uses the Hodge index
-theorem on the orthogonal complement of the ample class H to decide which of them can
-carry monodromy of the family: those with gamma^2 >= 0 cannot, since every algebraic
-gamma in Q is orthogonal to the ample H and therefore has gamma^2 < 0.
+(gamma = 2s with lambda = 2t in L and lambda^2 + gamma^2 = -8).  It once used the Hodge
+index theorem on the orthogonal complement of the class H to conclude that the classes
+with gamma^2 >= 0 cannot carry monodromy of the family, because every algebraic class
+orthogonal to the ample H has negative square.  H = f^*O(1) is nef and NOT ample
+(H.l_i = 0 for the ten nonzero (-2)-curves l_i = f^*E_i), so that step is withdrawn and
+this file pins the correction: no exclusion of the components with gamma^2 >= 0.
 """
 
 from __future__ import annotations
@@ -31,12 +33,14 @@ def test_the_classes_are_classified():
     assert "-8" in body
 
 
-def test_hodge_index_decides_which_matter():
+def test_the_ample_hypothesis_is_not_misused():
+    """The lemma once excluded the components with gamma^2 >= 0 by the Hodge index
+    theorem for an ample class.  H is nef and not ample (H.l_i = 0), so that step is
+    withdrawn and the guard pins the correction."""
     text = LA.read_text(encoding="utf-8")
     body = _block(text, LEMMA)
-    assert "Hodge index" in body or "negative definite" in body
-    assert "@Huy05, Ch. 3" in body or "@Voi07" in body
-    assert "ample" in body
+    assert "not** ample" in body or "nef and" in body
+    assert "not* excluded" in body or "not excluded" in body
 
 
 def test_the_generated_subgroup_stays_in_the_stable_group():
