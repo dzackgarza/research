@@ -10,9 +10,11 @@ A = <-2>^8 of index 2, and that the overlattice is
 
     K_Pi = A + ZZ * (l_1 + ... + l_8)/2 ,
 
-i.e. the gluing class in A*/A = (ZZ/2)^8 is the all-ones vector.  In
-particular the full orthogonal group O(K_Pi) acts on the eight antipodal pairs
-as the full symmetric group, hence transitively.
+i.e. the gluing class in A*/A = (ZZ/2)^8 is the all-ones vector, so that
+g(v) - v = -sum_{i: eps_i = -1} l_{sigma(i)} lies in A for EVERY signed
+permutation g(l_i) = eps_i l_{sigma(i)}: the image of O(K_Pi) in the signed
+permutations of the eight lines is all of {+-1}^8 x| S_8, and O(K_Pi) acts on
+the eight antipodal pairs as the full symmetric group, hence transitively.
 
 Inputs: AEGS, Nagoya Math. J. 259 (2025), Def. 2.3 (T_En); Sterk, Math. Z.
 207 (1991), 4.3.17 (the five 1-cusp types); the plane realisations of

@@ -141,13 +141,17 @@ Let $\Pi$ be a primitive isotropic plane of $\ten$ of one of the five types with
 $$
 K_\Pi = \generators{l_1,\dots,l_8} + \ZZ\cdot\tfrac12(l_1+\cdots+l_8).
 $$
-Consequently $\Orth(K_\Pi)$ permutes the eight pairs as the full symmetric group $\mathfrak{S}_8$ and is transitive on them.
+Consequently the image of $\Orth(K_\Pi)$ in the signed permutations of the eight lines is all of $\{\pm1\}^8\rtimes\mathfrak{S}_8$, so it permutes the eight pairs as the full symmetric group and is transitive on them.
 :::
 
 ::: {.proof}
 The computation is `computations/reports/coble_789-kpi-gluing.py`, whose transcript is printed beside it. For each of the five planes it reuses the exact quotient of @lem:five-one-cusps-nonempty (unimodular complement, exact Gram matrix $G_0$ with $\det G_0 = 64$, exhaustive enumeration of the sixteen vectors of square $-2$ by rational $LDL^{\mathsf T}$ pruning), checks that the eight representatives are pairwise orthogonal and have determinant $2$, so that they span a sublattice $A$ of index $2$ with $A\cong\generators{-2}^{\oplus8}$. A vector $w\in K_\Pi$ outside $A$ has half-integral coordinates in the basis $l_j$, by the index; the run computes them and finds all eight half-integral in every one of the five cases, so the gluing class in $A^{*}/A\cong(\ZZ/2)^8$ is the all-ones vector, which is the displayed identity.
 
-For the last sentence: an isometry of $K_\Pi$ permutes its sixteen vectors of square $-2$, hence preserves $A$ and induces a signed permutation of the eight lines; preserving the overlattice requires an even number of sign changes, since the gluing class is all-ones. Every permutation of the eight occurs with the trivial sign pattern, so the induced map to $\mathfrak{S}_8$ is onto.
+For the last sentence: an isometry of $K_\Pi$ permutes its sixteen vectors of square $-2$, hence preserves $A$ and induces a signed permutation $l_i\mapsto\varepsilon_i l_{\sigma(i)}$ of the eight lines. Every signed permutation preserves the overlattice: writing $v = \tfrac12(l_1+\cdots+l_8)$ for the gluing vector, one has
+$$
+g(v)-v = \tfrac12\textstyle\sum_{i}(\varepsilon_i-1)\,l_{\sigma(i)} = -\sum_{i:\varepsilon_i=-1} l_{\sigma(i)}\in A,
+$$
+because $(\varepsilon_i-1)/2$ is $0$ or $-1$. So $g(v)\in K_\Pi$ for every sign pattern and every permutation, the image of $\Orth(K_\Pi)$ in the signed permutations is all of $\{\pm1\}^8\rtimes\mathfrak{S}_8$, and its image in $\mathfrak{S}_8$ is onto.
 :::
 
 ::: {.lemma #lem:reflections-fix-the-pairs title="Reflections act trivially on the eight pairs"}
