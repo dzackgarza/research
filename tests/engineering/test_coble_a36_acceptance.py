@@ -457,6 +457,9 @@ def test_the_coble_pair_semifan_table_merges_no_walls():
     assert "no two walls coincide" in page
     # the degeneracy claim is stated for the record's pairs, not in general
     assert "for the pairs the record lists $q(x)=q(y)=-2$" in page
+    # with no walls coinciding, the cusp-5 irrelevant Gram is owed, not the old four-wall one
+    assert "$5$, on $5$ walls" in page
+    assert "are owed for the five" in page
     assert "$x+y$ is isotropic there while" not in page
     assert "$4\\equiv 11$" not in page and "$3\\equiv 13\\equiv 10$" not in page
     record = REPORTS / "coble_672-zero-cusp-sterk-two-run.txt"
