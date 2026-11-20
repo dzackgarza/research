@@ -608,6 +608,45 @@ $\mcM_\Co$ satisfies fppf descent, hence étale descent: isomorphisms are a shea
 Let $Y'\to Y$ be faithfully flat of finite presentation, with the two projections, and let an object over $Y'$ with a descent datum be given. The underlying schemes and the morphisms $f'$, $\pi'$, $\iota'$ descend to $Y$ by faithfully flat descent (SGA 1, Exposé VIII), the descended $f$ being flat and projective because both are local on the base and stable under base change. The condition of clause (1) is a condition on geometric fibres, so it is checked after $Y'\to Y$. The divisor $-2K_{\mcs/Y}$ is defined by the relative canonical sheaf of the descended $f$, and the $\mu_2$-torsor of clause (2) is $\Spec(\OO\oplus\OO(-\mcD))$, determined by that divisor and by the choice of $\mcD$ up to the sign of the second summand; so $\pi$ and $\iota$ descend with $f$. Isomorphisms are a subsheaf of the sheaf of isomorphisms of the underlying $Y$-schemes cut out by closed conditions, as in @lem:coble-moduli-functor-stack(1).
 :::
 
+::: {.definition #def:enriques-partial-compactification title="The partial compactification of the Enriques stack by involutions with empty or curve fixed locus"}
+
+Let $S_0=\Spec\ZZ[1/2]$. On $S_0$-schemes of finite presentation the functor $\mcM^{\partial}_\En$ assigns to $Y$ the groupoid of pairs $\qty{\mcx\xrightarrow{f}Y,\ \iota}$ in which $f$ is a flat projective family of $\mathrm{K3}$ surfaces and $\iota$ an involution of $\mcx$ over $Y$ whose geometric fibres satisfy exactly one of:
+
+1. $\operatorname{Fix}(\iota_b)=\emptyset$, the Enriques case;
+2. $\operatorname{Fix}(\iota_b)$ is a smooth rational curve $R_b$ with $R_b^2=-2$, the Coble case (@lem:d2-unpolarised-family(1)--(2): the quotient is then $\Bl_{10}\PP^2$ at the ten nodes of an irreducible sextic and $R_b$ is the ramification curve);
+
+with morphisms the $\iota$-equivariant Cartesian squares over $Y$ and pullback the fibre product. The two conditions of (1) and (2) are complementary, so $\mcM^{\partial}_\En$ is the disjoint union of its two loci.
+:::
+
+::: {.lemma #lem:enriques-partial-compactification-stack title="$\mcM^{\partial}_\En$ is a stack over $\ZZ[1/2]$"}
+
+$\mcM^{\partial}_\En$ satisfies fppf descent, hence étale descent: isomorphisms are a sheaf, objects descend, and the fixed-locus condition descends.
+:::
+
+::: {.proof}
+
+Let $Y'\to Y$ be faithfully flat of finite presentation with a descent datum for an object. The scheme $\mcx'$, the morphism $f'$ and the involution $\iota'$ descend by faithfully flat descent (SGA 1, Exposé VIII), $f$ remaining flat and projective because both are local on the base and stable under base change. Being a $\mathrm{K3}$ surface and the two alternatives of @def:enriques-partial-compactification are conditions on geometric fibres, hence checked after $Y'\to Y$: the fixed locus of an involution is computed fibrewise, and whether it is empty, or a smooth rational curve of self-intersection $-2$, is a property of the fibre alone. Isomorphisms form a subsheaf of the sheaf of isomorphisms of the underlying $Y$-schemes, cut out by the equations expressing equivariance for $\iota$, as in @lem:coble-moduli-functor-stack(1).
+:::
+
+::: {.proposition #lem:coble-is-the-boundary-divisor title="The Coble stack is the boundary divisor over $\delta^{\perp}$"}
+
+1. The locus of @def:enriques-partial-compactification(1) is the stack of smooth Enriques surfaces; the locus of (2) is $\mcM_\Co$, by $S_b=X_b/\iota_b$ with $X_b\to S_b$ the double cover of @def:coble-moduli-functor(2).
+2. The period map of $\mcM^{\partial}_\En$ lands in $\bD(\ten)/\Orth(\ten)$, and the image of the Enriques locus is $\qty{\bD(\ten)\sm\mch_{-2}}/\Orth(\ten)$, the moduli space of Enriques surfaces [@DK13, §3] (@prop:enriques-nodal-coble-heegner(1)).
+3. The image of the Coble locus is the Heegner divisor $\mch_{-2}/\Orth(\ten)$, birationally isomorphic to $\mcm_\Co$ (@prop:enriques-nodal-coble-heegner(3)), so $\mcM_\Co$ is a divisor of $\mcM^{\partial}_\En$ and its image is $\mch_{-2}$.
+4. The normal data are the class of the fixed curve: at a point of the Coble locus the fixed locus is a smooth rational curve $R_b$ of square $-2$ in $X_b$, with $[R_b]$ spanning the $(-2)$-line orthogonal to $\ten$ in $H^2(X_b)$, and $f^*[C_b]=2R_b$ for the anticanonical curve $C_b$ of $S_b$ (@lem:d2-unpolarised-family(1)).
+:::
+
+::: {.proof}
+
+(1) For a fixed-point-free involution the quotient is an Enriques surface, and conversely the K3 cover of an Enriques surface is a fixed-point-free invariant; for an involution with fixed curve $R$ of square $-2$, the quotient is a smooth rational surface with $|-K|=\emptyset$ and $|-2K|=|C|$ nonempty, by the adjunction computation of @lem:d2-unpolarised-family(1) read on the quotient, and the set of nodes of $C$ is the image of $R$.
+
+(2) is the cited statement, whose hypothesis is that the periods of the K3 covers of Enriques surfaces avoid $\mch_{-2}$, which is [@DK13, §3] and @prop:enriques-nodal-coble-heegner(1).
+
+(3) is @prop:enriques-nodal-coble-heegner(3), the quotient $\mch_{-2}/\Orth(\ten)$ being birationally isomorphic to $\mcm_\Co$; the identification of the Coble locus with $\mcM_\Co$ is (1).
+
+(4) For $S_b=\Bl_{10}\PP^2$ the ramification curve of the double cover is $R_b=f^*(-K_{S_b})$, of square $2(-K_{S_b})^2=-2$ and $C_b=-2K_{S_b}$ gives $f^*C_b=2R_b$; its class is orthogonal to $f^*\Pic(S_b)\supseteq\ten$-side and spans the line $\QQ R_b$ in $H^2(X_b)$, which is the direction in which the period leaves $\ten$ when the Enriques condition fails.
+:::
+
 ::: {.remark #rmk:coble-enriques-not-a-map title="There is no morphism from the Coble stack to the Enriques stack of smooth families"}
 
 Item 2 of research#797 asks for a morphism $\text{Coble}\to\text{Enriques}$. Between the moduli of *smooth* families there is none, and the relation the sources give is a boundary one: the moduli space of Coble surfaces is identified with a **codimension-one component of the boundary** of the moduli space of Enriques surfaces [@DK13, §1]. The reason is in the objects: a Coble surface is the quotient $X/\iota$ of a K3 surface by an involution with a fixed curve, while an Enriques surface is the quotient by a fixed-point-free one; a family of the first kind does not become a family of the second by any map of bases, and the Coble locus is reached only in the limit in which the branch curve of $X/\iota$ is contracted — which is the degeneration [@DK13, §1] and [@DK13, §3] describe.
