@@ -50,3 +50,13 @@ p = 19: good reduction: True
     p^10 Q(t/p) = (t - 19) * (t + 19) * (t^8 + 4*t^7 + 551*t^6 - 1805*t^5 + 150898*t^4 - 651605*t^3 + 71806871*t^2 + 188183524*t + 16983563041)
     cyclotomic factors Phi_d of Q: d in [1, 2]
     R(p) R(-p) = 2^5 * 3 * 5 * 19^14 * 29, class in Q*/Q*^2: 870
+========================================================================
+p = 23: good reduction: True
+  n=1  tr F^n|H^2 = 110  tr F^n.iota|H^2 = 120  tr F^n|H^2_+ = 5 p^n  tr F^n|H^2_- = -5
+  n=2  tr F^n|H^2 = 3866  tr F^n.iota|H^2 = 1424  tr F^n|H^2_+ = 5 p^n  tr F^n|H^2_- = 1221
+  n=3  tr F^n|H^2 = 93002  tr F^n.iota|H^2 = 28668  tr F^n|H^2_+ = 5 p^n  tr F^n|H^2_- = 32167
+  n=4  tr F^n|H^2 = 1948426  tr F^n.iota|H^2 = 849984  tr F^n|H^2_+ = 5 p^n  tr F^n|H^2_- = 549221
+  n=5  tr F^n|H^2 = 41617790  tr F^n.iota|H^2 = 22745640  tr F^n|H^2_+ = 5 p^n  tr F^n|H^2_- = 9436075
+  sign +1 of Q(t) = sign t^10 Q(1/t): consistent with n <= 5: True
+    p^10 Q(t/p) = (t - 23)^2 * (t + 23)^2 * (t^6 + 28*t^5 + 1104*t^4 + 16928*t^3 + 584016*t^2 + 7835548*t + 148035889)
+    cyclotomic factors Phi_d of Q: d in [1, 2]

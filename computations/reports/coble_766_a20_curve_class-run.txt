@@ -1,0 +1,9 @@
+restriction (13) * (y + 11)^2 * (y^5 + 16*y^4 + 5*y^3 + 3*y^2 + 4*y + 1)^2
+C at y = infinity: x = 10  (x = 1 or -1 would add points)
+   C+.D_{1,+} y = 10 mult 1
+   C+.D_{1,+} y = 2 mult 1
+   C+.D_{-1,-} y = 0 mult 1
+   C+.D_{-1,-} y = 11 mult 1
+degrees: deg P3 = 4  (y = infinity on C and tau C: x = 10 7 )
+C+.D1+ = 2  C+.D1- = 0  C+.D-1+ = 0  C+.D-1- = 2  C+.iotaC+ = 0
+w^2 = -4  w.v = 4  (w.v)^2 + 4 w^2 = 0
