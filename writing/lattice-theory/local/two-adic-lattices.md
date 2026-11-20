@@ -2,7 +2,7 @@
 
 ## Nikulin's $2$-adic lattices $V_k$ and $U_k$
 
-::: {.definition #def:nikulin-Vk-Uk title="Nikulin's lattices $V_k$ and $U_k$"}
+::: {.definition #def:nikulin-Vk-Uk title="Nikulin's lattices $V_k$ and $U_k$" defines="$V_k$; $U_k$"}
 
 For $k\in\bZ_{\geq0}$ define the rank-two $\padiccompletion{\bZ}{2}$-lattices
 $$

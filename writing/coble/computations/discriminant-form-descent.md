@@ -21,7 +21,7 @@ A counting problem about primitive isotropic vectors of an indefinite lattice is
 
 ## The mechanism {#sec-descent-mechanism}
 
-::: {.definition #def:descent-class title="The descent class of a primitive vector" defines="descent class"}
+::: {.definition #def:descent-class title="The descent class of a primitive vector" defines="descent class; $v^*$; isotropic class; $\mathcal C(L)$"}
 
 Let $L$ be an even nondegenerate lattice with discriminant group $A_L=L^\sharp/L$ and discriminant form $q_L$.
 For a nonzero $v\in L$ the divisibility $\div_L(v)$ of @def:lattice-divisibility is a positive integer, and
@@ -418,7 +418,7 @@ For every one of the thirteen public incidence edges, the workflow also prints a
 
 The witness calculation also checks the discriminant labels of the *witness objects themselves* against those of both public orbit vertices named by each edge. For every edge $L_i<P_j$, the primitive witness line has the same $A,B,C,D$ type as the representative of $L_i$, and the witness plane has the same three-letter finite type as the representative of $P_j$. These checks use the actual coordinate rows in the workflow log; they do not identify the two distinct integral plane orbits of type $AAA$ or $ADD$ from the finite type alone. Their distinction is instead supplied by the public integral orbit computation and the separate decorated-plane graph comparison.
 
-::: {.definition #def:stabilizer-congruence-data title="The congruence data of a lattice stabilizer"}
+::: {.definition #def:stabilizer-congruence-data title="The congruence data of a lattice stabilizer" defines="$e_1$; $e_2$; $\pi_m$; $\bar L_m$; $\bar K_m$; $\bar H_m$"}
 
 Let $V$ be a finite-dimensional vector space over $\bQ$ with a nondegenerate symmetric bilinear form $\beta$.
 Let $L\subseteq V$ be an integral nondegenerate lattice, so $L\subseteq L^\sharp$, and let $M\subseteq V$ be a finitely generated full $\bZ$-submodule with $L\subseteq M$.
@@ -699,7 +699,7 @@ Item 3 is @thm:enriques-spinor-orbit-agreement, whose proof gives the spinor-neg
 
 The discriminant image of @thm:stabilizer-discriminant-image is one of three characters that an integral stabilizer has. The determinant and the real spinor norm are the other two, and the second is what decides the orbit questions of @sec-descent-spinor, $\Orth^+(L)$ being its kernel (@def:lattice-spinor-kernels). By @prop:spinor-congruence-obstruction the spinor sign is not a function of the congruence class in general, and at the lattice of @ex:joint-character-sign-witness neither sign is a function of the discriminant image on the whole group $\Orth(L)$. This section computes the joint image of the three, the sign group that the discriminant kernel contributes, and the double-coset count that replaces @thm:descent-double-coset when the signs are not graph characters of the congruence data. The discriminant formula is always the formula for a group containing $\ker\rho_{L,q}$; @thm:joint-double-coset(3) states when its count is the count for $\Gamma_1$ itself, and @thm:joint-double-coset(4) states the fixed-fibre condition under which the two counts agree even when $\ker\rho_{L,q}\nsubseteq\Gamma_1$, as at @ex:joint-fibre-absorption.
 
-::: {.definition #def:joint-character title="The joint discriminant, determinant and spinor character"}
+::: {.definition #def:joint-character title="The joint discriminant, determinant and spinor character" defines="$\kappa_L$; $\kappa_{L,q}$; $E_L$; $\epsilon$; $K_\Gamma$; $\Sigma_\Gamma(\kappa)$"}
 
 Let $(V,\beta)$ be a finite-dimensional nondegenerate symmetric bilinear space over $\bQ$ and let $L\subseteq V$ be an integral nondegenerate lattice. Put
 $$
@@ -733,7 +733,7 @@ $$
 for its discriminant kernel and for the group of sign values attained by its elements; the sign values attained in the discriminant kernel of $\Gamma$ are the elements of $\Sigma_\Gamma(\kappa)$. When $L$ is even there is a second, quadratic discriminant representation $\rho_{L,q}$, and then $K_\Gamma=\Gamma\intersect\ker\rho_{L,q}$ as well, because $\rho_L=j_q\circ\rho_{L,q}$ with $j_q$ injective; for odd $L$ only the bilinear form is available, and $K_\Gamma$ is the displayed kernel of $\rho_L$.
 :::
 
-::: {.definition #def:graph-character title="Graph characters of congruence data" defines="graph character"}
+::: {.definition #def:graph-character title="Graph characters of congruence data" defines="$N_m$; graph character"}
 
 Assume $m\geq1$ with $mM\subseteq L$, so that $\pi_m$ of @def:stabilizer-congruence-data is defined, and put $N_m\definedas\bar K_m\intersect\Stab_G(L)$ for the congruence kernel inside the stabilizer. A character $\chi\colon\Stab_G(L)\to\theset{\pm1}$ is a **graph character** of the data at $m$ when $\chi(N_m)=1$, equivalently when $\chi$ is constant on the cosets of $N_m$, equivalently when $\chi=\bar\chi\circ\pi_m$ on $\Stab_G(L)$ for a character $\bar\chi$ of the finite group $\bar H_m=\pi_m\qty(\Stab_G(L))$.
 

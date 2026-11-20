@@ -1,6 +1,6 @@
 # Invariant and coinvariant lattices {#sec-invariant-coinvariant}
 
-::: {.definition #def:invariant_coinvariant_lattices title="Invariants and coinvariants of integral group actions" defines="invariant lattice; geometric coinvariant lattice; translation submodule; module coinvariants"}
+::: {.definition #def:invariant_coinvariant_lattices title="Invariants and coinvariants of integral group actions" defines="$\epsilon_G$; augmentation ideal $J_G$; invariant lattice; $L^G$; geometric coinvariant lattice; $L_G$; translation submodule; $I_G L$; module coinvariants; $L_G^{\mathrm{mod}}$"}
 Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ and let $\rho\colon G\too\Orth(L)$ be an action of a finite group. The homomorphism $\rho$ makes $L$ a left module over the integral group ring $\bZ[G]$, with augmentation $\epsilon_G\colon\bZ[G]\too\bZ$ and augmentation ideal $J_G\definedas\ker(\epsilon_G)$.
 
 The **invariant lattice** is the evaluation sublattice $L^G\isoto\Hom_{\bZ[G]}(\bZ,L)\injects L$, with $\bZ$ carrying the trivial action. Its **geometric coinvariant lattice** is $L_G\definedas(L^G)^{\perp_L}$, the orthogonal complement of @def:orthogonal-complement.
@@ -91,7 +91,7 @@ The first two modules are the kernel and cokernel of the norm on module coinvari
 
 ## Integral isotypic sublattices {#sec-integral-isotypic-sublattices}
 
-::: {.definition #def:isotypic-sublattices title="Integral isotypic sublattices" defines="integral isotypic sublattice"}
+::: {.definition #def:isotypic-sublattices title="Integral isotypic sublattices" defines="$\operatorname{Ann}_L(\mathfrak a)$; $\mathcal P_G$; integral isotypic sublattice; $L_{\mathfrak p}$"}
 For a two-sided ideal $\mathfrak a$ of the group ring $\bZ[G]$, let $\operatorname{Ann}_L(\mathfrak a)\injects L$ be its annihilator. Let $\mathcal P_G$ be the finite set of minimal two-sided prime ideals of $\bZ[G]$. The **integral isotypic sublattice** indexed by $\mathfrak p\in\mathcal P_G$ is $L_{\mathfrak p}\definedas\operatorname{Ann}_L(\mathfrak p)$.
 
 The quotient-ring morphisms assemble into the module exact sequence

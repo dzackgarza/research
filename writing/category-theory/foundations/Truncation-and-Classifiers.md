@@ -5,7 +5,7 @@ Each category of structured objects comes with a specified forgetful functor.
 
 ## Properties and structures {#sec-property-structure}
 
-::: {.definition #def:property-structure-stuff title="Property, structure, and stuff"}
+::: {.definition #def:property-structure-stuff title="Property, structure, and stuff" defines="property; structure; stuff; replete full subcategory; $\mcc_P$"}
 Let $U\colon\mcs\to\mcc$ be a forgetful functor.
 
 - If $U$ is fully faithful, it describes at most a property of objects of $\mcc$.
@@ -36,7 +36,7 @@ This is [@BS07, §2, Fact 3].
 
 ## Chosen structure
 
-::: {.definition #def:chosen-structure title="Chosen structure as a homotopy fiber"}
+::: {.definition #def:chosen-structure title="Chosen structure as a homotopy fiber" defines="chosen structure"}
 A structure on $X\in\mcc$ is a chosen object of the homotopy fiber of $U\colon\mcs\to\mcc$ over $X$.
 Several nonisomorphic choices may lie over the same $X$.
 A morphism in $\mcs$ must preserve the chosen structure.
@@ -51,7 +51,7 @@ Hence $\mathbf{Mon}\to\mathbf{Semigrp}$ is faithful and is not full.
 Let $U\colon\mcs\to\mcc$ and $F\colon\mcd\to\mcc$ be specified functors.
 The structured objects of $\mcd$ obtained from $U$ are given by the pseudo-pullback $\mathcal P$ in the square
 
-::: {.definition #def:axiom-through-functor title="Pulling back structured objects"}
+::: {.definition #def:axiom-through-functor title="Pulling back structured objects" defines="pullback of structured objects"}
 ```{.tikz}
 %%| filename: structured-object-pullback
 %%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
@@ -70,7 +70,7 @@ Its objects are exactly the $D\in\mcd$ for which $F(D)$ satisfies the stated pro
 
 ## Classifying objects and families {#sec-axiom-classifiers-general}
 
-::: {.definition #def:classifying-object title="Classifying objects and universal families" defines="represented; universal family"}
+::: {.definition #def:classifying-object title="Classifying objects and universal families" defines="represented functor; classifying object; universal family"}
 A functor $H\colon\mcc^{\opop}\to\mcs$ is *represented* by $B\in\mcc$ when there is a natural equivalence
 $$
 \eta\colon H(-)\simeq\operatorname{Map}_{\mcc}(-,B).

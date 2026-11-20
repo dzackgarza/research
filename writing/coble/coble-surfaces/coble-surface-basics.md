@@ -28,7 +28,7 @@ Since $C = C_1+\cdots+C_n \sim -2K_S$, intersecting with $C_i$ gives $-2K_S\cdot
 
 :::
 
-::: {.definition #def:minimal-coble-surface title="Minimal Coble surface" defines="minimal"}
+::: {.definition #def:minimal-coble-surface title="Minimal Coble surface" defines="minimal Coble surface"}
 
 A Coble surface (@def:coble-surface) $S$ is **minimal** if, for every $(-1)$-curve $E$ on $S$, the surface obtained by blowing down $E$ is not a Coble surface [@DK25, proof of Prop. 9.1.4].
 
@@ -40,7 +40,7 @@ A terminal Coble surface (@def:coble-surface) of K3 type with $n = 1$ is minimal
 
 :::
 
-::: {.definition #def:cremona-special title="Cremona special and unnodal point sets" defines="Cremona special; unnodal"}
+::: {.definition #def:cremona-special title="Cremona special and unnodal point sets" defines="$\Aut(S)^*$; $W_S$; Cremona special point set; unnodal point set"}
 
 Let $\mathcal{P} = \theset{p_1, \ldots, p_n}\iscontainedin\PP^2$ be a set of points, some possibly infinitely near, and let $S$ be the blowup of $\PP^2$ at $\mathcal{P}$.
 Let $\Aut(S)^*$ be the image of $\Aut(S)$ in $\Orth(\Pic(S))$.

@@ -4,7 +4,7 @@ Let $R$ be a Dedekind domain with fraction field $K$.
 
 ## Torsion-valued pairings {#sec-torsion-pairings}
 
-::: {.definition #def:torsion-pairing title="Pairings on finite-length modules" defines="torsion linking pairing"}
+::: {.definition #def:torsion-pairing title="Pairings on finite-length modules" defines="$\mathcal B_{R,W}^{\mathrm{fl}}$; torsion linking pairing"}
 For $W\in R\text{-}\mathbf{Mod}$, let $\mathcal B_{R,W}^{\mathrm{fl}}$ be the replete full subcategory of the fixed-value bilinear form category $\mathcal B_{R,W}$ of @def:form-categories on objects $(T,b)$ whose module component $T$ has finite length over $R$. No nondegeneracy or symmetry is assumed.
 
 A **torsion linking pairing** is a bilinear form
@@ -14,7 +14,7 @@ $$
 with $T$ of finite length; equivalently, it is an object of $\mathcal B_{R,K/R}^{\mathrm{fl}}$. The left and right adjoints and their complete radical–coradical exact sequences are the restrictions of @def:pairing-adjoints.
 :::
 
-::: {.definition #def:torsion-Pontryagin-dual title="The dual of a finite torsion module" defines="torsion dual"}
+::: {.definition #def:torsion-Pontryagin-dual title="The dual of a finite torsion module" defines="torsion dual; $T^\dagger$; evaluation morphism; $\eta_T$"}
 For a finite-length $R$-module $T$, define the **torsion dual** and its evaluation morphism by
 $$
 T^\dagger\definedas\Hom_R(T,K/R),

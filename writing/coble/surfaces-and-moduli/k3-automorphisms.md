@@ -33,7 +33,7 @@ itself need not be smooth [@Muk88, Prop. 8.10].
 
 ## Gluing and the automorphism group
 
-::: {.notation #not:k3-automorphism-data title="Lattice data of a K3 surface" defines="Hodge isometry"}
+::: {.notation #not:k3-automorphism-data title="Lattice data of a K3 surface" defines="$L$; Néron–Severi lattice; $S$; $\rho$; transcendental lattice; $T$; positive cone; $C_X$; ample cone; $\Amp(X)$; $\mathcal C_S$; Hodge isometry; $G_X$; $P_S$; $\Orth^+(S)$; $W(S)$; $\widetilde\Orth(S)$; $\widetilde\Orth^+(S)$; $\bar u_q$; $\gamma_q$; $Q$; $a$; $b$"}
 
 Let $X$ be a $K3$ surface (@def:k3-surface).
 Put $L\definedas H^2(X;\ZZ)$ with its cup-product pairing; it is even and unimodular by @prop:k3-lattice.
@@ -250,7 +250,7 @@ $$
 The group $\operatorname{MM}^+(N)$ is $\mathrm E_+(N)$ in [@AD15, §3.7, equation (3.18)], and $\rho_{N,q}$ is the homomorphism $d$ of [@AD15, §3.2].
 :::
 
-::: {.definition #def:k3-mm-obstruction title="The signed Miranda–Morrison obstruction of a K3 surface"}
+::: {.definition #def:k3-mm-obstruction title="The signed Miranda–Morrison obstruction of a K3 surface" defines="signed Miranda–Morrison obstruction; $\operatorname{ob}_X$; $A_2$"}
 
 In @not:k3-automorphism-data, suppose $\rho\geq3$.
 Then $S$ is nondegenerate, indefinite, even and of rank $\rho\geq3$ by @prop:k3-ns-transcendental, and its group $\Orth^+(S)$ in @thm:signed-miranda-morrison is the group $\Orth^+(S)$ of @not:k3-automorphism-data by @lem:k3-sign-structure.
@@ -327,7 +327,7 @@ Then $a\colon P_S\to Q$ is injective, so $A_1=1$ and $f\mapsto f_*|_T$ embeds $\
 
 ## Computing the pullback
 
-::: {.construction #cons:k3-aut-group-generators title="Group generators of $\Aut(X)$ from the fibre product"}
+::: {.construction #cons:k3-aut-group-generators title="Group generators of $\Aut(X)$ from the fibre product" defines="$H$; $K$; $N$; $A_1$; $Y_N$; $r_h$; $s_i$"}
 
 Take @not:k3-automorphism-data.
 Let $Y\iscontainedin P_S$ be a symmetric set of group generators of $P_S$ and let $Z\iscontainedin G_X$ be a set of group generators of $G_X$, given as isometries of $S$ and of $T$; let $\gamma_q$ be given.

@@ -35,7 +35,7 @@ Since kernels and cokernels are degreewise, monic, epic and exactness are checke
 
 Assume $\mca$ abelian for the remainder of the chapter.
 
-::: {.definition #def:homology title="Cycles, boundaries, and homology" defines="$n$-cycles; $n$-boundaries"}
+::: {.definition #def:homology title="Cycles, boundaries, and homology" defines="$n$-cycle; $n$-boundary; homology; $Z_n(C)$; $B_n(C)$; $H_n(C)$"}
 
 The *$n$-cycles* and *$n$-boundaries* of $C\in\mathbf{Ch}(\mca)$ are
 $$
@@ -51,7 +51,7 @@ $$
 [@Wei94, Def. 1.1.1]; a chain map sends cycles to cycles and boundaries to boundaries, which is what makes $H_n$ a functor [@Wei94, Ex. 1.1.2].
 :::
 
-::: {.definition #def:exact-complex title="Exactness" defines="exact at $n$; exact"}
+::: {.definition #def:exact-complex title="Exactness" defines="exact at $n$; exact; short exact sequence"}
 
 A complex $C$ is *exact at $n$* if $H_n(C)=0$, and *exact* if it is exact at every degree.
 Exactness at $n$ and exactness are isomorphism-invariant properties of objects of $\mathbf{Ch}(\mca)$ and therefore define replete full subcategories (@def:subcategory), the second being the intersection over $n\in\bZ$ of the first.
@@ -101,7 +101,7 @@ Applying it to the translate $[n]$ gives the sequence in every degree at once, a
 
 ## Translation, truncation, and the mapping cone {#sec-translation-cone}
 
-::: {.definition #def:translation title="Translation" defines="$p$th translate"}
+::: {.definition #def:translation title="Translation" defines="$p$th translate; $C[p]$"}
 
 For $p\in\bZ$ the *$p$th translate* $C[p]$ of $C$ has $C[p]_n=C_{n+p}$ with differential $(-1)^pd^C$.
 Setting $f[p]_n=f_{n+p}$ on chain maps makes $[p]$ an isomorphism of categories $\mathbf{Ch}(\mca)\to\mathbf{Ch}(\mca)$ with inverse $[-p]$, and
@@ -111,7 +111,7 @@ $$
 [@Wei94, 1.2.8].
 :::
 
-::: {.definition #def:good-truncation title="Good truncation"}
+::: {.definition #def:good-truncation title="Good truncation" defines="good truncation; $\tau_{\ge n}C$; $\tau_{<n}C$"}
 
 For $n\in\bZ$ let $\tau_{\ge n}C$ be the subcomplex of $C$ with
 $$
@@ -126,7 +126,7 @@ and let $\tau_{<n}C=C/\tau_{\ge n}C$.
 Then $H_i(\tau_{\ge n}C)=H_i(C)$ for $i\ge n$ and vanishes for $i<n$, while $H_i(\tau_{<n}C)=H_i(C)$ for $i<n$ and vanishes for $i\ge n$ [@Wei94, 1.2.7].
 :::
 
-::: {.definition #def:mapping-cone title="The mapping cone" defines="mapping cone"}
+::: {.definition #def:mapping-cone title="The mapping cone" defines="mapping cone; $\cone(f)$"}
 
 Let $f\colon B\to C$ be a chain map.
 The *mapping cone* of $f$ is the complex with
@@ -148,7 +148,7 @@ and $f$ is a quasi-isomorphism if and only if $\cone(f)$ is exact [@Wei94, Cor. 
 Work in $\mathbf{Ch}(R\text{-}\mathbf{Mod})$.
 A $W$-valued bilinear form on an $R$-module $M$ is an element of $\Hom_R(M\tensor_RM,W)$ (@def:module-bilinear-form), and the form categories $\mathcal B_{R,W}$ of @def:form-categories are the categories of elements of the presheaves so obtained.
 
-::: {.definition #def:complex-tensor-product title="The tensor product of complexes" defines="tensor product complex"}
+::: {.definition #def:complex-tensor-product title="The tensor product of complexes" defines="tensor product complex; $C\tensor_RD$"}
 
 For $C,D\in\mathbf{Ch}(R\text{-}\mathbf{Mod})$ the *tensor product complex* $C\tensor_RD$ has
 $$
@@ -167,7 +167,7 @@ $$
 commutes with the two differentials and is an isomorphism of complexes; it is the symmetry of @def:braided-symmetric for this tensor product.
 :::
 
-::: {.definition #def:value-complex title="Value complexes"}
+::: {.definition #def:value-complex title="Value complexes" defines="value complex; $W[n]$"}
 
 For $n\in\bZ$ write $W[n]$ for the complex with $W$ in degree $n$, the zero module in every other degree, and zero differentials.
 :::
@@ -364,7 +364,7 @@ For a finitely generated module over a local ring, and for a finitely generated 
 
 ## Derived functors, Ext, and Tor {#sec-derived-functors}
 
-::: {.definition #def:derived-functor title="Left and right derived functors" defines="right derived functors"}
+::: {.definition #def:derived-functor title="Left and right derived functors" defines="left derived functors; $L_iF$; right derived functors; $R^iF$"}
 
 Let $F\colon\mca\to\mathcal B$ be a right exact functor of abelian categories and let $\mca$ have enough projectives.
 For $A\in\mca$ choose a projective resolution $P\to A$ and set
@@ -375,7 +375,7 @@ A second projective resolution gives a canonically isomorphic object, and the li
 For a left exact $F$ and an $\mca$ with enough injectives, the *right derived functors* $R^iF$ are defined dually from injective resolutions [@Wei94, §2.5].
 :::
 
-::: {.definition #def:ext-tor title="Ext and Tor"}
+::: {.definition #def:ext-tor title="Ext and Tor" defines="Ext; $\Ext^i_R$; Tor; $\Tor^R_n$"}
 
 For $R$-modules $A$ and $B$,
 $$

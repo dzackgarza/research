@@ -99,7 +99,7 @@ Let $Y = \PP^1\times\PP^1$ with the involution $\tau(x,y) = (-x,-y)$, and let $B
 By passing to the K3 cover, one can embed $\fco$ into an arithmetic quotient of a 9-dimensional Hermitian symmetric domain of type $\rm{IV}$.
 Let $\lkt = U^3 \oplus E_8^2$ be the canonical K3 lattice.
 
-::: {.definition #def:type-iv-period-domain title="Type IV period domain and its arithmetic quotients"}
+::: {.definition #def:type-iv-period-domain title="Type IV period domain and its arithmetic quotients" defines="$\Omega_T$; $\bD(T)$; type IV period domain; $\bD(T)/\Gamma$; $\Orth^+(T)^*$"}
 
 Let $T$ be a lattice of signature $(2,n)$ with $n\geq1$, and let $\Omega_T$ be the set of @def:period-component-character.
 It has two connected components.
@@ -177,7 +177,7 @@ The first index is $2$, so $T$ is of type IV in the sense of @prop:type-iv-dimen
 For $M=S_\Co$ of rank $11$ the complement has signature $(2,9)$, giving $\dim_\CC \bD(T_\Co)=9$.
 :::
 
-::: {.definition #def:heegner-divisor title="Heegner divisor" defines="$(-2d)$-Heegner divisor"}
+::: {.definition #def:heegner-divisor title="Heegner divisor" defines="$(-2d)$-Heegner divisor; $\mch_{-2d}$"}
 
 Let $N$ be an even lattice of signature $(2, m)$, and let $\bD(N)$ be its period domain (@def:type-iv-period-domain).
 For $d\in\ZZ$, the **$(-2d)$-Heegner divisor** of $\bD(N)$ is
@@ -260,7 +260,7 @@ Then $\mcm_\Co$ is birationally isomorphic to $\mcm'_{5,\cusp}$ [@DK13, §4, Thm
 
 ## The sextic moduli construction
 
-::: {.notation #not:sextic-singular-type title="Moduli of sextics of a fixed singular type"}
+::: {.notation #not:sextic-singular-type title="Moduli of sextics of a fixed singular type" defines="$\mcv_T$; $\mcm_T$; $\wh X$; $X$; $H$; $L$; $\Delta$; $P$; $Q$"}
 
 For a singular type $T$ with root lattice $R$, write $\mcv_T$ for the space of sextic curves $Z\subset\PP^2$ with singularities exactly of type $T$, and
 $$
@@ -409,7 +409,7 @@ Both are defined here by constructing the family over a base given by explicit e
 The family and its local system are thus objects of the definition and not of a later theorem (@lem:d2-unpolarised-family, @lem:d2-local-system), and the two things the symbol $\Gamma_\Co$ needs --- a base and a family over it --- are fixed before the group is named (@def:gamma-co-groups(1)).
 @rmk:d2-what-is-open records what no source read supplies, and @rmk:d2-corrections what this section changes.
 
-::: {.notation #not:d2-plane-sextic-base title="The plane-sextic base and its quotients"}
+::: {.notation #not:d2-plane-sextic-base title="The plane-sextic base and its quotients" defines="$V$; $B$; $\bar B$; $U$; $M_\Co$"}
 
 Let $\abs{\OO_{\PP^2}(6)}$ be the linear system of plane sextics and put
 $$
@@ -471,7 +471,7 @@ In the notation of @not:d2-plane-sextic-base, let $U\subset(\PP^2)^{10}$ be the 
 The action of $S_{10}$ on $B$ need not be free: a labelled ten-nodal sextic $(Z;p_1,\dots,p_{10})$ together with a projectivity $g$ with $gZ=Z$ and $gp_i=p_{\sigma(i)}$ for some $\sigma\neq e$ would be a fixed point. The index of $\Gamma_\Co$ in $\Gamma_\Co(\bar B)$ is nevertheless $10!$, because $\bar B$ is read as the quotient stack $[B/S_{10}]$: @lem:d2-labelling-cover gives the principal $S_{10}$-bundle of stacks $B\to[B/S_{10}]$ and the exact sequence, and @lem:gamma-co-labelled-index computes the index from it, with the faithfulness of the label action on $A_M$. No freeness of the $S_{10}$-action on $B$ is used, and the coarse map $B\to V/(\SL_3\times S_{10})$ is not asserted to be a covering.
 :::
 
-::: {.definition #def:coble-family-unpolarized title="D2a: the family of unpolarized Coble surfaces" defines="Coble surface; covers; named; The coarse space; The unlabelled base; The labelled base; The objects; The bases; The fibres; The local system of lattices; The group"}
+::: {.definition #def:coble-family-unpolarized title="D2a: the family of unpolarized Coble surfaces" defines="Coble surface; unlabelled base; labelled base; $\Gamma_\Co$; $\fco$"}
 
 A *Coble surface* is a nonsingular projective rational surface $S$ with $\abs{-K_S}=\emptyset$ and $\abs{-2K_S}\neq\emptyset$ [@DZ99, Introduction; @DK13, §3].
 
@@ -637,7 +637,7 @@ Let $S=\Bl_{p_1,\dots,p_{10}}\PP^2$ be a classical Coble surface, $f\colon X\to 
 (4) Put $M\definedas H^2(X)^{\iota'}=f^*H^2(S)$, of rank $11$. The class $[R]$ of the ramification curve $R\subset X$ of $f$ is $f^*(-K_S)$: indeed $f^*C_b=2R$ with $C_b=-2K_{S_b}$ (@lem:d2-unpolarised-family(1)), so $R=f^*(-K_S)$, $R^2=2(-K_S)^2=-2$, and $R\cdot f^*(K_S^{\perp})=2(-K_S)\cdot K_S^{\perp}=0$. Hence $f^*(K_S^{\perp})$ and $[R]$ are orthogonal sublattices of $M$ of ranks $10$ and $1$, and their ranks sum to $\mathrm{rk}M$, so they span $M$. An automorphism $g$ with $g\circ\iota'=\iota'\circ g$ preserves $M=H^2(X)^{\iota'}$, and $H^2(X)^g=f^*(K_S^{\perp})$ forces $g^*=-1$ on the orthogonal complement of $f^*(K_S^{\perp})$ in $M$, that is $g^*[R]=-[R]$. Since $H^2(X)$ is unimodular and $g$ is an involution, $g_*=(g^*)^{-1}=g^*$, so for the nef and big class $e_0=f^*H$ one has $(g^*e_0)\cdot R=e_0\cdot(g_*R)=e_0\cdot(-R)=-2\,H\cdot(-K_S)=-6<0$, while $R$ is an effective curve; so $g^*e_0$ is not nef, and $g^*$ cannot be induced by an automorphism, which carries the nef cone to itself.
 :::
 
-::: {.definition #def:coble-family-degree-two title="D2b: the family of degree-$2$ polarized Coble surfaces" defines="The objects; The fibres; The base; The local system of lattices; The group"}
+::: {.definition #def:coble-family-degree-two title="D2b: the family of degree-$2$ polarized Coble surfaces" defines="degree-$2$ polarized Coble surface; $\Delta_2$; $\Gamma_{\Co,2}$; $F_{\Co,2}$"}
 
 **The objects.** Over a complex space $Y$, an object is a tuple $\qty{\mcs\to Y,\ \mcx\to\mcs,\ \tilde h}$ in which
 

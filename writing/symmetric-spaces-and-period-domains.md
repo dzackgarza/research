@@ -33,7 +33,7 @@ Here $*$ on quaternionic matrices is quaternionic conjugate transpose. Under the
 
 with the Hermitian form represented by $\operatorname{diag}(I_{p,q},I_{p,q})$ in the corresponding basis. The compact group $\operatorname{Sp}(n)$ is also denoted $\operatorname{USp}(2n)$; the archived notation $\operatorname{USp}_n$ counts quaternionic dimension.
 
-:::{.definition #def:hsd-quaternionic-real-forms title="Quaternionic real forms"}
+:::{.definition #def:hsd-quaternionic-real-forms title="Quaternionic real forms" defines="$\operatorname{SU}^*(2n)$; $\operatorname{SO}^*(2n)$"}
 Let $\jmath(z)=J_n\bar z$ on $\mathbb C^{2n}$. Set
 
 \begin{align*}
@@ -108,7 +108,7 @@ S^n&\cong\operatorname{SO}(n+1)/\operatorname{SO}(n)
 The sphere has isometry group $\operatorname O(n+1)$; its antipodal quotient has isometry group $\operatorname{PO}(n+1)$. Euclidean space has the homogeneous description $\mathbb R^n\cong(\mathbb R^n\rtimes\operatorname O(n))/\operatorname O(n)$.
 :::
 
-:::{.definition #def:hsd-positive-grassmannians title="Positive Grassmannians"}
+:::{.definition #def:hsd-positive-grassmannians title="Positive Grassmannians" defines="positive Grassmannian; $\operatorname{Gr}_k^+(\mathbb R^{p,q})$; oriented positive Grassmannian; $\operatorname{Gr}_k^{+,\mathrm{or}}(\mathbb R^{p,q})$"}
 On $\mathbb R^{p,q}$ use the form with matrix $I_{p,q}$. Set
 
 \begin{align*}
@@ -148,7 +148,7 @@ An orientation on the graph is specified by an orientation of its projection ont
 
 ### Isotropic Grassmannians and complex structures
 
-:::{.definition #def:hsd-isotropic-grassmannians title="Isotropic Grassmannians" defines="Lagrangian Grassmannian"}
+:::{.definition #def:hsd-isotropic-grassmannians title="Isotropic Grassmannians" defines="$\operatorname{OGr}_k(V,b)$; $\operatorname{SGr}_k(V,\omega)$; Lagrangian Grassmannian; $\operatorname{LGr}(V,\omega)$"}
 For a nondegenerate symmetric form $b$ on $V$, write $\operatorname{OGr}_k(V,b)=\{W\in\operatorname{Gr}_k(V):b|_{W\times W}=0\}$. For an alternating form $\omega$, use $\operatorname{SGr}_k(V,\omega)$ for the same condition. In symplectic dimension $2n$, $\operatorname{LGr}(V,\omega)=\operatorname{SGr}_n(V,\omega)$ is the *Lagrangian Grassmannian*.
 :::
 
@@ -341,7 +341,7 @@ Indeed, a first-order graph is a map $F\to V/F$, and $\det Q\otimes\det S\cong\d
 The split real orthogonal group $\operatorname O(g,g)$ does not give type $II_g$ by selecting positive maximal complex isotropics: if $z=x+iy$ is complex isotropic and $\beta(z,\bar z)>0$, then $x,y$ span a positive real two-plane, and a positive complex $g$-plane would require a positive real $2g$-plane in signature $(g,g)$. Type $II_g$ has real form $\operatorname{SO}^*(2g)$, as in the table [@Viv14, §3.2].
 :::
 
-:::{.definition #def:hsd-tube-type title="Tube domains" defines="tube domain; of tube type"}
+:::{.definition #def:hsd-tube-type title="Tube domains" defines="tube domain; tube type"}
 A *tube domain* is $V+iC\subset V_{\mathbb C}$, where $V$ is a real vector space and $C\subset V$ is an open cone. A bounded symmetric domain is *of tube type* if it is biholomorphic to such a domain.
 :::
 
@@ -349,7 +349,7 @@ The irreducible tube types are $I_{n,n}$, $II_{2n}$, $III_n$, $IV_n$ for $n\ne2$
 
 ## Siegel space and polarized tori {#sec-hsd-siegel}
 
-:::{.definition #def:hsd-siegel title="Siegel upper half-space and disc"}
+:::{.definition #def:hsd-siegel title="Siegel upper half-space and disc" defines="Siegel upper half-space; $\mathfrak H_n$; Siegel disc; $\mathfrak D_n$"}
 Set
 
 \begin{align*}
@@ -510,7 +510,7 @@ the Néron–Severi group is the algebraic Hodge index theorem.
 
 ## Orthogonal period domains {#sec-hsd-period-domains}
 
-:::{.definition #def:hsd-period-domain title="The type IV period domain"}
+:::{.definition #def:hsd-period-domain title="The type IV period domain" defines="type IV period domain; $\Omega_L$; $\Omega_L^+$; $\Omega_L^-$"}
 Let $L$ be a nondegenerate integral lattice of signature $(2,n)$, with $n\geq1$. Extend its pairing complex-bilinearly and set
 
 \begin{align*}
@@ -558,7 +558,7 @@ Indeed, reflection in a positive vector has $(\det,\theta,\varepsilon_+)=(-1,+1,
 Some references normalize the spinor norm by $\theta'(r_v)=-\operatorname{sign}(v^2)$; then $\theta'=\det\cdot\theta$, and $\operatorname O^+$ is its kernel. With the first convention, the sheet-preserving group in signature $(1,n)$ satisfies $\theta(g)=\det(g)$. These formulas fix the convention in each description.
 :::
 
-:::{.construction #cons:hsd-tube-coordinates title="Tube coordinates for the orthogonal domain"}
+:::{.construction #cons:hsd-tube-coordinates title="Tube coordinates for the orthogonal domain" defines="tube coordinates; $V$; $w(z)$"}
 Choose real isotropic vectors $e,f$ with $(e,f)=1$, and put $V=\langle e,f\rangle^\perp$, of signature $(1,n-1)$. For $z\in V_{\mathbb C}$ set
 
 \begin{align*}
@@ -633,11 +633,11 @@ are removed [@Huy16, Ch. 7; @GHS13, Thm. 2.9].
 
 ## Arithmetic quotients and boundary components {#sec-hsd-arithmetic-boundary}
 
-:::{.definition #def:hsd-arithmetic-subgroup title="Arithmetic subgroups" defines="arithmetic"}
+:::{.definition #def:hsd-arithmetic-subgroup title="Arithmetic subgroups" defines="$G(\mathbb Z)$; arithmetic subgroup"}
 Let $G$ be a linear algebraic group over $\mathbb Q$ with a fixed faithful rational representation $G\hookrightarrow\operatorname{GL}_m$. Put $G(\mathbb Z)=G(\mathbb Q)\cap\operatorname{GL}_m(\mathbb Z)$. A subgroup $\Gamma\subset G(\mathbb Q)$ is *arithmetic* if it is commensurable with $G(\mathbb Z)$. This condition is independent of the chosen faithful rational representation [@BB66, 3.1].
 :::
 
-:::{.definition #def:hsd-parabolic-subgroup title="Parabolic subgroups" defines="parabolic"}
+:::{.definition #def:hsd-parabolic-subgroup title="Parabolic subgroups" defines="parabolic subgroup; rational parabolic"}
 For a connected reductive algebraic group $G$ over $\mathbb Q$, a subgroup $P\subset G$ is *parabolic* if $G/P$ is projective. A rational parabolic is one defined over $\mathbb Q$. In $\operatorname{SL}_2$, the stabilizer of a line is parabolic; for the upper-triangular subgroup $B$, the map $gB\mapsto g\langle e_1\rangle$ identifies $\operatorname{SL}_2(\mathbb Q)/B(\mathbb Q)$ with $\mathbb P^1(\mathbb Q)$ [@DS05, §1.5].
 :::
 
@@ -649,7 +649,7 @@ F_L(\Gamma)&=\Gamma\backslash\Omega_L^+.
 
 This is a locally symmetric arithmetic quotient. Baily–Borel theory makes it a quasiprojective variety with a canonical projective compactification [@BB66]. If $\Gamma$ is torsion-free, its properly discontinuous action makes $F_L(\Gamma)$ a complex manifold. In general, finite stabilizers give local analytic models that are finite quotients of a complex ball [@GHS13, §5.1].
 
-::: {.definition #def:hsd-orthogonal-modular-form title="Orthogonal modular form" defines="modular form of weight $k$ and character $\chi$"}
+::: {.definition #def:hsd-orthogonal-modular-form title="Orthogonal modular form" defines="modular form of weight $k$ and character $\chi$; $M_k(\Gamma,\chi)$"}
 Suppose $n\geq3$, and let $\widetilde\Omega_L^+\subset L\otimes\mathbb C$
 be the inverse image of $\Omega_L^+$ under projectivization, with the zero
 vector removed. A *modular form of weight $k$ and character $\chi$* for a

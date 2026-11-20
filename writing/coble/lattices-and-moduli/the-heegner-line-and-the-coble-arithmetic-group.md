@@ -75,7 +75,7 @@ The double coset set controlling the split of the full $\Orth(\ten)$-orbit by th
 
 ## The stable orthogonal group induced from the Enriques side
 
-::: {.definition #def:gamma-co-en title="The induced Coble subgroup"}
+::: {.definition #def:gamma-co-en title="The induced Coble subgroup" defines="induced Coble subgroup; $\widetilde\Orth^+(T_\Co)^\En(\delta)$"}
 
 For the Heegner vector $\delta$ of @lem:coble-heegner-vector, define
 $$
@@ -293,7 +293,7 @@ By [@CD12, Lemma 3.7], $\abs{2h}$ has no base points; the proof there uses only 
 A base-point-free class is nef, so $2h$ and hence $h$ are nef, and $h^2 = 2>0$ makes $h$ big by @prop:nef-big-finite-cover.
 :::
 
-::: {.construction #cons:cd12-double-plane title="The double-plane model of an unnodal Coble surface [@CD12, §3]"}
+::: {.construction #cons:cd12-double-plane title="The double-plane model of an unnodal Coble surface [@CD12, §3]" defines="double-plane model of an unnodal Coble surface; $\mathfrak C$; $\pi$; $\widetilde X$; $I_\Co$; $R_\pi$; $\phi_h$; $\mathsf D$; $\mathrm{bl}_q$; $\mathsf D'$; $E_q$; $\phi'$; $\tau$; $\overline W$; $\mathsf H$; $E_8$"}
 
 Let $S$ and $h$ be as in @prop:unnodal-coble-polarization-nef.
 
@@ -1524,7 +1524,7 @@ $$
 
 ## The congruence comparison {#sec-congruence-comparison}
 
-::: {.definition #def:congruence-group title="The congruence group and block-compatibility" defines="congruence group; block-compatible"}
+::: {.definition #def:congruence-group title="The congruence group and block-compatibility" defines="$P$; congruence group; $\Gamma^{\mathrm{cong}}_{\Co,2}$; block-compatible"}
 
 Let
 $$
@@ -2969,7 +2969,7 @@ The durations are the runs' own. The body of `3147ea330f1f91bef3ae20006210dcbdc4
 
 ### The reflective set of the stable group {#sec-gamma-co-reflective-set}
 
-::: {#not:discriminants-of-twists-by-2 .notation title="Discriminants of twists by $2$"}
+::: {#not:discriminants-of-twists-by-2 .notation title="Discriminants of twists by $2$" defines="$T_\Co^*$; $S_\En^*$"}
 $T_\Co = B(2)$ and $S_\En = C(2)$ are twists by $2$ of unimodular lattices, so their duals are half of them,
 $$
 T_\Co^* = \tfrac12 T_\Co \subset T_\Co\tensor\bQ,

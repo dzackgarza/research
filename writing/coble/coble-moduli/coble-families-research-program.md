@@ -16,7 +16,7 @@ notes: |-
 
 ## Setting
 
-::: {#cons:coble-set-lattices .construction title="The lattices from a Coble set"}
+::: {#cons:coble-set-lattices .construction title="The lattices from a Coble set" defines="$M$; $N$; $F_{\Co,n}$"}
 
 Let $S$ be a terminal Coble surface (@def:coble-surface) of K3 type with $n$ boundary components, and let $X$ be its K3 double cover, branched along $C = C_1 + \cdots + C_n$.
 For a general such $S$, $\Pic(X)$ is the $2$-elementary lattice $M$ of @tbl-coble-lattices with invariants $(r,a,\delta) = (10+n,\, 12-n,\, \delta)$.
@@ -48,7 +48,7 @@ For $n = 1$, the image under the period map is an open subset of $\mcm_{\mathrm{
 The programme's organizing observation is that the lattices of @tbl-coble-lattices are the $g = 0$ row of Nikulin's triangle.
 This section derives that row from the existence theorem for even $2$-elementary lattices, so that the objects are the row's and not a transcription, and records what the derivation corrects.
 
-::: {.notation title="The triangle and its edge"}
+::: {.notation title="The triangle and its edge" defines="Nikulin triangle; $g = 0$ row; $(r, a, \delta)$; $(t_+, t_-)$"}
 
 For an even $2$-elementary lattice $S$ write $(r, a, \delta)$ for the rank, the generator length $a(S)$ of @def:p-elementary and the coparity $\delta_S$, and $(t_+, t_-)$ for its signature; thus $r = t_+ + t_-$.
 Nikulin's Theorem 3.6.2 [@Nik80, Thm. 3.6.2, printed pp. 144--145] gives the conditions for the existence of an even $2$-elementary lattice with prescribed $(\delta; t_+, t_-, a)$, and it determines the lattice up to isometry once $t_+ > 0$ and $t_- > 0$.

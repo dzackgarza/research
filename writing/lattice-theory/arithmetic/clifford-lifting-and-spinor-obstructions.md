@@ -141,7 +141,7 @@ Indeed, projection from the pullback has the same kernel as the field Clifford m
 
 ## Algebraic spinor morphisms and their kernels
 
-::: {.definition #def:integral-clifford-lifting-subgroup title="Integral Clifford lifting subgroup" defines="integral lifting subgroup"}
+::: {.definition #def:integral-clifford-lifting-subgroup title="Integral Clifford lifting subgroup" defines="integral lifting subgroup; $K_{\mathrm{lift},R}(M)$"}
 
 For the norm-one Clifford map $p\colon G\to O(q)$ over an arbitrary ring, define the *integral lifting subgroup*
 $$
@@ -150,7 +150,7 @@ $$
 With $I$ and $K$ as in @prop:clifford-lift-obstruction, this is the inverse image of the trivial torsor under the pointed-set map $\delta\colon I(R)\to H^1_{\mathrm{fppf}}(R,K)$. Its domain consists of the isometries admitting fppf-local lifts.
 :::
 
-::: {.definition #def:algebraic-spinor-kernels title="Full algebraic spinor kernel" defines="full algebraic spinor kernel"}
+::: {.definition #def:algebraic-spinor-kernels title="Full algebraic spinor kernel" defines="full algebraic spinor kernel; $K_R(M)$"}
 
 For $M$ free of finite rank with perfect polar form, the *full algebraic spinor kernel* is
 $$
@@ -158,7 +158,7 @@ K_R(M)=\ker\bigl(\theta_R\colon O(M,q)(R)\to\operatorname{Disc}(R)\bigr).
 $$
 :::
 
-::: {.definition #def:even-algebraic-spinor-kernel title="Even algebraic spinor kernel" defines="even algebraic spinor kernel"}
+::: {.definition #def:even-algebraic-spinor-kernel title="Even algebraic spinor kernel" defines="even algebraic spinor kernel; $K_R^{\mathrm{ev}}(M)$"}
 
 For $M$ free of finite rank with perfect polar form, the *even algebraic spinor kernel* is
 $$
@@ -173,7 +173,7 @@ K_R^{\mathrm{ev}}(M)=\operatorname{im}\bigl(\operatorname{Spin}(M)(R)\to O(M,q)(
 $$
 Thus the image of $\operatorname{Spin}$ is the residue-zero subgroup of the full spinor kernel.
 
-::: {.definition #def:generic-spinor-kernel title="Generic spinor kernel"}
+::: {.definition #def:generic-spinor-kernel title="Generic spinor kernel" defines="generic spinor kernel; $\theta_F^M$; $K_F(M)$"}
 
 For a domain $R$ with fraction field $F$ of characteristic different from $2$, assume only that $q_F$ is nondegenerate. Define
 $$
@@ -255,7 +255,7 @@ O_{\mathrm{sp}}^+(L)=K_{\mathbb R}(L)
 $$
 This is the group denoted $O^+(L)$ in [@Daw22, §1.3]. The subscript distinguishes it from Hahn–O'Meara's rotation group $O_{\mathrm{rot}}(L)$.
 
-::: {.definition #def:period-component-character title="Period-component character"}
+::: {.definition #def:period-component-character title="Period-component character" defines="period-component character; type-IV period domain; $\Omega_L$; $\chi_{\mathrm{per}}$"}
 
 Let $L$ have signature $(2,n)$, with $n\geq1$, and let $b$ be its bilinear form. Its type-IV period domain is
 $$
@@ -441,7 +441,7 @@ To obtain a type-IV example, take $L=M\oplus\langle2\rangle$, where the last sum
 
 ## Period groups and monodromy applications
 
-::: {.definition #def:vhs-monodromy title="Monodromy of a lattice-valued variation"}
+::: {.definition #def:vhs-monodromy title="Monodromy of a lattice-valued variation" defines="monodromy of a lattice-valued variation; $m_{\mathbb V}$; $\Gamma_{\mathbb V}$"}
 
 Let $\mathbb V_{\mathbb Z}$ be a polarized integral variation of Hodge structure of weight two on a connected complex manifold $B$, with a base point $b$ and an isometry $\mathbb V_{\mathbb Z,b}\simeq L$. Its parallel transport defines
 $$

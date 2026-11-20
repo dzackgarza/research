@@ -53,7 +53,7 @@ $\lambda$ records the monodromy direction.
 
 At Sterk cusp $1$, the Enriques involution acts freely on the Type III integral affine sphere by the antipodal map [@AEGS25, Prop. 4.8]. Its quotient is an integral affine $\RP^2$. Each singularity downstairs has two lifts of the same charge upstairs, so the quotient has total charge $12$. This gives the charge-$12$ model sought by viewing an Enriques degeneration as the quotient of its charge-$24$ K3 cover. The equivariant divisor-model construction and smoothing, including its period condition, are given in [@AEGS25, Thm. 4.6]; the stable pair follows by the descended ramification contraction [@AEGS25, Cor. 4.9].
 
-::: {.definition #def:symington_polytope defines="Symington polytope"}
+::: {.definition #def:symington_polytope defines="Symington polytope; $P(\lambda)$; $B(\lambda)$"}
 
 Given a monodromy invariant $\lambda$ with barycentric coordinates $\ell_i = \lambda \cdot \alpha_i$, the *Symington polytope* $P(\lambda)$ is the integral affine polygon determined by these coordinates [@Sym02].
 Gluing two copies along their boundary,

@@ -2,7 +2,7 @@
 
 ## The Enriques lattice $E_{10}$ and its twist
 
-::: {.definition #def:enriques-lattice title="The Enriques lattice" defines="Enriques lattice"}
+::: {.definition #def:enriques-lattice title="The Enriques lattice" defines="Enriques lattice; $E_{10}$"}
 
 The **Enriques lattice** is
 $$
@@ -33,7 +33,7 @@ The invariants of the twist E_10(2) follow from the scaled-discriminant sequence
 
 ## Degree $2d$ K3 lattices
 
-::: {.definition #def:degree-2d-k3-lattice title="Degree $2d$ K3 lattices" defines="degree $2d$ K3 lattice"}
+::: {.definition #def:degree-2d-k3-lattice title="Degree $2d$ K3 lattices" defines="$L_{\Kthree,2d}^{(m)}$; $L_{\Kthree,2d}$; degree $2d$ K3 lattice"}
 
 For a positive integer $d$ and an integer $m\geq0$, define
 $$

@@ -102,7 +102,7 @@ Over $\QQ$, the form $R_I$ has an orthogonal basis (@thm:orthogonal-decompositio
 
 ## Recognizing a lattice as a sum of standard blocks
 
-::: {.construction #cons:decomposition-search title="Search over signature-additive multisets"}
+::: {.construction #cons:decomposition-search title="Search over signature-additive multisets" defines="catalogue of standard blocks; $\mathcal B$"}
 
 Signature is additive over orthogonal direct sums, so a decomposition $L\cong\bigoplus_i L_i$ satisfies $\Sum_i (p_i,q_i) = (p,q)$ where $(p,q)$ is the signature of $L$.
 Fixing a catalogue $\mathcal B$ of standard blocks, a decomposition of $L$ within $\mathcal B$ is found by

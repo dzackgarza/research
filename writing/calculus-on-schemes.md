@@ -12,7 +12,7 @@ Let $f:X\to S$ be a morphism of schemes. Write $\mathcal A=\mathcal O_X$ and $\m
 An $\mathcal R$-*derivation* into an $\mathcal A$-module $\mathcal E$ is an additive sheaf map $D:\mathcal A\to\mathcal E$ that vanishes on the image of $\mathcal R$ and satisfies $D(ab)=aD(b)+bD(a)$.
 :::
 
-:::{.definition #def:calculus-differentials title="Relative differentials" defines="sheaf of relative differentials"}
+:::{.definition #def:calculus-differentials title="Relative differentials" defines="sheaf of relative differentials; $\Omega^1_{X/S}$; $d$"}
 The *sheaf of relative differentials* is the $\mathcal A$-module $\Omega^1_{X/S}$ with a derivation $d:\mathcal A\to\Omega^1_{X/S}$ representing derivations:
 
 \begin{align*}
@@ -36,7 +36,7 @@ A derivation $D$ determines an $\mathcal A$-linear map by $da\mapsto D(a)$. The 
 This map is unique because the sections $da$ generate locally. Restriction and composition commute with the assignment, giving the sheaf isomorphism and its naturality. $\square$
 :::
 
-:::{.definition #def:calculus-tangent title="Tangent sheaf" defines="relative tangent sheaf"}
+:::{.definition #def:calculus-tangent title="Tangent sheaf" defines="relative tangent sheaf; $\mathcal T_{X/S}$; vector field"}
 The *relative tangent sheaf* is $\mathcal T_{X/S}=\mathcal H om_{\mathcal A}(\Omega^1_{X/S},\mathcal A)$. A vector field on an open subset $U$ is a section $v\in\mathcal T_{X/S}(U)$. Its derivation is $a\mapsto v(a):=da(v)$.
 :::
 
@@ -44,7 +44,7 @@ The *relative tangent sheaf* is $\mathcal T_{X/S}=\mathcal H om_{\mathcal A}(\Om
 If $X\to S$ is smooth, $\Omega^1_{X/S}$ is finite locally free [@stacks-02G1]. Consequently evaluation identifies $\Omega^1_{X/S}$ with $\mathcal T_{X/S}^{\vee}$, where $\mathcal F^{\vee}=\mathcal H om_{\mathcal A}(\mathcal F,\mathcal A)$. For finite locally free $\mathcal E,\mathcal F$, the map $\lambda\otimes t\mapsto(s\mapsto\lambda(s)t)$ identifies $\mathcal E^{\vee}\otimes\mathcal F$ with $\mathcal H om_{\mathcal A}(\mathcal E,\mathcal F)$. In a local basis these maps send dual basis tensors to matrix units, which proves the identifications. They are used below only under these hypotheses.
 :::
 
-:::{.definition #def:calculus-de-rham title="Relative de Rham forms" defines="relative de Rham differential"}
+:::{.definition #def:calculus-de-rham title="Relative de Rham forms" defines="$\Omega^p_{X/S}$; relative de Rham differential"}
 Set $\Omega^p_{X/S}=\bigwedge^p_{\mathcal A}\Omega^1_{X/S}$ for $p\geq0$, with $\Omega^0_{X/S}=\mathcal A$. The *relative de Rham differential* extends $d$ by
 
 \begin{align*}
@@ -55,7 +55,7 @@ d(a_0\,da_1\wedge\cdots\wedge da_p)
 It is an $\mathcal R$-linear graded derivation with $d^2=0$ [@stacks-0FKM].
 :::
 
-:::{.definition #def:calculus-valued-forms title="Module-valued forms" defines="$\mathcal E$-valued $p$-forms"}
+:::{.definition #def:calculus-valued-forms title="Module-valued forms" defines="$\mathcal E$-valued $p$-forms; $\Omega^p(\mathcal E)$"}
 For an $\mathcal A$-module $\mathcal E$, its sheaf of *$\mathcal E$-valued $p$-forms* is $\Omega^p(\mathcal E)=\Omega^p_{X/S}\otimes_{\mathcal A}\mathcal E$. If $\Omega^1_{X/S}$ is finite locally free, evaluation gives $\Omega^p(\mathcal E)\cong\mathcal H om_{\mathcal A}(\bigwedge^p\mathcal T_{X/S},\mathcal E)$, by the local dual-basis calculation of @rmk:calculus-duality.
 :::
 
@@ -91,11 +91,11 @@ A *connection* on an $\mathcal A$-module $\mathcal E$ is an $\mathcal R$-linear 
 This is the Leibniz formulation of [@Ram04, Ch. 5, 1.4; @Huy05, Definition 4.2.1].
 :::
 
-:::{.definition #def:calculus-horizontal-morphism title="Morphisms of connections"}
+:::{.definition #def:calculus-horizontal-morphism title="Morphisms of connections" defines="morphism of connections"}
 A morphism $(\mathcal E,\nabla^{\mathcal E})\to(\mathcal F,\nabla^{\mathcal F})$ is an $\mathcal A$-linear sheaf map $u:\mathcal E\to\mathcal F$ satisfying $\nabla^{\mathcal F}\circ u=(1\otimes u)\circ\nabla^{\mathcal E}$. Such objects and morphisms form the category of modules with connection for the chosen differential algebra; composition is composition of sheaf maps.
 :::
 
-:::{.definition #def:calculus-horizontal-section title="Horizontal sections" defines="horizontal sections"}
+:::{.definition #def:calculus-horizontal-section title="Horizontal sections" defines="horizontal section; $\mathcal E^\nabla$"}
 The sheaf of *horizontal sections* is $\mathcal E^\nabla=\ker(\nabla)$, with the kernel taken in sheaves of $\mathcal R$-modules. Its sections are also called parallel or covariantly constant. It is a module over the sheaf of rings $\ker(d:\mathcal A\to\Omega^1)$, since $\nabla(as)=0$ whenever $da=0$ and $\nabla s=0$.
 :::
 
@@ -127,7 +127,7 @@ If $\nabla$ and $\nabla'$ are connections on $\mathcal E$, then $\nabla'-\nabla$
 Subtracting the two Leibniz identities cancels $da\otimes s$ and gives $(\nabla'-\nabla)(as)=a(\nabla'-\nabla)(s)$. Adding an $\mathcal A$-linear map preserves that identity. The action is free and transitive because the difference is uniquely determined. $\square$
 :::
 
-:::{.construction #cons:calculus-induced-connections title="Tensor, dual, and pullback connections" defines="\nabla)(a\otimes s)&=da\otimes s+a\\,(dq\otimes1)(q^"}
+:::{.construction #cons:calculus-induced-connections title="Tensor, dual, and pullback connections" defines="induced connection; pullback connection"}
 For finite locally free modules with connection, the induced connections are determined by
 
 \begin{align*}
@@ -150,7 +150,7 @@ Here $q^*\mathcal E=\mathcal O_Y\otimes_{q^{-1}\mathcal O_X}q^{-1}\mathcal E$. T
 
 ## Curvature and flatness {#sec-calculus-curvature}
 
-:::{.construction #cons:calculus-exterior-connection title="Exterior covariant derivative"}
+:::{.construction #cons:calculus-exterior-connection title="Exterior covariant derivative" defines="exterior covariant derivative; $d_\nabla$"}
 A connection extends to $\mathcal R$-linear maps $d_\nabla:\Omega^p(\mathcal E)\to\Omega^{p+1}(\mathcal E)$ by
 
 \begin{align*}
@@ -160,7 +160,7 @@ d_\nabla(\alpha\otimes s)&=d\alpha\otimes s+(-1)^p\alpha\wedge\nabla s.
 To check balancing, expand $d(a\alpha)=da\wedge\alpha+a\,d\alpha$ and $\nabla(as)=da\otimes s+a\nabla s$. The relation $da\wedge\alpha=(-1)^p\alpha\wedge da$ identifies the two expansions. The extension is therefore well-defined [@Ram04, Ch. 5, Rem. 1.11].
 :::
 
-:::{.definition #def:calculus-curvature title="Curvature" defines="curvature"}
+:::{.definition #def:calculus-curvature title="Curvature" defines="curvature; $F_\nabla$"}
 The *curvature* of $\nabla$ is $F_\nabla=d_\nabla\circ\nabla:\mathcal E\to\Omega^2\otimes_{\mathcal A}\mathcal E$.
 :::
 
@@ -208,7 +208,7 @@ Apply $\nabla$ to $eGu'$ and use the Leibniz rule. Its coefficients in $e'$ are 
 Since $F_\nabla$ is $\mathcal A$-linear, its matrix in $eG$ is $G^{-1}FG$. $\square$
 :::
 
-:::{.definition #def:calculus-flat title="Flat connection" defines="flat"}
+:::{.definition #def:calculus-flat title="Flat connection" defines="flat connection"}
 A connection is *flat*, or integrable, if $F_\nabla=0$. Flatness here is a property of the connection, distinct from flatness of its underlying module over a ring.
 :::
 
@@ -228,7 +228,7 @@ On $X=\operatorname{Spec}k[x,y]$, the connection $\nabla=d+x\,dy$ on $\mathcal O
 
 For this section assume that $\Omega^1$ is finite locally free and that $2$ is invertible. Write $\mathcal T=(\Omega^1)^\vee$. The bracket of vector fields is linear over the base scalars and satisfies $[v,aw]=v(a)w+a[v,w]$.
 
-:::{.definition #def:calculus-torsion title="Torsion" defines="torsion"}
+:::{.definition #def:calculus-torsion title="Torsion" defines="torsion; $T_\nabla$; torsion-free"}
 A connection on $\mathcal T$ is an affine connection. Its *torsion* is
 
 \begin{align*}
@@ -246,7 +246,7 @@ Torsion defines an $\mathcal A$-linear map $\bigwedge^2\mathcal T\to\mathcal T$.
 The identities $\nabla_w(av)=w(a)v+a\nabla_wv$ and $[av,w]=a[v,w]-w(a)v$ give $T_\nabla(av,w)=aT_\nabla(v,w)$. Skew-symmetry gives linearity in the other variable, and $T_\nabla(v,v)=0$ gives the factorization through the exterior square. $\square$
 :::
 
-:::{.definition #def:calculus-perfect-metric title="Perfect symmetric pairing" defines="perfect"}
+:::{.definition #def:calculus-perfect-metric title="Perfect symmetric pairing" defines="perfect symmetric pairing; $g^\flat$"}
 For a finite locally free $\mathcal A$-module $\mathcal E$, a symmetric pairing $g:\mathcal E\otimes\mathcal E\to\mathcal A$ is *perfect* if its adjoint $g^\flat:\mathcal E\to\mathcal E^\vee$, $s\mapsto g(s,-)$, is an isomorphism.
 :::
 
@@ -273,15 +273,15 @@ For $\mathcal E=\mathcal F$, symmetry means $b_1=b_2$. For finite locally free m
 The first line uses the dual of a morphism; the second uses $b\mapsto(s\mapsto b(s,-))$ and interchange of the arguments. All maps are over $\mathcal A$.
 :::
 
-:::{.definition #def:calculus-real-positivity title="Positivity at real points" defines="positive semidefinite; g)(v,v)\geq0$ for every $v\in p^; positive definite"}
+:::{.definition #def:calculus-real-positivity title="Positivity at real points" defines="positive semidefinite; positive definite; nondegenerate at $p$"}
 Let $X$ be an $\mathbb R$-scheme, $\mathcal E$ finite locally free, and $g$ a symmetric pairing on $\mathcal E$. At a real point $p:\operatorname{Spec}\mathbb R\to X$, the pairing is *positive semidefinite* if $(p^*g)(v,v)\geq0$ for every $v\in p^*\mathcal E$, and *positive definite* if the inequality is strict for every nonzero $v$. It is positive semidefinite or positive definite on the real locus if the corresponding condition holds at every real point. Nondegeneracy at $p$ means that the adjoint of $p^*g$ is an isomorphism.
 :::
 
-:::{.definition #def:calculus-isometric-endomorphism title="Endomorphisms compatible with a metric" defines="compatible with $g$; isometric"}
+:::{.definition #def:calculus-isometric-endomorphism title="Endomorphisms compatible with a metric" defines="compatible with $g$; isometric endomorphism"}
 Let $(\mathcal E,g)$ be a finite locally free module with perfect symmetric pairing. An endomorphism $F$ is *compatible with $g$*, or *isometric*, if $g(Fs,Ft)=g(s,t)$ for all local sections. This identity makes $F$ an automorphism: in a frame, $F^{\mathsf t}GF=G$ implies that $\det F$ is a unit. In particular, $F$ induces isometries on all fibers. On a nonreduced scheme, the fiber identities alone need not imply the sheaf identity, since residue fields do not detect nilpotents.
 :::
 
-:::{.definition #def:calculus-riemannian title="Riemannian metric" defines="Riemannian metric"}
+:::{.definition #def:calculus-riemannian title="Riemannian metric" defines="Riemannian metric; pseudo-Riemannian metric"}
 On a smooth real manifold $M$, a *Riemannian metric* is a smooth symmetric pairing $g$ on $\mathcal T_M$ whose value on each real tangent space is positive definite. A smooth perfect symmetric pairing without this positivity requirement is a pseudo-Riemannian metric.
 :::
 
@@ -328,7 +328,7 @@ Conversely, write compatibility for the triples $(u,v,w)$, $(v,w,u)$, and $(w,u,
 
 Here $M$ is a smooth manifold and $E$ is a finite-rank smooth vector bundle with sheaf of sections $\mathcal E$ and connection $\nabla$.
 
-:::{.construction #cons:calculus-transport title="Parallel transport" defines="E$ is parallel if $(\gamma^"}
+:::{.construction #cons:calculus-transport title="Parallel transport" defines="parallel section; parallel transport; $P_\gamma$"}
 For a piecewise smooth path $\gamma:[a,b]\to M$, a section $s$ of $\gamma^*E$ is parallel if $(\gamma^*\nabla)_{\partial_t}s=0$. In a frame this is the linear ordinary differential equation $u'(t)+A(\dot\gamma(t))u(t)=0$. Existence and uniqueness for linear ordinary differential equations give an isomorphism $P_\gamma:E_{\gamma(a)}\to E_{\gamma(b)}$, sending the initial value to the final value [@Ram04, Ch. 5, Def. 7.1]. Reversing the path gives its inverse; solving consecutively gives composition under concatenation.
 :::
 
@@ -361,7 +361,7 @@ Theorem @thm:calculus-flat-local-system makes $P_\gamma$ depend only on $[\gamma
 For an affine connection on $M$, a smooth curve $\gamma$ is a *geodesic* if $(\gamma^*\nabla)_{\partial_t}\dot\gamma=0$.
 :::
 
-:::{.definition #def:calculus-sectional title="Sectional curvature" defines="sectional curvature"}
+:::{.definition #def:calculus-sectional title="Sectional curvature" defines="sectional curvature; $K_x$"}
 For a Riemannian metric $g$ with Levi-Civita connection and the curvature sign convention of @prop:calculus-curvature-tensor, the *sectional curvature* of the plane spanned by linearly independent $u,v\in T_xM$ is
 
 \begin{align*}
@@ -414,7 +414,7 @@ A complex structure $J$ is equivalent to an $\mathcal A_{\mathbb C}$-module stru
 The presentation $\mathcal A_{\mathbb C}=\mathcal A[t]/(t^2+1)$ identifies an action with an endomorphism satisfying $J^2+1=0$. A module map respects the action precisely when it commutes with the image of $t$. $\square$
 :::
 
-:::{.definition #def:calculus-conjugate title="Conjugate module" defines="conjugate module"}
+:::{.definition #def:calculus-conjugate title="Conjugate module" defines="conjugate module; $\overline{\mathcal F}$"}
 For an $\mathcal A_{\mathbb C}$-module $\mathcal F$, its *conjugate module* $\overline{\mathcal F}$ has sections written $\bar s$ and scalar action $a\cdot\bar s=\overline{\bar a s}$. The map $s\mapsto\bar s$ is conjugate-linear; double conjugation gives a canonical linear isomorphism. In the description of @prop:calculus-complex-scalar-action, conjugation replaces $(\mathcal E,J)$ by $(\mathcal E,-J)$ [@Huy05, Remark 2.6.6].
 :::
 
@@ -439,7 +439,7 @@ Coefficientwise conjugation sends $P^{1,0}$ to $P^{0,1}$, so it interchanges the
 
 ### Real structures and algebraic base change
 
-:::{.definition #def:calculus-real-structure title="Real structure on a complex module" defines="real structure"}
+:::{.definition #def:calculus-real-structure title="Real structure on a complex module" defines="real structure; $\mathcal F^\rho$"}
 A *real structure* on $\mathcal F$ is a conjugate-linear involution $\rho:\mathcal F\to\mathcal F$. Write $\mathcal F^\rho=\ker(\rho-1)$ as a sheaf of $\mathcal A$-modules.
 :::
 
@@ -468,7 +468,7 @@ X \arrow[r] & \operatorname{Spec}\mathbb R.
 
 Its conjugation $\sigma$ is an involution over $X$. Quasicoherent sheaves on $X$ correspond to quasicoherent sheaves $\mathcal F$ on $X_{\mathbb C}$ with descent isomorphism $\theta:\sigma^*\mathcal F\to\mathcal F$ satisfying $\theta\circ\sigma^*\theta=1$ [@stacks-023T]. Morphisms commute with $\theta$. This is descent along $p$. It is not reconstruction from a fixed-point subscheme: fixed complex-valued points recover $X(\mathbb R)$, while descent recovers the scheme and its sheaves. The fixed-section calculation in @prop:calculus-module-descent is the corresponding algebra calculation on affine opens.
 
-:::{.definition #def:calculus-conjugate-scheme title="Conjugate scheme" defines="conjugate scheme"}
+:::{.definition #def:calculus-conjugate-scheme title="Conjugate scheme" defines="conjugate scheme; $\overline Y$"}
 For a complex scheme $Y\to\operatorname{Spec}\mathbb C$, its *conjugate scheme* is
 
 \begin{align*}
@@ -499,7 +499,7 @@ Let $M$ be a smooth real manifold. Put $\mathcal B=C^\infty_M(\mathbb C)$, $\mat
 An *almost complex structure* on $M$ is an $\mathcal A_M$-linear endomorphism $J$ of $\mathcal T_M$ with $J^2=-1$ [@Huy05, Definition 2.6.1].
 :::
 
-:::{.construction #cons:calculus-types title="Forms of type (p,q)"}
+:::{.construction #cons:calculus-types title="Forms of type (p,q)" defines="forms of type $(p,q)$; $\mathcal A^{1,0}$; $\mathcal A^{0,1}$; $\mathcal A^{p,q}$; $\partial$; $\bar\partial$"}
 Apply @prop:calculus-eigensheaves to $\mathcal T_M$ to obtain $\mathcal T^{1,0}\oplus\mathcal T^{0,1}$. Let $\mathcal A^{1,0}$ be the annihilator of $\mathcal T^{0,1}$ in $\mathcal A^1_{M,\mathbb C}$, and let $\mathcal A^{0,1}$ be the annihilator of $\mathcal T^{1,0}$. Set
 
 \begin{align*}
@@ -522,7 +522,7 @@ Similarly, exterior powers of the complexified tangent sheaf split as
 Conjugation interchanges $\mathcal T^{p,q}$ and $\mathcal T^{q,p}$, and likewise the form sheaves $\mathcal A^{p,q}$ and $\mathcal A^{q,p}$. These decompositions require only $J^2=-1$.
 :::
 
-:::{.definition #def:calculus-integrable title="Integrability" defines="integrable"}
+:::{.definition #def:calculus-integrable title="Integrability" defines="integrable almost complex structure"}
 An almost complex structure is *integrable* if $[\mathcal T^{0,1},\mathcal T^{0,1}]\subseteq\mathcal T^{0,1}$. The bracket is that of smooth complex vector fields [@Huy05, Proposition 2.6.17].
 :::
 
@@ -547,7 +547,7 @@ For an arbitrary almost complex structure, $d$ can also have components of bideg
 An integrable smooth almost complex structure is induced by a complex atlas [@Huy05, Theorem 2.6.19]. This is the analytic existence theorem used here.
 :::
 
-:::{.construction #cons:calculus-holomorphic-sheaves title="Holomorphic functions and forms"}
+:::{.construction #cons:calculus-holomorphic-sheaves title="Holomorphic functions and forms" defines="$Z$; $\mathcal O_Z$; $\Omega_Z^p$"}
 For an integrable $J$, write $Z=(M,J)$ for the resulting complex manifold. Its sheaves of holomorphic functions and forms are
 
 \begin{align*}
@@ -558,7 +558,7 @@ For an integrable $J$, write $Z=(M,J)$ for the resulting complex manifold. Its s
 Indeed, in complex coordinates $z^1,\ldots,z^n$, the equation $\bar\partial f=0$ is the Cauchy–Riemann equation, and $\bar\partial(\sum f_I\,dz^I)=0$ says that every coefficient $f_I$ is holomorphic [@Huy05, Proposition 2.6.11]. The smooth sheaf $\mathcal T^{1,0}$ is the extension of scalars of the holomorphic tangent sheaf $\mathcal T_Z$: $\mathcal B\otimes_{\mathcal O_Z}\mathcal T_Z\cong\mathcal T^{1,0}$. In coordinates, both sides have the frame $\partial/\partial z^j$ with smooth complex coefficients.
 :::
 
-:::{.definition #def:calculus-holomorphic-map title="Maps preserving complex structures" defines="pseudoholomorphic"}
+:::{.definition #def:calculus-holomorphic-map title="Maps preserving complex structures" defines="pseudoholomorphic map"}
 A smooth map $q:(M,J_M)\to(N,J_N)$ is *pseudoholomorphic* if $dq\circ J_M=(q^*J_N)\circ dq$. If the structures are integrable, this is the coordinate Cauchy–Riemann condition for a holomorphic map. Pullback then gives $q^{-1}\mathcal O_{(N,J_N)}\to\mathcal O_{(M,J_M)}$.
 :::
 
@@ -572,7 +572,7 @@ These data are an endomorphism and involutive distributions on an algebraic tang
 
 Let $Z$ be a complex manifold, $\mathcal B=C^\infty_Z(\mathbb C)$, and $\mathcal E$ a finite locally free $\mathcal B$-module. Write $\mathcal A^{p,q}(\mathcal E)=\mathcal A^{p,q}\otimes_{\mathcal B}\mathcal E$.
 
-:::{.definition #def:calculus-dolbeault-operator title="Dolbeault operator" defines="Dolbeault operator"}
+:::{.definition #def:calculus-dolbeault-operator title="Dolbeault operator" defines="Dolbeault operator; integrable Dolbeault operator"}
 A *Dolbeault operator* on $\mathcal E$ is a $\mathbb C$-linear sheaf map $\bar\partial_{\mathcal E}:\mathcal E\to\mathcal A^{0,1}(\mathcal E)$ satisfying $\bar\partial_{\mathcal E}(as)=\bar\partial a\otimes s+a\bar\partial_{\mathcal E}s$. Extend it to forms by the graded Leibniz rule. It is integrable if $\bar\partial_{\mathcal E}^2=0$.
 :::
 
@@ -607,7 +607,7 @@ Locally $D=\partial+A$ with $A$ a holomorphic matrix of one-forms. Its smooth ex
 
 ## Hermitian metrics and the Chern connection {#sec-calculus-hermitian}
 
-:::{.definition #def:calculus-sesquilinear title="Sesquilinear pairings" defines="sesquilinear pairing; parallel; flat pairing"}
+:::{.definition #def:calculus-sesquilinear title="Sesquilinear pairings" defines="sesquilinear pairing; parallel pairing; flat pairing"}
 For smooth complex bundles $\mathcal E,\mathcal F$, a *sesquilinear pairing* is a $\mathcal B$-linear map $b:\mathcal E\otimes_{\mathcal B}\overline{\mathcal F}\to\mathcal B$. We write $b(s,t)$ for $b(s,\bar t)$. Thus $b(as,ct)=a\bar c\,b(s,t)$.
 
 Given complex connections on the bundles, the pairing is *parallel* if
@@ -647,7 +647,7 @@ Conjugating $h_2$ and using double conjugation and the natural identification $\
 Thus Hermitian symmetry is exactly $h_1=\overline{h_2}$. In the algebraic base-change setting, replace conjugation of modules by $\sigma^*$ and use the canonical identifications $\sigma^{*2}\mathcal E\cong\mathcal E$ and $\sigma^*(\mathcal E^\vee)\cong(\sigma^*\mathcal E)^\vee$. The same equality expresses conjugate symmetry of a pairing $\mathcal E\otimes\sigma^*\mathcal E\to\mathcal O_{X_{\mathbb C}}$.
 :::
 
-:::{.definition #def:calculus-hermitian-connection title="Hermitian connection" defines="Hermitian"}
+:::{.definition #def:calculus-hermitian-connection title="Hermitian connection" defines="Hermitian connection"}
 A smooth complex connection is *Hermitian* if $dh(s,t)=h(\nabla s,t)+h(s,\nabla t)$. Forms in the second argument are conjugated: $h(s,\alpha\otimes t)=\bar\alpha h(s,t)$ [@Huy05, Definition 4.2.9].
 :::
 
@@ -680,7 +680,7 @@ projectivity [@Huy05, §4.3; @Voi07].
 
 ## Kähler geometry {#sec-calculus-kahler}
 
-:::{.definition #def:calculus-almost-hermitian title="Almost Hermitian structure" defines="almost Hermitian structure"}
+:::{.definition #def:calculus-almost-hermitian title="Almost Hermitian structure" defines="almost Hermitian structure; Hermitian structure"}
 An *almost Hermitian structure* on a smooth real manifold is a pair $(J,g)$ consisting of an almost complex structure and a Riemannian metric with $g(Ju,Jv)=g(u,v)$. It is Hermitian when $J$ is integrable [@Huy05, Definition 3.1.1].
 :::
 
@@ -692,7 +692,7 @@ For an almost complex structure $J$ and any Riemannian metric $g_0$, the formula
 The pairing is smooth and symmetric, and $g(u,u)>0$ for nonzero $u$ because $g_0(u,u)>0$. Substitution of $J^2=-1$ gives $g(Ju,Jv)=g(u,v)$. $\square$
 :::
 
-:::{.construction #cons:calculus-fundamental-form title="Fundamental two-form"}
+:::{.construction #cons:calculus-fundamental-form title="Fundamental two-form" defines="fundamental two-form; $\omega$; $h$"}
 For an almost Hermitian structure define $\omega(u,v)=g(Ju,v)$ and $h(u,v)=g(u,v)-i\omega(u,v)$ on $(\mathcal T_M)_J$. Then
 
 \begin{align*}
@@ -721,7 +721,7 @@ Let $g_{\mathbb C}$ be the complex-bilinear extension of $g$ and $\xi(u)=\tfrac1
 A *symplectic form* is a closed two-form $\omega$ whose adjoint $\omega^\flat:\mathcal T\to\mathcal T^\vee$ is an isomorphism. This definition applies to smooth manifolds and to relative differential forms on smooth schemes.
 :::
 
-:::{.definition #def:calculus-almost-kahler title="Almost Kähler structure" defines="almost Kähler"}
+:::{.definition #def:calculus-almost-kahler title="Almost Kähler structure" defines="almost Kähler structure"}
 An almost Hermitian structure is *almost Kähler* if its fundamental form is closed.
 :::
 

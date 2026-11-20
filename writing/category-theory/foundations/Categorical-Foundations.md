@@ -48,7 +48,7 @@ It is *replete* if every object of $\mcc$ equivalent to an object of $\mcd$ also
 An isomorphism-invariant property of objects of $\mcc$ defines a replete full subcategory [@The25, Tag 001D; @nlab:replete_subcategory].
 :::
 
-::: {.definition #def:concrete-category title="Concrete categories" defines="concrete category"}
+::: {.definition #def:concrete-category title="Concrete categories" defines="concrete category; underlying set"}
 
 A *concrete category* is a category $C$ equipped with a faithful functor $U\colon C\to\mathbf{Set}$.
 The set $U(X)$ is the underlying set of $X$.
@@ -76,7 +76,7 @@ Taking $T$ or $S$ to be a functor $\mathbf 1\to\mcc$, that is an object of $\mcc
 
 For a $1$-category $C$, the arrow category is also $[[1],C]$, and evaluation at the source and target gives a functor to $C\times C$.
 
-::: {.definition #def:universal-arrow title="Universal arrows" defines="universal from $c$ to $S$"}
+::: {.definition #def:universal-arrow title="Universal arrows" defines="universal from $c$ to $S$; couniversal from $S$ to $c$"}
 
 Let $S\colon\mcd\to\mcc$ and $c\in\mcc$.
 A morphism $u\colon c\to Sr$ is *universal from $c$ to $S$* when, for every $d\in\mcd$ and every $f\colon c\to Sd$, there is a unique $g\colon r\to d$ with $Sg\circ u=f$.
@@ -89,7 +89,7 @@ The corepresenting objects listed in @def:element-functor are the values of the 
 
 ## Additive and abelian categories {#sec-abelian}
 
-::: {.definition #def:preadditive title="Preadditive and additive categories" defines="preadditive category; zero morphisms; zero object; biproduct diagram; additive category"}
+::: {.definition #def:preadditive title="Preadditive and additive categories" defines="preadditive category; zero morphisms; zero object; biproduct diagram; biproduct; $a\oplus b$; additive category"}
 
 A *preadditive category*, or $\mathbf{Ab}$-category, is a category $\mca$ in which each $\Hom_{\mca}(b,c)$ is an abelian group and composition is bilinear.
 Its zero elements are the *zero morphisms* $0\colon b\to c$, and a composite with a zero morphism is zero.
@@ -167,7 +167,7 @@ Exactness is a property of a composable pair: $a\xrightarrow{f}b\xrightarrow{g}c
 
 ## Endomorphisms and automorphisms {#sec-endomorphisms}
 
-::: {.definition #def:endomorphism-monoid title="The endomorphism monoid and the automorphism group"}
+::: {.definition #def:endomorphism-monoid title="The endomorphism monoid and the automorphism group" defines="endomorphism monoid; automorphism group"}
 
 For an object $X$ of a category $\mcc$, composition makes $\Hom_{\mcc}(X,X)$ a monoid with unit $\id_X$.
 Its group of invertible elements is $\Aut_{\mcc}(X)$, the automorphism group of $X$, which is $\operatorname{Isom}_{\mcc}(X,X)$ in the notation of @sec-equivalence-spaces.
@@ -252,14 +252,14 @@ The natural isomorphism $(\theta^v)^{-1}\circ\theta^u\colon\Hom_C(-,X)\isoto\Hom
 Evaluating at $\id_X$ gives $F(\varphi)(v)=u$.
 :::
 
-::: {.definition #def:el-convention title="The $\int_C F$ convention"}
+::: {.definition #def:el-convention title="The $\int_C F$ convention" defines="$\int_C F$"}
 []{#sec-el}
 
 For every presheaf $F\colon C^{\opop}\to\mathbf{Set}$, use the category of elements and discrete-fibration convention of @def:category-of-elements.
 Thus the projection $\int_C F\to C$ is a discrete fibration; no additional opposite category is taken after forming $\int_C F$.
 :::
 
-::: {.definition #def:smooth-manifold title="Smooth manifolds as locally ringed spaces" defines="smooth atlas; smooth manifold"}
+::: {.definition #def:smooth-manifold title="Smooth manifolds as locally ringed spaces" defines="$\mathsf{LRS}_{\bR}$; standard local model; $M_n$; smooth atlas; smooth manifold"}
 
 Let $\mathsf{LRS}_{\bR}$ denote the category of locally $\bR$-ringed spaces: topological spaces equipped with a sheaf of $\bR$-algebras whose stalks are local rings [@nlab:locally_ringed_space].
 The standard local model of dimension $n$ is
@@ -286,7 +286,7 @@ The two projections $\pi_1, \pi_2\colon U \times_X U \to U$ encode the transitio
 The coequalizer condition forces $X$ to be the colimit obtained from charts glued along their transitions: the classical manifold, recovered without point-set intersections.
 :::
 
-::: {.definition #def:scheme-as-lrs title="Schemes as locally ringed spaces" defines="Zariski atlas; scheme"}
+::: {.definition #def:scheme-as-lrs title="Schemes as locally ringed spaces" defines="$\mathsf{LRS}$; $M_A$; Zariski atlas; scheme"}
 
 The smooth manifold definition of @def:smooth-manifold transfers to algebraic geometry by substituting the ambient category and local models.
 
@@ -310,7 +310,7 @@ The coequalizer is essential in algebraic geometry because the intersection of t
 The fibered product $U \times_X U$ encodes the scheme-theoretic intersections of the affine covers without requiring the intersections themselves to be local models.
 :::
 
-::: {.definition #def:grothendieck-topology-generalization title="Generalization by Grothendieck topology" defines="$\mca$-atlas"}
+::: {.definition #def:grothendieck-topology-generalization title="Generalization by Grothendieck topology" defines="admissible morphism; $\mca$-atlas"}
 
 The formulation of @def:smooth-manifold and @def:scheme-as-lrs admits a uniform generalization.
 Fix a category $\mcc$ of locally ringed spaces, a class $\mcl$ of local models, and a class $\mca$ of admissible morphisms.

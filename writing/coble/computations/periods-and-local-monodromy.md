@@ -16,7 +16,7 @@ notes: |-
 
 ## Periods and the period map
 
-::: {.definition #def:period-map title="Period matrix and period map" defines="period matrix; period map; projective period map; The general period matrix and period map; Specialization to the one-form case ($p = 1$, Calabi–Yau varieties)"}
+::: {.definition #def:period-map title="Period matrix and period map" defines="period matrix; $\Pi(t)$; period map; $\mathcal P$; $\omega_i$; $P_X$; $\omega$; projective period map"}
 
 Let $\pi \colon \mathcal{X} \to M$ be a smooth projective (or compact Kähler) family of complex $m$-dimensional varieties over a connected complex quasi-projective variety (or complex manifold) $M$.
 Fix a reference fiber $X = X_{t_0} = \inverseof{\pi}(t_0)$, and let $\{\Sigma_0, \dots, \Sigma_{k-1}\} \subset H_m(X, \ZZ)/\mathrm{tors}$ be an integral basis of the middle homology modulo torsion, where $k = b_m(X)$ is the middle Betti number.
@@ -56,7 +56,7 @@ For each $t \in M$, let $\{\omega_1(t), \dots, \omega_p(t)\}$ be a basis of a ho
 
 ## The algebraic construction
 
-::: {.construction #cons:pf-from-jacobian title="From the defining polynomial to the local monodromy"}
+::: {.construction #cons:pf-from-jacobian title="From the defining polynomial to the local monodromy" defines="Jacobian ideal; $J$; monomial basis; $B$; Milnor number; $\mu$; $P$; Picard--Fuchs operator; $\mathcal L$; exponent; $R$; $R_s$; $R_n$; local monodromy; $T$"}
 
 Let $k$ have characteristic $0$ and let $f\in k[x_0,\dots,x_{n-1},t]$ present a family of affine hypersurfaces over a one-dimensional base with parameter $t$.
 
@@ -157,7 +157,7 @@ The second statement is @cor:pf-unipotent-monodromy(3) applied to the single Jor
 
 ## The topological construction
 
-::: {.construction #cons:lefschetz-periods title="Periods from a Lefschetz pencil"}
+::: {.construction #cons:lefschetz-periods title="Periods from a Lefschetz pencil" defines="vanishing cycle; $\delta_i$; thimble; $\Delta_i$"}
 
 For a smooth projective hypersurface $X$, an iterated Lefschetz pencil $X\dashrightarrow\PP^1$ has critical values the roots of the discriminant of the pencil.
 At each critical value there is a vanishing cycle $\delta_i\in H_{n-1}(X_b)$ in the homology of a nearby fiber, and a thimble $\Delta_i\in H_n(Y,Y_b)$ with $\partial\Delta_i = \delta_i$.

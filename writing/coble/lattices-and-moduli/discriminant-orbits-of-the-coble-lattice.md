@@ -57,7 +57,7 @@ Twisting by $2$ and reading off invariants gives $\latI_{1,8}(2) = (9,9,1)$ of s
 
 ## The discriminant form of $T_\Co$
 
-::: {.definition #def:coble-mod-four-form title="The mod-$4$ norm on $B/2B$"}
+::: {.definition #def:coble-mod-four-form title="The mod-$4$ norm on $B/2B$" defines="mod-$4$ norm; $Q$"}
 
 For $B = \generators{1}\oplus E_{10}$ as in @prop:tco-as-twist, define
 $$

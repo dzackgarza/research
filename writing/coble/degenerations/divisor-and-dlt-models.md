@@ -2,7 +2,7 @@
 
 ## dlt models and involution pairs
 
-::: {.definition #def:dlt-model title="dlt models and half-divisor models" defines="dlt model; half-divisor model"}
+::: {.definition #def:dlt-model title="dlt models and half-divisor models" defines="dlt model; half-divisor model; $\mcz$; $(\mcz,\mcr_{\mcz})$"}
 
 Let $\mcx \to (C,0)$, resp. $(\mcx,\mcr)\to(C,0)$, be a Kulikov model, resp. a divisor model (@def:coble-divisor-model), of Enriques K3 surfaces on which the Enriques involution (@def:enriques-surface) $\iota_\En$ is a regular involution of $\mcx$, resp. a regular involution that preserves $\mcr$.
 The **dlt model**, resp. the **half-divisor model**, is the quotient by the Enriques involution:
@@ -63,7 +63,7 @@ In Type $\latII$, $\Gamma(\mcz_0)$ is a segment [@AEGS25, Prop. 4.8].
 
 ## Divisor models
 
-::: {.definition #def:coble-divisor-model title="Divisor model" defines="divisor model; integral-affine divisor"}
+::: {.definition #def:coble-divisor-model title="Divisor model" defines="divisor model; integral-affine divisor; $R_{\IA}$"}
 
 A *divisor model* for a degeneration $\pi\colon \mcx \to C$ of K3 (or Enriques) surfaces is a degeneration of pairs $(\mcx, \mcr) \to C$ where:
 

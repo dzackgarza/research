@@ -1,13 +1,13 @@
 # Coxeter systems and their classification
 
-::: {#not:coxeter-sign-convention .notation title="Sign convention"}
+::: {#not:coxeter-sign-convention .notation title="Sign convention" defines="sign convention"}
 
 Simple roots are negative-definite directions of norm $-2$, following the algebraic-geometry convention of @def:root-lattice, so a spherical Coxeter system (@def:coxeter-group) has a negative definite Gram form (@def:coxeter-gram-form).
 :::
 
 ## Coxeter matrices and their Gram forms
 
-::: {.definition #def:coxeter-matrix defines="Coxeter matrix; Coxeter diagram"}
+::: {.definition #def:coxeter-matrix defines="Coxeter matrix; Coxeter diagram; $\Sigma(M)$"}
 
 Let $S$ be a finite set.
 A **Coxeter matrix** on $S$ is a symmetric matrix $M = (m_{st})_{s,t\in S}$ with
@@ -48,7 +48,7 @@ For $m=3$, the roots of $A_2$ meet at angle $2\pi/3$, while their perpendicular 
 
 ![The simple roots and reflecting mirrors of $A_2$.](/rendered/A2RootSystem.png){#fig-coxeter-a2-roots-mirrors}
 
-::: {.definition #def:coxeter-gram-form title="The Gram form of a Coxeter matrix" defines="Gram form"}
+::: {.definition #def:coxeter-gram-form title="The Gram form of a Coxeter matrix" defines="Gram form; $G(M)$"}
 
 Let $M$ be a Coxeter matrix on $S$.
 The **Gram form** of $M$ is the symmetric bilinear form $G(M)$ on the real vector space $\RR^S$ with basis $\theset{\alpha_s}_{s\in S}$ determined by
@@ -90,7 +90,7 @@ m & 2 & 3 & 4 & 5 & 6 & \infty \\\hline
 $$
 :::
 
-::: {#not:schlafli-matrix-normalization .notation title="The opposite normalization" defines="Schläfli matrix"}
+::: {#not:schlafli-matrix-normalization .notation title="The opposite normalization" defines="Schläfli matrix; $C$"}
 
 Much of the reflection-group literature normalizes simple roots to $\alpha_s^2 = +2$ and attaches to $M$ the **Schläfli matrix** $C_{st} = -2\cos(\pi/m_{st})$, with $C_{ss} = 2$.
 Then $C = -G(M)$, and the definiteness conditions of @def:coxeter-system-type are read with the opposite sign: a spherical system has $C$ positive definite.
@@ -98,7 +98,7 @@ Then $C = -G(M)$, and the definiteness conditions of @def:coxeter-system-type ar
 
 ## Classification by definiteness
 
-::: {.definition #def:coxeter-system-type defines="spherical; euclidean; hyperbolic; elliptic; parabolic"}
+::: {.definition #def:coxeter-system-type defines="spherical Coxeter system; euclidean Coxeter system; hyperbolic Coxeter system; elliptic subdiagram; parabolic subdiagram"}
 
 Let $(W,S)$ be an irreducible Coxeter system (@def:coxeter-group) of rank $n$ with Coxeter matrix (@def:coxeter-matrix) $M$ and Gram form (@def:coxeter-gram-form) $G = G(M)$.
 Say that $(W,S)$, or $M$, is
@@ -155,7 +155,7 @@ In (3) the hyperboloid inside the nondegenerate space $(\RR^S,G)$ is the model o
 
 ## Subdiagrams and the inheritance of signature
 
-::: {.definition #def:coxeter-subdiagram defines="subdiagram; rank; standard parabolic subgroup"}
+::: {.definition #def:coxeter-subdiagram defines="subdiagram; $\Sigma_I$; rank; $W_I$; standard parabolic subgroup"}
 
 Let $\Sigma$ be the Coxeter diagram (@def:coxeter-matrix) of the Coxeter system (@def:coxeter-group) $(W,S)$ and let $I\iscontainedin S$.
 The **subdiagram** $\Sigma_I$ is the induced diagram on $I$, with Coxeter matrix $M[I,I]$ and Gram form (@def:coxeter-gram-form) the principal submatrix $G[I,I]$.
@@ -167,7 +167,7 @@ $$
 is the **standard parabolic subgroup** determined by $I$, and $(W_I, I)$ is a Coxeter system with Coxeter matrix $M[I,I]$ [@Bou08, Ch. IV §1 no. 8, Th. 2; @Hum90, §5.5, Theorem].
 :::
 
-::: {#not:parabolic-subgroups-and-subdiagrams .notation title="Parabolic subgroups and parabolic subdiagrams"}
+::: {#not:parabolic-subgroups-and-subdiagrams .notation title="Parabolic subgroups and parabolic subdiagrams" defines="parabolic subgroup; parabolic subdiagram"}
 
 The subgroup $W_I$ is a standard parabolic subgroup (@def:coxeter-subdiagram) for every subset $I\iscontainedin S$, whatever the definiteness of $G[I,I]$.
 The subdiagram $\Sigma_I$ is parabolic when each of its connected components is euclidean (@def:elliptic-subdiagram).
@@ -245,7 +245,7 @@ By definition, $(W,S)$ is spherical exactly when $B=-\tfrac12G$ is positive defi
 The cited statements classify the connected Coxeter graphs whose form $B$ is positive definite, and $G = -2B$.
 :::
 
-::: {#not:dihedral-diagrams .notation title="The diagrams $I_2(p)$"}
+::: {#not:dihedral-diagrams .notation title="The diagrams $I_2(p)$" defines="$I_2(p)$"}
 
 $I_2(p)$ denotes the rank-two diagram with $m_{12} = p$, so that $I_2(3)\cong A_2$, $I_2(4)\cong B_2$ and $I_2(6)\cong G_2$.
 :::
@@ -314,7 +314,7 @@ whose coefficients at $\alpha_1,\dots,\alpha_8$ are those of the highest root of
 
 ## Crystallographic Coxeter systems
 
-::: {.definition #def:crystallographic-coxeter defines="crystallographic"}
+::: {.definition #def:crystallographic-coxeter defines="crystallographic Coxeter matrix"}
 
 A Coxeter matrix (@def:coxeter-matrix) $M$ on $S$ is **crystallographic** if $m_{st}\in\theset{2,3,4,6,\infty}$ for all $s\neq t$.
 :::
@@ -348,7 +348,7 @@ For $m_{st} = 6$ the same rescaling by $\sqrt3$ gives norms $-2$ and $-6$ with p
 For $m_{st}\in\theset{2,3}$ the entries $0$ and $1$ are already integral, and the simply-laced diagrams need no rescaling.
 :::
 
-::: {.definition #def:coxeter-base-field defines="field of definition"}
+::: {.definition #def:coxeter-base-field defines="field of definition; $K(M)$"}
 
 Let $M$ be a Coxeter matrix (@def:coxeter-matrix) on $S$.
 Its **field of definition** is the subfield

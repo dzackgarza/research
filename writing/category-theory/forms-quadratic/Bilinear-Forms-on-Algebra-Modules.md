@@ -5,7 +5,7 @@ The tensor-hom adjunction of $R\text{-}\mathbf{Mod}$ identifies $R$-bilinear map
 
 ## Associative unital $R$-algebras {#sec-r-algebras}
 
-::: {.definition #def:r-algebra title="Associative unital $R$-algebras" defines="associative unital $R$-algebra"}
+::: {.definition #def:r-algebra title="Associative unital $R$-algebras" defines="associative unital $R$-algebra; $R\text{-}\mathbf{Alg}$; $U$; $R\text{-}\mathbf{CAlg}$"}
 
 An *associative unital $R$-algebra* is a monoid in $(R\text{-}\mathbf{Mod},\tensor_R,R)$: an $R$-module $A$ together with $R$-linear maps
 $$
@@ -53,7 +53,7 @@ The tensor product in this Hom is the tensor product of $R$-algebras.
 
 The forgetful functor $U$ sends an algebra bilinear form $\phi$ to a module bilinear form $U(\phi)$ on $U(A)$, using $U(A\tensor_R A)\cong U(A)\tensor_R U(A)$.
 
-::: {.definition #def:algebra-generating-set title="Algebra generating sets and module bases" defines="generates $A$ as a unital $R$-algebra"}
+::: {.definition #def:algebra-generating-set title="Algebra generating sets and module bases" defines="$R\langle S\rangle$; module basis; generates $A$ as a unital $R$-algebra"}
 
 Let $A$ be an associative unital $R$-algebra.
 The free unital associative $R$-algebra $R\langle S\rangle$ on a set $S$ represents $A\mapsto\mathbf{Set}(S,A)$: a function $S\to A$ of underlying sets extends uniquely to a homomorphism $R\langle S\rangle\to A$ in $R\text{-}\mathbf{Alg}$.
@@ -69,7 +69,7 @@ The polynomial ring $R[x]$ is generated as a unital $R$-algebra by $\{x\}$, and 
 
 ## Associative bilinear forms {#sec-associative-forms}
 
-::: {.definition #def:associative-bilinear-form title="Associative bilinear forms" defines="associative"}
+::: {.definition #def:associative-bilinear-form title="Associative bilinear forms" defines="associative bilinear form"}
 Let $B$ be a module bilinear form on $U(A)$.
 The form $B$ is *associative* if
 $$

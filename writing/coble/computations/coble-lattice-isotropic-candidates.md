@@ -36,7 +36,7 @@ $$
 
 ## The images under the embedding chain
 
-::: {#cons:isotropic-transport-embedding-chain .construction title="Term-by-term transport along the embedding chain"}
+::: {#cons:isotropic-transport-embedding-chain .construction title="Term-by-term transport along the embedding chain" defines="term-by-term transport along the embedding chain"}
 
 The same 18 vectors are mapped term-by-term along the embedding chain $T_{\Co}\injects \ten\injects \tdp$:
 

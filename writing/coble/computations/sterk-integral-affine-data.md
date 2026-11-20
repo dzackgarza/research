@@ -39,7 +39,7 @@ The $+1$-eigenspaces of [Explicit root vectors and the folded Sterk diagrams](#s
 
 ## The plotting procedure
 
-::: {#cons:polygon-from-boundary-directions .construction title="From directions to a polygon with symmetry"}
+::: {#cons:polygon-from-boundary-directions .construction title="From directions to a polygon with symmetry" defines="$\ell_i$; $p_i$; $\operatorname{Aut}(P)$"}
 
 1. Fix the ordered primitive boundary directions $v_i \in \ZZ^2$.
 

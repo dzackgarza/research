@@ -2,7 +2,7 @@
 
 Let $\mcc$ be a pointed $\infty$-category, with zero object $*$, and suppose that it has the finite limits and colimits required below.
 
-::: {.definition #def:fiber-cofiber title="Fibers and cofibers"}
+::: {.definition #def:fiber-cofiber title="Fibers and cofibers" defines="fiber; cofiber; $\operatorname{Fib}(f)$; $\operatorname{Cof}(f)$"}
 []{#sec-cobase-changes}
 
 For $f\colon X\to Y$, its fiber over the canonical basepoint $0\colon *\to Y$ is defined by the cartesian square
@@ -46,7 +46,7 @@ $$
 These definitions specialize in pointed spaces to the usual homotopy fiber and homotopy cofiber.
 :::
 
-::: {.definition #def:loops-suspension title="Loops and suspension"}
+::: {.definition #def:loops-suspension title="Loops and suspension" defines="loops; suspension; $\Omega X$; $\Sigma X$"}
 
 For an object $X$ of $\mcc$, loops are defined by the pullback square
 
@@ -136,7 +136,7 @@ X\xrightarrow{\;f\;}Y\too
 $$
 each stage being the fiber or cofiber of the preceding morphism [@nlab:fiber_sequence].
 
-::: {.definition #def:homotopy-groups title="Homotopy groups of a pointed space"}
+::: {.definition #def:homotopy-groups title="Homotopy groups of a pointed space" defines="homotopy group; $\pi_n(X,x)$; $\Omega^n_xX$"}
 
 Let $\mcs_*$ be the $\infty$-category of pointed spaces.
 For $(X,x)\in\mcs_*$ and $n\geq0$, set

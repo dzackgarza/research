@@ -20,7 +20,7 @@ Let $\fttz=\bD(\tdp)/\Gamma_\dP$ be the moduli space of K3 surfaces of degree $4
 2. The inclusion $\gent\subseteq\Gamma^K_\En$ of a subgroup of finite index induces a morphism $\fentwo\to F_{(10,10,0)}=\bD(T_\En)/\Gamma^K_\En$ of degree $2^7\cdot17\cdot31$ [@AEGS25, §2.3; @Ste91, Rem. 2.12, printed p. 8].
 :::
 
-::: {#cons:coble-embedding-extensions .construction title="The embedding and its two extensions"}
+::: {#cons:coble-embedding-extensions .construction title="The embedding and its two extensions" defines="$\eta$; $\tilde\eta$"}
 
 By @lem:locally_closed_embedding_BB, the lattice embeddings $T_\Co\injects\ten$ and $T_\Co\injects\tdp$ induce locally closed embeddings $\fco\injects\fen$ and $\fco\injects\fttz$, which extend to morphisms of Baily--Borel compactifications:
 $$

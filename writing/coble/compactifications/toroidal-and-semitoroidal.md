@@ -2,7 +2,7 @@
 
 ## Toroidal compactifications
 
-::: {.definition #def:toroidal-compactification defines="toroidal compactification"}
+::: {.definition #def:toroidal-compactification defines="toroidal compactification; $\torcpt{\FG}$"}
 
 A **toroidal compactification** $\torcpt{\FG}$ refines the singular cusps of the Baily--Borel compactification by choosing an admissible rational polyhedral fan $\torfan_I$ for each cusp $I$.
 
@@ -55,7 +55,7 @@ For example, $Q=\left(\begin{smallmatrix}2&1\\1&3\end{smallmatrix}\right)$ is po
 
 ## Semitoroidal compactifications
 
-::: {.definition #def:semitoroidal-compactification defines="semitoroidal compactification; semifans"}
+::: {.definition #def:semitoroidal-compactification defines="semitoroidal compactification; $\semitorcpt{\FG}$; semifan"}
 
 A **semitoroidal compactification** $\semitorcpt{\FG}$ replaces the fans of a toroidal compactification (@def:toroidal-compactification) with $\Gamma$-admissible **semifans** $\mcf_I$ [@Loo02, Def. 6.1; @AE23, Def. 5.11].
 
@@ -115,13 +115,13 @@ For the converse, the maximal cones of the semifan are the unions of the classes
 
 ## Generalized Coxeter semifans
 
-::: {.definition #def:coxeter-semifan defines="Coxeter semifan"}
+::: {.definition #def:coxeter-semifan defines="Coxeter semifan; $\mathcal F^{\mathrm{cox}}$"}
 
 Let $W\leq\Orth(L)$ be a reflection group with fundamental chamber $\mathfrak{C}$, acting on the rational closure $C_\QQ$ of a cone.
 The **Coxeter semifan** $\mathcal F^{\mathrm{cox}}$ of the chamber has, modulo $W$, the cones $\mathfrak{C}$, its faces, and their $W$-translates; it is a fan if and only if $W$ has finite covolume [@AE22, Def. 3.5, printed p. 10].
 :::
 
-::: {.definition #def:generalized-coxeter-semifan defines="relevant; irrelevant roots; generalized Coxeter semifan"}
+::: {.definition #def:generalized-coxeter-semifan defines="relevant root; irrelevant root; $\Phi^{\relevant}$; $\Phi^{\irrelevant}$; $W^{\irrelevant}$; generalized Coxeter semifan; $\mcf_{\mathrm{gen}}$"}
 
 Let $\eta$ be a $0$-cusp with Coxeter--Vinberg diagram $G(\Gamma_\eta)$ (@def:coxeter-vinberg-diagram), reflection group $W$ and fundamental chamber $\mathfrak{C}$.
 Partition the vertices of $G(\Gamma_\eta)$, that is the simple roots, into $\Phi = \Phi^{\relevant} \sqcup \Phi^{\irrelevant}$, the **relevant** and the **irrelevant roots**.
@@ -155,7 +155,7 @@ The normalization and refinement are [@AET23, Thm. 1.2]. The morphism from the C
 
 ## KSBA compactifications
 
-::: {.definition #def:ksba-compactification defines="KSBA-stable; semi log canonical (slc); KSBA compactification"}
+::: {.definition #def:ksba-compactification defines="KSBA-stable pair; semi log canonical (slc); KSBA compactification; $\oF^R$"}
 
 A pair $(X, D = \Sum b_j D_j)$ is **KSBA-stable** [@KS88; @Ale96] if:
 
@@ -193,7 +193,7 @@ For the degenerations in the stable-pair compactification, stability of $(X,\eps
 
 ## Looijenga compactifications
 
-::: {.definition #def:looijenga-compactification defines="Looijenga compactification"}
+::: {.definition #def:looijenga-compactification defines="Looijenga compactification; $\overline{\Gamma\backslash D}^{\\,\mch}$"}
 
 Let $\mch$ be a $\Gamma$-invariant arrangement of hyperplane sections of the period domain $D$.
 The **Looijenga compactification** $\overline{\Gamma\backslash D}^{\,\mch}$ is the compactification of the arrangement complement $\Gamma\backslash(D - \mch)$ determined by $\mch$ [@Loo02, Thm. 7.4].
@@ -214,7 +214,7 @@ So this proj is $\bbcpt{\FG}$.
 
 ## Recognizable divisors
 
-::: {.definition #def:recognizable-divisor defines="recognizable"}
+::: {.definition #def:recognizable-divisor defines="recognizable divisor"}
 
 A polarizing divisor $R$ on the generic surface in $F_S$ is **recognizable** if, for any quasipolarized Kulikov degeneration $\mcx \to \Delta$, the divisor $R$ extends unambiguously to a flat limit $R_0 \subset \mcx_0$, unique up to $\Aut^0(\tilde{\mcx}_0)$ in any other smoothing.
 :::

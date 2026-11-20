@@ -4,7 +4,7 @@ Fix a commutative ring $R$. The tensor product, internal Hom, and duality of $R\
 
 ## Pairings of two modules {#sec-general-pairings}
 
-::: {.definition #def:module-pairing title="Bilinear pairings with general source and value modules" defines="$R$-bilinear pairing; category of pairings"}
+::: {.definition #def:module-pairing title="Bilinear pairings with general source and value modules" defines="$R$-bilinear pairing; $\operatorname{Pair}_{R,W}(A,B)$; category of pairings; $\mathbf{Pair}_{R,W}$"}
 For $A,B,W\in R\text{-}\mathbf{Mod}$, an **$R$-bilinear pairing** of $A$ and $B$ with values in $W$ is a morphism
 $$
 b\colon A\tensor_R B\longrightarrow W
@@ -24,7 +24,7 @@ $$
 satisfying $b=b'\circ(f\tensor_Rg)$. Pullback along the diagonal $M\mapsto(M,M)$ gives the bilinear-form presheaf $\Bil_{R,W}$ of @def:form-presheaves. A pairing of two possibly different modules does not require symmetry or a choice of identification between them.
 :::
 
-::: {.definition #def:pairing-adjoints title="The adjoints and their exact sequences" defines="left; right adjoints; left radical; right radical; left coradical; right coradical; left nondegenerate; right nondegenerate; nondegenerate; perfect"}
+::: {.definition #def:pairing-adjoints title="The adjoints and their exact sequences" defines="left adjoint; right adjoint; $b^\ell$; $b^r$; left radical; right radical; $\radic_\ell(b)$; $\radic_r(b)$; left coradical; right coradical; $\operatorname{corad}_\ell(b)$; $\operatorname{corad}_r(b)$; left nondegenerate pairing; right nondegenerate pairing; nondegenerate pairing; perfect pairing"}
 For $b\colon A\tensor_RB\too W$, the tensor–Hom adjunction gives the **left** and **right adjoints**
 $$
 \begin{aligned}

@@ -1,6 +1,6 @@
 # Hyperbolic Coxeter polytopes and finite covolume {#sec-hyperbolic-coxeter-polytopes}
 
-::: {#not:hyperbolic-polytope-setting .notation}
+::: {#not:hyperbolic-polytope-setting .notation defines="$C_L^+$; $\HH^n_L$; root; mirror; $H_v$"}
 
 Throughout, $L$ is a hyperbolic lattice of signature $(1,n)$, $C_L^+$ is a fixed component of its positive cone (@not:reflection-groups-sign-convention), and $\HH^n_L$ is the associated hyperbolic $n$-space of @def:hyperbolic-model.
 Roots are negative-definite directions, so a mirror $H_v = v^{\perp}\intersect\HH^n_L$ is nonempty exactly when $v^2 < 0$.
@@ -8,7 +8,7 @@ Roots are negative-definite directions, so a mirror $H_v = v^{\perp}\intersect\H
 
 ## The Tits cone
 
-::: {.definition #def:tits-cone defines="closed fundamental chamber; Tits cone"}
+::: {.definition #def:tits-cone defines="closed fundamental chamber; $\oC$; Tits cone; $U$"}
 
 Let $(W,S)$ be a Coxeter system (@def:coxeter-group) with Gram form $G$ (@def:coxeter-gram-form) on $V \definedas \RR^S$ and simple roots $\theset{\alpha_s}_{s\in S}$, and let $W$ act on the dual space $V^*$ by the contragredient of its action on $V$.
 The **closed fundamental chamber** is
@@ -67,7 +67,7 @@ This is [@Hum90, §6.5], where the vector $\lambda$ spanning the radical is $\de
 
 ## Vertices of a Coxeter polytope
 
-::: {#not:coxeter-polytope-faces .notation}
+::: {#not:coxeter-polytope-faces .notation defines="wall; $H_s$; $A_I$"}
 
 Let $P\iscontainedin\HH^n_L$ be a Coxeter polytope (@def:coxeter-polytope) with walls $H_s = \alpha_s^{\perp}$ indexed by a finite set $S$, and Coxeter--Vinberg diagram $\Sigma$ (@def:coxeter-vinberg-diagram).
 For $I\iscontainedin S$ write

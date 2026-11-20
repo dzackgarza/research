@@ -15,7 +15,7 @@ notes: |-
 
 ## The half-space presentation in coordinates
 
-::: {.construction #cons:chamber-cone title="The chamber of a root set"}
+::: {.construction #cons:chamber-cone title="The chamber of a root set" defines="$R$; chamber of a root set; $C$"}
 
 Let $L$ be a hyperbolic lattice with bilinear form $\beta_L$ and Gram matrix $G$ in a chosen basis, and let $R = \theset{r_1,\dots,r_k}\subset L$ be a set of roots.
 The cone they bound is
@@ -72,7 +72,7 @@ By @thm:coxeter-polytope-volume(2) the polytope is compact exactly when it has n
 
 ## Integral data of the chamber
 
-::: {.construction #cons:chamber-integral-data title="Rays, facets, and integral points"}
+::: {.construction #cons:chamber-integral-data title="Rays, facets, and integral points" defines="primitive integral generator; Hilbert basis"}
 
 From the presentation of @cons:chamber-cone one reads off:
 
@@ -93,7 +93,7 @@ In both cases $C$ is full-dimensional, closed and non-compact.
 
 ## An exact invariant for a pair of walls
 
-::: {.definition #def:bond-invariant title="The bond invariant of two roots"}
+::: {.definition #def:bond-invariant title="The bond invariant of two roots" defines="bond invariant; $t(v,w)$"}
 
 For roots $v,w$ of an integral lattice $L$ with $v^2, w^2 \neq 0$, set
 $$

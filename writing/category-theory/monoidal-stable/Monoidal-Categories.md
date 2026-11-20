@@ -184,7 +184,7 @@ The inverse axiom uses the diagonal, which the cartesian structure supplies; gro
 
 ## The Grothendieck group of a monoidal structure {#sec-k0}
 
-::: {.definition #def:k0-monoidal title="$K_0$ of a symmetric monoidal category"}
+::: {.definition #def:k0-monoidal title="$K_0$ of a symmetric monoidal category" defines="$S^{\mathrm{iso}}$; Grothendieck group; $K_0^{\tensor}(S)$"}
 
 Let $S$ be a symmetric monoidal category whose isomorphism classes of objects form a set $S^{\mathrm{iso}}=\pi_0(S^{\simeq})$.
 Then $\tensor$ makes $S^{\mathrm{iso}}$ an abelian monoid with identity $[e]$, and

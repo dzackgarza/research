@@ -235,7 +235,7 @@ is developed in @sec-abcde-surfaces and the classifying map in
 
 ## Induced lattice involutions on $H^2$
 
-::: {.definition #def:lattice-involutions-k3 title="Lattice involutions for K3 covers"}
+::: {.definition #def:lattice-involutions-k3 title="Lattice involutions for K3 covers" defines="lattice involution; $\Idp$; $\Ien$; $\Inik$"}
 
 Fix a basis of the K3 lattice $\lkt$ corresponding to the decomposition $U^3 \oplus E_8^2$, and write a general vector as $(u_1, u_2, u_3, \alpha_1, \alpha_2)$ with $u_i \in U$ and $\alpha_j \in E_8$.
 The three geometric involutions $\idp$, $\ien$, and $\inik$ of @prop:k3-cover-p1xp1-involutions induce isometries of $\lkt$, denoted $\Idp$, $\Ien$, and $\Inik$ respectively, given in this basis by
@@ -271,7 +271,7 @@ The three involutions are distinct and nontrivial: $\Idp$ and $\Ien$ send $(u_1,
 A group of order $4$ in which every element has order at most $2$ is isomorphic to $\ZZ_2^2$.
 :::
 
-::: {#not:invariant-coinvariant-sublattices .notation title="Invariant and coinvariant sublattices of the lattice involutions"}
+::: {#not:invariant-coinvariant-sublattices .notation title="Invariant and coinvariant sublattices of the lattice involutions" defines="invariant sublattice; coinvariant sublattice; $S_\star$; $T_\star$; $L_{\Nik}^{+}$; $L_{\Nik}^{-}$"}
 
 For $\star\in\theset{\dP, \En, \Nik}$, write $S_\star \definedas \lkt^{I_\star = 1}$ for the invariant sublattice and $T_\star \definedas \lkt^{I_\star = -1}$ for the coinvariant sublattice of $I_\star$, in the sense of @def:invariant_coinvariant_lattices.
 For the Nikulin involution these are also written $L_{\Nik}^{+} = S_{\Nik}$ and $L_{\Nik}^{-} = T_{\Nik}$.

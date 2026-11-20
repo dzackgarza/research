@@ -7,7 +7,7 @@ A $\Sigma$-algebra in $\mathbf{Set}$ is a set $X$ together with one function $X^
 A homomorphism is a function preserving every operation.
 Equations between $\Sigma$-terms define a full subcategory of $\Sigma$-algebras.
 
-::: {.definition #def:operation-categories title="Magmas" defines="magma"}
+::: {.definition #def:operation-categories title="Magmas" defines="magma; magma homomorphism; $\mathbf{Mag}$"}
 
 A *magma* is a set $X$ with a binary operation $\mu\colon X\times X\to X$.
 A magma homomorphism $f\colon X\to Y$ satisfies
@@ -30,7 +30,7 @@ It is *commutative* if $\mu=\mu\circ\tau$, where $\tau(x,y)=(y,x)$.
 These are isomorphism-invariant properties of magmas and define replete full subcategories of $\mathbf{Mag}$.
 :::
 
-::: {.definition #def:semigroup-monoid title="Semigroups and monoids" defines="semigroup; monoid"}
+::: {.definition #def:semigroup-monoid title="Semigroups and monoids" defines="semigroup; monoid; monoid homomorphism"}
 
 A *semigroup* is an associative magma.
 A *monoid* is a tuple $(X,\mu,e)$ consisting of a semigroup and a chosen element $e\in X$ such that
@@ -70,7 +70,7 @@ A commutative ring also satisfies $xy=yx$.
 
 ## Forgetful functors
 
-::: {.definition #def:tower title="Towers of forgetful functors"}
+::: {.definition #def:tower title="Towers of forgetful functors" defines="tower of forgetful functors"}
 The standard definitions give the composable forgetful functors
 $$
 \mathbf{Grp}\too\mathbf{Mon}\too
@@ -90,7 +90,7 @@ Combining two object properties uses the intersection described in @sec-join-mee
 
 ## Free algebras {#sec-free-algebras}
 
-::: {.definition #def:free-algebra title="The free algebra on a set"}
+::: {.definition #def:free-algebra title="The free algebra on a set" defines="free algebra on a set; $\Sigma\text{-}\mathbf{Alg}_E$; $U$; $F(X)$; $F$; unit $\eta_X$"}
 
 Let $\Sigma$ be a one-sorted algebraic signature, let $E$ be a set of equations between $\Sigma$-terms, and write $\Sigma\text{-}\mathbf{Alg}_E$ for the full subcategory of $\Sigma$-algebras satisfying $E$, with forgetful functor $U\colon\Sigma\text{-}\mathbf{Alg}_E\to\mathbf{Set}$.
 

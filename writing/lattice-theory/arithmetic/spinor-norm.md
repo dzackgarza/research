@@ -1,6 +1,6 @@
 # Determinant and spinor norm {#sec-lattice-spinor-norm}
 
-::: {.definition #def:spinor-norm title="Determinant and spinor-norm exact sequences"}
+::: {.definition #def:spinor-norm title="Determinant and spinor-norm exact sequences" defines="$s_w$; normalized spinor norm; $\spinornorm_F$; $\SO(V)$; $\Theta_F(V)$"}
 
 Let $F$ be a field of characteristic different from $2$, and let $(V,\beta)$ be a finite-dimensional nondegenerate symmetric $F$-bilinear space.
 For anisotropic $w\in V$, define the reflection
@@ -50,7 +50,7 @@ $$
 $$
 :::
 
-::: {.definition #def:lattice-spinor-kernels title="Spinor kernels of an integral lattice"}
+::: {.definition #def:lattice-spinor-kernels title="Spinor kernels of an integral lattice" defines="spinor kernel of an integral lattice; $\SO_F(L)$; $\Theta_F(L)$; $\Orth^+(L)$"}
 
 Let $L$ be an integral lattice and let $F$ be a field equipped with a ring morphism
 $$
@@ -91,7 +91,7 @@ $$
 $$
 :::
 
-::: {.convention #conv:spinor-positive-subgroup title="Spinor-positive subgroups"}
+::: {.convention #conv:spinor-positive-subgroup title="Spinor-positive subgroups" defines="spinor-positive subgroup; $G^+$; $\SO^+(L)$; $\widetilde\Orth^+(L)$"}
 
 For a subgroup $G\le\Orth(L)$, define $G^+$ by the pullback
 ```tikzcd
@@ -193,7 +193,7 @@ It equals $+1$ on the diagonal and changes sign when $o'$ is replaced by $-o'$.
 Hence $c=+1$ exactly on the two components of the product that meet the diagonal.
 :::
 
-::: {.definition #def:orientation-classes title="Orientation classes of maximal positive-definite subspaces" defines="positive orientation classes; preserves the positive orientation classes; negative orientation classes"}
+::: {.definition #def:orientation-classes title="Orientation classes of maximal positive-definite subspaces" defines="positive orientation class; preserves the positive orientation class; negative orientation class"}
 
 The two components of $\widetilde\Gr^+(V)$ are the *positive orientation classes* of $V$.
 An isometry $g\in\Orth(V)$ *preserves the positive orientation classes* when it maps each of them to itself.

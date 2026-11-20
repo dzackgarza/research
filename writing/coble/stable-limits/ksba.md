@@ -3,7 +3,7 @@
 
 ## How a stable limit is obtained
 
-::: {.construction #cons:degree-two-k3-affine-sphere title="The degree-two K3 affine sphere"}
+::: {.construction #cons:degree-two-k3-affine-sphere title="The degree-two K3 affine sphere" defines="integral affine disc $P(\lambda)$; $B(\lambda)$; integral affine sphere; integral affine ramification divisor $R_{\mathrm{IA}}$; $a_i$; $b_i$"}
 
 For the degree-two K3 moduli space $F_2$, let $K$ be a fundamental chamber of the Coxeter fan in $N=U\oplus E_8(-1)^2\oplus A_1(-1)$. A class $\lambda\in K$ determines a nef class $L$ on the rational surface $T$ used in [@AET23, §§5–6]. First take $\lambda$ in the open chamber, with all length parameters positive. Start with the moment polygon of a toric model of $(T,L)$. It has eighteen sides, indexed $0,\ldots,17$. Perform Symington surgeries of positive sizes $b_{18},b_{19},b_{20}$ on sides $0,6,12$. The resulting integral affine disc $P(\lambda)$ has three interior $I_1$ singularities [@AET23, Construction 6.1].
 
@@ -280,7 +280,7 @@ The ramification divisor $R_Z \in \abs{M}$ of $\rho$ is ample, and the pair $(Z,
 Hence $\fentwo$ has a compactification $\ksbacpt{\fentwo}$ in the KSBA moduli space of pairs $(Z, \eps R_Z)$ with semi log canonical singularities, $K_Z \equiv 0$ and $R_Z$ an ample $\QQ$-Cartier divisor [@AEGS25, Def. 2.10].
 :::
 
-::: {.definition #def:coble-descended-ramification title="The descended ramification divisor $R_{\bar S}$ of a stable limit"}
+::: {.definition #def:coble-descended-ramification title="The descended ramification divisor $R_{\bar S}$ of a stable limit" defines="descended ramification divisor; $R_{\bar S}$"}
 
 Let $(\bar S, \eps R_{\bar S})$, $0 < \eps \ll 1$, be a KSBA stable limit of the pairs $(Z, \eps R_Z)$ of @thm:fen2-ksba-pair, and let $\rho \colon \bar S \to W$ be the morphism to the quotient by the descended del Pezzo involution, so that $\bar S$ is the quotient of a K3 stable limit by the Enriques involution (@prop:fen2-limits-are-k3-quotients).
 Then $R_{\bar S}$ is the divisorial part of the ramification divisor of $\rho$ that is not contained in the double locus of $\bar S$ [@AEGS25, §2.4, printed p. 588].
@@ -411,7 +411,7 @@ Two qualifications belong with that. The enumeration is exhaustive over the subg
 
 ## The dictionary from the contracted curve to the boundary lattice
 
-::: {.definition #def:coble-marking-dictionary title="The marked root of a degeneration at a marked cusp" defines="vanishing class; marked root"}
+::: {.definition #def:coble-marking-dictionary title="The marked root of a degeneration at a marked cusp" defines="$K_I$; vanishing class; $\nu_\xi$; marked root; $\kappa_{[I]}(\xi)$"}
 
 Let $[I]$ be a marked $0$-cusp, $\eta_I$ a representative of its isotropic line, and $K_I = \eta_I^{\perp\ten}/\ZZ\eta_I$; let $\delta$ be the Heegner vector of @lem:coble-heegner-vector, so that $\delta^{\perp\ten} = T_\Co$.
 Let $\xi$ be a degeneration at $[I]$ whose general member is a smooth degree-two Enriques pair, whose K3 cover is $X$, whose KSBA limit is $(\bar S,\eps R_{\bar S})$, and which meets the Coble locus transversally at the parameter $0$, where the K3 cover acquires its ordinary double point.

@@ -17,7 +17,7 @@ Let $\semitorfan = \theset{\semifan{F}_k}_{k=1}^5$ be the collection of folded s
    There is a classifying morphism $\normalize{B}\to\ksbacpt{\fentwo}$, and it is finite [@AEGS25, proof of Thm. 5.9].
 :::
 
-::: {.notation #not:sterk-cusp-labels title="Two indexings of the boundary"}
+::: {.notation #not:sterk-cusp-labels title="Two indexings of the boundary" defines="$i_1\dots i_k$"}
 
 The $0$-cusps carry Sterk's numbering $1,\dots,5$, as in the five-cusp example (@ex:fen2_five_cusps). A $1$-cusp is denoted $i_1\dots i_k$ when its closure contains the $0$-cusps $i_1,\dots,i_k$ [@AEGS25 Not. 3.1]; there are nine of them,
 $$
@@ -129,7 +129,7 @@ is unique up to the action of $\Orth(\lkt)$ [@AEGS25, Lem. 2.4].
 Taking orthogonal complements turns this into the chain $U(2)\hookrightarrow U(2)\oplus E_8(2)\hookrightarrow\lkt$. Nikulin's primitive embedding theorem gives uniqueness of the second inclusion [@Nik79, Thm. 1.14.4]. After scaling by $2$, uniqueness of the first reduces to the embedding $U\hookrightarrow U\oplus E_8$: its perpendicular is $E_8$, which determines the embedding up to isometry. Every isometry of $\tdp$ extends to one of $\lkt$ by the gluing and surjectivity results of [@Nik79, Props. 1.5.2, 3.6.3]. Thus an isometry taking one embedded copy of $\ten$ to another extends over the full chain [@AEGS25, proof of Lem. 2.4].
 :::
 
-::: {.construction #cons:fen2-cusp-involutions title="The five cusp folding involutions"}
+::: {.construction #cons:fen2-cusp-involutions title="The five cusp folding involutions" defines="cusp folding involution; $\overline{T}_{\mathrm{En}}$; $\overline{T}_{\mathrm{dP}}$; $J$"}
 
 Let $e\in\ten$ be a primitive isotropic vector.
 Let $\overline{T}_{\mathrm{En}} = e^\perp/e$ in $\ten$ and $\overline{T}_{\mathrm{dP}} = e^\perp/e$ in $\tdp$, so that $\overline{T}_{\mathrm{En}}\subset\overline{T}_{\mathrm{dP}}$.

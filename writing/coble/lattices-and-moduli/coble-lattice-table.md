@@ -68,7 +68,7 @@ The exception is the row with $\delta = 0$, where $N$ is not of that shape but $
 Finally $K_S^2=-n$: since $-2K_S=C=C_1+\cdots+C_n$ with $C_i^2=-4$ and $C_i\cdot C_j=0$, $K_S^2=\tfrac14C^2=-\tfrac14\cdot4n=-n$, which is the entry in the $K_{\mathrm V}^2$ column, and $K_S^2=9-\abs{\Sigma}$ together with $K_S^2=-n$ fixes $\abs{\Sigma}=9+n$.
 :::
 
-::: {#not:coble-table-invariants .notation title="Coble table invariants"}
+::: {#not:coble-table-invariants .notation title="Coble table invariants" defines="$l$; $\delta$"}
 
 In @tbl-coble-lattices, $l$ is the invariant $a(M)$ of @def:p-elementary and $\delta$ is the coparity $\delta_M$ of @def:p-elementary.
 In [@CDL25, Table 5.1, p. 553] the number $n$ of components of $C$ is written $k$, the number $\abs{\Sigma}$ of blown-up points is written $N$, and $a(M)$ is written $l$.

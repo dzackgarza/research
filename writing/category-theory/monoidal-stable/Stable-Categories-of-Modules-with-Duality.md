@@ -2,7 +2,7 @@
 
 ## Rings with involution and duality {#sec-ring-with-involution}
 
-::: {.definition #def:ring-with-involution title="Involutions and the duality functor" defines="involution; duality functor; }$ is an $A$-module by $(a\cdot f)(x)=f(x)\\,\bar a$, and where the dual of $f\colon M\to N$ is $f^{; }\to M^{"}
+::: {.definition #def:ring-with-involution title="Involutions and the duality functor" defines="involution; $\bar a$; duality functor; $(-)^{*}$; $f^{*}$; $\operatorname{can}_M$"}
 
 An *involution* on a ring $A$ is a ring isomorphism $A\to A^{\opop}$, written $a\mapsto\bar a$, with $\bar{\bar a}=a$ for every $a\in A$.
 It defines the *duality functor*
@@ -21,7 +21,7 @@ $$
 is an isomorphism [@Ran98, §20A, paragraph before Def. 20.1].
 :::
 
-::: {.definition #def:epsilon-symmetric-form title="$\epsilon$-symmetric and $\epsilon$-quadratic forms" defines="$\epsilon$-symmetric form; nonsingular; $\epsilon$-quadratic form; }$ modulo the relation $\psi\sim\psi+\chi-\epsilon\chi^{; $\epsilon$-symmetrization; }$ of a morphism $M\to M^{"}
+::: {.definition #def:epsilon-symmetric-form title="$\epsilon$-symmetric and $\epsilon$-quadratic forms" defines="$\epsilon$-symmetric form; nonsingular $\epsilon$-symmetric form; $\epsilon$-quadratic form; $\epsilon$-symmetrization"}
 
 Let $\epsilon\in A$ be a central unit with $\bar\epsilon=\epsilon^{-1}$.
 An *$\epsilon$-symmetric form* $(M,\phi)$ is a finitely generated projective $A$-module $M$ together with an $A$-module morphism $\phi\colon M\to M^{*}$ making the triangle
@@ -52,7 +52,7 @@ For $M$ finitely generated projective, the hyperbolic form of @def:hyperbolic-fo
 
 ## Complexes, duality, and $L$-groups {#sec-poincare-complexes}
 
-::: {.definition #def:chain-complexes title="Chain complexes in an additive category" defines="chain complex"}
+::: {.definition #def:chain-complexes title="Chain complexes in an additive category" defines="chain complex; chain map; $\mathbf{Ch}(\mca)$"}
 
 Let $\mca$ be an additive category.
 A *chain complex* in $\mca$ is a family of objects $C_n$ together with morphisms $d_n\colon C_n\to C_{n-1}$ satisfying $d_{n-1}d_n=0$.
@@ -77,7 +77,7 @@ Normalization throws away the degenerate simplices: the quotient of $X_n$ by the
 Enough projectives is not used; the statement is for any abelian $\mca$.
 :::
 
-::: {.definition #def:comonad-resolution title="Comonad resolutions and the bar construction"}
+::: {.definition #def:comonad-resolution title="Comonad resolutions and the bar construction" defines="comonad resolution; $\bot$; bar resolution"}
 
 Let $F\colon\mcc\to\mca$ be left adjoint to $U\colon\mca\to\mcc$.
 The composite $\bot=FU$, with counit $\eps\colon\bot\Rightarrow\id_{\mca}$ and comultiplication built from the unit, is a comonad on $\mca$ [@Wei94, Def. 8.6.1, Main Application 8.6.2].
@@ -85,7 +85,7 @@ For an object $X$ of $\mca$ the associated augmented simplicial object has $\bot
 For $\mca=A\text{-}\mathbf{Mod}$ and $F$ the free module functor this is the bar resolution, and it computes the derived functors of an additive functor out of $\mca$.
 :::
 
-::: {.definition #def:n-dual-complex title="The $n$-dual of a complex" defines="$n$-dual; }}=(-1)^{r}(d_C)^{"}
+::: {.definition #def:n-dual-complex title="The $n$-dual of a complex" defines="$C^{r}$; $n$-dual"}
 
 Let $A$ be a ring with involution and $C$ an $A$-module chain complex, and write $C^{r}=(C_r)^{*}$.
 The *$n$-dual* $C^{n-*}$ is the $A$-module chain complex with
@@ -97,7 +97,7 @@ $$
 [@Ran98, §20A, paragraph after Def. 20.1].
 :::
 
-::: {.definition #def:poincare-complex title="Algebraic Poincaré complexes and $L$-groups" defines="$n$-dimensional $\epsilon$-symmetric Poincaré complex; $n$-dimensional $U$-intermediate $\epsilon$-symmetric $L$-group"}
+::: {.definition #def:poincare-complex title="Algebraic Poincaré complexes and $L$-groups" defines="$n$-dimensional $\epsilon$-symmetric Poincaré complex; $\epsilon$-transposition involution; $T_{\epsilon}$; $n$-dimensional $U$-intermediate $\epsilon$-symmetric $L$-group; $L^{n}_{U}(A,\epsilon)$; $L^{U}_{n}(A,\epsilon)$"}
 
 An *$n$-dimensional $\epsilon$-symmetric Poincaré complex* over a ring with involution $A$ is a pair $(C,\phi)$ consisting of an $n$-dimensional $A$-module chain complex $C$ and an $\epsilon$-symmetric structure $\phi$ on $C$ whose component $\phi_0\colon C^{n-*}\to C$ is a chain equivalence; the $\epsilon$-quadratic case replaces $\phi$ by an $\epsilon$-quadratic structure $\psi$ and requires $(1+T_{\epsilon})\psi_0$ to be a chain equivalence, where $T_{\epsilon}$ is the $\epsilon$-transposition involution on $C\tensor_AC$ given by $x\tensor_A y\mapsto(-1)^{pq}\epsilon\,y\tensor_A x$ for $x\in C_p$ and $y\in C_q$ [@Ran98, Def. 20.2].
 For a $*$-invariant subgroup $U\iscontainedin\widetilde K_0(A)$, the *$n$-dimensional $U$-intermediate $\epsilon$-symmetric $L$-group* $L^{n}_{U}(A,\epsilon)$ and its $\epsilon$-quadratic counterpart $L^{U}_{n}(A,\epsilon)$ are the cobordism groups of such complexes with $[C]\in U$ [@Ran98, Def. 20.10].
@@ -153,7 +153,7 @@ The corresponding $\infty$-categorical constructions are @def:loops-suspension, 
 
 ## Stabilization {#sec-stabilization-of-modules}
 
-::: {.definition #def:stable-infinity-category title="Stable $\infty$-categories" defines="stable"}
+::: {.definition #def:stable-infinity-category title="Stable $\infty$-categories" defines="stable $\infty$-category"}
 
 An $\infty$-category $\mcc$ is *stable* if it has a zero object, every morphism of $\mcc$ admits a kernel and a cokernel, and a triangle in $\mcc$ is exact if and only if it is coexact [@Lur09, Def. 2.9].
 The homotopy category of a stable $\infty$-category is triangulated [@Lur09, Thm. 3.11], a stable $\infty$-category admits all finite limits and colimits [@Lur09, Prop. 4.4], and on it the suspension and loop functors of @def:loops-suspension are mutually inverse equivalences [@Lur09, §3, paragraph before Rmk. 3.3].
@@ -168,7 +168,7 @@ $$
 $$
 A pointed $\mcc$ is stable if and only if it admits finite limits and colimits and a square in $\mcc$ is a pushout if and only if it is a pullback [@Lur09, Prop. 4.4].
 
-::: {.definition #def:prespectrum title="Prespectrum and spectrum objects" defines="prespectrum object; structure maps; spectrum object"}
+::: {.definition #def:prespectrum title="Prespectrum and spectrum objects" defines="prespectrum object; $E_n$; structure map; $\sigma_n$; $\eps_n$; spectrum object; $\mathrm{Sp}(\mcc)$"}
 
 Let $\mcc$ be an $\infty$-category.
 A *prespectrum object* of $\mcc$ is a functor $X\colon\mathrm N(\mathbf Z\times\mathbf Z)\to\mcc$ whose value $X(i,j)$ is a zero object of $\mcc$ whenever $i\neq j$; write $E_n=X(n,n)$ [@Lur09, Def. 8.1, Rmk. 8.3].
@@ -227,14 +227,14 @@ Taking $\mca=A\text{-}\mathbf{Mod}$ places the complexes of @def:poincare-comple
 
 ## Ring spectra and trace invariants {#sec-ring-spectra-trace}
 
-::: {.definition #def:ring-spectrum title="Ring spectra and their modules" defines="$B$-algebra; enveloping $B$-algebra"}
+::: {.definition #def:ring-spectrum title="Ring spectra and their modules" defines="$B$-algebra; module spectrum; enveloping $B$-algebra; $A^{e}$"}
 
 Let $B$ be a commutative $S$-algebra.
 A *$B$-algebra* is a monoid in the symmetric monoidal category of $B$-modules under $\wedge_B$, and a module spectrum over it is a module for that monoid [@EKMM07, Def. VII.1.1].
 The *enveloping $B$-algebra* of a $B$-algebra $A$ is $A^{e}=A\wedge_B A^{\opop}$.
 :::
 
-::: {.definition #def:thh title="Topological Hochschild homology" defines="topological Hochschild homology"}
+::: {.definition #def:thh title="Topological Hochschild homology" defines="topological Hochschild homology; $THH^{B}(A;M)$"}
 
 For a $B$-algebra $A$ and an $(A,A)$-bimodule $M$, the *topological Hochschild homology* of $A$ with coefficients in $M$ is the derived smash product
 $$

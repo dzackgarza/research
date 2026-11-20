@@ -5,7 +5,7 @@
 A generalized element of $X$ with domain $T$ is a morphism $T\to X$ (@def:generalized-element).
 If $F\colon C^{\opop}\to\mathbf{Set}$ is a presheaf, an element $x\in F(T)$ is the object $(T,x)$ of $\int_C F$ defined in @def:category-of-elements.
 
-::: {.definition #def:element-functor title="Elements as maps from a corepresenting object"}
+::: {.definition #def:element-functor title="Elements as maps from a corepresenting object" defines="element; corepresenting object"}
 If a concrete functor $U\colon C\to\mathbf{Set}$ is corepresented by $P$, a specified natural isomorphism
 $$
 U\cong\Hom_C(P,-)
@@ -72,7 +72,7 @@ A relation or morphism involving the images is formed in $E$ and does not identi
 
 ## Solution functors {#sec-solution-functors}
 
-::: {.definition #def:solution-presheaf title="Solution presheaves as equalizers"}
+::: {.definition #def:solution-presheaf title="Solution presheaves as equalizers" defines="solution presheaf; $\operatorname{Sol}$; universal solution"}
 Let $A,B\colon C^{\opop}\to\mathbf{Set}$ be presheaves and let $\alpha,\beta\colon A\Rightarrow B$ be natural transformations.
 Their equalizer
 $$

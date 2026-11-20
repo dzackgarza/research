@@ -1,6 +1,6 @@
 # Higher categories and universes {#sec-higher-categories-universes}
 
-::: {.definition #def:universe title="Universe and decoded objects" defines="$\mcu$-small"}
+::: {.definition #def:universe title="Universe and decoded objects" defines="$\mcu$-small morphism; decoded object; decoding functor $\operatorname{Dec}_{\mcu}$; $[x,y]_{\mcu}$"}
 
 Work in an external cartesian closed $(\infty,\infty)$-category $\mck$ with pullbacks and terminal object $*$.
 Fix a monoidal closed $(\infty,\infty)$-category $\mcu$ internal to $\mck$, and use its canonical self-enrichment.
@@ -84,7 +84,7 @@ Its external decoding, denoted $[x,y]_{\mcu}$, is defined by the cartesian squar
 The size convention, the universe fibration, and the decoding functor are interpreted in the fixed external category $\mck$.
 :::
 
-::: {.definition #def:family-classifier title="Families and classifiers" defines="family over $b$; $\mathcal M$-family over $b$; classifier for $\mathcal M$"}
+::: {.definition #def:family-classifier title="Families and classifiers" defines="family over $b$; decoded arrow; $G^{\sharp}$; $\mathcal M$-family over $b$; $\mathcal M(b)$; classifier for $\mathcal M$"}
 
 For points $b,c\colon *\to\mcu$, a *family over $b$* is a $1$-cell
 $$
@@ -131,7 +131,7 @@ b_{\mathcal M}.
 The representing equivalence includes arrows and all higher cells between families, not only the existence of $F$.
 :::
 
-::: {.definition #def:higher-category title="The category of higher categories"}
+::: {.definition #def:higher-category title="The category of higher categories" defines="$\mathbf{Cat}_{\infty,\infty}$; $\widetilde{\mathbf{Cat}}_{\infty,\infty}$; $p_{\mathcal V}$; higher category; decoded higher category; object of $C$"}
 
 Let $\mathcal M_{\mathrm{cocart}}$ be the replete base-change-stable class of $1$-cells $G$ in $\mcu$ for which $\operatorname{Dec}_{\mcu}(G)$ is a $\mcu$-small cocartesian fibration in $\mck$.
 Assume that it has a classifier
@@ -229,7 +229,7 @@ When $C=\mathbf{Cat}_{\infty,\infty}$, such a point is itself the classifying po
 More generally, a functor $R\colon C\to\mathbf{Cat}_{\infty,\infty}$ sends a point $x\colon *\to C$ to the classifying point $R\circ x$ of a higher category.
 :::
 
-::: {.definition #def:grothendieck-construction title="Categorical families and categories of elements" defines="\to B$, the fiber over $s$ is $\int_; \too\int_"}
+::: {.definition #def:grothendieck-construction title="Categorical families and categories of elements" defines="$F^{\sharp}$; category of elements; $\int_B F^{\sharp}$; fiber over $s$"}
 
 Let $G\colon c\to b$ be a family in $\mcu$, and write
 $$
@@ -277,7 +277,7 @@ $$
 For $B=*$ and $F^{\sharp}=h_C$, this recovers the points $x\colon *\to C$ of @def:higher-category and [@nlab:grothendieck_construction].
 :::
 
-::: {.definition #def:internal-hom title="Local hom-objects"}
+::: {.definition #def:internal-hom title="Local hom-objects" defines="local hom-object; $[x,y]_C$; hom bifunctor $[-,-]_C$; identity point $\id_x$; composition functor; functor higher category $[C,D]_{\mathbf{Cat}_{\infty,\infty}}$"}
 
 For every decoded higher category $C$ and points $x,y\colon *\to C$, fix a classifying point
 $$
@@ -333,7 +333,7 @@ $$
 $$
 :::
 
-::: {.definition #def:cells title="Higher cells"}
+::: {.definition #def:cells title="Higher cells" defines="$0$-cell; $1$-cell; $2$-cell; $3$-cell; higher cell"}
 
 A $0$-cell of $C$ is a point $x\colon *\to C$.
 For $0$-cells $x,y$, a $1$-cell is a point
@@ -382,7 +382,7 @@ $$
 since $s(\xi)$ and $t(\xi)$ are parallel cells of the same iterated hom-object.
 :::
 
-::: {.definition #def:equivalence-of-categories title="Equivalences" defines="structure of reversibility; invertible"}
+::: {.definition #def:equivalence-of-categories title="Equivalences" defines="structure of reversibility; invertible cell; equivalence; $C\simeq D$"}
 
 A *structure of reversibility* is a family $\mcr$ of positive-dimensional cells in the iterated hom-objects such that, for every cell
 $$
@@ -417,7 +417,7 @@ $$
 Write $C\simeq D$ when such an equivalence has been chosen.
 :::
 
-::: {.definition #def:core title="Underlying homotopy type and core"}
+::: {.definition #def:core title="Underlying homotopy type and core" defines="underlying homotopy type; $\Pi_\infty$; core; $C^{\simeq}$"}
 
 Let $\mcs=\mathbf{Types}$ and let
 $$
@@ -436,7 +436,7 @@ is the underlying homotopy type obtained by inverting every morphism.
 The right adjoint $C\mapsto C^\simeq$ is the core obtained by retaining every object and only the equivalences [@Lur18c, Tags 01DQ and 02F5].
 :::
 
-::: {.definition #def:bicomplete-cat-infinity title="Limits, loops, and suspensions" defines="\times_X"}
+::: {.definition #def:bicomplete-cat-infinity title="Limits, loops, and suspensions" defines="loop object; $\Omega_xX$; suspension; $\Sigma A$"}
 
 The higher category $\mathbf{Cat}_{\infty,\infty}$ has an initial object $\varnothing$ and a terminal object $*$, and it is bicomplete.
 For a pointed higher category $(X,x)$, where $x\colon *\to X$, define
@@ -463,7 +463,7 @@ A
 The two coprojections $*\to\Sigma A$ make $\Sigma A$ bipointed.
 :::
 
-::: {.definition #def:spheres title="Spheres" defines="\from\varnothing\to; \amalg"}
+::: {.definition #def:spheres title="Spheres" defines="sphere; $S^{-1}$; $S^{n}$"}
 
 Define
 $$
@@ -488,7 +488,7 @@ For hom-objects, $[\varnothing,C]\simeq*$ for every $C$, since $\varnothing$ is 
 The coproduct $*\amalg*$ is neither initial nor terminal, so $\mathbf{Cat}_{\infty,\infty}$ has no zero object.
 :::
 
-::: {.definition #def:B01-construction title="The $B_{01}$ construction"}
+::: {.definition #def:B01-construction title="The $B_{01}$ construction" defines="bipointed higher category; endpoint hom functor; $\Omega_{01}$; $B_{01}$"}
 
 The higher category of bipointed higher categories is the comma category
 $$
@@ -527,7 +527,7 @@ The suspension $\Sigma A$ is the pushout in @def:bicomplete-cat-infinity.
 The object $B_{01}A$ is characterized by the adjunction $B_{01}\dashv\Omega_{01}$.
 :::
 
-::: {.definition #def:walking-arrow title="Walking arrows and ordinal categories"}
+::: {.definition #def:walking-arrow title="Walking arrows and ordinal categories" defines="$[0]$; $[1]$; $s$; $t$; ordinal category $[n]$; walking chain"}
 
 Define
 $$
@@ -549,7 +549,7 @@ $$
 is the higher category of functors $[n]\to C$ and their higher cells.
 :::
 
-::: {.definition #def:mapping-spaces title="Walking-arrow presentation and mapping types" defines="t^"}
+::: {.definition #def:mapping-spaces title="Walking-arrow presentation and mapping types" defines="underlying mapping type; $\operatorname{Map}_C(x,y)$; $\operatorname{Map}_{\mathbf{Cat}_{\infty,\infty}}(C,D)$"}
 
 Precomposition with $s$ and $t$ gives
 $$
@@ -591,14 +591,14 @@ $$
 $$
 :::
 
-::: {.definition #def:initial-terminal title="Initial, terminal, and contractible objects" defines="contractible"}
+::: {.definition #def:initial-terminal title="Initial, terminal, and contractible objects" defines="terminal object; initial object; contractible higher category"}
 
 An object $t\colon*\to C$ is terminal if $\operatorname{Map}_C(x,t)$ is contractible for every $x\colon*\to C$.
 An object $i\colon*\to C$ is initial if $\operatorname{Map}_C(i,x)$ is contractible for every $x\colon*\to C$.
 A higher category is *contractible* when it is equivalent to $*$.
 :::
 
-::: {.definition #def:truncated title="Truncated objects and morphisms" defines="$n$-truncated"}
+::: {.definition #def:truncated title="Truncated objects and morphisms" defines="$n$-truncated object; $C_{/Y}$; $n$-truncated morphism; $n$-truncated type; $\tau_{\leq n}^C$"}
 
 Let $C$ be a higher category.
 For an integer $n\geq-2$, an object $X\colon*\to C$ is *$n$-truncated* if $\operatorname{Map}_C(Y,X)$ is an $n$-truncated type for every $Y\colon*\to C$.
@@ -628,7 +628,7 @@ A $(-2)$-truncated type is contractible, a $(-1)$-truncated type is empty or con
 When the inclusion of $n$-truncated objects of $C$ is reflective, write its reflector as $\tau_{\leq n}^C$.
 :::
 
-::: {.definition #def:infinity-category-universe title="The truncation tower" defines="$n$-category structure"}
+::: {.definition #def:infinity-category-universe title="The truncation tower" defines="$T_{\leq n}$; $\mathbf{Cat}_n$; $\iota_n$; $\tau_{\leq n}$; $\tau_{\leq n}^{\mathrm R}$; $n$-category structure; $\mathbf{Cat}_n^{\mathrm{loc}}$; $[C,D]_{\mathbf{Cat}_{\infty,\infty}}^{\leq n}$"}
 
 For each integer $n\geq-2$, assume an idempotent truncation endomorphism
 $$
@@ -718,7 +718,7 @@ Both $\varnothing$ and $*$ are $(-1)$-truncated: $\operatorname{Map}(Y,*)$ is co
 So $\mathbf{Cat}_{-1}$ contains the two truth values $\varnothing$ and $*$, and the map $\mathbf{Cat}_{-2}\to\mathbf{Cat}_{-1}$ of the tower is the inclusion of $*$.
 :::
 
-::: {.definition #def:equivalence-of-objects title="Equivalence of objects" defines="equivalence"}
+::: {.definition #def:equivalence-of-objects title="Equivalence of objects" defines="equivalence; $\operatorname{Equiv}_C(X,Y)$; $X\simeq Y$"}
 
 Let $C$ be a higher category and let $X,Y\colon*\to C$ be objects.
 A morphism $f\colon X\to Y$ is an *equivalence* if the cell $f\colon*\to[X,Y]_C$ is invertible in the sense of @def:equivalence-of-categories.
@@ -730,7 +730,7 @@ be the union of the components that consist of equivalences.
 Write $X\simeq Y$ for the claim that $\operatorname{Equiv}_C(X,Y)$ is nonempty.
 :::
 
-::: {.definition #def:isomorphism-of-objects title="Isomorphisms and $n$-equivalences" defines="$0$-equivalence; $n$-equivalence; isomorphism"}
+::: {.definition #def:isomorphism-of-objects title="Isomorphisms and $n$-equivalences" defines="$0$-equivalence; $n$-equivalence; isomorphism; $\operatorname{Equiv}_{C,n}(X,Y)$; $\operatorname{Isom}_C(X,Y)$; $X\simeq_n Y$; $X\cong Y$"}
 
 Let $C$ be a higher category and let $f\colon x\to y$ be a cell of $C$, with $x,y$ in an iterated hom-object of $C$.
 Define the $n$-equivalences by induction on $n\geq0$ [@OR23, Definitions 1.1.8 and 1.4.3]:
@@ -753,7 +753,7 @@ be the union of the components that consist of isomorphisms.
 Write $X\simeq_n Y$ when $\operatorname{Equiv}_{C,n}(X,Y)$ is nonempty, and $X\cong Y$ when $\operatorname{Isom}_C(X,Y)$ is nonempty.
 :::
 
-::: {.definition #def:equality-of-objects title="Equality"}
+::: {.definition #def:equality-of-objects title="Equality" defines="definitional equality; $\operatorname{Eq}(X,Y)$; $X=Y$"}
 
 Definitional equality is judgmental equality in the chosen formal language.
 For objects $X,Y$, $\operatorname{Eq}(X,Y)$ is the proposition type of ways $X$ is equal to $Y$: a $(-1)$-truncated type (@def:truncated).

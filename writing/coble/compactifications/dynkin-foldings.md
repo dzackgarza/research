@@ -1,6 +1,6 @@
 # Foldings of Dynkin diagrams {#sec-dynkin-foldings}
 
-::: {#not:folding-sign-convention .notation title="Sign convention"}
+::: {#not:folding-sign-convention .notation title="Sign convention" defines="negative definite root lattice"}
 
 Root lattices are negative definite and roots have norm $-2$ (@def:root-lattice).
 :::
@@ -22,7 +22,7 @@ This is [@Kac90, Prop. 7.9(b), (e), (f)].
 
 ## Folded roots and folded root systems
 
-::: {.definition #def:folded-root title="Folded root systems" defines="folded root; folded root system"}
+::: {.definition #def:folded-root title="Folded root systems" defines="$[\alpha_i]$; folded root; folded root system; $\beta_{[\alpha_i]}$; $\Phi^G$"}
 
 Let $L$ be a lattice containing a root system $\Phi$ (@def:root-system-base) and $G \subset \Orth(L)$ a finite group preserving $\Phi$.
 Given a simple root $\alpha_i \in \Phi$, let $[\alpha_i] \subset \Phi$ denote its $G$-orbit.
@@ -60,7 +60,7 @@ In each case the type is the Langlands dual of the type of the fixed point subal
 
 ## The root-folding criterion for $\tdp$
 
-::: {#not:short-and-long-roots-tdp .notation title="Short and long roots of $\tdp$" defines="short roots; long roots"}
+::: {#not:short-and-long-roots-tdp .notation title="Short and long roots of $\tdp$" defines="short root; $\Phi^2$; long root; $\Phi^4$"}
 
 $\Phi^2$ denotes the **short roots** ($(-2)$-roots) and $\Phi^4$ the **long roots** ($(-4)$-roots, of divisibility $2$) of @def:k-root.
 :::
@@ -137,7 +137,7 @@ The last statement and the list (1)--(3) together are the forward direction of [
 
 ## Mirror moves
 
-::: {.definition #def:mirror-move title="Mirror moves" defines="mirror move; Odd/simple; Even, ordinary; Even, characteristic"}
+::: {.definition #def:mirror-move title="Mirror moves" defines="mirror move; $\overline{T}_\eta$"}
 
 A **mirror move** is a lattice-theoretic operation governed by the existence of a primitive isotropic vector $\eta \in T$ of a specified type and splitting [@AE22, Def. 5.6, printed p. 23]:
 

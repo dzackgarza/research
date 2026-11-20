@@ -4,7 +4,7 @@ Let $L$ be a nondegenerate indefinite even integral lattice of rank at least $3$
 
 ## Adelic determinant and spinor data
 
-::: {.definition #def:mm-adelic-det-spinor title="Adelic determinant–spinor character" defines="adelic determinant–spinor group"}
+::: {.definition #def:mm-adelic-det-spinor title="Adelic determinant–spinor character" defines="$\Gamma_p$; $\Gamma_{p,0}$; adelic determinant–spinor group; $\Gamma_{\mathbb A_f}$; $\sigma_{\mathbb A_f}$; $\Gamma_\bQ$"}
 
 For each prime $p$, write
 $$
@@ -28,7 +28,7 @@ Write $\Gamma_\bQ\hookrightarrow\Gamma_{\mathbb A_f}$ for the diagonal image of
 $\Gamma_\bQ:=\theset{\pm1}\times\bQ^\times/(\bQ^\times)^2$.
 :::
 
-::: {.definition #def:mm-integral-spinor-data title="Integral determinant–spinor images"}
+::: {.definition #def:mm-integral-spinor-data title="Integral determinant–spinor images" defines="discriminant kernel; $\widetilde\Orth(\widehat L)$; $\Sigma(L)$; $\Sigma^\sharp(L)$; $K_L$"}
 
 The action of $\Orth(\widehat L)$ on the quadratic discriminant form (@def:discriminant) defines the discriminant kernel
 $$
@@ -57,7 +57,7 @@ In particular, $K_L=\Gamma_\bQ\cap\Sigma(L)$ inside $\Gamma_{\mathbb A_f}$ [@MM0
 
 ## The obstruction and genus groups
 
-::: {.definition #def:mm-obstruction-group title="Miranda–Morrison group" defines="Miranda–Morrison obstruction group"}
+::: {.definition #def:mm-obstruction-group title="Miranda–Morrison group" defines="Miranda–Morrison obstruction group; $\operatorname{MM}(L)$"}
 
 Define the **Miranda–Morrison obstruction group** $\operatorname{MM}(L)$ by the cokernel sequence in $\mathbf{Ab}$
 $$
@@ -70,7 +70,7 @@ $$
 Thus $\operatorname{MM}(L)$ retains the adelic determinant–spinor obstruction after rational and discriminant-trivial integral isometries are accounted for.
 :::
 
-::: {.definition #def:mm-genus-group title="Genus group" defines="genus group"}
+::: {.definition #def:mm-genus-group title="Genus group" defines="genus group; $g(L)$"}
 
 Define the **genus group** $g(L)$ by the cokernel sequence in $\mathbf{Ab}$
 $$

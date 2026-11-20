@@ -1,12 +1,12 @@
 # Discriminant forms and the genus {#sec-discriminant-genus}
 
-::: {.convention #conv:discriminant-lattice-notation title="Discriminant-form notation"}
+::: {.convention #conv:discriminant-lattice-notation title="Discriminant-form notation" defines="$A_L$; $A_{L,q}$"}
 
 Throughout, $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$.
 Write $A_L$ and $A_{L,q}$ for the bilinear and quadratic discriminant objects of @def:discriminant.
 :::
 
-::: {.definition #def:coble-discriminant-forms title="Length of a lattice"}
+::: {.definition #def:coble-discriminant-forms title="Length of a lattice" defines="length of a finite $\bZ$-module; $\ell(A)$; length of a lattice; $\ell(L)$"}
 
 For a finite $\bZ$-module $A$, let $\ell(A)$ be the minimal cardinality of a set of module generators of $A$ [@Nik80, §1.9].
 Define $\ell(L)\definedas\ell(A_L)$.
@@ -63,7 +63,7 @@ The determinant of the twisted adjoint is $m^{\rank L}$ times the determinant of
 
 ## The genus, class set, and spinor genera
 
-::: {.definition #def:spinor-genus-partition title="Spinor genera" defines="spinor genus"}
+::: {.definition #def:spinor-genus-partition title="Spinor genera" defines="$V$; $\mathbb A_{K,f}$; $\widehat R$; $\widehat L$; $V_{\mathbb A_f}$; $\spinornorm_{\mathbb A_f}$; adelic spinor kernel; $\Theta_{\mathbb A_f}(V)$; spinor genus; $\operatorname{SpinGen}(L)$"}
 
 Let $R$ be the ring of integers of a global field $K$, let
 $L\in\mathbf{Lat}_R^{\mathrm{nd}}$, put $V\definedas L\tensor_RK$, and let
@@ -151,14 +151,14 @@ This is [@CS10, Ch. 15, Thm. 14].
 :::
 ## Mass
 
-::: {.definition #def:mass title="Mass of a lattice genus" defines="mass"}
+::: {.definition #def:mass title="Mass of a lattice genus" defines="mass of a lattice genus; $m(L)$"}
 
 When the genus groupoid (@def:genus) $\operatorname{Gen}(L)$ is essentially finite in the sense of @def:groupoid-cardinality, its **mass** is the groupoid cardinality
 $m(L)\definedas\cardinality{\operatorname{Gen}(L)}$.
 :::
 ## Brown invariant and Milgram's formula
 
-::: {.definition #def:brown-invariant title="Brown invariant" defines="Brown invariant"}
+::: {.definition #def:brown-invariant title="Brown invariant" defines="normalized Gauss sum; $\gamma(A,q)$; Brown invariant; $\operatorname{Br}(A,q)$"}
 
 Let $(A,q)$ be a nondegenerate finite quadratic module with $q\colon A\too\bQ/2\bZ$.
 Its normalized Gauss sum is

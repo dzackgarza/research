@@ -4,7 +4,7 @@ Fix a commutative ring $R$.
 
 ## Generating frames {#sec-generating-frames}
 
-::: {.definition #def:generating-frame title="Generating frames" defines="generating frame"}
+::: {.definition #def:generating-frame title="Generating frames" defines="$\operatorname{GenFrame}_I(R)$; generating frame; generating family"}
 
 Fix a set $I$ and write $R^{(I)}$ for the free $R$-module on $I$.
 The comma category $\bigl(R^{(I)}\downarrow R\text{-}\mathbf{Mod}\bigr)$ has objects the pairs $(M,s)$ with $s\colon R^{(I)}\to M$ an $R$-linear map, and a morphism $(M,s)\to(N,t)$ is an $R$-linear map $f\colon M\to N$ satisfying $fs=t$.
@@ -42,7 +42,7 @@ It is not full: for $I$ a one-element set, $M=N=R$ and $s=t=\id_R$, multiplicati
 A morphism $(M,s)\to(M,s')$ over $\id_M$ is the identity of $M$ together with the requirement $s=s'$, so the fibre has no morphisms other than identities.
 :::
 
-::: {.definition #def:coordinatized-module title="The two morphism conventions"}
+::: {.definition #def:coordinatized-module title="The two morphism conventions" defines="$\operatorname{Coord}_I(R)$"}
 
 Let $\operatorname{Coord}_I(R)$ be the category with the same objects as $\operatorname{GenFrame}_I(R)$ in which a morphism $(M,s)\to(N,t)$ is an arbitrary $R$-linear map $M\to N$.
 Its projection to $R\text{-}\mathbf{Mod}$ is fully faithful, so it is an equivalence onto the replete full subcategory of modules admitting an $I$-indexed generating frame, and by @def:property-structure-stuff it describes a property.
@@ -56,14 +56,14 @@ The coordinatized one is the setting for matrix calculus: a morphism there has a
 The basis case of the pair is @def:based-module and @prop:basis-is-structure.
 :::
 
-::: {.definition #def:cyclic-module title="Cyclic and finitely generated modules" defines="cyclic; finitely generated"}
+::: {.definition #def:cyclic-module title="Cyclic and finitely generated modules" defines="cyclic module; finitely generated module"}
 
 An $R$-module $M$ is *cyclic* if it admits a generating frame indexed by a one-element set, and *finitely generated* if it admits one indexed by a finite set.
 A cyclic module is isomorphic to $R/\Ann_R(x)$ for the image $x$ of the standard generator, and the cyclic modules form a replete full subcategory of the finitely generated ones.
 Finite generation is the property of @def:module-subcategories that asserts that the set of finite generating frames on $M$ is nonempty.
 :::
 
-::: {.definition #def:finite-module title="Finiteness of the underlying set"}
+::: {.definition #def:finite-module title="Finiteness of the underlying set" defines="finite underlying set"}
 
 Finiteness of the underlying set is a property of objects of $\mathbf{Set}$; the modules with finite underlying set are its pullback along the underlying-set functor $R\text{-}\mathbf{Mod}\to\mathbf{Set}$ in the sense of @def:axiom-through-functor.
 This property and finite generation are independent.
@@ -83,7 +83,7 @@ It consists of a finite generating frame $q_M$ together with a finite generating
 The module $M$ is *finitely presented* if it admits a finite presentation.
 :::
 
-::: {.definition #def:presentation-category title="The category of finite presentations"}
+::: {.definition #def:presentation-category title="The category of finite presentations" defines="category of finite presentations; $\operatorname{FinPres}(R)$"}
 
 Let $\operatorname{FinPres}(R)$ be the category whose objects are the finite presentations of @def:finite-presentation and whose morphisms are the commutative diagrams
 
@@ -182,7 +182,7 @@ Since $su(a,b)=a=s(a,b)$, the element $u$ fixes $(M,s)$, so the action of @prop:
 
 ## The free module functor {#sec-free-module-functor}
 
-::: {.definition #def:free-module-functor title="Free modules on a set"}
+::: {.definition #def:free-module-functor title="Free modules on a set" defines="$R^{(-)}$; $\eta_I$"}
 
 Sending a set $I$ to $R^{(I)}$ and a function $\varphi\colon I\to J$ to the $R$-linear map $e_i\mapsto e_{\varphi(i)}$ defines a functor $R^{(-)}\colon\mathbf{Set}\to R\text{-}\mathbf{Mod}$, left adjoint to the underlying-set functor $U$:
 $$

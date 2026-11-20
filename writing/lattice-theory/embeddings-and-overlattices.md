@@ -5,7 +5,7 @@ Throughout, $S$, $T$, and $L$ denote nondegenerate integral lattices. The notati
 
 ## Primitive and saturated sublattices
 
-::: {.definition #def:saturation title="Saturation" defines="saturation; saturated"}
+::: {.definition #def:saturation title="Saturation" defines="saturation; saturated; $\Sat_L(\iota)$"}
 
 Let $\iota\colon S\injects L$ be a morphism of lattices, let
 $\iota_\QQ\colon S_\QQ\injects L_\QQ$ be its base change along $\ZZ\to\QQ$, and let
@@ -79,7 +79,7 @@ Hence $(2)\Longleftrightarrow(6)$.
 
 ## Primitive-embedding groupoid and orbit sets
 
-::: {.definition #def:coble-embedding-equivalence title="The groupoid of primitive embeddings"}
+::: {.definition #def:coble-embedding-equivalence title="The groupoid of primitive embeddings" defines="groupoid of primitive embeddings; $\mathbf{PrimEmb}_S$; $\Emb(S,L)$; fixed-target isomorphism classes; primitive-subobject orbit set"}
 
 Fix a lattice $S$.
 Let $\mathbf{PrimEmb}_S$ be the core of the full subcategory of the undercategory
@@ -108,7 +108,7 @@ $\Orth(S)$-action.
 
 ## Overlattices and gluing
 
-::: {.definition #def:overlattice title="Overlattices and their discriminant subobjects" defines="overlattice"}
+::: {.definition #def:overlattice title="Overlattices and their discriminant subobjects" defines="overlattice; $H_\iota$"}
 
 An **overlattice** of a lattice $S$ is a lattice morphism
 $\iota\colon S\injects L$ whose cokernel $H_\iota$ is finite length, with exact sequence
@@ -213,7 +213,7 @@ $\abs{\disc{S}}=[L_h:S]^2\abs{\disc{L_h}}$.
 Equivariance under $\Orth(S)$ follows from functoriality of $S\mapsto(S^\#,A_S,q_S)$.
 :::
 
-::: {.construction #cons:embedding-gluing-data title="Gluing data of a primitive embedding"}
+::: {.construction #cons:embedding-gluing-data title="Gluing data of a primitive embedding" defines="gluing data; $h_{S,q}$; $h_{T,q}$; $\gamma_q$"}
 
 Let $\iota_S\colon S\injects L$ be a primitive embedding of even lattices with $L$ even, and let
 $\iota_T\colon T\injects L$ represent its orthogonal complement.
@@ -345,7 +345,7 @@ Since $P$ is unimodular, @prop:unimodular-splits gives $L\cong P\oplus P^{\perp 
 
 ## Maximal and split maximal lattices
 
-::: {.definition #def:maximal-lattice title="Maximal lattices" defines="maximal"}
+::: {.definition #def:maximal-lattice title="Maximal lattices" defines="maximal; maximal overlattice"}
 
 An even lattice $L'$ is **maximal** if $A_{L',q}$ has no nonzero isotropic quadratic subobject
 $(H,0)\injects A_{L',q}$.
@@ -725,7 +725,7 @@ which gives the displayed short exact sequence.
 If $L$ is unimodular, then $A_L=0$, so the exact sequence gives $A_{L(m)}\isoto K_m(L)$.
 :::
 
-::: {.definition #def:simultaneous-discriminant-spinor-kernel title="Simultaneous discriminant and spinor kernel"}
+::: {.definition #def:simultaneous-discriminant-spinor-kernel title="Simultaneous discriminant and spinor kernel" defines="simultaneous discriminant and spinor kernel; $\widetilde\Orth^+(L)$"}
 Let $\Orth^+(L)\injects\Orth(L)$ be the spinor kernel of @def:lattice-spinor-kernels. Define $\widetilde\Orth^+(L)$ by the pullback
 ```tikzcd
 \widetilde\Orth^+(L) \arrow[r] \arrow[d] & \widetilde\Orth(L) \arrow[d] \\

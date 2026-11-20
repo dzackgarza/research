@@ -16,7 +16,7 @@ The results are these.
 
 ## The surface and its automorphisms
 
-::: {.notation #not:coble-polarizing-setting title="The surface, its K3 cover and the level-two group" defines="level-two group"}
+::: {.notation #not:coble-polarizing-setting title="The surface, its K3 cover and the level-two group" defines="$\bar C$; $S_\Co$; $e_0$; $\Lambda$; $x_A$; $\mathcal C_\Lambda$; level-two group; $\Gamma_2$"}
 
 On this page $S = \Bl_{p_1,\dots,p_{10}}\PP^2$, the classes $H, E_1,\dots,E_{10}$ and the K3 double cover $f\colon X\to S$ are as in @not:coble-ten-point-blowup, where $p_1,\dots,p_{10}$ are the nodes of an irreducible rational plane sextic $B$ [@DK13, §3, arXiv v1 p. 5].
 The curve $C\iscontainedin S$ is the proper transform of $B$. It is the only member of $\abs{-2K_S}$, it is a smooth rational curve, and $C = -2K_S$ in $\Pic(S)$, so $C^2 = -4$ (@def:coble-surface, @prop:canonical-perp-is-e10).

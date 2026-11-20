@@ -15,7 +15,7 @@ notes: |-
 
 ## Coordinates
 
-::: {#not:coordinates-on-l-20-2-0 .notation title="Coordinates on $L_{20,2,0}$"}
+::: {#not:coordinates-on-l-20-2-0 .notation title="Coordinates on $L_{20,2,0}$" defines="$L_{20,2,0}$; $e,f$; $e',f'$; $\alpha_i$; $\tilde\alpha_i$; $w_i$; $\tilde w_i$"}
 
 Work in $L_{20,2,0} = U \oplus U(2) \oplus E_8 \oplus E_8$, with $e,f$ the $U$ basis, $e',f'$ the $U(2)$ basis, $\alpha_i$ and $\tilde\alpha_i$ the simple roots of the two $E_8$ summands, and $w_i, \tilde w_i$ the bases of the dual lattices $E_8^\# = E_8$ dual to them.
 :::
@@ -63,19 +63,19 @@ Under $\tilde\eta$ the Coble $0$-cusp maps to the $0$-cusp $(18,0,0)_1 = U\oplus
 
 Folding is performed by summing a root with its image under the relevant involution, $s = v + \sigma(v)$.
 
-::: {#cons:sterk-1-root-vectors .construction title="Sterk 1: 12 nodes, all of norm -4"}
+::: {#cons:sterk-1-root-vectors .construction title="Sterk 1: 12 nodes, all of norm -4" defines="$s^1_k$"}
 
 The involution is $v_k\leftrightarrow v_{k+8}$ for $1\le k\le 8$, $v_{17}\leftrightarrow v_{19}$, $v_{18}\leftrightarrow v_{20}$, with $v_{21}$ and $v_{22}$ fixed; it preserves the products of @prop:eighteen-two-zero-vinberg-diagram.
 The nodes are $s^1_k = v_k + v_{k+8}$ for $1\le k\le 8$, $s^1_9 = v_{17}+v_{19}$, $s^1_{10} = v_{18}+v_{20}$, $s^1_{11} = v_{21}$ and $s^1_{12} = v_{22}$.
 Their Gram matrix has rank $10$.
 :::
 
-::: {#cons:sterk-2-root-vectors .construction title="Sterk 2: 10 nodes, norms $(-4^{\times 8}, -2, -4)$"}
+::: {#cons:sterk-2-root-vectors .construction title="Sterk 2: 10 nodes, norms $(-4^{\times 8}, -2, -4)$" defines="$s^2_k$"}
 
 $s^2_k = w_k + w_{18-k}$, together with $s^2_9 = w_9$ and $s^2_{10} = w_{18}+w_{19}$.
 :::
 
-::: {#cons:sterk-3-root-vectors .construction title="Sterk 3: 12 nodes, norms $(-2,-4,-4,-4,-4,-4,-4,-4,-2,-4,-4,-4)$"}
+::: {#cons:sterk-3-root-vectors .construction title="Sterk 3: 12 nodes, norms $(-2,-4,-4,-4,-4,-4,-4,-4,-2,-4,-4,-4)$" defines="$w_\alpha$; $I$; $s^3_{11}$; $s^3_{12}$"}
 
 This case is reflection-twisted rather than a plain permutation.
 Set
@@ -87,13 +87,13 @@ $$
 so that $s^3_{11} = I(v_{20})$ and $s^3_{12} = I(v_{18})$.
 :::
 
-::: {#cons:sterk-4-root-vectors .construction title="Sterk 4: 11 nodes, norms $(-2,-4,-4,-4,-4,-4,-4,-4,-2,-4,-4)$"}
+::: {#cons:sterk-4-root-vectors .construction title="Sterk 4: 11 nodes, norms $(-2,-4,-4,-4,-4,-4,-4,-4,-2,-4,-4)$" defines="$s^4_{12}$"}
 
 $s^4_{12} = v_{22}+v_{21}$ is invariant under the involution.
 It has square $v_{21}^2 + v_{22}^2 + 2(v_{21},v_{22}) = -4-4+8 = 0$ (@prop:eighteen-two-zero-vinberg-diagram), so it is not a root and is dropped.
 :::
 
-::: {#cons:sterk-5-root-vectors .construction title="Sterk 5: 14 nodes, norms $(-4^{\times 8}, -2,-2,-2,-2, -4,-4)$"}
+::: {#cons:sterk-5-root-vectors .construction title="Sterk 5: 14 nodes, norms $(-4^{\times 8}, -2,-2,-2,-2, -4,-4)$" defines="$s^5_k$"}
 
 $s^5_k = v_{2k-2} + 2 v_{2k-1} + v_{2k}$.
 :::

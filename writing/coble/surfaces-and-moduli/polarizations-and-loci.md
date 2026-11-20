@@ -103,7 +103,7 @@ Then the K3 surface $X$ has two commuting involutions: the fixed-point-free **En
 The surface $X$ and both involutions are determined by the pair $(Z,[\mcl_Z])$ [@AEGS25, §2.1, Rem. 2.2].
 :::
 
-::: {.definition #def:nl-locus-enriques title="Noether–Lefschetz locus \\mathrm{NL}_{S_{\\mathrm{En}}}" defines="Noether–Lefschetz locus; invariant; Noether–Lefschetz closure"}
+::: {.definition #def:nl-locus-enriques title="Noether–Lefschetz locus \\mathrm{NL}_{S_{\\mathrm{En}}}" defines="Noether–Lefschetz locus; $\mathrm{NL}_{S_{\mathrm{En}}}$; invariant lattice; $\sen$; Noether–Lefschetz closure; $B$"}
 
 The moduli space $\fentwo$ of degree-$2$ numerically polarized Enriques surfaces (@def:enriques-surface) maps to the K3 moduli space $\fttz$ via the canonical morphism $j$ of @lem:fen2_normalization. Its map to the scheme-theoretic image is the normalization; an embedding is not asserted. The image lies in the **Noether–Lefschetz locus** $\mathrm{NL}_{S_{\mathrm{En}}}$ defined by the primitive embedding of the **invariant** (algebraic) lattice of $\ien$,
 $$
@@ -120,7 +120,7 @@ $$
 
 ## Two polarization classes on a Coble surface
 
-::: {.notation #not:coble-ten-point-blowup title="The ten-point blowup and its K3 double cover"}
+::: {.notation #not:coble-ten-point-blowup title="The ten-point blowup and its K3 double cover" defines="ten-point blowup; $S$; $\Pic(S)$; $f$; K3 double cover; $X$"}
 
 In this section, $S = \Bl_{p_1,\dots,p_{10}}\PP^2$ is the ten-point blowup, $\Pic(S) = \generators{H, E_1,\dots,E_{10}}\cong\latI_{1,10}$ is its Picard lattice with $H^2 = 1$, $E_i^2 = -1$ and $H\cdot E_i = E_i\cdot E_j = 0$ for $i\neq j$, and $f\colon X\to S$ is the K3 double cover.
 :::
@@ -160,7 +160,7 @@ An even unimodular lattice of signature $(1,9)$ is isometric to $E_{10}$ by the 
 Finally $C = -2K_S = 6H - 2\Sum_i E_i$ by the description of $K_S$.
 :::
 
-::: {.definition #def:coble-polarization-classes title="The hyperplane class and the degree-2 numerical polarization" defines="}h_\Co$ lies in $f^{; hyperplane class; degree-$2$ [numerical polarization]{.other-sense}; chamber"}
+::: {.definition #def:coble-polarization-classes title="The hyperplane class and the degree-2 numerical polarization" defines="hyperplane class; $H$; $e_0$; degree-$2$ numerical polarization; $h_\Co$; $\tilde h_\Co$; $\mathcal C_X$; $\Delta_X$; chamber; $\mathfrak c$"}
 
 Let $f\colon X\to S$ be the K3 double cover.
 

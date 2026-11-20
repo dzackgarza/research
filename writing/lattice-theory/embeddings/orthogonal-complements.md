@@ -144,7 +144,7 @@ Hence $N_q(L)=\operatorname{lcm}_{1\leq i\leq n}N_q(L_i)$, and the quadratic dis
 
 A primitive totally isotropic sublattice $P\leq L$ determines the cusp lattice $Q=P^{\perp_L}/P$.
 
-::: {.notation #not:isotropic-reduction-setup title="The data of an isotropic reduction"}
+::: {.notation #not:isotropic-reduction-setup title="The data of an isotropic reduction" defines="data of an isotropic reduction; $V$; $W$; $M$; $Q$; $N$; $N_V$; $D(P)$; $H$"}
 
 Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ be integral and let $P\leq L$ be a primitive totally isotropic sublattice of rank $r\geq1$.
 Put

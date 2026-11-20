@@ -2,7 +2,7 @@
 
 Fix a commutative ring $R$ and an $R$-module $W$, the *value module* of the forms below.
 
-::: {.definition #def:form-presheaves title="Bilinear and quadratic form presheaves"}
+::: {.definition #def:form-presheaves title="Bilinear and quadratic form presheaves" defines="$T_R(M)_2$; $\Bil_{R,W}$; $\Gamma_R^2(M)$; $\operatorname{Quad}_{R,W}$"}
 
 For $M\in R\text{-}\mathbf{Mod}$, write
 $$
@@ -48,7 +48,7 @@ $$
 is a presheaf.
 :::
 
-::: {.definition #def:form-categories title="Form categories"}
+::: {.definition #def:form-categories title="Form categories" defines="$\mathcal B_{R,W}$; $\mcq_{R,W}$; variable-value category; $\mathbf{BilMod}_R$; $p_{\mathrm{Bil}}$; $\mathbf{QuadMod}_R$; $p_{\mathrm{Quad}}$"}
 
 For fixed value module $W$, define $\mathcal B_{R,W}$ to have pairs $(M,b)$ with $b\in\Bil_{R,W}(M)$ and morphisms
 $$
@@ -81,7 +81,7 @@ The category-of-elements presentations of $\mathcal B_{R,W}$ and $\mcq_{R,W}$ ar
 Kernel, cokernel, image, and exact-sequence notation below is always taken in the explicitly named form category.
 :::
 
-::: {.definition #def:form-axioms title="Symmetry, alternation, and evenness" defines="symmetric; skew-symmetric; alternating; even"}
+::: {.definition #def:form-axioms title="Symmetry, alternation, and evenness" defines="$U$; $\Delta_M$; $q_b$; $\tau$; symmetric; skew-symmetric; alternating; even"}
 
 Let $U\colon R\text{-}\mathbf{Mod}\to\mathbf{Set}$ be the forgetful functor and let
 $$
@@ -126,7 +126,7 @@ The converse holds when multiplication by $2$ on $W$ is a monomorphism.
 When multiplication by $2$ is an epimorphism, every bilinear form is even.
 :::
 
-::: {.definition #def:polarization title="Adjoints, radicals, and nondegeneracy" defines="nondegenerate; perfect"}
+::: {.definition #def:polarization title="Adjoints, radicals, and nondegeneracy" defines="$b^\sharp$; ${}^\sharp b$; radical; coradical; nondegenerate; perfect"}
 
 For a bilinear module $(M,W,b)$ define
 $$
@@ -172,7 +172,7 @@ If $b$ is symmetric, $b^\sharp={}^\sharp b$, so the two exact sequences are the 
 If $b$ is skew-symmetric, ${}^\sharp b=-b^\sharp$; multiplication by $-1$ on $\Hom_R(M,W)$ induces the unique isomorphisms between the corresponding kernels and cokernels.
 :::
 
-::: {.definition #def:orthogonal-sum title="Orthogonal sum"}
+::: {.definition #def:orthogonal-sum title="Orthogonal sum" defines="orthogonal sum"}
 
 Let $\iota_M\colon M\to M\oplus N$ and $\iota_N\colon N\to M\oplus N$ be the biproduct injections.
 The orthogonal sum $(M,b_M)\perp(N,b_N)$ is the unique bilinear module $(M\oplus N,b_{M\perp N})$ satisfying
@@ -203,7 +203,7 @@ The quadratic form category has the analogous orthogonal sum.
 
 ## Orthogonality {#sec-orthogonality}
 
-::: {.definition #def:orthogonal-complement title="Left and right orthogonal complements" defines="left orthogonal complement; right orthogonal complement; isotropic"}
+::: {.definition #def:orthogonal-complement title="Left and right orthogonal complements" defines="$\lambda_{\iota}^{\mathrm L}$; $\lambda_{\iota}^{\mathrm R}$; left orthogonal complement; ${}^{\perp_b}T$; right orthogonal complement; $T^{\perp_b}$; isotropic"}
 
 Let $(M,W,b)$ be a bilinear module and let $\iota\colon T\injects M$ be a monomorphism of $R$-modules.
 Define
@@ -322,7 +322,7 @@ Applying the order-reversing map to $S\subseteq S^{\perp\perp}$ gives $S^{\perp\
 Hence $S^\perp=S^{\perp\perp\perp}$.
 :::
 
-::: {.definition #def:nondegenerate-reduction title="Nondegenerate reduction" defines="nondegenerate-reduction endofunctor"}
+::: {.definition #def:nondegenerate-reduction title="Nondegenerate reduction" defines="$B^{\mathrm{nd}}$; nondegenerate-reduction endofunctor; $T^\perp$"}
 
 Let $B$ be a symmetric bilinear module and let
 $$
@@ -417,7 +417,7 @@ $$
 by bilinearity; and conversely an invertible $P$ defines a second basis $e'$ of the same form, so congruent matrices are the Gram matrices of one form in two bases [@MH73, I §2.3].
 :::
 
-::: {.definition #def:cartan-matrix title="The Cartan matrix" defines="Cartan matrix; Cartan integers"}
+::: {.definition #def:cartan-matrix title="The Cartan matrix" defines="Cartan matrix; Cartan integer; $d_j$"}
 
 Let $b$ be a symmetric bilinear form on $M$ with values in $R$, and let $\alpha_1,\dots,\alpha_\ell$ be an ordered family in $M$ with each $b(\alpha_j,\alpha_j)$ invertible in $R$.
 The *Cartan matrix* of the family is
@@ -449,7 +449,7 @@ $$
 Here $d_2A_{12}=(-2)(-1)=2=G_{12}$, whereas $d_1A_{12}=(-1)(-1)=1$, so only the second index recovers $G$ from $A$.
 :::
 
-::: {.definition #def:determinant-class title="The determinant"}
+::: {.definition #def:determinant-class title="The determinant" defines="$R^{\bullet}$; $(R^{\bullet})^{2}$; determinant class"}
 
 Write $R^{\bullet}$ for the group of units of $R$ and $(R^{\bullet})^{2}$ for the subgroup of squares of units.
 By @prop:gram-congruence the determinant of a Gram matrix changes by the square of a unit under change of basis, so a perfect form on a free module has a well-defined
@@ -493,7 +493,7 @@ So @prop:alternating-gram fails without its skew-symmetry hypothesis.
 
 ## Tensor product and twisting {#sec-form-tensor}
 
-::: {.definition #def:form-tensor title="Tensor product of forms"}
+::: {.definition #def:form-tensor title="Tensor product of forms" defines="tensor product of forms; $\eps$-symmetric"}
 
 Let $b_M$ have value module $W_M$ and $b_N$ have value module $W_N$.
 There is exactly one bilinear map
@@ -535,7 +535,7 @@ $$
 The Gram matrix is the Kronecker product because $(b_M\tensor b_N)(e_i\tensor f_a,e_j\tensor f_b)=b_M(e_i,e_j)b_N(f_a,f_b)$ by @def:form-tensor, and the determinant identity follows from $\det(A\tensor B)=\det(A)^{n}\det(B)^{m}$ [@MH73, I §5.3], which is the multiplicativity of the determinant applied to the factorization $A\tensor B=(A\tensor I_n)(I_m\tensor B)$.
 :::
 
-::: {.definition #def:form-twist title="Twisting" defines="twist; }b_N=b_M$ and hence $f^{"}
+::: {.definition #def:form-twist title="Twisting" defines="twist; $b(\lambda)$; $M(\lambda)$"}
 
 For $\lambda\in R$ the *twist* $b(\lambda)$ of $(M,b)$ is the form $\lambda b$ on the same module, written $M(\lambda)$.
 Its Gram matrix in a basis is $\lambda G$, its adjoint maps are $\lambda\,b^{\sharp}$ and $\lambda\,{}^{\sharp}b$, and on a free module of rank $n$
@@ -549,7 +549,7 @@ For $\lambda$ a unit it is an isomorphism of categories with inverse $(-)(\lambd
 
 ## Signatures at real places {#sec-signature}
 
-::: {.definition #def:signature title="Signature"}
+::: {.definition #def:signature title="Signature" defines="signature; $\operatorname{sig}(V,b)$; $r$; set of real places; $\Sigma_\infty(R)$; $\operatorname{sig}_\sigma(M,b)$; $\operatorname{sig}_R(M,b)$"}
 
 Let $F$ be an ordered field and let $b$ be a symmetric bilinear form on a finite-dimensional $F$-vector space $V$.
 Define
@@ -609,7 +609,7 @@ For degenerate $b$, let $N$ be a complement of $\radic(V)$.
 Every pairing with $\radic(V)$ vanishes, so $V\cong\radic(V)\perp N$; the restriction $b|_N$ is perfect, because an element of $N$ pairing to zero with $N$ pairs to zero with all of $V$; and the perfect case applied to $N$ gives $V\cong V^{+}\perp V^{-}\perp\radic(V)$ and $p+q+r=\dim V$.
 :::
 
-::: {.definition #def:definiteness title="Definiteness" defines="degenerate; positive definite; negative definite; definite; indefinite; hyperbolic; parabolic"}
+::: {.definition #def:definiteness title="Definiteness" defines="degenerate; positive definite; negative definite; definite; indefinite; hyperbolic; Lorentzian signature; parabolic"}
 
 Let $b$ be a symmetric bilinear form of signature $(p,q,r)$ and set $n=p+q+r$.
 Then $b$ is
@@ -627,13 +627,13 @@ Then $b$ is
 - *parabolic* if $n\geq2$ and $(p,q,r)=(0,n-1,1)$.
 :::
 
-::: {#conv:negative-definite-root-lattices .convention}
+::: {#conv:negative-definite-root-lattices .convention defines="negative definite root lattice"}
 Root lattices are taken negative definite here, so the forms on $A_n$, $D_n$ and $E_n$ are negative definite and the hyperbolic signature is $(1,n-1,0)$.
 :::
 
 ## Isotropy and Witt decomposition {#sec-witt}
 
-::: {.definition #def:hyperbolic-plane title="Rank one forms, the hyperbolic plane, and split forms" defines="hyperbolic plane; split"}
+::: {.definition #def:hyperbolic-plane title="Rank one forms, the hyperbolic plane, and split forms" defines="$\langle u\rangle$; hyperbolic plane; $U$; split"}
 
 For a unit $u\in R^{\bullet}$ write $\langle u\rangle$ for the free module of rank $1$ on a generator $e$ with $b(e,e)=u$.
 Then $\langle u\rangle\cong\langle u'\rangle$ if and only if $u'=\alpha^{2}u$ for some $\alpha\in R^{\bullet}$ [@MH73, I §2.4].
@@ -648,7 +648,7 @@ A perfect symmetric form $b$ on $M$ is *split* if $M$ has a direct summand $N$ w
 Over a ring whose finitely generated projective modules are free and in which $2$ is a unit, a split form is an orthogonal sum of hyperbolic planes, which is @thm:metabolic-is-hyperbolic; this applies to a field of characteristic other than $2$.
 :::
 
-::: {.definition #def:witt-index title="Witt index" defines="Witt index"}
+::: {.definition #def:witt-index title="Witt index" defines="Witt index; $i(V)$"}
 
 The *Witt index* $i(V)$ of a perfect symmetric form on a finite-dimensional vector space $V$ over a field is the greatest dimension of a totally isotropic subspace.
 It satisfies
@@ -689,14 +689,14 @@ The form $x^{2}+y^{2}-3z^{2}$ has signature $(2,1,0)$, so $\min(p,q)=1$, and it 
 For a primitive integral solution of $x^{2}+y^{2}=3z^{2}$, reduction modulo $3$ forces $3\mid x$ and $3\mid y$ because $-1$ is not a square modulo $3$; then $9\mid3z^{2}$ gives $3\mid z$, contradicting primitivity.
 :::
 
-::: {#not:signature-pair-and-integer .notation title="The signature as a pair and as an integer"}
+::: {#not:signature-pair-and-integer .notation title="The signature as a pair and as an integer" defines="signature as a pair; signature at the ordering"}
 For a nondegenerate symmetric form over an ordered field $F$, the signature is the pair $(p,q)$ of @def:signature.
 [@MH73, III §2.5] calls the integer $p-q$ the signature at the ordering; it depends only on the Witt class, is additive over orthogonal sums and multiplicative over tensor products, and so defines a ring homomorphism $W(F)\to\bZ$ [@MH73, III Lem. 2.6].
 :::
 
 ## Diagonal and polarization {#sec-polarization-functors}
 
-::: {.definition #def:polarization-functors title="Diagonal and polarization functors"}
+::: {.definition #def:polarization-functors title="Diagonal and polarization functors" defines="$\diag$; diagonal; $\operatorname{polar}$; polarization; $\Symbil_{R,W}$"}
 Diagonal and polarization define natural transformations
 $$
 \diag\colon\Symbil_{R,W}

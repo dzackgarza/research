@@ -1,6 +1,6 @@
 # Levels, modularity, and discriminant characters {#sec-lattice-levels-characters}
 
-::: {.definition #def:lattice-level title="Arithmetic level" defines="quadratic level; bilinear denominator"}
+::: {.definition #def:lattice-level title="Arithmetic level" defines="quadratic level; bilinear denominator; $N_q(L)$; $N_b(L)$"}
 
 Let $L$ be a nondegenerate integral lattice.
 Its **quadratic level** is
@@ -26,7 +26,7 @@ N_q(L)\in\theset{N_b(L),\,2N_b(L)}.
 $$
 :::
 
-::: {.definition #def:modular-lattice-global title="$N$-modular lattices" defines="$N$-modular"}
+::: {.definition #def:modular-lattice-global title="$N$-modular lattices" defines="$N$-modular lattice"}
 
 Let $L$ be a nondegenerate integral lattice and $N>0$.
 The lattice is **$N$-modular** when there exists an isometry
@@ -37,7 +37,7 @@ Equivalently, the rational quadratic space $L_\bQ$ admits a similarity of multip
 For $N=1$ this is unimodularity.
 :::
 
-::: {.definition #def:lattice-bad-primes title="Bad primes of an integral lattice"}
+::: {.definition #def:lattice-bad-primes title="Bad primes of an integral lattice" defines="bad prime; $\Sigma_L$; $L_{\bF_p}$"}
 
 For a nondegenerate integral lattice $L$, define
 $$
@@ -52,7 +52,7 @@ $$
 is nondegenerate.
 :::
 
-::: {.definition #def:lattice-discriminant-character title="The discriminant quadratic character"}
+::: {.definition #def:lattice-discriminant-character title="The discriminant quadratic character" defines="discriminant quadratic character; $\Delta_L$; $d_L$; $\chi_L$"}
 
 Let $L$ be a nondegenerate integral lattice of even rank $2m$.
 Set

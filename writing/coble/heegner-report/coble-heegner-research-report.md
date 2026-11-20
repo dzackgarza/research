@@ -108,7 +108,7 @@ A *singular Coble quotient* is a normal rational surface $V^\sharp$ obtained as 
 The quotient has one singularity of type $\frac{1}{4}(1,1)$.
 :::
 
-::: {.definition #def:resolved-coble title="resolved Coble surface" defines="resolved Coble surface"}
+::: {.definition #def:resolved-coble title="resolved Coble surface" defines="resolved Coble surface; $\wV$"}
 The *resolved Coble surface* (@def:coble-surface) $\wV$ is the minimal resolution of $V^\sharp$.
 It is a smooth rational surface satisfying
 
@@ -486,7 +486,7 @@ Finally $T_{\Co}$ is even: every vector of $\langle2\rangle\perp U(2)\perp E_8(2
 Let $I_{\mathrm{En}}$ be the Enriques involution on the K3 lattice, acting as $+1$ on $S_{\mathrm{En}}$ and as $-1$ on $T_{\mathrm{En}}$.
 Let $w_\alpha$ be the reflection in the root $\alpha$.
 
-::: {.construction #cons:reflection-twist title="reflection twist"}
+::: {.construction #cons:reflection-twist title="reflection twist" defines="reflection twist; $I_{\Co}$"}
 Define
 
 \[
@@ -939,7 +939,7 @@ It follows that $(R^\sharp)^2=8$.
 Locally, $R^\sharp$ is the image of the union of the coordinate axes $(uv=0)$ in the quotient singularity $\frac{1}{4}(1,1)$.
 Its local class is $2$ in $\operatorname{Cl}(\frac{1}{4}(1,1))\cong\bZ/4$, so it is $\bQ$-Cartier of index $2$.
 
-::: {.definition #def:open-stable-coble-pair title="open stable Coble pair"}
+::: {.definition #def:open-stable-coble-pair title="open stable Coble pair" defines="open degree-$2$ stable Coble pair"}
 An open degree-$2$ stable Coble pair is
 
 \[
@@ -971,7 +971,7 @@ If the descent of $L$ is ample, then $K_{V^\sharp}+\epsilon R^\sharp$ is ample.
 The autonomous strategy should begin with a stack of labeled K3-cover data.
 The following definition is a mathematical specification; representability and equivalence with the singular pair moduli are required theorems.
 
-::: {.definition #def:direct-cover-datum title="direct resolved Coble cover datum"}
+::: {.definition #def:direct-cover-datum title="direct resolved Coble cover datum" defines="direct resolved degree-$2$ Coble cover datum"}
 Over a scheme $S$, a direct resolved degree-$2$ Coble cover datum consists of
 
 \[
@@ -1004,7 +1004,7 @@ The chamber and the effective root are part of the data because an abstract latt
 
 ### The singular-pair moduli problem {#sec-singular-moduli}
 
-::: {.definition #def:direct-singular-datum title="direct singular Coble datum"}
+::: {.definition #def:direct-singular-datum title="direct singular Coble datum" defines="direct singular Coble datum"}
 Over $S$, a direct singular Coble datum consists of
 
 \[
@@ -1039,7 +1039,7 @@ The equivalence is compatible with base change and automorphisms.
 Fix an embedded root $\alpha\in T_{\mathrm{En}}$ and put $T_{\Co}=\alpha^\perp$.
 There are at least four natural groups.
 
-::: {.definition #def:unpolarized-direct-group title="direct unpolarized Coble group"}
+::: {.definition #def:unpolarized-direct-group title="direct unpolarized Coble group" defines="direct unpolarized Coble group; $\Gamma_{\Co}^{\mathrm{dir}}$"}
 Dropping the degree-$4$ polarization and the del Pezzo involution from the labeled datum gives the candidate direct unpolarized group
 
 \[
@@ -1055,7 +1055,7 @@ The expected equality $\Gamma_{\Co}^{\mathrm{dir}}=O^+(T_{\Co})$ is compatible w
 The group $\Gamma_\Co$ of @def:gamma-co-groups, the monodromy group of @def:coble-family-unpolarized, is $\widetilde\Orth^+(T_\Co)$ on the labelled base (@thm:gamma-co-is-stable); no relation between $\Gamma_{\Co}^{\mathrm{dir}}$ and $\Gamma_\Co$ is established.
 :::
 
-::: {.definition #def:hodge-group title="Hodge-theoretic Heegner group"}
+::: {.definition #def:hodge-group title="Hodge-theoretic Heegner group" defines="Hodge-theoretic Heegner group; $\Gamma_{\Co,2}^{\mathrm{Hdg}}$"}
 
 \[
 \Gamma_{\Co,2}^{\mathrm{Hdg}}
@@ -1068,7 +1068,7 @@ The group $\Gamma_\Co$ of @def:gamma-co-groups, the monodromy group of @def:cobl
 
 This group is the natural group of a fixed normalized Heegner component once the Enriques construction has been fixed.
 
-::: {.definition #def:direct-group title="direct labeled centralizer group"}
+::: {.definition #def:direct-group title="direct labeled centralizer group" defines="direct labeled centralizer group; $\Gamma_{\Co,2}^{\mathrm{dir}}$"}
 
 \[
 \Gamma_{\Co,2}^{\mathrm{dir}}
@@ -1083,7 +1083,7 @@ The chamber $\mcc$ is part of this datum. It is not an extra label at a member w
 
 This is the arithmetic group naturally attached to the autonomous lattice datum, provided the labeled rigidity theorem holds.
 
-::: {.definition #def:geometric-monodromy title="geometric monodromy group"}
+::: {.definition #def:geometric-monodromy title="geometric monodromy group" defines="geometric monodromy group; $\Gamma_{\Co,2}^{\mathrm{geom}}$"}
 $\Gamma_{\Co,2}^{\mathrm{geom}}$ is the image of the orbifold monodromy representation of the connected direct moduli stack of polarized Coble data on the local system $T_{\Co}$.
 :::
 
@@ -1561,7 +1561,7 @@ The rank-$8$ elliptic subdiagrams are listed in @tbl-unpolarized-elliptic.
 Let $a$ be a $(-2)$ root in a hyperbolic lattice $M$, and let $b$ be another negative wall normal.
 The normal inside $a^\perp$ to the intersection $b^\perp\intersect a^\perp$ is the primitive vector proportional to the orthogonal projection of $b$ to $a^\perp$.
 
-::: {.construction #cons:wall-link title="orthogonal wall link"}
+::: {.construction #cons:wall-link title="orthogonal wall link" defines="orthogonal wall link; $b_{\operatorname{link}}$"}
 Define
 
 \[
@@ -1770,7 +1770,7 @@ The direct Coble theory should preserve this dictionary but must add the data of
 
 ### The Coble integral-affine package {#sec-coble-affine-package}
 
-::: {.definition #def:coble-affine-package title="candidate polarized Coble integral-affine package"}
+::: {.definition #def:coble-affine-package title="candidate polarized Coble integral-affine package" defines="Coble integral-affine package"}
 A Coble integral-affine package is a tuple
 
 \[

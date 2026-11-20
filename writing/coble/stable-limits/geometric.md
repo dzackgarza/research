@@ -1,6 +1,6 @@
 # Geometric preliminaries {#sec-geometric-preliminaries}
 
-::: {.definition #def:coble-surface title="Coble surface" defines="Coble surface; terminal of K3 type; boundary components"}
+::: {.definition #def:coble-surface title="Coble surface" defines="Coble surface; terminal of K3 type; boundary component"}
 
 A **Coble surface** is a smooth projective rational surface $S$ with $\abs{-K_S} = \varnothing$ and $\abs{-2K_S} \neq \varnothing$.
 It is **terminal of K3 type** when $\abs{-2K_S}$ contains a smooth divisor $C$.
@@ -65,13 +65,13 @@ The ramification divisor $R_Z\in\abs{\mathcal{M}}$ of $\rho$ is ample, and the p
 
 ## The components of a stable degeneration
 
-::: {.definition #def:ade-surfaces title="ADE surfaces" defines="ADE surfaces"}
+::: {.definition #def:ade-surfaces title="ADE surfaces" defines="ADE surface"}
 
 The **ADE surfaces** are the irreducible components of the KSBA stable degenerations of K3 surfaces with a nonsymplectic involution.
 A Type III component is labelled by a Dynkin diagram $A_n$, $D_n$ or $E_n$, and a Type II component by an affine diagram $\wA_n$, $\wD_n$ or $\wE_n$, matching the elliptic and parabolic subdiagrams of the Coxeter--Vinberg diagram (@def:coxeter-vinberg-diagram) (@def:elliptic-subdiagram). Each ADE surface $(X, D + \eps R)$ comes with a double cover $\pi\colon X\to Y$ onto a del Pezzo ADE surface $\bigl(Y,\ C + \tfrac{1+\eps}{2}B\bigr)$ of index $2$ [@AEGS25 §6].
 :::
 
-::: {.definition #def:bcde-surfaces title="BCDE surfaces and the folding labels" defines="BCDE surfaces"}
+::: {.definition #def:bcde-surfaces title="BCDE surfaces and the folding labels" defines="BCDE surface; folding label; type B component; type C component"}
 
 The **BCDE surfaces** are the quotients of ADE surfaces (@def:ade-surfaces) by involutions, and they correspond to the foldings of the ADE Dynkin diagrams.
 Type B components are the quotients by an [Enriques involution]{.other-sense} $\ien$, acting in suitable coordinates as $(x, y, z)\mapsto (\inverseof{x}, -y, -z)$; type C components are the quotients by the symplectic involution $\inik$.

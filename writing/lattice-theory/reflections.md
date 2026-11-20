@@ -2,7 +2,7 @@
 
 Let $R$ be a Dedekind domain with fraction field $K$.
 
-::: {.definition #def:reflection-in-a-vector title="Reflection in an anisotropic vector" defines="reflection in $v$"}
+::: {.definition #def:reflection-in-a-vector title="Reflection in an anisotropic vector" defines="reflection in $v$; $s_v$"}
 
 Let $L\in\mathbf{Lat}_R$ and let $v\in L$ satisfy $\beta_L(v,v)\ne0$. The **reflection in $v$** is the $K$-linear morphism
 $$

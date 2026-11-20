@@ -3,7 +3,7 @@
 
 ## The discriminant representation
 
-::: {.notation #not:discriminant-representation title="Notation for discriminant actions"}
+::: {.notation #not:discriminant-representation title="Notation for discriminant actions" defines="$\rho_L$; $\bar{\varphi}$; $\bar{\varphi}_q$"}
 
 Let $\rho_L\colon\Orth(L)\too\Orth(A_L)$ be the bilinear discriminant representation of @def:discriminant-rep.
 For $\varphi\in\Orth(L)$ write $\bar{\varphi}\definedas\rho_L(\varphi)$.
@@ -13,7 +13,7 @@ If $L$ is even, write $\bar{\varphi}_q\definedas\rho_{L,q}(\varphi)\in\Orth(A_{L
 
 ## The lifting criterion
 
-::: {.definition #def:gluing-datum-of-a-pair title="The gluing datum of a pair of primitive inclusions"}
+::: {.definition #def:gluing-datum-of-a-pair title="The gluing datum of a pair of primitive inclusions" defines="gluing datum; $j$; $h$"}
 
 Let $\iota_M\colon M\injects L$ and $\iota_N\colon N\injects L$ be primitive embeddings with
 $\iota_N(N)=\iota_M(M)^{\perp L}$.

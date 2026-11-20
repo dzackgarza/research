@@ -56,7 +56,7 @@ In particular, does every Coble surface of rational type in the sense of @def:co
 
 ## The Coble-Mukai lattice
 
-::: {.definition #def:coble-mukai-lattice title="Coble-Mukai lattice" defines="Coble-Mukai lattice"}
+::: {.definition #def:coble-mukai-lattice title="Coble-Mukai lattice" defines="$\widetilde{\Pic}(S)$; Coble-Mukai lattice; $\CM(S)$"}
 
 Let $S$ be a terminal Coble surface (@def:coble-surface) of K3 type with boundary components $C_1,\ldots,C_n$, and let $\beta_i\in\Pic(S)$ be the class of $C_i$.
 Let $\widetilde{\Pic}(S)$ be the $\ZZ$-submodule of $\Pic(S)_\QQ$ spanned by $\Pic(S)$ and $\tfrac12\beta_1,\ldots,\tfrac12\beta_n$.

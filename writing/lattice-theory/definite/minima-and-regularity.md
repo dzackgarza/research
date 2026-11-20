@@ -40,7 +40,7 @@ satisfies $M^{\mathsf T}GM=G$, hence $M\in\Orth(L)$.
 Its real eigenvalue $3+2\sqrt2>1$ implies that $M$ has infinite order; therefore $\Orth(L)$ and the orbit $\theset{M^ne_1\st n\in\bZ}\subseteq L[1]$ are infinite.
 :::
 
-::: {.definition #def:definite-minimum-shell title="Minimum, minimal vectors, and kissing number" defines="minimum; minimal shell; kissing number"}
+::: {.definition #def:definite-minimum-shell title="Minimum, minimal vectors, and kissing number" defines="minimum; $\mu(L)$; minimal shell; $\operatorname{Min}(L)$; kissing number; $\tau(L)$"}
 
 Let $L$ be definite.
 The **minimum** is

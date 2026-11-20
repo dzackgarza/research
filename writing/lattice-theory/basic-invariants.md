@@ -2,7 +2,7 @@
 
 Throughout, $R$ is a Dedekind domain with fraction field $K$, the main case being $R=\bZ$ and $K=\bQ$, and $L\in\mathbf{Lat}_R$ is a lattice as in @def:lattice.
 
-::: {.notation #def:lattice-basic-invariants title="Norm and norm shells" defines="norm; norm shell"}
+::: {.notation #def:lattice-basic-invariants title="Norm and norm shells" defines="norm; norm shell; $L[a]$"}
 
 Let $L$ be an integral lattice.
 The *norm* of $v\in L$ is the value of the form at the diagonal, $\beta_L(v,v)$; the notation $q_L$ is reserved for the quadratic discriminant form of @def:discriminant.
@@ -13,7 +13,7 @@ $$
 When $L$ is even (@def:even-lattice) every norm is even, so $L[a]$ is empty for odd $a$.
 :::
 
-::: {.definition #def:lattice-divisibility title="Divisibility of a vector" defines="divisibility ideal; divisibility"}
+::: {.definition #def:lattice-divisibility title="Divisibility of a vector" defines="divisibility ideal; $I_v$; divisibility; $\div_L(v)$"}
 
 Let $v\in L$.
 The *divisibility ideal* of $v$ is the image of the functional $\beta_L(v,-)$,
@@ -29,7 +29,7 @@ $$
 so $\div_L(v)$ is the largest integer by which every value $\beta_L(v,x)$ is divisible.
 :::
 
-::: {.definition #def:lattice-discriminant-class title="Discriminant class of a vector" defines="dual vector; discriminant class; ]\definedas\pi_L(v^"}
+::: {.definition #def:lattice-discriminant-class title="Discriminant class of a vector" defines="dual vector; $v^*$; discriminant class; $[v^*]$"}
 
 Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ be integral and let $0\ne v\in L$.
 The *dual vector* of $v$ is

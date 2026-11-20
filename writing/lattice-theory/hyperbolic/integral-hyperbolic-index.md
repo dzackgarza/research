@@ -7,7 +7,7 @@ H=\begin{pmatrix}0&1\\1&0\end{pmatrix}.
 $$
 The bilinear convention gives $q(x+y)=q(x)+2b(x,y)+q(y)$ [Conrad, *Bilinear Forms*, §§2, 6](https://kconrad.math.uconn.edu/blurbs/linmultialg/bilinearform.pdf).
 
-::: {.definition #def:integral-hyperbolic-index title="Integral hyperbolic index" defines="integral hyperbolic index"}
+::: {.definition #def:integral-hyperbolic-index title="Integral hyperbolic index" defines="integral hyperbolic index; $h_{\bZ}(L)$"}
 
 For an integral lattice $L$, its *integral hyperbolic index* is
 $$
