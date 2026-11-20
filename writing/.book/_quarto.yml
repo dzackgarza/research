@@ -193,6 +193,7 @@ book:
         - coble/stable-limits/ias.md
         - coble/stable-limits/nonsymplectic-k3-models.md
         - coble/stable-limits/ksba.md
+        - coble/stable-limits/polarizing-divisors-for-coble-moduli.md
     - part: 'Results for $F_{\mathrm{En},2}$'
       chapters:
         - coble/results-f-en-2/main-theorem-and-cusps.md
