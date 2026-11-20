@@ -53,3 +53,24 @@ def test_no_doubled_control_sequence_in_either_block():
     for label in (QUOTIENT, MONODROMY):
         body = _block(text, label)
         assert not re.search(r"\\\\+[A-Za-z]+", body), label
+
+
+TORELLI = "prop:torelli-for-the-coble-lattice"
+DEFORMATIONS = "lem:coble-deformations-are-not-all-of-Def-S"
+
+
+def test_item5_states_the_route_that_supplies_torelli():
+    body = _block(MC.read_text(encoding="utf-8"), TORELLI)
+    # route (b) is DK13 Prop. 3.2, and the transfer is section 5 there
+    assert "@DK13, Prop. 3.2" in body and "@DK13, §5" in body
+    # route (a) is recorded as having no object, with the Heegner-divisor reason
+    assert "Heegner" in body
+    # what is left open is named
+    assert "surjectivity" in body
+
+
+def test_item5_deformations_are_9_into_12_and_not_onto():
+    body = _block(MC.read_text(encoding="utf-8"), DEFORMATIONS)
+    assert "h^1(S,\\Theta_S)=12" in body
+    assert "9" in body and "12" in body
+    assert "neither" in body
