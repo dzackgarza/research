@@ -1,0 +1,11 @@
+q(e_0) = 1/2, q(e_1) = 3/2   (mod 2Z)
+q(u) = 0, q(v) = 0, b(u,v) = 1
+so <u,v> has the form q(a,b) = ab, that of A(U(2)) = (Z/2)^2
+|orthogonal complement of <u,v>| = 512 = 2^9
+<u,v> is a nondegenerate orthogonal summand of A(S_Co)
+
+existence: l(A(S)) = 11 <= 20 - t = 10 is FALSE, but t = 10 <= 10 is TRUE
+uniqueness: odd p vacuous (A(S) is a 2-group); l(A(S)_2) = 11 = 21 - 10,
+            and the U(2) summand is exhibited above
+so [@Dol96, Prop. 5.1] gives existence, and uniqueness up to an isometry of L.
+Corollary (5.2) needs t <= 9, so its non-emptiness conclusion is not available.

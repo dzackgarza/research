@@ -134,3 +134,22 @@ ADDENDUM (same commit): the Deligne--Mumford question of item 1, resolved negati
   stack is NOT Deligne--Mumford, and no nonempty open substack of it is.  The earlier
   round's report records the DM property as open with one missing input; that input
   is now supplied, with the opposite answer.
+
+RESTATED AS NUMBERED STATEMENTS (this commit)
+  Item 3 is now prop:coble-quotient-presentation (moduli-construction.md:1102): the
+  quotient presentation of the S_Co-polarized stack, with its hypotheses in four
+  clauses -- (U) by [@Dol96, Prop. 5.1] through the disjunct t <= 10 with the U(2)
+  summand check, the three hypotheses of prop:quotient-stack-of-periods with their
+  sources, the presentation [Otilde^+(T_Co) \ D(T_Co)^+], and what is NOT claimed
+  (non-emptiness from Cor. 5.2, and automorphism groups beyond the ample locus).
+  The U(2) check has a record: computations/reports/coble_797-u-condition.py with
+  -run.txt.
+  Item 4 is now thm:monodromy-exact-sequence (moduli-construction.md:1125): for a
+  pointed connected locally path connected semilocally 1-connected topological stack
+  with a local system of lattices, 1 -> K_L -> pi_1(X,x) -> Mon(L) -> 1 is exact, and
+  the subgroup K_L corresponds under the Galois correspondence to a pointed connected
+  covering whose deck group is Mon(L) and whose quotient is X.  The statement carries
+  Noohi Theorem 18.19, Corollary 18.20 and Definition 18.10; the proof records that
+  the exact sequence is a corollary of Theorem 18.19 and not a statement in the paper.
+  A guard test pins both statements and forbids a doubled control sequence in either:
+  tests/engineering/test_coble_797_items34.py, 3/3 run directly.
