@@ -298,11 +298,39 @@ The map $\Phi_0$ of @thm:b2-zero-cusps has empty fibre over Sterk's cusp $1$ (@p
 The fibres of $\Phi_0$ partition the $0$-cusps of $D(T_\Co)/R$: $\Phi_0$ is well defined by @thm:b2-zero-cusps(1), and the cusp set of $F_{\En,2}$ is the disjoint union of the five orbits of Sterk's representatives. The fibre over cusp $1$ is empty (@prop:fibre-cusp-one-empty). For $k = 2,3,4,5$ the representative $\eta_k$ is a primitive isotropic vector of $T_\Co$, so its $R$-orbit is a $0$-cusp of $D(T_\Co)/R$ lying over cusp $k$; by @thm:orbit-per-cusp the four classes $[\eta_k]$ lie in four distinct $P$-orbits, hence the four $R$-orbits are distinct, and by @thm:four-r-orbits there are exactly four of them. So each of the four fibres over $2,3,4,5$ contains exactly one of the four $R$-orbits.
 :::
 
+::: {.theorem #thm:one-cusp-multiplicities title="The number of $1$-cusps of $D(T_\Co)/R$ over each Sterk type"}
+Let $m_T$ be the number of $1$-cusps of $D(T_\Co)/R$ lying over Sterk's $1$-cusp of type $T\subset\{1,2,3,4,5\}$ [@AEGS25, Not. 3.1]. Then
+
+1. $m_T = 0$ for the four types containing $1$ (@lem:one-cusp-over-cusp-one-empty), and $m_T\geq1$ for the five others (@lem:five-one-cusps-nonempty(3));
+2. $\sum_T m_T = 7$ and $\sum_T m_T\,\abs{T\cap\{2,3,4,5\}} = 13$;
+3. consequently $m_{\{2,4,5\}} = 1$, $m_{\{5,5\}} = 2$, and exactly one of $m_{\{4,5\}}$, $m_{\{3,5\}}$, $m_{\{3,4\}}$ equals $2$ while the other two equal $1$. In particular every nonempty fibre is a set of one or two points;
+4. the degrees of the four $0$-cusps are therefore $0_2$ of degree $1$ and
+$$
+(0_3,0_4,0_5) =
+\begin{cases}
+(3,4,5) & \text{if } m_{\{3,4\}} = 2,\\
+(2,4,6) & \text{if } m_{\{4,5\}} = 2,\\
+(3,3,6) & \text{if } m_{\{3,5\}} = 2,
+\end{cases}
+$$
+with $13$ incidence edges in each case. Which case occurs is not decided by the counts of $2$ and $3$.
+:::
+
+::: {.proof}
+$1$ is @lem:one-cusp-over-cusp-one-empty and @lem:five-one-cusps-nonempty(3).
+
+$2$. The left sum counts the $1$-cusps of $D(T_\Co)/R$, that is the $R$-orbits on the primitive isotropic planes of $T_\Co$, and these number $7$ [@thm:coble-integral-lifting-fibre(4)(b)]. The right sum counts the pairs (a $1$-cusp, a $0$-cusp of $D(T_\Co)/R$ in its closure), by the incidence of @thm:cusp-diagram-tco(3) and [@AEGS25, Not. 3.1], which makes the $0$-cusps in the closure exactly the labels in $T$ intersected with $\{2,3,4,5\}$, since the $0$-cusps of $D(T_\Co)/R$ are $0_2$, $0_3$, $0_4$, $0_5$ (@thm:cusp-fibres-four) and there is none over $1$. Those pairs are the $R$-orbits of flags (a primitive isotropic line in a primitive isotropic plane) of $T_\Co$, and these number $13$: the flag orbits and the edges of $R_{\gent}$ are both $13$ [@thm:coble-integral-lifting-fibre(4)(b) and @prop:coble-flag-orbits-and-edges(3)].
+
+$3$. Put $e_T \definedas m_T - 1\geq0$ on the five types with nonempty fibre; by $2$, $\sum e_T = 7-5 = 2$ and $\sum e_T\abs{T\cap\{2,3,4,5\}} = 13-10 = 3$. The five weights are $3,2,2,2,1$ for $T = \{2,4,5\},\{4,5\},\{3,5\},\{3,4\},\{5,5\}$. Two units of excess with total weight $3$ must sit one on a type of weight $2$ and one on the type of weight $1$: a single type carrying both units would contribute twice its weight, which is even and not $3$, and two units on two types of weight $2$ contribute $4$. So $e_{\{5,5\}} = 1$, $e_{\{2,4,5\}} = 0$, and exactly one of the three remaining $e$'s equals $1$. Since each $m_T$ is the cardinality of the fibre over $T$ (@thm:b2-one-cusps), each nonempty fibre has one or two points.
+
+$4$ is the incidence rule of @thm:cusp-diagram-tco(3) read with the multiplicities of $3$: the degree of $0_k$ is $\sum_{T\ni k}m_T$, and the three possibilities for the middle weights give the three triples displayed; the total is $\sum_T m_T\abs{T\cap\{2,3,4,5\}} = 13$ in each case by $2$.
+:::
+
 ::: {.theorem #thm:cusp-diagram-tco title="The cusp diagram of $D(T_\Co)/R$"}
 1. *$0$-cusps.* There are four, written $0_2$, $0_3$, $0_4$, $0_5$, lying one over each of Sterk's $0$-cusps $2$, $3$, $4$, $5$, and none over cusp $1$ (@thm:cusp-fibres-four).
-2. *$1$-cusps.* A $1$-cusp of $D(T_\Co)/R$ lies over exactly one of Sterk's nine $1$-cusps, whose type is a subset $T\subset\{1,2,3,4,5\}$ [@AEGS25, Not. 3.1]. There are none over the four types $\{1,2\}$, $\{1,3\}$, $\{1,4\}$, $\{1,5\}$ (@lem:one-cusp-over-cusp-one-empty), and $7$ in all over the five types $\{2,4,5\}$, $\{4,5\}$, $\{3,5\}$, $\{3,4\}$, $\{5,5\}$, each of those five fibres being nonempty with at most $8$ points (@lem:five-one-cusps-nonempty).
+2. *$1$-cusps.* A $1$-cusp of $D(T_\Co)/R$ lies over exactly one of Sterk's nine $1$-cusps, whose type is a subset $T\subset\{1,2,3,4,5\}$ [@AEGS25, Not. 3.1]. There are none over the four types $\{1,2\}$, $\{1,3\}$, $\{1,4\}$, $\{1,5\}$ (@lem:one-cusp-over-cusp-one-empty), and $7$ in all over the five types $\{2,4,5\}$, $\{4,5\}$, $\{3,5\}$, $\{3,4\}$, $\{5,5\}$: the fibre over $\{2,4,5\}$ is a single point, that over $\{5,5\}$ has two points, and exactly one of the fibres over $\{4,5\}$, $\{3,5\}$, $\{3,4\}$ has two points while the other two are single points (@thm:one-cusp-multiplicities).
 3. *Incidence.* For $k\in\{2,3,4,5\}$ the $0$-cusp $0_k$ lies in the closure of a $1$-cusp over $T$ exactly when $k\in T$. Consequently $0_2$ meets only the $1$-cusps over $\{2,4,5\}$, $0_3$ those over $\{3,5\}$ and $\{3,4\}$, $0_4$ those over $\{2,4,5\}$, $\{4,5\}$ and $\{3,4\}$, and $0_5$ those over $\{2,4,5\}$, $\{4,5\}$, $\{3,5\}$ and $\{5,5\}$.
-4. The number of incidence edges is not determined by $1$--$3$: it is $\sum_T \#\{1\text{-cusps over }T\}\cdot\#(T\cap\{2,3,4,5\})$, and the individual $\#\{1\text{-cusps over }T\}$ are the distribution left open in @lem:five-one-cusps-nonempty(5).
+4. The number of incidence edges is $\sum_T m_T\,\#(T\cap\{2,3,4,5\}) = 13$, and the degrees of the four $0$-cusps are the three alternatives listed in @thm:one-cusp-multiplicities(4).
 :::
 
 ::: {.proof}
