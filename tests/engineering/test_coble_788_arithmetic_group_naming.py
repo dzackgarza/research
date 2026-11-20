@@ -167,6 +167,14 @@ def test_root_reflections_are_split_by_the_square_at_552():
     assert "$w^2=-2$" in text and "$w^2=-4$" in text
 
 
+def test_no_page_asserts_non_membership_that_is_the_open_question():
+    """The reverse inclusion is qst:coble-monodromy-equality, so neither membership nor its
+    negation of a discriminant-trivial element in Gamma_{Co,2} is available."""
+    text = KSBA.read_text()
+    assert "and not in $\\Gamma_{\\Co,2}$" not in text
+    assert "@qst:coble-monodromy-equality and is not asserted either way" in text
+
+
 def _run_all() -> int:
     tests = [(n, f) for n, f in sorted(globals().items())
              if n.startswith("test_") and callable(f)]

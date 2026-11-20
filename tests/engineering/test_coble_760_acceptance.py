@@ -507,9 +507,13 @@ def test_item_7_one_pair_is_settled_by_a_witness() -> None:
     text = run.read_text(encoding="utf-8")
     assert text.count("g preserves the form: True") == 2, "both permutations lift as isometries"
     assert text.count("g maps every printed root as the permutation says: True") == 2
-    # the 13/14 witness keeps delta and eta, so it is in Gamma_Co,2; the 12/13 one does not
+    # the 13/14 witness keeps delta and eta; the 12/13 one does not.  The record's closing
+    # sentence attributes the resulting relation to Gamma_Co,2, which thm:coble-monodromy-
+    # versus-enriques(3) refutes: what a Gent witness proves is R_gent-equivalence.  The
+    # assertion below is on the witness, not on that sentence, so that correcting the
+    # transcript (which needs its script re-run) does not fight this gate.
     assert "g(delta) = delta: True" in text and "g(delta) = delta: False" in text
-    assert "roots 13 and 14 are\n      Gamma_Co,2-equivalent at cusp 5" in text
+    assert "g exchanges the lifts of labels 13 and 14: True" in text
     assert "witnesses only that the two" in text and "one O(T_En)-orbit" in text
     # the witness is already in the reflection group, so it adds no route to root 12
     assert text.count("same group on this orbit: True") == 3
