@@ -496,7 +496,7 @@ Let $G$ be a connected complex Lie group acting on a connected complex analytic 
 
 ::: {.proof}
 
-*The loops of the stack.* In the loop model of @lem:orbifold-monodromy-of-a-quotient an orbifold loop of $V/G$ at $[s]$ is represented by a pair $(g,\tilde\gamma)$ with $g\in G$ and $\tilde\gamma$ a path in $V$ from $s$ to $gs$, and the transport of $\bL$ along it is
+*The loops of the stack.* In the loop model of @lem:orbifold-monodromy-of-a-quotient an orbifold loop of $V/G$ at $[s]$ is represented by a pair $(g,\tilde\gamma)$ with $g\in G$ and $\tilde\gamma$ a path in $V$ from $s$ to $gs$. What is used here is that model, an orbifold loop being a pair $(g,\tilde\gamma)$, and not the exact sequence stated in that lemma, whose quotient by $\Gamma$ is stated for a discrete group; for a connected $G$ the group element of a loop is homotopic to a path in $V$, which is what the next paragraph proves. The transport of $\bL$ along the pair is
 $$\varphi_g(s)^{-1}\circ\tilde\gamma^*,$$
 the second factor being the transport along $\tilde\gamma$ (@def:transport-and-monodromy) and the first the identification of the fibre at $gs$ with the fibre at $s$ given by the equivariance. A general loop of the stack is a finite concatenation of paths in $V$ and of such pairs, so it is enough to treat one pair.
 
