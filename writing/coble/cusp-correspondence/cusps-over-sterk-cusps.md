@@ -1,6 +1,6 @@
 # The cusps of $D(T_\Co)/R$ over Sterk's cusps {#sec-cusps-over-sterk-cusps}
 
-This section proves statement B2 of the plan for $F_\Co$ [research#786, Part I §5; research#789]: the $0$- and the $1$-cusps of $D(T_\Co)/R$ are the $\gent$-orbits of pairs $(\ell,\alpha)$, an isotropic line or plane $\ell$ of $\ten$ together with a $(-2)$-vector $\alpha$ perpendicular to it, and they fibre over Sterk's cusps of $F_{\En,2}$ by forgetting $\alpha$. The fibre over Sterk's cusp $[e_k]$ is the set of $\Stab_{\gent}(e_k)$-orbits of $(-2)$-vectors perpendicular to $e_k$, where the stabilizer is that of the isotropic *line* $\ZZ e_k$. The smallest case of that computation, Sterk's cusp $2$, is carried out here: its fibre is a single point. Every statement below names its group, and none of the counts is a count for $F_\Co$ or $F_{\Co,2}$.
+This section proves statement B2 of the plan for $F_\Co$ [research#786, Part I §5; research#789]: the $0$- and the $1$-cusps of $D(T_\Co)/R$ are the $\gent$-orbits of pairs $(\ell,\alpha)$, an isotropic line or plane $\ell$ of $\ten$ together with a $(-2)$-vector $\alpha$ perpendicular to it, and they fibre over Sterk's cusps of $F_{\En,2}$ by forgetting $\alpha$. The fibre over Sterk's cusp $[e_k]$ is the set of $\Stab_{\gent}(e_k)$-orbits of $(-2)$-vectors perpendicular to $e_k$, where the stabilizer is that of the isotropic *line* $\ZZ e_k$. The smallest case of that computation, Sterk's cusp $2$, is carried out here: the $(-2)$-vectors perpendicular to its representative form a single $\Orth(K_2)$-orbit. Every statement below names its group, and none of the counts is a count for $F_\Co$ or $F_{\Co,2}$.
 
 ## Setting
 
@@ -150,7 +150,7 @@ At cusp $3$ the representative is $e'+f'+y_3$ and the record's cusp-$3$ section 
 :::
 
 ::: {.theorem #thm:cusp-fibres-four title="The $0$-cusps of $D(T_\Co)/R$ lie one over each of Sterk's cusps $2,3,4,5$"}
-The map $\Phi_0$ of @thm:b2-zero-cusps has empty fibre over Sterk's cusp $1$ (@prop:fibre-cusp-one-empty), a one-point fibre over Sterk's cusp $2$ (@cor:fibre-cusp-two), and a nonempty fibre over each of Sterk's cusps $3$, $4$, $5$ (@prop:fibres-three-four-five). The subgroup $R$ has exactly four orbits on the primitive isotropic lines of $T_\Co$ [@prop:coble-cong-point-stabilizer(3), the subgroup being $R = \bar\rho^{-1}(P)$ by @prop:gamma-co-images(3)], so $D(T_\Co)/R$ has exactly four $0$-cusps. Hence each of the fibres over Sterk's cusps $3$, $4$, $5$ is a single point, and the four $0$-cusps of $D(T_\Co)/R$ are in bijection with Sterk's cusps $2,3,4,5$, one over each.
+The map $\Phi_0$ of @thm:b2-zero-cusps has empty fibre over Sterk's cusp $1$ (@prop:fibre-cusp-one-empty) and a nonempty fibre over each of Sterk's cusps $2$, $3$, $4$, $5$ (@cor:fibre-cusp-two, @prop:fibres-three-four-five). The subgroup $R$ has exactly four orbits on the primitive isotropic lines of $T_\Co$ [@prop:coble-cong-point-stabilizer(3), the subgroup being $R = \bar\rho^{-1}(P)$ by @prop:gamma-co-images(3)], so $D(T_\Co)/R$ has exactly four $0$-cusps. Hence each of the four nonempty fibres is a single point, and the four $0$-cusps of $D(T_\Co)/R$ are in bijection with Sterk's cusps $2,3,4,5$, one over each.
 :::
 
 ::: {.proof}
