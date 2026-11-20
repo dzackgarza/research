@@ -171,18 +171,6 @@ The fibre of $\Phi_0$ over Sterk's cusp $2$ is a single point, represented by th
 By @thm:b2-zero-cusps(2) the fibre is the set of $\Stab_{\gent}(e')$-orbits of $(-2)$-vectors $\alpha\perp e'$. Let $\alpha$ be one, and let $\bar\alpha$ be its image in $K_2 = (e')^{\perp\ten}/\ZZ e'$. The image of $\Stab_{\gent}(e')$ in $\Orth(K_2)$ is all of $\Orth(K_2)$ [@Ste91, 4.3.6, printed p. 21], and $\Orth(K_2)$ is transitive on the $(-2)$-vectors of $K_2$ (@thm:ou-e8-transitive), so some $g\in\Stab_{\gent}(e')$ has $g\bar\alpha = \bar\delta$, that is $g\alpha = \delta+k e'$ for some $k\in\ZZ$. By @lem:ze-translates-in-gent the transvection $E$ lies in $\Stab_{\gent}(e')$ and $E^{-k}(g\alpha) = \delta$. Hence every $(-2)$-vector perpendicular to $e'$ is $\Stab_{\gent}(e')$-equivalent to $\delta$, and the fibre is a single point.
 :::
 
-::: {.corollary #cor:fibre-cusp-two title="The fibre over Sterk's cusp $2$ maps onto a single point"}
-The fibre of $\Phi_0$ over Sterk's cusp $2$ is nonempty, and its image under $\alpha\mapsto\bar\alpha$ in $K_2$ is a single $\Orth(K_2)$-orbit: the class of $\delta = e-f$, which is perpendicular to $e'$. Indeed the image of $\Stab_{\gent}(e')$ in $\Orth(K_2)$ is all of $\Orth(K_2)$ [@Ste91, 4.3.6, printed p. 21], and $\Orth(K_2)$ is transitive on the $(-2)$-vectors of $K_2$ (@thm:ou-e8-transitive).
-:::
-
-::: {.proof}
-Immediate from @thm:b2-zero-cusps(2), the two cited statements, and $\delta\perp e'$. The fibre is the set of $\Stab_{\gent}(e')$-orbits of $(-2)$-vectors $\alpha\perp e'$, and the map $\alpha\mapsto\bar\alpha\in K_2$ is $\Stab_{\gent}(e')$-equivariant and surjective onto the $(-2)$-vectors of $K_2$; a surjective equivariant map of orbit sets is surjective.
-:::
-
-::: {.remark #rmk:fibre-cusp-two-translates title="The one step from the $\Orth(K_2)$-orbit to the fibre"}
-The fibre is the set of $\Stab_{\gent}(e')$-orbits on the $(-2)$-vectors $\alpha\perp e'$, and two such vectors have the same image in $K_2$ exactly when they differ by a multiple of $e'$. So the fibre is a single point exactly when $\Stab_{\gent}(e')$ acts transitively on the $\ZZ e'$-translates of a $(-2)$-vector, that is when the Eichler transvections of @lem:cusp-root-lift-independence --- which move $\delta$ to $\delta-ke'$ at the level of $\ten$ --- lie in $\gent$. Their membership in $\Orth(\ten)$ is @lem:cusp-root-lift-independence; their membership in $\gent$ is not established here, and it is the one step of the computation at cusp $2$ which this page does not carry out. The four-cusp statement below does not use it: it uses the independent count of four $R$-orbits.
-:::
-
 ## The other fibres, and the four $0$-cusps
 
 ::: {.proposition #prop:fibres-three-four-five title="The fibres over Sterk's cusps $3$, $4$ and $5$ are nonempty"}
@@ -203,11 +191,11 @@ At cusp $3$ the representative is $e'+f'+y_3$ and the record's cusp-$3$ section 
 :::
 
 ::: {.theorem #thm:cusp-fibres-four title="The $0$-cusps of $D(T_\Co)/R$ lie one over each of Sterk's cusps $2,3,4,5$"}
-The map $\Phi_0$ of @thm:b2-zero-cusps has empty fibre over Sterk's cusp $1$ (@prop:fibre-cusp-one-empty) and a nonempty fibre over each of Sterk's cusps $2$, $3$, $4$, $5$ (@cor:fibre-cusp-two, @prop:fibres-three-four-five). The subgroup $R$ has exactly four orbits on the primitive isotropic lines of $T_\Co$ [@prop:coble-cong-point-stabilizer(3), the subgroup being $R = \bar\rho^{-1}(P)$ by @prop:gamma-co-images(3)], so $D(T_\Co)/R$ has exactly four $0$-cusps. Hence each of the four nonempty fibres is a single point, and the four $0$-cusps of $D(T_\Co)/R$ are in bijection with Sterk's cusps $2,3,4,5$, one over each.
+The map $\Phi_0$ of @thm:b2-zero-cusps has empty fibre over Sterk's cusp $1$ (@prop:fibre-cusp-one-empty) and a nonempty fibre over each of Sterk's cusps $2$, $3$, $4$, $5$ (@cor:fibre-cusp-two, @prop:fibres-three-four-five). The subgroup $R$ has exactly four orbits on the primitive isotropic lines of $T_\Co$ (@thm:four-r-orbits), so $D(T_\Co)/R$ has exactly four $0$-cusps. Hence each of the four nonempty fibres is a single point, and the four $0$-cusps of $D(T_\Co)/R$ are in bijection with Sterk's cusps $2,3,4,5$, one over each.
 :::
 
 ::: {.proof}
-The fibres of $\Phi_0$ partition the $0$-cusps of $D(T_\Co)/R$: $\Phi_0$ is well defined by @thm:b2-zero-cusps(1), and the cusp set of $F_{\En,2}$ is the disjoint union of the five orbits of Sterk's representatives. One fibre is empty (@prop:fibre-cusp-one-empty) and the other four are nonempty (@cor:fibre-cusp-two, @prop:fibres-three-four-five), so they partition the four $0$-cusps of $D(T_\Co)/R$ into four nonempty parts. The count of four is not read off the fibres: it is @prop:coble-cong-point-stabilizer(3), whose proof identifies the $R$-orbits on primitive isotropic vectors with the $P$-orbits on the $527$ nonzero isotropic classes through the discriminant class $v\mapsto[v/2]$, a bijection on $K$-orbits by @thm:coble-zero-cusp-count(1).
+The fibres of $\Phi_0$ partition the $0$-cusps of $D(T_\Co)/R$: $\Phi_0$ is well defined by @thm:b2-zero-cusps(1), and the cusp set of $F_{\En,2}$ is the disjoint union of the five orbits of Sterk's representatives. One fibre is empty (@prop:fibre-cusp-one-empty) and the other four are nonempty (@cor:fibre-cusp-two, @prop:fibres-three-four-five), so they partition the four $0$-cusps of $D(T_\Co)/R$ into four nonempty parts. The count of four is not read off the fibres: it is @thm:four-r-orbits.
 :::
 
 ::: {.theorem #thm:four-r-orbits title="$R$ has exactly four orbits on the primitive isotropic lines of $T_\Co$"}
