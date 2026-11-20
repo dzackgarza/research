@@ -13,7 +13,7 @@ For $R$ a Dedekind domain, the lattice category $\mathbf{Lat}_R$ of @def:lattice
 ::: {.proposition #prop:form-morphism-injective title="Kernels of form-preserving maps"}
 
 Let $f\colon(M,b_M)\to(N,b_N)$ be a morphism of $\mathcal B_{R,W}$.
-Then $\ker f\iscontainedin\ker b_M^{\sharp}$, with $b_M^{\sharp}$ the adjoint map of @def:polarization.
+Then $\ker f\iscontainedin\ker b_M^{\sharp}$, with $b_M^{\sharp}$ the adjoint (@def:adjoint-morphism) map of @def:polarization.
 If $b_M$ is nondegenerate then $f$ is injective (@def:injective-map).
 In particular every morphism of $\mathbf{Lat}_R^{\mathrm{nd}}$ is injective, hence a monomorphism.
 :::
@@ -93,7 +93,7 @@ For $R$ a Dedekind domain and $M$ an $R$-lattice the same holds for $F_M$ on $\m
 By @prop:form-initial-object the pair $(0,0)$ is initial in $\mathcal B_{R,W}$, and it is an $R$-lattice, so it is initial in the full subcategory (@def:subcategory) $\mathbf{Lat}_R$ as well: the unique morphism out of it is the same map.
 Now $0\perp M\cong M$, and $\Hom\bigl(M,(0,0)\bigr)$ is empty by @prop:form-initial-object, since $b_M\neq0$; an initial object admits a morphism to every object, so $M$ is not initial, and $F_M$ carries an initial object to a non-initial one.
 
-A left adjoint preserves colimits (@def:limit), and the initial object is the colimit of the empty diagram, so a left adjoint preserves initial objects; an equivalence does too, being part of an adjoint equivalence.
+A left adjoint preserves colimits (@def:limit), and the initial object is the colimit of the empty diagram, so a left adjoint preserves initial objects; an equivalence does too, being part of an adjoint (@def:adjoint-morphism) equivalence.
 Hence $F_M$ is neither.
 A functor admits a right adjoint exactly when it is a left adjoint, so $F_M$ has no right adjoint either.
 For $S=F_{H(R)}$ the hypothesis is $h_R\neq0$, which holds by @ex:hyperbolic-plane, so $S$ has no right adjoint.
@@ -102,7 +102,7 @@ For $S=F_{H(R)}$ the hypothesis is $h_R\neq0$, which holds by @ex:hyperbolic-pla
 ::: {.theorem #thm:invertible-summand title="Invertible summands and the Witt class"}
 
 Let $R$ be a Dedekind domain.
-The zero lattice lies in $\mathbf{Lat}_R$ and an orthogonal sum of $R$-lattices is an $R$-lattice, so the symmetric monoidal structure (@def:property-structure-stuff) of @def:orthogonal-sum restricts to $(\mathbf{Lat}_R,\perp,0)$.
+The zero lattice lies in $\mathbf{Lat}_R$ and an orthogonal sum of $R$-lattices is an $R$-lattice, so the symmetric monoidal structure of @def:orthogonal-sum restricts to $(\mathbf{Lat}_R,\perp,0)$.
 
 1. The only invertible object of $(\mathbf{Lat}_R,\perp,0)$ is the unit, and $[0]=0$ in $W(R)$.
 

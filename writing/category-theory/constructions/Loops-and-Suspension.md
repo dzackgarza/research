@@ -5,7 +5,7 @@ Let $\mcc$ be a pointed $\infty$-category, with zero object $*$, and suppose tha
 ::: {.definition #def:fiber-cofiber title="Fibers and cofibers" defines="fiber; cofiber; $\operatorname{Fib}(f)$; $\operatorname{Cof}(f)$"}
 []{#sec-cobase-changes}
 
-For $f\colon X\to Y$, its fiber over the canonical basepoint (@def:based-loop) $0\colon *\to Y$ is defined by the cartesian square
+For $f\colon X\to Y$, its fiber over the zero morphism $0\colon *\to Y$ is defined by the cartesian square
 
 ```{.tikz}
 %%| filename: fiber-square
@@ -46,9 +46,9 @@ $$
 These definitions specialize in pointed spaces to the usual homotopy fiber and homotopy cofiber.
 :::
 
-::: {.definition #def:loops-suspension title="Loops and suspension" defines="loops; suspension; $\Omega X$; $\Sigma X$"}
+::: {.definition #def:loops-suspension title="Loops and suspension" defines="loop object; suspension object; $\Omega X$; $\Sigma X$"}
 
-For an object $X$ of $\mcc$, loops are defined by the pullback (@def:pullback-square) square
+For an object $X$ of $\mcc$, loops (@def:based-loop) are defined by the pullback (@def:pullback-square) square
 
 ```{.tikz}
 %%| filename: loop-square
@@ -112,7 +112,7 @@ $$
 
 ::: {.definition #def:fiber-sequence title="Fiber sequences" defines="fiber sequence"}
 
-A composable pair $F\to E\to B$ is a *fiber sequence* when $F$ is equivalent to the homotopy fiber (@def:fiber-cofiber) over a specified basepoint (@def:based-loop) of $B$.
+A composable pair $F\to E\to B$ is a *fiber sequence* when $F$ is equivalent to the homotopy fiber (@def:fiber-cofiber) over a specified basepoint of $B$.
 Applying homotopy groups (@def:homotopy-groups) gives the long exact (@def:exact-complex) sequence.
 Its component-level portion is the pointed-set sequence of @sec-pi0-fiber.
 :::
@@ -143,7 +143,7 @@ For $(X,x)\in\mcs_*$ and $n\geq0$, set
 $$
 \pi_n(X,x):=\pi_0\bigl(\Omega^n_xX\bigr),
 $$
-where $\Omega^0_xX:=X$ and $\Omega^{n}_xX:=\Omega_x\Omega^{n-1}_xX$, each loop object (@def:bicomplete-cat-infinity) taken at the basepoint (@def:based-loop) supplied by the previous stage.
-For $n\geq1$ the composition of loops (@def:loops-suspension) makes $\pi_n(X,x)$ a group (@def:group), and for $n\geq2$ an abelian group.
-These are the groups appearing in the truncation conditions of @def:truncated and in the long exact (@def:exact-complex) sequence of a fiber sequence (@def:fiber-sequence).
+where $\Omega^0_xX:=X$ and $\Omega^{n}_xX:=\Omega_x\Omega^{n-1}_xX$, each loop object (@def:bicomplete-cat-infinity) taken at the basepoint supplied by the previous stage.
+For $n\geq1$ the composition of loops (@def:based-loop) (@def:loops-suspension) makes $\pi_n(X,x)$ a group (@def:group), and for $n\geq2$ an abelian group.
+These are the groups appearing in the truncation conditions of @def:truncated and in the long exact (@def:exact-complex) sequence of homotopy groups.
 :::

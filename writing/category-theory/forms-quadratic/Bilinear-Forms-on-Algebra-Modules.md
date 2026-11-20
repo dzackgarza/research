@@ -104,7 +104,7 @@ From (2) to (1): if $B(x,y)=\eps(xy)$ then $B(xy,z)=\eps((xy)z)=\eps(x(yz))=B(x,
 :::
 
 ::: {.definition #def:frobenius-form title="Frobenius forms" defines="Frobenius form"}
-A linear form $\eps\colon A\to R$ is a *Frobenius form* when $(x,y)\mapsto\eps(xy)$ is perfect in the sense of @def:polarization: both adjoint maps $A\to\Hom_R(A,R)$ are isomorphisms [@nlab:frobenius_algebra].
+A linear form $\eps\colon A\to R$ is a *Frobenius form* when $(x,y)\mapsto\eps(xy)$ is perfect in the sense of @def:polarization: both adjoint (@def:adjoint-morphism) maps $A\to\Hom_R(A,R)$ are isomorphisms [@nlab:frobenius_algebra].
 :::
 
 ::: {.proposition #prop:structure-constants title="Structure constants"}
@@ -179,7 +179,7 @@ The hypothesis that $E$ is not finite supplies $e\notin E_0$.
 
 Let $A$ be an object of $R\text{-}\mathbf{CAlg}$.
 The tensor product $A\tensor_R A$ of @def:algebra-bilinear-form is the coproduct of $A$ with itself in $R\text{-}\mathbf{CAlg}$, with inclusions $a\mapsto a\tensor_R 1_A$ and $b\mapsto 1_A\tensor_R b$.
-The coproduct universal property (@def:property-structure-stuff) is
+The coproduct universal property is
 $$
 \Hom_{R\text{-}\mathbf{CAlg}}(A\tensor_R A,R)
 \cong
@@ -276,5 +276,5 @@ The first sentence is @prop:characters-pair evaluated on a pair of basis (@def:b
 So the Gram matrix of $U(\phi)$ is the rank-one matrix $\chi_L\chi_R^{\mathsf T}$ over the basis $E$, and in particular it has rank at most one whatever the size of $E$.
 
 For the second, a unital $R$-algebra homomorphism $\chi\colon A\to R$ out of a generated algebra is determined by its restriction to the generators, since $\chi$ is $R$-linear and multiplicative and every element of $A$ is a polynomial in $S$.
-Not every assignment extends: $\chi$ must kill the relations, and by the universal property (@def:property-structure-stuff) of $R\langle S\rangle$ in @def:algebra-generating-set the assignments that extend are the homomorphisms $R\langle S\rangle/(\text{relations})\to R$.
+Not every assignment extends: $\chi$ must kill the relations, and by the universal property of $R\langle S\rangle$ in @def:algebra-generating-set the assignments that extend are the homomorphisms $R\langle S\rangle/(\text{relations})\to R$.
 :::

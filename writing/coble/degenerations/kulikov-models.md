@@ -40,7 +40,7 @@ Depending on the nilpotency index (@def:nilpotency-index) of $N$, Kulikov models
   The dual complex is an interval.
 
 - **Type $\mathrm{III}$** ($N^3 = 0$, $N^2 \neq 0$): $\mcx_0$ is a union of rational surfaces glued along rational curves, forming an anticanonical cycle on each component.
-  The dual complex is a triangulation of the sphere (@def:spheres) $S^2$; with the integral affine structure (@def:property-structure-stuff) of @def:singular_ias it is an $\ias$.
+  The dual complex is a triangulation of the sphere (@def:spheres) $S^2$; with the integral affine structure of @def:singular_ias it is an $\ias$.
 :::
 
 ## Anticanonical components and the dual complex
@@ -66,7 +66,7 @@ Let $\mcx_0=\Union_iV_i$ be a $d$-semistable Type III Kulikov surface, and let $
 $$
 e_{i,j-1}+e_{i,j+1}=-D_{ij}^{2}e_{ij}.
 $$
-The structure (@def:property-structure-stuff) extends across the vertex exactly when $Q(V_i,D_i)=0$, equivalently when $(V_i,D_i)$ is toric [@AE22, §6.2].
+The structure extends across the vertex exactly when $Q(V_i,D_i)=0$, equivalently when $(V_i,D_i)$ is toric [@AE22, §6.2].
 :::
 
 ::: {.proof}
@@ -164,7 +164,7 @@ For a one-parameter degeneration of polarized K3 surfaces over a punctured disk,
 The boundary components of $\bbcpt{\ftd}$ are classified by the nilpotency index (@def:nilpotency-index) of $N$:
 
 - **Type $\latII$ degenerations (1-cusps)**: $N \neq 0$, $N^2 = 0$.
-  The weight filtration is 3-step ($W_0 \subset W_1 \subset W_2 \subset W_3$), and $\Gr_2^W = I^\perp / I = \overline{T}_I$ has a pure polarized Hodge structure (@def:property-structure-stuff) of weight 2.
+  The weight filtration is 3-step ($W_0 \subset W_1 \subset W_2 \subset W_3$), and $\Gr_2^W = I^\perp / I = \overline{T}_I$ has a pure polarized Hodge structure of weight 2.
 
 - **Type $\mathrm{III}$ degenerations (0-cusps)**: $N^2 \neq 0$, $N^3 = 0$.
   The weight filtration is of maximal length.

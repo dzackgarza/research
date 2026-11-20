@@ -60,12 +60,12 @@ The basis case of the pair is @def:based-module and @prop:basis-is-structure.
 
 An $R$-module $M$ is *cyclic* if it admits a generating frame (@def:generating-frame) indexed by a one-element set, and *finitely generated* if it admits one indexed by a finite set.
 A cyclic module is isomorphic to $R/\Ann_R(x)$ for the image $x$ of the standard generator, and the cyclic modules form a replete full subcategory (@def:property-structure-stuff) of the finitely generated ones.
-Finite generation is the property (@def:property-structure-stuff) of @def:module-subcategories that asserts that the set of finite generating frames on $M$ is nonempty.
+Finite generation is the property of @def:module-subcategories that asserts that the set of finite generating frames on $M$ is nonempty.
 :::
 
 ::: {.definition #def:finite-module title="Finiteness of the underlying set" defines="finite underlying set"}
 
-Finiteness of the underlying set (@def:concrete-category) is a property (@def:property-structure-stuff) of objects of $\mathbf{Set}$; the modules with finite underlying set are its pullback (@def:pullback-square) along the underlying-set functor $R\text{-}\mathbf{Mod}\to\mathbf{Set}$ in the sense of @def:axiom-through-functor.
+Finiteness of the underlying set (@def:concrete-category) is a property of objects (@def:property-structure-stuff) of $\mathbf{Set}$; the modules with finite underlying set are its pullback (@def:pullback-square) along the underlying-set functor $R\text{-}\mathbf{Mod}\to\mathbf{Set}$ in the sense of @def:axiom-through-functor.
 This property and finite generation are independent.
 Over $R=\bZ$: the module $\bZ$ is finitely generated (@def:module-subcategories) and has infinite underlying set, $\bQ/\bZ$ has infinite underlying set and admits no finite generating frame (@def:generating-frame), and $\bZ/n\bZ$ has both properties.
 :::
@@ -155,7 +155,7 @@ $$
 $$
 in which $P_i$ is finitely generated (@def:module-subcategories) for $0\le i\le n$.
 Type $FP_0$ is finite generation and type $FP_1$ is finite presentation (@def:finite-presentation).
-A chosen partial resolution finitely generated through degree (@def:graded-object) (@def:resolution) $n$ is structure (@def:property-structure-stuff) on $M$; type $FP_n$ is the property (@def:property-structure-stuff) asserting that one exists.
+A chosen partial resolution finitely generated through degree (@def:graded-object) (@def:resolution) $n$ is structure on $M$; type $FP_n$ is the property asserting that one exists.
 :::
 
 ## Automorphisms acting on frames {#sec-frames-and-automorphisms}

@@ -7,8 +7,8 @@ An indefinite (@def:definiteness) lattice $L$ of signature (@def:signature) $(1,
 $$
 C_L \definedas \theset{ v\in L_\RR \mid v^2 > 0 }
 $$
-has two connected components, and mirrors (@not:hyperbolic-polytope-setting) of roots are the hyperplanes orthogonal to negative-norm vectors.
-Fixing one component $C_L^+$ identifies $L_\RR$ with a model of hyperbolic $n$-space, on which the reflection group (@def:reflection-group) (@def:group) acts.
+has two connected components, and the hyperplane $v^{\perp}$ orthogonal to a root $v$ is the orthogonal hyperplane of a negative-norm vector.
+Fixing one component $C_L^+$ identifies $L_\RR$ with a model of hyperbolic $n$-space.
 :::
 
 ## Reflections and the Weyl group
@@ -214,7 +214,7 @@ A **simple system** is a set of roots whose mirrors (@not:hyperbolic-polytope-se
 
 ::: {.definition #def:coxeter-vinberg-diagram defines="Coxeter--Vinberg diagram; $g_{ij}$"}
 
-The **Coxeter--Vinberg diagram** of a hyperbolic (@def:definiteness) Coxeter polytope (@def:coxeter-polytope) is a graph whose vertices correspond to the simple roots $r_i$ (equivalently, to the walls (@not:coxeter-polytope-faces) $H_i$ of the fundamental chamber (@def:weyl-chamber)), and whose edges encode the relative position of the mirrors (@not:hyperbolic-polytope-setting) $H_i, H_j$ through the normalized pairing
+The **Coxeter--Vinberg diagram** of a hyperbolic (@def:definiteness) Coxeter polytope (@def:coxeter-polytope) is a graph whose vertices correspond to the simple roots $r_i$ (equivalently, to the hyperplanes $H_i = r_i^{\perp}$ bounding the fundamental chamber (@def:weyl-chamber)), and whose edges encode the relative position of the mirrors (@not:hyperbolic-polytope-setting) $H_i, H_j$ through the normalized pairing
 $$
 g_{ij} \definedas \frac{r_i\cdot r_j}{\sqrt{r_i^2\, r_j^2}} = \cos\!\left(\frac{\pi}{m_{ij}}\right)
 .

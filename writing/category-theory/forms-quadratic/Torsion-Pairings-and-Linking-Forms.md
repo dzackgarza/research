@@ -41,7 +41,7 @@ The divisible module $K/R$ is injective (@def:injective-map) over the Dedekind d
 :::
 
 ::: {.proposition #prop:torsion-perfectness title="Nondegenerate linking pairings are perfect"}
-Let $b\colon T\tensor_RT\too K/R$ be a symmetric pairing on a finite-length $R$-module $T$, with adjoint
+Let $b\colon T\tensor_RT\too K/R$ be a symmetric pairing on a finite-length $R$-module $T$, with adjoint (@def:adjoint-morphism)
 $$
 b^\sharp\colon T\longrightarrow T^\dagger.
 $$
@@ -80,7 +80,7 @@ The adjective **discriminant** refers to the bilinear form arising from this met
 :::
 
 ::: {.proof}
-The formula descends along $\pi_L$ in both entries: $\beta_{L_K}(L,L^\#)\subseteq R$ by the metric-dual pullback (@def:pullback-square). If $x\in L^\#$ pairs integrally with every $y\in L^\#$, then $x\in(L^\#)^\#=L$, so the adjoint of $\overline\beta_L$ has zero kernel. By @prop:torsion-perfectness it is an isomorphism. The value-module comparison for $R=\bZ$ is the universal property (@def:property-structure-stuff) of the bilinear-module cokernel of @def:discriminant and the canonical embedding of its value module in $\bQ/\bZ$.
+The formula descends along $\pi_L$ in both entries: $\beta_{L_K}(L,L^\#)\subseteq R$ by the metric-dual pullback (@def:pullback-square). If $x\in L^\#$ pairs integrally with every $y\in L^\#$, then $x\in(L^\#)^\#=L$, so the adjoint (@def:adjoint-morphism) of $\overline\beta_L$ has zero kernel. By @prop:torsion-perfectness it is an isomorphism. The value-module comparison for $R=\bZ$ is the universal property of the bilinear-module cokernel of @def:discriminant and the canonical embedding of its value module in $\bQ/\bZ$.
 :::
 
 ::: {.example #ex:rank-one-discriminant-linking title="The linking form of a rank-one lattice"}

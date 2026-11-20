@@ -22,7 +22,7 @@ The closed half-space is the union of the open half-space with the hyperplane $\
 On a euclidean space (@def:euclidean-structure) with $f=(\,\cdot\,,\alpha)$ for a nonzero $\alpha$, the closed half-space is the union $H_\alpha\union A_\alpha$ of the hyperplane $H_\alpha=\alpha^{\perp}$ with the open half-space $A_\alpha=\theset{\lambda\mid(\lambda,\alpha)>0}$ [@Hum90, §1.12].
 :::
 
-::: {.definition #def:closed-cone title="Closed cone" defines="cone; closed cone"}
+::: {.definition #def:closed-cone title="Closed cone" defines="cone in a real vector space; closed cone"}
 
 A **cone** in a real vector space $V$ is a subset $C\subseteq V$ that is closed under multiplication by positive scalars: $\lambda x\in C$ for all $x\in C$ and $\lambda>0$.
 A **closed cone** is a cone that is a closed subset (@def:closed-subset) of $V$.

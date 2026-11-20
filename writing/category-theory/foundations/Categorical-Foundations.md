@@ -136,7 +136,7 @@ $$
 \operatorname{Map}_{\mcd}(x,y)\simeq\operatorname{Map}_{\mcc}(x,y).
 $$
 It is *replete* if every object of $\mcc$ equivalent to an object of $\mcd$ also belongs to $\mcd$.
-An isomorphism-invariant property (@def:property-structure-stuff) of objects of $\mcc$ defines a replete full subcategory (@def:property-structure-stuff) [@The25, Tag 001D; @nlab:replete_subcategory].
+The objects of $\mcc$ satisfying an isomorphism-invariant condition span a full subcategory that is replete [@The25, Tag 001D; @nlab:replete_subcategory].
 :::
 
 ::: {.definition #def:concrete-category title="Concrete categories" defines="concrete category; underlying set"}

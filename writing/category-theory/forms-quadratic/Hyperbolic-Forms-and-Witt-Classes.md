@@ -22,7 +22,7 @@ is an object of $\mathcal B_{R,R}$.
 ::: {.proposition #prop:hyperbolic-adjoint title="The adjoint map of a hyperbolic form"}
 
 Let $\operatorname{can}_M\colon M\to M^{**}$ be the evaluation (@def:dualizable-object) map, $\operatorname{can}_M(x)(\psi)=\psi(x)$.
-Under the canonical isomorphism $(M\oplus M^{*})^{*}\cong M^{*}\oplus M^{**}$, the adjoint map of @def:polarization is
+Under the canonical isomorphism $(M\oplus M^{*})^{*}\cong M^{*}\oplus M^{**}$, the adjoint (@def:adjoint-morphism) map of @def:polarization is
 $$
 h_M^{\sharp}\colon M\oplus M^{*}\too M^{*}\oplus M^{**},
 \qquad
@@ -68,7 +68,7 @@ Then $H(M)$ is a unimodular $R$-lattice in the sense of @def:lattice and @def:un
 The dual $M^{*}=\Hom_R(M,R)$ of a finitely generated projective module is finitely generated projective: a decomposition $M\oplus M'\cong R^{n}$ gives $M^{*}\oplus M'^{*}\cong(R^{n})^{*}\cong R^{n}$, because $\Hom_R(-,R)$ carries finite biproducts (@def:preadditive) to finite biproducts.
 So $M\oplus M^{*}$ is finitely generated projective and $H(M)$ is an $R$-lattice in the sense of @def:lattice.
 
-By @lem:double-dual-fg-projective the evaluation (@def:dualizable-object) map $\operatorname{can}_M$ is an isomorphism, so by @prop:hyperbolic-adjoint the adjoint $h_M^{\sharp}$ is an isomorphism.
+By @lem:double-dual-fg-projective the evaluation (@def:dualizable-object) map $\operatorname{can}_M$ is an isomorphism, so by @prop:hyperbolic-adjoint the adjoint (@def:adjoint-morphism) $h_M^{\sharp}$ is an isomorphism.
 Vanishing of the radical and the coradical is then nondegeneracy and perfection by @def:polarization, so $h_M$ is perfect.
 
 The discriminant module $A_{H(M)}$ is the cokernel of $h_M^{\sharp}$ by @def:two-witnesses, and the cokernel of an isomorphism is zero; so $A_{H(M)}=0$, which is unimodularity by @def:unimodular.
@@ -199,7 +199,7 @@ If both are nondegenerate then $L\perp L'$ is nondegenerate, and if both are uni
 
 ::: {.proof}
 
-Under $(L\oplus L')^{*}\cong L^{*}\oplus L'^{*}$ the adjoint of the orthogonal sum is $b_{L\perp L'}^{\sharp}=b_L^{\sharp}\oplus b_{L'}^{\sharp}$, by @def:orthogonal-sum: the mixed terms vanish, so the components of $b_{L\perp L'}^{\sharp}(x,x')$ are $b_L^{\sharp}(x)$ and $b_{L'}^{\sharp}(x')$.
+Under $(L\oplus L')^{*}\cong L^{*}\oplus L'^{*}$ the adjoint (@def:adjoint-morphism) of the orthogonal sum is $b_{L\perp L'}^{\sharp}=b_L^{\sharp}\oplus b_{L'}^{\sharp}$, by @def:orthogonal-sum: the mixed terms vanish, so the components of $b_{L\perp L'}^{\sharp}(x,x')$ are $b_L^{\sharp}(x)$ and $b_{L'}^{\sharp}(x')$.
 A biproduct (@def:preadditive) morphism has zero kernel exactly when both components do, and is an isomorphism exactly when both components are, so the two assertions follow from @def:polarization and @def:two-witnesses.
 The underlying module of an orthogonal sum of lattices is finitely generated projective, being a biproduct of such.
 :::
@@ -220,7 +220,7 @@ For $R=\bZ$ it is an isomorphism in $\mathbf{DiscBil}_{\bZ}$ (@def:discbil), and
 
 ::: {.proof}
 
-The adjoint of an orthogonal sum is the orthogonal sum of the adjoints, as in @prop:orthogonal-sum-unimodular, and the canonical isomorphism of duals identifies $b_{S(L)}^{\sharp}$ with $b_L^{\sharp}\oplus h_R^{\sharp}$.
+The adjoint (@def:adjoint-morphism) of an orthogonal sum is the orthogonal sum of the adjoints, as in @prop:orthogonal-sum-unimodular, and the canonical isomorphism of duals identifies $b_{S(L)}^{\sharp}$ with $b_L^{\sharp}\oplus h_R^{\sharp}$.
 By @prop:hyperbolic-lattice, $h_R^{\sharp}$ is an isomorphism, so the cokernel of the sum is $\operatorname{coker}b_L^{\sharp}$, the cokernels being taken componentwise in @def:two-witnesses: $\operatorname{coker}(f\oplus g)\cong\operatorname{coker}f\oplus\operatorname{coker}g$, and $\operatorname{coker}h_R^{\sharp}=0$.
 This gives $A_{S(L)}\cong A_L$.
 

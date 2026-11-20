@@ -308,7 +308,7 @@ $$
 \too
 [x,z]_C.
 $$
-The associativity and unit cells and their higher coherences are part of the $(\infty,\infty)$-categorical structure (@def:property-structure-stuff).
+The associativity and unit cells and their higher coherences are part of the $(\infty,\infty)$-categorical structure.
 
 For higher categories classified by $h_C,h_D\colon *\to\mathbf{Cat}_{\infty,\infty}$, let
 $$
@@ -361,7 +361,7 @@ Iterating the same point and local hom-object (@def:internal-hom) constructions 
 
 Write $[x,y]^{(1)}_C:=[x,y]_C$ and, for a choice of parallel $k$-cells $u,v$ of $C$, write $[u,v]^{(k+1)}_C$ for the local hom-object formed at the $k$-th stage of @def:cells.
 By construction the $n$-cells of $[u,v]^{(k)}_C$ are the $(n+k)$-cells of $C$ that are parallel over the chosen $u,v$; in particular its $0$-cells are the $k$-cells of $C$ between them.
-Passing from $C$ to a local hom-object therefore lowers the dimension of every cell by one, and its adjoint (@def:pairing-adjoints) direction is $B_{01}\dashv\Omega_{01}$ (@def:B01-construction).
+Passing from $C$ to a local hom-object therefore lowers the dimension of every cell by one, and its adjoint (@def:adjoint-morphism) (@def:pairing-adjoints) direction is $B_{01}\dashv\Omega_{01}$ (@def:B01-construction).
 :::
 
 ::: {.proof}
@@ -675,7 +675,7 @@ $$
 \mathbf{Cat}_n\too\cdots\too
 \mathbf{Cat}_{\infty,\infty}.
 $$
-An *$n$-category structure (@def:property-structure-stuff)* on a higher category (@def:higher-category) $C=\int_*h_C$ is a lift
+An *$n$-category structure* on a higher category (@def:higher-category) $C=\int_*h_C$ is a lift
 
 \begin{tikzcd}
 &

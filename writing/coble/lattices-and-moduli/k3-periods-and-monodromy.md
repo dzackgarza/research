@@ -34,7 +34,7 @@ of dimension $19$.
 
 ## Families and their period maps
 
-::: {.definition #def:k3-moduli-functors title="K3 families, markings, periods, and monodromy" defines="$\lkt$; $F_{\Kthree}(S)$; $\bV_f$; $\beta_f$; marked K3 functor; $F_{\Kthree}^{\mathrm{marked}}(S)$; $\Omega_L$; $\per_{f,\eta}$; $\rho_{f,s_0}$; $\rho_{f,s_0}^{\eta_{s_0}}$; monodromy group; $\operatorname{Mon}(f,s_0,\eta_{s_0})$; $\operatorname{Mon}(\lkt)$"}
+::: {.definition #def:k3-moduli-functors title="K3 families, markings, periods, and monodromy" defines="$\lkt$; $F_{\Kthree}(S)$; $\bV_f$; $\beta_f$; marked K3 functor; $F_{\Kthree}^{\mathrm{marked}}(S)$; $\Omega_L$; $\per_{f,\eta}$; $\rho_{f,s_0}$; $\rho_{f,s_0}^{\eta_{s_0}}$; monodromy group of the marked base fiber; $\operatorname{Mon}(f,s_0,\eta_{s_0})$; $\operatorname{Mon}(\lkt)$"}
 
 Let
 $$

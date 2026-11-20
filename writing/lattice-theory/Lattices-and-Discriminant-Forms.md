@@ -131,7 +131,7 @@ L_K \arrow[d,"\beta_{L_K}^{\sharp}"] \\
 \Hom_R(L,K)
 ```
 
-An **$I$-integral structure (@def:property-structure-stuff)** on $L$ is the unique morphism $\eta_{L,I}\colon L\too L^{\# I}$ in $R\text{-}\mathbf{Mod}$ making
+An **$I$-integral structure** on $L$ is the unique morphism $\eta_{L,I}\colon L\too L^{\# I}$ in $R\text{-}\mathbf{Mod}$ making
 ```tikzcd
 & L^{\# I} \arrow[d] \\
 L \arrow[ur,"\eta_{L,I}"] \arrow[r] & L_K

@@ -55,7 +55,7 @@ $$
 $$
 together with the hexagon [@Mac98, §VII.7 and §XI.1].
 These conditions again imply that all diagrams built from $\alpha,\lambda,\varrho,\gamma$ commute.
-A cartesian or cocartesian monoidal structure (@def:property-structure-stuff) is symmetric, with $\gamma$ the isomorphism commuting with the projections or injections.
+A cartesian or cocartesian monoidal structure is symmetric, with $\gamma$ the isomorphism commuting with the projections or injections.
 :::
 
 ::: {.definition #def:closed-monoidal title="Closed structure and internal hom" defines="closed monoidal category; internal hom; dual object"}
@@ -71,7 +71,7 @@ $$
 \Hom_V(a\tensor b,\,c)\;\cong\;\Hom_V(a,\,[b,c]),
 $$
 natural in $a$ and $c$.
-The value $[b,c]$ is the *internal hom*. For a commutative (@def:operation-axioms) ring $R$, $(R\text{-}\mathbf{Mod},\tensor_R,R)$ is closed with $[B,A]=\Hom_R(B,A)$, and $\mathbf{Set}$ and $\mathbf{Cat}$ are closed for their cartesian structures (@def:property-structure-stuff) [@Mac98, §VII.7].
+The value $[b,c]$ is the *internal hom*. For a commutative (@def:operation-axioms) ring $R$, $(R\text{-}\mathbf{Mod},\tensor_R,R)$ is closed with $[B,A]=\Hom_R(B,A)$, and $\mathbf{Set}$ and $\mathbf{Cat}$ are closed for their cartesian structures [@Mac98, §VII.7].
 The *dual object* of $a$ in a closed monoidal category is $[a,e]$; that the canonical morphism $a\to[[a,e],e]$ is an isomorphism (@def:isomorphism-of-objects) is a hypothesis on $a$, stated where it is used.
 :::
 
@@ -170,7 +170,7 @@ A monoid in the strict monoidal category of endofunctors of a category, with $\t
 ::: {.definition #def:group-object title="Group objects" defines="group object"}
 
 Let $\mcc$ have finite products and a terminal object (@def:initial-terminal) $1$.
-A *group object* of $\mcc$ is a monoid (@def:semigroup-monoid) $\langle c,\mu,\eta\rangle$ for the cartesian structure (@def:property-structure-stuff) together with a morphism $\zeta\colon c\to c$ such that
+A *group object* of $\mcc$ is a monoid (@def:semigroup-monoid) $\langle c,\mu,\eta\rangle$ for the cartesian structure together with a morphism $\zeta\colon c\to c$ such that
 $$
 \mu\circ(1\times\zeta)\circ\delta=\eta\circ{!}_c
 \qquad\text{and}\qquad

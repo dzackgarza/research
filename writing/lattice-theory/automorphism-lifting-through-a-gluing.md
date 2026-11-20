@@ -103,7 +103,7 @@ and the second has finite index.
 
 By @thm:automorphism-lifting-criterion, an element $\varphi_M\in\Gamma$ lifts with
 $\varphi_N=\id_N$ exactly when $\rho_M(\varphi_M)$ lies in $\Stab_{\Orth(A_M)}(h)$.
-This is precisely the universal property (@def:property-structure-stuff) of the displayed pullback.
+This is precisely the universal property of the displayed pullback.
 The identity morphism of $A_M$ gives the induced monomorphism
 $\widetilde\Orth(M)\mathbin{\times}_{\Orth(M)}\Gamma\injects\Stab_\Gamma(h)$.
 The discriminant module $A_M^\sharp$ has finite length (@def:anticanonical-pair) over $\bZ$, hence finite cardinality; therefore $\Orth(A_M)$ is finite and $\Stab_\Gamma(h)\injects\Gamma$ has finite index.

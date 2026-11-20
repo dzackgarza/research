@@ -41,12 +41,12 @@ for every $x\in X$.
 A monoid homomorphism preserves both $\mu$ and $e$.
 
 The functor $\mathbf{Mon}\to\mathbf{Semigrp}$ is faithful and is not full: a semigroup homomorphism between monoids need not preserve the unit.
-Thus the unit is chosen structure (@def:chosen-structure), while the unit laws are properties of the pointed semigroup.
+Thus the unit is a chosen datum, while the unit laws are conditions on the pointed semigroup.
 :::
 
 ::: {.definition #def:group title="Groups" defines="group"}
 
-A *group* is a group object (@def:group-object) of $\mathbf{Set}$ for its cartesian structure (@def:property-structure-stuff): a monoid (@def:semigroup-monoid) $(G,\mu,e)$ in $\mathbf{Set}$ with a map $\zeta\colon G\to G$ that satisfies the inverse axiom of @def:group-object.
+A *group* is a group object (@def:group-object) of $\mathbf{Set}$ for its cartesian structure: a monoid (@def:semigroup-monoid) $(G,\mu,e)$ in $\mathbf{Set}$ with a map $\zeta\colon G\to G$ that satisfies the inverse axiom of @def:group-object.
 The inverse is unique and is preserved by every monoid homomorphism (@def:semigroup-monoid).
 Therefore $\mathbf{Grp}\to\mathbf{Mon}$ is fully faithful, with replete (@def:subcategory) essential image the monoids in which every element is invertible.
 :::

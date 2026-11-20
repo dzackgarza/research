@@ -171,7 +171,7 @@ Let $\widetilde U$ be a connected topological space, let $\Gamma$ be a group (@d
 $$\bT\definedas(\widetilde U\times T)/\Gamma$$
 be the quotient of the trivial local system by the diagonal action. Then $\bT$ is a local system on the orbifold $U$ with fibre $T$, and its monodromy representation (@def:transport-and-monodromy) is
 $$\pi_1^{\mathrm{orb}}(U,\tilde x)\too\Aut(T),\qquad (g,[\widetilde\gamma])\longmapsto g,$$
-where an orbifold loop based (@def:based-module) at $x=[\tilde x]$ is a pair $(g,\widetilde\gamma)$ with $g\in\Gamma$ and $\widetilde\gamma$ a path (@def:path-connectedness) in $\widetilde U$ from $\tilde x$ to $g\tilde x$. Its image is $\Gamma$ and its kernel (@def:kernel-cokernel) is $\pi_1(\widetilde U,\tilde x)$; in particular
+where an orbifold loop based at $x=[\tilde x]$ is a pair $(g,\widetilde\gamma)$ with $g\in\Gamma$ and $\widetilde\gamma$ a path (@def:path-connectedness) in $\widetilde U$ from $\tilde x$ to $g\tilde x$. Its image is $\Gamma$ and its kernel (@def:kernel-cokernel) is $\pi_1(\widetilde U,\tilde x)$; in particular
 $$1\too\pi_1(\widetilde U,\tilde x)\too\pi_1^{\mathrm{orb}}(U,\tilde x)\too\Gamma\too1$$
 is exact (@def:exact-complex).
 :::

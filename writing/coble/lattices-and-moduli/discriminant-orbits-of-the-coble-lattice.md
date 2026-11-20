@@ -24,7 +24,7 @@ By @thm:indefinite-unimodular-classification, an odd unimodular lattice (@def:un
 Twisting distributes over orthogonal direct sums and $\generators{1}(2) = \generators{2}$, whence $B(2) = \generators{2}\oplus E_{10}(2) = T_\Co$.
 
 A twist (@def:form-twist) leaves the underlying $\ZZ$-module unchanged and multiplies the form by a nonzero scalar, so an automorphism of the module preserves $\beta_B$ if and only if it preserves $2\beta_B = \beta_{B(2)}$; this gives $\Orth(T_\Co) = \Orth(B)$.
-The same scaling shows $\beta_{T_\Co}(v,v) = 2\beta_B(v,v)$ vanishes exactly when $\beta_B(v,v)$ does, and primitivity is a property (@def:property-structure-stuff) of the module alone.
+The same scaling shows $\beta_{T_\Co}(v,v) = 2\beta_B(v,v)$ vanishes exactly when $\beta_B(v,v)$ does, and primitivity is a property of the module alone.
 :::
 
 ::: {.proposition #prop:tco-split-maximal title="$T_\Co$ is the twist of a split maximal lattice"}
@@ -297,7 +297,7 @@ the added term counting the $G$-orbits that are unions of exactly two $H$-orbits
 
 ::: {.proof}
 
-The target (@def:globular-boundary) of $\chi$ is abelian, so $\chi$ is constant on conjugacy classes, conjugates of $\Stab_G(x)$ have the same image, and "$\Stab_G(x)\subseteq H$" is a property (@def:property-structure-stuff) of the orbit (@def:group-orbit).
+The target (@def:globular-boundary) of $\chi$ is abelian, so $\chi$ is constant on conjugacy classes, conjugates of $\Stab_G(x)$ have the same image, and "$\Stab_G(x)\subseteq H$" is a property of the orbit (@def:group-orbit).
 
 Since $\chi$ is surjective, choose $\sigma\in G$ with $\chi(\sigma)=-1$; then $G = H\cup\sigma H$.
 Suppose first that $s\in\Stab_G(x)$ has $\chi(s)=-1$; then $\chi(\sigma s^{-1}) = (-1)(-1) = +1$, so $\sigma s^{-1}\in H$ and $\sigma x = (\sigma s^{-1})sx = (\sigma s^{-1})x\in Hx$, whence $Gx = Hx\cup H\sigma x = Hx$. Conversely if $Gx = Hx$ then $\sigma x\in Hx$, say $\sigma x = hx$ with $h\in H$, and $h^{-1}\sigma\in\Stab_G(x)$ has $\chi = (-1)(-1) = -1$.

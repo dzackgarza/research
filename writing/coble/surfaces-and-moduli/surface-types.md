@@ -7,7 +7,7 @@ All surfaces are over $\CC$.
 A **smooth projective surface** is a nonsingular projective variety (@def:projective-variety) of dimension $2$ over $\CC$ [@Har77, Ch. V, Sect. 1].
 :::
 
-::: {.definition #def:complete-linear-system title="Complete linear system" defines="complete linear system; base point; base-point-free linear system"}
+::: {.definition #def:complete-linear-system title="Complete linear system" defines="complete linear system; base point of a linear system; base-point-free linear system"}
 
 Let $X$ be a smooth projective variety (@def:projective-variety) and $D_0$ a divisor on $X$.
 The **complete linear system** $|D_0|$ is the set of all effective divisors linearly equivalent to $D_0$ [@Har77, Ch. II, Sect. 7, definition before Lem. 7.8].

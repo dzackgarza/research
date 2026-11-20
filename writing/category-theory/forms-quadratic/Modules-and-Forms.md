@@ -53,7 +53,7 @@ If $R$ is an integral domain, $M$ is *torsion* when every element is annihilated
 Over a general ring, a torsion subcategory is used only after a torsion theory has been specified.
 :::
 
-::: {.definition #def:based-module title="Bases" defines="basis; based; $\operatorname{Bas}_I(M)$; $R\text{-}\mathbf{Mod}^{\mathrm{bas}}_I$; $U_{\mathrm{bas}}$"}
+::: {.definition #def:based-module title="Bases" defines="basis; based module; $\operatorname{Bas}_I(M)$; $R\text{-}\mathbf{Mod}^{\mathrm{bas}}_I$; $U_{\mathrm{bas}}$"}
 
 Fix a set $I$.
 A *basis* of an $R$-module $M$ indexed by $I$ is an isomorphism (@def:isomorphism-of-objects) $e\colon R^{(I)}\xrightarrow{\ \sim\ }M$, and a *based* module is a pair $(M,e)$.
@@ -80,7 +80,7 @@ An object of that fibre is a pair $\bigl((N,f),\varphi\bigr)$ with $\varphi\colo
 Sending $\bigl((N,f),\varphi\bigr)$ to the basis (@def:based-module) $\varphi f\in\operatorname{Bas}_I(M)$ identifies the objects of the fibre with $\operatorname{Bas}_I(M)$, and the condition $\varphi'u=\varphi$ together with $u=f'f^{-1}$ reads $\varphi'f'=\varphi f$, so a morphism of the fibre exists exactly between objects with equal associated basis, and is then unique.
 
 By @def:property-structure-stuff a faithful functor with discrete fibres presents structure: a basis is a chosen object of the fibre, while freeness of @def:module-subcategories is the property that the fibre be nonempty for some $I$.
-The simply transitive $\Aut_R(R^{(I)})$-action above is the action on that fibre, and a construction defined on a based (@def:based-module) module is stated together with its transformation rule under that action.
+The simply transitive $\Aut_R(R^{(I)})$-action above is the action on that fibre, and a construction defined on a based module (@def:based-module) is stated together with its transformation rule under that action.
 
 Dropping the requirement that $e$ be an isomorphism (@def:isomorphism-of-objects) and asking only that it be surjective gives the generating frames of @def:generating-frame, for which the same argument runs and reaches the same conclusion by @prop:generating-frame-is-structure.
 A basis is the case of a generating frame whose structure map (@def:prespectrum) is an isomorphism.

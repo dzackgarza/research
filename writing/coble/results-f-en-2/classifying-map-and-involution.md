@@ -86,7 +86,7 @@ The space $\normalize{B}$ is a compactification of $\fentwo$ that carries a univ
 Over the open subset $\fentwo\iscontainedin\normalize{B}$, the morphism $\phi$ classifies the universal family of Enriques pairs, so it restricts to the open embedding $\fentwo\injects\ksbacpt{\fentwo}$.
 
 The image of $\phi$ therefore contains the dense subset $\fentwo$, so $\phi$ is dominant.
-By the universal property (@def:property-structure-stuff) of normalization [@stacks-035Q, (4)], $\phi$ factors uniquely as $\phi=\nu\circ\psi$.
+By the universal property of normalization [@stacks-035Q, (4)], $\phi$ factors uniquely as $\phi=\nu\circ\psi$.
 The morphism $\phi$ is finite (@thm:classifying-map-finite) and $\nu$ is separated, so $\psi$ is finite [@stacks-035D].
 
 The space $\fentwo$ is normal: it is the open stratum $V_0$ of its Baily--Borel compactification, which is a normal analytic space (@thm:baily-borel-compactification).

@@ -203,7 +203,7 @@ The quadratic form category has the analogous orthogonal sum.
 
 ## Orthogonality {#sec-orthogonality}
 
-::: {.definition #def:orthogonal-complement title="Left and right orthogonal complements" defines="$\lambda_{\iota}^{\mathrm L}$; $\lambda_{\iota}^{\mathrm R}$; ${}^{\perp_b}T$; $T^{\perp_b}$; isotropic"}
+::: {.definition #def:orthogonal-complement title="Left and right orthogonal complements" defines="left orthogonal complement; right orthogonal complement; $\lambda_{\iota}^{\mathrm L}$; $\lambda_{\iota}^{\mathrm R}$; ${}^{\perp_b}T$; $T^{\perp_b}$; isotropic"}
 
 Let $(M,W,b)$ be a bilinear module and let $\iota\colon T\injects M$ be a monomorphism of $R$-modules.
 Define
@@ -228,7 +228,7 @@ M
 =
 b(\iota(t),x).
 $$
-Define the **left orthogonal complement (@def:general-pairing-orthogonals)** \({}^{\perp_b}T\), the **right orthogonal complement (@def:general-pairing-orthogonals)** \(T^{\perp_b}\), and their coradicals (@def:two-witnesses) by the exact (@def:exact-complex) sequences
+Define the **left orthogonal complement** \({}^{\perp_b}T\), the **right orthogonal complement** \(T^{\perp_b}\), and their coradicals (@def:two-witnesses) by the exact (@def:exact-complex) sequences
 $$
 0
 \too
@@ -258,7 +258,7 @@ $$
 \qquad
 \operatorname{corad}_{\mathrm L}(\iota)\isoto\operatorname{corad}_{\mathrm R}(\iota)
 $$
-commuting with the four structure (@def:property-structure-stuff) morphisms above.
+commuting with the four structure morphisms above.
 
 The subobject $\iota$ is **isotropic** when
 $$

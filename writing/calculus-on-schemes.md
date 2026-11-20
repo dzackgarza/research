@@ -47,15 +47,15 @@ Let $(X,\mathcal O_X)$ be a ringed space and let $\mathcal F$ be a sheaf of $\ma
 :::
 
 ::: {.definition #def:orbifold-quotient-structure title="Quotient orbifold structure" defines="orbifold quotient structure; quotient orbifold structure; quotient orbifold"}
-Let $M$ be a manifold and let $\Gamma$ be a group (@def:group) acting properly discontinuously on $M$. The *quotient orbifold structure* on $M/\Gamma$ has the following charts. For $x\in M/\Gamma$, choose $\tilde x\in M$ over $x$, let $I_x$ be the isotropy group of $\tilde x$, and choose a neighbourhood $\widetilde U_x$ of $\tilde x$ invariant by $I_x$ and disjoint from its translates by the elements of $\Gamma$ not in $I_x$. The projection of $U_x=\widetilde U_x/I_x$ to $M/\Gamma$ is a homeomorphism onto its image. The cover $\{U_x\}$, augmented by its finite intersections, gives $M/\Gamma$ the structure (@def:property-structure-stuff) of an orbifold [@Thu79, Prop. 13.2.1].
+Let $M$ be a manifold and let $\Gamma$ be a group (@def:group) acting properly discontinuously on $M$. The *quotient orbifold structure* on $M/\Gamma$ has the following charts. For $x\in M/\Gamma$, choose $\tilde x\in M$ over $x$, let $I_x$ be the isotropy group of $\tilde x$, and choose a neighbourhood $\widetilde U_x$ of $\tilde x$ invariant by $I_x$ and disjoint from its translates by the elements of $\Gamma$ not in $I_x$. The projection of $U_x=\widetilde U_x/I_x$ to $M/\Gamma$ is a homeomorphism onto its image. The cover $\{U_x\}$, augmented by its finite intersections, gives $M/\Gamma$ the structure of an orbifold [@Thu79, Prop. 13.2.1].
 :::
 
 ::: {.definition #def:path-connectedness title="Path and path-connectedness" defines="path; path-connectedness; path connected; path-connected"}
 A *path* in a topological space $X$ from $p$ to $q$ is a continuous map $f\colon[0,1]\to X$ with $f(0)=p$ and $f(1)=q$. The space $X$ is *path connected* if for all $p,q\in X$ there is a path in $X$ from $p$ to $q$ [@Lee11, Chapter 4].
 :::
 
-::: {.definition #def:based-loop title="Loop and base point" defines="loop; based loop; base point; basepoint"}
-A *loop* in a topological space $X$ is a path (@def:path-connectedness) $f\colon[0,1]\to X$ with $f(0)=f(1)=x_0$. The common endpoint $x_0$ is its *base point*, and $f$ is a *loop based (@def:based-module) at $x_0$*. The set of homotopy classes, relative to the endpoints, of loops based at $x_0$ is the fundamental group (@def:group) $\pi_1(X,x_0)$ [@Hat02, Chapter 1, §1.1].
+::: {.definition #def:based-loop title="Loop and base point" defines="loop; based loop; base point of a loop"}
+A *loop* in a topological space $X$ is a path (@def:path-connectedness) $f\colon[0,1]\to X$ with $f(0)=f(1)=x_0$. The common endpoint $x_0$ is its *base point*, and $f$ is a *loop based at $x_0$*. The set of homotopy classes, relative to the endpoints, of loops based at $x_0$ is the fundamental group (@def:group) $\pi_1(X,x_0)$ [@Hat02, Chapter 1, §1.1].
 :::
 
 ::: {.definition #def:projective-morphism-of-schemes title="Projective space and projective morphism" defines="projective space; projective $n$-space; projective morphism of schemes; projective morphism"}
@@ -299,7 +299,7 @@ Since $F_\nabla$ is $\mathcal A$-linear, its matrix in $eG$ is $G^{-1}FG$. $\squ
 :::
 
 :::{.definition #def:calculus-flat title="Flat connection" defines="flat connection"}
-A connection (@def:calculus-connection) is *flat*, or integrable, if $F_\nabla=0$. Flatness here is a property (@def:property-structure-stuff) of the connection, distinct from flatness of its underlying module over a ring.
+A connection (@def:calculus-connection) is *flat*, or integrable, if $F_\nabla=0$. Flatness here is a property of the connection, distinct from flatness of its underlying module over a ring.
 :::
 
 :::{.proposition #prop:calculus-flat-complex title="The de Rham complex with coefficients"}
@@ -448,7 +448,7 @@ Let $M$ be connected, let $x\in M$, and let $\nabla$ be flat. Parallel transport
 :::
 
 :::{.proof title="Composition of parallel transports"}
-Theorem @thm:calculus-flat-local-system makes $P_\gamma$ depend only on $[\gamma]$. Uniqueness of the parallel solution gives $P_{\gamma_2\gamma_1}=P_{\gamma_2}P_{\gamma_1}$ and sends the constant loop to the identity. Changing a basis conjugates each linear endomorphism by the same matrix. $\square$
+Theorem @thm:calculus-flat-local-system makes $P_\gamma$ depend only on $[\gamma]$. Uniqueness of the parallel solution gives $P_{\gamma_2\gamma_1}=P_{\gamma_2}P_{\gamma_1}$ and sends the constant loop (@def:based-loop) to the identity. Changing a basis conjugates each linear endomorphism by the same matrix. $\square$
 :::
 
 :::{.definition #def:calculus-geodesic title="Geodesic" defines="geodesic"}
@@ -505,7 +505,7 @@ A *complex structure* on an $\mathcal A$-module $\mathcal E$ is an endomorphism 
 :::
 
 :::{.proposition #prop:calculus-complex-scalar-action title="Complex scalar multiplication"}
-A complex structure (@def:calculus-module-complex-structure) $J$ is equivalent to an $\mathcal A_{\mathbb C}$-module structure (@def:property-structure-stuff) on the underlying $\mathcal A$-module $\mathcal E$, via $(a+ib)s=as+bJs$. Denote this module by $\mathcal E_J$. Morphisms are exactly the $\mathcal A$-linear maps commuting with $J$.
+A complex structure (@def:calculus-module-complex-structure) $J$ is equivalent to an $\mathcal A_{\mathbb C}$-module structure on the underlying $\mathcal A$-module $\mathcal E$, via $(a+ib)s=as+bJs$. Denote this module by $\mathcal E_J$. Morphisms are exactly the $\mathcal A$-linear maps commuting with $J$.
 :::
 
 :::{.proof title="The relation for multiplication by i"}
@@ -657,7 +657,7 @@ Indeed, in complex coordinates $z^1,\ldots,z^n$, the equation $\bar\partial f=0$
 :::
 
 :::{.definition #def:calculus-holomorphic-map title="Maps preserving complex structures" defines="pseudoholomorphic map"}
-A smooth map $q:(M,J_M)\to(N,J_N)$ is *pseudoholomorphic* if $dq\circ J_M=(q^*J_N)\circ dq$. If the structures (@def:property-structure-stuff) are integrable, this is the coordinate Cauchy–Riemann condition for a holomorphic map. Pullback then gives $q^{-1}\mathcal O_{(N,J_N)}\to\mathcal O_{(M,J_M)}$.
+A smooth map $q:(M,J_M)\to(N,J_N)$ is *pseudoholomorphic* if $dq\circ J_M=(q^*J_N)\circ dq$. If the structures are integrable, this is the coordinate Cauchy–Riemann condition for a holomorphic map. Pullback (@def:pullback-square) then gives $q^{-1}\mathcal O_{(N,J_N)}\to\mathcal O_{(M,J_M)}$.
 :::
 
 ### The algebraic analogue
@@ -687,7 +687,7 @@ A *holomorphic connection* on $\mathcal E^{\mathrm{hol}}$ is a $\mathbb C$-linea
 :::
 
 :::{.proposition #prop:calculus-curvature-types title="Curvature and the Dolbeault operator"}
-For a smooth complex connection (@def:calculus-connection), $(\nabla^{0,1})^2=F_\nabla^{0,2}$. Thus $F_\nabla^{0,2}=0$ makes $\nabla^{0,1}$ a holomorphic structure (@def:property-structure-stuff) by @thm:calculus-koszul-malgrange. If $\nabla$ is compatible with a fixed holomorphic structure, its $(1,0)$-part restricts to a holomorphic connection (@def:calculus-holomorphic-connection) exactly when $F_\nabla^{1,1}=0$.
+For a smooth complex connection (@def:calculus-connection), $(\nabla^{0,1})^2=F_\nabla^{0,2}$. Thus $F_\nabla^{0,2}=0$ makes $\nabla^{0,1}$ a holomorphic structure by @thm:calculus-koszul-malgrange. If $\nabla$ is compatible with a fixed holomorphic structure, its $(1,0)$-part restricts to a holomorphic connection (@def:calculus-holomorphic-connection) exactly when $F_\nabla^{1,1}=0$.
 :::
 
 :::{.proof title="Calculation in a holomorphic frame"}

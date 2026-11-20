@@ -419,9 +419,9 @@ This is a locally closed (@def:locally-closed-subset) analytic subset (@def:clos
 The effective group (@def:group) is $\PGL_3=\SL_3/\mu_3$: the scalars $\mu_3$ are the kernel (@def:kernel-cokernel) of $\SL_3\to\PGL_3$ and act trivially on both factors, so $\SL_3$ acts through $\PGL_3$ and $V/\SL_3=V/\PGL_3$; freeness is a statement about $\PGL_3$. The action of $\PGL_3$ on $V$ is free, and the $\SL_3$-stabilizer of every point of $V$ is $\mu_3$: the fixed points of a non-identity projectivity lie in the union of a line and a point, a line carries at most three nodes of $Z$, and no non-identity projectivity fixes all ten nodes (proved below). $S_{10}$ acts on the second factor and commutes (@def:commutative-diagram) with $\PGL_3$.
 Write
 $$B\definedas V/\PGL_3,\qquad \bar B\definedas[V/(\SL_3\times S_{10})]=[B/S_{10}]$$
-so that $B$ is a complex analytic space and $V\to B$ is a principal $\PGL_3$-bundle (proved below), while $\bar B$ is the quotient stack of $B$ by the finite group $S_{10}$, whose coarse space is $V/(\SL_3\times S_{10})$; $B\to\bar B$ is the quotient by $S_{10}$ (@lem:d2-labelling-cover).
+so that $B$ is a complex analytic space and $V\to B$ is a principal $\PGL_3$-bundle (proved below), while $\bar B$ is the quotient stack of $B$ by the finite group $S_{10}$, whose coarse space is $V/(\SL_3\times S_{10})$; $B\to\bar B$ is the quotient by $S_{10}$.
 Let $U\subset(\PP^2)^{10}$ be the image of $V$: the ordered ten-tuples that are the ten nodes of an irreducible sextic with ten ordinary double points. The quotient $M_\Co\definedas U/\PGL_3$ is the moduli space of Coble surfaces of [@DK13, §3], a locally closed subvariety (@def:closed-subvariety) of the GIT quotient of $(\PP^2)^{10}$ by $\PGL_3$ (@prop:coble-moduli-git), and $B\to M_\Co$ is the map forgetting the sextic.
-The locus of irreducible sextics with ten nodes is irreducible, being the image of the irreducible variety of degree-$6$ rational maps $\PP^1\to\PP^2$, so $U$ and $M_\Co$ are connected and irreducible (@lem:d2-incidence-connected).
+The locus of irreducible sextics with ten nodes is irreducible, being the image of the irreducible variety of degree-$6$ rational maps $\PP^1\to\PP^2$, so $U$ and $M_\Co$ are connected and irreducible (proved below).
 :::
 
 ::: {.lemma #lem:d2-plane-sextic-freeness title="The fixed locus of a projectivity, and the principal bundle $V\to B$"}
@@ -431,7 +431,7 @@ Let $V$ and $B=V/\PGL_3$ be as in @not:d2-plane-sextic-base.
 1. The fixed points of a non-identity projectivity of $\PP^2$ lie in the union of a line and a point.
 2. Every line carries at most three nodes of $Z$, and no non-identity projectivity fixes all ten nodes; hence $\PGL_3$ acts freely on $V$, and the $\SL_3$-stabilizer of every point of $V$ is $\mu_3$.
 3. Every point of $V$ has four nodes with no three collinear; for the four-element subsets $I$ of the labels the charts $S_I\to B$ of the proof make $B$ a complex analytic space and $V\to B$ a principal $\PGL_3$-bundle.
-4. The family and the local system of @lem:d2-unpolarised-family(3) and @lem:d2-local-system descend to $B$, and the monodromy group (@def:k3-moduli-functors) of $\bT$ over $B$ is $\rho\qty{\pi_1(B,s)}=\rho\qty{\pi_1(V,s)}$, the group $\Gamma_\Co$ of @def:coble-family-unpolarized.
+4. The family and the local system of @lem:d2-unpolarised-family(3) and @lem:d2-local-system descend to $B$, and the monodromy group (@def:transport-and-monodromy) of $\bT$ over $B$ is $\rho\qty{\pi_1(B,s)}=\rho\qty{\pi_1(V,s)}$, the group $\Gamma_\Co$ of @def:coble-family-unpolarized.
 :::
 
 ::: {.proof}
@@ -442,7 +442,7 @@ Let $V$ and $B=V/\PGL_3$ be as in @not:d2-plane-sextic-base.
 
 (3) Three non-collinear nodes exist, since at most three lie on a line. For three non-collinear nodes $A,B,C$ the lines $AB$, $AC$, $BC$ carry at most three nodes each and contain $A,B,C$ twice each, so at most $3+3+3-3=6$ nodes lie on them and a fourth node $D$ lies outside; then $A,B,C,D$ have no three collinear. For a four-element subset $I$ of the labels let $V_I\subset V$ be the open set of configurations whose $I$-indexed nodes have no three collinear, fix a projective frame $q_1,\dots,q_4$, and let $S_I\subset V_I$ be the closed subset (@def:closed-subset) of configurations whose $I$-indexed nodes are $q_1,\dots,q_4$. The map $\PGL_3\times S_I\to V_I$, $(g,s)\mapsto g\cdot s$, is a bijection: a configuration $v\in V_I$ has a unique projectivity $g_v$ carrying its $I$-indexed nodes to $q_1,\dots,q_4$, because a projectivity is determined by the images of four points with no three collinear, and $v=g_v^{-1}(g_vv)$ with $g_vv\in S_I$. It is a homeomorphism because $v\mapsto g_v$ is given by solving a linear system whose determinant is nonzero on $V_I$. The composites $S_I\to V_I\to B$ are therefore charts; they cover $B$ by the first paragraph, and their transition maps are restrictions of the $\PGL_3$-action, hence analytic. So $B$ is a complex analytic space and $V\to B$ is a principal $\PGL_3$-bundle.
 
-(4) The family and $\bT$ are $\PGL_3$-equivariant (@lem:d2-unpolarised-family(3)), so they descend to the base $B$ of the principal bundle $V\to B$. A loop of $B$ lifts to a path (@def:path-connectedness) of $V$ by local triviality and compactness of $[0,1]$; the lift ends at $gs$ for some $g\in\PGL_3$, and since $\PGL_3$ is connected a path from $e$ to $g$ turns it into a loop of $V$ over the given loop. Hence $\pi_1(V,s)\to\pi_1(B,[s])$ is surjective. The monodromy group (@def:k3-moduli-functors) of the descended system on $B$ is $\rho\qty{\pi_1(B,[s])}$, and its pullback to $V$ is $\bT$, so it equals $\rho\qty{\pi_1(V,s)}$, which is $\Gamma_\Co$ (@lem:d2a-monodromy-of-the-stack).
+(4) The family and $\bT$ are $\PGL_3$-equivariant (@lem:d2-unpolarised-family(3)), so they descend to the base $B$ of the principal bundle $V\to B$. A loop of $B$ lifts to a path (@def:path-connectedness) of $V$ by local triviality and compactness of $[0,1]$; the lift ends at $gs$ for some $g\in\PGL_3$, and since $\PGL_3$ is connected a path from $e$ to $g$ turns it into a loop of $V$ over the given loop. Hence $\pi_1(V,s)\to\pi_1(B,[s])$ is surjective. The monodromy group (@def:transport-and-monodromy) of the descended system on $B$ is $\rho\qty{\pi_1(B,[s])}$, and its pullback to $V$ is $\bT$, so it equals $\rho\qty{\pi_1(V,s)}$, which is $\Gamma_\Co$ (@lem:d2a-monodromy-of-the-stack).
 :::
 
 ::: {.lemma #lem:d2-incidence-connected title="The incidence variety, $B$ and $\bar B$ are connected"}
@@ -505,7 +505,7 @@ The labelling of the ten exceptional curves is not part of the objects: the labe
 **The bases** are three, and the choice among them is part of the definition; the family is the same over the space $B$ and the stack $\bar B$, and there is no family over the coarse space $M_\Co$.
 
 1. *The coarse space.* $M_\Co=U/\PGL_3$ of @not:d2-plane-sextic-base, the moduli space of [@DK13, §3] (@prop:coble-moduli-git). It is a coarse space and carries no family: a Coble surface whose automorphism group (@def:endomorphism-monoid) acts nontrivially on $T_\Co$ has none. Statements about $\Gamma_\Co$ are therefore not statements about base 1.
-2. *The unlabelled base.* the quotient stack $\bar B=[B/S_{10}]=[V/(\SL_3\times S_{10})]$ of @not:d2-plane-sextic-base, whose coarse space is the space $V/(\SL_3\times S_{10})$ and whose points are irreducible ten-nodal sextics without names for the nodes; the family over it is @lem:d2-unpolarised-family(3) and the local system is @lem:d2-local-system, with monodromy group (@def:k3-moduli-functors) $\Gamma_\Co(\bar B)\supseteq\Gamma_\Co$ of index $10!$ (@lem:d2-local-system(5), @lem:gamma-co-labelled-index).
+2. *The unlabelled base.* the quotient stack $\bar B=[B/S_{10}]=[V/(\SL_3\times S_{10})]$ of @not:d2-plane-sextic-base, whose coarse space is the space $V/(\SL_3\times S_{10})$ and whose points are irreducible ten-nodal sextics without names for the nodes; the family over it is @lem:d2-unpolarised-family(3) and the local system is @lem:d2-local-system, with monodromy group (@def:transport-and-monodromy) $\Gamma_\Co(\bar B)\supseteq\Gamma_\Co$ of index $10!$ (@lem:d2-local-system(5), @lem:gamma-co-labelled-index).
 3. *The labelled base.* the space $B=V/\PGL_3$ of @not:d2-plane-sextic-base, whose points are sextics with the ten nodes named, up to projectivity; the family over it is @lem:d2-unpolarised-family(3) and its local system is @lem:d2-local-system, and the eleven classes of the next item are $\SL_3$-invariant global sections over $V$, hence descend to $B$ (@lem:d2-local-system(2)). This is the base the definition assigns to $\Gamma_\Co$.
 
 The family over $B$ is the descent of @lem:d2-unpolarised-family(2) along the principal bundle $V\to B$ (@lem:d2-plane-sextic-freeness(4)), and its local system is @lem:d2-local-system.
@@ -514,7 +514,7 @@ The family over $B$ is the descent of @lem:d2-unpolarised-family(2) along the pr
 
 **The local system of lattices** is $\bT$ of @lem:d2-local-system: the orthogonal complement in $R^2f_*\underline{\ZZ}_{\mcx}$ modulo torsion of the span of the classes of the pullback of a line and of the ten exceptional curves. Its fibre is $T_\Co$, its rank is $11$, and its stalks (@def:stalk) have signature $(2,9)$.
 
-**The group.** $\Gamma_\Co\leq\Orth(T_\Co)$ is the monodromy group (@def:k3-moduli-functors) of $\bT$ (@lem:d2-local-system) on the labelled base $B$: the image of the monodromy representation (@def:transport-and-monodromy) of $\bT$ (@def:local-system-of-lattices) on $\pi_1(B,s)$. By @lem:d2-plane-sextic-freeness(4) it is also $\rho\qty{\pi_1(V,s)}$, and it is a subgroup of $\Orth(T_\Co)$ because $\bT$ is a local system of lattices with fibre $T_\Co$ and transport along a path (@def:path-connectedness) is an isometry (@prop:local-system-of-lattices-monodromy). Put $\fco\definedas\bD(T_\Co)/\Gamma_\Co$.
+**The group.** $\Gamma_\Co\leq\Orth(T_\Co)$ is the monodromy group (@def:transport-and-monodromy) of $\bT$ (@lem:d2-local-system) on the labelled base $B$: the image of the monodromy representation (@def:transport-and-monodromy) of $\bT$ (@def:local-system-of-lattices) on $\pi_1(B,s)$. By @lem:d2-plane-sextic-freeness(4) it is also $\rho\qty{\pi_1(V,s)}$, and it is a subgroup of $\Orth(T_\Co)$ because $\bT$ is a local system of lattices with fibre $T_\Co$ and transport along a path (@def:path-connectedness) is an isometry (@prop:local-system-of-lattices-monodromy). Put $\fco\definedas\bD(T_\Co)/\Gamma_\Co$.
 :::
 
 ::: {.lemma #lem:d2-unpolarised-family title="The family over the labelled base exists"}
@@ -538,8 +538,8 @@ Let $b=(Z;p_1,\dots,p_{10})\in V$ and $S_b=\Bl_{p_1,\dots,p_{10}}\PP^2$, with $H
 ::: {.lemma #lem:coble-family-base-change title="Base change changes the monodromy group by a subgroup"}
 
 Let $p\colon B'\to B$ be a continuous map of arcwise connected, locally simply connected spaces, let $(\bL,\beta)$ be a local system of lattices (@def:local-system-of-lattices) on $B$, and let $s'\in B'$ with $p(s')=s$.
-Then the monodromy group (@def:k3-moduli-functors) of $p^{-1}\bL$ is $\rho\qty{p_*\pi_1(B',s')}$, the image in $\Aut(\bL_s,\beta_s)$ of the subgroup $p_*\pi_1(B',s')$ of $\pi_1(B,s)$.
-In particular it is contained in the monodromy group (@def:k3-moduli-functors) of $\bL$, and if $p$ is a covering of finite degree (@def:graded-object) then it has finite index (@def:index) in it.
+Then the monodromy group (@def:transport-and-monodromy) of $p^{-1}\bL$ is $\rho\qty{p_*\pi_1(B',s')}$, the image in $\Aut(\bL_s,\beta_s)$ of the subgroup $p_*\pi_1(B',s')$ of $\pi_1(B,s)$.
+In particular it is contained in the monodromy group (@def:transport-and-monodromy) of $\bL$, and if $p$ is a covering of finite degree (@def:graded-object) then it has finite index (@def:index) in it.
 :::
 
 ::: {.proof}
@@ -571,7 +571,7 @@ Let $\mcx\to\mcs\to B$ be the family of @lem:d2-unpolarised-family(3).
 Let $G$ be a connected complex Lie group (@def:group) acting on a connected complex analytic space $V$, and let $\bL$ be a $G$-equivariant local system of lattices on $V$: a local system with isomorphisms (@def:isomorphism-of-objects) $\varphi_g(v)\colon\bL_v\to\bL_{gv}$ for $g\in G$ and $v\in V$, continuous in $(g,v)$, with $\varphi_e=\id$ and $\varphi_{gh}(v)=\varphi_g(hv)\circ\varphi_h(v)$; this is the same datum as a local system of lattices on the quotient stack $[V/G]$. Let $s\in V$ and identify $\bL_s$ with a lattice $T$.
 
 1. Every loop of $[V/G]$ at $[s]$ is homotopic, in the loop model of @lem:orbifold-monodromy-of-a-quotient, to a loop of $V$ at $s$.
-2. The monodromy group (@def:k3-moduli-functors) of $\bL$ on $[V/G]$ equals the image $\rho\qty{\pi_1(V,s)}\leq\Orth(T)$ of the monodromy representation of $\bL$ on $V$.
+2. The monodromy group (@def:transport-and-monodromy) of $\bL$ on $[V/G]$ equals the image $\rho\qty{\pi_1(V,s)}\leq\Orth(T)$ of the monodromy representation of $\bL$ on $V$.
 3. For $G=\SL_3$ acting on $V$ as in @not:d2-plane-sextic-base and $\bL=\bT$ of @lem:d2-local-system, which is $\SL_3$-equivariant by @lem:d2-unpolarised-family(3), this gives $\Gamma_\Co=\rho\qty{\pi_1(V,s)}$: the group of @def:coble-family-unpolarized is the monodromy group of the family over the labelled base.
 :::
 
@@ -596,7 +596,7 @@ $$\sigma^*\circ\tilde\gamma^*=\varphi_g(s)^{-1}\circ\tilde\gamma^*$$
 
 ::: {.lemma #lem:coble-family-labelled-monodromy title="The labelled family has monodromy in $\widetilde\Orth^+ (T_\Co)$"}
 
-On base 3 of @def:coble-family-unpolarized, the labelled base, the monodromy group (@def:k3-moduli-functors) $\Gamma_\Co$ of $\bT$ is contained in $\widetilde\Orth^+(T_\Co)$.
+On base 3 of @def:coble-family-unpolarized, the labelled base, the monodromy group (@def:transport-and-monodromy) $\Gamma_\Co$ of $\bT$ is contained in $\widetilde\Orth^+(T_\Co)$.
 :::
 
 ::: {.proof}

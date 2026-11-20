@@ -30,7 +30,7 @@ Its universal property (@def:universal-arrow) is the greatest lower bound in $\o
 
 The join of $A$ and $B$ is the replete full subcategory (@def:property-structure-stuff) on the objects lying in $A$ or $B$.
 It is the least upper bound in $\operatorname{RFull}(C)$.
-Thus disjunction of two object properties is a valid property (@def:property-structure-stuff) and defines a full subcategory (@def:subcategory).
+Thus disjunction of two object properties is a valid property and defines a full subcategory (@def:subcategory).
 :::
 
 ## Closure under specified operations

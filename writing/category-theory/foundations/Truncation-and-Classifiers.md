@@ -5,12 +5,12 @@ Each category of structured objects comes with a specified forgetful functor.
 
 ## Properties and structures {#sec-property-structure}
 
-::: {.definition #def:property-structure-stuff title="Property, structure, and stuff" defines="property; structure; stuff; replete full subcategory; $\mcc_P$"}
+::: {.definition #def:property-structure-stuff title="Property, structure, and stuff" defines="property of objects; structure on objects; stuff; replete full subcategory; $\mcc_P$"}
 Let $U\colon\mcs\to\mcc$ be a forgetful functor.
 
 - If $U$ is fully faithful, it describes at most a property of objects of $\mcc$.
 
-- If $U$ is faithful, it describes at most structure on those objects.
+- If $U$ is faithful, it describes at most structure on objects of $\mcc$.
 
 - A general $U$ may forget stuff [@BS07, §2; @nlab:stuff_structure_property].
 
@@ -24,7 +24,7 @@ Let $U\colon\mcs\to\mcc$ be a functor between groupoids.
 For $x\in\mcc$, the homotopy fiber (@def:fiber-cofiber) $U^{-1}(x)$ is the groupoid of objects $e\in\mcs$ with an isomorphism (@def:isomorphism-of-objects) $U(e)\cong x$, and of morphisms of $\mcs$ compatible with these isomorphisms.
 
 - If every $U^{-1}(x)$ is a $(-1)$-groupoid, that is, empty or equivalent to a point, then $U$ forgets at most properties.
-- If every $U^{-1}(x)$ is a $0$-groupoid, that is, equivalent to a set, then $U$ forgets at most structure (@def:property-structure-stuff).
+- If every $U^{-1}(x)$ is a $0$-groupoid, that is, equivalent to a set, then $U$ forgets at most structure.
 - If the $U^{-1}(x)$ are arbitrary groupoids, then $U$ forgets stuff (@def:property-structure-stuff).
 
 [@BS07, §2, Fact 3]
@@ -37,7 +37,7 @@ This is [@BS07, §2, Fact 3].
 ## Chosen structure
 
 ::: {.definition #def:chosen-structure title="Chosen structure as a homotopy fiber" defines="chosen structure"}
-A structure (@def:property-structure-stuff) on $X\in\mcc$ is a chosen object of the homotopy fiber (@def:fiber-cofiber) of $U\colon\mcs\to\mcc$ over $X$.
+A structure on $X\in\mcc$ is a chosen object of the homotopy fiber (@def:fiber-cofiber) of $U\colon\mcs\to\mcc$ over $X$.
 Several nonisomorphic choices may lie over the same $X$.
 A morphism in $\mcs$ must preserve the chosen structure.
 
@@ -65,7 +65,7 @@ The structured objects of $\mcd$ obtained from $U$ are given by the pseudo-pullb
 \end{tikzcd}
 ```
 If $U$ is a replete (@def:subcategory) full inclusion, it is an isofibration, and the strict pullback (@def:pullback-square) presents this pseudo-pullback up to equivalence (@def:equivalence-of-objects) (@sec-pullback-cat).
-Its objects are exactly the $D\in\mcd$ for which $F(D)$ satisfies the stated property (@def:property-structure-stuff).
+Its objects are exactly the $D\in\mcd$ for which $F(D)$ satisfies the stated property.
 :::
 
 ## Classifying objects and families {#sec-axiom-classifiers-general}
@@ -80,7 +80,7 @@ Only then is $B$ called a classifying object for $H$.
 Suppose $H(X)$ is the space of families of a specified kind over $X$.
 The *universal family* $p\colon E\to B$ is the family corresponding under $\eta_B^{-1}$ to $\id_B$.
 Naturality identifies pullback (@def:pullback-square) of $p$ along $f\colon X\to B$ with the family corresponding to $f$.
-Thus the equivalence $\eta$ records existence, equivalences between presentations, and automorphisms of families; mere existence of some pullback presentation is not a universal property (@def:property-structure-stuff).
+Thus the equivalence $\eta$ records existence, equivalences between presentations, and automorphisms of families; mere existence of some pullback presentation is not a universal property.
 :::
 
 ## Operations and endomorphism operads {#sec-operations}

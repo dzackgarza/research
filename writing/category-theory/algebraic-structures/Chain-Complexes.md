@@ -66,7 +66,7 @@ is the complex concentrated in degrees $2,1,0$ with $d_2=i$ and $d_1=p$, togethe
 ::: {.definition #def:quasi-isomorphism title="Quasi-isomorphisms" defines="quasi-isomorphism"}
 
 A chain map (@def:chain-complexes) $u\colon C\to D$ is a *quasi-isomorphism* if $H_n(u)$ is an isomorphism (@def:isomorphism-of-objects) for every $n$ [@Wei94, Def. 1.1.2].
-These are the weak equivalences (@def:quasi-isomorphism) of the model structure (@def:property-structure-stuff) of @thm:projective-model-structure.
+These are the weak equivalences (@def:quasi-isomorphism) of the model structure of @thm:projective-model-structure.
 :::
 
 ::: {.theorem #thm:homology-les title="The long exact homology sequence"}
@@ -215,7 +215,7 @@ The condition that $\beta^{\sharp}$ be a chain equivalence (@def:equivalence-of-
 
 ::: {.proof}
 
-For each $r$, an $R$-bilinear map $C_r\times C_{n-r}\to R$ is the same as an $R$-linear map $C_r\to\Hom_R(C_{n-r},R)$, by the universal property (@def:property-structure-stuff) of the hom module, and the sign $(-1)^r$ is a bijection of each such set with itself, so the two families correspond.
+For each $r$, an $R$-bilinear map $C_r\times C_{n-r}\to R$ is the same as an $R$-linear map $C_r\to\Hom_R(C_{n-r},R)$, by the universal property of the hom module, and the sign $(-1)^r$ is a bijection of each such set with itself, so the two families correspond.
 
 It remains to match the two conditions.
 For $x\in C_r$ and $y\in C_{n-r+1}$,

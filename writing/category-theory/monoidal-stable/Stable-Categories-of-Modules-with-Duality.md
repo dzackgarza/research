@@ -99,7 +99,7 @@ $$
 
 ::: {.definition #def:poincare-complex title="Algebraic Poincaré complexes and $L$-groups" defines="$n$-dimensional $\epsilon$-symmetric Poincaré complex; $\epsilon$-transposition involution; $T_{\epsilon}$; $n$-dimensional $U$-intermediate $\epsilon$-symmetric $L$-group; $L^{n}_{U}(A,\epsilon)$; $L^{U}_{n}(A,\epsilon)$"}
 
-An *$n$-dimensional $\epsilon$-symmetric Poincaré complex* over a ring with involution (@def:ring-with-involution) $A$ is a pair $(C,\phi)$ consisting of an $n$-dimensional $A$-module chain complex (@def:chain-complexes) $C$ and an $\epsilon$-symmetric structure (@def:property-structure-stuff) $\phi$ on $C$ whose component $\phi_0\colon C^{n-*}\to C$ is a chain equivalence (@def:equivalence-of-objects); the $\epsilon$-quadratic case replaces $\phi$ by an $\epsilon$-quadratic structure $\psi$ and requires $(1+T_{\epsilon})\psi_0$ to be a chain equivalence, where $T_{\epsilon}$ is the $\epsilon$-transposition involution on $C\tensor_AC$ given by $x\tensor_A y\mapsto(-1)^{pq}\epsilon\,y\tensor_A x$ for $x\in C_p$ and $y\in C_q$ [@Ran98, Def. 20.2].
+An *$n$-dimensional $\epsilon$-symmetric Poincaré complex* over a ring with involution (@def:ring-with-involution) $A$ is a pair $(C,\phi)$ consisting of an $n$-dimensional $A$-module chain complex (@def:chain-complexes) $C$ and an $\epsilon$-symmetric structure $\phi$ on $C$ whose component $\phi_0\colon C^{n-*}\to C$ is a chain equivalence (@def:equivalence-of-objects); the $\epsilon$-quadratic case replaces $\phi$ by an $\epsilon$-quadratic structure $\psi$ and requires $(1+T_{\epsilon})\psi_0$ to be a chain equivalence, where $T_{\epsilon}$ is the $\epsilon$-transposition involution on $C\tensor_AC$ given by $x\tensor_A y\mapsto(-1)^{pq}\epsilon\,y\tensor_A x$ for $x\in C_p$ and $y\in C_q$ [@Ran98, Def. 20.2].
 For a $*$-invariant subgroup $U\iscontainedin\widetilde K_0(A)$, the *$n$-dimensional $U$-intermediate $\epsilon$-symmetric $L$-group* $L^{n}_{U}(A,\epsilon)$ and its $\epsilon$-quadratic counterpart $L^{U}_{n}(A,\epsilon)$ are the cobordism groups (@def:group) of such complexes with $[C]\in U$ [@Ran98, Def. 20.10].
 :::
 
@@ -111,7 +111,7 @@ $L^{0}_{U}(A,\epsilon)$ is the Witt group (@def:group) of nonsingular $\epsilon$
 ::: {.proof}
 
 This is [@Ran98, Ex. 20.11].
-In dimension $0$ a Poincaré complex of @def:poincare-complex is a chain complex (@def:chain-complexes) concentrated in degree (@def:graded-object) $0$ together with a symmetric or quadratic structure (@def:property-structure-stuff) whose component $\phi_0\colon C^0\to C_0$ is a chain equivalence (@def:equivalence-of-objects), which is exactly a nonsingular form on $C_0$ in the sense of @def:polarization; cobordism of such complexes is Witt equivalence of @def:witt-class, and the intermediate $L$-group is the quotient by the forms admitting a lagrangian, which is @def:lagrangian.
+In dimension $0$ a Poincaré complex of @def:poincare-complex is a chain complex (@def:chain-complexes) concentrated in degree (@def:graded-object) $0$ together with a symmetric or quadratic structure whose component $\phi_0\colon C^0\to C_0$ is a chain equivalence (@def:equivalence-of-objects), which is exactly a nonsingular form on $C_0$ in the sense of @def:polarization; cobordism of such complexes is Witt equivalence of @def:witt-class, and the intermediate $L$-group is the quotient by the forms admitting a lagrangian, which is @def:lagrangian.
 A hyperbolic form (@def:hyperbolic-form) admits a lagrangian, so its class in $L^0$ is zero, as is its Witt class by @prop:metabolic-witt-trivial.
 :::
 
@@ -142,7 +142,7 @@ The cofibrant replacement of an object of $\mca$ concentrated in degree $0$ is a
 
 ::: {.proof}
 
-The model structure (@def:property-structure-stuff) is [@Qui67, Ch. I §1, Ex. B]; the axioms are checked there for the three classes named.
+The model structure is [@Qui67, Ch. I §1, Ex. B]; the axioms are checked there for the three classes named.
 
 A cofibrant object is one for which $\varnothing\to C$ is a cofibration, that is, injective (@def:injective-map) with a projective cokernel (@def:kernel-cokernel) in each degree; a complex concentrated in degree $0$ in $\mca$ is not cofibrant in general, because its cokernel is the object itself and need not be projective.
 A cofibrant replacement $P\to A$ is a degreewise map from such a $P$ to $A$ in degree $0$ and to $0$ elsewhere, a weak equivalence by hypothesis; being a degreewise epimorphism with projective terms it is a projective resolution of $A$, and exactness of the augmented complex is the vanishing of homology above degree $0$ required by the weak equivalence.
@@ -156,7 +156,7 @@ The corresponding $\infty$-categorical constructions are @def:loops-suspension, 
 ::: {.definition #def:stable-infinity-category title="Stable $\infty$-categories" defines="stable $\infty$-category"}
 
 An $\infty$-category $\mcc$ is *stable* if it has a zero object (@def:preadditive), every morphism of $\mcc$ admits a kernel (@def:kernel-cokernel) and a cokernel (@def:kernel-cokernel), and a triangle in $\mcc$ is exact (@def:exact-complex) if and only if it is coexact [@Lur09, Def. 2.9].
-The homotopy category (@def:model-category) of a stable $\infty$-category is triangulated [@Lur09, Thm. 3.11], a stable $\infty$-category admits all finite limits and colimits (@def:limit) [@Lur09, Prop. 4.4], and on it the suspension and loop functors of @def:loops-suspension are mutually inverse equivalences (@def:equivalence-of-objects) [@Lur09, §3, paragraph before Rmk. 3.3].
+The homotopy category (@def:model-category) of a stable $\infty$-category is triangulated [@Lur09, Thm. 3.11], a stable $\infty$-category admits all finite limits and colimits (@def:limit) [@Lur09, Prop. 4.4], and on it the suspension and loop (@def:based-loop) functors of @def:loops-suspension are mutually inverse equivalences (@def:equivalence-of-objects) [@Lur09, §3, paragraph before Rmk. 3.3].
 The hypothesis of the first is weaker than stability: it asks that $\mcc$ be pointed, admit cokernels, and have the suspension an equivalence.
 That hypothesis holds for every stable $\mcc$, and is in fact equivalent to stability, by [@Lur09, Rmk. 3.12].
 :::
@@ -208,7 +208,7 @@ The $\infty$-category of spectra is $\mathrm{Sp}=\mathrm{Sp}(\mcs_{*})=\mathrm{S
 
 $\mathrm{Stab}(\mcc)=\mathrm{Sp}(\mcc_{*})$ is [@Lur09, Def. 8.4].
 $\mathrm{Sp}=\mathrm{Stab}(\mcs)$ in [@Lur09, Def. 9.1] is the case $\mcc=\mcs$, together with the identification $\mcs_{*}=\mcs$ up to the trivial fibration of [@Lur09, Rem. 8.5].
-The universal property (@def:property-structure-stuff) is the equivalence (@def:equivalence-of-objects) $\mathrm{Exc}(\mathcal{C},\mathrm{Stab}(\mathcal{D}))\simeq\mathrm{Exc}(\mathcal{C},\mathcal{D})$ of [@Lur09, Prop. 10.12].
+The universal property is the equivalence (@def:equivalence-of-objects) $\mathrm{Exc}(\mathcal{C},\mathrm{Stab}(\mathcal{D}))\simeq\mathrm{Exc}(\mathcal{C},\mathcal{D})$ of [@Lur09, Prop. 10.12].
 Free (@def:module-subcategories) generation by the sphere spectrum is [@Lur09, Cor. 15.6]: evaluation (@def:dualizable-object) on the sphere spectrum induces $\operatorname{Pr}^{\mathrm L}(\mathrm{Sp},\mathcal{D})\simeq\mathcal{D}$ for stable presentable $\mathcal{D}$.
 :::
 

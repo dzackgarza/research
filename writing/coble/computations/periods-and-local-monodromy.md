@@ -32,7 +32,7 @@ For each $t \in M$, let $\{\omega_1(t), \dots, \omega_p(t)\}$ be a basis of a ho
    \;\in\; \Mat_{p \times k}(\CC).
    $$
    Because the basis of holomorphic forms is determined only up to an invertible change of basis in $\GL_p(\CC)$, the $p$-dimensional subspace spanned by the rows of $\Pi(t)$ defines a point in the Grassmannian $\Gr(p, H^m(X, \CC))$, or more precisely in the Griffiths period domain $\mathcal{D} \subset \Gr(p, k)$ cut out by the Riemann–Hodge bilinear relations.
-   Modulo the global monodromy group (@def:k3-moduli-functors) (@def:transport-and-monodromy) $\Gamma \le \Aut(H_m(X, \ZZ), Q)$, this association defines the *period map* of the family
+   Modulo the global monodromy group (@def:transport-and-monodromy) $\Gamma \le \Aut(H_m(X, \ZZ), Q)$, this association defines the *period map* of the family
    $$
    \mathcal{P} \colon M \too \mathcal{D}/\Gamma.
    $$
@@ -149,7 +149,7 @@ The Jordan type of the monodromy in any basis of $H^1(X_t,\CC)$ is one Jordan bl
 
 ::: {.proof}
 
-The monodromy is induced by parallel transport (@cons:calculus-transport) along a loop in the base, which is a homeomorphism of the fiber (@def:fiber-cofiber).
+The monodromy is induced by parallel transport (@cons:calculus-transport) along a loop (@def:based-loop) in the base, which is a homeomorphism of the fiber (@def:fiber-cofiber).
 It therefore preserves $H_1(X_t,\ZZ)\cong\ZZ^2$ and $H^1(X_t,\ZZ)$, and its matrix in a $\ZZ$-basis of either lies in $\GL_2(\ZZ)$.
 The matrix $T$ of @ex:legendre-monodromy has the entry $2\pi i\notin\ZZ$.
 The second statement is @cor:pf-unipotent-monodromy(3) applied to the single Jordan block of $T$.

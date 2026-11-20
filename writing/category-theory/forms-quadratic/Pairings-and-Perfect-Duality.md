@@ -25,7 +25,7 @@ satisfying $b=b'\circ(f\tensor_Rg)$. Pullback along the diagonal (@def:polarizat
 :::
 
 ::: {.definition #def:pairing-adjoints title="The adjoints and their exact sequences" defines="left adjoint; right adjoint; $b^\ell$; $b^r$; left radical; right radical; $\radic_\ell(b)$; $\radic_r(b)$; left coradical; right coradical; $\operatorname{corad}_\ell(b)$; $\operatorname{corad}_r(b)$; left nondegenerate pairing; right nondegenerate pairing; nondegenerate pairing; perfect pairing"}
-For $b\colon A\tensor_RB\too W$, the tensor–Hom adjunction gives the **left** and **right adjoints (@def:adjoint-morphism)**
+For $b\colon A\tensor_RB\too W$, the tensor–Hom adjunction gives the **left adjoint** $b^\ell$ and the **right adjoint** $b^r$
 $$
 \begin{aligned}
 b^\ell\colon A&\longrightarrow\Hom_R(B,W),
@@ -34,7 +34,7 @@ b^r\colon B&\longrightarrow\Hom_R(A,W),
 &b&\longmapsto(a\mapsto b(a,b)).
 \end{aligned}
 $$
-Here the symbols in parentheses designate evaluation (@def:dualizable-object) of the original pairing; the adjoints are morphisms in $R\text{-}\mathbf{Mod}$.
+Here the symbols in parentheses designate evaluation (@def:dualizable-object) of the original pairing; the adjoints (@def:adjoint-morphism) are morphisms in $R\text{-}\mathbf{Mod}$.
 
 The **left radical (@def:two-witnesses)**, **right radical**, **left coradical**, and **right coradical** are the kernels (@def:kernel-cokernel) and cokernels (@def:kernel-cokernel) in the complete exact (@def:exact-complex) sequences
 $$
@@ -70,7 +70,7 @@ Thus $b^\ell$ is invertible precisely when $b^r$ is. For $b=\operatorname{ev}_A$
 
 ## Orthogonality for pairings {#sec-pairing-orthogonality}
 
-::: {.definition #def:general-pairing-orthogonals title="The two orthogonal-complement functors" defines="right orthogonal complement; left orthogonal complement"}
+::: {.definition #def:general-pairing-orthogonals title="The two orthogonal-complement functors" defines="right orthogonal complement of a pairing; left orthogonal complement of a pairing"}
 Fix $b\colon A\tensor_RB\too W$. For a monomorphism $i\colon S\injects A$, the **right orthogonal complement** is the kernel (@def:kernel-cokernel) of
 $$
 B\xrightarrow{b^r}\Hom_R(A,W)

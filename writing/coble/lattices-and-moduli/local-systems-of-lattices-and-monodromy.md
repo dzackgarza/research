@@ -15,7 +15,7 @@ $$
 are isomorphisms (@def:isomorphism-of-objects).
 :::
 
-::: {.definition #def:transport-and-monodromy title="Transport and the monodromy representation" defines="transport along $\gamma$; $\gamma^*$; monodromy representation; $\rho$"}
+::: {.definition #def:transport-and-monodromy title="Transport and the monodromy representation" defines="transport along $\gamma$; $\gamma^*$; monodromy representation; $\rho$; monodromy group"}
 
 The *transport along $\gamma$* is the composite
 $$
@@ -26,7 +26,8 @@ For $s\in B$, the *monodromy representation*
 $$
 \rho\colon\pi_1(B,s)\too\Aut(\bL_s)
 $$
-of $\bL$ sends the class of a loop $\gamma$ based (@def:based-module) at $s$ to $\gamma^*$ [@Voi07, Corollary 3.10, Definition 3.13].
+of $\bL$ sends the class of a loop $\gamma$ based (@def:based-loop) at $s$ to $\gamma^*$ [@Voi07, Corollary 3.10, Definition 3.13].
+Its image $\rho\qty{\pi_1(B,s)}\leq\Aut(\bL_s)$ is the *monodromy group* of $\bL$ at $s$ [@Voi07, §3.1.3].
 The product on $\pi_1(B,s)$ is the one in which $\gamma\delta$ is the loop $\delta$ followed by the loop $\gamma$.
 :::
 
@@ -69,7 +70,7 @@ $$
 \rho\colon\pi_1(B,s)\too\Aut(\bL_s,\beta_s).
 $$
 2. All stalks (@def:stalk) of $(\bL,\beta)$ are isometric.
-   Symmetry, the alternating property (@def:property-structure-stuff) and nondegeneracy of $\beta_b$ (@def:form-axioms), and the signature of a nondegenerate (@def:polarization) symmetric $\beta_b$ (@def:signature), are independent of $b$.
+   Symmetry, the alternating property and nondegeneracy of $\beta_b$ (@def:form-axioms), and the signature of a nondegenerate (@def:polarization) symmetric $\beta_b$ (@def:signature), are independent of $b$.
 3. Let $(L,\beta_L)$ be a $\ZZ$-lattice and choose $\tilde s\in\widetilde B$ over $s$, where $\pi\colon\widetilde B\to B$ is the universal cover.
    Every group morphism $\rho\colon\pi_1(B,s)\to\Aut(L,\beta_L)$ is the monodromy representation of a local system of lattices $(\bL,\beta)$ on $B$, under an isometry $(\bL_s,\beta_s)\iso(L,\beta_L)$ determined by $\tilde s$.
 :::
@@ -140,7 +141,7 @@ The same statements hold for $\Orth^+(\bL_s(-1))$ and $\operatorname{Or}^-_{\bL}
 ::: {.proof}
 
 Since $B$ is arcwise connected, a global section $(o_b)$ is determined by $o_s$, through $o_b=\gamma^*o_s$ for any path (@def:path-connectedness) $\gamma$ from $s$ to $b$.
-A class $o_s\in\operatorname{Or}^+_s$ extends to a global section exactly when $\gamma^*o_s$ depends only on the endpoint of $\gamma$, that is, when every loop $\gamma$ at $s$ has $\gamma^*o_s=o_s$.
+A class $o_s\in\operatorname{Or}^+_s$ extends to a global section exactly when $\gamma^*o_s$ depends only on the endpoint of $\gamma$, that is, when every loop (@def:based-loop) $\gamma$ at $s$ has $\gamma^*o_s=o_s$.
 The transport along a loop of class $\gamma$ is $\rho(\gamma)\in\Orth(\bL_s)$, and it fixes $o_s$ exactly when $\rho(\gamma)\in\Orth^+(\bL_s)$, by @prop:spinor-norm-orientation-classes (4).
 The condition does not depend on which of the two classes $o_s$ is chosen.
 The sheaf $\operatorname{Or}^-_{\bL}$ is $\operatorname{Or}^+$ of $(\bL,-\beta)$, whose stalk (@def:stalk) at $s$ is the twist $\bL_s(-1)$ of @def:form-twist.
@@ -726,7 +727,7 @@ for the space of invariants.
 
 A flat global section $e$ of $\bL\tensor\CC$ is a global section of the local system $\bL\tensor_\ZZ\underline\CC_B$.
 For a path (@def:path-connectedness) $\gamma$ from $s$ to $b$, the pullback (@def:pullback-square) of $e$ is a section of $\gamma^{-1}\qty{\bL\tensor\underline\CC}$ over $[0,1]$, so $e(b)=\gamma^*e(s)$.
-Hence $e$ is determined by $e(s)$, and $e(s)$ is fixed by the transport along every loop at $s$.
+Hence $e$ is determined by $e(s)$, and $e(s)$ is fixed by the transport along every loop (@def:based-loop) at $s$.
 Conversely, for $v\in L_\CC^\rho$ the vector $\gamma^*v\in\bL_b\tensor\CC$ does not depend on the path $\gamma$ from $s$ to $b$, and $b\mapsto\gamma^*v$ is a global section, because on a simply connected open set on which $\bL$ is constant the transport is the identification of the stalks (@def:stalk).
 This proves (1).
 
