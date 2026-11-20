@@ -68,6 +68,25 @@ def test_no_prose_says_the_monodromy_group_is_the_restricted_stabilizer():
     assert "$R_{\\gent} = \\bar\\rho^{-1}(P)$ is the restricted stabilizer" in PAGE.read_text()
 
 
+def test_no_page_infers_membership_in_the_monodromy_group():
+    """A lattice computation places an element in R_gent, not in Gamma_{Co,2}.
+
+    The witnesses at cusp 5 are isometries fixing delta and preserving the discriminant
+    decomposition, that is elements of Gent, and thm:coble-monodromy-versus-enriques(3),(4)
+    refute the equality with Gamma_{Co,2} and prove only the containment; the reverse
+    inclusion is qst:coble-monodromy-equality.  So a page may not read membership in R_gent
+    as membership in Gamma_{Co,2}; the only remaining use is the definitional action.
+    """
+    text = KSBA.read_text()
+    for phrase in ("form-preserving, in $\\Gamma_{\\Co,2}$",
+                   "places in $\\Gamma_{\\Co,2}$",
+                   "returns an element of $\\Gamma_{\\Co,2}$",
+                   "The membership test in $\\Gamma_{\\Co,2}$",
+                   "lies in $\\Gamma_{\\Co,2}$"):
+        assert phrase not in text, phrase
+    assert "$\\Gamma_{\\Co,2}$ acts on $T_\\Co$" in text
+
+
 def test_the_cusp_five_orbits_are_the_arithmetic_groups():
     """The cusp-5 witnesses lie in R_gent; a positive R-relation does not descend to Gamma_{Co,2}.
 
