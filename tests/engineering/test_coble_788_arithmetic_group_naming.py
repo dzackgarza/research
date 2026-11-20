@@ -155,6 +155,18 @@ def test_the_shear_is_placed_in_the_arithmetic_group_corpus_wide():
     assert not sites, sites
 
 
+def test_root_reflections_are_split_by_the_square_at_552():
+    """A lattice reflection is discriminant-trivial only for w^2 = -2.
+
+    The coefficient 2(x*,w)/(w,w) is integral when w^2 = -2 and a half-integer in general
+    when w^2 = -4, so only the (-2)-roots lie in ker(rho_{T_En}) by integrality; the
+    (-4)-roots are placed in Gent by a summand test, and the page must say which is which.
+    """
+    text = KSBA.read_text()
+    assert "moves every dual vector by an integral multiple of that vector" not in text
+    assert "$w^2=-2$" in text and "$w^2=-4$" in text
+
+
 def _run_all() -> int:
     tests = [(n, f) for n, f in sorted(globals().items())
              if n.startswith("test_") and callable(f)]
