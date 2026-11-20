@@ -13,6 +13,11 @@ multiplicities m_T (thm:one-cusp-multiplicities):
    type (4, 5)       m_T = 1
    type (5,)         m_T = 2
 
+cross-check against prop:coble-flag-orbits-and-edges(1)--(3):
+   every plane's endpoint list has pairwise distinct sizes, so |C(P)/H| equals
+   the flag count |(J_0\0)/H_0| plane by plane (prop:coble-flag-orbits-and-edges(3)),
+   and the total is 13 flag orbits = 13 edges.
+
 degrees of the 0-cusps (the number of 1-cusps in whose closure they lie):
    0_2: 1, 0_3: 3, 0_4: 3, 0_5: 6
    total incidences (= flag orbits = edges): 13
