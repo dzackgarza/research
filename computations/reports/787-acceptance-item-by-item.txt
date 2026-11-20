@@ -1,88 +1,92 @@
 research#787 (D2 of research#786) -- acceptance item by item
 
-Commit: ed3c6e3e11 ("the D2a group is the monodromy of the stack family, not only
-of its pullback").  Supersedes the earlier text of this file, which reported items
-1-5 MET and which the review of 2026-11-20 06:48:27 (pinned to main@d277e333fc)
-refuted in U1-U8.  Paths are relative to the repository root; line numbers are
-those of this commit.
+Commit series: ed3c6e3e11 (U1, the stack monodromy), dd8aca0318 (the loop model is
+cited without the discrete-group sequence), e9d2187929 (the containment in
+Orth(T_Co) for the right reason), and this commit (U3 and the honest base B).
+Supersedes the earlier texts of this file.  Paths are relative to the repository
+root; line numbers are those of this commit.
+
+Review read: the report of 2026-11-20 06:48:27, pinned to main@d277e333fc, items
+U1-U8.
 
 ITEM 1. D2a: the unpolarized family, its base, its fibres, its lattice local system.
-VERDICT: NOT MET.
-  U1 PROVED at ed3c6e3e11.
-     Base: the quotient stack [V/SL_3], moduli-construction.md:416 and :429-431.
-     Family: lem:d2-unpolarised-family, :439, over V, descending to the stack at (3).
-     Local system: lem:d2-local-system, :471.
-     The missing surjectivity argument is lem:d2a-monodromy-of-the-stack, :488: for a
-     connected complex Lie group G acting on a connected complex analytic space V, every
-     loop (g, gamma-tilde) of [V/G] has transport phi_g(s)^{-1} o gamma-tilde^*, and a
-     path beta from e to g makes t -> beta(t)s a path of V whose transport is phi_g(s);
-     so the loop is homotopic to the loop gamma-tilde * sigma of V, and the monodromy
-     group on [V/G] equals rho(pi_1(V,s)).  Applied to G = SL_3, which is connected
-     (elementary matrices), and to the SL_3-equivariant T of lem:d2-local-system, this is
-     Gamma_Co = rho(pi_1(V,s)); the definition at :436 now cites it.
-     The coarse space B is no longer asserted to carry the family or its local system:
-     lem:d2-unpolarised-family(3), :441.
-  U2 NOT MET, unchanged.
-     The principal S_10-cover and the index 10!: lattices.md:213-227 and lem:d2-labelling-
-     cover, moduli-construction.md:494.  Freeness of S_10 on V does not give freeness on
-     B = V/SL_3.  The identification Gamma_Co = Otilde^+(T_Co): the two proofs at
-     lattices.md:243-249 and :251-253, the first calling the period map on V injective
-     although it is constant on PGL_3-orbits, the second using the 10!-cover.
-  U3 NOT MET, unchanged.
-     moduli-construction.md:408: "a projectivity fixing three non-collinear points being
-     the identity" (four points in general position are needed) and "the curve Z, which
-     has genus 10 > 1" (a ten-nodal plane sextic is rational, genus 0).
+VERDICT: MET.
+  U1 PROVED (ed3c6e3e11, completed here).  The base is the space B = V/PGL_3
+     (moduli-construction.md:409-411), which is a complex analytic space and the
+     total space of a principal PGL_3-bundle V -> B (lem:d2-plane-sextic-freeness,
+     :416); the family descends to it (lem:d2-unpolarised-family(3), :465) and so
+     does the local system (lem:d2-local-system, :497); Gamma_Co = rho(pi_1(B,s)) =
+     rho(pi_1(V,s)) (lem:d2-plane-sextic-freeness(4), and the group paragraph of
+     def:coble-family-unpolarized, :462).
+  U2 CORRECTED, not proved: the page now states only what is proved.  S_10 acts
+     freely on V, and B -> Bbar is the quotient by the finite group S_10; every path
+     of Bbar lifts, the map pi_1(Bbar) -> S_10 is onto with kernel the image of
+     pi_1(B), and the image of pi_1(B) has index 10! (lem:d2-labelling-cover, :554).
+     Whether S_10 acts freely on B is qst:s10-free-on-B (:437), open; the equality
+     [Gamma_Co : Gamma_Co(Bbar)] = 10! of lattices.md:213-227 (lem:gamma-co-labelled-
+     index) needs that freeness and is now conditional.  That equality belongs to G1
+     (research#780), not to D2a, and is flagged rather than edited.
+  U3 PROVED.  The two false justifications are gone.  A non-identity projectivity of
+     P^2 has its fixed points in the union of a line and a point; a line carries at
+     most three nodes of the irreducible sextic (else Z.L >= 8 > 6 puts L in Z by
+     Bezout); so at most four nodes are fixed and PGL_3 acts freely, with SL_3-
+     stabilizer mu_3 (lem:d2-plane-sextic-freeness(1)-(2), :416 and :406).  The genus
+     argument is no longer used.
 
 ITEM 2. D2b: the degree-2 family, its base, its fibres, its lattice local system.
-VERDICT: NOT MET, unchanged.
+VERDICT: NOT MET, unchanged (U4-U6).
   U4 No family over Delta_2 and no base change: def:coble-family-degree-two,
-     moduli-construction.md:570, and its "base" at :581-583.
-  U5 Only the smooth nondegenerate h_Co = F_1+F_2: moduli-construction.md:572-579;
-     the other nef degree-2 form h = 2F_1+R recorded at :629 is not in the moduli problem.
-  U6 The Enriques-quotient reading of the vector at :558, :567, :616, :619, and the
-     statement/proof mismatch of lem:d2-degree-two-polarization(4) (:559 statement,
-     :567 proof for an involution).
+     moduli-construction.md:600, and its base at :611-612.
+  U5 Only the smooth nondegenerate h_Co = F_1 + F_2: moduli-construction.md:602-610;
+     the other nef degree-2 form h = 2F_1 + R recorded at :657 is not in the moduli
+     problem.
+  U6 The Enriques-quotient reading of the vector at :582, :588, :638, :646, and the
+     statement/proof mismatch of lem:d2-degree-two-polarization(4) (:589 statement,
+     :597 proof for an involution).
 
 ITEM 3. The D2a period map is DK13 Proposition 3.2, hypotheses checked.
-VERDICT: MET, unchanged.  lem:d2a-period-map, moduli-construction.md:538; DK13 Prop. 3.2,
-  printed p. 513.
+VERDICT: MET, unchanged.  lem:d2a-period-map, moduli-construction.md:568; DK13
+  Prop. 3.2, printed p. 513.
 
 ITEM 4. The base of D2b is all of Delta_2.
-VERDICT: NOT MET, unchanged.
-  U7 moduli-construction.md:600 invokes prop:coble-polarized-moduli(2)-(3), whose
+VERDICT: NOT MET, unchanged (U7-U8).
+  U7 moduli-construction.md:630 invokes prop:coble-polarized-moduli(2)-(3), whose
      statements at polarizing-divisors-for-coble-moduli.md:261-262 are Picard-general.
-  U8 "up to normalization" at moduli-construction.md:593; the properness step of
+  U8 "up to normalization" at moduli-construction.md:623; the properness step of
      thm:normalization (lattices.md:588, applied at :615) uses
      lem:locally_closed_embedding_BB (lattices.md:106-114) outside its stated groups.
 
 ITEM 5. Every page using Gamma_Co or Gamma_{Co,2} cites the D2 definitions.
 VERDICT: NOT MET, unchanged.
-  computations/reports/787-gamma-citation-check.py:12 matches \Gamma_\Co but not the
-  braced \Gamma_{\Co}; coble-surface-structure-and-classification.md:107 and
-  ResearchStatement.md:155,158-159 use the braced spelling with no D2 citation.
+  787-gamma-citation-check.py:12 matches \Gamma_\Co but not the braced \Gamma_{\Co};
+  coble-surface-structure-and-classification.md:107 and ResearchStatement.md:155,158-
+  159 use the braced spelling with no D2 citation.
 
 CHECKS RUN AT THIS COMMIT
   python3 scripts/docs_check.py --source
     exit 1; 24 findings, all "citation is in no bibliography" on other pages; none on
-    moduli-construction.md.  These 24 are the pre-existing set.
+    moduli-construction.md or lattices.md.
   python3 tests/engineering/test_coble_658_page_invariants.py
     3/3 (every page parses under pandoc, every @ref resolves, no undefined macro).
   python3 tests/engineering/test_coble_658_no_stale_text.py
     3/4; the failure is the pre-existing absence of rmk:gamma-co-nodal-pair-proposal
-    from moduli-construction.md and lattice-and-diagram-conventions.md (0 occurrences at
-    the base commit eb369f514a as well).
+    from moduli-construction.md and lattice-and-diagram-conventions.md.
   The pytest suite itself was not run: it imports sage_extensions, which is not
   available in this container.
 
+CONSEQUENCE FOR RESEARCH#780 (not edited: lattices.md is that issue's page)
+  lem:gamma-co-labelled-index (lattices.md:213-227) and the second proof of
+  thm:gamma-co-is-stable (lattices.md:232) use the exactness of
+  1 -> pi_1(B) -> pi_1(Bbar) -> S_10 -> 1, that is the freeness of S_10 on B
+  (qst:s10-free-on-B, moduli-construction.md:437).  Until that is settled,
+  lem:gamma-co-labelled-index proves only that the image of pi_1(B) has index 10!,
+  and the second proof of thm:gamma-co-is-stable gives Gamma_Co = Otilde^+ only
+  together with that freeness; the first proof there gives Gamma_Co . {+-id} =
+  Otilde^+ without it.  The 10! of thm:gamma-co-sextic-group is a separate
+  arithmetic statement and is not affected.
+
 NEXT
-  One lemma: PGL_3 acts freely and properly on V, so that B = V/PGL_3 is an honest space
-  carrying the family, with Gamma_Co = rho(pi_1(B)) = rho(pi_1(V)).  Freeness: a
-  non-identity projectivity of P^2 fixes three points, or a line together with one point
-  (eigenvalue classification, Jordan case included), and a line carries at most three
-  nodes of an irreducible sextic (else Z.L >= 8 > 6 gives L contained in Z), so at most
-  four of the ten labelled nodes are fixed.  Properness: three non-collinear points exist,
-  the three lines they span carry at most six of the ten points, so four of them have no
-  three collinear, and a projectivity is determined continuously by the images of four
-  such points.  This supersedes the stack reading of the labelled base and is the base the
-  issue asks for.  The review's U2 then reduces to the separate fact that S_10 does not
-  act freely on B (the shape sigma[v] = [v] with sigma v = g v, sigma v != v).
+  Item 5 is mechanical: extend 787-gamma-citation-check.py to the braced spelling and
+  cite the definition at the two files.  The next lemma is U4: a family over Delta_2
+  and a map from its base to the D2a base, or the statement that the two bases are
+  compared only through the period space.

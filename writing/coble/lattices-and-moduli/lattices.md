@@ -229,7 +229,7 @@ is well defined and onto. Its kernel is the image of $\pi_1(B,s)$, namely $\Gamm
 
 ::: {.theorem #thm:gamma-co-is-stable title="G1: the monodromy group of the unpolarized Coble family is $\widetilde\Orth^+(T_\Co)$"}
 
-Let $V$ be the variety of labelled sextics of @not:d2-plane-sextic-base, whose quotient stack $[V/\SL_3]$ is the labelled base of @def:coble-family-unpolarized, item 3., let $\bT$ be the local system of lattices of @lem:d2-local-system, of fibre $T_\Co$, and let
+Let $V$ be the variety of labelled sextics of @not:d2-plane-sextic-base, whose quotient $B=V/\PGL_3$ is the labelled base of @def:coble-family-unpolarized, item 3., let $\bT$ be the local system of lattices of @lem:d2-local-system, of fibre $T_\Co$, and let
 $$\rho\colon\pi_1(V,s)\too\Orth(T_\Co)$$
 be its monodromy representation, whose image is $\Gamma_\Co$ (@def:gamma-co-groups(1)). Then
 $$\Gamma_\Co=\widetilde\Orth^+(T_\Co).$$
