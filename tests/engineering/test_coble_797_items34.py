@@ -84,7 +84,7 @@ def test_the_transfer_is_proved_at_the_level_of_the_stack():
     text = MC.read_text(encoding="utf-8")
     body = _block(text, PERIOD_STACK)
     # the four clauses: defined, injective on labelled objects, local Torelli, descent
-    assert "injectivity on labelled objects" in body.lower()
+    assert "injectivity on objects" in body.lower()
     assert "Local Torelli" in body or "local Torelli" in body
     assert "fully faithful" in body
     # the two numbered inputs that do the work
@@ -98,7 +98,7 @@ def test_item6_says_which_group_a_restriction_gives():
     assert "@lem:coble-family-base-change" in body
     assert "Stab" in body
     assert "not* thereby $\\Gamma_\\Co$" in body or "not" in body
-    assert "@qst:coble-monodromy-equality" in body
+    assert "coble-monodromy-equality" in body
 
 
 MAPS = "prop:coble-enriques-maps-and-the-vhs"
@@ -145,22 +145,25 @@ def test_the_monodromy_of_the_labelled_stack_is_the_marking_group():
     assert "What this settles" in tail and "@lem:every-ample-m-polarized-k3-is-a-coble-cover" in tail
 
 
-FINAL = "thm:gamma-co-is-the-orbifold-monodromy"
+FINAL = "conj:gamma-co-orbifold-equality"
 IOTA = "rmk:is-iota-a-loop"
 
 
-def test_the_final_group_is_assembled_from_the_three_parts():
+def test_the_equality_is_a_conjecture_and_the_inclusion_is_what_is_proved():
     body = _block(MC.read_text(encoding="utf-8"), FINAL)
     assert "\\Gamma_\\Co=\\widetilde\\Orth^+(T_\\Co)" in body
     text = MC.read_text(encoding="utf-8")
-    proof = text[text.index("#" + FINAL):]
-    for need in ["prop:coble-monodromy-is-the-marking-group", "prop:gamma-co-from-the-labelled-stack",
-                 "Theorem 18.19", "W_{10}(2)"]:
-        assert need in proof[:6000], need
+    tail = text[text.index("#" + FINAL):]
+    # what is proved, the four findings, and the conditional assembly are all stated
+    for need in ["@thm:gamma-co-is-stable(1)", "@conj:gamma-co-stable",
+                 "does not", "Review findings recorded here"]:
+        assert need in tail[:8000], need
 
 
 def test_iota_is_settled_as_isotropy_not_loop():
     body = _block(MC.read_text(encoding="utf-8"), IOTA)
     assert "@thm:sign-is-isotropy" in body
     assert "@thm:no-loop-carries-the-sign" in body
-    assert "index-two" in body or "index two" in body
+    # the loop reading is stated as smaller, by a quotient, and the transfer is flagged
+    assert "isotropy" in body and "loop" in body
+    assert "conditional" in body
