@@ -128,6 +128,19 @@ def test_the_gap_ledger_states_what_the_conditionality_reduces_to():
     assert "vanish on none" in gaps
 
 
+def test_the_cusp_correspondence_from_f_co_descends_under_the_lifting():
+    """The stage question needs a map on Gamma_Co cusps, not only on the stable ones."""
+    page = (ROOT / "writing/coble/cusp-correspondence/enriques-to-coble-cusp-correspondence.md").read_text(
+        encoding="utf-8")
+    start = page.index("#prop:cusp-correspondence-descends")
+    block = page[start:page.index("\n:::", page.index("\n", start))]
+    assert "@conj:gamma-co-stable" in block
+    assert "Gamma_\\Co\\backslash" in block or "\\Gamma_\\Co\\backslash" in block
+    assert "Ext}(\\Gamma_\\Co)\\subseteq\\Gamma_{\\En,2}" in block
+    proof = page[start:start + 2000]
+    assert "@cor:coble-lifting-under-conjecture" in proof
+
+
 def _run_all() -> int:
     items = [(name, fn) for name, fn in sorted(globals().items())
              if name.startswith("test_") and callable(fn)]
