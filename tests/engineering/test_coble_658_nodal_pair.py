@@ -146,10 +146,10 @@ def test_the_criterion_that_makes_a_period_computation_decisive():
     lattices = (ROOT / "writing/coble/lattices-and-moduli/lattices.md").read_text(encoding="utf-8")
     start = lattices.index("#rmk:gamma-co-nodal-pair-proposal")
     body = lattices[start:lattices.index("\n:::", lattices.index("\n", start))]
-    assert "*(PL)* is the classical Picard--Lefschetz theorem" in body
+    assert "[@Voi07, Thm. 3.16, printed p. 78]" in body
     assert "*(MG)* is where the work is" in body
-    assert "no source held in `tmp/sources` states it" in body
-    assert "does *not* inherit gap 2 after all" in body
+    assert "*(MG)* is where the work is" in body
+    assert "is **not** established" in body
     assert "if and only if" in body or "\\iff" in body
     assert "meets no Heegner divisor of positive square" in body
     assert "Neither hypothesis is proved in this book" in body
