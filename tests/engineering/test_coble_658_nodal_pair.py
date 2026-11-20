@@ -112,7 +112,7 @@ def test_the_classical_model_cannot_host_the_witness():
     assert "acts as the identity on $T_\\Co$" in body
     assert "they are not vanishing classes" in body
     assert "neither produced nor excluded by it" in body
-    assert "(-4)$-Heegner divisor" in body
+    assert "a met divisor of square $-4$ would give an element outside" in body
     assert "*(MG)* is where the work is" in body
     assert "an input, not a result of this book" in body
     assert "cons:lefschetz-periods" in body
@@ -141,17 +141,29 @@ def test_the_cusp_correspondence_from_f_co_descends_under_the_lifting():
     assert "@cor:coble-lifting-under-conjecture" in proof
 
 
-def test_the_criterion_is_stated_upstairs():
-    """The generation is done in the contractible cover; the conclusion and its tension are on the page."""
+def test_the_upstairs_theorem_and_its_consequences():
+    """The generation is a theorem; which inclusion it proves, which it refutes, is stated."""
     lattices = (ROOT / "writing/coble/lattices-and-moduli/lattices.md").read_text(encoding="utf-8")
-    start = lattices.index("#rmk:gamma-co-nodal-pair-proposal")
-    body = lattices[start:lattices.index("\n:::", lattices.index("\n", start))]
-    assert "[@Voi07, Thm. 3.16, printed p. 78]" in body
-    assert "done upstairs, because" in body
-    assert "\\Gamma_\\Co=\\Orth(T_\\Co)" in body
-    assert "SGA1, Expos" in body
-    assert "The tension this exposes" in body
-    assert "meets no Heegner divisor of positive square" in body
+
+    def block(label):
+        start = lattices.index("#" + label)
+        body = lattices.index("\n", start) + 1
+        return lattices[body:lattices.index("\n:::", body)]
+
+    thm = block("thm:gamma-co-is-full")
+    assert "\\Gamma_\\Co=\\Orth(T_\\Co)" in thm
+    assert "[@DK13, Prop. 3.2, printed p. 513]" in thm
+
+    proof = lattices[lattices.index("#thm:gamma-co-is-full"):]
+    assert "SGA1, Exposé X, Corollaire 3.3, printed p. 213" in proof
+
+    cor = block("cor:gamma-co-inclusions")
+    assert "the *reverse* inclusion" in cor
+    assert "the *forward* inclusion" in cor
+    assert "fails" in cor
+
+    after = lattices[lattices.index("#cor:gamma-co-inclusions"):]
+    assert "whether its hypothesis is the book's reading" in after
 
 
 def _run_all() -> int:
