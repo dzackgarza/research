@@ -226,8 +226,22 @@ $$
 T_\Co \definedas S_\Co^{\perp \lkt} = (11, 11, 1)_2 \cong \generators{2} \oplus E_{10}(2)
 .
 $$
-3. The quotient $\bD(T_\Co)/\Orth(T_\Co)$ is a normal quasi-projective variety of dimension $9$. By the Torelli theorem for algebraic K3 surfaces [@PS71], the moduli space $\mcm_\Co$ of @prop:coble-moduli-git is isomorphic to an open subset of $\bD(T_\Co)/\Orth(T_\Co)$ [@DK13, §3, Prop. 3.2].
+3. The quotient $\bD(T_\Co)/\Orth(T_\Co)$ is a normal quasi-projective variety of dimension $9$, and the moduli space $\mcm_\Co$ of @prop:coble-moduli-git is isomorphic to an open subset of it (@lem:d2a-coble-moduli-quotient).
 
+:::
+
+::: {.lemma #lem:d2a-coble-moduli-quotient title="The Coble moduli space is an open subset of the orthogonal quotient"}
+
+Let $T_\Co = \generators{2}\oplus E_{10}(2)$ be the lattice of [@DK13, (3.6)] and @prop:coble-period-domain(2), and let $\mcm_\Co$ be the moduli space of Coble surfaces of @prop:coble-moduli-git. Then $\mcm_\Co$ is isomorphic to an open subset of $\bD(T_\Co)/\Orth(T_\Co)$ [@DK13, Prop. 3.2], and that open subset is the image of the period map.
+:::
+
+::: {.proof}
+
+This is [@DK13, Prop. 3.2], whose statement is that for $N=\generators{2}\oplus E(2)$ the moduli space $\mathcal M_{\mathrm{Co}}$ of Coble surfaces is isomorphic to an open subset of $\mathcal D(N)/\Orth(N)$; $\mathcal D(N)$ is the period domain of (3.1) there and $N$ is the lattice of (3.6) there, which is $T_\Co=\generators{2}\oplus E_{10}(2)$ by @prop:coble-period-domain(2).
+
+Its hypotheses are the ones this book already checks on the fibres. The period domain is attached to an algebraic K3 surface: the double cover of @lem:d2-unpolarised-family(1) is a K3 surface $X_b$, and $h^{2,0}(X_b)=1$, so a point of $\bD(T_\Co)$ is the $2$-dimensional positive subspace $H^{2,0}(X_b)\subset T_\Co\otimes\CC$ of @prop:coble-period-domain(1). The lattice $N$ is the transcendental lattice of $X_b$: the classes $e_0,\dots,e_{10}$ of @prop:coble-period-domain(1) span $M$ primitively in $\lkt$, and $T_\Co=M^{\perp\lkt}$ (@prop:coble-transcendental). So the pair $(X_b,M\subset H^2(X_b,\ZZ))$ is an $M$-polarized K3 surface in the sense of the source, and the identity of periods it uses is the identity of the Hodge structures on $T_\Co$.
+
+[@DK13, Prop. 3.2] obtains the statement from the Torelli-type theorem for algebraic K3 surfaces of Pyatetskii--Shapiro and Shafarevich, which the source cites in its proof; that theorem is therefore not an independent input of this book, and no numbered statement of it is cited here.
 :::
 
 ::: {.proposition #prop:coble-moduli-heegner-divisor title="The Coble moduli space as a Heegner divisor"}
