@@ -10,16 +10,84 @@ We use ordinary tensor products and classical schemes. A smooth manifold $M$ is 
 A subset $A$ of a topological space $X$ is *closed* if $X-A$ is open [@Mun00, §17].
 :::
 
+::: {.definition #def:locally-closed-subset title="Locally closed subset" defines="locally closed subset; locally closed"}
+A subset of a topological space is *locally closed* if it is an open subset of its closure, or, equivalently, if it is the intersection of an open set with a closed set (@def:closed-subset) [@Har77, Chapter I, Ex. 3.10].
+:::
+
+::: {.definition #def:irreducible-closed-subset title="Irreducible closed subset" defines="irreducible closed subset; irreducible subset"}
+A nonempty subset $Y$ of a topological space $X$ is *irreducible* if it cannot be expressed as the union $Y=Y_1\cup Y_2$ of two proper subsets, each one of which is closed in $Y$. The empty set is not irreducible [@Har77, Chapter I, §1]. An *irreducible closed subset* of $X$ is a closed subset (@def:closed-subset) of $X$ that is irreducible.
+:::
+
+::: {.definition #def:closed-analytic-subset title="Closed analytic subset" defines="closed analytic subset; analytic subset"}
+Let $X$ be a complex manifold and let $Z\subset X$ be a closed subset (@def:closed-subset). Then $Z$ is an *analytic subset* of $X$ if $X$ admits a covering by open sets $U\subset X$ such that $U\cap Z$ is the zero locus of holomorphic functions $f_1,\dots,f_N\in\Gamma(U,\mathcal O_U)$ [@Voi07a, §11.1.1, Def. 11.2].
+:::
+
+::: {.definition #def:closed-subscheme title="Closed immersion and closed subscheme" defines="closed subscheme; closed immersion"}
+A *closed immersion* is a morphism $f\colon Y\to X$ of schemes (@def:scheme-as-lrs) such that $f$ induces a homeomorphism of $\operatorname{sp}(Y)$ onto a closed subset (@def:closed-subset) of $\operatorname{sp}(X)$, and the induced map $f^\#\colon\mathcal O_X\to f_*\mathcal O_Y$ of sheaves on $X$ is surjective. A *closed subscheme* of a scheme $X$ is an equivalence class (@def:equivalence-relation) of closed immersions, where $f\colon Y\to X$ and $f'\colon Y'\to X$ are equivalent if there is an isomorphism $i\colon Y'\to Y$ with $f'=f\circ i$ [@Har77, Chapter II, §3].
+:::
+
+::: {.definition #def:base-scheme title="Scheme over a base scheme" defines="base scheme; scheme over $S$; $S$-morphism"}
+Let $S$ be a fixed scheme (@def:scheme-as-lrs). A *scheme over $S$* is a scheme $X$ together with a morphism $X\to S$. If $X$ and $Y$ are schemes over $S$, a morphism of $X$ to $Y$ as schemes over $S$, also called an *$S$-morphism*, is a morphism $f\colon X\to Y$ compatible with the given morphisms to $S$ [@Har77, Chapter II, §3]. The scheme $S$ is then a *base scheme*: one is interested in the category of schemes over $S$ [@Har77, Chapter II, §3, base extension].
+:::
+
+::: {.definition #def:regular-scheme title="Regular scheme" defines="regular scheme"}
+A scheme (@def:scheme-as-lrs) is *regular* if all of its local rings are regular local rings [@Har77, Chapter II, Rem. 6.11.1A].
+:::
+
+::: {.definition #def:projective-variety title="Projective variety" defines="projective variety; projective algebraic variety; quasi-projective variety; quasiprojective variety; abstract variety"}
+Let $k$ be an algebraically closed field (@def:algebraically-closed-field). A *projective variety* is an irreducible (@def:irreducible-closed-subset) algebraic set in $\mathbf P^n$, with the induced topology. An open subset of a projective variety is a *quasi-projective variety* [@Har77, Chapter I, §2]. An *abstract variety* is an integral separated scheme (@def:scheme-as-lrs) of finite type over $k$. The varieties of Chapter I of [@Har77] are identified with their associated schemes, which are abstract varieties [@Har77, Chapter II, §4, Def. and Rem. 4.10.1].
+:::
+
+::: {.definition #def:closed-subvariety title="Closed subvariety" defines="closed subvariety; subvariety"}
+If $X$ is a quasi-projective variety (@def:projective-variety) and $Y\subset X$ is an irreducible locally closed subset (@def:locally-closed-subset), then $Y$ with the induced structure is a *subvariety* of $X$ [@Har77, Chapter I, Ex. 3.10]. It is a *closed subvariety* if $Y$ is a closed subset (@def:closed-subset) of $X$. For a closed subset $Y$ of a scheme $X$, the smallest of the closed subscheme (@def:closed-subscheme) structures on $Y$ is the *reduced induced closed subscheme structure* [@Har77, Chapter II, Example 3.2.6].
+:::
+
+::: {.definition #def:finite-locally-free-module title="Locally free and finite locally free module" defines="finite locally free module; finite locally free; locally free module; locally free sheaf"}
+Let $(X,\mathcal O_X)$ be a ringed space and let $\mathcal F$ be a sheaf of $\mathcal O_X$-modules. Then $\mathcal F$ is *locally free* if for every point $x\in X$ there exist a set $I$ and an open neighbourhood $x\in U\subset X$ such that $\mathcal F|_U$ is isomorphic to $\bigoplus_{i\in I}\mathcal O_X|_U$ as an $\mathcal O_X|_U$-module. It is *finite locally free* if the index (@def:index) sets $I$ can be chosen finite [@The25, Definition 17.14.1, Tag 01C6].
+:::
+
+::: {.definition #def:orbifold-quotient-structure title="Quotient orbifold structure" defines="orbifold quotient structure; quotient orbifold structure; quotient orbifold"}
+Let $M$ be a manifold and let $\Gamma$ be a group (@def:group) acting properly discontinuously on $M$. The *quotient orbifold structure* on $M/\Gamma$ has the following charts. For $x\in M/\Gamma$, choose $\tilde x\in M$ over $x$, let $I_x$ be the isotropy group of $\tilde x$, and choose a neighbourhood $\widetilde U_x$ of $\tilde x$ invariant by $I_x$ and disjoint from its translates by the elements of $\Gamma$ not in $I_x$. The projection of $U_x=\widetilde U_x/I_x$ to $M/\Gamma$ is a homeomorphism onto its image. The cover $\{U_x\}$, augmented by its finite intersections, gives $M/\Gamma$ the structure (@def:property-structure-stuff) of an orbifold [@Thu79, Prop. 13.2.1].
+:::
+
+::: {.definition #def:path-connectedness title="Path and path-connectedness" defines="path; path-connectedness; path connected; path-connected"}
+A *path* in a topological space $X$ from $p$ to $q$ is a continuous map $f\colon[0,1]\to X$ with $f(0)=p$ and $f(1)=q$. The space $X$ is *path connected* if for all $p,q\in X$ there is a path in $X$ from $p$ to $q$ [@Lee11, Chapter 4].
+:::
+
+::: {.definition #def:based-loop title="Loop and base point" defines="loop; based loop; base point; basepoint"}
+A *loop* in a topological space $X$ is a path (@def:path-connectedness) $f\colon[0,1]\to X$ with $f(0)=f(1)=x_0$. The common endpoint $x_0$ is its *base point*, and $f$ is a *loop based (@def:based-module) at $x_0$*. The set of homotopy classes, relative to the endpoints, of loops based at $x_0$ is the fundamental group (@def:group) $\pi_1(X,x_0)$ [@Hat02, Chapter 1, §1.1].
+:::
+
 ::: {.definition #def:projective-morphism-of-schemes title="Projective space and projective morphism" defines="projective space; projective $n$-space; projective morphism of schemes; projective morphism"}
-For a scheme (@def:scheme-as-lrs) $Y$, *projective $n$-space over $Y$* is $\mathbf P^n_Y=\mathbf P^n_{\mathbf Z}\times_{\operatorname{Spec}\mathbf Z}Y$. A morphism $f\colon X\to Y$ of schemes is *projective* if it factors as a closed immersion $X\to\mathbf P^n_Y$ for some $n$ followed by the projection $\mathbf P^n_Y\to Y$ [@Har77, Chapter II, §4].
+For a scheme (@def:scheme-as-lrs) $Y$, *projective $n$-space over $Y$* is $\mathbf P^n_Y=\mathbf P^n_{\mathbf Z}\times_{\operatorname{Spec}\mathbf Z}Y$. A morphism $f\colon X\to Y$ of schemes is *projective* if it factors as a closed immersion (@def:closed-subscheme) $X\to\mathbf P^n_Y$ for some $n$ followed by the projection $\mathbf P^n_Y\to Y$ [@Har77, Chapter II, §4].
 :::
 
 ::: {.definition #def:degree-of-finite-morphism title="Degree of a finite morphism of curves" defines="degree of a finite morphism; degree of a finite morphism of curves"}
 For a finite morphism $f\colon X\to Y$ of curves, the *degree (@def:graded-object)* of $f$ is the degree $[K(X):K(Y)]$ of the field extension of function fields [@Har77, Chapter II, §6].
 :::
 
+::: {.definition #def:regular-singular-point title="Linear ordinary differential equation and regular singular point" defines="ordinary differential equation; linear ordinary differential equation; regular singular point; regular singularity"}
+Let $U$ be an open neighbourhood of $0$ in $\mathbf C$. A *linear ordinary differential equation* of order $n$ with coefficients holomorphic on $U-\{0\}$ is an equation
+$$y^{(n)}+\sum_{i=0}^{n-1}a_i(x)\,y^{(i)}=0,$$
+with each $a_i$ holomorphic on $U-\{0\}$. The point $0$ is a *regular singular point* of the equation if the functions $x^{n-i}a_i(x)$ are holomorphic at $0$. Equivalently, after multiplication by $x^n$ the equation takes the form $(x\tfrac{d}{dx})^ny+\sum_{i=0}^{n-1}b_i(x)(x\tfrac{d}{dx})^iy=0$ with every $b_i$ holomorphic at $0$ [@Del70, Chapter II, §1, 1.1].
+:::
+
 ::: {.definition #def:algebraic-monodromy-group title="Algebraic monodromy group" defines="algebraic monodromy group"}
 For a family of polarized K3 surfaces over $S$ with monodromy representation (@def:transport-and-monodromy) $\rho\colon\pi_1(S,t)\to\mathrm O(H^2(X_t,\mathbb Q))$, the *algebraic monodromy group* is the Zariski closure $\overline{\mathrm{Im}(\rho)}\subset\mathrm O(H^2(X_t,\mathbb Q))$ [@Huy16, Chapter 4, §4.3].
+:::
+
+::: {.definition #def:pullback-of-local-system title="Inverse image of a sheaf and pullback of a local system" defines="inverse image sheaf; pullback of a sheaf; pullback of a local system"}
+Let $\pi\colon X\to Y$ be a continuous map and $\mathcal F$ a sheaf on $Y$. The *inverse image* (pullback) $\pi^{-1}\mathcal F$ is the sheaf on $X$ with $\pi^{-1}\mathcal F(U)=\varinjlim_{\pi(U)\subset V}\mathcal F(V)$, the limit over open $V\subset Y$ containing $\pi(U)$ [@Voi07a, §5.3.2]. Its stalk at $x\in X$ is the stalk (@def:stalk) $\mathcal F_{\pi(x)}$. For a local system $\mathcal F$ on $Y$, locally isomorphic to a constant sheaf of stalk $G$ [@Voi07a, Definition 9.8], the *pullback* $\pi^{-1}\mathcal F$ is again a local system of stalk $G$: if $\mathcal F|_V\cong\underline G_V$, then $\pi^{-1}\mathcal F|_{\pi^{-1}V}\cong\underline G_{\pi^{-1}V}$, since $\pi^{-1}$ takes the constant sheaf to the constant sheaf.
+:::
+
+::: {.definition #def:primitive-cohomology title="Primitive cohomology" defines="primitive cohomology; primitive cohomology of a Kähler manifold"}
+Let $X$ be a compact Kähler manifold (@def:calculus-kahler) of complex dimension $n$, and let $L\colon H^k(X,\mathbb R)\to H^{k+2}(X,\mathbb R)$ be the Lefschetz operator, cup product with the class of the Kähler form. For $k\le n$ the *primitive cohomology* is
+$$H^k(X,\mathbb R)_{\mathrm{prim}}=\operatorname{Ker}\bigl(L^{n-k+1}\colon H^k(X,\mathbb R)\to H^{2n-k+2}(X,\mathbb R)\bigr)$$
+[@Voi07a, §6.2.3]. For a smooth projective variety (@def:projective-variety) $X$ the Kähler class is the class of a hyperplane section, and for $n=2$, $k=2$ the primitive cohomology is the orthogonal complement of the hyperplane class (@def:coble-polarization-classes) for the intersection form.
+:::
+
+::: {.definition #def:split-torus title="Split torus" defines="split torus; $F$-split torus; torus"}
+Let $F$ be a subfield of the algebraically closed field (@def:algebraically-closed-field) $k$. An $F$-torus is an $F$-group that is a torus, that is, isomorphic over $k$ to a product $\mathbf G_m^n$. An $F$-torus $T$ that is $F$-isomorphic to some group (@def:group) $\mathbf D_n$ of invertible diagonal $n\times n$ matrices, that is, to $\mathbf G_m^n$, is *$F$-split* [@Spr09, §3.2, paragraph preceding Proposition 3.2.12]. Equivalently, all characters of $T$ are defined over $F$ [@Spr09, Proposition 3.2.12 (i)].
 :::
 
 ## Differentials and tangent sheaves {#sec-calculus-differentials}
@@ -70,11 +138,15 @@ d(a_0\,da_1\wedge\cdots\wedge da_p)
 &=da_0\wedge da_1\wedge\cdots\wedge da_p.
 \end{align*}
 
-It is an $\mathcal R$-linear graded derivation (@def:calculus-derivation) with $d^2=0$ [@stacks-0FKM].
+It is an $\mathcal R$-linear graded derivation (@def:calculus-derivation) with $d^2=0$ [@The25, Definition 17.30.1, Tag 0FKM].
+:::
+
+:::{.definition #def:calculus-closed-form title="Degree and closedness of a differential form" defines="degree of a differential form; closed differential form; closed form"}
+A section of $\bigwedge^kT^*M$ over a smooth manifold (@def:smooth-manifold) $M$ is a *differential $k$-form*, and the integer $k$ is its *degree (@def:graded-object)*. A smooth differential form $\omega$ is *closed* if $d\omega=0$ [@Lee13, Chapter 14, §Differential Forms on Manifolds]. For the relative de Rham differential $d$ of @def:calculus-de-rham, a section of $\Omega^p_{X/S}$ has degree $p$ and is closed if $d\omega=0$.
 :::
 
 :::{.definition #def:calculus-valued-forms title="Module-valued forms" defines="$\mathcal E$-valued $p$-forms; $\Omega^p(\mathcal E)$"}
-For an $\mathcal A$-module $\mathcal E$, its sheaf of *$\mathcal E$-valued $p$-forms* is $\Omega^p(\mathcal E)=\Omega^p_{X/S}\otimes_{\mathcal A}\mathcal E$. If $\Omega^1_{X/S}$ is finite locally free, evaluation (@def:dualizable-object) gives $\Omega^p(\mathcal E)\cong\mathcal H om_{\mathcal A}(\bigwedge^p\mathcal T_{X/S},\mathcal E)$, by the local dual-basis calculation of @rmk:calculus-duality.
+For an $\mathcal A$-module $\mathcal E$, its sheaf of *$\mathcal E$-valued $p$-forms* is $\Omega^p(\mathcal E)=\Omega^p_{X/S}\otimes_{\mathcal A}\mathcal E$. If $\Omega^1_{X/S}$ is finite locally free (@def:finite-locally-free-module), evaluation (@def:dualizable-object) gives $\Omega^p(\mathcal E)\cong\mathcal H om_{\mathcal A}(\bigwedge^p\mathcal T_{X/S},\mathcal E)$, by the local dual-basis calculation of @rmk:calculus-duality.
 :::
 
 ### Smooth and holomorphic differentials
@@ -118,7 +190,7 @@ The sheaf of *horizontal sections* is $\mathcal E^\nabla=\ker(\nabla)$, with the
 :::
 
 :::{.proposition #prop:calculus-covariant title="Covariant derivatives"}
-Suppose $\Omega^1$ is finite locally free and put $\mathcal T=(\Omega^1)^\vee$. A connection determines operators $\nabla_v s=(\operatorname{ev}_v\otimes1)(\nabla s)$ satisfying
+Suppose $\Omega^1$ is finite locally free (@def:finite-locally-free-module) and put $\mathcal T=(\Omega^1)^\vee$. A connection determines operators $\nabla_v s=(\operatorname{ev}_v\otimes1)(\nabla s)$ satisfying
 
 \begin{align*}
 \nabla_{av+bw}s&=a\nabla_v s+b\nabla_w s,\\
@@ -146,7 +218,7 @@ Subtracting the two Leibniz identities cancels $da\otimes s$ and gives $(\nabla'
 :::
 
 :::{.construction #cons:calculus-induced-connections title="Tensor, dual, and pullback connections" defines="induced connection; pullback connection"}
-For finite locally free modules (@def:module-subcategories) with connection (@def:calculus-connection), the induced connections are determined by
+For finite locally free modules (@def:finite-locally-free-module) (@def:module-subcategories) with connection (@def:calculus-connection), the induced connections are determined by
 
 \begin{align*}
 \nabla^{\mathcal E\otimes\mathcal F}(s\otimes t)
@@ -183,7 +255,7 @@ The *curvature* of $\nabla$ is $F_\nabla=d_\nabla\circ\nabla:\mathcal E\to\Omega
 :::
 
 :::{.proposition #prop:calculus-curvature-tensor title="Tensoriality and the curvature formula"}
-The map $F_\nabla$ is $\mathcal A$-linear. When $\mathcal E$ is finite locally free, it is a global section of $\Omega^2\otimes\mathcal E nd_{\mathcal A}(\mathcal E)$. When $\Omega^1$ is also finite locally free, its evaluation (@def:dualizable-object) on vector fields (@def:calculus-tangent) is
+The map $F_\nabla$ is $\mathcal A$-linear. When $\mathcal E$ is finite locally free (@def:finite-locally-free-module), it is a global section of $\Omega^2\otimes\mathcal E nd_{\mathcal A}(\mathcal E)$. When $\Omega^1$ is also finite locally free, its evaluation (@def:dualizable-object) on vector fields (@def:calculus-tangent) is
 
 \begin{align*}
 F_\nabla(v,w)s&=\nabla_v\nabla_w s-\nabla_w\nabla_v s-\nabla_{[v,w]}s.
@@ -265,7 +337,7 @@ The identities $\nabla_w(av)=w(a)v+a\nabla_wv$ and $[av,w]=a[v,w]-w(a)v$ give $T
 :::
 
 :::{.definition #def:calculus-perfect-metric title="Perfect symmetric pairing" defines="perfect symmetric pairing; $g^\flat$"}
-For a finite locally free $\mathcal A$-module $\mathcal E$, a symmetric pairing $g:\mathcal E\otimes\mathcal E\to\mathcal A$ is *perfect (@def:polarization)* if its adjoint (@def:adjoint-morphism) $g^\flat:\mathcal E\to\mathcal E^\vee$, $s\mapsto g(s,-)$, is an isomorphism (@def:isomorphism-of-objects).
+For a finite locally free (@def:finite-locally-free-module) $\mathcal A$-module $\mathcal E$, a symmetric pairing $g:\mathcal E\otimes\mathcal E\to\mathcal A$ is *perfect (@def:polarization)* if its adjoint (@def:adjoint-morphism) $g^\flat:\mathcal E\to\mathcal E^\vee$, $s\mapsto g(s,-)$, is an isomorphism (@def:isomorphism-of-objects).
 :::
 
 :::{.remark #rmk:calculus-pairing-adjoints title="The two adjoints of a pairing"}
@@ -292,15 +364,19 @@ The first line uses the dual of a morphism; the second uses $b\mapsto(s\mapsto b
 :::
 
 :::{.definition #def:calculus-real-positivity title="Positivity at real points" defines="positive semidefinite; nondegenerate at $p$"}
-Let $X$ be an $\mathbb R$-scheme, $\mathcal E$ finite locally free, and $g$ a symmetric pairing on $\mathcal E$. At a real point $p:\operatorname{Spec}\mathbb R\to X$, the pairing is *positive semidefinite* if $(p^*g)(v,v)\geq0$ for every $v\in p^*\mathcal E$, and *positive definite (@def:definiteness)* if the inequality is strict for every nonzero $v$. It is positive semidefinite or positive definite on the real locus if the corresponding condition holds at every real point. Nondegeneracy at $p$ means that the adjoint (@def:adjoint-morphism) of $p^*g$ is an isomorphism (@def:isomorphism-of-objects).
+Let $X$ be an $\mathbb R$-scheme, $\mathcal E$ finite locally free (@def:finite-locally-free-module), and $g$ a symmetric pairing on $\mathcal E$. At a real point $p:\operatorname{Spec}\mathbb R\to X$, the pairing is *positive semidefinite* if $(p^*g)(v,v)\geq0$ for every $v\in p^*\mathcal E$, and *positive definite (@def:definiteness)* if the inequality is strict for every nonzero $v$. It is positive semidefinite or positive definite on the real locus if the corresponding condition holds at every real point. Nondegeneracy at $p$ means that the adjoint (@def:adjoint-morphism) of $p^*g$ is an isomorphism (@def:isomorphism-of-objects).
 :::
 
 :::{.definition #def:calculus-isometric-endomorphism title="Endomorphisms compatible with a metric" defines="isometric endomorphism"}
-Let $(\mathcal E,g)$ be a finite locally free module with perfect symmetric pairing (@def:calculus-perfect-metric). An endomorphism $F$ is *compatible with $g$*, or *isometric*, if $g(Fs,Ft)=g(s,t)$ for all local sections. This identity makes $F$ an automorphism: in a frame, $F^{\mathsf t}GF=G$ implies that $\det F$ is a unit. In particular, $F$ induces isometries on all fibers (@def:fiber-cofiber). On a nonreduced scheme (@def:scheme-as-lrs), the fiber identities alone need not imply the sheaf identity, since residue fields do not detect nilpotents.
+Let $(\mathcal E,g)$ be a finite locally free module (@def:finite-locally-free-module) with perfect symmetric pairing (@def:calculus-perfect-metric). An endomorphism $F$ is *compatible with $g$*, or *isometric*, if $g(Fs,Ft)=g(s,t)$ for all local sections. This identity makes $F$ an automorphism: in a frame, $F^{\mathsf t}GF=G$ implies that $\det F$ is a unit. In particular, $F$ induces isometries on all fibers (@def:fiber-cofiber). On a nonreduced scheme (@def:scheme-as-lrs), the fiber identities alone need not imply the sheaf identity, since residue fields do not detect nilpotents.
 :::
 
 :::{.definition #def:calculus-riemannian title="Riemannian metric" defines="Riemannian metric; pseudo-Riemannian metric"}
 On a smooth real manifold $M$, a *Riemannian metric* is a smooth symmetric pairing $g$ on $\mathcal T_M$ whose value on each real tangent space is positive definite (@def:definiteness). A smooth perfect symmetric pairing (@def:calculus-perfect-metric) without this positivity requirement is a pseudo-Riemannian metric.
+:::
+
+:::{.definition #def:calculus-pullback-metric title="Pullback of a Riemannian metric" defines="pullback of a Riemannian metric; pullback metric"}
+Let $F\colon M\to N$ be a smooth map of smooth manifolds and $g$ a Riemannian metric (@def:calculus-riemannian) on $N$. The pullback $F^*g$ is a smooth $2$-tensor field on $M$. If it is positive definite, it is a Riemannian metric on $M$, the *pullback metric* determined by $F$ [@Lee13, Chapter 13, §Pullback Metrics].
 :::
 
 On an algebraic scheme, perfectness is expressed by $g^\flat$ being an isomorphism. Positivity requires ordered real fibers. In particular, positivity at real points of an $\mathbb R$-scheme does not replace perfectness on the scheme: the real locus can be empty. A fiberwise test for perfectness must concern every point, or must use hypotheses that justify a smaller test set.
@@ -347,7 +423,7 @@ Conversely, write compatibility for the triples $(u,v,w)$, $(v,w,u)$, and $(w,u,
 Here $M$ is a smooth manifold and $E$ is a finite-rank smooth vector bundle with sheaf of sections $\mathcal E$ and connection $\nabla$.
 
 :::{.construction #cons:calculus-transport title="Parallel transport" defines="parallel section; parallel transport; $P_\gamma$"}
-For a piecewise smooth path $\gamma:[a,b]\to M$, a section $s$ of $\gamma^*E$ is parallel if $(\gamma^*\nabla)_{\partial_t}s=0$. In a frame this is the linear ordinary differential equation $u'(t)+A(\dot\gamma(t))u(t)=0$. Existence and uniqueness for linear ordinary differential equations give an isomorphism (@def:isomorphism-of-objects) $P_\gamma:E_{\gamma(a)}\to E_{\gamma(b)}$, sending the initial value to the final value [@Ram04, Ch. 5, Def. 7.1]. Reversing the path gives its inverse; solving consecutively gives composition under concatenation.
+For a piecewise smooth path (@def:path-connectedness) $\gamma:[a,b]\to M$, a section $s$ of $\gamma^*E$ is parallel if $(\gamma^*\nabla)_{\partial_t}s=0$. In a frame this is the linear ordinary differential equation (@def:regular-singular-point) $u'(t)+A(\dot\gamma(t))u(t)=0$. Existence and uniqueness for linear ordinary differential equations give an isomorphism (@def:isomorphism-of-objects) $P_\gamma:E_{\gamma(a)}\to E_{\gamma(b)}$, sending the initial value to the final value [@Ram04, Ch. 5, Def. 7.1]. Reversing the path gives its inverse; solving consecutively gives composition under concatenation.
 :::
 
 :::{.theorem #thm:calculus-flat-local-system title="Flat connections and local systems"}
@@ -360,7 +436,7 @@ On the frame bundle, curvature (@def:calculus-curvature) is the vertical compone
 
 Transition matrices between parallel frames have derivative zero and are locally constant. Parallel transport (@cons:calculus-transport) in these frames is constant continuation. Subdividing a homotopy into frame neighborhoods proves homotopy invariance.
 
-Conversely, on a sufficiently small coordinate ball, homotopy invariance makes transport from a fixed point independent of the path. Transporting a basis (@def:based-module) gives a parallel frame. In such a frame $\ker\nabla=\underline{k}^{r}$ and the asserted multiplication map is the identity on $\mathcal A_M^r$. These local descriptions prove the local-system and reconstruction statements. $\square$
+Conversely, on a sufficiently small coordinate ball, homotopy invariance makes transport from a fixed point independent of the path (@def:path-connectedness). Transporting a basis (@def:based-module) gives a parallel frame. In such a frame $\ker\nabla=\underline{k}^{r}$ and the asserted multiplication map is the identity on $\mathcal A_M^r$. These local descriptions prove the local-system and reconstruction statements. $\square$
 :::
 
 :::{.remark #rmk:calculus-small-loops title="Parallel transport around small loops"}
@@ -379,6 +455,10 @@ Theorem @thm:calculus-flat-local-system makes $P_\gamma$ depend only on $[\gamma
 For an affine connection (@def:calculus-connection) on $M$, a smooth curve $\gamma$ is a *geodesic* if $(\gamma^*\nabla)_{\partial_t}\dot\gamma=0$.
 :::
 
+:::{.definition #def:calculus-geodesically-complete title="Geodesically complete Riemannian manifold" defines="geodesically complete Riemannian manifold; geodesically complete; complete Riemannian manifold"}
+A Riemannian manifold $(M,g)$ is *geodesically complete* if every maximal geodesic (@def:calculus-geodesic) is defined for all $t\in\mathbb R$ [@Lee97, Chapter 5].
+:::
+
 :::{.definition #def:calculus-sectional title="Sectional curvature" defines="sectional curvature; $K_x$"}
 For a Riemannian metric (@def:calculus-riemannian) $g$ with Levi-Civita connection (@def:calculus-connection) and the curvature (@def:calculus-curvature) sign convention of @prop:calculus-curvature-tensor, the *sectional curvature* of the plane spanned by linearly independent $u,v\in T_xM$ is
 
@@ -394,7 +474,7 @@ A Riemannian manifold has *constant sectional curvature* $\kappa$ if $K_x(P)=\ka
 :::
 
 :::{.theorem #thm:calculus-space-forms title="Complete constant-curvature manifolds"}
-Let $(M,g)$ be connected, complete, and of dimension $n\geq2$, with constant sectional curvature (@def:calculus-constant-curvature) $\kappa$. Its universal cover, with the pullback metric, is isometric to the following model [@Car92, Chapter 8, Theorem 4.1]:
+Let $(M,g)$ be connected, complete, and of dimension $n\geq2$, with constant sectional curvature (@def:calculus-constant-curvature) $\kappa$. Its universal cover, with the pullback metric (@def:calculus-pullback-metric), is isometric to the following model [@Car92, Chapter 8, Theorem 4.1]:
 
 | Curvature (@def:calculus-curvature) | Simply connected model |
 | --- | --- |
@@ -863,5 +943,5 @@ The archived attributions are Katz [@Kat70] and Ramanan [@Ram04] for connections
 - [@Ram04, Chapters 1–2]: manifolds as spaces with function sheaves, tangent sheaves, and differential forms; Chapter 5: connections, induced connections, curvature, and parallel transport; Chapters 6–7: torsion and Riemannian geometry.
 - [@Huy05, §1.2]: complexification and Hermitian linear algebra; §2.6: integrability and holomorphic sheaves; §3.1: Kähler forms; §§4.2–4.3: compatible connections and Chern curvature; Appendix 4.A: the Levi-Civita comparison.
 - [@Car92, Chapter 8, §4]: complete constant-curvature manifolds and their universal covers.
-- [@stacks-08RL; @stacks-0FKM]: relative differentials and their de Rham differential.
+- [@The25, Section 17.28, Tag 08RL; Definition 17.30.1, Tag 0FKM]: relative differentials and their de Rham differential.
 - [@stacks-023T]: effective descent of quasicoherent sheaves.

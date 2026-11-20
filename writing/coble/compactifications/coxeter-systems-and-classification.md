@@ -150,7 +150,7 @@ All three are [@Hum90, §§6.4, 6.5 and 6.8] and the results of Bourbaki cited i
 
 In (1) the sphere of the sources is that of $(\RR^S,2B)$, which is $(\RR^S,-G)$; rescaling a metric by a positive constant preserves the sphere, the reflections and their fundamental domain. The closed (@def:tits-cone) cone (@def:closed-cone) $\overline{C}_0$ on which every $B(\alpha_s,-)$ is nonnegative is a fundamental domain [@Bou08, Ch. V §4 no. 8, Prop. 9]. It is a simplicial cone because the $\alpha_s$ form a basis (@def:based-module), so it meets the sphere in a spherical simplex.
 In (2) the euclidean space is the affine hyperplane $A$ of [@Bou08, Ch. V §4 no. 9, Prop. 10]. Its translation space is dual to $\RR^S/\ker G$, and $G$ identifies it with $\RR^S/\ker G$, of dimension $n-1$. The affine reflections are the restrictions of the contragredient reflections of the $s_{\alpha_s}$ to $A$, and discreteness is properness of the action.
-In (3) the hyperboloid inside the nondegenerate (@def:polarization) space $(\RR^S,G)$ is the model of $\HH^{n-1}$ of @def:hyperbolic-model, and $P$ is the chamber (@cons:chamber-cone) of @def:coxeter-polytope.
+In (3) the hyperboloid inside the nondegenerate (@def:polarization) space $(\RR^S,G)$ is the model of $\HH^{n-1}$ of @def:hyperbolic-model, and $P$ is the chamber of @def:coxeter-polytope.
 :::
 
 ## Subdiagrams and the inheritance of signature

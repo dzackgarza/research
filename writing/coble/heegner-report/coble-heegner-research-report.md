@@ -271,7 +271,7 @@ This is the standard that any direct Coble group must meet.
 ::: {.proposition #prop:coble-and-unigonal-heegner-divisors title="The Coble divisor and the unigonal divisor"}
 Let $\Gamma^K_{\mathrm{En}}=O(T_{\mathrm{En}})$, so that $\mcf_{(10,10,0)}=\bD(T_{\mathrm{En}})/\Gamma^K_{\mathrm{En}}$.
 
-1. Up to $\Gamma^K_{\mathrm{En}}$ there is a unique $(-2)$-vector $\alpha\in T_{\mathrm{En}}$. The discriminant divisor $\Delta=\alpha^\perp\subset\bD(T_{\mathrm{En}})/\Gamma^K_{\mathrm{En}}$ parameterizes quotients of nodal K3 surfaces by an involution that fixes a node. These quotients are rational Coble surfaces (@def:coble-surface) with a $\frac{1}{4}(1,1)$ singularity.
+1. Up to $\Gamma^K_{\mathrm{En}}$ there is a unique $(-2)$-vector $\alpha\in T_{\mathrm{En}}$. The discriminant divisor $\Delta=\alpha^\perp\subset\bD(T_{\mathrm{En}})/\Gamma^K_{\mathrm{En}}$ parameterizes quotients of nodal K3 surfaces (@def:nodal-k3-surface) by an involution that fixes a node. These quotients are rational Coble surfaces (@def:coble-surface) with a $\frac{1}{4}(1,1)$ singularity.
 
 2. There are two $\Gamma^K_{\mathrm{En}}$-orbits of $(-4)$-vectors $\beta\in T_{\mathrm{En}}$. The divisor of the vector with $\beta^\perp\cong\langle4\rangle\oplus U\oplus E_8(2)$ parameterizes nodal Enriques surfaces (@def:nodal-enriques-surface) (@def:enriques-surface). The divisor of the other orbit (@def:group-orbit) parameterizes the unigonal Enriques surfaces, which are double covers of $\bP(1,1,2)$.
 
@@ -649,7 +649,7 @@ Then:
 ::: {.proof}
 *The map.* By part (4) of @prop:tuple-of-the-construction, $I_{\Co,b}$ is nonsymplectic, so $H^{2,0}(\widehat X_b)\subseteq T_{\Co,b}\otimes\bC$.
 By @cor:construction-monodromy the monodromy of the family preserves the labels, so a marking that carries the labels of $\widehat X_b$ to $(S_\Co,S_{\mathrm{dP}},H,\alpha)$ is defined up to the stabilizer of the labels, and the period of $\widehat X_b$ is a point of $\bD(T_\Co)$ defined up to $\Gamma_{\mathrm{lab}}$.
-The family is smooth and proper over the smooth quasi-projective variety $B$, so $\mathcal P$ is holomorphic and lifts locally to $\bD(T_\Co)$.
+The family is smooth and proper over the smooth quasi-projective variety (@def:projective-variety) $B$, so $\mathcal P$ is holomorphic and lifts locally to $\bD(T_\Co)$.
 The group $\Gamma_{\mathrm{lab}}$ is arithmetic, being the image of the stabilizer of lattice data, so $\Gamma_{\mathrm{lab}}\backslash\bD(T_\Co)$ is quasi-projective.
 After passage to a neat subgroup of finite index and the corresponding finite étale cover of $B$, Borel's extension theorem [@Bor72, Thm. 3.10] makes $\mathcal P$ algebraic.
 
@@ -676,7 +676,7 @@ By generic smoothness in characteristic $0$, the differential of $\mathcal P$ ha
 This proves (2).
 
 *The very general member.* Let $v\in T_\Co$ be nonzero.
-The set $\bD(T_\Co)\cap v^\perp$ has dimension $8$, so by (2) the set of $b\in B$ whose period is orthogonal to a $\Gamma_{\mathrm{lab}}$-translate of $v$ is a proper closed analytic subset of the irreducible variety $B$.
+The set $\bD(T_\Co)\cap v^\perp$ has dimension $8$, so by (2) the set of $b\in B$ whose period is orthogonal to a $\Gamma_{\mathrm{lab}}$-translate of $v$ is a proper closed analytic subset (@def:closed-analytic-subset) of the irreducible variety $B$.
 There are countably many $v$, so a very general $b$ lies in none of these subsets, and for such $b$ no nonzero class of $T_{\Co,b}$ is orthogonal to $H^{2,0}(\widehat X_b)$, that is, $T_{\Co,b}\cap\Pic(\widehat X_b) = 0$.
 Let $x\in\Pic(\widehat X_b)$.
 The automorphism $\widehat\iota_{\Co,b}$ preserves $\Pic(\widehat X_b)$, so $x-I_{\Co,b}x$ lies in $T_{\Co,b}\cap\Pic(\widehat X_b) = 0$, and $x\in S_{\Co,b}$.
@@ -1379,7 +1379,7 @@ For a nonsingular class $x\in V$, take its coordinate vector $v\in\{0,1\}^{11}$.
 The executable certificate `computations/reports/coble_full_discriminant_root_lifts.py` constructs all $496$ roots, verifies the Gram identity and determinant of every integral reflection, and checks its reduction on all eleven coordinate basis vectors. It also supplies an explicit integral unimodular matrix $M$ of determinant $-1$ with $M\,\operatorname{diag}(1,1,-1,\ldots,-1)M^T=\langle1
 angle\oplus U\oplus E_8(-1)$, thereby transporting **every** root and reflection to the actual standard $T_\Co$ basis and verifying their integral Gram identities there. Finally it verifies that the $527$ nonzero singular classes span $V$ and computes the generated permutation group's order by Schreier--Sims. The returned order equals the full orthogonal-group order above, so these reflections generate the entire finite discriminant image. In fact, the certificate also checks that the ten parity masks $(1836,269,54,418,354,390,649,562,650,957)$ already generate the same group through their explicitly constructed integral root reflections. Thus these ten integral reflections suffice for every finite-image word lift; this asserts no generation of the integral discriminant kernel (@def:mm-integral-spinor-data). The executed output is `computations/reports/coble_full_discriminant_root_lifts-run.txt`. This constructs lifts of the *finite image*, not generators of $\ker\rho$.
 
-The same executable constructs a Schreier orbit (@def:group-orbit) tree on all $527$ nonzero singular discriminant classes using only these ten integral reflections. Starting from a primitive isotropic basis (@def:isotropic-basis-hyperbolic-plane) vector of $U$, each tree path gives a product of explicit standard-basis integral reflection matrices carrying it to a primitive integral isotropic vector (@def:isotropic-subspace) in the prescribed discriminant class. All $527$ resulting integral vectors are checked for exact norm zero, primitivity, and reduction modulo $2$; a sample word is checked by multiplying the integral matrices and verifying exact equality of its image with the constructed vector. The complete machine-readable certificate `computations/reports/coble_singular_integral_representatives.json` records the standard Gram matrix, ten integral generator roots, and for every class its integral vector and generator word. An independent pure-integer replay checked all $527$ word products and their norm and primitivity. Thus every nonzero singular discriminant class has a constructively certified primitive integral isotropic representative. This does not supply transporters between arbitrary prescribed integral isotropic vectors or flags: the latter additionally requires the stabilizer-fibre theorem and its integral witnesses.
+The same executable constructs a Schreier orbit (@def:group-orbit) tree on all $527$ nonzero singular discriminant classes using only these ten integral reflections. Starting from a primitive isotropic basis (@def:isotropic-basis-hyperbolic-plane) vector of $U$, each tree path (@def:path-connectedness) gives a product of explicit standard-basis integral reflection matrices carrying it to a primitive integral isotropic vector (@def:isotropic-subspace) in the prescribed discriminant class. All $527$ resulting integral vectors are checked for exact norm zero, primitivity, and reduction modulo $2$; a sample word is checked by multiplying the integral matrices and verifying exact equality of its image with the constructed vector. The complete machine-readable certificate `computations/reports/coble_singular_integral_representatives.json` records the standard Gram matrix, ten integral generator roots, and for every class its integral vector and generator word. An independent pure-integer replay checked all $527$ word products and their norm and primitivity. Thus every nonzero singular discriminant class has a constructively certified primitive integral isotropic representative. This does not supply transporters between arbitrary prescribed integral isotropic vectors or flags: the latter additionally requires the stabilizer-fibre theorem and its integral witnesses.
 :::
 
 ::: {.lemma #lem:coble-explicit-vector-parabolic-image title="Explicit integral root section of the isotropic-vector parabolic image"}
@@ -1784,7 +1784,7 @@ where
 
 2. $R_{\IA}$ is the weighted balanced graph recording the del Pezzo ramification divisor;
 
-3. $E_{\IA}$ records the visible class, collapsed path, or marked affine stratum associated with the exceptional root $\alpha$;
+3. $E_{\IA}$ records the visible class, collapsed path (@def:path-connectedness), or marked affine stratum associated with the exceptional root $\alpha$;
 
 4. the two affine involutions commute and preserve the full polarized package;
 
@@ -2372,7 +2372,7 @@ The deck group of the marking cover and the geometric monodromy group of @def:ge
 
 *The marked period space.* By @lem:chamber-from-marked-period the marked moduli injects into $\bD(T_\Co)$, with the chamber included, and by @prob:B24 its image is exactly the set $O = \pi^{-1}\bigl(\mathrm{im}(p)\bigr)$ of realized periods, $\pi\colon\bD(T_\Co)\to\bD(T_\Co)/\Gamma_{\mathrm{lab}}$ the quotient.
 
-*$O$ is connected.* By @prob:B24 the complement of $\mathrm{im}(p)$ is a union of Heegner divisors, so $O$ is the complement in the component of $\bD(T_\Co)$ of a union of walls (@not:coxeter-polytope-faces); that union is locally finite, each compact subset of the domain meeting only the walls of the classes whose periods satisfy a bound, and the complement of a locally finite union of proper closed analytic subsets of a connected complex manifold is connected and dense. It is $\Gamma_{\mathrm{lab}}$-invariant as a preimage.
+*$O$ is connected.* By @prob:B24 the complement of $\mathrm{im}(p)$ is a union of Heegner divisors, so $O$ is the complement in the component of $\bD(T_\Co)$ of a union of walls (@not:coxeter-polytope-faces); that union is locally finite, each compact subset of the domain meeting only the walls of the classes whose periods satisfy a bound, and the complement of a locally finite union of proper closed analytic subsets (@def:closed-analytic-subset) of a connected complex manifold is connected and dense. It is $\Gamma_{\mathrm{lab}}$-invariant as a preimage.
 
 *The two covers.* Two markings with the same period differ by a label-preserving isometry acting trivially on $\bD(T_\Co)$. Since $I_\Co$ acts by $-1$ on $T_\Co$, the element $-\id_{T_\Co}$ lies in $\Gamma_{\mathrm{lab}}$ — it pairs with $\id_{S_\Co}$ through the glue, $-\id = \id$ on the $2$-torsion of $A_{T_\Co}$ — and it acts trivially on the period domain, so the period cover $O\to O/\Gamma_{\mathrm{lab}} = \mathfrak M$ has deck group $\Gamma_{\mathrm{lab}}/\{\pm1\}$ and not $\Gamma_{\mathrm{lab}}$. The marking cover is the $\{\pm1\}$-cover of $O$ above it, of degree (@def:graded-object) $\abs{\Gamma_{\mathrm{lab}}}$ over $\mathfrak M$; it trivializes $T_\Co$, since a marking is an isometry of $H^2$ carrying the labels, and the monodromy is the deck group of *that* cover.
 
@@ -2840,7 +2840,7 @@ $$
 Then $\bar S\cong\langle2\rangle\oplus E_8(2)$ and:
 
 1. $C_\delta$ is a fundamental chamber of the full reflection group (@def:reflection) $W^{(2,4)}(\bar S)$, generated by all $(-2)$-roots and all $(-4)$-roots of divisibility $2$ in the sense of [@AN06, Thm. 3.1], printed p. 51, and it is the chamber of [@AN06, Table 1], entry $(9,9,1)$, printed p. 52;
-2. intersection with $\bar\delta^\perp$ identifies the AEGS semifan $\mathcal F^2$ of [@AEGS25, Defs. 5.3 and 5.4], printed pp. 610--611, with the generalized Coxeter semifan (@def:generalized-coxeter-semifan) of $C_\delta$ whose irrelevant set is the single interior spur, in the manuscript's current wall labels $\{4\}$; and
+2. intersection with $\bar\delta^\perp$ identifies the AEGS semifan (@def:semitoroidal-compactification) $\mathcal F^2$ of [@AEGS25, Defs. 5.3 and 5.4], printed pp. 610--611, with the generalized Coxeter semifan (@def:generalized-coxeter-semifan) of $C_\delta$ whose irrelevant set is the single interior spur, in the manuscript's current wall labels $\{4\}$; and
 3. after reordering the walls as
 $$
 (v_1,v_2,v_3,v_4,v_5,v_6,v_7,v_8,v_9)
@@ -2848,7 +2848,7 @@ $$
 $$
 the irrelevant root is $v_9$ and the restricted irrelevant group is $\langle s_{v_9}\rangle\cong S_2$, while $v_1,\dots,v_8$ are relevant.
 
-Cusp $2$ is the one cusp of $\fentwo$ at which this chamber occurs: at cusps $3$, $4$ and $5$ the facet of a white node has $11$, $10$ and $13$ distinct walls, and all four cusps carry Coble $0$-cusps with boundary lattice $(9,9,1)_1$, so the boundary lattice alone does not locate the chamber (@thm:coble-zero-cusp-sterk-two, parts (2) and (3)).
+Cusp $2$ is the one cusp of $\fentwo$ at which this chamber occurs: at cusps $3$, $4$ and $5$ the facet of a white node has $11$, $10$ and $13$ distinct walls, and all four cusps carry Coble $0$-cusps with boundary lattice $(9,9,1)_1$, so the boundary lattice alone does not locate the chamber.
 :::
 
 ::: {.proof}

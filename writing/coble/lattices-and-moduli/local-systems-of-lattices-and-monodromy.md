@@ -4,7 +4,7 @@ Throughout this chapter $B$ is an arcwise connected, locally simply connected to
 
 ::: {.lemma #lem:local-system-on-interval title="A local system on an interval is constant"}
 
-For a local system $\bL$ and a path $\gamma\colon[0,1]\to B$, the sheaf $\gamma^{-1}\bL$ is constant [@Voi07, Lemma 3.6], and both restriction maps
+For a local system $\bL$ and a path (@def:path-connectedness) $\gamma\colon[0,1]\to B$, the sheaf $\gamma^{-1}\bL$ is constant [@Voi07, Lemma 3.6], and both restriction maps
 $$
 \bL_{\gamma(0)}
 \longleftarrow
@@ -33,7 +33,7 @@ The product on $\pi_1(B,s)$ is the one in which $\gamma\delta$ is the loop $\del
 ::: {.proposition #prop:transport-homotopy-invariant title="Transport depends only on the homotopy class"}
 
 1. The transport $\gamma^*$ depends only on the homotopy class of $\gamma$ relative to its endpoints [@Voi07, proof of Proposition 3.9].
-2. If the path $\delta$ ends where the path $\gamma$ begins, the transport along $\delta$ followed by $\gamma$ is $\gamma^*\circ\delta^*$.
+2. If the path (@def:path-connectedness) $\delta$ ends where the path $\gamma$ begins, the transport along $\delta$ followed by $\gamma$ is $\gamma^*\circ\delta^*$.
 3. The monodromy representation (@def:transport-and-monodromy) $\rho$ is a well-defined group (@def:group) morphism.
 :::
 
@@ -63,7 +63,7 @@ Each stalk $(\bL_b,\beta_b)$ of a local system of lattices is a $\ZZ$-lattice in
 
 Let $(\bL,\beta)$ be a local system of lattices (@def:local-system-of-lattices) on $B$ and let $s\in B$.
 
-1. For every path $\gamma$ in $B$, the transport $\gamma^*\colon\bL_{\gamma(0)}\to\bL_{\gamma(1)}$ is an isometry for $\beta_{\gamma(0)}$ and $\beta_{\gamma(1)}$.
+1. For every path (@def:path-connectedness) $\gamma$ in $B$, the transport $\gamma^*\colon\bL_{\gamma(0)}\to\bL_{\gamma(1)}$ is an isometry for $\beta_{\gamma(0)}$ and $\beta_{\gamma(1)}$.
    The monodromy representation (@def:transport-and-monodromy) is therefore a group (@def:group) morphism
 $$
 \rho\colon\pi_1(B,s)\too\Aut(\bL_s,\beta_s).
@@ -116,7 +116,7 @@ In this section $(\bL,\beta)$ is a local system of lattices on $B$ whose stalks 
 ::: {.definition #def:orientation-sheaf title="Sheaves of orientation classes of a local system of lattices" defines="$\operatorname{Or}^+_b$; sheaf of orientation classes of maximal positive-definite subspaces; $\operatorname{Or}^+_{\bL}$; $\operatorname{Or}^-_{\bL}$"}
 
 For $b\in B$, let $\operatorname{Or}^+_b$ be the two-element set of positive orientation classes of $\bL_b\tensor\RR$ (@def:orientation-classes).
-By @prop:local-system-of-lattices-monodromy, the transport along a path $\gamma$ induces a bijection $\gamma^*\colon\operatorname{Or}^+_{\gamma(0)}\to\operatorname{Or}^+_{\gamma(1)}$.
+By @prop:local-system-of-lattices-monodromy, the transport along a path (@def:path-connectedness) $\gamma$ induces a bijection $\gamma^*\colon\operatorname{Or}^+_{\gamma(0)}\to\operatorname{Or}^+_{\gamma(1)}$.
 The *sheaf of orientation classes of maximal positive-definite subspaces* $\operatorname{Or}^+_{\bL}$ is the sheaf of sets on $B$ with
 $$
 \Gamma\qty{O,\operatorname{Or}^+_{\bL}}
@@ -139,7 +139,7 @@ The same statements hold for $\Orth^+(\bL_s(-1))$ and $\operatorname{Or}^-_{\bL}
 
 ::: {.proof}
 
-Since $B$ is arcwise connected, a global section $(o_b)$ is determined by $o_s$, through $o_b=\gamma^*o_s$ for any path $\gamma$ from $s$ to $b$.
+Since $B$ is arcwise connected, a global section $(o_b)$ is determined by $o_s$, through $o_b=\gamma^*o_s$ for any path (@def:path-connectedness) $\gamma$ from $s$ to $b$.
 A class $o_s\in\operatorname{Or}^+_s$ extends to a global section exactly when $\gamma^*o_s$ depends only on the endpoint of $\gamma$, that is, when every loop $\gamma$ at $s$ has $\gamma^*o_s=o_s$.
 The transport along a loop of class $\gamma$ is $\rho(\gamma)\in\Orth(\bL_s)$, and it fixes $o_s$ exactly when $\rho(\gamma)\in\Orth^+(\bL_s)$, by @prop:spinor-norm-orientation-classes (4).
 The condition does not depend on which of the two classes $o_s$ is chosen.
@@ -422,7 +422,7 @@ F^p\mathcal H^k_{\mathrm{prim}}\definedas F^p\mathcal H^k\cap\qty{\bV^k_{\mathrm
 $$
 is a holomorphic subbundle of $\bV^k_{\mathrm{prim}}\tensor_\ZZ\OO_B$.
 The connection (@def:calculus-connection) $\nabla$ preserves the flat subbundle $\bV^k_{\mathrm{prim}}\tensor_\ZZ\OO_B$, so condition (2) of @def:polarized-integral-vhs for $F^\bullet\mathcal H^k_{\mathrm{prim}}$ follows from the inclusion $\nabla F^p\mathcal H^k\iscontainedin F^{p-1}\mathcal H^k\tensor\Omega_B$.
-Condition (1) is the pair of Hodge--Riemann bilinear relations for the primitive cohomology of each fibre [@Voi07a, Theorem 6.32, §7.1.2].
+Condition (1) is the pair of Hodge--Riemann bilinear relations for the primitive cohomology (@def:primitive-cohomology) of each fibre [@Voi07a, Theorem 6.32, §7.1.2].
 :::
 
 ::: {.corollary #cor:middle-cohomology-monodromy title="Monodromy of even-dimensional middle cohomology"}
@@ -725,7 +725,7 @@ for the space of invariants.
 ::: {.proof}
 
 A flat global section $e$ of $\bL\tensor\CC$ is a global section of the local system $\bL\tensor_\ZZ\underline\CC_B$.
-For a path $\gamma$ from $s$ to $b$, the pullback (@def:pullback-square) of $e$ is a section of $\gamma^{-1}\qty{\bL\tensor\underline\CC}$ over $[0,1]$, so $e(b)=\gamma^*e(s)$.
+For a path (@def:path-connectedness) $\gamma$ from $s$ to $b$, the pullback (@def:pullback-square) of $e$ is a section of $\gamma^{-1}\qty{\bL\tensor\underline\CC}$ over $[0,1]$, so $e(b)=\gamma^*e(s)$.
 Hence $e$ is determined by $e(s)$, and $e(s)$ is fixed by the transport along every loop at $s$.
 Conversely, for $v\in L_\CC^\rho$ the vector $\gamma^*v\in\bL_b\tensor\CC$ does not depend on the path $\gamma$ from $s$ to $b$, and $b\mapsto\gamma^*v$ is a global section, because on a simply connected open set on which $\bL$ is constant the transport is the identification of the stalks (@def:stalk).
 This proves (1).

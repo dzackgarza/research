@@ -35,7 +35,7 @@ Let $G$ be a symmetric real matrix with effective convergent rational enclosures
 
 Choose symmetric rational midpoint matrices $A_n$ with entrywise error at most $2^{-n}$, and let $r$ be the size. Then $\|G-A_n\|_\infty\le e_n=r2^{-n}$. At a stage where $A_n$ is invertible, compute $K_n=\|A_n^{-1}\|_\infty$ exactly and stop when $K_ne_n<1$. For $0\le t\le1$,
 $$A_n+t(G-A_n)=A_n\bigl(I+tA_n^{-1}(G-A_n)\bigr)$$
-is invertible by the geometric series. Its inertia is constant along the path, so the rational inertia of $A_n$ is that of $G$. Since $G^{-1}$ exists, for large $n$ one has $\|A_n^{-1}\|_\infty\le2\|G^{-1}\|_\infty$, and $K_ne_n\to0$. Every stage uses rational decisions. Rank zero gives $(0,0)$.
+is invertible by the geometric series. Its inertia is constant along the path (@def:path-connectedness), so the rational inertia of $A_n$ is that of $G$. Since $G^{-1}$ exists, for large $n$ one has $\|A_n^{-1}\|_\infty\le2\|G^{-1}\|_\infty$, and $K_ne_n\to0$. Every stage uses rational decisions. Rank zero gives $(0,0)$.
 :::
 
 The same argument works with measured row-sum errors from outward-rounded ball endpoints. If midpoint and half-width are rational, take the maximum row sum of half-widths for $e$. The matrix and its inverse remain exact rational data. A fixed precision cutoff is not a singularity test.

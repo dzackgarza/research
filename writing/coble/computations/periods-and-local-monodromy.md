@@ -18,7 +18,7 @@ notes: |-
 
 ::: {.definition #def:period-map title="Period matrix and period map" defines="period matrix; $\Pi(t)$; period map; $\mathcal P$; $\omega_i$; $P_X$; $\omega$; projective period map"}
 
-Let $\pi \colon \mathcal{X} \to M$ be a smooth projective (or compact Kähler) family of complex $m$-dimensional varieties over a connected complex quasi-projective variety (or complex manifold) $M$.
+Let $\pi \colon \mathcal{X} \to M$ be a smooth projective (or compact Kähler) family of complex $m$-dimensional varieties over a connected complex quasi-projective variety (@def:projective-variety) (or complex manifold) $M$.
 Fix a reference fiber (@def:fiber-cofiber) $X = X_{t_0} = \inverseof{\pi}(t_0)$, and let $\{\Sigma_0, \dots, \Sigma_{k-1}\} \subset H_m(X, \ZZ)/\mathrm{tors}$ be an integral basis (@def:based-module) of the middle homology (@def:homology) modulo torsion, where $k = b_m(X)$ is the middle Betti number.
 For each $t \in M$, let $\{\omega_1(t), \dots, \omega_p(t)\}$ be a basis of a holomorphic subbundle of the relative de Rham cohomology, such as $H^{m,0}(X_t) \subset H^m_{\dR}(X_t)$ where $p = h^{m,0}(X)$, varying holomorphically with $t$.
 
@@ -32,7 +32,7 @@ For each $t \in M$, let $\{\omega_1(t), \dots, \omega_p(t)\}$ be a basis of a ho
    \;\in\; \Mat_{p \times k}(\CC).
    $$
    Because the basis of holomorphic forms is determined only up to an invertible change of basis in $\GL_p(\CC)$, the $p$-dimensional subspace spanned by the rows of $\Pi(t)$ defines a point in the Grassmannian $\Gr(p, H^m(X, \CC))$, or more precisely in the Griffiths period domain $\mathcal{D} \subset \Gr(p, k)$ cut out by the Riemann–Hodge bilinear relations.
-   Modulo the global monodromy group (@def:k3-moduli-functors) $\Gamma \le \Aut(H_m(X, \ZZ), Q)$, this association defines the *period map* of the family
+   Modulo the global monodromy group (@def:k3-moduli-functors) (@def:transport-and-monodromy) $\Gamma \le \Aut(H_m(X, \ZZ), Q)$, this association defines the *period map* of the family
    $$
    \mathcal{P} \colon M \too \mathcal{D}/\Gamma.
    $$
@@ -78,7 +78,7 @@ Let $k$ have characteristic $0$ and let $f\in k[x_0,\dots,x_{n-1},t]$ present a 
 
 4. Compute the indicial polynomial of $\mathcal L$ at $t = 0$.
    Its roots are the exponents $\alpha_1,\dots,\alpha_\mu$.
-   Its degree (@def:graded-object) (@def:numerical-polarization) equals $\mu$ exactly when $t = 0$ is a regular singular point, so checking that degree is checking the hypothesis under which the remaining steps are valid.
+   Its degree (@def:graded-object) (@def:numerical-polarization) equals $\mu$ exactly when $t = 0$ is a regular singular point (@def:regular-singular-point), so checking that degree is checking the hypothesis under which the remaining steps are valid.
 
 5. Let $R$ be the Jordan form over $\overline{\QQ}$ of the companion matrix of the monic indicial polynomial, and let $R = R_s + R_n$ be its Jordan decomposition into commuting semisimple and nilpotent parts.
 
@@ -102,7 +102,7 @@ Let $T$, $R = R_s + R_n$ and $\alpha_1,\dots,\alpha_\mu$ be as in @cons:pf-from-
    $$
    N \;=\; \log T \;=\; 2\pi i\, R_n ,
    $$
-   so the nilpotency index of $N$ is the nilpotency index of $R_n$, and the Jordan block sizes of $T$ are those of $R$.
+   so the nilpotency index (@def:nilpotency-index) of $N$ is the nilpotency index of $R_n$, and the Jordan block sizes of $T$ are those of $R$.
 
 3. The Jordan type of $T$, and hence the nilpotency index of $N$ and the type of @def:kulikov-types, is the same in every basis (@def:based-module) of the fiber (@def:fiber-cofiber) cohomology.
 :::

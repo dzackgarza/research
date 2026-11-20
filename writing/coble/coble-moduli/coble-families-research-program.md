@@ -38,7 +38,7 @@ By @prop:coble-table-invariants, $r = 10+n$ and $a = 12-n$, so $22-r-a = 0$ and 
 ::: {.proposition #prop:coble-families-in-enriques-moduli title="Each Coble family lies in the Coble divisor of Enriques moduli"}
 
 For each lattice $M$ of rank $10+n$ in @tbl-coble-lattices, the moduli functor of $M$-polarized K3 surfaces of [@CDL25, §5.4] embeds into the moduli functor of $E_{10}(2)$-polarized K3 surfaces.
-Its image is an open subset of an irreducible closed subset (@def:closed-subset) of codimension $n-1$ of the quotient $\Gamma^\sharp_{\mathrm{Enr}}\backslash\mch(-2)$ of the $(-2)$-Heegner divisor of the Enriques period domain, and it is a coarse moduli space of Coble surfaces (@def:coble-surface) with $n$ boundary components [@CDL25, §5.4, Prop. 5.4.6 and the paragraph after it].
+Its image is an open subset of an irreducible closed subset (@def:irreducible-closed-subset) (@def:closed-subset) of codimension $n-1$ of the quotient $\Gamma^\sharp_{\mathrm{Enr}}\backslash\mch(-2)$ of the $(-2)$-Heegner divisor of the Enriques period domain, and it is a coarse moduli space of Coble surfaces (@def:coble-surface) with $n$ boundary components [@CDL25, §5.4, Prop. 5.4.6 and the paragraph after it].
 For $n = 1$, the image under the period map (@def:period-map) is an open subset of $\mcm_{\mathrm{Coble}}$, and the coarse moduli space is the coarse moduli space of marked Coble surfaces with $n = 1$ [@CDL25, Prop. 5.4.6].
 
 :::

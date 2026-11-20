@@ -313,7 +313,7 @@ $$
 is exact (@def:exact-complex).
 It is a *projective resolution* if every $P_i$ is projective (@def:module-subcategories) and a *free resolution* if every $P_i$ is free (@def:module-subcategories) [@Wei94, Def. 2.2.4].
 Every $R$-module has a projective resolution, and every object of an abelian category (@def:abelian-category) with enough projectives has one [@Wei94, Lem. 2.2.5].
-A projective resolution of $M$ is a cofibrant replacement of $M$ in the model structure (@def:property-structure-stuff) of @thm:projective-model-structure, and the bar construction of @def:comonad-resolution produces one from the free-module adjunction.
+A projective resolution of $M$ is a cofibrant replacement of $M$ in the projective model structure on bounded-below complexes, and the bar construction of @def:comonad-resolution produces one from the free-module adjunction.
 :::
 
 ::: {.theorem #thm:resolution-comparison title="Comparison of resolutions"}

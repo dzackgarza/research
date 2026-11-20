@@ -31,7 +31,7 @@ Here a modification of $\pi$ is a degeneration $\pi'\colon X'\to\Delta$ with a b
 ::: {.definition #def:kulikov-types title="Type I, II, III Kulikov degenerations" defines="log monodromy; Type $\latI$; Type $\latII$; Type $\mathrm{III}$"}
 
 Let $T$ be the unipotent Picard--Lefschetz monodromy of a Kulikov model and let $N = \log T$ be the associated *log monodromy* operator, a nilpotent endomorphism.
-Depending on the nilpotency index of $N$, Kulikov models are classified into three types [@Kul77, Thm. II]:
+Depending on the nilpotency index (@def:nilpotency-index) of $N$, Kulikov models are classified into three types [@Kul77, Thm. II]:
 
 - **Type $\latI$** ($N = 0$): $\mcx_0$ is a smooth K3 surface.
 
@@ -161,7 +161,7 @@ The limiting mixed Hodge structure of a degeneration is the subject of the nilpo
 
 For a one-parameter degeneration of polarized K3 surfaces over a punctured disk, the unipotent monodromy operator $T \in \Orth(T_{2d})$ and its nilpotent logarithm $N = \log T$ induce a canonical monodromy weight filtration $W^{\bullet}$.
 
-The boundary components of $\bbcpt{\ftd}$ are classified by the nilpotency index of $N$:
+The boundary components of $\bbcpt{\ftd}$ are classified by the nilpotency index (@def:nilpotency-index) of $N$:
 
 - **Type $\latII$ degenerations (1-cusps)**: $N \neq 0$, $N^2 = 0$.
   The weight filtration is 3-step ($W_0 \subset W_1 \subset W_2 \subset W_3$), and $\Gr_2^W = I^\perp / I = \overline{T}_I$ has a pure polarized Hodge structure (@def:property-structure-stuff) of weight 2.

@@ -62,7 +62,7 @@ The vertical map is $F_{\Co}\to F_{\Co,2}$, finite of degree $[\Gamma_{\Co,2}:\G
 
 ::: {.proposition #prop:coble-moduli-git title="The GIT construction of the Coble moduli space"}
 
-1. The moduli space $\mcm_\Co$ of blowups of $\PP^2$ at the ten nodes of an irreducible plane sextic is a locally closed subvariety of the GIT quotient of the variety $(\PP^2)^{10}$ of $10$-tuples of points in $\PP^2$ by $\PGL_3$ [@DK13, §3].
+1. The moduli space $\mcm_\Co$ of blowups of $\PP^2$ at the ten nodes of an irreducible plane sextic is a locally closed (@def:locally-closed-subset) subvariety (@def:closed-subvariety) of the GIT quotient of the variety $(\PP^2)^{10}$ of $10$-tuples of points in $\PP^2$ by $\PGL_3$ [@DK13, §3].
 2. A general point of $(\PP^2)^{10}$ has trivial stabilizer (@def:group-orbit) in $\PGL_3$, so its $\PGL_3$-orbit has dimension $\dim\PGL_3 = 3^2-1 = 8$ and codimension
 $$
 \dim (\PP^2)^{10} - \dim \PGL_3 = 2\cdot 10 - 8 = 12
@@ -89,7 +89,7 @@ So the stabilizer is trivial, and the orbit (@def:group-orbit) map $\PGL_3\to(\P
 Let $Y = \PP^1\times\PP^1$ with the involution $\tau(x,y) = (-x,-y)$, and let $B\in\abs{-2K_Y}$ be a $\tau$-invariant divisor with at worst ADE singularities that does not pass through the four points with $x, y\in\theset{0,\infty}$ fixed by $\tau$.
 
 1. The double cover $\pi\colon X\to Y$ branched in $B$ is a K3 surface with a del Pezzo involution $\idp$ such that $Y = X/\idp$. The involution $\tau$ lifts to a basepoint-free involution $\ien$ of $X$ that commutes (@def:commutative-diagram) with $\idp$, and $Z = X/\ien$ is an Enriques surface (@def:enriques-surface) [@AEGS25, §2.1].
-2. Certain mildly singular $\tau$-invariant equations $f(x,y)$ of bidegree $(4,4)$ that vanish at a torus-fixed point correspond to Coble surfaces (@def:coble-surface), which are $\ZZ/2$ quotients of nodal K3 surfaces [@AEGS25, §2.1; @Hor77].
+2. Certain mildly singular $\tau$-invariant equations $f(x,y)$ of bidegree $(4,4)$ that vanish at a torus-fixed point correspond to Coble surfaces (@def:coble-surface), which are $\ZZ/2$ quotients of nodal K3 surfaces (@def:nodal-k3-surface) [@AEGS25, §2.1; @Hor77].
 3. There is a unique $(-2)$-vector $\alpha\in\ten$ modulo $\Orth(\ten)$. The divisor $\Delta = \alpha^\perp\iscontainedin\bD(\ten)/\Orth(\ten)$ parametrizes quotients of nodal K3 surfaces by an involution that fixes a node. These are rational Coble surfaces with a $\tfrac14(1,1)$ singularity [@AEGS25, §2.3].
 
 :::
@@ -193,7 +193,7 @@ Let $\ten = U\oplus E_{10}(2)$ be the orthogonal complement in $\lkt$ of the pul
 The group (@def:group) $\Orth(\ten)$ is the group $\Gamma^K_\En$ of the opening display, and it contains the group $\Orth^+(\ten)^*$ of $\fen$.
 
 1. The period point of the K3 cover of an Enriques surface does not lie in $\mch_{-2}$.
-   The quotient $\bD(\ten)/\Orth(\ten)$ is a normal quasi-projective variety of dimension $10$, and $\qty{\bD(\ten)\sm\mch_{-2}}/\Orth(\ten)$ is the moduli space $\mcm_\En$ of Enriques surfaces [@DK13, §3].
+   The quotient $\bD(\ten)/\Orth(\ten)$ is a normal quasi-projective variety (@def:projective-variety) of dimension $10$, and $\qty{\bD(\ten)\sm\mch_{-2}}/\Orth(\ten)$ is the moduli space $\mcm_\En$ of Enriques surfaces [@DK13, §3].
 2. There are two $\Orth(\ten)$-orbits of $(-4)$-vectors in $\ten$ [@AEGS25, §2.3].
    One orbit (@def:group-orbit) consists of the vectors $\delta$ with $\delta^{\perp\ten}\cong T_\Nod = U\oplus\generators{4}\oplus E_8(2)$; let $\mch^{\mathrm{nod}}_{-4}\iscontainedin\mch_{-4}$ be the union of their hyperplanes.
    The divisor $\mcm^{\mathrm{nod}}_\En \definedas \qty{\mch^{\mathrm{nod}}_{-4}\sm\mch_{-2}}/\Orth(\ten)$ parametrizes nodal (@def:nodal-enriques-surface) Enriques surfaces [@AEGS25, §2.3].
@@ -226,7 +226,7 @@ $$
 T_\Co \definedas S_\Co^{\perp \lkt} = (11, 11, 1)_2 \cong \generators{2} \oplus E_{10}(2)
 .
 $$
-3. The quotient $\bD(T_\Co)/\Orth(T_\Co)$ is a normal quasi-projective variety of dimension $9$, and the moduli space $\mcm_\Co$ of @prop:coble-moduli-git is isomorphic to an open subset of it (@lem:d2a-coble-moduli-quotient).
+3. The quotient $\bD(T_\Co)/\Orth(T_\Co)$ is a normal quasi-projective variety (@def:projective-variety) of dimension $9$, and the moduli space $\mcm_\Co$ of @prop:coble-moduli-git is isomorphic to an open subset of it (@lem:d2a-coble-moduli-quotient).
 
 :::
 
@@ -415,12 +415,12 @@ Let $\abs{\OO_{\PP^2}(6)}$ be the linear system of plane sextics and put
 $$
 V\definedas\theset{(Z;p_1,\dots,p_{10})\in\abs{\OO_{\PP^2}(6)}\times(\PP^2)^{10}\ \st\ p_1,\dots,p_{10}\ \text{are distinct},\ Z\ \text{is irreducible},\ \operatorname{Sing}Z=\{p_1,\dots,p_{10}\}\ \text{and each } p_i\ \text{is an ordinary double point}} .
 $$
-This is a locally closed analytic subset of a product of projective spaces (@def:projective-morphism-of-schemes): irreducibility is open, and so is the conjunction "the $p_i$ are distinct ordinary double points (@def:ordinary-double-point) and there is no other singular point", the last because ordinary double points persist under small deformation of $Z$ (the equations $Z=\partial_xZ=\partial_yZ=0$ have invertible Jacobian, the Hessian, at an ordinary double point).
-The effective group (@def:group) is $\PGL_3=\SL_3/\mu_3$: the scalars $\mu_3$ are the kernel (@def:kernel-cokernel) of $\SL_3\to\PGL_3$ and act trivially on both factors, so $\SL_3$ acts through $\PGL_3$ and $V/\SL_3=V/\PGL_3$; freeness is a statement about $\PGL_3$. The action of $\PGL_3$ on $V$ is free, and the $\SL_3$-stabilizer of every point of $V$ is $\mu_3$: the fixed points of a non-identity projectivity lie in the union of a line and a point, a line carries at most three nodes of $Z$, and no non-identity projectivity fixes all ten nodes (@lem:d2-plane-sextic-freeness(1)--(2)). $S_{10}$ acts on the second factor and commutes (@def:commutative-diagram) with $\PGL_3$.
+This is a locally closed (@def:locally-closed-subset) analytic subset (@def:closed-analytic-subset) of a product of projective spaces (@def:projective-morphism-of-schemes): irreducibility is open, and so is the conjunction "the $p_i$ are distinct ordinary double points (@def:ordinary-double-point) and there is no other singular point", the last because ordinary double points persist under small deformation of $Z$ (the equations $Z=\partial_xZ=\partial_yZ=0$ have invertible Jacobian, the Hessian, at an ordinary double point).
+The effective group (@def:group) is $\PGL_3=\SL_3/\mu_3$: the scalars $\mu_3$ are the kernel (@def:kernel-cokernel) of $\SL_3\to\PGL_3$ and act trivially on both factors, so $\SL_3$ acts through $\PGL_3$ and $V/\SL_3=V/\PGL_3$; freeness is a statement about $\PGL_3$. The action of $\PGL_3$ on $V$ is free, and the $\SL_3$-stabilizer of every point of $V$ is $\mu_3$: the fixed points of a non-identity projectivity lie in the union of a line and a point, a line carries at most three nodes of $Z$, and no non-identity projectivity fixes all ten nodes (proved below). $S_{10}$ acts on the second factor and commutes (@def:commutative-diagram) with $\PGL_3$.
 Write
 $$B\definedas V/\PGL_3,\qquad \bar B\definedas[V/(\SL_3\times S_{10})]=[B/S_{10}]$$
-so that $B$ is a complex analytic space and $V\to B$ is a principal $\PGL_3$-bundle (@lem:d2-plane-sextic-freeness(3)), while $\bar B$ is the quotient stack of $B$ by the finite group $S_{10}$, whose coarse space is $V/(\SL_3\times S_{10})$; $B\to\bar B$ is the quotient by $S_{10}$ (@lem:d2-labelling-cover).
-Let $U\subset(\PP^2)^{10}$ be the image of $V$: the ordered ten-tuples that are the ten nodes of an irreducible sextic with ten ordinary double points. The quotient $M_\Co\definedas U/\PGL_3$ is the moduli space of Coble surfaces of [@DK13, §3], a locally closed subvariety of the GIT quotient of $(\PP^2)^{10}$ by $\PGL_3$ (@prop:coble-moduli-git), and $B\to M_\Co$ is the map forgetting the sextic.
+so that $B$ is a complex analytic space and $V\to B$ is a principal $\PGL_3$-bundle (proved below), while $\bar B$ is the quotient stack of $B$ by the finite group $S_{10}$, whose coarse space is $V/(\SL_3\times S_{10})$; $B\to\bar B$ is the quotient by $S_{10}$ (@lem:d2-labelling-cover).
+Let $U\subset(\PP^2)^{10}$ be the image of $V$: the ordered ten-tuples that are the ten nodes of an irreducible sextic with ten ordinary double points. The quotient $M_\Co\definedas U/\PGL_3$ is the moduli space of Coble surfaces of [@DK13, §3], a locally closed subvariety (@def:closed-subvariety) of the GIT quotient of $(\PP^2)^{10}$ by $\PGL_3$ (@prop:coble-moduli-git), and $B\to M_\Co$ is the map forgetting the sextic.
 The locus of irreducible sextics with ten nodes is irreducible, being the image of the irreducible variety of degree-$6$ rational maps $\PP^1\to\PP^2$, so $U$ and $M_\Co$ are connected and irreducible (@lem:d2-incidence-connected).
 :::
 
@@ -442,7 +442,7 @@ Let $V$ and $B=V/\PGL_3$ be as in @not:d2-plane-sextic-base.
 
 (3) Three non-collinear nodes exist, since at most three lie on a line. For three non-collinear nodes $A,B,C$ the lines $AB$, $AC$, $BC$ carry at most three nodes each and contain $A,B,C$ twice each, so at most $3+3+3-3=6$ nodes lie on them and a fourth node $D$ lies outside; then $A,B,C,D$ have no three collinear. For a four-element subset $I$ of the labels let $V_I\subset V$ be the open set of configurations whose $I$-indexed nodes have no three collinear, fix a projective frame $q_1,\dots,q_4$, and let $S_I\subset V_I$ be the closed subset (@def:closed-subset) of configurations whose $I$-indexed nodes are $q_1,\dots,q_4$. The map $\PGL_3\times S_I\to V_I$, $(g,s)\mapsto g\cdot s$, is a bijection: a configuration $v\in V_I$ has a unique projectivity $g_v$ carrying its $I$-indexed nodes to $q_1,\dots,q_4$, because a projectivity is determined by the images of four points with no three collinear, and $v=g_v^{-1}(g_vv)$ with $g_vv\in S_I$. It is a homeomorphism because $v\mapsto g_v$ is given by solving a linear system whose determinant is nonzero on $V_I$. The composites $S_I\to V_I\to B$ are therefore charts; they cover $B$ by the first paragraph, and their transition maps are restrictions of the $\PGL_3$-action, hence analytic. So $B$ is a complex analytic space and $V\to B$ is a principal $\PGL_3$-bundle.
 
-(4) The family and $\bT$ are $\PGL_3$-equivariant (@lem:d2-unpolarised-family(3)), so they descend to the base $B$ of the principal bundle $V\to B$. A loop of $B$ lifts to a path of $V$ by local triviality and compactness of $[0,1]$; the lift ends at $gs$ for some $g\in\PGL_3$, and since $\PGL_3$ is connected a path from $e$ to $g$ turns it into a loop of $V$ over the given loop. Hence $\pi_1(V,s)\to\pi_1(B,[s])$ is surjective. The monodromy group (@def:k3-moduli-functors) of the descended system on $B$ is $\rho\qty{\pi_1(B,[s])}$, and its pullback to $V$ is $\bT$, so it equals $\rho\qty{\pi_1(V,s)}$, which is $\Gamma_\Co$ (@lem:d2a-monodromy-of-the-stack).
+(4) The family and $\bT$ are $\PGL_3$-equivariant (@lem:d2-unpolarised-family(3)), so they descend to the base $B$ of the principal bundle $V\to B$. A loop of $B$ lifts to a path (@def:path-connectedness) of $V$ by local triviality and compactness of $[0,1]$; the lift ends at $gs$ for some $g\in\PGL_3$, and since $\PGL_3$ is connected a path from $e$ to $g$ turns it into a loop of $V$ over the given loop. Hence $\pi_1(V,s)\to\pi_1(B,[s])$ is surjective. The monodromy group (@def:k3-moduli-functors) of the descended system on $B$ is $\rho\qty{\pi_1(B,[s])}$, and its pullback to $V$ is $\bT$, so it equals $\rho\qty{\pi_1(V,s)}$, which is $\Gamma_\Co$ (@lem:d2a-monodromy-of-the-stack).
 :::
 
 ::: {.lemma #lem:d2-incidence-connected title="The incidence variety, $B$ and $\bar B$ are connected"}
@@ -514,7 +514,7 @@ The family over $B$ is the descent of @lem:d2-unpolarised-family(2) along the pr
 
 **The local system of lattices** is $\bT$ of @lem:d2-local-system: the orthogonal complement in $R^2f_*\underline{\ZZ}_{\mcx}$ modulo torsion of the span of the classes of the pullback of a line and of the ten exceptional curves. Its fibre is $T_\Co$, its rank is $11$, and its stalks (@def:stalk) have signature $(2,9)$.
 
-**The group.** $\Gamma_\Co\leq\Orth(T_\Co)$ is the monodromy group (@def:k3-moduli-functors) of $\bT$ (@lem:d2-local-system) on the labelled base $B$: the image of the monodromy representation (@def:transport-and-monodromy) of $\bT$ (@def:local-system-of-lattices) on $\pi_1(B,s)$. By @lem:d2-plane-sextic-freeness(4) it is also $\rho\qty{\pi_1(V,s)}$, and it is a subgroup of $\Orth(T_\Co)$ because $\bT$ is a local system of lattices with fibre $T_\Co$ and transport along a path is an isometry (@prop:local-system-of-lattices-monodromy). Put $\fco\definedas\bD(T_\Co)/\Gamma_\Co$.
+**The group.** $\Gamma_\Co\leq\Orth(T_\Co)$ is the monodromy group (@def:k3-moduli-functors) of $\bT$ (@lem:d2-local-system) on the labelled base $B$: the image of the monodromy representation (@def:transport-and-monodromy) of $\bT$ (@def:local-system-of-lattices) on $\pi_1(B,s)$. By @lem:d2-plane-sextic-freeness(4) it is also $\rho\qty{\pi_1(V,s)}$, and it is a subgroup of $\Orth(T_\Co)$ because $\bT$ is a local system of lattices with fibre $T_\Co$ and transport along a path (@def:path-connectedness) is an isometry (@prop:local-system-of-lattices-monodromy). Put $\fco\definedas\bD(T_\Co)/\Gamma_\Co$.
 :::
 
 ::: {.lemma #lem:d2-unpolarised-family title="The family over the labelled base exists"}
@@ -544,7 +544,7 @@ In particular it is contained in the monodromy group (@def:k3-moduli-functors) o
 
 ::: {.proof}
 
-The pullback $p^{-1}\bL$ has stalk (@def:stalk) $\bL_{p(s')}$ at $s'$, and transport along a path $\gamma$ in $B'$ is transport along $p\circ\gamma$ in $B$: both are computed on sections over the interval, and $p$ carries a trivializing open set of $\bL$ to an open set on which $p^{-1}\bL$ is trivial.
+The pullback $p^{-1}\bL$ has stalk (@def:stalk) $\bL_{p(s')}$ at $s'$, and transport along a path (@def:path-connectedness) $\gamma$ in $B'$ is transport along $p\circ\gamma$ in $B$: both are computed on sections over the interval, and $p$ carries a trivializing open set of $\bL$ to an open set on which $p^{-1}\bL$ is trivial.
 So the monodromy representation of $p^{-1}\bL$ is $\rho\circ p_*$ (@def:transport-and-monodromy).
 The remaining statements are those of the image of a subgroup under a group morphism, and, for a covering of finite degree, of the finite index of $\pi_1(B',s')$ in $\pi_1(B,s)$.
 :::
@@ -577,7 +577,7 @@ Let $G$ be a connected complex Lie group (@def:group) acting on a connected comp
 
 ::: {.proof}
 
-*The loops (@def:loops-suspension) of the stack.* In the loop model of @lem:orbifold-monodromy-of-a-quotient an orbifold loop of $V/G$ at $[s]$ is represented by a pair $(g,\tilde\gamma)$ with $g\in G$ and $\tilde\gamma$ a path in $V$ from $s$ to $gs$. What is used here is that model, an orbifold loop being a pair $(g,\tilde\gamma)$, and not the exact (@def:exact-complex) sequence stated in that lemma, whose quotient by $\Gamma$ is stated for a discrete group; for a connected $G$ the group element of a loop is homotopic to a path in $V$, which is what the next paragraph proves. The transport of $\bL$ along the pair is
+*The loops (@def:loops-suspension) of the stack.* In the loop model of @lem:orbifold-monodromy-of-a-quotient an orbifold loop of $V/G$ at $[s]$ is represented by a pair $(g,\tilde\gamma)$ with $g\in G$ and $\tilde\gamma$ a path (@def:path-connectedness) in $V$ from $s$ to $gs$. What is used here is that model, an orbifold loop being a pair $(g,\tilde\gamma)$, and not the exact (@def:exact-complex) sequence stated in that lemma, whose quotient by $\Gamma$ is stated for a discrete group; for a connected $G$ the group element of a loop is homotopic to a path in $V$, which is what the next paragraph proves. The transport of $\bL$ along the pair is
 $$\varphi_g(s)^{-1}\circ\tilde\gamma^*,$$
 the second factor being the transport along $\tilde\gamma$ (@def:transport-and-monodromy) and the first the identification of the fibre at $gs$ with the fibre at $s$ given by the equivariance. A general loop of the stack is a finite concatenation of paths in $V$ and of such pairs, so it is enough to treat one pair.
 
@@ -610,7 +610,7 @@ That group is $\Orth^+(T_\Co)\intersect\discriminantkernel{T_\Co}$, which is $\w
 
 Let $B=V/\PGL_3$ be the labelled base, a connected complex analytic space on which $S_{10}$ acts (@not:d2-plane-sextic-base, @lem:d2-incidence-connected(2)), let $\bar B=[B/S_{10}]$ be the quotient stack, and let $s\in B$ map to $[s]\in\bar B$. Then:
 
-1. For every $\sigma\in S_{10}$ there is a path of $B$ from $s$ to $\sigma s$.
+1. For every $\sigma\in S_{10}$ there is a path (@def:path-connectedness) of $B$ from $s$ to $\sigma s$.
 2. The assignment that sends an orbifold loop $(\sigma,\tilde\gamma)$ of $\bar B$ at $[s]$ to $\sigma$ is a surjective homomorphism $\pi_1(\bar B,[s])\to S_{10}$ whose kernel is the image of $\pi_1(B,s)$; in particular
 $$1\too\pi_1(B,s)\too\pi_1(\bar B,[s])\too S_{10}\too1$$
 is exact.
@@ -635,7 +635,7 @@ Consequently the fundamental-group sequence of @lem:d2-label-lift(2) applies. Th
 
 *The fibre product.* The two actions commute, so $[B/S_{10}]\cong[V/(\SL_3\times S_{10})]$, and it suffices to prove the statement for the quotient map $X\to[X/H]$ of a stack $X$ by a finite group $H$. An object of $X\times_{[X/H]}X$ over a test space $T$ is a pair $(x,x')$ of objects of $X(T)$ together with an isomorphism of their images in $[X/H](T)$; such an isomorphism is an $H$-arrow; an $H$-equivariant automorphism of the trivial $H$-torsor is right multiplication by an $h\in H$, so the arrow determines $h$, and $x'\cong hx$. So the fibre product is $H\times X$ and the displayed morphism is an equivalence; $X\to[X/H]$ is then a torsor under $H$, hence finite étale of degree $\abs{H}$.
 
-*The exact sequence.* The fibre product above shows that $B\to\bar B$ is a torsor under the finite group $S_{10}$, and a quotient of a locally compact space by a finite group has the path-lifting and homotopy-lifting properties. With those two properties the fundamental-group sequence, including the existence of a path from $s$ to $\sigma s$ for each $\sigma$, is @lem:d2-label-lift(2), whose hypotheses are the connectedness of $B$ (@lem:d2-incidence-connected(2)) and the description of $\bar B$ as $[B/S_{10}]$.
+*The exact sequence.* The fibre product above shows that $B\to\bar B$ is a torsor under the finite group $S_{10}$, and a quotient of a locally compact space by a finite group has the path-lifting and homotopy-lifting properties. With those two properties the fundamental-group sequence, including the existence of a path (@def:path-connectedness) from $s$ to $\sigma s$ for each $\sigma$, is @lem:d2-label-lift(2), whose hypotheses are the connectedness of $B$ (@lem:d2-incidence-connected(2)) and the description of $\bar B$ as $[B/S_{10}]$.
 
 *The coarse spaces.* What is used above is the quotient stack, not its coarse space. A projectivity $g$ with $gZ=Z$ and $gp_i=p_{\sigma(i)}$ carries $(Z;p_1,\dots,p_{10})$ to $\sigma(Z;p_1,\dots,p_{10})$ in $V$, so it makes the image of $(Z;p_1,\dots,p_{10})$ in $B$ fixed by $\sigma$ in the stack sense; this is an orbifold point of $[B/S_{10}]$, and it does not affect the torsor statement, which is a statement about quotient stacks. No freeness of the $S_{10}$-action on $B$ is used above.
 :::

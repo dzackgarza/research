@@ -30,7 +30,7 @@ The $1$-cusp $35$ is the one whose closure contains the $0$-cusps $3$ and $5$, a
 
 ::: {.lemma #lem:fen2_normalization title="Normalization of $\fentwo$"}
 
-There exists a closed subscheme $X \subset \fttz$ such that $\fentwo$ is canonically isomorphic to the normalization of $X$.
+There exists a closed subscheme (@def:closed-subscheme) $X \subset \fttz$ such that $\fentwo$ is canonically isomorphic to the normalization of $X$.
 :::
 
 ::: {.proof}

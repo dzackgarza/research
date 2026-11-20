@@ -482,7 +482,7 @@ and indefinite (@def:definiteness) of signature $(1,8)$, and $M\cong\latI_{1,8}$
 
 (2) An even unimodular definite (@def:definiteness) lattice has rank divisible by $8$, so $M$, of rank $7$, is odd. The odd
 definite unimodular lattice of rank $7$ is unique by @thm:definite-unimodular-class-numbers and the first
-row of @tbl-unimodular-definite-class-numbers, for the negative-definite sign by the sign twist that theorem
+row of @tbl-unimodular-definite-class-numbers, for the negative-definite sign by the sign twist (@def:sign-twist-equivalence) that theorem
 records. So $M\cong\latI_{0,7}$.
 :::
 

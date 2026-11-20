@@ -136,7 +136,7 @@ and, in his coordinates $(x,y,z)=(A_1,A_2,A_0)$, parametrizes it by
 $$
 [u:v]\longmapsto[-v^6+3u^5v:\;u^6+3uv^5:\;-5u^3v^3]
 $$
-[@Dol18, §7, pp. 13--14]. The three forms have no common zero. The ten nodes already account for the total defect $\delta=10$ in the genus formula used to prove @lem:rational_sextic_ten_nodes, so they are the curve's only singularities. The Winger curve therefore belongs to $U$ and to $\Sigma_{10A_1}$. Every other member of $U$ likewise has exactly ten nodes by the same genus count. Since $\mathbb G$ is irreducible, the nonempty open set $U$ is dense in $B$.
+[@zotero-item-31353, §7, pp. 13--14]. The three forms have no common zero. The ten nodes already account for the total defect $\delta=10$ in the genus formula used to prove @lem:rational_sextic_ten_nodes, so they are the curve's only singularities. The Winger curve therefore belongs to $U$ and to $\Sigma_{10A_1}$. Every other member of $U$ likewise has exactly ten nodes by the same genus count. Since $\mathbb G$ is irreducible, the nonempty open set $U$ is dense in $B$.
 
 **Step 3: a triple smooth conic is in the closure.** The base-point-free net
 $$
@@ -177,7 +177,7 @@ In particular the **double smooth cubic is excluded**, rather than assigned to e
 ::: {.proof}
 **The image-cycle criterion.** Put $M=\overline M_{0,0}(\PP^2,6)$ and write $\Phi(\mu)=\mu_*[D]$ for the image cycle of a stable map $\mu:D\to\PP^2$, with multiplicities retained. Chen--Coskun's theorem [@CC11, Thm. 1.4, p. 4; proof pp. 9--10] makes this a morphism to $\operatorname{Chow}_{6,0,2}$. Fulton--Pandharipande [@FulPan97, §0.4, Thms. 1, 2 and 3, pp. 6--7, 11--12] show that $M$ is irreducible and that its smooth-domain locus is dense.
 
-Let $U\subset M$ consist of birational maps from $\PP^1$ whose images have only ordinary nodes. Transversality makes this condition open: a node has two regular identification equations at its preimage pair, compactness excludes new identifications away from those pairs and the diagonal, and the immersion condition is open. Dolgachev's Winger parametrization ([@Dol18, §7, pp. 13--14]) supplies a point of $U$, so $U$ is dense in $M$. Normalization gives $\Phi(U)=\Sigma_{10A_1}$: the image is an irreducible rational sextic, whose total $\delta$-invariant is $10$, and therefore has exactly ten $A_1$ singularities. Hence continuity and properness of $M$ give
+Let $U\subset M$ consist of birational maps from $\PP^1$ whose images have only ordinary nodes. Transversality makes this condition open: a node has two regular identification equations at its preimage pair, compactness excludes new identifications away from those pairs and the diagonal, and the immersion condition is open. Dolgachev's Winger parametrization ([@zotero-item-31353, §7, pp. 13--14]) supplies a point of $U$, so $U$ is dense in $M$. Normalization gives $\Phi(U)=\Sigma_{10A_1}$: the image is an irreducible rational sextic, whose total $\delta$-invariant is $10$, and therefore has exactly ten $A_1$ singularities. Hence continuity and properness of $M$ give
 $$
 \Phi(M)=\overline{\Sigma}_{10A_1}.
 $$
@@ -265,7 +265,7 @@ is the irreducible plane sextic
 $$
 F = 27x^5z+5x^3y^3+150x^2y^2z^2-120xyz^4+27y^5z+32z^6,
 $$
-which is the member at $(\lambda:\mu)=(27:5)$ of the pencil $\mu(xy+z^2)^3+\lambda z(x^5+y^5+z^5+5x^2y^2z-5xyz^3)$ of [@Dol18, §7, pp. 13--14], read with the correction recorded in the proof of @thm:coble-arrangement-nonempty; $\varphi$ is birational onto it.
+which is the member at $(\lambda:\mu)=(27:5)$ of the pencil $\mu(xy+z^2)^3+\lambda z(x^5+y^5+z^5+5x^2y^2z-5xyz^3)$ of [@zotero-item-31353, §7, pp. 13--14], read with $z^5$ appearing once in the quintic factor; $\varphi$ is birational onto it.
 
 The sextic has exactly ten singular points, all ordinary nodes. They lie in the chart $z = 1$; their $y$-coordinates are the roots of
 $$

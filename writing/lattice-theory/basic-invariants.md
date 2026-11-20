@@ -18,6 +18,17 @@ When $L$ is even (@def:even-lattice) every norm is even, so $L[a]$ is empty for 
 An integral lattice $L$ is *odd* if it is not even (@def:even-lattice), that is, if some $v\in L$ has odd norm (@def:lattice-basic-invariants) $\beta_L(v,v)$ [@Nik80, §1.1; @CS10, Ch. 2, §2].
 :::
 
+::: {.definition #def:induced-integral-lattice-structure title="Induced integral lattice structure" defines="induced integral lattice structure; induced integral lattice"}
+
+Let $L$ be a lattice (@def:lattice), with form $\beta_L$ extended bilinearly to $L\otimes\bQ$, and let $M\subseteq L\otimes\bQ$ be a subgroup that is free of finite rank.
+If $\beta_L(M,M)\subseteq\bZ$, the restriction $\beta_L|_{M\times M}$ makes $M$ an integral lattice (@def:lattice), the **integral lattice structure induced** on $M$ by $L$.
+:::
+
+::: {.definition #def:sign-twist-equivalence title="Sign-twist equivalence of lattices" defines="sign-twist equivalence of lattices; sign-twist equivalence; sign twist"}
+
+Two lattices $L$ and $M$ are **sign-twist equivalent** if $L\cong M$ or $L\cong M(-1)$, where $M(-1)$ is the twist (@def:form-twist) of $M$ by $-1$.
+:::
+
 ::: {.definition #def:lattice-divisibility title="Divisibility of a vector" defines="divisibility ideal; $I_v$; divisibility; $\div_L(v)$"}
 
 Let $v\in L$.

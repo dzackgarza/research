@@ -121,7 +121,7 @@ This is a computation in SageMath with exact rational arithmetic.
 ::: {.proposition #prop:sextic-equisingular-dimension title="Dimension of the space of sextics of a fixed singular type"}
 
 Let $Z$ be a reduced plane sextic with only simple singularities, with root lattices $R_1, \ldots, R_m$, and let $T$ be its singular type.
-Then $\PP\mcv_T$ (@not:sextic-singular-type) is a smooth irreducible quasi-projective variety of the expected dimension
+Then $\PP\mcv_T$ (@not:sextic-singular-type) is a smooth irreducible quasi-projective variety (@def:projective-variety) of the expected dimension
 $$
 \binom{6+2}{2} - 1 - \Sum_{i=1}^m \rank(R_i) = 27 - \Sum_{i=1}^m \rank(R_i)
 ,

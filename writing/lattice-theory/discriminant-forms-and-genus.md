@@ -64,6 +64,27 @@ An element $\zeta\in k$ with $\zeta^m=1$ for some integer $m\ge1$ is an $m$-th r
 If $m$ is not divisible by the characteristic of $k$ (@def:characteristic-of-field), the $m$-th roots of unity in an algebraic closure of $k$ form a cyclic group (@def:group) of order $m$, and a generator of it is a **primitive $m$-th root of unity**, that is, an $m$-th root of unity of exact (@def:exact-complex) multiplicative order $m$ [@Lan05, Ch. VI, §3].
 :::
 
+::: {.definition #def:maximal-real-subfield-cyclotomic title="Maximal real subfield of a cyclotomic field" defines="maximal real subfield of a cyclotomic field; maximal totally real subfield of a cyclotomic field; $K^+$"}
+
+Let $\zeta_n$ be a primitive $n$-th root of unity (@def:primitive-root-of-unity) in $\bC$ and let $K=\bQ(\zeta_n)$ be the cyclotomic field of $n$-th roots of unity.
+Complex conjugation restricts to the automorphism $\zeta_n\mapsto\zeta_n^{-1}$ of $K$.
+The subfield of real elements of $K$ is $K^+=\bQ(\zeta_n+\zeta_n^{-1})$, the **maximal real subfield** of $K$ [@DF04, §14.5, Exercise 7].
+:::
+
+::: {.definition #def:norm-element title="Norm element of a group ring" defines="norm element of a group ring; norm element"}
+
+Let $G$ be a finite group (@def:group).
+The **norm element** of the group ring $\bZ G$ is the sum $N=\sum_{g\in G}g$.
+It is central in $\bZ G$ and satisfies $hN=N=Nh$ for every $h\in G$ [@Wei94, 6.1.8].
+:::
+
+::: {.definition #def:nilpotency-index title="Index of nilpotency" defines="nilpotency index; index of nilpotency; nilpotent element"}
+
+An element $z$ of a ring is **nilpotent** if $z^t=0$ for some $t\ge1$.
+The **index of nilpotency** of $z$ is the smallest $t$ with $z^t=0$, so that $z^{t-1}\neq0$ [@Jac85, §4.4, exercises].
+For an endomorphism $N$ of a module, this is the least $t$ with $N^t=0$ in the ring of endomorphisms.
+:::
+
 ::: {.definition #def:minimal-prime-ideal title="Minimal prime ideal" defines="minimal prime ideal"}
 
 A prime ideal of a commutative (@def:operation-axioms) ring $A$ is a **minimal prime ideal** if it is a minimal element, for inclusion, of the set of prime ideals of $A$.
@@ -76,7 +97,7 @@ An element of the field of fractions $K$ of an integral domain $A$ is integral o
 The domain $A$ is **integrally closed** if every element of $K$ integral over $A$ lies in $A$ [@AM18, Ch. 5].
 :::
 
-::: {.definition #def:coble-discriminant-forms title="Length of a lattice" defines="length of a finite $\bZ$-module; $\ell(A)$; length of a lattice; $\ell(L)$"}
+::: {.definition #def:coble-discriminant-forms title="Length of a lattice" defines="length of a finite $\bZ$-module; minimal number of generators of a finite abelian group; $\ell(A)$; length of a lattice; $\ell(L)$"}
 
 For a finite $\bZ$-module $A$, let $\ell(A)$ be the minimal cardinality of a set of module generators of $A$ [@Nik80, §1.9].
 Define $\ell(L)\definedas\ell(A_L)$.

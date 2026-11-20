@@ -364,7 +364,7 @@ So $j(e_0)$ is nonnegative on every $(-2)$-curve, it has square $2$ and $j(e_0)\
 Let $\oF_2^R$ be the KSBA compactification of $F_2$ for the ramification divisor (@thm:degree-two-k3-semifan), and let $Z_P\iscontainedin F_2$ be as in @prop:coble-plane-model-space.
 
 1. For a Picard-general (@def:picard-general-coble) surface, let $X\to\bar X$ be the contraction of the ten curves $f^*E_i$ and $\bar R\iscontainedin\bar X$ the image of $\bar C$. Then $\bar X$ is the double plane branched along $B$, $\bar R$ is the ramification divisor of $\bar X\to\PP^2$, its pullback to $X$ is $\bar C+\sum_if^*E_i\in\abs{3e_0}$, and $(\bar X,\eps\bar R)$ is the pair that $\oF_2^R$ assigns to $(X,e_0)$. It is KSBA-stable, and so is the pair $\bigl(\PP^2,\tfrac{1+\eps}2B\bigr)$.
-2. The closure $\bar Z_P$ of $Z_P$ in $\oF_2^R$ is a closed subset (@def:closed-subset) of a projective variety whose points are KSBA-stable pairs, and $Z_P$ is open and dense in it.
+2. The closure $\bar Z_P$ of $Z_P$ in $\oF_2^R$ is a closed subset (@def:closed-subset) of a projective variety (@def:projective-variety) whose points are KSBA-stable pairs, and $Z_P$ is open and dense in it.
 :::
 
 ::: {.proof}
@@ -399,7 +399,7 @@ A second published statement applies to the divisor of (1): for a K3 surface wit
 Let $\overline{\fentwo}$ be the KSBA compactification (@def:ksba-compactification) of [@AEGS25, Def. 2.10, arXiv v2 p. 8], let $\overline{\fentwo}^{\mcf}$ be the semitoroidal compactification (@def:semitoroidal-compactification) that is its normalization [@AEGS25, Thm. 5.9, arXiv v2 p. 31], and let $\Delta_2\definedas\mch_{-2}/\gent\iscontainedin\fentwo$ be the Coble divisor.
 
 1. For an unnodal (@def:nodal-enriques-surface) surface $S$ with a degree-$2$ polarization $h$, the pair $\bigl(S,\tfrac12C+\eps W\bigr)$ of @thm:coble-pair-ksba is KSBA-stable, where $W$ is the fixed curve of the deck transformation of the map given by $\abs{2h}$. A Picard-general (@def:picard-general-coble) surface is unnodal (@lem:coble-k3-negative-curves(4)).
-2. The image $\bar\Delta$ of the closure $W_\Delta$ of $\Delta_2$ in $\overline{\fentwo}^{\mcf}$ is a closed subset (@def:closed-subset) of the projective variety $\overline{\fentwo}$, whose points are KSBA-stable pairs (@def:ksba-compactification).
+2. The image $\bar\Delta$ of the closure $W_\Delta$ of $\Delta_2$ in $\overline{\fentwo}^{\mcf}$ is a closed subset (@def:closed-subset) of the projective variety (@def:projective-variety) $\overline{\fentwo}$, whose points are KSBA-stable pairs (@def:ksba-compactification).
 3. The normalization of $W_\Delta$ is a normal compactification of $\bD(T_\Co)/R_{\gent}$, and it maps finitely onto $\bar\Delta$. This map is birational exactly when the map $\fentwo\to\overline{\fentwo}$ is generically injective (@def:injective-map) on $\Delta_2$.
 :::
 

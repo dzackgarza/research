@@ -56,5 +56,5 @@ Let $B$ be the closure of the image of $\fentwo$ in $\ksbacpt{\fttz}$ (@prop:enr
 
 ::: {.conjecture #conj:descent_semitoroidal_data_En2 title="Projectivity of $\normalize{B}$"}
 
-The normalization $\normalize{B}$ of the Noether--Lefschetz closure (@def:nl-locus-enriques) $B$ is a projective variety.
+The normalization $\normalize{B}$ of the Noether--Lefschetz closure (@def:nl-locus-enriques) $B$ is a projective variety (@def:projective-variety).
 :::

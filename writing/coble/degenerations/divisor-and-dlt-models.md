@@ -35,7 +35,7 @@ $$
 holds.
 
 The quotient $Y = X/\iota$ has branch divisor $B$ and image boundary $C = \pi(D)$, where $\pi\colon X \to Y$ is the quotient map.
-The pair $(Y, C)$ is a log del Pezzo surface (@def:degree-of-del-pezzo-surface) of index (@def:index) at most $2$, satisfying
+The pair $(Y, C)$ is a log del Pezzo surface (@def:index-of-log-del-pezzo-surface) (@def:degree-of-del-pezzo-surface) of index (@def:index) at most $2$, satisfying
 $$
 K_X + D + \eps R = \pi^*\left( K_Y + C + \frac{1+\eps}{2}B \right)
 ,

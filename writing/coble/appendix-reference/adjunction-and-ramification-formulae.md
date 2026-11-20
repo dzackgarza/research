@@ -43,7 +43,7 @@ $q(X)$; the image of integral cohomology is a full lattice
 
 ::: {.proposition #prop:canonical-class-of-blowup title="Canonical class of a blowup"}
 
-Let $X$ be a nonsingular variety, let $V\iscontainedin X$ be a nonsingular subvariety of codimension $r\geq 2$, let $f\colon Y = \Bl_V X\to X$ be the blowup of $X$ along $V$, and let $E = f^{-1}(V)$.
+Let $X$ be a nonsingular variety, let $V\iscontainedin X$ be a nonsingular subvariety (@def:closed-subvariety) of codimension $r\geq 2$, let $f\colon Y = \Bl_V X\to X$ be the blowup of $X$ along $V$, and let $E = f^{-1}(V)$.
 Then
 $$
 K_Y = f^* K_X + (r - 1)E

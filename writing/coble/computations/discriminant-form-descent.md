@@ -95,7 +95,7 @@ $$ (q^{-1}Hq\cap F)\bigl\backslash F\bigl/S. $$
 ::: {.proof}
 Let $y\in\mathcal F_{\mathcal X}(D)$. Since $\mathcal X$ is one $\Orth(L)$-orbit, some $g\in\Orth(L)$ satisfies $gx=y$. Equivariance gives $\rho_{L,q}(g)D=D$, hence $g\in\mathcal G_D$. Therefore $\mathcal G_D$ acts transitively on the fibre.
 
-The full group (@def:group) $\Gamma$ need not preserve the fibre over $D$. Its subgroup $\Gamma_D=\Gamma\cap\mathcal G_D$ does, and the transitive $\mathcal G_D$-action on that fibre has stabilizer (@def:group-orbit) $\mathcal G_D(x)$. Thus the $\Gamma_D$-orbits are the displayed double cosets. If $K\subseteq\Gamma$, reduction modulo $K$ is faithful on these double cosets: the group $\mathcal G_D$ is $\rho^{-1}(F)$, $\Gamma\cap\mathcal G_D$ is $\rho^{-1}(H\cap F)$, and $\mathcal G_D(x)$ maps to $S$. Conjugation by $\widetilde q$ identifies the new fibre with the old one and replaces $H$ by $q^{-1}Hq$; the order of a double-coset family is therefore independent of the chosen representative and lift. To classify the orbits of the **full** $\Gamma$ on $\mathcal X$, take one datum from each $H$-orbit on the finite data attained by $\mathcal X$ and use the corresponding fibre-orbit sets, as in @cor:descent-finite-orbit-sum.
+The full group (@def:group) $\Gamma$ need not preserve the fibre over $D$. Its subgroup $\Gamma_D=\Gamma\cap\mathcal G_D$ does, and the transitive $\mathcal G_D$-action on that fibre has stabilizer (@def:group-orbit) $\mathcal G_D(x)$. Thus the $\Gamma_D$-orbits are the displayed double cosets. If $K\subseteq\Gamma$, reduction modulo $K$ is faithful on these double cosets: the group $\mathcal G_D$ is $\rho^{-1}(F)$, $\Gamma\cap\mathcal G_D$ is $\rho^{-1}(H\cap F)$, and $\mathcal G_D(x)$ maps to $S$. Conjugation by $\widetilde q$ identifies the new fibre with the old one and replaces $H$ by $q^{-1}Hq$; the order of a double-coset family is therefore independent of the chosen representative and lift. To classify the orbits of the **full** $\Gamma$ on $\mathcal X$, take one datum from each $H$-orbit on the finite data attained by $\mathcal X$ and use the corresponding fibre-orbit sets.
 :::
 
 ::: {.corollary #cor:descent-finite-orbit-sum title="The sum over finite orbits"}
@@ -708,7 +708,7 @@ $$
 $$
 and, when $L$ is even, $\kappa_{L,q}\definedas(\rho_{L,q},\det,\spinornorm_\bR)\colon\Orth(L)\to\Orth(A_{L,q})\times\theset{\pm1}^2$, so that $\kappa_L=(j_q\times\id)\circ\kappa_{L,q}$ for the forgetful monomorphism $j_q$ of @def:discriminant-rep.
 
-The three components have three different domains, and @thm:schreier-joint-image evaluates them one by one:
+The three components have three different domains:
 
 - $\rho_L$, respectively $\rho_{L,q}$ when $L$ is even, is defined on $\Orth(L)$ and on nothing larger: it needs an isometry carrying $L$ to itself;
 - $\det$ is the determinant of the underlying $\bQ$-linear automorphism, defined on all of $\Orth(V)$;

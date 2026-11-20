@@ -50,7 +50,7 @@ Conversely, a homomorphism $\varphi\colon G\to S_A$ defines the action $g\cdot a
 
 ::: {.definition #def:commutative-diagram title="Commutative diagrams" defines="commutative diagram; commutes"}
 
-A diagram (@def:diagram) presented as a directed graph (@def:free-category) of morphisms in a category *commutes* if any two paths of composable arrows in the graph with the same source (@def:globular-boundary) and the same target (@def:globular-boundary) have the same composite; the diagram is then a *commutative diagram* [@Rie16, §1.6].
+A diagram (@def:diagram) presented as a directed graph (@def:free-category) of morphisms in a category *commutes* if any two paths (@def:path-connectedness) of composable arrows in the graph with the same source (@def:globular-boundary) and the same target (@def:globular-boundary) have the same composite; the diagram is then a *commutative diagram* [@Rie16, §1.6].
 :::
 
 ::: {.definition #def:diagonal-morphism title="The diagonal morphism" defines="diagonal morphism; diagonal map"}

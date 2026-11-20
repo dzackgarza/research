@@ -856,7 +856,7 @@ $B$ is open because the node condition is the vanishing of the coefficient of $x
 
 ::: {.proposition #prop:one-node-connected title="The one-node locus is path-connected: any two members lie on a pencil meeting the bad strata in finitely many points"}
 
-Let $H = \set{f(p) = 0}\subset\abs{\OO_Y(4,4)}^\tau$, of dimension $11$ since evaluation at $p$ is a nonzero functional, and let $B\subset H$ be the members whose branch curve is smooth away from $p$ and has a nondegenerate (@def:polarization) node at $p$, exactly the locus of @prop:one-node-family. Then $B$ is nonempty, and for any $f_0,f_1\in B$ the pencil through them meets the complement of $B$ in at most finitely many points, so $f_0$ and $f_1$ lie in one path-connected subfamily of $B$.
+Let $H = \set{f(p) = 0}\subset\abs{\OO_Y(4,4)}^\tau$, of dimension $11$ since evaluation at $p$ is a nonzero functional, and let $B\subset H$ be the members whose branch curve is smooth away from $p$ and has a nondegenerate (@def:polarization) node at $p$, exactly the locus of @prop:one-node-family. Then $B$ is nonempty, and for any $f_0,f_1\in B$ the pencil through them meets the complement of $B$ in at most finitely many points, so $f_0$ and $f_1$ lie in one path-connected (@def:path-connectedness) subfamily of $B$.
 :::
 
 ::: {.proof}
@@ -868,7 +868,7 @@ Write $\ell\subset\abs{\OO_Y(4,4)}$ for the projective line through $f_0$ and $f
 
 Each of those closed loci is therefore a finite subset of $\ell$, as is their union.
 The curve of @ex:one-node-branch-curve lies in $B$, so $B\ne\varnothing$.
-A projective line with finitely many points removed is path-connected, so $f_0$ and $f_1$ are joined by a path in $\ell\cap B$.
+A projective line with finitely many points removed is path-connected, so $f_0$ and $f_1$ are joined by a path (@def:path-connectedness) in $\ell\cap B$.
 :::
 
 ::: {.theorem #thm:a21-labels title="The labels of any two tuples of the one-node direct-projective construction are conjugate"}
@@ -879,12 +879,12 @@ $$\gamma S_{\Co} = S'_{\Co},\qquad \gamma S_{\mathrm{dP}} = S'_{\mathrm{dP}},\qq
 
 ::: {.proof}
 
-By @prop:one-node-connected both parameter points lie in one connected $B$, so they are joined by a path; the family of @prop:one-node-family is smooth and proper over $B$ with $\mathcal H$ and $\mathcal D$ flat; @thm:one-node-transport applied to the path gives the conclusion.
+By @prop:one-node-connected both parameter points lie in one connected $B$, so they are joined by a path (@def:path-connectedness); the family of @prop:one-node-family is smooth and proper over $B$ with $\mathcal H$ and $\mathcal D$ flat; @thm:one-node-transport applied to the path gives the conclusion.
 :::
 
 ::: {.theorem #thm:one-node-transport title="Parallel transport preserves the lattice labels"}
 
-In the situation of @prop:one-node-family let $\theta$ be a path in $B$ from $b$ to $b'$, and let $\psi_\theta\colon H^2(\widehat X_b,\ZZ)\iso H^2(\widehat X_{b'},\ZZ)$ be the Gauss–Manin parallel transport (@cons:calculus-transport). Then $\psi_\theta H_b = H_{b'}$, $\psi_\theta\alpha_b = \alpha_{b'}$, and $\psi_\theta$ intertwines $\widehat\iota_{\Co,b},\widehat\iota_{\mathrm{dP},b}$ with $\widehat\iota_{\Co,b'},\widehat\iota_{\mathrm{dP},b'}$; hence, after markings, there is $\gamma\in\Orth(\lkt)$ with
+In the situation of @prop:one-node-family let $\theta$ be a path (@def:path-connectedness) in $B$ from $b$ to $b'$, and let $\psi_\theta\colon H^2(\widehat X_b,\ZZ)\iso H^2(\widehat X_{b'},\ZZ)$ be the Gauss–Manin parallel transport (@cons:calculus-transport). Then $\psi_\theta H_b = H_{b'}$, $\psi_\theta\alpha_b = \alpha_{b'}$, and $\psi_\theta$ intertwines $\widehat\iota_{\Co,b},\widehat\iota_{\mathrm{dP},b}$ with $\widehat\iota_{\Co,b'},\widehat\iota_{\mathrm{dP},b'}$; hence, after markings, there is $\gamma\in\Orth(\lkt)$ with
 $$\gamma S_{\Co,b} = S_{\Co,b'},\qquad \gamma S_{\mathrm{dP},b} = S_{\mathrm{dP},b'},\qquad \gamma H_b = H_{b'},\qquad \gamma\alpha_b = \alpha_{b'}.$$
 :::
 
@@ -1731,7 +1731,7 @@ In the marking of @thm:theta-co-coordinates:
 
 1. The two polarization (@def:numerical-polarization) classes are one vector: $\tilde h_\Co = h_\En = H = e_2+e_3+e_4+e_5$, of square $4$, and $\theta_\Co(H) = -H$ while $I_\Co(H) = H$; $\tilde h_\Co = h_\En$ holds in every marking, both being the class $H$ of @prop:coble-cover-marking and @prop:coble-enriques-ambient-isometry(3).
 2. The lattice $\bar T_{\mathrm{dP}} = U\oplus E_8^2 = (18,0,0)_1$ of the $0$-cusp to which the Coble $0$-cusp maps (@lem:cusp_map_dP) has two copies in this marking, $$W = U_2\oplus E_{8,1}\oplus E_{8,2}\quad\text{and}\quad W' = U_3\oplus E_{8,1}\oplus E_{8,2},$$ each spanned by eighteen standard basis vectors, even of rank $18$, determinant $-1$ and signature $(1,17)$, that is $U\oplus E_8^2 = (18,0,0)_1$, the unique even unimodular lattice of that signature; $\theta_\Co$ carries $W$ to $W'$, and $H$ lies in neither.
-3. The nineteen roots of the Coxeter diagram of $(18,0,0)_1$ in $W$, in the standard basis, are $$w_1,\dots,w_7 = \alpha_1,\alpha_3,\alpha_4,\alpha_5,\alpha_6,\alpha_7,\alpha_8,\qquad w_8 = \omega_8+e_2,\qquad w_9 = e_3-e_2,\qquad w_{10} = \tilde\omega_8+e_2,$$ $$w_{11},\dots,w_{17} = \tilde\alpha_8,\tilde\alpha_7,\tilde\alpha_6,\tilde\alpha_5,\tilde\alpha_4,\tilde\alpha_3,\tilde\alpha_1,\qquad w_{18} = \alpha_2,\qquad w_{19} = \tilde\alpha_2,$$ where $\alpha_i = e_{5+i}$ are the Bourbaki simple roots of $E_{8,1}$, $\tilde\alpha_i = e_{13+i}$ those of $E_{8,2}$, and $\omega_8$, $\tilde\omega_8$ the fundamental weights (@def:coroot-weight) dual to $\alpha_8$, $\tilde\alpha_8$. Every one has square $-2$, and their Gram matrix is the diagram's: a tree on nineteen nodes all of whose bonds --- in Bourbaki's word for the edges of a Coxeter graph (@def:coxeter-form) [@Bou08, Ch. VI §4] --- are of label $3$, its two $E_8$ branches being the $\alpha$-chains with $\alpha_2$ hanging off $\alpha_4$, joined through the path $w_8-w_9-w_{10}$.
+3. The nineteen roots of the Coxeter diagram of $(18,0,0)_1$ in $W$, in the standard basis, are $$w_1,\dots,w_7 = \alpha_1,\alpha_3,\alpha_4,\alpha_5,\alpha_6,\alpha_7,\alpha_8,\qquad w_8 = \omega_8+e_2,\qquad w_9 = e_3-e_2,\qquad w_{10} = \tilde\omega_8+e_2,$$ $$w_{11},\dots,w_{17} = \tilde\alpha_8,\tilde\alpha_7,\tilde\alpha_6,\tilde\alpha_5,\tilde\alpha_4,\tilde\alpha_3,\tilde\alpha_1,\qquad w_{18} = \alpha_2,\qquad w_{19} = \tilde\alpha_2,$$ where $\alpha_i = e_{5+i}$ are the Bourbaki simple roots of $E_{8,1}$, $\tilde\alpha_i = e_{13+i}$ those of $E_{8,2}$, and $\omega_8$, $\tilde\omega_8$ the fundamental weights (@def:coroot-weight) dual to $\alpha_8$, $\tilde\alpha_8$. Every one has square $-2$, and their Gram matrix is the diagram's: a tree on nineteen nodes all of whose bonds --- in Bourbaki's word for the edges of a Coxeter graph (@def:coxeter-form) [@Bou08, Ch. VI §4] --- are of label $3$, its two $E_8$ branches being the $\alpha$-chains with $\alpha_2$ hanging off $\alpha_4$, joined through the path (@def:path-connectedness) $w_8-w_9-w_{10}$.
 4. $I_\Co = -\theta_\Co$ carries these nineteen roots to the nineteen roots of the same diagram in $W'$, node $k$ to node $18-k$ for $k\le 8$, $w_{18}$ to $w'_{19}$ and $w_{19}$ to $w'_{18}$, and fixes $w_9$: an involution of the diagram exchanging its two $E_8$ branches, which is the reflection $J\colon\alpha_k\mapsto\alpha_{20-k}$ of [@AEGS25, Lemma 3.9] read across the two copies. The folded roots (@def:folded-root) $w_k+w_{18-k}$ for $k\le 8$, $w_9$ and $w_{18}+w_{19}$ have norms $(-4^{\times 8},-2,-4)$, the entries of the folded diagram of cusp $2$ in [@AEGS25, Fig. 7].
 5. The polarization meets exactly two of the nineteen roots: $H\cdot w = 0$ for the sixteen $E_8$-roots and $H\cdot w_8 = H\cdot w_{10} = 1$, and the same holds for the copy in $W'$; the Heegner vector $\delta = e_0-e_1$ is orthogonal to all nineteen roots of both copies.
 :::
@@ -1938,7 +1938,7 @@ In this section $T_\Co = B(2)$ with $B\cong\latI_{2,9}$ (@prop:tco-as-twist), so
 
 (2) An isotropic class lies in the subgroup $A^0$ of @prop:coble-discriminant-group: $A_{T_\Co}=\ZZ k\perp A^0$ with $q(k)=\tfrac12$, so a class outside $A^0$ is $k+a$ with $q(k+a)=\tfrac12+q(a)\in\tfrac12+\ZZ/2\ZZ$, never $0$. Also $A^0\cong A_{E_{10}(2)} = A_{U(2)}\perp A_{E_8(2)}$, with $\Orth(q)\iso\Orth(q_{A^0})$ by restriction. So by @lem:coble-discriminant-blocks(2) the nonzero isotropic classes number $527$ and form one $\Orth(q)$-orbit.
 
-*The full discriminant surjectivity.* The representation $\rho_{T_\Co}\colon\Orth(T_\Co)\too\Orth(q_{T_\Co})$ is **onto**. This is Nikulin's theorem for an even indefinite $2$-elementary lattice, applied to $T_\Co=B(2)$: [@Nik80, Theorem 3.6.3] (@thm:two-elementary-surjectivity). It is the surjectivity onto the orthogonal group of the full discriminant group $A_{T_\Co}=B/2B$; the surjectivity used in @lem:cusp-vector-stabilizer-image(1) is the separate instance for the complement $K(2)$.
+*The full discriminant surjectivity.* The representation $\rho_{T_\Co}\colon\Orth(T_\Co)\too\Orth(q_{T_\Co})$ is **onto**. This is Nikulin's theorem for an even indefinite $2$-elementary lattice, applied to $T_\Co=B(2)$: [@Nik80, Theorem 3.6.3] (@thm:two-elementary-surjectivity). It is the surjectivity onto the orthogonal group of the full discriminant group $A_{T_\Co}=B/2B$; the surjectivity for the complement $K(2)$ is a separate instance.
 
 *Every class occurs.* Let $S\definedas\theset{[v/2] : v\in T_\Co\ \text{primitive isotropic}}$. The set $S$ is nonempty: in the diagonal (@def:polarization-functors) model $B=\latI_{2,9}$ the vector $e_0+e_2$ has $e_0^2=1$, $e_2^2=-1$ and primitive coordinates, so it is a primitive isotropic vector (@def:isotropic-subspace) of $B=T_\Co$. By (1) each element of $S$ is a nonzero isotropic class. For $g\in\Orth(T_\Co)$ and $v$ primitive isotropic, $gv$ is primitive isotropic and $[gv/2]=\rho_{T_\Co}(g)[v/2]$ by (1); since $\rho_{T_\Co}$ is onto, $S$ is stable under all of $\Orth(q)$. A nonempty $\Orth(q)$-stable subset of the single orbit (@def:group-orbit) of @lem:coble-discriminant-blocks(2) is that orbit. Therefore $S$ is exactly the $527$ nonzero isotropic classes, and these form one $\Orth(q)$-orbit.
 :::
@@ -2363,7 +2363,7 @@ There is a **56-element ordinary generating family (@def:generating-frame)** $S\
 $$
 \generators{S}\,\Gamma(16)=\Gamma(2).
 $$
-In fact $S$ consists of the 26 proved generators of the integral level-two plane stabilizer (@def:group-orbit) $K_P$ from @prop:coble-level-two-plane-parabolic, together with 30 explicitly selected conjugates $g_i k_j g_i^{-1}$ for $10\le i\le15$ and $k_j\in K_P$, where $g_i$ are the published ambient Eichler generators. The 56 matrices first generate the full finite congruence quotient; their **ordinary generation of the entire infinite group** is established separately in @thm:coble-fifty-six-ordinary-full-kernel-generation, so the lattice-database `generator_morphisms` field may use this certified family. Moreover, **56 is a sharp lower bound for the number of ordinary generators of $\Gamma(2)$**: its quotient $\Gamma(2)/\Gamma(4)\cong(\ZZ/2)^{56}$ requires at least 56 generators. Thus this family attains the minimum (@def:definite-minimum-shell) possible cardinality for an ordinary generating family of the full infinite group.
+In fact $S$ consists of the 26 proved generators of the integral level-two plane stabilizer (@def:group-orbit) $K_P$ from @prop:coble-level-two-plane-parabolic, together with 30 explicitly selected conjugates $g_i k_j g_i^{-1}$ for $10\le i\le15$ and $k_j\in K_P$, where $g_i$ are the published ambient Eichler generators. The 56 matrices first generate the full finite congruence quotient; their **ordinary generation of the entire infinite group** is established separately, so the lattice-database `generator_morphisms` field may use this certified family. Moreover, **56 is a sharp lower bound for the number of ordinary generators of $\Gamma(2)$**: its quotient $\Gamma(2)/\Gamma(4)\cong(\ZZ/2)^{56}$ requires at least 56 generators. Thus this family attains the minimum (@def:definite-minimum-shell) possible cardinality for an ordinary generating family of the full infinite group.
 :::
 
 ::: {.proof}
@@ -2382,7 +2382,7 @@ Moreover $K$ has full image in $\Gamma(2)/\Gamma(2^k)$ for **every** $k\ge1$. Th
 $$
 2\cdot3^{25}\prod_{i=1}^{5}(3^{2i}-1)=305\,831\,171\,736\,479\,457\,253\,785\,600.
 $$
-The source-hashed result is `computations/reports/coble_kernel_fifty_six_mod_three_image.json`, regenerated by `coble_kernel_fifty_six_odd_image_audit.py`; its integrity is checked by `test_coble_fifty_six_mod_three_full_orthogonal_image_certificate`. The finite-index and congruence calculations alone do not establish $K=\Gamma(2)$; the missing noncongruence obstruction is eliminated by the spin-cover CSP argument in @thm:coble-fifty-six-ordinary-full-kernel-generation.
+The source-hashed result is `computations/reports/coble_kernel_fifty_six_mod_three_image.json`, regenerated by `coble_kernel_fifty_six_odd_image_audit.py`; its integrity is checked by `test_coble_fifty_six_mod_three_full_orthogonal_image_certificate`. The finite-index and congruence calculations alone do not establish $K=\Gamma(2)$; the missing noncongruence obstruction is eliminated by the spin-cover CSP argument that follows.
 :::
 
 ::: {.proof}
@@ -2501,7 +2501,7 @@ By @cor:coble-level-two-kernel-split-extension, $\Gamma(2)=E_2\rtimes\generators
 
 ::: {.theorem #thm:coble-positive-kernel-ninety-five-generators title="Ninety-five explicit ordinary generators of the positive Coble discriminant kernel"}
 
-The subgroup $\widetilde O^+(T_\Co)=\Gamma(2)\cap\ker(\operatorname{sn}_{\mathbb R})$ is generated **as an ordinary infinite integral group** by the **95 exact integral matrices** in the source-hashed certificate `computations/reports/coble_kernel_positive_schreier_generators.json`. They are obtained by an index-two Reidemeister--Schreier construction from the 56 ordinary generators of @thm:coble-fifty-six-ordinary-full-kernel-generation; no cosets of the enormous discriminant image are enumerated. The smaller, **provably minimal 55-generator family** is established in @thm:coble-positive-fifty-five-full-generation.
+The subgroup $\widetilde O^+(T_\Co)=\Gamma(2)\cap\ker(\operatorname{sn}_{\mathbb R})$ is generated **as an ordinary infinite integral group** by the **95 exact integral matrices** in the source-hashed certificate `computations/reports/coble_kernel_positive_schreier_generators.json`. They are obtained by an index-two Reidemeister--Schreier construction from the 56 ordinary generators of @thm:coble-fifty-six-ordinary-full-kernel-generation; no cosets of the enormous discriminant image are enumerated.
 :::
 
 ::: {.proof}
@@ -2889,7 +2889,7 @@ and the count for $\Gamma_\Co$ is $189\,720$, since $\Gamma_\Co$ is the stable g
 :::
 
 ::: {.proof}
-Items 1 and 2 are the plane column of @cor:coble-eight-standard-line-counts, and item 3 is @cor:coble-heegner-integral-plane-descent; the last sentence is @thm:plane-fibre(3) with @thm:plane-transitivity-tco for $F^{\mathrm{un}}_\Co$. So no count here rests on a row. What the rows are is a reproduction of each, through the group the entry point builds, and each is named by the record that prints it, by path and line on sage-extensions `main`. The four rows are `tests/coble_gamma_co_2_incidence_rows.py:620`'s labels `O`, `Gamma_{Co,2}`, `Otilde` and `Otilde+`:
+Items 1 and 2 are the plane column of @cor:coble-eight-standard-line-counts, and item 3 is @cor:coble-heegner-integral-plane-descent; the last sentence is @thm:plane-fibre(3) with @thm:plane-transitivity-tco for $F^{\mathrm{un}}_\Co$. So no count here rests on a row. What the rows are is a reproduction of each, through the group the entry point builds, and each is named by the record that prints it, by path (@def:path-connectedness) and line on sage-extensions `main`. The four rows are `tests/coble_gamma_co_2_incidence_rows.py:620`'s labels `O`, `Gamma_{Co,2}`, `Otilde` and `Otilde+`:
 
 | group | orbits | the public call, and where it is made | the record that prints the count |
 | --- | ---: | --- | --- |
@@ -3103,7 +3103,7 @@ Let $T_\Co = B(2)$ and let $h(g)\in\End_{\F_2}(B/2B)$ be defined by $g = \id + 2
 2. $h(\delta_{E_8})$ is the projection onto the eight $E_8(2)$-coordinates, so it is nonzero, and it lies in the $\F_2$-span of the $h(s_v)$, which has dimension $56$;
 3. hence no linear functional $\lambda$ of $h$ takes the value $0$ on $W(T_\Co)$ and a nonzero value at $\delta_{E_8}$: the shadow separates neither $\delta_{E_8}$ from $W(T_\Co)$ nor its negation. That limitation is now immaterial: $\delta_{E_8}\in W(T_\Co)$ and so do $\iota$ and $\epsilon$ (@thm:coble-block-sign-in-w), and the span of the $h(s_v)$, which contains all three, was never going to distinguish them.
 
-So the level-two information was consistent with both answers to (REL)'s query and could decide neither; the query is now decided by an arithmetic argument of a different kind (@thm:coble-block-sign-in-w). That rules out the level-two family of arguments; the other natural attempt, through the longest element of $W(E_8)$, is closed in @rmk:longest-element-route-closed, and the level-four reduction of @lem:block-sign-reduces-to-gamma-four is no longer needed for the answer. The orientation (@def:free-module-orientation) test is exhausted as well: on the positive definite plane $\langle\zeta, e'+f'\rangle$ the quantity $\det(\pi_W g|_W)$ of @prop:spinor-norm-orientation-classes(4) is positive for the word $w$, for $\delta_{E_8}$ and for the residual $k$ alike ($1\,485\,620\,920\,945$, $1$ and $1\,485\,620\,920\,945$), so $\Orth^+$ separates none of them.
+So the level-two information was consistent with both answers to (REL)'s query and could decide neither; the query is now decided by an arithmetic argument of a different kind (@thm:coble-block-sign-in-w). That rules out the level-two family of arguments; the other natural attempt, through the longest element of $W(E_8)$, is closed in @rmk:longest-element-route-closed, and a level-four reduction is no longer needed for the answer. The orientation (@def:free-module-orientation) test is exhausted as well: on the positive definite plane $\langle\zeta, e'+f'\rangle$ the quantity $\det(\pi_W g|_W)$ of @prop:spinor-norm-orientation-classes(4) is positive for the word $w$, for $\delta_{E_8}$ and for the residual $k$ alike ($1\,485\,620\,920\,945$, $1$ and $1\,485\,620\,920\,945$), so $\Orth^+$ separates none of them.
 :::
 
 ::: {.proof}

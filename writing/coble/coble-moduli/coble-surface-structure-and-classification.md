@@ -36,7 +36,7 @@ If $E$ is a component of $C$, then $E$ is a boundary component and $E^2 = -4$ by
 ::: {.theorem #thm:coble-aut-lattice title="Coble's theorem, lattice form"}
 
 Let $S$ be the blowup of $\PP^2$ at the ten nodes of an irreducible rational plane sextic whose singular points are ordinary nodes, and let $M_S \definedas K_S^{\perp\, \Pic(S)}$.
-The Cremona equivalence class (@def:equivalence-relation) of such a sextic is the union of finitely many projective equivalence classes.
+The Cremona equivalence class (@def:cremona-equivalence-of-sextics) (@def:equivalence-relation) of such a sextic is the union of finitely many projective equivalence classes.
 Then $\Aut(S)$ is isomorphic to a subgroup of finite index (@def:index) in $\Orth(M_S)$.
 For a general such sextic, this subgroup is isomorphic to the congruence subgroup of level $2$ of $\Orth(M_S)/\theset{\pm1}$, and $\Orth(M_S)/\theset{\pm1}$ is isomorphic to the Weyl group (@def:weyl-group) $W(E_{10})$ [@DZ99, Introduction].
 :::

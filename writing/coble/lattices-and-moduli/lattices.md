@@ -72,7 +72,7 @@ $$
 $$
 
 and thus an embedding $\fco \injects \fttz$.
-The three matrices, in the standard basis of the marking of @thm:theta-co-coordinates, are @thm:chain-matrices.
+The three matrices, in the standard basis of the marking of @thm:theta-co-coordinates, are displayed later in the book.
 :::
 
 ::: {.proof}
@@ -105,7 +105,7 @@ Similarly, by [@Nik80 Cor. 1.5.2, Thm. 3.6.3], the homomorphism $\Orth(\lkt)\to 
 
 ::: {.lemma #lem:locally_closed_embedding_BB}
 
-The embeddings of lattices $\eta: T_\Co\injects T_\En$ (resp. $T_{\Co} \injects \tdp$) induce locally closed embeddings $\fco \injects \fen$ (resp. $\fco \injects \fttz$) which extend to morphisms on the Baily--Borel compactifications.
+The embeddings of lattices $\eta: T_\Co\injects T_\En$ (resp. $T_{\Co} \injects \tdp$) induce locally closed (@def:locally-closed-subset) embeddings $\fco \injects \fen$ (resp. $\fco \injects \fttz$) which extend to morphisms on the Baily--Borel compactifications.
 :::
 
 ::: {.proof}
@@ -169,11 +169,11 @@ The two-way form that (PL) and (MG) would give is superseded by @thm:gamma-co-is
 
 ::: {.lemma #lem:orbifold-monodromy-of-a-quotient title="Monodromy of the tautological local system of a quotient orbifold"}
 
-Let $\widetilde U$ be a connected topological space, let $\Gamma$ be a group (@def:group) acting on it, and let $T$ be a $\Gamma$-module. Put $U\definedas\widetilde U/\Gamma$ with the quotient orbifold structure, and let
+Let $\widetilde U$ be a connected topological space, let $\Gamma$ be a group (@def:group) acting on it, and let $T$ be a $\Gamma$-module. Put $U\definedas\widetilde U/\Gamma$ with the quotient orbifold structure (@def:orbifold-quotient-structure), and let
 $$\bT\definedas(\widetilde U\times T)/\Gamma$$
 be the quotient of the trivial local system by the diagonal action. Then $\bT$ is a local system on the orbifold $U$ with fibre $T$, and its monodromy representation (@def:transport-and-monodromy) is
 $$\pi_1^{\mathrm{orb}}(U,\tilde x)\too\Aut(T),\qquad (g,[\widetilde\gamma])\longmapsto g,$$
-where an orbifold loop based (@def:based-module) at $x=[\tilde x]$ is a pair $(g,\widetilde\gamma)$ with $g\in\Gamma$ and $\widetilde\gamma$ a path in $\widetilde U$ from $\tilde x$ to $g\tilde x$. Its image is $\Gamma$ and its kernel (@def:kernel-cokernel) is $\pi_1(\widetilde U,\tilde x)$; in particular
+where an orbifold loop based (@def:based-module) at $x=[\tilde x]$ is a pair $(g,\widetilde\gamma)$ with $g\in\Gamma$ and $\widetilde\gamma$ a path (@def:path-connectedness) in $\widetilde U$ from $\tilde x$ to $g\tilde x$. Its image is $\Gamma$ and its kernel (@def:kernel-cokernel) is $\pi_1(\widetilde U,\tilde x)$; in particular
 $$1\too\pi_1(\widetilde U,\tilde x)\too\pi_1^{\mathrm{orb}}(U,\tilde x)\too\Gamma\too1$$
 is exact (@def:exact-complex).
 :::
@@ -200,7 +200,7 @@ This is the monodromy of the tautological local system and is not $\Gamma_\Co$ o
 $$\Stab_{\Orth(T_\Co)}(\bD^+)=\Theta_\bR(T_\Co)=\Orth^+(T_\Co)$$
 by @conv:spinor-positive-subgroup. Hence $\Gamma^{\mathrm{taut}}_\Co\subseteq\Orth^+(T_\Co)$.
 
-*Second inclusion: $\Orth^+(T_\Co)\subseteq\Gamma^{\mathrm{taut}}_\Co$.* The quotient $\bD^+/\Gamma$ is an orbifold and not a manifold --- it is singular along the image of every fixed locus of codimension $\ge2$ [@Dim92, Ch. 4, Rem. (1.2)] --- so the argument is made on the smooth domain $\bD^+$. Put $\Gamma\definedas\Orth^+(T_\Co)$ and let $U\subseteq\bD^+/\Gamma$ be the image of the period map. By the choice of the orbifold structure, $M_\Co\to U$ is an isomorphism of orbifolds. Let $\widetilde U\subseteq\bD^+$ be the inverse image of $U$. The domain $\bD^+$ is a bounded symmetric domain, hence connected. The image $U$ of the period map is nonempty, and it is open by the hypothesis that $\per$ is an isomorphism of orbifolds onto an open substack; so $\widetilde U$ is a nonempty $\Gamma$-invariant open subset of $\bD^+$ and its complement $Z$ is a proper closed analytic subset. It is connected: if $\bD^+\sm Z=A\sqcup B$ with $A,B$ nonempty open, take $a\in A$, $b\in B$ and a path $\gamma$ in $\bD^+$ from $a$ to $b$; at the first point $t$ with $\gamma(t)\notin A$ one has $\gamma(t)\in Z$, and a ball $V\ni\gamma(t)$ has $V\sm Z$ connected --- a ball minus a proper analytic subset is connected --- and meeting both $A$ and $B$, a contradiction. So $\widetilde U$ is connected.
+*Second inclusion: $\Orth^+(T_\Co)\subseteq\Gamma^{\mathrm{taut}}_\Co$.* The quotient $\bD^+/\Gamma$ is an orbifold and not a manifold --- it is singular along the image of every fixed locus of codimension $\ge2$ [@Dim92, Ch. 4, Rem. (1.2)] --- so the argument is made on the smooth domain $\bD^+$. Put $\Gamma\definedas\Orth^+(T_\Co)$ and let $U\subseteq\bD^+/\Gamma$ be the image of the period map. By the choice of the orbifold structure, $M_\Co\to U$ is an isomorphism of orbifolds. Let $\widetilde U\subseteq\bD^+$ be the inverse image of $U$. The domain $\bD^+$ is a bounded symmetric domain, hence connected. The image $U$ of the period map is nonempty, and it is open by the hypothesis that $\per$ is an isomorphism of orbifolds onto an open substack; so $\widetilde U$ is a nonempty $\Gamma$-invariant open subset of $\bD^+$ and its complement $Z$ is a proper closed analytic subset (@def:closed-analytic-subset). It is connected: if $\bD^+\sm Z=A\sqcup B$ with $A,B$ nonempty open, take $a\in A$, $b\in B$ and a path (@def:path-connectedness) $\gamma$ in $\bD^+$ from $a$ to $b$; at the first point $t$ with $\gamma(t)\notin A$ one has $\gamma(t)\in Z$, and a ball $V\ni\gamma(t)$ has $V\sm Z$ connected --- a ball minus a proper analytic subset (@def:closed-analytic-subset) is connected --- and meeting both $A$ and $B$, a contradiction. So $\widetilde U$ is connected.
 
 By its definition in D2a, the local system $\bT$ with its Hodge filtration is the pullback of the tautological local system $(\bD^+\times T_\Co)/\Gamma$ along the period map --- that is what it means for the period map to classify the variation (@prop:lifted-period-map(3)) --- so over $\widetilde U$ it is $(\widetilde U\times T_\Co)/\Gamma$. By @lem:orbifold-monodromy-of-a-quotient its monodromy representation is the projection
 $$\pi_1^{\mathrm{orb}}(U,\tilde x)\too\Gamma,\qquad (g,[\widetilde\gamma])\longmapsto g,$$
@@ -584,7 +584,7 @@ So the universal family exists over the moduli stack, of which $F_{\En,2}$ is th
 
 ::: {.lemma #lem:coble-monodromy-in-stabilizer title="The monodromy of the degree-$2$ Coble family lies in the stabilizer of $\delta$"}
 
-Let $\Delta\subset F_{\En,2} = \bD(T_\En)/\gent$ be the discriminant divisor, the image of $\alpha^{\perp}\subset\bD(T_\En)$ [@AEGS25, Def. 2.7 and the paragraph after it], whose points parameterize quotients of nodal K3 surfaces by an involution fixing a node, these quotients being rational Coble surfaces with a $(1,1)/4$-singularity. Let $\delta$ be the $(-2)$-vector of [@DK13, the sentence after Prop. 3.2] --- a representative of the class $\alpha$ of [@AEGS25] --- and let $T_\Co = N_X = M_X^{\perp}$ be the transcendental lattice of the K3 double cover $X$ of a Coble surface [@DK13, (3.6)], which is $\delta^{\perp T_\En}$. Let $\Gamma_{\Co,2}$ be the monodromy group of @def:gamma-co-groups(5) for the K3 covers over $\Delta$, and assume
+Let $\Delta\subset F_{\En,2} = \bD(T_\En)/\gent$ be the discriminant divisor, the image of $\alpha^{\perp}\subset\bD(T_\En)$ [@AEGS25, Def. 2.7 and the paragraph after it], whose points parameterize quotients of nodal K3 surfaces (@def:nodal-k3-surface) by an involution fixing a node, these quotients being rational Coble surfaces with a $(1,1)/4$-singularity. Let $\delta$ be the $(-2)$-vector of [@DK13, the sentence after Prop. 3.2] --- a representative of the class $\alpha$ of [@AEGS25] --- and let $T_\Co = N_X = M_X^{\perp}$ be the transcendental lattice of the K3 double cover $X$ of a Coble surface [@DK13, (3.6)], which is $\delta^{\perp T_\En}$. Let $\Gamma_{\Co,2}$ be the monodromy group of @def:gamma-co-groups(5) for the K3 covers over $\Delta$, and assume
 
 (F) the local system with fibre $T_\Co$ of that family is the $\delta^{\perp}$-part of the restriction to $\Delta$ of the local system with fibre $T_\En$.
 
@@ -710,7 +710,7 @@ A proper morphism with finite fibres is finite ([@stacks-02LS]), so $f^{\Gamma}$
 Let $Z\definedas f^{\Gamma}(F^{\Gamma}_\Co)$, which is closed because a finite morphism is closed.
 
 Generic injectivity.
-A proper primitive sublattice $S\subsetneq T_\Co$ of signature $(2,\ast)$ cuts out a proper closed analytic subset $\bD(S)\subsetneq\bD(T_\Co)$, and there are countably many such $S$.
+A proper primitive sublattice $S\subsetneq T_\Co$ of signature $(2,\ast)$ cuts out a proper closed analytic subset (@def:closed-analytic-subset) $\bD(S)\subsetneq\bD(T_\Co)$, and there are countably many such $S$.
 So the set of $x\in\bD(T_\Co)$ with $T(x) = T_\Co$ is the complement of countably many proper closed analytic subsets, hence dense.
 For such an $x$ the fibre computation allows only $M' = T_\Co$: one has $T_\Co = T(x)\iscontainedin M'$ with both primitive of rank $11$.
 The fibre through $x$ is therefore a single point.

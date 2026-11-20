@@ -335,7 +335,7 @@ $$
 D_n^+\definedas D_n\union(v_++D_n),
 \qquad D_n^-\definedas D_n\union(v_-+D_n).
 $$
-Their closure under addition and their induced integral lattice structures are addressed by @thm:plus-construction.
+Their closure under addition and their induced integral lattice structures (@def:induced-integral-lattice-structure) are addressed by @thm:plus-construction.
 :::
 
 ::: {.theorem #thm:plus-construction title="Integral and even plus lattices"}

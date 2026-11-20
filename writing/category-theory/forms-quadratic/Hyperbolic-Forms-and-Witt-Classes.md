@@ -279,7 +279,7 @@ $$
 X\perp Y\;\cong\;X'\perp Y'
 $$
 [@MH73, Def. I.7.1].
-That $\sim$ is an equivalence relation (@def:equivalence-relation), and that it is compatible with orthogonal sum (@def:orthogonal-sum) and with tensor product, is @lem:witt-equivalence.
+That $\sim$ is an equivalence relation (@def:equivalence-relation), and that it is compatible with orthogonal sum (@def:orthogonal-sum) and with tensor product, is proved below.
 :::
 
 ::: {.lemma #lem:witt-equivalence title="Witt equivalence is a congruence"}

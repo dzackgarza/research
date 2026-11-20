@@ -36,7 +36,7 @@ For each $n\ge1$, the isometry classes of positive-definite odd (@def:two-elemen
 
 The rank-$8$ even lattice (@def:even-lattice) is $E_8(-1)$. In rank $16$ the even lattices are $E_8(-1)^{\perp2}$ and $D_{16}^+(-1)$. In rank $24$ the even lattices are the $24$ Niemeier lattices, distinguished by their root lattices, including the rootless Leech lattice [@CS10, Table 2.2; @CS10, Ch. 16, Thm. 4].
 
-Twisting by $(-1)$ identifies the positive- and negative-definite isometry classes, so the table gives the counts in either definite (@def:definiteness) sign by the sign-twist equivalence of @def:form-twist.
+Twisting by $(-1)$ identifies the positive- and negative-definite isometry classes, so the table gives the counts in either definite (@def:definiteness) sign by the sign-twist equivalence (@def:sign-twist-equivalence) of @def:form-twist.
 :::
 
 ::: {.proof}

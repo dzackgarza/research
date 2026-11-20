@@ -20,7 +20,7 @@ notes: |-
 
 A **rational genus-one surface** is a smooth projective rational surface $Y$ with a relatively minimal fibration (@def:relatively-minimal-fibration) $\pi: Y\to\PP^1$ whose generic fiber (@def:fiber-cofiber) is a smooth geometrically integral curve of genus one. The term *rational elliptic surface* is also used here without requiring a section; a section makes the fibration Jacobian.
 Its **index (@def:index) (@def:halphen-surface-index)** is the minimal $m$ with $\pi$ given by $|-mK_Y|$.
-A **Halphen pencil of index $m$** is a pencil of degree (@def:graded-object) $3m$ curves in $\PP^2$ with 9 basepoints; minimally resolving its basepoints gives a **Halphen surface of index $m$**. Equivalently, $Y$ is Halphen of index $m$ when $|-mK_Y|$ has dimension 1, no fixed part, and is basepoint free.
+A **Halphen pencil of index $m$** is a pencil of degree (@def:graded-object) $3m$ curves in $\PP^2$ with 9 basepoints (@def:based-loop); minimally resolving its basepoints gives a **Halphen surface of index $m$**. Equivalently, $Y$ is Halphen of index $m$ when $|-mK_Y|$ has dimension 1, no fixed part, and is basepoint free.
 Every relatively minimal rational elliptic surface is Halphen of some index.
 :::
 

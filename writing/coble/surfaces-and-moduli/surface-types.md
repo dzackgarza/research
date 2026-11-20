@@ -4,12 +4,12 @@ All surfaces are over $\CC$.
 
 ::: {.definition #def:smooth-projective-surface title="Smooth projective surface" defines="smooth projective surface; nonsingular projective surface"}
 
-A **smooth projective surface** is a nonsingular projective variety of dimension $2$ over $\CC$ [@Har77, Ch. V, Sect. 1].
+A **smooth projective surface** is a nonsingular projective variety (@def:projective-variety) of dimension $2$ over $\CC$ [@Har77, Ch. V, Sect. 1].
 :::
 
 ::: {.definition #def:complete-linear-system title="Complete linear system" defines="complete linear system; base point; base-point-free linear system"}
 
-Let $X$ be a smooth projective variety and $D_0$ a divisor on $X$.
+Let $X$ be a smooth projective variety (@def:projective-variety) and $D_0$ a divisor on $X$.
 The **complete linear system** $|D_0|$ is the set of all effective divisors linearly equivalent to $D_0$ [@Har77, Ch. II, Sect. 7, definition before Lem. 7.8].
 A point $P\in X$ is a **base point** of a linear system if $P$ lies in the support of every divisor of the system, and a linear system is **base-point-free** if it has no base point [@Har77, Ch. II, Sect. 7, Lem. 7.8].
 :::
@@ -33,7 +33,7 @@ $$
 
 ::: {.definition #def:strict-transform title="Strict transform" defines="strict transform; proper transform"}
 
-Let $\pi\colon\widetilde X\to X$ be the blow-up of $X$ along a closed subscheme with exceptional locus $E$, and let $Y\subset X$ be a closed subvariety.
+Let $\pi\colon\widetilde X\to X$ be the blow-up of $X$ along a closed subscheme (@def:closed-subscheme) with exceptional locus $E$, and let $Y\subset X$ be a closed subvariety (@def:closed-subvariety).
 The **strict transform** $\widetilde Y$ of $Y$ is the closure of $\pi^{-1}(Y\setminus\pi(E))$ in $\widetilde X$ [@Har77, Ch. II, Sect. 7, Def. 7.15 and Ex. 7.15.1].
 :::
 
@@ -41,6 +41,21 @@ The **strict transform** $\widetilde Y$ of $Y$ is the closure of $\pi^{-1}(Y\set
 
 Let $P$ be a pencil on a smooth projective surface (@def:smooth-projective-surface), that is, a linear system of dimension $1$ with no fixed component, defining a rational map $\varphi\colon S\dashrightarrow\PP^1$.
 A **resolution of the base points (@def:complete-linear-system)** of $P$ is a composite $\eta\colon S'\to S$ of finitely many blow-ups at base points, together with a morphism $f\colon S'\to\PP^1$ such that $f=\varphi\circ\eta$ [@Bea96, Thm. II.7].
+:::
+
+::: {.definition #def:degree-of-plane-pencil title="Degree of a pencil of plane curves" defines="degree of a pencil of curves; pencil of plane curves of degree $d$"}
+
+A **pencil of plane curves of degree (@def:graded-object) $d$** is a pencil (@def:resolution-of-base-points-of-a-pencil) in $\PP^2$ of curves $\lambda F+\mu G=0$ with $F,G$ forms of degree $d$; the integer $d$ is its **degree** [@CD89, §5.6, on Halphen pencils].
+:::
+
+::: {.definition #def:cremona-equivalence-of-sextics title="Cremona equivalence of nodal sextics" defines="Cremona equivalence of plane models; Cremona equivalent; Cremona equivalence class"}
+
+Two irreducible sextic curves $C$ and $C'$ in $\PP^2$ with nodes are **Cremona equivalent** if there is a Cremona transformation $T$ whose fundamental points are among the nodes of $C$ such that $T(C)=C'$ [@MS87, §7].
+:::
+
+::: {.definition #def:nodal-k3-surface title="Nodal K3 surface" defines="nodal K3 surface; nodal $K3$ surface"}
+
+A **nodal K3 surface** is a K3 surface (@def:k3-surface) having a node, that is, a unique $A_1$ singularity (@def:ordinary-double-point); its desingularization contains the exceptional curve over the node [@Mez21, Rem. 4.3.9 and §4.5].
 :::
 
 ::: {.definition #def:relatively-minimal-fibration title="Relatively minimal fibration" defines="relatively minimal fibration"}
@@ -73,6 +88,17 @@ A resolution of singularities $\pi\colon Y\to X$ of a normal surface $X$ is **mi
 
 A **del Pezzo surface** is a normal surface $S$ whose canonical sheaf $\omega_S$ is invertible, with $\omega_S^{-1}$ ample and all singularities rational double points [@Dol12, Def. 8.1.12].
 Its **degree (@def:graded-object)** is the self-intersection number $d=K_S^2$ [@Dol12, Def. 8.1.16].
+:::
+
+::: {.definition #def:index-of-log-del-pezzo-surface title="Index of a log del Pezzo surface" defines="index of a log del Pezzo surface; log del Pezzo surface; log del Pezzo surface of index $\leq 2$; log del Pezzo pair of index $2$; del Pezzo surface with boundary of index $\leq 2$"}
+
+A complete algebraic surface $Z$ with log terminal singularities is a **log del Pezzo surface** if its anticanonical divisor $-K_Z$ is ample. The **index (@def:index)** of a point $z\in Z$ is the minimal positive integer $i$ for which $iK_Z$ is a Cartier divisor in a neighbourhood of $z$ [@AN06, §0.1]. For a resolution of singularities $\pi\colon Y\to Z$ with $K_Y=\pi^*K_Z+\sum\alpha_iF_i$, the least common multiple of the denominators of the $\alpha_i$ is the **index** of $Z$ [@AN06, §1.1].
+A del Pezzo surface (@def:degree-of-del-pezzo-surface) with boundary $(Y,C)$ has **index $\leq 2$** if $-2(K_Y+C)$ is an ample Cartier divisor [@AT17, Lem. 2.3].
+:::
+
+::: {.definition #def:index-of-calabi-yau-pair title="Index of a Calabi–Yau pair" defines="index of a Calabi–Yau pair; index of a CY pair; index of an anticanonical pair; Calabi–Yau pair; CY pair"}
+
+A projective slc pair (@def:demi-normal-slc) $(X,\Delta)$ is **CY** if $K_X+\Delta\sim_{\mathbb Q}0$. The **index** of a CY pair $(X,\Delta)$ is the smallest positive integer $N$ such that $N(K_X+\Delta)\sim0$ [@ABB+23, Def. 2.1].
 :::
 
 ::: {.definition #def:complete-intersection-variety title="Complete intersection" defines="complete intersection; strict complete intersection"}
@@ -490,7 +516,7 @@ An **$ADE$ surface** is a normal surface $(Y, C)$ with reduced boundary $C$ give
 1. The $ADE$ surfaces of pure shape are toric. They are defined by the polytopes of [@AT17, Sec. 3A, Def. 3.5, Table 1].
 2. The $ADE$ surfaces of primed shape are obtained from surfaces of pure shape by priming (@def:priming; [@AT17, Sec. 3C, Def. 3.15]).
 
-Each $ADE$ surface is a log del Pezzo surface (@def:degree-of-del-pezzo-surface) of index (@def:index) $2$: the pair $(Y, C)$ is log canonical, and the divisor $-2(K_Y + C)$ is Cartier and ample [@AT17, Def. 3.1].
+Each $ADE$ surface is a log del Pezzo surface (@def:index-of-log-del-pezzo-surface) (@def:degree-of-del-pezzo-surface) of index (@def:index) $2$: the pair $(Y, C)$ is log canonical, and the divisor $-2(K_Y + C)$ is Cartier and ample [@AT17, Def. 3.1].
 The $ADE$ surfaces are of type III in the sense of [@AT17, Lem. 2.5], so the pair $(Y, C)$ is not klt [@AT17, Def. 3.1, Lem. 2.5].
 The construction associates to each $ADE$ surface a shape: a decorated $ADE$ Dynkin diagram, and the $ADE$ root lattice obtained by deleting the decorations [@AT17, Sec. 3].
 :::
