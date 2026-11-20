@@ -1934,7 +1934,7 @@ In this section $T_\Co = B(2)$ with $B\cong\latI_{2,9}$ (@prop:tco-as-twist), so
 
 (1) $q([v/2]) = v^2/4 = 0$, and $[v/2]\neq0$ because a primitive vector of $B$ does not lie in $2B$. The equivariance is the definition of $\rho$.
 
-(2) An isotropic class lies in the subgroup $A^0$ of @prop:coble-discriminant-group, and $A^0\cong A_{E_{10}(2)} = A_{U(2)}\perp A_{E_8(2)}$, with $\Orth(q)\iso\Orth(q_{A^0})$ by restriction. So by @lem:coble-discriminant-blocks(2) the nonzero isotropic classes number $527$ and form one $\Orth(q)$-orbit.
+(2) An isotropic class lies in the subgroup $A^0$ of @prop:coble-discriminant-group: $A_{T_\Co}=\ZZ k\perp A^0$ with $q(k)=\tfrac12$, so a class outside $A^0$ is $k+a$ with $q(k+a)=\tfrac12+q(a)\in\tfrac12+\ZZ/2\ZZ$, never $0$. Also $A^0\cong A_{E_{10}(2)} = A_{U(2)}\perp A_{E_8(2)}$, with $\Orth(q)\iso\Orth(q_{A^0})$ by restriction. So by @lem:coble-discriminant-blocks(2) the nonzero isotropic classes number $527$ and form one $\Orth(q)$-orbit.
 
 *The full discriminant surjectivity.* The representation $\rho_{T_\Co}\colon\Orth(T_\Co)\too\Orth(q_{T_\Co})$ is **onto**. This is Nikulin's theorem for an even indefinite $2$-elementary lattice, applied to $T_\Co=B(2)$: [@Nik80, Theorem 3.6.3, printed p. 144] (@thm:two-elementary-surjectivity). It is the surjectivity onto the orthogonal group of the full discriminant group $A_{T_\Co}=B/2B$; the surjectivity used in @lem:cusp-vector-stabilizer-image(1) is the separate instance for the complement $K(2)$.
 
