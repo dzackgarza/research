@@ -93,3 +93,25 @@ CHECKS AT THIS COMMIT
 NEXT
   (U) for S_Co, and the unpolarized half of item 3: the global Torelli theorem and
   the surjectivity of the period map, by numbered statement.  Then item 5.
+
+ADDENDUM (same commit): the Deligne--Mumford question of item 1, resolved negatively
+
+  While items 3 and 4 were being written, the question left open by the earlier
+  round -- whether the stabilisers Aut(S_b) are finite -- was settled: they are not.
+  moduli-construction.md, lem:coble-automorphism-group-is-infinite: for every
+  irreducible ten-nodal sextic the 45 Bertini involutions act on
+  Pic(S) = <H,E_1,...,E_10> by
+    sigma_I^*(H)   = 17H - 6 sum_{i in I} E_i,
+    sigma_I^*(E_i) = 6H - 3E_i - 2 sum_{j in I, j != i} E_j  (i in I),
+    sigma_I^*(E_a) = E_a,  sigma_I^*(E_b) = E_b,
+  each an isometry and an involution; and for I = {1..8}, J = {1,2,3,4,5,6,9,10}
+  the product has characteristic polynomial (t-1)^7 (t+1)^2 (t^2-14t+1), with
+  roots 7 +- 4 sqrt 3, so it has infinite order in GL_11(Z).
+  Record: computations/reports/coble_797-bertini-infinite-order.py with
+  -run.txt.  The eigenspace input is [@CD12, Thm. 3.5], and its consequence on H
+  agrees with the value proved independently in prop:coble-plane-model-comparison(2)
+  from [@Pie26, Prop. 59].
+  CONSEQUENCE, now on the page at :495, rmk:d2-involution-moduli-of-ae22: the Coble
+  stack is NOT Deligne--Mumford, and no nonempty open substack of it is.  The earlier
+  round's report records the DM property as open with one missing input; that input
+  is now supplied, with the opposite answer.
