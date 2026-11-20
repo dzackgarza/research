@@ -348,7 +348,11 @@ M^*
 \too
 0.
 $$
-Then $b$ is nondegenerate (@def:polarization) exactly when $\radic(M)=0$, and it is perfect (@def:polarization) exactly when $\radic(M)=0=\operatorname{corad}_b(M)$.
+:::
+
+::: {.remark #rmk:radical-nondegenerate-perfect title="Radical, nondegeneracy and perfectness"}
+
+By @def:polarization, $b$ is nondegenerate exactly when $\radic(M)=0$, and perfect exactly when $\radic(M)=0=\operatorname{corad}_b(M)$.
 :::
 
 

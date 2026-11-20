@@ -1077,8 +1077,11 @@ This group is the natural group of a fixed normalized Heegner component once the
  \too O^+(T_{\Co})
  \right).
 \]
+:::
 
-The chamber $\mcc$ is part of this datum. It is not an extra label at a member whose Picard lattice is the invariant lattice $S_{\Co,b}$: there the chamber is a function of $H$ and $\alpha$, so every element of the centralizer $Z_{O(L_{K3})}(I_{\Co},I_{\mathrm{dP}})_{H,\alpha}$ preserves it and the group above is the one @prop:direct-eq-heegner computes, $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$. At a member whose Picard lattice is larger the chamber is cut finer and the subscript is a genuine condition on the centralizer (@rmk:chamber-pinned-scope, and @thm:chamber-subscript-is-a-condition for the element that witnesses it); it is not one on the elements that preserve the member's period, which preserve its chamber at every member (@lem:chamber-preserved-on-period). So the group below is the group of a member and not of the labels, and @qst:chamber-subscript-image asks the one thing left about it, whether the condition changes its image.
+::: {.remark #rmk:direct-group-chamber title="The chamber in the datum of the direct group"}
+
+The chamber $\mcc$ is part of the datum of @def:direct-group. It is not an extra label at a member whose Picard lattice is the invariant lattice $S_{\Co,b}$: there the chamber is a function of $H$ and $\alpha$, so every element of the centralizer $Z_{O(L_{K3})}(I_{\Co},I_{\mathrm{dP}})_{H,\alpha}$ preserves it and the group above is the one @prop:direct-eq-heegner computes, $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$. At a member whose Picard lattice is larger the chamber is cut finer and the subscript is a genuine condition on the centralizer (@rmk:chamber-pinned-scope, and @thm:chamber-subscript-is-a-condition for the element that witnesses it); it is not one on the elements that preserve the member's period, which preserve its chamber at every member (@lem:chamber-preserved-on-period). So the group below is the group of a member and not of the labels, and @qst:chamber-subscript-image asks the one thing left about it, whether the condition changes its image.
 :::
 
 This is the arithmetic group naturally attached to the autonomous lattice datum, provided the labeled rigidity theorem holds.
@@ -2361,6 +2364,16 @@ So the three statements stand as written:
 What that unit owed was @qst:b25-sign-holonomy, since answered by @thm:no-loop-carries-the-sign and @thm:sign-is-isotropy; the three statements above are not repaired by that answer.
 :::
 
+::: {.lemma #lem:b25-O-connected title="The arrangement complement is connected"}
+
+The arrangement complement $O$ of @prob:B24 is connected, dense in its component of $\bD(T_\Co)$, and $\Gamma_{\mathrm{lab}}$-invariant.
+:::
+
+::: {.proof}
+
+By @prob:B24 the complement of $\mathrm{im}(p)$ is a union of Heegner divisors, so $O$ is the complement in the component of $\bD(T_\Co)$ of a union of walls (@not:coxeter-polytope-faces); that union is locally finite, each compact subset of the domain meeting only the walls of the classes whose periods satisfy a bound, and the complement of a locally finite union of proper closed analytic subsets (@def:closed-analytic-subset) of a connected complex manifold is connected and dense. It is $\Gamma_{\mathrm{lab}}$-invariant as a preimage.
+:::
+
 ::: {.theorem #prob:B25 title="B2.5. Direct monodromy theorem — proved"}
 
 The deck group of the marking cover and the geometric monodromy group of @def:geometric-monodromy differ by the isotropy of the moduli stack: the deck group is $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm1\}$, the monodromy of loops over the coarse moduli space (@thm:no-loop-carries-the-sign), and the orbifold monodromy group is $\Gamma^{\mathrm{dir}}_{\Co,2}$ (@thm:sign-is-isotropy). The dichotomy an earlier form of this statement carried — $\Gamma^{\mathrm{dir}}_{\Co,2}$ if the $\{\pm1\}$-cover of the period image is nontrivial and $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm1\}$ if it splits — is that difference, and both branches are computed. $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2} = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ in either case. The chamber datum is the member's own (@def:coble-polarization-classes, part 3), and by @lem:chamber-from-marked-period it is a function of the marked period, so no hypothesis on the labels beyond @sec-labeled-lattice-data enters.
@@ -2372,7 +2385,7 @@ The deck group of the marking cover and the geometric monodromy group of @def:ge
 
 *The marked period space.* By @lem:chamber-from-marked-period the marked moduli injects into $\bD(T_\Co)$, with the chamber included, and by @prob:B24 its image is exactly the set $O = \pi^{-1}\bigl(\mathrm{im}(p)\bigr)$ of realized periods, $\pi\colon\bD(T_\Co)\to\bD(T_\Co)/\Gamma_{\mathrm{lab}}$ the quotient.
 
-*$O$ is connected.* By @prob:B24 the complement of $\mathrm{im}(p)$ is a union of Heegner divisors, so $O$ is the complement in the component of $\bD(T_\Co)$ of a union of walls (@not:coxeter-polytope-faces); that union is locally finite, each compact subset of the domain meeting only the walls of the classes whose periods satisfy a bound, and the complement of a locally finite union of proper closed analytic subsets (@def:closed-analytic-subset) of a connected complex manifold is connected and dense. It is $\Gamma_{\mathrm{lab}}$-invariant as a preimage.
+*$O$ is connected* by @lem:b25-O-connected.
 
 *The two covers.* Two markings with the same period differ by a label-preserving isometry acting trivially on $\bD(T_\Co)$. Since $I_\Co$ acts by $-1$ on $T_\Co$, the element $-\id_{T_\Co}$ lies in $\Gamma_{\mathrm{lab}}$ — it pairs with $\id_{S_\Co}$ through the glue, $-\id = \id$ on the $2$-torsion of $A_{T_\Co}$ — and it acts trivially on the period domain, so the period cover $O\to O/\Gamma_{\mathrm{lab}} = \mathfrak M$ has deck group $\Gamma_{\mathrm{lab}}/\{\pm1\}$ and not $\Gamma_{\mathrm{lab}}$. The marking cover is the $\{\pm1\}$-cover of $O$ above it, of degree (@def:graded-object) $\abs{\Gamma_{\mathrm{lab}}}$ over $\mathfrak M$; it trivializes $T_\Co$, since a marking is an isometry of $H^2$ carrying the labels, and the monodromy is the deck group of *that* cover.
 
@@ -2404,7 +2417,7 @@ Its period map to $\bD(T_\Co)$ is injective (@def:injective-map): two marked tup
 This is @lem:chamber-from-marked-period, and it holds at every member of the construction, the ample class being a label and not a datum of a general member.
 
 *The image and its connectedness.*
-By @prob:B24 the image of the period map is the arrangement complement $O$, and $O$ is connected (the paragraph *$O$ is connected* in the proof of @prob:B25).
+By @prob:B24 the image of the period map is the arrangement complement $O$, and $O$ is connected (@lem:b25-O-connected).
 
 *The deck group.*
 So $\widetilde{\mathfrak M}=O$, and the monodromy of $T_\Co$ over $\mathfrak M=O/\Gamma^{\mathrm{dir}}_{\Co,2}$ is the deck group of $O\to\mathfrak M$.
@@ -2462,7 +2475,7 @@ $$\iota = -\id_{T_\Co} = \epsilon\cdot s_{c_1}\cdots s_{c_9},\qquad
 \epsilon\definedas -\id_{\langle u_1,u_2\rangle}\oplus\id_{\langle c_1,\dots,c_9\rangle}.$$
 So $\iota\in W(T_\Co)$ if and only if $\epsilon\in W(T_\Co)$.
 
-Consequently the question of @qst:b25-sign-holonomy is not about the odd rank of $T_\Co$ and not about its $E_8(2)$ summand: it is the single question whether the reflection group contains the element that negates one positive definite $2$-plane and nothing else, and a certificate for $\iota$ needs only a word for that element. That question too is answered, in the positive: $\epsilon$ and $\iota$ are words in the reflections (@thm:coble-block-sign-in-w), while no loop gives $\iota$ (@thm:no-loop-carries-the-sign).
+Consequently the question of @qst:b25-sign-holonomy is not about the odd rank of $T_\Co$ and not about its $E_8(2)$ summand: it is the single question whether the reflection group contains the element that negates one positive definite $2$-plane and nothing else, and a certificate for $\iota$ needs only a word for that element.
 :::
 
 ::: {.proof}
@@ -2470,6 +2483,11 @@ Consequently the question of @qst:b25-sign-holonomy is not about the odd rank of
 $T_\Co = B(2)$ means $\beta_{T_\Co} = 2b_B$, so a $B$-basis vector of square $-1$ has $T_\Co$-square $-2$, and the displayed orthogonal decomposition is a $\ZZ$-basis of pairwise orthogonal vectors. The reflection of $T_\Co$ in $c_j$ is $x\mapsto x + \beta(x,c_j)c_j = x + 2b_B(x,c_j)c_j$, integral because $\beta(c_j,T_\Co)\subseteq 2\ZZ$, so $s_{c_j}\in W(T_\Co)$ by @prop:gamma-co-reflective-set, part 1.
 Their product is $-1$ on $\langle c_1,\dots,c_9\rangle$ and $+1$ on its orthogonal complement, and composing with $\epsilon$ gives $-\id_{T_\Co}$ on both pieces.
 Multiplication by an element of $W(T_\Co)$ is a bijection of $\Orth(T_\Co)$, so $\iota\in W(T_\Co)$ exactly when $\epsilon\in W(T_\Co)$.
+:::
+
+::: {.remark #rmk:sign-plane-answered title="The positive-plane question is answered"}
+
+The question of @lem:sign-reduces-to-positive-plane is answered, in the positive: $\epsilon$ and $\iota$ are words in the reflections (@thm:coble-block-sign-in-w), while no loop gives $\iota$ (@thm:no-loop-carries-the-sign).
 :::
 
 ::: {.corollary #cor:four-groups-decided title="The four arithmetic groups"}

@@ -133,7 +133,7 @@ The representing equivalence includes arrows and all higher cells (@def:cells) b
 
 ::: {.definition #def:cat-infty title="The category of higher categories" defines="$\mathbf{Cat}_{\infty,\infty}$; $\widetilde{\mathbf{Cat}}_{\infty,\infty}$; $p_{\mathcal V}$"}
 
-Let $\mathcal M_{\mathrm{cocart}}$ be the base-change-stable class, closed under equivalence (@def:equivalence-of-objects), of $1$-cells $G$ in $\mcu$ for which $\operatorname{Dec}_{\mcu}(G)$ is a $\mcu$-small cocartesian fibration in $\mck$.
+Let $\mathcal M_{\mathrm{cocart}}$ be the base-change-stable class of $1$-cells $G$ in $\mcu$ for which $\operatorname{Dec}_{\mcu}(G)$ is a $\mcu$-small cocartesian fibration in $\mck$.
 Assume that it has a classifier
 $$
 p_{\mathcal M_{\mathrm{cocart}}}\colon
@@ -201,7 +201,6 @@ p_{\mcv}
 \too
 \mathbf{Cat}_{\infty,\infty}.
 $$
-The representing equivalence (@def:equivalence-of-objects) determines $h_{\mathbf{Cat}_{\infty,\infty}}$, and hence $\mathbf{Cat}_{\infty,\infty}$, up to equivalence as the classifier of small cocartesian families.
 
 :::
 
@@ -391,7 +390,7 @@ $$
 since $s(\xi)$ and $t(\xi)$ are parallel cells of the same iterated hom-object.
 :::
 
-::: {.definition #def:equivalence-of-categories title="Equivalences" defines="structure of reversibility; invertible cell; $C\simeq D$"}
+::: {.definition #def:equivalence-of-categories title="Invertible cells" defines="structure of reversibility; invertible cell"}
 
 A *structure of reversibility* is a family $\mcr$ of positive-dimensional cells in the iterated hom-objects such that, for every cell
 $$
@@ -416,14 +415,6 @@ $$
 in $\mcr$.
 A cell is *invertible* if it belongs to a structure of reversibility [@OR23, Definition 1.5.1].
 
-An equivalence (@def:equivalence-of-objects) between higher categories $C$ and $D$ is an invertible point
-$$
-F\colon
-*
-\too
-[C,D]_{\mathbf{Cat}_{\infty,\infty}}.
-$$
-Write $C\simeq D$ when such an equivalence has been chosen.
 :::
 
 ::: {.definition #def:core title="Underlying homotopy type and core" defines="underlying homotopy type; $\Pi_\infty$; core; $C^{\simeq}$"}
@@ -737,6 +728,18 @@ $$
 $$
 be the union of the components that consist of equivalences.
 Write $X\simeq Y$ for the claim that $\operatorname{Equiv}_C(X,Y)$ is nonempty.
+:::
+
+::: {.remark #rmk:equivalence-of-higher-categories title="Equivalences of higher categories" defines="equivalence of higher categories; $C\simeq D$"}
+
+An equivalence of higher categories $C$ and $D$ is an equivalence (@def:equivalence-of-objects) in $\mathbf{Cat}_{\infty,\infty}$ (@def:cat-infty): an invertible point
+$$
+F\colon
+*
+\too
+[C,D]_{\mathbf{Cat}_{\infty,\infty}}.
+$$
+Write $C\simeq D$ when such an equivalence has been chosen.
 :::
 
 ::: {.definition #def:isomorphism-of-objects title="Isomorphisms and $n$-equivalences" defines="$0$-equivalence; $n$-equivalence; isomorphism; $\operatorname{Equiv}_{C,n}(X,Y)$; $\operatorname{Isom}_C(X,Y)$; $X\simeq_n Y$; $X\cong Y$"}

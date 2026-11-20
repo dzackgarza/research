@@ -226,7 +226,6 @@ $$
 T_\Co \definedas S_\Co^{\perp \lkt} = (11, 11, 1)_2 \cong \generators{2} \oplus E_{10}(2)
 .
 $$
-3. The quotient $\bD(T_\Co)/\Orth(T_\Co)$ is a normal quasi-projective variety (@def:projective-variety) of dimension $9$, and the moduli space $\mcm_\Co$ of @prop:coble-moduli-git is isomorphic to an open subset of it (@lem:d2a-coble-moduli-quotient).
 
 :::
 
@@ -239,9 +238,14 @@ Let $T_\Co = \generators{2}\oplus E_{10}(2)$ be the lattice of [@DK13, (3.6)] an
 
 This is [@DK13, Prop. 3.2], whose statement is that for $N=\generators{2}\oplus E(2)$ the moduli space $\mathcal M_{\mathrm{Co}}$ of Coble surfaces is isomorphic to an open subset of $\mathcal D(N)/\Orth(N)$; $\mathcal D(N)$ is the period domain of (3.1) there and $N$ is the lattice of (3.6) there, which is $T_\Co=\generators{2}\oplus E_{10}(2)$ by @prop:coble-period-domain(2).
 
-Its hypotheses are the ones this book already checks on the fibres. The period domain is attached to an algebraic K3 surface: the double cover of @lem:d2-unpolarised-family(1) is a K3 surface $X_b$, and $h^{2,0}(X_b)=1$, so a point of $\bD(T_\Co)$ is the $2$-dimensional positive subspace $H^{2,0}(X_b)\subset T_\Co\otimes\CC$ of @prop:coble-period-domain(1). The lattice $N$ is the transcendental lattice of $X_b$: the classes $e_0,\dots,e_{10}$ of @prop:coble-period-domain(1) span $M$ primitively in $\lkt$, and $T_\Co=M^{\perp\lkt}$ (@prop:coble-transcendental). So the pair $(X_b,M\subset H^2(X_b,\ZZ))$ is an $M$-polarized K3 surface in the sense of the source, and the identity of periods it uses is the identity of the Hodge structures on $T_\Co$.
+Its hypotheses are the ones this book already checks on the fibres. The period domain is attached to an algebraic K3 surface: the double cover of @lem:d2-unpolarised-family(1) is a K3 surface $X_b$, and $h^{2,0}(X_b)=1$, so a point of $\bD(T_\Co)$ is the $2$-dimensional positive subspace $H^{2,0}(X_b)\subset T_\Co\otimes\CC$ of @prop:coble-period-domain(1). The lattice $N$ is the transcendental lattice (@not:k3-automorphism-data) of $X_b$: the classes $e_0,\dots,e_{10}$ of @prop:coble-period-domain(1) span $M$ primitively in $\lkt$, and $T_\Co=M^{\perp\lkt}$ (@prop:coble-transcendental). So the pair $(X_b,M\subset H^2(X_b,\ZZ))$ is an $M$-polarized K3 surface in the sense of the source, and the identity of periods it uses is the identity of the Hodge structures on $T_\Co$.
 
 [@DK13, Prop. 3.2] obtains the statement from the Torelli-type theorem for algebraic K3 surfaces of Pyatetskii--Shapiro and Shafarevich, which the source cites in its proof; that theorem is therefore not an independent input of this book, and no numbered statement of it is cited here.
+:::
+
+::: {.remark #rmk:coble-orthogonal-quotient title="The orthogonal quotient of the Coble period domain"}
+
+The quotient $\bD(T_\Co)/\Orth(T_\Co)$ is a normal quasi-projective variety (@def:projective-variety) of dimension $9$, and the moduli space $\mcm_\Co$ of @prop:coble-moduli-git is isomorphic to an open subset of it (@lem:d2a-coble-moduli-quotient).
 :::
 
 ::: {.proposition #prop:coble-moduli-heegner-divisor title="The Coble moduli space as a Heegner divisor"}
@@ -410,7 +414,7 @@ Both are defined here by constructing the family over a base given by explicit e
 The family and its local system are thus objects of the definition and not of a later theorem (@lem:d2-unpolarised-family, @lem:d2-local-system), and the two things the symbol $\Gamma_\Co$ needs --- a base and a family over it --- are fixed before the group is named (@def:gamma-co-groups).
 @rmk:d2-what-is-open records what no source read supplies, and @rmk:d2-corrections what this section changes.
 
-::: {.notation #not:d2-plane-sextic-base title="The plane-sextic base and its quotients" defines="$V$; $B$; $\bar B$; $U$; $M_\Co$"}
+::: {.notation #not:d2-plane-sextic-base title="The plane-sextic base and its quotients" defines="$V$; $B$; labelled base; $\bar B$; unlabelled base; $U$; $M_\Co$"}
 
 Let $\abs{\OO_{\PP^2}(6)}$ be the linear system of plane sextics and put
 $$
@@ -509,23 +513,20 @@ and $F_S=(D_S-\Delta)/\Gamma_\rho$ is *the coarse space* of $\mathrm{K3}$ surfac
 *Deligne--Mumford.* Let $\underline{\mathrm{Cob}}$ be the functor of research#797: over a scheme or complex space $Y$, objects are flat families $S\to Y$ of Coble surfaces together with the relative double cover $X\to S$ branched along the relative divisor $-2K_{S/Y}$ and its involution, and morphisms are isomorphisms of such families commuting with pullback. Two of its properties can be settled without the functor's formal construction. First, its *automorphism groups are finite on the locus where the polarization is ample*: an automorphism of an object preserves $H=f^*\OO_{\PP^2}(1)$, which is ample on every member of the family of @def:coble-family-unpolarized (it is a finite pullback of $\OO(1)$), and an automorphism of a $\mathrm{K3}$ surface fixing an ample class is the identity on cohomology and hence, by the faithfulness of the action on $H^2$, the identity. So on the open subfunctor where $H$ is ample, the diagonal is unramified and the stack is Deligne--Mumford, with coarse space the quotient named above. Second, *off that locus it need not be*: a member with $H$ merely nef can have an infinite automorphism group, and an isotrivial family then has infinite stabilizers, so the Deligne--Mumford property must be stated for the ample locus only — which is the locus the family of @def:coble-family-unpolarized occupies.
 :::
 
-::: {.definition #def:coble-family-unpolarized title="D2a: the family of unpolarized Coble surfaces" defines="unlabelled base; labelled base; $\Gamma_\Co$; $\fco$"}
+::: {.definition #def:coble-family-unpolarized title="D2a: the family of unpolarized Coble surfaces" defines="$\Gamma_\Co$; $\fco$"}
 
 A *Coble surface* is a nonsingular projective rational surface $S$ with $\abs{-K_S}=\emptyset$ and $\abs{-2K_S}\neq\emptyset$ [@DZ99, Introduction; @DK13, §3].
 
-**The objects.** Over a complex space $Y$, an object is a flat projective family $\mcs\to Y$ of classical Coble surfaces: a morphism whose geometric fibres are the surfaces $S=\Bl_{p_1,\dots,p_{10}}\PP^2$ of @lem:d2-unpolarised-family(1), together with the relative double cover $\mcx\to\mcs$ branched along the relative divisor $-2K_{\mcs/Y}$ and the covering involution $\iota$. Morphisms are Cartesian squares commuting with $\iota$.
+**The objects.** Over a complex space $Y$, an object is a flat projective family $\mcs\to Y$ of classical Coble surfaces: a morphism whose geometric fibres are the surfaces $S=\Bl_{p_1,\dots,p_{10}}\PP^2$ for $(Z;p_1,\dots,p_{10})\in V$ of @not:d2-plane-sextic-base, together with the relative double cover $\mcx\to\mcs$ branched along the relative divisor $-2K_{\mcs/Y}$ and the covering involution $\iota$. Morphisms are Cartesian squares commuting with $\iota$.
 A Coble surface is rational, so $h^{2,0}=0$ on every fibre and the degree-$2$ Hodge structure of $\mcs$ is of type $(1,1)$ throughout; the variation of Hodge structure on which the monodromy acts is that of the K3 *covers*, which is the local system of the next item.
-The labelling of the ten exceptional curves is not part of the objects: the labelled base $B=V/\PGL_3$ is the space of sextics with their ten nodes *named* (@not:d2-plane-sextic-base), and the objects over the unlabelled base $\bar B$ are unlabelled (@lem:d2-labelling-cover).
 
 **The bases** are three, and the choice among them is part of the definition; the family is the same over the space $B$ and the stack $\bar B$, and there is no family over the coarse space $M_\Co$.
 
 1. *The coarse space.* $M_\Co=U/\PGL_3$ of @not:d2-plane-sextic-base, the moduli space of [@DK13, §3] (@prop:coble-moduli-git). It is a coarse space and carries no family: a Coble surface whose automorphism group (@def:endomorphism-monoid) acts nontrivially on $T_\Co$ has none. Statements about $\Gamma_\Co$ are therefore not statements about base 1.
-2. *The unlabelled base.* the quotient stack $\bar B=[B/S_{10}]=[V/(\SL_3\times S_{10})]$ of @not:d2-plane-sextic-base, whose coarse space is the space $V/(\SL_3\times S_{10})$ and whose points are irreducible ten-nodal sextics without names for the nodes; the family over it is @lem:d2-unpolarised-family(3) and the local system is @lem:d2-local-system, with monodromy group (@def:transport-and-monodromy) $\Gamma_\Co(\bar B)\supseteq\Gamma_\Co$ of index $10!$ (@lem:d2-local-system(5), @lem:gamma-co-labelled-index).
-3. *The labelled base.* the space $B=V/\PGL_3$ of @not:d2-plane-sextic-base, whose points are sextics with the ten nodes named, up to projectivity; the family over it is @lem:d2-unpolarised-family(3) and its local system is @lem:d2-local-system, and the eleven classes of the next item are $\SL_3$-invariant global sections over $V$, hence descend to $B$ (@lem:d2-local-system(2)). This is the base the definition assigns to $\Gamma_\Co$.
+2. *The unlabelled base.* the quotient stack $\bar B=[B/S_{10}]=[V/(\SL_3\times S_{10})]$ of @not:d2-plane-sextic-base, whose coarse space is the space $V/(\SL_3\times S_{10})$ and whose points are irreducible ten-nodal sextics without names for the nodes, with monodromy group (@def:transport-and-monodromy) $\Gamma_\Co(\bar B)\supseteq\Gamma_\Co$.
+3. *The labelled base.* the space $B=V/\PGL_3$ of @not:d2-plane-sextic-base, whose points are sextics with the ten nodes named, up to projectivity. This is the base the definition assigns to $\Gamma_\Co$.
 
-The family over $B$ is the descent of @lem:d2-unpolarised-family(2) along the principal bundle $V\to B$ (@lem:d2-labelled-base-monodromy), and its local system is @lem:d2-local-system.
 
-**The fibres** are the surfaces $S_b=\Bl_{p_1,\dots,p_{10}}\PP^2$ for $b=(Z;p_1,\dots,p_{10})$, with $C_b$ the proper transform (@def:strict-transform) of $Z$; then $[C_b]=-2K_{S_b}$, $C_b^2=-4$, and the double cover of $S_b$ branched along $C_b$ is a K3 surface $X_b$ with covering involution $\iota_b$ (@lem:d2-unpolarised-family(1)).
 
 **The local system of lattices** is $\bT$ of @lem:d2-local-system: the orthogonal complement in $R^2f_*\underline{\ZZ}_{\mcx}$ modulo torsion of the span of the classes of the pullback of a line and of the ten exceptional curves. Its fibre is $T_\Co$, its rank is $11$, and its stalks (@def:stalk) have signature $(2,9)$.
 
@@ -538,7 +539,7 @@ Let $b=(Z;p_1,\dots,p_{10})\in V$ and $S_b=\Bl_{p_1,\dots,p_{10}}\PP^2$, with $H
 
 1. $S_b$ is a Coble surface, $[C_b]=-2K_{S_b}=6H-\sum_{i=1}^{10}2E_i$ for $C_b\subset S_b$ the proper transform (@def:strict-transform) of $Z$, $C_b^2=-4$, $\abs{-2K_{S_b}}=\{C_b\}$, that is $h^0(-2K_{S_b})=1$, and the double cover $\pi_b\colon X_b\to S_b$ branched along $C_b$ is a K3 surface with a covering involution $\iota_b$.
 2. Over $V$ there are: the universal sextic $Z_V\subset\PP^2_V$, ten disjoint sections $\sigma_1,\dots,\sigma_{10}$ given by the $p_i$, the blowup $q\colon\mcs_V\definedas\Bl_{\sigma_1,\dots,\sigma_{10}}\PP^2_V\to V$, the exceptional divisors $\mcE_1,\dots,\mcE_{10}$, the pullback $\mcH$ of $\OO_{\PP^2}(1)$, and the proper transform $\mcC_V$ of $Z_V$. The morphism $\mcs_V\to V$ is smooth, projective and flat with fibre $S_b$, the divisor $\mcC_V$ is a Cartier divisor with $\mcC_V=-2K_{\mcs_V/V}$, and $\OO(\mcC_V)=\OO(2\mcD_V)$ for $\mcD_V\definedas3\mcH-\sum_i\mcE_i$. Hence the cyclic double cover $\mcx_V\to\mcs_V$ branched along $\mcC_V$ exists, is smooth and projective over $V$, and has fibre $X_b$; its covering involution $\iota_V$ restricts to $\iota_b$.
-3. The morphisms and divisors of 2. are $\SL_3$-equivariant for the action on $V$ of @not:d2-plane-sextic-base, and the $S_{10}$-action of that notation, which permutes $\sigma_1,\dots,\sigma_{10}$ and commutes (@def:commutative-diagram) with $\SL_3$, sends $\mcE_i$ to $\mcE_{\sigma^{-1}(i)}$ and $\mcH$ to $\mcH$; hence they define the same data over the space $B=V/\PGL_3$ (@lem:d2-plane-sextic-freeness(3)) and over the quotient stack $\bar B=[B/S_{10}]$, the labelled and unlabelled bases of @def:coble-family-unpolarized(2)--(3).
+3. The morphisms and divisors of 2. are $\SL_3$-equivariant for the action on $V$ of @not:d2-plane-sextic-base, and the $S_{10}$-action of that notation, which permutes $\sigma_1,\dots,\sigma_{10}$ and commutes (@def:commutative-diagram) with $\SL_3$, sends $\mcE_i$ to $\mcE_{\sigma^{-1}(i)}$ and $\mcH$ to $\mcH$; hence they define the same data over the space $B=V/\PGL_3$ (@lem:d2-plane-sextic-freeness(3)) and over the quotient stack $\bar B=[B/S_{10}]$, the labelled and unlabelled bases of @not:d2-plane-sextic-base.
 :::
 
 ::: {.proof}
@@ -547,7 +548,26 @@ Let $b=(Z;p_1,\dots,p_{10})\in V$ and $S_b=\Bl_{p_1,\dots,p_{10}}\PP^2$, with $H
 
 (2) The ten sections are disjoint because the $p_i$ are distinct, so their union is a closed submanifold of $\PP^2_V$ and its blowup $q$ exists and is smooth and projective over $V$; blowing up a smooth centre commuting with a smooth morphism preserves smoothness of the morphism, so $\mcs_V\to V$ is smooth, and its fibre at $b$ is $S_b$ by construction. On the fibre the proper transform of $Z_b$ has class $6H-2\sum_iE_i$, which is $-2K_{S_b}$ by (1), and $K_{\mcs_V/V}=-3\mcH+\sum_i\mcE_i$ by the blowup formula; so $\mcC_V=-2K_{\mcs_V/V}$. The line bundle $\OO(\mcD_V)$ satisfies $\OO(\mcD_V)^{\tensor2}=\OO(\mcC_V)$, so $\mcC_V$ is $2$-divisible in $\Pic(\mcs_V)$, and a $2$-divisible Cartier divisor on a smooth family is the branch divisor of a cyclic double cover [@EV92, §3, Chapter I]; the total space is smooth because $\mcC_V$ is, and it is projective over $V$ because $\OO(\mcD_V)$ is relatively ample after twisting by $q^*\OO(1)$.
 
-(3) Each of $Z_V$, $\sigma_i$, $\mcH$, $\mcE_i$ and $\mcC_V$ is carried to itself or to its translate by an element of $\SL_3$, because $Z_V$ is the universal sextic over the linear system on which $\SL_3$ acts and the $\sigma_i$ are the coordinate sections; so the data are $\SL_3$-equivariant, and, the action of $\PGL_3$ on $V$ being free with quotient $B$ (@lem:d2-plane-sextic-freeness(3)), descend to $B$. The stack $[V/\SL_3]$ is the moduli stack of the objects of @def:coble-family-unpolarized: a point of $V$ is a labelling of the ten nodes of an irreducible sextic, two such labelings of the same sextic differ by an element of $S_{10}$ (@lem:d2-labelling-cover), and the isomorphisms (@def:isomorphism-of-objects) of the surfaces $S_b$ are those induced by the projectivities carrying one sextic to the other, that is by $\PGL_3$ (the scalars act trivially on $V$ and on the surfaces).
+(3) Each of $Z_V$, $\sigma_i$, $\mcH$, $\mcE_i$ and $\mcC_V$ is carried to itself or to its translate by an element of $\SL_3$, because $Z_V$ is the universal sextic over the linear system on which $\SL_3$ acts and the $\sigma_i$ are the coordinate sections; so the data are $\SL_3$-equivariant, and, the action of $\PGL_3$ on $V$ being free with quotient $B$ (@lem:d2-plane-sextic-freeness(3)), descend to $B$.
+:::
+
+::: {.lemma #lem:d2a-moduli-stack title="The quotient stack is the moduli stack of D2a"}
+
+The stack $[V/\SL_3]$ is the moduli stack of the objects of @def:coble-family-unpolarized, with universal family that of @lem:d2-unpolarised-family(3).
+:::
+
+::: {.proof}
+
+A point of $V$ is a labelling of the ten nodes of an irreducible sextic, two such labelings of the same sextic differ by an element of $S_{10}$ (@lem:d2-labelling-cover), and the isomorphisms (@def:isomorphism-of-objects) of the surfaces $S_b$ are those induced by the projectivities carrying one sextic to the other, that is by $\PGL_3$ (the scalars act trivially on $V$ and on the surfaces).
+:::
+
+::: {.remark #rmk:d2a-family-over-the-bases title="The family and the local system over the bases of D2a"}
+
+Over the labelled base and the unlabelled base of @def:coble-family-unpolarized the family is that of @lem:d2-unpolarised-family(3) and the local system is that of @lem:d2-local-system; the eleven classes of @lem:d2-local-system(2) are $\SL_3$-invariant global sections over $V$, hence descend to $B$.
+The family over $B$ is the descent of @lem:d2-unpolarised-family(2) along the principal bundle $V\to B$ (@lem:d2-labelled-base-monodromy), and its local system is @lem:d2-local-system.
+
+The fibres are the surfaces $S_b=\Bl_{p_1,\dots,p_{10}}\PP^2$ for $b=(Z;p_1,\dots,p_{10})$, with $C_b$ the proper transform (@def:strict-transform) of $Z$; then $[C_b]=-2K_{S_b}$, $C_b^2=-4$, and the double cover of $S_b$ branched along $C_b$ is a K3 surface $X_b$ with covering involution $\iota_b$ (@lem:d2-unpolarised-family(1)).
+The labelling of the ten exceptional curves is not part of the objects: the labelled base $B=V/\PGL_3$ is the space of sextics with their ten nodes *named* (@not:d2-plane-sextic-base), and the objects over the unlabelled base $\bar B$ are unlabelled (@lem:d2-labelling-cover).
 :::
 
 ::: {.lemma #lem:coble-family-base-change title="Base change changes the monodromy group by a subgroup"}
@@ -571,24 +591,23 @@ Let $\mcx\to\mcs\to B$ be the family of @lem:d2-unpolarised-family(3).
 1. $\bV\definedas R^2f_*\underline{\ZZ}_\mcx$ modulo torsion is a local system of lattices with the cup product (@prop:primitive-cohomology-vhs(1)), of rank $22$ and signature $(3,19)$.
 2. The classes $\varepsilon_0$ of $\mcH$, and $\varepsilon_1,\dots,\varepsilon_{10}$ of $\mcE_1,\dots,\mcE_{10}$, are values of global sections of $\bV$, and their span $\bM$ is a local system of lattices with fibre $M=\generators{2}\oplus\generators{-2}^{\oplus10}\cong S_\Co$, primitive (@def:primitive-embedding) in $\bV$ and of signature $(1,10)$ (@prop:coble-is-the-ten-nodal-sextic-type).
 3. $\bT\definedas\bM^{\perp\bV}$ is a local system of lattices with fibre $T_\Co=M^{\perp\lkt}\cong\generators{2}\oplus E(2)$ (@prop:coble-period-domain(2), [@DK13, (3.6)]), of rank $11$ and signature $(2,9)$.
-4. $\Gamma_\Co=\rho\qty{\pi_1(B,s)}$ is a subgroup of $\Orth(T_\Co)$ (@lem:d2-labelled-base-monodromy), and it lies in $\Orth^+(T_\Co)$ (@lem:monodromy-is-spinor-positive).
-5. On $\bar B$ the same construction gives a local system of lattices with fibre $T_\Co$ and monodromy group $\Gamma_\Co(\bar B)$ containing $\Gamma_\Co$, of index $10!$ (@lem:gamma-co-labelled-index); the classes $\varepsilon_i$ are permuted by the elements of $S_{10}$ and fixed by no other generator.
+4. On $\bar B$ the same construction gives a local system of lattices with fibre $T_\Co$ and monodromy group $\Gamma_\Co(\bar B)$ containing $\Gamma_\Co$; the classes $\varepsilon_i$ are permuted by the elements of $S_{10}$ and fixed by no other generator.
 :::
 
 ::: {.proof}
 
-(1) is [@prop:primitive-cohomology-vhs(1)], the fibres being K3 surfaces by @lem:d2-unpolarised-family(1). (2) Each $\mcE_i$ is a relative divisor, so its class is a global section of $\bV$; so is $\mcH$. The fibre of the span is spanned by the classes $e_0,\dots,e_{10}$ of [@DK13, §3], which is $M$ there, primitive in $L_{\mathrm{K3}}$ and of signature $(1,10)$; primitivity is an open condition on the fibre, so the span is primitive throughout (@prop:coble-is-the-ten-nodal-sextic-type). (3) is the orthogonal complement of (2) in (1). (4) Transport is an isometry (@prop:local-system-of-lattices-monodromy), and the monodromy of a family over a connected base lies in one component of the orthogonal group, the one preserving the period (@lem:monodromy-is-spinor-positive). (5) The map of quotient stacks $B\to\bar B$ is a principal $S_{10}$-bundle of stacks (@lem:d2-labelling-cover), so $\pi_1(B)$ is a normal subgroup of $\pi_1(\bar B)$ with quotient $S_{10}$, the pullback $\bT|_B$ is the system of $\bar B$ pulled back, and its monodromy is the restriction of that of $\bar B$ (@lem:coble-family-base-change); the index is $\abs{S_{10}}=10!$. The action of a permutation of the labels on the classes $\varepsilon_i$ is the permutation of the corresponding sections, and $\PGL_3$ acts trivially on the cohomology classes of the fibre.
+(1) is [@prop:primitive-cohomology-vhs(1)], the fibres being K3 surfaces by @lem:d2-unpolarised-family(1). (2) Each $\mcE_i$ is a relative divisor, so its class is a global section of $\bV$; so is $\mcH$. The fibre of the span is spanned by the classes $e_0,\dots,e_{10}$ of [@DK13, §3], which is $M$ there, primitive in $L_{\mathrm{K3}}$ and of signature $(1,10)$; primitivity is an open condition on the fibre, so the span is primitive throughout (@prop:coble-is-the-ten-nodal-sextic-type). (3) is the orthogonal complement of (2) in (1). (4) The map of quotient stacks $B\to\bar B$ is a principal $S_{10}$-bundle of stacks (@lem:d2-labelling-cover), so $\pi_1(B)$ is a normal subgroup of $\pi_1(\bar B)$ with quotient $S_{10}$, the pullback $\bT|_B$ is the system of $\bar B$ pulled back, and its monodromy is the restriction of that of $\bar B$ (@lem:coble-family-base-change). The action of a permutation of the labels on the classes $\varepsilon_i$ is the permutation of the corresponding sections, and $\PGL_3$ acts trivially on the cohomology classes of the fibre.
 :::
 
 
 ::: {.lemma #lem:d2-labelled-base-monodromy title="The family and the local system over the labelled base"}
 
-The family and the local system of @lem:d2-unpolarised-family(3) and @lem:d2-local-system descend to the base $B$ of the principal bundle of @lem:d2-plane-sextic-freeness(3), and the monodromy group (@def:transport-and-monodromy) of $\bT$ over $B$ is $\rho\qty{\pi_1(B,s)}=\rho\qty{\pi_1(V,s)}$, the group $\Gamma_\Co$ of @def:coble-family-unpolarized.
+The family and the local system of @lem:d2-unpolarised-family(3) and @lem:d2-local-system descend to the base $B$ of the principal bundle of @lem:d2-plane-sextic-freeness(3), and the monodromy group (@def:transport-and-monodromy) of $\bT$ over $B$ is $\rho\qty{\pi_1(B,s)}=\rho\qty{\pi_1(V,s)}$, the group $\Gamma_\Co$ of @def:coble-family-unpolarized. It is a subgroup of $\Orth(T_\Co)$ and lies in $\Orth^+(T_\Co)$ (@lem:monodromy-is-spinor-positive).
 :::
 
 ::: {.proof}
 
-The family and $\bT$ are $\PGL_3$-equivariant (@lem:d2-unpolarised-family(3)), so they descend to the base $B$ of the principal bundle $V\to B$. A loop of $B$ lifts to a path (@def:path-connectedness) of $V$ by local triviality and compactness of $[0,1]$; the lift ends at $gs$ for some $g\in\PGL_3$, and since $\PGL_3$ is connected a path from $e$ to $g$ turns it into a loop of $V$ over the given loop. Hence $\pi_1(V,s)\to\pi_1(B,[s])$ is surjective. The monodromy group (@def:transport-and-monodromy) of the descended system on $B$ is $\rho\qty{\pi_1(B,[s])}$, and its pullback to $V$ is $\bT$, so it equals $\rho\qty{\pi_1(V,s)}$, which is $\Gamma_\Co$ (@lem:d2a-monodromy-of-the-stack).
+The family and $\bT$ are $\PGL_3$-equivariant (@lem:d2-unpolarised-family(3)), so they descend to the base $B$ of the principal bundle $V\to B$. A loop of $B$ lifts to a path (@def:path-connectedness) of $V$ by local triviality and compactness of $[0,1]$; the lift ends at $gs$ for some $g\in\PGL_3$, and since $\PGL_3$ is connected a path from $e$ to $g$ turns it into a loop of $V$ over the given loop. Hence $\pi_1(V,s)\to\pi_1(B,[s])$ is surjective. The monodromy group (@def:transport-and-monodromy) of the descended system on $B$ is $\rho\qty{\pi_1(B,[s])}$, and its pullback to $V$ is $\bT$, so it equals $\rho\qty{\pi_1(V,s)}$, which is $\Gamma_\Co$ (@lem:d2a-monodromy-of-the-stack). Transport is an isometry (@prop:local-system-of-lattices-monodromy), so $\Gamma_\Co\leq\Orth(T_\Co)$, and the monodromy of a family over a connected base lies in the component of the orthogonal group that preserves the period (@lem:monodromy-is-spinor-positive).
 :::
 
 ::: {.lemma #lem:d2a-monodromy-of-the-stack title="The monodromy of the labelled base is the monodromy on $V$"}
@@ -650,7 +669,7 @@ is exact.
 
 ::: {.lemma #lem:d2-labelling-cover title="The labels are a principal $S_{10}$-bundle of stacks"}
 
-Let $B=V/\PGL_3$ and $\bar B=[B/S_{10}]=[V/(\SL_3\times S_{10})]$ be the labelled and unlabelled bases of @def:coble-family-unpolarized(2)--(3). Then the quotient map $p\colon B\to\bar B$ is a principal $S_{10}$-bundle in the category of stacks: the morphism
+Let $B=V/\PGL_3$ and $\bar B=[B/S_{10}]=[V/(\SL_3\times S_{10})]$ be the labelled and unlabelled bases of @not:d2-plane-sextic-base. Then the quotient map $p\colon B\to\bar B$ is a principal $S_{10}$-bundle in the category of stacks: the morphism
 $$S_{10}\times B\too B\times_{\bar B}B,\qquad (\sigma,b)\longmapsto (b,\sigma b)$$
 is an equivalence, and $p$ is finite étale of degree (@def:graded-object) $10!=3\,628\,800$. In particular
 Consequently the fundamental-group sequence of @lem:d2-label-lift(2) applies. The induced map of coarse spaces $V/\PGL_3\to V/(\SL_3\times S_{10})$ is not asserted to be a covering: the statement proved here is about the quotient stack, and no freeness of the $S_{10}$-action on $B$ is used.
@@ -686,7 +705,7 @@ Let $S=\Bl_{p_1,\dots,p_{10}}\PP^2$ be a classical Coble surface, $f\colon X\to 
 1. $f^*\colon\Pic(S)\to H^2(X)$ doubles the form, $f^*(x)\cdot f^*(y)=2\,x\cdot y$; its image is $S_\Co$; and $f^*(K_S^{\perp})$ is the orthogonal complement of $f^*H$ in $S_\Co$, of rank $10$, isometric to $U(2)\oplus E_8(2)$.
 2. Let $h_\Co\in K_S^{\perp}$ be a degree-$2$ numerical polarization of @def:coble-polarization-classes(2), $h_\Co=F_1+F_2$ with $F_i^2=0$ and $F_1\cdot F_2=1$. Then $\tilde h\definedas f^*h_\Co$ has $\tilde h^2=4$, $\tilde h=f^*F_1+f^*F_2$ with $(f^*F_i)^2=0$ and $f^*F_1\cdot f^*F_2=2$, and $f^*$ identifies the sublattice $\generators{F_1,F_2}\cong U$ with $\generators{f^*F_1,f^*F_2}\cong U(2)$.
 3. Consequently $\tilde h$ is the polarization vector (@def:polarization-vector) $h=e+f$ of [@AEGS25, Def. 2.5], $e,f$ the basis (@def:based-module) of $U(2)$ with $e^2=f^2=0$ and $e\cdot f=2$: the degree-$2$ numerical polarization $h_\Co$ of the Coble surface and the degree-$2$ polarization vector that [@AEGS25, Def. 2.5] fixes are the same vector of $S_\Co$, namely $f^*(h_\Co)$.
-4. No automorphism $g$ of $X$ with $g\circ\iota'=\iota'\circ g$ has $H^2(X)^g=f^*(K_S^{\perp})$: the invariant lattice $S_\En$ is not the invariant lattice of an effective involution of $X$ commuting with $\iota'$, so the two degree-$2$ structures are compared through $f^*$ and not through a second involution of the same K3.
+4. No automorphism $g$ of $X$ with $g\circ\iota'=\iota'\circ g$ has $H^2(X)^g=f^*(K_S^{\perp})$: the invariant lattice (@def:invariant_coinvariant_lattices) $S_\En$ is not the invariant lattice of an effective involution of $X$ commuting with $\iota'$, so the two degree-$2$ structures are compared through $f^*$ and not through a second involution of the same K3.
 :::
 
 ::: {.proof}
@@ -750,7 +769,7 @@ Let $R_{\gent}$ be the restricted stabilizer (@def:group-orbit) of @def:gamma-co
 
 (1) The first identity is [@prop:coble-degree-two-space(2)], whose proof identifies the stabilizer of $\tilde h$ in the isometries of $\lkt$ preserving $S_\Co$ with the image of $\Stab_{\gent}(\delta)$ in $\Orth(T_\Co)$. The moduli interpretation is @prop:coble-polarized-moduli(2)--(3): the period of a pair of type $\tilde h$ is well defined in $\bD(T_\Co)/\Gamma_{\tilde h}$, two Picard-general (@def:picard-general-coble) pairs are isomorphic exactly when their periods agree, and every point of the fibre of $\bD(T_\Co)/\Gamma_{\tilde h}\to\bD(T_\Co)/\Orth(T_\Co)$ is the period of such a pair. The remaining statements are @thm:normalization with $\Gamma=\gent$, whose three hypotheses are its own: $R_{\gent}$ is the image of $\Stab_{\gent}(\delta)$ (@prop:gamma-co-images(3)), $T_\Co=\delta^{\perp\ten}$, and $\bD(T_\Co)/R_{\gent}$ is normal.
 (2) A moduli problem whose marked period space is the normalization of a variety has that variety as its coarse space up to normalization; the composite $\bD(T_\Co)/R_{\gent}\to\Delta_2\hookrightarrow\fentwo$ is finite and surjective by (1), so its image is all of $\Delta_2$ and not a proper sublocus.
-(3) A monodromy operator of the family of @def:coble-family-degree-two preserves the local system $\bM$ of @lem:d2-local-system(2) and its section $\tilde h$, so its image in $\Orth(T_\Co)$ is the restriction of an isometry $\gamma$ of $\lkt$ with $\gamma(S_\Co)=S_\Co$ and $\gamma(\tilde h)=\tilde h$, that is an element of $\Gamma_{\tilde h}=R_{\gent}$; and it lies in $\Orth^+(T_\Co)$ by @lem:d2-local-system(4).
+(3) A monodromy operator of the family of @def:coble-family-degree-two preserves the local system $\bM$ of @lem:d2-local-system(2) and its section $\tilde h$, so its image in $\Orth(T_\Co)$ is the restriction of an isometry $\gamma$ of $\lkt$ with $\gamma(S_\Co)=S_\Co$ and $\gamma(\tilde h)=\tilde h$, that is an element of $\Gamma_{\tilde h}=R_{\gent}$; and it lies in $\Orth^+(T_\Co)$ by @lem:d2-labelled-base-monodromy.
 (4) $\Delta_2$ is the image of the irreducible $\bD(T_\Co)$ under a finite morphism, hence irreducible; equivalently $\gent$ is transitive on the $(-2)$-vectors of $\ten$ [@Ste91, (2.10) and the paragraph after it].
 :::
 
@@ -776,7 +795,7 @@ and not by an identification: the marked period space of the degree-$2$ family i
 
 (1) is the first item of @def:coble-family-degree-two: an object of that definition consists of an object $\mcs\to Y$ of @def:coble-family-unpolarized together with the section $\tilde h$. The local system $\bT$ of @lem:d2-local-system is built from $\mcx\to\mcs\to Y$ and the eleven relative divisors alone, so it is the same local system for the two structures, and transport along a loop of $Y$ (@def:transport-and-monodromy) is computed from $\bT$ alone; hence the two monodromy representations are the same map.
 
-(2) By the moduli property recorded in @lem:d2-unpolarised-family(3), $\bar B$ is the moduli stack of the objects of @def:coble-family-unpolarized, so the underlying object is the pullback of the universal family along a morphism $p\colon Y\to\bar B$. The argument of @lem:coble-family-base-change applies with the stack $\bar B$ in place of the space $B$: the pullback is trivialized over the inverse image of a trivializing open set of the universal family, and transport along a loop $\gamma$ of $Y$ is transport along $p\circ\gamma$, both being read on sections over the interval (@def:transport-and-monodromy). So the monodromy group is the image of $p_*\pi_1(Y,y)$ in that of $\bar B$, which is the display. The inclusion in $\Orth^+(T_\Co)$ is @lem:monodromy-is-spinor-positive applied to the underlying family, whose periods lie in one component because $Y$ is connected.
+(2) By @lem:d2a-moduli-stack, $\bar B$ is the moduli stack of the objects of @def:coble-family-unpolarized, so the underlying object is the pullback of the universal family along a morphism $p\colon Y\to\bar B$. The argument of @lem:coble-family-base-change applies with the stack $\bar B$ in place of the space $B$: the pullback is trivialized over the inverse image of a trivializing open set of the universal family, and transport along a loop $\gamma$ of $Y$ is transport along $p\circ\gamma$, both being read on sections over the interval (@def:transport-and-monodromy). So the monodromy group is the image of $p_*\pi_1(Y,y)$ in that of $\bar B$, which is the display. The inclusion in $\Orth^+(T_\Co)$ is @lem:monodromy-is-spinor-positive applied to the underlying family, whose periods lie in one component because $Y$ is connected.
 
 (3) By @lem:orbifold-monodromy-of-a-quotient the monodromy representation of the tautological local system of $\bD(T_\Co)/R_{\gent}$ is the projection $\pi_1^{\mathrm{orb}}\to R_{\gent}$, so its image is $R_{\gent}$. By @thm:coble-monodromy-versus-enriques(2) there is a primitive $\zeta\in T_\Co$ of square $2$ with $s_\zeta\in R_{\gent}$ and $s_\zeta\notin\Orth^+(T_\Co)$. A family of Coble surfaces over that orbifold with the tautological system as its $\bT$ would have monodromy group $R_{\gent}$ by (1), against @lem:monodromy-is-spinor-positive, which puts the monodromy of every Coble family in $\Orth^+(T_\Co)$.
 

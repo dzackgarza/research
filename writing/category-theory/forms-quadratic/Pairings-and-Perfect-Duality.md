@@ -45,7 +45,7 @@ $$
 \twoheadrightarrow\operatorname{corad}_r(b)\too0.
 \end{aligned}
 $$
-The pairing is **left nondegenerate (@def:polarization)** when $\radic_\ell(b)=0$, **right nondegenerate** when $\radic_r(b)=0$, and **nondegenerate** when both radicals vanish. It is **perfect (@def:polarization)** when both adjoints (@def:adjoint-morphism) are isomorphisms (@def:isomorphism-of-objects), equivalently when all four kernel and cokernel obstructions vanish.
+The pairing is a **left nondegenerate pairing** when $\radic_\ell(b)=0$, a **right nondegenerate pairing** when $\radic_r(b)=0$, and a **nondegenerate pairing** when both radicals vanish. It is a **perfect pairing** when $b^\ell$ and $b^r$ are isomorphisms (@def:isomorphism-of-objects), equivalently when all four kernel and cokernel obstructions vanish.
 :::
 
 ::: {.proposition #prop:perfect-pairing-projective title="Perfectness on finitely generated projective modules"}

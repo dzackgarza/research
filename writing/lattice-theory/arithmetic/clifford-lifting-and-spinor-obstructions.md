@@ -443,7 +443,7 @@ To obtain a type-IV example, take $L=M\oplus\langle2\rangle$, where the last sum
 
 ::: {.definition #def:vhs-monodromy title="Monodromy of a lattice-valued variation" defines="monodromy of a lattice-valued variation; $m_{\mathbb V}$; $\Gamma_{\mathbb V}$"}
 
-Let $\mathbb V_{\mathbb Z}$ be a polarized integral variation of Hodge structure (@def:polarized-integral-vhs) of weight two on a connected complex manifold $B$, with a base point (@def:complete-linear-system) $b$ and an isometry $\mathbb V_{\mathbb Z,b}\simeq L$. Its parallel transport (@cons:calculus-transport) defines
+Let $\mathbb V_{\mathbb Z}$ be a polarized integral variation of Hodge structure (@def:polarized-integral-vhs) of weight two on a connected complex manifold $B$, with a base point $b$ and an isometry $\mathbb V_{\mathbb Z,b}\simeq L$. Its parallel transport (@cons:calculus-transport) defines
 $$
 m_{\mathbb V}\colon\pi_1(B,b)\longrightarrow O(L),\qquad
 \Gamma_{\mathbb V}=\operatorname{im}m_{\mathbb V}.
