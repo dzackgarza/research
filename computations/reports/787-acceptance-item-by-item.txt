@@ -1,71 +1,80 @@
 research#787 (D2 of research#786) -- acceptance item by item
 
-Commit series: 902c7b1b1a (D2 rewritten), 8298d7199a (Gamma_Co on the quotient stack),
-6600fe5c7c (item 4, citation check; no-involution lemma), and this commit (D2a residues).
-Paths are relative to the repository root; line numbers are those of this commit.
+Commit: ed3c6e3e11 ("the D2a group is the monodromy of the stack family, not only
+of its pullback").  Supersedes the earlier text of this file, which reported items
+1-5 MET and which the review of 2026-11-20 06:48:27 (pinned to main@d277e333fc)
+refuted in U1-U8.  Paths are relative to the repository root; line numbers are
+those of this commit.
 
-Checks to run:
-  python3 computations/reports/787-gamma-citation-check.py     # exit 0
-  pandoc -f markdown -t native writing/coble/lattices-and-moduli/moduli-construction.md
-  python3 scripts/docs_check.py --source                        # no new findings on the touched pages
+ITEM 1. D2a: the unpolarized family, its base, its fibres, its lattice local system.
+VERDICT: NOT MET.
+  U1 PROVED at ed3c6e3e11.
+     Base: the quotient stack [V/SL_3], moduli-construction.md:416 and :429-431.
+     Family: lem:d2-unpolarised-family, :439, over V, descending to the stack at (3).
+     Local system: lem:d2-local-system, :471.
+     The missing surjectivity argument is lem:d2a-monodromy-of-the-stack, :488: for a
+     connected complex Lie group G acting on a connected complex analytic space V, every
+     loop (g, gamma-tilde) of [V/G] has transport phi_g(s)^{-1} o gamma-tilde^*, and a
+     path beta from e to g makes t -> beta(t)s a path of V whose transport is phi_g(s);
+     so the loop is homotopic to the loop gamma-tilde * sigma of V, and the monodromy
+     group on [V/G] equals rho(pi_1(V,s)).  Applied to G = SL_3, which is connected
+     (elementary matrices), and to the SL_3-equivariant T of lem:d2-local-system, this is
+     Gamma_Co = rho(pi_1(V,s)); the definition at :436 now cites it.
+     The coarse space B is no longer asserted to carry the family or its local system:
+     lem:d2-unpolarised-family(3), :441.
+  U2 NOT MET, unchanged.
+     The principal S_10-cover and the index 10!: lattices.md:213-227 and lem:d2-labelling-
+     cover, moduli-construction.md:494.  Freeness of S_10 on V does not give freeness on
+     B = V/SL_3.  The identification Gamma_Co = Otilde^+(T_Co): the two proofs at
+     lattices.md:243-249 and :251-253, the first calling the period map on V injective
+     although it is constant on PGL_3-orbits, the second using the 10!-cover.
+  U3 NOT MET, unchanged.
+     moduli-construction.md:408: "a projectivity fixing three non-collinear points being
+     the identity" (four points in general position are needed) and "the curve Z, which
+     has genus 10 > 1" (a ten-nodal plane sextic is rational, genus 0).
 
-ITEM 1. D2a: the unpolarized family, with base, fibres and lattice local system.
-VERDICT: MET.
-  base       moduli-construction.md:399  not:d2-plane-sextic-base -- B = V/PGL_3, V the
-             sextics with ten labelled ordinary double points; DK13 §3 (Izv. Math. 77:3, printed
-             p. 513), DZ99 Introduction (Amer. J. Math. 123, printed p. 79).
-  family     moduli-construction.md:439  lem:d2-unpolarised-family -- blowup of the ten
-             sections, C = -2K with O(C) = O(2D), D = 3H - sum E_i; double cover branched along C.
-             The fibres are Coble surfaces by proof: |−K| = empty, and |−2K| = {C} with h^0 = 1,
-             both by Bezout (36 < 40).
-  local syst moduli-construction.md:471  lem:d2-local-system -- T = M^perp in
-             R^2 f_* Z / torsion, fibre T_Co = <2> + E(2) of DK13 (3.6), rank 11, signature (2,9);
-             Gamma_Co = rho(pi_1) on the quotient stack.
-  labels     moduli-construction.md:499  lem:d2-labelling-cover -- B -> Bbar principal S_10.
-  period map moduli-construction.md:509  lem:d2a-period-map -- DK13 Prop. 3.2 (p. 513).
-  OPEN, printed at moduli-construction.md:593: that Bbar -> M_Co is birational.
+ITEM 2. D2b: the degree-2 family, its base, its fibres, its lattice local system.
+VERDICT: NOT MET, unchanged.
+  U4 No family over Delta_2 and no base change: def:coble-family-degree-two,
+     moduli-construction.md:570, and its "base" at :581-583.
+  U5 Only the smooth nondegenerate h_Co = F_1+F_2: moduli-construction.md:572-579;
+     the other nef degree-2 form h = 2F_1+R recorded at :629 is not in the moduli problem.
+  U6 The Enriques-quotient reading of the vector at :558, :567, :616, :619, and the
+     statement/proof mismatch of lem:d2-degree-two-polarization(4) (:559 statement,
+     :567 proof for an involution).
 
-ITEM 2. D2b: the degree-2 family, with base, fibres and lattice local system.
-VERDICT: MET.
-  object     moduli-construction.md:541  def:coble-family-degree-two -- the Coble degree-2
-             numerical polarization of def:coble-polarization-classes(2) (DK13 §8, p. 522).
-  dictionary moduli-construction.md:523  lem:d2-degree-two-polarization -- f^*(h_Co) = e+f
-             in U(2), squares 2 -> 4, AEGS25 Def. 2.5 (Nagoya 259, p. 587); item (4): no
-             automorphism commuting with iota' has invariant lattice f^*(K_S^perp).
-  DK13 M(2)  moduli-construction.md:577  rmk:d2-degree-two-vs-DK13 -- same period space and
-             the same degree 67456 over M_Co.
-  OPEN, printed: Gamma_Co,2 = R_gent; the unnodal locus.
-
-ITEM 3. The D2a period map is DK13 Prop. 3.2, hypotheses checked.
-VERDICT: MET. moduli-construction.md:509: the Torelli theorem identifies a K3 with the
-  Hodge structure on H^2; M_X = M and N_X = N by DK13 §3 (p. 513); open image by Prop. 3.2.
+ITEM 3. The D2a period map is DK13 Proposition 3.2, hypotheses checked.
+VERDICT: MET, unchanged.  lem:d2a-period-map, moduli-construction.md:538; DK13 Prop. 3.2,
+  printed p. 513.
 
 ITEM 4. The base of D2b is all of Delta_2.
-VERDICT: MET. moduli-construction.md:559: thm:normalization (lattices.md:567) with
-  Gamma = g_En makes D(T_Co)/R_gEn the normalization of Delta_2 = H_-2/g_En in
-  F_En,2 = D(T_En)/g_En; prop:coble-degree-two-space(2)
-  (polarizing-divisors-for-coble-moduli.md:314) gives R_gEn = Gamma_h, the group of the
-  degree-2 polarized Coble moduli; hence the marked base is the normalization of Delta_2 and its
-  image is all of Delta_2. Part (3): Gamma_Co,2 <= R_gEn cap O^+(T_Co).
-  OPEN and printed: equality Gamma_Co,2 = R_gEn (research#779).
+VERDICT: NOT MET, unchanged.
+  U7 moduli-construction.md:600 invokes prop:coble-polarized-moduli(2)-(3), whose
+     statements at polarizing-divisors-for-coble-moduli.md:261-262 are Picard-general.
+  U8 "up to normalization" at moduli-construction.md:593; the properness step of
+     thm:normalization (lattices.md:588, applied at :615) uses
+     lem:locally_closed_embedding_BB (lattices.md:106-114) outside its stated groups.
 
-ITEM 5. Every page using Gamma_Co or Gamma_Co,2 cites the D2 definitions.
-VERDICT: MET. Checker computations/reports/787-gamma-citation-check.py; it failed before
-  6600fe5c7c on two pages and now exits 0: 14 pages use the symbols, none uncited. Table:
-  computations/reports/787-gamma-citation-table.txt. Not covered: the slide
-  writing/talks/2026-07 PCRM/pcrm_pres.tex (a talk, not a page).
+ITEM 5. Every page using Gamma_Co or Gamma_{Co,2} cites the D2 definitions.
+VERDICT: NOT MET, unchanged.
+  computations/reports/787-gamma-citation-check.py:12 matches \Gamma_\Co but not the
+  braced \Gamma_{\Co}; coble-surface-structure-and-classification.md:107 and
+  ResearchStatement.md:155,158-159 use the braced spelling with no D2 citation.
 
-RELATED CORRECTIONS, each at its site.
-  GAPS.md:970 -- Gamma_Co was a subgroup of O(A_T_Co,q); now the monodromy group, with the
-    discriminant image named as such.
-  ksba.md:232 -- prop:gamma-co-2-line-stabilizer renamed Gamma^stab_Co,2; the identity with
-    Gamma_Co,2 denied in place.
-  cusp-diagram-calculations.md:235 -- Gamma_Co,2 was defined as R_gEn; now the monodromy
-    group of def:coble-family-degree-two, with Gamma_Co,2 <= R_gEn.
-  lattices.md:186 -- thm:gamma-co-is-full computes Gamma^taut_Co = O^+(T_Co), the
-    tautological system, and says it is not Gamma_Co; lattices.md:276 follows.
+CHECKS RUN AT THIS COMMIT
+  python3 scripts/docs_check.py --source
+    exit 1; 24 findings, all "citation is in no bibliography" on other pages; none on
+    moduli-construction.md.  These 24 are the pre-existing set.
+  python3 tests/engineering/test_coble_658_page_invariants.py
+    3/3 (every page parses under pandoc, every @ref resolves, no undefined macro).
+  python3 tests/engineering/test_coble_658_no_stale_text.py
+    3/4; the failure is the pre-existing absence of rmk:gamma-co-nodal-pair-proposal
+    from moduli-construction.md and lattice-and-diagram-conventions.md (0 occurrences at
+    the base commit eb369f514a as well).
+  The pytest suite itself was not run: it imports sage_extensions, which is not
+  available in this container.
 
-REMAINING, NOT CLAIMED.
-  (a) moduli-construction.md line 56 prints a covering reversed (reported by an independent
-      check, not verified here);
-  (b) the Gamma_Co,2 = R_gent equality and the unnodal locus are open, as printed.
+NEXT
+  One lemma, the one every index argument of U2 rests on: S_10 acts freely on B = V/SL_3.
+  The shape a proof must exclude is the review's: sigma[v] = [v] with sigma v = g v for
+  some g in PGL_3 and sigma v != v.
