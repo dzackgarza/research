@@ -463,7 +463,7 @@ On $F^{\mathrm{un}}_\Co$ the following are defined without a polarization: the B
 No interpretation of that toroidal compactification by stable pairs is known; the marking that a generalized Coxeter semifan needs is the missing datum of @warn:coble-marking, and by @prop:coble-degree-two-semifan-not-invariant the degree-$2$ structure supplies four different markings over the one cusp. At the cusp over $k=2$ the semifan of the degree-$2$ structure is the coarsening of this Coxeter fan by one irrelevant wall (@thm:coble-pair-semifan(1) and (2)).
 
 A statement about $\fco=\bD(T_\Co)/\Gamma_\Co$ (@def:gamma-co-groups(1)) depends on $\Gamma_\Co$.
-If $\Gamma_\Co=\Orth(T_\Co)$ (@thm:gamma-co-is-full), then $\fco=F^{\mathrm{un}}_\Co$ and the results of this page apply to it.
+If $\Gamma_\Co$ is the group $\Gamma^{\mathrm{taut}}_\Co=\Orth^+(T_\Co)$ of the tautological reading (@thm:gamma-co-is-full), then $\fco$ has the same coarse space as $F^{\mathrm{un}}_\Co$ and the results of this page apply to it; for the monodromy group of the geometric family, which is $\Gamma_\Co$ of @def:gamma-co-groups(1) and the group @def:coble-family-unpolarized defines, what applies is the bound of @prop:gamma-co-geometric-bound.
 If $\Gamma_\Co$ lies in $\ker\rho$ (@conj:gamma-co-stable), then every class of $S_\Co$ is invariant under the monodromy, $\fco$ maps finitely to $\bD(T_\Co)/\Gamma_P$ and to $\bD(T_\Co)/R_{\gent}$, and each of the two structures is defined on $\fco$ itself.
 By @thm:coble-polarized-family a family of Coble surfaces with a polarization has monodromy on $T_\Co$ whose image in $\Orth(q_{T_\Co})$ has order prime to $527$.
 

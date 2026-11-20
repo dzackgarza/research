@@ -967,7 +967,7 @@ A convention on the group $\Gamma_{\mathrm{Co}}$, whose definition moved under t
   cusp group, i.e. the $\Gamma_k$ of the next paragraph, and differs from $\Gamma_{\En,2}$ only by
   the $e$.  $\Gamma_{2d}$ is the degree-$2d$ K3 group of the Scattone chapter, settled in an earlier
   entry as the stable orthogonal group $\widetilde O^+(T_{2d})$.  $\Gamma_\Co$ is the Heegner
-  chapter's subgroup of $\Orth(A_{T_\Co}, q)$.  A bare $\Gamma$ belongs to the hypotheses of the cusp
+  chapter's monodromy group of the family of unpolarized Coble surfaces, a subgroup of $\Orth(T_\Co)$ (@def:gamma-co-groups(1), @def:coble-family-unpolarized); the subgroup of $\Orth(A_{T_\Co}, q)$ is where its discriminant image lies (@cor:gamma-co-lifting-criterion).  A bare $\Gamma$ belongs to the hypotheses of the cusp
   correspondence and should not be read as any one of the four.
   The lemma numbers, reconciled against the version of record.  The retained e-print's source order
   and the published numbering disagree by one in Section 3: assembling the e-print's numbered

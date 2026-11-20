@@ -220,15 +220,16 @@ already the stable model: $\overline{\mcz}_0=\mcz_0$
 
 ## The polarized Coble locus
 
-::: {.proposition #prop:gamma-co-2-line-stabilizer title="$\Gamma_{\Co, 2}$ is the stabilizer of the Heegner line"}
+::: {.proposition #prop:gamma-co-2-line-stabilizer title="$\Gamma^{\mathrm{stab}}_{\Co, 2}$, the lattice stabilizer of the Heegner line"}
 
-Let $\delta \in \ten$ be the $(-2)$ vector of @lem:coble-heegner-vector, so that $\delta^{\perp \ten} = T_\Co$, and let $\Gamma_{\Co, 2} = \Stab_{\Orth(\ten)}(T_\Co)$ as in @sec-moduli-construction.
+Let $\delta \in \ten$ be the $(-2)$ vector of @lem:coble-heegner-vector, so that $\delta^{\perp \ten} = T_\Co$, and let $\Gamma^{\mathrm{stab}}_{\Co, 2} \definedas \Stab_{\Orth(\ten)}(T_\Co)$ as in @sec-moduli-construction.
 Then
 $$
-\Gamma_{\Co, 2} \;=\; \Stab_{\Orth(\ten)}(\ZZ\delta)
+\Gamma^{\mathrm{stab}}_{\Co, 2} \;=\; \Stab_{\Orth(\ten)}(\ZZ\delta)
 \;\containing\; \Stab_{\Orth(\ten)}(\delta) ,
 $$
 and the inclusion has index $2$.
+The group $\Gamma_{\Co,2}$ itself is not this stabilizer: it is the monodromy group of the family of @def:coble-family-degree-two (@def:gamma-co-groups(5)), and what relates the two is the inclusion $\Gamma_{\Co,2}\leq R_{\gent}$ of @lem:d2-degree-two-base(3), not an identity.
 :::
 
 ::: {.proof}
