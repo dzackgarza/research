@@ -99,3 +99,18 @@ def test_item6_says_which_group_a_restriction_gives():
     assert "Stab" in body
     assert "not* thereby $\\Gamma_\\Co$" in body or "not" in body
     assert "@qst:coble-monodromy-equality" in body
+
+
+MAPS = "prop:coble-enriques-maps-and-the-vhs"
+
+
+def test_item6_the_two_maps_and_what_each_does_to_the_local_system():
+    body = _block(MC.read_text(encoding="utf-8"), MAPS)
+    # the Enriques map is a normalization of a Heegner divisor, not an open immersion
+    assert "@thm:normalization" in body and "Heegner" in body
+    assert "normalization" in body
+    # the meridian acts trivially on the hyperplane, so the restriction gives a bound
+    assert "@lem:d2-vanishing-reflections(3)" in body
+    assert "upper bound" in body
+    # the K3 map is a quotient and does not move the local system
+    assert "sub-local-system" in body

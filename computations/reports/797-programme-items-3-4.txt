@@ -216,3 +216,21 @@ THE TRANSFER, PROVED ON THE PAGE, AND ITEM 6 (this commit)
   restriction; for Gamma_Co that identification is research#780 and for Gamma_{Co,2} it
   is the open question named.  This is the reduction the issue's own sentence promises
   ("G1 (research#780) and D2 (research#787) are restated from item 6"), not an answer.
+
+ITEM 6, THE MAPS (this commit)
+  prop:coble-enriques-maps-and-the-vhs (moduli-construction.md:1260) records what the
+  two maps of item 2 do to the local system, with the volume's own statements:
+  1. Coble -> Enriques: T_Co = delta^perp in T_En, so the Coble period domain is a
+     closed submanifold of the Enriques one, and on the quotients the map is finite and
+     birational onto the (-2)-Heegner divisor, exhibiting F_Co as its normalization
+     (@thm:normalization) -- never an open immersion.
+  2. The meridian of that divisor is s_delta (@lem:d2-vanishing-reflections(3)) and acts
+     trivially on delta^perp = eta(T_Co), so restricting the Enriques system to the
+     divisor gives fibre T_Co and monodromy the image of Stab_{Gamma_En}(delta) =
+     R_{Gamma_En} = Otilde^+(T_Co) (@prop:gamma-co-images(1)): an upper bound for
+     Gamma_Co, not Gamma_Co.
+  3. Coble -> K3: (S, X -> S, iota) |-> X is a quotient by iota, fully faithful on the
+     groupoids (@lem:d0-coble-stack-in-involution-stack), and it does not move the local
+     system: the Coble system is the iota-anti-invariant summand T_Co of the K3 system
+     (@lem:d2-local-system(3)), so a sub-local-system, not a pullback or pushforward.
+  The test file now has eight assertions, all passing when run directly.
