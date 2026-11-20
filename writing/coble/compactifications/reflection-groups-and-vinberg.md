@@ -199,7 +199,7 @@ $$
 $$
 :::
 
-::: {.definition #def:weyl-chamber defines="Weyl chamber; simple system; $C_L^{\circ}$"}
+::: {.definition #def:weyl-chamber defines="Weyl chamber; simple system of a hyperbolic reflection group; $C_L^{\circ}$"}
 
 The **Weyl chambers** of $L$ are the connected components of
 $$

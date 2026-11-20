@@ -6,8 +6,8 @@ The symbols $A_n,D_n,E_n$ denote negative-definite root lattices. Coordinate rea
 
 ## General root lattices
 
-::: {.definition #def:root-lattice title="Simply-laced root lattices" defines="norm-$(-2)$ root; $R(L)$; simple system; $\Phi(L)$; root-span morphism; $\sigma_L$; simply-laced root lattice"}
-Let $L$ be a negative-definite integral lattice. Its **norm-$(-2)$ roots** are $R(L)\definedas L[-2]$ in the norm-shell notation of @def:lattice-basic-invariants. A **simple system** $\Phi(L)$ is a basis (@def:based-module) of the rational span of $R(L)$ consisting of roots such that every root is an integral combination of $\Phi(L)$ with coefficients either all nonnegative or all nonpositive. The **root-span morphism** is
+::: {.definition #def:root-lattice title="Simply-laced root lattices" defines="norm-$(-2)$ root; $R(L)$; simple system of a definite root lattice; $\Phi(L)$; root-span morphism; $\sigma_L$; simply-laced root lattice"}
+Let $L$ be a negative-definite integral lattice. Its **norm-$(-2)$ roots** are $R(L)\definedas L[-2]$ in the norm-shell notation of @def:lattice-basic-invariants. A **simple system** $\Phi(L)$ of $L$ is a basis (@def:based-module) of the rational span of $R(L)$ consisting of roots such that every root is an integral combination of $\Phi(L)$ with coefficients either all nonnegative or all nonpositive. The **root-span morphism** is
 $$
 \begin{aligned}
 \sigma_L\colon\bZ^{(R(L))}&\longrightarrow L,\\

@@ -34,7 +34,7 @@ b^r\colon B&\longrightarrow\Hom_R(A,W),
 &b&\longmapsto(a\mapsto b(a,b)).
 \end{aligned}
 $$
-Here the symbols in parentheses designate evaluation (@def:dualizable-object) of the original pairing; the adjoints (@def:adjoint-morphism) are morphisms in $R\text{-}\mathbf{Mod}$.
+Here the symbols in parentheses designate evaluation (@def:dualizable-object) of the original pairing; these two curried morphisms are morphisms in $R\text{-}\mathbf{Mod}$.
 
 The **left radical (@def:two-witnesses)**, **right radical**, **left coradical**, and **right coradical** are the kernels (@def:kernel-cokernel) and cokernels (@def:kernel-cokernel) in the complete exact (@def:exact-complex) sequences
 $$
@@ -45,7 +45,7 @@ $$
 \twoheadrightarrow\operatorname{corad}_r(b)\too0.
 \end{aligned}
 $$
-The pairing is **left nondegenerate (@def:polarization)** when $\radic_\ell(b)=0$, **right nondegenerate** when $\radic_r(b)=0$, and **nondegenerate** when both radicals vanish. It is **perfect (@def:polarization)** when both adjoints are isomorphisms (@def:isomorphism-of-objects), equivalently when all four kernel and cokernel obstructions vanish.
+The pairing is **left nondegenerate (@def:polarization)** when $\radic_\ell(b)=0$, **right nondegenerate** when $\radic_r(b)=0$, and **nondegenerate** when both radicals vanish. It is **perfect (@def:polarization)** when both adjoints (@def:adjoint-morphism) are isomorphisms (@def:isomorphism-of-objects), equivalently when all four kernel and cokernel obstructions vanish.
 :::
 
 ::: {.proposition #prop:perfect-pairing-projective title="Perfectness on finitely generated projective modules"}

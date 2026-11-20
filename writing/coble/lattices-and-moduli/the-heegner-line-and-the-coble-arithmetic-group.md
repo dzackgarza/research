@@ -1147,7 +1147,7 @@ Let the branch curve $B$ have at most one node, at a $\tau$-fixed point $p$ and 
 1. If $B$ has one node, let $\widehat X_b$ be the resolved K3 surface of @prop:del-pezzo-type-on-the-resolution, the double cover of $\widehat Y = \Bl_p(\PP^1\times\PP^1)$ branched along the smooth proper transform (@def:strict-transform) $\widetilde B$, with $e_b = \widehat\pi^*h_1$, $f_b = \widehat\pi^*h_2$ the ruling pullbacks (@def:pullback-square) and $D_b = \widehat\pi^*e$ the exceptional $(-2)$-curve. Then
 $$S_{\mathrm{dP},b}=H^2(\widehat X_b,\ZZ)^{\widehat\iota_{\mathrm{dP}}=+1}
 =\Lambda\definedas\langle e_b,f_b,[D_b]\rangle\cong U(2)\perp\langle-2\rangle,\qquad \det S_{\mathrm{dP},b} = 8,$$
-and the index-$2$ overlattice $U\perp\langle-2\rangle$ (determinant $2$) does not occur. In particular every $I_{\mathrm{dP}}$-invariant class pairs evenly with each ruling class.
+and the index-$2$ overlattice (@def:overlattice) $U\perp\langle-2\rangle$ (determinant $2$) does not occur. In particular every $I_{\mathrm{dP}}$-invariant class pairs evenly with each ruling class.
 2. If $B$ is smooth, then $S_{\mathrm{dP}} = \pi^*H^2(Y,\ZZ)\cong U(2)$.
 :::
 
@@ -2987,6 +2987,11 @@ The pairing of two vectors of $L^*$ lies in $\tfrac12\ZZ$.
 By @def:2elementary-roots, the roots of the $2$-elementary lattice $T_\Co$ are the short roots, of square $-2$, and the long roots, of square $-4$ and divisibility (@def:lattice-divisibility) $2$.
 :::
 
+::: {.definition #def:reflective-set title="The reflective set of an arithmetic group" defines="reflective set"}
+
+Let $T$ be an even lattice (@def:even-lattice) and $\Gamma\leq\Orth(T)$. The *reflective set* of $\Gamma$ is the set of primitive vectors $v\in T$ with $v^2\neq0$ whose reflection $s_v\colon x\mapsto x-2\frac{(x,v)}{v^2}v$ is an element of $\Gamma$.
+:::
+
 ::: {.proposition #prop:gamma-co-reflective-set title="The reflective set of the stable Coble group"}
 
 Let $T_\Co = B(2)$ be the Coble lattice of @prop:tco-as-twist, even of signature $(2,9)$ and determinant $-2048$, so that every primitive vector of $T_\Co$ has divisibility $2$ (@lem:divisibilityAlwaysTwoTco), and let $\widetilde\Orth^+(T_\Co) = \Orth^+(T_\Co)\intersect\ker\rho_{T_\Co}$, with $\Orth^+(T_\Co) = \Theta_\bR(T_\Co)$ of @def:lattice-spinor-kernels and $\spinornorm_\bR$ the real spinor norm of @def:spinor-norm.
@@ -3002,7 +3007,7 @@ Then, for a primitive $v$, $s_v$ is an isometry of $T_\Co$ exactly for $v^2\in\{
 2. if $v^2 = 2$ or $v^2 = 4$ then $s_v\notin\Orth^+(T_\Co)$, hence $s_v\notin\widetilde\Orth^+(T_\Co)$; for $v^2 = 2$ one has in addition $s_v\in\ker\rho_{T_\Co}$, and for $v^2 = 4$ never;
 3. if $v^2 = -4$ then $s_v\in\Orth^+(T_\Co)$ and $s_v\notin\ker\rho_{T_\Co}$.
 
-Consequently the reflective set of $\widetilde\Orth^+(T_\Co)$ — the primitive vectors of $T_\Co$ whose reflection lies in $\widetilde\Orth^+(T_\Co)$ — is exactly the set of primitive short roots, which is every vector of square $-2$, and no long root (@def:2elementary-roots) lies in it.
+Consequently the reflective set (@def:reflective-set) of $\widetilde\Orth^+(T_\Co)$ is exactly the set of primitive short roots, which is every vector of square $-2$, and no long root (@def:2elementary-roots) lies in it.
 :::
 
 ::: {.proof}

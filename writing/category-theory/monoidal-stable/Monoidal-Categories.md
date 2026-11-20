@@ -177,7 +177,11 @@ $$
 \mu\circ(\zeta\times 1)\circ\delta=\eta\circ{!}_c,
 $$
 where $\delta\colon c\to c\times c$ is the diagonal (@def:polarization-functors) and $!_c\colon c\to 1$ [@Mac98, §III.6].
-Group objects of $\mathbf{Set}$, of $\mathbf{Top}$, and of the category of smooth manifolds (@def:smooth-manifold) are groups (@def:group), topological groups, and Lie groups.
+:::
+
+::: {.remark #rmk:group-objects-of-set-top-man title="Classical, topological and Lie groups"}
+
+Group objects of $\mathbf{Set}$, of $\mathbf{Top}$, and of the category of smooth manifolds (@def:smooth-manifold) are classical groups (@def:group), topological groups, and Lie groups; in particular $\mathbf{Grp}=\operatorname{Grp}(\mathbf{Set})$.
 :::
 
 The inverse axiom uses the diagonal, which the cartesian structure supplies; group objects are therefore defined for a cartesian monoidal structure, while monoid objects need only the data of @def:monoidal-category.

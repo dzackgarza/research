@@ -77,7 +77,7 @@ For a family of polarized K3 surfaces over $S$ with monodromy representation (@d
 :::
 
 ::: {.definition #def:pullback-of-local-system title="Inverse image of a sheaf and pullback of a local system" defines="inverse image sheaf; pullback of a sheaf; pullback of a local system"}
-Let $\pi\colon X\to Y$ be a continuous map and $\mathcal F$ a sheaf on $Y$. The *inverse image* (pullback) $\pi^{-1}\mathcal F$ is the sheaf on $X$ with $\pi^{-1}\mathcal F(U)=\varinjlim_{\pi(U)\subset V}\mathcal F(V)$, the limit over open $V\subset Y$ containing $\pi(U)$ [@Voi07a, §5.3.2]. Its stalk at $x\in X$ is the stalk (@def:stalk) $\mathcal F_{\pi(x)}$. For a local system $\mathcal F$ on $Y$, locally isomorphic to a constant sheaf of stalk $G$ [@Voi07a, Definition 9.8], the *pullback* $\pi^{-1}\mathcal F$ is again a local system of stalk $G$: if $\mathcal F|_V\cong\underline G_V$, then $\pi^{-1}\mathcal F|_{\pi^{-1}V}\cong\underline G_{\pi^{-1}V}$, since $\pi^{-1}$ takes the constant sheaf to the constant sheaf.
+Let $\pi\colon X\to Y$ be a continuous map and $\mathcal F$ a sheaf on $Y$. The *inverse image* (pullback (@def:pullback-square)) $\pi^{-1}\mathcal F$ is the sheaf on $X$ with $\pi^{-1}\mathcal F(U)=\varinjlim_{\pi(U)\subset V}\mathcal F(V)$, the limit over open $V\subset Y$ containing $\pi(U)$ [@Voi07a, §5.3.2]. Its stalk at $x\in X$ is the stalk (@def:stalk) $\mathcal F_{\pi(x)}$. For a local system $\mathcal F$ on $Y$, locally isomorphic to a constant sheaf of stalk $G$ [@Voi07a, Definition 9.8], the *pullback* $\pi^{-1}\mathcal F$ is again a local system of stalk $G$: if $\mathcal F|_V\cong\underline G_V$, then $\pi^{-1}\mathcal F|_{\pi^{-1}V}\cong\underline G_{\pi^{-1}V}$, since $\pi^{-1}$ takes the constant sheaf to the constant sheaf.
 :::
 
 ::: {.definition #def:primitive-cohomology title="Primitive cohomology" defines="primitive cohomology; primitive cohomology of a Kähler manifold"}
@@ -376,7 +376,7 @@ On a smooth real manifold $M$, a *Riemannian metric* is a smooth symmetric pairi
 :::
 
 :::{.definition #def:calculus-pullback-metric title="Pullback of a Riemannian metric" defines="pullback of a Riemannian metric; pullback metric"}
-Let $F\colon M\to N$ be a smooth map of smooth manifolds and $g$ a Riemannian metric (@def:calculus-riemannian) on $N$. The pullback $F^*g$ is a smooth $2$-tensor field on $M$. If it is positive definite, it is a Riemannian metric on $M$, the *pullback metric* determined by $F$ [@Lee13, Chapter 13, §Pullback Metrics].
+Let $F\colon M\to N$ be a smooth map of smooth manifolds (@def:smooth-manifold) and $g$ a Riemannian metric (@def:calculus-riemannian) on $N$. The pullback $F^*g$ is a smooth $2$-tensor field on $M$. If it is positive definite, it is a Riemannian metric on $M$, the *pullback metric* determined by $F$ [@Lee13, Chapter 13, §Pullback Metrics].
 :::
 
 On an algebraic scheme, perfectness is expressed by $g^\flat$ being an isomorphism. Positivity requires ordered real fibers. In particular, positivity at real points of an $\mathbb R$-scheme does not replace perfectness on the scheme: the real locus can be empty. A fiberwise test for perfectness must concern every point, or must use hypotheses that justify a smaller test set.

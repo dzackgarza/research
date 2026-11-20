@@ -131,9 +131,9 @@ b_{\mathcal M}.
 The representing equivalence includes arrows and all higher cells (@def:cells) between families, not only the existence of $F$.
 :::
 
-::: {.definition #def:higher-category title="The category of higher categories" defines="$\mathbf{Cat}_{\infty,\infty}$; $\widetilde{\mathbf{Cat}}_{\infty,\infty}$; $p_{\mathcal V}$; higher category; decoded higher category"}
+::: {.definition #def:cat-infty title="The category of higher categories" defines="$\mathbf{Cat}_{\infty,\infty}$; $\widetilde{\mathbf{Cat}}_{\infty,\infty}$; $p_{\mathcal V}$"}
 
-Let $\mathcal M_{\mathrm{cocart}}$ be the replete (@def:subcategory) base-change-stable class of $1$-cells $G$ in $\mcu$ for which $\operatorname{Dec}_{\mcu}(G)$ is a $\mcu$-small cocartesian fibration in $\mck$.
+Let $\mathcal M_{\mathrm{cocart}}$ be the base-change-stable class, closed under equivalence (@def:equivalence-of-objects), of $1$-cells $G$ in $\mcu$ for which $\operatorname{Dec}_{\mcu}(G)$ is a $\mcu$-small cocartesian fibration in $\mck$.
 Assume that it has a classifier
 $$
 p_{\mathcal M_{\mathrm{cocart}}}\colon
@@ -203,11 +203,20 @@ p_{\mcv}
 $$
 The representing equivalence (@def:equivalence-of-objects) determines $h_{\mathbf{Cat}_{\infty,\infty}}$, and hence $\mathbf{Cat}_{\infty,\infty}$, up to equivalence as the classifier of small cocartesian families.
 
+:::
+
+::: {.definition #def:higher-category title="Higher categories" defines="higher category"}
+
 A higher category is a point
 $$
-h_C\colon *\too\mathbf{Cat}_{\infty,\infty}.
+h_C\colon *\too\mathbf{Cat}_{\infty,\infty}
 $$
-Its decoded higher category is defined by the cartesian square
+of the classifier of @def:cat-infty.
+:::
+
+::: {.definition #def:decoded-higher-category title="The decoded higher category" defines="decoded higher category"}
+
+The decoded higher category of a higher category (@def:higher-category) $h_C$ is its decoding (@def:universe), exhibited by the cartesian square of $\mck$
 
 \begin{tikzcd}
 C:=\displaystyle\int_*h_C
@@ -225,7 +234,7 @@ C:=\displaystyle\int_*h_C
 \end{tikzcd}
 
 An object of $C$ is a point $x\colon *\to C$.
-When $C=\mathbf{Cat}_{\infty,\infty}$, such a point is itself the classifying point of a higher category, which is decoded by the same pullback (@def:pullback-square).
+When $C=\mathbf{Cat}_{\infty,\infty}$, such a point is itself the classifying point of a higher category, which is decoded in the same way.
 More generally, a functor $R\colon C\to\mathbf{Cat}_{\infty,\infty}$ sends a point $x\colon *\to C$ to the classifying point $R\circ x$ of a higher category.
 :::
 
@@ -279,7 +288,7 @@ For $B=*$ and $F^{\sharp}=h_C$, this recovers the points $x\colon *\to C$ of @de
 
 ::: {.definition #def:internal-hom title="Local hom-objects" defines="local hom-object; $[x,y]_C$; hom bifunctor $[-,-]_C$; identity point $\id_x$; composition functor; functor higher category $[C,D]_{\mathbf{Cat}_{\infty,\infty}}$"}
 
-For every decoded higher category (@def:higher-category) $C$ and points $x,y\colon *\to C$, fix a classifying point
+For every decoded higher category (@def:decoded-higher-category) (@def:higher-category) $C$ and points $x,y\colon *\to C$, fix a classifying point
 $$
 h_{[x,y]_C}\colon
 *
