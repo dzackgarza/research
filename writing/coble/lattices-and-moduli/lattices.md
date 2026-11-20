@@ -140,7 +140,7 @@ The equality
 $$
 \Gamma_\Co=\widetilde\Orth^+(T_\Co)
 $$
-was the stable-group conjecture of this chapter. On the labelled base, the base that @def:coble-family-unpolarized assigns to $\Gamma_\Co$, what is proved is the inclusion $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$; the equality holds exactly when $\Gamma_\Co$ contains $-\id_{T_\Co}$ and is open (@thm:gamma-co-is-stable, @qst:gamma-co-sign-is-realised). On the unlabelled base the group is strictly larger (@cor:gamma-co-inclusions(2)), and on the coarse space there is no family at all; the tautological local system of that quotient has monodromy $\Orth^+(T_\Co)$, which is not $\Gamma_\Co$ (@thm:gamma-co-is-full). Statements elsewhere in the book that were conditional on this equality therefore hold on the labelled base, and statements about the other two bases name their group.
+was the stable-group conjecture of this chapter. On the labelled base, the base that @def:coble-family-unpolarized assigns to $\Gamma_\Co$, what is proved is the inclusion $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$; the equality implies that $\Gamma_\Co$ contains $-\id_{T_\Co}$, and which subgroup it is beyond the inclusion is open (@thm:gamma-co-is-stable(2), @qst:gamma-co-sign-is-realised). On the unlabelled base the group is strictly larger (@cor:gamma-co-inclusions(2)), and on the coarse space there is no family at all; the tautological local system of that quotient has monodromy $\Orth^+(T_\Co)$, which is not $\Gamma_\Co$ (@thm:gamma-co-is-full). Statements elsewhere in the book that were conditional on this equality therefore hold on the labelled base, and statements about the other two bases name their group.
 :::
 
 ::: {.remark #rmk:gamma-co-nodal-pair-proposal title="The $(-4)$-reflection: what is computed, and the three inputs that are missing"}
@@ -213,8 +213,9 @@ which is onto. Hence $\Gamma\subseteq\Gamma^{\mathrm{taut}}_\Co$, and the two in
 Let $B=V/\PGL_3$ and $\bar B=[V/(\SL_3\times S_{10})]$ be the labelled and unlabelled bases of @def:coble-family-unpolarized(2)--(3), with the local system $\bT$ of @lem:d2-local-system and the monodromy groups
 $$\Gamma_\Co(B)=\rho\qty{\pi_1(B,s)},\qquad \Gamma_\Co(\bar B)=\rho\qty{\pi_1(\bar B,s)}$$
 of @lem:d2-local-system(4),(5), the base point of $B$ lying over that of $\bar B$. Then
-$$\Gamma_\Co(B)=\Gamma_\Co(\bar B)\cap\ker\bar\rho,\qquad [\Gamma_\Co(\bar B):\Gamma_\Co(B)]=\abs{\bar\rho\qty{\Gamma_\Co(\bar B)}},$$
-which divides $10!=3\,628\,800$ by @prop:gamma-co-geometric-bound(2).
+1. $\Gamma_\Co(B)=\Gamma_\Co(\bar B)\cap\ker\bar\rho$.
+2. $[\Gamma_\Co(\bar B):\Gamma_\Co(B)]=\abs{\bar\rho\qty{\Gamma_\Co(\bar B)}}$.
+This index is a divisor of $10!=3\,628\,800$ by @prop:gamma-co-geometric-bound(2); it equals $10!$ only if $\bar\rho(\Gamma_\Co(\bar B))=\Theta$, which is not proved (@rmk:gamma-co-orbifold-obstruction).
 :::
 
 ::: {.proof}
@@ -237,18 +238,16 @@ $$\rho\colon\pi_1(V,s)\too\Orth(T_\Co)$$
 be its monodromy representation, whose image is $\Gamma_\Co$ (@def:gamma-co-groups(1)). Then
 
 1. $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$. This is proved.
-2. $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ if and only if $\Gamma_\Co$ contains an element acting as $-\id$ on $T_\Co$. Of the two alternatives, the inclusion is the one established here; which of them holds is @qst:gamma-co-sign-is-realised, and no argument for either is given.
+2. If $\Gamma_\Co$ is all of $\widetilde\Orth^+(T_\Co)$, then $\Gamma_\Co$ contains an element acting as $-\id$ on $T_\Co$. This is a necessary condition, not a sufficient one: the converse is not asserted, and for what it is worth it is not what the period map decides, since $-\id$ acts trivially on $\bD(T_\Co)$ (@prop:coble-period-domain(1)) and so is invisible to it. Which subgroup of $\widetilde\Orth^+(T_\Co)$ the group $\Gamma_\Co$ is, beyond the inclusion, is @qst:gamma-co-sign-is-realised.
 
-Accordingly $\fco=\bD(T_\Co)/\Gamma_\Co$ has the coarse space of $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ if and only if the sign is realized; what holds unconditionally is that $\fco$ maps to it, with finite fibres.
+Accordingly $\fco=\bD(T_\Co)/\Gamma_\Co$ maps to $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$, since $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$, and the two have the same coarse space only if $\Gamma_\Co$ is all of $\widetilde\Orth^+(T_\Co)$; neither the index nor the equality is known.
 :::
 
 ::: {.proof}
 
 1. This is @lem:coble-family-labelled-monodromy; here is the same argument with the two halves named. The eleven classes $\varepsilon_0,\dots,\varepsilon_{10}$ are values of global sections of $\bV$ (@lem:d2-local-system(2)), so every $\rho(\gamma)$ fixes them and acts trivially on $M=\generators{2}\oplus\generators{-2}^{\oplus10}$ and hence on $A_M$. By @lem:coble-discriminant-actions-conjugate its discriminant action on $T_\Co$ is conjugate to its action on $A_M$, so it is trivial and $\rho(\gamma)\in\discriminantkernel{T_\Co}$; and $\rho(\gamma)\in\Orth^+(T_\Co)$ by @lem:monodromy-is-spinor-positive. Hence $\rho(\gamma)\in\widetilde\Orth^+(T_\Co)$.
 
-2. *If.* Suppose $-\id\in\Gamma_\Co$. The image of $\Gamma_\Co$ in $\Orth(T_\Co)/\{\pm\id\}$ is then the image of $\widetilde\Orth^+(T_\Co)$: for the labelled base this is what the period map computes up to sign, the deck group of the marking cover being the monodromy group modulo the isometries acting trivially on $\bD(T_\Co)$, and those are exactly $\{\pm\id\}$ (@prop:lifted-period-map, @eq-period-map-equivariance). Since $\Gamma_\Co$ and $\widetilde\Orth^+(T_\Co)$ have the same image modulo $\{\pm\id\}$ and $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$ by 1., containing $-\id$ forces equality.
-
-*Only if.* If $\Gamma_\Co$ is all of $\widetilde\Orth^+(T_\Co)$ then $-\id\in\Gamma_\Co$, because $-\id\in\widetilde\Orth^+(T_\Co)$: it lies in $\Orth^+(T_\Co)$ by @lem:minus-identity-spinor-norm and in $\ker\bar\rho$ because $A_{T_\Co}\cong(\ZZ/2)^{11}$ (@prop:coble-discriminant-group).
+2. *The implication of 2.* If $\Gamma_\Co$ is all of $\widetilde\Orth^+(T_\Co)$ then $-\id\in\Gamma_\Co$, because $-\id\in\widetilde\Orth^+(T_\Co)$: it lies in $\Orth^+(T_\Co)$ by @lem:minus-identity-spinor-norm and in $\ker\bar\rho$ because $A_{T_\Co}\cong(\ZZ/2)^{11}$ (@prop:coble-discriminant-group).
 
 This is where the determination stops. The step of the earlier proof at this place was that $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$, taken from the orbifold statement of [@YZZ25, Prop. 6.6]; that inference is withdrawn in @rmk:gamma-co-orbifold-obstruction, and with it the equality of 2. in the case at hand.
 :::
@@ -297,7 +296,11 @@ Let $\bar B$ be the unlabelled base of @def:coble-family-unpolarized(2), let $\m
 
 *The local systems.* [@YZZ25, §3.1] puts $P_F=\generators{H_F}\oplus L_F$, with $L_F=A_1^{\oplus10}$ generated by the classes of the ten exceptional curves of the resolution and $H_F$ the class of the pullback of a line, and $Q_F=P_F^{\perp\Lambda_F}$. The span $\bM$ of @lem:d2-local-system(2) is generated by the class $\varepsilon_0$ of the pullback of a line and the classes $\varepsilon_1,\dots,\varepsilon_{10}$ of the ten exceptional curves, and $\bT=\bM^{\perp}$. By the identification of the fibres the two generating sets are the same classes of $H^2(X_F)$, so $P_F=\bM$ and $Q_F=\bT$.
 
-The proof stops at the stalk. The family is a family over the *labelled* base and over the stack $\bar B$; the identification of the stalks above does not compare the two families at an orbifold point, where the isotropy acts on the stalk and the actions must agree. No such comparison is made here (@rmk:gamma-co-orbifold-obstruction).
+The proof stops at the stalk, and that is all that is used. Two remarks on why the remaining comparisons are not needed for what this book proves.
+
+*The labelled base has no isotropy to compare.* $\PGL_3$ acts freely on $V$ and $B=V/\PGL_3$ is a space (@lem:d2-plane-sextic-freeness(2)--(3)); on $B$ the local system $\bT$ is an ordinary local system of lattices, its monodromy is $\rho(\pi_1(B,s))$, and there is no stabilizer acting on a fibre to identify. Every statement this book makes about $\Gamma_\Co$ is a statement about $B$ (@def:coble-family-unpolarized(3), @lem:d2a-family-is-yzz).
+
+*On the unlabelled base the comparison is not made, and nothing below needs it.* At a sextic carrying a projectivity that permutes its nodes, the image of that projectivity is an orbifold point of $\bar B$, and comparing the two families there would require the isotropy actions on the stalk to agree — the comparison that @rmk:gamma-co-orbifold-obstruction shows is obstructed. The only statement about $\bar B$ that this book uses is the containment $\Gamma_\Co(\bar B)\subseteq\Gamma_{10A_1}$, which is read off the permuted classes and needs no isotropy (@prop:gamma-co-geometric-bound(2)).
 :::
 
 ::: {.theorem #thm:gamma-co-sextic-group title="The sextic base: $\Gamma_{10A_1}=\Orth^+(T_\Co)\intersect\bar\rho^{-1}(\Theta)$, and the two indices"}
@@ -333,7 +336,7 @@ $$[\Orth^+(T_\Co):\Gamma_{10A_1}]=\frac{\abs{\Orth(q_{T_\Co})}}{10!}=2^{13}\cdot
 
 ::: {.corollary #cor:gamma-co-inclusions title="What G1 decides for the stable group"}
 
-1. *The labelled base, the base of $\Gamma_\Co$* (@def:coble-family-unpolarized). What is proved is $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable(1)). The equality, and with it @conj:gamma-co-stable on this base, holds exactly when $\Gamma_\Co$ contains $-\id_{T_\Co}$ (@thm:gamma-co-is-stable(2), @qst:gamma-co-sign-is-realised), and is not proved. Accordingly the counts stated for the stable quotient --- $527$ $0$-cusps (@thm:coble-zero-cusp-count(2)) and $189\,720$ $1$-cusps (@thm:plane-fibre(3)) --- are counts for $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$, and are counts for $\fco$ only under that hypothesis.
+1. *The labelled base, the base of $\Gamma_\Co$* (@def:coble-family-unpolarized). What is proved is $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable(1)). The equality, and with it @conj:gamma-co-stable on this base, is not proved: containing $-\id_{T_\Co}$ is necessary for it (@thm:gamma-co-is-stable(2)) and not sufficient, and where $\Gamma_\Co$ sits inside $\widetilde\Orth^+(T_\Co)$ is @qst:gamma-co-sign-is-realised. Accordingly the counts stated for the stable quotient --- $527$ $0$-cusps (@thm:coble-zero-cusp-count(2)) and $189\,720$ $1$-cusps (@thm:plane-fibre(3)) --- are counts for $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$, and are counts for $\fco$ only under that hypothesis.
 2. *The unlabelled base.* $\Gamma_\Co(\bar B)=\Gamma_{10A_1}=\Orth^+(T_\Co)\intersect\bar\rho^{-1}(\Theta)$ (@thm:gamma-co-sextic-group), so
 $$\widetilde\Orth^+(T_\Co)\subsetneq\Gamma_{10A_1}\subsetneq\Orth^+(T_\Co),\qquad[\Gamma_{10A_1}:\widetilde\Orth^+(T_\Co)]=10!,\qquad[\Orth^+(T_\Co):\Gamma_{10A_1}]=12\,951\,552 .$$
 The inclusion $\Gamma_\Co\subseteq\Gamma_\Co(\bar B)$ is @lem:d2-local-system(5), and its index is $10!$ by @thm:gamma-co-sextic-group(4).
