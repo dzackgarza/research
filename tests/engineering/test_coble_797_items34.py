@@ -187,3 +187,19 @@ def test_the_sign_reconciliation_names_both_moduli_problems():
     assert "@lem:d2-vanishing-reflections(4)" in body
     assert "@thm:no-loop-carries-the-sign" in body
     assert "two moduli problems" in body or "different moduli problems" in body
+
+
+COBLE_LOCUS = "prop:the-coble-locus-in-the-period-domain"
+
+
+def test_the_bad_locus_is_closed_and_the_coble_locus_is_its_complement():
+    body = _block(MC.read_text(encoding="utf-8"), COBLE_LOCUS)
+    assert "locally finite" in body
+    assert "closed analytic subset" in body
+    # the characterization, in both directions
+    assert "labelled Coble cover" in body
+    assert "not*" in body or "not" in body
+    # and the honest note that it is countable, closed only by local finiteness
+    text = MC.read_text(encoding="utf-8")
+    tail = text[text.index("#" + COBLE_LOCUS):]
+    assert "local finiteness is doing the work" in tail

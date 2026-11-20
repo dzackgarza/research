@@ -1485,6 +1485,26 @@ Two theorems of the volume, both proved, appear to disagree about the sign, and 
 These are consistent only because the objects differ: the first is the unpolarized family over the labelled base, the second the degree-$2$ polarized construction, and the map between them is not an isomorphism of local systems. The consequence for this page is that the phrase "the loop monodromy is an index-two subgroup" is *not* available for the unpolarized family: there the sign is a reflection word, hence a loop, and no index-two gap is asserted. Whether the two moduli problems see the same lattice group is @qst:coble-monodromy-equality, now decided negatively for the stabilizer comparison (@prop:coble-monodromy-equality-false) but not for the sign.
 :::
 
+::: {.proposition #prop:the-coble-locus-in-the-period-domain title="Which pseudo-ample $M$-polarized $\mathrm{K3}$ surfaces are Coble covers, and why the bad locus is a closed analytic subset"}
+Let $\bD=\bD(T_\Co)^+$, let $\Delta(T_\Co)=\theset{\delta\in T_\Co:\delta^2=-2}$, and let
+$$Z\definedas\bigcup_{\delta\in\Delta(T_\Co)}\qty(H_\delta\intersect\bD),\qquad H_\delta=\theset{\pi\in\bD:\delta\perp\pi}.$$
+Then:
+
+1. $Z$ is a closed analytic subset of $\bD$, locally finite: every compact $K\subset\bD$ meets $H_\delta$ for only finitely many $\delta\in\Delta(T_\Co)$.
+2. For $\pi\in\bD\sm Z$ the marked surface $X_\pi$ is a labelled Coble cover.
+3. For $\pi\in Z$ the marked surface $X_\pi$ is *not* a Coble cover: the class $\delta$ is algebraic of type $(1,1)$ on $X_\pi$ and $\sigma=\id_M\oplus(-\id_{T_\Co})$ acts on it as $-1$, so $\sigma$ is not an automorphism.
+4. Hence the Coble locus is exactly $\bD\sm Z$; it is open, and it is connected.
+:::
+
+::: {.proof}
+1. *Local finiteness.* Let $K\subset\bD$ be compact. A period in $K$ is a positive $2$-plane, and the family of these is bounded; choose $\pi_0\in\bD$ and let $\beta$ be the positive definite form $\beta(x)=-(x,x)_{\pi_0^{\perp}}+(x,x)_{\pi_0}$ on $T_\Co\otimes\RR$. On the compact $K$ the forms $\beta_\pi$ obtained by replacing $\pi_0$ by $\pi$ are uniformly equivalent to $\beta$: there is $c>0$ with $c^{-1}\beta\le\beta_\pi\le c\beta$ for all $\pi\in K$. If $\delta\perp\pi$ then $\delta\in\pi^{\perp}$, so $\beta_\pi(\delta)=-|\delta|^2$ and $\beta(\delta)\ge c^{-1}\abs{\delta}^2$. Since $\Delta(T_\Co)$ is discrete in $T_\Co\otimes\RR$ and $\beta$ is positive definite, the set of $\delta$ with $\beta(\delta)$ bounded is finite. So only finitely many hyperplanes meet $K$, and $Z$ is closed and analytic.
+2. At $\pi\notin Z$ no $(-2)$-class of $T_\Co$ is orthogonal to the period, so every $(-2)$-class of $\pi^{\perp}$ lies in $M$ and is fixed by $\sigma$; hence $\sigma$ preserves the chamber and the Kähler cone and is realised by an automorphism (strong Torelli). That automorphism has invariant lattice $M$ of rank $11$, so by the Lefschetz count $\chi(\Fix\sigma)=2\rank M-20=2$ its fixed locus is a smooth rational curve, and the quotient is a Coble surface with $X$ as its double cover (@lem:every-ample-m-polarized-k3-is-a-coble-cover).
+3. If $\pi\in H_\delta$ then $\delta\in(\pi^{\perp}\intersect T_\Co)$ is of type $(1,1)$, hence algebraic on $X_\pi$; $\sigma$ acts on it as $-1$. An automorphism of a $\mathrm{K3}$ surface preserves the effective cone, but $\delta$ and $-\delta$ cannot both be effective for $\delta^2=-2$, so a $\sigma$ realising the isometry would send an effective class to an anti-effective one, which no automorphism does. So $\sigma$ is not an automorphism and $X_\pi$ is not a Coble cover.
+4. is 2 and 3 together. Connectedness is the argument of @thm:gamma-co-is-full: $Z$ is a proper closed analytic subset, a ball minus a proper analytic subset is connected, and a path meeting $Z$ can be diverted inside such a ball.
+:::
+
+*The one input that is not a numbered statement.* Local finiteness in 1 is proved above from the discreteness of $T_\Co$ and the compactness of $K$, not cited; the same fact underlies the arrangement $\calH_T$ of [@YZZ25, Thm. 3.4], whose right-hand side is the complement of that arrangement in $\bD_T$. What is *not* claimed is that $Z$ is a finite union: it is countable, and it is closed because it is locally finite. That is what allows $\bD\sm Z$ to be open -- a countable union of closed sets need not be closed, and the local finiteness is doing the work.
+
 ### Item 6: the groups from the universal families
 
 ::: {.proposition #prop:gamma-co-from-the-universal-family title="What the universal families give, and what a restriction gives instead"}
