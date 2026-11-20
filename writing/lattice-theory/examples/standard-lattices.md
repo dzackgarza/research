@@ -47,7 +47,7 @@ Then $i_a,j_b\in\Orth(U_\QQ)$.
 
 ::: {.proof}
 
-An isometry of $U$ permutes $U^{\mathrm{prim}}[0]=\theset{\pm e,\pm f}$ and is determined by its action on the ordered isotropic (@def:orthogonal-complement) frame $(e,f)$.
+An isometry of $U$ permutes $U^{\mathrm{prim}}[0]=\theset{\pm e,\pm f}$ and is determined by its action on the ordered isotropic frame $(e,f)$.
 Preservation of $ef = 1$ forces the image frame to be one of $(e, f), (-e, -f), (f, e), (-f, -e)$, giving the four listed matrices.
 Over $\QQ$ the vectors $ae$ and $\inverseof{a} f$ are again isotropic with $(ae)(\inverseof{a} f) = ef = 1$, so $i_a\in\Orth(U_\QQ)$, and likewise $j_b(e) = \inverseof{b} f$, $j_b(f) = be$ satisfy $(\inverseof{b} f)(be) = fe = 1$, so $j_b\in\Orth(U_\QQ)$.
 :::

@@ -10,7 +10,7 @@ For $a\in\bZ$ the *norm shell* of $a$ is the set of vectors of that norm,
 $$
 L[a]\definedas\theset{v\in L\st \beta_L(v,v)=a}\subseteq L.
 $$
-When $L$ is even (@def:even-lattice) every norm is even, so $L[a]$ is empty for odd (@def:two-elementary-isotropic-types) $a$.
+When $L$ is even (@def:even-lattice) every norm is even, so $L[a]$ is empty for odd $a$.
 :::
 
 ::: {.definition #def:lattice-divisibility title="Divisibility of a vector" defines="divisibility ideal; $I_v$; divisibility; $\div_L(v)$"}

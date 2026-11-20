@@ -2,7 +2,7 @@
 
 ::: {.definition #def:coble-surface title="Coble surface" defines="Coble surface; terminal of K3 type; boundary component"}
 
-A **Coble surface** is a smooth projective (@def:module-subcategories) rational surface $S$ with $\abs{-K_S} = \varnothing$ and $\abs{-2K_S} \neq \varnothing$.
+A **Coble surface** is a smooth projective rational surface $S$ with $\abs{-K_S} = \varnothing$ and $\abs{-2K_S} \neq \varnothing$.
 It is **terminal of K3 type** when $\abs{-2K_S}$ contains a smooth divisor $C$.
 Then $C$ is the only member of $\abs{-2K_S}$, and it is a disjoint union $C = C_1 + \cdots + C_n$ of smooth rational curves with $C_i^2 = -4$.
 The curves $C_i$ are the **boundary components** of $S$ [@DM20, Sec. 5.1; @DK25, Sec. 9.1].
@@ -25,7 +25,7 @@ The morphism $\pi$ is the blowup of $N = 9 + n$ double points of $\pi(C)$, some 
 
 Let $S$ be a terminal (@def:terminal-coble-surface) Coble surface (@def:coble-surface) of K3 type with $n = 1$.
 Then $\pi(C)$ is an irreducible rational plane sextic $B$, and $S$ is the blowup of $\PP^2$ at the $10$ double points of $B$ [@Dol17, Sec. 5.1].
-The double points of $B$ are ordinary (@def:two-elementary-isotropic-types) nodes or cusps, possibly infinitely near [@DK25, Ex. 9.1.7].
+The double points of $B$ are ordinary nodes or cusps, possibly infinitely near [@DK25, Ex. 9.1.7].
 :::
 
 ::: {.proposition #prop:coble-enriques-degeneration title="Coble surfaces as degenerations of Enriques quotients"}
@@ -50,7 +50,7 @@ For $i \neq j$, the linear system $\abs{2f_i + 2f_j}$ defines a degree-$2$ map
 $$
 \phi_{ij}\colon S \to D
 $$
-onto a quartic del Pezzo surface $D$ with four ordinary (@def:two-elementary-isotropic-types) double points.
+onto a quartic del Pezzo surface $D$ with four ordinary double points.
 The map $\phi_{ij}$ is not finite: it contracts $C$ to one of the four double points of $D$.
 The deck transformation of $\phi_{ij}$ is a biregular automorphism of $S$ [@Dol17, Sec. 5.1].
 :::
@@ -68,7 +68,7 @@ The ramification divisor $R_Z\in\abs{\mathcal{M}}$ of $\rho$ is ample, and the p
 ::: {.definition #def:ade-surfaces title="ADE surfaces" defines="ADE surface"}
 
 The **ADE surfaces** are the irreducible components of the KSBA stable degenerations of K3 surfaces with a nonsymplectic involution.
-A Type III component is labelled by a Dynkin diagram $A_n$, $D_n$ or $E_n$, and a Type II component by an affine diagram $\wA_n$, $\wD_n$ or $\wE_n$, matching the elliptic and parabolic subdiagrams of the Coxeter--Vinberg diagram (@def:coxeter-vinberg-diagram) (@def:elliptic-subdiagram). Each ADE surface $(X, D + \eps R)$ comes with a double cover $\pi\colon X\to Y$ onto a del Pezzo ADE surface $\bigl(Y,\ C + \tfrac{1+\eps}{2}B\bigr)$ of index (@def:index) $2$ [@AEGS25 §6].
+A Type III component is labelled by a Dynkin diagram $A_n$, $D_n$ or $E_n$, and a Type II component by an affine diagram $\wA_n$, $\wD_n$ or $\wE_n$, matching the elliptic and parabolic subdiagrams of the Coxeter--Vinberg diagram (@def:coxeter-vinberg-diagram) (@def:elliptic-subdiagram). Each ADE surface $(X, D + \eps R)$ comes with a double cover $\pi\colon X\to Y$ onto a del Pezzo ADE surface $\bigl(Y,\ C + \tfrac{1+\eps}{2}B\bigr)$ of index $2$ [@AEGS25 §6].
 :::
 
 ::: {.definition #def:bcde-surfaces title="BCDE surfaces and the folding labels" defines="BCDE surface; folding label; type B component; type C component"}

@@ -61,7 +61,7 @@ is exact (@def:exact-complex).
 The last term is the torsion subgroup of the finitely generated (@def:module-subcategories) $\ZZ$-module $Q_\iota$, proving $(1)\Longleftrightarrow(2)$.
 
 A finitely generated torsion-free $\ZZ$-module is free.
-Hence $(1)$ implies that the cokernel sequence splits (@def:hyperbolic-plane), producing the retraction in $(3)$.
+Hence $(1)$ implies that the cokernel sequence splits, producing the retraction in $(3)$.
 Conversely, a retraction gives $L\cong S\oplus\ker r$, so $Q_\iota\cong\ker r$ is free.
 Thus $(1)\Longleftrightarrow(3)$.
 
@@ -255,7 +255,7 @@ j_{\iota_S}\colon S\oplus T\too L,
 \qquad
 (s,t)\longmapsto\iota_S(s)+\iota_T(t).
 $$
-The embedding $\iota$ **splits (@def:hyperbolic-plane)** when $j_\iota$ is an isomorphism (@def:isomorphism-of-objects).
+The embedding $\iota$ **splits (@def:lattice-split)** when $j_\iota$ is an isomorphism (@def:isomorphism-of-objects).
 :::
 
 ::: {.proposition #prop:unimodular-splits title="Unimodular sublattices split"}
@@ -284,7 +284,7 @@ Hence
 $$
 0\too S^{\perp L}\too L\xrightarrow{r}S\too0
 $$
-is split (@def:hyperbolic-plane) by $\iota$, and
+is split by $\iota$, and
 $j_\iota\colon S\oplus S^{\perp L}\isoto L$ is an isometry.
 
 If $L$ is unimodular, additivity of the discriminant functor gives
@@ -329,7 +329,7 @@ $$
 Let $e\in L$ be a primitive isotropic vector.
 By @lem:unimodular-divisibility choose $w\in L$ with $\beta_L(e, w) = 1$, and set $k\definedas w^2$.
 The sublattice $P\definedas\generators{e, w}$ has Gram matrix $\begin{bmatrix}0 & 1\\ 1 & k\end{bmatrix}$ of determinant $-1$, hence $P$ is a rank-$2$ unimodular sublattice, and it is primitive since a unimodular sublattice is saturated by the primitive-sublattice characterization (@prop:primitive-characterization).
-The isometry type of $P$ is governed by the parity of $k = w^2$: the Gram matrix $\begin{bmatrix}0 & 1\\ 1 & k\end{bmatrix}$ gives $P\cong U$ when $k$ is even and $P\cong\latI_{1, 1}$ (the odd (@def:two-elementary-isotropic-types) rank-$2$ unimodular hyperbolic lattice (@not:reflection-groups-sign-convention)) when $k$ is odd.
+The isometry type of $P$ is governed by the parity of $k = w^2$: the Gram matrix $\begin{bmatrix}0 & 1\\ 1 & k\end{bmatrix}$ gives $P\cong U$ when $k$ is even and $P\cong\latI_{1, 1}$ (the odd rank-$2$ unimodular hyperbolic lattice (@not:reflection-groups-sign-convention)) when $k$ is odd.
 We adjust $w$ within its coset to realize the parity dictated by $L$; note that adding to $w$ any vector of $\generators{e}^{\perp L}$ preserves $\beta_L(e, w) = 1$.
 
 If $L$ is even (@def:form-axioms) then $k = w^2$ is even; replacing $w$ by $w - \tfrac{k}{2}e$ (and $e\in\generators{e}^{\perp L}$ since $e^2 = 0$) leaves $\beta_L(e, w) = 1$ unchanged and makes $w^2 = 0$, so $P\cong U$.
@@ -407,7 +407,7 @@ Let $L'$ be an *even* (@def:form-axioms) maximal (@def:maximal-lattice) $U^{\opl
 ::: {.proof}
 
 Both statements are in [@Daw22 §3.1]: Algorithm 3.3 constructs $\tau(x,y)$ from the
-two displayed hyperbolic (@def:definiteness) summands, and the Attwell-Duval criterion gives the second
+two displayed hyperbolic (@def:hyperbolic-plane) summands, and the Attwell-Duval criterion gives the second
 orbit statement.
 :::
 
@@ -461,7 +461,7 @@ $\Orth(\latI_{2,2})$ is not transitive on primitive isotropic vectors.
 
 ::: {.lemma #lem:odd-unimodular-isotropic-splitting title="Splitting an odd unimodular lattice at a primitive isotropic line"}
 
-Let $L$ be an odd (@def:two-elementary-isotropic-types) unimodular lattice (@def:unimodular) of signature $(p,q)$ and let $l$ be a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) line of $L$.
+Let $L$ be an odd unimodular lattice (@def:unimodular) of signature $(p,q)$ and let $l$ be a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) line of $L$.
 Then $L=P\perp M$ with $l\subset P\cong\latI_{1,1}$ and $M$ unimodular of signature $(p-1,q-1)$, and
 $l^{\perp L}=l\perp M$, so $l^{\perp L}/l\cong M$. Moreover:
 
@@ -621,7 +621,7 @@ $M\cong\latI_{1,8}$. Then $J^{\perp B}=\theset{x\in l\perp M\st x\cdot m=0}=l\pe
 $m^{\perp M}=\ZZ m\perp N$ with $N\cong\latI_{0,7}$ by @lem:odd-unimodular-isotropic-splitting(2). Hence
 $J^{\perp B}=J\perp N$ and $J^{\perp B}/J\cong\latI_{0,7}$.
 
-The lattice $U\perp U\perp\latI_{0,7}$ is odd (@def:two-elementary-isotropic-types), unimodular and indefinite (@def:definiteness) of signature $(2,9)$, so it is
+The lattice $U\perp U\perp\latI_{0,7}$ is odd, unimodular and indefinite (@def:definiteness) of signature $(2,9)$, so it is
 isometric to $B$ by @thm:indefinite-unimodular-classification.
 :::
 

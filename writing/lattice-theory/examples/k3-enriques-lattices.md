@@ -28,7 +28,7 @@ Thus $E_{10}(2)$ is $2$-elementary of type $(r,a,\delta)=\EnriquesInvariants$.
 
 ::: {.proof}
 
-The invariants of the twist E_10(2) follow from the scaled-discriminant sequence of @prop:scaled-discriminant-ses applied to the unimodular rank-10 lattice E_10: its discriminant group (@def:group) is 0, so the discriminant of the twist is E_10/2E_10, of order 2^10 and exponent (@cons:pf-from-jacobian) 2.
+The invariants of the twist E_10(2) follow from the scaled-discriminant sequence of @prop:scaled-discriminant-ses applied to the unimodular rank-10 lattice E_10: its discriminant group (@def:group) is 0, so the discriminant of the twist is E_10/2E_10, of order 2^10 and exponent 2.
 :::
 
 ## Degree $2d$ K3 lattices
@@ -41,7 +41,7 @@ L_{\Kthree,2d}^{(m)}\definedas\generators{-2d}\oplus U^2\oplus E_8^m,
 \qquad
 L_{\Kthree,2d}\definedas L_{\Kthree,2d}^{(2)}.
 $$
-The distinguished case $m=2$ has signature (@def:signature) $(2,19)$ and is called the **degree (@def:numerical-polarization) $2d$ K3 lattice**.
+The distinguished case $m=2$ has signature (@def:signature) $(2,19)$ and is called the **degree $2d$ K3 lattice (@def:degree-2d-k3-lattice)**.
 :::
 
 ::: {.proposition #prop:degree-2d-k3-complement title="The degree-$2d$ orthogonal complement"}

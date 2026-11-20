@@ -6,7 +6,7 @@ The decomposition sought in @sec-integral-hyperbolic-index has different existen
 
 ::: {.theorem #thm:real-hyperbolic-index title="Real hyperbolic index"}
 
-A real symmetric bilinear space of signature (@def:signature) $(p,q)$ has hyperbolic (@def:definiteness) index (@def:index) $\min(p,q)$. Its remaining nondegenerate (@def:polarization) summand is definite (@def:definiteness).
+A real symmetric bilinear space of signature (@def:signature) $(p,q)$ has hyperbolic index (@def:witt-index) $\min(p,q)$. Its remaining nondegenerate (@def:polarization) summand is definite (@def:definiteness).
 :::
 
 ::: {.proof}
@@ -71,14 +71,14 @@ If singular computable forms were given a uniform index decision, it would decid
 
 ::: {.theorem #thm:rational-hyperbolic-splitting title="Rational hyperbolic splitting"}
 
-Exact (@def:exact-complex) isotropy decision and rational linear algebra construct an isometry
+Exact isotropy decision and rational linear algebra construct an isometry
 $$U_{\bQ}^{\perp w}\perp A\xrightarrow{\sim}L,$$
 where $A$ is anisotropic and $w=h_{\bQ}(L)$.
 :::
 
 ::: {.proof}
 
-Work on the nondegenerate (@def:polarization) quotient if necessary. Decide whether the current complement has a nonzero isotropic (@def:orthogonal-complement) vector $e$. If so, solve $b(e,v)=1$ and put $f=v-q(v)e/2$. Then $q(f)=0$ and $b(e,f)=1$. Split (@def:hyperbolic-plane) the pair by @prop:hyperbolic-summand-splits and repeat on its nondegenerate complement. Each step removes two dimensions. The final complement is anisotropic by the exact stopping decision, and Witt decomposition makes the number of hyperbolic planes (@def:hyperbolic-plane) maximal (@def:maximal-lattice) [Knebusch, *Specialization of Quadratic and Symmetric Bilinear Forms*, §2, Theorem 1](https://homepages.uni-regensburg.de/~knm22087/book.pdf). Compose the retained basis (@def:based-module) maps to express the isometry in the original space.
+Work on the nondegenerate (@def:polarization) quotient if necessary. Decide whether the current complement has a nonzero isotropic (@def:orthogonal-complement) vector $e$. If so, solve $b(e,v)=1$ and put $f=v-q(v)e/2$. Then $q(f)=0$ and $b(e,f)=1$. Split (@def:hyperbolic-plane) the pair by @prop:hyperbolic-summand-splits and repeat on its nondegenerate complement. Each step removes two dimensions. The final complement is anisotropic by the exact stopping decision, and Witt decomposition makes the number of hyperbolic planes (@def:hyperbolic-plane) maximal [Knebusch, *Specialization of Quadratic and Symmetric Bilinear Forms*, §2, Theorem 1](https://homepages.uni-regensburg.de/~knm22087/book.pdf). Compose the retained basis (@def:based-module) maps to express the isometry in the original space.
 :::
 
 Hasse–Minkowski supplies a finite isotropy decision over $\bQ$ [Conrad, *The Local–Global Principle*, Theorem 3.3](https://kconrad.math.uconn.edu/blurbs/gradnumthy/localglobal.pdf). In dimension two, diagonalize and test whether $-b/a$ is a rational square. In dimension at least three, clear denominators to a nonsingular integral matrix $A$. The real test is indefiniteness. At primes not dividing $2\det A$, a nonzero zero modulo the prime exists in at least three variables and lifts. The remaining primes have the following finite test.

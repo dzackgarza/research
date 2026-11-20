@@ -90,7 +90,7 @@ $$
 
 ::: {.proof}
 
-For hyperbolic (@def:definiteness) bases (@def:root-system-base) $e_1,f_1,e_2,f_2$ of $U\perp U$, define
+For hyperbolic (@def:hyperbolic-plane) bases (@def:based-module) $e_1,f_1,e_2,f_2$ of $U\perp U$, define
 $$
 \phi(e_1)=E_{11},
 \qquad

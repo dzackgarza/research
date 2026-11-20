@@ -35,8 +35,8 @@ If $E$ is a component of $C$, then $E$ is a boundary component and $E^2 = -4$ by
 
 ::: {.theorem #thm:coble-aut-lattice title="Coble's theorem, lattice form"}
 
-Let $S$ be the blowup of $\PP^2$ at the ten nodes of an irreducible rational plane sextic whose singular points are ordinary (@def:two-elementary-isotropic-types) nodes, and let $M_S \definedas K_S^{\perp\, \Pic(S)}$.
-The Cremona equivalence (@def:equivalence-of-objects) class of such a sextic is the union of finitely many projective (@def:module-subcategories) equivalence classes.
+Let $S$ be the blowup of $\PP^2$ at the ten nodes of an irreducible rational plane sextic whose singular points are ordinary nodes, and let $M_S \definedas K_S^{\perp\, \Pic(S)}$.
+The Cremona equivalence class of such a sextic is the union of finitely many projective equivalence classes.
 Then $\Aut(S)$ is isomorphic to a subgroup of finite index (@def:index) in $\Orth(M_S)$.
 For a general such sextic, this subgroup is isomorphic to the congruence subgroup of level $2$ of $\Orth(M_S)/\theset{\pm1}$, and $\Orth(M_S)/\theset{\pm1}$ is isomorphic to the Weyl group (@def:weyl-group) $W(E_{10})$ [@DZ99, Introduction].
 :::
@@ -133,7 +133,7 @@ A Coble surface of elliptic type admits a birational morphism onto $\PP^2$ [@DZ9
 
 Let $X$ be a Coble surface (@def:coble-surface) with $M^2 = 0$, for $M$ as in @def:coble-elliptic-rational-type.
 
-- If $X$ is of Halphen type, obtained from a minimal (@def:minimal-resolution) Halphen surface $Y_m$ of index (@def:index) $2$ by one blowup of a singular point on its non-multiple fibre $F$, then $X$ is of K3 type if and only if $F$ has type $I_n$, $\II$, $\III$ or $\IV$.
+- If $X$ is of Halphen type, obtained from a minimal (@def:minimal-resolution) Halphen surface $Y_m$ of index (@def:halphen-surface-index) $2$ by one blowup of a singular point on its non-multiple fibre $F$, then $X$ is of K3 type if and only if $F$ has type $I_n$, $\II$, $\III$ or $\IV$.
 
 - If $X$ is of Jacobian type, obtained from a minimal Jacobian rational elliptic surface (@def:halphen-surface-index) by blowing up a singular point of one fibre $F$ and at least one singular point, with its infinitely near points, of another fibre $F_1$, then $X$ is of K3 type if and only if each of $F$ and $F_1$ has type $I_n$, $\II$, $\III$ or $\IV$.
 
@@ -146,7 +146,7 @@ For a Coble surface (@def:coble-surface) $X$ the following are equivalent:
 
 1. $\abs{-2K_X}$ contains a reduced divisor;
 
-2. there is a double cover $\tilde X \to X$ with $\tilde X$ a K3 surface with at most ordinary (@def:two-elementary-isotropic-types) double points.
+2. there is a double cover $\tilde X \to X$ with $\tilde X$ a K3 surface with at most ordinary double points.
 
 [@DZ99, Lem. 6.2]
 :::
@@ -155,12 +155,12 @@ For a Coble surface (@def:coble-surface) $X$ the following are equivalent:
 
 ::: {.definition #def:rational-log-enriques title="Rational log Enriques surface of index 2" defines="rational log Enriques surface of index $2$"}
 
-A **rational log Enriques surface of index (@def:index) $2$** is a normal rational surface $\bar X$ with at worst quotient singularities such that $\OO(-2K_{\bar X}) \cong \OO_{\bar X}$ [@DZ99, §6, paragraph before Prop. 6.4].
+A **rational log Enriques surface of index $2$** is a normal rational surface $\bar X$ with at worst quotient singularities such that $\OO(-2K_{\bar X}) \cong \OO_{\bar X}$ [@DZ99, §6, paragraph before Prop. 6.4].
 :::
 
 ::: {.theorem #thm:coble-log-enriques-resolution title="Terminal Coble surfaces are resolutions of log Enriques surfaces"}
 
-1. The minimal (@def:minimal-resolution) resolution $X$ of a rational log Enriques surface of index (@def:index) $2$ is a Coble surface (@def:coble-surface) with $h^0(-2K_X) = 1$. The unique member $D\in\abs{-2K_X}$ is reduced, and each connected component of $D$ is either a single $(-4)$-curve or a linear chain with dual graph
+1. The minimal (@def:minimal-resolution) resolution $X$ of a rational log Enriques surface of index (@def:rational-log-enriques) $2$ is a Coble surface (@def:coble-surface) with $h^0(-2K_X) = 1$. The unique member $D\in\abs{-2K_X}$ is reduced, and each connected component of $D$ is either a single $(-4)$-curve or a linear chain with dual graph
 $$
 (-3) - (-2) - \cdots - (-2) - (-3)
 .
@@ -183,7 +183,7 @@ Let $\sigma$ be its deck transformation, and let $C \in \abs{-2K_S}$ be the anti
 
 1. $\Fix(\sigma)$ is the union of a smooth curve $\bar W$ of genus $4$ and three isolated points.
 2. $\phi_h(C) = \theset{q}$ is a singular point of $\mathsf{D}$, and the other three singular points of $\mathsf{D}$ are the images of the isolated fixed points.
-3. $\bar W$ meets (@def:replete-full-meet) $C$ in two points.
+3. $\bar W$ meets $C$ in two points.
 4. $W \definedas \phi_h(\bar W)$ has $p_a(W) = 5$ and a double point at $q$, and it is the complete (@def:complete) intersection of a net of quadrics.
 
 So a Coble surface is obtained as a degeneration of an Enriques surface (@def:enriques-surface) when the branch curve $W$ of $\phi_h$ passes through a singular point of $\mathsf{D}$ [@DK13, §8].
@@ -191,7 +191,7 @@ So a Coble surface is obtained as a degeneration of an Enriques surface (@def:en
 
 ::: {.proposition #prop:cuspidal-quintics-enriques title="Cuspidal quintics and Enriques surfaces"}
 
-Let $\mcm_{\cusp}$ be the moduli space of cuspidal plane quintics, the GIT quotient of the projective (@def:module-subcategories) space of cuspidal plane quintics by $\PGL_3$.
+Let $\mcm_{\cusp}$ be the moduli space of cuspidal plane quintics, the GIT quotient of the projective space of cuspidal plane quintics by $\PGL_3$.
 Then $\mcm_{\cusp}$ is a rational variety, birationally isomorphic to the moduli space $\mcm_{\En}$ of Enriques surfaces (@def:enriques-surface) [@DK13, §4].
 The locus $\mcm'_{5,\cusp}$ of @thm:coble-moduli-rational is a rational variety of dimension $9$ [@DK13, Thm. 4.1].
 :::

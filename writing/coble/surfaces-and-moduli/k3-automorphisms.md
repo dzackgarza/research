@@ -79,7 +79,7 @@ In @not:k3-automorphism-data:
 (1) $S$ is the group (@def:group) of classes of type $(1,1)$ [@PS24, Proposition B.2.5].
 If $nx\in S$ with $x\in L$ and $n\neq0$, then $x$ has type $(1,1)$, so $x\in S$; hence $S$ is primitive.
 An orthogonal complement is primitive.
-Since $X$ is projective (@def:module-subcategories), $S$ and $T$ are orthogonal complements of each other in $L$ [@PS24, Lemma B.2.7].
+Since $X$ is projective, $S$ and $T$ are orthogonal complements of each other in $L$ [@PS24, Lemma B.2.7].
 
 (2) $S$ is even because $L$ is even.
 It is nondegenerate [@PS24, Lemma B.2.7], so $S\perp S^{\perp L}=S\perp T$ has finite index in $L$.
@@ -111,13 +111,13 @@ For $\rho=1$ this holds because $S\tensor\RR$ is a line.
 For $\rho\geq2$, $S$ has signature (@def:signature) $(1,\rho-1)$ by @prop:k3-ns-transcendental, so $P$ has two components by @prop:spinor-plus-cone-components, each preserved by $\Orth^+(S)$; and $-\id_S\notin\Orth^+(S)$ by @lem:minus-identity-spinor-norm because the positive index of $S$ is $1$, so $-\id_S$ exchanges them.
 
 The positive cone $C_X$ is a connected component of the open set of classes of positive square in $H^{1,1}(X)\intersect H^2(X;\RR)$ [@PS24, §19.1].
-So $\mathcal C_S=C_X\intersect P$ is open and closed (@def:closed-monoidal) in $P$, and it is a union of components of $P$.
+So $\mathcal C_S=C_X\intersect P$ is open and closed in $P$, and it is a union of components of $P$.
 It contains $\Amp(X)$ [@PS24, §19.1], so $P_0\iscontainedin\mathcal C_S$.
 
 A reflection $s_r$ with $r^2<0$ preserves each component of $P$ (proof of @prop:spinor-plus-cone-components), so $W(S)$ preserves $P_0$ and $-P_0$.
 Suppose $-P_0\iscontainedin\mathcal C_S$, and let $x\in-P_0$.
 The closure of $\Amp(X)$ is a fundamental domain for $W(S)$ on $\mathcal C_S$ [@PS24, Proposition 19.1.3(2)], so $wx$ lies in the closure of $\Amp(X)$ for some $w\in W(S)$.
-The closure of $\Amp(X)$ meets (@def:replete-full-meet) $P$ only in $P_0$, because $P_0$ is closed in $P$.
+The closure of $\Amp(X)$ meets $P$ only in $P_0$, because $P_0$ is closed in $P$.
 But $wx\in-P_0$, which is disjoint from $P_0$.
 This contradiction gives $\mathcal C_S=P_0$.
 
@@ -216,15 +216,15 @@ The isometry $g$ permutes these roots and preserves $\mathcal C_S$, so it maps $
 Let $x\in\Amp(X)$.
 By [@PS24, Proposition 19.1.3(2)] there is $w\in W(S)$ with $wgx$ in the closure of $\Amp(X)$.
 The group (@def:group) $W(S)$ permutes the mirrors, so $wgx\in U$.
-A connected component of $U$ is closed (@def:closed-monoidal) in $U$, so $wgx\in\Amp(X)$.
-Then $wg(\Amp(X))$ is a component of $U$ that meets (@def:replete-full-meet) $\Amp(X)$, so $wg(\Amp(X))=\Amp(X)$ and $wg\in P_S$.
+A connected component of $U$ is closed in $U$, so $wgx\in\Amp(X)$.
+Then $wg(\Amp(X))$ is a component of $U$ that meets $\Amp(X)$, so $wg(\Amp(X))=\Amp(X)$ and $wg\in P_S$.
 Hence $\rho_{S,q}(g)=\rho_{S,q}(wg)=a(wg)$.
 :::
 
 ::: {.lemma #lem:k3-sign-structure title="Positive sign structures on the Néron–Severi lattice"}
 
 In @not:k3-automorphism-data, suppose $\rho\geq2$.
-Then the subgroup of $\Orth(S)$ that preserves positive sign structures (@def:property-structure-stuff) [@AD15, §3.7] is $\Orth^+(S)$.
+Then the subgroup of $\Orth(S)$ that preserves positive sign structures [@AD15, §3.7] is $\Orth^+(S)$.
 :::
 
 ::: {.proof}
@@ -242,7 +242,7 @@ So $\ker\det_+=\ker\chi$, which is $\Orth^+(S)$ by @prop:spinor-plus-cone-compon
 ::: {.theorem #thm:signed-miranda-morrison title="The signed Miranda–Morrison sequence"}
 
 Let $N$ be a nondegenerate (@def:polarization), indefinite (@def:definiteness), even lattice (@def:even-lattice) of rank at least $3$.
-Let $\Orth^+(N)$ be the subgroup of $\Orth(N)$ that preserves positive sign structures (@def:property-structure-stuff), and let $g(N)$ be the genus group (@def:mm-genus-group) of $N$.
+Let $\Orth^+(N)$ be the subgroup of $\Orth(N)$ that preserves positive sign structures, and let $g(N)$ be the genus group (@def:mm-genus-group) of $N$.
 There is a group (@def:group) $\operatorname{MM}^+(N)$ and an exact (@def:exact-complex) sequence of groups
 $$
 \Orth^+(N)\xrightarrow{\rho_{N,q}}\Orth(A_{N,q})\xrightarrow{e_N^+}\operatorname{MM}^+(N)\too g(N)\too1.

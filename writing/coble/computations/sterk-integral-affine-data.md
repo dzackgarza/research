@@ -47,7 +47,7 @@ The $+1$-eigenspaces of [Explicit root vectors and the folded Sterk diagrams](#s
 
 3. Walk the polygon by $p_{i+1} = p_i + \ell_i v_i$.
 
-4. Place surgery triangles: `edge_len = gcd(v)`, base (@def:root-system-base) offset $|\lfloor \text{edge\_len}/2\rfloor - \lfloor \text{surg\_size}/2\rfloor|$.
+4. Place surgery triangles: `edge_len = gcd(v)`, base offset $|\lfloor \text{edge\_len}/2\rfloor - \lfloor \text{surg\_size}/2\rfloor|$.
 
 5. Recentre at the centroid and call `restricted_automorphism_group(output="matrix")` to obtain $\Aut(P)$.
 :::

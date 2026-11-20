@@ -112,7 +112,7 @@ in $R\text{-}\mathbf{Mod}$ has torsion-free $Q_f$.
 Write $\operatorname{PrimEmb}(L,M)$ for the set of morphisms satisfying this condition.
 A subobject of $M$ (@def:subobject-relation) is *primitive* when any representing monomorphism has this property.
 
-Identities are primitive, and primitivity is closed (@def:closed-monoidal) under composition.
+Identities are primitive, and primitivity is closed under composition.
 For primitive $f\colon L\to M$ and $g\colon M\to P$, the canonical cokernel maps fit into the short exact sequence (@def:exact-complex)
 $$
 0\too Q_f\too Q_{gf}\too Q_g\too0.

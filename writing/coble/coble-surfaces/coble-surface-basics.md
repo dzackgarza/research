@@ -30,13 +30,13 @@ Since $C = C_1+\cdots+C_n \sim -2K_S$, intersecting with $C_i$ gives $-2K_S\cdot
 
 ::: {.definition #def:minimal-coble-surface title="Minimal Coble surface" defines="minimal Coble surface"}
 
-A Coble surface (@def:coble-surface) $S$ is **minimal (@def:minimal-resolution)** if, for every $(-1)$-curve $E$ on $S$, the surface obtained by blowing down $E$ is not a Coble surface [@DK25, proof of Prop. 9.1.4].
+A Coble surface (@def:coble-surface) $S$ is **minimal (@def:minimal-coble-surface)** if, for every $(-1)$-curve $E$ on $S$, the surface obtained by blowing down $E$ is not a Coble surface [@DK25, proof of Prop. 9.1.4].
 
 :::
 
 ::: {.proposition #prop:coble-one-boundary-minimal title="One boundary component implies minimal"}
 
-A terminal (@def:terminal-coble-surface) Coble surface (@def:coble-surface) of K3 type with $n = 1$ is minimal (@def:minimal-resolution) in the sense of @def:minimal-coble-surface [@DK25, proof of Prop. 9.1.4].
+A terminal (@def:terminal-coble-surface) Coble surface (@def:coble-surface) of K3 type with $n = 1$ is minimal (@def:minimal-coble-surface) in the sense of @def:minimal-coble-surface [@DK25, proof of Prop. 9.1.4].
 
 :::
 

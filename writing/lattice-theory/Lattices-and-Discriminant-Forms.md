@@ -398,7 +398,7 @@ M^{\mathrm{nd}}
 $$
 is exact (@def:exact-complex).
 Thus the underlying $R$-module of $M^{\mathrm{nd}}$ is finitely generated (@def:module-subcategories) and torsion-free, hence projective (@def:module-subcategories) over the Dedekind domain $R$.
-The underlying short exact sequence (@def:exact-complex) of $R$-modules therefore splits (@def:hyperbolic-plane); choose
+The underlying short exact sequence (@def:exact-complex) of $R$-modules therefore splits; choose
 $$
 s_M\colon M^{\mathrm{nd}}\too M,
 \qquad

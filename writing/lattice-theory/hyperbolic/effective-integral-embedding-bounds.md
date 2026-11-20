@@ -69,7 +69,7 @@ For a definite (@def:definiteness) form, negate if necessary and choose an LLL-r
 $$\prod_i\|b_i\|^2\le2^{n(n-1)/2}D.$$
 Every squared length is a positive integer, hence at least one; each is at most the product. Cauchy–Schwarz bounds every Gram entry by $F(n,D)$.
 
-For an indefinite (@def:definiteness) form of rank at least three, Li–Margulis [@LM16b, §2.3, Lemma 13 and Appendix] give an explicit compact subset of unimodular Euclidean lattice space with minimum (@def:definite-minimum-shell) at least $E_n^{-1}$ meeting the relevant closed (@def:closed-monoidal) orthogonal orbit. Minkowski's second theorem gives independent vectors of lengths less than $L_n$ [@Hen02, Theorem 1.3]. To see the bound, if the successive minima are $\lambda_i$, the unit-ball volume estimate gives $\prod\lambda_i\le n^{n/2}$, while every $\lambda_i\ge E_n^{-1}$.
+For an indefinite (@def:definiteness) form of rank at least three, Li–Margulis [@LM16b, §2.3, Lemma 13 and Appendix] give an explicit compact subset of unimodular Euclidean lattice space with minimum (@def:definite-minimum-shell) at least $E_n^{-1}$ meeting the relevant closed orthogonal orbit. Minkowski's second theorem gives independent vectors of lengths less than $L_n$ [@Hen02, Theorem 1.3]. To see the bound, if the successive minima are $\lambda_i$, the unit-ball volume estimate gives $\prod\lambda_i\le n^{n/2}$, while every $\lambda_i\ge E_n^{-1}$.
 
 The independent vectors generate a sublattice of index (@def:index) $d\le L_n^n$ by Hadamard. If $d>1$, reduce a vector from a nonzero quotient coset to $w=\sum c_iv_i$ with $|c_i|\le1/2$. Replace a $v_j$ for which $c_j\ne0$ by $w$. The new index is $|c_j|d\le d/2$, and the largest length grows by at most a factor $n$. After at most $\log_2d$ replacements these vectors form a basis. Since $n\le2^n$, their lengths are at most $L_nn^{\log_2d}\le L_nd^n\le L_n^{n^2+1}<R_n$. A column sign adjusts the determinant. In the normalized expression $G=D^{1/n}g^TJg$, each Gram coefficient at that orbit point is bounded by $nR_n^2D^{1/n}\le I(n,D)$.
 
@@ -176,7 +176,7 @@ The bound (5) is vast but finite and fully evaluated. It does not make the box p
 
 ::: {.proposition #prop:split-binary-all-embedding-bound title="All embeddings in a split binary target"}
 
-Let $G=\left(\begin{smallmatrix}a&b\\b&c\end{smallmatrix}\right)$ be integral, indefinite (@def:definiteness) and nondegenerate (@def:polarization), with $b^2-ac=s^2$ for an integer $s>0$. Let $A$ be a nondegenerate integral source (@def:globular-boundary) of rank one or two and $H_A=\max_{ij}|A_{ij}|$. Every integral $X$ with $X^TGX=A$ has entries bounded by $H_A$ when $a=c=0$, and by $2H_A\max(|a|,|b|,s)$ when $a\ne0$. If $a=0\ne c$, interchange target (@def:globular-boundary) coordinates first.
+Let $G=\left(\begin{smallmatrix}a&b\\b&c\end{smallmatrix}\right)$ be integral, indefinite (@def:definiteness) and nondegenerate (@def:polarization), with $b^2-ac=s^2$ for an integer $s>0$. Let $A$ be a nondegenerate integral source of rank one or two and $H_A=\max_{ij}|A_{ij}|$. Every integral $X$ with $X^TGX=A$ has entries bounded by $H_A$ when $a=c=0$, and by $2H_A\max(|a|,|b|,s)$ when $a\ne0$. If $a=0\ne c$, interchange target coordinates first.
 :::
 
 ::: {.proof}
@@ -219,7 +219,7 @@ Let $P$ be a decidable predicate on $\operatorname{Emb}_{\bZ}(T,L)$ such that $P
 
 ::: {.proof}
 
-An embedding satisfying $P$ moves into the box by a target (@def:globular-boundary) isometry. Invariance preserves $P$. The reverse implication is immediate. All entries in the box are integers, and the Gram equation and $P$ can be tested finitely.
+An embedding satisfying $P$ moves into the box by a target isometry. Invariance preserves $P$. The reverse implication is immediate. All entries in the box are integers, and the Gram equation and $P$ can be tested finitely.
 :::
 
 Primitivity is invariant: postcomposition by $g$ identifies the quotient modules $L/j(T)$ and $L/(g\circ j)(T)$. For $U(2)\to U$, the map $e\mapsto2e$, $f\mapsto f$ is an embedding of index two. Every embedding has index two because $(\det j)^2=\det U(2)/\det U=4$; hence the embedding space is nonempty but its primitive subspace is empty. A fixed-coordinate sign condition need not be invariant under $O(L,\bZ)$. Its emptiness does not follow from an orbit box.

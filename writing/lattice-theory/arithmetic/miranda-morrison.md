@@ -19,7 +19,7 @@ $$
 \Gamma_{\mathbb A_f}\definedas
 \prod_p^{\prime}(\Gamma_p,\Gamma_{p,0}).
 $$
-The determinant and the spinor norm (@def:lattice-basic-invariants) of @def:spinor-norm give
+The determinant and the spinor norm (@def:spinor-norm) of @def:spinor-norm give
 $$
 \sigma_{\mathbb A_f}\colon\Orth(V_{\mathbb A_f})
 \longrightarrow\Gamma_{\mathbb A_f}.
@@ -134,11 +134,11 @@ $$
 
 ::: {.corollary #cor:nikulin-mm-vanishing title="Nikulin's criterion for vanishing obstructions"}
 
-Let $L$ be an even (@def:form-axioms) indefinite (@def:definiteness) integral lattice of rank at least $3$. Write $\ell_p(A_L)$ for the length (@def:anticanonical-pair) of its $p$-primary discriminant module and $q_{L,2}$ for its $2$-primary quadratic discriminant form (@def:discriminant). Assume
-1. $\rank L\geq\ell_p(A_L)+2$ for every odd (@def:two-elementary-isotropic-types) prime $p$;
+Let $L$ be an even (@def:form-axioms) indefinite (@def:definiteness) integral lattice of rank at least $3$. Write $\ell_p(A_L)$ for the length (@def:coble-discriminant-forms) of its $p$-primary discriminant module and $q_{L,2}$ for its $2$-primary quadratic discriminant form (@def:discriminant). Assume
+1. $\rank L\geq\ell_p(A_L)+2$ for every odd prime $p$;
 2. if $\rank L=\ell_2(A_L)$, then $q_{L,2}$ has an orthogonal summand isometric to the rank-two form $u$ or $v$ of @thm:2elementary-decomposition.
 
-Then the discriminant representation (@def:representable-presheaf) $\rho_{L,q}$ is surjective, $L$ is unique in its genus, and
+Then the discriminant representation (@def:discriminant-rep) $\rho_{L,q}$ is surjective, $L$ is unique in its genus, and
 $$
 \operatorname{MM}(L)=0,\qquad g(L)=1.
 $$

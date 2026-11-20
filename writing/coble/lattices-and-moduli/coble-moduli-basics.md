@@ -17,6 +17,6 @@ A double cover of a Coble surface (@def:coble-surface) branched along the proper
 
 ::: {.conjecture #conj:coble-degenerations-flower-pot title="Coble degenerations are flower pot degenerations"}
 
-The degenerations of @prop:coble-k3-cover-degenerates-enriques-cover correspond to the weakly projective (@def:module-subcategories) flower pot degenerations (@def:flower-pot-degeneration) of [@Mor81, Example 1.6], and their Kulikov models (@def:kulikov-model) correspond to integral-affine discs, not to integral-affine spheres (@def:spheres) or real projective spaces.
+The degenerations of @prop:coble-k3-cover-degenerates-enriques-cover correspond to the weakly projective flower pot degenerations (@def:flower-pot-degeneration) of [@Mor81, Example 1.6], and their Kulikov models (@def:kulikov-model) correspond to integral-affine discs, not to integral-affine spheres (@def:spheres) or real projective spaces.
 
 :::

@@ -64,7 +64,7 @@ Q(x+y)=Q(x)+Q(y)+2B(x,y).
 $$
 Therefore $Q$ is determined by its values on an ordered basis (@def:based-module) and on all pairwise sums of basis vectors.
 
-The six displayed relations are actual isometries. Relative to the ordered standard bases (@def:root-system-base) of their two sides, explicit matrices in $\operatorname{GL}_r(\bF_2)$ witnessing the first two relations and the four rank-three relations are, respectively,
+The six displayed relations are actual isometries. Relative to the ordered standard bases (@def:based-module) of their two sides, explicit matrices in $\operatorname{GL}_r(\bF_2)$ witnessing the first two relations and the four rank-three relations are, respectively,
 $$
 \begin{array}{c|c}
 \text{isometry}&\text{matrix}\\ \hline
@@ -80,7 +80,7 @@ u+q\to p+2q,\quad v+p\to3q,\quad v+q\to3p&
 $$
 Each preserves $Q$, as is verified from the four defining block values on the standard basis vectors and their pairwise sums. Thus the relations hold in the isometry-class monoid.
 
-The decomposition theorem for finite elementary quadratic forms gives the four blocks as generators [@Nik80, §1.8]. To prove completeness of the relations, consider an orthogonal sum of these blocks. If it has a $p$ or $q$ summand, each $u$ or $v$ can be eliminated using one of the last four relations. The resulting normal form is $a p+(n-a)q$, with $n$ its rank. Direct evaluation (@def:dualizable-object) of normalized Gauss sums yields
+The decomposition theorem for finite elementary quadratic forms gives the four blocks as generators [@Nik80, §1.8]. To prove completeness of the relations, consider an orthogonal sum of these blocks. If it has a $p$ or $q$ summand, each $u$ or $v$ can be eliminated using one of the last four relations. The resulting normal form is $a p+(n-a)q$, with $n$ its rank. Direct evaluation of normalized Gauss sums yields
 $$
 \operatorname{Br}(p)=1,\quad
 \operatorname{Br}(q)=-1,\quad
@@ -101,7 +101,7 @@ A_{L,q}\isoto
 p^{\perp m_p}\perp q^{\perp m_q}\perp
 u^{\perp m_u}\perp v^{\perp m_v}.
 $$
-Its discriminant length (@def:anticanonical-pair) $a$, coparity (@def:p-elementary) $\delta$ and scalar signature satisfy
+Its discriminant length (@def:coble-discriminant-forms) $a$, coparity (@def:p-elementary) $\delta$ and scalar signature satisfy
 $$
 \begin{aligned}
 a&=m_p+m_q+2m_u+2m_v,\\

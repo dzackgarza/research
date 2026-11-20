@@ -19,7 +19,7 @@ Then the boundary of the Baily--Borel compactification $\bbcpt{D/\Gamma}$ is the
 ::: {.proposition #prop:coble-divisibility-discriminant}
 
 Let $L$ be an integral nondegenerate (@def:polarization) lattice and $v\in L$ a nonzero primitive (@def:primitive-embedding) vector, not necessarily isotropic (@def:orthogonal-complement), with divisibility $\div_L(v)$ of @def:lattice-divisibility and dual vector $v^*$ of @def:lattice-discriminant-class.
-Then $v^*$ is primitive in $L^\#$, and its image $[v^*]$ in the discriminant group (@def:group) $A_L = L^\#/L$ has order $\div_L(v)$.
+Then $v^*$ is primitive in $L^\#$, and its image $[v^*]$ in the discriminant group (@def:discriminant) $A_L = L^\#/L$ has order $\div_L(v)$.
 
 In particular $\div_L(v)$ divides $\abs{A_L} = \abs{\disc{L}}$.
 :::
@@ -72,7 +72,7 @@ v^2 = w^2
 [v^*] = [w^*]\in A_L
 .
 $$
-Equivalently, the $\discriminantkernel{L}$-orbit of a primitive vector is determined by its length together with the pair $\bigl(\div_L(v),\ v/\div_L(v)\bmod L\bigr)$ in the discriminant group (@def:group).
+Equivalently, the $\discriminantkernel{L}$-orbit of a primitive vector is determined by its length together with the pair $\bigl(\div_L(v),\ v/\div_L(v)\bmod L\bigr)$ in the discriminant group (@def:discriminant).
 :::
 
 ::: {.proof}

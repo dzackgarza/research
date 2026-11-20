@@ -11,9 +11,9 @@ $$
 b(\alpha_s,\alpha_t)=2\cos\!\left(\frac{\pi}{m(s,t)}\right),
 $$
 read as $-2$ when $s=t$ and as $2$ when $m(s,t)=\infty$.
-Its Gram matrix in the basis (@def:based-module) $\{\alpha_s\}$ is $G$ with $G_{st}=2\cos(\pi/m(s,t))$, so the diagonal (@def:polarization-functors) entries are $-2$ and the off-diagonal entries are nonnegative.
+Its Gram matrix in the basis (@def:based-module) $\{\alpha_s\}$ is $G$ with $G_{st}=2\cos(\pi/m(s,t))$, so the diagonal entries are $-2$ and the off-diagonal entries are nonnegative.
 
-The source (@def:globular-boundary) [@Hum90, §5.3] uses $B(\alpha_s,\alpha_t)=-\cos(\pi/m(s,t))$, so $B(\alpha_s,\alpha_s)=1$ and $b=-2B$.
+The source [@Hum90, §5.3] uses $B(\alpha_s,\alpha_t)=-\cos(\pi/m(s,t))$, so $B(\alpha_s,\alpha_s)=1$ and $b=-2B$.
 Every definiteness statement quoted from that source is therefore read here with the sign reversed, in the convention of @def:definiteness.
 
 The data are those of a *Coxeter graph*: a finite undirected graph on $S$ whose edges are labelled by integers at least $3$ or by $\infty$, with $m(s,t)=2$ for distinct vertices joined by no edge and $m(s,s)=1$ [@Hum90, §2.3].
@@ -44,7 +44,7 @@ So $A_{ij}=-b(\alpha_i,\alpha_j)=-G_{ij}$, which is the displayed identity, and 
 
 Let $(W,S)$ be irreducible, so that its Coxeter graph (@def:coxeter-form) is connected, and write $n=|S|$.
 
-$W$ is finite if and only if $b$ is negative definite, and in that case $W$ is a finite reflection group (@def:group) [@Hum90, §6.4].
+$W$ is finite if and only if $b$ is negative definite, and in that case $W$ is a finite reflection group [@Hum90, §6.4].
 Call such a system *elliptic*.
 
 If $b$ is negative semidefinite and degenerate, its radical (@def:two-witnesses) has rank exactly $1$ [@Hum90, §2.6], so the signature (@def:signature) is $(0,n-1,1)$ and $b$ is parabolic in the sense of @def:definiteness.
@@ -56,7 +56,7 @@ For $n=3$ the remaining possibility is signature $(1,2,0)$ [@Hum90, §6.7].
 
 ::: {.proof}
 
-The three clauses are [@Hum90, §6.4] (finite exactly when positive definite for the source (@def:globular-boundary)'s $B$, hence negative definite for $b=-2B$), [@Hum90, §2.6] (positive semidefinite (@def:calculus-real-positivity) and degenerate forces a one-dimensional radical, so the signature is $(0,n-1,1)$), and [@Hum90, §6.7] for the rank-three statement.
+The three clauses are [@Hum90, §6.4] (finite exactly when positive definite for the source's $B$, hence negative definite for $b=-2B$), [@Hum90, §2.6] (positive semidefinite (@def:calculus-real-positivity) and degenerate forces a one-dimensional radical, so the signature is $(0,n-1,1)$), and [@Hum90, §6.7] for the rank-three statement.
 :::
 
 ::: {.theorem #thm:parabolic-radical title="The radical of a parabolic system"}
@@ -92,7 +92,7 @@ Two conditions on $(W,S)$ are used below, and they cut out different classes.
 - **The signature (@def:signature) condition.** The form $b$ is hyperbolic, equivalently of Lorentzian signature, when its signature is $(1,n-1,0)$; this is @def:definiteness, and it is the condition under which a lattice is called hyperbolic.
   The term *Lorentzian* for a form with exactly one positive square is the usage of [@CS10, Ch. 27].
 
-- **The condition of [@Hum90, §6.8].** The system $(W,S)$ is a *hyperbolic Coxeter system* (@def:coxeter-group) when $b$ has signature $(1,n-1,0)$ and, in addition, $b(\lambda,\lambda)>0$ for every $\lambda\in C$.
+- **The condition of [@Hum90, §6.8].** The system $(W,S)$ is a *hyperbolic Coxeter system* (@def:coxeter-system-type) when $b$ has signature $(1,n-1,0)$ and, in addition, $b(\lambda,\lambda)>0$ for every $\lambda\in C$.
   Equivalently: $b$ is nondegenerate and not negative definite, and for each $s\in S$ the Coxeter graph (@def:coxeter-form) obtained by deleting $s$ has negative semidefinite form.
 
 The system is *compact hyperbolic* when $b$ is nondegenerate and not negative definite and for each $s$ the graph obtained by deleting $s$ has negative definite form; these are the systems classified by Lannér [@Hum90, §6.8].
@@ -103,8 +103,8 @@ The condition on $C$ is a further restriction, and the two classes differ: hyper
 
 ::: {.proposition #prop:hyperbolic-covolume title="Covolume"}
 
-Give the homogeneous space $O(V,b)/W$ the measure induced by the Haar measure of the real Lie group (@def:group) $O(V,b)$.
-That measure is finite exactly when $b$ is negative definite, in which case $W$ is finite, or when $(W,S)$ is a hyperbolic Coxeter system (@def:coxeter-group) in the sense of @def:hyperbolic-coxeter, the condition on the cone $C$ included [@Hum90, §6.8].
+Give the homogeneous space $O(V,b)/W$ the measure induced by the Haar measure of the real Lie group $O(V,b)$.
+That measure is finite exactly when $b$ is negative definite, in which case $W$ is finite, or when $(W,S)$ is a hyperbolic Coxeter system (@def:hyperbolic-coxeter) in the sense of @def:hyperbolic-coxeter, the condition on the cone $C$ included [@Hum90, §6.8].
 
 When $b$ has signature (@def:signature) $(1,n-1,0)$, one component of $\{\lambda\in V\mid b(\lambda,\lambda)=2\}$ is a model of hyperbolic space of dimension $n-1$ [@Hum90, §6.8].
 :::

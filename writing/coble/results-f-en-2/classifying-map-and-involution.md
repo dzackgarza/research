@@ -8,7 +8,7 @@ Let $B$ be the closure of the image of $\fentwo$ in $\ksbacpt{\fttz}$, and let $
 Its general fibre is a pair $(X, \eps R)$ of an Enriques K3 surface $X$ and the ramification divisor $R$ of the del Pezzo involution.
 
 1. The Enriques involution (@def:enriques-surface) $\ien$ of the general fibre extends uniquely to an involution of $(\mcx_B, \eps\mcr_B)$ commuting with the del Pezzo involution $\idp$.
-   The quotient is a flat family $(\mcz, \eps\mcr_\mcz)\to B$ over a compact base (@def:root-system-base), which extends the universal family of Enriques surfaces with divisor.
+   The quotient is a flat family $(\mcz, \eps\mcr_\mcz)\to B$ over a compact base, which extends the universal family of Enriques surfaces with divisor.
 
 2. The normalization $\normalize{B}$ is a compactification of $\fentwo$ with a universal family of pairs, so there is a classifying morphism $\normalize{B}\to\ksbacpt{\fentwo}$
 
@@ -17,7 +17,7 @@ Its general fibre is a pair $(X, \eps R)$ of an Enriques K3 surface $X$ and the 
 
 ::: {.proof}
 
-The generic involution preserves $R$, hence acts on the relative log canonical algebra that forms the stable model. It therefore extends to the relative $\Proj$ of that algebra. Two extensions agree on a dense open subset and hence everywhere by separatedness; since $\ien$ and $\idp$ commute on the generic fibre, their extensions commute. In characteristic (@def:two-elementary-isotropic-types) zero, the invariant part of a flat relative coordinate algebra is a direct summand, so the finite quotient remains flat over $B$. The quotient is a family of stable Enriques pairs; over $\fentwo$ it is the original family, which gives the classifying morphism after normalization [@AEGS25, proof of Thm. 5.9].
+The generic involution preserves $R$, hence acts on the relative log canonical algebra that forms the stable model. It therefore extends to the relative $\Proj$ of that algebra. Two extensions agree on a dense open subset and hence everywhere by separatedness; since $\ien$ and $\idp$ commute on the generic fibre, their extensions commute. In characteristic zero, the invariant part of a flat relative coordinate algebra is a direct summand, so the finite quotient remains flat over $B$. The quotient is a family of stable Enriques pairs; over $\fentwo$ it is the original family, which gives the classifying morphism after normalization [@AEGS25, proof of Thm. 5.9].
 :::
 
 ## Finiteness of the classifying map
@@ -35,7 +35,7 @@ of @prop:enriques-involution-extends(2), from the normalization $\normalize{B}$ 
 
 The normalization of the KSBA compactification (@def:ksba-compactification) dominates its Baily–Borel compactification: at a Type II boundary point, the elliptic modulus can be recovered from the slc Enriques pair. Either its double curve is elliptic, or it is a rational curve with four distinguished $A_1$ points. In the latter case, the double cover of $\PP^1$ branched at those points has the required $j$-invariant [@AEGS25, proof of Thm. 5.9; @AET23, Thm. 3.17].
 
-The normalized KSBA space therefore lies between the semitoroidal compactification (@def:semitoroidal-compactification) determined by the folded semifans $\semifan{F}_k$ and Baily–Borel. The semitoroidal comparison theorem makes its semifans coarsenings $\semifan{G}_k$ of the $\semifan{F}_k$ [@AE23, Thm. 7.18]. If a maximal (@def:maximal-lattice) cone were lost in a strict (@def:monoidal-category) coarsening, a codimension-one cone of some $\semifan{F}_k$ would parametrize a one-dimensional family of K3 pairs with fewer than the maximal number of double curves while their Enriques quotients had the maximal number. The explicit quotient models have the maximal number of double curves exactly when their K3 covers do [@AEGS25, Prop. 4.8, Cor. 4.9]. Thus the maximal cones remain distinct, and the classifying morphism is finite by the semitoroidal cone comparison [@AEGS25, proof of Thm. 5.9].
+The normalized KSBA space therefore lies between the semitoroidal compactification (@def:semitoroidal-compactification) determined by the folded semifans $\semifan{F}_k$ and Baily–Borel. The semitoroidal comparison theorem makes its semifans coarsenings $\semifan{G}_k$ of the $\semifan{F}_k$ [@AE23, Thm. 7.18]. If a maximal (@def:maximal-lattice) cone were lost in a strict coarsening, a codimension-one cone of some $\semifan{F}_k$ would parametrize a one-dimensional family of K3 pairs with fewer than the maximal number of double curves while their Enriques quotients had the maximal number. The explicit quotient models have the maximal number of double curves exactly when their K3 covers do [@AEGS25, Prop. 4.8, Cor. 4.9]. Thus the maximal cones remain distinct, and the classifying morphism is finite by the semitoroidal cone comparison [@AEGS25, proof of Thm. 5.9].
 :::
 
 ::: {.proposition #prop:enriques-semifan-coarsening title="The semifans of the normalized KSBA compactification"}
@@ -62,7 +62,7 @@ Then $f$ is an isomorphism (@def:isomorphism-of-objects).
 ::: {.proof}
 
 A finite morphism is affine, so locally $Y = \Spec A$ and $X = \Spec B$ with $B$ a finite $A$-module containing $A$; birationality identifies $\Frac B$ with $\Frac A = K$, giving $A\iscontainedin B\iscontainedin K$.
-Since $Y$ is normal, $A$ is integrally closed (@def:closed-monoidal) in $K$, and $B$ is integral over $A$, so $B = A$.
+Since $Y$ is normal, $A$ is integrally closed in $K$, and $B$ is integral over $A$, so $B = A$.
 
 :::
 

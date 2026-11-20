@@ -114,7 +114,7 @@ The fibre product is therefore $\ker a\times\theset{\pm\id} = A_1\times\theset{\
 (2) *The inclusion $\supseteq$.* Let $g'\in\Gamma_2$ and $g\definedas\id_{\ZZ K_S}\perp g'$.
 The dual lattice of $\Pic(X) = \Pic(S)(2)$ is $\tfrac12\Pic(X)$, so $A_{\Pic(X)}\cong\Pic(S)/2\Pic(S)$, and $g$ acts trivially on it. So $g\in\widetilde\Orth(\Pic(X))$.
 It remains to show that $g$ preserves $\Amp(X)$.
-Let $\Delta$ be the set of classes of square $-2$ in $\Pic(X)$. A *chamber* is a connected component of the complement in $\mathcal C_S$ of the hyperplanes $\delta^{\perp}$, $\delta\in\Delta$, and $\Amp(X)$ is a chamber (@def:ample-cone).
+Let $\Delta$ be the set of classes of square $-2$ in $\Pic(X)$. A *chamber* is a connected component of the complement in $\mathcal C_S$ of the hyperplanes $\delta^{\perp}$, $\delta\in\Delta$, and $\Amp(X)$ is a chamber (@cons:chamber-cone).
 For $\delta\in\Delta$ exactly one of $\pm\delta$ is effective, and an effective one is a sum of $(-2)$-curves [@AE22, §4D, arXiv v2 p. 17].
 
 Let $x\in\mathcal C_\Lambda$ and $p\definedas f^*x$.
@@ -193,7 +193,7 @@ Let $S$ be Picard-general (@def:picard-general-coble).
 (1) The class is $aK_S$ by @thm:coble-invariant-classes, and $K_S$ is primitive (@def:primitive-embedding) in $\Pic(S)$.
 For $a>0$, $h^0(aK_S)=0$ on the rational surface $S$.
 Let $a=-m<0$ and $D\in\abs{-mK_S}$. Then $D\cdot C = 2mK_S^2 = -2m<0$, so $C$ is a component of $D$ and $D-C\in\abs{-(m-2)K_S}$.
-By induction, $\abs{-mK_S}=\theset{\tfrac m2C}$ for even $m$, and $\abs{-mK_S}$ is empty for odd $m$ because $\abs{-K_S}$ is empty (@def:coble-surface).
+By induction, $\abs{-mK_S}=\theset{\tfrac m2C}$ for even $m$, and $\abs{-mK_S}$ is empty for odd $m$ because $\abs{-K_S}$ is empty.
 
 (2) The class of the divisor is $-mK_S$ with $m\ge0$ by @thm:coble-invariant-classes, and (1) gives the divisor.
 

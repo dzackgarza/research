@@ -9,7 +9,7 @@ $$
 B \definedas \generators{1}\oplus E_{10} = \generators{1}\oplus U\oplus E_8
 .
 $$
-Then $B$ is odd (@def:two-elementary-isotropic-types) and unimodular of signature $(2,9)$, so $B\cong\latI_{2,9}$, and
+Then $B$ is odd and unimodular of signature $(2,9)$, so $B\cong\latI_{2,9}$, and
 $$
 T_\Co = \generators{2}\oplus E_{10}(2) = B(2) \cong \latI_{2,9}(2)
 .
@@ -48,7 +48,7 @@ $$
 ::: {.proof}
 
 $B$ is unimodular, hence maximal by @lem:maximal-overlattice-exists.
-The lattice $U\oplus U\oplus\latI_{0,7}$ is unimodular of signature $(2,9)$ and odd (@def:two-elementary-isotropic-types), because $\latI_{0,7}$ is, so it is isometric to $\latI_{2,9}\cong B$ by @thm:indefinite-unimodular-classification; this exhibits $B$ in the shape required by @def:split-maximal.
+The lattice $U\oplus U\oplus\latI_{0,7}$ is unimodular of signature $(2,9)$ and odd, because $\latI_{0,7}$ is, so it is isometric to $\latI_{2,9}\cong B$ by @thm:indefinite-unimodular-classification; this exhibits $B$ in the shape required by @def:split-maximal.
 Twisting this isometry by $2$ gives the decomposition of $T_\Co = B(2)$, with $\latI_{0,7}(2) = \generators{-2}^{\oplus 7} = A_1^{\oplus 7}$.
 For the quotients, take $e$ to be an isotropic basis vector of the first hyperbolic summand of $B\cong U\oplus U\oplus\latI_{0,7}$; then $e^{\perp B} = \ZZ e\oplus U\oplus\latI_{0,7}$ and $e^{\perp}/e\cong U\oplus\latI_{0,7}\cong\latI_{1,8}$, which is odd unimodular of signature $(1,8)$.
 Taking $J$ to be spanned by isotropic basis vectors of the two hyperbolic summands gives $J^{\perp B} = J\oplus\latI_{0,7}$ and $J^{\perp}/J\cong\latI_{0,7}$.
@@ -315,7 +315,7 @@ Let $B=\latI_{2,9}$, $T_\Co=B(2)$, let $K=\discriminantkernel{T_\Co}$ be the dis
 
 ::: {.proof}
 
-*The groups (@def:group) differ.* $B$ is odd (@def:two-elementary-isotropic-types), so it has a unit vector $v$ with $v^2=1$, and the reflection $s_v(x) = x-2(x,v)v$ is integral and orthogonal. Modulo $2B$ it is the identity, so $s_v\in K$; and by the reflection computation of @prop:period-spinor-character, $\chi_{\mathrm{per}}(s_v) = \operatorname{sgn}(-q(v)) = -1$, because $q(v) = \tfrac12 > 0$ and $v$ is a positive vector. So $\chi_{\mathrm{per}}$ is nontrivial on $K$, which is therefore not contained in $\Orth^+$, and $[K:\widetilde\Orth^+(T_\Co)]=2$ since $\chi_{\mathrm{per}}$ takes values in $\{\pm1\}$.
+*The groups (@def:group) differ.* $B$ is odd, so it has a unit vector $v$ with $v^2=1$, and the reflection $s_v(x) = x-2(x,v)v$ is integral and orthogonal. Modulo $2B$ it is the identity, so $s_v\in K$; and by the reflection computation of @prop:period-spinor-character, $\chi_{\mathrm{per}}(s_v) = \operatorname{sgn}(-q(v)) = -1$, because $q(v) = \tfrac12 > 0$ and $v$ is a positive vector. So $\chi_{\mathrm{per}}$ is nontrivial on $K$, which is therefore not contained in $\Orth^+$, and $[K:\widetilde\Orth^+(T_\Co)]=2$ since $\chi_{\mathrm{per}}$ takes values in $\{\pm1\}$.
 
 *The orbits agree.* By @lem:character-kernel-orbits, applied to the restriction of $\chi_{\mathrm{per}}$ to $K$, which is surjective by the first part, it is enough to find, for each primitive isotropic $x$, an element of $\Stab_K(x)$ with character $-1$.
 By @thm:unpolarized-cusps there is $g\in\Orth(B)$ with $g(\ZZ e) = \ZZ x$ for the vector $e$ of @prop:tco-split-maximal, and $e^{\perp B} = \ZZ e\oplus M_0$ with $M_0 = U\oplus\latI_{0,7}\cong\latI_{1,8}$; so $x^{\perp B} = \ZZ x\oplus M$ with $M = g(M_0)\cong\latI_{1,8}$.
@@ -363,7 +363,7 @@ Then the cusp lattice $v^{\perp T}/\generators{v}$ is
 
 ::: {.proof}
 
-In both cases $v$ spans a hyperbolic summand and is orthogonal to the rest, so $v^{\perp T} = \generators{v}\perp (\text{the remaining summand})$ and the quotient by $\generators{v}$ drops the hyperbolic direction: for $T_\En = U\perp U(2)\perp E_8(2)$ this leaves $U(2)\oplus E_8(2)$, and for $T_\Co = U(2)\oplus U(2)\oplus\I_{0,7}(2)$ from the splitting of @prop:tco-split-maximal it leaves $U(2)\oplus\I_{0,7}(2) = U(2)\oplus\generators{-2}^{7}$, which is $\I_{1,8}(2)$ because $U\oplus\generators{-1}^{7}$ is the odd (@def:two-elementary-isotropic-types) unimodular lattice (@def:unimodular) of signature $(1,8)$.
+In both cases $v$ spans a hyperbolic summand and is orthogonal to the rest, so $v^{\perp T} = \generators{v}\perp (\text{the remaining summand})$ and the quotient by $\generators{v}$ drops the hyperbolic direction: for $T_\En = U\perp U(2)\perp E_8(2)$ this leaves $U(2)\oplus E_8(2)$, and for $T_\Co = U(2)\oplus U(2)\oplus\I_{0,7}(2)$ from the splitting of @prop:tco-split-maximal it leaves $U(2)\oplus\I_{0,7}(2) = U(2)\oplus\generators{-2}^{7}$, which is $\I_{1,8}(2)$ because $U\oplus\generators{-1}^{7}$ is the odd unimodular lattice (@def:unimodular) of signature $(1,8)$.
 
 Both lattices are twists $M(2)$ of a unimodular lattice $M$: $U(2)\oplus E_8(2) = (U\oplus E_8)(2)$ with $M = U\oplus E_8$ even of rank $10$, and $\I_{1,8}(2)$ with $M = \I_{1,8}$ odd of rank $9$.
 Twisting preserves the signature, so the signatures are $(1,9)$ and $(1,8)$, and $\det M(2) = 2^{\rank M}\det M$ gives $2^{10}\cdot(-1) = -2^{10}$ and $2^{9}\cdot 1 = 2^9$.
@@ -376,7 +376,7 @@ So $q$ is integral on $A_{(U\oplus E_8)(2)}$, giving $\delta = 0$, and takes the
 Let $K_\Co = \I_{1,8}(2)$ and $K_\En = U(2)\oplus E_8(2)$ be the cusp lattices of @prop:zero-cusp-lattices, halves $K'_\Co = \I_{1,8}$ and $K'_\En = U\oplus E_8$, and let $K(2)$ denote $K$ with the form doubled.
 Then
 
-1. $\Orth(K(2)) = \Orth(K)$, and the reflection $s_r$ of @def:spinor-norm is unchanged when the form is scaled, so the Coxeter chamber (@def:coble-polarization-classes) of $K(2)$ is the chamber of $K$ with every root norm (@def:lattice-basic-invariants) doubled;
+1. $\Orth(K(2)) = \Orth(K)$, and the reflection $s_r$ of @def:spinor-norm is unchanged when the form is scaled, so the Coxeter chamber (@cons:chamber-cone) of $K(2)$ is the chamber of $K$ with every root norm (@def:lattice-basic-invariants) doubled;
 
 2. the chamber of $K_\En = \eta_1^{\perp}/\eta_1$ has ten walls (@not:coxeter-polytope-faces), with Coxeter--Vinberg diagram (@def:coxeter-vinberg-diagram) $T_{2,3,7}$, all of whose edges have label $3$, one ideal vertex, and its ten walls are the roots
 $$

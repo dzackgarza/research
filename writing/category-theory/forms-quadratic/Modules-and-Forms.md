@@ -63,7 +63,7 @@ The group (@def:group) $\Aut_R(R^{(I)})$ acts on $\operatorname{Bas}_I(M)$ by pr
 So $\operatorname{Bas}_I(M)$ is either empty or a torsor under $\Aut_R(R^{(I)})$, and it is nonempty exactly when $M\cong R^{(I)}$.
 
 Let $R\text{-}\mathbf{Mod}^{\mathrm{bas}}_I$ be the category whose objects are based modules $(M,e)$ with index (@def:index) set $I$ and whose morphisms $(M,e)\to(N,f)$ are the $R$-linear maps $u\colon M\to N$ satisfying $ue=f$.
-Since $e$ and $f$ are isomorphisms, such a $u$ both exists and is forced to be $fe^{-1}$, so every hom-set is a singleton and the category is equivalent to the terminal (@def:terminal-coble-surface) category.
+Since $e$ and $f$ are isomorphisms, such a $u$ both exists and is forced to be $fe^{-1}$, so every hom-set is a singleton and the category is equivalent to the terminal (@def:initial-terminal) category.
 The forgetful functor
 $$
 U_{\mathrm{bas}}\colon R\text{-}\mathbf{Mod}^{\mathrm{bas}}_I\too R\text{-}\mathbf{Mod}
@@ -88,7 +88,7 @@ A basis is the case of a generating frame whose structure map (@def:prespectrum)
 
 ::: {.proof}
 
-A basis is structure and not a property: two bases (@def:root-system-base) of one module are related by an element of GL_n, which is a torsor and not a truth value. The proof is the argument of @def:property-structure-stuff applied to the forgetful functor from modules-with-basis.
+A basis is structure and not a property: two bases (@def:based-module) of one module are related by an element of GL_n, which is a torsor and not a truth value. The proof is the argument of @def:property-structure-stuff applied to the forgetful functor from modules-with-basis.
 :::
 
 ::: {.definition #def:free-module-orientation title="Orientation of a free module" defines="$\det(M)$; orientation; orientation modulo $U$"}
@@ -101,5 +101,5 @@ $$
 $$
 Fix a subgroup of units $U\le R^\times$.
 An *orientation modulo $U$* is an orbit of such isomorphisms under the action of $U$ by scalar multiplication.
-Two ordered bases (@def:root-system-base) $(e_1,\dots,e_n)$ and $(f_1,\dots,f_n)$ of $M$ determine the same orientation modulo $U$ if and only if the change-of-basis matrix $A\in\GL_n(R)$, defined by $f_j=\Sum_{i=1}^n A_{ij}e_i$, satisfies $\det(A)\in U$.
+Two ordered bases (@def:based-module) $(e_1,\dots,e_n)$ and $(f_1,\dots,f_n)$ of $M$ determine the same orientation modulo $U$ if and only if the change-of-basis matrix $A\in\GL_n(R)$, defined by $f_j=\Sum_{i=1}^n A_{ij}e_i$, satisfies $\det(A)\in U$.
 :::

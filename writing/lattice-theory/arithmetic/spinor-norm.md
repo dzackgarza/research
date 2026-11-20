@@ -2,7 +2,7 @@
 
 ::: {.definition #def:spinor-norm title="Determinant and spinor-norm exact sequences" defines="$s_w$; normalized spinor norm; $\spinornorm_F$; $\SO(V)$; $\Theta_F(V)$"}
 
-Let $F$ be a field of characteristic (@def:two-elementary-isotropic-types) different from $2$, and let $(V,\beta)$ be a finite-dimensional nondegenerate (@def:polarization) symmetric $F$-bilinear space.
+Let $F$ be a field of characteristic different from $2$, and let $(V,\beta)$ be a finite-dimensional nondegenerate (@def:polarization) symmetric $F$-bilinear space.
 For anisotropic $w\in V$, define the reflection
 $$
 s_w(x)
@@ -60,7 +60,7 @@ Scalar extension induces
 $$
 \Orth(L)\too\Orth(L_F).
 $$
-Composing with determinant and spinor norm (@def:lattice-basic-invariants) defines short exact sequences (@def:exact-complex)
+Composing with determinant and spinor norm (@def:spinor-norm) defines short exact sequences (@def:exact-complex)
 $$
 1
 \too
@@ -99,7 +99,7 @@ G^+ \arrow[r] \arrow[d] \arrow[dr,phantom,very near start,"\lrcorner"] & G \arro
 \Orth^+(L) \arrow[r] & \Orth(L)
 ```
 [@GHS08, eq. (2)].
-For $G=\SO_\bR(L)$ this defines $\SO^+(L)$, and for $G=\widetilde\Orth(L)$ it defines the simultaneous discriminant-and-spinor kernel (@def:kernel-cokernel)
+For $G=\SO_\bR(L)$ this defines $\SO^+(L)$, and for $G=\widetilde\Orth(L)$ it defines the simultaneous discriminant-and-spinor kernel (@def:simultaneous-discriminant-spinor-kernel)
 $$
 \widetilde\Orth^+(L)
 \definedas
@@ -114,7 +114,7 @@ Let $L$ be a lattice of signature (@def:signature) $(p,q)$. Then
 $$
 \spinornorm_\bR(-\id_L) = [(-1)^p],
 $$
-and consequently $-\id_L\in\Orth^+(L)$ exactly when $p$ is even (@def:form-axioms).
+and consequently $-\id_L\in\Orth^+(L)$ exactly when $p$ is even.
 :::
 
 ::: {.proof}
@@ -182,7 +182,7 @@ $$
 -\beta(\phi x,\phi x)<\beta(x,x)
 \qquad\text{for all }0\neq x\in W_0,
 $$
-which says that $\phi$ has operator norm (@def:lattice-basic-invariants) less than $1$ for the Euclidean norms $\beta|_{W_0}$ and $-\beta|_{W_0^\perp}$.
+which says that $\phi$ has operator norm less than $1$ for the Euclidean norms $\beta|_{W_0}$ and $-\beta|_{W_0^\perp}$.
 The map $W\mapsto\phi_W$ is therefore a homeomorphism from $\Gr^+(V)$ onto an open ball of $\Hom_\bR(W_0,W_0^\perp)$.
 A covering of a contractible space is trivial, so $\widetilde\Gr^+(V)$ has two components, and they are exchanged by $(W,o)\mapsto(W,-o)$.
 
@@ -190,7 +190,7 @@ For (3), define $c\qty{(W,o),(W',o')}\in\theset{\pm1}$ to be $+1$ when $\pi_W|_{
 By (1) this function is defined on all of $\widetilde\Gr^+(V)\times\widetilde\Gr^+(V)$.
 The isomorphism $\pi_W|_{W'}$ depends continuously on $(W,W')$, so $c$ is locally constant, and it is constant on each of the four components of the product.
 It equals $+1$ on the diagonal (@def:polarization-functors) and changes sign when $o'$ is replaced by $-o'$.
-Hence $c=+1$ exactly on the two components of the product that meet (@def:replete-full-meet) the diagonal.
+Hence $c=+1$ exactly on the two components of the product that meet the diagonal.
 :::
 
 ::: {.definition #def:orientation-classes title="Orientation classes of maximal positive-definite subspaces" defines="positive orientation class; negative orientation class"}
@@ -212,7 +212,7 @@ $$
 
 ::: {.proof}
 
-An isometry $g$ maps a maximal (@def:maximal-lattice) positive-definite subspace $W$ with orientation (@def:free-module-orientation) $o$ to the maximal positive-definite subspace $gW$ with orientation $g_*o$.
+An isometry $g$ maps a maximal positive-definite subspace $W$ with orientation (@def:free-module-orientation) $o$ to the maximal positive-definite subspace $gW$ with orientation $g_*o$.
 This is an action of $\Orth(V)$ on $\widetilde\Gr^+(V)$ by homeomorphisms, so $\Orth(V)$ acts on the two-element set of components.
 
 For (1), let $o$ be an orientation of $W$.
@@ -220,7 +220,7 @@ By @lem:positive-grassmannian (3), the points $(gW,g_*o)$ and $(W,o)$ lie in the
 An automorphism of a real vector space preserves an orientation exactly when its determinant is positive.
 
 For (2), the subgroup is the kernel (@def:kernel-cokernel) of the action on the two-element set of components, so its index is at most $2$.
-For fixed $W$, the determinant in (1) is a continuous function of $g$, so the subgroup is open and closed (@def:closed-monoidal) in $\Orth(V)$; it contains $\id$, and hence it contains the connected component $\Orth(V)^\circ$.
+For fixed $W$, the determinant in (1) is a continuous function of $g$, so the subgroup is open and closed in $\Orth(V)$; it contains $\id$, and hence it contains the connected component $\Orth(V)^\circ$.
 
 For (3), if $p=0$ then $W=0$ is the only point of $\Gr^+(V)$, and $\pi_W\circ g|_W$ is the identity of the zero space, of determinant $1$.
 :::
@@ -230,7 +230,7 @@ For (3), if $p=0$ then $W=0$ is the only point of $\Gr^+(V)$, and $\pi_W\circ g|
 Identify $\bR^\times/(\bR^\times)^2$ with $\theset{\pm1}$.
 
 1. An isometry $g\in\Orth(V)$ satisfies $\spinornorm_\bR(g)=+1$ exactly when $g$ preserves the positive orientation classes (@def:orientation-classes) of $V$.
-2. For $g\in\Orth(V)=\Orth(V(-1))$, the real spinor norm (@def:lattice-basic-invariants) of $g$ as an isometry of $V(-1)$ is $\det(g)\,\spinornorm_\bR(g)$. It is $+1$ exactly when $g$ preserves the negative orientation classes (@def:orientation-classes) of $V$.
+2. For $g\in\Orth(V)=\Orth(V(-1))$, the real spinor norm (@def:spinor-norm) of $g$ as an isometry of $V(-1)$ is $\det(g)\,\spinornorm_\bR(g)$. It is $+1$ exactly when $g$ preserves the negative orientation classes (@def:orientation-classes) of $V$.
 3. If $V=V_1\perp V_2$ and $g_i\in\Orth(V_i)$, then $\spinornorm_\bR(g_1\oplus g_2)=\spinornorm_\bR(g_1)\,\spinornorm_\bR(g_2)$.
 4. If $L$ is a lattice with $L_\bR=V$, then $\Orth^+(L)$ is the subgroup of $\Orth(L)$ of isometries that preserve the positive orientation classes of $V$, and $\Orth^+(L(-1))$ is the subgroup of isometries that preserve the negative orientation classes of $V$.
 :::
@@ -292,13 +292,13 @@ By @prop:spinor-norm-orientation-classes (1) and (2), an isometry lies in $\SO(V
 The inclusion $\supseteq$ is therefore @lem:orientation-classes-action (2) for $V$ and for $V(-1)$.
 Let $g\in\SO(V)\cap\Theta_\bR(V)$, fix $W\in\Gr^+(V)$, and let $\phi\colon W\to W^\perp$ be the linear map whose graph is $gW$ (@lem:positive-grassmannian).
 For $t\in[0,1]$ let $W_t$ be the graph of $t\phi$; it lies in $\Gr^+(V)$, and $W_t^\perp$ is the graph of $t\phi^*\colon W^\perp\to W$, where $\beta(\phi x,y)=-\beta(x,\phi^*y)$.
-Choose bases (@def:root-system-base) of $W$ and of $W^\perp$ that are orthonormal for $\beta$ and for $-\beta$.
+Choose bases (@def:based-module) of $W$ and of $W^\perp$ that are orthonormal for $\beta$ and for $-\beta$.
 Applying the Gram--Schmidt process to their images under $x\mapsto x+t\phi x$ and $y\mapsto y+t\phi^*y$ gives bases of $W_t$ and of $W_t^\perp$, orthonormal for $\beta$ and for $-\beta$, that depend continuously on $t$.
 Let $h_t\in\Orth(V)$ carry the chosen bases to these.
 Then $h_0=\id$, so $h_1\in\Orth(V)^\circ$, and $h_1W=gW$.
 
 The isometry $h_1^{-1}g$ lies in $\SO(V)\cap\Theta_\bR(V)$ and preserves $W$ and $W^\perp$; write it as $a\oplus b$ with $a\in\Orth(W)$ and $b\in\Orth(W^\perp)$.
-On the positive-definite space $W$ every reflection has real spinor norm (@def:lattice-basic-invariants) $-1$ and determinant $-1$, so $\spinornorm_\bR(a)=\det a$.
+On the positive-definite space $W$ every reflection has real spinor norm (@def:spinor-norm) $-1$ and determinant $-1$, so $\spinornorm_\bR(a)=\det a$.
 On the negative-definite space $W^\perp$ every reflection has real spinor norm $+1$, so $\spinornorm_\bR(b)=+1$.
 By @prop:spinor-norm-orientation-classes (3),
 $$

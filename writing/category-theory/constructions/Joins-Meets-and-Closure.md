@@ -23,7 +23,7 @@ B \arrow[d,hook]\\
 A \arrow[r,hook] & C
 \end{tikzcd}
 ```
-Its universal property (@def:property-structure-stuff) is the greatest lower bound in $\operatorname{RFull}(C)$.
+Its universal property (@def:universal-arrow) is the greatest lower bound in $\operatorname{RFull}(C)$.
 :::
 
 ::: {.definition #def:join-diagram title="Joins" defines="join"}

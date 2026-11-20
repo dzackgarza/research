@@ -30,7 +30,7 @@ The kernel retains its inclusion into $L$. It exists even when $S$ is degenerate
 
 ::: {.proposition #prop:field-embedding-witt-test title="Embedding criterion over a field"}
 
-For nondegenerate (@def:polarization) finite-dimensional spaces $T,L$ over a field of characteristic (@def:two-elementary-isotropic-types) different from two,
+For nondegenerate (@def:polarization) finite-dimensional spaces $T,L$ over a field of characteristic different from two,
 $$
 \operatorname{Emb}(T,L)\ne\varnothing
 \quad\Longleftrightarrow\quad
@@ -40,7 +40,7 @@ $$
 
 ::: {.proof}
 
-If $T$ embeds, split (@def:hyperbolic-plane) its nondegenerate image to write $L\cong T\perp M$. Then $T\perp(-T)$ is hyperbolic (@def:definiteness) of rank $2\dim T$, giving the inequality. Conversely Witt decomposition with at least $\dim T$ planes yields $L\perp(-T)\cong M\perp T\perp(-T)$. Witt cancellation of $-T$ gives $L\cong M\perp T$ [@OM00, §42E, 42:16].
+If $T$ embeds, split (@def:lattice-split) its nondegenerate image to write $L\cong T\perp M$. Then $T\perp(-T)$ is hyperbolic (@def:definiteness) of rank $2\dim T$, giving the inequality. Conversely Witt decomposition with at least $\dim T$ planes yields $L\perp(-T)\cong M\perp T\perp(-T)$. Witt cancellation of $-T$ gives $L\cong M\perp T$ [@OM00, §42E, 42:16].
 :::
 
 When source and target have equal dimension, an embedding is an isometry. The inverse map must be returned with the original endpoints. Over $\bQ$, an affirmative criterion followed by a complete rational enumeration yields a witness; over a real closed exact field, matching diagonal signs and square-root scalings gives one directly. For example $\langle1/4\rangle\cong\langle1\rangle$ over $\bQ$ by $v\mapsto e/2$, with inverse $e\mapsto2v$. The forms $\langle3\rangle$ and $\langle1\rangle$ become isometric over a real algebraic closure by $\sqrt3$, but not over $\bQ$. The rational form $\langle1,1\rangle$ represents $2$ but not $3$, whereas both are represented over a real algebraic closure.

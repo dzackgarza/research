@@ -20,7 +20,7 @@ Let $\Lambda$ be the $(-1)$-eigenlattice of the covering involution on the secon
 1. Let $X\to\Delta$ be a flower pot degeneration (@def:flower-pot-degeneration), with period map (@def:period-map) $\Phi\colon\Delta^*\to\Gamma\backslash D$.
    If $\Phi$ extends to $\Phi\colon\Delta\to\Gamma\backslash D$, then $\Phi(0)\in H_\lambda$ for some $\lambda$ [@Mor81, Lemma 7.1].
 
-2. Let $X\to\Delta$ be a weakly projective (@def:module-subcategories) flower pot degeneration.
+2. Let $X\to\Delta$ be a weakly projective flower pot degeneration.
    Then $2K_{\tilde X}\not\equiv 0$ for every semistable (@def:kulikov-model) birational model $\tilde X$ of $X$ [@Mor81, Cor. 7.2].
 :::
 

@@ -26,7 +26,7 @@ For $s\in B$, the *monodromy representation*
 $$
 \rho\colon\pi_1(B,s)\too\Aut(\bL_s)
 $$
-of $\bL$ sends the class of a loop $\gamma$ based (@def:based-module) at $s$ to $\gamma^*$ [@Voi07, Corollary 3.10, Definition 3.13].
+of $\bL$ sends the class of a loop $\gamma$ based at $s$ to $\gamma^*$ [@Voi07, Corollary 3.10, Definition 3.13].
 The product on $\pi_1(B,s)$ is the one in which $\gamma\delta$ is the loop $\delta$ followed by the loop $\gamma$.
 :::
 
@@ -49,7 +49,7 @@ Statement (3) follows from (1) and (2).
 
 ::: {.definition #def:local-system-of-lattices title="Local system of lattices" defines="local system of lattices; morphism of local systems of lattices"}
 
-A *local system of lattices* on $B$ is a pair $(\bL,\beta)$ in which $\bL$ is a local system on $B$ whose stalks (@def:flower-pot-degeneration) are finitely generated (@def:module-subcategories) free (@def:module-subcategories) abelian groups (@def:group) and
+A *local system of lattices* on $B$ is a pair $(\bL,\beta)$ in which $\bL$ is a local system on $B$ whose stalks are finitely generated (@def:module-subcategories) free (@def:module-subcategories) abelian groups (@def:group) and
 $$
 \beta\colon\bL\tensor_{\underline{\ZZ}_B}\bL\too\underline{\ZZ}_B
 $$
@@ -68,7 +68,7 @@ Let $(\bL,\beta)$ be a local system of lattices (@def:local-system-of-lattices) 
 $$
 \rho\colon\pi_1(B,s)\too\Aut(\bL_s,\beta_s).
 $$
-2. All stalks (@def:flower-pot-degeneration) of $(\bL,\beta)$ are isometric.
+2. All stalks of $(\bL,\beta)$ are isometric.
    Symmetry, the alternating property (@def:property-structure-stuff) and nondegeneracy of $\beta_b$ (@def:form-axioms), and the signature of a nondegenerate (@def:polarization) symmetric $\beta_b$ (@def:signature), are independent of $b$.
 3. Let $(L,\beta_L)$ be a $\ZZ$-lattice and choose $\tilde s\in\widetilde B$ over $s$, where $\pi\colon\widetilde B\to B$ is the universal cover.
    Every group morphism $\rho\colon\pi_1(B,s)\to\Aut(L,\beta_L)$ is the monodromy representation of a local system of lattices $(\bL,\beta)$ on $B$, under an isometry $(\bL_s,\beta_s)\iso(L,\beta_L)$ determined by $\tilde s$.
@@ -123,7 +123,7 @@ $$
 \definedas
 \theset{(o_b)_{b\in O}\st o_b\in\operatorname{Or}^+_b,\ \gamma^*o_{\gamma(0)}=o_{\gamma(1)}\text{ for every path }\gamma\text{ in }O}.
 $$
-The sheaf $\operatorname{Or}^-_{\bL}$ of orientation (@def:free-module-orientation) classes of maximal (@def:maximal-lattice) negative-definite subspaces is $\operatorname{Or}^+$ of $(\bL,-\beta)$.
+The sheaf $\operatorname{Or}^-_{\bL}$ of orientation (@def:orientation-sheaf) classes of maximal (@def:maximal-lattice) negative-definite subspaces is $\operatorname{Or}^+$ of $(\bL,-\beta)$.
 :::
 
 ::: {.proposition #prop:orientation-sheaf-section title="Monodromy lies in $\Orth^+$ exactly when $\operatorname{Or}^+_{\bL}$ has a global section"}
@@ -143,7 +143,7 @@ Since $B$ is arcwise connected, a global section $(o_b)$ is determined by $o_s$,
 A class $o_s\in\operatorname{Or}^+_s$ extends to a global section exactly when $\gamma^*o_s$ depends only on the endpoint of $\gamma$, that is, when every loop $\gamma$ at $s$ has $\gamma^*o_s=o_s$.
 The transport along a loop of class $\gamma$ is $\rho(\gamma)\in\Orth(\bL_s)$, and it fixes $o_s$ exactly when $\rho(\gamma)\in\Orth^+(\bL_s)$, by @prop:spinor-norm-orientation-classes (4).
 The condition does not depend on which of the two classes $o_s$ is chosen.
-The sheaf $\operatorname{Or}^-_{\bL}$ is $\operatorname{Or}^+$ of $(\bL,-\beta)$, whose stalk (@def:flower-pot-degeneration) at $s$ is the twist $\bL_s(-1)$ of @def:form-twist.
+The sheaf $\operatorname{Or}^-_{\bL}$ is $\operatorname{Or}^+$ of $(\bL,-\beta)$, whose stalk at $s$ is the twist $\bL_s(-1)$ of @def:form-twist.
 :::
 
 ::: {.example #ex:monodromy-outside-orth-plus title="A local system of lattices with no global orientation class"}
@@ -158,8 +158,8 @@ Neither $\operatorname{Or}^+_{\bL}$ nor $\operatorname{Or}^-_{\bL}$ has a global
 
 ::: {.definition #def:polarized-integral-vhs title="Polarized integral variation of Hodge structure" defines="Hodge structure of weight $k$ on $L$ polarized by $Q$; $H^{p,q}$; Hodge numbers; $h^{p,q}$; polarized integral variation of Hodge structure of weight $k$; polarization form; $S$"}
 
-Let $k$ be an integer and let $(L,Q)$ be a $\ZZ$-lattice with $Q$ nondegenerate (@def:polarization), symmetric if $k$ is even (@def:form-axioms) and alternating (@def:form-axioms) if $k$ is odd (@def:two-elementary-isotropic-types).
-A *Hodge structure (@def:property-structure-stuff) of weight $k$ on $L$ polarized by $Q$* is a decreasing filtration $F^\bullet$ of $L_\CC$ by complex subspaces such that the subspaces
+Let $k$ be an integer and let $(L,Q)$ be a $\ZZ$-lattice with $Q$ nondegenerate (@def:polarization), symmetric if $k$ is even (@def:form-axioms) and alternating (@def:form-axioms) if $k$ is odd.
+A *Hodge structure (@def:polarized-integral-vhs) of weight $k$ on $L$ polarized by $Q$* is a decreasing filtration $F^\bullet$ of $L_\CC$ by complex subspaces such that the subspaces
 $$
 H^{p,q}\definedas F^p\cap\overline{F^q},\qquad p+q=k,
 $$
@@ -184,7 +184,7 @@ The polarization form of [@Sch73, (2.10)] is $S=(-1)^{k(k-1)/2}Q$.
 
 ::: {.lemma #lem:hodge-real-pieces title="Signs of the polarization on the real Hodge pieces"}
 
-Let $F^\bullet$ be a Hodge structure (@def:property-structure-stuff) of even (@def:form-axioms) weight $k=2m$ on $L$ polarized by $Q$, and put $\epsilon\definedas(-1)^{m+1}$.
+Let $F^\bullet$ be a Hodge structure (@def:polarized-integral-vhs) of even (@def:form-axioms) weight $k=2m$ on $L$ polarized by $Q$, and put $\epsilon\definedas(-1)^{m+1}$.
 For $j\ge0$ define the real subspaces
 $$
 R_j\definedas\qty{H^{m+j,m-j}\oplus H^{m-j,m+j}}\cap L_\RR
@@ -294,7 +294,7 @@ If $g\in\Theta_\RR(L_\RR,-\epsilon Q)$, then $g\in G_\RR^\circ$ by @eq-identity-
 Otherwise choose $0\neq w\in R_0$.
 By @lem:hodge-real-pieces, $Q(w,w)$ has sign $-\epsilon$ and $w$ is orthogonal to $H^{p,q}_F$ for $(p,q)\neq(m,m)$.
 The reflection $s_w$ therefore fixes those subspaces pointwise and preserves $H^{m,m}_F$, so $s_w\in V_F$.
-By @def:spinor-norm, the real spinor norm (@def:lattice-basic-invariants) of $s_w$ is $[-\epsilon Q(w,w)/2]=+1$ for the form $\epsilon Q$ and $[\epsilon Q(w,w)/2]=-1$ for the form $-\epsilon Q$.
+By @def:spinor-norm, the real spinor norm (@def:spinor-norm) of $s_w$ is $[-\epsilon Q(w,w)/2]=+1$ for the form $\epsilon Q$ and $[\epsilon Q(w,w)/2]=-1$ for the form $-\epsilon Q$.
 Both $g$ and $s_w$ lie in $\Theta_\RR(L_\RR,\epsilon Q)$ and neither lies in $\Theta_\RR(L_\RR,-\epsilon Q)$, and the real spinor norm is a group morphism for each form, so $gs_w$ lies in both $\Theta_\RR(L_\RR,\epsilon Q)$ and $\Theta_\RR(L_\RR,-\epsilon Q)$.
 Hence $gs_w\in G_\RR^\circ$ by @eq-identity-component-two-spinor-kernels, and $g\in G_\RR^\circ\cdot V_F$.
 :::
@@ -305,7 +305,7 @@ The group $\pi_1(B,s)$ acts on $\widetilde B$ by the deck transformations used i
 
 ::: {.proposition #prop:lifted-period-map title="The lifted period map"}
 
-1. The sheaf $\pi^{-1}\bL$ is constant, and the restriction $\Gamma\qty{\widetilde B,\pi^{-1}\bL}\to\bL_s$ to the stalk (@def:flower-pot-degeneration) at $\tilde s$ is an isomorphism (@def:isomorphism-of-objects) [@Voi07, proof of Corollary 3.10].
+1. The sheaf $\pi^{-1}\bL$ is constant, and the restriction $\Gamma\qty{\widetilde B,\pi^{-1}\bL}\to\bL_s$ to the stalk at $\tilde s$ is an isomorphism (@def:isomorphism-of-objects) [@Voi07, proof of Corollary 3.10].
 2. For $\tilde t\in\widetilde B$, let $\widetilde\Phi(\tilde t)$ be the image of the filtration $F^\bullet_{\pi(\tilde t)}$ under the isomorphism $\bL_{\pi(\tilde t)}\iso\bL_s$ of (1). Then $\widetilde\Phi(\tilde t)\in D$ and $\widetilde\Phi(\tilde s)=F^\bullet_s$.
 3. The map $\widetilde\Phi\colon\widetilde B\to D$ satisfies
 $$
@@ -319,7 +319,7 @@ $$ {#eq-period-map-equivariance}
 ::: {.proof}
 
 Statements (1), (3) and (4) are cited.
-For (2), the isomorphism of (1) is an isometry for $Q$, because $Q$ is a morphism of sheaves, so it carries a Hodge structure (@def:property-structure-stuff) polarized by $Q_{\pi(\tilde t)}$ to one polarized by $Q_s$.
+For (2), the isomorphism of (1) is an isometry for $Q$, because $Q$ is a morphism of sheaves, so it carries a Hodge structure (@def:polarized-integral-vhs) polarized by $Q_{\pi(\tilde t)}$ to one polarized by $Q_s$.
 The Hodge numbers (@def:polarized-integral-vhs) of $F^\bullet_b$ are the ranks of the bundles $F^p$ and their conjugates, which are constant on the connected manifold $B$.
 :::
 
@@ -334,7 +334,7 @@ The subgroup $\Stab_{G_\ZZ}(D^+)$ of $G_\ZZ$ is the following, with $\epsilon=(-
 
 | weight | Hodge numbers | $\Stab_{G_\ZZ}(D^+)$ |
 | --- | --- | --- |
-| $k=2m$ | $h^{m,m}>0$ | $\Orth^+(L(\epsilon))$: $\Orth^+(L)$ for $m$ odd (@def:two-elementary-isotropic-types), $\Orth^+(L(-1))$ for $m$ even (@def:form-axioms) |
+| $k=2m$ | $h^{m,m}>0$ | $\Orth^+(L(\epsilon))$: $\Orth^+(L)$ for $m$ odd, $\Orth^+(L(-1))$ for $m$ even |
 | $k=2m$ | $h^{m,m}=0$ | $\SO^+(L)$ |
 | $k$ odd | any | $\Sp(L)$ |
 
@@ -403,18 +403,18 @@ $$
 ::: {.proposition #prop:primitive-cohomology-vhs title="Primitive cohomology of a polarized family"}
 
 1. $(\bV^k,Q)$ is a local system of lattices (@def:local-system-of-lattices) on $B$, and $L_\omega$ is a morphism of local systems.
-2. $\qty{\bV^k_{\mathrm{prim}},Q}$ with the Hodge filtration of the fibres is a polarized integral variation of Hodge structure (@def:property-structure-stuff) of weight $k$.
+2. $\qty{\bV^k_{\mathrm{prim}},Q}$ with the Hodge filtration of the fibres is a polarized integral variation of Hodge structure (@def:polarized-integral-vhs) of weight $k$.
 :::
 
 ::: {.proof}
 
-The local system $R^kf_*\underline\ZZ$ carries the cup product, and the monodromy representation (@def:transport-and-monodromy) is compatible with it [@Voi07, §3.1.2]; the class $\omega|_{X_b}$ is locally constant, so $L_\omega$ and $Q$ are compatible with the local identifications of the stalks (@def:flower-pot-degeneration) [@Voi07a, §10.1.3].
+The local system $R^kf_*\underline\ZZ$ carries the cup product, and the monodromy representation (@def:transport-and-monodromy) is compatible with it [@Voi07, §3.1.2]; the class $\omega|_{X_b}$ is locally constant, so $L_\omega$ and $Q$ are compatible with the local identifications of the stalks [@Voi07a, §10.1.3].
 This proves (1).
 
 For (2), put $\mathcal H^j\definedas\bV^j\tensor_\ZZ\OO_B$, with its flat connection (@def:calculus-flat) $\nabla$.
 The Hodge filtrations of the fibres form a filtration of $\mathcal H^j$ by holomorphic subbundles $F^p\mathcal H^j$ with $\nabla F^p\mathcal H^j\iscontainedin F^{p-1}\mathcal H^j\tensor\Omega_B$ [@Voi07a, Theorem 10.3].
 The operator $L_\omega^{n-k+1}$ is a flat morphism $\mathcal H^k\to\mathcal H^{2n-k+2}$ that maps $F^p\mathcal H^k$ to $F^{p+n-k+1}\mathcal H^{2n-k+2}$, because $\omega|_{X_b}$ has type $(1,1)$.
-On each fibre the Lefschetz decomposition is a decomposition of Hodge structures [@Voi07a, §6.2.3, §7.1.2], so the kernel (@def:kernel-cokernel) of $L_\omega^{n-k+1}$ on $F^pH^k(X_b,\CC)$ is $F^p\cap H^k(X_b,\CC)_{\mathrm{prim}}$, and its dimension is a sum of primitive (@def:primitive-embedding) Hodge numbers.
+On each fibre the Lefschetz decomposition is a decomposition of Hodge structures [@Voi07a, §6.2.3, §7.1.2], so the kernel (@def:kernel-cokernel) of $L_\omega^{n-k+1}$ on $F^pH^k(X_b,\CC)$ is $F^p\cap H^k(X_b,\CC)_{\mathrm{prim}}$, and its dimension is a sum of primitive Hodge numbers.
 The Hodge numbers of the fibres are locally constant [@Voi07a, Proposition 9.20], and so are the primitive Hodge numbers, which are differences of Hodge numbers by the Lefschetz decomposition.
 A morphism of holomorphic vector bundles of constant rank has a holomorphic subbundle as kernel, so
 $$
@@ -440,7 +440,7 @@ Statement (1) is @cor:vhs-monodromy-stabilizes-component for the variation of @p
 For (2), put $\kappa\definedas\omega|_{X_s}$.
 Then $Q(\kappa,\kappa)=\int_{X_s}\omega^2>0$, the class $\kappa$ is fixed by $\rho$, and $\bV^2_{\mathrm{prim},s}=\kappa^\perp$.
 Each $\rho(\gamma)$ is therefore $\id_{\RR\kappa}\oplus g$ on $\RR\kappa\perp\qty{\kappa^\perp}_\RR$, with $g$ the monodromy of the primitive (@def:primitive-embedding) part.
-By (1) with $m=1$ and $\epsilon=+1$, the real spinor norm (@def:lattice-basic-invariants) of $g$ is $+1$, and so is that of $\id_{\RR\kappa}$.
+By (1) with $m=1$ and $\epsilon=+1$, the real spinor norm (@def:spinor-norm) of $g$ is $+1$, and so is that of $\id_{\RR\kappa}$.
 By @prop:spinor-norm-orientation-classes (3), the real spinor norm of $\rho(\gamma)$ is $+1$, so $\rho(\gamma)\in\Orth^+\qty{H^2(X_s,\ZZ)/\text{torsion}}$ by @def:lattice-spinor-kernels.
 :::
 
@@ -585,11 +585,11 @@ No hypothesis of the theorem concerns the isometry class of $S$.
 
 ::: {.proposition #prop:monodromy-fixing-sublattice title="Monodromy on the orthogonal complement of a sublattice of flat classes"}
 
-Let $(\bL,\beta)$ be a local system of lattices (@def:local-system-of-lattices) on $B$ with symmetric stalks (@def:flower-pot-degeneration), let $s\in B$, and let $\rho$ be its monodromy representation.
+Let $(\bL,\beta)$ be a local system of lattices (@def:local-system-of-lattices) on $B$ with symmetric stalks, let $s\in B$, and let $\rho$ be its monodromy representation.
 Suppose that the stalk $\Lambda\definedas\bL_s$ is unimodular, that $S\iscontainedin\Lambda$ is a primitive (@def:primitive-embedding) nondegenerate (@def:polarization) sublattice with $T\definedas S^{\perp\Lambda}$, and that every element of $S$ is the value at $s$ of a global section of $\bL$.
 
 1. $\rho\qty{\pi_1(B,s)}\iscontainedin\Fix_{\Orth(\Lambda)}(S)$.
-2. The representation (@def:representable-presheaf) $\operatorname{res}_T\circ\rho$ on $T$ takes values in $\widetilde\Orth(T)$.
+2. The representation (@def:transport-and-monodromy) $\operatorname{res}_T\circ\rho$ on $T$ takes values in $\widetilde\Orth(T)$.
 3. If $\rho$ takes values in $\Orth^+(\Lambda)$, then $\operatorname{res}_T\circ\rho$ takes values in
 $$
 \widetilde\Orth^+(T).
@@ -613,7 +613,7 @@ With (2), $\operatorname{res}_T(g)\in\widetilde\Orth^+(T)$ by @conv:spinor-posit
 
 In @cor:middle-cohomology-monodromy let $n=2$, let the fibres be K3 surfaces, and let $\eta_s\colon H^2(X_s,\ZZ)\iso\lkt$ be an isometry.
 Let $S\iscontainedin\lkt$ be a primitive (@def:primitive-embedding) nondegenerate (@def:polarization) sublattice with $T\definedas S^{\perp\lkt}$, and suppose that every element of $\eta_s^{-1}(S)$ is the value at $s$ of a global section of $R^2f_*\underline\ZZ_{\mcx}$.
-Then the representation (@def:representable-presheaf) $\gamma\mapsto\eta_s\,\rho(\gamma)\,\eta_s^{-1}$ preserves $T$, and its restriction to $T$ takes values in
+Then the representation (@def:transport-and-monodromy) $\gamma\mapsto\eta_s\,\rho(\gamma)\,\eta_s^{-1}$ preserves $T$, and its restriction to $T$ takes values in
 $$
 \widetilde\Orth^+(T).
 $$
@@ -624,7 +624,7 @@ $$
 The lattice $\lkt$ is unimodular (@prop:k3-lattice).
 The group (@def:group) $H^2(X_s,\ZZ)$ is torsion-free (@prop:k3-lattice), so $\rho$ takes values in $\Orth^+\qty{H^2(X_s,\ZZ)}$ by @cor:middle-cohomology-monodromy (2).
 The isometry $\eta_s$ conjugates $\Orth^+\qty{H^2(X_s,\ZZ)}$ onto $\Orth^+(\lkt)$ (@def:lattice-spinor-kernels), so the representation $\gamma\mapsto\eta_s\,\rho(\gamma)\,\eta_s^{-1}$ takes values in $\Orth^+(\lkt)$.
-The sheaf $R^2f_*\underline\ZZ_{\mcx}$ with the cup product is a local system of lattices (@def:local-system-of-lattices) with symmetric stalks (@def:flower-pot-degeneration) by @prop:primitive-cohomology-vhs (1).
+The sheaf $R^2f_*\underline\ZZ_{\mcx}$ with the cup product is a local system of lattices (@def:local-system-of-lattices) with symmetric stalks by @prop:primitive-cohomology-vhs (1).
 Apply @prop:monodromy-fixing-sublattice (3) to it, with the identification $\eta_s$ of its stalk at $s$ with $\lkt$.
 :::
 
@@ -648,7 +648,7 @@ For $F\in D$, an *automorphism of the polarized Hodge structure* $F$ is an eleme
 ::: {.proposition #prop:k3-primitive-hodge-automorphisms title="Automorphisms of the primitive Hodge structure of a polarized K3 surface"}
 
 Let $X$ be a K3 surface, let $h\in H^2(X,\ZZ)$ be a primitive ample class with $h^2=2d$, and let $G_h$ be the group (@def:group) of Hodge isometries of $H^2(X,\ZZ)$ (@sec-k3-automorphisms) that fix $h$.
-Give $h^\perp$ the Hodge structure (@def:property-structure-stuff) with $(p,q)$-part $H^{p,q}(X)\cap h^\perp_\CC$.
+Give $h^\perp$ the Hodge structure (@def:polarized-integral-vhs) with $(p,q)$-part $H^{p,q}(X)\cap h^\perp_\CC$.
 
 1. Restriction to $h^\perp$ is an injective group morphism from $G_h$ to the group of isometries of $h^\perp$ that preserve this Hodge structure.
 2. The isometry $-\id_{h^\perp}$ preserves this Hodge structure, and it is the restriction of an element of $G_h$ exactly when $d=1$.
@@ -677,7 +677,7 @@ It maps $H^{2,0}(X)\iscontainedin h^\perp_\CC$ to itself, so it is a Hodge isome
 ::: {.proposition #prop:monodromy-hodge-automorphism title="When a monodromy operator is an automorphism of the Hodge structure"}
 
 1. For every $F\in D$, the group (@def:group) $G_\ZZ\cap V_F$ is finite.
-2. For $\gamma\in\pi_1(B,s)$ and $\tilde t\in\widetilde B$, the isometry $\rho(\gamma)$ is an automorphism of the polarized Hodge structure (@def:property-structure-stuff) $\widetilde\Phi(\tilde t)$ exactly when
+2. For $\gamma\in\pi_1(B,s)$ and $\tilde t\in\widetilde B$, the isometry $\rho(\gamma)$ is an automorphism of the polarized Hodge structure (@def:polarized-integral-vhs) $\widetilde\Phi(\tilde t)$ exactly when
 $$
 \widetilde\Phi(\gamma\tilde t)=\widetilde\Phi(\tilde t).
 $$
@@ -727,7 +727,7 @@ for the space of invariants.
 A flat global section $e$ of $\bL\tensor\CC$ is a global section of the local system $\bL\tensor_\ZZ\underline\CC_B$.
 For a path $\gamma$ from $s$ to $b$, the pullback (@def:pullback-square) of $e$ is a section of $\gamma^{-1}\qty{\bL\tensor\underline\CC}$ over $[0,1]$, so $e(b)=\gamma^*e(s)$.
 Hence $e$ is determined by $e(s)$, and $e(s)$ is fixed by the transport along every loop at $s$.
-Conversely, for $v\in L_\CC^\rho$ the vector $\gamma^*v\in\bL_b\tensor\CC$ does not depend on the path $\gamma$ from $s$ to $b$, and $b\mapsto\gamma^*v$ is a global section, because on a simply connected open set on which $\bL$ is constant the transport is the identification of the stalks (@def:flower-pot-degeneration).
+Conversely, for $v\in L_\CC^\rho$ the vector $\gamma^*v\in\bL_b\tensor\CC$ does not depend on the path $\gamma$ from $s$ to $b$, and $b\mapsto\gamma^*v$ is a global section, because on a simply connected open set on which $\bL$ is constant the transport is the identification of the stalks.
 This proves (1).
 
 For (2), choose a set $\Sigma$ of group (@def:group) generators of $\pi_1(B,s)$.
@@ -745,7 +745,7 @@ Let $e$ be a flat global section of $\bL\tensor\CC$.
 
 ::: {.corollary #cor:invariants-sub-hodge-structure title="The invariants are a constant sub-Hodge structure"}
 
-1. For every $\tilde t\in\widetilde B$, the subspace $L_\QQ^\rho\iscontainedin L_\QQ$ is a sub-Hodge structure (@def:property-structure-stuff) of $\widetilde\Phi(\tilde t)$, and the induced Hodge structure on $L_\QQ^\rho$ is independent of $\tilde t$.
+1. For every $\tilde t\in\widetilde B$, the subspace $L_\QQ^\rho\iscontainedin L_\QQ$ is a sub-Hodge structure (@def:polarized-integral-vhs) of $\widetilde\Phi(\tilde t)$, and the induced Hodge structure on $L_\QQ^\rho$ is independent of $\tilde t$.
 2. The restriction of $Q$ to $L_\QQ^\rho$ is nondegenerate (@def:polarization), and
 $$
 L_\QQ=L_\QQ^\rho\perp\qty{L_\QQ^\rho}^\perp
@@ -768,15 +768,15 @@ Apply this to $W=L_\QQ^\rho$; the complement is $\pi_1(B,s)$-stable because $\rh
 
 ::: {.theorem #thm:global-invariant-cycles title="Global invariant cycle theorem"}
 
-Let $f\colon\mcx\to B$ be a smooth projective (@def:module-subcategories) morphism of smooth quasi-projective varieties, let $s\in B$, and let $\overline{\mcx}$ be a smooth projective compactification of $\mcx$.
+Let $f\colon\mcx\to B$ be a smooth projective morphism of smooth quasi-projective varieties, let $s\in B$, and let $\overline{\mcx}$ be a smooth projective compactification of $\mcx$.
 
 1. The space $H^k(X_s,\QQ)^\rho$ of monodromy invariants is the image of the restriction map $H^k\qty{\overline{\mcx},\QQ}\to H^k(X_s,\QQ)$ [@Voi07, Proposition 4.23, Theorem 4.24 and its proof].
-2. The space $H^k(X_s,\QQ)^\rho$ is a sub-Hodge structure (@def:property-structure-stuff) of $H^k(X_s,\QQ)$ [@Voi07, Proposition 3.14, Corollary 4.25].
+2. The space $H^k(X_s,\QQ)^\rho$ is a sub-Hodge structure (@def:polarized-integral-vhs) of $H^k(X_s,\QQ)$ [@Voi07, Proposition 3.14, Corollary 4.25].
 :::
 
 ::: {.theorem #thm:monodromy-semisimple title="Deligne's semisimplicity theorem"}
 
-The representation (@def:representable-presheaf) $\rho$ of $\pi_1(B,s)$ on $L_\CC$ is completely reducible [@Sch73, Theorem (7.25)].
+The representation (@def:transport-and-monodromy) $\rho$ of $\pi_1(B,s)$ on $L_\CC$ is completely reducible [@Sch73, Theorem (7.25)].
 :::
 
 ::: {.example #ex:unipotent-monodromy-not-global title="No unipotent global monodromy group"}
@@ -795,7 +795,7 @@ The *Mumford--Tate group* $\MT(V)$ is the smallest algebraic subgroup of $\GL(V)
 
 ::: {.proposition #prop:mumford-tate-sub-hodge-structures title="The Mumford--Tate group and sub-Hodge structures"}
 
-A subspace of a tensor space $\bigoplus_iV^{\tensor n_i}\tensor(V^*)^{\tensor m_i}$ is a sub-Hodge structure (@def:property-structure-stuff) exactly when $\MT(V)$ preserves it [@Huy16, Ch. 3, §3.4].
+A subspace of a tensor space $\bigoplus_iV^{\tensor n_i}\tensor(V^*)^{\tensor m_i}$ is a sub-Hodge structure (@def:polarized-integral-vhs) exactly when $\MT(V)$ preserves it [@Huy16, Ch. 3, §3.4].
 :::
 
 For a family of polarized K3 surfaces $f\colon\mcx\to S$ over a smooth connected complex algebraic variety $S$, with monodromy representation $\rho\colon\pi_1(S,t)\to\Orth\qty{H^2(X_t,\QQ)}$, the *algebraic monodromy group* is the Zariski closure of $\rho\qty{\pi_1(S,t)}$ in $\Orth\qty{H^2(X_t,\QQ)}$ [@Huy16, Ch. 6, §4.3].
@@ -803,7 +803,7 @@ For a family of polarized K3 surfaces $f\colon\mcx\to S$ over a smooth connected
 ::: {.theorem #thm:mumford-tate-contains-monodromy title="The Mumford--Tate group contains the algebraic monodromy group up to finite index"}
 
 Let $f\colon\mcx\to S$ be a family of polarized K3 surfaces over a smooth connected complex algebraic variety.
-There is a countable union $S'\subsetneq S$ of proper closed (@def:closed-monoidal) subvarieties such that for $t\in S\sm S'$ the group (@def:group) $\MT\qty{H^2(X_t,\QQ)}$ is constant and contains a subgroup of finite index (@def:index) of the algebraic monodromy group (@def:k3-moduli-functors); it contains the identity component of the algebraic monodromy group [@Huy16, Ch. 6, Theorem 4.9].
+There is a countable union $S'\subsetneq S$ of proper closed subvarieties such that for $t\in S\sm S'$ the group (@def:group) $\MT\qty{H^2(X_t,\QQ)}$ is constant and contains a subgroup of finite index (@def:index) of the algebraic monodromy group; it contains the identity component of the algebraic monodromy group [@Huy16, Ch. 6, Theorem 4.9].
 :::
 
 ::: {.corollary #cor:finite-index-monodromy-hodge-tensors title="Monodromy at a very general fibre of a family of polarized K3 surfaces"}
@@ -814,14 +814,14 @@ $$
 $$
 
 1. The subgroup $\Gamma'$ has finite index (@def:index) in $\Gamma$.
-2. Every element of $\Gamma'$ preserves every sub-Hodge structure (@def:property-structure-stuff) of every tensor space $\bigoplus_iV^{\tensor n_i}\tensor(V^*)^{\tensor m_i}$.
+2. Every element of $\Gamma'$ preserves every sub-Hodge structure (@def:polarized-integral-vhs) of every tensor space $\bigoplus_iV^{\tensor n_i}\tensor(V^*)^{\tensor m_i}$.
 3. The set of $g\in\Gamma$ with $g_\CC H^{2,0}(X_t)=H^{2,0}(X_t)$ is a finite subgroup of $\Gamma$; it contains no element of infinite order.
 :::
 
 ::: {.proof}
 
-Let $M$ be the algebraic monodromy group (@def:k3-moduli-functors) and let $H\iscontainedin M\cap\MT(V)$ be an algebraic subgroup of finite index in $M$, which exists by @thm:mumford-tate-contains-monodromy.
-The map $\Gamma/\qty{\Gamma\cap H(\QQ)}\to M(\overline\QQ)/H(\overline\QQ)$ is injective and its target (@def:globular-boundary) is finite, so $\Gamma\cap H(\QQ)$ has finite index in $\Gamma$; it is contained in $\Gamma'$.
+Let $M$ be the algebraic monodromy group and let $H\iscontainedin M\cap\MT(V)$ be an algebraic subgroup of finite index in $M$, which exists by @thm:mumford-tate-contains-monodromy.
+The map $\Gamma/\qty{\Gamma\cap H(\QQ)}\to M(\overline\QQ)/H(\overline\QQ)$ is injective and its target is finite, so $\Gamma\cap H(\QQ)$ has finite index in $\Gamma$; it is contained in $\Gamma'$.
 This proves (1), and (2) is @prop:mumford-tate-sub-hodge-structures.
 
 For (3), let $h\in H^2(X_t,\ZZ)$ be the class of the polarization (@def:polarization-functors).

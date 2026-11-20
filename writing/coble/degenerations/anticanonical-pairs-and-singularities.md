@@ -5,7 +5,7 @@
 ::: {.definition #def:anticanonical-pair defines="anticanonical pair; length; labeled anticanonical pair"}
 
 An **anticanonical pair** $(V, D)$ consists of a smooth rational surface $V$ and a divisor $D\in\abs{-K_V}$ that is a reduced cycle of rational curves $D = \sum_{i=1}^r D_i$, with $i$ taken mod $r$, together with an orientation (@def:free-module-orientation) of $D$.
-For $r\geq 2$, each $D_i$ is a smooth rational curve, and $D_i$ meets (@def:replete-full-meet) $D_{i\pm1}$ transversally.
+For $r\geq 2$, each $D_i$ is a smooth rational curve, and $D_i$ meets $D_{i\pm1}$ transversally.
 For $r = 1$, $D = D_1$ is an irreducible nodal (@def:nodal-enriques-surface) curve.
 The integer $r = r(D)$ is the **length** of $D$.
 The pair is **labeled** if the components of $D$ are indexed as above [@Fri15, Sec. 1].
@@ -30,7 +30,7 @@ $$
 
 Let $(V, D)$ be an anticanonical pair (@def:anticanonical-pair) whose divisor $D$ is a cycle of rational curves.
 
-- **Corner blowups**, at nodes of $D$ (points where two components of $D$ meet (@def:replete-full-meet)), preserve the charge (@def:charge).
+- **Corner blowups**, at nodes of $D$ (points where two components of $D$ meet), preserve the charge (@def:charge).
 
 - **Interior blowups**, at smooth points of $D$ (points lying on a single component of $D$), increase the charge by $1$
 
@@ -44,7 +44,7 @@ A *toric model* of an anticanonical pair (@def:anticanonical-pair) $(V,D)$ is a 
 $$
 (V,D) \longleftarrow (V',D') \longrightarrow (\bar V,\bar D),
 $$
-where $(\bar V,\bar D)$ is a smooth toric surface with its toric boundary, $V'\to V$ is a sequence of corner blowups at nodes of $D$, and $V'\to\bar V$ is the contraction of the exceptional curves of a sequence of interior blowups at smooth points of the boundary. The boundary on the corner blowup is the reduced inverse image; on an interior blowup it is the strict (@def:monoidal-category) transform [@AE22, §6.1].
+where $(\bar V,\bar D)$ is a smooth toric surface with its toric boundary, $V'\to V$ is a sequence of corner blowups at nodes of $D$, and $V'\to\bar V$ is the contraction of the exceptional curves of a sequence of interior blowups at smooth points of the boundary. The boundary on the corner blowup is the reduced inverse image; on an interior blowup it is the strict transform [@AE22, §6.1].
 
 The diagram gives a birational map $V\dashrightarrow\bar V$ through their common model $V'$. The intermediate $V'$ need not be toric: its map to the toric surface contracts curves created by interior blowups. Thus “toric model” names the toric target (@def:globular-boundary) of the diagram, rather than every surface in it [@AE22, §6.1].
 :::
@@ -118,7 +118,7 @@ $$
 With discrepancies as in @def:discrepancy, write $D = \Sum_i a_i D_i$ with distinct prime divisors $D_i$.
 The pair $(X, D)$ is
 
-- **terminal (@def:terminal-coble-surface)** if $\operatorname{discrep}(X, D) > 0$;
+- **terminal (@def:mmp-singularities)** if $\operatorname{discrep}(X, D) > 0$;
 
 - **canonical** if $\operatorname{discrep}(X, D) \geq 0$;
 
@@ -134,7 +134,7 @@ The pair $(X, D)$ is
 ::: {.definition #def:divisorial-log-terminal title="Divisorial log terminal pairs" defines="divisorial log terminal (dlt) pair"}
 
 Let $X$ be a normal variety and let $D = \Sum_i a_i D_i$ be a sum of distinct prime divisors with $0\leq a_i\leq1$, such that $m(K_X + D)$ is Cartier for some $m > 0$.
-The pair $(X, D)$ is **divisorial log terminal (@def:terminal-coble-surface) (dlt)** if there is a closed (@def:closed-monoidal) subset $Z\subset X$ such that:
+The pair $(X, D)$ is **divisorial log terminal (@def:divisorial-log-terminal) (dlt)** if there is a closed subset $Z\subset X$ such that:
 
 1. $X\sm Z$ is smooth and $D|_{X\sm Z}$ is an snc divisor;
 

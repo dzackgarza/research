@@ -5,13 +5,13 @@ Let $R$ be a Dedekind domain with fraction field $K$.
 ## Torsion-valued pairings {#sec-torsion-pairings}
 
 ::: {.definition #def:torsion-pairing title="Pairings on finite-length modules" defines="$\mathcal B_{R,W}^{\mathrm{fl}}$; torsion linking pairing"}
-For $W\in R\text{-}\mathbf{Mod}$, let $\mathcal B_{R,W}^{\mathrm{fl}}$ be the replete full subcategory (@def:property-structure-stuff) of the fixed-value bilinear form category $\mathcal B_{R,W}$ of @def:form-categories on objects $(T,b)$ whose module component $T$ has finite length (@def:anticanonical-pair) over $R$. No nondegeneracy or symmetry is assumed.
+For $W\in R\text{-}\mathbf{Mod}$, let $\mathcal B_{R,W}^{\mathrm{fl}}$ be the replete full subcategory (@def:property-structure-stuff) of the fixed-value bilinear form category $\mathcal B_{R,W}$ of @def:form-categories on objects $(T,b)$ whose module component $T$ has finite length over $R$. No nondegeneracy or symmetry is assumed.
 
 A **torsion linking pairing** is a bilinear form
 $$
 b\colon T\tensor_RT\longrightarrow K/R
 $$
-with $T$ of finite length; equivalently, it is an object of $\mathcal B_{R,K/R}^{\mathrm{fl}}$. The left and right adjoints and their complete (@def:complete) radical–coradical exact sequences are the restrictions of @def:pairing-adjoints.
+with $T$ of finite length; equivalently, it is an object of $\mathcal B_{R,K/R}^{\mathrm{fl}}$. The left and right adjoints and their complete radical–coradical exact sequences are the restrictions of @def:pairing-adjoints.
 :::
 
 ::: {.definition #def:torsion-Pontryagin-dual title="The dual of a finite torsion module" defines="torsion dual; $T^\dagger$; evaluation morphism; $\eta_T$"}
@@ -33,7 +33,7 @@ the dual sequence
 $$
 0\too T_3^\dagger\too T_2^\dagger\too T_1^\dagger\too0
 $$
-is exact, and $T^\dagger$ has the same finite length (@def:anticanonical-pair) as $T$ at each nonzero prime of $R$.
+is exact, and $T^\dagger$ has the same finite length as $T$ at each nonzero prime of $R$.
 :::
 
 ::: {.proof}
@@ -47,7 +47,7 @@ b^\sharp\colon T\longrightarrow T^\dagger.
 $$
 Then the following are equivalent: $\ker(b^\sharp)=0$; $\operatorname{coker}(b^\sharp)=0$; and $b^\sharp$ is an isomorphism. Hence a symmetric finite torsion linking pairing (@def:torsion-pairing) is nondegenerate exactly when it is perfect.
 
-The complete (@def:complete) exact sequence is
+The complete exact sequence is
 $$
 0\too\radic(b)\too T\xrightarrow{b^\sharp}T^\dagger
 \twoheadrightarrow\operatorname{corad}(b)\too0.
@@ -55,7 +55,7 @@ $$
 :::
 
 ::: {.proof}
-The modules $T$ and $T^\dagger$ have identical finite lengths (@def:anticanonical-pair) at every prime by @prop:torsion-duality-exact. An injective morphism between them must have zero cokernel, and a surjective morphism must have zero kernel. Symmetry identifies the two adjoints of @def:pairing-adjoints, proving the equivalence (@def:equivalence-of-objects) with nondegeneracy.
+The modules $T$ and $T^\dagger$ have identical finite lengths at every prime by @prop:torsion-duality-exact. An injective morphism between them must have zero cokernel, and a surjective morphism must have zero kernel. Symmetry identifies the two adjoints of @def:pairing-adjoints, proving the equivalence (@def:equivalence-of-objects) with nondegeneracy.
 :::
 
 ## Discriminant forms as categorical cokernels {#sec-torsion-discriminants}

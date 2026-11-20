@@ -2,7 +2,7 @@
 
 ::: {#not:hyperbolic-polytope-setting .notation defines="$C_L^+$; $\HH^n_L$; mirror; $H_v$"}
 
-Throughout, $L$ is a hyperbolic lattice of signature (@def:signature) $(1,n)$, $C_L^+$ is a fixed component of its positive cone (@not:reflection-groups-sign-convention), and $\HH^n_L$ is the associated hyperbolic (@def:definiteness) $n$-space of @def:hyperbolic-model.
+Throughout, $L$ is a hyperbolic lattice of signature (@def:signature) $(1,n)$, $C_L^+$ is a fixed component of its positive cone (@not:reflection-groups-sign-convention), and $\HH^n_L$ is the associated hyperbolic (@def:hyperbolic-model) $n$-space of @def:hyperbolic-model.
 Roots are negative-definite directions, so a mirror $H_v = v^{\perp}\intersect\HH^n_L$ is nonempty exactly when $v^2 < 0$.
 :::
 
@@ -28,7 +28,7 @@ When $G$ is nondegenerate (@def:polarization) it identifies $V$ with $V^*$, and 
 
 Let $(W,S)$, $\oC$ and $U$ be as in @def:tits-cone, and for $f\in \oC$ write $I(f) \definedas \theset{s\in S \mid f(\alpha_s) = 0}$.
 
-1. $U$ is a convex cone, and $\oC$ is a strict (@def:monoidal-category) fundamental domain for the action of $W$ on $U$: every $W$-orbit in $U$ meets (@def:replete-full-meet) $\oC$ in exactly one point.
+1. $U$ is a convex cone, and $\oC$ is a strict fundamental domain for the action of $W$ on $U$: every $W$-orbit in $U$ meets $\oC$ in exactly one point.
 
 2. The stabilizer of $f\in\oC$ in $W$ is the standard parabolic subgroup $W_{I(f)}$ of @def:coxeter-subdiagram.
 
@@ -39,7 +39,7 @@ Let $(W,S)$, $\oC$ and $U$ be as in @def:tits-cone, and for $f\in \oC$ write $I(
 
 ::: {.proof}
 
-Parts (1) and (2) are [@Bou08, Ch. V §4 no. 6, Prop. 6 and Cor. of Prop. 5; @Hum90, §5.13, Theorem]. Part (3) is [@Dav08, Theorem D.2.6(iii)], which states that the interior of $U$ is $W\cdot C^f$, where $C^f$ is the union of the open faces of the chamber (@def:coble-polarization-classes) with finite stabilizers. Part (4) is [@Dav08, App. D.2, "Some Consequences", after Theorem D.2.7].
+Parts (1) and (2) are [@Bou08, Ch. V §4 no. 6, Prop. 6 and Cor. of Prop. 5; @Hum90, §5.13, Theorem]. Part (3) is [@Dav08, Theorem D.2.6(iii)], which states that the interior of $U$ is $W\cdot C^f$, where $C^f$ is the union of the open faces of the chamber (@def:tits-cone) with finite stabilizers. Part (4) is [@Dav08, App. D.2, "Some Consequences", after Theorem D.2.7].
 :::
 
 ::: {.proposition #prop:tits-cone-spherical title="The Tits cone of a spherical system"}
@@ -57,7 +57,7 @@ By @thm:coxeter-type-and-geometry(1), $(W,S)$ is spherical if and only if $W$ is
 
 Let $(W,S)$ be an irreducible euclidean Coxeter system (@def:coxeter-system-type) (@def:coxeter-group), and let $\ker G = \RR\delta$ as in @prop:euclidean-radical.
 Then $W$ stabilizes the affine hyperplane $E \definedas \theset{f\in V^* \mid f(\delta) = 1}$ and acts on it faithfully.
-For the euclidean structure (@def:property-structure-stuff) on $E$ induced by $G$, each $s\in S$ acts on $E$ as the orthogonal reflection in the affine hyperplane $E\intersect\theset{f \mid f(\alpha_s) = 0}$ [@Hum90, §6.5].
+For the euclidean structure on $E$ induced by $G$, each $s\in S$ acts on $E$ as the orthogonal reflection in the affine hyperplane $E\intersect\theset{f \mid f(\alpha_s) = 0}$ [@Hum90, §6.5].
 :::
 
 ::: {.proof}
@@ -86,14 +86,14 @@ Let $I\iscontainedin S$.
    $$
    \Intersect_{s\in I} H_s
    $$
-   is a single point of $\HH^n_L$, an **ordinary (@def:two-elementary-isotropic-types) vertex** of $P$ when it lies in $\overline{P}$.
+   is a single point of $\HH^n_L$, an **ordinary vertex** of $P$ when it lies in $\overline{P}$.
 
 2. If $\Sigma_I$ is parabolic (@def:definiteness) of rank $n-1$, then $\dim A_I = n$, the form $\restrictionof{\beta_L}{A_I}$ is negative semidefinite with radical (@def:two-witnesses) a line $\RR\eta$ spanned by an isotropic (@def:orthogonal-complement) vector $\eta$, one has $A_I^{\perp L_\RR} = \RR\eta$, and
    $$
    \Intersect_{s\in I}\overline{H_s}
    $$
-   meets (@def:replete-full-meet) the closure of $\HH^n_L$ in the single boundary point $[\eta]\in\del\HH^n_L$, an **ideal vertex** of $P$ when it lies in $\overline P$.
-   In this case the negative-definite lattice $\eta^{\perp L}/\eta$ has rank $n-1$, and the stabilizer of $[\eta]$ in $W$ is $W_I$, acting on $(\eta^{\perp L}/\eta)\tensor_\ZZ\RR \cong \EE^{\,n-1}$ as the euclidean reflection group (@def:group) with diagram $\Sigma_I$.
+   meets the closure of $\HH^n_L$ in the single boundary point $[\eta]\in\del\HH^n_L$, an **ideal vertex** of $P$ when it lies in $\overline P$.
+   In this case the negative-definite lattice $\eta^{\perp L}/\eta$ has rank $n-1$, and the stabilizer of $[\eta]$ in $W$ is $W_I$, acting on $(\eta^{\perp L}/\eta)\tensor_\ZZ\RR \cong \EE^{\,n-1}$ as the euclidean reflection group with diagram $\Sigma_I$.
 :::
 
 ::: {.proof}
@@ -112,7 +112,7 @@ Since $\eta$ is isotropic and $L$ has signature $(1,n)$, the form induced on $\e
 
 ::: {.corollary #cor:ideal-vertices-are-parabolic}
 
-Sending an ideal vertex $[\eta]$ of $P$ to the set $I$ of all walls (@not:coxeter-polytope-faces) of $P$ through $[\eta]$ is a bijection from the ideal vertices of $P$ onto a set of parabolic subdiagrams of $\Sigma$ of rank $n-1$, and each such $\Sigma_I$ is maximal (@def:maximal-lattice) among the parabolic subdiagrams of $\Sigma$, in the sense of @def:parabolic-subdiagram.
+Sending an ideal vertex $[\eta]$ of $P$ to the set $I$ of all walls (@not:coxeter-polytope-faces) of $P$ through $[\eta]$ is a bijection from the ideal vertices of $P$ onto a set of parabolic subdiagrams of $\Sigma$ of rank $n-1$, and each such $\Sigma_I$ is maximal (@def:parabolic-subdiagram) among the parabolic subdiagrams of $\Sigma$, in the sense of @def:parabolic-subdiagram.
 :::
 
 ::: {.proof}
@@ -128,15 +128,15 @@ By the choice of $I$ this gives $J = I$.
 ::: {.definition #def:covolume defines="covolume"}
 
 Let $\Gamma\leq\Isom(\HH^n_L)$ be a discrete subgroup.
-Its **covolume** is the hyperbolic (@def:definiteness) volume $\vol(\HH^n_L/\Gamma)$ of the quotient orbifold.
-If $\Gamma$ is generated by the reflections in the walls (@not:coxeter-polytope-faces) of a Coxeter polytope $P$ (@def:coxeter-polytope), then $P$ is a strict (@def:monoidal-category) fundamental domain and $\vol(\HH^n_L/\Gamma) = \vol(P)$.
+Its **covolume** is the hyperbolic volume $\vol(\HH^n_L/\Gamma)$ of the quotient orbifold.
+If $\Gamma$ is generated by the reflections in the walls (@not:coxeter-polytope-faces) of a Coxeter polytope $P$ (@def:coxeter-polytope), then $P$ is a strict fundamental domain and $\vol(\HH^n_L/\Gamma) = \vol(P)$.
 :::
 
 ::: {.theorem #thm:coxeter-polytope-volume title="Finite volume and compactness"}
 
 Let $P\iscontainedin\HH^n_L$ be a Coxeter polytope (@def:coxeter-polytope) with finitely many walls (@not:coxeter-polytope-faces) and Coxeter--Vinberg diagram $\Sigma$ (@def:coxeter-vinberg-diagram).
 
-1. $\vol(P) < \infty$ if and only if, in the projective (@def:module-subcategories) model of @def:hyperbolic-model, the closure of $P$ is the convex hull of finitely many points of $\overline{\HH^n_L}$ --- equivalently, of the ordinary (@def:two-elementary-isotropic-types) and ideal vertices supplied by @prop:polytope-vertex-subdiagram.
+1. $\vol(P) < \infty$ if and only if, in the projective (@def:hyperbolic-model) model of @def:hyperbolic-model, the closure of $P$ is the convex hull of finitely many points of $\overline{\HH^n_L}$ --- equivalently, of the ordinary and ideal vertices supplied by @prop:polytope-vertex-subdiagram.
 
 2. $P$ is compact if and only if $\vol(P)<\infty$ and $P$ has no ideal vertex; equivalently, if and only if the closure of $P$ in the projective model is the convex hull of finitely many ordinary vertices.
    By @cor:ideal-vertices-are-parabolic this is the condition that no parabolic subdiagram of $\Sigma$ of rank $n-1$ is cut out by a set of walls meeting in $\overline{P}$.
@@ -151,7 +151,7 @@ This is [@Vin67, §3, eqs. (8) and (9)] and [@Vin85, Ch. I, §4.1].
 
 ::: {.corollary #cor:coxeter-simplex-volume title="The simplex case"}
 
-Suppose $\abs{S} = n+1$ and $P$ is a simplex, so that its $n+1$ vertices are cut out by the $n+1$ maximal (@def:maximal-lattice) proper subdiagrams (@def:coxeter-subdiagram) $\Sigma_{S\sm\theset{s}}$, $s\in S$.
+Suppose $\abs{S} = n+1$ and $P$ is a simplex, so that its $n+1$ vertices are cut out by the $n+1$ maximal proper subdiagrams (@def:coxeter-subdiagram) $\Sigma_{S\sm\theset{s}}$, $s\in S$.
 Then
 
 1. $P$ is compact if and only if every $\Sigma_{S\sm\theset{s}}$ is elliptic;
@@ -163,7 +163,7 @@ Then
 
 ::: {.proof}
 
-Since $P$ is a simplex, the $\alpha_s$ for $s\in S$ form a basis (@def:based-module) of $L_\RR$, and the closure of $P$ in the projective (@def:module-subcategories) model is the convex hull of the $n+1$ points $v_s$, where $v_s$ spans the line $A_{S\sm\theset{s}}^{\perp}$.
+Since $P$ is a simplex, the $\alpha_s$ for $s\in S$ form a basis (@def:based-module) of $L_\RR$, and the closure of $P$ in the projective (@def:hyperbolic-model) model is the convex hull of the $n+1$ points $v_s$, where $v_s$ spans the line $A_{S\sm\theset{s}}^{\perp}$.
 So $A_{S\sm\theset{s}} = v_s^{\perp}$, and $\Sigma_{S\sm\theset{s}}$ has the Gram form (@def:coxeter-gram-form) $\restrictionof{\beta_L}{v_s^\perp}$.
 As $L_\RR$ has signature $(1,n)$, @thm:sylvester gives: $v_s^2 > 0$ exactly when $v_s^{\perp}$ is negative definite (@def:definiteness), that is $\Sigma_{S\sm\theset{s}}$ is elliptic; $v_s^2 < 0$ exactly when $v_s^{\perp}$ is nondegenerate (@def:polarization) of signature $(1,n-1)$, that is $\Sigma_{S\sm\theset{s}}$ is hyperbolic; and $v_s^2 = 0$ exactly when $v_s^{\perp}$ is degenerate (@def:definiteness), with radical (@def:two-witnesses) $\RR v_s$.
 
@@ -223,7 +223,7 @@ By @def:coxeter-polytope each dihedral angle is $\pi/m$ for an integer $m\geq 2$
 
 ::: {.proposition #prop:cusp-cross-section title="The stabilizer of an ideal vertex"}
 
-Let $P$ be a finite-volume Coxeter polytope with reflection group (@def:group) $W$, let $[\eta]$ be an ideal vertex of $P$, and let $I$ be the set of walls (@not:coxeter-polytope-faces) of $P$ through $[\eta]$.
+Let $P$ be a finite-volume Coxeter polytope with reflection group $W$, let $[\eta]$ be an ideal vertex of $P$, and let $I$ be the set of walls (@not:coxeter-polytope-faces) of $P$ through $[\eta]$.
 Then the stabilizer of $[\eta]$ in $W$ is $W_I$, and $W_I$ acts on $(\eta^{\perp L}/\eta)\tensor_\ZZ\RR\cong\EE^{\,n-1}$ as a euclidean reflection group with a compact fundamental domain.
 :::
 
@@ -245,7 +245,7 @@ Let $P\iscontainedin\HH^n_L$ be a Coxeter polytope with finitely many walls (@no
 
 3. Let $M$ be a lattice of signature (@def:signature) $(2,n+1)$, let $I\iscontainedin M$ be a primitive isotropic sublattice of rank $1$, and let $L = I^{\perp M}/I$.
    Then $J\mapsto J/I$ is a bijection from the primitive totally isotropic sublattices $J\iscontainedin M$ of rank $2$ that contain $I$ onto the primitive isotropic sublattices of $L$ of rank $1$.
-   For an arithmetic group (@def:group) $\Gamma\leq\Orth(M)$ that preserves a connected component $D$ of the period domain of $M$, the rational boundary component of each such $J$ contains that of $I$ in its boundary, and the $1$-cusps of $\bbcpt{D/\Gamma}$ incident to the $0$-cusp of $I$, in the sense of [@Sca87, (2.1.10)], are the $\Gamma$-orbits of these $J$.
+   For an arithmetic group $\Gamma\leq\Orth(M)$ that preserves a connected component $D$ of the period domain of $M$, the rational boundary component of each such $J$ contains that of $I$ in its boundary, and the $1$-cusps of $\bbcpt{D/\Gamma}$ incident to the $0$-cusp of $I$, in the sense of [@Sca87, (2.1.10)], are the $\Gamma$-orbits of these $J$.
 :::
 
 ::: {.proof}
@@ -253,9 +253,9 @@ Let $P\iscontainedin\HH^n_L$ be a Coxeter polytope with finitely many walls (@no
 (1) By @cor:ideal-vertices-are-parabolic the map is injective, and its values are maximal parabolic subdiagrams of rank $n-1$.
 Let $\Sigma_J$ be a parabolic subdiagram.
 By @cor:coxeter-polytope-acute, $P$ is acute-angled, so [@Vin85, Ch. I, Prop. 3.2] applies: let $c_j > 0$, $j\in J$, be the coefficients of a linear relation among the rows of $G[J,J]$; then $u \definedas \sum_{j\in J} c_j\alpha_j$ is nonzero, isotropic and orthogonal to every $\alpha_j$ with $j\in J$, and $[u]\in\overline P$.
-Let $\hat P$ be the continuation of $P$ in the projective (@def:module-subcategories) sphere (@def:spheres) [@Vin85, Ch. I, §4.1]; it is the convex hull of its finitely many vertices, and since $\vol(P) < \infty$ it equals $\overline P$ [@Vin85, Ch. I, §4.1].
+Let $\hat P$ be the continuation of $P$ in the projective sphere [@Vin85, Ch. I, §4.1]; it is the convex hull of its finitely many vertices, and since $\vol(P) < \infty$ it equals $\overline P$ [@Vin85, Ch. I, §4.1].
 Let $F$ be the face of $\hat P$ that contains $[u]$ in its relative interior.
-Then $F\iscontainedin\overline P\iscontainedin\overline{\HH^n_L}$, and in an affine chart $\overline{\HH^n_L}$ is a closed (@def:closed-monoidal) ellipsoid, which is strictly convex; a segment in it whose interior meets (@def:replete-full-meet) the boundary is a single point, so $F = \theset{[u]}$ is a vertex of $\hat P$.
+Then $F\iscontainedin\overline P\iscontainedin\overline{\HH^n_L}$, and in an affine chart $\overline{\HH^n_L}$ is a closed ellipsoid, which is strictly convex; a segment in it whose interior meets the boundary is a single point, so $F = \theset{[u]}$ is a vertex of $\hat P$.
 Since $\vol(P) < \infty$, the complex of $\hat P$ equals the extended complex of $P$ [@Vin85, Ch. I, §4.1], so the vertex $[u]$, which lies on the boundary of $\HH^n_L$, is a vertex at infinity of $P$.
 By [@Vin85, Ch. I, Thm. 3.2], the set of walls through $[u]$ is a parabolic subdiagram of rank $n-1$, and it contains $J$ because $u\perp\alpha_j$ for $j\in J$.
 So every maximal parabolic subdiagram $\Sigma_J$ has rank $n-1$ and is the set of walls through $[u]$.

@@ -62,7 +62,7 @@ In each case the type is the Langlands dual of the type of the fixed point subal
 
 ::: {#not:short-and-long-roots-tdp .notation title="Short and long roots of $\tdp$" defines="$\Phi^2$; $\Phi^4$"}
 
-$\Phi^2$ denotes the **short roots** ($(-2)$-roots) and $\Phi^4$ the **long roots** ($(-4)$-roots, of divisibility (@def:lattice-divisibility) $2$) of @def:k-root.
+$\Phi^2$ denotes the **short roots** (@def:2elementary-roots) ($(-2)$-roots) and $\Phi^4$ the **long roots** (@def:2elementary-roots) ($(-4)$-roots, of divisibility (@def:lattice-divisibility) $2$) of @def:k-root.
 :::
 
 ::: {.lemma #lem:root-folding-tdp title="Root folding criterion"}
@@ -77,7 +77,7 @@ Then $\beta_{[v]}\in\Phi(\ten)$ if and only if exactly one of the following hold
 
 3. $v\in\Phi^2(\tdp)$ and $v\cdot I(v) = 0$, in which case $\beta_{[v]} = v + I(v)\in\Phi^4(\ten)$ is the sum of two orthogonal roots in $\Phi^2(\tdp)$.
 
-In particular, a long root $v\in\Phi^4(\tdp)$ with $I(v)\neq v$ never folds to a root of $\ten$.
+In particular, a long root (@def:2elementary-roots) $v\in\Phi^4(\tdp)$ with $I(v)\neq v$ never folds to a root of $\ten$.
 Moreover, if $\beta_{[v]}^2<0$, then $\beta_{[v]}\in\Phi(\ten)$.
 :::
 

@@ -279,13 +279,13 @@ $$
 X\perp Y\;\cong\;X'\perp Y'
 $$
 [@MH73, Def. I.7.1].
-That $\sim$ is an equivalence (@def:equivalence-of-objects) relation, and that it is compatible with orthogonal sum (@def:orthogonal-sum) and with tensor product, is @lem:witt-equivalence.
+That $\sim$ is an equivalence relation, and that it is compatible with orthogonal sum (@def:orthogonal-sum) and with tensor product, is @lem:witt-equivalence.
 :::
 
 ::: {.lemma #lem:witt-equivalence title="Witt equivalence is a congruence"}
 
 Let $R$ be a Dedekind domain.
-Witt equivalence (@def:witt-class) is an equivalence (@def:equivalence-of-objects) relation on isometry classes of unimodular $R$-lattices, and it is a congruence: if $X\sim X'$ and $Z\sim Z'$ then $X\perp Z\sim X'\perp Z'$ and $X\otimes Z\sim X'\otimes Z'$ [@MH73, Lem. I.7.2].
+Witt equivalence (@def:witt-class) is an equivalence relation on isometry classes of unimodular $R$-lattices, and it is a congruence: if $X\sim X'$ and $Z\sim Z'$ then $X\perp Z\sim X'\perp Z'$ and $X\otimes Z\sim X'\otimes Z'$ [@MH73, Lem. I.7.2].
 :::
 
 ::: {.proof}

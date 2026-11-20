@@ -43,7 +43,7 @@ Since $\coker \eta$ is torsionfree, $\eta$ is a primitive embedding.
 
 ::: {.proof}
 
-The map is well defined and isometric: $h$ has square $2$ and $\tilde e+\tilde f$ has square $2$, since $\tilde e,\tilde f$ are the isotropic (@def:orthogonal-complement) basis of $U$ with $\tilde e\cdot\tilde f=1$; and $\eta$ is the identity on $E_{10}(2)$, which is an orthogonal summand of both sides.
+The map is well defined and isometric: $h$ has square $2$ and $\tilde e+\tilde f$ has square $2$, since $\tilde e,\tilde f$ are the isotropic basis of $U$ with $\tilde e\cdot\tilde f=1$; and $\eta$ is the identity on $E_{10}(2)$, which is an orthogonal summand of both sides.
 So $\eta$ is a morphism of lattices of $\mathbf{Lat}_{\bZ}$, and it is injective because it is injective on each summand.
 
 For primitivity, $\eta(T_{\Co})=\bZ(\tilde e+\tilde f)\oplus E_{10}(2)$, so
@@ -105,7 +105,7 @@ Similarly, by [@Nik80 Cor. 1.5.2, Thm. 3.6.3], the homomorphism $\Orth(\lkt)\to 
 
 ::: {.lemma #lem:locally_closed_embedding_BB}
 
-The embeddings of lattices $\eta: T_\Co\injects T_\En$ (resp. $T_{\Co} \injects \tdp$) induce locally closed (@def:closed-monoidal) embeddings $\fco \injects \fen$ (resp. $\fco \injects \fttz$) which extend to morphisms on the Baily--Borel compactifications.
+The embeddings of lattices $\eta: T_\Co\injects T_\En$ (resp. $T_{\Co} \injects \tdp$) induce locally closed embeddings $\fco \injects \fen$ (resp. $\fco \injects \fttz$) which extend to morphisms on the Baily--Borel compactifications.
 :::
 
 ::: {.proof}
@@ -124,7 +124,7 @@ Three groups act on $\bD(T_\En)$: the stable group $\Gamma_\En\definedas\widetil
 $$
 \widetilde\Orth^+(T_\Co) = \Orth^+(T_\Co)\intersect\ker\bar\rho,
 $$
-$\bar\rho$ being the discriminant representation (@def:representable-presheaf) of $T_\Co$ and $\ker\bar\rho$ the group $\ker\bigl(\Orth(L)\to\Orth(A_L)\bigr)$ of [@DK13, (2.1)].
+$\bar\rho$ being the discriminant representation (@def:discriminant-rep) of $T_\Co$ and $\ker\bar\rho$ the group $\ker\bigl(\Orth(L)\to\Orth(A_L)\bigr)$ of [@DK13, (2.1)].
 4. For $\Gamma$ one of $\Gamma_\En$, $\Gamma^K_\En$, $\gent$, the restricted stabilizer
 $$
 R_\Gamma\definedas \text{the image of } \Stab_{\Gamma}(\delta) \text{ in } \Orth(\delta^{\perp T_\En}) = \Orth(T_\Co).
@@ -150,7 +150,7 @@ The lattice half of a refutation of @conj:gamma-co-stable is computed and stands
 Three inputs are missing, and none of them is a proved statement of this book:
 
 1. the local monodromy of a degeneration acquiring two ordinary nodes at once as the product of the two commuting Picard--Lefschetz reflections: no printed statement in `tmp/sources` supplies it, and the record's citation of `.ultramath/smw0o7jbf/m5/A20-direct-period-theorem.md` §6.1(b) points outside main;
-2. that the one-node family is a family of Coble surfaces *in the moduli space whose monodromy is $\Gamma_\Co$*. The members themselves are not the difficulty: a one-node member is a singular Coble quotient in the book's sense, a K3 with one $A_1$ point quotiented by an involution that fixes that point and is otherwise free in codimension one (@def:singular-coble), and its resolution is the resolved Coble surface of @def:resolved-coble, "the object traditionally called a classical Coble surface". What is missing is the moduli identification: [@DK13, Prop. 3.2] is about the *classical* ten-node construction --- "In this note we will restrict ourselves to these classical examples" --- so it places that construction in $\bD(N)/\Orth(N)$ and says nothing about whether the one-node members lie in the same open subset;
+2. that the one-node family is a family of Coble surfaces *in the moduli space whose monodromy is $\Gamma_\Co$*. The members themselves are not the difficulty: a one-node member is a singular Coble quotient in the book's sense, a K3 with one $A_1$ point quotiented by an involution that fixes that point and is otherwise free in codimension one, and its resolution is the resolved Coble surface of @def:resolved-coble, "the object traditionally called a classical Coble surface". What is missing is the moduli identification: [@DK13, Prop. 3.2] is about the *classical* ten-node construction --- "In this note we will restrict ourselves to these classical examples" --- so it places that construction in $\bD(N)/\Orth(N)$ and says nothing about whether the one-node members lie in the same open subset;
 3. that the monodromy of the family over that base is contained in $\Gamma_\Co$, which is functorial once 2 holds and is not otherwise known.
 
 There is a reason, not only a gap, behind the second of these, and it points at where a witness would have to live. In the classical model of [@DK13, §3] the Coble surface is the blow-up of $\PP^2$ at the ten nodes of a sextic, the double cover $X$ carries the divisors $E_0,\dots,E_{10}$, and their classes $e_0,\dots,e_{10}$ generate $M_X\cong\generators{2}\oplus\generators{-2}^{\oplus10}$, with $T_\Co = M_X^\perp$ (@prop:coble-transcendental). A class of $M_X$ is orthogonal to $T_\Co$, so its reflection acts as the identity on $T_\Co$. That does not settle the question, and the reason is worth stating, because the first reading of it is wrong: the classes $e_0,\dots,e_{10}$ are algebraic on every member, so they are not vanishing classes. A vanishing class must be orthogonal to $\Pic(\widehat X_b)$, hence lies in $T_\Co$ --- which is why the discriminant of the period map is described by classes of $T_\Co$ (@prop:monodromy-contains-root-reflections), not by the $e_i$. What the computation above says is therefore only that the $M_X$-part of the monodromy is invisible on $T_\Co$; it does not say that a $(-4)$-class of $T_\Co$ fails to arise, and a witness for $\Gamma_\Co\not\subseteq\widetilde\Orth^+(T_\Co)$ is neither produced nor excluded by it.
@@ -169,25 +169,25 @@ The two-way form that (PL) and (MG) would give is superseded by @thm:gamma-co-is
 
 ::: {.lemma #lem:orbifold-monodromy-of-a-quotient title="Monodromy of the tautological local system of a quotient orbifold"}
 
-Let $\widetilde U$ be a connected topological space, let $\Gamma$ be a group (@def:group) acting on it, and let $T$ be a $\Gamma$-module. Put $U\definedas\widetilde U/\Gamma$ with the quotient orbifold structure (@def:property-structure-stuff), and let
+Let $\widetilde U$ be a connected topological space, let $\Gamma$ be a group (@def:group) acting on it, and let $T$ be a $\Gamma$-module. Put $U\definedas\widetilde U/\Gamma$ with the quotient orbifold structure, and let
 $$\bT\definedas(\widetilde U\times T)/\Gamma$$
-be the quotient of the trivial local system by the diagonal (@def:polarization-functors) action. Then $\bT$ is a local system on the orbifold $U$ with fibre $T$, and its monodromy representation (@def:transport-and-monodromy) is
+be the quotient of the trivial local system by the diagonal action. Then $\bT$ is a local system on the orbifold $U$ with fibre $T$, and its monodromy representation (@def:transport-and-monodromy) is
 $$\pi_1^{\mathrm{orb}}(U,\tilde x)\too\Aut(T),\qquad (g,[\widetilde\gamma])\longmapsto g,$$
-where an orbifold loop based (@def:based-module) at $x=[\tilde x]$ is a pair $(g,\widetilde\gamma)$ with $g\in\Gamma$ and $\widetilde\gamma$ a path in $\widetilde U$ from $\tilde x$ to $g\tilde x$. Its image is $\Gamma$ and its kernel (@def:kernel-cokernel) is $\pi_1(\widetilde U,\tilde x)$; in particular
+where an orbifold loop based at $x=[\tilde x]$ is a pair $(g,\widetilde\gamma)$ with $g\in\Gamma$ and $\widetilde\gamma$ a path in $\widetilde U$ from $\tilde x$ to $g\tilde x$. Its image is $\Gamma$ and its kernel (@def:kernel-cokernel) is $\pi_1(\widetilde U,\tilde x)$; in particular
 $$1\too\pi_1(\widetilde U,\tilde x)\too\pi_1^{\mathrm{orb}}(U,\tilde x)\too\Gamma\too1$$
 is exact (@def:exact-complex).
 :::
 
 ::: {.proof}
 
-The quotient map $\widetilde U\times T\to\bT$ is a $\Gamma$-covering, so $\bT$ is a local system on the orbifold $U$. Its pullback (@def:pullback-square) to $\widetilde U$ is the trivial local system $\widetilde U\times T$: transport along $\widetilde\gamma$ in the trivial system is the identity of $T$, and at the endpoint $g\tilde x$ the fibre is identified with the fibre at $\tilde x$ by $g$, so transport along the orbifold loop $(g,\widetilde\gamma)$ is $g$. Homotopic orbifold paths have equal transport (@prop:transport-homotopy-invariant), so the assignment is well defined, and it is a homomorphism because the product of orbifold loops (@def:loops-suspension) is $(g,\widetilde\gamma)(h,\widetilde\delta)=(gh,\widetilde\gamma*(g\widetilde\delta))$ and transport is functorial. It is onto, the constant path at $\tilde x$ from $\tilde x$ to $g\tilde x$ representing $g$, and its kernel is the set of pairs $(1,\widetilde\gamma)$, that is $\pi_1(\widetilde U,\tilde x)$.
+The quotient map $\widetilde U\times T\to\bT$ is a $\Gamma$-covering, so $\bT$ is a local system on the orbifold $U$. Its pullback to $\widetilde U$ is the trivial local system $\widetilde U\times T$: transport along $\widetilde\gamma$ in the trivial system is the identity of $T$, and at the endpoint $g\tilde x$ the fibre is identified with the fibre at $\tilde x$ by $g$, so transport along the orbifold loop $(g,\widetilde\gamma)$ is $g$. Homotopic orbifold paths have equal transport (@prop:transport-homotopy-invariant), so the assignment is well defined, and it is a homomorphism because the product of orbifold loops (@def:loops-suspension) is $(g,\widetilde\gamma)(h,\widetilde\delta)=(gh,\widetilde\gamma*(g\widetilde\delta))$ and transport is functorial. It is onto, the constant path at $\tilde x$ from $\tilde x$ to $g\tilde x$ representing $g$, and its kernel is the set of pairs $(1,\widetilde\gamma)$, that is $\pi_1(\widetilde U,\tilde x)$.
 :::
 
 ::: {.theorem #thm:gamma-co-is-full title="G1 on the universal-family reading: the tautological local system has monodromy $\Orth^+(T_\Co)$"}
 
 Let $M_\Co$ be base 1 of @def:coble-family-unpolarized, the coarse space of Coble surfaces, read with the orbifold structure for which the period map
 $$\per\colon M_\Co\too\bD(T_\Co)/\Orth(T_\Co)$$
-is an isomorphism of orbifolds onto an open substack of $\bD(T_\Co)/\Orth(T_\Co)$; the map is that of [@DK13, Prop. 3.2], whose coarse form is @lem:d2a-period-map, and this is the reading under which the tautological local system is a local system of lattices with fibre $T_\Co$; it is the universal-family reading of G1, and it is not the local system of D2a, whose base carries a family of its own (@def:coble-family-unpolarized, @lem:d2-local-system). Let $\bT$ be that local system, the pullback of the tautological local system of the quotient along $\per$ (@def:coble-family-unpolarized), and let
+is an isomorphism of orbifolds onto an open substack of $\bD(T_\Co)/\Orth(T_\Co)$; the map is that of [@DK13, Prop. 3.2], whose coarse form is @lem:d2a-period-map, and this is the reading under which the tautological local system is a local system of lattices with fibre $T_\Co$; it is the universal-family reading of G1, and it is not the local system of D2a, whose base carries a family of its own (@def:coble-family-unpolarized, @lem:d2-local-system). Let $\bT$ be that local system, the pullback of the tautological local system of the quotient along $\per$, and let
 $$\rho\colon\pi_1^{\mathrm{orb}}(M_\Co)\to\Orth(T_\Co)$$
 be its monodromy representation (@def:transport-and-monodromy), whose image we write $\Gamma^{\mathrm{taut}}_\Co$. Then
 $$\Gamma^{\mathrm{taut}}_\Co=\Orth^+(T_\Co).$$
@@ -200,7 +200,7 @@ This is the monodromy of the tautological local system and is not $\Gamma_\Co$ o
 $$\Stab_{\Orth(T_\Co)}(\bD^+)=\Theta_\bR(T_\Co)=\Orth^+(T_\Co)$$
 by @conv:spinor-positive-subgroup. Hence $\Gamma^{\mathrm{taut}}_\Co\subseteq\Orth^+(T_\Co)$.
 
-*Second inclusion: $\Orth^+(T_\Co)\subseteq\Gamma^{\mathrm{taut}}_\Co$.* The quotient $\bD^+/\Gamma$ is an orbifold and not a manifold --- it is singular along the image of every fixed locus of codimension $\ge2$ [@Dim92, Ch. 4, Rem. (1.2)] --- so the argument is made on the smooth domain $\bD^+$. Put $\Gamma\definedas\Orth^+(T_\Co)$ and let $U\subseteq\bD^+/\Gamma$ be the image of the period map. By the choice of the orbifold structure, $M_\Co\to U$ is an isomorphism of orbifolds. Let $\widetilde U\subseteq\bD^+$ be the inverse image of $U$. The domain $\bD^+$ is a bounded symmetric domain, hence connected. The image $U$ of the period map is nonempty, and it is open by the hypothesis that $\per$ is an isomorphism of orbifolds onto an open substack; so $\widetilde U$ is a nonempty $\Gamma$-invariant open subset of $\bD^+$ and its complement $Z$ is a proper closed (@def:closed-monoidal) analytic subset. It is connected: if $\bD^+\sm Z=A\sqcup B$ with $A,B$ nonempty open, take $a\in A$, $b\in B$ and a path $\gamma$ in $\bD^+$ from $a$ to $b$; at the first point $t$ with $\gamma(t)\notin A$ one has $\gamma(t)\in Z$, and a ball $V\ni\gamma(t)$ has $V\sm Z$ connected --- a ball minus a proper analytic subset is connected --- and meeting both $A$ and $B$, a contradiction. So $\widetilde U$ is connected.
+*Second inclusion: $\Orth^+(T_\Co)\subseteq\Gamma^{\mathrm{taut}}_\Co$.* The quotient $\bD^+/\Gamma$ is an orbifold and not a manifold --- it is singular along the image of every fixed locus of codimension $\ge2$ [@Dim92, Ch. 4, Rem. (1.2)] --- so the argument is made on the smooth domain $\bD^+$. Put $\Gamma\definedas\Orth^+(T_\Co)$ and let $U\subseteq\bD^+/\Gamma$ be the image of the period map. By the choice of the orbifold structure, $M_\Co\to U$ is an isomorphism of orbifolds. Let $\widetilde U\subseteq\bD^+$ be the inverse image of $U$. The domain $\bD^+$ is a bounded symmetric domain, hence connected. The image $U$ of the period map is nonempty, and it is open by the hypothesis that $\per$ is an isomorphism of orbifolds onto an open substack; so $\widetilde U$ is a nonempty $\Gamma$-invariant open subset of $\bD^+$ and its complement $Z$ is a proper closed analytic subset. It is connected: if $\bD^+\sm Z=A\sqcup B$ with $A,B$ nonempty open, take $a\in A$, $b\in B$ and a path $\gamma$ in $\bD^+$ from $a$ to $b$; at the first point $t$ with $\gamma(t)\notin A$ one has $\gamma(t)\in Z$, and a ball $V\ni\gamma(t)$ has $V\sm Z$ connected --- a ball minus a proper analytic subset is connected --- and meeting both $A$ and $B$, a contradiction. So $\widetilde U$ is connected.
 
 By its definition in D2a, the local system $\bT$ with its Hodge filtration is the pullback of the tautological local system $(\bD^+\times T_\Co)/\Gamma$ along the period map --- that is what it means for the period map to classify the variation (@prop:lifted-period-map(3)) --- so over $\widetilde U$ it is $(\widetilde U\times T_\Co)/\Gamma$. By @lem:orbifold-monodromy-of-a-quotient its monodromy representation is the projection
 $$\pi_1^{\mathrm{orb}}(U,\tilde x)\too\Gamma,\qquad (g,[\widetilde\gamma])\longmapsto g,$$
@@ -234,7 +234,7 @@ That image is a subgroup of $\Theta$ (@prop:gamma-co-geometric-bound(2)), so the
 
 Let $V$ be the variety of labelled sextics of @not:d2-plane-sextic-base, whose quotient $B=V/\PGL_3$ is the labelled base of @def:coble-family-unpolarized, item 3., let $\bT$ be the local system of lattices of @lem:d2-local-system, of fibre $T_\Co$, and let
 $$\rho\colon\pi_1(V,s)\too\Orth(T_\Co)$$
-be its monodromy representation, whose image is $\Gamma_\Co$ (@def:gamma-co-groups(1)). Then
+be its monodromy representation, whose image is $\Gamma_\Co$ (@def:gamma-co-groups). Then
 
 1. $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$. This is proved.
 2. $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ if and only if $\Gamma_\Co$ contains an element acting as $-\id$ on $T_\Co$. Of the two alternatives, the inclusion is the one established here; which of them holds is @qst:gamma-co-sign-is-realised, and no argument for either is given.
@@ -286,14 +286,14 @@ Let $\Gamma_\Co$ be the monodromy group of the family of @def:coble-family-unpol
 
 ::: {.lemma #lem:d2a-family-is-yzz title="The D2a family is the family $X_F$ of Yu--Zheng--Zhong"}
 
-Let $\bar B$ be the unlabelled base of @def:coble-family-unpolarized(2), let $\mcx\to\mcs\to\bar B$ be the family of @lem:d2-unpolarised-family(3), and let $\bT$ be the local system of @lem:d2-local-system. Let $T=10A_1$, let $\mcv_T$ be the space of sextics of type $T$ and $\mcm_T=\mcv_T/\PGL_3$ [@YZZ25, §2.1], and let $Q_F=P_F^{\perp\Lambda_F}$ be the local system of [@YZZ25, §3.1]. Then the family $\mcx\to\mcs\to\bar B$ and the family $X_F\to\mcv_T$ of [@YZZ25, §2.3] have the same base up to labelling, the same fibres, and stalkwise the same lattice with the same generators; the local system $\bT$ has stalk (@def:flower-pot-degeneration) $Q_F$ and the generating classes $H_F,\ell_1,\dots,\ell_{10}$ of [@YZZ25, §3.1]. What is *not* asserted is an identification of the two as equivariant local systems over the orbifold points; that is @rmk:gamma-co-orbifold-obstruction, and it is what the next theorem would need.
+Let $\bar B$ be the unlabelled base of @def:coble-family-unpolarized(2), let $\mcx\to\mcs\to\bar B$ be the family of @lem:d2-unpolarised-family(3), and let $\bT$ be the local system of @lem:d2-local-system. Let $T=10A_1$, let $\mcv_T$ be the space of sextics of type $T$ and $\mcm_T=\mcv_T/\PGL_3$ [@YZZ25, §2.1], and let $Q_F=P_F^{\perp\Lambda_F}$ be the local system of [@YZZ25, §3.1]. Then the family $\mcx\to\mcs\to\bar B$ and the family $X_F\to\mcv_T$ of [@YZZ25, §2.3] have the same base up to labelling, the same fibres, and stalkwise the same lattice with the same generators; the local system $\bT$ has stalk $Q_F$ and the generating classes $H_F,\ell_1,\dots,\ell_{10}$ of [@YZZ25, §3.1]. What is *not* asserted is an identification of the two as equivariant local systems over the orbifold points; that is @rmk:gamma-co-orbifold-obstruction, and it is what the next theorem would need.
 :::
 
 ::: {.proof}
 
 *The bases.* A point of $\bar B$ is an irreducible plane sextic with its ten nodes as a set (@not:d2-plane-sextic-base), that is a sextic of the irreducible type $T=10A_1$; a sextic of type $T$ determines its singular set, so forgetting the labelling is a surjection $V\to\mcv_T$ whose fibres are the $10!$ orderings of the nodes, and quotienting by $S_{10}$ and $\PGL_3$ identifies $\bar B$ with $\mcm_T$.
 
-*The fibres.* For a sextic $Z$ of type $T$, [@YZZ25, §2.3] defines $X_F$ as the minimal (@def:minimal-resolution) resolution of the double cover of $\PP^2$ branched along $Z$. The fibre of @lem:d2-unpolarised-family(1) is the double cover of $\Bl_{p_1,\dots,p_{10}}\PP^2$ branched along the proper transform $C_b$ of $Z$. At a node of $Z$ the double cover has local equation $z^2=xy$, an $A_1$ singularity; blowing up the node replaces it by the exceptional curve, along which the proper transform of $Z$ is smooth of self-intersection $-4$, and the double cover branched along it is smooth there, the exceptional curve lifting to a $(-2)$-curve. That is the minimal resolution of the $A_1$ point, and the minimal resolution is unique, so the two constructions give the same K3 surface with the same covering involution and the same proper transform of $Z$.
+*The fibres.* For a sextic $Z$ of type $T$, [@YZZ25, §2.3] defines $X_F$ as the minimal resolution of the double cover of $\PP^2$ branched along $Z$. The fibre of @lem:d2-unpolarised-family(1) is the double cover of $\Bl_{p_1,\dots,p_{10}}\PP^2$ branched along the proper transform $C_b$ of $Z$. At a node of $Z$ the double cover has local equation $z^2=xy$, an $A_1$ singularity; blowing up the node replaces it by the exceptional curve, along which the proper transform of $Z$ is smooth of self-intersection $-4$, and the double cover branched along it is smooth there, the exceptional curve lifting to a $(-2)$-curve. That is the minimal resolution of the $A_1$ point, and the minimal resolution is unique, so the two constructions give the same K3 surface with the same covering involution and the same proper transform of $Z$.
 
 *The local systems.* [@YZZ25, §3.1] puts $P_F=\generators{H_F}\oplus L_F$, with $L_F=A_1^{\oplus10}$ generated by the classes of the ten exceptional curves of the resolution and $H_F$ the class of the pullback of a line, and $Q_F=P_F^{\perp\Lambda_F}$. The span $\bM$ of @lem:d2-local-system(2) is generated by the class $\varepsilon_0$ of the pullback of a line and the classes $\varepsilon_1,\dots,\varepsilon_{10}$ of the ten exceptional curves, and $\bT=\bM^{\perp}$. By the identification of the fibres the two generating sets are the same classes of $H^2(X_F)$, so $P_F=\bM$ and $Q_F=\bT$.
 
@@ -304,7 +304,7 @@ The proof stops at the stalk. The family is a family over the *labelled* base an
 
 Let $T=10A_1$, so that $P=\generators{H}\oplus L$ with $L=A_1^{\oplus10}$ and $Q=P^{\perp\Lkt}=T_\Co$ (@thm:occult-period-map-sextics, @lem:ten-a1-permutation-forces-strictness), and let $\Gamma_{10A_1}\le\Orth(T_\Co)$ be the group of [@YZZ25, §3.1] for that type: the image of $\Orth(\Lkt,\Delta,H)\to\Orth(Q)$, restricted to the subgroup preserving the component $\bD(Q)$. Let $\Theta\le\Orth(q_{T_\Co})$ be the image of the permutations of $e_1,\dots,e_{10}$ fixing $e_0$ (@prop:gamma-co-geometric-bound(2)). Then:
 
-0. The unlabelled base $\bar B$ of @def:coble-family-unpolarized is the moduli stack of sextics of irreducible type $T=10A_1$, with coarse space $\mathcal M_T$, and the stalk (@def:flower-pot-degeneration) of the local system $\bT$ of @lem:d2-local-system is the lattice $Q_F$ of [@YZZ25, §3.1] (@lem:d2a-family-is-yzz). The *group* identity $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ is **not** a consequence of this, for the reason recorded in @rmk:gamma-co-orbifold-obstruction; what holds is $\Gamma_\Co(\bar B)\subseteq\Gamma_{10A_1}$ (@prop:gamma-co-geometric-bound(2)), with the index of $\Gamma_\Co$ in $\Gamma_\Co(\bar B)$ equal to $\abs{\bar\rho(\Gamma_\Co(\bar B))}$ (@lem:gamma-co-labelled-index).
+0. The unlabelled base $\bar B$ of @def:coble-family-unpolarized is the moduli stack of sextics of irreducible type $T=10A_1$, with coarse space $\mathcal M_T$, and the stalk of the local system $\bT$ of @lem:d2-local-system is the lattice $Q_F$ of [@YZZ25, §3.1] (@lem:d2a-family-is-yzz). The *group* identity $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ is **not** a consequence of this, for the reason recorded in @rmk:gamma-co-orbifold-obstruction; what holds is $\Gamma_\Co(\bar B)\subseteq\Gamma_{10A_1}$ (@prop:gamma-co-geometric-bound(2)), with the index of $\Gamma_\Co$ in $\Gamma_\Co(\bar B)$ equal to $\abs{\bar\rho(\Gamma_\Co(\bar B))}$ (@lem:gamma-co-labelled-index).
 1. $\Theta\cong\mathfrak S_{10}$ and $|\Theta|=10!=3\,628\,800$.
 2. $\Gamma_{10A_1}=\Orth^+(T_\Co)\intersect\bar\rho^{-1}(\Theta)$.
 3. $[\Gamma_{10A_1}:\widetilde\Orth^+(T_\Co)]=|\Theta|=10!$ and
@@ -403,7 +403,7 @@ which is the displayed identity. Its last clause is then immediate, and $\bar\rh
 :::
 
 ::: {.proposition #prop:gamma-co-images title="The three restricted stabilizers"}
-With $\delta$, $H$ and $R_\Gamma$ as in @def:gamma-co-groups, and $\bar\rho$ the discriminant representation (@def:representable-presheaf) of $T_\Co$:
+With $\delta$, $H$ and $R_\Gamma$ as in @def:gamma-co-groups, and $\bar\rho$ the discriminant representation (@def:discriminant-rep) of $T_\Co$:
 
 1. $R_{\Gamma_\En} = \widetilde\Orth^+(T_\Co)$.
 2. $R_{\Gamma^K_\En}$ is the stabilizer in $\Orth(T_\Co)$ of the class $[h/2]$ of $A_{T_\Co}$, and that stabilizer is all of $\Orth(T_\Co)$, because $[h/2]$ is the characteristic class of $q_{T_\Co}$:
@@ -502,7 +502,7 @@ Two consequences are worth separating from the proposition. First, (2) is strong
 
 In the situation of @lem:coble-monodromy-in-stabilizer, assume
 
-(U) the degree-$2$ Coble family over $\Delta$ and its marking are defined: the family is the restriction to $\Delta$ of the universal family (@def:classifying-object) of K3 surfaces with the Enriques involution over the moduli stack of degree-$2$ numerically polarized Enriques surfaces, whose coarse space is $F_{\En,2}$ [@AEGS25, introduction, and Defs. 2.5--2.7]; $\Gamma_{\Co,2}$ is its monodromy group on the local system with fibre $T_\Co$ (@def:gamma-co-groups(5)); and on every fibre the covering involution has invariant lattice $S_\Co$, spanned by the classes of $E_0,\dots,E_{10}$ [@DK13, §3].
+(U) the degree-$2$ Coble family over $\Delta$ and its marking are defined: the family is the restriction to $\Delta$ of the universal family (@def:classifying-object) of K3 surfaces with the Enriques involution over the moduli stack of degree-$2$ numerically polarized Enriques surfaces, whose coarse space is $F_{\En,2}$ [@AEGS25, introduction, and Defs. 2.5--2.7]; $\Gamma_{\Co,2}$ is its monodromy group on the local system with fibre $T_\Co$ (@def:gamma-co-groups); and on every fibre the covering involution has invariant lattice $S_\Co$, spanned by the classes of $E_0,\dots,E_{10}$ [@DK13, §3].
 
 Then (F) holds: the local system with fibre $T_\Co$ is the $\delta^{\perp}$-part of the restriction to $\Delta$ of the local system with fibre $T_\En$.
 
@@ -527,7 +527,7 @@ The ambient family is [@AEGS25], at the level recorded in @rmk:coble-universal-f
 ::: {.remark #rmk:coble-universal-family-level title="At which level the universal family over $F_{\En,2}$ exists"}
 [@AEGS25, introduction] announces "a description of $F_{\En,2}$ and its universal family", and the body states the level at which the family is constructed: "Consider the universal family $(X,\epsilon R)\to F(2,2,0)$ of KSBA-stable pairs over the compactified moduli stack. ... By Lemma 2.8, the normalization $B^\nu$ of $B$ is a compactification of $F_{\En,2}$ admitting a universal family of pairs. So we have a classifying morphism $B^\nu\to F_{\En,2}$" [@AEGS25]. The same paper says that $F_{\En,2}$ itself is coarse: "the complement of the discriminant divisor in $F_{\En,2}=D(T_\En)/\Gamma_{\En,2}$ is the coarse moduli space of Enriques surfaces with a numerical polarization of degree 2" [@AEGS25].
 
-So the universal family exists over the moduli stack, of which $F_{\En,2}$ is the coarse space, and over the finite cover $B^\nu$; it is not a family over $F_{\En,2}$ as a scheme, and what the paper gives over $F_{\En,2}$ is the classifying morphism $B^\nu\to F_{\En,2}$. The family of @lem:coble-family-identification is therefore the restriction of the universal family at the level of the stack, equivalently of the finite cover $B^\nu$; it is not a family over the coarse space $F_{\En,2}$, and $\Gamma_{\Co,2}$ is the monodromy of the family at that level (@def:gamma-co-groups(5)).
+So the universal family exists over the moduli stack, of which $F_{\En,2}$ is the coarse space, and over the finite cover $B^\nu$; it is not a family over $F_{\En,2}$ as a scheme, and what the paper gives over $F_{\En,2}$ is the classifying morphism $B^\nu\to F_{\En,2}$. The family of @lem:coble-family-identification is therefore the restriction of the universal family at the level of the stack, equivalently of the finite cover $B^\nu$; it is not a family over the coarse space $F_{\En,2}$, and $\Gamma_{\Co,2}$ is the monodromy of the family at that level (@def:gamma-co-groups).
 :::
 
 ::: {.lemma #lem:coble-monodromy-in-stabilizer title="The monodromy of the degree-$2$ Coble family lies in the stabilizer of $\delta$"}
@@ -544,9 +544,9 @@ $$\Gamma_{\Co,2}\subseteq R_{\gent}.$$
 
 *The periods lie in $\delta^{\perp}$ and fill it.* For a fibre $X_b$ of the family over $\Delta$ the period $[\omega_b]$ lies in $\bD(T_\Co)$, because $T_\Co = M_X^{\perp}$ is the transcendental lattice of $X_b$ [@DK13, (3.6)]. Since $T_\Co = \delta^{\perp T_\En}$ [@DK13, the sentence after Prop. 3.2], one has $[\omega_b]\in\bD(\delta^{\perp})\subset\bD(T_\En)$. The image of the marked period map is the preimage of $\Delta$, and $\Delta$ is by definition the image of $\alpha^{\perp}$ in $\bD(T_\En)/\Gamma_\En$ [@AEGS25, Def. 2.7]; that preimage is a union of components of $\bD(\delta^{\perp})$, hence open in it. This is where the definition of $\Delta$ as a period divisor is used, and no Torelli theorem is invoked.
 
-*The monodromy preserves the line $\ZZ\delta$.* Transport is an isometry of $T_\En$, and the period map is equivariant, $\Phi(\gamma\tilde b) = \rho(\gamma)\Phi(\tilde b)$ (@eq-period-map-equivariance), so $\rho(\gamma)$ carries the image $\Phi(\widetilde\Delta)$ of the period map to itself. Its image is open in $\bD(T_\Co)$ by the previous paragraph. For an isometry $g$ one has $g\,\bD(\delta^{\perp}) = \bD((g\delta)^{\perp})$; the two closed (@def:closed-monoidal) analytic hypersurfaces $\bD(\delta^{\perp})$ and $\bD((\rho(\gamma)\delta)^{\perp})$ of $\bD(T_\En)$ meet (@def:replete-full-meet) in the nonempty open subset $\Phi(\widetilde\Delta)$, hence coincide, so $(\rho(\gamma)\delta)^{\perp} = \delta^{\perp}$ and $\rho(\gamma)\delta = \pm\delta$.
+*The monodromy preserves the line $\ZZ\delta$.* Transport is an isometry of $T_\En$, and the period map is equivariant, $\Phi(\gamma\tilde b) = \rho(\gamma)\Phi(\tilde b)$ (@eq-period-map-equivariance), so $\rho(\gamma)$ carries the image $\Phi(\widetilde\Delta)$ of the period map to itself. Its image is open in $\bD(T_\Co)$ by the previous paragraph. For an isometry $g$ one has $g\,\bD(\delta^{\perp}) = \bD((g\delta)^{\perp})$; the two closed analytic hypersurfaces $\bD(\delta^{\perp})$ and $\bD((\rho(\gamma)\delta)^{\perp})$ of $\bD(T_\En)$ meet in the nonempty open subset $\Phi(\widetilde\Delta)$, hence coincide, so $(\rho(\gamma)\delta)^{\perp} = \delta^{\perp}$ and $\rho(\gamma)\delta = \pm\delta$.
 
-*The image lies in $R_{\gent}$.* Hence $\rho(\gamma)$ lies in the line stabilizer $\Stab_{\gent}(\ZZ\delta)$, and its restriction to $\delta^{\perp} = T_\Co$ is the image of an element of that stabilizer. The line stabilizer and the vector stabilizer have the same image in $\Orth(T_\Co)$: if $\rho(\gamma)\delta = -\delta$ then $s_\delta\rho(\gamma)$ fixes $\delta$, and $s_\delta$ acts as the identity on $\delta^{\perp}$; and $s_\delta\in\ker\rho_{T_\En}\subseteq\gent$, because $\delta$ lies in the unimodular summand $U$ of $T_\En$ and $s_\delta$ therefore acts trivially on $A_{T_\En}$. So the image of $\Stab_{\gent}(\ZZ\delta)$ is the image of $\Stab_{\gent}(\delta)$, which is $R_{\gent}$ (@def:gamma-co-groups(4), @prop:gamma-co-images(3)).
+*The image lies in $R_{\gent}$.* Hence $\rho(\gamma)$ lies in the line stabilizer $\Stab_{\gent}(\ZZ\delta)$, and its restriction to $\delta^{\perp} = T_\Co$ is the image of an element of that stabilizer. The line stabilizer and the vector stabilizer have the same image in $\Orth(T_\Co)$: if $\rho(\gamma)\delta = -\delta$ then $s_\delta\rho(\gamma)$ fixes $\delta$, and $s_\delta$ acts as the identity on $\delta^{\perp}$; and $s_\delta\in\ker\rho_{T_\En}\subseteq\gent$, because $\delta$ lies in the unimodular summand $U$ of $T_\En$ and $s_\delta$ therefore acts trivially on $A_{T_\En}$. So the image of $\Stab_{\gent}(\ZZ\delta)$ is the image of $\Stab_{\gent}(\delta)$, which is $R_{\gent}$ (@def:gamma-co-groups, @prop:gamma-co-images(3)).
 :::
 
 ::: {.theorem #thm:coble-monodromy-versus-enriques title="The monodromy of the degree-$2$ Coble family against the Enriques stabilizer"}
@@ -635,7 +635,7 @@ is defined and finite, its image is the Heegner divisor $\mch_{-2}/\Gamma$, and 
 
 ::: {.proof}
 
-That $f^{\Gamma}$ is defined is @prop:gamma-co-images: restriction carries $\Stab_{\Gamma}(\delta)$ onto $R_\Gamma$, so the containment required by the descent criterion (@rmk:descent-of-an-equivariant-inclusion) holds, with equality. The target is the period quotient $\bD(\ten)/\Gamma$ and not the complement $(\bD(\ten)\sm\mch_{-2})/\Gamma$ of @sec-moduli-construction: every period of $T_\Co$ is orthogonal to $\delta = \tilde e-\tilde f$, a vector of square $-2$, so the image of $f^{\Gamma}$ lies in the Heegner divisor $\mch_{-2}/\Gamma$ and does not meet (@def:replete-full-meet) its complement. Nothing below uses more about $R_\Gamma$ than that it is this image, so the argument runs for each $\Gamma$. It has three steps: finiteness of the fibres, properness, and generic injectivity.
+That $f^{\Gamma}$ is defined is @prop:gamma-co-images: restriction carries $\Stab_{\Gamma}(\delta)$ onto $R_\Gamma$, so the containment required by the descent criterion (@rmk:descent-of-an-equivariant-inclusion) holds, with equality. The target is the period quotient $\bD(\ten)/\Gamma$ and not the complement $(\bD(\ten)\sm\mch_{-2})/\Gamma$ of @sec-moduli-construction: every period of $T_\Co$ is orthogonal to $\delta = \tilde e-\tilde f$, a vector of square $-2$, so the image of $f^{\Gamma}$ lies in the Heegner divisor $\mch_{-2}/\Gamma$ and does not meet its complement. Nothing below uses more about $R_\Gamma$ than that it is this image, so the argument runs for each $\Gamma$. It has three steps: finiteness of the fibres, properness, and generic injectivity.
 
 Fibres.
 For $x = [\omega]\in\bD(T_\En)$ let $T(x)$ be the smallest primitive sublattice of $T_\En$ whose complexification contains $\omega$, namely $T(x)\definedas\bigl(T_\En\intersect\omega^{\perp_{T_\En\tensor_\ZZ\CC}}\bigr)^{\perp T_\En}$.
@@ -655,7 +655,7 @@ By @lem:locally_closed_embedding_BB, the map $f^{\Gamma}$ extends to a morphism 
 A boundary component of $\overline{F^{\Gamma}_\Co}^{\operatorname{BB}}$ is indexed by a primitive isotropic sublattice $I\leq T_\Co$ of rank $1$ or $2$, and the saturation of $I$ in $T_\En$ is again primitive isotropic of the same rank.
 So $\bar f^{\Gamma}$ carries boundary to boundary, giving $\inverseof{\bar f^{\Gamma}}(\bD(\ten)/\Gamma) = F^{\Gamma}_\Co$, and $f^{\Gamma}$ is proper because properness is stable under base change.
 A proper morphism with finite fibres is finite ([@stacks-02LS]), so $f^{\Gamma}$ is finite.
-Let $Z\definedas f^{\Gamma}(F^{\Gamma}_\Co)$, which is closed (@def:closed-monoidal) because a finite morphism is closed.
+Let $Z\definedas f^{\Gamma}(F^{\Gamma}_\Co)$, which is closed because a finite morphism is closed.
 
 Generic injectivity.
 A proper primitive sublattice $S\subsetneq T_\Co$ of signature $(2,\ast)$ cuts out a proper closed analytic subset $\bD(S)\subsetneq\bD(T_\Co)$, and there are countably many such $S$.
@@ -675,8 +675,8 @@ For Enriques surfaces, $\fentwo$ is the normalization of a closed subvariety of 
 
 ::: {.proposition #prop:sterk-group-identification title="The discriminant image of $\gent$"}
 
-Let $\rho\colon\Orth(\ten)\to\Orth(A_{\ten}, q_{\ten})$ be the discriminant representation (@def:representable-presheaf) and $K = \ker\rho$.
-Identify $\ten = U\oplus U(2)\oplus E_8(2)$ with the lattice $L_- = \mathbf H\oplus\mathbf H(2)\oplus E_8(-2)$ of [@Ste91, 1.3] summand by summand, and let $e', f'$ be the isotropic (@def:orthogonal-complement) basis (@def:based-module) of $U(2)$, with $(e', f') = 2$.
+Let $\rho\colon\Orth(\ten)\to\Orth(A_{\ten}, q_{\ten})$ be the discriminant representation (@def:discriminant-rep) and $K = \ker\rho$.
+Identify $\ten = U\oplus U(2)\oplus E_8(2)$ with the lattice $L_- = \mathbf H\oplus\mathbf H(2)\oplus E_8(-2)$ of [@Ste91, 1.3] summand by summand, and let $e', f'$ be the isotropic basis (@def:based-module) of $U(2)$, with $(e', f') = 2$.
 
 1. $\gent$ is the group (@def:group) $\Gamma$ of [@Ste91, §2, Prop. 2.7], and $\gent = \theset{g\in\Orth(\ten) \st \rho(g)\text{ preserves the summands } A_{U(2)} \text{ and } A_{E_8(2)} \text{ of } A_{\ten}}$.
 2. $\rho(\gent) = M\definedas\Orth(q_{U(2)})\times\Orth(q_{E_8(2)})$, and $\gent = \rho^{-1}(M)$; in particular $K\subseteq\gent$.
@@ -685,7 +685,7 @@ Identify $\ten = U\oplus U(2)\oplus E_8(2)$ with the lattice $L_- = \mathbf H\op
 
 ::: {.proof}
 
-(1) The group $\Gamma$ of [@Ste91, Prop. 2.7] is the image in $\Orth(L_-)$ of the isometries of the K3 lattice that commute with the Enriques involution (@def:enriques-surface) and fix the polarization (@def:polarization-functors) vector, and $\gent$ is the image in $\Orth(\ten)$ of the same group [@AEGS25 Def. 2.6].
+(1) The group $\Gamma$ of [@Ste91, Prop. 2.7] is the image in $\Orth(L_-)$ of the isometries of the K3 lattice that commute with the Enriques involution (@def:enriques-surface) and fix the polarization vector, and $\gent$ is the image in $\Orth(\ten)$ of the same group [@AEGS25 Def. 2.6].
 The description by the two summands is [@Ste91, Prop. 2.7].
 
 (2) Because $U$ is unimodular, $A_{\ten} = A_{U(2)}\perp A_{E_8(2)}$, and an isometry of $q_{\ten}$ preserves both summands exactly when it is a pair of isometries of the summands.
@@ -737,7 +737,7 @@ For a primitive $az+be'\in\varPi_2$, the ideal $(az+be',\ten)$ contains $(az+be'
 By [@Ste91, Prop. 4.6] there are exactly two $\Orth(\ten)$-classes of primitive isotropic planes, and divisibility is invariant under $\Orth(\ten)$, so $\varPi_1$ and $\varPi_2$ represent the two classes.
 
 (2), (3): the subgroup $D(\varPi)$.
-$A_{\ten}$ has exponent (@cons:pf-from-jacobian) two, so $2\ten^*\subseteq\ten$, and primitivity of $\varPi$ gives $\varPi_\QQ\cap\ten^*\subseteq\tfrac12(\varPi_\QQ\cap\ten) = \tfrac12\varPi$.
+$A_{\ten}$ has exponent two, so $2\ten^*\subseteq\ten$, and primitivity of $\varPi$ gives $\varPi_\QQ\cap\ten^*\subseteq\tfrac12(\varPi_\QQ\cap\ten) = \tfrac12\varPi$.
 A vector $p/2$ with $p\in\varPi$ lies in $\ten^*$ exactly when $(p,\ten)\subseteq 2\ZZ$, and $[p/2] = 0$ exactly when $p\in 2\varPi$.
 So $D(\varPi)$ is the image of $\theset{p\in\varPi \st (p,\ten)\subseteq 2\ZZ}$ in $\varPi/2\varPi$.
 If $\varPi$ contains a vector of divisibility one, then by (1) it is the image of $\varPi_1$ under an isometry, so it has a basis $u, v$ with $\operatorname{div}(u) = 1$ and $\operatorname{div}(v) = 2$.
@@ -762,7 +762,7 @@ It is contained in this set, because $u$ and $y_{0,1}$ are both integers or both
 For $(u,y')\in\ZZ^8\cup(\ZZ^8+s)$ choose $y_{0,1}$ in $\ZZ$ or in $\ZZ+\tfrac12$, matching $u$, with $y_{0,1}+\sum_j y'_j$ even; then $y_0 = (y_{0,1},y')\in E_8$, the numbers $a = y_{0,1}+u$ and $b = y_{0,1}-u$ are integers, and $\pi(ae+bf+y) = (u,y')$.
 The set $\ZZ^8\cup(\ZZ^8+s)$ is $D_8^*$ [@CS10, Ch. 4, §7.1], so $\pi$ induces an isometry $\varPi_2^\perp/\varPi_2\cong D_8^*(2)$.
 
-There is also a direct obstruction to a third, trivial-discriminant stratum, independent of the classification in (1). Reduce $N=U\perp U(2)\perp E_8(2)$ modulo $2N$. The alternating form induced by its integral pairing is supported entirely on $U/2U$, where it is nondegenerate of dimension two. For a primitive totally isotropic plane $\varPi$, primitivity gives an injection $\varPi/2\varPi\injects N/2N$. Its image is isotropic for the mod-two pairing, so its projection onto $U/2U$ has dimension at most one. Consequently a nonzero class of $\varPi/2\varPi$ has zero $U/2U$-projection. Choose a primitive lift $p\in\varPi$ of that nonzero parity class (any nonzero element of $\F_2^2$ lifts to a primitive vector of $\ZZ^2$). Its $U$-coordinates are even, while all pairings in the other two summands are even, so $(p,N)\subseteq2\ZZ$ and $p/2\in N^*$. The class $[p/2]\in A_N$ is nonzero: otherwise $p\in2N$, and primitivity of $\varPi$ would give $p\in2\varPi$, contrary to its nonzero parity class. In particular $D(\varPi)$ is **never trivial**: the zero-dimensional finite discriminant stratum cannot lift to a primitive isotropic plane. The other two strata are realized by $\varPi_1$ and $\varPi_2$, and all their finite subgroups are realized by the transitivity and surjectivity arguments of @thm:enriques-degree-two-arithmetic(2).
+There is also a direct obstruction to a third, trivial-discriminant stratum, independent of the classification in (1). Reduce $N=U\perp U(2)\perp E_8(2)$ modulo $2N$. The alternating form induced by its integral pairing is supported entirely on $U/2U$, where it is nondegenerate of dimension two. For a primitive totally isotropic plane $\varPi$, primitivity gives an injection $\varPi/2\varPi\injects N/2N$. Its image is isotropic for the mod-two pairing, so its projection onto $U/2U$ has dimension at most one. Consequently a nonzero class of $\varPi/2\varPi$ has zero $U/2U$-projection. Choose a primitive lift $p\in\varPi$ of that nonzero parity class (any nonzero element of $\F_2^2$ lifts to a primitive vector of $\ZZ^2$). Its $U$-coordinates are even, while all pairings in the other two summands are even, so $(p,N)\subseteq2\ZZ$ and $p/2\in N^*$. The class $[p/2]\in A_N$ is nonzero: otherwise $p\in2N$, and primitivity of $\varPi$ would give $p\in2\varPi$, contrary to its nonzero parity class. In particular $D(\varPi)$ is **never trivial**: the zero-dimensional finite discriminant stratum cannot lift to a primitive isotropic plane. The other two strata are realized by $\varPi_1$ and $\varPi_2$, and all their finite subgroups are realized by the transitivity and surjectivity arguments of the cusp theorem (2).
 :::
 
 ::: {.lemma #lem:half-vector-eichler title="Eichler transvections along a vector of divisibility two"}
@@ -797,7 +797,7 @@ The formula gives
 $$
 E_{\eta,w}(x') = x' + (\eta,x')\,w - \bigl(2(w,x')+w^2(\eta,x')\bigr)\tfrac{\eta}{2} .
 $$
-The two coefficients are integers, $2w\in\ten$ and $\eta\in\ten$, so modulo $\ten$ only their residues modulo $2$ matter, and $A$ has exponent (@cons:pf-from-jacobian) two.
+The two coefficients are integers, $2w\in\ten$ and $\eta\in\ten$, so modulo $\ten$ only their residues modulo $2$ matter, and $A$ has exponent two.
 So $\rho(E_{\eta,w})(a) = T_{d,[w]}(a)$.
 
 (2) Let $c = [w_0]$ with $w_0\in\ten^*$.
@@ -853,7 +853,7 @@ Hence $\rho(S_0) = F_1$, and both images equal $F_1$.
 
 ::: {.lemma #lem:line-stabilizer-image title="The stabilizer of a primitive isotropic line maps onto the stabilizer of its class"}
 
-For a primitive isotropic $v\in\ten$ let $c(\ZZ v) = [v/\operatorname{div}(v)]\in A_{\ten}$; it does not depend on the sign of $v$, because $A_{\ten}$ has exponent (@cons:pf-from-jacobian) two.
+For a primitive isotropic $v\in\ten$ let $c(\ZZ v) = [v/\operatorname{div}(v)]\in A_{\ten}$; it does not depend on the sign of $v$, because $A_{\ten}$ has exponent two.
 Let $\Gamma\leq\Orth(\ten)$ contain $K$, and put $H = \rho(\Gamma)$.
 Then
 $$
@@ -1105,7 +1105,7 @@ By @prop:ten-plane-classes(1), $P_1 = \varPi_1$ and $P_2 = \varPi_2$ represent t
 For a plane $P$ choose $g$ with $gP_1=P$ or with $gP_2=P$, and put $k\definedas g\sigma_Ug^{-1}$ in the first case and $k\definedas g\tau g^{-1}$ in the second; then $k\in\ker\rho\setminus\Orth^+(N)$ and $k$ stabilizes $P$.
 
 *Conclusion.*
-The hypotheses of @lem:spinor-orbit-agreement are met: $\Orth^+(\ten)$ has index two in $\Orth(\ten)$, because $\spinornorm_\bR$ is a homomorphism from $\Orth(\ten)$ to $\{\pm1\}$ with kernel $\Orth^+(\ten)$ and it is onto, $\sigma_U$ being an integral isometry of $\ten$ with $\spinornorm_\bR(\sigma_U)=-1$; and at every primitive isotropic line and at every primitive isotropic plane the stabilizer inside $\Gamma$ meets (@def:replete-full-meet) $\Gamma\setminus\Orth^+(\ten)$.
+The hypotheses of @lem:spinor-orbit-agreement are met: $\Orth^+(\ten)$ has index two in $\Orth(\ten)$, because $\spinornorm_\bR$ is a homomorphism from $\Orth(\ten)$ to $\{\pm1\}$ with kernel $\Orth^+(\ten)$ and it is onto, $\sigma_U$ being an integral isometry of $\ten$ with $\spinornorm_\bR(\sigma_U)=-1$; and at every primitive isotropic line and at every primitive isotropic plane the stabilizer inside $\Gamma$ meets $\Gamma\setminus\Orth^+(\ten)$.
 Items 1 and 2 follow on those two sets.
 Item 3 is @thm:enriques-flag-witnesses, which produces such a $k$ for every flag, after which the same lemma gives item 3.
 :::
@@ -1121,7 +1121,7 @@ $$
 let $\Gamma(2)\definedas\ker\qty(\SL_2(\bZ)\too\SL_2(\bF_2))$ act on $\bZ^2$ and on $\PP^1(\bZ)$, and let $\Lambda\definedas\generators{A,B,-\id}$.
 Then $\Lambda\leq\Gamma(2)$, and for a primitive (@def:primitive-embedding) $(a,c)\in\bZ^2$:
 
-1. there is $\lambda\in\Lambda$ with $\lambda(a,c)$ equal to $\pm(1,0)$ if $a$ is odd (@def:two-elementary-isotropic-types) and $c$ even (@def:form-axioms), to $\pm(0,1)$ if $a$ is even and $c$ odd, and to $\pm(1,1)$ if $a$ and $c$ are both odd;
+1. there is $\lambda\in\Lambda$ with $\lambda(a,c)$ equal to $\pm(1,0)$ if $a$ is odd and $c$ even (@def:form-axioms), to $\pm(0,1)$ if $a$ is even and $c$ odd, and to $\pm(1,1)$ if $a$ and $c$ are both odd;
 2. every element of $\Gamma(2)$ is congruent to the identity modulo $2$ and therefore preserves the class of a vector modulo $2$ and sign, so the $\Gamma(2)$-orbits on $\PP^1(\bZ)$ are exactly the three classes $[1:0]$, $[0:1]$, $[1:1]$, and each of them is a single $\Lambda$-orbit of primitive vectors;
 3. $\mu$ is not congruent to the identity modulo $2$; it carries $[1:0]$ to $[1:1]$, and fixes $[0:1]$; and every element of $\generators{\Lambda,\mu}$ preserves the parity of the first coordinate, so that $\generators{\Lambda,\mu}$ has exactly two orbits on $\PP^1(\bZ)$, the primitive lines $[a:c]$ with $a$ odd and those with $a$ even.
 
@@ -1188,7 +1188,7 @@ Thus $g^t\in\Orth(V)$ for every real $t$; and $g^sg^t$ and $g^{s+t}$ agree for i
 Hence $t\mapsto g^t$ is a homomorphism $(\bR,+)\to\Orth(V)$ carrying $1$ to $g$.
 
 *Conclusion.*
-The composite $\chi\colon t\mapsto\spinornorm_\bR(g^t)$ is a homomorphism from $(\bR,+)$ into $\bR^\times/(\bR^\times)^2$, a group (@def:group) of exponent (@cons:pf-from-jacobian) two, and $t=2\cdot(t/2)$ gives $\chi(t)=\chi(t/2)^2=1$.
+The composite $\chi\colon t\mapsto\spinornorm_\bR(g^t)$ is a homomorphism from $(\bR,+)$ into $\bR^\times/(\bR^\times)^2$, a group (@def:group) of exponent two, and $t=2\cdot(t/2)$ gives $\chi(t)=\chi(t/2)^2=1$.
 Therefore $\spinornorm_\bR(g)=\chi(1)=1$.
 :::
 
@@ -1287,7 +1287,7 @@ The coefficient of $t$ in $\beta(\sigma_tx,\sigma_ty)$ is
 $\beta(x,a)\beta(w,y)-\beta(x,w)\beta(a,y)+\beta(y,a)\beta(x,w)-\beta(y,w)\beta(x,a)$, which vanishes by cancellation, and the coefficient of $t^2$ is
 $\beta(x,a)\beta(y,a)\beta(w,w)-\beta(x,a)\beta(y,w)\beta(w,a)-\beta(x,w)\beta(y,a)\beta(a,w)+\beta(x,w)\beta(y,w)\beta(a,a)$, which vanishes because $a$ and $w$ are isotropic and orthogonal.
 So $\sigma^{(i)}_t\in\Orth(N_\bR)$ for every $t$, and $\sigma^{(i)}_s\sigma^{(i)}_t=\sigma^{(i)}_{s+t}$ because $\sigma^{(i)}_t$ fixes both $a$ and $w$ and preserves the two pairings $\beta(\cdot,a)$, $\beta(\cdot,w)$.
-Thus $\sigma^{(i)}_1=E_i$ lies in a one-parameter subgroup of $\Orth(N_\bR)$, and $t\mapsto\spinornorm_\bR(\sigma^{(i)}_t)$ is a homomorphism from $(\bR,+)$ to a group of exponent (@cons:pf-from-jacobian) two, hence trivial; so $\spinornorm_\bR(E_i)=1$, which is also the statement of @lem:unipotent-spinor-trivial.
+Thus $\sigma^{(i)}_1=E_i$ lies in a one-parameter subgroup of $\Orth(N_\bR)$, and $t\mapsto\spinornorm_\bR(\sigma^{(i)}_t)$ is a homomorphism from $(\bR,+)$ to a group of exponent two, hence trivial; so $\spinornorm_\bR(E_i)=1$, which is also the statement of @lem:unipotent-spinor-trivial.
 For the two sign changes, @lem:minus-identity-spinor-norm gives $\spinornorm_\bR(-\id_U)=[(-1)^1]$ and $\spinornorm_\bR(-\id_{U(2)})=[(-1)^1]$, the summands having positive index one, and the spinor norm of an orthogonal sum is the product of the spinor norms of its summands, since a reflection of a summand is the corresponding reflection of the sum; so both have spinor norm $-1$.
 
 *The planes.*
@@ -1351,7 +1351,7 @@ So every primitive line of $P_2$ is the image of one of these three under an ele
 Let $\ell\subset P$ be a flag.
 By [@Ste91, 4.6] there are exactly two $\Orth(N)$-classes of primitive isotropic planes, represented by $P_1$ and $P_2$ (@prop:ten-plane-classes(1)), so there is $g\in\Orth(N)$ with $gP_1=P$ or with $gP_2=P$.
 Then $g^{-1}\ell$ is a primitive isotropic line of that representative plane, hence has a witness $k$ by the two paragraphs above, and $gkg^{-1}\in\ker\rho$ has spinor norm $-1$ and fixes $P$ and $\ell$.
-Since every witness lies in $\ker\rho\subseteq\Gamma$, the stabilizer inside $\Gamma$ of each of these objects meets (@def:replete-full-meet) $\Gamma\setminus\Orth^+(N)$.
+Since every witness lies in $\ker\rho\subseteq\Gamma$, the stabilizer inside $\Gamma$ of each of these objects meets $\Gamma\setminus\Orth^+(N)$.
 
 :::
 
@@ -1361,7 +1361,7 @@ Let $N = \ten$, let $M\leq\Orth(A_\ten,q_\ten)$ and $\Gamma=\rho^{-1}(M)$, so th
 
 1. $\Gamma = \Gamma^+\sqcup\Gamma^+\tau_0$, so $\Gamma^+$ has index two in $\Gamma$, and $\rho(\Gamma^+)=\rho(\Gamma)=M$.
 2. $\Gamma$ and $\Gamma^+$ have the same orbits on primitive isotropic lines, on primitive isotropic planes and on flags.
-   On a $\Gamma$-set $X$ their orbits agree exactly when $\Stab_\Gamma(x)$ meets (@def:replete-full-meet) $\Gamma\setminus\Orth^+(N)$ for every $x\in X$.
+   On a $\Gamma$-set $X$ their orbits agree exactly when $\Stab_\Gamma(x)$ meets $\Gamma\setminus\Orth^+(N)$ for every $x\in X$.
 :::
 
 ::: {.proof}
@@ -1389,7 +1389,7 @@ Any other admissible anti-isometry gives a preimage conjugate to $\gent$ in $\Or
 
 The discriminant groups of $U(2)$ and of $E_8(2)$ are the same in the two lattices, because both lattices contain those summands isometrically; $U$ contributes nothing. So the canonical identification is an isometry of quadratic spaces, and $\gamma = \id$ is an anti-isometry because negating a $\ZZ/2\ZZ$-valued form changes nothing.
 The generators act on the discriminant through their own summands and trivially on the other, so the images of the nine isometries of $\ten$ are the nine generators of the group in @thm:coble-heegner-finite-orbits' first item and equal the $\gamma$-transport of @prop:gamma-en-two-gluing's image.
-Two admissible anti-isometries differ by $\tau\in\Orth(A_{\ten},q_{\ten})$, since both satisfy $q_{\ten}(\gamma x) = -q_{\sen}(x)$; by the surjectivity of the discriminant representation (@def:representable-presheaf) (@thm:two-elementary-surjectivity) $\tau = \rho_{\ten}(s)$ for some isometry $s$ of $\ten$, and then
+Two admissible anti-isometries differ by $\tau\in\Orth(A_{\ten},q_{\ten})$, since both satisfy $q_{\ten}(\gamma x) = -q_{\sen}(x)$; by the surjectivity of the discriminant representation (@def:discriminant-rep) (@thm:two-elementary-surjectivity) $\tau = \rho_{\ten}(s)$ for some isometry $s$ of $\ten$, and then
 $$
 \rho_{\ten}^{-1}(\tau M\tau^{-1}) = s\,\rho_{\ten}^{-1}(M)\,s^{-1},
 $$

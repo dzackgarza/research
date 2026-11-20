@@ -16,7 +16,7 @@ tags:
 
 Let $\fttz=\bD(\tdp)/\Gamma_\dP$ be the moduli space of K3 surfaces of degree $4$ with a del Pezzo involution [@AEGS25, §1, Def. 2.7, printed p. 587].
 
-1. The inclusion $\bD(T_\En)\subset\bD(\tdp)$ induces a finite, generically injective morphism $\fentwo\to\fttz$, and $\fentwo$ is the normalization of a closed (@def:closed-monoidal) subvariety of $\fttz$ [@AEGS25, Lemma 2.8, printed p. 587].
+1. The inclusion $\bD(T_\En)\subset\bD(\tdp)$ induces a finite, generically injective morphism $\fentwo\to\fttz$, and $\fentwo$ is the normalization of a closed subvariety of $\fttz$ [@AEGS25, Lemma 2.8, printed p. 587].
 2. The inclusion $\gent\subseteq\Gamma^K_\En$ of a subgroup of finite index (@def:index) induces a morphism $\fentwo\to F_{(10,10,0)}=\bD(T_\En)/\Gamma^K_\En$ of degree $2^7\cdot17\cdot31$ [@AEGS25, §2.3; @Ste91, Rem. 2.12, printed p. 8].
 :::
 
@@ -76,7 +76,7 @@ $$\Phi([\ell])=\lim_{t\to\infty}\Phi([w(z_t)])=\lim_{t\to\infty}[w(z_t)]=[\iota(
 
 ::: {.theorem #thm:coble-zero-cusp-sterk-two title="Which cusp of $\fentwo$ carries the Coble $0$-cusp: cusps $2$--$5$ for the boundary lattice, cusp $2$ for the chamber"}
 
-Let $\delta = e-f$, $T_\Co = \delta^{\perp\ten}$, $R_{\gent}$ the image of $\Stab_{\gent}(\delta)$ in $\Orth(T_\Co)$ (@prop:gamma-co-images(3)) and $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ with $\Gamma_{\Co,2}$ the monodromy group (@def:k3-moduli-functors) of the family of @def:coble-family-degree-two (@def:gamma-co-groups(5)), and let $\eta_1,\dots,\eta_5$ be Sterk's five cusp vectors in $\ten = U\oplus U(2)\oplus E_8(2)$, that is the vectors the lattice database returns as `Sterk.selected_isotropic_vectors()` [@Ste91, (4.2.2)--(4.2.3), printed p. 16], whose coordinates and divisibilities are tabulated in @ex:sterk-isotropic-divisibilities.
+Let $\delta = e-f$, $T_\Co = \delta^{\perp\ten}$, $R_{\gent}$ the image of $\Stab_{\gent}(\delta)$ in $\Orth(T_\Co)$ (@prop:gamma-co-images(3)) and $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ with $\Gamma_{\Co,2}$ the monodromy group (@def:k3-moduli-functors) of the family of @def:coble-family-degree-two (@def:gamma-co-groups), and let $\eta_1,\dots,\eta_5$ be Sterk's five cusp vectors in $\ten = U\oplus U(2)\oplus E_8(2)$, that is the vectors the lattice database returns as `Sterk.selected_isotropic_vectors()` [@Ste91, (4.2.2)--(4.2.3), printed p. 16], whose coordinates and divisibilities are tabulated in @ex:sterk-isotropic-divisibilities.
 Then:
 
 1. **Cusp $1$ carries no Coble $0$-cusp.** $(\eta_1,\delta) = -1$, so $\eta_1\notin T_\Co$.

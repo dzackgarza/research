@@ -8,7 +8,7 @@ Write $A_L$ and $A_{L,q}$ for the bilinear and quadratic discriminant objects of
 
 ::: {.definition #def:coble-discriminant-forms title="Length of a lattice" defines="length of a finite $\bZ$-module; $\ell(A)$; length of a lattice; $\ell(L)$"}
 
-For a finite $\bZ$-module $A$, let $\ell(A)$ be the minimal (@def:minimal-resolution) cardinality of a set of module generators of $A$ [@Nik80, §1.9].
+For a finite $\bZ$-module $A$, let $\ell(A)$ be the minimal cardinality of a set of module generators of $A$ [@Nik80, §1.9].
 Define $\ell(L)\definedas\ell(A_L)$.
 :::
 
@@ -76,7 +76,7 @@ $$
 \qquad
 V_{\mathbb A_f}\definedas V\tensor_K\mathbb A_{K,f}.
 $$
-The local spinor norms (@def:lattice-basic-invariants) of @def:spinor-norm assemble to
+The local spinor norms (@def:spinor-norm) of @def:spinor-norm assemble to
 $$
 \spinornorm_{\mathbb A_f}\colon
 \Orth(V_{\mathbb A_f})

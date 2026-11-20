@@ -42,7 +42,7 @@ The displayed sequence is the defining cokernel (@def:kernel-cokernel) sequence 
 
 ::: {.proposition #prop:isotropic-complement-embedding title="Splitting an isotropic orthogonal complement"}
 
-Under the hypotheses of @prop:primitive-isotropic-complement, applying $U\colon\mathbf{BilMod}_{\bZ}\too\bZ\text{-}\mathbf{Mod}$ to its exact (@def:exact-complex) sequence gives a split (@def:hyperbolic-plane) exact sequence, and $\qty{v^{\perp_L}}^{\mathrm{nd}}$ admits an embedding into $L$ in $\mathbf{Lat}_{\bZ}$.
+Under the hypotheses of @prop:primitive-isotropic-complement, applying $U\colon\mathbf{BilMod}_{\bZ}\too\bZ\text{-}\mathbf{Mod}$ to its exact (@def:exact-complex) sequence gives a split exact sequence, and $\qty{v^{\perp_L}}^{\mathrm{nd}}$ admits an embedding into $L$ in $\mathbf{Lat}_{\bZ}$.
 :::
 
 ::: {.proof}
@@ -271,7 +271,7 @@ $$
 $$
 
 It remains to identify $\det(B)$ with $[N_V:P]$. An element $x=\sum_i\lambda_i v_i$ of $V$ lies in $N$ exactly when $\beta_{L_{\bQ}}(x,L)\subseteq\bZ$, and since $\beta_{L_{\bQ}}(x,M)=0$ this is the single condition $B^{\mathsf T}\lambda\in\bZ^r$.
-Hence $N_V=(B^{\mathsf T})^{-1}\bZ^r$, whose covolume (@def:covolume) in $V$ is $\abs{\det B}^{-1}$ times that of $P=\sum_i\bZ v_i$; therefore $[N_V:P]=\abs{\det B}$.
+Hence $N_V=(B^{\mathsf T})^{-1}\bZ^r$, whose covolume in $V$ is $\abs{\det B}^{-1}$ times that of $P=\sum_i\bZ v_i$; therefore $[N_V:P]=\abs{\det B}$.
 With $\cardinality{A_L}=\abs{\det G}$ and $\cardinality{A_Q}=\abs{\det G_Q}=\abs{\disc Q}$, the displayed identity follows.
 :::
 

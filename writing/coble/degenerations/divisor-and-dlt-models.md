@@ -4,7 +4,7 @@
 
 ::: {.definition #def:dlt-model title="dlt models and half-divisor models" defines="dlt model; half-divisor model; $\mcz$; $(\mcz,\mcr_{\mcz})$"}
 
-Let $\mcx \to (C,0)$, resp. $(\mcx,\mcr)\to(C,0)$, be a Kulikov model (@def:kulikov-model), resp. a divisor model (@def:coble-divisor-model), of Enriques K3 surfaces on which the Enriques involution (@def:enriques-surface) $\iota_\En$ is a regular (@def:regular-ternary-lattice) involution of $\mcx$, resp. a regular involution that preserves $\mcr$.
+Let $\mcx \to (C,0)$, resp. $(\mcx,\mcr)\to(C,0)$, be a Kulikov model (@def:kulikov-model), resp. a divisor model (@def:coble-divisor-model), of Enriques K3 surfaces on which the Enriques involution (@def:enriques-surface) $\iota_\En$ is a regular involution of $\mcx$, resp. a regular involution that preserves $\mcr$.
 The **dlt model**, resp. the **half-divisor model**, is the quotient by the Enriques involution:
 $$
 \mcz \definedas \mcx/\iota_\En,
@@ -35,7 +35,7 @@ $$
 holds.
 
 The quotient $Y = X/\iota$ has branch divisor $B$ and image boundary $C = \pi(D)$, where $\pi\colon X \to Y$ is the quotient map.
-The pair $(Y, C)$ is a log del Pezzo surface of index (@def:index) at most $2$, satisfying
+The pair $(Y, C)$ is a log del Pezzo surface of index at most $2$, satisfying
 $$
 K_X + D + \eps R = \pi^*\left( K_Y + C + \frac{1+\eps}{2}B \right)
 ,

@@ -2,7 +2,7 @@
 
 ::: {.definition #def:groupoid-cardinality title="Groupoid cardinality" defines="essentially finite; groupoid cardinality"}
 
-An ordinary (@def:two-elementary-isotropic-types) groupoid $\mathcal G$ is **essentially finite** when $\pi_0(\mathcal G)$ is finite and $\Aut_{\mathcal G}(x)$ is finite for every $x\in\mathcal G$.
+An ordinary groupoid $\mathcal G$ is **essentially finite** when $\pi_0(\mathcal G)$ is finite and $\Aut_{\mathcal G}(x)$ is finite for every $x\in\mathcal G$.
 Its **groupoid cardinality** is
 $$
 \cardinality{\mathcal G}
@@ -35,9 +35,9 @@ A general forgetful functor need not arise from a category of elements.
 ::: {.definition #def:subcategory title="Subobjects, full and replete subcategories" defines="subobject; full subcategory; replete"}
 
 A *subobject* of $Y\in\mcc$ is a monomorphism $m:X\to Y$ in $\mcc$; the datum is the arrow $m$, not merely the domain $X$ [@Lur18c, Tag 04VD].
-Equivalently, $m$ is a subterminal object of the slice $\mcc_{/Y}$, and if the relevant pullback (@def:pullback-square) exists, $m$ is monic exactly when the diagonal (@def:polarization-functors) $\Delta_m:X\to X\times_Y X$ is an equivalence (@def:equivalence-of-objects).
+Equivalently, $m$ is a subterminal object of the slice $\mcc_{/Y}$, and if the relevant pullback (@def:pullback-square) exists, $m$ is monic exactly when the diagonal $\Delta_m:X\to X\times_Y X$ is an equivalence (@def:equivalence-of-objects).
 
-For ordinary (@def:two-elementary-isotropic-types) $\mathbf{Cat}$, a functor $F:\mca\to\mathcal B$ is monic if and only if it is injective on objects and faithful; hence subobjects in $\mathbf{Cat}$ are ordinary subcategories, up to isomorphism (@def:isomorphism-of-objects) over $\mathcal B$.
+For ordinary $\mathbf{Cat}$, a functor $F:\mca\to\mathcal B$ is monic if and only if it is injective on objects and faithful; hence subobjects in $\mathbf{Cat}$ are ordinary subcategories, up to isomorphism (@def:isomorphism-of-objects) over $\mathcal B$.
 In $\operatorname{Cat}_{\infty,\infty}$, a monomorphism must also contain every equivalence between objects in its image, so not every ordinary subcategory remains a subobject after passing to $\operatorname{Cat}_{\infty,\infty}$.
 
 A *full subcategory* $\mcd\iscontainedin\mcc$ is the special case where $m$ is fully faithful: a collection of objects of $\mcc$ with mapping spaces inherited from $\mcc$,
@@ -136,7 +136,7 @@ m=\ker(\coker f),
 \qquad
 e=\coker(\ker f),
 $$
-and the factorization is functorial: a commutative (@def:operation-axioms) square from $f$ to $f'$ induces a unique morphism between the two factorizations commuting with both halves.
+and the factorization is functorial: a commutative square from $f$ to $f'$ induces a unique morphism between the two factorizations commuting with both halves.
 The object $\operatorname{Im}(f)$ is the domain of $m$ and $\operatorname{Coim}(f)$ the codomain of $e$ [@Mac98, §VIII.3, Proposition 1].
 :::
 
@@ -155,7 +155,7 @@ $$
 \coker f\to\coker g\to\coker h
 $$
 exact (@def:exact-complex) (snake lemma).
-In a commutative (@def:operation-axioms) diagram with exact rows and five vertical morphisms, if the four outer ones are isomorphisms (@def:isomorphism-of-objects) then so is the middle one (five lemma) [@Mac98, §VIII.4, Lemmas 1, 4, and 5].
+In a commutative diagram with exact rows and five vertical morphisms, if the four outer ones are isomorphisms (@def:isomorphism-of-objects) then so is the middle one (five lemma) [@Mac98, §VIII.4, Lemmas 1, 4, and 5].
 :::
 
 ::: {.proof}
@@ -261,7 +261,7 @@ Thus the projection $\int_C F\to C$ is a discrete fibration; no additional oppos
 
 ::: {.definition #def:smooth-manifold title="Smooth manifolds as locally ringed spaces" defines="$\mathsf{LRS}_{\bR}$; standard local model; $M_n$; smooth atlas; smooth manifold"}
 
-Let $\mathsf{LRS}_{\bR}$ denote the category of locally $\bR$-ringed spaces: topological spaces equipped with a sheaf of $\bR$-algebras whose stalks (@def:flower-pot-degeneration) are local rings [@nlab:locally_ringed_space].
+Let $\mathsf{LRS}_{\bR}$ denote the category of locally $\bR$-ringed spaces: topological spaces equipped with a sheaf of $\bR$-algebras whose stalks are local rings [@nlab:locally_ringed_space].
 The standard local model of dimension $n$ is
 $$
 M_n := (\bR^n,\, C^\infty_{\bR^n}),

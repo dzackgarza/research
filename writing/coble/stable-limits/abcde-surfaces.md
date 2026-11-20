@@ -86,7 +86,7 @@ $$
 R_Z=\tfrac12\rho^*B_W,\quad R_{Z'}=\tfrac12\rho'^*B_W,
 \qquad D_Z=\rho^*C_W,\quad D_{Z'}=\rho'^*C_W.
 $$
-The pair $(W,C_W+\tfrac{1+\eps}{2}B_W)$ is del Pezzo ADE and $Z'$ is its index-one anticanonical cover. The quotient $Z$ has index (@def:index) $2$:
+The pair $(W,C_W+\tfrac{1+\eps}{2}B_W)$ is del Pezzo ADE and $Z'$ is its index-one anticanonical cover. The quotient $Z$ has index $2$:
 $$
 2(K_Z+D_Z)\sim0,\qquad K_Z+D_Z\not\sim0.
 $$

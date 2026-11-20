@@ -19,7 +19,7 @@ Every relatively minimal rational elliptic surface is a Halphen surface of some 
 
 ::: {.proposition #prop:enriques-elliptic-half-fibres title="The two half-fibres of an Enriques pencil"}
 Let $Z$ be a complex Enriques surface (@def:enriques-surface) and let $|E|$ be an elliptic pencil:
-a one-dimensional complete (@def:complete) linear system whose general member is a smooth
+a one-dimensional complete linear system whose general member is a smooth
 curve of genus one. The pencil is basepoint-free and defines a genus-one
 fibration $Z\to\PP^1$. It has exactly two multiple fibres, both of
 multiplicity $2$. Write them as $2F_1$ and $2F_2$, where $F_i$ is the
@@ -79,7 +79,7 @@ In case 2 the fibre is of type $\tilde A_k$ with $k\leq8$, and in case 1 the two
 Let $V$ be a terminal (@def:terminal-coble-surface) Coble surface (@def:coble-surface) of K3 type with $n = 1$, and let $W = V(F_6)$ be the irreducible plane sextic of @prop:coble-sextic-model, with $10$ ordinary nodes or cusps, possibly infinitely near.
 Choose $9$ of the $10$ double points of $W$.
 Then a plane cubic $V(F_3)$ passes through them, and the pencil $V(\lambda F_6 + \mu F_3^2)$ is a Halphen pencil of index $2$.
-The minimal (@def:minimal-resolution) resolution of its base points is a Halphen surface of index $2$, and $V$ is the blowup of a singular point of an irreducible simple fibre of this pencil.
+The minimal resolution of its base points is a Halphen surface of index $2$, and $V$ is the blowup of a singular point of an irreducible simple fibre of this pencil.
 
 Let $F$ be a reducible simple fibre of the pencil.
 The blowup of a singular point of $F$ is a non-terminal Coble surface of K3 type with $n = 1$, whose anti-bicanonical curve is the proper transform of $F$.

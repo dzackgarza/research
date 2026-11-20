@@ -21,7 +21,7 @@ The fixed-value **category of pairings** $\mathbf{Pair}_{R,W}$ has objects $(A,B
 $$
 (f,g)\colon(A,B,b)\too(A',B',b')
 $$
-satisfying $b=b'\circ(f\tensor_Rg)$. Pullback (@def:pullback-square) along the diagonal (@def:polarization-functors) $M\mapsto(M,M)$ gives the bilinear-form presheaf $\Bil_{R,W}$ of @def:form-presheaves. A pairing of two possibly different modules does not require symmetry or a choice of identification between them.
+satisfying $b=b'\circ(f\tensor_Rg)$. Pullback along the diagonal (@def:polarization-functors) $M\mapsto(M,M)$ gives the bilinear-form presheaf $\Bil_{R,W}$ of @def:form-presheaves. A pairing of two possibly different modules does not require symmetry or a choice of identification between them.
 :::
 
 ::: {.definition #def:pairing-adjoints title="The adjoints and their exact sequences" defines="left adjoint; right adjoint; $b^\ell$; $b^r$; left radical; right radical; $\radic_\ell(b)$; $\radic_r(b)$; left coradical; right coradical; $\operatorname{corad}_\ell(b)$; $\operatorname{corad}_r(b)$; left nondegenerate pairing; right nondegenerate pairing; nondegenerate pairing; perfect pairing"}

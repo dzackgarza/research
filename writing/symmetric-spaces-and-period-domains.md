@@ -41,7 +41,7 @@ Let $\jmath(z)=J_n\bar z$ on $\mathbb C^{2n}$. Set
 \operatorname{SO}^*(2n)&=\{g\in\operatorname{SL}(2n,\mathbb C):g^{\mathsf t}g=I_{2n},\ g^*J_ng=J_n\}.
 \end{align*}
 
-The first group (@def:group) is $\operatorname{SL}(n,\mathbb H)$, with determinant understood via its complex representation (@def:representable-presheaf). The second preserves a complex symmetric form (@def:form-axioms) and a skew-Hermitian form [@Hel01, §X.2].
+The first group (@def:group) is $\operatorname{SL}(n,\mathbb H)$, with determinant understood via its complex representation. The second preserves a complex symmetric form (@def:form-axioms) and a skew-Hermitian form [@Hel01, §X.2].
 :::
 
 :::{.remark #rmk:hsd-quaternionic-orthogonal title="Quaternionic orthogonal notation"}
@@ -116,7 +116,7 @@ On $\mathbb R^{p,q}$ use the form with matrix $I_{p,q}$. Set
 &=\{V\subset\mathbb R^{p,q}:\dim V=k,\ (\ ,\ )|_V>0\}.
 \end{align*}
 
-Adding an orientation (@def:free-module-orientation) gives $\operatorname{Gr}_k^{+,\mathrm{or}}$. For $0\leq k\leq p$, extension of orthonormal bases (@def:root-system-base) gives
+Adding an orientation (@def:free-module-orientation) gives $\operatorname{Gr}_k^{+,\mathrm{or}}$. For $0\leq k\leq p$, extension of orthonormal bases gives
 
 \begin{align*}
 \operatorname{Gr}_k^+(\mathbb R^{p,q})
@@ -125,7 +125,7 @@ Adding an orientation (@def:free-module-orientation) gives $\operatorname{Gr}_k^
 &\cong\frac{\operatorname O(p,q)}{\operatorname{SO}(k)\times\operatorname O(p-k,q)}.
 \end{align*}
 
-In particular, the stabilizer of the standard maximal (@def:maximal-lattice) positive subspace $\mathbb R^p\oplus0$ is $\operatorname O(p)\times\operatorname O(q)$. For $p,q>0$, the oriented maximal positive Grassmannian has two components, each isomorphic to
+In particular, the stabilizer of the standard maximal positive subspace $\mathbb R^p\oplus0$ is $\operatorname O(p)\times\operatorname O(q)$. For $p,q>0$, the oriented maximal positive Grassmannian has two components, each isomorphic to
 
 \begin{align*}
 \frac{\operatorname{SO}^0(p,q)}{\operatorname{SO}(p)\times\operatorname{SO}(q)}.
@@ -572,7 +572,7 @@ Then $(w,w)=0$, $(w,e)=1$, and $(w,\bar w)=2(\operatorname{Im}z,\operatorname{Im
 C^+\text{ a component of }\{y\in V:(y,y)>0\}.
 \end{align*}
 
-For $n=1$, this is the ordinary (@def:two-elementary-isotropic-types) upper half-plane. Rational choices of $e,f$ are available when the rational quadratic space contains a hyperbolic plane (@def:hyperbolic-plane).
+For $n=1$, this is the ordinary upper half-plane. Rational choices of $e,f$ are available when the rational quadratic space contains a hyperbolic plane (@def:hyperbolic-plane).
 :::
 
 :::{.example #ex:hsd-conic-half-plane title="The conic and the upper half-plane"}
@@ -634,11 +634,11 @@ are removed [@Huy16, Ch. 7; @GHS13, Thm. 2.9].
 ## Arithmetic quotients and boundary components {#sec-hsd-arithmetic-boundary}
 
 :::{.definition #def:hsd-arithmetic-subgroup title="Arithmetic subgroups" defines="$G(\mathbb Z)$; arithmetic subgroup"}
-Let $G$ be a linear algebraic group (@def:group) over $\mathbb Q$ with a fixed faithful rational representation (@def:representable-presheaf) $G\hookrightarrow\operatorname{GL}_m$. Put $G(\mathbb Z)=G(\mathbb Q)\cap\operatorname{GL}_m(\mathbb Z)$. A subgroup $\Gamma\subset G(\mathbb Q)$ is *arithmetic* if it is commensurable with $G(\mathbb Z)$. This condition is independent of the chosen faithful rational representation [@BB66, 3.1].
+Let $G$ be a linear algebraic group (@def:group) over $\mathbb Q$ with a fixed faithful rational representation $G\hookrightarrow\operatorname{GL}_m$. Put $G(\mathbb Z)=G(\mathbb Q)\cap\operatorname{GL}_m(\mathbb Z)$. A subgroup $\Gamma\subset G(\mathbb Q)$ is *arithmetic* if it is commensurable with $G(\mathbb Z)$. This condition is independent of the chosen faithful rational representation [@BB66, 3.1].
 :::
 
 :::{.definition #def:hsd-parabolic-subgroup title="Parabolic subgroups" defines="parabolic subgroup; rational parabolic"}
-For a connected reductive algebraic group (@def:group) $G$ over $\mathbb Q$, a subgroup $P\subset G$ is *parabolic (@def:definiteness)* if $G/P$ is projective (@def:module-subcategories). A rational parabolic is one defined over $\mathbb Q$. In $\operatorname{SL}_2$, the stabilizer of a line is parabolic; for the upper-triangular subgroup $B$, the map $gB\mapsto g\langle e_1\rangle$ identifies $\operatorname{SL}_2(\mathbb Q)/B(\mathbb Q)$ with $\mathbb P^1(\mathbb Q)$ [@DS05, §1.5].
+For a connected reductive algebraic group (@def:group) $G$ over $\mathbb Q$, a subgroup $P\subset G$ is *parabolic (@def:hsd-parabolic-subgroup)* if $G/P$ is projective. A rational parabolic is one defined over $\mathbb Q$. In $\operatorname{SL}_2$, the stabilizer of a line is parabolic; for the upper-triangular subgroup $B$, the map $gB\mapsto g\langle e_1\rangle$ identifies $\operatorname{SL}_2(\mathbb Q)/B(\mathbb Q)$ with $\mathbb P^1(\mathbb Q)$ [@DS05, §1.5].
 :::
 
 Let $\operatorname O(L)^+$ be the subgroup preserving $\Omega_L^+$. For an arithmetic subgroup $\Gamma\subset\operatorname O(L_{\mathbb Q})\cap\operatorname O^+(L_{\mathbb R})$, put

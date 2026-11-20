@@ -4,7 +4,7 @@
 
 ::: {.proposition #prop:double-cover-canonical-bundle title="Canonical bundle of a double cover"}
 
-Let $Y$ be a smooth projective (@def:module-subcategories) surface, let $B\subset Y$ be a smooth divisor, and let $\mcl$ be a line bundle on $Y$ with $\mcl^{\tensor 2}\cong\OO_Y(B)$.
+Let $Y$ be a smooth projective surface, let $B\subset Y$ be a smooth divisor, and let $\mcl$ be a line bundle on $Y$ with $\mcl^{\tensor 2}\cong\OO_Y(B)$.
 Let $\pi\colon X\to Y$ be the double cover branched along $B$ and determined by $\mcl$.
 Then $\pi_*\OO_X\cong\OO_Y\oplus\inverseof{\mcl}$ and
 $$
@@ -76,7 +76,7 @@ Then the following hold [@AEGS25, Sec. 2.1].
 
 2. The involution $\tau$ has two lifts to $X$:
    - the **Enriques** involution $\ien(x,y,z) = (-x,-y,-z)$, which is fixed-point-free, and whose quotient $Z = X/\ien$ is an Enriques surface (@def:enriques-surface);
-   - the **Nikulin** involution $\inik(x,y,z) = (-x,-y,z)$, whose quotient $Z' = X/\inik$ has eight $A_1$ singularities and a K3 minimal (@def:minimal-resolution) resolution.
+   - the **Nikulin** involution $\inik(x,y,z) = (-x,-y,z)$, whose quotient $Z' = X/\inik$ has eight $A_1$ singularities and a K3 minimal resolution.
 
 3. The involutions $\idp$, $\ien$ and $\inik$ commute, and with the identity they form a Klein four-group in $\Aut(X)$.
 
@@ -188,7 +188,7 @@ finite stabilizer, so the quotient dimension is $12-2=10$, as in
 ::: {.proposition #prop:horikawa-pair-volumes title="The branch, K3, and Enriques pairs"}
 Let $\pi\colon X\to Y=\PP^1\times\PP^1$ be a smooth member of this
 family, let $q\colon X\to Z$ be its Enriques quotient, and let $R$ be the
-ramification divisor of $\pi$. Put $R_Z=q(R)$ with its reduced structure (@def:property-structure-stuff).
+ramification divisor of $\pi$. Put $R_Z=q(R)$ with its reduced structure.
 For $0<\epsilon\ll1$,
 $$
 \begin{aligned}
@@ -208,7 +208,7 @@ $\pi^*B=2R$. The map $q$ is étale and $q^*R_Z=R$
 [@AEGS25, §2.1], so $K_X=q^*K_Z$ and the second covering equality
 follows. On $Y$, $K_Y=(-2,-2)$ and $B=(4,4)$; hence
 $K_Y+(1+\epsilon)B/2=(2\epsilon,2\epsilon)$ has square $8\epsilon^2$.
-Pullback (@def:pullback-square) multiplies intersections by the degree (@def:numerical-polarization) of the cover, which
+Pullback (@def:pullback-square) multiplies intersections by the degree of the cover, which
 gives the remaining equalities.
 :::
 
@@ -266,7 +266,7 @@ $$
 \end{aligned}
 $$
 Because $\Idp$ and $\Ien$ are involutions, $\Idp\circ\Inik = \Ien = \Inik\circ\Idp$ and $\Ien\circ\Inik = \Idp = \Inik\circ\Ien$.
-So the four elements are closed (@def:closed-monoidal) under composition, they commute, and every element has order at most $2$.
+So the four elements are closed under composition, they commute, and every element has order at most $2$.
 The three involutions are distinct and nontrivial: $\Idp$ and $\Ien$ send $(u_1, 0, 0, 0, 0)$ to $(-u_1, 0, 0, 0, 0)$ and $\Inik$ fixes it, and $\Idp$ sends $(0, 0, 0, \alpha_1, 0)$ to $(0, 0, 0, -\alpha_1, 0)$ while $\Ien$ sends it to $(0, 0, 0, 0, \alpha_1)$.
 A group (@def:group) of order $4$ in which every element has order at most $2$ is isomorphic to $\ZZ_2^2$.
 :::

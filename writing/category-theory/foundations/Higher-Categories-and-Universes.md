@@ -361,12 +361,12 @@ Iterating the same point and local hom-object (@def:internal-hom) constructions 
 
 Write $[x,y]^{(1)}_C:=[x,y]_C$ and, for a choice of parallel $k$-cells $u,v$ of $C$, write $[u,v]^{(k+1)}_C$ for the local hom-object formed at the $k$-th stage of @def:cells.
 By construction the $n$-cells of $[u,v]^{(k)}_C$ are the $(n+k)$-cells of $C$ that are parallel over the chosen $u,v$; in particular its $0$-cells are the $k$-cells of $C$ between them.
-Passing from $C$ to a local hom-object therefore lowers the dimension of every cell by one, and its adjoint (@def:adjoint-morphism) direction is $B_{01}\dashv\Omega_{01}$ (@def:B01-construction).
+Passing from $C$ to a local hom-object therefore lowers the dimension of every cell by one, and its adjoint (@def:pairing-adjoints) direction is $B_{01}\dashv\Omega_{01}$ (@def:B01-construction).
 :::
 
 ::: {.proof}
 
-Apply the adjunction characterizing the internal hom (@def:closed-monoidal) (@def:internal-hom) twice and the universal property (@def:property-structure-stuff) of the coproduct.
+Apply the adjunction characterizing the internal hom (@def:closed-monoidal) (@def:internal-hom) twice and the universal property (@def:universal-arrow) of the coproduct.
 :::
 
 ::: {.definition #def:globular-boundary title="Sources and targets" defines="source; target"}
@@ -476,7 +476,7 @@ Since the pushout (@def:pullback-square) of $*\from\varnothing\to*$ is the copro
 
 ::: {.example #ex:initial-terminal-cat title="The initial and terminal higher categories"}
 
-Closedness makes $-\times C$ a left adjoint (@def:internal-hom), so it preserves colimits and in particular the initial object:
+Closedness makes $-\times C$ a left adjoint (@def:pairing-adjoints), so it preserves colimits and in particular the initial object:
 $$
 \varnothing\times C\simeq\varnothing,
 \qquad
@@ -593,7 +593,7 @@ $$
 
 ::: {.definition #def:initial-terminal title="Initial, terminal, and contractible objects" defines="terminal object; initial object; contractible higher category"}
 
-An object $t\colon*\to C$ is terminal (@def:terminal-coble-surface) if $\operatorname{Map}_C(x,t)$ is contractible for every $x\colon*\to C$.
+An object $t\colon*\to C$ is terminal (@def:initial-terminal) if $\operatorname{Map}_C(x,t)$ is contractible for every $x\colon*\to C$.
 An object $i\colon*\to C$ is initial if $\operatorname{Map}_C(i,x)$ is contractible for every $x\colon*\to C$.
 A higher category (@def:higher-category) is *contractible* when it is equivalent to $*$.
 :::
@@ -625,7 +625,7 @@ $$
 
 For a type $S$, $n$-truncation means $\pi_k(S,s)=0$ for every point $s$ and every $k>n$.
 A $(-2)$-truncated type is contractible, a $(-1)$-truncated type is empty or contractible, and a $0$-truncated type is a set.
-When the inclusion of $n$-truncated objects of $C$ is reflective (@def:reflective-lattice), write its reflector as $\tau_{\leq n}^C$.
+When the inclusion of $n$-truncated objects of $C$ is reflective, write its reflector as $\tau_{\leq n}^C$.
 :::
 
 ::: {.definition #def:infinity-category-universe title="The truncation tower" defines="$T_{\leq n}$; $\mathbf{Cat}_n$; $\iota_n$; $\tau_{\leq n}$; $\tau_{\leq n}^{\mathrm R}$; $n$-category structure; $\mathbf{Cat}_n^{\mathrm{loc}}$; $[C,D]_{\mathbf{Cat}_{\infty,\infty}}^{\leq n}$"}

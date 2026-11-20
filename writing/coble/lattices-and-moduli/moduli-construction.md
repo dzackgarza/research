@@ -28,12 +28,12 @@ The quotient $F^K_{\En} = \bD(\ten)/\Gamma^K_{\En}$, with $\Gamma^K_{\En} = \Ort
 The group $\Gamma_\Co$ is the monodromy group of the family of unpolarized Coble surfaces of @def:coble-family-unpolarized, and $\fco = \bD(T_\Co)/\Gamma_\Co$ (@def:gamma-co-groups).
 
 The objects, bases, local systems of lattices and period maps of the two families on which $\Gamma_\Co$ and $\Gamma_{\Co,2}$ are taken are those of @sec-coble-families-d2: the unpolarized family with its three bases (@def:coble-family-unpolarized), whose period map on the first of them is the map of [@DK13, Prop. 3.2] (@lem:d2a-period-map), and the degree-$2$ family over the discriminant divisor (@def:coble-family-degree-two), whose base is the whole of that divisor (@lem:d2-degree-two-base).
-The equality $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ is @conj:gamma-co-stable, and on the labelled base, the base that @def:gamma-co-groups(1) assigns to $\Gamma_\Co$, it is proved (@thm:gamma-co-is-stable). It is not an equality on the other bases of D2a: on the unlabelled base the group is $\Gamma_{10A_1}$, which strictly contains $\widetilde\Orth^+(T_\Co)$ (@cor:gamma-co-inclusions(2)), and the coarse space carries no family, its tautological local system having group $\Orth^+(T_\Co)$ (@thm:gamma-co-is-full, @rmk:gamma-co-d2a).
-The group $\Gamma_{\Co,2}$ of $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ is the monodromy group of the VHS of the degree-$2$ Coble family (@def:gamma-co-groups(5)). The group that the Enriques datum defines is $R_{\gent} = \bar\rho^{-1}(P)$, the image of the stabilizer of $\delta$ in $\gent$ (@prop:gamma-co-images(3)); it is not the monodromy group, and $\Gamma_{\Co,2} = R_{\gent}$ is false (@thm:coble-monodromy-versus-enriques(3)). The monodromy group lies in $R_{\gent}\intersect\Orth^+(T_\Co)$ (@thm:coble-monodromy-versus-enriques(4), from @lem:coble-monodromy-in-stabilizer conditional on (U) of @lem:coble-family-identification; (U) and (F) are D2 of research#786, and the definitions they ask for are @sec-coble-families-d2, the family, the base and the local system being those of @def:coble-family-degree-two and @lem:d2-local-system).
+The equality $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ is @conj:gamma-co-stable, and on the labelled base, the base that @def:gamma-co-groups assigns to $\Gamma_\Co$, it is proved (@thm:gamma-co-is-stable). It is not an equality on the other bases of D2a: on the unlabelled base the group is $\Gamma_{10A_1}$, which strictly contains $\widetilde\Orth^+(T_\Co)$ (@cor:gamma-co-inclusions(2)), and the coarse space carries no family, its tautological local system having group $\Orth^+(T_\Co)$ (@thm:gamma-co-is-full, @rmk:gamma-co-d2a).
+The group $\Gamma_{\Co,2}$ of $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ is the monodromy group of the VHS of the degree-$2$ Coble family (@def:gamma-co-groups). The group that the Enriques datum defines is $R_{\gent} = \bar\rho^{-1}(P)$, the image of the stabilizer of $\delta$ in $\gent$ (@prop:gamma-co-images(3)); it is not the monodromy group, and $\Gamma_{\Co,2} = R_{\gent}$ is false (@thm:coble-monodromy-versus-enriques(3)). The monodromy group lies in $R_{\gent}\intersect\Orth^+(T_\Co)$ (@thm:coble-monodromy-versus-enriques(4), from @lem:coble-monodromy-in-stabilizer conditional on (U) of @lem:coble-family-identification; (U) and (F) are D2 of research#786, and the definitions they ask for are @sec-coble-families-d2, the family, the base and the local system being those of @def:coble-family-degree-two and @lem:d2-local-system).
 The stable subgroup $\widetilde\Orth^+(T_\Co)$ is the kernel of the action on $A_{T_\Co}$ of each of the groups $\Gamma^{\mathrm{Hdg}}_\Co$ and $\Gamma^\theta_\Co$ of @sec-gamma-co-comparison, and both inclusions are strict, of index $\abs{W(E_8)} = 696\,729\,600$ (@prop:gamma-co-heegner-strict, @prop:theta-co-index).
 
 ::: {#rmk:coble-arithmetic-group-description .remark title="The group $\Gamma_{\Co,2}$, explicitly"}
-@def:gamma-co-groups(5) defines $\Gamma_{\Co,2}$ as the monodromy group, and @thm:coble-monodromy-versus-enriques identifies the arithmetic group that contains it (@lem:coble-monodromy-in-stabilizer, conditional on (U) of @lem:coble-family-identification, which is D2 of research#786): $\Gamma_{\Co,2}\subseteq\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co) = \rho_{T_\Co}^{-1}(P)\intersect\Orth^+(T_\Co) = R_{\gent}\intersect\Orth^+(T_\Co)$, the preimage in $\Orth(T_\Co)$ of the stabilizer $P$ of the decomposition $[h/2]^{\perp} = A_{U(2)}\oplus A_{E_8(2)}$ of $A_{T_\Co}$ (@prop:gamma-co-images(3)), intersected with $\Orth^+(T_\Co)$, of index $[\Orth(T_\Co):\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)] = 2\cdot 67\,456 = 134\,912$. The intersection with $\Orth^+(T_\Co)$ cannot be dropped from that chain: the group $R_{\gent} = \rho_{T_\Co}^{-1}(P)$ of @thm:gamma-co-2-comparison(1) is not contained in $\Orth^+(T_\Co)$ (@thm:coble-monodromy-versus-enriques(2)), the two differ by the coset $s_\zeta\,(R_{\gent}\intersect\Orth^+(T_\Co))$ of a reflection in a primitive vector $\zeta$ of square $2$, so $R_{\gent} = \rho_{T_\Co}^{-1}(P)$ is the larger group and $\Gamma_{\Co,2} = R_{\gent}$ does not hold; whether $\Gamma_{\Co,2}$ is the whole arithmetic group is @qst:coble-monodromy-equality.
+@def:gamma-co-groups defines $\Gamma_{\Co,2}$ as the monodromy group, and @thm:coble-monodromy-versus-enriques identifies the arithmetic group that contains it (@lem:coble-monodromy-in-stabilizer, conditional on (U) of @lem:coble-family-identification, which is D2 of research#786): $\Gamma_{\Co,2}\subseteq\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co) = \rho_{T_\Co}^{-1}(P)\intersect\Orth^+(T_\Co) = R_{\gent}\intersect\Orth^+(T_\Co)$, the preimage in $\Orth(T_\Co)$ of the stabilizer $P$ of the decomposition $[h/2]^{\perp} = A_{U(2)}\oplus A_{E_8(2)}$ of $A_{T_\Co}$ (@prop:gamma-co-images(3)), intersected with $\Orth^+(T_\Co)$, of index $[\Orth(T_\Co):\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)] = 2\cdot 67\,456 = 134\,912$. The intersection with $\Orth^+(T_\Co)$ cannot be dropped from that chain: the group $R_{\gent} = \rho_{T_\Co}^{-1}(P)$ of @thm:gamma-co-2-comparison(1) is not contained in $\Orth^+(T_\Co)$ (@thm:coble-monodromy-versus-enriques(2)), the two differ by the coset $s_\zeta\,(R_{\gent}\intersect\Orth^+(T_\Co))$ of a reflection in a primitive vector $\zeta$ of square $2$, so $R_{\gent} = \rho_{T_\Co}^{-1}(P)$ is the larger group and $\Gamma_{\Co,2} = R_{\gent}$ does not hold; whether $\Gamma_{\Co,2}$ is the whole arithmetic group is @qst:coble-monodromy-equality.
 :::
 
 ```{.tikz}
@@ -62,7 +62,7 @@ The vertical map is $F_{\Co}\to F_{\Co,2}$, finite of degree $[\Gamma_{\Co,2}:\G
 
 ::: {.proposition #prop:coble-moduli-git title="The GIT construction of the Coble moduli space"}
 
-1. The moduli space $\mcm_\Co$ of blowups of $\PP^2$ at the ten nodes of an irreducible plane sextic is a locally closed (@def:closed-monoidal) subvariety of the GIT quotient of the variety $(\PP^2)^{10}$ of $10$-tuples of points in $\PP^2$ by $\PGL_3$ [@DK13, §3].
+1. The moduli space $\mcm_\Co$ of blowups of $\PP^2$ at the ten nodes of an irreducible plane sextic is a locally closed subvariety of the GIT quotient of the variety $(\PP^2)^{10}$ of $10$-tuples of points in $\PP^2$ by $\PGL_3$ [@DK13, §3].
 2. A general point of $(\PP^2)^{10}$ has trivial stabilizer in $\PGL_3$, so its $\PGL_3$-orbit has dimension $\dim\PGL_3 = 3^2-1 = 8$ and codimension
 $$
 \dim (\PP^2)^{10} - \dim \PGL_3 = 2\cdot 10 - 8 = 12
@@ -267,7 +267,7 @@ $$
 \mcm_T \definedas \PP\mcv_T \modmod \SL_3
 $$
 for the moduli space of such curves, the quotient being taken in the sense of geometric invariant theory [@YZZ25 §2.1].
-Let $\wh X$ be the double cover of $\PP^2$ branched along $Z$, let $X$ be its minimal (@def:minimal-resolution) resolution --- a K3 surface --- and let $H\in\Pic(X)$ be the pullback of the line class, so $H^2 = 2$.
+Let $\wh X$ be the double cover of $\PP^2$ branched along $Z$, let $X$ be its minimal resolution --- a K3 surface --- and let $H\in\Pic(X)$ be the pullback of the line class, so $H^2 = 2$.
 The exceptional curves of $X\to\wh X$ span a copy $L\iscontainedin\Pic(X)$ of the root lattice $R$, with the exceptional classes as a base (@def:root-system-base) $\Delta$.
 Write $P$ for the primitive (@def:primitive-embedding) hull of $\generators H\oplus L$ in $H^2(X;\ZZ)$ and $Q \definedas P^{\perp H^2(X;\ZZ)}$, of signatures (@def:signature) $(1,\rank R)$ and $(2, 19 - \rank R)$ [@YZZ25 §2.3].
 For a general member of $\mcv_T$ one has $\Pic(X) = P$ [@YZZ25 §3.3].
@@ -295,7 +295,7 @@ Taking orthogonal complements in $\lkt$ gives $Q = T_\Co$, and the polarized-K3 
 
 ::: {.proposition #prop:sextic-cover-involution-on-root-lattice title="The covering involution on the root lattice"}
 
-In the setting of @not:sextic-singular-type, let $\iota$ be the covering involution of $X$, let $p\colon X\to S = X/\iota$ be the quotient map, and let $f\colon S\to\PP^2$ be the minimal (@def:minimal-resolution) blowup such that the strict (@def:monoidal-category) transform of $Z$ is smooth.
+In the setting of @not:sextic-singular-type, let $\iota$ be the covering involution of $X$, let $p\colon X\to S = X/\iota$ be the quotient map, and let $f\colon S\to\PP^2$ be the minimal blowup such that the strict transform of $Z$ is smooth.
 Then $H^2(S,\ZZ)\cong\generators{f^*h}\oplus\Lambda_S$, where $h$ is the class of a line and $\Lambda_S$ is the lattice that arises from the blowup $f$ [@YZZ25, §5.2].
 Let $L^\iota$ be the sublattice of $L$ fixed by $\iota$.
 
@@ -398,7 +398,7 @@ What is not settled here is the map $\bar B\to M_\Co$ that forgets the sextic: w
 ::: {.proposition #prop:sextic-root-lattice-counts title="Root lattices of plane sextics"}
 
 The root lattices $R$ that arise from a singular type of plane sextic with simple singularities have been classified [@Ura88; @Yan96].
-The maximal (@def:maximal-lattice) rank of such an $R$ is $19$, and the number of such $R$ of rank $19$, $18$, $17$, $16$ is $519$, $987$, $975$, $782$ respectively [@YZZ25, §1; @Yan96, Thm. 2.1].
+The maximal rank of such an $R$ is $19$, and the number of such $R$ of rank $19$, $18$, $17$, $16$ is $519$, $987$, $975$, $782$ respectively [@YZZ25, §1; @Yan96, Thm. 2.1].
 
 :::
 
@@ -406,7 +406,7 @@ The maximal (@def:maximal-lattice) rank of such an $R$ is $19$, and the number o
 
 Statements D2a and D2b of research#786 ask for the two families whose variations of Hodge structure define $\Gamma_\Co$ and $\Gamma_{\Co,2}$: for each, a base, its fibres, and the local system of lattices with fibre $T_\Co = \generators{2}\oplus E(2)$ of [@DK13, (3.6)].
 Both are defined here by constructing the family over a base given by explicit equations; the base is then identified with the one the source uses, for D2a with the moduli space of [@DK13, Prop. 3.2] (@lem:d2a-period-map) and for D2b with the divisor $\Delta_2$ of $\fentwo$ (@lem:d2-degree-two-base).
-The family and its local system are thus objects of the definition and not of a later theorem (@lem:d2-unpolarised-family, @lem:d2-local-system), and the two things the symbol $\Gamma_\Co$ needs --- a base and a family over it --- are fixed before the group is named (@def:gamma-co-groups(1)).
+The family and its local system are thus objects of the definition and not of a later theorem (@lem:d2-unpolarised-family, @lem:d2-local-system), and the two things the symbol $\Gamma_\Co$ needs --- a base and a family over it --- are fixed before the group is named (@def:gamma-co-groups).
 @rmk:d2-what-is-open records what no source read supplies, and @rmk:d2-corrections what this section changes.
 
 ::: {.notation #not:d2-plane-sextic-base title="The plane-sextic base and its quotients" defines="$V$; $B$; $\bar B$; $U$; $M_\Co$"}
@@ -431,7 +431,7 @@ Let $V$ and $B=V/\PGL_3$ be as in @not:d2-plane-sextic-base.
 1. The fixed points of a non-identity projectivity of $\PP^2$ lie in the union of a line and a point.
 2. Every line carries at most three nodes of $Z$, and no non-identity projectivity fixes all ten nodes; hence $\PGL_3$ acts freely on $V$, and the $\SL_3$-stabilizer of every point of $V$ is $\mu_3$.
 3. Every point of $V$ has four nodes with no three collinear; for the four-element subsets $I$ of the labels the charts $S_I\to B$ of the proof make $B$ a complex analytic space and $V\to B$ a principal $\PGL_3$-bundle.
-4. The family and the local system of @lem:d2-unpolarised-family(3) and @lem:d2-local-system descend to $B$, and the monodromy group (@def:group) of $\bT$ over $B$ is $\rho\qty{\pi_1(B,s)}=\rho\qty{\pi_1(V,s)}$, the group $\Gamma_\Co$ of @def:coble-family-unpolarized.
+4. The family and the local system of @lem:d2-unpolarised-family(3) and @lem:d2-local-system descend to $B$, and the monodromy group (@def:k3-moduli-functors) of $\bT$ over $B$ is $\rho\qty{\pi_1(B,s)}=\rho\qty{\pi_1(V,s)}$, the group $\Gamma_\Co$ of @def:coble-family-unpolarized.
 :::
 
 ::: {.proof}
@@ -482,7 +482,7 @@ The labelling of the ten exceptional curves is not part of the objects: the labe
 **The bases** are three, and the choice among them is part of the definition; the family is the same over the space $B$ and the stack $\bar B$, and there is no family over the coarse space $M_\Co$.
 
 1. *The coarse space.* $M_\Co=U/\PGL_3$ of @not:d2-plane-sextic-base, the moduli space of [@DK13, §3] (@prop:coble-moduli-git). It is a coarse space and carries no family: a Coble surface whose automorphism group (@def:endomorphism-monoid) acts nontrivially on $T_\Co$ has none. Statements about $\Gamma_\Co$ are therefore not statements about base 1.
-2. *The unlabelled base.* the quotient stack $\bar B=[B/S_{10}]=[V/(\SL_3\times S_{10})]$ of @not:d2-plane-sextic-base, whose coarse space is the space $V/(\SL_3\times S_{10})$ and whose points are irreducible ten-nodal sextics without names for the nodes; the family over it is @lem:d2-unpolarised-family(3) and the local system is @lem:d2-local-system, with monodromy group (@def:group) $\Gamma_\Co(\bar B)\supseteq\Gamma_\Co$ of index $10!$ (@lem:d2-local-system(5), @lem:gamma-co-labelled-index).
+2. *The unlabelled base.* the quotient stack $\bar B=[B/S_{10}]=[V/(\SL_3\times S_{10})]$ of @not:d2-plane-sextic-base, whose coarse space is the space $V/(\SL_3\times S_{10})$ and whose points are irreducible ten-nodal sextics without names for the nodes; the family over it is @lem:d2-unpolarised-family(3) and the local system is @lem:d2-local-system, with monodromy group (@def:k3-moduli-functors) $\Gamma_\Co(\bar B)\supseteq\Gamma_\Co$ of index $10!$ (@lem:d2-local-system(5), @lem:gamma-co-labelled-index).
 3. *The labelled base.* the space $B=V/\PGL_3$ of @not:d2-plane-sextic-base, whose points are sextics with the ten nodes named, up to projectivity; the family over it is @lem:d2-unpolarised-family(3) and its local system is @lem:d2-local-system, and the eleven classes of the next item are $\SL_3$-invariant global sections over $V$, hence descend to $B$ (@lem:d2-local-system(2)). This is the base the definition assigns to $\Gamma_\Co$.
 
 The family over $B$ is the descent of @lem:d2-unpolarised-family(2) along the principal bundle $V\to B$ (@lem:d2-plane-sextic-freeness(4)), and its local system is @lem:d2-local-system.
@@ -515,7 +515,7 @@ Let $b=(Z;p_1,\dots,p_{10})\in V$ and $S_b=\Bl_{p_1,\dots,p_{10}}\PP^2$, with $H
 ::: {.lemma #lem:coble-family-base-change title="Base change changes the monodromy group by a subgroup"}
 
 Let $p\colon B'\to B$ be a continuous map of arcwise connected, locally simply connected spaces, let $(\bL,\beta)$ be a local system of lattices (@def:local-system-of-lattices) on $B$, and let $s'\in B'$ with $p(s')=s$.
-Then the monodromy group (@def:group) of $p^{-1}\bL$ is $\rho\qty{p_*\pi_1(B',s')}$, the image in $\Aut(\bL_s,\beta_s)$ of the subgroup $p_*\pi_1(B',s')$ of $\pi_1(B,s)$.
+Then the monodromy group (@def:k3-moduli-functors) of $p^{-1}\bL$ is $\rho\qty{p_*\pi_1(B',s')}$, the image in $\Aut(\bL_s,\beta_s)$ of the subgroup $p_*\pi_1(B',s')$ of $\pi_1(B,s)$.
 In particular it is contained in the monodromy group (@def:k3-moduli-functors) of $\bL$, and if $p$ is a covering of finite degree then it has finite index (@def:index) in it.
 :::
 
@@ -584,20 +584,20 @@ $$\sigma^*\circ\tilde\gamma^*=\varphi_g(s)^{-1}\circ\tilde\gamma^*$$
 
 ::: {.lemma #lem:coble-family-labelled-monodromy title="The labelled family has monodromy in $\widetilde\Orth^+ (T_\Co)$"}
 
-On base 3 of @def:coble-family-unpolarized, the labelled base, the monodromy group (@def:group) $\Gamma_\Co$ of $\bT$ is contained in $\widetilde\Orth^+(T_\Co)$.
+On base 3 of @def:coble-family-unpolarized, the labelled base, the monodromy group (@def:k3-moduli-functors) $\Gamma_\Co$ of $\bT$ is contained in $\widetilde\Orth^+(T_\Co)$.
 :::
 
 ::: {.proof}
 
 The eleven classes of @lem:d2-local-system(2) are values at $s$ of global sections of $\bV$, and $\bM$ is their span, primitive (@def:primitive-embedding) and nondegenerate (@def:polarization) of signature $(1,10)$ (@lem:d2-local-system(2), @prop:coble-is-the-ten-nodal-sextic-type).
 So @cor:lattice-polarized-k3-monodromy applies: the restriction of the monodromy to $T_\Co=\bM^{\perp\bV}$ takes values in $\widetilde\Orth^+(T)$.
-That group is $\Orth^+(T_\Co)\intersect\discriminantkernel{T_\Co}$, which is $\widetilde\Orth^+(T_\Co)$ (@def:gamma-co-groups(3), @prop:gamma-co-images(1)).
+That group is $\Orth^+(T_\Co)\intersect\discriminantkernel{T_\Co}$, which is $\widetilde\Orth^+(T_\Co)$ (@def:gamma-co-groups, @prop:gamma-co-images(1)).
 :::
 
 ::: {.lemma #lem:d2-labelling-cover title="The labels are a principal $S_{10}$-bundle of stacks"}
 
 4. $\Gamma_\Co=\rho\qty{\pi_1(B,s)}$ is a subgroup of $\Orth(T_\Co)$ (@lem:d2-plane-sextic-freeness(4)), and it lies in $\Orth^+(T_\Co)$ (@lem:monodromy-is-spinor-positive).
-5. On $\bar B$ the same construction gives a local system of lattices with fibre $T_\Co$ and monodromy group (@def:group) $\Gamma_\Co(\bar B)$ containing $\Gamma_\Co$, of index $10!$ (@lem:gamma-co-labelled-index); the classes $\varepsilon_i$ are permuted by the elements of $S_{10}$ and fixed by no other generator.
+5. On $\bar B$ the same construction gives a local system of lattices with fibre $T_\Co$ and monodromy group (@def:k3-moduli-functors) $\Gamma_\Co(\bar B)$ containing $\Gamma_\Co$, of index $10!$ (@lem:gamma-co-labelled-index); the classes $\varepsilon_i$ are permuted by the elements of $S_{10}$ and fixed by no other generator.
 :::
 
 ::: {.proof}
@@ -652,12 +652,12 @@ By @lem:d2-degree-two-polarization(3) this is the same datum as a global section
 
 **The local system of lattices** is $\bT$ of @lem:d2-local-system, the orthogonal complement of $\bM$ in $R^2f_*\underline\ZZ_\mcx$ modulo torsion; the polarization is a section of $\bM$, so $\bT$ is the same system for the polarized and the unpolarized family, and its fibre is $T_\Co$.
 
-**The group (@def:group).** $\Gamma_{\Co,2}\leq\Orth(T_\Co)$ is the image of the monodromy representation of $\bT$ (@def:gamma-co-groups(5)). It is a subgroup of the restricted stabilizer $R_{\gent}$ of @def:gamma-co-groups(4) (@lem:d2-degree-two-base(3)). Put $F_{\Co,2}\definedas\bD(T_\Co)/\Gamma_{\Co,2}$.
+**The group (@def:group).** $\Gamma_{\Co,2}\leq\Orth(T_\Co)$ is the image of the monodromy representation of $\bT$ (@def:gamma-co-groups). It is a subgroup of the restricted stabilizer $R_{\gent}$ of @def:gamma-co-groups (@lem:d2-degree-two-base(3)). Put $F_{\Co,2}\definedas\bD(T_\Co)/\Gamma_{\Co,2}$.
 :::
 
 ::: {.lemma #lem:d2-degree-two-base title="The base of D2b is all of $\Delta_2$"}
 
-Let $R_{\gent}$ be the restricted stabilizer of @def:gamma-co-groups(4) and $\Gamma_{\tilde h}$ the group (@def:group) of pairs of type $\tilde h$ of @prop:coble-polarized-moduli, and $\Delta_2=\mch_{-2}/\gent\subset\fentwo=\bD(\ten)/\gent$.
+Let $R_{\gent}$ be the restricted stabilizer of @def:gamma-co-groups and $\Gamma_{\tilde h}$ the group (@def:group) of pairs of type $\tilde h$ of @prop:coble-polarized-moduli, and $\Delta_2=\mch_{-2}/\gent\subset\fentwo=\bD(\ten)/\gent$.
 
 1. $\Gamma_{\tilde h}=R_{\gent}$ [@prop:coble-degree-two-space(2)], so $\bD(T_\Co)/\Gamma_{\tilde h}=\bD(T_\Co)/R_{\gent}$ is the moduli space of pairs $(S,h_\Co)$ of @def:coble-family-degree-two and, by @thm:normalization with $\Gamma=\gent$, it is the normalization of $\Delta_2$: the map $\bD(T_\Co)/R_{\gent}\to\fentwo$ is finite, its image is $\Delta_2$, and it is birational.
 2. Hence $\Delta_2$ is the coarse space of @def:coble-family-degree-two up to normalization, and in particular it is the whole base: the period map (@def:period-map) of the family lands in $\bD(T_\Co)/\Gamma_{\Co,2}\to\bD(T_\Co)/R_{\gent}$, whose image is $\Delta_2$, and no proper sublocus of $\Delta_2$ contains it.
@@ -704,7 +704,7 @@ Five corrections to the earlier form of this section, each at its file and line 
 
 1. *The family is constructed, not declared.* The earlier definition listed three bases and called the choice part of the definition, while the base named for $\Gamma_\Co$ carried no family; @lem:d2-unpolarised-family now constructs the family and @lem:d2-local-system its local system, and the group is the monodromy of that system.
 2. *The labels are a torsor of stacks, not a principal bundle of coarse spaces.* The finite-cover statement, formerly introduced without proof, is @lem:d2-labelling-cover, which proves the torsor statement for the quotient stacks and records that the induced map of coarse spaces is not a covering.
-3. *The degree-$2$ object is the Coble polarization.* The earlier definition took an ample degree-$2$ class on the Enriques quotient instead of the class $h_\Co\in K_S^{\perp}$ of @def:coble-polarization-classes(2); @lem:d2-degree-two-polarization proves that the two are the same class on the K3 cover, so the definition can and now does use the Coble class, which is the one @def:gamma-co-groups(5) names.
+3. *The degree-$2$ object is the Coble polarization.* The earlier definition took an ample degree-$2$ class on the Enriques quotient instead of the class $h_\Co\in K_S^{\perp}$ of @def:coble-polarization-classes(2); @lem:d2-degree-two-polarization proves that the two are the same class on the K3 cover, so the definition can and now does use the Coble class, which is the one @def:gamma-co-groups names.
 4. *The base is $\Delta_2$ by normalization, not by inheritance.* The earlier proof applied the pointwise description of the divisor in the full quotient $\bD(\ten)/\Orth(\ten)$ through the finite map $\fentwo\to\bD(\ten)/\Orth(\ten)$ in the wrong direction; @lem:d2-degree-two-base now identifies the two period spaces directly, through @thm:normalization and @prop:coble-degree-two-space(2).
 5. *The reverse inclusion does not use a period map, and the label cover is a torsor of stacks.* The earlier proof of $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_\Co$ applied a period map $\per_M\colon V\to\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ and asserted that it is injective; it is not, since $\PGL_3$-orbits in $V$ give isomorphic $M$-marked K3 covers. The earlier form of @lem:d2-labelling-cover then asserted a principal $S_{10}$-bundle of the coarse spaces $B\to\bar B$, which need not be a covering: a projectivity carrying a sextic to itself and permuting its nodes identifies two points of $B$ over one point of $\bar B$. @lem:d2-labelling-cover now proves the torsor statement for the quotient stacks, @lem:gamma-co-labelled-index gives $\Gamma_\Co(B)=\Gamma_\Co(\bar B)\cap\ker\bar\rho$ and the index $10!$, and @thm:gamma-co-is-stable obtains the reverse inclusion from $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ (@thm:gamma-co-sextic-group), which is the period isomorphism on the unlabelled base.
 :::

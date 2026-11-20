@@ -73,7 +73,7 @@ The first is the Coble $0$-cusp lattice and the other two are the two Enriques $
 
 By @thm:two-elementary-classification an indefinite (@def:definiteness) even $2$-elementary lattice is determined by its signature, $a$ and $\delta$, so it suffices to compute these invariants.
 The types of $U(2)\oplus E_8(2)$ and $U\oplus E_8(2)$ are computed in @prop:sterk-cusp-quotients.
-The lattice $\I_{1,8}$ is odd unimodular of rank $9$, so $\I_{1,8}(2)$ is even with discriminant group (@def:group) $\tfrac12\I_{1,8}(2)/\I_{1,8}(2)\cong(\ZZ/2)^9$, and $a = 9$.
+The lattice $\I_{1,8}$ is odd unimodular of rank $9$, so $\I_{1,8}(2)$ is even with discriminant group (@def:discriminant) $\tfrac12\I_{1,8}(2)/\I_{1,8}(2)\cong(\ZZ/2)^9$, and $a = 9$.
 Its quadratic form takes the value $\tfrac12 y^2$ on the class of $\tfrac12 y$, which is not in $\ZZ$ when $y^2$ is odd, so $\delta = 1$.
 The identification with the $0$-cusp lattices is @thm:zero-cusp-chambers.
 :::

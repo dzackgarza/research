@@ -2,7 +2,7 @@
 
 ::: {#not:reflection-groups-sign-convention .notation title="Sign convention" defines="hyperbolic lattice; positive cone; $C_L$"}
 
-Roots are *negative-definite* directions, a **short root** having norm (@def:lattice-basic-invariants) $v^2 = -2$ and a **long root** norm $v^2 = -4$.
+Roots are *negative-definite* directions, a **short root** (@def:2elementary-roots) having norm (@def:lattice-basic-invariants) $v^2 = -2$ and a **long root** (@def:2elementary-roots) norm $v^2 = -4$.
 An indefinite (@def:definiteness) lattice $L$ of signature (@def:signature) $(1, n)$ is called **hyperbolic (@def:definiteness)**; its **positive cone**
 $$
 C_L \definedas \theset{ v\in L_\RR \mid v^2 > 0 }
@@ -105,7 +105,7 @@ R^\vee \definedas \generators{\, \alpha_i^\vee = 2\alpha_i/(\alpha_i,\alpha_i) \
 .
 $$
 The **weight lattice** is the dual lattice $P(R) \definedas \dualof{(R^\vee)}$, and the **fundamental weights** are the dual-basis elements $\omega_i$ determined by $(\omega_i, \alpha_j^\vee) = \delta_{ij}$, the pairing being against the coroots.
-When all roots have the same length (@def:anticanonical-pair), in particular for the simply-laced systems, $R^\vee = R$ and $P(R) = \dualof{R}$.
+When all roots have the same length (@def:root-lattice), in particular for the simply-laced systems, $R^\vee = R$ and $P(R) = \dualof{R}$.
 :::
 
 ::: {.example #ex:e8-fundamental-weights title="Coroots and fundamental weights of $E_8$"}
@@ -139,7 +139,7 @@ The intersection pairing induces a hyperbolic (@def:definiteness) metric on $L_\
   \BB^n_L \definedas \PP(C_L) \subset \PP(L_\RR)
   ,
   $$
-  the image of the positive cone in projective (@def:module-subcategories) space.
+  the image of the positive cone in projective space.
 
 In the projective model the boundary $\partial\HH^n_L$ is the image $\PP(\theset{v\in L_\RR \mid v^2 = 0})$ of the isotropic (@def:orthogonal-complement) cone, and geodesics (@def:calculus-geodesic) are straight line segments.
 
@@ -214,7 +214,7 @@ A **simple system** is a set of roots whose mirrors (@not:hyperbolic-polytope-se
 
 ::: {.definition #def:coxeter-vinberg-diagram defines="Coxeter--Vinberg diagram; $g_{ij}$"}
 
-The **Coxeter--Vinberg diagram** of a hyperbolic (@def:definiteness) Coxeter polytope (@def:coxeter-polytope) is a graph whose vertices correspond to the simple roots $r_i$ (equivalently, to the walls (@not:coxeter-polytope-faces) $H_i$ of the fundamental chamber (@def:coble-polarization-classes)), and whose edges encode the relative position of the mirrors (@not:hyperbolic-polytope-setting) $H_i, H_j$ through the normalized pairing
+The **Coxeter--Vinberg diagram** of a hyperbolic (@def:definiteness) Coxeter polytope (@def:coxeter-polytope) is a graph whose vertices correspond to the simple roots $r_i$ (equivalently, to the walls (@not:coxeter-polytope-faces) $H_i$ of the fundamental chamber (@def:weyl-chamber)), and whose edges encode the relative position of the mirrors (@not:hyperbolic-polytope-setting) $H_i, H_j$ through the normalized pairing
 $$
 g_{ij} \definedas \frac{r_i\cdot r_j}{\sqrt{r_i^2\, r_j^2}} = \cos\!\left(\frac{\pi}{m_{ij}}\right)
 .
@@ -253,7 +253,7 @@ For roots of norm $+2$, the three conditions of @def:elliptic-subdiagram read po
 
 ::: {.definition #def:parabolic-subdiagram defines="maximal parabolic subdiagram"}
 
-A parabolic subdiagram (@def:elliptic-subdiagram) is **maximal (@def:maximal-lattice)** if it is not properly contained in a larger parabolic subdiagram.
+A parabolic subdiagram (@def:parabolic-subdiagram) is **maximal (@def:parabolic-subdiagram)** if it is not properly contained in a larger parabolic subdiagram.
 :::
 
 ## Vinberg's algorithm
@@ -261,7 +261,7 @@ A parabolic subdiagram (@def:elliptic-subdiagram) is **maximal (@def:maximal-lat
 ::: {.theorem #thm:vinberg-algorithm title="Vinberg’s algorithm for a fundamental chamber"}
 
 Let $\Gamma\iscontainedin\Orth(L)$ be an arithmetic reflection subgroup of a hyperbolic lattice (@not:reflection-groups-sign-convention) $L$.
-Vinberg's algorithm constructs a fundamental chamber (@def:coble-polarization-classes) $P\iscontainedin\HH^n$ for $\Gamma$ as follows [@Vin75, §1.4 and §3.2].
+Vinberg's algorithm constructs a fundamental chamber (@def:weyl-chamber) $P\iscontainedin\HH^n$ for $\Gamma$ as follows [@Vin75, §1.4 and §3.2].
 
 1. **Control vector.** Choose a generic positive-norm vector $v_0\in C_L^+$.
    Its stabilizer in $\Gamma$ is the reflection group (@def:group) of the finite subdiagram (@def:coxeter-subdiagram) of roots orthogonal to $v_0$, which are used as the first walls (@not:coxeter-polytope-faces).
@@ -284,7 +284,7 @@ The algorithm terminates in finitely many steps if and only if $\Gamma$ has fini
 
 ::: {.proof}
 
-The algorithm is [@Vin75, §1.4]; its form for a hyperbolic lattice, and the equivalence (@def:equivalence-of-objects) of finite index (@def:index) $[\Orth(L):\Gamma]<\infty$ with termination, are [@Vin75, §3.2].
+The algorithm is [@Vin75, §1.4]; its form for a hyperbolic lattice, and the equivalence of finite index (@def:index) $[\Orth(L):\Gamma]<\infty$ with termination, are [@Vin75, §3.2].
 :::
 
 ::: {.definition #def:lanner-subgraph title="Lannér subgraph" defines="Lannér subgraph; quasi-Lannér subgraph"}
@@ -314,7 +314,7 @@ Conversely, if $G$ has signature $(1,d)$, then $C_W$ has exactly one negative ei
 ::: {.theorem #thm:vinberg-completeness-criterion title="A sufficient criterion for completeness"}
 
 Let $\Gamma$ be a Coxeter--Vinberg diagram without dotted edges, obtained from a run of @thm:vinberg-algorithm.
-If $\Gamma$ contains no Lannér subgraph (@def:lanner-subgraph), and every connected parabolic subdiagram of $\Gamma$ is contained in a maximal parabolic subdiagram (@def:parabolic-subdiagram) of maximal (@def:maximal-lattice) rank, then $\Gamma$ is complete (@def:complete): the accepted roots bound a finite-volume polytope and the algorithm may be stopped.
+If $\Gamma$ contains no Lannér subgraph (@def:lanner-subgraph), and every connected parabolic subdiagram of $\Gamma$ is contained in a maximal parabolic subdiagram (@def:parabolic-subdiagram) of maximal rank, then $\Gamma$ is complete: the accepted roots bound a finite-volume polytope and the algorithm may be stopped.
 :::
 
 ::: {.proof}

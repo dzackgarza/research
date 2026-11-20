@@ -30,7 +30,7 @@ The $1$-cusp $35$ is the one whose closure contains the $0$-cusps $3$ and $5$, a
 
 ::: {.lemma #lem:fen2_normalization title="Normalization of $\fentwo$"}
 
-There exists a closed (@def:closed-monoidal) subscheme $X \subset \fttz$ such that $\fentwo$ is canonically isomorphic to the normalization of $X$.
+There exists a closed subscheme $X \subset \fttz$ such that $\fentwo$ is canonically isomorphic to the normalization of $X$.
 :::
 
 ::: {.proof}
@@ -140,7 +140,7 @@ The five involutions $J$ below are numbered by the $0$-cusps in Sterk's numberin
 | --- | --- | --- | --- |
 | $1$ | $(18,2,0)_1$ | rotation of the diagram by $180^\circ$ | $U(2)\oplus E_8(2)$ |
 | $2$ | $(18,0,0)_1$ | reflection $\alpha_k\mapsto\alpha_{20-k}$ of the diagram about the vertical line | $U\oplus E_8(2)$ |
-| $3$ | $(18,2,0)_1$ | reflection of the diagram about the diagonal (@def:polarization-functors), followed by the reflection in the root $\alpha_{20}$ | $U\oplus E_8(2)$ |
+| $3$ | $(18,2,0)_1$ | reflection of the diagram about the diagonal, followed by the reflection in the root $\alpha_{20}$ | $U\oplus E_8(2)$ |
 | $4$ | $(18,2,0)_1$ | reflection of the diagram about a horizontal line | $U\oplus E_8(2)$ |
 | $5$ | $(18,2,0)_1$ | composition of the $8$ commuting reflections in the roots $\alpha_1,\alpha_3,\dots,\alpha_{15}$ | $U\oplus E_8(2)$ |
 
@@ -169,7 +169,7 @@ The embedding-chain uniqueness of @lem:enriques-embedding-chain identifies this 
 Let $e$, $\overline{T}_{\mathrm{En}}\subset\overline{T}_{\mathrm{dP}}$ and $J$ be as in @cons:fen2-cusp-involutions.
 The folded diagram $G(\overline{T}_{\mathrm{dP}})^J$ of the Coxeter--Vinberg diagram $G(\overline{T}_{\mathrm{dP}})$ (@def:coxeter-vinberg-diagram) has as nodes the folded vectors $\beta_{[\alpha]}$ (@def:folded-root) of the simple roots $\alpha$ for which these vectors are roots of $\overline{T}_{\mathrm{En}}$ [@AEGS25, Def. 3.7].
 
-1. Let $\mathfrak{C}$ be a chamber (@def:coble-polarization-classes) of $W(\Gamma_{\mathrm{dP},e})$ in the positive cone (@not:reflection-groups-sign-convention) of $\overline{T}_{\mathrm{dP}}$ whose intersection with $\overline{T}_{\mathrm{En}}\otimes\RR$ has maximal (@def:maximal-lattice) dimension.
+1. Let $\mathfrak{C}$ be a chamber (@cons:chamber-cone) of $W(\Gamma_{\mathrm{dP},e})$ in the positive cone (@not:reflection-groups-sign-convention) of $\overline{T}_{\mathrm{dP}}$ whose intersection with $\overline{T}_{\mathrm{En}}\otimes\RR$ has maximal dimension.
    Then $\mathfrak{C}^J = \mathfrak{C}\intersect\overline{T}_{\mathrm{En}}\otimes\RR$ is a fundamental chamber of $W(\Gamma_{\mathrm{En},2,e})$, and its Coxeter--Vinberg diagram is $G(\overline{T}_{\mathrm{dP}})^J$ [@AEGS25, Lem. 3.8].
 
 2. The five involutions $J$ of @cons:fen2-cusp-involutions give the folded diagrams of the five $0$-cusps, in Sterk's numbering [@AEGS25, Lem. 3.9, Lem. 3.10].

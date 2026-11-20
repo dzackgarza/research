@@ -92,7 +92,7 @@ The first two modules are the kernel (@def:kernel-cokernel) and cokernel (@def:k
 ## Integral isotypic sublattices {#sec-integral-isotypic-sublattices}
 
 ::: {.definition #def:isotypic-sublattices title="Integral isotypic sublattices" defines="$\operatorname{Ann}_L(\mathfrak a)$; $\mathcal P_G$; integral isotypic sublattice; $L_{\mathfrak p}$"}
-For a two-sided ideal $\mathfrak a$ of the group (@def:group) ring $\bZ[G]$, let $\operatorname{Ann}_L(\mathfrak a)\injects L$ be its annihilator. Let $\mathcal P_G$ be the finite set of minimal (@def:minimal-resolution) two-sided prime ideals of $\bZ[G]$. The **integral isotypic sublattice** indexed by $\mathfrak p\in\mathcal P_G$ is $L_{\mathfrak p}\definedas\operatorname{Ann}_L(\mathfrak p)$.
+For a two-sided ideal $\mathfrak a$ of the group (@def:group) ring $\bZ[G]$, let $\operatorname{Ann}_L(\mathfrak a)\injects L$ be its annihilator. Let $\mathcal P_G$ be the finite set of minimal two-sided prime ideals of $\bZ[G]$. The **integral isotypic sublattice** indexed by $\mathfrak p\in\mathcal P_G$ is $L_{\mathfrak p}\definedas\operatorname{Ann}_L(\mathfrak p)$.
 
 The quotient-ring morphisms assemble into the module exact (@def:exact-complex) sequence
 $$
@@ -108,7 +108,7 @@ $$
 \operatorname{Ann}_{\bZ}(\coker\Delta_G)
 \subseteq\operatorname{Ann}_{\bZ}\qty{\coker(U_{\mathrm{mod}}(j_\rho))}.
 $$
-The augmentation ideal $J_G$ is a minimal (@def:minimal-resolution) two-sided prime and
+The augmentation ideal $J_G$ is a minimal two-sided prime and
 $$
 L_{J_G}=L^G,\qquad
 L_G=\Sat_L\qty{\sum_{\substack{\mathfrak p\in\mathcal P_G\\\mathfrak p\ne J_G}}L_{\mathfrak p}}.
@@ -170,7 +170,7 @@ Each left-hand side lies in $M_\bQ$; primitivity gives $L\cap M_\bQ=M$, hence $n
 :::
 
 ::: {.theorem #thm:unimodular-finite-group-gluing title="Discriminant gluing of a finite isometry group"}
-Let $L$ be an even (@def:form-axioms) unimodular lattice (@def:unimodular) and let $\rho\colon G\too\Orth(L)$ be an action of a finite group (@def:group) of order $n$. Put $S=L^G$ and $T=L_G$. The primitive (@def:primitive-embedding)-complement gluing correspondence of @thm:nikulin-gluing supplies a quadratic anti-isometry
+Let $L$ be an even (@def:even-lattice) unimodular lattice (@def:unimodular) and let $\rho\colon G\too\Orth(L)$ be an action of a finite group (@def:group) of order $n$. Put $S=L^G$ and $T=L_G$. The primitive (@def:primitive-embedding)-complement gluing correspondence of @thm:nikulin-gluing supplies a quadratic anti-isometry
 $$
 \gamma_G\colon A_{S,q}\xrightarrow{\sim}A_{T,q}(-1),
 $$
@@ -193,7 +193,7 @@ is the trivial homomorphism.
 :::
 
 ::: {.proof}
-The fixed and orthogonal coinvariant lattices are primitive, nondegenerate (@def:polarization), mutually orthogonal, and have finite-index sum by @thm:invariants-coinvariants-integral. The unimodular gluing correspondence identifies their discriminant modules anti-isometrically and with the gluing cokernel $C_G$. The integral norm (@def:lattice-basic-invariants) identity gives $nC_G=0$, hence the annihilator and length assertions.
+The fixed and orthogonal coinvariant lattices are primitive, nondegenerate (@def:polarization), mutually orthogonal, and have finite-index sum by @thm:invariants-coinvariants-integral. The unimodular gluing correspondence identifies their discriminant modules anti-isometrically and with the gluing cokernel $C_G$. The integral norm identity gives $nC_G=0$, hence the annihilator and length assertions.
 
 The gluing graph is invariant under $G$ because $G$ preserves $L$. Its first projection identifies it with $A_{S,q}$, on which $G$ acts trivially because it fixes $S$ pointwise. Its other projection identifies it with $A_{T,q}$, so equivariance of the graph forces the action on that module to be trivial as well.
 :::
@@ -315,7 +315,7 @@ Thus multiplication by $2$ annihilates $A_{L^\pm}^\sharp$, so $L^\pm$ is $2$-ele
 ## Involution gluing and discriminant forms {#sec-involution-gluing}
 
 ::: {.corollary #cor:unimodular-involution-gluing title="Gluing of invariant and coinvariant lattices of an involution"}
-Let $L$ be an even (@def:form-axioms) unimodular lattice (@def:unimodular) and let $I\in\Orth(L)$ be an involution. Put $S=L^{\generators{I}}$ and $T=L_{\generators{I}}$. The gluing graph of @thm:unimodular-finite-group-gluing is a quadratic anti-isometry
+Let $L$ be an even (@def:even-lattice) unimodular lattice (@def:unimodular) and let $I\in\Orth(L)$ be an involution. Put $S=L^{\generators{I}}$ and $T=L_{\generators{I}}$. The gluing graph of @thm:unimodular-finite-group-gluing is a quadratic anti-isometry
 $$
 \gamma_I\colon A_{S,q}\xrightarrow{\sim}A_{T,q}(-1)
 $$

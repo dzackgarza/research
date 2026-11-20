@@ -57,7 +57,7 @@ The *pseudofan* $\mathcal F(V,D)$ is the cone on the dual cycle of $D$, triangul
 The atlas extends over the cone point precisely for a toric pair [@Eng18, Prop. 3.9]. Thus a non-toric pair contributes a singular local model. Corner blowups of the pair subdivide its pseudofan without changing charge. A corner blowup equivalence class records this choice of toric subdivision; it does not identify every pair with the same boundary cycle [@Eng18, Def. 3.8 and Props. 3.9–3.13].
 
 ::: {.definition #def:corner-blowup-class title="Corner blowup equivalence" defines="corner blowup equivalent; corner blowup equivalence class; cbec"}
-Two pseudofans (@def:ias-pseudofan) are *corner blowup equivalent* when finite sequences of corner blowups and their inverses, with each inverse contracting a boundary $(-1)$-curve, connect them. The source (@def:globular-boundary) notes call an equivalence (@def:equivalence-of-objects) class a *corner blowup equivalence class* (*cbec*). It retains the singular affine germ at the cone point while changing its triangulated presentation [@Eng18, §3].
+Two pseudofans (@def:ias-pseudofan) are *corner blowup equivalent* when finite sequences of corner blowups and their inverses, with each inverse contracting a boundary $(-1)$-curve, connect them. The source notes call an equivalence (@def:equivalence-of-objects) class a *corner blowup equivalence class* (*cbec*). It retains the singular affine germ at the cone point while changing its triangulated presentation [@Eng18, §3].
 :::
 
 ## Type III spheres {#sec-type-iii-ias}

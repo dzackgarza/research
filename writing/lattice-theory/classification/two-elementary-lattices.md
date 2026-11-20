@@ -47,7 +47,7 @@ Set $r\definedas\rank_\bZ L$ and $a\definedas\dim_{\bF_2}(A_L^\sharp)$.
 Let $j_{q,L}\colon W_q(L)\injects\bQ/2\bZ$ be the coefficient inclusion of @def:discriminant. Define $\delta(L)=0$ when the image of the composite $j_{q,L}\circ q_L$ lies in the canonical submodule $\bZ/2\bZ\injects\bQ/2\bZ$, and define $\delta(L)=1$ otherwise.
 Equivalently, $\delta(L)=0$ when the value submodule $\operatorname{Val}(q_L)$ of @def:form-axioms factors through $\bZ/2\bZ\injects\bQ/2\bZ$.
 
-The integral isometry class of $L$ is determined by its signature (@def:signature) $(p,q)$, generator length (@def:anticanonical-pair) $a$, and coparity (@def:p-elementary) $\delta(L)$. Conversely, for integers $p,q\ge1$, $a\ge0$, and $\delta\in\{0,1\}$, an indefinite even $2$-elementary lattice with these invariants exists exactly when
+The integral isometry class of $L$ is determined by its signature (@def:signature) $(p,q)$, generator length (@def:p-elementary) $a$, and coparity (@def:p-elementary) $\delta(L)$. Conversely, for integers $p,q\ge1$, $a\ge0$, and $\delta\in\{0,1\}$, an indefinite even $2$-elementary lattice with these invariants exists exactly when
 $$
 \begin{aligned}
 &a\le p+q,\qquad p+q+a\equiv0\pmod2,\\
@@ -103,7 +103,7 @@ $$
 :::
 
 ::: {.proof}
-Nikulin's indefinite classification @thm:two-elementary-classification makes the genus of $L$ a single integral isometry class, so $g(L)=1$. By @thm:two-elementary-surjectivity, the discriminant representation (@def:representable-presheaf) is onto. Exactness of the full Miranda–Morrison sequence of @thm:miranda-morrison then gives $\operatorname{MM}(L)=0$.
+Nikulin's indefinite classification @thm:two-elementary-classification makes the genus of $L$ a single integral isometry class, so $g(L)=1$. By @thm:two-elementary-surjectivity, the discriminant representation (@def:discriminant-rep) is onto. Exactness of the full Miranda–Morrison sequence of @thm:miranda-morrison then gives $\operatorname{MM}(L)=0$.
 :::
 
 

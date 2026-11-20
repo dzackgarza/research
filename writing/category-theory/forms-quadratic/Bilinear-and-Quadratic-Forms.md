@@ -228,7 +228,7 @@ M
 =
 b(\iota(t),x).
 $$
-Define the **left orthogonal complement (@def:general-pairing-orthogonals)** \({}^{\perp_b}T\), the **right orthogonal complement (@def:general-pairing-orthogonals)** \(T^{\perp_b}\), and their coradicals (@def:two-witnesses) by the exact (@def:exact-complex) sequences
+Define the **left orthogonal complement** \({}^{\perp_b}T\), the **right orthogonal complement** \(T^{\perp_b}\), and their coradicals (@def:two-witnesses) by the exact (@def:exact-complex) sequences
 $$
 0
 \too
@@ -293,7 +293,7 @@ S\subseteq T^\perp
 \quad\Longleftrightarrow\quad
 T\subseteq S^\perp .
 $$
-Thus $(-)^\perp$ is an antitone Galois connection (@def:calculus-connection) of $\operatorname{Sub}(M)$ with itself, and
+Thus $(-)^\perp$ is an antitone Galois connection of $\operatorname{Sub}(M)$ with itself, and
 $$
 S\subseteq S^{\perp\perp},
 \qquad
@@ -414,7 +414,7 @@ If $e'_j=\Sum_iP_{ij}e_i$ then
 $$
 G'_{ij}=b(e'_i,e'_j)=\Sum_{k,l}P_{ki}\,G_{kl}\,P_{lj}=(P^{\mathsf T}GP)_{ij}
 $$
-by bilinearity; and conversely an invertible $P$ defines a second basis $e'$ of the same form, so congruent matrices are the Gram matrices of one form in two bases (@def:root-system-base) [@MH73, I §2.3].
+by bilinearity; and conversely an invertible $P$ defines a second basis $e'$ of the same form, so congruent matrices are the Gram matrices of one form in two bases (@prop:gram-matrix-free-module) [@MH73, I §2.3].
 :::
 
 ::: {.definition #def:cartan-matrix title="The Cartan matrix" defines="Cartan matrix; Cartan integer; $d_j$"}
@@ -424,7 +424,7 @@ The *Cartan matrix* of the family is
 $$
 A_{ij}=\frac{2\,b(\alpha_i,\alpha_j)}{b(\alpha_j,\alpha_j)} ,
 $$
-normalized by the second index (@def:index).
+normalized by the second index.
 For the simple roots of a root system (@def:root-system-base) these entries are the *Cartan integers* [@Hum72, §11.1].
 
 Write $G$ for the Gram matrix of the family, as in @prop:gram-matrix-free-module, and put $d_j=b(\alpha_j,\alpha_j)/2$.
@@ -556,7 +556,7 @@ Define
 $$
 \operatorname{sig}(V,b)\definedas(p,q,r),
 $$
-where $p$ and $q$ are the maximal (@def:maximal-lattice) dimensions of positive- and negative-definite subspaces and
+where $p$ and $q$ are the maximal (@def:signature) dimensions of positive- and negative-definite subspaces and
 $$
 r\definedas\dim_F\radic(V).
 $$
@@ -598,12 +598,12 @@ For a degenerate (@def:definiteness) $b$ the same conclusions hold with $r=\dim\
 ::: {.proof}
 
 This is [@MH73, III §2.5].
-An ordered field has characteristic (@def:two-elementary-isotropic-types) $0$, hence $2$ is a unit and
+An ordered field has characteristic $0$, hence $2$ is a unit and
 $$
 2\,b(u,v)=b(u+v,u+v)-b(u,u)-b(v,v).
 $$
 That identity gives a vector of nonzero square and hence, by @thm:orthogonal-decomposition, an orthogonal basis (@def:based-module).
-Given an orthogonal basis, $V=V^{+}\perp V^{-}$ with the two summands definite (@def:definiteness), and $\dim V^{+}$ is maximal (@def:maximal-lattice) among positive definite subspaces because such a subspace meets (@def:replete-full-meet) $V^{-}$ only at $0$.
+Given an orthogonal basis, $V=V^{+}\perp V^{-}$ with the two summands definite (@def:definiteness), and $\dim V^{+}$ is maximal among positive definite subspaces because such a subspace meets (@def:replete-full-meet) $V^{-}$ only at $0$.
 
 For degenerate $b$, let $N$ be a complement of $\radic(V)$.
 Every pairing with $\radic(V)$ vanishes, so $V\cong\radic(V)\perp N$; the restriction $b|_N$ is perfect, because an element of $N$ pairing to zero with $N$ pairs to zero with all of $V$; and the perfect case applied to $N$ gives $V\cong V^{+}\perp V^{-}\perp\radic(V)$ and $p+q+r=\dim V$.
@@ -645,7 +645,7 @@ $$
 so its Gram matrix is $\left(\begin{smallmatrix}0&1\\1&0\end{smallmatrix}\right)$, its form is perfect (@def:polarization) and even, and its signature (@def:signature) over an ordered field is $(1,1,0)$.
 
 A perfect symmetric form $b$ on $M$ is *split* if $M$ has a direct summand $N$ with $N=N^{\perp_b}$ [@MH73, I §6.1].
-Over a ring whose finitely generated projective (@def:module-subcategories) modules are free and in which $2$ is a unit, a split form (@not:split-and-metabolic) is an orthogonal sum (@def:orthogonal-sum) of hyperbolic planes, which is @thm:metabolic-is-hyperbolic; this applies to a field of characteristic (@def:two-elementary-isotropic-types) other than $2$.
+Over a ring whose finitely generated projective (@def:module-subcategories) modules are free and in which $2$ is a unit, a split form (@not:split-and-metabolic) is an orthogonal sum (@def:orthogonal-sum) of hyperbolic planes, which is @thm:metabolic-is-hyperbolic; this applies to a field of characteristic other than $2$.
 :::
 
 ::: {.definition #def:witt-index title="Witt index" defines="Witt index; $i(V)$"}
@@ -675,8 +675,8 @@ This is [@MH73, III §1.1 and §1.7].
 Existence does not need $2$ to be a unit: if $v$ is isotropic (@def:orthogonal-complement) and $b(v,w)=\lambda\neq0$, then $P=\langle v,w\rangle$ has Gram matrix with determinant $-1$, a unit in every ring, so $P$ splits off by @thm:orthogonal-decomposition, and the line $\langle v\rangle$ is a lagrangian (@def:lagrangian) of $P$ because $b(v,\alpha v+\beta w)=\beta\lambda$ vanishes exactly on $\langle v\rangle$ — whatever $b(w,w)$ is.
 So the induction produces $S\perp A$ with $A$ anisotropic over any field.
 
-The proof uses (i) that $i(V)=i(S)$ when $A$ is anisotropic, which is Witt's extension theorem applied to a maximal (@def:maximal-lattice) totally isotropic subspace [@MH73, III §1.2], and (ii) the uniqueness of the anisotropic representative of a Witt class, which [@MH73, III Thm. 1.7] proves for every field, characteristic (@def:two-elementary-isotropic-types) $2$ included.
-Clause (i) needs the hypothesis on $A$: $\langle1\rangle\perp\langle-1\rangle$ is hyperbolic (@def:definiteness) with index (@def:index) $1$, while neither summand contains an isotropic vector.
+The proof uses (i) that $i(V)=i(S)$ when $A$ is anisotropic, which is Witt's extension theorem applied to a maximal totally isotropic subspace [@MH73, III §1.2], and (ii) the uniqueness of the anisotropic representative of a Witt class, which [@MH73, III Thm. 1.7] proves for every field, characteristic $2$ included.
+Clause (i) needs the hypothesis on $A$: $\langle1\rangle\perp\langle-1\rangle$ is hyperbolic (@def:definiteness) with index (@def:witt-index) $1$, while neither summand contains an isotropic vector.
 :::
 
 ::: {.example #ex:witt-index-over-Q title="Witt index and signature"}

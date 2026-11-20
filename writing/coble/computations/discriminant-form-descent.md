@@ -107,7 +107,7 @@ Here $S\leq F$, because $\Stab_{\Orth(L)}(x)$ preserves $D(x)$ by @lem:descent-s
 ## Spinor restriction {#sec-descent-spinor}
 
 ::: {.proposition #prop:descent-spinor-fibre title="Orbit-by-orbit spinor restriction"}
-Put $\Gamma^+=\Gamma\cap\Orth^+(L)$, where $\Orth^+(L)$ is the normalized real spinor kernel (@def:kernel-cokernel), and fix one $\Gamma$-orbit $\mathcal O=\Gamma x\subseteq\mathcal F_{\mathcal X}(D)$. If $\Stab_{\mathcal G_D\cap\Gamma}(x)$ contains a spinor-negative element, then $\mathcal O$ is still one $\Gamma^+$-orbit.
+Put $\Gamma^+=\Gamma\cap\Orth^+(L)$, where $\Orth^+(L)$ is the normalized real spinor kernel (@def:lattice-spinor-kernels), and fix one $\Gamma$-orbit $\mathcal O=\Gamma x\subseteq\mathcal F_{\mathcal X}(D)$. If $\Stab_{\mathcal G_D\cap\Gamma}(x)$ contains a spinor-negative element, then $\mathcal O$ is still one $\Gamma^+$-orbit.
 
 Consequently, when this hypothesis holds at a point $x$, the $\Gamma^+$-orbits inside $\mathcal G_D\cdot x$ are computed by the *unreduced* double cosets
 $$ (\Gamma^+\cap\mathcal G_D)\bigl\backslash\mathcal G_D\bigl/\Stab_{\mathcal G_D}(x). $$
@@ -115,7 +115,7 @@ If $K=\ker\rho_{L,q}\subseteq\Gamma^+$, these reduce to $(H^+\cap F)\backslash F
 :::
 
 ::: {.proof}
-For $y=gx$ with $g\in\Gamma$, if $g\notin\Orth^+(L)$ and $\tau\in\Stab_{\mathcal G_D\cap\Gamma}(x)$ is spinor-negative, then $g\tau\in\Gamma^+$ also takes $x$ to $y$ (the product $g\tau$ has positive spinor norm (@def:lattice-basic-invariants)). Conjugation by the same $g$ keeps $\Gamma$ stable, so the hypothesis at $x$ gives the required witness at every point of $\mathcal O$. If the hypothesis holds at a representative of every $\Gamma$-orbit, every $\Gamma$-orbit in the fibre remains one $\Gamma^+$-orbit.
+For $y=gx$ with $g\in\Gamma$, if $g\notin\Orth^+(L)$ and $\tau\in\Stab_{\mathcal G_D\cap\Gamma}(x)$ is spinor-negative, then $g\tau\in\Gamma^+$ also takes $x$ to $y$ (the product $g\tau$ has positive spinor norm (@def:spinor-norm)). Conjugation by the same $g$ keeps $\Gamma$ stable, so the hypothesis at $x$ gives the required witness at every point of $\mathcal O$. If the hypothesis holds at a representative of every $\Gamma$-orbit, every $\Gamma$-orbit in the fibre remains one $\Gamma^+$-orbit.
 
 The displayed formula is @thm:descent-double-coset applied with $\Gamma^+$ substituted for $\Gamma$. Only when $K\subseteq\Gamma^+$ does its final reduction modulo $K$ apply; replacing $H$ by $H^+$ without this containment would discard the $\Gamma^+$-ineffective double cosets.
 :::
@@ -250,7 +250,7 @@ If moreover $\ker\rho_{L,q}\subseteq\Gamma$, then $\rho_{L,q}\qty(\Gamma_{P,C})=
 ::: {.proof}
 
 *Item 1.*
-The flags whose plane lies in $\Gamma P$ are $\Gamma\cdot\theset{(\ell\subset P)\st\ell\in\Pi_1(P)}$, and every $\Gamma$-orbit in that set meets (@def:replete-full-meet) the displayed set, since a flag with plane $gP$ is the image under $g$ of a flag over $P$.
+The flags whose plane lies in $\Gamma P$ are $\Gamma\cdot\theset{(\ell\subset P)\st\ell\in\Pi_1(P)}$, and every $\Gamma$-orbit in that set meets the displayed set, since a flag with plane $gP$ is the image under $g$ of a flag over $P$.
 Two members $(\ell\subset P)$ and $(\ell'\subset P)$ lie in one $\Gamma$-orbit exactly when some $g\in\Gamma$ satisfies $gP=P$ and $g\ell=\ell'$, that is $g\in\Stab_\Gamma(P)$; so the orbits correspond to the $\Stab_\Gamma(P)$-orbits on $\Pi_1(P)$.
 
 *Item 2.*
@@ -314,7 +314,7 @@ That is @lem:zero-datum-divisibility, which identifies the datum $0$ with divisi
 ::: {.proof}
 
 Part 1. The group $Q$ is $\Orth(A_L,q_L)$ by @thm:two-elementary-surjectivity, and $\ker\rho\subseteq\Gamma$ is @prop:sterk-group-identification(2).
-Item a is @lem:line-stabilizer-image; since $A_L$ has exponent (@cons:pf-from-jacobian) two, the stabilizer of a class $c$ is the stabilizer of the subgroup $\generators{c}$.
+Item a is @lem:line-stabilizer-image; since $A_L$ has exponent two, the stabilizer of a class $c$ is the stabilizer of the subgroup $\generators{c}$.
 Item b is @thm:enriques-integral-plane-stabilizers, and the orbit statement is then @thm:descent-double-coset with $(H\cap F)\backslash F/S=(H\cap F)\backslash F/F$, one double coset.
 Item c is @thm:enriques-spinor-orbit-agreement.
 Item d is items 1, 3 and 4 of @thm:enriques-degree-two-arithmetic together with @lem:zero-datum-divisibility: the line orbit of type $1$ is the divisibility-one orbit, and the plane orbits whose labels contain $1$ are the four planes of [@Ste91, §4.3.16].
@@ -337,7 +337,7 @@ Let $T_\Co=B(2)$ and let $G_\Co\leq\Orth(q_{T_\Co})$ be the finite image of @thm
 The kernel inclusion $\ker\rho_{T_\Co}\subseteq\Gamma$ is immediate from the definition of $\Gamma$. By @thm:cusp-lifting(2), the integral plane orbits are the $G_\Co$-orbits of pairs $(J,s)$ consisting of an order-$4$ isotropic subgroup and one of its eight stars (@def:plane-star); by @thm:cusp-lifting(3), the flag orbits are the $G_\Co$-orbits of triples $(J,s,c)$ with $0\neq c\in J$. The exact finite enumeration in `computations/reports/coble_gco_plane-orbits.py` and `computations/reports/coble_gco_plane-orbits-run.txt`, cited in the proof of @thm:cusp-lifting, gives respectively seven and thirteen orbits. The spinor-negative stabilizers constructed in @thm:cusp-lifting(4) show that neither orbit set splits upon intersection with $\Orth^+(T_\Co)$. This is @thm:coble-integral-lifting-fibre(1) at $\Gamma=\rho^{-1}(G_\Co)$, and its item 2 is the step that lets the count be read off the finite $G_\Co$-orbits: the integral stabilizer of a plane or of a flag realizes the whole finite stabilizer of its datum, so the double quotient of the fibre is one point per datum.
 :::
 
-The five orbits of $G_\Co$ on *undecorated* finite isotropic planes in @tbl-finite-plane-orbits are not five integral plane orbits: the integral fibre over each finite plane has eight star choices by @lem:plane-stars, and the arithmetic group acts on those choices. In particular the seven integral plane orbits above do not follow from the five-row table without this stabilizer-image calculation. These statements concern $\rho^{-1}(G_\Co)$, identified with $R_{\gent}$ in @prop:coble-cong-point-stabilizer, and not the geometric monodromy group $\Gamma_\Co$ (@def:coble-family-unpolarized); the latter's equality with the stable group is @thm:gamma-co-is-stable.
+The five orbits of $G_\Co$ on *undecorated* finite isotropic planes in @tbl-finite-plane-orbits are not five integral plane orbits: the integral fibre over each finite plane has eight star choices by @lem:plane-stars, and the arithmetic group acts on those choices. In particular the seven integral plane orbits above do not follow from the five-row table without this stabilizer-image calculation. These statements concern $\rho^{-1}(G_\Co)$, identified with $R_{\gent}$ in @prop:coble-cong-point-stabilizer, and not the geometric monodromy group $\Gamma_\Co$ (@def:gamma-co-groups); the latter's equality with the stable group is @thm:gamma-co-is-stable.
 
 The exact finite action also determines which of the five plane types split into distinct integral plane orbits. Forgetting the star gives the following fibres:
 
@@ -431,7 +431,7 @@ $$ e_1\definedas\exp(M/L),\qquad e_2\definedas\exp\qty(L^\sharp/(L^\sharp\inters
 Then $e_1$ is the least positive integer with $e_1M\subseteq L$, and $e_2$ the least positive integer with $e_2L^\sharp\subseteq L^\sharp\intersect M$, equivalently with $e_2L^\sharp\subseteq M$.
 Write $\pi_m\colon G\to\Aut_{\bZ}(M/mM)$ for the reduction modulo $mM$, and for $m$ with $mM\subseteq L$ write $\bar L_m\definedas L/mM$ for the image of $L$ in $M/mM$ and put
 $$ \bar K_m\definedas\ker\pi_m,\qquad \bar H_m\definedas\Stab_{\pi_m(G)}(\bar L_m). $$
-The $\bZ$-module $L^\sharp/L=A_L$ has the bilinear discriminant form of @def:discriminant, and $\rho_L$ denotes the bilinear discriminant representation of @def:discriminant-rep; if $L$ is even, $A_L$ also has the quadratic refinement $q_L$ and $\rho_L=j_q\circ\rho_{L,q}$ is the composite of the quadratic representation (@def:representable-presheaf) with the forgetful monomorphism.
+The $\bZ$-module $L^\sharp/L=A_L$ has the bilinear discriminant form of @def:discriminant, and $\rho_L$ denotes the bilinear discriminant representation of @def:discriminant-rep; if $L$ is even, $A_L$ also has the quadratic refinement $q_L$ and $\rho_L=j_q\circ\rho_{L,q}$ is the composite of the quadratic representation (@def:discriminant-rep) with the forgetful monomorphism.
 :::
 
 ::: {.example #ex:non-integral-invariant-module title="The invariant module need not be integral, nor contained in the dual of $L$"}
@@ -542,7 +542,7 @@ Item 1 is @lem:congruence-stabilizer-preimage applied at the modulus $m$.
 
 For item 2, let $g\in G$ with $\pi_m(g)\in\bar H_m$; by item 1 $g\in\Stab_G(L)$, so $\rho_L(g)$ is defined.
 If $g'\in G$ is another lift of the same element, then $\pi_m(g^{-1}g')=\id$, that is $g^{-1}g'\in\bar K_m$, and $\bar K_m\subseteq\ker\rho_L$ by @cor:stabilizer-modulus, so $\rho_L(g)=\rho_L(g')$.
-Multiplicativity of $\rho_L$ gives that of $\Phi_m$, and $\Phi_m(\bar h)=\id$ holds exactly when the coset $\pi_m^{-1}(\bar h)\intersect\Stab_G(L)$ meets (@def:replete-full-meet) $\ker\rho_L$, which is the displayed kernel.
+Multiplicativity of $\rho_L$ gives that of $\Phi_m$, and $\Phi_m(\bar h)=\id$ holds exactly when the coset $\pi_m^{-1}(\bar h)\intersect\Stab_G(L)$ meets $\ker\rho_L$, which is the displayed kernel.
 
 Item 3 follows from item 1: $\rho_L(\Stab_G(L))=\rho_L(\pi_m^{-1}(\bar H_m)\intersect G)=\Phi_m(\bar H_m)$, and $\bar H_m$ is generated by the $\bar h_i$, so its image is generated by the $\rho_L(g_i)$.
 
@@ -690,7 +690,7 @@ Item 1 is the factorization criterion: $\spinornorm_\bR$ restricted to $\Stab_G(
 For item 2, $\sigma_U$ negates $U$ and fixes the other two summands, so $\sigma_U-\id$ is $-2$ on $U$ and zero elsewhere, and $(\sigma_U-\id)(N)\subseteq 2N$ because $2U\subseteq 2N$; that is $\sigma_U\in\bar K_2$.
 Its spinor norm is $\spinornorm_\bR(-\id_U)=[(-1)^1]=-1$ by @lem:minus-identity-spinor-norm, the summand $U$ having positive index one, and the spinor norm of an orthogonal sum is the product of those of the summands.
 The choice $L=M=N$, $m=2$ satisfies $mM\subseteq e_2L$ because $e_2=\exp(N^\sharp/N)=2$ and $2N\subseteq 2N$.
-At that modulus $\bar K_2$ meets (@def:replete-full-meet) $\Stab_G(L)$ whenever $\sigma_U\in G$, and $\sigma_U\in\Orth(N)$; so with $G=\Orth(N)$ the sign is not a function of $\pi_2(g)$, while $\rho_N$ is one by @cor:stabilizer-modulus.
+At that modulus $\bar K_2$ meets $\Stab_G(L)$ whenever $\sigma_U\in G$, and $\sigma_U\in\Orth(N)$; so with $G=\Orth(N)$ the sign is not a function of $\pi_2(g)$, while $\rho_N$ is one by @cor:stabilizer-modulus.
 
 Item 3 is @thm:enriques-spinor-orbit-agreement, whose proof gives the spinor-negative elements of $\ker\rho$.
 :::

@@ -57,7 +57,7 @@ G(M)_{st} \definedas \beta(\alpha_s,\alpha_t) = 2\cos\!\left(\frac{\pi}{m_{st}}\
 ,
 $$
 read on the diagonal (@def:polarization-functors) as $G(M)_{ss} = 2\cos\pi = -2$, and as $G(M)_{st} = 2$ when $m_{st} = \infty$.
-Each $\alpha_s$ has norm (@def:lattice-basic-invariants) $-2$ and is therefore a short root in the sense of @def:2elementary-roots; the reflections $s_{\alpha_s}$ of @def:reflection preserve $G(M)$, and $s\mapsto s_{\alpha_s}$ extends to an injective homomorphism from the Coxeter group $W(M)$ of @def:coxeter-group to $\Orth(\RR^S, G(M))$ [@Bou08, Ch. V §4 no. 3, Prop. 3, and no. 4, Cor. 2 of Th. 1; @Hum90, §5.3, Proposition, and §5.4, Corollary]. These sources (@def:globular-boundary) use the form $B_M(\alpha_s,\alpha_t)=-\cos(\pi/m_{st})$, so $G(M)=-2B_M$, and their reflection $\sigma_s(x)=x-2B_M(\alpha_s,x)\alpha_s$ is the reflection $s_{\alpha_s}(x)=x+\beta(x,\alpha_s)\alpha_s$.
+Each $\alpha_s$ has norm (@def:lattice-basic-invariants) $-2$ and is therefore a short root in the sense of @def:2elementary-roots; the reflections $s_{\alpha_s}$ of @def:reflection preserve $G(M)$, and $s\mapsto s_{\alpha_s}$ extends to an injective homomorphism from the Coxeter group $W(M)$ of @def:coxeter-group to $\Orth(\RR^S, G(M))$ [@Bou08, Ch. V §4 no. 3, Prop. 3, and no. 4, Cor. 2 of Th. 1; @Hum90, §5.3, Proposition, and §5.4, Corollary]. These sources use the form $B_M(\alpha_s,\alpha_t)=-\cos(\pi/m_{st})$, so $G(M)=-2B_M$, and their reflection $\sigma_s(x)=x-2B_M(\alpha_s,x)\alpha_s$ is the reflection $s_{\alpha_s}(x)=x+\beta(x,\alpha_s)\alpha_s$.
 :::
 
 ::: {.proposition #prop:coxeter-normalized-pairing title="Normalized pairings of a Coxeter matrix"}
@@ -111,7 +111,7 @@ Say that $(W,S)$, or $M$, is
 
 A Gram form of signature $(p,q)$ with $p\geq 2$ falls under none of the three.
 
-For subdiagrams (@def:coxeter-subdiagram), @def:elliptic-subdiagram names the corresponding conditions **elliptic**, **parabolic (@def:definiteness)**, and **hyperbolic**. An elliptic subdiagram is one all of whose components are spherical; a parabolic subdiagram on $k$ vertices with $c$ connected components has kernel (@def:kernel-cokernel) of rank $c$, hence rank $k-c$.
+For subdiagrams (@def:coxeter-subdiagram), @def:elliptic-subdiagram names the corresponding conditions **elliptic**, **parabolic (@def:elliptic-subdiagram)**, and **hyperbolic**. An elliptic subdiagram is one all of whose components are spherical; a parabolic subdiagram on $k$ vertices with $c$ connected components has kernel (@def:kernel-cokernel) of rank $c$, hence rank $k-c$.
 :::
 
 ::: {.proposition #prop:coxeter-type-signature title="The three types by signature"}
@@ -146,11 +146,11 @@ Let $(W,S)$ be an irreducible Coxeter system (@def:coxeter-group) of rank $n$ wi
 
 ::: {.proof}
 
-All three are [@Hum90, §§6.4, 6.5 and 6.8] and the results of Bourbaki cited in the statement, with $G = -2B$ for $B$ the sources (@def:globular-boundary)' invariant form, so that definite (@def:definiteness) for $B$ is the corresponding definite sign for $G$.
+All three are [@Hum90, §§6.4, 6.5 and 6.8] and the results of Bourbaki cited in the statement, with $G = -2B$ for $B$ the sources' invariant form, so that definite (@def:definiteness) for $B$ is the corresponding definite sign for $G$.
 
-In (1) the sphere of the sources is that of $(\RR^S,2B)$, which is $(\RR^S,-G)$; rescaling a metric by a positive constant preserves the sphere, the reflections and their fundamental domain. The closed (@def:closed-monoidal) cone $\overline{C}_0$ on which every $B(\alpha_s,-)$ is nonnegative is a fundamental domain [@Bou08, Ch. V §4 no. 8, Prop. 9]. It is a simplicial cone because the $\alpha_s$ form a basis (@def:based-module), so it meets (@def:replete-full-meet) the sphere in a spherical simplex.
+In (1) the sphere of the sources is that of $(\RR^S,2B)$, which is $(\RR^S,-G)$; rescaling a metric by a positive constant preserves the sphere, the reflections and their fundamental domain. The closed (@def:tits-cone) cone $\overline{C}_0$ on which every $B(\alpha_s,-)$ is nonnegative is a fundamental domain [@Bou08, Ch. V §4 no. 8, Prop. 9]. It is a simplicial cone because the $\alpha_s$ form a basis (@def:based-module), so it meets the sphere in a spherical simplex.
 In (2) the euclidean space is the affine hyperplane $A$ of [@Bou08, Ch. V §4 no. 9, Prop. 10]. Its translation space is dual to $\RR^S/\ker G$, and $G$ identifies it with $\RR^S/\ker G$, of dimension $n-1$. The affine reflections are the restrictions of the contragredient reflections of the $s_{\alpha_s}$ to $A$, and discreteness is properness of the action.
-In (3) the hyperboloid inside the nondegenerate (@def:polarization) space $(\RR^S,G)$ is the model of $\HH^{n-1}$ of @def:hyperbolic-model, and $P$ is the chamber (@def:coble-polarization-classes) of @def:coxeter-polytope.
+In (3) the hyperboloid inside the nondegenerate (@def:polarization) space $(\RR^S,G)$ is the model of $\HH^{n-1}$ of @def:hyperbolic-model, and $P$ is the chamber (@cons:chamber-cone) of @def:coxeter-polytope.
 :::
 
 ## Subdiagrams and the inheritance of signature
@@ -170,7 +170,7 @@ is the **standard parabolic subgroup** determined by $I$, and $(W_I, I)$ is a Co
 ::: {#rmk:parabolic-subgroups-and-subdiagrams .remark title="Parabolic subgroups and parabolic subdiagrams"}
 
 The subgroup $W_I$ is a standard parabolic subgroup (@def:coxeter-subdiagram) for every subset $I\iscontainedin S$, whatever the definiteness of $G[I,I]$.
-The subdiagram $\Sigma_I$ is parabolic when each of its connected components is euclidean (@def:elliptic-subdiagram).
+The subdiagram $\Sigma_I$ is parabolic when each of its connected components is euclidean (@def:coxeter-system-type).
 :::
 
 ::: {.proposition #prop:parabolic-subdiagram-product title="The Coxeter system of a parabolic subdiagram"}
@@ -183,7 +183,7 @@ Then $W_I$ is the direct product of the standard parabolic subgroups $W_{I_1},\d
 
 By @def:coxeter-subdiagram, $(W_I, I)$ is a Coxeter system with Coxeter diagram (@def:coxeter-matrix) $\Sigma_I$.
 For any Coxeter system, $W$ is the direct product of the standard parabolic subgroups of the connected components of its Coxeter diagram, and each of these is an irreducible Coxeter system [@Hum90, §6.1, Proposition].
-Each $\Sigma_{I_j}$ is euclidean because $\Sigma_I$ is parabolic (@def:definiteness).
+Each $\Sigma_{I_j}$ is euclidean because $\Sigma_I$ is parabolic (@def:elliptic-subdiagram).
 :::
 
 ::: {.proposition #prop:signature-under-restriction title="Restriction cannot increase the positive index"}
@@ -328,7 +328,7 @@ In general, $W(M)$ preserves a lattice of full rank in $\RR^S$ if and only if $M
 
 ::: {.proof}
 
-This is [@Hum90, §6.6, Proposition], stated there for the geometric representation (@def:representable-presheaf) with form $B$; the reflections of @def:coxeter-gram-form are those of $B$, since $G = -2B$.
+This is [@Hum90, §6.6, Proposition], stated there for the geometric representation with form $B$; the reflections of @def:coxeter-gram-form are those of $B$, since $G = -2B$.
 :::
 
 ::: {.example #ex:crystallographic-rescaling title="Rescaling to an integral form"}
@@ -361,7 +361,7 @@ the smallest field over which the Gram form (@def:coxeter-gram-form) $G(M)$ is d
 
 ::: {.proposition #prop:coxeter-base-field-degree}
 
-For an integer $m\geq 2$ one has $2\cos(\pi/m) = \zeta_{2m} + \inverseof{\zeta_{2m}}$ for a primitive (@def:primitive-embedding) $2m$-th root of unity $\zeta_{2m}$, so $\QQ(2\cos(\pi/m))$ is the maximal (@def:maximal-lattice) totally real subfield of $\QQ(\zeta_{2m})$ and
+For an integer $m\geq 2$ one has $2\cos(\pi/m) = \zeta_{2m} + \inverseof{\zeta_{2m}}$ for a primitive $2m$-th root of unity $\zeta_{2m}$, so $\QQ(2\cos(\pi/m))$ is the maximal totally real subfield of $\QQ(\zeta_{2m})$ and
 $$
 \left[\QQ\!\left(2\cos(\pi/m)\right) : \QQ\right] = \tfrac12\,\#\unitsof{(\ZZ/2m\ZZ)}
 .
@@ -374,10 +374,10 @@ In particular $K(M) = \QQ$ exactly when $m_{st}\in\theset{2,3,\infty}$ for all $
 The first identity is $\zeta_{2m} + \zeta_{2m}^{-1} = 2\cos(2\pi/2m) = 2\cos(\pi/m)$ for a primitive $2m$-th root, and $\zeta\mapsto\zeta^{-1}$ generates $\operatorname{Gal}(\QQ(\zeta_{2m})/\QQ)$, a group (@def:group) of order $\#(\ZZ/2m\ZZ)^{\!\times}$.
 Complex conjugation is $\zeta\mapsto\zeta^{-1}$, so it is the involution $\sigma$ of that group, and an element $x$ of the cyclotomic field is fixed by $\sigma$ exactly when $x\in\QQ(\zeta_{2m})^{\langle\sigma\rangle}$.
 The fixed field of conjugation is the maximal totally real subfield, and $\zeta+\zeta^{-1}$ generates it: it is fixed, and $[\QQ(\zeta):\QQ(\zeta+\zeta^{-1})] = 2$ because $\zeta$ satisfies the quadratic $T^2 - (\zeta+\zeta^{-1})T + 1$ over that field and is not in it.
-Hence $\QQ(2\cos(\pi/m))$ is that fixed field, of degree (@def:numerical-polarization) $\tfrac12\#(\ZZ/2m\ZZ)^{\!\times}$ over $\QQ$.
+Hence $\QQ(2\cos(\pi/m))$ is that fixed field, of degree $\tfrac12\#(\ZZ/2m\ZZ)^{\!\times}$ over $\QQ$.
 
 For the specializations, Euler's $\varphi$ is $1$ exactly at $1$ and $2$, so $\tfrac12\varphi(2m) = 1$ exactly when $2m\in\{2,4\}$; $2m = 2$ would give $m = 1$, which is not an order $\geq2$, leaving $m = 2$.
-The value $m = 3$ gives $\varphi(6) = 2$ and degree $1$ as well, so these two orders give rational values, and they give $2\cos(\pi/2) = 0$ and $2\cos(\pi/3) = 1$; the order $m = \infty$ is not in the index (@def:index) set of the union and contributes the diagonal (@def:polarization-functors) value $2$ of @def:coxeter-gram-form.
+The value $m = 3$ gives $\varphi(6) = 2$ and degree $1$ as well, so these two orders give rational values, and they give $2\cos(\pi/2) = 0$ and $2\cos(\pi/3) = 1$; the order $m = \infty$ is not in the index set of the union and contributes the diagonal (@def:polarization-functors) value $2$ of @def:coxeter-gram-form.
 Every order $m\geq4$ has $\varphi(2m)\geq 4$ and hence degree $\geq2$, so $K(M) = \QQ$ exactly for the three listed orders.
 :::
 
@@ -389,7 +389,7 @@ Among the Coxeter matrices with every $m_{st}$ finite, these are exactly the sim
 
 ::: {.proof}
 The entries are the values $2\cos(\pi/m_{st})$ of @def:coxeter-gram-form (@ex:coxeter-form-values), and an entry lies in $\ZZ$ only if it lies in $\QQ$.
-By @prop:coxeter-base-field-degree the degree (@def:numerical-polarization) of $\QQ(2\cos(\pi/m))$ over $\QQ$ is $\tfrac12\#(\ZZ/2m\ZZ)^\times$, which equals $1$ exactly when $2m\in\theset{4,6}$, that is when $m\in\theset{2,3}$; the value at $m=\infty$ is $2$.
+By @prop:coxeter-base-field-degree the degree of $\QQ(2\cos(\pi/m))$ over $\QQ$ is $\tfrac12\#(\ZZ/2m\ZZ)^\times$, which equals $1$ exactly when $2m\in\theset{4,6}$, that is when $m\in\theset{2,3}$; the value at $m=\infty$ is $2$.
 The remaining orders therefore give irrational entries, and the three admissible orders give $0$, $1$ and $2$.
 :::
 

@@ -64,7 +64,7 @@ The structured objects of $\mcd$ obtained from $U$ are given by the pseudo-pullb
 \mathcal D \arrow[r,"F"'] & \mathcal C
 \end{tikzcd}
 ```
-If $U$ is a replete (@def:subcategory) full inclusion, it is an isofibration, and the strict (@def:monoidal-category) pullback (@def:pullback-square) presents this pseudo-pullback up to equivalence (@def:equivalence-of-objects) (@sec-pullback-cat).
+If $U$ is a replete (@def:subcategory) full inclusion, it is an isofibration, and the strict pullback (@def:pullback-square) presents this pseudo-pullback up to equivalence (@def:equivalence-of-objects) (@sec-pullback-cat).
 Its objects are exactly the $D\in\mcd$ for which $F(D)$ satisfies the stated property (@def:property-structure-stuff).
 :::
 

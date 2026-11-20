@@ -99,9 +99,9 @@ $$
 ,
 $$
 and combining $\chi(\OO_X) = 1 - h^1(\OO_X) + h^2(\OO_X)$ with $h^1(\OO_X) = 0$ gives $p_g(X) = h^2(\OO_X) = 1$.
-A smooth projective (@def:module-subcategories) surface with $\omega_X\cong\OO_X$ and $h^1(\OO_X) = 0$ is a K3 surface, which is the first claim.
+A smooth projective surface with $\omega_X\cong\OO_X$ and $h^1(\OO_X) = 0$ is a K3 surface, which is the first claim.
 
-For the intersection numbers, $\pi$ is finite of degree (@def:numerical-polarization) $2$, so $\pi_*\pi^{*} = 2$ on divisor classes, and the projection formula gives
+For the intersection numbers, $\pi$ is finite of degree $2$, so $\pi_*\pi^{*} = 2$ on divisor classes, and the projection formula gives
 $$
 \pi^{*}D\cdot\pi^{*}D' = D\cdot\pi_*\pi^{*}D' = D\cdot 2D' = 2(D\cdot D')
 .
@@ -126,7 +126,7 @@ $$
 ::: {.proof}
 
 If $f^*D = 0$ then $2D = f_* f^* D = 0$, and $\Pic(S)\cong\latI_{1, 10}$ is torsion-free, so $D = 0$; thus $f^*$ is injective.
-As $f$ has degree (@def:numerical-polarization) $2$, one has $f_* f^* = 2$, and the projection formula gives, for all $D, D'\in\Pic(S)$,
+As $f$ has degree $2$, one has $f_* f^* = 2$, and the projection formula gives, for all $D, D'\in\Pic(S)$,
 $$
 \qty{f^*D \cdot f^*D'} = D \cdot f_* f^* D' = D\cdot 2D' = 2\qty(D\cdot D')
 .
@@ -152,7 +152,7 @@ A_{S_\Co} \cong (\bZ/2\bZ)^{11},
 q_{S_\Co} \cong \generators{\tfrac{1}{2}}\oplus\generators{-\tfrac{1}{2}}^{10}
 ,
 $$
-so $S_\Co$ is $2$-elementary of rank $r = 11$ and length (@def:anticanonical-pair) $a = 11$.
+so $S_\Co$ is $2$-elementary of rank $r = 11$ and length (@def:coble-discriminant-forms) $a = 11$.
 Because $q_{S_\Co}$ takes the value $\tfrac{1}{2}\notin\bZ$, one has $\delta = 1$, giving $(r, a, \delta) = (11, 11, 1)$.
 
 The involution $\sigma$ acts as $-\id$ on $T(X)$, and $H^2(X, \bZ)^\sigma = \Pic(X)^{\sigma^*}$.
@@ -177,7 +177,7 @@ $$
 S = S_N \xrightarrow{\pi_N} S_{N-1} \too \cdots \xrightarrow{\pi_1} S_0 = \PP^2
 $$
 be a sequence of blowups, where $\pi_i$ is the blowup of a point $p_i\in S_{i-1}$ with exceptional curve $E_i\iscontainedin S_i$.
-Let $e_0\in\Pic(S)$ be the pullback (@def:pullback-square) of the class of a line in $\PP^2$, and for $1\leq i\leq N$ let $e_i\in\Pic(S)$ be the pullback of the class of $E_i$.
+Let $e_0\in\Pic(S)$ be the pullback of the class of a line in $\PP^2$, and for $1\leq i\leq N$ let $e_i\in\Pic(S)$ be the pullback of the class of $E_i$.
 
 1. The classes $e_0, e_1, \ldots, e_N$ form a basis (@def:based-module) of $\Pic(S)$ with $e_0^2 = 1$, $e_i^2 = -1$ for $i\geq 1$, and $e_i\cdot e_j = 0$ for $i\neq j$. So $\Pic(S)\cong\latI_{1,N}$, and $\rho(S) = N+1$.
 2. $K_S = -3e_0 + e_1 + \cdots + e_N$.

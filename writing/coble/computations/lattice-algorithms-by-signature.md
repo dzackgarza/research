@@ -31,7 +31,7 @@ notes: |-
 
 For (1), write $v = \sum_i x_ib_i$ in the basis.
 Then $\varepsilon v^2 = x^{\mathsf T}(\varepsilon G)x \geq \lambda\, x^{\mathsf T}x$, so $\varepsilon v^2\leq c$ forces $\lvert x_i\rvert\leq\sqrt{c/\lambda}$ for each $i$.
-Each $x_i$ is an integer in an interval of length (@def:anticanonical-pair) $2\sqrt{c/\lambda}$, which holds at most $2\sqrt{c/\lambda}+1$ integers.
+Each $x_i$ is an integer in an interval of length $2\sqrt{c/\lambda}$, which holds at most $2\sqrt{c/\lambda}+1$ integers.
 The vectors of square $c$ lie in the set with $\varepsilon v^2 \leq \lvert c\rvert$.
 
 For (2), $v^2 = \beta_U(v,v) = 2x_1x_2$, which vanishes exactly when $x_1 = 0$ or $x_2 = 0$.
@@ -115,7 +115,7 @@ Fixing a catalogue $\mathcal B$ of standard blocks, a decomposition of $L$ withi
 
 4. testing each sum for isometry with $L$.
 
-The catalogue $\mathcal B$ is $A_n$, $D_n$ and $E_n$ up to rank $20$, the odd (@def:two-elementary-isotropic-types) and even unimodular lattices (@def:unimodular) $I_{p,q}$ and $II_{p,q}$, and the $2$-twists of all of these.
+The catalogue $\mathcal B$ is $A_n$, $D_n$ and $E_n$ up to rank $20$, the odd and even unimodular lattices (@def:unimodular) $I_{p,q}$ and $II_{p,q}$, and the $2$-twists of all of these.
 The even unimodular lattices are indexed by the signatures with $p\equiv q \bmod 8$.
 When $L$ and the sum are indefinite (@def:definiteness), even and $2$-elementary, step 4 is the comparison of signature, $a$ and $\delta$, by @thm:two-elementary-classification.
 :::

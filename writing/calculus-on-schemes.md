@@ -56,7 +56,7 @@ It is an $\mathcal R$-linear graded derivation (@def:calculus-derivation) with $
 :::
 
 :::{.definition #def:calculus-valued-forms title="Module-valued forms" defines="$\mathcal E$-valued $p$-forms; $\Omega^p(\mathcal E)$"}
-For an $\mathcal A$-module $\mathcal E$, its sheaf of *$\mathcal E$-valued $p$-forms* is $\Omega^p(\mathcal E)=\Omega^p_{X/S}\otimes_{\mathcal A}\mathcal E$. If $\Omega^1_{X/S}$ is finite locally free (@def:module-subcategories), evaluation (@def:dualizable-object) gives $\Omega^p(\mathcal E)\cong\mathcal H om_{\mathcal A}(\bigwedge^p\mathcal T_{X/S},\mathcal E)$, by the local dual-basis calculation of @rmk:calculus-duality.
+For an $\mathcal A$-module $\mathcal E$, its sheaf of *$\mathcal E$-valued $p$-forms* is $\Omega^p(\mathcal E)=\Omega^p_{X/S}\otimes_{\mathcal A}\mathcal E$. If $\Omega^1_{X/S}$ is finite locally free, evaluation (@def:dualizable-object) gives $\Omega^p(\mathcal E)\cong\mathcal H om_{\mathcal A}(\bigwedge^p\mathcal T_{X/S},\mathcal E)$, by the local dual-basis calculation of @rmk:calculus-duality.
 :::
 
 ### Smooth and holomorphic differentials
@@ -100,7 +100,7 @@ The sheaf of *horizontal sections* is $\mathcal E^\nabla=\ker(\nabla)$, with the
 :::
 
 :::{.proposition #prop:calculus-covariant title="Covariant derivatives"}
-Suppose $\Omega^1$ is finite locally free (@def:module-subcategories) and put $\mathcal T=(\Omega^1)^\vee$. A connection determines operators $\nabla_v s=(\operatorname{ev}_v\otimes1)(\nabla s)$ satisfying
+Suppose $\Omega^1$ is finite locally free and put $\mathcal T=(\Omega^1)^\vee$. A connection determines operators $\nabla_v s=(\operatorname{ev}_v\otimes1)(\nabla s)$ satisfying
 
 \begin{align*}
 \nabla_{av+bw}s&=a\nabla_v s+b\nabla_w s,\\
@@ -124,11 +124,11 @@ If $\nabla$ and $\nabla'$ are connections (@def:calculus-connection) on $\mathca
 :::
 
 :::{.proof title="Cancellation of the symbol"}
-Subtracting the two Leibniz identities cancels $da\otimes s$ and gives $(\nabla'-\nabla)(as)=a(\nabla'-\nabla)(s)$. Adding an $\mathcal A$-linear map preserves that identity. The action is free (@def:module-subcategories) and transitive because the difference is uniquely determined. $\square$
+Subtracting the two Leibniz identities cancels $da\otimes s$ and gives $(\nabla'-\nabla)(as)=a(\nabla'-\nabla)(s)$. Adding an $\mathcal A$-linear map preserves that identity. The action is free and transitive because the difference is uniquely determined. $\square$
 :::
 
 :::{.construction #cons:calculus-induced-connections title="Tensor, dual, and pullback connections" defines="induced connection; pullback connection"}
-For finite locally free (@def:module-subcategories) modules with connection (@def:calculus-connection), the induced connections are determined by
+For finite locally free modules with connection (@def:calculus-connection), the induced connections are determined by
 
 \begin{align*}
 \nabla^{\mathcal E\otimes\mathcal F}(s\otimes t)
@@ -139,7 +139,7 @@ For finite locally free (@def:module-subcategories) modules with connection (@de
 &=\nabla^{\mathcal F}_v(u(s))-u(\nabla^{\mathcal E}_v s).
 \end{align*}
 
-For a morphism $q:Y\to X$ in the chosen geometric category, over the same base (@def:root-system-base) in the relative case, use $dq:q^*\Omega_X^1\to\Omega_Y^1$ to define
+For a morphism $q:Y\to X$ in the chosen geometric category, over the same base in the relative case, use $dq:q^*\Omega_X^1\to\Omega_Y^1$ to define
 
 \begin{align*}
 (q^*\nabla)(a\otimes s)&=da\otimes s+a\,(dq\otimes1)(q^*(\nabla s)).
@@ -165,7 +165,7 @@ The *curvature* of $\nabla$ is $F_\nabla=d_\nabla\circ\nabla:\mathcal E\to\Omega
 :::
 
 :::{.proposition #prop:calculus-curvature-tensor title="Tensoriality and the curvature formula"}
-The map $F_\nabla$ is $\mathcal A$-linear. When $\mathcal E$ is finite locally free (@def:module-subcategories), it is a global section of $\Omega^2\otimes\mathcal E nd_{\mathcal A}(\mathcal E)$. When $\Omega^1$ is also finite locally free, its evaluation (@def:dualizable-object) on vector fields (@def:calculus-tangent) is
+The map $F_\nabla$ is $\mathcal A$-linear. When $\mathcal E$ is finite locally free, it is a global section of $\Omega^2\otimes\mathcal E nd_{\mathcal A}(\mathcal E)$. When $\Omega^1$ is also finite locally free, its evaluation (@def:dualizable-object) on vector fields (@def:calculus-tangent) is
 
 \begin{align*}
 F_\nabla(v,w)s&=\nabla_v\nabla_w s-\nabla_w\nabla_v s-\nabla_{[v,w]}s.
@@ -247,7 +247,7 @@ The identities $\nabla_w(av)=w(a)v+a\nabla_wv$ and $[av,w]=a[v,w]-w(a)v$ give $T
 :::
 
 :::{.definition #def:calculus-perfect-metric title="Perfect symmetric pairing" defines="perfect symmetric pairing; $g^\flat$"}
-For a finite locally free (@def:module-subcategories) $\mathcal A$-module $\mathcal E$, a symmetric pairing $g:\mathcal E\otimes\mathcal E\to\mathcal A$ is *perfect (@def:polarization)* if its adjoint (@def:adjoint-morphism) $g^\flat:\mathcal E\to\mathcal E^\vee$, $s\mapsto g(s,-)$, is an isomorphism (@def:isomorphism-of-objects).
+For a finite locally free $\mathcal A$-module $\mathcal E$, a symmetric pairing $g:\mathcal E\otimes\mathcal E\to\mathcal A$ is *perfect (@def:polarization)* if its adjoint (@def:adjoint-morphism) $g^\flat:\mathcal E\to\mathcal E^\vee$, $s\mapsto g(s,-)$, is an isomorphism (@def:isomorphism-of-objects).
 :::
 
 :::{.remark #rmk:calculus-pairing-adjoints title="The two adjoints of a pairing"}
@@ -274,11 +274,11 @@ The first line uses the dual of a morphism; the second uses $b\mapsto(s\mapsto b
 :::
 
 :::{.definition #def:calculus-real-positivity title="Positivity at real points" defines="positive semidefinite; nondegenerate at $p$"}
-Let $X$ be an $\mathbb R$-scheme, $\mathcal E$ finite locally free (@def:module-subcategories), and $g$ a symmetric pairing on $\mathcal E$. At a real point $p:\operatorname{Spec}\mathbb R\to X$, the pairing is *positive semidefinite* if $(p^*g)(v,v)\geq0$ for every $v\in p^*\mathcal E$, and *positive definite (@def:definiteness)* if the inequality is strict (@def:monoidal-category) for every nonzero $v$. It is positive semidefinite or positive definite on the real locus if the corresponding condition holds at every real point. Nondegeneracy at $p$ means that the adjoint (@def:adjoint-morphism) of $p^*g$ is an isomorphism (@def:isomorphism-of-objects).
+Let $X$ be an $\mathbb R$-scheme, $\mathcal E$ finite locally free, and $g$ a symmetric pairing on $\mathcal E$. At a real point $p:\operatorname{Spec}\mathbb R\to X$, the pairing is *positive semidefinite* if $(p^*g)(v,v)\geq0$ for every $v\in p^*\mathcal E$, and *positive definite (@def:definiteness)* if the inequality is strict for every nonzero $v$. It is positive semidefinite or positive definite on the real locus if the corresponding condition holds at every real point. Nondegeneracy at $p$ means that the adjoint (@def:adjoint-morphism) of $p^*g$ is an isomorphism (@def:isomorphism-of-objects).
 :::
 
 :::{.definition #def:calculus-isometric-endomorphism title="Endomorphisms compatible with a metric" defines="isometric endomorphism"}
-Let $(\mathcal E,g)$ be a finite locally free (@def:module-subcategories) module with perfect symmetric pairing (@def:calculus-perfect-metric). An endomorphism $F$ is *compatible with $g$*, or *isometric*, if $g(Fs,Ft)=g(s,t)$ for all local sections. This identity makes $F$ an automorphism: in a frame, $F^{\mathsf t}GF=G$ implies that $\det F$ is a unit. In particular, $F$ induces isometries on all fibers (@def:fiber-cofiber). On a nonreduced scheme (@def:scheme-as-lrs), the fiber identities alone need not imply the sheaf identity, since residue fields do not detect nilpotents.
+Let $(\mathcal E,g)$ be a finite locally free module with perfect symmetric pairing (@def:calculus-perfect-metric). An endomorphism $F$ is *compatible with $g$*, or *isometric*, if $g(Fs,Ft)=g(s,t)$ for all local sections. This identity makes $F$ an automorphism: in a frame, $F^{\mathsf t}GF=G$ implies that $\det F$ is a unit. In particular, $F$ induces isometries on all fibers (@def:fiber-cofiber). On a nonreduced scheme (@def:scheme-as-lrs), the fiber identities alone need not imply the sheaf identity, since residue fields do not detect nilpotents.
 :::
 
 :::{.definition #def:calculus-riemannian title="Riemannian metric" defines="Riemannian metric; pseudo-Riemannian metric"}
@@ -329,7 +329,7 @@ Conversely, write compatibility for the triples $(u,v,w)$, $(v,w,u)$, and $(w,u,
 Here $M$ is a smooth manifold and $E$ is a finite-rank smooth vector bundle with sheaf of sections $\mathcal E$ and connection $\nabla$.
 
 :::{.construction #cons:calculus-transport title="Parallel transport" defines="parallel section; parallel transport; $P_\gamma$"}
-For a piecewise smooth path $\gamma:[a,b]\to M$, a section $s$ of $\gamma^*E$ is parallel if $(\gamma^*\nabla)_{\partial_t}s=0$. In a frame this is the linear ordinary (@def:two-elementary-isotropic-types) differential equation $u'(t)+A(\dot\gamma(t))u(t)=0$. Existence and uniqueness for linear ordinary differential equations give an isomorphism (@def:isomorphism-of-objects) $P_\gamma:E_{\gamma(a)}\to E_{\gamma(b)}$, sending the initial value to the final value [@Ram04, Ch. 5, Def. 7.1]. Reversing the path gives its inverse; solving consecutively gives composition under concatenation.
+For a piecewise smooth path $\gamma:[a,b]\to M$, a section $s$ of $\gamma^*E$ is parallel if $(\gamma^*\nabla)_{\partial_t}s=0$. In a frame this is the linear ordinary differential equation $u'(t)+A(\dot\gamma(t))u(t)=0$. Existence and uniqueness for linear ordinary differential equations give an isomorphism (@def:isomorphism-of-objects) $P_\gamma:E_{\gamma(a)}\to E_{\gamma(b)}$, sending the initial value to the final value [@Ram04, Ch. 5, Def. 7.1]. Reversing the path gives its inverse; solving consecutively gives composition under concatenation.
 :::
 
 :::{.theorem #thm:calculus-flat-local-system title="Flat connections and local systems"}
@@ -350,7 +350,7 @@ Equivalently, $\nabla$ is flat if every point has a neighborhood on which parall
 :::
 
 :::{.corollary #cor:calculus-monodromy title="Monodromy representation"}
-Let $M$ be connected, let $x\in M$, and let $\nabla$ be flat. Parallel transport (@cons:calculus-transport) defines $\rho_x:\pi_1(M,x)\to\operatorname{GL}_k(E_x)$, $[\gamma]\mapsto P_\gamma$, when the product $[\gamma_2][\gamma_1]$ means traversing $\gamma_1$ first and then $\gamma_2$. Changing a basis (@def:based-module) of $E_x$ conjugates its matrix representation (@def:representable-presheaf).
+Let $M$ be connected, let $x\in M$, and let $\nabla$ be flat. Parallel transport (@cons:calculus-transport) defines $\rho_x:\pi_1(M,x)\to\operatorname{GL}_k(E_x)$, $[\gamma]\mapsto P_\gamma$, when the product $[\gamma_2][\gamma_1]$ means traversing $\gamma_1$ first and then $\gamma_2$. Changing a basis (@def:based-module) of $E_x$ conjugates its matrix representation.
 :::
 
 :::{.proof title="Composition of parallel transports"}
@@ -376,7 +376,7 @@ A Riemannian manifold has *constant sectional curvature* $\kappa$ if $K_x(P)=\ka
 :::
 
 :::{.theorem #thm:calculus-space-forms title="Complete constant-curvature manifolds"}
-Let $(M,g)$ be connected, complete (@def:complete), and of dimension $n\geq2$, with constant sectional curvature (@def:calculus-constant-curvature) $\kappa$. Its universal cover, with the pullback (@def:pullback-square) metric, is isometric to the following model [@Car92, Chapter 8, Theorem 4.1]:
+Let $(M,g)$ be connected, complete, and of dimension $n\geq2$, with constant sectional curvature (@def:calculus-constant-curvature) $\kappa$. Its universal cover, with the pullback metric, is isometric to the following model [@Car92, Chapter 8, Theorem 4.1]:
 
 | Curvature (@def:calculus-curvature) | Simply connected model |
 | --- | --- |
@@ -534,7 +534,7 @@ Integrability is equivalent to $d=\partial+\bar\partial$ on all complex differen
 
 For $\alpha\in\mathcal A^{1,0}$ and $v,w\in\mathcal T^{0,1}$, the exterior derivative formula gives $d\alpha(v,w)=-\alpha([v,w])$. Thus bracket closure is equivalent to the vanishing of the $(0,2)$-component of $d\alpha$ for all such $\alpha$.
 
-Complex conjugation gives the corresponding vanishing of the $(2,0)$-component on $\mathcal A^{0,1}$. Functions and one-forms generate the exterior algebra locally, so the graded Leibniz rule gives $d=\partial+\bar\partial$ in every degree (@def:numerical-polarization). The converse follows by applying this equality to one-forms.
+Complex conjugation gives the corresponding vanishing of the $(2,0)$-component on $\mathcal A^{0,1}$. Functions and one-forms generate the exterior algebra locally, so the graded Leibniz rule gives $d=\partial+\bar\partial$ in every degree. The converse follows by applying this equality to one-forms.
 
 Separate the distinct bidegrees in $0=d^2=\partial^2+\partial\bar\partial+\bar\partial\partial+\bar\partial^2$. Each component vanishes. $\square$
 :::
@@ -559,7 +559,7 @@ Indeed, in complex coordinates $z^1,\ldots,z^n$, the equation $\bar\partial f=0$
 :::
 
 :::{.definition #def:calculus-holomorphic-map title="Maps preserving complex structures" defines="pseudoholomorphic map"}
-A smooth map $q:(M,J_M)\to(N,J_N)$ is *pseudoholomorphic* if $dq\circ J_M=(q^*J_N)\circ dq$. If the structures (@def:property-structure-stuff) are integrable, this is the coordinate Cauchy–Riemann condition for a holomorphic map. Pullback (@def:pullback-square) then gives $q^{-1}\mathcal O_{(N,J_N)}\to\mathcal O_{(M,J_M)}$.
+A smooth map $q:(M,J_M)\to(N,J_N)$ is *pseudoholomorphic* if $dq\circ J_M=(q^*J_N)\circ dq$. If the structures (@def:property-structure-stuff) are integrable, this is the coordinate Cauchy–Riemann condition for a holomorphic map. Pullback then gives $q^{-1}\mathcal O_{(N,J_N)}\to\mathcal O_{(M,J_M)}$.
 :::
 
 ### The algebraic analogue
@@ -577,7 +577,7 @@ A *Dolbeault operator* on $\mathcal E$ is a $\mathbb C$-linear sheaf map $\bar\p
 :::
 
 :::{.theorem #thm:calculus-koszul-malgrange title="Holomorphic structures from Dolbeault operators"}
-An integrable Dolbeault operator (@def:calculus-dolbeault-operator) determines a holomorphic vector bundle with sheaf of holomorphic sections $\mathcal E^{\mathrm{hol}}=\ker\bar\partial_{\mathcal E}$. This sheaf is locally free (@def:module-subcategories) over $\mathcal O_Z$, and multiplication identifies $\mathcal B\otimes_{\mathcal O_Z}\mathcal E^{\mathrm{hol}}$ with $\mathcal E$. Conversely, each holomorphic vector bundle determines such an operator [@Huy05, Theorem 2.6.26]. The analytic local existence of holomorphic frames is the content of the theorem.
+An integrable Dolbeault operator (@def:calculus-dolbeault-operator) determines a holomorphic vector bundle with sheaf of holomorphic sections $\mathcal E^{\mathrm{hol}}=\ker\bar\partial_{\mathcal E}$. This sheaf is locally free over $\mathcal O_Z$, and multiplication identifies $\mathcal B\otimes_{\mathcal O_Z}\mathcal E^{\mathrm{hol}}$ with $\mathcal E$. Conversely, each holomorphic vector bundle determines such an operator [@Huy05, Theorem 2.6.26]. The analytic local existence of holomorphic frames is the content of the theorem.
 :::
 
 :::{.definition #def:calculus-compatible-holomorphic title="Compatibility with a holomorphic structure" defines="compatible with the holomorphic structure"}
@@ -616,7 +616,7 @@ Given complex connections (@def:calculus-connection) on the bundles, the pairing
 db(s,t)&=b(\nabla^{\mathcal E}s,t)+b(s,\nabla^{\mathcal F}t).
 \end{align*}
 
-Here forms in the second argument are conjugated. If the base (@def:root-system-base) is a complex manifold, the two type components of this identity are
+Here forms in the second argument are conjugated. If the base is a complex manifold, the two type components of this identity are
 
 \begin{align*}
 \partial b(s,t)&=b(\nabla^{\mathcal E,1,0}s,t)+b(s,\nabla^{\mathcal F,0,1}t),\\
@@ -718,11 +718,11 @@ Let $g_{\mathbb C}$ be the complex-bilinear extension of $g$ and $\xi(u)=\tfrac1
 :::
 
 :::{.definition #def:calculus-symplectic title="Symplectic form" defines="symplectic form"}
-A *symplectic form* is a closed (@def:closed-monoidal) two-form $\omega$ whose adjoint (@def:adjoint-morphism) $\omega^\flat:\mathcal T\to\mathcal T^\vee$ is an isomorphism (@def:isomorphism-of-objects). This definition applies to smooth manifolds (@def:smooth-manifold) and to relative differential forms on smooth schemes (@def:scheme-as-lrs).
+A *symplectic form* is a closed two-form $\omega$ whose adjoint (@def:adjoint-morphism) $\omega^\flat:\mathcal T\to\mathcal T^\vee$ is an isomorphism (@def:isomorphism-of-objects). This definition applies to smooth manifolds (@def:smooth-manifold) and to relative differential forms on smooth schemes (@def:scheme-as-lrs).
 :::
 
 :::{.definition #def:calculus-almost-kahler title="Almost Kähler structure" defines="almost Kähler structure"}
-An almost Hermitian structure (@def:calculus-almost-hermitian) is *almost Kähler* if its fundamental form is closed (@def:closed-monoidal).
+An almost Hermitian structure (@def:calculus-almost-hermitian) is *almost Kähler* if its fundamental form is closed.
 :::
 
 :::{.definition #def:calculus-kahler title="Kähler structure" defines="Kähler structure"}
@@ -741,9 +741,9 @@ If these conditions hold, $\nabla$ induces the Chern connection on $\mathcal T^{
 
 :::{.proof title="Torsion, type, and the metric"}
 
-Metric compatibility gives $(\nabla_u\omega)(v,w)=g((\nabla_uJ)v,w)$. Perfectness of $g$ proves the equivalence (@def:equivalence-of-objects) of conditions 2 and 3.
+Metric compatibility gives $(\nabla_u\omega)(v,w)=g((\nabla_uJ)v,w)$. Perfectness of $g$ proves the equivalence of conditions 2 and 3.
 
-Assume condition 2. Complexifying $\nabla$ preserves both eigensubbundles. If $v,w$ have type $(0,1)$, torsion-freeness gives $[v,w]=\nabla_vw-\nabla_wv$ of type $(0,1)$, so $J$ is integrable. Moreover a parallel two-form for a torsion-free connection (@def:calculus-torsion) is closed (@def:closed-monoidal): expanding the exterior differential gives $d\omega(u,v,w)=\sum_{\mathrm{cyc}}(\nabla_u\omega)(v,w)=0$. Thus condition 1 holds.
+Assume condition 2. Complexifying $\nabla$ preserves both eigensubbundles. If $v,w$ have type $(0,1)$, torsion-freeness gives $[v,w]=\nabla_vw-\nabla_wv$ of type $(0,1)$, so $J$ is integrable. Moreover a parallel two-form for a torsion-free connection (@def:calculus-torsion) is closed: expanding the exterior differential gives $d\omega(u,v,w)=\sum_{\mathrm{cyc}}(\nabla_u\omega)(v,w)=0$. Thus condition 1 holds.
 
 Assume condition 1 and choose holomorphic coordinates. Write $g_{j\bar k}=g_{\mathbb C}(\partial_{z^j},\partial_{\bar z^k})$. Closure of $\omega=i\sum g_{j\bar k}\,dz^j\wedge d\bar z^k$ gives $\partial_\ell g_{j\bar k}=\partial_j g_{\ell\bar k}$ and its conjugate. The Koszul formula then gives
 

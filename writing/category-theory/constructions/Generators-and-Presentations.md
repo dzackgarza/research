@@ -85,7 +85,7 @@ The module $M$ is *finitely presented* if it admits a finite presentation.
 
 ::: {.definition #def:presentation-category title="The category of finite presentations" defines="category of finite presentations; $\operatorname{FinPres}(R)$"}
 
-Let $\operatorname{FinPres}(R)$ be the category whose objects are the finite presentations of @def:finite-presentation and whose morphisms are the commutative (@def:operation-axioms) diagrams
+Let $\operatorname{FinPres}(R)$ be the category whose objects are the finite presentations of @def:finite-presentation and whose morphisms are the commutative diagrams
 
 ```{.tikz}
 %%| filename: finite-presentation-morphism
@@ -103,7 +103,7 @@ N \arrow[r] &
 ```
 
 so the datum of a morphism includes the pair $(A_1,A_0)$ of maps of free (@def:module-subcategories) modules.
-Relative to the standard bases (@def:root-system-base), $A_1$ and $A_0$ are matrices over $R$, and $f$ is the $R$-linear map they present.
+Relative to the standard bases (@def:based-module), $A_1$ and $A_0$ are matrices over $R$, and $f$ is the $R$-linear map they present.
 The projection $\operatorname{FinPres}(R)\to R\text{-}\mathbf{Mod}$ sends the diagram to $f$.
 :::
 
@@ -138,7 +138,7 @@ In particular $A_0-A_0'=d_Nh_0$ for some $R$-linear map $h_0\colon R^{n}\to R^{m
 ::: {.proof}
 
 The extensions exist: by @def:resolution the modules $\ker d_M$ and $\ker d_N$ have projective resolutions, and splicing them onto the presentations gives $P$ and $Q$.
-The pair $(A_1,A_0)$ is a chain map $P\to Q$ in degrees (@def:numerical-polarization) $0$ and $1$ over $f$, because the two squares of @def:presentation-category commute.
+The pair $(A_1,A_0)$ is a chain map $P\to Q$ in degrees (@def:chain-complexes) $0$ and $1$ over $f$, because the two squares of @def:presentation-category commute.
 For degree $2$, the composite $A_1d^P_2$ satisfies $d_NA_1d^P_2=A_0d_Md^P_2=0$, so it lands in $\ker d_N=\im d^Q_2$, by exactness of $Q$.
 Since $P_2$ is projective (@def:module-subcategories), it lifts along $Q_2\twoheadrightarrow\im d^Q_2$ to $f_2$ with $d^Q_2f_2=A_1d^P_2$.
 The higher degrees follow by the same induction as in the proof of @thm:resolution-comparison.
@@ -155,7 +155,7 @@ $$
 $$
 in which $P_i$ is finitely generated (@def:module-subcategories) for $0\le i\le n$.
 Type $FP_0$ is finite generation and type $FP_1$ is finite presentation (@def:finite-presentation).
-A chosen partial resolution finitely generated through degree (@def:numerical-polarization) $n$ is structure (@def:property-structure-stuff) on $M$; type $FP_n$ is the property (@def:property-structure-stuff) asserting that one exists.
+A chosen partial resolution finitely generated through degree (@def:resolution) $n$ is structure (@def:property-structure-stuff) on $M$; type $FP_n$ is the property (@def:property-structure-stuff) asserting that one exists.
 :::
 
 ## Automorphisms acting on frames {#sec-frames-and-automorphisms}

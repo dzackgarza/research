@@ -6,7 +6,7 @@
 
 A *Kulikov model* is a degeneration $\mcx \to \Delta$ of K3 surfaces where:
 
-1. The total space $\mcx$ is regular (@def:regular-ternary-lattice) (smooth as a threefold).
+1. The total space $\mcx$ is regular (smooth as a threefold).
 
 2. The central fiber (@def:fiber-cofiber) $\mcx_0$ is a reduced simple normal crossings (snc) divisor.
 
@@ -19,7 +19,7 @@ Such a model is *semistable* by conditions (1) and (2) and *$K$-trivial* by cond
 
 Let $\pi\colon X\to\Delta$ be a proper flat morphism from a complex manifold $X$ of dimension $3$ to the unit disc, with nonsingular fibers (@def:fiber-cofiber) $X_t$ for $t\neq 0$.
 
-1. Assume that $\pi$ is projective (@def:module-subcategories), that the general fiber is a K3 surface ($m = 1$) or an Enriques surface (@def:enriques-surface) ($m = 2$), and that $X_0 = V_1 + \cdots + V_n$ is a normal crossings divisor whose components $V_i$ are smooth and of multiplicity $1$.
+1. Assume that $\pi$ is projective, that the general fiber is a K3 surface ($m = 1$) or an Enriques surface (@def:enriques-surface) ($m = 2$), and that $X_0 = V_1 + \cdots + V_n$ is a normal crossings divisor whose components $V_i$ are smooth and of multiplicity $1$.
    Then $\pi$ has a modification $\pi_1\colon X'\to\Delta$ such that $X_0'$ is a normal crossings divisor with smooth components of multiplicity $1$ and $mK_{X'}$ is trivial [@Kul77, Thm. I].
 
 2. Assume that every component of $X_0$ has multiplicity $1$, that $X_0$ has local normal crossings, that $K_{X_t}$ is trivial for $t\neq0$, and that every component of $X_0$ is algebraic.
@@ -31,7 +31,7 @@ Here a modification of $\pi$ is a degeneration $\pi'\colon X'\to\Delta$ with a b
 ::: {.definition #def:kulikov-types title="Type I, II, III Kulikov degenerations" defines="log monodromy; Type $\latI$; Type $\latII$; Type $\mathrm{III}$"}
 
 Let $T$ be the unipotent Picard--Lefschetz monodromy of a Kulikov model and let $N = \log T$ be the associated *log monodromy* operator, a nilpotent endomorphism.
-Depending on the nilpotency index (@def:index) of $N$, Kulikov models are classified into three types [@Kul77, Thm. II]:
+Depending on the nilpotency index of $N$, Kulikov models are classified into three types [@Kul77, Thm. II]:
 
 - **Type $\latI$** ($N = 0$): $\mcx_0$ is a smooth K3 surface.
 
@@ -161,13 +161,13 @@ The limiting mixed Hodge structure of a degeneration is the subject of the nilpo
 
 For a one-parameter degeneration of polarized K3 surfaces over a punctured disk, the unipotent monodromy operator $T \in \Orth(T_{2d})$ and its nilpotent logarithm $N = \log T$ induce a canonical monodromy weight filtration $W^{\bullet}$.
 
-The boundary components of $\bbcpt{\ftd}$ are classified by the nilpotency index (@def:index) of $N$:
+The boundary components of $\bbcpt{\ftd}$ are classified by the nilpotency index of $N$:
 
 - **Type $\latII$ degenerations (1-cusps)**: $N \neq 0$, $N^2 = 0$.
   The weight filtration is 3-step ($W_0 \subset W_1 \subset W_2 \subset W_3$), and $\Gr_2^W = I^\perp / I = \overline{T}_I$ has a pure polarized Hodge structure (@def:property-structure-stuff) of weight 2.
 
 - **Type $\mathrm{III}$ degenerations (0-cusps)**: $N^2 \neq 0$, $N^3 = 0$.
-  The weight filtration is of maximal (@def:maximal-lattice) length (@def:anticanonical-pair).
+  The weight filtration is of maximal length.
   These correspond to normal crossing varieties whose dual complex is a triangulation of $S^2$.
 :::
 

@@ -75,7 +75,7 @@ $$
 p_{a}(C)=1+\frac{1}{2}\qty{ C^{2}+C \cdot K_{S} } = 1 + \frac12\qty{4K_S^2 - 2K_S^2} = 1+K_{S}^{2}=0
 .
 $$
-An integral projective (@def:module-subcategories) curve with $p_a = 0$ is nonsingular and isomorphic to $\PP^1$ [@Har77, IV Ex. 1.8(b)].
+An integral projective curve with $p_a = 0$ is nonsingular and isomorphic to $\PP^1$ [@Har77, IV Ex. 1.8(b)].
 Finally $C^2 = 4K_S^2 = -4$.
 
 :::

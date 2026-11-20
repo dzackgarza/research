@@ -75,7 +75,7 @@ For an object $(M,b_M)$, the set $\Hom_{\mathcal B_{R,W}}\bigl((M,b_M),(0,0)\big
 
 ::: {.proof}
 
-Let $j\colon 0\to M$ and $k\colon M\to0$ be the unique $R$-linear maps; there is exactly one of each, since the zero module is initial and terminal (@def:terminal-coble-surface) in $R\text{-}\mathbf{Mod}$.
+Let $j\colon 0\to M$ and $k\colon M\to0$ be the unique $R$-linear maps; there is exactly one of each, since the zero module is initial and terminal (@def:initial-terminal) in $R\text{-}\mathbf{Mod}$.
 The zero module carries exactly one bilinear form, so $j^{*}b_M$ is that form and $j$ is a morphism $(0,0)\to(M,b_M)$; being the only linear map $0\to M$, it is the only such morphism.
 For the other direction, $k^{*}0=0$ by definition, and $0=b_M$ exactly when $b_M=0$.
 So there is exactly one morphism out of $(0,0)$ into any object, and the pair is initial.
@@ -93,7 +93,7 @@ For $R$ a Dedekind domain and $M$ an $R$-lattice the same holds for $F_M$ on $\m
 By @prop:form-initial-object the pair $(0,0)$ is initial in $\mathcal B_{R,W}$, and it is an $R$-lattice, so it is initial in the full subcategory (@def:subcategory) $\mathbf{Lat}_R$ as well: the unique morphism out of it is the same map.
 Now $0\perp M\cong M$, and $\Hom\bigl(M,(0,0)\bigr)$ is empty by @prop:form-initial-object, since $b_M\neq0$; an initial object admits a morphism to every object, so $M$ is not initial, and $F_M$ carries an initial object to a non-initial one.
 
-A left adjoint preserves colimits (@def:limit), and the initial object is the colimit of the empty diagram, so a left adjoint preserves initial objects; an equivalence does too, being part of an adjoint (@def:adjoint-morphism) equivalence.
+A left adjoint preserves colimits (@def:limit), and the initial object is the colimit of the empty diagram, so a left adjoint preserves initial objects; an equivalence does too, being part of an adjoint equivalence.
 Hence $F_M$ is neither.
 A functor admits a right adjoint exactly when it is a left adjoint, so $F_M$ has no right adjoint either.
 For $S=F_{H(R)}$ the hypothesis is $h_R\neq0$, which holds by @ex:hyperbolic-plane, so $S$ has no right adjoint.
@@ -141,7 +141,7 @@ $$
 $$
 and this set is stable under $p\mapsto-p$, since $c(-p,-p)=c(p,p)$.
 
-If $(P,c)$ were terminal (@def:terminal-coble-surface), this hom-set would be a singleton, and in particular nonempty; taking $p$ in it, $-p$ is in it too, so $p=-p$ and $2p=0$.
+If $(P,c)$ were terminal (@def:initial-terminal), this hom-set would be a singleton, and in particular nonempty; taking $p$ in it, $-p$ is in it too, so $p=-p$ and $2p=0$.
 Then
 $$
 0=c(2p,2p)=4\,c(p,p)=4\cdot1_R
@@ -160,7 +160,7 @@ For $R$ a Dedekind domain with $4\cdot1_R\neq0$ the same conclusions hold for $\
 ::: {.proof}
 
 An additive category (@def:preadditive) is an $\mathbf{Ab}$-category with a zero object and finite products [@Wei94, §A.4].
-A zero object is an object that is both initial and terminal (@def:terminal-coble-surface), so a category with no terminal object (@def:initial-terminal) has no zero object and is not additive.
+A zero object is an object that is both initial and terminal (@def:initial-terminal), so a category with no terminal object (@def:initial-terminal) has no zero object and is not additive.
 By @thm:form-no-terminal this applies to $\mathcal B_{R,R}$, and to $\mathbf{Lat}_R$ when $R$ is a Dedekind domain, under the hypothesis $4\cdot1_R\neq0$.
 An abelian category is additive by @def:abelian-category, so neither category is abelian.
 :::
@@ -168,11 +168,11 @@ An abelian category is additive by @def:abelian-category, so neither category is
 ## Hypotheses of the homological constructions {#sec-additive-hypotheses}
 
 The constructions of @sec-stable-duality each state a hypothesis on their base category.
-A chain complex is a family $C_n$ with $d_{n-1}d_n=0$, an equation naming the zero morphism; the category $\mathbf{Ch}(\mca)$ and its homology functors are built for $\mca$ additive (@def:chain-complexes).
+A chain complex is a family $C_n$ with $d_{n-1}d_n=0$, an equation naming the zero morphism; the category $\mathbf{Ch}(\mca)$ and its homology functors are built for $\mca$ additive (@def:preadditive).
 Normalization is an intersection of kernels and the Dold–Kan correspondence is stated for $\mca$ abelian (@thm:dold-kan).
 The bar resolution is the augmented simplicial object of the comonad of an adjunction, in a module category, and it computes the derived functors of an additive functor out of that category (@def:comonad-resolution).
 The projective model structure is stated for bounded-below complexes in an abelian category with enough projectives (@thm:projective-model-structure).
-A stable $\infty$-category has a zero object (@def:stable-infinity-category), and a prespectrum object is a diagram whose off-diagonal values are zero objects (@def:prespectrum).
+A stable $\infty$-category has a zero object (@def:preadditive), and a prespectrum object is a diagram whose off-diagonal values are zero objects (@def:preadditive).
 
 ::: {.theorem #thm:no-heart title="Hearts of $t$-structures"}
 
