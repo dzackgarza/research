@@ -152,14 +152,14 @@ def test_the_locus_probe_reproduces_its_record():
 def test_the_pages_that_discuss_the_semifan_state_the_hypothesis_as_one():
     """Item 2's substance, not only its wording: nothing implies coarsening is automatic.
 
-    The research statement conjectures that the Coble semifan coarsens the Coxeter fan.  That is
-    hypothesis (W) of @thm:semifan-recognizable-divisor for the Coble divisor, and the page and
-    the statement must both say it is a hypothesis: the general theory does not supply it.
+    The research statement conjectures that the Coble semifan coarsens or refines the Coxeter
+    fan.  That is hypothesis (W) of @thm:semifan-recognizable-divisor for the Coble divisor, and
+    the page must say it is a hypothesis: the general theory does not supply it.  The statement
+    itself was restored to the owner's own text (4aa693b1b0), which states the conjecture and
+    does not name (W); the page carries the naming, so only the page is asserted here.
     """
     statement = (REPO / "writing/research-statement/ResearchStatement.md").read_text(encoding="utf-8")
-    assert "Coarsening is a named hypothesis in that theory, not a consequence of it" in statement
-    assert "thm:semifan-recognizable-divisor" in statement
-    assert "a genuine statement about the Coble divisor and not a special case" in statement
+    assert "either refinements or coarsenings of the canonical Coxeter fans" in statement
     page = page_text()
     assert "#thm:semifan-stratum" in page and "hypothesis" in page
 
@@ -455,6 +455,9 @@ def test_the_coble_pair_semifan_table_merges_no_walls():
     )
     assert "| distinct walls | $9$ | $11$ | $10$ | $13$ |" in page
     assert "no two walls coincide" in page
+    # the degeneracy claim is stated for the record's pairs, not in general
+    assert "for the pairs the record lists $q(x)=q(y)=-2$" in page
+    assert "$x+y$ is isotropic there while" not in page
     assert "$4\\equiv 11$" not in page and "$3\\equiv 13\\equiv 10$" not in page
     record = REPORTS / "coble_672-zero-cusp-sterk-two-run.txt"
     assert record.exists()
