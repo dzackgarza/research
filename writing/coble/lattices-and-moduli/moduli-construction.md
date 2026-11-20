@@ -466,9 +466,31 @@ In the notation of @not:d2-plane-sextic-base, let $U\subset(\PP^2)^{10}$ be the 
 *$B$ and $\bar B$.* $B=V/\PGL_3$ is a quotient of a connected space, hence connected, and $\bar B=[B/S_{10}]$ has $B$ as a smooth cover, so it is connected.
 :::
 
+::: {.lemma #lem:d2-s10-not-free title="The $S_{10}$-action on the labelled base is not free"}
+
+The action of $S_{10}$ on $B=V/\PGL_3$ is not free. The sextic
+$$
+G=4x^6-12x^5y-12x^5z-3x^4y^2+30x^4yz+13x^4z^2+26x^3y^3-12x^3y^2z-26x^3yz^2-6x^3z^3-3x^2y^4-12x^2y^3z+39x^2y^2z^2+9x^2yz^3+x^2z^4-12xy^5+30xy^4z-26xy^3z^2+9xy^2z^3-xyz^4+4y^6-12y^5z+13y^4z^2-6y^3z^3+y^2z^4
+$$
+is irreducible and has exactly the ten ordinary double points
+$$
+[0:0:1],\ [1:0:1],\ [0:1:1],\ [-1:-1:1],\ [1:0:2],\ [0:1:2],\ [-1:-1:2],\ [1:2:0],\ [-2:-1:0],\ [1:-1:0],
+$$
+and it is invariant under the projectivity $R$ of order $3$ with matrix
+$$
+R=\begin{pmatrix}0&-1&0\\1&-1&0\\0&0&1\end{pmatrix},
+$$
+which permutes the ten points by the cycle $(A\,B\,C)(A'\,B'\,C')(X\,Y\,Z)$ and fixes $[0:0:1]$. Hence the class in $B$ of the labelled sextic is fixed by that $3$-cycle of $S_{10}$, and $S_{10}$ does not act freely on $B$; in particular the map of coarse spaces $B\to V/(\SL_3\times S_{10})$ is not a covering.
+:::
+
+::: {.proof}
+
+The ten points are the vertices $A=[1:0:1]$, $B=[0:1:1]$, $C=[-1:-1:1]$ and $A'=[1:0:2]$, $B'=[0:1:2]$, $C'=[-1:-1:2]$ of two triangles in perspective from the centre $[0:0:1]$, together with the intersections $X=BC\intersect B'C'$, $Y=CA\intersect C'A'$, $Z=AB\intersect A'B'$ of corresponding sides. The projectivity $R$ cycles $A,B,C$ and $A',B',C'$ and fixes the centre, so it permutes the ten points. The thirty conditions that the sextic have a double point at each of the ten points form a $30\times28$ matrix over $\QQ$; the computation `computations/reports/coble_787-s10-symmetric-sextic.py`, recorded in `computations/reports/coble_787-s10-symmetric-sextic-run.txt`, verifies in exact rational arithmetic that the ten points are distinct, that the matrix has rank $27$, that its one-dimensional kernel is spanned by $G$, that $G$ is irreducible over $\QQ$, that each of the ten points is an ordinary double point (the $2\times2$ Hessian of a dehomogenized equation is nonsingular there), and that $G\circ R=G$. An irreducible plane sextic has arithmetic genus $10$, and ten ordinary double points account for all of it, so $G$ has no further singular point and the ten points are its nodes. Since $G$ is invariant, $R$ carries the labelled sextic to the relabelling of its nodes by the cycle $(A\,B\,C)(A'\,B'\,C')(X\,Y\,Z)\neq e$, so that permutation fixes the class of the labelled sextic in $B$.
+:::
+
 ::: {.remark #qst:s10-free-on-B title="Freeness of $S_{10}$ on the labelled base, and why the index does not need it"}
 
-The action of $S_{10}$ on $B$ need not be free: a labelled ten-nodal sextic $(Z;p_1,\dots,p_{10})$ together with a projectivity $g$ with $gZ=Z$ and $gp_i=p_{\sigma(i)}$ for some $\sigma\neq e$ would be a fixed point. The index of $\Gamma_\Co$ in $\Gamma_\Co(\bar B)$ is nevertheless $10!$, because $\bar B$ is read as the quotient stack $[B/S_{10}]$: @lem:d2-labelling-cover gives the principal $S_{10}$-bundle of stacks $B\to[B/S_{10}]$ and the exact sequence, and @lem:gamma-co-labelled-index computes the index from it, with the faithfulness of the label action on $A_M$. No freeness of the $S_{10}$-action on $B$ is used, and the coarse map $B\to V/(\SL_3\times S_{10})$ is not asserted to be a covering.
+The action of $S_{10}$ on $B$ is not free (@lem:d2-s10-not-free): a labelled ten-nodal sextic $(Z;p_1,\dots,p_{10})$ together with a projectivity $g$ with $gZ=Z$ and $gp_i=p_{\sigma(i)}$ for some $\sigma\neq e$ is a fixed point, and one is exhibited there. The index of $\Gamma_\Co$ in $\Gamma_\Co(\bar B)$ is nevertheless $10!$, because $\bar B$ is read as the quotient stack $[B/S_{10}]$: @lem:d2-labelling-cover gives the principal $S_{10}$-bundle of stacks $B\to[B/S_{10}]$ and the exact sequence, and @lem:gamma-co-labelled-index computes the index from it, with the faithfulness of the label action on $A_M$. No freeness of the $S_{10}$-action on $B$ is used, and the coarse map $B\to V/(\SL_3\times S_{10})$ is not asserted to be a covering.
 :::
 
 ::: {.definition #def:coble-family-unpolarized title="D2a: the family of unpolarized Coble surfaces" defines="Coble surface; unlabelled base; labelled base; $\Gamma_\Co$; $\fco$"}

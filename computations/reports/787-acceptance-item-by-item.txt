@@ -2,41 +2,56 @@ research#787 (D2 of research#786) -- acceptance item by item
 
 Commit series: ed3c6e3e11 (U1, the stack monodromy), dd8aca0318 (the loop model is
 cited without the discrete-group sequence), e9d2187929 (the containment in
-Orth(T_Co) for the right reason), 192cbfec80 (U3 and the honest base B), and this
-commit (item 5: the citation checker and the two pages).  Paths are relative to the
+Orth(T_Co) for the right reason), 192cbfec80 (U3 and the honest base B),
+1e87c007ec (item 5: the citation checker and the two pages), cfaeb51a38 (#780: the
+label cover of stacks, the index 10! and the reverse inclusion), and this commit
+(U2's last open point: S_10 is not free on B).  Paths are relative to the
 repository root; line numbers are those of this commit.
 
 REVIEW ITEMS (the report of 2026-11-20 06:48:27, pinned to main@d277e333fc)
 
-  U1  MET.  The D2a group is the monodromy group of the named family.  The base is
-      the space B = V/PGL_3, which carries the family and the local system, and
-      Gamma_Co = rho(pi_1(B,s)) = rho(pi_1(V,s)) (moduli-construction.md:416,
-      lem:d2-plane-sextic-freeness(4); the group paragraph at :462).
-  U2  NOT MET.  The principal S_10-cover and the exact index 10! are not proved.
-      What is proved is that S_10 acts freely on V, that B -> Bbar is the quotient
-      by the finite group, that every path lifts, that pi_1(Bbar) -> S_10 is onto
-      with kernel the image of pi_1(B), and that this image has index 10!
-      (moduli-construction.md:554, lem:d2-labelling-cover).  Freeness of S_10 on B
-      is qst:s10-free-on-B (:437), open.  Consequences for research#780 are listed
-      at the end of this file.
+  U1  MET.  The D2a group is the monodromy group of the named family: the base is
+      the space B = V/PGL_3, the family and the local system descend to it, and
+      Gamma_Co = rho(pi_1(B,s)) = rho(pi_1(V,s)) (moduli-construction.md:427,
+      lem:d2-plane-sextic-freeness(4); the group paragraph at :516).
+  U2  MET.  The principal S_10-cover is a torsor of stacks, not of coarse spaces:
+      B -> Bbar = [B/S_10] is a principal S_10-bundle in the category of stacks,
+      S_10 x B -> B x_Bbar B an equivalence, of degree 10!, and
+      1 -> pi_1(B,s) -> pi_1(Bbar,p(s)) -> S_10 -> 1 is exact
+      (moduli-construction.md:625, lem:d2-labelling-cover, proved there by the
+      fibre-product computation and the loop model; no freeness of S_10 on B is
+      used).  The index is 10!: Gamma_Co(B) = Gamma_Co(Bbar) cap ker(rho-bar) and
+      [Gamma_Co(Bbar) : Gamma_Co(B)] = |Theta| = 10! (lattices.md:211,
+      lem:gamma-co-labelled-index, with the faithfulness of the label action on A_M
+      proved from the Z/2-basis [h/2], [e_i/2]).  The reverse inclusion of
+      thm:gamma-co-is-stable (lattices.md:291) is now
+      Gamma_Co = Gamma_Co(Bbar) cap ker(rho-bar) = Otilde^+(T_Co), obtained from
+      Gamma_Co(Bbar) = Gamma_{10A_1} (thm:gamma-co-sextic-group(0)-(2)) and not from
+      a period map.
+      The freeness question the earlier rounds left open is answered negatively:
+      S_10 does not act freely on B, by an explicit irreducible ten-nodal sextic
+      invariant under a projectivity of order 3 permuting its nodes
+      (moduli-construction.md:469, lem:d2-s10-not-free;
+      computations/reports/coble_787-s10-symmetric-sextic.py and its run record).
+      That is why the coarse map is not a covering and the stack reading is used.
   U3  MET.  A non-identity projectivity of P^2 has its fixed points in the union of
       a line and a point; a line carries at most three nodes of the irreducible
       sextic (else Z.L >= 8 > 6 puts L in Z by Bezout); so at most four of the ten
       labelled nodes are fixed, PGL_3 acts freely, and the SL_3-stabilizer is mu_3
-      (moduli-construction.md:416, lem:d2-plane-sextic-freeness(1)-(2)).
-  U4  NOT MET.  No family over Delta_2 and no base change: def:coble-family-degree-
-      two, moduli-construction.md:600 and its base at :611-612.
+      (moduli-construction.md:427, lem:d2-plane-sextic-freeness(1)-(2)).
+  U4  NOT MET.  No family over Delta_2 and no base change:
+      def:coble-family-degree-two, moduli-construction.md:674 and its base at :685.
   U5  NOT MET.  Only the smooth nondegenerate h_Co = F_1 + F_2 is admitted
-      (moduli-construction.md:602-610); the other nef degree-2 form h = 2F_1 + R
-      recorded at :657 is not in the moduli problem.
-  U6  NOT MET.  The Enriques-quotient reading of the vector at :582, :588, :638,
-      :646, and the statement/proof mismatch of lem:d2-degree-two-polarization(4)
-      (:589 statement, :597 proof for an involution).
-  U7  NOT MET.  moduli-construction.md:630 invokes prop:coble-polarized-moduli(2)-
+      (moduli-construction.md:676-680); the other nef degree-2 form h = 2F_1 + R
+      recorded at :731 is not in the moduli problem.
+  U6  NOT MET.  The Enriques-quotient reading of the vector at :656, :663, :720,
+      and the statement/proof mismatch of lem:d2-degree-two-polarization(4)
+      (:663 statement, :671 proof for an involution).
+  U7  NOT MET.  moduli-construction.md:704 invokes prop:coble-polarized-moduli(2)-
       (3), whose statements at polarizing-divisors-for-coble-moduli.md:261-262 are
       Picard-general.
-  U8  NOT MET.  "up to normalization" at moduli-construction.md:623; the properness
-      step of thm:normalization (lattices.md:588, applied at :615) uses
+  U8  NOT MET.  "up to normalization" at moduli-construction.md:697; the properness
+      step of thm:normalization (lattices.md:687, applied at :714) uses
       lem:locally_closed_embedding_BB (lattices.md:106-114) outside its stated
       groups.
 
@@ -44,74 +59,58 @@ ACCEPTANCE ITEMS
 
 ITEM 1. D2a: the unpolarized family, its base, its fibres, its lattice local system.
 VERDICT: MET.
-  U1 and U3 above are proved.  The base is the space B = V/PGL_3
-  (moduli-construction.md:409-411), a principal PGL_3-bundle over which the family
-  and the local system descend (lem:d2-plane-sextic-freeness(4), :416;
-  lem:d2-unpolarised-family(3), :465; lem:d2-local-system, :497), and
-  Gamma_Co = rho(pi_1(B,s)) = rho(pi_1(V,s)) (:462).
-  U2 does not enter this item: the page states only the proved "index dividing
-  10!" (lem:d2-local-system(5)) and leaves the exact index to research#780.
+  U1, U2 and U3 above are proved.  The base is the space B = V/PGL_3
+  (moduli-construction.md:421-422), a principal PGL_3-bundle over which the family
+  and the local system descend (lem:d2-plane-sextic-freeness(4), :427;
+  lem:d2-unpolarised-family(3), :519; lem:d2-local-system, :551), and
+  Gamma_Co = rho(pi_1(B,s)) = rho(pi_1(V,s)) (:516).  The unlabelled base is the
+  quotient stack [B/S_10], which carries the family and the local system and whose
+  monodromy group contains Gamma_Co with index 10! (:625, lattices.md:211).
 
 ITEM 2. D2b: the degree-2 family, its base, its fibres, its lattice local system.
 VERDICT: NOT MET, unchanged (U4-U6).
 
 ITEM 3. The D2a period map is DK13 Proposition 3.2, hypotheses checked.
-VERDICT: MET, unchanged.  lem:d2a-period-map, moduli-construction.md:568; DK13
+VERDICT: MET, unchanged.  lem:d2a-period-map, moduli-construction.md:642; DK13
   Prop. 3.2.
 
 ITEM 4. The base of D2b is all of Delta_2.
 VERDICT: NOT MET, unchanged (U7-U8).
 
 ITEM 5. Every page using Gamma_Co or Gamma_{Co,2} cites the D2 definitions.
-VERDICT: MET.
-  computations/reports/787-gamma-citation-check.py now matches the braced spelling
-  \Gamma_{\Co} as well as \Gamma_\Co; it reports 16 pages using the symbols and 0
-  citing no D2 definition, exit 0.  The two pages the review named now cite the
-  definition at the point of use:
-    writing/coble/coble-moduli/coble-surface-structure-and-classification.md:107
-      (the question qst:coble-mukai-naturality)
-    writing/research-statement/ResearchStatement.md:155
-  Before the repair the checker reported 14 pages and 0 uncited, missing exactly
-  these two.
+VERDICT: MET.  computations/reports/787-gamma-citation-check.py matches the braced
+  spelling as well as the unbraced one; 16 pages use the symbols, 0 cite no D2
+  definition, exit 0.  The two pages the review named cite the definition at the
+  point of use: coble-surface-structure-and-classification.md:107 and
+  ResearchStatement.md:155.
 
 CITATION POLICY OF THIS ROUND
   The owner's instruction is to cite by numbered statement only, with no printed
-  page, PDF page or offset, and to replace any such citation touched.  The pages
-  touched this round carry no printed-page citation on the lines edited, so none
-  was replaced.  The repository's quoted standard (numbered statement and printed
-  page) is overridden here by that instruction; the sentinel test
+  page, PDF page or offset, and to replace any such citation touched.  Everything
+  written or edited in this round carries no printed page, and the two pages this
+  issue owns now carry none at all: moduli-construction.md and lattices.md have 0
+  occurrences of "printed p.", the sweep having been made in cd296211e6.  The
+  repository's quoted standard (numbered statement and printed page) is overridden
+  here by that instruction; the sentinel test
   tests/engineering/test_citation_printed_pages.py pins only the Gur99 citation in
-  the-heegner-line-and-the-coble-arithmetic-group.md, which this round does not
-  touch, so it is unaffected.  The 25 printed-page citations on
-  moduli-construction.md and the 38 on lattices.md are pre-existing and are not
-  swept here.
+  the-heegner-line-and-the-coble-arithmetic-group.md, which this issue does not
+  touch.
 
 CHECKS RUN AT THIS COMMIT
-  python3 computations/reports/787-gamma-citation-check.py
-    exit 0; 16 pages using the symbols, 0 citing no D2 definition.
+  python3 computations/reports/coble_787-s10-symmetric-sextic.py
+    exit 0; the ten points distinct, the 30x28 matrix of rank 27, G irreducible,
+    ten ordinary double points, G o R = G, the permutation a nontrivial 3-cycle.
   python3 scripts/docs_check.py --source
     exit 1; 24 findings, all "citation is in no bibliography" on other pages; none
     on moduli-construction.md, lattices.md, coble-surface-structure-and-
     classification.md or ResearchStatement.md.
-  python3 tests/engineering/test_coble_658_page_invariants.py
-    3/3 (every page parses under pandoc, every @ref resolves, no undefined macro).
-  python3 tests/engineering/test_coble_658_no_stale_text.py
-    3/4; the failure is the pre-existing absence of rmk:gamma-co-nodal-pair-
-    proposal from moduli-construction.md and lattice-and-diagram-conventions.md.
+  python3 tests/engineering/test_coble_658_page_invariants.py 3/3
+  python3 tests/engineering/test_coble_780_labelled_index.py 4/4
+  python3 tests/engineering/test_coble_780_sextic_group.py 3/3
   The pytest suite itself was not run: it imports sage_extensions, which is not
   available in this container.
 
-CONSEQUENCE FOR RESEARCH#780 (not edited: lattices.md is that issue's page)
-  lem:gamma-co-labelled-index (lattices.md:213-227) and the second proof of
-  thm:gamma-co-is-stable (lattices.md:232) use the exactness of
-  1 -> pi_1(B) -> pi_1(Bbar) -> S_10 -> 1, that is the freeness of S_10 on B
-  (qst:s10-free-on-B, moduli-construction.md:437).  Until that is settled,
-  lem:gamma-co-labelled-index proves only that the image of pi_1(B) has index 10!,
-  and the second proof of thm:gamma-co-is-stable gives Gamma_Co = Otilde^+ only
-  together with that freeness; the first proof there gives Gamma_Co . {+-id} =
-  Otilde^+ without it.  The 10! of thm:gamma-co-sextic-group is a separate
-  arithmetic statement and is not affected.
-
 NEXT
-  U4: a family over Delta_2 and a map from its base to the D2a base, or the
-  statement that the two bases are compared only through the period space.
+  The next acceptance item still open is ITEM 2/ITEM 4 (D2b): U4, a family over
+  Delta_2 and a map from its base to the D2a base, or the statement that the two
+  bases are compared only through the period space.
