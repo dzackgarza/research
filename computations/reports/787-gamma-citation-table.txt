@@ -1,0 +1,20 @@
+research#787 acceptance item 4: pages using Gamma_Co or Gamma_{Co,2} and the D2 citation
+check: computations/reports/787-gamma-citation-check.py   (exit 0 iff none missing)
+
+page                                                                     first use  cites D2 definition
+writing/coble/coble-moduli/cusp-correspondence-morphism-chain.md                79  ADDED THIS COMMIT: def:coble-family-degree-two
+writing/coble/compactifications/reflection-data-and-replacements.md             13  def:coble-family-unpolarized
+writing/coble/computations/discriminant-form-descent.md                        340  def:coble-family-unpolarized
+writing/coble/cusp-correspondence/cusp-diagram-calculations.md                 232  def:coble-family-degree-two
+writing/coble/cusp-correspondence/enriques-to-coble-cusp-correspondence.md       267  def:coble-family-unpolarized
+writing/coble/heegner-report/coble-heegner-research-report.md                 1055  def:coble-family-unpolarized
+writing/coble/lattices-and-moduli/lattices.md                                  121  def:coble-family-unpolarized, def:coble-family-degree-two
+writing/coble/lattices-and-moduli/moduli-construction.md                         8  def:coble-family-unpolarized, def:coble-family-degree-two
+writing/coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md      1704  def:coble-family-unpolarized
+writing/coble/reference-tables/lattice-and-diagram-conventions.md              142  def:coble-family-unpolarized, def:coble-family-degree-two
+writing/coble/stable-limits/ksba.md                                            232  def:coble-family-degree-two
+writing/coble/stable-limits/polarizing-divisors-for-coble-moduli.md            465  def:coble-family-unpolarized
+writing/dissertation/GAPS.md                                                   969  def:coble-family-unpolarized
+writing/open-questions.md                                                       38  ADDED THIS COMMIT: def:coble-family-unpolarized
+
+pages using the symbols: 14  pages citing no D2 definition: 0
