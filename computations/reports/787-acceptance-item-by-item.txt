@@ -4,9 +4,10 @@ Commit series: ed3c6e3e11 (U1), dd8aca0318 (the loop model), e9d2187929 (the
 containment in Orth(T_Co)), 192cbfec80 (U3 and the honest base B), 1e87c007ec
 (item 5), cfaeb51a38 (#780: the label cover of stacks and the index 10!),
 3def5c74d6 (U2: S_10 is not free on the labelled base), db792b527c (U4: the degree-2
-family forgets to the unpolarized one), and this commit (U5: the degree-2 datum is a
-class, and the degenerate case).  Paths are relative to the repository root; line
-numbers are those of this commit.
+family forgets to the unpolarized one), a9c53d4710 (U5's nondegenerate-form half),
+and this commit (U4: an explicit family of degree-2 polarized Coble surfaces over the
+labelled base).  Paths are relative to the repository root; line numbers are those of
+this commit.
 
 REVIEW ITEMS (the report of 2026-11-20 06:48:27, pinned to main@d277e333fc)
 
@@ -24,14 +25,21 @@ REVIEW ITEMS (the report of 2026-11-20 06:48:27, pinned to main@d277e333fc)
       point, a line carries at most three nodes, so PGL_3 acts freely on V with
       SL_3-stabilizer mu_3 (moduli-construction.md:427,
       lem:d2-plane-sextic-freeness(1)-(2)).
-  U4  NOT MET as a construction over Delta_2; the orbifold reading is refuted.
-      Proved (moduli-construction.md:731, lem:d2b-forgets-to-d2a): every base of a
-      degree-2 family carries the underlying unpolarized family with the same T, so
-      its monodromy is subordinated to Gamma_Co(Bbar) through the classifying map
-      Y -> Bbar (1)-(2); and Delta_2 read as D(T_Co)/R_gEn carries no family of Coble
-      surfaces with the tautological local system (3).  The marked space is
-      D(T_Co)/Gamma_{Co,2} and Delta_2 is its image (4).  Missing: a family over the
-      marked space itself.
+  U4  MET as a construction over the open part of the normalization of Delta_2.
+      moduli-construction.md:760, lem:d2b-family-over-the-labelled-base: for every
+      label i the cubic through the nine nodes other than p_i has class
+      F_i = 3eps_0 - sum_{k != i} eps_k with F_i^2 = 0 and F_i.K_S = 0, and for
+      i != j the class h_ij = F_i + F_j is primitive, nef, of square 2 and lies in
+      K_S^perp, so (S, h_ij) is a degree-2 polarized Coble surface; the f^*h_ij are
+      flat sections, so the family exists over B, with monodromy
+      Otilde^+(T_Co) (4), and its period map has open image in the normalization of
+      Delta_2 (5).  Also from db792b527c (moduli-construction.md:731,
+      lem:d2b-forgets-to-d2a): any degree-2 base carries the underlying unpolarized
+      family and maps to Bbar, so Gamma_{Co,2} lies in Gamma_Co(Bbar); and Delta_2
+      read as D(T_Co)/R_gEn carries no family with the tautological local system.
+      With (4) the two-sided bound is Otilde^+(T_Co) <= Gamma_{Co,2} <= Gamma_Co(Bbar).
+      Missing: whether the image is all of the normalization, which is the
+      surjectivity of U7/U8 and not a construction.
   U5  PARTLY MET, NOT MET as stated.  The restriction to the nondegenerate form is
       repaired: item 2 of def:coble-family-degree-two (:695) now takes the class
       (nef, square 2), not the decomposition, and the degenerate alternative is
@@ -40,7 +48,7 @@ REVIEW ITEMS (the report of 2026-11-20 06:48:27, pinned to main@d277e333fc)
       Still NOT MET: the objects are the smooth classical Coble surfaces only, and
       the nodal quotients with a 1/4(1,1) singularity that [@AEGS25, Def. 2.7]
       admits are not in the moduli problem.
-  U6  NOT MET.  The Enriques-quotient reading of the vector at :656, :663, :770, and
+  U6  NOT MET.  The Enriques-quotient reading of the vector at :656, :663, :798, and
       the statement/proof mismatch of lem:d2-degree-two-polarization(4)
       (:663 statement, :671 proof for an involution).
   U7  NOT MET.  moduli-construction.md:725 invokes prop:coble-polarized-moduli(2)-
@@ -67,9 +75,10 @@ VERDICT: NOT MET (U5-U6; U4 answered as a comparison, not as a base equality).
   MET within it: the objects, the fibres and the local system are those of
   def:coble-family-degree-two (:695); the polarization is the class, not the
   decomposition (:674, lem:d2b-polarization-is-a-class), so the degenerate
-  alternative is admitted; and the family is the underlying unpolarized family with
-  a flat section, so it exists over every base on which the pairs do and its
-  monodromy is subordinated to Gamma_Co(Bbar) (:731, lem:d2b-forgets-to-d2a(1)-(2)).
+  alternative is admitted; the family exists over the labelled base, explicitly, as
+  the ten cubic classes (:760, lem:d2b-family-over-the-labelled-base(1)-(3)); and it
+  exists over every base on which the pairs do, with monodromy subordinated to
+  Gamma_Co(Bbar) (:731, lem:d2b-forgets-to-d2a(1)-(2)).
   NOT MET: the objects are smooth classical Coble surfaces only, so the nodal
   quotients of [@AEGS25, Def. 2.7] are outside the moduli problem; and the base is
   not Delta_2 as a marked space (lem:d2-degree-two-base(2), :718;
@@ -111,6 +120,9 @@ CITATION POLICY OF THIS ROUND
   touch.
 
 CHECKS RUN AT THIS COMMIT
+  python3 computations/reports/coble_787-explicit-d2b-family.py
+    exit 0; all 90 ordered pairs give F_i^2 = F_i.K_S = 0, F_i.F_j = 1, h_ij
+    primitive of square 2 in K_S^perp, and h-tilde of square 4.
   python3 computations/reports/coble_787-degenerate-polarization.py
     exit 0; K_S^2 = -1; the (-2)-class R = H - E_1 - E_2 - E_3 has R^2 = -2 and
     R.K_S = 0; h = 2F_1 + R' has h^2 = 2, h.K_S = 0, h.R' = 0; the printed

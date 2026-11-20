@@ -1,0 +1,7 @@
+ordered pairs of distinct labels: 90
+every F_i is a curve class of square 0 lying in K_S^perp (an elliptic cubic)
+h_ij = F_i + F_j: 90 classes, each primitive, of square 2, in K_S^perp,
+  and each is nef as a sum of two nef classes (F_i is the class of an
+  irreducible elliptic cubic, so F_i^2 = 0 forces F_i nef)
+K3 pullback h-tilde_ij = f^*h_ij has square 4
+ALL ASSERTIONS HOLD

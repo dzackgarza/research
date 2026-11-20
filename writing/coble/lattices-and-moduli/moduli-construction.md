@@ -757,6 +757,34 @@ and not by an identification: the marked period space of the degree-$2$ family i
 (4) By (1) and (2) the forgetful morphism and the period maps are the only comparison available. The period map of the degree-$2$ family lands in $\bD(T_\Co)/\Gamma_{\Co,2}$ by the definition of $\Gamma_{\Co,2}$ as the monodromy group (@def:gamma-co-groups(5), @eq-period-map-equivariance), and the second arrow is the quotient by the subgroup $R_{\gent}$ of @lem:d2-degree-two-base(1); the composite is finite with image $\Delta_2$ (@lem:d2-degree-two-base(2)). Since $\Gamma_{\Co,2}\subseteq\Orth^+(T_\Co)$ by (2) and $s_\zeta\in R_{\gent}$ lies outside $\Orth^+(T_\Co)$, $\Gamma_{\Co,2}\neq R_{\gent}$, which is @thm:coble-monodromy-versus-enriques(3); so the first arrow is not an isomorphism and $\Delta_2$ is the image, not the marked space.
 :::
 
+::: {.lemma #lem:d2b-family-over-the-labelled-base title="A family of degree-$2$ polarized Coble surfaces over the labelled base"}
+
+Let $b=(Z;p_1,\dots,p_{10})\in V$ and, for each label $i$, let $C_i\subset\PP^2$ be the cubic through the nine nodes other than $p_i$, with class $F_i=3\varepsilon_0-\sum_{k\neq i}\varepsilon_k$ in the local system $\bM$ of @lem:d2-local-system(2).
+
+1. $F_i^2=0$ and $F_i\cdot K_S=0$; $F_i$ is nef on the locus where $C_i$ is irreducible.
+2. For $i\neq j$ the class $h_{ij}\definedas F_i+F_j$ is primitive, nef, of square $2$, and lies in $K_S^{\perp}$; hence $(S_b,h_{ij})$ is a degree-$2$ polarized Coble surface in the sense of @def:coble-polarization-classes(2) and @lem:d2b-polarization-is-a-class.
+3. The classes $F_i$ are values of global sections of $\bM$, so the $\tilde h_{ij}\definedas f^*h_{ij}$ are flat sections of the local system $f^*(K^{\perp})$ and $(\mcs_V\to V,\ \mcx_V\to\mcs_V,\ \iota_V,\ \tilde h_{ij})$ is an object of @def:coble-family-degree-two over $V$, descending to the labelled base $B$.
+4. Its monodromy group is that of the underlying unpolarized family (@lem:d2b-forgets-to-d2a(1)), namely $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable); hence
+$$
+\widetilde\Orth^+(T_\Co)\ \subseteq\ \Gamma_{\Co,2}\ \subseteq\ \Gamma_\Co(\bar B),
+$$
+the second inclusion being @lem:d2b-forgets-to-d2a(2).
+5. The period map of this family lands in $\bD(T_\Co)/\Gamma_{\Co,2}$ and its composite with the quotient to $\bD(T_\Co)/R_{\gent}$ has open image, since the period map of the underlying family is an isomorphism onto an open subset (@lem:d2a-period-map(3)). So the family is a family of degree-$2$ polarized Coble surfaces over the open part of the normalization of $\Delta_2$ (@lem:d2-degree-two-base(1)).
+:::
+
+::: {.proof}
+
+(1) The class of the proper transform of $C_i$ is $3\varepsilon_0-\sum_{k\neq i}\varepsilon_k$; its square is $9-9=0$ and its intersection with $K_S=-3H+\sum_kE_k$ is $-9+9=0$. An irreducible curve meets every effective divisor it does not contain in a nonnegative number, and its own self-intersection is $0$, so its class is nef; hence $F_i$ is nef wherever $C_i$ is irreducible, which is an open condition on $V$.
+
+(2) $F_i\cdot F_j=9-8=1$ for $i\neq j$, so $h_{ij}^2=0+2\cdot1+0=2$, and $h_{ij}\cdot K_S=0+0=0$. The coefficient vector has a coordinate $1$ at $E_i$ and at $E_j$, so it is primitive. Nef is the sum of two nef classes. The identification of $(S_b,h_{ij})$ with a degree-$2$ polarized Coble surface is @def:coble-polarization-classes(2) together with the class reading of @lem:d2b-polarization-is-a-class(3).
+
+(3) The eleven classes $\varepsilon_0,\dots,\varepsilon_{10}$ are values of global sections of $\bV$ (@lem:d2-local-system(2)), so $F_i$ is a global section of $\bM$ and $\tilde h_{ij}$ one of $f^*(K^{\perp})$; the family is @lem:d2-unpolarised-family(2) with the section added, and it descends to $B$ by @lem:d2-unpolarised-family(3).
+
+(4) By @lem:d2b-forgets-to-d2a(1) the monodromy group of the family is that of the underlying unpolarized family, which is $\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable); by @lem:d2b-forgets-to-d2a(2) the monodromy group of any degree-$2$ family is contained in $\Gamma_\Co(\bar B)$. The two bounds are the display.
+
+(5) The period map of a degree-$2$ family is the map of its underlying unpolarized family, which is an isomorphism onto an open subset of $\bD(T_\Co)/\Orth(T_\Co)$ (@lem:d2a-period-map(3)); its lift to $\bD(T_\Co)/\Gamma_{\Co,2}$ is therefore a homeomorphism onto an open subset, and the image under the quotient by $R_{\gent}\supseteq\Gamma_{\Co,2}$ is open in $\bD(T_\Co)/R_{\gent}$, whose quotient by $R_{\gent}$ is the normalization of $\Delta_2$ (@lem:d2-degree-two-base(1)). The computation `computations/reports/coble_787-explicit-d2b-family.py`, recorded in `computations/reports/coble_787-explicit-d2b-family-run.txt`, verifies items (1)--(3) for all $90$ ordered pairs of labels.
+:::
+
 ::: {.remark #rmk:d2-degree-two-vs-DK13 title="The moduli space $\mcm_\Co(2)$ of Dolgachev--Kondo"}
 
 [@DK13, §8] considers, for an unnodal Coble surface, a polarization $h=[F_1+F_2]$ of degree $2$, corresponding to an embedding $U\injects E$ of the Enriques lattice into $K_S^{\perp}$, and writes the resulting moduli space $\mcm_\Co(2)$; the rational map $\Phi'\colon\mcm_\Co(2)\dashrightarrow\mcm_\Co$ has degree $2^7\cdot17\cdot31$ [@DK13, §8]. That is the same moduli problem as @def:coble-family-degree-two: by @lem:d2-degree-two-polarization the class $h_\Co=F_1+F_2$ is the vector $\tilde h$ of type $\Gamma_{\tilde h}$, so the marked space of $\mcm_\Co(2)$ is $\bD(T_\Co)/\Gamma_{\tilde h}$, which is the normalization of $\Delta_2$ by @lem:d2-degree-two-base(1); and the degree of $\Phi'$ is the index $[\Orth(T_\Co):\Gamma_{\tilde h}]=[\Orth(T_\Co):R_{\gent}]=2^7\cdot17\cdot31=67\,456$ of @prop:coble-degree-two-space(2), as it must be. The unnodal locus is the complement of the $(-2)$-Heegner divisors in $\bD(T_\Co)$, so $\mcm_\Co(2)$ is an open subset of the normalization of $\Delta_2$ and the two agree birationally. The two objects are therefore not different, as @rmk:degree-two-two-meanings(3) formerly recorded, but the same moduli problem read on the two sides of the cover.
