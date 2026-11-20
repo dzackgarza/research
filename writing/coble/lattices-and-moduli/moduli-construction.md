@@ -581,9 +581,9 @@ the image lying in the $(-1)$-eigenspace because $\iota$ is nonsymplectic.
 
 ::: {.remark #rmk:stacks-line-by-line title="Each stack in the chain: its base ring, and each property with its source"}
 
-The functor of @def:coble-moduli-functor-z is modelled on the groupoid formulation of Huybrechts, *Lectures on K3 Surfaces*, §1.3: a category fibred in groupoids over $(\mathbf{Sch}/S)$ whose objects are families together with the extra structure and whose morphisms are the Cartesian squares respecting it [@Huy16, §1.3]. The lines below give, for each stack the programme uses, the base and the status of each property.
+The functor of @def:coble-moduli-functor-z is modelled on the groupoid formulation of Huybrechts, *Lectures on K3 Surfaces*, §1.3: a category fibred in groupoids over $(\mathbf{Sch}/S)$ whose objects are families together with the extra structure and whose morphisms are the Cartesian squares respecting it Huybrechts, *Lectures on K3 Surfaces*, §1.3. The lines below give, for each stack the programme uses, the base and the status of each property.
 
-1. *The degree-$2d$ polarized K3 stack* $M_d$. Over $S=\Spec\CC$ the functor is coarsely represented by a quasi-projective variety [@Huy16, Theorem 1.1]; over a general base $S$ it is coarsely represented by a separated algebraic space locally of finite type [@Huy16, Theorem 1.2]; and as a groupoid it is a separated Deligne--Mumford stack of finite type [@Huy16, Theorem 1.3].
+1. *The degree-$2d$ polarized K3 stack* $M_d$. Over $S=\Spec\CC$ the functor is coarsely represented by a quasi-projective variety Huybrechts, *Lectures on K3 Surfaces*, Theorem 1.1; over a general base $S$ it is coarsely represented by a separated algebraic space locally of finite type Huybrechts, *Lectures on K3 Surfaces*, Theorem 1.2; and as a groupoid it is a separated Deligne--Mumford stack of finite type Huybrechts, *Lectures on K3 Surfaces*, Theorem 1.3.
 2. *The unpolarized K3 moduli.* Kondo, *K3 Surfaces*, defines the moduli space through the period domain as a complex analytic object [@Kon20, Definition 5.12], and complete deformation families analytically [@Kon20, Definition 5.8, Definition 5.13]. Nothing read there gives an algebraic moduli stack of finite type for the unpolarized problem, which is consistent with the family not being bounded; the statements the volume uses are analytic.
 3. *Cossec--Verra polarized Enriques surfaces.* $\mcM_{\mathrm{CV,ample}}$ is a quasi-separated Artin stack of finite type over $\ZZ$ (Liedtke, arXiv:1007.0787, the theorem stated in the introduction) and is Deligne--Mumford over $\ZZ[1/2]$.
 4. *The Coble stack* $\mcM_\Co$ of @def:coble-moduli-functor-z. Base $\ZZ[1/2]$; a stack for the fppf topology (@lem:coble-moduli-functor-fppf); **not** Deligne--Mumford and **not** separated, the automorphism groups being infinite ([@CD12, §5]; @rmk:coble-automorphisms-infinite); algebraicity over $\ZZ[1/2]$ **open**, and the boundedness it would need is not established.
@@ -1777,6 +1777,22 @@ Under the markings both $H^2$ are identified with $L$, so the two Hodge structur
 :::
 
 *What this closes.* @thm:coble-period-map-of-the-stack(2)'s injectivity uses exactly this: two labelled objects with the same period have the same chamber (the marking determines it), so they are isomorphic, and the isomorphisms between them are the automorphisms of either. The chamber/ample-class item of @thm:gamma-co-is-the-stack-monodromy's ledger is therefore supplied by @lem:pseudo-ample-injectivity-from-the-chamber, and is no longer owed.
+
+::: {.remark #rmk:the-huybrechts-model title="The marked-$\mathrm{K3}$ model of Huybrechts, *Lectures on K3 Surfaces*, Ch. 7, and the Coble problem as its $\iota$-anti-invariant part"}
+The Coble computation can be modelled on the unpolarized marked problem, and every step of @thm:gamma-co-is-the-stack-monodromy has a counterpart there.
+
+| step | the Coble route on this page | the marked-$\mathrm{K3}$ model, by number |
+|---|---|---|
+| objects | labelled Coble covers with a marking of $M$ (§@lem:every-object-of-the-functor-is-labellable) | pairs $(X,\varphi)$, $\varphi\colon H^2(X,\ZZ)\iso\Lambda$ a marking: Huybrechts, *Lectures on K3 Surfaces*, §3.3 |
+| the space | a stack with infinite isotropy ($\Aut(S)\neq1$) | the moduli space $N$ of marked $\mathrm{K3}$ surfaces, a fine $20$-dimensional complex manifold, not Hausdorff: Huybrechts, *Lectures on K3 Surfaces*, §3.3 |
+| the period map | $\mathfrak p\colon\mcM^{\mathrm{lab}}_\Co\to\qty[\widetilde\Orth^+(T_\Co)\backslash\bD]$ | the global period map of the universal family over $N$: Huybrechts, *Lectures on K3 Surfaces*, §3.3 |
+| injectivity | @lem:pseudo-ample-injectivity-from-the-chamber | Huybrechts, *Lectures on K3 Surfaces*, Thm. 3.4, the global Torelli theorem, the period map of marked polarized $\mathrm{K3}$ surfaces being an open embedding; and Huybrechts, *Lectures on K3 Surfaces*, §7.5.2 for the lifting of a Hodge isometry carrying a polarization to a polarization |
+| local Torelli | @thm:coble-period-map-of-the-stack(3) | local Torelli, used to glue the deformation spaces into $N$: Huybrechts, *Lectures on K3 Surfaces*, §3.3 |
+| existence | [@Dol96, Thm. 3.1] | Huybrechts, *Lectures on K3 Surfaces*, Thm. 3.1, surjectivity of the period map |
+| monodromy | the torsor plus Noohi's Theorem 18.19 | the monodromy group is $\operatorname{Im}\rho$ for $\rho\colon\pi_1(S,t)\to\Orth(H^2(X_t,\QQ))$: Huybrechts, *Lectures on K3 Surfaces*, §4.3, with the discussion of Huybrechts, *Lectures on K3 Surfaces*, §7.5.3 |
+
+*What the model gives, and the one place the analogy is not an identity.* In the unpolarized marked problem the monodromy group is $\widetilde\Orth^+(\Lambda_{\mathrm{K3}})=\Orth^+(\Lambda_{\mathrm{K3}})$, and the two agree because $\Lambda_{\mathrm{K3}}$ is unimodular, so the discriminant kernel is everything. Here $T_\Co$ is not unimodular: its discriminant group is $(\ZZ/2)^{11}$ (@prop:coble-discriminant-group), so the group that the same argument produces is the *discriminant kernel* $\widetilde\Orth^+(T_\Co)=\Orth^+(T_\Co)\intersect\ker\bar\rho$, not $\Orth^+(T_\Co)$. That is the precise sense in which $\Gamma_\Co$ is the anti-invariant analogue: it is the monodromy of the $\iota$-anti-invariant part $T_\Co$, and the discriminant condition is forced by the gluing $T_\En=(\T_\Co\perp\ZZ\delta)_H$, whose overlattice exacts the kernel. The model thus supplies nothing new for the steps already proved here, and it confirms the shape: the same period-map-and-torsor argument, run on the anti-invariant lattice rather than on all of $H^2$.
+:::
 
 ### Item 6: the groups from the universal families
 
