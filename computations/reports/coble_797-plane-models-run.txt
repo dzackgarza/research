@@ -1,9 +1,10 @@
-K_S^2 = -1   D = -2K_S, D^2 = -4
+K_S^2 = -1, D = -2K_S, D^2 = -4
 ten pairwise disjoint (-1)-curves: OK
-A = 2H - E1 - E2 - E3:  A^2 = 1   A.D = 6   A.G_k = [0]
--K_S            = [3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
-3A - sum_k G_k  = [3, -1, -1, -1, 1, 1, 1, 1, 1, 1, 1]
-=> 3A - sum_k G_k =/= -K_S, so (A, G_1..G_10) is NOT a plane model of S:
-   A is orthogonal to the ten curves and has square 1, but the contraction
-   they define is not the plane model that A comes from.
+A = 2H - E1 - E2 - E3:  A^2 = 1,  A.G_k = 0 for all k,  A.D = 6
+3A - sum_k G_k = [3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+-K_S           = [3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+3A - sum_k G_k = -K_S: the fourth plane-model condition HOLDS
+G_k.D = [2] (each exceptional curve meets the
+  branch divisor in 2, so its image is a double point of the image sextic)
+A != H, so the two plane models differ
 ALL ASSERTIONS HOLD
