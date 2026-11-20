@@ -136,9 +136,10 @@ def test_the_monodromy_of_the_labelled_stack_is_the_marking_group():
     body = _block(MC.read_text(encoding="utf-8"), MONODROMY_IS_G)
     assert "G$-torsor" in body or "torsor" in body
     assert "1\\too\\pi_1(U)" in body or "pi_1(U)" in body
-    assert "\\widetilde\\Orth^+(T_\\Co)" in body
-    # the equality is asserted, and the departure from the standing record is on the page
-    assert "\\Gamma_\\Co(B)=\\widetilde\\Orth^+(T_\\Co)" in body
+    assert "\\Orth^+(T_\\Co)" in body
+    # the orbifold reading is asserted, and the loop reading is separated from it
+    assert "orbifold" in body
+    assert "@thm:no-loop-carries-the-sign" in body or "index-two" in body
     text = MC.read_text(encoding="utf-8")
     tail = text[text.index("#" + MONODROMY_IS_G):]
-    assert "Departure" in tail and "@lem:every-ample-m-polarized-k3-is-a-coble-cover" in tail
+    assert "What this settles" in tail and "@lem:every-ample-m-polarized-k3-is-a-coble-cover" in tail
