@@ -582,6 +582,32 @@ $\mcM_\Co$ is a stack for the étale topology on $\mathfrak{C}$, hence also for 
 (3) A geometric fibre of $f$ is a geometric fibre of $f'$ with the same base change, so the first condition is unaffected. For the second, $K_{\mcs/Y}$ is $\det\Omega^1_{\mcs/Y}$ in the smooth case and is computed from the descended $f$; the cyclic cover construction is @lem:d2-unpolarised-family(2), whose input is the class of $\mcD$ with $\OO(2\mcD)=\OO(-2K_{\mcs/Y})$.
 :::
 
+::: {.definition #def:coble-moduli-functor-z title="The Coble functor over $\ZZ[1/2]$"}
+
+Let $S_0=\Spec\ZZ[1/2]$. On the category of $S_0$-schemes of finite presentation the functor
+$$
+\mcM_\Co\colon\qty(\mathbf{Sch}_{/S_0})^{\mathrm{op}}\too\mathfrak{Grpd}
+$$
+assigns to $Y$ the groupoid of triples $\qty{\mcs\xrightarrow{f}Y,\ \mcx\xrightarrow{\pi}\mcs,\ \iota}$ in which
+
+1. $f$ is flat and projective of finite presentation, and each geometric fibre is $\Bl_{p_1,\dots,p_{10}}\PP^2$ at the ten ordinary double points of an irreducible plane sextic of degree $6$ (@lem:d2-unpolarised-family(1));
+2. $\pi$ is the cyclic double cover branched along $-2K_{\mcs/Y}$, that is the $\mu_2$-torsor $\Spec_{\OO_\mcs}\qty(\OO_\mcs\oplus\OO_\mcs(-\mcD))$ for $\mcD$ with $\OO(2\mcD)=\OO(-2K_{\mcs/Y})$, which exists because $2$ is invertible on $S_0$ and the class $-K_{\mcs/Y}$ is integral (@lem:d2-unpolarised-family(2));
+3. $\iota$ is the involution of $\pi$;
+
+with morphisms the Cartesian squares over $Y$ commuting with $\pi$ and $\iota$, and pullback the fibre product. The number $N=2$ is the only one needed: the node condition is defined over $\ZZ$, the ordinary-double-point condition is the nonvanishing of the Hessian determinant, the divisor $-2K_{\mcs/Y}$ is defined by the relative canonical sheaf, and the cover of (2) is a $\mu_2$-torsor precisely because $2\in\OO_{S_0}^{\times}$.
+:::
+
+::: {.lemma #lem:coble-moduli-functor-fppf title="$\mcM_\Co$ is a stack for the fppf topology over $S_0$"}
+
+$\mcM_\Co$ satisfies fppf descent, hence étale descent: isomorphisms are a sheaf; objects descend; the fibre conditions and the branch divisor descend.
+
+:::
+
+::: {.proof}
+
+Let $Y'\to Y$ be faithfully flat of finite presentation, with the two projections, and let an object over $Y'$ with a descent datum be given. The underlying schemes and the morphisms $f'$, $\pi'$, $\iota'$ descend to $Y$ by faithfully flat descent (SGA 1, Exposé VIII), the descended $f$ being flat and projective because both are local on the base and stable under base change. The condition of clause (1) is a condition on geometric fibres, so it is checked after $Y'\to Y$. The divisor $-2K_{\mcs/Y}$ is defined by the relative canonical sheaf of the descended $f$, and the $\mu_2$-torsor of clause (2) is $\Spec(\OO\oplus\OO(-\mcD))$, determined by that divisor and by the choice of $\mcD$ up to the sign of the second summand; so $\pi$ and $\iota$ descend with $f$. Isomorphisms are a subsheaf of the sheaf of isomorphisms of the underlying $Y$-schemes cut out by closed conditions, as in @lem:coble-moduli-functor-stack(1).
+:::
+
 ::: {.proposition #prop:coble-plane-model-comparison title="The map from $\bar B$ to $\mcM_\Co$: essentially surjective, not full, not injective"}
 
 Let $\bar B=[B/S_{10}]$ be the unlabelled base of @def:coble-family-unpolarized(2) and let $\varphi\colon\bar B\to\mcM_\Co$ send a labelled ten-nodal sextic to the Coble surface it defines with its K3 double cover (@def:coble-moduli-functor).
