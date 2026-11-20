@@ -548,7 +548,9 @@ Let $S$ be a smooth projective rational surface and $m\geq1$. Then $H^0\qty(S,\o
 $$H^0\qty(S',\operatorname{Sym}^m\Omega^1_{S'})\cong H^0\qty(S\sm\theset{p},\operatorname{Sym}^m\Omega^1_S)=H^0\qty(S,\operatorname{Sym}^m\Omega^1_S),$$
 the last equality because $S$ is smooth and a section over a dense open set of a vector bundle extends uniquely.
 
-*A rational surface.* Every rational surface is obtained from $\PP^2$ by a sequence of blow-ups and blow-downs, so the invariance gives $H^0\qty(S,\operatorname{Sym}^m\Omega^1_S)=H^0\qty(\PP^2,\operatorname{Sym}^m\Omega^1)=0$.
+*The Hirzebruch surfaces.* Let $F_n$ be the ruled surface $\PP\qty(\OO_{\PP^1}\oplus\OO_{\PP^1}(n))$ over $\PP^1$ with $n\neq1$. Its cotangent sheaf sits in $0\to f^*\Omega^1_{\PP^1}\to\Omega^1_{F_n}\to\Omega^1_{F_n/\PP^1}\to0$, and on a fibre $F\cong\PP^1$ the relative quotient is $\Omega^1_{F_n/\PP^1}|_F\cong\Omega^1_{\PP^1}=\OO(-2)$; since $\operatorname{Sym}^m$ is right exact, $\operatorname{Sym}^m\Omega^1_{F_n}|_F$ surjects onto $\OO(-2m)$, which has no sections. A nonzero section of $\operatorname{Sym}^m\Omega^1_{F_n}$ restricts nontrivially to a general fibre — its zero divisor cannot contain a general member of the pencil — so $H^0\qty(F_n,\operatorname{Sym}^m\Omega^1)=0$.
+
+*A rational surface.* Every minimal rational surface is $\PP^2$ or a Hirzebruch surface $F_n$ with $n\neq1$ [@Bea96, Chapter III, the classification of minimal rational surfaces], and every rational surface is obtained from one of them by a sequence of blow-ups. The invariance under blow-ups above and the two computations give $H^0\qty(S,\operatorname{Sym}^m\Omega^1_S)=0$.
 :::
 
 ::: {.proposition #prop:coble-stack-smooth-connected title="$\mcM_\Co$ is smooth, and connected on the classical subfamily; where the isotropy is larger"}
