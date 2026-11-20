@@ -267,6 +267,22 @@ The map $\Phi_0$ of @thm:b2-zero-cusps has empty fibre over Sterk's cusp $1$ (@p
 The fibres of $\Phi_0$ partition the $0$-cusps of $D(T_\Co)/R$: $\Phi_0$ is well defined by @thm:b2-zero-cusps(1), and the cusp set of $F_{\En,2}$ is the disjoint union of the five orbits of Sterk's representatives. The fibre over cusp $1$ is empty (@prop:fibre-cusp-one-empty). For $k = 2,3,4,5$ the representative $\eta_k$ is a primitive isotropic vector of $T_\Co$, so its $R$-orbit is a $0$-cusp of $D(T_\Co)/R$ lying over cusp $k$; by @thm:orbit-per-cusp the four classes $[\eta_k]$ lie in four distinct $P$-orbits, hence the four $R$-orbits are distinct, and by @thm:four-r-orbits there are exactly four of them. So each of the four fibres over $2,3,4,5$ contains exactly one of the four $R$-orbits.
 :::
 
+::: {.theorem #thm:cusp-diagram-tco title="The cusp diagram of $D(T_\Co)/R$, labelled by Sterk's cusps"}
+1. The $0$-cusps of $D(T_\Co)/R$ are four, one over each of Sterk's $0$-cusps $2$, $3$, $4$, $5$ (@thm:cusp-fibres-four); they are written $0_2$, $0_3$, $0_4$, $0_5$.
+2. A $1$-cusp of $D(T_\Co)/R$ lies over exactly one of Sterk's nine $1$-cusps, whose type is a subset $T\subset\{1,2,3,4,5\}$ [@AEGS25, Not. 3.1, printed p. 590]. The fibres over the four types $\{1,2\}$, $\{1,3\}$, $\{1,4\}$, $\{1,5\}$ are empty (@lem:one-cusp-over-cusp-one-empty); the fibres over the five types $\{2,4,5\}$, $\{4,5\}$, $\{3,5\}$, $\{3,4\}$, $\{5,5\}$ are nonempty finite sets (@lem:five-one-cusps-nonempty).
+3. Incidence. A $0$-cusp of $D(T_\Co)/R$ is incident to a $1$-cusp only if the $0$-cusp's label lies in the $1$-cusp's type: $0_k$ meets the closure of a $1$-cusp over $T$ only if $k\in T$.
+:::
+
+::: {.proof}
+$1$ is @thm:cusp-fibres-four, $2$ is @thm:b2-one-cusps with the two lemmas named.
+
+For $3$: the Baily--Borel incidence is containment of boundary components, that is, a $0$-cusp $[\ell]$ lies in the closure of a $1$-cusp $[\Pi]$ exactly when some representatives satisfy $\ell\subset\Pi$ [@AEGS25, Def. 2.9 and §3.1, printed pp. 588--590]. The forgetful maps of @thm:b2-zero-cusps and @thm:b2-one-cusps carry $[\ell]_R\mapsto[\ell]_{\gent}$ and $[\Pi]_R\mapsto[\Pi]_{\gent}$, and $\ell\subset\Pi$ implies $\ell\subset\Pi$ for the images; so $[\ell]_R$ incident to $[\Pi]_R$ forces $[\ell]_{\gent}$ incident to $[\Pi]_{\gent}$, which by [@AEGS25, Not. 3.1, printed p. 590] means that the label $k$ of $[\ell]_{\gent}$ lies in the type $T$ of $[\Pi]_{\gent}$.
+:::
+
+::: {.remark #rmk:cusp-diagram-what-is-not-determined title="What the labelled diagram does not determine"}
+The five nonempty fibres of item 2 are finite sets of at most $16$ points (@lem:five-one-cusps-nonempty), and their cardinalities are not computed here; accordingly item 3 gives the incidence only in the direction it can be read off the labels, and does not say which of the possibly several $1$-cusps over a given type $T$ is incident to which $0$-cusp $0_k$, $k\in T$. Nothing here is a statement about $F_{\mathrm{Co},2}$.
+:::
+
 ::: {.remark #rmk:certified-versus-printed-chamber title="The certified cusp-$2$ chamber and Sterk's printed roots"}
 The ten walls of the certified chamber of @thm:ou-e8-transitive are $\alpha_1,\dots,\alpha_8$, $-e+f$ and $-2f-\omega_8$ in the coordinates of `computations/reports/coble_TEn-chambers-run.txt`. Sterk prints the last of them as $\alpha_9 = \omega_8+2f$ [@Ste91, 4.3.6, printed p. 21], a different vector: the two differ by $4f$, and the record `computations/reports/coble_sterk-reflection-subgroups-run.txt` reports that nine of his ten printed roots are walls of the certified chamber. The count of $(-2)$-walls is one in both cases, since $-2f-\omega_8$ has square $-4$; what the printed set cannot be used for is the chamber-translate principle, which needs a fundamental chamber and is therefore applied above to the certified one. The identification of Sterk's ten printed roots with the white nodes of [@AEGS25, Figs.~7--8, printed pp.~594--595] is unaffected: it concerns the simple $(-2)$- and $(-4)$-roots at each cusp, and the white node at cusp $2$ is $e-f$ in both lists.
 :::
