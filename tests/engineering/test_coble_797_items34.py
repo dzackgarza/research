@@ -203,3 +203,16 @@ def test_the_bad_locus_is_closed_and_the_coble_locus_is_its_complement():
     text = MC.read_text(encoding="utf-8")
     tail = text[text.index("#" + COBLE_LOCUS):]
     assert "local finiteness is doing the work" in tail
+
+
+TWO_ARR = "rmk:two-arrangements-two-bases"
+
+
+def test_the_two_arrangements_are_distinguished():
+    body = _block(MC.read_text(encoding="utf-8"), TWO_ARR)
+    # the Coble locus uses the (-2)-classes of T_Co; the base's arrangement is larger
+    assert "(-2)" in body and "larger" in body
+    assert "not" in body
+    # the closedness mechanism is proper discontinuity
+    assert "properly discontinuously" in body
+    assert "locally finite" in body

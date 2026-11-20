@@ -1508,7 +1508,7 @@ Then:
 1. $Z$ is a closed analytic subset of $\bD$, locally finite: every compact $K\subset\bD$ meets $H_\delta$ for only finitely many $\delta\in\Delta(T_\Co)$.
 2. For $\pi\in\bD\sm Z$ the marked surface (@def:flower-pot-degeneration) $X_\pi$ is a labelled Coble cover.
 3. For $\pi\in Z$ the marked surface $X_\pi$ is *not* a Coble cover: the class $\delta$ is algebraic of type $(1,1)$ on $X_\pi$ and $\sigma=\id_M\oplus(-\id_{T_\Co})$ acts on it as $-1$, so $\sigma$ is not an automorphism.
-4. Hence the Coble locus is exactly $\bD\sm Z$; it is open, and it is connected.
+4. Hence the locus of periods realised by *some* Coble cover is exactly $\bD\sm Z$; it is open, and it is connected. This is a statement about the period domain. It is **not** a statement about the base $B$ of the D2a family, which is the complement of a strictly larger arrangement; see @rmk:two-arrangements-two-bases.
 :::
 
 ::: {.proof}
@@ -1519,6 +1519,19 @@ Then:
 :::
 
 *The one input that is not a numbered statement.* Local finiteness in 1 is proved above from the discreteness of $T_\Co$ and the compactness of $K$, not cited; the same fact underlies the arrangement $\calH_T$ of [@YZZ25, Thm. 3.4], whose right-hand side is the complement of that arrangement in $\bD_T$. What is *not* claimed is that $Z$ is a finite union: it is countable, and it is closed because it is locally finite. That is what allows $\bD\sm Z$ to be open -- a countable union of closed sets need not be closed, and the local finiteness is doing the work.
+
+::: {.remark #rmk:two-arrangements-two-bases title="Two arrangements, two objects: the Coble locus in the period domain, and the base of the D2a family"}
+@prop:the-coble-locus-in-the-period-domain and @lem:d2-vanishing-reflections(2) are both true and are about different things, and the difference is recorded by the volume itself.
+
+- *The Coble locus.* $Z$ is the union of the hyperplanes of the $(-2)$-vectors **of $T_\Co$** (@prop:the-coble-locus-in-the-period-domain). Its complement is the set of periods realised by some Coble cover, because the criterion for the marking's involution to be an automorphism is that no $(-2)$-class of $T_\Co$ become algebraic.
+- *The base of the family.* The arrangement of the D2a family, $\calH_T$, is strictly larger: its components are the $\gamma^{\perp}$ for the classes $\gamma$ with $\gamma^2\in\set{0,-4,-6,-8}$ of @lem:d2-arrangement-classes, and the components of $\calH_T$ are the divisors along which a member degenerates (@lem:d2-vanishing-reflections(2)). So $B$ is *not* the complement of $Z$; the page already records the weaker and correct statement, that @lem:d2a-family-is-yzz gives $B$ as the labelled moduli space of the family and @lem:d2a-period-map gives its classifying map into $\bD(T_\Co)/\Gamma_\Co$, with $\calH_T$ not identified with a locus in the period domain independently of the family.
+
+So the D2a base $B$ is **not** all of $\bD\sm Z$ modulo $\Gamma_\Co$: it is the complement of the larger arrangement, and it is a proper open subset of the Coble locus as soon as $Z\neq\calH_T$, which is what @lem:d2-arrangement-classes shows. The passage from the family's base to the whole Coble locus is exactly the reconstruction step that @conj:gamma-co-orbifold-equality needs, not a consequence of either arrangement being closed.
+
+*Why $Z$ is closed.* The argument is the one in the proof of @prop:the-coble-locus-in-the-period-domain, and its mechanism is the proper discontinuity of the lattice action rather than a compactness count: $\Orth(T_\Co)$ acts properly discontinuously on $\bD(T_\Co)$, so every compact set meets only finitely many of the hyperplanes $H_\delta$ with $\delta\in\Delta(T_\Co)$; the union is therefore locally finite, and a locally finite union of closed analytic subsets is closed analytic. What is *not* used, and would be false, is that the union is finite: it is countable, and it is closed only because it is locally finite.
+:::
+
+*The index $\qty[\widetilde\Orth^+(T_\Co):\Gamma_\Co(B)]$, which is now this page's.* Three facts are in place: $\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable(1)); $W(T_\Co)\subseteq\Gamma_\Co(B)$ (@lem:d2-vanishing-reflections(4)); and $-\id_{T_\Co}\in W(T_\Co)$ (@thm:coble-block-sign-in-w), so $-id$ lies in $\Gamma_\Co(B)$ for the unpolarized labelled family, the sign being carried by a meridional loop (@rmk:where-the-sign-is-a-loop). The index is therefore a divisor of $\qty[\widetilde\Orth^+(T_\Co):W(T_\Co)]$, and no longer constrained to be two: the earlier "index-two" reading is withdrawn (@rmk:where-the-sign-is-a-loop). Whether it is $1$ is exactly @conj:gamma-co-orbifold-equality, so the index question and the equality are one question and are open.
 
 ### Item 6: the groups from the universal families
 
