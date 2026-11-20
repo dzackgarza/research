@@ -190,20 +190,45 @@ Hence each of the three fibres is nonempty.
 At cusp $3$ the representative is $e'+f'+y_3$ and the record's cusp-$3$ section prints the two white roots as $\delta = [-1,1,0,\dots,0] = -(e-f)$ and $[1,1,0,-1,0,\dots,0,1] = e+f-f'+\alpha_8$, each certified to have square $-2$ and to be orthogonal to the representative. At cusp $4$ the representative is $2e'+f'+y_4$ and the record's cusp-$4$ section prints the white roots as $[1,1,-1,0,1,0,\dots,0] = e+f-e'+\alpha_1$ and $[-1,1,0,\dots,0] = -(e-f)$. At cusp $5$ the representative is $2e+2f+y_4$ and the record prints the four white roots $[1,1,2,3,-2,0,1,0,\dots,0]$, $[1,1,3,3,-2,1,2,2,1,0,0,0]$, $[-1,1,0,\dots,0]$ and $[1,1,3,4,-2,2,3,4,3,2,1,0]$, which are the displayed vectors. The identification of the white nodes of AEGS's Figures 7--8 with the simple $(-2)$-roots of Sterk's diagrams is @prop:facet-angles-aegs.
 :::
 
-::: {.theorem #thm:cusp-fibres-four title="The $0$-cusps of $D(T_\Co)/R$ lie one over each of Sterk's cusps $2,3,4,5$"}
-The map $\Phi_0$ of @thm:b2-zero-cusps has empty fibre over Sterk's cusp $1$ (@prop:fibre-cusp-one-empty) and a nonempty fibre over each of Sterk's cusps $2$, $3$, $4$, $5$ (@cor:fibre-cusp-two, @prop:fibres-three-four-five). The subgroup $R$ has exactly four orbits on the primitive isotropic lines of $T_\Co$ (@thm:four-r-orbits), so $D(T_\Co)/R$ has exactly four $0$-cusps. Hence each of the four nonempty fibres is a single point, and the four $0$-cusps of $D(T_\Co)/R$ are in bijection with Sterk's cusps $2,3,4,5$, one over each.
-:::
-
-::: {.proof}
-The fibres of $\Phi_0$ partition the $0$-cusps of $D(T_\Co)/R$: $\Phi_0$ is well defined by @thm:b2-zero-cusps(1), and the cusp set of $F_{\En,2}$ is the disjoint union of the five orbits of Sterk's representatives. One fibre is empty (@prop:fibre-cusp-one-empty) and the other four are nonempty (@cor:fibre-cusp-two, @prop:fibres-three-four-five), so they partition the four $0$-cusps of $D(T_\Co)/R$ into four nonempty parts. The count of four is not read off the fibres: it is @thm:four-r-orbits.
-:::
-
 ::: {.theorem #thm:four-r-orbits title="$R$ has exactly four orbits on the primitive isotropic lines of $T_\Co$"}
 The subgroup $R$ has exactly four orbits on the primitive isotropic lines of $T_\Co$, of discriminant-class sizes $2$, $135$, $270$ and $120$. Hence $D(T_\Co)/R$ has exactly four $0$-cusps.
 :::
 
 ::: {.proof}
 Every primitive vector of $T_\Co$ has divisibility $2$ (@lem:divisibilityAlwaysTwoTco), so $v\mapsto[v/2]$ maps the primitive isotropic vectors of $T_\Co$ to the $527$ nonzero isotropic classes of $A_{T_\Co}$, and the map is a bijection from the $\ker\bar\rho$-orbits of primitive isotropic vectors onto those classes [@thm:coble-zero-cusp-count(1)]. For a subgroup $\Gamma$ with $\ker\bar\rho\subseteq\Gamma\subseteq\Orth(T_\Co)$ the $\Gamma$-orbits on primitive isotropic vectors correspond to the $\bar\rho(\Gamma)$-orbits on the classes, because the fibre over a class is a single $\ker\bar\rho$-orbit [@thm:coble-zero-cusp-count, proof, paragraph "Intermediate groups"]. Here $R = \bar\rho^{-1}(P)$ [@prop:gamma-co-images(3)], so $\bar\rho(R) = P$, and $P = \Orth(q_{U(2)})\times\Orth(q_{E_8(2)})$ has exactly four orbits on the $527$ nonzero isotropic classes, of sizes $2$, $135$, $270$ and $120$ [@prop:coble-cong-point-stabilizer(2)]. A count of $0$-cusps names its group [@def:gamma-co-groups], and this is the count for $R$.
+:::
+
+::: {.theorem #thm:orbit-per-cusp title="Which $R$-orbit lies over which Sterk cusp"}
+Let $\eta_2 = e'$, $\eta_3 = e'+f'+y_3$, $\eta_4 = 2e'+f'+y_4$, $\eta_5 = 2h+y_4$ with $h = e+f$, $y_3$ of square $-4$ and $y_4$ of square $-8$ be Sterk's representatives of his cusps $2$, $3$, $4$, $5$ [@Ste91, (4.2.3), printed p. 16], and put $[\eta_k]\definedas[\eta_k/2]\in A_{T_\Co}$. Then $[\eta_k]$ lies in the $P$-orbit of @prop:coble-cong-point-stabilizer(2) of size
+$$
+\begin{array}{c|cccc}
+k & 2 & 3 & 4 & 5\\ \hline
+\text{size of the }P\text{-orbit of }[\eta_k] & 2 & 120 & 270 & 135
+\end{array}
+$$
+Because $v\mapsto[v/2]$ is a bijection from the $R$-orbits on primitive isotropic lines of $T_\Co$ onto the $P$-orbits on the $527$ nonzero isotropic classes [@thm:coble-zero-cusp-count(1), with $\bar\rho(R) = P$ by @prop:gamma-co-images(3)], the $R$-orbit lying over Sterk's cusp $k$ is the orbit of $[\eta_k]$, and the four $R$-orbits of @thm:four-r-orbits are exactly the four cusps' orbits.
+:::
+
+::: {.proof}
+Write $T_\Co = \generators{h}\oplus U(2)\oplus E_8(2)$ [@DK13, (3.6), printed p. 513], so that $A_{T_\Co} = A_{\generators{2}}\oplus A_{U(2)}\oplus A_{E_8(2)}$. For $k = 2,3,4,5$ the vector $\eta_k$ lies in $T_\Co$, is primitive and isotropic, and its half has the following components, with the $q$-value of each:
+$$
+\begin{array}{c|c|c|c|c}
+k & \text{component in } U(2) & q & \text{component in } E_8(2) & q\\ \hline
+2 & e'/2 & 0 & 0 & 0\\
+3 & (e'+f')/2 & 1 & y_3/2 & -1\\
+4 & e'+f'/2 & 2 & y_4/2 & -2\\
+5 & 0 & 0 & y_4/2 & -2
+\end{array}
+$$
+the last line because $\eta_5/2 = h+y_4/2$ and $h\in T_\Co$. Each total $q$ is $0$ modulo $2\ZZ$, as it must be for an isotropic vector. The three nonzero classes of $A_{U(2)}$ are $u_1,u_2,u_3$ with $q$-values $0,0,1$, and the $E_8(2)$-classes of value $0$ and $1$ are the sets $E_0$ of size $135$ and $E_1$ of size $120$ [@prop:coble-cong-point-stabilizer(2), proof]. So $[\eta_2] = (u_1\text{ or }u_2,\,0)$ lies in $\{u_1,u_2\}$ of size $2$; $[\eta_3] = (u_3,\,E_1)$ in the orbit of size $120$; $[\eta_4] = (u_1\text{ or }u_2,\,E_0)$ in the orbit of size $270$; and $[\eta_5] = (0,\,E_0)$ in the orbit of size $135$. The computation is `computations/reports/coble_789-cusp-classes.py`, whose transcript `-run.txt` prints, for each $k$, the components and the orbit.
+:::
+
+::: {.theorem #thm:cusp-fibres-four title="The $0$-cusps of $D(T_\Co)/R$ lie one over each of Sterk's cusps $2,3,4,5$"}
+The map $\Phi_0$ of @thm:b2-zero-cusps has empty fibre over Sterk's cusp $1$ (@prop:fibre-cusp-one-empty) and exactly one point over each of Sterk's cusps $2$, $3$, $4$, $5$. Hence the four $0$-cusps of $D(T_\Co)/R$ are in bijection with Sterk's cusps $2,3,4,5$, one over each.
+:::
+
+::: {.proof}
+The fibres of $\Phi_0$ partition the $0$-cusps of $D(T_\Co)/R$: $\Phi_0$ is well defined by @thm:b2-zero-cusps(1), and the cusp set of $F_{\En,2}$ is the disjoint union of the five orbits of Sterk's representatives. The fibre over cusp $1$ is empty (@prop:fibre-cusp-one-empty). For $k = 2,3,4,5$ the representative $\eta_k$ is a primitive isotropic vector of $T_\Co$, so its $R$-orbit is a $0$-cusp of $D(T_\Co)/R$ lying over cusp $k$; by @thm:orbit-per-cusp the four classes $[\eta_k]$ lie in four distinct $P$-orbits, hence the four $R$-orbits are distinct, and by @thm:four-r-orbits there are exactly four of them. So each of the four fibres over $2,3,4,5$ contains exactly one of the four $R$-orbits.
 :::
 
 ::: {.remark #rmk:certified-versus-printed-chamber title="The certified cusp-$2$ chamber and Sterk's printed roots"}
