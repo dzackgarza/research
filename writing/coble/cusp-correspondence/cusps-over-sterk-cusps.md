@@ -1,6 +1,6 @@
 # The cusps of $D(T_\Co)/R$ over Sterk's cusps {#sec-cusps-over-sterk-cusps}
 
-This section proves statement B2 of the plan for $F_\Co$ [research#786, Part I §5; research#789]: the $0$- and the $1$-cusps of $D(T_\Co)/R$ are the $\gent$-orbits of pairs $(\ell,\alpha)$, an isotropic line or plane $\ell$ of $\ten$ together with a $(-2)$-vector $\alpha$ perpendicular to it, and they fibre over Sterk's cusps of $F_{\En,2}$ by forgetting $\alpha$. The fibre over Sterk's cusp $[e_k]$ is the set of $\Stab_{\gent}(e_k)$-orbits of $(-2)$-vectors perpendicular to $e_k$, where the stabilizer is that of the isotropic *line* $\ZZ e_k$. The smallest case of that computation, Sterk's cusp $2$, is carried out here: the $(-2)$-vectors perpendicular to its representative form a single $\Orth(K_2)$-orbit. Every statement below names its group, and none of the counts is a count for $F_\Co$ or $F_{\Co,2}$: the group of this page is $R = \bar\rho^{-1}(P)$, of index $67\,456$ in $\Orth(T_\Co)$, whereas $\fco$ is $\bD(T_\Co)/\Gamma_\Co$ with $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ a theorem on the labelled base (@thm:gamma-co-is-stable), a group for which the $0$-cusps number $527$ and the $1$-cusps $189\,720$ (@thm:coble-zero-cusp-count(2), @thm:coble-plane-orbit-counts(2)). The passage from the counts below to $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ is @qst:coble-monodromy-equality, whose forward inclusion is @thm:coble-monodromy-versus-enriques(4), conditional on (U) of @lem:coble-family-identification.
+This section proves statement B2 of the plan for $F_\Co$ [research#786, Part I §5; research#789]: the $0$- and the $1$-cusps of $D(T_\Co)/R$ are the $\gent$-orbits of pairs $(\ell,\alpha)$, an isotropic line or plane $\ell$ of $\ten$ together with a $(-2)$-vector $\alpha$ perpendicular to it, and they fibre over Sterk's cusps of $F_{\En,2}$ by forgetting $\alpha$. The fibre over Sterk's cusp $[e_k]$ is the set of $\Stab_{\gent}(e_k)$-orbits of $(-2)$-vectors perpendicular to $e_k$, where the stabilizer is that of the isotropic *line* $\ZZ e_k$. The smallest case of that computation, Sterk's cusp $2$, is carried out here: the $(-2)$-vectors perpendicular to its representative form a single $\Orth(K_{\eta_2})$-orbit. Every statement below names its group, and none of the counts is a count for $F_\Co$ or $F_{\Co,2}$: the group of this page is $R = \bar\rho^{-1}(P)$, of index $67\,456$ in $\Orth(T_\Co)$, whereas $\fco$ is $\bD(T_\Co)/\Gamma_\Co$ with $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ a theorem on the labelled base (@thm:gamma-co-is-stable), a group for which the $0$-cusps number $527$ and the $1$-cusps $189\,720$ (@thm:coble-zero-cusp-count(2), @thm:coble-plane-orbit-counts(2)). The passage from the counts below to $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ is @qst:coble-monodromy-equality, whose forward inclusion is @thm:coble-monodromy-versus-enriques(4), conditional on (U) of @lem:coble-family-identification.
 
 ## Setting
 
@@ -13,7 +13,15 @@ $$
 \delta \definedas e - f,\qquad \delta^2 = -2,\qquad
 T_\Co \definedas \delta^{\perp\ten} = \generators{e+f}\oplus U(2)\oplus E_8(2)\cong\generators{2}\oplus E(2),
 $$
-the Coble lattice of [@DK13, (3.6) and Prop. 3.2]; the identification of $\generators{e+f}$ with $\generators{2}$ uses $(e+f)^2 = 2\,e\cdot f = 2$. Let
+the Coble lattice of [@DK13, (3.6) and Prop. 3.2]; the identification of $\generators{e+f}$ with $\generators{2}$ uses $(e+f)^2 = 2\,e\cdot f = 2$.
+
+The boundary lattices are those of @prop:sterk-cusp-quotients and @thm:coble-cusp-admissibility: for a primitive isotropic line $I = \ZZ e$ of $\ten$ and a primitive isotropic plane $J$ of $\ten$,
+$$
+K_I \definedas e^{\perp\ten}/\ZZ e, \qquad K_J \definedas J^{\perp\ten}/J,
+$$
+and for Sterk's representatives $K_{\eta_k} \definedas \eta_k^{\perp\ten}/\ZZ\eta_k$. A quotient of a plane is also written $\Pi^{\perp\ten}/\Pi$; $L_0$ below is $K_\Pi$.
+
+Let
 $$
 \gent = \Gamma_{\En,2}\leq\Orth(\ten)
 $$
@@ -145,7 +153,7 @@ $2$. By $1$ and the hypothesis $d_w = 1$ for every $w\in\Pi$, so for each such $
 Let $[\Pi]$ be one of Sterk's five further $1$-cusps, of types $\{2,4,5\}$, $\{4,5\}$, $\{3,5\}$, $\{3,4\}$ and $\{5,5\}$ [@Ste91, 4.3.17]. Then:
 
 1. $\Pi$ is primitive in $\ten$, and for a choice of a complementary basis the Gram matrix $G_0$ of $L_0 = \Pi^{\perp\ten}/\Pi$ is exact: its determinant is $64$, and $L_0$ has exactly $16$ vectors of square $-2$;
-2. every one of those $16$ classes has $\mathrm{div}_{L_0}$ equal to $1$, certified by an explicit $z\in\Pi^{\perp}$ with $(\alpha,z) = 1$;
+2. every one of those $16$ classes has $\mathrm{div}_{L_0}$ equal to $1$, certified by an explicit $z\in\Pi^{\perp}$ with $(\alpha,z) = 1$; this is the count of $16$ classes of square $-2$ that @thm:coble-cusp-admissibility(3) records at each of the five types, and it is a statement about $K_\Pi$, not about the number of $1$-cusps of $D(T_\Co)/R$;
 3. hence, by @lem:divisibility-decides-one-cusp, all lifts of any one class form a single $\Stab_{\gent}(\Pi)$-orbit, so the fibre of @thm:b2-one-cusps over $[\Pi]$ is the set of orbits on the eight antipodal pairs (@lem:minus-id-in-gent) and has at most $8$ points;
 4. the total number of $1$-cusps of $D(T_\Co)/R$ over the five types is $7$, not the number of pairs: the $R$-orbits on the primitive isotropic planes of $T_\Co$ number $7$ (@cor:coble-heegner-integral-plane-descent, which applies to $R$ because $\ker\bar\rho\subseteq R$; @thm:cusp-lifting(4)). So the five fibres are nonempty sets of at most $8$ points with total $7$, that is either $(3,1,1,1,1)$ or $(2,2,1,1,1)$ in some order;
 5. which of the two holds is decided by @thm:one-cusp-multiplicities(5): the double fibre is over $\{3,5\}$, the multiplicities being $1,1,2,1,2$ on $(\{2,4,5\},\{4,5\},\{3,5\},\{3,4\},\{5,5\})$, read off the seven plane orbits of `computations/reports/coble_gco_plane-orbits-run.txt` through the label dictionary of @thm:orbit-per-cusp.
@@ -164,19 +172,19 @@ $4$ is @cor:coble-heegner-integral-plane-descent as used at the count of primiti
 At Sterk's cusp $2$ the stabilizer is the whole orthogonal group of the cusp lattice, so the fibre is decided without any information about the other cusps. Cusp $1$ is the other extreme: it carries no $(-2)$-vector at all.
 
 ::: {.proposition #prop:fibre-cusp-one-empty title="The fibre over Sterk's cusp $1$ is empty"}
-At Sterk's cusp $1$, with representative $e_1 = e$, one has $K_1 = e_1^{\perp\ten}/\ZZ e_1\cong U(2)\oplus E_8(2)$, every vector of which has square divisible by $4$. In particular $K_1$ contains no $(-2)$-vector, and the fibre of $\Phi_0$ over Sterk's cusp $1$ is empty.
+At Sterk's cusp $1$, with representative $\eta_1 = e$, one has $K_{\eta_1} = e^{\perp\ten}/\ZZ e\cong U(2)\oplus E_8(2)$, every vector of which has square divisible by $4$. In particular $K_{\eta_1}$ contains no $(-2)$-vector, and the fibre of $\Phi_0$ over Sterk's cusp $1$ is empty.
 :::
 
 ::: {.proof}
-$e^{\perp\ten} = \generators{e}\oplus U(2)\oplus E_8(2)$, so $K_1\cong U(2)\oplus E_8(2)$; this is [@Ste91, 4.3.4], whose statement is $e^{\perp}/\ZZ e\cong\mathbf H(2)\oplus E_8(-2)$. Both summands are twice an even lattice (@def:even-lattice), so every square in $K_1$ lies in $4\ZZ$, and $-2\notin4\ZZ$.
+$e^{\perp\ten} = \generators{e}\oplus U(2)\oplus E_8(2)$, so $K_{\eta_1}\cong U(2)\oplus E_8(2)$; this is [@Ste91, 4.3.4], whose statement is $e^{\perp}/\ZZ e\cong\mathbf H(2)\oplus E_8(-2)$. Both summands are twice an even lattice (@def:even-lattice), so every square in $K_1$ lies in $4\ZZ$, and $-2\notin4\ZZ$.
 :::
 
 ::: {.theorem #thm:ou-e8-transitive title="$\Orth(U\oplus E_8(2))$ is transitive on the $(-2)$-vectors"}
-Let $K = U\oplus E_8(2)$. Then $\Orth(K)$ acts transitively on $\{x\in K : x^2 = -2\}$.
+Let $K_{\eta_2} = U\oplus E_8(2)$ be the boundary lattice of Sterk's cusp $2$ (@prop:sterk-cusp-quotients). Then $\Orth(K_{\eta_2})$ acts transitively on $\{x\in K_{\eta_2} : x^2 = -2\}$.
 :::
 
 ::: {.proof}
-By [@Ste91, 4.3.6], $K$ is the cusp lattice $K_2 = (e')^{\perp\ten}/\ZZ e'$ of Sterk's cusp $2$, and $\Orth(K) = \{\pm1\}\cdot W_{e'}$, where $W_{e'}$ is the subgroup generated by the reflections of $\Orth(K)$.
+By [@Ste91, 4.3.6], $K_{\eta_2} = (e')^{\perp\ten}/\ZZ e'$ is the boundary lattice of Sterk's cusp $2$, and $\Orth(K_{\eta_2}) = \{\pm1\}\cdot W_{e'}$, where $W_{e'}$ is the subgroup generated by the reflections of $\Orth(K)$.
 
 *A fundamental chamber (@def:coble-polarization-classes) of $W_{e'}$.* Take the chamber certified by the complete Vinberg search of `computations/reports/coble_TEn-chambers-run.txt`, section `K(L_2)`, which lists in the basis (@def:based-module) $e,f,\alpha_1,\dots,\alpha_8$ of $K$ the ten walls (@not:coxeter-polytope-faces)
 $$
@@ -189,7 +197,7 @@ By Vinberg's theorem [@Vin85, §1, no. 1], a Coxeter polytope (@def:coxeter-poly
 *Every $(-2)$-vector is a wall translate.* Let $x\in K$ with $x^2 = -2$ and let $s_x$ be the reflection in $x$. Since $s_x\in\Orth(K) = \{\pm1\}W_{e'}$ and $\pm1$ acts trivially on $\mathbf H$, the isometry of $\mathbf H$ induced by $s_x$ lies in the image of $W_{e'}$; it is the reflection of $\mathbf H$ with fixed hyperplane $x^{\perp}\cap\mathbf H$. By Vinberg's theorem that hyperplane is a wall of the tessellation, so $x^{\perp} = w(r_i^{\perp})$ for some $w\in W_{e'}$ and some $i\in\{1,\dots,10\}$, that is $x = \pm w(r_i)$, $r_i$ being the $i$-th wall root. Of the ten wall roots only $-e+f$ has square $-2$; the other nine have square $-4$. Hence every $(-2)$-vector of $K$ lies in the $W_{e'}$-orbit of $\pm(e-f)$, and $\Orth(K)$ is transitive.
 :::
 
-::: {.proposition #prop:isometry-k-roots title="An explicit isometry of $U\oplus E_8(2)$ carrying $e-f$ to $e+f+\alpha_1$"}
+::: {.proposition #prop:isometry-k-roots title="An explicit isometry of $U\oplus E_8(2)$ sending $e-f$ to $e+f+\alpha_1$"}
 In the basis (@def:based-module) $e,f,\alpha_1,\dots,\alpha_8$ of $K=U\oplus E_8(2)$ with Gram matrix $G = \begin{pmatrix}0&1\\1&0\end{pmatrix}\oplus(-2)C(E_8)$ the matrix
 $$
 N = \begin{pmatrix}
@@ -235,13 +243,13 @@ The fibre of $\Phi_0$ over Sterk's cusp $2$ is a single point, represented by th
 :::
 
 ::: {.proof}
-By @thm:b2-zero-cusps(2) the fibre is the set of $\Stab_{\gent}(e')$-orbits of $(-2)$-vectors $\alpha\perp e'$. Let $\alpha$ be one, and let $\bar\alpha$ be its image in $K_2 = (e')^{\perp\ten}/\ZZ e'$. The image of $\Stab_{\gent}(e')$ in $\Orth(K_2)$ is all of $\Orth(K_2)$ [@Ste91, 4.3.6], and $\Orth(K_2)$ is transitive on the $(-2)$-vectors of $K_2$ (@thm:ou-e8-transitive), so some $g\in\Stab_{\gent}(e')$ has $g\bar\alpha = \bar\delta$, that is $g\alpha = \delta+k e'$ for some $k\in\ZZ$. By @lem:ze-translates-in-gent the transvection $E$ lies in $\Stab_{\gent}(e')$ and $E^{-k}(g\alpha) = \delta$. Hence every $(-2)$-vector perpendicular to $e'$ is $\Stab_{\gent}(e')$-equivalent to $\delta$, and the fibre is a single point.
+By @thm:b2-zero-cusps(2) the fibre is the set of $\Stab_{\gent}(e')$-orbits of $(-2)$-vectors $\alpha\perp e'$. Let $\alpha$ be one, and let $\bar\alpha$ be its image in $K_{\eta_2} = (e')^{\perp\ten}/\ZZ e'$. The image of $\Stab_{\gent}(e')$ in $\Orth(K_{\eta_2})$ is all of $\Orth(K_{\eta_2})$ [@Ste91, 4.3.6], and $\Orth(K_{\eta_2})$ is transitive on the $(-2)$-vectors of $K_{\eta_2}$ (@thm:ou-e8-transitive), so some $g\in\Stab_{\gent}(e')$ has $g\bar\alpha = \bar\delta$, that is $g\alpha = \delta+k e'$ for some $k\in\ZZ$. By @lem:ze-translates-in-gent the transvection $E$ lies in $\Stab_{\gent}(e')$ and $E^{-k}(g\alpha) = \delta$. Hence every $(-2)$-vector perpendicular to $e'$ is $\Stab_{\gent}(e')$-equivalent to $\delta$, and the fibre is a single point.
 :::
 
 ## The other fibres, and the four $0$-cusps
 
 ::: {.proposition #prop:fibres-three-four-five title="The fibres over Sterk's cusps $3$, $4$ and $5$ are nonempty"}
-At Sterk's cusps $3$, $4$ and $5$ the cusp lattice $K_k = \eta_k^{\perp\ten}/\ZZ\eta_k$ of @prop:sterk-cusp-quotients is $K_k\cong U\oplus E_8(2)$ as well [@Ste91, 4.3.4], and each carries a $(-2)$-vector perpendicular to its representative, as follows; the vectors are the white nodes of [@AEGS25, Figs.~7--8], and the coordinates are those of the record `computations/reports/coble_enriques-white-root-facets-run.txt` in the basis $(e,f,e',f',\alpha_1,\dots,\alpha_8)$ of $\ten$.
+At Sterk's cusps $3$, $4$ and $5$ the boundary lattice $K_{\eta_k} = \eta_k^{\perp\ten}/\ZZ\eta_k$ of @prop:sterk-cusp-quotients is $K_{\eta_k}\cong U\oplus E_8(2)$ as well [@Ste91, 4.3.4], and each has a $(-2)$-vector perpendicular to its representative, as follows; the vectors are the white nodes of [@AEGS25, Figs.~7--8], and the coordinates are those of the record `computations/reports/coble_enriques-white-root-facets-run.txt` in the basis $(e,f,e',f',\alpha_1,\dots,\alpha_8)$ of $\ten$.
 $$
 \begin{array}{c|c|c}
 \text{cusp} & \text{representative} & \text{a }(-2)\text{-vector perpendicular to it}\\ \hline
