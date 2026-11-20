@@ -513,6 +513,29 @@ and $F_S=(D_S-\Delta)/\Gamma_\rho$ is *the coarse space* of $\mathrm{K3}$ surfac
 
 @def:coble-family-unpolarized describes a class of families and then chooses a parameter space; it states no functor and no property of that parameter space as a moduli object. This section states the functor and proves the one property of it that needs no comparison with $B$.
 
+::: {.lemma #lem:d0-coble-stack-in-involution-stack title="The Coble stack inside the moduli of $\mathrm{K3}$ surfaces with a nonsymplectic involution of type $(11,11,1)$"}
+
+Let $\mcM_\Co$ be the functor of @def:coble-moduli-functor, a stack by @lem:coble-moduli-functor-stack, and let $\mathfrak{Inv}$ be the moduli of $\mathrm{K3}$ surfaces with a nonsymplectic involution of invariant lattice of type $(11,11,1)$ in the sense of [@AE22, §2A] and [@AE22, §2C]: its objects are flat families $X\to Y$ of $\mathrm{K3}$ surfaces with an involution $\iota$ that acts as $-1$ on $H^{2,0}$ and whose $(+1)$-eigenspace on $H^2$ is a lattice $S$ of type $(11,11,1)$, and its morphisms are Cartesian squares commuting with $\iota$. Then:
+
+1. The assignment $(S\xrightarrow{f}Y,\ X\xrightarrow{\pi}S,\ \iota)\longmapsto(X\xrightarrow{f\pi}Y,\ \iota)$ is a fully faithful morphism $\mcM_\Co\to\mathfrak{Inv}$.
+2. Its essential image over $Y$ is the set of those objects all of whose geometric fibres satisfy: (i) $\Fix(\iota)\neq\emptyset$, equivalently the quotient $X/\iota$ is rational rather than Enriques; (ii) $\abs{-K_{X/\iota}}=\emptyset$; (iii) the branch curve, the image of $\Fix(\iota)$, is irreducible with exactly ten ordinary double points.
+3. On that image the monodromy group is the image of $\pi_1$ under the composite
+$$\pi_1(\mcM_\Co,s)\too\Gamma_\rho\too\Orth(T_\Co),$$
+where $\Gamma_\rho=\theset{\gamma\in\Orth(\Lambda_{\mathrm{K3}})\mid\gamma\rho=\rho\gamma}$ is the marking group of [@AE22, §2C] and the first map is given by the $\rho$-markings, which form a $\Gamma_\rho$-torsor there; so $\Gamma_\Co$ is the image of $\pi_1$ of the substack, not of the ambient $\mathfrak{Inv}$.
+:::
+
+::: {.proof}
+
+1. *The quotient is part of the data.* An object of $\mcM_\Co$ carries $X\to S$ and $\iota$, and $\iota$ is the covering involution of a double cover, so $S=X/\iota$ and $\iota$ is recovered from $(X,\iota)$; conversely $X$ is the double cover of $S$ branched along the relative divisor $-2K_{S/Y}$ (@lem:d2-unpolarised-family(1)--(2)). So the assignment is injective on isomorphism classes of objects, and a morphism of $\mcM_\Co$ is a Cartesian square commuting with $\pi$ and $\iota$, which is exactly a morphism of $\mathfrak{Inv}$ between the images; it is bijective on morphism sets because $\pi$ is determined by $\iota$. Hence fully faithful.
+
+2. (i) is [@AE22, §2A]: the quotient of a $\mathrm{K3}$ surface by a nonsymplectic involution is rational or Enriques, and it is Enriques exactly when the involution is fixed-point-free. The invariant lattice is $S=M=\generators{2}\oplus\generators{-2}^{\oplus10}$ of type $(11,11,1)$ (@prop:coble-period-domain(1)--(2)), whose embedding in $\Lambda_{\mathrm{K3}}$ is unique up to $\Orth(\Lambda_{\mathrm{K3}})$ by Nikulin's classification [@AE22, §2A, citing Nikulin 3.6.2].
+(ii) $\abs{-K}=\emptyset$ is the defining condition of a Coble surface [@DZ99, Introduction; @DK13, §3] and $\abs{-2K}\neq\emptyset$ is automatic from (i), the branch divisor being $-2K_{X/\iota}$; so the fibres of an object of $\mcM_\Co$ satisfy (ii) by @lem:d2-unpolarised-family(1). For (iii), the fibres of @def:coble-moduli-functor are $\Bl_{p_1,\dots,p_{10}}\PP^2$ at the ten nodes of an irreducible sextic (@lem:d2-unpolarised-family(1)), whose proper transform is the branch curve; conversely a family satisfying (i)--(iii) has, in each fibre, the ten exceptional curves over the ten nodes and the proper transform as branch curve, so the fibre is that of @lem:d2-unpolarised-family(1).
+
+3. The monodromy of the local system $\bT$ of @lem:d2-local-system over the substack is the image of $\pi_1$ of the substack by the definition of monodromy (@def:transport-and-monodromy, @lem:d2a-monodromy-of-the-stack). The $\rho$-markings of a $\mathrm{K3}$ surface with involution are a torsor over $\Gamma_\rho$ [@AE22, §2C], so a loop of the base acts on the marking by an element of $\Gamma_\rho$, and on $T_\Co=T=S^{\perp}$ through the restriction $\Gamma_\rho\to\Orth(T_\Co)$; the local system is the one whose fibre is $T_\Co$ and whose transport is that restriction, so its monodromy group is the image of the composite. That the ambient group is $\Orth(T_\Co)$ and not $\widetilde\Orth^+(T_\Co)$ is the point of @rmk:d2-involution-moduli-of-ae22.
+
+*What is not proved here.* Naming the image in 2 an *open* substack needs the upper semicontinuity of $h^0(-K)$, for which no source has been read in this repository; it is recorded as the one citation owed, not as a claim. The value of the image of 3 — which subgroup of $\Orth(T_\Co)$ it is — is research#780 and is not addressed here.
+:::
+
 ::: {.definition #def:coble-moduli-functor title="The moduli functor of Coble surfaces"}
 
 Let $\mathfrak{C}$ be the category of complex spaces. The functor
