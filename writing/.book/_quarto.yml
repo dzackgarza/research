@@ -182,6 +182,7 @@ book:
       chapters:
         - coble/cusp-correspondence/cusp-diagram-calculations.md
         - coble/cusp-correspondence/cusp-diagrams-by-moduli-space.md
+        - coble/cusp-correspondence/cusps-over-sterk-cusps.md
         - coble/cusp-correspondence/enriques-to-coble-cusp-correspondence.md
     - part: Stable limits
       chapters:
