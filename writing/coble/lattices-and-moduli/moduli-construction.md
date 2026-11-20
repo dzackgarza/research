@@ -1682,6 +1682,39 @@ be the locus of periods whose stabiliser is strictly larger than $\{\pm\id\}$. T
 $\Fix(g)$ is the fixed locus of an isometry of the period domain: it is closed analytic, and it is proper because an isometry of $\bD$ which fixes an open set is the identity, so for $g\neq\id$ the fixed locus has empty interior. Local finiteness: $G$ acts properly discontinuously on $\bD$, so for a compact $K\subset\bD$ only finitely many $g$ satisfy $gK\intersect K\neq\emptyset$, and only those can fix a point of $K$; hence only finitely many of the sets $\Fix(g)$ meet $K$. A locally finite union of proper closed analytic subsets is closed analytic and proper, so its complement is open and dense, with complement of positive codimension. The last sentence is @prop:the-generic-locus-sees-the-whole-group(1) applied with $\mcM^{\mathrm{gen}}$ the complement of $Z_{\mathrm{sp}}$.
 :::
 
+::: {.theorem #thm:gamma-co-is-the-stack-monodromy title="The monodromy group of the Coble moduli stack: $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$, with every input listed"}
+Let $\mcM_\Co$ be the stack of @def:coble-moduli-functor, in the class the definition now states (a single smooth anti-bicanonical curve, invariant lattice $M$ of the $(11,11,1)$ type), let $\bD=\bD(T_\Co)^+$, $Z$ the $(-2)$-arrangement of @prop:the-coble-locus-in-the-period-domain and $\mcM^{\mathrm{gen}}$ the complement of the special-isotropy locus of @lem:the-special-isotropy-locus-is-proper. Then
+$$\Gamma_\Co=\rho\qty(\pi_1(\mcM_\Co))=\widetilde\Orth^+(T_\Co).$$
+:::
+
+::: {.proof}
+*The chain.* (a) Every period in $\bD\sm Z$ is realised by an object of $\mcM_\Co$, and every object has a marking of $M$ preserved by $\iota$: [@Dol96, Thm. 3.1] with @prop:d2a-family-is-pseudo-ample for existence, and @lem:every-object-of-the-functor-is-labellable for the marking. (b) Two labelled objects with the same period are isomorphic up to the isotropy (@thm:coble-period-map-of-the-stack(2)), and the differential is an isomorphism (@thm:coble-period-map-of-the-stack(3)). (c) On $\mcM^{\mathrm{gen}}$ the isotropy is exactly $\{\id,\iota\}$, so the period map is an equivalence onto an open substack of $\qty[\widetilde\Orth^+(T_\Co)\backslash\bD]$ (@prop:coble-monodromy-is-the-marking-group(1)). (d) $\mcM^{\mathrm{gen}}\to\qty[\widetilde\Orth^+(T_\Co)\backslash U^{\mathrm{gen}}]$ is a $G$-torsor, hence a covering of topological stacks, and Noohi's Theorem 18.19 with Corollary 18.20 (*Foundations of topological stacks I*, arXiv:math/0503247; Definition 18.10 for the coverings) give $1\to\pi_1(U^{\mathrm{gen}})\to\pi_1(\qty[U^{\mathrm{gen}}/G])\to G\to1$ with the last map onto (@prop:coble-monodromy-is-the-marking-group(2)). (e) The local system is the pullback of the tautological one, whose monodromy has image $G$ (@lem:orbifold-monodromy-of-a-quotient). (f) The inclusion $\mcM^{\mathrm{gen}}\subset\mcM_\Co$ induces a surjection on $\pi_1$, the complement being a closed analytic substack of positive codimension and the loop being compact one-dimensional (@prop:the-generic-locus-sees-the-whole-group(1), with @lem:the-special-isotropy-locus-is-proper). Hence $\rho(\pi_1(\mcM_\Co))=\rho^{\mathrm{gen}}(\pi_1(\mcM^{\mathrm{gen}}))=G$.
+
+*Every input, with its status.*
+
+| input | supplies | status |
+|---|---|---|
+| @def:coble-moduli-functor (narrowed class) | the objects, a single smooth anti-bicanonical curve | definition; the narrowing is a modification of the definition and is kof5's |
+| @prop:d2a-family-is-pseudo-ample | pseudo-ampleness, $e_0$ nef and big | proved |
+| [@Dol96, Thm. 3.1] | surjectivity of the marked pseudo-ample period map, fibres $W_\pi(N)$ | cited |
+| [@Dol96, Prop. 3.3] | $\Gamma_M=\Orth(T_\Co)^*$ | cited |
+| @lem:every-object-of-the-functor-is-labellable | a marking of $M$, preserved by $\iota$ | proved, on the $n=1$ class the functor now states |
+| @prop:the-coble-locus-in-the-period-domain | $Z$ closed analytic, $\bD\sm Z$ open and connected | proved |
+| @thm:coble-period-map-of-the-stack(2) | injectivity on objects, isomorphisms $=$ automorphisms of a member | read as proved; its strong Torelli input is the *owed* chamber/ample-class step (finding (ii)) |
+| @thm:coble-period-map-of-the-stack(3) | local Torelli | proved |
+| @prop:coble-quotient-presentation | the presentation $\qty[\widetilde\Orth^+(T_\Co)\backslash\bD]$ | proved given (U) and the component computation |
+| @prop:coble-monodromy-is-the-marking-group(1)--(3) | the equivalence on the generic substack, the torsor, the tautological system | proved, conditional on the isotropy hypothesis |
+| Noohi, Def. 18.10, Thm. 18.19, Cor. 18.20 | the Galois correspondence and the exact sequence | cited, verified against the fetched paper |
+| @lem:orbifold-monodromy-of-a-quotient | tautological monodromy has image all of $G$ | proved |
+| @lem:the-special-isotropy-locus-is-proper | the special-isotropy locus is proper closed analytic | proved |
+| @prop:the-generic-locus-sees-the-whole-group(1) | $\pi_1(\mcM^{\mathrm{gen}})\to\pi_1(\mcM_\Co)$ onto | proved, given smoothness and connectedness of $\mcM_\Co$ |
+| smoothness and connectedness of $\mcM_\Co$ | the hypotheses of the surjectivity | **owed**, kof5's |
+
+*The SGA 1 statement, kept exact.* [SGA 1, Exposé X, Corollaire 3.3] states that for $X$ locally noetherian and normal and $Z\subset X$ closed of codimension at least $2$, the map $\pi_1(X\sm Z)\to\pi_1(X)$ is an **isomorphism**. What is used here is only surjectivity, and under the weaker hypothesis of positive codimension; the proof is the perturbation of a compact loop off a nowhere dense closed analytic subset, and the citation is recorded in that weaker form, not as an isomorphism available at codimension one.
+
+*What remains owed, and it is not nothing.* Two inputs above are not proved: smoothness and connectedness of $\mcM_\Co$ (kof5's, in progress), and the chamber/ample-class step that @thm:coble-period-map-of-the-stack(2) uses for injectivity (finding (ii) of the review, 42fp's). Until both are in, this theorem is proved from its inputs but not unconditional, and the page says so rather than presenting the chain as closed.
+:::
+
 ### Item 6: the groups from the universal families
 
 ::: {.proposition #prop:gamma-co-from-the-universal-family title="What the universal families give, and what a restriction gives instead"}

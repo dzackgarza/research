@@ -293,3 +293,17 @@ def test_the_special_locus_is_proper_and_closed():
     tail = text[text.index("#" + SPEC):]
     assert "properly discontinuously" in tail[:3000]
     assert "positive codimension" in tail[:3000]
+
+
+ASSEMBLED = "thm:gamma-co-is-the-stack-monodromy"
+
+
+def test_the_assembled_theorem_lists_every_input_with_its_status():
+    text = MC.read_text(encoding="utf-8")
+    tail = text[text.index("#" + ASSEMBLED):]
+    # the ledger exists and marks the two owed inputs
+    assert "Every input, with its status" in tail[:6000]
+    assert "owed" in tail[:6000]
+    # the SGA 1 statement is kept exact: isomorphism at codimension two, surjectivity used
+    assert "SGA 1" in tail[:8000]
+    assert "isomorphism" in tail[:8000]
