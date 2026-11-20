@@ -1680,28 +1680,28 @@ Nothing else enters: the indices computed there ($\abs{P} = \abs{W(E_8)}$, $[\Ga
 
 ::: {.theorem #thm:gamma-co-2-comparison title="The comparison with the Enriques group at the Heegner vector"}
 
-Let $\delta$ and $\zeta$ be the vectors of @lem:coble-heegner-vector, $\gent$ the degree-$2$ Enriques group of @prop:gamma-en-two-gluing, $\Gamma_{\Co,2}\definedas R_{\gent}$ the image of $\Stab_{\gent}(\ZZ\delta)$ in $\Orth(\delta^{\perp\ten}) = \Orth(T_\Co)$ (@def:gamma-co-groups, @def:gamma-co-en), and $\Gamma^{\mathrm{cong}}_{\Co,2} = \rho_{T_\Co}^{-1}(P)$ the congruence group of @def:congruence-group. Then:
+Let $\delta$ and $\zeta$ be the vectors of @lem:coble-heegner-vector, $\gent$ the degree-$2$ Enriques group of @prop:gamma-en-two-gluing, $R_{\gent}$ the image of $\Stab_{\gent}(\ZZ\delta)$ in $\Orth(\delta^{\perp\ten}) = \Orth(T_\Co)$ (@def:gamma-co-groups, @def:gamma-co-en), and $\Gamma^{\mathrm{cong}}_{\Co,2} = \rho_{T_\Co}^{-1}(P)$ the congruence group of @def:congruence-group. Then:
 
-1. $\Gamma_{\Co,2} = \Gamma^{\En}_\Co(\delta) = \Gamma^{\mathrm{cong}}_{\Co,2}$: the Enriques description at $\delta$ and the congruence description give the same subgroup of $\Orth(T_\Co)$. The image of the $\theta$-centralizer $Z_{\Orth(\lkt)}(\theta_\Co)\intersect\Stab_{\Orth(\lkt)}(\tilde h_\Co)$ in $\Orth(T_\Co)$ is the same group again, so the $\theta$-description and the Enriques description differ in nothing but the condition $\varphi\in\Orth^+(T_\Co)$ with which @prop:gamma-co-in-theta-centralizer states the $\theta$ one; with that condition the three descriptions give $\Gamma^{\mathrm{Hdg}}_\Co = \Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ (@cor:gamma-hdg-is-congruence).
+1. $R_{\gent} = \Gamma^{\En}_\Co(\delta) = \Gamma^{\mathrm{cong}}_{\Co,2}$: the Enriques description at $\delta$ and the congruence description give the same subgroup of $\Orth(T_\Co)$. The image of the $\theta$-centralizer $Z_{\Orth(\lkt)}(\theta_\Co)\intersect\Stab_{\Orth(\lkt)}(\tilde h_\Co)$ in $\Orth(T_\Co)$ is the same group again, so the $\theta$-description and the Enriques description differ in nothing but the condition $\varphi\in\Orth^+(T_\Co)$ with which @prop:gamma-co-in-theta-centralizer states the $\theta$ one; with that condition the three descriptions give $\Gamma^{\mathrm{Hdg}}_\Co = \Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ (@cor:gamma-hdg-is-congruence).
 
-2. The two descriptions differ by one coset: $[\Gamma_{\Co,2}:\Gamma^\theta_\Co] = 2$, that is $\Gamma_{\Co,2} = \Gamma^\theta_\Co\sqcup s_\zeta\Gamma^\theta_\Co$, and the nontrivial class is that of the reflection $s_\zeta$, whose $\zeta^2 = 2$ gives it trivial discriminant action and spinor norm $-1$ (@prop:gamma-cong-eq-heegner(3), @prop:gamma-co-reflective-set(2)). So the $\theta$-description of @prop:gamma-co-in-theta-centralizer and the Enriques description agree up to that single isometry and no further.
+2. The two descriptions differ by one coset: $[R_{\gent}:\Gamma^\theta_\Co] = 2$, that is $R_{\gent} = \Gamma^\theta_\Co\sqcup s_\zeta\Gamma^\theta_\Co$, and the nontrivial class is that of the reflection $s_\zeta$, whose $\zeta^2 = 2$ gives it trivial discriminant action and spinor norm $-1$ (@prop:gamma-cong-eq-heegner(3), @prop:gamma-co-reflective-set(2)). So the $\theta$-description of @prop:gamma-co-in-theta-centralizer and the Enriques description agree up to that single isometry and no further.
 
 3. The indices are
 $$
-\widetilde\Orth^+(T_\Co)\subseteq\Gamma^\theta_\Co\subseteq\Gamma_{\Co,2} = \Gamma^{\mathrm{cong}}_{\Co,2},
+\widetilde\Orth^+(T_\Co)\subseteq\Gamma^\theta_\Co\subseteq R_{\gent} = \Gamma^{\mathrm{cong}}_{\Co,2},
 \qquad
 [\Gamma^\theta_\Co:\widetilde\Orth^+(T_\Co)] = \abs{W(E_8)},
 \qquad
-[\Gamma_{\Co,2}:\widetilde\Orth^+(T_\Co)] = 2\abs{W(E_8)} = 1\,393\,459\,200,
+[R_{\gent}:\widetilde\Orth^+(T_\Co)] = 2\abs{W(E_8)} = 1\,393\,459\,200,
 $$
 and the index in the whole orthogonal group, which @prop:gamma-co-images(3) states as the index of the subgroup $P$ of $\Orth(q_{T_\Co})$, is
 $$
-[\Orth(T_\Co):\Gamma_{\Co,2}] = [\Orth(q_{T_\Co}):P] = 67\,456
+[\Orth(T_\Co):R_{\gent}] = [\Orth(q_{T_\Co}):P] = 67\,456
 ,
 $$
 it is the number of decompositions of $A^0 = [\overline{\zeta/2}]^{\perp}$ into a two-dimensional summand isometric to $A_{U(2)}$ and an eight-dimensional one isometric to $A_{E_8(2)}$.
 
-4. Under @conj:gamma-co-stable, $\Gamma_\Co = \widetilde\Orth^+(T_\Co)\subseteq\Gamma_{\Co,2}$, and then $\fco = \bD(T_\Co)/\Gamma_\Co\to\bD(T_\Co)/\Gamma_{\Co,2} = F_{\Co,2}$ is finite of degree $2\abs{W(E_8)} = 1\,393\,459\,200$; the inclusion $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_{\Co,2}$ and that index hold unconditionally.
+4. Under @conj:gamma-co-stable, $\Gamma_\Co = \widetilde\Orth^+(T_\Co)\subseteq R_{\gent}$, and then $\fco = \bD(T_\Co)/\Gamma_\Co\to\bD(T_\Co)/R_{\gent}$ is finite of degree $2\abs{W(E_8)} = 1\,393\,459\,200$; the inclusion $\widetilde\Orth^+(T_\Co)\subseteq R_{\gent}$ and that index hold unconditionally.
 
 5. In the marking of @thm:theta-co-coordinates, $\delta = e_0-e_1$ and $\zeta = e_0+e_1$; the span $\generators{\delta,\zeta}$ has index $2$ in $U_1$, and $\delta^{\perp\ten} = T_\Co$; $s_\zeta$ is the reflection in $e_0+e_1$, an integral isometry of $\lkt$ fixing $S_\Co$ pointwise, hence lying in $Z_{\Orth(\lkt)}(\theta_\Co)\intersect\Stab(\tilde h_\Co)$, and it acts trivially on $A_{T_\Co}$ and on $A_{T_\En}$, so it lies in $\ker\rho_{T_\En}\subseteq\gent$ and fixes the line $\ZZ\delta$.
 :::
@@ -1716,9 +1716,9 @@ it is the number of decompositions of $A^0 = [\overline{\zeta/2}]^{\perp}$ into 
 
 **One coset.** By @prop:gamma-cong-eq-heegner(3), for $x\in\Gamma^{\mathrm{cong}}_{\Co,2}$ one of $x$ and $xs_\zeta$ lies in $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$, and the two have the same image under $\rho_{T_\Co}$; and $s_\zeta$ does not lie in $\Orth^+(T_\Co)$, because a reflection in a vector of square $2$ has spinor norm $-1$ (@prop:gamma-co-reflective-set(2)). So the quotient has two elements, and one of them is the class of $s_\zeta$.
 
-**The indices.** $\widetilde\Orth^+(T_\Co)\subseteq\Gamma^\theta_\Co$ is @prop:gamma-co-in-heegner-group(1); $[\Gamma^\theta_\Co:\widetilde\Orth^+(T_\Co)] = \abs{W(E_8)}$ and $[\Gamma_{\Co,2}:\widetilde\Orth^+(T_\Co)] = 2\abs{W(E_8)}$ are @prop:gamma-cong-eq-heegner(3), and the second is the product of the first with the index $2$ of the previous paragraph. For $[\Orth(T_\Co):\Gamma_{\Co,2}]$: $\rho_{T_\Co}$ is onto (@thm:two-elementary-surjectivity), so the index is $[\Orth(q_{T_\Co}):P]$, and a coset decomposition of $\Orth(q_{T_\Co})$ by the stabilizer of the decomposition matches the decompositions $A^0 = W\perp W^{\perp}$ with $W\cong A_{U(2)}$ and $W^{\perp}\cong A_{E_8(2)}$ (Witt's extension theorem, applied as in the proof of @prop:gamma-cong-eq-heegner(1)). The number of those decompositions is counted in `computations/reports/coble_a13-heegner-comparison-run.txt`: $67\,456$ for the $2^{10}$ elements of $A^0$, and the same file checks it against $\abs{\Orth(q_{T_\Co})}/\abs{P} = 46\,998\,591\,897\,600/696\,729\,600$.
+**The indices.** $\widetilde\Orth^+(T_\Co)\subseteq\Gamma^\theta_\Co$ is @prop:gamma-co-in-heegner-group(1); $[\Gamma^\theta_\Co:\widetilde\Orth^+(T_\Co)] = \abs{W(E_8)}$ and $[R_{\gent}:\widetilde\Orth^+(T_\Co)] = 2\abs{W(E_8)}$ are @prop:gamma-cong-eq-heegner(3), and the second is the product of the first with the index $2$ of the previous paragraph. For $[\Orth(T_\Co):R_{\gent}]$: $\rho_{T_\Co}$ is onto (@thm:two-elementary-surjectivity), so the index is $[\Orth(q_{T_\Co}):P]$, and a coset decomposition of $\Orth(q_{T_\Co})$ by the stabilizer of the decomposition matches the decompositions $A^0 = W\perp W^{\perp}$ with $W\cong A_{U(2)}$ and $W^{\perp}\cong A_{E_8(2)}$ (Witt's extension theorem, applied as in the proof of @prop:gamma-cong-eq-heegner(1)). The number of those decompositions is counted in `computations/reports/coble_a13-heegner-comparison-run.txt`: $67\,456$ for the $2^{10}$ elements of $A^0$, and the same file checks it against $\abs{\Orth(q_{T_\Co})}/\abs{P} = 46\,998\,591\,897\,600/696\,729\,600$.
 
-**The quotient map.** For subgroups $\Gamma\subseteq\Gamma'$ of $\Orth(T_\Co)$ of finite index acting properly discontinuously on $\bD(T_\Co)$, the natural map $\bD/\Gamma\to\bD/\Gamma'$ has degree $[\Gamma':\Gamma]$ at a generic point, since a generic $\Gamma'$-orbit is the union of $[\Gamma':\Gamma]$ $\Gamma$-orbits. With $\Gamma = \Gamma_\Co$ and $\Gamma' = \Gamma_{\Co,2}$ the degree is therefore $[\Gamma_{\Co,2}:\Gamma_\Co] = 2\abs{W(E_8)}$ under @conj:gamma-co-stable, and the unconditional part is the inclusion $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_{\Co,2}$ with that index.
+**The quotient map.** For subgroups $\Gamma\subseteq\Gamma'$ of $\Orth(T_\Co)$ of finite index acting properly discontinuously on $\bD(T_\Co)$, the natural map $\bD/\Gamma\to\bD/\Gamma'$ has degree $[\Gamma':\Gamma]$ at a generic point, since a generic $\Gamma'$-orbit is the union of $[\Gamma':\Gamma]$ $\Gamma$-orbits. With $\Gamma = \Gamma_\Co$ and $\Gamma' = R_{\gent}$ the degree is therefore $[R_{\gent}:\Gamma_\Co] = 2\abs{W(E_8)}$ under @conj:gamma-co-stable, and the unconditional part is the inclusion $\widetilde\Orth^+(T_\Co)\subseteq R_{\gent}$ with that index.
 
 **The coordinates.** Everything in part 5 is a computation in the marking of @thm:theta-co-coordinates, recorded in the same transcript: the Gram matrix $\begin{pmatrix}-2&0\\0&2\end{pmatrix}$ of $\delta,\zeta$ and its determinant $-4$, the identity $\delta^{\perp\ten} = T_\Co$, the integrality of $s_\zeta$ and its being an involution preserving the form, its fixing the eleven $S_\Co$-basis vectors and its commutation with $\theta_\Co$, the triviality of its action on $A_{T_\Co}$ and on $A_{T_\En}$ tested against the dual bases of those two discriminant groups, and its fixing $\delta$. Membership in $\gent$ follows from $\bar\rho_{T_\En}(s_\zeta) = 1$ and $\gent = \rho_{T_\En}^{-1}(M)$ (@prop:sterk-group-identification(2)).
 :::
@@ -2846,11 +2846,11 @@ edges. Each summand is the number of classes of the relation on $J_0\sm\generato
 ::: {.proposition #prop:coble-cong-point-stabilizer title="The group the public plane stabilizer builds, and the $0$-cusps of $F_{\Co,2}$"}
 1. $\Stab_{\Orth(q_{T_\Co})}\bigl(A_{U(2)}\bigr) = \Orth(q_{U(2)})\times\Orth(q_{E_8(2)}) = P$ of @def:congruence-group, and consequently
 $$
-\rho_{T_\Co}^{-1}\left(\Stab_{\Orth(q_{T_\Co})}\bigl(A_{U(2)}\bigr)\right) = \rho_{T_\Co}^{-1}(P) = \Gamma^{\mathrm{cong}}_{\Co,2} = R_{\gent} = \Gamma_{\Co,2}
+\rho_{T_\Co}^{-1}\left(\Stab_{\Orth(q_{T_\Co})}\bigl(A_{U(2)}\bigr)\right) = \rho_{T_\Co}^{-1}(P) = \Gamma^{\mathrm{cong}}_{\Co,2} = R_{\gent}
 ,$$
-the three equalities after $\rho_{T_\Co}^{-1}(P)$ being @def:congruence-group, @prop:gamma-co-images(3) and @def:gamma-co-groups(5).
+the three equalities after $\rho_{T_\Co}^{-1}(P)$ being @def:congruence-group and @prop:gamma-co-images(3); this is the arithmetic group $R_{\gent}$, not the monodromy group $\Gamma_{\Co,2}$ of @def:gamma-co-groups(5), which is compared with it in @thm:coble-monodromy-versus-enriques.
 2. The orbits of $P$ on the $527$ nonzero isotropic classes of $A_{T_\Co}$ are four, of sizes $2$, $135$, $270$ and $120$.
-3. Hence $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ has exactly four $0$-cusps.
+3. Hence $\bD(T_\Co)/R_{\gent}$ has exactly four $0$-cusps, and $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ has exactly four $0$-cusps when @qst:coble-monodromy-equality holds (@rmk:coble-monodromy-counts).
 :::
 
 ::: {.proof}

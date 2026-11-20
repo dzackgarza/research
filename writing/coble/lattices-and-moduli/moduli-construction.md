@@ -17,7 +17,8 @@ $$
 \gent &= \Orth(\ten) \intersect \Orth(\tdp) \iscontainedin \Orth(\lkt) \\
 \Gamma_\En &= \widetilde\Orth^+(\ten) = \Orth^+(\ten)^* = \Orth^+(\ten)\intersect\discriminantkernel{\ten}, \qquad \Gamma^K_{\En} = \Orth(\ten) \\
 \Gamma_\Co &= \text{the monodromy group of the family of unpolarized Coble surfaces} \\
-\Gamma_{\Co, 2} &= \text{the image of } \Stab_{\gent}(\delta) \text{ in } \Orth(\delta^{\perp}), \quad \delta^2 = -2,\ \delta^{\perp T_\En} = T_\Co \\
+\Gamma_{\Co, 2} &= \text{the monodromy group of the VHS of the degree-$2$ Coble family} \\
+R_{\gent} &= \text{the image of } \Stab_{\gent}(\delta) \text{ in } \Orth(\delta^{\perp\ten}) = \Orth(T_\Co), \quad \delta^2 = -2 \\
 F_{\Nod} &= \bD(T_\Nod)/\Orth^+(T_\Nod)^*
 \end{aligned}
 $$
@@ -26,11 +27,11 @@ Here $\tdp$ is the lattice of [@AEGS25], and $\eta\colon T_\Co\injects\ten$ is t
 The quotient $F^K_{\En} = \bD(\ten)/\Gamma^K_{\En}$, with $\Gamma^K_{\En} = \Orth(\ten)$ the group $\Gamma_{\mathrm{Enr}}$ of [@AEGS25], has two $0$-cusps $(10,10,0)_1$, $(10,8,0)_1$ and two $1$-cusps $(8,8,0)_0$, $(8,6,0)_0$ [@AEGS25, §2]. The quotient $\fentwo = \bD(\ten)/\gent$, with $\gent = \Gamma^K_{\En}\intersect\Gamma_{\dP}$, has five $0$-cusps [@AEGS25, §3]. Throughout, $\Gamma_\En$ denotes the stable group $\widetilde\Orth^+(\ten)$, also written $\Orth^+(\ten)^*$ (@def:gamma-co-groups, @sec-heegner-line, @thm:normalization, @def:gamma-co-en).
 The group $\Gamma_\Co$ is the monodromy group of the family of unpolarized Coble surfaces that the family of unpolarized Enriques surfaces induces, and $\fco = \bD(T_\Co)/\Gamma_\Co$ (@def:gamma-co-groups).
 The equality $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ is @conj:gamma-co-stable: the sign half of $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$ is proved (@lem:monodromy-is-spinor-positive) and the discriminant half is open (@rmk:gamma-co-status), in the divisor form of @rmk:gamma-co-nodal-pair-proposal.
-The group $\Gamma_{\Co,2}$ of $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ is the image of the stabilizer of $\delta$ in $\gent$ (@prop:gamma-co-images).
+The group $\Gamma_{\Co,2}$ of $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ is the monodromy group of the VHS of the degree-$2$ Coble family (@def:gamma-co-groups(5)). The group that the Enriques datum defines is $R_{\gent} = \bar\rho^{-1}(P)$, the image of the stabilizer of $\delta$ in $\gent$ (@prop:gamma-co-images(3)); it is not the monodromy group, and $\Gamma_{\Co,2} = R_{\gent}$ is false (@thm:coble-monodromy-versus-enriques(3)). The monodromy group lies in $R_{\gent}\intersect\Orth^+(T_\Co)$ for the degree-$2$ Coble data of the direct construction (@thm:coble-monodromy-versus-enriques(4)); the inclusion for a general degree-$2$ Coble family is the first of the two named inputs of @qst:coble-monodromy-equality.
 The stable subgroup $\widetilde\Orth^+(T_\Co)$ is the kernel of the action on $A_{T_\Co}$ of each of the groups $\Gamma^{\mathrm{Hdg}}_\Co$ and $\Gamma^\theta_\Co$ of @sec-gamma-co-comparison, and both inclusions are strict, of index $\abs{W(E_8)} = 696\,729\,600$ (@prop:gamma-co-heegner-strict, @prop:theta-co-index).
 
 ::: {.remark title="The group $\Gamma_{\Co,2}$, explicitly"}
-@def:gamma-co-groups describes $\Gamma_{\Co,2}$ as the image of the stabilizer of the Heegner vector, and @thm:gamma-co-2-comparison(1) evaluates that description: $\Gamma_{\Co,2} = \rho_{T_\Co}^{-1}(P) = \Gamma^{\mathrm{cong}}_{\Co,2}$, the preimage in $\Orth(T_\Co)$ of the stabilizer $P$ of the decomposition $[h/2]^{\perp} = A_{U(2)}\oplus A_{E_8(2)}$ of $A_{T_\Co}$ (@prop:gamma-co-images(3)), of index $[\Orth(T_\Co):\Gamma_{\Co,2}] = 67\,456$ (@thm:gamma-co-2-comparison(3)).
+@def:gamma-co-groups(5) defines $\Gamma_{\Co,2}$ as the monodromy group, and @thm:coble-monodromy-versus-enriques identifies the arithmetic group that contains it for the degree-$2$ Coble data of the direct construction: $\Gamma_{\Co,2}\subseteq\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co) = \rho_{T_\Co}^{-1}(P) = R_{\gent}\intersect\Orth^+(T_\Co)$, the preimage in $\Orth(T_\Co)$ of the stabilizer $P$ of the decomposition $[h/2]^{\perp} = A_{U(2)}\oplus A_{E_8(2)}$ of $A_{T_\Co}$ (@prop:gamma-co-images(3)), of index $[\Orth(T_\Co):\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)] = 134\,912$. The group $R_{\gent} = \rho_{T_\Co}^{-1}(P)$ of @thm:gamma-co-2-comparison(1) is not contained in $\Orth^+(T_\Co)$ (@thm:coble-monodromy-versus-enriques(2)), so the equality $\Gamma_{\Co,2} = R_{\gent}$ does not hold; whether $\Gamma_{\Co,2}$ is the whole arithmetic group, and whether the general degree-$2$ Coble family lies in it, is @qst:coble-monodromy-equality.
 :::
 
 ```{.tikz}
@@ -47,13 +48,13 @@ F_{(2,2,0)}
 F_4 \\
 F_{\mathrm{Co}}
   \arrow[r]
-  \arrow[u, "2\,|W(E_8)|"'] &
+  \arrow[u, "|W(E_8)|"'] &
 F_{\mathrm{En}}
 \end{tikzcd}
 ```
 
 The tower relates the degree-$2$ numerically polarized Coble and Enriques moduli $F_{\Co,2}$, $\fentwo$, their unpolarized quotients $\fco$, $\fen$, and the degree-$(2,2,0)$ K3 moduli space $\fttz\injects F_4$.
-The vertical map is $F_{\Co}\to F_{\Co,2}$, finite of degree $[\Gamma_{\Co,2}:\Gamma_\Co] = 2\abs{W(E_8)} = 1\,393\,459\,200$ under @conj:gamma-co-stable, by @thm:gamma-co-2-comparison(4). Unconditionally $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_{\Co,2}$ with that index, so the quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)\to F_{\Co,2}$ has that degree, and the identification $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ is exactly the conjecture.
+The vertical map is $F_{\Co}\to F_{\Co,2}$, finite of degree $[\Gamma_{\Co,2}:\Gamma_\Co]$ once $\Gamma_\Co\subseteq\Gamma_{\Co,2}$; under @conj:gamma-co-stable together with @qst:coble-monodromy-equality, $\Gamma_\Co = \widetilde\Orth^+(T_\Co)\subseteq R_{\gent}\intersect\Orth^+(T_\Co) = \Gamma_{\Co,2}$ and the degree is $[\Gamma_{\Co,2}:\widetilde\Orth^+(T_\Co)] = \abs{W(E_8)} = 696\,729\,600$ (@rmk:coble-monodromy-counts), the index $2\abs{W(E_8)}$ of @thm:gamma-co-2-comparison(4) being the index of the larger group $R_{\gent}$. The identification $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ is exactly the conjecture.
 
 ## The GIT construction
 
@@ -378,7 +379,7 @@ $$
 $$
 (@thm:occult-period-map-sextics).
 Is either inclusion an equality?
-How does $\Gamma_\Co$ compare with $\Gamma_{10A_1}$, with $\widetilde\Orth^+(T_\Co)$ (@conj:gamma-co-stable) and with the polarized group $\Gamma_{\Co,2}$?
+How does $\Gamma_\Co$ compare with $\Gamma_{10A_1}$, with $\widetilde\Orth^+(T_\Co)$ (@conj:gamma-co-stable) and with the arithmetic model $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ of the monodromy group $\Gamma_{\Co,2}$ (@thm:coble-monodromy-versus-enriques)?
 
 The second comparison has a criterion on its discriminant side. The inclusion $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$ asks for triviality of the monodromy action on $A_{T_\Co}$, and for the family whose local system is the $N$-summand of the $H^2$ local system of the K3 double covers that triviality is equivalent to triviality of the monodromy action on $A_M$, where $M = \generators{2}\oplus\generators{-2}^{\oplus 10}$ is the Picard lattice generated by the classes of $E_0,\dots,E_{10}$ (@cor:gamma-co-lifting-criterion). So $\Gamma_\Co$ is not contained in $\widetilde\Orth^+(T_\Co)$ as soon as some loop of the family exchanges two of the ten exceptional classes, and then @conj:gamma-co-stable and the $\Gamma_\Co$ form of the strong lifting of @thm:coble-strong-lifting both fail.
 @lem:ten-a1-permutation-forces-strictness gives the same criterion for the first inclusion: by [@YZZ25, Prop. 3.2] every isometry of $T_\Co$ acting trivially on $A_{T_\Co}$ lies in $\widetilde\Gamma_T$, so the discriminant kernel is the part of $\Gamma_{10A_1}$ that is accounted for, and the inclusion $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_{10A_1}$ is strict as soon as one of the permutations that $\Orth(P,H,\Delta)\cong\mathfrak S_{10}$ realizes on $A_P$ ([@YZZ25, Lemma 6.7 and its proof]) extends to an isometry of $\Lambda_1$ preserving $H$. Whether one does is not decided by [@YZZ25], whose statements give the contained side only. @rmk:coble-moduli-functor records that the source itself has both quotients, $\bD(T_\Co)/\discriminantkernel{T_\Co}$ for the lattice polarized family [@DK13, printed p. 512] and $\bD(T_\Co)/\Orth(T_\Co)$ for the unpolarized one [@DK13, printed p. 513], so the group asked about here depends on which family the symbol $\Gamma_\Co$ denotes.
