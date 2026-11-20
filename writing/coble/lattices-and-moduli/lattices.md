@@ -417,7 +417,7 @@ Let $T=10A_1$, so that $P=\generators{H}\oplus L$ with $L=A_1^{\oplus10}$ and $Q
 2. $\Gamma_{10A_1}=\Orth^+(T_\Co)\intersect\bar\rho^{-1}(\Theta)$.
 3. $[\Gamma_{10A_1}:\widetilde\Orth^+(T_\Co)]=|\Theta|=10!$ and
 $$[\Orth^+(T_\Co):\Gamma_{10A_1}]=\frac{\abs{\Orth(q_{T_\Co})}}{10!}=2^{13}\cdot3\cdot17\cdot31=12\,951\,552 .$$
-4. $\widetilde\Orth^+(T_\Co)\subsetneq\Gamma_{10A_1}\subsetneq\Orth^+(T_\Co)$; on the family of @def:coble-family-unpolarized the inclusion $\Gamma_\Co=\Gamma_\Co(B)\subseteq\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ of @lem:d2-local-system(4) has index $10!$ (@lem:gamma-co-labelled-index).
+4. $\widetilde\Orth^+(T_\Co)\subsetneq\Gamma_{10A_1}\subsetneq\Orth^+(T_\Co)$; on the family of @def:coble-family-unpolarized one has $\Gamma_\Co=\Gamma_\Co(B)\subseteq\Gamma_\Co(\bar B)\subseteq\Gamma_{10A_1}$ (@lem:d2-local-system(4), @prop:gamma-co-geometric-bound(2)), and $[\Gamma_\Co(\bar B):\Gamma_\Co(B)]$ is a divisor of $10!$ (@lem:gamma-co-labelled-index). The identity $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ is *not* proved, and clause (0) records why it is not a consequence of the identification of the stalk.
 :::
 
 ::: {.proof}
@@ -436,15 +436,15 @@ $$[\Orth^+(T_\Co):\Gamma_{10A_1}]=\frac{\abs{\Orth(q_{T_\Co})}}{10!}=2^{13}\cdot
 
 (3). By @thm:two-elementary-surjectivity the map $\bar\rho\colon\Orth(T_\Co)\to\Orth(q_{T_\Co})$ is onto, its hypotheses being that $T_\Co$ is even, indefinite and $2$-elementary, which it is: $T_\Co=\generators{2}\oplus E_{10}(2)$ of signature $(2,9)$ (@prop:coble-period-domain(2)). The kernel $\ker\bar\rho$ contains the reflection $s_\zeta$ in a primitive vector $\zeta$ of square $2$, and $s_\zeta\notin\Orth^+(T_\Co)$ (@prop:gamma-co-reflective-set(2)); so of the two cosets of $\ker\bar\rho$ over a class $g\in\Orth(q_{T_\Co})$ one lies in $\Orth^+$, and $\bar\rho$ maps $\Orth^+(T_\Co)$ onto $\Orth(q_{T_\Co})$. Hence $\Orth^+(T_\Co)\intersect\bar\rho^{-1}(\Theta)\to\Theta$ is onto with kernel $\Orth^+(T_\Co)\intersect\ker\bar\rho=\widetilde\Orth^+(T_\Co)$, so the first index is $|\Theta|=10!$, and the second is $|\Orth(q_{T_\Co})|/10!$ with $|\Orth(q_{T_\Co})|$ from @prop:coble-discriminant-group.
 
-(4). Both indices in (3) exceed $1$. The last clause is @lem:gamma-co-labelled-index, which gives the index of $\Gamma_\Co(B)$ in $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ from the $S_{10}$-cover, with @lem:d2-local-system(4) for the containment; it does not use the labelled-base theorem.
+(4). Both indices in (3) exceed $1$. The last clause is @lem:gamma-co-labelled-index(2): the index of $\Gamma_\Co(B)$ in $\Gamma_\Co(\bar B)$ is $\abs{\bar\rho(\Gamma_\Co(\bar B))}$, read off the $S_{10}$-cover, and it divides $10!$ because $\bar\rho(\Gamma_\Co(\bar B))\subseteq\Theta$ (@prop:gamma-co-geometric-bound(2)); the containment $\Gamma_\Co(\bar B)\subseteq\Gamma_{10A_1}$ is that inclusion with @thm:gamma-co-sextic-group(2). The identity $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ is the case of index $10!$ and is not proved, which is clause (0); the argument does not use the labelled-base theorem.
 :::
 
 ::: {.corollary #cor:gamma-co-inclusions title="What G1 decides for the stable group"}
 
 1. *The labelled base, the base of $\Gamma_\Co$* (@def:coble-family-unpolarized). What is proved is $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable(1)). The equality, and with it @conj:gamma-co-stable on this base, is not proved: containing $-\id_{T_\Co}$ is necessary for it (@thm:gamma-co-is-stable(2)) and not sufficient, and where $\Gamma_\Co$ sits inside $\widetilde\Orth^+(T_\Co)$ is @qst:gamma-co-sign-is-realised. Accordingly the counts stated for the stable quotient --- $527$ $0$-cusps (@thm:coble-zero-cusp-count(2)) and $189\,720$ $1$-cusps (@thm:plane-fibre(3)) --- are counts for $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$, and are counts for $\fco$ only under that hypothesis.
-2. *The unlabelled base.* $\Gamma_\Co(\bar B)=\Gamma_{10A_1}=\Orth^+(T_\Co)\intersect\bar\rho^{-1}(\Theta)$ (@thm:gamma-co-sextic-group), so
+2. *The unlabelled base.* $\Gamma_\Co(\bar B)\subseteq\Gamma_{10A_1}=\Orth^+(T_\Co)\intersect\bar\rho^{-1}(\Theta)$ (@thm:gamma-co-sextic-group(2), @prop:gamma-co-geometric-bound(2)), so
 $$\widetilde\Orth^+(T_\Co)\subsetneq\Gamma_{10A_1}\subsetneq\Orth^+(T_\Co),\qquad[\Gamma_{10A_1}:\widetilde\Orth^+(T_\Co)]=10!,\qquad[\Orth^+(T_\Co):\Gamma_{10A_1}]=12\,951\,552 .$$
-The inclusion $\Gamma_\Co\subseteq\Gamma_\Co(\bar B)$ is @lem:d2-local-system(4), and its index is $10!$ by @thm:gamma-co-sextic-group(4).
+The inclusion $\Gamma_\Co\subseteq\Gamma_\Co(\bar B)$ is @lem:d2-local-system(4), and $[\Gamma_\Co(\bar B):\Gamma_\Co(B)]$ divides $10!$ by @thm:gamma-co-sextic-group(4) with @lem:gamma-co-labelled-index(2).
 3. *The coarse space.* There is no family (@rmk:d2-what-is-open(1)); the tautological local system has monodromy $\Gamma^{\mathrm{taut}}_\Co=\Orth^+(T_\Co)$ (@thm:gamma-co-is-full), and
 $$[\Orth^+(T_\Co):\widetilde\Orth^+(T_\Co)]=\abs{\Orth(q_{T_\Co})}=2^{21}\cdot3^5\cdot5^2\cdot7\cdot17\cdot31=46\,998\,591\,897\,600$$
 by @thm:two-elementary-surjectivity and @prop:coble-discriminant-group.
