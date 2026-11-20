@@ -37,6 +37,12 @@ REVIEW ITEMS (the report of 2026-11-20 06:48:27, pinned to main@d277e333fc)
       Also from db792b527c (:732, lem:d2b-forgets-to-d2a): every degree-2 base
       carries the underlying unpolarized family and maps to Bbar, so the two-sided
       bound Otilde^+(T_Co) <= Gamma_{Co,2} <= Gamma_Co(Bbar) holds.
+      (c) :811, prop:d2b-index-exact, settles the index exactly:
+      [R_gEn : Otilde^+] = 2|P| = 1,393,459,200 with |P| = |O(q)|/(2^7*17*31) =
+      696,729,600, and [R_gEn : Gamma_{Co,2}] = 1,393,459,200 / [Gamma_{Co,2} :
+      Otilde^+], so 384 <= [R_gEn : Gamma_{Co,2}] <= 1,393,459,200, with 384 iff
+      Gamma_{Co,2} = Gamma_{10A_1}.  The exact value is the single unknown
+      [Gamma_{Co,2} : Otilde^+], a divisor of 10!, and is recorded as open.
   U5  PARTLY MET, NOT MET as stated.  The nondegenerate-form half is repaired: item 2
       of def:coble-family-degree-two (:696) takes the class, not the decomposition,
       and the degenerate alternative is neither excluded nor excluded-by-theorem
@@ -119,6 +125,9 @@ CITATION POLICY OF THIS ROUND
   touch.
 
 CHECKS RUN AT THIS COMMIT
+  python3 computations/reports/coble_787-index-of-gamma-co-2.py
+    exit 0; |O(q)|/67,456 = 696,729,600 = |P|; 12,951,552 * 10! = |O(q)|, so the
+    discriminant map is onto; 2|P| = 1,393,459,200, and divided by 10! gives 384.
   python3 computations/reports/coble_787-explicit-d2b-family.py
     exit 0; all 90 ordered pairs give F_i^2 = F_i.K_S = 0, F_i.F_j = 1, h_ij
     primitive of square 2 in K_S^perp, and h-tilde of square 4.
@@ -141,6 +150,8 @@ CHECKS RUN AT THIS COMMIT
   available in this container.
 
 NEXT
-  The next acceptance item still open is ITEM 2/ITEM 4 (D2b): U4, a family over
-  Delta_2 and a map from its base to the D2a base, or the statement that the two
-  bases are compared only through the period space.
+  U5's nodal half: admit the nodal quotients with a 1/4(1,1) singularity that
+  [@AEGS25, Def. 2.7] admits, or prove they cannot occur in the degree-2 moduli
+  problem.  Then U6 (the statement against its proof at lem:d2-degree-two-polarization
+  (4)), U7 (the Picard-general proposition at prop:coble-polarized-moduli(2)-(3)) and
+  U8 (the normalization and the properness step of thm:normalization).

@@ -808,6 +808,39 @@ of the marked period space of @def:coble-family-degree-two onto the normalizatio
 (3) The existence of the family over the moduli base is @lem:d2b-family-over-the-labelled-base(3) together with @lem:d2b-forgets-to-d2a(1)--(2), and the degree of the induced map from the base to the normalization of $\Delta_2$ is the index of (1).
 :::
 
+::: {.proposition #prop:d2b-index-exact title="The index $[R_{\gent}:\Gamma_{\Co,2}]$, exactly"} 
+
+Assume $\Gamma_{\Co,2}\subseteq R_{\gent}$ (@lem:d2-degree-two-base(3)). Then
+
+1. $[R_{\gent}:R_{\gent}\intersect\Orth^+(T_\Co)]=2$ and $[R_{\gent}\intersect\Orth^+(T_\Co):\widetilde\Orth^+(T_\Co)]=\abs{P}=696\,729\,600$, so
+$$
+[R_{\gent}:\widetilde\Orth^+(T_\Co)] = 2\abs{P} = 1\,393\,459\,200 .
+$$
+2. Consequently
+$$
+[R_{\gent}:\Gamma_{\Co,2}] = \frac{2\abs{P}}{[\Gamma_{\Co,2}:\widetilde\Orth^+(T_\Co)]} = \frac{1\,393\,459\,200}{[\Gamma_{\Co,2}:\widetilde\Orth^+(T_\Co)]}.
+$$
+3. $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_{\Co,2}\subseteq\Gamma_\Co(\bar B)\subseteq\Gamma_{10A_1}$ and $[\Gamma_{10A_1}:\widetilde\Orth^+(T_\Co)]=10!$, so
+$$
+384\ \leq\ [R_{\gent}:\Gamma_{\Co,2}]\ \leq\ 1\,393\,459\,200,
+$$
+with $[R_{\gent}:\Gamma_{\Co,2}]=384$ if and only if $\Gamma_{\Co,2}=\Gamma_{10A_1}$.
+4. The exact value is therefore the single unknown $[\Gamma_{\Co,2}:\widetilde\Orth^+(T_\Co)]$, which is open: it is the index of the monodromy of the degree-$2$ family in the unlabelled unpolarized group $\Gamma_\Co(\bar B)$, and it is a divisor of $10!$ by (2) and (3).
+:::
+
+::: {.proof}
+
+(1) The first index is @thm:coble-monodromy-versus-enriques(2). For the second, $R_{\gent}=\bar\rho^{-1}(P)$ (@prop:gamma-co-images(3)) and $\widetilde\Orth^+(T_\Co)=\Orth^+(T_\Co)\intersect\ker\bar\rho$ (@def:gamma-co-groups), so
+$$R_{\gent}\intersect\Orth^+(T_\Co) = \Orth^+(T_\Co)\intersect\bar\rho^{-1}(P),$$
+and the index of this in $\Orth^+(T_\Co)$ over $\widetilde\Orth^+(T_\Co)$ is $\abs{\bar\rho(\Orth^+(T_\Co))\intersect P}$. The map $\bar\rho\colon\Orth^+(T_\Co)\to\Orth(q_{T_\Co})$ is onto: $[\Orth^+(T_\Co):\widetilde\Orth^+(T_\Co)]=\abs{\Orth(q_{T_\Co})}$ by @thm:gamma-co-sextic-group(3), whose two factors $[\Orth^+:\Gamma_{10A_1}]=\abs{\Orth(q)}/10!$ and $[\Gamma_{10A_1}:\widetilde\Orth^+]=10!$ multiply to $\abs{\Orth(q)}$. Hence the intersection is $P$ and the index is $\abs{P}=\abs{\Orth(q_{T_\Co})}/[\Orth(q_{T_\Co}):P]=\abs{\Orth(q_{T_\Co})}/(2^7\cdot17\cdot31)$, the second factor being the arithmetic of @prop:gamma-co-images(3). The value $\abs{P}=696\,729\,600$ is the quotient of the two displayed numbers, computed in `computations/reports/coble_787-index-of-gamma-co-2.py` and its run record.
+
+(2) is the multiplicativity of the index in the chain $\widetilde\Orth^+\subseteq\Gamma_{\Co,2}\subseteq R_{\gent}\intersect\Orth^+\subseteq R_{\gent}$, with (1).
+
+(3) $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_{\Co,2}$ is @lem:d2b-family-over-the-labelled-base(4); $\Gamma_{\Co,2}\subseteq\Gamma_\Co(\bar B)$ is @lem:d2b-forgets-to-d2a(2); $\Gamma_\Co(\bar B)\subseteq\Orth^+(T_\Co)$ is @lem:monodromy-is-spinor-positive and $\bar\rho(\Gamma_\Co(\bar B))\subseteq\Theta$ is @prop:gamma-co-geometric-bound(2), so $\Gamma_\Co(\bar B)\subseteq\Orth^+(T_\Co)\intersect\bar\rho^{-1}(\Theta)=\Gamma_{10A_1}$ (@thm:gamma-co-sextic-group(2)); and $[\Gamma_{10A_1}:\widetilde\Orth^+]=10!$ is @thm:gamma-co-sextic-group(3). Dividing $2\abs{P}$ by an index between $1$ and $10!$ gives the display, the lower end at $10!$ and the upper at $1$.
+
+(4) By (2) the index is determined by $[\Gamma_{\Co,2}:\widetilde\Orth^+(T_\Co)]$ alone, and by (3) that index lies between $1$ and $10!$; no statement read fixes it. It is the same unknown as the reverse inclusion of @qst:coble-monodromy-equality, read in the unlabelled group rather than in $R_{\gent}$.
+:::
+
 ::: {.remark #rmk:d2-degree-two-vs-DK13 title="The moduli space $\mcm_\Co(2)$ of Dolgachev--Kondo"}
 
 [@DK13, §8] considers, for an unnodal Coble surface, a polarization $h=[F_1+F_2]$ of degree $2$, corresponding to an embedding $U\injects E$ of the Enriques lattice into $K_S^{\perp}$, and writes the resulting moduli space $\mcm_\Co(2)$; the rational map $\Phi'\colon\mcm_\Co(2)\dashrightarrow\mcm_\Co$ has degree $2^7\cdot17\cdot31$ [@DK13, §8]. That is the same moduli problem as @def:coble-family-degree-two: by @lem:d2-degree-two-polarization the class $h_\Co=F_1+F_2$ is the vector $\tilde h$ of type $\Gamma_{\tilde h}$, so the marked space of $\mcm_\Co(2)$ is $\bD(T_\Co)/\Gamma_{\tilde h}$, which is the normalization of $\Delta_2$ by @lem:d2-degree-two-base(1); and the degree of $\Phi'$ is the index $[\Orth(T_\Co):\Gamma_{\tilde h}]=[\Orth(T_\Co):R_{\gent}]=2^7\cdot17\cdot31=67\,456$ of @prop:coble-degree-two-space(2), as it must be. The unnodal locus is the complement of the $(-2)$-Heegner divisors in $\bD(T_\Co)$, so $\mcm_\Co(2)$ is an open subset of the normalization of $\Delta_2$ and the two agree birationally. The two objects are therefore not different, as @rmk:degree-two-two-meanings(3) formerly recorded, but the same moduli problem read on the two sides of the cover.
