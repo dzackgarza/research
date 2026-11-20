@@ -1,0 +1,9 @@
+research(#797): pin the Alexeev-Engel version the numbering was checked in
+
+The literature record cited arXiv:2505.22557 without a version, and the page
+now cites numbered statements of it (Theorem 3.11, Definition 4.6, Definition
+4.21, Theorem 4.7, Theorem 4.22, Theorem 5.5, Remark 4.23). Those were verified
+against v4, which is the version arXiv serves today; an earlier version could
+renumber them. The record now names v4 and lists the statements.
+
+policy c2291c7ab917bf86978a564337f00d5f

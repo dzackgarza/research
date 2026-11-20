@@ -221,13 +221,33 @@ def test_the_two_arrangements_are_distinguished():
 TWO_STEPS = "rmk:the-two-steps-and-where-they-fail"
 
 
-def test_the_first_failing_step_is_named():
-    body = _block(MC.read_text(encoding="utf-8"), TWO_STEPS)
-    assert "structure theorem for Coble surfaces" in body
-    assert "first step that fails" in body.lower()
-    assert "not" in body
-    # and the second failure, the special-member isotropy
+SURJECTIVITY = "thm:coble-period-surjectivity"
+
+
+def test_step_one_is_the_surjectivity_theorem_and_step_two_is_open():
+    text = MC.read_text(encoding="utf-8")
+    body = _block(text, TWO_STEPS)
+    # step 1 is the surjectivity theorem, for the functor as it is defined
+    assert "@thm:coble-period-surjectivity" in body
+    assert "@def:coble-moduli-functor" in body
+    # what step 1 does not give is the plane model, and the remark says so
+    assert "What step 1 does not give" in body
+    assert "ten nodes of an irreducible sextic" in body
+    # the second step, the special-member isotropy, is not closed
     assert "special member" in body
+    assert "is not closed" in body
+
+
+def test_the_surjectivity_theorem_states_the_quotient():
+    body = _block(MC.read_text(encoding="utf-8"), SURJECTIVITY)
+    # the period set, the involution and the three clauses on the quotient
+    assert "\\Omega\\sm Z_\\Omega" in body
+    assert "\\sigma\\definedas\\id_M\\oplus(-\\id_{T_\\Co})" in body
+    assert "one smooth rational curve" in body
+    assert "\\abs{-K_S}=\\emptyset" in body
+    assert "\\abs{-2K_S}=\\theset{C}" in body
+    # the converse, so that the period set is exactly the complement
+    assert "Necessity" in body
 
 
 PLANE_MODEL = "rmk:which-coble-surfaces-have-a-plane-model"
@@ -241,8 +261,11 @@ def test_the_subclass_with_a_plane_model_is_named():
     assert "log Enriques" in body
     assert "classical" in body
     assert "not" in body
-    # the coordination the finding asks for is recorded rather than performed silently
-    assert "coordination" in body
+    # the functor's class is the single-smooth-curve class; every period off Z gives an
+    # object of it, and whether each object has a plane model is left undecided
+    assert "single smooth curve" in body
+    assert "@thm:coble-period-surjectivity" in body
+    assert "is not decided here" in body
 
 
 LABELLABLE = "lem:every-object-of-the-functor-is-labellable"
