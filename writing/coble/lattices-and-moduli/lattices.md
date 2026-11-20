@@ -198,7 +198,7 @@ is an isomorphism of orbifolds onto an open substack of $\bD(T_\Co)/\Orth(T_\Co)
 $$\rho\colon\pi_1^{\mathrm{orb}}(M_\Co)\to\Orth(T_\Co)$$
 be its monodromy representation (@def:transport-and-monodromy), whose image we write $\Gamma^{\mathrm{taut}}_\Co$. Then
 $$\Gamma^{\mathrm{taut}}_\Co=\Orth^+(T_\Co).$$
-This is the monodromy of the tautological local system and is not $\Gamma_\Co$ of @def:gamma-co-groups(1): the geometric family has its own local system over the labelled base, and its monodromy lies in $\widetilde\Orth^+(T_\Co)$ (@lem:coble-family-labelled-monodromy), a proper subgroup of $\Orth^+(T_\Co)$ (@cor:gamma-co-inclusions(3)).
+This is the monodromy of the tautological local system and is not $\Gamma_\Co$ of @def:gamma-co-groups(1): the geometric family has its own local system over the labelled base, and its monodromy lies in $\widetilde\Orth^+(T_\Co)$ (@lem:coble-family-labelled-monodromy).
 :::
 
 ::: {.proof}
@@ -429,7 +429,7 @@ Let $\Gamma_\Co(B)$ and $\Gamma_\Co(\bar B)$ be the monodromy groups of the labe
 
 ::: {.proof}
 
-(1) is @thm:gamma-co-is-stable. For (2), a point of $\bar B$ is a sextic together with its ten nodes as a set (@not:d2-plane-sextic-base), so the class $e_0=f^*H$ of the pullback of a line is the value of a global section of $\bV|_{\bar B}$, while the ten classes $e_1,\dots,e_{10}$ are permuted. A monodromy operator therefore fixes $e_0$ and acts on $M$ by an element of $\mathfrak S_{10}$, and @lem:coble-discriminant-actions-conjugate gives $\bar\rho(\Gamma_\Co(\bar B))\subseteq\gamma\bar\rho_M(\mathfrak S_{10})\gamma^{-1}$. That $\Theta\cong\mathfrak S_{10}$, and its index, is the computation of the same paragraph: the classes $[e_i/2]$, $i\ge1$, are permuted among themselves and $[e_0/2]$ is fixed, so $\mathfrak S_{10}\to\Orth(q_M)$ is injective (@def:injective-map), $|\Theta|=10!$, and $[\Orth(q_{T_\Co}):\Theta]=\abs{\Orth(q_{T_\Co})}/10!=2^{13}\cdot3\cdot17\cdot31$ by @prop:coble-discriminant-group. The proof of (2) uses neither (1) nor @thm:gamma-co-is-stable, so the use of $\Theta$ in @thm:gamma-co-sextic-group is not circular.
+(1) is @thm:gamma-co-is-stable. For (2), a point of $\bar B$ is a sextic together with its ten nodes as a set (@not:d2-plane-sextic-base), so the class $e_0=f^*H$ of the pullback of a line is the value of a global section of $\bV|_{\bar B}$, while the ten classes $e_1,\dots,e_{10}$ are permuted. A monodromy operator therefore fixes $e_0$ and acts on $M$ by an element of $\mathfrak S_{10}$, and @lem:coble-discriminant-actions-conjugate gives $\bar\rho(\Gamma_\Co(\bar B))\subseteq\gamma\bar\rho_M(\mathfrak S_{10})\gamma^{-1}$. That $\Theta\cong\mathfrak S_{10}$, and its index, is the computation of the same paragraph: the classes $[e_i/2]$, $i\ge1$, are permuted among themselves and $[e_0/2]$ is fixed, so $\mathfrak S_{10}\to\Orth(q_M)$ is injective (@def:injective-map), $|\Theta|=10!$, and $[\Orth(q_{T_\Co}):\Theta]=\abs{\Orth(q_{T_\Co})}/10!=2^{13}\cdot3\cdot17\cdot31$ by @prop:coble-discriminant-group.
 :::
 
 ::: {.remark #rmk:gamma-co-coarse-space title="The coarse space carries no family"}

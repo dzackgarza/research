@@ -2861,7 +2861,7 @@ $$
 ,$$
 the three equalities after $\rho_{T_\Co}^{-1}(P)$ being @def:congruence-group and @prop:gamma-co-images(3); this is the arithmetic group $R_{\gent}$, not the monodromy group $\Gamma_{\Co,2}$ of @def:gamma-co-groups(5), which is compared with it in @thm:coble-monodromy-versus-enriques.
 2. The orbits of $P$ on the $527$ nonzero isotropic classes of $A_{T_\Co}$ are four, of sizes $2$, $135$, $270$ and $120$.
-3. Hence $\bD(T_\Co)/(R_{\gent}\intersect\Orth^+(T_\Co))$ has exactly four $0$-cusps, and $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ does not: that would need @qst:coble-monodromy-equality, which is false (@prop:coble-monodromy-equality-false, @rmk:coble-monodromy-counts). The four lie one over each of Sterk's cusps $2,3,4,5$ and none over cusp $1$ (@thm:four-r-orbits, @thm:orbit-per-cusp, @thm:cusp-fibres-four), and the same group has $7$ orbits on the primitive isotropic planes, as the plane count of this page gives, none over the four $1$-cusp types containing $1$ and distributed over the five others as @thm:one-cusp-multiplicities gives: one over $\{2,4,5\}$, one over $\{4,5\}$, two over $\{3,5\}$, one over $\{3,4\}$ and two over $\{5,5\}$; the incidence is $0_k\rightsquigarrow T$ exactly when $k\in T$, with degrees $1,3,3,6$ and $13$ edges (@thm:cusp-diagram-tco).
+3. Hence $\bD(T_\Co)/(R_{\gent}\intersect\Orth^+(T_\Co))$ has exactly four $0$-cusps, and $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ does not: that would need @qst:coble-monodromy-equality, which is false (@prop:coble-monodromy-equality-false, @rmk:coble-monodromy-counts).
 :::
 
 ::: {.proof}
@@ -2880,7 +2880,16 @@ of sizes $1$, $2$, $135$, $270$ and $120$; the four nonzero orbits total $527$.
 
 (3) The $0$-cusps of $\bD(T_\Co)/(R_{\gent}\intersect\Orth^+(T_\Co))$ are its orbits on the primitive isotropic vectors (@def:isotropic-subspace) of $T_\Co$. Every primitive vector of $T_\Co$ has divisibility $2$ (@lem:divisibilityAlwaysTwoTco), and $\rho(R_{\gent}\intersect\Orth^+(T_\Co)) = P$ (@prop:gamma-cong-eq-heegner(3)), so by @thm:cusp-lifting(1), (4) these orbits correspond to the orbits of $P$ on the $527$ nonzero isotropic classes, which by (2) number four; this is @prop:coble-cong-point-stabilizer(3), and $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ has exactly four $0$-cusps when @qst:coble-monodromy-equality holds, not otherwise asserted. This count is independently returned by the public row of @rmk:coble-plane-incidence-rows.
 
+:::
+
+::: {.remark #rmk:coble-plane-descent-group title="The group of the integral plane descent"}
+
 *The group that @cor:coble-heegner-integral-plane-descent counts is $R_{\gent}$.* That corollary counts the orbits of $\rho_{T_\Co}^{-1}(G_\Co)$, so what is needed is $G_\Co = P$, and this is the computation of the proof of @thm:coble-integral-lifting-fibre(4)(b): $G_\Co$ is the transport $\gamma G\gamma^{-1}$ of the group $G = P_{S_\En}$ of @thm:coble-heegner-finite-orbits(1), of order $\abs{W(E_8)} = \abs{P}$ (@prop:gamma-cong-eq-heegner(1)), and $\gamma P_{S_\En}\gamma^{-1} = P$ because the marked gluing is block-compatible (@prop:gamma-cong-eq-heegner(2), @prop:coble-block-compatibility). Hence $\rho_{T_\Co}^{-1}(G_\Co) = \rho_{T_\Co}^{-1}(P) = R_{\gent}$ (@prop:coble-cong-point-stabilizer(1)).
+:::
+
+::: {.remark #rmk:coble-cong-point-cusps-over-sterk title="Where the four $0$-cusps of $R_{\gent}$ lie"}
+
+In @prop:coble-cong-point-stabilizer(3): the four lie one over each of Sterk's cusps $2,3,4,5$ and none over cusp $1$ (@thm:four-r-orbits, @thm:orbit-per-cusp, @thm:cusp-fibres-four), and the same group has $7$ orbits on the primitive isotropic planes, as the plane count of this page gives, none over the four $1$-cusp types containing $1$ and distributed over the five others as @thm:one-cusp-multiplicities gives: one over $\{2,4,5\}$, one over $\{4,5\}$, two over $\{3,5\}$, one over $\{3,4\}$ and two over $\{5,5\}$; the incidence is $0_k\rightsquigarrow T$ exactly when $k\in T$, with degrees $1,3,3,6$ and $13$ edges (@thm:cusp-diagram-tco).
 :::
 
 ::: {.theorem #thm:coble-plane-orbit-counts title="The primitive isotropic plane orbits of the four group rows, each against its call and its record"}

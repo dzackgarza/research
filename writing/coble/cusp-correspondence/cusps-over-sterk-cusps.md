@@ -181,8 +181,7 @@ Let $[\Pi]$ be one of Sterk's five further $1$-cusps, of types $\{2,4,5\}$, $\{4
 1. $\Pi$ is primitive in $\ten$, and for a choice of a complementary basis the Gram matrix $G_0$ of $L_0 = \Pi^{\perp\ten}/\Pi$ is exact: its determinant is $64$, and $L_0$ has exactly $16$ vectors of square $-2$;
 2. every one of those $16$ classes has $\mathrm{div}_{L_0}$ equal to $1$, certified by an explicit $z\in\Pi^{\perp}$ with $(\alpha,z) = 1$; this is the count of $16$ classes of square $-2$ that @thm:coble-cusp-admissibility(3) records at each of the five types, and it is a statement about $K_\Pi$, not about the number of $1$-cusps of $D(T_\Co)/R$;
 3. hence, by @lem:divisibility-decides-one-cusp, all lifts of any one class form a single $\Stab_{\gent}(\Pi)$-orbit, so the fibre of @thm:b2-one-cusps over $[\Pi]$ is the set of orbits on the eight antipodal pairs (@lem:minus-id-in-gent) and has at most $8$ points;
-4. the total number of $1$-cusps of $D(T_\Co)/R$ over the five types is $7$, not the number of pairs: the $R$-orbits on the primitive isotropic planes of $T_\Co$ number $7$ (@cor:coble-heegner-integral-plane-descent, which applies to $R$ because $\ker\bar\rho\subseteq R$; @thm:cusp-lifting(4)). So the five fibres are nonempty sets of at most $8$ points with total $7$, that is either $(3,1,1,1,1)$ or $(2,2,1,1,1)$ in some order;
-5. which of the two holds is decided by @thm:one-cusp-multiplicities(5): the double fibre is over $\{3,5\}$, the multiplicities being $1,1,2,1,2$ on $(\{2,4,5\},\{4,5\},\{3,5\},\{3,4\},\{5,5\})$, read off the seven plane orbits of `computations/reports/coble_gco_plane-orbits-run.txt` through the label dictionary of @thm:orbit-per-cusp.
+4. the total number of $1$-cusps of $D(T_\Co)/R$ over the five types is $7$, not the number of pairs: the $R$-orbits on the primitive isotropic planes of $T_\Co$ number $7$ (@cor:coble-heegner-integral-plane-descent, which applies to $R$ because $\ker\bar\rho\subseteq R$; @thm:cusp-lifting(4)). So the five fibres are nonempty sets of at most $8$ points with total $7$, that is either $(3,1,1,1,1)$ or $(2,2,1,1,1)$ in some order.
 :::
 
 ::: {.proof}
@@ -191,6 +190,11 @@ $1$ and $2$ are `computations/reports/coble_789-one-cusp-divisibility.py`, whose
 $3$ is @lem:divisibility-decides-one-cusp(2), which gives one orbit per class, together with @lem:minus-id-in-gent, which identifies the classes $r$ and $-r$; the sixteen classes therefore fall into at most eight orbits, one for each antipodal pair.
 
 $4$ is @cor:coble-heegner-integral-plane-descent as used at the count of primitive isotropic plane orbits of $R$; the five types are those with nonempty fibre by $1$--$3$ and @lem:one-cusp-over-cusp-one-empty, and they partition the seven. $5$: a computation of the orbits on the pairs would be a computation of the image of $\Stab_{\gent}(\Pi)$ in $\Orth(L_0)$, which neither the present record nor any other on the page performs.
+:::
+
+::: {.remark #rmk:five-one-cusps-which-split title="Which split of the seven $1$-cusps holds"}
+
+In @lem:five-one-cusps-nonempty(4), which of the two holds is decided by @thm:one-cusp-multiplicities(5): the double fibre is over $\{3,5\}$, the multiplicities being $1,1,2,1,2$ on $(\{2,4,5\},\{4,5\},\{3,5\},\{3,4\},\{5,5\})$, read off the seven plane orbits of `computations/reports/coble_gco_plane-orbits-run.txt` through the label dictionary of @thm:orbit-per-cusp.
 :::
 
 ## The fibre over Sterk's cusp $2$: the smallest case
