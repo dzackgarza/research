@@ -181,3 +181,38 @@ ITEM 5 (this commit, on the same page)
   (tests/engineering/test_coble_a29_acceptance.py, test_a2) passes.
   tests/engineering/test_coble_797_items34.py now has five assertions, all passing
   when run directly.
+
+THE TRANSFER, PROVED ON THE PAGE, AND ITEM 6 (this commit)
+  thm:coble-period-map-of-the-stack (moduli-construction.md:1233) states and proves
+  what prop:torelli-for-the-coble-lattice had only cited for coarse spaces:
+  1. the period map of the stack of labelled Coble covers is defined (H^{2,0} lies in
+     T_Co by prop:coble-transcendental);
+  2. it is injective on labelled objects, with a unique isomorphism: the marking makes
+     phi = id_L a Hodge isometry, which preserves the polarization and its ampleness,
+     so the strong Torelli theorem [@BHPV04, Ch. VIII, Thm. 11.1] in the form used at
+     lem:chamber-from-marked-period gives the isomorphism, which commutes with the
+     involutions because an involution is determined by its action on H^2;
+  3. local Torelli: the differential is Dol96 section 3's displayed bijection d_1
+     restricted to the iota-invariant parts, 9 -> 9 (lem:coble-deformations(1));
+  4. descent: Gamma(M) acts, its image is O(T_Co)^* = Otilde(T_Co) [@Dol96, Prop. 3.3],
+     and the induced map of quotient stacks is fully faithful with image the ample
+     locus.
+  So the statement DK13 leaves unnumbered for the Coble lattice is now proved here,
+  and item 5's remaining gap is closed; item 5 is MET (route (b) proved, route (a)
+  recorded as having no object).
+
+  prop:gamma-co-from-the-universal-family (moduli-construction.md:1253), item 6:
+  1. Gamma_Co is the monodromy of the VHS on the universal family over the stack
+     (def:gamma-co-groups(1)), and a presentation computes it by
+     lem:coble-family-base-change, exactly when the presentation sees all of pi_1;
+  2. the restriction from the Enriques side gives the image of Stab_{Gamma_En}(delta),
+     which is Otilde^+(T_Co) on that side, and NOT Gamma_Co: the missing step is the
+     one recorded as failing in rmk:d2-routes-for-the-equality(3);
+  3. Gamma_{Co,2} is defined the same way from the degree-2 family, is not rho-bar^{-1}(P)
+     (thm:coble-monodromy-versus-enriques(3)), and the equality is
+     qst:coble-monodromy-equality.
+  VERDICT for item 6: NOT MET as an identification.  The two groups are defined from
+  the universal families, and neither is identified with a lattice group by
+  restriction; for Gamma_Co that identification is research#780 and for Gamma_{Co,2} it
+  is the open question named.  This is the reduction the issue's own sentence promises
+  ("G1 (research#780) and D2 (research#787) are restated from item 6"), not an answer.

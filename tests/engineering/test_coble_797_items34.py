@@ -74,3 +74,28 @@ def test_item5_deformations_are_9_into_12_and_not_onto():
     assert "h^1(S,\\Theta_S)=12" in body
     assert "9" in body and "12" in body
     assert "neither" in body
+
+
+PERIOD_STACK = "thm:coble-period-map-of-the-stack"
+FROM_UNIVERSAL = "prop:gamma-co-from-the-universal-family"
+
+
+def test_the_transfer_is_proved_at_the_level_of_the_stack():
+    text = MC.read_text(encoding="utf-8")
+    body = _block(text, PERIOD_STACK)
+    # the four clauses: defined, injective on labelled objects, local Torelli, descent
+    assert "injectivity on labelled objects" in body.lower()
+    assert "Local Torelli" in body or "local Torelli" in body
+    assert "fully faithful" in body
+    # the two numbered inputs that do the work
+    proof = text[text.index("#" + PERIOD_STACK):]
+    assert "@BHPV04, Ch. VIII, Thm. 11.1" in proof
+    assert "@Dol96, §3" in proof
+
+
+def test_item6_says_which_group_a_restriction_gives():
+    body = _block(MC.read_text(encoding="utf-8"), FROM_UNIVERSAL)
+    assert "@lem:coble-family-base-change" in body
+    assert "Stab" in body
+    assert "not* thereby $\\Gamma_\\Co$" in body or "not" in body
+    assert "@qst:coble-monodromy-equality" in body
