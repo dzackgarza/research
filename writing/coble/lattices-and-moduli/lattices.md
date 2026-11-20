@@ -323,9 +323,14 @@ be the monodromy representation of the local system $\bT$ of @lem:d2-local-syste
 
 ::: {.proof}
 
-1. This is @lem:coble-family-labelled-monodromy; here is the same argument with the two halves named. The eleven classes $\varepsilon_0,\dots,\varepsilon_{10}$ are values of global sections of $\bV$ (@lem:d2-local-system(2)), so every $\rho(\gamma)$ fixes them and acts trivially on $M=\generators{2}\oplus\generators{-2}^{\oplus10}$ and hence on $A_M$. By @lem:coble-discriminant-actions-conjugate its discriminant action on $T_\Co$ is conjugate to its action on $A_M$, so it is trivial and $\rho(\gamma)\in\discriminantkernel{T_\Co}$; and $\rho(\gamma)\in\Orth^+(T_\Co)$ by @lem:monodromy-is-spinor-positive. Hence $\rho(\gamma)\in\widetilde\Orth^+(T_\Co)$; independently of this argument, @lem:d2-monodromy-in-discriminant-kernel(1) gives the same inclusion from the lattice-polarized period theorem. The isomorphism $\Gamma_\Co(B)\cong\pi_1(H,s)/\ker\rho$ is the first isomorphism theorem, $\rho$ being a homomorphism of groups.
+1. This is @lem:coble-family-labelled-monodromy; here is the same argument with the two halves named. The eleven classes $\varepsilon_0,\dots,\varepsilon_{10}$ are values of global sections of $\bV$ (@lem:d2-local-system(2)), so every $\rho(\gamma)$ fixes them and acts trivially on $M=\generators{2}\oplus\generators{-2}^{\oplus10}$ and hence on $A_M$. By @lem:coble-discriminant-actions-conjugate its discriminant action on $T_\Co$ is conjugate to its action on $A_M$, so it is trivial and $\rho(\gamma)\in\discriminantkernel{T_\Co}$; and $\rho(\gamma)\in\Orth^+(T_\Co)$ by @lem:monodromy-is-spinor-positive. Hence $\rho(\gamma)\in\widetilde\Orth^+(T_\Co)$. The isomorphism $\Gamma_\Co(B)\cong\pi_1(H,s)/\ker\rho$ is the first isomorphism theorem, $\rho$ being a homomorphism of groups.
 
-2. The failure of the reverse inclusion is not a gap in one argument but the failure of three routes, recorded with the step that fails in @rmk:d2-routes-for-the-equality: the sextic-base orbifold route stops at $P\Gamma_T$ (@rmk:gamma-co-orbifold-obstruction), the reflection route stops because the discriminant arrangement is strictly larger than the $(-2)$-arrangement (@lem:d2-arrangement-classes), and the Enriques-side route is withdrawn because it relates $\Gamma_\Co$ to nothing: the description of the Coble family as the restriction of the Enriques family is a statement about *which* family it is, and identifying the monodromy of that restriction with a stabilizer requires exactly the map that the theorem asks for.
+2.
+:::
+
+::: {.remark #rmk:gamma-co-is-stable-context title="Why the reverse inclusion is open"}
+
+The failure of the reverse inclusion is not a gap in one argument but the failure of three routes, recorded with the step that fails in @rmk:d2-routes-for-the-equality: the sextic-base orbifold route stops at $P\Gamma_T$ (@rmk:gamma-co-orbifold-obstruction), the reflection route stops because the discriminant arrangement is strictly larger than the $(-2)$-arrangement (@lem:d2-arrangement-classes), and the Enriques-side route is withdrawn because it relates $\Gamma_\Co$ to nothing: the description of the Coble family as the restriction of the Enriques family is a statement about *which* family it is, and identifying the monodromy of that restriction with a stabilizer requires exactly the map that the theorem asks for.
 :::
 
 
@@ -420,12 +425,16 @@ Let $\Gamma_\Co(B)$ and $\Gamma_\Co(\bar B)$ be the monodromy groups of the labe
 
 1. On the labelled base $B$, $\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co)$, so $\bar\rho(\Gamma_\Co(B))=\theset{1}$ (@thm:gamma-co-is-stable(1)); the equality $\Gamma_\Co(B)=\widetilde\Orth^+(T_\Co)$ is @qst:gamma-co-sign-is-realised and is not proved.
 2. On the unlabelled base $\bar B$, $\bar\rho(\Gamma_\Co(\bar B))\subseteq\Theta\definedas\gamma\,\bar\rho_M(\mathfrak S_{10})\,\gamma^{-1}$, where $\gamma\colon A_M\to A_N(-1)$ is the gluing isometry of @lem:coble-discriminant-actions-conjugate and $\mathfrak S_{10}$ permutes $e_1,\dots,e_{10}$ and fixes $e_0$. The group $\Theta$ is isomorphic to $\mathfrak S_{10}$, of order $10!$, and is a proper subgroup of $\Orth(q_{T_\Co})$ of index $2^{13}\cdot3\cdot17\cdot31=12\,951\,552$.
-3. On the coarse space $M_\Co$ there is no family (@rmk:d2-what-is-open(1)); the tautological local system of the quotient has monodromy $\Orth^+(T_\Co)$ (@thm:gamma-co-is-full), which is not $\Gamma_\Co(B)$.
 :::
 
 ::: {.proof}
 
-(1) is @thm:gamma-co-is-stable. For (2), a point of $\bar B$ is a sextic together with its ten nodes as a set (@not:d2-plane-sextic-base), so the class $e_0=f^*H$ of the pullback of a line is the value of a global section of $\bV|_{\bar B}$, while the ten classes $e_1,\dots,e_{10}$ are permuted. A monodromy operator therefore fixes $e_0$ and acts on $M$ by an element of $\mathfrak S_{10}$, and @lem:coble-discriminant-actions-conjugate gives $\bar\rho(\Gamma_\Co(\bar B))\subseteq\gamma\bar\rho_M(\mathfrak S_{10})\gamma^{-1}$. That $\Theta\cong\mathfrak S_{10}$, and its index, is the computation of the same paragraph: the classes $[e_i/2]$, $i\ge1$, are permuted among themselves and $[e_0/2]$ is fixed, so $\mathfrak S_{10}\to\Orth(q_M)$ is injective (@def:injective-map), $|\Theta|=10!$, and $[\Orth(q_{T_\Co}):\Theta]=\abs{\Orth(q_{T_\Co})}/10!=2^{13}\cdot3\cdot17\cdot31$ by @prop:coble-discriminant-group. The proof of (2) uses neither (1) nor @thm:gamma-co-is-stable, so the use of $\Theta$ in @thm:gamma-co-sextic-group is not circular. (3) is @thm:gamma-co-is-full and @rmk:d2-what-is-open(1).
+(1) is @thm:gamma-co-is-stable. For (2), a point of $\bar B$ is a sextic together with its ten nodes as a set (@not:d2-plane-sextic-base), so the class $e_0=f^*H$ of the pullback of a line is the value of a global section of $\bV|_{\bar B}$, while the ten classes $e_1,\dots,e_{10}$ are permuted. A monodromy operator therefore fixes $e_0$ and acts on $M$ by an element of $\mathfrak S_{10}$, and @lem:coble-discriminant-actions-conjugate gives $\bar\rho(\Gamma_\Co(\bar B))\subseteq\gamma\bar\rho_M(\mathfrak S_{10})\gamma^{-1}$. That $\Theta\cong\mathfrak S_{10}$, and its index, is the computation of the same paragraph: the classes $[e_i/2]$, $i\ge1$, are permuted among themselves and $[e_0/2]$ is fixed, so $\mathfrak S_{10}\to\Orth(q_M)$ is injective (@def:injective-map), $|\Theta|=10!$, and $[\Orth(q_{T_\Co}):\Theta]=\abs{\Orth(q_{T_\Co})}/10!=2^{13}\cdot3\cdot17\cdot31$ by @prop:coble-discriminant-group. The proof of (2) uses neither (1) nor @thm:gamma-co-is-stable, so the use of $\Theta$ in @thm:gamma-co-sextic-group is not circular.
+:::
+
+::: {.remark #rmk:gamma-co-coarse-space title="The coarse space carries no family"}
+
+On the coarse space $M_\Co$ there is no family (@rmk:d2-what-is-open(1)); the tautological local system of the quotient has monodromy $\Orth^+(T_\Co)$ (@thm:gamma-co-is-full), which is not $\Gamma_\Co(B)$.
 :::
 
 ::: {.lemma #lem:d2a-family-is-yzz title="The D2a family is the family $X_F$ of Yu--Zheng--Zhong"}
@@ -445,7 +454,7 @@ The proof stops at the stalk, and that is all that is used. Two remarks on why t
 
 *The labelled base has no isotropy to compare.* $\PGL_3$ acts freely on $V$ and $B=V/\PGL_3$ is a space (@lem:d2-plane-sextic-freeness(2)--(3)); on $B$ the local system $\bT$ is an ordinary local system of lattices, its monodromy is $\rho(\pi_1(B,s))$, and there is no stabilizer (@def:group-orbit) acting on a fibre to identify. Every statement this book makes about $\Gamma_\Co$ is a statement about $B$ (@def:coble-family-unpolarized(3), @lem:d2a-family-is-yzz).
 
-*On the unlabelled base the comparison is not made, and nothing below needs it.* At a sextic carrying a projectivity that permutes its nodes, the image of that projectivity is an orbifold point of $\bar B$, and comparing the two families there would require the isotropy actions on the stalk to agree — the comparison that @rmk:gamma-co-orbifold-obstruction shows is obstructed. The only statement about $\bar B$ that this book uses is the containment $\Gamma_\Co(\bar B)\subseteq\Gamma_{10A_1}$, which is read off the permuted classes and needs no isotropy (@prop:gamma-co-geometric-bound(2)).
+*On the unlabelled base the comparison is not made, and nothing below needs it.* At a sextic carrying a projectivity that permutes its nodes, the image of that projectivity is an orbifold point of $\bar B$, and comparing the two families there would require the isotropy actions on the stalk to agree — the comparison that @rmk:gamma-co-orbifold-obstruction shows is obstructed.
 :::
 
 ::: {.theorem #thm:gamma-co-sextic-group title="The sextic base: $\Gamma_{10A_1}=\Orth^+(T_\Co)\intersect\bar\rho^{-1}(\Theta)$, and the two indices"}
@@ -481,13 +490,18 @@ $$[\Orth^+(T_\Co):\Gamma_{10A_1}]=\frac{\abs{\Orth(q_{T_\Co})}}{10!}=2^{13}\cdot
 
 ::: {.corollary #cor:gamma-co-inclusions title="What G1 decides for the stable group"}
 
-1. *The labelled base, the base of $\Gamma_\Co$* (@def:coble-family-unpolarized). What is proved is $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable(1)). The equality, and with it @conj:gamma-co-stable on this base, is not proved: containing $-\id_{T_\Co}$ is necessary for it (@thm:gamma-co-is-stable(2)) and not sufficient, and where $\Gamma_\Co$ sits inside $\widetilde\Orth^+(T_\Co)$ is @qst:gamma-co-sign-is-realised. Accordingly the counts stated for the stable quotient --- $527$ $0$-cusps (@thm:coble-zero-cusp-count(2)) and $189\,720$ $1$-cusps (@thm:plane-fibre(3)) --- are counts for $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$, and are counts for $\fco$ only under that hypothesis.
+1. *The labelled base, the base of $\Gamma_\Co$* (@def:coble-family-unpolarized). What is proved is $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable(1)). The equality, and with it @conj:gamma-co-stable on this base, is not proved: containing $-\id_{T_\Co}$ is necessary for it (@thm:gamma-co-is-stable(2)) and not sufficient, and where $\Gamma_\Co$ sits inside $\widetilde\Orth^+(T_\Co)$ is @qst:gamma-co-sign-is-realised.
 2. *The unlabelled base.* $\Gamma_\Co(\bar B)\subseteq\Gamma_{10A_1}=\Orth^+(T_\Co)\intersect\bar\rho^{-1}(\Theta)$ (@thm:gamma-co-sextic-group(2), @prop:gamma-co-geometric-bound(2)), so
 $$\widetilde\Orth^+(T_\Co)\subsetneq\Gamma_{10A_1}\subsetneq\Orth^+(T_\Co),\qquad[\Gamma_{10A_1}:\widetilde\Orth^+(T_\Co)]=10!,\qquad[\Orth^+(T_\Co):\Gamma_{10A_1}]=12\,951\,552 .$$
 The inclusion $\Gamma_\Co\subseteq\Gamma_\Co(\bar B)$ is @lem:d2-local-system(4), and $[\Gamma_\Co(\bar B):\Gamma_\Co(B)]$ divides $10!$ by @thm:gamma-co-sextic-group(4) with @lem:gamma-co-labelled-index(2).
 3. *The coarse space.* There is no family (@rmk:d2-what-is-open(1)); the tautological local system has monodromy $\Gamma^{\mathrm{taut}}_\Co=\Orth^+(T_\Co)$ (@thm:gamma-co-is-full), and
 $$[\Orth^+(T_\Co):\widetilde\Orth^+(T_\Co)]=\abs{\Orth(q_{T_\Co})}=2^{21}\cdot3^5\cdot5^2\cdot7\cdot17\cdot31=46\,998\,591\,897\,600$$
 by @thm:two-elementary-surjectivity and @prop:coble-discriminant-group.
+:::
+
+::: {.remark #rmk:gamma-co-stable-quotient-counts title="Which quotient the stable counts describe"}
+
+Accordingly the counts stated for the stable quotient --- $527$ $0$-cusps (@thm:coble-zero-cusp-count(2)) and $189\,720$ $1$-cusps (@thm:plane-fibre(3)) --- are counts for $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$, and are counts for $\fco$ only under that hypothesis.
 :::
 
 ::: {.remark #rmk:gamma-co-d2a title="The three bases, and which group each gives"}

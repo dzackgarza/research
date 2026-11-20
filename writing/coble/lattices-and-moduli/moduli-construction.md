@@ -698,7 +698,7 @@ The disagreement is therefore not a mathematical contradiction: the two descript
 
 ::: {.lemma #lem:period-stabiliser-finite title="The stabiliser of a period point in the orthogonal group of the lattice is finite"}
 
-Let $T$ be a lattice of signature $(2,n)$ and $P\subset T\tensor\RR$ a positive definite $2$-plane (a point of $\bD(T)$). Then
+Let $T$ be a lattice of signature (@def:signature) $(2,n)$ and $P\subset T\tensor\RR$ a positive definite (@def:definiteness) $2$-plane (a point of $\bD(T)$). Then
 $$
 \Stab_{\Orth(T)}(P)=\theset{g\in\Orth(T)\mid g(P)=P}
 $$
@@ -707,7 +707,7 @@ is finite.
 
 ::: {.proof}
 
-An isometry of $T$ acts on $T\tensor\RR$ preserving the form, and $\Orth(T)$ is a discrete subgroup of the Lie group $\Orth(T\tensor\RR)$: a neighbourhood of the identity in the latter contains no non-identity lattice isometry, because such an isometry would move some lattice vector by less than its length. An element of the stabiliser preserves $P$ and therefore its orthogonal complement $P^{\perp T\tensor\RR}$, which is negative definite of dimension $n$; so the stabiliser maps to the compact group $\Orth(P)\times\Orth(P^{\perp})$, injectively, because an isometry fixing $P$ and $P^{\perp}$ pointwise is the identity. A discrete subgroup of a compact group is finite, and the stabiliser is closed in $\Orth(T)$, hence discrete. So it is finite.
+An isometry of $T$ acts on $T\tensor\RR$ preserving the form, and $\Orth(T)$ is a discrete subgroup of the Lie group (@def:group) $\Orth(T\tensor\RR)$: a neighbourhood of the identity in the latter contains no non-identity lattice isometry, because such an isometry would move some lattice vector by less than its length. An element of the stabiliser preserves $P$ and therefore its orthogonal complement $P^{\perp T\tensor\RR}$, which is negative definite (@def:definiteness) of dimension $n$; so the stabiliser maps to the compact group $\Orth(P)\times\Orth(P^{\perp})$, injectively, because an isometry fixing $P$ and $P^{\perp}$ pointwise is the identity. A discrete subgroup of a compact group is finite, and the stabiliser is closed in $\Orth(T)$, hence discrete. So it is finite.
 :::
 
 ::: {.proposition #prop:gamma-co-from-the-labelled-stack title="$\Gamma_\Co$ assembled from the labelled stack: the exact sequence, the isotropy and the relabellings"}
@@ -1373,13 +1373,13 @@ Let $\iota\colon X\to S=X/\iota$ be the Coble cover, with $X$ a $\mathrm{K3}$ su
 
 1. $h^1(X,\Theta_X)=20$ and its $\iota$-invariant part is $9$-dimensional. Under the identification $\Theta_X\iso\Omega^1_X$ by contraction with the holomorphic $2$-form, which anti-commutes with $\iota$ because $\iota^*\omega=-\omega$, the eigenspaces are exchanged, so $H^1(X,\Theta_X)^{\iota}\iso H^{1,1}(X)^{-}=\Pi^{\perp}\intersect\qty(T_\Co\otimes\RR)$, of dimension $\rank T_\Co-2=9$.
 2. $h^1(S,\Theta_S)=12$. Riemann--Roch for the tangent bundle of a surface gives $\chi(\Theta_S)=(7K_S^2-5e(S))/6$, and $K_S^2=-1$, $e(S)=13$ give $\chi(\Theta_S)=-12$; $h^0(\Theta_S)=0$ and $h^2(\Theta_S)=h^0(\Omega^1_S\otimes K_S)^*=0$, the latter because $\Omega^1_S\otimes K_S$ pulls back to $\Omega^1_X$ under the cover, so $h^1(\Theta_S)=12$.
-3. Hence the map $H^1(X,\Theta_X)^{\iota}\to H^1(S,\Theta_S)$ induced by passing to the quotient is neither surjective nor an isomorphism: $9\neq12$, and the Coble locus has codimension $3$ in $\mathrm{Def}(S)=\Ext^1(\Omega^1_S,\OO_S)$.
+3. Hence the map $H^1(X,\Theta_X)^{\iota}\to H^1(S,\Theta_S)$ induced by passing to the quotient is neither surjective nor an isomorphism (@def:isomorphism-of-objects): $9\neq12$, and the Coble locus has codimension $3$ in $\mathrm{Def}(S)=\Ext^1(\Omega^1_S,\OO_S)$.
 :::
 
 ::: {.proof}
 1. $h^1(\Theta_X)=20$ for a $\mathrm{K3}$ surface; $H^2(X,\CC)=M_\CC\oplus(T_\Co)_\CC$ with $\rank M=11$, and the period plane $\Pi$ is a positive $2$-plane inside $(T_\Co)_\RR$, so $H^{1,1}(X)$ has dimension $20$ and splits as $M_\CC$ of dimension $11$ and $\Pi^{\perp}\intersect(T_\Co)_\RR$ of dimension $11-2=9$; since $\iota$ acts as $-1$ on $T_\Co$, the anti-invariant part is the second summand. The contraction $\Theta_X\iso\Omega^1_X$ sends $w$ to $\iota_w\omega$, and $\alpha_{\iota_*w}=\iota^*\iota_w\omega=-\iota_w\iota^*\omega=-\iota^*\alpha_w$ because $\iota^*\omega=-\omega$; so the invariant part of $H^1(\Theta_X)$ is the anti-invariant part of $H^{1,1}$.
-2. $\chi(\Theta_S)=(7K_S^2-5e(S))/6$ is Riemann--Roch: with $c_1(\Theta_S)=-K_S$ and $c_2(\Theta_S)=e(S)$, the Chern character and Todd class give $\chi=(K_S^2-2e(S))/2+K_S^2/2+(K_S^2+e(S))/6$, which is that expression; for $\PP^2$ it gives $8=h^0(\Theta_{\PP^2})$, so the form is right. Then $K_S^2=9-10=-1$ and $e(S)=3+10=13$ give $-12$, and the two vanishing cohomology groups give $h^1=12$.
-3. Passing to the quotient is compatible with base change for a finite group, so a family of $\mathrm{K3}$ surfaces with a fibrewise involution has a quotient family and the map exists; the dimensions of 1. and 2. give the rest, and $\mathrm{Def}(S)$ is that $\Ext^1$ by the deformation--obstruction sequence, unobstructed because $h^2(\Theta_S)=0$.
+2. $\chi(\Theta_S)=(7K_S^2-5e(S))/6$ is Riemann--Roch: with $c_1(\Theta_S)=-K_S$ and $c_2(\Theta_S)=e(S)$, the Chern character and Todd class give $\chi=(K_S^2-2e(S))/2+K_S^2/2+(K_S^2+e(S))/6$, which is that expression; for $\PP^2$ it gives $8=h^0(\Theta_{\PP^2})$, so the form is right. Then $K_S^2=9-10=-1$ and $e(S)=3+10=13$ give $-12$, and the two vanishing cohomology groups (@def:group) give $h^1=12$.
+3. Passing to the quotient is compatible with base change (@def:module-base-change) for a finite group, so a family of $\mathrm{K3}$ surfaces with a fibrewise involution has a quotient family and the map exists; the dimensions of 1. and 2. give the rest, and $\mathrm{Def}(S)$ is that $\Ext^1$ by the deformation--obstruction sequence, unobstructed because $h^2(\Theta_S)=0$.
 :::
 
 ### The transfer at the level of the stacks
@@ -1456,7 +1456,7 @@ Let $M=S_\Co$, let $X$ be an $M$-polarized $\mathrm{K3}$ surface with the markin
 So the equality $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ holds for the monodromy of the universal family over the stack -- the definition of @def:gamma-co-groups(1) -- and fails by the sign for the monodromy of loops over a parameter space, where the group is $\Gamma_\Co(B)=\rho\qty{\pi_1(B,s)}$. An earlier form of this proposition asserted $\Gamma_\Co(B)=\widetilde\Orth^+(T_\Co)$; that is false, contradicts @thm:no-loop-carries-the-sign, and is corrected here. What the three routes of @rmk:d2-routes-for-the-equality computed was the loop monodromy, which is why each of them stopped one sign short. What remains open is the identification of the index-two subgroup $\Gamma_\Co(B)$ with the one named in @prop:gamma-co-from-the-universal-family(1), and the comparison of $\Gamma_{\Co,2}$ with $R_{\gent}$, which is settled in the negative (@qst:coble-monodromy-equality, @prop:coble-monodromy-equality-false).
 
 ::: {.conjecture #conj:gamma-co-orbifold-equality title="The orbifold monodromy of the Coble stack is $\widetilde\Orth^+(T_\Co)$"}
-Let $\mcM^{\mathrm{lab}}_\Co\to\mcM_\Co$ be the forgetful map from the labelled stack to the stack of Coble surfaces, and read $\Gamma_\Co$ as the monodromy of $T_\Co$ on $\pi_1$ of the stack. Then $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$.
+Let $\mcM^{\mathrm{lab}}_\Co\to\mcM_\Co$ be the forgetful map from the labelled stack to the stack of Coble surfaces (@def:coble-surface), and read $\Gamma_\Co$ as the monodromy of $T_\Co$ on $\pi_1$ of the stack. Then $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$.
 :::
 
 *What is proved, and what is not.* The inclusion $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$ is @thm:gamma-co-is-stable(1), and equality is the conjecture of @conj:gamma-co-stable, of which this is the stack reading. The assembly that would give it is *conditional*, on three statements none of which is proved here:
@@ -1514,7 +1514,7 @@ $$Z\definedas\bigcup_{\delta\in\Delta(T_\Co)}\qty(H_\delta\intersect\bD),\qquad 
 Then:
 
 1. $Z$ is a closed analytic subset of $\bD$, locally finite: every compact $K\subset\bD$ meets $H_\delta$ for only finitely many $\delta\in\Delta(T_\Co)$.
-2. For $\pi\in\bD\sm Z$ the marked surface $X_\pi$ is a labelled Coble cover.
+2. For $\pi\in\bD\sm Z$ the marked surface (@def:flower-pot-degeneration) $X_\pi$ is a labelled Coble cover.
 3. For $\pi\in Z$ the marked surface $X_\pi$ is *not* a Coble cover: the class $\delta$ is algebraic of type $(1,1)$ on $X_\pi$ and $\sigma=\id_M\oplus(-\id_{T_\Co})$ acts on it as $-1$, so $\sigma$ is not an automorphism.
 4. Hence the Coble locus is exactly $\bD\sm Z$; it is open, and it is connected.
 :::
