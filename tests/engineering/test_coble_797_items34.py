@@ -253,6 +253,9 @@ def test_every_object_is_labellable():
     body = _block(MC.read_text(encoding="utf-8"), LABELLABLE)
     assert "invariant lattice" in body
     assert "marking" in body
+    # the connectedness hypothesis and the n > 1 counterexample are in the statement
+    assert "connected" in body
+    assert "10+n" in body or "10 + n" in body
     # the count that fixes the rank is in the proof, not the statement
     text = MC.read_text(encoding="utf-8")
     proof = text[text.index("#" + LABELLABLE):]
@@ -263,5 +266,8 @@ def test_the_labelled_equality_and_its_hypothesis():
     body = _block(MC.read_text(encoding="utf-8"), LABELLED_EQ)
     assert "isotropy" in body
     assert "\\widetilde\\Orth^+(T_\\Co)" in body
-    # the genericity hypothesis is in the statement, not hidden
+    # the hypotheses are in the statement, and the generic-to-global inference is withdrawn
+    text = MC.read_text(encoding="utf-8")
+    tail = text[text.index("#" + LABELLED_EQ):]
     assert "gen" in body
+    assert "not* a computation of the global group" in tail or "not a computation" in tail
