@@ -1,0 +1,11 @@
+T_En = NamedLattices.TEn, rank 12, Gram determinant 1024
+type (2, 4, 5): 104 of the 134 returned generators lie in Stab_{Gamma_En,2}(Pi)
+   orbits on the sixteen classes: 1; on the eight antipodal pairs: 1; moved 240 classes
+type (4, 5): 52 of the 134 returned generators lie in Stab_{Gamma_En,2}(Pi)
+   orbits on the sixteen classes: 6; on the eight antipodal pairs: 4; moved 54 classes
+type (3, 5): 66 of the 134 returned generators lie in Stab_{Gamma_En,2}(Pi)
+   orbits on the sixteen classes: 2; on the eight antipodal pairs: 2; moved 140 classes
+type (3, 4): 63 of the 133 returned generators lie in Stab_{Gamma_En,2}(Pi)
+   orbits on the sixteen classes: 2; on the eight antipodal pairs: 2; moved 132 classes
+type (5, 5): 79 of the 133 returned generators lie in Stab_{Gamma_En,2}(Pi)
+   orbits on the sixteen classes: 4; on the eight antipodal pairs: 3; moved 58 classes
