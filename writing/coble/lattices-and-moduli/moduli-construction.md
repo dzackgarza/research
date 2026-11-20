@@ -928,7 +928,7 @@ hence $F_1\cdot R=1$ and $h\cdot R=0$. Since $R$ is an effective curve meeting $
 For the family of @def:coble-family-degree-two the polarization is a class and not a decomposition (@lem:d2-degree-two-polarization(2), @lem:d2b-polarization-is-a-class). On the locus where $h_{\Co,y}$ is nondegenerate it splits as $F_1+F_2$ with $F_i$ nef and $F_i^2=0$, and then $\tilde h_y=f^*F_1+f^*F_2$ is the vector $h=e+f$ of [@AEGS25, Def. 2.5] (@lem:d2-degree-two-polarization(3), @lem:d2b-polarization-is-a-class(2)); on the degenerate locus it does not (@lem:d2b-polarization-is-a-class(3)), and that case is part of that moduli problem.
 :::
 
-::: {.definition #def:coble-family-degree-two title="D2b: the family of degree-$2$ polarized Coble surfaces" defines="degree-$2$ polarized Coble surface; $\Delta_2$; $\Gamma_{\Co,2}$; $F_{\Co,2}$"}
+::: {.definition #def:coble-family-degree-two title="D2b: the family of degree-$2$ polarized Coble surfaces" defines="degree-$2$ polarized Coble surface; $\Delta_2$"}
 
 **The objects.** Over a complex space $Y$, an object is a tuple $\qty{\mcs\to Y,\ \mcx\to\mcs,\ \tilde h}$ in which
 
@@ -941,7 +941,6 @@ The section is part of the objects and is not a marking: it is the polarization.
 
 **The local system of lattices** is $\bT$ of @lem:d2-local-system, the orthogonal complement of $\bM$ in $R^2f_*\underline\ZZ_\mcx$ modulo torsion; the polarization is a section of $\bM$, so $\bT$ is the same system for the polarized and the unpolarized family, and its fibre is $T_\Co$.
 
-**The group.** $\Gamma_{\Co,2}\leq\Orth(T_\Co)$ is the image of the monodromy representation of $\bT$ (@def:gamma-co-groups(5)). Put $F_{\Co,2}\definedas\bD(T_\Co)/\Gamma_{\Co,2}$.
 :::
 
 ::: {.lemma #lem:d2-degree-two-base title="The period image of the degree-$2$ family is all of $\Delta_2$, up to normalization"}
@@ -949,7 +948,7 @@ The section is part of the objects and is not a marking: it is the polarization.
 Let $R_{\gent}$ be the restricted stabilizer (@def:group-orbit) of @def:gamma-co-groups and $\Gamma_{\tilde h}$ the group (@def:group) of pairs of type $\tilde h$ of @prop:coble-polarized-moduli, and $\Delta_2=\mch_{-2}/\gent\subset\fentwo=\bD(\ten)/\gent$.
 
 1. $\Gamma_{\tilde h}=R_{\gent}$ [@prop:coble-degree-two-space(2)], so $\bD(T_\Co)/\Gamma_{\tilde h}=\bD(T_\Co)/R_{\gent}$ is the moduli space of pairs $(S,h_\Co)$ of @def:coble-family-degree-two and, by @thm:normalization with $\Gamma=\gent$, it is the normalization of $\Delta_2$: the map $\bD(T_\Co)/R_{\gent}\to\fentwo$ is finite, its image is $\Delta_2$, and it is birational.
-2. Hence $\Delta_2$ is the image of the period map of @def:coble-family-degree-two up to normalization, and no proper sublocus of $\Delta_2$ contains it: the period map of the family lands in $\bD(T_\Co)/\Gamma_{\Co,2}\to\bD(T_\Co)/R_{\gent}$, and the composite with $\bD(T_\Co)/R_{\gent}\to\Delta_2\hookrightarrow\fentwo$ is finite and surjective by (1). This is a statement about the image; the marked space is $\bD(T_\Co)/\Gamma_{\Co,2}$, which is not $\bD(T_\Co)/R_{\gent}$ (@lem:d2b-forgets-to-d2a(4)).
+2. Hence $\Delta_2$ is the image of the period map of @def:coble-family-degree-two up to normalization, and no proper sublocus of $\Delta_2$ contains it: the period map of the family lands in $\bD(T_\Co)/\Gamma_{\Co,2}\to\bD(T_\Co)/R_{\gent}$, and the composite with $\bD(T_\Co)/R_{\gent}\to\Delta_2\hookrightarrow\fentwo$ is finite and surjective by (1).
 3. $\Gamma_{\Co,2}\leq R_{\gent}\cap\Orth^+(T_\Co)$.
 4. $\Delta_2$ is irreducible.
 :::

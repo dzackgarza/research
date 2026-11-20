@@ -120,7 +120,7 @@ Three groups act on $\bD(T_\En)$: the stable group $\Gamma_\En\definedas\widetil
 
 1. $\Gamma_\Co\leq\Orth(T_\Co)$ is the monodromy group of the variation of Hodge structure on the universal family over the moduli stack $\mcM_\Co$ of Coble surfaces (@def:coble-moduli-functor, @lem:coble-moduli-functor-stack): the image of the monodromy representation (@def:transport-and-monodromy) of the local system of lattices with fibre $T_\Co$ (@def:local-system-of-lattices) of that variation under $\pi_1(\mcM_\Co)$. A monodromy group is a property of the VHS on the universal family over the stack; it is not the monodromy of a chosen family, and no chosen family replaces it. A parameter space $B'$ carrying a family, with its map to $\mcM_\Co$, pulls the system back, and the monodromy of the pulled-back system is the image of $\pi_1(B')$ under the composite (@lem:coble-family-base-change); that image is $\Gamma_\Co$ exactly when the map sees all of $\pi_1(\mcM_\Co)$, which is a theorem and not the definition. The presentation used for the computations of this section is @def:coble-family-unpolarized: its labelled base $B$ carries the family and the local system of @lem:d2-unpolarised-family and @lem:d2-local-system, over which the eleven classes are global sections (@lem:d2-local-system(2)); write
 $$\Gamma_\Co(B)\definedas\rho\qty{\pi_1(B,s)}$$
-for the monodromy of that presentation, and $\Gamma_\Co(\bar B)$ for that of the unlabelled base, which carries the same family and a larger group, base 1. being a coarse space with no family (@lem:d2-local-system(4), @rmk:d2-what-is-open(1)). The two groups are compared by the map $\pi_1(B)\to\pi_1(\mcM_\Co)$ induced by the presentation, and identifying them is research#797, item 6; what is proved below is $\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable(1)). Put $\fco\definedas\bD(T_\Co)/\Gamma_\Co$.
+for the monodromy of that presentation, and $\Gamma_\Co(\bar B)$ for that of the unlabelled base, which carries the same family and a larger group, base 1. being a coarse space with no family (@lem:d2-local-system(4), @rmk:d2-what-is-open(1)). The two groups are compared by the map $\pi_1(B)\to\pi_1(\mcM_\Co)$ induced by the presentation, and identifying them is research#797, item 6. Put $\fco\definedas\bD(T_\Co)/\Gamma_\Co$.
 2. $\Gamma^{\mathrm{un}}_\Co\definedas\Orth(T_\Co)$, with $F^{\mathrm{un}}_\Co\definedas\bD(T_\Co)/\Orth(T_\Co)$: the moduli space $M_\Co$ of Coble surfaces is isomorphic to an open subset of $\bD(N)/\Orth(N)$ [@DK13, Prop. 3.2].
 3. The stable group
 $$
@@ -138,7 +138,7 @@ A statement about a quotient of $\bD(T_\Co)$ names the group it uses; in particu
 
 ::: {.remark #rmk:gamma-co-groups-comparisons title="How the groups of the Coble problem compare"}
 
-The family of unpolarized Enriques surfaces (@def:enriques-surface), whose local system of lattices has fibre $T_\En$ and monodromy group $\Gamma_\En$, induces the family of @def:gamma-co-groups(1) and its local system *of lattices*, in the sense that $T_\Co=\delta^{\perp\ten}$ is cut out of $T_\En$ (@prop:gamma-co-images); that it induces the family itself, that is that the two bases are identified, is not proved by anything read (@rmk:d2-what-is-open(2)).
+The family of unpolarized Enriques surfaces (@def:enriques-surface), whose local system of lattices has fibre $T_\En$ and monodromy group $\Gamma_\En$, induces the family of @def:gamma-co-groups(1) and its local system *of lattices*, in the sense that $T_\Co=\delta^{\perp\ten}$ is cut out of $T_\En$ (@prop:gamma-co-images); that it induces the family itself, that is that the two bases are identified, is not proved by anything read (@rmk:d2-what-is-open(2)). What is proved about the labelled group is $\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable(1)); identifying it with the group of @def:gamma-co-groups(1) is research#797, item 6.
 
 The group $R_{\gent} = \bar\rho^{-1}(P)$ of @def:gamma-co-groups(4) and @prop:gamma-co-images(3) is the restricted Enriques stabilizer; the comparison of $\Gamma_{\Co,2}$ of @def:gamma-co-groups(5) with it is @thm:coble-monodromy-versus-enriques, and the arithmetic group (@def:arithmetic-group) that contains $\Gamma_{\Co,2}$ is $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co) = \Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2}$ (@thm:coble-monodromy-versus-enriques(4)).
 :::
@@ -627,7 +627,7 @@ Then (F) holds: the local system with fibre $T_\Co$ is the $\delta^{\perp}$-part
 :::
 
 ::: {.remark #rmk:coble-family-identification-status title="Where the two halves of the identification come from"}
-The ambient family is [@AEGS25], at the level recorded in @rmk:coble-universal-family-level; the fibre marking is [@DK13, §3] and @prop:coble-cover-marking. Neither is a definition of the degree-$2$ Coble family as a moduli functor, which is (U) and is D2 of research#786. The one thing neither paper writes as a single statement is the pair for $\Delta$: [@AEGS25] identifies the *points* of $\Delta$ with the Coble quotients and [@DK13] describes the covers fibre by fibre. The rank of the period lattice, $11$ [@DK13, (3.6)], is the rank of the classical family, which is what makes the identification the right one.
+The ambient family is [@AEGS25], at the level recorded in @rmk:coble-universal-family-level; the fibre marking is [@DK13, §3] and @prop:coble-cover-marking. Neither is a definition of the degree-$2$ Coble family as a moduli functor, which is (U) and is D2 of research#786. The one thing neither paper writes as a single statement is the pair for $\Delta$: [@AEGS25] identifies the *points* of $\Delta$ with the Coble quotients and [@DK13] describes the covers fibre by fibre. The rank of the period lattice, $11$ [@DK13, (3.6)], is the rank of the classical family, which is what makes the identification the right one. The identification of the points of $\Delta$ with the Coble quotients is [@AEGS25]; (F), the family-level statement used by @lem:coble-monodromy-in-stabilizer, is @lem:coble-family-identification under its hypothesis (U).
 :::
 
 ::: {.remark #rmk:coble-universal-family-level title="At which level the universal family over $F_{\En,2}$ exists"}
@@ -642,7 +642,7 @@ Let $\Delta\subset F_{\En,2} = \bD(T_\En)/\gent$ be the discriminant divisor, th
 
 (F) the local system with fibre $T_\Co$ of that family is the $\delta^{\perp}$-part of the restriction to $\Delta$ of the local system with fibre $T_\En$.
 
-The identification of the points of $\Delta$ with the Coble quotients is [@AEGS25]; (F) is the family-level statement, and it is @lem:coble-family-identification under its hypothesis (U), which is D2 of research#786. Under (F),
+Under (F),
 $$\Gamma_{\Co,2}\subseteq R_{\gent}.$$
 :::
 
