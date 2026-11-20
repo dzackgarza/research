@@ -60,9 +60,11 @@ computations/reports/coble_797-plane-models.py with its run record.
 
 ITEM 5. def:gamma-co-groups is restated from the stack.
 VERDICT: NOT MET.  lattices.md:116, def:gamma-co-groups, still defines Gamma_Co as
-the monodromy group over the labelled base B.  By ITEM 4 that is the monodromy of a
-plane presentation, not of the stack; and the stack's monodromy differs from it by the
-plane-model equivalence (ITEM 4(4)).
+the monodromy group over the labelled base B.  The definition to be restated from is
+the monodromy of the variation of Hodge structure on the universal family over the
+Coble moduli stack (research#797, body and correction comment); what is open is the
+comparison of that group with rho(pi_1(B,s)), and ITEM 4 says only that B is a plane
+presentation, not that the definition is a different one.
 
 RELATED, NOT ACCEPTANCE: the comparison with the K3-with-involution moduli is stated
 at :563, lem:d0-coble-stack-in-involution-stack (a fully faithful morphism into AE22's
