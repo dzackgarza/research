@@ -1,13 +1,12 @@
 research#787 (D2 of research#786) -- acceptance item by item
 
-Commit series: ed3c6e3e11 (U1, the stack monodromy), dd8aca0318 (the loop model is
-cited without the discrete-group sequence), e9d2187929 (the containment in
-Orth(T_Co) for the right reason), 192cbfec80 (U3 and the honest base B),
-1e87c007ec (item 5: the citation checker and the two pages), cfaeb51a38 (#780: the
-label cover of stacks, the index 10! and the reverse inclusion), 3def5c74d6 (U2:
-S_10 is not free on the labelled base), and this commit (U4: the degree-2 family as
-the unpolarized family with a flat section, and Delta_2 as its period image).
-Paths are relative to the repository root; line numbers are those of this commit.
+Commit series: ed3c6e3e11 (U1), dd8aca0318 (the loop model), e9d2187929 (the
+containment in Orth(T_Co)), 192cbfec80 (U3 and the honest base B), 1e87c007ec
+(item 5), cfaeb51a38 (#780: the label cover of stacks and the index 10!),
+3def5c74d6 (U2: S_10 is not free on the labelled base), db792b527c (U4: the degree-2
+family forgets to the unpolarized one), and this commit (U5: the degree-2 datum is a
+class, and the degenerate case).  Paths are relative to the repository root; line
+numbers are those of this commit.
 
 REVIEW ITEMS (the report of 2026-11-20 06:48:27, pinned to main@d277e333fc)
 
@@ -15,41 +14,39 @@ REVIEW ITEMS (the report of 2026-11-20 06:48:27, pinned to main@d277e333fc)
       the space B = V/PGL_3, the family and the local system descend to it, and
       Gamma_Co = rho(pi_1(B,s)) = rho(pi_1(V,s)) (moduli-construction.md:427,
       lem:d2-plane-sextic-freeness(4); the group paragraph at :516).
-  U2  MET.  The principal S_10-cover is a torsor of stacks, not of coarse spaces
-      (moduli-construction.md:625, lem:d2-labelling-cover), with the index 10!
-      (lattices.md:211, lem:gamma-co-labelled-index) and the reverse inclusion
-      Gamma_Co = Otilde^+(T_Co) from Gamma_Co(Bbar) = Gamma_{10A_1}
-      (lattices.md:291).  S_10 is not free on B, by an explicit invariant sextic
-      (moduli-construction.md:469, lem:d2-s10-not-free), so the stack reading is
-      necessary.
+  U2  MET.  B -> Bbar is a principal S_10-bundle of stacks (moduli-construction.md
+      :625, lem:d2-labelling-cover), the index is 10! (lattices.md:211,
+      lem:gamma-co-labelled-index), the reverse inclusion Gamma_Co = Otilde^+(T_Co)
+      comes from Gamma_Co(Bbar) = Gamma_{10A_1} (lattices.md:291), and S_10 is not
+      free on B, by an explicit invariant sextic (moduli-construction.md:469,
+      lem:d2-s10-not-free).
   U3  MET.  The fixed locus of a non-identity projectivity lies in a line and a
       point, a line carries at most three nodes, so PGL_3 acts freely on V with
       SL_3-stabilizer mu_3 (moduli-construction.md:427,
       lem:d2-plane-sextic-freeness(1)-(2)).
-  U4  NOT MET as a construction over Delta_2, and the orbifold reading is
-      refuted.  What is now proved (moduli-construction.md:710,
-      lem:d2b-forgets-to-d2a): every base Y of a degree-2 family carries the
-      underlying unpolarized family with the same T, so its monodromy group is
-      subordinated to Gamma_Co(Bbar) through the classifying map Y -> Bbar (1)-(2);
-      and Delta_2 read as the orbifold D(T_Co)/R_gEn carries no family of Coble
-      surfaces with the tautological local system, because R_gEn contains
-      s_zeta not in O^+(T_Co) (thm:coble-monodromy-versus-enriques(2)) while every
-      Coble family's monodromy lies in O^+(T_Co) (lem:monodromy-is-spinor-positive)
-      (3).  The marked period space is D(T_Co)/Gamma_{Co,2} and Delta_2 is its
-      image under the quotient by R_gEn (4).  What is still missing is a family over
-      the marked space with its local system: no such family is constructed here,
-      and the localization of the moduli of pairs at the period map remains
-      Picard-general (U7).
-  U5  NOT MET.  Only the smooth nondegenerate h_Co = F_1 + F_2 is admitted
-      (moduli-construction.md:676-680); the other nef degree-2 form h = 2F_1 + R
-      recorded at :760 is not in the moduli problem.
-  U6  NOT MET.  The Enriques-quotient reading of the vector at :656, :663, :749,
-      and the statement/proof mismatch of lem:d2-degree-two-polarization(4)
+  U4  NOT MET as a construction over Delta_2; the orbifold reading is refuted.
+      Proved (moduli-construction.md:731, lem:d2b-forgets-to-d2a): every base of a
+      degree-2 family carries the underlying unpolarized family with the same T, so
+      its monodromy is subordinated to Gamma_Co(Bbar) through the classifying map
+      Y -> Bbar (1)-(2); and Delta_2 read as D(T_Co)/R_gEn carries no family of Coble
+      surfaces with the tautological local system (3).  The marked space is
+      D(T_Co)/Gamma_{Co,2} and Delta_2 is its image (4).  Missing: a family over the
+      marked space itself.
+  U5  PARTLY MET, NOT MET as stated.  The restriction to the nondegenerate form is
+      repaired: item 2 of def:coble-family-degree-two (:695) now takes the class
+      (nef, square 2), not the decomposition, and the degenerate alternative is
+      neither excluded nor excluded-by-theorem (moduli-construction.md:674,
+      lem:d2b-polarization-is-a-class(1)-(3)), with its locus nonempty (:674(4)).
+      Still NOT MET: the objects are the smooth classical Coble surfaces only, and
+      the nodal quotients with a 1/4(1,1) singularity that [@AEGS25, Def. 2.7]
+      admits are not in the moduli problem.
+  U6  NOT MET.  The Enriques-quotient reading of the vector at :656, :663, :770, and
+      the statement/proof mismatch of lem:d2-degree-two-polarization(4)
       (:663 statement, :671 proof for an involution).
-  U7  NOT MET.  moduli-construction.md:704 invokes prop:coble-polarized-moduli(2)-
+  U7  NOT MET.  moduli-construction.md:725 invokes prop:coble-polarized-moduli(2)-
       (3), whose statements are Picard-general (polarizing-divisors-for-coble-
       moduli.md:261-262).
-  U8  NOT MET.  "up to normalization" at moduli-construction.md:697; the properness
+  U8  NOT MET.  "up to normalization" at moduli-construction.md:718; the properness
       step of thm:normalization (lattices.md:687, applied at :714) uses
       lem:locally_closed_embedding_BB (lattices.md:106) outside its stated groups.
 
@@ -66,16 +63,17 @@ VERDICT: MET.
   monodromy group contains Gamma_Co with index 10! (:625, lattices.md:211).
 
 ITEM 2. D2b: the degree-2 family, its base, its fibres, its lattice local system.
-VERDICT: NOT MET (U4-U6).
+VERDICT: NOT MET (U5-U6; U4 answered as a comparison, not as a base equality).
   MET within it: the objects, the fibres and the local system are those of
-  def:coble-family-degree-two (:674) and the family is the underlying unpolarized
-  family with a flat section, so it exists over every base on which the pairs do and
-  its monodromy is subordinated to Gamma_Co(Bbar) (lem:d2b-forgets-to-d2a(1)-(2),
-  :710).
-  NOT MET: the base.  The divisor Delta_2 is the period image up to normalization
-  (lem:d2-degree-two-base(2), :697), not the marked space, and in the orbifold
-  reading it carries no such family at all (lem:d2b-forgets-to-d2a(3)).  U5 and U6
-  stand.
+  def:coble-family-degree-two (:695); the polarization is the class, not the
+  decomposition (:674, lem:d2b-polarization-is-a-class), so the degenerate
+  alternative is admitted; and the family is the underlying unpolarized family with
+  a flat section, so it exists over every base on which the pairs do and its
+  monodromy is subordinated to Gamma_Co(Bbar) (:731, lem:d2b-forgets-to-d2a(1)-(2)).
+  NOT MET: the objects are smooth classical Coble surfaces only, so the nodal
+  quotients of [@AEGS25, Def. 2.7] are outside the moduli problem; and the base is
+  not Delta_2 as a marked space (lem:d2-degree-two-base(2), :718;
+  lem:d2b-forgets-to-d2a(3)-(4)).
 
 ITEM 3. The D2a period map is DK13 Proposition 3.2, hypotheses checked.
 VERDICT: MET, unchanged.  lem:d2a-period-map, moduli-construction.md:642; DK13
@@ -113,6 +111,11 @@ CITATION POLICY OF THIS ROUND
   touch.
 
 CHECKS RUN AT THIS COMMIT
+  python3 computations/reports/coble_787-degenerate-polarization.py
+    exit 0; K_S^2 = -1; the (-2)-class R = H - E_1 - E_2 - E_3 has R^2 = -2 and
+    R.K_S = 0; h = 2F_1 + R' has h^2 = 2, h.K_S = 0, h.R' = 0; the printed
+    F_1.R' = 0 would give h^2 = -2; the sextic of lem:d2-s10-not-free has exactly
+    three nodes on z = 0.
   python3 computations/reports/coble_787-s10-symmetric-sextic.py
     exit 0; the ten points distinct, the 30x28 matrix of rank 27, G irreducible,
     ten ordinary double points, G o R = G, the permutation a nontrivial 3-cycle.

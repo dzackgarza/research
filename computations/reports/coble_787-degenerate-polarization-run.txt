@@ -1,0 +1,14 @@
+K_S^2 = -1  (a Coble surface has K_S^2 = -1)
+R = H - E_1 - E_2 - E_3      R^2 = -2   R.K_S = 0
+  -> R is a (-2)-class of K_S^perp: the proper transform of the line
+     through three collinear nodes
+F_1 = 3H - sum_{i<=9} E_i    F_1^2 = 0   F_1.K_S = 0
+F_1.R' = 1  (R' = H - E_1 - E_2 - E_10)
+h = 2F_1 + R'                h^2 = 2   h.K_S = 0   h.R' = 0
+  F_1.R' = 0  =>  h^2 = -2,  h.R' = -2
+  F_1.R' = 1  =>  h^2 = 2,  h.R' = 0
+  -> the pair consistent with h^2 = 2 is F_1.R' = 1, and then h.R' = 0
+nodes with z = 0: [(1, 2, 0), (-2, -1, 0), (1, -1, 0)]
+  -> exactly three of the ten nodes lie on the line z = 0, so at that point
+     of the D2a base the surface has the (-2)-class R = H - E_1 - E_2 - E_3
+ALL ASSERTIONS HOLD

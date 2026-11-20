@@ -671,14 +671,35 @@ Let $S=\Bl_{p_1,\dots,p_{10}}\PP^2$ be a classical Coble surface, $f\colon X\to 
 (4) Put $M\definedas H^2(X)^{\iota'}=f^*H^2(S)$, of rank $11$. The class $[R]$ of the ramification curve $R\subset X$ of $f$ is $f^*(-K_S)$: indeed $f^*C_b=2R$ with $C_b=-2K_{S_b}$ (@lem:d2-unpolarised-family(1)), so $R=f^*(-K_S)$, $R^2=2(-K_S)^2=-2$, and $R\cdot f^*(K_S^{\perp})=2(-K_S)\cdot K_S^{\perp}=0$. Hence $f^*(K_S^{\perp})$ and $[R]$ are orthogonal sublattices of $M$ of ranks $10$ and $1$, and their ranks sum to $\mathrm{rk}M$, so they span $M$. An automorphism $g$ with $g\circ\iota'=\iota'\circ g$ preserves $M=H^2(X)^{\iota'}$, and $H^2(X)^g=f^*(K_S^{\perp})$ forces $g^*=-1$ on the orthogonal complement of $f^*(K_S^{\perp})$ in $M$, that is $g^*[R]=-[R]$. Since $H^2(X)$ is unimodular and $g$ is an involution, $g_*=(g^*)^{-1}=g^*$, so for the nef and big class $e_0=f^*H$ one has $(g^*e_0)\cdot R=e_0\cdot(g_*R)=e_0\cdot(-R)=-2\,H\cdot(-K_S)=-6<0$, while $R$ is an effective curve; so $g^*e_0$ is not nef, and $g^*$ cannot be induced by an automorphism, which carries the nef cone to itself.
 :::
 
+::: {.lemma #lem:d2b-polarization-is-a-class title="The degree-$2$ datum is a class: the decomposition is a case, not a definition"}
+
+1. Let $X$ be an Enriques surface and $h\in E\definedas K_X^{\perp}\isoto U\oplus E_8$ a nef class with $h^2=2$. Then $h=F_1+F_2$ with $F_1,F_2$ nef, $F_i^2=0$, $F_1\cdot F_2=1$, or $h=2F_1+R$ with $F_1^2=0$ and $R$ a $(-2)$-curve [@CD89, Cor. 4.5.1], quoted in [@DK13, §7], where $h$ is called *non-degenerate* in the first case and *degenerate* otherwise.
+2. In the degenerate case $F_1\cdot R=1$ and $h\cdot R=0$. In particular $h$ is not ample, and $X$ carries a $(-2)$-curve.
+3. The dichotomy is stated for Enriques surfaces, and for Coble surfaces the source treats only the unnodal case, where by (2) the degenerate alternative cannot occur [@DK13, §8]. A moduli problem of degree-$2$ polarized Coble surfaces therefore does not have the nondegenerate decomposition available as a definition, and the datum is the class: a nef $h_\Co\in K_S^{\perp}$ with $h_\Co^2=2$ (@def:coble-polarization-classes(2), and item 2 of @def:coble-family-degree-two).
+4. The degenerate locus of the base of @def:coble-family-unpolarized is not empty: at a point whose sextic has three collinear nodes, the proper transform of the line through them is a $(-2)$-curve with class $R=H-E_1-E_2-E_3\in K_S^{\perp}$ (@lem:d2-s10-not-free).
+:::
+
+::: {.proof}
+
+(1) is the cited dichotomy, in the form in which [@DK13, §7] states it.
+
+(2) By (1) $h=2F_1+R$ with $F_1^2=0$ and $R^2=-2$, so
+$$h^2=4F_1\cdot R+R^2=4F_1\cdot R-2=2,\qquad h\cdot R=2F_1\cdot R+R^2=2F_1\cdot R-2,$$
+hence $F_1\cdot R=1$ and $h\cdot R=0$. Since $R$ is an effective curve meeting $h$ in $0$, $h$ is not ample. The deposited extraction of [@DK13, §7] prints $F_1\cdot R=0$ at this point, which with $R^2=-2$ gives $h^2=-2$; the two displayed equations are what the stated hypotheses $h^2=2$ and $R^2=-2$ force, and they are what is used below. The arithmetic is verified on the lattice $E$ by `computations/reports/coble_787-degenerate-polarization.py`, recorded in `computations/reports/coble_787-degenerate-polarization-run.txt`.
+
+(3) is a statement about the two cited sources: the dichotomy of (1) is [@CD89, Cor. 4.5.1] for Enriques surfaces, and the Coble case is treated in [@DK13, §8] under the hypothesis that $S$ has no $(-2)$-curve, which by (2) excludes the degenerate alternative. Nothing read supplies the dichotomy for a nodal Coble surface, so a definition that required the nondegenerate decomposition would exclude a case that no theorem excludes.
+
+(4) Let $p_1,p_2,p_3$ be collinear nodes and $L$ the line they span. Since $L$ is a line and $\deg Z=6$, $L$ is not a component of $Z$, so its proper transform is a curve $R\subset S$ with class $H-E_1-E_2-E_3$; then $R^2=1-3=-2$ and $R\cdot K_S=-3+3=0$, so $R$ is a $(-2)$-curve with class in $K_S^{\perp}$. The sextic of @lem:d2-s10-not-free has exactly three nodes on the line $z=0$; the computation cited in (2) verifies that the three are collinear and that $R^2=-2$ and $R\cdot K_S=0$.
+:::
+
 ::: {.definition #def:coble-family-degree-two title="D2b: the family of degree-$2$ polarized Coble surfaces" defines="degree-$2$ polarized Coble surface; $\Delta_2$; $\Gamma_{\Co,2}$; $F_{\Co,2}$"}
 
 **The objects.** Over a complex space $Y$, an object is a tuple $\qty{\mcs\to Y,\ \mcx\to\mcs,\ \tilde h}$ in which
 
 1. $\mcs\to Y$ is an object of @def:coble-family-unpolarized, with its K3 double cover $\mcx\to\mcs$ and involution $\iota$;
-2. $\tilde h$ is a global section of the local system of lattices $f^*(K^\perp)$ of @lem:d2-degree-two-polarization(1), whose value at every $y\in Y$ is the pullback of a degree-$2$ numerical polarization of $S_y$ in the sense of @def:coble-polarization-classes(2): $\tilde h_y=f^*F_1+f^*F_2$ with $F_i^2=0$, $F_1\cdot F_2=1$, $\tilde h_y^2=4$, and $F_1,F_2$ nef.
+2. $\tilde h$ is a global section of the local system of lattices $f^*(K^\perp)$ of @lem:d2-degree-two-polarization(1) whose value at every $y\in Y$ is the pullback $\tilde h_y=f^*h_{\Co,y}$ of a nef class $h_{\Co,y}\in K_{S_y}^{\perp}$ with $h_{\Co,y}^2=2$: a degree-$2$ numerical polarization in the sense of @def:coble-polarization-classes(2), with the polarization a *class* and not a decomposition (@lem:d2-degree-two-polarization(2), @lem:d2b-polarization-is-a-class).
 
-By @lem:d2-degree-two-polarization(3) this is the same datum as a global section $h$ of the local system with fibre $S_\En=U(2)\oplus E_8(2)$ whose value is the vector $h=e+f$ of [@AEGS25, Def. 2.5]; the section is part of the objects and is not a marking: it is the polarization.
+The section is part of the objects and is not a marking: it is the polarization. On the locus where $h_{\Co,y}$ is nondegenerate it splits as $F_1+F_2$ with $F_i$ nef and $F_i^2=0$, and then $\tilde h_y=f^*F_1+f^*F_2$ is the vector $h=e+f$ of [@AEGS25, Def. 2.5] (@lem:d2-degree-two-polarization(3), @lem:d2b-polarization-is-a-class(2)); on the degenerate locus it does not (@lem:d2b-polarization-is-a-class(3)), and that case is part of this moduli problem.
 
 **The fibres** are the Coble surfaces $S_y$ of @def:coble-family-unpolarized with their degree-$2$ numerical polarization $h_{\Co,y}$; the K3 cover $X_y$ is a K3 surface with a marked class $\tilde h_y$ of square $4$.
 
