@@ -8,7 +8,7 @@ Equivalently, its elements are isomorphism-invariant properties of objects of $C
 
 ::: {.definition #def:replete-full-meet title="Meets" defines="meet"}
 
-For $A,B\in\operatorname{RFull}(C)$, their meet is the replete full subcategory on the objects lying in both $A$ and $B$.
+For $A,B\in\operatorname{RFull}(C)$, their meet is the replete full subcategory (@def:property-structure-stuff) on the objects lying in both $A$ and $B$.
 It is represented by the pullback
 
 ```{.tikz}
@@ -23,14 +23,14 @@ B \arrow[d,hook]\\
 A \arrow[r,hook] & C
 \end{tikzcd}
 ```
-Its universal property is the greatest lower bound in $\operatorname{RFull}(C)$.
+Its universal property (@def:property-structure-stuff) is the greatest lower bound in $\operatorname{RFull}(C)$.
 :::
 
 ::: {.definition #def:join-diagram title="Joins" defines="join"}
 
-The join of $A$ and $B$ is the replete full subcategory on the objects lying in $A$ or $B$.
+The join of $A$ and $B$ is the replete full subcategory (@def:property-structure-stuff) on the objects lying in $A$ or $B$.
 It is the least upper bound in $\operatorname{RFull}(C)$.
-Thus disjunction of two object properties is a valid property and defines a full subcategory.
+Thus disjunction of two object properties is a valid property (@def:property-structure-stuff) and defines a full subcategory (@def:subcategory).
 :::
 
 ## Closure under specified operations

@@ -39,11 +39,11 @@ The following construction applies to sheaves of groups on the fppf site of $S=\
 
 ::: {.proposition #prop:clifford-lift-obstruction title="Local existence and global lifting"}
 
-Let $p\colon G\to H$ be a homomorphism of fppf sheaves of groups. Put $K=\ker p$ and let $I\subseteq H$ be its sheaf image. Then
+Let $p\colon G\to H$ be a homomorphism of fppf sheaves of groups (@def:group). Put $K=\ker p$ and let $I\subseteq H$ be its sheaf image. Then
 $$
 1\longrightarrow K\longrightarrow G\longrightarrow I\longrightarrow1
 $$
-is exact. For $g\in I(S)$, the fiber $P_g=p^{-1}(g)$ is a right $K$-torsor. There is an exact sequence of pointed sets
+is exact (@def:exact-complex). For $g\in I(S)$, the fiber (@def:fiber-cofiber) $P_g=p^{-1}(g)$ is a right $K$-torsor. There is an exact sequence of pointed sets
 $$
 1\longrightarrow K(S)\longrightarrow G(S)\longrightarrow I(S)
 \xrightarrow{\delta}H^1_{\mathrm{fppf}}(S,K),\qquad
@@ -152,7 +152,7 @@ With $I$ and $K$ as in @prop:clifford-lift-obstruction, this is the inverse imag
 
 ::: {.definition #def:algebraic-spinor-kernels title="Full algebraic spinor kernel" defines="full algebraic spinor kernel; $K_R(M)$"}
 
-For $M$ free of finite rank with perfect polar form, the *full algebraic spinor kernel* is
+For $M$ free (@def:module-subcategories) of finite rank with perfect (@def:polarization) polar form, the *full algebraic spinor kernel* is
 $$
 K_R(M)=\ker\bigl(\theta_R\colon O(M,q)(R)\to\operatorname{Disc}(R)\bigr).
 $$
@@ -160,7 +160,7 @@ $$
 
 ::: {.definition #def:even-algebraic-spinor-kernel title="Even algebraic spinor kernel" defines="even algebraic spinor kernel; $K_R^{\mathrm{ev}}(M)$"}
 
-For $M$ free of finite rank with perfect polar form, the *even algebraic spinor kernel* is
+For $M$ free (@def:module-subcategories) of finite rank with perfect (@def:polarization) polar form, the *even algebraic spinor kernel* is
 $$
 K_R^{\mathrm{ev}}(M)=K_R(M)\cap O_{\mathrm{rot}}(M).
 $$
@@ -175,13 +175,13 @@ Thus the image of $\operatorname{Spin}$ is the residue-zero subgroup of the full
 
 ::: {.definition #def:generic-spinor-kernel title="Generic spinor kernel" defines="generic spinor kernel; $\theta_F^M$; $K_F(M)$"}
 
-For a domain $R$ with fraction field $F$ of characteristic different from $2$, assume only that $q_F$ is nondegenerate. Define
+For a domain $R$ with fraction field $F$ of characteristic (@def:two-elementary-isotropic-types) different from $2$, assume only that $q_F$ is nondegenerate (@def:polarization). Define
 $$
 \theta_F^M\colon O(M,q)(R)\to F^\times/(F^\times)^2,\quad
 g\mapsto\theta_F(g_F),\qquad
 K_F(M)=\ker\theta_F^M.
 $$
-Then $K_F(M)$ is the image of $E_R^{\mathrm{gen}}$, and base change of lifts gives
+Then $K_F(M)$ is the image of $E_R^{\mathrm{gen}}$, and base change (@def:module-base-change) of lifts gives
 $K_{\mathrm{lift},R}(M)\subseteq K_F(M)$.
 :::
 
@@ -193,7 +193,7 @@ Indeed, a product of $r$ reflections has determinant $(-1)^r$, and each reflecti
 
 ::: {.proposition #prop:spinor-kernel-base-change title="Exact comparison of kernels"}
 
-Let $M$ be free of finite rank over $R$ with perfect polar form, and let $R\to A$ be a ring homomorphism. Write $j(g)=g_A$ and $c=\operatorname{Disc}(R\to A)$. Then $\theta_A\circ j=c\circ\theta_R$, and
+Let $M$ be free (@def:module-subcategories) of finite rank over $R$ with perfect (@def:polarization) polar form, and let $R\to A$ be a ring homomorphism. Write $j(g)=g_A$ and $c=\operatorname{Disc}(R\to A)$. Then $\theta_A\circ j=c\circ\theta_R$, and
 $$
 1\longrightarrow K_R(M)
 \longrightarrow j^{-1}\bigl(K_A(M_A)\bigr)
@@ -201,13 +201,13 @@ $$
 \operatorname{im}(\theta_R)\cap\ker(c)
 \longrightarrow1
 $$
-is exact. In particular, the two kernels agree precisely when
+is exact (@def:exact-complex). In particular, the two kernels (@def:kernel-cokernel) agree precisely when
 $\operatorname{im}(\theta_R)\cap\ker(c)=\{1\}$.
 :::
 
 ::: {.proof}
 
-Assume the stated base change. We prove the exact sequence.
+Assume the stated base change (@def:module-base-change). We prove the exact sequence.
 
 1. **Image.** The identity $\theta_A(j(g))=c(\theta_R(g))$ says that $j(g)\in K_A(M_A)$ exactly when $\theta_R(g)\in\ker c$. Thus the indicated restriction of $\theta_R$ maps onto $\operatorname{im}(\theta_R)\cap\ker c$.
 2. **Kernel.** The kernel of that restriction is $\ker\theta_R=K_R(M)$.
@@ -257,12 +257,12 @@ This is the group denoted $O^+(L)$ in [@Daw22, §1.3]. The subscript distinguish
 
 ::: {.definition #def:period-component-character title="Period-component character" defines="period-component character; type-IV period domain; $\Omega_L$; $\chi_{\mathrm{per}}$"}
 
-Let $L$ have signature $(2,n)$, with $n\geq1$, and let $b$ be its bilinear form. Its type-IV period domain is
+Let $L$ have signature (@def:signature) $(2,n)$, with $n\geq1$, and let $b$ be its bilinear form. Its type-IV period domain is
 $$
 \Omega_L=\{[\omega]\in\mathbb P(L\otimes\mathbb C):
 b(\omega,\omega)=0,\ b(\omega,\bar\omega)>0\}.
 $$
-The map $[\omega]\mapsto\langle\operatorname{Re}\omega,\operatorname{Im}\omega\rangle$, with this ordered orientation, identifies it with the space of oriented positive-definite real two-planes. It has two connected components. The action on them defines
+The map $[\omega]\mapsto\langle\operatorname{Re}\omega,\operatorname{Im}\omega\rangle$, with this ordered orientation (@def:free-module-orientation), identifies it with the space of oriented positive-definite real two-planes. It has two connected components. The action on them defines
 $\chi_{\mathrm{per}}\colon O(L)\to\{+1,-1\}$, where $+1$ means that each component is preserved.
 :::
 
@@ -287,11 +287,11 @@ For the reflection normalization and component interpretation, see [@Daw22, §§
 
 ::: {.proof}
 
-Assume signature $(2,n)$. We compare the two real characters before restricting to $O(L)$.
+Assume signature (@def:signature) $(2,n)$. We compare the two real characters before restricting to $O(L)$.
 
 1. **Negative reflection vector.** If $q(v)<0$, then $v^\perp$ contains a positive two-plane. The reflection fixes that plane pointwise and hence fixes its oriented point in $\Omega_L$. It preserves both components, so its component character is $+1=\operatorname{sgn}(-q(v))$.
-2. **Positive reflection vector.** If $q(v)>0$, choose a positive vector $w\in v^\perp$. On the positive plane $\langle v,w\rangle$, the reflection reverses orientation. The two orientations lie in opposite components, so its component character is $-1=\operatorname{sgn}(-q(v))$.
-3. **Conclusion.** Real orthogonal transformations are products of anisotropic reflections by Cartan–Dieudonné. Steps 1–2 identify the characters on generators; restriction to $O(L)$ and base change identify the asserted maps and kernels.
+2. **Positive reflection vector.** If $q(v)>0$, choose a positive vector $w\in v^\perp$. On the positive plane $\langle v,w\rangle$, the reflection reverses orientation (@def:free-module-orientation). The two orientations lie in opposite components, so its component character is $-1=\operatorname{sgn}(-q(v))$.
+3. **Conclusion.** Real orthogonal transformations are products of anisotropic reflections by Cartan–Dieudonné. Steps 1–2 identify the characters on generators; restriction to $O(L)$ and base change (@def:module-base-change) identify the asserted maps and kernels (@def:kernel-cokernel).
 :::
 
 For signature $(1,n)$ the analogous geometric character is the action on the two components of $\{x:b(x,x)>0\}$. The same reflection argument identifies it with $\chi_{\mathrm{sp}}$. The geometric spaces are the positive-cone components in signature $(1,n)$ and the oriented-positive-two-plane components in signature $(2,n)$.
@@ -357,12 +357,12 @@ $$
 
 ::: {.theorem #thm:kneser-spinor-comparison title="Kneser conditions"}
 
-Let $L$ be an even lattice of signature $(2,n)$ with $n\geq2$. Suppose $L$ represents $-2$, $\operatorname{rank}_3(L)\geq5$, and $\operatorname{rank}_2(L)\geq6$. Then
+Let $L$ be an even lattice (@def:even-lattice) of signature (@def:signature) $(2,n)$ with $n\geq2$. Suppose $L$ represents $-2$, $\operatorname{rank}_3(L)\geq5$, and $\operatorname{rank}_2(L)\geq6$. Then
 $$
 O'(L)=\widetilde{SO}_{\mathrm{sp}}^+(L)
 =\langle s_u s_v:u,v\in L,\ b(u,u)=b(v,v)=-2\rangle.
 $$
-The generation statement is Kneser's theorem, as stated in [@GHS08, Theorem 1.1]; the equality with the stable real kernel is [@GHS08, Corollary 1.2].
+The generation statement is Kneser's theorem, as stated in [@GHS08, Theorem 1.1]; the equality with the stable real kernel (@def:kernel-cokernel) is [@GHS08, Corollary 1.2].
 :::
 
 ::: {.proof}
@@ -389,10 +389,10 @@ $$
 Assume the Kneser conditions and choose a root $a\in L$.
 
 1. **Root reflection.** The formula $s_a(x)=x+b(x,a)a$ gives an integral isometry. For $x\in L^\vee$, its difference from $x$ lies in $L$, so $\rho_L(s_a)=1$. Also $\det(s_a)=-1$ and $\theta_{\mathbb Q}(s_a)=[1]$.
-2. **Even parts.** The determinant-one parts of $K_{\mathbb Q}(L)$ and $\widetilde O_{\mathrm{sp}}^+(L)$ coincide and are generated by pairs of root reflections, by @thm:kneser-spinor-comparison.
-3. **Odd parts.** Multiplication by $s_a$ identifies the determinant-minus-one part of each of these two groups with its determinant-one part, by step 1.
+2. **Even (@def:form-axioms) parts.** The determinant-one parts of $K_{\mathbb Q}(L)$ and $\widetilde O_{\mathrm{sp}}^+(L)$ coincide and are generated by pairs of root reflections, by @thm:kneser-spinor-comparison.
+3. **Odd (@def:two-elementary-isotropic-types) parts.** Multiplication by $s_a$ identifies the determinant-minus-one part of each of these two groups (@def:group) with its determinant-one part, by step 1.
 4. **Integral lifts.** The Clifford vector $a$ has $a^2=q(a)=-1$ and $a\bar a=1$. It is an integral norm-one lift of $s_a$. Products of these vectors lift the group generated by the root reflections; products of pairs lie in $\operatorname{Spin}(L)(\mathbb Z)$.
-5. **Conclusion.** Steps 2–3 identify $K_{\mathbb Q}(L)$ with $\widetilde O_{\mathrm{sp}}^+(L)$ and give the stated generators. Step 4 and $K_{\mathrm{lift},\mathbb Z}(L)\subseteq K_{\mathbb Q}(L)$ identify the integral lifting subgroup. For the even subgroup, step 4 gives surjectivity onto $O'(L)$; scalar extension places the image of $\operatorname{Spin}(L)(\mathbb Z)$ in $O'(L)$.
+5. **Conclusion.** Steps 2–3 identify $K_{\mathbb Q}(L)$ with $\widetilde O_{\mathrm{sp}}^+(L)$ and give the stated generators. Step 4 and $K_{\mathrm{lift},\mathbb Z}(L)\subseteq K_{\mathbb Q}(L)$ identify the integral lifting subgroup (@def:integral-clifford-lifting-subgroup). For the even subgroup, step 4 gives surjectivity onto $O'(L)$; scalar extension places the image of $\operatorname{Spin}(L)(\mathbb Z)$ in $O'(L)$.
 :::
 
 ::: {.example #ex:polarized-k3-spinor-kernel title="The polarized K3 period lattice"}
@@ -443,12 +443,12 @@ To obtain a type-IV example, take $L=M\oplus\langle2\rangle$, where the last sum
 
 ::: {.definition #def:vhs-monodromy title="Monodromy of a lattice-valued variation" defines="monodromy of a lattice-valued variation; $m_{\mathbb V}$; $\Gamma_{\mathbb V}$"}
 
-Let $\mathbb V_{\mathbb Z}$ be a polarized integral variation of Hodge structure of weight two on a connected complex manifold $B$, with a base point $b$ and an isometry $\mathbb V_{\mathbb Z,b}\simeq L$. Its parallel transport defines
+Let $\mathbb V_{\mathbb Z}$ be a polarized integral variation of Hodge structure (@def:property-structure-stuff) of weight two on a connected complex manifold $B$, with a base (@def:root-system-base) point $b$ and an isometry $\mathbb V_{\mathbb Z,b}\simeq L$. Its parallel transport (@cons:calculus-transport) defines
 $$
 m_{\mathbb V}\colon\pi_1(B,b)\longrightarrow O(L),\qquad
 \Gamma_{\mathbb V}=\operatorname{im}m_{\mathbb V}.
 $$
-For a moduli stack, use its orbifold fundamental group. A different choice of fiber isometry conjugates $\Gamma_{\mathbb V}$ in $O(L)$.
+For a moduli stack, use its orbifold fundamental group (@def:group). A different choice of fiber (@def:fiber-cofiber) isometry conjugates $\Gamma_{\mathbb V}$ in $O(L)$.
 :::
 
 For a weight-two variation of K3 type, with Hodge numbers $(1,n,1)$ and the type-IV sign convention, the period map from the connected universal cover of $B$ lands in one component of $\Omega_L$. Equivariance implies $\Gamma_{\mathbb V}\subseteq O_{\mathrm{sp}}^+(L)$. If the induced discriminant local system is constant, then $\rho_L\circ m_{\mathbb V}=1$, and consequently

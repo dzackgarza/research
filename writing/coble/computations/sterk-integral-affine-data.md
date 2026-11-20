@@ -41,13 +41,13 @@ The $+1$-eigenspaces of [Explicit root vectors and the folded Sterk diagrams](#s
 
 ::: {#cons:polygon-from-boundary-directions .construction title="From directions to a polygon with symmetry" defines="$\ell_i$; $p_i$; $\operatorname{Aut}(P)$"}
 
-1. Fix the ordered primitive boundary directions $v_i \in \ZZ^2$.
+1. Fix the ordered primitive (@def:primitive-embedding) boundary directions $v_i \in \ZZ^2$.
 
-2. Solve $\Sum \ell_i v_i = 0$ by `A.right_kernel()`, then rescale for evenness and divisibility.
+2. Solve $\Sum \ell_i v_i = 0$ by `A.right_kernel()`, then rescale for evenness and divisibility (@def:lattice-divisibility).
 
 3. Walk the polygon by $p_{i+1} = p_i + \ell_i v_i$.
 
-4. Place surgery triangles: `edge_len = gcd(v)`, base offset $|\lfloor \text{edge\_len}/2\rfloor - \lfloor \text{surg\_size}/2\rfloor|$.
+4. Place surgery triangles: `edge_len = gcd(v)`, base (@def:root-system-base) offset $|\lfloor \text{edge\_len}/2\rfloor - \lfloor \text{surg\_size}/2\rfloor|$.
 
 5. Recentre at the centroid and call `restricted_automorphism_group(output="matrix")` to obtain $\Aut(P)$.
 :::

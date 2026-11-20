@@ -4,9 +4,9 @@
 
 ::: {.definition #def:anticanonical-pair defines="anticanonical pair; length; labeled anticanonical pair"}
 
-An **anticanonical pair** $(V, D)$ consists of a smooth rational surface $V$ and a divisor $D\in\abs{-K_V}$ that is a reduced cycle of rational curves $D = \sum_{i=1}^r D_i$, with $i$ taken mod $r$, together with an orientation of $D$.
-For $r\geq 2$, each $D_i$ is a smooth rational curve, and $D_i$ meets $D_{i\pm1}$ transversally.
-For $r = 1$, $D = D_1$ is an irreducible nodal curve.
+An **anticanonical pair** $(V, D)$ consists of a smooth rational surface $V$ and a divisor $D\in\abs{-K_V}$ that is a reduced cycle of rational curves $D = \sum_{i=1}^r D_i$, with $i$ taken mod $r$, together with an orientation (@def:free-module-orientation) of $D$.
+For $r\geq 2$, each $D_i$ is a smooth rational curve, and $D_i$ meets (@def:replete-full-meet) $D_{i\pm1}$ transversally.
+For $r = 1$, $D = D_1$ is an irreducible nodal (@def:nodal-enriques-surface) curve.
 The integer $r = r(D)$ is the **length** of $D$.
 The pair is **labeled** if the components of $D$ are indexed as above [@Fri15, Sec. 1].
 :::
@@ -30,7 +30,7 @@ $$
 
 Let $(V, D)$ be an anticanonical pair (@def:anticanonical-pair) whose divisor $D$ is a cycle of rational curves.
 
-- **Corner blowups**, at nodes of $D$ (points where two components of $D$ meet), preserve the charge.
+- **Corner blowups**, at nodes of $D$ (points where two components of $D$ meet (@def:replete-full-meet)), preserve the charge (@def:charge).
 
 - **Interior blowups**, at smooth points of $D$ (points lying on a single component of $D$), increase the charge by $1$
 
@@ -44,9 +44,9 @@ A *toric model* of an anticanonical pair (@def:anticanonical-pair) $(V,D)$ is a 
 $$
 (V,D) \longleftarrow (V',D') \longrightarrow (\bar V,\bar D),
 $$
-where $(\bar V,\bar D)$ is a smooth toric surface with its toric boundary, $V'\to V$ is a sequence of corner blowups at nodes of $D$, and $V'\to\bar V$ is the contraction of the exceptional curves of a sequence of interior blowups at smooth points of the boundary. The boundary on the corner blowup is the reduced inverse image; on an interior blowup it is the strict transform [@AE22, §6.1].
+where $(\bar V,\bar D)$ is a smooth toric surface with its toric boundary, $V'\to V$ is a sequence of corner blowups at nodes of $D$, and $V'\to\bar V$ is the contraction of the exceptional curves of a sequence of interior blowups at smooth points of the boundary. The boundary on the corner blowup is the reduced inverse image; on an interior blowup it is the strict (@def:monoidal-category) transform [@AE22, §6.1].
 
-The diagram gives a birational map $V\dashrightarrow\bar V$ through their common model $V'$. The intermediate $V'$ need not be toric: its map to the toric surface contracts curves created by interior blowups. Thus “toric model” names the toric target of the diagram, rather than every surface in it [@AE22, §6.1].
+The diagram gives a birational map $V\dashrightarrow\bar V$ through their common model $V'$. The intermediate $V'$ need not be toric: its map to the toric surface contracts curves created by interior blowups. Thus “toric model” names the toric target (@def:globular-boundary) of the diagram, rather than every surface in it [@AE22, §6.1].
 :::
 
 ::: {.theorem #thm:anticanonical-toric-model title="Existence of toric models"}
@@ -67,12 +67,12 @@ Nine interior blowups of the toric boundary of $\PP^1\times\PP^1$; the exception
 
 ::: {.proposition #prop:charge-counts-interior-blowups title="Charge counts interior blowups"}
 
-For any toric model of $(V,D)$, the number of interior blowups is $Q(V,D)$.
+For any toric model (@def:toric-model-anticanonical) of $(V,D)$, the number of interior blowups is $Q(V,D)$.
 :::
 
 ::: {.proof}
 
-The toric pair $(\bar V,\bar D)$ has charge $0$ by @prop:charge-under-blowup. Each interior blowup raises charge by $1$, and each corner blowup preserves it. Thus the charge of $(V',D')$ is the number of interior blowups and equals the charge of $(V,D)$ [@AE22, §6.1].
+The toric pair $(\bar V,\bar D)$ has charge (@def:charge) $0$ by @prop:charge-under-blowup. Each interior blowup raises charge by $1$, and each corner blowup preserves it. Thus the charge of $(V',D')$ is the number of interior blowups and equals the charge of $(V,D)$ [@AE22, §6.1].
 :::
 
 ::: {.example #ex:nine-interior-blowups title="Nine interior blowups of $\PP^1\times\PP^1$"}
@@ -82,13 +82,13 @@ Let $D$ be the four toric boundary curves on $\PP^1\times\PP^1$. Blow up nine di
 
 ::: {.theorem #thm:friedman-miranda-charge title="Friedman--Miranda charge theorem"}
 
-Let $\mcx \to (C, 0)$ be a Type III Kulikov degeneration of $K3$ surfaces with central fiber
+Let $\mcx \to (C, 0)$ be a Type III Kulikov degeneration of $K3$ surfaces with central fiber (@def:fiber-cofiber)
 $$
 \mcx_0 = \Union_{i=1}^n V_i
 .
 $$
 Let $\tilde V_i$ be the normalization of $V_i$, and let $\tilde D_i$ be the inverse image in $\tilde V_i$ of the double curve of $\mcx_0$ on $V_i$, so that each $(\tilde V_i, \tilde D_i)$ is an anticanonical pair (@def:anticanonical-pair).
-Then the sum of the charges of all components is exactly $24$:
+Then the sum of the charges (@def:charge) of all components is exactly $24$:
 $$
 \Sum_{i=1}^n Q(\tilde V_i, \tilde D_i) = 24
 $$
@@ -118,7 +118,7 @@ $$
 With discrepancies as in @def:discrepancy, write $D = \Sum_i a_i D_i$ with distinct prime divisors $D_i$.
 The pair $(X, D)$ is
 
-- **terminal** if $\operatorname{discrep}(X, D) > 0$;
+- **terminal (@def:terminal-coble-surface)** if $\operatorname{discrep}(X, D) > 0$;
 
 - **canonical** if $\operatorname{discrep}(X, D) \geq 0$;
 
@@ -134,7 +134,7 @@ The pair $(X, D)$ is
 ::: {.definition #def:divisorial-log-terminal title="Divisorial log terminal pairs" defines="divisorial log terminal (dlt) pair"}
 
 Let $X$ be a normal variety and let $D = \Sum_i a_i D_i$ be a sum of distinct prime divisors with $0\leq a_i\leq1$, such that $m(K_X + D)$ is Cartier for some $m > 0$.
-The pair $(X, D)$ is **divisorial log terminal (dlt)** if there is a closed subset $Z\subset X$ such that:
+The pair $(X, D)$ is **divisorial log terminal (@def:terminal-coble-surface) (dlt)** if there is a closed (@def:closed-monoidal) subset $Z\subset X$ such that:
 
 1. $X\sm Z$ is smooth and $D|_{X\sm Z}$ is an snc divisor;
 
@@ -145,7 +145,7 @@ The pair $(X, D)$ is **divisorial log terminal (dlt)** if there is a closed subs
 
 ::: {.definition #def:demi-normal-slc defines="demi-normal scheme; semi-log canonical (slc) pair"}
 
-- A scheme $X$ is **demi-normal** if it satisfies Serre's condition $S_2$ and each of its codimension-$1$ points is a regular point or a node [@Kol23a, Def. 11.10].
+- A scheme (@def:scheme-as-lrs) $X$ is **demi-normal** if it satisfies Serre's condition $S_2$ and each of its codimension-$1$ points is a regular (@def:regular-ternary-lattice) point or a node [@Kol23a, Def. 11.10].
 
 - Let $X$ be demi-normal, with normalization $\pi\colon\bar X\to X$ and conductors $\Sigma\subset X$ and $\bar\Sigma\subset\bar X$.
   Let $D$ be an effective $\RR$-divisor on $X$ whose support contains no irreducible component of $\Sigma$, and let $\bar D$ be the divisorial part of $\pi^{-1}(D)$.

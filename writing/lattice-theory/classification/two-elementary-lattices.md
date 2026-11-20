@@ -2,8 +2,8 @@
 
 ::: {.definition #def:two-elementary-isotropic-types title="Primitive isotropic-vector types" defines="$j_L$; $r_L$; characteristic; ordinary; odd; even ordinary; even characteristic"}
 
-Let $L$ be an even $2$-elementary lattice.
-For every primitive vector, $\div_L(v)\in\theset{1,2}$.
+Let $L$ be an even (@def:form-axioms) $2$-elementary lattice.
+For every primitive (@def:primitive-embedding) vector, $\div_L(v)\in\theset{1,2}$.
 Since multiplication by $2$ annihilates $A_L^\sharp$, one has $N_b(L)\mid2$.
 Hence the bilinear value module admits the canonical monomorphism
 $$
@@ -42,12 +42,12 @@ For $e\in L^{\mathrm{prim}}[0]$, define its type by
 
 ::: {.theorem #thm:two-elementary-classification title="Nikulin's classification of indefinite even $2$-elementary lattices"}
 
-Let $L$ be an indefinite even $2$-elementary lattice.
+Let $L$ be an indefinite (@def:definiteness) even $2$-elementary lattice.
 Set $r\definedas\rank_\bZ L$ and $a\definedas\dim_{\bF_2}(A_L^\sharp)$.
 Let $j_{q,L}\colon W_q(L)\injects\bQ/2\bZ$ be the coefficient inclusion of @def:discriminant. Define $\delta(L)=0$ when the image of the composite $j_{q,L}\circ q_L$ lies in the canonical submodule $\bZ/2\bZ\injects\bQ/2\bZ$, and define $\delta(L)=1$ otherwise.
 Equivalently, $\delta(L)=0$ when the value submodule $\operatorname{Val}(q_L)$ of @def:form-axioms factors through $\bZ/2\bZ\injects\bQ/2\bZ$.
 
-The integral isometry class of $L$ is determined by its signature $(p,q)$, generator length $a$, and coparity $\delta(L)$. Conversely, for integers $p,q\ge1$, $a\ge0$, and $\delta\in\{0,1\}$, an indefinite even $2$-elementary lattice with these invariants exists exactly when
+The integral isometry class of $L$ is determined by its signature (@def:signature) $(p,q)$, generator length (@def:anticanonical-pair) $a$, and coparity (@def:p-elementary) $\delta(L)$. Conversely, for integers $p,q\ge1$, $a\ge0$, and $\delta\in\{0,1\}$, an indefinite even $2$-elementary lattice with these invariants exists exactly when
 $$
 \begin{aligned}
 &a\le p+q,\qquad p+q+a\equiv0\pmod2,\\
@@ -67,7 +67,7 @@ This is [@Nik80, Thm. 3.6.2].
 :::
 
 ::: {.theorem #thm:two-elementary-surjectivity title="Nikulin's surjectivity theorem"}
-Let $L$ be an even indefinite nondegenerate $2$-elementary lattice. Its quadratic discriminant representation is surjective; thus its discriminant kernel fits into the exact sequence of groups
+Let $L$ be an even (@def:form-axioms) indefinite (@def:definiteness) nondegenerate (@def:polarization) $2$-elementary lattice. Its quadratic discriminant representation (@def:discriminant-rep) is surjective; thus its discriminant kernel (@def:mm-integral-spinor-data) fits into the exact (@def:exact-complex) sequence of groups (@def:group)
 $$
 1\too\widetilde\Orth(L)\too\Orth(L)
 \xrightarrow{\rho_{L,q}}\Orth(A_{L,q})\too1.
@@ -81,9 +81,9 @@ This is [@Nik80, Thm. 3.6.3].
 :::
 
 ::: {.corollary #cor:twoelementary-complement-lifting title="Extension of isometries across a $2$-elementary complement"}
-Let $L$ be even unimodular, let $\iota_S\colon S\injects L$ be a primitive embedding of nondegenerate lattices, and let $T=S^{\perp_L}$ be indefinite and $2$-elementary. Every $\varphi\in\Orth(S)$ extends to an isometry of $L$ preserving the embedded sublattice $S$.
+Let $L$ be even unimodular, let $\iota_S\colon S\injects L$ be a primitive embedding of nondegenerate (@def:polarization) lattices, and let $T=S^{\perp_L}$ be indefinite (@def:definiteness) and $2$-elementary. Every $\varphi\in\Orth(S)$ extends to an isometry of $L$ preserving the embedded sublattice $S$.
 
-Writing $\Stab_{\Orth(L)}(S)$ for the stabilizer of $\iota_S(S)$, the restriction and extension morphisms give the exact group sequence
+Writing $\Stab_{\Orth(L)}(S)$ for the stabilizer of $\iota_S(S)$, the restriction and extension morphisms give the exact group (@def:group) sequence
 $$
 1\too\widetilde\Orth(T)
 \longrightarrow\Stab_{\Orth(L)}(S)
@@ -96,20 +96,20 @@ Let $\gamma_q\colon A_{S,q}\xrightarrow{\sim}A_{T,q}(-1)$ be the discriminant an
 :::
 
 ::: {.corollary #cor:twoelementary-mm-obstructions title="Vanishing of the Miranda–Morrison obstruction"}
-For an even indefinite $2$-elementary lattice $L$ of rank at least $3$, the Miranda–Morrison obstruction and genus groups of @def:mm-obstruction-group and @def:mm-genus-group are trivial:
+For an even indefinite (@def:definiteness) $2$-elementary lattice $L$ of rank at least $3$, the Miranda–Morrison obstruction and genus groups of @def:mm-obstruction-group and @def:mm-genus-group are trivial:
 $$
 \operatorname{MM}(L)=0,\qquad g(L)=1.
 $$
 :::
 
 ::: {.proof}
-Nikulin's indefinite classification @thm:two-elementary-classification makes the genus of $L$ a single integral isometry class, so $g(L)=1$. By @thm:two-elementary-surjectivity, the discriminant representation is onto. Exactness of the full Miranda–Morrison sequence of @thm:miranda-morrison then gives $\operatorname{MM}(L)=0$.
+Nikulin's indefinite classification @thm:two-elementary-classification makes the genus of $L$ a single integral isometry class, so $g(L)=1$. By @thm:two-elementary-surjectivity, the discriminant representation (@def:representable-presheaf) is onto. Exactness of the full Miranda–Morrison sequence of @thm:miranda-morrison then gives $\operatorname{MM}(L)=0$.
 :::
 
 
 ::: {.theorem #thm:isotropic-trichotomy title="Primitive isotropic vectors in an indefinite $2$-elementary lattice"}
 
-Let $S$ be an even indefinite $2$-elementary lattice of signature $(n_+,n_-)$ with invariants $(r,a,\delta)$, and let $v\in S^{\mathrm{prim}}[0]$.
+Let $S$ be an even indefinite (@def:definiteness) $2$-elementary lattice of signature (@def:signature) $(n_+,n_-)$ with invariants $(r,a,\delta)$, and let $v\in S^{\mathrm{prim}}[0]$.
 Let $\kappa_v\colon v^{\perp_S}\injects S$ be the right orthogonal-complement kernel of $\iota_v\colon\generators{v}_{\bZ}\injects S$ from @def:orthogonal-complement. By @prop:primitive-isotropic-complement its nondegenerate reduction is $\qty{v^{\perp_S}}^{\mathrm{nd}}$.
 
 Then exactly one of the following holds [@AE22, Prop. 5.5]:
@@ -120,11 +120,11 @@ Then exactly one of the following holds [@AE22, Prop. 5.5]:
 
 3. If $v$ is even characteristic, $S\isoto\latI_{1,1}(2)\perp\qty{v^{\perp_S}}^{\mathrm{nd}}$, necessarily $\delta=1$, and $\qty{v^{\perp_S}}^{\mathrm{nd}}$ has invariants $(r-2,a-2,0)$.
 
-Conversely, a primitive isotropic vector of a given one of the three types exists in $S$ if and only if an even $2$-elementary lattice with the corresponding invariants and signature $(n_+-1,n_--1)$ exists [@AE22, Prop. 5.5].
+Conversely, a primitive (@def:primitive-embedding) isotropic vector of a given one of the three types exists in $S$ if and only if an even $2$-elementary lattice with the corresponding invariants and signature $(n_+-1,n_--1)$ exists [@AE22, Prop. 5.5].
 Two primitive isotropic vectors $v_1,v_2$ of the same type lie in one $\Orth(S)$-orbit if and only if $\qty{v_1^{\perp_S}}^{\mathrm{nd}}\cong\qty{v_2^{\perp_S}}^{\mathrm{nd}}$.
 If $n_+\geq2$ and $n_-\geq2$, the vectors of each type form a single $\Orth(S)$-orbit.
 
-In every case $\qty{v^{\perp_S}}^{\mathrm{nd}}$ is even of rank $r-2$ and signature $(n_+-1,n_--1)$, in particular negative definite when $S$ is hyperbolic.
+In every case $\qty{v^{\perp_S}}^{\mathrm{nd}}$ is even of rank $r-2$ and signature $(n_+-1,n_--1)$, in particular negative definite (@def:definiteness) when $S$ is hyperbolic (@def:definiteness).
 :::
 
 ::: {.proof}
@@ -132,6 +132,6 @@ In every case $\qty{v^{\perp_S}}^{\mathrm{nd}}$ is even of rank $r-2$ and signat
 The splittings and the existence statement are [@AE22, Prop. 5.5].
 If $g\in\Orth(S)$ maps $v_1$ to $v_2$, then $g$ maps $v_1^{\perp_S}$ onto $v_2^{\perp_S}$ and $\generators{v_1}_{\bZ}$ onto $\generators{v_2}_{\bZ}$, so it induces an isometry of the nondegenerate reductions.
 Conversely, write $S=H_i\perp K_i$ with $v_i\in H_i$ and $K_i\cong\qty{v_i^{\perp_S}}^{\mathrm{nd}}$, where $H_1\cong H_2$ is $U$, $U(2)$ or $\latI_{1,1}(2)$ according to the common type.
-The primitive isotropic vectors of each of these three rank-$2$ lattices form one orbit under its orthogonal group, so an isometry $H_1\to H_2$ mapping $v_1$ to $v_2$ and an isometry $K_1\to K_2$ combine to an element of $\Orth(S)$ mapping $v_1$ to $v_2$ [@AE22, proof of Prop. 5.5].
+The primitive isotropic vectors of each of these three rank-$2$ lattices form one orbit under its orthogonal group (@def:group), so an isometry $H_1\to H_2$ mapping $v_1$ to $v_2$ and an isometry $K_1\to K_2$ combine to an element of $\Orth(S)$ mapping $v_1$ to $v_2$ [@AE22, proof of Prop. 5.5].
 If $n_+\geq2$ and $n_-\geq2$, the two reductions are indefinite even $2$-elementary lattices with the same signature and invariants, so they are isometric by @thm:two-elementary-classification.
 :::

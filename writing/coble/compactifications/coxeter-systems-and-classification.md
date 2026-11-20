@@ -51,13 +51,13 @@ For $m=3$, the roots of $A_2$ meet at angle $2\pi/3$, while their perpendicular 
 ::: {.definition #def:coxeter-gram-form title="The Gram form of a Coxeter matrix" defines="Gram form; $G(M)$"}
 
 Let $M$ be a Coxeter matrix on $S$.
-The **Gram form** of $M$ is the symmetric bilinear form $G(M)$ on the real vector space $\RR^S$ with basis $\theset{\alpha_s}_{s\in S}$ determined by
+The **Gram form** of $M$ is the symmetric bilinear form $G(M)$ on the real vector space $\RR^S$ with basis (@def:based-module) $\theset{\alpha_s}_{s\in S}$ determined by
 $$
 G(M)_{st} \definedas \beta(\alpha_s,\alpha_t) = 2\cos\!\left(\frac{\pi}{m_{st}}\right)
 ,
 $$
-read on the diagonal as $G(M)_{ss} = 2\cos\pi = -2$, and as $G(M)_{st} = 2$ when $m_{st} = \infty$.
-Each $\alpha_s$ has norm $-2$ and is therefore a short root in the sense of @def:2elementary-roots; the reflections $s_{\alpha_s}$ of @def:reflection preserve $G(M)$, and $s\mapsto s_{\alpha_s}$ extends to an injective homomorphism from the Coxeter group $W(M)$ of @def:coxeter-group to $\Orth(\RR^S, G(M))$ [@Bou08, Ch. V §4 no. 3, Prop. 3, and no. 4, Cor. 2 of Th. 1; @Hum90, §5.3, Proposition, and §5.4, Corollary]. These sources use the form $B_M(\alpha_s,\alpha_t)=-\cos(\pi/m_{st})$, so $G(M)=-2B_M$, and their reflection $\sigma_s(x)=x-2B_M(\alpha_s,x)\alpha_s$ is the reflection $s_{\alpha_s}(x)=x+\beta(x,\alpha_s)\alpha_s$.
+read on the diagonal (@def:polarization-functors) as $G(M)_{ss} = 2\cos\pi = -2$, and as $G(M)_{st} = 2$ when $m_{st} = \infty$.
+Each $\alpha_s$ has norm (@def:lattice-basic-invariants) $-2$ and is therefore a short root in the sense of @def:2elementary-roots; the reflections $s_{\alpha_s}$ of @def:reflection preserve $G(M)$, and $s\mapsto s_{\alpha_s}$ extends to an injective homomorphism from the Coxeter group $W(M)$ of @def:coxeter-group to $\Orth(\RR^S, G(M))$ [@Bou08, Ch. V §4 no. 3, Prop. 3, and no. 4, Cor. 2 of Th. 1; @Hum90, §5.3, Proposition, and §5.4, Corollary]. These sources (@def:globular-boundary) use the form $B_M(\alpha_s,\alpha_t)=-\cos(\pi/m_{st})$, so $G(M)=-2B_M$, and their reflection $\sigma_s(x)=x-2B_M(\alpha_s,x)\alpha_s$ is the reflection $s_{\alpha_s}(x)=x+\beta(x,\alpha_s)\alpha_s$.
 :::
 
 ::: {.proposition #prop:coxeter-normalized-pairing title="Normalized pairings of a Coxeter matrix"}
@@ -93,7 +93,7 @@ $$
 ::: {#not:schlafli-matrix-normalization .notation title="The opposite normalization" defines="Schläfli matrix; $C$"}
 
 Much of the reflection-group literature normalizes simple roots to $\alpha_s^2 = +2$ and attaches to $M$ the **Schläfli matrix** $C_{st} = -2\cos(\pi/m_{st})$, with $C_{ss} = 2$.
-Then $C = -G(M)$, and the definiteness conditions of @def:coxeter-system-type are read with the opposite sign: a spherical system has $C$ positive definite.
+Then $C = -G(M)$, and the definiteness conditions of @def:coxeter-system-type are read with the opposite sign: a spherical system has $C$ positive definite (@def:definiteness).
 :::
 
 ## Classification by definiteness
@@ -103,29 +103,29 @@ Then $C = -G(M)$, and the definiteness conditions of @def:coxeter-system-type ar
 Let $(W,S)$ be an irreducible Coxeter system (@def:coxeter-group) of rank $n$ with Coxeter matrix (@def:coxeter-matrix) $M$ and Gram form (@def:coxeter-gram-form) $G = G(M)$.
 Say that $(W,S)$, or $M$, is
 
-- **spherical** if $G$ is negative definite;
+- **spherical** if $G$ is negative definite (@def:definiteness);
 
 - **euclidean** if $G$ is negative semidefinite and $\ker G$ has rank $1$;
 
-- **hyperbolic** if $G$ is nondegenerate of signature $(1, n-1)$.
+- **hyperbolic (@def:definiteness)** if $G$ is nondegenerate (@def:polarization) of signature (@def:signature) $(1, n-1)$.
 
 A Gram form of signature $(p,q)$ with $p\geq 2$ falls under none of the three.
 
-For subdiagrams, @def:elliptic-subdiagram names the corresponding conditions **elliptic**, **parabolic**, and **hyperbolic**. An elliptic subdiagram is one all of whose components are spherical; a parabolic subdiagram on $k$ vertices with $c$ connected components has kernel of rank $c$, hence rank $k-c$.
+For subdiagrams (@def:coxeter-subdiagram), @def:elliptic-subdiagram names the corresponding conditions **elliptic**, **parabolic (@def:definiteness)**, and **hyperbolic**. An elliptic subdiagram is one all of whose components are spherical; a parabolic subdiagram on $k$ vertices with $c$ connected components has kernel (@def:kernel-cokernel) of rank $c$, hence rank $k-c$.
 :::
 
 ::: {.proposition #prop:coxeter-type-signature title="The three types by signature"}
 
 Let $(W,S)$ be an irreducible Coxeter system (@def:coxeter-group) of rank $n$ with Gram form (@def:coxeter-gram-form) $G$, and let $\operatorname{sig}(\RR^S, G) = (p,q,r)$ be the signature of @def:signature.
-Then $(W,S)$ is spherical if and only if $(p,q,r) = (0,n,0)$, euclidean if and only if $(p,q,r) = (0,n-1,1)$, and hyperbolic if and only if $(p,q,r) = (1,n-1,0)$.
+Then $(W,S)$ is spherical if and only if $(p,q,r) = (0,n,0)$, euclidean if and only if $(p,q,r) = (0,n-1,1)$, and hyperbolic (@def:definiteness) if and only if $(p,q,r) = (1,n-1,0)$.
 :::
 
 ::: {.proof}
 
 By @thm:sylvester, $p+q+r = n$.
-The form $G$ is negative definite exactly when $q = n$.
+The form $G$ is negative definite (@def:definiteness) exactly when $q = n$.
 It is negative semidefinite exactly when $p = 0$, and then $\ker G$ has rank $1$ exactly when $r = 1$, that is $q = n-1$.
-It is nondegenerate of signature $(1,n-1)$ exactly when $r = 0$, $p = 1$ and $q = n-1$.
+It is nondegenerate (@def:polarization) of signature $(1,n-1)$ exactly when $r = 0$, $p = 1$ and $q = n-1$.
 :::
 
 ::: {.theorem #thm:coxeter-type-and-geometry title="The geometry of the three types"}
@@ -133,11 +133,11 @@ It is nondegenerate of signature $(1,n-1)$ exactly when $r = 0$, $p = 1$ and $q 
 Let $(W,S)$ be an irreducible Coxeter system (@def:coxeter-group) of rank $n$ with Gram form (@def:coxeter-gram-form) $G$.
 
 1. $(W,S)$ is spherical if and only if $W$ is finite.
-   In that case $W$ acts on the unit sphere of the negative definite space $(\RR^S, -G)$ as a finite reflection group whose fundamental domain is a spherical simplex [@Bou08, Ch. V §4 no. 8, Th. 2 and Prop. 9].
+   In that case $W$ acts on the unit sphere (@def:spheres) of the negative definite (@def:definiteness) space $(\RR^S, -G)$ as a finite reflection group (@def:group) whose fundamental domain is a spherical simplex [@Bou08, Ch. V §4 no. 8, Th. 2 and Prop. 9].
 
 2. $(W,S)$ is euclidean if and only if $W$ is infinite and admits a faithful action on a euclidean space $\EE^{\,n-1}$ as a discrete group generated by $n$ affine reflections, with fundamental domain a euclidean simplex [@Bou08, Ch. V §4 no. 9, Lemma 2 and Props. 10 and 11].
 
-3. If $(W,S)$ is hyperbolic, then $\RR^S$ with the form $G$ is a model of hyperbolic $(n-1)$-space in the sense of @def:hyperbolic-model, and the reflections $s_{\alpha_s}$ generate a discrete subgroup of its isometry group whose fundamental domain is the Coxeter polytope
+3. If $(W,S)$ is hyperbolic (@def:definiteness), then $\RR^S$ with the form $G$ is a model of hyperbolic $(n-1)$-space in the sense of @def:hyperbolic-model, and the reflections $s_{\alpha_s}$ generate a discrete subgroup of its isometry group whose fundamental domain is the Coxeter polytope
    $$
    P \definedas \theset{\, [v] \in \HH^{\,n-1} \mid \beta(v,\alpha_s)\geq 0 \text{ for all } s\in S \,}
    $$
@@ -146,11 +146,11 @@ Let $(W,S)$ be an irreducible Coxeter system (@def:coxeter-group) of rank $n$ wi
 
 ::: {.proof}
 
-All three are [@Hum90, §§6.4, 6.5 and 6.8] and the results of Bourbaki cited in the statement, with $G = -2B$ for $B$ the sources' invariant form, so that definite for $B$ is the corresponding definite sign for $G$.
+All three are [@Hum90, §§6.4, 6.5 and 6.8] and the results of Bourbaki cited in the statement, with $G = -2B$ for $B$ the sources (@def:globular-boundary)' invariant form, so that definite (@def:definiteness) for $B$ is the corresponding definite sign for $G$.
 
-In (1) the sphere of the sources is that of $(\RR^S,2B)$, which is $(\RR^S,-G)$; rescaling a metric by a positive constant preserves the sphere, the reflections and their fundamental domain. The closed cone $\overline{C}_0$ on which every $B(\alpha_s,-)$ is nonnegative is a fundamental domain [@Bou08, Ch. V §4 no. 8, Prop. 9]. It is a simplicial cone because the $\alpha_s$ form a basis, so it meets the sphere in a spherical simplex.
+In (1) the sphere of the sources is that of $(\RR^S,2B)$, which is $(\RR^S,-G)$; rescaling a metric by a positive constant preserves the sphere, the reflections and their fundamental domain. The closed (@def:closed-monoidal) cone $\overline{C}_0$ on which every $B(\alpha_s,-)$ is nonnegative is a fundamental domain [@Bou08, Ch. V §4 no. 8, Prop. 9]. It is a simplicial cone because the $\alpha_s$ form a basis (@def:based-module), so it meets (@def:replete-full-meet) the sphere in a spherical simplex.
 In (2) the euclidean space is the affine hyperplane $A$ of [@Bou08, Ch. V §4 no. 9, Prop. 10]. Its translation space is dual to $\RR^S/\ker G$, and $G$ identifies it with $\RR^S/\ker G$, of dimension $n-1$. The affine reflections are the restrictions of the contragredient reflections of the $s_{\alpha_s}$ to $A$, and discreteness is properness of the action.
-In (3) the hyperboloid inside the nondegenerate space $(\RR^S,G)$ is the model of $\HH^{n-1}$ of @def:hyperbolic-model, and $P$ is the chamber of @def:coxeter-polytope.
+In (3) the hyperboloid inside the nondegenerate (@def:polarization) space $(\RR^S,G)$ is the model of $\HH^{n-1}$ of @def:hyperbolic-model, and $P$ is the chamber (@def:coble-polarization-classes) of @def:coxeter-polytope.
 :::
 
 ## Subdiagrams and the inheritance of signature
@@ -175,15 +175,15 @@ The subdiagram $\Sigma_I$ is parabolic when each of its connected components is 
 
 ::: {.proposition #prop:parabolic-subdiagram-product title="The Coxeter system of a parabolic subdiagram"}
 
-Let $\Sigma_I$ be a parabolic subdiagram with connected components $\Sigma_{I_1},\dots,\Sigma_{I_r}$.
-Then $W_I$ is the direct product of the standard parabolic subgroups $W_{I_1},\dots,W_{I_r}$, and each $(W_{I_j}, I_j)$ is an irreducible euclidean Coxeter system (@def:coxeter-group).
+Let $\Sigma_I$ be a parabolic subdiagram (@def:elliptic-subdiagram) with connected components $\Sigma_{I_1},\dots,\Sigma_{I_r}$.
+Then $W_I$ is the direct product of the standard parabolic subgroups $W_{I_1},\dots,W_{I_r}$, and each $(W_{I_j}, I_j)$ is an irreducible euclidean Coxeter system (@def:coxeter-system-type) (@def:coxeter-group).
 :::
 
 ::: {.proof}
 
 By @def:coxeter-subdiagram, $(W_I, I)$ is a Coxeter system with Coxeter diagram (@def:coxeter-matrix) $\Sigma_I$.
 For any Coxeter system, $W$ is the direct product of the standard parabolic subgroups of the connected components of its Coxeter diagram, and each of these is an irreducible Coxeter system [@Hum90, §6.1, Proposition].
-Each $\Sigma_{I_j}$ is euclidean because $\Sigma_I$ is parabolic.
+Each $\Sigma_{I_j}$ is euclidean because $\Sigma_I$ is parabolic (@def:definiteness).
 :::
 
 ::: {.proposition #prop:signature-under-restriction title="Restriction cannot increase the positive index"}
@@ -198,7 +198,7 @@ and the same inequalities hold for $n_-$.
 :::
 
 ::: {.proof}
-The integer $n_+(\beta)$ is the largest dimension of a subspace of $V$ on which $\beta$ is positive definite.
+The integer $n_+(\beta)$ is the largest dimension of a subspace of $V$ on which $\beta$ is positive definite (@def:definiteness).
 A subspace of $V'$ on which $\restrictionof{\beta}{V'}$ is positive definite is such a subspace of $V$, which gives the upper bound.
 If $P\leq V$ is positive definite of dimension $n_+(\beta)$, then $\beta$ is positive definite on $P\intersect V'$, and $\dim(P\intersect V')\geq n_+(\beta) - c$, which gives the lower bound.
 Applying both to $-\beta$ gives the statement for $n_-$.
@@ -209,13 +209,13 @@ Applying both to $-\beta$ gives the statement for $n_-$.
 Let $\Sigma$ be a Coxeter diagram (@def:coxeter-matrix) on $S$ and $J\iscontainedin I\iscontainedin S$.
 
 1. If $\Sigma_I$ is elliptic then so is $\Sigma_J$.
-   Equivalently, a subdiagram that is not elliptic is contained in no elliptic subdiagram.
+   Equivalently, a subdiagram (@def:coxeter-subdiagram) that is not elliptic is contained in no elliptic subdiagram (@def:elliptic-subdiagram).
 
-2. If the Gram form (@def:coxeter-gram-form) of $\Sigma$ has exactly one positive square --- in particular if $\Sigma$ is hyperbolic --- then the Gram form of every subdiagram of $\Sigma$ has at most one positive square, so every subdiagram is negative semidefinite or of signature $(1,q)$ with a possibly nontrivial kernel.
+2. If the Gram form (@def:coxeter-gram-form) of $\Sigma$ has exactly one positive square --- in particular if $\Sigma$ is hyperbolic (@def:definiteness) --- then the Gram form of every subdiagram of $\Sigma$ has at most one positive square, so every subdiagram is negative semidefinite or of signature (@def:signature) $(1,q)$ with a possibly nontrivial kernel (@def:kernel-cokernel).
 :::
 
 ::: {.proof}
-For (1), the restriction of a negative definite form to a subspace is negative definite.
+For (1), the restriction of a negative definite (@def:definiteness) form to a subspace is negative definite.
 For (2), apply the upper bound of @prop:signature-under-restriction with $n_+(G) = 1$.
 :::
 
@@ -240,7 +240,7 @@ and diagrams from distinct entries of this list are not isomorphic [@Bou08, Ch. 
 
 ::: {.proof}
 
-By definition, $(W,S)$ is spherical exactly when $B=-\tfrac12G$ is positive definite. The connected Coxeter graphs with $B$ positive definite are those of [@Hum90, §2.4, Figure 1, and §2.7, Theorem]. In [@Bou08, Ch. VI §4 no. 1, Ths. 1 and 2] the same list is the list of connected Coxeter graphs with $W$ finite, and $W$ is finite exactly when $B$ is positive definite [@Bou08, Ch. V §4 no. 8, Th. 2].
+By definition, $(W,S)$ is spherical exactly when $B=-\tfrac12G$ is positive definite (@def:definiteness). The connected Coxeter graphs (@def:coxeter-form) with $B$ positive definite are those of [@Hum90, §2.4, Figure 1, and §2.7, Theorem]. In [@Bou08, Ch. VI §4 no. 1, Ths. 1 and 2] the same list is the list of connected Coxeter graphs with $W$ finite, and $W$ is finite exactly when $B$ is positive definite [@Bou08, Ch. V §4 no. 8, Th. 2].
 
 The cited statements classify the connected Coxeter graphs whose form $B$ is positive definite, and $G = -2B$.
 :::
@@ -252,7 +252,7 @@ $I_2(p)$ denotes the rank-two diagram with $m_{12} = p$, so that $I_2(3)\cong A_
 
 ::: {.proposition #prop:bn-cn-coxeter-system title="$B_n$ and $C_n$ have one Coxeter system"}
 
-The root systems $B_n$ and $C_n$ of @def:root-system-Bn-Cn are distinct crystallographic root systems with the same Weyl group, the Coxeter group (@def:coxeter-group) of type $B_n$ [@Hum90, §2.9].
+The root systems $B_n$ and $C_n$ of @def:root-system-Bn-Cn are distinct crystallographic root systems with the same Weyl group (@def:weyl-group), the Coxeter group (@def:coxeter-group) of type $B_n$ [@Hum90, §2.9].
 :::
 
 ::: {.proof}
@@ -280,7 +280,7 @@ The diagram $\tilde A_1$ has two vertices joined by a bond with $m_{12} = \infty
 
 ::: {.proof}
 
-This is the classification of the connected Coxeter graphs with $B$ positive semidefinite and degenerate [@Bou08, Ch. VI §4 no. 2, Th. 4; @Hum90, §2.5, Figure 2, §2.7, Theorem, and §6.5]. The graph that Bourbaki calls $\tilde B_2$ is $\tilde C_2$ here. For a connected graph with $B$ positive semidefinite and degenerate, $\ker B$ has rank $1$ [@Hum90, §2.6, Proposition (a)], so these are the euclidean diagrams.
+This is the classification of the connected Coxeter graphs (@def:coxeter-form) with $B$ positive semidefinite (@def:calculus-real-positivity) and degenerate (@def:definiteness) [@Bou08, Ch. VI §4 no. 2, Th. 4; @Hum90, §2.5, Figure 2, §2.7, Theorem, and §6.5]. The graph that Bourbaki calls $\tilde B_2$ is $\tilde C_2$ here. For a connected graph with $B$ positive semidefinite and degenerate, $\ker B$ has rank $1$ [@Hum90, §2.6, Proposition (a)], so these are the euclidean diagrams.
 :::
 
 ::: {.proposition #prop:euclidean-radical title="The radical of a euclidean diagram"}
@@ -297,7 +297,7 @@ unique up to scalar, and $\delta^2 = 0$ [@Bou08, Ch. V §4 no. 9, Lemma 2; @Hum9
 
 ::: {.proof}
 
-That $\ker G[I,I]$ is one-dimensional and spanned by a vector of strictly positive coordinates is [@Bou08, Ch. V §4 no. 9, Lemma 2] and [@Hum90, §2.6, Proposition (a)]; the cited statement is for the positive semidefinite form $B$, and $G = -2B$ has the same kernel.
+That $\ker G[I,I]$ is one-dimensional and spanned by a vector of strictly positive coordinates is [@Bou08, Ch. V §4 no. 9, Lemma 2] and [@Hum90, §2.6, Proposition (a)]; the cited statement is for the positive semidefinite (@def:calculus-real-positivity) form $B$, and $G = -2B$ has the same kernel (@def:kernel-cokernel).
 Uniqueness up to scalar is the one-dimensionality, and $\delta^2 = \beta(\delta,\delta) = 0$ because $\delta$ lies in the kernel of the form.
 :::
 
@@ -323,12 +323,12 @@ A Coxeter matrix (@def:coxeter-matrix) $M$ on $S$ is **crystallographic** if $m_
 
 Let $M$ be a Coxeter matrix on $S$, and let $W(M)$ act on $\RR^S$ by the reflections $s_{\alpha_s}$ of @def:coxeter-gram-form.
 If the Coxeter diagram $\Sigma(M)$ contains no circuit, then $W(M)$ preserves a lattice of full rank in $\RR^S$ if and only if $M$ is crystallographic.
-In general, $W(M)$ preserves a lattice of full rank in $\RR^S$ if and only if $M$ is crystallographic and every circuit in $\Sigma(M)$ has an even number of edges labelled $4$ and an even number of edges labelled $6$ [@Hum90, §6.6, Proposition].
+In general, $W(M)$ preserves a lattice of full rank in $\RR^S$ if and only if $M$ is crystallographic and every circuit in $\Sigma(M)$ has an even (@def:form-axioms) number of edges labelled $4$ and an even number of edges labelled $6$ [@Hum90, §6.6, Proposition].
 :::
 
 ::: {.proof}
 
-This is [@Hum90, §6.6, Proposition], stated there for the geometric representation with form $B$; the reflections of @def:coxeter-gram-form are those of $B$, since $G = -2B$.
+This is [@Hum90, §6.6, Proposition], stated there for the geometric representation (@def:representable-presheaf) with form $B$; the reflections of @def:coxeter-gram-form are those of $B$, since $G = -2B$.
 :::
 
 ::: {.example #ex:crystallographic-rescaling title="Rescaling to an integral form"}
@@ -361,7 +361,7 @@ the smallest field over which the Gram form (@def:coxeter-gram-form) $G(M)$ is d
 
 ::: {.proposition #prop:coxeter-base-field-degree}
 
-For an integer $m\geq 2$ one has $2\cos(\pi/m) = \zeta_{2m} + \inverseof{\zeta_{2m}}$ for a primitive $2m$-th root of unity $\zeta_{2m}$, so $\QQ(2\cos(\pi/m))$ is the maximal totally real subfield of $\QQ(\zeta_{2m})$ and
+For an integer $m\geq 2$ one has $2\cos(\pi/m) = \zeta_{2m} + \inverseof{\zeta_{2m}}$ for a primitive (@def:primitive-embedding) $2m$-th root of unity $\zeta_{2m}$, so $\QQ(2\cos(\pi/m))$ is the maximal (@def:maximal-lattice) totally real subfield of $\QQ(\zeta_{2m})$ and
 $$
 \left[\QQ\!\left(2\cos(\pi/m)\right) : \QQ\right] = \tfrac12\,\#\unitsof{(\ZZ/2m\ZZ)}
 .
@@ -371,13 +371,13 @@ In particular $K(M) = \QQ$ exactly when $m_{st}\in\theset{2,3,\infty}$ for all $
 
 ::: {.proof}
 
-The first identity is $\zeta_{2m} + \zeta_{2m}^{-1} = 2\cos(2\pi/2m) = 2\cos(\pi/m)$ for a primitive $2m$-th root, and $\zeta\mapsto\zeta^{-1}$ generates $\operatorname{Gal}(\QQ(\zeta_{2m})/\QQ)$, a group of order $\#(\ZZ/2m\ZZ)^{\!\times}$.
+The first identity is $\zeta_{2m} + \zeta_{2m}^{-1} = 2\cos(2\pi/2m) = 2\cos(\pi/m)$ for a primitive $2m$-th root, and $\zeta\mapsto\zeta^{-1}$ generates $\operatorname{Gal}(\QQ(\zeta_{2m})/\QQ)$, a group (@def:group) of order $\#(\ZZ/2m\ZZ)^{\!\times}$.
 Complex conjugation is $\zeta\mapsto\zeta^{-1}$, so it is the involution $\sigma$ of that group, and an element $x$ of the cyclotomic field is fixed by $\sigma$ exactly when $x\in\QQ(\zeta_{2m})^{\langle\sigma\rangle}$.
 The fixed field of conjugation is the maximal totally real subfield, and $\zeta+\zeta^{-1}$ generates it: it is fixed, and $[\QQ(\zeta):\QQ(\zeta+\zeta^{-1})] = 2$ because $\zeta$ satisfies the quadratic $T^2 - (\zeta+\zeta^{-1})T + 1$ over that field and is not in it.
-Hence $\QQ(2\cos(\pi/m))$ is that fixed field, of degree $\tfrac12\#(\ZZ/2m\ZZ)^{\!\times}$ over $\QQ$.
+Hence $\QQ(2\cos(\pi/m))$ is that fixed field, of degree (@def:numerical-polarization) $\tfrac12\#(\ZZ/2m\ZZ)^{\!\times}$ over $\QQ$.
 
 For the specializations, Euler's $\varphi$ is $1$ exactly at $1$ and $2$, so $\tfrac12\varphi(2m) = 1$ exactly when $2m\in\{2,4\}$; $2m = 2$ would give $m = 1$, which is not an order $\geq2$, leaving $m = 2$.
-The value $m = 3$ gives $\varphi(6) = 2$ and degree $1$ as well, so these two orders give rational values, and they give $2\cos(\pi/2) = 0$ and $2\cos(\pi/3) = 1$; the order $m = \infty$ is not in the index set of the union and contributes the diagonal value $2$ of @def:coxeter-gram-form.
+The value $m = 3$ gives $\varphi(6) = 2$ and degree $1$ as well, so these two orders give rational values, and they give $2\cos(\pi/2) = 0$ and $2\cos(\pi/3) = 1$; the order $m = \infty$ is not in the index (@def:index) set of the union and contributes the diagonal (@def:polarization-functors) value $2$ of @def:coxeter-gram-form.
 Every order $m\geq4$ has $\varphi(2m)\geq 4$ and hence degree $\geq2$, so $K(M) = \QQ$ exactly for the three listed orders.
 :::
 
@@ -389,7 +389,7 @@ Among the Coxeter matrices with every $m_{st}$ finite, these are exactly the sim
 
 ::: {.proof}
 The entries are the values $2\cos(\pi/m_{st})$ of @def:coxeter-gram-form (@ex:coxeter-form-values), and an entry lies in $\ZZ$ only if it lies in $\QQ$.
-By @prop:coxeter-base-field-degree the degree of $\QQ(2\cos(\pi/m))$ over $\QQ$ is $\tfrac12\#(\ZZ/2m\ZZ)^\times$, which equals $1$ exactly when $2m\in\theset{4,6}$, that is when $m\in\theset{2,3}$; the value at $m=\infty$ is $2$.
+By @prop:coxeter-base-field-degree the degree (@def:numerical-polarization) of $\QQ(2\cos(\pi/m))$ over $\QQ$ is $\tfrac12\#(\ZZ/2m\ZZ)^\times$, which equals $1$ exactly when $2m\in\theset{4,6}$, that is when $m\in\theset{2,3}$; the value at $m=\infty$ is $2$.
 The remaining orders therefore give irrational entries, and the three admissible orders give $0$, $1$ and $2$.
 :::
 

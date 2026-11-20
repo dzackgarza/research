@@ -14,7 +14,7 @@ $$
 \definedas
 \Hom_{R\text{-}\mathbf{Mod}}\qty{T_R(M)_2,W}.
 $$
-For $f\colon M\to N$, pullback is
+For $f\colon M\to N$, pullback (@def:pullback-square) is
 $$
 f^*\colon\Bil_{R,W}(N)\too\Bil_{R,W}(M),
 \qquad
@@ -26,7 +26,7 @@ $$
 $$
 is a presheaf.
 
-For $M\in R\text{-}\mathbf{Mod}$, let $\Gamma_R^2(M)$ be the quotient of the free $R$-module on symbols $[x]$, $x\in M$, by the relations
+For $M\in R\text{-}\mathbf{Mod}$, let $\Gamma_R^2(M)$ be the quotient of the free (@def:module-subcategories) $R$-module on symbols $[x]$, $x\in M$, by the relations
 $$
 \begin{aligned}
 [rx]&=r^2[x],\\
@@ -34,7 +34,7 @@ $$
 [rx+y]-[rx]-[y]&=r\qty{[x+y]-[x]-[y]}.
 \end{aligned}
 $$
-The map $\gamma_M\colon M\to\Gamma_R^2(M)$, $x\mapsto[x]$, is universal among maps $q\colon M\to W$ satisfying $q(rx)=r^2q(x)$ and having $R$-bilinear polarization.
+The map $\gamma_M\colon M\to\Gamma_R^2(M)$, $x\mapsto[x]$, is universal among maps $q\colon M\to W$ satisfying $q(rx)=r^2q(x)$ and having $R$-bilinear polarization (@def:polarization-functors).
 Hence
 $$
 \operatorname{Quad}_{R,W}(M)
@@ -78,7 +78,7 @@ has fibre $p_{\mathrm{Bil}}^{-1}(W)=\mathcal B_{R,W}$.
 Define $\mathbf{QuadMod}_R$ and $p_{\mathrm{Quad}}$ analogously using $\Gamma_R^2(M)$; its fibre over $W$ is $\mcq_{R,W}$.
 
 The category-of-elements presentations of $\mathcal B_{R,W}$ and $\mcq_{R,W}$ are the fixed-value fibres of these projections, not additional form categories.
-Kernel, cokernel, image, and exact-sequence notation below is always taken in the explicitly named form category.
+Kernel (@def:kernel-cokernel), cokernel (@def:kernel-cokernel), image, and exact-sequence notation below is always taken in the explicitly named form category.
 :::
 
 ::: {.definition #def:form-axioms title="Symmetry, alternation, and evenness" defines="$U$; $\Delta_M$; $q_b$; $\tau$; symmetric form; skew-symmetric; alternating; even"}
@@ -89,7 +89,7 @@ $$
 \qquad
 x\longmapsto x\tensor x
 $$
-be the natural diagonal of underlying sets. For a bilinear map $b\colon M\tensor_RM\to W$, define
+be the natural diagonal (@def:polarization-functors) of underlying sets (@def:concrete-category). For a bilinear map $b\colon M\tensor_RM\to W$, define
 $$
 q_b
 \definedas
@@ -169,12 +169,12 @@ $$
 $$
 
 If $b$ is symmetric, $b^\sharp={}^\sharp b$, so the two exact sequences are the same and the common radical and coradical are written $\radic(M)$ and $\operatorname{corad}(M)$.
-If $b$ is skew-symmetric, ${}^\sharp b=-b^\sharp$; multiplication by $-1$ on $\Hom_R(M,W)$ induces the unique isomorphisms between the corresponding kernels and cokernels.
+If $b$ is skew-symmetric (@def:form-axioms), ${}^\sharp b=-b^\sharp$; multiplication by $-1$ on $\Hom_R(M,W)$ induces the unique isomorphisms between the corresponding kernels and cokernels.
 :::
 
 ::: {.definition #def:orthogonal-sum title="Orthogonal sum" defines="orthogonal sum"}
 
-Let $\iota_M\colon M\to M\oplus N$ and $\iota_N\colon N\to M\oplus N$ be the biproduct injections.
+Let $\iota_M\colon M\to M\oplus N$ and $\iota_N\colon N\to M\oplus N$ be the biproduct (@def:preadditive) injections.
 The orthogonal sum $(M,b_M)\perp(N,b_N)$ is the unique bilinear module $(M\oplus N,b_{M\perp N})$ satisfying
 $$
 \begin{aligned}
@@ -186,7 +186,7 @@ b_{M\perp N}\circ(\iota_M\tensor\iota_N)&=0,
 b_{M\perp N}\circ(\iota_N\tensor\iota_M)&=0.
 \end{aligned}
 $$
-The biproduct coherence morphisms of $R\text{-}\mathbf{Mod}$ are form-preserving for these forms, giving the symmetric monoidal category
+The biproduct coherence morphisms of $R\text{-}\mathbf{Mod}$ are form-preserving for these forms, giving the symmetric monoidal category (@def:braided-symmetric)
 $$
 \qty{
 \mathcal B_{R,W},
@@ -228,7 +228,7 @@ M
 =
 b(\iota(t),x).
 $$
-Define the **left orthogonal complement** \({}^{\perp_b}T\), the **right orthogonal complement** \(T^{\perp_b}\), and their coradicals by the exact sequences
+Define the **left orthogonal complement (@def:general-pairing-orthogonals)** \({}^{\perp_b}T\), the **right orthogonal complement (@def:general-pairing-orthogonals)** \(T^{\perp_b}\), and their coradicals (@def:two-witnesses) by the exact (@def:exact-complex) sequences
 $$
 0
 \too
@@ -252,13 +252,13 @@ M
 \too\operatorname{corad}_{\mathrm R}(\iota)
 \too0.
 $$
-If $b$ is symmetric, then $\lambda_{\iota}^{\mathrm L}=\lambda_{\iota}^{\mathrm R}$; the universal properties of kernel and cokernel give unique isomorphisms
+If $b$ is symmetric, then $\lambda_{\iota}^{\mathrm L}=\lambda_{\iota}^{\mathrm R}$; the universal properties of kernel (@def:kernel-cokernel) and cokernel (@def:kernel-cokernel) give unique isomorphisms (@def:isomorphism-of-objects)
 $$
 {}^{\perp_b}T\isoto T^{\perp_b},
 \qquad
 \operatorname{corad}_{\mathrm L}(\iota)\isoto\operatorname{corad}_{\mathrm R}(\iota)
 $$
-commuting with the four structure morphisms above.
+commuting with the four structure (@def:property-structure-stuff) morphisms above.
 
 The subobject $\iota$ is **isotropic** when
 $$
@@ -285,7 +285,7 @@ $$
 
 ::: {.proposition #prop:orthogonal-galois-connection title="The orthogonal complement is an antitone Galois connection"}
 
-Let $(M,W,b)$ be a symmetric bilinear module, and let $\operatorname{Sub}(M)$ be the poset of subobjects of $M$ in $R\text{-}\mathbf{Mod}$ (@def:subobject-relation), with $S\subseteq T$ when $S$ factors through $T$.
+Let $(M,W,b)$ be a symmetric bilinear module, and let $\operatorname{Sub}(M)$ be the poset (@def:preorder-category) of subobjects of $M$ in $R\text{-}\mathbf{Mod}$ (@def:subobject-relation), with $S\subseteq T$ when $S$ factors through $T$.
 For a subobject $S$ represented by $\iota\colon S\injects M$, let $S^\perp$ be the subobject represented by $\kappa_\iota^{\mathrm R}\colon S^{\perp_b}\injects M$ of @def:orthogonal-complement.
 Then $S\mapsto S^\perp$ is a well-defined order-reversing map $\operatorname{Sub}(M)\too\operatorname{Sub}(M)$, and for all $S,T\in\operatorname{Sub}(M)$
 $$
@@ -293,7 +293,7 @@ S\subseteq T^\perp
 \quad\Longleftrightarrow\quad
 T\subseteq S^\perp .
 $$
-Thus $(-)^\perp$ is an antitone Galois connection of $\operatorname{Sub}(M)$ with itself, and
+Thus $(-)^\perp$ is an antitone Galois connection (@def:calculus-connection) of $\operatorname{Sub}(M)$ with itself, and
 $$
 S\subseteq S^{\perp\perp},
 \qquad
@@ -305,7 +305,7 @@ $$
 ::: {.proof}
 
 In $R\text{-}\mathbf{Mod}$ a subobject of $M$ is determined by the image of any representative, and $S\subseteq T$ holds exactly when the image of $S$ is contained in the image of $T$.
-By the exact sequence that defines $S^{\perp_b}$, the image of $\kappa_\iota^{\mathrm R}$ is
+By the exact (@def:exact-complex) sequence that defines $S^{\perp_b}$, the image of $\kappa_\iota^{\mathrm R}$ is
 $$
 \{x\in M : b(y,x)=0\text{ for all }y\in\iota(S)\},
 $$
@@ -316,7 +316,7 @@ Both $S\subseteq T^\perp$ and $T\subseteq S^\perp$ state that $b(y,z)=0$ for all
 So the two conditions are equivalent.
 
 Regard $(-)^\perp$ as two order-preserving maps $F\colon\operatorname{Sub}(M)\too\operatorname{Sub}(M)^{\mathrm{op}}$ and $G\colon\operatorname{Sub}(M)^{\mathrm{op}}\too\operatorname{Sub}(M)$.
-The displayed equivalence states that $FS\supseteq T$ in $\operatorname{Sub}(M)$ if and only if $S\subseteq GT$, so $F$ is left adjoint to $G$ and the pair is a Galois connection [@Mac98, §IV.5, Thm. 1].
+The displayed equivalence (@def:equivalence-of-objects) states that $FS\supseteq T$ in $\operatorname{Sub}(M)$ if and only if $S\subseteq GT$, so $F$ is left adjoint (@def:pairing-adjoints) to $G$ and the pair is a Galois connection [@Mac98, §IV.5, Thm. 1].
 Taking $T=S^\perp$ gives $S\subseteq S^{\perp\perp}$.
 Applying the order-reversing map to $S\subseteq S^{\perp\perp}$ gives $S^{\perp\perp\perp}\subseteq S^\perp$, and $S^\perp\subseteq(S^\perp)^{\perp\perp}$ is the previous inclusion for $S^\perp$.
 Hence $S^\perp=S^{\perp\perp\perp}$.
@@ -328,7 +328,7 @@ Let $B$ be a symmetric bilinear module and let
 $$
 \rho_B\colon\radic(B)\too B
 $$
-be its radical morphism.
+be its radical (@def:two-witnesses) morphism.
 Define
 $$
 B^{\mathrm{nd}}
@@ -343,11 +343,11 @@ $$
 \mathbf{BilMod}_R.
 $$
 
-If $L$ is nondegenerate and
+If $L$ is nondegenerate (@def:polarization) and
 $$
 \iota\colon T\injects L
 $$
-is an isotropic sublattice over the commutative ring $R$, then in lattice-theoretic notation
+is an isotropic (@def:orthogonal-complement) sublattice over the commutative (@def:operation-axioms) ring $R$, then in lattice-theoretic notation
 $$
 T^\perp
 \definedas
@@ -361,27 +361,27 @@ Let $(M,W,b)$ be symmetric and let
 $$
 \iota\colon T\injects M
 $$
-be a bilinear submodule on which the restricted form is perfect.
+be a bilinear submodule on which the restricted form is perfect (@def:polarization).
 Then the canonical orthogonal-sum morphism
 $$
 T\perp T^\perp
 \too
 M
 $$
-is an isomorphism [@MH73, I §3.1].
+is an isomorphism (@def:isomorphism-of-objects) [@MH73, I §3.1].
 :::
 
 ::: {.proof}
 
 This is [@MH73, I §3.1].
-The argument needs nothing of $M$: for $m\in M$ the functional $t\mapsto b(m,\iota(t))$ equals $b(t_0,\iota(t))$ for a unique $t_0\in T$ by perfectness of $b|_T$, and then $m-\iota(t_0)\in T^{\perp}$; injectivity is that $T\cap T^{\perp}$ is the kernel of the perfect form $b_T$.
+The argument needs nothing of $M$: for $m\in M$ the functional $t\mapsto b(m,\iota(t))$ equals $b(t_0,\iota(t))$ for a unique $t_0\in T$ by perfectness of $b|_T$, and then $m-\iota(t_0)\in T^{\perp}$; injectivity is that $T\cap T^{\perp}$ is the kernel (@def:kernel-cokernel) of the perfect form $b_T$.
 :::
 
 ## Gram matrices and the determinant {#sec-gram-determinant}
 
 ::: {.proposition #prop:gram-matrix-free-module title="Gram matrix"}
 
-Let $M$ be free as an $R$-module on $E=\{e_i\}_{i\in I}$, and let $b$ be a bilinear form on $M$ with values in $R$.
+Let $M$ be free (@def:module-subcategories) as an $R$-module on $E=\{e_i\}_{i\in I}$, and let $b$ be a bilinear form on $M$ with values in $R$.
 The *Gram matrix* of $b$ with respect to $E$ is the family $G_{ij}=b(e_i,e_j)$ indexed by $I\times I$.
 If $v=\Sum_i a_i e_i$ and $w=\Sum_j c_j e_j$, then
 $$
@@ -393,13 +393,13 @@ Every family $(G_{ij})_{i,j\in I}$ in $R$ arises uniquely in this way.
 
 ::: {.proof}
 
-The first claim is bilinearity applied to two finite sums, and the second is that a bilinear form is determined by its values on pairs of basis vectors, with the displayed formula reconstructing it.
+The first claim is bilinearity applied to two finite sums, and the second is that a bilinear form is determined by its values on pairs of basis (@def:based-module) vectors, with the displayed formula reconstructing it.
 This is the standard bijection between forms and matrices on a free module [@MH73, I §2.1].
 :::
 
 ::: {.proposition #prop:gram-congruence title="Congruence"}
 
-Let $M$ be free with basis $e_1,\dots,e_n$ and Gram matrix $G=\bigl(b(e_i,e_j)\bigr)$ as in @prop:gram-matrix-free-module.
+Let $M$ be free (@def:module-subcategories) with basis (@def:based-module) $e_1,\dots,e_n$ and Gram matrix $G=\bigl(b(e_i,e_j)\bigr)$ as in @prop:gram-matrix-free-module.
 Let $e'_1,\dots,e'_n$ be a second basis and let $P$ be the invertible matrix whose $j$-th column holds the coordinates of $e'_j$ in the basis $e$.
 Then the Gram matrix in the basis $e'$ is
 $$
@@ -414,7 +414,7 @@ If $e'_j=\Sum_iP_{ij}e_i$ then
 $$
 G'_{ij}=b(e'_i,e'_j)=\Sum_{k,l}P_{ki}\,G_{kl}\,P_{lj}=(P^{\mathsf T}GP)_{ij}
 $$
-by bilinearity; and conversely an invertible $P$ defines a second basis $e'$ of the same form, so congruent matrices are the Gram matrices of one form in two bases [@MH73, I §2.3].
+by bilinearity; and conversely an invertible $P$ defines a second basis $e'$ of the same form, so congruent matrices are the Gram matrices of one form in two bases (@def:root-system-base) [@MH73, I §2.3].
 :::
 
 ::: {.definition #def:cartan-matrix title="The Cartan matrix" defines="Cartan matrix; Cartan integer; $d_j$"}
@@ -424,7 +424,7 @@ The *Cartan matrix* of the family is
 $$
 A_{ij}=\frac{2\,b(\alpha_i,\alpha_j)}{b(\alpha_j,\alpha_j)} ,
 $$
-normalized by the second index.
+normalized by the second index (@def:index).
 For the simple roots of a root system (@def:root-system-base) these entries are the *Cartan integers* [@Hum72, §11.1].
 
 Write $G$ for the Gram matrix of the family, as in @prop:gram-matrix-free-module, and put $d_j=b(\alpha_j,\alpha_j)/2$.
@@ -451,19 +451,19 @@ Here $d_2A_{12}=(-2)(-1)=2=G_{12}$, whereas $d_1A_{12}=(-1)(-1)=1$, so only the 
 
 ::: {.definition #def:determinant-class title="The determinant" defines="$R^{\bullet}$; $(R^{\bullet})^{2}$; determinant class"}
 
-Write $R^{\bullet}$ for the group of units of $R$ and $(R^{\bullet})^{2}$ for the subgroup of squares of units.
-By @prop:gram-congruence the determinant of a Gram matrix changes by the square of a unit under change of basis, so a perfect form on a free module has a well-defined
+Write $R^{\bullet}$ for the group (@def:group) of units of $R$ and $(R^{\bullet})^{2}$ for the subgroup of squares of units.
+By @prop:gram-congruence the determinant of a Gram matrix changes by the square of a unit under change of basis (@def:based-module), so a perfect (@def:polarization) form on a free (@def:module-subcategories) module has a well-defined
 $$
 \det(b)\in R^{\bullet}/(R^{\bullet})^{2},
 $$
-and a general form on a free module has a well-defined class in the quotient monoid $R/(R^{\bullet})^{2}$ [@MH73, I §2.5].
-Under orthogonal sum the rank adds and the determinant multiplies [@MH73, I §3, display before (3.1)].
+and a general form on a free module has a well-defined class in the quotient monoid (@def:semigroup-monoid) $R/(R^{\bullet})^{2}$ [@MH73, I §2.5].
+Under orthogonal sum (@def:orthogonal-sum) the rank adds and the determinant multiplies [@MH73, I §3, display before (3.1)].
 :::
 
 ::: {.proposition #prop:alternating-gram title="Alternating forms in a basis"}
 
-Let $b$ be skew-symmetric on a free module with basis $e_1,\dots,e_n$.
-Then $b$ is alternating if and only if $b(e_i,e_i)=0$ for every $i$.
+Let $b$ be skew-symmetric (@def:form-axioms) on a free (@def:module-subcategories) module with basis (@def:based-module) $e_1,\dots,e_n$.
+Then $b$ is alternating (@def:form-axioms) if and only if $b(e_i,e_i)=0$ for every $i$.
 :::
 
 ::: {.proof}
@@ -514,17 +514,17 @@ x\tensor u\tensor y\tensor v
 \longmapsto
 b_M(x,y)\tensor b_N(u,v),
 $$
-after the symmetry isomorphism carrying $(M\tensor_RN)^{\tensor2}$ to $M\tensor_RM\tensor_RN\tensor_RN$ [@MH73, I §5.1].
+after the symmetry isomorphism (@def:isomorphism-of-objects) carrying $(M\tensor_RN)^{\tensor2}$ to $M\tensor_RM\tensor_RN\tensor_RN$ [@MH73, I §5.1].
 For $W_M=W_N=R$ the value module is $R$.
 
-Call a form $\eps$-symmetric when $b(x,y)=\eps\,b(y,x)$, so that $1$-symmetric means symmetric and $(-1)$-symmetric means skew-symmetric.
+Call a form $\eps$-symmetric when $b(x,y)=\eps\,b(y,x)$, so that $1$-symmetric means symmetric and $(-1)$-symmetric means skew-symmetric (@def:form-axioms).
 The tensor product of an $\eps$-symmetric and an $\eps'$-symmetric form is $\eps\eps'$-symmetric [@MH73, I §5.2].
-If both forms are perfect and both modules are finitely generated projective, the tensor product is perfect [@MH73, I §5.3].
+If both forms are perfect (@def:polarization) and both modules are finitely generated projective (@def:module-subcategories), the tensor product is perfect [@MH73, I §5.3].
 :::
 
 ::: {.proposition #prop:tensor-gram title="Gram matrix and determinant of a tensor product"}
 
-If $M$ and $N$ are free of ranks $m$ and $n$ with Gram matrices $G_M$ and $G_N$, the Gram matrix of $b_M\tensor_R b_N$ in the product basis is the Kronecker product $G_M\tensor_R G_N$, and
+If $M$ and $N$ are free (@def:module-subcategories) of ranks $m$ and $n$ with Gram matrices $G_M$ and $G_N$, the Gram matrix of $b_M\tensor_R b_N$ in the product basis (@def:based-module) is the Kronecker product $G_M\tensor_R G_N$, and
 $$
 \det(b_M\tensor_R b_N)=\det(b_M)^{\,n}\det(b_N)^{\,m}.
 $$
@@ -538,13 +538,13 @@ The Gram matrix is the Kronecker product because $(b_M\tensor b_N)(e_i\tensor f_
 ::: {.definition #def:form-twist title="Twisting" defines="twist; $b(\lambda)$; $M(\lambda)$"}
 
 For $\lambda\in R$ the *twist* $b(\lambda)$ of $(M,b)$ is the form $\lambda b$ on the same module, written $M(\lambda)$.
-Its Gram matrix in a basis is $\lambda G$, its adjoint maps are $\lambda\,b^{\sharp}$ and $\lambda\,{}^{\sharp}b$, and on a free module of rank $n$
+Its Gram matrix in a basis (@def:based-module) is $\lambda G$, its adjoint (@def:adjoint-morphism) maps are $\lambda\,b^{\sharp}$ and $\lambda\,{}^{\sharp}b$, and on a free (@def:module-subcategories) module of rank $n$
 $$
 \det\bigl(b(\lambda)\bigr)=\lambda^{\,n}\det(b).
 $$
 
 A morphism $f$ of @def:form-categories satisfies $f^{*}b_N=b_M$ and hence $f^{*}(\lambda b_N)=\lambda b_M$, so $(-)(\lambda)$ is an endofunctor of $\mathcal B_{R,W}$ which is the identity on underlying maps.
-For $\lambda$ a unit it is an isomorphism of categories with inverse $(-)(\lambda^{-1})$, and $(-)(-1)$ is an involution.
+For $\lambda$ a unit it is an isomorphism (@def:isomorphism-of-objects) of categories with inverse $(-)(\lambda^{-1})$, and $(-)(-1)$ is an involution.
 :::
 
 ## Signatures at real places {#sec-signature}
@@ -556,12 +556,12 @@ Define
 $$
 \operatorname{sig}(V,b)\definedas(p,q,r),
 $$
-where $p$ and $q$ are the maximal dimensions of positive- and negative-definite subspaces and
+where $p$ and $q$ are the maximal (@def:maximal-lattice) dimensions of positive- and negative-definite subspaces and
 $$
 r\definedas\dim_F\radic(V).
 $$
 
-For a commutative ring $R$, define the set of real places
+For a commutative (@def:operation-axioms) ring $R$, define the set of real places
 $$
 \Sigma_\infty(R)
 \definedas
@@ -584,26 +584,26 @@ $$
 $$
 For $R=\bZ$ there is one real place and the tuple is identified with its single component.
 
-For a nondegenerate form every component has radical dimension $0$ and is written as a pair.
+For a nondegenerate (@def:polarization) form every component has radical (@def:two-witnesses) dimension $0$ and is written as a pair.
 :::
 
 ::: {.theorem #thm:sylvester title="Sylvester's law of inertia"}
 
-Let $F$ be an ordered field and let $b$ be a perfect symmetric bilinear form on a finite-dimensional $F$-vector space $V$.
-Then $V\cong V^{+}\perp V^{-}$ with $b$ positive definite on $V^{+}$ and negative definite on $V^{-}$, and the two dimensions depend only on the isomorphism class of $(V,b)$: $\dim V^{+}$ is the greatest dimension of a positive definite subspace of $V$ [@MH73, III §2.5].
+Let $F$ be an ordered field and let $b$ be a perfect (@def:polarization) symmetric bilinear form on a finite-dimensional $F$-vector space $V$.
+Then $V\cong V^{+}\perp V^{-}$ with $b$ positive definite (@def:definiteness) on $V^{+}$ and negative definite (@def:definiteness) on $V^{-}$, and the two dimensions depend only on the isomorphism (@def:isomorphism-of-objects) class of $(V,b)$: $\dim V^{+}$ is the greatest dimension of a positive definite subspace of $V$ [@MH73, III §2.5].
 So the signature of @def:signature is $(\dim V^{+},\dim V^{-},0)$ and $p+q=\dim V$.
-For a degenerate $b$ the same conclusions hold with $r=\dim\radic(V)$ nonzero, and $p+q+r=\dim V$.
+For a degenerate (@def:definiteness) $b$ the same conclusions hold with $r=\dim\radic(V)$ nonzero, and $p+q+r=\dim V$.
 :::
 
 ::: {.proof}
 
 This is [@MH73, III §2.5].
-An ordered field has characteristic $0$, hence $2$ is a unit and
+An ordered field has characteristic (@def:two-elementary-isotropic-types) $0$, hence $2$ is a unit and
 $$
 2\,b(u,v)=b(u+v,u+v)-b(u,u)-b(v,v).
 $$
-That identity gives a vector of nonzero square and hence, by @thm:orthogonal-decomposition, an orthogonal basis.
-Given an orthogonal basis, $V=V^{+}\perp V^{-}$ with the two summands definite, and $\dim V^{+}$ is maximal among positive definite subspaces because such a subspace meets $V^{-}$ only at $0$.
+That identity gives a vector of nonzero square and hence, by @thm:orthogonal-decomposition, an orthogonal basis (@def:based-module).
+Given an orthogonal basis, $V=V^{+}\perp V^{-}$ with the two summands definite (@def:definiteness), and $\dim V^{+}$ is maximal (@def:maximal-lattice) among positive definite subspaces because such a subspace meets (@def:replete-full-meet) $V^{-}$ only at $0$.
 
 For degenerate $b$, let $N$ be a complement of $\radic(V)$.
 Every pairing with $\radic(V)$ vanishes, so $V\cong\radic(V)\perp N$; the restriction $b|_N$ is perfect, because an element of $N$ pairing to zero with $N$ pairs to zero with all of $V$; and the perfect case applied to $N$ gives $V\cong V^{+}\perp V^{-}\perp\radic(V)$ and $p+q+r=\dim V$.
@@ -611,7 +611,7 @@ Every pairing with $\radic(V)$ vanishes, so $V\cong\radic(V)\perp N$; the restri
 
 ::: {.definition #def:definiteness title="Definiteness" defines="degenerate; positive definite; negative definite; definite; indefinite; hyperbolic; Lorentzian signature; parabolic"}
 
-Let $b$ be a symmetric bilinear form of signature $(p,q,r)$ and set $n=p+q+r$.
+Let $b$ be a symmetric bilinear form of signature (@def:signature) $(p,q,r)$ and set $n=p+q+r$.
 Then $b$ is
 
 - *degenerate* if $r>0$;
@@ -628,43 +628,43 @@ Then $b$ is
 :::
 
 ::: {#conv:negative-definite-root-lattices .convention defines="negative definite root lattice"}
-Root lattices are taken negative definite here, so the forms on $A_n$, $D_n$ and $E_n$ are negative definite and the hyperbolic signature is $(1,n-1,0)$.
+Root lattices are taken negative definite (@def:definiteness) here, so the forms on $A_n$, $D_n$ and $E_n$ are negative definite and the hyperbolic (@def:definiteness) signature (@def:signature) is $(1,n-1,0)$.
 :::
 
 ## Isotropy and Witt decomposition {#sec-witt}
 
 ::: {.definition #def:hyperbolic-plane title="Rank one forms, the hyperbolic plane, and split forms" defines="$\langle u\rangle$; hyperbolic plane; $U$; split"}
 
-For a unit $u\in R^{\bullet}$ write $\langle u\rangle$ for the free module of rank $1$ on a generator $e$ with $b(e,e)=u$.
+For a unit $u\in R^{\bullet}$ write $\langle u\rangle$ for the free (@def:module-subcategories) module of rank $1$ on a generator $e$ with $b(e,e)=u$.
 Then $\langle u\rangle\cong\langle u'\rangle$ if and only if $u'=\alpha^{2}u$ for some $\alpha\in R^{\bullet}$ [@MH73, I §2.4].
 
 The *hyperbolic plane* $U$ over $R$ is the free module on $e,f$ with
 $$
 b(e,e)=b(f,f)=0,\qquad b(e,f)=b(f,e)=1,
 $$
-so its Gram matrix is $\left(\begin{smallmatrix}0&1\\1&0\end{smallmatrix}\right)$, its form is perfect and even, and its signature over an ordered field is $(1,1,0)$.
+so its Gram matrix is $\left(\begin{smallmatrix}0&1\\1&0\end{smallmatrix}\right)$, its form is perfect (@def:polarization) and even, and its signature (@def:signature) over an ordered field is $(1,1,0)$.
 
 A perfect symmetric form $b$ on $M$ is *split* if $M$ has a direct summand $N$ with $N=N^{\perp_b}$ [@MH73, I §6.1].
-Over a ring whose finitely generated projective modules are free and in which $2$ is a unit, a split form is an orthogonal sum of hyperbolic planes, which is @thm:metabolic-is-hyperbolic; this applies to a field of characteristic other than $2$.
+Over a ring whose finitely generated projective (@def:module-subcategories) modules are free and in which $2$ is a unit, a split form (@not:split-and-metabolic) is an orthogonal sum (@def:orthogonal-sum) of hyperbolic planes, which is @thm:metabolic-is-hyperbolic; this applies to a field of characteristic (@def:two-elementary-isotropic-types) other than $2$.
 :::
 
 ::: {.definition #def:witt-index title="Witt index" defines="Witt index; $i(V)$"}
 
-The *Witt index* $i(V)$ of a perfect symmetric form on a finite-dimensional vector space $V$ over a field is the greatest dimension of a totally isotropic subspace.
+The *Witt index* $i(V)$ of a perfect (@def:polarization) symmetric form (@def:form-axioms) on a finite-dimensional vector space $V$ over a field is the greatest dimension of a totally isotropic (@def:orthogonal-complement) subspace.
 It satisfies
 $$
 0\leq i(V)\leq\tfrac12\dim V,
 $$
-with $i(V)=0$ exactly when the form is anisotropic and $i(V)=\tfrac12\dim V$ exactly when the form is split [@MH73, III §1.2].
+with $i(V)=0$ exactly when the form is anisotropic and $i(V)=\tfrac12\dim V$ exactly when the form is split (@def:hyperbolic-plane) [@MH73, III §1.2].
 :::
 
 ::: {.theorem #thm:witt-decomposition title="Witt decomposition"}
 
-Every perfect symmetric form on a finite-dimensional vector space $V$ over a field $F$ decomposes as
+Every perfect (@def:polarization) symmetric form (@def:form-axioms) on a finite-dimensional vector space $V$ over a field $F$ decomposes as
 $$
 V\cong S\perp A
 $$
-with $S$ split and $A$ anisotropic [@MH73, III §1.1], and $A$ is determined up to isomorphism by the Witt class of $V$ [@MH73, III §1.7].
+with $S$ split (@def:hyperbolic-plane) and $A$ anisotropic [@MH73, III §1.1], and $A$ is determined up to isomorphism (@def:isomorphism-of-objects) by the Witt class (@def:witt-class) of $V$ [@MH73, III §1.7].
 Here $\dim S=2\,i(V)$ and $\dim A=\dim V-2\,i(V)$.
 :::
 
@@ -672,11 +672,11 @@ Here $\dim S=2\,i(V)$ and $\dim A=\dim V-2\,i(V)$.
 
 This is [@MH73, III §1.1 and §1.7].
 
-Existence does not need $2$ to be a unit: if $v$ is isotropic and $b(v,w)=\lambda\neq0$, then $P=\langle v,w\rangle$ has Gram matrix with determinant $-1$, a unit in every ring, so $P$ splits off by @thm:orthogonal-decomposition, and the line $\langle v\rangle$ is a lagrangian of $P$ because $b(v,\alpha v+\beta w)=\beta\lambda$ vanishes exactly on $\langle v\rangle$ — whatever $b(w,w)$ is.
+Existence does not need $2$ to be a unit: if $v$ is isotropic (@def:orthogonal-complement) and $b(v,w)=\lambda\neq0$, then $P=\langle v,w\rangle$ has Gram matrix with determinant $-1$, a unit in every ring, so $P$ splits off by @thm:orthogonal-decomposition, and the line $\langle v\rangle$ is a lagrangian (@def:lagrangian) of $P$ because $b(v,\alpha v+\beta w)=\beta\lambda$ vanishes exactly on $\langle v\rangle$ — whatever $b(w,w)$ is.
 So the induction produces $S\perp A$ with $A$ anisotropic over any field.
 
-The proof uses (i) that $i(V)=i(S)$ when $A$ is anisotropic, which is Witt's extension theorem applied to a maximal totally isotropic subspace [@MH73, III §1.2], and (ii) the uniqueness of the anisotropic representative of a Witt class, which [@MH73, III Thm. 1.7] proves for every field, characteristic $2$ included.
-Clause (i) needs the hypothesis on $A$: $\langle1\rangle\perp\langle-1\rangle$ is hyperbolic with index $1$, while neither summand contains an isotropic vector.
+The proof uses (i) that $i(V)=i(S)$ when $A$ is anisotropic, which is Witt's extension theorem applied to a maximal (@def:maximal-lattice) totally isotropic subspace [@MH73, III §1.2], and (ii) the uniqueness of the anisotropic representative of a Witt class, which [@MH73, III Thm. 1.7] proves for every field, characteristic (@def:two-elementary-isotropic-types) $2$ included.
+Clause (i) needs the hypothesis on $A$: $\langle1\rangle\perp\langle-1\rangle$ is hyperbolic (@def:definiteness) with index (@def:index) $1$, while neither summand contains an isotropic vector.
 :::
 
 ::: {.example #ex:witt-index-over-Q title="Witt index and signature"}
@@ -690,8 +690,8 @@ For a primitive integral solution of $x^{2}+y^{2}=3z^{2}$, reduction modulo $3$ 
 :::
 
 ::: {#not:signature-pair-and-integer .notation title="The signature as a pair and as an integer" defines="signature at the ordering"}
-For a nondegenerate symmetric form over an ordered field $F$, the signature is the pair $(p,q)$ of @def:signature.
-[@MH73, III §2.5] calls the integer $p-q$ the signature at the ordering; it depends only on the Witt class, is additive over orthogonal sums and multiplicative over tensor products, and so defines a ring homomorphism $W(F)\to\bZ$ [@MH73, III Lem. 2.6].
+For a nondegenerate (@def:polarization) symmetric form (@def:form-axioms) over an ordered field $F$, the signature is the pair $(p,q)$ of @def:signature.
+[@MH73, III §2.5] calls the integer $p-q$ the signature at the ordering; it depends only on the Witt class (@def:witt-class), is additive over orthogonal sums (@def:orthogonal-sum) and multiplicative over tensor products, and so defines a ring homomorphism $W(F)\to\bZ$ [@MH73, III Lem. 2.6].
 :::
 
 ## Diagonal and polarization {#sec-polarization-functors}
@@ -718,10 +718,10 @@ $$
 \qquad
 \diag(\operatorname{polar}(q))=2q.
 $$
-If $2$ is invertible on $W$, division by $2$ gives inverse equivalences between symmetric bilinear forms and quadratic forms.
+If $2$ is invertible on $W$, division by $2$ gives inverse equivalences (@def:equivalence-of-objects) between symmetric bilinear forms and quadratic forms.
 For a general value module, they define parallel functors whose composites are multiplication by $2$.
 
-For discriminant forms, the isomorphism
+For discriminant forms, the isomorphism (@def:isomorphism-of-objects)
 $$
 \bQ/2\bZ\too\bQ/\bZ,
 \qquad w\longmapsto w/2,

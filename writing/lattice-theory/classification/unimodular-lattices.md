@@ -3,14 +3,14 @@
 ## Indefinite unimodular lattices {#sec-indefinite-unimodular-classification}
 
 ::: {.theorem #thm:indefinite-unimodular-classification title="Classification of indefinite unimodular lattices"}
-Let $L\in\mathbf{Unimod}_{\bZ}$ be indefinite, with $\operatorname{sig}(L)=(p,q)$, where $p,q>0$ in the convention of @def:signature.
+Let $L\in\mathbf{Unimod}_{\bZ}$ be indefinite (@def:definiteness), with $\operatorname{sig}(L)=(p,q)$, where $p,q>0$ in the convention of @def:signature.
 
-If $L$ is odd, there is an isometry
+If $L$ is odd (@def:two-elementary-isotropic-types), there is an isometry
 $$
 L\isoto\latI_{p,q}
 \definedas\generators{1}^{\perp p}\perp\generators{-1}^{\perp q}.
 $$
-If $L$ is even, the Brown invariant of its quadratic discriminant form is zero, and by @thm:milgram this forces $\signature{L}\equiv0\pmod8$. There is then an isometry
+If $L$ is even (@def:form-axioms), the Brown invariant of its quadratic discriminant form is zero, and by @thm:milgram this forces $\signature{L}\equiv0\pmod8$. There is then an isometry
 $$
 L\isoto\latII_{p,q},
 \qquad
@@ -31,16 +31,16 @@ The formulas for $\latI_{p,q}$ and $\latII_{p,q}$ exhibit unimodular integral la
 ## Definite unimodular lattices {#sec-definite-unimodular-classification}
 
 ::: {.theorem #thm:definite-unimodular-class-numbers title="Class numbers of definite unimodular lattices"}
-For each $n\ge1$, the isometry classes of positive-definite odd unimodular integral lattices of rank $n$ form the class set $\Cl(\latI_{n,0})$ of @def:genus. Even positive-definite unimodular lattices exist exactly when $8\mid n$; in rank $n=8k$ their isometry classes form $\Cl(E_8(-1)^{\perp k})$. The class numbers in ranks at most $24$ are recorded in @tbl-unimodular-definite-class-numbers. The odd, even, and total sequences are respectively [OEIS A054911](https://oeis.org/A054911), [OEIS A054909](https://oeis.org/A054909), and [OEIS A005134](https://oeis.org/A005134), in agreement with [@CS10, Table 2.2].
+For each $n\ge1$, the isometry classes of positive-definite odd (@def:two-elementary-isotropic-types) unimodular integral lattices of rank $n$ form the class set $\Cl(\latI_{n,0})$ of @def:genus. Even (@def:form-axioms) positive-definite unimodular lattices (@def:unimodular) exist exactly when $8\mid n$; in rank $n=8k$ their isometry classes form $\Cl(E_8(-1)^{\perp k})$. The class numbers in ranks at most $24$ are recorded in @tbl-unimodular-definite-class-numbers. The odd, even, and total sequences are respectively [OEIS A054911](https://oeis.org/A054911), [OEIS A054909](https://oeis.org/A054909), and [OEIS A005134](https://oeis.org/A005134), in agreement with [@CS10, Table 2.2].
 
 
-The rank-$8$ even lattice is $E_8(-1)$. In rank $16$ the even lattices are $E_8(-1)^{\perp2}$ and $D_{16}^+(-1)$. In rank $24$ the even lattices are the $24$ Niemeier lattices, distinguished by their root lattices, including the rootless Leech lattice [@CS10, Table 2.2; @CS10, Ch. 16, Thm. 4].
+The rank-$8$ even lattice (@def:even-lattice) is $E_8(-1)$. In rank $16$ the even lattices are $E_8(-1)^{\perp2}$ and $D_{16}^+(-1)$. In rank $24$ the even lattices are the $24$ Niemeier lattices, distinguished by their root lattices, including the rootless Leech lattice [@CS10, Table 2.2; @CS10, Ch. 16, Thm. 4].
 
-Twisting by $(-1)$ identifies the positive- and negative-definite isometry classes, so the table gives the counts in either definite sign by the sign-twist equivalence of @def:form-twist.
+Twisting by $(-1)$ identifies the positive- and negative-definite isometry classes, so the table gives the counts in either definite (@def:definiteness) sign by the sign-twist equivalence (@def:equivalence-of-objects) of @def:form-twist.
 :::
 
 ::: {.proof}
-The class-set formulation is that of @def:genus: all positive-definite odd unimodular lattices of rank $n$ lie in the genus of $\latI_{n,0}$, and all positive-definite even unimodular lattices of rank $8k$ lie in the genus of $E_8(-1)^{\perp k}$ [@CS10, Ch. 15, Thms. 9–10]. The divisibility $8\mid n$ follows from @thm:milgram; the classes in the table are the classical definite enumeration [@CS10, Table 2.2]. The even rank-$24$ classification is due to Niemeier; its $24$ classes are characterized by their root systems (@def:root-system-base) [@CS10, Ch. 16, Thm. 4].
+The class-set formulation is that of @def:genus: all positive-definite odd unimodular lattices of rank $n$ lie in the genus of $\latI_{n,0}$, and all positive-definite even unimodular lattices of rank $8k$ lie in the genus of $E_8(-1)^{\perp k}$ [@CS10, Ch. 15, Thms. 9–10]. The divisibility (@def:lattice-divisibility) $8\mid n$ follows from @thm:milgram; the classes in the table are the classical definite enumeration [@CS10, Table 2.2]. The even rank-$24$ classification is due to Niemeier; its $24$ classes are characterized by their root systems (@def:root-system-base) [@CS10, Ch. 16, Thm. 4].
 :::
 
 ## Niemeier root systems {#sec-niemeier-root-systems}

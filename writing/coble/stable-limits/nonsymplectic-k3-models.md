@@ -67,7 +67,7 @@ $0$, $1$, and $2$ [@AE22, Lemma 9.7].
 A stable surface is of *pumpkin type* if its normalized components
 $\bar V_i$ have two boundary sides
 $\bar D_{i,\mathrm{left}}+\bar D_{i,\mathrm{right}}$, glued cyclically,
-and every side joins the same two points, the north and south poles
+and every side joins (@def:join-diagram) the same two points, the north and south poles
 [@AE22, Definition 9.8].
 :::
 

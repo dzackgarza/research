@@ -2,7 +2,7 @@
 
 ::: {#not:folding-sign-convention .notation title="Sign convention" defines="negative definite root lattice"}
 
-Root lattices are negative definite and roots have norm $-2$ (@def:root-lattice).
+Root lattices are negative definite (@def:definiteness) and roots have norm $-2$ (@def:root-lattice).
 :::
 
 ## Foldings of simply-laced diagrams
@@ -24,7 +24,7 @@ This is [@Kac90, Prop. 7.9(b), (e), (f)].
 
 ::: {.definition #def:folded-root title="Folded root systems" defines="$[\alpha_i]$; folded root; folded root system; $\beta_{[\alpha_i]}$; $\Phi^G$"}
 
-Let $L$ be a lattice containing a root system $\Phi$ (@def:root-system-base) and $G \subset \Orth(L)$ a finite group preserving $\Phi$.
+Let $L$ be a lattice containing a root system $\Phi$ (@def:root-system-base) and $G \subset \Orth(L)$ a finite group (@def:group) preserving $\Phi$.
 Given a simple root $\alpha_i \in \Phi$, let $[\alpha_i] \subset \Phi$ denote its $G$-orbit.
 
 The associated **folded root** and **folded root system** are defined by
@@ -62,7 +62,7 @@ In each case the type is the Langlands dual of the type of the fixed point subal
 
 ::: {#not:short-and-long-roots-tdp .notation title="Short and long roots of $\tdp$" defines="$\Phi^2$; $\Phi^4$"}
 
-$\Phi^2$ denotes the **short roots** ($(-2)$-roots) and $\Phi^4$ the **long roots** ($(-4)$-roots, of divisibility $2$) of @def:k-root.
+$\Phi^2$ denotes the **short roots** ($(-2)$-roots) and $\Phi^4$ the **long roots** ($(-4)$-roots, of divisibility (@def:lattice-divisibility) $2$) of @def:k-root.
 :::
 
 ::: {.lemma #lem:root-folding-tdp title="Root folding criterion"}
@@ -89,7 +89,7 @@ Then $I(u, \alpha_1, \alpha_2) = -\Ien(u, \alpha_1, \alpha_2) = (u, -\alpha_2, -
 By @prop:k3-cover-eigenlattices both $\tdp$ and $\ten$ are even and $2$-elementary, so their roots are the two types of @def:2elementary-roots.
 
 Suppose $I(v) = v$, so $\beta_{[v]} = v\in\ten$.
-If $v = m y$ with $y\in\ten$ then $y\in\tdp$, so $v$ is primitive in $\ten$ because it is primitive in $\tdp$.
+If $v = m y$ with $y\in\ten$ then $y\in\tdp$, so $v$ is primitive (@def:primitive-embedding) in $\ten$ because it is primitive in $\tdp$.
 If $v^2 = -2$, then $v\in\Phi^2(\ten)$.
 If $v^2 = -4$, then $v\cdot\ten\iscontainedin v\cdot\tdp\iscontainedin 2\ZZ$, so $v$ satisfies the integrality condition of @def:k-root in $\ten$, and $v\in\Phi^4(\ten)$ by @prop:root-integrality.
 So in this case $\beta_{[v]}\in\Phi(\ten)$, and (1) or (2) holds according to $v^2$.
@@ -127,7 +127,7 @@ v^2-v\cdot I(v)
 =(\alpha_1+\alpha_2)^2
 .
 $$
-The lattice $E_8$ is even and negative definite, so $v\cdot I(v)\geq v^2+2$, and $v\cdot I(v)=u^2-2\,\alpha_1\cdot\alpha_2$ is even.
+The lattice $E_8$ is even and negative definite (@def:definiteness), so $v\cdot I(v)\geq v^2+2$, and $v\cdot I(v)=u^2-2\,\alpha_1\cdot\alpha_2$ is even.
 If $v\in\Phi^2(\tdp)$, then $v\cdot I(v)\geq0$, and $\beta_{[v]}^2=-4+2\,v\cdot I(v)<0$ gives $v\cdot I(v)<2$.
 So $v\cdot I(v)=0$, and $\beta_{[v]}\in\Phi(\ten)$ by (3).
 If $v\in\Phi^4(\tdp)$, then $\alpha_1,\alpha_2\in2E_8$ as above, so $(\alpha_1+\alpha_2)^2\leq-8$ and $v\cdot I(v)\geq4$.
@@ -139,13 +139,13 @@ The last statement and the list (1)--(3) together are the forward direction of [
 
 ::: {.definition #def:mirror-move title="Mirror moves" defines="mirror move; $\overline{T}_\eta$"}
 
-A **mirror move** is a lattice-theoretic operation governed by the existence of a primitive isotropic vector $\eta \in T$ of a specified type and splitting [@AE22, Def. 5.6, printed p. 23]:
+A **mirror move** is a lattice-theoretic operation governed by the existence of a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) vector $\eta \in T$ of a specified type and splitting [@AE22, Def. 5.6, printed p. 23]:
 
 - **Odd/simple:** $\div_T(\eta) = 1$, splitting as $T \cong U \oplus K$.
-  The new invariants are $(r-2, a, \delta)$: the odd move preserves the coparity.
+  The new invariants are $(r-2, a, \delta)$: the odd move preserves the coparity (@def:p-elementary).
 
-- **Even, ordinary:** $\div_T(\eta) = 2$ and $\eta^*$ is ordinary, splitting as $T \cong U(2) \oplus K$.
-  The new invariants are $(r-2, a-2, \delta)$: the even ordinary (@def:two-elementary-isotropic-types) move preserves the coparity and lowers the generator length by two.
+- **Even (@def:form-axioms), ordinary:** $\div_T(\eta) = 2$ and $\eta^*$ is ordinary, splitting as $T \cong U(2) \oplus K$.
+  The new invariants are $(r-2, a-2, \delta)$: the even ordinary (@def:two-elementary-isotropic-types) move preserves the coparity and lowers the generator length (@def:anticanonical-pair) by two.
 
 - **Even, characteristic:** $\div_T(\eta) = 2$ and $\eta^*$ is characteristic, splitting as $T \cong I_{1,1}(2) \oplus K$.
   The move is possible only from a lattice of coparity $\delta = 1$, and the new invariants are $(r-2, a-2, 0)$.

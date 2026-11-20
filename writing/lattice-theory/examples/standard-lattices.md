@@ -47,7 +47,7 @@ Then $i_a,j_b\in\Orth(U_\QQ)$.
 
 ::: {.proof}
 
-An isometry of $U$ permutes $U^{\mathrm{prim}}[0]=\theset{\pm e,\pm f}$ and is determined by its action on the ordered isotropic frame $(e,f)$.
+An isometry of $U$ permutes $U^{\mathrm{prim}}[0]=\theset{\pm e,\pm f}$ and is determined by its action on the ordered isotropic (@def:orthogonal-complement) frame $(e,f)$.
 Preservation of $ef = 1$ forces the image frame to be one of $(e, f), (-e, -f), (f, e), (-f, -e)$, giving the four listed matrices.
 Over $\QQ$ the vectors $ae$ and $\inverseof{a} f$ are again isotropic with $(ae)(\inverseof{a} f) = ef = 1$, so $i_a\in\Orth(U_\QQ)$, and likewise $j_b(e) = \inverseof{b} f$, $j_b(f) = be$ satisfy $(\inverseof{b} f)(be) = fe = 1$, so $j_b\in\Orth(U_\QQ)$.
 :::
@@ -56,7 +56,7 @@ Over $\QQ$ the vectors $ae$ and $\inverseof{a} f$ are again isotropic with $(ae)
 
 ::: {.proposition #prop:U2-discriminant title="Discriminant forms of $U(2)$"}
 
-In the basis $B_U$,
+In the basis (@def:based-module) $B_U$,
 $$
 [\beta_{U(2)}]_{B_U}
 =
@@ -86,7 +86,7 @@ U^\#(1/2)
 \isoto
 U(1/2).
 $$
-Multiplication by $2$ induces the displayed isomorphism
+Multiplication by $2$ induces the displayed isomorphism (@def:isomorphism-of-objects)
 $$
 A_{U(2)}^\sharp\isoto U/2U.
 $$
@@ -94,7 +94,7 @@ Let
 $$
 \pi_{U(2)}\colon U(2)^\#\twoheadrightarrow A_{U(2)}^\sharp
 $$
-be the cokernel morphism of @def:metric-dual.
+be the cokernel (@def:kernel-cokernel) morphism of @def:metric-dual.
 For $x=(ae+bf)/2\in U(2)^\#$,
 $$
 q_{U(2)}\qty{\pi_{U(2)}(x)}
@@ -128,7 +128,7 @@ The bilinear value module is $\tfrac12\ZZ/\ZZ$, and
 $$
 \ell\qty{A_{E_8(2)}^\sharp}=8.
 $$
-Since $E_8$ is even, $A_{E_8(2),q}$ has value module $\ZZ/2\ZZ$.
+Since $E_8$ is even (@def:form-axioms), $A_{E_8(2),q}$ has value module $\ZZ/2\ZZ$.
 :::
 
 ::: {.proof}
@@ -175,7 +175,7 @@ Let
 $$
 \pi_{M(2)}\colon(M(2))^\#\twoheadrightarrow A_{M(2)}^\sharp
 $$
-be the cokernel morphism of @def:metric-dual.
+be the cokernel (@def:kernel-cokernel) morphism of @def:metric-dual.
 For $x\in M$,
 $$
 q_{M(2)}\qty{\pi_{M(2)}(x/2)}
@@ -189,7 +189,7 @@ $$
 \tfrac12\ZZ/2\ZZ, & M\text{ odd},
 \end{cases}
 $$
-and $\pi_{M(2)}(x/2)$ is isotropic exactly when
+and $\pi_{M(2)}(x/2)$ is isotropic (@def:orthogonal-complement) exactly when
 $$
 \beta_M(x,x)\in4\ZZ.
 $$

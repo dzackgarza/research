@@ -9,11 +9,11 @@ the same order as the automorphism.
 
 ::: {.proposition #prop:k3-finite-automorphism-bounds title="Bounds for finite automorphism groups of complex K3 surfaces"}
 
-Let $G$ be a finite group acting faithfully on a complex K3 surface.
+Let $G$ be a finite group (@def:group) acting faithfully on a complex K3 surface.
 If every element acts symplectically, then $|G|\leq960$; equality is
 attained by the Mathieu group $M_{20}$ [@Muk88, Thm. 0.6 and Ex. 0.4].
-Without the symplectic condition, $|G|\leq3840$, and the maximal group
-contains $M_{20}$ with index $4$ [@Kon99].
+Without the symplectic condition, $|G|\leq3840$, and the maximal (@def:maximal-lattice) group
+contains $M_{20}$ with index (@def:index) $4$ [@Kon99].
 These are bounds on **finite subgroups**; $\Aut(X)$ itself can be
 infinite.
 :::
@@ -69,17 +69,17 @@ $$
 In @not:k3-automorphism-data:
 
 1. $S=H^{1,1}(X)\intersect L$, and $S$ and $T$ are primitive sublattices of $L$ with $T=S^{\perp L}$ and $S=T^{\perp L}$.
-2. $S$ is even and nondegenerate of signature $(1,\rho-1)$.
+2. $S$ is even and nondegenerate (@def:polarization) of signature (@def:signature) $(1,\rho-1)$.
 3. $H^{2,0}(X)\iscontainedin T\tensor\CC$.
 4. An isometry of $L$ is a Hodge isometry if and only if its complex extension preserves each of $H^{2,0}(X)$, $H^{1,1}(X)$ and $H^{0,2}(X)$.
 :::
 
 ::: {.proof}
 
-(1) $S$ is the group of classes of type $(1,1)$ [@PS24, Proposition B.2.5].
+(1) $S$ is the group (@def:group) of classes of type $(1,1)$ [@PS24, Proposition B.2.5].
 If $nx\in S$ with $x\in L$ and $n\neq0$, then $x$ has type $(1,1)$, so $x\in S$; hence $S$ is primitive.
 An orthogonal complement is primitive.
-Since $X$ is projective, $S$ and $T$ are orthogonal complements of each other in $L$ [@PS24, Lemma B.2.7].
+Since $X$ is projective (@def:module-subcategories), $S$ and $T$ are orthogonal complements of each other in $L$ [@PS24, Lemma B.2.7].
 
 (2) $S$ is even because $L$ is even.
 It is nondegenerate [@PS24, Lemma B.2.7], so $S\perp S^{\perp L}=S\perp T$ has finite index in $L$.
@@ -99,7 +99,7 @@ So if $g_\CC$ preserves $H^{2,0}(X)$, it preserves $H^{0,2}(X)=\overline{H^{2,0}
 ::: {.lemma #lem:k3-positive-cone-component title="The positive cone of the Néron–Severi lattice"}
 
 In @not:k3-automorphism-data, $\mathcal C_S$ is the connected component of $\theset{x\in S\tensor\RR\st x^2>0}$ that contains $\Amp(X)$, and the other component is $-\mathcal C_S$.
-The group $W(S)$ preserves $\mathcal C_S$, and $P_S\iscontainedin\Orth^+(S)$.
+The group (@def:group) $W(S)$ preserves $\mathcal C_S$, and $P_S\iscontainedin\Orth^+(S)$.
 If $\rho\geq2$, then $\Orth^+(S)$ is the group $\Orth^+(S)$ of @prop:spinor-plus-cone-components.
 :::
 
@@ -108,16 +108,16 @@ If $\rho\geq2$, then $\Orth^+(S)$ is the group $\Orth^+(S)$ of @prop:spinor-plus
 Put $P\definedas\theset{x\in S\tensor\RR\st x^2>0}$, and let $P_0$ be the component of $P$ that contains the connected set $\Amp(X)$ (@def:ample-cone).
 The set $P$ has exactly the two components $P_0$ and $-P_0$.
 For $\rho=1$ this holds because $S\tensor\RR$ is a line.
-For $\rho\geq2$, $S$ has signature $(1,\rho-1)$ by @prop:k3-ns-transcendental, so $P$ has two components by @prop:spinor-plus-cone-components, each preserved by $\Orth^+(S)$; and $-\id_S\notin\Orth^+(S)$ by @lem:minus-identity-spinor-norm because the positive index of $S$ is $1$, so $-\id_S$ exchanges them.
+For $\rho\geq2$, $S$ has signature (@def:signature) $(1,\rho-1)$ by @prop:k3-ns-transcendental, so $P$ has two components by @prop:spinor-plus-cone-components, each preserved by $\Orth^+(S)$; and $-\id_S\notin\Orth^+(S)$ by @lem:minus-identity-spinor-norm because the positive index of $S$ is $1$, so $-\id_S$ exchanges them.
 
 The [positive cone]{.other-sense} $C_X$ is a connected component of the open set of classes of positive square in $H^{1,1}(X)\intersect H^2(X;\RR)$ [@PS24, §19.1].
-So $\mathcal C_S=C_X\intersect P$ is open and closed in $P$, and it is a union of components of $P$.
+So $\mathcal C_S=C_X\intersect P$ is open and closed (@def:closed-monoidal) in $P$, and it is a union of components of $P$.
 It contains $\Amp(X)$ [@PS24, §19.1], so $P_0\iscontainedin\mathcal C_S$.
 
 A reflection $s_r$ with $r^2<0$ preserves each component of $P$ (proof of @prop:spinor-plus-cone-components), so $W(S)$ preserves $P_0$ and $-P_0$.
 Suppose $-P_0\iscontainedin\mathcal C_S$, and let $x\in-P_0$.
 The closure of $\Amp(X)$ is a fundamental domain for $W(S)$ on $\mathcal C_S$ [@PS24, Proposition 19.1.3(2)], so $wx$ lies in the closure of $\Amp(X)$ for some $w\in W(S)$.
-The closure of $\Amp(X)$ meets $P$ only in $P_0$, because $P_0$ is closed in $P$.
+The closure of $\Amp(X)$ meets (@def:replete-full-meet) $P$ only in $P_0$, because $P_0$ is closed in $P$.
 But $wx\in-P_0$, which is disjoint from $P_0$.
 This contradiction gives $\mathcal C_S=P_0$.
 
@@ -127,7 +127,7 @@ An isometry preserves $P_0$ if and only if it preserves both components of $P$, 
 
 ::: {.theorem #thm:k3-aut-fibre-product title="The automorphism group is a fibre product"}
 
-In @not:k3-automorphism-data, the assignment $f\mapsto(f_*|_S,f_*|_T)$ is an isomorphism of groups
+In @not:k3-automorphism-data, the assignment $f\mapsto(f_*|_S,f_*|_T)$ is an isomorphism of groups (@def:group)
 $$
 \Aut(X)\isoto P_S\times_Q G_X\definedas\theset{(s,t)\in P_S\times G_X\st a(s)=b(t)}.
 $$
@@ -177,7 +177,7 @@ Since $\gamma_q$ is an isomorphism and $\Orth(A_{T,q})\to\Orth(A_T)$ is a monomo
 
 ::: {.proposition #prop:k3-symplectic-aut title="The symplectic automorphism group"}
 
-In @not:k3-automorphism-data, $A_1$ is isomorphic to the group of symplectic automorphisms of $X$, and
+In @not:k3-automorphism-data, $A_1$ is isomorphic to the group (@def:group) of symplectic automorphisms of $X$, and
 $$
 A_1\cong\widetilde\Orth^+(S)/W(S)
 $$
@@ -210,29 +210,29 @@ So $s_r(x)-x\in S$, and $s_r$ acts trivially on $A_{S,q}$.
 With @lem:k3-positive-cone-component this gives $W(S)\iscontainedin\widetilde\Orth^+(S)$.
 
 Since $P_S\iscontainedin\Orth^+(S)$ by @lem:k3-positive-cone-component, $a(P_S)\iscontainedin\rho_{S,q}(\Orth^+(S))$.
-Conversely, let $g\in\Orth^+(S)$, and let $U\iscontainedin \mathcal C_S$ be the complement of the mirrors $r^\perp$ of the roots $r\in S$ with $r^2=-2$.
+Conversely, let $g\in\Orth^+(S)$, and let $U\iscontainedin \mathcal C_S$ be the complement of the mirrors (@not:hyperbolic-polytope-setting) $r^\perp$ of the roots $r\in S$ with $r^2=-2$.
 The ample cone is a connected component of $U$ (@def:ample-cone).
 The isometry $g$ permutes these roots and preserves $\mathcal C_S$, so it maps $U$ onto $U$ and $\Amp(X)$ onto a component of $U$.
 Let $x\in\Amp(X)$.
 By [@PS24, Proposition 19.1.3(2)] there is $w\in W(S)$ with $wgx$ in the closure of $\Amp(X)$.
-The group $W(S)$ permutes the mirrors, so $wgx\in U$.
-A connected component of $U$ is closed in $U$, so $wgx\in\Amp(X)$.
-Then $wg(\Amp(X))$ is a component of $U$ that meets $\Amp(X)$, so $wg(\Amp(X))=\Amp(X)$ and $wg\in P_S$.
+The group (@def:group) $W(S)$ permutes the mirrors, so $wgx\in U$.
+A connected component of $U$ is closed (@def:closed-monoidal) in $U$, so $wgx\in\Amp(X)$.
+Then $wg(\Amp(X))$ is a component of $U$ that meets (@def:replete-full-meet) $\Amp(X)$, so $wg(\Amp(X))=\Amp(X)$ and $wg\in P_S$.
 Hence $\rho_{S,q}(g)=\rho_{S,q}(wg)=a(wg)$.
 :::
 
 ::: {.lemma #lem:k3-sign-structure title="Positive sign structures on the Néron–Severi lattice"}
 
 In @not:k3-automorphism-data, suppose $\rho\geq2$.
-Then the subgroup of $\Orth(S)$ that preserves positive sign structures [@AD15, §3.7] is $\Orth^+(S)$.
+Then the subgroup of $\Orth(S)$ that preserves positive sign structures (@def:property-structure-stuff) [@AD15, §3.7] is $\Orth^+(S)$.
 :::
 
 ::: {.proof}
 
-A positive sign structure on $S$ is an orientation of a maximal positive-definite subspace of $S\tensor\RR$, and $\det_+\colon\Orth(S)\to\theset{\pm1}$ records whether an isometry preserves or reverses it [@AD15, §3.7].
+A positive sign structure on $S$ is an orientation (@def:free-module-orientation) of a maximal (@def:maximal-lattice) positive-definite subspace of $S\tensor\RR$, and $\det_+\colon\Orth(S)\to\theset{\pm1}$ records whether an isometry preserves or reverses it [@AD15, §3.7].
 The same definition gives a homomorphism $\det_+\colon\Orth(S\tensor\RR)\to\theset{\pm1}$.
 Let $w\in S\tensor\RR$ with $w^2\neq0$.
-If $w^2<0$, then $w^\perp$ has signature $(1,\rho-2)$, so it contains a maximal positive-definite subspace, which $s_w$ fixes; hence $\det_+(s_w)=1$.
+If $w^2<0$, then $w^\perp$ has signature (@def:signature) $(1,\rho-2)$, so it contains a maximal positive-definite subspace, which $s_w$ fixes; hence $\det_+(s_w)=1$.
 If $w^2>0$, then $\RR w$ is a maximal positive-definite subspace and $s_w(w)=-w$; hence $\det_+(s_w)=-1$.
 The character $\chi$ of the proof of @prop:spinor-plus-cone-components takes the same values on these reflections.
 The reflections generate $\Orth(S\tensor\RR)$ by the Cartan–Dieudonné theorem, so $\det_+=\chi$ on $\Orth(S)$.
@@ -241,9 +241,9 @@ So $\ker\det_+=\ker\chi$, which is $\Orth^+(S)$ by @prop:spinor-plus-cone-compon
 
 ::: {.theorem #thm:signed-miranda-morrison title="The signed Miranda–Morrison sequence"}
 
-Let $N$ be a nondegenerate, indefinite, even lattice of rank at least $3$.
-Let $\Orth^+(N)$ be the subgroup of $\Orth(N)$ that preserves positive sign structures, and let $g(N)$ be the genus group (@def:mm-genus-group) of $N$.
-There is a group $\operatorname{MM}^+(N)$ and an exact sequence of groups
+Let $N$ be a nondegenerate (@def:polarization), indefinite (@def:definiteness), even lattice (@def:even-lattice) of rank at least $3$.
+Let $\Orth^+(N)$ be the subgroup of $\Orth(N)$ that preserves positive sign structures (@def:property-structure-stuff), and let $g(N)$ be the genus group (@def:mm-genus-group) of $N$.
+There is a group (@def:group) $\operatorname{MM}^+(N)$ and an exact (@def:exact-complex) sequence of groups
 $$
 \Orth^+(N)\xrightarrow{\rho_{N,q}}\Orth(A_{N,q})\xrightarrow{e_N^+}\operatorname{MM}^+(N)\too g(N)\too1.
 $$
@@ -253,7 +253,7 @@ The group $\operatorname{MM}^+(N)$ is $\mathrm E_+(N)$ in [@AD15, §3.7, equatio
 ::: {.definition #def:k3-mm-obstruction title="The signed Miranda–Morrison obstruction of a K3 surface" defines="signed Miranda–Morrison obstruction; $\operatorname{ob}_X$; $A_2$"}
 
 In @not:k3-automorphism-data, suppose $\rho\geq3$.
-Then $S$ is nondegenerate, indefinite, even and of rank $\rho\geq3$ by @prop:k3-ns-transcendental, and its group $\Orth^+(S)$ in @thm:signed-miranda-morrison is the group $\Orth^+(S)$ of @not:k3-automorphism-data by @lem:k3-sign-structure.
+Then $S$ is nondegenerate (@def:polarization), indefinite (@def:definiteness), even and of rank $\rho\geq3$ by @prop:k3-ns-transcendental, and its group (@def:group) $\Orth^+(S)$ in @thm:signed-miranda-morrison is the group $\Orth^+(S)$ of @not:k3-automorphism-data by @lem:k3-sign-structure.
 Define
 $$
 \operatorname{ob}_X\definedas e_S^+\circ b|_{G_X}\colon G_X\too\operatorname{MM}^+(S),
@@ -303,7 +303,7 @@ By @def:k3-mm-obstruction, $A_2=e_S^+(b(G_X))\iscontainedin\im e_S^+$.
 
 ::: {.corollary #cor:k3-aut-full-orthogonal title="The fibre product with the full orthogonal group of $T$"}
 
-In @not:k3-automorphism-data, the fibre product $P_S\times_Q\Orth(T)\definedas\theset{(s,t)\in P_S\times\Orth(T)\st a(s)=b(t)}$ is isomorphic, by extension of $s\perp t$, to the group of isometries of $L$ that preserve $S$ and $\Amp(X)$.
+In @not:k3-automorphism-data, the fibre product $P_S\times_Q\Orth(T)\definedas\theset{(s,t)\in P_S\times\Orth(T)\st a(s)=b(t)}$ is isomorphic, by extension of $s\perp t$, to the group (@def:group) of isometries of $L$ that preserve $S$ and $\Amp(X)$.
 The group $\Aut(X)$ is its pullback along the inclusion $G_X\injects\Orth(T)$:
 ```tikzcd
 \Aut(X) \arrow[r] \arrow[d] \arrow[dr, phantom, "\lrcorner", very near start] & G_X \arrow[d,hook] \\
@@ -330,7 +330,7 @@ Then $a\colon P_S\to Q$ is injective, so $A_1=1$ and $f\mapsto f_*|_T$ embeds $\
 ::: {.construction #cons:k3-aut-group-generators title="Group generators of $\Aut(X)$ from the fibre product" defines="$H$; $K$; $N$; $A_1$; $Y_N$; $r_h$; $s_i$"}
 
 Take @not:k3-automorphism-data.
-Let $Y\iscontainedin P_S$ be a symmetric set of group generators of $P_S$ and let $Z\iscontainedin G_X$ be a set of group generators of $G_X$, given as isometries of $S$ and of $T$; let $\gamma_q$ be given.
+Let $Y\iscontainedin P_S$ be a symmetric set of group (@def:group) generators of $P_S$ and let $Z\iscontainedin G_X$ be a set of group generators of $G_X$, given as isometries of $S$ and of $T$; let $\gamma_q$ be given.
 
 1. Put $H\definedas a(P_S)=\generators{a(Y)}\le Q$. It is finite because $A_{S,q}$ is finite.
 2. Put $K\definedas b|_{G_X}^{-1}(H)\le G_X$. The group $G_X$ is finite cyclic [@MS24, §2.2], so $K$ is finite cyclic.
@@ -394,7 +394,7 @@ If $K=1$, then $\Aut(X)\cong N$.
 $N=\ker a$ is normal in $P_S$, and $a(s^m)=b(t^m)=1$, so $s^m\in N$.
 The two identities hold in $P_S\times G_X$ because $t\,1\,t^{-1}=1$ and $t^m=1$.
 
-Let $F'$ be the presented group and $F\definedas P_S\times_Q G_X$.
+Let $F'$ be the presented group (@def:group) and $F\definedas P_S\times_Q G_X$.
 The assignment $y\mapsto(y,1)$, $u\mapsto(s,t)$ respects the relations, so it defines a homomorphism $\pi\colon F'\to F$.
 It is onto: by @prop:k3-aut-pullback-group-generators (2), $F/(N\times\theset{1})\cong K$ is generated by the image of $u$, and by (1) of that proposition the pairs $(y,1)$ with $y\in Y_N$ generate $N\times\theset{1}$.
 Let $N'\le F'$ be the subgroup generated by $Y_N$.
@@ -420,6 +420,6 @@ $$
 ::: {.proof}
 
 Conjugation by $\varphi$ is an isomorphism $\Orth(L)\isoto\Orth(\lkt)$.
-It maps the Hodge isometries of $L$ that preserve $\Amp(X)$ onto the displayed group.
+It maps the Hodge isometries of $L$ that preserve $\Amp(X)$ onto the displayed group (@def:group).
 By the Torelli theorem [@MS24, Theorem 2.3], $f\mapsto f_*$ is an isomorphism from $\Aut(X)$ onto the Hodge isometries of $L$ that preserve $\Amp(X)$, as in the proof of @thm:k3-aut-fibre-product.
 :::

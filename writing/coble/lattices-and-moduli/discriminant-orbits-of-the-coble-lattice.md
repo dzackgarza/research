@@ -157,7 +157,7 @@ An isometry $w$ of $E_8$ satisfies $\beta(wx,wx) = \beta(x,x)$ and $w(2E_8) = 2E
 The roots $e_1\pm e_2$, $e_3\pm e_4$, $e_5\pm e_6$, $e_7\pm e_8$ of @ex:E8-roots are pairwise orthogonal and span $E_8\tensor\QQ$, so the product of their reflections is $-\id_{E_8}$; it lies in $W(E_8)$ and reduces to the identity.
 
 Let $\bar w = \id$ and let $r$ be a root, so $r^2 = -2$ and $w(r)-r\in 2E_8$.
-A nonzero $x = 2y\in 2E_8$ has $x^2 = 4y^2\leq -8$, because $E_8$ is even and negative definite (@thm:E8-characterization).
+A nonzero $x = 2y\in 2E_8$ has $x^2 = 4y^2\leq -8$, because $E_8$ is even and negative definite (@def:definiteness) (@thm:E8-characterization).
 By the Cauchy--Schwarz inequality for the positive-definite form $-\beta$, $\abs{\beta(w(r),r)}\leq 2$, with $\beta(w(r),r) = 2$ only for $w(r) = -r$.
 So $(w(r)-r)^2 = -4-2\beta(w(r),r)\geq -8$, with equality only for $w(r) = -r$, and therefore $w(r) = \pm r$.
 If two simple roots $r_i$, $r_j$ are joined in the Dynkin diagram, then $r_i+r_j$ has square $-2$ and is a root, so $w(r_i+r_j) = \pm(r_i+r_j)$ forces the signs of $r_i$ and $r_j$ to agree.

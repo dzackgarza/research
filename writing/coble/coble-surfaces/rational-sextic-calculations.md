@@ -8,7 +8,7 @@ Then $C$ is a rational curve if and only if it has exactly ten $A_1$ singulariti
 
 ::: {.proof}
 
-Recall the genus–degree formula for singular plane curves:
+Recall the genus–degree (@def:numerical-polarization) formula for singular plane curves:
 
 $$
 p_a(C) = {1\over 2}(d-1)(d-2) - \Sum_p \delta_p
@@ -22,7 +22,7 @@ Thus $g = 0$ if and only if $k = 10$.
 
 ::: {.proposition #prop:rational-sextic-severi title="The Severi variety of rational sextics"}
 
-1. Let $S_{6,0}\iscontainedin\PP^{27}$ be the Severi variety of rational plane sextics. It is irreducible of dimension $17$ and degree $26312976$. Its general member has exactly $10$ nodes, and the set of these $10$ nodes determines the curve [@BHO+12, §4, proof of Thm. 2].
+1. Let $S_{6,0}\iscontainedin\PP^{27}$ be the Severi variety of rational plane sextics. It is irreducible of dimension $17$ and degree (@def:numerical-polarization) $26312976$. Its general member has exactly $10$ nodes, and the set of these $10$ nodes determines the curve [@BHO+12, §4, proof of Thm. 2].
 2. There is a rational cuspidal plane sextic over $\CC$ whose only singular point is a cusp with multiplicity sequence $[5]$ [@GK20, Thm. 1.1, Thm. 3.1]. It does not have ten $A_1$ singularities.
 
 :::
@@ -30,7 +30,7 @@ Thus $g = 0$ if and only if $k = 10$.
 ::: {.proposition #prop:coble-canonical-class title="Canonical class of the blowup of the ten nodes"}
 
 Let $W\subset \PP^2$ be an irreducible sextic whose singular points are exactly ten $A_1$ singularities $p_1, \ldots, p_{10}$.
-Let $\pi\colon S\to\PP^2$ be the blowup of $p_1, \ldots, p_{10}$, with geometric basis $e_0, \ldots, e_{10}$ as in @prop:blowup-geometric-basis, and let $C$ be the proper transform of $W$.
+Let $\pi\colon S\to\PP^2$ be the blowup of $p_1, \ldots, p_{10}$, with geometric basis (@def:based-module) $e_0, \ldots, e_{10}$ as in @prop:blowup-geometric-basis, and let $C$ be the proper transform of $W$.
 Then
 $$
 K_S = -3e_0 + \Sum_{k=1}^{10} e_k,
@@ -54,8 +54,8 @@ K_S^2 = 9e_0^2 + \Sum_{k=1}^{10} e_k^2 = 9 - 10 = -1
 .
 $$
 An $A_1$ singularity of a plane curve is a double point, so $W$ has multiplicity $2$ at each $p_k$.
-The points $p_k$ are distinct points of $\PP^2$, so each blowup is an isomorphism near the other points, and the proper transform of $W$ still has multiplicity $2$ at each point blown up later.
-By [@Har77, V.3.6], the pullback of a curve under the blowup of a point of multiplicity $r$ on it is its proper transform plus $r$ times the exceptional curve.
+The points $p_k$ are distinct points of $\PP^2$, so each blowup is an isomorphism (@def:isomorphism-of-objects) near the other points, and the proper transform of $W$ still has multiplicity $2$ at each point blown up later.
+By [@Har77, V.3.6], the pullback (@def:pullback-square) of a curve under the blowup of a point of multiplicity $r$ on it is its proper transform plus $r$ times the exceptional curve.
 Applied ten times, with $W\sim 6h$ for the class $h$ of a line [@Har77, II.6.4], this gives $6e_0 = C + 2\Sum_{k=1}^{10} e_k$ in $\Pic(S)$, so $C \sim 6e_0 - 2\Sum_k e_k = -2K_S$.
 
 :::
@@ -75,7 +75,7 @@ $$
 p_{a}(C)=1+\frac{1}{2}\qty{ C^{2}+C \cdot K_{S} } = 1 + \frac12\qty{4K_S^2 - 2K_S^2} = 1+K_{S}^{2}=0
 .
 $$
-An integral projective curve with $p_a = 0$ is nonsingular and isomorphic to $\PP^1$ [@Har77, IV Ex. 1.8(b)].
+An integral projective (@def:module-subcategories) curve with $p_a = 0$ is nonsingular and isomorphic to $\PP^1$ [@Har77, IV Ex. 1.8(b)].
 Finally $C^2 = 4K_S^2 = -4$.
 
 :::
@@ -101,9 +101,9 @@ The monomials $x^iy^jz^k$ with $i+j+k=6$ number $\binom{6+2}{2} = 28$, giving th
 For a fixed $p$, singularity of $\theset{F = 0}$ at $p$ is the vanishing of the three partial derivatives $\del_x F(p)$, $\del_y F(p)$, $\del_z F(p)$; each is a linear condition on the coefficients of $F$, and $F(p) = 0$ follows from Euler's identity $\Sum_i x_i\,\del_i F = 6F$.
 Choose representatives $\tilde p_i\in\CC^3\setminus\theset{0}$ of the points $p_i$.
 The thirty conditions form the linear map $M(\tilde p_1, \ldots, \tilde p_{10})\colon H^0\bigl(\PP^2, \OO_{\PP^2}(6)\bigr)\cong\CC^{28}\to\CC^{30}$ that sends $F$ to the values of $\del_x F$, $\del_y F$, $\del_z F$ at the $\tilde p_i$.
-A sextic singular at all ten points is a nonzero vector of its kernel, and the kernel is nonzero if and only if the rank is at most $27$.
+A sextic singular at all ten points is a nonzero vector of its kernel (@def:kernel-cokernel), and the kernel is nonzero if and only if the rank is at most $27$.
 
-The partial derivatives are homogeneous of degree $5$, so replacing $\tilde p_i$ by $\lambda\tilde p_i$ multiplies three rows by $\lambda^5$ and does not change the rank.
+The partial derivatives are homogeneous of degree (@def:numerical-polarization) $5$, so replacing $\tilde p_i$ by $\lambda\tilde p_i$ multiplies three rows by $\lambda^5$ and does not change the rank.
 The locus where the rank is $28$ is the complement of the common zero set of the $28\times 28$ minors, which are polynomials in the coordinates of the $\tilde p_i$; it therefore descends to a Zariski-open subset $\mathcal U\iscontainedin(\PP^2)^{10}$.
 The subset $\mathcal U$ is nonempty by @ex:sextic-node-conditions-rank.
 :::
@@ -148,7 +148,7 @@ The second statement is @prop:rational-sextic-severi (1).
 
 ::: {.proposition #prop:hessian-rank-at-singular-point title="Hessian rank at a singular point"}
 
-Let $k$ be a field, let $F\in k[x_0, x_1, x_2]$ be homogeneous of degree $n$, and let $p\in k^3$ be nonzero with
+Let $k$ be a field, let $F\in k[x_0, x_1, x_2]$ be homogeneous of degree (@def:numerical-polarization) $n$, and let $p\in k^3$ be nonzero with
 $$
 \del_j F(p) = 0
 \qquad\text{for } j = 0, 1, 2
@@ -171,6 +171,6 @@ $$
 $$
 that is $\Sum_i x_i\,\del_i\del_j F = (n-1)\,\del_j F$.
 Evaluating at $p$, where every first partial vanishes, gives $H(F)(p)\cdot p = 0$.
-Since $p\neq 0$ the kernel of $H(F)(p)$ is nonzero, so by rank-nullity in dimension $3$ the rank is at most $2$.
+Since $p\neq 0$ the kernel (@def:kernel-cokernel) of $H(F)(p)$ is nonzero, so by rank-nullity in dimension $3$ the rank is at most $2$.
 :::
 

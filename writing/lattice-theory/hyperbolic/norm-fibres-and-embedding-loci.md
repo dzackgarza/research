@@ -30,7 +30,7 @@ The kernel retains its inclusion into $L$. It exists even when $S$ is degenerate
 
 ::: {.proposition #prop:field-embedding-witt-test title="Embedding criterion over a field"}
 
-For nondegenerate finite-dimensional spaces $T,L$ over a field of characteristic different from two,
+For nondegenerate (@def:polarization) finite-dimensional spaces $T,L$ over a field of characteristic (@def:two-elementary-isotropic-types) different from two,
 $$
 \operatorname{Emb}(T,L)\ne\varnothing
 \quad\Longleftrightarrow\quad
@@ -40,7 +40,7 @@ $$
 
 ::: {.proof}
 
-If $T$ embeds, split its nondegenerate image to write $L\cong T\perp M$. Then $T\perp(-T)$ is hyperbolic of rank $2\dim T$, giving the inequality. Conversely Witt decomposition with at least $\dim T$ planes yields $L\perp(-T)\cong M\perp T\perp(-T)$. Witt cancellation of $-T$ gives $L\cong M\perp T$ [@OM00, §42E, 42:16].
+If $T$ embeds, split (@def:hyperbolic-plane) its nondegenerate image to write $L\cong T\perp M$. Then $T\perp(-T)$ is hyperbolic (@def:definiteness) of rank $2\dim T$, giving the inequality. Conversely Witt decomposition with at least $\dim T$ planes yields $L\perp(-T)\cong M\perp T\perp(-T)$. Witt cancellation of $-T$ gives $L\cong M\perp T$ [@OM00, §42E, 42:16].
 :::
 
 When source and target have equal dimension, an embedding is an isometry. The inverse map must be returned with the original endpoints. Over $\bQ$, an affirmative criterion followed by a complete rational enumeration yields a witness; over a real closed exact field, matching diagonal signs and square-root scalings gives one directly. For example $\langle1/4\rangle\cong\langle1\rangle$ over $\bQ$ by $v\mapsto e/2$, with inverse $e\mapsto2v$. The forms $\langle3\rangle$ and $\langle1\rangle$ become isometric over a real algebraic closure by $\sqrt3$, but not over $\bQ$. The rational form $\langle1,1\rangle$ represents $2$ but not $3$, whereas both are represented over a real algebraic closure.
@@ -49,7 +49,7 @@ For a concrete higher-dimensional algebraic-real embedding, $T$ with Gram matrix
 
 ::: {.proposition #prop:integral-embedding-saturation title="Saturation reduction"}
 
-For nondegenerate finite-rank integral lattices $T,L$,
+For nondegenerate (@def:polarization) finite-rank integral lattices $T,L$,
 $$
 \operatorname{Emb}_{\bZ}(T,L)\ne\varnothing
 \quad\Longleftrightarrow\quad
@@ -61,7 +61,7 @@ The family of such $T'$ is finite.
 
 ::: {.proof}
 
-For $j:T\to L$, put $P=j_{\bQ}(T_{\bQ})\cap L$. If a nonzero multiple of $x\in L$ lies in the rational image, then $x$ lies there, so $P$ is primitive. Pull $P$ back through $j_{\bQ}$ to $T'$. Its form is integral because $P\subseteq L$, and $b(T',T)\subseteq\bZ$ gives $T'\subseteq T^\vee$. Conversely compose an overlattice inclusion with a primitive embedding of $T'$. Since $T^\vee/T$ is finite, its subgroups give a finite list. Integrality is the vanishing of the discriminant bilinear pairing on the subgroup; evenness is a stronger condition and is not required here.
+For $j:T\to L$, put $P=j_{\bQ}(T_{\bQ})\cap L$. If a nonzero multiple of $x\in L$ lies in the rational image, then $x$ lies there, so $P$ is primitive (@def:primitive-embedding). Pull $P$ back through $j_{\bQ}$ to $T'$. Its form is integral because $P\subseteq L$, and $b(T',T)\subseteq\bZ$ gives $T'\subseteq T^\vee$. Conversely compose an overlattice (@def:overlattice) inclusion with a primitive embedding (@def:primitive-embedding) of $T'$. Since $T^\vee/T$ is finite, its subgroups give a finite list. Integrality is the vanishing of the discriminant bilinear pairing on the subgroup; evenness is a stronger condition and is not required here.
 :::
 
 For $U(4)\to U(2)$, $e\mapsto2e$ and $f\mapsto f$ gives an index-two embedding. It is neither primitive nor an isometry in equal rank, but its saturation is an integral overlattice. An odd $\langle1\rangle$ cannot embed in the even lattice $U(2)$. Classification by primitive embeddings of these finite overlattices supplies an unconstrained existence decision when its primitive-embedding decision applies. An extra condition on the original map may not survive passage to a class representative.
@@ -101,7 +101,7 @@ There is no total emptiness algorithm for arbitrary decidable predicate subsets 
 
 ::: {.proof}
 
-Choose a basis $e,f,a$ of $L=U\perp\langle2\rangle$ with $b(e,f)=1$ and $q(a)=2$. For every $n\ge0$ define
+Choose a basis (@def:based-module) $e,f,a$ of $L=U\perp\langle2\rangle$ with $b(e,f)=1$ and $q(a)=2$. For every $n\ge0$ define
 $$j_n(e)=e,\qquad j_n(f)=f+na-n^2e.$$
 The Gram equation makes each $j_n$ an embedding. Conversely, an embedding $j$ with $j(e)=e$ has $j(f)=xe+f+na$; its zero square forces $x=-n^2$. Restricting to nonnegative $a$-coordinate therefore selects precisely the $j_n$.
 

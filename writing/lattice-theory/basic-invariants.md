@@ -5,12 +5,12 @@ Throughout, $R$ is a Dedekind domain with fraction field $K$, the main case bein
 ::: {.notation #def:lattice-basic-invariants title="Norm and norm shells" defines="norm; norm shell; $L[a]$"}
 
 Let $L$ be an integral lattice.
-The *norm* of $v\in L$ is the value of the form at the diagonal, $\beta_L(v,v)$; the notation $q_L$ is reserved for the quadratic discriminant form of @def:discriminant.
+The *norm* of $v\in L$ is the value of the form at the diagonal (@def:polarization-functors), $\beta_L(v,v)$; the notation $q_L$ is reserved for the quadratic discriminant form of @def:discriminant.
 For $a\in\bZ$ the *norm shell* of $a$ is the set of vectors of that norm,
 $$
 L[a]\definedas\theset{v\in L\st \beta_L(v,v)=a}\subseteq L.
 $$
-When $L$ is even (@def:even-lattice) every norm is even, so $L[a]$ is empty for odd $a$.
+When $L$ is even (@def:even-lattice) every norm is even, so $L[a]$ is empty for odd (@def:two-elementary-isotropic-types) $a$.
 :::
 
 ::: {.definition #def:lattice-divisibility title="Divisibility of a vector" defines="divisibility ideal; $I_v$; divisibility; $\div_L(v)$"}
@@ -41,5 +41,5 @@ The *discriminant class* of $v$ is its image
 $$
 [v^*]\definedas\pi_L(v^*)\in A_L^\sharp
 $$
-under the cokernel morphism $\pi_L\colon L^\#\twoheadrightarrow A_L^\sharp$ of @def:discriminant.
+under the cokernel (@def:kernel-cokernel) morphism $\pi_L\colon L^\#\twoheadrightarrow A_L^\sharp$ of @def:discriminant.
 :::

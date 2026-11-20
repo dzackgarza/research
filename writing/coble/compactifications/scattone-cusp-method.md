@@ -121,14 +121,14 @@ For $p = 1$ the congruence $v\equiv w\pmod{\ten}$ holds for all $v, w\in\ten$, s
 
 ::: {.proposition #prop:scattone-niemeier-complements title="Boundary lattices as complements in Niemeier lattices"}
 
-Let $d\geq 1$ and let $\mathcal G(d)$ be the genus of $\langle -2d\rangle\oplus E_8^{\oplus 2}$, a genus of even (@def:form-axioms) negative definite lattices of rank $17$.
+Let $d\geq 1$ and let $\mathcal G(d)$ be the genus of $\langle -2d\rangle\oplus E_8^{\oplus 2}$, a genus of even (@def:form-axioms) negative definite (@def:definiteness) lattices of rank $17$.
 
-1. For every primitive totally isotropic (@def:orthogonal-complement) plane $E\iscontainedin\lkttd$ that is primitive in $\lkttd^\#$, the lattice $E^{\perp}/E$ lies in $\mathcal G(d)$, and every lattice in $\mathcal G(d)$ is isometric to $E^{\perp}/E$ for such a plane $E$ [@Sca87, §5, (5.0.1)].
+1. For every primitive (@def:primitive-embedding) totally isotropic (@def:orthogonal-complement) plane $E\iscontainedin\lkttd$ that is primitive in $\lkttd^\#$, the lattice $E^{\perp}/E$ lies in $\mathcal G(d)$, and every lattice in $\mathcal G(d)$ is isometric to $E^{\perp}/E$ for such a plane $E$ [@Sca87, §5, (5.0.1)].
 
-2. There are exactly $24$ even unimodular negative definite lattices of rank $24$ up to isometry, and each is determined up to isometry by its sublattice spanned by the vectors of norm $-2$ [@Sca87, Thm. 3.5.1].
+2. There are exactly $24$ even unimodular negative definite lattices of rank $24$ up to isometry, and each is determined up to isometry by its sublattice spanned by the vectors of norm (@def:lattice-basic-invariants) $-2$ [@Sca87, Thm. 3.5.1].
 
 3. Let $v\in E_8$ be primitive with $v^2 = -2d$ and let $N\definedas v^{\perp E_8}$.
-   Every lattice in $\mathcal G(d)$ is isometric to the orthogonal complement $N^{\perp M}$ of some primitive embedding $N\injects M$ into a lattice $M$ of (2) [@Sca87, Prop. 6.1.2].
+   Every lattice in $\mathcal G(d)$ is isometric to the orthogonal complement $N^{\perp M}$ of some primitive embedding (@def:primitive-embedding) $N\injects M$ into a lattice $M$ of (2) [@Sca87, Prop. 6.1.2].
 :::
 
 ## Example: the cusp diagram of $F_2$

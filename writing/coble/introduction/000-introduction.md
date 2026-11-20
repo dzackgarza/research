@@ -2,11 +2,11 @@
 
 ::: {.theorem #thm:baily-borel-compactification title="The Baily--Borel compactification"}
 
-Let $G$ be a connected semisimple $\QQ$-group with trivial center whose symmetric space $X = K\backslash G_\RR$ is a bounded domain, and let $\Gamma$ be an arithmetic group of automorphisms of $X$.
+Let $G$ be a connected semisimple $\QQ$-group with trivial center whose symmetric space (@def:hsd-symmetric-space) $X = K\backslash G_\RR$ is a bounded domain, and let $\Gamma$ be an arithmetic group (@def:group) of automorphisms of $X$.
 Let $X^*$ be the union of the rational [boundary components]{.other-sense} of $X$ with the Satake topology, and let $V^* = X^*/\Gamma$ be the compactification of $V = X/\Gamma$.
 Then $V^*$ is the disjoint union of finitely many quotients $V_i = F_i/\Gamma(F_i)$ of rational [boundary components]{.other-sense} $F_i$, with $F_0 = X$.
-The space $V^*$ is an irreducible normal analytic space, in which each $V_i$ is a locally closed analytic subspace [@BB66, 10.1, Thm. 10.4].
-There are finitely many automorphic forms of one weight whose map $V^*\to\PP^N$ is an isomorphism onto a normally projective subvariety of $\PP^N$ [@BB66, Thm. 10.11].
+The space $V^*$ is an irreducible normal analytic space, in which each $V_i$ is a locally closed (@def:closed-monoidal) analytic subspace [@BB66, 10.1, Thm. 10.4].
+There are finitely many automorphic forms of one weight whose map $V^*\to\PP^N$ is an isomorphism (@def:isomorphism-of-objects) onto a normally projective (@def:module-subcategories) subvariety of $\PP^N$ [@BB66, Thm. 10.11].
 
 :::
 

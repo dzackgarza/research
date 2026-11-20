@@ -27,7 +27,7 @@ For an integral lattice $L$,
 $$
 h_{\bZ}(L)\leq h_{\bQ}(L\otimes\bQ)\leq h_{\bR}(L\otimes\bR).
 $$
-If $L$ is nondegenerate of signature $(n_+,n_-)$, then
+If $L$ is nondegenerate (@def:polarization) of signature (@def:signature) $(n_+,n_-)$, then
 $$
 h_{\bZ}(L)\leq i_W(L_{\bQ})\leq\min(n_+,n_-).
 $$
@@ -35,21 +35,21 @@ $$
 
 ::: {.proof}
 
-Tensor an orthogonal splitting with $\bQ$ and then $\bR$. The rational span of one isotropic vector in each integral hyperbolic plane is totally isotropic. A totally isotropic subspace of $L_{\bR}=V^+\perp V^-$ meets either definite summand trivially, so both projections from it are injective. Its dimension is at most $n_+$ and $n_-$. Nondegeneracy matters: a radical is totally isotropic but contributes no sign to the signature.
+Tensor an orthogonal splitting (@def:lattice-split) with $\bQ$ and then $\bR$. The rational span of one isotropic (@def:orthogonal-complement) vector in each integral hyperbolic plane (@def:hyperbolic-plane) is totally isotropic. A totally isotropic subspace of $L_{\bR}=V^+\perp V^-$ meets (@def:replete-full-meet) either definite (@def:definiteness) summand trivially, so both projections from it are injective. Its dimension is at most $n_+$ and $n_-$. Nondegeneracy matters: a radical (@def:two-witnesses) is totally isotropic but contributes no sign to the signature.
 :::
 
 ## Radical reduction {#sec-hyperbolic-radical}
 
 ::: {.proposition #prop:hyperbolic-radical-reduction title="Radical reduction"}
 
-Let $N=\operatorname{rad}(L)$. Over each of the three rings above, $N$ is saturated, $L/N$ is free and nondegenerate, and
+Let $N=\operatorname{rad}(L)$. Over each of the three rings above, $N$ is saturated (@def:saturation), $L/N$ is free (@def:module-subcategories) and nondegenerate (@def:polarization), and
 $$L\cong N\perp(L/N),\qquad h_R(L)=h_R(L/N).$$
 A splitting of $L/N$ lifts to a splitting of $L$ whose complement contains $N$.
 :::
 
 ::: {.proof}
 
-If $ax\in N$ for nonzero $a\in R$, then $ab(x,y)=0$ for every $y$, hence $x\in N$. The quotient is free because $R$ is a field or $\bZ$; choose a linear section. The radical is perpendicular to the section, proving the first decomposition. Its quotient form has zero radical. A hyperbolic summand of $L/N$ lifts along the section, and @prop:hyperbolic-summand-splits splits it in $L$. Conversely, the image of a hyperbolic summand in $L/N$ remains hyperbolic.
+If $ax\in N$ for nonzero $a\in R$, then $ab(x,y)=0$ for every $y$, hence $x\in N$. The quotient is free because $R$ is a field or $\bZ$; choose a linear section. The radical (@def:two-witnesses) is perpendicular to the section, proving the first decomposition. Its quotient form has zero radical. A hyperbolic (@def:definiteness) summand of $L/N$ lifts along the section, and @prop:hyperbolic-summand-splits splits (@def:hyperbolic-plane) it in $L$. Conversely, the image of a hyperbolic summand in $L/N$ remains hyperbolic.
 :::
 
 The zero module has index zero; the empty basis change has determinant one.
@@ -62,12 +62,12 @@ Suppose $e_1,f_1,\ldots,e_r,f_r\in L$ satisfy
 $$b(e_i,e_j)=b(f_i,f_j)=0,\qquad b(e_i,f_j)=\delta_{ij}.$$
 Let $S$ be their span. Then addition gives an isometry $S\perp S^\perp\xrightarrow{\sim}L$, with complementary projection
 $$\pi_{S^\perp}(x)=x-\sum_{i=1}^r\bigl(b(x,f_i)e_i+b(x,e_i)f_i\bigr). \tag{2}$$
-In particular an isometric integral embedding $U_{\bZ}^{\perp r}\to L$ has primitive image.
+In particular an isometric integral embedding $U_{\bZ}^{\perp r}\to L$ has primitive (@def:primitive-embedding) image.
 :::
 
 ::: {.proof}
 
-Pairing (2) with any $e_j$ or $f_j$ gives zero. The difference $x-\pi_{S^\perp}(x)$ lies in $S$, and pairing an element of $S\cap S^\perp$ with $f_j$ and $e_j$ kills every coefficient. Thus $L=S\oplus S^\perp$, with vanishing cross pairing. The integral formula makes this a direct sum of integral modules, so the quotient by $S$ is free.
+Pairing (2) with any $e_j$ or $f_j$ gives zero. The difference $x-\pi_{S^\perp}(x)$ lies in $S$, and pairing an element of $S\cap S^\perp$ with $f_j$ and $e_j$ kills every coefficient. Thus $L=S\oplus S^\perp$, with vanishing cross pairing. The integral formula makes this a direct sum of integral modules, so the quotient by $S$ is free (@def:module-subcategories).
 :::
 
 In selected bases, let $X$ have the hyperbolic columns, $X^TGX=H^{\oplus r}$. A *full* basis $Y$ of $\ker_R(X^TG)$ gives

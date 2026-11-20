@@ -18,7 +18,7 @@ notes: |-
 
 ::: {#cons:coble-set-lattices .construction title="The lattices from a Coble set" defines="$M$; $N$; $F_{\Co,n}$"}
 
-Let $S$ be a terminal Coble surface (@def:coble-surface) of K3 type with $n$ boundary components, and let $X$ be its K3 double cover, branched along $C = C_1 + \cdots + C_n$.
+Let $S$ be a terminal (@def:terminal-coble-surface) Coble surface (@def:coble-surface) of K3 type with $n$ boundary components, and let $X$ be its K3 double cover (@not:coble-ten-point-blowup), branched along $C = C_1 + \cdots + C_n$.
 For a general such $S$, $\Pic(X)$ is the $2$-elementary lattice $M$ of @tbl-coble-lattices with invariants $(r,a,\delta) = (10+n,\, 12-n,\, \delta)$.
 The period domain construction of @sec-moduli-construction, applied to $M$ and its orthogonal complement $N = M^{\perp\lkt}$, gives the moduli spaces $F_{\Co,n}$.
 :::
@@ -38,8 +38,8 @@ By @prop:coble-table-invariants, $r = 10+n$ and $a = 12-n$, so $22-r-a = 0$ and 
 ::: {.proposition #prop:coble-families-in-enriques-moduli title="Each Coble family lies in the Coble divisor of Enriques moduli"}
 
 For each lattice $M$ of rank $10+n$ in @tbl-coble-lattices, the moduli functor of $M$-polarized K3 surfaces of [@CDL25, §5.4] embeds into the moduli functor of $E_{10}(2)$-polarized K3 surfaces.
-Its image is an open subset of an irreducible closed subset of codimension $n-1$ of the quotient $\Gamma^\sharp_{\mathrm{Enr}}\backslash\mch(-2)$ of the $(-2)$-Heegner divisor of the Enriques period domain, and it is a coarse moduli space of Coble surfaces (@def:coble-surface) with $n$ boundary components [@CDL25, §5.4, Prop. 5.4.6 and the paragraph after it].
-For $n = 1$, the image under the period map is an open subset of $\mcm_{\mathrm{Coble}}$, and the coarse moduli space is the coarse moduli space of marked Coble surfaces with $n = 1$ [@CDL25, Prop. 5.4.6].
+Its image is an open subset of an irreducible closed (@def:closed-monoidal) subset of codimension $n-1$ of the quotient $\Gamma^\sharp_{\mathrm{Enr}}\backslash\mch(-2)$ of the $(-2)$-Heegner divisor of the Enriques period domain, and it is a coarse moduli space of Coble surfaces (@def:coble-surface) with $n$ boundary components [@CDL25, §5.4, Prop. 5.4.6 and the paragraph after it].
+For $n = 1$, the image under the period map (@def:period-map) is an open subset of $\mcm_{\mathrm{Coble}}$, and the coarse moduli space is the coarse moduli space of marked Coble surfaces with $n = 1$ [@CDL25, Prop. 5.4.6].
 
 :::
 
@@ -93,7 +93,7 @@ Each triple is a row of @tbl-coble-lattices by @prop:coble-table-invariants.
 
 Write $n \definedas 12 - a$. The ten triples with $\delta = 1$ are the lattices $(10+n,\, 12-n,\, 1)$ for $n = 1, \dots, 10$, and the eleventh is $(18,4,0)$, which has $n = 8$.
 Hence @tbl-coble-lattices has one row for each $n$ from $1$ to $10$ and two rows at $n = 8$, the family $(10+n,\, 12-n,\, \delta)$ is a family of ten values of $n$ and eleven lattices, and the "ten lattices" of the programme's organizing observation counts $n$ and not lattices.
-The triple $(14,8,0)$ lies on the edge and is a lattice, but it is not one of the eleven: by (2) of the proof the complement $N$ of $(14,8,0)$ would be an even lattice of signature $(2,6)$ with $(\delta; t_+, t_-, a) = (0; 2, 6, 8)$, and the condition attached to $a = t_+ + t_-$, which holds there with equality, requires $2 - 6 = -4 \equiv 0 \pmod 8$, which fails.
+The triple $(14,8,0)$ lies on the edge and is a lattice, but it is not one of the eleven: by (2) of the proof the complement $N$ of $(14,8,0)$ would be an even lattice (@def:even-lattice) of signature $(2,6)$ with $(\delta; t_+, t_-, a) = (0; 2, 6, 8)$, and the condition attached to $a = t_+ + t_-$, which holds there with equality, requires $2 - 6 = -4 \equiv 0 \pmod 8$, which fails.
 :::
 
 ::: {.proof}
@@ -119,17 +119,17 @@ For each row of @tbl-coble-lattices let $M_n$ be the lattice $M$ and $N_n = M_n^
 Then $N_n = B_n(2)$ with $B_n$ unimodular of signature $(2,\, 10-n)$: $B_n = \latI_{2,10-n}$ in the ten rows with $\delta = 1$ and $B_n = U^{\oplus 2}$ in the row $(18,4,0)$.
 Consequently:
 
-1. $A_{N_n} \cong B_n/2B_n$, and under this identification the discriminant quadratic form is $q_{N_n}([x/2]) = b_{B_n}(x,x) \bmod 2$ and the discriminant representation is reduction modulo $2$;
-2. every primitive vector $v\in N_n$ has divisibility exactly $2$ in $N_n$, so the class $[v/2]\in A_{N_n}$ is defined and nonzero;
+1. $A_{N_n} \cong B_n/2B_n$, and under this identification the discriminant quadratic form (@def:discquad) is $q_{N_n}([x/2]) = b_{B_n}(x,x) \bmod 2$ and the discriminant representation (@def:representable-presheaf) is reduction modulo $2$;
+2. every primitive vector $v\in N_n$ has divisibility (@def:lattice-divisibility) exactly $2$ in $N_n$, so the class $[v/2]\in A_{N_n}$ is defined and nonzero;
 3. $\bD(N_n)$ has complex dimension $10 - n$.
 :::
 
 ::: {.proof}
 
-The complement column of @tbl-coble-lattices is @prop:coble-table-invariants, namely $N_n = \latI_{2,10-n}(2)$ in the ten rows with $\delta = 1$, and $N_n = U(2)^{\oplus 2} = (U^{\oplus 2})(2)$ in the row $(18,4,0)$, whose negative index is $10 - 8 = 2$.
-The lattice $\latI_{2,10-n}$ is odd unimodular of signature $(2, 10-n)$ and $U^{\oplus 2}$ is even unimodular of signature $(2,2)$, so in each row $N_n = B_n(2)$ with $B_n$ unimodular of that signature.
+The complement column of @tbl-coble-lattices is @prop:coble-table-invariants, namely $N_n = \latI_{2,10-n}(2)$ in the ten rows with $\delta = 1$, and $N_n = U(2)^{\oplus 2} = (U^{\oplus 2})(2)$ in the row $(18,4,0)$, whose negative index (@def:index) is $10 - 8 = 2$.
+The lattice $\latI_{2,10-n}$ is odd (@def:two-elementary-isotropic-types) unimodular of signature $(2, 10-n)$ and $U^{\oplus 2}$ is even (@def:form-axioms) unimodular of signature $(2,2)$, so in each row $N_n = B_n(2)$ with $B_n$ unimodular of that signature.
 
-(1) For a unimodular $B$ the dual of $T = B(2)$ is $\tfrac12 B$: the form of $T$ is $2b_B$, its inverse form is $\tfrac12 b_B^{-1}$, and in a basis of $B$ the matrix of $b_B^{-1}$ is unimodular; so
+(1) For a unimodular $B$ the dual of $T = B(2)$ is $\tfrac12 B$: the form of $T$ is $2b_B$, its inverse form is $\tfrac12 b_B^{-1}$, and in a basis (@def:based-module) of $B$ the matrix of $b_B^{-1}$ is unimodular; so
 $$
 A_T = (\tfrac12 B)/B \cong B/2B .
 $$
@@ -143,9 +143,9 @@ An isometry of $T$ is an isometry of $B$, because the two forms differ by the sc
 
 The conjecture was that the Baily--Borel boundaries of all ten families are computable by the techniques used at $n = 1$, which were three: the reduction of the cusp orbits through the discriminant kernel, a computation on the finite group $A_N$ (@thm:coble-zero-cusp-count); Vinberg's algorithm at each cusp, which produces the chamber and its diagram (@cor:vinberg-terminates-reflective); and the Tits incidence between the orbits of lines and of planes (@prop:coble-arithmetic-flag-incidence).
 
-1. The structural input of the first step transfers to every row: by @prop:coble-n-twist-form the period lattice $N_n$ is a twist $B_n(2)$ of a unimodular lattice, so its discriminant group, its quadratic form and its discriminant representation have the same description as at $n = 1$.
+1. The structural input of the first step transfers to every row: by @prop:coble-n-twist-form the period lattice $N_n$ is a twist $B_n(2)$ of a unimodular lattice, so its discriminant group, its quadratic form and its discriminant representation (@def:representable-presheaf) have the same description as at $n = 1$.
    What does not transfer with it is the pair of statements that the $n = 1$ computation uses to identify the fibres over the classes, and those are stated only for $B = \latI_{2,9}$ (@lem:I29-plus-line-transitivity, @lem:cusp-vector-stabilizer-image); for another row they must be proved again, and no row of this chapter proves them.
-2. The second step fails in three rows: for $M = (17,5,1)$, $(18,4,1)$ and $(19,3,1)$ the group $W_r(M)$ has infinite index (@thm:nonreflective-r-plus-a-22), Vinberg's algorithm does not terminate (@cor:vinberg-terminates-reflective), and the reflection semifan of $W_r(M)$ is not a fan (@def:coxeter-semifan, from [@AE22, Def. 3.5, printed p. 10]).
+2. The second step fails in three rows: for $M = (17,5,1)$, $(18,4,1)$ and $(19,3,1)$ the group $W_r(M)$ has infinite index (@thm:nonreflective-r-plus-a-22), Vinberg's algorithm does not terminate (@cor:vinberg-terminates-reflective), and the reflection semifan (@def:semitoroidal-compactification) of $W_r(M)$ is not a fan (@def:coxeter-semifan, from [@AE22, Def. 3.5, printed p. 10]).
    These three families have no chamber at any cusp, so no boundary diagram of them is computed by the $n = 1$ technique; what replaces it is the mirror-move classification of their $0$-cusps and boundary lattices (@prop:coble-table-cusp-boundary-lattices), which is an application of [@AE22, Def. 5.6 and Thm. 5.8, printed p. 23] and not of the $n = 1$ technique.
 3. Two rows have no boundary of the shape the comparison needs: for $n = 9$ the lattice $N_9 = \latI_{2,1}(2)$ has negative index one, so it has primitive isotropic vectors and no primitive isotropic plane, and $F_{\Co,9}$ has no $1$-cusp and no Tits edge; for $n = 10$ the lattice $N_{10} = \latI_{2,0}(2)$ is positive definite, $\bD(N_{10})$ is one point, the family is zero-dimensional and it has no $0$-cusp (@prop:coble-table-cusp-boundary-lattices, with @prop:type-iv-dimension).
 

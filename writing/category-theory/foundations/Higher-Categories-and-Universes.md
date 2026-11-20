@@ -2,7 +2,7 @@
 
 ::: {.definition #def:universe title="Universe and decoded objects" defines="$\mcu$-small morphism; decoded object; decoding functor $\operatorname{Dec}_{\mcu}$; $[x,y]_{\mcu}$"}
 
-Work in an external cartesian closed $(\infty,\infty)$-category $\mck$ with pullbacks and terminal object $*$.
+Work in an external cartesian closed (@def:closed-monoidal) $(\infty,\infty)$-category $\mck$ with pullbacks (@def:pullback-square) and terminal object (@def:initial-terminal) $*$.
 Fix a monoidal closed $(\infty,\infty)$-category $\mcu$ internal to $\mck$, and use its canonical self-enrichment.
 Fix a universe fibration
 $$
@@ -25,13 +25,13 @@ B
 \mathcal U.
 \end{tikzcd}
 
-The universe fibration classifies these morphisms: base change induces an equivalence of higher categories
+The universe fibration classifies these morphisms: base change (@def:module-base-change) induces an equivalence (@def:equivalence-of-objects) of higher categories
 $$
 [B,\mcu]_{\mck}
 \simeq
 \mck^{\mcu\text{-small}}_{/B},
 $$
-where the right-hand side is the replete full higher subcategory of $\mck_{/B}$ on the $\mcu$-small morphisms.
+where the right-hand side is the replete (@def:subcategory) full higher subcategory of $\mck_{/B}$ on the $\mcu$-small morphisms.
 
 For a point $h_A\colon *\to\mcu$, define its decoded object by the cartesian square
 
@@ -96,7 +96,7 @@ Writing $B:=\operatorname{Dec}_{\mcu}(b)$ and $C:=\operatorname{Dec}_{\mcu}(c)$,
 $$
 G^{\sharp}:=\operatorname{Dec}_{\mcu}(G)\colon C\too B.
 $$
-Let $\mathcal M$ be a replete class of $1$-cells in $\mcu$ that is stable under base change.
+Let $\mathcal M$ be a replete (@def:subcategory) class of $1$-cells in $\mcu$ that is stable under base change (@def:module-base-change).
 An *$\mathcal M$-family over $b$* is a family $G\colon c\to b$ that belongs to $\mathcal M$.
 Write $\mathcal M(b)$ for the replete full higher subcategory of $\mcu_{/b}$ on the $\mathcal M$-families.
 
@@ -104,7 +104,7 @@ A *classifier for $\mathcal M$* is a $1$-cell
 $$
 p_{\mathcal M}\colon e_{\mathcal M}\too b_{\mathcal M}
 $$
-for which base change induces an equivalence
+for which base change induces an equivalence (@def:equivalence-of-objects)
 $$
 [b,b_{\mathcal M}]_{\mcu}
 \simeq
@@ -128,12 +128,12 @@ b
 b_{\mathcal M}.
 \end{tikzcd}
 
-The representing equivalence includes arrows and all higher cells between families, not only the existence of $F$.
+The representing equivalence includes arrows and all higher cells (@def:cells) between families, not only the existence of $F$.
 :::
 
 ::: {.definition #def:higher-category title="The category of higher categories" defines="$\mathbf{Cat}_{\infty,\infty}$; $\widetilde{\mathbf{Cat}}_{\infty,\infty}$; $p_{\mathcal V}$; higher category; decoded higher category"}
 
-Let $\mathcal M_{\mathrm{cocart}}$ be the replete base-change-stable class of $1$-cells $G$ in $\mcu$ for which $\operatorname{Dec}_{\mcu}(G)$ is a $\mcu$-small cocartesian fibration in $\mck$.
+Let $\mathcal M_{\mathrm{cocart}}$ be the replete (@def:subcategory) base-change-stable class of $1$-cells $G$ in $\mcu$ for which $\operatorname{Dec}_{\mcu}(G)$ is a $\mcu$-small cocartesian fibration in $\mck$.
 Assume that it has a classifier
 $$
 p_{\mathcal M_{\mathrm{cocart}}}\colon
@@ -201,7 +201,7 @@ p_{\mcv}
 \too
 \mathbf{Cat}_{\infty,\infty}.
 $$
-The representing equivalence determines $h_{\mathbf{Cat}_{\infty,\infty}}$, and hence $\mathbf{Cat}_{\infty,\infty}$, up to equivalence as the classifier of small cocartesian families.
+The representing equivalence (@def:equivalence-of-objects) determines $h_{\mathbf{Cat}_{\infty,\infty}}$, and hence $\mathbf{Cat}_{\infty,\infty}$, up to equivalence as the classifier of small cocartesian families.
 
 A higher category is a point
 $$
@@ -225,7 +225,7 @@ C:=\displaystyle\int_*h_C
 \end{tikzcd}
 
 An object of $C$ is a point $x\colon *\to C$.
-When $C=\mathbf{Cat}_{\infty,\infty}$, such a point is itself the classifying point of a higher category, which is decoded by the same pullback.
+When $C=\mathbf{Cat}_{\infty,\infty}$, such a point is itself the classifying point of a higher category, which is decoded by the same pullback (@def:pullback-square).
 More generally, a functor $R\colon C\to\mathbf{Cat}_{\infty,\infty}$ sends a point $x\colon *\to C$ to the classifying point $R\circ x$ of a higher category.
 :::
 
@@ -248,7 +248,7 @@ $$
 F^{\sharp}:=\operatorname{Dec}_{\mcu}(F)
 \colon B\too\mathbf{Cat}_{\infty,\infty}.
 $$
-Define its category of elements by the cartesian square
+Define its category of elements (@def:category-of-elements) by the cartesian square
 
 \begin{tikzcd}
 \displaystyle\int_BF^{\sharp}
@@ -269,7 +269,7 @@ Decoding the classifier square identifies $G^{\sharp}$ with $q_{F^{\sharp}}$ ove
 $$
 C\simeq_B\int_BF^{\sharp}.
 $$
-For a point $s\colon *\to B$, the fiber over $s$ is $\int_*(F^{\sharp}\circ s)$.
+For a point $s\colon *\to B$, the fiber (@def:fiber-cofiber) over $s$ is $\int_*(F^{\sharp}\circ s)$.
 A point of the family over $s$ is a point
 $$
 x\colon *\too\int_*(F^{\sharp}\circ s).
@@ -279,7 +279,7 @@ For $B=*$ and $F^{\sharp}=h_C$, this recovers the points $x\colon *\to C$ of @de
 
 ::: {.definition #def:internal-hom title="Local hom-objects" defines="local hom-object; $[x,y]_C$; hom bifunctor $[-,-]_C$; identity point $\id_x$; composition functor; functor higher category $[C,D]_{\mathbf{Cat}_{\infty,\infty}}$"}
 
-For every decoded higher category $C$ and points $x,y\colon *\to C$, fix a classifying point
+For every decoded higher category (@def:higher-category) $C$ and points $x,y\colon *\to C$, fix a classifying point
 $$
 h_{[x,y]_C}\colon
 *
@@ -308,7 +308,7 @@ $$
 \too
 [x,z]_C.
 $$
-The associativity and unit cells and their higher coherences are part of the $(\infty,\infty)$-categorical structure.
+The associativity and unit cells and their higher coherences are part of the $(\infty,\infty)$-categorical structure (@def:property-structure-stuff).
 
 For higher categories classified by $h_C,h_D\colon *\to\mathbf{Cat}_{\infty,\infty}$, let
 $$
@@ -323,7 +323,7 @@ $$
 :=
 \int_*h_{[C,D]_{\mathbf{Cat}_{\infty,\infty}}}
 $$
-for the decoded functor higher category.
+for the decoded functor higher category (@def:higher-category).
 Its points are functors $C\to D$.
 For higher categories $A,C,D$, closedness gives
 $$
@@ -354,19 +354,19 @@ $$
 \too
 [\alpha,\beta]_{[f,g]_{[x,y]_C}}.
 $$
-Iterating the same point and local hom-object constructions defines all higher cells.
+Iterating the same point and local hom-object (@def:internal-hom) constructions defines all higher cells.
 :::
 
 ::: {.proposition #prop:iterated-hom-cells title="Cells of an iterated hom-object"}
 
 Write $[x,y]^{(1)}_C:=[x,y]_C$ and, for a choice of parallel $k$-cells $u,v$ of $C$, write $[u,v]^{(k+1)}_C$ for the local hom-object formed at the $k$-th stage of @def:cells.
 By construction the $n$-cells of $[u,v]^{(k)}_C$ are the $(n+k)$-cells of $C$ that are parallel over the chosen $u,v$; in particular its $0$-cells are the $k$-cells of $C$ between them.
-Passing from $C$ to a local hom-object therefore lowers the dimension of every cell by one, and its adjoint direction is $B_{01}\dashv\Omega_{01}$ (@def:B01-construction).
+Passing from $C$ to a local hom-object therefore lowers the dimension of every cell by one, and its adjoint (@def:adjoint-morphism) direction is $B_{01}\dashv\Omega_{01}$ (@def:B01-construction).
 :::
 
 ::: {.proof}
 
-Apply the adjunction characterizing the internal hom (@def:internal-hom) twice and the universal property of the coproduct.
+Apply the adjunction characterizing the internal hom (@def:closed-monoidal) (@def:internal-hom) twice and the universal property (@def:property-structure-stuff) of the coproduct.
 :::
 
 ::: {.definition #def:globular-boundary title="Sources and targets" defines="source; target"}
@@ -407,7 +407,7 @@ $$
 in $\mcr$.
 A cell is *invertible* if it belongs to a structure of reversibility [@OR23, Definition 1.5.1].
 
-An equivalence between higher categories $C$ and $D$ is an invertible point
+An equivalence (@def:equivalence-of-objects) between higher categories $C$ and $D$ is an invertible point
 $$
 F\colon
 *
@@ -428,22 +428,22 @@ Assume the adjunctions
 $$
 \Pi_\infty\dashv i\dashv(-)^\simeq.
 $$
-The left adjoint
+The left adjoint (@def:pairing-adjoints)
 $$
 \Pi_\infty\colon\mathbf{Cat}_{\infty,\infty}\too\mcs
 $$
 is the underlying homotopy type obtained by inverting every morphism.
-The right adjoint $C\mapsto C^\simeq$ is the core obtained by retaining every object and only the equivalences [@Lur18c, Tags 01DQ and 02F5].
+The right adjoint (@def:pairing-adjoints) $C\mapsto C^\simeq$ is the core obtained by retaining every object and only the equivalences (@def:equivalence-of-objects) [@Lur18c, Tags 01DQ and 02F5].
 :::
 
 ::: {.definition #def:bicomplete-cat-infinity title="Limits, loops, and suspensions" defines="loop object; $\Omega_xX$; $\Sigma A$"}
 
-The higher category $\mathbf{Cat}_{\infty,\infty}$ has an initial object $\varnothing$ and a terminal object $*$, and it is bicomplete.
+The higher category (@def:higher-category) $\mathbf{Cat}_{\infty,\infty}$ has an initial object (@def:initial-terminal) $\varnothing$ and a terminal object (@def:initial-terminal) $*$, and it is bicomplete (@def:complete).
 For a pointed higher category $(X,x)$, where $x\colon *\to X$, define
 $$
 \Omega_xX:=*\times_X*.
 $$
-For a higher category $A$, define its suspension by the pushout
+For a higher category $A$, define its suspension (@def:loops-suspension) by the pushout
 
 \begin{tikzcd}
 A
@@ -471,7 +471,7 @@ S^{-1}:=\varnothing,
 \qquad
 S^{n}:=\Sigma S^{n-1}\quad(n\geq0).
 $$
-Since the pushout of $*\from\varnothing\to*$ is the coproduct, $S^{0}=*\amalg*$, the bipointed object indexing the comma category of @def:B01-construction.
+Since the pushout (@def:pullback-square) of $*\from\varnothing\to*$ is the coproduct, $S^{0}=*\amalg*$, the bipointed object indexing the comma category (@def:comma-category) of @def:B01-construction.
 :::
 
 ::: {.example #ex:initial-terminal-cat title="The initial and terminal higher categories"}
@@ -490,7 +490,7 @@ The coproduct $*\amalg*$ is neither initial nor terminal, so $\mathbf{Cat}_{\inf
 
 ::: {.definition #def:B01-construction title="The $B_{01}$ construction" defines="bipointed higher category; endpoint hom functor; $\Omega_{01}$; $B_{01}$"}
 
-The higher category of bipointed higher categories is the comma category
+The higher category (@def:higher-category) of bipointed higher categories is the comma category (@def:comma-category)
 $$
 ((*\amalg *)\downarrow\id_{\mathbf{Cat}_{\infty,\infty}}).
 $$
@@ -506,7 +506,7 @@ $$
 \qquad
 (X;x_0,x_1)\longmapsto[x_0,x_1]_X.
 $$
-Assume that $\Omega_{01}$ has a left adjoint
+Assume that $\Omega_{01}$ has a left adjoint (@def:pairing-adjoints)
 $$
 B_{01}\dashv\Omega_{01}.
 $$
@@ -523,7 +523,7 @@ For a higher category $A=\int_*h_A$, the bipointed higher category $B_{01}A$ has
 \end{tikzcd}
 
 Composition is given by the identity actions on $A$ and the unique morphisms from $\varnothing$.
-The suspension $\Sigma A$ is the pushout in @def:bicomplete-cat-infinity.
+The suspension (@def:loops-suspension) $\Sigma A$ is the pushout (@def:pullback-square) in @def:bicomplete-cat-infinity.
 The object $B_{01}A$ is characterized by the adjunction $B_{01}\dashv\Omega_{01}$.
 :::
 
@@ -541,12 +541,12 @@ $$
 [n]:=
 \underbrace{[1]\amalg_{[0]}[1]\amalg_{[0]}\cdots\amalg_{[0]}[1]}_{n\text{ copies}},
 $$
-where each pushout identifies the target of one copy with the source of the next.
-For a higher category $C$, the hom-object
+where each pushout (@def:pullback-square) identifies the target (@def:globular-boundary) of one copy with the source (@def:globular-boundary) of the next.
+For a higher category (@def:higher-category) $C$, the hom-object
 $$
 [[n],C]_{\mathbf{Cat}_{\infty,\infty}}
 $$
-is the higher category of functors $[n]\to C$ and their higher cells.
+is the higher category of functors $[n]\to C$ and their higher cells (@def:cells).
 :::
 
 ::: {.definition #def:mapping-spaces title="Walking-arrow presentation and mapping types" defines="underlying mapping type; $\operatorname{Map}_C(x,y)$; $\operatorname{Map}_{\mathbf{Cat}_{\infty,\infty}}(C,D)$"}
@@ -562,7 +562,7 @@ $$
 \simeq
 C\times C.
 $$
-For points $x,y\colon*\to C$, the local hom-object $[x,y]_C$ is the cartesian fiber
+For points $x,y\colon*\to C$, the local hom-object (@def:internal-hom) $[x,y]_C$ is the cartesian fiber
 
 \begin{tikzcd}
 {[x,y]_C}
@@ -593,28 +593,28 @@ $$
 
 ::: {.definition #def:initial-terminal title="Initial, terminal, and contractible objects" defines="terminal object; initial object; contractible higher category"}
 
-An object $t\colon*\to C$ is terminal if $\operatorname{Map}_C(x,t)$ is contractible for every $x\colon*\to C$.
+An object $t\colon*\to C$ is terminal (@def:terminal-coble-surface) if $\operatorname{Map}_C(x,t)$ is contractible for every $x\colon*\to C$.
 An object $i\colon*\to C$ is initial if $\operatorname{Map}_C(i,x)$ is contractible for every $x\colon*\to C$.
-A higher category is *contractible* when it is equivalent to $*$.
+A higher category (@def:higher-category) is *contractible* when it is equivalent to $*$.
 :::
 
 ::: {.definition #def:truncated title="Truncated objects and morphisms" defines="$n$-truncated object; $C_{/Y}$; $n$-truncated morphism; $n$-truncated type; $\tau_{\leq n}^C$"}
 
-Let $C$ be a higher category.
+Let $C$ be a higher category (@def:higher-category).
 For an integer $n\geq-2$, an object $X\colon*\to C$ is *$n$-truncated* if $\operatorname{Map}_C(Y,X)$ is an $n$-truncated type for every $Y\colon*\to C$.
-The $(-2)$-truncated objects are the terminal objects.
+The $(-2)$-truncated objects are the terminal objects (@def:initial-terminal).
 
 For an object $Y\colon*\to C$, write $C_{/Y}:=(\id_C\downarrow Y)$ for the slice.
 A morphism $f\colon X\to Y$ is *$n$-truncated* if it is an $n$-truncated object of $C_{/Y}$.
-Equivalently, for every $Z\colon*\to C$ and every point of $\operatorname{Map}_C(Z,Y)$, the corresponding fiber of
+Equivalently, for every $Z\colon*\to C$ and every point of $\operatorname{Map}_C(Z,Y)$, the corresponding fiber (@def:fiber-cofiber) of
 $$
 \operatorname{Map}_C(Z,X)
 \too
 \operatorname{Map}_C(Z,Y)
 $$
 is an $n$-truncated type.
-A $(-2)$-truncated morphism is an equivalence.
-When the required pullback exists and $n\geq-1$, the recursive criterion is
+A $(-2)$-truncated morphism is an equivalence (@def:equivalence-of-objects).
+When the required pullback (@def:pullback-square) exists and $n\geq-1$, the recursive criterion is
 $$
 f\text{ is }n\text{-truncated}
 \quad\Longleftrightarrow\quad
@@ -625,7 +625,7 @@ $$
 
 For a type $S$, $n$-truncation means $\pi_k(S,s)=0$ for every point $s$ and every $k>n$.
 A $(-2)$-truncated type is contractible, a $(-1)$-truncated type is empty or contractible, and a $0$-truncated type is a set.
-When the inclusion of $n$-truncated objects of $C$ is reflective, write its reflector as $\tau_{\leq n}^C$.
+When the inclusion of $n$-truncated objects of $C$ is reflective (@def:reflective-lattice), write its reflector as $\tau_{\leq n}^C$.
 :::
 
 ::: {.definition #def:infinity-category-universe title="The truncation tower" defines="$T_{\leq n}$; $\mathbf{Cat}_n$; $\iota_n$; $\tau_{\leq n}$; $\tau_{\leq n}^{\mathrm R}$; $n$-category structure; $\mathbf{Cat}_n^{\mathrm{loc}}$; $[C,D]_{\mathbf{Cat}_{\infty,\infty}}^{\leq n}$"}
@@ -662,7 +662,7 @@ Assume
 $$
 \tau_{\leq n}\dashv\iota_n.
 $$
-If $\iota_n$ also has a right adjoint, write
+If $\iota_n$ also has a right adjoint (@def:pairing-adjoints), write
 $$
 \iota_n\dashv\tau_{\leq n}^{\mathrm R}.
 $$
@@ -675,7 +675,7 @@ $$
 \mathbf{Cat}_n\too\cdots\too
 \mathbf{Cat}_{\infty,\infty}.
 $$
-An *$n$-category structure* on a higher category $C=\int_*h_C$ is a lift
+An *$n$-category structure (@def:property-structure-stuff)* on a higher category (@def:higher-category) $C=\int_*h_C$ is a lift
 
 \begin{tikzcd}
 &
@@ -689,9 +689,9 @@ An *$n$-category structure* on a higher category $C=\int_*h_C$ is a lift
 \mathbf{Cat}_{\infty,\infty}
 \end{tikzcd}
 
-together with a specified equivalence $\iota_n\circ\widetilde h_C\simeq h_C$.
+together with a specified equivalence (@def:equivalence-of-objects) $\iota_n\circ\widetilde h_C\simeq h_C$.
 
-For $n\geq0$, a second construction begins with the full replete subcategory
+For $n\geq0$, a second construction begins with the full replete (@def:subcategory) subcategory
 $$
 \mathbf{Cat}_n^{\mathrm{loc}}
 \iscontainedin
@@ -720,7 +720,7 @@ So $\mathbf{Cat}_{-1}$ contains the two truth values $\varnothing$ and $*$, and 
 
 ::: {.definition #def:equivalence-of-objects title="Equivalence of objects" defines="equivalence; $\operatorname{Equiv}_C(X,Y)$; $X\simeq Y$"}
 
-Let $C$ be a higher category and let $X,Y\colon*\to C$ be objects.
+Let $C$ be a higher category (@def:higher-category) and let $X,Y\colon*\to C$ be objects.
 A morphism $f\colon X\to Y$ is an *equivalence* if the cell $f\colon*\to[X,Y]_C$ is invertible in the sense of @def:equivalence-of-categories.
 Let
 $$
@@ -732,7 +732,7 @@ Write $X\simeq Y$ for the claim that $\operatorname{Equiv}_C(X,Y)$ is nonempty.
 
 ::: {.definition #def:isomorphism-of-objects title="Isomorphisms and $n$-equivalences" defines="$0$-equivalence; $n$-equivalence; isomorphism; $\operatorname{Equiv}_{C,n}(X,Y)$; $\operatorname{Isom}_C(X,Y)$; $X\simeq_n Y$; $X\cong Y$"}
 
-Let $C$ be a higher category and let $f\colon x\to y$ be a cell of $C$, with $x,y$ in an iterated hom-object of $C$.
+Let $C$ be a higher category (@def:higher-category) and let $f\colon x\to y$ be a cell of $C$, with $x,y$ in an iterated hom-object of $C$.
 Define the $n$-equivalences by induction on $n\geq0$ [@OR23, Definitions 1.1.8 and 1.4.3]:
 
 - $f$ is a *$0$-equivalence* if there is a cell $g\colon y\to x$ with $g\circ f=\id_x$ and $f\circ g=\id_y$;

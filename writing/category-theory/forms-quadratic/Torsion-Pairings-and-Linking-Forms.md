@@ -5,13 +5,13 @@ Let $R$ be a Dedekind domain with fraction field $K$.
 ## Torsion-valued pairings {#sec-torsion-pairings}
 
 ::: {.definition #def:torsion-pairing title="Pairings on finite-length modules" defines="$\mathcal B_{R,W}^{\mathrm{fl}}$; torsion linking pairing"}
-For $W\in R\text{-}\mathbf{Mod}$, let $\mathcal B_{R,W}^{\mathrm{fl}}$ be the replete full subcategory of the fixed-value bilinear form category $\mathcal B_{R,W}$ of @def:form-categories on objects $(T,b)$ whose module component $T$ has finite length over $R$. No nondegeneracy or symmetry is assumed.
+For $W\in R\text{-}\mathbf{Mod}$, let $\mathcal B_{R,W}^{\mathrm{fl}}$ be the replete full subcategory (@def:property-structure-stuff) of the fixed-value bilinear form category $\mathcal B_{R,W}$ of @def:form-categories on objects $(T,b)$ whose module component $T$ has finite length (@def:anticanonical-pair) over $R$. No nondegeneracy or symmetry is assumed.
 
 A **torsion linking pairing** is a bilinear form
 $$
 b\colon T\tensor_RT\longrightarrow K/R
 $$
-with $T$ of finite length; equivalently, it is an object of $\mathcal B_{R,K/R}^{\mathrm{fl}}$. The left and right adjoints and their complete radical–coradical exact sequences are the restrictions of @def:pairing-adjoints.
+with $T$ of finite length; equivalently, it is an object of $\mathcal B_{R,K/R}^{\mathrm{fl}}$. The left and right adjoints and their complete (@def:complete) radical–coradical exact sequences are the restrictions of @def:pairing-adjoints.
 :::
 
 ::: {.definition #def:torsion-Pontryagin-dual title="The dual of a finite torsion module" defines="torsion dual; $T^\dagger$; evaluation morphism; $\eta_T$"}
@@ -21,11 +21,11 @@ T^\dagger\definedas\Hom_R(T,K/R),
 \qquad
 \eta_T\colon T\longrightarrow T^{\dagger\dagger}.
 $$
-The morphism $\eta_T$ is induced by evaluation $T\tensor_RT^\dagger\too K/R$ under the tensor–Hom adjunction of @def:closed-monoidal.
+The morphism $\eta_T$ is induced by evaluation (@def:dualizable-object) $T\tensor_RT^\dagger\too K/R$ under the tensor–Hom adjunction of @def:closed-monoidal.
 :::
 
 ::: {.proposition #prop:torsion-duality-exact title="Exact self-duality of finite torsion modules"}
-The contravariant functor $(-)^\dagger$ is exact on the category of finite-length $R$-modules, and $\eta_T$ is an isomorphism for every such $T$. In particular, for a short exact sequence
+The contravariant functor $(-)^\dagger$ is exact (@def:exact-complex) on the category of finite-length $R$-modules, and $\eta_T$ is an isomorphism (@def:isomorphism-of-objects) for every such $T$. In particular, for a short exact sequence (@def:exact-complex)
 $$
 0\too T_1\too T_2\too T_3\too0
 $$
@@ -33,11 +33,11 @@ the dual sequence
 $$
 0\too T_3^\dagger\too T_2^\dagger\too T_1^\dagger\too0
 $$
-is exact, and $T^\dagger$ has the same finite length as $T$ at each nonzero prime of $R$.
+is exact, and $T^\dagger$ has the same finite length (@def:anticanonical-pair) as $T$ at each nonzero prime of $R$.
 :::
 
 ::: {.proof}
-The divisible module $K/R$ is injective over the Dedekind domain $R$, so $\Hom_R(-,K/R)$ is exact. Localization decomposes a finite-length module into its primary components. Over the discrete valuation ring $R_{\mathfrak p}$ the dual of $R_{\mathfrak p}/\mathfrak p^e R_{\mathfrak p}$ is $\mathfrak p^{-e}R_{\mathfrak p}/R_{\mathfrak p}$, which has the same length and is isomorphic to the original cyclic module. Evaluation identifies each component with its double dual. These componentwise isomorphisms give the natural biduality isomorphism $\eta_T$.
+The divisible module $K/R$ is injective over the Dedekind domain $R$, so $\Hom_R(-,K/R)$ is exact. Localization decomposes a finite-length module into its primary components. Over the discrete valuation ring $R_{\mathfrak p}$ the dual of $R_{\mathfrak p}/\mathfrak p^e R_{\mathfrak p}$ is $\mathfrak p^{-e}R_{\mathfrak p}/R_{\mathfrak p}$, which has the same length and is isomorphic to the original cyclic module (@def:cyclic-module). Evaluation (@def:dualizable-object) identifies each component with its double dual. These componentwise isomorphisms give the natural biduality isomorphism $\eta_T$.
 :::
 
 ::: {.proposition #prop:torsion-perfectness title="Nondegenerate linking pairings are perfect"}
@@ -47,7 +47,7 @@ b^\sharp\colon T\longrightarrow T^\dagger.
 $$
 Then the following are equivalent: $\ker(b^\sharp)=0$; $\operatorname{coker}(b^\sharp)=0$; and $b^\sharp$ is an isomorphism. Hence a symmetric finite torsion linking pairing (@def:torsion-pairing) is nondegenerate exactly when it is perfect.
 
-The complete exact sequence is
+The complete (@def:complete) exact sequence is
 $$
 0\too\radic(b)\too T\xrightarrow{b^\sharp}T^\dagger
 \twoheadrightarrow\operatorname{corad}(b)\too0.
@@ -55,7 +55,7 @@ $$
 :::
 
 ::: {.proof}
-The modules $T$ and $T^\dagger$ have identical finite lengths at every prime by @prop:torsion-duality-exact. An injective morphism between them must have zero cokernel, and a surjective morphism must have zero kernel. Symmetry identifies the two adjoints of @def:pairing-adjoints, proving the equivalence with nondegeneracy.
+The modules $T$ and $T^\dagger$ have identical finite lengths (@def:anticanonical-pair) at every prime by @prop:torsion-duality-exact. An injective morphism between them must have zero cokernel, and a surjective morphism must have zero kernel. Symmetry identifies the two adjoints of @def:pairing-adjoints, proving the equivalence (@def:equivalence-of-objects) with nondegeneracy.
 :::
 
 ## Discriminant forms as categorical cokernels {#sec-torsion-discriminants}
@@ -80,7 +80,7 @@ The adjective **discriminant** refers to the bilinear form arising from this met
 :::
 
 ::: {.proof}
-The formula descends along $\pi_L$ in both entries: $\beta_{L_K}(L,L^\#)\subseteq R$ by the metric-dual pullback. If $x\in L^\#$ pairs integrally with every $y\in L^\#$, then $x\in(L^\#)^\#=L$, so the adjoint of $\overline\beta_L$ has zero kernel. By @prop:torsion-perfectness it is an isomorphism. The value-module comparison for $R=\bZ$ is the universal property of the bilinear-module cokernel of @def:discriminant and the canonical embedding of its value module in $\bQ/\bZ$.
+The formula descends along $\pi_L$ in both entries: $\beta_{L_K}(L,L^\#)\subseteq R$ by the metric-dual pullback (@def:pullback-square). If $x\in L^\#$ pairs integrally with every $y\in L^\#$, then $x\in(L^\#)^\#=L$, so the adjoint of $\overline\beta_L$ has zero kernel. By @prop:torsion-perfectness it is an isomorphism. The value-module comparison for $R=\bZ$ is the universal property (@def:property-structure-stuff) of the bilinear-module cokernel of @def:discriminant and the canonical embedding of its value module in $\bQ/\bZ$.
 :::
 
 ::: {.example #ex:rank-one-discriminant-linking title="The linking form of a rank-one lattice"}

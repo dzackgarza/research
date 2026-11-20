@@ -18,11 +18,11 @@ notes: |-
 
 ::: {.definition #def:period-map title="Period matrix and period map" defines="period matrix; $\Pi(t)$; period map; $\mathcal P$; $\omega_i$; $P_X$; $\omega$; projective period map"}
 
-Let $\pi \colon \mathcal{X} \to M$ be a smooth projective (or compact Kähler) family of complex $m$-dimensional varieties over a connected complex quasi-projective variety (or complex manifold) $M$.
-Fix a reference fiber $X = X_{t_0} = \inverseof{\pi}(t_0)$, and let $\{\Sigma_0, \dots, \Sigma_{k-1}\} \subset H_m(X, \ZZ)/\mathrm{tors}$ be an integral basis of the middle homology modulo torsion, where $k = b_m(X)$ is the middle Betti number.
+Let $\pi \colon \mathcal{X} \to M$ be a smooth projective (@def:module-subcategories) (or compact Kähler) family of complex $m$-dimensional varieties over a connected complex quasi-projective variety (or complex manifold) $M$.
+Fix a reference fiber (@def:fiber-cofiber) $X = X_{t_0} = \inverseof{\pi}(t_0)$, and let $\{\Sigma_0, \dots, \Sigma_{k-1}\} \subset H_m(X, \ZZ)/\mathrm{tors}$ be an integral basis (@def:based-module) of the middle homology (@def:homology) modulo torsion, where $k = b_m(X)$ is the middle Betti number.
 For each $t \in M$, let $\{\omega_1(t), \dots, \omega_p(t)\}$ be a basis of a holomorphic subbundle of the relative de Rham cohomology, such as $H^{m,0}(X_t) \subset H^m_{\dR}(X_t)$ where $p = h^{m,0}(X)$, varying holomorphically with $t$.
 
-1. **The general period matrix and period map:** The *period matrix* of the fiber $X_t$ with respect to the chosen bases is the $p \times k$ matrix of period integrals
+1. **The general period matrix and period map:** The *period matrix* of the fiber $X_t$ with respect to the chosen bases (@def:root-system-base) is the $p \times k$ matrix of period integrals
    $$
    \Pi(t) \;\coloneqq\; \begin{pmatrix}
    \ds\int_{\Sigma_0(t)} \omega_1(t) & \cdots & \ds\int_{\Sigma_{k-1}(t)} \omega_1(t) \\
@@ -32,7 +32,7 @@ For each $t \in M$, let $\{\omega_1(t), \dots, \omega_p(t)\}$ be a basis of a ho
    \;\in\; \Mat_{p \times k}(\CC).
    $$
    Because the basis of holomorphic forms is determined only up to an invertible change of basis in $\GL_p(\CC)$, the $p$-dimensional subspace spanned by the rows of $\Pi(t)$ defines a point in the Grassmannian $\Gr(p, H^m(X, \CC))$, or more precisely in the Griffiths period domain $\mathcal{D} \subset \Gr(p, k)$ cut out by the Riemann–Hodge bilinear relations.
-   Modulo the global monodromy group $\Gamma \le \Aut(H_m(X, \ZZ), Q)$, this association defines the *period map* of the family
+   Modulo the global monodromy group (@def:k3-moduli-functors) $\Gamma \le \Aut(H_m(X, \ZZ), Q)$, this association defines the *period map* of the family
    $$
    \mathcal{P} \colon M \too \mathcal{D}/\Gamma.
    $$
@@ -58,12 +58,12 @@ For each $t \in M$, let $\{\omega_1(t), \dots, \omega_p(t)\}$ be a basis of a ho
 
 ::: {.construction #cons:pf-from-jacobian title="From the defining polynomial to the local monodromy" defines="Jacobian ideal; $J$; monomial basis; $B$; Milnor number; $\mu$; $P$; Picard--Fuchs operator; $\mathcal L$; exponent; $R$; $R_s$; $R_n$; local monodromy; $T$"}
 
-Let $k$ have characteristic $0$ and let $f\in k[x_0,\dots,x_{n-1},t]$ present a family of affine hypersurfaces over a one-dimensional base with parameter $t$.
+Let $k$ have characteristic (@def:two-elementary-isotropic-types) $0$ and let $f\in k[x_0,\dots,x_{n-1},t]$ present a family of affine hypersurfaces over a one-dimensional base (@def:root-system-base) with parameter $t$.
 
 1. Form the Jacobian ideal $J = \left(\partial f/\partial x_0,\dots,\partial f/\partial x_{n-1}\right)$ in $k(t)[x_0,\dots,x_{n-1}]$ and a monomial basis $B$ of the Milnor algebra $k(t)[x]/J$.
-   Then $\mu = \lvert B\rvert$ is the Milnor number of the generic fiber, the base field being $k(t)$.
+   Then $\mu = \lvert B\rvert$ is the Milnor number of the generic fiber (@def:fiber-cofiber), the base field being $k(t)$.
 
-2. On the Brieskorn module of $f$, take the Gauss--Manin connection, and apply it to the form
+2. On the Brieskorn module of $f$, take the Gauss--Manin connection (@def:calculus-connection), and apply it to the form
    $$
    P \;=\; (-1)^{n-1}\,\frac{\partial_t f}{t}\Bigl(\Sum_{b\in B} b\Bigr)
    $$
@@ -78,7 +78,7 @@ Let $k$ have characteristic $0$ and let $f\in k[x_0,\dots,x_{n-1},t]$ present a 
 
 4. Compute the indicial polynomial of $\mathcal L$ at $t = 0$.
    Its roots are the exponents $\alpha_1,\dots,\alpha_\mu$.
-   Its degree equals $\mu$ exactly when $t = 0$ is a regular singular point, so checking that degree is checking the hypothesis under which the remaining steps are valid.
+   Its degree (@def:numerical-polarization) equals $\mu$ exactly when $t = 0$ is a regular (@def:regular-ternary-lattice) singular point, so checking that degree is checking the hypothesis under which the remaining steps are valid.
 
 5. Let $R$ be the Jordan form over $\overline{\QQ}$ of the companion matrix of the monic indicial polynomial, and let $R = R_s + R_n$ be its Jordan decomposition into commuting semisimple and nilpotent parts.
 
@@ -102,9 +102,9 @@ Let $T$, $R = R_s + R_n$ and $\alpha_1,\dots,\alpha_\mu$ be as in @cons:pf-from-
    $$
    N \;=\; \log T \;=\; 2\pi i\, R_n ,
    $$
-   so the nilpotency index of $N$ is the nilpotency index of $R_n$, and the Jordan block sizes of $T$ are those of $R$.
+   so the nilpotency index (@def:index) of $N$ is the nilpotency index of $R_n$, and the Jordan block sizes of $T$ are those of $R$.
 
-3. The Jordan type of $T$, and hence the nilpotency index of $N$ and the type of @def:kulikov-types, is the same in every basis of the fiber cohomology.
+3. The Jordan type of $T$, and hence the nilpotency index of $N$ and the type of @def:kulikov-types, is the same in every basis (@def:based-module) of the fiber (@def:fiber-cofiber) cohomology.
 :::
 
 ::: {.proof}
@@ -143,13 +143,13 @@ a single Jordan block, so $T$ is unipotent with $N\neq 0$ and $N^2 = 0$.
 
 ::: {.proposition #prop:legendre-monodromy-basis-not-integral title="The Legendre monodromy is not written in an integral basis"}
 
-The basis in which @ex:legendre-monodromy writes $T$ is not a $\ZZ$-basis of $H_1(X_t,\ZZ)$ or of $H^1(X_t,\ZZ)$.
+The basis (@def:based-module) in which @ex:legendre-monodromy writes $T$ is not a $\ZZ$-basis of $H_1(X_t,\ZZ)$ or of $H^1(X_t,\ZZ)$.
 The Jordan type of the monodromy in any basis of $H^1(X_t,\CC)$ is one Jordan block of size $2$.
 :::
 
 ::: {.proof}
 
-The monodromy is induced by parallel transport along a loop in the base, which is a homeomorphism of the fiber.
+The monodromy is induced by parallel transport (@cons:calculus-transport) along a loop in the base (@def:root-system-base), which is a homeomorphism of the fiber (@def:fiber-cofiber).
 It therefore preserves $H_1(X_t,\ZZ)\cong\ZZ^2$ and $H^1(X_t,\ZZ)$, and its matrix in a $\ZZ$-basis of either lies in $\GL_2(\ZZ)$.
 The matrix $T$ of @ex:legendre-monodromy has the entry $2\pi i\notin\ZZ$.
 The second statement is @cor:pf-unipotent-monodromy(3) applied to the single Jordan block of $T$.
@@ -159,10 +159,10 @@ The second statement is @cor:pf-unipotent-monodromy(3) applied to the single Jor
 
 ::: {.construction #cons:lefschetz-periods title="Periods from a Lefschetz pencil" defines="vanishing cycle; $\delta_i$; thimble; $\Delta_i$"}
 
-For a smooth projective hypersurface $X$, an iterated Lefschetz pencil $X\dashrightarrow\PP^1$ has critical values the roots of the discriminant of the pencil.
-At each critical value there is a vanishing cycle $\delta_i\in H_{n-1}(X_b)$ in the homology of a nearby fiber, and a thimble $\Delta_i\in H_n(Y,Y_b)$ with $\partial\Delta_i = \delta_i$.
-Integrating a basis of rational differential forms over the thimbles gives the period matrix; a homology modification corrects $H_n(Y)$ to $H_n(X)$ across the blow-up.
-The monodromy around a critical value is the Picard--Lefschetz twist along the corresponding vanishing cycle, and continuing the periods numerically around each critical value returns the monodromy matrices on $H_{n-1}(X_b)$ in an explicit homology basis.
+For a smooth projective (@def:module-subcategories) hypersurface $X$, an iterated Lefschetz pencil $X\dashrightarrow\PP^1$ has critical values the roots of the discriminant of the pencil.
+At each critical value there is a vanishing cycle $\delta_i\in H_{n-1}(X_b)$ in the homology (@def:homology) of a nearby fiber (@def:fiber-cofiber), and a thimble $\Delta_i\in H_n(Y,Y_b)$ with $\partial\Delta_i = \delta_i$.
+Integrating a basis (@def:based-module) of rational differential forms over the thimbles gives the period matrix (@def:period-map); a homology modification corrects $H_n(Y)$ to $H_n(X)$ across the blow-up.
+The monodromy around a critical value is the Picard--Lefschetz twist (@def:form-twist) along the corresponding vanishing cycle, and continuing the periods numerically around each critical value returns the monodromy matrices on $H_{n-1}(X_b)$ in an explicit homology basis.
 :::
 
 Related: [Kulikov models and limiting mixed Hodge structures](#sec-kulikov-models), [Open problems and technical gaps](#sec-open-problems), [Toolchain and recipe for a hyperbolic 2-elementary lattice](#sec-computational-toolchain-and-recipe).

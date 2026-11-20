@@ -105,7 +105,7 @@ The surface $X$ and both involutions are determined by the pair $(Z,[\mcl_Z])$ [
 
 ::: {.definition #def:nl-locus-enriques title="Noether–Lefschetz locus \\mathrm{NL}_{S_{\\mathrm{En}}}" defines="Noether–Lefschetz locus; $\mathrm{NL}_{S_{\mathrm{En}}}$; $\sen$; Noether–Lefschetz closure; $B$"}
 
-The moduli space $\fentwo$ of degree-$2$ numerically polarized Enriques surfaces (@def:enriques-surface) maps to the K3 moduli space $\fttz$ via the canonical morphism $j$ of @lem:fen2_normalization. Its map to the scheme-theoretic image is the normalization; an embedding is not asserted. The image lies in the **Noether–Lefschetz locus** $\mathrm{NL}_{S_{\mathrm{En}}}$ defined by the primitive embedding of the **invariant** (algebraic) lattice of $\ien$,
+The moduli space $\fentwo$ of degree-$2$ numerically polarized Enriques surfaces (@def:enriques-surface) maps to the K3 moduli space $\fttz$ via the canonical morphism $j$ of @lem:fen2_normalization. Its map to the scheme-theoretic image is the normalization; an embedding is not asserted. The image lies in the **Noether–Lefschetz locus** $\mathrm{NL}_{S_{\mathrm{En}}}$ defined by the primitive embedding (@def:primitive-embedding) of the **invariant** (algebraic) lattice of $\ien$,
 $$
 \sen = E_{10}(2) = U(2)\oplus E_8(2)
 ,
@@ -132,7 +132,7 @@ $$
 \Sum_{i=1}^{10} b_i = 3a
 .
 $$
-The sublattice $K_S^{\perp}$ is even and unimodular of signature $(1, 9)$, hence
+The sublattice $K_S^{\perp}$ is even (@def:form-axioms) and unimodular of signature $(1, 9)$, hence
 $$
 K_S^{\perp} \cong E_{10} = U\oplus E_8
 ,
@@ -148,7 +148,7 @@ $$
 ::: {.proof}
 
 The expression for $K_S$ is the blowup formula, and $D\cdot K_S = -3a + \Sum_i b_i$, which vanishes if and only if $\Sum_i b_i = 3a$.
-Since $K_S^2 = 9 - 10 = -1$, the rank-one sublattice $\generators{K_S}\cong\generators{-1}$ is unimodular, so by the unimodular-splitting proposition (@prop:unimodular-splits) it splits $\Pic(S)$ and its complement $K_S^{\perp}$ is unimodular of signature $(1, 9)$.
+Since $K_S^2 = 9 - 10 = -1$, the rank-one sublattice $\generators{K_S}\cong\generators{-1}$ is unimodular, so by the unimodular-splitting proposition (@prop:unimodular-splits) it splits (@def:hyperbolic-plane) $\Pic(S)$ and its complement $K_S^{\perp}$ is unimodular of signature $(1, 9)$.
 That complement is even: for $D = aH - \Sum_i b_iE_i$ with $\Sum_i b_i = 3a$,
 $$
 D^2 = a^2 - \Sum_i b_i^2 \equiv a^2 - \Sum_i b_i = a^2 - 3a \equiv a(a-1) \equiv 0
@@ -156,17 +156,17 @@ D^2 = a^2 - \Sum_i b_i^2 \equiv a^2 - \Sum_i b_i = a^2 - 3a \equiv a(a-1) \equiv
 ,
 $$
 using $b^2\equiv b\bmod 2$.
-An even unimodular lattice of signature $(1,9)$ is isometric to $E_{10}$ by the indefinite unimodular classification (@thm:indefinite-unimodular-classification).
+An even unimodular lattice of signature $(1,9)$ is isometric to $E_{10}$ by the indefinite (@def:definiteness) unimodular classification (@thm:indefinite-unimodular-classification).
 Finally $C = -2K_S = 6H - 2\Sum_i E_i$ by the description of $K_S$.
 :::
 
 ::: {.definition #def:coble-polarization-classes title="The hyperplane class and the degree-2 numerical polarization" defines="hyperplane class; $H$; $e_0$; degree-$2$ numerical polarization; $h_\Co$; $\tilde h_\Co$; $\mathcal C_X$; $\Delta_X$; chamber; $\mathfrak c$"}
 
-Let $f\colon X\to S$ be the K3 double cover.
+Let $f\colon X\to S$ be the K3 double cover (@not:coble-ten-point-blowup).
 
 1. The **hyperplane class** is $H\in\Pic(S)$, the pullback of $c_1(\OO_{\PP^2}(1))$, with $H^2 = 1$; its K3 pullback $e_0\definedas f^{*}H\in S_\Co$ has $e_0^2 = 2$ by the K3 double-cover proposition (@prop:double-cover-is-k3).
 
-2. The **degree-$2$ [numerical polarization]{.other-sense}** is a class $h_\Co\in K_S^{\perp}\iscontainedin\Pic(S)$ of Enriques type: in the non-degenerate case $h_\Co = F_1 + F_2$ with $F_1,F_2\in K_S^{\perp}$, $F_i^2 = 0$ and $F_1\cdot F_2 = 1$, so that $h_\Co^2 = 2$; its K3 pullback $\tilde h_\Co\definedas f^{*}h_\Co$ lies in $f^{*}(K_S^{\perp})\iscontainedin S_\Co$ and has $\tilde h_\Co^2 = 4$. Thus $\tilde h_\Co = f^*F_1 + f^*F_2$ is the sum of the standard basis of $\generators{f^*F_1, f^*F_2}\cong U(2)$, as for the vector $h = e + f$ of [@AEGS25, Def. 2.5].
+2. The **degree-$2$ [numerical polarization]{.other-sense}** is a class $h_\Co\in K_S^{\perp}\iscontainedin\Pic(S)$ of Enriques type: in the non-degenerate case $h_\Co = F_1 + F_2$ with $F_1,F_2\in K_S^{\perp}$, $F_i^2 = 0$ and $F_1\cdot F_2 = 1$, so that $h_\Co^2 = 2$; its K3 pullback $\tilde h_\Co\definedas f^{*}h_\Co$ lies in $f^{*}(K_S^{\perp})\iscontainedin S_\Co$ and has $\tilde h_\Co^2 = 4$. Thus $\tilde h_\Co = f^*F_1 + f^*F_2$ is the sum of the standard basis (@def:based-module) of $\generators{f^*F_1, f^*F_2}\cong U(2)$, as for the vector $h = e + f$ of [@AEGS25, Def. 2.5].
 
 3. Let $\mathcal C_X\iscontainedin\NS(X)\tensor\RR$ be the component of the positive cone (@not:reflection-groups-sign-convention) that contains the ample cone $\Amp(X)$ (@lem:k3-positive-cone-component), and let $\Delta_X$ be the set of classes of square $-2$ that are effective on $X$. The **chamber** $\mathfrak c$ of $X$ is the component of $\mathcal C_X\setminus\bigcup_{\delta\in\Delta_X}\delta^{\perp}$ that contains $\Amp(X)$; it exists because $\Amp(X)$ is convex and every ample class is positive on every $\delta\in\Delta_X$.
 :::

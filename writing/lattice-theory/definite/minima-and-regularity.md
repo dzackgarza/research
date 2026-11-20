@@ -2,14 +2,14 @@
 
 ::: {.proposition #prop:definite-finiteness title="Finiteness for definite lattices"}
 
-If $L$ is definite, then $L[k]$ is finite for every $k\in\bZ$, and $\Orth(L)$ is finite.
+If $L$ is definite (@def:definiteness), then $L[k]$ is finite for every $k\in\bZ$, and $\Orth(L)$ is finite.
 :::
 
 ::: {.proof}
-The scalar extension $L\injects L_\bR$ is discrete, and for fixed $k$ the shell $L[k]$ lies on a compact sphere for the positive-definite form $\beta_L$ or $-\beta_L$; hence $L[k]$ is finite.
+The scalar extension $L\injects L_\bR$ is discrete, and for fixed $k$ the shell $L[k]$ lies on a compact sphere (@def:spheres) for the positive-definite form $\beta_L$ or $-\beta_L$; hence $L[k]$ is finite.
 
 Choose a $\bZ$-basis $e_1,\dots,e_r$ of $L$.
-Evaluation on the basis gives a monomorphism of sets
+Evaluation (@def:dualizable-object) on the basis (@def:based-module) gives a monomorphism of sets
 $$
 \Orth(L)
 \injects
@@ -42,7 +42,7 @@ Its real eigenvalue $3+2\sqrt2>1$ implies that $M$ has infinite order; therefore
 
 ::: {.definition #def:definite-minimum-shell title="Minimum, minimal vectors, and kissing number" defines="minimum; $\mu(L)$; minimal shell; $\operatorname{Min}(L)$; kissing number; $\tau(L)$"}
 
-Let $L$ be definite.
+Let $L$ be definite (@def:definiteness).
 The **minimum** is
 $$
 \mu(L)\definedas\min_{0\neq x\in L}|x^2|.
@@ -64,7 +64,7 @@ $$
 
 ::: {.definition #def:voronoi-perfect-lattice title="Voronoi-perfect lattices" defines="Voronoi-perfect"}
 
-Let $L$ be definite.
+Let $L$ be definite (@def:definiteness).
 For $v\in L_\bQ$, let $v^{\otimes2}\in\operatorname{Sym}^2_\bQ(L_\bQ)$ be the corresponding rank-one symmetric tensor.
 The lattice is **Voronoi-perfect** when
 $$

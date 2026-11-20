@@ -55,7 +55,7 @@ $$
 :::
 
 ::: {.proof}
-The displayed Gram matrix of $U_0$ is the base change of the standard Gram matrix of $U$.
+The displayed Gram matrix of $U_0$ is the base change (@def:module-base-change) of the standard Gram matrix of $U$.
 Twisting by $2^k$ gives the displayed Gram matrix of $U_k$.
 The determinant formulas follow directly from the two defining matrices.
 :::

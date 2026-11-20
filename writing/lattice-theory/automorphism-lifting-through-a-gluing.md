@@ -15,7 +15,7 @@ If $L$ is even, write $\bar{\varphi}_q\definedas\rho_{L,q}(\varphi)\in\Orth(A_{L
 
 ::: {.definition #def:gluing-datum-of-a-pair title="The gluing datum of a pair of primitive inclusions" defines="gluing datum; $j$; $h$"}
 
-Let $\iota_M\colon M\injects L$ and $\iota_N\colon N\injects L$ be primitive embeddings with
+Let $\iota_M\colon M\injects L$ and $\iota_N\colon N\injects L$ be primitive embeddings (@def:primitive-embedding) with
 $\iota_N(N)=\iota_M(M)^{\perp L}$.
 Set $j\definedas\iota_M\perp\iota_N\colon M\perp N\injects L$. Its module-component cokernel sequence in $\bZ\text{-}\mathbf{Mod}$ is
 $$
@@ -69,7 +69,7 @@ $$
 $$
 be the discriminant quotient morphism.
 By @def:gluing-datum-of-a-pair, $L$ is the inverse image under $\pi$ of the subobject $h\colon(H,0)\injects A_{M\perp N}$.
-The automorphism induced by $\psi_\QQ$ on the target of $\pi$ is $U_{\mathrm{mod}}(\bar\psi)$.
+The automorphism induced by $\psi_\QQ$ on the target (@def:globular-boundary) of $\pi$ is $U_{\mathrm{mod}}(\bar\psi)$.
 Hence $\psi_\QQ$ preserves $L$ exactly when $\bar\psi$ preserves the subobject $h$, which is equivalent to the existence of the automorphism $u$ in the commuting square above.
 In that case $\restrictionof{\psi_\QQ}{L}$ is the required isometry.
 :::
@@ -103,10 +103,10 @@ and the second has finite index.
 
 By @thm:automorphism-lifting-criterion, an element $\varphi_M\in\Gamma$ lifts with
 $\varphi_N=\id_N$ exactly when $\rho_M(\varphi_M)$ lies in $\Stab_{\Orth(A_M)}(h)$.
-This is precisely the universal property of the displayed pullback.
+This is precisely the universal property (@def:property-structure-stuff) of the displayed pullback.
 The identity morphism of $A_M$ gives the induced monomorphism
 $\widetilde\Orth(M)\mathbin{\times}_{\Orth(M)}\Gamma\injects\Stab_\Gamma(h)$.
-The discriminant module $A_M^\sharp$ has finite length over $\bZ$, hence finite cardinality; therefore $\Orth(A_M)$ is finite and $\Stab_\Gamma(h)\injects\Gamma$ has finite index.
+The discriminant module $A_M^\sharp$ has finite length (@def:anticanonical-pair) over $\bZ$, hence finite cardinality; therefore $\Orth(A_M)$ is finite and $\Stab_\Gamma(h)\injects\Gamma$ has finite index.
 :::
 
 
@@ -117,7 +117,7 @@ I_\Gamma\definedas\rho_M(\Gamma)\injects\Orth(A_M),
 \qquad
 J_h\definedas\Stab_{\Orth(A_M)}(h)\injects\Orth(A_M).
 $$
-The restriction of the discriminant representation gives the exact sequence of groups
+The restriction of the discriminant representation (@def:representable-presheaf) gives the exact sequence of groups (@def:group)
 $$
 1\too\Gamma\cap\widetilde\Orth(M)
 \too\Stab_\Gamma(h)
@@ -143,7 +143,7 @@ The displayed coset sets are groups only when the corresponding stabilizers are 
 :::
 
 ::: {.proof}
-By the pullback in @cor:liftable-automorphisms, $\Stab_\Gamma(h)=\rho_M^{-1}(J_h)\cap\Gamma$. The restriction of $\rho_M$ therefore has image $I_\Gamma\cap J_h$ and kernel $\Gamma\cap\ker\rho_M=\Gamma\cap\widetilde\Orth(M)$, proving exactness. The coset bijection and index equality follow by the same pullback and the first isomorphism theorem applied to the image of $\Gamma$.
+By the pullback in @cor:liftable-automorphisms, $\Stab_\Gamma(h)=\rho_M^{-1}(J_h)\cap\Gamma$. The restriction of $\rho_M$ therefore has image $I_\Gamma\cap J_h$ and kernel $\Gamma\cap\ker\rho_M=\Gamma\cap\widetilde\Orth(M)$, proving exactness. The coset bijection and index equality follow by the same pullback and the first isomorphism (@def:isomorphism-of-objects) theorem applied to the image of $\Gamma$.
 :::
 
 

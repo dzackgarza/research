@@ -21,7 +21,7 @@ is an object of $\mathcal B_{R,R}$.
 
 ::: {.proposition #prop:hyperbolic-adjoint title="The adjoint map of a hyperbolic form"}
 
-Let $\operatorname{can}_M\colon M\to M^{**}$ be the evaluation map, $\operatorname{can}_M(x)(\psi)=\psi(x)$.
+Let $\operatorname{can}_M\colon M\to M^{**}$ be the evaluation (@def:dualizable-object) map, $\operatorname{can}_M(x)(\psi)=\psi(x)$.
 Under the canonical isomorphism $(M\oplus M^{*})^{*}\cong M^{*}\oplus M^{**}$, the adjoint map of @def:polarization is
 $$
 h_M^{\sharp}\colon M\oplus M^{*}\too M^{*}\oplus M^{**},
@@ -33,42 +33,42 @@ Hence $h_M$ is nondegenerate if and only if $\operatorname{can}_M$ is injective,
 
 ::: {.proof}
 
-A functional on a biproduct restricts to its two summands, giving the isomorphism $\Hom_R(M\oplus M^{*},R)\cong M^{*}\oplus M^{**}$ that sends $\lambda$ to $(\lambda\circ\iota_M,\lambda\circ\iota_{M^{*}})$.
+A functional on a biproduct (@def:preadditive) restricts to its two summands, giving the isomorphism $\Hom_R(M\oplus M^{*},R)\cong M^{*}\oplus M^{**}$ that sends $\lambda$ to $(\lambda\circ\iota_M,\lambda\circ\iota_{M^{*}})$.
 Apply it to $\lambda=h_M^{\sharp}(x,\varphi)$, whose value on $(y,\psi)$ is $\psi(x)+\varphi(y)$: the restriction to $M\oplus0$ is $y\mapsto\varphi(y)$, which is $\varphi$, and the restriction to $0\oplus M^{*}$ is $\psi\mapsto\psi(x)$, which is $\operatorname{can}_M(x)$.
 So $h_M^{\sharp}$ is the morphism displayed, and its two components are $\varphi$ and $\operatorname{can}_M(x)$.
 
 Under this identification $h_M^{\sharp}=\id_{M^{*}}\oplus\operatorname{can}_M$.
 Its kernel is $0\oplus\ker\operatorname{can}_M$, so it is injective exactly when $\operatorname{can}_M$ is; and a morphism of $R$-modules is an isomorphism exactly when it is injective and surjective, so $h_M^{\sharp}$ is an isomorphism exactly when $\operatorname{can}_M$ is, the other component being $\id_{M^{*}}$.
-By @def:polarization, nondegeneracy of $h_M$ is vanishing of $\ker h_M^{\sharp}$ and perfection is vanishing of $\ker h_M^{\sharp}$ and $\operatorname{coker}h_M^{\sharp}$, so the two equivalences asserted follow.
+By @def:polarization, nondegeneracy of $h_M$ is vanishing of $\ker h_M^{\sharp}$ and perfection is vanishing of $\ker h_M^{\sharp}$ and $\operatorname{coker}h_M^{\sharp}$, so the two equivalences (@def:equivalence-of-objects) asserted follow.
 :::
 
 ::: {.lemma #lem:double-dual-fg-projective title="The double dual of a finitely generated projective module"}
 
-For a finitely generated projective $R$-module $M$, the evaluation map $\operatorname{can}_M\colon M\to M^{**}$ is an isomorphism.
+For a finitely generated projective (@def:module-subcategories) $R$-module $M$, the evaluation (@def:dualizable-object) map $\operatorname{can}_M\colon M\to M^{**}$ is an isomorphism (@def:isomorphism-of-objects).
 :::
 
 ::: {.proof}
 
-Evaluation commutes with finite biproducts: $\operatorname{can}_{M\oplus M'}=\operatorname{can}_M\oplus\operatorname{can}_{M'}$, since a functional on a biproduct is a pair of functionals and evaluation is componentwise.
-For a free module of finite rank, $\operatorname{can}_{R^{n}}\colon R^{n}\to(R^{n})^{**}\cong R^{n}$ is the identity, because a functional is determined by its values on a basis and evaluation against the dual basis returns those values.
+Evaluation commutes with finite biproducts (@def:preadditive): $\operatorname{can}_{M\oplus M'}=\operatorname{can}_M\oplus\operatorname{can}_{M'}$, since a functional on a biproduct is a pair of functionals and evaluation is componentwise.
+For a free (@def:module-subcategories) module of finite rank, $\operatorname{can}_{R^{n}}\colon R^{n}\to(R^{n})^{**}\cong R^{n}$ is the identity, because a functional is determined by its values on a basis (@def:based-module) and evaluation against the dual basis returns those values.
 
-A finitely generated projective module is a summand of a finitely generated free module, $M\oplus M'\cong R^{n}$.
+A finitely generated projective module is a summand of a finitely generated (@def:module-subcategories) free module, $M\oplus M'\cong R^{n}$.
 Then $\operatorname{can}_M\oplus\operatorname{can}_{M'}\cong\operatorname{can}_{R^{n}}\cong\id$, and a summand of an isomorphism is an isomorphism: if $f\oplus g$ is invertible, its inverse has components $f^{-1}$ and $g^{-1}$ under the same biproduct decomposition.
 Hence $\operatorname{can}_M$ is an isomorphism.
 :::
 
 ::: {.proposition #prop:hyperbolic-lattice title="Hyperbolic lattices"}
 
-Let $R$ be a Dedekind domain and let $M$ be a finitely generated projective $R$-module.
+Let $R$ be a Dedekind domain and let $M$ be a finitely generated projective (@def:module-subcategories) $R$-module.
 Then $H(M)$ is a unimodular $R$-lattice in the sense of @def:lattice and @def:unimodular, and its discriminant module (@def:discriminant) is $A_{H(M)}=0$.
 :::
 
 ::: {.proof}
 
-The dual $M^{*}=\Hom_R(M,R)$ of a finitely generated projective module is finitely generated projective: a decomposition $M\oplus M'\cong R^{n}$ gives $M^{*}\oplus M'^{*}\cong(R^{n})^{*}\cong R^{n}$, because $\Hom_R(-,R)$ carries finite biproducts to finite biproducts.
+The dual $M^{*}=\Hom_R(M,R)$ of a finitely generated projective module is finitely generated projective: a decomposition $M\oplus M'\cong R^{n}$ gives $M^{*}\oplus M'^{*}\cong(R^{n})^{*}\cong R^{n}$, because $\Hom_R(-,R)$ carries finite biproducts (@def:preadditive) to finite biproducts.
 So $M\oplus M^{*}$ is finitely generated projective and $H(M)$ is an $R$-lattice in the sense of @def:lattice.
 
-By @lem:double-dual-fg-projective the evaluation map $\operatorname{can}_M$ is an isomorphism, so by @prop:hyperbolic-adjoint the adjoint $h_M^{\sharp}$ is an isomorphism.
+By @lem:double-dual-fg-projective the evaluation (@def:dualizable-object) map $\operatorname{can}_M$ is an isomorphism, so by @prop:hyperbolic-adjoint the adjoint $h_M^{\sharp}$ is an isomorphism.
 Vanishing of the radical and the coradical is then nondegeneracy and perfection by @def:polarization, so $h_M$ is perfect.
 
 The discriminant module $A_{H(M)}$ is the cokernel of $h_M^{\sharp}$ by @def:two-witnesses, and the cokernel of an isomorphism is zero; so $A_{H(M)}=0$, which is unimodularity by @def:unimodular.
@@ -90,7 +90,7 @@ For $R=\bZ$ the lattice $H(\bZ)$ is even (@def:even-lattice), unimodular, and of
 
 ::: {.definition #def:hyperbolic-functor title="The hyperbolic functor" defines="$H(u)$; hyperbolic functor; $H$"}
 
-For an isomorphism $u\colon M\to N$ of $R$-modules set
+For an isomorphism (@def:isomorphism-of-objects) $u\colon M\to N$ of $R$-modules set
 $$
 H(u)(x,\varphi)=\bigl(u(x),\varphi\circ u^{-1}\bigr).
 $$
@@ -120,7 +120,7 @@ The form $(M,b)$ is *metabolic* if it admits a lagrangian [@MH73, §I.6; @Ran98,
 :::
 
 ::: {#not:split-and-metabolic .notation title="Split and metabolic" defines="split form"}
-[@MH73, Def. I.6.1] calls a metabolic form *split*; the term *metabolic* is due to Knebusch [@MH73, §I.6].
+[@MH73, Def. I.6.1] calls a metabolic form (@def:lagrangian) *split (@def:hyperbolic-plane)*; the term *metabolic* is due to Knebusch [@MH73, §I.6].
 :::
 
 ::: {.proposition #prop:hyperbolic-metabolic title="Hyperbolic forms are metabolic"}
@@ -142,29 +142,29 @@ Injectivity of $\operatorname{can}_M$ gives $x=0$, so $(0\oplus M^{*})^{\perp}=0
 
 ::: {.proposition #prop:metabolic-closure title="Closure of metabolic forms"}
 
-Let $(X,b_X)$ and $(Y,b_Y)$ be metabolic perfect forms over $R$ with lagrangians $N_X$ and $N_Y$, and let $(Z,b_Z)$ be perfect.
+Let $(X,b_X)$ and $(Y,b_Y)$ be metabolic perfect (@def:polarization) forms over $R$ with lagrangians (@def:lagrangian) $N_X$ and $N_Y$, and let $(Z,b_Z)$ be perfect.
 Then $X\perp Y$ is metabolic, with lagrangian $N_X\perp N_Y$, and $X\otimes Z$, with the tensor product form of @def:form-tensor, is metabolic, with lagrangian $N_X\otimes Z$.
 :::
 
 ::: {.proof}
 
-Both closures are [@MH73, Lem. I.7.2], which states that Witt equivalence is compatible with orthogonal sum and with tensor product, and proves the compatibility by exhibiting exactly these lagrangians.
+Both closures are [@MH73, Lem. I.7.2], which states that Witt equivalence (@def:witt-class) is compatible with orthogonal sum (@def:orthogonal-sum) and with tensor product, and proves the compatibility by exhibiting exactly these lagrangians.
 The tensor-product closure uses only that $N_X$ is a lagrangian: the form of @def:form-tensor vanishes on $(N_X\tensor Z)^{\otimes2}$ immediately, and the converse uses only that $b_Z$ is perfect.
 :::
 
 ::: {.proposition #prop:negation-is-metabolic title="A form orthogonally summed with its twist"}
 
-Let $(X,b_X)$ be a perfect form over $R$.
+Let $(X,b_X)$ be a perfect (@def:polarization) form over $R$.
 Then $X\perp X(-1)$, with the twist of @def:form-twist, is metabolic [@MH73, Lem. I.6.2], and
 $$
 N\definedas\theset{(x,x)\st x\in X}
 $$
-is a lagrangian.
+is a lagrangian (@def:lagrangian).
 :::
 
 ::: {.proof}
 
-This is the standard construction of the additive inverse in $W(R)$: the diagonal $N=\theset{(x,x)}$ is a direct summand split by $(x,y)\mapsto x$, it is isotropic because the two summands carry opposite forms, and an element of its orthogonal complement satisfies $b_X(x,z)=b_X(y,z)$ for all $z$, so $x=y$ by perfection.
+This is the standard construction of the additive inverse in $W(R)$: the diagonal (@def:polarization-functors) $N=\theset{(x,x)}$ is a direct summand split (@def:hyperbolic-plane) by $(x,y)\mapsto x$, it is isotropic (@def:orthogonal-complement) because the two summands carry opposite forms, and an element of its orthogonal complement satisfies $b_X(x,z)=b_X(y,z)$ for all $z$, so $x=y$ by perfection.
 :::
 
 ## Hyperbolic stabilization {#sec-hyperbolic-stabilization}
@@ -193,14 +193,14 @@ For $R$ a Dedekind domain and $M$ an $R$-lattice, $F_M$ restricts to an endofunc
 
 ::: {.proposition #prop:orthogonal-sum-unimodular title="Nondegeneracy and unimodularity of orthogonal sums"}
 
-Let $R$ be a ring and let $(L,b_L)$ and $(L',b_{L'})$ be forms over $R$ with finitely generated projective underlying modules.
+Let $R$ be a ring and let $(L,b_L)$ and $(L',b_{L'})$ be forms over $R$ with finitely generated projective (@def:module-subcategories) underlying modules.
 If both are nondegenerate then $L\perp L'$ is nondegenerate, and if both are unimodular $R$-lattices then $L\perp L'$ is a unimodular $R$-lattice.
 :::
 
 ::: {.proof}
 
 Under $(L\oplus L')^{*}\cong L^{*}\oplus L'^{*}$ the adjoint of the orthogonal sum is $b_{L\perp L'}^{\sharp}=b_L^{\sharp}\oplus b_{L'}^{\sharp}$, by @def:orthogonal-sum: the mixed terms vanish, so the components of $b_{L\perp L'}^{\sharp}(x,x')$ are $b_L^{\sharp}(x)$ and $b_{L'}^{\sharp}(x')$.
-A biproduct morphism has zero kernel exactly when both components do, and is an isomorphism exactly when both components are, so the two assertions follow from @def:polarization and @def:two-witnesses.
+A biproduct (@def:preadditive) morphism has zero kernel exactly when both components do, and is an isomorphism exactly when both components are, so the two assertions follow from @def:polarization and @def:two-witnesses.
 The underlying module of an orthogonal sum of lattices is finitely generated projective, being a biproduct of such.
 :::
 
@@ -238,7 +238,7 @@ So the identification is an isometry of discriminant forms, in $\mathbf{DiscBil}
 
 Let $R$ be a Dedekind domain and let $L$ be an $R$-lattice with $A_L\neq0$.
 Then $A_{S^{n}(L)}\cong A_L$ for every $n\geq0$.
-Consequently $S^{n}(L)$ is not unimodular, and $S^{n}(L)$ is not isometric to $H(P)$ for any finitely generated projective $R$-module $P$ and any $n\geq0$.
+Consequently $S^{n}(L)$ is not unimodular, and $S^{n}(L)$ is not isometric to $H(P)$ for any finitely generated projective (@def:module-subcategories) $R$-module $P$ and any $n\geq0$.
 :::
 
 ::: {.proof}
@@ -279,30 +279,30 @@ $$
 X\perp Y\;\cong\;X'\perp Y'
 $$
 [@MH73, Def. I.7.1].
-That $\sim$ is an equivalence relation, and that it is compatible with orthogonal sum and with tensor product, is @lem:witt-equivalence.
+That $\sim$ is an equivalence (@def:equivalence-of-objects) relation, and that it is compatible with orthogonal sum (@def:orthogonal-sum) and with tensor product, is @lem:witt-equivalence.
 :::
 
 ::: {.lemma #lem:witt-equivalence title="Witt equivalence is a congruence"}
 
 Let $R$ be a Dedekind domain.
-Witt equivalence is an equivalence relation on isometry classes of unimodular $R$-lattices, and it is a congruence: if $X\sim X'$ and $Z\sim Z'$ then $X\perp Z\sim X'\perp Z'$ and $X\otimes Z\sim X'\otimes Z'$ [@MH73, Lem. I.7.2].
+Witt equivalence (@def:witt-class) is an equivalence (@def:equivalence-of-objects) relation on isometry classes of unimodular $R$-lattices, and it is a congruence: if $X\sim X'$ and $Z\sim Z'$ then $X\perp Z\sim X'\perp Z'$ and $X\otimes Z\sim X'\otimes Z'$ [@MH73, Lem. I.7.2].
 :::
 
 ::: {.proof}
 
 Reflexivity holds with $Y=Y'=0$, the zero lattice being metabolic with lagrangian $0$ by @def:lagrangian, and symmetry is symmetry of the defining condition.
-Transitivity, and compatibility with orthogonal sum and tensor product, are [@MH73, Lem. I.7.2].
+Transitivity, and compatibility with orthogonal sum (@def:orthogonal-sum) and tensor product, are [@MH73, Lem. I.7.2].
 :::
 
 ::: {.theorem #thm:witt-ring title="The Witt ring"}
 
-The set $W(R)$ of Witt classes of unimodular $R$-lattices is a commutative ring with $1$, with orthogonal sum as addition and tensor product as multiplication [@MH73, Thm. I.7.3].
+The set $W(R)$ of Witt classes (@def:witt-class) of unimodular $R$-lattices is a commutative (@def:operation-axioms) ring with $1$, with orthogonal sum (@def:orthogonal-sum) as addition and tensor product as multiplication [@MH73, Thm. I.7.3].
 :::
 
 ::: {.proof}
 
 The two operations are well defined on Witt classes by @lem:witt-equivalence, and the axioms are [@MH73, Thm. I.7.3].
-The tensor product of unimodular lattices is unimodular by the perfectness clause of @def:form-tensor.
+The tensor product of unimodular lattices (@def:unimodular) is unimodular by the perfectness clause of @def:form-tensor.
 The additive inverse of $[X]$ is $[X(-1)]$, by @prop:negation-is-metabolic.
 :::
 
@@ -310,7 +310,7 @@ The additive inverse of $[X]$ is $[X(-1)]$, by @prop:negation-is-metabolic.
 
 Let $X$ be a metabolic unimodular $R$-lattice.
 Then $[X]=0$ in $W(R)$.
-In particular $[H(P)]=0$ for every finitely generated projective $R$-module $P$.
+In particular $[H(P)]=0$ for every finitely generated projective (@def:module-subcategories) $R$-module $P$.
 :::
 
 ::: {.proof}
@@ -318,13 +318,13 @@ In particular $[H(P)]=0$ for every finitely generated projective $R$-module $P$.
 The zero lattice is metabolic, with lagrangian $0$.
 Taking $Y=0$ and $Y'=X$ in @def:witt-class, both metabolic by hypothesis, the isometry $X\perp0\cong0\perp X$ of the symmetric monoidal coherence exhibits $X\sim0$, so the class of $X$ is zero in $W(R)$ of @thm:witt-ring.
 
-The hyperbolic lattice $H(P)$ is metabolic by @prop:hyperbolic-metabolic, applied with the isomorphism $\operatorname{can}_P$ of @lem:double-dual-fg-projective.
+The hyperbolic lattice (@not:reflection-groups-sign-convention) $H(P)$ is metabolic by @prop:hyperbolic-metabolic, applied with the isomorphism (@def:isomorphism-of-objects) $\operatorname{can}_P$ of @lem:double-dual-fg-projective.
 :::
 
 ::: {.theorem #thm:witt-shift-by-summand title="Which summand shifts the Witt class"}
 
 Let $M$ be a unimodular $R$-lattice.
-On unimodular lattices, $F_M$ of @def:hyperbolic-stabilization acts on Witt classes by
+On unimodular lattices (@def:unimodular), $F_M$ of @def:hyperbolic-stabilization acts on Witt classes by
 $$
 \bigl[F_M(X)\bigr]=[X]+[M],
 $$
@@ -341,7 +341,7 @@ $$
 The orthogonal sum of unimodular lattices is unimodular by @prop:orthogonal-sum-unimodular, so $F_M$ carries unimodular lattices to unimodular lattices and induces a map on $W(R)$.
 On classes it is translation by $[M]$, because $[F_M(X)]=[X\perp M]=[X]+[M]$ by the definition of addition in @thm:witt-ring.
 
-In a group, translation by an element is the identity exactly when the element is zero, so translation by $[M]$ is the identity if and only if $[M]=0$.
+In a group (@def:group), translation by an element is the identity exactly when the element is zero, so translation by $[M]$ is the identity if and only if $[M]=0$.
 For $M=H(R)$ the class is zero by @prop:metabolic-witt-trivial, so $[S(L)]=[L]$ for every unimodular $L$ and, iterating, $[S^{n}(L)]=[L]$; the class is therefore constant along the displayed tower.
 :::
 
@@ -359,9 +359,9 @@ with $\langle1\rangle$ as in @ex:rank-one-forms and [@MH73, Cor. II.4.4].
 ::: {.proof}
 
 The isomorphism is [@MH73, Cor. II.4.4].
-Alternatively, with $\sigma(L)=p-q$ the signature of @def:signature, $\sigma$ is additive and multiplicative on representatives, because orthogonality concatenates diagonalizations and a tensor product of diagonalizations is diagonal (@thm:sylvester); it vanishes on metabolic forms, a lagrangian having dimension $\tfrac12\dim$ and a totally isotropic subspace of a real form of signature $(p,q)$ at most $\min(p,q)$; so it descends.
+Alternatively, with $\sigma(L)=p-q$ the signature of @def:signature, $\sigma$ is additive and multiplicative on representatives, because orthogonality concatenates diagonalizations and a tensor product of diagonalizations is diagonal (@def:polarization-functors) (@thm:sylvester); it vanishes on metabolic forms (@def:lagrangian), a lagrangian (@def:lagrangian) having dimension $\tfrac12\dim$ and a totally isotropic (@def:orthogonal-complement) subspace of a real form of signature $(p,q)$ at most $\min(p,q)$; so it descends.
 Surjectivity is $n\langle1\rangle$ for $n\geq0$ and $m\langle-1\rangle$ for $m\leq0$.
-For injectivity, a unimodular lattice with $\sigma(L)=0$ is $0$, or definite of rank $0$, or indefinite with $p=q$, hence a sum of copies of $\langle1\rangle\perp\langle-1\rangle$ or of the hyperbolic plane by @thm:indefinite-unimodular-classification, both metabolic.
+For injectivity, a unimodular lattice (@def:unimodular) with $\sigma(L)=0$ is $0$, or definite (@def:definiteness) of rank $0$, or indefinite (@def:definiteness) with $p=q$, hence a sum of copies of $\langle1\rangle\perp\langle-1\rangle$ or of the hyperbolic plane (@def:hyperbolic-plane) by @thm:indefinite-unimodular-classification, both metabolic.
 :::
 
 ::: {.example #ex:witt-classes-over-z title="Witt classes over $\mathbb Z$"}
@@ -373,8 +373,8 @@ By @thm:witt-shift-by-summand, $F_{\langle1\rangle}$ translates $W(\bZ)$ by $1$ 
 
 ::: {.theorem #thm:metabolic-is-hyperbolic title="Metabolic forms when $2$ is a unit"}
 
-Let $R$ be a ring over which every finitely generated projective module is free and in which $2$ is a unit.
-Then every metabolic unimodular form over $R$ is isometric to an orthogonal sum of copies of $H(R)$ [@MH73, Lem. I.6.3].
+Let $R$ be a ring over which every finitely generated projective (@def:module-subcategories) module is free (@def:module-subcategories) and in which $2$ is a unit.
+Then every metabolic unimodular form over $R$ is isometric to an orthogonal sum (@def:orthogonal-sum) of copies of $H(R)$ [@MH73, Lem. I.6.3].
 Conversely such an orthogonal sum is metabolic over any $R$, by @prop:hyperbolic-metabolic and the closure of metabolic forms under orthogonal sum (@prop:metabolic-closure) [@MH73, Lem. I.6.2].
 :::
 
@@ -382,8 +382,8 @@ Conversely such an orthogonal sum is metabolic over any $R$, by @prop:hyperbolic
 
 This is [@MH73, Lem. I.6.3].
 
-Let $(M,b)$ be metabolic and perfect with lagrangian $N$ and complement $W$, so $M=N\oplus W$ with $\rank N=\rank W=n$.
-In an adapted basis the Gram matrix is
+Let $(M,b)$ be metabolic and perfect (@def:polarization) with lagrangian $N$ and complement $W$, so $M=N\oplus W$ with $\rank N=\rank W=n$.
+In an adapted basis (@def:based-module) the Gram matrix is
 $$
 G=\begin{pmatrix}0&A\\A^{T}&B\end{pmatrix},
 $$

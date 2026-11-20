@@ -4,8 +4,8 @@ Let $R$ be a Dedekind domain with fraction field $K$; the main case is $R=\bZ$ a
 
 ::: {.definition #def:lattice title="Lattices" defines="$R$-lattice; $\mathbf{Lat}_R$; $\mathbf{Lat}_R^{\mathrm{nd}}$"}
 
-An $R$-**lattice** is a bilinear module $(L,R,\beta_L)$ whose underlying $R$-module is finitely generated projective.
-Write $\mathbf{Lat}_R\hookrightarrow\mathcal B_{R,R}$ for the replete full subcategory of @def:form-categories on these objects, and $\mathbf{Lat}_R^{\mathrm{nd}}\hookrightarrow\mathbf{Lat}_R$ for the replete full subcategory cut out by nondegeneracy in @def:polarization.
+An $R$-**lattice** is a bilinear module $(L,R,\beta_L)$ whose underlying $R$-module is finitely generated projective (@def:module-subcategories).
+Write $\mathbf{Lat}_R\hookrightarrow\mathcal B_{R,R}$ for the replete full subcategory (@def:property-structure-stuff) of @def:form-categories on these objects, and $\mathbf{Lat}_R^{\mathrm{nd}}\hookrightarrow\mathbf{Lat}_R$ for the replete full subcategory cut out by nondegeneracy in @def:polarization.
 :::
 
 
@@ -44,7 +44,7 @@ since $\bR$ is flat over $\bZ$.
 ::: {.definition #def:even-lattice title="Even lattices" defines="even lattice; $\mathbf{EvenLat}_R$"}
 
 An $R$-lattice $L$ is **even** when $\beta_L$ is even in the sense of @def:form-axioms.
-Write $\mathbf{EvenLat}_R\hookrightarrow\mathbf{Lat}_R$ for the corresponding replete full subcategory.
+Write $\mathbf{EvenLat}_R\hookrightarrow\mathbf{Lat}_R$ for the corresponding replete full subcategory (@def:property-structure-stuff).
 :::
 
 
@@ -53,7 +53,7 @@ Write $\mathbf{EvenLat}_R\hookrightarrow\mathbf{Lat}_R$ for the corresponding re
 
 ::: {.definition #def:signature-subcategories title="Signature subcategories" defines="signature subcategory; $\mathbf{Lat}_R^{\underline s}$; $\mathbf{Def}_{\bZ}^{+}$; $\mathbf{Def}_{\bZ}^{-}$; $\mathbf{Def}_{\bZ}$; $\mathbf{Indef}_{\bZ}$; $\mathbf{Hyp}_{\bZ}$"}
 
-For a signature tuple $\underline s=(s_\sigma)_{\sigma\in\Sigma_\infty(R)}$ of @def:signature, let $\mathbf{Lat}_R^{\underline s}\hookrightarrow\mathbf{Lat}_R$ be the replete full subcategory of lattices with signature tuple $\underline s$.
+For a signature tuple $\underline s=(s_\sigma)_{\sigma\in\Sigma_\infty(R)}$ of @def:signature, let $\mathbf{Lat}_R^{\underline s}\hookrightarrow\mathbf{Lat}_R$ be the replete full subcategory (@def:property-structure-stuff) of lattices with signature tuple $\underline s$.
 
 For $R=\bZ$, define
 $$
@@ -95,7 +95,7 @@ The root lattices are objects of $\mathbf{Def}_{\bZ}^{-}$.
 ::: {.definition #def:metric-dual title="Metric $I$-duals" defines="metric $I$-dual; $L^{\\# I}$; $I$-integral structure; $\eta_{L,I}$; $I$-integral lattice; $A_L^{\\# I}$; $L^{\\#}$; $\iota_L$; $A_L^{\\sharp}$"}
 
 Let $L\in\mathbf{Lat}_R^{\mathrm{nd}}$ and let $I\injects K$ be a nonzero fractional ideal.
-The coefficient exact sequence is
+The coefficient exact (@def:exact-complex) sequence is
 $$
 0\too I\too K\too K/I\too0
 $$ {#eq-metric-dual-coefficients}
@@ -131,7 +131,7 @@ L_K \arrow[d,"\beta_{L_K}^{\sharp}"] \\
 \Hom_R(L,K)
 ```
 
-An **$I$-integral structure** on $L$ is the unique morphism $\eta_{L,I}\colon L\too L^{\# I}$ in $R\text{-}\mathbf{Mod}$ making
+An **$I$-integral structure (@def:property-structure-stuff)** on $L$ is the unique morphism $\eta_{L,I}\colon L\too L^{\# I}$ in $R\text{-}\mathbf{Mod}$ making
 ```tikzcd
 & L^{\# I} \arrow[d] \\
 L \arrow[ur,"\eta_{L,I}"] \arrow[r] & L_K
@@ -163,11 +163,11 @@ $$
 ::: {.definition #def:unimodular title="$I$-modular and unimodular lattices" defines="$I$-modular lattice; $\mathbf{ModLat}_{R,I}$; unimodular lattice; $\mathbf{Unimod}_R$"}
 
 An $I$-integral lattice $L$ is **$I$-modular** when $A_L^{\# I}=0$.
-Equivalently, its defining exact sequence is
+Equivalently, its defining exact (@def:exact-complex) sequence is
 $$
 0\too L\xrightarrow{\eta_{L,I}}L^{\# I}\too0.
 $$
-Write $\mathbf{ModLat}_{R,I}\hookrightarrow\mathbf{Lat}_R^{\mathrm{nd}}$ for the replete full subcategory of $I$-modular lattices.
+Write $\mathbf{ModLat}_{R,I}\hookrightarrow\mathbf{Lat}_R^{\mathrm{nd}}$ for the replete full subcategory (@def:property-structure-stuff) of $I$-modular lattices.
 For $I=R$ set $\mathbf{Unimod}_R\definedas\mathbf{ModLat}_{R,R}$.
 :::
 
@@ -191,7 +191,7 @@ $$
 \definedas
 (\iota_L,j_{b,L})
 $$
-is a morphism in $\mathbf{BilMod}_{\bZ}$, and the **bilinear discriminant form** is its cokernel in that abelian category:
+is a morphism in $\mathbf{BilMod}_{\bZ}$, and the **bilinear discriminant form** is its cokernel (@def:kernel-cokernel) in that abelian category (@def:abelian-category):
 $$
 (L,\bZ,\beta_L)
 \xrightarrow{\boldsymbol\iota_L}
@@ -226,7 +226,7 @@ J_L
 \injects
 \bZ.
 $$
-The diagonal of $\beta_{L^\#}$ induces the unique quadratic morphism
+The diagonal (@def:polarization-functors) of $\beta_{L^\#}$ induces the unique quadratic morphism
 $$
 q_L\colon
 A_L^\sharp
@@ -245,7 +245,7 @@ A_{L,q}
 \definedas
 \qty{A_L^\sharp,\tfrac2{N_q(L)}\bZ/J_L,q_L}.
 $$
-If $L$ is even, then $J_L=2\bZ$, so this recovers the usual
+If $L$ is even (@def:form-axioms), then $J_L=2\bZ$, so this recovers the usual
 $\tfrac2{N_q(L)}\bZ/2\bZ$-valued refinement [@Nik80, §1.1].
 :::
 
@@ -260,7 +260,7 @@ $$
 \hookrightarrow
 \mathbf{BilMod}_{\bZ}^{\simeq}
 $$
-for the full subgroupoid spanned by these cokernels.
+for the full subgroupoid spanned by these cokernels (@def:kernel-cokernel).
 :::
 
 ::: {.definition #def:discquad title="Discriminant quadratic forms" defines="discriminant quadratic form; $\mathbf{DiscQuad}_{\bZ}^{\simeq}$"}
@@ -305,10 +305,10 @@ A_S^\sharp\isoto(\bZ/p\bZ)^a,
 \abs{\disc{S}}=p^a.
 $$
 For $p=2$ this is Nikulin's $2$-elementary condition [@Nik80, §3.6.1].
-The condition defines a replete full subcategory of $\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$.
+The condition defines a replete full subcategory (@def:property-structure-stuff) of $\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$.
 
-For an even $2$-elementary lattice $S$, the coparity $\delta_S$ is the invariant of $A_{S,q}$ from [@Nik80, §3.6].
-Let the signature of $S$ be $(t_{(+)},t_{(-)},0)$.
+For an even (@def:form-axioms) $2$-elementary lattice $S$, the coparity $\delta_S$ is the invariant of $A_{S,q}$ from [@Nik80, §3.6].
+Let the signature (@def:signature) of $S$ be $(t_{(+)},t_{(-)},0)$.
 The genus is determined by $(\delta_S;t_{(+)},t_{(-)},a)$, and when $t_{(+)}>0$ and $t_{(-)}>0$ these invariants determine the integral isometry class [@Nik80, Thm. 3.6.2].
 :::
 
@@ -334,7 +334,7 @@ Hence $A_{A_3}^\sharp$ has exponent $4$, whereas a $2$-elementary $\bZ$-module h
 
 ::: {.definition #def:two-witnesses title="Radical and coradical" defines="radical; $\radic(M)$; coradical; $\operatorname{corad}_b(M)$"}
 
-For a symmetric bilinear form $b$ on a finitely generated projective $R$-module $M$, define its radical and coradical by the exact sequence
+For a symmetric bilinear form $b$ on a finitely generated projective (@def:module-subcategories) $R$-module $M$, define its radical and coradical by the exact (@def:exact-complex) sequence
 $$
 0
 \too
@@ -348,20 +348,20 @@ M^*
 \too
 0.
 $$
-Then $b$ is nondegenerate exactly when $\radic(M)=0$, and it is perfect exactly when $\radic(M)=0=\operatorname{corad}_b(M)$.
+Then $b$ is nondegenerate (@def:polarization) exactly when $\radic(M)=0$, and it is perfect (@def:polarization) exactly when $\radic(M)=0=\operatorname{corad}_b(M)$.
 :::
 
 
 ::: {.theorem #thm:radical-splits title="The radical splits off"}
 
-Let $R$ be a Dedekind domain, let $M$ be a finitely generated projective $R$-module, and let $b$ be a symmetric $R$-valued bilinear form on $M$.
+Let $R$ be a Dedekind domain, let $M$ be a finitely generated projective (@def:module-subcategories) $R$-module, and let $b$ be a symmetric $R$-valued bilinear form on $M$.
 Let
 $$
 \rho_M\colon\radic(M)\injects M,
 \qquad
 q_M\colon M\surjects M^{\mathrm{nd}}
 $$
-be the radical morphism and its cokernel in $\mathbf{BilMod}_R$:
+be the radical (@def:two-witnesses) morphism and its cokernel (@def:kernel-cokernel) in $\mathbf{BilMod}_R$:
 $$
 0\too\radic(M)\xrightarrow{\rho_M}M\xrightarrow{q_M}M^{\mathrm{nd}}\too0.
 $$
@@ -378,11 +378,11 @@ $$
 \isoto
 M
 $$
-is an isomorphism of $R$-valued bilinear modules.
+is an isomorphism (@def:isomorphism-of-objects) of $R$-valued bilinear modules.
 :::
 
 ::: {.proof}
-The adjoint factors uniquely through $q_M$:
+The adjoint (@def:adjoint-morphism) factors uniquely through $q_M$:
 $$
 M\xrightarrow{q_M}M^{\mathrm{nd}}
 \xrightarrow{\overline b^{\sharp}}
@@ -396,9 +396,9 @@ M^{\mathrm{nd}}
 \xrightarrow{\overline b^\sharp}
 \Hom_R(M,R)
 $$
-is exact.
-Thus the underlying $R$-module of $M^{\mathrm{nd}}$ is finitely generated and torsion-free, hence projective over the Dedekind domain $R$.
-The underlying short exact sequence of $R$-modules therefore splits; choose
+is exact (@def:exact-complex).
+Thus the underlying $R$-module of $M^{\mathrm{nd}}$ is finitely generated (@def:module-subcategories) and torsion-free, hence projective (@def:module-subcategories) over the Dedekind domain $R$.
+The underlying short exact sequence (@def:exact-complex) of $R$-modules therefore splits (@def:hyperbolic-plane); choose
 $$
 s_M\colon M^{\mathrm{nd}}\too M,
 \qquad
@@ -432,7 +432,7 @@ Let
 $$
 \mathcal E_R\colon 0\too R\too K\too K/R\too0
 $$
-be the coefficient exact sequence. Tensoring $\mathcal E_R$ with an $R$-module $M$ gives
+be the coefficient exact (@def:exact-complex) sequence. Tensoring $\mathcal E_R$ with an $R$-module $M$ gives
 $$
 0
 \too
@@ -470,7 +470,7 @@ L^*
 \too
 0,
 $$ {#eq:dual-localization}
-again because $L$ is projective.
+again because $L$ is projective (@def:module-subcategories).
 :::
 
 ::: {.proof}
@@ -480,7 +480,7 @@ The long exact sequence is the snake lemma of @thm:diagram-lemmas applied to the
 
 ::: {.theorem #thm:double-complex title="Discriminant comparison via localization"}
 Let $L\in\mathbf{Lat}_R^{\mathrm{nd}}$.
-The adjoint of the scalar-extended form gives the commutative diagram
+The adjoint (@def:adjoint-morphism) of the scalar-extended form gives the commutative (@def:operation-axioms) diagram
 ```tikzcd
 0 \arrow[r] &
 L \arrow[r] \arrow[d,"b^\sharp"'] &
@@ -506,7 +506,7 @@ L\tensor_R(K/R)
 \too
 0
 $$
-and the canonical isomorphism
+and the canonical isomorphism (@def:isomorphism-of-objects)
 $$
 \operatorname{corad}_{b}(L)
 \isoto
@@ -517,5 +517,5 @@ For $R=\bZ$, this gives $U(A_L)=A_L^\sharp\isoto\operatorname{corad}_{b}(L)$.
 
 ::: {.proof}
 
-The double complex is the one associated with a resolution of each term, and its total complex computes the same homology by the standard spectral sequence argument, and the total complex is exact when the columns are exact (@thm:chain-complexes-abelian).
+The double complex is the one associated with a resolution of each term, and its total complex computes the same homology (@def:homology) by the standard spectral sequence argument, and the total complex is exact (@def:exact-complex) when the columns are exact (@thm:chain-complexes-abelian).
 :::

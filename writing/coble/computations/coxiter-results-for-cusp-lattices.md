@@ -41,9 +41,9 @@ At rank $9$ the Sterk 1 diagram has $4$ spherical subdiagrams of type $A_1 \oplu
 ::: {.proposition #prop:aegs-coxeter-ray-counts title="Rays of the Coxeter fans and of the semifans"}
 
 For $k = 1,\dots,5$ let $G^k$ be the folded Coxeter--Vinberg diagram (@def:coxeter-vinberg-diagram) of the $0$-cusp $k$ of $\fentwo$, and let $\Gamma_k = \operatorname{Aut}(G^k)\ltimes W(G^k)$ be the group induced on $e^{\perp}/e$.
-The Type II rays of the Coxeter fan correspond to the maximal parabolic subdiagrams of $G^k$, and the Type III cones to its elliptic subdiagrams [@AEGS25, §5.1].
+The Type II rays of the Coxeter fan correspond to the maximal parabolic subdiagrams (@def:parabolic-subdiagram) of $G^k$, and the Type III cones to its elliptic subdiagrams (@def:elliptic-subdiagram) [@AEGS25, §5.1].
 The numbers of Type II and Type III rays modulo $\Gamma_k$ are $4+4$, $2+8$, $3+15$, $4+12$, $5+17$ for $k = 1,\dots,5$ [@AEGS25, Lem. 5.2].
-After removal of every subdiagram with a connected component of irrelevant roots (@def:generalized-coxeter-semifan), the numbers of Type II and Type III divisors at the cusps of the semitoroidal compactification (@def:semitoroidal-compactification) are $2+0$, $2+7$, $2+7$, $4+7$, $3+0$ [@AEGS25, Lem. 5.8].
+After removal of every subdiagram (@def:coxeter-subdiagram) with a connected component of irrelevant roots (@def:generalized-coxeter-semifan), the numbers of Type II and Type III divisors at the cusps of the semitoroidal compactification (@def:semitoroidal-compactification) are $2+0$, $2+7$, $2+7$, $4+7$, $3+0$ [@AEGS25, Lem. 5.8].
 :::
 
 ::: {.example #ex:sterk-one-ideal-vertex-orbits title="Ideal vertices of Sterk 1 modulo diagram symmetries"}
@@ -71,9 +71,9 @@ The first is the Coble $0$-cusp lattice and the other two are the two Enriques $
 
 ::: {.proof}
 
-By @thm:two-elementary-classification an indefinite even $2$-elementary lattice is determined by its signature, $a$ and $\delta$, so it suffices to compute these invariants.
+By @thm:two-elementary-classification an indefinite (@def:definiteness) even $2$-elementary lattice is determined by its signature, $a$ and $\delta$, so it suffices to compute these invariants.
 The types of $U(2)\oplus E_8(2)$ and $U\oplus E_8(2)$ are computed in @prop:sterk-cusp-quotients.
-The lattice $\I_{1,8}$ is odd unimodular of rank $9$, so $\I_{1,8}(2)$ is even with discriminant group $\tfrac12\I_{1,8}(2)/\I_{1,8}(2)\cong(\ZZ/2)^9$, and $a = 9$.
+The lattice $\I_{1,8}$ is odd unimodular of rank $9$, so $\I_{1,8}(2)$ is even with discriminant group (@def:group) $\tfrac12\I_{1,8}(2)/\I_{1,8}(2)\cong(\ZZ/2)^9$, and $a = 9$.
 Its quadratic form takes the value $\tfrac12 y^2$ on the class of $\tfrac12 y$, which is not in $\ZZ$ when $y^2$ is odd, so $\delta = 1$.
 The identification with the $0$-cusp lattices is @thm:zero-cusp-chambers.
 :::

@@ -6,7 +6,7 @@ A generalized element of $X$ with domain $T$ is a morphism $T\to X$ (@def:genera
 If $F\colon C^{\opop}\to\mathbf{Set}$ is a presheaf, an element $x\in F(T)$ is the object $(T,x)$ of $\int_C F$ defined in @def:category-of-elements.
 
 ::: {.definition #def:element-functor title="Elements as maps from a corepresenting object" defines="corepresenting object"}
-If a concrete functor $U\colon C\to\mathbf{Set}$ is corepresented by $P$, a specified natural isomorphism
+If a concrete functor $U\colon C\to\mathbf{Set}$ is corepresented by $P$, a specified natural isomorphism (@def:isomorphism-of-objects)
 $$
 U\cong\Hom_C(P,-)
 $$
@@ -21,7 +21,7 @@ Categories of objects with chosen structure are instead described by their forge
 ## Subobjects {#sec-containment}
 
 ::: {.definition #def:subobject-relation title="Subobjects as monomorphisms up to isomorphism" defines="subobject"}
-A *subobject* of $M\in C$ is an isomorphism class of monomorphisms $i\colon N\hookrightarrow M$.
+A *subobject* of $M\in C$ is an isomorphism (@def:isomorphism-of-objects) class of monomorphisms $i\colon N\hookrightarrow M$.
 A representative of the subobject is a specific monomorphism.
 Two representatives $i\colon N\hookrightarrow M$ and $i'\colon N'\hookrightarrow M$ define the same subobject when there is an isomorphism $u\colon N\isoto N'$ with $i=i'\circ u$ [@MM12, I.5].
 :::
@@ -35,7 +35,7 @@ A construction that uses an embedding names a particular monomorphism.
 
 ::: {.definition #def:fiber-over-point title="The fiber over a point" defines="fiber of $f$ over $y$"}
 
-Let $C$ have a terminal object $1$ and the relevant pullbacks, let $f\colon X\to Y$, and let $y\colon 1\to Y$ be a point.
+Let $C$ have a terminal object (@def:initial-terminal) $1$ and the relevant pullbacks (@def:pullback-square), let $f\colon X\to Y$, and let $y\colon 1\to Y$ be a point.
 The *fiber of $f$ over $y$* is the apex of the cartesian square
 
 ```{.tikz}
@@ -51,7 +51,7 @@ X \arrow[d,"f"]\\
 \end{tikzcd}
 ```
 
-In a concrete category whose underlying-set functor is corepresented as in @def:element-functor, its points are the elements of $X$ sent by $f$ to $y$.
+In a concrete category (@def:concrete-category) whose underlying-set functor is corepresented as in @def:element-functor, its points are the elements of $X$ sent by $f$ to $y$.
 When $C$ is pointed and $y$ is the zero point, this is the fiber of @def:fiber-cofiber.
 :::
 

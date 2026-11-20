@@ -15,17 +15,17 @@ Let $U\colon\mcs\to\mcc$ be a forgetful functor.
 - A general $U$ may forget stuff [@BS07, §2; @nlab:stuff_structure_property].
 
 Repleteness is separate from these conditions.
-If $U$ is fully faithful, then it induces an equivalence from $\mcs$ to its replete full essential image in $\mcc$.
+If $U$ is fully faithful, then it induces an equivalence (@def:equivalence-of-objects) from $\mcs$ to its replete (@def:subcategory) full essential image in $\mcc$.
 An isomorphism-invariant property $P$ of objects of $\mcc$ defines the replete full subcategory $\mcc_P$ spanned by the objects satisfying $P$.
 :::
 
 ::: {.proposition #prop:forgetful-homotopy-fibers title="Forgetfulness read from homotopy fibers"}
 Let $U\colon\mcs\to\mcc$ be a functor between groupoids.
-For $x\in\mcc$, the homotopy fiber $U^{-1}(x)$ is the groupoid of objects $e\in\mcs$ with an isomorphism $U(e)\cong x$, and of morphisms of $\mcs$ compatible with these isomorphisms.
+For $x\in\mcc$, the homotopy fiber (@def:fiber-cofiber) $U^{-1}(x)$ is the groupoid of objects $e\in\mcs$ with an isomorphism (@def:isomorphism-of-objects) $U(e)\cong x$, and of morphisms of $\mcs$ compatible with these isomorphisms.
 
 - If every $U^{-1}(x)$ is a $(-1)$-groupoid, that is, empty or equivalent to a point, then $U$ forgets at most properties.
-- If every $U^{-1}(x)$ is a $0$-groupoid, that is, equivalent to a set, then $U$ forgets at most structure.
-- If the $U^{-1}(x)$ are arbitrary groupoids, then $U$ forgets stuff.
+- If every $U^{-1}(x)$ is a $0$-groupoid, that is, equivalent to a set, then $U$ forgets at most structure (@def:property-structure-stuff).
+- If the $U^{-1}(x)$ are arbitrary groupoids, then $U$ forgets stuff (@def:property-structure-stuff).
 
 [@BS07, §2, Fact 3]
 :::
@@ -37,12 +37,12 @@ This is [@BS07, §2, Fact 3].
 ## Chosen structure
 
 ::: {.definition #def:chosen-structure title="Chosen structure as a homotopy fiber" defines="chosen structure"}
-A structure on $X\in\mcc$ is a chosen object of the homotopy fiber of $U\colon\mcs\to\mcc$ over $X$.
+A structure (@def:property-structure-stuff) on $X\in\mcc$ is a chosen object of the homotopy fiber (@def:fiber-cofiber) of $U\colon\mcs\to\mcc$ over $X$.
 Several nonisomorphic choices may lie over the same $X$.
 A morphism in $\mcs$ must preserve the chosen structure.
 
-For example, the unit of a monoid is part of its structure.
-Although a two-sided unit is unique when it exists, a semigroup homomorphism between unital semigroups need not preserve it.
+For example, the unit of a monoid (@def:semigroup-monoid) is part of its structure.
+Although a two-sided unit is unique when it exists, a semigroup (@def:semigroup-monoid) homomorphism between unital semigroups need not preserve it.
 Hence $\mathbf{Mon}\to\mathbf{Semigrp}$ is faithful and is not full.
 :::
 
@@ -64,14 +64,14 @@ The structured objects of $\mcd$ obtained from $U$ are given by the pseudo-pullb
 \mathcal D \arrow[r,"F"'] & \mathcal C
 \end{tikzcd}
 ```
-If $U$ is a replete full inclusion, it is an isofibration, and the strict pullback presents this pseudo-pullback up to equivalence (@sec-pullback-cat).
-Its objects are exactly the $D\in\mcd$ for which $F(D)$ satisfies the stated property.
+If $U$ is a replete (@def:subcategory) full inclusion, it is an isofibration, and the strict (@def:monoidal-category) pullback (@def:pullback-square) presents this pseudo-pullback up to equivalence (@def:equivalence-of-objects) (@sec-pullback-cat).
+Its objects are exactly the $D\in\mcd$ for which $F(D)$ satisfies the stated property (@def:property-structure-stuff).
 :::
 
 ## Classifying objects and families {#sec-axiom-classifiers-general}
 
 ::: {.definition #def:classifying-object title="Classifying objects and universal families" defines="represented functor; classifying object; universal family"}
-A functor $H\colon\mcc^{\opop}\to\mcs$ is *represented* by $B\in\mcc$ when there is a natural equivalence
+A functor $H\colon\mcc^{\opop}\to\mcs$ is *represented* by $B\in\mcc$ when there is a natural equivalence (@def:equivalence-of-objects)
 $$
 \eta\colon H(-)\simeq\operatorname{Map}_{\mcc}(-,B).
 $$
@@ -79,8 +79,8 @@ Only then is $B$ called a classifying object for $H$.
 
 Suppose $H(X)$ is the space of families of a specified kind over $X$.
 The *universal family* $p\colon E\to B$ is the family corresponding under $\eta_B^{-1}$ to $\id_B$.
-Naturality identifies pullback of $p$ along $f\colon X\to B$ with the family corresponding to $f$.
-Thus the equivalence $\eta$ records existence, equivalences between presentations, and automorphisms of families; mere existence of some pullback presentation is not a universal property.
+Naturality identifies pullback (@def:pullback-square) of $p$ along $f\colon X\to B$ with the family corresponding to $f$.
+Thus the equivalence $\eta$ records existence, equivalences between presentations, and automorphisms of families; mere existence of some pullback presentation is not a universal property (@def:property-structure-stuff).
 :::
 
 ## Operations and endomorphism operads {#sec-operations}

@@ -36,7 +36,7 @@ with $y_3 = -(2\alpha_1+3\alpha_2+4\alpha_3+6\alpha_4+5\alpha_5+4\alpha_6+3\alph
 ## Primitivity
 
 ::: {.lemma #lem:primitivity-tco-in-ten title="A vector primitive in $T_\Co$ is primitive in $\ten$"}
-If $v\in T_\Co$ is primitive in $T_\Co$, it is primitive in $\ten$.
+If $v\in T_\Co$ is primitive (@def:primitive-embedding) in $T_\Co$, it is primitive in $\ten$.
 :::
 
 ::: {.proof}
@@ -48,7 +48,7 @@ Consequently a primitive isotropic line or plane of $T_\Co$ is a primitive isotr
 ## The correspondence
 
 ::: {.theorem #thm:b2-zero-cusps title="B2 for $0$-cusps: the $0$-cusps of $D(T_\Co)/R$ are the $\gent$-orbits of pairs $(\ell,\alpha)$"}
-Let $\mathcal P_0$ be the set of pairs $(\ell,\alpha)$ in which $\ell\subset\ten$ is a primitive isotropic line and $\alpha\in\ten$ is a $(-2)$-vector with $\alpha\perp\ell$, and let $\gent$ act on $\mathcal P_0$ by $g(\ell,\alpha) = (g\ell,g\alpha)$. Then:
+Let $\mathcal P_0$ be the set of pairs $(\ell,\alpha)$ in which $\ell\subset\ten$ is a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) line and $\alpha\in\ten$ is a $(-2)$-vector with $\alpha\perp\ell$, and let $\gent$ act on $\mathcal P_0$ by $g(\ell,\alpha) = (g\ell,g\alpha)$. Then:
 
 1. The forgetful map $\ell\mapsto\ell$ induces a well defined map of cusp sets
 $$
@@ -73,7 +73,7 @@ $(2)$ Let $\mathcal Y_k$ be the set of primitive isotropic lines $\ell\subset T_
 $$
 \Psi_k\colon\tilde Y_k\longrightarrow L_k\definedas\{\alpha\in\ten : \alpha^2 = -2,\ \alpha\perp e_k\},\qquad \gamma\longmapsto \gamma^{-1}\delta .
 $$
-The target is right: $(\gamma^{-1}\delta)\cdot e_k = \delta\cdot(\gamma e_k) = 0$ because $\gamma e_k\in T_\Co = \delta^{\perp}$, and $\delta^2 = -2$. The map is invariant under left multiplication by $R = \Stab_{\gent}(\delta)$, because $(r\gamma)^{-1}\delta = \gamma^{-1}r^{-1}\delta = \gamma^{-1}\delta$; and it is equivariant for right multiplication by $s\in\Stab_{\gent}(e_k)$, with $s e_k = \pm e_k$, acting on $L_k$ by $\alpha\mapsto s^{-1}\alpha$, which preserves $L_k$ because $(s^{-1}\alpha)\cdot e_k = \alpha\cdot(s e_k) = \pm\alpha\cdot e_k = 0$. It is surjective: for $\alpha\in L_k$, transitivity of $\gent$ on the $(-2)$-vectors of $\ten$ [@Ste91, 2.10] gives $\gamma\in\gent$ with $\gamma\alpha = \delta$, and then $\gamma e_k\perp\delta$ and $\Psi_k(\gamma) = \gamma^{-1}\delta = \alpha$. It is injective on $R$-orbits: if $\gamma^{-1}\delta = \gamma'^{-1}\delta$ then $\gamma'\gamma^{-1}\delta = \delta$, so $\gamma'\gamma^{-1}\in R$ and $\gamma'$ lies in the $R$-orbit of $\gamma$. Hence $\Psi_k$ induces a bijection
+The target (@def:globular-boundary) is right: $(\gamma^{-1}\delta)\cdot e_k = \delta\cdot(\gamma e_k) = 0$ because $\gamma e_k\in T_\Co = \delta^{\perp}$, and $\delta^2 = -2$. The map is invariant under left multiplication by $R = \Stab_{\gent}(\delta)$, because $(r\gamma)^{-1}\delta = \gamma^{-1}r^{-1}\delta = \gamma^{-1}\delta$; and it is equivariant for right multiplication by $s\in\Stab_{\gent}(e_k)$, with $s e_k = \pm e_k$, acting on $L_k$ by $\alpha\mapsto s^{-1}\alpha$, which preserves $L_k$ because $(s^{-1}\alpha)\cdot e_k = \alpha\cdot(s e_k) = \pm\alpha\cdot e_k = 0$. It is surjective: for $\alpha\in L_k$, transitivity of $\gent$ on the $(-2)$-vectors of $\ten$ [@Ste91, 2.10] gives $\gamma\in\gent$ with $\gamma\alpha = \delta$, and then $\gamma e_k\perp\delta$ and $\Psi_k(\gamma) = \gamma^{-1}\delta = \alpha$. It is injective on $R$-orbits: if $\gamma^{-1}\delta = \gamma'^{-1}\delta$ then $\gamma'\gamma^{-1}\delta = \delta$, so $\gamma'\gamma^{-1}\in R$ and $\gamma'$ lies in the $R$-orbit of $\gamma$. Hence $\Psi_k$ induces a bijection
 $$
 R\backslash\tilde Y_k/\Stab_{\gent}(e_k)\ \cong\ \Stab_{\gent}(e_k)\backslash L_k,
 $$
@@ -83,17 +83,17 @@ $(3)$ The $0$-cusps of $F_{\En,2}$ are the $\gent$-orbits of primitive isotropic
 :::
 
 ::: {.theorem #thm:b2-one-cusps title="B2 for $1$-cusps"}
-The same statement with "line" replaced by "plane": the $1$-cusps of $D(T_\Co)/R$ are the $\gent$-orbits of pairs $(\Pi,\alpha)$ in which $\Pi\subset\ten$ is a primitive isotropic plane and $\alpha\in\ten$ is a $(-2)$-vector with $\alpha\perp\Pi$; the fibre over Sterk's $1$-cusp $[\Pi]$ is the set of $\Stab_{\gent}(\Pi)$-orbits of $(-2)$-vectors $\alpha\perp\Pi$, the stabilizer being taken in the plane $[\Pi]$.
+The same statement with "line" replaced by "plane": the $1$-cusps of $D(T_\Co)/R$ are the $\gent$-orbits of pairs $(\Pi,\alpha)$ in which $\Pi\subset\ten$ is a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) plane and $\alpha\in\ten$ is a $(-2)$-vector with $\alpha\perp\Pi$; the fibre over Sterk's $1$-cusp $[\Pi]$ is the set of $\Stab_{\gent}(\Pi)$-orbits of $(-2)$-vectors $\alpha\perp\Pi$, the stabilizer being taken in the plane $[\Pi]$.
 
-For such a $\Pi$ the quotient $\Pi^{\perp\ten}/\Pi$ is negative definite, so there are finitely many $(-2)$-classes in $\Pi^{\perp\ten}/\Pi$; that the fibre itself is finite is @lem:one-cusp-fibre-finite.
+For such a $\Pi$ the quotient $\Pi^{\perp\ten}/\Pi$ is negative definite (@def:definiteness), so there are finitely many $(-2)$-classes in $\Pi^{\perp\ten}/\Pi$; that the fibre itself is finite is @lem:one-cusp-fibre-finite.
 :::
 
 ::: {.proof}
-Every step of the proof of @thm:b2-zero-cusps uses only that $\ell$ is a primitive isotropic subspace of $\ten$ and that a primitive isotropic subspace of $T_\Co$ is one of $\ten$ (@lem:primitivity-tco-in-ten), so it applies verbatim to primitive isotropic planes. The identification of the $1$-cusps of $F_{\En,2}$ with the $\gent$-orbits of primitive isotropic planes is [@AEGS25, Def. 2.9]; Sterk's nine $1$-cusps are [@Ste91, §4.3]. The quotient $\Pi^{\perp}/\Pi$ has signature $(0,8)$, because $\Pi$ is a maximal isotropic plane in a lattice of signature $(2,10)$, so a negative definite integral lattice has finitely many vectors of a given norm --- finitely many $(-2)$-classes, but not yet finitely many orbits on their lifts; the lifts are controlled by @lem:one-cusp-fibre-finite below.
+Every step of the proof of @thm:b2-zero-cusps uses only that $\ell$ is a primitive isotropic subspace of $\ten$ and that a primitive isotropic subspace of $T_\Co$ is one of $\ten$ (@lem:primitivity-tco-in-ten), so it applies verbatim to primitive isotropic planes. The identification of the $1$-cusps of $F_{\En,2}$ with the $\gent$-orbits of primitive isotropic planes is [@AEGS25, Def. 2.9]; Sterk's nine $1$-cusps are [@Ste91, §4.3]. The quotient $\Pi^{\perp}/\Pi$ has signature (@def:signature) $(0,8)$, because $\Pi$ is a maximal (@def:maximal-lattice) isotropic plane in a lattice of signature $(2,10)$, so a negative definite integral lattice has finitely many vectors of a given norm (@def:lattice-basic-invariants) --- finitely many $(-2)$-classes, but not yet finitely many orbits on their lifts; the lifts are controlled by @lem:one-cusp-fibre-finite below.
 :::
 
 ::: {.lemma #lem:one-cusp-fibre-finite title="The fibre over a $1$-cusp is finite"}
-Let $\Pi\subset\ten$ be a primitive isotropic plane with a basis $u,v$ of isotropic vectors, and let $\alpha\in\ten$ have $\alpha^2 = -2$ and $\alpha\perp\Pi$. For $z\in u^{\perp\ten}$ the Eichler transvection
+Let $\Pi\subset\ten$ be a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) plane with a basis (@def:based-module) $u,v$ of isotropic vectors, and let $\alpha\in\ten$ have $\alpha^2 = -2$ and $\alpha\perp\Pi$. For $z\in u^{\perp\ten}$ the Eichler transvection
 $$
 E_{u,z}(x) \definedas x+(x,u)z-(x,z)u-\tfrac{z^2}{2}(x,u)u
 $$
@@ -109,7 +109,7 @@ lies in $\gent$, fixes $\Pi$ setwise, and acts on $\Pi^{\perp\ten}$ by $x\mapsto
 
 *The ideal.* Since $\alpha,z\in\ten$ the value $(\alpha,z)$ is an integer; the set of them is a subgroup of $\ZZ$, say $d_u\ZZ$. Because $\alpha\in\Pi^{\perp}\subset u^{\perp}$ one has $(\alpha,\alpha) = -2\in d_u\ZZ$, so $d_u\mid 2$. Hence $2u\in d_u\ZZ\cdot u$ and the orbit contains $\alpha+2u$; the same argument with $v$ in place of $u$ gives $\alpha+2v$.
 
-*Finiteness.* The orbit of $\alpha$ therefore contains $\alpha+2\Pi$, so the orbits on the lifts of a $(-2)$-class are a quotient of $\Pi/2\Pi\cong(\ZZ/2)^2$ and number at most four. The $(-2)$-classes of $\Pi^{\perp}/\Pi$ are finite because that lattice is negative definite. So the fibre is finite.
+*Finiteness.* The orbit of $\alpha$ therefore contains $\alpha+2\Pi$, so the orbits on the lifts of a $(-2)$-class are a quotient of $\Pi/2\Pi\cong(\ZZ/2)^2$ and number at most four. The $(-2)$-classes of $\Pi^{\perp}/\Pi$ are finite because that lattice is negative definite (@def:definiteness). So the fibre is finite.
 :::
 
 ::: {.lemma #lem:one-cusp-over-cusp-one-empty title="The four $1$-cusps over Sterk's cusp $1$ have empty fibre"}
@@ -117,19 +117,19 @@ Let $[\Pi]$ be one of the four $1$-cusps of $F_{\En,2}$ whose closure contains S
 :::
 
 ::: {.proof}
-Sterk computes the four one-dimensional boundary components whose closure contains the $0$-cusp $e$ [@Ste91, 4.3.5]: "These four classes are not distinguished by the isomorphism type of $F^{\perp}/F$ ... In all cases we even find the same isomorphism type, namely $E_8(-2)$" [@Ste91, 4.3.5], and the four types are listed in [@Ste91, 4.3.16]. In the notation of this page $E_8(-2)$ is $E_8(2)$. Its Gram matrix is $-2C(E_8)$, with diagonal entries $-4$ and off-diagonal entries $0$ or $2$, so for $x = \sum x_i\alpha_i$ one has $x^2 = -4\sum x_i^2+4\sum_{i<j,\ \alpha_i\cdot\alpha_j = 2}x_ix_j$, a multiple of $4$; in particular $-2$ does not occur. Since $\Pi$ is isotropic, the class of a vector $\alpha\perp\Pi$ in $\Pi^{\perp}/\Pi$ has square $\alpha^2$, so an $\alpha$ with $\alpha^2 = -2$ cannot exist. The fibre, which is the set of $\Stab_{\gent}(\Pi)$-orbits of such $\alpha$ (@thm:b2-one-cusps), is therefore empty. The case $\Pi = \langle e,e'\rangle$ of the type $\{1,2\}$ is checked directly in `computations/reports/coble_789-one-cusp-empty.py`: $\Pi^{\perp\ten} = \langle e,e'\rangle\oplus E_8(2)$.
+Sterk computes the four one-dimensional boundary components (@def:coble-surface) whose closure contains the $0$-cusp $e$ [@Ste91, 4.3.5]: "These four classes are not distinguished by the isomorphism (@def:isomorphism-of-objects) type of $F^{\perp}/F$ ... In all cases we even (@def:form-axioms) find the same isomorphism type, namely $E_8(-2)$" [@Ste91, 4.3.5], and the four types are listed in [@Ste91, 4.3.16]. In the notation of this page $E_8(-2)$ is $E_8(2)$. Its Gram matrix is $-2C(E_8)$, with diagonal (@def:polarization-functors) entries $-4$ and off-diagonal entries $0$ or $2$, so for $x = \sum x_i\alpha_i$ one has $x^2 = -4\sum x_i^2+4\sum_{i<j,\ \alpha_i\cdot\alpha_j = 2}x_ix_j$, a multiple of $4$; in particular $-2$ does not occur. Since $\Pi$ is isotropic (@def:orthogonal-complement), the class of a vector $\alpha\perp\Pi$ in $\Pi^{\perp}/\Pi$ has square $\alpha^2$, so an $\alpha$ with $\alpha^2 = -2$ cannot exist. The fibre, which is the set of $\Stab_{\gent}(\Pi)$-orbits of such $\alpha$ (@thm:b2-one-cusps), is therefore empty. The case $\Pi = \langle e,e'\rangle$ of the type $\{1,2\}$ is checked directly in `computations/reports/coble_789-one-cusp-empty.py`: $\Pi^{\perp\ten} = \langle e,e'\rangle\oplus E_8(2)$.
 :::
 
 ::: {.theorem #lem:five-one-cusps-nonempty title="The exact fibre over each of the other five $1$-cusps: $16$ points"}
-Let $[\Pi]$ be one of Sterk's five further $1$-cusps, of types $\{2,4,5\}$, $\{4,5\}$, $\{3,5\}$, $\{3,4\}$ and $\{5,5\}$ [@Ste91, 4.3.17], and let $u,v$ be a basis of isotropic vectors of $\Pi$. Then:
+Let $[\Pi]$ be one of Sterk's five further $1$-cusps, of types $\{2,4,5\}$, $\{4,5\}$, $\{3,5\}$, $\{3,4\}$ and $\{5,5\}$ [@Ste91, 4.3.17], and let $u,v$ be a basis (@def:based-module) of isotropic (@def:orthogonal-complement) vectors of $\Pi$. Then:
 
-1. $\Pi^{\perp\ten}/\Pi$ is an even negative definite lattice of rank $8$ and determinant $64$, with exactly $16$ vectors of square $-2$, forming eight mutually orthogonal antipodal pairs.
+1. $\Pi^{\perp\ten}/\Pi$ is an even (@def:form-axioms) negative definite (@def:definiteness) lattice of rank $8$ and determinant $64$, with exactly $16$ vectors of square $-2$, forming eight mutually orthogonal antipodal pairs.
 2. For every integral lift $\alpha$ of a $(-2)$-class with $\alpha^2 = -2$ one has $d_u = d_v = d_{u+v} = 1$, where $d_w\ZZ \definedas \{(\alpha,z) : z\in w^{\perp\ten}\}$.
 3. Consequently $\Stab_{\gent}(\Pi)$ is transitive on the lifts of each $(-2)$-class, and the fibre of the $1$-cusp map of @thm:b2-one-cusps over $[\Pi]$ has exactly $16$ points.
 :::
 
 ::: {.proof}
-$1$ is `computations/reports/coble_789-five-one-cusps.py`: saturated kernels and Smith complements give the quotient Gram matrix, its determinant is $64$, Sage's complete positive-definite short-vector enumeration returns sixteen vectors of square $-2$, and the reflections in them have orbits of size two, so the sixteen are eight antipodal pairs $\{\pm r\}$ with distinct pairs mutually orthogonal.
+$1$ is `computations/reports/coble_789-five-one-cusps.py`: saturated (@def:saturation) kernels (@def:kernel-cokernel) and Smith complements give the quotient Gram matrix, its determinant is $64$, Sage's complete (@def:complete) positive-definite short-vector enumeration returns sixteen vectors of square $-2$, and the reflections in them have orbits of size two, so the sixteen are eight antipodal pairs $\{\pm r\}$ with distinct pairs mutually orthogonal.
 
 $2$ and $3$. A vector $z\in u^{\perp}$ gives the Eichler transvection $E_{u,z}$ of @lem:one-cusp-fibre-finite, which lies in $\gent$, preserves $\Pi$ setwise, and acts on $\Pi^{\perp}$ by $x\mapsto x-(x,z)u$; hence the $\Stab_{\gent}(\Pi)$-orbit of $\alpha$ contains $\alpha-(\alpha,z)u$ for every $z\in u^{\perp}$. The set of values is an ideal $d_u\ZZ$ containing $(\alpha,\alpha) = -2$, so $d_u\mid2$. The computation `computations/reports/coble_789-one-cusp-fibres.py` lifts each of the sixteen classes to an integral $\alpha$ with $\alpha^2 = -2$ and computes $d_u$, $d_v$, $d_{u+v}$ as the gcd of the pairings over a saturated basis of $w^{\perp}$: for each of the five planes and each of the sixteen classes the triple is $(1,1,1)$. So the orbit of $\alpha$ contains $\alpha-u$, $\alpha-v$ and $\alpha-(u+v)$, hence all of $\alpha+\Pi$. Since reduction modulo $\Pi$ is $\Stab_{\gent}(\Pi)$-invariant, each class carries exactly one orbit, and the sixteen classes give sixteen orbits.
 :::
@@ -143,7 +143,7 @@ At Sterk's cusp $1$, with representative $e_1 = e$, one has $K_1 = e_1^{\perp\te
 :::
 
 ::: {.proof}
-$e^{\perp\ten} = \generators{e}\oplus U(2)\oplus E_8(2)$, so $K_1\cong U(2)\oplus E_8(2)$; this is [@Ste91, 4.3.4], whose statement is $e^{\perp}/\ZZ e\cong\mathbf H(2)\oplus E_8(-2)$. Both summands are twice an even lattice, so every square in $K_1$ lies in $4\ZZ$, and $-2\notin4\ZZ$.
+$e^{\perp\ten} = \generators{e}\oplus U(2)\oplus E_8(2)$, so $K_1\cong U(2)\oplus E_8(2)$; this is [@Ste91, 4.3.4], whose statement is $e^{\perp}/\ZZ e\cong\mathbf H(2)\oplus E_8(-2)$. Both summands are twice an even lattice (@def:even-lattice), so every square in $K_1$ lies in $4\ZZ$, and $-2\notin4\ZZ$.
 :::
 
 ::: {.theorem #thm:ou-e8-transitive title="$\Orth(U\oplus E_8(2))$ is transitive on the $(-2)$-vectors"}
@@ -153,19 +153,19 @@ Let $K = U\oplus E_8(2)$. Then $\Orth(K)$ acts transitively on $\{x\in K : x^2 =
 ::: {.proof}
 By [@Ste91, 4.3.6], $K$ is the cusp lattice $K_2 = (e')^{\perp\ten}/\ZZ e'$ of Sterk's cusp $2$, and $\Orth(K) = \{\pm1\}\cdot W_{e'}$, where $W_{e'}$ is the subgroup generated by the reflections of $\Orth(K)$.
 
-*A fundamental chamber of $W_{e'}$.* Take the chamber certified by the complete Vinberg search of `computations/reports/coble_TEn-chambers-run.txt`, section `K(L_2)`, which lists in the basis $e,f,\alpha_1,\dots,\alpha_8$ of $K$ the ten walls
+*A fundamental chamber (@def:coble-polarization-classes) of $W_{e'}$.* Take the chamber certified by the complete (@def:complete) Vinberg search of `computations/reports/coble_TEn-chambers-run.txt`, section `K(L_2)`, which lists in the basis (@def:based-module) $e,f,\alpha_1,\dots,\alpha_8$ of $K$ the ten walls (@not:coxeter-polytope-faces)
 $$
 \alpha_1,\dots,\alpha_8,\qquad -e+f,\qquad \bar\alpha_8-2f,
 $$
-where $\bar\alpha_8 \definedas -(2\alpha_1+3\alpha_2+4\alpha_3+6\alpha_4+5\alpha_5+4\alpha_6+3\alpha_7+2\alpha_8)$ is Sterk's doubled fundamental weight, of square $-4$ and with $\bar\alpha_8\cdot\alpha_8 = 2$; there the wall Gram matrix has diagonal $(-4,\dots,-4,-2,-4)$ and off-diagonal entries $0$ and $2$, so the dihedral angles are $\pi/2$, $\pi/3$ or $\pi/4$, all submultiples of $\pi$. That the search is complete --- that these ten walls bound a chamber and not a proper sub-polytope --- is the line `unrestricted certified search on this cusp: complete=True walls=10 ideal=2 finite=8` of `computations/reports/coble_sterk-reflection-subgroups-run.txt`. Sterk's printed ten roots at cusp $2$ are the same list except for the tenth wall, which he prints as $\alpha_9 = \bar\alpha_8+2f = -\omega_8+2f$ [@Ste91, 4.3.6], $\bar\alpha_8$ being the doubled fundamental weight $2\omega_8$: the record's `his walls among the walls of the certified chamber: 9 of 10 (his walls not among them: labels [9])` compares wall vectors, and $-\omega_8+2f$ and $-2f-\omega_8$ differ by $4f$. The argument below uses the certified chamber, and does not rely on the printed one.
+where $\bar\alpha_8 \definedas -(2\alpha_1+3\alpha_2+4\alpha_3+6\alpha_4+5\alpha_5+4\alpha_6+3\alpha_7+2\alpha_8)$ is Sterk's doubled fundamental weight (@def:coroot-weight), of square $-4$ and with $\bar\alpha_8\cdot\alpha_8 = 2$; there the wall Gram matrix has diagonal (@def:polarization-functors) $(-4,\dots,-4,-2,-4)$ and off-diagonal entries $0$ and $2$, so the dihedral angles are $\pi/2$, $\pi/3$ or $\pi/4$, all submultiples of $\pi$. That the search is complete --- that these ten walls bound a chamber and not a proper sub-polytope --- is the line `unrestricted certified search on this cusp: complete=True walls=10 ideal=2 finite=8` of `computations/reports/coble_sterk-reflection-subgroups-run.txt`. Sterk's printed ten roots at cusp $2$ are the same list except for the tenth wall, which he prints as $\alpha_9 = \bar\alpha_8+2f = -\omega_8+2f$ [@Ste91, 4.3.6], $\bar\alpha_8$ being the doubled fundamental weight $2\omega_8$: the record's `his walls among the walls of the certified chamber: 9 of 10 (his walls not among them: labels [9])` compares wall vectors, and $-\omega_8+2f$ and $-2f-\omega_8$ differ by $4f$. The argument below uses the certified chamber, and does not rely on the printed one.
 
-By Vinberg's theorem [@Vin85, §1, no. 1], a Coxeter polytope $P$ is a fundamental polytope for the group generated by the reflections in its walls, the polytopes $\gamma P$, $\gamma\in W_{e'}$, tessellate the hyperbolic space $\mathbf H$ attached to $K$, and every mirror of a reflection of $W_{e'}$ is a wall of that tessellation.
+By Vinberg's theorem [@Vin85, §1, no. 1], a Coxeter polytope (@def:coxeter-polytope) $P$ is a fundamental polytope for the group (@def:group) generated by the reflections in its walls, the polytopes $\gamma P$, $\gamma\in W_{e'}$, tessellate the hyperbolic (@def:definiteness) space $\mathbf H$ attached to $K$, and every mirror (@not:hyperbolic-polytope-setting) of a reflection of $W_{e'}$ is a wall of that tessellation.
 
 *Every $(-2)$-vector is a wall translate.* Let $x\in K$ with $x^2 = -2$ and let $s_x$ be the reflection in $x$. Since $s_x\in\Orth(K) = \{\pm1\}W_{e'}$ and $\pm1$ acts trivially on $\mathbf H$, the isometry of $\mathbf H$ induced by $s_x$ lies in the image of $W_{e'}$; it is the reflection of $\mathbf H$ with fixed hyperplane $x^{\perp}\cap\mathbf H$. By Vinberg's theorem that hyperplane is a wall of the tessellation, so $x^{\perp} = w(r_i^{\perp})$ for some $w\in W_{e'}$ and some $i\in\{1,\dots,10\}$, that is $x = \pm w(r_i)$, $r_i$ being the $i$-th wall root. Of the ten wall roots only $-e+f$ has square $-2$; the other nine have square $-4$. Hence every $(-2)$-vector of $K$ lies in the $W_{e'}$-orbit of $\pm(e-f)$, and $\Orth(K)$ is transitive.
 :::
 
 ::: {.proposition #prop:isometry-k-roots title="An explicit isometry of $U\oplus E_8(2)$ carrying $e-f$ to $e+f+\alpha_1$"}
-In the basis $e,f,\alpha_1,\dots,\alpha_8$ of $K=U\oplus E_8(2)$ with Gram matrix $G = \begin{pmatrix}0&1\\1&0\end{pmatrix}\oplus(-2)C(E_8)$ the matrix
+In the basis (@def:based-module) $e,f,\alpha_1,\dots,\alpha_8$ of $K=U\oplus E_8(2)$ with Gram matrix $G = \begin{pmatrix}0&1\\1&0\end{pmatrix}\oplus(-2)C(E_8)$ the matrix
 $$
 N = \begin{pmatrix}
 2&1&-4&0&2&0&0&0&0&0\\
@@ -184,7 +184,7 @@ satisfies $N^{\mathsf T}GN = G$, $\det N = -1$ and $N(e-f) = e+f+\alpha_1$. Henc
 :::
 
 ::: {.proof}
-The products $N^{\mathsf T}GN$ and $N(e-f)$ are computed in exact integer arithmetic in `computations/reports/coble_789-transvection-and-isometry.py`, whose transcript `-run.txt` prints `N^T G_K N = G_K: True`, `det N = -1` and `N(e-f) = e+f+a_1: True`. The computation serves @thm:ou-e8-transitive as a certificate for this one pair, not as its proof; the proof of transitivity is the chamber argument there.
+The products $N^{\mathsf T}GN$ and $N(e-f)$ are computed in exact (@def:exact-complex) integer arithmetic in `computations/reports/coble_789-transvection-and-isometry.py`, whose transcript `-run.txt` prints `N^T G_K N = G_K: True`, `det N = -1` and `N(e-f) = e+f+a_1: True`. The computation serves @thm:ou-e8-transitive as a certificate for this one pair, not as its proof; the proof of transitivity is the chamber (@def:coble-polarization-classes) argument there.
 :::
 
 ::: {.lemma #lem:ze-translates-in-gent title="The $\ZZ e'$-translates of $\delta$ are realised by $\gent$"}
@@ -196,7 +196,7 @@ Then $E\in\gent$, $E(e') = e'$, $E(\delta) = \delta+e'$ and $E^k(\delta) = \delt
 :::
 
 ::: {.proof}
-*Integrality.* On the basis $e,f,e',f',\alpha_1,\dots,\alpha_8$ of $\ten$ one has $E(e) = e$, $E(f) = f-e'$, $E(e') = e'$, $E(f') = f'+2e$ and $E(\alpha_i) = \alpha_i$, all integral. This is the case $\eta = e'$, $a = e$ of the Eichler transformation of [@GHS08, §3.1, Lemma 3.1 and the integrality assertion after (10)], as quoted in @lem:cusp-root-lift-independence; the computation is `computations/reports/coble_789-transvection-and-isometry.py`.
+*Integrality.* On the basis (@def:based-module) $e,f,e',f',\alpha_1,\dots,\alpha_8$ of $\ten$ one has $E(e) = e$, $E(f) = f-e'$, $E(e') = e'$, $E(f') = f'+2e$ and $E(\alpha_i) = \alpha_i$, all integral. This is the case $\eta = e'$, $a = e$ of the Eichler transformation of [@GHS08, §3.1, Lemma 3.1 and the integrality assertion after (10)], as quoted in @lem:cusp-root-lift-independence; the computation is `computations/reports/coble_789-transvection-and-isometry.py`.
 
 *Isometry.* Expanding $(E x,E y)$ for $x,y\in\ten$ with $e^2 = (e')^2 = e\cdot e' = 0$ (the sum $U\oplus U(2)\oplus E_8(2)$ is orthogonal, so $e$ and $e'$ are perpendicular), the correction terms cancel in pairs: $(Ex,Ey)-(x,y) = (x,e)(y,e')-(y,e)(x,e')+(x,e')(e,y)-(x,e)(e',y)$, and this vanishes because $(e,y) = (y,e)$ and $(e',y) = (y,e')$.
 
@@ -206,7 +206,7 @@ Then $E\in\gent$, $E(e') = e'$, $E(\delta) = \delta+e'$ and $E^k(\delta) = \delt
 :::
 
 ::: {.corollary #cor:fibre-cusp-two title="The fibre over Sterk's cusp $2$ is a single point"}
-The fibre of $\Phi_0$ over Sterk's cusp $2$ is a single point, represented by the pair $(\ZZ e',\,\delta)$: by the $(-2)$-vector $\delta = e-f$ of $\ten$, and by the primitive isotropic line $\ZZ e'$ of $T_\Co$ that the pair carries. (The vector $\delta$ itself is not a vector of $T_\Co$: $\delta^2 = -2\neq0$.)
+The fibre of $\Phi_0$ over Sterk's cusp $2$ is a single point, represented by the pair $(\ZZ e',\,\delta)$: by the $(-2)$-vector $\delta = e-f$ of $\ten$, and by the primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) line $\ZZ e'$ of $T_\Co$ that the pair carries. (The vector $\delta$ itself is not a vector of $T_\Co$: $\delta^2 = -2\neq0$.)
 :::
 
 ::: {.proof}

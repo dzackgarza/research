@@ -7,7 +7,7 @@ The tensor-hom adjunction of $R\text{-}\mathbf{Mod}$ identifies $R$-bilinear map
 
 ::: {.definition #def:r-algebra title="Associative unital $R$-algebras" defines="associative unital $R$-algebra; $R\text{-}\mathbf{Alg}$; $U$; $R\text{-}\mathbf{CAlg}$"}
 
-An *associative unital $R$-algebra* is a monoid in $(R\text{-}\mathbf{Mod},\tensor_R,R)$: an $R$-module $A$ together with $R$-linear maps
+An *associative (@def:operation-axioms) unital $R$-algebra* is a monoid (@def:semigroup-monoid) in $(R\text{-}\mathbf{Mod},\tensor_R,R)$: an $R$-module $A$ together with $R$-linear maps
 $$
 \mu\colon A\tensor_R A\too A,
 \qquad
@@ -21,7 +21,7 @@ $$
 U\colon R\text{-}\mathbf{Alg}\too R\text{-}\mathbf{Mod}
 $$
 for the functor that retains the $R$-module.
-Write $R\text{-}\mathbf{CAlg}$ for the full subcategory of $R\text{-}\mathbf{Alg}$ on commutative objects [@nlab:associative_algebra].
+Write $R\text{-}\mathbf{CAlg}$ for the full subcategory (@def:subcategory) of $R\text{-}\mathbf{Alg}$ on commutative (@def:operation-axioms) objects [@nlab:associative_algebra].
 :::
 
 ## Module bilinear forms and algebra bilinear forms {#sec-two-homs}
@@ -38,8 +38,8 @@ By the tensor-hom adjunction this Hom-module is $\Bil_{R,R}(M)$ (@def:form-presh
 
 ::: {.definition #def:algebra-bilinear-form title="Algebra bilinear forms" defines="algebra bilinear form"}
 
-Let $A$ be an associative unital $R$-algebra.
-The tensor product $A\tensor_R A$ in $R\text{-}\mathbf{Alg}$ is the monoid in $R\text{-}\mathbf{Mod}$ whose underlying module is $U(A)\tensor_R U(A)$ and whose multiplication is
+Let $A$ be an associative (@def:operation-axioms) unital $R$-algebra.
+The tensor product $A\tensor_R A$ in $R\text{-}\mathbf{Alg}$ is the monoid (@def:semigroup-monoid) in $R\text{-}\mathbf{Mod}$ whose underlying module is $U(A)\tensor_R U(A)$ and whose multiplication is
 $$
 (a\tensor_R b)(c\tensor_R d)=ac\tensor_R bd
 $$
@@ -55,23 +55,23 @@ The forgetful functor $U$ sends an algebra bilinear form $\phi$ to a module bili
 
 ::: {.definition #def:algebra-generating-set title="Algebra generating sets and module bases" defines="$R\langle S\rangle$; module basis; algebra generating set"}
 
-Let $A$ be an associative unital $R$-algebra.
-The free unital associative $R$-algebra $R\langle S\rangle$ on a set $S$ represents $A\mapsto\mathbf{Set}(S,A)$: a function $S\to A$ of underlying sets extends uniquely to a homomorphism $R\langle S\rangle\to A$ in $R\text{-}\mathbf{Alg}$.
+Let $A$ be an associative (@def:operation-axioms) unital $R$-algebra.
+The free (@def:module-subcategories) unital associative $R$-algebra $R\langle S\rangle$ on a set $S$ represents $A\mapsto\mathbf{Set}(S,A)$: a function $S\to A$ of underlying sets (@def:concrete-category) extends uniquely to a homomorphism $R\langle S\rangle\to A$ in $R\text{-}\mathbf{Alg}$.
 
-- $A$ is free as an $R$-module on a set $E=\{e_i\}_{i\in I}$ when $U(A)\cong R^{(I)}$ on that basis.
+- $A$ is free as an $R$-module on a set $E=\{e_i\}_{i\in I}$ when $U(A)\cong R^{(I)}$ on that basis (@def:based-module).
   Every $v\in A$ is then uniquely $v=\Sum_{i\in I} v^i e_i$ with finite support in $I$.
 
 - A subset $S\subset A$ *generates $A$ as a unital $R$-algebra* when the unique homomorphism $R\langle S\rangle\to A$ sending each generator to the corresponding element of $S$ is surjective.
 
-Finite algebra generation does not imply that $U(A)$ is finitely generated.
+Finite algebra generation does not imply that $U(A)$ is finitely generated (@def:module-subcategories).
 The polynomial ring $R[x]$ is generated as a unital $R$-algebra by $\{x\}$, and is free as an $R$-module on $\{x^n:n\ge 0\}$.
 :::
 
 ## Associative bilinear forms {#sec-associative-forms}
 
 ::: {.definition #def:associative-bilinear-form title="Associative bilinear forms" defines="associative bilinear form"}
-Let $B$ be a module bilinear form on $U(A)$.
-The form $B$ is *associative* if
+Let $B$ be a module bilinear form (@def:module-bilinear-form) on $U(A)$.
+The form $B$ is *associative (@def:operation-axioms)* if
 $$
 B\circ(\mu\tensor_R\id_A)
 =
@@ -84,7 +84,7 @@ equivalently $B(xy,z)=B(x,yz)$ for all $x,y,z\in A$.
 
 ::: {.theorem #thm:associative-is-trace title="Associative forms and multiplication"}
 
-Let $A$ be an associative unital $R$-algebra and $B$ a module bilinear form on $U(A)$.
+Let $A$ be an associative (@def:operation-axioms) unital $R$-algebra and $B$ a module bilinear form (@def:module-bilinear-form) on $U(A)$.
 The following are equivalent:
 
 1. $B$ is associative;
@@ -109,7 +109,7 @@ A linear form $\eps\colon A\to R$ is a *Frobenius form* when $(x,y)\mapsto\eps(x
 
 ::: {.proposition #prop:structure-constants title="Structure constants"}
 
-Suppose $A$ is free on $E=\{e_i\}_{i\in I}$, and write $e_j e_k=\Sum_i\mu^i_{jk}e_i$ with finite support in $i$.
+Suppose $A$ is free (@def:module-subcategories) on $E=\{e_i\}_{i\in I}$, and write $e_j e_k=\Sum_i\mu^i_{jk}e_i$ with finite support in $i$.
 Associativity of $B$ is equivalent to
 $$
 \Sum_k \mu^k_{ij} G_{kl}
@@ -121,12 +121,12 @@ for all $i,j,l\in I$, where $G_{ij}=B(e_i,e_j)$.
 
 ::: {.proof}
 
-By @thm:associative-is-trace, $B$ is associative exactly when $B(x,y)=\eps(xy)$ for a linear form $\eps$, and then
+By @thm:associative-is-trace, $B$ is associative (@def:operation-axioms) exactly when $B(x,y)=\eps(xy)$ for a linear form $\eps$, and then
 $$
 G_{ij}=B(e_i,e_j)=\eps\qty{\Sum_k\mu^k_{ij}e_k}=\Sum_k\mu^k_{ij}\eps(e_k),
 $$
 a finite sum by the support condition on $\mu$.
-So the Gram matrix is over-determined by the single family $\eps(e_k)_{k\in I}$, and $\eps$ is determined by that family because $E$ is a basis.
+So the Gram matrix is over-determined by the single family $\eps(e_k)_{k\in I}$, and $\eps$ is determined by that family because $E$ is a basis (@def:based-module).
 
 The displayed identity is associativity evaluated on a triple of basis vectors: with $z=e_l$,
 $$
@@ -151,9 +151,9 @@ The values of $B$ on $\operatorname{Span}_R\{1,x\}$ determine $\eps$ on $\{1,x,x
 
 ::: {.proposition #prop:generators-insufficient title="Algebra generators do not determine module bilinear forms"}
 
-Suppose $U(A)$ is free on a basis $E$ that is not finite, and let $M\subseteq U(A)$ be a finitely generated submodule.
-Then there are distinct module bilinear forms on $U(A)$ that agree on $M\times M$.
-In particular the values of $B$ on pairs drawn from a finite algebra generating set do not determine $B$.
+Suppose $U(A)$ is free (@def:module-subcategories) on a basis (@def:based-module) $E$ that is not finite, and let $M\subseteq U(A)$ be a finitely generated (@def:module-subcategories) submodule.
+Then there are distinct module bilinear forms (@def:module-bilinear-form) on $U(A)$ that agree on $M\times M$.
+In particular the values of $B$ on pairs drawn from a finite algebra generating set (@def:algebra-generating-set) do not determine $B$.
 :::
 
 ::: {.proof}
@@ -179,7 +179,7 @@ The hypothesis that $E$ is not finite supplies $e\notin E_0$.
 
 Let $A$ be an object of $R\text{-}\mathbf{CAlg}$.
 The tensor product $A\tensor_R A$ of @def:algebra-bilinear-form is the coproduct of $A$ with itself in $R\text{-}\mathbf{CAlg}$, with inclusions $a\mapsto a\tensor_R 1_A$ and $b\mapsto 1_A\tensor_R b$.
-The coproduct universal property is
+The coproduct universal property (@def:property-structure-stuff) is
 $$
 \Hom_{R\text{-}\mathbf{CAlg}}(A\tensor_R A,R)
 \cong
@@ -189,7 +189,7 @@ $$
 $$
 An algebra bilinear form $\phi\colon A\tensor_R A\to R$ is therefore $\phi(a\tensor_R b)=\chi_L(a)\chi_R(b)$ for the pair of $R$-algebra homomorphisms $\chi_L,\chi_R\colon A\to R$ given by $\chi_L(a)=\phi(a\tensor_R 1_A)$ and $\chi_R(b)=\phi(1_A\tensor_R b)$.
 
-The same formulae classify algebra bilinear forms when $A$ is an object of $R\text{-}\mathbf{Alg}$, not necessarily commutative.
+The same formulae classify algebra bilinear forms when $A$ is an object of $R\text{-}\mathbf{Alg}$, not necessarily commutative (@def:operation-axioms).
 :::
 
 ::: {.proof}
@@ -233,7 +233,7 @@ Here $A\times B$ is the product $R$-module with componentwise multiplication and
 For the product, the two projections are homomorphisms of $R$-algebras.
 For homomorphisms $f\colon C\to A$ and $g\colon C\to B$, the map $c\mapsto(f(c),g(c))$ is $R$-linear, multiplicative and unital because each component is.
 It is the unique map whose composites with the projections are $f$ and $g$.
-The algebra $A\times B$ is commutative because $A$ and $B$ are.
+The algebra $A\times B$ is commutative (@def:operation-axioms) because $A$ and $B$ are.
 
 For the coproduct, let $f\colon A\to C$ and $g\colon B\to C$ be homomorphisms.
 The map $(a,b)\mapsto f(a)g(b)$ is $R$-bilinear, so it induces an $R$-linear map $h\colon A\tensor_RB\to C$ with $h(a\tensor_Rb)=f(a)g(b)$.
@@ -266,15 +266,15 @@ Each is determined by the image of the algebra generator $x$.
 :::
 
 ::: {.proposition #prop:character-gram title="Gram matrices from characters"}
-If $A$ is free on $E$, the Gram matrix of the module bilinear form $U(\phi)$ is $G_{ij}=\chi_L(e_i)\chi_R(e_j)$.
+If $A$ is free (@def:module-subcategories) on $E$, the Gram matrix of the module bilinear form (@def:module-bilinear-form) $U(\phi)$ is $G_{ij}=\chi_L(e_i)\chi_R(e_j)$.
 If $A$ is generated as a unital $R$-algebra by a finite set $S$, each of $\chi_L$ and $\chi_R$ is determined by its values on $S$, subject to the relations of $A$.
 :::
 
 ::: {.proof}
 
-The first sentence is @prop:characters-pair evaluated on a pair of basis vectors: $G_{ij}=U(\phi)(e_i,e_j)=\phi(e_i\tensor_Re_j)=\chi_L(e_i)\chi_R(e_j)$.
+The first sentence is @prop:characters-pair evaluated on a pair of basis (@def:based-module) vectors: $G_{ij}=U(\phi)(e_i,e_j)=\phi(e_i\tensor_Re_j)=\chi_L(e_i)\chi_R(e_j)$.
 So the Gram matrix of $U(\phi)$ is the rank-one matrix $\chi_L\chi_R^{\mathsf T}$ over the basis $E$, and in particular it has rank at most one whatever the size of $E$.
 
 For the second, a unital $R$-algebra homomorphism $\chi\colon A\to R$ out of a generated algebra is determined by its restriction to the generators, since $\chi$ is $R$-linear and multiplicative and every element of $A$ is a polynomial in $S$.
-Not every assignment extends: $\chi$ must kill the relations, and by the universal property of $R\langle S\rangle$ in @def:algebra-generating-set the assignments that extend are the homomorphisms $R\langle S\rangle/(\text{relations})\to R$.
+Not every assignment extends: $\chi$ must kill the relations, and by the universal property (@def:property-structure-stuff) of $R\langle S\rangle$ in @def:algebra-generating-set the assignments that extend are the homomorphisms $R\langle S\rangle/(\text{relations})\to R$.
 :::

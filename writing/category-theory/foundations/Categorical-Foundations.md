@@ -2,7 +2,7 @@
 
 ::: {.definition #def:groupoid-cardinality title="Groupoid cardinality" defines="essentially finite; groupoid cardinality"}
 
-An ordinary groupoid $\mathcal G$ is **essentially finite** when $\pi_0(\mathcal G)$ is finite and $\Aut_{\mathcal G}(x)$ is finite for every $x\in\mathcal G$.
+An ordinary (@def:two-elementary-isotropic-types) groupoid $\mathcal G$ is **essentially finite** when $\pi_0(\mathcal G)$ is finite and $\Aut_{\mathcal G}(x)$ is finite for every $x\in\mathcal G$.
 Its **groupoid cardinality** is
 $$
 \cardinality{\mathcal G}
@@ -35,9 +35,9 @@ A general forgetful functor need not arise from a category of elements.
 ::: {.definition #def:subcategory title="Subobjects, full and replete subcategories" defines="subobject; full subcategory; replete"}
 
 A *subobject* of $Y\in\mcc$ is a monomorphism $m:X\to Y$ in $\mcc$; the datum is the arrow $m$, not merely the domain $X$ [@Lur18c, Tag 04VD].
-Equivalently, $m$ is a subterminal object of the slice $\mcc_{/Y}$, and if the relevant pullback exists, $m$ is monic exactly when the diagonal $\Delta_m:X\to X\times_Y X$ is an equivalence.
+Equivalently, $m$ is a subterminal object of the slice $\mcc_{/Y}$, and if the relevant pullback (@def:pullback-square) exists, $m$ is monic exactly when the diagonal (@def:polarization-functors) $\Delta_m:X\to X\times_Y X$ is an equivalence (@def:equivalence-of-objects).
 
-For ordinary $\mathbf{Cat}$, a functor $F:\mca\to\mathcal B$ is monic if and only if it is injective on objects and faithful; hence subobjects in $\mathbf{Cat}$ are ordinary subcategories, up to isomorphism over $\mathcal B$.
+For ordinary (@def:two-elementary-isotropic-types) $\mathbf{Cat}$, a functor $F:\mca\to\mathcal B$ is monic if and only if it is injective on objects and faithful; hence subobjects in $\mathbf{Cat}$ are ordinary subcategories, up to isomorphism (@def:isomorphism-of-objects) over $\mathcal B$.
 In $\operatorname{Cat}_{\infty,\infty}$, a monomorphism must also contain every equivalence between objects in its image, so not every ordinary subcategory remains a subobject after passing to $\operatorname{Cat}_{\infty,\infty}$.
 
 A *full subcategory* $\mcd\iscontainedin\mcc$ is the special case where $m$ is fully faithful: a collection of objects of $\mcc$ with mapping spaces inherited from $\mcc$,
@@ -45,7 +45,7 @@ $$
 \operatorname{Map}_{\mcd}(x,y)\simeq\operatorname{Map}_{\mcc}(x,y).
 $$
 It is *replete* if every object of $\mcc$ equivalent to an object of $\mcd$ also belongs to $\mcd$.
-An isomorphism-invariant property of objects of $\mcc$ defines a replete full subcategory [@The25, Tag 001D; @nlab:replete_subcategory].
+An isomorphism-invariant property (@def:property-structure-stuff) of objects of $\mcc$ defines a replete full subcategory (@def:property-structure-stuff) [@The25, Tag 001D; @nlab:replete_subcategory].
 :::
 
 ::: {.definition #def:concrete-category title="Concrete categories" defines="concrete category; underlying set"}
@@ -80,8 +80,8 @@ For a $1$-category $C$, the arrow category is also $[[1],C]$, and evaluation at 
 
 Let $S\colon\mcd\to\mcc$ and $c\in\mcc$.
 A morphism $u\colon c\to Sr$ is *universal from $c$ to $S$* when, for every $d\in\mcd$ and every $f\colon c\to Sd$, there is a unique $g\colon r\to d$ with $Sg\circ u=f$.
-Equivalently, $\langle r,u\rangle$ is an initial object of the comma category $(c\downarrow S)$, so it is unique up to a unique isomorphism of $(c\downarrow S)$ and $r$ is unique up to isomorphism in $\mcd$ [@Mac98, §III.1].
-Dually, a morphism $v\colon Sr\to c$ is couniversal when $\langle r,v\rangle$ is terminal in $(S\downarrow c)$.
+Equivalently, $\langle r,u\rangle$ is an initial object (@def:initial-terminal) of the comma category (@def:comma-category) $(c\downarrow S)$, so it is unique up to a unique isomorphism (@def:isomorphism-of-objects) of $(c\downarrow S)$ and $r$ is unique up to isomorphism in $\mcd$ [@Mac98, §III.1].
+Dually, a morphism $v\colon Sr\to c$ is couniversal when $\langle r,v\rangle$ is terminal (@def:terminal-coble-surface) in $(S\downarrow c)$.
 :::
 
 Free constructions are of this form: the insertion of a graph into the underlying graph of the free category on it is universal from the graph to the forgetful functor $U\colon\mathbf{Cat}\to\mathbf{Grph}$ (@def:free-category).
@@ -91,10 +91,10 @@ The corepresenting objects listed in @def:element-functor are the values of the 
 
 ::: {.definition #def:preadditive title="Preadditive and additive categories" defines="preadditive category; zero morphisms; zero object; biproduct diagram; biproduct; $a\oplus b$; additive category"}
 
-A *preadditive category*, or $\mathbf{Ab}$-category, is a category $\mca$ in which each $\Hom_{\mca}(b,c)$ is an abelian group and composition is bilinear.
+A *preadditive category*, or $\mathbf{Ab}$-category, is a category $\mca$ in which each $\Hom_{\mca}(b,c)$ is an abelian group (@def:group) and composition is bilinear.
 Its zero elements are the *zero morphisms* $0\colon b\to c$, and a composite with a zero morphism is zero.
 
-In a preadditive category an object $z$ is initial exactly when it is terminal, exactly when $1_z=0$, and exactly when $\Hom_{\mca}(z,z)$ is the zero group; such a $z$ is a *zero object* [@Mac98, §VIII.2, Proposition 1].
+In a preadditive category an object $z$ is initial exactly when it is terminal (@def:terminal-coble-surface), exactly when $1_z=0$, and exactly when $\Hom_{\mca}(z,z)$ is the zero group; such a $z$ is a *zero object* [@Mac98, §VIII.2, Proposition 1].
 
 A *biproduct diagram* for $a,b\in\mca$ consists of an object $c$ and morphisms
 $$
@@ -111,32 +111,32 @@ An *additive category* is a preadditive category with a zero object and a biprod
 
 ::: {.definition #def:kernel-cokernel title="Kernels and cokernels" defines="kernel; cokernel"}
 
-In a category with a zero object, the *kernel* of $f\colon a\to b$ is the equalizer of the pair $f,0\colon a\to b$: a morphism $k\colon s\to a$ with $fk=0$ through which every $h$ with $fh=0$ factors uniquely.
+In a category with a zero object (@def:preadditive), the *kernel* of $f\colon a\to b$ is the equalizer of the pair $f,0\colon a\to b$: a morphism $k\colon s\to a$ with $fk=0$ through which every $h$ with $fh=0$ factors uniquely.
 The *cokernel* is the coequalizer of the same pair [@Mac98, §VIII.1].
 :::
 
 ::: {.definition #def:abelian-category title="Abelian categories" defines="abelian category"}
 
-An *abelian category* is an additive category in which every morphism has a kernel and a cokernel and, for every morphism $f$, the canonical map
+An *abelian category* is an additive category (@def:preadditive) in which every morphism has a kernel (@def:kernel-cokernel) and a cokernel (@def:kernel-cokernel) and, for every morphism $f$, the canonical map
 $$
 \operatorname{Coim}(f)\too\operatorname{Im}(f)
 $$
-is an isomorphism [@The25, Tag 0109].
+is an isomorphism (@def:isomorphism-of-objects) [@The25, Tag 0109].
 In an abelian category, a morphism is monic exactly when its kernel is zero and epic exactly when its cokernel is zero.
 
-An equivalent axiomatization asks for a zero object, binary biproducts, kernels and cokernels of every morphism, and that every monomorphism be a kernel and every epimorphism a cokernel [@Mac98, §VIII.3].
-Kernels and cokernels then supply the remaining finite limits and colimits: the equalizer of $f,g$ is the kernel of $f-g$, and biproducts are the finite products, so an abelian category is finitely complete and finitely cocomplete [@Mac98, §VIII.3].
+An equivalent axiomatization asks for a zero object (@def:preadditive), binary biproducts (@def:preadditive), kernels and cokernels of every morphism, and that every monomorphism be a kernel and every epimorphism a cokernel [@Mac98, §VIII.3].
+Kernels and cokernels then supply the remaining finite limits and colimits (@def:limit): the equalizer of $f,g$ is the kernel of $f-g$, and biproducts are the finite products, so an abelian category is finitely complete (@def:complete) and finitely cocomplete (@def:complete) [@Mac98, §VIII.3].
 :::
 
 ::: {.theorem #thm:canonical-factorization title="The canonical factorization"}
 
-In an abelian category every morphism $f$ factors as $f=me$ with $m$ monic and $e$ epic, where
+In an abelian category (@def:abelian-category) every morphism $f$ factors as $f=me$ with $m$ monic and $e$ epic, where
 $$
 m=\ker(\coker f),
 \qquad
 e=\coker(\ker f),
 $$
-and the factorization is functorial: a commutative square from $f$ to $f'$ induces a unique morphism between the two factorizations commuting with both halves.
+and the factorization is functorial: a commutative (@def:operation-axioms) square from $f$ to $f'$ induces a unique morphism between the two factorizations commuting with both halves.
 The object $\operatorname{Im}(f)$ is the domain of $m$ and $\operatorname{Coim}(f)$ the codomain of $e$ [@Mac98, §VIII.3, Proposition 1].
 :::
 
@@ -148,14 +148,14 @@ This is [@Mac98, §VIII.3, Proposition 1].
 ::: {.theorem #thm:diagram-lemmas title="Diagram lemmas"}
 
 Let $\mca$ be abelian.
-For a morphism $\langle f,g,h\rangle$ of short exact sequences: if $f$ and $h$ are monic then $g$ is monic, and if $f$ and $h$ are epic then $g$ is epic (short five lemma); there is a connecting morphism $\delta\colon\ker h\to\coker f$ making
+For a morphism $\langle f,g,h\rangle$ of short exact sequences (@def:exact-complex): if $f$ and $h$ are monic then $g$ is monic, and if $f$ and $h$ are epic then $g$ is epic (short five lemma); there is a connecting morphism $\delta\colon\ker h\to\coker f$ making
 $$
 \ker f\to\ker g\to\ker h
 \xrightarrow{\;\delta\;}
 \coker f\to\coker g\to\coker h
 $$
-exact (snake lemma).
-In a commutative diagram with exact rows and five vertical morphisms, if the four outer ones are isomorphisms then so is the middle one (five lemma) [@Mac98, §VIII.4, Lemmas 1, 4, and 5].
+exact (@def:exact-complex) (snake lemma).
+In a commutative (@def:operation-axioms) diagram with exact rows and five vertical morphisms, if the four outer ones are isomorphisms (@def:isomorphism-of-objects) then so is the middle one (five lemma) [@Mac98, §VIII.4, Lemmas 1, 4, and 5].
 :::
 
 ::: {.proof}
@@ -169,8 +169,8 @@ Exactness is a property of a composable pair: $a\xrightarrow{f}b\xrightarrow{g}c
 
 ::: {.definition #def:endomorphism-monoid title="The endomorphism monoid and the automorphism group" defines="endomorphism monoid; automorphism group"}
 
-For an object $X$ of a category $\mcc$, composition makes $\Hom_{\mcc}(X,X)$ a monoid with unit $\id_X$.
-Its group of invertible elements is $\Aut_{\mcc}(X)$, the automorphism group of $X$, which is $\operatorname{Isom}_{\mcc}(X,X)$ in the notation of @sec-equivalence-spaces.
+For an object $X$ of a category $\mcc$, composition makes $\Hom_{\mcc}(X,X)$ a monoid (@def:semigroup-monoid) with unit $\id_X$.
+Its group (@def:group) of invertible elements is $\Aut_{\mcc}(X)$, the automorphism group of $X$, which is $\operatorname{Isom}_{\mcc}(X,X)$ in the notation of @sec-equivalence-spaces.
 When $\mcc$ is preadditive, $\Hom_{\mcc}(X,X)$ is a ring under composition and the group addition, and $\Aut_{\mcc}(X)$ is its group of units.
 :::
 
@@ -210,7 +210,7 @@ A **representation** of $F$ is a pair $(X,u)$ with $X\in C$ and $u\in F(X)$ for 
 $$
 \theta^u_T\colon\Hom_C(T,X)\too F(T),\qquad f\longmapsto F(f)(u)
 $$
-are bijections for every $T\in C$; equivalently, $\theta^u\colon\Hom_C(-,X)\isoto F$ is a natural isomorphism.
+are bijections for every $T\in C$; equivalently, $\theta^u\colon\Hom_C(-,X)\isoto F$ is a natural isomorphism (@def:isomorphism-of-objects).
 The element $u$ is the **universal element** of the representation.
 The presheaf $F$ is **representable** if it admits a representation.
 The dual convention applies to corepresentable covariant functors.
@@ -219,7 +219,7 @@ The dual convention applies to corepresentable covariant functors.
 ::: {.theorem #thm:yoneda title="The Yoneda lemma"}
 
 Let $C$ be locally small, $F\colon C\to\mathbf{Set}$ a functor, and $c\in C$.
-Evaluation of a natural transformation at $\id_c$ is a bijection
+Evaluation (@def:dualizable-object) of a natural transformation at $\id_c$ is a bijection
 $$
 \operatorname{Nat}\bigl(\Hom_C(c,-),\,F\bigr)
 \;\cong\;
@@ -234,7 +234,7 @@ C\hookrightarrow\mathbf{Set}^{C^{\opop}},
 \qquad
 C^{\opop}\hookrightarrow\mathbf{Set}^{C}
 $$
-are fully faithful: natural transformations between represented functors correspond to morphisms between the representing objects [@Rie16, Corollary 2.2.8].
+are fully faithful: natural transformations between represented functors (@def:classifying-object) correspond to morphisms between the representing objects [@Rie16, Corollary 2.2.8].
 :::
 
 ::: {.proof}
@@ -244,7 +244,7 @@ This is [@Rie16, Theorem 2.2.4; @Mac98, §III.2].
 
 ::: {.corollary #cor:representations-unique title="Uniqueness of representations"}
 
-Let $F\colon C^{\opop}\to\mathbf{Set}$ be a presheaf. For any two representations $(X,u)$ and $(Y,v)$ of $F$, there is a unique isomorphism $\varphi\colon X\isoto Y$ satisfying $F(\varphi)(v)=u$.
+Let $F\colon C^{\opop}\to\mathbf{Set}$ be a presheaf. For any two representations (@def:representable-presheaf) $(X,u)$ and $(Y,v)$ of $F$, there is a unique isomorphism (@def:isomorphism-of-objects) $\varphi\colon X\isoto Y$ satisfying $F(\varphi)(v)=u$.
 :::
 
 ::: {.proof}
@@ -261,7 +261,7 @@ Thus the projection $\int_C F\to C$ is a discrete fibration; no additional oppos
 
 ::: {.definition #def:smooth-manifold title="Smooth manifolds as locally ringed spaces" defines="$\mathsf{LRS}_{\bR}$; standard local model; $M_n$; smooth atlas; smooth manifold"}
 
-Let $\mathsf{LRS}_{\bR}$ denote the category of locally $\bR$-ringed spaces: topological spaces equipped with a sheaf of $\bR$-algebras whose stalks are local rings [@nlab:locally_ringed_space].
+Let $\mathsf{LRS}_{\bR}$ denote the category of locally $\bR$-ringed spaces: topological spaces equipped with a sheaf of $\bR$-algebras whose stalks (@def:flower-pot-degeneration) are local rings [@nlab:locally_ringed_space].
 The standard local model of dimension $n$ is
 $$
 M_n := (\bR^n,\, C^\infty_{\bR^n}),
@@ -274,7 +274,7 @@ A *smooth atlas* for an object $X \in \mathsf{LRS}_{\bR}$ is a morphism $p\colon
 
 2. For every component inclusion $\iota_i\colon M_{n_i} \hookrightarrow U$, the composite $p \circ \iota_i\colon M_{n_i} \to X$ is an open immersion.
 
-3. $p$ is an effective epimorphism: it is the coequalizer of its kernel pair $$ U \times_X U \;\rightrightarrows\; U \;\xrightarrow{p}\; X.
+3. $p$ is an effective epimorphism: it is the coequalizer of its kernel (@def:kernel-cokernel) pair $$ U \times_X U \;\rightrightarrows\; U \;\xrightarrow{p}\; X.
 $$
 
 A *smooth manifold* is an object $X \in \mathsf{LRS}_{\bR}$ that admits a smooth atlas [@nlab:effective_epimorphism; @nlab:smooth_manifold].
@@ -291,7 +291,7 @@ The coequalizer condition forces $X$ to be the colimit obtained from charts glue
 The smooth manifold definition of @def:smooth-manifold transfers to algebraic geometry by substituting the ambient category and local models.
 
 Let $\mathsf{LRS}$ denote the category of all locally ringed spaces.
-The local models are affine schemes: for a commutative ring $A$, write
+The local models are affine schemes: for a commutative (@def:operation-axioms) ring $A$, write
 $$
 M_A := (\Spec(A),\, \mathcal{O}_{\Spec(A)}).
 $$
@@ -301,7 +301,7 @@ A *Zariski atlas* for an object $X \in \mathsf{LRS}$ is a morphism $p\colon U \t
 
 2. For every component inclusion $\iota_i\colon M_{A_i} \hookrightarrow U$, the composite $p \circ \iota_i\colon M_{A_i} \to X$ is an open immersion.
 
-3. $p$ is an effective epimorphism: it is the coequalizer of its kernel pair $$ U \times_X U \;\rightrightarrows\; U \;\xrightarrow{p}\; X.
+3. $p$ is an effective epimorphism: it is the coequalizer of its kernel (@def:kernel-cokernel) pair $$ U \times_X U \;\rightrightarrows\; U \;\xrightarrow{p}\; X.
 $$
 
 A *scheme* is an object $X \in \mathsf{LRS}$ that admits a Zariski atlas.

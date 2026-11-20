@@ -4,7 +4,7 @@
 
 ::: {.definition #def:ring-with-involution title="Involutions and the duality functor" defines="ring with involution; $\bar a$; duality functor; $(-)^{*}$; $f^{*}$; $\operatorname{can}_M$"}
 
-An *involution* on a ring $A$ is a ring isomorphism $A\to A^{\opop}$, written $a\mapsto\bar a$, with $\bar{\bar a}=a$ for every $a\in A$.
+An *involution* on a ring $A$ is a ring isomorphism (@def:isomorphism-of-objects) $A\to A^{\opop}$, written $a\mapsto\bar a$, with $\bar{\bar a}=a$ for every $a\in A$.
 It defines the *duality functor*
 $$
 (-)^{*}\colon A\text{-}\mathbf{Mod}\too A\text{-}\mathbf{Mod},
@@ -12,7 +12,7 @@ $$
 M^{*}=\Hom_A(M,A),
 $$
 where $M^{*}$ is an $A$-module by $(a\cdot f)(x)=f(x)\,\bar a$, and where the dual of $f\colon M\to N$ is $f^{*}\colon N^{*}\to M^{*}$, $g\mapsto g\circ f$.
-For a finitely generated projective $A$-module $M$ the map
+For a finitely generated projective (@def:module-subcategories) $A$-module $M$ the map
 $$
 \operatorname{can}_M\colon M\too M^{**},
 \qquad
@@ -24,7 +24,7 @@ is an isomorphism [@Ran98, §20A, paragraph before Def. 20.1].
 ::: {.definition #def:epsilon-symmetric-form title="$\epsilon$-symmetric and $\epsilon$-quadratic forms" defines="$\epsilon$-symmetric form; nonsingular $\epsilon$-symmetric form; $\epsilon$-quadratic form; $\epsilon$-symmetrization"}
 
 Let $\epsilon\in A$ be a central unit with $\bar\epsilon=\epsilon^{-1}$.
-An *$\epsilon$-symmetric form* $(M,\phi)$ is a finitely generated projective $A$-module $M$ together with an $A$-module morphism $\phi\colon M\to M^{*}$ making the triangle
+An *$\epsilon$-symmetric form* $(M,\phi)$ is a finitely generated projective (@def:module-subcategories) $A$-module $M$ together with an $A$-module morphism $\phi\colon M\to M^{*}$ making the triangle
 
 ```{.tikz}
 %%| filename: epsilon-symmetry-triangle
@@ -41,7 +41,7 @@ M^{**} \arrow[d,"\epsilon\,\phi^{*}"]
 ```
 
 commute.
-The form is *nonsingular* if $\phi$ is an isomorphism.
+The form is *nonsingular* if $\phi$ is an isomorphism (@def:isomorphism-of-objects).
 An *$\epsilon$-quadratic form* $(M,\psi)$ is a finitely generated projective $A$-module $M$ together with a class of morphisms $\psi\colon M\to M^{*}$ modulo the relation $\psi\sim\psi+\chi-\epsilon\chi^{*}$ for $\chi\in\Hom_A(M,M^{*})$; its *$\epsilon$-symmetrization* is $(M,\psi+\epsilon\psi^{*})$ [@Ran98, Def. 20.1].
 In both formulas the dual $\chi^{*}\colon M^{**}\to M^{*}$ of a morphism $M\to M^{*}$ is precomposed with $\operatorname{can}_M$, as in the triangle above.
 :::
@@ -54,40 +54,40 @@ For $M$ finitely generated projective, the hyperbolic form of @def:hyperbolic-fo
 
 ::: {.definition #def:chain-complexes title="Chain complexes in an additive category" defines="chain complex; chain map; $\mathbf{Ch}(\mca)$"}
 
-Let $\mca$ be an additive category.
+Let $\mca$ be an additive category (@def:preadditive).
 A *chain complex* in $\mca$ is a family of objects $C_n$ together with morphisms $d_n\colon C_n\to C_{n-1}$ satisfying $d_{n-1}d_n=0$.
 Chain maps are the degreewise morphisms commuting with the differentials, and $\mathbf{Ch}(\mca)$ is again additive [@Wei94, §1.1–1.2].
 :::
 
 ::: {.theorem #thm:dold-kan title="The Dold–Kan correspondence"}
 
-Let $\mca$ be an abelian category and let $X$ be a simplicial object of $\mca$, with face maps $d_i$.
-The *normalized chain complex* has
+Let $\mca$ be an abelian category (@def:abelian-category) and let $X$ be a simplicial object of $\mca$, with face maps $d_i$.
+The *normalized chain complex (@def:chain-complexes)* has
 $$
 N(X)_n=\bigcap_{i=1}^{n}\ker\bigl(d_i\colon X_n\to X_{n-1}\bigr)
 $$
 and differential induced by $d_0$.
-Then $N$ is an equivalence between the category of simplicial objects of $\mca$ and $\mathbf{Ch}_{\geq0}(\mca)$ [@Wei94, Thm. 8.4.1].
+Then $N$ is an equivalence (@def:equivalence-of-objects) between the category of simplicial objects of $\mca$ and $\mathbf{Ch}_{\geq0}(\mca)$ [@Wei94, Thm. 8.4.1].
 :::
 
 ::: {.proof}
 
 This is [@Wei94, Thm. 8.4.1].
-Normalization throws away the degenerate simplices: the quotient of $X_n$ by the subspace spanned by the images of the degeneracy maps is canonically $N(X)_n$, so $N$ keeps exactly the information $d_0$ needs and no more [@Wei94, §8.3].
-Enough projectives is not used; the statement is for any abelian $\mca$.
+Normalization throws away the degenerate (@def:definiteness) simplices: the quotient of $X_n$ by the subspace spanned by the images of the degeneracy maps is canonically $N(X)_n$, so $N$ keeps exactly the information $d_0$ needs and no more [@Wei94, §8.3].
+Enough projectives (@def:module-subcategories) is not used; the statement is for any abelian $\mca$.
 :::
 
 ::: {.definition #def:comonad-resolution title="Comonad resolutions and the bar construction" defines="comonad resolution; $\bot$; bar resolution"}
 
-Let $F\colon\mcc\to\mca$ be left adjoint to $U\colon\mca\to\mcc$.
+Let $F\colon\mcc\to\mca$ be left adjoint (@def:pairing-adjoints) to $U\colon\mca\to\mcc$.
 The composite $\bot=FU$, with counit $\eps\colon\bot\Rightarrow\id_{\mca}$ and comultiplication built from the unit, is a comonad on $\mca$ [@Wei94, Def. 8.6.1, Main Application 8.6.2].
-For an object $X$ of $\mca$ the associated augmented simplicial object has $\bot^{\,n+1}X$ in degree $n$, with faces and degeneracies from $\eps$ and the unit, and its chain complex is a resolution of $X$ [@Wei94, §8.6].
-For $\mca=A\text{-}\mathbf{Mod}$ and $F$ the free module functor this is the bar resolution, and it computes the derived functors of an additive functor out of $\mca$.
+For an object $X$ of $\mca$ the associated augmented simplicial object has $\bot^{\,n+1}X$ in degree (@def:numerical-polarization) $n$, with faces and degeneracies from $\eps$ and the unit, and its chain complex (@def:chain-complexes) is a resolution of $X$ [@Wei94, §8.6].
+For $\mca=A\text{-}\mathbf{Mod}$ and $F$ the free (@def:module-subcategories) module functor this is the bar resolution, and it computes the derived functors of an additive functor out of $\mca$.
 :::
 
 ::: {.definition #def:n-dual-complex title="The $n$-dual of a complex" defines="$C^{r}$; $n$-dual"}
 
-Let $A$ be a ring with involution and $C$ an $A$-module chain complex, and write $C^{r}=(C_r)^{*}$.
+Let $A$ be a ring with involution (@def:ring-with-involution) and $C$ an $A$-module chain complex (@def:chain-complexes), and write $C^{r}=(C_r)^{*}$.
 The *$n$-dual* $C^{n-*}$ is the $A$-module chain complex with
 $$
 (C^{n-*})_r=C^{\,n-r},
@@ -99,20 +99,20 @@ $$
 
 ::: {.definition #def:poincare-complex title="Algebraic Poincaré complexes and $L$-groups" defines="$n$-dimensional $\epsilon$-symmetric Poincaré complex; $\epsilon$-transposition involution; $T_{\epsilon}$; $n$-dimensional $U$-intermediate $\epsilon$-symmetric $L$-group; $L^{n}_{U}(A,\epsilon)$; $L^{U}_{n}(A,\epsilon)$"}
 
-An *$n$-dimensional $\epsilon$-symmetric Poincaré complex* over a ring with involution $A$ is a pair $(C,\phi)$ consisting of an $n$-dimensional $A$-module chain complex $C$ and an $\epsilon$-symmetric structure $\phi$ on $C$ whose component $\phi_0\colon C^{n-*}\to C$ is a chain equivalence; the $\epsilon$-quadratic case replaces $\phi$ by an $\epsilon$-quadratic structure $\psi$ and requires $(1+T_{\epsilon})\psi_0$ to be a chain equivalence, where $T_{\epsilon}$ is the $\epsilon$-transposition involution on $C\tensor_AC$ given by $x\tensor_A y\mapsto(-1)^{pq}\epsilon\,y\tensor_A x$ for $x\in C_p$ and $y\in C_q$ [@Ran98, Def. 20.2].
-For a $*$-invariant subgroup $U\iscontainedin\widetilde K_0(A)$, the *$n$-dimensional $U$-intermediate $\epsilon$-symmetric $L$-group* $L^{n}_{U}(A,\epsilon)$ and its $\epsilon$-quadratic counterpart $L^{U}_{n}(A,\epsilon)$ are the cobordism groups of such complexes with $[C]\in U$ [@Ran98, Def. 20.10].
+An *$n$-dimensional $\epsilon$-symmetric Poincaré complex* over a ring with involution (@def:ring-with-involution) $A$ is a pair $(C,\phi)$ consisting of an $n$-dimensional $A$-module chain complex (@def:chain-complexes) $C$ and an $\epsilon$-symmetric structure (@def:property-structure-stuff) $\phi$ on $C$ whose component $\phi_0\colon C^{n-*}\to C$ is a chain equivalence (@def:equivalence-of-objects); the $\epsilon$-quadratic case replaces $\phi$ by an $\epsilon$-quadratic structure $\psi$ and requires $(1+T_{\epsilon})\psi_0$ to be a chain equivalence, where $T_{\epsilon}$ is the $\epsilon$-transposition involution on $C\tensor_AC$ given by $x\tensor_A y\mapsto(-1)^{pq}\epsilon\,y\tensor_A x$ for $x\in C_p$ and $y\in C_q$ [@Ran98, Def. 20.2].
+For a $*$-invariant subgroup $U\iscontainedin\widetilde K_0(A)$, the *$n$-dimensional $U$-intermediate $\epsilon$-symmetric $L$-group* $L^{n}_{U}(A,\epsilon)$ and its $\epsilon$-quadratic counterpart $L^{U}_{n}(A,\epsilon)$ are the cobordism groups (@def:group) of such complexes with $[C]\in U$ [@Ran98, Def. 20.10].
 :::
 
 ::: {.theorem #thm:l-zero-is-witt title="The zero-dimensional $L$-group"}
 
-$L^{0}_{U}(A,\epsilon)$ is the Witt group of nonsingular $\epsilon$-symmetric forms over $A$, and $L^{U}_{0}(A,\epsilon)$ the Witt group of nonsingular $\epsilon$-quadratic forms; a form admitting a lagrangian is zero in it [@Ran98, Ex. 20.11].
+$L^{0}_{U}(A,\epsilon)$ is the Witt group (@def:group) of nonsingular $\epsilon$-symmetric forms over $A$, and $L^{U}_{0}(A,\epsilon)$ the Witt group of nonsingular $\epsilon$-quadratic forms; a form admitting a lagrangian is zero in it [@Ran98, Ex. 20.11].
 :::
 
 ::: {.proof}
 
 This is [@Ran98, Ex. 20.11].
-In dimension $0$ a Poincaré complex of @def:poincare-complex is a chain complex concentrated in degree $0$ together with a symmetric or quadratic structure whose component $\phi_0\colon C^0\to C_0$ is a chain equivalence, which is exactly a nonsingular form on $C_0$ in the sense of @def:polarization; cobordism of such complexes is Witt equivalence of @def:witt-class, and the intermediate $L$-group is the quotient by the forms admitting a lagrangian, which is @def:lagrangian.
-A hyperbolic form admits a lagrangian, so its class in $L^0$ is zero, as is its Witt class by @prop:metabolic-witt-trivial.
+In dimension $0$ a Poincaré complex of @def:poincare-complex is a chain complex (@def:chain-complexes) concentrated in degree (@def:numerical-polarization) $0$ together with a symmetric or quadratic structure (@def:property-structure-stuff) whose component $\phi_0\colon C^0\to C_0$ is a chain equivalence (@def:equivalence-of-objects), which is exactly a nonsingular form on $C_0$ in the sense of @def:polarization; cobordism of such complexes is Witt equivalence of @def:witt-class, and the intermediate $L$-group is the quotient by the forms admitting a lagrangian, which is @def:lagrangian.
+A hyperbolic form (@def:hyperbolic-form) admits a lagrangian, so its class in $L^0$ is zero, as is its Witt class by @prop:metabolic-witt-trivial.
 :::
 
 For $A=R$ a Dedekind domain with the identity involution and $\epsilon=1$, the group $L^{0}_{\widetilde K_0(R)}(R,1)$ is the additive group of the Witt ring $W(R)$ of @thm:witt-ring, and by @prop:hyperbolic-metabolic every hyperbolic form of @def:hyperbolic-form has the zero class in it.
@@ -121,30 +121,30 @@ For $A=R$ a Dedekind domain with the identity involution and $\epsilon=1$, the g
 
 ::: {.definition #def:model-category title="Model categories" defines="model category; homotopy category"}
 
-A *model category* is a category together with three classes of maps in it, the fibrations, the cofibrations, and the weak equivalences, satisfying the axioms of [@Qui67, Ch. I §1, Def. 1].
+A *model category* is a category together with three classes of maps in it, the fibrations, the cofibrations, and the weak equivalences (@def:equivalence-of-objects), satisfying the axioms of [@Qui67, Ch. I §1, Def. 1].
 Its *homotopy category* is the localization at the weak equivalences [@Qui67, Ch. I §1, Def. 6].
 :::
 
 ::: {.theorem #thm:projective-model-structure title="The projective model structure on complexes"}
 
-Let $\mca$ be an abelian category with enough projectives and let $C_{+}(\mca)$ be the category of chain complexes in $\mca$ that are bounded below.
-Then $C_{+}(\mca)$ is a model category in which
+Let $\mca$ be an abelian category (@def:abelian-category) with enough projectives (@def:module-subcategories) and let $C_{+}(\mca)$ be the category of chain complexes (@def:chain-complexes) in $\mca$ that are bounded below.
+Then $C_{+}(\mca)$ is a model category (@def:model-category) in which
 
-- the weak equivalences are the maps inducing isomorphisms on homology,
+- the weak equivalences (@def:equivalence-of-objects) are the maps inducing isomorphisms (@def:isomorphism-of-objects) on homology (@def:homology),
 
 - the fibrations are the epimorphisms, and
 
-- the cofibrations are the injective maps $i$ for which $\coker i$ has a projective object of $\mca$ in each degree
+- the cofibrations are the injective maps $i$ for which $\coker i$ has a projective object of $\mca$ in each degree (@def:numerical-polarization)
 
 [@Qui67, Ch. I §1, Ex. B].
-The cofibrant replacement of an object of $\mca$ concentrated in degree $0$ is a projective resolution of that object.
+The cofibrant replacement of an object of $\mca$ concentrated in degree $0$ is a projective resolution (@def:resolution) of that object.
 :::
 
 ::: {.proof}
 
-The model structure is [@Qui67, Ch. I §1, Ex. B]; the axioms are checked there for the three classes named.
+The model structure (@def:property-structure-stuff) is [@Qui67, Ch. I §1, Ex. B]; the axioms are checked there for the three classes named.
 
-A cofibrant object is one for which $\varnothing\to C$ is a cofibration, that is, injective with a projective cokernel in each degree; a complex concentrated in degree $0$ in $\mca$ is not cofibrant in general, because its cokernel is the object itself and need not be projective.
+A cofibrant object is one for which $\varnothing\to C$ is a cofibration, that is, injective with a projective cokernel (@def:kernel-cokernel) in each degree; a complex concentrated in degree $0$ in $\mca$ is not cofibrant in general, because its cokernel is the object itself and need not be projective.
 A cofibrant replacement $P\to A$ is a degreewise map from such a $P$ to $A$ in degree $0$ and to $0$ elsewhere, a weak equivalence by hypothesis; being a degreewise epimorphism with projective terms it is a projective resolution of $A$, and exactness of the augmented complex is the vanishing of homology above degree $0$ required by the weak equivalence.
 :::
 
@@ -155,8 +155,8 @@ The corresponding $\infty$-categorical constructions are @def:loops-suspension, 
 
 ::: {.definition #def:stable-infinity-category title="Stable $\infty$-categories" defines="stable $\infty$-category"}
 
-An $\infty$-category $\mcc$ is *stable* if it has a zero object, every morphism of $\mcc$ admits a kernel and a cokernel, and a triangle in $\mcc$ is exact if and only if it is coexact [@Lur09, Def. 2.9].
-The homotopy category of a stable $\infty$-category is triangulated [@Lur09, Thm. 3.11], a stable $\infty$-category admits all finite limits and colimits [@Lur09, Prop. 4.4], and on it the suspension and loop functors of @def:loops-suspension are mutually inverse equivalences [@Lur09, §3, paragraph before Rmk. 3.3].
+An $\infty$-category $\mcc$ is *stable* if it has a zero object (@def:preadditive), every morphism of $\mcc$ admits a kernel (@def:kernel-cokernel) and a cokernel (@def:kernel-cokernel), and a triangle in $\mcc$ is exact (@def:exact-complex) if and only if it is coexact [@Lur09, Def. 2.9].
+The homotopy category (@def:model-category) of a stable $\infty$-category is triangulated [@Lur09, Thm. 3.11], a stable $\infty$-category admits all finite limits and colimits (@def:limit) [@Lur09, Prop. 4.4], and on it the suspension and loop functors of @def:loops-suspension are mutually inverse equivalences (@def:equivalence-of-objects) [@Lur09, §3, paragraph before Rmk. 3.3].
 The hypothesis of the first is weaker than stability: it asks that $\mcc$ be pointed, admit cokernels, and have the suspension an equivalence.
 That hypothesis holds for every stable $\mcc$, and is in fact equivalent to stability, by [@Lur09, Rmk. 3.12].
 :::
@@ -171,7 +171,7 @@ A pointed $\mcc$ is stable if and only if it admits finite limits and colimits a
 ::: {.definition #def:prespectrum title="Prespectrum and spectrum objects" defines="prespectrum object; $E_n$; structure map; $\sigma_n$; $\eps_n$; spectrum object; $\mathrm{Sp}(\mcc)$"}
 
 Let $\mcc$ be an $\infty$-category.
-A *prespectrum object* of $\mcc$ is a functor $X\colon\mathrm N(\mathbf Z\times\mathbf Z)\to\mcc$ whose value $X(i,j)$ is a zero object of $\mcc$ whenever $i\neq j$; write $E_n=X(n,n)$ [@Lur09, Def. 8.1, Rmk. 8.3].
+A *prespectrum object* of $\mcc$ is a functor $X\colon\mathrm N(\mathbf Z\times\mathbf Z)\to\mcc$ whose value $X(i,j)$ is a zero object (@def:preadditive) of $\mcc$ whenever $i\neq j$; write $E_n=X(n,n)$ [@Lur09, Def. 8.1, Rmk. 8.3].
 The square of $X$ on the corners $(n,n)$, $(n,n+1)$, $(n+1,n)$, $(n+1,n+1)$ is
 
 ```{.tikz}
@@ -188,34 +188,34 @@ E_n
 \end{tikzcd}
 ```
 
-By @def:loops-suspension the pushout of the span $0\from E_n\to0$ is $\Sigma E_n$, and the pullback of the cospan $0\to E_{n+1}\from0$ is $\Omega E_{n+1}$, so the square determines the *structure maps*
+By @def:loops-suspension the pushout (@def:pullback-square) of the span $0\from E_n\to0$ is $\Sigma E_n$, and the pullback (@def:pullback-square) of the cospan $0\to E_{n+1}\from0$ is $\Omega E_{n+1}$, so the square determines the *structure maps*
 $$
 \sigma_n\colon\Sigma E_n\too E_{n+1},
 \qquad
 \eps_n\colon E_n\too\Omega E_{n+1},
 $$
 which correspond to one another under $\Sigma\dashv\Omega$.
-The prespectrum is a *spectrum object* when every $\eps_n$ is an equivalence; the spectrum objects span a full subcategory $\mathrm{Sp}(\mcc)\iscontainedin\mathrm{PSp}(\mcc)$ [@Lur09, Def. 8.4].
+The prespectrum is a *spectrum object* when every $\eps_n$ is an equivalence (@def:equivalence-of-objects); the spectrum objects span a full subcategory (@def:subcategory) $\mathrm{Sp}(\mcc)\iscontainedin\mathrm{PSp}(\mcc)$ [@Lur09, Def. 8.4].
 :::
 
 ::: {.theorem #thm:stabilization-universal title="The universal property of the stabilization"}
 
-For an $\infty$-category $\mcc$ the stabilization $\mathrm{Stab}(\mcc)$ is universal among stable $\infty$-categories equipped with a left exact functor to $\mcc$ [@Lur09, Prop. 10.12].
-The $\infty$-category of spectra is $\mathrm{Sp}=\mathrm{Sp}(\mcs_{*})=\mathrm{Stab}(\mcs)$ [@Lur09, Def. 9.1], and it is freely generated under colimits, as a stable $\infty$-category, by the sphere spectrum [@Lur09, Cor. 15.6].
+For an $\infty$-category $\mcc$ the stabilization $\mathrm{Stab}(\mcc)$ is universal among stable $\infty$-categories equipped with a left exact (@def:exact-complex) functor to $\mcc$ [@Lur09, Prop. 10.12].
+The $\infty$-category of spectra is $\mathrm{Sp}=\mathrm{Sp}(\mcs_{*})=\mathrm{Stab}(\mcs)$ [@Lur09, Def. 9.1], and it is freely generated under colimits (@def:limit), as a stable $\infty$-category, by the sphere (@def:spheres) spectrum [@Lur09, Cor. 15.6].
 :::
 
 ::: {.proof}
 
 $\mathrm{Stab}(\mcc)=\mathrm{Sp}(\mcc_{*})$ is [@Lur09, Def. 8.4].
 $\mathrm{Sp}=\mathrm{Stab}(\mcs)$ in [@Lur09, Def. 9.1] is the case $\mcc=\mcs$, together with the identification $\mcs_{*}=\mcs$ up to the trivial fibration of [@Lur09, Rem. 8.5].
-The universal property is the equivalence $\mathrm{Exc}(\mathcal{C},\mathrm{Stab}(\mathcal{D}))\simeq\mathrm{Exc}(\mathcal{C},\mathcal{D})$ of [@Lur09, Prop. 10.12].
-Free generation by the sphere spectrum is [@Lur09, Cor. 15.6]: evaluation on the sphere spectrum induces $\operatorname{Pr}^{\mathrm L}(\mathrm{Sp},\mathcal{D})\simeq\mathcal{D}$ for stable presentable $\mathcal{D}$.
+The universal property (@def:property-structure-stuff) is the equivalence (@def:equivalence-of-objects) $\mathrm{Exc}(\mathcal{C},\mathrm{Stab}(\mathcal{D}))\simeq\mathrm{Exc}(\mathcal{C},\mathcal{D})$ of [@Lur09, Prop. 10.12].
+Free (@def:module-subcategories) generation by the sphere spectrum is [@Lur09, Cor. 15.6]: evaluation (@def:dualizable-object) on the sphere spectrum induces $\operatorname{Pr}^{\mathrm L}(\mathrm{Sp},\mathcal{D})\simeq\mathcal{D}$ for stable presentable $\mathcal{D}$.
 :::
 
 ::: {.theorem #thm:derived-category-heart title="The derived $\infty$-category"}
 
-Let $\mca$ be an abelian category with enough projectives.
-Then $\mcd^{-}(\mca)$ is a stable $\infty$-category, the subcategories of complexes with vanishing homology in negative and in positive degrees determine a $t$-structure on it, and its heart is equivalent to the nerve of $\mca$ [@Lur09, Prop. 13.10].
+Let $\mca$ be an abelian category (@def:abelian-category) with enough projectives (@def:module-subcategories).
+Then $\mcd^{-}(\mca)$ is a stable $\infty$-category, the subcategories of complexes with vanishing homology (@def:homology) in negative and in positive degrees (@def:numerical-polarization) determine a $t$-structure on it, and its heart is equivalent to the nerve of $\mca$ [@Lur09, Prop. 13.10].
 :::
 
 ::: {.proof}
@@ -229,8 +229,8 @@ Taking $\mca=A\text{-}\mathbf{Mod}$ places the complexes of @def:poincare-comple
 
 ::: {.definition #def:ring-spectrum title="Ring spectra and their modules" defines="$B$-algebra; module spectrum; enveloping $B$-algebra; $A^{e}$"}
 
-Let $B$ be a commutative $S$-algebra.
-A *$B$-algebra* is a monoid in the symmetric monoidal category of $B$-modules under $\wedge_B$, and a module spectrum over it is a module for that monoid [@EKMM07, Def. VII.1.1].
+Let $B$ be a commutative (@def:operation-axioms) $S$-algebra.
+A *$B$-algebra* is a monoid (@def:semigroup-monoid) in the symmetric monoidal category (@def:braided-symmetric) of $B$-modules under $\wedge_B$, and a module spectrum over it is a module for that monoid [@EKMM07, Def. VII.1.1].
 The *enveloping $B$-algebra* of a $B$-algebra $A$ is $A^{e}=A\wedge_B A^{\opop}$.
 :::
 
@@ -241,7 +241,7 @@ $$
 THH^{B}(A;M)=M\wedge_{A^{e}}A
 $$
 [@EKMM07, Def. IX.1.1].
-When $B$ is a discrete commutative ring and $A$ is a $B$-algebra that is flat as a $B$-module, $\pi_n THH^{B}(A;M)\cong HH^{B}_n(A;M)$ [@EKMM07, Thm. IX.1.7].
+When $B$ is a discrete commutative (@def:operation-axioms) ring and $A$ is a $B$-algebra that is flat as a $B$-module, $\pi_n THH^{B}(A;M)\cong HH^{B}_n(A;M)$ [@EKMM07, Thm. IX.1.7].
 The simplicial construction of $THH^{B}(A)$ is cyclic, and $THH^{B}(A)$ is an $S^{1}$-equivariant $B$-module [@EKMM07, Rem. IX.3.9].
 :::
 

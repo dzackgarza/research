@@ -17,7 +17,7 @@ notes: |-
 
 ::: {#not:coordinates-on-l-20-2-0 .notation title="Coordinates on $L_{20,2,0}$" defines="$L_{20,2,0}$; $e,f$; $e',f'$; $\alpha_i$; $\tilde\alpha_i$; $w_i$; $\tilde w_i$"}
 
-Work in $L_{20,2,0} = U \oplus U(2) \oplus E_8 \oplus E_8$, with $e,f$ the $U$ basis, $e',f'$ the $U(2)$ basis, $\alpha_i$ and $\tilde\alpha_i$ the simple roots of the two $E_8$ summands, and $w_i, \tilde w_i$ the bases of the dual lattices $E_8^\# = E_8$ dual to them.
+Work in $L_{20,2,0} = U \oplus U(2) \oplus E_8 \oplus E_8$, with $e,f$ the $U$ basis (@def:based-module), $e',f'$ the $U(2)$ basis, $\alpha_i$ and $\tilde\alpha_i$ the simple roots of the two $E_8$ summands, and $w_i, \tilde w_i$ the bases (@def:root-system-base) of the dual lattices $E_8^\# = E_8$ dual to them.
 :::
 
 ## The $(18,2,0)_1$ diagram: 22 roots
@@ -148,7 +148,7 @@ The nonzero products $(v_i,v_j)$ with $i<j$ are as follows.
 | $-2$ | $\theset{18,22}$, $\theset{20,22}$ |
 | $4$ | $\theset{21,22}$ |
 
-Each pair with a negative product contains exactly one index $i$ with $\epsilon_i = -1$, and each pair with a positive product contains zero or two such indices, so the signs $\epsilon_i$ make every product nonnegative.
+Each pair with a negative product contains exactly one index (@def:index) $i$ with $\epsilon_i = -1$, and each pair with a positive product contains zero or two such indices, so the signs $\epsilon_i$ make every product nonnegative.
 With the conventions of [@AE22, Sec. 3A], two $(-2)$-roots with product $1$ are joined by a single edge, a $(-2)$-root and a $(-4)$-root with product $2$ by a double edge, and the two $(-4)$-roots $v_{21}, v_{22}$ with product $4$ by a thick edge.
 The diagram is therefore the $16$-cycle
 $$
@@ -162,7 +162,7 @@ The Coxeter diagram of [@AET23, Fig. 1] has $24$ nodes and describes a fundament
 
 ::: {.proposition #prop:aegs-toroidal-cusps title="Toroidal cusps of the stable-pair compactification"}
 
-The normalization of $\ofentwo$ is semitoroidal for the semifans $\mathfrak F^k$, $k = 1,\dots,5$, of [@AEGS25, §5.2].
+The normalization of $\ofentwo$ is semitoroidal for the semifans (@def:semitoroidal-compactification) $\mathfrak F^k$, $k = 1,\dots,5$, of [@AEGS25, §5.2].
 It is toroidal over the $0$-cusps $2$ and $4$, over the $1$-cusps adjacent to them and over the $1$-cusp $35$, and strictly semitoroidal over the remaining cusps [@AEGS25, Thm. 5.9].
 :::
 

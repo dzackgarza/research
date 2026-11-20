@@ -17,13 +17,13 @@ notes: |-
 
 ::: {.construction #cons:chamber-cone title="The chamber of a root set" defines="$R$; chamber of a root set; $C$"}
 
-Let $L$ be a hyperbolic lattice with bilinear form $\beta_L$ and Gram matrix $G$ in a chosen basis, and let $R = \theset{r_1,\dots,r_k}\subset L$ be a set of roots.
+Let $L$ be a hyperbolic lattice with bilinear form $\beta_L$ and Gram matrix $G$ in a chosen basis (@def:based-module), and let $R = \theset{r_1,\dots,r_k}\subset L$ be a set of roots.
 The cone they bound is
 $$
 C \definedas \theset{\, x\in L_\RR \;:\; \beta_L(r_i, x)\geq 0 \ \textfor i = 1,\dots,k \,}
 \iscontainedin L_\RR ,
 $$
-and $C\intersect\HH^n_L$ is the polytope $P$ of @thm:coxeter-type-and-geometry(3). In coordinates the linear functional $\beta_L(r,-)$ is the row $r^{\mathsf T}G$, so the inequality defining the wall of $r$ is given by that row and not by the coordinate row of $r$.
+and $C\intersect\HH^n_L$ is the polytope $P$ of @thm:coxeter-type-and-geometry(3). In coordinates the linear functional $\beta_L(r,-)$ is the row $r^{\mathsf T}G$, so the inequality defining the wall (@not:coxeter-polytope-faces) of $r$ is given by that row and not by the coordinate row of $r$.
 :::
 
 ::: {.lemma #lem:chamber-cone-apex title="The cone has apex the origin"}
@@ -34,14 +34,14 @@ When $C$ is pointed, its only vertex as a polyhedron is $0$, which is not a poin
 
 ::: {.proof}
 
-Every hyperplane $\beta_L(r_i,-) = 0$ passes through $0$, and $C$ is the intersection of the corresponding closed half-spaces, so $C$ is a polyhedral cone with apex $0$.
+Every hyperplane $\beta_L(r_i,-) = 0$ passes through $0$, and $C$ is the intersection of the corresponding closed (@def:closed-monoidal) half-spaces, so $C$ is a polyhedral cone with apex $0$.
 A pointed polyhedral cone has $0$ as its only vertex.
 Every point $v$ of $\HH^n_L$ has $v^2 = 1$ (@def:hyperbolic-model), and $0^2 = 0$.
 :::
 
 ::: {.proposition #prop:chamber-cone-criterion title="The volume criterion on the cone"}
 
-Let $L$ have signature $(1,n)$, let $C_L^+$ be the chosen component of the positive cone (@not:reflection-groups-sign-convention), and let $C$ be as in @cons:chamber-cone.
+Let $L$ have signature (@def:signature) $(1,n)$, let $C_L^+$ be the chosen component of the positive cone (@not:reflection-groups-sign-convention), and let $C$ be as in @cons:chamber-cone.
 Then $\vol(C\intersect\HH^n_L) < \infty$ if and only if
 
 1. every extremal ray generator $v$ of $C$ satisfies $v^2 \geq 0$;
@@ -50,19 +50,19 @@ Then $\vol(C\intersect\HH^n_L) < \infty$ if and only if
 
 3. the lineality space of $C$ is trivial.
 
-Under these conditions $C \iscontainedin \overline{C_L^+}$ and the closure of $C\intersect\HH^n_L$ in the projective model is the convex hull of the points determined by the extremal rays, which is criterion (1) of @thm:coxeter-polytope-volume.
-The rays with $v^2 > 0$ are the ordinary vertices and the rays with $v^2 = 0$ the ideal vertices of @prop:polytope-vertex-subdiagram, so by @thm:coxeter-polytope-volume(2) the polytope is compact exactly when no extremal ray is isotropic.
+Under these conditions $C \iscontainedin \overline{C_L^+}$ and the closure of $C\intersect\HH^n_L$ in the projective (@def:module-subcategories) model is the convex hull of the points determined by the extremal rays, which is criterion (1) of @thm:coxeter-polytope-volume.
+The rays with $v^2 > 0$ are the ordinary (@def:two-elementary-isotropic-types) vertices and the rays with $v^2 = 0$ the ideal vertices of @prop:polytope-vertex-subdiagram, so by @thm:coxeter-polytope-volume(2) the polytope is compact exactly when no extremal ray is isotropic (@def:orthogonal-complement).
 :::
 
 ::: {.proof}
 
 *The three conditions are necessary.*
-If some extremal ray generator $v$ of $C$ had $v^2<0$, then $v$ is a null direction of $C$ on which the hyperplane $v^{\perp}$ cuts $C$ in a face, and the ray recedes outside the closed positive cone $\overline{C_L^+}$; the intersection $C\cap\HH^n_L$ then has infinite volume in that direction, since a polyhedral cone meeting the hyperboloid in a receding ray contains a region of the form ray $\times$ ball.
+If some extremal ray generator $v$ of $C$ had $v^2<0$, then $v$ is a null direction of $C$ on which the hyperplane $v^{\perp}$ cuts $C$ in a face, and the ray recedes outside the closed (@def:closed-monoidal) positive cone $\overline{C_L^+}$; the intersection $C\cap\HH^n_L$ then has infinite volume in that direction, since a polyhedral cone meeting the hyperboloid in a receding ray contains a region of the form ray $\times$ ball.
 Condition (2) is what makes $C$ lie on one side of the hyperplane perpendicular to a timelike vector, without which the identification of $C\cap\HH^n_L$ with a polyhedron in the projective model fails.
 Condition (3) is needed because a nontrivial lineality space means $C$ contains a line, and a line in $\overline{C_L^+}$ is null, again giving infinite volume.
 
 *They are sufficient.*
-Under (1)--(3) the cone $C$ has finitely many extremal rays, all in $\overline{C_L^+}$ and all in one half, so its projectivization $C\cap\HH^n_L$ is the convex hull in the projective model of the finitely many points $[v]$ determined by the extremal rays — this is the standard dictionary between a pointed polyhedral cone and a polytope in the projective model of hyperbolic space, and it makes the identification with @thm:coxeter-polytope-volume(1) explicit.
+Under (1)--(3) the cone $C$ has finitely many extremal rays, all in $\overline{C_L^+}$ and all in one half, so its projectivization $C\cap\HH^n_L$ is the convex hull in the projective model of the finitely many points $[v]$ determined by the extremal rays — this is the standard dictionary between a pointed polyhedral cone and a polytope in the projective model of hyperbolic (@def:definiteness) space, and it makes the identification with @thm:coxeter-polytope-volume(1) explicit.
 A convex hull of finitely many points has finite volume, so the volume is finite.
 
 *The vertex classification.*
@@ -76,13 +76,13 @@ By @thm:coxeter-polytope-volume(2) the polytope is compact exactly when it has n
 
 From the presentation of @cons:chamber-cone one reads off:
 
-- the extremal rays and the facets, with the incidence between them, the facets being the walls indexed by $R$;
+- the extremal rays and the facets, with the incidence between them, the facets being the walls (@not:coxeter-polytope-faces) indexed by $R$;
 
 - a primitive integral generator of each ray, obtained by clearing denominators by their least common multiple and dividing by the greatest common divisor of the resulting entries;
 
-- the Hilbert basis of the monoid $C\intersect L$, that is, its unique minimal generating set as a monoid, together with generators for its integral points.
+- the Hilbert basis of the monoid (@def:semigroup-monoid) $C\intersect L$, that is, its unique minimal (@def:minimal-resolution) generating set as a monoid, together with generators for its integral points.
 
-The last two are the data of the chamber as a subset of $L$, and are what a computation inside $C\intersect L$ requires.
+The last two are the data of the chamber (@def:coble-polarization-classes) as a subset of $L$, and are what a computation inside $C\intersect L$ requires.
 :::
 
 ::: {#ex:chamber-of-phi-18-2-0 .example title="The chamber of the $22$ roots of $\Phi_{(18,2,0)}$"}
@@ -100,19 +100,19 @@ $$
 t(v,w) \definedas \frac{4\,\beta_L(v,w)^2}{v^2\, w^2} = 4\,g_{vw}^2 ,
 $$
 where $g_{vw}$ is the normalized pairing of @def:coxeter-vinberg-diagram.
-For a bond of Coxeter exponent $m$ one has $t = 4\cos^2(\pi/m)$, so
+For a bond of Coxeter exponent (@cons:pf-from-jacobian) $m$ one has $t = 4\cos^2(\pi/m)$, so
 $$
 m = 2,\ 3,\ 4,\ 6,\ \infty
 \quad\longleftrightarrow\quad
 t = 0,\ 1,\ 2,\ 3,\ 4 ,
 $$
-and $t > 4$ is the ultraparallel case, with $t = 4\cosh^2 d$ for $d$ the distance between the mirrors (@def:hyperbolic-model).
+and $t > 4$ is the ultraparallel case, with $t = 4\cosh^2 d$ for $d$ the distance between the mirrors (@not:hyperbolic-polytope-setting) (@def:hyperbolic-model).
 :::
 
 ::: {.proposition #prop:bond-invariant-rational title="The bond invariant is rational"}
 
 Let $v,w$ be roots of an integral lattice $L$ with $v^2,w^2\neq0$.
-Then $t(v,w)\in\QQ$, and $v,w$ do not span a bond of Coxeter exponent $5$.
+Then $t(v,w)\in\QQ$, and $v,w$ do not span a bond of Coxeter exponent (@cons:pf-from-jacobian) $5$.
 For $v^2 = -2$, $w^2 = -4$ and $\beta_L(v,w) = \pm1$ the normalized pairing $g_{vw} = \pm1/(2\sqrt2)$ is irrational.
 :::
 

@@ -2,7 +2,7 @@
 
 ::: {.proposition #prop:nikulin-fixed-locus title="Fixed locus of an involution acting as $-1$ on the transcendental lattice"}
 
-Let $X$ be a complex algebraic K3 surface and let $\sigma$ be an involution of $X$ that acts as $-\id$ on the transcendental lattice $T(X)$.
+Let $X$ be a complex algebraic K3 surface and let $\sigma$ be an involution of $X$ that acts as $-\id$ on the transcendental lattice (@not:k3-automorphism-data) $T(X)$.
 Then $M\definedas\Pic(X)^{\sigma^*}$ is a $2$-elementary lattice that contains an ample divisor class [@CDL25, Lemma 5.3.3].
 Let $(r,a,\delta)$ be its invariants, with $a$ as in @def:p-elementary.
 The fixed locus of $\sigma$ is
@@ -23,7 +23,7 @@ $$
 
 ::: {.proposition #prop:coble-k3-cover title="The K3 cover of a terminal Coble surface"}
 
-Let $S$ be a terminal Coble surface (@def:coble-surface) of K3 type over $\CC$, with $\abs{-2K_S} = \theset{C}$ and $C = C_1+\cdots+C_n$, where $C_1,\dots,C_n$ are disjoint $(-4)$-curves.
+Let $S$ be a terminal (@def:terminal-coble-surface) Coble surface (@def:coble-surface) of K3 type over $\CC$, with $\abs{-2K_S} = \theset{C}$ and $C = C_1+\cdots+C_n$, where $C_1,\dots,C_n$ are disjoint $(-4)$-curves.
 Let $\mcl \definedas \OO_S(-K_S)$, let $s\in H^0(S, \mcl^{\tensor_{\OO_S} 2})$ have $Z(s) = C$, and let $f\colon X\to S$ be the double cover defined by $(\mcl, s)$.
 Let $\sigma$ be the covering involution of $f$.
 
@@ -31,7 +31,7 @@ Let $\sigma$ be the covering involution of $f$.
 2. $e(S) = 12+n$ and $\rho(S) = 10+n$ [@DK25, §9.1].
 3. The preimages $\bar C_i$ of the curves $C_i$ are disjoint $(-2)$-curves on $X$ [@CDL25, §5.4, p. 552].
 4. $S$ is the blowup of $\PP^2$ at $N\geq 10$ points, possibly infinitely near, and $K_S^2 = 9-N = -n$ [@CDL25, §5.4, (5.4.1)].
-5. The sublattice $M\definedas\Pic(X)_0$ of $\Pic(X)$ spanned by $f^*\Pic(S)\cong\latI_{1,N}(2)$ and the classes of the $\bar C_i$ is $2$-elementary, it contains $f^*\Pic(S)$ with finite index, and $a(M) = a(\latI_{1,N}(2)) - 2(n-1) = 21-N = 12-n$ [@CDL25, §5.4, p. 552].
+5. The sublattice $M\definedas\Pic(X)_0$ of $\Pic(X)$ spanned by $f^*\Pic(S)\cong\latI_{1,N}(2)$ and the classes of the $\bar C_i$ is $2$-elementary, it contains $f^*\Pic(S)$ with finite index (@def:index), and $a(M) = a(\latI_{1,N}(2)) - 2(n-1) = 21-N = 12-n$ [@CDL25, §5.4, p. 552].
 6. For a general such $S$, the ramification divisor of $f$ is as in @prop:nikulin-fixed-locus with $g = 0$ and $k = n-1$, and $\Pic(X)$ is a $2$-elementary lattice of rank $10+n$ with $a(\Pic(X)) = 12-n$ [@CDL25, §5.4, p. 552].
 
 :::
@@ -52,7 +52,7 @@ For a general $S$ the second inclusion is an equality.
 
 By @prop:blowup-geometric-basis (3), $f^*$ is injective with image $f^*\Pic(S)\cong\latI_{1,N}(2)$.
 By @prop:coble-k3-cover (2), $\rank\Pic(S) = \rho(S) = 10+n$, so $\rank f^*\Pic(S) = 10+n$.
-By @prop:coble-k3-cover (5), $f^*\Pic(S)$ has finite index in $M$, so $\rank M = 10+n$.
+By @prop:coble-k3-cover (5), $f^*\Pic(S)$ has finite index (@def:index) in $M$, so $\rank M = 10+n$.
 Since $\latI_{1,N}$ is unimodular, @prop:scaled-discriminant-ses gives $A_{\latI_{1,N}(2)}\cong(\bZ/2)^{N+1}$, so $\abs{\det f^*\Pic(S)} = 2^{N+1}$.
 By @prop:coble-k3-cover (5), $M$ is $2$-elementary with $a(M) = 21-N$, so $\abs{\det M} = 2^{21-N}$.
 The square of the index $[M : f^*\Pic(S)]$ is the quotient of these determinants, $2^{N+1}/2^{21-N} = 2^{2N-20} = 2^{2(n-1)}$, where $N = 9+n$ by @prop:coble-k3-cover (4).
@@ -99,9 +99,9 @@ $$
 ,
 $$
 and combining $\chi(\OO_X) = 1 - h^1(\OO_X) + h^2(\OO_X)$ with $h^1(\OO_X) = 0$ gives $p_g(X) = h^2(\OO_X) = 1$.
-A smooth projective surface with $\omega_X\cong\OO_X$ and $h^1(\OO_X) = 0$ is a K3 surface, which is the first claim.
+A smooth projective (@def:module-subcategories) surface with $\omega_X\cong\OO_X$ and $h^1(\OO_X) = 0$ is a K3 surface, which is the first claim.
 
-For the intersection numbers, $\pi$ is finite of degree $2$, so $\pi_*\pi^{*} = 2$ on divisor classes, and the projection formula gives
+For the intersection numbers, $\pi$ is finite of degree (@def:numerical-polarization) $2$, so $\pi_*\pi^{*} = 2$ on divisor classes, and the projection formula gives
 $$
 \pi^{*}D\cdot\pi^{*}D' = D\cdot\pi_*\pi^{*}D' = D\cdot 2D' = 2(D\cdot D')
 .
@@ -110,7 +110,7 @@ $$
 
 ::: {.proposition #prop:coble-invariant-lattice}
 
-Let $f: X\to S$ be the K3 double cover of a terminal Coble surface (@def:coble-surface) of K3 type with $n = 1$, and let $\sigma$ be the covering involution.
+Let $f: X\to S$ be the K3 double cover (@not:coble-ten-point-blowup) of a terminal (@def:terminal-coble-surface) Coble surface (@def:coble-surface) of K3 type with $n = 1$, and let $\sigma$ be the covering involution.
 Write $\Pic(S) = \generators{H, E_1, \ldots, E_{10}} \cong \latI_{1, 10}$, where $H$ is the pullback of a line and the $E_i$ are the exceptional curves of $S = \Bl_{p_1, \ldots, p_{10}} \PP^2$, so that $H^2 = 1$, $E_i^2 = -1$, and $H\cdot E_i = E_i\cdot E_j = 0$ for $i\neq j$.
 Then $f^*: \Pic(S)\to \Pic(X)$ is injective, its image
 $$
@@ -126,12 +126,12 @@ $$
 ::: {.proof}
 
 If $f^*D = 0$ then $2D = f_* f^* D = 0$, and $\Pic(S)\cong\latI_{1, 10}$ is torsion-free, so $D = 0$; thus $f^*$ is injective.
-As $f$ has degree $2$, one has $f_* f^* = 2$, and the projection formula gives, for all $D, D'\in\Pic(S)$,
+As $f$ has degree (@def:numerical-polarization) $2$, one has $f_* f^* = 2$, and the projection formula gives, for all $D, D'\in\Pic(S)$,
 $$
 \qty{f^*D \cdot f^*D'} = D \cdot f_* f^* D' = D\cdot 2D' = 2\qty(D\cdot D')
 .
 $$
-Applied to the orthogonal basis $H, E_1, \ldots, E_{10}$, this shows that $f^*H, f^*E_1, \ldots, f^*E_{10}$ have Gram matrix $\diag(2, -2, \ldots, -2)$, so that $S_\Co \cong \generators{2}\oplus\generators{-2}^{10} = \latI_{1, 10}(2)$, of signature $(1, 10)$.
+Applied to the orthogonal basis (@def:based-module) $H, E_1, \ldots, E_{10}$, this shows that $f^*H, f^*E_1, \ldots, f^*E_{10}$ have Gram matrix $\diag(2, -2, \ldots, -2)$, so that $S_\Co \cong \generators{2}\oplus\generators{-2}^{10} = \latI_{1, 10}(2)$, of signature (@def:signature) $(1, 10)$.
 
 The lattice $S_\Co$ is $\sigma$-invariant, so $S_\Co\iscontainedin H^2(X, \bZ)^\sigma$.
 The fixed locus $\Fix(\sigma) = R$ is a single smooth rational curve (the case $n = 1$), so $\chi(R) = 2$.
@@ -152,12 +152,12 @@ A_{S_\Co} \cong (\bZ/2\bZ)^{11},
 q_{S_\Co} \cong \generators{\tfrac{1}{2}}\oplus\generators{-\tfrac{1}{2}}^{10}
 ,
 $$
-so $S_\Co$ is $2$-elementary of rank $r = 11$ and length $a = 11$.
+so $S_\Co$ is $2$-elementary of rank $r = 11$ and length (@def:anticanonical-pair) $a = 11$.
 Because $q_{S_\Co}$ takes the value $\tfrac{1}{2}\notin\bZ$, one has $\delta = 1$, giving $(r, a, \delta) = (11, 11, 1)$.
 
 The involution $\sigma$ acts as $-\id$ on $T(X)$, and $H^2(X, \bZ)^\sigma = \Pic(X)^{\sigma^*}$.
 The lattice $\NS(X) = H^{1,1}(X)\intersect H^2(X, \bZ)\cong\Pic(X)$ is primitive in $H^2(X, \bZ)$, and $T(X) = \NS(X)^{\perp}$ [@Huy16, Ch. 3, Def. 2.5 and Lemma 3.1].
-The sublattice $S_\Co = f^*\Pic(S)$ lies in $\Pic(X)$, and it has finite index in $H^2(X, \bZ)^\sigma$, so $H^2(X, \bQ)^\sigma = S_\Co\tensor\bQ\iscontainedin\NS(X)\tensor\bQ$.
+The sublattice $S_\Co = f^*\Pic(S)$ lies in $\Pic(X)$, and it has finite index (@def:index) in $H^2(X, \bZ)^\sigma$, so $H^2(X, \bQ)^\sigma = S_\Co\tensor\bQ\iscontainedin\NS(X)\tensor\bQ$.
 Primitivity of $\NS(X)$ gives $H^2(X, \bZ)^\sigma\iscontainedin H^2(X, \bZ)\intersect(\NS(X)\tensor\bQ) = \NS(X)$, hence $H^2(X, \bZ)^\sigma = \Pic(X)^{\sigma^*}$.
 It also gives $T(X) = \NS(X)^\perp\iscontainedin(H^2(X, \bZ)^\sigma)^\perp$, which is the coinvariant lattice of @def:invariant_coinvariant_lattices.
 By @prop:involution_eigenspaces, $\sigma^*$ acts as $-1$ on the rational span of the coinvariant lattice, so $\sigma^*$ acts as $-\id$ on $T(X)$.
@@ -167,7 +167,7 @@ The fixed locus $R$ is nonempty and is not a union of two elliptic curves, so it
 A single smooth rational curve gives $g = 0$ and $k = 0$, so $22-r-a = 0$ and $r-a = 0$, that is $r = a = 11$.
 As $M$ is $2$-elementary with $a = 11$, $\abs{\det H^2(X, \bZ)^\sigma} = 2^{11}$.
 Since $S_\Co \iscontainedin H^2(X, \bZ)^\sigma$ have equal rank $11$ and equal absolute determinant $2^{11}$, the index $[H^2(X, \bZ)^\sigma : S_\Co]$ is $1$: the two coincide, and by @thm:invariants-coinvariants-integral the invariant lattice -- hence $S_\Co$ -- is primitive in $H^2(X, \bZ)$.
-That the invariants $(11, 11, 1)_1$ determine the isometry class $\generators{2}\oplus\generators{-2}^{10}\cong\generators{-2}\oplus E_{10}(2)$ is Nikulin's classification of indefinite even $2$-elementary lattices [@Nik80, Thm. 3.6.2].
+That the invariants $(11, 11, 1)_1$ determine the isometry class $\generators{2}\oplus\generators{-2}^{10}\cong\generators{-2}\oplus E_{10}(2)$ is Nikulin's classification of indefinite (@def:definiteness) even (@def:form-axioms) $2$-elementary lattices [@Nik80, Thm. 3.6.2].
 :::
 
 ::: {.proposition #prop:blowup-geometric-basis title="Geometric basis of a blowup of the plane"}
@@ -177,13 +177,13 @@ $$
 S = S_N \xrightarrow{\pi_N} S_{N-1} \too \cdots \xrightarrow{\pi_1} S_0 = \PP^2
 $$
 be a sequence of blowups, where $\pi_i$ is the blowup of a point $p_i\in S_{i-1}$ with exceptional curve $E_i\iscontainedin S_i$.
-Let $e_0\in\Pic(S)$ be the pullback of the class of a line in $\PP^2$, and for $1\leq i\leq N$ let $e_i\in\Pic(S)$ be the pullback of the class of $E_i$.
+Let $e_0\in\Pic(S)$ be the pullback (@def:pullback-square) of the class of a line in $\PP^2$, and for $1\leq i\leq N$ let $e_i\in\Pic(S)$ be the pullback of the class of $E_i$.
 
-1. The classes $e_0, e_1, \ldots, e_N$ form a basis of $\Pic(S)$ with $e_0^2 = 1$, $e_i^2 = -1$ for $i\geq 1$, and $e_i\cdot e_j = 0$ for $i\neq j$. So $\Pic(S)\cong\latI_{1,N}$, and $\rho(S) = N+1$.
+1. The classes $e_0, e_1, \ldots, e_N$ form a basis (@def:based-module) of $\Pic(S)$ with $e_0^2 = 1$, $e_i^2 = -1$ for $i\geq 1$, and $e_i\cdot e_j = 0$ for $i\neq j$. So $\Pic(S)\cong\latI_{1,N}$, and $\rho(S) = N+1$.
 2. $K_S = -3e_0 + e_1 + \cdots + e_N$.
-3. If $S$ is a terminal Coble surface (@def:coble-surface) of K3 type and $f\colon X\to S$ is the double cover of @prop:coble-k3-cover, then $f^*$ is injective and $f^*\Pic(S)\cong\latI_{1,N}(2)$, with basis $f^*e_0,\dots,f^*e_N$.
+3. If $S$ is a terminal (@def:terminal-coble-surface) Coble surface (@def:coble-surface) of K3 type and $f\colon X\to S$ is the double cover of @prop:coble-k3-cover, then $f^*$ is injective and $f^*\Pic(S)\cong\latI_{1,N}(2)$, with basis $f^*e_0,\dots,f^*e_N$.
 
-A choice of such a basis is a marking of $S$, and it defines an isomorphism of lattices $\Pic(S)\to\latI_{1,N}$ [@CDL25, §5.4, p. 552].
+A choice of such a basis is a marking of $S$, and it defines an isomorphism (@def:isomorphism-of-objects) of lattices $\Pic(S)\to\latI_{1,N}$ [@CDL25, §5.4, p. 552].
 
 :::
 

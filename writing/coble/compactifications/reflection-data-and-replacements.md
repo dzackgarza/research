@@ -68,7 +68,7 @@ be the decomposition of [@DK13, (3.6), printed p. 513], with $h^2 = 2$ and $e,f$
 
 ::: {.proof}
 
-*Item 1.* In the basis $(h;e,f;\beta_1,\dots,\beta_8)$, with $\beta_i$ a basis of the $E_8(2)$ summand, the Gram matrix of $T_\Co$ is block diagonal with entries $h^2 = 2$, $(e,f) = 2$, and the $E_8(2)$ block; its determinant is the product $2\cdot(-4)\cdot2^8 = -2048$ of the determinants of the three blocks, and its signature is $(2,9)$.
+*Item 1.* In the basis $(h;e,f;\beta_1,\dots,\beta_8)$, with $\beta_i$ a basis of the $E_8(2)$ summand, the Gram matrix of $T_\Co$ is block diagonal (@def:polarization-functors) with entries $h^2 = 2$, $(e,f) = 2$, and the $E_8(2)$ block; its determinant is the product $2\cdot(-4)\cdot2^8 = -2048$ of the determinants of the three blocks, and its signature is $(2,9)$.
 The only nonzero entry of the column $(x,\eta)$ is $(f,\eta) = 2$, so
 $$
 \eta^{\perp T_\Co} = \theset{x\in T_\Co \st x_f = 0} = \ZZ e\oplus\generators{h}\oplus E_8(2) = \ZZ\eta\oplus K_I,
@@ -90,7 +90,7 @@ in the sense of [@AN06, Theorem 3.1, printed p. 51]. By item 2 the image is $\Or
 
 ::: {.proposition #prop:cusp-stabilizer-section title="The extension for a subgroup: one discriminant and one sign condition"}
 
-In the notation of @prop:cusp-stabilizer-orthogonal-coble let $\rho$ be the discriminant representation of $T_\Co$, and for a lattice $L$ write $\widetilde\Orth^+(L) \definedas \Orth^+(L)\cap\ker\rho_L$. Then for $g\in\Orth(K_I)$:
+In the notation of @prop:cusp-stabilizer-orthogonal-coble let $\rho$ be the discriminant representation (@def:representable-presheaf) of $T_\Co$, and for a lattice $L$ write $\widetilde\Orth^+(L) \definedas \Orth^+(L)\cap\ker\rho_L$. Then for $g\in\Orth(K_I)$:
 
 1. $A_{T_\Co} = A_{U(2)}\oplus A_{K_I}$ and $\rho(\hat g) = \id_{A_{U(2)}}\oplus\rho_{K_I}(g)$; hence $\hat g\in\ker\rho$ if and only if $g\in\ker\rho_{K_I}$;
 2. $\hat g\in\Orth^+(T_\Co)$ if and only if $g\in\Orth^+(K_I)$;

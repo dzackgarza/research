@@ -17,7 +17,7 @@ notes: |-
 
 ::: {.proposition #prop:vectors-of-given-square title="Vectors of a given square"}
 
-1. Let $L$ be a definite lattice of rank $n$ with Gram matrix $G$ in a basis, let $\varepsilon = 1$ if $L$ is positive definite and $\varepsilon = -1$ if it is negative definite, and let $\lambda > 0$ be the smallest eigenvalue of $\varepsilon G$.
+1. Let $L$ be a definite (@def:definiteness) lattice of rank $n$ with Gram matrix $G$ in a basis (@def:based-module), let $\varepsilon = 1$ if $L$ is positive definite (@def:definiteness) and $\varepsilon = -1$ if it is negative definite (@def:definiteness), and let $\lambda > 0$ be the smallest eigenvalue of $\varepsilon G$.
    Then for every $c\geq 0$
    $$
    \#\theset{v\in L : \varepsilon v^2 \leq c} \leq \left(2\sqrt{c/\lambda}+1\right)^{n} ,
@@ -31,7 +31,7 @@ notes: |-
 
 For (1), write $v = \sum_i x_ib_i$ in the basis.
 Then $\varepsilon v^2 = x^{\mathsf T}(\varepsilon G)x \geq \lambda\, x^{\mathsf T}x$, so $\varepsilon v^2\leq c$ forces $\lvert x_i\rvert\leq\sqrt{c/\lambda}$ for each $i$.
-Each $x_i$ is an integer in an interval of length $2\sqrt{c/\lambda}$, which holds at most $2\sqrt{c/\lambda}+1$ integers.
+Each $x_i$ is an integer in an interval of length (@def:anticanonical-pair) $2\sqrt{c/\lambda}$, which holds at most $2\sqrt{c/\lambda}+1$ integers.
 The vectors of square $c$ lie in the set with $\varepsilon v^2 \leq \lvert c\rvert$.
 
 For (2), $v^2 = \beta_U(v,v) = 2x_1x_2$, which vanishes exactly when $x_1 = 0$ or $x_2 = 0$.
@@ -39,7 +39,7 @@ For (2), $v^2 = \beta_U(v,v) = 2x_1x_2$, which vanishes exactly when $x_1 = 0$ o
 
 ::: {.proposition #prop:theta-series-convergence title="Theta series"}
 
-Let $L$ be definite and let $\varepsilon$ be as in @prop:vectors-of-given-square.
+Let $L$ be definite (@def:definiteness) and let $\varepsilon$ be as in @prop:vectors-of-given-square.
 The series $\Sum_{v\in L} q^{\varepsilon v^2}$ converges absolutely for $\lvert q\rvert < 1$, and its coefficient of $q^c$ is the number of vectors of square $\varepsilon c$.
 For $L = U$ the coefficient of $q^0$ in $\Sum_{v\in U} q^{v^2}$ is infinite.
 :::
@@ -54,9 +54,9 @@ The statement for $U$ is @prop:vectors-of-given-square(2).
 
 ::: {.proposition #prop:orthogonal-group-of-definite-lattice title="Orthogonal groups of a definite lattice and of $U$"}
 
-1. If $L$ is definite, then $\Orth(L)$ is finite.
+1. If $L$ is definite (@def:definiteness), then $\Orth(L)$ is finite.
 
-2. $\Orth(U)$ has order $4$: in the basis $e = (1,0)$, $f = (0,1)$ it consists of $\pm\mathrm{id}$ and $\pm\sigma$, where $\sigma$ exchanges $e$ and $f$.
+2. $\Orth(U)$ has order $4$: in the basis (@def:based-module) $e = (1,0)$, $f = (0,1)$ it consists of $\pm\mathrm{id}$ and $\pm\sigma$, where $\sigma$ exchanges $e$ and $f$.
 :::
 
 ::: {.proof}
@@ -65,7 +65,7 @@ For (1), let $b_1,\dots,b_n$ be a basis of $L$ and let $c = \max_i \lvert b_i^2\
 An isometry $g$ maps each $b_i$ to a vector of the same square, so $g(b_i)$ lies in the finite set of @prop:vectors-of-given-square(1).
 An isometry is determined by $g(b_1),\dots,g(b_n)$, so $\Orth(L)$ is finite.
 
-For (2), the primitive vectors of square $0$ in $U$ are $\pm e$ and $\pm f$, by @prop:vectors-of-given-square(2).
+For (2), the primitive (@def:primitive-embedding) vectors of square $0$ in $U$ are $\pm e$ and $\pm f$, by @prop:vectors-of-given-square(2).
 An isometry permutes them and preserves $\beta_U(e,f) = 1$.
 So $(g(e),g(f))$ is one of $(e,f)$, $(f,e)$, $(-e,-f)$, $(-f,-e)$, and each of these four assignments is an isometry.
 :::
@@ -87,24 +87,24 @@ So $(g(e),g(f))$ is one of $(e,f)$, $(f,e)$, $(-e,-f)$, $(-f,-e)$, and each of t
 Let $L$ be an integral lattice, let $\theset{r_i}_{i\in I}$ be simple roots of a Coxeter polytope (@def:coxeter-polytope) with $r_i^2<0$, and suppose that $g_{ij}\leq 1$ for all $i\neq j$ in $I$, so that $\Sigma_I$ has a Coxeter matrix $M[I,I]$ with $g_{ij} = \cos(\pi/m_{ij})$ (@def:coxeter-vinberg-diagram).
 Let $R_I = (r_i\cdot r_j)_{i,j\in I}$, an integer matrix.
 Then $\operatorname{sig}(\RR^I, G[I,I]) = \operatorname{sig}(\QQ^I, R_I)$, and $G[I,I]$ and $R_I$ have the same connected components.
-Hence the type of $\Sigma_I$ in @def:coxeter-system-type, and the type of the subdiagram in @def:elliptic-subdiagram, are determined by the signature over $\QQ$ of the integer matrix $R_I$, componentwise.
+Hence the type of $\Sigma_I$ in @def:coxeter-system-type, and the type of the subdiagram (@def:coxeter-subdiagram) in @def:elliptic-subdiagram, are determined by the signature over $\QQ$ of the integer matrix $R_I$, componentwise.
 :::
 
 ::: {.proof}
 
-Let $D = \operatorname{diag}(\lvert r_i^2\rvert)_{i\in I}$, a diagonal matrix with positive entries.
+Let $D = \operatorname{diag}(\lvert r_i^2\rvert)_{i\in I}$, a diagonal (@def:polarization-functors) matrix with positive entries.
 For $i\neq j$, $G[I,I]_{ij} = 2\cos(\pi/m_{ij}) = 2g_{ij}$ by @def:coxeter-gram-form and @def:coxeter-vinberg-diagram, so $r_i\cdot r_j = g_{ij}\sqrt{r_i^2r_j^2} = \tfrac12 G[I,I]_{ij}\sqrt{\lvert r_i^2\rvert\,\lvert r_j^2\rvert}$.
 For $i = j$, $r_i^2 = -\lvert r_i^2\rvert = \tfrac12 G[I,I]_{ii}\,\lvert r_i^2\rvert$, since $G[I,I]_{ii} = -2$ (@def:coxeter-gram-form).
 So $R_I = \tfrac12 D^{1/2}\, G[I,I]\, D^{1/2}$, a congruence by an invertible real matrix followed by a positive scalar.
 Both preserve the signature by @thm:sylvester, and both preserve the zero pattern of the off-diagonal entries, hence the connected components.
-Over $\QQ$, the form $R_I$ has an orthogonal basis (@thm:orthogonal-decomposition), and a $\QQ$-orthogonal basis is an $\RR$-orthogonal basis of $R_I\otimes\RR$, so the signature over $\QQ$ equals the signature over $\RR$.
+Over $\QQ$, the form $R_I$ has an orthogonal basis (@def:based-module) (@thm:orthogonal-decomposition), and a $\QQ$-orthogonal basis is an $\RR$-orthogonal basis of $R_I\otimes\RR$, so the signature over $\QQ$ equals the signature over $\RR$.
 :::
 
 ## Recognizing a lattice as a sum of standard blocks
 
 ::: {.construction #cons:decomposition-search title="Search over signature-additive multisets" defines="catalogue of standard blocks; $\mathcal B$"}
 
-Signature is additive over orthogonal direct sums, so a decomposition $L\cong\bigoplus_i L_i$ satisfies $\Sum_i (p_i,q_i) = (p,q)$ where $(p,q)$ is the signature of $L$.
+Signature (@def:signature) is additive over orthogonal direct sums, so a decomposition $L\cong\bigoplus_i L_i$ satisfies $\Sum_i (p_i,q_i) = (p,q)$ where $(p,q)$ is the signature of $L$.
 Fixing a catalogue $\mathcal B$ of standard blocks, a decomposition of $L$ within $\mathcal B$ is found by
 
 1. grouping $\mathcal B$ by signature;
@@ -115,9 +115,9 @@ Fixing a catalogue $\mathcal B$ of standard blocks, a decomposition of $L$ withi
 
 4. testing each sum for isometry with $L$.
 
-The catalogue $\mathcal B$ is $A_n$, $D_n$ and $E_n$ up to rank $20$, the odd and even unimodular lattices $I_{p,q}$ and $II_{p,q}$, and the $2$-twists of all of these.
+The catalogue $\mathcal B$ is $A_n$, $D_n$ and $E_n$ up to rank $20$, the odd (@def:two-elementary-isotropic-types) and even unimodular lattices (@def:unimodular) $I_{p,q}$ and $II_{p,q}$, and the $2$-twists of all of these.
 The even unimodular lattices are indexed by the signatures with $p\equiv q \bmod 8$.
-When $L$ and the sum are indefinite, even and $2$-elementary, step 4 is the comparison of signature, $a$ and $\delta$, by @thm:two-elementary-classification.
+When $L$ and the sum are indefinite (@def:definiteness), even and $2$-elementary, step 4 is the comparison of signature, $a$ and $\delta$, by @thm:two-elementary-classification.
 :::
 
 Related: [Toolchain and recipe for a hyperbolic 2-elementary lattice](#sec-computational-toolchain-and-recipe), [Orbits of isotropic vectors and the Tits building of a cusp configuration](#sec-isotropic-orbits-and-tits-buildings), [CoxIter results for the Sterk cusps and the 0-cusp lattices](#sec-coxiter-results-for-cusp-lattices), [Open problems and technical gaps](#sec-open-problems).

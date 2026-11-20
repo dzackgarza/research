@@ -39,7 +39,7 @@ Y \arrow[d,"i_Y"]\\
 \end{tikzcd}
 ```
 
-The pushout notation for its apex is
+The pushout (@def:pullback-square) notation for its apex is
 $$
 \operatorname{Cof}(f)=Y\amalg_X *.
 $$
@@ -48,7 +48,7 @@ These definitions specialize in pointed spaces to the usual homotopy fiber and h
 
 ::: {.definition #def:loops-suspension title="Loops and suspension" defines="loops; suspension; $\Omega X$; $\Sigma X$"}
 
-For an object $X$ of $\mcc$, loops are defined by the pullback square
+For an object $X$ of $\mcc$, loops are defined by the pullback (@def:pullback-square) square
 
 ```{.tikz}
 %%| filename: loop-square
@@ -63,7 +63,7 @@ For an object $X$ of $\mcc$, loops are defined by the pullback square
 \end{tikzcd}
 ```
 
-Suspension is defined by the pushout square
+Suspension is defined by the pushout (@def:pullback-square) square
 
 ```{.tikz}
 %%| filename: suspension-square
@@ -112,8 +112,8 @@ $$
 
 ::: {.definition #def:fiber-sequence title="Fiber sequences" defines="fiber sequence"}
 
-A composable pair $F\to E\to B$ is a *fiber sequence* when $F$ is equivalent to the homotopy fiber over a specified basepoint of $B$.
-Applying homotopy groups gives the long exact sequence.
+A composable pair $F\to E\to B$ is a *fiber sequence* when $F$ is equivalent to the homotopy fiber (@def:fiber-cofiber) over a specified basepoint of $B$.
+Applying homotopy groups (@def:homotopy-groups) gives the long exact (@def:exact-complex) sequence.
 Its component-level portion is the pointed-set sequence of @sec-pi0-fiber.
 :::
 
@@ -143,7 +143,7 @@ For $(X,x)\in\mcs_*$ and $n\geq0$, set
 $$
 \pi_n(X,x):=\pi_0\bigl(\Omega^n_xX\bigr),
 $$
-where $\Omega^0_xX:=X$ and $\Omega^{n}_xX:=\Omega_x\Omega^{n-1}_xX$, each loop object taken at the basepoint supplied by the previous stage.
-For $n\geq1$ the composition of loops makes $\pi_n(X,x)$ a group, and for $n\geq2$ an abelian group.
-These are the groups appearing in the truncation conditions of @def:truncated and in the long exact sequence of a fiber sequence.
+where $\Omega^0_xX:=X$ and $\Omega^{n}_xX:=\Omega_x\Omega^{n-1}_xX$, each loop object (@def:bicomplete-cat-infinity) taken at the basepoint supplied by the previous stage.
+For $n\geq1$ the composition of loops (@def:loops-suspension) makes $\pi_n(X,x)$ a group (@def:group), and for $n\geq2$ an abelian group.
+These are the groups appearing in the truncation conditions of @def:truncated and in the long exact (@def:exact-complex) sequence of a fiber sequence (@def:fiber-sequence).
 :::

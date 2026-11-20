@@ -6,7 +6,7 @@ The degree-six polarized Enriques model arising from Enriques' original construc
 
 ::: {.theorem #thm:fen2_main title="Compactification of $\fentwo$"}
 
-Let $\ksbacpt{\fentwo}$ denote the KSBA compactification (@def:ksba-compactification) of the moduli space $\fentwo$ of numerically polarized Enriques surfaces (@def:enriques-surface) of degree $2$.
+Let $\ksbacpt{\fentwo}$ denote the KSBA compactification (@def:ksba-compactification) of the moduli space $\fentwo$ of numerically polarized Enriques surfaces (@def:enriques-surface) of degree (@def:numerical-polarization) $2$.
 Let $\semitorfan = \theset{\semifan{F}_k}_{k=1}^5$ be the collection of folded semifans for the $0$-cusps.
 
 1. The normalization $\normksbacpt{\fentwo}$ is isomorphic to the semitoroidal compactification (@def:semitoroidal-compactification) $\semifancpt{\fentwo}{\semitorfan}$ [@AEGS25, Thm. 1.1].
@@ -30,7 +30,7 @@ The $1$-cusp $35$ is the one whose closure contains the $0$-cusps $3$ and $5$, a
 
 ::: {.lemma #lem:fen2_normalization title="Normalization of $\fentwo$"}
 
-There exists a closed subscheme $X \subset \fttz$ such that $\fentwo$ is canonically isomorphic to the normalization of $X$.
+There exists a closed (@def:closed-monoidal) subscheme $X \subset \fttz$ such that $\fentwo$ is canonically isomorphic to the normalization of $X$.
 :::
 
 ::: {.proof}
@@ -115,7 +115,7 @@ The toroidal and semitoroidal cusps are those of @thm:fen2_main(2).
 
 ::: {.lemma #lem:enriques-embedding-chain title="Uniqueness of the period-lattice embedding chain"}
 
-The chain of primitive embeddings
+The chain of primitive embeddings (@def:primitive-embedding)
 $$
 \ten=U\oplus U(2)\oplus E_8(2)
 \hookrightarrow \tdp=U\oplus U(2)\oplus E_8^2
@@ -131,7 +131,7 @@ Taking orthogonal complements turns this into the chain $U(2)\hookrightarrow U(2
 
 ::: {.construction #cons:fen2-cusp-involutions title="The five cusp folding involutions" defines="cusp folding involution; $\overline{T}_{\mathrm{En}}$; $\overline{T}_{\mathrm{dP}}$; $J$"}
 
-Let $e\in\ten$ be a primitive isotropic vector.
+Let $e\in\ten$ be a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) vector.
 Let $\overline{T}_{\mathrm{En}} = e^\perp/e$ in $\ten$ and $\overline{T}_{\mathrm{dP}} = e^\perp/e$ in $\tdp$, so that $\overline{T}_{\mathrm{En}}\subset\overline{T}_{\mathrm{dP}}$.
 Let $J = -\overline{I}_{\mathrm{En}}$ be the involution of $\overline{T}_{\mathrm{dP}}$ induced by $-\Ien$, whose $(+1)$-eigenspace is $\overline{T}_{\mathrm{En}}$ [@AEGS25, Def. 3.5].
 The five involutions $J$ below are numbered by the $0$-cusps in Sterk's numbering, and the simple roots $\alpha_k$ of the Coxeter--Vinberg diagram $G(\overline{T}_{\mathrm{dP}})$ (@def:coxeter-vinberg-diagram) are numbered as in [@AEGS25, Fig. 5].
@@ -140,7 +140,7 @@ The five involutions $J$ below are numbered by the $0$-cusps in Sterk's numberin
 | --- | --- | --- | --- |
 | $1$ | $(18,2,0)_1$ | rotation of the diagram by $180^\circ$ | $U(2)\oplus E_8(2)$ |
 | $2$ | $(18,0,0)_1$ | reflection $\alpha_k\mapsto\alpha_{20-k}$ of the diagram about the vertical line | $U\oplus E_8(2)$ |
-| $3$ | $(18,2,0)_1$ | reflection of the diagram about the diagonal, followed by the reflection in the root $\alpha_{20}$ | $U\oplus E_8(2)$ |
+| $3$ | $(18,2,0)_1$ | reflection of the diagram about the diagonal (@def:polarization-functors), followed by the reflection in the root $\alpha_{20}$ | $U\oplus E_8(2)$ |
 | $4$ | $(18,2,0)_1$ | reflection of the diagram about a horizontal line | $U\oplus E_8(2)$ |
 | $5$ | $(18,2,0)_1$ | composition of the $8$ commuting reflections in the roots $\alpha_1,\alpha_3,\dots,\alpha_{15}$ | $U\oplus E_8(2)$ |
 
@@ -156,7 +156,7 @@ For each of the five involutions $J$ of $\overline T_{\mathrm{dP}}$ in @cons:fen
 
 At cusp $2$, decompose $\tdp=U(2)\oplus\overline T_{\mathrm{dP}}$ and act trivially on the first factor. At cusp $1$, use $\tdp=U\oplus\overline T_{\mathrm{dP}}$ in the same way. At cusps $3$, $4$, and $5$, $\overline T_{\mathrm{dP}}=U(2)\oplus E_8^2$ has fixed lattice $U\oplus E_8(2)$, and the trivial extension does not have the required fixed lattice.
 
-Write $U=\langle e,f\rangle$, with $e^2=f^2=0$ and $e\cdot f=1$. A section of $\overline T_{\mathrm{dP}}$ into $\ZZ e\oplus\overline T_{\mathrm{dP}}$ is given by $a\in\overline T_{\mathrm{dP}}^*$, sending $x$ to $x+a(x)e$. Its perpendicular in $\tdp$ is $\langle e,2f-2a\rangle$ when $a\notin\overline T_{\mathrm{dP}}$; here $(2f-2a)^2=4a^2$. Choose $a=e'/2$ for a standard isotropic basis vector $e'$ of the $U(2)$ summand of $\overline T_{\mathrm{dP}}$. Its discriminant value is integral, so this perpendicular is $U(2)$. Act by $J$ on the chosen section and trivially on its perpendicular. The resulting fixed lattice is
+Write $U=\langle e,f\rangle$, with $e^2=f^2=0$ and $e\cdot f=1$. A section of $\overline T_{\mathrm{dP}}$ into $\ZZ e\oplus\overline T_{\mathrm{dP}}$ is given by $a\in\overline T_{\mathrm{dP}}^*$, sending $x$ to $x+a(x)e$. Its perpendicular in $\tdp$ is $\langle e,2f-2a\rangle$ when $a\notin\overline T_{\mathrm{dP}}$; here $(2f-2a)^2=4a^2$. Choose $a=e'/2$ for a standard isotropic (@def:orthogonal-complement) basis (@def:based-module) vector $e'$ of the $U(2)$ summand of $\overline T_{\mathrm{dP}}$. Its discriminant value is integral, so this perpendicular is $U(2)$. Act by $J$ on the chosen section and trivially on its perpendicular. The resulting fixed lattice is
 $$
 \tdp^{I=1}\cong U(2)\oplus\overline T_{\mathrm{dP}}^{J=1}
 \cong U\oplus U(2)\oplus E_8(2)=\ten.
@@ -169,7 +169,7 @@ The embedding-chain uniqueness of @lem:enriques-embedding-chain identifies this 
 Let $e$, $\overline{T}_{\mathrm{En}}\subset\overline{T}_{\mathrm{dP}}$ and $J$ be as in @cons:fen2-cusp-involutions.
 The folded diagram $G(\overline{T}_{\mathrm{dP}})^J$ of the Coxeter--Vinberg diagram $G(\overline{T}_{\mathrm{dP}})$ (@def:coxeter-vinberg-diagram) has as nodes the folded vectors $\beta_{[\alpha]}$ (@def:folded-root) of the simple roots $\alpha$ for which these vectors are roots of $\overline{T}_{\mathrm{En}}$ [@AEGS25, Def. 3.7].
 
-1. Let $\mathfrak{C}$ be a chamber of $W(\Gamma_{\mathrm{dP},e})$ in the positive cone (@not:reflection-groups-sign-convention) of $\overline{T}_{\mathrm{dP}}$ whose intersection with $\overline{T}_{\mathrm{En}}\otimes\RR$ has maximal dimension.
+1. Let $\mathfrak{C}$ be a chamber (@def:coble-polarization-classes) of $W(\Gamma_{\mathrm{dP},e})$ in the positive cone (@not:reflection-groups-sign-convention) of $\overline{T}_{\mathrm{dP}}$ whose intersection with $\overline{T}_{\mathrm{En}}\otimes\RR$ has maximal (@def:maximal-lattice) dimension.
    Then $\mathfrak{C}^J = \mathfrak{C}\intersect\overline{T}_{\mathrm{En}}\otimes\RR$ is a fundamental chamber of $W(\Gamma_{\mathrm{En},2,e})$, and its Coxeter--Vinberg diagram is $G(\overline{T}_{\mathrm{dP}})^J$ [@AEGS25, Lem. 3.8].
 
 2. The five involutions $J$ of @cons:fen2-cusp-involutions give the folded diagrams of the five $0$-cusps, in Sterk's numbering [@AEGS25, Lem. 3.9, Lem. 3.10].
@@ -179,7 +179,7 @@ The folded diagram $G(\overline{T}_{\mathrm{dP}})^J$ of the Coxeter--Vinberg dia
 
 ::: {.proof}
 
-The root-folding criterion @lem:root-folding-tdp identifies the folded walls with root hyperplanes of $\overline T_{\mathrm{En}}$. Intersecting a chamber of the ambient reflection group with $\overline T_{\mathrm{En}}\otimes\RR$ gives the chamber in (1): the hyperplane of $\alpha$ restricts to that of $\alpha+J\alpha$ when $J\alpha\ne\alpha$, and a nonempty wall has negative folded norm. At cusp $2$, the orbit sums $\alpha_k+\alpha_{20-k}$, $1\le k\le8$, span $E_8(2)$, while $\alpha_{10}$ and the isotropic vector of the diagram relation span an orthogonal $U$ [@AEGS25, proof of Lem. 3.9]. For cusp $1$, the folded diagram contains $\widetilde E_8(2)$: half its null root and the disjoint simple root span $U(2)$ orthogonal to $E_8(2)$. At cusp $3$, the $E_7A_1(2)$ subsystem has index $2$ in $E_8(2)$, while half the null root of $\widetilde A_1(2)$ and its disjoint root span $U$. The diagrams at cusps $4$ and $5$ start from $\widetilde D_8(2)$ and $\widetilde A_7\widetilde A_1(2)$, respectively [@AEGS25, proofs of Lems. 3.9–3.10, printed pp. 594–595].
+The root-folding criterion @lem:root-folding-tdp identifies the folded walls (@not:coxeter-polytope-faces) with root hyperplanes of $\overline T_{\mathrm{En}}$. Intersecting a chamber of the ambient reflection group with $\overline T_{\mathrm{En}}\otimes\RR$ gives the chamber in (1): the hyperplane of $\alpha$ restricts to that of $\alpha+J\alpha$ when $J\alpha\ne\alpha$, and a nonempty wall has negative folded norm. At cusp $2$, the orbit sums $\alpha_k+\alpha_{20-k}$, $1\le k\le8$, span $E_8(2)$, while $\alpha_{10}$ and the isotropic vector of the diagram relation span an orthogonal $U$ [@AEGS25, proof of Lem. 3.9]. For cusp $1$, the folded diagram contains $\widetilde E_8(2)$: half its null root and the disjoint simple root span $U(2)$ orthogonal to $E_8(2)$. At cusp $3$, the $E_7A_1(2)$ subsystem has index (@def:index) $2$ in $E_8(2)$, while half the null root of $\widetilde A_1(2)$ and its disjoint root span $U$. The diagrams at cusps $4$ and $5$ start from $\widetilde D_8(2)$ and $\widetilde A_7\widetilde A_1(2)$, respectively [@AEGS25, proofs of Lems. 3.9–3.10, printed pp. 594–595].
 
 Each $J$ lifts to $\tdp$ by @lem:enriques-folding-lifts, so the five chambers correspond to Enriques cusp reflection groups. Sterk's classification gives exactly five $0$-cusps [@Ste91, §4.3]; hence the list is exhaustive [@AEGS25, proof of Cor. 3.12].
 :::
