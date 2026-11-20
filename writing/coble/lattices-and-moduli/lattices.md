@@ -246,12 +246,39 @@ Let $\Gamma_\Co$ be the monodromy group of the family of @def:coble-family-unpol
 (1) is @thm:gamma-co-is-stable. For (2), a point of $\bar B$ is a sextic together with its ten nodes as a set (@not:d2-plane-sextic-base), so the class $e_0=f^*H$ of the pullback of a line is the value of a global section of $\bV|_{\bar B}$, while the ten classes $e_1,\dots,e_{10}$ are permuted. A monodromy operator therefore fixes $e_0$ and acts on $M$ by an element of $\mathfrak S_{10}$, and @lem:coble-discriminant-actions-conjugate gives $\bar\rho(\Gamma_\Co(\bar B))\subseteq\gamma\bar\rho_M(\mathfrak S_{10})\gamma^{-1}$. That $\Theta\cong\mathfrak S_{10}$, and its index, is the computation of the same paragraph: the classes $[e_i/2]$, $i\ge1$, are permuted among themselves and $[e_0/2]$ is fixed, so $\mathfrak S_{10}\to\Orth(q_M)$ is injective, $|\Theta|=10!$, and $[\Orth(q_{T_\Co}):\Theta]=\abs{\Orth(q_{T_\Co})}/10!=2^{13}\cdot3\cdot17\cdot31$ by @prop:coble-discriminant-group. (3) is @thm:gamma-co-is-full and @rmk:d2-what-is-open(1).
 :::
 
+::: {.theorem #thm:gamma-co-sextic-group title="The sextic base: $\Gamma_{10A_1}=\Orth^+(T_\Co)\intersect\bar\rho^{-1}(\Theta)$, and the two indices"}
+
+Let $T=10A_1$, so that $P=\generators{H}\oplus L$ with $L=A_1^{\oplus10}$ and $Q=P^{\perp\Lkt}=T_\Co$ (@thm:occult-period-map-sextics, @lem:ten-a1-permutation-forces-strictness), and let $\Gamma_{10A_1}\le\Orth(T_\Co)$ be the group of [@YZZ25, §3.1] for that type: the image of $\Orth(\Lkt,\Delta,H)\to\Orth(Q)$, restricted to the subgroup preserving the component $\bD(Q)$. Let $\Theta\le\Orth(q_{T_\Co})$ be the image of the permutations of $e_1,\dots,e_{10}$ fixing $e_0$ (@prop:gamma-co-geometric-bound(2)). Then:
+
+0. The unlabelled base $\bar B$ of @def:coble-family-unpolarized is the moduli space $\mathcal M_T$ of sextics of type $T$, and the local system $\bT$ of @lem:d2-local-system is the local system of that family; hence $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$.
+1. $\Theta\cong\mathfrak S_{10}$ and $|\Theta|=10!=3\,628\,800$.
+2. $\Gamma_{10A_1}=\Orth^+(T_\Co)\intersect\bar\rho^{-1}(\Theta)$.
+3. $[\Gamma_{10A_1}:\widetilde\Orth^+(T_\Co)]=|\Theta|=10!$ and
+$$[\Orth^+(T_\Co):\Gamma_{10A_1}]=\frac{\abs{\Orth(q_{T_\Co})}}{10!}=2^{13}\cdot3\cdot17\cdot31=12\,951\,552 .$$
+4. $\widetilde\Orth^+(T_\Co)\subsetneq\Gamma_{10A_1}\subsetneq\Orth^+(T_\Co)$; on the family of @def:coble-family-unpolarized the inclusion $\Gamma_\Co=\Gamma_\Co(B)\subseteq\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ of @lem:d2-local-system(5) has index $10!$.
+:::
+
+::: {.proof}
+
+(0). A point of $\bar B$ is an irreducible plane sextic with its ten nodes as a set (@not:d2-plane-sextic-base), which is the datum of a sextic of type $T=10A_1$; and the family of @lem:d2-unpolarised-family(3), quotiented by the labelling, is the family of K3 resolutions of the double covers branched along those sextics, which is the family of [@YZZ25, §2.3]. By [@YZZ25, Thm. 3.4] the period map is an isomorphism $\mathcal M_T\cong\Gamma_T\backslash(\bD_T-\mathcal H_T)$, so the monodromy of the local system on $\mathcal M_T$ is $\Gamma_T=\Gamma_{10A_1}$; over the orbifold points this is [@YZZ25, Prop. 6.6].
+
+(1) is @prop:gamma-co-geometric-bound(2).
+
+(2), *the inclusion $\subseteq$.* By [@YZZ25, §3.1] an element of $\Orth(\Lkt,\Delta,H)$ preserves $H$ and the set $\Delta=\theset{r_1,\dots,r_{10}}$ of the ten classes of the resolution. Hence its restriction to $P$ lies in $\Orth(P,H,\Delta)$, which is $\operatorname{Aut}(\Delta)\cong\mathfrak S_{10}$ and acts on $A_P\cong\ZZ/2\times(\ZZ/2)^{10}$ by permuting the ten generators $[r_i/2]$ and fixing $[H/2]$ [@YZZ25, Lemma 6.7]. By @lem:coble-discriminant-actions-conjugate the discriminant action on $Q=T_\Co$ is $\gamma\bar\rho_P(\psi)\gamma^{-1}$ for $\psi$ the restriction to $P$, so it lies in $\Theta$. That gives the inclusion into $\bar\rho^{-1}(\Theta)$; the inclusion into $\Orth^+(T_\Co)$ is the restriction to the component in the definition of $\Gamma_{10A_1}$ [@YZZ25, §3.1].
+
+(2), *the inclusion $\supseteq$.* Let $\varphi\in\Orth^+(T_\Co)$ with $\bar\rho(\varphi)\in\Theta$. By [@YZZ25, Lemma 6.7] the map $\Orth(P,H,\Delta)\to\Orth(A_P)$ has image $\gamma^{-1}\Theta\gamma$, so there is $\psi\in\Orth(P,H,\Delta)$ with $\bar\rho_P(\psi)=\gamma^{-1}\bar\rho(\varphi)\gamma$; equivalently $\bar\rho(\varphi)=\gamma\bar\rho_P(\psi)\gamma^{-1}$, which by @lem:coble-discriminant-actions-conjugate is the condition that the pair $(\psi,\varphi)$ preserve the gluing subgroup of $P\oplus Q$ in $\Lkt$. By Nikulin's criterion [@Nik80, Cor. 1.5.2], which is @thm:automorphism-lifting-criterion, the pair then extends to an isometry $g\in\Orth(\Lkt)$ with $g|_P=\psi$ and $g|_Q=\varphi$. Since $\psi$ preserves $H$ and permutes $\Delta$, so does $g$; hence $\varphi$ is the restriction of an element of $\Orth(\Lkt,\Delta,H)$, and $\varphi\in\Gamma_{10A_1}$ because the restriction map $\Orth(\Lkt,H,\Delta)\to\Gamma_{10A_1}$ is an isomorphism [@YZZ25, Prop. 6.5(ii)].
+
+(3). By @thm:two-elementary-surjectivity the map $\bar\rho\colon\Orth(T_\Co)\to\Orth(q_{T_\Co})$ is onto, its hypotheses being that $T_\Co$ is even, indefinite and $2$-elementary, which it is: $T_\Co=\generators{2}\oplus E_{10}(2)$ of signature $(2,9)$ (@prop:coble-period-domain(2)). The kernel $\ker\bar\rho$ contains the reflection $s_\zeta$ in a primitive vector $\zeta$ of square $2$, and $s_\zeta\notin\Orth^+(T_\Co)$ (@prop:gamma-co-reflective-set(2)); so of the two cosets of $\ker\bar\rho$ over a class $g\in\Orth(q_{T_\Co})$ one lies in $\Orth^+$, and $\bar\rho$ maps $\Orth^+(T_\Co)$ onto $\Orth(q_{T_\Co})$. Hence $\Orth^+(T_\Co)\intersect\bar\rho^{-1}(\Theta)\to\Theta$ is onto with kernel $\Orth^+(T_\Co)\intersect\ker\bar\rho=\widetilde\Orth^+(T_\Co)$, so the first index is $|\Theta|=10!$, and the second is $|\Orth(q_{T_\Co})|/10!$ with $|\Orth(q_{T_\Co})|$ from @prop:coble-discriminant-group.
+
+(4). Both indices in (3) exceed $1$. The last clause is (2) together with @thm:gamma-co-is-stable, which gives $\Gamma_\Co(B)=\widetilde\Orth^+(T_\Co)$ up to $\pm\id$, and @lem:d2-local-system(5) for the containment.
+:::
+
 ::: {.corollary #cor:gamma-co-inclusions title="What G1 decides for the stable group"}
 
 1. *The labelled base, the base of $\Gamma_\Co$* (@def:coble-family-unpolarized). $\Gamma_\Co\cdot\theset{\pm\id}=\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable): the forward and the reverse inclusion both hold, so @conj:gamma-co-stable is true on this base, and $\fco$ has the coarse space of $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$. Every count stated for the stable quotient is therefore a count for $\fco$: $527$ $0$-cusps (@thm:coble-zero-cusp-count(2)) and $189\,720$ $1$-cusps (@thm:plane-fibre(3)).
-2. *The unlabelled base.* $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ (@thm:occult-period-map-sextics), and
-$$\widetilde\Orth^+(T_\Co)\subseteq\Gamma_{10A_1}\subsetneq\Orth^+(T_\Co)$$
-by [@YZZ25, Prop. 3.2] and @lem:ten-a1-permutation-forces-strictness, while $\Gamma_\Co\subseteq\Gamma_\Co(\bar B)$ with index dividing $10!$ (@lem:d2-local-system(5)).
+2. *The unlabelled base.* $\Gamma_\Co(\bar B)=\Gamma_{10A_1}=\Orth^+(T_\Co)\intersect\bar\rho^{-1}(\Theta)$ (@thm:gamma-co-sextic-group), so
+$$\widetilde\Orth^+(T_\Co)\subsetneq\Gamma_{10A_1}\subsetneq\Orth^+(T_\Co),\qquad[\Gamma_{10A_1}:\widetilde\Orth^+(T_\Co)]=10!,\qquad[\Orth^+(T_\Co):\Gamma_{10A_1}]=12\,951\,552 .$$
+The inclusion $\Gamma_\Co\subseteq\Gamma_\Co(\bar B)$ is @lem:d2-local-system(5), and its index is $10!$ by @thm:gamma-co-sextic-group(4).
 3. *The coarse space.* There is no family (@rmk:d2-what-is-open(1)); the tautological local system has monodromy $\Gamma^{\mathrm{taut}}_\Co=\Orth^+(T_\Co)$ (@thm:gamma-co-is-full), and
 $$[\Orth^+(T_\Co):\widetilde\Orth^+(T_\Co)]=\abs{\Orth(q_{T_\Co})}=2^{21}\cdot3^5\cdot5^2\cdot7\cdot17\cdot31=46\,998\,591\,897\,600$$
 by @thm:two-elementary-surjectivity and @prop:coble-discriminant-group.
@@ -259,7 +286,7 @@ by @thm:two-elementary-surjectivity and @prop:coble-discriminant-group.
 
 ::: {.remark #rmk:gamma-co-d2a title="The three bases, and which group each gives"}
 
-@def:coble-family-unpolarized has one family and three bases. On the labelled base $B$, the base that @def:gamma-co-groups(1) assigns to $\Gamma_\Co$, the group is $\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable). On the unlabelled base $\bar B$ the same family has the larger group $\Gamma_{10A_1}$, which contains $\widetilde\Orth^+(T_\Co)$ strictly ([@YZZ25, Prop. 3.2], @lem:ten-a1-permutation-forces-strictness) and contains $\Gamma_\Co$ with index dividing $10!$ (@lem:d2-local-system(5)). On the coarse space $M_\Co$ there is no family; the tautological local system of the quotient is a different object, with group $\Orth^+(T_\Co)$ (@thm:gamma-co-is-full).
+@def:coble-family-unpolarized has one family and three bases. On the labelled base $B$, the base that @def:gamma-co-groups(1) assigns to $\Gamma_\Co$, the group is $\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable). On the unlabelled base $\bar B$ the same family has the larger group $\Gamma_{10A_1}=\Orth^+(T_\Co)\intersect\bar\rho^{-1}(\Theta)$, which contains $\widetilde\Orth^+(T_\Co)$ with index $10!$ and is contained in $\Orth^+(T_\Co)$ with index $12\,951\,552$ (@thm:gamma-co-sextic-group); the inclusion $\Gamma_\Co\subseteq\Gamma_\Co(\bar B)$ has index $10!$. On the coarse space $M_\Co$ there is no family; the tautological local system of the quotient is a different object, with group $\Orth^+(T_\Co)$ (@thm:gamma-co-is-full).
 
 So the answer to G1 depends on the base, and the base is part of D2a; on the labelled base it is the stable group. What remains open is the index of $\Gamma_\Co$ in $\Gamma_{10A_1}$, that is the comparison of bases 2 and 3 (@qst:sextic-group-comparison), and the sign $-\id\in\Gamma_\Co$, which does not affect $\fco$.
 :::
@@ -268,7 +295,7 @@ So the answer to G1 depends on the base, and the base is part of D2a; on the lab
 
 On the labelled base of D2a, $\Gamma_\Co\cdot\theset{\pm\id}=\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable): the forward inclusion is @lem:coble-family-labelled-monodromy, and the reverse inclusion is the period-map argument of the theorem. So @conj:gamma-co-stable holds on the base the definition names, and $\fco=\bD(T_\Co)/\Gamma_\Co$ has the coarse space of $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$; every cusp count for the stable quotient is a count for $\fco$ (@cor:gamma-co-inclusions(1)).
 
-Three things are not settled here. The sign: whether $-\id_{T_\Co}\in\Gamma_\Co$ is not seen by the period map, which is constant on $\pm\id$; it is the question of @qst:b25-sign-holonomy and does not change $\fco$. The index: $\Gamma_\Co\subseteq\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ is the comparison of bases 2 and 3 (@qst:sextic-group-comparison). And the coarse quotient: its tautological group is $\Orth^+(T_\Co)$, not $\Gamma_\Co$ (@thm:gamma-co-is-full).
+Three things are not settled here. The sign: whether $-\id_{T_\Co}\in\Gamma_\Co$ is not seen by the period map, which is constant on $\pm\id$; it is the question of @qst:b25-sign-holonomy and does not change $\fco$. The index: $\Gamma_\Co\subseteq\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ has index $10!$ (@thm:gamma-co-sextic-group(4)), so the comparison of bases 2 and 3 is settled as well. And the coarse quotient: its tautological group is $\Orth^+(T_\Co)$, not $\Gamma_\Co$ (@thm:gamma-co-is-full).
 :::
 
 ::: {.lemma #lem:gluing-discriminant-identification title="The gluing identification $\kappa\colon A_{E_{10}(2)}\isoto A_{T_\En}$"}
