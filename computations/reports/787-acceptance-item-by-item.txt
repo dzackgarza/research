@@ -4,50 +4,53 @@ Commit series: ed3c6e3e11 (U1), dd8aca0318 (the loop model), e9d2187929 (the
 containment in Orth(T_Co)), 192cbfec80 (U3 and the honest base B), 1e87c007ec
 (item 5), cfaeb51a38 (#780: the label cover of stacks and the index 10!),
 3def5c74d6 (U2: S_10 is not free on the labelled base), db792b527c (U4: the degree-2
-family forgets to the unpolarized one), and this commit (U5: the degree-2 datum is a
-class, and the degenerate case).  Paths are relative to the repository root; line
-numbers are those of this commit.
+family forgets to the unpolarized one), a9c53d4710 (U5's nondegenerate-form half),
+8044ca97f6 (U4: an explicit degree-2 family over the labelled base), and this commit
+(U4 concluded: Delta_2 is a proper quotient of the base).  Paths are relative to the
+repository root; line numbers are those of this commit.
 
 REVIEW ITEMS (the report of 2026-11-20 06:48:27, pinned to main@d277e333fc)
 
   U1  MET.  The D2a group is the monodromy group of the named family: the base is
       the space B = V/PGL_3, the family and the local system descend to it, and
       Gamma_Co = rho(pi_1(B,s)) = rho(pi_1(V,s)) (moduli-construction.md:427,
-      lem:d2-plane-sextic-freeness(4); the group paragraph at :516).
-  U2  MET.  B -> Bbar is a principal S_10-bundle of stacks (moduli-construction.md
-      :625, lem:d2-labelling-cover), the index is 10! (lattices.md:211,
+      lem:d2-plane-sextic-freeness(4); the group paragraph at :517).
+  U2  MET.  B -> Bbar is a principal S_10-bundle of stacks (:626,
+      lem:d2-labelling-cover), the index is 10! (lattices.md:211,
       lem:gamma-co-labelled-index), the reverse inclusion Gamma_Co = Otilde^+(T_Co)
       comes from Gamma_Co(Bbar) = Gamma_{10A_1} (lattices.md:291), and S_10 is not
-      free on B, by an explicit invariant sextic (moduli-construction.md:469,
-      lem:d2-s10-not-free).
+      free on B (:470, lem:d2-s10-not-free).
   U3  MET.  The fixed locus of a non-identity projectivity lies in a line and a
       point, a line carries at most three nodes, so PGL_3 acts freely on V with
-      SL_3-stabilizer mu_3 (moduli-construction.md:427,
-      lem:d2-plane-sextic-freeness(1)-(2)).
-  U4  NOT MET as a construction over Delta_2; the orbifold reading is refuted.
-      Proved (moduli-construction.md:731, lem:d2b-forgets-to-d2a): every base of a
-      degree-2 family carries the underlying unpolarized family with the same T, so
-      its monodromy is subordinated to Gamma_Co(Bbar) through the classifying map
-      Y -> Bbar (1)-(2); and Delta_2 read as D(T_Co)/R_gEn carries no family of Coble
-      surfaces with the tautological local system (3).  The marked space is
-      D(T_Co)/Gamma_{Co,2} and Delta_2 is its image (4).  Missing: a family over the
-      marked space itself.
-  U5  PARTLY MET, NOT MET as stated.  The restriction to the nondegenerate form is
-      repaired: item 2 of def:coble-family-degree-two (:695) now takes the class
-      (nef, square 2), not the decomposition, and the degenerate alternative is
-      neither excluded nor excluded-by-theorem (moduli-construction.md:674,
-      lem:d2b-polarization-is-a-class(1)-(3)), with its locus nonempty (:674(4)).
-      Still NOT MET: the objects are the smooth classical Coble surfaces only, and
-      the nodal quotients with a 1/4(1,1) singularity that [@AEGS25, Def. 2.7]
-      admits are not in the moduli problem.
-  U6  NOT MET.  The Enriques-quotient reading of the vector at :656, :663, :770, and
+      SL_3-stabilizer mu_3 (:427, lem:d2-plane-sextic-freeness(1)-(2)).
+  U4  MET, and answered negatively for Delta_2 itself.  Two lemmas.
+      (a) :761, lem:d2b-family-over-the-labelled-base: the cubics through nine of the
+      nodes give classes F_i = 3eps_0 - sum_{k != i} eps_k with F_i^2 = F_i.K_S = 0,
+      and h_ij = F_i + F_j is primitive, nef, of square 2, in K_S^perp; the f^*h_ij
+      are flat sections, so the degree-2 family exists over the labelled base B, and
+      its monodromy is Otilde^+(T_Co).
+      (b) :789, prop:d2b-base-covers-delta: Gamma_{Co,2} is a proper subgroup of
+      R_gEn, so D(T_Co)/Gamma_{Co,2} -> D(T_Co)/R_gEn is a covering of degree
+      [R_gEn : Gamma_{Co,2}] >= 2 and Delta_2 is a proper quotient of the base, not
+      the base.  So no family over Delta_2 is the universal one, and the review's
+      demand is met by the construction over the base plus this refutation.
+      Also from db792b527c (:732, lem:d2b-forgets-to-d2a): every degree-2 base
+      carries the underlying unpolarized family and maps to Bbar, so the two-sided
+      bound Otilde^+(T_Co) <= Gamma_{Co,2} <= Gamma_Co(Bbar) holds.
+  U5  PARTLY MET, NOT MET as stated.  The nondegenerate-form half is repaired: item 2
+      of def:coble-family-degree-two (:696) takes the class, not the decomposition,
+      and the degenerate alternative is neither excluded nor excluded-by-theorem
+      (:675, lem:d2b-polarization-is-a-class(1)-(3)), its locus being nonempty
+      (:675(4)).  Still NOT MET: the objects are the smooth classical Coble surfaces
+      only, and the nodal quotients with a 1/4(1,1) singularity that
+      [@AEGS25, Def. 2.7] admits are outside the moduli problem.
+  U6  NOT MET.  The Enriques-quotient reading of the vector at :657, :664, :821, and
       the statement/proof mismatch of lem:d2-degree-two-polarization(4)
-      (:663 statement, :671 proof for an involution).
-  U7  NOT MET.  moduli-construction.md:725 invokes prop:coble-polarized-moduli(2)-
-      (3), whose statements are Picard-general (polarizing-divisors-for-coble-
-      moduli.md:261-262).
-  U8  NOT MET.  "up to normalization" at moduli-construction.md:718; the properness
-      step of thm:normalization (lattices.md:687, applied at :714) uses
+      (:664 statement, :672 proof for an involution).
+  U7  NOT MET.  :726 invokes prop:coble-polarized-moduli(2)-(3), whose statements
+      are Picard-general (polarizing-divisors-for-coble-moduli.md:261-262).
+  U8  NOT MET.  "up to normalization" at :719; the properness step of
+      thm:normalization (lattices.md:687, applied at :715) uses
       lem:locally_closed_embedding_BB (lattices.md:106) outside its stated groups.
 
 ACCEPTANCE ITEMS
@@ -67,9 +70,10 @@ VERDICT: NOT MET (U5-U6; U4 answered as a comparison, not as a base equality).
   MET within it: the objects, the fibres and the local system are those of
   def:coble-family-degree-two (:695); the polarization is the class, not the
   decomposition (:674, lem:d2b-polarization-is-a-class), so the degenerate
-  alternative is admitted; and the family is the underlying unpolarized family with
-  a flat section, so it exists over every base on which the pairs do and its
-  monodromy is subordinated to Gamma_Co(Bbar) (:731, lem:d2b-forgets-to-d2a(1)-(2)).
+  alternative is admitted; the family exists over the labelled base, explicitly, as
+  the ten cubic classes (:760, lem:d2b-family-over-the-labelled-base(1)-(3)); and it
+  exists over every base on which the pairs do, with monodromy subordinated to
+  Gamma_Co(Bbar) (:731, lem:d2b-forgets-to-d2a(1)-(2)).
   NOT MET: the objects are smooth classical Coble surfaces only, so the nodal
   quotients of [@AEGS25, Def. 2.7] are outside the moduli problem; and the base is
   not Delta_2 as a marked space (lem:d2-degree-two-base(2), :718;
@@ -80,7 +84,11 @@ VERDICT: MET, unchanged.  lem:d2a-period-map, moduli-construction.md:642; DK13
   Prop. 3.2.
 
 ITEM 4. The base of D2b is all of Delta_2.
-VERDICT: NOT MET.  The item asks for every point of Delta_2 to be such a pair and
+VERDICT: REFUTED as an identification, and open as a surjectivity statement.
+  prop:d2b-base-covers-delta (:789) proves Delta_2 is a proper quotient of the base
+  of degree [R_gEn : Gamma_{Co,2}] >= 2, so the base is not Delta_2.  What survives is
+  the weaker reading, that every point of Delta_2 is the image of a pair, which is the
+  surjectivity of the normalization map and remains U8.  The item asks for every point of Delta_2 to be such a pair and
   conversely.  The converse direction is exactly what fails at the level of the
   marked space: Delta_2 is the image of D(T_Co)/Gamma_{Co,2} under the quotient by
   R_gEn (@lem:d2-degree-two-base(2), @lem:d2b-forgets-to-d2a(4)), and the quotient
@@ -111,6 +119,9 @@ CITATION POLICY OF THIS ROUND
   touch.
 
 CHECKS RUN AT THIS COMMIT
+  python3 computations/reports/coble_787-explicit-d2b-family.py
+    exit 0; all 90 ordered pairs give F_i^2 = F_i.K_S = 0, F_i.F_j = 1, h_ij
+    primitive of square 2 in K_S^perp, and h-tilde of square 4.
   python3 computations/reports/coble_787-degenerate-polarization.py
     exit 0; K_S^2 = -1; the (-2)-class R = H - E_1 - E_2 - E_3 has R^2 = -2 and
     R.K_S = 0; h = 2F_1 + R' has h^2 = 2, h.K_S = 0, h.R' = 0; the printed

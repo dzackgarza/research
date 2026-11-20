@@ -445,26 +445,27 @@ Let $V$ and $B=V/\PGL_3$ be as in @not:d2-plane-sextic-base.
 (4) The family and $\bT$ are $\PGL_3$-equivariant (@lem:d2-unpolarised-family(3)), so they descend to the base $B$ of the principal bundle $V\to B$. A loop of $B$ lifts to a path of $V$ by local triviality and compactness of $[0,1]$; the lift ends at $gs$ for some $g\in\PGL_3$, and since $\PGL_3$ is connected a path from $e$ to $g$ turns it into a loop of $V$ over the given loop. Hence $\pi_1(V,s)\to\pi_1(B,[s])$ is surjective. The monodromy group (@def:k3-moduli-functors) of the descended system on $B$ is $\rho\qty{\pi_1(B,[s])}$, and its pullback to $V$ is $\bT$, so it equals $\rho\qty{\pi_1(V,s)}$, which is $\Gamma_\Co$ (@lem:d2a-monodromy-of-the-stack).
 :::
 
-::: {.lemma #lem:d2-incidence-connected title="The labelled incidence variety, $B$ and $\bar B$ are connected"}
+::: {.lemma #lem:d2-incidence-connected title="The incidence variety, $B$ and $\bar B$ are connected"}
 
-In the notation of @not:d2-plane-sextic-base, let $U\subset(\PP^2)^{10}$ be the image of $V$ and let $\pi\colon V\to U$ be the projection. Then:
+In the notation of @not:d2-plane-sextic-base, let $W\subset U\times\abs{\OO_{\PP^2}(6)}$ be the set of pairs $(p,Z)$ with $p_i\in\Sing Z$ for all $i$, and let $\pi\colon W\to U$ and $\pi_V\colon V\to U$ be the projections. Then:
 
-1. $\pi$ is a finite morphism, and it is birational: the fibre over the generic point of $U$ is a single point.
-2. $U$ is irreducible, and $V$ is irreducible; hence $V$, $B=V/\PGL_3$ and $\bar B=[B/S_{10}]$ are connected.
+1. $\pi$ is proper and has finite fibres; hence $\pi$ is finite, every fibre of $\pi$ over $U$ is a single point, and $W$ is irreducible.
+2. $V$ is an open subset of $W$, hence irreducible and connected; so are $B=V/\PGL_3$ and $\bar B=[B/S_{10}]$.
 :::
 
 ::: {.proof}
 
-(1) *Finiteness.* For $p=(p_1,\dots,p_{10})\in U$ the fibre $\pi^{-1}(p)$ is the set of sextics $Z$ with $\operatorname{Sing}Z$ equal to $\{p_1,\dots,p_{10}\}$ as a set and each $p_i$ an ordinary double point (@def:ordinary-double-point). A sextic has $h^0(\OO_{\PP^2}(6))=28$; the condition that $Z$ pass through $p_i$ with multiplicity at least $2$ is three linear conditions (the value and the two first derivatives at $p_i$), so the sextics with all ten $p_i$ as singular points form a projective linear subspace of dimension at least $28-1-30=-3$, that is the empty set or a single point, and in either case $\pi^{-1}(p)$ is finite. A quasi-finite morphism of varieties of finite type over $\CC$ is finite, so $\pi$ is finite.
+1. *Properness.* $\abs{\OO_{\PP^2}(6)}$ is a projective space, hence proper over $\CC$, so the projection $U\times\abs{\OO_{\PP^2}(6)}\to U$ is proper; $W$ is closed in the product, being defined by the closed conditions $Z(p_i)=\partial_xZ(p_i)=\partial_yZ(p_i)=0$ for all $i$, so $\pi$ is proper.
 
-*Birationality.* Over the generic point $\pi$ is injective (@def:injective-map) by the same count, and the set of $p\in U$ over which there is a sextic at all is dense, so $\pi$ is birational onto its image, which is $U$ by definition.
+*Finite fibres.* The fibre over $p$ is the linear system $|\mathfrak m_{p_1}^2\cdots\mathfrak m_{p_{10}}^2(6)|$, a projective linear subspace. The ten double points impose $30$ linear conditions on the $28$-dimensional space of sextics, so that subspace has dimension at most $-1$, i.e. it is empty or a single point; a quasi-finite proper morphism is finite.
 
-(2) *Irreducibility of $U$.* The sextics with exactly ten ordinary double points are the image of the irreducible variety of degree-$6$ morphisms $\PP^1\to\PP^2$ whose image has exactly ten nodes: a rational sextic has arithmetic genus $10$, and ten ordinary double points account for the whole of it, so such a morphism is birational onto a ten-nodal sextic; conversely the normalization of a ten-nodal sextic is $\PP^1$ (@lem:d2-plane-sextic-freeness(2)). That image is irreducible, being the image of an irreducible variety, and it is $U$ up to the ordering of the labels, which is a union of finitely many copies of it; so $U$ is irreducible.
+*Irreducibility.* By definition of $U$ as the image of $V$, the map $\pi$ is surjective onto $U$ and every fibre is a single point, so $\pi$ is a finite birational morphism of degree one. A finite morphism of degree one onto an irreducible variety has one irreducible component, hence $W$ is irreducible.
 
-*Irreducibility of $V$.* The morphism $\pi$ is finite and birational with $U$ irreducible. Were $V=V_1\cup V_2$ a union of two proper closed subsets (@def:closed-subset), then $U=\pi(V_1)\cup\pi(V_2)$, so $U=\pi(V_1)$ by irreducibility; but $\pi$ is birational, so $\pi^{-1}$ of a dense open subset of $U$ is a dense open subset of $V$ contained in $V_1$, forcing $V_1=V$. So $V$ is irreducible, hence connected.
+2. *Irreducibility of $U$, and of $V$.* $U$ is irreducible: the ten-nodal sextics are the image of the irreducible variety of degree-$6$ morphisms $\PP^1\to\PP^2$ whose image has exactly ten nodes, since a rational sextic has arithmetic genus $10$ and ten ordinary double points exhaust it, and the normalization of a ten-nodal sextic is $\PP^1$ (@lem:d2-plane-sextic-freeness(2)); $U$ is the image of that under the node map. For $V$: it is the open subset of $W$ on which the ten points are distinct ordinary double points and there is no other singular point (@not:d2-plane-sextic-base), so $V$ is a nonempty open subset of the irreducible $W$, hence irreducible and connected.
 
 *$B$ and $\bar B$.* $B=V/\PGL_3$ is a quotient of a connected space, hence connected, and $\bar B=[B/S_{10}]$ has $B$ as a smooth cover, so it is connected.
 :::
+
 
 ::: {.lemma #lem:d2-s10-not-free title="The $S_{10}$-action on the labelled base is not free"}
 
@@ -755,6 +756,56 @@ and not by an identification: the marked period space of the degree-$2$ family i
 (3) By @lem:orbifold-monodromy-of-a-quotient the monodromy representation of the tautological local system of $\bD(T_\Co)/R_{\gent}$ is the projection $\pi_1^{\mathrm{orb}}\to R_{\gent}$, so its image is $R_{\gent}$. By @thm:coble-monodromy-versus-enriques(2) there is a primitive $\zeta\in T_\Co$ of square $2$ with $s_\zeta\in R_{\gent}$ and $s_\zeta\notin\Orth^+(T_\Co)$. A family of Coble surfaces over that orbifold with the tautological system as its $\bT$ would have monodromy group $R_{\gent}$ by (1), against @lem:monodromy-is-spinor-positive, which puts the monodromy of every Coble family in $\Orth^+(T_\Co)$.
 
 (4) By (1) and (2) the forgetful morphism and the period maps are the only comparison available. The period map of the degree-$2$ family lands in $\bD(T_\Co)/\Gamma_{\Co,2}$ by the definition of $\Gamma_{\Co,2}$ as the monodromy group (@def:gamma-co-groups(5), @eq-period-map-equivariance), and the second arrow is the quotient by the subgroup $R_{\gent}$ of @lem:d2-degree-two-base(1); the composite is finite with image $\Delta_2$ (@lem:d2-degree-two-base(2)). Since $\Gamma_{\Co,2}\subseteq\Orth^+(T_\Co)$ by (2) and $s_\zeta\in R_{\gent}$ lies outside $\Orth^+(T_\Co)$, $\Gamma_{\Co,2}\neq R_{\gent}$, which is @thm:coble-monodromy-versus-enriques(3); so the first arrow is not an isomorphism and $\Delta_2$ is the image, not the marked space.
+:::
+
+::: {.lemma #lem:d2b-family-over-the-labelled-base title="A family of degree-$2$ polarized Coble surfaces over the labelled base"}
+
+Let $b=(Z;p_1,\dots,p_{10})\in V$ and, for each label $i$, let $C_i\subset\PP^2$ be the cubic through the nine nodes other than $p_i$, with class $F_i=3\varepsilon_0-\sum_{k\neq i}\varepsilon_k$ in the local system $\bM$ of @lem:d2-local-system(2).
+
+1. $F_i^2=0$ and $F_i\cdot K_S=0$; $F_i$ is nef on the locus where $C_i$ is irreducible.
+2. For $i\neq j$ the class $h_{ij}\definedas F_i+F_j$ is primitive, nef, of square $2$, and lies in $K_S^{\perp}$; hence $(S_b,h_{ij})$ is a degree-$2$ polarized Coble surface in the sense of @def:coble-polarization-classes(2) and @lem:d2b-polarization-is-a-class.
+3. The classes $F_i$ are values of global sections of $\bM$, so the $\tilde h_{ij}\definedas f^*h_{ij}$ are flat sections of the local system $f^*(K^{\perp})$ and $(\mcs_V\to V,\ \mcx_V\to\mcs_V,\ \iota_V,\ \tilde h_{ij})$ is an object of @def:coble-family-degree-two over $V$, descending to the labelled base $B$.
+4. Its monodromy group is that of the underlying unpolarized family (@lem:d2b-forgets-to-d2a(1)), namely $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable); hence
+$$
+\widetilde\Orth^+(T_\Co)\ \subseteq\ \Gamma_{\Co,2}\ \subseteq\ \Gamma_\Co(\bar B),
+$$
+the second inclusion being @lem:d2b-forgets-to-d2a(2).
+5. The period map of this family lands in $\bD(T_\Co)/\Gamma_{\Co,2}$ and its composite with the quotient to $\bD(T_\Co)/R_{\gent}$ has open image, since the period map of the underlying family is an isomorphism onto an open subset (@lem:d2a-period-map(3)). So the family is a family of degree-$2$ polarized Coble surfaces over the open part of the normalization of $\Delta_2$ (@lem:d2-degree-two-base(1)).
+:::
+
+::: {.proof}
+
+(1) The class of the proper transform of $C_i$ is $3\varepsilon_0-\sum_{k\neq i}\varepsilon_k$; its square is $9-9=0$ and its intersection with $K_S=-3H+\sum_kE_k$ is $-9+9=0$. An irreducible curve meets every effective divisor it does not contain in a nonnegative number, and its own self-intersection is $0$, so its class is nef; hence $F_i$ is nef wherever $C_i$ is irreducible, which is an open condition on $V$.
+
+(2) $F_i\cdot F_j=9-8=1$ for $i\neq j$, so $h_{ij}^2=0+2\cdot1+0=2$, and $h_{ij}\cdot K_S=0+0=0$. The coefficient vector has a coordinate $1$ at $E_i$ and at $E_j$, so it is primitive. Nef is the sum of two nef classes. The identification of $(S_b,h_{ij})$ with a degree-$2$ polarized Coble surface is @def:coble-polarization-classes(2) together with the class reading of @lem:d2b-polarization-is-a-class(3).
+
+(3) The eleven classes $\varepsilon_0,\dots,\varepsilon_{10}$ are values of global sections of $\bV$ (@lem:d2-local-system(2)), so $F_i$ is a global section of $\bM$ and $\tilde h_{ij}$ one of $f^*(K^{\perp})$; the family is @lem:d2-unpolarised-family(2) with the section added, and it descends to $B$ by @lem:d2-unpolarised-family(3).
+
+(4) By @lem:d2b-forgets-to-d2a(1) the monodromy group of the family is that of the underlying unpolarized family, which is $\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable); by @lem:d2b-forgets-to-d2a(2) the monodromy group of any degree-$2$ family is contained in $\Gamma_\Co(\bar B)$. The two bounds are the display.
+
+(5) The period map of a degree-$2$ family is the map of its underlying unpolarized family, which is an isomorphism onto an open subset of $\bD(T_\Co)/\Orth(T_\Co)$ (@lem:d2a-period-map(3)); its lift to $\bD(T_\Co)/\Gamma_{\Co,2}$ is therefore a homeomorphism onto an open subset, and the image under the quotient by $R_{\gent}\supseteq\Gamma_{\Co,2}$ is open in $\bD(T_\Co)/R_{\gent}$, whose quotient by $R_{\gent}$ is the normalization of $\Delta_2$ (@lem:d2-degree-two-base(1)). The computation `computations/reports/coble_787-explicit-d2b-family.py`, recorded in `computations/reports/coble_787-explicit-d2b-family-run.txt`, verifies items (1)--(3) for all $90$ ordered pairs of labels.
+:::
+
+::: {.proposition #prop:d2b-base-covers-delta title="$\Delta_2$ is a proper quotient of the base of the degree-$2$ family"}
+
+Assume $\Gamma_{\Co,2}\subseteq R_{\gent}$ (@lem:d2-degree-two-base(3)).
+
+1. $\Gamma_{\Co,2}\subsetneq R_{\gent}$, and the map
+$$
+\bD(T_\Co)/\Gamma_{\Co,2}\too\bD(T_\Co)/R_{\gent}
+$$
+of the marked period space of @def:coble-family-degree-two onto the normalization of $\Delta_2$ (@lem:d2-degree-two-base(1)) is a covering of degree $[R_{\gent}:\Gamma_{\Co,2}]\geq 2$.
+2. Hence $\Delta_2$ is not the base of the degree-$2$ family, but a proper quotient of it: two marked periods in the same $R_{\gent}$-orbit and in different $\Gamma_{\Co,2}$-orbits have the same image in $\Delta_2$ and different monodromy markings.
+3. The base itself is the moduli of degree-$2$ polarized Coble surfaces, over which the family exists (@lem:d2b-family-over-the-labelled-base(3)), and the number $[R_{\gent}:\Gamma_{\Co,2}]$ is the degree of the map from the base to $\Delta_2$.
+:::
+
+::: {.proof}
+
+(1) By @lem:d2b-forgets-to-d2a(2) every element of $\Gamma_{\Co,2}$ lies in $\Orth^+(T_\Co)$, and by @thm:coble-monodromy-versus-enriques(2) the group $R_{\gent}$ contains an element outside $\Orth^+(T_\Co)$. So $\Gamma_{\Co,2}\neq R_{\gent}$, and with the hypothesis $\Gamma_{\Co,2}\subsetneq R_{\gent}$. The quotient map of a domain by a subgroup of finite index is a covering of that index, and $R_{\gent}$ has finite index in $\Orth(T_\Co)$ (@prop:gamma-co-images(3)) with $\Gamma_{\Co,2}\subseteq\Orth(T_\Co)$, so the index is finite and at least $2$.
+
+(2) The marked period space of the family is $\bD(T_\Co)/\Gamma_{\Co,2}$ by the definition of $\Gamma_{\Co,2}$ as the monodromy group (@def:gamma-co-groups, @eq-period-map-equivariance), and $\bD(T_\Co)/R_{\gent}$ is the normalization of $\Delta_2$ (@lem:d2-degree-two-base(1)). Points of $\bD(T_\Co)$ in one $R_{\gent}$-orbit but in different $\Gamma_{\Co,2}$-orbits are the marked periods of the same point of $\Delta_2$ and of different points of the base; such pairs exist by (1).
+
+(3) The existence of the family over the moduli base is @lem:d2b-family-over-the-labelled-base(3) together with @lem:d2b-forgets-to-d2a(1)--(2), and the degree of the induced map from the base to the normalization of $\Delta_2$ is the index of (1).
 :::
 
 ::: {.remark #rmk:d2-degree-two-vs-DK13 title="The moduli space $\mcm_\Co(2)$ of Dolgachev--Kondo"}

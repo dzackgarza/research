@@ -1,14 +1,14 @@
 """#789: the 1-cusp quotient Pi^perp/Pi at the four 1-cusps over cusp 1.
 
-Sterk (Math. Z. 207 (1991), 4.3.5, printed p. 20) states that the four
+Sterk (Math. Z. 207 (1991), 4.3.5) states that the four
 one-dimensional boundary components whose closure contains the 0-cusp e all
 have the same quotient type, namely E8(-2) = E8(2).  This script checks the
 case Pi = <e, e'> of the type {1,2} explicitly: Pi^perp = <e,e'> + E8(2), so
 Pi^perp/Pi is E8(2), whose Gram matrix has diagonal -4 and off-diagonal 0 or 2,
 so every square is divisible by 4 and there is no (-2)-vector.
 
-Inputs: AEGS, Nagoya Math. J. 259 (2025), Def. 2.3, printed p. 586 (T_En);
-Sterk, (4.2.3), printed p. 16 (the cusp vectors e, e'), and 4.3.5, printed
+Inputs: AEGS, Nagoya Math. J. 259 (2025), Def. 2.3 (T_En);
+Sterk, (4.2.3) (the cusp vectors e, e'), and 4.3.5, printed
 p. 20 (the common quotient type).
 """
 import itertools
