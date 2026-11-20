@@ -379,7 +379,7 @@ Let $g\in\Gamma_W$ be such an element, with $\psi\definedas\restrictionof{g}{P}$
 
 ::: {.remark #rmk:coble-moduli-functor title="Two quotients in the source, and which one $\Gamma_\Co$ is the monodromy of"}
 
-The source gives both quotients, one printed page apart. For lattice polarized K3 surfaces --- isomorphism classes of pairs $(X,j)$ with $j\colon M\injects\operatorname{Pic}(X)$ a primitive embedding --- the moduli space is
+The source gives both quotients, in the same section. For lattice polarized K3 surfaces --- isomorphism classes of pairs $(X,j)$ with $j\colon M\injects\operatorname{Pic}(X)$ a primitive embedding --- the moduli space is
 $$\mcm_{\mathrm{K3},M} = \mathcal D(N)/\Orth(N)^*, \qquad \Orth(N)^* = \ker\bigl(\Orth(N)\too\Orth(A_N)\bigr),$$
 with $N = M^{\perp L_{\mathrm{K3}}}$ [@DK13, §3]; for the pair $M = \generators{2}\oplus\generators{-2}^{\oplus 10}$, $N = T_\Co$ of [@DK13, (3.6)] this is $\bD(T_\Co)/\discriminantkernel{T_\Co}$, the quotient by the discriminant kernel. For *unpolarized* Coble surfaces the same source gives $\mcm_\Co$ as an open subset of $\bD(N)/\Orth(N)$ [@DK13, Prop. 3.2], the quotient by the full orthogonal group.
 
@@ -421,7 +421,7 @@ Write
 $$B\definedas V/\PGL_3,\qquad \bar B\definedas[V/(\SL_3\times S_{10})]=[B/S_{10}]$$
 so that $B$ is a complex analytic space and $V\to B$ is a principal $\PGL_3$-bundle (@lem:d2-plane-sextic-freeness(3)), while $\bar B$ is the quotient stack of $B$ by the finite group $S_{10}$, whose coarse space is $V/(\SL_3\times S_{10})$; $B\to\bar B$ is the quotient by $S_{10}$ (@lem:d2-labelling-cover).
 Let $U\subset(\PP^2)^{10}$ be the image of $V$: the ordered ten-tuples that are the ten nodes of an irreducible sextic with ten ordinary double points. The quotient $M_\Co\definedas U/\PGL_3$ is the moduli space of Coble surfaces of [@DK13, §3], a locally closed subvariety of the GIT quotient of $(\PP^2)^{10}$ by $\PGL_3$ (@prop:coble-moduli-git), and $B\to M_\Co$ is the map forgetting the sextic.
-The locus of irreducible sextics with ten nodes is irreducible, being the image of the irreducible variety of degree-$6$ rational maps $\PP^1\to\PP^2$, so $V$, $B$ and $\bar B$ are connected.
+The locus of irreducible sextics with ten nodes is irreducible, being the image of the irreducible variety of degree-$6$ rational maps $\PP^1\to\PP^2$, so $U$ and $M_\Co$ are connected and irreducible (@lem:d2-incidence-connected).
 :::
 
 ::: {.lemma #lem:d2-plane-sextic-freeness title="The fixed locus of a projectivity, and the principal bundle $V\to B$"}
@@ -443,6 +443,27 @@ Let $V$ and $B=V/\PGL_3$ be as in @not:d2-plane-sextic-base.
 (3) Three non-collinear nodes exist, since at most three lie on a line. For three non-collinear nodes $A,B,C$ the lines $AB$, $AC$, $BC$ carry at most three nodes each and contain $A,B,C$ twice each, so at most $3+3+3-3=6$ nodes lie on them and a fourth node $D$ lies outside; then $A,B,C,D$ have no three collinear. For a four-element subset $I$ of the labels let $V_I\subset V$ be the open set of configurations whose $I$-indexed nodes have no three collinear, fix a projective frame $q_1,\dots,q_4$, and let $S_I\subset V_I$ be the closed subset of configurations whose $I$-indexed nodes are $q_1,\dots,q_4$. The map $\PGL_3\times S_I\to V_I$, $(g,s)\mapsto g\cdot s$, is a bijection: a configuration $v\in V_I$ has a unique projectivity $g_v$ carrying its $I$-indexed nodes to $q_1,\dots,q_4$, because a projectivity is determined by the images of four points with no three collinear, and $v=g_v^{-1}(g_vv)$ with $g_vv\in S_I$. It is a homeomorphism because $v\mapsto g_v$ is given by solving a linear system whose determinant is nonzero on $V_I$. The composites $S_I\to V_I\to B$ are therefore charts; they cover $B$ by the first paragraph, and their transition maps are restrictions of the $\PGL_3$-action, hence analytic. So $B$ is a complex analytic space and $V\to B$ is a principal $\PGL_3$-bundle.
 
 (4) The family and $\bT$ are $\PGL_3$-equivariant (@lem:d2-unpolarised-family(3)), so they descend to the base $B$ of the principal bundle $V\to B$. A loop of $B$ lifts to a path of $V$ by local triviality and compactness of $[0,1]$; the lift ends at $gs$ for some $g\in\PGL_3$, and since $\PGL_3$ is connected a path from $e$ to $g$ turns it into a loop of $V$ over the given loop. Hence $\pi_1(V,s)\to\pi_1(B,[s])$ is surjective. The monodromy group of the descended system on $B$ is $\rho\qty{\pi_1(B,[s])}$, and its pullback to $V$ is $\bT$, so it equals $\rho\qty{\pi_1(V,s)}$, which is $\Gamma_\Co$ (@lem:d2a-monodromy-of-the-stack).
+:::
+
+::: {.lemma #lem:d2-incidence-connected title="The labelled incidence variety, $B$ and $\bar B$ are connected"}
+
+In the notation of @not:d2-plane-sextic-base, let $U\subset(\PP^2)^{10}$ be the image of $V$ and let $\pi\colon V\to U$ be the projection. Then:
+
+1. $\pi$ is a finite morphism, and it is birational: the fibre over the generic point of $U$ is a single point.
+2. $U$ is irreducible, and $V$ is irreducible; hence $V$, $B=V/\PGL_3$ and $\bar B=[B/S_{10}]$ are connected.
+:::
+
+::: {.proof}
+
+(1) *Finiteness.* For $p=(p_1,\dots,p_{10})\in U$ the fibre $\pi^{-1}(p)$ is the set of sextics $Z$ with $\operatorname{Sing}Z$ equal to $\{p_1,\dots,p_{10}\}$ as a set and each $p_i$ an ordinary double point. A sextic has $h^0(\OO_{\PP^2}(6))=28$; the condition that $Z$ pass through $p_i$ with multiplicity at least $2$ is three linear conditions (the value and the two first derivatives at $p_i$), so the sextics with all ten $p_i$ as singular points form a projective linear subspace of dimension at least $28-1-30=-3$, that is the empty set or a single point, and in either case $\pi^{-1}(p)$ is finite. A quasi-finite morphism of varieties of finite type over $\CC$ is finite, so $\pi$ is finite.
+
+*Birationality.* Over the generic point $\pi$ is injective by the same count, and the set of $p\in U$ over which there is a sextic at all is dense, so $\pi$ is birational onto its image, which is $U$ by definition.
+
+(2) *Irreducibility of $U$.* The sextics with exactly ten ordinary double points are the image of the irreducible variety of degree-$6$ morphisms $\PP^1\to\PP^2$ whose image has exactly ten nodes: a rational sextic has arithmetic genus $10$, and ten ordinary double points account for the whole of it, so such a morphism is birational onto a ten-nodal sextic; conversely the normalization of a ten-nodal sextic is $\PP^1$ (@lem:d2-plane-sextic-freeness(2)). That image is irreducible, being the image of an irreducible variety, and it is $U$ up to the ordering of the labels, which is a union of finitely many copies of it; so $U$ is irreducible.
+
+*Irreducibility of $V$.* The morphism $\pi$ is finite and birational with $U$ irreducible. Were $V=V_1\cup V_2$ a union of two proper closed subsets, then $U=\pi(V_1)\cup\pi(V_2)$, so $U=\pi(V_1)$ by irreducibility; but $\pi$ is birational, so $\pi^{-1}$ of a dense open subset of $U$ is a dense open subset of $V$ contained in $V_1$, forcing $V_1=V$. So $V$ is irreducible, hence connected.
+
+*$B$ and $\bar B$.* $B=V/\PGL_3$ is a quotient of a connected space, hence connected, and $\bar B=[B/S_{10}]$ has $B$ as a smooth cover, so it is connected.
 :::
 
 ::: {.remark #qst:s10-free-on-B title="Freeness of $S_{10}$ on the labelled base, and why the index does not need it"}
@@ -523,7 +544,11 @@ is exact for every $s\in B$. The induced map of coarse spaces $V/\PGL_3\to V/(\S
 
 *The fibre product.* The two actions commute, so $[B/S_{10}]\cong[V/(\SL_3\times S_{10})]$, and it suffices to prove the statement for the quotient map $X\to[X/H]$ of a stack $X$ by a finite group $H$. An object of $X\times_{[X/H]}X$ over a test space $T$ is a pair $(x,x')$ of objects of $X(T)$ together with an isomorphism of their images in $[X/H](T)$; such an isomorphism is an $H$-arrow; an $H$-equivariant automorphism of the trivial $H$-torsor is right multiplication by an $h\in H$, so the arrow determines $h$, and $x'\cong hx$. So the fibre product is $H\times X$ and the displayed morphism is an equivalence; $X\to[X/H]$ is then a torsor under $H$, hence finite étale of degree $\abs{H}$.
 
-*The exact sequence.* A loop of $\bar B$ at $[s]$ is represented, in the loop model of @lem:orbifold-monodromy-of-a-quotient (which is the groupoid model of the quotient and applies verbatim to a stack $X$ in place of $\widetilde U$), by a pair $(\sigma,\tilde\gamma)$ with $\sigma\in S_{10}$ and $\tilde\gamma$ a path in $B$ from $s$ to $\sigma s$. The assignment $[(\sigma,\tilde\gamma)]\mapsto\sigma$ is a homomorphism to $S_{10}$, because loops compose by $(\sigma,\tilde\gamma)(\sigma',\tilde\delta)=(\sigma\sigma',\tilde\gamma*(\sigma\tilde\delta))$; it is onto, the constant path at $s$ representing $\sigma$; and its kernel is the set of pairs $(e,\tilde\gamma)$, that is $\pi_1(B,s)$. A kernel is normal, so the sequence is exact.
+*The exact sequence.* A loop of $\bar B$ at $[s]$ is represented, in the loop model of @lem:orbifold-monodromy-of-a-quotient (which is the groupoid model of the quotient and applies verbatim to a stack $X$ in place of $\widetilde U$), by a pair $(\sigma,\tilde\gamma)$ with $\sigma\in S_{10}$ and $\tilde\gamma$ a path in $B$ from $s$ to $\sigma s$. Such a path exists for every $\sigma$, and this is where the connectedness of $B$ is used: $B$ is connected (@lem:d2-incidence-connected(2)), so there is a path in $B$ joining $s$ to $\sigma s$, and its image in $\bar B$ is a loop at $[s]$ representing $\sigma$. The constant path represents the identity only, so it is not the constant path but connectivity that gives surjectivity.
+
+The assignment $[(\sigma,\tilde\gamma)]\mapsto\sigma$ is well defined and a homomorphism to $S_{10}$, because loops compose by $(\sigma,\tilde\gamma)(\sigma',\tilde\delta)=(\sigma\sigma',\tilde\gamma*(\sigma\tilde\delta))$ and homotopic loops have the same endpoint; it is onto by the preceding paragraph.
+
+*Injectivity at the left.* A loop of $\bar B$ lying in the kernel is a pair $(e,\tilde\gamma)$, that is a loop of $B$ at $s$, so the kernel is the image of $\pi_1(B,s)$. Conversely a loop of $B$ that becomes null-homotopic in $\bar B$ is null-homotopic in $B$: $B\to\bar B$ is a torsor under the finite group $S_{10}$, hence a covering in the orbifold sense, so a null-homotopy of its image lifts to $B$ starting at the given loop. Hence $\pi_1(B,s)\to\pi_1(\bar B,[s])$ is injective with image the kernel, and the sequence is exact.
 
 *The coarse spaces.* What is used above is the quotient stack, not its coarse space. A projectivity $g$ with $gZ=Z$ and $gp_i=p_{\sigma(i)}$ carries $(Z;p_1,\dots,p_{10})$ to $\sigma(Z;p_1,\dots,p_{10})$ in $V$, so it makes the image of $(Z;p_1,\dots,p_{10})$ in $B$ fixed by $\sigma$ in the stack sense; this is an orbifold point of $[B/S_{10}]$, and it does not affect the torsor statement, which is a statement about quotient stacks. No freeness of the $S_{10}$-action on $B$ is used above.
 :::

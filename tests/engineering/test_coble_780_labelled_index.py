@@ -50,12 +50,35 @@ def test_the_cover_index_is_a_lemma():
     assert "YZZ25, Lemma 6.7" in proof
 
 
-def test_the_labelled_identification_has_the_cover_proof():
+def test_the_labelled_identification_is_the_inclusion_plus_the_sign():
+    """The equality was claimed.  It is not proved: the theorem states the inclusion,
+    the sign dichotomy, and names the question that decides between them."""
     text = LATTICES.read_text(encoding="utf-8")
+    body = _block(text, "thm:gamma-co-is-stable")
+    # clause 1 is the proved inclusion; clause 2 is the dichotomy, not the equality
+    assert "\\Gamma_\\Co\\subseteq\\widetilde\\Orth^+(T_\\Co)" in body
+    assert "if and only if" in body
+    assert "-\\id" in body
+    assert "@qst:gamma-co-sign-is-realised" in body
     proof = _proof_after(text, "thm:gamma-co-is-stable")
-    assert "@lem:gamma-co-labelled-index" in proof
-    assert "@thm:gamma-co-sextic-group" in proof
-    assert "no period map" in proof or "Second proof" in proof
+    assert "@lem:coble-family-labelled-monodromy" in proof
+    assert "@rmk:gamma-co-orbifold-obstruction" in proof
+
+
+def test_the_refuted_orbifold_identification_cannot_come_back():
+    """Guard: the page once called the PGamma_T orbifold 'the same' as the Gamma_T one.
+
+    YZZ25 Section 6.1 states they are different, and -id acts on the fibre, so the
+    Q-local system does not descend.  This guard bites on an injected bad line, which
+    is checked here rather than asserted.
+    """
+    text = LATTICES.read_text(encoding="utf-8")
+    for bad in ("is the same orbifold as",
+                "which is the same orbifold"):
+        assert bad not in text, bad
+    # the guard bites: an injected line is caught
+    injected = text + "\nThis is the same orbifold as the other one.\n"
+    assert any(b in injected for b in ("is the same orbifold as",)), "guard does not bite"
 
 
 def test_the_sextic_theorem_uses_the_cover_index_not_the_labelled_theorem():
