@@ -269,7 +269,7 @@ By @thm:coble-isotropic-class-orbits, the nonzero isotropic classes form a singl
 
 Let $B = U\oplus U\oplus\latI_{0,7}$ and $T_\Co = B(2)$ as in @prop:tco-split-maximal, and let $e, f$ be the isotropic basis vectors of the first hyperbolic summand of $B$, so that in $T_\Co$ they are primitive isotropic vectors with $e\cdot f = 2$.
 Then no $g\in\widetilde\Orth^+(T_\Co)$ satisfies $g(\ZZ e) = \ZZ f$.
-So $\Orth^+(T_\Co)$ is transitive on the primitive isotropic vectors of $T_\Co$ (@thm:unpolarized-cusps) while the stable group $\widetilde\Orth^+(T_\Co)$ is not: $\ZZ e$ and $\ZZ f$ lie in different $\widetilde\Orth^+(T_\Co)$-orbits. Those two are the orbits of the classes $[e/2]$ and $[f/2]$, and the orbits of the stable group are indexed by the $527$ nonzero isotropic classes of $A_{T_\Co}$ (@thm:coble-zero-cusp-count(2)), the fibre over one class being a single orbit (@thm:coble-integral-lifting-fibre(1), (2)); hence $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ has exactly $527$ $0$-cusps, and $\fco$ has $527$ of them under @conj:gamma-co-stable.
+So $\Orth^+(T_\Co)$ is transitive on the primitive isotropic vectors of $T_\Co$ (@thm:unpolarized-cusps) while the stable group $\widetilde\Orth^+(T_\Co)$ is not: $\ZZ e$ and $\ZZ f$ lie in different $\widetilde\Orth^+(T_\Co)$-orbits. Those two are the orbits of the classes $[e/2]$ and $[f/2]$, and the orbits of the stable group are indexed by the $527$ nonzero isotropic classes of $A_{T_\Co}$ (@thm:coble-zero-cusp-count(2)), the fibre over one class being a single orbit (@thm:coble-integral-lifting-fibre(1), (2)); hence $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ has exactly $527$ $0$-cusps, and $\fco$ has $527$ of them under @conj:gamma-co-stable. The group $R = \bar\rho^{-1}(P)$ is the other extreme in this direction: it has four orbits (@thm:four-r-orbits), one over each of Sterk's cusps $2,3,4,5$, so $\bD(T_\Co)/R$ has four $0$-cusps (@thm:cusp-fibres-four) and its $1$-cusps and $0$-$1$ incidence are @thm:cusp-diagram-tco; none of those four counts is a count for $\Gamma_{\Co,2}$ or for $\Gamma_\Co$.
 :::
 
 ::: {.proof}
@@ -345,7 +345,7 @@ There is no orthogonal splitting $\ten = U\perp U_1\perp L_0$ with $U_1$ isometr
 
 ::: {.proof}
 
-Write $\ten = U\oplus B_0(2)$ with $B_0(2) = U(2)\oplus E_8(2)$ [@AEGS25, Def. 2.3, printed p. 586]. A vector of $\ten$ orthogonal to both basis vectors of the $U$ summand has zero components there, so $U^{\perp\ten} = B_0(2)$. Every value of $\beta_\ten$ on $B_0(2)$ is even, because that lattice is doubled, and a sublattice isometric to $U$ needs two vectors with pairing $1$; so $B_0(2)$ contains no copy of $U$, and a second hyperbolic plane orthogonal to the first does not exist.
+Write $\ten = U\oplus B_0(2)$ with $B_0(2) = U(2)\oplus E_8(2)$ [@AEGS25, Def. 2.3]. A vector of $\ten$ orthogonal to both basis vectors of the $U$ summand has zero components there, so $U^{\perp\ten} = B_0(2)$. Every value of $\beta_\ten$ on $B_0(2)$ is even, because that lattice is doubled, and a sublattice isometric to $U$ needs two vectors with pairing $1$; so $B_0(2)$ contains no copy of $U$, and a second hyperbolic plane orthogonal to the first does not exist.
 
 This is the same obstruction that @prop:tco-no-hyperbolic-plane records for $T_\Co$, and it is why the Eichler criterion, which needs two, is not available for either lattice.
 :::
