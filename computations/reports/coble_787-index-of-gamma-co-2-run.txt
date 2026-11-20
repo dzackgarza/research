@@ -1,0 +1,12 @@
+|O(q_T_Co)| = 46998591897600
+[O(q) : P]  = 67456 (= 2^7*17*31)
+|P|         = 696729600 = |O(q)|/[O(q):P]
+[O^+ : Gamma_{10A_1}] = |O(q)|/10! = 12951552 (12,951,552 expected)
+10!         = 3628800
+[O^+ : Otilde^+] = 46998591897600 = |O(q)|, so rho-bar : O^+ -> O(q) is onto
+[R_gEn : Otilde^+] = 2|P| = 1393459200
+[R_gEn : Gamma_{Co,2}] = 1393459200 / [Gamma_{Co,2} : Otilde^+]
+  lower bound (Gamma_{Co,2} = Gamma_{10A_1}): 384
+  upper bound (Gamma_{Co,2} = Otilde^+): 1393459200
+  2|P| = 2 * 696729600 = 1,393,459,200; 1,393,459,200/3,628,800 = 384
+ALL ASSERTIONS HOLD

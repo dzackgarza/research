@@ -16,6 +16,26 @@ anything, check whether it, or anything it touches, violates that model or its i
 violation found, in your task or outside it, is recorded as a defect where this repository records
 defects, never worked around or silently kept.
 
+# Read the research before working on it (always-on)
+
+This repository is a research programme, and every unit of work in it is a step of
+that programme. Before any mathematical work, and again before each new lemma, read:
+
+- [`writing/research-statement/ResearchStatement.md`](writing/research-statement/ResearchStatement.md): the programme and its pipeline;
+- the pages of `writing/` that state your objects, found through
+  [`writing/index-of-definitions.md`](writing/index-of-definitions.md),
+  [`writing/index-of-results.md`](writing/index-of-results.md) and
+  [`writing/open-questions.md`](writing/open-questions.md);
+- `writing/dissertation/` where it treats those objects.
+
+Work from what the volume already defines and proves, and follow the routes it states.
+Name the page labels you build on. A result that contradicts a conjecture, proposition
+or expectation stated in the volume is a departure: report it with the statement it
+contradicts, and do not present it as a new answer. A new definition of an object the
+volume already defines is a defect. (Owner, 2026-11-20: chats worked research#780 on
+routes of their own while `conj:gamma-co-stable` and `prop:gamma-co-images` already
+stated the expected answer.)
+
 # The evidence model: nothing from a leaf is trusted
 
 These invariants bind every repository of the programme. They are stated here in full, not only

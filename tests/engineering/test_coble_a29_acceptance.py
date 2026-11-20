@@ -419,6 +419,7 @@ le ge leq geq neq ne lt gt equiv sim simeq approx cong propto perp parallel asym
 subset subseteq supset supseteq subsetneq supsetneq nsubseteq nsupseteq in notin ni not
 cup cap setminus emptyset varnothing sqcup sqcap uplus
 to mapsto rightarrow leftarrow Rightarrow Leftarrow leftrightarrow Leftrightarrow
+rightsquigarrow leadsto dashrightarrow
 longleftrightarrow implies iff hookrightarrow longrightarrow longleftarrow
 infty partial nabla forall exists nexists aleph hbar ell wp Re Im
 mathbb mathbf mathcal mathfrak mathrm mathit mathsf mathtt operatorname mathop mathbin mathrel

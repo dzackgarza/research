@@ -1,6 +1,6 @@
 # The cusps of $D(T_\Co)/R$ over Sterk's cusps {#sec-cusps-over-sterk-cusps}
 
-This section proves statement B2 of the plan for $F_\Co$ [research#786, Part I §5; research#789]: the $0$- and the $1$-cusps of $D(T_\Co)/R$ are the $\gent$-orbits of pairs $(\ell,\alpha)$, an isotropic line or plane $\ell$ of $\ten$ together with a $(-2)$-vector $\alpha$ perpendicular to it, and they fibre over Sterk's cusps of $F_{\En,2}$ by forgetting $\alpha$. The fibre over Sterk's cusp $[e_k]$ is the set of $\Stab_{\gent}(e_k)$-orbits of $(-2)$-vectors perpendicular to $e_k$, where the stabilizer is that of the isotropic *line* $\ZZ e_k$. The smallest case of that computation, Sterk's cusp $2$, is carried out here: the $(-2)$-vectors perpendicular to its representative form a single $\Orth(K_2)$-orbit. Every statement below names its group, and none of the counts is a count for $F_\Co$ or $F_{\Co,2}$.
+This section proves statement B2 of the plan for $F_\Co$ [research#786, Part I §5; research#789]: the $0$- and the $1$-cusps of $D(T_\Co)/R$ are the $\gent$-orbits of pairs $(\ell,\alpha)$, an isotropic line or plane $\ell$ of $\ten$ together with a $(-2)$-vector $\alpha$ perpendicular to it, and they fibre over Sterk's cusps of $F_{\En,2}$ by forgetting $\alpha$. The fibre over Sterk's cusp $[e_k]$ is the set of $\Stab_{\gent}(e_k)$-orbits of $(-2)$-vectors perpendicular to $e_k$, where the stabilizer is that of the isotropic *line* $\ZZ e_k$. The smallest case of that computation, Sterk's cusp $2$, is carried out here: the $(-2)$-vectors perpendicular to its representative form a single $\Orth(K_2)$-orbit. Every statement below names its group, and none of the counts is a count for $F_\Co$ or $F_{\Co,2}$: the group of this page is $R = \bar\rho^{-1}(P)$, of index $67\,456$ in $\Orth(T_\Co)$, whereas $\fco$ is $\bD(T_\Co)/\Gamma_\Co$ with $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ a theorem on the labelled base (@thm:gamma-co-is-stable), a group for which the $0$-cusps number $527$ and the $1$-cusps $189\,720$ (@thm:coble-zero-cusp-count(2), @thm:coble-plane-orbit-counts(2)). The passage from the counts below to $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ is @qst:coble-monodromy-equality, whose forward inclusion is @thm:coble-monodromy-versus-enriques(4), conditional on (U) of @lem:coble-family-identification.
 
 ## Setting
 
@@ -117,7 +117,7 @@ Let $[\Pi]$ be one of the four $1$-cusps of $F_{\En,2}$ whose closure contains S
 :::
 
 ::: {.proof}
-Sterk computes the four one-dimensional boundary components (@def:coble-surface) whose closure contains the $0$-cusp $e$ [@Ste91, 4.3.5]: "These four classes are not distinguished by the isomorphism (@def:isomorphism-of-objects) type of $F^{\perp}/F$ ... In all cases we even (@def:form-axioms) find the same isomorphism type, namely $E_8(-2)$" [@Ste91, 4.3.5], and the four types are listed in [@Ste91, 4.3.16]. In the notation of this page $E_8(-2)$ is $E_8(2)$. Its Gram matrix is $-2C(E_8)$, with diagonal (@def:polarization-functors) entries $-4$ and off-diagonal entries $0$ or $2$, so for $x = \sum x_i\alpha_i$ one has $x^2 = -4\sum x_i^2+4\sum_{i<j,\ \alpha_i\cdot\alpha_j = 2}x_ix_j$, a multiple of $4$; in particular $-2$ does not occur. Since $\Pi$ is isotropic (@def:orthogonal-complement), the class of a vector $\alpha\perp\Pi$ in $\Pi^{\perp}/\Pi$ has square $\alpha^2$, so an $\alpha$ with $\alpha^2 = -2$ cannot exist. The fibre, which is the set of $\Stab_{\gent}(\Pi)$-orbits of such $\alpha$ (@thm:b2-one-cusps), is therefore empty. The case $\Pi = \langle e,e'\rangle$ of the type $\{1,2\}$ is checked directly in `computations/reports/coble_789-one-cusp-empty.py`: $\Pi^{\perp\ten} = \langle e,e'\rangle\oplus E_8(2)$.
+In the marked form this is @thm:coble-cusp-admissibility(3), whose four $1$-cusps carrying no marking are exactly these; the unmarked statement below is what the $1$-cusp map of @thm:b2-one-cusps needs. Sterk computes the four one-dimensional boundary components (@def:coble-surface) whose closure contains the $0$-cusp $e$ [@Ste91, 4.3.5]: "These four classes are not distinguished by the isomorphism (@def:isomorphism-of-objects) type of $F^{\perp}/F$ ... In all cases we even (@def:form-axioms) find the same isomorphism type, namely $E_8(-2)$" [@Ste91, 4.3.5], and the four types are listed in [@Ste91, 4.3.16]. In the notation of this page $E_8(-2)$ is $E_8(2)$. Its Gram matrix is $-2C(E_8)$, with diagonal (@def:polarization-functors) entries $-4$ and off-diagonal entries $0$ or $2$, so for $x = \sum x_i\alpha_i$ one has $x^2 = -4\sum x_i^2+4\sum_{i<j,\ \alpha_i\cdot\alpha_j = 2}x_ix_j$, a multiple of $4$; in particular $-2$ does not occur. Since $\Pi$ is isotropic (@def:orthogonal-complement), the class of a vector $\alpha\perp\Pi$ in $\Pi^{\perp}/\Pi$ has square $\alpha^2$, so an $\alpha$ with $\alpha^2 = -2$ cannot exist. The fibre, which is the set of $\Stab_{\gent}(\Pi)$-orbits of such $\alpha$ (@thm:b2-one-cusps), is therefore empty. The case $\Pi = \langle e,e'\rangle$ of the type $\{1,2\}$ is checked directly in `computations/reports/coble_789-one-cusp-empty.py`: $\Pi^{\perp\ten} = \langle e,e'\rangle\oplus E_8(2)$.
 :::
 
 ::: {.lemma #lem:minus-id-in-gent title="$-\id_{T_\En}$ lies in $\gent$ and identifies a lift with its negative"}
@@ -148,7 +148,7 @@ Let $[\Pi]$ be one of Sterk's five further $1$-cusps, of types $\{2,4,5\}$, $\{4
 2. every one of those $16$ classes has $\mathrm{div}_{L_0}$ equal to $1$, certified by an explicit $z\in\Pi^{\perp}$ with $(\alpha,z) = 1$;
 3. hence, by @lem:divisibility-decides-one-cusp, all lifts of any one class form a single $\Stab_{\gent}(\Pi)$-orbit, so the fibre of @thm:b2-one-cusps over $[\Pi]$ is the set of orbits on the eight antipodal pairs (@lem:minus-id-in-gent) and has at most $8$ points;
 4. the total number of $1$-cusps of $D(T_\Co)/R$ over the five types is $7$, not the number of pairs: the $R$-orbits on the primitive isotropic planes of $T_\Co$ number $7$ (@cor:coble-heegner-integral-plane-descent, which applies to $R$ because $\ker\bar\rho\subseteq R$; @thm:cusp-lifting(4)). So the five fibres are nonempty sets of at most $8$ points with total $7$, that is either $(3,1,1,1,1)$ or $(2,2,1,1,1)$ in some order;
-5. which of the two distributions holds is not determined here: it is the number of orbits of $\Stab_{\gent}(\Pi)$ on the eight antipodal pairs, and the computation below decides only the classes and the lifts of a single class.
+5. which of the two holds is decided by @thm:one-cusp-multiplicities(5): the double fibre is over $\{3,5\}$, the multiplicities being $1,1,2,1,2$ on $(\{2,4,5\},\{4,5\},\{3,5\},\{3,4\},\{5,5\})$, read off the seven plane orbits of `computations/reports/coble_gco_plane-orbits-run.txt` through the label dictionary of @thm:orbit-per-cusp.
 :::
 
 ::: {.proof}
@@ -241,7 +241,7 @@ By @thm:b2-zero-cusps(2) the fibre is the set of $\Stab_{\gent}(e')$-orbits of $
 ## The other fibres, and the four $0$-cusps
 
 ::: {.proposition #prop:fibres-three-four-five title="The fibres over Sterk's cusps $3$, $4$ and $5$ are nonempty"}
-At Sterk's cusps $3$, $4$ and $5$ the cusp lattice is $K_k\cong U\oplus E_8(2)$ as well [@Ste91, 4.3.4], and each carries a $(-2)$-vector perpendicular to its representative, as follows; the vectors are the white nodes of [@AEGS25, Figs.~7--8], and the coordinates are those of the record `computations/reports/coble_enriques-white-root-facets-run.txt` in the basis $(e,f,e',f',\alpha_1,\dots,\alpha_8)$ of $\ten$.
+At Sterk's cusps $3$, $4$ and $5$ the cusp lattice $K_k = \eta_k^{\perp\ten}/\ZZ\eta_k$ of @prop:sterk-cusp-quotients is $K_k\cong U\oplus E_8(2)$ as well [@Ste91, 4.3.4], and each carries a $(-2)$-vector perpendicular to its representative, as follows; the vectors are the white nodes of [@AEGS25, Figs.~7--8], and the coordinates are those of the record `computations/reports/coble_enriques-white-root-facets-run.txt` in the basis $(e,f,e',f',\alpha_1,\dots,\alpha_8)$ of $\ten$.
 $$
 \begin{array}{c|c|c}
 \text{cusp} & \text{representative} & \text{a }(-2)\text{-vector perpendicular to it}\\ \hline
@@ -313,7 +313,8 @@ $$
 (3,3,6) & \text{if } m_{\{3,5\}} = 2,
 \end{cases}
 $$
-with $13$ incidence edges in each case. Which case occurs is not decided by the counts of $2$ and $3$.
+with $13$ incidence edges in each case;
+5. the third case occurs: $m_{\{3,5\}} = 2$, $m_{\{3,4\}} = m_{\{4,5\}} = 1$. So the multiplicities are $(1,1,2,1,2)$ for the types $(\{2,4,5\},\{4,5\},\{3,5\},\{3,4\},\{5,5\})$, and the degrees of the four $0$-cusps are $1,3,3,6$ for $0_2,0_3,0_4,0_5$, with $13$ incidence edges.
 :::
 
 ::: {.proof}
@@ -324,13 +325,15 @@ $2$. The left sum counts the $1$-cusps of $D(T_\Co)/R$, that is the $R$-orbits o
 $3$. Put $e_T \definedas m_T - 1\geq0$ on the five types with nonempty fibre; by $2$, $\sum e_T = 7-5 = 2$ and $\sum e_T\abs{T\cap\{2,3,4,5\}} = 13-10 = 3$. The five weights are $3,2,2,2,1$ for $T = \{2,4,5\},\{4,5\},\{3,5\},\{3,4\},\{5,5\}$. Two units of excess with total weight $3$ must sit one on a type of weight $2$ and one on the type of weight $1$: a single type carrying both units would contribute twice its weight, which is even and not $3$, and two units on two types of weight $2$ contribute $4$. So $e_{\{5,5\}} = 1$, $e_{\{2,4,5\}} = 0$, and exactly one of the three remaining $e$'s equals $1$. Since each $m_T$ is the cardinality of the fibre over $T$ (@thm:b2-one-cusps), each nonempty fibre has one or two points.
 
 $4$ is the incidence rule of @thm:cusp-diagram-tco(3) read with the multiplicities of $3$: the degree of $0_k$ is $\sum_{T\ni k}m_T$, and the three possibilities for the middle weights give the three triples displayed; the total is $\sum_T m_T\abs{T\cap\{2,3,4,5\}} = 13$ in each case by $2$.
+
+$5$. The record `computations/reports/coble_gco_plane-orbits-run.txt` prints, for each of the seven $R$-orbits of primitive isotropic planes of $T_\Co$, the discriminant-orbit sizes of the nonzero classes of the primitive lines in that plane: $(2,135,270)$, $(135)$, $(120,135)$, $(135)$, $(120,135)$, $(120,270)$, $(135,270)$. By @thm:orbit-per-cusp the $P$-orbit of $[\eta_k/2]$ has size $2$, $120$, $270$, $135$ for $k = 2,3,4,5$, so the size list is the set of Sterk labels of the plane's lines, that is its type [@AEGS25, Not. 3.1]. The seven planes are therefore of types $\{2,4,5\}$, $\{5\}$, $\{3,5\}$, $\{5\}$, $\{3,5\}$, $\{3,4\}$, $\{4,5\}$, where $\{5\}$ is Sterk's $\{5,5\}$, whose closure meets $0_5$ twice. So $m$ is $1,1,2,1,2$ on $(\{2,4,5\},\{4,5\},\{3,5\},\{3,4\},\{5,5\})$, which is the third alternative of $3$ and $4$; the computation is `computations/reports/coble_789-one-cusp-multiplicities.py`, which reads that record, applies the dictionary, and checks the totals $7$ and $13$.
 :::
 
 ::: {.theorem #thm:cusp-diagram-tco title="The cusp diagram of $D(T_\Co)/R$"}
-1. *$0$-cusps.* There are four, written $0_2$, $0_3$, $0_4$, $0_5$, lying one over each of Sterk's $0$-cusps $2$, $3$, $4$, $5$, and none over cusp $1$ (@thm:cusp-fibres-four).
-2. *$1$-cusps.* A $1$-cusp of $D(T_\Co)/R$ lies over exactly one of Sterk's nine $1$-cusps, whose type is a subset $T\subset\{1,2,3,4,5\}$ [@AEGS25, Not. 3.1]. There are none over the four types $\{1,2\}$, $\{1,3\}$, $\{1,4\}$, $\{1,5\}$ (@lem:one-cusp-over-cusp-one-empty), and $7$ in all over the five types $\{2,4,5\}$, $\{4,5\}$, $\{3,5\}$, $\{3,4\}$, $\{5,5\}$: the fibre over $\{2,4,5\}$ is a single point, that over $\{5,5\}$ has two points, and exactly one of the fibres over $\{4,5\}$, $\{3,5\}$, $\{3,4\}$ has two points while the other two are single points (@thm:one-cusp-multiplicities).
+1. *$0$-cusps.* There are four, written $0_2$, $0_3$, $0_4$, $0_5$, lying one over each of Sterk's $0$-cusps $2$, $3$, $4$, $5$, and none over cusp $1$ (@thm:cusp-fibres-four); in the marked form the same four are the marked $0$-cusps of @thm:coble-cusp-admissibility(2).
+2. *$1$-cusps.* A $1$-cusp of $D(T_\Co)/R$ lies over exactly one of Sterk's nine $1$-cusps, whose type is a subset $T\subset\{1,2,3,4,5\}$ in the notation of [@AEGS25, Not. 3.1] and [@Ste91, §4.3.15], as the volume uses it at @thm:coble-cusp-admissibility(3). There are none over the four types $\{1,2\}$, $\{1,3\}$, $\{1,4\}$, $\{1,5\}$ (@lem:one-cusp-over-cusp-one-empty), and $7$ in all over the five types $\{2,4,5\}$, $\{4,5\}$, $\{3,5\}$, $\{3,4\}$, $\{5,5\}$: the fibre over $\{2,4,5\}$ is a single point, that over $\{5,5\}$ has two points, and exactly one of the fibres over $\{4,5\}$, $\{3,5\}$, $\{3,4\}$ has two points while the other two are single points (@thm:one-cusp-multiplicities).
 3. *Incidence.* For $k\in\{2,3,4,5\}$ the $0$-cusp $0_k$ lies in the closure of a $1$-cusp over $T$ exactly when $k\in T$. Consequently $0_2$ meets only the $1$-cusps over $\{2,4,5\}$, $0_3$ those over $\{3,5\}$ and $\{3,4\}$, $0_4$ those over $\{2,4,5\}$, $\{4,5\}$ and $\{3,4\}$, and $0_5$ those over $\{2,4,5\}$, $\{4,5\}$, $\{3,5\}$ and $\{5,5\}$.
-4. The number of incidence edges is $\sum_T m_T\,\#(T\cap\{2,3,4,5\}) = 13$, and the degrees of the four $0$-cusps are the three alternatives listed in @thm:one-cusp-multiplicities(4).
+4. The number of incidence edges is $\sum_T m_T\,\#(T\cap\{2,3,4,5\}) = 13$, and the degrees of $0_2$, $0_3$, $0_4$, $0_5$ are $1$, $3$, $3$, $6$ (@thm:one-cusp-multiplicities(5)).
 :::
 
 ::: {.proof}
@@ -340,7 +343,7 @@ $1$ is @thm:cusp-fibres-four, and $2$ is @thm:b2-one-cusps with @lem:one-cusp-ov
 
 *Sufficiency in $3$.* Let $\Pi'$ be a primitive isotropic plane of $T_\Co$ representing a $1$-cusp of $D(T_\Co)/R$ over $T$, and let $k\in T$ with $k\neq1$. By [@AEGS25, Not. 3.1] the label $k$ is the label of some primitive isotropic line $\ell\subset\Pi$ of $\ten$; conjugating by an element of $\gent$ gives $\ell\subset\Pi'$, and $\ell\subset T_\Co$ because $\Pi'\subset T_\Co$. So the $R$-orbit of $\ell$ is a $0$-cusp of $D(T_\Co)/R$ over $k$, hence is $0_k$ by @thm:cusp-fibres-four, and it is incident to $[\Pi']_R$ because $\ell\subset\Pi'$.
 
-$4$ is immediate from the incidence rule and the fact, recorded in @lem:five-one-cusps-nonempty(5), that the per-type numbers are not computed.
+$4$ is the incidence rule read with the multiplicities of @thm:one-cusp-multiplicities(5): the degree of $0_k$ is $\sum_{T\ni k}m_T$, which gives $1$, $3$, $3$, $6$, and the total is $13$ by @thm:one-cusp-multiplicities(2).
 :::
 
 ::: {.remark #rmk:certified-versus-printed-chamber title="The certified cusp-$2$ chamber and Sterk's printed roots"}

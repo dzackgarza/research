@@ -50,19 +50,24 @@ def test_the_cover_index_is_a_lemma():
     assert "YZZ25, Lemma 6.7" in proof
 
 
-def test_the_labelled_identification_is_the_inclusion_plus_the_sign():
-    """The equality was claimed.  It is not proved: the theorem states the inclusion,
-    the necessary condition, and names the question that decides between them."""
+def test_the_labeled_identification_is_the_inclusion_and_the_open_equality():
+    """The equality was claimed twice and withdrawn twice.  The theorem now states the
+    inclusion, the exact statement a proof must supply, and the three failed routes."""
     text = LATTICES.read_text(encoding="utf-8")
     body = _block(text, "thm:gamma-co-is-stable")
-    # clause 1 is the proved inclusion; clause 2 is only the implication
-    assert "\\Gamma_\\Co\\subseteq\\widetilde\\Orth^+(T_\\Co)" in body
-    assert "necessary condition" in body
-    assert "-\\id" in body
-    assert "@qst:gamma-co-sign-is-realised" in body
+    assert "is a subgroup of $\\widetilde\\Orth^+(T_\\Co)$" in body
+    assert "explicit" in body and "surjective" in body.replace("onto", "surjective")
     proof = _proof_after(text, "thm:gamma-co-is-stable")
-    assert "@lem:coble-family-labelled-monodromy" in proof
-    assert "@rmk:gamma-co-orbifold-obstruction" in proof
+    assert "@rmk:d2-routes-for-the-equality" in proof
+
+
+def test_the_withdrawn_enriques_route_cannot_return():
+    """Guard: the Enriques-stabilizer lemma was withdrawn; it must not reappear."""
+    text = LATTICES.read_text(encoding="utf-8")
+    assert "lem:d2-monodromy-is-enriques-stabilizer" not in text
+    routes = _block(text, "rmk:d2-routes-for-the-equality")
+    assert "withdrawn" in routes
+    assert "pi_1(H,s)" in routes or "\\pi_1(H,s)" in routes
 
 
 def test_the_refuted_orbifold_identification_cannot_come_back():
@@ -88,20 +93,6 @@ def test_the_sextic_theorem_uses_the_cover_index_not_the_labelled_theorem():
     # the index clause may not rest on the theorem it is used to prove
     clause = body[body.index("on the family of @def:coble-family-unpolarized"):]
     assert "@thm:gamma-co-is-stable" not in clause
-
-
-def test_the_sign_is_necessary_and_not_sufficient():
-    """Guard: an earlier draft of thm:gamma-co-is-stable said the equality holds
-    "if and only if" -id is in Gamma_Co.  That converse is false (an index-two
-    subgroup of Otilde^+ containing -id is a counterexample), so the page must
-    state only the implication, and the guard bites on the injected equivalence."""
-    text = LATTICES.read_text(encoding="utf-8")
-    body = _block(text, "thm:gamma-co-is-stable")
-    assert "necessary condition" in body
-    for bad in ("if and only if", "exactly when"):
-        assert bad not in body, bad
-    injected = body.replace("This is a necessary condition", "This holds if and only if")
-    assert "if and only if" in injected, "guard does not bite"
 
 
 def _run_all() -> int:

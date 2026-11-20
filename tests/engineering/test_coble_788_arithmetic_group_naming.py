@@ -175,6 +175,26 @@ def test_no_page_asserts_non_membership_that_is_the_open_question():
     assert "@qst:coble-monodromy-equality and is not asserted either way" in text
 
 
+REGISTER = WRITING / "open-questions.md"
+
+
+def test_the_register_row_names_the_arithmetic_group_for_the_cusp_five_orbits():
+    """The volume's own summary row must use the route its research statement uses.
+
+    ResearchStatement names the lattice group R_gent for the cusp counts and sends the
+    passage to Gamma_Co and Gamma_{Co,2} to qst:coble-monodromy-equality.  The register row
+    for the KSBA comparison has to do the same: a positive relation proved in R_gent does
+    not descend to Gamma_{Co,2}, and the row once said that it did.
+    """
+    row = [l for l in REGISTER.read_text(encoding="utf-8").splitlines()
+           if "no-moduli-loss" in l or "no_moduli_loss" in l][0]
+    assert "the $\\Gamma_{\\Co,2}$-orbits at cusp $5$ are decided" not in row
+    assert "the $R_{\\gent}$-orbits at cusp $5$ are decided" in row
+    assert "are one $\\Gamma_{\\Co,2}$-orbit by an explicit integral isometry" not in row
+    assert "are one $R_{\\gent}$-orbit by an explicit integral isometry" in row
+    assert "@qst:coble-monodromy-equality" in row
+
+
 def _run_all() -> int:
     tests = [(n, f) for n, f in sorted(globals().items())
              if n.startswith("test_") and callable(f)]
