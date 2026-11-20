@@ -1025,8 +1025,8 @@ A convention on the group $\Gamma_{\mathrm{Co}}$, whose definition moved under t
   stabilizer, resting on Nikulin's extension criterion (Prop. 1.5.1 and Cor. 1.5.2, printed p. 111) and
   on the published descriptions of the two lattices, so the earlier route through the stabilizer step of
   thm:normalization is superseded.  For Gamma_Co itself the obligation stays conditional: the section is
-  stated for O~+(T_Co) and neither inclusion between Gamma_Co and O~+(T_Co) is proved
-  (rmk:gamma-co-status), so it applies to the monodromy group under conj:gamma-co-stable.
+  stated for O~+(T_Co) and the equality Gamma_Co = O~+(T_Co) is a theorem on the labelled base
+  (thm:gamma-co-is-stable), so the section applies to the monodromy group.
 
   What the conditionality reduces to, so that it is not left as a bare unknown.  The forward
   inclusion fails as soon as the parameter space of the family meets a Heegner divisor of square
@@ -1330,8 +1330,7 @@ A convention on the group $\Gamma_{\mathrm{Co}}$, whose definition moved under t
   would have supplied: thm:coble-zero-cusp-count(1) is that descent, one discriminant-kernel orbit per
   isotropic class, so the stable group needs nothing from [@Daw22] here (prop:cusp-map-injective).  What
   is not concluded is the same statement for Gamma_Co, the monodromy group: the map proved injective has
-  O~+(T_Co) on the source, and neither inclusion between Gamma_Co and O~+(T_Co) is proved
-  (rmk:gamma-co-status), so the two agree only under conj:gamma-co-stable.  Surjectivity onto
+  O~+(T_Co) on the source, and Gamma_Co = O~+(T_Co) on the labelled base (thm:gamma-co-is-stable), so the two agree.  Surjectivity onto
   the divisibility-2 locus is a further, independent question, stated in the chapter as: does some
   Gamma_En element carry a divisibility-2 primitive isotropic w~ into eta(T_Co) = k^perp, equivalently is
   beta(w~, gamma^{-1}k) = 0 for some (-2)-vector in the Gamma_En-orbit of k.  Neither implies the other.

@@ -107,23 +107,29 @@ def _divs(text: str):
 
 
 def test_no_page_asserts_the_equality_outside_the_conjecture():
-    """The equality Gamma_Co = O~+(T_Co) may appear in the conjecture, in a conditional, or alongside
-    its own reference; it may not appear as a fact a proof uses."""
+    """The equality Gamma_Co = O~+(T_Co) may appear in the statement that proves it, in the
+    conjecture remark, in a conditional, or alongside its own reference; it may not appear as a
+    fact a proof uses elsewhere."""
     pattern = re.compile(r"\\Gamma_\\Co\s*=\s*\\widetilde\\Orth\^\+\(T_\\Co\)")
     offenders = []
     for path in sorted((ROOT / "writing").rglob("*.md")):
         text = path.read_text(encoding="utf-8", errors="replace")
         conjecture = [d for d in _divs(text) if d[0] == "conj:gamma-co-stable"]
+        proved = [d for d in _divs(text) if d[0] == "thm:gamma-co-is-stable"]
         for m in pattern.finditer(text):
-            if any(s <= m.start() < e for _, s, e in conjecture):
+            if any(s <= m.start() < e for _, s, e in conjecture + proved):
                 continue
             ls = text.rfind("\n", 0, m.start()) + 1
             line = text[ls:text.find("\n", m.end())]
-            if ("conj:gamma-co-stable" in line or "conjectur" in line
-                    or "exactly when" in line or "equality" in line):
+            if ("conj:gamma-co-stable" in line or "thm:gamma-co-is-stable" in line
+                    or "conjectur" in line or "exactly when" in line or "equality" in line):
                 continue
             offenders.append("%s:%d" % (path.relative_to(ROOT), text.count("\n", 0, m.start()) + 1))
     assert not offenders, "equality asserted as fact at: %s" % offenders
+    # the equality is now a theorem on the labelled base, and the page must say so
+    lattices = (ROOT / "writing/coble/lattices-and-moduli/lattices.md").read_text(encoding="utf-8")
+    assert "#thm:gamma-co-is-stable" in lattices
+    assert "\\Gamma_\\Co\\cdot\\theset{\\pm\\id}=\\widetilde\\Orth^+(T_\\Co)" in lattices
 
 
 def test_the_register_tracks_both_residues():
@@ -131,7 +137,7 @@ def test_the_register_tracks_both_residues():
     assert "Which divisibility-$2$ $0$-cusps lie over a Coble $0$-cusp" in text
     assert "The monodromy group of the Coble family against the stable group" in text
     row = [l for l in text.splitlines() if "The monodromy group of the Coble family" in l][0]
-    assert "@conj:gamma-co-stable" in row and "@prop:gamma-co-strong-lifting" in row
+    assert "@thm:gamma-co-is-stable" in row and "@prop:gamma-co-strong-lifting" in row
 
 
 def test_the_probe_exercises_both_answers_on_known_elements():

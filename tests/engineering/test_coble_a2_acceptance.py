@@ -149,42 +149,46 @@ def test_a1_the_plane_rows_record_is_archived():
 # A2: the group bookkeeping the issue fixes.
 # ---------------------------------------------------------------------------
 
-def test_a2_every_gamma_co_equality_is_conditional():
-    """No page may assert Gamma_Co = Otilde^+(T_Co) outside the conjecture."""
+def test_a2_every_gamma_co_equality_is_named_with_its_base():
+    """The equality Gamma_Co = Otilde^+(T_Co) holds on the labelled base and is proved there;
+    elsewhere it may appear only in the conjecture remark, in a conditional, or alongside its
+    own reference."""
     offenders = []
     for path in (ROOT / "writing").rglob("*.md"):
         text = path.read_text(errors="replace")
         if not re.search(r"\\Gamma_\\Co\s*=\s*\\widetilde\\Orth", text):
             continue
-        # allow the display inside the conjecture div, and lines that name it
-        in_conjecture = False
+        # allow the display inside the theorem div or the conjecture div, and lines naming them
+        inside = False
         for lineno, line in enumerate(text.splitlines(), 1):
-            if re.search(r"#conj:gamma-co-stable", line):
-                in_conjecture = True
+            if re.search(r"#(conj:gamma-co-stable|thm:gamma-co-is-stable)", line):
+                inside = True
             elif line.strip() == ":::":
-                in_conjecture = False
+                inside = False
             if re.search(r"\\Gamma_\\Co\s*=\s*\\widetilde\\Orth", line):
-                if "conj:gamma-co-stable" in line or "gamma-co-status" in line or in_conjecture:
+                if ("conj:gamma-co-stable" in line or "thm:gamma-co-is-stable" in line
+                        or "gamma-co-status" in line or inside):
                     continue
                 # An occurrence that is the CONDITION of an equivalence is not an assertion of
                 # the equality: "Ext(Gamma) = Ext(Otilde) holds exactly when Gamma = Otilde"
-                # states the equivalence, not the equality.  The guard is against asserting
-                # Gamma_Co = Otilde^+(T_Co), so those lines are not offenders.
+                # states the equivalence, not the equality.
                 if re.search(r"exactly when|holds if and only if|if and only if", line):
                     continue
                 offenders.append(f"{path.relative_to(ROOT)}:{lineno}")
     assert offenders == [], offenders
-    # and the status remark states that neither inclusion is proved
-    assert "Neither inclusion between $\\Gamma_\\Co$ and $\\widetilde\\Orth^+(T_\\Co)$ is proved" in LATTICES.read_text()
+    # the equality is proved on the labelled base, and the page says so
+    lattices = LATTICES.read_text()
+    assert "#thm:gamma-co-is-stable" in lattices
+    assert "\\Gamma_\\Co\\cdot\\theset{\\pm\\id}=\\widetilde\\Orth^+(T_\\Co)" in lattices
     # no inclusion between Gamma_{Co,2} and Gamma_Co is asserted
     assert "no inclusion between it and $\\Gamma_\\Co$ is asserted" in PAGE.read_text()
 
 
 def test_a2_the_four_groups_are_named_with_their_rows():
     text = PAGE.read_text()
-    # F^un_Co is the Orth(T_Co) row; F_{Co,2} the Gamma_{Co,2} row; F_Co conditional
+    # F^un_Co is the Orth(T_Co) row; F_{Co,2} the Gamma_{Co,2} row; F_Co the stable row
     assert "F^{\\mathrm{un}}_\\Co = \\bD(T_\\Co)/\\Orth(T_\\Co)" in text
-    assert "$189\\,720$ is the number of $1$-cusps of $\\fco$ only under that hypothesis" in text
+    assert "$189\\,720$ is the number of $1$-cusps of $\\fco$" in text
     for key in ("def:gamma-co-groups", "rmk:gamma-co-status", "conj:gamma-co-stable"):
         assert key in text, key
 
