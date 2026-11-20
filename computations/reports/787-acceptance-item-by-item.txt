@@ -4,9 +4,10 @@ Commit series: ed3c6e3e11 (U1, the stack monodromy), dd8aca0318 (the loop model 
 cited without the discrete-group sequence), e9d2187929 (the containment in
 Orth(T_Co) for the right reason), 192cbfec80 (U3 and the honest base B),
 1e87c007ec (item 5: the citation checker and the two pages), cfaeb51a38 (#780: the
-label cover of stacks, the index 10! and the reverse inclusion), and this commit
-(U2's last open point: S_10 is not free on B).  Paths are relative to the
-repository root; line numbers are those of this commit.
+label cover of stacks, the index 10! and the reverse inclusion), 3def5c74d6 (U2:
+S_10 is not free on the labelled base), and this commit (U4: the degree-2 family as
+the unpolarized family with a flat section, and Delta_2 as its period image).
+Paths are relative to the repository root; line numbers are those of this commit.
 
 REVIEW ITEMS (the report of 2026-11-20 06:48:27, pinned to main@d277e333fc)
 
@@ -14,46 +15,43 @@ REVIEW ITEMS (the report of 2026-11-20 06:48:27, pinned to main@d277e333fc)
       the space B = V/PGL_3, the family and the local system descend to it, and
       Gamma_Co = rho(pi_1(B,s)) = rho(pi_1(V,s)) (moduli-construction.md:427,
       lem:d2-plane-sextic-freeness(4); the group paragraph at :516).
-  U2  MET.  The principal S_10-cover is a torsor of stacks, not of coarse spaces:
-      B -> Bbar = [B/S_10] is a principal S_10-bundle in the category of stacks,
-      S_10 x B -> B x_Bbar B an equivalence, of degree 10!, and
-      1 -> pi_1(B,s) -> pi_1(Bbar,p(s)) -> S_10 -> 1 is exact
-      (moduli-construction.md:625, lem:d2-labelling-cover, proved there by the
-      fibre-product computation and the loop model; no freeness of S_10 on B is
-      used).  The index is 10!: Gamma_Co(B) = Gamma_Co(Bbar) cap ker(rho-bar) and
-      [Gamma_Co(Bbar) : Gamma_Co(B)] = |Theta| = 10! (lattices.md:211,
-      lem:gamma-co-labelled-index, with the faithfulness of the label action on A_M
-      proved from the Z/2-basis [h/2], [e_i/2]).  The reverse inclusion of
-      thm:gamma-co-is-stable (lattices.md:291) is now
-      Gamma_Co = Gamma_Co(Bbar) cap ker(rho-bar) = Otilde^+(T_Co), obtained from
-      Gamma_Co(Bbar) = Gamma_{10A_1} (thm:gamma-co-sextic-group(0)-(2)) and not from
-      a period map.
-      The freeness question the earlier rounds left open is answered negatively:
-      S_10 does not act freely on B, by an explicit irreducible ten-nodal sextic
-      invariant under a projectivity of order 3 permuting its nodes
-      (moduli-construction.md:469, lem:d2-s10-not-free;
-      computations/reports/coble_787-s10-symmetric-sextic.py and its run record).
-      That is why the coarse map is not a covering and the stack reading is used.
-  U3  MET.  A non-identity projectivity of P^2 has its fixed points in the union of
-      a line and a point; a line carries at most three nodes of the irreducible
-      sextic (else Z.L >= 8 > 6 puts L in Z by Bezout); so at most four of the ten
-      labelled nodes are fixed, PGL_3 acts freely, and the SL_3-stabilizer is mu_3
-      (moduli-construction.md:427, lem:d2-plane-sextic-freeness(1)-(2)).
-  U4  NOT MET.  No family over Delta_2 and no base change:
-      def:coble-family-degree-two, moduli-construction.md:674 and its base at :685.
+  U2  MET.  The principal S_10-cover is a torsor of stacks, not of coarse spaces
+      (moduli-construction.md:625, lem:d2-labelling-cover), with the index 10!
+      (lattices.md:211, lem:gamma-co-labelled-index) and the reverse inclusion
+      Gamma_Co = Otilde^+(T_Co) from Gamma_Co(Bbar) = Gamma_{10A_1}
+      (lattices.md:291).  S_10 is not free on B, by an explicit invariant sextic
+      (moduli-construction.md:469, lem:d2-s10-not-free), so the stack reading is
+      necessary.
+  U3  MET.  The fixed locus of a non-identity projectivity lies in a line and a
+      point, a line carries at most three nodes, so PGL_3 acts freely on V with
+      SL_3-stabilizer mu_3 (moduli-construction.md:427,
+      lem:d2-plane-sextic-freeness(1)-(2)).
+  U4  NOT MET as a construction over Delta_2, and the orbifold reading is
+      refuted.  What is now proved (moduli-construction.md:710,
+      lem:d2b-forgets-to-d2a): every base Y of a degree-2 family carries the
+      underlying unpolarized family with the same T, so its monodromy group is
+      subordinated to Gamma_Co(Bbar) through the classifying map Y -> Bbar (1)-(2);
+      and Delta_2 read as the orbifold D(T_Co)/R_gEn carries no family of Coble
+      surfaces with the tautological local system, because R_gEn contains
+      s_zeta not in O^+(T_Co) (thm:coble-monodromy-versus-enriques(2)) while every
+      Coble family's monodromy lies in O^+(T_Co) (lem:monodromy-is-spinor-positive)
+      (3).  The marked period space is D(T_Co)/Gamma_{Co,2} and Delta_2 is its
+      image under the quotient by R_gEn (4).  What is still missing is a family over
+      the marked space with its local system: no such family is constructed here,
+      and the localization of the moduli of pairs at the period map remains
+      Picard-general (U7).
   U5  NOT MET.  Only the smooth nondegenerate h_Co = F_1 + F_2 is admitted
       (moduli-construction.md:676-680); the other nef degree-2 form h = 2F_1 + R
-      recorded at :731 is not in the moduli problem.
-  U6  NOT MET.  The Enriques-quotient reading of the vector at :656, :663, :720,
+      recorded at :760 is not in the moduli problem.
+  U6  NOT MET.  The Enriques-quotient reading of the vector at :656, :663, :749,
       and the statement/proof mismatch of lem:d2-degree-two-polarization(4)
       (:663 statement, :671 proof for an involution).
   U7  NOT MET.  moduli-construction.md:704 invokes prop:coble-polarized-moduli(2)-
-      (3), whose statements at polarizing-divisors-for-coble-moduli.md:261-262 are
-      Picard-general.
+      (3), whose statements are Picard-general (polarizing-divisors-for-coble-
+      moduli.md:261-262).
   U8  NOT MET.  "up to normalization" at moduli-construction.md:697; the properness
       step of thm:normalization (lattices.md:687, applied at :714) uses
-      lem:locally_closed_embedding_BB (lattices.md:106-114) outside its stated
-      groups.
+      lem:locally_closed_embedding_BB (lattices.md:106) outside its stated groups.
 
 ACCEPTANCE ITEMS
 
@@ -68,14 +66,32 @@ VERDICT: MET.
   monodromy group contains Gamma_Co with index 10! (:625, lattices.md:211).
 
 ITEM 2. D2b: the degree-2 family, its base, its fibres, its lattice local system.
-VERDICT: NOT MET, unchanged (U4-U6).
+VERDICT: NOT MET (U4-U6).
+  MET within it: the objects, the fibres and the local system are those of
+  def:coble-family-degree-two (:674) and the family is the underlying unpolarized
+  family with a flat section, so it exists over every base on which the pairs do and
+  its monodromy is subordinated to Gamma_Co(Bbar) (lem:d2b-forgets-to-d2a(1)-(2),
+  :710).
+  NOT MET: the base.  The divisor Delta_2 is the period image up to normalization
+  (lem:d2-degree-two-base(2), :697), not the marked space, and in the orbifold
+  reading it carries no such family at all (lem:d2b-forgets-to-d2a(3)).  U5 and U6
+  stand.
 
 ITEM 3. The D2a period map is DK13 Proposition 3.2, hypotheses checked.
 VERDICT: MET, unchanged.  lem:d2a-period-map, moduli-construction.md:642; DK13
   Prop. 3.2.
 
 ITEM 4. The base of D2b is all of Delta_2.
-VERDICT: NOT MET, unchanged (U7-U8).
+VERDICT: NOT MET.  The item asks for every point of Delta_2 to be such a pair and
+  conversely.  The converse direction is exactly what fails at the level of the
+  marked space: Delta_2 is the image of D(T_Co)/Gamma_{Co,2} under the quotient by
+  R_gEn (@lem:d2-degree-two-base(2), @lem:d2b-forgets-to-d2a(4)), and the quotient
+  is not an isomorphism because Gamma_{Co,2} lies in O^+(T_Co) while R_gEn does not
+  (@lem:d2b-forgets-to-d2a(2)-(3), @thm:coble-monodromy-versus-enriques(2)).  The
+  other direction, that every point of Delta_2 is a pair, is the surjectivity of the
+  normalization map and is @lem:d2-degree-two-base(1)-(2) up to the normalization
+  step, which remains U8.  So the item is NOT MET both because U8 is open and because
+  the identification it states is false in the orbifold reading.
 
 ITEM 5. Every page using Gamma_Co or Gamma_{Co,2} cites the D2 definitions.
 VERDICT: MET.  computations/reports/787-gamma-citation-check.py matches the braced

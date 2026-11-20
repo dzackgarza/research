@@ -682,19 +682,19 @@ By @lem:d2-degree-two-polarization(3) this is the same datum as a global section
 
 **The fibres** are the Coble surfaces $S_y$ of @def:coble-family-unpolarized with their degree-$2$ numerical polarization $h_{\Co,y}$; the K3 cover $X_y$ is a K3 surface with a marked class $\tilde h_y$ of square $4$.
 
-**The base** is $\Delta_2\subset\fentwo$, the image of the hyperplanes $\alpha^{\perp}$ for $\alpha\in\ten$ a $(-2)$-vector, which is the whole base and not a sublocus of it (@lem:d2-degree-two-base).
+**The base** of a family is the base over which it lives, and every such base carries the underlying unpolarized family and maps to $\bar B$ (@lem:d2b-forgets-to-d2a(1)--(2)). The base is compared with the D2a base through that forgetful morphism and the period maps, and its marked period space is $\bD(T_\Co)/\Gamma_{\Co,2}$; the divisor $\Delta_2\subset\fentwo$, the image of the hyperplanes $\alpha^{\perp}$ for $\alpha\in\ten$ a $(-2)$-vector, is the image of that period space under the quotient by $R_{\gent}$ (@lem:d2-degree-two-base(2), @lem:d2b-forgets-to-d2a(4)) and not the marked space itself.
 
 **The local system of lattices** is $\bT$ of @lem:d2-local-system, the orthogonal complement of $\bM$ in $R^2f_*\underline\ZZ_\mcx$ modulo torsion; the polarization is a section of $\bM$, so $\bT$ is the same system for the polarized and the unpolarized family, and its fibre is $T_\Co$.
 
-**The group.** $\Gamma_{\Co,2}\leq\Orth(T_\Co)$ is the image of the monodromy representation of $\bT$ (@def:gamma-co-groups(5)). It is a subgroup of the restricted stabilizer $R_{\gent}$ of @def:gamma-co-groups(4) (@lem:d2-degree-two-base(3)). Put $F_{\Co,2}\definedas\bD(T_\Co)/\Gamma_{\Co,2}$.
+**The group.** $\Gamma_{\Co,2}\leq\Orth(T_\Co)$ is the image of the monodromy representation of $\bT$ (@def:gamma-co-groups(5)). It is a subgroup of $\Orth^+(T_\Co)$, unconditionally, because the family of this definition forgets to a family of Coble surfaces (@lem:d2b-forgets-to-d2a(1)--(2)); the further containment in the restricted stabilizer $R_{\gent}$ is @lem:d2-degree-two-base(3). Put $F_{\Co,2}\definedas\bD(T_\Co)/\Gamma_{\Co,2}$.
 :::
 
-::: {.lemma #lem:d2-degree-two-base title="The base of D2b is all of $\Delta_2$"}
+::: {.lemma #lem:d2-degree-two-base title="The period image of the degree-$2$ family is all of $\Delta_2$, up to normalization"}
 
 Let $R_{\gent}$ be the restricted stabilizer of @def:gamma-co-groups(4) and $\Gamma_{\tilde h}$ the group of pairs of type $\tilde h$ of @prop:coble-polarized-moduli, and $\Delta_2=\mch_{-2}/\gent\subset\fentwo=\bD(\ten)/\gent$.
 
 1. $\Gamma_{\tilde h}=R_{\gent}$ [@prop:coble-degree-two-space(2)], so $\bD(T_\Co)/\Gamma_{\tilde h}=\bD(T_\Co)/R_{\gent}$ is the moduli space of pairs $(S,h_\Co)$ of @def:coble-family-degree-two and, by @thm:normalization with $\Gamma=\gent$, it is the normalization of $\Delta_2$: the map $\bD(T_\Co)/R_{\gent}\to\fentwo$ is finite, its image is $\Delta_2$, and it is birational.
-2. Hence $\Delta_2$ is the coarse space of @def:coble-family-degree-two up to normalization, and in particular it is the whole base: the period map of the family lands in $\bD(T_\Co)/\Gamma_{\Co,2}\to\bD(T_\Co)/R_{\gent}$, whose image is $\Delta_2$, and no proper sublocus of $\Delta_2$ contains it.
+2. Hence $\Delta_2$ is the image of the period map of @def:coble-family-degree-two up to normalization, and no proper sublocus of $\Delta_2$ contains it: the period map of the family lands in $\bD(T_\Co)/\Gamma_{\Co,2}\to\bD(T_\Co)/R_{\gent}$, and the composite with $\bD(T_\Co)/R_{\gent}\to\Delta_2\hookrightarrow\fentwo$ is finite and surjective by (1). This is a statement about the image; the marked space is $\bD(T_\Co)/\Gamma_{\Co,2}$, which is not $\bD(T_\Co)/R_{\gent}$ (@lem:d2b-forgets-to-d2a(4)).
 3. $\Gamma_{\Co,2}\leq R_{\gent}\cap\Orth^+(T_\Co)$.
 4. $\Delta_2$ is irreducible.
 :::
@@ -705,6 +705,35 @@ Let $R_{\gent}$ be the restricted stabilizer of @def:gamma-co-groups(4) and $\Ga
 (2) A moduli problem whose marked period space is the normalization of a variety has that variety as its coarse space up to normalization; the composite $\bD(T_\Co)/R_{\gent}\to\Delta_2\hookrightarrow\fentwo$ is finite and surjective by (1), so its image is all of $\Delta_2$ and not a proper sublocus.
 (3) A monodromy operator of the family of @def:coble-family-degree-two preserves the local system $\bM$ of @lem:d2-local-system(2) and its section $\tilde h$, so its image in $\Orth(T_\Co)$ is the restriction of an isometry $\gamma$ of $\lkt$ with $\gamma(S_\Co)=S_\Co$ and $\gamma(\tilde h)=\tilde h$, that is an element of $\Gamma_{\tilde h}=R_{\gent}$; and it lies in $\Orth^+(T_\Co)$ by @lem:d2-local-system(4).
 (4) $\Delta_2$ is the image of the irreducible $\bD(T_\Co)$ under a finite morphism, hence irreducible; equivalently $\gent$ is transitive on the $(-2)$-vectors of $\ten$ [@Ste91, (2.10) and the paragraph after it].
+:::
+
+::: {.lemma #lem:d2b-forgets-to-d2a title="The degree-$2$ family is the unpolarized family with a flat section, and $\Delta_2$ is its period image"}
+
+Let $Y$ be a connected complex space, $y\in Y$, and let $\qty{\mcs\to Y,\ \mcx\to\mcs,\ \iota,\ \tilde h}$ be an object of @def:coble-family-degree-two.
+
+1. Dropping $\tilde h$ leaves an object of @def:coble-family-unpolarized over the same $Y$, with the same K3 cover, the same $\iota$ and the same local system $\bT$ of @lem:d2-local-system. Hence the two monodromy representations $\pi_1(Y,y)\to\Orth(T_\Co)$ coincide, and the monodromy group of a degree-$2$ family over $Y$ is the monodromy group of the underlying unpolarized family.
+2. The underlying unpolarized family is the pullback of the family of @lem:d2-unpolarised-family along a morphism $Y\to\bar B$ classifying it, so
+$$
+\rho\qty{\pi_1(Y,y)}\subseteq\rho\qty{\pi_1(\bar B,p(y))}=\Gamma_\Co(\bar B),
+$$
+and in particular $\Gamma_{\Co,2}\subseteq\Orth^+(T_\Co)$.
+3. Read as the orbifold $\bD(T_\Co)/R_{\gent}$ of @lem:d2-degree-two-base(1), $\Delta_2$ carries no family of Coble surfaces whose local system is the tautological one: the tautological system has monodromy $R_{\gent}$ (@lem:orbifold-monodromy-of-a-quotient), and $R_{\gent}$ contains $s_\zeta\notin\Orth^+(T_\Co)$ (@thm:coble-monodromy-versus-enriques(2)), whereas the monodromy of every family of Coble surfaces lies in $\Orth^+(T_\Co)$ (@lem:monodromy-is-spinor-positive).
+4. Hence the two bases are compared by the forgetful morphism of (1)--(2) and by the period maps
+$$
+\bD(T_\Co)/\Gamma_{\Co,2}\too\bD(T_\Co)/R_{\gent}\too\fentwo ,
+$$
+and not by an identification: the marked period space of the degree-$2$ family is $\bD(T_\Co)/\Gamma_{\Co,2}$, and $\Delta_2$ is its image under the quotient by $R_{\gent}$.
+:::
+
+::: {.proof}
+
+(1) is the first item of @def:coble-family-degree-two: an object of that definition consists of an object $\mcs\to Y$ of @def:coble-family-unpolarized together with the section $\tilde h$. The local system $\bT$ of @lem:d2-local-system is built from $\mcx\to\mcs\to Y$ and the eleven relative divisors alone, so it is the same local system for the two structures, and transport along a loop of $Y$ (@def:transport-and-monodromy) is computed from $\bT$ alone; hence the two monodromy representations are the same map.
+
+(2) By the moduli property recorded in @lem:d2-unpolarised-family(3), $\bar B$ is the moduli stack of the objects of @def:coble-family-unpolarized, so the underlying object is the pullback of the universal family along a morphism $p\colon Y\to\bar B$. The argument of @lem:coble-family-base-change applies with the stack $\bar B$ in place of the space $B$: the pullback is trivialized over the inverse image of a trivializing open set of the universal family, and transport along a loop $\gamma$ of $Y$ is transport along $p\circ\gamma$, both being read on sections over the interval (@def:transport-and-monodromy). So the monodromy group is the image of $p_*\pi_1(Y,y)$ in that of $\bar B$, which is the display. The inclusion in $\Orth^+(T_\Co)$ is @lem:monodromy-is-spinor-positive applied to the underlying family, whose periods lie in one component because $Y$ is connected.
+
+(3) By @lem:orbifold-monodromy-of-a-quotient the monodromy representation of the tautological local system of $\bD(T_\Co)/R_{\gent}$ is the projection $\pi_1^{\mathrm{orb}}\to R_{\gent}$, so its image is $R_{\gent}$. By @thm:coble-monodromy-versus-enriques(2) there is a primitive $\zeta\in T_\Co$ of square $2$ with $s_\zeta\in R_{\gent}$ and $s_\zeta\notin\Orth^+(T_\Co)$. A family of Coble surfaces over that orbifold with the tautological system as its $\bT$ would have monodromy group $R_{\gent}$ by (1), against @lem:monodromy-is-spinor-positive, which puts the monodromy of every Coble family in $\Orth^+(T_\Co)$.
+
+(4) By (1) and (2) the forgetful morphism and the period maps are the only comparison available. The period map of the degree-$2$ family lands in $\bD(T_\Co)/\Gamma_{\Co,2}$ by the definition of $\Gamma_{\Co,2}$ as the monodromy group (@def:gamma-co-groups(5), @eq-period-map-equivariance), and the second arrow is the quotient by the subgroup $R_{\gent}$ of @lem:d2-degree-two-base(1); the composite is finite with image $\Delta_2$ (@lem:d2-degree-two-base(2)). Since $\Gamma_{\Co,2}\subseteq\Orth^+(T_\Co)$ by (2) and $s_\zeta\in R_{\gent}$ lies outside $\Orth^+(T_\Co)$, $\Gamma_{\Co,2}\neq R_{\gent}$, which is @thm:coble-monodromy-versus-enriques(3); so the first arrow is not an isomorphism and $\Delta_2$ is the image, not the marked space.
 :::
 
 ::: {.remark #rmk:d2-degree-two-vs-DK13 title="The moduli space $\mcm_\Co(2)$ of Dolgachev--Kondo"}
