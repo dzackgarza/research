@@ -149,6 +149,20 @@ def test_the_locus_probe_reproduces_its_record():
     assert "coble_679-locus-probe-run.txt" in page
 
 
+def test_the_f2_cusp_is_the_refinement_case():
+    """The smallest case, decided without (W): at the F_2 cusp the semifan refines.
+
+    AE23 Thm. 10.16 (printed p. 38) identifies the restriction of F_rc to the unigonal
+    hyperplane with ABE22's fan, which subdivides the chamber into nine cones; so the
+    semifan refines the Coxeter fan along that wall, which is the refinement half of the
+    owner's dichotomy and not the coarsening half.
+    """
+    page = page_text()
+    assert "#lem:f2-cusp-is-the-refinement-case" in page
+    assert "realises the **refinement** half" in page
+    assert "nine cones, none of the four being the mirror of a root" in page
+
+
 def test_the_semifan_is_determined_on_one_chamber_whatever_the_half():
     """The reading-independent determination: W_2-invariance, hence one chamber suffices.
 
