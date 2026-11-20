@@ -10,8 +10,8 @@ $$
 \Num(Z) = \NS(Z)/\mathrm{Tors} = \NS(Z)/(K_Z) \cong U\oplus E_8 = E_{10}
 ,
 $$
-the Enriques lattice of @def:enriques-lattice, which is even and unimodular of rank $10$ and signature $(1,9)$.
+the Enriques lattice of @def:enriques-lattice, which is even (@def:form-axioms) and unimodular of [rank]{.other-sense} $10$ and signature (@def:signature) $(1,9)$.
 The first Chern class gives an isometry $\Num(Z)\cong H^2(Z;\ZZ)/\mathrm{Tors}$ [@CDL25, Prop. 1.5.1 and its proof].
-A **marking** of $Z$ is an isomorphism $\Num(Z)\to E_{10}$ [@CDL25, Def. 5.3.5].
+A **marking** of $Z$ is an isomorphism (@def:isomorphism-of-objects) $\Num(Z)\to E_{10}$ [@CDL25, Def. 5.3.5].
 
 :::

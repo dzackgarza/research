@@ -81,7 +81,7 @@ The category-of-elements presentations of $\mathcal B_{R,W}$ and $\mcq_{R,W}$ ar
 Kernel, cokernel, image, and exact-sequence notation below is always taken in the explicitly named form category.
 :::
 
-::: {.definition #def:form-axioms title="Symmetry, alternation, and evenness" defines="$U$; $\Delta_M$; $q_b$; $\tau$; symmetric; skew-symmetric; alternating; even"}
+::: {.definition #def:form-axioms title="Symmetry, alternation, and evenness" defines="$U$; $\Delta_M$; $q_b$; $\tau$; symmetric form; skew-symmetric; alternating; even"}
 
 Let $U\colon R\text{-}\mathbf{Mod}\to\mathbf{Set}$ be the forgetful functor and let
 $$
@@ -126,7 +126,7 @@ The converse holds when multiplication by $2$ on $W$ is a monomorphism.
 When multiplication by $2$ is an epimorphism, every bilinear form is even.
 :::
 
-::: {.definition #def:polarization title="Adjoints, radicals, and nondegeneracy" defines="$b^\sharp$; ${}^\sharp b$; radical; coradical; nondegenerate; perfect"}
+::: {.definition #def:polarization title="Adjoints, radicals, and nondegeneracy" defines="$b^\sharp$; ${}^\sharp b$; nondegenerate; perfect"}
 
 For a bilinear module $(M,W,b)$ define
 $$
@@ -203,7 +203,7 @@ The quadratic form category has the analogous orthogonal sum.
 
 ## Orthogonality {#sec-orthogonality}
 
-::: {.definition #def:orthogonal-complement title="Left and right orthogonal complements" defines="$\lambda_{\iota}^{\mathrm L}$; $\lambda_{\iota}^{\mathrm R}$; left orthogonal complement; ${}^{\perp_b}T$; right orthogonal complement; $T^{\perp_b}$; isotropic"}
+::: {.definition #def:orthogonal-complement title="Left and right orthogonal complements" defines="$\lambda_{\iota}^{\mathrm L}$; $\lambda_{\iota}^{\mathrm R}$; ${}^{\perp_b}T$; $T^{\perp_b}$; isotropic"}
 
 Let $(M,W,b)$ be a bilinear module and let $\iota\colon T\injects M$ be a monomorphism of $R$-modules.
 Define
@@ -689,7 +689,7 @@ The form $x^{2}+y^{2}-3z^{2}$ has signature $(2,1,0)$, so $\min(p,q)=1$, and it 
 For a primitive integral solution of $x^{2}+y^{2}=3z^{2}$, reduction modulo $3$ forces $3\mid x$ and $3\mid y$ because $-1$ is not a square modulo $3$; then $9\mid3z^{2}$ gives $3\mid z$, contradicting primitivity.
 :::
 
-::: {#not:signature-pair-and-integer .notation title="The signature as a pair and as an integer" defines="signature as a pair; signature at the ordering"}
+::: {#not:signature-pair-and-integer .notation title="The signature as a pair and as an integer" defines="signature at the ordering"}
 For a nondegenerate symmetric form over an ordered field $F$, the signature is the pair $(p,q)$ of @def:signature.
 [@MH73, III §2.5] calls the integer $p-q$ the signature at the ordering; it depends only on the Witt class, is additive over orthogonal sums and multiplicative over tensor products, and so defines a ring homomorphism $W(F)\to\bZ$ [@MH73, III Lem. 2.6].
 :::

@@ -60,7 +60,7 @@ In each case the type is the Langlands dual of the type of the fixed point subal
 
 ## The root-folding criterion for $\tdp$
 
-::: {#not:short-and-long-roots-tdp .notation title="Short and long roots of $\tdp$" defines="short root; $\Phi^2$; long root; $\Phi^4$"}
+::: {#not:short-and-long-roots-tdp .notation title="Short and long roots of $\tdp$" defines="$\Phi^2$; $\Phi^4$"}
 
 $\Phi^2$ denotes the **short roots** ($(-2)$-roots) and $\Phi^4$ the **long roots** ($(-4)$-roots, of divisibility $2$) of @def:k-root.
 :::

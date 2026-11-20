@@ -61,7 +61,7 @@ Write $G^0$ for the identity component of a real Lie group. For block diagonal g
 
 ## Homogeneous spaces and Grassmannians {#sec-hsd-grassmannians}
 
-:::{.definition #def:hsd-symmetric-space title="Symmetric spaces" defines="symmetric; Hermitian symmetric"}
+:::{.definition #def:hsd-symmetric-space title="Symmetric spaces" defines="symmetric space; Hermitian symmetric"}
 A connected Riemannian manifold is *symmetric* if every point $x$ admits an isometry $s_x$ with $s_x(x)=x$ and $(ds_x)_x=-1$. It is *Hermitian symmetric* if it is Hermitian and each $s_x$ can be chosen holomorphic [@Hel01, §IV.3 and §VIII.4; @Viv14, Definition 2.4].
 :::
 

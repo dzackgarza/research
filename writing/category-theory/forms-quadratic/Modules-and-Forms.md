@@ -38,7 +38,7 @@ For $W=A$ the isomorphism $B\tensor_AA\cong B$ rewrites this as $b_B(c\tensor_A 
 
 ## Module properties {#sec-module-properties}
 
-::: {.definition #def:module-subcategories title="Standard subcategories of modules" defines="finitely generated; projective; free; finitely generated projective; torsion; torsion-free"}
+::: {.definition #def:module-subcategories title="Standard subcategories of modules" defines="finitely generated; projective; free; finitely generated projective; torsion module; torsion-free module"}
 The following isomorphism-invariant properties define replete full subcategories of $R\text{-}\mathbf{Mod}$:
 
 - finitely generated: some $R^n\twoheadrightarrow M$ is surjective;

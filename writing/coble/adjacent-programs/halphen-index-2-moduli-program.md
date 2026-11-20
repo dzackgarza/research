@@ -16,7 +16,7 @@ notes: |-
 
 ## Definitions and known moduli
 
-::: {#def:halphen-surface-index .definition title="Index, Halphen pencil, Halphen surface" defines="rational elliptic surface; rational genus-one surface; index; Halphen pencil of index $m$; Halphen surface of index $m$"}
+::: {#def:halphen-surface-index .definition title="Index, Halphen pencil, Halphen surface" defines="rational elliptic surface; rational genus-one surface; Halphen index; Halphen pencil of index $m$; Halphen surface of index $m$"}
 
 A **rational genus-one surface** is a smooth projective rational surface $Y$ with a relatively minimal fibration $\pi: Y\to\PP^1$ whose generic fiber is a smooth geometrically integral curve of genus one. The term *rational elliptic surface* is also used here without requiring a section; a section makes the fibration Jacobian.
 Its **index** is the minimal $m$ with $\pi$ given by $|-mK_Y|$.

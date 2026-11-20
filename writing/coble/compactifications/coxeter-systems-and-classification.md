@@ -1,6 +1,6 @@
 # Coxeter systems and their classification
 
-::: {#not:coxeter-sign-convention .notation title="Sign convention" defines="sign convention"}
+::: {#rmk:coxeter-sign-convention .remark title="Sign convention"}
 
 Simple roots are negative-definite directions of norm $-2$, following the algebraic-geometry convention of @def:root-lattice, so a spherical Coxeter system (@def:coxeter-group) has a negative definite Gram form (@def:coxeter-gram-form).
 :::
@@ -98,7 +98,7 @@ Then $C = -G(M)$, and the definiteness conditions of @def:coxeter-system-type ar
 
 ## Classification by definiteness
 
-::: {.definition #def:coxeter-system-type defines="spherical Coxeter system; euclidean Coxeter system; hyperbolic Coxeter system; elliptic subdiagram; parabolic subdiagram"}
+::: {.definition #def:coxeter-system-type defines="spherical Coxeter system; euclidean Coxeter system; hyperbolic Coxeter system"}
 
 Let $(W,S)$ be an irreducible Coxeter system (@def:coxeter-group) of rank $n$ with Coxeter matrix (@def:coxeter-matrix) $M$ and Gram form (@def:coxeter-gram-form) $G = G(M)$.
 Say that $(W,S)$, or $M$, is
@@ -167,7 +167,7 @@ $$
 is the **standard parabolic subgroup** determined by $I$, and $(W_I, I)$ is a Coxeter system with Coxeter matrix $M[I,I]$ [@Bou08, Ch. IV §1 no. 8, Th. 2; @Hum90, §5.5, Theorem].
 :::
 
-::: {#not:parabolic-subgroups-and-subdiagrams .notation title="Parabolic subgroups and parabolic subdiagrams" defines="parabolic subgroup; parabolic subdiagram"}
+::: {#rmk:parabolic-subgroups-and-subdiagrams .remark title="Parabolic subgroups and parabolic subdiagrams"}
 
 The subgroup $W_I$ is a standard parabolic subgroup (@def:coxeter-subdiagram) for every subset $I\iscontainedin S$, whatever the definiteness of $G[I,I]$.
 The subdiagram $\Sigma_I$ is parabolic when each of its connected components is euclidean (@def:elliptic-subdiagram).

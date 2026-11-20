@@ -2,7 +2,7 @@
 
 ::: {.definition #def:singular_ias defines="singular integral affine structure"}
 
-The dual complex $\Gamma(\mcx_0)$ of a Type III Kulikov model has a canonical *singular integral affine structure*: away from a finite singular set its charts map to $\RR^2$ with transition functions in $\operatorname{GL}_2(\bZ) \ltimes \RR^2$, and its singularities correspond to the components of positive charge, the non-toric anticanonical pairs (@def:anticanonical-pair).
+The dual complex $\Gamma(\mcx_0)$ of a Type III Kulikov model (@def:kulikov-model) has a canonical *singular integral affine structure*: away from a finite singular set its charts map to $\RR^2$ with transition functions in $\operatorname{GL}_2(\bZ) \ltimes \RR^2$, and its singularities correspond to the components of positive charge (@def:charge), the non-toric anticanonical pairs (@def:anticanonical-pair).
 The total charge is $24$, which constrains the number and type of singularities; for instance one may have $24$ singularities of type $I_1$.
 :::
 
@@ -60,7 +60,7 @@ Gluing two copies along their boundary,
 $$
 B(\lambda) = P(\lambda) \union P(\lambda)^{\opop},
 $$
-produces the integral affine sphere realizing the dual complex $\Gamma(\mcx_0)$; the equator along which the two copies are glued supports the integral affine polarization $R_{\mathrm{IA}}$ [@AE23].
+produces the integral affine sphere (@def:singular-integral-affine-surface) realizing the dual complex $\Gamma(\mcx_0)$; the equator along which the two copies are glued supports the integral affine [polarization]{.other-sense} $R_{\mathrm{IA}}$ [@AE23].
 :::
 
 ::: {#fig-moduli-degeneration .figure}
@@ -201,8 +201,8 @@ dictionary; the gluing periods and changes of model must also be tracked.
 ## Mirror lattices and the Enriques half-twist {#sec-mirror-lattices-half-twist}
 
 ::: {.definition #def:admissible-mirror-cusp title="An admissible isotropic vector" defines="$m$-admissible"}
-Let $M\hookrightarrow\lkt$ be a primitive hyperbolic lattice and put
-$N=M^\perp$. A primitive isotropic vector $f\in N$ is *$m$-admissible*
+Let $M\hookrightarrow\lkt$ be a primitive (@def:primitive-embedding) hyperbolic lattice (@not:reflection-groups-sign-convention) and put
+$N=M^\perp$. A primitive isotropic (@def:orthogonal-complement) vector $f\in N$ is *$m$-admissible*
 if $\operatorname{div}_N(f)=m$ and there is a primitive isotropic
 $g\in N$ with $(f,g)=m$ and $\operatorname{div}_N(g)=m$
 [@Dol96, §5, Definition preceding Lemma 5.4].
@@ -216,20 +216,20 @@ N=\langle f,g\rangle\oplus\check M
 \qquad
 \check M\cong f^\perp_N/\ZZ f.
 $$
-If $M$ has rank $r$, then $\check M$ has signature $(1,19-r)$ and
-rank $20-r$.
+If $M$ has [rank]{.other-sense} $r$, then $\check M$ has signature (@def:signature) $(1,19-r)$ and
+[rank]{.other-sense} $20-r$.
 :::
 
 ::: {.proof}
-For $x\in N$, divisibility makes both $(x,g)/m$ and $(x,f)/m$ integers,
+For $x\in N$, divisibility (@def:lattice-divisibility) makes both $(x,g)/m$ and $(x,f)/m$ integers,
 and
 $$
 x-\frac{(x,g)}m f-\frac{(x,f)}m g
 \in\langle f,g\rangle^\perp.
 $$
-Thus $\langle f,g\rangle$ splits off integrally. In this decomposition,
+Thus $\langle f,g\rangle$ splits (@def:hyperbolic-plane) off integrally. In this decomposition,
 $f^\perp_N=\ZZ f\oplus\check M$. Subtracting signatures from
-$\operatorname{sig}(\lkt)=(3,19)$ gives the stated signature and rank
+$\operatorname{sig}(\lkt)=(3,19)$ gives the stated signature and [rank]{.other-sense}
 [@Dol96, Lemma 5.4 and §6].
 :::
 

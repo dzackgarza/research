@@ -53,7 +53,7 @@ The tensor product in this Hom is the tensor product of $R$-algebras.
 
 The forgetful functor $U$ sends an algebra bilinear form $\phi$ to a module bilinear form $U(\phi)$ on $U(A)$, using $U(A\tensor_R A)\cong U(A)\tensor_R U(A)$.
 
-::: {.definition #def:algebra-generating-set title="Algebra generating sets and module bases" defines="$R\langle S\rangle$; module basis; generates $A$ as a unital $R$-algebra"}
+::: {.definition #def:algebra-generating-set title="Algebra generating sets and module bases" defines="$R\langle S\rangle$; module basis; algebra generating set"}
 
 Let $A$ be an associative unital $R$-algebra.
 The free unital associative $R$-algebra $R\langle S\rangle$ on a set $S$ represents $A\mapsto\mathbf{Set}(S,A)$: a function $S\to A$ of underlying sets extends uniquely to a homomorphism $R\langle S\rangle\to A$ in $R\text{-}\mathbf{Alg}$.

@@ -414,7 +414,7 @@ def build(project: Path) -> tuple[nx.DiGraph, list[Finding]]:
                         if not terms:
                             findings.append(Finding(Kind.MISSING_DEFINES, chapter, (ident,)))
                         for term in terms:
-                            if "$" not in term and " " in term and re.search(r"[a-z]{3}", term):
+                            if "$" not in term and re.search(r"[a-z]{3}", term):
                                 definers.setdefault(term.lower(), set()).add(ident)
                     previous = ident
                 elif isinstance(block, pf.Div) and "proof" in block.classes:

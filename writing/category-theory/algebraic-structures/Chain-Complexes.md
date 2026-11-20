@@ -172,7 +172,7 @@ commutes with the two differentials and is an isomorphism of complexes; it is th
 For $n\in\bZ$ write $W[n]$ for the complex with $W$ in degree $n$, the zero module in every other degree, and zero differentials.
 :::
 
-::: {.definition #def:complex-form title="Bilinear forms on a complex" defines="$W$-valued bilinear form of degree $n$ on $C$; symmetric"}
+::: {.definition #def:complex-form title="Bilinear forms on a complex" defines="$W$-valued bilinear form of degree $n$ on $C$"}
 
 Let $C\in\mathbf{Ch}(R\text{-}\mathbf{Mod})$.
 A *$W$-valued bilinear form of degree $n$ on $C$* is a chain map

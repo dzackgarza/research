@@ -29,7 +29,7 @@ Define $\widetilde\Orth(L)$ by the pullback
 \widetilde\Orth(L) \arrow[r] \arrow[d] & \Orth(L) \arrow[d,"\rho_L"] \\
 1 \arrow[r] & \Orth(A_L).
 ```
-Let $I_L\injects\Orth(A_L)$ be the image subobject.
+Let $I_L\injects\Orth(A_L)$ be the image subobject (@def:subobject-relation).
 Then
 $$
 1
@@ -42,9 +42,9 @@ I_L
 \too
 1
 $$
-is exact.
+is exact (@def:exact-complex).
 
-If $L$ is even, $\bar{\varphi}$ preserves $A_{L,q}$ and defines $\rho_{L,q}\colon\Orth(L)\too\Orth(A_{L,q})$.
+If $L$ is even (@def:form-axioms), $\bar{\varphi}$ preserves $A_{L,q}$ and defines $\rho_{L,q}\colon\Orth(L)\too\Orth(A_{L,q})$.
 The forgetful monomorphism $j_q\colon\Orth(A_{L,q})\injects\Orth(A_L)$ satisfies $\rho_L=j_q\circ\rho_{L,q}$.
 Let $I_{L,q}\injects\Orth(A_{L,q})$ be the image subobject.
 Since $j_q$ is monic,
@@ -64,7 +64,7 @@ is exact.
 
 ::: {.convention #conv:stable-subgroup title="Stable subgroups" defines="stable subgroup; $\widetilde G$"}
 
-For a subgroup $G\le\Orth(L)$, define $\widetilde G$ by the pullback
+For a subgroup $G\le\Orth(L)$, define $\widetilde G$ by the pullback (@def:pullback-square)
 ```tikzcd
 \widetilde G \arrow[r] \arrow[d] \arrow[dr,phantom,very near start,"\lrcorner"] & G \arrow[d] \\
 \widetilde\Orth(L) \arrow[r] & \Orth(L).
@@ -84,19 +84,19 @@ are monomorphisms in $\mathbf{Set}$.
 :::
 
 ::: {.proof}
-For a morphism $f\colon L\to M$ in $\mathbf{Lat}_R^{\mathrm{nd}}$, applying $U\colon\mathbf{Lat}_R\too R\text{-}\mathbf{Mod}$ gives the kernel sequence
+For a morphism $f\colon L\to M$ in $\mathbf{Lat}_R^{\mathrm{nd}}$, applying $U\colon\mathbf{Lat}_R\too R\text{-}\mathbf{Mod}$ gives the kernel (@def:kernel-cokernel) sequence
 $$
 0\too\ker(Uf)\too U L\xrightarrow{Uf}U M.
 $$
 If $x\in\ker(Uf)$, then $b_L(x,y)=b_M(fx,fy)=0$ for every $y\in L$.
 Hence the kernel monomorphism induces the unique morphism $k_f\colon\ker(Uf)\too\radic(L)$ with $\rho_L\circ k_f=\ker(Uf)\injects U L$.
 For $L\in\mathbf{Lat}_R^{\mathrm{nd}}$, $\radic(L)=0$; hence $\ker(Uf)=0$ and $Uf$ is monic.
-Faithfulness of the forgetful functor gives the monomorphism $U_{L,M}$, while $j_{L,M}$ is the defining inclusion of the primitive-embedding subobject.
+Faithfulness of the forgetful functor gives the monomorphism $U_{L,M}$, while $j_{L,M}$ is the defining inclusion of the primitive-embedding subobject (@def:subobject-relation).
 :::
 
 ::: {.definition #def:primitive-embedding title="Primitive embeddings" defines="primitive embedding; $\operatorname{PrimEmb}(L,M)$; primitive"}
 
-A morphism $f\colon L\to M$ of $\mathbf{Lat}_R^{\mathrm{nd}}$ is a *primitive embedding* when the cokernel sequence of $U(f)$ in $R\text{-}\mathbf{Mod}$
+A morphism $f\colon L\to M$ of $\mathbf{Lat}_R^{\mathrm{nd}}$ is a *primitive embedding* when the cokernel (@def:kernel-cokernel) sequence of $U(f)$ in $R\text{-}\mathbf{Mod}$
 $$
 0
 \too
@@ -110,10 +110,10 @@ Q_f
 $$
 in $R\text{-}\mathbf{Mod}$ has torsion-free $Q_f$.
 Write $\operatorname{PrimEmb}(L,M)$ for the set of morphisms satisfying this condition.
-A subobject of $M$ (@def:subobject-relation) is *primitive* when any representing monomorphism has this property.
+A subobject of $M$ (@def:subobject-relation) is *primitive* when any representing monomorphism has this [property]{.other-sense}.
 
-Identities are primitive, and primitivity is closed under composition.
-For primitive $f\colon L\to M$ and $g\colon M\to P$, the canonical cokernel maps fit into the short exact sequence
+Identities are primitive, and primitivity is [closed]{.other-sense} under composition.
+For primitive $f\colon L\to M$ and $g\colon M\to P$, the canonical cokernel maps fit into the short exact sequence (@def:exact-complex)
 $$
 0\too Q_f\too Q_{gf}\too Q_g\too0.
 $$
@@ -168,19 +168,19 @@ N \arrow[r,"f^*"] \arrow[d,"b_N^\sharp"'] & M \arrow[d,"b_M^\sharp"] \\
 \Hom_{R\text{-}\mathbf{Mod}}(N,W) \arrow[r,"f^\vee"'] & \Hom_{R\text{-}\mathbf{Mod}}(M,W)
 ```
 commute.
-If $b_M$ is nondegenerate, such an adjoint is unique when it exists.
-If $b_M$ is perfect, it exists and equals $(b_M^\sharp)^{-1}\circ f^\vee\circ b_N^\sharp$.
+If $b_M$ is nondegenerate (@def:polarization), such an adjoint is unique when it exists.
+If $b_M$ is perfect (@def:polarization), it exists and equals $(b_M^\sharp)^{-1}\circ f^\vee\circ b_N^\sharp$.
 :::
 
 ::: {.proposition #prop:adjoint-matrix title="The adjoint in coordinates"}
 
-Let $(M,b_M),(N,b_N)\in\mathcal B_{R,R}$ have finite free underlying $R$-modules.
-Choose ordered bases $B_M,B_N$ and write
+Let $(M,b_M),(N,b_N)\in\mathcal B_{R,R}$ have finite free (@def:module-subcategories) underlying $R$-modules.
+Choose ordered [bases]{.other-sense} $B_M,B_N$ and write
 $$
 G_M\definedas[b_M]_{B_M},\qquad G_N\definedas[b_N]_{B_N},\qquad
 A\definedas[f]_{B_N\leftarrow B_M}.
 $$
-If $b_M$ is perfect, then $[f^*]_{B_M\leftarrow B_N}=G_M^{-1}A^{\mathsf T}G_N$.
+If $b_M$ is perfect (@def:polarization), then $[f^*]_{B_M\leftarrow B_N}=G_M^{-1}A^{\mathsf T}G_N$.
 When $M=N$, $B_M=B_N=B$, and $f\in\operatorname{End}_{R\text{-}\mathbf{Mod}}(M)$, one has $f\in O(M)$ exactly when $A^{\mathsf T}G_MA=G_M$; in that case $A^{-1}=G_M^{-1}A^{\mathsf T}G_M$.
 :::
 
@@ -207,31 +207,31 @@ $$
 \Hom_{\mathcal B_{R,W}}\qty{M(\lambda),N},
 $$
 where $M(\lambda)$ is the twist of @def:form-twist.
-An element of this Hom-set is a **similarity morphism of multiplier $\lambda$**. For $W=R$, finite free $M,N$, and chosen bases $B_M,B_N$, a morphism $f\in\operatorname{Sim}_\lambda(M,N)$ with matrix $A=[f]_{B_N\leftarrow B_M}$ satisfies $A^{\mathsf T}G_NA=\lambda G_M$.
-If $M$ and $N$ have equal rank $n$, then $\det(A)^2\det(G_N)=\lambda^n\det(G_M)$.
+An element of this Hom-set is a **similarity morphism of multiplier $\lambda$**. For $W=R$, finite free (@def:module-subcategories) $M,N$, and chosen [bases]{.other-sense} $B_M,B_N$, a morphism $f\in\operatorname{Sim}_\lambda(M,N)$ with matrix $A=[f]_{B_N\leftarrow B_M}$ satisfies $A^{\mathsf T}G_NA=\lambda G_M$.
+If $M$ and $N$ have equal [rank]{.other-sense} $n$, then $\det(A)^2\det(G_N)=\lambda^n\det(G_M)$.
 :::
 
 ::: {.proposition #prop:embedding-index title="The index of an embedding"}
 
-Let $f\colon L\to M$ be a morphism of $\mathbf{Lat}_{\bZ}$ between lattices of the same rank $n$.
-Then its cokernel sequence
+Let $f\colon L\to M$ be a morphism of $\mathbf{Lat}_{\bZ}$ between lattices of the same [rank]{.other-sense} $n$.
+Then its cokernel (@def:kernel-cokernel) sequence
 $$
 0\too L\xrightarrow{f}M\too Q_f\too0
 $$
-has a finitely generated torsion $\bZ$-module $Q_f$.
+has a finitely generated (@def:module-subcategories) torsion $\bZ$-module $Q_f$.
 Its cardinality is the index $[M:f(L)]$ of @def:index, and $\det(b_L)=[M:f(L)]^{2}\det(b_M)$.
-Choose ordered bases $B_L,B_M$ and write $G_L=[b_L]_{B_L}$, $G_M=[b_M]_{B_M}$, and $A=[f]_{B_M\leftarrow B_L}$.
+Choose ordered [bases]{.other-sense} $B_L,B_M$ and write $G_L=[b_L]_{B_L}$, $G_M=[b_M]_{B_M}$, and $A=[f]_{B_M\leftarrow B_L}$.
 Then $G_L=A^{\mathsf T}G_MA$ and $\abs{\det A}=[M:f(L)]$.
 Index $1$ holds exactly for the isometries.
 :::
 
 ::: {.proof}
 
-$Q_f$ is finitely generated because $L$ is, and torsion because $f$ is injective with $L,M$ of equal rank, so $\rank Q_f=0$ over the domain $\bZ$.
+$Q_f$ is finitely generated because $L$ is, and torsion because $f$ is injective with $L,M$ of equal [rank]{.other-sense}, so $\rank Q_f=0$ over the domain $\bZ$.
 
 For the matrix identity, apply the adjoint formula of @prop:adjoint-matrix: the identity $G_L=A^{\mathsf T}G_MA$ is the coordinate statement of $f^{*}b_M=b_L$, the condition for $f$ to be a morphism of $\mathbf{Lat}_\bZ$.
 Then $\det G_L=\det(A)^{2}\det G_M$, and by @def:determinant-class $\det b_L$ and $\det b_M$ are the classes of these determinants up to squares of units, so $\det(b_L)=\det(b_M)[M:f(L)]^{2}$ once $\abs{\det A}=[M:f(L)]$ is known.
-That last equality is the index formula for a map of free $\bZ$-modules of equal rank: $Q_f\cong\bZ^{n}/A\bZ^{n}$, of order $\abs{\det A}$.
+That last equality is the index formula for a map of free (@def:module-subcategories) $\bZ$-modules of equal [rank]{.other-sense}: $Q_f\cong\bZ^{n}/A\bZ^{n}$, of order $\abs{\det A}$.
 
 Index $1$ is $\abs{\det A}=1$, that is $A\in\GL_n(\bZ)$, that is $A$ invertible over $\bZ$; and $G_L=A^{\mathsf T}G_MA$ with $A$ invertible is exactly $f\in O(L)$ by @prop:adjoint-matrix.
 :::
@@ -239,14 +239,14 @@ Index $1$ is $\abs{\det A}=1$, that is $A\in\GL_n(\bZ)$, that is $A$ invertible 
 ## Matrix realizations
 
 ::: {.proposition #prop:matrix-realizations title="Matrix realizations of isometry and automorphism groups"}
-Let $L\in\mathbf{Lat}_R$ with $U(L)$ free of rank $n$.
-Choose an ordered basis $B_L$, let $c_{B_L}\colon U(L)\isoto R^n$ be the coordinate isomorphism, and write $G_L=[b_L]_{B_L}$.
+Let $L\in\mathbf{Lat}_R$ with $U(L)$ free (@def:module-subcategories) of [rank]{.other-sense} $n$.
+Choose an ordered basis (@def:based-module) $B_L$, let $c_{B_L}\colon U(L)\isoto R^n$ be the coordinate isomorphism (@def:isomorphism-of-objects), and write $G_L=[b_L]_{B_L}$.
 Conjugation by $c_{B_L}$ gives
 $$
 O(L)\isoto\theset{A\in\operatorname{GL}_n(R)\st A^{\mathsf T}G_LA=G_L}.
 $$
 Changing the basis conjugates this subgroup.
-For a finitely generated torsion $\bZ$-module $A$, choose an invariant-factor decomposition $A\isoto\bigoplus_{i=1}^r\bZ/d_i\bZ$.
+For a finitely generated (@def:module-subcategories) torsion $\bZ$-module $A$, choose an invariant-factor decomposition $A\isoto\bigoplus_{i=1}^r\bZ/d_i\bZ$.
 An element of $\operatorname{End}_{\bZ\text{-}\mathbf{Mod}}(A)$ is represented by a matrix $(a_{ij})$ whose entry $a_{ij}$ represents a morphism $\bZ/d_j\bZ\to\bZ/d_i\bZ$, equivalently $d_j a_{ij}=0$ in $\bZ/d_i\bZ$; the automorphisms are the units of this endomorphism ring.
 In the homocyclic case this gives
 $$
@@ -257,8 +257,8 @@ $$
 
 ::: {.proof}
 
-Conjugation by the coordinate isomorphism is an isomorphism of groups, and it carries $f$ to a matrix $A$; $f$ preserves $b_L$ exactly when $A^{\mathsf T}G_LA=G_L$ by @prop:adjoint-matrix, and $f$ invertible exactly when $A\in\GL_n(R)$.
-The determinant of $G_L$ is a unit, since $L$ is nondegenerate and free, so the condition forces $\det(A)^{2}=1$, and $A$ is invertible.
+Conjugation by the coordinate isomorphism is an isomorphism of groups (@def:group), and it carries $f$ to a matrix $A$; $f$ preserves $b_L$ exactly when $A^{\mathsf T}G_LA=G_L$ by @prop:adjoint-matrix, and $f$ invertible exactly when $A\in\GL_n(R)$.
+The determinant of $G_L$ is a unit, since $L$ is nondegenerate (@def:polarization) and free, so the condition forces $\det(A)^{2}=1$, and $A$ is invertible.
 Changing the basis replaces $G_L$ by $P^{\mathsf T}G_LP$ for $P$ the change-of-basis matrix, by @prop:gram-congruence, so the subgroup is carried to a conjugate one.
 
 For the endomorphism ring, $\Hom_\bZ(\bZ/d_j\bZ,\bZ/d_i\bZ)\cong\bZ/d_i\bZ$ with the morphism determined by the image of $1$, which must be killed by $d_j$; that is the condition $d_j a_{ij}=0$ in $\bZ/d_i\bZ$, and composition is matrix multiplication under it.
@@ -269,8 +269,8 @@ The automorphisms of a finite module are the units of its endomorphism ring, and
 
 ::: {.proposition #prop:orthogonal-group-degenerate title="The orthogonal group of a degenerate form"}
 
-Let $R$ be a Dedekind domain and let $b$ be a symmetric $R$-valued bilinear form on a finitely generated projective $R$-module $M$.
-Choose a section $s_M\colon M^{\mathrm{nd}}\to M$ of the cokernel $q_M\colon M\to M^{\mathrm{nd}}$ from @thm:radical-splits, and identify $M$ through the isometry $\rho_M\perp s_M\colon\radic(M)\perp M^{\mathrm{nd}}\isoto M$.
+Let $R$ be a Dedekind domain and let $b$ be a symmetric $R$-valued bilinear form on a finitely generated projective (@def:module-subcategories) $R$-module $M$.
+Choose a section $s_M\colon M^{\mathrm{nd}}\to M$ of the cokernel (@def:kernel-cokernel) $q_M\colon M\to M^{\mathrm{nd}}$ from @thm:radical-splits, and identify $M$ through the isometry $\rho_M\perp s_M\colon\radic(M)\perp M^{\mathrm{nd}}\isoto M$.
 Every isometry preserves $\radic(M)$, so in this decomposition it has the unique block form
 $$
 \begin{pmatrix}a&\varphi\\0&d\end{pmatrix},
@@ -290,12 +290,12 @@ The subgroup fixing $\radic(M)$ pointwise is the inverse image of $\{\id_{\radic
 
 ::: {.proof}
 
-$M^{\mathrm{nd}}$ is the cokernel of the radical and $s_M$ a section of it, by @def:nondegenerate-reduction and @thm:radical-splits; that $\rho_M\perp s_M$ is an isometry is the vanishing of every pairing involving $\radic(M)$ in @def:polarization.
+$M^{\mathrm{nd}}$ is the cokernel of the radical (@def:two-witnesses) and $s_M$ a section of it, by @def:nondegenerate-reduction and @thm:radical-splits; that $\rho_M\perp s_M$ is an isometry is the vanishing of every pairing involving $\radic(M)$ in @def:polarization.
 
 An isometry $g$ preserves the radical: if $x\in\radic(M)$ then $b(gx,y)=b(x,g^{-1}y)=0$ for all $y$, so $gx\in\radic(M)$.
 In the decomposition its matrix is therefore block upper triangular with entries $a=g|_{\radic(M)}$, $d$ the induced map on $M^{\mathrm{nd}}$ and $\varphi$ the remaining block, and $a$ is invertible because $g$ is.
 
-Conversely a block $\begin{pmatrix}a&\varphi\\0&d\end{pmatrix}$ with $a,d$ invertible preserves the form: on a pair of vectors in $\radic(M)\perp M^{\mathrm{nd}}$ the cross terms vanish and the radical component is isotropic, so only $d$ is tested, and $d\in\Orth(M^{\mathrm{nd}})$ is the hypothesis.
+Conversely a block $\begin{pmatrix}a&\varphi\\0&d\end{pmatrix}$ with $a,d$ invertible preserves the form: on a pair of vectors in $\radic(M)\perp M^{\mathrm{nd}}$ the cross terms vanish and the radical component is isotropic (@def:orthogonal-complement), so only $d$ is tested, and $d\in\Orth(M^{\mathrm{nd}})$ is the hypothesis.
 The multiplication law of block upper triangular matrices is $(\varphi,a,d)(\varphi',a',d')=(\varphi a'+d\varphi',\,aa',\,dd')$, which exhibits the semidirect product with the normal subgroup of those with $a=\id$ and $d=\id$, isomorphic to $\Hom_R(M^{\mathrm{nd}},\radic(M))$ additively.
 
 Fixing $\radic(M)$ pointwise is $a=\id$, and fixing it also as a set is what the block form already encodes; so the subgroup in question is the inverse image stated, which is $\Hom(M^{\mathrm{nd}},\radic(M))\rtimes\Orth(M^{\mathrm{nd}})$.
@@ -306,7 +306,7 @@ Fixing $\radic(M)$ pointwise is $a=\id$, and fixing it also as a set is what the
 ::: {.definition #def:index title="Index of a subgroup" defines="index; $[G:H]$"}
 For a subgroup $H\le G$, the *index* $[G:H]$ is the cardinality of the set of left cosets $G/H$.
 If $G$ is finite, $[G:H]=\cardinality{G}/\cardinality{H}$.
-In an abelian category, the analogous cardinality of a cokernel is used only after the relevant monomorphism and finiteness hypotheses have been stated.
+In an abelian category (@def:abelian-category), the analogous cardinality of a cokernel (@def:kernel-cokernel) is used only after the relevant monomorphism and finiteness hypotheses have been stated.
 :::
 
 ## The genus

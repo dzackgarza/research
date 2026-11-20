@@ -6,12 +6,12 @@ Let $A\in\operatorname{Sym}_m(\bZ)$ and $G\in\operatorname{Sym}_n(\bZ)$ be nonde
 
 ::: {.proposition #prop:definite-coordinate-bound title="Definite square-fibre bound"}
 
-Let $G$ be definite of positive rank, choose $\sigma\in\{\pm1\}$ such that $P=\sigma G$ is positive definite, and put $t=\sigma a$. If $t<0$, the square-$a$ fibre is empty. If $t\ge0$, every $x\in\bZ^n$ with $x^TGx=a$ satisfies
+Let $G$ be definite (@def:definiteness) of positive [rank]{.other-sense}, choose $\sigma\in\{\pm1\}$ such that $P=\sigma G$ is positive definite (@def:definiteness), and put $t=\sigma a$. If $t<0$, the square-$a$ fibre is empty. If $t\ge0$, every $x\in\bZ^n$ with $x^TGx=a$ satisfies
 $$
 |x_i|\le\left\lfloor\sqrt{t(P^{-1})_{ii}}\right\rfloor
 \le b_G(a):=\left\lfloor\sqrt{t\max_i(P^{-1})_{ii}}\right\rfloor.
 $$
-For rank zero put $b_G(a)=0$.
+For [rank]{.other-sense} zero put $b_G(a)=0$.
 :::
 
 ::: {.proof}
@@ -60,20 +60,20 @@ $$B(n,D)=\max\{F(n,D),I(n,D)\}\quad(n\ge3),\qquad K(n)=B(n,1).$$
 
 ::: {.proposition #prop:integral-representative-bound title="Bounded equivalent Gram matrix"}
 
-If $G$ is nonsingular integral of rank $n\ge1$ and $D=|\det G|$, some $P\in\mathrm{GL}_n(\bZ)$ satisfies $\|P^TGP\|_\infty\le B(n,D)$.
+If $G$ is nonsingular integral of [rank]{.other-sense} $n\ge1$ and $D=|\det G|$, some $P\in\mathrm{GL}_n(\bZ)$ satisfies $\|P^TGP\|_\infty\le B(n,D)$.
 :::
 
 ::: {.proof}
 
-For a definite form, negate if necessary and choose an LLL-reduced basis with parameter $3/4$. The reduced-basis inequalities [@LLL82, §1, conditions (1.4)–(1.5) and Proposition 1.6] give
+For a definite (@def:definiteness) form, negate if necessary and choose an LLL-reduced basis (@def:based-module) with parameter $3/4$. The reduced-basis inequalities [@LLL82, §1, conditions (1.4)–(1.5) and Proposition 1.6] give
 $$\prod_i\|b_i\|^2\le2^{n(n-1)/2}D.$$
-Every squared length is a positive integer, hence at least one; each is at most the product. Cauchy–Schwarz bounds every Gram entry by $F(n,D)$.
+Every squared [length]{.other-sense} is a positive integer, hence at least one; each is at most the product. Cauchy–Schwarz bounds every Gram entry by $F(n,D)$.
 
-For an indefinite form of rank at least three, Li–Margulis [@LM16b, §2.3, Lemma 13 and Appendix] give an explicit compact subset of unimodular Euclidean lattice space with minimum at least $E_n^{-1}$ meeting the relevant closed orthogonal orbit. Minkowski's second theorem gives independent vectors of lengths less than $L_n$ [@Hen02, Theorem 1.3]. To see the bound, if the successive minima are $\lambda_i$, the unit-ball volume estimate gives $\prod\lambda_i\le n^{n/2}$, while every $\lambda_i\ge E_n^{-1}$.
+For an indefinite (@def:definiteness) form of [rank]{.other-sense} at least three, Li–Margulis [@LM16b, §2.3, Lemma 13 and Appendix] give an explicit compact subset of unimodular Euclidean lattice space with minimum (@def:definite-minimum-shell) at least $E_n^{-1}$ meeting the relevant [closed]{.other-sense} orthogonal orbit. Minkowski's second theorem gives independent vectors of [lengths]{.other-sense} less than $L_n$ [@Hen02, Theorem 1.3]. To see the bound, if the successive minima are $\lambda_i$, the unit-ball volume estimate gives $\prod\lambda_i\le n^{n/2}$, while every $\lambda_i\ge E_n^{-1}$.
 
-The independent vectors generate a sublattice of index $d\le L_n^n$ by Hadamard. If $d>1$, reduce a vector from a nonzero quotient coset to $w=\sum c_iv_i$ with $|c_i|\le1/2$. Replace a $v_j$ for which $c_j\ne0$ by $w$. The new index is $|c_j|d\le d/2$, and the largest length grows by at most a factor $n$. After at most $\log_2d$ replacements these vectors form a basis. Since $n\le2^n$, their lengths are at most $L_nn^{\log_2d}\le L_nd^n\le L_n^{n^2+1}<R_n$. A column sign adjusts the determinant. In the normalized expression $G=D^{1/n}g^TJg$, each Gram coefficient at that orbit point is bounded by $nR_n^2D^{1/n}\le I(n,D)$.
+The independent vectors generate a sublattice of index (@def:index) $d\le L_n^n$ by Hadamard. If $d>1$, reduce a vector from a nonzero quotient coset to $w=\sum c_iv_i$ with $|c_i|\le1/2$. Replace a $v_j$ for which $c_j\ne0$ by $w$. The new index is $|c_j|d\le d/2$, and the largest [length]{.other-sense} grows by at most a factor $n$. After at most $\log_2d$ replacements these vectors form a basis. Since $n\le2^n$, their [lengths]{.other-sense} are at most $L_nn^{\log_2d}\le L_nd^n\le L_n^{n^2+1}<R_n$. A column sign adjusts the determinant. In the normalized expression $G=D^{1/n}g^TJg$, each Gram coefficient at that orbit point is bounded by $nR_n^2D^{1/n}\le I(n,D)$.
 
-For an indefinite binary isotropic form, complete a primitive zero to a basis and reduce the other diagonal coefficient modulo twice the cross coefficient; its determinant is minus the cross coefficient squared, giving bound $D$. For an anisotropic binary form, choose a primitive $v$ minimizing $|q(v)|=|a|>0$, complete it to a basis and shift the other vector until $|b|\le|a|/2$. Minimality gives $|c|\ge|a|$. Since $ac=b^2-D$, the inequalities force $ac<0$, $a^2\le D-b^2$ and $|c|\le D$. Rank one has coefficient of absolute value $D$.
+For an indefinite binary isotropic (@def:orthogonal-complement) form, [complete]{.other-sense} a primitive (@def:primitive-embedding) zero to a basis and reduce the other [diagonal]{.other-sense} coefficient modulo twice the cross coefficient; its determinant is minus the cross coefficient squared, giving bound $D$. For an anisotropic binary form, choose a primitive $v$ minimizing $|q(v)|=|a|>0$, [complete]{.other-sense} it to a basis and shift the other vector until $|b|\le|a|/2$. Minimality gives $|c|\ge|a|$. Since $ac=b^2-D$, the inequalities force $ac<0$, $a^2\le D-b^2$ and $|c|\le D$. [Rank]{.other-sense} one has coefficient of absolute value $D$.
 :::
 
 The compact-subset step is a source-dependent estimate, not a bound on the change-of-basis matrix. In particular @prop:integral-representative-bound alone does not bound an embedding.
@@ -82,19 +82,19 @@ The sharper Li–Margulis representation constant in (1) remains a separate comp
 
 ::: {.proposition #prop:integral-completion-bound title="Completion preserving prescribed columns"}
 
-Suppose $0<m<n$, $\tau^TG\tau=A$, and $a=|\det A|$, $D=|\det G|$, $k=n-m$. Let $d$ be the gcd of the maximal minors of $\tau$. There is an integral completion $\gamma=(\tau\mid\tau_1)$ with
+Suppose $0<m<n$, $\tau^TG\tau=A$, and $a=|\det A|$, $D=|\det G|$, $k=n-m$. Let $d$ be the gcd of the [maximal]{.other-sense} minors of $\tau$. There is an integral completion $\gamma=(\tau\mid\tau_1)$ with
 $$
 |\det\gamma|=d,\qquad
 \|\gamma^TG\gamma\|_\infty
 \le C:=K(k)a^kD+(m+1)^2\|A\|_\infty.
 \tag{2}
 $$
-It is unimodular exactly when $\tau(\bZ^m)$ is primitive.
+It is unimodular exactly when $\tau(\bZ^m)$ is primitive (@def:primitive-embedding).
 :::
 
 ::: {.proof}
 
-Hermite normal form completes $\tau$ to $\gamma_0$ with determinant of absolute value $d$. Cauchy–Binet shows $d\mid\det A$, so $d\le a$. Write
+Hermite normal form [completes]{.other-sense} $\tau$ to $\gamma_0$ with determinant of absolute value $d$. Cauchy–Binet shows $d\mid\det A$, so $d\le a$. Write
 $$\gamma_0^TG\gamma_0=
 \begin{pmatrix}A&c^T\\c&C_0\end{pmatrix},\qquad
 E=C_0-cA^{-1}c^T,\qquad \lambda=\det A.$$
@@ -145,13 +145,13 @@ $$
 
 ::: {.proposition #prop:calderon-equivalence-bound title="Evaluated integral equivalence bound"}
 
-If $G,J$ are integrally isometric nondegenerate integral matrices of rank $n\ge3$ with heights at most $h,k$, some $U\in\mathrm{GL}_n(\bZ)$ satisfies
+If $G,J$ are integrally isometric nondegenerate (@def:polarization) integral matrices of [rank]{.other-sense} $n\ge3$ with heights at most $h,k$, some $U\in\mathrm{GL}_n(\bZ)$ satisfies
 $$U^TGU=J,\qquad \|U\|_\infty\le F_n(h,k).$$
 :::
 
 ::: {.proof}
 
-For indefinite forms substitute (3) into Calderón's Appendix F constants and Theorem 5.1 with $S=\{\infty\}$ [@Cal23, Theorem 5.1 and Appendix F]. The factor $2^{2n^6}$ in (4) retains the closed-orbit volume factor without absorbing it into another constant. Replacing positive fractional exponents by their ceilings enlarges every bound, and polynomial coefficient height is at most twice matrix height. For definite forms, negate both forms if needed. Each isometry column has square at most $k$; the inverse-Gram estimate bounds its coordinate square by $k(n-1)!h^{n-1}$, which is below $F_n(h,k)^2$.
+For indefinite (@def:definiteness) forms substitute (3) into Calderón's Appendix F constants and Theorem 5.1 with $S=\{\infty\}$ [@Cal23, Theorem 5.1 and Appendix F]. The factor $2^{2n^6}$ in (4) retains the closed-orbit volume factor without absorbing it into another constant. Replacing positive fractional [exponents]{.other-sense} by their ceilings enlarges every bound, and polynomial coefficient height is at most twice matrix height. For definite (@def:definiteness) forms, negate both forms if needed. Each isometry column has square at most $k$; the inverse-Gram estimate bounds its coordinate square by $k(n-1)!h^{n-1}$, which is below $F_n(h,k)^2$.
 :::
 
 ::: {.proposition #prop:integral-embedding-orbit-bound title="Bound in every embedding orbit"}
@@ -160,12 +160,12 @@ Let $0<m\le n$, $n\ge3$, $a=|\det A|$, $h=\|G\|_\infty$, and let $C$ be (2) when
 $$
 \|gX\|_\infty\le n a(n-1)!F_n(h,n^2C). \tag{5}
 $$
-The image of $X$ need not be primitive.
+The image of $X$ need not be primitive (@def:primitive-embedding).
 :::
 
 ::: {.proof}
 
-Complete $X$ to $\gamma$ as in @prop:integral-completion-bound; for $m=n$ take $\gamma=X$. Put $H=\gamma^TG\gamma$, $d=|\det\gamma|\le a$, and $P=\gamma^{-1}\bZ^n$. The lattice $dP$ has a column Hermite basis $B$ with entries at most $d$; $\beta=B/d$ is a basis of $P$ with $\|\beta\|_\infty\le1$ and $\beta^{-1}$ integral with entries bounded by $d(n-1)!$. Since $V=\gamma\beta$ is unimodular,
+[Complete]{.other-sense} $X$ to $\gamma$ as in @prop:integral-completion-bound; for $m=n$ take $\gamma=X$. Put $H=\gamma^TG\gamma$, $d=|\det\gamma|\le a$, and $P=\gamma^{-1}\bZ^n$. The lattice $dP$ has a column Hermite basis (@def:based-module) $B$ with entries at most $d$; $\beta=B/d$ is a basis of $P$ with $\|\beta\|_\infty\le1$ and $\beta^{-1}$ integral with entries bounded by $d(n-1)!$. Since $V=\gamma\beta$ is unimodular,
 $$J=\beta^TH\beta=V^TGV,\qquad \|J\|_\infty\le n^2C.$$
 Choose $U$ from @prop:calderon-equivalence-bound with $U^TGU=J$. If $E$ selects the first $m$ columns, $X'=U\beta^{-1}E$ is integral, has Gram matrix $A$, and obeys (5). Moreover $g=UV^{-1}\in O(G,\bZ)$ and $gX=X'$. This last identity proves the orbit assertion, not only existence of some bounded embedding.
 :::
@@ -176,14 +176,14 @@ The bound (5) is vast but finite and fully evaluated. It does not make the box p
 
 ::: {.proposition #prop:split-binary-all-embedding-bound title="All embeddings in a split binary target"}
 
-Let $G=\left(\begin{smallmatrix}a&b\\b&c\end{smallmatrix}\right)$ be integral, indefinite and nondegenerate, with $b^2-ac=s^2$ for an integer $s>0$. Let $A$ be a nondegenerate integral source of rank one or two and $H_A=\max_{ij}|A_{ij}|$. Every integral $X$ with $X^TGX=A$ has entries bounded by $H_A$ when $a=c=0$, and by $2H_A\max(|a|,|b|,s)$ when $a\ne0$. If $a=0\ne c$, interchange target coordinates first.
+Let $G=\left(\begin{smallmatrix}a&b\\b&c\end{smallmatrix}\right)$ be integral, indefinite (@def:definiteness) and nondegenerate (@def:polarization), with $b^2-ac=s^2$ for an integer $s>0$. Let $A$ be a nondegenerate integral [source]{.other-sense} of [rank]{.other-sense} one or two and $H_A=\max_{ij}|A_{ij}|$. Every integral $X$ with $X^TGX=A$ has entries bounded by $H_A$ when $a=c=0$, and by $2H_A\max(|a|,|b|,s)$ when $a\ne0$. If $a=0\ne c$, interchange [target]{.other-sense} coordinates first.
 :::
 
 ::: {.proof}
 
 For a column $(x_i,y_i)$ and $a\ne0$ put $u_i=ax_i+(b+s)y_i$, $v_i=ax_i+(b-s)y_i$. Then
 $$u_iv_i=aA_{ii},\qquad u_iv_j+v_iu_j=2aA_{ij}.$$
-A nonzero diagonal square bounds both nonzero integer factors by $|a|H_A$. If a diagonal square is zero, nondegeneracy of $A$ forces rank two and a nonzero off-diagonal pairing. Exactly one factor is nonzero, and the pairing bounds it by $2|a|H_A$. Invert:
+A nonzero [diagonal]{.other-sense} square bounds both nonzero integer factors by $|a|H_A$. If a [diagonal]{.other-sense} square is zero, nondegeneracy of $A$ forces [rank]{.other-sense} two and a nonzero off-[diagonal]{.other-sense} pairing. Exactly one factor is nonzero, and the pairing bounds it by $2|a|H_A$. Invert:
 $$y_i=(u_i-v_i)/(2s),\qquad
 x_i=((b+s)v_i-(b-s)u_i)/(2as).$$
 These give the stated bound. If $a=c=0$, use $2bx_iy_i=A_{ii}$ and $b(x_iy_j+y_ix_j)=A_{ij}$ in the same way.
@@ -195,13 +195,13 @@ For $U(4)\to U$, the images $e\mapsto4e$, $f\mapsto f$ give a nonprimitive embed
 
 ::: {.proposition #prop:nonsplit-binary-orbit-bound title="A norm-orbit bound in an anisotropic binary target"}
 
-Let $G$ be indefinite binary with nonsquare discriminant and let $A$ be nondegenerate integral of rank $m=1$ or $2$. Put $\alpha=A_{11}$ and $h=\|G\|_\infty$. If $\alpha=0$, no embedding exists. Otherwise let $v_1,\ldots,v_s$ be a finite transversal for vectors of square $\alpha$ modulo $O(G,\bZ)$, and put $V=\max_{k,i}|(v_k)_i|$, with $V=0$ for an empty transversal. Every embedding orbit meets the box of radius
+Let $G$ be indefinite (@def:definiteness) binary with nonsquare discriminant and let $A$ be nondegenerate (@def:polarization) integral of [rank]{.other-sense} $m=1$ or $2$. Put $\alpha=A_{11}$ and $h=\|G\|_\infty$. If $\alpha=0$, no embedding exists. Otherwise let $v_1,\ldots,v_s$ be a finite transversal for vectors of square $\alpha$ modulo $O(G,\bZ)$, and put $V=\max_{k,i}|(v_k)_i|$, with $V=0$ for an empty transversal. Every embedding orbit [meets]{.other-sense} the box of radius
 $$B=V\quad(m=1),\qquad B=(|A_{12}|+2h|\det A|)V\quad(m=2).$$
 :::
 
 ::: {.proof}
 
-Move the first column of an embedding to a transversal vector $v$. In rank two write $\beta=A_{12}$, $\gamma=A_{22}$, $p=Gv$, $z=(-p_2,p_1)^T$. Then $v^TGz=0$, $z^TGz=(\det G)\alpha$, and the second column is $w=(\beta/\alpha)v+tz$. Its square imposes
+Move the first column of an embedding to a transversal vector $v$. In [rank]{.other-sense} two write $\beta=A_{12}$, $\gamma=A_{22}$, $p=Gv$, $z=(-p_2,p_1)^T$. Then $v^TGz=0$, $z^TGz=(\det G)\alpha$, and the second column is $w=(\beta/\alpha)v+tz$. Its square imposes
 $$t^2=\det A/((\det G)\alpha^2).$$
 Since the determinants and $\alpha$ are nonzero integers, $|t|\le|\det A|$ and $\|z\|_\infty\le2hV$. These give the bound. An empty transversal excludes embeddings.
 :::
@@ -214,12 +214,12 @@ In $\langle1,-2\rangle$, the vectors $(1,0)$, $(0,1)$ and $(2,0)$ have squares $
 
 ::: {.proposition #prop:invariant-embedding-filter title="Finite search with an invariant condition"}
 
-Let $P$ be a decidable predicate on $\operatorname{Emb}_{\bZ}(T,L)$ such that $P(g\circ j)=P(j)$ for all $g\in O(L,\bZ)$. In each nondegenerate regime above, the $P$-locus is empty if and only if its intersection with the corresponding finite orbit box is empty.
+Let $P$ be a decidable predicate on $\operatorname{Emb}_{\bZ}(T,L)$ such that $P(g\circ j)=P(j)$ for all $g\in O(L,\bZ)$. In each nondegenerate (@def:polarization) regime above, the $P$-locus is empty if and only if its intersection with the corresponding finite orbit box is empty.
 :::
 
 ::: {.proof}
 
-An embedding satisfying $P$ moves into the box by a target isometry. Invariance preserves $P$. The reverse implication is immediate. All entries in the box are integers, and the Gram equation and $P$ can be tested finitely.
+An embedding satisfying $P$ moves into the box by a [target]{.other-sense} isometry. Invariance preserves $P$. The reverse implication is immediate. All entries in the box are integers, and the Gram equation and $P$ can be tested finitely.
 :::
 
 Primitivity is invariant: postcomposition by $g$ identifies the quotient modules $L/j(T)$ and $L/(g\circ j)(T)$. For $U(2)\to U$, the map $e\mapsto2e$, $f\mapsto f$ is an embedding of index two. Every embedding has index two because $(\det j)^2=\det U(2)/\det U=4$; hence the embedding space is nonempty but its primitive subspace is empty. A fixed-coordinate sign condition need not be invariant under $O(L,\bZ)$. Its emptiness does not follow from an orbit box.

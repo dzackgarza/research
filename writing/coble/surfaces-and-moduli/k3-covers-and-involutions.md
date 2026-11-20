@@ -4,7 +4,7 @@
 
 ::: {.proposition #prop:double-cover-canonical-bundle title="Canonical bundle of a double cover"}
 
-Let $Y$ be a smooth projective surface, let $B\subset Y$ be a smooth divisor, and let $\mcl$ be a line bundle on $Y$ with $\mcl^{\tensor 2}\cong\OO_Y(B)$.
+Let $Y$ be a smooth [projective]{.other-sense} surface, let $B\subset Y$ be a smooth divisor, and let $\mcl$ be a line bundle on $Y$ with $\mcl^{\tensor 2}\cong\OO_Y(B)$.
 Let $\pi\colon X\to Y$ be the double cover branched along $B$ and determined by $\mcl$.
 Then $\pi_*\OO_X\cong\OO_Y\oplus\inverseof{\mcl}$ and
 $$
@@ -22,10 +22,10 @@ Substituting $\mcl = -K_Y$ gives $K_X = \pi^*(K_Y - K_Y) = \OO_X$.
 
 ::: {.proposition #prop:coble-canonical-cover title="The canonical cover of a terminal Coble surface"}
 
-Let $S$ be a terminal Coble surface of K3 type (@def:coble-surface) over $\CC$, with $\abs{-2K_S} = \theset{C}$ and $C = C_1+\cdots+C_n$ a disjoint union of $n$ smooth rational curves of square $-4$.
+Let $S$ be a terminal (@def:terminal-coble-surface) Coble surface of K3 type (@def:coble-surface) over $\CC$, with $\abs{-2K_S} = \theset{C}$ and $C = C_1+\cdots+C_n$ a disjoint union of $n$ smooth rational curves of square $-4$.
 Let $\mcl = \OO_S(-K_S)$, let $s\in H^0(\mcl^{\tensor_{\OO_S} 2})$ be a section with zero locus $C$, and let $f\colon X\to S$ be the double cover defined by $(\mcl, s)$.
 Then $X$ is a smooth K3 surface [@DK25, Prop. 9.1.1].
-For a general such $S$, $\Pic(X)$ is a $2$-elementary lattice of rank $10+n$ whose discriminant group has rank $12-n$ over $\FF_2$ [@CDL25, Sec. 5.4].
+For a general such $S$, $\Pic(X)$ is a $2$-elementary lattice of [rank]{.other-sense} $10+n$ whose discriminant group (@def:group) has [rank]{.other-sense} $12-n$ over $\FF_2$ [@CDL25, Sec. 5.4].
 :::
 
 ## Geometric involutions on the double cover
@@ -76,7 +76,7 @@ Then the following hold [@AEGS25, Sec. 2.1].
 
 2. The involution $\tau$ has two lifts to $X$:
    - the **Enriques** involution $\ien(x,y,z) = (-x,-y,-z)$, which is fixed-point-free, and whose quotient $Z = X/\ien$ is an Enriques surface (@def:enriques-surface);
-   - the **Nikulin** involution $\inik(x,y,z) = (-x,-y,z)$, whose quotient $Z' = X/\inik$ has eight $A_1$ singularities and a K3 minimal resolution.
+   - the **Nikulin** involution $\inik(x,y,z) = (-x,-y,z)$, whose quotient $Z' = X/\inik$ has eight $A_1$ singularities and a K3 minimal (@def:minimal-resolution) resolution.
 
 3. The involutions $\idp$, $\ien$ and $\inik$ commute, and with the identity they form a Klein four-group in $\Aut(X)$.
 
@@ -170,14 +170,14 @@ $$
 G=(\mathbb G_m^2)\rtimes
 \bigl((\ZZ/2\ZZ)^2\rtimes\ZZ/2\ZZ\bigr).
 $$
-The finite factor is the dihedral group of order $8$: its generators
+The finite factor is the dihedral group (@def:group) of order $8$: its generators
 invert either coordinate and interchange the two factors. The generic
 quotient of $U$ by $G$ has dimension $10$.
 :::
 
 ::: {.proof}
 The involution acts on the displayed monomial by $(-1)^{a+b}$, which gives
-the two sets of exponent pairs. A projective transformation of $\PP^1$
+the two sets of [exponent]{.other-sense} pairs. A [projective]{.other-sense} transformation of $\PP^1$
 commuting with $x\mapsto-x$ preserves its fixed set $\{0,\infty\}$,
 so it is $x\mapsto ax$ or $x\mapsto a/x$. Applying this to each factor,
 and adjoining their interchange, gives $G$. A general branch curve has
@@ -188,7 +188,7 @@ finite stabilizer, so the quotient dimension is $12-2=10$, as in
 ::: {.proposition #prop:horikawa-pair-volumes title="The branch, K3, and Enriques pairs"}
 Let $\pi\colon X\to Y=\PP^1\times\PP^1$ be a smooth member of this
 family, let $q\colon X\to Z$ be its Enriques quotient, and let $R$ be the
-ramification divisor of $\pi$. Put $R_Z=q(R)$ with its reduced structure.
+ramification divisor of $\pi$. Put $R_Z=q(R)$ with its reduced [structure]{.other-sense}.
 For $0<\epsilon\ll1$,
 $$
 \begin{aligned}
@@ -208,7 +208,7 @@ $\pi^*B=2R$. The map $q$ is étale and $q^*R_Z=R$
 [@AEGS25, §2.1], so $K_X=q^*K_Z$ and the second covering equality
 follows. On $Y$, $K_Y=(-2,-2)$ and $B=(4,4)$; hence
 $K_Y+(1+\epsilon)B/2=(2\epsilon,2\epsilon)$ has square $8\epsilon^2$.
-Pullback multiplies intersections by the degree of the cover, which
+[Pullback]{.other-sense} multiplies intersections by the [degree]{.other-sense} of the cover, which
 gives the remaining equalities.
 :::
 
@@ -237,7 +237,7 @@ is developed in @sec-abcde-surfaces and the classifying map in
 
 ::: {.definition #def:lattice-involutions-k3 title="Lattice involutions for K3 covers" defines="lattice involution; $\Idp$; $\Ien$; $\Inik$"}
 
-Fix a basis of the K3 lattice $\lkt$ corresponding to the decomposition $U^3 \oplus E_8^2$, and write a general vector as $(u_1, u_2, u_3, \alpha_1, \alpha_2)$ with $u_i \in U$ and $\alpha_j \in E_8$.
+Fix a basis (@def:based-module) of the K3 lattice $\lkt$ corresponding to the decomposition $U^3 \oplus E_8^2$, and write a general vector as $(u_1, u_2, u_3, \alpha_1, \alpha_2)$ with $u_i \in U$ and $\alpha_j \in E_8$.
 The three geometric involutions $\idp$, $\ien$, and $\inik$ of @prop:k3-cover-p1xp1-involutions induce isometries of $\lkt$, denoted $\Idp$, $\Ien$, and $\Inik$ respectively, given in this basis by
 $$
 \begin{aligned}
@@ -266,9 +266,9 @@ $$
 \end{aligned}
 $$
 Because $\Idp$ and $\Ien$ are involutions, $\Idp\circ\Inik = \Ien = \Inik\circ\Idp$ and $\Ien\circ\Inik = \Idp = \Inik\circ\Ien$.
-So the four elements are closed under composition, they commute, and every element has order at most $2$.
+So the four elements are [closed]{.other-sense} under composition, they commute, and every element has order at most $2$.
 The three involutions are distinct and nontrivial: $\Idp$ and $\Ien$ send $(u_1, 0, 0, 0, 0)$ to $(-u_1, 0, 0, 0, 0)$ and $\Inik$ fixes it, and $\Idp$ sends $(0, 0, 0, \alpha_1, 0)$ to $(0, 0, 0, -\alpha_1, 0)$ while $\Ien$ sends it to $(0, 0, 0, 0, \alpha_1)$.
-A group of order $4$ in which every element has order at most $2$ is isomorphic to $\ZZ_2^2$.
+A group (@def:group) of order $4$ in which every element has order at most $2$ is isomorphic to $\ZZ_2^2$.
 :::
 
 ::: {#not:invariant-coinvariant-sublattices .notation title="Invariant and coinvariant sublattices of the lattice involutions" defines="invariant sublattice; coinvariant sublattice; $S_\star$; $T_\star$; $L_{\Nik}^{+}$; $L_{\Nik}^{-}$"}
@@ -280,7 +280,7 @@ By @prop:involution_eigenspaces, $S_\star$ and $T_\star$ are orthogonal and rati
 
 ::: {.proposition #prop:k3-cover-eigenlattices title="Eigenlattices of the lattice involutions"}
 
-The invariant and coinvariant sublattices of $\Idp$, $\Ien$ and $\Inik$ are even and $2$-elementary.
+The invariant and coinvariant sublattices (@not:invariant-coinvariant-sublattices) of $\Idp$, $\Ien$ and $\Inik$ are even (@def:form-axioms) and $2$-elementary.
 Their isometry classes and their invariants $(r,a,\delta)_n$, where $n = n_+$ is the number of positive eigenvalues, are the following [@AEGS25, Sec. 2.3].
 
 | $L$ | Isometry class | $\rank_\ZZ(L)$ | $\operatorname{sig}(L)$ | $(r,a,\delta)_n$ | $A_L$ |
@@ -303,7 +303,7 @@ Then $H^2(X,\ZZ)^{\iota}$ contains no class of square $-2$, and consequently $\i
 
 ::: {.proof}
 
-With an isotropic basis $a,b$ of $U(2)$ satisfying $a\cdot b = 2$, the vectors are $ma+nb$ and have square $4mn$, so $-2$ is not attained; an integral class fixed by $\iota$ lies in $H^2(X,\ZZ)^{\iota}$, and the class of a smooth rational curve fixed by $\iota$ is such a class of square $-2$.
+With an isotropic basis (@def:based-module) $a,b$ of $U(2)$ satisfying $a\cdot b = 2$, the vectors are $ma+nb$ and have square $4mn$, so $-2$ is not attained; an integral class fixed by $\iota$ lies in $H^2(X,\ZZ)^{\iota}$, and the class of a smooth rational curve fixed by $\iota$ is such a class of square $-2$.
 :::
 
 ::: {#ex:square-minus-2-class-tdp .example title="A class of square $-2$ in $\tdp$"}

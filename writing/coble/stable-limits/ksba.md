@@ -3,7 +3,7 @@
 
 ## How a stable limit is obtained
 
-::: {.construction #cons:degree-two-k3-affine-sphere title="The degree-two K3 affine sphere" defines="integral affine disc $P(\lambda)$; $B(\lambda)$; integral affine sphere; integral affine ramification divisor $R_{\mathrm{IA}}$; $a_i$; $b_i$"}
+::: {.construction #cons:degree-two-k3-affine-sphere title="The degree-two K3 affine sphere" defines="integral affine disc $P(\lambda)$; $B(\lambda)$; integral affine ramification divisor $R_{\mathrm{IA}}$; $a_i$; $b_i$"}
 
 For the degree-two K3 moduli space $F_2$, let $K$ be a fundamental chamber of the Coxeter fan in $N=U\oplus E_8(-1)^2\oplus A_1(-1)$. A class $\lambda\in K$ determines a nef class $L$ on the rational surface $T$ used in [@AET23, §§5–6]. First take $\lambda$ in the open chamber, with all length parameters positive. Start with the moment polygon of a toric model of $(T,L)$. It has eighteen sides, indexed $0,\ldots,17$. Perform Symington surgeries of positive sizes $b_{18},b_{19},b_{20}$ on sides $0,6,12$. The resulting integral affine disc $P(\lambda)$ has three interior $I_1$ singularities [@AET23, Construction 6.1].
 

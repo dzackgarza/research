@@ -2,7 +2,7 @@
 
 ## Rings with involution and duality {#sec-ring-with-involution}
 
-::: {.definition #def:ring-with-involution title="Involutions and the duality functor" defines="involution; $\bar a$; duality functor; $(-)^{*}$; $f^{*}$; $\operatorname{can}_M$"}
+::: {.definition #def:ring-with-involution title="Involutions and the duality functor" defines="ring with involution; $\bar a$; duality functor; $(-)^{*}$; $f^{*}$; $\operatorname{can}_M$"}
 
 An *involution* on a ring $A$ is a ring isomorphism $A\to A^{\opop}$, written $a\mapsto\bar a$, with $\bar{\bar a}=a$ for every $a\in A$.
 It defines the *duality functor*

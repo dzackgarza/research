@@ -5,7 +5,7 @@
 A generalized element of $X$ with domain $T$ is a morphism $T\to X$ (@def:generalized-element).
 If $F\colon C^{\opop}\to\mathbf{Set}$ is a presheaf, an element $x\in F(T)$ is the object $(T,x)$ of $\int_C F$ defined in @def:category-of-elements.
 
-::: {.definition #def:element-functor title="Elements as maps from a corepresenting object" defines="element; corepresenting object"}
+::: {.definition #def:element-functor title="Elements as maps from a corepresenting object" defines="corepresenting object"}
 If a concrete functor $U\colon C\to\mathbf{Set}$ is corepresented by $P$, a specified natural isomorphism
 $$
 U\cong\Hom_C(P,-)

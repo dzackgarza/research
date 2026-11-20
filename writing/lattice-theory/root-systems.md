@@ -288,7 +288,7 @@ $$
 $$
 :::
 
-::: {.definition #def:root-system-F4 title="The root system $F_4$" defines="long roots; short roots; $\alpha_i$"}
+::: {.definition #def:root-system-F4 title="The root system $F_4$" defines="$\alpha_i$"}
 Equip $\bQ^4$ with the negative standard form. The root system $F_4$ consists of the $24$ **long roots**
 $$
 \theset{\pm e_i\pm e_j\st1\le i<j\le4}
@@ -308,7 +308,7 @@ $$
 $$
 :::
 
-::: {.definition #def:root-system-G2 title="The root system $G_2$" defines="$\Sigma$; trace-zero lattice; $\bZ^3_\Delta$; short roots; long roots; $\alpha_i$"}
+::: {.definition #def:root-system-G2 title="The root system $G_2$" defines="$\Sigma$; trace-zero lattice; $\bZ^3_\Delta$; $\alpha_i$"}
 Equip $\bZ^3$ with the negative standard form and let $\Sigma\colon\bZ^3\too\bZ$ be the coordinate-sum morphism. Its kernel is the trace-zero lattice in the exact sequence
 $$
 0\too\bZ^3_\Delta\too\bZ^3\xrightarrow{\Sigma}\bZ\too0.

@@ -103,7 +103,7 @@ Then the K3 surface $X$ has two commuting involutions: the fixed-point-free **En
 The surface $X$ and both involutions are determined by the pair $(Z,[\mcl_Z])$ [@AEGS25, §2.1, Rem. 2.2].
 :::
 
-::: {.definition #def:nl-locus-enriques title="Noether–Lefschetz locus \\mathrm{NL}_{S_{\\mathrm{En}}}" defines="Noether–Lefschetz locus; $\mathrm{NL}_{S_{\mathrm{En}}}$; invariant lattice; $\sen$; Noether–Lefschetz closure; $B$"}
+::: {.definition #def:nl-locus-enriques title="Noether–Lefschetz locus \\mathrm{NL}_{S_{\\mathrm{En}}}" defines="Noether–Lefschetz locus; $\mathrm{NL}_{S_{\mathrm{En}}}$; $\sen$; Noether–Lefschetz closure; $B$"}
 
 The moduli space $\fentwo$ of degree-$2$ numerically polarized Enriques surfaces (@def:enriques-surface) maps to the K3 moduli space $\fttz$ via the canonical morphism $j$ of @lem:fen2_normalization. Its map to the scheme-theoretic image is the normalization; an embedding is not asserted. The image lies in the **Noether–Lefschetz locus** $\mathrm{NL}_{S_{\mathrm{En}}}$ defined by the primitive embedding of the **invariant** (algebraic) lattice of $\ien$,
 $$

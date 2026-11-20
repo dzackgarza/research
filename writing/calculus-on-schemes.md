@@ -228,7 +228,7 @@ On $X=\operatorname{Spec}k[x,y]$, the connection $\nabla=d+x\,dy$ on $\mathcal O
 
 For this section assume that $\Omega^1$ is finite locally free and that $2$ is invertible. Write $\mathcal T=(\Omega^1)^\vee$. The bracket of vector fields is linear over the base scalars and satisfies $[v,aw]=v(a)w+a[v,w]$.
 
-:::{.definition #def:calculus-torsion title="Torsion" defines="torsion; $T_\nabla$; torsion-free"}
+:::{.definition #def:calculus-torsion title="Torsion" defines="torsion of a connection; $T_\nabla$; torsion-free connection"}
 A connection on $\mathcal T$ is an affine connection. Its *torsion* is
 
 \begin{align*}
@@ -273,11 +273,11 @@ For $\mathcal E=\mathcal F$, symmetry means $b_1=b_2$. For finite locally free m
 The first line uses the dual of a morphism; the second uses $b\mapsto(s\mapsto b(s,-))$ and interchange of the arguments. All maps are over $\mathcal A$.
 :::
 
-:::{.definition #def:calculus-real-positivity title="Positivity at real points" defines="positive semidefinite; positive definite; nondegenerate at $p$"}
+:::{.definition #def:calculus-real-positivity title="Positivity at real points" defines="positive semidefinite; nondegenerate at $p$"}
 Let $X$ be an $\mathbb R$-scheme, $\mathcal E$ finite locally free, and $g$ a symmetric pairing on $\mathcal E$. At a real point $p:\operatorname{Spec}\mathbb R\to X$, the pairing is *positive semidefinite* if $(p^*g)(v,v)\geq0$ for every $v\in p^*\mathcal E$, and *positive definite* if the inequality is strict for every nonzero $v$. It is positive semidefinite or positive definite on the real locus if the corresponding condition holds at every real point. Nondegeneracy at $p$ means that the adjoint of $p^*g$ is an isomorphism.
 :::
 
-:::{.definition #def:calculus-isometric-endomorphism title="Endomorphisms compatible with a metric" defines="compatible with $g$; isometric endomorphism"}
+:::{.definition #def:calculus-isometric-endomorphism title="Endomorphisms compatible with a metric" defines="isometric endomorphism"}
 Let $(\mathcal E,g)$ be a finite locally free module with perfect symmetric pairing. An endomorphism $F$ is *compatible with $g$*, or *isometric*, if $g(Fs,Ft)=g(s,t)$ for all local sections. This identity makes $F$ an automorphism: in a frame, $F^{\mathsf t}GF=G$ implies that $\det F$ is a unit. In particular, $F$ induces isometries on all fibers. On a nonreduced scheme, the fiber identities alone need not imply the sheaf identity, since residue fields do not detect nilpotents.
 :::
 

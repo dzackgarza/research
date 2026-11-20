@@ -131,7 +131,7 @@ b_{\mathcal M}.
 The representing equivalence includes arrows and all higher cells between families, not only the existence of $F$.
 :::
 
-::: {.definition #def:higher-category title="The category of higher categories" defines="$\mathbf{Cat}_{\infty,\infty}$; $\widetilde{\mathbf{Cat}}_{\infty,\infty}$; $p_{\mathcal V}$; higher category; decoded higher category; object of $C$"}
+::: {.definition #def:higher-category title="The category of higher categories" defines="$\mathbf{Cat}_{\infty,\infty}$; $\widetilde{\mathbf{Cat}}_{\infty,\infty}$; $p_{\mathcal V}$; higher category; decoded higher category"}
 
 Let $\mathcal M_{\mathrm{cocart}}$ be the replete base-change-stable class of $1$-cells $G$ in $\mcu$ for which $\operatorname{Dec}_{\mcu}(G)$ is a $\mcu$-small cocartesian fibration in $\mck$.
 Assume that it has a classifier
@@ -229,7 +229,7 @@ When $C=\mathbf{Cat}_{\infty,\infty}$, such a point is itself the classifying po
 More generally, a functor $R\colon C\to\mathbf{Cat}_{\infty,\infty}$ sends a point $x\colon *\to C$ to the classifying point $R\circ x$ of a higher category.
 :::
 
-::: {.definition #def:grothendieck-construction title="Categorical families and categories of elements" defines="$F^{\sharp}$; category of elements; $\int_B F^{\sharp}$; fiber over $s$"}
+::: {.definition #def:grothendieck-construction title="Categorical families and categories of elements" defines="$F^{\sharp}$; $\int_B F^{\sharp}$; fiber over $s$"}
 
 Let $G\colon c\to b$ be a family in $\mcu$, and write
 $$
@@ -382,7 +382,7 @@ $$
 since $s(\xi)$ and $t(\xi)$ are parallel cells of the same iterated hom-object.
 :::
 
-::: {.definition #def:equivalence-of-categories title="Equivalences" defines="structure of reversibility; invertible cell; equivalence; $C\simeq D$"}
+::: {.definition #def:equivalence-of-categories title="Equivalences" defines="structure of reversibility; invertible cell; $C\simeq D$"}
 
 A *structure of reversibility* is a family $\mcr$ of positive-dimensional cells in the iterated hom-objects such that, for every cell
 $$
@@ -436,7 +436,7 @@ is the underlying homotopy type obtained by inverting every morphism.
 The right adjoint $C\mapsto C^\simeq$ is the core obtained by retaining every object and only the equivalences [@Lur18c, Tags 01DQ and 02F5].
 :::
 
-::: {.definition #def:bicomplete-cat-infinity title="Limits, loops, and suspensions" defines="loop object; $\Omega_xX$; suspension; $\Sigma A$"}
+::: {.definition #def:bicomplete-cat-infinity title="Limits, loops, and suspensions" defines="loop object; $\Omega_xX$; $\Sigma A$"}
 
 The higher category $\mathbf{Cat}_{\infty,\infty}$ has an initial object $\varnothing$ and a terminal object $*$, and it is bicomplete.
 For a pointed higher category $(X,x)$, where $x\colon *\to X$, define

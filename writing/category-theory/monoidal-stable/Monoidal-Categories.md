@@ -44,7 +44,7 @@ Dually, finite coproducts and an initial object give the *cocartesian* structure
 For a commutative ring $R$, the tensor product and the direct sum give two different monoidal structures on $R\text{-}\mathbf{Mod}$, namely $(R\text{-}\mathbf{Mod},\tensor_R,R)$ and $(R\text{-}\mathbf{Mod},\oplus,0)$, and a statement about "the" monoidal structure names which one it uses.
 :::
 
-::: {.definition #def:braided-symmetric title="Braided and symmetric structures" defines="braiding; symmetric"}
+::: {.definition #def:braided-symmetric title="Braided and symmetric structures" defines="braiding; symmetric monoidal category"}
 
 A *braiding* on a monoidal category is a natural isomorphism $\gamma_{a,b}\colon a\tensor b\cong b\tensor a$ satisfying the two hexagon conditions relating $\gamma$ to $\alpha$.
 A monoidal category is *symmetric* when it is equipped with a braiding satisfying
@@ -75,7 +75,7 @@ The value $[b,c]$ is the *internal hom*. For a commutative ring $R$, $(R\text{-}
 The *dual object* of $a$ in a closed monoidal category is $[a,e]$; that the canonical morphism $a\to[[a,e],e]$ is an isomorphism is a hypothesis on $a$, stated where it is used.
 :::
 
-::: {.definition #def:dualizable-object title="Dualizable objects" defines="dualizable; dual; coevaluation; evaluation"}
+::: {.definition #def:dualizable-object title="Dualizable objects" defines="dualizable; coevaluation; evaluation"}
 
 Let $\langle V,\tensor,e\rangle$ be a symmetric monoidal category (@def:braided-symmetric), with $\alpha,\lambda,\varrho$ suppressed from the notation by @thm:coherence.
 An object $a\in V$ is *dualizable* when there exist an object $a^\vee$, the *dual* of $a$, and morphisms

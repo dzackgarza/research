@@ -8,9 +8,9 @@ Throughout, $S$, $T$, and $L$ denote nondegenerate integral lattices. The notati
 ::: {.definition #def:saturation title="Saturation" defines="saturation; saturated; $\Sat_L(\iota)$"}
 
 Let $\iota\colon S\injects L$ be a morphism of lattices, let
-$\iota_\QQ\colon S_\QQ\injects L_\QQ$ be its base change along $\ZZ\to\QQ$, and let
+$\iota_\QQ\colon S_\QQ\injects L_\QQ$ be its base change (@def:module-base-change) along $\ZZ\to\QQ$, and let
 $j_L\colon L\to L_\QQ$ be the canonical map.
-The **saturation** of $\iota$ is the pullback in $\ZZ\text{-}\mathbf{Mod}$
+The **saturation** of $\iota$ is the pullback (@def:pullback-square) in $\ZZ\text{-}\mathbf{Mod}$
 
 ```tikzcd
 \Sat_L(\iota) \arrow[r] \arrow[d] & S_\QQ \arrow[d,"\iota_\QQ"] \\
@@ -19,7 +19,7 @@ L \arrow[r,"j_L"'] & L_\QQ
 
 The maps $S\to S_\QQ$ and $\iota\colon S\to L$ induce a canonical morphism
 $S\to\Sat_L(\iota)$.
-The embedding $\iota$ is **saturated** when this morphism is an isomorphism.
+The embedding $\iota$ is **saturated** when this morphism is an isomorphism (@def:isomorphism-of-objects).
 :::
 
 ::: {.proposition #prop:primitive-characterization title="Characterization of primitive embeddings"}
@@ -28,28 +28,28 @@ Let $\iota\colon S\injects L$ be a morphism of lattices, and let
 $$
 0\too S\xrightarrow{\iota}L\xrightarrow{q}Q_\iota\too0
 $$
-be its cokernel sequence.
+be its cokernel (@def:kernel-cokernel) sequence.
 The following conditions are equivalent.
 
-1. $Q_\iota$ is torsion-free.
+1. $Q_\iota$ is torsion-free (@def:module-subcategories).
 
-2. The canonical comparison $S\to\Sat_L(\iota)$ of @def:saturation is an isomorphism.
+2. The canonical comparison $S\to\Sat_L(\iota)$ of @def:saturation is an isomorphism (@def:isomorphism-of-objects).
 
 3. There exists a $\ZZ$-linear retraction $r\colon L\to S$ with $r\circ\iota=\id_S$.
 
-4. Every $\ZZ$-basis of $S$ extends along $\iota$ to a $\ZZ$-basis of $L$.
+4. Every $\ZZ$-basis (@def:based-module) of $S$ extends along $\iota$ to a $\ZZ$-basis of $L$.
 
 5. The restriction morphism $\iota^\vee\colon\Hom_\ZZ(L,\ZZ)\twoheadrightarrow\Hom_\ZZ(S,\ZZ)$ is an epimorphism in $\bZ\text{-}\mathbf{Mod}$.
 
 6. The canonical morphism $S\to(S^{\perp L})^{\perp L}$ is an isomorphism.
 
-A morphism satisfying these conditions is a **primitive embedding**.
+A morphism satisfying these conditions is a **primitive embedding** (@def:primitive-embedding).
 :::
 
 ::: {.proof}
 
 Tensor the cokernel sequence with $\QQ$.
-The universal property of @def:saturation gives
+The universal [property]{.other-sense} of @def:saturation gives
 $\Sat_L(\iota)\isoto\ker\qty{L\too L_\QQ\too(Q_\iota)_\QQ}$.
 The induced sequence
 $$
@@ -57,11 +57,11 @@ $$
 \too\ker\qty{Q_\iota\to(Q_\iota)_\QQ}
 \too0
 $$
-is exact.
-The last term is the torsion subgroup of the finitely generated $\ZZ$-module $Q_\iota$, proving $(1)\Longleftrightarrow(2)$.
+is exact (@def:exact-complex).
+The last term is the torsion subgroup of the finitely generated (@def:module-subcategories) $\ZZ$-module $Q_\iota$, proving $(1)\Longleftrightarrow(2)$.
 
 A finitely generated torsion-free $\ZZ$-module is free.
-Hence $(1)$ implies that the cokernel sequence splits, producing the retraction in $(3)$.
+Hence $(1)$ implies that the cokernel sequence [splits]{.other-sense}, producing the retraction in $(3)$.
 Conversely, a retraction gives $L\cong S\oplus\ker r$, so $Q_\iota\cong\ker r$ is free.
 Thus $(1)\Longleftrightarrow(3)$.
 
@@ -82,9 +82,9 @@ Hence $(2)\Longleftrightarrow(6)$.
 ::: {.definition #def:coble-embedding-equivalence title="The groupoid of primitive embeddings" defines="groupoid of primitive embeddings; $\mathbf{PrimEmb}_S$; $\Emb(S,L)$; fixed-target isomorphism classes; primitive-subobject orbit set"}
 
 Fix a lattice $S$.
-Let $\mathbf{PrimEmb}_S$ be the core of the full subcategory of the undercategory
-$S/\mathbf{Lat}_\ZZ$ on primitive morphisms.
-Thus its objects are primitive embeddings $\iota\colon S\injects M$, and a morphism
+Let $\mathbf{PrimEmb}_S$ be the core (@def:core) of the full subcategory (@def:subcategory) of the undercategory
+$S/\mathbf{Lat}_\ZZ$ on primitive (@def:primitive-embedding) morphisms.
+Thus its objects are primitive embeddings (@def:primitive-embedding) $\iota\colon S\injects M$, and a morphism
 from $\iota_1\colon S\injects M_1$ to $\iota_2\colon S\injects M_2$ is an isometry
 $\varphi\colon M_1\isoto M_2$ for which the triangle
 ```tikzcd
@@ -93,16 +93,16 @@ M_1 \arrow[rr,"\varphi"'] && M_2
 ```
 commutes.
 
-For a fixed target $L$, write
+For a fixed [target]{.other-sense} $L$, write
 $\Emb(S,L)\definedas\operatorname{PrimEmb}(S,L)$ for the set of primitive embedding morphisms.
-Postcomposition by $\Orth(L)$ gives the fixed-target isomorphism classes
+Postcomposition by $\Orth(L)$ gives the fixed-[target]{.other-sense} isomorphism (@def:isomorphism-of-objects) classes
 $\Orth(L)\backslash\Emb(S,L)$.
-The commuting right action of $\Orth(S)$ gives the primitive-subobject orbit set
+The commuting right action of $\Orth(S)$ gives the primitive-subobject (@def:subobject-relation) orbit set
 $\Orth(L)\backslash\Emb(S,L)/\Orth(S)$.
 
 Nikulin's primitive-embedding classification [@Nik80 Prop. 1.15.1] classifies the
 fixed-source isomorphism classes $\Orth(L)\backslash\Emb(S,L)$ by the corresponding
-gluing data; passing to primitive subobjects introduces the additional right
+gluing data (@cons:embedding-gluing-data); passing to primitive subobjects introduces the additional right
 $\Orth(S)$-action.
 :::
 
@@ -111,7 +111,7 @@ $\Orth(S)$-action.
 ::: {.definition #def:overlattice title="Overlattices and their discriminant subobjects" defines="overlattice; $H_\iota$"}
 
 An **overlattice** of a lattice $S$ is a lattice morphism
-$\iota\colon S\injects L$ whose cokernel $H_\iota$ is finite length, with exact sequence
+$\iota\colon S\injects L$ whose cokernel (@def:kernel-cokernel) $H_\iota$ is finite [length]{.other-sense}, with exact (@def:exact-complex) sequence
 $$
 0\too S\xrightarrow{\iota}L\xrightarrow{c_\iota}H_\iota\too0.
 $$
@@ -119,15 +119,15 @@ Since $\iota_\QQ\colon S_\QQ\isoto L_\QQ$, its inverse induces
 $\lambda_\iota\colon L\injects S^\#$ with $\lambda_\iota\circ\iota=\iota_S$.
 Functoriality of the bilinear cokernel gives
 $\bar{\lambda}_\iota\colon(H_\iota,0)\injects A_S$.
-If $S$ is even, $L$ is even exactly when this refines to
+If $S$ is even (@def:form-axioms), $L$ is even exactly when this refines to
 $\bar{\lambda}_{\iota,q}\colon(H_\iota,0)\injects A_{S,q}$.
 :::
 
 ::: {.theorem #thm:nikulin-gluing title="Nikulin's gluing correspondence"}
 
-Let $S$ be an even lattice.
-Let $\operatorname{Over}^{\mathrm{ev}}(S)$ be the poset of even overlattice morphisms $S\injects L$, ordered by morphisms over $S$.
-Let $\operatorname{IsoSub}(A_{S,q})$ be the poset of isotropic quadratic subobjects
+Let $S$ be an even (@def:form-axioms) lattice.
+Let $\operatorname{Over}^{\mathrm{ev}}(S)$ be the poset (@def:preorder-category) of even overlattice (@def:overlattice) morphisms $S\injects L$, ordered by morphisms over $S$.
+Let $\operatorname{IsoSub}(A_{S,q})$ be the poset of isotropic (@def:orthogonal-complement) quadratic subobjects (@def:subobject-relation)
 $h_q\colon(H,0)\injects A_{S,q}$, ordered by factorization.
 Then
 $$
@@ -138,8 +138,8 @@ $$
 as posets [@Nik80, §1.4].
 
 For $h_q$ with bilinear monomorphism $h\colon H\injects A_S^\sharp$, let
-$\pi_S\colon S^\#\twoheadrightarrow A_S^\sharp$ be the cokernel morphism.
-The corresponding overlattice is the pullback in $\bZ\text{-}\mathbf{Mod}$
+$\pi_S\colon S^\#\twoheadrightarrow A_S^\sharp$ be the cokernel (@def:kernel-cokernel) morphism.
+The corresponding overlattice is the pullback (@def:pullback-square) in $\bZ\text{-}\mathbf{Mod}$
 ```tikzcd
 L_h \arrow[r] \arrow[d] & S^\# \arrow[d,"\pi_S"] \\
 H \arrow[r,hook,"h"'] & A_S^\sharp .
@@ -156,8 +156,8 @@ H^{\perp_{A_S}}
 \injects
 A_S
 $$
-be the right orthogonal-complement kernel of the underlying isotropic bilinear subobject $h\colon(H,0)\injects A_S$.
-Since $h$ is isotropic, the universal property of the orthogonal-complement kernel gives the unique monomorphism
+be the right orthogonal-complement kernel (@def:kernel-cokernel) of the underlying isotropic bilinear subobject $h\colon(H,0)\injects A_S$.
+Since $h$ is isotropic, the universal [property]{.other-sense} of the orthogonal-complement kernel gives the unique monomorphism
 $$
 \lambda_h\colon(H,0)\injects H^{\perp_{A_S}},
 \qquad
@@ -204,7 +204,7 @@ A_{L_h}
 0
 $$
 in $\mathbf{BilMod}_{\bZ}$.
-The index equality follows from the exact sequence
+The index (@def:index) equality follows from the exact (@def:exact-complex) sequence
 $$
 0\to S\to L_h\to H\to0,
 $$
@@ -215,13 +215,13 @@ Equivariance under $\Orth(S)$ follows from functoriality of $S\mapsto(S^\#,A_S,q
 
 ::: {.construction #cons:embedding-gluing-data title="Gluing data of a primitive embedding" defines="gluing data; $h_{S,q}$; $h_{T,q}$; $\gamma_q$"}
 
-Let $\iota_S\colon S\injects L$ be a primitive embedding of even lattices with $L$ even, and let
+Let $\iota_S\colon S\injects L$ be a primitive embedding (@def:primitive-embedding) of even (@def:form-axioms) lattices with $L$ even, and let
 $\iota_T\colon T\injects L$ represent its orthogonal complement.
-Then $j\definedas\iota_S\perp\iota_T\colon S\perp T\injects L$ is an even overlattice, with cokernel sequence
+Then $j\definedas\iota_S\perp\iota_T\colon S\perp T\injects L$ is an even overlattice (@def:overlattice), with cokernel (@def:kernel-cokernel) sequence
 $$
 0\too S\perp T\xrightarrow{j}L\too H_j\too0.
 $$
-Let $h_{j,q}\colon(H_j,0)\injects A_{S,q}\perp A_{T,q}$ be its isotropic quadratic subobject from @thm:nikulin-gluing.
+Let $h_{j,q}\colon(H_j,0)\injects A_{S,q}\perp A_{T,q}$ be its isotropic (@def:orthogonal-complement) quadratic subobject (@def:subobject-relation) from @thm:nikulin-gluing.
 
 Primitivity implies that the two projections of $h_{j,q}$ are monomorphisms.
 Write the induced quadratic subobjects as
@@ -233,34 +233,34 @@ $$
 Then there is a unique isometry $\gamma_q\colon H_{S,q}\isoto H_{T,q}(-1)$ whose graph is $h_{j,q}$.
 Thus the gluing construction attached to $\iota$ is $(h_{S,q},h_{T,q},\gamma_q)$.
 
-The index/discriminant relation gives
+The index (@def:index)/discriminant relation gives
 $$
 \abs{\disc{T}}
 =
 \frac{\abs{\disc{L}}\,\cardinality{H_j}^2}{\abs{\disc{S}}}.
 $$
-If $L$ is unimodular, the two projections are isomorphisms and $A_{S,q}\isoto A_{T,q}(-1)$.
+If $L$ is unimodular, the two projections are isomorphisms (@def:isomorphism-of-objects) and $A_{S,q}\isoto A_{T,q}(-1)$.
 This is the primitive-embedding gluing construction of [@Nik80, §1.4--1.5].
 :::
 
 ## Splitting of unimodular sublattices
 
-::: {.definition #def:lattice-split title="Orthogonal splitting" defines="splits"}
+::: {.definition #def:lattice-split title="Orthogonal splitting" defines="orthogonal splitting"}
 
-Let $\iota_S\colon S\injects L$ be a primitive embedding, and let
-$\iota_T\colon T\injects L$ represent its orthogonal-complement subobject.
+Let $\iota_S\colon S\injects L$ be a primitive embedding (@def:primitive-embedding), and let
+$\iota_T\colon T\injects L$ represent its orthogonal-complement subobject (@def:subobject-relation).
 The pair induces the orthogonal-sum morphism
 $$
 j_{\iota_S}\colon S\oplus T\too L,
 \qquad
 (s,t)\longmapsto\iota_S(s)+\iota_T(t).
 $$
-The embedding $\iota$ **splits** when $j_\iota$ is an isomorphism.
+The embedding $\iota$ **[splits]{.other-sense}** when $j_\iota$ is an isomorphism (@def:isomorphism-of-objects).
 :::
 
 ::: {.proposition #prop:unimodular-splits title="Unimodular sublattices split"}
 
-Let $\iota\colon S\injects L$ be a primitive embedding with $S$ unimodular and $L$ nondegenerate.
+Let $\iota\colon S\injects L$ be a primitive embedding (@def:primitive-embedding) with $S$ unimodular and $L$ nondegenerate (@def:polarization).
 Then the orthogonal-sum morphism of @def:lattice-split is an isometry
 $j_\iota\colon S\oplus S^{\perp L}\isoto L$.
 If $L$ is unimodular, then $S^{\perp L}$ is unimodular.
@@ -268,7 +268,7 @@ If $L$ is unimodular, then $S^{\perp L}$ is unimodular.
 
 ::: {.proof}
 
-Let $\beta_S^\sharp\colon S\isoto S^\vee$ be the adjoint isomorphism of the unimodular lattice $S$, and let
+Let $\beta_S^\sharp\colon S\isoto S^\vee$ be the adjoint (@def:adjoint-morphism) isomorphism (@def:isomorphism-of-objects) of the unimodular lattice (@def:unimodular) $S$, and let
 $\iota^\vee\colon L^\vee\to S^\vee$ be restriction along $\iota$.
 Define
 $$
@@ -279,12 +279,12 @@ r\definedas
 \colon L\too S.
 $$
 Since $\iota$ preserves the bilinear forms, $r\circ\iota=\id_S$.
-Moreover, $\ker r$ is exactly the orthogonal-complement subobject $S^{\perp L}\injects L$.
+Moreover, $\ker r$ is exactly the orthogonal-complement subobject (@def:subobject-relation) $S^{\perp L}\injects L$.
 Hence
 $$
 0\too S^{\perp L}\too L\xrightarrow{r}S\too0
 $$
-is split by $\iota$, and
+is [split]{.other-sense} by $\iota$, and
 $j_\iota\colon S\oplus S^{\perp L}\isoto L$ is an isometry.
 
 If $L$ is unimodular, additivity of the discriminant functor gives
@@ -295,24 +295,24 @@ Thus $S^{\perp L}$ is unimodular.
 
 ::: {.lemma #lem:unimodular-divisibility title="Divisibility of isotropic vectors in unimodular lattices"}
 
-Let $L$ be a nondegenerate unimodular lattice and let $v\in L$ be a primitive isotropic vector.
+Let $L$ be a nondegenerate (@def:polarization) unimodular lattice (@def:unimodular) and let $v\in L$ be a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) vector.
 Then there exists $w\in L$ with $\beta_L(v, w) = 1$.
 In particular $\div_L(v) = 1$ for every primitive vector $v\in L$.
 :::
 
 ::: {.proof}
 
-Since $L$ is unimodular, the canonical map $L\to \dualof{L}$ is an isomorphism, so every functional in $\dualof{L} = \Hom_\ZZ(L, \ZZ)$ has the form $\beta_L(u,\,\cdot\,)$ for a unique $u\in L$.
+Since $L$ is unimodular, the canonical map $L\to \dualof{L}$ is an isomorphism (@def:isomorphism-of-objects), so every functional in $\dualof{L} = \Hom_\ZZ(L, \ZZ)$ has the form $\beta_L(u,\,\cdot\,)$ for a unique $u\in L$.
 Because $v$ is primitive, by the primitive-sublattice characterization (@prop:primitive-characterization) it extends to a $\ZZ$-basis $e_1 = v, e_2,\ldots,e_n$ of $L$.
 Let $\varphi\colon L\to\ZZ$ be the dual-basis functional with $\varphi(v) = 1$ and $\varphi(e_j) = 0$ for $j > 1$.
 Writing $\varphi = \beta_L(w,\,\cdot\,)$ for the corresponding $w\in L$ and using symmetry gives $\beta_L(v, w) = \beta_L(w, v) = \varphi(v) = 1$.
-For the divisibility statement, the image $\beta_L(v, L) = \div_L(v)\ZZ$ contains $\beta_L(v, w) = 1$, so $\div_L(v) = 1$.
+For the divisibility (@def:lattice-divisibility) statement, the image $\beta_L(v, L) = \div_L(v)\ZZ$ contains $\beta_L(v, w) = 1$, so $\div_L(v) = 1$.
 :::
 
 ::: {.corollary #cor:hyperbolic-splitting title="Hyperbolic splitting of unimodular lattices"}
 
-Let $L$ be a nondegenerate unimodular lattice containing a primitive isotropic vector.
-Then $L$ splits off a rank-$2$ unimodular hyperbolic plane:
+Let $L$ be a nondegenerate (@def:polarization) unimodular lattice (@def:unimodular) containing a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) vector.
+Then $L$ splits (@def:hyperbolic-plane) off a rank-$2$ unimodular hyperbolic plane (@def:hyperbolic-plane):
 $$
 L \cong P\oplus P^{\perp L},
 \qquad
@@ -329,14 +329,14 @@ $$
 Let $e\in L$ be a primitive isotropic vector.
 By @lem:unimodular-divisibility choose $w\in L$ with $\beta_L(e, w) = 1$, and set $k\definedas w^2$.
 The sublattice $P\definedas\generators{e, w}$ has Gram matrix $\begin{bmatrix}0 & 1\\ 1 & k\end{bmatrix}$ of determinant $-1$, hence $P$ is a rank-$2$ unimodular sublattice, and it is primitive since a unimodular sublattice is saturated by the primitive-sublattice characterization (@prop:primitive-characterization).
-The isometry type of $P$ is governed by the parity of $k = w^2$: the Gram matrix $\begin{bmatrix}0 & 1\\ 1 & k\end{bmatrix}$ gives $P\cong U$ when $k$ is even and $P\cong\latI_{1, 1}$ (the odd rank-$2$ unimodular hyperbolic lattice) when $k$ is odd.
+The isometry type of $P$ is governed by the parity of $k = w^2$: the Gram matrix $\begin{bmatrix}0 & 1\\ 1 & k\end{bmatrix}$ gives $P\cong U$ when $k$ is even and $P\cong\latI_{1, 1}$ (the odd (@def:two-elementary-isotropic-types) rank-$2$ unimodular hyperbolic lattice (@not:reflection-groups-sign-convention)) when $k$ is odd.
 We adjust $w$ within its coset to realize the parity dictated by $L$; note that adding to $w$ any vector of $\generators{e}^{\perp L}$ preserves $\beta_L(e, w) = 1$.
 
-If $L$ is even then $k = w^2$ is even; replacing $w$ by $w - \tfrac{k}{2}e$ (and $e\in\generators{e}^{\perp L}$ since $e^2 = 0$) leaves $\beta_L(e, w) = 1$ unchanged and makes $w^2 = 0$, so $P\cong U$.
+If $L$ is even (@def:form-axioms) then $k = w^2$ is even; replacing $w$ by $w - \tfrac{k}{2}e$ (and $e\in\generators{e}^{\perp L}$ since $e^2 = 0$) leaves $\beta_L(e, w) = 1$ unchanged and makes $w^2 = 0$, so $P\cong U$.
 
 If $L$ is odd we arrange $w^2$ to be odd, so that $P\cong\latI_{1, 1}$.
 Every $x\in L$ satisfies $x - \beta_L(e, x)\,w\in\generators{e}^{\perp L}$, so $L = \generators{e}^{\perp L} + \ZZ w$.
-Were $\generators{e}^{\perp L}$ to consist entirely of even-norm vectors and $w^2$ even, every $x = y + mw$ ($y\in\generators{e}^{\perp L}$) would have $x^2 = y^2 + 2m\,\beta_L(y, w) + m^2 w^2$ even, forcing $L$ even --- contrary to hypothesis.
+Were $\generators{e}^{\perp L}$ to consist entirely of even-norm (@def:lattice-basic-invariants) vectors and $w^2$ even, every $x = y + mw$ ($y\in\generators{e}^{\perp L}$) would have $x^2 = y^2 + 2m\,\beta_L(y, w) + m^2 w^2$ even, forcing $L$ even --- contrary to hypothesis.
 Hence either $w^2$ is already odd, or $\generators{e}^{\perp L}$ contains a vector $u$ of odd norm; in the latter case replace $w$ by $w + u$, which preserves $\beta_L(e, w) = 1$ and gives $(w + u)^2 = w^2 + 2\beta_L(w, u) + u^2$ odd.
 Either way $k = w^2$ is odd and $P\cong\latI_{1, 1}$.
 
@@ -347,16 +347,16 @@ Since $P$ is unimodular, @prop:unimodular-splits gives $L\cong P\oplus P^{\perp 
 
 ::: {.definition #def:maximal-lattice title="Maximal lattices" defines="maximal; maximal overlattice"}
 
-An even lattice $L'$ is **maximal** if $A_{L',q}$ has no nonzero isotropic quadratic subobject
+An even (@def:form-axioms) lattice $L'$ is **maximal** if $A_{L',q}$ has no nonzero isotropic (@def:orthogonal-complement) quadratic subobject (@def:subobject-relation)
 $(H,0)\injects A_{L',q}$.
-A maximal overlattice of $L$ is an even overlattice morphism
-$\iota\colon L\injects L'$ whose target is maximal.
+A maximal overlattice (@def:overlattice) of $L$ is an even overlattice morphism
+$\iota\colon L\injects L'$ whose [target]{.other-sense} is maximal.
 :::
 
 ::: {.lemma #lem:maximal-overlattice-exists}
 
-Every even lattice admits a maximal overlattice.
-A unimodular lattice is maximal.
+Every even (@def:form-axioms) lattice admits a maximal (@def:maximal-lattice) overlattice (@def:overlattice).
+A unimodular lattice (@def:unimodular) is maximal.
 :::
 
 ::: {.proof}
@@ -367,22 +367,22 @@ $$
 \isoto
 \operatorname{IsoSub}(A_{L,q})
 $$
-as posets, with overlattices ordered by morphisms over $L$ and isotropic quadratic subobjects ordered by factorization.
-The discriminant module $A_L^\sharp$ has finite length, so $\operatorname{IsoSub}(A_{L,q})$ is a finite poset and has a maximal element.
+as posets (@def:preorder-category), with overlattices ordered by morphisms over $L$ and isotropic (@def:orthogonal-complement) quadratic subobjects (@def:subobject-relation) ordered by factorization.
+The discriminant module $A_L^\sharp$ has finite [length]{.other-sense}, so $\operatorname{IsoSub}(A_{L,q})$ is a finite poset and has a maximal element.
 Its corresponding even overlattice admits no proper even overlattice, hence is maximal.
 For a unimodular lattice $A_{L,q}=0$, so the zero subobject is maximal.
 :::
 
 ::: {.definition #def:split-maximal title="Maximal lattices with two hyperbolic summands" defines="split maximal; $U^{\oplus2}$-decomposable"}
 
-A maximal lattice $L'$ of signature $(2,n)$ is **$U^{\oplus2}$-decomposable** if
+A maximal (@def:maximal-lattice) lattice $L'$ of signature (@def:signature) $(2,n)$ is **$U^{\oplus2}$-decomposable** if
 $U^{\oplus2}\oplus L_0\isoto L'$ for some lattice $L_0$.
 Dawes uses the term *split maximal* for this decomposition hypothesis [@Daw22 §3.1].
 :::
 
 ::: {.theorem #thm:maximal-splits-for-large-n title="Maximal lattices of signature $(2,n)$ are $U^{\oplus2}$-decomposable for $n\geq5$"}
 
-Every maximal lattice of signature $(2,n)$ with $n\geq5$ is $U^{\oplus2}$-decomposable.
+Every maximal (@def:maximal-lattice) lattice of signature (@def:signature) $(2,n)$ with $n\geq5$ is $U^{\oplus2}$-decomposable.
 :::
 
 ::: {.proof}
@@ -393,13 +393,13 @@ Attwell-Duval; for smaller $n$, see also [@Nik80 Cor. 1.13.5].
 
 ::: {.theorem #thm:split-maximal-isotropic-transitivity title="Isotropic transitivity for an even maximal $U^{\oplus2}$-decomposable lattice"}
 
-Let $L'$ be an *even* maximal $U^{\oplus2}$-decomposable lattice of signature $(2,n)$.
+Let $L'$ be an *even* (@def:form-axioms) maximal (@def:maximal-lattice) $U^{\oplus2}$-decomposable lattice of signature (@def:signature) $(2,n)$.
 
 1. For any $x,y\in L'^{\mathrm{prim}}[0]$ there exists
    $\tau(x,y)\in\Orth^+(L')$ with $\tau(x,y)x=y$; hence $\Orth^+(L')$ acts
    transitively on $L'^{\mathrm{prim}}[0]$.
 
-2. Two primitive totally isotropic embeddings
+2. Two primitive (@def:primitive-embedding) totally isotropic (@def:orthogonal-complement) embeddings
    $\iota_i\colon E_i\injects L'$ lie in the same $\Orth^+(L')$-orbit if and only if
    $E_1^{\perp L'}/E_1\cong E_2^{\perp L'}/E_2$.
 :::
@@ -407,46 +407,46 @@ Let $L'$ be an *even* maximal $U^{\oplus2}$-decomposable lattice of signature $(
 ::: {.proof}
 
 Both statements are in [@Daw22 §3.1]: Algorithm 3.3 constructs $\tau(x,y)$ from the
-two displayed hyperbolic summands, and the Attwell-Duval criterion gives the second
+two displayed [hyperbolic]{.other-sense} summands, and the Attwell-Duval criterion gives the second
 orbit statement.
 :::
 
-::: {.definition #def:characteristic-vector title="Characteristic vectors" defines="characteristic"}
+::: {.definition #def:characteristic-vector title="Characteristic vectors" defines="characteristic vector"}
 
-A vector $c$ of a unimodular lattice $L$ is **characteristic** if $c\cdot x\equiv x^2\pmod 2$ for every
+A vector $c$ of a unimodular lattice (@def:unimodular) $L$ is **[characteristic]{.other-sense}** if $c\cdot x\equiv x^2\pmod 2$ for every
 $x\in L$.
 :::
 
 ::: {.lemma #lem:characteristic-vectors-of-Ipq title="Characteristic vectors of $\latI_{p,q}$"}
 
-Every characteristic vector of $\latI_{p,q}$ has square $\equiv p-q\pmod 8$. Hence, if
-$p-q\not\equiv0\pmod 8$, no isotropic vector of $\latI_{p,q}$ is characteristic.
+Every [characteristic]{.other-sense} vector of $\latI_{p,q}$ has square $\equiv p-q\pmod 8$. Hence, if
+$p-q\not\equiv0\pmod 8$, no isotropic (@def:orthogonal-complement) vector of $\latI_{p,q}$ is [characteristic]{.other-sense}.
 :::
 
 ::: {.proof}
 
-Let $e_1,\dots,e_{p+q}$ be the standard orthogonal basis, with $e_i^2=1$ for $i\leq p$ and $e_i^2=-1$ for
-$i>p$, and let $c=\sum_ic_ie_i$ be characteristic. For $x=e_i$ the condition reads $\pm c_i\equiv\pm1\pmod 2$,
-so every $c_i$ is odd and $c_i^2\equiv1\pmod 8$. Hence
+Let $e_1,\dots,e_{p+q}$ be the standard orthogonal basis (@def:based-module), with $e_i^2=1$ for $i\leq p$ and $e_i^2=-1$ for
+$i>p$, and let $c=\sum_ic_ie_i$ be [characteristic]{.other-sense}. For $x=e_i$ the condition reads $\pm c_i\equiv\pm1\pmod 2$,
+so every $c_i$ is [odd]{.other-sense} and $c_i^2\equiv1\pmod 8$. Hence
 $c^2=\sum_{i\leq p}c_i^2-\sum_{i>p}c_i^2\equiv p-q\pmod 8$; this is the case $L=\latI_{p,q}$ of van der
 Blij's congruence $c^2\equiv\sigma(L)\pmod 8$ [@Nik80, §1.9]. An isotropic vector has square $0$, so it is
-not characteristic when $p-q\not\equiv0\pmod 8$.
+not [characteristic]{.other-sense} when $p-q\not\equiv0\pmod 8$.
 :::
 
 ::: {.proposition #prop:odd-unimodular-rank-one-transitivity title="The odd lattice $B = \latI_{2,9}$: primitive isotropic vectors, full orthogonal group"}
 
-$\Orth(\latI_{2,9})$ acts transitively on the primitive isotropic vectors of $\latI_{2,9}$.
+$\Orth(\latI_{2,9})$ acts transitively on the primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) vectors of $\latI_{2,9}$.
 :::
 
 ::: {.proof}
 
 James' integral Witt theorem [@Jam68, Theorem, p. 303]: for $L$ unimodular, an isometry between primitive
 sublattices $J$, $K$ with $r(L)-\abs{\fs(L)}\geq2(r(J)+1)$ extends to an isometry of $L$ if and only
-if it carries characteristic vectors to characteristic vectors. For $B=\latI_{2,9}$ one has
+if it carries [characteristic]{.other-sense} vectors to [characteristic]{.other-sense} vectors. For $B=\latI_{2,9}$ one has
 $r-\abs{\fs}=11-7=4=2(1+1)$, so the inequality holds for a primitive rank-one $J$ with equality, and
-it is the only hypothesis besides the characteristic clause. Given two primitive isotropic vectors $v$,
+it is the only hypothesis besides the [characteristic]{.other-sense} clause. Given two primitive isotropic vectors $v$,
 $w$, the isometry $\langle v\rangle\to\langle w\rangle$, $v\mapsto w$, therefore extends provided
-neither line is characteristic. Neither is, by @lem:characteristic-vectors-of-Ipq, since
+neither line is [characteristic]{.other-sense}. Neither is, by @lem:characteristic-vectors-of-Ipq, since
 $2-9=-7\not\equiv0\pmod 8$; so the clause is vacuous and the isometry extends.
 :::
 
@@ -461,7 +461,7 @@ $\Orth(\latI_{2,2})$ is not transitive on primitive isotropic vectors.
 
 ::: {.lemma #lem:odd-unimodular-isotropic-splitting title="Splitting an odd unimodular lattice at a primitive isotropic line"}
 
-Let $L$ be an odd unimodular lattice of signature $(p,q)$ and let $l$ be a primitive isotropic line of $L$.
+Let $L$ be an odd (@def:two-elementary-isotropic-types) unimodular lattice (@def:unimodular) of signature $(p,q)$ and let $l$ be a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) line of $L$.
 Then $L=P\perp M$ with $l\subset P\cong\latI_{1,1}$ and $M$ unimodular of signature $(p-1,q-1)$, and
 $l^{\perp L}=l\perp M$, so $l^{\perp L}/l\cong M$. Moreover:
 
@@ -473,28 +473,28 @@ $l^{\perp L}=l\perp M$, so $l^{\perp L}/l\cong M$. Moreover:
 
 By @cor:hyperbolic-splitting, $L$ being odd, $L=P\perp M$ with $l\subset P\cong\latI_{1,1}$, and $M$ is
 unimodular of signature $(p-1,q-1)$ because $P$ is unimodular of signature $(1,1)$. Let $e,f$ be an
-orthogonal basis of $P$ with $e^2=1$, $f^2=-1$. The primitive isotropic vectors of $P$ are $\pm(e\pm f)$,
+orthogonal basis (@def:based-module) of $P$ with $e^2=1$, $f^2=-1$. The primitive isotropic vectors of $P$ are $\pm(e\pm f)$,
 so after replacing $f$ by $-f$ one has $l=\ZZ(e+f)$. An element $ae+bf+m$ with $m\in M$ is orthogonal to
 $l$ exactly when $a=b$, so $l^{\perp L}=l\perp M$.
 
-(1) An even unimodular lattice has signature $\equiv0\pmod 8$, and $1-8\not\equiv0\pmod 8$, so $M$ is odd
-and indefinite of signature $(1,8)$, and $M\cong\latI_{1,8}$ by @thm:indefinite-unimodular-classification.
+(1) An even (@def:form-axioms) unimodular lattice has signature $\equiv0\pmod 8$, and $1-8\not\equiv0\pmod 8$, so $M$ is odd
+and indefinite (@def:definiteness) of signature $(1,8)$, and $M\cong\latI_{1,8}$ by @thm:indefinite-unimodular-classification.
 
-(2) An even unimodular definite lattice has rank divisible by $8$, so $M$, of rank $7$, is odd. The odd
-definite unimodular lattice of rank $7$ is unique by @thm:definite-unimodular-class-numbers and the first
+(2) An even unimodular definite (@def:definiteness) lattice has [rank]{.other-sense} divisible by $8$, so $M$, of [rank]{.other-sense} $7$, is odd. The odd
+definite unimodular lattice of [rank]{.other-sense} $7$ is unique by @thm:definite-unimodular-class-numbers and the first
 row of @tbl-unimodular-definite-class-numbers, for the negative-definite sign by the sign twist that theorem
 records. So $M\cong\latI_{0,7}$.
 :::
 
 ::: {.proposition #prop:rank-nine-line-transitivity title="Primitive isotropic lines of $\latI_{1,8}$ and of its twist"}
 
-Let $L$ be $\latI_{1,8}$ or its twist $\latI_{1,8}(2)$, of rank $9$ and signature $(1,8)$. Then $\Orth(L)$
-and $\Orth^+(L)$ both act transitively on the primitive isotropic **lines** of $L$.
+Let $L$ be $\latI_{1,8}$ or its twist $\latI_{1,8}(2)$, of [rank]{.other-sense} $9$ and signature $(1,8)$. Then $\Orth(L)$
+and $\Orth^+(L)$ both act transitively on the primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) **lines** of $L$.
 :::
 
 ::: {.proof}
 
-Twisting by $2$ preserves the module, the isometry group as a subgroup of $\GL_9(\ZZ)$ and isotropy, so it
+Twisting by $2$ preserves the module, the isometry group (@def:group) as a subgroup of $\GL_9(\ZZ)$ and isotropy, so it
 suffices to treat $L=\latI_{1,8}$.
 
 Let $\ZZ v$ and $\ZZ v'$ be primitive isotropic lines. By @lem:odd-unimodular-isotropic-splitting(2),
@@ -504,14 +504,14 @@ $e\mapsto e'$, $f\mapsto f'$ and an isometry $M\to M'$ together give $g\in\Orth(
 So $\Orth(L)$ is transitive on lines.
 
 By @lem:minus-identity-spinor-norm, $-\id_L\notin\Orth^+(L)$, since the positive index is $1$, and
-$\Orth^+(L)$ has index $2$ in $\Orth(L)$. Hence for $g$ carrying $\ZZ v$ to $\ZZ v'$, either $g$ or $-g$ lies
+$\Orth^+(L)$ has index (@def:index) $2$ in $\Orth(L)$. Hence for $g$ carrying $\ZZ v$ to $\ZZ v'$, either $g$ or $-g$ lies
 in $\Orth^+(L)$, and $-g$ also carries $\ZZ v$ to $\ZZ v'$. So $\Orth^+(L)$ is transitive on lines too.
 :::
 
 ::: {.proposition #prop:rank-nine-vector-transitivity title="Primitive isotropic vectors of $\latI_{1,8}$ and of its twist"}
 
 Let $L$ be $\latI_{1,8}$ or $\latI_{1,8}(2)$, of signature $(1,8)$, and fix a component $C^+$ of the positive cone (@not:reflection-groups-sign-convention) $\theset{x\in L\otimes\bR\st x^2>0}$.
-For a primitive isotropic $v\in L$ the sign of $\beta_\bR(v,e)$ is independent of the choice of $e\in C^+$, because $\beta_\bR(v,-)$ has no zero on $C^+$ --- a zero would put the isotropic $v$ in the negative definite hyperplane $e^{\perp}$ --- and $C^+$ is connected; call that sign the **side** of $v$.
+For a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) $v\in L$ the sign of $\beta_\bR(v,e)$ is independent of the choice of $e\in C^+$, because $\beta_\bR(v,-)$ has no zero on $C^+$ --- a zero would put the isotropic $v$ in the negative definite (@def:definiteness) hyperplane $e^{\perp}$ --- and $C^+$ is connected; call that sign the **side** of $v$.
 Then
 
 1. $\Orth(L)$ acts transitively on the primitive isotropic vectors of $L$;
@@ -524,11 +524,11 @@ Then
 
 ::: {.proof}
 
-Twisting by $2$ preserves the module, the isometry group as a subgroup of $\GL_9(\bZ)$ and isotropy, as in @prop:rank-nine-line-transitivity, so it suffices to treat $L=\latI_{1,8}$.
+Twisting by $2$ preserves the module, the isometry group (@def:group) as a subgroup of $\GL_9(\bZ)$ and isotropy, as in @prop:rank-nine-line-transitivity, so it suffices to treat $L=\latI_{1,8}$.
 
 (1) By @prop:rank-nine-line-transitivity there is $g\in\Orth(L)$ with $g(\bZ v)=\bZ v'$, that is $g(v)=\pm v'$; composing with $-\id_L$, which lies in $\Orth(L)$, gives the sign.
 
-(2) By @lem:minus-identity-spinor-norm, $\spinornorm_\bR(-\id_L)=[(-1)^1]=-1$ because the positive index is $1$, so $-\id_L\notin\Orth^+(L)$ and $\Orth(L)=\Orth^+(L)\cup(-\id_L)\Orth^+(L)$.
+(2) By @lem:minus-identity-spinor-norm, $\spinornorm_\bR(-\id_L)=[(-1)^1]=-1$ because the positive [index]{.other-sense} is $1$, so $-\id_L\notin\Orth^+(L)$ and $\Orth(L)=\Orth^+(L)\cup(-\id_L)\Orth^+(L)$.
 Hence $\Orth(L)\cdot v=\Orth^+(L)\cdot v\cup\Orth^+(L)\cdot(-v)$, and by (1) there are at most two $\Orth^+(L)$-orbits.
 There are at least two: $\Orth^+(L)$ preserves each component of $C^+$ by @prop:spinor-plus-cone-components, so for $g\in\Orth^+(L)$ and $e\in C^+$ one has $ge\in C^+$ and
 $$
@@ -542,7 +542,7 @@ So the two orbits are the two sides.
 
 ::: {.lemma #lem:split-isometry-spinor-norm title="Spinor norm of an isometry fixing a summand"}
 
-Let $B=P\perp M$ be an orthogonal splitting of a nondegenerate lattice and let $\varphi\in\Orth(M)$. Then
+Let $B=P\perp M$ be an orthogonal splitting (@def:lattice-split) of a nondegenerate (@def:polarization) lattice and let $\varphi\in\Orth(M)$. Then
 $\spinornorm_\bR(\id_P\perp\varphi)=\spinornorm_\bR(\varphi)$, so $\id_P\perp\varphi\in\Orth^+(B)$ exactly
 when $\varphi\in\Orth^+(M)$.
 :::
@@ -552,13 +552,13 @@ when $\varphi\in\Orth^+(M)$.
 By the Cartan--Dieudonné theorem write $\varphi\otimes\bR=s_{u_1}\cdots s_{u_k}$ with anisotropic
 $u_i\in M\otimes\bR$. Each reflection $s_{u_i}$ of $B\otimes\bR$ fixes $P\otimes\bR$ pointwise and restricts
 to the reflection $s_{u_i}$ of $M\otimes\bR$, so $\id_P\perp\varphi=s_{u_1}\cdots s_{u_k}$ in
-$\Orth(B\otimes\bR)$, and the two spinor norms agree by @def:spinor-norm. The group $\Orth^+$ is the kernel
-of the real spinor norm.
+$\Orth(B\otimes\bR)$, and the two spinor [norms]{.other-sense} agree by @def:spinor-norm. The group (@def:group) $\Orth^+$ is the kernel (@def:kernel-cokernel)
+of the real spinor [norm]{.other-sense}.
 :::
 
 ::: {.lemma #lem:I29-plus-line-transitivity title="$\Orth^+(\latI_{2,9})$ on primitive isotropic lines and vectors"}
 
-$\Orth^+(\latI_{2,9})$ acts transitively on the primitive isotropic lines and on the primitive isotropic
+$\Orth^+(\latI_{2,9})$ acts transitively on the primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) lines and on the primitive isotropic
 vectors of $\latI_{2,9}$.
 :::
 
@@ -570,7 +570,7 @@ $l'=\ZZ(e'+f')\subset P'$ and $M\cong M'\cong\latI_{1,8}$. The isometry $\psi\co
 $e\mapsto e'$, $f\mapsto f'$ and an isometry $\vartheta\colon M\to M'$ give $g=\psi\perp\vartheta\in\Orth(B)$
 with $g(l)=l'$. Put $\sigma'=\id_{P'}\perp(-\id_{M'})$. It fixes $l'$, and $\sigma'\notin\Orth^+(B)$ by
 @lem:split-isometry-spinor-norm, since $-\id_{M'}\notin\Orth^+(M')$ by @lem:minus-identity-spinor-norm.
-As $\Orth^+(B)$ has index $2$ in $\Orth(B)$, one of $g$ and $\sigma'g$ lies in $\Orth^+(B)$ and carries $l$
+As $\Orth^+(B)$ has index (@def:index) $2$ in $\Orth(B)$, one of $g$ and $\sigma'g$ lies in $\Orth^+(B)$ and carries $l$
 to $l'$.
 
 For primitive isotropic vectors $v,v'$, an element $g\in\Orth^+(B)$ with $g(\ZZ v)=\ZZ v'$ has $g(v)=\pm v'$,
@@ -579,7 +579,7 @@ and $-\id_B\in\Orth^+(B)$ by @lem:minus-identity-spinor-norm, since the positive
 
 ::: {.theorem #thm:plane-transitivity-tco title="Primitive isotropic planes of $T_\Co$"}
 
-$\Orth^+(T_\Co)$ acts transitively on the primitive isotropic planes of $T_\Co$.
+$\Orth^+(T_\Co)$ acts transitively on the primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) planes of $T_\Co$.
 :::
 
 ::: {.proof}
@@ -590,7 +590,7 @@ isotropic planes of the two lattices are the same set.
 
 Let $J,J'$ be primitive isotropic planes of $B$, and choose primitive isotropic lines $l\subset J$ and
 $l'\subset J'$; a primitive vector of a primitive sublattice is primitive in $B$. By
-@lem:I29-plus-line-transitivity some $g\in\Orth^+(B)$ carries $l$ to $l'$. Split $B=P'\perp M'$ at $l'$ by
+@lem:I29-plus-line-transitivity some $g\in\Orth^+(B)$ carries $l$ to $l'$. Split (@def:hyperbolic-plane) $B=P'\perp M'$ at $l'$ by
 @lem:odd-unimodular-isotropic-splitting(1), so $l'^{\perp B}=l'\perp M'$ with $M'\cong\latI_{1,8}$. An
 isotropic plane $K\supset l'$ lies in $l'^{\perp B}$, and $K=l'\oplus(K\cap M')$ with $K\cap M'$ a primitive
 isotropic line of $M'$, because the $M'$-component of an element of $K$ lies in $K$. Apply this to $K=g(J)$
@@ -601,7 +601,7 @@ carries $g(J)$ to $J'$. So $(\id_{P'}\perp\varphi)\circ g\in\Orth^+(B)$ carries 
 
 ::: {.corollary #cor:tco-isotropic-splitting title="Isotropic quotients of $T_\Co$"}
 
-Let $l$ be a primitive isotropic line and $J$ a primitive isotropic plane of $T_\Co$. Then
+Let $l$ be a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) line and $J$ a primitive isotropic plane of $T_\Co$. Then
 $T_\Co=\latI_{1,1}(2)\perp\latI_{1,8}(2)$ with $l\subset\latI_{1,1}(2)$, and
 $$
 l^{\perp T_\Co}/l\cong\latI_{1,8}(2),\qquad J^{\perp T_\Co}/J\cong\latI_{0,7}(2).
@@ -615,13 +615,13 @@ By @prop:tco-as-twist, $T_\Co=B(2)$ with $B=\latI_{2,9}$. Twisting by $2$ preser
 orthogonality and isotropy, so it suffices to prove the untwisted statements for $B$ and twist the result.
 The splitting and $l^{\perp B}/l\cong\latI_{1,8}$ are @lem:odd-unimodular-isotropic-splitting(1).
 
-For $J$, choose a primitive isotropic line $l\subset J$ and split $B=P\perp M$ at $l$. As in the proof of
+For $J$, choose a primitive isotropic line $l\subset J$ and split (@def:hyperbolic-plane) $B=P\perp M$ at $l$. As in the proof of
 @thm:plane-transitivity-tco, $J=l\oplus\ZZ m$ with $\ZZ m$ a primitive isotropic line of
 $M\cong\latI_{1,8}$. Then $J^{\perp B}=\theset{x\in l\perp M\st x\cdot m=0}=l\perp m^{\perp M}$, and
 $m^{\perp M}=\ZZ m\perp N$ with $N\cong\latI_{0,7}$ by @lem:odd-unimodular-isotropic-splitting(2). Hence
 $J^{\perp B}=J\perp N$ and $J^{\perp B}/J\cong\latI_{0,7}$.
 
-The lattice $U\perp U\perp\latI_{0,7}$ is odd, unimodular and indefinite of signature $(2,9)$, so it is
+The lattice $U\perp U\perp\latI_{0,7}$ is odd (@def:two-elementary-isotropic-types), unimodular and indefinite (@def:definiteness) of signature $(2,9)$, so it is
 isometric to $B$ by @thm:indefinite-unimodular-classification.
 :::
 
@@ -629,7 +629,7 @@ isometric to $B$ by @thm:indefinite-unimodular-classification.
 
 ::: {.proposition #prop:embedding-finiteness title="Finiteness of primitive-embedding orbits into an even unimodular lattice"}
 
-Let $S$ and $L$ be even lattices with $L$ unimodular.
+Let $S$ and $L$ be even lattices (@def:even-lattice) with $L$ unimodular.
 Then $\Orth(L)\backslash\Emb(S,L)$ is finite.
 :::
 
@@ -637,11 +637,11 @@ Then $\Orth(L)\backslash\Emb(S,L)$ is finite.
 
 Fix $\iota\colon S\injects L$ and put $T\definedas S^{\perp L}$.
 Unimodularity of $L$ gives an isometry $A_{S,q}\isoto A_{T,q}(-1)$.
-The signature of $T$ together with $A_{T,q}$ is therefore fixed, so $T$ belongs to a fixed genus; that genus contains finitely many integral isometry classes.
+The signature (@def:signature) of $T$ together with $A_{T,q}$ is therefore fixed, so $T$ belongs to a fixed genus; that genus contains finitely many integral isometry classes.
 
 For each such $T$, the set $\operatorname{Iso}\qty{A_{S,q},A_{T,q}(-1)}$ is finite because the discriminant modules $A_S^\sharp$ and $A_T^\sharp$ have finite cardinality.
-Nikulin's equivalence relation on these gluing data is induced by isometries of the target and complement [@Nik80, Prop. 1.15.1].
-Hence only finitely many $\Orth(L)$-orbits of primitive embeddings occur.
+Nikulin's [equivalence]{.other-sense} relation on these gluing data (@cons:embedding-gluing-data) is induced by isometries of the [target]{.other-sense} and complement [@Nik80, Prop. 1.15.1].
+Hence only finitely many $\Orth(L)$-orbits of primitive embeddings (@def:primitive-embedding) occur.
 :::
 
 ::: {.proposition #prop:scaled-discriminant-ses title="Bilinear discriminant form of a scaled lattice"}
@@ -671,7 +671,7 @@ W_m(L),
 =
 \frac{\beta_L(x,y)}{m}+\bZ.
 $$
-Then there is a short exact sequence in $\mathbf{BilMod}_{\bZ}$
+Then there is a short exact (@def:exact-complex) sequence in $\mathbf{BilMod}_{\bZ}$
 $$
 0
 \too
@@ -688,7 +688,7 @@ If $L$ is unimodular, then $A_{L(m)}\isoto K_m(L)$ and $A_{L(m)}^\sharp\isoto L/
 
 ::: {.proof}
 
-The metric dual of the twist is
+The metric dual of the twist (@def:form-twist) is
 $$
 L(m)^\#
 \isoto
@@ -721,12 +721,12 @@ $$
 \isoto
 K_m(L),
 $$
-which gives the displayed short exact sequence.
+which gives the displayed short exact sequence (@def:exact-complex).
 If $L$ is unimodular, then $A_L=0$, so the exact sequence gives $A_{L(m)}\isoto K_m(L)$.
 :::
 
 ::: {.definition #def:simultaneous-discriminant-spinor-kernel title="Simultaneous discriminant and spinor kernel" defines="simultaneous discriminant and spinor kernel; $\widetilde\Orth^+(L)$"}
-Let $\Orth^+(L)\injects\Orth(L)$ be the spinor kernel of @def:lattice-spinor-kernels. Define $\widetilde\Orth^+(L)$ by the pullback
+Let $\Orth^+(L)\injects\Orth(L)$ be the spinor [kernel]{.other-sense} of @def:lattice-spinor-kernels. Define $\widetilde\Orth^+(L)$ by the pullback (@def:pullback-square)
 ```tikzcd
 \widetilde\Orth^+(L) \arrow[r] \arrow[d] & \widetilde\Orth(L) \arrow[d] \\
 \Orth^+(L) \arrow[r] & \Orth(L).

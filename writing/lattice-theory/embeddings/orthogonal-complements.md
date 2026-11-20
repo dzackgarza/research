@@ -5,9 +5,9 @@ When $v$ is isotropic, $v^{\perp_L}$ is degenerate with nondegenerate reduction 
 
 ::: {.proposition #prop:primitive-isotropic-complement title="Primitive isotropic complements"}
 
-Let $L$ be a nondegenerate integral lattice and let $v\in L^{\mathrm{prim}}[0]$.
+Let $L$ be a nondegenerate (@def:polarization) integral lattice and let $v\in L^{\mathrm{prim}}[0]$.
 Isotropy gives a unique monomorphism $\lambda_v\colon\generators{v}_{\bZ}\injects v^{\perp_L}$ with $\kappa_v\circ\lambda_v=\iota_v$.
-For the radical monomorphism $\rho_v\colon\radic(v^{\perp_L})\injects v^{\perp_L}$, there is a unique isomorphism
+For the radical (@def:two-witnesses) monomorphism $\rho_v\colon\radic(v^{\perp_L})\injects v^{\perp_L}$, there is a unique isomorphism (@def:isomorphism-of-objects)
 $\bar{\lambda}_v\colon\generators{v}_{\bZ}\isoto\radic(v^{\perp_L})$ with $\rho_v\circ\bar{\lambda}_v=\lambda_v$.
 Consequently
 $$
@@ -21,11 +21,11 @@ v^{\perp_L}
 \too
 0
 $$
-is exact in $\mathbf{BilMod}_{\bZ}$.
+is exact (@def:exact-complex) in $\mathbf{BilMod}_{\bZ}$.
 :::
 
 ::: {.proof}
-Flat base change along $\bZ\to\bQ$ sends the kernel defining $v^{\perp_L}$ to the kernel defining $v^{\perp_{L_\bQ}}$.
+Flat base change (@def:module-base-change) along $\bZ\to\bQ$ sends the kernel (@def:kernel-cokernel) defining $v^{\perp_L}$ to the kernel defining $v^{\perp_{L_\bQ}}$.
 Nondegeneracy of $L_\bQ$ and isotropy of $v$ give $\radic\qty{v^{\perp_{L_\bQ}}}=\bQ v$.
 Primitivity of $\iota_v$ gives the Cartesian square
 
@@ -36,13 +36,13 @@ L \arrow[d,hook] \\
 L_\bQ .
 ```
 
-Hence $\radic(v^{\perp_L})$ is the pullback of $\bQ v\injects v^{\perp_{L_\bQ}}$ along $v^{\perp_L}\injects v^{\perp_{L_\bQ}}$, so $\bar{\lambda}_v$ is an isomorphism.
-The displayed sequence is the defining cokernel sequence of the nondegenerate reduction.
+Hence $\radic(v^{\perp_L})$ is the pullback (@def:pullback-square) of $\bQ v\injects v^{\perp_{L_\bQ}}$ along $v^{\perp_L}\injects v^{\perp_{L_\bQ}}$, so $\bar{\lambda}_v$ is an isomorphism.
+The displayed sequence is the defining cokernel (@def:kernel-cokernel) sequence of the nondegenerate reduction.
 :::
 
 ::: {.proposition #prop:isotropic-complement-embedding title="Splitting an isotropic orthogonal complement"}
 
-Under the hypotheses of @prop:primitive-isotropic-complement, applying $U\colon\mathbf{BilMod}_{\bZ}\too\bZ\text{-}\mathbf{Mod}$ to its exact sequence gives a split exact sequence, and $\qty{v^{\perp_L}}^{\mathrm{nd}}$ admits an embedding into $L$ in $\mathbf{Lat}_{\bZ}$.
+Under the hypotheses of @prop:primitive-isotropic-complement, applying $U\colon\mathbf{BilMod}_{\bZ}\too\bZ\text{-}\mathbf{Mod}$ to its exact (@def:exact-complex) sequence gives a [split]{.other-sense} exact sequence, and $\qty{v^{\perp_L}}^{\mathrm{nd}}$ admits an embedding into $L$ in $\mathbf{Lat}_{\bZ}$.
 :::
 
 ::: {.proof}
@@ -96,7 +96,7 @@ A_L
 $$
 in $\mathcal B_{\bZ,W}$.
 
-If every $L_i$ is even, let $N_q$ denote the quadratic level of @def:lattice-level and set
+If every $L_i$ is even (@def:form-axioms), let $N_q$ denote the quadratic level of @def:lattice-level and set
 $$
 N_q'\definedas\operatorname{lcm}_{1\leq i\leq n}N_q(L_i),
 \qquad
@@ -116,13 +116,13 @@ $$
 :::
 
 ::: {.proof}
-The metric dual is additive under finite orthogonal sums,
+The metric dual is additive under finite orthogonal sums (@def:orthogonal-sum),
 $$
 L^\#
 \isoto
 L_1^\#\oplus\cdots\oplus L_n^\#,
 $$
-and additivity of cokernels gives
+and additivity of cokernels (@def:kernel-cokernel) gives
 $$
 A_L^\sharp
 \isoto
@@ -146,7 +146,7 @@ A primitive totally isotropic sublattice $P\leq L$ determines the cusp lattice $
 
 ::: {.notation #not:isotropic-reduction-setup title="The data of an isotropic reduction" defines="data of an isotropic reduction; $V$; $W$; $M$; $Q$; $N$; $N_V$; $D(P)$; $H$"}
 
-Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ be integral and let $P\leq L$ be a primitive totally isotropic sublattice of rank $r\geq1$.
+Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ be integral and let $P\leq L$ be a primitive (@def:primitive-embedding) totally isotropic (@def:orthogonal-complement) sublattice of [rank]{.other-sense} $r\geq1$.
 Put
 $$
 V\definedas P_{\bQ},
@@ -157,7 +157,7 @@ M\definedas P^{\perp_L}=L\cap W,
 \qquad
 Q\definedas M/P .
 $$
-Because $V$ is totally isotropic one has $V\subseteq W$, and because both are $\bQ$-subspaces of $L_{\bQ}$ the sublattices $P=L\cap V$ and $M=L\cap W$ are saturated in $L$.
+Because $V$ is totally isotropic one has $V\subseteq W$, and because both are $\bQ$-subspaces of $L_{\bQ}$ the sublattices $P=L\cap V$ and $M=L\cap W$ are saturated (@def:saturation) in $L$.
 Primitivity of $P$ is exactly the statement $L\cap V=P$, so $P\subseteq M$ and $Q$ is a lattice.
 Write $N\definedas L^{\#}$ for the metric dual of @def:metric-dual and set
 $$
@@ -180,30 +180,30 @@ D(P)=\frac{N_V+L}{L}\cong\frac{N_V}{N_V\cap L}=\frac{N_V}{P},
 \qquad
 \cardinality{D(P)}=[N_V:P],
 $$
-the middle isomorphism being Noether's, with $N_V\cap L=N\cap V\cap L=P$ because $L\cap V=P$.
-The subgroup is determined by $V$ alone, and it is totally isotropic: every class of $D(P)$ has a representative in the totally isotropic subspace $V$, so $\beta_{L_{\bQ}}$ vanishes on $V\times V$ and, when $L$ is even, $q_{A_L}$ vanishes there as well.
+the middle isomorphism (@def:isomorphism-of-objects) being Noether's, with $N_V\cap L=N\cap V\cap L=P$ because $L\cap V=P$.
+The subgroup is determined by $V$ alone, and it is totally isotropic: every class of $D(P)$ has a representative in the totally isotropic subspace $V$, so $\beta_{L_{\bQ}}$ vanishes on $V\times V$ and, when $L$ is even (@def:form-axioms), $q_{A_L}$ vanishes there as well.
 
 :::
 
 ::: {.lemma #lem:isotropic-reduction-pairing title="The pairing of the isotropic subspace with $L/M$, and the metric dual it computes"}
 
-With the data of @not:isotropic-reduction-setup, the pairing with $L$ induces an isomorphism of $\bQ$-vector spaces
+With the data of @not:isotropic-reduction-setup, the pairing with $L$ induces an isomorphism (@def:isomorphism-of-objects) of $\bQ$-vector spaces
 $$
 \theta\colon
 V\isoto\Hom_{\bZ\text{-}\mathbf{Mod}}(L/M,\bQ),
 \qquad
 \theta(v)(\bar\ell)=\beta_{L_{\bQ}}(v,\ell),
 $$
-and the composite $V\too\Hom_{\bZ\text{-}\mathbf{Mod}}(L/M,\bQ)\too\Hom_{\bZ\text{-}\mathbf{Mod}}(L/M,\bQ/\bZ)$ is surjective with kernel $N_V$.
+and the composite $V\too\Hom_{\bZ\text{-}\mathbf{Mod}}(L/M,\bQ)\too\Hom_{\bZ\text{-}\mathbf{Mod}}(L/M,\bQ/\bZ)$ is surjective with kernel (@def:kernel-cokernel) $N_V$.
 :::
 
 ::: {.proof}
 
 For $v\in V\subseteq W$ one has $\beta_{L_{\bQ}}(v,M)=0$, so $\theta(v)$ is defined on classes and $\theta$ is $\bQ$-linear.
 If $\theta(v)=0$ then $v$ pairs trivially with $L$, hence with $L_{\bQ}$, so $v=0$ by nondegeneracy of $L_{\bQ}$; thus $\theta$ is injective.
-Both sides have rank $r$, so $\theta$ is an isomorphism.
+Both sides have [rank]{.other-sense} $r$, so $\theta$ is an isomorphism.
 
-The coefficient morphism $\bQ\too\bQ/\bZ$ is surjective and $L/M$ is free of rank $r$ by @prop:primitive-characterization, so a functional $L/M\too\bQ/\bZ$ lifts along a basis of $L/M$ to a functional $L/M\too\bQ$; the composite is therefore surjective.
+The coefficient morphism $\bQ\too\bQ/\bZ$ is surjective and $L/M$ is free (@def:module-subcategories) of [rank]{.other-sense} $r$ by @prop:primitive-characterization, so a functional $L/M\too\bQ/\bZ$ lifts along a basis (@def:based-module) of $L/M$ to a functional $L/M\too\bQ$; the composite is therefore surjective.
 Its kernel consists of those $v\in V$ with $\beta_{L_{\bQ}}(v,L)\subseteq\bZ$, that is of $N\cap V=N_V$.
 :::
 
@@ -224,9 +224,9 @@ Then:
 
 *Item 2.* By item 1 the functional $\ell\mapsto\beta_{L_{\bQ}}(\tilde y,\ell)$ is integral on $M$, so its reduction modulo $\bZ$ vanishes on $M$ and it descends to a functional $\bar\lambda\colon L/M\too\bQ/\bZ$.
 By @lem:isotropic-reduction-pairing choose $u\in V$ with $\theta(u)\equiv-\bar\lambda$, that is $\beta_{L_{\bQ}}(u,\ell)\equiv-\beta_{L_{\bQ}}(\tilde y,\ell)\pmod{\bZ}$ for all $\ell\in L$; then $\tilde y+u\in N$.
-If $u,u'$ both have this property, then $\beta_{L_{\bQ}}(u-u',L)\subseteq\bZ$, so $u-u'\in N\cap V=N_V$; conversely adding an element of $N_V$ preserves the property because $\beta_{L_{\bQ}}(N_V,L)\subseteq\bZ$.
+If $u,u'$ both have this [property]{.other-sense}, then $\beta_{L_{\bQ}}(u-u',L)\subseteq\bZ$, so $u-u'\in N\cap V=N_V$; conversely adding an element of $N_V$ preserves the [property]{.other-sense} because $\beta_{L_{\bQ}}(N_V,L)\subseteq\bZ$.
 
-*Item 3.* Since $\tilde y\in W=V^{\perp}$ and $N_V\subseteq V$ one has $\beta_{L_{\bQ}}(\tilde y,N_V)=0$, and since $V$ is totally isotropic one has $\beta_{L_{\bQ}}(u,N_V)=0$.
+*Item 3.* Since $\tilde y\in W=V^{\perp}$ and $N_V\subseteq V$ one has $\beta_{L_{\bQ}}(\tilde y,N_V)=0$, and since $V$ is totally isotropic (@def:orthogonal-complement) one has $\beta_{L_{\bQ}}(u,N_V)=0$.
 Together with $\tilde y+u\in N$ this states $\tilde y+u\in H$.
 
 *Item 4.* Lifts of $y$ differ by an element of $V$, and representatives of $y$ modulo $Q$ — that is, changes of $\tilde y$ by an element of $M$ — are changes by an element of $L$. Two lifts in $W$ therefore differ by some $v\in V$.
@@ -248,7 +248,7 @@ $$
 
 ::: {.proof}
 
-By @prop:primitive-characterization the quotient $L/P$ is free, and $M/P$ is saturated in it because $M$ is saturated in $L$; choose a $\bZ$-basis $v_1,\dots,v_r$ of $P$, a $\bZ$-basis $\bar u_1,\dots,\bar u_s$ of $M/P$ with lifts $u_1,\dots,u_s\in M$, and lifts $w_1,\dots,w_r\in L$ completing to a basis of $L/P$.
+By @prop:primitive-characterization the quotient $L/P$ is free (@def:module-subcategories), and $M/P$ is saturated in it because $M$ is saturated in $L$; choose a $\bZ$-basis (@def:based-module) $v_1,\dots,v_r$ of $P$, a $\bZ$-basis $\bar u_1,\dots,\bar u_s$ of $M/P$ with lifts $u_1,\dots,u_s\in M$, and lifts $w_1,\dots,w_r\in L$ completing to a basis of $L/P$.
 Then $(v,u,w)$ is a $\bZ$-basis of $L$, the pair $(v,u)$ is a $\bZ$-basis of $M$, and $s=\rank Q=\rank L-2r$.
 In this basis the Gram matrix of $L$ is
 $$
@@ -263,7 +263,7 @@ $$
 where the $v$–$v$ block vanishes by isotropy, the $v$–$u$ block vanishes because $u\subseteq M=P^{\perp_L}$, and $G_Q$ is the Gram matrix of the basis $\bar u$ of $Q$.
 Since $\det G\neq0$, an element $x=\sum_i\lambda_i v_i$ with $B^{\mathsf T}\lambda=0$ satisfies $\beta_{L_{\bQ}}(x,w_j)=0$ for every $j$, while $\beta_{L_{\bQ}}(x,u)=0$ because $u\subseteq M=P^{\perp_L}$ and $\beta_{L_{\bQ}}(x,v)=0$ by isotropy; then $x$ is orthogonal to $L_{\bQ}$ and is zero by nondegeneracy, so $\lambda=0$ and $B$ is invertible.
 
-Over $\bQ$, first replace $w_j$ by $w_j-\sum_\ell\qty(G_Q^{-1}C_{\cdot j})_\ell u_\ell$, which is legitimate because $\det G_Q=\pm\disc Q\neq0$. Indeed, on the subspace $W$ the radical of the restricted form is $W\cap W^{\perp_{L_{\bQ}}}=W\cap V=V$, since $V\subseteq W$ is totally isotropic, so the radical of the quotient $Q_{\bQ}=W/V$ is $V/V=0$ and the induced form on $Q_{\bQ}$ is nondegenerate. This kills the $u$–$w$ block while preserving the $v$–$u$ and $v$–$v$ blocks.
+Over $\bQ$, first replace $w_j$ by $w_j-\sum_\ell\qty(G_Q^{-1}C_{\cdot j})_\ell u_\ell$, which is legitimate because $\det G_Q=\pm\disc Q\neq0$. Indeed, on the subspace $W$ the radical (@def:two-witnesses) of the restricted form is $W\cap W^{\perp_{L_{\bQ}}}=W\cap V=V$, since $V\subseteq W$ is totally isotropic (@def:orthogonal-complement), so the radical of the quotient $Q_{\bQ}=W/V$ is $V/V=0$ and the induced form on $Q_{\bQ}$ is nondegenerate (@def:polarization). This kills the $u$–$w$ block while preserving the $v$–$u$ and $v$–$v$ blocks.
 Then replace the new $w_j$ by $w_j-\tfrac12\sum_k\qty(B^{-\mathsf T}E'_{\cdot j})_k v_k$, where $E'$ is the resulting $w$–$w$ block; this is legitimate because $B$ is invertible, it kills $E'$ because $E'$ is symmetric, and it does not disturb the other blocks since $V$ is totally isotropic and $\beta_{L_{\bQ}}(u,v)=0$.
 In the resulting $\bQ$-basis $(v,u,w'')$ the Gram matrix is $\begin{pmatrix}0&B&0\\B^{\mathsf T}&0&0\\0&0&G_Q\end{pmatrix}$ after reordering, so
 $$
@@ -271,14 +271,14 @@ $$
 $$
 
 It remains to identify $\det(B)$ with $[N_V:P]$. An element $x=\sum_i\lambda_i v_i$ of $V$ lies in $N$ exactly when $\beta_{L_{\bQ}}(x,L)\subseteq\bZ$, and since $\beta_{L_{\bQ}}(x,M)=0$ this is the single condition $B^{\mathsf T}\lambda\in\bZ^r$.
-Hence $N_V=(B^{\mathsf T})^{-1}\bZ^r$, whose covolume in $V$ is $\abs{\det B}^{-1}$ times that of $P=\sum_i\bZ v_i$; therefore $[N_V:P]=\abs{\det B}$.
+Hence $N_V=(B^{\mathsf T})^{-1}\bZ^r$, whose covolume (@def:covolume) in $V$ is $\abs{\det B}^{-1}$ times that of $P=\sum_i\bZ v_i$; therefore $[N_V:P]=\abs{\det B}$.
 With $\cardinality{A_L}=\abs{\det G}$ and $\cardinality{A_Q}=\abs{\det G_Q}=\abs{\disc Q}$, the displayed identity follows.
 :::
 
 ::: {.lemma #lem:isotropic-subgroup-quotient-order title="The order of the orthogonal subquotient of an isotropic subgroup"}
 
-Let $A$ be a finite abelian group with a nondegenerate pairing $\beta\colon A\times A\too\bQ/\bZ$, and let $D\leq A$ satisfy $D\subseteq D^{\perp}$ for $D^{\perp}=\theset{a\in A\st\beta(a,d)=0 \text{ for all } d\in D}$.
-Then the pairing induces an isomorphism $A/D^{\perp}\isoto\Hom_{\bZ\text{-}\mathbf{Mod}}(D,\bQ/\bZ)$, and
+Let $A$ be a finite abelian group (@def:group) with a nondegenerate pairing (@def:pairing-adjoints) $\beta\colon A\times A\too\bQ/\bZ$, and let $D\leq A$ satisfy $D\subseteq D^{\perp}$ for $D^{\perp}=\theset{a\in A\st\beta(a,d)=0 \text{ for all } d\in D}$.
+Then the pairing induces an isomorphism (@def:isomorphism-of-objects) $A/D^{\perp}\isoto\Hom_{\bZ\text{-}\mathbf{Mod}}(D,\bQ/\bZ)$, and
 $$
 \cardinality{D^{\perp}/D}=\frac{\cardinality{A}}{\cardinality{D}^2}.
 $$
@@ -292,7 +292,7 @@ $$
 \qquad
 \Psi(a)=\beta(a,\cdot)|_D,
 $$
-is additive, and its kernel is $D^{\perp}$ by the definition of $D^{\perp}$; write $\Phi\colon A/D^{\perp}\to\Hom(D,\bQ/\bZ)$ for the induced map on the quotient, which is therefore well defined and injective.
+is additive, and its kernel (@def:kernel-cokernel) is $D^{\perp}$ by the definition of $D^{\perp}$; write $\Phi\colon A/D^{\perp}\to\Hom(D,\bQ/\bZ)$ for the induced map on the quotient, which is therefore well defined and injective.
 For surjectivity, let $\lambda\colon D\too\bQ/\bZ$ be a homomorphism; since $\bQ/\bZ$ is a divisible group, $\lambda$ extends to a homomorphism $\Lambda\colon A\too\bQ/\bZ$, and nondegeneracy of $\beta$ on the finite group $A$ provides $a\in A$ with $\Lambda=\beta(a,\cdot)$, that is $\Phi(\bar a)=\lambda$.
 Hence $\Phi$ is an isomorphism and $\cardinality{A/D^{\perp}}=\cardinality{D^{\vee}}=\cardinality{D}$.
 
@@ -307,7 +307,7 @@ $$
 
 ::: {.theorem #thm:isotropic-reduction-discriminant title="The discriminant form of an isotropic reduction: $A_Q\isoto D(P)^{\perp}/D(P)$"}
 
-Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ be integral, let $P\leq L$ be primitive totally isotropic of rank $r\geq1$, and adopt @not:isotropic-reduction-setup.
+Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ be integral, let $P\leq L$ be primitive (@def:primitive-embedding) totally isotropic (@def:orthogonal-complement) of [rank]{.other-sense} $r\geq1$, and adopt @not:isotropic-reduction-setup.
 By @lem:isotropic-reduction-extension the prescription
 $$
 \varphi_P\colon
@@ -315,13 +315,13 @@ A_Q\longrightarrow D(P)^{\perp}/D(P),
 \qquad
 [y]\longmapsto[\tilde y+u]+D(P),
 $$
-with $\tilde y\in W$ any lift of $y$ and $u\in V$ the correction of @lem:isotropic-reduction-extension, is well defined and additive, hence a morphism of finite abelian groups.
-It is an isomorphism, and it preserves both forms:
+with $\tilde y\in W$ any lift of $y$ and $u\in V$ the correction of @lem:isotropic-reduction-extension, is well defined and additive, hence a morphism of finite abelian groups (@def:group).
+It is an isomorphism (@def:isomorphism-of-objects), and it preserves both forms:
 $$
 \beta_{A_Q}(y,y')=\beta_{A_L}\qty(\varphi_P(y),\varphi_P(y'))
 \qquad\text{for all } y,y'\in A_Q,
 $$
-and when $L$ is even, so that $Q$ is even,
+and when $L$ is even (@def:form-axioms), so that $Q$ is even,
 $$
 q_{A_Q}(y)=q_{A_L}\qty(\varphi_P(y))
 \qquad\text{for all } y\in A_Q .
@@ -368,7 +368,7 @@ $$
 because $\tilde y\in W=V^{\perp}$ and $V$ is totally isotropic.
 Hence $\ell\in P^{\perp_L}=M$, and $y=[\tilde y]=[\ell]\in M/P=Q$, that is $y=0$ in $A_Q$.
 
-*Surjectivity.* The target has $\cardinality{D(P)^{\perp}/D(P)}=\cardinality{A_L}/\cardinality{D(P)}^2$ by @lem:isotropic-subgroup-quotient-order, applied to the nondegenerate form of $A_L$ of @prop:discriminant-nondegenerate and the isotropic subgroup $D(P)$ of @not:isotropic-reduction-setup.
+*Surjectivity.* The [target]{.other-sense} has $\cardinality{D(P)^{\perp}/D(P)}=\cardinality{A_L}/\cardinality{D(P)}^2$ by @lem:isotropic-subgroup-quotient-order, applied to the nondegenerate (@def:polarization) form of $A_L$ of @prop:discriminant-nondegenerate and the isotropic subgroup $D(P)$ of @not:isotropic-reduction-setup.
 With $\cardinality{D(P)}=[N_V:P]$ and @lem:isotropic-reduction-index this equals $\cardinality{A_Q}$.
 An injective morphism between finite groups of the same order is bijective.
 
@@ -381,7 +381,7 @@ $$
 the last equality because $\tilde y,\tilde y'$ represent $y,y'$ in $W/V\supseteq Q_{\bQ}$ and $\beta_{L_{\bQ}}$ vanishes on $V\times V$ and on $W\times V$.
 Passing to $\bQ/\bZ$ gives the displayed identity of discriminant forms.
 
-*The quadratic form.* Let $L$ be even; then $Q=M/P$ is even because the norms of $M$ are norms of $L$.
+*The quadratic form.* Let $L$ be even; then $Q=M/P$ is even because the norms (@def:lattice-basic-invariants) of $M$ are norms of $L$.
 Since $\hat y-\tilde y\in V$ is isotropic and orthogonal to $\tilde y$, one has $\hat y^2=\tilde y^2$, and $\tilde y^2=y^2$ in $\bQ/2\bZ$ because a change of lift by $V$ leaves the square unchanged.
 Hence $q_{A_L}(\varphi_P(y))=\hat y^2\bmod2\bZ=y^2\bmod2\bZ=q_{A_Q}(y)$.
 
@@ -392,7 +392,7 @@ The commutativity of the square follows, and restricting to $g\in\Stab_{\Orth(L)
 
 ::: {.corollary #cor:isotropic-reduction-stabilizer title="The exact image of the parabolic stabilizer, and the action on the subquotient"}
 
-Let the data and hypotheses be those of @thm:isotropic-reduction-discriminant, put $Q_0=\rho_L(\Orth(L))$ for the discriminant representation $\rho_L$ of @def:discriminant-rep, and let
+Let the data and hypotheses be those of @thm:isotropic-reduction-discriminant, put $Q_0=\rho_L(\Orth(L))$ for the discriminant [representation]{.other-sense} $\rho_L$ of @def:discriminant-rep, and let
 $$
 C\definedas\ker\qty(\Stab_{Q_0}\qty(D(P))\too\Aut\qty(D(P)^{\perp}/D(P))).
 $$
@@ -407,8 +407,8 @@ Then:
    $$
    \bar g_Q=\varphi_P^{-1}\circ\bar g_D\circ\varphi_P,
    $$
-   so $\Stab_{\Orth(L)}(P)\too\Orth(A_Q)$ has the same kernel as $\Stab_{\Orth(L)}(P)\too\Aut(D(P)^{\perp}/D(P))$, namely $\Stab_{\Orth(L)}(P)\cap\rho_L^{-1}(C)$;
-3. the kernel of $\Stab_{\Orth(L)}(P)\too\Orth(A_Q)$ contains $\Stab_{\Orth(L)}(P)\cap\widetilde\Orth(L)$, where $\widetilde\Orth(L)=\ker\rho_L$ is the discriminant kernel of @def:discriminant-rep; so the map of item 2 is injective exactly when $\Stab_{\Orth(L)}(P)\cap\rho_L^{-1}(C)=1$, and it is not injective when $\Stab_{\Orth(L)}(P)\cap\widetilde\Orth(L)\neq1$.
+   so $\Stab_{\Orth(L)}(P)\too\Orth(A_Q)$ has the same kernel (@def:kernel-cokernel) as $\Stab_{\Orth(L)}(P)\too\Aut(D(P)^{\perp}/D(P))$, namely $\Stab_{\Orth(L)}(P)\cap\rho_L^{-1}(C)$;
+3. the kernel of $\Stab_{\Orth(L)}(P)\too\Orth(A_Q)$ contains $\Stab_{\Orth(L)}(P)\cap\widetilde\Orth(L)$, where $\widetilde\Orth(L)=\ker\rho_L$ is the discriminant kernel (@def:mm-integral-spinor-data) of @def:discriminant-rep; so the map of item 2 is injective exactly when $\Stab_{\Orth(L)}(P)\cap\rho_L^{-1}(C)=1$, and it is not injective when $\Stab_{\Orth(L)}(P)\cap\widetilde\Orth(L)\neq1$.
 :::
 
 ::: {.proof}
@@ -421,7 +421,7 @@ So the action in item 2 is faithful exactly when $\Stab_{\Orth(L)}(P)\cap\rho_L^
 
 ::: {.corollary #cor:isotropic-reduction-rank-one title="Isotropic reduction along a primitive isotropic vector"}
 
-Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ be integral and let $v\in L$ be primitive and isotropic, with divisibility $\div_L(v)$ of @def:lattice-divisibility.
+Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ be integral and let $v\in L$ be primitive (@def:primitive-embedding) and isotropic (@def:orthogonal-complement), with divisibility $\div_L(v)$ of @def:lattice-divisibility.
 Put $P=\generators{v}_{\bZ}$ and $c\definedas[v/\div_L(v)]\in A_L$.
 Then $N_V=\bZ\,v/\div_L(v)$, $[N_V:P]=\div_L(v)$, $D(P)=\generators{c}$, and $\varphi_P$ of @thm:isotropic-reduction-discriminant is an isometry
 $$
@@ -434,6 +434,6 @@ $$
 Here $r=1$ and $V=\bQ v$ in @not:isotropic-reduction-setup.
 An element $tv$ with $t\in\bQ$ lies in $N=L^{\#}$ exactly when $t\,\beta_L(v,x)\in\bZ$ for every $x\in L$.
 By @def:lattice-divisibility the values $\beta_L(v,x)$ for $x\in L$ form the ideal $\div_L(v)\bZ$, so the condition is $t\,\div_L(v)\in\bZ$, and $N_V=N\cap V=\bZ\,v/\div_L(v)$.
-Hence $[N_V:P]=\div_L(v)$, and $D(P)$, the image of $N_V$ in $A_L$, is the cyclic group $\generators{c}$.
+Hence $[N_V:P]=\div_L(v)$, and $D(P)$, the image of $N_V$ in $A_L$, is the cyclic group (@def:group) $\generators{c}$.
 Since $M=P^{\perp_L}=v^{\perp_L}$ and $Q=M/P=v^{\perp_L}/v$, the isometry is @thm:isotropic-reduction-discriminant.
 :::

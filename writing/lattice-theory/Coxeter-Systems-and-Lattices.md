@@ -4,7 +4,7 @@ Let $(W,S)$ be a Coxeter system with $S$ finite, presented by the orders $m(s,t)
 
 ## The canonical form {#sec-coxeter-form}
 
-::: {.definition #def:coxeter-form title="The form of a Coxeter system" defines="canonical form; $G$; Coxeter graph; reflection; $\sigma_s$"}
+::: {.definition #def:coxeter-form title="The form of a Coxeter system" defines="canonical form; $G$; Coxeter graph; $\sigma_s$"}
 
 The *canonical form* of $(W,S)$ is the symmetric bilinear form on $V$ with
 $$

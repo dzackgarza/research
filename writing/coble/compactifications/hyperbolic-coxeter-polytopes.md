@@ -1,6 +1,6 @@
 # Hyperbolic Coxeter polytopes and finite covolume {#sec-hyperbolic-coxeter-polytopes}
 
-::: {#not:hyperbolic-polytope-setting .notation defines="$C_L^+$; $\HH^n_L$; root; mirror; $H_v$"}
+::: {#not:hyperbolic-polytope-setting .notation defines="$C_L^+$; $\HH^n_L$; mirror; $H_v$"}
 
 Throughout, $L$ is a hyperbolic lattice of signature $(1,n)$, $C_L^+$ is a fixed component of its positive cone (@not:reflection-groups-sign-convention), and $\HH^n_L$ is the associated hyperbolic $n$-space of @def:hyperbolic-model.
 Roots are negative-definite directions, so a mirror $H_v = v^{\perp}\intersect\HH^n_L$ is nonempty exactly when $v^2 < 0$.

@@ -33,7 +33,7 @@ itself need not be smooth [@Muk88, Prop. 8.10].
 
 ## Gluing and the automorphism group
 
-::: {.notation #not:k3-automorphism-data title="Lattice data of a K3 surface" defines="$L$; Néron–Severi lattice; $S$; $\rho$; transcendental lattice; $T$; positive cone; $C_X$; ample cone; $\Amp(X)$; $\mathcal C_S$; Hodge isometry; $G_X$; $P_S$; $\Orth^+(S)$; $W(S)$; $\widetilde\Orth(S)$; $\widetilde\Orth^+(S)$; $\bar u_q$; $\gamma_q$; $Q$; $a$; $b$"}
+::: {.notation #not:k3-automorphism-data title="Lattice data of a K3 surface" defines="$L$; Néron–Severi lattice; $S$; $\rho$; transcendental lattice; $T$; $C_X$; $\Amp(X)$; $\mathcal C_S$; Hodge isometry; $G_X$; $P_S$; $\Orth^+(S)$; $W(S)$; $\widetilde\Orth(S)$; $\widetilde\Orth^+(S)$; $\bar u_q$; $\gamma_q$; $Q$; $a$; $b$"}
 
 Let $X$ be a $K3$ surface (@def:k3-surface).
 Put $L\definedas H^2(X;\ZZ)$ with its cup-product pairing; it is even and unimodular by @prop:k3-lattice.

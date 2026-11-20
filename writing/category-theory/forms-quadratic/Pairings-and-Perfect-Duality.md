@@ -21,11 +21,11 @@ The fixed-value **category of pairings** $\mathbf{Pair}_{R,W}$ has objects $(A,B
 $$
 (f,g)\colon(A,B,b)\too(A',B',b')
 $$
-satisfying $b=b'\circ(f\tensor_Rg)$. Pullback along the diagonal $M\mapsto(M,M)$ gives the bilinear-form presheaf $\Bil_{R,W}$ of @def:form-presheaves. A pairing of two possibly different modules does not require symmetry or a choice of identification between them.
+satisfying $b=b'\circ(f\tensor_Rg)$. Pullback (@def:pullback-square) along the diagonal (@def:polarization-functors) $M\mapsto(M,M)$ gives the bilinear-form presheaf $\Bil_{R,W}$ of @def:form-presheaves. A pairing of two possibly different modules does not require symmetry or a choice of identification between them.
 :::
 
 ::: {.definition #def:pairing-adjoints title="The adjoints and their exact sequences" defines="left adjoint; right adjoint; $b^\ell$; $b^r$; left radical; right radical; $\radic_\ell(b)$; $\radic_r(b)$; left coradical; right coradical; $\operatorname{corad}_\ell(b)$; $\operatorname{corad}_r(b)$; left nondegenerate pairing; right nondegenerate pairing; nondegenerate pairing; perfect pairing"}
-For $b\colon A\tensor_RB\too W$, the tensor–Hom adjunction gives the **left** and **right adjoints**
+For $b\colon A\tensor_RB\too W$, the tensor–Hom adjunction gives the **left** and **right adjoints (@def:adjoint-morphism)**
 $$
 \begin{aligned}
 b^\ell\colon A&\longrightarrow\Hom_R(B,W),
@@ -34,9 +34,9 @@ b^r\colon B&\longrightarrow\Hom_R(A,W),
 &b&\longmapsto(a\mapsto b(a,b)).
 \end{aligned}
 $$
-Here the symbols in parentheses designate evaluation of the original pairing; the adjoints are morphisms in $R\text{-}\mathbf{Mod}$.
+Here the symbols in parentheses designate [evaluation]{.other-sense} of the original pairing; the adjoints are morphisms in $R\text{-}\mathbf{Mod}$.
 
-The **left radical**, **right radical**, **left coradical**, and **right coradical** are the kernels and cokernels in the complete exact sequences
+The **left radical (@def:two-witnesses)**, **right radical**, **left coradical**, and **right coradical** are the kernels (@def:kernel-cokernel) and cokernels (@def:kernel-cokernel) in the [complete]{.other-sense} exact (@def:exact-complex) sequences
 $$
 \begin{aligned}
 0&\too\radic_\ell(b)\too A\xrightarrow{b^\ell}\Hom_R(B,W)
@@ -45,33 +45,33 @@ $$
 \twoheadrightarrow\operatorname{corad}_r(b)\too0.
 \end{aligned}
 $$
-The pairing is **left nondegenerate** when $\radic_\ell(b)=0$, **right nondegenerate** when $\radic_r(b)=0$, and **nondegenerate** when both radicals vanish. It is **perfect** when both adjoints are isomorphisms, equivalently when all four kernel and cokernel obstructions vanish.
+The pairing is **left nondegenerate (@def:polarization)** when $\radic_\ell(b)=0$, **right nondegenerate** when $\radic_r(b)=0$, and **nondegenerate** when both radicals vanish. It is **perfect (@def:polarization)** when both adjoints are isomorphisms (@def:isomorphism-of-objects), equivalently when all four kernel and cokernel obstructions vanish.
 :::
 
 ::: {.proposition #prop:perfect-pairing-projective title="Perfectness on finitely generated projective modules"}
-Suppose $A$ and $B$ are finitely generated projective and $W=R$. Then $b^\ell$ is an isomorphism if and only if $b^r$ is an isomorphism; either condition is equivalent to perfectness.
+Suppose $A$ and $B$ are finitely generated projective (@def:module-subcategories) and $W=R$. Then $b^\ell$ is an isomorphism (@def:isomorphism-of-objects) if and only if $b^r$ is an isomorphism; either condition is equivalent to perfectness.
 
 The evaluation pairing
 $$
 \operatorname{ev}_A\colon A^\vee\tensor_RA\longrightarrow R,
 \qquad A^\vee\definedas\Hom_R(A,R),
 $$
-is perfect for every finitely generated projective $A$.
+is perfect (@def:polarization) for every finitely generated projective $A$.
 :::
 
 ::: {.proof}
-Finitely generated projective modules are dualizable by @prop:projective-dualizable, and the evaluation morphism $B\longrightarrow B^{\vee\vee}$ is an isomorphism. The right adjoint is the composite
+Finitely generated projective modules are dualizable (@def:dualizable-object) by @prop:projective-dualizable, and the evaluation (@def:dualizable-object) morphism $B\longrightarrow B^{\vee\vee}$ is an isomorphism. The right adjoint (@def:pairing-adjoints) is the composite
 $$
 B\xrightarrow{\sim}B^{\vee\vee}
 \xrightarrow{(b^\ell)^\vee}A^\vee.
 $$
-Thus $b^\ell$ is invertible precisely when $b^r$ is. For $b=\operatorname{ev}_A$, the right adjoint is $\id_{A^\vee}$ and the left adjoint is the evaluation biduality isomorphism $A\xrightarrow{\sim}A^{\vee\vee}$, up to the symmetry of the tensor product.
+Thus $b^\ell$ is invertible precisely when $b^r$ is. For $b=\operatorname{ev}_A$, the right adjoint is $\id_{A^\vee}$ and the left adjoint (@def:pairing-adjoints) is the evaluation biduality isomorphism $A\xrightarrow{\sim}A^{\vee\vee}$, up to the symmetry of the tensor product.
 :::
 
 ## Orthogonality for pairings {#sec-pairing-orthogonality}
 
 ::: {.definition #def:general-pairing-orthogonals title="The two orthogonal-complement functors" defines="right orthogonal complement; left orthogonal complement"}
-Fix $b\colon A\tensor_RB\too W$. For a monomorphism $i\colon S\injects A$, the **right orthogonal complement** is the kernel of
+Fix $b\colon A\tensor_RB\too W$. For a monomorphism $i\colon S\injects A$, the **right orthogonal complement** is the kernel (@def:kernel-cokernel) of
 $$
 B\xrightarrow{b^r}\Hom_R(A,W)
 \xrightarrow{\Hom_R(i,W)}\Hom_R(S,W).
@@ -81,7 +81,7 @@ $$
 A\xrightarrow{b^\ell}\Hom_R(B,W)
 \xrightarrow{\Hom_R(j,W)}\Hom_R(T,W).
 $$
-These yield order-reversing functors between the two module-subobject posets of @def:subobject-relation. They satisfy the Galois connection
+These yield order-reversing functors between the two module-subobject posets (@def:preorder-category) of @def:subobject-relation. They satisfy the Galois [connection]{.other-sense}
 $$
 S\subseteq{}^{\perp_A}T
 \quad\Longleftrightarrow\quad
@@ -91,22 +91,22 @@ For $A=B=M$ and $b$ symmetric, the two constructions agree with the orthogonal-c
 :::
 
 ::: {.proposition #prop:pairing-duality-base-change title="Flat base change of adjoints and radicals"}
-Let $\varphi\colon R\too S$ be a homomorphism of commutative rings and suppose $A,B$ are finitely generated projective $R$-modules. The base-changed pairing
+Let $\varphi\colon R\too S$ be a homomorphism of commutative (@def:operation-axioms) rings and suppose $A,B$ are finitely generated projective (@def:module-subcategories) $R$-modules. The base-changed pairing
 $$
 b_S\colon(S\tensor_RA)\tensor_S(S\tensor_RB)
 \longrightarrow S\tensor_RW
 $$
-has adjoints canonically isomorphic to $S\tensor_Rb^\ell$ and $S\tensor_Rb^r$. If $S$ is flat over $R$, the four exact kernel–cokernel sequences of @def:pairing-adjoints remain exact after base change, so the radicals and coradicals commute with scalar extension. If $S$ is faithfully flat, $b$ is nondegenerate, respectively perfect, if and only if $b_S$ is.
+has adjoints (@def:adjoint-morphism) canonically isomorphic to $S\tensor_Rb^\ell$ and $S\tensor_Rb^r$. If $S$ is flat over $R$, the four exact (@def:exact-complex) kernel (@def:kernel-cokernel)–cokernel (@def:kernel-cokernel) sequences of @def:pairing-adjoints remain exact after base change (@def:module-base-change), so the radicals (@def:two-witnesses) and coradicals (@def:two-witnesses) commute with scalar extension. If $S$ is faithfully flat, $b$ is nondegenerate (@def:polarization), respectively perfect (@def:polarization), if and only if $b_S$ is.
 :::
 
 ::: {.proof}
-Dualizability gives natural isomorphisms
+Dualizability gives natural isomorphisms (@def:isomorphism-of-objects)
 $$
 S\tensor_R\Hom_R(A,W)
 \xrightarrow{\sim}
 \Hom_S(S\tensor_RA,S\tensor_RW)
 $$
-and the corresponding isomorphisms with $B$. They identify the adjoints after extension of scalars with the stated tensor products. Flatness preserves kernels and cokernels of the two complete exact sequences. Faithfully flat scalar extension also reflects zero modules, yielding the last equivalences.
+and the corresponding isomorphisms with $B$. They identify the adjoints after extension of scalars with the stated tensor products. Flatness preserves kernels and cokernels of the two [complete]{.other-sense} exact sequences. Faithfully flat scalar extension also reflects zero modules, yielding the last [equivalences]{.other-sense}.
 :::
 
 ## Perfectness depends on the value module {#sec-value-module-duality}

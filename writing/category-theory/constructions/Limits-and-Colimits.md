@@ -174,7 +174,7 @@ Completeness is a stronger hypothesis than finite completeness, and a small cate
 
 ## Preservation, reflection, and creation {#sec-preservation}
 
-::: {.definition #def:preserve-reflect-create title="Preservation, reflection, and creation of limits" defines="preserves; reflects; creates"}
+::: {.definition #def:preserve-reflect-create title="Preservation, reflection, and creation of limits" defines="preservation of limits; reflection of limits; creation of limits"}
 
 Let $F\colon\mcc\to\mcd$ and fix a class of diagrams in $\mcc$.
 $F$ *preserves* those limits when the image of a limit cone over $K$ is a limit cone over $FK$.

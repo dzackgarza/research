@@ -1,6 +1,6 @@
 # Hyperbolic reflection groups and Vinberg's algorithm {#sec-reflection-groups-and-vinberg}
 
-::: {#not:reflection-groups-sign-convention .notation title="Sign convention" defines="short root; long root; hyperbolic lattice; positive cone; $C_L$"}
+::: {#not:reflection-groups-sign-convention .notation title="Sign convention" defines="hyperbolic lattice; positive cone; $C_L$"}
 
 Roots are *negative-definite* directions, a **short root** having norm $v^2 = -2$ and a **long root** norm $v^2 = -4$.
 An indefinite lattice $L$ of signature $(1, n)$ is called **hyperbolic**; its **positive cone**
@@ -246,7 +246,7 @@ A subdiagram $D\iscontainedin G$ is:
 - **hyperbolic** if its Gram matrix is nondegenerate of signature $(1, k-1)$, where $k$ is the number of vertices of $D$.
 :::
 
-::: {#not:subdiagram-opposite-normalization .notation title="The opposite normalization for subdiagrams" defines="opposite normalization for subdiagrams"}
+::: {#rmk:subdiagram-opposite-normalization .remark title="The opposite normalization for subdiagrams"}
 
 For roots of norm $+2$, the three conditions of @def:elliptic-subdiagram read positive definite, positive semidefinite with a one-dimensional kernel on each connected component, and signature $(k-1,1)$.
 :::

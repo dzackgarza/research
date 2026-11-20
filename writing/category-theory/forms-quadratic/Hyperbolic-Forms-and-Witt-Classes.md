@@ -119,7 +119,7 @@ A *lagrangian* of $(M,b)$ is a direct summand $N\iscontainedin M$ with $N=N^{\pe
 The form $(M,b)$ is *metabolic* if it admits a lagrangian [@MH73, §I.6; @Ran98, Def. 20.1].
 :::
 
-::: {#not:split-and-metabolic .notation title="Split and metabolic" defines="split form; metabolic form"}
+::: {#not:split-and-metabolic .notation title="Split and metabolic" defines="split form"}
 [@MH73, Def. I.6.1] calls a metabolic form *split*; the term *metabolic* is due to Knebusch [@MH73, §I.6].
 :::
 
