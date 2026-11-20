@@ -562,6 +562,19 @@ The graded pieces of the filtration therefore have no sections, and $H^0$ of an 
 *A rational surface.* Every minimal rational surface is $\PP^2$ or a Hirzebruch surface $F_n$ with $n\neq1$ [@Bea96, Chapter III, the classification of minimal rational surfaces], and every rational surface is obtained from one of them by a sequence of blow-ups. The invariance under blow-ups above and the two computations give $H^0\qty(S,\operatorname{Sym}^m\Omega^1_S)=0$.
 :::
 
+::: {.remark #rmk:coble-base-ring title="Why $N=2$, what is not inherited from a polarized moduli problem, and which statements need $\CC$"}
+
+*The reason for $N=2$.* The only place a denominator enters @def:coble-moduli-functor-z is the cyclic double cover of clause (2): it is a $\mu_2$-torsor, which requires $2\in\OO^\times$. Nothing else in the definition or in the descent proof divides by anything. In particular **no polarization enters**: the objects are unpolarized Coble surfaces with their double covers, so there is no degree $2d$ and no $1/(2d)$ to inherit.
+
+*Comparison with the polarized problems.* Rizov, *Moduli stacks of polarized K3 surfaces in mixed characteristic* (arXiv:math/0506120), proves that the stack $M_{2d}$ of degree-$2d$ polarized K3 surfaces is Deligne--Mumford over $\ZZ$ and smooth over $\ZZ[1/2d]$ (the smoothness over $\ZZ[1/2d]$ is his thesis, Prop. 1.4.15); the $2d$ there comes from the polarization, which this functor does not have. Liedtke, *Arithmetic moduli and lifting of Enriques surfaces* (arXiv:1007.0787), proves that the Cossec--Verra *polarized* Enriques surfaces form an Artin stack of finite type over $\ZZ$ that is Deligne--Mumford over $\ZZ[1/2]$, and treats the unpolarized functor there, where whether it has a coarse space is not clear. Neither statement transfers a denominator to this functor, and both are consistent with $N=2$: $2$ is the universal one for a $\mu_2$-cover, and the polarized problems pay $2d$ on top of it.
+
+*What is and is not claimed over which base.*
+- The functor, its morphisms and the fppf/étale descent (@def:coble-moduli-functor-z, @lem:coble-moduli-functor-fppf) are stated over $\ZZ[1/2]$ and proved there.
+- Algebraicity over $\ZZ[1/2]$ is **not** proved, and there is a reason to expect that it needs work: the functor is unpolarized, and for unpolarized K3 surfaces there is no algebraic moduli stack of finite type, the family not being bounded. Whether the unpolarized Coble functor is bounded — every member being $\Bl$ of $\PP^2$ at ten points, but with no fixed polarization — is not decided anywhere read here.
+- Everything the volume *uses* is analytic and over $\CC$: the period domain $\bD(T_\Co)$, the period map, Torelli, and the local system whose monodromy is $\Gamma_\Co$ (@lem:d2-local-system and the items 3--6 of research#797). Those statements need the complex analytic stack, not the arithmetic one.
+- The Deligne--Mumford determination (@rmk:coble-automorphisms-infinite) is a statement about automorphism groups and is independent of the base ring.
+:::
+
 ::: {.proposition #prop:coble-stack-smooth-connected title="$\mcM_\Co$ is smooth, and connected on the classical subfamily; where the isotropy is larger"}
 
 1. *Smoothness.* Every geometric fibre $S_b$ is a rational surface, so $H^0(S_b,\Omega^1)=0$ and, by Serre duality $H^2(S_b,T_{S_b})\cong H^0(S_b,\Omega^1_{S_b})^*$, the obstruction space $H^2(S_b,T_{S_b})$ vanishes. Deformations of $S_b$ are therefore unobstructed, and $\mcM_\Co$ is a smooth stack at every point.
