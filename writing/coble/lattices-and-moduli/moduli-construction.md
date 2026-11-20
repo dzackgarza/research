@@ -1568,6 +1568,30 @@ So step 1 of @rmk:the-two-steps-and-where-they-fail produces a Coble surface in 
 
 :::
 
+::: {.lemma #lem:every-object-of-the-functor-is-labellable title="Every object of the functor carries a marking of $M$, and $\iota$ preserves it"}
+Let $(S,X\xrightarrow{\pi}S,\iota)$ be an object of @def:coble-moduli-functor in the narrowed class of the functor -- a Coble surface whose anti-bicanonical system has a smooth member, with $\pi$ the double cover branched along it. Then the invariant lattice $H^2(X,\ZZ)^{\iota}$ is isometric to $M=S_\Co=\generators{2}\oplus\generators{-2}^{\oplus10}$, so the object admits a marking $\psi\colon M\iso H^2(X,\ZZ)^{\iota}$, and every such marking is preserved by $\iota$.
+:::
+
+::: {.proof}
+The fixed locus of $\iota$ is the branch curve $C$, a smooth rational curve, so $\chi(\Fix\iota)=2$; the Lefschetz count $\chi(\Fix\iota)=2\rank H^2(X,\ZZ)^{\iota}-20$ gives rank $11$. The invariant lattice of a nonsymplectic involution is even and $2$-elementary, of signature $(1,10)$ here, and its discriminant form is that of the $(-1)$-eigenspace with the sign reversed; by Nikulin's classification of $2$-elementary lattices [@Nik80, Thm. 3.6.2] the invariants $(\delta;t_+,t_-,a)=(1;1,10,11)$ determine it, and the lattice with those invariants is $\generators{2}\oplus\generators{-2}^{\oplus10}=M$ (@prop:coble-invariant-lattice, @prop:coble-period-domain(1)). A marking is an isometry onto that lattice, and it exists because the two lattices are isometric. Finally $\iota$ acts as $+\id$ on its own invariant lattice, so it preserves every marking of it.
+:::
+
+::: {.theorem #thm:gamma-co-labelled-equality title="The labelled equality: $\Gamma_\Co=\rho^{\mathrm{lab}}\qty(\pi_1)=\widetilde\Orth^+(T_\Co)$ over the locus where the isotropy is the sign"}
+Let $\mcM^{\mathrm{lab}}_\Co$ be the stack whose objects are the objects of @def:coble-moduli-functor together with a marking $\psi$ of @lem:every-object-of-the-functor-is-labellable, let $U=\bD(T_\Co)^+\sm Z$ be the complement of the $(-2)$-arrangement (@prop:the-coble-locus-in-the-period-domain), and let $\mcM^{\mathrm{gen}}\subseteq\mcM^{\mathrm{lab}}_\Co$ be the open substack where the automorphism group of a labelled object is exactly $\{\id,\iota\}$. Then:
+
+1. the period map induces an equivalence $\mcM^{\mathrm{gen}}\to\qty[\widetilde\Orth^+(T_\Co)\backslash U^{\mathrm{gen}}]$ onto an open substack, with the isotropy $\{\id,\iota\}$ on both sides;
+2. the monodromy representation of $T_\Co$ on $\pi_1\qty(\mcM^{\mathrm{gen}})$ has image $\widetilde\Orth^+(T_\Co)$;
+3. hence $\Gamma_\Co=\rho^{\mathrm{lab}}\qty(\pi_1)=\widetilde\Orth^+(T_\Co)$ there, and $\Gamma_\Co$ is the closure of that group in the sense of the enlargement by the extra isotropy of the special members.
+:::
+
+::: {.proof}
+1. Surjectivity onto $U$: a period off $Z$ is realised by an object of the functor (@rmk:the-two-steps-and-where-they-fail with the narrowed class of the functor), and @lem:every-object-of-the-functor-is-labellable supplies the marking. Injectivity on objects and uniqueness up to the isotropy: two labelled objects with the same period are isomorphic (@thm:coble-period-map-of-the-stack(2)), and the isomorphisms are the automorphisms of either, which are $\{\id,\iota\}$ on $\mcM^{\mathrm{gen}}$ by definition. So the period map is an equivalence onto an open substack with the same isotropy, and $U^{\mathrm{gen}}$ is its image.
+2. $U^{\mathrm{gen}}\to[U^{\mathrm{gen}}/G]$ is a $G$-torsor with $G=\widetilde\Orth^+(T_\Co)$, a covering of topological stacks in the sense of Noohi's Definition 18.10, so Noohi's Theorem 18.19 with Corollary 18.20 give $1\to\pi_1(U^{\mathrm{gen}})\to\pi_1([U^{\mathrm{gen}}/G])\to G\to1$, and the local system is the pullback of the tautological one, whose monodromy has image $G$ (@lem:orbifold-monodromy-of-a-quotient).
+3. is 1 and 2 with @def:gamma-co-groups(1).
+:::
+
+*The hypothesis that is not proved, stated in the statement.* Clause 1 needs $\Aut$ of a labelled object to be exactly $\{\id,\iota\}$, and that is a genericity statement: at a special member the period stabiliser is strictly larger (@thm:sign-is-isotropy's normaliser and the plane-model image of 18c07a9cd7). So the theorem gives the equality on the dense open $\mcM^{\mathrm{gen}}$ and states the global group as the enlargement by that extra isotropy, which is a description, not a computation. @conj:gamma-co-orbifold-equality remains the global statement, and what it now needs is exactly the isotropy at the special members.
+
 ### Item 6: the groups from the universal families
 
 ::: {.proposition #prop:gamma-co-from-the-universal-family title="What the universal families give, and what a restriction gives instead"}

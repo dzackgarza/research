@@ -243,3 +243,25 @@ def test_the_subclass_with_a_plane_model_is_named():
     assert "not" in body
     # the coordination the finding asks for is recorded rather than performed silently
     assert "coordination" in body
+
+
+LABELLABLE = "lem:every-object-of-the-functor-is-labellable"
+LABELLED_EQ = "thm:gamma-co-labelled-equality"
+
+
+def test_every_object_is_labellable():
+    body = _block(MC.read_text(encoding="utf-8"), LABELLABLE)
+    assert "invariant lattice" in body
+    assert "marking" in body
+    # the count that fixes the rank is in the proof, not the statement
+    text = MC.read_text(encoding="utf-8")
+    proof = text[text.index("#" + LABELLABLE):]
+    assert "rank $11$" in proof[:2500] and ("Nikulin" in proof[:2500] or "@Nik80" in proof[:2500])
+
+
+def test_the_labelled_equality_and_its_hypothesis():
+    body = _block(MC.read_text(encoding="utf-8"), LABELLED_EQ)
+    assert "isotropy" in body
+    assert "\\widetilde\\Orth^+(T_\\Co)" in body
+    # the genericity hypothesis is in the statement, not hidden
+    assert "gen" in body
