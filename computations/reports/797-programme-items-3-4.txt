@@ -37,12 +37,25 @@ which is reduced and named below.
     applies with m = 2.
   Hence F_S = [Otilde+(T_Co) \ D(T_Co)^+], the presentation item 3 asks for.
 
-  NOT MET, reduced: the hypotheses are not all supplied for the Coble lattice.
-  [@Dol96, Prop. 5.1] gives condition (U), uniqueness of the primitive embedding,
-  under l(A(M)) <= 20 - t, and for M = S_Co, l(A(M)) = 11 > 20 - 10 = 10
-  (moduli-construction.md:1054).  (U) is not needed for the marked theory, which is
-  what the labelled base of def:coble-family-unpolarized uses; it is owed for the
-  unmarked reading of K_M.
+  CORRECTED at this commit (an earlier form of this report and of the page said the
+  opposite): condition (U) IS supplied for M = S_Co by [@Dol96, Prop. 5.1], whose
+  existence hypothesis is l(A(M)) <= 20 - t OR t <= 10, the second disjunct holding
+  at t = 10, and whose uniqueness hypothesis is met because A(M) is a 2-group (odd
+  p vacuous) and A(M)_2 contains the discriminant form of U(2) as an orthogonal
+  summand, the classes e_0 + e_1 and e_0 + e_2 spanning it (moduli-construction.md,
+  the bullet "Condition (U)").  What does not follow from (5.1) is the non-emptiness
+  of the ample locus, which is [@Dol96, Cor. 5.2] with hypothesis t <= 9; for the
+  Coble lattice non-emptiness is the existence of the surfaces.
+
+  PARTIAL, and the gap named: the identification above is one of points and
+  components.  For the stack it must compare the stabiliser of a period in O(N)*
+  with Aut(X,j), and a Hodge isometry fixing the period is realised by an
+  automorphism exactly when it preserves the Kahler cone (strong Torelli), which
+  [@Dol96] does not state.  For M = S_Co the central -id_N is realised at every
+  member (the covering involution) and on the ample locus it is the generic
+  stabiliser, so the two agree there; for general M the period quotient is
+  ineffective and not the moduli stack (moduli-construction.md, the paragraph
+  "The stabiliser").
 
   NOT MET, reduced: the unpolarized case M = 0 (moduli-construction.md:1056).
   [@Dol96, §3] requires M of signature (1,t) and does not cover M = 0.  The inputs
@@ -72,7 +85,13 @@ item 3 have; NOT MET for the general statement on an arbitrary stack, reduced be
   system of the VHS on the universal family over M_Co.  It needs the universal family
   (item 1) and the pushforward/pullback of item 6.  The Galois correspondence for
   covering stacks of an arbitrary stack is also not read in this repository, so the
-  covering-stack half of item 4 rests on the orbifold case only.
+  covering-stack half of item 4 is supplied by Noohi, Foundations of topological
+  stacks I (arXiv:math/0503247): Definition 17.5 for pi_1 of a pointed topological
+  stack, Definition 18.10 for a covering of stacks, Theorem 18.19 for the Galois
+  correspondence, Corollary 18.20 for the subgroup bijection and the universal
+  cover, all read at those numbers.  The exact sequence is a corollary of Theorem
+  18.19, not a statement in that paper.  For the quotient stack the kernel is
+  trivial: K = pi_1(D(T_Co)^+), and that domain is contractible.
 
 DEFINITION (the body's first paragraph, not an item)
   lattices.md:116, def:gamma-co-groups(1), defines Gamma_Co as the monodromy of the
