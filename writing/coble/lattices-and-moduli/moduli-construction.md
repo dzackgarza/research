@@ -647,6 +647,15 @@ Let $Y'\to Y$ be faithfully flat of finite presentation with a descent datum for
 (4) For $S_b=\Bl_{10}\PP^2$ the ramification curve of the double cover is $R_b=f^*(-K_{S_b})$, of square $2(-K_{S_b})^2=-2$ and $C_b=-2K_{S_b}$ gives $f^*C_b=2R_b$; its class is orthogonal to $f^*\Pic(S_b)\supseteq\ten$-side and spans the line $\QQ R_b$ in $H^2(X_b)$, which is the direction in which the period leaves $\ten$ when the Enriques condition fails.
 :::
 
+::: {.remark #rmk:universal-object-of-the-coble-stack title="The universal object over the stack, and why no family over a scheme presents it"}
+
+Item 1 of research#797 asks for the universal family over the Coble stack, and item 2 for that over the partial compactification. Two different things are at stake.
+
+1. *The universal object over the stack.* A moduli stack in groupoids carries the object given by its identity morphism, the tautological family over itself; so $\mcM_\Co$ and $\mcM^{\partial}_\En$ each carry a universal object, and this part is formal.
+2. *A family over a scheme presenting it.* What an explicit construction supplies is a family over a scheme together with a smooth surjection from that scheme: the family of @lem:d2-unpolarised-family(2) over $V$, descending to $B$ and to $\bar B$. That map is essentially surjective but not an equivalence (@prop:coble-plane-model-comparison(1)--(3)), so the family over $\bar B$ **presents** the universal object of $\mcM_\Co$ as a presentation, and it is not a universal family over a scheme in the sense of representing the functor. What remains open is whether some other scheme — necessarily not one dominating $\bar B$ in the plane-model direction — carries a family representing the restricted functor on an open substack, and no such scheme is constructed in the volume.
+3. *The Enriques locus.* Over the Enriques part of $\mcM^{\partial}_\En$ no presentation by a family of K3 surfaces with a fixed-point-free involution is constructed here; the period-domain description of [@DK13, §3] and the quotient presentation of item 3 of the programme are the routes, and neither is written.
+:::
+
 ::: {.remark #rmk:coble-enriques-not-a-map title="There is no morphism from the Coble stack to the Enriques stack of smooth families"}
 
 Item 2 of research#797 asks for a morphism $\text{Coble}\to\text{Enriques}$. Between the moduli of *smooth* families there is none, and the relation the sources give is a boundary one: the moduli space of Coble surfaces is identified with a **codimension-one component of the boundary** of the moduli space of Enriques surfaces [@DK13, §1]. The reason is in the objects: a Coble surface is the quotient $X/\iota$ of a K3 surface by an involution with a fixed curve, while an Enriques surface is the quotient by a fixed-point-free one; a family of the first kind does not become a family of the second by any map of bases, and the Coble locus is reached only in the limit in which the branch curve of $X/\iota$ is contracted — which is the degeneration [@DK13, §1] and [@DK13, §3] describe.
