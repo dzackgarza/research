@@ -176,6 +176,9 @@ def test_the_semifan_is_determined_on_one_chamber_whatever_the_half():
     assert "#lem:semifan-determined-on-one-chamber" in page
     assert "determined by its restriction to the closure of a fundamental chamber" in page
     assert "holds for either half of the dichotomy" in page
+    # research#777: the refinement half is realised, so the coarsening-only reading is refuted
+    assert "the reading in which every Coble semifan coarsens" in page
+    assert "is refuted at that cusp" in page
 
 
 def test_the_page_says_w_is_the_coarsening_half_of_the_dichotomy():
