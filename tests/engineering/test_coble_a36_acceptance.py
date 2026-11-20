@@ -149,6 +149,21 @@ def test_the_locus_probe_reproduces_its_record():
     assert "coble_679-locus-probe-run.txt" in page
 
 
+def test_the_page_says_w_is_the_coarsening_half_of_the_dichotomy():
+    """The owner's wording is "refinements or coarsenings"; (W) is the second half only.
+
+    ResearchStatement.md:215 states the dichotomy, and research#777 records that the
+    refinement half is unsettled.  Every page result proved under (W) is conditional on
+    the coarsening half, and the remark has to say which results are not.
+    """
+    page = page_text()
+    assert "#rmk:coarsening-is-one-half" in page
+    assert "either refinements or coarsenings of the canonical Coxeter fans" in page
+    assert "conditional on the coarsening half" in page
+    statement = (REPO / "writing/research-statement/ResearchStatement.md").read_text(encoding="utf-8")
+    assert "either refinements or coarsenings of the canonical Coxeter fans" in statement
+
+
 def test_the_pages_that_discuss_the_semifan_state_the_hypothesis_as_one():
     """Item 2's substance, not only its wording: nothing implies coarsening is automatic.
 
