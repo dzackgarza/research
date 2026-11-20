@@ -557,7 +557,7 @@ $$
 $$
 assigns to $Y$ the groupoid whose **objects** are triples $\qty{\mcs\xrightarrow{f}Y,\ \mcx\xrightarrow{\pi}\mcs,\ \iota}$ with:
 
-1. $f$ flat, proper and of finite presentation, whose geometric fibres are the surfaces $S=\Bl_{p_1,\dots,p_{10}}\PP^2$ of @lem:d2-unpolarised-family(1);
+1. $f$ flat, proper and of finite presentation (@def:finite-presentation), whose geometric fibres are the surfaces $S=\Bl_{p_1,\dots,p_{10}}\PP^2$ of @lem:d2-unpolarised-family(1);
 2. $\pi$ the relative double cover branched along the relative divisor $-2K_{\mcs/Y}$, which exists because $-2K_{\mcs/Y}$ is a $2$-divisible Cartier divisor on a smooth family (@lem:d2-unpolarised-family(2));
 3. $\iota$ the covering involution of $\pi$;
 
@@ -577,7 +577,7 @@ $\mcM_\Co$ is a stack for the étale topology on $\mathfrak{C}$, hence also for 
 
 (1) is the sheaf property of the presheaf of isomorphisms of two spaces over $Y$, restricted by closed conditions.
 
-(2) SGA 1, Exposé VIII, is the descent statement for faithfully flat morphisms of finite presentation; an étale surjection is such a morphism, and the effectivity of the descent datum is its conclusion for the pair of spaces and the morphisms between them. Flatness and properness of the descended morphism are local on the base in the étale topology.
+(2) SGA 1, Exposé VIII, is the descent statement for faithfully flat morphisms of finite presentation (@def:finite-presentation); an étale surjection is such a morphism, and the effectivity of the descent datum is its conclusion for the pair of spaces and the morphisms between them. Flatness and properness of the descended morphism are local on the base in the étale topology.
 
 (3) A geometric fibre of $f$ is a geometric fibre of $f'$ with the same base change, so the first condition is unaffected. For the second, $K_{\mcs/Y}$ is $\det\Omega^1_{\mcs/Y}$ in the smooth case and is computed from the descended $f$; the cyclic cover construction is @lem:d2-unpolarised-family(2), whose input is the class of $\mcD$ with $\OO(2\mcD)=\OO(-2K_{\mcs/Y})$.
 :::
@@ -622,7 +622,7 @@ A Coble surface is rational, so $h^{2,0}=0$ on every fibre and the degree-$2$ Ho
 
 **The local system of lattices** is $\bT$ of @lem:d2-local-system: the orthogonal complement in $R^2f_*\underline{\ZZ}_{\mcx}$ modulo torsion of the span of the classes of the pullback of a line and of the ten exceptional curves. Its fibre is $T_\Co$, its rank is $11$, and its stalks (@def:stalk) have signature $(2,9)$.
 
-**The group.** $\Gamma_\Co\leq\Orth(T_\Co)$ is the monodromy group (@def:transport-and-monodromy) of $\bT$ (@lem:d2-local-system) on the labelled base $B$: the image of the monodromy representation (@def:transport-and-monodromy) of $\bT$ (@def:local-system-of-lattices) on $\pi_1(B,s)$. By @lem:d2-labelled-base-monodromy it is also $\rho\qty{\pi_1(V,s)}$, and it is a subgroup of $\Orth(T_\Co)$ because $\bT$ is a local system of lattices with fibre $T_\Co$ and transport along a path (@def:path-connectedness) is an isometry (@prop:local-system-of-lattices-monodromy). Put $\fco\definedas\bD(T_\Co)/\Gamma_\Co$.
+**The group.** $\Gamma_\Co\leq\Orth(T_\Co)$ is the monodromy group (@def:transport-and-monodromy) of $\bT$ (@lem:d2-local-system) on the labelled base $B$: the image of the monodromy representation (@def:transport-and-monodromy) of $\bT$ (@def:local-system-of-lattices) on $\pi_1(B,s)$. Put $\fco\definedas\bD(T_\Co)/\Gamma_\Co$.
 :::
 
 ::: {.lemma #lem:d2-unpolarised-family title="The family over the labelled base exists"}
@@ -645,7 +645,7 @@ Let $b=(Z;p_1,\dots,p_{10})\in V$ and $S_b=\Bl_{p_1,\dots,p_{10}}\PP^2$, with $H
 
 ::: {.lemma #lem:d2a-moduli-stack title="The quotient stack is the moduli stack of D2a"}
 
-The stack $[V/\SL_3]$ is the moduli stack of the objects of @def:coble-family-unpolarized, with universal family that of @lem:d2-unpolarised-family(3).
+The stack $[V/\SL_3]$ is the moduli stack of the objects of @def:coble-family-unpolarized, with universal family (@def:classifying-object) that of @lem:d2-unpolarised-family(3).
 :::
 
 ::: {.proof}
@@ -660,6 +660,7 @@ The family over $B$ is the descent of @lem:d2-unpolarised-family(2) along the pr
 
 The fibres are the surfaces $S_b=\Bl_{p_1,\dots,p_{10}}\PP^2$ for $b=(Z;p_1,\dots,p_{10})$, with $C_b$ the proper transform (@def:strict-transform) of $Z$; then $[C_b]=-2K_{S_b}$, $C_b^2=-4$, and the double cover of $S_b$ branched along $C_b$ is a K3 surface $X_b$ with covering involution $\iota_b$ (@lem:d2-unpolarised-family(1)).
 The labelling of the ten exceptional curves is not part of the objects: the labelled base $B=V/\PGL_3$ is the space of sextics with their ten nodes *named* (@not:d2-plane-sextic-base), and the objects over the unlabelled base $\bar B$ are unlabelled (@lem:d2-labelling-cover).
+By @lem:d2-labelled-base-monodromy the group $\Gamma_\Co$ of @def:coble-family-unpolarized is also $\rho\qty{\pi_1(V,s)}$, and it is a subgroup of $\Orth(T_\Co)$ because $\bT$ is a local system of lattices with fibre $T_\Co$ and transport along a path (@def:path-connectedness) is an isometry (@prop:local-system-of-lattices-monodromy).
 :::
 
 ::: {.lemma #lem:coble-family-base-change title="Base change changes the monodromy group by a subgroup"}
@@ -744,7 +745,7 @@ That group is $\Orth^+(T_\Co)\intersect\discriminantkernel{T_\Co}$, which is $\w
 
 ::: {.lemma #lem:d2-label-lift title="A path from $s$ to every $S_{10}$-translate, and the fundamental-group sequence"}
 
-Let $B=V/\PGL_3$ be the labelled base (@def:coble-family-unpolarized), a connected complex analytic space on which $S_{10}$ acts (@not:d2-plane-sextic-base, @lem:d2-incidence-connected(2)), let $\bar B=[B/S_{10}]$ be the quotient stack, and let $s\in B$ map to $[s]\in\bar B$. Then:
+Let $B=V/\PGL_3$ be the labelled base, a connected complex analytic space on which $S_{10}$ acts (@not:d2-plane-sextic-base, @lem:d2-incidence-connected(2)), let $\bar B=[B/S_{10}]$ be the quotient stack, and let $s\in B$ map to $[s]\in\bar B$. Then:
 
 1. For every $\sigma\in S_{10}$ there is a path (@def:path-connectedness) of $B$ from $s$ to $\sigma s$.
 2. The assignment that sends an orbifold loop $(\sigma,\tilde\gamma)$ of $\bar B$ at $[s]$ to $\sigma$ is a surjective homomorphism $\pi_1(\bar B,[s])\to S_{10}$ whose kernel is the image of $\pi_1(B,s)$; in particular
@@ -829,22 +830,25 @@ hence $F_1\cdot R=1$ and $h\cdot R=0$. Since $R$ is an effective curve meeting $
 (4) Let $p_1,p_2,p_3$ be collinear nodes and $L$ the line they span. Since $L$ is a line and $\deg Z=6$, $L$ is not a component of $Z$, so its proper transform is a curve $R\subset S$ with class $H-E_1-E_2-E_3$; then $R^2=1-3=-2$ and $R\cdot K_S=-3+3=0$, so $R$ is a $(-2)$-curve with class in $K_S^{\perp}$. The sextic of @lem:d2-s10-not-free has exactly three nodes on the line $z=0$; the computation cited in (2) verifies that the three are collinear and that $R^2=-2$ and $R\cdot K_S=0$.
 :::
 
+::: {.remark #rmk:d2b-decomposition-locus title="Where the degree-$2$ class decomposes"}
+
+For the family of @def:coble-family-degree-two the polarization is a class and not a decomposition (@lem:d2-degree-two-polarization(2), @lem:d2b-polarization-is-a-class). On the locus where $h_{\Co,y}$ is nondegenerate it splits as $F_1+F_2$ with $F_i$ nef and $F_i^2=0$, and then $\tilde h_y=f^*F_1+f^*F_2$ is the vector $h=e+f$ of [@AEGS25, Def. 2.5] (@lem:d2-degree-two-polarization(3), @lem:d2b-polarization-is-a-class(2)); on the degenerate locus it does not (@lem:d2b-polarization-is-a-class(3)), and that case is part of that moduli problem.
+:::
+
 ::: {.definition #def:coble-family-degree-two title="D2b: the family of degree-$2$ polarized Coble surfaces" defines="degree-$2$ polarized Coble surface; $\Delta_2$; $\Gamma_{\Co,2}$; $F_{\Co,2}$"}
 
 **The objects.** Over a complex space $Y$, an object is a tuple $\qty{\mcs\to Y,\ \mcx\to\mcs,\ \tilde h}$ in which
 
 1. $\mcs\to Y$ is an object of @def:coble-family-unpolarized, with its K3 double cover $\mcx\to\mcs$ and involution $\iota$;
-2. $\tilde h$ is a global section of the local system of lattices $f^*(K^\perp)$ of @lem:d2-degree-two-polarization(1) whose value at every $y\in Y$ is the pullback $\tilde h_y=f^*h_{\Co,y}$ of a nef class (@def:nef-cone) $h_{\Co,y}\in K_{S_y}^{\perp}$ with $h_{\Co,y}^2=2$: a degree-$2$ numerical polarization in the sense of @def:coble-polarization-classes(2), with the polarization a *class* and not a decomposition (@lem:d2-degree-two-polarization(2), @lem:d2b-polarization-is-a-class).
+2. $\tilde h$ is a global section of the local system of lattices $f^*(K^\perp)$ of @lem:d2-degree-two-polarization(1) whose value at every $y\in Y$ is the pullback $\tilde h_y=f^*h_{\Co,y}$ of a nef class (@def:nef-cone) $h_{\Co,y}\in K_{S_y}^{\perp}$ with $h_{\Co,y}^2=2$: a degree-$2$ numerical polarization in the sense of @def:coble-polarization-classes(2).
 
-The section is part of the objects and is not a marking: it is the polarization. On the locus where $h_{\Co,y}$ is nondegenerate it splits as $F_1+F_2$ with $F_i$ nef and $F_i^2=0$, and then $\tilde h_y=f^*F_1+f^*F_2$ is the vector $h=e+f$ of [@AEGS25, Def. 2.5] (@lem:d2-degree-two-polarization(3), @lem:d2b-polarization-is-a-class(2)); on the degenerate locus it does not (@lem:d2b-polarization-is-a-class(3)), and that case is part of this moduli problem.
+The section is part of the objects and is not a marking: it is the polarization.
 
 **The fibres** are the Coble surfaces $S_y$ of @def:coble-family-unpolarized with their degree-$2$ numerical polarization $h_{\Co,y}$; the K3 cover $X_y$ is a K3 surface with a marked class $\tilde h_y$ of square $4$.
 
-**The base** of a family is the base over which it lives, and every such base carries the underlying unpolarized family and maps to $\bar B$ (@lem:d2b-forgets-to-d2a(1)--(2)). The base is compared with the D2a base through that forgetful morphism and the period maps, and its marked period space is $\bD(T_\Co)/\Gamma_{\Co,2}$; the divisor $\Delta_2\subset\fentwo$, the image of the hyperplanes $\alpha^{\perp}$ for $\alpha\in\ten$ a $(-2)$-vector, is the image of that period space under the quotient by $R_{\gent}$ (@lem:d2-degree-two-base(2), @lem:d2b-forgets-to-d2a(4)) and not the marked space itself.
-
 **The local system of lattices** is $\bT$ of @lem:d2-local-system, the orthogonal complement of $\bM$ in $R^2f_*\underline\ZZ_\mcx$ modulo torsion; the polarization is a section of $\bM$, so $\bT$ is the same system for the polarized and the unpolarized family, and its fibre is $T_\Co$.
 
-**The group.** $\Gamma_{\Co,2}\leq\Orth(T_\Co)$ is the image of the monodromy representation of $\bT$ (@def:gamma-co-groups(5)). It is a subgroup of $\Orth^+(T_\Co)$, unconditionally, because the family of this definition forgets to a family of Coble surfaces (@lem:d2b-forgets-to-d2a(1)--(2)); the further containment in the restricted stabilizer (@def:group-orbit) $R_{\gent}$ is @lem:d2-degree-two-base(3). Put $F_{\Co,2}\definedas\bD(T_\Co)/\Gamma_{\Co,2}$.
+**The group.** $\Gamma_{\Co,2}\leq\Orth(T_\Co)$ is the image of the monodromy representation of $\bT$ (@def:gamma-co-groups(5)). Put $F_{\Co,2}\definedas\bD(T_\Co)/\Gamma_{\Co,2}$.
 :::
 
 ::: {.lemma #lem:d2-degree-two-base title="The period image of the degree-$2$ family is all of $\Delta_2$, up to normalization"}
@@ -892,6 +896,13 @@ and not by an identification: the marked period space of the degree-$2$ family i
 (3) By @lem:orbifold-monodromy-of-a-quotient the monodromy representation of the tautological local system of $\bD(T_\Co)/R_{\gent}$ is the projection $\pi_1^{\mathrm{orb}}\to R_{\gent}$, so its image is $R_{\gent}$. By @thm:coble-monodromy-versus-enriques(2) there is a primitive $\zeta\in T_\Co$ of square $2$ with $s_\zeta\in R_{\gent}$ and $s_\zeta\notin\Orth^+(T_\Co)$. A family of Coble surfaces over that orbifold with the tautological system as its $\bT$ would have monodromy group $R_{\gent}$ by (1), against @lem:monodromy-is-spinor-positive, which puts the monodromy of every Coble family in $\Orth^+(T_\Co)$.
 
 (4) By (1) and (2) the forgetful morphism and the period maps are the only comparison available. The period map of the degree-$2$ family lands in $\bD(T_\Co)/\Gamma_{\Co,2}$ by the definition of $\Gamma_{\Co,2}$ as the monodromy group (@def:gamma-co-groups(5), @eq-period-map-equivariance), and the second arrow is the quotient by the subgroup $R_{\gent}$ of @lem:d2-degree-two-base(1); the composite is finite with image $\Delta_2$ (@lem:d2-degree-two-base(2)). Since $\Gamma_{\Co,2}\subseteq\Orth^+(T_\Co)$ by (2) and $s_\zeta\in R_{\gent}$ lies outside $\Orth^+(T_\Co)$, $\Gamma_{\Co,2}\neq R_{\gent}$, which is @thm:coble-monodromy-versus-enriques(3); so the first arrow is not an isomorphism and $\Delta_2$ is the image, not the marked space.
+:::
+
+::: {.remark #rmk:d2b-base-and-group title="The base and the group of D2b"}
+
+The base of a family of @def:coble-family-degree-two carries the underlying unpolarized family and maps to $\bar B$ (@lem:d2b-forgets-to-d2a(1)--(2)). The base is compared with the D2a base through that forgetful morphism and the period maps, and its marked period space is $\bD(T_\Co)/\Gamma_{\Co,2}$; the divisor $\Delta_2\subset\fentwo$, the image of the hyperplanes $\alpha^{\perp}$ for $\alpha\in\ten$ a $(-2)$-vector, is the image of that period space under the quotient by $R_{\gent}$ (@lem:d2-degree-two-base(2), @lem:d2b-forgets-to-d2a(4)) and not the marked space itself.
+
+The group $\Gamma_{\Co,2}$ is a subgroup of $\Orth^+(T_\Co)$, unconditionally, because a family of @def:coble-family-degree-two forgets to a family of Coble surfaces (@lem:d2b-forgets-to-d2a(1)--(2)); the further containment in the restricted stabilizer (@def:group-orbit) $R_{\gent}$ is @lem:d2-degree-two-base(3).
 :::
 
 ::: {.lemma #lem:d2b-family-over-the-labelled-base title="A family of degree-$2$ polarized Coble surfaces over the labelled base"}
