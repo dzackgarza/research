@@ -149,6 +149,21 @@ def test_the_locus_probe_reproduces_its_record():
     assert "coble_679-locus-probe-run.txt" in page
 
 
+def test_the_semifan_is_determined_on_one_chamber_whatever_the_half():
+    """The reading-independent determination: W_2-invariance, hence one chamber suffices.
+
+    lem:minus-two-reflections-lift gives that every (-2)-reflection of the boundary
+    lattice lies in the monodromy, so the semifan is W_2-invariant; a W_2-invariant
+    locally finite fan is determined by its trace on the closure of a fundamental
+    chamber, and Gamma-admissibility leaves finitely many cones to record.  Nothing
+    here uses coarsening or refinement.
+    """
+    page = page_text()
+    assert "#lem:semifan-determined-on-one-chamber" in page
+    assert "determined by its restriction to the closure of a fundamental chamber" in page
+    assert "holds for either half of the dichotomy" in page
+
+
 def test_the_page_says_w_is_the_coarsening_half_of_the_dichotomy():
     """The owner's wording is "refinements or coarsenings"; (W) is the second half only.
 
