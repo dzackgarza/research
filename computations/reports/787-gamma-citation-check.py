@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
-"""research#787, acceptance item 4: every page that uses Gamma_Co or Gamma_{Co,2}
+r"""research#787, acceptance item 4: every page that uses Gamma_Co or Gamma_{Co,2}
 cites the D2 definitions.
+
+The braced spelling \Gamma_{\Co} is the same symbol as \Gamma_\Co, and the first
+version of this checker matched only the unbraced spelling; two pages using the
+braced one were reported as not using the symbol at all.
 
 Run from the repository root:  python3 computations/reports/787-gamma-citation-check.py
 Exit status 0 iff no page uses a symbol without citing a definition.
@@ -9,7 +13,10 @@ import glob
 import re
 import sys
 
-USE = [re.compile(r'\\Gamma_\\Co\b'), re.compile(r'\\Gamma_\{\\Co,\s*2\}')]
+USE = [
+    re.compile(r'\\Gamma_(?:\{\\Co\}|\\Co)(?![A-Za-z0-9])'),
+    re.compile(r'\\Gamma_\{\\Co,\s*2\}'),
+]
 CITES = ['def:coble-family-unpolarized', 'def:coble-family-degree-two']
 
 

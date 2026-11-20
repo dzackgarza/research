@@ -152,7 +152,7 @@ I have extended \( \eta \) to a morphism \( \tilde \eta: \overline{  F_{\Co} }^{
 I determined that that the Coble cusps correspond to \( U\oplus E_8^2 \), the lattice with invariants \( (18, 0, 0)_1 \) in @fig:220-cusps-diagram.
 Using our previous work in [@AEGS25], I am working on a correspondence between \( \fco \) and \( F_{\En, 2} \) in order to construct KSBA degenerations.
 The cusp diagram for \( F_{\En, 2} \) was first given by [@Ste91], and I have computed that the Coble 0-cusp corresponds with cusp 2 of @fig:sterk-cusp-diagram.
-This correspondence requires studying a separate period domain \( D_{\Co}/\Gamma \) for a certain subgroup \( \Gamma_{\Co} \leq {\Orth}(T_{\Co}) \) and classifying orbits of isotropic vectors under this subgroup.
+This correspondence requires studying a separate period domain \( D_{\Co}/\Gamma \) for the subgroup \( \Gamma_{\Co} \leq {\Orth}(T_{\Co}) \) of @def:coble-family-unpolarized(3), the monodromy group of the family of unpolarized Coble surfaces, and classifying orbits of isotropic vectors under it.
 
 Toward this end, I have been working on adapting the techniques of [@Ste91] and [@Sca87] to new lattices.
 This has involved a careful study of the discriminant groups \( A_{T_{\Co}} \) and \( A_{T_{\En}} \) of the Coble and Enriques lattices, and finding techniques to reduce classification of orbits of isotropic vectors in \( T_{\Co} \) to finite, computable problems in \( A_{T_{\Co}} \). This has also involved explicit constructions of *Eichler transformations* which prove that vectors satisfying certain numerical properties are in the same \( \Gamma_{\Co} \)-orbit.
