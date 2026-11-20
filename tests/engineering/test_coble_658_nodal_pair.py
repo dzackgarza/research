@@ -113,7 +113,7 @@ def test_the_classical_model_cannot_host_the_witness():
     assert "they are not vanishing classes" in body
     assert "neither produced nor excluded by it" in body
     assert "(-4)$-Heegner divisor" in body
-    assert "(MG) the meridians of the Heegner divisors" in body
+    assert "*(MG)* is not merely uncited" in body
     assert "an input, not a result of this book" in body
     assert "cons:lefschetz-periods" in body
 
@@ -146,8 +146,10 @@ def test_the_criterion_that_makes_a_period_computation_decisive():
     lattices = (ROOT / "writing/coble/lattices-and-moduli/lattices.md").read_text(encoding="utf-8")
     start = lattices.index("#rmk:gamma-co-nodal-pair-proposal")
     body = lattices[start:lattices.index("\n:::", lattices.index("\n", start))]
-    assert "(PL) the local monodromy around" in body
-    assert "(MG) the meridians of the Heegner divisors" in body
+    assert "*(PL)* is the classical Picard--Lefschetz theorem" in body
+    assert "*(MG)* is not merely uncited" in body
+    assert "no source held in `tmp/sources` states it" in body
+    assert "does not decouple the two" in body
     assert "if and only if" in body or "\\iff" in body
     assert "meets no Heegner divisor of positive square" in body
     assert "Neither hypothesis is proved in this book" in body
