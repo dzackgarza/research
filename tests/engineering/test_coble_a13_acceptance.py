@@ -692,14 +692,18 @@ def test_the_group_the_question_names_is_the_one_the_theorem_computes():
     """A13 asks for the comparison to $\\Gamma^\\En_\\Co(\\delta)$; the book must name it.
 
     The symbol stands for the image of the stabilizer of the Heegner vector in the degree-two
-    Enriques group, which is the group the book writes $\\Gamma_{\\Co,2}$.  Unless the definition
-    gives the symbol and the comparison states the identity, a reader sent to
-    @thm:gamma-co-2-comparison cannot recognise the object A13 names.
+    Enriques group, which is the arithmetic group the book writes $R_{\\gent}$.  Unless the
+    definition gives the symbol and the comparison states the identity, a reader sent to
+    @thm:gamma-co-2-comparison cannot recognise the object A13 names.  The equation used to
+    begin with $\\Gamma_{\\Co,2}$, which is the monodromy group: thm:coble-monodromy-versus-enriques(3)
+    refutes that equality, and (4) proves only the containment, so the chain asserted here is
+    the three descriptions of the arithmetic group.
     """
-    lattices = (ROOT / "writing/coble/lattices-and-moduli/lattices.md").read_text()
-    assert r"\Gamma^{\En}_\Co(\delta)" in lattices
+    # The symbol and the comparison both live on the page that carries
+    # thm:gamma-co-2-comparison; lattices.md no longer names it, so the check is on the page.
     page = PAGE.read_text()
-    assert (r"\Gamma_{\Co,2} = \Gamma^{\En}_\Co(\delta) = "
+    assert r"\Gamma^{\En}_\Co(\delta)" in page
+    assert (r"R_{\gent} = \Gamma^{\En}_\Co(\delta) = "
             r"\Gamma^{\mathrm{cong}}_{\Co,2}") in page
 
 
