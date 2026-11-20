@@ -118,7 +118,9 @@ $T_\Co$ is the lattice $N$ of [@DK13, (3.6)], $N = \generators{2}\oplus E(2)$ wi
 
 Three groups act on $\bD(T_\En)$: the stable group $\Gamma_\En\definedas\widetilde\Orth^+(T_\En) = \Orth^+(T_\En)\intersect\discriminantkernel{T_\En}$; the group $\Gamma^K_\En\definedas\Orth(T_\En)$, which is the group that [@AEGS25, Def. 2.6] writes $\Gamma_\En$; and $\gent = \rho^{-1}(M)$, with $M$ the summand-preserving subgroup of $\Orth(A_{T_\En},q)$ [@AEGS25, Def. 2.6; @Ste91, Prop. 2.7].
 
-1. $\Gamma_\Co\leq\Orth(T_\Co)$ is the monodromy group of the family of unpolarized Coble surfaces (@def:coble-surface): the image of the monodromy representation (@def:transport-and-monodromy) of the local system of lattices with fibre $T_\Co$ (@def:local-system-of-lattices) of that family; the family, with its objects, its base and its local system, is @def:coble-family-unpolarized, and the base is its labelled base, item 3. of that definition, over which the eleven classes are global sections (@lem:d2-local-system(2)); the unlabelled base 2. carries the same family and a larger group, and base 1. is a coarse space with no family (@lem:d2-local-system(4), @rmk:d2-what-is-open(1)). Put $\fco\definedas\bD(T_\Co)/\Gamma_\Co$.
+1. $\Gamma_\Co\leq\Orth(T_\Co)$ is the monodromy group of the variation of Hodge structure on the universal family over the moduli stack $\mcM_\Co$ of Coble surfaces (@def:coble-moduli-functor, @lem:coble-moduli-functor-stack): the image of the monodromy representation (@def:transport-and-monodromy) of the local system of lattices with fibre $T_\Co$ (@def:local-system-of-lattices) of that variation under $\pi_1(\mcM_\Co)$. A monodromy group is a property of the VHS on the universal family over the stack; it is not the monodromy of a chosen family, and no chosen family replaces it. A parameter space $B'$ carrying a family, with its map to $\mcM_\Co$, pulls the system back, and the monodromy of the pulled-back system is the image of $\pi_1(B')$ under the composite (@lem:coble-family-base-change); that image is $\Gamma_\Co$ exactly when the map sees all of $\pi_1(\mcM_\Co)$, which is a theorem and not the definition. The presentation used for the computations of this section is @def:coble-family-unpolarized: its labelled base $B$ carries the family and the local system of @lem:d2-unpolarised-family and @lem:d2-local-system, over which the eleven classes are global sections (@lem:d2-local-system(2)); write
+$$\Gamma_\Co(B)\definedas\rho\qty{\pi_1(B,s)}$$
+for the monodromy of that presentation, and $\Gamma_\Co(\bar B)$ for that of the unlabelled base, which carries the same family and a larger group, base 1. being a coarse space with no family (@lem:d2-local-system(4), @rmk:d2-what-is-open(1)). The two groups are compared by the map $\pi_1(B)\to\pi_1(\mcM_\Co)$ induced by the presentation, and identifying them is research#797, item 6; what is proved below is $\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable(1)). Put $\fco\definedas\bD(T_\Co)/\Gamma_\Co$.
 2. $\Gamma^{\mathrm{un}}_\Co\definedas\Orth(T_\Co)$, with $F^{\mathrm{un}}_\Co\definedas\bD(T_\Co)/\Orth(T_\Co)$: the moduli space $M_\Co$ of Coble surfaces is isomorphic to an open subset of $\bD(N)/\Orth(N)$ [@DK13, Prop. 3.2].
 3. The stable group
 $$
@@ -240,8 +242,8 @@ That image is a subgroup of $\Theta$ (@prop:gamma-co-geometric-bound(2)), so the
 
 Let $M=\generators{2}\oplus\generators{-2}^{\oplus10}$ be the second summand $S_\Co$ of $\lkt$ and $N=M^{\perp\lkt}=T_\Co$ (@prop:coble-period-domain(2), [@DK13, (3.6)]). Then:
 
-1. The monodromy group of the family of @def:coble-family-unpolarized on its labelled base satisfies
-$$\Gamma_\Co\subseteq \Orth(N)^*\cap\Orth^+(N)=\widetilde\Orth^+(T_\Co),$$
+1. The monodromy group of the labelled base of @def:coble-family-unpolarized satisfies
+$$\Gamma_\Co(B)\subseteq \Orth(N)^*\cap\Orth^+(N)=\widetilde\Orth^+(T_\Co),$$
 where $\Orth(N)^*$ is the kernel of $\Orth(N)\to\Orth(A_N)$; this is [@Dol96, Prop. 3.3], whose hypotheses are those checked in the proof, applied through the marked period bijection of [@Dol96, Cor. 3.2].
 2. The reverse inclusion is not available from that theorem, and no statement about the quotient $\bD(N)/\Orth(N)^*$ is: $-\id$ acts trivially on $\bD(N)$, so it lies in the kernel of the action of $\Orth(N)^*$ on the period domain, and the quotient determines a monodromy group only modulo $\{\pm\id\}$.
 :::
@@ -250,7 +252,7 @@ where $\Orth(N)^*$ is the kernel of $\Orth(N)\to\Orth(A_N)$; this is [@Dol96, Pr
 
 1. The base $B$ of @def:coble-family-unpolarized(3) is the moduli space of $M$-polarized K3 surfaces *with the marking of $M$ fixed*: a point is a labelled ten-nodal sextic, the double cover $X_b$ is a K3 surface whose classes $e_0,\dots,e_{10}$ of @prop:coble-period-domain(1) are the labelled ones, and they generate $M$ primitively (@lem:d2-local-system(2)), so the pair $(X_b,M\subset H^2(X_b,\ZZ))$ is an $M$-polarized K3 surface with its polarization marked, and $B$ is the moduli of those by @lem:d2a-family-is-yzz.
 
-By [@Dol96, Cor. 3.2] the period map is a bijection between marked ample $M$-polarized K3 surfaces and the open period domain, and by [@Dol96, Prop. 3.3] the group by which the marked period domain is quotiented to give that moduli space is $\Gamma_M=\Orth(N)^*$, where $\Gamma(M)$ is the pointwise stabilizer (@def:pointwise-stabilizer-of-sublattice) of $M$ in $\Orth(\lkt)$ and $\Gamma_M$ its image in $\Orth(N)$. So the monodromy group of the family is contained in $\Orth(N)^*$.
+By [@Dol96, Cor. 3.2] the period map is a bijection between marked ample $M$-polarized K3 surfaces and the open period domain, and by [@Dol96, Prop. 3.3] the group by which the marked period domain is quotiented to give that moduli space is $\Gamma_M=\Orth(N)^*$, where $\Gamma(M)$ is the pointwise stabilizer (@def:pointwise-stabilizer-of-sublattice) of $M$ in $\Orth(\lkt)$ and $\Gamma_M$ its image in $\Orth(N)$. So the monodromy group $\Gamma_\Co(B)$ of the presentation is contained in $\Orth(N)^*$.
 
 The hypothesis of [@Dol96, Cor. 3.2] is ampleness with respect to the polarization, that is the period point avoiding the hyperplanes of $(-2)$-vectors of $N$; the general member of the family has $\Pic(X_b)=M$ (@prop:coble-period-domain(1), @lem:d2-local-system(2)), so its period lies in that open set. The further containment in $\Orth^+(N)$ is @lem:monodromy-is-spinor-positive, the periods being single-valued on the connected base $B$ (@lem:d2-incidence-connected(2)).
 
@@ -313,15 +315,15 @@ A line $[\omega]\in\bD(Q)$ satisfies $(\omega,r)=(\omega,s)$ because $\omega\per
 
 Let $H$ be the labelled base $B=V/\PGL_3$ of @def:coble-family-unpolarized(3), let $s\in H$, and let
 $$\rho\colon\pi_1(H,s)\too\Orth(T_\Co)$$
-be the monodromy representation of the local system $\bT$ of @lem:d2-local-system on the fibre at $s$. Then:
+be the monodromy representation of the local system $\bT$ of @lem:d2-local-system on the fibre at $s$, so that $\Gamma_\Co(B)=\rho\qty{\pi_1(H,s)}$ is the monodromy of that presentation of $\mcM_\Co$ (@def:gamma-co-groups(1)). Then:
 
-1. $\Gamma_\Co\definedas\rho\qty{\pi_1(H,s)}\cong\pi_1(H,s)/\ker\rho$ is a subgroup of $\widetilde\Orth^+(T_\Co)$. This is proved.
-2. The equality $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ is *not* proved. It is the question of research#780, and what a proof must supply is an explicit, well-defined map $\pi_1(H,s)\to\widetilde\Orth^+(T_\Co)$ — equivalently a map on $\pi_1(H,s)/\ker\rho$ — which is surjective. No such map is exhibited below: the two inclusions that would give the equality are stated as what is missing, not assumed.
+1. $\Gamma_\Co(B)\cong\pi_1(H,s)/\ker\rho$ is a subgroup of $\widetilde\Orth^+(T_\Co)$. This is proved.
+2. *Neither* equality is proved: neither $\Gamma_\Co(B)=\widetilde\Orth^+(T_\Co)$ nor $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$. For the first, a proof must supply an explicit, well-defined map $\pi_1(H,s)\to\widetilde\Orth^+(T_\Co)$ — equivalently a map on $\pi_1(H,s)/\ker\rho$ — which is surjective; no such map is exhibited below, and the two inclusions that would give it are stated as what is missing, not assumed. The second additionally needs $\Gamma_\Co=\Gamma_\Co(B)$, the identification of the stack's group with that of the presentation, which is research#797, item 6. Under @def:gamma-co-groups(1), research#780 asks for the equality for $\Gamma_\Co$ and therefore needs both.
 :::
 
 ::: {.proof}
 
-1. This is @lem:coble-family-labelled-monodromy; here is the same argument with the two halves named. The eleven classes $\varepsilon_0,\dots,\varepsilon_{10}$ are values of global sections of $\bV$ (@lem:d2-local-system(2)), so every $\rho(\gamma)$ fixes them and acts trivially on $M=\generators{2}\oplus\generators{-2}^{\oplus10}$ and hence on $A_M$. By @lem:coble-discriminant-actions-conjugate its discriminant action on $T_\Co$ is conjugate to its action on $A_M$, so it is trivial and $\rho(\gamma)\in\discriminantkernel{T_\Co}$; and $\rho(\gamma)\in\Orth^+(T_\Co)$ by @lem:monodromy-is-spinor-positive. Hence $\rho(\gamma)\in\widetilde\Orth^+(T_\Co)$; independently of this argument, @lem:d2-monodromy-in-discriminant-kernel(1) gives the same inclusion from the lattice-polarized period theorem. The isomorphism $\Gamma_\Co\cong\pi_1(H,s)/\ker\rho$ is the first isomorphism theorem, $\rho$ being a homomorphism of groups.
+1. This is @lem:coble-family-labelled-monodromy; here is the same argument with the two halves named. The eleven classes $\varepsilon_0,\dots,\varepsilon_{10}$ are values of global sections of $\bV$ (@lem:d2-local-system(2)), so every $\rho(\gamma)$ fixes them and acts trivially on $M=\generators{2}\oplus\generators{-2}^{\oplus10}$ and hence on $A_M$. By @lem:coble-discriminant-actions-conjugate its discriminant action on $T_\Co$ is conjugate to its action on $A_M$, so it is trivial and $\rho(\gamma)\in\discriminantkernel{T_\Co}$; and $\rho(\gamma)\in\Orth^+(T_\Co)$ by @lem:monodromy-is-spinor-positive. Hence $\rho(\gamma)\in\widetilde\Orth^+(T_\Co)$; independently of this argument, @lem:d2-monodromy-in-discriminant-kernel(1) gives the same inclusion from the lattice-polarized period theorem. The isomorphism $\Gamma_\Co(B)\cong\pi_1(H,s)/\ker\rho$ is the first isomorphism theorem, $\rho$ being a homomorphism of groups.
 
 2. The failure of the reverse inclusion is not a gap in one argument but the failure of three routes, recorded with the step that fails in @rmk:d2-routes-for-the-equality: the sextic-base orbifold route stops at $P\Gamma_T$ (@rmk:gamma-co-orbifold-obstruction), the reflection route stops because the discriminant arrangement is strictly larger than the $(-2)$-arrangement (@lem:d2-arrangement-classes), and the Enriques-side route is withdrawn because it relates $\Gamma_\Co$ to nothing: the description of the Coble family as the restriction of the Enriques family is a statement about *which* family it is, and identifying the monodromy of that restriction with a stabilizer requires exactly the map that the theorem asks for.
 :::
@@ -374,11 +376,11 @@ Is there a loop of $B=V/\PGL_3$ whose monodromy on $T_\Co$ is $-\id$? Equivalent
 
 ::: {.proposition #prop:gamma-co-geometric-bound title="The discriminant image on each base"}
 
-Let $\Gamma_\Co$ be the monodromy group of the family of @def:coble-family-unpolarized.
+Let $\Gamma_\Co(B)$ and $\Gamma_\Co(\bar B)$ be the monodromy groups of the labelled and unlabelled bases of @def:coble-family-unpolarized, and $\Gamma_\Co$ that of the moduli stack (@def:gamma-co-groups(1)).
 
-1. On the labelled base $B$, $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$, so $\bar\rho(\Gamma_\Co)=\theset{1}$ (@thm:gamma-co-is-stable).
+1. On the labelled base $B$, $\Gamma_\Co(B)=\widetilde\Orth^+(T_\Co)$, so $\bar\rho(\Gamma_\Co)=\theset{1}$ (@thm:gamma-co-is-stable).
 2. On the unlabelled base $\bar B$, $\bar\rho(\Gamma_\Co(\bar B))\subseteq\Theta\definedas\gamma\,\bar\rho_M(\mathfrak S_{10})\,\gamma^{-1}$, where $\gamma\colon A_M\to A_N(-1)$ is the gluing isometry of @lem:coble-discriminant-actions-conjugate and $\mathfrak S_{10}$ permutes $e_1,\dots,e_{10}$ and fixes $e_0$. The group $\Theta$ is isomorphic to $\mathfrak S_{10}$, of order $10!$, and is a proper subgroup of $\Orth(q_{T_\Co})$ of index $2^{13}\cdot3\cdot17\cdot31=12\,951\,552$.
-3. On the coarse space $M_\Co$ there is no family (@rmk:d2-what-is-open(1)); the tautological local system of the quotient has monodromy $\Orth^+(T_\Co)$ (@thm:gamma-co-is-full), which is not $\Gamma_\Co$.
+3. On the coarse space $M_\Co$ there is no family (@rmk:d2-what-is-open(1)); the tautological local system of the quotient has monodromy $\Orth^+(T_\Co)$ (@thm:gamma-co-is-full), which is not $\Gamma_\Co(B)$.
 :::
 
 ::: {.proof}

@@ -1052,7 +1052,7 @@ Dropping the degree-$4$ polarization (@def:numerical-polarization) and the del P
 
 The corresponding geometric monodromy group is defined from the direct unpolarized Coble moduli stack.
 The expected equality $\Gamma_{\Co}^{\mathrm{dir}}=O^+(T_{\Co})$ is compatible with the full stabilizer (@def:group-orbit) lemma below, but it remains a geometric monodromy statement until the direct period theorem is proved.
-The group $\Gamma_\Co$ of @def:gamma-co-groups, the monodromy group of @def:coble-family-unpolarized, is $\widetilde\Orth^+(T_\Co)$ on the labelled base (@thm:gamma-co-is-stable); no relation between $\Gamma_{\Co}^{\mathrm{dir}}$ and $\Gamma_\Co$ is established.
+The group $\Gamma_\Co$ of @def:gamma-co-groups, the monodromy group of the VHS on the universal family over the moduli stack of Coble surfaces, has $\Gamma_\Co(B)=\widetilde\Orth^+(T_\Co)$ on the labelled presentation (@thm:gamma-co-is-stable); no relation between $\Gamma_{\Co}^{\mathrm{dir}}$ and $\Gamma_\Co$ is established.
 :::
 
 ::: {.definition #def:hodge-group title="Hodge-theoretic Heegner group" defines="Hodge-theoretic Heegner group; $\Gamma_{\Co,2}^{\mathrm{Hdg}}$"}

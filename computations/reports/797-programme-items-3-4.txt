@@ -1,0 +1,155 @@
+research#797 (D0, restated as a research programme) -- items 3 and 4, item by item
+
+Body read: the restated body of 2026-11-20 and its correction comment
+(issuecomment-7040126022): Gamma_Co is by definition the monodromy of the VHS on the
+universal family over the Coble moduli stack, and nothing weakens that definition.
+Commit: this commit, on top of 25a13d4a99.  Line numbers are those of this commit.
+
+ITEM 3. The quotient-stack presentations: for unpolarized K3 surfaces, and then for
+S-polarized K3 surfaces, write the stack as F_S = [Otilde+(T) \ D_T], from
+Dolgachev's lattice-polarized theory cited by number, with the hypotheses checked.
+VERDICT: MET for the S-polarized marked case; NOT MET for the unpolarized half,
+which is reduced and named below.
+
+  moduli-construction.md:1024, prop:quotient-stack-of-periods.  M even of signature
+  (1,t), t <= 19, primitively embedded in the K3 lattice L, N = M^perp.  Under
+  (i) K_M a fine moduli space for marked M-polarized K3 surfaces [@Dol96, §3],
+  (ii) the period map bijective on the ample locus [@Dol96, Cor. 3.2] and surjective
+  with fibre W_pi(N) on the pseudo-ample one [@Dol96, Thm. 3.1], (iii)
+  Gamma_M = O(N)* [@Dol96, Prop. 3.3], the ample moduli stack is
+  [O(N)* \ D^o_M] and the pseudo-ample one [O(N)* \ D_M]; and if N contains an
+  m-admissible isotropic vector with m <= 2 then O(N)* is transitive on the two
+  components and the stack is [O(N)^{+,*} \ D^+_M] [@Dol96, Prop. 5.6].
+  The proof supplies the step the source does not state: the markings of a fixed
+  M-polarized K3 are a Gamma(M)-torsor, so the moduli stack is [K_M / Gamma(M)], and
+  the period map identifies that with [O(N)* \ D_M].  The pseudo-ample fibre
+  W_pi(N) lies in Gamma(M), so surjectivity in place of bijectivity does not change
+  the quotient.
+
+  Hypotheses checked for the Coble lattice, M = S_Co, N = T_Co
+  (moduli-construction.md:1048-1052):
+  - even, signature (1,10), t = 10 <= 19: @prop:coble-period-domain(1)--(2);
+  - primitive embedding: explicit, @prop:coble-transcendental;
+  - (i), (ii), (iii): [@Dol96, §3], [@Dol96, Cor. 3.2 with Thm. 3.1], [@Dol96,
+    Prop. 3.3], the last unconditional;
+  - 2-admissible vector: the summand U(2) of T_Co has basis e, f with e^2 = f^2 = 0
+    and e.f = 2, so div(e) = div(f) = 2 and e is 2-admissible; [@Dol96, Prop. 5.6]
+    applies with m = 2.
+  Hence F_S = [Otilde+(T_Co) \ D(T_Co)^+], the presentation item 3 asks for.
+
+  CORRECTED at this commit (an earlier form of this report and of the page said the
+  opposite): condition (U) IS supplied for M = S_Co by [@Dol96, Prop. 5.1], whose
+  existence hypothesis is l(A(M)) <= 20 - t OR t <= 10, the second disjunct holding
+  at t = 10, and whose uniqueness hypothesis is met because A(M) is a 2-group (odd
+  p vacuous) and A(M)_2 contains the discriminant form of U(2) as an orthogonal
+  summand, the classes e_0 + e_1 and e_0 + e_2 spanning it (moduli-construction.md,
+  the bullet "Condition (U)").  What does not follow from (5.1) is the non-emptiness
+  of the ample locus, which is [@Dol96, Cor. 5.2] with hypothesis t <= 9; for the
+  Coble lattice non-emptiness is the existence of the surfaces.
+
+  PARTIAL, and the gap named: the identification above is one of points and
+  components.  For the stack it must compare the stabiliser of a period in O(N)*
+  with Aut(X,j), and a Hodge isometry fixing the period is realised by an
+  automorphism exactly when it preserves the Kahler cone (strong Torelli), which
+  [@Dol96] does not state.  For M = S_Co the central -id_N is realised at every
+  member (the covering involution) and on the ample locus it is the generic
+  stabiliser, so the two agree there; for general M the period quotient is
+  ineffective and not the moduli stack (moduli-construction.md, the paragraph
+  "The stabiliser").
+
+  NOT MET, reduced: the unpolarized case M = 0 (moduli-construction.md:1056).
+  [@Dol96, §3] requires M of signature (1,t) and does not cover M = 0.  The inputs
+  needed are the global Torelli theorem for K3 surfaces and the surjectivity of
+  their period map, each by numbered statement; no numbered statement of either has
+  been read in this repository.  This is the reduction the body allows.
+
+ITEM 4. Monodromy from a local system on a stack: 1 -> K_L -> pi_1(X) -> Mon(L) -> 1
+with the Galois correspondence on stacks, cited by number; from this, Otilde+(T) is
+the monodromy of the VHS on the universal family over F_S.
+VERDICT: MET for the quotient-stack case, which is the case both presentations of
+item 3 have; NOT MET for the general statement on an arbitrary stack, reduced below.
+
+  moduli-construction.md:1058-1060: the exact sequence is the first isomorphism
+  theorem for rho: pi_1(X,x) -> Aut(T), with Mon(L) = rho(pi_1(X,x)) and K_L its
+  kernel.
+  moduli-construction.md:1068, cor:monodromy-of-the-tautological-system, from
+  lattices.md, lem:orbifold-monodromy-of-a-quotient: for U = D~/Gamma with the
+  tautological system (D~ x T)/Gamma the monodromy representation is
+  (g, gamma~) -> g, with image Gamma and kernel pi_1(D~), so
+  1 -> pi_1(D~) -> pi_1^orb(U) -> Gamma -> 1 is exact.  Applied to
+  F_S = [Otilde+(T_Co) \ D(T_Co)^+], the tautological system has monodromy
+  Otilde+(T_Co) itself, and nontrivial stabilisers do not shrink the image: they make
+  orbifold points.
+
+  NOT MET, reduced: the identification of that tautological system with the local
+  system of the VHS on the universal family over M_Co.  It needs the universal family
+  (item 1) and the pushforward/pullback of item 6.  The Galois correspondence for
+  covering stacks of an arbitrary stack is also not read in this repository, so the
+  covering-stack half of item 4 is supplied by Noohi, Foundations of topological
+  stacks I (arXiv:math/0503247): Definition 17.5 for pi_1 of a pointed topological
+  stack, Definition 18.10 for a covering of stacks, Theorem 18.19 for the Galois
+  correspondence, Corollary 18.20 for the subgroup bijection and the universal
+  cover, all read at those numbers.  The exact sequence is a corollary of Theorem
+  18.19, not a statement in that paper.  For the quotient stack the kernel is
+  trivial: K = pi_1(D(T_Co)^+), and that domain is contractible.
+
+DEFINITION (the body's first paragraph, not an item)
+  lattices.md:116, def:gamma-co-groups(1), defines Gamma_Co as the monodromy of the
+  VHS on the universal family over the moduli stack; the labelled base B is a
+  presentation, and its group is written Gamma_Co(B).
+  lattices.md:307, thm:gamma-co-is-stable, proves the inclusion for Gamma_Co(B) and
+  states that neither Gamma_Co(B) = Otilde+(T_Co) nor Gamma_Co = Otilde+(T_Co) is
+  proved.  Sentences on nine pages that called Gamma_Co the monodromy of one chosen
+  family are replaced; prop:coble-plane-model-comparison(4) keeps the owner's wording
+  of 25a13d4a99 and gains the notation Gamma_Co(B).
+
+CHECKS AT THIS COMMIT
+  python3 scripts/docs_check.py --source   29 findings, all "citation is in no
+    bibliography", none on the touched pages (parent: 29).
+  tests/engineering/test_coble_780_arrangement_classes.py   3/3 run directly; pytest
+    cannot run here (tests/conftest.py needs sage_extensions, absent).
+
+NEXT
+  (U) for S_Co, and the unpolarized half of item 3: the global Torelli theorem and
+  the surjectivity of the period map, by numbered statement.  Then item 5.
+
+ADDENDUM (same commit): the Deligne--Mumford question of item 1, resolved negatively
+
+  While items 3 and 4 were being written, the question left open by the earlier
+  round -- whether the stabilisers Aut(S_b) are finite -- was settled: they are not.
+  moduli-construction.md, lem:coble-automorphism-group-is-infinite: for every
+  irreducible ten-nodal sextic the 45 Bertini involutions act on
+  Pic(S) = <H,E_1,...,E_10> by
+    sigma_I^*(H)   = 17H - 6 sum_{i in I} E_i,
+    sigma_I^*(E_i) = 6H - 3E_i - 2 sum_{j in I, j != i} E_j  (i in I),
+    sigma_I^*(E_a) = E_a,  sigma_I^*(E_b) = E_b,
+  each an isometry and an involution; and for I = {1..8}, J = {1,2,3,4,5,6,9,10}
+  the product has characteristic polynomial (t-1)^7 (t+1)^2 (t^2-14t+1), with
+  roots 7 +- 4 sqrt 3, so it has infinite order in GL_11(Z).
+  Record: computations/reports/coble_797-bertini-infinite-order.py with
+  -run.txt.  The eigenspace input is [@CD12, Thm. 3.5], and its consequence on H
+  agrees with the value proved independently in prop:coble-plane-model-comparison(2)
+  from [@Pie26, Prop. 59].
+  CONSEQUENCE, now on the page at :495, rmk:d2-involution-moduli-of-ae22: the Coble
+  stack is NOT Deligne--Mumford, and no nonempty open substack of it is.  The earlier
+  round's report records the DM property as open with one missing input; that input
+  is now supplied, with the opposite answer.
+
+RESTATED AS NUMBERED STATEMENTS (this commit)
+  Item 3 is now prop:coble-quotient-presentation (moduli-construction.md:1102): the
+  quotient presentation of the S_Co-polarized stack, with its hypotheses in four
+  clauses -- (U) by [@Dol96, Prop. 5.1] through the disjunct t <= 10 with the U(2)
+  summand check, the three hypotheses of prop:quotient-stack-of-periods with their
+  sources, the presentation [Otilde^+(T_Co) \ D(T_Co)^+], and what is NOT claimed
+  (non-emptiness from Cor. 5.2, and automorphism groups beyond the ample locus).
+  The U(2) check has a record: computations/reports/coble_797-u-condition.py with
+  -run.txt.
+  Item 4 is now thm:monodromy-exact-sequence (moduli-construction.md:1125): for a
+  pointed connected locally path connected semilocally 1-connected topological stack
+  with a local system of lattices, 1 -> K_L -> pi_1(X,x) -> Mon(L) -> 1 is exact, and
+  the subgroup K_L corresponds under the Galois correspondence to a pointed connected
+  covering whose deck group is Mon(L) and whose quotient is X.  The statement carries
+  Noohi Theorem 18.19, Corollary 18.20 and Definition 18.10; the proof records that
+  the exact sequence is a corollary of Theorem 18.19 and not a statement in the paper.
+  A guard test pins both statements and forbids a doubled control sequence in either:
+  tests/engineering/test_coble_797_items34.py, 3/3 run directly.
