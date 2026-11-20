@@ -58,6 +58,35 @@ print("multiplicities m_T (thm:one-cusp-multiplicities):")
 for T in sorted(m):
     print("   type %-12s m_T = %d" % (str(T), m[T]))
 assert sum(m.values()) == 7, sum(m.values())
+
+# --- the volume's route, prop:coble-flag-orbits-and-edges(1)--(3) -------------
+# (1) the flag orbits over a plane orbit are |(J_0\0)/H_0|, printed in the record's
+#     "flag orbit sizes" block; (2) the edges are sum |C(P)/H|, the number of
+#     distinct H-orbits among the nonzero classes, i.e. the number of DISTINCT
+#     sizes in the endpoint list; (3) edges <= flag orbits, with equality exactly
+#     when the H_0-orbits are the H-orbits.  So the endpoint list must have
+#     pairwise distinct sizes, and its length must equal the flag count.
+fb = text.index("flag orbit sizes over each decorated-plane orbit")
+flagblock = text[fb:text.index("endpoint incidence by decorated-plane orbit")]
+flaglines = [ln for ln in flagblock.splitlines()
+             if "flag orbits" in ln and re.search(r"plane size\s+\d+:", ln)]
+assert len(flaglines) == 7, flaglines
+flags = {}
+for ln in flaglines:
+    n = int(re.search(r"plane size\s+(\d+):", ln).group(1))
+    flags[n] = int(re.search(r"(\d+) flag orbits", ln).group(1))
+tot_flags = 0
+for n in sorted(flags):
+    tot_flags += flags[n]
+print("")
+print("cross-check against prop:coble-flag-orbits-and-edges(1)--(3):")
+for n, labels in types:
+    assert len(labels) == len(set(labels)), ("two line classes of one plane in one H-orbit", n, labels)
+    assert len(labels) == flags[n], ("endpoint count differs from the flag count", n, len(labels), flags[n])
+print("   every plane's endpoint list has pairwise distinct sizes, so |C(P)/H| equals")
+print("   the flag count |(J_0\\0)/H_0| plane by plane (prop:coble-flag-orbits-and-edges(3)),")
+print("   and the total is %d flag orbits = %d edges." % (tot_flags, tot_flags))
+assert tot_flags == 13
 # the four empty types containing label 1 do not occur in the record
 assert all(1 not in T for T in m), "a plane of T_Co met the 0-cusp 1"
 deg = {}
