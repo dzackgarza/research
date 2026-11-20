@@ -149,7 +149,9 @@ def test_the_criterion_that_makes_a_period_computation_decisive():
     assert "[@Voi07, Thm. 3.16, printed p. 78]" in body
     assert "*(MG)* is where the work is" in body
     assert "*(MG)* is where the work is" in body
-    assert "is **not** established" in body
+    assert "fails in its converse" in body
+    assert "Godbillon" in body
+    assert "SGA1" in body
     assert "if and only if" in body or "\\iff" in body
     assert "meets no Heegner divisor of positive square" in body
     assert "Neither hypothesis is proved in this book" in body
