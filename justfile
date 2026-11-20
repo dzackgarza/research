@@ -63,6 +63,75 @@ docs-check: docs-assets
 docs-deps:
     cd writing/.book && uv run --script ../../scripts/docs_dependency_graph.py --project . --out ../../.tmp/dependency-graph --check
 
+# Query the book's structure (blocks, headings, citations, uses); any subcommand of scripts/docs_query.py. e.g. `just book list --kind theorem --chapter coble`, `just book deps thm:foo --depth 2`. The index is cached in .tmp/docs-query and rebuilt when a chapter changes.
+[positional-arguments]
+book *ARGS:
+    @PYTHONWARNINGS=ignore::SyntaxWarning HF_HUB_DISABLE_PROGRESS_BARS=1 TRANSFORMERS_VERBOSITY=error uv run --quiet --script scripts/docs_query.py --cache .tmp/docs-query/index.pickle "$@"
+
+# List the numbered blocks of the given kinds in reading order (no kind: every block), with id, file:line and title. e.g. `just book-blocks definition notation`
+book-blocks *KINDS:
+    @just book list {{ if KINDS == "" { "" } else { "--kind " + KINDS } }}
+
+# List the block ids of the given kinds, one per line (no kind: every id)
+book-ids *KINDS:
+    @just book list --ids {{ if KINDS == "" { "" } else { "--kind " + KINDS } }}
+
+# Print the source of blocks with their proofs. e.g. `just book-show def:universe thm:foo`
+book-show +IDS:
+    @just book show {{IDS}}
+
+# Print the heading tree of the book (or of chapters whose path contains FILTER), with the numbered blocks under each heading
+book-tree FILTER="":
+    @just book tree --blocks {{FILTER}}
+
+# Print only the headings of the book (or of chapters whose path contains FILTER), down to level DEPTH
+book-toc FILTER="" DEPTH="3":
+    @just book tree --depth {{DEPTH}} {{FILTER}}
+
+# Search the blocks by meaning and by words (txtai hybrid index of titles, defined terms, statements and proofs). e.g. `just book-search lattices whose discriminant group is 2-elementary`
+book-search +QUERY:
+    @just book search "{{QUERY}}"
+
+# Find the definition, construction, notation or convention for a notion, by meaning and by words. e.g. `just book-term discriminant form`
+book-term +QUERY:
+    @just book term "{{QUERY}}"
+
+# Locate every @KEY (bibliography key or block id): file:line, enclosing block, statement or proof, locator and section; for a bibliography key, also each cited result and its users
+book-where KEY:
+    @just book where {{KEY}}
+
+# Print the blocks and cited results that block ID uses, transitively, as a tree
+book-uses ID DEPTH="":
+    @just book deps {{ID}} {{ if DEPTH == "" { "" } else { "--depth " + DEPTH } }}
+
+# Print the blocks that use block ID, transitively, as a tree
+book-used-by ID DEPTH="":
+    @just book deps {{ID}} --reverse {{ if DEPTH == "" { "" } else { "--depth " + DEPTH } }}
+
+# Print a shortest chain of uses from block SOURCE down to block TARGET
+book-path SOURCE TARGET:
+    @just book path {{SOURCE}} {{TARGET}}
+
+# Render the uses-neighbourhood of block ID (both directions, DEPTH steps) to .tmp/docs-query/<ID>.svg
+book-graph ID DEPTH="2":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    out=".tmp/docs-query/$(echo '{{ID}}' | tr -c '[:alnum:]-\n' '_').svg"
+    just book graph '{{ID}}' --depth {{DEPTH}} --both | dot -Tsvg -o "$out"
+    echo "$out"
+
+# List theorems, lemmas, propositions, corollaries, observations and claims that have no proof after them
+book-unproved:
+    @just book list --unproved
+
+# List logical blocks that no logical block uses
+book-unused:
+    @just book list --unused
+
+# Count the numbered blocks by kind and part of the book
+book-stats:
+    @just book stats
+
 # Every citation that names no result (a whole work, a chapter, a section, a page), in statements, proofs and prose, with its sentence and block, grouped by work; read each and keep it as attribution or tighten it to the result it uses. Report: .tmp/citation-audit.md
 docs-citation-audit:
     cd writing/.book && uv run --script ../../scripts/docs_citation_audit.py --project . --out ../../.tmp/citation-audit.md
