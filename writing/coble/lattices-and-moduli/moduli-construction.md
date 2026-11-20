@@ -786,6 +786,28 @@ the second inclusion being @lem:d2b-forgets-to-d2a(2).
 (5) The period map of a degree-$2$ family is the map of its underlying unpolarized family, which is an isomorphism onto an open subset of $\bD(T_\Co)/\Orth(T_\Co)$ (@lem:d2a-period-map(3)); its lift to $\bD(T_\Co)/\Gamma_{\Co,2}$ is therefore a homeomorphism onto an open subset, and the image under the quotient by $R_{\gent}\supseteq\Gamma_{\Co,2}$ is open in $\bD(T_\Co)/R_{\gent}$, whose quotient by $R_{\gent}$ is the normalization of $\Delta_2$ (@lem:d2-degree-two-base(1)). The computation `computations/reports/coble_787-explicit-d2b-family.py`, recorded in `computations/reports/coble_787-explicit-d2b-family-run.txt`, verifies items (1)--(3) for all $90$ ordered pairs of labels.
 :::
 
+::: {.proposition #prop:d2b-base-covers-delta title="$\Delta_2$ is a proper quotient of the base of the degree-$2$ family"}
+
+Assume $\Gamma_{\Co,2}\subseteq R_{\gent}$ (@lem:d2-degree-two-base(3)).
+
+1. $\Gamma_{\Co,2}\subsetneq R_{\gent}$, and the map
+$$
+\bD(T_\Co)/\Gamma_{\Co,2}\too\bD(T_\Co)/R_{\gent}
+$$
+of the marked period space of @def:coble-family-degree-two onto the normalization of $\Delta_2$ (@lem:d2-degree-two-base(1)) is a covering of degree $[R_{\gent}:\Gamma_{\Co,2}]\geq 2$.
+2. Hence $\Delta_2$ is not the base of the degree-$2$ family, but a proper quotient of it: two marked periods in the same $R_{\gent}$-orbit and in different $\Gamma_{\Co,2}$-orbits have the same image in $\Delta_2$ and different monodromy markings.
+3. The base itself is the moduli of degree-$2$ polarized Coble surfaces, over which the family exists (@lem:d2b-family-over-the-labelled-base(3)), and the number $[R_{\gent}:\Gamma_{\Co,2}]$ is the degree of the map from the base to $\Delta_2$.
+:::
+
+::: {.proof}
+
+(1) By @lem:d2b-forgets-to-d2a(2) every element of $\Gamma_{\Co,2}$ lies in $\Orth^+(T_\Co)$, and by @thm:coble-monodromy-versus-enriques(2) the group $R_{\gent}$ contains an element outside $\Orth^+(T_\Co)$. So $\Gamma_{\Co,2}\neq R_{\gent}$, and with the hypothesis $\Gamma_{\Co,2}\subsetneq R_{\gent}$. The quotient map of a domain by a subgroup of finite index is a covering of that index, and $R_{\gent}$ has finite index in $\Orth(T_\Co)$ (@prop:gamma-co-images(3)) with $\Gamma_{\Co,2}\subseteq\Orth(T_\Co)$, so the index is finite and at least $2$.
+
+(2) The marked period space of the family is $\bD(T_\Co)/\Gamma_{\Co,2}$ by the definition of $\Gamma_{\Co,2}$ as the monodromy group (@def:gamma-co-groups, @eq-period-map-equivariance), and $\bD(T_\Co)/R_{\gent}$ is the normalization of $\Delta_2$ (@lem:d2-degree-two-base(1)). Points of $\bD(T_\Co)$ in one $R_{\gent}$-orbit but in different $\Gamma_{\Co,2}$-orbits are the marked periods of the same point of $\Delta_2$ and of different points of the base; such pairs exist by (1).
+
+(3) The existence of the family over the moduli base is @lem:d2b-family-over-the-labelled-base(3) together with @lem:d2b-forgets-to-d2a(1)--(2), and the degree of the induced map from the base to the normalization of $\Delta_2$ is the index of (1).
+:::
+
 ::: {.remark #rmk:d2-degree-two-vs-DK13 title="The moduli space $\mcm_\Co(2)$ of Dolgachev--Kondo"}
 
 [@DK13, §8] considers, for an unnodal Coble surface, a polarization $h=[F_1+F_2]$ of degree $2$, corresponding to an embedding $U\injects E$ of the Enriques lattice into $K_S^{\perp}$, and writes the resulting moduli space $\mcm_\Co(2)$; the rational map $\Phi'\colon\mcm_\Co(2)\dashrightarrow\mcm_\Co$ has degree $2^7\cdot17\cdot31$ [@DK13, §8]. That is the same moduli problem as @def:coble-family-degree-two: by @lem:d2-degree-two-polarization the class $h_\Co=F_1+F_2$ is the vector $\tilde h$ of type $\Gamma_{\tilde h}$, so the marked space of $\mcm_\Co(2)$ is $\bD(T_\Co)/\Gamma_{\tilde h}$, which is the normalization of $\Delta_2$ by @lem:d2-degree-two-base(1); and the degree of $\Phi'$ is the index $[\Orth(T_\Co):\Gamma_{\tilde h}]=[\Orth(T_\Co):R_{\gent}]=2^7\cdot17\cdot31=67\,456$ of @prop:coble-degree-two-space(2), as it must be. The unnodal locus is the complement of the $(-2)$-Heegner divisors in $\bD(T_\Co)$, so $\mcm_\Co(2)$ is an open subset of the normalization of $\Delta_2$ and the two agree birationally. The two objects are therefore not different, as @rmk:degree-two-two-meanings(3) formerly recorded, but the same moduli problem read on the two sides of the cover.
