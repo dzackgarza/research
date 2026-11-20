@@ -438,7 +438,7 @@ The family over $B$ is @lem:d2-unpolarised-family(2) and its local system is @le
 
 **The local system of lattices** is $\bT$ of @lem:d2-local-system: the orthogonal complement in $R^2f_*\underline{\ZZ}_{\mcx}$ modulo torsion of the span of the classes of the pullback of a line and of the ten exceptional curves. Its fibre is $T_\Co$, its rank is $11$, and its stalks have signature $(2,9)$.
 
-**The group.** $\Gamma_\Co\leq\Orth(T_\Co)$ is the image of the monodromy representation (@def:transport-and-monodromy) of $\bT$ on $B$ (@def:local-system-of-lattices). Put $\fco\definedas\bD(T_\Co)/\Gamma_\Co$.
+**The group.** $\Gamma_\Co\leq\Orth(T_\Co)$ is the image of the monodromy representation (@def:transport-and-monodromy) of $\bT$ (@def:local-system-of-lattices), taken on the base read as the quotient stack $[V/\SL_3]$: the local system is pulled back from the stack along the smooth cover $V\to[V/\SL_3]$, so $\Gamma_\Co=\rho\qty{\pi_1(V,s)}$, and on the free locus of the action this is the monodromy group of the family over the space $B$. It is a subgroup of $\Orth(T_\Co)$ and not of a larger group: the isotropy of the stack acts on $T_\Co$ through the automorphism group of the surface, so a family over the coarse space $B$ need not exist and the group is not computed from $\pi_1$ of a coarse space (@rmk:d2-what-is-open(1)). Put $\fco\definedas\bD(T_\Co)/\Gamma_\Co$.
 :::
 
 ::: {.lemma #lem:d2-unpolarised-family title="The family over the labelled base exists"}
