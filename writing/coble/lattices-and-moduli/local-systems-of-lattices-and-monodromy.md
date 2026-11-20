@@ -26,7 +26,7 @@ For $s\in B$, the *monodromy representation*
 $$
 \rho\colon\pi_1(B,s)\too\Aut(\bL_s)
 $$
-of $\bL$ sends the class of a loop $\gamma$ based at $s$ to $\gamma^*$ [@Voi07, Corollary 3.10, Definition 3.13].
+of $\bL$ sends the class of a loop $\gamma$ based (@def:based-module) at $s$ to $\gamma^*$ [@Voi07, Corollary 3.10, Definition 3.13].
 The product on $\pi_1(B,s)$ is the one in which $\gamma\delta$ is the loop $\delta$ followed by the loop $\gamma$.
 :::
 
@@ -123,7 +123,7 @@ $$
 \definedas
 \theset{(o_b)_{b\in O}\st o_b\in\operatorname{Or}^+_b,\ \gamma^*o_{\gamma(0)}=o_{\gamma(1)}\text{ for every path }\gamma\text{ in }O}.
 $$
-The sheaf $\operatorname{Or}^-_{\bL}$ of orientation (@def:orientation-sheaf) classes of maximal (@def:maximal-lattice) negative-definite subspaces is $\operatorname{Or}^+$ of $(\bL,-\beta)$.
+The sheaf $\operatorname{Or}^-_{\bL}$ of orientation (@def:free-module-orientation) (@def:orientation-sheaf) classes of maximal (@def:maximal-lattice) negative-definite subspaces is $\operatorname{Or}^+$ of $(\bL,-\beta)$.
 :::
 
 ::: {.proposition #prop:orientation-sheaf-section title="Monodromy lies in $\Orth^+$ exactly when $\operatorname{Or}^+_{\bL}$ has a global section"}
@@ -294,7 +294,7 @@ If $g\in\Theta_\RR(L_\RR,-\epsilon Q)$, then $g\in G_\RR^\circ$ by @eq-identity-
 Otherwise choose $0\neq w\in R_0$.
 By @lem:hodge-real-pieces, $Q(w,w)$ has sign $-\epsilon$ and $w$ is orthogonal to $H^{p,q}_F$ for $(p,q)\neq(m,m)$.
 The reflection $s_w$ therefore fixes those subspaces pointwise and preserves $H^{m,m}_F$, so $s_w\in V_F$.
-By @def:spinor-norm, the real spinor norm (@def:spinor-norm) of $s_w$ is $[-\epsilon Q(w,w)/2]=+1$ for the form $\epsilon Q$ and $[\epsilon Q(w,w)/2]=-1$ for the form $-\epsilon Q$.
+By @def:spinor-norm, the real spinor norm (@def:lattice-basic-invariants) (@def:spinor-norm) of $s_w$ is $[-\epsilon Q(w,w)/2]=+1$ for the form $\epsilon Q$ and $[\epsilon Q(w,w)/2]=-1$ for the form $-\epsilon Q$.
 Both $g$ and $s_w$ lie in $\Theta_\RR(L_\RR,\epsilon Q)$ and neither lies in $\Theta_\RR(L_\RR,-\epsilon Q)$, and the real spinor norm is a group morphism for each form, so $gs_w$ lies in both $\Theta_\RR(L_\RR,\epsilon Q)$ and $\Theta_\RR(L_\RR,-\epsilon Q)$.
 Hence $gs_w\in G_\RR^\circ$ by @eq-identity-component-two-spinor-kernels, and $g\in G_\RR^\circ\cdot V_F$.
 :::
@@ -440,7 +440,7 @@ Statement (1) is @cor:vhs-monodromy-stabilizes-component for the variation of @p
 For (2), put $\kappa\definedas\omega|_{X_s}$.
 Then $Q(\kappa,\kappa)=\int_{X_s}\omega^2>0$, the class $\kappa$ is fixed by $\rho$, and $\bV^2_{\mathrm{prim},s}=\kappa^\perp$.
 Each $\rho(\gamma)$ is therefore $\id_{\RR\kappa}\oplus g$ on $\RR\kappa\perp\qty{\kappa^\perp}_\RR$, with $g$ the monodromy of the primitive (@def:primitive-embedding) part.
-By (1) with $m=1$ and $\epsilon=+1$, the real spinor norm (@def:spinor-norm) of $g$ is $+1$, and so is that of $\id_{\RR\kappa}$.
+By (1) with $m=1$ and $\epsilon=+1$, the real spinor norm (@def:lattice-basic-invariants) (@def:spinor-norm) of $g$ is $+1$, and so is that of $\id_{\RR\kappa}$.
 By @prop:spinor-norm-orientation-classes (3), the real spinor norm of $\rho(\gamma)$ is $+1$, so $\rho(\gamma)\in\Orth^+\qty{H^2(X_s,\ZZ)/\text{torsion}}$ by @def:lattice-spinor-kernels.
 :::
 
@@ -803,7 +803,7 @@ For a family of polarized K3 surfaces $f\colon\mcx\to S$ over a smooth connected
 ::: {.theorem #thm:mumford-tate-contains-monodromy title="The Mumford--Tate group contains the algebraic monodromy group up to finite index"}
 
 Let $f\colon\mcx\to S$ be a family of polarized K3 surfaces over a smooth connected complex algebraic variety.
-There is a countable union $S'\subsetneq S$ of proper closed subvarieties such that for $t\in S\sm S'$ the group (@def:group) $\MT\qty{H^2(X_t,\QQ)}$ is constant and contains a subgroup of finite index (@def:index) of the algebraic monodromy group; it contains the identity component of the algebraic monodromy group [@Huy16, Ch. 6, Theorem 4.9].
+There is a countable union $S'\subsetneq S$ of proper closed subvarieties such that for $t\in S\sm S'$ the group (@def:group) $\MT\qty{H^2(X_t,\QQ)}$ is constant and contains a subgroup of finite index (@def:index) of the algebraic monodromy group (@def:k3-moduli-functors); it contains the identity component of the algebraic monodromy group [@Huy16, Ch. 6, Theorem 4.9].
 :::
 
 ::: {.corollary #cor:finite-index-monodromy-hodge-tensors title="Monodromy at a very general fibre of a family of polarized K3 surfaces"}
@@ -820,8 +820,8 @@ $$
 
 ::: {.proof}
 
-Let $M$ be the algebraic monodromy group and let $H\iscontainedin M\cap\MT(V)$ be an algebraic subgroup of finite index in $M$, which exists by @thm:mumford-tate-contains-monodromy.
-The map $\Gamma/\qty{\Gamma\cap H(\QQ)}\to M(\overline\QQ)/H(\overline\QQ)$ is injective and its target is finite, so $\Gamma\cap H(\QQ)$ has finite index in $\Gamma$; it is contained in $\Gamma'$.
+Let $M$ be the algebraic monodromy group (@def:k3-moduli-functors) and let $H\iscontainedin M\cap\MT(V)$ be an algebraic subgroup of finite index in $M$, which exists by @thm:mumford-tate-contains-monodromy.
+The map $\Gamma/\qty{\Gamma\cap H(\QQ)}\to M(\overline\QQ)/H(\overline\QQ)$ is injective and its target (@def:globular-boundary) is finite, so $\Gamma\cap H(\QQ)$ has finite index in $\Gamma$; it is contained in $\Gamma'$.
 This proves (1), and (2) is @prop:mumford-tate-sub-hodge-structures.
 
 For (3), let $h\in H^2(X_t,\ZZ)$ be the class of the polarization (@def:polarization-functors).

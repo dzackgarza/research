@@ -32,7 +32,7 @@ For each $t \in M$, let $\{\omega_1(t), \dots, \omega_p(t)\}$ be a basis of a ho
    \;\in\; \Mat_{p \times k}(\CC).
    $$
    Because the basis of holomorphic forms is determined only up to an invertible change of basis in $\GL_p(\CC)$, the $p$-dimensional subspace spanned by the rows of $\Pi(t)$ defines a point in the Grassmannian $\Gr(p, H^m(X, \CC))$, or more precisely in the Griffiths period domain $\mathcal{D} \subset \Gr(p, k)$ cut out by the Riemann–Hodge bilinear relations.
-   Modulo the global monodromy group $\Gamma \le \Aut(H_m(X, \ZZ), Q)$, this association defines the *period map* of the family
+   Modulo the global monodromy group (@def:k3-moduli-functors) $\Gamma \le \Aut(H_m(X, \ZZ), Q)$, this association defines the *period map* of the family
    $$
    \mathcal{P} \colon M \too \mathcal{D}/\Gamma.
    $$
@@ -56,7 +56,7 @@ For each $t \in M$, let $\{\omega_1(t), \dots, \omega_p(t)\}$ be a basis of a ho
 
 ## The algebraic construction
 
-::: {.construction #cons:pf-from-jacobian title="From the defining polynomial to the local monodromy" defines="Jacobian ideal; $J$; monomial basis; $B$; Milnor number; $\mu$; $P$; Picard--Fuchs operator; $\mathcal L$; exponent; $R$; $R_s$; $R_n$; local monodromy; $T$"}
+::: {.construction #cons:pf-from-jacobian title="From the defining polynomial to the local monodromy" defines="Jacobian ideal; $J$; monomial basis; $B$; Milnor number; $\mu$; $P$; Picard--Fuchs operator; $\mathcal L$; local monodromy exponent; $R$; $R_s$; $R_n$; local monodromy; $T$"}
 
 Let $k$ have characteristic $0$ and let $f\in k[x_0,\dots,x_{n-1},t]$ present a family of affine hypersurfaces over a one-dimensional base with parameter $t$.
 

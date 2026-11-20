@@ -1,6 +1,6 @@
 # Indefinite even $2$-elementary lattices {#sec-indefinite-two-elementary-lattices}
 
-::: {.definition #def:two-elementary-isotropic-types title="Primitive isotropic-vector types" defines="$j_L$; $r_L$; characteristic; ordinary; odd; even ordinary; even characteristic"}
+::: {.definition #def:two-elementary-isotropic-types title="Primitive isotropic-vector types" defines="$j_L$; $r_L$; characteristic isotropic vector; ordinary isotropic vector; odd isotropic vector; even ordinary; even characteristic"}
 
 Let $L$ be an even (@def:form-axioms) $2$-elementary lattice.
 For every primitive (@def:primitive-embedding) vector, $\div_L(v)\in\theset{1,2}$.

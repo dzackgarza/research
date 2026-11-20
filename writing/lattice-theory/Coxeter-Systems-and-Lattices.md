@@ -13,7 +13,7 @@ $$
 read as $-2$ when $s=t$ and as $2$ when $m(s,t)=\infty$.
 Its Gram matrix in the basis (@def:based-module) $\{\alpha_s\}$ is $G$ with $G_{st}=2\cos(\pi/m(s,t))$, so the diagonal entries are $-2$ and the off-diagonal entries are nonnegative.
 
-The source [@Hum90, §5.3] uses $B(\alpha_s,\alpha_t)=-\cos(\pi/m(s,t))$, so $B(\alpha_s,\alpha_s)=1$ and $b=-2B$.
+The source (@def:globular-boundary) [@Hum90, §5.3] uses $B(\alpha_s,\alpha_t)=-\cos(\pi/m(s,t))$, so $B(\alpha_s,\alpha_s)=1$ and $b=-2B$.
 Every definiteness statement quoted from that source is therefore read here with the sign reversed, in the convention of @def:definiteness.
 
 The data are those of a *Coxeter graph*: a finite undirected graph on $S$ whose edges are labelled by integers at least $3$ or by $\infty$, with $m(s,t)=2$ for distinct vertices joined by no edge and $m(s,s)=1$ [@Hum90, §2.3].
@@ -56,7 +56,7 @@ For $n=3$ the remaining possibility is signature $(1,2,0)$ [@Hum90, §6.7].
 
 ::: {.proof}
 
-The three clauses are [@Hum90, §6.4] (finite exactly when positive definite for the source's $B$, hence negative definite for $b=-2B$), [@Hum90, §2.6] (positive semidefinite (@def:calculus-real-positivity) and degenerate forces a one-dimensional radical, so the signature is $(0,n-1,1)$), and [@Hum90, §6.7] for the rank-three statement.
+The three clauses are [@Hum90, §6.4] (finite exactly when positive definite for the source (@def:globular-boundary)'s $B$, hence negative definite for $b=-2B$), [@Hum90, §2.6] (positive semidefinite (@def:calculus-real-positivity) and degenerate forces a one-dimensional radical, so the signature is $(0,n-1,1)$), and [@Hum90, §6.7] for the rank-three statement.
 :::
 
 ::: {.theorem #thm:parabolic-radical title="The radical of a parabolic system"}

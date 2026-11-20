@@ -253,7 +253,7 @@ Let $P\iscontainedin\HH^n_L$ be a Coxeter polytope with finitely many walls (@no
 (1) By @cor:ideal-vertices-are-parabolic the map is injective, and its values are maximal parabolic subdiagrams of rank $n-1$.
 Let $\Sigma_J$ be a parabolic subdiagram.
 By @cor:coxeter-polytope-acute, $P$ is acute-angled, so [@Vin85, Ch. I, Prop. 3.2] applies: let $c_j > 0$, $j\in J$, be the coefficients of a linear relation among the rows of $G[J,J]$; then $u \definedas \sum_{j\in J} c_j\alpha_j$ is nonzero, isotropic and orthogonal to every $\alpha_j$ with $j\in J$, and $[u]\in\overline P$.
-Let $\hat P$ be the continuation of $P$ in the projective sphere [@Vin85, Ch. I, §4.1]; it is the convex hull of its finitely many vertices, and since $\vol(P) < \infty$ it equals $\overline P$ [@Vin85, Ch. I, §4.1].
+Let $\hat P$ be the continuation of $P$ in the projective sphere (@def:spheres) [@Vin85, Ch. I, §4.1]; it is the convex hull of its finitely many vertices, and since $\vol(P) < \infty$ it equals $\overline P$ [@Vin85, Ch. I, §4.1].
 Let $F$ be the face of $\hat P$ that contains $[u]$ in its relative interior.
 Then $F\iscontainedin\overline P\iscontainedin\overline{\HH^n_L}$, and in an affine chart $\overline{\HH^n_L}$ is a closed ellipsoid, which is strictly convex; a segment in it whose interior meets the boundary is a single point, so $F = \theset{[u]}$ is a vertex of $\hat P$.
 Since $\vol(P) < \infty$, the complex of $\hat P$ equals the extended complex of $P$ [@Vin85, Ch. I, §4.1], so the vertex $[u]$, which lies on the boundary of $\HH^n_L$, is a vertex at infinity of $P$.

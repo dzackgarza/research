@@ -273,7 +273,7 @@ Let $\Gamma^K_{\mathrm{En}}=O(T_{\mathrm{En}})$, so that $\mcf_{(10,10,0)}=\bD(T
 
 1. Up to $\Gamma^K_{\mathrm{En}}$ there is a unique $(-2)$-vector $\alpha\in T_{\mathrm{En}}$. The discriminant divisor $\Delta=\alpha^\perp\subset\bD(T_{\mathrm{En}})/\Gamma^K_{\mathrm{En}}$ parameterizes quotients of nodal K3 surfaces by an involution that fixes a node. These quotients are rational Coble surfaces (@def:coble-surface) with a $\frac{1}{4}(1,1)$ singularity.
 
-2. There are two $\Gamma^K_{\mathrm{En}}$-orbits of $(-4)$-vectors $\beta\in T_{\mathrm{En}}$. The divisor of the vector with $\beta^\perp\cong\langle4\rangle\oplus U\oplus E_8(2)$ parameterizes nodal Enriques surfaces (@def:enriques-surface). The divisor of the other orbit parameterizes the unigonal Enriques surfaces, which are double covers of $\bP(1,1,2)$.
+2. There are two $\Gamma^K_{\mathrm{En}}$-orbits of $(-4)$-vectors $\beta\in T_{\mathrm{En}}$. The divisor of the vector with $\beta^\perp\cong\langle4\rangle\oplus U\oplus E_8(2)$ parameterizes nodal Enriques surfaces (@def:nodal-enriques-surface) (@def:enriques-surface). The divisor of the other orbit parameterizes the unigonal Enriques surfaces, which are double covers of $\bP(1,1,2)$.
 
 3. On the unigonal Heegner divisor of $\mcf_{\mathrm{En},2}$, the projective diagram of @sec-aegs-projective is replaced by the diagram with $(Y,L)=(\bP(1,1,2),\mathcal O(4))$, a singular quadric.
 
@@ -804,7 +804,7 @@ After contracting the full $L$-null configuration, its descent is ample.
 
 ::: {.proof}
 
-Against the fixed curve: $\psi^*L=H$ and $\psi^*C=2E$, so $2\,L\cdot C=\psi^*L\cdot\psi^*C=H\cdot(2E)=2\,H\cdot E=0$, whence $L\cdot C=0$; and $H^2 = (\psi^*L)^2 = \deg\psi\cdot L^2 = 2\,L^2$ (pullback by a finite morphism of degree (@def:numerical-polarization) $\deg\psi$ scales squares by $\deg\psi$, and here $H^2 = 4$), so $L^2 = H^2/\deg\psi = 2$, using that $\psi$ has degree $2$, being the quotient by the involution $\iota_{\Co}$.
+Against the fixed curve: $\psi^*L=H$ and $\psi^*C=2E$, so $2\,L\cdot C=\psi^*L\cdot\psi^*C=H\cdot(2E)=2\,H\cdot E=0$, whence $L\cdot C=0$; and $H^2 = (\psi^*L)^2 = \deg\psi\cdot L^2 = 2\,L^2$ (pullback (@def:pullback-square) by a finite morphism of degree (@def:numerical-polarization) $\deg\psi$ scales squares by $\deg\psi$, and here $H^2 = 4$), so $L^2 = H^2/\deg\psi = 2$, using that $\psi$ has degree $2$, being the quotient by the involution $\iota_{\Co}$.
 
 Not ample: an ample class meets every curve positively, and $L\cdot C=0$ with $C$ a curve.
 
@@ -879,7 +879,7 @@ p_a(R_{\wV})=4.
 :::
 
 ::: {.proof}
-Pulling back $2L+K_{\wV}$ gives $2H-E=\wR$, and $R_{\wV}=\psi_*\wR$ is the divisor on $\wV$ whose pullback is that class.
+Pulling back $2L+K_{\wV}$ gives $2H-E=\wR$, and $R_{\wV}=\psi_*\wR$ is the divisor on $\wV$ whose pullback (@def:pullback-square) is that class.
 
 For the self-intersection, $H=\pi^*\OO_Y(1,1)$ and $H\cdot E=0$ because $E$ is the exceptional curve of the minimal resolution of the $A_1$ point, hence contracts to a point of $Y$, so $\pi_*E=0$ and $H\cdot E=\OO_Y(1,1)\cdot\pi_*E=0$.
 So
@@ -1780,7 +1780,7 @@ A Coble integral-affine package is a tuple
 
 where
 
-1. $B(\lambda)$ is the integral-affine dual sphere (@def:singular-integral-affine-surface) or Type II segment of a K3 divisor model;
+1. $B(\lambda)$ is the integral-affine dual sphere (@def:spheres) (@def:singular-integral-affine-surface) or Type II segment of a K3 divisor model;
 
 2. $R_{\IA}$ is the weighted balanced graph recording the del Pezzo ramification divisor;
 
@@ -2289,7 +2289,7 @@ Compute the simultaneous eigenspaces of the Klein-four action, their primitive c
 ::: {.theorem #prob:B24 title="B2.4. Direct global Torelli theorem — the period image, decided"}
 Let $p$ be the period map of the direct one-node construction into the component of $\bD(T_\Co)$ modulo $\Gamma_{\mathrm{lab}}$, the image in $\Orth(T_\Co)$ of the stabilizer in $\Orth(\lkt)$ of the labels $(I_\Co,I_{\mathrm{dP}},H,\alpha)$. Then the complement of $\mathrm{im}(p)$ is a union of Heegner divisors of $T_\Co$:
 1. no period of the construction lies on a wall (@not:coxeter-polytope-faces) $\delta^\perp$ with $\delta\in T_\Co$ of square $-2$;
-2. each of the $121$ classes whose glued image is the level $\set{q_{T_\Co} = 1}$ carries a wall that the image misses, and the single class $\eta_0$ of the other level $\set{q_{T_\Co} = 1/2}$ that the pinned gluing $\gamma_\Co$ could charge carries no vector of norm $-2$, $-4$, $-6$ or $-8$, so no divisor of that level is excluded.
+2. each of the $121$ classes whose glued image is the level $\set{q_{T_\Co} = 1}$ carries a wall that the image misses, and the single class $\eta_0$ of the other level $\set{q_{T_\Co} = 1/2}$ that the pinned gluing $\gamma_\Co$ could charge (@def:charge) carries no vector of norm $-2$, $-4$, $-6$ or $-8$, so no divisor of that level is excluded.
 
 So the marked direct Coble moduli stack is the complement of that subarrangement of walls — the ample/nef chamber and the exceptional root are encoded by the labels and the chamber, as @thm:chamber-pinned-by-labels makes explicit — and the reading of B2.4 that identifies it with the complement of the whole divisorial locus $\bD_\Co^\circ = \bD\setminus\mathrm{NL}_2$ is **false**: the excluded divisors are proper and nonempty on both sides.
 :::

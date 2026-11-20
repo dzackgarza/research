@@ -62,7 +62,7 @@ For $x = x_1 + x_2$ in an orthogonal direct sum, $x^2 = x_1^2 + x_2^2$, so the s
 ::: {.theorem #thm:coeven-duality title="Duality for coeven lattices"}
 
 If $S$ is even (@def:form-axioms) hyperbolic (@def:definiteness) $2$-elementary and coeven (@def:coeven-coodd) with invariants $(r, a, 0)$, then $S^{\dagger} = \dualof{S}(2)$ is again even hyperbolic and coeven, with invariants $(r, r - a, 0)$.
-The Coxeter diagrams $\Gamma_r(S)$ and $\Gamma_r(S^{\dagger})$ correspond to each other with the short and long roots (@def:2elementary-roots) interchanged, and there is a bijection between the maximal parabolic subdiagrams (@def:parabolic-subdiagram) of the two.
+The Coxeter diagrams (@def:coxeter-matrix) $\Gamma_r(S)$ and $\Gamma_r(S^{\dagger})$ correspond to each other with the short and long roots (@def:2elementary-roots) interchanged, and there is a bijection between the maximal parabolic subdiagrams (@def:parabolic-subdiagram) of the two.
 :::
 
 ::: {.proof}

@@ -19,7 +19,7 @@ $$
 \Gamma_{\mathbb A_f}\definedas
 \prod_p^{\prime}(\Gamma_p,\Gamma_{p,0}).
 $$
-The determinant and the spinor norm (@def:spinor-norm) of @def:spinor-norm give
+The determinant and the spinor norm (@def:lattice-basic-invariants) (@def:spinor-norm) of @def:spinor-norm give
 $$
 \sigma_{\mathbb A_f}\colon\Orth(V_{\mathbb A_f})
 \longrightarrow\Gamma_{\mathbb A_f}.

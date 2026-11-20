@@ -11,7 +11,7 @@ tags:
 
 ## Setting
 
-::: {#def:nodal-enriques-surface .definition title="Nodal and unnodal" defines="nodal; unnodal"}
+::: {#def:nodal-enriques-surface .definition title="Nodal and unnodal" defines="nodal Enriques surface; unnodal Enriques surface"}
 
 An Enriques surface (@def:enriques-surface) $Y$ is **nodal** if it contains a rational $(-2)$-curve, and **unnodal** otherwise.
 A generic Enriques surface is unnodal, and $F_{\Nod}$ is an irreducible hypersurface in $\fen$.

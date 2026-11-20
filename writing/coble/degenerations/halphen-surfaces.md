@@ -5,7 +5,7 @@ part of the data. A fibration with a section is called Jacobian.
 
 ::: {.proposition #prop:halphen-surface-fibres title="Fibres of Halphen surfaces"}
 
-A relatively minimal rational elliptic surface (@def:halphen-surface-index) $V$ is a **Halphen surface of index $n$** if the class of its fibre is $-nK_V$.
+A relatively minimal rational elliptic surface (@def:halphen-surface-index) $V$ is a **Halphen surface of index (@def:index) $n$** if the class of its fibre is $-nK_V$.
 Every relatively minimal rational elliptic surface is a Halphen surface of some index $n$.
 
 1. A Halphen surface of index $1$ is a Jacobian rational elliptic surface: its fibration has no multiple fibres, equivalently it has a section.
@@ -66,7 +66,7 @@ attached to the fibre.
 Let $V$ be a terminal (@def:terminal-coble-surface) Coble surface of K3 type (@def:coble-surface).
 Then $V$ is isomorphic to one of the following:
 
-1. the blowup of a Halphen surface of index $1$ at singular points of two simple reduced fibres;
+1. the blowup of a Halphen surface of index (@def:index) $1$ at singular points of two simple reduced fibres;
 
 2. the blowup of a Halphen surface of index $2$ at singular points of one simple reduced fibre.
 
@@ -78,7 +78,7 @@ In case 2 the fibre is of type $\tilde A_k$ with $k\leq8$, and in case 1 the two
 
 Let $V$ be a terminal (@def:terminal-coble-surface) Coble surface (@def:coble-surface) of K3 type with $n = 1$, and let $W = V(F_6)$ be the irreducible plane sextic of @prop:coble-sextic-model, with $10$ ordinary nodes or cusps, possibly infinitely near.
 Choose $9$ of the $10$ double points of $W$.
-Then a plane cubic $V(F_3)$ passes through them, and the pencil $V(\lambda F_6 + \mu F_3^2)$ is a Halphen pencil of index $2$.
+Then a plane cubic $V(F_3)$ passes through them, and the pencil $V(\lambda F_6 + \mu F_3^2)$ is a Halphen pencil of index (@def:index) $2$.
 The minimal resolution of its base points is a Halphen surface of index $2$, and $V$ is the blowup of a singular point of an irreducible simple fibre of this pencil.
 
 Let $F$ be a reducible simple fibre of the pencil.
@@ -100,7 +100,7 @@ $$
 h^1(\Theta_{V/k}(-C)) = 10 - n
 .
 $$
-For $n = 1$ it is $9$, the number of moduli of general Halphen surfaces of index $2$ [@DK25, Rem. 9.1.9].
+For $n = 1$ it is $9$, the number of moduli of general Halphen surfaces of index (@def:index) $2$ [@DK25, Rem. 9.1.9].
 :::
 
 ::: {.lemma #lem:coble_halphen_blowdown title="Cobles to Halphens"}
@@ -109,9 +109,9 @@ Let $X$ be a smooth rational surface with $\abs{-K_X} = \varnothing$, $K_X^2 = -
 Let $\pi_{E}\colon X \to Y$ be the blowing down of a $(-1)$-curve $E$.
 Then
 
-- $Y$ is a Halphen surface of index 2;
+- $Y$ is a Halphen surface of index (@def:index) 2;
 
-- $C$ is the proper transform of the fiber $F$ containing $y_{0}=\pi_{E}(E)$;
+- $C$ is the proper transform of the fiber (@def:fiber-cofiber) $F$ containing $y_{0}=\pi_{E}(E)$;
 
 - the fiber $F$ is irreducible, and $y_{0}$ is its unique singular point.
 
@@ -156,6 +156,6 @@ The linear system $\abs{-K_X}$ is empty, because $\abs{-K_Y}$ consists of the un
 
 ::: {.conjecture #conj:coble-halphen-moduli-correspondence title="Coble and Halphen moduli"}
 
-The constructions of @lem:coble_halphen_blowdown and @prop:terminal-coble-halphen-blowup give a correspondence between the moduli spaces of Coble surfaces with $n$ boundary components and the moduli spaces of index $2$ Halphen pencils on the $g=0$ line of Nikulin's diagram of $2$-elementary lattices, whose vertices are the triples $(r, a, \delta)$.
+The constructions of @lem:coble_halphen_blowdown and @prop:terminal-coble-halphen-blowup give a correspondence between the moduli spaces of Coble surfaces with $n$ boundary components and the moduli spaces of index (@def:index) $2$ Halphen pencils on the $g=0$ line of Nikulin's diagram of $2$-elementary lattices, whose vertices are the triples $(r, a, \delta)$.
 Under this correspondence the cusp diagrams of the two moduli spaces coincide.
 :::

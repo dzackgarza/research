@@ -133,7 +133,7 @@ A Coble surface of elliptic type admits a birational morphism onto $\PP^2$ [@DZ9
 
 Let $X$ be a Coble surface (@def:coble-surface) with $M^2 = 0$, for $M$ as in @def:coble-elliptic-rational-type.
 
-- If $X$ is of Halphen type, obtained from a minimal (@def:minimal-resolution) Halphen surface $Y_m$ of index (@def:halphen-surface-index) $2$ by one blowup of a singular point on its non-multiple fibre $F$, then $X$ is of K3 type if and only if $F$ has type $I_n$, $\II$, $\III$ or $\IV$.
+- If $X$ is of Halphen type, obtained from a minimal (@def:minimal-resolution) Halphen surface $Y_m$ of index (@def:index) (@def:halphen-surface-index) $2$ by one blowup of a singular point on its non-multiple fibre $F$, then $X$ is of K3 type if and only if $F$ has type $I_n$, $\II$, $\III$ or $\IV$.
 
 - If $X$ is of Jacobian type, obtained from a minimal Jacobian rational elliptic surface (@def:halphen-surface-index) by blowing up a singular point of one fibre $F$ and at least one singular point, with its infinitely near points, of another fibre $F_1$, then $X$ is of K3 type if and only if each of $F$ and $F_1$ has type $I_n$, $\II$, $\III$ or $\IV$.
 
@@ -155,12 +155,12 @@ For a Coble surface (@def:coble-surface) $X$ the following are equivalent:
 
 ::: {.definition #def:rational-log-enriques title="Rational log Enriques surface of index 2" defines="rational log Enriques surface of index $2$"}
 
-A **rational log Enriques surface of index $2$** is a normal rational surface $\bar X$ with at worst quotient singularities such that $\OO(-2K_{\bar X}) \cong \OO_{\bar X}$ [@DZ99, §6, paragraph before Prop. 6.4].
+A **rational log Enriques surface (@def:enriques-surface) of index (@def:index) $2$** is a normal rational surface $\bar X$ with at worst quotient singularities such that $\OO(-2K_{\bar X}) \cong \OO_{\bar X}$ [@DZ99, §6, paragraph before Prop. 6.4].
 :::
 
 ::: {.theorem #thm:coble-log-enriques-resolution title="Terminal Coble surfaces are resolutions of log Enriques surfaces"}
 
-1. The minimal (@def:minimal-resolution) resolution $X$ of a rational log Enriques surface of index (@def:rational-log-enriques) $2$ is a Coble surface (@def:coble-surface) with $h^0(-2K_X) = 1$. The unique member $D\in\abs{-2K_X}$ is reduced, and each connected component of $D$ is either a single $(-4)$-curve or a linear chain with dual graph
+1. The minimal (@def:minimal-resolution) resolution $X$ of a rational log Enriques surface (@def:enriques-surface) of index (@def:index) (@def:rational-log-enriques) $2$ is a Coble surface (@def:coble-surface) with $h^0(-2K_X) = 1$. The unique member $D\in\abs{-2K_X}$ is reduced, and each connected component of $D$ is either a single $(-4)$-curve or a linear chain with dual graph
 $$
 (-3) - (-2) - \cdots - (-2) - (-3)
 .

@@ -76,7 +76,7 @@ $$
 Equivalently, the values of the quadratic form on the minimal shell (@def:definite-minimum-shell) determine the form up to scale [@Mar03, Ch. 4].
 :::
 
-::: {.definition #def:regular-ternary-lattice title="Regular and spinor-regular ternary lattices" defines="regular; spinor regular"}
+::: {.definition #def:regular-ternary-lattice title="Regular and spinor-regular ternary lattices" defines="regular ternary lattice; spinor regular"}
 
 Let $L$ be a positive-definite integral ternary lattice, and let $\mathfrak s_L$ be the spinor genus containing $[L]$ in the partition of @def:spinor-genus-partition.
 The lattice $L$ is **regular** when

@@ -81,7 +81,7 @@ $$
 A\xrightarrow{b^\ell}\Hom_R(B,W)
 \xrightarrow{\Hom_R(j,W)}\Hom_R(T,W).
 $$
-These yield order-reversing functors between the two module-subobject posets (@def:preorder-category) of @def:subobject-relation. They satisfy the Galois connection
+These yield order-reversing functors between the two module-subobject posets (@def:preorder-category) of @def:subobject-relation. They satisfy the Galois connection (@def:calculus-connection)
 $$
 S\subseteq{}^{\perp_A}T
 \quad\Longleftrightarrow\quad

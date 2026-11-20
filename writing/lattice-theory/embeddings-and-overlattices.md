@@ -345,7 +345,7 @@ Since $P$ is unimodular, @prop:unimodular-splits gives $L\cong P\oplus P^{\perp 
 
 ## Maximal and split maximal lattices
 
-::: {.definition #def:maximal-lattice title="Maximal lattices" defines="maximal; maximal overlattice"}
+::: {.definition #def:maximal-lattice title="Maximal lattices" defines="maximal lattice; maximal overlattice"}
 
 An even (@def:form-axioms) lattice $L'$ is **maximal** if $A_{L',q}$ has no nonzero isotropic (@def:orthogonal-complement) quadratic subobject (@def:subobject-relation)
 $(H,0)\injects A_{L',q}$.
@@ -552,7 +552,7 @@ when $\varphi\in\Orth^+(M)$.
 By the Cartan--Dieudonné theorem write $\varphi\otimes\bR=s_{u_1}\cdots s_{u_k}$ with anisotropic
 $u_i\in M\otimes\bR$. Each reflection $s_{u_i}$ of $B\otimes\bR$ fixes $P\otimes\bR$ pointwise and restricts
 to the reflection $s_{u_i}$ of $M\otimes\bR$, so $\id_P\perp\varphi=s_{u_1}\cdots s_{u_k}$ in
-$\Orth(B\otimes\bR)$, and the two spinor norms agree by @def:spinor-norm. The group (@def:group) $\Orth^+$ is the kernel (@def:kernel-cokernel)
+$\Orth(B\otimes\bR)$, and the two spinor norms (@def:lattice-basic-invariants) agree by @def:spinor-norm. The group (@def:group) $\Orth^+$ is the kernel (@def:kernel-cokernel)
 of the real spinor norm.
 :::
 

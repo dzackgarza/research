@@ -76,7 +76,7 @@ $$
 \qquad
 V_{\mathbb A_f}\definedas V\tensor_K\mathbb A_{K,f}.
 $$
-The local spinor norms (@def:spinor-norm) of @def:spinor-norm assemble to
+The local spinor norms (@def:lattice-basic-invariants) (@def:spinor-norm) of @def:spinor-norm assemble to
 $$
 \spinornorm_{\mathbb A_f}\colon
 \Orth(V_{\mathbb A_f})

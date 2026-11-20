@@ -194,7 +194,7 @@ and
 $$
 \Gamma_h^+\backslash\mathcal F_{1,2}(\ten)\longrightarrow\Gamma_h\backslash\mathcal F_{1,2}(\ten)
 $$
-are bijections, where $\mathcal I_k$ denotes primitive totally isotropic rank-$k$ sublattices and $\mathcal F_{1,2}$ their incident flags. Moreover $\rho(\Gamma_h^+)=\rho(\Gamma_h)=M_h$. Thus a public computation using the *full* discriminant preimage $\Gamma_h$ can be compared to the $\Gamma_h^+$ cusp tables of [@SH23, §3.6] without an additional factor of two, provided the finite image is the **actual** polarization-family image $M_h$ rather than a stabilizer of one discriminant class.
+are bijections, where $\mathcal I_k$ denotes primitive totally isotropic rank-$k$ sublattices and $\mathcal F_{1,2}$ their incident flags. Moreover $\rho(\Gamma_h^+)=\rho(\Gamma_h)=M_h$. Thus a public computation using the *full* discriminant preimage $\Gamma_h$ can be compared to the $\Gamma_h^+$ cusp tables of [@SH23, §3.6] without an additional factor of two, provided the finite image is the **actual** polarization-family image $M_h$ rather than a stabilizer of one discriminant class (@def:lattice-discriminant-class).
 
 :::
 

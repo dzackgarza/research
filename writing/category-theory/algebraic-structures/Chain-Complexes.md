@@ -355,7 +355,7 @@ The proof uses exactness of the Koszul complex $K(x_1,\dots,x_r)$ on a regular s
 With those, the bound is $\Tor^R_i(M,k)\cong F_i\tensor_Rk$ for the minimal resolution $F$ of $M$, which vanishes for $i>r$ because $K(x)$ does, so $F_i=0$ for $i>r$.
 :::
 
-::: {.definition #def:minimal-resolution title="Minimal free resolutions" defines="minimal"}
+::: {.definition #def:minimal-resolution title="Minimal free resolutions" defines="minimal free resolution"}
 
 Let $(R,\mathfrak m)$ be a local ring.
 A free resolution (@def:resolution) $F$ of $M$ is *minimal* if $\im\varphi_n\iscontainedin\mathfrak mF_{n-1}$ for every $n$, equivalently if every differential of $F\tensor_RR/\mathfrak m$ is zero [@Eis95, §19.1, Definition before Lem. 19.4].

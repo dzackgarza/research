@@ -428,7 +428,7 @@ Let $\Gamma'\iscontainedin\Orth(T_\Co)$ be a subgroup that contains $\ker\rho$. 
 ::: {.proof}
 
 Put $\Gamma=\Orth(T_\Co)$ and $N=\ker\rho$, a normal subgroup of finite index (@def:index), and for a group (@def:group) $G$ between $N$ and $\Gamma$ let $A(G)$ be the graded ring of $G$-automorphic forms on $\bD(T_\Co)$.
-The Baily--Borel compactification of $\bD(T_\Co)/G$ is the projective spectrum of $A(G)$, the forms of degree $k$ being the sections of the $k$-th power of an ample line bundle on it [@Loo02, Thm. 2.4], as in the proof of @cor:looijenga-empty-arrangement. So $A(G)$ is a finitely generated algebra.
+The Baily--Borel compactification of $\bD(T_\Co)/G$ is the projective spectrum of $A(G)$, the forms of degree $k$ being the sections of the $k$-th power of an ample line bundle on it [@Loo02, Thm. 2.4], as in the proof of @cor:looijenga-empty-arrangement. So $A(G)$ is a finitely generated (@def:module-subcategories) algebra.
 The finite group $\Gamma/N$ acts on $A(N)$ with ring of invariants $A(\Gamma)$, so $A(N)$ is a finite module over $A(\Gamma)$, and so is its subring $A(\Gamma')$.
 A finite extension of graded rings induces a finite morphism of projective spectra, and on $\bD(T_\Co)/\Gamma'$ it is the covering.
 :::

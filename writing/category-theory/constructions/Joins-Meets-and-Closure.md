@@ -6,7 +6,7 @@ Fix a $\mathcal U$-small category $C$.
 Let $\operatorname{RFull}(C)$ be the preorder of replete full subcategories of $C$, ordered by inclusion.
 Equivalently, its elements are isomorphism-invariant properties of objects of $C$, ordered by implication.
 
-::: {.definition #def:replete-full-meet title="Meets" defines="meet"}
+::: {.definition #def:replete-full-meet title="Meets" defines="meet of replete full subcategories"}
 
 For $A,B\in\operatorname{RFull}(C)$, their meet is the replete full subcategory (@def:property-structure-stuff) on the objects lying in both $A$ and $B$.
 It is represented by the pullback
@@ -26,7 +26,7 @@ A \arrow[r,hook] & C
 Its universal property (@def:universal-arrow) is the greatest lower bound in $\operatorname{RFull}(C)$.
 :::
 
-::: {.definition #def:join-diagram title="Joins" defines="join"}
+::: {.definition #def:join-diagram title="Joins" defines="join of replete full subcategories"}
 
 The join of $A$ and $B$ is the replete full subcategory (@def:property-structure-stuff) on the objects lying in $A$ or $B$.
 It is the least upper bound in $\operatorname{RFull}(C)$.

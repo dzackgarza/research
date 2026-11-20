@@ -4,7 +4,7 @@ A tensor product on a category is chosen structure on it (@def:chosen-structure)
 
 ## Monoidal, braided, and symmetric structures {#sec-monoidal-categories}
 
-::: {.definition #def:monoidal-category title="Monoidal categories" defines="monoidal category; strict"}
+::: {.definition #def:monoidal-category title="Monoidal categories" defines="monoidal category; strict monoidal category"}
 
 A *monoidal category* is a tuple $\langle B,\otimes,e,\alpha,\lambda,\varrho\rangle$ consisting of a category $B$, a bifunctor $\tensor\colon B\times B\to B$, an object $e\in B$, and natural isomorphisms (@def:isomorphism-of-objects)
 $$
@@ -58,7 +58,7 @@ These conditions again imply that all diagrams built from $\alpha,\lambda,\varrh
 A cartesian or cocartesian monoidal structure (@def:property-structure-stuff) is symmetric, with $\gamma$ the isomorphism commuting with the projections or injections.
 :::
 
-::: {.definition #def:closed-monoidal title="Closed structure and internal hom" defines="closed; internal hom; dual object"}
+::: {.definition #def:closed-monoidal title="Closed structure and internal hom" defines="closed monoidal category; internal hom; dual object"}
 
 A monoidal category (@def:monoidal-category) $V$ is *closed* when it is symmetric and each functor $-\tensor b\colon V\to V$ has a specified right adjoint (@def:pairing-adjoints) $[b,-]\colon V\to V$,
 $$

@@ -128,7 +128,7 @@ Subtracting the two Leibniz identities cancels $da\otimes s$ and gives $(\nabla'
 :::
 
 :::{.construction #cons:calculus-induced-connections title="Tensor, dual, and pullback connections" defines="induced connection; pullback connection"}
-For finite locally free modules with connection (@def:calculus-connection), the induced connections are determined by
+For finite locally free modules (@def:module-subcategories) with connection (@def:calculus-connection), the induced connections are determined by
 
 \begin{align*}
 \nabla^{\mathcal E\otimes\mathcal F}(s\otimes t)

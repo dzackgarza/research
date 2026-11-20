@@ -53,7 +53,7 @@ If every simple root has norm (@def:lattice-basic-invariants) $-2$, then $A=-G$.
 The defining Cartan identity $A_{ij}\alpha_j^2=2G_{ij}$ and the symmetry of $G$ give the assertions.
 :::
 
-::: {.definition #def:root-system-base title="Root systems and their bases" defines="$\sigma_\alpha$; $\langle x,\alpha\rangle$; root system; base"}
+::: {.definition #def:root-system-base title="Root systems and their bases" defines="$\sigma_\alpha$; $\langle x,\alpha\rangle$; root system; base of a root system"}
 
 Let $E$ be a finite-dimensional real vector space with a positive-definite inner product $(-\mid-)$, and for $\alpha\neq0$ let $\sigma_\alpha(x)\definedas x-\langle x,\alpha\rangle\alpha$ with $\langle x,\alpha\rangle\definedas 2(x\mid\alpha)/(\alpha\mid\alpha)$. A **root system** in $E$ is a subset $\Phi\subseteq E$ such that
 

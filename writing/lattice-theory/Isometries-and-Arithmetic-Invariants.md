@@ -94,7 +94,7 @@ For $L\in\mathbf{Lat}_R^{\mathrm{nd}}$, $\radic(L)=0$; hence $\ker(Uf)=0$ and $U
 Faithfulness of the forgetful functor gives the monomorphism $U_{L,M}$, while $j_{L,M}$ is the defining inclusion of the primitive-embedding subobject (@def:subobject-relation).
 :::
 
-::: {.definition #def:primitive-embedding title="Primitive embeddings" defines="primitive embedding; $\operatorname{PrimEmb}(L,M)$; primitive"}
+::: {.definition #def:primitive-embedding title="Primitive embeddings" defines="primitive embedding; $\operatorname{PrimEmb}(L,M)$; primitive embedding"}
 
 A morphism $f\colon L\to M$ of $\mathbf{Lat}_R^{\mathrm{nd}}$ is a *primitive embedding* when the cokernel (@def:kernel-cokernel) sequence of $U(f)$ in $R\text{-}\mathbf{Mod}$
 $$

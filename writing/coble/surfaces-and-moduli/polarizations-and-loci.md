@@ -2,7 +2,7 @@
 
 ## Numerical polarizations
 
-::: {.definition #def:numerical-polarization title="Numerical polarization" defines="numerical polarization; degree"}
+::: {.definition #def:numerical-polarization title="Numerical polarization" defines="numerical polarization; degree of a numerical polarization"}
 
 A **numerical polarization** $[h]$ on an algebraic surface $Z$ --- for instance an Enriques surface (@def:enriques-surface) --- is the numerical class of $h \definedas c_1(\mcl)$ for an ample line bundle $\mcl\in\Pic(Z)$, often written $[\mcl]$.
 The **degree** of $[h]$ is its self-intersection $h^2$, computed in $\Num(Z)$.
@@ -160,7 +160,7 @@ An even unimodular lattice of signature $(1,9)$ is isometric to $E_{10}$ by the 
 Finally $C = -2K_S = 6H - 2\Sum_i E_i$ by the description of $K_S$.
 :::
 
-::: {.definition #def:coble-polarization-classes title="The hyperplane class and the degree-2 numerical polarization" defines="hyperplane class; $H$; $e_0$; degree-$2$ numerical polarization; $h_\Co$; $\tilde h_\Co$; $\mathcal C_X$; $\Delta_X$; chamber; $\mathfrak c$"}
+::: {.definition #def:coble-polarization-classes title="The hyperplane class and the degree-2 numerical polarization" defines="hyperplane class; $H$; $e_0$; degree-$2$ numerical polarization; $h_\Co$; $\tilde h_\Co$; $\mathcal C_X$; $\Delta_X$; chamber of a Coble polarization; $\mathfrak c$"}
 
 Let $f\colon X\to S$ be the K3 double cover (@not:coble-ten-point-blowup).
 

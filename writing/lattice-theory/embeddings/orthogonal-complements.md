@@ -271,7 +271,7 @@ $$
 $$
 
 It remains to identify $\det(B)$ with $[N_V:P]$. An element $x=\sum_i\lambda_i v_i$ of $V$ lies in $N$ exactly when $\beta_{L_{\bQ}}(x,L)\subseteq\bZ$, and since $\beta_{L_{\bQ}}(x,M)=0$ this is the single condition $B^{\mathsf T}\lambda\in\bZ^r$.
-Hence $N_V=(B^{\mathsf T})^{-1}\bZ^r$, whose covolume in $V$ is $\abs{\det B}^{-1}$ times that of $P=\sum_i\bZ v_i$; therefore $[N_V:P]=\abs{\det B}$.
+Hence $N_V=(B^{\mathsf T})^{-1}\bZ^r$, whose covolume (@def:covolume) in $V$ is $\abs{\det B}^{-1}$ times that of $P=\sum_i\bZ v_i$; therefore $[N_V:P]=\abs{\det B}$.
 With $\cardinality{A_L}=\abs{\det G}$ and $\cardinality{A_Q}=\abs{\det G_Q}=\abs{\disc Q}$, the displayed identity follows.
 :::
 
@@ -368,7 +368,7 @@ $$
 because $\tilde y\in W=V^{\perp}$ and $V$ is totally isotropic.
 Hence $\ell\in P^{\perp_L}=M$, and $y=[\tilde y]=[\ell]\in M/P=Q$, that is $y=0$ in $A_Q$.
 
-*Surjectivity.* The target has $\cardinality{D(P)^{\perp}/D(P)}=\cardinality{A_L}/\cardinality{D(P)}^2$ by @lem:isotropic-subgroup-quotient-order, applied to the nondegenerate (@def:polarization) form of $A_L$ of @prop:discriminant-nondegenerate and the isotropic subgroup $D(P)$ of @not:isotropic-reduction-setup.
+*Surjectivity.* The target (@def:globular-boundary) has $\cardinality{D(P)^{\perp}/D(P)}=\cardinality{A_L}/\cardinality{D(P)}^2$ by @lem:isotropic-subgroup-quotient-order, applied to the nondegenerate (@def:polarization) form of $A_L$ of @prop:discriminant-nondegenerate and the isotropic subgroup $D(P)$ of @not:isotropic-reduction-setup.
 With $\cardinality{D(P)}=[N_V:P]$ and @lem:isotropic-reduction-index this equals $\cardinality{A_Q}$.
 An injective morphism between finite groups of the same order is bijective.
 

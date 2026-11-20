@@ -228,7 +228,7 @@ M
 =
 b(\iota(t),x).
 $$
-Define the **left orthogonal complement** \({}^{\perp_b}T\), the **right orthogonal complement** \(T^{\perp_b}\), and their coradicals (@def:two-witnesses) by the exact (@def:exact-complex) sequences
+Define the **left orthogonal complement (@def:general-pairing-orthogonals)** \({}^{\perp_b}T\), the **right orthogonal complement (@def:general-pairing-orthogonals)** \(T^{\perp_b}\), and their coradicals (@def:two-witnesses) by the exact (@def:exact-complex) sequences
 $$
 0
 \too
@@ -293,7 +293,7 @@ S\subseteq T^\perp
 \quad\Longleftrightarrow\quad
 T\subseteq S^\perp .
 $$
-Thus $(-)^\perp$ is an antitone Galois connection of $\operatorname{Sub}(M)$ with itself, and
+Thus $(-)^\perp$ is an antitone Galois connection (@def:calculus-connection) of $\operatorname{Sub}(M)$ with itself, and
 $$
 S\subseteq S^{\perp\perp},
 \qquad
@@ -609,7 +609,7 @@ For degenerate $b$, let $N$ be a complement of $\radic(V)$.
 Every pairing with $\radic(V)$ vanishes, so $V\cong\radic(V)\perp N$; the restriction $b|_N$ is perfect, because an element of $N$ pairing to zero with $N$ pairs to zero with all of $V$; and the perfect case applied to $N$ gives $V\cong V^{+}\perp V^{-}\perp\radic(V)$ and $p+q+r=\dim V$.
 :::
 
-::: {.definition #def:definiteness title="Definiteness" defines="degenerate; positive definite; negative definite; definite; indefinite; hyperbolic; Lorentzian signature; parabolic"}
+::: {.definition #def:definiteness title="Definiteness" defines="degenerate; positive definite; negative definite; definite; indefinite; hyperbolic form; Lorentzian signature; parabolic form"}
 
 Let $b$ be a symmetric bilinear form of signature (@def:signature) $(p,q,r)$ and set $n=p+q+r$.
 Then $b$ is
@@ -633,7 +633,7 @@ Root lattices are taken negative definite (@def:definiteness) here, so the forms
 
 ## Isotropy and Witt decomposition {#sec-witt}
 
-::: {.definition #def:hyperbolic-plane title="Rank one forms, the hyperbolic plane, and split forms" defines="$\langle u\rangle$; hyperbolic plane; $U$; split"}
+::: {.definition #def:hyperbolic-plane title="Rank one forms, the hyperbolic plane, and split forms" defines="$\langle u\rangle$; hyperbolic plane; $U$; split form"}
 
 For a unit $u\in R^{\bullet}$ write $\langle u\rangle$ for the free (@def:module-subcategories) module of rank $1$ on a generator $e$ with $b(e,e)=u$.
 Then $\langle u\rangle\cong\langle u'\rangle$ if and only if $u'=\alpha^{2}u$ for some $\alpha\in R^{\bullet}$ [@MH73, I §2.4].
@@ -696,7 +696,7 @@ For a nondegenerate (@def:polarization) symmetric form (@def:form-axioms) over a
 
 ## Diagonal and polarization {#sec-polarization-functors}
 
-::: {.definition #def:polarization-functors title="Diagonal and polarization functors" defines="$\diag$; diagonal; $\operatorname{polar}$; polarization; $\Symbil_{R,W}$"}
+::: {.definition #def:polarization-functors title="Diagonal and polarization functors" defines="$\diag$; diagonal functor; $\operatorname{polar}$; polarization functor; $\Symbil_{R,W}$"}
 Diagonal and polarization define natural transformations
 $$
 \diag\colon\Symbil_{R,W}

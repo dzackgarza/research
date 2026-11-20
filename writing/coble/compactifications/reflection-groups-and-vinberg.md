@@ -253,7 +253,7 @@ For roots of norm $+2$, the three conditions of @def:elliptic-subdiagram read po
 
 ::: {.definition #def:parabolic-subdiagram defines="maximal parabolic subdiagram"}
 
-A parabolic subdiagram (@def:parabolic-subdiagram) is **maximal (@def:parabolic-subdiagram)** if it is not properly contained in a larger parabolic subdiagram.
+A parabolic subdiagram (@def:elliptic-subdiagram) (@def:parabolic-subdiagram) is **maximal (@def:parabolic-subdiagram)** if it is not properly contained in a larger parabolic subdiagram.
 :::
 
 ## Vinberg's algorithm

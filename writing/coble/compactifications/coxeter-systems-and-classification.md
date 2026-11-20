@@ -57,7 +57,7 @@ G(M)_{st} \definedas \beta(\alpha_s,\alpha_t) = 2\cos\!\left(\frac{\pi}{m_{st}}\
 ,
 $$
 read on the diagonal (@def:polarization-functors) as $G(M)_{ss} = 2\cos\pi = -2$, and as $G(M)_{st} = 2$ when $m_{st} = \infty$.
-Each $\alpha_s$ has norm (@def:lattice-basic-invariants) $-2$ and is therefore a short root in the sense of @def:2elementary-roots; the reflections $s_{\alpha_s}$ of @def:reflection preserve $G(M)$, and $s\mapsto s_{\alpha_s}$ extends to an injective homomorphism from the Coxeter group $W(M)$ of @def:coxeter-group to $\Orth(\RR^S, G(M))$ [@Bou08, Ch. V §4 no. 3, Prop. 3, and no. 4, Cor. 2 of Th. 1; @Hum90, §5.3, Proposition, and §5.4, Corollary]. These sources use the form $B_M(\alpha_s,\alpha_t)=-\cos(\pi/m_{st})$, so $G(M)=-2B_M$, and their reflection $\sigma_s(x)=x-2B_M(\alpha_s,x)\alpha_s$ is the reflection $s_{\alpha_s}(x)=x+\beta(x,\alpha_s)\alpha_s$.
+Each $\alpha_s$ has norm (@def:lattice-basic-invariants) $-2$ and is therefore a short root in the sense of @def:2elementary-roots; the reflections $s_{\alpha_s}$ of @def:reflection preserve $G(M)$, and $s\mapsto s_{\alpha_s}$ extends to an injective homomorphism from the Coxeter group $W(M)$ of @def:coxeter-group to $\Orth(\RR^S, G(M))$ [@Bou08, Ch. V §4 no. 3, Prop. 3, and no. 4, Cor. 2 of Th. 1; @Hum90, §5.3, Proposition, and §5.4, Corollary]. These sources (@def:globular-boundary) use the form $B_M(\alpha_s,\alpha_t)=-\cos(\pi/m_{st})$, so $G(M)=-2B_M$, and their reflection $\sigma_s(x)=x-2B_M(\alpha_s,x)\alpha_s$ is the reflection $s_{\alpha_s}(x)=x+\beta(x,\alpha_s)\alpha_s$.
 :::
 
 ::: {.proposition #prop:coxeter-normalized-pairing title="Normalized pairings of a Coxeter matrix"}
@@ -146,7 +146,7 @@ Let $(W,S)$ be an irreducible Coxeter system (@def:coxeter-group) of rank $n$ wi
 
 ::: {.proof}
 
-All three are [@Hum90, §§6.4, 6.5 and 6.8] and the results of Bourbaki cited in the statement, with $G = -2B$ for $B$ the sources' invariant form, so that definite (@def:definiteness) for $B$ is the corresponding definite sign for $G$.
+All three are [@Hum90, §§6.4, 6.5 and 6.8] and the results of Bourbaki cited in the statement, with $G = -2B$ for $B$ the sources (@def:globular-boundary)' invariant form, so that definite (@def:definiteness) for $B$ is the corresponding definite sign for $G$.
 
 In (1) the sphere of the sources is that of $(\RR^S,2B)$, which is $(\RR^S,-G)$; rescaling a metric by a positive constant preserves the sphere, the reflections and their fundamental domain. The closed (@def:tits-cone) cone $\overline{C}_0$ on which every $B(\alpha_s,-)$ is nonnegative is a fundamental domain [@Bou08, Ch. V §4 no. 8, Prop. 9]. It is a simplicial cone because the $\alpha_s$ form a basis (@def:based-module), so it meets the sphere in a spherical simplex.
 In (2) the euclidean space is the affine hyperplane $A$ of [@Bou08, Ch. V §4 no. 9, Prop. 10]. Its translation space is dual to $\RR^S/\ker G$, and $G$ identifies it with $\RR^S/\ker G$, of dimension $n-1$. The affine reflections are the restrictions of the contragredient reflections of the $s_{\alpha_s}$ to $A$, and discreteness is properness of the action.

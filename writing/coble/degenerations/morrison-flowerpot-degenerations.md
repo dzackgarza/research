@@ -1,6 +1,6 @@
 # Morrison's degenerations
 
-::: {.definition #def:flower-pot-degeneration title="Flowers, stalks, pots and flower pot degenerations" defines="marked surface; flower; stalk; stalk assembly; pot; flower pot degeneration"}
+::: {.definition #def:flower-pot-degeneration title="Flowers, stalks, pots and flower pot degenerations" defines="marked surface; flower of a flower pot degeneration; stalk of a flower pot degeneration; stalk assembly; pot of a flower pot degeneration; flower pot degeneration"}
 
 A **marked surface** $(V, D)$ is an algebraic surface $V$ with a reduced effective divisor $D\subset V$ with local normal crossings.
 

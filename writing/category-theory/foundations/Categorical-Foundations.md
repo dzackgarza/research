@@ -155,7 +155,7 @@ $$
 \coker f\to\coker g\to\coker h
 $$
 exact (@def:exact-complex) (snake lemma).
-In a commutative diagram with exact rows and five vertical morphisms, if the four outer ones are isomorphisms (@def:isomorphism-of-objects) then so is the middle one (five lemma) [@Mac98, §VIII.4, Lemmas 1, 4, and 5].
+In a commutative (@def:operation-axioms) diagram with exact rows and five vertical morphisms, if the four outer ones are isomorphisms (@def:isomorphism-of-objects) then so is the middle one (five lemma) [@Mac98, §VIII.4, Lemmas 1, 4, and 5].
 :::
 
 ::: {.proof}

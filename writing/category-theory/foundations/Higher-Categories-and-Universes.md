@@ -625,7 +625,7 @@ $$
 
 For a type $S$, $n$-truncation means $\pi_k(S,s)=0$ for every point $s$ and every $k>n$.
 A $(-2)$-truncated type is contractible, a $(-1)$-truncated type is empty or contractible, and a $0$-truncated type is a set.
-When the inclusion of $n$-truncated objects of $C$ is reflective, write its reflector as $\tau_{\leq n}^C$.
+When the inclusion of $n$-truncated objects of $C$ is reflective (@def:reflective-lattice), write its reflector as $\tau_{\leq n}^C$.
 :::
 
 ::: {.definition #def:infinity-category-universe title="The truncation tower" defines="$T_{\leq n}$; $\mathbf{Cat}_n$; $\iota_n$; $\tau_{\leq n}$; $\tau_{\leq n}^{\mathrm R}$; $n$-category structure; $\mathbf{Cat}_n^{\mathrm{loc}}$; $[C,D]_{\mathbf{Cat}_{\infty,\infty}}^{\leq n}$"}

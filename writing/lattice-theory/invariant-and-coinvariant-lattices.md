@@ -14,7 +14,7 @@ $$
 ## Integral norm and coinvariant sequences {#sec-integral-coinvariants}
 
 ::: {.theorem #thm:invariants-coinvariants-integral title="Integral invariants, coinvariants, and splitting"}
-Let $G,L$ be as in @def:invariant_coinvariant_lattices, put $n\definedas\cardinality{G}$, and let the integral norm $N_G\definedas\sum_{g\in G}\rho(g)$ factor as $\nu_G\colon L\too L^G\injects L$. Then
+Let $G,L$ be as in @def:invariant_coinvariant_lattices, put $n\definedas\cardinality{G}$, and let the integral norm (@def:lattice-basic-invariants) $N_G\definedas\sum_{g\in G}\rho(g)$ factor as $\nu_G\colon L\too L^G\injects L$. Then
 $$
 L_G=\ker(\nu_G)=\Sat_L(I_G L),
 \qquad
@@ -86,7 +86,7 @@ In particular the ideal $(n)$ is contained in the annihilators over $\bZ$ of all
 :::
 
 ::: {.proof}
-The first two modules are the kernel (@def:kernel-cokernel) and cokernel (@def:kernel-cokernel) of the norm on module coinvariants (@def:invariant_coinvariant_lattices). The surjection $L\too\nu_G(L)/nL^G$ has kernel $L^G+L_G$: if $\nu_G(x)=ns$, then $x-s\in\ker\nu_G=L_G$, and the converse is immediate. This gives the isomorphism with $C_G$. The inclusions $nL^G\subseteq\nu_G(L)\subseteq L^G$ yield the remaining exact sequence and annihilator containments.
+The first two modules are the kernel (@def:kernel-cokernel) and cokernel (@def:kernel-cokernel) of the norm (@def:lattice-basic-invariants) on module coinvariants (@def:invariant_coinvariant_lattices). The surjection $L\too\nu_G(L)/nL^G$ has kernel $L^G+L_G$: if $\nu_G(x)=ns$, then $x-s\in\ker\nu_G=L_G$, and the converse is immediate. This gives the isomorphism with $C_G$. The inclusions $nL^G\subseteq\nu_G(L)\subseteq L^G$ yield the remaining exact sequence and annihilator containments.
 :::
 
 ## Integral isotypic sublattices {#sec-integral-isotypic-sublattices}
@@ -193,7 +193,7 @@ is the trivial homomorphism.
 :::
 
 ::: {.proof}
-The fixed and orthogonal coinvariant lattices are primitive, nondegenerate (@def:polarization), mutually orthogonal, and have finite-index sum by @thm:invariants-coinvariants-integral. The unimodular gluing correspondence identifies their discriminant modules anti-isometrically and with the gluing cokernel $C_G$. The integral norm identity gives $nC_G=0$, hence the annihilator and length assertions.
+The fixed and orthogonal coinvariant lattices are primitive, nondegenerate (@def:polarization), mutually orthogonal, and have finite-index sum by @thm:invariants-coinvariants-integral. The unimodular gluing correspondence identifies their discriminant modules anti-isometrically and with the gluing cokernel $C_G$. The integral norm (@def:lattice-basic-invariants) identity gives $nC_G=0$, hence the annihilator and length assertions.
 
 The gluing graph is invariant under $G$ because $G$ preserves $L$. Its first projection identifies it with $A_{S,q}$, on which $G$ acts trivially because it fixes $S$ pointwise. Its other projection identifies it with $A_{T,q}$, so equivariance of the graph forces the action on that module to be trivial as well.
 :::

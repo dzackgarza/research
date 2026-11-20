@@ -2,7 +2,7 @@
 
 ## Anticanonical pairs and their charge
 
-::: {.definition #def:anticanonical-pair defines="anticanonical pair; length; labeled anticanonical pair"}
+::: {.definition #def:anticanonical-pair defines="anticanonical pair; length of an anticanonical pair; labeled anticanonical pair"}
 
 An **anticanonical pair** $(V, D)$ consists of a smooth rational surface $V$ and a divisor $D\in\abs{-K_V}$ that is a reduced cycle of rational curves $D = \sum_{i=1}^r D_i$, with $i$ taken mod $r$, together with an orientation (@def:free-module-orientation) of $D$.
 For $r\geq 2$, each $D_i$ is a smooth rational curve, and $D_i$ meets $D_{i\pm1}$ transversally.

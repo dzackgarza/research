@@ -60,7 +60,7 @@ Scalar extension induces
 $$
 \Orth(L)\too\Orth(L_F).
 $$
-Composing with determinant and spinor norm (@def:spinor-norm) defines short exact sequences (@def:exact-complex)
+Composing with determinant and spinor norm (@def:lattice-basic-invariants) (@def:spinor-norm) defines short exact sequences (@def:exact-complex)
 $$
 1
 \too
@@ -182,7 +182,7 @@ $$
 -\beta(\phi x,\phi x)<\beta(x,x)
 \qquad\text{for all }0\neq x\in W_0,
 $$
-which says that $\phi$ has operator norm less than $1$ for the Euclidean norms $\beta|_{W_0}$ and $-\beta|_{W_0^\perp}$.
+which says that $\phi$ has operator norm (@def:lattice-basic-invariants) less than $1$ for the Euclidean norms $\beta|_{W_0}$ and $-\beta|_{W_0^\perp}$.
 The map $W\mapsto\phi_W$ is therefore a homeomorphism from $\Gr^+(V)$ onto an open ball of $\Hom_\bR(W_0,W_0^\perp)$.
 A covering of a contractible space is trivial, so $\widetilde\Gr^+(V)$ has two components, and they are exchanged by $(W,o)\mapsto(W,-o)$.
 
@@ -230,7 +230,7 @@ For (3), if $p=0$ then $W=0$ is the only point of $\Gr^+(V)$, and $\pi_W\circ g|
 Identify $\bR^\times/(\bR^\times)^2$ with $\theset{\pm1}$.
 
 1. An isometry $g\in\Orth(V)$ satisfies $\spinornorm_\bR(g)=+1$ exactly when $g$ preserves the positive orientation classes (@def:orientation-classes) of $V$.
-2. For $g\in\Orth(V)=\Orth(V(-1))$, the real spinor norm (@def:spinor-norm) of $g$ as an isometry of $V(-1)$ is $\det(g)\,\spinornorm_\bR(g)$. It is $+1$ exactly when $g$ preserves the negative orientation classes (@def:orientation-classes) of $V$.
+2. For $g\in\Orth(V)=\Orth(V(-1))$, the real spinor norm (@def:lattice-basic-invariants) (@def:spinor-norm) of $g$ as an isometry of $V(-1)$ is $\det(g)\,\spinornorm_\bR(g)$. It is $+1$ exactly when $g$ preserves the negative orientation classes (@def:orientation-classes) of $V$.
 3. If $V=V_1\perp V_2$ and $g_i\in\Orth(V_i)$, then $\spinornorm_\bR(g_1\oplus g_2)=\spinornorm_\bR(g_1)\,\spinornorm_\bR(g_2)$.
 4. If $L$ is a lattice with $L_\bR=V$, then $\Orth^+(L)$ is the subgroup of $\Orth(L)$ of isometries that preserve the positive orientation classes of $V$, and $\Orth^+(L(-1))$ is the subgroup of isometries that preserve the negative orientation classes of $V$.
 :::
@@ -298,7 +298,7 @@ Let $h_t\in\Orth(V)$ carry the chosen bases to these.
 Then $h_0=\id$, so $h_1\in\Orth(V)^\circ$, and $h_1W=gW$.
 
 The isometry $h_1^{-1}g$ lies in $\SO(V)\cap\Theta_\bR(V)$ and preserves $W$ and $W^\perp$; write it as $a\oplus b$ with $a\in\Orth(W)$ and $b\in\Orth(W^\perp)$.
-On the positive-definite space $W$ every reflection has real spinor norm (@def:spinor-norm) $-1$ and determinant $-1$, so $\spinornorm_\bR(a)=\det a$.
+On the positive-definite space $W$ every reflection has real spinor norm (@def:lattice-basic-invariants) (@def:spinor-norm) $-1$ and determinant $-1$, so $\spinornorm_\bR(a)=\det a$.
 On the negative-definite space $W^\perp$ every reflection has real spinor norm $+1$, so $\spinornorm_\bR(b)=+1$.
 By @prop:spinor-norm-orientation-classes (3),
 $$

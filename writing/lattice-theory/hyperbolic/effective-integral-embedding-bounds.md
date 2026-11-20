@@ -176,7 +176,7 @@ The bound (5) is vast but finite and fully evaluated. It does not make the box p
 
 ::: {.proposition #prop:split-binary-all-embedding-bound title="All embeddings in a split binary target"}
 
-Let $G=\left(\begin{smallmatrix}a&b\\b&c\end{smallmatrix}\right)$ be integral, indefinite (@def:definiteness) and nondegenerate (@def:polarization), with $b^2-ac=s^2$ for an integer $s>0$. Let $A$ be a nondegenerate integral source of rank one or two and $H_A=\max_{ij}|A_{ij}|$. Every integral $X$ with $X^TGX=A$ has entries bounded by $H_A$ when $a=c=0$, and by $2H_A\max(|a|,|b|,s)$ when $a\ne0$. If $a=0\ne c$, interchange target coordinates first.
+Let $G=\left(\begin{smallmatrix}a&b\\b&c\end{smallmatrix}\right)$ be integral, indefinite (@def:definiteness) and nondegenerate (@def:polarization), with $b^2-ac=s^2$ for an integer $s>0$. Let $A$ be a nondegenerate integral source (@def:globular-boundary) of rank one or two and $H_A=\max_{ij}|A_{ij}|$. Every integral $X$ with $X^TGX=A$ has entries bounded by $H_A$ when $a=c=0$, and by $2H_A\max(|a|,|b|,s)$ when $a\ne0$. If $a=0\ne c$, interchange target (@def:globular-boundary) coordinates first.
 :::
 
 ::: {.proof}
@@ -219,7 +219,7 @@ Let $P$ be a decidable predicate on $\operatorname{Emb}_{\bZ}(T,L)$ such that $P
 
 ::: {.proof}
 
-An embedding satisfying $P$ moves into the box by a target isometry. Invariance preserves $P$. The reverse implication is immediate. All entries in the box are integers, and the Gram equation and $P$ can be tested finitely.
+An embedding satisfying $P$ moves into the box by a target (@def:globular-boundary) isometry. Invariance preserves $P$. The reverse implication is immediate. All entries in the box are integers, and the Gram equation and $P$ can be tested finitely.
 :::
 
 Primitivity is invariant: postcomposition by $g$ identifies the quotient modules $L/j(T)$ and $L/(g\circ j)(T)$. For $U(2)\to U$, the map $e\mapsto2e$, $f\mapsto f$ is an embedding of index two. Every embedding has index two because $(\det j)^2=\det U(2)/\det U=4$; hence the embedding space is nonempty but its primitive subspace is empty. A fixed-coordinate sign condition need not be invariant under $O(L,\bZ)$. Its emptiness does not follow from an orbit box.

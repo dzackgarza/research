@@ -115,7 +115,7 @@ If $K=\ker\rho_{L,q}\subseteq\Gamma^+$, these reduce to $(H^+\cap F)\backslash F
 :::
 
 ::: {.proof}
-For $y=gx$ with $g\in\Gamma$, if $g\notin\Orth^+(L)$ and $\tau\in\Stab_{\mathcal G_D\cap\Gamma}(x)$ is spinor-negative, then $g\tau\in\Gamma^+$ also takes $x$ to $y$ (the product $g\tau$ has positive spinor norm (@def:spinor-norm)). Conjugation by the same $g$ keeps $\Gamma$ stable, so the hypothesis at $x$ gives the required witness at every point of $\mathcal O$. If the hypothesis holds at a representative of every $\Gamma$-orbit, every $\Gamma$-orbit in the fibre remains one $\Gamma^+$-orbit.
+For $y=gx$ with $g\in\Gamma$, if $g\notin\Orth^+(L)$ and $\tau\in\Stab_{\mathcal G_D\cap\Gamma}(x)$ is spinor-negative, then $g\tau\in\Gamma^+$ also takes $x$ to $y$ (the product $g\tau$ has positive spinor norm (@def:lattice-basic-invariants) (@def:spinor-norm)). Conjugation by the same $g$ keeps $\Gamma$ stable, so the hypothesis at $x$ gives the required witness at every point of $\mathcal O$. If the hypothesis holds at a representative of every $\Gamma$-orbit, every $\Gamma$-orbit in the fibre remains one $\Gamma^+$-orbit.
 
 The displayed formula is @thm:descent-double-coset applied with $\Gamma^+$ substituted for $\Gamma$. Only when $K\subseteq\Gamma^+$ does its final reduction modulo $K$ apply; replacing $H$ by $H^+$ without this containment would discard the $\Gamma^+$-ineffective double cosets.
 :::
@@ -688,7 +688,7 @@ Consequently two lifts of one element of $\bar H_2$ can carry opposite spinor si
 Item 1 is the factorization criterion: $\spinornorm_\bR$ restricted to $\Stab_G(L)$ induces a map on the cosets of $\Stab_G(L)\intersect\bar K_m$ exactly when it is constant on each such coset, that is trivial on that kernel.
 
 For item 2, $\sigma_U$ negates $U$ and fixes the other two summands, so $\sigma_U-\id$ is $-2$ on $U$ and zero elsewhere, and $(\sigma_U-\id)(N)\subseteq 2N$ because $2U\subseteq 2N$; that is $\sigma_U\in\bar K_2$.
-Its spinor norm is $\spinornorm_\bR(-\id_U)=[(-1)^1]=-1$ by @lem:minus-identity-spinor-norm, the summand $U$ having positive index one, and the spinor norm of an orthogonal sum is the product of those of the summands.
+Its spinor norm is $\spinornorm_\bR(-\id_U)=[(-1)^1]=-1$ by @lem:minus-identity-spinor-norm, the summand $U$ having positive index one, and the spinor norm of an orthogonal sum (@def:orthogonal-sum) is the product of those of the summands.
 The choice $L=M=N$, $m=2$ satisfies $mM\subseteq e_2L$ because $e_2=\exp(N^\sharp/N)=2$ and $2N\subseteq 2N$.
 At that modulus $\bar K_2$ meets $\Stab_G(L)$ whenever $\sigma_U\in G$, and $\sigma_U\in\Orth(N)$; so with $G=\Orth(N)$ the sign is not a function of $\pi_2(g)$, while $\rho_N$ is one by @cor:stabilizer-modulus.
 
@@ -730,7 +730,7 @@ K_\Gamma\definedas\Gamma\intersect\ker\rho_L,
 \qquad
 \Sigma_\Gamma(\kappa)\definedas\epsilon\qty(K_\Gamma)\leq\theset{\pm1}^2
 $$
-for its discriminant kernel and for the group of sign values attained by its elements; the sign values attained in the discriminant kernel of $\Gamma$ are the elements of $\Sigma_\Gamma(\kappa)$. When $L$ is even there is a second, quadratic discriminant representation $\rho_{L,q}$, and then $K_\Gamma=\Gamma\intersect\ker\rho_{L,q}$ as well, because $\rho_L=j_q\circ\rho_{L,q}$ with $j_q$ injective; for odd $L$ only the bilinear form is available, and $K_\Gamma$ is the displayed kernel of $\rho_L$.
+for its discriminant kernel (@def:mm-integral-spinor-data) and for the group of sign values attained by its elements; the sign values attained in the discriminant kernel of $\Gamma$ are the elements of $\Sigma_\Gamma(\kappa)$. When $L$ is even there is a second, quadratic discriminant representation $\rho_{L,q}$, and then $K_\Gamma=\Gamma\intersect\ker\rho_{L,q}$ as well, because $\rho_L=j_q\circ\rho_{L,q}$ with $j_q$ injective; for odd $L$ only the bilinear form is available, and $K_\Gamma$ is the displayed kernel of $\rho_L$.
 :::
 
 ::: {.definition #def:graph-character title="Graph characters of congruence data" defines="$N_m$; graph character"}
@@ -742,7 +742,7 @@ Two objects are involved here and they must not be confused. The element $\pi_m(
 
 ::: {.theorem #thm:schreier-joint-image title="The joint images of the Schreier loops generate the joint image"}
 
-Take the data of @def:stabilizer-congruence-data with $m\geq1$ and $mM\subseteq L$, let $S\subseteq G$ be a finite symmetric generating set, and let $\Sigma_m$, the transporters $t_p$ and the loops $k_{s,p}=t_{sp}^{-1}st_p$ be as in @thm:schreier-discriminant-image.
+Take the data of @def:stabilizer-congruence-data with $m\geq1$ and $mM\subseteq L$, let $S\subseteq G$ be a finite symmetric generating set, and let $\Sigma_m$, the transporters $t_p$ and the loops (@def:loops-suspension) $k_{s,p}=t_{sp}^{-1}st_p$ be as in @thm:schreier-discriminant-image.
 
 1. Every loop $k_{s,p}$ is an integral self-isometry of $L$ (@thm:schreier-discriminant-image(1)), so $\kappa_L(k_{s,p})$ is defined, and
 $$
@@ -788,7 +788,7 @@ Item 3 is the definitions of $\kappa_L$ and of a graph character.
 
 Let $\Gamma\leq\Orth(L)$, let $K_\Gamma$ and $\Sigma_\Gamma(\kappa)$ be as in @def:joint-character, and let $\epsilon=(\det,\spinornorm_\bR)$.
 
-1. The identity-discriminant fibre of the joint image is the joint image of the discriminant kernel, and the two occurrences of $\theset{\id}$ in the display below are the same object inside the codomain $\Orth(A_L)\times\theset{\pm1}^2$:
+1. The identity-discriminant fibre of the joint image is the joint image of the discriminant kernel (@def:mm-integral-spinor-data), and the two occurrences of $\theset{\id}$ in the display below are the same object inside the codomain $\Orth(A_L)\times\theset{\pm1}^2$:
 $$
 \kappa_L(\Gamma)\intersect\qty(\theset{\id}\times\theset{\pm1}^2)=\kappa_L\qty(K_\Gamma)=\theset{\id}\times\Sigma_\Gamma(\kappa),
 $$
@@ -796,10 +796,10 @@ the last member being a subgroup of $\Orth(A_L)\times\theset{\pm1}^2$ and not a 
 2. $\Sigma_\Gamma(\kappa)$ is one of the five subgroups $\theset{1}$, $\generators{(-1,1)}$, $\generators{(1,-1)}$, $\generators{(-1,-1)}$ and $\theset{\pm1}^2$ of $\theset{\pm1}^2$, with the readings:
    - $\Sigma_\Gamma(\kappa)=\theset{1}$: the discriminant kernel of $\Gamma$ attains no sign, so both signs are functions of the discriminant image on $\Gamma\cap\ker\rho_L$;
    - $\generators{(-1,1)}$: a kernel element of determinant $-1$ and positive spinor norm, such as a reflection $s_w$ in a vector $w\in L$ of negative square with $\rho_L(s_w)=\id$ (@ex:joint-character-sign-witness takes $w=a$);
-   - $\generators{(1,-1)}$: a kernel element of determinant $1$ and negative spinor norm, such as $-\id$ on a unimodular hyperbolic plane summand $U$, of positive index one, with every other summand fixed (@lem:minus-identity-spinor-norm and @lem:split-isometry-spinor-norm), realized at $T_\En$ by $\sigma_U$ (@prop:spinor-congruence-obstruction(2)) and in @ex:joint-character-sign-witness by $\sigma=-\id_U$;
+   - $\generators{(1,-1)}$: a kernel element of determinant $1$ and negative spinor norm, such as $-\id$ on a unimodular hyperbolic plane (@def:hyperbolic-plane) summand $U$, of positive index one, with every other summand fixed (@lem:minus-identity-spinor-norm and @lem:split-isometry-spinor-norm), realized at $T_\En$ by $\sigma_U$ (@prop:spinor-congruence-obstruction(2)) and in @ex:joint-character-sign-witness by $\sigma=-\id_U$;
    - $\generators{(-1,-1)}$: a kernel element negative in both signs, as $s_a\sigma$ is in @ex:joint-character-sign-witness;
    - $\theset{\pm1}^2$: the two signs are independent on the discriminant kernel, as they are for $\Gamma=\Orth(L)$ at $L=U\perp A_1\perp A_1$ (@ex:joint-character-sign-witness).
-3. With the Schreier data of @thm:schreier-joint-image and $\Gamma=\Stab_G(L)$, the group $\Sigma_\Gamma(\kappa)$ is not in general generated by the sign parts of the individual loops $k_{s,p}$; it is the set of sign parts of those words in the loops whose discriminant part is the identity, that is
+3. With the Schreier data of @thm:schreier-joint-image and $\Gamma=\Stab_G(L)$, the group $\Sigma_\Gamma(\kappa)$ is not in general generated by the sign parts of the individual loops (@def:loops-suspension) $k_{s,p}$; it is the set of sign parts of those words in the loops whose discriminant part is the identity, that is
 $$
 \Sigma_\Gamma(\kappa)=\theset{\epsilon(k)\st k\in\Gamma,\ \rho_L(k)=\id}.
 $$
@@ -864,7 +864,7 @@ subgroups of $\Orth(A_{L,q})\times\theset{\pm1}^2$. Assume $E_L\subseteq\Gamma_1
 $$
 1\too\theset{\id}\times\Sigma_{\Orth(L)}(\kappa)\too J_D\too F\too1
 $$
-of the discriminant stabilizer by the signs in the discriminant kernel. This projection is injective exactly when that kernel is trivial, that is when no element of $\ker\rho_{L,q}$ has a nontrivial sign, so $J_D$ is not isomorphic to $F$ in general (@ex:joint-fibre-absorption); the same caveat applies to the projections of $J_1$ and $J_x$ onto the discriminant groups.
+of the discriminant stabilizer by the signs in the discriminant kernel (@def:mm-integral-spinor-data). This projection is injective exactly when that kernel is trivial, that is when no element of $\ker\rho_{L,q}$ has a nontrivial sign, so $J_D$ is not isomorphic to $F$ in general (@ex:joint-fibre-absorption); the same caveat applies to the projections of $J_1$ and $J_x$ onto the discriminant groups.
 3. **When the discriminant double cosets suffice.** Suppose $\ker\rho_{L,q}\subseteq\Gamma_1$. Then $K\subseteq\Gamma_1\intersect A=A_1$, hence $\kappa_{L,q}(K)\subseteq J_1$; write $\Sigma\definedas\theset{\id}\times\Sigma_{\Orth(L)}(\kappa)=\kappa_{L,q}(K)$, a subgroup of the product $\Orth(A_{L,q})\times\theset{\pm1}^2$, and take every quotient in this item in that product. Reduction modulo $\Sigma$ is a bijection of double-coset sets
 $$
 J_1\backslash J_D/J_x\ \xrightarrow{\ \sim\ }\ (J_1/\Sigma)\backslash(J_D/\Sigma)\big/\qty(J_x\Sigma/\Sigma),

@@ -43,7 +43,7 @@ Since $\coker \eta$ is torsionfree, $\eta$ is a primitive embedding.
 
 ::: {.proof}
 
-The map is well defined and isometric: $h$ has square $2$ and $\tilde e+\tilde f$ has square $2$, since $\tilde e,\tilde f$ are the isotropic basis of $U$ with $\tilde e\cdot\tilde f=1$; and $\eta$ is the identity on $E_{10}(2)$, which is an orthogonal summand of both sides.
+The map is well defined and isometric: $h$ has square $2$ and $\tilde e+\tilde f$ has square $2$, since $\tilde e,\tilde f$ are the isotropic (@def:orthogonal-complement) basis of $U$ with $\tilde e\cdot\tilde f=1$; and $\eta$ is the identity on $E_{10}(2)$, which is an orthogonal summand of both sides.
 So $\eta$ is a morphism of lattices of $\mathbf{Lat}_{\bZ}$, and it is injective because it is injective on each summand.
 
 For primitivity, $\eta(T_{\Co})=\bZ(\tilde e+\tilde f)\oplus E_{10}(2)$, so
@@ -173,7 +173,7 @@ Let $\widetilde U$ be a connected topological space, let $\Gamma$ be a group (@d
 $$\bT\definedas(\widetilde U\times T)/\Gamma$$
 be the quotient of the trivial local system by the diagonal action. Then $\bT$ is a local system on the orbifold $U$ with fibre $T$, and its monodromy representation (@def:transport-and-monodromy) is
 $$\pi_1^{\mathrm{orb}}(U,\tilde x)\too\Aut(T),\qquad (g,[\widetilde\gamma])\longmapsto g,$$
-where an orbifold loop based at $x=[\tilde x]$ is a pair $(g,\widetilde\gamma)$ with $g\in\Gamma$ and $\widetilde\gamma$ a path in $\widetilde U$ from $\tilde x$ to $g\tilde x$. Its image is $\Gamma$ and its kernel (@def:kernel-cokernel) is $\pi_1(\widetilde U,\tilde x)$; in particular
+where an orbifold loop based (@def:based-module) at $x=[\tilde x]$ is a pair $(g,\widetilde\gamma)$ with $g\in\Gamma$ and $\widetilde\gamma$ a path in $\widetilde U$ from $\tilde x$ to $g\tilde x$. Its image is $\Gamma$ and its kernel (@def:kernel-cokernel) is $\pi_1(\widetilde U,\tilde x)$; in particular
 $$1\too\pi_1(\widetilde U,\tilde x)\too\pi_1^{\mathrm{orb}}(U,\tilde x)\too\Gamma\too1$$
 is exact (@def:exact-complex).
 :::
@@ -245,7 +245,7 @@ where $\Orth(N)^*$ is the kernel of $\Orth(N)\to\Orth(A_N)$; this is [@Dol96, Pr
 
 1. The base $B$ of @def:coble-family-unpolarized(3) is the moduli space of $M$-polarized K3 surfaces *with the marking of $M$ fixed*: a point is a labelled ten-nodal sextic, the double cover $X_b$ is a K3 surface whose classes $e_0,\dots,e_{10}$ of @prop:coble-period-domain(1) are the labelled ones, and they generate $M$ primitively (@lem:d2-local-system(2)), so the pair $(X_b,M\subset H^2(X_b,\ZZ))$ is an $M$-polarized K3 surface with its polarization marked, and $B$ is the moduli of those by @lem:d2a-family-is-yzz.
 
-By [@Dol96, Cor. 3.2] the period map is a bijection between marked ample $M$-polarized K3 surfaces and the open period domain, and by [@Dol96, Prop. 3.3] the group by which the marked period domain is quotiented to give that moduli space is $\Gamma_M=\Orth(N)^*$, where $\Gamma(M)$ is the pointwise stabilizer of $M$ in $\Orth(\lkt)$ and $\Gamma_M$ its image in $\Orth(N)$. So the monodromy group of the family is contained in $\Orth(N)^*$.
+By [@Dol96, Cor. 3.2] the period map is a bijection between marked ample $M$-polarized K3 surfaces and the open period domain, and by [@Dol96, Prop. 3.3] the group by which the marked period domain is quotiented to give that moduli space is $\Gamma_M=\Orth(N)^*$, where $\Gamma(M)$ is the pointwise stabilizer (@def:pointwise-stabilizer-of-sublattice) of $M$ in $\Orth(\lkt)$ and $\Gamma_M$ its image in $\Orth(N)$. So the monodromy group of the family is contained in $\Orth(N)^*$.
 
 The hypothesis of [@Dol96, Cor. 3.2] is ampleness with respect to the polarization, that is the period point avoiding the hyperplanes of $(-2)$-vectors of $N$; the general member of the family has $\Pic(X_b)=M$ (@prop:coble-period-domain(1), @lem:d2-local-system(2)), so its period lies in that open set. The further containment in $\Orth^+(N)$ is @lem:monodromy-is-spinor-positive, the periods being single-valued on the connected base $B$ (@lem:d2-incidence-connected(2)).
 
@@ -269,7 +269,7 @@ In particular $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$ (@prop:gamma-co-refl
 
 2. *The divisor is the boundary, not a locus in the family.* By [@YZZ25, Thm. 3.4] the moduli space of sextics of type $T=10A_1$ is $\Gamma_T\backslash(\bD_T-\calH_T)$, where $\calH_T$ is the union of the hyperplanes $r^{\perp}$ over the roots $r$ with $r^2=-2$, $r\perp H$ and $r\notin L$ [@YZZ25, §3.3]; the lattice $Q=P^{\perp}$ there is $T_\Co$ (@thm:occult-period-map-sextics), and the roots $r\perp H$, $r\notin L$ are exactly the vectors of square $-2$ in $T_\Co$, which is the list of 1. So the discriminant of the family is the union of the $\delta^{\perp}$ of 1, and the base is its complement: no member of the family lies on any $\delta^{\perp}$, that is every member has $\Pic(X_b)=M$ and none has an extra $(-2)$-class.
 
-*The degeneration.* A member of the family is a labelled ten-nodal sextic $(Z;p_1,\dots,p_{10})$ with its Coble surface $S=\Bl_{p_1,\dots,p_{10}}\PP^2$ and K3 double cover $X$ branched along the proper transform $C$ of $Z$ (@lem:d2-unpolarised-family(1)). A small deformation of $Z$ in which an eleventh ordinary double point appears, while the ten labelled ones persist, gives a one-parameter family whose general member is again a labelled ten-nodal sextic and whose centre has eleven nodes: the ten conditions are transverse because the ten labelled nodes persist, so a disc transverse to the boundary divisor at such a sextic maps to a disc transverse to $\calH_T$ at the corresponding period. The Coble surface is unchanged, $S=\Bl_{p_1,\dots,p_{10}}\PP^2$ with branch curve the proper transform $C$; at the centre $C$ has an ordinary double point at the eleventh node, and since the double cover is branched along $C$, the cover has an ordinary double point there (its local equation is $z^2=xy$ at a node of the branch curve), while it stays smooth over the ten nodes because those have been blown up, where $C$ is smooth of self-intersection $-4$ (@lem:d2-unpolarised-family(1), @lem:d2a-family-is-yzz). The smoothing of that ordinary double point is the Picard--Lefschetz degeneration and the vanishing class $\delta$ is the class of the rational curve in the resolution, of square $-2$ and orthogonal to $M$ because it lies over the eleventh node and the ten blown-up nodes and a line are disjoint from it; so $\delta\in T_\Co$.
+*The degeneration.* A member of the family is a labelled ten-nodal sextic $(Z;p_1,\dots,p_{10})$ with its Coble surface $S=\Bl_{p_1,\dots,p_{10}}\PP^2$ and K3 double cover $X$ branched along the proper transform $C$ of $Z$ (@lem:d2-unpolarised-family(1)). A small deformation of $Z$ in which an eleventh ordinary double point appears, while the ten labelled ones persist, gives a one-parameter family whose general member is again a labelled ten-nodal sextic and whose centre has eleven nodes: the ten conditions are transverse because the ten labelled nodes persist, so a disc transverse to the boundary divisor at such a sextic maps to a disc transverse to $\calH_T$ at the corresponding period. The Coble surface is unchanged, $S=\Bl_{p_1,\dots,p_{10}}\PP^2$ with branch curve the proper transform $C$; at the centre $C$ has an ordinary double point at the eleventh node, and since the double cover is branched along $C$, the cover has an ordinary double point there (its local equation is $z^2=xy$ at a node of the branch curve), while it stays smooth over the ten nodes because those have been blown up, where $C$ is smooth of self-intersection $-4$ (@lem:d2-unpolarised-family(1), @lem:d2a-family-is-yzz). The smoothing of that ordinary double point is the Picard--Lefschetz degeneration and the vanishing class (@def:coble-marking-dictionary) $\delta$ is the class of the rational curve in the resolution, of square $-2$ and orthogonal to $M$ because it lies over the eleventh node and the ten blown-up nodes and a line are disjoint from it; so $\delta\in T_\Co$.
 
 *The meridian.* By the Picard--Lefschetz formula in the form of [@Voi07, Thm. 3.16], $T(\alpha)=\alpha+\epsilon_n\langle\alpha,\delta\rangle\delta$ with $\epsilon_n=-1$ for a surface, the local monodromy about such a degeneration is the reflection $s_\delta$. Equivalently [@Dol96, Thm. 3.1] describes the fibre of the period map over a period $\pi$ as a torsor under the group generated by the reflections in the $(-2)$-vectors orthogonal to $\pi$; for $\pi$ general in $\delta^{\perp}$ that group is $\{1,s_\delta\}$, and the loop about $\delta^{\perp}$ acts non-trivially because $\delta$ is algebraic on the divisor and not off it.
 
@@ -736,7 +736,7 @@ For Enriques surfaces, $\fentwo$ is the normalization of a closed subvariety of 
 ::: {.proposition #prop:sterk-group-identification title="The discriminant image of $\gent$"}
 
 Let $\rho\colon\Orth(\ten)\to\Orth(A_{\ten}, q_{\ten})$ be the discriminant representation (@def:discriminant-rep) and $K = \ker\rho$.
-Identify $\ten = U\oplus U(2)\oplus E_8(2)$ with the lattice $L_- = \mathbf H\oplus\mathbf H(2)\oplus E_8(-2)$ of [@Ste91, 1.3] summand by summand, and let $e', f'$ be the isotropic basis (@def:based-module) of $U(2)$, with $(e', f') = 2$.
+Identify $\ten = U\oplus U(2)\oplus E_8(2)$ with the lattice $L_- = \mathbf H\oplus\mathbf H(2)\oplus E_8(-2)$ of [@Ste91, 1.3] summand by summand, and let $e', f'$ be the isotropic (@def:orthogonal-complement) basis (@def:based-module) of $U(2)$, with $(e', f') = 2$.
 
 1. $\gent$ is the group (@def:group) $\Gamma$ of [@Ste91, §2, Prop. 2.7], and $\gent = \theset{g\in\Orth(\ten) \st \rho(g)\text{ preserves the summands } A_{U(2)} \text{ and } A_{E_8(2)} \text{ of } A_{\ten}}$.
 2. $\rho(\gent) = M\definedas\Orth(q_{U(2)})\times\Orth(q_{E_8(2)})$, and $\gent = \rho^{-1}(M)$; in particular $K\subseteq\gent$.
@@ -777,13 +777,13 @@ This is the index computed in [@Ste91, Rem. 2.12].
 
 ::: {.proposition #prop:ten-plane-classes title="The two classes of primitive isotropic planes of $\ten$"}
 
-Write $e,f$ for the isotropic basis of $U$ and $e',f'$ for that of $U(2)$, with $(e,f) = 1$ and $(e',f') = 2$.
+Write $e,f$ for the isotropic basis (@def:based-module) of $U$ and $e',f'$ for that of $U(2)$, with $(e,f) = 1$ and $(e',f') = 2$.
 Identify the summand $E_8(2)$ with $E_8 = \theset{y_0\in\ZZ^8\cup(\ZZ^8+s) \st \textstyle\sum_i y_{0,i}\in2\ZZ}$, $s = \tfrac12(1,\dots,1)$ [@CS10, Ch. 4, §8.1], so that $y\leftrightarrow y_0$ and $(y,y') = -2\,y_0\cdot y_0'$.
 Let $\alpha\in E_8(2)$ correspond to $2e_1$, and put $z\definedas 2e+2f+\alpha$.
 For a primitive totally isotropic plane $\varPi\subseteq\ten$ let $D(\varPi)\leq A_{\ten}$ be the image of $\varPi_\QQ\cap\ten^*$, as in @not:isotropic-reduction-setup.
 
 1. $\varPi_1 = \generators{e,e'}$ and $\varPi_2 = \generators{z,e'}$ are primitive totally isotropic planes.
-   Every primitive totally isotropic plane $\varPi$ is $\Orth(\ten)$-equivalent to exactly one of them, and to $\varPi_1$ exactly when it contains a vector of divisibility one.
+   Every primitive totally isotropic plane $\varPi$ is $\Orth(\ten)$-equivalent to exactly one of them, and to $\varPi_1$ exactly when it contains a vector of divisibility (@def:lattice-divisibility) one.
 2. If $\varPi$ contains a vector of divisibility one, then $D(\varPi)$ has order $2$, its nonzero element is $[v/2]$ for every primitive $v\in\varPi$ of divisibility two, and $\varPi^\perp/\varPi\cong E_8(2)$.
 3. If $\varPi$ contains no vector of divisibility one, then $D(\varPi)$ has order $4$, its three nonzero elements are the classes $[p/2]$ of the primitive $p\in\varPi$, and $\varPi^\perp/\varPi\cong D_8^*(2)$, where $D_8^*$ carries the negative of the Euclidean form.
 :::
@@ -833,7 +833,7 @@ Let $d\in A$ be isotropic and nonzero, and for $c\in d^\perp$ define
 $$
 T_{d,c}(a)\definedas a+\beta_q(a,d)\,c+\bigl(\beta_q(a,c)+q(c)\,\beta_q(a,d)\bigr)\,d .
 $$
-Let $\eta\in\ten$ be a primitive isotropic vector of divisibility two with $[\eta/2] = d$.
+Let $\eta\in\ten$ be a primitive isotropic vector of divisibility (@def:lattice-divisibility) two with $[\eta/2] = d$.
 
 1. For $w\in\ten^*$ with $(w,\eta) = 0$, the Eichler--Siegel transvection $E_{\eta,w}$ of @def:eichler-siegel lies in $\Orth(\ten)$, fixes $\eta$, maps every primitive totally isotropic plane that contains $\eta$ onto itself, and satisfies $\rho(E_{\eta,w}) = T_{d,[w]}$.
 2. Every $c\in d^\perp$ is $[w]$ for some $w\in\ten^*$ with $(w,\eta) = 0$.
@@ -925,7 +925,7 @@ $$
 
 ::: {.proof}
 
-For $g\in\Orth(\ten)$ one has $c(g\ZZ v) = \rho(g)\,c(\ZZ v)$, because $g$ preserves divisibility.
+For $g\in\Orth(\ten)$ one has $c(g\ZZ v) = \rho(g)\,c(\ZZ v)$, because $g$ preserves divisibility (@def:lattice-divisibility).
 By [@Ste91, Prop. 4.5] there is $g\in\Orth(\ten)$ with $g\ZZ v_0 = \ZZ v$ for $v_0 = e$ or $v_0 = e'$.
 Conjugation by $g$ carries $\Stab_{\Orth(\ten)}(\ZZ v_0)$ to $\Stab_{\Orth(\ten)}(\ZZ v)$, and conjugation by $\rho(g)$ carries the stabilizer of $c(\ZZ v_0)$ to the stabilizer of $c(\ZZ v)$.
 The first equality holds for $v_0$ by @lem:ten-base-stabilizers, because $c(\ZZ e) = 0$ and $c(\ZZ e') = d_1$.
@@ -946,7 +946,7 @@ Two primitive isotropic lines $\ell,\ell'\subseteq\ten$ are $\Gamma$-equivalent 
 
 If $\ell' = \gamma\ell$ with $\gamma\in\Gamma$, then $c(\ell') = \rho(\gamma)c(\ell)$.
 Conversely let $c(\ell') = h\,c(\ell)$ with $h\in H$.
-The class $c(\ell)$ is $0$ exactly when $\operatorname{div}(\ell) = 1$, so $\ell$ and $\ell'$ have the same divisibility, and by [@Ste91, Prop. 4.5] there is $g\in\Orth(\ten)$ with $g\ell = \ell'$.
+The class $c(\ell)$ is $0$ exactly when $\operatorname{div}(\ell) = 1$, so $\ell$ and $\ell'$ have the same divisibility (@def:lattice-divisibility), and by [@Ste91, Prop. 4.5] there is $g\in\Orth(\ten)$ with $g\ell = \ell'$.
 Then $h^{-1}\rho(g)$ fixes $c(\ell)$, so by @lem:line-stabilizer-image $h^{-1}\rho(g) = \rho(s)$ with $s\in\Stab_{\Orth(\ten)}(\ell)$.
 The element $\gamma = gs^{-1}$ carries $\ell$ to $\ell'$ and has $\rho(\gamma) = h$, so $\gamma\in\rho^{-1}(H) = \Gamma$.
 :::
@@ -1114,7 +1114,7 @@ Every $\Gamma$-orbit is therefore a single $\Gamma^+$-orbit.
 
 ::: {.theorem #thm:enriques-spinor-orbit-agreement title="Spinor agreement for every polarization family of $\ten$: isotropic lines, isotropic planes and flags"}
 
-Let $N=\ten=U\oplus U(2)\oplus E_8(2)$ with signature $(2,10)$, let $\rho$ be its quadratic discriminant representation and $\widetilde\Orth(N)=\ker\rho$ its discriminant kernel, and let $\Gamma\leq\Orth(N)$ be a subgroup with $\widetilde\Orth(N)\subseteq\Gamma$.
+Let $N=\ten=U\oplus U(2)\oplus E_8(2)$ with signature $(2,10)$, let $\rho$ be its quadratic discriminant representation (@def:discriminant-rep) and $\widetilde\Orth(N)=\ker\rho$ its discriminant kernel (@def:mm-integral-spinor-data), and let $\Gamma\leq\Orth(N)$ be a subgroup with $\widetilde\Orth(N)\subseteq\Gamma$.
 Every preimage $\rho^{-1}(M)$ with $M\leq\Orth(A_\ten,q_\ten)$ is of this form.
 Put $\Gamma^+=\Gamma\intersect\Orth^+(N)$.
 Then $\Gamma$ and $\Gamma^+$ have the same orbits on
@@ -1135,7 +1135,7 @@ $$
 \tau\definedas\id_U\oplus(-\id_{U(2)})\oplus\id_{E_8(2)} ,
 $$
 the $\tau_0$ of @lem:enriques-level-two-transvections.
-By @lem:enriques-level-two-transvections, $\alpha^2=-8$, $z$ is primitive isotropic of divisibility two, and
+By @lem:enriques-level-two-transvections, $\alpha^2=-8$, $z$ is primitive isotropic of divisibility (@def:lattice-divisibility) two, and
 $$
 \sigma_U\definedas-\id_U\oplus\id\oplus\id,\qquad E_1\definedas E_{f,e'},\qquad E_2\definedas E_{f',e},\qquad E_3\definedas E_{f',z}
 $$
@@ -1254,9 +1254,9 @@ Therefore $\spinornorm_\bR(g)=\chi(1)=1$.
 
 ::: {.lemma #lem:enriques-level-two-transvections title="The level-two transvections of $\ten$: images, plane actions and spinor signs"}
 
-Let $N=\ten=U\oplus U(2)\oplus E_8(2)$, with $e,f$ the hyperbolic basis of $U$, $e',f'$ that of $U(2)$, and $r_1,r_2$ two orthogonal roots of the summand $E_8(2)$ — the roots corresponding to $e_1-e_2$ and $e_1+e_2$ in the coordinates of @prop:ten-plane-classes; the summand is negative definite, so its norms lie in $4\bZ$ and its inner products in $2\bZ$.
+Let $N=\ten=U\oplus U(2)\oplus E_8(2)$, with $e,f$ the hyperbolic basis of $U$, $e',f'$ that of $U(2)$, and $r_1,r_2$ two orthogonal roots of the summand $E_8(2)$ — the roots corresponding to $e_1-e_2$ and $e_1+e_2$ in the coordinates of @prop:ten-plane-classes; the summand is negative definite (@def:definiteness), so its norms (@def:lattice-basic-invariants) lie in $4\bZ$ and its inner products in $2\bZ$.
 Put $\alpha\definedas r_1+r_2$ and $z\definedas 2e+2f+\alpha$.
-Then $\alpha^2=-8$, the vector $z$ is primitive isotropic of divisibility $2$, and $\beta(x,\alpha)\in2\bZ$ for every $x\in N$.
+Then $\alpha^2=-8$, the vector $z$ is primitive isotropic of divisibility (@def:lattice-divisibility) $2$, and $\beta(x,\alpha)\in2\bZ$ for every $x\in N$.
 
 Write $E_{a,w}$ in the notation of @def:eichler-siegel — $a$ the isotropic vector, $w$ the vector orthogonal to it — so that
 $$
@@ -1316,7 +1316,7 @@ $$
 Every image is an integral vector, and the basis vectors have integral images, so each $E_i$ is an integral isometry of $N$; the three displayed inverses are integral by the same computation, and $E_{a,w}E_{a,-w}=\id$ because the two shears cancel.
 $\sigma_U$ and $\tau_0$ are evidently integral isometries.
 
-*The discriminant kernel, on a full generating set.*
+*The discriminant kernel (@def:mm-integral-spinor-data), on a full generating set.*
 $U$ is unimodular, $E_8$ is unimodular, so
 $$
 N^\#=U\oplus\tfrac12U(2)\oplus\tfrac12E_8(2),\qquad A_\ten=N^\#/N ,
@@ -1348,7 +1348,7 @@ $\beta(x,a)\beta(w,y)-\beta(x,w)\beta(a,y)+\beta(y,a)\beta(x,w)-\beta(y,w)\beta(
 $\beta(x,a)\beta(y,a)\beta(w,w)-\beta(x,a)\beta(y,w)\beta(w,a)-\beta(x,w)\beta(y,a)\beta(a,w)+\beta(x,w)\beta(y,w)\beta(a,a)$, which vanishes because $a$ and $w$ are isotropic and orthogonal.
 So $\sigma^{(i)}_t\in\Orth(N_\bR)$ for every $t$, and $\sigma^{(i)}_s\sigma^{(i)}_t=\sigma^{(i)}_{s+t}$ because $\sigma^{(i)}_t$ fixes both $a$ and $w$ and preserves the two pairings $\beta(\cdot,a)$, $\beta(\cdot,w)$.
 Thus $\sigma^{(i)}_1=E_i$ lies in a one-parameter subgroup of $\Orth(N_\bR)$, and $t\mapsto\spinornorm_\bR(\sigma^{(i)}_t)$ is a homomorphism from $(\bR,+)$ to a group of exponent two, hence trivial; so $\spinornorm_\bR(E_i)=1$, which is also the statement of @lem:unipotent-spinor-trivial.
-For the two sign changes, @lem:minus-identity-spinor-norm gives $\spinornorm_\bR(-\id_U)=[(-1)^1]$ and $\spinornorm_\bR(-\id_{U(2)})=[(-1)^1]$, the summands having positive index one, and the spinor norm of an orthogonal sum is the product of the spinor norms of its summands, since a reflection of a summand is the corresponding reflection of the sum; so both have spinor norm $-1$.
+For the two sign changes, @lem:minus-identity-spinor-norm gives $\spinornorm_\bR(-\id_U)=[(-1)^1]$ and $\spinornorm_\bR(-\id_{U(2)})=[(-1)^1]$, the summands having positive index one, and the spinor norm of an orthogonal sum (@def:orthogonal-sum) is the product of the spinor norms of its summands, since a reflection of a summand is the corresponding reflection of the sum; so both have spinor norm $-1$.
 
 *The planes.*
 From the displayed images: $E_1(e)=e+e'$ and $E_1(e')=e'$ give $E_1^2(e)=e+2e'$, and $E_2(e')=e'+2e$; all three stabilize $P_1$.
@@ -1374,7 +1374,7 @@ E_1|_{P_2}\colon[a:c]\mapsto[a:c+2a],&\qquad E_3|_{P_2}\colon[a:c]\mapsto[a+2c:c
 $$
 while $E_1^2$ acts on $P_1$ by $[a:c]\mapsto[a:2a+c]$. Then:
 
-1. $\theta$ stabilizes $P_2$, lies in $\ker\rho$, and fixes the *vector* $z+e'$; its spinor norm is $-1$.
+1. $\theta$ stabilizes $P_2$, lies in $\ker\rho$, and fixes the *vector* $z+e'$; its spinor norm (@def:lattice-basic-invariants) is $-1$.
 2. For every primitive isotropic line $\ell\subset P_1$ there is $k\in\ker\rho\cap\Gamma$ with $\spinornorm_\bR(k)=-1$, $k(P_1)=P_1$ and $k(\ell)=\ell$.
 3. For every primitive isotropic line $\ell\subset P_2$ there is such a $k$.
 4. For every flag $\ell\subset P$, with $\ell$ a primitive isotropic line in a primitive isotropic plane, there is such a $k$ with $k(\ell)=\ell$ and $k(P)=P$.
@@ -1395,7 +1395,7 @@ $$
 E_1\mapsto\mu=\begin{pmatrix}1&0\\1&1\end{pmatrix},\qquad E_1^2\mapsto\mu^2=B=\begin{pmatrix}1&0\\2&1\end{pmatrix},\qquad E_2\mapsto A=\begin{pmatrix}1&2\\0&1\end{pmatrix},
 $$
 and $-\id_N\in\ker\rho$ acts by $-I$.
-By part 3 of @lem:congruence-two-transitivity the group generated by these matrices is transitive on the primitive lines of $P_1$ with first coordinate odd, and on those with first coordinate even; and those two sets are exactly the two divisibility classes of $P_1$ computed in @lem:enriques-level-two-transvections.
+By part 3 of @lem:congruence-two-transitivity the group generated by these matrices is transitive on the primitive lines of $P_1$ with first coordinate odd, and on those with first coordinate even; and those two sets are exactly the two divisibility (@def:lattice-divisibility) classes of $P_1$ computed in @lem:enriques-level-two-transvections.
 So a primitive line $\ell\subset P_1$ of divisibility one is $g\ZZ e$ for some $g\in\generators{E_1,E_2}$, and $g\sigma_Ug^{-1}$ is a witness for it; a line of divisibility two is $g\ZZ e'$ for some such $g$, and $g\tau_0g^{-1}$ is a witness.
 
 *The lines of $P_2$.*
