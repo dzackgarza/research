@@ -562,6 +562,18 @@ The graded pieces of the filtration therefore have no sections, and $H^0$ of an 
 *A rational surface.* Every minimal rational surface is $\PP^2$ or a Hirzebruch surface $F_n$ with $n\neq1$ [@Bea96, Chapter III, the classification of minimal rational surfaces], and every rational surface is obtained from one of them by a sequence of blow-ups. The invariance under blow-ups above and the two computations give $H^0\qty(S,\operatorname{Sym}^m\Omega^1_S)=0$.
 :::
 
+::: {.remark #rmk:stacks-line-by-line title="Each stack in the chain: its base ring, and each property with its source"}
+
+The functor of @def:coble-moduli-functor-z is modelled on the groupoid formulation of Huybrechts, *Lectures on K3 Surfaces*, §1.3: a category fibred in groupoids over $(\mathbf{Sch}/S)$ whose objects are families together with the extra structure and whose morphisms are the Cartesian squares respecting it [@Huy16, §1.3]. The lines below give, for each stack the programme uses, the base and the status of each property.
+
+1. *The degree-$2d$ polarized K3 stack* $M_d$. Over $S=\Spec\CC$ the functor is coarsely represented by a quasi-projective variety [@Huy16, Theorem 1.1]; over a general base $S$ it is coarsely represented by a separated algebraic space locally of finite type [@Huy16, Theorem 1.2]; and as a groupoid it is a separated Deligne--Mumford stack of finite type [@Huy16, Theorem 1.3].
+2. *The unpolarized K3 moduli.* Kondo, *K3 Surfaces*, defines the moduli space through the period domain as a complex analytic object [@Kon20, Definition 5.12], and complete deformation families analytically [@Kon20, Definition 5.8, Definition 5.13]. Nothing read there gives an algebraic moduli stack of finite type for the unpolarized problem, which is consistent with the family not being bounded; the statements the volume uses are analytic.
+3. *Cossec--Verra polarized Enriques surfaces.* $\mcM_{\mathrm{CV,ample}}$ is a quasi-separated Artin stack of finite type over $\ZZ$ (Liedtke, arXiv:1007.0787, the theorem stated in the introduction) and is Deligne--Mumford over $\ZZ[1/2]$.
+4. *The Coble stack* $\mcM_\Co$ of @def:coble-moduli-functor-z. Base $\ZZ[1/2]$; a stack for the fppf topology (@lem:coble-moduli-functor-fppf); **not** Deligne--Mumford and **not** separated, the automorphism groups being infinite ([@CD12, §5]; @rmk:coble-automorphisms-infinite); algebraicity over $\ZZ[1/2]$ **open**, and the boundedness it would need is not established.
+5. *The involution stack* of @def:involution-stack and the *partial compactification* of @def:enriques-partial-compactification. Base $\ZZ[1/2]$; fppf stacks (@lem:involution-stack(1), @lem:enriques-partial-compactification-stack); no further property claimed.
+6. *The labelled stack.* Base $\CC$; analytic, its period map and Torelli being those of items 3 and 4; the DM property holds there since the isotropy is $\theset{\id,\iota}$-finite.
+:::
+
 ::: {.remark #rmk:coble-base-ring title="Why $N=2$, what is not inherited from a polarized moduli problem, and which statements need $\CC$"}
 
 *The reason for $N=2$.* The only place a denominator enters @def:coble-moduli-functor-z is the cyclic double cover of clause (2): it is a $\mu_2$-torsor, which requires $2\in\OO^\times$. Nothing else in the definition or in the descent proof divides by anything. In particular **no polarization enters**: the objects are unpolarized Coble surfaces with their double covers, so there is no degree $2d$ and no $1/(2d)$ to inherit.
