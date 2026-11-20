@@ -265,7 +265,31 @@ For (4). The inclusion $\Gamma_{\Co,2}\subseteq R_{\gent}$ is @lem:coble-monodro
 
 ::: {.question #qst:coble-monodromy-equality title="Is the monodromy of the degree-$2$ Coble family the whole arithmetic model?"}
 
-Is $\Gamma_{\Co,2} = R_{\gent}\intersect\Orth^+(T_\Co)$? The inclusion $\Gamma_{\Co,2}\subseteq R_{\gent}\intersect\Orth^+(T_\Co)$ is @thm:coble-monodromy-versus-enriques(4), from @lem:coble-monodromy-in-stabilizer under its family identification (F). The reverse inclusion is the assertion that every congruence isometry of $T_\Co$ in $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ is realised by monodromy. It holds for the degree-$2$ Coble data of the direct construction, where it is @prob:B25, whose proof rests on the period computation of @prob:B24 and not on a printed theorem; no printed statement supplies it for the degree-$2$ Coble family of @lem:coble-monodromy-in-stabilizer, and it is the degree-$2$ analogue of the reverse inclusion of @conj:gamma-co-stable. The equality $R_{\gent} = \Gamma_{\Co,2}$ of research#779 is false either way (@thm:coble-monodromy-versus-enriques(3)).
+Is $\Gamma_{\Co,2} = R_{\gent}\intersect\Orth^+(T_\Co)$? The inclusion $\Gamma_{\Co,2}\subseteq R_{\gent}\intersect\Orth^+(T_\Co)$ is @thm:coble-monodromy-versus-enriques(4), from @lem:coble-monodromy-in-stabilizer under its family identification (F). The reverse inclusion is the assertion that every congruence isometry of $T_\Co$ in $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ is realised by monodromy; by @lem:coble-monodromy-reverse-reduction it is equivalent to $\bar\rho(\Gamma_{\Co,2}) = P$ and $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_{\Co,2}$. It holds for the degree-$2$ Coble data of the direct construction, where it is @prob:B25, whose proof rests on the period computation of @prob:B24 and not on a printed theorem; no printed statement supplies it for the degree-$2$ Coble family of @lem:coble-monodromy-in-stabilizer, and it is the degree-$2$ analogue of the reverse inclusion of @conj:gamma-co-stable. The equality $R_{\gent} = \Gamma_{\Co,2}$ of research#779 is false either way (@thm:coble-monodromy-versus-enriques(3)).
+:::
+
+::: {.lemma #lem:coble-monodromy-reverse-reduction title="The reverse inclusion splits into a discriminant surjectivity and the stable group"}
+
+Let $\Gamma_{\Co,2}$ be the monodromy group of @def:gamma-co-groups(5), so that $\Gamma_{\Co,2}\subseteq\Orth^+(T_\Co)$ (@thm:coble-monodromy-versus-enriques(1)), and let $R_{\gent} = \bar\rho^{-1}(P)$ (@prop:gamma-co-images(3)). Then
+$$\Gamma_{\Co,2} = R_{\gent}\intersect\Orth^+(T_\Co)$$
+if and only if both
+
+1. $\bar\rho(\Gamma_{\Co,2}) = P$, and
+2. $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_{\Co,2}$.
+:::
+
+::: {.proof}
+Since $R_{\gent} = \bar\rho^{-1}(P)$ and $\widetilde\Orth^+(T_\Co) = \ker\bar\rho\intersect\Orth^+(T_\Co)$, the group $R_{\gent}\intersect\Orth^+(T_\Co)$ is the preimage in $\Orth^+(T_\Co)$ of $P$.
+
+If (1) and (2) hold and $g\in R_{\gent}\intersect\Orth^+(T_\Co)$, choose $\gamma\in\Gamma_{\Co,2}$ with $\bar\rho(\gamma) = \bar\rho(g)$, which (1) permits; then $g\gamma^{-1}\in\Orth^+(T_\Co)$ and $\bar\rho(g\gamma^{-1}) = \id$, so $g\gamma^{-1}\in\widetilde\Orth^+(T_\Co)\subseteq\Gamma_{\Co,2}$ by (2), and $g\in\Gamma_{\Co,2}$.
+
+Conversely, if $\Gamma_{\Co,2} = R_{\gent}\intersect\Orth^+(T_\Co)$, then (2) holds because $\widetilde\Orth^+(T_\Co)\subseteq R_{\gent}\intersect\Orth^+(T_\Co)$, and (1) holds because $\bar\rho$ carries $R_{\gent}\intersect\Orth^+(T_\Co)$ onto $P$: $\bar\rho$ is onto (@thm:two-elementary-surjectivity), and if $x\in\bar\rho^{-1}(g)$ lies outside $\Orth^+(T_\Co)$ then $-x$ lies in it and $\bar\rho(-x) = \bar\rho(x)$, because $-1$ acts trivially on the $2$-elementary group $A_{T_\Co}$.
+:::
+
+::: {.remark #rmk:coble-monodromy-reverse-status title="Where the two halves of the reverse inclusion stand"}
+(2) is the reverse inclusion of @conj:gamma-co-stable with $\Gamma_{\Co,2}$ in place of $\Gamma_\Co$: every stable isometry is realised by monodromy. It would follow from $W(T_\Co) = \widetilde\Orth^+(T_\Co)$ together with $W(T_\Co)\subseteq\Gamma_{\Co,2}$, the containment that @prop:monodromy-contains-root-reflections derives from the meridian hypothesis (@rmk:gamma-co-nodal-pair-proposal); the index $[\widetilde\Orth^+(T_\Co):W(T_\Co)]$ is @qst:gamma-co-reflection-index and is not known.
+
+(1) needs monodromy elements whose discriminant action is nontrivial, and the Picard--Lefschetz reflections do not supply them: a reflection in a vector of square $-2$ acts trivially on $A_{T_\Co}$, while the reflection in a $(-4)$-class acts nontrivially (@prop:gamma-co-reflective-set(2),(3)) and arises as the product of two commuting nodal reflections (@rmk:gamma-co-nodal-pair-proposal). Whether such products generate $P$ is not known. For the degree-$2$ Coble data of @prop:one-node-family both (1) and (2) hold (@prob:B25); for the family of @lem:coble-monodromy-in-stabilizer neither is supplied by a printed source.
 :::
 
 ::: {.remark #rmk:coble-monodromy-counts title="The index and the cusp counts after the correction"}
