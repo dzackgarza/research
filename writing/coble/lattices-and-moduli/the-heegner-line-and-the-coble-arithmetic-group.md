@@ -1935,7 +1935,10 @@ In this section $T_\Co = B(2)$ with $B\cong\latI_{2,9}$ (@prop:tco-as-twist), so
 (1) $q([v/2]) = v^2/4 = 0$, and $[v/2]\neq0$ because a primitive vector of $B$ does not lie in $2B$. The equivariance is the definition of $\rho$.
 
 (2) An isotropic class lies in the subgroup $A^0$ of @prop:coble-discriminant-group, and $A^0\cong A_{E_{10}(2)} = A_{U(2)}\perp A_{E_8(2)}$, with $\Orth(q)\iso\Orth(q_{A^0})$ by restriction. So by @lem:coble-discriminant-blocks(2) the nonzero isotropic classes number $527$ and form one $\Orth(q)$-orbit.
-By @lem:I29-plus-line-transitivity, $\Orth(B)$ is transitive on the primitive isotropic vectors, so by (1) their classes form one $\Orth(q)$-orbit of nonzero isotropic classes, namely all of them.
+
+*The full discriminant surjectivity.* The representation $\rho_{T_\Co}\colon\Orth(T_\Co)\too\Orth(q_{T_\Co})$ is **onto**. This is Nikulin's theorem for an even indefinite $2$-elementary lattice, applied to $T_\Co=B(2)$: [@Nik80, Theorem 3.6.3, printed p. 144] (@thm:two-elementary-surjectivity). It is the surjectivity onto the orthogonal group of the full discriminant group $A_{T_\Co}=B/2B$; the surjectivity used in @lem:cusp-vector-stabilizer-image(1) is the separate instance for the complement $K(2)$.
+
+*Every class occurs.* Let $S\definedas\theset{[v/2] : v\in T_\Co\ \text{primitive isotropic}}$. The set $S$ is nonempty: in the diagonal model $B=\latI_{2,9}$ the vector $e_0+e_2$ has $e_0^2=1$, $e_2^2=-1$ and primitive coordinates, so it is a primitive isotropic vector of $B=T_\Co$. By (1) each element of $S$ is a nonzero isotropic class. For $g\in\Orth(T_\Co)$ and $v$ primitive isotropic, $gv$ is primitive isotropic and $[gv/2]=\rho_{T_\Co}(g)[v/2]$ by (1); since $\rho_{T_\Co}$ is onto, $S$ is stable under all of $\Orth(q)$. A nonempty $\Orth(q)$-stable subset of the single orbit of @lem:coble-discriminant-blocks(2) is that orbit. Therefore $S$ is exactly the $527$ nonzero isotropic classes, and these form one $\Orth(q)$-orbit.
 :::
 
 ::: {.lemma #lem:cusp-vector-stabilizer-image title="The stabilizer of a primitive isotropic vector"}
@@ -1948,15 +1951,27 @@ Let $v\in T_\Co$ be primitive isotropic and $c = [v/2]$. Then
 
 ::: {.proof}
 
-By @lem:odd-unimodular-isotropic-splitting(1), $B = P\perp K$ with $v\in P\cong\latI_{1,1}$ and $K\cong\latI_{1,8}$, and $v^{\perp} = \ZZ v\perp K$, so $v^\perp/v\cong K$.
+By @lem:odd-unimodular-isotropic-splitting(1), $B = P\perp K$ with $v\in P\cong\latI_{1,1}$ and $K\cong\latI_{1,8}$, and $v^{\perp} = \ZZ v\perp K$, so $v^\perp/v\cong K$. Write $P=\ZZ v\oplus\ZZ w$ with $(v,w)=1$.
 
-(1) $\Orth(K)\leq\Stab_{\Orth(B)}(v)$ as the isometries that fix $P$ pointwise, and the stabilizer also contains the Eichler transvections $E(v,k)$ for $k\in v^{\perp}$ with $k^2$ even ([@Eic74]; [@GHS08], §3).
-$K(2)$ is even, indefinite and $2$-elementary of rank $9$, so $\Orth(K)\to\Orth(q_{K(2)})$ is onto (@thm:two-elementary-surjectivity), and $q_{K(2)}\iso q|_{c^{\perp}/c}$. So $\rho(\Stab_{\Orth(B)}(v))$ maps onto $\Stab_{\Orth(q)}(c)/N$, where $N$ is the kernel of $\Stab_{\Orth(q)}(c)\to\Orth(c^{\perp}/c)$.
-By @lem:isotropic-classes-lift(2) and @prop:coble-discriminant-group, $\abs{\Stab_{\Orth(q)}(c)} = \abs{\Orth(q)}/527$, so
+*The parabolic decomposition.* Let $P_v=\Stab_{\Orth(B)}(v)$ and $K_{\mathrm{ev}}\definedas\theset{k\in K : k^2\in2\ZZ}$, a sublattice of index $2$ in $K$. For $k\in K_{\mathrm{ev}}$ define
 $$
-\abs{N} = \frac{\abs{\Stab_{\Orth(q)}(c)}}{\abs{\Orth(c^{\perp}/c)}} = \frac{\abs{\Orth(q)}/527}{\abs{\operatorname{GO}^+_8(2)}} = \frac{89\,181\,388\,800}{348\,364\,800} = 2^8 .
+E(v,k)(x)\definedas x-(x,k)v+(x,v)k-\tfrac12(k,k)(x,v)v .
 $$
-The images $\rho(E(v,k))$ lie in $N$, and $\rho(E(v,k)) = \id$ if and only if $k\in\ZZ v+2B$, so they form a group isomorphic to $K_{\mathrm{ev}}/2K$, of order $2^8 = \abs{N}$. Hence $\rho(\Stab_{\Orth(B)}(v)) = \Stab_{\Orth(q)}(c)$.
+This is the Eichler transvection $t(v,k)$ of [@GHS08, §3.1, equation (4), printed p. 8], written for the integral form of $B$; GHS08 state it for an even lattice, and here the coefficient $\tfrac12(k,k)$ is an integer exactly because $k\in K_{\mathrm{ev}}$. Since $(x,k),(x,v)\in\ZZ$ as well, $E(v,k)$ is integral, and $E(v,k)(v)=v$, so $E(v,k)\in P_v$. Thus $P_v$ contains $\Orth(K)$, acting trivially on $P$, and the transvections $E(v,k)$ for $k\in K_{\mathrm{ev}}$.
+
+*The unipotent radical.* Every $g\in P_v$ acting trivially on $v^\perp/v$ is $E(v,k)$ for a unique $k\in K_{\mathrm{ev}}$. Indeed, $g(v)=v$ and $g(y)=y+\lambda(y)v$ for $y\in K$, with $\lambda$ an additive map $K\to\ZZ$; and $g(w)=w+\alpha v+k$ with $k\in K$ and $\alpha\in\ZZ$, the coefficient of $w$ being $(g(w),v)=(w,v)=1$. Preservation of the form gives $(g(w),g(y))=(w,y)+(k,y)+\lambda(y)$, hence $\lambda(y)=-(y,k)$, and $(g(w),g(w))=k^2+2\alpha$, hence $\alpha=-\tfrac12(k,k)$ and $k\in K_{\mathrm{ev}}$. Then $g=E(v,k)$, and $E(v,k)(w)=w-\tfrac12(k,k)v+k$ shows that $k$ is determined by $g$. By [@GHS08, equation (5), printed p. 9], $E(v,k)E(v,k')=E(v,k+k')$ and $E(v,xv)=\id$, so $k\mapsto E(v,k)$ is an isomorphism from $K_{\mathrm{ev}}$ onto the unipotent radical $U$ of $P_v$. Every $g\in P_v$ differs from the lift $\id_P\oplus\bar g\in\Orth(K)$ of its induced isometry $\bar g\in\Orth(v^\perp/v)$ by an element of $U$, so $P_v=\Orth(K)\,U$ with $\Orth(K)\cap U=1$.
+
+*The image of $U$.* For $y\in K$, $E(v,k)(y)=y-(y,k)v\equiv y\pmod{\ZZ v}$; hence $\rho(E(v,k))$ acts trivially on $c^\perp/c\cong K/2K$ and lies in the kernel $N$ of $\Stab_{\Orth(q)}(c)\to\Orth(c^\perp/c)$. Moreover $E(v,k)\equiv\id\pmod{2B}$ if and only if $k\in2K$: the $K$-component of $E(v,k)(w)-w$ is $k$, and $k\in2K$ makes $(y,k)$ and $\tfrac12(k,k)$ even for every $y\in K$. So $\rho$ induces an isomorphism $K_{\mathrm{ev}}/2K\iso\rho(U)$. The quotient $K_{\mathrm{ev}}/2K$ has order $2^8$: $K/2K$ is $9$-dimensional and $k\mapsto k^2\bmod2$ is a nonzero linear form on it, because $K$ is odd and represents $1$.
+
+*The Levi image.* The inclusion $\Orth(K)\subset P_v$ is the identity on $v^\perp/v=K$, and the composite $\Orth(K)\subset P_v\xrightarrow{\rho}\Orth(q)$ is the discriminant representation of $K(2)$ on $c^\perp/c=K/2K$. The lattice $K(2)$ is even, indefinite and $2$-elementary of rank $9$, so this representation is onto by [@Nik80, Theorem 3.6.3, printed p. 144] (@thm:two-elementary-surjectivity). Moreover $q_{K(2)}\iso q|_{c^\perp/c}$: the class of $y\in K$ in $c^\perp/c$ corresponds to $y/2\in A_{K(2)}$, and both forms take there the value $\tfrac12(y,y)_B$, the form of $T_\Co$ being twice that of $B$. Therefore $\rho(P_v)$ maps onto $\Stab_{\Orth(q)}(c)/N$.
+
+*The kernel.* By @lem:isotropic-classes-lift(2) and @prop:coble-discriminant-group, $\abs{\Stab_{\Orth(q)}(c)}=\abs{\Orth(q)}/527$, and $\abs{\Orth(c^\perp/c)}=\abs{\operatorname{GO}^+_8(2)}=348\,364\,800$ by @lem:weyl-E8-mod-two, the discriminant form of $K(2)$ being the odd $9$-dimensional form whose isometry group is $\operatorname{GO}^+_8(2)$. Hence
+$$
+\abs{N} = \frac{\abs{\Stab_{\Orth(q)}(c)}}{\abs{\Orth(c^{\perp}/c)}} = \frac{\abs{\Orth(q)}/527}{\abs{\operatorname{GO}^+_8(2)}} = \frac{89\,181\,388\,800}{348\,364\,800} = 2^8 = \abs{\rho(U)} .
+$$
+Since $\rho(U)\subseteq N$, this gives $\rho(U)=N$, and $\rho(P_v)=\rho(\Orth(K))\,\rho(U)$ is all of $\Stab_{\Orth(q)}(c)$.
+
+*The exact certificate.* The equality is also certified directly at the base vector $u=e_0+e_2$ of the one $\Orth(T_\Co)$-orbit, without the order count. Every one of the $240$ nonsingular classes $x\in A^0\cap c^\perp$ has an integral norm-$\pm2$ lift $r_x\in u^\perp$ in its parity class, and the reflection $s_{r_x}$ fixes $u$ exactly and reduces to the nonsingular symmetry determined by $x$. The source-hashed Sage certificate `computations/reports/coble_full_discriminant_root_lifts.py` constructs all $240$ roots, verifies each norm, parity and orthogonality to $u$, and computes by Schreier--Sims the permutation group they generate on the $527$ nonzero singular classes. Its executed transcript, `computations/reports/coble_full_discriminant_root_lifts-run.txt`, records the order $89\,181\,388\,800=\abs{\Orth(q)}/527=\abs{\Stab_{\Orth(q)}(c)}$; the ten roots with parity masks $(1919,215,58,359,311,335,591,538,2016,594)$ already generate it, and their exact standard-basis matrices are stored with the order in `computations/reports/coble_singular_integral_representatives.json` (`vector_stabilizer_ten_roots_standard`, `vector_stabilizer_finite_order`). A subgroup of $\Stab_{\Orth(q)}(c)$ of order $\abs{\Stab_{\Orth(q)}(c)}$ is $\Stab_{\Orth(q)}(c)$, so this is an independent exact verification of the same equality at $u$; transitivity of $\Orth(T_\Co)$ on the primitive isotropic vectors (@lem:I29-plus-line-transitivity) and conjugacy carry it to every $v$.
 
 (2) Let $g = \id_P\oplus(-\id_K)$. It fixes $v$, and it is the identity modulo $2B$, so $g\in\ker\rho$. By @lem:split-isometry-spinor-norm and @lem:minus-identity-spinor-norm, $\spinornorm_\bR(g) = \spinornorm_\bR(-\id_K) = -1$, because the positive index of $K$ is $1$. So $g\notin\Orth^+(B)$.
 :::
