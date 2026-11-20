@@ -2053,18 +2053,18 @@ So $A_b\in S_{\Co,b}$, which is orthogonal to $T_{\Co,b}$: these are the two eig
 And $A_b$ is ample: $2H_b-\alpha_b=\widehat\pi_b^*(-K_{\widehat Y})$ with $-K_{\widehat Y}$ ample and $\widehat\pi_b$ finite (@prop:one-node-period-image).
 
 *The class is effective up to sign.*
-Riemann–Roch on a K3 surface reads [@AN06, display (11), printed p. 23]
+Riemann–Roch on a K3 surface reads [@AN06, display (11)]
 $$l(\delta)+l(-\delta)=h^1(\delta)+\tfrac12\delta^2+2\ge\tfrac12\delta^2+2=1,$$
 so one of $\pm\delta$ is effective.
-The same step is stated as a necessary condition on the period of a polarized K3 surface in [@Nik80, printed p. 157], and it is the observation of [@DK13, printed p. 511] that the period point of a marked K3 surface lies on the $(-2)$-Heegner divisor of the complement lattice exactly when the image of a $(-2)$-vector is an effective class orthogonal to every class of the polarized lattice.
+The same step is stated as a necessary condition on the period of a polarized K3 surface in [@Nik80], and it is the observation of [@DK13] that the period point of a marked K3 surface lies on the $(-2)$-Heegner divisor of the complement lattice exactly when the image of a $(-2)$-vector is an effective class orthogonal to every class of the polarized lattice.
 
 *The contradiction.*
 Let $D\ne0$ be an effective divisor whose class is $\pm\delta$, so that $h\cdot D=0$.
-An ample class meets every curve positively, this being the Nakai--Moishezon criterion in the form used in [@AN06, printed p. 105], where ampleness is decided by $A^2>0$ and $A\cdot C>0$ for every curve $C$; it therefore meets every nonzero effective divisor positively.
+An ample class meets every curve positively, this being the Nakai--Moishezon criterion in the form used in [@AN06], where ampleness is decided by $A^2>0$ and $A\cdot C>0$ for every curve $C$; it therefore meets every nonzero effective divisor positively.
 So $h\cdot D>0$, a contradiction.
 
 *From algebraicity to the period.*
-A class of $T_{\Co,b}$ is orthogonal to the period $\omega_b$ exactly when it lies in $H^{1,1}(\widehat X_b)$, and on a K3 surface the integral classes of type $(1,1)$ are exactly the classes of divisors; this is the equivalence by which [@DK13, printed p. 511] reads membership of the period point in a Heegner divisor as the existence of the corresponding class in $\Pic$.
+A class of $T_{\Co,b}$ is orthogonal to the period $\omega_b$ exactly when it lies in $H^{1,1}(\widehat X_b)$, and on a K3 surface the integral classes of type $(1,1)$ are exactly the classes of divisors; this is the equivalence by which [@DK13] reads membership of the period point in a Heegner divisor as the existence of the corresponding class in $\Pic$.
 So no $(-2)$-vector of $T_{\Co,b}$ is orthogonal to $\omega_b$.
 :::
 
@@ -2078,10 +2078,10 @@ The divisors of the classes of square $-4$ and below are not reached by Riemann-
 The first clause of that problem asks the direct open period map to identify the moduli space with $\Gamma_{\Co,2}^{\mathrm{dir}}\backslash\bD_{\Co}^{\circ}$ for an explicit hyperplane complement, and to transfer that identification to the normalization of the KSBA closure.
 What is settled below is the shape of that complement and the published status of the open identification.
 
-The unpolarized form of the open identification is published: [@DK13, Prop. 3.2, printed p. 513] identifies the moduli space $\mcm_\Co$ of classical Coble surfaces with an open subset of $\bD(N)/\Orth(N)$, where $N=\langle2\rangle\oplus E(2)$ with $E=U\oplus E_8$ [@DK13, (3.6), printed p. 513], and that $N$ is $T_\Co$ by @prop:coble-transcendental.
+The unpolarized form of the open identification is published: [@DK13, Prop. 3.2] identifies the moduli space $\mcm_\Co$ of classical Coble surfaces with an open subset of $\bD(N)/\Orth(N)$, where $N=\langle2\rangle\oplus E(2)$ with $E=U\oplus E_8$ [@DK13, (3.6)], and that $N$ is $T_\Co$ by @prop:coble-transcendental.
 Two qualifications belong with it.
 The group is the whole orthogonal group, so the quotient is $F^{\mathrm{un}}_\Co=\bD(T_\Co)/\Orth(T_\Co)$ and not the $\Gamma_{\Co,2}^{\mathrm{dir}}\backslash\bD_\Co$ of the clause: the passage from $\Orth(T_\Co)$ to the finite-index subgroup $\Gamma^{\mathrm{dir}}_{\Co,2}$ of @def:direct-group, which lies inside $\Orth^+(T_\Co)$ (@lem:minus-id-in-direct-group(2)), is @prob:B25, and the two-element ambiguity its proof recorded is decided: the sign is in the orbifold group of @def:geometric-monodromy (@thm:sign-is-isotropy) and in no loop (@thm:no-loop-carries-the-sign).
-And the Coble surfaces of [@DK13, §3, printed p. 513] are the blowups of ten nodes of an irreducible plane sextic, so the proposition covers the unpolarized Coble moduli space and not the labeled tuple of @sec-labeled-lattice-data.
+And the Coble surfaces of [@DK13, §3] are the blowups of ten nodes of an irreducible plane sextic, so the proposition covers the unpolarized Coble moduli space and not the labeled tuple of @sec-labeled-lattice-data.
 
 The complement is not empty and contains the whole root arrangement: @thm:direct-period-misses-root-walls.
 So the clause cannot be read with an empty complement, and every $(-2)$-Heegner divisor of $T_\Co$ lies in the excluded locus.
@@ -2089,14 +2089,14 @@ The excluded divisors beyond the root arrangement are decided in one direction a
 That level set is not the record's: it has $496$ classes, computed exactly (@rmk:coble-discriminant-levels), so $121$ is a subset of it and not the set.
 
 ::: {.remark #rmk:coble-discriminant-levels title="the level sets of the discriminant forms of $S_\Co$ and $T_\Co$, exactly"}
-The discriminant form $q_L(x)=v^2\bmod 2\bZ$ of a $2$-elementary lattice takes four values, and at the models of [@DK13, §3, printed p. 511] and @prop:coble-transcendental the numbers of the $2048$ classes at each are
+The discriminant form $q_L(x)=v^2\bmod 2\bZ$ of a $2$-elementary lattice takes four values, and at the models of [@DK13, §3] and @prop:coble-transcendental the numbers of the $2048$ classes at each are
 
 | lattice | $q=0$ | $q=\tfrac12$ | $q=1$ | $q=\tfrac32$ |
 |:--|--:|--:|--:|--:|
 | $S_\Co=\langle2\rangle\oplus\langle-2\rangle^{\oplus10}$ | $528$ | $496$ | $496$ | $528$ |
 | $T_\Co=\langle2\rangle\oplus U(2)\oplus E_8(2)$ | $528$ | $528$ | $496$ | $496$ |
 
-computed exactly in `computations/reports/coble_671-discriminant-levels.py`, transcript `-run.txt`, where the second row is checked against the negation of the first, $q_{T_\Co}=-q_{S_\Co}$ [@DK13, printed p. 513].
+computed exactly in `computations/reports/coble_671-discriminant-levels.py`, transcript `-run.txt`, where the second row is checked against the negation of the first, $q_{T_\Co}=-q_{S_\Co}$ [@DK13].
 The level-$0$ entry of $T_\Co$ is $528=527+1$: the $527$ nonzero singular classes of @thm:coble-zero-cusp-count(2), with the zero class.
 
 Two readings follow.
@@ -2116,7 +2116,7 @@ At $b_\star$ the restrictions of the branch curve to the two ruling fibres are
 $$f_\star(1,y)=(y-3)^2(y-1)^2,\qquad f_\star(-1,y)=(y+1)^2(y+3)^2,$$
 so each fibre meets the branch curve in two points of multiplicity two and nowhere else away from the node's own fibre $x=0$ (@thm:chamber-clause-fails, and its record `computations/reports/coble_a21_chamber_fails-run.txt`, which prints these two factorisations and $\gcd(q,q')=x^2-1$ for the $x$-discriminant).
 Over such a fibre $F$ the covering surface is $z^2=\prod_i(y-a_i)^2$, which is the union of the two curves $z=\pm\prod_i(y-a_i)$: two smooth rational curves meeting in the two points $y=a_i$, so $\widehat\pi_b^{-1}(F)=D_+ + D_-$ with $D_+\cdot D_- = 2$.
-Each component is rational, so $D_\pm^2 = 2p_a-2 = -2$ by the genus formula [@AN06, display (10), printed p. 22].
+Each component is rational, so $D_\pm^2 = 2p_a-2 = -2$ by the genus formula [@AN06, display (10)].
 
 *The involution exchanges the two fibres.*
 $\widehat\iota_{\Co,b_\star}$ covers $\tau$ (@prop:tuple-of-the-construction), and $\tau$ carries $\set{x=c}$ to $\set{x=-c}$; the point $p=(0,0)$ lies on neither of the fibres $c=\pm1$, so on them $\tau$ acts as on $Y$.
@@ -2299,7 +2299,7 @@ So the marked direct Coble moduli stack is the complement of that subarrangement
 
 ::: {.proof}
 
-*The image.* This is the content of `computations/reports/smwo_direct-period.md`, Theorem D and the (T-mixed) block, at passes 7 and 8 there. The two inclusions are decided member by member rather than by a dominance argument: every member of the construction lies in the locus $O$ of the statement, because $\alpha$ is by construction the class of the node's exceptional curve and $A = 2H-\alpha$ is ample; and conversely every point of $O$ is reconstructed as the period of a member, by the realization of the $S_\Co$-polarized structure, the geometric realization of the two involutions at $A$ ample, and the reconstruction of the member from its period. Part 1 is no longer the record's: it is @thm:direct-period-misses-root-walls, which proves it from the Riemann–Roch effectivity of [@AN06, (11), printed p. 23] and the Nakai–Moishezon criterion [@AN06, printed p. 105], without the record and without the programme's own constructions; part 2 is (X-TM), decided negatively there: the level-set identity $\set{z\in A_{T_\Co} : q_{T_\Co}(z) = 1} = \mathrm{BAD}_T(-4)$ has no slack on either side, and every class of $\mathrm{BAD}_S$ has $q_{S_\Co} = -1$, so the isotropy of the even lattice $\lkt$ forces the glue to carry all $121$ of them through to that level; the single class of the other level is carried by the corpus's own $\gamma_\Co$, so its wall is empty of members.
+*The image.* This is the content of `computations/reports/smwo_direct-period.md`, Theorem D and the (T-mixed) block, at passes 7 and 8 there. The two inclusions are decided member by member rather than by a dominance argument: every member of the construction lies in the locus $O$ of the statement, because $\alpha$ is by construction the class of the node's exceptional curve and $A = 2H-\alpha$ is ample; and conversely every point of $O$ is reconstructed as the period of a member, by the realization of the $S_\Co$-polarized structure, the geometric realization of the two involutions at $A$ ample, and the reconstruction of the member from its period. Part 1 is no longer the record's: it is @thm:direct-period-misses-root-walls, which proves it from the Riemann–Roch effectivity of [@AN06, (11)] and the Nakai–Moishezon criterion [@AN06], without the record and without the programme's own constructions; part 2 is (X-TM), decided negatively there: the level-set identity $\set{z\in A_{T_\Co} : q_{T_\Co}(z) = 1} = \mathrm{BAD}_T(-4)$ has no slack on either side, and every class of $\mathrm{BAD}_S$ has $q_{S_\Co} = -1$, so the isotropy of the even lattice $\lkt$ forces the glue to carry all $121$ of them through to that level; the single class of the other level is carried by the corpus's own $\gamma_\Co$, so its wall is empty of members.
 
 *The refutation.* With both parts, the excluded and the included divisors are both nonempty: no $(-2)$-wall of $T_\Co$ is met, and each of the $121$ walls of part 2 is missed, while the complement of the whole divisorial locus is dense. So the image is neither $\bD^\circ_\Co$ nor the whole domain, and the arrangement-complement form of B2.4 fails on the side of the $121$ divisors.
 :::
@@ -2330,7 +2330,7 @@ Then
 *The isometry.*
 $g$ preserves $S_\Co$ and $T_\Co$ and is an isometry of each.
 The lattice $\lkt$ is an overlattice of $S_\Co\oplus T_\Co$ glued along a subgroup of $A_{S_\Co}\oplus A_{T_\Co}$, and an isometry of the two summands extends to the overlattice exactly when it preserves that subgroup (@thm:nikulin-gluing; [@Nik80, Prop. 1.4.1]).
-Both discriminant groups are $2$-torsion: $A_{T_\Co}\cong(\bZ/2)^{11}$ by @prop:coble-transcendental, and $A_{S_\Co}\cong(\bZ/2)^{11}$ because $S_\Co\cong\latI_{1,10}(2)$ (@prop:coble-invariant-lattice) is the lattice of [@DK13, §3, printed p. 511], whose discriminant group is stated there to be $(\bZ/2\bZ)^{11}$.
+Both discriminant groups are $2$-torsion: $A_{T_\Co}\cong(\bZ/2)^{11}$ by @prop:coble-transcendental, and $A_{S_\Co}\cong(\bZ/2)^{11}$ because $S_\Co\cong\latI_{1,10}(2)$ (@prop:coble-invariant-lattice) is the lattice of [@DK13, §3], whose discriminant group is stated there to be $(\bZ/2\bZ)^{11}$.
 So $g$ acts on $A_{S_\Co}\oplus A_{T_\Co}$ as $(-\id,\id)=(\id,\id)$, that is trivially, and hence preserves every subgroup; so $g\in\Orth(\lkt)$.
 
 *The labels.*
@@ -2344,14 +2344,14 @@ So $g\in Z$, and its image in $\Orth(T_\Co)$ is $-\id_{T_\Co}$.
 By @lem:minus-identity-spinor-norm, $\spinornorm_\bR(-\id_L) = [(-1)^p]$ for a lattice of signature $(p,q)$, so $-\id_L\in\Orth^+(L)$ exactly when $p$ is even.
 Here $T_\Co$ has signature $(2,9)$ (@prop:coble-transcendental), so $p = 2$ and $-\id_{T_\Co}\in\Theta_\bR(T_\Co) = \Orth^+(T_\Co)$ (@def:lattice-spinor-kernels).
 The same conclusion reads off the orientation (@def:orientation-classes) classes, without the spinor norm: on a positive definite $2$-plane $W$ the isometry $-\id$ has $\det(-\id|_W) = (-1)^2 = 1 > 0$, so it preserves the positive orientation classes (@def:orientation-classes), which is $\Orth^+$ by @prop:spinor-norm-orientation-classes(4).
-The criterion by cone (@def:closed-cone) components must not be transported here: [@AEGS25, §5.1, printed p. 609] defines $O^+(\Lambda)$ for a hyperbolic lattice of rank $r$ and signature $(1,r-1)$, where $C$ is one of the two halves of $\set{v\in\Lambda_\RR: v^2>0}$, and @prop:spinor-plus-cone-components proves the agreement of that reading with $\Theta_\bR$ for signature $(1,n)$ only.
+The criterion by cone (@def:closed-cone) components must not be transported here: [@AEGS25, §5.1] defines $O^+(\Lambda)$ for a hyperbolic lattice of rank $r$ and signature $(1,r-1)$, where $C$ is one of the two halves of $\set{v\in\Lambda_\RR: v^2>0}$, and @prop:spinor-plus-cone-components proves the agreement of that reading with $\Theta_\bR$ for signature $(1,n)$ only.
 For signature $(2,9)$ the set $\set{v: v^2>0}$ is connected — $t\mapsto(\cos t,\sin t,0,\dots,0)$ joins a vector of square $1$ to its negative inside it — so there are no two halves for $-\id$ to exchange, and the cone reading has no content here.
 :::
 
 ::: {.warning #warn:direct-group-orth-plus title="withdrawn: the group of @def:direct-group is inside $\Orth^+$, and the coset recorded at @cor:four-groups-decided stands"}
 This warning recorded three landed statements as unable to stand, on the ground that $-\id_{T_\Co}$ lies outside $\Orth^+(T_\Co)$. It does not, and the ground is a definition read outside its hypothesis.
 
-$\Orth^+(L)$ is $\Theta_\bR(L)$, the kernel of the real spinor norm (@def:lattice-spinor-kernels), and $\spinornorm_\bR(-\id_L) = [(-1)^p]$ on a lattice of signature $(p,q)$, so $-\id_L\in\Orth^+(L)$ exactly when $p$ is even (@lem:minus-identity-spinor-norm). Here $p = 2$. The reading the warning used is [@AEGS25, §5.1, printed p. 609], which defines $O^+(\Lambda)$ for a hyperbolic lattice of signature $(1,r-1)$, where the positive cone is one of the two halves of $\set{v: v^2>0}$; for signature $(2,9)$ that set is connected, and the corpus's identification of the two readings is @prop:spinor-plus-cone-components, stated for signature $(1,n)$. The element $s_\zeta$, on the other hand, is outside $\Orth^+(T_\Co)$ under the corpus's definition, $\spinornorm_\bR(s_\zeta) = [-\tfrac12\cdot 2] = [-1]$, which is what carries the $s_\zeta$-coset of @cor:four-groups-decided.
+$\Orth^+(L)$ is $\Theta_\bR(L)$, the kernel of the real spinor norm (@def:lattice-spinor-kernels), and $\spinornorm_\bR(-\id_L) = [(-1)^p]$ on a lattice of signature $(p,q)$, so $-\id_L\in\Orth^+(L)$ exactly when $p$ is even (@lem:minus-identity-spinor-norm). Here $p = 2$. The reading the warning used is [@AEGS25, §5.1], which defines $O^+(\Lambda)$ for a hyperbolic lattice of signature $(1,r-1)$, where the positive cone is one of the two halves of $\set{v: v^2>0}$; for signature $(2,9)$ that set is connected, and the corpus's identification of the two readings is @prop:spinor-plus-cone-components, stated for signature $(1,n)$. The element $s_\zeta$, on the other hand, is outside $\Orth^+(T_\Co)$ under the corpus's definition, $\spinornorm_\bR(s_\zeta) = [-\tfrac12\cdot 2] = [-1]$, which is what carries the $s_\zeta$-coset of @cor:four-groups-decided.
 
 So the three statements stand as written:
 
@@ -2413,7 +2413,7 @@ Then the monodromy of $T_\Co$ over $\mathfrak M$ is $\Gamma^{\mathrm{dir}}_{\Co,
 ::: {.proof}
 *The marked moduli is the period image.*
 Let $\widetilde{\mathfrak M}$ be the set of isomorphism classes of marked tuples — tuples $(X_b,\iota_{\Co,b},H_b,\alpha_b;\psi)$ with $\psi\colon H^2(\widehat X_b,\ZZ)\to\lkt$ carrying the labels to the standard ones.
-Its period map to $\bD(T_\Co)$ is injective (@def:injective-map): two marked tuples with the same period differ by a Hodge isometry $g$ carrying the ample class $A=2H-\alpha$, which is a label, to the ample class, hence carrying the fundamental chamber to the fundamental chamber, and the Global Torelli theorem [@AN06, printed p. 25] — in the form that a period isomorphism preserving $H^{2,0}$ and the fundamental chamber is induced by a unique isomorphism of the surfaces — makes $g=\varphi^*$ for an isomorphism $\varphi$ intertwining the markings.
+Its period map to $\bD(T_\Co)$ is injective (@def:injective-map): two marked tuples with the same period differ by a Hodge isometry $g$ carrying the ample class $A=2H-\alpha$, which is a label, to the ample class, hence carrying the fundamental chamber to the fundamental chamber, and the Global Torelli theorem [@AN06] — in the form that a period isomorphism preserving $H^{2,0}$ and the fundamental chamber is induced by a unique isomorphism of the surfaces — makes $g=\varphi^*$ for an isomorphism $\varphi$ intertwining the markings.
 This is @lem:chamber-from-marked-period, and it holds at every member of the construction, the ample class being a label and not a datum of a general member.
 
 *The image and its connectedness.*
@@ -2696,7 +2696,7 @@ $$
 H=\bar\delta^\perp,\qquad
 \bar S=(\delta^\perp\cap e^\perp)/\ZZ e=H\cap\bar T,
 $$
-a primitive corank-one sublattice of $\bar T$. Let $W$ be a reflection group (@def:reflection-group) on $\bar T$, let $C$ be a chamber (@cons:chamber-cone) for $W$ cut out by a diagram $G$, and let $\F^{\mathrm{gen}}(I\sqcup J)$ be its generalized Coxeter semifan (@def:generalized-coxeter-semifan) in the sense of [@AEGS25, §5.2], printed p. 610. Write $C_\delta=C\cap H_\RR$ and let $W_\delta$ be generated by the integral reflections of $\bar S$ whose mirrors (@not:hyperbolic-polytope-setting) bound $C_\delta$ in the interior of its positive cone (@not:reflection-groups-sign-convention).
+a primitive corank-one sublattice of $\bar T$. Let $W$ be a reflection group (@def:reflection-group) on $\bar T$, let $C$ be a chamber (@cons:chamber-cone) for $W$ cut out by a diagram $G$, and let $\F^{\mathrm{gen}}(I\sqcup J)$ be its generalized Coxeter semifan (@def:generalized-coxeter-semifan) in the sense of [@AEGS25, §5.2]. Write $C_\delta=C\cap H_\RR$ and let $W_\delta$ be generated by the integral reflections of $\bar S$ whose mirrors (@not:hyperbolic-polytope-setting) bound $C_\delta$ in the interior of its positive cone (@not:reflection-groups-sign-convention).
 
 **Case A: $\bar\delta$ is not a mirror of $W$.** Assume
 
@@ -2720,13 +2720,13 @@ In either case, the following two conclusions hold:
 In Case B, moreover:
 
 3. $\F^{\mathrm{gen}}(I\sqcup J)\cap H_\RR$ is the generalized Coxeter semifan of $C_\delta$, with the relevance inherited from $I\sqcup J$; and
-4. its Type II rays and Type III cones (@def:closed-cone) are the maximal parabolic (@def:definiteness) and elliptic faces of $C_\delta$, respectively, in the sense of [@AEGS25, Def. 5.1], printed p. 609, and its Type II coarsening is governed by the irrelevant components in [@AEGS25, Lem. 5.7], printed p. 611.
+4. its Type II rays and Type III cones (@def:closed-cone) are the maximal parabolic (@def:definiteness) and elliptic faces of $C_\delta$, respectively, in the sense of [@AEGS25, Def. 5.1], and its Type II coarsening is governed by the irrelevant components in [@AEGS25, Lem. 5.7].
 :::
 
 ::: {.proof}
 For every $\alpha$ not proportional to $\bar\delta$, $\alpha^\perp\cap H_\RR$ is the hyperplane in $H_\RR$ cut by the orthogonal projection of $\alpha$ to $H_\QQ$. This proves (1), since a wall must meet the interior of the positive cone to contribute a bounding hyperplane of $C_\delta$.
 
-In Case A, (A1) makes each of these hyperplanes the mirror of an integral reflection of $\bar S$, and (A2) is Vinberg's cell criterion: a convex polyhedron whose dihedral angles are submultiples of $\pi$ is a fundamental chamber for the group generated by the reflections in its walls ([@Vin67], §1, printed p. 430, conditions $(\beta)$ and $(\beta')$). Since $C_\delta$ is the intersection of the corresponding half-spaces, this proves (2). No global identification of the restricted arrangement with the $W_\delta$-chambers is asserted in Case A: such an identification is proved below only in Case B, where every generator of $W_\delta$ is induced by an element of the stabilizer (@def:group-orbit) of $H_\RR$ in $W$.
+In Case A, (A1) makes each of these hyperplanes the mirror of an integral reflection of $\bar S$, and (A2) is Vinberg's cell criterion: a convex polyhedron whose dihedral angles are submultiples of $\pi$ is a fundamental chamber for the group generated by the reflections in its walls ([@Vin67], §1, conditions $(\beta)$ and $(\beta')$). Since $C_\delta$ is the intersection of the corresponding half-spaces, this proves (2). No global identification of the restricted arrangement with the $W_\delta$-chambers is asserted in Case A: such an identification is proved below only in Case B, where every generator of $W_\delta$ is induced by an element of the stabilizer (@def:group-orbit) of $H_\RR$ in $W$.
 
 It remains to prove (2) and (3) in Case B. Put $K=\Stab_W(H_\RR)$ and let $\alpha\neq\pm\bar\delta$ be a wall of $C$. Suppose first that $\alpha\perp\bar\delta$. Then $s_\alpha\in K$ restricts to reflection of $H_\RR$ in $\alpha^\perp\cap H_\RR$. If $\alpha$ is not orthogonal to $\bar\delta$ but the two hyperplanes meet in the positive cone, write their angle as $\pi/(2k)$ by (B2). On $P=\RR\bar\delta+\RR\alpha$, the product $s_{\bar\delta}s_\alpha$ is rotation through $\pi/k$. Consequently
 $$
@@ -2757,7 +2757,7 @@ For the second paragraph: $v = \alpha_1+2\alpha_2$ has $v^2 = -6$, its orthogona
 :::
 
 ::: {.proposition #prop:facet-angles-aegs title="The induced facet angles at every white node of the AEGS cusp diagrams"}
-Read the nodes of [@AEGS25, Fig. 7; @AEGS25, Fig. 8], printed pp. 594--595, using its definition in §3.4, printed p. 591: for simple roots $\alpha_i$,
+Read the nodes of [@AEGS25, Fig. 7; @AEGS25, Fig. 8], using its definition in §3.4: for simple roots $\alpha_i$,
 $$
 g_{ij}=\frac{(\alpha_i,\alpha_j)}{\sqrt{\alpha_i^2\alpha_j^2}},
 $$
@@ -2815,7 +2815,7 @@ Let $\eta\in T_{\En}$ be primitive (@def:primitive-embedding) isotropic (@def:or
 :::
 
 ::: {.proof}
-Choose $a\in\eta^\perp$ with $(a,\delta)=1$. In the version actually read, arXiv:0810.1614v1, §3.1, Lemma 3.1 and formula (4) give precisely the Eichler transvection displayed next, and the integrality assertion following equation (10), printed pp. 8--9 of that version, applies because $\eta$ and $a$ are integral vectors with $a^2$ even (@def:form-axioms). The *J. Algebra* record cited by the bibliography supplies publication data only. Explicitly,
+Choose $a\in\eta^\perp$ with $(a,\delta)=1$. In the version actually read, arXiv:0810.1614v1, §3.1, Lemma 3.1 and formula (4) give precisely the Eichler transvection displayed next, and the integrality assertion following equation (10) of that version, applies because $\eta$ and $a$ are integral vectors with $a^2$ even (@def:form-axioms). The *J. Algebra* record cited by the bibliography supplies publication data only. Explicitly,
 $$
 E_{\eta,a}(x)=x+(x,\eta)a-(x,a)\eta-\frac{a^2}{2}(x,\eta)\eta
 $$
@@ -2832,7 +2832,7 @@ $$
 T_{\Co}=\langle2\rangle\oplus E(2)
  =\langle2\rangle\oplus U(2)\oplus E_8(2),
 $$
-the lattice of [@DK13, (3.6)], printed p. 513. Its discriminant group is $(\ZZ/2\ZZ)^{11}$, and the normal form of its discriminant quadratic form (@def:discquad) is
+the lattice of [@DK13, (3.6)]. Its discriminant group is $(\ZZ/2\ZZ)^{11}$, and the normal form of its discriminant quadratic form (@def:discquad) is
 $$
 \begin{pmatrix}0&1/2\\1/2&0\end{pmatrix}^{\oplus 5}
   \oplus(1/2),
@@ -2847,7 +2847,7 @@ For each representative the record prints a $\ZZ$-basis $B$ of $\delta^\perp$ an
 `IntegralLattice(H).discriminant_group().normal_form()`
 on each $H_\delta$ and on the displayed model $T_{\Co}$ returns identical value modules, invariants, quadratic matrices, and bilinear matrices; the common output is the normal form in the statement. The nine triples (cusp, figure node, printed root) are listed at the end of the transcript, which terminates with `PYEXIT=0`; their matrices and full normal forms appear in the per-candidate sections.
 
-The perpendicular is even because $T_{\En}$ is even, and it has signature $(p,q)=(2,9)$ because $\delta^2<0$. Its discriminant group has order $2^{11}$, and the final $(1/2)$-summand distinguishes the $2$-elementary invariant $\delta=1$. Thus $a=p+q=11$ and its invariants are $(11,11,1)$. The existence hypotheses of @thm:two-elementary-classification hold directly: $p,q\ge1$, $a=p+q$, $p+q+a=22$ is even, and the further listed conditions impose nothing when $\delta=1$, $a\ne0,1,2$. Its uniqueness clause ([@Nik80, Thm. 3.6.2, printed p. 144]), rather than @prop:coble-transcendental, gives $\delta^\perp\cong T_{\Co}$.
+The perpendicular is even because $T_{\En}$ is even, and it has signature $(p,q)=(2,9)$ because $\delta^2<0$. Its discriminant group has order $2^{11}$, and the final $(1/2)$-summand distinguishes the $2$-elementary invariant $\delta=1$. Thus $a=p+q=11$ and its invariants are $(11,11,1)$. The existence hypotheses of @thm:two-elementary-classification hold directly: $p,q\ge1$, $a=p+q$, $p+q+a=22$ is even, and the further listed conditions impose nothing when $\delta=1$, $a\ne0,1,2$. Its uniqueness clause ([@Nik80, Thm. 3.6.2]), rather than @prop:coble-transcendental, gives $\delta^\perp\cong T_{\Co}$.
 :::
 
 ::: {.theorem #thm:coble-restricted-semifan title="The restricted Coxeter semifan at cusp 2 is the marked Coble semifan"}
@@ -2857,8 +2857,8 @@ $$
 $$
 Then $\bar S\cong\langle2\rangle\oplus E_8(2)$ and:
 
-1. $C_\delta$ is a fundamental chamber of the full reflection group (@def:reflection) $W^{(2,4)}(\bar S)$, generated by all $(-2)$-roots and all $(-4)$-roots of divisibility $2$ in the sense of [@AN06, Thm. 3.1], printed p. 51, and it is the chamber of [@AN06, Table 1], entry $(9,9,1)$, printed p. 52;
-2. intersection with $\bar\delta^\perp$ identifies the AEGS semifan (@def:semitoroidal-compactification) $\mathcal F^2$ of [@AEGS25, Defs. 5.3 and 5.4], printed pp. 610--611, with the generalized Coxeter semifan (@def:generalized-coxeter-semifan) of $C_\delta$ whose irrelevant set is the single interior spur, in the manuscript's current wall labels $\{4\}$; and
+1. $C_\delta$ is a fundamental chamber of the full reflection group (@def:reflection) $W^{(2,4)}(\bar S)$, generated by all $(-2)$-roots and all $(-4)$-roots of divisibility $2$ in the sense of [@AN06, Thm. 3.1], and it is the chamber of [@AN06, Table 1], entry $(9,9,1)$;
+2. intersection with $\bar\delta^\perp$ identifies the AEGS semifan (@def:semitoroidal-compactification) $\mathcal F^2$ of [@AEGS25, Defs. 5.3 and 5.4], with the generalized Coxeter semifan (@def:generalized-coxeter-semifan) of $C_\delta$ whose irrelevant set is the single interior spur, in the manuscript's current wall labels $\{4\}$; and
 3. after reordering the walls as
 $$
 (v_1,v_2,v_3,v_4,v_5,v_6,v_7,v_8,v_9)
@@ -2882,7 +2882,7 @@ $$
 $$
 The groups are equal and $C_\delta$ is a fundamental chamber of the full group, proving (1).
 
-The marking is AEGS Definition 5.4: roots on the folded triangle's boundary are relevant, and Figure 7's interior spur is the only irrelevant root. Lemma 5.5 attaches that marking to $\mathcal F^2$. It descends unchanged by @thm:semifan-restriction, while @thm:semifan-restriction(3) supplies the generalized fan identification. The only irrelevant reflection is integral and of order $2$, so its group is $S_2$, in agreement with AEGS Lemma 5.6, printed p. 611. Current node $4$ is named $v_9$ by the displayed reordering, proving (2) and (3).
+The marking is AEGS Definition 5.4: roots on the folded triangle's boundary are relevant, and Figure 7's interior spur is the only irrelevant root. Lemma 5.5 attaches that marking to $\mathcal F^2$. It descends unchanged by @thm:semifan-restriction, while @thm:semifan-restriction(3) supplies the generalized fan identification. The only irrelevant reflection is integral and of order $2$, so its group is $S_2$, in agreement with AEGS Lemma 5.6. Current node $4$ is named $v_9$ by the displayed reordering, proving (2) and (3).
 :::
 
 ::: {#rmk:mirror-case-parity-hypothesis .remark title="Why the mirror case has a parity hypothesis"}
@@ -2969,7 +2969,7 @@ The table lists each statement, whether it is proved, and the section that prove
 | Explicit equivariant smoothing | established for the projective family | @sec-equivariant-smoothing |
 | Coverage of the complete Coble locus | required theorem | @sec-projective-coverage |
 | The direct period image misses every $(-2)$-Heegner divisor of $T_\Co$ | proved | @thm:direct-period-misses-root-walls |
-| Target theorem A, first clause | published in the unpolarized form [@DK13, Prop. 3.2, printed p. 513]; no root divisor is met (@thm:direct-period-misses-root-walls) and one $(-4)$-divisor is (@thm:direct-period-meets-minus-four), so the complement is a proper nonempty subarrangement; which $(-4)$-divisors are met is the record of @prob:B24, part 2, its level set computed at @rmk:coble-discriminant-levels; the polarized refinement is decided: the sign is in $\Gamma^{\mathrm{geom}}_{\Co,2}$ through the isotropy $I_\Co$ (@thm:sign-is-isotropy) and in no loop (@thm:no-loop-carries-the-sign), and it is a word in the reflection group (@thm:coble-block-sign-in-w) | @sec-autonomous-target |
+| Target theorem A, first clause | published in the unpolarized form [@DK13, Prop. 3.2]; no root divisor is met (@thm:direct-period-misses-root-walls) and one $(-4)$-divisor is (@thm:direct-period-meets-minus-four), so the complement is a proper nonempty subarrangement; which $(-4)$-divisors are met is the record of @prob:B24, part 2, its level set computed at @rmk:coble-discriminant-levels; the polarized refinement is decided: the sign is in $\Gamma^{\mathrm{geom}}_{\Co,2}$ through the isotropy $I_\Co$ (@thm:sign-is-isotropy) and in no loop (@thm:no-loop-carries-the-sign), and it is a word in the reflection group (@thm:coble-block-sign-in-w) | @sec-autonomous-target |
 | Target theorem A, clause three, the cusps | the cusp lattice is one lattice at every cusp (@thm:one-cusp-lattice), computed at the four public representatives: rank $9$, determinant $512$, signature $(1,8)$, $2$-elementary with $a=9$, $\delta=1$, that is $I_{1,8}(2)$ (`computations/reports/coble_671-four-cusps-run.txt`); the cusps themselves are four $0$-cusps and seven $1$-cusps (@prop:coble-cong-point-stabilizer(3), @cor:coble-heegner-integral-plane-descent), and the semifans at the four $0$-cusps are @thm:coble-pair-semifan | @sec-autonomous-target |
 | Target theorem A, clause three, the diagrams | the four folded Coxeter diagrams, and with them the Type II and Type III strata at the labelled cusps, are not established: what each cusp owes is the image $\Gamma_e\le\Orth(I_{1,8}(2))$ of its stabilizer, which is a congruence subgroup fixed by a finite discriminant datum (@lem:cusp-image-is-finite), and two inputs are missing — that finite computation on $O(A_{T_\Co})$, with $P$ transported to the cusp, and the relevance marking for the fan-versus-semifan reading (@prob:coxeter-completeness, @warn:coble-marking); the basis of the public row is no longer among them, the artifact's `standard_gram` supplying it; at a labelled cusp the image is $\rho_K^{-1}(\Stab_{\Orth(q_K)}(e_0))$, one class $e_0=[h/2]$ of $A_K$, and it contains **every** reflection of the cusp lattice, so the labelled chamber is the unpolarized chamber and the labelled diagram is the nine-node Coble diagram with no node deleted (@lem:cusp-image-is-the-stabilizer-of-a-class, @thm:labelled-chamber-is-the-unpolarized-chamber); what the four published representatives still need is the transport of that one class along each, and the relevance marking decides the fan-versus-semifan reading | @sec-coxeter |
 | Target theorem A, clause two | not established; it waits on @sec-coble-dlt and on the diagrams above | @sec-autonomous-target |
