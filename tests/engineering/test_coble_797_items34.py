@@ -119,13 +119,26 @@ def test_item6_the_two_maps_and_what_each_does_to_the_local_system():
 MONODROMY_IS_G = "prop:coble-monodromy-is-the-marking-group"
 
 
+EVERY_AMPLE = "lem:every-ample-m-polarized-k3-is-a-coble-cover"
+
+
+def test_reconstruction_of_the_coble_cover_from_the_period():
+    body = _block(MC.read_text(encoding="utf-8"), EVERY_AMPLE)
+    assert "rank $11$" in body
+    assert "Coble surface" in body
+    # the count that fixes the rank is in the proof, not the statement
+    text = MC.read_text(encoding="utf-8")
+    proof = text[text.index("#" + EVERY_AMPLE):]
+    assert "Lefschetz" in proof[:4000]
+
+
 def test_the_monodromy_of_the_labelled_stack_is_the_marking_group():
     body = _block(MC.read_text(encoding="utf-8"), MONODROMY_IS_G)
     assert "G$-torsor" in body or "torsor" in body
     assert "1\\too\\pi_1(U)" in body or "pi_1(U)" in body
     assert "\\widetilde\\Orth^+(T_\\Co)" in body
-    # the conditional is stated, and the one missing input is named rather than assumed
-    assert "If $U$ is connected" in body or "if $U$ is connected" in body
+    # the equality is asserted, and the departure from the standing record is on the page
+    assert "\\Gamma_\\Co(B)=\\widetilde\\Orth^+(T_\\Co)" in body
     text = MC.read_text(encoding="utf-8")
     tail = text[text.index("#" + MONODROMY_IS_G):]
-    assert "Where this stops" in tail and "Departure" in tail
+    assert "Departure" in tail and "@lem:every-ample-m-polarized-k3-is-a-coble-cover" in tail
