@@ -233,7 +233,7 @@ Let $V$ be the variety of labelled sextics of @not:d2-plane-sextic-base, whose q
 $$\rho\colon\pi_1(V,s)\too\Orth(T_\Co)$$
 be its monodromy representation, whose image is $\Gamma_\Co$ (@def:gamma-co-groups(1)). Then
 $$\Gamma_\Co=\widetilde\Orth^+(T_\Co).$$
-The image of $\Gamma_\Co$ in $\Aut\qty(\bD(T_\Co)^+)=\Orth^+(T_\Co)/\theset{\pm\id}$ is the image of the stable subgroup, and $\fco=\bD(T_\Co)/\Gamma_\Co$ has the same coarse space as $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$.
+The image of $\Gamma_\Co$ in $\Aut\qty(\bD(T_\Co)^+)=\Orth^+(T_\Co)/\theset{\pm\id}$ is the image of the stable subgroup, and $\fco=\bD(T_\Co)/\Gamma_\Co$ has the same coarse space as $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$. In particular $-\id_{T_\Co}\in\Gamma_\Co$: it lies in $\Orth^+(T_\Co)$ because the positive index is $2$ (@lem:minus-identity-spinor-norm) and in $\ker\bar\rho$ because $A_{T_\Co}\cong(\ZZ/2)^{11}$ (@prop:coble-discriminant-group), so it lies in $\widetilde\Orth^+(T_\Co)$.
 :::
 
 ::: {.proof}
@@ -316,7 +316,7 @@ So the answer to G1 depends on the base, and the base is part of D2a; on the lab
 
 On the labelled base of D2a, $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable): the forward inclusion is @lem:coble-family-labelled-monodromy, and the reverse inclusion is the period-map argument of the theorem. So @conj:gamma-co-stable holds on the base the definition names, and $\fco=\bD(T_\Co)/\Gamma_\Co$ has the coarse space of $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$; every cusp count for the stable quotient is a count for $\fco$ (@cor:gamma-co-inclusions(1)).
 
-Three things are not settled here. The sign: whether $-\id_{T_\Co}\in\Gamma_\Co$ is not seen by the period map, which is constant on $\pm\id$; it is the question of @qst:b25-sign-holonomy and does not change $\fco$. The index: $\Gamma_\Co\subseteq\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ has index $10!$ (@thm:gamma-co-sextic-group(4)), so the comparison of bases 2 and 3 is settled as well. And the coarse quotient: its tautological group is $\Orth^+(T_\Co)$, not $\Gamma_\Co$ (@thm:gamma-co-is-full).
+Two further things are settled by the equality itself. The sign: $-\id_{T_\Co}\in\widetilde\Orth^+(T_\Co)$ (@lem:minus-identity-spinor-norm, @prop:coble-discriminant-group), so $-\id\in\Gamma_\Co$, and on the labelled base a loop does carry it. The index: $\Gamma_\Co\subseteq\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ has index $10!$ (@thm:gamma-co-sextic-group(4)), so the comparison of bases 2 and 3 is settled as well. What is not a statement about $\Gamma_\Co$ is the coarse quotient: its tautological group is $\Orth^+(T_\Co)$ (@thm:gamma-co-is-full).
 :::
 
 ::: {.lemma #lem:gluing-discriminant-identification title="The gluing identification $\kappa\colon A_{E_{10}(2)}\isoto A_{T_\En}$"}
