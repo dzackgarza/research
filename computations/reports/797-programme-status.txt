@@ -46,15 +46,34 @@ ITEM 5. Torelli.
   step from a constructible image to a proper closed analytic complement is not proved).
 
 ITEM 6. Pushing, pulling and restricting the VHS; Gamma_Co and Gamma_{Co,2}.
-  REDUCED for Gamma_Co: prop:gamma-co-from-the-labelled-stack gives
-  Gamma_Co <= Otilde^+(T_Co) and reduces the equality to the labelled statement;
-  prop:pi1-of-the-plane-model-quotient computes the plane-model quotient and bounds its
-  image memberwise; prop:gamma-co-on-the-coble-stack is the combined statement,
-  conditional on (L) and (S), with the alternative Gamma_Co = Otilde^+/{+-1} at a
-  general member and the special-member case open.
-  NOT MET: the identification itself, and any statement for Gamma_{Co,2}.
+  PROVED: the local system on the labelled stack is the pullback of the one on the
+  stack of Coble surfaces, so rho^lab = rho_Co o p_* with p_* onto, and
+  Gamma_Co = rho_Co(pi_1(M_Co)) = rho^lab(pi_1(M^lab,S_10)) -- an IMAGE, with
+  rho^lab(ker p_*) = 1 automatically (prop:pi1-of-the-plane-model-quotient(1)-(4));
+  the isotropy and plane-model contributions are carried by loops of the labelled
+  stack and are neither added nor divided out (rmk:correction-monodromy-is-an-image).
+  CONDITIONAL: Gamma_Co = Otilde^+(T_Co) given (L) the labelled equality, with no
+  further input (prop:gamma-co-on-the-coble-stack).
+  OPEN: (L) itself -- the labelled monodromy is all of Otilde^+(T_Co), equivalently
+  the connectedness of the period image on the labelled stack, which is
+  thm:gamma-co-is-stable(2) and items 3-4's open step.  This is now the ONLY open
+  input for Gamma_Co.
+  OPEN: everything about Gamma_{Co,2}; no statement identifies it.
+  WITHDRAWN: the quotient formula Gamma_Co = Otilde^+/rho(N), the isotropy subgroup
+  F_b as a separate input, the input rho(N) = 1, and the alternative
+  Gamma_Co = Otilde^+/ {+-1} (bc991006fc).
 
-WHAT WOULD FINISH IT.  Two inputs, both single: (i) the labelled equality, which is
-the connectedness of the period image on the labelled stack; (ii) rho(N) = 1, a
-statement about one plane-model loop at a general member.  Everything else in the
-item-6 chain is conditional on those two and is stated as such.
+WHAT WOULD FINISH EACH OPEN ITEM.
+  Item 1: the algebraicity of the functor and a family over a scheme presenting it.
+  Item 2: a functor of Enriques surfaces over Z[1/2] with its stack property and
+    universal family; the two-lattice structure of the partial compactification.
+  Items 3-4: the labelled period theorem and the marking-group proposition, on the
+    item-3/4 branch, together with (L).
+  Item 5: the Torelli findings, which belong to 42fp: object injectivity plus a
+    differential do not identify inertia; no ample class is constructed where
+    BHPV04 Chapter VIII Theorem 11.1 needs one; the step from a constructible image to
+    a proper closed analytic complement is not proved; and AE23 Theorem 5.4's
+    [D_Lambda : _W Gamma] with inertia Gamma_x/W_x(Lambda^perp) is not addressed.
+  Item 6: (L) for Gamma_Co; nothing yet for Gamma_{Co,2}.
+  Presentation: the functor is over Z[1/2] and items 3-6 are over C; no page
+    reconciles the two bases.
