@@ -22,10 +22,9 @@ This repository is a research programme, and every unit of work in it is a step 
 that programme. Before any mathematical work, and again before each new lemma, read:
 
 - [`writing/research-statement/ResearchStatement.md`](writing/research-statement/ResearchStatement.md): the programme and its pipeline;
-- the pages of `writing/` that state your objects, found through
-  [`writing/index-of-definitions.md`](writing/index-of-definitions.md),
-  [`writing/index-of-results.md`](writing/index-of-results.md) and
-  [`writing/open-questions.md`](writing/open-questions.md);
+- the pages of `writing/` that state your objects: search `writing/` for their names and
+  for their `def:`, `prop:`, `thm:` and `conj:` labels (the index pages are filled only at
+  render time), and read [`writing/open-questions.md`](writing/open-questions.md);
 - `writing/dissertation/` where it treats those objects.
 
 Work from what the volume already defines and proves, and follow the routes it states.
