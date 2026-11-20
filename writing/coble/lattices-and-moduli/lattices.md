@@ -666,7 +666,6 @@ In the situation of @lem:coble-monodromy-in-stabilizer, assume
 
 Then (F) holds: the local system with fibre $T_\Co$ is the $\delta^{\perp}$-part of the restriction to $\Delta$ of the local system with fibre $T_\En$.
 
-(U) is **not available in this book**: no definition of the degree-$2$ Coble family, or of its marking, is given here, and supplying them is D2 of research#786. The ambient half is AEGS's universal family of Enriques surfaces over the moduli stack, quoted in the proof; the Coble half is the quotient over $\Delta$, which is what the missing definition has to make into a moduli functor.
 :::
 
 ::: {.proof}
@@ -681,7 +680,9 @@ Then (F) holds: the local system with fibre $T_\Co$ is the $\delta^{\perp}$-part
 :::
 
 ::: {.remark #rmk:coble-family-identification-status title="Where the two halves of the identification come from"}
-The ambient family is [@AEGS25], at the level recorded in @rmk:coble-universal-family-level; the fibre marking is [@DK13, §3] and @prop:coble-cover-marking. Neither is a definition of the degree-$2$ Coble family as a moduli functor, which is (U) and is D2 of research#786. The one thing neither paper writes as a single statement is the pair for $\Delta$: [@AEGS25] identifies the *points* of $\Delta$ with the Coble quotients and [@DK13] describes the covers fibre by fibre. The rank of the period lattice, $11$ [@DK13, (3.6)], is the rank of the classical family, which is what makes the identification the right one. The identification of the points of $\Delta$ with the Coble quotients is [@AEGS25]; (F), the family-level statement used by @lem:coble-monodromy-in-stabilizer, is @lem:coble-family-identification under its hypothesis (U).
+The ambient family is [@AEGS25], at the level recorded in @rmk:coble-universal-family-level; the fibre marking is [@DK13, §3] and @prop:coble-cover-marking. The degree-$2$ Coble family as a moduli functor is @def:coble-family-degree-two. The one thing neither paper writes as a single statement is the pair for $\Delta$: [@AEGS25] identifies the *points* of $\Delta$ with the Coble quotients and [@DK13] describes the covers fibre by fibre. The rank of the period lattice, $11$ [@DK13, (3.6)], is the rank of the classical family, which is what makes the identification the right one. The identification of the points of $\Delta$ with the Coble quotients is [@AEGS25]; (F), the family-level statement used by @lem:coble-monodromy-in-stabilizer, is @lem:coble-family-identification under its hypothesis (U).
+
+Hypothesis (U) of @lem:coble-family-identification has three parts, and the book supplies two of them. The degree-$2$ Coble family and its local system with fibre $T_\Co$ are @def:coble-family-degree-two, with $\Gamma_{\Co,2}$ its monodromy group (@def:gamma-co-groups(5)); on every fibre the covering involution has invariant lattice $S_\Co$, spanned by $e_0,\dots,e_{10}$ (@prop:coble-cover-marking). The third part is not proved: that this family, over $\Delta$, is the restriction of the universal family of [@AEGS25] over the moduli stack of degree-$2$ numerically polarized Enriques surfaces. @def:coble-family-degree-two is a functor on all complex bases $Y$ and does not mention that universal family, and nothing read identifies the two; the same gap, for the unpolarized family and the family of Enriques surfaces, is @rmk:d2-what-is-open(2). The identification also cannot be made with $\Delta$ read as the orbifold $\bD(T_\Co)/R_{\gent}$, which carries no family of Coble surfaces with its tautological local system (@lem:d2b-forgets-to-d2a(3)).
 :::
 
 ::: {.remark #rmk:coble-universal-family-level title="At which level the universal family over $F_{\En,2}$ exists"}
