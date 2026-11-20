@@ -176,6 +176,7 @@ def test_no_page_asserts_non_membership_that_is_the_open_question():
 
 
 REGISTER = WRITING / "open-questions.md"
+RS = WRITING / "research-statement/ResearchStatement.md"
 
 
 def test_the_register_row_names_the_arithmetic_group_for_the_cusp_five_orbits():
@@ -193,6 +194,23 @@ def test_the_register_row_names_the_arithmetic_group_for_the_cusp_five_orbits():
     assert "are one $\\Gamma_{\\Co,2}$-orbit by an explicit integral isometry" not in row
     assert "are one $R_{\\gent}$-orbit by an explicit integral isometry" in row
     assert "@qst:coble-monodromy-equality" in row
+
+
+def test_the_volume_sends_each_group_to_its_own_question():
+    """Gamma_Co and Gamma_{Co,2} are different groups with different open questions.
+
+    Gamma_{Co,2}'s relation to R_gent cap O^+ is qst:coble-monodromy-equality; Gamma_Co's
+    relation to Otilde^+(T_Co) is conj:gamma-co-stable, and the cusp diagram's passage for
+    Gamma_Co is not the degree-two question.  A summary page that sends both to one question
+    misstates Gamma_Co's status, and the register row may not call the orbit question closed.
+    """
+    rs = RS.read_text()
+    assert ("the passage to \\( \\Gamma_{\\Co} \\) and \\( \\Gamma_{\\Co,2} \\) is "
+            "@qst:coble-monodromy-equality") not in rs
+    assert "@conj:gamma-co-stable" in rs
+    row = [l for l in REGISTER.read_text(encoding="utf-8").splitlines()
+           if "no-moduli-loss" in l or "no_moduli_loss" in l][0]
+    assert "what is open there is the identification step and not the orbit" not in row
 
 
 def _run_all() -> int:
