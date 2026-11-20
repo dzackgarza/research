@@ -66,6 +66,20 @@ def test_the_meridian_step_is_not_overstated():
     assert "@Voi07, Thm. 3.16" in text
 
 
+def test_the_arrangement_is_strictly_larger_with_an_explicit_root():
+    """Item 7 finished: H_T contains a hyperplane from an isotropic class.
+
+    For an isotropic e in U(2) the vector r = l_1 + e has square -2, is orthogonal to H
+    and is not in L, so it is one of the roots defining H_T; its hyperplane is e-perp, and
+    e is isotropic.  So H_T is strictly larger than the square-(-2) arrangement, and no
+    description of the monodromy by the s_delta alone can be complete."""
+    text = LA.read_text(encoding="utf-8")
+    body = _block(text, LEMMA)
+    assert "strict" in body
+    assert "isotropic" in body
+    assert "\\ell_1" in body or "l_1" in body
+
+
 def _run_all() -> int:
     items = [(n, f) for n, f in sorted(globals().items())
              if n.startswith("test_") and callable(f)]
