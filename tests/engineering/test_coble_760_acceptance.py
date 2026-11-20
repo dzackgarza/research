@@ -303,11 +303,14 @@ def test_item_3_the_vacuity_claim_is_withdrawn_and_the_pair_named() -> None:
     assert "Not vacuous" in conj_block
     assert "Settled, vacuously" not in conj_block
     assert "holds vacuously: the marking is unique" not in text
-    # the pair is named in the remark and is now decided, with the two surviving facts
+    # the pair is named in the remark and is now decided, with the two surviving facts.
+    # The 13 <-> 14 witness is an element of Gent, so what it proves is R_gent-equivalence:
+    # thm:coble-monodromy-versus-enriques(3) refutes Gamma_{Co,2} = R_gent and (4) gives only
+    # the containment, so the Gamma_{Co,2} half of the pair is not established by it.
     remark = block("rmk:coble-root-orbits-cusp-five")
     assert "no element of it carries $r_{12}$ to $r_{13}$ at all" in remark
     assert "coble_759-gamma-co-2-orbit-1213-run.txt" in remark
-    assert "13$ and $14$ are $\\Gamma_{\\Co,2}$-equivalent" in remark
+    assert "13$ and $14$ are $R_{\\gent}$-equivalent" in remark
     assert "lies outside $\\gent$" in remark
     assert "coble_760-gent-membership-run.txt" in remark
 

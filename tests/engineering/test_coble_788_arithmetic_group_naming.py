@@ -56,6 +56,37 @@ def test_the_page_keeps_the_containment_and_the_question():
     assert "@qst:coble-monodromy-equality" in text
 
 
+KSBA = WRITING / "coble/stable-limits/ksba.md"
+
+
+def test_no_prose_says_the_monodromy_group_is_the_restricted_stabilizer():
+    """`Gamma_{Co,2} is the restricted stabilizer R_gent` is the refuted identity in prose."""
+    for path in (PAGE, KSBA):
+        text = path.read_text()
+        assert "$\\Gamma_{\\Co,2}$ is the restricted stabilizer" not in text, path.name
+        assert "\\Gamma_{\\Co,2} is the restricted stabilizer" not in text, path.name
+    assert "$R_{\\gent} = \\bar\\rho^{-1}(P)$ is the restricted stabilizer" in PAGE.read_text()
+
+
+def test_the_cusp_five_orbits_are_the_arithmetic_groups():
+    """The cusp-5 witnesses lie in R_gent; a positive R-relation does not descend to Gamma_{Co,2}.
+
+    thm:coble-monodromy-versus-enriques(4) gives Gamma_{Co,2} <= R_gent cap O^+ and (3)
+    refutes the equality, so R_gent-equivalence of roots 13 and 14 says nothing about
+    their Gamma_{Co,2}-orbits.  The negative pair (12,13) is decided in the larger group
+    and hence in the smaller, which is what makes thm:no-moduli-loss's hypothesis met.
+    """
+    text = KSBA.read_text()
+    forbidden = ("$13$ and $14$ lie in one $\\Gamma_{\\Co,2}$-orbit",
+                 "$13$ and $14$ are $\\Gamma_{\\Co,2}$-equivalent",
+                 "two $\\Gamma_{\\Co,2}$-orbits, $\\{13,14\\}$",
+                 "form one $\\Gamma_{\\Co,2}$-orbit")
+    hits = [f for f in forbidden if f in text]
+    assert not hits, hits
+    assert "$R_{\\gent}$-equivalent" in text
+    assert "$R_{\\gent}$-orbits" in text
+
+
 def _run_all() -> int:
     tests = [(n, f) for n, f in sorted(globals().items())
              if n.startswith("test_") and callable(f)]
