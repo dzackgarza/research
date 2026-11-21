@@ -1,0 +1,5 @@
+# research#810
+
+Let G be a discrete group acting properly discontinuously, with finite stabilizers, on a connected, locally path-connected and locally simply connected space U, and let [U/G] be the quotient stack. Let A be an abelian group. Is the pullback along U -> [U/G] an equivalence from local systems of A-modules on [U/G] (locally constant sheaves on the stack, with their comparisons along the 2-morphisms and the cocycle conditions) to G-equivariant local systems of A-modules on U? And for a base point x of U, does the monodromy of a descended system along a loop of [U/G] at [x] equal the action, through the transport of the per-loop model, of the corresponding element of the orbifold fundamental group pi_1^orb([U/G], [x])?
+
+The statement must be proved on writing/, with exact numbered sources and hypothesis checks, or cited by number. Every assumption (D) on lattices.md and moduli-construction.md must then cite that theorem. Do not change objects, weaken statements, or use the unproved equality Gamma_Co = Otilde^+(T_Co).

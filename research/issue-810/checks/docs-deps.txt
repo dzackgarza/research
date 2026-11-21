@@ -1,0 +1,127 @@
+cd writing/.book && uv run --script ../../scripts/docs_dependency_graph.py --project . --out ../../.tmp/dependency-graph --check
+docs-deps: coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md: missing-id coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md#830
+docs-deps: coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md: missing-id coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md#832
+docs-deps: coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md: missing-id coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md#879
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: missing-defines def:involution-stack
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: missing-defines def:coble-moduli-functor
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: missing-defines def:coble-moduli-functor-z
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: missing-defines def:enriques-partial-compactification
+docs-deps: coble/lattices-and-moduli/marked-coble-covers-and-the-period-map.md: missing-defines def:marked-coble-cover
+docs-deps: coble/stable-limits/polarizing-divisors-for-coble-moduli.md: orphan-proof
+docs-deps: coble/stable-limits/polarizing-divisors-for-coble-moduli.md: orphan-proof
+docs-deps: coble/computations/discriminant-form-descent.md: missing-id coble/computations/discriminant-form-descent.md#1675
+docs-deps: coble/open-problems/open-problems.md: missing-id coble/open-problems/open-problems.md#1720
+docs-deps: coble/open-problems/open-problems.md: missing-id coble/open-problems/open-problems.md#1721
+docs-deps: coble/coble-moduli/coble-families-research-program.md: missing-id coble/coble-moduli/coble-families-research-program.md#1740
+docs-deps: coble/heegner-report/coble-heegner-research-report.md: missing-id coble/heegner-report/coble-heegner-research-report.md#1786
+docs-deps: coble/heegner-report/coble-heegner-research-report.md: missing-id coble/heegner-report/coble-heegner-research-report.md#1821
+docs-deps: coble/heegner-report/coble-heegner-research-report.md: missing-id coble/heegner-report/coble-heegner-research-report.md#1826
+docs-deps: coble/heegner-report/coble-heegner-research-report.md: missing-id coble/heegner-report/coble-heegner-research-report.md#1827
+docs-deps: coble/heegner-report/coble-heegner-research-report.md: missing-id coble/heegner-report/coble-heegner-research-report.md#1841
+docs-deps: coble/heegner-report/coble-heegner-research-report.md: missing-id coble/heegner-report/coble-heegner-research-report.md#1844
+docs-deps: coble/heegner-report/coble-heegner-research-report.md: missing-id coble/heegner-report/coble-heegner-research-report.md#1866
+docs-deps: category-theory/forms-quadratic/Morphisms-of-Form-Modules.md: unlocated-citation "@Wei94, §A.4" thm:form-not-additive
+docs-deps: lattice-theory/embeddings-and-overlattices.md: unlocated-citation "@Jam68, Theorem, p. 303" prop:odd-unimodular-rank-one-transitivity
+docs-deps: lattice-theory/hyperbolic/norm-fibres-and-embedding-loci.md: unlocated-citation "@Tur37" prop:arbitrary-embedding-filter-undecidable
+docs-deps: coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md: unlocated-citation "@Ste91, §2" thm:coble-root-orbit-uniqueness-published
+docs-deps: coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md: unlocated-citation "@CCN+85" prop:theta-co-index
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: unlocated-citation "@HM98, §6.E, Initial reductions" lem:d2-incidence-connected
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: unlocated-citation "@ACGH85, Chapter III, §1" lem:d2-incidence-connected
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: unlocated-citation "@Bea96, Chapter III, the classification of minimal rational surfaces" lem:sym-cotangent-birational
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: unlocated-citation "@EV92, §3, Chapter I" lem:coble-moduli-functor-stack
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: unlocated-citation "@DZ99, Introduction" prop:coble-plane-models-are-double-point-sextics
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: unlocated-citation "@DZ99, Introduction" lem:coble-moduli-functor-fppf
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: unlocated-citation "@DK13, §3" lem:coble-is-the-boundary-divisor
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: unlocated-citation "@CD12" prop:gamma-co-from-the-labelled-stack
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: unlocated-citation "@DZ99, Introduction" lem:d2-unpolarised-family
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: unlocated-citation "@DK13, §3" lem:d2-unpolarised-family
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: unlocated-citation "@EV92, §3, Chapter I" lem:d2-unpolarised-family
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: unlocated-citation "@DK13, §3" lem:d2-local-system
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: unlocated-citation "@Noo05, §20" lem:pi1-of-a-groupoid-quotient-is-generated-by-three-contributions
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: unlocated-citation "@Noo05" lem:pi1-of-a-groupoid-quotient-is-generated-by-three-contributions
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: unlocated-citation "@DK13, §3" lem:d2-degree-two-polarization
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: unlocated-citation "@DK13, §7" lem:d2b-polarization-is-a-class
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: unlocated-citation "@DK13, §7" lem:d2b-polarization-is-a-class
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: unlocated-citation "@DK13, §8" lem:d2b-polarization-is-a-class
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: unlocated-citation "@Dol96, §3" prop:quotient-stack-of-periods
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: unlocated-citation "@Dol96, §5" prop:coble-quotient-presentation
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: unlocated-citation "@DK13, §5" prop:torelli-for-the-coble-lattice
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: unlocated-citation "@Dol96, §3" thm:coble-period-map-of-the-stack
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: unlocated-citation "@Dol96, §1" prop:d2a-family-is-pseudo-ample
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: unlocated-citation "@DK13, §3" thm:coble-period-surjectivity
+docs-deps: coble/lattices-and-moduli/lattices.md: unlocated-citation "@Dol96" lem:d2-monodromy-in-discriminant-kernel
+docs-deps: coble/lattices-and-moduli/lattices.md: unlocated-citation "@Huy05, Ch. 3" lem:d2-arrangement-classes
+docs-deps: coble/lattices-and-moduli/lattices.md: unlocated-citation "@AEGS25" lem:coble-family-identification
+docs-deps: coble/lattices-and-moduli/marked-coble-covers-and-the-period-map.md: unlocated-citation "@DK13, §3" prop:marked-coble-period-not-injective
+docs-deps: coble/lattices-and-moduli/marked-coble-covers-and-the-period-map.md: unlocated-citation "@DK13, §3" prop:marked-coble-period-not-injective
+docs-deps: coble/compactifications/reflective-two-elementary-lattices.md: unlocated-citation "@Ale22, §3, paragraph "Other coeven lattices"" thm:coeven-duality
+docs-deps: coble/compactifications/reflective-two-elementary-lattices.md: unlocated-citation "@Ale22, §2" thm:two-elementary-hyperbolic-decomposition
+docs-deps: coble/compactifications/reflective-two-elementary-lattices.md: unlocated-citation "@Ale22, §2" thm:parabolic-isotropic-correspondence
+docs-deps: coble/compactifications/reflective-two-elementary-lattices.md: unlocated-citation "@Ale22, §3" thm:maximal-parabolic-counts
+docs-deps: coble/compactifications/reflective-two-elementary-lattices.md: unlocated-citation "@Ale22, §3, paragraph "(11,11,1)"" thm:coble-picard-parabolics
+docs-deps: coble/compactifications/reflective-two-elementary-lattices.md: unlocated-citation "@Ale22, §1" thm:k3-automorphism-sequence
+docs-deps: coble/compactifications/toroidal-and-semitoroidal.md: unlocated-citation "@AE23" thm:semifan-stratum
+docs-deps: coble/compactifications/toroidal-and-semitoroidal.md: unlocated-citation "@AE22" thm:semifan-stratum
+docs-deps: coble/compactifications/toroidal-and-semitoroidal.md: unlocated-citation "@AE23" thm:semifan-stratum
+docs-deps: coble/compactifications/toroidal-and-semitoroidal.md: unlocated-citation "@ABE22, Intro." prop:semifan-coarsening-fails
+docs-deps: coble/compactifications/toroidal-and-semitoroidal.md: unlocated-citation "@AE22, §10, printed p. 57" thm:cone-inventory-printed
+docs-deps: coble/compactifications/toroidal-and-semitoroidal.md: unlocated-citation "@AET23" cor:semifan-computed-cases
+docs-deps: coble/compactifications/toroidal-and-semitoroidal.md: unlocated-citation "@AET23" lem:rcop-refinement-criterion
+docs-deps: coble/compactifications/toroidal-and-semitoroidal.md: unlocated-citation "@Nik79b, p. 1404" lem:k-not-two-reflective
+docs-deps: coble/compactifications/toroidal-and-semitoroidal.md: unlocated-citation "@Nik79b, printed p. 1402" lem:wall-criterion
+docs-deps: coble/cusp-correspondence/cusp-diagram-calculations.md: unlocated-citation "@DK13" prop:coble-pair-boundary
+docs-deps: coble/cusp-correspondence/cusp-diagram-calculations.md: unlocated-citation "@DK13" prop:coble-pair-class
+docs-deps: coble/cusp-correspondence/cusp-diagram-calculations.md: unlocated-citation "@DK13" prop:coble-pair-class
+docs-deps: coble/cusp-correspondence/cusp-diagram-calculations.md: unlocated-citation "@DK13" prop:coble-pair-class
+docs-deps: coble/cusp-correspondence/cusp-diagram-calculations.md: unlocated-citation "@DK13" prop:coble-negative-curves
+docs-deps: coble/cusp-correspondence/cusp-diagram-calculations.md: unlocated-citation "@AEGS25" thm:coble-pair-semifan
+docs-deps: coble/cusp-correspondence/cusp-diagram-calculations.md: unlocated-citation "@AEGS25" thm:coble-pair-semifan
+docs-deps: coble/cusp-correspondence/cusp-diagram-calculations.md: unlocated-citation "@AEGS25" thm:coble-pair-semifan
+docs-deps: coble/cusp-correspondence/cusps-over-sterk-cusps.md: unlocated-citation "@Vin85, §1, no. 1" thm:ou-e8-transitive
+docs-deps: coble/stable-limits/ksba.md: unlocated-citation "@AEGS25" prop:coble-marking-class-is-heegner
+docs-deps: coble/stable-limits/ksba.md: unlocated-citation "@AEGS25" prop:coble-marking-class-is-heegner
+docs-deps: coble/stable-limits/ksba.md: unlocated-citation "@AEGS25, printed p. 587" prop:coble-marking-class-is-heegner
+docs-deps: coble/open-problems/open-problems.md: unlocated-citation "@YZ23, beginning of §3, p. 5" thm:coble-arrangement-nonempty
+docs-deps: coble/open-problems/open-problems.md: unlocated-citation "@zotero-item-31353, §7, pp. 13–14" thm:coble-arrangement-nonempty
+docs-deps: coble/open-problems/open-problems.md: unlocated-citation "@YZ23, p. 10" thm:coble-arrangement-nonempty
+docs-deps: coble/coble-moduli/coble-families-research-program.md: unlocated-citation "@AEGS25, p. 610" thm:coble-n-semifan-verdict
+docs-deps: coble/coble-moduli/cusp-correspondence-morphism-chain.md: unlocated-citation "@BB66" lem:cusp-map-of-a-period-lattice-embedding
+docs-deps: coble/coble-moduli/cusp-correspondence-morphism-chain.md: unlocated-citation "@BB66" lem:cusp-map-of-a-period-lattice-embedding
+docs-deps: coble/heegner-report/coble-heegner-research-report.md: unlocated-citation "@AN06, display (11)" thm:direct-period-misses-root-walls
+docs-deps: coble/heegner-report/coble-heegner-research-report.md: unlocated-citation "@Nik80" thm:direct-period-misses-root-walls
+docs-deps: coble/heegner-report/coble-heegner-research-report.md: unlocated-citation "@DK13" thm:direct-period-misses-root-walls
+docs-deps: coble/heegner-report/coble-heegner-research-report.md: unlocated-citation "@AN06" thm:direct-period-misses-root-walls
+docs-deps: coble/heegner-report/coble-heegner-research-report.md: unlocated-citation "@DK13" thm:direct-period-misses-root-walls
+docs-deps: coble/heegner-report/coble-heegner-research-report.md: unlocated-citation "@AN06, display (10)" thm:direct-period-meets-minus-four
+docs-deps: coble/heegner-report/coble-heegner-research-report.md: unlocated-citation "@AN06, (11)" prob:B24
+docs-deps: coble/heegner-report/coble-heegner-research-report.md: unlocated-citation "@AN06" prob:B24
+docs-deps: coble/heegner-report/coble-heegner-research-report.md: unlocated-citation "@DK13, §3" lem:minus-id-in-direct-group
+docs-deps: coble/heegner-report/coble-heegner-research-report.md: unlocated-citation "@Ste91" prob:B25
+docs-deps: coble/heegner-report/coble-heegner-research-report.md: unlocated-citation "@AN06" thm:no-loop-carries-the-sign
+docs-deps: coble/heegner-report/coble-heegner-research-report.md: unlocated-citation "@Vin67" thm:semifan-restriction
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: cycle lem:d2-incidence-connected not:d2-plane-sextic-base
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: cycle thm:coble-smooth-antibicanonical-is-a-plane-blowup lem:coble-double-point-of-the-sextic
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: cycle lem:d2-local-system def:gamma-co-groups def:coble-family-unpolarized
+docs-deps: coble/lattices-and-moduli/local-systems-of-lattices-and-monodromy.md: uncited-term "exact" lem:monodromy-of-a-descended-local-system def:exact-complex
+docs-deps: coble/lattices-and-moduli/local-systems-of-lattices-and-monodromy.md: uncited-term "kernel" lem:monodromy-of-a-descended-local-system def:kernel-cokernel
+docs-deps: coble/lattices-and-moduli/local-systems-of-lattices-and-monodromy.md: uncited-term "local system of lattices" lem:monodromy-of-a-descended-local-system def:local-system-of-lattices
+docs-deps: coble/lattices-and-moduli/local-systems-of-lattices-and-monodromy.md: uncited-term "stalk" lem:monodromy-of-a-descended-local-system def:stalk
+docs-deps: coble/lattices-and-moduli/local-systems-of-lattices-and-monodromy.md: uncited-term "kernel" cor:monodromy-of-the-tautological-descent def:kernel-cokernel
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "loop" lem:d2-incidence-connected def:based-loop
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "monodromy group" lem:d2-incidence-connected def:transport-and-monodromy
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "cartan matrix" prop:coble-e8-configuration-excludes-ten-distinct-centres def:cartan-matrix
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "strict transform" lem:cremona-second-plane-model-general def:strict-transform
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "group" not:paths-of-a-groupoid-quotient def:group
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "path" not:paths-of-a-groupoid-quotient def:path-connectedness
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "loop" def:haefliger-path def:based-loop
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "path" def:haefliger-path def:path-connectedness
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "gluing data" lem:haefliger-paths-exhaust-the-fundamental-groupoid cons:embedding-gluing-data
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "group" lem:haefliger-paths-exhaust-the-fundamental-groupoid def:group
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "isomorphism" lem:haefliger-paths-exhaust-the-fundamental-groupoid def:isomorphism-of-objects
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "loop" lem:haefliger-paths-exhaust-the-fundamental-groupoid def:based-loop
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "path" lem:haefliger-paths-exhaust-the-fundamental-groupoid def:path-connectedness
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "path connected" lem:haefliger-paths-exhaust-the-fundamental-groupoid def:path-connectedness
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "source" lem:haefliger-paths-exhaust-the-fundamental-groupoid def:globular-boundary
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "target" lem:haefliger-paths-exhaust-the-fundamental-groupoid def:globular-boundary
+docs-deps: 1904 blocks, 1118 cited results, 9521 edges, 124 findings -> ../../.tmp/dependency-graph
+error: recipe `docs-deps` failed on line 64 with exit code 1
