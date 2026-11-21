@@ -1621,7 +1621,7 @@ Whether the displayed walls form a complete simple system is @prob:coxeter-compl
 Let $\Gamma\le\Orth(T_\Co)$ be any arithmetic subgroup (@def:hsd-arithmetic-subgroup) and let $e$ be a primitive isotropic vector (@def:isotropic-subspace) of $T_\Co$ whose line is a $0$-cusp of $\bD(T_\Co)/\Gamma$.
 Then
 $$e^{\perp}/\bZ e\cong I_{1,8}(2).$$
-In particular the four $0$-cusps of $F_{\Co,2}$ and the one $0$-cusp of $F^{\mathrm{un}}_{\Co}$ have one and the same cusp lattice, and the Coxeter data by which they differ are the images $\Gamma_e\le\Orth(I_{1,8}(2))$ of their stabilizers (@def:group-orbit), not the lattice.
+In particular the four $0$-cusps of $\bD(T_\Co)/R_{\gent}$ and the one $0$-cusp of $F^{\mathrm{un}}_{\Co}$ have one and the same cusp lattice, and the Coxeter data by which they differ are the images $\Gamma_e\le\Orth(I_{1,8}(2))$ of their stabilizers (@def:group-orbit), not the lattice.
 :::
 
 ::: {.proof}
@@ -1719,7 +1719,7 @@ It does not: $P$ contains all of $O(q_{U(2)})$, so only *some* action on the $U(
 That is @lem:cusp-image-is-the-stabilizer-of-a-class, which uses nothing beyond the two facts @lem:cusp-image-is-finite already records, and it is the reason the first of the two inputs this section used to name is no longer missing.
 :::
 
-**What item 1 still waits on, at the four cusps of $F_{\Co,2}$.** One input, and the other is supplied.
+**What item 1 still waits on, at the four cusps of $\bD(T_\Co)/R_{\gent}$.** One input, and the other is supplied.
 Supplied at a labelled cusp in the shape of @prop:cusp-stabilizer-orthogonal-coble, that is for the representative $\eta=e$ of the $U(2)$ summand: the image is $\rho_K^{-1}(\Stab_{\Orth(q_K)}(e_0))$ with $e_0=[h/2]$, it contains every reflection of $K$, and the labelled chamber is the unpolarized chamber (@lem:cusp-image-is-the-stabilizer-of-a-class, @thm:labelled-chamber-is-the-unpolarized-chamber).
 What the four published representatives still need is the transport of that one class to each of them: for $\eta_i$ carried to $e$ by $g_i\in\Orth(T_\Co)$ the group $R_{\gent}$ is carried to $\rho^{-1}(\rho(g_i)P\rho(g_i)^{-1})$, so the class whose stabilizer is the image at the $i$-th cusp is $\rho(g_i)(e_0)$ and not $e_0$ unless $g_i$ normalizes $P$.
 So the image at a labelled cusp is now a single class of $A_K$ per cusp, and the four classes are computable from the four recorded representatives.
@@ -1973,7 +1973,7 @@ For each direct Coble $0$-cusp, define a root to be relevant if a general crossi
 The maximal regions of combinatorial constancy of direct Coble stable pairs are exactly the cones of the generalized Coxeter semifan obtained from the direct Coble Coxeter diagram of @prob:coxeter-completeness and the intrinsic relevance marking.
 :::
 
-At the four $0$-cusps of $F_{\Co,2}$ the generalized semifan is a theorem, with the marking inherited by restriction from the Enriques semifans: @thm:coble-pair-semifan answers the three questions of this unit at each of them. At the one $0$-cusp of $F^{\mathrm{un}}_\Co$ there is no Enriques cusp above it to restrict from, and there the Coxeter part is @thm:coble-coxeter-semifan, a fan with one Type II ray; what is missing at that cusp is the marking, the dictionary from its nine simple roots to curves of the Coble surface, which @warn:coble-marking records.
+At the four $0$-cusps of $\bD(T_\Co)/R_{\gent}$ the generalized semifan is a theorem, with the marking inherited by restriction from the Enriques semifans: @thm:coble-pair-semifan answers the three questions of this unit at each of them. The $0$-cusps of $F_{\Co,2}$ sit over these four, and whether one of them splits is open (@lem:d2-degree-two-base(3)). At the one $0$-cusp of $F^{\mathrm{un}}_\Co$ there is no Enriques cusp above it to restrict from, and there the Coxeter part is @thm:coble-coxeter-semifan, a fan with one Type II ray; what is missing at that cusp is the marking, the dictionary from its nine simple roots to curves of the Coble surface, which @warn:coble-marking records.
 
 The theorem must determine cusp by cusp whether the irrelevant reflection group is finite, whether the semifan is an actual fan, and whether any Type II parabolic component consists entirely of irrelevant roots.
 
@@ -3001,7 +3001,7 @@ The table lists each statement, whether it is proved, and the section that prove
 | Polarized Coble Coxeter diagrams | the lattice is one, $I_{1,8}(2)$, at every cusp (@thm:one-cusp-lattice); the folded diagrams at the four stabilizer images are not established | @sec-coxeter |
 | Integral-affine Coble package | defined; realization open | @sec-coble-affine-package |
 | Direct dlt and stable-model theorem | open | @sec-coble-dlt |
-| Exact Coble semifans | established at the four $0$-cusps of $F_{\Co,2}$ by restriction, the marking inherited; no marking at the one $0$-cusp of $F^{\mathrm{un}}_\Co$ | @sec-direct-semifans, @sec-coble-pair-semifan |
+| Exact Coble semifans | established at the four $0$-cusps of $\bD(T_\Co)/R_{\gent}$ by restriction, the marking inherited (the $0$-cusps of $F_{\Co,2}$ sit over them, splitting open); no marking at the one $0$-cusp of $F^{\mathrm{un}}_\Co$ | @sec-direct-semifans, @sec-coble-pair-semifan |
 | Normalization of the Heegner KSBA closure | target theorem | @sec-heegner-target |
 | Target theorem B, clause by clause | clause 1 decided (@cor:four-groups-decided); clauses 2 to 6 not established, and with them the canonical isomorphism at the head of the statement | @sec-heegner-target |
 

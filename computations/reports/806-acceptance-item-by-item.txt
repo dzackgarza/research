@@ -17,11 +17,131 @@ of this file, the VG3H round: the diagram's |W(E_8)| label, the universal
 quotient-monodromy sentence, the no-count-transfer sentence, and two Noohi
 citation numbers; and, in a later commit, the WEJM round: the cusp page's
 proof sentence that denied count coincidence, and the same overstatement
-in cusps-over-sterk-cusps.md:3.
+in cusps-over-sterk-cusps.md:3; and, in a later commit, the YFDV round: the
+cusp page's four 0-cusps and their semifans renamed from F_{Co,2} to
+D(T_Co)/R, with the same renaming carried to its citers.
 Paths are relative to the repository root; line numbers are those of the commit
 that carries this file.
 
-CURRENT STATUS AFTER WEJM (review wejm of research#806 at b487dd8633)
+CURRENT STATUS AFTER YFDV (review yfdv of research#806 at a177886c0f)
+
+  Review yfdv accepts the C:304 and cusps-over-sterk-cusps.md:3 repairs and
+  reports that vmuk has since taken M:1104 to thm:quotient-local-system-descent
+  (8f17a013db), so that site is not this issue's.  What remains is that the
+  cusp page assigned to F_{Co,2} the four 0-cusps and their semifans that
+  thm:coble-pair-semifan computes for D(T_Co)/R.  For Gamma_{Co,2} only
+  Gamma_{Co,2} in R cap O^+ is proved, which gives a surjection from
+  Gamma_{Co,2}-orbits onto R-orbits and no splitting statement.
+
+  SITES REPAIRED IN cusp-diagram-calculations.md.
+
+  1. :228, the section heading.  OLD: "The generalized Coxeter semifan at the
+     0-cusps of F_{Co,2}".  NEW: "... at the four 0-cusps of D(T_Co)/R_gent".
+     The id sec-coble-pair-semifan is unchanged, so its cross-references
+     still resolve.
+  2. :239, the theorem title.  OLD: "... of the Coble stable pairs at each
+     0-cusp of F_{Co,2}".  NEW: "... at each 0-cusp of D(T_Co)/R_gent".
+  3. :185, the prose that sends the reader to the theorem.  OLD: "at the four
+     0-cusps of F_{Co,2} its hypotheses are verified one by one in
+     thm:coble-pair-semifan".  NEW: "at the four 0-cusps of D(T_Co)/R_gent".
+  4. :235, the section's opening prose.  OLD: "The semifan at a 0-cusp of
+     F_{Co,2} is not formed from a divisor of the Coble surface ...".  NEW:
+     "The semifan at a 0-cusp of D(T_Co)/R_gent is not formed ...", followed by
+     the one direction that is proved: "The 0-cusps of F_{Co,2} are not
+     computed here, one direction of the comparison being all that is proved:
+     Gamma_{Co,2} in R_gent cap O^+ (lem:d2-degree-two-base(3)), so the
+     quotient map D(T_Co)/Gamma_{Co,2} -> D(T_Co)/R_gent carries each 0-cusp of
+     F_{Co,2} onto one of these four, and whether one of the four splits into
+     several is open."
+  5. :242, item (0) of the theorem, aligned with the same standard.  OLD: "the
+     same four are not identified as the 0-cusps of F_{Co,2} ... : that
+     transfer would need the identification Gamma_{Co,2} = R cap O^+, which is
+     false".  NEW: "they are not the 0-cusps of F_{Co,2} = D(T_Co)/Gamma_{Co,2},
+     which sit over them: ... every R_gent-orbit is a union of Gamma_{Co,2}-
+     orbits, the induced map from the 0-cusps of F_{Co,2} onto these four is
+     surjective, and the count for F_{Co,2} is at least four.  Whether one of
+     the four splits is open: the identification Gamma_{Co,2} = R cap O^+,
+     which would make the two counts equal, is false."
+  6. :329, the scope remark.  OLD: "The theorem gives the semifan at the four
+     0-cusps of F_{Co,2}, which is the datum a semitoroidal compactification of
+     F_{Co,2} consumes at its 0-cusps."  NEW: the four 0-cusps are those of
+     D(T_Co)/R_gent, "the datum a semitoroidal compactification of F_{Co,2}
+     consumes at its 0-cusps once a splitting is known", and then what is
+     proved for F_{Co,2} itself: the quotient map carries each of its 0-cusps
+     onto one of these four, the count is at least four, and whether one of the
+     four splits is open.
+
+  FURTHER "of F_{Co,2}" CLAIMS, FOUND AND REPAIRED.  The other cusp pages of
+  the cusp-correspondence directory were searched: cusp-diagrams-by-moduli-
+  space.md and enriques-to-coble-cusp-correspondence.md carry no claim of this
+  shape.  Outside that directory the same claim is made by citers of the
+  renamed theorem, and each is now renamed to the group it computes:
+
+  7. cusp-correspondence-morphism-chain.md:84.  OLD: "each of Sterk's cusps 2
+     to 5 carries a 0-cusp of F_{Co,2} with boundary lattice (9,9,1)_1, by
+     thm:coble-pair-semifan(0) ...".  NEW: "carries a 0-cusp of
+     D(T_Co)/R_gent ... --- the 0-cusps of F_{Co,2} sit over these four, and
+     whether one of the four splits is open (lem:d2-degree-two-base(3))".
+  8. cusp-correspondence-morphism-chain.md:103.  OLD: "That each is a 0-cusp
+     of F_{Co,2} over the cusp named by the same vector is
+     lem:cusp-map-of-a-period-lattice-embedding ...".  NEW: "a 0-cusp of
+     D(T_Co)/R_gent".
+  9. coble-heegner-research-report.md:1624.  OLD: "the four 0-cusps of
+     F_{Co,2} and the one 0-cusp of F^un have one and the same cusp lattice".
+     NEW: "the four 0-cusps of D(T_Co)/R_gent and the one 0-cusp ...".
+ 10. coble-heegner-research-report.md:1722.  OLD: "at the four cusps of
+     F_{Co,2}" (heading).  NEW: "at the four cusps of D(T_Co)/R_gent".
+ 11. coble-heegner-research-report.md:1976.  OLD: "At the four 0-cusps of
+     F_{Co,2} the generalized semifan is a theorem ... thm:coble-pair-semifan
+     answers the three questions of this unit at each of them."  NEW: the four
+     0-cusps are those of D(T_Co)/R_gent, and "The 0-cusps of F_{Co,2} sit
+     over these four, and whether one of them splits is open
+     (lem:d2-degree-two-base(3))."
+ 12. coble-heegner-research-report.md:3004 (the status table).  OLD: "Exact
+     Coble semifans | established at the four 0-cusps of F_{Co,2} by
+     restriction, the marking inherited".  NEW: "... at the four 0-cusps of
+     D(T_Co)/R_gent ..., the marking inherited (the 0-cusps of F_{Co,2} sit
+     over them, splitting open)".
+ 13. the-heegner-line-and-the-coble-arithmetic-group.md:2933, the title of
+     prop:coble-cong-point-stabilizer.  OLD: "... and the 0-cusps of F_{Co,2}".
+     NEW: "... and the 0-cusps of D(T_Co)/(R_gent cap O^+(T_Co))", which is
+     what its clause 3 already computes.
+ 14. the-heegner-line-and-the-coble-arithmetic-group.md:2993, the title of
+     rmk:coble-plane-incidence-rows.  OLD: "... the cusps of F_{Co,2} and the
+     incidence".  NEW: "... the cusps of D(T_Co)/R_gent and the incidence".
+ 15. coble/open-problems/open-problems.md:174.  OLD: "it is a theorem at the
+     four 0-cusps of F_{Co,2}, with the marking inherited by restriction
+     (thm:coble-pair-semifan)".  NEW: "... at the four 0-cusps of
+     D(T_Co)/R_gent ... --- the 0-cusps of F_{Co,2} sit over them, and whether
+     one of the four splits is open ---".
+
+  CHECKED AND LEFT.  The phrase "Coble 0-cusp", used of a cusp of \fentwo that
+  carries Coble data (thm:coble-zero-cusp-sterk-two, cusps-over-sterk-cusps.md,
+  the heegner report, the extracted-references entry for Sterk), is a different
+  object from a 0-cusp of F_{Co,2} and is not renamed.  polarizing-divisors-
+  for-coble-moduli.md:441 already says "at the four 0-cusps of
+  D(T_Co)/R_gent".  The two remaining cusp pages and the envelopes of the
+  theorem's other items name no F_{Co,2}.
+
+  CHECKS RUN.
+  - scripts/docs_check.py --source on this tree and on a base worktree at the
+    same commit (8f17a013db): byte-identical, the same 29 pre-existing
+    bibliography findings, none on a touched page; the renamed section id and
+    the renamed theorem id both still resolve, so their cross-references and
+    the index entries are unaffected.
+  - every @label in the five touched files resolves to a {#...} div.
+  - scripts/docs_dependency_graph.py over writing/.book on base and on this
+    tree: 1904 blocks, 1116 cited results, 9527 -> 9529 edges, 124 findings on
+    both, the finding sets equal up to rotation of one pre-existing cycle; the
+    two added edges are the lem:d2-degree-two-base(3) citations in the two
+    blocks that did not carry it.
+
+  NOT RUN.  tests/engineering/*.py: the conftest imports dzack_research, so
+  collection fails on a plain checkout.  No render was made, so the renamed
+  headings and titles are not checked by a build; CI's gate is not visible from
+  the session and is not claimed.
+
+STATUS AFTER WEJM (superseded by the section above; review wejm of research#806 at b487dd8633)
 
   Review wejm accepts the M:53 and M:1104 repairs and accepts the lower bound
   at C:304 (lem:d2-degree-two-base(3) gives Gamma_{Co,2} in R cap O^+
