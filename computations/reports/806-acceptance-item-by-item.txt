@@ -19,11 +19,101 @@ citation numbers; and, in a later commit, the WEJM round: the cusp page's
 proof sentence that denied count coincidence, and the same overstatement
 in cusps-over-sterk-cusps.md:3; and, in a later commit, the YFDV round: the
 cusp page's four 0-cusps and their semifans renamed from F_{Co,2} to
-D(T_Co)/R, with the same renaming carried to its citers.
+D(T_Co)/R, with the same renaming carried to its citers; and, in a later commit, the
+3NFL round: the Case B verification made cusp by cusp at :185, and the ledger
+row at open-questions.md:56.
 Paths are relative to the repository root; line numbers are those of the commit
 that carries this file.
 
-CURRENT STATUS AFTER YFDV (review yfdv of research#806 at a177886c0f)
+CURRENT STATUS AFTER 3NFL (review 3nfl of research#806 at e1d6772c91)
+
+  Of the three items of review 3nfl, two are this issue's and are repaired;
+  the third is an instruction not to touch a file, and it was not touched.
+  The general connected-group clause of thm:quotient-local-system-descent is
+  research#810's.
+
+  SITES REPAIRED.
+
+  1. cusp-diagram-calculations.md:185, in rmk:coble-relevance-state.
+     OLD: "The mirror case is Case B of @thm:semifan-restriction, and at the
+     four $0$-cusps of $\bD(T_\Co)/R_{\gent}$ its hypotheses are verified one
+     by one in @thm:coble-pair-semifan, where the restricted chambers are the
+     facets of @prop:facet-angles-aegs."  That contradicts the page's own
+     proof, which verifies the hypotheses at three cusps and records that two
+     of them fail at the fourth (:277: "The hypotheses of Case B ... hold at
+     the cusps over 2, 3 and 4 ... At the cusp over 5, (B1) and (B5) both
+     fail"; :325 the same, in the last paragraph of the theorem's proof).
+     NEW: "at three of the four $0$-cusps of $\bD(T_\Co)/R_{\gent}$, those
+     over Sterk's $2$, $3$ and $4$, its hypotheses are verified one by one in
+     @thm:coble-pair-semifan, where the restricted chambers are the facets of
+     @prop:facet-angles-aegs.  At the cusp over $5$ two of them, (B1) and
+     (B5), fail, so what is defined there is the intersection
+     $\mathcal F^{5}\cap\delta^{\perp}$ (the last paragraph of the proof of
+     @thm:coble-pair-semifan)."  The three passages now agree cusp by cusp.
+
+  2. writing/open-questions.md:56, the status-ledger row.
+     OLD: "@prob:direct-semifan (answered at the four $0$-cusps of
+     $F_{\Co,2}$: @thm:coble-pair-semifan)".
+     NEW: "@prob:direct-semifan (answered at the four $0$-cusps of
+     $\bD(T_\Co)/R_{\gent}$: @thm:coble-pair-semifan; the $0$-cusps of
+     $F_{\Co,2}$ map onto these four, and whether one of them splits is open,
+     @lem:d2-degree-two-base(3))".  This matches the section heading and the
+     theorem title at :228 and :239 of the cusp page.
+
+  3. writing/talks/2026-07 PCRM/pcrm_pres.tex: NOT TOUCHED, as instructed.
+     It is the owner's record of a past talk, not a page of the volume.  No
+     site in it was edited, and no claim in it was counted in the searches
+     below.
+
+  SEARCHES RUN FOR THE SAME CLAIM.
+
+  - "Case B of @thm:semifan-restriction": three sites besides :185.  :277 and
+    :325 say what is proved and are unchanged.  coble-heegner-research-
+    report.md:2882 says "All hypotheses of Case B ... hold" for the candidate
+    at Sterk cusp $2$ only, in the proof of that cusp's nine-wall chamber, and
+    is correct as it stands.
+  - "hypotheses are verified" and "verified one by one": no other site.
+  - "answered at the four $0$-cusps" and "at the four $0$-cusps of":
+    writing/open-questions.md:56 was the only remaining site of that shape
+    after the YFDV round; the others already name $\bD(T_\Co)/R_{\gent}$.
+
+  TWO OBSERVATIONS, NOT EDITED, FOR THE OWNER OF thm:coble-pair-semifan.
+
+  (a) The page asserts at :277 and at :325 that at cusp $5$ "the coincident
+      wall $3\equiv13\equiv10$ carries the relevant root $3$ together with the
+      irrelevant roots $10,13$", which is how (B5) is said to fail there.
+      But :268 of the same proof says "no two walls coincide: the record
+      prints for each of the four cusps the projected walls together with the
+      pairs whose normals are proportional, and that set is empty at all
+      four", and the record it names,
+      computations/reports/coble_672-zero-cusp-sterk-two-run.txt:59-71,
+      prints "proportional pairs []" at Sterk 2, 3, 4 and 5.  Either the
+      recorded prohibition is what fails, or the coincidence is not one of
+      projected normals; the two passages cannot both be right as worded, and
+      deciding it is #789's, so neither was changed here.
+  (b) Item (1) of the theorem (:255) says "At each of the four ... the marking
+      is inherited", while the last paragraph of its proof (:325) says "it is
+      not the generalized Coxeter semifan of the restricted diagram with an
+      inherited marking, and this theorem asserts no such identification at
+      that cusp" of cusp $5$.  The statement and its proof therefore still
+      disagree at that cusp; the repair of :185 above follows the proof, and
+      item (1) is left for #789 to settle.
+
+  CHECKS RUN.
+  - scripts/docs_check.py --source on this tree and on a base worktree at the
+    same commit (b2b5b4a778): byte-identical output, the same 29 pre-existing
+    "citation is in no bibliography" findings, none on a touched page.
+  - every @label in the two touched files resolves to a {#...} div.
+  - scripts/docs_dependency_graph.py over writing/.book on base and on this
+    tree: 1904 blocks, 1116 cited results, 9529 edges and 124 findings on both,
+    the finding sets equal up to rotation of two pre-existing cycles; no new
+    edge and no new finding.
+
+  NOT RUN.  tests/engineering/*.py: the conftest imports dzack_research, so
+  collection fails on a plain checkout.  No render was made; CI's gate is not
+  visible from the session and is not claimed.
+
+STATUS AFTER YFDV (superseded by the section above; review yfdv of research#806 at a177886c0f)
 
   Review yfdv accepts the C:304 and cusps-over-sterk-cusps.md:3 repairs and
   reports that vmuk has since taken M:1104 to thm:quotient-local-system-descent
