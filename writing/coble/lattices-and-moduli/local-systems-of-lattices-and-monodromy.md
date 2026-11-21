@@ -110,39 +110,33 @@ Hence $\gamma^*=\id_{\bL_s}$.
 A local system with trivial monodromy representation is constant [@Voi07, Corollary 3.10].
 :::
 
-## Local systems on a quotient stack {#sec-local-systems-on-a-quotient-stack}
+## Local systems on a free quotient {#sec-local-systems-of-a-free-quotient}
 
-In this section $U$ is a connected and locally simply connected topological space, the standing hypothesis on $B$ of this chapter, hence locally path connected and semilocally $1$-connected; $G$ is a discrete group acting properly discontinuously on $U$, by which we mean that every compact subset of $U$ meets only finitely many of its translates, so that the stabilisers are finite and $X\definedas[U/G]$, the quotient stack of the groupoid $[G\times U\rightrightarrows U]$, is a topological stack with chart $\pi\colon U\to X$ (Noohi, *Foundations of topological stacks I*, arXiv:math/0503247, Definition 3.3).
-Freeness of the action is a separate hypothesis, used only where an item states it: with stabilisers the stack has isotropy loops, and those are not seen by paths of $U$ (@rmk:isotropy-loops-are-not-paths-of-U, @lem:orbifold-monodromy-of-a-quotient).
-The chart is the representable epimorphism $P$ of Noohi's §7, with representability from his Lemma 6.3, and $X$ is a topological stack: the local homeomorphisms, which the chart is, are the local fibrations of his Example 13.1(6), and his Definition 13.8 asks for a chart in the chosen class.
-The chart is a covering map with fibre $G$ in the sense of Noohi's Definition 4.5, the same notion as his Definition 18.10: its base change along itself is the projection $G\times U\to U$, which is a covering map of spaces because $G$ is discrete (Noohi, Proposition 3.4 and Example 4.6(1)).
-So $X$ is locally path connected and semilocally $1$-connected, a chart for it being the space $U$ (Noohi, Definition 18.2), it is path connected because $U$ is, and the results of Noohi's §18 apply to $X$.
-A *local system of lattices* on $X$ is a sheaf of lattices on $X$ that is locally constant, in the sense of @def:local-system-of-lattices; its transport along paths and its monodromy representation are those of @def:transport-and-monodromy, whose proofs are local on the interval and so apply to a path $[0,1]\to X$ in a stack; and its *monodromy group* is the image of its monodromy representation, the reading of @def:gamma-co-groups(1).
+In this section $U$ is a connected and locally simply connected topological space, the standing hypothesis on $B$ of this chapter, hence locally path connected and semilocally $1$-connected; $G$ is a discrete group acting freely and properly discontinuously on $U$, by which we mean that every point of $U$ has a neighbourhood whose translates are pairwise disjoint; $X\definedas U/G$; and $\pi\colon U\to X$ is the quotient map.
+Then $\pi$ is a covering map with fibre $G$: for such a neighbourhood $W$ of $u$ the restriction of $\pi$ to $W$ is injective with open image, and $\pi^{-1}\pi(W)$ is the disjoint union of the translates of $W$.
+$X$ is path connected, being the image of the path connected space $U$, and an automorphism of the covering $\pi$ carries $u'\in U$ to $g(u')u'$ for a unique $g(u')\in G$, the function $u'\mapsto g(u')$ being locally constant, hence constant as $U$ is connected; so the automorphism group of $\pi$ is $G$ acting on $U$.
+Local systems of lattices on $X$, their transport and their monodromy representation are those of @def:local-system-of-lattices, @def:transport-and-monodromy and @prop:local-system-of-lattices-monodromy, and the *monodromy group* of one is the image of its monodromy representation, the reading of @def:gamma-co-groups(1).
 
-::: {.lemma #lem:monodromy-of-a-descended-local-system title="The monodromy of a local system on $[U/G]$ that descends the constant system on $U$: the criterion, and the group for a free action"}
+::: {.lemma #lem:monodromy-of-a-descended-local-system title="The monodromy of a local system on a free quotient that descends the constant system on $U$"}
 
-Fix $u\in U$, put $x\definedas\pi(u)$, and let $\pi_*\colon\pi_1(U,u)\to\pi_1(X,x)$ be the map induced by the chart.
+Fix $u\in U$, put $x\definedas\pi(u)$, and let $\pi_*\colon\pi_1(U,u)\to\pi_1(X,x)$ be the map induced by the covering.
 
-1. Suppose that $G$ acts freely on $U$, and let $\psi$ send a loop $\gamma$ at $x$ to the unique $g\in G$ for which the lift $s$ of $\gamma$ with $s(0)=u$ has $s(1)=gu$; the lift exists and is unique (Noohi, Proposition 18.18 and Lemma 18.12), and freeness makes $g$ unique.
+1. Let $\psi$ send a loop $\gamma$ at $x$ to the unique $g\in G$ for which the lift $s$ of $\gamma$ with $s(0)=u$ has $s(1)=gu$; the lift exists and is unique (Noohi, Proposition 18.18 and Lemma 18.12), and freeness makes $g$ unique.
    For the product convention of @def:transport-and-monodromy, in which $\gamma\delta$ is $\delta$ followed by $\gamma$, the lift of $\gamma\delta$ from $u$ is the lift of $\delta$ followed by the translate by $\psi(\delta)$ of the lift of $\gamma$, so
 $$\psi(\gamma\delta)=\psi(\delta)\psi(\gamma).$$
    Thus $\psi$ is an anti-homomorphism and $\psi^{-1}\colon\gamma\mapsto\psi(\gamma)^{-1}$ is a homomorphism; it is onto, because $U$ is path connected, and its kernel is $\pi_*\pi_1(U,u)$, because $\psi(\gamma)=1$ exactly when $\gamma$ lifts to a loop at $u$ (Noohi, Lemma 18.14, (ii) $\Leftrightarrow$ (iii)), so that with $\pi_*$ injective (Noohi, Proposition 18.15)
 $$1\longrightarrow\pi_1(U,u)\longrightarrow\pi_1(X,x)\longrightarrow G\longrightarrow1$$
    is exact.
-   In the loop model of @lem:orbifold-monodromy-of-a-quotient, where a loop of $U/G$ at $[u]$ is a pair $(g,\widetilde\gamma)$ with $\widetilde\gamma$ a path from $u$ to $gu$ and the product is $(g,\widetilde\gamma)(h,\widetilde\delta)=(gh,\widetilde\gamma*(g\widetilde\delta))$, the same assignment is a homomorphism, its product being the reverse of @def:transport-and-monodromy's, and the exact sequence is the one stated in that lemma.
 
 2. Let $\bL$ be a local system of lattices on $X$ with stalk $\Lambda\definedas\bL_x$, monodromy representation $\rho\colon\pi_1(X,x)\to\Orth(\Lambda)$ (@def:transport-and-monodromy), and pullback $\pi^{-1}\bL$ to $U$.
-   Then $\pi^{-1}\bL$ is constant if and only if $\rho$ kills $\pi_*\pi_1(U,u)$; this needs no hypothesis on the stabilisers.
-   Suppose moreover that $G$ acts freely on $U$, that $\pi^{-1}\bL$ is constant, and that $\tau\colon\underline\Lambda_U\iso\pi^{-1}\bL$ is a trivialisation with $\tau_u=\id_\Lambda$.
-   Then $\Aut(x)$ is trivial, so a loop $\gamma$ at $x$ is determined by its lift $s$ from $u$, and
-$$\rho(\gamma)=\tau_{s(1)},$$
+   Then $\pi^{-1}\bL$ is constant if and only if $\rho$ kills $\pi_*\pi_1(U,u)$.
+   If $\tau\colon\underline\Lambda_U\iso\pi^{-1}\bL$ is a trivialisation with $\tau_u=\id_\Lambda$, then every loop $\gamma$ at $x$ and every lift $s$ of $\gamma$ with $s(0)=u$ satisfy
+$$\rho(\gamma)=\tau_{s(1)}\tau_u^{-1},$$
    and the monodromy group of $\bL$ is
-$$\rho(\pi_1(X,x))=\theset{\tau_w\st w\in U,\ \pi(w)=x}=\theset{\tau_{gu}\st g\in G}.$$
+$$\rho(\pi_1(X,x))=\theset{\tau_{gu}\tau_u^{-1}\st g\in G}.$$
 
-3. Suppose in addition to the hypotheses of (2) that $\tau_{gu}=\varphi(g)$ for a homomorphism $\varphi\colon G\to\Orth(\Lambda)$ and all $g\in G$; this is the condition that $\bL$ is the descent of the constant system $\underline\Lambda_U$ with the equivariant structure $g\cdot(u,\lambda)\definedas(gu,\varphi(g)\lambda)$.
-   Then the monodromy group of $\bL$ is $\varphi(G)$, and it is isomorphic to $G$ exactly when $\varphi$ is injective.
-   In particular, for $G\iscontainedin\Orth(\Lambda)$ and the defining equivariant structure $g\cdot(u,\lambda)=(gu,g\lambda)$ the monodromy group of $\bL$ is $G$.
-   The case of an action with stabilisers is not this item: for the tautological local system of a quotient with isotropy the monodromy of a loop is the group element of the loop, isotropy included, and that is @lem:orbifold-monodromy-of-a-quotient.
+3. Suppose that the set of (2) is $\varphi(G)$ for a homomorphism $\varphi\colon G\to\Orth(\Lambda)$; for the descent of the constant system $\underline\Lambda_U$ with the equivariant structure $g\cdot(u,\lambda)\definedas(gu,\varphi(g)\lambda)$ the identifications $\tau_{gu}\tau_u^{-1}$ are the elements $\varphi(g)$, up to the inversion that the choice of which end of the lifted path the transport of @def:transport-and-monodromy is referred to may introduce, and $\varphi(G)=\theset{\varphi(g)^{-1}\st g\in G}$, so that inversion does not change the set.
+   Then the monodromy group of $\bL$ is $\varphi(G)\cong G/\ker\varphi$, and it is $G$ itself, as a subgroup of $\Orth(\Lambda)$, exactly when $\ker\varphi=1$ — in particular for a subgroup $G\iscontainedin\Orth(\Lambda)$ and its defining action $g\cdot(u,\lambda)=(gu,g\lambda)$.
 :::
 
 ::: {.proof}
@@ -151,46 +145,42 @@ For (1), let $\gamma$ be a loop at $x$ and let $s$ be its lift with $s(0)=u$ (No
 Let $\delta$ be another loop at $x$, with lift $s'$ from $u$ ending at $h u$, $h=\psi(\delta)$; the lift of the composite $\gamma\delta$ from $u$ is $s'$ followed by the translate by $h$ of $s$, which ends at $h g u$. Hence $\psi(\gamma\delta)=hg=\psi(\delta)\psi(\gamma)$, and $\psi^{-1}$, the map $\gamma\mapsto\psi(\gamma)^{-1}$, is a homomorphism.
 It is onto: $u$ and $gu$ are joined by a path of $U$, whose image is a loop at $x$ lifted by that path.
 Its kernel is $\pi_*\pi_1(U,u)$: $\psi(\gamma)=1$ exactly when the lift of $\gamma$ from $u$ is a loop at $u$, which by Noohi's Lemma 18.14 ((ii) $\Leftrightarrow$ (iii)) is exactly $\gamma\in\pi_*\pi_1(U,u)$; injectivity of $\pi_*$ is Noohi's Proposition 18.15.
-Noohi's Theorem 18.19 and Corollary 18.20 give the same statement in the covering language: $\pi$ is a connected cover because $U$ is connected, so $F_x(U)$ is a transitive $\pi_1(X,x)$-set, and by Corollary 18.20 the stabiliser of a point of it is $\pi_*\pi_1(U,u)$; in the free case $F_x(U)$ is a $G$-torsor, so its group of automorphisms is $G$ and $\psi^{-1}$ is the action of $\pi_1(X,x)$ on it.
 
 For (2), the transport of $\pi^{-1}\bL$ along a path $s$ of $U$ is the transport of $\bL$ along $\pi\circ s$, by @def:transport-and-monodromy, since $(\pi\circ s)^{-1}\bL=s^{-1}\pi^{-1}\bL$; so $\rho\circ\pi_*$ is the monodromy representation of $\pi^{-1}\bL$.
 If $\pi^{-1}\bL$ is constant, its transport along every loop of $U$ is the identity and $\rho$ kills $\pi_*\pi_1(U,u)$; conversely, if $\rho$ kills $\pi_*\pi_1(U,u)$, then $\pi^{-1}\bL$ has trivial monodromy and is constant by [@Voi07, Corollary 3.10 and Remark 3.11] — the hypotheses there, $U$ arcwise connected and locally simply connected, are those of this section — and [@Voi07, Remark 3.12] supplies the case of local systems of $\ZZ$-modules.
-For the endpoint formula, freeness is what makes the loop visible to $U$: $\Aut(x)$ is trivial, so the base-point identifications of a loop at $x$ are trivial and the loop is $\pi\circ s$ for its lift $s$, which exists (Noohi, Proposition 18.18) and is unique (Lemma 18.12).
-Along $s$ the sheaf $\pi^{-1}\bL$ is the constant sheaf $\underline\Lambda_{[0,1]}$ in the trivialisation $\tau$, whose transport is the identity, and its two ends are compared with the stalk $\bL_x$ through $\tau_{s(0)}=\id_\Lambda$ and $\tau_{s(1)}$: this is $\rho(\gamma)=\tau_{s(1)}$.
-Every $w\in U$ with $\pi(w)=x$ is the endpoint of a path $s$ from $u$, whose image is a loop at $x$, so every $\tau_w$ occurs as a value of $\rho$; this gives the displayed description of the monodromy group, the points over $x$ being the points $gu$.
-Without freeness the formula fails, and it is not repaired by any choice of $\tau$: see @rmk:isotropy-loops-are-not-paths-of-U.
+Along the lift $s$ the sheaf $\pi^{-1}\bL$ is the constant sheaf $\underline\Lambda_{[0,1]}$ in the trivialisation $\tau$, whose transport is the identity, so the transport along $\gamma$, referred to the two ends through $\tau_{s(0)}=\id_\Lambda$ and $\tau_{s(1)}$, is $\tau_{s(1)}\tau_u^{-1}$.
+Every $w\in U$ with $\pi(w)=x$ is the endpoint of a path $s$ from $u$, whose image is a loop at $x$, so every $\tau_w\tau_u^{-1}$ occurs as a value of $\rho$, and the points over $x$ are the points $gu$; this gives the displayed description of the monodromy group.
 
-For (3), the points of $U$ over $x$ are the points $gu$, so by (2) the monodromy group is $\theset{\tau_{gu}\st g\in G}=\varphi(G)$, and $\varphi(G)\iso G$ exactly when $\varphi$ is injective.
-For $G\iscontainedin\Orth(\Lambda)$ and the defining equivariant structure, $\tau_{gu}=g$ and the monodromy group is $G$.
+For (3), the monodromy group is the set of (2), which by hypothesis is $\varphi(G)$, and it is unchanged by passing from each $\varphi(g)$ to its inverse because $\varphi(G)$ is a subgroup; that $\varphi(G)\cong G/\ker\varphi$ is the first isomorphism theorem for $\varphi$, and $\varphi$ has trivial kernel exactly when it is the inclusion of a subgroup $G\subseteq\Orth(\Lambda)$ in its defining action.
 :::
 
-::: {.remark #rmk:isotropy-loops-are-not-paths-of-U title="With stabilisers the endpoint formula fails: the isotropy loop at a fixed point carries monodromy that no path of $U$ sees"}
+::: {.corollary #cor:monodromy-of-the-tautological-descent title="The tautological descent on a free quotient has monodromy group $G$"}
 
-The hypothesis of freeness in @lem:monodromy-of-a-descended-local-system(2)--(3) cannot be dropped, and this is the reason the filed statement of research#803 cannot be read without a descent datum even after $\varphi$ is named.
-Take $U=\CC$, let $G=\ZZ/2=\theset{1,g}$ act **trivially** on $U$, let $\Lambda=\ZZ$ and let $\varphi\colon G\to\theset{\pm1}$ be the nontrivial character, so that the hypotheses on $U$, $G$ and $X=[U/G]$ above hold and the stabiliser of every point is $G$.
-Let $\bL$ be the descent of the constant system $\underline\Lambda_U$ with the equivariant structure $g\cdot(u,\lambda)=(u,-\lambda)$.
-Its pullback to $U$ is constant, with the trivialisation $\tau=\id$; every point of $U$ maps to the single point $x$, so $\theset{\tau_w\st\pi(w)=x}=\theset{\id}$.
-But $\bL$ is the tautological local system $(U\times\ZZ)/G$ of @lem:orbifold-monodromy-of-a-quotient for the module $\ZZ$ on which $g$ acts by $-1$, so by that lemma the monodromy of the loop $(g,\widetilde\gamma)$ is the action of $g$, that is $-1$; the loop is the constant path at $x$ with the identification $g$ at its base point, and no path of $U$ represents it.
-So $\rho(\pi_1(X,x))=\theset{\pm1}=\varphi(G)$ while the endpoint set is $\theset{\id}$, and the two sides of @lem:monodromy-of-a-descended-local-system(2) differ.
-The monodromy of a quotient with isotropy is computed on the loop model of @lem:orbifold-monodromy-of-a-quotient, where the group element of the loop contributes; the endpoint formula of (2) is the case in which that contribution is trivial, that is, the free case.
+Let $G\iscontainedin\Orth(\Lambda)$ be a subgroup acting freely and properly discontinuously on $U$, let $\bL$ be the descent to $X=U/G$ of the constant system $\underline\Lambda_U$ with the equivariant structure $g\cdot(u,\lambda)\definedas(gu,g\lambda)$, and let $\rho$ be its monodromy representation.
+Then $\rho(\pi_1(X,x))=G$: the monodromy group of $\bL$ is $G$ itself and not a proper subgroup of it.
+:::
+
+::: {.proof}
+
+This is @lem:monodromy-of-a-descended-local-system(3) with $\varphi$ the inclusion $G\iscontainedin\Orth(\Lambda)$, whose kernel is trivial.
 :::
 
 ::: {.remark #rmk:descent-datum-of-a-quotient-stack title="The constant system on $U$ alone does not determine the monodromy group"}
 
-The phrase "the local system on $[U/G]$ that descends the constant system on $U$" names a local system only together with its equivariant structure, and by @lem:monodromy-of-a-descended-local-system(3) its monodromy group is $G$ only when that structure is faithful.
+The phrase "the local system on $X$ that descends the constant system on $U$" names a local system only together with its equivariant structure, and by @lem:monodromy-of-a-descended-local-system(3) its monodromy group is $G$ only when that structure is faithful.
 Take $U=\CC$, let $G=\ZZ$ act by translations, and take the trivial equivariant structure $g\cdot(u,\lambda)=(gu,\lambda)$ on $\underline\Lambda_U$.
-The action is free, so $[U/G]$ is the space $\CC/\ZZ$; the descended system is the constant local system on it, and its monodromy group is trivial rather than $\ZZ$, which is @lem:monodromy-of-a-descended-local-system(3) with $\varphi$ the trivial homomorphism.
-The statement is therefore false with the descent datum left unspecified, and what it asserts is true of the pair consisting of the $G$-torsor $\pi\colon U\to X$ and a faithful $\varphi$.
+Then $X$ is the space $\CC/\ZZ$; the descended system is the constant local system on it, and its monodromy group is trivial rather than $\ZZ$, which is @lem:monodromy-of-a-descended-local-system(3) with $\varphi$ the trivial homomorphism.
+The assertion of research#803 is therefore false with the descent datum left unspecified, and what it asserts is true of the pair consisting of the $G$-covering $\pi\colon U\to X$ and a faithful $\varphi$.
 :::
 
-::: {.remark #rmk:monodromy-of-the-coble-lattice title="What the lemma gives for $\Gamma_\Co$, and what it leaves open"}
+::: {.remark #rmk:monodromy-of-the-coble-lattice title="What the corollary gives for $\Gamma_\Co$, and what it leaves open"}
 
 @def:gamma-co-groups(1) defines $\Gamma_\Co$ as the monodromy group of the local system of lattices of fibre $T_\Co$ of the family of unpolarized Coble surfaces.
-Let $\bD=\bD(T_\Co)^+$ and let $Z$ be the $(-2)$-arrangement of @prop:the-coble-locus-in-the-period-domain, so that $U=\bD\sm Z$ is the locus of periods realised by a Coble cover and, by @prop:the-coble-locus-in-the-period-domain(4), open and connected; let $G\iscontainedin\Orth(T_\Co)$ be a discrete group acting properly discontinuously on $U$.
-That action is not free — $-1\in\Orth(T_\Co)$ acts trivially on $\bD$, and a period with extra automorphisms has a larger finite stabiliser — so the Coble case is the isotropy case, and the statement it needs is @lem:orbifold-monodromy-of-a-quotient: if the family's local system of lattices is the tautological local system of that lemma, then the monodromy of a loop is its group element and the monodromy group is $G$, whence $\Gamma_\Co=G$.
-This is one step of the reduction of research#798, and it says nothing about which subgroup of $\Orth(T_\Co)$ acts: @conj:gamma-co-stable remains open.
-Two inputs of that step are outside the lemma and are not proved on this page: the presentation of the family's moduli stack by the chart $\pi\colon U\to[U/G]$ — the label presentation is @prop:coble-quotient-presentation, for the $S_\Co$-polarized $\mathrm{K3}$ moduli stack, and its transfer to the family of Coble surfaces is research#802's — and the identification of the family's local system of lattices with the tautological one of @lem:orbifold-monodromy-of-a-quotient.
-The connectedness of $U$ is not one of them: it is @prop:the-coble-locus-in-the-period-domain(4).
+Let $\bD=\bD(T_\Co)^+$ and let $Z$ be the $(-2)$-arrangement of @prop:the-coble-locus-in-the-period-domain, so that $U=\bD\sm Z$ is the locus of periods realised by a Coble cover and, by @prop:the-coble-locus-in-the-period-domain(4), open and connected.
+@cor:monodromy-of-the-tautological-descent is the free case; whether the action of a group $G\iscontainedin\Orth(T_\Co)$ on $U$ is free is not asserted here.
+What the reduction of research#798 takes from this page is that computation: if the family's local system of lattices is the descent of the constant system $T_{\Co,U}$ with the defining equivariant structure of a subgroup $G\iscontainedin\Orth(T_\Co)$ on a free quotient, then its monodromy group is $G$.
+Two inputs are outside the corollary, and neither is proved on this page: the presentation of the family's moduli stack as such a quotient — the label presentation is @prop:coble-quotient-presentation, for the $S_\Co$-polarized $\mathrm{K3}$ moduli stack, and its transfer to the family of Coble surfaces is research#802's — and the identification of the family's local system of lattices with that descent.
+Nothing on this page computes $\Gamma_\Co$ or identifies it with $\widetilde\Orth^+(T_\Co)$: @conj:gamma-co-stable remains open.
 :::
 
 ## The sheaves of orientation classes {#sec-orientation-sheaf}
