@@ -325,7 +325,7 @@ with image $\varphi(\Gamma)=\Gamma$, where $\varphi\colon\Gamma\injects\Aut(T_\C
 :::
 
 
-::: {.lemma #lem:gamma-co-labelled-index title="The labelled cover and the index $10!$"}
+::: {.lemma #lem:gamma-co-labelled-index title="The principal $S_{10}$-bundle $B\to\bar B$ and the index $10!$"}
 
 Let $B=V/\PGL_3$ and $\bar B=[V/(\SL_3\times S_{10})]$ be the labelled and unlabelled bases of @not:d2-plane-sextic-base, with the local system $\bT$ of @lem:d2-local-system and the monodromy groups
 $$\Gamma_\Co(B)=\rho\qty{\pi_1(B,s)},\qquad \Gamma_\Co(\bar B)=\rho\qty{\pi_1(\bar B,s)}$$
