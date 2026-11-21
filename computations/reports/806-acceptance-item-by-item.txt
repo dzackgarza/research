@@ -8,10 +8,59 @@ system and the comparison of monodromies), 0bd48d7aa3 (this report records the
 descent and the comparison), fc7fd874ea (the five citers state their exact status,
 and the index-two sentence is withdrawn), 324a7f8dad (the statements made
 conditional on the descent, and the first seven rows below, rebased onto
-272d2b00f9), and the commit that carries this report (the three remaining
-unconditional uses made conditional after review hyjh, comment 7059208107).
+272d2b00f9), a1ccad7119 (the rebase onto #807), and the commit that carries this
+report (the free-action replacement after review hyjh, comment 7059208107).
 Paths are relative to the repository root; line numbers are those of the commit
 that carries this file.
+
+CURRENT STATUS (the commit that carries this report)
+
+  Acceptance: the REPLACEMENT disjunct is taken and is MET.
+
+  - @lem:orbifold-monodromy-of-a-quotient is now the free-action statement of
+    #803, not the general non-free statement.  It is stated at lattices.md:177
+    and proved at :188 from @lem:monodromy-of-a-descended-local-system and
+    @cor:monodromy-of-the-tautological-descent (local-systems-of-lattices-and-
+    monodromy.md, research 14830a5d6b).  The action is free and properly
+    discontinuous, the quotient is a space, and the descent is ordinary
+    covering-space theory; the lemma states the descended local system and its
+    monodromy group phi(Gamma), with the exact sequence of the covering.
+
+  - The non-free case is the separate statement
+    @lem:orbifold-monodromy-of-a-nonfree-quotient at lattices.md:197, proved at
+    :226.  Clauses 1-2 are the proved per-loop transport and exact sequences.
+    Clause 3 is the sole descended-system assertion and assumes (D) at :219:
+    the equivalence between Gamma-equivariant local systems on U~ and local
+    systems on [U~/Gamma], including the 2-morphism comparisons and cocycle
+    conditions.  (D) names research#797, item 4, and
+    @rmk:the-descent-stops-at-the-2-morphisms.  The old label no longer asserts
+    this non-free conclusion.
+
+  - Every citing result is rechecked and points at the statement that proves what
+    it uses: @thm:gamma-co-is-full at lattices.md:278 and its proof :293;
+    @lem:d2a-monodromy-of-the-stack at moduli-construction.md:1254, :1261 (under
+    its (D)); @lem:d2-label-lift at :1304 (per-loop clause);
+    @lem:coble-invariant-lattice-in-families at :1345 (under (D_{S_10}));
+    @lem:d2b-forgets-to-d2a at :1718, :1732 (descent named); the per-loop case
+    and @cor:monodromy-of-the-tautological-system at :1933, :1942 (descent in
+    the corollary); @prop:coble-monodromy-is-the-marking-group at :2021, :2028
+    (under (H3)); @thm:gamma-co-labelled-equality at :2252 (under (v)); and
+    @thm:gamma-co-is-the-stack-monodromy at :2296 and :2313-2314 (under (A2)
+    and (A3)).  The ledger rows at :2313-2314 name which statement is free and
+    which is conditional.
+
+  - The item-6 summary at moduli-construction.md:2363 is conditional.  It gives
+    item 4 outright only for a free quotient; for a non-free quotient it states
+    the per-loop transport and says that the descended-system statement holds
+    only under (D), research#797 item 4.  Its final isomorphism at :2363 is
+    stated under the same descent.
+
+  - The corrected-and-proved general non-free lemma is NOT claimed.  The chosen
+    free-action replacement is the issue's other disjunct; the non-free
+    addendum is labelled by what it proves and by the one input it assumes.
+
+HISTORICAL ROUNDS (the line numbers and dispositions below predate this round;
+superseded by CURRENT STATUS above)
 
 ACCEPTANCE (one disjunctive item, quoted from the issue)
 
@@ -19,11 +68,13 @@ ACCEPTANCE (one disjunctive item, quoted from the issue)
   (local-systems-of-lattices-and-monodromy.md, at research 14830a5d6b), or corrected
   and proved, and every result that cites it is rechecked."
 
-  MET for the lemma as stated, through the second disjunct: the lemma proves the
-  per-loop transport of a loop of the quotient and the two exact sequences, and it
-  asserts no local system on the quotient.  Whether the programme's uses of a
-  tautological local system on a stack are proved is a separate question, and the
-  pages now answer it as conditional, with the input named (the eight rows below).
+  SUPERSEDED: this was the reading of the per-loop route before the replacement.
+  The current disposition is CURRENT STATUS above.  Historically the note read:
+  the lemma proves the per-loop transport of a loop of the quotient and the two
+  exact sequences, and it asserts no local system on the quotient.  Whether the
+  programme's uses of a tautological local system on a stack are proved is a
+  separate question, and the pages answer it as conditional, with the input
+  named (the eight rows below).
 
   The lemma is corrected and proved: lattices.md:177 (statement), :198 (proof).  It
   posits no local system on the quotient orbifold, and it no longer calls an
@@ -379,16 +430,18 @@ CHECKS RUN FOR THE drl1 ROUND (324a7f8dad)
   tests/engineering: not run, for the reason above.
   CI: not used as evidence.
 
-CHECKS RUN FOR THE hyjh ROUND (the commit that carries this file)
+CHECKS RUN FOR THE FREE-ACTION ROUND (the commit that carries this file)
 
   scripts/docs_check.py --source: byte-identical to a detached worktree at
-    324a7f8dad, 29 findings, all pre-existing "citation is in no bibliography" in
+    a1ccad7119, 29 findings, all pre-existing "citation is in no bibliography" in
     other chapters, none on lattices.md or moduli-construction.md.
-  scripts/docs_dependency_graph.py --project writing/.book --check: 123 findings
-    on both trees, 1892 blocks and 1087 cited results on both, 9323 edges here
-    against 9321 at 324a7f8dad (the two new references to the descent remark).
-    Canonical comparison finds zero added and zero removed findings: the six cycle
-    findings are the same six unordered pairs, although the script prints some in
-    the opposite order, and the fourteen missing-id findings are unchanged.
+  scripts/docs_dependency_graph.py --project writing/.book --check: 125 findings
+    on both trees, 1899 blocks here against 1898 at a1ccad7119 (the separate
+    non-free statement), 1092 cited results on both, 9360 edges against 9351 (the
+    split's new references).  Canonical comparison finds zero added and zero
+    removed findings: the counts by kind are 77 unlocated-citation, 21
+    uncited-term, 14 missing-id, 6 cycle, 5 missing-defines and 2 orphan-proof on
+    both trees; the missing-id line numbers shift with the inserted block and no
+    finding names either new lemma or the summary.
   tests/engineering: not run, for the reason above.
   CI: not used as evidence.
