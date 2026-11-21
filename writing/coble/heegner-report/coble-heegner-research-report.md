@@ -213,7 +213,7 @@ The first two are nonsymplectic and the product is symplectic.
 The quotient $Z=X/\iota_{\mathrm{En}}$ is generically Enriques, while $X/\iota_{\mathrm{Nik}}$ is a K3 surface with eight $A_1$ singularities.
 The ramification divisor used in the AEGS stable-pair problem is the ramification of the **del Pezzo involution**, not the fixed locus of the Enriques involution.
 
-### The AEGS lattice package {#sec-aegs-lattices}
+### Lattice conventions of AEGS {#sec-aegs-lattices}
 
 The involutions act on $L_{K3}=U^3\oplus E_8^2$ with eigenspaces
 
