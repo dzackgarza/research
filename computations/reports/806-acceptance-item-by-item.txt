@@ -8,56 +8,52 @@ system and the comparison of monodromies), 0bd48d7aa3 (this report records the
 descent and the comparison), fc7fd874ea (the five citers state their exact status,
 and the index-two sentence is withdrawn), 324a7f8dad (the statements made
 conditional on the descent, and the first seven rows below, rebased onto
-272d2b00f9), a1ccad7119 (the rebase onto #807), and the commit that carries this
-report (the free-action replacement after review hyjh, comment 7059208107).
+272d2b00f9), a1ccad7119 (the rebase onto #807), 1227d63ace (the free-action
+replacement after review hyjh), and the commit that carries this report (the
+three repairs after review ltn3, comment 7059864089).
 Paths are relative to the repository root; line numbers are those of the commit
 that carries this file.
 
-CURRENT STATUS (the commit that carries this report)
+CURRENT STATUS AFTER LTN3 (the commit that carries this report)
 
-  Acceptance: the REPLACEMENT disjunct is taken and is MET.
+  The three defects named in review ltn3 are repaired.
 
-  - @lem:orbifold-monodromy-of-a-quotient is now the free-action statement of
-    #803, not the general non-free statement.  It is stated at lattices.md:177
-    and proved at :188 from @lem:monodromy-of-a-descended-local-system and
-    @cor:monodromy-of-the-tautological-descent (local-systems-of-lattices-and-
-    monodromy.md, research 14830a5d6b).  The action is free and properly
-    discontinuous, the quotient is a space, and the descent is ordinary
-    covering-space theory; the lemma states the descended local system and its
-    monodromy group phi(Gamma), with the exact sequence of the covering.
+  1. @lem:orbifold-monodromy-of-a-nonfree-quotient(2), second exact
+     sequence: lattices.md:238 now uses the homomorphism
+     ker rho -> ker phi, lambda |-> psi(lambda)^{-1}, because psi is an
+     anti-homomorphism.  It is onto since psi is onto, and its kernel is
+     ker psi = pi_1(U~,x~); the proof at :240 states that derivation and
+     the sequence follows.  The loop-lifting citation in the same proof is
+     corrected from Noohi Proposition 18.18 to Definition 18.13, the source
+     for an arbitrary loop's lift.
 
-  - The non-free case is the separate statement
-    @lem:orbifold-monodromy-of-a-nonfree-quotient at lattices.md:197, proved at
-    :226.  Clauses 1-2 are the proved per-loop transport and exact sequences.
-    Clause 3 is the sole descended-system assertion and assumes (D) at :219:
-    the equivalence between Gamma-equivariant local systems on U~ and local
-    systems on [U~/Gamma], including the 2-morphism comparisons and cocycle
-    conditions.  (D) names research#797, item 4, and
-    @rmk:the-descent-stops-at-the-2-morphisms.  The old label no longer asserts
-    this non-free conclusion.
+  2. @thm:gamma-co-is-the-stack-monodromy: research#797 item 6 is now the
+     named hypothesis (A4) at moduli-construction.md:2290.  It identifies
+     the generic substack and its local system with the generic labelled
+     stack and the local system of the universal family, in group form
+     Gamma_Co = Gamma_Co(B) on the generic locus.  The proof invokes it at
+     :2297 in the opening of the chain and in step (f); the ledger row is
+     at :2313, and "what remains owed" at :2324 now lists (A1)--(A4).
+     The page-wide promises at :31, :1165 and :1256 now say that the only
+     use of item 6 is hypothesis (A4) of this theorem.
 
-  - Every citing result is rechecked and points at the statement that proves what
-    it uses: @thm:gamma-co-is-full at lattices.md:278 and its proof :293;
-    @lem:d2a-monodromy-of-the-stack at moduli-construction.md:1254, :1261 (under
-    its (D)); @lem:d2-label-lift at :1304 (per-loop clause);
-    @lem:coble-invariant-lattice-in-families at :1345 (under (D_{S_10}));
-    @lem:d2b-forgets-to-d2a at :1718, :1732 (descent named); the per-loop case
-    and @cor:monodromy-of-the-tautological-system at :1933, :1942 (descent in
-    the corollary); @prop:coble-monodromy-is-the-marking-group at :2021, :2028
-    (under (H3)); @thm:gamma-co-labelled-equality at :2252 (under (v)); and
-    @thm:gamma-co-is-the-stack-monodromy at :2296 and :2313-2314 (under (A2)
-    and (A3)).  The ledger rows at :2313-2314 name which statement is free and
-    which is conditional.
+  3. @lem:d2-local-system(4): the asserted containment
+     Gamma_Co(B-bar) contains Gamma_Co is deleted.  The clause at
+     moduli-construction.md:1227 now asserts only the proved
+     Gamma_Co(B) contained in Gamma_Co(B-bar), from the pullback
+     T_B-bar|_B = T, and says that no containment involving Gamma_Co is
+     asserted; Gamma_Co contained in Gamma_Co(B-bar) would follow only from
+     Gamma_Co = Gamma_Co(B), research#797 item 6, which is not proved.
+     The proof at :1232 gives the pullback and base-change argument.  The
+     index paragraph at :507 now names the index
+     [Gamma_Co(B-bar):Gamma_Co(B)] rather than an index involving Gamma_Co.
+     This agrees with lattices.md:549, which says the same and records
+     research#797 item 6 as the missing input.
 
-  - The item-6 summary at moduli-construction.md:2363 is conditional.  It gives
-    item 4 outright only for a free quotient; for a non-free quotient it states
-    the per-loop transport and says that the descended-system statement holds
-    only under (D), research#797 item 4.  Its final isomorphism at :2363 is
-    stated under the same descent.
-
-  - The corrected-and-proved general non-free lemma is NOT claimed.  The chosen
-    free-action replacement is the issue's other disjunct; the non-free
-    addendum is labelled by what it proves and by the one input it assumes.
+  The free-action replacement remains MET as in the previous round, and the
+  non-free descended-system conclusion remains conditional on research#797
+  item 4.  No corrected-and-proved general non-free lemma is claimed; the
+  open inputs named above stay open.
 
 HISTORICAL ROUNDS (the line numbers and dispositions below predate this round;
 superseded by CURRENT STATUS above)
@@ -430,18 +426,24 @@ CHECKS RUN FOR THE drl1 ROUND (324a7f8dad)
   tests/engineering: not run, for the reason above.
   CI: not used as evidence.
 
-CHECKS RUN FOR THE FREE-ACTION ROUND (the commit that carries this file)
+CHECKS RUN FOR THE LTN3 ROUND (the commit that carries this file)
 
   scripts/docs_check.py --source: byte-identical to a detached worktree at
-    a1ccad7119, 29 findings, all pre-existing "citation is in no bibliography" in
+    1227d63ace, 29 findings, all pre-existing "citation is in no bibliography" in
     other chapters, none on lattices.md or moduli-construction.md.
-  scripts/docs_dependency_graph.py --project writing/.book --check: 125 findings
-    on both trees, 1899 blocks here against 1898 at a1ccad7119 (the separate
-    non-free statement), 1092 cited results on both, 9360 edges against 9351 (the
-    split's new references).  Canonical comparison finds zero added and zero
-    removed findings: the counts by kind are 77 unlocated-citation, 21
-    uncited-term, 14 missing-id, 6 cycle, 5 missing-defines and 2 orphan-proof on
-    both trees; the missing-id line numbers shift with the inserted block and no
-    finding names either new lemma or the summary.
-  tests/engineering: not run, for the reason above.
+  scripts/docs_dependency_graph.py --project writing/.book --check: 1899 blocks
+    and 1092 cited results on both trees, 9365 edges here against 9360 at
+    1227d63ace (the (A4) and corrected-containment references).  The finding
+    kinds are 77 unlocated-citation, 21 uncited-term, 14 missing-id,
+    5 missing-defines and 2 orphan-proof on both trees; cycles are 6 at the base
+    and 3 here.  No finding is added and the three removed cycle findings are not
+    repairs: the new (A4) references join the strongly connected components
+    containing (prop:coble-plane-model-comparison, prop:coble-stack-as-quotient),
+    (lem:coble-invariant-lattice-in-families,
+    lem:pi1-of-a-groupoid-quotient-is-generated-by-three-contributions) and
+    (lem:gamma-co-labelled-index, lem:relabelling-discriminant-action) to the
+    existing large component, which remains an SCC on both trees.  No finding
+    names a touched block.
+  tests/engineering: not run.  tests/conftest.py imports dzack_research, which a
+    plain checkout does not have.
   CI: not used as evidence.
