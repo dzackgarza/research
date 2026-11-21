@@ -1039,8 +1039,8 @@ The equivalence is compatible with base change and automorphisms.
 Fix an embedded root $\alpha\in T_{\mathrm{En}}$ and put $T_{\Co}=\alpha^\perp$.
 There are at least four natural groups.
 
-::: {.definition #def:unpolarized-direct-group title="direct unpolarized Coble group" defines="direct unpolarized Coble group; $\Gamma_{\Co}^{\mathrm{dir}}$"}
-Dropping the degree-$4$ polarization (@def:numerical-polarization) and the del Pezzo involution from the labeled datum gives the candidate direct unpolarized group
+::: {.definition #def:unpolarized-centralizer-image title="The image of the unpolarized centralizer in $O^+(T_{\Co})$" defines="$\Gamma_{\Co}^{\mathrm{dir}}$"}
+Dropping the degree-$4$ polarization (@def:numerical-polarization) and the del Pezzo involution from the labeled datum gives the image
 
 \[
 \Gamma_{\Co}^{\mathrm{dir}}
