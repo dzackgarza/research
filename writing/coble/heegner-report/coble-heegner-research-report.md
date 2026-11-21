@@ -1751,7 +1751,7 @@ The reflections of $T_\Co$ that lie in $\widetilde\Orth^+(T_\Co)$ are given by @
 
 ## Integral-affine structures, dlt quotients, and stable models {#sec-integral-affine}
 
-### The AEGS dictionary {#sec-aegs-dictionary}
+### Correspondence between the degeneration data of AEGS {#sec-aegs-correspondence}
 
 AEGS relate five forms of degeneration data:
 
@@ -1774,7 +1774,7 @@ They become edge lengths, internal blowup parameters, and nodal-surgery sizes in
 A zero coordinate places the monodromy on a wall.
 If the wall corresponds to a visible curve, the zero can collapse a path joining two focus-focus singularities.
 
-The direct Coble theory should preserve this dictionary but must add the data of the fixed exceptional root and its quotient branch curve.
+The direct Coble theory should preserve this correspondence but must add the data of the fixed exceptional root and its quotient branch curve.
 
 ### The Coble integral-affine package {#sec-coble-affine-package}
 
