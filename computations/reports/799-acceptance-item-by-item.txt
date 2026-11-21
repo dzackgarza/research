@@ -116,10 +116,12 @@ SECOND AND THIRD READS (m3, m1), AND THEIR DISPOSITIONS
   E_i(b) = E_{sigma^{-1}(i)}(sigma b), m3 uses eps_i(sigma b) =
   eps_{sigma^{-1}(i)}(b), and each is the inverse relation of the other.
   Neither noticed the other's relation was available, and both agree that
-  nothing in the theorem is sensitive. That is why this revision states the
-  direction as a convention instead of picking one; m1's attribution finding
-  is accepted, the E_i convention being at lem:d2-unpolarised-family(3) and
-  not at the notation block, and the sentence no longer attributes it.
+  nothing in the theorem is sensitive. m1's attribution finding is accepted:
+  the E_i convention is at lem:d2-unpolarised-family(3) and not at the
+  notation block. The sentence on the page was still attributing it to
+  not:d2-plane-sextic-base when this note first claimed otherwise; that was
+  an error in this report, corrected with the attribution in the revision
+  after m2's second pass.
 
   ACCEPTED from m1 and repaired:
   - [@Vin72, Table 5] does not give O^+(E_10) = W(E_10); see item 7. Input
@@ -136,6 +138,31 @@ SECOND AND THIRD READS (m3, m1), AND THEIR DISPOSITIONS
   change of (f), agreeing with m1's independent computation.
 
   NOT ACCEPTED: m3's (c) direction claim, for the reason above.
+
+FOURTH READ (m2, second pass), AND ITS DISPOSITIONS
+
+  m2 re-read the revision and withdrew (j1), conceding that the last paragraph
+  of the proof of lem:coble-invariant-lattice-in-families states the descent
+  for a general arrow. It also conceded (c) at the theorem's level and
+  withdrew "the two errors cancel".
+
+  What it kept is a defect of wording, and it is real: the corpus states the
+  S_10-action on V at lem:d2-labelling-cover's proof ("a projectivity g with
+  gp_i = p_{sigma(i)} carries (Z;p) to sigma(Z;p)", hence (sigma.p)_i =
+  p_{sigma(i)}) and names its effect on the divisor classes at
+  lem:d2-unpolarised-family(3) ("sends E_i to E_{sigma^{-1}(i)}"), and those
+  two agree only if the second verb is the pushforward: read as pullback the
+  second sentence says E_i(sigma b) = E_{sigma^{-1}(i)}(b), which contradicts
+  E_i(sigma b) = E_{sigma(i)}(b) that the first gives. So "one numbered
+  sentence is false" is too strong -- the pushforward reading makes both true
+  -- but the word is ambiguous at exactly the point every reader has to
+  settle, which is why m1 and m3 derived opposite directions from it.
+  Disposition: the page's sentence now states that "sends" there can only be
+  the pushforward, since the pullback reading contradicts the action on
+  points, and attributes the E_i convention to lem:d2-unpolarised-family(3).
+  The one-word tightening of lem:d2-unpolarised-family(3) itself, "sends
+  sigma_* E_i = E_{sigma^{-1}(i)}", is left to that block's owner and is
+  flagged here rather than made.
 
 
 ORIGINAL STATEMENT, CLAUSE BY CLAUSE
