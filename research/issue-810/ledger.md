@@ -3,3 +3,5 @@
 3. CHECK #2 [self]: PASS: self-reading of the complete statement, atlas construction, positive-dimensional case, monodromy and source hypotheses — checks/1-read.md
 4. OPEN: Kimi item 1: prove the Noohi-loop/Haefliger-pair comparison in the original topological hypotheses — notes.md#4
 5. PROVED #4: Noohi loops pull back to Gamma-torsors on I and their homotopies on I^2; trivial sections give Haefliger pairs and homotopies with endpoint labels — checks/evzj-item1.md
+6. OPEN: Kimi item 2: prove principal-bundle loop representation and transport for connected Lie groups — notes.md#5
+7. PROVED #6: Principal G-bundles over I and I^2 give loop pairs and deformations, associated transport is varphi(g)^{-1} gamma^*, and path connected G deforms g to e — checks/evzj-item2.md
