@@ -1,0 +1,105 @@
+research#806 -- acceptance item by item
+
+Commit: b295afdf05 (the corrected lemma, its proof, the counterexample remark, and
+every citing result), on top of the main at 80f692f038.  Paths are relative to the
+repository root; line numbers are those of b295afdf05.
+
+ACCEPTANCE (one disjunctive item, quoted from the issue)
+
+  "the lemma is replaced by the proved free-action statement of #803
+  (local-systems-of-lattices-and-monodromy.md, at research 14830a5d6b), or corrected
+  and proved, and every result that cites it is rechecked."
+
+  MET, through the second disjunct.
+
+  The lemma is corrected and proved: lattices.md:177 (statement), :196 (proof).
+  What is proved, for U~ a connected manifold, Gamma a group acting properly
+  discontinuously with finite stabilizers, U = U~/Gamma, phi: Gamma -> Aut(T) a
+  homomorphism and bT = (U~ x T)/Gamma:
+    (1) a loop of U at x is a pair (g, gamma~); the assignment
+        lambda |-> psi(lambda)^{-1} is a surjective homomorphism
+        pi_1^orb(U,x~) -> Gamma with kernel pi_1(U~,x~), that is,
+        1 -> pi_1(U~) -> pi_1^orb(U) -> Gamma -> 1 is exact;
+    (2) rho = phi o psi^{-1}, so im rho = phi(Gamma),
+        ker rho = {lambda : psi(lambda) in ker phi}, and
+        1 -> pi_1(U~) -> ker rho -> ker phi -> 1 is exact; if phi is injective, as
+        for a subgroup Gamma <= Aut(T) in its defining action, then im rho = Gamma
+        and ker rho = pi_1(U~).
+  The old form claimed im rho = Gamma and ker rho = pi_1(U~) for every Gamma-module.
+  Its counterexample is research#803's, recorded at lattices.md:213
+  (rmk:orbifold-monodromy-depends-on-the-equivariant-structure): U~ a point, T = Z,
+  Gamma = C_2 acting trivially, where the system is constant, im rho = 1 and
+  ker rho = C_2.
+
+  Inputs, each a numbered statement read in Noohi, Foundations of topological stacks
+  I (arXiv:math/0503247): Definition 3.3 and Proposition 3.4 (the chart presents the
+  quotient stack), Lemma 6.3 (the chart is representable), Definition 4.5 and
+  Example 4.6(1) (covering maps are local on the target and base-change invariant),
+  Definition 13.8 and Example 13.1(6) (the chart is LF, so U is a topological stack),
+  Definition 18.2 (local connectivity through the chart), Definition 18.10 (covering
+  of stacks), Theorem 18.19 and Corollary 18.20 (coverings and pi_1-sets; the deck
+  group of a regular covering), Proposition 18.18 and Lemma 18.12 (lifting and its
+  uniqueness, applied to the loop cut open at the base point), Lemma 18.14,
+  (ii) <=> (iii), and Proposition 18.15 (the kernel and the injectivity of p_*).  No
+  printed-page, PDF-page or offset locator is used.
+
+EVERY RESULT THAT CITES THE LEMMA, RECHECKED
+
+  lattices.md:237, proof of thm:gamma-co-is-full.  Uses only the image, with
+    Gamma = Orth^+(T_Co) acting on T_Co through its defining action, which is
+    injective; the conclusion Gamma <= Gamma^taut is clause (2) with phi injective.
+    MET; the text now names phi and displays phi(g)^{-1}.
+
+  moduli-construction.md:1054 and :1061, lem:d2a-monodromy-of-the-stack.  Uses only
+    the pair description of loops, and says so at :1061 ("not the exact sequence
+    stated in that lemma"); the group there is connected, so the lemma's discrete
+    sequences neither apply nor are used, and the connectedness argument is the
+    result's own.  MET; both citations are worded as the loop model of the quotient
+    stack.
+  moduli-construction.md:1104, lem:d2-label-lift(2), and :1145,
+    lem:d2-local-system(3).  The loop model of [B/S_10], a finite group acting on B:
+    within the corrected hypotheses, and only the model is used.  MET, unchanged.
+
+  moduli-construction.md:1459 and :1473, lem:d2b-forgets-to-d2a(3).  The claim is that
+    the tautological system of D(T_Co)/R_gEn has monodromy R_gEn; R_gEn <= Orth(T_Co)
+    acts through its defining action, which is injective, so this is clause (2).
+    MET; both texts now name the defining action.
+
+  moduli-construction.md:1678-1680 and :1687,
+    cor:monodromy-of-the-tautological-system, with the paragraph that states the case
+    the programme uses.  The claim is that the tautological system of
+    [Otilde^+(T_Co)\D(T_Co)^+] has monodromy group Otilde^+(T_Co) with kernel
+    pi_1(D(T_Co)^+); the action is the defining one, so clause (2) gives it.  MET;
+    the paragraph and the corollary now require the defining action and state
+    phi(Gamma).
+
+  moduli-construction.md:1760 and :1767, prop:coble-monodromy-is-the-marking-group(3).
+    The same setting with G = Otilde^+(T_Co).  MET; :1767 now displays phi(g)^{-1}
+    and names the defining action.
+
+  moduli-construction.md:1982, thm:gamma-co-labelled-equality(2), and :2020,
+    thm:gamma-co-is-the-stack-monodromy, step (e).  The same setting.  MET; both now
+    name the defining action.
+  moduli-construction.md:2037, the input ledger of thm:gamma-co-is-the-stack-monodromy.
+    The row "tautological monodromy has image all of G" is true for the defining
+    action, and the row now says so.  MET.
+
+  computations/reports/797-programme-items-3-4.txt:76 and :256.  A review record, not
+    a result; its statement is the tautological-system case with the faithful defining
+    action and is true as written.  Left unchanged as the record it is.
+
+CHECKS RUN
+
+  scripts/docs_check.py --source, on a worktree at the base 80f692f038 and on the
+    repaired tree: byte-identical output, 29 findings, all pre-existing "citation is
+    in no bibliography" findings in chapters other than these two, and none on
+    lattices.md or moduli-construction.md.  The documented .assets copy
+    (references.bib, mathjax-macros.html) was made before both runs.
+  scripts/docs_dependency_graph.py --check: 121 findings on the base worktree at
+    80f692f038 and 121 on the repaired tree; the new block is one, its added edges
+    three, and no finding names the lemma or the remark.  Two uncited-term findings of
+    the first draft, "automorphism group" and "stabilizer", were fixed by citing
+    def:endomorphism-monoid and def:group-orbit before the pages commit.
+  tests/engineering: not run.  tests/conftest.py imports dzack_research, which a plain
+    checkout does not have (ModuleNotFoundError at tests/conftest.py:28).
+  CI: not used as evidence.
