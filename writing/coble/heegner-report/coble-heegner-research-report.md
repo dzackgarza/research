@@ -971,8 +971,8 @@ If the descent of $L$ is ample, then $K_{V^\sharp}+\epsilon R^\sharp$ is ample.
 The autonomous strategy should begin with a stack of labeled K3-cover data.
 The following definition is a mathematical specification; representability and equivalence with the singular pair moduli are required theorems.
 
-::: {.definition #def:direct-cover-datum title="direct resolved Coble cover datum" defines="direct resolved degree-$2$ Coble cover datum"}
-Over a scheme (@def:scheme-as-lrs) $S$, a direct resolved degree-$2$ Coble cover datum consists of
+::: {.definition #def:resolved-coble-cover-tuple title="The tuple $(\widetilde{\mcx}/S,\mce,\iota_{\Co},\iota_{\mathrm{dP}},\mch,\mcc)$" defines="$\widetilde{\mcx}/S$; $\mce$; $\iota_{\Co}$; $\iota_{\mathrm{dP}}$; $\mch$; $\mcc$"}
+Over a scheme (@def:scheme-as-lrs) $S$, consider the tuple
 
 \[
 (\widetilde{\mcx}/S,
@@ -2277,7 +2277,7 @@ Each of these steps requires a proof; the chain A1--A8 states the required lemma
 #### Autonomous outline {#sec-strategy-autonomous-outline}
 
 This strategy never defines the direct Coble objects as a locus in Enriques moduli.
-It begins with the direct cover datum of Definition (direct resolved Coble cover datum) (@def:direct-cover-datum), computes its period theory, and reproduces Coble analogues of the AEGS constructions.
+It begins with the tuple of K3-cover data of @def:resolved-coble-cover-tuple, computes its period theory, and reproduces Coble analogues of the AEGS constructions.
 Only after the autonomous compactification theorem is proved does one compare it with the Heegner divisor.
 
 #### Open moduli and periods {#sec-strategy-B-section2}
