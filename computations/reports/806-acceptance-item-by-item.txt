@@ -5,10 +5,11 @@ first report), e82f2521af with c508c596c0 (the proof without stalks; the S_10 pr
 order), 63bc64d349 (the transport systems, the S_10 derivation, and the citing
 results stated for what is proved), 835db4f69a (the descent of the tautological
 system and the comparison of monodromies), 0bd48d7aa3 (this report records the
-descent and the comparison), and the commit that carries this file (the citer
-status table and its page edits), rebased onto the main at 393498f777.  Paths are
-relative to the repository root; line numbers are those of the commit that
-carries this file.
+descent and the comparison), fc7fd874ea (the five citers state their exact status,
+and the index-two sentence is withdrawn), and the commit that carries this file
+(the statements made conditional on the descent, and the seven rows below),
+rebased onto the main at fc7fd874ea.  Paths are relative to the repository root;
+line numbers are those of the commit that carries this file.
 
 ACCEPTANCE (one disjunctive item, quoted from the issue)
 
@@ -16,10 +17,15 @@ ACCEPTANCE (one disjunctive item, quoted from the issue)
   (local-systems-of-lattices-and-monodromy.md, at research 14830a5d6b), or corrected
   and proved, and every result that cites it is rechecked."
 
-  MET, through the second disjunct.
+  MET for the lemma as stated, through the second disjunct: the lemma proves the
+  per-loop transport of a loop of the quotient and the two exact sequences, and it
+  asserts no local system on the quotient.  Whether the programme's uses of a
+  tautological local system on a stack are proved is a separate question, and the
+  pages now answer it as conditional, with the input named (the seven rows below).
 
-  The lemma is corrected and proved: lattices.md:177 (statement), :198 (proof).  No
-  local system on the orbifold is posited.  For a loop lambda the proof builds the
+  The lemma is corrected and proved: lattices.md:177 (statement), :198 (proof).  It
+  posits no local system on the quotient orbifold, and it no longer calls an
+  arbitrary abelian group a lattice.  For a loop lambda the proof builds the
   transport system on S^1 --- P = lambda^{-1}U~ is a Gamma-torsor, (P x T)/Gamma is
   a covering of S^1 with fibre T --- and computes in it (:202): the chart torsor has
   (0,h) ~ (1,hg^{-1}), the transport system has (0,t) ~ (1,phi(g)t), and the
@@ -39,141 +45,148 @@ ACCEPTANCE (one disjunctive item, quoted from the issue)
   (rmk:orbifold-monodromy-depends-on-the-equivariant-structure): U~ a point, T = Z,
   Gamma = C_2 acting trivially, im rho = 1, ker rho = C_2.
 
-THE CITERS AI05 NAMED: EXACT STATUS ON THE PAGE (one row each)
+THE CITERS AND THEIR EXACT STATUS ON THE PAGE (seven rows)
 
   The scope decision is comment 7058559021: a citer is rechecked when the page
   states its exact status -- proved from the corrected lemma, or conditional with
   its open input named by issue -- and no citer is left asserting more than is
   proved.  The corrected lemma is @lem:orbifold-monodromy-of-a-quotient
-  (lattices.md:177, proof :198); the result it is paired with is
-  @lem:tautological-system-descends (lattices.md:218, proof :228).
+  (lattices.md:177, proof :198).  What it is paired with is
+  @lem:tautological-system-descends (lattices.md:218, proof :228), whose scope is
+  stated in @rmk:the-descent-stops-at-the-2-morphisms (lattices.md:239): pullbacks
+  along maps from topological spaces, not the 2-morphisms of the site.  That gap
+  is research#797, item 4, and it is named as an input in every statement below
+  that calls the descended object a local system on a stack.  Rows 1-5 are the
+  citers ai05 named; rows 6-7 are the direct sites drl1 added.  Line numbers are
+  those of the commit that carries this file.
 
-  1. @thm:gamma-co-is-full -- lattices.md:239, proof :250.
-     CONDITIONAL, and proved from the corrected lemma.
-     Proved: the monodromy representation is rho = phi o psi^{-1} with
-     im rho = phi(Gamma) = Orth^+(T_Co), phi being the defining (injective)
-     action (:258), and the descent lemma supplies the local system on U whose
-     monodromy is the per-loop transport, so the monodromy of the quotient is
-     computed and not posited.
-     Open input, named in the statement (:243) and again at the step (:256): the
-     complement, in the chosen component, of the image of the period map is a
-     proper closed ANALYTIC subset.  Finding (iii) of
-     @rmk:findings-ii-iii-and-the-isotropy records that this needs a theorem and
-     reduces to the algebraicity of M_Co: research#797, item 1.  The existence of
-     the orbifold structure, the reading's other input, is research#797, items 3
-     and 4.
-     What was wrong: :256 derived "its complement Z is a proper closed analytic
-     subset (@def:closed-analytic-subset)" from nothing but openness of the
-     period image.  Openness gives Z closed and proper; analyticity is now a
-     named hypothesis.  The one downstream "unconditional" (lattices.md:165) now
-     reads "given the two inputs that theorem names"; the flat citations of the
-     theorem elsewhere are left as citations of a statement whose hypotheses are
-     on its face.
+  1. @thm:gamma-co-is-full -- lattices.md:244, statement :248, proof :261.
+     CONDITIONAL on three inputs, all named in the statement, and proved from the
+     corrected lemma given them: (1) the orbifold structure, research#797, items 3
+     and 4; (2) that the complement, in the chosen component, of the image of the
+     period map is a proper closed ANALYTIC subset -- finding (iii) of
+     @rmk:findings-ii-iii-and-the-isotropy, reducing to the algebraicity of M_Co,
+     research#797, item 1, openness of the image giving only closed and proper;
+     (3) the descent along the 2-morphisms, @rmk:the-descent-stops-at-the-2-
+     morphisms, research#797, item 4.  Proved: the representation is
+     rho = phi o psi^{-1} with im rho = phi(Gamma) = Orth^+(T_Co) for the defining
+     (injective) action.
+     Change from the previous round: the previous statement named (1) and (2) and
+     said the conclusion was proved from @lem:tautological-system-descends; drl1
+     is right that the monodromy step uses the descent, so (3) is now an input and
+     the proof says so at the step.
 
-  2. @lem:d2a-monodromy-of-the-stack(3) -- moduli-construction.md:1075, clause 3
-     at :1081, its proof :1098.
-     (1)-(2) PROVED, (3) CONDITIONAL.
-     Clauses (1)-(2) are the lemma's own connected-Lie-group path argument; they
-     use the corrected lemma only for the pair model of a loop, and :1086 says
-     expressly that the exact sequence is not used.
-     Clause (3) now stops at Gamma_Co(B) = rho(pi_1(V,s)).  The identification of
-     that group with Gamma_Co of @def:gamma-co-groups(1) is the comparison of the
-     labelled stack with the presentation B -- research#797, item 6 -- and is
-     named as unproved and unused, in the clause and in the proof.
+  2. @lem:d2a-monodromy-of-the-stack -- moduli-construction.md:1123, clause 3 at
+     :1129, its proof :1146.
+     (1)-(2) PROVED by its own connected-Lie-group path argument, which uses the
+     corrected lemma only for the pair model (:1086 says the exact sequence is
+     not used); (3) CONDITIONAL, stopping at Gamma_Co(B) = rho(pi_1(V,s)), with
+     the identification with Gamma_Co named as research#797, item 6, unproved and
+     unused.  MET as a citer on drl1's reading, and unchanged this round.
 
-  3. @prop:coble-monodromy-is-the-marking-group -- moduli-construction.md:1831,
-     (H1)-(H2) at :1834-1835, clause 4 at :1844, its proof :1851, the
-     "what this settles" paragraph :1868, @rmk:is-iota-a-loop :1889.
-     CONDITIONAL on (H1)-(H2), both named in the statement.
-     (H1) is the stack-level Torelli with inertia: @rmk:findings-ii-iii-and-the-
-     isotropy, findings (i) and (iv), with the ample-class route at finding (ii)
-     -- research#797, item 5 -- and the equality itself research#798.  (H2) is
-     connectedness of U, whose route is finding (iii): research#797, item 1.
-     Clauses 1-3 are proved from them.
-     CORRECTED, not merely conditioned.  Clause 4 and the "what this settles"
-     paragraph asserted that loop monodromy over ANY base is an index-two
-     subgroup of G, "because no loop carries iota".  That is false on the
-     labelled base: a loop carries -id_{T_Co} (@prop:sign-is-a-loop-of-the-
-     labelled-base, with W(T_Co) <= Gamma_Co(B)).  Clause 4 now states the
-     orbifold monodromy only, names its two excluded steps separately, and
-     records Gamma_Co(B) <= Orth^+(T_Co) with -id in it and finite index.  The
-     paragraph no longer says the three routes stopped "one sign short": the
-     sign is a loop on B, and each route stops where @rmk:d2-routes-for-the-
-     equality names.
-     Open inputs named: research#797, item 6 (labelled stack versus the universal
-     family over M_Co); the transfer of @thm:no-loop-carries-the-sign to B, which
-     is finding (iv) and the isotropy workstream's; @qst:gamma-co-sign-is-realised
-     for the loop equality.
+  3. @prop:coble-monodromy-is-the-marking-group -- moduli-construction.md:1881,
+     (H1)-(H3) at :1884-1886, clause 3 at :1894, its proof :1901, clause 4 at
+     :1895, the "what this settles" paragraph :1919.
+     CONDITIONAL on (H1)-(H3), all in the statement.  (H1) is the stack-level
+     Torelli with inertia (findings (i) and (iv); the ample class is (ii),
+     research#797 item 5; the equality research#798); (H2) is connectedness of U
+     (finding (iii), research#797 item 1); (H3) is the descent along the
+     2-morphisms (@rmk:the-descent-stops-at-the-2-morphisms, research#797 item 4).
+     Clause 3 now reads "Under (H3), ... the monodromy representation of that local
+     system is ...", and its proof says the computation is per loop and that (H3)
+     is what makes the transports the monodromy of a local system on the stack.
+     Changed from the previous round: clause 3 asserted the tautological system's
+     monodromy from @lem:orbifold-monodromy-of-a-quotient alone; that is drl1's
+     finding, and (H3) is its repair.  The index-two sentence was already
+     withdrawn (clause 4) and stays withdrawn.
 
-  4. @thm:gamma-co-labelled-equality -- moduli-construction.md:2055,
-     (i)-(iv) at :2059-2062, clause 3 at :2067, step 2 of the proof at :2072.
-     CONDITIONAL on (i)-(iv), all named in the statement and none proved: (i)
-     M_gen open and nonempty, (ii) every period of U realised in M_gen, (iii)
-     equal-period labelled objects isomorphic, (iv) U_gen open and connected.
-     The monodromy step is proved from the corrected lemma and now cites the
-     descent lemma as well: the equivariant system (U~ x T_Co)/G descends to a
-     local system on [U_gen/G] (@lem:tautological-system-descends) whose
-     monodromy is the per-loop transport phi(g)^{-1}
-     (@lem:orbifold-monodromy-of-a-quotient(2)), with image G.
-     Clause 3 now says which part of "Gamma_Co = rho^lab(pi_1) = Otilde^+(T_Co)"
-     is proved (the right-hand equality, clauses 1-2) and that reading the middle
-     group as Gamma_Co of @def:gamma-co-groups(1) is research#797, item 6.
+  4. @thm:gamma-co-labelled-equality -- moduli-construction.md:2107, (i)-(v) at
+     :2110-2114, clause 3 at :2120, proof step 2 at :2125.
+     CONDITIONAL on (i)-(v), all in the statement and none proved: (i) M_gen open
+     and nonempty; (ii) every period of U realised in M_gen; (iii) equal-period
+     labelled objects isomorphic; (iv) U_gen open and connected; (v) the descent
+     along the 2-morphisms (research#797, item 4).
+     CORRECTED beyond conditioning: clause 3 no longer prints
+     "Gamma_Co = rho^lab(pi_1) = Otilde^+(T_Co)".  It now prints
+     rho^lab(pi_1) = Otilde^+(T_Co) and says that the identification of that group
+     with Gamma_Co of @def:gamma-co-groups(1) is research#797, item 6 and is not
+     asserted.  The title, which carried the same identity, is cut to
+     rho^lab(pi_1) = Otilde^+(T_Co); the proof step no longer cites
+     @def:gamma-co-groups(1).  The monodromy step no longer claims the descent from
+     @lem:tautological-system-descends: it computes the per-loop transport and
+     names (v).
 
-  5. @thm:gamma-co-is-the-stack-monodromy -- moduli-construction.md:2104,
-     (A1)-(A2) at :2108-2109, chain :2115, ledger :2119-2136.
-     CONDITIONAL on (A1)-(A2), both named in the statement.
-     (A1) smoothness and connectedness of M_Co: not proved here; algebraicity and
-     the DM/smoothness properties are research#797, item 1, and smoothness is
-     kof5's.  (A2) is (H1)-(H2) of row 3, i.e. research#798 with research#797,
-     items 1 and 5.
-     CORRECTED.  Step (d) read "M_gen -> [Otilde^+(T_Co)\backslash U_gen] is a
-     G-torsor".  The torsor is U_gen -> [U_gen/G]; the period map is an
-     equivalence by (c) and is not itself a torsor, and (d) now says so.  Step
-     (e) cites the descent lemma, and the ledger has a row for it
-     (@lem:tautological-system-descends, proved).
+  5. @thm:gamma-co-is-the-stack-monodromy -- moduli-construction.md:2157,
+     (A1)-(A2) at :2160-2161, chain :2168, ledger :2178-:2192.
+     CONDITIONAL on (A1)-(A2), with (A2) now stated as (H1)-(H3) of row 3.  Step
+     (e) reads "Given (A2), hence (H3), ... " and says that the transports are
+     what @lem:tautological-system-descends constructs and that their being the
+     monodromy of a local system on the stack is (H3).  The ledger's row for
+     @lem:tautological-system-descends no longer says "proved" simpliciter: it
+     reads "proved for the strict maps; the 2-morphisms are
+     @rmk:the-descent-stops-at-the-2-morphisms, research#797, item 4, and are
+     assumed here as (A2)/(H3)".  The row for
+     @prop:coble-monodromy-is-the-marking-group(1)--(3) now says which clause uses
+     which hypothesis.  The torsor correction of the previous round stands: the
+     G-torsor is U^gen -> [U^gen/G] and the period map is an equivalence.
 
-NOT IN THE BRIEF'S LIST, TOUCHED ONLY WHERE THE CORRECTION MADE IT STALE
+  6. @lem:d2b-forgets-to-d2a(3) -- moduli-construction.md:1581, clause 3 at :1591,
+     its proof :1605.  CONDITIONAL on the descent: the clause now reads "the
+     tautological system has monodromy phi(R_gent) = R_gent ... (for the
+     transports per loop, and the descent along the 2-morphisms for the reading of
+     them as the monodromy of a local system on the quotient, @rmk:the-descent-
+     stops-at-the-2-morphisms, research#797, item 4)", and the proof repeats it.
+     The conclusion of the clause -- that Delta_2 carries no family whose local
+     system is the tautological one -- is unchanged and is what the descent is an
+     input for.
 
-  - lattices.md:443 (@rmk:the-sign-is-a-loop-not-a-missing-sign(1)) described the
-    closing sentence of clause 4.  That sentence is gone; the remark now records
-    it as an earlier form and says what is true instead.
-  - moduli-construction.md:1890 (@rmk:is-iota-a-loop) said the loop monodromy
-    over a parameter space "is smaller"; it now says where that holds (the coarse
-    space of the direct construction) and where it does not (the labelled base).
-  - @lem:orbifold-monodromy-of-a-quotient's opening still calls T_u a "local
-    system of lattices" while T is an arbitrary abelian group (ai05, twice).  Not
-    fixed in this round; recorded here so that it is not lost.
+  7. @cor:monodromy-of-the-tautological-system -- moduli-construction.md:1810,
+     statement :1811, proof :1815.  CONDITIONAL on the descent, stated in the
+     corollary itself: "given the descent of the equivariant system ... along the
+     2-morphisms (@rmk:the-descent-stops-at-the-2-morphisms, research#797, item
+     4), the monodromy group ... is Otilde^+(T_Co) itself ...; without that input
+     the lemma below gives the transport of every loop and not the monodromy of a
+     local system on F_S".  The heading of the paragraph introducing it, "The case
+     the programme uses, proved", now reads "per loop".
 
+THE LEMMA'S OWN STATUS AFTER drl1
 
+  - The per-loop statement is proved and unchanged in substance: the pair model of
+    a loop, psi an anti-homomorphism with the first exact sequence, the transport
+    system (P x T)/Gamma with endpoint relation (0,t) ~ (1, phi(g)t) and transport
+    phi(g)^{-1}, and rho = phi o psi^{-1} with im rho = phi(Gamma) and the second
+    exact sequence.
+  - The arbitrary-abelian-group "local system of lattices" is repaired: the lemma's
+    U~ x T is now "the trivial local system of abelian groups", with the lattice
+    case marked as the one where T is finitely generated free and phi lands in
+    Orth(T) -- which is the case of every application -- and @def:
+    local-system-of-lattices does require finitely generated free stalks
+    (local-systems-of-lattices-and-monodromy.md, definition of a local system of
+    lattices).  The same correction is made at the opening of
+    @lem:tautological-system-descends and in its clause 1.
+  - The descent is now stated for what it proves.  Its title, its clause 2 and its
+    proof paragraph on functoriality no longer say that the assignment is a sheaf
+    on the site of U: they say that the pullbacks are functorial and satisfy the
+    sheaf axioms for the strict maps, and that the restriction along the
+    2-morphisms is not constructed.  The new @rmk:the-descent-stops-at-the-2-
+    morphisms states the gap, says what a morphism of the site carries, notes that
+    the omission is not about open covers (at a point with finite stabilizer the
+    site over it has one object and its 2-morphisms are the stabilizer), and names
+    it research#797, item 4.  It does not claim the comparison cannot be written
+    down, and nothing here attempts it.
 
-  The review asks for: T = (U~ x T)/Gamma is a local system on the orbifold U, and
-  its monodromy along every loop equals the per-loop transport.  New
-  lem:tautological-system-descends at lattices.md:218, proof :228, proves it.
+CONSISTENCY REPAIRS THE REVIEW ASKED FOR, NONE OF THEM NEW MATHEMATICS
 
-  1. For every map f: W -> U from a topological space, f^*T is the sheaf whose
-     sections over an open O are the Gamma-equivariant maps f^{-1}U~|_O -> T,
-     with f^{-1}U~ = W x_U U~; this is the sheaf of sections of the covering
-     (f^{-1}U~ x T)/Gamma -> W, hence locally constant with fibre T, and a local
-     system of lattices when T is one and phi preserves its form.  The chart and
-     its pullback are a Gamma-torsor and a covering: Noohi, Definition 3.3,
-     Proposition 3.4, Definition 4.5, Example 4.6(1), Definition 18.10.
-  2. (fh)^*T = h^*f^*T canonically and each f^*T is an ordinary sheaf on W; these
-     are the sheaf conditions on the site of U, whose covers are the open
-     coverings of spaces (Noohi, §3 and §4), a sheaf on a category fibred in
-     groupoids being [@stacks-06TR].  So T is a local system on the topological
-     stack U, the descent of the equivariant system, the object written
-     (U~ x T)/Gamma.
-  3. p^{-1}U~ = U~ x_U U~ = Gamma x U~ (Noohi, Proposition 3.4), so p^*T = U~ x T
-     is trivial: T is locally constant.
-  4. For a loop lambda with pair (g,gamma~), lambda^*T is the transport system
-     (P x T)/Gamma of @lem:orbifold-monodromy-of-a-quotient(2) with
-     P = lambda^{-1}U~, whose transport is phi(g)^{-1}; every loop has such a pair,
-     so the monodromy of T along every loop is the per-loop transport and the
-     representation is rho = phi o psi^{-1}.
+  - moduli-construction.md:1080, :1115-1116, :1120 and :1153 called the
+    labelled-base monodromy simply Gamma_Co.  Each now says Gamma_Co(B), and says
+    that identifying it with Gamma_Co is research#797, item 6.  With those, the
+    promise at :31 ("no statement below uses it") is true.
+  - the labelled equality's clause 3, title and proof step: see row 4; the
+    previous round printed Gamma_Co = rho^lab(pi_1) = Otilde^+(T_Co).
+  - the review list at :1939 gains a finding (v), the descent, with the issue, so
+    that the page's own list of what is open matches the hypotheses it states.
 
-  This is the descent that the earlier objection ("defined by its pullbacks")
-  named: the pullback is constructed as equivariant maps and the sheaf axioms are
-  verified, rather than assumed.
+THE COMPARISON THE THIRD REVIEW NAMED AS REMAINING (MET)
 
   Inputs, each a numbered statement read in Noohi, Foundations of topological stacks
   I (arXiv:math/0503247): Definition 3.3 and Proposition 3.4 (the chart presents the
@@ -187,7 +200,8 @@ NOT IN THE BRIEF'S LIST, TOUCHED ONLY WHERE THE CORRECTION MADE IT STALE
   kernel and the injectivity of p_*).  No printed-page, PDF-page or offset locator is
   used.
 
-THE REVIEW'S FINDINGS, AND WHERE EACH IS DISPOSED OF
+THE REVIEW'S FINDINGS, AND WHERE EACH IS DISPOSED OF (line numbers are those of
+the round that answered each; current locations are in the table above)
 
   K1. "T is a well-defined local system on the orbifold ... UNPROVED. This is
       asserted as a definition at lattices.md:181, with no descent proof or numbered
@@ -325,5 +339,21 @@ CHECKS RUN FOR THE CITERS' ROUND (the commit that carries this file)
     at 393498f777 and 9260 here (the eleven new citations); the five cycle
     findings are the same five as at the base, differing only in the order the two
     names are printed.  No finding names the descent lemma or a touched block.
+  tests/engineering: not run, for the reason above.
+  CI: not used as evidence.
+
+CHECKS RUN FOR THE drl1 ROUND (the commit that carries this file)
+
+  scripts/docs_check.py --source: byte-identical to a detached worktree at
+    272d2b00f9 (the commit this one is rebased onto), 29 findings, all pre-existing
+    "citation is in no bibliography" in other chapters, none on lattices.md or
+    moduli-construction.md.
+  scripts/docs_dependency_graph.py --check: 123 findings on both trees, 1892 blocks
+    here against 1891 (the new remark), 9321 edges against 9308 (the thirteen new
+    citations); the six cycle findings and the fourteen missing-id findings are the
+    same as at the base, the latter shifted only by the line numbers they print.
+    The one finding this round produced -- an uncited "pullback of a local system"
+    in the chain of @thm:gamma-co-is-the-stack-monodromy -- was fixed by citing
+    @def:pullback-of-local-system there, and none remains.
   tests/engineering: not run, for the reason above.
   CI: not used as evidence.
