@@ -1,6 +1,9 @@
 research#799 -- acceptance item by item
 
-Revision: the commit containing this report; parent 1197067c3d.
+Revision: the commit containing this report; parent 29f00e3e9b. This
+revision repairs items 1 and 6 after the review at comment 7054280771: the
+three finiteness sentences at :1148, :1155 and :1253 were false and now
+state the infiniteness on M and the finiteness on T_Co separately.
 Page: writing/coble/lattices-and-moduli/moduli-construction.md.
 Proof: thm:coble-monodromy-on-m-classical, :1247.
 
@@ -8,10 +11,20 @@ ORIGINAL STATEMENT, CLAUSE BY CLAUSE
 
 1. Every family of classical Coble covers over a connected base has
    invariant-lattice monodromy contained in the stated finite group.
-   VERDICT: MET. :1247-1258, using lem:coble-family-base-change (:1020),
+   VERDICT: the containment is MET, and the group is INFINITE, so the
+   finite alternative is REFUTED. :1247-1253, using
+   lem:coble-family-base-change (:1020),
    lem:pi1-of-a-groupoid-quotient-is-generated-by-three-contributions
    (:1210), lem:d2-label-lift (:1100), and
-   lem:coble-invariant-lattice-in-families (:1134).
+   lem:coble-invariant-lattice-in-families (:1134). W(E_10) = W_10
+   contains the image of Aut(S_b) (rmk:coble-automorphisms-infinite(1)),
+   which contains the infinite-order Bertini product
+   (lem:coble-automorphism-group-is-infinite(2)), and the universal family
+   has monodromy exactly W(E_10) (:1252). What is
+   finite in this picture is the isotropy action on the anti-invariant
+   summand T_Co (:1148, :1155), not the action on M. An earlier revision of
+   this item called W(E_10) "the stated finite group"; that is the error the
+   review at comment 7054280771 charges at :1148, :1155 and :1253.
 
 2. The universal family over the classical substack has monodromy
    exactly W(E_10) = Orth^+(K^{perp M}).
@@ -34,8 +47,10 @@ ORIGINAL STATEMENT, CLAUSE BY CLAUSE
    non-permutation isotropy action recorded at :1143-1148.
 
 6. The monodromy on M is a stated finite group.
-   VERDICT: MET on the classical substack, with the stated group W(E_10)
-   (:1247). NOT MET for the widened stack, where no group is computed.
+   VERDICT: REFUTED on the classical substack. The stated group is W(E_10)
+   (:1252) and it is infinite (:1253), so the monodromy on M is not a
+   finite group there either. NOT MET for the widened stack, where no group
+   is computed at all (:1253).
 
 7. Every input is cited by a numbered statement that has been read.
    VERDICT: MET for the classical-substack result. The cited statements
@@ -46,27 +61,60 @@ ORIGINAL STATEMENT, CLAUSE BY CLAUSE
 ISSUE ACCEPTANCE CONTRACT
 
 1. "The statement proved on a page of writing/."
-   VERDICT: MET for the classical-substack statement of items 1, 2, 6, 7.
-   NOT MET for the literal every-family statement including the widened
-   stack, because of item 3.
+   VERDICT: MET for the classical-substack theorem (item 2) and for the
+   refutation of items 5 and 6; NOT MET for the literal every-family
+   statement including the widened stack, because of item 3.
 
 2. "Read MET by one Kimi review."
-   VERDICT: NOT MET; submitted for that review.
+   VERDICT: NOT MET; the review at comment 7054280771 returned NOT MET, and
+   one of its two page-level charges, (a) the finiteness claim, is repaired
+   by this commit. Its charge (b), the dropped arrow term in
+   lem:pi1-of-a-groupoid-quotient-is-generated-by-three-contributions, is
+   not touched here and is still open.
 
 3. "Or refuted with a counterexample."
-   VERDICT: NOT MET; no refutation of the classical-substack statement
-   is supplied.
+   VERDICT: MET for the issue's finite-group alternative, which is the
+   verdict that alternative asks for. rho is onto W(E_10) (:1252), so there
+   is a loop gamma: S^1 -> M^cl_Co with rho([gamma]) = sigma_I^* sigma_J^*,
+   whose characteristic polynomial (t-1)^7(t+1)^2(t^2-14t+1) is not
+   cyclotomic (lem:coble-automorphism-group-is-infinite(2)), so
+   rho([gamma]) has infinite order. The pullback of the universal family
+   along gamma is a family of classical Coble covers over the connected
+   base S^1 whose monodromy on M is of infinite order: the monodromy is
+   neither trivial nor a finite group, so the issue's second clause is
+   refuted and not satisfied. This is a refutation of that clause only; the
+   exact-group statement of item 2 is proved, not refuted.
 
-OVERALL: not ALL MET. The classical-substack monodromy theorem is proved;
-the widened-functor clause of the original statement remains open, and the
-independent review condition has not yet been returned.
+OVERALL: not ALL MET, and the issue's second clause is REFUTED. The
+classical-substack theorem is proved (item 2): the monodromy group on M is
+W(E_10), and every family of classical Coble covers over a connected base
+has monodromy a subgroup of it (item 1). That group is infinite, so
+"trivial or a stated finite group" fails in both of its alternatives, and a
+family over S^1 refutes it outright (contract item 3); the finite-group
+verdicts which an earlier revision of this report gave at items 1 and 6 were
+false. The widened-functor clause of the first statement remains open
+(item 3), and no independent review has returned MET.
 
 REVIEW GAPS
 
+(a) of review 7054280771, the finiteness claim, page :1148, :1155, :1253:
+    repaired here. :1148 and :1155 now say the image of Aut(S_b) on M is
+    infinite -- the Bertini product sigma_I^* sigma_J^* has infinite order,
+    and at unnodal members the image contains W_10(2) -- and that the period
+    bounds only the image on T_Co, of signature
+    (2,9), where lem:period-stabiliser-finite applies; the lemma does not
+    apply to M of signature (1,10). :1253 no longer infers "hence finite"
+    from containment in W(E_10), which is infinite. Neither bound used in
+    thm:coble-monodromy-on-m-classical depended on the finiteness, so
+    removing it changes no accepted step.
+(b) of review 7054280771, the dropped arrow term in
+    lem:pi1-of-a-groupoid-quotient-is-generated-by-three-contributions,
+    page :1232-1242: NOT touched in this commit; still open.
 (3) Smooth cover of prop:coble-stack-as-quotient:
     closed by Grivaux Prop. 3.1 at commit 02ca0a6a24; page :773.
 (4) Groupoid pi_1 generation:
-    closed by the loop decomposition at commit 1197067c3d; page :1210.
+    closed by the loop decomposition at commit 1197067c3d; page :1210,
+    subject to (b).
 (5) Kernel pi_1(B) of the relabelling sequence:
     closed here by lem:coble-invariant-lattice-in-families(2), page :1142,
     with lem:d2-label-lift(2), page :1100.
