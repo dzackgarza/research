@@ -10,3 +10,7 @@
 Representability uses Lemma 6.3, and cover locality uses Definition 4.5 and Example 4.6(1). No new gap identified in this self-reading. This is not an independent review.
 
 The three DeepSeek reviewers ended without reports or findings; no independent model check was recorded.
+
+# Addendum after Kimi evzj
+
+The unsupported loop-comparison sentence has been removed. The direct torsor-on-I and torsor-on-I^2 proof supplies sections, pair representatives, endpoint labels and homotopies with no manifold assumption. The principal case allows a continuously varying arrow and deforms it to e when G is path connected. Base naturality uses iterated 2-fibre products, and the Coble consumer descends the same R_f-equivariant system. Item 4 and stale three-input strings are corrected. docs-deps reports no findings on the descent blocks. These are writer checks, not independent review.

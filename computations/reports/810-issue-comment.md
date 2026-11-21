@@ -1,9 +1,12 @@
-Intended orchestrator comment for research#810 (the issue connector is read-only; not posted).
+Intended orchestrator follow-up for research#810 (the issue connector is read-only; not posted).
 
-thm:quotient-local-system-descent now proves the local-system equivalence along an arbitrary atlas, including every 2-morphism comparison and its cocycle, and proves the Noohi-fibre monodromy formula in the discrete properly discontinuous case. Its proof checks the exact hypotheses of the cited statements and gives the atlas construction and endpoint transport directly. The non-free quotient lemma, the SL_3 consumer, the finite relabelling consumer and the family-wise systems on the Coble stack now cite that theorem in place of (D).
+Kimi evzj's four findings are repaired one at a time in 4767be49f9, 82b88c6552, 9653987744 and 68612adbed:
 
-The Siege proof record is research/issue-810/proof.md and the itemized report is computations/reports/810-acceptance-item-by-item.txt. Noohi, Moerdijk, Colman and Moerdijk--Pronk text is in tmp/sources. Moerdijk--Mrcun Chapters 5--6 could not be obtained in readable form: Cambridge marks the book closed and ZOTERO_API_KEY is absent.
+1. The Noohi/Haefliger assertion is now proved by sections of Gamma-torsors over intervals and squares, with endpoint identifications and composition checked. No Noohi--Colman comparison theorem or manifold hypothesis is used.
+2. Principal-bundle analogues prove loop representation, deformation and associated transport for connected Lie groups. The SL_3 consumer uses that clause directly.
+3. Iterated 2-fibre products prove base naturality. In the Coble application M_f and f^*M descend the same R_f-equivariant system, and the path/arrow transports follow directly.
+4. The surviving conditional (D) at moduli-construction.md:1104 is replaced. Stale three-input statuses are normalized to two.
 
-The source scan has only pre-existing findings on untouched pages; the dependency scan has no finding on the descent blocks and no new cycle. The full docs gate was not established because a shared LFS figure is unresolved.
+The arbitrary-topological descent no longer invokes the smooth Moerdijk--Pronk statement as independent evidence. docs-deps has no finding on the edited descent blocks and no new cycle; docs --source has only pre-existing findings on untouched pages. The full docs gate remains blocked by an unresolved Git LFS asset.
 
-Kimi review is still outstanding, so the issue is not ready to close. Three DeepSeek review runs exhausted without reports; no independent approval is claimed. An isolated worktree was used because the shared checkout is stale and contains other sessions' edits.
+computations/reports/810-acceptance-item-by-item.txt has the per-item status and research/issue-810/proof.md has the updated clean proof. A further Kimi review is required before #810 can close; no independent approval is claimed here.

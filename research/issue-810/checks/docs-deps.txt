@@ -1,4 +1,7 @@
 cd writing/.book && uv run --script ../../scripts/docs_dependency_graph.py --project . --out ../../.tmp/dependency-graph --check
+Downloading networkx (2.0MiB)
+ Downloaded networkx
+Installed 6 packages in 4ms
 docs-deps: coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md: missing-id coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md#830
 docs-deps: coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md: missing-id coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md#832
 docs-deps: coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md: missing-id coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md#879
@@ -123,5 +126,5 @@ docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "path"
 docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "path connected" lem:haefliger-paths-exhaust-the-fundamental-groupoid def:path-connectedness
 docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "source" lem:haefliger-paths-exhaust-the-fundamental-groupoid def:globular-boundary
 docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "target" lem:haefliger-paths-exhaust-the-fundamental-groupoid def:globular-boundary
-docs-deps: 1904 blocks, 1118 cited results, 9530 edges, 124 findings -> ../../.tmp/dependency-graph
+docs-deps: 1904 blocks, 1116 cited results, 9527 edges, 124 findings -> ../../.tmp/dependency-graph
 error: recipe `docs-deps` failed on line 64 with exit code 1
