@@ -102,7 +102,7 @@ docs-deps: coble/heegner-report/coble-heegner-research-report.md: unlocated-cita
 docs-deps: coble/heegner-report/coble-heegner-research-report.md: unlocated-citation "@Ste91" prob:B25
 docs-deps: coble/heegner-report/coble-heegner-research-report.md: unlocated-citation "@AN06" thm:no-loop-carries-the-sign
 docs-deps: coble/heegner-report/coble-heegner-research-report.md: unlocated-citation "@Vin67" thm:semifan-restriction
-docs-deps: coble/lattices-and-moduli/moduli-construction.md: cycle not:d2-plane-sextic-base lem:d2-incidence-connected
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: cycle lem:d2-incidence-connected not:d2-plane-sextic-base
 docs-deps: coble/lattices-and-moduli/moduli-construction.md: cycle thm:coble-smooth-antibicanonical-is-a-plane-blowup lem:coble-double-point-of-the-sextic
 docs-deps: coble/lattices-and-moduli/moduli-construction.md: cycle def:coble-family-unpolarized lem:d2-local-system def:gamma-co-groups
 docs-deps: coble/lattices-and-moduli/local-systems-of-lattices-and-monodromy.md: uncited-term "exact" lem:monodromy-of-a-descended-local-system def:exact-complex
@@ -126,5 +126,5 @@ docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "path"
 docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "path connected" lem:haefliger-paths-exhaust-the-fundamental-groupoid def:path-connectedness
 docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "source" lem:haefliger-paths-exhaust-the-fundamental-groupoid def:globular-boundary
 docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "target" lem:haefliger-paths-exhaust-the-fundamental-groupoid def:globular-boundary
-docs-deps: 1904 blocks, 1116 cited results, 9527 edges, 124 findings -> ../../.tmp/dependency-graph
+docs-deps: 1904 blocks, 1116 cited results, 9529 edges, 124 findings -> ../../.tmp/dependency-graph
 error: recipe `docs-deps` failed on line 64 with exit code 1

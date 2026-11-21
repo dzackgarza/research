@@ -14,3 +14,7 @@ The three DeepSeek reviewers ended without reports or findings; no independent m
 # Addendum after Kimi evzj
 
 The unsupported loop-comparison sentence has been removed. The direct torsor-on-I and torsor-on-I^2 proof supplies sections, pair representatives, endpoint labels and homotopies with no manifold assumption. The principal case allows a continuously varying arrow and deforms it to e when G is path connected. Base naturality uses iterated 2-fibre products, and the Coble consumer descends the same R_f-equivariant system. Item 4 and stale three-input strings are corrected. docs-deps reports no findings on the descent blocks. These are writer checks, not independent review.
+
+# Addendum after review mihf
+
+The false section deformation is deleted. The pair family has the original pair at u=0 and the loop of U with e at u=1. Its transport is checked by the section t -> phi_{beta(t)}(x), giving phi_g, so sigma_1^* = phi_g^{-1}. Base naturality was independently accepted. The (v) and three-input statuses are reconciled; the three inputs below lattices.md:165 refer to the separate refutation and are not descriptions of gamma-co-is-full.
