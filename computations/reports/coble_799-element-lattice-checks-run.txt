@@ -1,0 +1,14 @@
+K^2 = -2
+K primitive (gcd of coordinates is 1): True
+K.K =  -2  (so K^2 divides x.K for all x iff x.K is even)
+x.K on the frame: [-6, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2] all even: True
+(x.K)/K^2 on the frame: [Fraction(3, 1), Fraction(1, 1), Fraction(1, 1), Fraction(1, 1), Fraction(1, 1), Fraction(1, 1), Fraction(1, 1), Fraction(1, 1), Fraction(1, 1), Fraction(1, 1), Fraction(1, 1)]
+control: diag(2,2), K=e1+e2: K^2 = 4 K primitive: True  (x.K)/K^2 on the frame: [Fraction(1, 2), Fraction(1, 2)] -> index 2, so primitive does NOT split
+det M = 2048    det K^perp = det M / K^2 = -1024
+Gram of the ten classes:
+ Matrix([[-4, 2, 0, 0, 0, 0, 0, 0, 0, 0], [2, -4, 2, 0, 0, 0, 0, 0, 0, 0], [0, 2, -4, 2, 0, 0, 0, 0, 0, 2], [0, 0, 2, -4, 2, 0, 0, 0, 0, 0], [0, 0, 0, 2, -4, 2, 0, 0, 0, 0], [0, 0, 0, 0, 2, -4, 2, 0, 0, 0], [0, 0, 0, 0, 0, 2, -4, 2, 0, 0], [0, 0, 0, 0, 0, 0, 2, -4, 2, 0], [0, 0, 0, 0, 0, 0, 0, 2, -4, 0], [0, 0, 2, 0, 0, 0, 0, 0, 0, -4]])
+det Gram = -1024
+Gram / 2 has -2 on the diagonal: True
+det of the half Gram (the Cartan matrix of E_10): -1
+rank of the ten classes: 10
+det Gram equals det K^perp: True

@@ -54,7 +54,56 @@ CONSEQUENCE FOR THE THEOREM, AND THE INDEX
   case of lem:coble-image-on-m-is-the-weyl-group's bound, the other coset
   represented by -id_{K^{perp M}} + id_K.
 
-ORIGINAL STATEMENT, CLAUSE BY CLAUSE
+REVIEW OF ITEM (2), AND ITS DISPOSITIONS
+
+  Swarm smwpxmykd, member m2, read commit 75b45e3cff against the six checks
+  (a)-(f) and reported four met, (c) met-but-inverted, (e) not met with the
+  conclusion true. Dispositions, after checking each at the page:
+
+  ACCEPTED, and repaired in this revision:
+  (e1) "K primitive, so M = K^perp + Z K" is false as an implication, and the
+       page gave no reason. Counterexample: M = diag(2,2), K = e_1+e_2,
+       K primitive, K^perp + Z K of index 2. What is needed is
+       (x.K)/K^2 in Z for every x, which holds here: x.K = -6x_0-2 sum_{i>=1}
+       x_i is even. Both places now carry the computation, with the control.
+  (e2) K^perp = E_10(2) was cited to a clause that computes a Dynkin diagram.
+       It is now derived: the ten classes have Gram matrix
+       2(-2I+Adj(T_{2,3,7})) of determinant -2^10, equal to det M/K^2, so they
+       span K^perp. Record: coble_799-element-lattice-checks-run.txt
+       (det K^perp = -1024, det of the half Gram = -1, and the control above).
+  (k)  lem:coble-image-on-m-is-the-weyl-group's proof said 1/2(x.delta_i) is an
+       integer "because delta_i has even coordinates" -- the coordinates of
+       e_i - e_{i+1} are odd. The reason is that M is even. Repaired.
+  (g)  The theorem is now stated at the base point x = P(s), with the
+       identification M_x = M by the frame at s named; it was stated for an
+       arbitrary x and proved only for that one.
+  (i)  P_*: pi_1(B,s) -> pi_1(M^cl_Co,x) is an anti-homomorphism, the two
+       products being opposite; now said. Only subgroups are used, here and
+       in lem:haefliger-paths-exhaust-the-fundamental-groupoid.
+  (j2) The Families paragraph cited lem:coble-family-base-change, which is
+       stated for a map of spaces, for a classifying map into the stack; the
+       paragraph now says "the argument of".
+  (h)  Stated but re-named: rho = T o inv, and the statement now adds that its
+       image is the monodromy group of def:transport-and-monodromy.
+
+  PARTLY ACCEPTED. (c): the sentence that gave the direction of a relabelling
+  arrow rested on a convention the corpus does not pin -- m(r) is the
+  permutation by sigma or by sigma^{-1} according as the S_10-action on the
+  frame is read one way or the other, and both readings are consistent with
+  the transport law once the composite arrow is labelled accordingly. The page
+  no longer picks one; it states the permutation up to that inversion, notes
+  that every relabelling arrow used is a transposition, and prop:pi1(2) is
+  restated the same way. The review's own claim, that the direction is sigma
+  and not sigma^{-1}, was not accepted: it presumes one of the two readings,
+  and the sentence it called a fiat convention is now replaced by the
+  statement that the direction is a convention.
+
+  NOT ACCEPTED. (j1): the review said lem:coble-invariant-lattice-in-families(4)
+  does not state the descent for a general arrow. Its proof does, in the last
+  paragraph of (4) ("an isomorphism of objects is an isomorphism of the covers
+  commuting with the involutions, hence an isometry carrying M_b to M_{b'}");
+  the citation stands, with a pointer to that paragraph added.
+
 
 1. Every family of classical Coble covers over a connected base has
    invariant-lattice monodromy contained in a stated group.
@@ -150,4 +199,10 @@ WHAT THIS REVISION DID NOT DO
   lacks.
 
 FINAL INDEPENDENT-CHECK STATUS
-  No fresh independent check is claimed for this revision.
+  One independent read of item (2) has returned: swarm smwpxmykd, m2, four of
+  the six checks met, (c) and (e) not met, and its findings are disposed of
+  above; the four repairs it forced are in this revision. That is one read of
+  the argument, not the "read MET by one Kimi review" the issue's acceptance
+  asks for, and it did not return MET as a whole. No MET review is claimed.
+  The two remaining members of the same swarm were still reading when this
+  revision was committed.
