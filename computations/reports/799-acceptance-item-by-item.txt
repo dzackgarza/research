@@ -105,6 +105,41 @@ REVIEW OF ITEM (2), AND ITS DISPOSITIONS
   the citation stands, with a pointer to that paragraph added.
 
 
+SECOND AND THIRD READS (m3, m1), AND THEIR DISPOSITIONS
+
+  Both read 75b45e3cff. They agree with (a), (b), (d) and (f), and they
+  disagree with each other on (c):
+  m1: MET -- m(r) = sigma^{-1} is right under the corpus's convention, and
+      only the attribution to not:d2-plane-sextic-base is wrong.
+  m3: NOT MET -- m(r) = sigma, so :1395 and :1418 are both inverted.
+  The two derivations are the two readings of the same sentence: m1 uses
+  E_i(b) = E_{sigma^{-1}(i)}(sigma b), m3 uses eps_i(sigma b) =
+  eps_{sigma^{-1}(i)}(b), and each is the inverse relation of the other.
+  Neither noticed the other's relation was available, and both agree that
+  nothing in the theorem is sensitive. That is why this revision states the
+  direction as a convention instead of picking one; m1's attribution finding
+  is accepted, the E_i convention being at lem:d2-unpolarised-family(3) and
+  not at the notation block, and the sentence no longer attributes it.
+
+  ACCEPTED from m1 and repaired:
+  - [@Vin72, Table 5] does not give O^+(E_10) = W(E_10); see item 7. Input
+    (I) is now named on the page and recorded here. m1's own remark that the
+    same table is used correctly at prop:gamma-co-heegner-strict is right:
+    there the lattice is the odd I_{1,8}, which the paper's form (1) covers.
+  - "K primitive, so M = K^perp + Z K" (m1's control Gram [[2,1],[1,-2]],
+    K = (0,1)): the same finding as m2's (e1), repaired in c60bfbd64a.
+  - (d): the frame identification that the positivity computation uses is
+    now named in the theorem's statement.
+
+  ACCEPTED from m3 and repaired: the basepoint point of (g); m3 verified (e)
+  by hand -- K^perp = E_10(2), det -2^10, index 2 -- and the Cremona frame
+  change of (f), agreeing with m1's independent computation.
+
+  NOT ACCEPTED: m3's (c) direction claim, for the reason above.
+
+
+ORIGINAL STATEMENT, CLAUSE BY CLAUSE
+
 1. Every family of classical Coble covers over a connected base has
    invariant-lattice monodromy contained in a stated group.
    VERDICT: MET, with the group W(E_10), which is infinite, not finite.
@@ -113,9 +148,18 @@ REVIEW OF ITEM (2), AND ITS DISPOSITIONS
 
 2. The universal family over the classical substack has monodromy
    exactly W(E_10) = O^+(K^{perp M}).
-   VERDICT: MET. thm:coble-monodromy-on-m-classical (:1373), now read
-   through lem:transport-order-on-the-classical-coble-stack (:1328) and
-   stating the index [Stab_{O(M)}(K) : rho(pi_1)] = 2 as well.
+   VERDICT: MET modulo one imported input. thm:coble-monodromy-on-m-
+   classical (:1373), read through lem:transport-order-on-the-classical-
+   coble-stack (:1328), and stating the index [Stab_{O(M)}(K) :
+   rho(pi_1)] = 2 as well. The upper bound uses input (I): the reflection
+   group of E_10 = II_{1,9} is O^+(E_10), equivalently the ten simple
+   reflections of lem:coble-image-on-m-is-the-weyl-group(1) generate it.
+   Reflectivity of E_10 is [@Vin85, Introduction, no. 6] (unimodular forms
+   are reflective for n <= 19) and the semidirect decomposition with
+   trivial diagram symmetry is prop:reflective-semidirect(1)-(2); what no
+   page here has is the identification of the reflection group with the
+   group of the ten simple reflections. The theorem's statement now says
+   "on the imported input (I) named in the proof".
 
 3. "Every family of Coble covers" read for the widened functor of
    def:coble-moduli-functor, including non-plane-model members.
@@ -138,17 +182,27 @@ REVIEW OF ITEM (2), AND ITS DISPOSITIONS
    infinite W(E_10). The widened stack is NOT MET, not asserted.
 
 7. Every input is cited by a numbered statement that has been read.
-   VERDICT: MET for items (1) and (2). No printed page number is added
-   anywhere in this revision; the sources cited by the new lemma are
+   VERDICT: NOT MET, on one input, and MET otherwise. No printed page
+   number is added anywhere; the sources cited by the new lemma are
    def:transport-and-monodromy, prop:transport-homotopy-invariant(2),
    not:paths-of-a-groupoid-quotient,
    lem:pi1-of-a-groupoid-quotient-is-generated-by-three-contributions,
    lem:coble-invariant-lattice-in-families(2)-(3),
    prop:spinor-plus-cone-components, prop:coble-invariant-lattice,
-   def:primitive-embedding, lem:coble-monodromy-group-on-m-is-the-
-   canonical-stabilizer(4), lem:coble-image-on-m-is-the-weyl-group(1)
-   and [Vin72, Table 5]. A fresh independent review has not yet read this
-   revision.
+   def:primitive-embedding,
+   lem:coble-monodromy-group-on-m-is-the-canonical-stabilizer(4),
+   lem:coble-image-on-m-is-the-weyl-group(1)-(2), [Vin85, Introduction,
+   no. 6] and prop:reflective-semidirect(1)-(2). The exception is input
+   (I) of item 2: the group of the ten simple reflections is the whole
+   reflection group of E_10, which no numbered statement of the corpus
+   carries. [@Vin72, Table 5] was cited for it until this revision and
+   does not carry it either: that paper's forms are (1) -x_0^2 + x_1^2 +
+   ... + x_n^2, n <= 17, and (3) -2x_0^2 + x_1^2 + ... + x_n^2, n <= 14,
+   both odd, and its Tables 4-7 give the reflection subgroups of those;
+   E_10 = II_{1,9} is even unimodular and is none of them. The corpus's
+   other uses of [@Vin72, Table 5], at prop:gamma-co-heegner-strict and
+   on the-heegner-line-and-the-coble-arithmetic-group, are for the odd
+   I_{1,8} and are not affected by this.
 
 ISSUE ACCEPTANCE CONTRACT
 
@@ -199,10 +253,13 @@ WHAT THIS REVISION DID NOT DO
   lacks.
 
 FINAL INDEPENDENT-CHECK STATUS
-  One independent read of item (2) has returned: swarm smwpxmykd, m2, four of
-  the six checks met, (c) and (e) not met, and its findings are disposed of
-  above; the four repairs it forced are in this revision. That is one read of
-  the argument, not the "read MET by one Kimi review" the issue's acceptance
-  asks for, and it did not return MET as a whole. No MET review is claimed.
-  The two remaining members of the same swarm were still reading when this
-  revision was committed.
+  Three independent reads of item (2) have returned, all of swarm smwpxmykd.
+  m1: (a), (b), (c), (d), (f) met, (e) not met on the citation and on the
+  splitting implication. m3: all but (c) met, and (c) claimed inverted, which
+  m1 claimed is right. m2: (c) and (e) not met. Every finding that survived
+  checking is repaired in c60bfbd64a and this revision; the two that did not
+  ((c)'s direction claim, and the reading of the citation to
+  lem:coble-invariant-lattice-in-families(4)) are disposed of above. The one
+  thing no read could close is input (I) of item 2, and item 7 is NOT MET for
+  it. None of this is the "read MET by one Kimi review" the issue's acceptance
+  asks for, and no read returned MET as a whole. No MET review is claimed.
