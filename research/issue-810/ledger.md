@@ -13,3 +13,5 @@
 13. PROVED #12: Theta_u has the original pair at u=0 and the loop of U with e at u=1, with transport sigma_1^* gamma^* = varphi_g^{-1} gamma^* — checks/mihf-item1.md
 14. OPEN: Review mihf item 2: remove stale (v) conditional and reconcile remaining three-input status text — notes.md#9
 15. PROVED #14: Conditional (v) removed, the two gamma-co-is-full inputs are stated consistently, and no open conditional descent hypothesis survives — checks/mihf-item2.md
+16. OPEN: Terminology and literature comparison: standardize loops and G-paths and determine whether a direct group-comparison theorem exists — notes.md#10
+17. PROVED #16: All coinages replaced by standard stack-loop and G-path terminology with numbered citations; no direct comparison theorem exists in the named sources, so the direct torsor proof is retained — notes.md#10

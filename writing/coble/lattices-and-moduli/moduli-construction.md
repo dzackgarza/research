@@ -1101,7 +1101,7 @@ so the relabelling half of the $\mathfrak S_{10}$ of @lem:d2-label-lift(2) is an
 
 (1) is @lem:d2-label-lift(2): the torsor of @lem:d2-labelling-cover is over a path connected $B$ (@lem:d2-incidence-connected(3)), and the sequence is that lemma's. Nothing is asserted for $\mcM^{\mathrm{lab}}_\Co$, whose identification with $B$ is research#797, item 6 (@def:gamma-co-groups(1)) and whose connectedness is not proved; the fibre-product computation of @lem:d2-labelling-cover is what makes the sequence available for the base it is made over.
 
-(2) is @lem:d2a-monodromy-of-the-stack(3) with @def:gamma-co-groups(1): the monodromy group of the labelled presentation is $\rho(\pi_1(B,s))=\Gamma_\Co(B)$, and $\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co)$ is @thm:gamma-co-is-stable(1). For a *free* quotient the monodromy group of $[\Gamma\backslash D^+]$ is $\Gamma$ (@lem:orbifold-monodromy-of-a-quotient(2), with $\varphi$ the defining inclusion, which is injective); the quotient here is not free, $-\id_{T_\Co}\in\widetilde\Orth^+(T_\Co)$ (@prop:sign-is-a-loop-of-the-labelled-base with @thm:gamma-co-is-stable(1)) acting trivially on $\bD(T_\Co)^+$ (@rmk:no-loop-carries-the-sign-is-another-base(2)), and the descended-system clause needed is then @lem:orbifold-monodromy-of-a-nonfree-quotient(3), proved by @thm:quotient-local-system-descent(1)--(2). Its monodromy formula uses the direct comparison of Noohi loops with Haefliger pairs by torsor pullback, so it is no longer an open input. So reading the presentation $[\widetilde\Orth^+(T_\Co)\backslash\bD(T_\Co)^+]$ as the labelled stack *is* the equality $\Gamma_\Co(B)=\widetilde\Orth^+(T_\Co)$, which is @qst:gamma-co-sign-is-realised and is not proved; what the presentation supplies unconditionally is the inclusion.
+(2) is @lem:d2a-monodromy-of-the-stack(3) with @def:gamma-co-groups(1): the monodromy group of the labelled presentation is $\rho(\pi_1(B,s))=\Gamma_\Co(B)$, and $\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co)$ is @thm:gamma-co-is-stable(1). For a *free* quotient the monodromy group of $[\Gamma\backslash D^+]$ is $\Gamma$ (@lem:orbifold-monodromy-of-a-quotient(2), with $\varphi$ the defining inclusion, which is injective); the quotient here is not free, $-\id_{T_\Co}\in\widetilde\Orth^+(T_\Co)$ (@prop:sign-is-a-loop-of-the-labelled-base with @thm:gamma-co-is-stable(1)) acting trivially on $\bD(T_\Co)^+$ (@rmk:no-loop-carries-the-sign-is-another-base(2)), and the descended-system clause needed is then @lem:orbifold-monodromy-of-a-nonfree-quotient(3), proved by @thm:quotient-local-system-descent(1)--(2). Its monodromy formula uses the direct comparison of loops of the stack in the sense of [@Noo05, Definition 17.5] with $G$-paths of the action groupoid in the sense of [@BH99, Part III.G, 3.1] by torsor pullback, so it is no longer an open input. So reading the presentation $[\widetilde\Orth^+(T_\Co)\backslash\bD(T_\Co)^+]$ as the labelled stack *is* the equality $\Gamma_\Co(B)=\widetilde\Orth^+(T_\Co)$, which is @qst:gamma-co-sign-is-realised and is not proved; what the presentation supplies unconditionally is the inclusion.
 
 (3) is @lem:relabelling-discriminant-action(1)--(3). The error of the earlier form of this item is worth naming, because it is the reason the item read the way it did: a relabelling *is* a change of marking and not an automorphism of the surface, and that is exactly why it moves $T_\Co$. The transport along the relabelling arrow is the identity on $H^2(X_b)$ in the frame of the surface, while the frame of the lattice $T_\Co$ is the labelled marking; changing the labelling changes that frame by $\psi_{\sigma b}\psi_b^{-1}$, whose restriction to $T_\Co$ is not the identity (@lem:relabelling-discriminant-action(3)). And $\sigma\oplus\id_{T_\Co}$ is an isometry of the proper sublattice $M\oplus T_\Co$ of index $2^{11}$, not of $L_{\mathrm{K3}}$ (@lem:relabelling-discriminant-action(1)). The surface's $H^2$ does not change; the monodromy group is a subgroup of $\Orth(T_\Co)$, and in it the frame change is the element.
 
@@ -1304,7 +1304,7 @@ Let $G$ be a connected complex Lie group (@def:group) acting on a connected comp
 
 ::: {.proof}
 
-*The loops (@def:loops-suspension) of the stack.* @thm:quotient-local-system-descent(1) supplies the descended local system $\bL_{[V/G]}$ whose monodromy is being computed. The quotient map $V\to[V/G]$ is a principal $G$-bundle, so clause 3 of that theorem represents every Noohi loop of $[V/G]$ at $[s]$ by a pair $(g,\widetilde\gamma)$ with $g\in G$ and $\widetilde\gamma$ a path (@def:path-connectedness) in $V$ from $s$ to $gs$, and identifies transport along the loop with transport of the associated system on the pullback to $I$. This uses clause 3, not the discrete-group exact sequence of @lem:orbifold-monodromy-of-a-nonfree-quotient. The transport of $\bL_{[V/G]}$ along the pair is
+*The loops (@def:loops-suspension) of the stack.* @thm:quotient-local-system-descent(1) supplies the descended local system $\bL_{[V/G]}$ whose monodromy is being computed. The quotient map $V\to[V/G]$ is a principal $G$-bundle, so clause 3 of that theorem represents every loop of $[V/G]$ at $[s]$ in the sense of [@Noo05, Definition 17.5] by a pair $(g,\widetilde\gamma)$ with $g\in G$ and $\widetilde\gamma$ a path (@def:path-connectedness) in $V$ from $s$ to $gs$, and identifies transport along the loop with transport of the associated system on the pullback to $I$. This uses clause 3, not the discrete-group exact sequence of @lem:orbifold-monodromy-of-a-nonfree-quotient. The transport of $\bL_{[V/G]}$ along the pair is
 $$\varphi_g(s)^{-1}\circ\tilde\gamma^*,$$
 the second factor being the transport along $\tilde\gamma$ (@def:transport-and-monodromy) and the first the identification of the fibre at $gs$ with the fibre at $s$ given by the equivariance. A general loop of the stack is a finite concatenation of paths in $V$ and of such pairs, so it is enough to treat one pair.
 
@@ -1460,31 +1460,31 @@ $$[p\alpha]\definedas[(p\circ\alpha,\id,\id)]\in\Pi_1(\mcY)\qty(p(a),p(b)),\qqua
 the second being the constant path with the identification $\rho$ at its end [@Noo05, Remark 17.3].
 :::
 
-::: {.definition #def:haefliger-path title="Haefliger path of a groupoid" defines="Haefliger path; $[w]$"}
+::: {.definition #def:haefliger-path title="G-path of a groupoid" defines="G-path; $[w]$"}
 
-In the notation of @not:paths-of-a-groupoid-quotient, a *Haefliger path* of $[R\rightrightarrows X]$ from $a\in X$ to $b\in X$ is a sequence
+In the notation of @not:paths-of-a-groupoid-quotient, a *G-path* of $[R\rightrightarrows X]$ from $a\in X$ to $b\in X$ is a sequence
 $$w=(\alpha_0,\rho_1,\alpha_1,\dots,\rho_n,\alpha_n),\qquad n\geq0,$$
-of paths $\alpha_i\colon[0,1]\to X$ and points $\rho_i\in R$ with
+of paths $\alpha_i\colon[0,1]\to X$ (@def:path-connectedness) and points $\rho_i\in R$ with
 $$\alpha_0(0)=a,\qquad s(\rho_i)=\alpha_{i-1}(1),\qquad t(\rho_i)=\alpha_i(0),\qquad\alpha_n(1)=b$$
-[@Col09, §3.1, where the sequence is written $(g_0,\alpha_1,g_1,\dots,\alpha_n,g_n)$ with an arrow at each end; the two forms differ by constant paths and identity arrows].
+[@BH99, Part III.G, 3.1; @Col09, §3.1, where the sequence is written $(g_0,\alpha_1,g_1,\dots,\alpha_n,g_n)$ with an arrow at each end; the two forms differ by constant paths and identity arrows].
 Its class is
 $$[w]\definedas[p\alpha_0]\,[\rho_1]\,[p\alpha_1]\cdots[\rho_n]\,[p\alpha_n]\in\Pi_1(\mcY)\qty(p(a),p(b)).$$
-A Haefliger path from $x$ to $x$ is a Haefliger loop at $x$.
-The fundamental groupoid of a Lie groupoid in the sense of Haefliger is the groupoid of homotopy classes of these sequences [@Col09, Definitions 3.2 and 3.3].
+A G-path from $x$ to $x$ is a G-loop at $x$.
+The fundamental groupoid of a Lie groupoid is the groupoid of homotopy classes of these sequences [@BH99, Part III.G, 3.5--3.6; @Col09, Definitions 3.2 and 3.3].
 :::
 
-::: {.lemma #lem:haefliger-paths-exhaust-the-fundamental-groupoid title="Every path of $[X/R]$ is a Haefliger path, and $\pi_1([X/R])$ is generated by the loops of $X$ and the arrows of $R$"}
+::: {.lemma #lem:haefliger-paths-exhaust-the-fundamental-groupoid title="Every path of $[X/R]$ is a G-path, and $\pi_1([X/R])$ is generated by the loops of $X$ and the arrows of $R$"}
 
 In the notation of @not:paths-of-a-groupoid-quotient and @def:haefliger-path:
 
-1. For $a,b\in X$, every element of $\Pi_1(\mcY)\qty(p(a),p(b))$ is the class $[w]$ of a Haefliger path $w$ from $a$ to $b$.
+1. For $a,b\in X$, every element of $\Pi_1(\mcY)\qty(p(a),p(b))$ is the class $[w]$ of a G-path $w$ from $a$ to $b$.
    Explicitly, let $(\gamma,\epsilon_0,\epsilon_1)$ be a path from $p(a)$ to $p(b)$, and let $0=t_0<t_1<\dots<t_m=1$, $\beta_j\colon[t_{j-1},t_j]\to X$ and $\theta_j\colon p\circ\beta_j\Rightarrow\gamma|_{[t_{j-1},t_j]}$ be a subdivision with lifts of $\gamma$ on its intervals. Then
    $$[(\gamma,\epsilon_0,\epsilon_1)]=[\rho_0]\,[p\beta_1]\,[\rho_1]\,[p\beta_2]\cdots[p\beta_m]\,[\rho_m],$$
    $$\rho_0=\theta_1(t_0)^{-1}\circ\epsilon_0,\qquad\rho_j=\theta_{j+1}(t_j)^{-1}\circ\theta_j(t_j)\quad(0<j<m),\qquad\rho_m=\epsilon_1\circ\theta_m(t_m),$$
    where $\rho_0$ is an arrow from $a$ to $\beta_1(t_0)$, $\rho_j$ an arrow from $\beta_j(t_j)$ to $\beta_{j+1}(t_j)$, and $\rho_m$ an arrow from $\beta_m(t_m)$ to $b$. Such a subdivision with lifts exists for every path.
 2. Let $X$ be path connected, fix $x\in X$, and for every $z\in X$ fix a path $c_z$ of $X$ from $x$ to $z$, with $c_x$ constant. For a path $\alpha$ of $X$ from $a$ to $b$ and a point $\rho$ of $R$ put
    $$\ell_\alpha\definedas[pc_a]\,[p\alpha]\,[pc_b]^{-1}=p_*\qty[c_a\alpha c_b^{-1}]\in p_*\pi_1(X,x),\qquad\lambda_\rho\definedas[pc_{s(\rho)}]\,[\rho]\,[pc_{t(\rho)}]^{-1}\in\pi_1(\mcY,p(x)).$$
-   Then every Haefliger loop $w=(\alpha_0,\rho_1,\alpha_1,\dots,\rho_n,\alpha_n)$ at $x$ has
+   Then every G-loop $w=(\alpha_0,\rho_1,\alpha_1,\dots,\rho_n,\alpha_n)$ at $x$ has
    $$[w]=\ell_{\alpha_0}\,\lambda_{\rho_1}\,\ell_{\alpha_1}\cdots\lambda_{\rho_n}\,\ell_{\alpha_n},$$
    and $\pi_1(\mcY,p(x))$ is generated by the subgroup $p_*\pi_1(X,x)$ and the elements $\lambda_\rho$, $\rho\in R$. For $\rho$ with $s(\rho)=t(\rho)=z$, an element of the isotropy group of $p(z)$, the element $\lambda_\rho=[pc_z]\,[\rho]\,[pc_z]^{-1}$ is the conjugate by $[pc_z]$ of the inertial loop $\omega_{p(z)}(\rho)$ of [@Noo05, §17]; the isotropy groups enter the generation through these $\lambda_\rho$.
 3. If $h\colon[0,1]\to R$ is a path from $\rho$ to $\rho'$, then
@@ -1515,7 +1515,7 @@ $$[p\beta_j]=[(\gamma_j,\ \theta_j(t_{j-1}),\ \theta_j(t_j)^{-1})]=[\theta_j(t_{
 By (e), then (f), then this equation solved for $[(\gamma_j,\id,\id)]$,
 $$[(\gamma,\epsilon_0,\epsilon_1)]=[\epsilon_0]\,\prod_{j=1}^m[(\gamma_j,\id,\id)]\,[\epsilon_1]
 =[\epsilon_0]\,[\theta_1(t_0)]^{-1}\,[p\beta_1]\,[\theta_1(t_1)]\,[\theta_2(t_1)]^{-1}\,[p\beta_2]\cdots[p\beta_m]\,[\theta_m(t_m)]\,[\epsilon_1],$$
-and (d) collects each product of two identification classes into one: $[\epsilon_0]\,[\theta_1(t_0)]^{-1}=[\rho_0]$, $[\theta_j(t_j)]\,[\theta_{j+1}(t_j)]^{-1}=[\rho_j]$ and $[\theta_m(t_m)]\,[\epsilon_1]=[\rho_m]$. Each $\rho_j$ is an identification between the images under $p$ of two points of $X$, that is a point of $R$ with the stated source and target (@not:paths-of-a-groupoid-quotient). The right side is the class of the Haefliger path $(\mathrm{const}_a,\rho_0,\beta_1,\rho_1,\dots,\beta_m,\rho_m,\mathrm{const}_b)$, with each $\beta_j$ reparametrized to $[0,1]$ by (b), since the class of a constant path of $X$ is an identity.
+and (d) collects each product of two identification classes into one: $[\epsilon_0]\,[\theta_1(t_0)]^{-1}=[\rho_0]$, $[\theta_j(t_j)]\,[\theta_{j+1}(t_j)]^{-1}=[\rho_j]$ and $[\theta_m(t_m)]\,[\epsilon_1]=[\rho_m]$. Each $\rho_j$ is an identification between the images under $p$ of two points of $X$, that is a point of $R$ with the stated source and target (@not:paths-of-a-groupoid-quotient). The right side is the class of the G-path $(\mathrm{const}_a,\rho_0,\beta_1,\rho_1,\dots,\beta_m,\rho_m,\mathrm{const}_b)$, with each $\beta_j$ reparametrized to $[0,1]$ by (b), since the class of a constant path of $X$ is an identity.
 
 *(2).* The equality $\ell_\alpha=p_*[c_a\alpha c_b^{-1}]$ holds because $\alpha\mapsto[p\alpha]$ is compatible with composition and with homotopy of paths of $X$. In the product $\ell_{\alpha_0}\lambda_{\rho_1}\ell_{\alpha_1}\cdots\lambda_{\rho_n}\ell_{\alpha_n}$ the factor $[pc_{\alpha_{i-1}(1)}]^{-1}$ that ends $\ell_{\alpha_{i-1}}$ cancels the factor $[pc_{s(\rho_i)}]$ that begins $\lambda_{\rho_i}$, the factor $[pc_{t(\rho_i)}]^{-1}$ that ends $\lambda_{\rho_i}$ cancels the factor $[pc_{\alpha_i(0)}]$ that begins $\ell_{\alpha_i}$, and the two outer factors are classes of the constant path $c_x$; what remains is $[p\alpha_0]\,[\rho_1]\,[p\alpha_1]\cdots[\rho_n]\,[p\alpha_n]=[w]$, every $[\rho_i]$ being kept inside its $\lambda_{\rho_i}$. By (1) every element of $\pi_1(\mcY,p(x))=\Pi_1(\mcY)(p(x),p(x))$ is such a $[w]$, hence a product of elements of $p_*\pi_1(X,x)$ and elements $\lambda_\rho$. For $s(\rho)=t(\rho)=z$ the class $[\rho]$ is the class of the constant path at $p(z)$ with the identification $\rho$, which is $\omega_{p(z)}(\rho)$.
 
