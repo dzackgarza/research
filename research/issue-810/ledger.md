@@ -11,3 +11,5 @@
 11. PROVED #10: The final conditional (D) is replaced by quotient-local-system-descent clauses 1--2 and stale three-input counts are corrected to two — checks/evzj-item4.md
 12. OPEN: Review mihf item 1: replace false section deformation with correct pair homotopy and transport identity — notes.md#8
 13. PROVED #12: Theta_u has the original pair at u=0 and the loop of U with e at u=1, with transport sigma_1^* gamma^* = varphi_g^{-1} gamma^* — checks/mihf-item1.md
+14. OPEN: Review mihf item 2: remove stale (v) conditional and reconcile remaining three-input status text — notes.md#9
+15. PROVED #14: Conditional (v) removed, the two gamma-co-is-full inputs are stated consistently, and no open conditional descent hypothesis survives — checks/mihf-item2.md
