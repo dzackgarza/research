@@ -154,7 +154,7 @@ Every $w\in U$ with $\pi(w)=x$ is the endpoint of a path $s$ from $u$, whose ima
 For (3), the monodromy group is the set of (2), which by hypothesis is $\varphi(G)$, and it is unchanged by passing from each $\varphi(g)$ to its inverse because $\varphi(G)$ is a subgroup; that $\varphi(G)\cong G/\ker\varphi$ is the first isomorphism theorem for $\varphi$, and $\varphi$ has trivial kernel exactly when it is the inclusion of a subgroup $G\subseteq\Orth(\Lambda)$ in its defining action.
 :::
 
-::: {.corollary #cor:monodromy-of-the-tautological-descent title="The tautological descent on a free quotient has monodromy group $G$"}
+::: {.corollary #cor:monodromy-of-the-descended-local-system title="The descended local system $(U\times\Lambda)/G$ on a free quotient has monodromy group $G$"}
 
 Let $G\iscontainedin\Orth(\Lambda)$ be a subgroup acting freely and properly discontinuously on $U$, let $\bL$ be the descent to $X=U/G$ of the constant system $\underline\Lambda_U$ with the equivariant structure $g\cdot(u,\lambda)\definedas(gu,g\lambda)$, and let $\rho$ be its monodromy representation.
 Then $\rho(\pi_1(X,x))=G$: the monodromy group of $\bL$ is $G$ itself and not a proper subgroup of it.
@@ -177,7 +177,7 @@ The assertion of research#803 is therefore false with the descent datum left uns
 
 @def:gamma-co-groups(1) defines $\Gamma_\Co$ as the monodromy group of the local system of lattices of fibre $T_\Co$ of the family of unpolarized Coble surfaces.
 Let $\bD=\bD(T_\Co)^+$ and let $Z$ be the $(-2)$-arrangement of @prop:the-coble-locus-in-the-period-domain, so that $U=\bD\sm Z$ is the locus of periods realised by a Coble cover and, by @prop:the-coble-locus-in-the-period-domain(4), open and connected.
-@cor:monodromy-of-the-tautological-descent is the free case; whether the action of a group $G\iscontainedin\Orth(T_\Co)$ on $U$ is free is not asserted here.
+@cor:monodromy-of-the-descended-local-system is the free case; whether the action of a group $G\iscontainedin\Orth(T_\Co)$ on $U$ is free is not asserted here.
 What the reduction of research#798 takes from this page is that computation: if the family's local system of lattices is the descent of the constant system $T_{\Co,U}$ with the defining equivariant structure of a subgroup $G\iscontainedin\Orth(T_\Co)$ on a free quotient, then its monodromy group is $G$.
 Two inputs are outside the corollary, and neither is proved on this page: the presentation of the family's moduli stack as such a quotient — the label presentation is @prop:coble-quotient-presentation, for the $S_\Co$-polarized $\mathrm{K3}$ moduli stack, and its transfer to the family of Coble surfaces is research#802's — and the identification of the family's local system of lattices with that descent.
 Nothing on this page computes $\Gamma_\Co$ or identifies it with $\widetilde\Orth^+(T_\Co)$: @conj:gamma-co-stable remains open.
