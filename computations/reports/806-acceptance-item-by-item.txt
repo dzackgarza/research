@@ -2,9 +2,10 @@ research#806 -- acceptance item by item
 
 Commits: b295afdf05 (the corrected lemma and the first recheck), 6caa489ac9 (the
 first report), e82f2521af with c508c596c0 (the proof without stalks; the S_10 product
-order), 63bc64d349 (this repair: the transport systems, the S_10 derivation, and the
-citing results stated for what is proved), on top of the main at cb72ff3542.  Paths
-are relative to the repository root; line numbers are those of 63bc64d349.
+order), 63bc64d349 (the transport systems, the S_10 derivation, and the citing
+results stated for what is proved), 835db4f69a (the descent of the tautological
+system and the comparison of monodromies), on top of the main at fa66cab619.  Paths
+are relative to the repository root; line numbers are those of 835db4f69a.
 
 ACCEPTANCE (one disjunctive item, quoted from the issue)
 
@@ -34,6 +35,37 @@ ACCEPTANCE (one disjunctive item, quoted from the issue)
   the counterexample is research#803's, recorded at lattices.md:213
   (rmk:orbifold-monodromy-depends-on-the-equivariant-structure): U~ a point, T = Z,
   Gamma = C_2 acting trivially, im rho = 1, ker rho = C_2.
+
+THE COMPARISON THE THIRD REVIEW NAMED AS REMAINING (MET)
+
+  The review asks for: T = (U~ x T)/Gamma is a local system on the orbifold U, and
+  its monodromy along every loop equals the per-loop transport.  New
+  lem:tautological-system-descends at lattices.md:218, proof :228, proves it.
+
+  1. For every map f: W -> U from a topological space, f^*T is the sheaf whose
+     sections over an open O are the Gamma-equivariant maps f^{-1}U~|_O -> T,
+     with f^{-1}U~ = W x_U U~; this is the sheaf of sections of the covering
+     (f^{-1}U~ x T)/Gamma -> W, hence locally constant with fibre T, and a local
+     system of lattices when T is one and phi preserves its form.  The chart and
+     its pullback are a Gamma-torsor and a covering: Noohi, Definition 3.3,
+     Proposition 3.4, Definition 4.5, Example 4.6(1), Definition 18.10.
+  2. (fh)^*T = h^*f^*T canonically and each f^*T is an ordinary sheaf on W; these
+     are the sheaf conditions on the site of U, whose covers are the open
+     coverings of spaces (Noohi, §3 and §4), a sheaf on a category fibred in
+     groupoids being [@stacks-06TR].  So T is a local system on the topological
+     stack U, the descent of the equivariant system, the object written
+     (U~ x T)/Gamma.
+  3. p^{-1}U~ = U~ x_U U~ = Gamma x U~ (Noohi, Proposition 3.4), so p^*T = U~ x T
+     is trivial: T is locally constant.
+  4. For a loop lambda with pair (g,gamma~), lambda^*T is the transport system
+     (P x T)/Gamma of @lem:orbifold-monodromy-of-a-quotient(2) with
+     P = lambda^{-1}U~, whose transport is phi(g)^{-1}; every loop has such a pair,
+     so the monodromy of T along every loop is the per-loop transport and the
+     representation is rho = phi o psi^{-1}.
+
+  This is the descent that the earlier objection ("defined by its pullbacks")
+  named: the pullback is constructed as equivariant maps and the sheaf axioms are
+  verified, rather than assumed.
 
   Inputs, each a numbered statement read in Noohi, Foundations of topological stacks
   I (arXiv:math/0503247): Definition 3.3 and Proposition 3.4 (the chart presents the
@@ -131,7 +163,7 @@ gamma)
 
 EVERY RESULT THAT CITES THE LEMMA, RECHECKED
 
-  lattices.md:237, proof of thm:gamma-co-is-full.  Only the image is used, for the
+  lattices.md:258, proof of thm:gamma-co-is-full (the line moved by the insertion).  Only the image is used, for the
     defining action of Orth^+(T_Co); clause (2) with phi injective.  MET for that
     input.
   moduli-construction.md:1079 and :1086, lem:d2a-monodromy-of-the-stack.  The pair
@@ -164,13 +196,13 @@ EVERY RESULT THAT CITES THE LEMMA, RECHECKED
 
 CHECKS RUN
 
-  scripts/docs_check.py --source, on a worktree at cb72ff3542 and on the repaired
+  scripts/docs_check.py --source, on a worktree at fa66cab619 and on the repaired
     tree: byte-identical output, 29 findings, all pre-existing "citation is in no
     bibliography" findings in other chapters, none on these two pages.  The .assets
     copy was made before both runs.
-  scripts/docs_dependency_graph.py --check: 123 findings at cb72ff3542 and 123 on
-    the repaired tree, with the same number of blocks and edges; no finding names
-    the edited blocks.
+  scripts/docs_dependency_graph.py --check: 121 findings at fa66cab619 and 121 on
+    the repaired tree, with one added block and its edges; no finding names the new
+    lemma.
   tests/engineering: not run.  tests/conftest.py imports dzack_research, which a
     plain checkout does not have.
   CI: not used as evidence.
