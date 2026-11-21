@@ -1776,10 +1776,10 @@ If the wall corresponds to a visible curve, the zero can collapse a path joining
 
 The direct Coble theory should preserve this correspondence but must add the data of the fixed exceptional root and its quotient branch curve.
 
-### The Coble integral-affine package {#sec-coble-affine-package}
+### The tuple of integral-affine data {#sec-coble-integral-affine-tuple}
 
-::: {.definition #def:coble-affine-package title="candidate polarized Coble integral-affine package" defines="Coble integral-affine package"}
-A Coble integral-affine package is a tuple
+::: {.definition #def:coble-integral-affine-tuple title="The tuple $(B(\lambda),R_{\IA},E_{\IA},\iota_{\Co,IA},\iota_{\mathrm{dP,IA}})$" defines="$B(\lambda)$; $R_{\IA}$; $E_{\IA}$; $\iota_{\Co,IA}$; $\iota_{\mathrm{dP,IA}}$"}
+Consider the tuple
 
 \[
 \bigl(B(\lambda),R_{\IA},E_{\IA},
@@ -1794,7 +1794,7 @@ where
 
 3. $E_{\IA}$ records the visible class, collapsed path (@def:path-connectedness), or marked affine stratum associated with the exceptional root $\alpha$;
 
-4. the two affine involutions commute and preserve the full polarized package;
+4. the two affine involutions commute and preserve all five entries of this tuple;
 
 5. the quotient data predicts the branch curve $C$ and the divisor $R_{\wV}$ on a Coble dlt model (@def:dlt-model).
 :::
@@ -1815,7 +1815,7 @@ This is the same local operation used by AEGS for crossed nodes, but in the Cobl
 ### Required realization theorem {#sec-affine-realization}
 
 ::: {.problem #prob:affine-realization title="Required theorem (direct integral-affine realization)"}
-For every sufficiently divisible monodromy invariant in every direct Coble cusp chamber, construct a K3 divisor model $(\mcx,\mcr,\mce)\too(C,0)$ whose dual complex is the prescribed Coble integral-affine package.
+For every sufficiently divisible monodromy invariant in every direct Coble cusp chamber, construct a K3 divisor model $(\mcx,\mcr,\mce)\too(C,0)$ whose dual complex is the prescribed tuple.
 Conversely, show that every direct Coble degeneration admits such a model after finite base change and allowed dlt modification.
 :::
 
@@ -1827,7 +1827,7 @@ An affine symmetry is not automatically an algebraic involution.
 AEGS use limiting-period conditions and invariant component/gluing parameters to extend their involution over a general divisor model.
 The Coble version must also retain the exceptional root.
 
-::: {.problem #prob:algebraic-extension title="Required theorem (algebraic extension of the Coble package)"}
+::: {.problem #prob:algebraic-extension title="Required theorem (algebraic extension of the tuple of integral-affine data)"}
 A general divisor model with direct Coble monodromy admits commuting regular involutions $\iota_{\Co}$ and $\iota_{\mathrm{dP}}$ such that
 
 \[
@@ -2548,7 +2548,7 @@ Construct, for every direct Coble cusp, the mirror anticanonical pair, moment po
 :::
 
 ::: {.problem #prob:B42 title="B4.2. Integral-affine realization theorem"}
-Realize every sufficiently divisible chamber point by a divisor model carrying the full Coble affine package.
+Realize every sufficiently divisible chamber point by a divisor model carrying the entire tuple of integral-affine data.
 :::
 
 ::: {.problem #prob:B43 title="B4.3. Affine-symmetry characterization theorem"}
@@ -2566,7 +2566,7 @@ Prove the dlt and slc properties, canonical bundle formula, positivity, and exac
 #### Sections 5--7 analogues: semifans and boundary classification {#sec-strategy-B-section5}
 
 ::: {.problem #prob:B51 title="B5.1. Coble recognizability theorem"}
-Prove that the direct divisor package is recognizable from limiting Hodge and combinatorial data in the sense required by the Alexeev--Engel compactification theory.
+Prove that the divisor data of a direct Coble stable pair are recognizable from limiting Hodge and combinatorial data in the sense required by the Alexeev--Engel compactification theory.
 :::
 
 ::: {.problem #prob:B52 title="B5.2. Geometric relevance theorem"}
@@ -2999,7 +2999,7 @@ The table lists each statement, whether it is proved, and the section that prove
 | Unpolarized Coxeter chamber | established | @sec-unpolarized-coxeter |
 | Polarized wall-slice arrangements | established computations | @sec-wall-slices |
 | Polarized Coble Coxeter diagrams | the lattice is one, $I_{1,8}(2)$, at every cusp (@thm:one-cusp-lattice); the folded diagrams at the four stabilizer images are not established | @sec-coxeter |
-| Integral-affine Coble package | defined; realization open | @sec-coble-affine-package |
+| The tuple of integral-affine data | defined; realization open | @sec-coble-integral-affine-tuple |
 | Direct dlt and stable-model theorem | open | @sec-coble-dlt |
 | Exact Coble semifans | established at the four $0$-cusps of $\bD(T_\Co)/R_{\gent}$ by restriction, the marking inherited (the $0$-cusps of $F_{\Co,2}$ sit over them, splitting open); no marking at the one $0$-cusp of $F^{\mathrm{un}}_\Co$ | @sec-direct-semifans, @sec-coble-pair-semifan |
 | Normalization of the Heegner KSBA closure | target theorem | @sec-heegner-target |
@@ -3191,7 +3191,7 @@ On the resolution, the degree-$2$ class is a quasipolarization, $|-2K|$ consists
 \frac{1+\epsilon}{2}C+\epsilon R_{\wV}.
 \]
 
-The open problems are the labeled embedding rigidity, complete Vinberg chambers, algebraic realization of the Coble affine package, intrinsic relevance of walls, and the comparison between the autonomous compactification and the normalized Enriques Heegner closure; the equality of the labelled group with the geometric monodromy is no longer one of them, being @thm:sign-is-isotropy over the moduli stack and @thm:no-loop-carries-the-sign over the coarse space.
+The open problems are the labeled embedding rigidity, complete Vinberg chambers, algebraic realization of this tuple of integral-affine data, intrinsic relevance of walls, and the comparison between the autonomous compactification and the normalized Enriques Heegner closure; the equality of the labelled group with the geometric monodromy is no longer one of them, being @thm:sign-is-isotropy over the moduli stack and @thm:no-loop-carries-the-sign over the coarse space.
 
 The autonomous strategy organizes these issues into direct Coble analogues of the AEGS theorem chain.
 The Heegner strategy organizes them into arithmetic normalization, universal-family, and no-further-coarsening statements.
