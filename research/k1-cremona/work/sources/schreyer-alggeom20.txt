@@ -1,0 +1,288 @@
+Algebraic Geometry, Lecture 20
+
+        Frank-Olaf Schreyer
+
+
+  Saarland University, Perugia 2021
+Overview
+
+
+
+    1. The blow-up
+    2. Resolution of singularities
+    3. A birational map between P1 × P1 and P2
+    4. Cremona transformations
+The blow-up
+  Definition. Let X ⊂ P1 × A2 be defined by
+                             
+                        z0 z1
+                   det          ∈ K [z0 , z1 , x, y ]
+                         x y
+  and let σ : X → A2 denote the projection onto the second
+  component. σ is called the blow-up of A2 at the origin o.
+  X is covered by two affine charts Uj = X ∩ (Uzj × A2 ) which are
+  both isomorphic to A2 .
+
+                         = K [z, x, y ]/(y − xz) ∼
+                 K [U0 ] ∼                       = K [x, z]
+  and the map σ|U0 : U0 → A2 is given by (x, z) 7→ (x, xz). Similary
+       K [U1 ] ∼
+               = K [w , y ] and σ|U : U1 → A2 , (w , y ) 7→ (wy , y ).
+                                  1
+
+  The fiber of σ over o = (0, 0) ∈ A2 is E = P1 × {o} ∼
+                                                      = P1 . E is
+  called the exceptional curve of σ. Outside E the map σ restricts
+  to an isomorphism X \ E ∼= A2 \ {o}.
+Strict and total transform
+   X \ E ⊂ P1 × (A2 \ {o}) is isomorphic
+   to the graph of the morphism
+
+        A2 \ {o}, (x, y ) 7→ [x : y ].
+
+   In other words we may think of
+                       
+                  z0 z1
+     X = V (det           ) ⊂ P1 × A2
+                  x y
+   as obtained from A2 by replacing the origin o by the projective
+   space E ∼= P1 of lines through o.
+   Definition. Let C ⊂ A2 be a plane curve. Then the closure
+   C 0 = σ −1 (C \ {o}) ⊂ X is called the strict transform of C . The
+   total transform is σ −1 (C ).
+   Proposition. Let C = V (f ) be a curve of multiplicity m at the
+   origin. Then the strict transform C 0 ⊂ X intersects E in precisely
+   m points counted with multiplicities.
+Proof of the proposition
+   Suppose f = fm + . . . + fd ∈ K [x, y ] with fj homogeneous of
+   degree j. The total transform of C in the chart U0 is defined
+    f (x, xz) = x m (fm (1, z) + xfm+1 (1, z) + . . . + x d−m fd (1, z)) = 0.
+   The exceptional curve E is defined by x = 0 on U0 . So the strict
+   transform C 0 is defined by
+             fm (1, z) + xfm+1 (1, z) + . . . + x d−m fd (1, z) = 0.
+                                          0
+   Thus the intersection point ofQrE ∩ eCi contained in U0 are defined
+   by V (fm (1, z), x). Let fm = i=1 `i be the factorization of fm into
+   distinct linear factors. The intersection multiplicity
+                               i(C 0 , E ; pi ) = ei
+   at the point pi = [ai : bi ] ∈ P1 = E corresponding to the tangent
+   line V (`i ) with `i = bi x − ai y since the factors
+                                                  Pr `j for j 6= i are
+   units in OX ,pi . The result follows because i=1 ei = m.
+The effect of the blow-up on curves
+   Corollary. If o is an ordinary m-fold point, then E and C 0 have
+   transversal intersections and C 0 is non-singular at the intersection
+   points.
+   Since X is covered by charts isomorphic to A2 we can iterate this
+   process.
+   Example. Consider C = V (y 3 − x 5 ) the strict transform of C is
+   contained in the chart U0 where the total transform is defined by
+   x 3 (z 3 − x 2 ).
+
+
+
+
+   The further blow-up (x, z) = (uz, u) yields u 5 z 3 (u − z 2 ).
+   Blowing-up the intersection point of the second exceptional curve
+   E2 = {u2 = 0} with C 00 via (u, z) = (wz, z) yields the local
+   equation w 5 z 9 (w − z), and all curves intersect transversal.
+Resolution of singularities
+   Theorem. Let C ⊂ P2 be a plane algebraic curve. Then there
+   exists a sequence
+                      σr                              σ1
+                Xr         / Xr −1   / ...     / X1        / P2
+
+
+   of blow-ups, such that the strict transform C (r ) of C in Xr is a
+   non-singular curve.
+   The main difficulty in proving this theorem is to prove that some
+   numerical invariant improves along the process of blow-ups. In the
+   example above such invariant was the multiplicity of the singular
+   points. However in general a more subtle invariant is needed.
+Example
+
+  Example. Consider y 2 − x 4 + x 6 = 0. Substituting
+  (x, y ) = (x, xz) leads to the strict transform z 2 − x 2 + x 4 = 0,
+  which still has a double point at the origin. A second blow-up
+  (x, z) = (uz, z) gives the strict transform u 2 − 1 + u 4 z 2 = 0 which
+  actually is now a smooth curve.
+Blow-up of P2 and the cubic scroll
+   The blow-up of a point p ∈ A2 ∼  = U2 ⊂ P2 glues with the U0 , U1 to
+                 2         2
+   the blow-up P (p) of P at p. This is a projective surface which
+   one can describe explicitely as follows: Consider the rational map
+             P2 99K P4 , [x : y : z] 7→ [x 2 : xy : y 2 : xz : yz].
+   The image is the cubic scroll defined by
+                                          
+                              w0 w1 w3
+                       rank                  < 2.
+                              w1 w2 w4
+   It is the projection of the Veronese surface V2,2 ⊂ P5 from the
+   point ρ2,2 ([0 : 0 : 1]) = [0 : . . . : 0 : 1].
+   Note that we can identify the
+   exceptional line
+
+      E = P1 = V (w0 , w1 , w2 )
+
+   with the projective tangent
+   space E ∼
+           = P(Tp P2 ).
+Blow-up of smooth projective surfaces
+   More generally one can define the blow-up X (p) of a smooth
+   projective surface X ⊂ Pn at a point p as the image of the
+   composition of
+                                 n+2          n
+                    X ,→ Pn ,→ P( 2 )−1 99K P(2)−2
+   of the 2-uple embedding ρn,2 with the projection π from the image
+   point. The image is again a smooth projective surface X (p) with
+   an exceptional curve E ∼
+                          = P(Tp X ) ∼
+                                     = P1 and
+                          X (p) \ E ∼
+                                    = X \ p.
+   Remark. Frequently on can project X ⊂ Pn directly from p
+   without first the Veronese re-embedding. This however does not
+   work if X has a 3-secant line which passing through p, e.g,. if X
+   contains a line which passes through p.
+Birational maps between smooth surfaces
+   A second place where the blow-up plays a crucial role is in the
+   description of birational maps between smooth surfaces.
+   Theorem(Castelnuovo)
+    1. Let ϕ : Z → X be a birational morphism between smooth
+        projective surfaces. Then there exists a sequence of blow-ups
+                        σr                                  σ1
+                  Xr         / Xr −1    / ...       / X1         /X
+
+       such that Z ∼= X (r )
+    2. Every birational map Y 99K X between smooth projective
+       surfaces can be factored into birational morphisms from a
+       smooth projective surface Z as follows:
+                                        Z               .
+
+                                               
+                                Y                   X
+       where both morphisms are sequences of blow-ups.
+The birational projection of P1 × P1 99K P2
+   Consider a point p = (a, b) ∈ P1 × P1 ⊂ P3 and the rational map
+
+                            πp : P1 × P1 99K P2
+
+   which maps a point q ∈ P1 × P1 to the line pq ∈ P2 where we
+   identify P2 with the set of lines in P3 through p. Its factorization is
+                   Z
+
+          {
+    P1 × P1                 P2 .
+   where Z → P × P is the blow-up of P1 × P1 in p and Z → P2
+                 1      1
+
+   collapses the strict transforms of the lines P1 × {b} and {a} × P1
+   to two points p1 , p2 ∈ P2 . The exceptional curve E over p is
+   mapped to the line p1 p2 .
+Projection of P1 × P1 99K P2
+           P2 \ p1 p2 = A2 = A1 × A1
+                      ∼
+                      = (P1 \ {a}) × (P1 \ {b})
+                    = P1 × P1 \ ({a} × P1 ∪ P1 × {b})
+The quadratic transformation
+   Definition. The birational map
+                                        1 1 1
+        q : P2 99K P2 ,   [x : y : z] 7→ [ : : ] = [yz : xz : yz]
+                                        x y z
+   is called the quadratic transformation. The map is not defined in
+   the fundamental points p0 = [1 : 0 : 0], p1 = [0 : 1 : 0] and
+   p2 = [0 : 0 : 1]. To visualize the map it is convenient to choose
+   coordinates such that all three fundamental point lie in an affine
+   chart:
+The graph of the quadratic transformation
+   Proposition. The graph of the quadratic transformation is
+   isomorphic to the blow-up of P2 in the 3 fundamental points. The
+   projection onto the second factor is again a blow-up of three
+   points, the strict transforms of the 3 fundamental lines Lij = pi pj
+   are the exceptional curves of the second projection.
+   Proof. The graph G is defined as the closure of the graph of the
+   morphism U → P2 , which represents q. We use coordinates
+   [x : y : z] and [u : v : w ] on P2 × P2 . The graph is defined by
+                                             
+                                   yz xz xy
+                           rank                 <2
+                                   u v w
+   outside the fundamental points. However, over the fundamental
+   points we need additional equations. If J denotes the ideal
+   generated by the 2 × 2-minors of the matrix above. Then
+                I = J : (xy , xz, yz) = (vy − ux, ux − wz)
+   gives the defining ideal of G .
+The graph of the quadratic transformation 2
+   Now restricted to the open set G21 = G ∩ {z = 1, v = 1}, we
+   obtain
+          K [G21 ] ∼
+                   = K [x, y , u, w ]/(y − ux, w − ux) ∼
+                                                       = K [x, u]
+   and the projection onto the first factor is
+                A2 ∼= G21 → U0 ∼  = A2 , (x, u) 7→ (x, ux).
+   This is the chart of a blow-up. Since the sets Gij for i 6= j cover G
+   the proposition follows.
+   Proposition. Let C be a reduced plane curve of degree d which
+   has multiplicity r0 , r1 , r2 in the fundamental points p0 , p1 , p2 of a
+   quadratic transformation q. Then the strict transform q(C ) has
+   degree 2d − r0 − r1 − r2 and three new singular points with
+   multiplicity d − r1 − r2 , d − r0 − r2 and d − r0 − r1 .
+Example
+  Consider the curve C = V (). Then q(C ) = V ().
+
+
+
+
+  Note that the circle on one side is the strict transform of the line
+  at infinity of the visible chart on the other side. The original curve
+  has a non-ordinary triple point, the strict transform has an ordinary
+  triple point.
+Cremona resolution
+   Theorem. K = K . Every irreducible plane curve can be
+   transformed by a sequence of quadratic transformations into a
+   plane curve with only ordinary singularities.
+   The Cremona resolution allows to deduce the existence of a
+   resolution of singularities.
+   Theorem. Let C ⊂ P2 be a plane algebraic curve. Then there
+   exists a sequence
+                      σr                              σ1
+                Xr         / Xr −1   / ...     / X1        / P2
+
+   of blow-ups, such that the strict transform C (r ) of C in Xr is a
+   non-singular curve.
+   Proof. Let C be a plane curve. We first assume that C is
+   irreducible and consider a Cremona resolution of C . Now instead
+   of performing the quadratic transforms, we only blow-up the
+   fundamental points.
+Proof of resolution singularities
+   The fundamental points of the second step give points on the
+   blown-up surface, and iterating this process we end up with a strict
+   transform of C on an iterated blow-up of P2 which has only
+   ordinary singular points. Blowing-up all those points we arrive at a
+   smooth curve C 0 .
+   Now assume C = C1 ∪ . . . ∪ Cs is reducible. We can perform this
+   process in parallel for each component of Ci arriving at an iterated
+   blow-up of P2 where all strict transforms Ci0 are smooth. Thus the
+   only singularities of C 0 = C10 ∪ . . . ∪ Cs0 are points where two
+   components intersect.
+   We leave it as an exercise to prove that two smooth curves which
+   intersect with multiplicity i(C1 , C2 ; p) = m at a point p get
+   separated after precisely m blow-ups.
+Ingredients of the proof for the Cremona resolution
+   The proof for the existence of a Cremona resolution needs two
+   results.
+     1. We need Bertini’s theorem, which will allow us to find good
+        fundamental points for the quadratic transformations.
+     2. We have to introduce two invariants of plane curves which
+        improve under a suitable chosen quadratic transformation.
+        The first invariant is the number of non-ordinary singularities
+        of C . The second invariant is the difference
+                                     X 
+                                d −1            rp
+                                       −
+                                  2             2
+                                         p∈C
+
+      where rp denotes the multiplicity of C at p.
+   We will return to this after the proof of Bertini’s theorem.
+
