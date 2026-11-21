@@ -1,0 +1,158 @@
+research#807 -- acceptance item by item
+
+Commit: the commit that carries this file, on top of main at fc7fd874ea.
+Paths are relative to the repository root; line numbers are those of that commit.
+
+ACCEPTANCE (quoted from the issue)
+
+  "Acceptance: proved or refuted on a page of writing/, read MET by a Kimi
+  review."
+
+  Item 1, "proved or refuted on a page of writing/": MET.
+  Item 2, "read MET by a Kimi review":                     NOT MET.
+
+  Item 1 is met by moduli-construction.md:725 (statement), :736 (proof), with
+  lem:coble-double-point-of-the-sextic at :748 (proof :757) and
+  rmk:coble-class-is-the-plane-class at :762.  Item 2 is not met and cannot be
+  met by this session: no Kimi review of this work exists, and a review written
+  by the author of the proof is not an independent read.
+
+WHAT IS PROVED, IN THE ISSUE'S TERMS
+
+  The issue's disjunction was: every Coble surface with | -2K | a single smooth
+  curve is the blow-up of the ten nodes of an irreducible plane sextic, so the
+  classical substack is all of M_Co; or a non-classical one exists, and M_Co has
+  a further component.
+
+  Proved (thm:coble-smooth-antibicanonical-is-a-plane-blowup):
+  (1) such an S has C rational with C^2 = -4 and K_S^2 = -1, and is minimal as a
+      Coble surface;
+  (2) S is basic: it admits a birational morphism onto P^2, is a blow-up
+      Bl_{p_1,...,p_10} P^2, and -K_S = 3H - sum E_i, C = 6H - 2 sum E_i;
+  (3) the image Z = pi(C) is an irreducible plane sextic, C -> Z is its
+      normalisation, Z has multiplicity 2 at the image of each centre and no
+      other singularity, and delta(Z) = 10 = p_a(Z);
+  (4) when the ten centres are distinct, Z has exactly ten double points, each
+      of delta = 1, each an ordinary node or an ordinary cusp.
+
+  Hence NO object of the functor lies outside the plane-model family, and the
+  second alternative of the issue is refuted: the widening of the functor does
+  not produce a further component of M_Co.  The strict form of the first
+  alternative, "ten NODES", is NOT proved in general; see the two cases below.
+
+THE TWO CASES THE PROOF LEAVES (named, not assumed either way)
+
+  (a) A double point of Z that is an ordinary cusp.  By
+      lem:coble-double-point-of-the-sextic a double point is a cusp exactly
+      when C meets the corresponding (-1)-curve in one point of multiplicity
+      two, equivalently when the preimage of that curve in the K3 double cover
+      is a pair of (-2)-curves meeting once rather than one smooth (-2)-curve.
+      In the plane model of [DZ99, Theorem 4.3] this is [DZ99, Theorem 2.5]
+      with a non-multiple fibre of Kodaira type II; the other types that
+      [DZ99, Theorem 6.5] and thm:dz-k3-type-criterion allow -- I_n with
+      n >= 2, III, IV -- leave C reducible and so are not objects of the
+      functor, and type I_1 is the classical ten-nodal sextic.
+  (b) Two of the ten centres infinitely near.  Then the plane sextic has a
+      double point with an infinitely near double point over it, of delta = 2,
+      and Z has nine double points rather than ten.
+
+  The single lemma that closes the issue: the surfaces of case (a) and of case
+  (b) are (or are not) again the blow-up of the ten nodes of some irreducible
+  plane sextic, i.e. they admit a second plane model whose ten centres are
+  distinct nodes.  By lem:coble-double-point-of-the-sextic(3) that is the
+  question whether such an S carries ten pairwise disjoint (-1)-curves meeting
+  C twice each whose preimages in the K3 cover are smooth; the model supplies
+  one whose preimage is a nodal pair in case (a) and two that meet each other
+  in case (b).
+
+INPUTS, EACH A NUMBERED STATEMENT READ
+
+  DZ99 is Dolgachev-Zhang, Coble rational surfaces, read from
+  tmp/sources/dolgachev-zhang-2001-coble-rational-surfaces.pdf, the published
+  text.  The Zotero web API was not used and no key was needed.
+
+  [DZ99, Introduction]     the definition of a Coble surface.
+  [DZ99, §1.1]             K_X^2 <= -1 for a Coble surface; K^2 = -1 implies
+                           minimal; the order on Coble surfaces.
+  [DZ99, §1.2, (1.1)]      p_a of a divisor, and its two values 0 and 1.
+  [DZ99, Lemma 1.2(1)]     p_a(D) = h^0(D + K_V) for V rational; p_a is
+                           monotone for subdivisors.
+  [DZ99, Lemma 1.5(1)]     p_a(D + sE) = h^0(-K_Y) for a (-1)-curve E with
+                           blowdown Y.
+  [DZ99, Lemma 1.10]       a Coble surface admits a blow-down, so carries a
+                           (-1)-curve.
+  [DZ99, Corollary 1.6]    minimal Coble surface <=> p_a(D+2E) = 1.
+  [DZ99, §2.1]             the decomposition |-2K_X + 2E| = M + P, mobile part
+                           M, and the elliptic/rational dichotomy p_a(M) in
+                           {0,1}.
+  [DZ99, Definition and Remark 2.9]  elliptic type = Halphen or Jacobian type;
+                           rational type = not elliptic.
+  [DZ99, Theorem 2.5]      minimal Coble, p_a(M)=1, M^2=0 => S is one blow-up
+                           of a singular point of a non-multiple fibre of a
+                           Halphen surface of index 2.
+  [DZ99, §4.1]             basic = admits a birational morphism to P^2.
+  [DZ99, Theorem 4.3]      a Coble surface of elliptic type is basic.
+  [DZ99, Remark 3.3]       multiplicity of an image at a blown-up point.
+  [DZ99, Definition 6.1]   K3-type = |-2K| contains a reduced divisor.
+  [DZ99, Theorem 6.3]      rational type with respect to some (-1)-curve is
+                           never of K3-type.
+  [DZ99, Theorem 6.5]      for Halphen type with M^2 = 0: K3-type iff the
+                           non-multiple fibre has type I_n, II, III or IV.
+  [DZ99, Proposition 6.4(1),(3)]  log Enriques of index 2 equivalences (read;
+                           used only as a cross-check of clause 1, not as an
+                           input to the theorem).
+
+  Page-internal statements used: def:coble-moduli-functor(2),
+  prop:coble-plane-model-comparison(1), prop:coble-stack-as-quotient,
+  thm:coble-monodromy-on-m-classical, rmk:the-two-steps-and-where-they-fail,
+  thm:coble-elliptic-type-classification (last sentence),
+  thm:dz-k3-type-criterion, lem:dz-k3-type-double-cover.
+
+  CD12 was not needed: no statement of it enters the proof.  No printed page,
+  PDF page or offset locator is used anywhere in the new text.
+
+THE ARGUMENT, IN SEVEN LINES (for the reviewer)
+
+  1. C = -2K_S, so p_a(C) = h^0(-K_S) = 0 by [DZ99, Lemma 1.2(1)]; adjunction
+     gives C^2 = -4 and K_S^2 = -1; K^2 = -1 makes S minimal [DZ99, §1.1].
+  2. S carries a (-1)-curve E [DZ99, Lemma 1.10]; p_a(C+2E) = 1
+     [DZ99, Corollary 1.6].
+  3. With Y the blowdown, p_a(C+2E) = h^0(-K_Y) = 1 [DZ99, Lemma 1.5(1)], and
+     2D_0, D_0 in |-K_Y|, is a second member of |-2K_Y| besides C_Y = pi(C), so
+     h^0(-2K_Y) >= 2 and the mobile part M of |-2K_S + 2E| is nonzero.
+  4. p_a(M) <= p_a(M+P) = 1 [DZ99, Lemma 1.2(1)], so p_a(M) is 0 or 1.
+  5. p_a(M) = 0 is rational type, which is never K3-type [DZ99, Theorem 6.3],
+     while C reduced makes S K3-type [DZ99, Definition 6.1].  So p_a(M) = 1.
+  6. Elliptic type, so basic [DZ99, Theorem 4.3]: S -> P^2 birational, and
+     K_S^2 = 9 - k = -1 gives k = 10.
+  7. Then C = 6H - 2 sum E_i and C smooth irreducible makes Z = pi(C) an
+     irreducible sextic with ten double points and C its normalisation.
+
+WHAT THE PAGE NOW SAYS ELSEWHERE, AND WHY
+
+  Moduli-construction.md:602, :838, :945, :985, :988, :1211, :1433, :2052,
+  :2074, :2091 and rmk:which-coble-surfaces-have-a-plane-model (:2081) asserted
+  the openness of this question.  Each now cites the theorem and states the
+  residue.  rmk:coble-class-smooth-antinbicanonical's closing paragraph, which
+  said "That is being checked", now records the answer.  No other page in
+  writing/ referred to research#807 (checked by grep for "807" and for the
+  remark's label).
+
+CHECKS RUN
+
+  scripts/docs_check.py --source on this tree: 29 findings, all of them the
+    pre-existing "citation is in no bibliography" kind in other chapters, none
+    on moduli-construction.md.  Same count as the baseline recorded for
+    fc7fd874ea.  Not byte-compared to the base in this session.
+  scripts/docs_dependency_graph.py --check: NOT RUN; the script imports
+    panflute, which this VM does not have.
+  tests/engineering: not run.  tests/conftest.py imports dzack_research, which a
+    plain checkout does not have.
+  No gate and no CI result is claimed; neither is visible from this session.
+
+WHAT THIS REPORT DOES NOT CLAIM
+
+  It does not claim the literal statement of the issue title.  "Ten nodes" is
+  proved when the ten centres are distinct and no double point is a cusp; cases
+  (a) and (b) above are named and undecided.  It does not claim item 2 of the
+  acceptance.
