@@ -783,7 +783,7 @@ Then (F) holds: the local system with fibre $T_\Co$ is the $\delta^{\perp}$-part
 
 *The fibre marking.* On a fibre the covering involution has invariant lattice $M_X = S_\Co$, spanned by the classes of $E_0,\dots,E_{10}$, and anti-invariant lattice $N_X = T_\Co$ [@DK13, (3.6); @prop:coble-cover-marking].
 
-*The covering involution is the reflection twist.* With that marking the involution acts on $H^2(X_b)\cong\lkt$ as $I_\Co = -\theta_\Co$ [@prop:coble-cover-marking]. The reflection twist $w_\alpha I_\En$ of @cons:reflection-twist has the same two eigenspaces, $S_\En\oplus\Z\alpha = S_\Co$ and $\alpha^{\perp T_\En} = T_\Co$ [@prop:coble-eigenspaces, @prop:coble-transcendental]. Two involutions of $L_{K3}$ with the same $(\pm1)$-eigenspaces coincide, so the covering involution is $w_\alpha I_\En$ on every fibre, and, the classes $e_0,\dots,e_{10}$ being canonical sections, as a family.
+*The covering involution is the composite $w_\alpha I_{\mathrm{En}}$.* With that marking the involution acts on $H^2(X_b)\cong\lkt$ as $I_\Co = -\theta_\Co$ [@prop:coble-cover-marking]. The composite involution $w_\alpha I_\En$ of @cons:coble-involution has the same two eigenspaces, $S_\En\oplus\Z\alpha = S_\Co$ and $\alpha^{\perp T_\En} = T_\Co$ [@prop:coble-eigenspaces, @prop:coble-transcendental]. Two involutions of $L_{K3}$ with the same $(\pm1)$-eigenspaces coincide, so the covering involution is $w_\alpha I_\En$ on every fibre, and, the classes $e_0,\dots,e_{10}$ being canonical sections, as a family.
 
 *Conclusion.* The local system with fibre $T_\Co$ of the Coble family is the anti-invariant local system $L_{K3}^{I_\Co=-1}$ of that involution, whose fibre is $\alpha^{\perp T_\En} = \delta^{\perp T_\En}$ [@prop:coble-eigenspaces]. That is (F).
 :::

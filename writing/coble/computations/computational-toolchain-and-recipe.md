@@ -27,7 +27,7 @@ notes: |-
 
 3. **Run CoxIter** on the diagram for the $f$-vector, a finite-covolume certificate, the count of vertices at infinity, and the growth series.
 
-4. **Fold along an explicit involution.** Realize $\sigma$ either as a permutation of root labels or as a product of reflections; assert $\sigma^2 = \id$; take $s = v + \sigma(v)$, or $x + w_\alpha(x)$ in the reflection-twisted cases.
+4. **Fold along an explicit involution.** Realize $\sigma$ either as a permutation of root labels or as a product of reflections; assert $\sigma^2 = \id$; take $s = v + \sigma(v)$, or $x + w_\alpha(x)$ when composition with a root reflection is used.
    The rank of the $+1$-eigenspace is the number of independent edge-length parameters.
    Check that each $s$ is actually a root: see the Sterk 4 case in [root vectors and folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams), where an invariant vector is not a root and must be dropped.
 

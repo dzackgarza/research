@@ -481,12 +481,12 @@ For $\delta$ one has $\delta(T_{\Co}) = 0$ exactly when the image of $q$ lies in
 Finally $T_{\Co}$ is even: every vector of $\langle2\rangle\perp U(2)\perp E_8(2)$ has even square, $\eta^2 = 2$ being even in $\bZ$. An even $2$-elementary lattice of rank $11$ with $A=(\bZ/2)^{11}$ and $\delta=1$ is unique, and this one is $I_{2,9}(2)$ in the notation of @sec-unimodular-lattice-classification.
 :::
 
-### The invariant lattice and the reflection twist {#sec-reflection-twist}
+### The invariant lattice and the composite involution $I_{\Co}=w_\alpha I_{\mathrm{En}}$ {#sec-coble-involution}
 
 Let $I_{\mathrm{En}}$ be the Enriques involution on the K3 lattice, acting as $+1$ on $S_{\mathrm{En}}$ and as $-1$ on $T_{\mathrm{En}}$.
 Let $w_\alpha$ be the reflection in the root $\alpha$.
 
-::: {.construction #cons:reflection-twist title="reflection twist" defines="reflection twist; $I_{\Co}$"}
+::: {.construction #cons:coble-involution title="The composite involution $I_{\Co}=w_\alpha I_{\mathrm{En}}$" defines="$I_{\Co}$"}
 Define
 
 \[
@@ -496,7 +496,7 @@ I_{\Co}:=w_\alpha I_{\mathrm{En}}.
 
 Since $I_{\mathrm{En}}(\alpha)=-\alpha$, the two factors commute.
 
-::: {.proposition #prop:coble-eigenspaces title="eigenspaces of the reflection twist"}
+::: {.proposition #prop:coble-eigenspaces title="Eigenspaces of the composite involution $I_{\Co}$"}
 One has
 
 \[
@@ -542,10 +542,10 @@ and the $(-1)$-eigenspace is $T_\Co$ by the same computation with the sign rever
 Let $e,f$ be the isotropic basis of the summand $U$ of $T_\En = U\oplus U(2)\oplus E_8(2)$, with $e\cdot f = 1$, so that $\alpha = e-f$.
 Since $E_8$ is negative definite, the vectors of square $-4$ in $E_8(2)$ are the $240$ roots of $E_8$.
 For each such $v$ the vector $\beta = (e+f)+v$ has $\beta^2 = 2-4 = -2$, and $\beta\notin U$.
-So $T_\En$ has vectors of square $-2$ outside $U$, and @cons:reflection-twist depends on the choice of $\alpha$.
+So $T_\En$ has vectors of square $-2$ outside $U$, and @cons:coble-involution depends on the choice of $\alpha$.
 :::
 
-::: {.question #qst:twist-root-conjugacy title="conjugacy of reflection twists"}
+::: {.question #qst:coble-involution-conjugacy title="Conjugacy of the composite involutions"}
 Let $\beta\in T_\En$ be a vector of square $-2$.
 Is the pair $(I_\En, w_\beta I_\En)$ conjugate to the pair $(I_\En, w_\alpha I_\En)$ by an isometry of $\lkt$?
 :::
@@ -739,7 +739,7 @@ Is $S_{\mathrm{dP}} = \pi^*\Pic(Y)\perp\ZZ D_1\perp\cdots\perp\ZZ D_k$?
 
 ::: {.proposition #prop:twist-pair-not-construction-pair title="the pair $\{I_\En,I_\Co\}$ is not the pair of a one-node member"}
 Let $b$ be a one-node member.
-No isometry of $\lkt$ conjugates the set $\{I_\En,I_\Co\}$ of @cons:reflection-twist to the set $\{I_{\Co,b},I_{\mathrm{dP},b}\}$.
+No isometry of $\lkt$ conjugates the set $\{I_\En,I_\Co\}$ of @cons:coble-involution to the set $\{I_{\Co,b},I_{\mathrm{dP},b}\}$.
 :::
 
 ::: {.proof}
@@ -1581,9 +1581,9 @@ b_{\operatorname{link}}
 The formula is integral and defines the correct hyperplane in $a^\perp$.
 It does not imply that $b_{\operatorname{link}}$ is a root of the orthogonal lattice.
 
-### Candidate reflection twist at a cusp {#sec-cusp-reflection-twist}
+### The composite involution at a cusp {#sec-cusp-coble-involution}
 
-At the full K3-lattice level one has the reflection twist $I_{\Co}=w_\alpha I_{\mathrm{En}}$.
+At the full K3-lattice level one has the composite involution $I_{\Co}=w_\alpha I_{\mathrm{En}}$.
 If a primitive isotropic line $e$ is orthogonal to $\alpha$, the involutions induce actions on the cusp quotient $e^\perp/e$.
 This suggests the cusp-level candidate $J_{\Co}=w_{\bar\alpha}J_{\mathrm{En}}$, where $\bar\alpha$ is the image of $\alpha$ in the cusp lattice.
 
@@ -2244,7 +2244,7 @@ With A1--A8, the conclusion follows by normality and finite birationality.
 
 The following ingredients are available.
 
-- The root complement $T_{\Co}$ and reflection twist are explicit.
+- The root complement $T_{\Co}$ and the composite involution are explicit.
 
 - The open local Coble quotient and stable divisor are explicit.
 
@@ -2341,7 +2341,7 @@ Both discriminant groups are $2$-torsion: $A_{T_\Co}\cong(\bZ/2)^{11}$ by @prop:
 So $g$ acts on $A_{S_\Co}\oplus A_{T_\Co}$ as $(-\id,\id)=(\id,\id)$, that is trivially, and hence preserves every subgroup; so $g\in\Orth(\lkt)$.
 
 *The labels.*
-$I_\Co$ acts by $+\id$ on $S_\Co$ and by $-\id$ on $T_\Co$ (@cons:reflection-twist, @prop:coble-transcendental), and $g$ acts by the same two scalars, so $gI_\Co=I_\Co g$.
+$I_\Co$ acts by $+\id$ on $S_\Co$ and by $-\id$ on $T_\Co$ (@cons:coble-involution, @prop:coble-transcendental), and $g$ acts by the same two scalars, so $gI_\Co=I_\Co g$.
 $I_{\mathrm{dP}}$ commutes (@def:commutative-diagram) with $I_\Co$, hence preserves each of the two lattices, and $g$ is a scalar on each, so $gI_{\mathrm{dP}}=I_{\mathrm{dP}}g$.
 $H$ and $\alpha$ lie in $S_\Co$, both being fixed by $I_\Co$ (@sec-labeled-lattice-data), and $g$ is the identity on $S_\Co$, so $gH=H$ and $g\alpha=\alpha$.
 For the chamber: at this member $\Delta_b\subseteq S_{\Co,b}$ and $\mcc_b$ is cut out of $\mathcal C_b$ by the sign conditions of @thm:chamber-pinned-by-labels, parts (1) and (2), and $g$ is the identity on $S_{\Co,b}$, hence on $\mathcal C_b\subseteq\Pic(\widehat X_b)\otimes\RR$, so it preserves $\mcc_b$; that is part (3) of the same theorem applied to $\id\in\Orth(S_{\Co,b})$, whose hypothesis at $H_b$ and $\alpha_b$ it meets.
@@ -2445,7 +2445,7 @@ $I_\Co$ and $I_{\mathrm{dP}}$ are automorphisms of every member of the construct
 They commute with each other and fix $H$ and $\alpha$ (@sec-labeled-lattice-data), and each commutes (@def:commutative-diagram) with both label involutions, so each is an automorphism of the labelled object; with the identity and the product they form $(\bZ/2)^2$.
 
 *Their action on $T_\Co$.*
-$T_\Co=\alpha^{\perp}_{T_\En}$ and $I_\Co=w_\alpha I_\En$ acts there as $I_\En$, which is $-1$ on $T_\En$; so $I_\Co$ acts on $T_\Co$ by $-1$ (@cons:reflection-twist, @prop:coble-transcendental).
+$T_\Co=\alpha^{\perp}_{T_\En}$ and $I_\Co=w_\alpha I_\En$ acts there as $I_\En$, which is $-1$ on $T_\En$; so $I_\Co$ acts on $T_\Co$ by $-1$ (@cons:coble-involution, @prop:coble-transcendental).
 
 *Why the isotropy is in the representation.*
 A local system on a Deligne--Mumford stack is a functor on its fundamental groupoid, so it assigns to every automorphism of every object an automorphism of the fibre at that object; the orbifold monodromy representation of @def:geometric-monodromy is therefore defined on the isotropy groups as well as on the loops.
@@ -2534,7 +2534,7 @@ Prove termination, completeness of the simple roots, and compute the chamber aut
 :::
 
 ::: {.problem #prob:B33 title="B3.3. Full-lattice lift theorem"}
-Lift every cusp-lattice involution or reflection-twist description through the discriminant gluing to the labeled K3 lattice datum.
+Lift every cusp-lattice involution or description as a composite with a root reflection through the discriminant gluing to the labeled K3 lattice datum.
 :::
 
 ::: {.problem #prob:B34 title="B3.4. Parabolic and elliptic exhaustion theorem"}
@@ -2601,11 +2601,11 @@ The autonomous strategy has three advantages.
 
 Its principal difficulties are equally clear: direct monodromy, complete Vinberg calculations, algebraic realization of the fixed exceptional curve in degenerations, and a Coble-specific recognizable-divisor theorem.
 
-### Strategy C: direct K3-to-Coble folding or reflection twisting {#sec-strategy-folding}
+### Strategy C: direct K3-to-Coble folding or composition with a root reflection {#sec-strategy-folding}
 
 #### Candidate mechanism {#sec-strategy-C-mechanism}
 
-The identity $I_{\Co}=w_\alpha I_{\mathrm{En}}$ suggests that the Coble theory can be obtained from the K3 involution space $\mcf_{(2,2,0)}$ by a direct reflection-twisted folding, rather than by first folding to Enriques and then slicing by $\alpha^\perp$.
+The identity $I_{\Co}=w_\alpha I_{\mathrm{En}}$ suggests that the Coble theory can be obtained from the K3 involution space $\mcf_{(2,2,0)}$ by direct composition with a root reflection, rather than by first folding to Enriques and then slicing by $\alpha^\perp$.
 
 At a cusp, the candidate operation is $J_{\Co}=w_{\bar\alpha}J_{\mathrm{En}}$.
 
@@ -2984,7 +2984,7 @@ The table lists each statement, whether it is proved, and the section that prove
 | The level sets of the discriminant forms of $S_\Co$ and $T_\Co$ | computed exactly: $528$, $496$, $496$, $528$ and $528$, $528$, $496$, $496$ over the $2048$ classes | @rmk:coble-discriminant-levels |
 | A primitive $(-4)$-class in $T_{\Co,b}\intersect\Pic$ at the member $b_\star$ | proved, with the class $D_{1,+}-\widehat\iota_{\Co,b_\star}(D_{1,+})$ of two components of split ruling fibres | @thm:direct-period-meets-minus-four |
 | $T_{\Co}\cong\langle2\rangle\oplus U(2)\oplus E_8(2)$ | established | @sec-orthogonal-complement |
-| $S_{\Co}$ and reflection twist | established as lattice calculations | @sec-reflection-twist |
+| $S_{\Co}$ and the composite involution | established as lattice calculations | @sec-coble-involution |
 | Labeled embedding uniqueness | required theorem | @sec-labeled-lattice-data |
 | Degree-$2$ class is quasipolarized on $\wV$ | established | @sec-resolved-diagram |
 | $\lvert-2K_{\widetilde V}\rvert=\{C\}$ generically | established | @sec-anti-bicanonical |
