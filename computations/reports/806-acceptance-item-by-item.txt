@@ -24,11 +24,100 @@ D(T_Co)/R, with the same renaming carried to its citers; and, in a later commit,
 row at open-questions.md:56; and, in a later commit, the PBNM round: the cusp
 theorem's item (1) and proof reconciled cusp by cusp on the record's evidence,
 the pseudo-ample fibre hypothesis restored at moduli-construction.md:2417, and
-the orbit-count clause at discriminant-orbits:272.
+the orbit-count clause at discriminant-orbits:272; and, in a later commit, the
+WZ6B round: the matched-inertia hypothesis (v) named in
+thm:gamma-co-labelled-equality, its proof, and its list of remaining
+hypotheses.
 Paths are relative to the repository root; line numbers are those of the commit
 that carries this file.
 
-CURRENT STATUS AFTER PBNM (review pbnm of research#806 at 93f165c867)
+CURRENT STATUS AFTER WZ6B (review wz6b of research#806)
+
+  Review wz6b reads the 45 citer sites of the scope comment: 43 MET and 2 NOT
+  MET, the replacement lemma MET.  Both open sites are in
+  thm:gamma-co-labelled-equality and its proof, and both are repaired here;
+  nothing else was touched.
+
+  THE DEFECT.  The theorem assumed (i)--(iv) and concluded that the period map
+  is an equivalence of stacks with the isotropy {id, iota} on both sides, and
+  clause 2 then transported the quotient's monodromy to M^gen across it.  The
+  matched-inertia statement --- that the stabiliser of a period in
+  Otilde^+(T_Co) is the automorphism group of the object --- is none of
+  (i)--(iv): the page records it as unavailable at :2101 (item 1, "an
+  equivalence of stacks onto its image with the inertia groups matched"), as
+  (H1) of @prop:coble-monodromy-is-the-marking-group at :2052, and as the
+  clause of @thm:coble-period-map-of-the-stack(2)'s proof at :2023 ("not an
+  isomorphism on groupoids without matching that isotropy").  So both clauses
+  were unproved under the hypotheses as named.
+
+  SITES REPAIRED, in moduli-construction.md.
+
+  1. The hypothesis list of the statement, after (iv): "(v) the period
+     stabiliser is the isotropy: for every pi in U^gen the stabiliser
+     Stab_{Otilde^+(T_Co)}(pi) is {id, iota}, which is the automorphism group
+     of a labelled object of M^gen with period pi."
+  2. The descent sentence after it: "The descent that this statement formerly
+     assumed as a further hypothesis is @thm:quotient-local-system-descent:
+     ... That theorem does not supply (v): it identifies the transports of the
+     descended system on the quotient with those computed per loop, and states
+     nothing about the automorphisms of the objects of M^gen."  The old
+     sentence called the descent "(v)", which the new numbering takes.
+  3. Clause 1: "under (v), the period map induces an equivalence ... with the
+     isotropy {id, iota} on both sides".  Clause 2: "under (v), the monodromy
+     representation of T_Co on pi_1(M^gen) has image Otilde^+(T_Co)".
+  4. The proof of clause 1: the matched-inertia step is now named where the
+     old text passed over it.  OLD: "So the period map is an equivalence onto
+     an open substack with the same isotropy, and U^gen is its image."  NEW:
+     "What that gives is a bijection on objects and on the morphisms between
+     distinct objects: it does not compare the automorphism group of an object
+     with the stabiliser of its period, and a stabiliser of pi in G larger than
+     {id, iota} would leave the period map non-faithful at that object while
+     identifying no two distinct objects.  That the two groups agree at every
+     period of U^gen is (v), and it is not a consequence of (i)--(iv):
+     @thm:coble-period-map-of-the-stack(2) gives a bijection on objects and, as
+     its proof records, no statement about automorphisms without matching the
+     isotropy.  Under (v) the period map is an equivalence onto an open
+     substack with the same isotropy at every point, and U^gen is its image."
+  5. The proof of clause 2: the transport across the equivalence is now
+     attributed.  Added after the per-loop and descent computations: "Both
+     computations are statements about [U^gen/G], and carrying them to M^gen
+     is the equivalence of clause 1, hence rests on (v): at a period whose
+     stabiliser in G is larger than {id, iota} the two stacks differ at that
+     object, the two fundamental groups are not identified, and the image is a
+     statement about the quotient only."
+  6. The list of remaining hypotheses (:2299, now :2300) includes it: after the
+     openness and connectedness clause, "and it needs (v), the matched-inertia
+     comparison, which the list (i)--(iv) did not carry: (i)--(iv) give a
+     bijection on objects and say nothing about automorphisms, and (v) is the
+     statement that the stabiliser of every period of U^gen is {id, iota},
+     which no source read supplies --- it is the input recorded as unavailable
+     at @rmk:findings-ii-iii-and-the-isotropy and carried as (H1) of
+     @prop:coble-monodromy-is-the-marking-group.  The descent adds no
+     hypothesis: ..." (the sentence ending "formerly called (v)" is reworded,
+     since (v) is now the inertia comparison).
+
+  NOT TOUCHED.  No other site was edited.  No other page of the volume states
+  the hypotheses of this theorem: a search for "gamma-co-labelled-equality"
+  finds only its own title line, and a search for "(i)--(iv)" finds nothing
+  else, so no citer had to be reworded with it.  The later global theorem
+  keeps (A1)--(A4), and (A2) is where the same inertia input sits there.
+
+  CHECKS RUN.
+  - scripts/docs_check.py --source on this tree and on a base worktree at the
+    same commit (e694d7b8d6): byte-identical output, the same 29 pre-existing
+    "citation is in no bibliography" findings, none on a touched page.
+  - every @label in the file resolves, including the two named above.
+  - scripts/docs_dependency_graph.py over writing/.book on base and on this
+    tree: 1904 blocks, 1117 cited results, 9527 edges and 123 findings on both,
+    the finding sets equal up to rotation of one pre-existing cycle; the two
+    labels newly named in the statement are already cited in that block, so no
+    edge and no finding is new.
+
+  NOT RUN.  tests/engineering/*.py: the conftest imports dzack_research, so
+  collection fails on a plain checkout.  No render was made; CI's gate is not
+  visible from the session and is not claimed.
+
+STATUS AFTER PBNM (superseded by the section above; review pbnm of research#806 at 93f165c867)
 
   Three items of review pbnm are this issue's; the fourth, the coined terms,
   was removed by a separate sweep and nothing of it was touched here.  All
