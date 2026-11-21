@@ -6,10 +6,12 @@ order), 63bc64d349 (the transport systems, the S_10 derivation, and the citing
 results stated for what is proved), 835db4f69a (the descent of the tautological
 system and the comparison of monodromies), 0bd48d7aa3 (this report records the
 descent and the comparison), fc7fd874ea (the five citers state their exact status,
-and the index-two sentence is withdrawn), and the commit that carries this file
-(the statements made conditional on the descent, and the seven rows below),
-rebased onto the main at fc7fd874ea.  Paths are relative to the repository root;
-line numbers are those of the commit that carries this file.
+and the index-two sentence is withdrawn), 324a7f8dad (the statements made
+conditional on the descent, and the first seven rows below, rebased onto
+272d2b00f9), and the commit that carries this report (the three remaining
+unconditional uses made conditional after review hyjh, comment 7059208107).
+Paths are relative to the repository root; line numbers are those of the commit
+that carries this file.
 
 ACCEPTANCE (one disjunctive item, quoted from the issue)
 
@@ -21,7 +23,7 @@ ACCEPTANCE (one disjunctive item, quoted from the issue)
   per-loop transport of a loop of the quotient and the two exact sequences, and it
   asserts no local system on the quotient.  Whether the programme's uses of a
   tautological local system on a stack are proved is a separate question, and the
-  pages now answer it as conditional, with the input named (the seven rows below).
+  pages now answer it as conditional, with the input named (the eight rows below).
 
   The lemma is corrected and proved: lattices.md:177 (statement), :198 (proof).  It
   posits no local system on the quotient orbifold, and it no longer calls an
@@ -45,7 +47,7 @@ ACCEPTANCE (one disjunctive item, quoted from the issue)
   (rmk:orbifold-monodromy-depends-on-the-equivariant-structure): U~ a point, T = Z,
   Gamma = C_2 acting trivially, im rho = 1, ker rho = C_2.
 
-THE CITERS AND THEIR EXACT STATUS ON THE PAGE (seven rows)
+THE CITERS AND THEIR EXACT STATUS ON THE PAGE (eight rows)
 
   The scope decision is comment 7058559021: a citer is rechecked when the page
   states its exact status -- proved from the corrected lemma, or conditional with
@@ -57,8 +59,9 @@ THE CITERS AND THEIR EXACT STATUS ON THE PAGE (seven rows)
   along maps from topological spaces, not the 2-morphisms of the site.  That gap
   is research#797, item 4, and it is named as an input in every statement below
   that calls the descended object a local system on a stack.  Rows 1-5 are the
-  citers ai05 named; rows 6-7 are the direct sites drl1 added.  Line numbers are
-  those of the commit that carries this file.
+  citers ai05 named; rows 6-7 are the direct sites drl1 added; row 8 is the
+  remaining direct use added by hyjh.  Line numbers are those of the commit that
+  carries this file.
 
   1. @thm:gamma-co-is-full -- lattices.md:244, statement :248, proof :261.
      CONDITIONAL on three inputs, all named in the statement, and proved from the
@@ -76,13 +79,19 @@ THE CITERS AND THEIR EXACT STATUS ON THE PAGE (seven rows)
      is right that the monodromy step uses the descent, so (3) is now an input and
      the proof says so at the step.
 
-  2. @lem:d2a-monodromy-of-the-stack -- moduli-construction.md:1123, clause 3 at
-     :1129, its proof :1146.
-     (1)-(2) PROVED by its own connected-Lie-group path argument, which uses the
-     corrected lemma only for the pair model (:1086 says the exact sequence is
-     not used); (3) CONDITIONAL, stopping at Gamma_Co(B) = rho(pi_1(V,s)), with
-     the identification with Gamma_Co named as research#797, item 6, unproved and
-     unused.  MET as a citer on drl1's reading, and unchanged this round.
+  2. @lem:d2a-monodromy-of-the-stack -- moduli-construction.md:1123, hypothesis
+     (D) at :1127, clauses (1)-(3) at :1131-1133, proof :1138 and :1150.
+     CONDITIONAL on (D), now in the statement for all three clauses: the
+     equivalence between G-equivariant local systems of lattices on V and local
+     systems of lattices on [V/G], with pullback inverse to descent and including
+     the 2-morphism comparisons and cocycle conditions.  The statement names this
+     research#797, item 4, and @rmk:the-descent-stops-at-the-2-morphisms.  The
+     descended system is written L_[V/G], distinct from its pullback L.  The
+     connected-Lie-group path computation is unchanged, but the proof now says
+     that (D) supplies the descended system whose monodromy it computes.  Clause
+     (3) still stops at Gamma_Co(B) = rho(pi_1(V,s)); the identification with
+     Gamma_Co remains research#797, item 6, unproved and unused.  This repairs
+     hyjh's finding that clauses (1)-(2) asserted the equivalence unconditionally.
 
   3. @prop:coble-monodromy-is-the-marking-group -- moduli-construction.md:1881,
      (H1)-(H3) at :1884-1886, clause 3 at :1894, its proof :1901, clause 4 at
@@ -116,19 +125,17 @@ THE CITERS AND THEIR EXACT STATUS ON THE PAGE (seven rows)
      @lem:tautological-system-descends: it computes the per-loop transport and
      names (v).
 
-  5. @thm:gamma-co-is-the-stack-monodromy -- moduli-construction.md:2157,
-     (A1)-(A2) at :2160-2161, chain :2168, ledger :2178-:2192.
-     CONDITIONAL on (A1)-(A2), with (A2) now stated as (H1)-(H3) of row 3.  Step
-     (e) reads "Given (A2), hence (H3), ... " and says that the transports are
-     what @lem:tautological-system-descends constructs and that their being the
-     monodromy of a local system on the stack is (H3).  The ledger's row for
-     @lem:tautological-system-descends no longer says "proved" simpliciter: it
-     reads "proved for the strict maps; the 2-morphisms are
-     @rmk:the-descent-stops-at-the-2-morphisms, research#797, item 4, and are
-     assumed here as (A2)/(H3)".  The row for
-     @prop:coble-monodromy-is-the-marking-group(1)--(3) now says which clause uses
-     which hypothesis.  The torsor correction of the previous round stands: the
-     G-torsor is U^gen -> [U^gen/G] and the period map is an equivalence.
+  5. @thm:gamma-co-is-the-stack-monodromy -- moduli-construction.md:2161,
+     (A1)-(A3) at :2164-2166, chain :2173, ledger :2191 and :2198.
+     CONDITIONAL on (A1)-(A3).  (A2) remains (H1)-(H3) of row 3; the new (A3)
+     states explicitly the equivalence between G-equivariant local systems on
+     U^gen and local systems on [U^gen/G], with pullback inverse to descent and
+     including the 2-morphism comparisons and cocycle conditions.  It names
+     research#797, item 4, and @rmk:the-descent-stops-at-the-2-morphisms.  Step
+     (e) invokes both (A2)/(H3) and (A3), and the ledger and "what remains owed"
+     paragraph repeat that (A3) is assumed, not proved.  The torsor correction of
+     the previous round stands: the G-torsor is U^gen -> [U^gen/G] and the period
+     map is an equivalence.
 
   6. @lem:d2b-forgets-to-d2a(3) -- moduli-construction.md:1581, clause 3 at :1591,
      its proof :1605.  CONDITIONAL on the descent: the clause now reads "the
@@ -148,6 +155,20 @@ THE CITERS AND THEIR EXACT STATUS ON THE PAGE (seven rows)
      the lemma below gives the transport of every loop and not the monodromy of a
      local system on F_S".  The heading of the paragraph introducing it, "The case
      the programme uses, proved", now reads "per loop".
+
+  8. @lem:coble-invariant-lattice-in-families(3) -- moduli-construction.md:1201,
+     clause 3 at :1210, clause 4 at :1215, proof :1222.
+     CONDITIONAL on (D_{S_10}), stated in clause 3: the equivalence between
+     S_10-equivariant local systems of lattices on B and local systems of lattices
+     on [B/S_10], with pullback inverse to descent and including the 2-morphism
+     comparisons and cocycle conditions.  It names research#797, item 4, and
+     @rmk:the-descent-stops-at-the-2-morphisms.  The proof begins "Assume
+     (D_{S_10})"; the product-order and transport calculation is unchanged.
+     Clause 4 and its proof now mark the conclusions that use clause 3, including
+     the first contribution and the lower bound by S_10, as conditional on the
+     same hypothesis, so it does not re-enter there unconditionally.  The
+     Bertini and isotropy computations do not use it.  This repairs hyjh's
+     finding at the former unconditional descent assertion in clause 3.
 
 THE LEMMA'S OWN STATUS AFTER drl1
 
@@ -342,7 +363,7 @@ CHECKS RUN FOR THE CITERS' ROUND (the commit that carries this file)
   tests/engineering: not run, for the reason above.
   CI: not used as evidence.
 
-CHECKS RUN FOR THE drl1 ROUND (the commit that carries this file)
+CHECKS RUN FOR THE drl1 ROUND (324a7f8dad)
 
   scripts/docs_check.py --source: byte-identical to a detached worktree at
     272d2b00f9 (the commit this one is rebased onto), 29 findings, all pre-existing
@@ -355,5 +376,19 @@ CHECKS RUN FOR THE drl1 ROUND (the commit that carries this file)
     The one finding this round produced -- an uncited "pullback of a local system"
     in the chain of @thm:gamma-co-is-the-stack-monodromy -- was fixed by citing
     @def:pullback-of-local-system there, and none remains.
+  tests/engineering: not run, for the reason above.
+  CI: not used as evidence.
+
+CHECKS RUN FOR THE hyjh ROUND (the commit that carries this file)
+
+  scripts/docs_check.py --source: byte-identical to a detached worktree at
+    324a7f8dad, 29 findings, all pre-existing "citation is in no bibliography" in
+    other chapters, none on lattices.md or moduli-construction.md.
+  scripts/docs_dependency_graph.py --project writing/.book --check: 123 findings
+    on both trees, 1892 blocks and 1087 cited results on both, 9323 edges here
+    against 9321 at 324a7f8dad (the two new references to the descent remark).
+    Canonical comparison finds zero added and zero removed findings: the six cycle
+    findings are the same six unordered pairs, although the script prints some in
+    the opposite order, and the fourteen missing-id findings are unchanged.
   tests/engineering: not run, for the reason above.
   CI: not used as evidence.
