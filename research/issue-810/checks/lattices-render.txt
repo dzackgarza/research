@@ -31,7 +31,7 @@ Installed 98 packages in 120ms
     - ../../tikz-diagrams.css
   number-offset:
     - 81
-  
+
 [1mmetadata[22m
   crossref:
     chapters: true
@@ -137,8 +137,8 @@ Installed 98 packages in 120ms
   smooth-scroll: true
   hide-description: true
   title: "[[81]{.chapter-number}\_ [Period domain embeddings and normalization]{.chapter-title}]{#sec-lattices .quarto-section-identifier}"
-  
-[33mWARNING (/workspace/nucleus/work/projects/p-9fcb4ed7f4b64e008de2ee29a7197bf4/repo/.scratch/wt-810/.tmp/uv-cache/archive-v0/3nH-djJKWgAhsgDq/lib/python3.12/site-packages/quarto_cli/share/filters/main.lua:10073) 
+
+[33mWARNING (/workspace/nucleus/work/projects/p-9fcb4ed7f4b64e008de2ee29a7197bf4/repo/.scratch/wt-810/.tmp/uv-cache/archive-v0/3nH-djJKWgAhsgDq/lib/python3.12/site-packages/quarto_cli/share/filters/main.lua:10073)
 The following string was found in the document: :::
 
 This usually indicates a problem with a fenced div in the document. Please check the document for errors.

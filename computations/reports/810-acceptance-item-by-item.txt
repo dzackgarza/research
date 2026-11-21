@@ -1,0 +1,15 @@
+research#810 acceptance item by item
+
+Page/proof commits: 06ef36b48e and 66738f51f6 (before the check-record cleanup).
+
+1. MET (mathematical statement): thm:quotient-local-system-descent proves atlas descent, including 2-morphism comparisons and cocycles, at writing/coble/lattices-and-moduli/lattices.md:197-207 and its proof at :209-216. Clause 1 covers positive-dimensional topological groups and arbitrary atlases. Clause 2 proves the discrete quotient monodromy formula. Its hypotheses are checked against Noohi Proposition 3.4, Definitions 17.2, 17.5, 18.2, 18.10, 18.13, Lemmas 18.8--18.9, Theorem 18.19; Moerdijk sections 5.1, 5.3, 5.6 and 6.1; Moerdijk--Pronk section 3 Remarks 2--3; and Colman Definitions 3.2--3.3 and Remark 3.1. The non-free statement is unconditional at lattices.md:219-240 and :258.
+
+2. MET (replace every (D)): the consumers are at moduli-construction.md:923-941 (chart plus atlas descent), :1296-1319 (connected complex Lie group), :1377-1391 (finite relabelling), and the formerly conditional statements now citing thm:quotient-local-system-descent throughout the two pages. The rmk at lattices.md:287-289 explains how the supplied 2-morphisms complete the strict construction. Search of writing/ finds no surviving conditional (D), descent hypothesis, research#797 item 4, or "does not construct" claim.
+
+3. NOT MET (review): the issue requires a Kimi review. No independent Kimi review has been obtained. Three DeepSeek reviewers exhausted without reports or findings; this is not a pass. The self-reading and its limits are at research/issue-810/checks/1-read.md and research/issue-810/proof.md.
+
+4. Source-text limitation: Noohi, Moerdijk and Colman arXiv text and Moerdijk--Pronk text were read and saved under tmp/sources. Moerdijk--Mrcun Chapters 5--6 were not read: the publisher marks the book closed and its chapter PDF redirects to the abstract; ZOTERO_API_KEY is absent and no accessible full text was found. A mirror's human check and Google Books's 429 were respected.
+
+5. Checks: git diff --check omm/main..HEAD is clean. docs --source has 29 pre-existing missing-bibliography findings, none on touched pages. docs-deps has 124 findings, none on any new or edited descent block and no new dependency cycle. The full docs gate was not established because docs-assets hits an unresolved Git LFS figure; the direct one-page render produced HTML but failed its publishing copy step.
+
+Overall issue acceptance: NOT MET solely because the independent Kimi review is outstanding. No issue closure is authorized.

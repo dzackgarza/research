@@ -23,4 +23,3 @@ so that $R=U\times_XU\rightrightarrows U$. Then:
 
 It remains to compare the loop presentations. [@Noo05, Definitions 17.2 and 17.5] define paths, homotopies and $\pi_1$ by pointed maps of stacks. [@Col09, Definitions 3.2--3.3] define homotopy of Haefliger $G$-paths and the groupoid of their homotopy classes; [@Col09, Remark 3.1] identifies $G$-paths up to equivalence with generalized maps from the interval to the groupoid up to isomorphism. On the atlas groupoid these are the same maps and homotopies as Noohi's, with the same endpoint identifications. Quotients by the chart have the effect recorded in [@Noo05, Proposition 3.4], so the Noohi loop and the Haefliger loop in clause 2 agree. The inversion in the displayed representation is the product convention of @def:transport-and-monodromy, not a different fundamental group.
 :::
-
