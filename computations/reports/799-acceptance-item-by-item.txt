@@ -1,0 +1,72 @@
+research#799 -- acceptance item by item
+
+Revision: the commit containing this report; parent 1197067c3d.
+Page: writing/coble/lattices-and-moduli/moduli-construction.md.
+Proof: thm:coble-monodromy-on-m-classical, :1247.
+
+ORIGINAL STATEMENT, CLAUSE BY CLAUSE
+
+1. Every family of classical Coble covers over a connected base has
+   invariant-lattice monodromy contained in the stated finite group.
+   VERDICT: MET. :1247-1258, using lem:coble-family-base-change (:1020),
+   lem:pi1-of-a-groupoid-quotient-is-generated-by-three-contributions
+   (:1210), lem:d2-label-lift (:1100), and
+   lem:coble-invariant-lattice-in-families (:1134).
+
+2. The universal family over the classical substack has monodromy
+   exactly W(E_10) = Orth^+(K^{perp M}).
+   VERDICT: MET. :1247 and :1265, using
+   lem:coble-image-on-m-is-the-weyl-group (:1188).
+
+3. "Every family of Coble covers" read for the widened functor of
+   def:coble-moduli-functor, including non-plane-model members.
+   VERDICT: NOT MET. The quotient presentation and the atlas are proved
+   only for the classical substack (:773); essential surjectivity of
+   barB onto the widened class is open (rmk:coble-class-smooth-antinbicanonical).
+
+4. The invariant local system is isomorphic to the constant system M by
+   an isometry respecting the eleven classes.
+   VERDICT: MET on the labelled base B (:1134(2)); NOT MET on the
+   classical substack, where the monodromy is W(E_10), not the identity.
+
+5. The monodromy on M is trivial.
+   VERDICT: NOT MET; refuted by the relabelling action S_10 and the
+   non-permutation isotropy action recorded at :1143-1148.
+
+6. The monodromy on M is a stated finite group.
+   VERDICT: MET on the classical substack, with the stated group W(E_10)
+   (:1247). NOT MET for the widened stack, where no group is computed.
+
+7. Every input is cited by a numbered statement that has been read.
+   VERDICT: MET for the classical-substack result. The cited statements
+   are the repository labels above, Nikulin Thm. 3.6.2, Vinberg Table 5,
+   Grivaux Prop. 3.1, and Noohi Definitions 13.8, 17.2, 17.5, 18.2 and
+   Lemma 18.9.
+
+ISSUE ACCEPTANCE CONTRACT
+
+1. "The statement proved on a page of writing/."
+   VERDICT: MET for the classical-substack statement of items 1, 2, 6, 7.
+   NOT MET for the literal every-family statement including the widened
+   stack, because of item 3.
+
+2. "Read MET by one Kimi review."
+   VERDICT: NOT MET; submitted for that review.
+
+3. "Or refuted with a counterexample."
+   VERDICT: NOT MET; no refutation of the classical-substack statement
+   is supplied.
+
+OVERALL: not ALL MET. The classical-substack monodromy theorem is proved;
+the widened-functor clause of the original statement remains open, and the
+independent review condition has not yet been returned.
+
+REVIEW GAPS
+
+(3) Smooth cover of prop:coble-stack-as-quotient:
+    closed by Grivaux Prop. 3.1 at commit 02ca0a6a24; page :773.
+(4) Groupoid pi_1 generation:
+    closed by the loop decomposition at commit 1197067c3d; page :1210.
+(5) Kernel pi_1(B) of the relabelling sequence:
+    closed here by lem:coble-invariant-lattice-in-families(2), page :1142,
+    with lem:d2-label-lift(2), page :1100.
