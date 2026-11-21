@@ -1004,7 +1004,7 @@ Let $b$ be a one-node member of @prop:one-node-family with $\Pic(\widehat X_b) =
 2. $\mcc_b = \set{x\in\mathcal C_b : x\cdot\delta>0 \ \text{for every}\ \delta\in\Delta_b}$;
 3. every $\psi\in\Orth(S_{\Co,b})$ with $\psi H_b = H_b$ and $\psi\alpha_b = \alpha_b$ satisfies $\psi(\Delta_b) = \Delta_b$ and $\psi(\mcc_b) = \mcc_b$;
 
-and consequently every $g\in Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ preserves $\Delta_b$ and $\mcc_b$, so that the chamber carried by @def:direct-group costs nothing at such a member:
+and consequently every $g\in Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ preserves $\Delta_b$ and $\mcc_b$, so that the chamber carried by @def:labeled-centralizer-image costs nothing at such a member:
 $$Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha,\mcc} = Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}.$$
 :::
 
@@ -1059,13 +1059,13 @@ Let $\gamma\in\Pic(\widehat X_b)$ have $\gamma^2 = -2$. If the effective sign of
 Conversely, let $h\definedas H_b\cdot\gamma>0$. Riemann--Roch gives $h^0(\gamma)+h^0(-\gamma) = 1+h^1(\gamma)\ge1$, and $H_b\cdot(-\gamma) = -h<0$ with $H_b$ nef excludes $h^0(-\gamma)>0$; so $h^0(\gamma)>0$ and $\gamma$ is effective. This is the argument @thm:chamber-clause-fails runs on its $H$-degree-one classes, and it does not use the degree (@def:graded-object) beyond its sign.
 :::
 
-::: {.theorem #thm:chamber-subscript-is-a-condition title="The chamber in the datum of the direct group is a genuine condition, and the element that moves it"}
+::: {.theorem #thm:chamber-subscript-is-a-condition title="The chamber in the datum of the labeled centralizer is a genuine condition, and the element that moves it"}
 
 Let $b$ be the member of @thm:chamber-clause-fails, with the two $H_b$-degree-one components $C_+,C_-$ of its ruling fibre, of square $-2$, of sum $C_++C_-\in S_{\Co,b}$, and let $v\definedas C_+-\widehat\iota_{\Co,b}C_+$ be the class of square $-4$ in $T_{\Co,b}\intersect\Pic(\widehat X_b)$ of @thm:direct-period-meets-minus-four (@rmk:chamber-pinned-scope). Then there is a class $\delta\in T_\Co$ of square $-2$ with $v\cdot\delta\neq0$, and for such a class
 $$g\definedas s_\delta\;\in\;Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha},\qquad
 g\;\notin\;Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha,\mcc}.$$
 The element is the identity modulo $2$, so it lies in $\ker\rho_{T_\Co}$: the subscript cuts into the kernel, and nothing here is asserted about the image of the centralizer in $P$, which is @qst:chamber-subscript-image.
-So the chamber subscript of @def:direct-group is a genuine condition at a member of the construction, and the implication (INV) of research#720 — every $g\in Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ preserves the tuple's model-effective arrangement — is false.
+So the chamber subscript of @def:labeled-centralizer-image is a genuine condition at a member of the construction, and the implication (INV) of research#720 — every $g\in Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ preserves the tuple's model-effective arrangement — is false.
 :::
 
 ::: {.proof}
@@ -1115,7 +1115,7 @@ In the situation of @thm:chamber-subscript-is-a-condition, let $g\in Z_{\Orth(\l
 1. for $\gamma\in\Delta_b$ the class $g\gamma$ has square $-2$ and $H_b$-degree $H_b\cdot\gamma$, and $g\gamma\in\Delta_b$ if and only if $g^{-1}\omega_b\perp\gamma$;
 2. consequently $g\mathfrak c_b = \mathfrak c_b$ if and only if $g^{-1}\omega_b\perp\langle\Delta_b\rangle$.
 
-So the chamber subscript of @def:direct-group is a linear condition on the transport of the period, and not a condition to be read off from the arrangement of chambers.
+So the chamber subscript of @def:labeled-centralizer-image is a linear condition on the transport of the period, and not a condition to be read off from the arrangement of chambers.
 :::
 
 ::: {.proof}
@@ -1888,7 +1888,7 @@ Every value and every entry below is in `computations/reports/coble_a13-chain-ma
 
 ::: {.proposition #prop:direct-eq-heegner title="The direct labelled group equals the Heegner one"}
 
-Let $\Gamma^{\mathrm{dir}}_{\Co,2}$ and $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ be the groups of @def:direct-group and @def:heegner-stabilizer-image, the first taken with the centralizer $Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ of its four labels, which at a member with $\Pic(\widehat X_b) = S_{\Co,b}$ is the centralizer of @def:direct-group with the chamber in its datum as well, by @thm:chamber-pinned-by-labels.
+Let $\Gamma^{\mathrm{dir}}_{\Co,2}$ and $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ be the groups of @def:labeled-centralizer-image and @def:heegner-stabilizer-image, the first taken with the centralizer $Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ of its four labels, which at a member with $\Pic(\widehat X_b) = S_{\Co,b}$ is the centralizer of @def:labeled-centralizer-image with the chamber in its datum as well, by @thm:chamber-pinned-by-labels.
 Then
 $$
 \Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2} = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co).
@@ -1931,10 +1931,10 @@ $$
 and by @cor:gamma-hdg-is-congruence that is $\Gamma^{\mathrm{Hdg}}_\Co$.
 
 *The chamber.*
-@def:direct-group carries the subscript $\mcc$, and nothing above uses it: every step is a statement about the centralizer of the four labels $I_\Co,I_{\mathrm{dP}},H,\alpha$.
+@def:labeled-centralizer-image carries the subscript $\mcc$, and nothing above uses it: every step is a statement about the centralizer of the four labels $I_\Co,I_{\mathrm{dP}},H,\alpha$.
 The subscript is nevertheless no restriction on that centralizer where the group is defined, since at a one-node member with $\Pic(\widehat X_b) = S_{\Co,b}$ the chamber is a function of $H_b$ and $\alpha_b$ (@thm:chamber-pinned-by-labels): every element of the centralizer preserves it, and
 $$Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha,\mcc} = Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}.$$
-The equality proved is therefore the one for the group that @def:direct-group defines, with $\mcc$ in its datum, and not for a subscript-free variant of it: the chamber clause of the labelled rigidity theorem is not an input here, the chamber being read off from the other labels; and at a member whose Picard lattice is larger it is no restriction on the part of the centralizer that preserves the member's period either, which preserves the chamber there as well (@lem:chamber-preserved-on-period).
+The equality proved is therefore the one for the group that @def:labeled-centralizer-image defines, with $\mcc$ in its datum, and not for a subscript-free variant of it: the chamber clause of the labelled rigidity theorem is not an input here, the chamber being read off from the other labels; and at a member whose Picard lattice is larger it is no restriction on the part of the centralizer that preserves the member's period either, which preserves the chamber there as well (@lem:chamber-preserved-on-period).
 :::
 
 ::: {.remark #rmk:root-arrangement-answered title="The root arrangement"}
@@ -1951,7 +1951,7 @@ What the argument does not reach is the member with a larger Picard lattice, whe
 In the situation of @prop:one-node-family, let $b$ be a member, let $\psi\colon H^2(\widehat X_b,\ZZ)\iso\lkt$ be a marking, and let $g\in Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ satisfy $g\psi(\omega_b)\in\CC\psi(\omega_b)$ for a holomorphic $2$-form $\omega_b$ on $\widehat X_b$.
 Then $\psi^{-1}g\psi$ preserves the chamber $\mathfrak c_b$ and the arrangement $\Delta_b$ of @def:coble-polarization-classes, part 3.
 
-Consequently the chamber in the datum of @def:direct-group costs nothing on that part of the centralizer at every member of the construction, the members whose Picard lattice is larger than $S_{\Co,b}$ included, where @thm:chamber-pinned-by-labels does not apply.
+Consequently the chamber in the datum of @def:labeled-centralizer-image costs nothing on that part of the centralizer at every member of the construction, the members whose Picard lattice is larger than $S_{\Co,b}$ included, where @thm:chamber-pinned-by-labels does not apply.
 :::
 
 ::: {.proof}
@@ -1986,7 +1986,7 @@ So $\rho\le13$: if the sign is $+1$ at $11$ or at $19$, $\rho=12$; if it is $-1$
 
 ::: {.question #qst:chamber-subscript-image title="What the chamber subscript does to the group"}
 
-@lem:chamber-preserved-on-period settles the chamber on the elements of $Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ that preserve the member's period, and @thm:chamber-subscript-is-a-condition settles the other direction at a member with a larger Picard lattice: an element that moves no label can move the chamber, so the subscript of @def:direct-group is a genuine condition and the group it defines is the group of a member and not of the labels.
+@lem:chamber-preserved-on-period settles the chamber on the elements of $Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ that preserve the member's period, and @thm:chamber-subscript-is-a-condition settles the other direction at a member with a larger Picard lattice: an element that moves no label can move the chamber, so the subscript of @def:labeled-centralizer-image is a genuine condition and the group it defines is the group of a member and not of the labels.
 
 What is left is what that condition does to the group: is
 $$\rho_{T_\Co}\bigl(Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha,\mcc}\bigr)\;=\;\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$$

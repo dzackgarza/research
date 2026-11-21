@@ -1068,7 +1068,7 @@ The group $\Gamma_\Co$ of @def:gamma-co-groups, the monodromy group of the VHS o
 
 This image is the natural group of a fixed normalized Heegner component once the Enriques construction has been fixed.
 
-::: {.definition #def:direct-group title="direct labeled centralizer group" defines="direct labeled centralizer group; $\Gamma_{\Co,2}^{\mathrm{dir}}$"}
+::: {.definition #def:labeled-centralizer-image title="The image of the labeled centralizer in $O^+(T_{\Co})$" defines="$\Gamma_{\Co,2}^{\mathrm{dir}}$"}
 
 \[
 \Gamma_{\Co,2}^{\mathrm{dir}}
@@ -1079,9 +1079,9 @@ This image is the natural group of a fixed normalized Heegner component once the
 \]
 :::
 
-::: {.remark #rmk:direct-group-chamber title="The chamber in the datum of the direct group"}
+::: {.remark #rmk:labeled-centralizer-chamber title="The chamber in the datum of the labeled centralizer"}
 
-The chamber $\mcc$ is part of the datum of @def:direct-group. It is not an extra label at a member whose Picard lattice is the invariant lattice $S_{\Co,b}$: there the chamber is a function of $H$ and $\alpha$, so every element of the centralizer $Z_{O(L_{K3})}(I_{\Co},I_{\mathrm{dP}})_{H,\alpha}$ preserves it and the group above is the one @prop:direct-eq-heegner computes, $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$. At a member whose Picard lattice is larger the chamber is cut finer and the subscript is a genuine condition on the centralizer (@rmk:chamber-pinned-scope, and @thm:chamber-subscript-is-a-condition for the element that witnesses it); it is not one on the elements that preserve the member's period, which preserve its chamber at every member (@lem:chamber-preserved-on-period). So the group below is the group of a member and not of the labels, and @qst:chamber-subscript-image asks the one thing left about it, whether the condition changes its image.
+The chamber $\mcc$ is part of the datum of @def:labeled-centralizer-image. It is not an extra label at a member whose Picard lattice is the invariant lattice $S_{\Co,b}$: there the chamber is a function of $H$ and $\alpha$, so every element of the centralizer $Z_{O(L_{K3})}(I_{\Co},I_{\mathrm{dP}})_{H,\alpha}$ preserves it and the group above is the one @prop:direct-eq-heegner computes, $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$. At a member whose Picard lattice is larger the chamber is cut finer and the subscript is a genuine condition on the centralizer (@rmk:chamber-pinned-scope, and @thm:chamber-subscript-is-a-condition for the element that witnesses it); it is not one on the elements that preserve the member's period, which preserve its chamber at every member (@lem:chamber-preserved-on-period). So the group below is the group of a member and not of the labels, and @qst:chamber-subscript-image asks the one thing left about it, whether the condition changes its image.
 :::
 
 This is the arithmetic group naturally attached to the autonomous lattice datum, provided the labeled rigidity theorem holds.
@@ -2085,7 +2085,7 @@ What is settled below is the shape of that complement and the published status o
 
 The unpolarized form of the open identification is published: [@DK13, Prop. 3.2] identifies the moduli space $\mcm_\Co$ of classical Coble surfaces with an open subset of $\bD(N)/\Orth(N)$, where $N=\langle2\rangle\oplus E(2)$ with $E=U\oplus E_8$ [@DK13, (3.6)], and that $N$ is $T_\Co$ by @prop:coble-transcendental.
 Two qualifications belong with it.
-The group is the whole orthogonal group, so the quotient is $F^{\mathrm{un}}_\Co=\bD(T_\Co)/\Orth(T_\Co)$ and not the $\Gamma_{\Co,2}^{\mathrm{dir}}\backslash\bD_\Co$ of the clause: the passage from $\Orth(T_\Co)$ to the finite-index subgroup $\Gamma^{\mathrm{dir}}_{\Co,2}$ of @def:direct-group, which lies inside $\Orth^+(T_\Co)$ (@lem:minus-id-in-direct-group(2)), is @prob:B25, and the two-element ambiguity its proof recorded is decided: the sign is in the orbifold group of @def:geometric-monodromy (@thm:sign-is-isotropy) and in no loop (@thm:no-loop-carries-the-sign).
+The group is the whole orthogonal group, so the quotient is $F^{\mathrm{un}}_\Co=\bD(T_\Co)/\Orth(T_\Co)$ and not the $\Gamma_{\Co,2}^{\mathrm{dir}}\backslash\bD_\Co$ of the clause: the passage from $\Orth(T_\Co)$ to the finite-index subgroup $\Gamma^{\mathrm{dir}}_{\Co,2}$ of @def:labeled-centralizer-image, which lies inside $\Orth^+(T_\Co)$ (@lem:minus-id-in-labeled-centralizer(2)), is @prob:B25, and the two-element ambiguity its proof recorded is decided: the sign is in the orbifold group of @def:geometric-monodromy (@thm:sign-is-isotropy) and in no loop (@thm:no-loop-carries-the-sign).
 And the Coble surfaces of [@DK13, §3] are the blowups of ten nodes of an irreducible plane sextic, so the proposition covers the unpolarized Coble moduli space and not the labeled tuple of @sec-labeled-lattice-data.
 
 The complement is not empty and contains the whole root arrangement: @thm:direct-period-misses-root-walls.
@@ -2323,14 +2323,14 @@ The transition isometry $g = \psi_{b'}^{-1}\psi_b\colon H^2(X_b,\ZZ)\iso H^2(X_{
 This is not in conflict with @thm:chamber-clause-fails: that theorem compares two members with different periods that share their labels, and shows that the labels alone do not determine the chamber. The chamber is a function of the marked period — the datum the moduli stack carries — and not of the labels alone.
 :::
 
-::: {.lemma #lem:minus-id-in-direct-group title="the label centralizer contains $-\id_{T_\Co}$, and its image lies in $\Orth^+$"}
+::: {.lemma #lem:minus-id-in-labeled-centralizer title="the label centralizer contains $-\id_{T_\Co}$, and its image lies in $\Orth^+$"}
 
-Let $b$ be a one-node member of @prop:one-node-family with $\Pic(\widehat X_b) = S_{\Co,b}$, and let $Z=Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha,\mcc}$ be the centralizer of @def:direct-group at that member.
+Let $b$ be a one-node member of @prop:one-node-family with $\Pic(\widehat X_b) = S_{\Co,b}$, and let $Z=Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha,\mcc}$ be the centralizer of @def:labeled-centralizer-image at that member.
 Then
 
 1. $g\definedas\id_{S_\Co}\oplus(-\id_{T_\Co})$ is an isometry of $\lkt$ lying in $Z$, so its image $-\id_{T_\Co}$ lies in $\Gamma^{\mathrm{dir}}_{\Co,2}$;
 
-2. $-\id_{T_\Co}\in\Orth^+(T_\Co)$, so the image of $Z$ lies in $\rho_{T_\Co}^{-1}(P)\intersect\Orth^+(T_\Co)$, which is $\Gamma^{\mathrm{dir}}_{\Co,2}$ by @prop:direct-eq-heegner, and the target $O^+(T_\Co)$ of @def:direct-group is the correct one.
+2. $-\id_{T_\Co}\in\Orth^+(T_\Co)$, so the image of $Z$ lies in $\rho_{T_\Co}^{-1}(P)\intersect\Orth^+(T_\Co)$, which is $\Gamma^{\mathrm{dir}}_{\Co,2}$ by @prop:direct-eq-heegner, and the target $O^+(T_\Co)$ of @def:labeled-centralizer-image is the correct one.
 :::
 
 ::: {.proof}
@@ -2355,14 +2355,14 @@ The criterion by cone (@def:closed-cone) components must not be transported here
 For signature $(2,9)$ the set $\set{v: v^2>0}$ is connected — $t\mapsto(\cos t,\sin t,0,\dots,0)$ joins a vector of square $1$ to its negative inside it — so there are no two halves for $-\id$ to exchange, and the cone reading has no content here.
 :::
 
-::: {.warning #warn:direct-group-orth-plus title="withdrawn: the group of @def:direct-group is inside $\Orth^+$, and the coset recorded at @cor:four-groups-decided stands"}
+::: {.warning #warn:labeled-centralizer-orth-plus title="withdrawn: the group of @def:labeled-centralizer-image is inside $\Orth^+$, and the coset recorded at @cor:four-groups-decided stands"}
 This warning recorded three landed statements as unable to stand, on the ground that $-\id_{T_\Co}$ lies outside $\Orth^+(T_\Co)$. It does not, and the ground is a definition read outside its hypothesis.
 
 $\Orth^+(L)$ is $\Theta_\bR(L)$, the kernel of the real spinor norm (@def:lattice-spinor-kernels), and $\spinornorm_\bR(-\id_L) = [(-1)^p]$ on a lattice of signature $(p,q)$, so $-\id_L\in\Orth^+(L)$ exactly when $p$ is even (@lem:minus-identity-spinor-norm). Here $p = 2$. The reading the warning used is [@AEGS25, §5.1], which defines $O^+(\Lambda)$ for a hyperbolic lattice of signature $(1,r-1)$, where the positive cone is one of the two halves of $\set{v: v^2>0}$; for signature $(2,9)$ that set is connected, and the corpus's identification of the two readings is @prop:spinor-plus-cone-components, stated for signature $(1,n)$. The element $s_\zeta$, on the other hand, is outside $\Orth^+(T_\Co)$ under the corpus's definition, $\spinornorm_\bR(s_\zeta) = [-\tfrac12\cdot 2] = [-1]$, which is what carries the $s_\zeta$-coset of @cor:four-groups-decided.
 
 So the three statements stand as written:
 
-1. The target of @def:direct-group, $O^+(T_\Co)$, is the correct one, and the image of the centralizer lies in it (@lem:minus-id-in-direct-group(2)).
+1. The target of @def:labeled-centralizer-image, $O^+(T_\Co)$, is the correct one, and the image of the centralizer lies in it (@lem:minus-id-in-labeled-centralizer(2)).
 
 2. @prop:direct-eq-heegner, the paragraph resolving @prob:group-identification, and @cor:four-groups-decided: $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ holds as stated.
 
@@ -2398,7 +2398,7 @@ The deck group of the cover by markings and the geometric monodromy group of @de
 
 *What that leaves, and what answers it.* Over the coarse moduli space the monodromy is $\Gamma_{\mathrm{lab}}/\{\pm1\}$ and no loop carries $-\id_{T_\Co}$ (@thm:no-loop-carries-the-sign), while the orbifold monodromy of @def:geometric-monodromy is $\Gamma_{\mathrm{lab}}$ itself, the sign being the isotropy $I_\Co$ that every member carries (@thm:sign-is-isotropy):
 $$\Gamma^{\mathrm{geom}}_{\Co,2} = \Gamma^{\mathrm{dir}}_{\Co,2},$$
-and the quotient branch is the same statement read over the coarse space. The two branches an earlier form of this paragraph carried are that distinction, not two unknowns. What @prob:B24 does not supply is the word itself: it identifies which walls the image meets (@def:replete-full-meet), hence which reflections are carried by the loops around the Heegner divisors. The word is supplied by the arithmetic of @thm:coble-block-sign-in-w, which puts $\iota$ in $W(T_\Co)$; what it does not supply is the loop. Three facts about the ambiguity are established, and they are what the question starts from. First, it is genuine and internal to the label group, not a defect of the notation: $\iota\definedas\id_{S_\Co}\oplus(-\id_{T_\Co})$ is the involution $I_\Co$, it lies in $\Gamma^{\mathrm{dir}}_{\Co,2} = \rho_{T_\Co}^{-1}(P)\intersect\Orth^+(T_\Co)$ (@lem:minus-id-in-direct-group, part 1, and @prop:direct-eq-heegner), and it lies in $\Orth^+(T_\Co)$ because $\spinornorm_\bR(-\id_L) = [(-1)^p]$ with $p = 2$ (@lem:minus-identity-spinor-norm), equivalently because $\det(-1|_W) = (-1)^2 = 1$ on a positive $2$-plane (@prop:spinor-norm-orientation-classes(4)); so it is an element of the group the monodromy is asserted to equal, and the dichotomy asks which subgroup of that group is realized. Second, $\iota$ is not the square of any isometry of $\lkt$: from $g^2 = \iota$ one gets $g\iota = g\,g^2 = g^3 = g^2g = \iota g$, so $g$ preserves the two eigenspaces $S_\Co$ and $T_\Co$, and $g|_{T_\Co}$ is then an orthogonal complex structure (@def:calculus-module-complex-structure) on a space of signature $(2,9)$, which pairs positive vectors with positive and negative with negative and so forces both ranks even, against $9$. The sign therefore cannot arise as the square of an orbifold stabiliser, which is how $-1$ does enter the monodromy of the elliptic curves, where the local monodromy (@def:transport-and-monodromy) at $j=i$ has order $4$. Third, the branch "no loop carries it" is false one level up, where it can be checked: under the identification of the monodromy group of the degree-$2$ numerically polarized Enriques space with $\Gamma_{\En,2}$ that the corpus records (`writing/dissertation/sections/1-part-combinatorial/3-chapter-enriques-k3/475-our-cusps.md`:126, [@Ste91]) and uses in @def:gamma-co-groups, that group contains $I_\En$ itself — it commutes (@def:commutative-diagram) with $I_\En$ and fixes $h\in S_\En$ — and its image in $\Orth(T_\En)$ is $-\id_{T_\En}$; and that containment is of the group and not of the loop monodromy: the inference from the one to the other is what @thm:no-loop-carries-the-sign blocks in the Coble case, and it blocks it one level up for the same reason, where $I_\En$ is the isotropy of that moduli stack and $\delta^{\perp T_\En} = \eta(T_\Co)$ is the sublattice on which it acts by $-1$. That isotropy is not a loop of $\mathfrak M$, and the Coble statement does not follow from it, the group of the labelled base being only $\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable(1)), with the equality itself open (@qst:gamma-co-sign-is-realised) and its transfer to $\Gamma_\Co$ the comparison of research#797, item 6. So the two-element question that @qst:b25-sign-holonomy posed is answered on both readings it can be read in: the sign is in the orbifold group through the isotropy and in no loop, and $\epsilon$ is a word too (@thm:coble-block-sign-in-w).
+and the quotient branch is the same statement read over the coarse space. The two branches an earlier form of this paragraph carried are that distinction, not two unknowns. What @prob:B24 does not supply is the word itself: it identifies which walls the image meets (@def:replete-full-meet), hence which reflections are carried by the loops around the Heegner divisors. The word is supplied by the arithmetic of @thm:coble-block-sign-in-w, which puts $\iota$ in $W(T_\Co)$; what it does not supply is the loop. Three facts about the ambiguity are established, and they are what the question starts from. First, it is genuine and internal to the label group, not a defect of the notation: $\iota\definedas\id_{S_\Co}\oplus(-\id_{T_\Co})$ is the involution $I_\Co$, it lies in $\Gamma^{\mathrm{dir}}_{\Co,2} = \rho_{T_\Co}^{-1}(P)\intersect\Orth^+(T_\Co)$ (@lem:minus-id-in-labeled-centralizer, part 1, and @prop:direct-eq-heegner), and it lies in $\Orth^+(T_\Co)$ because $\spinornorm_\bR(-\id_L) = [(-1)^p]$ with $p = 2$ (@lem:minus-identity-spinor-norm), equivalently because $\det(-1|_W) = (-1)^2 = 1$ on a positive $2$-plane (@prop:spinor-norm-orientation-classes(4)); so it is an element of the group the monodromy is asserted to equal, and the dichotomy asks which subgroup of that group is realized. Second, $\iota$ is not the square of any isometry of $\lkt$: from $g^2 = \iota$ one gets $g\iota = g\,g^2 = g^3 = g^2g = \iota g$, so $g$ preserves the two eigenspaces $S_\Co$ and $T_\Co$, and $g|_{T_\Co}$ is then an orthogonal complex structure (@def:calculus-module-complex-structure) on a space of signature $(2,9)$, which pairs positive vectors with positive and negative with negative and so forces both ranks even, against $9$. The sign therefore cannot arise as the square of an orbifold stabiliser, which is how $-1$ does enter the monodromy of the elliptic curves, where the local monodromy (@def:transport-and-monodromy) at $j=i$ has order $4$. Third, the branch "no loop carries it" is false one level up, where it can be checked: under the identification of the monodromy group of the degree-$2$ numerically polarized Enriques space with $\Gamma_{\En,2}$ that the corpus records (`writing/dissertation/sections/1-part-combinatorial/3-chapter-enriques-k3/475-our-cusps.md`:126, [@Ste91]) and uses in @def:gamma-co-groups, that group contains $I_\En$ itself — it commutes (@def:commutative-diagram) with $I_\En$ and fixes $h\in S_\En$ — and its image in $\Orth(T_\En)$ is $-\id_{T_\En}$; and that containment is of the group and not of the loop monodromy: the inference from the one to the other is what @thm:no-loop-carries-the-sign blocks in the Coble case, and it blocks it one level up for the same reason, where $I_\En$ is the isotropy of that moduli stack and $\delta^{\perp T_\En} = \eta(T_\Co)$ is the sublattice on which it acts by $-1$. That isotropy is not a loop of $\mathfrak M$, and the Coble statement does not follow from it, the group of the labelled base being only $\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable(1)), with the equality itself open (@qst:gamma-co-sign-is-realised) and its transfer to $\Gamma_\Co$ the comparison of research#797, item 6. So the two-element question that @qst:b25-sign-holonomy posed is answered on both readings it can be read in: the sign is in the orbifold group through the isotropy and in no loop, and $\epsilon$ is a word too (@thm:coble-block-sign-in-w).
 :::
 
 ::: {.question #qst:b25-sign-holonomy title="The sign holonomy of the direct Coble stack"}
@@ -2504,9 +2504,9 @@ $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2} = \Gamma^\theta_\
 
 ::: {.corollary #cor:g3-g4-decided title="The two comparison entries left untouched: $G_3$ is the geometric monodromy, $G_4$ is strictly larger than it"}
 
-Write $G_1\definedas\Gamma^{\mathrm{geom}}_{\Co,2}$ (@def:geometric-monodromy), $G_2\definedas\Gamma^{\mathrm{dir}}_{\Co,2}$ (@def:direct-group), $G_3\definedas\Gamma^{\mathrm{Hdg}}_{\Co,2}$ and $G_4\definedas\Gamma^{\mathrm{cong}}_{\Co,2}$ — the entries $G_1$ to $G_4$ of the ledger of research#720, whose last two it left untouched. Then
+Write $G_1\definedas\Gamma^{\mathrm{geom}}_{\Co,2}$ (@def:geometric-monodromy), $G_2\definedas\Gamma^{\mathrm{dir}}_{\Co,2}$ (@def:labeled-centralizer-image), $G_3\definedas\Gamma^{\mathrm{Hdg}}_{\Co,2}$ and $G_4\definedas\Gamma^{\mathrm{cong}}_{\Co,2}$ — the entries $G_1$ to $G_4$ of the ledger of research#720, whose last two it left untouched. Then
 
-1. $G_1 = G_2 = G_3$. The geometric monodromy group in the sense of @def:geometric-monodromy is the direct group (@thm:sign-is-isotropy), and $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2}$ (@prop:direct-eq-heegner).
+1. $G_1 = G_2 = G_3$. The geometric monodromy group in the sense of @def:geometric-monodromy is the image of the labeled centralizer (@thm:sign-is-isotropy), and $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2}$ (@prop:direct-eq-heegner).
 2. $G_4\neq G_1$. The congruence group is the union of $\Gamma^{\mathrm{dir}}_{\Co,2}$ with its $s_\zeta$-coset, and $s_\zeta\notin\Orth^+(T_\Co)$ (@cor:four-groups-decided), whereas $G_1 = G_2$ lies in $\Orth^+(T_\Co)$.
 3. Read over the coarse moduli space instead of the stack, the monodromy is $H$, the complement of $\{\pm\id_{T_\Co}\}$ of @thm:no-loop-carries-the-sign, and no one of $G_2$, $G_3$, $G_4$ equals it: $H$ has index two in $G_2 = G_3$ and contains no $-\id_{T_\Co}$, which $G_4$ contains.
 :::
@@ -2515,7 +2515,7 @@ Write $G_1\definedas\Gamma^{\mathrm{geom}}_{\Co,2}$ (@def:geometric-monodromy), 
 
 (1) is @thm:sign-is-isotropy and @prop:direct-eq-heegner composed.
 For (2): $G_4 = \Gamma^{\mathrm{dir}}_{\Co,2}\cup s_\zeta\Gamma^{\mathrm{dir}}_{\Co,2}$ with $s_\zeta\notin\Orth^+(T_\Co)$ (@cor:four-groups-decided), and $\Gamma^{\mathrm{dir}}_{\Co,2} = \rho_{T_\Co}^{-1}(P)\intersect\Orth^+(T_\Co)\subseteq\Orth^+(T_\Co)$ (@prop:direct-eq-heegner), so $s_\zeta\in G_4\setminus G_1$.
-For (3): $H\{ \pm\id_{T_\Co}\} = \Gamma^{\mathrm{dir}}_{\Co,2}$ with $H\cap\{\pm\id_{T_\Co}\} = \{\id\}$ (@thm:no-loop-carries-the-sign), so $H$ has index two in $G_2 = G_3$; and $-\id_{T_\Co}\in\Gamma^{\mathrm{dir}}_{\Co,2}$ (@lem:minus-id-in-direct-group) lies in $G_4$ but not in $H$.
+For (3): $H\{ \pm\id_{T_\Co}\} = \Gamma^{\mathrm{dir}}_{\Co,2}$ with $H\cap\{\pm\id_{T_\Co}\} = \{\id\}$ (@thm:no-loop-carries-the-sign), so $H$ has index two in $G_2 = G_3$; and $-\id_{T_\Co}\in\Gamma^{\mathrm{dir}}_{\Co,2}$ (@lem:minus-id-in-labeled-centralizer) lies in $G_4$ but not in $H$.
 :::
 
 ::: {.problem #prob:B26 title="B2.6. Direct stable-pair theorem"}
@@ -2686,7 +2686,7 @@ The required chain is:
 
 4. restriction of the AEGS family to the direct period space identified in steps 1--3;
 
-5. integral cusp and Vinberg calculations for the direct group;
+5. integral cusp and Vinberg calculations for the image of the labeled centralizer;
 
 6. normalized toroidal restriction and semitoroidal compatibility;
 
