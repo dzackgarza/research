@@ -121,7 +121,7 @@ Local systems of lattices on $X$, their transport and their monodromy representa
 
 Fix $u\in U$, put $x\definedas\pi(u)$, and let $\pi_*\colon\pi_1(U,u)\to\pi_1(X,x)$ be the map induced by the covering.
 
-1. Let $\psi$ send a loop $\gamma$ at $x$ to the unique $g\in G$ for which the lift $s$ of $\gamma$ with $s(0)=u$ has $s(1)=gu$; the lift exists and is unique (Noohi, Proposition 18.18 and Lemma 18.12), and freeness makes $g$ unique.
+1. Let $\psi$ send a loop $\gamma$ at $x$ to the unique $g\in G$ for which the lift $s$ of $\gamma$ with $s(0)=u$ has $s(1)=gu$; the lift exists and is unique (Noohi, Definition 18.13 and Lemma 18.12), and freeness makes $g$ unique.
    For the product convention of @def:transport-and-monodromy, in which $\gamma\delta$ is $\delta$ followed by $\gamma$, the lift of $\gamma\delta$ from $u$ is the lift of $\delta$ followed by the translate by $\psi(\delta)$ of the lift of $\gamma$, so
 $$\psi(\gamma\delta)=\psi(\delta)\psi(\gamma).$$
    Thus $\psi$ is an anti-homomorphism and $\psi^{-1}\colon\gamma\mapsto\psi(\gamma)^{-1}$ is a homomorphism; it is onto, because $U$ is path connected, and its kernel is $\pi_*\pi_1(U,u)$, because $\psi(\gamma)=1$ exactly when $\gamma$ lifts to a loop at $u$ (Noohi, Lemma 18.14, (ii) $\Leftrightarrow$ (iii)), so that with $\pi_*$ injective (Noohi, Proposition 18.15)
@@ -141,7 +141,7 @@ $$\rho(\pi_1(X,x))=\theset{\tau_{gu}\tau_u^{-1}\st g\in G}.$$
 
 ::: {.proof}
 
-For (1), let $\gamma$ be a loop at $x$ and let $s$ be its lift with $s(0)=u$ (Noohi, Proposition 18.18 for existence, Lemma 18.12 for uniqueness), so that $\psi(\gamma)=g$ means $s(1)=gu$; freeness makes $g$ unique and Lemma 18.12 makes $\psi(\gamma)$ depend only on the class of $\gamma$.
+For (1), let $\gamma$ be a loop at $x$ and let $s$ be its lift with $s(0)=u$ (Noohi, Definition 18.13 for existence, Lemma 18.12 for uniqueness), so that $\psi(\gamma)=g$ means $s(1)=gu$; freeness makes $g$ unique and Lemma 18.12 makes $\psi(\gamma)$ depend only on the class of $\gamma$.
 Let $\delta$ be another loop at $x$, with lift $s'$ from $u$ ending at $h u$, $h=\psi(\delta)$; the lift of the composite $\gamma\delta$ from $u$ is $s'$ followed by the translate by $h$ of $s$, which ends at $h g u$. Hence $\psi(\gamma\delta)=hg=\psi(\delta)\psi(\gamma)$, and $\psi^{-1}$, the map $\gamma\mapsto\psi(\gamma)^{-1}$, is a homomorphism.
 It is onto: $u$ and $gu$ are joined by a path of $U$, whose image is a loop at $x$ lifted by that path.
 Its kernel is $\pi_*\pi_1(U,u)$: $\psi(\gamma)=1$ exactly when the lift of $\gamma$ from $u$ is a loop at $u$, which by Noohi's Lemma 18.14 ((ii) $\Leftrightarrow$ (iii)) is exactly $\gamma\in\pi_*\pi_1(U,u)$; injectivity of $\pi_*$ is Noohi's Proposition 18.15.

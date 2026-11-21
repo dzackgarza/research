@@ -12,11 +12,109 @@ conditional on the descent, and the first seven rows below, rebased onto
 replacement after review hyjh), 1227d63ace with e84e964da8 (the three repairs
 after review ltn3, comment 7059864089), and the commit that carries this report,
 which is the LTN4 round: the tower paragraph's "Gamma_Co = Otilde^+ up to
-+-id" claim and the thirteen sites that depended on it.
++-id" claim and the thirteen sites that depended on it; and, in a later commit
+of this file, the VG3H round: the diagram's |W(E_8)| label, the universal
+quotient-monodromy sentence, the no-count-transfer sentence, and two Noohi
+citation numbers.
 Paths are relative to the repository root; line numbers are those of the commit
 that carries this file.
 
-CURRENT STATUS AFTER LTN4 (the repair of the "Gamma_Co = Otilde^+ up to +-id" error)
+CURRENT STATUS AFTER VG3H (review vg3h of research#806, comment 7060858868)
+
+  Review vg3h accepts the route (the proved free-action replacement of #803,
+  no full descent owed by #806) and #806's line-59 repair, and names three
+  citers that still assert more than is proved: the degree label of the tower
+  diagram at M:53, the universal quotient-monodromy sentence at M:1104, and
+  the no-count-transfer sentence at C:304.  All three are repaired below; the
+  orchestrator's edge #806 <- #810 is not needed for any of them.
+
+  SITES REPAIRED, each with the old claim and its new status.
+
+  1. moduli-construction.md:53, the tikz diagram "moduli-tower".
+     OLD: the vertical arrow F_Co -> F_{Co,2} carried the label
+     "|W(E_8)|", an unconditional degree that M:59 had already ceased to
+     assert; worse, |W(E_8)| = |P| = [R_gent cap O^+ : Otilde^+] is exactly
+     the value M:59 says the degree is NOT.
+     NEW: the label is removed and the arrow is drawn unlabelled, and M:59
+     now says so in words: "No value of the degree is known, and the diagram
+     above therefore carries no degree on that arrow; in particular it is not
+     |W(E_8)| = 696 729 600, which would put Gamma_{Co,2} at
+     R_gent cap O^+ (qst:coble-monodromy-equality, false by
+     prop:coble-monodromy-equality-false)."  The diagram and its paragraph
+     now assert the same thing.
+
+  2. moduli-construction.md:1104 (qaa9's M:1054, moved).
+     OLD: "The monodromy group of a quotient [Gamma\D^+] is Gamma, so reading
+     the presentation [Otilde^+ \ D(T_Co)^+] as the labelled stack *is* the
+     equality Gamma_Co(B) = Otilde^+, which is qst:gamma-co-sign-is-realised
+     and is not proved."
+     NEW: the universal sentence is restricted to the free case and the case
+     here is stated as conditional.  In order: (i) "For a *free* quotient the
+     monodromy group of [Gamma\D^+] is Gamma
+     (@lem:orbifold-monodromy-of-a-quotient(2), with phi the defining
+     inclusion, which is injective)"; (ii) the quotient here is not free,
+     -id_{T_Co} in Otilde^+(T_Co) (prop:sign-is-a-loop-of-the-labelled-base
+     with thm:gamma-co-is-stable(1)) acting trivially on D(T_Co)^+
+     (rmk:no-loop-carries-the-sign-is-another-base(2)); (iii) "the statement
+     needed is then the descended-system clause of
+     @lem:orbifold-monodromy-of-a-nonfree-quotient(3), which is conditional on
+     the descent hypothesis (D) named there --- the descent along the
+     2-morphisms that @rmk:the-descent-stops-at-the-2-morphisms leaves open,
+     research#810, formerly item 4 of research#797.  Without (D) that lemma
+     gives the transport of each loop and not the monodromy of a local system
+     on the quotient."  The closing clause now reads "what the presentation
+     supplies unconditionally is the inclusion", so the open equality is still
+     named where it is used and nothing unconditional is claimed.
+
+  3. cusp-diagram-calculations.md:304 (the cusp-computation page).
+     OLD: "so no count here is a count for Gamma_{Co,2} or for F_{Co,2}."
+     That is too strong: the refuted equality blocks one route of transfer, it
+     does not prove that the numbers cannot coincide.
+     NEW: "So the counts of this page are counts for R and for
+     R cap O^+(T_Co), and they are not counts for Gamma_{Co,2}: the route
+     recorded for that transfer, the equality Gamma_{Co,2} = R cap O^+(T_Co),
+     is false, and what is proved is the containment Gamma_{Co,2} in
+     R cap O^+(T_Co) (@lem:d2-degree-two-base(3)), which makes each count here
+     a lower bound for the corresponding count of Gamma_{Co,2} --- a subgroup
+     has at least as many orbits as the group --- and not an equality.  Whether
+     the count for Gamma_{Co,2}, hence for F_{Co,2} = D(T_Co)/Gamma_{Co,2},
+     coincides with these numbers is not decided on this page."  What is not
+     established is now the coincidence, not the transfer; and the valid lower
+     bound is stated rather than dropped.
+
+  4. local-systems-of-lattices-and-monodromy.md:124 and :144, not one of the
+     three, but the same citation defect vg3h names in its first audit row.
+     OLD: "Noohi, Proposition 18.18" for the existence of a lift of a loop,
+     which requires the image-of-pi_1 hypothesis and so does not apply.
+     NEW: "Noohi, Definition 18.13", which is the applicable statement and is
+     the one this volume already uses for the same purpose at
+     lattices.md:228.
+
+  WHAT WAS NOT CHANGED.  No other page carries the unconditional degree label
+  or the universal quotient-monodromy sentence: grep over writing/ for
+  |W(E_8)|, for "monodromy group of a quotient", and for "no count ... is a
+  count" returns only the sites above.  The other citers vg3h marks "mostly
+  correct as conditional" are untouched.
+
+  CHECKS RUN.
+  - scripts/docs_check.py --source on this tree and on a base worktree at the
+    same commit (eaf2129572): byte-identical output, the same 29 pre-existing
+    "citation is in no bibliography" findings in other chapters, none on a
+    touched page.
+  - every @label in the three touched files resolves to a {#...} div.
+  - scripts/docs_dependency_graph.py over writing/.book on base and on this
+    tree: 1903 blocks, 1097 cited results, 9470 -> 9476 edges, 124 findings on
+    both, and the finding sets are equal up to rotation of one pre-existing
+    cycle; no new cycle and no new finding from the added citations.
+  - the tikz diagram is inside a code fence and is not read by either check;
+    the change is the deletion of one label, "|W(E_8)|", from one arrow.
+
+  NOT RUN.  tests/engineering/*.py: the conftest imports dzack_research, so
+  collection fails before any test runs on a plain checkout.  No render was
+  made, so the tikz change is not checked by a build; CI's gate is not visible
+  from the session and is not claimed.
+
+STATUS AFTER LTN4 (superseded by the section above; the repair of the "Gamma_Co = Otilde^+ up to +-id" error)
 
   Scope of this round: the tower paragraph of moduli-construction.md said
   "By @thm:gamma-co-is-stable, Gamma_Co = Otilde^+(T_Co) up to +-id" and
