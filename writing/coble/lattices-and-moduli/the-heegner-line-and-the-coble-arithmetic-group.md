@@ -2904,7 +2904,7 @@ Let $B = \latI_{2,9}$, $T_\Co = B(2)$, $K = \ker\rho_{T_\Co}$, and in the notati
 2. $189\,720$ orbits under $K$ and under each of $K\intersect SO$, $K\intersect O^+$ and $K\intersect SO^+$;
 3. seven orbits under $R_{\gent}\intersect\Orth^+(T_\Co)$, and not under $\Gamma_{\Co,2}$, which would need @qst:coble-monodromy-equality (@prop:coble-monodromy-equality-false);
 
-and the count for $\Gamma_\Co$ is $189\,720$, since $\Gamma_\Co$ is the stable group on the labelled base (@thm:gamma-co-is-stable). Each count is proved on the page, and each is also the integer a public row returns: the proof lists the call that builds each group and the record that prints its number.
+and the count for $\Gamma_\Co$ is $189\,720$ only under $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$ (@conj:gamma-co-stable, research#780) together with $\Gamma_\Co=\Gamma_\Co(B)$ for the labelled base (research#797, item 6); the labelled base proves $\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable(1)), where $189\,720$ is a lower bound for the count of $\Gamma_\Co(B)$. Each count is proved on the page, and each is also the integer a public row returns: the proof lists the call that builds each group and the record that prints its number.
 :::
 
 ::: {.proof}

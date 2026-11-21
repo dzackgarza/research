@@ -9,12 +9,217 @@ descent and the comparison), fc7fd874ea (the five citers state their exact statu
 and the index-two sentence is withdrawn), 324a7f8dad (the statements made
 conditional on the descent, and the first seven rows below, rebased onto
 272d2b00f9), a1ccad7119 (the rebase onto #807), 1227d63ace (the free-action
-replacement after review hyjh), and the commit that carries this report (the
-three repairs after review ltn3, comment 7059864089).
+replacement after review hyjh), 1227d63ace with e84e964da8 (the three repairs
+after review ltn3, comment 7059864089), and the commit that carries this report,
+which is the LTN4 round: the tower paragraph's "Gamma_Co = Otilde^+ up to
++-id" claim and the thirteen sites that depended on it.
 Paths are relative to the repository root; line numbers are those of the commit
 that carries this file.
 
-CURRENT STATUS AFTER LTN3 (the commit that carries this report)
+CURRENT STATUS AFTER LTN4 (the repair of the "Gamma_Co = Otilde^+ up to +-id" error)
+
+  Scope of this round: the tower paragraph of moduli-construction.md said
+  "By @thm:gamma-co-is-stable, Gamma_Co = Otilde^+(T_Co) up to +-id" and
+  derived from it an inclusion Gamma_Co in Gamma_{Co,2}, the degree of
+  F_Co -> F_{Co,2}, and two divisibility statements.  thm:gamma-co-is-stable
+  proves neither equality: (1) is Gamma_Co(B) contained in Otilde^+, and (2)
+  says that neither Gamma_Co(B) = Otilde^+ nor Gamma_Co = Otilde^+ is proved.
+  "Up to +-id" was nowhere proved on the page and is deleted everywhere it
+  appeared; no proof of it exists to keep.
+
+  The rule applied at every site below: a containment, a degree or a count
+  is asserted only together with the exact hypothesis it needs, named by its
+  block -- Gamma_Co contained in Gamma_{Co,2}, or Gamma_Co = Otilde^+
+  (conj:gamma-co-stable, research#780), plus Gamma_Co = Gamma_Co(B)
+  (research#797, item 6) wherever a labelled-base statement is transferred
+  to Gamma_Co.  No policy note was added to any page; the statements and
+  their uses were repaired.
+
+  SITES REPAIRED, each with the old claim and its new status.
+
+  1. moduli-construction.md:59 (the tower paragraph after the diagram).
+     OLD: "The vertical map is F_Co -> F_{Co,2}, finite of degree
+     [Gamma_{Co,2}:Gamma_Co] once Gamma_Co in Gamma_{Co,2}.  By
+     @thm:gamma-co-is-stable, Gamma_Co = Otilde^+(T_Co) up to +-id, and
+     Otilde^+ in R_gent cap O^+ unconditionally; so Gamma_Co in
+     Gamma_{Co,2} whenever Gamma_{Co,2} contains Otilde^+, and the degree is
+     [Gamma_{Co,2}:Otilde^+], which divides |W(E_8)| = 696 729 600; it is
+     not that number ... and with Gamma_{Co,2} in Gamma_{10A_1} it is a
+     divisor of 10! whenever Otilde^+ in Gamma_{Co,2}."
+     NEW: the map and its degree are stated only under Gamma_Co contained in
+     Gamma_{Co,2}, which is named as not proved; both inputs are named as
+     open -- Gamma_Co = Otilde^+ is conj:gamma-co-stable (research#780) and
+     Otilde^+ in Gamma_{Co,2} is open at prop:d2b-index-exact; the only
+     unconditional containment stated is in the supergroup R_gent cap O^+;
+     the degree is [Gamma_{Co,2}:Otilde^+] only under those two hypotheses,
+     the divisibility by 10! only under them, and any reading off the
+     labelled base only with Gamma_Co = Gamma_Co(B) (research#797, item 6).
+     |W(E_8)| now appears only as the value the degree is NOT, with the
+     reference that settles it (qst:coble-monodromy-equality is false).
+
+  2. moduli-construction.md:31 (the page-wide promise on item 6).
+     OLD: "no statement below uses it except @thm:gamma-co-is-the-stack-
+     monodromy, where it is hypothesis (A4)."
+     NEW: "... except @thm:gamma-co-is-the-stack-monodromy, where it is
+     hypothesis (A4), and the paragraph after the diagram below, which
+     states what the degree of the vertical map would be under it."  The
+     promise is now exact; it was the paragraph of site 1 that made the old
+     wording false.
+
+  3. moduli-construction.md:2107 ("What is proved, and what is not").
+     OLD: "The inclusion Gamma_Co in Otilde^+(T_Co) is
+     @thm:gamma-co-is-stable(1), and equality is the conjecture of
+     @conj:gamma-co-stable."
+     NEW: the inclusion proved is Gamma_Co(B) in Otilde^+, a statement about
+     the labelled presentation; for Gamma_Co itself what is proved is
+     Gamma_Co in O^+ (lem:monodromy-is-spinor-positive), the containment in
+     the discriminant kernel being exactly the content of
+     conj:gamma-co-stable, whose stack reading this is.
+
+  4. moduli-construction.md:1842, :1848, :1852, :1857 and the proof at
+     :1866 and :1868 (prop:d2b-index-exact).
+     OLD: the standing hypothesis was Gamma_{Co,2} in R_gent, and under it
+     (2) displayed [R_gent:Gamma_{Co,2}] = 2|P|/[Gamma_{Co,2}:Otilde^+],
+     (3) asserted the chain Otilde^+ in Gamma_{Co,2} in Gamma_Co(B-bar) in
+     Gamma_{10A_1} with 384 <= [R_gent:Gamma_{Co,2}] <= 1 393 459 200, and
+     (4) made the index a divisor of 10!; the proof of (3) cited
+     @lem:d2b-family-over-the-labelled-base(4) for the first containment,
+     which that lemma explicitly does not assert.
+     NEW: Otilde^+ in Gamma_{Co,2} is named in the proposition's hypothesis
+     line together with the two open inputs it needs (Gamma_Co(B) =
+     Otilde^+, qst:gamma-co-sign-is-realised, and Gamma_Co(B) in
+     Gamma_{Co,2}), (2)--(4) are each marked as holding  under that
+     containment, and the proof of (3) now says that the containment is
+     unproved, that the labelled-base lemma's group is Gamma_Co(B) and
+     asserts neither input, and that what is unconditional is
+     Gamma_{Co,2} in Gamma_Co(B-bar) in Gamma_{10A_1}.
+
+  5. lattices.md:908 (rmk:gamma-co-counts).
+     OLD: "The cusp counts of F_Co are the counts for the stable subgroup:
+     F_Co = D(T_Co)/Gamma_Co has the coarse space of D(T_Co)/Otilde^+
+     (@thm:gamma-co-is-stable), hence 527 0-cusps and 189 720 1-cusps."
+     NEW: conditional on Gamma_Co = Otilde^+ (conj:gamma-co-stable,
+     research#780); the unconditional statements are Gamma_Co in O^+
+     (lem:monodromy-is-spinor-positive) and Gamma_Co(B) in Otilde^+, so 527
+     and 189 720 are lower bounds for the counts of Gamma_Co(B) and the
+     counts for Gamma_Co follow only through Gamma_Co = Gamma_Co(B)
+     (research#797, item 6).  This makes the remark agree with
+     lattices.md:600, which already said the stable counts are not proved
+     to be counts for F_Co.
+
+  6. the-heegner-line-and-the-coble-arithmetic-group.md:2907
+     (thm:coble-plane-orbit-counts, last sentence).
+     OLD: "the count for Gamma_Co is 189 720, since Gamma_Co is the stable
+     group on the labelled base (@thm:gamma-co-is-stable)."
+     NEW: the count for Gamma_Co is 189 720 only under Gamma_Co = Otilde^+
+     together with Gamma_Co = Gamma_Co(B); on the labelled base 189 720 is a
+     lower bound for the count of Gamma_Co(B).
+
+  7. coble-heegner-research-report.md:1055.
+     OLD: "has Gamma_Co(B) = Otilde^+(T_Co) on the labelled presentation
+     (@thm:gamma-co-is-stable)".
+     NEW: "has Gamma_Co(B) contained in Otilde^+(T_Co) ... (1), the reverse
+     inclusion and the equality being @qst:gamma-co-sign-is-realised".
+
+  8. coble-heegner-research-report.md:2399.
+     OLD: "... on the labelled base Gamma_Co and Otilde^+(T_Co) being equal
+     up to +-id (@thm:gamma-co-is-stable)."
+     NEW: "... the group of the labelled base being only Gamma_Co(B)
+     contained in Otilde^+, with the equality itself open
+     (qst:gamma-co-sign-is-realised) and its transfer to Gamma_Co the
+     comparison of research#797, item 6."
+
+  9. lattice-and-diagram-conventions.md:146.
+     OLD: "The equality Gamma_Co = Otilde^+(T_Co) is @conj:gamma-co-stable,
+     proved on the labelled base (@thm:gamma-co-is-stable)."
+     NEW: the equality is the conjecture; on the labelled base only the
+     inclusion Gamma_Co(B) in Otilde^+ is proved, the reverse being
+     qst:gamma-co-sign-is-realised, and identifying that group with Gamma_Co
+     is research#797, item 6.
+
+ 10. lattice-and-diagram-conventions.md:147, last clause.
+     OLD: "for Gamma_Co, the count 527 (@thm:gamma-co-is-stable)."
+     NEW: "for Gamma_Co, the count 527 under Gamma_Co = Otilde^+
+     (@conj:gamma-co-stable, @thm:coble-zero-cusp-count(2))."
+
+ 11. polarizing-divisors-for-coble-moduli.md:466.
+     OLD: "On the labelled base ... the group is Otilde^+(T_Co) up to +-id
+     (@thm:gamma-co-is-stable): so every class of S_Co is invariant under the
+     monodromy, F_Co maps finitely to D/Gamma_P and to D/R_gent, each of the
+     two structures is defined on F_Co itself, and its Baily--Borel boundary
+     is that of the stable quotient."
+     NEW: the group of the labelled base is Gamma_Co(B) and only its
+     inclusion in Otilde^+ is proved; the paragraph's statements for F_Co
+     hold under Gamma_Co = Otilde^+ (research#780), and reading them off the
+     labelled base needs Gamma_Co = Gamma_Co(B) (research#797, item 6).
+
+ 12. dissertation/GAPS.md:1029.
+     OLD: "the equality Gamma_Co = O~+(T_Co) is a theorem on the labelled
+     base (thm:gamma-co-is-stable), so the section applies to the monodromy
+     group."
+     NEW: the equality is open (conj:gamma-co-stable), the labelled base
+     proving only Gamma_Co(B) <= O~+(T_Co) (thm:gamma-co-is-stable(1)), so
+     the section applies to the monodromy group only under that equality
+     together with Gamma_Co = Gamma_Co(B) (research#797, item 6).
+
+ 13. dissertation/GAPS.md:1333.
+     OLD: "Gamma_Co = O~+(T_Co) on the labelled base (thm:gamma-co-is-stable),
+     so the two agree."
+     NEW: Gamma_Co = O~+(T_Co) is conj:gamma-co-stable, proved on the
+     labelled base only in one direction, Gamma_Co(B) <= O~+(T_Co), with
+     Gamma_Co = Gamma_Co(B) the comparison of research#797, item 6, so the
+     two agree under that conjecture only.
+
+  SITES THAT ALREADY CARRIED THE CONDITION, READ AND LEFT UNCHANGED:
+  moduli-construction.md:395, :400, :505-:507, :520, :1097, :1110, :1253,
+  :1277, :1659, :1801, :1813, :2072, :2101, :2297 and :2303;
+  lattices.md:403 and :600; the-heegner-line:1706, :2000 and :2723;
+  open-questions.md:38 and :41.  thm:gamma-co-is-the-stack-monodromy keeps item 6 as (A4) and
+  nothing else.
+
+  FLAGGED, NOT EDITED (owned by research#779: ksba.md and the cusp pages).
+
+  a. ksba.md:538: "It is not the monodromy group Gamma_Co of
+     @def:gamma-co-groups, which equals the stable subgroup Otilde^+(T_Co) on
+     the labelled base (@thm:gamma-co-is-stable)."  The clause names the wrong
+     group for the equality and the wrong clause of the theorem: the labelled
+     base gives Gamma_Co(B) contained in Otilde^+, not an equality, and not
+     Gamma_Co.
+  b. cusp-correspondence/enriques-to-coble-cusp-correspondence.md:318: "By
+     @thm:gamma-co-is-stable, Gamma_Co = Otilde^+(T_Co) up to +-id, so
+     condition (2) of @prop:gamma-co-strong-lifting holds."  Condition (2) is
+     Gamma_Co contained in Otilde^+, which is what the page's own
+     prop:gamma-co-strong-lifting takes as hypothesis (:293) and leaves open;
+     the proof of its corollary cannot discharge it by citation.  The same
+     page :285 has the same clause in the proof ("that inclusion is proved on
+     the labelled base, where the two groups are equal up to +-id"), and its
+     surrounding sentence is otherwise correct: it says the inclusion for
+     Gamma_Co is not asserted without it.
+
+  CHECKS RUN.
+  - scripts/docs_check.py --source on this tree and on a base worktree at the
+    same commit: byte-identical output, 29 pre-existing "citation is in no
+    bibliography" findings in other chapters, none on a touched page.  So no
+    citation, cross-reference, block link or macro finding was added.
+  - every @label in the seven touched files resolves to a {#...} div in the
+    tree (script check over writing/**/*.md).
+  - scripts/docs_dependency_graph.py over writing/.book on the base and on
+    this tree: 1900 blocks, 1092 cited results, 9398 -> 9405 edges, 123
+    findings on both, and the finding sets are equal up to rotation of the
+    two pre-existing cycles in moduli-construction.md; no new cycle, no new
+    finding.
+  - the pinned strings of tests/engineering/test_coble_a13_acceptance.py:716
+    ("The vertical map is $F_{\Co}\to F_{\Co,2}$") and of
+    test_coble_a2_acceptance.py's equality scan were checked against the new
+    text: still present, and no new occurrence of the equality outside the
+    conjecture's own block.
+
+  NOT RUN.  tests/engineering/*.py: the conftest imports dzack_research,
+  which a plain checkout does not have (ModuleNotFoundError before collection),
+  so the suite is not evidence here.  CI's gate is not visible from the
+  session and is not claimed.
+
+STATUS AFTER LTN3 (superseded by the section above; the line numbers are those of its own commit)
 
   The three defects named in review ltn3 are repaired.
 
