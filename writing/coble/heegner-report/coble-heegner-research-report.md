@@ -1055,7 +1055,7 @@ The expected equality $\Gamma_{\Co}^{\mathrm{dir}}=O^+(T_{\Co})$ is compatible w
 The group $\Gamma_\Co$ of @def:gamma-co-groups, the monodromy group of the VHS on the universal family over the moduli stack of Coble surfaces, has $\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co)$ on the labelled presentation (@thm:gamma-co-is-stable(1)), the reverse inclusion and the equality being @qst:gamma-co-sign-is-realised; no relation between $\Gamma_{\Co}^{\mathrm{dir}}$ and $\Gamma_\Co$ is established.
 :::
 
-::: {.definition #def:hodge-group title="Hodge-theoretic Heegner group" defines="Hodge-theoretic Heegner group; $\Gamma_{\Co,2}^{\mathrm{Hdg}}$"}
+::: {.definition #def:heegner-stabilizer-image title="The image of the Heegner stabilizer in $O^+(T_{\Co})$" defines="$\Gamma_{\Co,2}^{\mathrm{Hdg}}$"}
 
 \[
 \Gamma_{\Co,2}^{\mathrm{Hdg}}
@@ -1066,7 +1066,7 @@ The group $\Gamma_\Co$ of @def:gamma-co-groups, the monodromy group of the VHS o
 \]
 :::
 
-This group is the natural group of a fixed normalized Heegner component once the Enriques construction has been fixed.
+This image is the natural group of a fixed normalized Heegner component once the Enriques construction has been fixed.
 
 ::: {.definition #def:direct-group title="direct labeled centralizer group" defines="direct labeled centralizer group; $\Gamma_{\Co,2}^{\mathrm{dir}}$"}
 

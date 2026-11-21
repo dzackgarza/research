@@ -1888,7 +1888,7 @@ Every value and every entry below is in `computations/reports/coble_a13-chain-ma
 
 ::: {.proposition #prop:direct-eq-heegner title="The direct labelled group equals the Heegner one"}
 
-Let $\Gamma^{\mathrm{dir}}_{\Co,2}$ and $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ be the groups of @def:direct-group and @def:hodge-group, the first taken with the centralizer $Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ of its four labels, which at a member with $\Pic(\widehat X_b) = S_{\Co,b}$ is the centralizer of @def:direct-group with the chamber in its datum as well, by @thm:chamber-pinned-by-labels.
+Let $\Gamma^{\mathrm{dir}}_{\Co,2}$ and $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ be the groups of @def:direct-group and @def:heegner-stabilizer-image, the first taken with the centralizer $Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ of its four labels, which at a member with $\Pic(\widehat X_b) = S_{\Co,b}$ is the centralizer of @def:direct-group with the chamber in its datum as well, by @thm:chamber-pinned-by-labels.
 Then
 $$
 \Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2} = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co).
