@@ -1,8 +1,35 @@
 research#800 -- acceptance item by item
 
-Revision: 6aa56ed712a0ca8d2dc156ec3ec2ea181483e7c1 (on main; parent f1b71260ed).
+Revision: the commit carrying this report (on main; parent 4bc5db8546, which is
+the revision the review of 2026-11-21 01:17 recorded on the issue returned NOT
+MET). Two findings of that review are repaired here, and nothing else was
+changed.
 Page: writing/coble/lattices-and-moduli/marked-coble-covers-and-the-period-map.md.
 Statement: #800's, refuted.
+
+THE TWO FINDINGS OF THE REVIEW, AND THEIR DISPOSITIONS
+
+F1. "E_0 is nonzero effective and every ample class pairs positively with it
+    -- UNPROVED as cited at :53-55." The review is right: the locator
+    [@Huy16, Ch. 1, §2, (2.2)] names the ample-curve equation of that section,
+    but in Huybrechts "2.2" also names the paragraph on the Hodge index
+    theorem and Remark 2.2, so the locator does not identify the statement,
+    and the submitted text cited no numbered statement for the positivity of
+    an ample class on a nonzero effective divisor.
+    REPAIRED at page :53-55: E_0 is now identified as a curve (the preimage of
+    a line, a smooth connected curve of genus 2, branched at the six points of
+    tilde L cap tilde C, since tilde C.H = 6), and the positivity is derived
+    rather than asserted: an ample class pairs positively with every curve
+    [@Huy16, Ch. 8, §1, Theorem 1.2, the Nakai-Moishezon-Kleiman criterion],
+    hence with every nonzero effective divisor, a sum of curves; applied to
+    the ample class f^*(A) this gives f^*(A).[E_0] > 0. The locator (2.2) is
+    no longer used.
+
+F2. "g commutes with I_Co -- TRUE, although :41 says imprecisely that both are
+    scalar on each block: g is not scalar on S_Co."
+    REPAIRED at page :41: the sentence now reads that g preserves each of the
+    two summands, so it commutes with I_Co, which is +id on the first and -id
+    on the second.
 
 THE STATEMENT OF THE ISSUE
 "Two marked Coble covers (X, iota, phi) and (X', iota', phi') with the same
@@ -37,10 +64,11 @@ ACCEPTANCE CONTRACT, CLAUSE BY CLAUSE
    For the refutation this is met in the sense the next clause names: the page
    carries the counterexample. VERDICT: MET.
 2. "and read MET by one Kimi review."
-   VERDICT: NOT MET. No review has been returned; the review is the
-   orchestrator's to request, and this report is submitted for it.
+   VERDICT: NOT MET. The review of 2026-11-21 01:17 returned NOT MET on the
+   previous revision; this revision is submitted for the review of the repair.
 3. "or refuted with a counterexample."
-   VERDICT: MET, by the counterexample of 1.
+   VERDICT: MET, by the counterexample of 1, whose one unsourced step (F1) is
+   now derived from a numbered statement.
 
 OVERALL: not ALL MET, clause 2 being open.
 
@@ -55,8 +83,12 @@ INPUTS, EACH A NUMBERED STATEMENT THAT WAS READ
   isomorphism. Ch. 7, §5, Cor. 5.1: the period map on marked K3 surfaces is
   generically and not globally injective. Read in tmp/sources/huybrechts-2016-
   lectures-on-k3.md.
-- [@Huy16, Ch. 1, §2, (2.2)]: an ample class pairs positively with a curve.
-  [@Huy16, Ch. 1, §3, (3.2)]: Pic(X) = H^2(X,Z) cap H^{1,1}(X). Read there.
+- [@Huy16, Ch. 8, §1, Theorem 1.2] (Nakai-Moishezon-Kleiman): a line bundle L
+  on a smooth projective surface is ample if and only if (L)^2 > 0 and
+  (L.C) > 0 for all curves C; the "only if" half is the positivity used at
+  page :55. Read in tmp/sources/huybrechts-2016-lectures-on-k3.md.
+- [@Huy16, Ch. 1, §3, (3.2)]: Pic(X) = H^2(X,Z) cap H^{1,1}(X). Read there.
+- Dropped: [@Huy16, Ch. 1, §2, (2.2)], see F1.
 - Volume statements read: @rmk:marked-coble-covers-after-huybrechts,
   @def:coble-moduli-functor, @prop:coble-cover-marking, @prop:theta-co-exists,
   @prop:coble-period-domain, @def:gamma-co-groups, @def:type-iv-period-domain,
@@ -74,7 +106,7 @@ and is not decided on this page.
 
 CHECKS
 scripts/docs_check.py --source: 29 findings, all pre-existing missing
-bibliography, none on the new page. The lattice claims were re-checked in exact
+bibliography, none on the page. The lattice claims were re-checked in exact
 integer arithmetic (|A_{S_Co}| = |A_{T_Co}| = 2^11; delta = h + e_1 has
 delta^2 = -2 and s_delta is integral, an isometry, and trivial on A_{T_Co}).
 pytest not run: a plain checkout lacks dzack_research and sage_extensions; the

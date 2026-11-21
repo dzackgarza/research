@@ -38,7 +38,7 @@ Let $(X,\iota,\varphi)$ be a marked Coble cover of the classical kind, @def:mark
 Let $s_c\in\Orth(S_\Co)$ be the reflection in $c$.
 For $x\in S_\Co^\#$ one has $s_c(x) = x-(x,c)c$, and $(x,c)\in\bZ$, so $s_c(x)\in x+S_\Co$: the reflection acts trivially on $A_{S_\Co}$.
 Hence $s_c\perp\id_{T_\Co}$ preserves the gluing subgroup, and it extends to an isometry $g\in\Orth(\lkt)$ with $\restrictionof{g}{S_\Co} = s_c$ and $\restrictionof{g}{T_\Co} = \id_{T_\Co}$ (@thm:automorphism-lifting-criterion).
-The isometry $g$ commutes with $I_\Co$, both being scalars on each of $S_\Co$ and $T_\Co$.
+The isometry $g$ preserves each of the two summands $S_\Co$ and $T_\Co$, so it commutes with $I_\Co$, which is $+\id$ on the first and $-\id$ on the second.
 
 *The second marking.*
 Put $\varphi'\definedas g\circ\varphi$.
@@ -50,9 +50,9 @@ In particular $\varphi'\neq\varphi$.
 *No isomorphism.*
 Let $f\colon X\to X$ be biholomorphic with $f\circ\iota\circ f^{-1} = \iota$ and $\varphi\circ f^* = \varphi'$.
 Then $\varphi\circ f^* = g\circ\varphi$, so $f^* = \varphi^{-1}\circ g\circ\varphi = G$, an involution of $H^2(X,\bZ)$ acting as the reflection in the class $[E_0]$ on $\varphi^{-1}(S_\Co)$ and as the identity on $\varphi^{-1}(T_\Co)$.
-The class $[E_0]$ is that of the divisor $E_0$ [@DK13, §3], so it is nonzero and effective, of square $2$.
+The class $[E_0]$ is that of the curve $E_0 = f^{-1}(\tilde L)$, where $\tilde L$ is the proper transform of a line meeting $C$ in six points away from its nodes [@DK13, §3]: the double cover restricted to $\tilde L\cong\PP^1$ is branched at the six points of $\tilde L\intersect\tilde C$, since $\tilde C\cdot H = 6$, so $E_0$ is a smooth connected curve of genus $2$, of square $2$.
 Let $A$ be an ample class on $X$.
-Then $f^*(A)$ is ample, and it pairs positively with $[E_0]$, that is $f^*(A)\cdot[E_0]>0$ [@Huy16, Ch. 1, §2, (2.2)].
+An ample class pairs positively with every curve of a smooth projective surface [@Huy16, Ch. 8, §1, Theorem 1.2], hence with every nonzero effective divisor, which is a sum of curves; applied to the ample class $f^*(A)$ this gives $f^*(A)\cdot[E_0]>0$.
 On the other hand $f^*(A)\cdot[E_0] = A\cdot f_*([E_0]) = A\cdot G^{-1}([E_0]) = -A\cdot[E_0]<0$, since $G([E_0]) = -[E_0]$ and $G^{-1} = G$.
 This is a contradiction, so no such $f$ exists.
 
