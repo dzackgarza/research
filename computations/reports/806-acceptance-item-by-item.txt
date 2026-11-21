@@ -15,11 +15,99 @@ which is the LTN4 round: the tower paragraph's "Gamma_Co = Otilde^+ up to
 +-id" claim and the thirteen sites that depended on it; and, in a later commit
 of this file, the VG3H round: the diagram's |W(E_8)| label, the universal
 quotient-monodromy sentence, the no-count-transfer sentence, and two Noohi
-citation numbers.
+citation numbers; and, in a later commit, the WEJM round: the cusp page's
+proof sentence that denied count coincidence, and the same overstatement
+in cusps-over-sterk-cusps.md:3.
 Paths are relative to the repository root; line numbers are those of the commit
 that carries this file.
 
-CURRENT STATUS AFTER VG3H (review vg3h of research#806, comment 7060858868)
+CURRENT STATUS AFTER WEJM (review wejm of research#806 at b487dd8633)
+
+  Review wejm accepts the M:53 and M:1104 repairs and accepts the lower bound
+  at C:304 (lem:d2-degree-two-base(3) gives Gamma_{Co,2} in R cap O^+
+  unconditionally, and a subgroup has at least as many orbits as the group).
+  It finds one defect left in the same paragraph: "fails" and "are not counts
+  for Gamma_{Co,2}" assert a difference of counts that
+  prop:coble-monodromy-equality-false does not prove --- it proves
+  Gamma_{Co,2} != R cap O^+, and a proper subgroup can have the same number of
+  orbits as the group.
+
+  SITE REPAIRED.
+
+  1. cusp-diagram-calculations.md:304 (the proof of thm:coble-pair-semifan,
+     item (0)).
+     OLD: "The corresponding statement for Gamma_{Co,2} fails: G5 ...
+     is false ..., and so is the equality with R itself ....  So the counts of
+     this page are counts for R and for R cap O^+, and they are not counts for
+     Gamma_{Co,2}: the route recorded for that transfer ... is false, and what
+     is proved is the containment Gamma_{Co,2} in R cap O^+ ..., which makes
+     each count here a lower bound ... and not an equality.  Whether the count
+     for Gamma_{Co,2} ... coincides with these numbers is not decided on this
+     page."
+     NEW: "Gamma_{Co,2} is neither R nor R cap O^+: G5 ... is false ..., and so
+     is the equality with R itself ....  The counts of this page are counts for
+     R and for R cap O^+.  What is proved for Gamma_{Co,2} is the containment
+     Gamma_{Co,2} in R cap O^+ (lem:d2-degree-two-base(3)), which makes each
+     count here a lower bound for the corresponding count of Gamma_{Co,2} --- a
+     subgroup has at least as many orbits as the group --- and not an equality.
+     Whether each count for Gamma_{Co,2}, hence for F_{Co,2} =
+     D(T_Co)/Gamma_{Co,2}, equals the corresponding count for R cap O^+ is
+     open: the inequality of the groups does not decide it, a proper subgroup
+     having as many orbits as the group it sits in in general."
+     "fails" and "are not counts for Gamma_{Co,2}" are gone; the inequality of
+     the groups and the lower bound are kept; the equality of counts is stated
+     open rather than denied.
+
+  SEARCH OF THE OTHER CUSP PAGES FOR THE SAME OVERSTATEMENT.
+
+  2. cusps-over-sterk-cusps.md:3 carried it, and is repaired.  OLD: "Every
+     statement below names its group, and none of the counts is a count for
+     F_Co or F_{Co,2}" and, at the end of the paragraph, "... that equality is
+     false (prop:coble-monodromy-equality-false), so the counts below are not
+     asserted for F_{Co,2}."  NEW: "none of the counts is established as the
+     count for F_Co or for F_{Co,2}"; and the closing sentence now reads
+     "What is proved is the containment Gamma_{Co,2} in R cap O^+
+     (lem:d2-degree-two-base(3)), which makes each count below a lower bound
+     for the corresponding count of F_{Co,2} and not an equality, the orbits of
+     R on these lattices being those of R cap O^+ (rmk:coble-monodromy-counts);
+     whether the counts of F_{Co,2} equal those below is open."
+
+  3. cusp-diagrams-by-moduli-space.md: read; its counts are attributed to the
+     stable group at :98 and no count is transferred to Gamma_{Co,2} or
+     F_{Co,2}.  No change.
+  4. enriques-to-coble-cusp-correspondence.md: read; its counts are the 527
+     orbits of Otilde^+ (:434, :450, :459) and its Gamma_{Co,2} statements are
+     about the lifting, not about counts.  No change.
+  5. cusp-diagram-calculations.md:242, the statement of the theorem: it already
+     says that the four are "not identified as the 0-cusps of F_{Co,2} = ...
+     by this theorem" and that the transfer "would need the identification
+     Gamma_{Co,2} = R cap O^+, which is false".  That is the route-qualified
+     form and is left as it is.
+
+  ONE NEAR-MISS, NOT CHANGED, AND WHY.  lattices.md:859 (item 3 of
+  prop:coble-monodromy-equality-false) reads "No count of orbits of R_gent is
+  a count for F_{Co,2} by that route."  The qualifier "by that route" makes it
+  a statement about the route, not a denial that the numbers coincide, which is
+  the standard the review asks for; it is also the proved proposition's own
+  page and not a cusp page.  It is reported here rather than edited.
+
+  CHECKS RUN.
+  - scripts/docs_check.py --source on this tree and on a base worktree at the
+    same commit (232892c469): byte-identical output, the same 29 pre-existing
+    "citation is in no bibliography" findings, none on a touched page.
+  - every @label in the two touched files resolves to a {#...} div.
+  - scripts/docs_dependency_graph.py over writing/.book on base and on this
+    tree: 1904 blocks, 1118 cited results, 9530 edges and 124 findings on both,
+    the finding sets equal up to rotation of one pre-existing cycle; the two
+    added citations (lem:d2-degree-two-base(3), rmk:coble-monodromy-counts) are
+    already used in the blocks that receive them, so no edge and no finding is
+    new.
+
+  NOT RUN.  tests/engineering/*.py: the conftest imports dzack_research, so
+  collection fails on a plain checkout.  No render was made; CI's gate is not
+  visible from the session and is not claimed.
+
+STATUS AFTER VG3H (superseded by the section above; review vg3h of research#806, comment 7060858868)
 
   Review vg3h accepts the route (the proved free-action replacement of #803,
   no full descent owed by #806) and #806's line-59 repair, and names three
