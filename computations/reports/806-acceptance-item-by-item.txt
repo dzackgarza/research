@@ -1,9 +1,10 @@
 research#806 -- acceptance item by item
 
 Commits: b295afdf05 (the corrected lemma and the first recheck), 6caa489ac9 (the
-first report), e82f2521af (the proof without stalks, the pair-based kernel argument,
-and the S_10 product order), on top of the main at 6e8380f62d.  Paths are relative
-to the repository root; line numbers are those of e82f2521af.
+first report), e82f2521af with c508c596c0 (the proof without stalks; the S_10 product
+order), 63bc64d349 (this repair: the transport systems, the S_10 derivation, and the
+citing results stated for what is proved), on top of the main at cb72ff3542.  Paths
+are relative to the repository root; line numbers are those of 63bc64d349.
 
 ACCEPTANCE (one disjunctive item, quoted from the issue)
 
@@ -13,138 +14,163 @@ ACCEPTANCE (one disjunctive item, quoted from the issue)
 
   MET, through the second disjunct.
 
-  The lemma is corrected and proved: lattices.md:177 (statement), :196 (proof).
-  The local system is defined by its pullbacks along maps from topological spaces
-  (:181), and the transport is computed on the space S^1 (:200).  What is proved,
-  for U~ a connected manifold, Gamma a group acting properly discontinuously with
-  finite stabilizers, U = U~/Gamma, phi: Gamma -> Aut(T) and T the local system
-  defined by the equivariant structure g.(u~,t) = (g u~, phi(g) t):
+  The lemma is corrected and proved: lattices.md:177 (statement), :198 (proof).  No
+  local system on the orbifold is posited.  For a loop lambda the proof builds the
+  transport system on S^1 --- P = lambda^{-1}U~ is a Gamma-torsor, (P x T)/Gamma is
+  a covering of S^1 with fibre T --- and computes in it (:202): the chart torsor has
+  (0,h) ~ (1,hg^{-1}), the transport system has (0,t) ~ (1,phi(g)t), and the
+  transport is phi(g)^{-1}.  What is proved, for U~ a connected manifold, Gamma a
+  group acting properly discontinuously with finite stabilizers, U = U~/Gamma and
+  phi: Gamma -> Aut(T):
     (1) a loop of U at x is a pair (g, gamma~); the assignment
         lambda |-> psi(lambda)^{-1} is a surjective homomorphism
         pi_1^orb(U,x~) -> Gamma with kernel pi_1(U~,x~), that is,
-        1 -> pi_1(U~) -> pi_1^orb(U) -> Gamma -> 1 is exact (:194);
-    (2) rho = phi o psi^{-1}, so im rho = phi(Gamma),
-        ker rho = {lambda : psi(lambda) in ker phi}, and
-        1 -> pi_1(U~) -> ker rho -> ker phi -> 1 is exact (:208); if phi is
-        injective, as for a subgroup Gamma <= Aut(T) in its defining action, then
-        im rho = Gamma and ker rho = pi_1(U~).
+        1 -> pi_1(U~) -> pi_1^orb(U) -> Gamma -> 1 is exact (:196);
+    (2) the representation defined by the transports is rho = phi o psi^{-1}, with
+        im rho = phi(Gamma) and ker rho = {lambda : psi(lambda) in ker phi}, and the
+        exact sequence 1 -> pi_1(U~) -> ker rho -> ker phi -> 1 (:210); for phi
+        injective, im rho = Gamma and ker rho = pi_1(U~).
   The old form claimed im rho = Gamma and ker rho = pi_1(U~) for every Gamma-module;
-  its counterexample is research#803's, recorded at lattices.md:211
+  the counterexample is research#803's, recorded at lattices.md:213
   (rmk:orbifold-monodromy-depends-on-the-equivariant-structure): U~ a point, T = Z,
-  Gamma = C_2 acting trivially, where the system is constant, im rho = 1 and
-  ker rho = C_2.
+  Gamma = C_2 acting trivially, im rho = 1, ker rho = C_2.
 
   Inputs, each a numbered statement read in Noohi, Foundations of topological stacks
   I (arXiv:math/0503247): Definition 3.3 and Proposition 3.4 (the chart presents the
   quotient stack), Lemma 6.3 (the chart is representable), Definition 4.5 and
-  Example 4.6(1) (covering maps are local on the target and base-change invariant),
-  Definition 13.8 and Example 13.1(6) (the chart is LF, so U is a topological stack),
-  Definition 18.2 (local connectivity through the chart), Definition 18.10 (covering
-  of stacks), Theorem 18.19 (coverings and pi_1-sets, hence the deck group as the
-  automorphisms of the pi_1-set) with Corollary 18.20 (the subgroup
-  correspondence), Proposition 18.18 and Lemma 18.12 (lifting and its uniqueness,
-  applied to the loop cut open at the base point), Lemma 18.14, (ii) <=> (iii), and
-  Proposition 18.15 (the kernel and the injectivity of p_*).  No printed-page,
-  PDF-page or offset locator is used.
+  Example 4.6(1) with Definition 18.10 (the chart is a covering of stacks),
+  Definition 13.8 and Example 13.1(6) (U is a topological stack), Definition 18.2
+  (local connectivity through the chart), Theorem 18.19 with Corollary 18.20
+  (coverings and pi_1-sets; the deck group as the automorphisms of the pi_1-set),
+  Proposition 18.18 and Lemma 18.12 (lifting and its uniqueness, applied to the loop
+  cut open at the base point), Lemma 18.14 (ii) <=> (iii) and Proposition 18.15 (the
+  kernel and the injectivity of p_*).  No printed-page, PDF-page or offset locator is
+  used.
 
 THE REVIEW'S FINDINGS, AND WHERE EACH IS DISPOSED OF
 
-  R1. The tau construction is contradictory at a fixed point (U~ = *, Gamma = C_2,
-      T = Z, phi(s) = -id forces tau o (-id) = tau), and an arbitrary t in T is not
-      the value of a Gamma-equivariant section at a fixed point.  REMOVED.  The
-      proof constructs no tau and takes no stalks.  For a loop with pair (g,gamma~)
-      it pulls back the torsor and computes on S^1: lambda^{-1}T = (P x T)/Gamma,
-      P = lambda^{-1}U~ trivialised by gamma~, the ends identified by
-      (0,t) ~ (1, phi(g) t), and the transport is phi(g)^{-1} (:200).  In the
-      reviewer's countermodel the gluing is (0,t) ~ (1,-t) and the transport is -1,
-      which is the monodromy of the system.
+  K1. "T is a well-defined local system on the orbifold ... UNPROVED. This is
+      asserted as a definition at lattices.md:181, with no descent proof or numbered
+      source."  REMOVED.  The lemma no longer asserts a local system on U and no
+      longer defines one by its pullbacks.  The object constructed is the transport
+      system of a loop, on the space S^1 (:202); its existence (a covering with fibre
+      T), its transport, well-definedness on homotopy classes and multiplicativity
+      are proved there and at :204.  The statement at :177-196 mentions no sheaf on
+      U.
 
-  R2. The kernel argument is false with stabilizers: at U~ = * every lifted path is
-      closed.  REPLACED (:206).  The kernel is described on the pair: ker psi
-      consists of the pairs (1,gamma~) with gamma~ a loop of U~, and two such pairs
-      are equal exactly when the loops of U~ are homotopic; hence
-      ker psi = p_* pi_1(U~) = pi_1(U~) by Noohi, Proposition 18.15.  The isotropy
-      loop at a fixed point has pair (-1, const) and is not in the kernel.
+  K2. "lem:coble-invariant-lattice-in-families(3) correctly computes transport by
+      sigma^{-1}. --- UNPROVED. At :1145 this transport is asserted, not derived from
+      the family's equivariant structure. ... The equivariant label action is itself
+      written using sigma^{-1}-indexing at :978, so the necessary reconciliation
+      cannot be skipped."  DERIVED at :1170.  The representation is identified: the
+      action on the frame is phi_sigma(eps_i) = eps_{sigma(i)}, the inverse of the
+      index convention E_i -> E_{sigma^{-1}(i)} of lem:d2-unpolarised-family(3),
+      because that index map is an anti-homomorphism and a descent uses a
+      homomorphism.  The transport is phi_sigma^{-1} = eps_i -> eps_{sigma^{-1}(i)},
+      and phi_{tau sigma}^{-1} = phi_sigma^{-1} phi_tau^{-1} shows it is a
+      homomorphism in the pair, whose group element is tau sigma.
 
-  R3. The sheaf/stalk/interval-transport calculus on the orbifold is not a standing
-      premise of this page.  MET by not using it.  The lemma defines T by its
-      pullbacks along maps from spaces (:181) and computes the transport with
-      ordinary transport on S^1 (:200); no stalks, inverse images, or sheaves on
-      the stack beyond that definition are used.
+  K3. "prop:coble-monodromy-is-the-marking-group proves orbifold monodromy
+      Otilde^+(T_Co). --- UNPROVED. Its assertions at 1752-1757 require the period-map
+      equivalence, connectedness, and reconstruction inputs."  STATED FOR WHAT IS
+      PROVED (:1774).  The proposition now assumes (H1) the period map is an
+      equivalence of stacks onto its open image with the isotropy matched and (H2) U
+      is connected; clause 1 is (H1), clauses 2-3 are proved from it, and clause 4
+      and the "what this settles" paragraph (:1816) are stated under (H1)-(H2).
 
-  R4. The defining-action uses were unproved as consequences of the submitted
-      lemma.  MET once R1--R3 are repaired: each of those results now cites clause
-      (2) with an injective phi, and im rho = phi(Gamma) = Gamma follows.
+  K4. "thm:gamma-co-labelled-equality(2) is valid. --- UNPROVED. ... 1982 expressly
+      says that openness, nonemptiness, and connectedness of the two loci are
+      unproved."  STATED FOR WHAT IS PROVED (:1998).  The theorem now assumes
+      (i) M_gen open and nonempty, (ii) every period of U realised in M_gen,
+      (iii) injectivity on isomorphism classes, (iv) U_gen open and connected, and
+      its clauses are proved from these.
 
-  R5. lem:d2-label-lift(2) had the product order backwards and was not rechecked;
-      the same defective homomorphism is reused at :1145.  REPAIRED.  The statement
-      now gives the homomorphism (sigma,gamma~) |-> sigma^{-1} and the
-      anti-homomorphism (sigma,gamma~) |-> sigma (:1095); the proof computes the
-      composite as delta~ followed by the sigma'-translate of gamma~, ending at
-      sigma' sigma s (:1104); and the use in
-      lem:coble-invariant-lattice-in-families(3) is corrected to the same map and to
-      the transport by sigma^{-1} (:1145).  The earlier "MET, unchanged" is
-      withdrawn.
+  K5. "thm:gamma-co-is-the-stack-monodromy proves the global equality. --- UNPROVED
+      and inconsistent with the volume. ... chain at :2016 uses the preceding
+      conditional results, :2035-2040 explicitly owes smoothness and connectedness,
+      and :1819-1826 contradicts itself on pseudo-ampleness. Moreover :1914 records
+      that the Dolgachev theorem used in chain step (a) is false as stated."
+      STATED FOR WHAT IS PROVED (:2047).  The theorem assumes (A1) M_Co smooth and
+      connected and (A2) the hypotheses of K3; chain step (a) now takes existence
+      from @thm:coble-period-surjectivity, which @rmk:coble-period-surjectivity-
+      sources records as using neither [@Dol96, Thm. 3.1] nor pseudo-ampleness; the
+      ledger (:2066-2078) and "what remains owed" (:2082) are updated.  K6 below is
+      the pseudo-ampleness contradiction.
 
-  R6. The earlier report named lem:d2-local-system(3) at :1145.  CORRECTED: the
-      block is lem:coble-invariant-lattice-in-families, item (3).
+  K6. ":1819-1826 contradicts itself on pseudo-ampleness."  FIXED (:1844).  The
+      proposition's statement recorded pseudo-ampleness as open while its proof
+      concluded that the intersection was nonempty; the title, clause 3, its proof
+      and the following paragraph now say the same thing: e_0 is nef and big, e_0 is
+      not in C(M)^+ because e_0.e_i = 0 for the ten classes, and pseudo-ampleness is
+      open.  [@Dol96, Thm. 3.1] is quoted there only conditionally, with the note
+      that it is false as stated.
+
+  K7. "citing results assert the equality at 1757, 1786, 2012. The acceptance
+      report's statement that these are 'not consequences' does not recheck or
+      resolve them."  RESOLVED: those three lines are now the conditional statements
+      of K3, K3's summary and K5, each with its hypotheses named in the statement.
+
+CONVENTIONS CHECKED (def:transport-and-monodromy: gamma delta is delta followed by
+gamma)
+
+  - Chart torsor: P|_I = I x Gamma by (s,h) -> (s, h gamma~(s)); at the two ends
+    (0,h) represents (0,h x~) and (1,h') represents (1,h' g x~), so the gluing is
+    (0,h) ~ (1,h g^{-1}) (:202).
+  - Transport system: (0,t) ~ (1, phi(g) t) in (P x T)/Gamma, since
+    (0,x~) = (1,x~) and (1,g x~, phi(g)t) = (1,x~,t); the transport around S^1 is
+    phi(g)^{-1} (:202).
+  - Product: lambda = (g,gamma~), mu = (h,delta~); lambda mu is mu followed by
+    lambda, whose lift from x~ is delta~ followed by the h-translate of gamma~ and
+    ends at h g x~; so psi(lambda mu) = h g = psi(mu) psi(lambda) and
+    rho(lambda mu) = phi(hg)^{-1} = phi(g)^{-1} phi(h)^{-1} = rho(lambda) rho(mu)
+    (:204).
+  - Item 2: with (sigma,gamma~) and (tau,delta~) the same computation gives
+    tau sigma and phi_{tau sigma}^{-1} = phi_sigma^{-1} phi_tau^{-1} (:1170).
+  - lem:d2-label-lift(2) was corrected earlier to the same convention: the composite
+    ends at sigma' sigma s and the homomorphism is sigma -> sigma^{-1} (:1120, :1129).
 
 EVERY RESULT THAT CITES THE LEMMA, RECHECKED
 
-  lattices.md:235, proof of thm:gamma-co-is-full.  Uses only the image, with
-    Gamma = Orth^+(T_Co) in its defining action on T_Co, which is injective; the
-    conclusion is clause (2) with phi injective.  MET.
-
-  moduli-construction.md:1054 and :1061, lem:d2a-monodromy-of-the-stack.  Uses only
-    the pair description of loops, and says so at :1061; the group is connected, so
-    the lemma's discrete sequences neither apply nor are used, and the connectedness
-    argument is the result's own.  MET.
-  moduli-construction.md:1104, lem:d2-label-lift(2).  REPAIRED as R5; its uses
-    (:870, :881 in the labelled-stack item, :1112 and :1119 in
-    lem:d2-labelling-cover, :1132 in lem:coble-invariant-lattice-in-families(2))
-    need only the kernel statement, which is unchanged.
-  moduli-construction.md:1145, lem:coble-invariant-lattice-in-families(3).  REPAIRED
-    as R5/R6; the statement of item (3) is unchanged, since inversion does not
-    change the group S_10.
-  moduli-construction.md:1459 and :1473, lem:d2b-forgets-to-d2a(3).  R_gEn <=
-    Orth(T_Co) acts through its defining action, which is injective; clause (2).
+  lattices.md:237, proof of thm:gamma-co-is-full.  Only the image is used, for the
+    defining action of Orth^+(T_Co); clause (2) with phi injective.  MET for that
+    input.
+  moduli-construction.md:1079 and :1086, lem:d2a-monodromy-of-the-stack.  The pair
+    description only; the exact sequence is expressly not used (:1086), and the
+    connected-group argument is the result's own.  MET.
+  moduli-construction.md:1129, lem:d2-label-lift(2), and its uses at :870, :881,
+    :1137, :1144, :1157.  The statement gives the homomorphism sigma -> sigma^{-1}
+    and the anti-homomorphism sigma (:1120); the uses need only the kernel and the
+    group.  MET.
+  moduli-construction.md:1170, lem:coble-invariant-lattice-in-families(3).  Now
+    derived (K2); the statement of (3) is unchanged, inversion not changing S_10.
     MET.
-  moduli-construction.md:1674-1676 and :1683,
-    cor:monodromy-of-the-tautological-system, with the paragraph that states the
-    case the programme uses.  Defining action of Otilde^+(T_Co); clause (2).  MET.
-  moduli-construction.md:1756 and :1763,
-    prop:coble-monodromy-is-the-marking-group(3).  The same setting with
-    G = Otilde^+(T_Co).  MET.
-  moduli-construction.md:1978, thm:gamma-co-labelled-equality(2), :2016,
-    thm:gamma-co-is-the-stack-monodromy, step (e), and :2033, its input ledger.  The
-    monodromy input is clause (2) for the defining action; the ledger row says so.
-    MET for that input.
+  moduli-construction.md:1484 and :1498, lem:d2b-forgets-to-d2a(3).  The defining
+    action of R_gEn <= Orth(T_Co); clause (2).  MET.
+  moduli-construction.md:1699-1701 and :1708,
+    cor:monodromy-of-the-tautological-system, with the paragraph stating the case the
+    programme uses.  Defining action of Otilde^+(T_Co); clause (2).  MET.
+  moduli-construction.md:1786 and :1793,
+    prop:coble-monodromy-is-the-marking-group(3): under (H1)-(H2); see K3.  The
+    monodromy step is proved; the proposition is conditional.
+  moduli-construction.md:2015, thm:gamma-co-labelled-equality(2): under (i)-(iv);
+    see K4.  The monodromy step is proved; the theorem is conditional.
+  moduli-construction.md:2058, thm:gamma-co-is-the-stack-monodromy step (e): under
+    (A1)-(A2); see K5.
+  moduli-construction.md:2075, the input ledger: the row now names the defining
+    action, and the [@Dol96, Thm. 3.1] row is replaced by @thm:coble-period-
+    surjectivity.
   computations/reports/797-programme-items-3-4.txt:76 and :256.  A review record,
     not a result; left unchanged.
 
-THE EQUALITIES THE REVIEW COMPARED WITH THE CONJECTURE
-
-  The review named the unconditional equalities at moduli-construction.md:31,
-  :1761, :1790 and :2014-2044 and lattices.md:146-150 as conflicting with
-  conj:gamma-co-stable, and recorded that #806 does not repair that inconsistency.
-  None of them is a consequence of this lemma.  The main this is rebased onto,
-  6e8380f62d (research#805), states the surviving equalities for what is proved:
-  the labelled part as an inclusion with the reverse open at qst:gamma-co-sign-is-
-  realised, and the unlabelled part as Gamma_Co(B) <= Gamma_Co(Bbar) <= Gamma_10A_1
-  with the index 10! and the middle equality open.  This issue leaves those lines
-  to #780 and adds nothing to them.
-
 CHECKS RUN
 
-  scripts/docs_check.py --source, on a worktree at 6e8380f62d and on the repaired
+  scripts/docs_check.py --source, on a worktree at cb72ff3542 and on the repaired
     tree: byte-identical output, 29 findings, all pre-existing "citation is in no
-    bibliography" findings in other chapters, none on these two pages.  The
-    .assets copy was made before both runs.
-  scripts/docs_dependency_graph.py --check: 122 findings at 6e8380f62d and 122 on
+    bibliography" findings in other chapters, none on these two pages.  The .assets
+    copy was made before both runs.
+  scripts/docs_dependency_graph.py --check: 123 findings at cb72ff3542 and 123 on
     the repaired tree, with the same number of blocks and edges; no finding names
-    the lemma, the remark or lem:d2-label-lift.  A cycle that an earlier draft of
-    R1 introduced through a citation to lem:d2a-monodromy-of-the-stack was removed by
-    defining T without that citation.
+    the edited blocks.
   tests/engineering: not run.  tests/conftest.py imports dzack_research, which a
     plain checkout does not have.
   CI: not used as evidence.
