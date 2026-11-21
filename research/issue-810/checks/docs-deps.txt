@@ -1,4 +1,7 @@
 cd writing/.book && uv run --script ../../scripts/docs_dependency_graph.py --project . --out ../../.tmp/dependency-graph --check
+Downloading networkx (2.0MiB)
+ Downloaded networkx
+Installed 6 packages in 4ms
 docs-deps: coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md: missing-id coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md#830
 docs-deps: coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md: missing-id coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md#832
 docs-deps: coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md: missing-id coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md#879
@@ -100,8 +103,8 @@ docs-deps: coble/heegner-report/coble-heegner-research-report.md: unlocated-cita
 docs-deps: coble/heegner-report/coble-heegner-research-report.md: unlocated-citation "@AN06" thm:no-loop-carries-the-sign
 docs-deps: coble/heegner-report/coble-heegner-research-report.md: unlocated-citation "@Vin67" thm:semifan-restriction
 docs-deps: coble/lattices-and-moduli/moduli-construction.md: cycle not:d2-plane-sextic-base lem:d2-incidence-connected
-docs-deps: coble/lattices-and-moduli/moduli-construction.md: cycle lem:coble-double-point-of-the-sextic thm:coble-smooth-antibicanonical-is-a-plane-blowup
-docs-deps: coble/lattices-and-moduli/lattices.md: cycle def:gamma-co-groups def:coble-family-unpolarized lem:d2-local-system
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: cycle thm:coble-smooth-antibicanonical-is-a-plane-blowup lem:coble-double-point-of-the-sextic
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: cycle def:coble-family-unpolarized lem:d2-local-system def:gamma-co-groups
 docs-deps: coble/lattices-and-moduli/local-systems-of-lattices-and-monodromy.md: uncited-term "exact" lem:monodromy-of-a-descended-local-system def:exact-complex
 docs-deps: coble/lattices-and-moduli/local-systems-of-lattices-and-monodromy.md: uncited-term "kernel" lem:monodromy-of-a-descended-local-system def:kernel-cokernel
 docs-deps: coble/lattices-and-moduli/local-systems-of-lattices-and-monodromy.md: uncited-term "local system of lattices" lem:monodromy-of-a-descended-local-system def:local-system-of-lattices
@@ -122,5 +125,5 @@ docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "path"
 docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "path connected" lem:g-paths-exhaust-the-fundamental-groupoid def:path-connectedness
 docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "source" lem:g-paths-exhaust-the-fundamental-groupoid def:globular-boundary
 docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "target" lem:g-paths-exhaust-the-fundamental-groupoid def:globular-boundary
-docs-deps: 1904 blocks, 1117 cited results, 9532 edges, 123 findings -> ../../.tmp/dependency-graph
+docs-deps: 1904 blocks, 1117 cited results, 9527 edges, 123 findings -> ../../.tmp/dependency-graph
 error: recipe `docs-deps` failed on line 64 with exit code 1

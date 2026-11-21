@@ -1,9 +1,13 @@
 Intended orchestrator follow-up for research#810 (the issue connector is read-only; not posted).
 
-Review p1n4's discrete acceptance is retained. The added connected-group clause and general homotopy assertion are removed from thm:quotient-local-system-descent, and their older proof entries are retracted. lem:d2a-monodromy-of-the-stack now says "conditional on research issue 816" in its title and marks every clause conditional on that issue. Its proof uses research#816 for the principal transport and the loop/homotopy assertion; issue 816 is not worked here.
+Review am8w reads the discrete theorem MET. Its three residual findings are repaired:
 
-The torsor discrete loop comparison, covering-fibre action, action groupoid and base and coefficient naturality are unchanged. The complete #810-page terminology sweep has zero matches for the requested coined terms. A literal # was avoided in the conditional block's title because that breaks the block parser.
+A. moduli-construction.md:1092 and :1104 now cite lem:d2-labelled-base-monodromy, the dedicated unconditional principal-bundle proof. At :1293 the equality is proved directly there by local lifts, connectedness of PGL_3 and pullback, rather than by the conditional lemma. No unconditional use of the conditional clause remains.
 
-Checks: docs --source has only the 29 pre-existing missing-bibliography findings on untouched pages; docs-deps has 123 findings and none on the discrete theorem or connected consumer, with no new dependency cycle. git diff --check is clean. The full docs gate remains blocked by an unresolved Git LFS asset, and CI was not observed.
+B. The conditional proof at :1307 uses only #816: surjectivity on pi_1 and transport along the image of a loop of V. It does not assume the general pair/principal formula or the pair-family stack homotopy, because neither is needed for the group identity. No extra statement is added.
 
-See computations/reports/810-acceptance-item-by-item.txt for status and research/issue-810/proof.md for the clean discrete proof. A further independent Kimi review is required before closure.
+C. loop model at :1300 is replaced by the pair representation. The updated terminology sweep has zero matches for it or for the other labels removed by the terminology commits. The discrete torsor uses G, and pi_Q(q(1))=g x.
+
+Checks: docs --source has only the 29 pre-existing missing-bibliography findings on untouched pages; docs-deps has 123 findings and none on the discrete theorem or the affected connected consumer, with no new dependency cycle. git diff --check is clean. The full docs gate remains blocked by a shared unresolved Git LFS asset, and CI was not observed.
+
+See computations/reports/810-acceptance-item-by-item.txt and research/issue-810/proof.md. Issue 816 is not worked. A further independent Kimi review is required before #810 can close.

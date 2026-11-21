@@ -22,3 +22,7 @@ The false section deformation is deleted. The pair family has the original pair 
 # Addendum after review p1n4
 
 Only the discrete theorem remains. The connected-group clause and its general homotopy assertion are removed; older proof entries for that clause are retracted. The connected consumer explicitly assumes research issue 816, and p1n4's discrete atlas, cocycle and naturality acceptances are retained. The block title avoids a literal # so the block reference resolves. The complete #810-page terminology sweep has zero matches.
+
+# Addendum after review am8w
+
+The already existing dedicated unconditional lemma proves the labelled equality by local lifts, connectedness of PGL_3 and pullback. All three former conditional citations now name it. The connected proof is only #816: pi_1 surjection and transport on image loops; no pair formula or family homotopy is assumed. No extra statement is required. loop model is removed and the acceptance-card sweep now includes it.

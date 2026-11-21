@@ -35,3 +35,9 @@ The same construction applies to a homotopy of loops of the stack in the sense o
 
 :::
 :::
+
+# Addendum after review am8w
+
+The discrete theorem is read MET by review am8w. Its three residual findings are repaired: the existing dedicated lem:d2-labelled-base-monodromy replaces all three conditional citations at 1092, 1104 and 1293; the connected conditional proof now assumes only #816, surjectivity on pi_1 and image-loop transport, not the general pair/principal formula or pair-family stack homotopy; loop model is replaced by the pair representation. The extra statement is not needed for the group identity, so no added input is claimed. The torsor notation now uses G, and pi_Q(q(1))=g x.
+
+docs --source retains only the 29 pre-existing missing-bibliography findings on untouched pages. docs-deps has 123 findings and none on either monodromy block or the discrete theorem; no new cycle. The complete #810 terminology sweep, including loop model, is empty. The full docs gate was not established because of a shared unresolved Git LFS asset, and CI was not observed.
