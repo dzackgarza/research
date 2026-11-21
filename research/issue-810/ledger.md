@@ -7,3 +7,5 @@
 7. PROVED #6: Principal G-bundles over I and I^2 give loop pairs and deformations, associated transport is varphi(g)^{-1} gamma^*, and path connected G deforms g to e — checks/evzj-item2.md
 8. OPEN: Kimi item 3: prove base naturality f^*M = M_f and the path/arrow transport statements — notes.md#6
 9. PROVED #8: Atlas descent commutes with base change by iterated 2-fibre products; the Coble systems pull back naturally, with path and arrow transports computed by the comparisons — checks/evzj-item3.md
+10. OPEN: Kimi item 4: replace the surviving conditional (D) at moduli-construction.md:1104 and normalize stale input counts — notes.md#7
+11. PROVED #10: The final conditional (D) is replaced by quotient-local-system-descent clauses 1--2 and stale three-input counts are corrected to two — checks/evzj-item4.md
