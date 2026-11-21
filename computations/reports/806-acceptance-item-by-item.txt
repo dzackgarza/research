@@ -21,11 +21,126 @@ in cusps-over-sterk-cusps.md:3; and, in a later commit, the YFDV round: the
 cusp page's four 0-cusps and their semifans renamed from F_{Co,2} to
 D(T_Co)/R, with the same renaming carried to its citers; and, in a later commit, the
 3NFL round: the Case B verification made cusp by cusp at :185, and the ledger
-row at open-questions.md:56.
+row at open-questions.md:56; and, in a later commit, the PBNM round: the cusp
+theorem's item (1) and proof reconciled cusp by cusp on the record's evidence,
+the pseudo-ample fibre hypothesis restored at moduli-construction.md:2417, and
+the orbit-count clause at discriminant-orbits:272.
 Paths are relative to the repository root; line numbers are those of the commit
 that carries this file.
 
-CURRENT STATUS AFTER 3NFL (review 3nfl of research#806 at e1d6772c91)
+CURRENT STATUS AFTER PBNM (review pbnm of research#806 at 93f165c867)
+
+  Three items of review pbnm are this issue's; the fourth, the coined terms,
+  was removed by a separate sweep and nothing of it was touched here.  All
+  three are repaired in this commit.
+
+  1. cusp-diagram-calculations.md, thm:coble-pair-semifan: the statement and
+     its proof now agree cusp by cusp, and the two incompatible verdicts on
+     coincidence are resolved against the record the proof itself names.
+
+     The evidence first.  (B5) of @thm:semifan-restriction fails exactly when
+     two roots of different relevance cut the same restricted wall.  The page
+     says both that no two walls coincide (:268, and (2) at :279, "the five
+     irrelevant roots cut five walls, no two walls coinciding") and that at
+     cusp 5 a wall coincides (:277, :313, :325).  The record that :268 names,
+     computations/reports/coble_672-zero-cusp-sterk-two-run.txt:59-71, prints
+     for Sterk 5 "printed 14  multiples of delta [9]  projected 13
+     proportional pairs []", and separately lists the degenerate-span pairs
+     (8,14) and (10,14) that :268 says are not proportionality.  So the record
+     supports :268: no two restricted walls coincide at any of the four
+     cusps, hence (B5) holds at all four, and the sole hypothesis of Case B
+     that fails at cusp 5 is (B1), δ itself being an irrelevant root there.
+
+     (a) :255, item (1) of the theorem.  OLD: "The chamber and the marking. At
+         each of the four the chamber is the facet ... and the marking is
+         inherited: a wall of C_delta is relevant exactly when the root of C
+         that cuts it is relevant".  NEW, retitled "The chamber and the
+         marking, cusp by cusp": the chamber is the facet at each of the four
+         and no two of its walls coincide, so each wall is cut by roots of one
+         relevance only; at the three cusps over 2, 3 and 4 the marking is
+         inherited and Case B applies, so F^k cap delta^perp is the generalized
+         Coxeter semifan of C_delta with that marking; at the cusp over 5 (B1)
+         fails, Case B does not apply, the relevance of each root of C is
+         recorded in the table there, and the theorem asserts no identification
+         of F^5 cap delta^perp with the generalized Coxeter semifan of C_delta.
+     (b) :277, the verification.  OLD: "At the cusp over 5, (B1) and (B5) both
+         fail: δ is itself an irrelevant root there, and the coincident wall
+         3 = 13 = 10 carries the relevant root 3 together with the irrelevant
+         roots 10,13."  NEW: "At the cusp over 5 exactly one of them fails,
+         (B1) ... Condition (B5) holds at all four cusps, because no two
+         restricted walls coincide (:268): the roots 3, 13 and 10 project to
+         three distinct walls, and the merging of them into one wall, which an
+         earlier form of this page recorded at cusp 5, is what the test of
+         research#672 refuted (:279)."  The same line's (B5) clause for cusps
+         2-4 is reworded to "no two of the restricted walls coincide, so that a
+         wall carries one relevance only".
+     (c) :313, the proof of (1).  OLD: "The coincident walls are the parallel
+         pairs, listed in the table, and at cusps 2, 3, 4 each of them carries
+         one relevance only, which is (B5)."  NEW: "No two restricted walls
+         coincide, at any of the four cusps (:268), so no wall carries two
+         relevances and (B5) holds at all four."  And OLD: "At cusp 5 the cut
+         mirror is on that list and one wall carries roots of both relevances,
+         so Case B does not apply ..."  NEW: "At cusp 5 the cut mirror itself
+         is on the irrelevant list, so (B1) fails, Case B does not apply, and
+         the marking is not inherited there as a semifan marking ...".  The
+         opening of the clause now reads "at the three cusps where Case B
+         applies the inherited marking is the statement of
+         @thm:semifan-restriction(1) and (3)".
+     (d) :325, the remark rmk:coble-pair-semifan-marking.  OLD: "both (B1) and
+         (B5) ... fail: the cut mirror is irrelevant, so the face delta^perp is
+         one the coarsening deletes, and one restricted wall carries the
+         relevant root 3 together with the irrelevant roots 10,13."  NEW: "the
+         hypothesis (B1) ... fails: the cut mirror delta is irrelevant, so the
+         face delta^perp is one the coarsening deletes, and the relevance of
+         the roots of C is not inherited as a marking of the semifan."
+
+  2. moduli-construction.md:2417, the item-6 summary.  OLD: "For the quotient
+     stack of item 3 the kernel is trivial: K_T = pi_1(D(T_Co)^+), and
+     D(T_Co)^+ is a bounded symmetric domain, hence contractible, so the
+     monodromy representation is an isomorphism pi_1(F_S) -> Otilde^+(T_Co)."
+     NEW: "For the quotient stack of item 3, and under the pseudo-ample fibre
+     hypothesis of its presentation (@prop:coble-quotient-presentation(3)),
+     without which that presentation of the quotient is not available, the
+     kernel is trivial: ...".  This is the hypothesis the page attaches to the
+     same presentation at :1960 and :1989.
+
+  3. discriminant-orbits-of-the-coble-lattice.md:272, the last clause of
+     lem:stable-orthogonal-not-transitive.  OLD: "none of those four counts is
+     a count for Gamma_{Co,2} or for Gamma_Co."  NEW: "For Gamma_{Co,2} what
+     is proved is the inclusion Gamma_{Co,2} in R cap O^+(T_Co)
+     (lem:d2-degree-two-base(3)), so each of those four counts is a lower bound
+     for the corresponding count of Gamma_{Co,2} --- the orbits of R on these
+     lattices being those of R cap O^+(T_Co) (rmk:coble-monodromy-counts), and
+     a subgroup having at least as many orbits as the group --- and whether the
+     two counts coincide is open; for Gamma_Co the containment in
+     R cap O^+(T_Co) is not proved either, following only from
+     conj:gamma-co-stable, so no bound and no inequality is asserted for its
+     counts."
+
+  ONE OBSERVATION, NOT EDITED, for the owner of thm:coble-pair-semifan.  At
+  cusp 5 the row "no-intersection pairs" of the table (:261) reads 13,14, and
+  :313 reads "13,14 at cusp 5", while :268 gives the degenerate-span pairs at
+  that cusp as (8,14) and (10,14) "in the library's printed indices".  The two
+  may be one pair in two index conventions, figure order against library
+  order, but the page does not say so and the same ambiguity is what the
+  merged-roots history turned on.  Not changed here: settling it needs the
+  printed-root matching of the transcript, and it is #789's theorem.
+
+  CHECKS RUN.
+  - scripts/docs_check.py --source on this tree and on a base worktree at the
+    same commit (60c2d2bdb6): byte-identical output, the same 29 pre-existing
+    "citation is in no bibliography" findings, none on a touched page.
+  - every @label in the three touched files resolves to a {#...} div.
+  - scripts/docs_dependency_graph.py over writing/.book on base and on this
+    tree: 1904 blocks, 1117 cited results, 9532 -> 9534 edges, 123 findings on
+    both, the finding sets equal up to rotation of two pre-existing cycles; no
+    new finding.
+
+  NOT RUN.  tests/engineering/*.py: the conftest imports dzack_research, so
+  collection fails on a plain checkout.  No render was made; CI's gate is not
+  visible from the session and is not claimed.
+
+STATUS AFTER 3NFL (superseded by the section above; review 3nfl of research#806 at e1d6772c91)
 
   Of the three items of review 3nfl, two are this issue's and are repaired;
   the third is an instruction not to touch a file, and it was not touched.
