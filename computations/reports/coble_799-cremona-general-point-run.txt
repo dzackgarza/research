@@ -1,0 +1,8 @@
+seed 2 GOOD SINGULAR SCHEME factors [(10, 1)]
+fs = [3*u^6 + 100*u^5 + 99*u^4 + 99*u^3 + 99*u^2 + 3*u + 3, 100*u^6 + 100*u^5 + 3*u^4 + 3*u^3 + 3*u^2 + 2*u + 99, 99*u^6 + 2*u^5 + u^4 + 99*u^3 + u^2 + 99*u + 1]
+F = 20*x^6 + 40*x^5*y + 35*x^4*y^2 + 35*x^3*y^3 + 5*x^2*y^4 - 41*x*y^5 + 17*y^6 + 29*x^5*z + 15*x^4*y*z + 31*x^2*y^3*z - 21*x*y^4*z - y^5*z - 26*x^4*z^2 + 27*x^3*y*z^2 - 30*x^2*y^2*z^2 - 2*x*y^3*z^2 - 44*y^4*z^2 - 38*x^3*z^3 + 48*x^2*y*z^3 + 42*x*y^2*z^3 - 34*y^3*z^3 - 8*x^2*z^4 + 48*x*y*z^4 + 2*y^2*z^4 + 5*x*z^5 + 15*y*z^5 + z^6
+elim = Y^10 + 75*Y^9 + 40*Y^8 + 10*Y^7 + 76*Y^6 + 7*Y^5 + 39*Y^4 + 67*Y^3 + 50*Y^2 + 80*Y + 12
+xr = 89*Y^9 + 24*Y^8 + 52*Y^7 + 13*Y^6 + 78*Y^5 + 89*Y^4 + 81*Y^3 + 97*Y^2 + 33*Y + 79
+CHOSEN NODES (0, 1, 2) all remaining nodes miss the three joins
+nonzero residual discriminants [((0, 1), 24*a^9 + 59*a^8 + 91*a^7 + 91*a^6 + 33*a^5 + 70*a^4 + 100*a^3 + 81*a^2 + 31*a), ((0, 2), 16*a^8 + 66*a^7 + 51*a^6 + 92*a^5 + 4*a^4 + 65*a^3 + 6*a^2 + 7*a + 73), ((1, 2), 82*a^9 + 30*a^8 + 53*a^7 + 92*a^6 + 74*a^5 + 52*a^4 + 11*a^3 + 56*a^2 + 98*a + 83)]
+VERIFIED: good special fibre at p=101; consequently the good open locus is nonempty in characteristic zero.

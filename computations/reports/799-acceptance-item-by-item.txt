@@ -1,120 +1,93 @@
 research#799 -- acceptance item by item
 
-Revision: the commit containing this report; parent 29f00e3e9b. This
-revision repairs items 1 and 6 after the review at comment 7054280771: the
-three finiteness sentences at :1148, :1155 and :1253 were false and now
-state the infiniteness on M and the finiteness on T_Co separately.
+Revision: the commit containing this report; parent 26edef22f8.
+This turn addresses open item (1), the general-point Cremona realization.
+Item (2), assembly from #804, and the widened stack are not worked here.
 Page: writing/coble/lattices-and-moduli/moduli-construction.md.
-Proof: thm:coble-monodromy-on-m-classical, :1247.
+New proof: lem:cremona-second-plane-model-general (:908).
+Certificate: coble_799-cremona-general-point.py and its run record.
 
 ORIGINAL STATEMENT, CLAUSE BY CLAUSE
 
 1. Every family of classical Coble covers over a connected base has
-   invariant-lattice monodromy contained in the stated finite group.
-   VERDICT: the containment is MET, and the group is INFINITE, so the
-   finite alternative is REFUTED. :1247-1253, using
-   lem:coble-family-base-change (:1020),
-   lem:pi1-of-a-groupoid-quotient-is-generated-by-three-contributions
-   (:1210), lem:d2-label-lift (:1100), and
-   lem:coble-invariant-lattice-in-families (:1134). W(E_10) = W_10
-   contains the image of Aut(S_b) (rmk:coble-automorphisms-infinite(1)),
-   which contains the infinite-order Bertini product
-   (lem:coble-automorphism-group-is-infinite(2)), and the universal family
-   has monodromy exactly W(E_10) (:1252). What is
-   finite in this picture is the isotropy action on the anti-invariant
-   summand T_Co (:1148, :1155), not the action on M. An earlier revision of
-   this item called W(E_10) "the stated finite group"; that is the error the
-   review at comment 7054280771 charges at :1148, :1155 and :1253.
+   invariant-lattice monodromy contained in a stated group.
+   VERDICT: MET, with the group W(E_10), which is infinite, not finite.
+   thm:coble-monodromy-on-m-classical (:1328), using #804 and the new
+   general-point lower bound (:909-934).
 
 2. The universal family over the classical substack has monodromy
    exactly W(E_10) = Orth^+(K^{perp M}).
-   VERDICT: MET. :1247 and :1265, using
-   lem:coble-image-on-m-is-the-weyl-group (:1188).
+   VERDICT: MET. thm:coble-monodromy-on-m-classical (:1328), especially
+   the lower bound (:1347), citing lem:cremona-second-plane-model-general.
 
 3. "Every family of Coble covers" read for the widened functor of
    def:coble-moduli-functor, including non-plane-model members.
-   VERDICT: NOT MET. The quotient presentation and the atlas are proved
-   only for the classical substack (:773); essential surjectivity of
-   barB onto the widened class is open (rmk:coble-class-smooth-antinbicanonical).
+   VERDICT: NOT MET. The presentation and atlas are classical only;
+   rmk:coble-class-smooth-antinbicanonical remains the scope boundary.
+   This turn makes no widened-stack claim.
 
 4. The invariant local system is isomorphic to the constant system M by
    an isometry respecting the eleven classes.
-   VERDICT: MET on the labelled base B (:1134(2)); NOT MET on the
-   classical substack, where the monodromy is W(E_10), not the identity.
+   VERDICT: MET on the labelled base B, NOT MET on the classical
+   substack. The labelled global frame is
+   lem:coble-invariant-lattice-in-families(2); nontrivial relabelling and
+   isotropy on the classical stack refute constancy ((3)--(4)).
 
 5. The monodromy on M is trivial.
-   VERDICT: NOT MET; refuted by the relabelling action S_10 and the
-   non-permutation isotropy action recorded at :1143-1148.
+   VERDICT: REFUTED. Relabelling permutes e_1,...,e_10 and the product of
+   two Bertini involutions has infinite order
+   (lem:coble-automorphism-group-is-infinite(2)).
 
 6. The monodromy on M is a stated finite group.
-   VERDICT: REFUTED on the classical substack. The stated group is W(E_10)
-   (:1252) and it is infinite (:1253), so the monodromy on M is not a
-   finite group there either. NOT MET for the widened stack, where no group
-   is computed at all (:1253).
+   VERDICT: REFUTED on the classical substack. The exact group is the
+   infinite group W(E_10). The pullback along a loop representing the
+   Bertini product gives an S^1-family with non-cyclotomic monodromy
+   (t-1)^7(t+1)^2(t^2-14t+1). The widened stack is NOT MET, not asserted.
 
 7. Every input is cited by a numbered statement that has been read.
-   VERDICT: MET for the classical-substack result. The cited statements
-   are the repository labels above, Nikulin Thm. 3.6.2, Vinberg Table 5,
-   Grivaux Prop. 3.1, and Noohi Definitions 13.8, 17.2, 17.5, 18.2 and
-   Lemma 18.9.
+   VERDICT: MET for this turn's item. The new nonempty-locus lemma is an
+   original proof with an exact special-fibre certificate; it does not use
+   the withdrawn HM (3.42)/(3.44) deformation citation. The exact-group
+   theorem uses the numbered statements recorded on the page, the #804
+   Haefliger result, and the new numbered lemma. A fresh independent review
+   has not yet read this revision.
 
 ISSUE ACCEPTANCE CONTRACT
 
 1. "The statement proved on a page of writing/."
-   VERDICT: MET for the classical-substack theorem (item 2) and for the
-   refutation of items 5 and 6; NOT MET for the literal every-family
-   statement including the widened stack, because of item 3.
+   VERDICT: MET for the classical-substack exact group and for refuting
+   trivial or finite monodromy; NOT MET for the literal every-family clause
+   including the widened stack.
 
 2. "Read MET by one Kimi review."
-   VERDICT: NOT MET; the review at comment 7054280771 returned NOT MET, and
-   one of its two page-level charges, (a) the finiteness claim, is repaired
-   by this commit. Its charge (b), the dropped arrow term in
-   lem:pi1-of-a-groupoid-quotient-is-generated-by-three-contributions, is
-   not touched here and is still open.
+   VERDICT: NOT MET. Reviews gxlb, 5x9y, sujq and yg4v all returned NOT MET.
+   The #804 kernel later read MET at 0ad24e4790. No Kimi review of this
+   Cremona repair has yet been returned.
 
 3. "Or refuted with a counterexample."
-   VERDICT: MET for the issue's finite-group alternative, which is the
-   verdict that alternative asks for. rho is onto W(E_10) (:1252), so there
-   is a loop gamma: S^1 -> M^cl_Co with rho([gamma]) = sigma_I^* sigma_J^*,
-   whose characteristic polynomial (t-1)^7(t+1)^2(t^2-14t+1) is not
-   cyclotomic (lem:coble-automorphism-group-is-infinite(2)), so
-   rho([gamma]) has infinite order. The pullback of the universal family
-   along gamma is a family of classical Coble covers over the connected
-   base S^1 whose monodromy on M is of infinite order: the monodromy is
-   neither trivial nor a finite group, so the issue's second clause is
-   refuted and not satisfied. This is a refutation of that clause only; the
-   exact-group statement of item 2 is proved, not refuted.
+   VERDICT: MET for the finite-group alternative. The universal classical
+   family is onto W(E_10), so choose a loop whose monodromy is the Bertini
+   product. Its pullback to S^1 has infinite-order monodromy and is neither
+   trivial nor finite. This does not answer the widened-stack clause.
 
-OVERALL: not ALL MET, and the issue's second clause is REFUTED. The
-classical-substack theorem is proved (item 2): the monodromy group on M is
-W(E_10), and every family of classical Coble covers over a connected base
-has monodromy a subgroup of it (item 1). That group is infinite, so
-"trivial or a stated finite group" fails in both of its alternatives, and a
-family over S^1 refutes it outright (contract item 3); the finite-group
-verdicts which an earlier revision of this report gave at items 1 and 6 were
-false. The widened-functor clause of the first statement remains open
-(item 3), and no independent review has returned MET.
+OVERALL: NOT ALL MET. The classical-substack result is proved and the
+finite alternative is refuted. The widened stack and a new independent
+Kimi MET review remain open.
 
-REVIEW GAPS
+REVIEW DISPOSITIONS
 
-(a) of review 7054280771, the finiteness claim, page :1148, :1155, :1253:
-    repaired here. :1148 and :1155 now say the image of Aut(S_b) on M is
-    infinite -- the Bertini product sigma_I^* sigma_J^* has infinite order,
-    and at unnodal members the image contains W_10(2) -- and that the period
-    bounds only the image on T_Co, of signature
-    (2,9), where lem:period-stabiliser-finite applies; the lemma does not
-    apply to M of signature (1,10). :1253 no longer infers "hence finite"
-    from containment in W(E_10), which is infinite. Neither bound used in
-    thm:coble-monodromy-on-m-classical depended on the finiteness, so
-    removing it changes no accepted step.
-(b) of review 7054280771, the dropped arrow term in
-    lem:pi1-of-a-groupoid-quotient-is-generated-by-three-contributions,
-    page :1232-1242: NOT touched in this commit; still open.
-(3) Smooth cover of prop:coble-stack-as-quotient:
-    closed by Grivaux Prop. 3.1 at commit 02ca0a6a24; page :773.
-(4) Groupoid pi_1 generation:
-    closed by the loop decomposition at commit 1197067c3d; page :1210,
-    subject to (b).
-(5) Kernel pi_1(B) of the relabelling sequence:
-    closed here by lem:coble-invariant-lattice-in-families(2), page :1142,
-    with lem:d2-label-lift(2), page :1100.
+(gxlb) Finite S_10 was false: repaired before this turn by infinite
+   isotropy and exact classical monodromy; the widened-stack error is not
+   repeated.
+(5x9y) Cremona orthochrony: the theorem-level proof uses isomorphisms of
+   surfaces, not e_0 or birational preservation of nefness. The widened
+   exclusion and Aut(S_b) containment-only reading are retained.
+(sujq) Groupoid generation and smooth atlas: closed by Grivaux Prop. 3.1
+   and #804 at 0ad24e4790, not reworked here.
+(yg4v) Cremona at allowed special points: repaired here by restricting to
+   a nonempty open locus, proving the incidence/tangency conditions, and
+   checking ordinary nodes after contraction. The exact certificate is
+   independent of the rejected numerical-only shortcut.
+(m1/m2 review of the first draft of this lemma) The HM moving-line proof
+   was invalid and is deleted. The replacement uses a special fibre at 101,
+   not a density argument without a witness.
