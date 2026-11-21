@@ -2174,7 +2174,7 @@ Under this isomorphism:
 
 Target theorem B is the comparison theorem of @sec-central-problem.
 **Status, clause by clause, and it is a target theorem.** Of the six clauses, the first is decided: the direct and Heegner arithmetic groups agree, at $\Gamma^{\mathrm{dir}}_{\Co,2}=\Gamma^{\mathrm{Hdg}}_{\Co,2}=\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ (@cor:four-groups-decided, with the loop and isotropy readings separated at @thm:no-loop-carries-the-sign and @thm:sign-is-isotropy).
-The other five are not established: the commuting period diagram is @prob:period-diagram, clause four needs the folded diagrams that clause three of Target theorem A owes, clause five needs the descended ramification divisor's identity with the restriction of $R_Z$ and the marking dictionary (@def:coble-descended-ramification, @warn:coble-marking), and clause six needs clause two of Target theorem A.
+The other five are not established: the commuting period diagram is @prob:period-diagram, clause four needs the folded diagrams that clause three of Target theorem A owes, clause five needs the descended ramification divisor's identity with the restriction of $R_Z$ and the identification of the marked root (@def:coble-descended-ramification, @warn:coble-marking), and clause six needs clause two of Target theorem A.
 The canonical isomorphism itself, at the head of the statement, is not established either, and nothing in this report proves it.
 Target theorem A is a substantial independent theorem and an intermediate strategy, but it becomes a proof of the Heegner statement only after Target theorem B is established.
 
