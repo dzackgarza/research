@@ -420,7 +420,7 @@ The failure of the reverse inclusion is not a gap in one argument but the failur
 
 This records the state of the route through the marked period domain, in the three steps it decomposes into, with the step that resists.
 
-*(a1) Surjectivity.* By [@Dol96, Thm. 3.1] the period map of marked pseudo-ample $M$-polarized K3 surfaces is surjective onto the period domain $\bD(N)$, $N=M^{\perp\diamond}=T_\Co$; the hypotheses are that $M=\generators{2}\oplus\generators{-2}^{\oplus10}$ is primitive, even and of signature $(1,10)$, which is @prop:coble-is-the-ten-nodal-sextic-type. So every period in $\bD(T_\Co)$ is realized by an $M$-polarized K3.
+*(a1) Surjectivity, and the failed input.* The route cannot use [@Dol96, Thm. 3.1]: that theorem is false as stated (@rmk:coble-period-surjectivity-sources). The replacement is @thm:coble-period-surjectivity, whose proof uses [@Huy16, Theorem 7.4.1] and realises every period off the $(-2)$-arrangement by a marked Coble cover. Thus the required marked K3 surfaces exist without the pseudo-ample fibre assertion of Dolgachev's theorem.
 
 *(a2) Injectivity.* For marked objects the period map is injective ([@Dol96, Cor. 3.2], from the global Torelli theorem). The involution needs no separate classification argument: under a marking that fixes $M$ pointwise, the covering involution acts on $M$ as $+1$ — $M=f^*\Pic(S)$ — and on $T_\Co$ as $-\id$ (@prop:coble-transcendental, [@DK13, §3]), and the two blocks determine the isometry of $\Lambda_{\mathrm{K3}}$ because $\Lambda\otimes\QQ=M\oplus T_\Co$. So the marked object determines the involution, and a Hodge isometry of the markings is one commuting with it.
 
