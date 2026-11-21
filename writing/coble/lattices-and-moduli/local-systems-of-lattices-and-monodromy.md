@@ -135,7 +135,7 @@ $$\rho(\gamma)=\tau_{s(1)}\tau_u^{-1},$$
    and the monodromy group of $\bL$ is
 $$\rho(\pi_1(X,x))=\theset{\tau_{gu}\tau_u^{-1}\st g\in G}.$$
 
-3. Suppose that the set of (2) is $\varphi(G)$ for a homomorphism $\varphi\colon G\to\Orth(\Lambda)$; for the descent of the constant system $\underline\Lambda_U$ with the equivariant structure $g\cdot(u,\lambda)\definedas(gu,\varphi(g)\lambda)$ the identifications $\tau_{gu}\tau_u^{-1}$ are the elements $\varphi(g)$, up to the inversion that the choice of which end of the lifted path the transport of @def:transport-and-monodromy is referred to may introduce, and $\varphi(G)=\theset{\varphi(g)^{-1}\st g\in G}$, so that inversion does not change the set.
+3. Suppose that the set of (2) is $\varphi(G)$ for a homomorphism $\varphi\colon G\to\Orth(\Lambda)$; for the descent of the constant system $\underline\Lambda_U$ with the equivariant structure $g\cdot(u,\lambda)\definedas(gu,\varphi(g)\lambda)$, trivialised at $w\in U$ by $\tau_w(\lambda)\definedas[w,\lambda]$ and normalised at $u$ by $\tau_u=\id_\Lambda$, the identifications are $\tau_{gu}\tau_u^{-1}=\varphi(g)^{-1}$, so that $\rho(\gamma)=\varphi(\psi(\gamma))^{-1}=\varphi(\psi^{-1}(\gamma))$ for the transport of @def:transport-and-monodromy and the monodromy group is $\varphi(G)=\theset{\varphi(g)^{-1}\st g\in G}$.
    Then the monodromy group of $\bL$ is $\varphi(G)\cong G/\ker\varphi$, and it is $G$ itself, as a subgroup of $\Orth(\Lambda)$, exactly when $\ker\varphi=1$ — in particular for a subgroup $G\iscontainedin\Orth(\Lambda)$ and its defining action $g\cdot(u,\lambda)=(gu,g\lambda)$.
 :::
 
@@ -151,7 +151,11 @@ If $\pi^{-1}\bL$ is constant, its transport along every loop of $U$ is the ident
 Along the lift $s$ the sheaf $\pi^{-1}\bL$ is the constant sheaf $\underline\Lambda_{[0,1]}$ in the trivialisation $\tau$, whose transport is the identity, so the transport along $\gamma$, referred to the two ends through $\tau_{s(0)}=\id_\Lambda$ and $\tau_{s(1)}$, is $\tau_{s(1)}\tau_u^{-1}$.
 Every $w\in U$ with $\pi(w)=x$ is the endpoint of a path $s$ from $u$, whose image is a loop at $x$, so every $\tau_w\tau_u^{-1}$ occurs as a value of $\rho$, and the points over $x$ are the points $gu$; this gives the displayed description of the monodromy group.
 
-For (3), the monodromy group is the set of (2), which by hypothesis is $\varphi(G)$, and it is unchanged by passing from each $\varphi(g)$ to its inverse because $\varphi(G)$ is a subgroup; that $\varphi(G)\cong G/\ker\varphi$ is the first isomorphism theorem for $\varphi$, and $\varphi$ has trivial kernel exactly when it is the inclusion of a subgroup $G\subseteq\Orth(\Lambda)$ in its defining action.
+For (3), let the trivialisation of $\pi^{-1}\bL$ be $\tau_w(\lambda)=[w,\lambda]$ for $w\in U$ and $\lambda\in\Lambda$, normalised at $u$ by $\tau_u=\id_\Lambda$. Then
+$$\tau_u^{-1}\tau_{gu}(\lambda)=\tau_u^{-1}[gu,\lambda]=\tau_u^{-1}[u,\varphi(g)^{-1}\lambda]=\varphi(g)^{-1}\lambda,$$
+because $g\cdot(u,\varphi(g)^{-1}\lambda)=(gu,\lambda)$, so $\tau_{gu}\tau_u^{-1}=\varphi(g)^{-1}$; by (2) the transport is therefore
+$$\rho(\gamma)=\tau_{s(1)}\tau_u^{-1}=\varphi(\psi(\gamma))^{-1}=\varphi(\psi^{-1}(\gamma)),$$
+a homomorphism because $\psi^{-1}$ is one. Hence the set of (2) is $\varphi(G)=\theset{\varphi(g)^{-1}\st g\in G}$, as this clause assumes, and the monodromy group is $\varphi(G)\cong G/\ker\varphi$ by the first isomorphism theorem for $\varphi$; $\varphi$ has trivial kernel exactly when it is the inclusion of a subgroup $G\subseteq\Orth(\Lambda)$ in its defining action.
 :::
 
 ::: {.corollary #cor:monodromy-of-the-descended-local-system title="The descended local system $(U\times\Lambda)/G$ on a free quotient has monodromy group $G$"}
