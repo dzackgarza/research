@@ -5,3 +5,5 @@
 5. PROVED #4: Noohi loops pull back to Gamma-torsors on I and their homotopies on I^2; trivial sections give Haefliger pairs and homotopies with endpoint labels — checks/evzj-item1.md
 6. OPEN: Kimi item 2: prove principal-bundle loop representation and transport for connected Lie groups — notes.md#5
 7. PROVED #6: Principal G-bundles over I and I^2 give loop pairs and deformations, associated transport is varphi(g)^{-1} gamma^*, and path connected G deforms g to e — checks/evzj-item2.md
+8. OPEN: Kimi item 3: prove base naturality f^*M = M_f and the path/arrow transport statements — notes.md#6
+9. PROVED #8: Atlas descent commutes with base change by iterated 2-fibre products; the Coble systems pull back naturally, with path and arrow transports computed by the comparisons — checks/evzj-item3.md
