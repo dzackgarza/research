@@ -150,3 +150,26 @@ CHECKS RUN IN THIS REVISION
   (depth 0). The engineering pytest suite was not run: it needs sage_extensions
   and dzack_research, which this checkout lacks. CI's gate is not visible from
   the session and is not claimed.
+
+RELATION TO THE STATED PROGRAMME
+
+  The objects are the volume's. M = S_Co = I_{1,10}(2) = <-2> + E_10(2) is the
+  invariant lattice of @prop:coble-invariant-lattice and
+  @lem:coble-invariant-lattice-in-families; T_Co = <2> + E_10(2) and
+  E_10 = U + E_8 = II_{1,9} are @def:enriques-lattice, as in
+  ResearchStatement.md's display of S_Co and T_Co; the Coble substack is
+  @prop:coble-stack-as-quotient; the bases are @not:d2-plane-sextic-base; the
+  arrows are those of @lem:pi1-of-a-groupoid-quotient-is-generated-by-three-
+  contributions, whose inputs are research#804.
+
+  No departure. The volume's stated expectation about a monodromy group is
+  @conj:gamma-co-stable, that Gamma_Co = Otilde^+(T_Co), and it is recorded as
+  open at writing/open-questions.md row "The monodromy group of the Coble family
+  against the stable group" (only Gamma_Co(B) <= Otilde^+(T_Co) is proved).
+  That is a statement about T_Co, and nothing here is transferred to it: this
+  theorem is about M, where the answer is the different group W(E_10), and the
+  difference is not a correction to the conjecture or to its evidence. The one
+  expectation the volume did state about M is the earlier form of
+  @lem:coble-invariant-lattice-in-families, that the monodromy there is S_10;
+  that form was withdrawn on the page before this turn, and this theorem is the
+  proof of what replaced it, so the departure is already recorded at its block.
