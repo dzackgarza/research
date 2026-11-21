@@ -421,7 +421,7 @@ The quotient of the open nodal invariant $(4,4)$ locus by the full centralizer o
 Equivalently, the projective diagram can be reconstructed intrinsically from the Coble pair, and the resulting period map has image the full relevant period-domain component.
 :::
 
-## The Coble lattice package {#sec-coble-lattices}
+## Coble lattice conventions {#sec-coble-lattices}
 
 ### The orthogonal complement lattice {#sec-orthogonal-complement}
 
