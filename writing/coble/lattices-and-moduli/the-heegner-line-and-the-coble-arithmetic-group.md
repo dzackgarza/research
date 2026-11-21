@@ -73,6 +73,77 @@ $$
 The double coset set controlling the split of the full $\Orth(\ten)$-orbit by the preimage subgroup is therefore a singleton, and the orbit does not split.
 :::
 
+::: {.question #qst:coble_root_orbit_uniqueness title="A5: are the $(-2)$ vectors of $\ten$ with Coble complement one $\gent$-orbit?"}
+
+A **Coble root** is a $(-2)$ vector $\alpha\in\ten$ with $\alpha^{\perp\ten}\cong T_\Co$, and $\delta$ is one, with $\delta^{\perp\ten} = T_\Co$ itself (@lem:coble-heegner-vector).
+The question is whether the Coble roots are one orbit (@def:group-orbit) under $\gent$, the group of the degree-$2$ Enriques family: in the notation of @def:gamma-co-groups it is $\gent = \rho^{-1}(M)$, for $\rho$ the discriminant representation (@def:discriminant-rep) and $M$ the subgroup of $\Orth(A_{\ten},q_{\ten})$ preserving the two summands, and [@AEGS25, Defs. 2.6--2.7] define it as the image of the isometries of the K3 lattice that commute with the Enriques involution and fix the degree-$2$ polarization.
+Sterk writes this group $\Gamma$, and it is $\gent$ and not $\Orth(\ten)$ by @prop:sterk-group-identification(1); the full group contains it with index $2^7\cdot17\cdot31 = 67\,456$ (@prop:gamma-en-two-index).
+That difference is the whole content of the question, since a single $\Orth(\ten)$-orbit can split into several $\gent$-orbits, so the single $\Orth(\ten)$-orbit of $(-2)$ vectors [@Nam85, Thm. 2.13] is not an answer.
+The alternative outcome that the programme could use is a list of the $\gent$-orbits of Coble roots with a proof that they are distinct.
+The use made of it is that of research#648: a semitoroidal structure of $\fentwo$ restricts to the Heegner divisor of a Coble root, and that restriction is one compactification of the Coble locus only when the roots it runs over lie in one orbit.
+
+**Answered, yes: @thm:coble-root-orbit-uniqueness-published, which is [@Ste91, 2.10 and the sentence after it] with the proof at [@Ste91, 3.3] and [@Ste91, 3.6].**
+:::
+
+::: {.theorem #thm:coble-root-orbit-uniqueness-published title="The $(-2)$ vectors of $\ten$ are one $\gent$-orbit"}
+
+Let $\delta = u-w\in\ten$ be the Heegner vector of @lem:coble-heegner-vector.
+
+1. The set $R_- \definedas \theset{\alpha\in\ten \st \alpha^2 = -2}$ is one $\gent$-orbit of $\ten$, namely the orbit of $\delta$.
+2. The Coble roots are the $(-2)$ vectors of $\ten$, and they are one $\gent$-orbit.
+
+The statement is [@Ste91, 2.10 and the sentence after it], proved at [@Ste91, 3.6] on [@Ste91, 3.3], for Sterk's group $\Gamma$; that group is $\gent$ (@prop:sterk-group-identification(1)), so the statement transfers to $\gent$ and to no larger group.
+Sterk records it as the analogue of the full-group statement [@Nam85, Thm. 2.13], which is a different and weaker statement; item (1) also gives @thm:coble-heegner-line-unique, without the route through [@Daw22] taken there.
+:::
+
+::: {.proof}
+
+*The three identifications.* Sterk's set is the set in (1), his group is $\gent$, and his vectors are the Coble roots of (2); the identifications are (i)--(iii) and the rest of the proof is his.
+
+**(i) Lattice and signs.** By [@Ste91, 1.3] the K3 lattice is $L = \mathbf H^{\oplus 3}\oplus E_8(-1)^{\oplus 2}$ with the Enriques involution (@def:enriques-surface) $I\colon (m,m',h)\mapsto (m',m,-h)$, and its anti-invariant lattice is
+$$
+L_- = \theset{(m,-m,h) \st m\in M,\ h\in\mathbf H} \cong \mathbf H\oplus M(2) = \mathbf H\oplus\mathbf H(2)\oplus E_8(-2)
+$$
+for $M = \mathbf H\oplus E_8(-1)$, of signature $(2,10)$ [@Ste91, 1.3, 1.4].
+That is $\ten = U\oplus U(2)\oplus E_8(2)$ summand by summand, with the same signs: $\mathbf H = U$, and $E_8(-2)$ is the negative-definite $E_8$ with its form doubled, which is $E_8(2)$ for the $E_8$ of @def:enriques-lattice, negative definite as that definition says and as [@AEGS25, §2.3] repeats, where the same lattice is written $T_\En = (12,10,0)_2$.
+No form is negated and none is rescaled, so $R_-$ is the set of $(-2)$ vectors of $\ten$ and the class of vectors in @qst:coble_root_orbit_uniqueness is the same class on both sides.
+
+**(ii) Group.** Sterk's $\Gamma$ is the image in $\Orth(L_-)$ of
+$$
+\theset{g\in\Orth(L) \st g\circ I = I\circ g,\quad g(e+f, e+f, 0) = (e+f, e+f, 0)},
+$$
+where $e+f\in L_+ = M(2)$ has square $4$ [@Ste91, §2], and [@Ste91, Prop. 2.7] characterises it as the set of isometries whose discriminant action preserves the two summands $\tfrac12\mathbf H(2)/\mathbf H(2)$ and $\tfrac12 E_8(-2)/E_8(-2)$ of $L_-^*/L_-$.
+Read on $\ten$ these are the definition of $\gent$ [@AEGS25, Def. 2.6] and its description by the summands $A_{U(2)}$ and $A_{E_8(2)}$ of $A_{\ten}$, which is @prop:sterk-group-identification(1), (2).
+In particular no statement below is for $\Orth(\ten)$, of which $\Gamma$ has index $2^7\cdot17\cdot31 = 67\,456$ [@Ste91, Rem. 2.12] (@prop:gamma-en-two-index).
+
+**(iii) The class of vectors.** A $(-2)$ vector is primitive: if $\alpha = k\beta$ with $\abs{k}\geq 2$, then $\alpha^2 = k^2\beta^2$ is divisible by $4$, the lattice being even (@def:form-axioms).
+Hence the set in (2) is a subset of $R_-$ that contains $\delta$ (@lem:coble-heegner-vector) and is $\gent$-invariant, since an isometry carries $\alpha^{\perp\ten}$ to an isometric lattice; so it equals $R_-$ as soon as $R_-$ is one orbit, and (2) follows from (1).
+
+**Sterk's argument, and the step he leaves to the reader.** [@Ste91, 3.6] reduces the statement to [@Ste91, 3.3] and leaves the last step of the reduction unstated; that step is what makes the hypotheses of 3.3 match, so it is supplied here.
+For $x\in R_-$ write $x = a+b$ with $a\in\mathbf H$ and $b\in\mathbf H(2)\oplus E_8(-2)$ --- the printed line gives the second summand as $\mathbf H(-2)\oplus E_8(-2)$, and the argument below uses only that it is twice an even lattice.
+Then $a\neq 0$, since $b\in 2L'$ for the even lattice $L' = \mathbf H\oplus E_8(-1)$ would give $b^2\equiv 0\bmod 4$ and hence $x^2 = b^2\neq -2$.
+Write $a = k\alpha$ with $\alpha$ primitive in $\mathbf H$; then $k$ is odd, since $k$ even gives $k^2\alpha^2\equiv 0\bmod 4$ and again $x^2\equiv 0\bmod 4$.
+A primitive $\alpha\in\mathbf H$ has $(\alpha,\mathbf H) = \ZZ$, so
+$$
+(x, L_-) = k\,(\alpha,\mathbf H) + (b, \mathbf H(2)\oplus E_8(-2)) \subseteq k\ZZ + 2\ZZ = \ZZ
+$$
+with $k$ odd, and $(x,L_-)\subseteq\ZZ$ because the form is integral; hence $(x, L_-) = \ZZ$ for every $x\in R_-$.
+Let now $v, w\in R_-$. They are primitive by (iii), of equal square $-2$, with $(v, L_-) = (w, L_-) = p\ZZ$ for $p = 1$, and $v\equiv w\bmod 1\cdot L_-$; so [@Ste91, 3.3] applies with $\Lambda = \mathbf H\oplus\mathbf H(2)$, with $P = E_8(-2)$ even and nondegenerate, and with $N = L_-$, and gives $v\sim_{O^*(L_-)} w$.
+The subgroup $O^*(L_-)$ of isometries acting trivially on $L_-^*/L_-$ lies in $\Gamma$ [@Ste91, 3.4], hence in $\gent$, so $R_-$ is one $\gent$-orbit.
+:::
+
+::: {.remark #rmk:coble-root-orbit-uniqueness-conventions title="What could have differed from Sterk's setting, and does not"}
+
+Three conventions could have made [@Ste91, 2.10] say something else about this lattice, and each is checked in the proof above.
+The sign: the set is $\theset{x \st x^2 = -2}$ and not $\theset{x \st x^2 = 2}$, on $L_- = \mathbf H\oplus\mathbf H(2)\oplus E_8(-2)$, which is $\ten$ with the signs of @def:enriques-lattice and of [@AEGS25, §2.3].
+The group: Sterk's $\Gamma$ is $\gent$, of index $67\,456$ in $\Orth(\ten)$, and neither $\Orth(\ten)$ nor Namikawa's group is substituted for it.
+The vectors: they are vectors of the lattice and not lines, and not classes modulo $\ten$, so (1) is the statement @thm:coble-heegner-line-unique gives only after projectivising.
+
+One thing does differ, and it is the period domain rather than the lattice: Sterk's $\Omega_-$ is the union of the two components of the period domain, and $\Gamma$ contains the isometry $-\id_{\mathbf H}\oplus\id$ interchanging them [@Ste91, Rem. 2.9], whereas $\bD(\ten)$ is one component (AEGS 2025, Def. 2.5).
+That element is $\sigma_U = -\id_U\oplus\id_{U(2)}\oplus\id_{E_8(2)}$, which acts trivially on $A_{\ten}$ because $U$ is unimodular, so it lies in $\ker\rho\subseteq\gent$ (@prop:sterk-group-identification(2)) and the two descriptions of the group agree on it.
+The orbit statement is about the action on the lattice, so it is unaffected by which of the two quotients of the period domain one forms.
+:::
+
 ## The stable orthogonal group induced from the Enriques side
 
 ::: {.definition #def:gamma-co-en title="The induced Coble subgroup" defines="induced Coble subgroup; $\widetilde\Orth^+(T_\Co)^\En(\delta)$"}

@@ -2205,6 +2205,8 @@ The strategy requires the following sequence.
 ::: {.problem #prob:A1 title="A1. Root-orbit and embedded-component lemma"}
 The relevant roots form one orbit under the actual degree-$2$ Enriques group, or the chosen component is otherwise specified intrinsically.
 The stabilizer image on $T_{\Co}$ is computed.
+
+Both clauses stand, and they stand differently. The first is settled affirmatively: the relevant roots are the $(-2)$ vectors of $T_\En$ with Coble complement, and they are one $\gent$-orbit, by [@Ste91, 2.10 and 3.6] (@thm:coble-root-orbit-uniqueness-published), so the alternative of specifying a component intrinsically is not needed. The second is @def:gamma-co-en, and for $\gent$ it is evaluated in @prop:gamma-co-images(3) as $R_{\gent} = \bar\rho^{-1}(P)$; items (1) and (2) there are the images for the other two Enriques-side groups, and the image for the monodromy group $\Gamma_\Co$ is not among the three.
 :::
 
 ::: {.problem #prob:A2 title="A2. Root-marked universal-family lemma"}
