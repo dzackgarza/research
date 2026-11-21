@@ -91,3 +91,9 @@ REVIEW DISPOSITIONS
 (m1/m2 review of the first draft of this lemma) The HM moving-line proof
    was invalid and is deleted. The replacement uses a special fibre at 101,
    not a density argument without a witness.
+
+FINAL INDEPENDENT-CHECK STATUS
+The second two-member review of the repaired special-fibre argument ended
+exhausted without a report or finding. No fresh independent check is
+claimed. The exact Sage certificate was rerun successfully after merging
+current main at c508c596c0.
