@@ -8,3 +8,6 @@ Review mihf confirmed the torsor loop comparison and base naturality. Its two re
 Search finds no open conditional descent hypothesis. docs-deps has no finding on the edited descent blocks and no new cycle; docs --source has only pre-existing findings on untouched pages. The full docs gate remains blocked by an unresolved Git LFS asset. CI was not observed.
 
 See computations/reports/810-acceptance-item-by-item.txt for itemized status and research/issue-810/proof.md for the updated clean proof. A further Kimi review is required before #810 can close.
+
+
+Terminology follow-up: all coinages are removed in favor of loops and homotopies of maps of stacks (Noohi Definitions 17.2 and 17.5) and G-paths (Bridson--Haefliger III.G 3.1, 3.5 and 3.6). No direct Noohi-stack versus G-path group comparison theorem was found in Noohi, Moerdijk or Bridson--Haefliger. In particular III.G 3.9(1) only gives the action-group exact sequence, so it was not used as a substitute for the direct comparison proof.

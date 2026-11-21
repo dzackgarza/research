@@ -40,3 +40,9 @@ A Noohi homotopy pulls back to a principal bundle on $I^2$, which again has a gl
 $$\sigma_1^*\circ\widetilde\gamma^*=\varphi_g(\tilde x)^{-1}\circ\widetilde\gamma^*,$$
 exactly the initial transport. This is the statement of clause 3; no Noohi covering hypothesis is asserted for the principal bundle.
 :::
+
+# Terminology and literature-search addendum
+
+All uses of "Noohi loop", "Noohi homotopy" and "Haefliger path" in writing/ are removed. Stack loops and homotopies cite Noohi Definitions 17.2 and 17.5. G-paths, homotopy and the fundamental group cite Bridson--Haefliger Part III.G 3.1, 3.5 and 3.6. The requested direct group-comparison theorem was not found: Noohi section 19.3 generalizes Thurston, Moerdijk section 5.3 gives paths and BG, and Bridson--Haefliger 3.9(1) gives the action-group exact sequence, but none directly identifies the two fundamental groups. The direct torsor proof remains and is not replaced by a citation.
+
+Checks after this pass: no coinages remain; git diff --check clean; docs --source has the same 29 pre-existing missing-bibliography findings on untouched pages; docs-deps has 120 findings and none on the descent theorem or the G-path definition. The full docs gate was not established because the shared Git LFS asset is unresolved.
