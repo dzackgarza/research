@@ -18,3 +18,7 @@ The unsupported loop-comparison sentence has been removed. The direct torsor-on-
 # Addendum after review mihf
 
 The false section deformation is deleted. The pair family has the original pair at u=0 and the loop of U with e at u=1. Its transport is checked by the section t -> phi_{beta(t)}(x), giving phi_g, so sigma_1^* = phi_g^{-1}. Base naturality was independently accepted. The (v) and three-input statuses are reconciled; the three inputs below lattices.md:165 refer to the separate refutation and are not descriptions of gamma-co-is-full.
+
+# Addendum after review p1n4
+
+Only the discrete theorem remains. The connected-group clause and its general homotopy assertion are removed; older proof entries for that clause are retracted. The connected consumer explicitly assumes research issue 816, and p1n4's discrete atlas, cocycle and naturality acceptances are retained. The block title avoids a literal # so the block reference resolves. The complete #810-page terminology sweep has zero matches.

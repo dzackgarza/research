@@ -15,3 +15,5 @@
 15. PROVED #14: Conditional (v) removed, the two gamma-co-is-full inputs are stated consistently, and no open conditional descent hypothesis survives — checks/mihf-item2.md
 16. OPEN: Terminology and literature comparison: standardize loops and G-paths and determine whether a direct group-comparison theorem exists — notes.md#10
 17. PROVED #16: All coinages replaced by standard stack-loop and G-path terminology with numbered citations; no direct comparison theorem exists in the named sources, so the direct torsor proof is retained — notes.md#10
+18. RETRACT #7: Remove the principal connected-group loop/homotopy clause: its parameter-varying deformation is not supplied by BH III.G 3.5 or Colman 3.2 and does not yield a general stack homotopy
+19. RETRACT #13: The endpoint/transport computation is not enough to prove the asserted general stack homotopy; do not use it outside discrete #810
