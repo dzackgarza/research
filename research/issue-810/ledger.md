@@ -9,3 +9,5 @@
 9. PROVED #8: Atlas descent commutes with base change by iterated 2-fibre products; the Coble systems pull back naturally, with path and arrow transports computed by the comparisons — checks/evzj-item3.md
 10. OPEN: Kimi item 4: replace the surviving conditional (D) at moduli-construction.md:1104 and normalize stale input counts — notes.md#7
 11. PROVED #10: The final conditional (D) is replaced by quotient-local-system-descent clauses 1--2 and stale three-input counts are corrected to two — checks/evzj-item4.md
+12. OPEN: Review mihf item 1: replace false section deformation with correct pair homotopy and transport identity — notes.md#8
+13. PROVED #12: Theta_u has the original pair at u=0 and the loop of U with e at u=1, with transport sigma_1^* gamma^* = varphi_g^{-1} gamma^* — checks/mihf-item1.md
