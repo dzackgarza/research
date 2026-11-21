@@ -1004,8 +1004,8 @@ The chamber and the effective root are part of the data because an abstract latt
 
 ### The singular-pair moduli problem {#sec-singular-moduli}
 
-::: {.definition #def:direct-singular-datum title="direct singular Coble datum" defines="direct singular Coble datum"}
-Over $S$, a direct singular Coble datum consists of
+::: {.definition #def:singular-coble-pair-tuple title="The tuple $(\mcv^\sharp/S,\mcl^\sharp,\tau_{\mathrm{dP}},\mcr^\sharp)$" defines="$\mcv^\sharp/S$; $\mcl^\sharp$; $\tau_{\mathrm{dP}}$; $\mcr^\sharp$"}
+Over $S$, consider the tuple
 
 \[
 (\mcv^\sharp/S,
