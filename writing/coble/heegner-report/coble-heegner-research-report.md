@@ -1087,7 +1087,7 @@ The chamber $\mcc$ is part of the datum of @def:labeled-centralizer-image. It is
 This is the arithmetic group naturally attached to the autonomous lattice datum, provided the labeled rigidity theorem holds.
 
 ::: {.definition #def:geometric-monodromy title="geometric monodromy group" defines="geometric monodromy group; $\Gamma_{\Co,2}^{\mathrm{geom}}$"}
-$\Gamma_{\Co,2}^{\mathrm{geom}}$ is the image of the orbifold monodromy representation (@def:transport-and-monodromy) of the connected direct moduli stack of polarized Coble data on the local system $T_{\Co}$, that local system being the descent of the equivariant system along the atlas of the stack (@thm:quotient-local-system-descent(1), whose hypotheses are those of a discrete group acting properly discontinuously with finite stabilizers on a connected, locally path-connected and locally simply connected space).
+$\Gamma_{\Co,2}^{\mathrm{geom}}$ is the image of the orbifold monodromy representation (@def:transport-and-monodromy) of the connected direct moduli stack of polarized Coble data on the local system of lattices (@def:local-system-of-lattices) $T_{\Co}$ of the universal family (@def:classifying-object) on that stack, that is, on the fundamental groupoid of the stack (@def:transport-and-monodromy).
 :::
 
 Finally, the degree-$2$ marking gives an orthogonal decomposition $A_{T_{\mathrm{En}}} \cong A_{U(2)}\perp A_{E_8(2)}$, and hence the finite subgroup $P:=O(q_{U(2)})\cross O(q_{E_8(2)})$.
