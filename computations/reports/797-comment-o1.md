@@ -130,3 +130,38 @@ Clause 3 is still the statement that would close it, and it is still open. The e
 period map is locally injective on isomorphism classes of families" is asserted by that search's report but not
 proved there (its proof of the reverse implication assumes the finite cover it is meant to produce), so it is not
 on the page.
+
+---
+
+**Update: the universal property is proved, so O1's coarse-space item is met.** The parallel search closed
+the gap and the page now carries it (`rmk:coble-moduli-functor-five-clauses`, clause 5, and
+`thm:coble-torelli-for-pairs`): the period map $\mcM_\Co\to F_S$ is bijective on isomorphism classes over
+$\CC$ on the whole of $F_S$ and is initial among morphisms from $\mcM_\Co$ to complex spaces, so $F_S$ is a
+coarse space of $\mcM_\Co$ in the two senses the remark asks for.
+
+The step that was missing, and how it is supplied: a morphism $g\colon\mcM_\Co\to Z$ is constant on
+isomorphism classes and the induced set map $|F_S|\to|Z|$ is holomorphic; what remained was the equality
+$g(\xi)=f(p(\xi))$ as morphisms for an object over a base $Y$ that is not reduced, where agreement at
+points is not enough. It is local on $Y$, and every object is locally the pullback of one family over a
+complex manifold — the universal deformation of a fibre over its smooth base, restricted to the fixed locus
+of the involution and to the periods off $Z$; the page already uses the classifying property in the form
+"By the universal property there are an open neighbourhood $O_1$ of $y_0$ and a holomorphic map
+$h\colon O_1\to\operatorname{Def}(X_0)$ with $h(y_0)=0$ such that $\mcx|_{O_1}$ is the pullback of
+$\mathcal Z$ along $h$" (proof of `lem:coble-canonical-class-and-ample-component-in-families`), with "Over
+$U$ the action of $\iota_0$ is an involution $\iota_u$ of each fibre $X_u$" and "This is the family" in
+`thm:coble-classical-substack-is-open-dense-and-proper`. Both sides are then pullbacks of morphisms out of a
+manifold, which agree at every point and hence are equal. An independent route, recorded in the search and
+not used on the page, is the moduli space of marked Coble covers of
+`rmk:marked-coble-covers-after-huybrechts`, "a complex manifold with a universal family".
+
+**Acceptance, O1, item by item, as it now stands.** The functor and its morphisms: MET
+(`def:coble-moduli-functor`, `def:coble-moduli-functor-z`). Stack: MET (`lem:coble-moduli-functor-stack`,
+`lem:coble-moduli-functor-fppf`). Algebraicity: NOT MET — clause 3, no smooth atlas exhibited. Deligne--Mumford:
+open under the definition of [@stacks-03YO], and finite at the surfaces of [@Kon21, Theorem 1.1, Table 2].
+Coarse space: MET. Universal family: the universal object exists over the marked stack and over the chart
+`N_Co`; no family over a scheme presents the stack, which is the content of
+`rmk:universal-object-of-the-coble-stack`.
+
+**What this does not settle.** Clause 3. The same families are candidate charts — every object locally in the
+image, and the family versal — so the reader who wants algebraicity should decide whether their disjoint union
+meets the remark's definition of a smooth atlas. That question is open here and owned by clause 3.
