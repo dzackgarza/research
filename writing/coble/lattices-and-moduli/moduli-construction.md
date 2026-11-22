@@ -1120,6 +1120,62 @@ is finite.
 An isometry of $T$ acts on $T\tensor\RR$ preserving the form, and $\Orth(T)$ is a discrete subgroup of the Lie group (@def:group) $\Orth(T\tensor\RR)$: a neighbourhood of the identity in the latter contains no non-identity lattice isometry, because such an isometry would move some lattice vector by less than its length. An element of the stabiliser preserves $P$ and therefore its orthogonal complement $P^{\perp T\tensor\RR}$, which is negative definite (@def:definiteness) of dimension $n$; so the stabiliser maps to the compact group $\Orth(P)\times\Orth(P^{\perp})$, injectively, because an isometry fixing $P$ and $P^{\perp}$ pointwise is the identity. A discrete subgroup of a compact group is finite, and the stabiliser is closed in $\Orth(T)$, hence discrete. So it is finite.
 :::
 
+A statement that a moduli stack *is* the period domain, or a quotient of it by a group of isometries, is a statement about automorphism groups, and those of the two sides are already computed on this page: the covering involution is an automorphism of every labelled object (@rmk:coble-labelled-versus-unlabelled(1)), while the automorphism group of a classical Coble surface is infinite (@lem:coble-automorphism-group-is-infinite(3)). The two statements research#802 asks for are therefore false as stated, and what refutes them is the invariant computed next.
+
+::: {.lemma #lem:automorphism-group-under-an-equivalence title="An equivalence of categories carries an automorphism group isomorphically onto the automorphism group of the image"}
+
+Let $F\colon\mca\to\mcb$ be an equivalence of categories, that is a functor admitting a quasi-inverse $G$ [@stacks-001J, Definition 4.2.17], and let $x$ be an object of $\mca$. Then
+$$F\colon\Aut_{\mca}(x)\too\Aut_{\mcb}(Fx),\qquad f\longmapsto F(f),$$
+is an isomorphism of the automorphism groups of @def:endomorphism-monoid.
+:::
+
+::: {.proof}
+
+Let $\eta\colon\id_\mca\isoto G\circ F$ and $\epsilon\colon F\circ G\isoto\id_\mcb$ be natural isomorphisms, which exist by [@stacks-001J, Definition 4.2.17]. Since $F$ is a functor, $F(\id_x)=\id_{Fx}$ and $F(f\circ g)=F(f)\circ F(g)$, so $f\mapsto F(f)$ is a homomorphism of the monoids $\Hom(x,x)\to\Hom(Fx,Fx)$, and it carries units to units, hence restricts to the groups $\Aut$ of @def:endomorphism-monoid.
+
+*Injectivity.* Let $f\colon x\to x$ with $F(f)=\id_{Fx}$. Then $GF(f)=\id_{GFx}$, and naturality of $\eta$ at $f$ reads $GF(f)\circ\eta_x=\eta_x\circ f$; so $\eta_x\circ f=\eta_x$, and $f=\id_x$ because $\eta_x$ is an isomorphism.
+
+*Surjectivity.* Let $h\colon Fx\to Fx$ be an automorphism and put $f\definedas\eta_x^{-1}\circ G(h)\circ\eta_x$, an automorphism of $x$. Then
+$$F(f)=F(\eta_x)^{-1}\circ FG(h)\circ F(\eta_x).$$
+Put $\sigma\definedas\epsilon_{Fx}\circ F(\eta_x)\in\Aut_{\mcb}(Fx)$. Cancelling $F(\eta_x)$ and using naturality of $\epsilon$ at $h$, which reads $\epsilon_{Fx}\circ FG(h)=h\circ\epsilon_{Fx}$, gives
+$$\sigma\circ F(f)\circ\sigma^{-1}=\epsilon_{Fx}\circ FG(h)\circ\epsilon_{Fx}^{-1}=h.$$
+So $F(f)=\sigma^{-1}\circ h\circ\sigma$, and as $h$ runs over $\Aut_{\mcb}(Fx)$ so does $\sigma^{-1}\circ h\circ\sigma$. Hence the image of $\Aut_{\mca}(x)$ is all of $\Aut_{\mcb}(Fx)$, and $F$ is a bijection there.
+
+:::
+
+::: {.proposition #prop:no-identification-with-the-period-domain title="Neither the marked nor the unmarked Coble stack is the period domain or a quotient of it by a group of isometries"}
+
+Let $\bD\definedas\bD(T_\Co)^+$ be the period domain of @def:type-iv-period-domain, let $Z$ be the $(-2)$-arrangement of @prop:the-coble-locus-in-the-period-domain and put $U\definedas\bD\sm Z$. Let $\mcM^{\mathrm{lab}}_\Co$ be the marked stack of @rmk:coble-labelled-versus-unlabelled and $\mcM_\Co$ the stack of @def:coble-moduli-functor. Then:
+
+1. *Automorphisms in a quotient of $U$ are finite, and those of $U$ are trivial.* Let $G\iscontainedin\Orth(T_\Co)$ be a subgroup and let $[U/G]$ be the quotient stack of [@Noo05, Definition 3.3]. For a point $\tilde x\in U$ the automorphism group (@def:endomorphism-monoid) of the object $(\tilde x)$ of $[U/G]$ over a point is the stabiliser
+$$G_{\tilde x}=\theset{g\in G\mid g\tilde x=\tilde x}$$
+of @def:group-orbit, which is contained in $\Stab_{\Orth(T_\Co)}(\tilde x)$ and is therefore **finite** (@lem:period-stabiliser-finite). For $G=1$ the statement reads: the stack represented by the space $U$ has trivial automorphism group at every object.
+
+2. *The marked stack is not $U$.* $\mcM^{\mathrm{lab}}_\Co$ is not equivalent to the stack represented by $U$. "The covering involution $\iota$ is a nontrivial automorphism of every labelled object" (@rmk:coble-labelled-versus-unlabelled(1)), so the automorphism group of every object of $\mcM^{\mathrm{lab}}_\Co$ contains $\theset{\id,\iota}\cong\ZZ/2$, whereas by (1) every object of the stack represented by $U$ has automorphism group $\theset{\id}$; an equivalence would identify the two (@lem:automorphism-group-under-an-equivalence).
+
+3. *The unmarked stack is not a quotient of $U$ by isometries.* For **no** subgroup $G\iscontainedin\Orth(T_\Co)$ is $\mcM_\Co$ equivalent to $[U/G]$; in particular this fails for $G=\widetilde\Orth^+(T_\Co)$ of @def:gamma-co-groups(3), so no equivalence of the kind research#802 assumes exists at which the identification $G=\widetilde\Orth^+(T_\Co)$ could be read off. A classical Coble surface is an object of $\mcM_\Co$ (@def:coble-moduli-functor(1)--(2), @lem:d2-unpolarised-family(1)), and it occurs as the fibre of an object of $\mcM_\Co$ over a base (@prop:coble-family-over-c-star-with-infinite-monodromy-on-m(1)). Its automorphism group is infinite (@lem:coble-automorphism-group-is-infinite(3); [@CD12, Theorem 3.5]), and "the automorphism group of a Coble surface is $W_{10}(2)$, infinite and discrete, so $\mcM_\Co$ has infinite isotropy" (@rmk:coble-labelled-versus-unlabelled(2)); while by (1) every object of $[U/G]$ over a point has finite automorphism group. An equivalence would identify the two by @lem:automorphism-group-under-an-equivalence.
+
+:::
+
+::: {.proof}
+
+1. By @lem:action-groupoid-fibre-product the quotient stack $[U/G]$ is presented by the action groupoid, whose objects over a space $W$ are the continuous maps $W\to U$ and whose morphisms $x\to y$ are the pairs $(g,x)$ with $g\colon W\to G$ locally constant and $y=gx$. Over a point $W=\mathrm{pt}$ the objects are the points $\tilde x\in U$ and the endomorphisms of $\tilde x$ are the pairs $(g,\tilde x)$ with $g\tilde x=\tilde x$, that is the elements of $G_{\tilde x}$; composition is multiplication in $G$, so $\Aut(\tilde x)=G_{\tilde x}$ (@def:endomorphism-monoid). Since $G\iscontainedin\Orth(T_\Co)$ and $\tilde x$ is a positive definite $2$-plane in $T_\Co\tensor\RR$ (@def:type-iv-period-domain), $G_{\tilde x}\iscontainedin\Stab_{\Orth(T_\Co)}(\tilde x)$ is finite (@lem:period-stabiliser-finite); and $\bD(T_\Co)$ is of signature $(2,9)$ (@prop:coble-period-domain(2)), so that lemma applies to it. For $G=1$ the group $G_{\tilde x}$ is trivial.
+
+2. This is (1) with $G=1$ and @rmk:coble-labelled-versus-unlabelled(1), whose clause counts $\iota$ as an automorphism of the labelled object because a labelling records the eleven classes and $\iota$ preserves each of them, and @lem:automorphism-group-under-an-equivalence, applied to the equivalence of the two stacks restricted to their fibre categories over a point.
+
+3. The objects exist and have infinite automorphism group by the statements cited: the surface $S=\Bl_{p_1,\dots,p_{10}}\PP^2$ of @lem:d2-unpolarised-family(1) is a fibre of the object of $\mcM_\Co$ constructed in @prop:coble-family-over-c-star-with-infinite-monodromy-on-m(1), so that object has infinite isotropy; independently @rmk:coble-labelled-versus-unlabelled(2) records the infinite isotropy of $\mcM_\Co$ at every object. Its automorphism group in $[U/G]$ is finite at every point by (1). @lem:automorphism-group-under-an-equivalence then excludes an equivalence, for every subgroup $G$ of $\Orth(T_\Co)$, and $\widetilde\Orth^+(T_\Co)$ is one.
+
+:::
+
+::: {.remark #rmk:what-the-marked-isotropy-is title="What the page does prove about the isotropy of the marked stack, and the two statements that stand beside the refutation"}
+
+1. *Proved.* The isotropy of the marked stack is finite, nontrivial and contains $\theset{\id,\iota}$ at every object: "the isotropy of $\mcM^{\mathrm{lab}}_\Co$ contains $\theset{\id,\iota}\cong\ZZ/2$ at every object. It is finite" (@rmk:coble-labelled-versus-unlabelled(1)), and on the generic substack, under hypothesis (v) of @thm:gamma-co-labelled-equality, "the stabiliser $\Stab_{\widetilde\Orth^+(T_\Co)}(\pi)$ is $\theset{\id,\iota}$" and the period map is an equivalence onto $\qty[\widetilde\Orth^+(T_\Co)\backslash U^{\mathrm{gen}}]$ "with the isotropy $\theset{\id,\iota}$ on both sides" (@thm:gamma-co-labelled-equality(1)). So the marked stack is a quotient of the period domain by isometries of $T_\Co$ on its generic substack, and @prop:no-identification-with-the-period-domain(3) shows that the unmarked stack is not such a quotient.
+
+2. *The coarse space is not the stack.* @rmk:d2-routes-for-the-equality records that "the identification of $H$ with $(\bD(T_\Co)-Z)/G$ for an explicit $G$ is *equivalent* to the equality", $H$ being the labelled base $B$ of @def:coble-family-unpolarized(3); that is a statement about the space $H$ and a quotient space, both of which have trivial automorphism groups as stacks, and it is neither implied by nor implies clauses (2)--(3) of @prop:no-identification-with-the-period-domain. Passing to a coarse space is not one of the two equivalences research#802 states, and it is not put in their place here.
+
+3. *Which marking.* Two markings occur in the volume, and they are different data. The first is the eleven classes $e_0,\dots,e_{10}$ of @rmk:coble-labelled-versus-unlabelled, which are part of the objects of $\mcM^{\mathrm{lab}}_\Co$; clause (2) is a statement about those objects. The second is the isometry $\varphi\colon H^2(X,\bZ)\isoto\lkt$ of @def:marked-coble-cover, and $\iota$ does not preserve it: $\varphi\circ\iota^*\circ\varphi^{-1}=\rho\neq\id$ (@def:marked-coble-cover(1)), so $\iota$ is not an automorphism of a $\varphi$-marked cover and the argument of clause (2) does not apply to that datum. No statement is made here about a stack built on it.
+:::
+
 ::: {.lemma #lem:relabelling-discriminant-action title="A relabelling acts on $T_\Co$ by the conjugate of the permutation, and never trivially"}
 
 Let $M=\generators{e_0,\dots,e_{10}}=\pi^*\Pic(S_b)\cong\generators{2}\oplus\generators{-2}^{\oplus10}$ be the span of the eleven classes of @lem:d2-local-system(2) and $T_\Co=M^{\perp\lkt}$ (@lem:d2-local-system(3), @prop:coble-period-domain(1)--(2)), and let $\gamma\colon A_M\isoto A_{T_\Co}(-1)$ be the gluing isometry of @lem:coble-discriminant-actions-conjugate. Let $\sigma$ be a permutation of $e_1,\dots,e_{10}$ fixing $e_0$, read as an isometry of $M$, and let $\Theta=\gamma\bar\rho_M(\mathfrak S_{10})\gamma^{-1}\le\Orth(q_{T_\Co})$ be the group of @prop:gamma-co-geometric-bound(2). Then:
