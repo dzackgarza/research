@@ -374,14 +374,47 @@ def test_a_minus_two_class_is_moved_off_the_minus_two_divisor():
     assert "@cons:coble-involution" in tail[:9000]
 
 
-def test_the_refuted_sentence_is_gone_and_the_locus_is_qualified():
+TOR_QUOTED = re.compile(r"every reflection in a \$\(-2\)\$-class of \$\\Pic\(X'\)\$ commutes")
+PAIRS = "thm:coble-torelli-for-pairs"
+
+
+def test_the_refuted_sentence_is_gone_and_the_case_split_is_a_remark():
     text = MC.read_text(encoding="utf-8")
-    # the withdrawn justification: it asserts commutation for every (-2)-class of Pic(X'),
-    # which fails off the Picard-general locus (prop:coble-moved-minus-two-class(2))
-    bad = re.compile(r"every reflection in a \$\(-2\)\$-class of \$\\Pic\(X'\)\$ commutes")
-    assert not bad.search(text), bad.search(text).group(0)
+    # the withdrawn justification asserted commutation for every (-2)-class of Pic(X'),
+    # which prop:coble-moved-minus-two-class(2) refutes off the Picard-general locus
+    assert not TOR_QUOTED.search(text), TOR_QUOTED.search(text).group(0)
     body = _block(text, FIVE_CLAUSES)
-    # what stands instead: the Picard-general locus, named, and the statement that Z is not it
-    assert "@prop:coble-moved-minus-two-class(1)" in body
+    # what stands instead: the unconditional Torelli step, and the two cases as remarks
+    assert "@thm:coble-torelli-for-pairs" in body
+    assert "The Torelli step is settled." in body
+    assert "What the case split added, and why it is no longer needed." in body
     assert "@prop:coble-moved-minus-two-class(2)" in body
-    assert "not on $\\bD\\sm Z$" in body
+    # and the universal property is stated as open, not claimed
+    assert "The universal property, and the step that fails." in body
+
+
+def test_torelli_for_pairs_is_stated_on_the_whole_coble_locus():
+    text = MC.read_text(encoding="utf-8")
+    body = _block(text, PAIRS)
+    # the two clauses: the isomorphism of pairs with its correction element, and bijectivity
+    assert "\\varphi\\iota=\\iota'\\varphi" in body
+    assert "u\\varphi" in body
+    assert "on the image of $\\bD(T_\\Co)\\sm Z$" in body
+    # the restriction to Picard-general periods must not appear in the statement
+    assert "Picard" not in body, [w for w in body.split(".") if "Picard" in w][:2]
+    # the number of the block is the one the remark cites
+    assert "@thm:coble-torelli-for-pairs" in _block(text, FIVE_CLAUSES)
+
+
+def test_torelli_for_pairs_quotes_its_numbered_inputs():
+    text = MC.read_text(encoding="utf-8")
+    tail = text[text.index("#" + PAIRS):]
+    proof = tail[:14000]
+    # fundamental domain, simple transitivity, Torelli, and the sign handled by -id
+    assert "@PS24, Proposition 19.1.3(2)" in proof
+    assert "@PS24, Proposition 17.2.5(3)" in proof
+    assert "acts simply transitively on root bases and on Weyl chambers" in proof
+    assert "@PS24, Theorem 19.2.2" in proof
+    assert "-\\id\\in\\Gamma_\\rho" in proof
+    # the conjugation computation is on the page, not only in a report
+    assert "(\\iota' u\\iota')\\varphi(\\mathcal A_X)" in proof
