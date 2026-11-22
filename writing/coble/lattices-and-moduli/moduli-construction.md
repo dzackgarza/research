@@ -25,7 +25,7 @@ $$
 
 Here $\tdp$ is the $(-1)$-eigenlattice of $I_\dP$ [@AEGS25, Def. 2.3], and $\eta\colon T_\Co\injects\ten$ is the embedding of @lem:primitive_embedding_eta.
 The quotient $F^K_{\En} = \bD(\ten)/\Gamma^K_{\En}$, with $\Gamma^K_{\En} = \Orth(\ten)$ the group $\Gamma_{\mathrm{Enr}}$ of [@AEGS25, Def. 2.6], has two $0$-cusps $(10,10,0)_1$, $(10,8,0)_1$ and two $1$-cusps $(8,8,0)_0$, $(8,6,0)_0$ [@AEGS25, §3.2, Fig. 3]. The quotient $\fentwo = \bD(\ten)/\gent$, with $\gent = \Gamma^K_{\En}\intersect\Gamma_{\dP}$, has five $0$-cusps [@AEGS25, §3]. Throughout, $\Gamma_\En$ denotes the stable group $\widetilde\Orth^+(\ten)$, also written $\Orth^+(\ten)^*$ (@def:gamma-co-groups, @sec-heegner-line, @thm:normalization, @def:gamma-co-en).
-The group $\Gamma_\Co$ is the monodromy group of the VHS on the universal family over the moduli stack $\mcM_\Co$ (@def:coble-moduli-functor, @def:gamma-co-groups(1)), and $\fco = \bD(T_\Co)/\Gamma_\Co$; the base $B=V/\PGL_3$ of @def:coble-family-unpolarized carries a family whose monodromy group is $\Gamma_\Co(B)$ (@def:gamma-co-groups(1)), and the morphism $B\to\mcM_\Co$ it induces carries $B$ into the open classical substack, is not full and is not injective on isomorphism classes, so it is not an equivalence (@prop:coble-plane-model-comparison(1)--(3)); whether that family is universal over an open substack is research#797's open item and is not asserted here.
+The group $\Gamma_\Co$ is the monodromy group of the VHS on the universal family over the moduli stack $\mcM_\Co$ (@def:coble-moduli-functor, @def:gamma-co-groups(1)), and $\fco = \bD(T_\Co)/\Gamma_\Co$; the base $B=V/\PGL_3$ of @def:coble-family-unpolarized carries a family whose monodromy group is $\Gamma_\Co(B)$ (@def:gamma-co-groups(1)), and the morphism $B\to\mcM_\Co$ it induces carries $B$ into the open classical substack, is not full and is not injective on isomorphism classes, so it is not an equivalence (@prop:coble-plane-model-comparison(1)--(3)); by @prop:d2a-family-is-universal-nowhere it is universal over no open substack of $\mcM_\Co$.
 
 The objects, bases, local systems of lattices and period maps of the two families on which $\Gamma_\Co$ and $\Gamma_{\Co,2}$ are taken are those of @sec-coble-families-d2: the unpolarized family with its three bases (@def:coble-family-unpolarized), whose period map on the first of them is the map of [@DK13, Prop. 3.2] (@lem:d2a-period-map), and the degree-$2$ family over the discriminant divisor (@def:coble-family-degree-two), whose base is the whole of that divisor (@lem:d2-degree-two-base).
 The equality $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ is @conj:gamma-co-stable. On the base $B=V/\PGL_3$ it is proved in one direction: $\Gamma_\Co(B)=\rho(\pi_1(B,s))\subseteq\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable(1)), the reverse inclusion being @qst:gamma-co-sign-is-realised. The identification $\Gamma_\Co=\Gamma_\Co(B)$, of the group of the stack with that of the presentation, is research#797, item 6 (@def:gamma-co-groups(1), @thm:gamma-co-is-stable(2)); no statement below depends on it except @thm:gamma-co-is-the-stack-monodromy, where it is hypothesis (A4), and the paragraph after the diagram below, which states what the degree of the vertical map would be under it. It is not an equality on the other bases of D2a either: on the unlabelled base $\Gamma_\Co(\bar B)$ contains $\Gamma_\Co(B)$ with index $10!$ and is not contained in $\widetilde\Orth^+(T_\Co)$ (@cor:gamma-co-inclusions(2), @lem:relabelling-discriminant-action(3)), while it is contained in $\Gamma_{10A_1}$, which strictly contains $\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-sextic-group(4)); and the coarse space carries no family; given the two inputs of @thm:gamma-co-is-full, its descended local system has group $\Orth^+(T_\Co)$ (@rmk:gamma-co-d2a).
@@ -479,6 +479,28 @@ each of the $10!$ sets on the right is open in $q^{-1}(\Sigma\intersect N)$, bei
 3. $B$ is the image of $V$ under the quotient map, $U$ is the image of $V$ under the projection to $(\PP^2)^{10}$, and $M_\Co$ is the image of $U$ under the quotient map; a continuous image of a path connected space is path connected. $\bar B=[B/S_{10}]$ has the path connected space $B$ as a smooth cover, so it is connected.
 :::
 
+
+::: {.proposition #prop:d2a-family-is-universal-nowhere title="The D2a family is universal over no open substack of $\mcM_\Co$"}
+
+Let $\varphi\colon\bar B=[B/S_{10}]\to\mcM_\Co$ be the classifying morphism of the family of @def:coble-family-unpolarized(2), $\bar B$ the unlabelled base, and let $\psi\colon B\to\mcM_\Co$ be the classifying morphism of the same family over the labelled base $B$ of @def:coble-family-unpolarized(3), so that $\psi$ is the composite of $B\to\bar B$ with $\varphi$.
+
+A family over a base is *universal over an open substack* $W$ when its classifying morphism is an equivalence onto $W$; this is the notion of a moduli stack and a universal family used throughout this page (@def:coble-moduli-functor, and @lem:d2a-moduli-stack, where $[V/\SL_3]$ is the moduli stack of @def:coble-family-unpolarized with universal family that of @lem:d2-unpolarised-family(3)).
+
+Then:
+
+1. there is no open substack of $\mcM_\Co$ over which the family of @def:coble-family-unpolarized(2) is universal: $\varphi$ is not an equivalence onto an open substack;
+2. the same for the family over the labelled base: $\psi$ is not an equivalence onto an open substack;
+3. consequently $\Gamma_\Co(B)$ is not, by universality, the monodromy group of an open substack of $\mcM_\Co$. No statement is made here about $\Gamma_\Co$.
+:::
+
+::: {.proof}
+
+Suppose $\varphi$ is an equivalence onto an open substack $W$. Then $W$ is the essential image of $\varphi$, so $W$ is nonempty whenever the essential image is, and it is: at every irreducible ten-nodal sextic $b$ the object of @lem:d2-unpolarised-family(1) is a Coble surface in the essential image (@prop:coble-plane-model-comparison(1)). So $W$ contains the class of a Coble surface $S_b$ with $b$ an irreducible ten-nodal sextic. An equivalence of stacks induces a bijection on the automorphism group of corresponding objects; but at every such $b$ there is an automorphism of $S_b$, the Bertini involution of any eight of the ten nodes, induced by no projectivity, hence by no automorphism of the object of $\bar B$ over it, so $\varphi$ is not full there (@prop:coble-plane-model-comparison(2)). This contradicts the bijection, so no such $W$ exists, which is (1).
+
+(2) follows because $\psi$ is $\varphi$ composed with $B\to\bar B$: an automorphism of $S_b$ outside the image of $\Aut_{\bar B}(b)$ is outside the image of $\Aut_B(b)$, $\Aut_B(b)$ mapping into $\Aut_{\bar B}(b)$, so $\psi$ is not full at the same ten-nodal sextics either.
+
+(3) is (1) together with the definition of universality stated above: the monodromy group of a family equals that of the open substack over which it is universal, and here there is none.
+:::
 
 ::: {.lemma #lem:d2-s10-not-free title="The $S_{10}$-action on the base $B=V/\PGL_3$ is not free"}
 
