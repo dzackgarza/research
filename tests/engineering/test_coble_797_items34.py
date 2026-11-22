@@ -447,3 +447,23 @@ def test_the_universal_property_is_proved_by_descent_to_a_manifold_chart():
     assert "@thm:coble-classical-substack-is-open-dense-and-proper" in body
     # and the conclusion
     assert "So $g=f\\circ p$ on every object, and $F_S$ is a coarse space of $\\mcM_\\Co$." in body
+
+
+def test_the_atlas_claim_and_clause_three_name_the_same_missing_hypothesis():
+    """Clause 5 gives essential surjectivity only; clause 3 names what is missing.
+
+    The two paragraphs contradicted each other once: clause 5 said the period-chart
+    families were a smooth atlas and clause 3 said no atlas was exhibited.  Both now
+    name the representability of the diagonal, and neither claims an atlas.
+    """
+    text = MC.read_text(encoding="utf-8")
+    body = _block(text, FIVE_CLAUSES)
+    assert "is therefore a smooth atlas" not in text
+    # clause 5: essential surjectivity and nothing more
+    assert "It gives essential surjectivity and only that" in body
+    # clause 3: the missing hypothesis, stated once
+    assert "the representability of the diagonal" in body
+    assert "the sheaf of isomorphisms between them is representable by a complex space" in body
+    # and the coarse-space result is not weakened by the withdrawal
+    assert "5. **Coarse space.** **Proved**" in body
+    assert "and $F_S$ is a coarse space of $" in body
