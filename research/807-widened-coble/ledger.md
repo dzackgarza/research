@@ -14,3 +14,5 @@
 14. CHECK #13 [model]: GAP: Review-B required the 9-dimensional differential calculation and a definition-citation correction, and exposed the reversed local-finiteness inequality — checks/review-B-repair.md
 15. RETRACT #13: reprove after the period differential, irreducibility citation and local-finiteness repairs
 16. PROVED #1: After Reviews-B and C, the repaired page proves non-classical objects but no additional component from #2, #3, #5 and #6 — checks/review-B-repair.md
+17. CHECK #16 [model]: PASS: accepted independent DeepSeek reviews A, B and C cover all three proof layers after their requested repairs; scope limits are explicit — checks/accepted-reviews.md
+18. CHECK #16 [self]: PASS: final self-reading of the repaired page, source hypotheses, E8 obstruction, deformation and component logic, and monodromy separation — checks/final-read.md

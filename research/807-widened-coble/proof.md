@@ -1,10 +1,13 @@
 # #807: the widened smooth-member Coble family
 
-**Status**: PROVED #7. The argument was read only by the model that wrote it.
+**Status**: PROVED #16. The argument was checked by: model.
 
-  self: PASS: self-reading covered statement scope, all examples, the E8 proof, deformation and connectedness inputs, and monodromy separation; not independent
+  model: PASS: accepted independent DeepSeek reviews A, B and C cover all three proof layers after their requested repairs; scope limits are explicit
+  self: PASS: final self-reading of the repaired page, source hypotheses, E8 obstruction, deformation and component logic, and monodromy separation
 
-Independent DeepSeek review is pending. Acceptance item 2 of the issue (an independent Kimi MET review) remains NOT MET.
+Review-A was accepted with a clarification separating affine irreducibility from exclusion of the line at infinity. Review-B was accepted after the fixed-locus differential, smoothness-citation and local-finiteness repairs. Review-C was accepted after the canonical identity, Halphen-plane-model citation, node/cusp proof and lattice-rank citation repairs. Details are in `checks/accepted-reviews.md`.
+
+Acceptance item 2 of the issue (an independent Kimi MET review) remains NOT MET; the accepted DeepSeek reviews are not that review.
 
 ## Decision
 
@@ -56,9 +59,9 @@ There is no extra component whose monodromy remains to be computed. The uncondit
 - Singular absolute-factor, genus and singularity rerun: PASS, `checks/singular-run.txt`.
 - Pandoc parse: no warning.
 - `docs_check.py --source`: byte-identical to detached main; 28 pre-existing bibliography findings on other pages, none on this page.
-- Dependency graph: same 125 pre-existing findings as main after normalization; no new finding; one new block and 21 new edges.
+- Dependency graph: same 125 pre-existing findings as main after normalization; no new finding; one new block and 23 new edges.
 - `git diff --check`: clean.
 - Two targeted pytest commands did not run: collection fails because `dzack_research` is unavailable (pytest exit 4). No Sage suite, full engineering suite, render, or CI result is claimed.
-- Independent model reports: pending; they will be recorded before the result is pushed.
+- Independent model reports: accepted in all three scopes, `checks/accepted-reviews.md`. Scope boundaries are recorded there and are not silently extended to universal-stack monodromy.
 
-Sources read for this result: Dolgachev–Zhang Introduction, §1.1–§1.10, §2.1, §4.1–§4.3, §6.1–§6.7 and Example 6.10; Grivaux Proposition 3.1; Harris Lemma (1.2); Alexeev–Engel–Han Definition 2.2 and Lemma 2.7; Harris–Morrison §6.E, Initial reductions and (6.45); Huybrechts Chapter 1 (2.5) and Chapter 6 Remark 2.6, Corollary 2.7, Proposition 2.8 and §2.4. All citations in the new text use author and numbered statement, not page locators.
+Sources read for this result: Dolgachev–Zhang Introduction, §1.1–§1.10, §2.1, §4.1–§4.3, §6.1–§6.7 and Example 6.10; Grivaux Proposition 3.1; Harris Lemma (1.2); Alexeev–Engel–Han Definition 2.2 and Lemma 2.7; Harris–Morrison Definition (1.48), Theorem (1.49)(1), §6.E Initial reductions and (6.45); Huybrechts Chapter 1 (2.5) and Chapter 6 Remark 2.6, Corollary 2.7, Proposition 2.8 and §2.4. All citations in the new text use author and numbered statement, not page locators.
