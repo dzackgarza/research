@@ -477,6 +477,8 @@ def test_the_isomorphism_sheaf_is_representable_and_glued_on_the_whole_locus():
     assert "every open $U\\subseteq T_a$" in proof
     assert "countable disjoint union" in proof
     assert "locally closed" in proof and "not closed" in proof
+    assert "clopen" in proof and "locally constant" in proof
+    assert "U_\\psi" in proof
     assert "Yoneda" in proof and "cocycle" in proof
     assert "No restriction of the locus" in proof
 
@@ -490,6 +492,7 @@ def test_the_atlas_is_analytic_and_does_not_assert_an_algebraic_stack():
     proof = text[text.index("#" + ATLAS):text.index("#prop:coble-moved-minus-two-class")]
     assert "every open $U\\subseteq T$" in proof
     assert "torsor" in proof and "Gamma_\\rho" in proof
+    assert "constant sheaf" in proof and "disconnected" in proof
     assert "@stacks-06FS" not in proof
     five = _block(text, FIVE_CLAUSES)
     assert "3. **Algebraicity.** **Open**" in five
@@ -503,4 +506,6 @@ def test_fppf_effectivity_is_not_inferred_from_base_change_stability():
     body = text[start:end]
     assert "is not proved and is withdrawn" in body
     assert "@stacks-08J0" in body and "@stacks-08KE" in body
+    assert "@stacks-0ADV" in body
+    assert "descended algebraic space is again a projective scheme" in body
     assert "effective" in body
