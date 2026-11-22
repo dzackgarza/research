@@ -37,6 +37,9 @@ def test_the_quotient_presentation_is_stated_with_its_hypotheses():
     assert "\\widetilde\\Orth^+(T_\\Co)" in body
     # the non-emptiness is NOT claimed from the proposition whose t <= 9 fails
     assert "@Dol96, Cor. 5.2" in body
+    # O3: point/component information is not relabelled as a stack presentation
+    assert "moduli stack" in body and "open" in body
+    assert "stabilizers" in body and "cone preservation" in body
 
 
 def test_the_monodromy_sequence_is_stated_with_its_cover():
@@ -80,17 +83,17 @@ PERIOD_STACK = "thm:coble-period-map-of-the-stack"
 FROM_UNIVERSAL = "prop:gamma-co-from-the-universal-family"
 
 
-def test_the_transfer_is_proved_at_the_level_of_the_stack():
+def test_stack_transfer_keeps_the_inertia_comparison_open():
     text = MC.read_text(encoding="utf-8")
     body = _block(text, PERIOD_STACK)
-    # the four clauses: defined, injective on labelled objects, local Torelli, descent
     assert "injectivity on objects" in body.lower()
     assert "Local Torelli" in body or "local Torelli" in body
-    assert "fully faithful" in body
-    # the two numbered inputs that do the work
+    assert "fully faithful" in body and "open" in body
+    assert "essential image" in body and "do not identify the inertia groups" in body
     proof = text[text.index("#" + PERIOD_STACK):]
     assert "@BHPV04, Ch. VIII, Thm. 11.1" in proof
     assert "@Dol96, §3" in proof
+    assert "withdrawn" in proof and "Neither proves" in proof
 
 
 def test_item6_says_which_group_a_restriction_gives():
@@ -449,20 +452,15 @@ def test_the_universal_property_is_proved_by_descent_to_a_manifold_chart():
     assert "So $g=f\\circ p$ on every object, and $F_S$ is a coarse space of $\\mcM_\\Co$." in body
 
 
-def test_the_period_chart_families_are_not_the_atlas_and_clause_three_is_settled():
-    """Clause 5 says the period-chart families are not an atlas; clause 3 is proved.
-
-    An earlier form of clause 5 claimed the disjoint union of those families was a
-    smooth atlas while clause 3 said no atlas was exhibited.  The two are now
-    consistent: the families are essentially surjective and not a covering, and the
-    atlas is the moduli of marked covers.
-    """
+def test_the_period_charts_do_not_decide_smoothness_and_algebraicity_stays_open():
+    """The analytic chart does not supply the scheme atlas required by 026O."""
     text = MC.read_text(encoding="utf-8")
     body = _block(text, FIVE_CLAUSES)
-    assert "is therefore a smooth atlas" not in text
     assert "It gives essential surjectivity and only that." in body
     assert "They are not an atlas" in body
-    assert "3. **Algebraicity.** **Proved**" in body
+    assert "3. **Algebraicity.** **Open**" in body
+    assert "$\\CC^*\\to\\CC$" in body
+    assert "$\\CC\\sqcup\\CC^*\\to\\CC$" in body
     # the coarse-space verdict is untouched by any of this
     assert "5. **Coarse space.** **Proved**" in body
 
@@ -471,27 +469,38 @@ ISOM = "thm:coble-isom-sheaf-representable"
 ATLAS = "thm:coble-atlas"
 
 
-def test_the_isomorphism_sheaf_is_representable_and_no_locus_is_restricted():
+def test_the_isomorphism_sheaf_is_representable_and_glued_on_the_whole_locus():
     text = MC.read_text(encoding="utf-8")
     body = _block(text, ISOM)
-    # the two families, the claim, and the reduction to the K3 covers
     assert "is representable by a complex space over $T$" in body
     proof = text[text.index("#" + ISOM):text.index("#" + ATLAS)]
-    assert "@PS24, Lemma 19.2.4" in proof          # faithfulness: the action is injective
-    assert "@PS24, Theorem 19.3.1" in proof        # the fine moduli of marked K3 surfaces
-    assert "No restriction of the locus" in proof  # no classical/unnodal/Picard-general hypothesis
+    assert "every open $U\\subseteq T_a$" in proof
+    assert "countable disjoint union" in proof
+    assert "locally closed" in proof and "not closed" in proof
+    assert "Yoneda" in proof and "cocycle" in proof
+    assert "No restriction of the locus" in proof
 
 
-def test_the_atlas_is_the_marked_moduli_and_algebraicity_follows():
+def test_the_atlas_is_analytic_and_does_not_assert_an_algebraic_stack():
     text = MC.read_text(encoding="utf-8")
     body = _block(text, ATLAS)
     assert "smooth and essentially surjective" in body
-    assert "its diagonal is representable by @thm:coble-isom-sheaf-representable" in body
-    proof = text[text.index("#" + ATLAS):]
-    assert "torsor over" in proof[:3000] and "Gamma_" in proof[:3000]
-    # clause 3 no longer calls algebraicity open, and clause 4 is the first open one
+    assert "no algebraic-space diagonal" in body
+    assert "@stacks-026O" in body
+    proof = text[text.index("#" + ATLAS):text.index("#prop:coble-moved-minus-two-class")]
+    assert "every open $U\\subseteq T$" in proof
+    assert "torsor" in proof and "Gamma_\\rho" in proof
+    assert "@stacks-06FS" not in proof
     five = _block(text, FIVE_CLAUSES)
-    assert "3. **Algebraicity.** **Proved**" in five
-    assert "Clause 4 is the first open one." in five
-    # and the period-chart families are explicitly not the atlas
-    assert "They are not an atlas" in five
+    assert "3. **Algebraicity.** **Open**" in five
+    assert "Clause 3 is the first open one." in five
+
+
+def test_fppf_effectivity_is_not_inferred_from_base_change_stability():
+    text = MC.read_text(encoding="utf-8")
+    start = text.index("#lem:coble-moduli-functor-fppf")
+    end = text.index("#def:enriques-partial-compactification", start)
+    body = text[start:end]
+    assert "is not proved and is withdrawn" in body
+    assert "@stacks-08J0" in body and "@stacks-08KE" in body
+    assert "effective" in body
