@@ -17,7 +17,6 @@ tags:
 | **Monoidal structures with an invertible object of nonzero Witt class** | @sec-open-statements; sharpened by @thm:invertible-summand |
 | **The discriminant construction as a functor on Poincaré complexes** | @sec-open-statements |
 | **A canonical universe for the equality predicate** | @sec-equality-universe |
-| **$K_0$ of the $2$-elementary forms** | @thm:2elementary-decomposition; `sections/1-part-combinatorial/2-chapter-lattice-theory/300-classification.md` |
 
 : {tbl-colwidths="[35,65]"}
 
