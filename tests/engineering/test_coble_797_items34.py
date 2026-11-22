@@ -389,8 +389,9 @@ def test_the_refuted_sentence_is_gone_and_the_case_split_is_a_remark():
     assert "The Torelli step is settled." in body
     assert "What the case split added, and why it is no longer needed." in body
     assert "@prop:coble-moved-minus-two-class(2)" in body
-    # and the universal property is stated as open, not claimed
-    assert "The universal property, and the step that fails." in body
+    # and the universal property is a paragraph of its own, proved
+    assert "\n   *The universal property.*" in body
+    assert "5. **Coarse space.** **Proved**" in body
 
 
 def test_torelli_for_pairs_is_stated_on_the_whole_coble_locus():
@@ -423,14 +424,26 @@ def test_torelli_for_pairs_quotes_its_numbered_inputs():
 HOLOMORPHY = re.compile(r"what is missing is that this map is holomorphic")
 
 
-def test_the_universal_property_names_the_descent_for_families_not_the_analyticity():
+def test_the_withdrawn_diagnosis_of_the_universal_property_is_gone():
     text = MC.read_text(encoding="utf-8")
-    # the false diagnosis, withdrawn: the induced set map is holomorphic (ball family,
-    # finite period stabiliser), so the gap is the descent for families, not the analyticity
+    # the false diagnosis, withdrawn twice: first that the analyticity was missing,
+    # then that the descent fails at all
     assert not HOLOMORPHY.search(text), HOLOMORPHY.search(text).group(0)
+    assert "What fails is the descent for *families*" not in text
     body = _block(text, FIVE_CLAUSES)
-    assert "What fails is the descent for *families*" in body
-    assert "down which holomorphic functions descend" in body
-    # the inputs it rests on are the two the page proves
-    assert "@lem:period-stabiliser-finite" in body
-    assert "@thm:coble-period-surjectivity" in body
+    # what stands: the induced set map is holomorphic, and the descent is proved
+    assert "that map is holomorphic" in body
+    assert "automatically constant on isomorphism classes" in body
+
+
+def test_the_universal_property_is_proved_by_descent_to_a_manifold_chart():
+    body = _block(MC.read_text(encoding="utf-8"), FIVE_CLAUSES)
+    # the two parts of a coarse space, and where each comes from
+    assert "@thm:coble-torelli-for-pairs(2) gives for $F=F_S$" in body
+    # the descent: equality of morphisms is not taken from agreement at points
+    assert "agreement at every point of $Y$ gives equality only when $Y$ is reduced" in body
+    # the chart is the universal deformation over its smooth base, quoted from the page
+    assert "is the pullback of $\\mathcal Z$ along $h$" in body
+    assert "@thm:coble-classical-substack-is-open-dense-and-proper" in body
+    # and the conclusion
+    assert "So $g=f\\circ p$ on every object, and $F_S$ is a coarse space of $\\mcM_\\Co$." in body
