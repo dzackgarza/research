@@ -522,11 +522,13 @@ def test_the_polarized_return_checks_each_descent_hypothesis():
     body = _block(text, POLARIZED_RETURN)
     assert "relatively ample" in body and "line-bundle descent datum" in body
     proof = text[text.index("#" + POLARIZED_RETURN):text.index("#" + ANTI_POLARIZATION)]
-    for tag in ["@stacks-0ADV", "@stacks-0D1G", "@stacks-023T",
+    for tag in ["@stacks-0ADV", "@stacks-0D1G", "@stacks-0DFQ", "@stacks-04W8",
                 "@stacks-0D3C", "@stacks-0D36", "@stacks-01VW", "@stacks-0BCL"]:
         assert tag in proof, tag
+    assert "@stacks-023T" not in proof
+    assert "scheme-only Proposition 35.5.2" in proof
     assert "finite presentation" in proof
-    assert "one-member fpqc cover" in proof
+    assert "fpqc covering of algebraic spaces" in proof
 
 
 def test_anti_bicanonical_is_not_a_polarization():
@@ -538,10 +540,30 @@ def test_anti_bicanonical_is_not_a_polarization():
     assert "Nakai" in proof
 
 
-def test_the_projective_return_is_the_exact_residue():
+def test_the_projective_return_is_one_statement_for_the_original_functor():
     text = MC.read_text(encoding="utf-8")
     body = _block(text, PROJECTIVE_RETURN)
-    assert "equivalent" in body
-    assert "relatively ample" in body and "line-bundle descent datum" in body
-    assert "not proved" in body
-    assert "No theorem on the page or in the sources read supplies" in body
+    assert "original flat projective Coble-cover functor" in body
+    assert "descended proper flat algebraic space" in body
+    assert "projective over $Y$" in body
+    assert "No invariant polarization is added" in body
+    assert "exact hypotheses" in body
+
+
+def test_the_deformation_claim_keeps_the_cover_and_does_not_assert_stack_smoothness():
+    text = MC.read_text(encoding="utf-8")
+    body = _block(text, "prop:coble-stack-smooth-connected")
+    assert "H^2(S_b,T_{S_b})\\cong H^0(S_b,\\Omega^1_{S_b}\\otimes K_{S_b})^*" in body
+    assert "**not** $H^0(S_b,\\Omega^1_{S_b})^*$" in body
+    assert "Deformations of $S_b$ are therefore unobstructed, and $\\mcM_\\Co$ is a smooth stack" not in body
+    assert "withdrawn" in body and "algebraicity" in body
+
+
+def test_the_hodge_rank_claim_is_only_the_distinct_centre_case():
+    text = MC.read_text(encoding="utf-8")
+    body = _block(text, "prop:coble-stack-smooth-connected")
+    assert "distinct centres" in body
+    assert "nine ordinary nodes and one ordinary cusp" in body
+    assert "$10$, not $20$" in body
+    assert "full #807 object class" in body
+    assert "infinitely near" in body
