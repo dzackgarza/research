@@ -553,6 +553,19 @@ Third, *the Deligne--Mumford property fails*, and it is not merely unproved: @le
 
 :::
 
+::: {.remark #rmk:coble-moduli-functor-five-clauses title="The five clauses for $\mcM_\Co$, and where each stands"}
+
+For $\mcM_\Co$ itself — the functor of @def:coble-moduli-functor, not the classical substack, not the marked stack and not $[V/\SL_3]$ — the five clauses and their sources:
+
+1. **The functor and its morphisms.** @def:coble-moduli-functor: objects $\qty{\mcs\to Y,\ \mcx\to\mcs,\ \iota}$ over a complex space $Y$, with the relative double cover branched along $-2K_{\mcs/Y}$, and morphisms Cartesian squares commuting with $\iota$; over $\ZZ[1/2]$, @def:coble-moduli-functor-z.
+2. **Stack.** Proved: @lem:coble-moduli-functor-stack, for the étale topology on $\mathfrak{C}$ and hence for the analytic topology, and @lem:coble-moduli-functor-fppf, for the fppf topology over $S_0$.
+3. **Algebraicity.** **Open.** No page exhibits a smooth atlas for $\mcM_\Co$: @prop:coble-stack-as-quotient gives a chart for the classical substack $\mcM^{\mathrm{cl}}_\Co$ only, and the two candidate atlases are not atlases — the classifying morphisms $[B/S_{10}]\to\mcM_\Co$ and $B\to\mcM_\Co$ of @prop:coble-plane-model-comparison are not essentially surjective, their essential image being the classical substack (@prop:coble-plane-model-comparison(1)), and no open substack carries the family (@prop:d2a-family-is-universal-nowhere(1)--(2)).
+4. **Deligne--Mumford.** Refuted, not merely unproved: $\Aut(S_b)$ is infinite at every geometric point (@lem:coble-automorphism-group-is-infinite, with @rmk:coble-automorphisms-infinite(2)--(3)), so $\mcM_\Co$ and every nonempty open substack of it are not Deligne--Mumford; the route through the involution moduli is closed in the negative at @rmk:dm-route-through-ae22-fails and @rmk:d2-involution-moduli-of-ae22.
+5. **Coarse space.** $M_\Co=U/\PGL_3$ (@not:d2-plane-sextic-base), proved a coarse space at @prop:coble-moduli-git, and identified with an open subset of $\bD(N)/\Orth(N)$, $N=T_\Co$, by [@DK13, Prop. 3.2] (@lem:d2a-period-map(2)--(3)).
+
+Clause 3 is the first open one. What a proof needs is a smooth atlas for $\mcM_\Co$ — a complex space $U$ with a representable, smooth, essentially surjective morphism $U\to\mcM_\Co$ — and neither of the two morphisms at hand qualifies, for the reason given in clause 3. Whether the involution moduli of [@AE22, §2C] supplies one is not decided here: that source constructs the coarse space $F_S$ and not the stack, and its comparison with $\mcM_\Co$ is where clause 3 would have to be settled.
+:::
+
 ## The moduli functor of Coble surfaces {#sec-coble-moduli-functor}
 
 @def:coble-family-unpolarized describes a class of families and then chooses a parameter space; it states no functor and no property of that parameter space as a moduli object. This section states the functor and proves the one property of it that needs no comparison with $B$.
