@@ -52,7 +52,7 @@ There is no extra component whose monodromy remains to be computed. The uncondit
 
 ## Checks and skipped checks
 
-- Exact symbolic substitution and E_8 Gram determinant: PASS, `checks/exact-symbolic.txt`.
+- Exact symbolic substitution and E_8 Gram determinant: PASS, `checks/exact-symbolic.txt`; the standard-basis root computation gives 240 roots, 120 classes modulo 2E_8, each one antipodal pair: `checks/e8-root-classes.txt`.
 - Singular absolute-factor, genus and singularity rerun: PASS, `checks/singular-run.txt`.
 - Pandoc parse: no warning.
 - `docs_check.py --source`: byte-identical to detached main; 28 pre-existing bibliography findings on other pages, none on this page.
@@ -61,4 +61,4 @@ There is no extra component whose monodromy remains to be computed. The uncondit
 - Two targeted pytest commands did not run: collection fails because `dzack_research` is unavailable (pytest exit 4). No Sage suite, full engineering suite, render, or CI result is claimed.
 - Independent model reports: pending; they will be recorded before the result is pushed.
 
-Sources read for this result: Dolgachev–Zhang Introduction, §1.1–§1.10, §2.1, §4.1–§4.3, §6.1–§6.7 and Example 6.10; Grivaux Proposition 3.1; Harris Lemma (1.2); Harris–Morrison §6.E, Initial reductions and (6.45); Huybrechts Chapter 1 (2.5) and Chapter 6 Remark 2.6, Corollary 2.7, Proposition 2.8 and §2.4. All citations in the new text use author and numbered statement, not page locators.
+Sources read for this result: Dolgachev–Zhang Introduction, §1.1–§1.10, §2.1, §4.1–§4.3, §6.1–§6.7 and Example 6.10; Grivaux Proposition 3.1; Harris Lemma (1.2); Alexeev–Engel–Han Definition 2.2 and Lemma 2.7; Harris–Morrison §6.E, Initial reductions and (6.45); Huybrechts Chapter 1 (2.5) and Chapter 6 Remark 2.6, Corollary 2.7, Proposition 2.8 and §2.4. All citations in the new text use author and numbered statement, not page locators.

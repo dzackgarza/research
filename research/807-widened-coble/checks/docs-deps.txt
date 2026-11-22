@@ -99,10 +99,10 @@ docs-deps: coble/heegner-report/coble-heegner-research-report.md: unlocated-cita
 docs-deps: coble/heegner-report/coble-heegner-research-report.md: unlocated-citation "@Ste91" prob:B25
 docs-deps: coble/heegner-report/coble-heegner-research-report.md: unlocated-citation "@AN06" thm:no-loop-carries-the-sign
 docs-deps: coble/heegner-report/coble-heegner-research-report.md: unlocated-citation "@Vin67" thm:semifan-restriction
-docs-deps: coble/lattices-and-moduli/moduli-construction.md: cycle lem:d2-incidence-connected not:d2-plane-sextic-base
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: cycle not:d2-plane-sextic-base lem:d2-incidence-connected
 docs-deps: coble/lattices-and-moduli/moduli-construction.md: cycle lem:coble-double-point-of-the-sextic thm:coble-smooth-antibicanonical-is-a-plane-blowup
-docs-deps: coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md: cycle lem:cusp-vector-stabilizer-image thm:coble-plane-stabilizer-image prop:coble-planecusp-finite
-docs-deps: coble/lattices-and-moduli/lattices.md: cycle def:gamma-co-groups def:coble-family-unpolarized lem:d2-local-system
+docs-deps: coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md: cycle prop:coble-planecusp-finite lem:cusp-vector-stabilizer-image thm:coble-plane-stabilizer-image
+docs-deps: coble/lattices-and-moduli/moduli-construction.md: cycle def:coble-family-unpolarized lem:d2-local-system def:gamma-co-groups
 docs-deps: coble/lattices-and-moduli/local-systems-of-lattices-and-monodromy.md: uncited-term "exact" lem:monodromy-of-a-descended-local-system def:exact-complex
 docs-deps: coble/lattices-and-moduli/local-systems-of-lattices-and-monodromy.md: uncited-term "kernel" lem:monodromy-of-a-descended-local-system def:kernel-cokernel
 docs-deps: coble/lattices-and-moduli/local-systems-of-lattices-and-monodromy.md: uncited-term "local system of lattices" lem:monodromy-of-a-descended-local-system def:local-system-of-lattices
@@ -123,4 +123,4 @@ docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "path"
 docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "path connected" lem:g-paths-exhaust-the-fundamental-groupoid def:path-connectedness
 docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "source" lem:g-paths-exhaust-the-fundamental-groupoid def:globular-boundary
 docs-deps: coble/lattices-and-moduli/moduli-construction.md: uncited-term "target" lem:g-paths-exhaust-the-fundamental-groupoid def:globular-boundary
-docs-deps: 1925 blocks, 1146 cited results, 9835 edges, 125 findings -> ../../research/807-widened-coble/checks/dependency-graph
+docs-deps: 1925 blocks, 1146 cited results, 9837 edges, 125 findings -> ../../.tmp/dependency-graph-807
