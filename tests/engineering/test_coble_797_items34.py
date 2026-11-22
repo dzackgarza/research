@@ -449,21 +449,49 @@ def test_the_universal_property_is_proved_by_descent_to_a_manifold_chart():
     assert "So $g=f\\circ p$ on every object, and $F_S$ is a coarse space of $\\mcM_\\Co$." in body
 
 
-def test_the_atlas_claim_and_clause_three_name_the_same_missing_hypothesis():
-    """Clause 5 gives essential surjectivity only; clause 3 names what is missing.
+def test_the_period_chart_families_are_not_the_atlas_and_clause_three_is_settled():
+    """Clause 5 says the period-chart families are not an atlas; clause 3 is proved.
 
-    The two paragraphs contradicted each other once: clause 5 said the period-chart
-    families were a smooth atlas and clause 3 said no atlas was exhibited.  Both now
-    name the representability of the diagonal, and neither claims an atlas.
+    An earlier form of clause 5 claimed the disjoint union of those families was a
+    smooth atlas while clause 3 said no atlas was exhibited.  The two are now
+    consistent: the families are essentially surjective and not a covering, and the
+    atlas is the moduli of marked covers.
     """
     text = MC.read_text(encoding="utf-8")
     body = _block(text, FIVE_CLAUSES)
     assert "is therefore a smooth atlas" not in text
-    # clause 5: essential surjectivity and nothing more
-    assert "It gives essential surjectivity and only that" in body
-    # clause 3: the missing hypothesis, stated once
-    assert "the representability of the diagonal" in body
-    assert "the sheaf of isomorphisms between them is representable by a complex space" in body
-    # and the coarse-space result is not weakened by the withdrawal
+    assert "It gives essential surjectivity and only that." in body
+    assert "They are not an atlas" in body
+    assert "3. **Algebraicity.** **Proved**" in body
+    # the coarse-space verdict is untouched by any of this
     assert "5. **Coarse space.** **Proved**" in body
-    assert "and $F_S$ is a coarse space of $" in body
+
+
+ISOM = "thm:coble-isom-sheaf-representable"
+ATLAS = "thm:coble-atlas"
+
+
+def test_the_isomorphism_sheaf_is_representable_and_no_locus_is_restricted():
+    text = MC.read_text(encoding="utf-8")
+    body = _block(text, ISOM)
+    # the two families, the claim, and the reduction to the K3 covers
+    assert "is representable by a complex space over $T$" in body
+    proof = text[text.index("#" + ISOM):text.index("#" + ATLAS)]
+    assert "@PS24, Lemma 19.2.4" in proof          # faithfulness: the action is injective
+    assert "@PS24, Theorem 19.3.1" in proof        # the fine moduli of marked K3 surfaces
+    assert "No restriction of the locus" in proof  # no classical/unnodal/Picard-general hypothesis
+
+
+def test_the_atlas_is_the_marked_moduli_and_algebraicity_follows():
+    text = MC.read_text(encoding="utf-8")
+    body = _block(text, ATLAS)
+    assert "smooth and essentially surjective" in body
+    assert "its diagonal is representable by @thm:coble-isom-sheaf-representable" in body
+    proof = text[text.index("#" + ATLAS):]
+    assert "torsor over" in proof[:3000] and "Gamma_" in proof[:3000]
+    # clause 3 no longer calls algebraicity open, and clause 4 is the first open one
+    five = _block(text, FIVE_CLAUSES)
+    assert "3. **Algebraicity.** **Proved**" in five
+    assert "Clause 4 is the first open one." in five
+    # and the period-chart families are explicitly not the atlas
+    assert "They are not an atlas" in five
