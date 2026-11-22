@@ -508,4 +508,40 @@ def test_fppf_effectivity_is_not_inferred_from_base_change_stability():
     assert "@stacks-08J0" in body and "@stacks-08KE" in body
     assert "@stacks-0ADV" in body
     assert "descended algebraic space is again a projective scheme" in body
+    assert "@qst:coble-projective-return" in body
     assert "effective" in body
+
+
+POLARIZED_RETURN = "lem:coble-fppf-invariant-polarization"
+ANTI_POLARIZATION = "prop:anti-bicanonical-is-not-a-polarization"
+PROJECTIVE_RETURN = "qst:coble-projective-return"
+
+
+def test_the_polarized_return_checks_each_descent_hypothesis():
+    text = MC.read_text(encoding="utf-8")
+    body = _block(text, POLARIZED_RETURN)
+    assert "relatively ample" in body and "line-bundle descent datum" in body
+    proof = text[text.index("#" + POLARIZED_RETURN):text.index("#" + ANTI_POLARIZATION)]
+    for tag in ["@stacks-0ADV", "@stacks-0D1G", "@stacks-023T",
+                "@stacks-0D3C", "@stacks-0D36", "@stacks-01VW", "@stacks-0BCL"]:
+        assert tag in proof, tag
+    assert "finite presentation" in proof
+    assert "one-member fpqc cover" in proof
+
+
+def test_anti_bicanonical_is_not_a_polarization():
+    text = MC.read_text(encoding="utf-8")
+    body = _block(text, ANTI_POLARIZATION)
+    assert "(-K_S)^2=K_S^2=-1<0" in body
+    assert "(-2K_S)^2=C^2=-4<0" in body
+    proof = text[text.index("#" + ANTI_POLARIZATION):text.index("#" + PROJECTIVE_RETURN)]
+    assert "Nakai" in proof
+
+
+def test_the_projective_return_is_the_exact_residue():
+    text = MC.read_text(encoding="utf-8")
+    body = _block(text, PROJECTIVE_RETURN)
+    assert "equivalent" in body
+    assert "relatively ample" in body and "line-bundle descent datum" in body
+    assert "not proved" in body
+    assert "No theorem on the page or in the sources read supplies" in body
