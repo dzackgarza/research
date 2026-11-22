@@ -343,3 +343,45 @@ def test_injectivity_comes_from_the_chamber_not_from_an_ample_class():
     # and the ledger no longer carries the chamber item as owed
     led = text[text.index("#thm:gamma-co-is-the-stack-monodromy"):]
     assert "only item still owed" in led[:6000]
+
+
+MOVED = "prop:coble-moved-minus-two-class"
+FIVE_CLAUSES = "rmk:coble-moduli-functor-five-clauses"
+
+
+def test_the_picard_general_locus_is_the_complement_of_all_the_heegner_divisors():
+    body = _block(MC.read_text(encoding="utf-8"), MOVED)
+    # clause 1 names the locus as the complement of the (-2d)-divisors, not of Z alone
+    assert "\\bigcup_{d\\ge1}\\mch_{-2d}" in body
+    assert "@def:heegner-divisor" in body
+    # and both directions of the equivalence, with the negative-square step in the proof
+    text = MC.read_text(encoding="utf-8")
+    tail = text[text.index("#" + MOVED):]
+    proof = tail[tail.index("\\begin") if "\\begin" in tail else 0:]
+    for need in ["positive index $2$", "U(2)", "primitive", "locally finite"]:
+        assert need in proof[:9000], need
+
+
+def test_a_minus_two_class_is_moved_off_the_minus_two_divisor():
+    text = MC.read_text(encoding="utf-8")
+    body = _block(text, MOVED)
+    # the counterexample: a square -4 class of T_Co, and the square -2 class it makes with e_0
+    assert "\\delta^2=-4" in body
+    assert "e_0+\\delta" in body and "e_0-\\delta" in body
+    # the existence is by the Baire category theorem on one hyperplane, not by a computation
+    tail = text[text.index("#" + MOVED):]
+    assert "Baire" in tail[:9000]
+    assert "@cons:coble-involution" in tail[:9000]
+
+
+def test_the_refuted_sentence_is_gone_and_the_locus_is_qualified():
+    text = MC.read_text(encoding="utf-8")
+    # the withdrawn justification: it asserts commutation for every (-2)-class of Pic(X'),
+    # which fails off the Picard-general locus (prop:coble-moved-minus-two-class(2))
+    bad = re.compile(r"every reflection in a \$\(-2\)\$-class of \$\\Pic\(X'\)\$ commutes")
+    assert not bad.search(text), bad.search(text).group(0)
+    body = _block(text, FIVE_CLAUSES)
+    # what stands instead: the Picard-general locus, named, and the statement that Z is not it
+    assert "@prop:coble-moved-minus-two-class(1)" in body
+    assert "@prop:coble-moved-minus-two-class(2)" in body
+    assert "not on $\\bD\\sm Z$" in body
