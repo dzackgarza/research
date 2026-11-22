@@ -9,7 +9,7 @@ Lattices in the same genus have the same rank, signature, and determinant, but m
 We define the **class group** $\cl(L)$ to be the set of isometry classes within a genus, and the **class number** as the size of $\cl(L)$.
 We note that for indefinite even lattices $L$, one typically expects the class number of $L$ to be one.
 For definite lattices, the situation is reversed, and having class number one is somewhat rare.
-By [@Sca87, §3.4], if $\rank(L)>16+\ell(L)$, then $\cl(L) \geq 2$.
+The large-rank genus claim requires a definiteness hypothesis: as written, the inequality $\rank(L)>16+\ell(L)$ does **not** imply that the genus contains at least two isometry classes. Indeed, $L=U\perp E_8(-1)^{\perp2}$ is an even unimodular lattice of rank $18$ and signature $(1,17)$, hence $\ell(L)=0$ and $18>16$, but its genus has exactly one class by the classification of indefinite even unimodular lattices ([Huybrechts, *Lectures on K3 Surfaces*, Ch. 14, Thm. 1.1](https://www.math.uni-bonn.de/people/huybrech/K3Global.pdf#page=284)). More generally, for even indefinite lattices of fixed signature and discriminant quadratic form, $\rank(L)\geq\ell(A_L)+2$ is a sufficient uniqueness criterion ([ibid., Thm. 1.5](https://www.math.uni-bonn.de/people/huybrech/K3Global.pdf#page=285)). The scope of the different bound attributed to [@Sca87, §3.4] must not be transferred to the indefinite case without verifying its hypotheses.
 :::
 
 #### p-Elementary Lattices
@@ -32,7 +32,9 @@ We note, however, that Nikulin works over $\ZZpadic$ and particularly over $\ZZt
 | $\generators{2} \cong \left( \ZZ, \begin{bmatrix} 2 \end{bmatrix} \right)$ | $p \cong \lieq_1(2) \cong \left( C_2, \left[ \tfrac{1}{2} \right] \right)$ | Co-odd |
 | $\generators{-2} \cong \left( \ZZ, \begin{bmatrix} -2 \end{bmatrix} \right)$ | $q \cong \lieq_1(-2) \cong \left( C_2, \left[ -\tfrac{1}{2} \right] \right)$ | Co-odd |
 | $U(2) \cong \left( \ZZtwoadic^2, \begin{bmatrix} 0 & 2 \\ 2 & 0 \end{bmatrix} \right)$ | $u \cong \lieu(2) \cong \left( C_2^2, \begin{bmatrix} 0 & \tfrac{1}{2} \\ \tfrac{1}{2} & 0 \end{bmatrix} \right)$ | Co-even |
-| $V(2) \cong \left( \ZZtwoadic^2, \begin{bmatrix} 4 & 2 \\ 2 & 4 \end{bmatrix} \right)$ | $v \cong \liev(2) \cong \left( C_2 \times C_6, \begin{bmatrix} 1 & \tfrac{1}{2} \\ \tfrac{1}{2} & \tfrac{1}{3} \end{bmatrix} \right)$ | Co-even |
+| $V(2) \cong \left( \ZZtwoadic^2, \begin{bmatrix} 4 & 2 \\ 2 & 4 \end{bmatrix} \right)$ | $v \cong \liev(2) \cong \left( C_2^2, \begin{bmatrix} 1 & \tfrac{1}{2} \\ \tfrac{1}{2} & 1 \end{bmatrix} \right)$ | Co-even |
+
+For the $2$-adic $V(2)$ row, the Gram matrix is $2B$ with $B=\begin{psmallmatrix}2&1\\1&2\end{psmallmatrix}$ and $\det(B)=3\in\ZZtwoadic^\times$. Thus $B$ is invertible over $\ZZtwoadic$, and the discriminant group is $(\frac12\ZZtwoadic^2)/\ZZtwoadic^2\cong C_2^2$. Each of its three nonzero classes has quadratic value $1$ in $\QQ_2/2\ZZ_2$, agreeing with $v$ in @def:twoelementary-finite-quadratic-generators. Reading the *same matrix* over $\ZZ$ instead gives a different lattice, of determinant $12$ and discriminant group $C_2\oplus C_6$; its $3$-torsion is not part of the $2$-elementary form $v$.
 
 Let $L$ be an even, indefinite, 2-elementary lattice with $\rank(L) \geq 4$.
 The classification of such lattices is determined by three invariants:
