@@ -1,0 +1,9 @@
+K_ev basis squares: [0, 0, -2, -2, -2, -2, -2, -2, -4]
+index of K_ev in K: 2
+nine transvections integral and Gram-preserving: True
+nine transvections fix v: True
+nine transvections act trivially on v^perp/Zv: True
+distinct integral reflections of K in vectors of square +-2: 772
+order of the transvection images on B/2B: 256
+order of the reflection images on B/2B: 348364800
+order of the full family on B/2B: 89181388800
