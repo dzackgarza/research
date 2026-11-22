@@ -94,6 +94,7 @@ book:
         - coble/coble-surfaces/coble-surface-basics.md
         - coble/coble-surfaces/k3-covers-of-coble-surfaces.md
         - coble/coble-moduli/coble-surface-structure-and-classification.md
+        - coble/coble-moduli/coble-surfaces-with-finite-automorphism-group.md
         - coble/coble-surfaces/rational-sextic-calculations.md
     # General lattice machinery, complete before any Coble-specific lattice is
     # named. Splitting this from the next part is what keeps either readable.
