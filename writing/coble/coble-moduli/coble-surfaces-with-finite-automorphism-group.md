@@ -255,8 +255,9 @@ The three rows of @thm:kondo-finite-aut-classification whose characteristic colu
 
 ::: {.corollary #cor:kondo-finite-aut-locus-finite title="Finiteness of the object, and the count of roots"}
 
-Let $p\neq2$. The strong Coble surfaces over an algebraically closed field of characteristic $p$ with finite automorphism group form at most nine isomorphism classes, so in the moduli of Coble surfaces the locus of objects with finite automorphism group is finite, not positive-dimensional.
+Let $p\neq2$. The strong Coble surfaces over an algebraically closed field of characteristic $p$ with finite automorphism group form at most nine isomorphism classes, so in the moduli of Coble surfaces the strong objects with finite automorphism group are finitely many points, not a positive-dimensional family.
 The number of effective irreducible roots of such a surface is $12$, $20$ or $40$, and it is $12$ for the three complex ones.
+A Coble surface that is not strong is not covered by [@Kon21, Theorem 1.1], so no claim is made about its automorphism group: the finiteness here is a statement about the strong locus, which is what @prop:strong-coble-is-terminal-coble identifies.
 :::
 
 ::: {.proof}
