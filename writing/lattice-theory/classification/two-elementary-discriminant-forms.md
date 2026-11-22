@@ -93,6 +93,22 @@ The Brown invariant of $a p+(n-a)q$ is $2a-n$ modulo $8$. Two such normal forms 
 If all the quadratic values lie in $\bZ/2\bZ$, the decomposition contains only $u,v$. Its rank is $2m$; $2u\cong2v$ reduces it to either $m u$ or $(m-1)u+v$ for $m\ge1$. Their Brown invariants are respectively $0$ and $4$, so they are inequivalent. The zero-rank form is unique. Hence the stated relations give a unique normal form for each possible triple of rank, integral-valuedness, and Brown invariant. As these three quantities are invariant under isometry, no additional relations hold.
 :::
 
+::: {.corollary #cor:twoelementary-monoidal-k0 title="The monoidal Grothendieck group of $2$-elementary quadratic forms"}
+Let $\mathcal Q_{2,W}^{\simeq}$ be the symmetric monoidal groupoid whose objects are the nondegenerate finite $2$-elementary $W$-valued quadratic forms of @thm:2elementary-decomposition, whose morphisms are isometries, and whose monoidal product is orthogonal sum. Then the group completion of its isometry-class monoid (@def:k0-monoidal) is
+$
+K_0^{\perp}(\mathcal Q_{2,W}^{\simeq})
+\cong\bZ\langle[q]\rangle\oplus
+(\bZ/4\bZ)\langle[p]-[q]\rangle.
+$
+In particular, $[q]$ has infinite order and $[p]-[q]$ has exact order $4$. This computes monoidal $K_0^{\perp}$, not a Grothendieck group associated with an unspecified exact structure.
+:::
+
+::: {.proof}
+By @thm:2elementary-decomposition the monoid of isometry classes has the complete presentation on $p,q,u,v$ with the six stated relations. Group completion is left adjoint to forgetting inverses, so its abelian-group presentation has exactly the same generators and relations (@def:k0-monoidal).
+
+Writing these relations additively, $u+p=2p+q$ and $v+p=3q$ give $u=p+q$ and $v=3q-p$. The relation $v+q=3p$ then gives $4(p-q)=0$. Substitution into $u+q=p+2q$, $2u=2v$, and $4p=4q$ produces identities or the same relation; hence the group is presented by independent generators $q$ and $t=p-q$ with the single relation $4t=0$. Its universal presentation is $\bZ\langle q\rangle\oplus(\bZ/4\bZ)\langle t\rangle$. No further relation can arise because the cited monoid presentation is an isomorphism rather than merely a list of known isometries.
+:::
+
 
 ::: {.corollary #cor:twoelementary-monoid-numerical-invariants title="Discriminant blocks, coparity, and signature"}
 Let $L$ be an even $2$-elementary lattice of signature (@def:signature) $(s_+,s_-)$ and write a decomposition of its quadratic discriminant form, using @thm:2elementary-decomposition, as
