@@ -418,3 +418,19 @@ def test_torelli_for_pairs_quotes_its_numbered_inputs():
     assert "-\\id\\in\\Gamma_\\rho" in proof
     # the conjugation computation is on the page, not only in a report
     assert "(\\iota' u\\iota')\\varphi(\\mathcal A_X)" in proof
+
+
+HOLOMORPHY = re.compile(r"what is missing is that this map is holomorphic")
+
+
+def test_the_universal_property_names_the_descent_for_families_not_the_analyticity():
+    text = MC.read_text(encoding="utf-8")
+    # the false diagnosis, withdrawn: the induced set map is holomorphic (ball family,
+    # finite period stabiliser), so the gap is the descent for families, not the analyticity
+    assert not HOLOMORPHY.search(text), HOLOMORPHY.search(text).group(0)
+    body = _block(text, FIVE_CLAUSES)
+    assert "What fails is the descent for *families*" in body
+    assert "down which holomorphic functions descend" in body
+    # the inputs it rests on are the two the page proves
+    assert "@lem:period-stabiliser-finite" in body
+    assert "@thm:coble-period-surjectivity" in body

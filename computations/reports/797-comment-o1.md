@@ -116,3 +116,17 @@ that the universal property fails.
 *Acceptance.* O1 algebraicity: NOT MET, unchanged. O1 coarse space: first clause MET on the whole Coble locus
 (`thm:coble-torelli-for-pairs`); universal property NOT MET, waiting on the atlas of clause 3. A parallel search on
 the universal property is running and its findings will be reported separately.
+
+*Correction to the universal-property paragraph, after a parallel search.* The paragraph first written said that what is
+missing is the holomorphy of the induced set map $|F|\to|Z|$. That is wrong, and it is withdrawn on the page: a
+morphism $g\colon\mcM_\Co\to Z$ is constant on isomorphism classes automatically, and the induced set map is
+holomorphic, because about each point of the Coble locus the family over a ball of the proof of
+`thm:coble-period-surjectivity` has period map an isomorphism onto an open subset of $\bD(T_\Co)$, the stabiliser
+of a period is finite (`lem:period-stabiliser-finite`, on $T_\Co$ of signature $(2,9)$), and on a ball on which
+only that finite group acts the period map is the quotient of a ball by a finite group. What is missing is the
+descent for *families*: a chart $U\to\mcM_\Co$ whose composite $U\to F_S$ is a categorical quotient in complex
+spaces, so that every object of $\mcM_\Co$ is locally after base change a pullback of the one family over $U$.
+Clause 3 is still the statement that would close it, and it is still open. The equivalence of this with "the
+period map is locally injective on isomorphism classes of families" is asserted by that search's report but not
+proved there (its proof of the reverse implication assumes the finite cover it is meant to produce), so it is not
+on the page.
