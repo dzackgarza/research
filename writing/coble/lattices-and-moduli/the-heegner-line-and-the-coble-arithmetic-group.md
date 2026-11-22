@@ -2054,6 +2054,21 @@ A second certificate, at the standard vector $v = e_1$ of @thm:coble-plane-stabi
 (2) Let $g = \id_P\oplus(-\id_K)$. It fixes $v$, and it is the identity modulo $2B$, so $g\in\ker\rho$. By @lem:split-isometry-spinor-norm and @lem:minus-identity-spinor-norm, $\spinornorm_\bR(g) = \spinornorm_\bR(-\id_K) = -1$, because the positive index (@def:maximal-positive-definite-subspace) of $K$ is $1$. So $g\notin\Orth^+(B)$.
 :::
 
+::: {.theorem #thm:coble-integral-line-lifting title="Integral line lifting and the fibre over a discriminant class"}
+Let $B=\latI_{2,9}$, $T_\Co=B(2)$, $q=q_{T_\Co}$, $\rho=\rho_{T_\Co}\colon\Orth(T_\Co)\too\Orth(q)$, $K=\discriminantkernel{T_\Co}=\ker\rho$ and $\widetilde\Orth^+(T_\Co)=K\intersect\Orth^+(T_\Co)$. Let $\mathcal L$ be the set of primitive isotropic lines of $T_\Co$ and $\mathcal C$ the set of nonzero isotropic classes of $A_{T_\Co}$. For a subgroup $\Gamma$ with $\widetilde\Orth^+(T_\Co)\iscontainedin\Gamma\iscontainedin\Orth(T_\Co)$:
+
+1. (Discriminant image and surjectivity.) The class map $\ell=\ZZ v\mapsto[\ell/2]\definedas[v/2]$ is $\Gamma$-equivariant, $\rho(g)[v/2]=[gv/2]$, and its image is all of $\mathcal C$; hence it induces a map $\Gamma\backslash\mathcal L\to\rho(\Gamma)\backslash\mathcal C$.
+2. (Fibres.) That map is a bijection: $\ell$ and $\ell'$ lie in one $\Gamma$-orbit if and only if $[\ell/2]$ and $[\ell'/2]$ lie in one $\rho(\Gamma)$-orbit. Each fibre is a single $\widetilde\Orth^+(T_\Co)$-orbit.
+3. (The stated groups.) $\rho(\Orth(T_\Co))=\Orth(q)$, and $\Orth(q)$ is transitive on $\mathcal C$, so $\Orth(T_\Co)$ has one line orbit. $\widetilde\Orth(T_\Co)=K$ and $\widetilde\Orth^+(T_\Co)\iscontainedin K$, so their images are trivial and each has exactly $\abs{\mathcal C}=527$ line orbits. For $R_{\Gamma_{\mathrm{En},2}}=\bar\rho^{-1}(P_0)$ (@def:gamma-co-groups), which contains $K$, the image is $P_0$ and the line orbits are the $P_0$-orbits of $\mathcal C$.
+4. (Not covered.) $\Gamma_\Co$ is not covered by parts 1--3. The identification of $\Gamma_\Co$ with a subgroup defined by the discriminant form is @conj:gamma-co-stable, and only the inclusion of @thm:gamma-co-is-stable(2) is a theorem; the line orbits of $\Gamma_\Co$ are therefore classified only under that conjecture.
+:::
+
+::: {.proof}
+(1) Equivariance is @lem:isotropic-classes-lift(1), and the image is $\mathcal C$ by @lem:isotropic-classes-lift(2). Since the class of a line does not depend on the choice of its primitive generator, the map is well defined on $\Gamma$-orbits.
+(2) Let $\ell=\ZZ v$, $\ell'=\ZZ v'$ with $[\ell'/2]=\rho(g)[\ell/2]$ for some $g\in\Gamma$. Replacing $\ell'$ by $g^{-1}\ell'$ we may assume $[v'/2]=[v/2]$; then $v'=kv$ for some $k\in K$ by @thm:coble-zero-cusp-count(1). Choose $\varepsilon\in\Stab_K(v)$ with $\spinornorm_\bR(\varepsilon)=\spinornorm_\bR(k)$; this is possible because $\Stab_K(v)$ contains an element of spinor norm $-1$ (@lem:cusp-vector-stabilizer-image(2)) and the identity, so one of the two has the required norm. Then $k^+\definedas k\varepsilon^{-1}$ lies in $K\intersect\Orth^+(B)=\widetilde\Orth^+(T_\Co)$ and $k^+v=k\varepsilon^{-1}v=kv=v'$, because $\varepsilon v=v$. So $\ell'$ lies in the $\widetilde\Orth^+(T_\Co)$-orbit of $\ell$, hence in its $\Gamma$-orbit as $\widetilde\Orth^+(T_\Co)\iscontainedin\Gamma$. Thus every fibre is a single $\Gamma$-orbit, which is injectivity on orbit sets; surjectivity is (1).
+(3) $\rho(\Orth(T_\Co))=\Orth(q)$ is @thm:two-elementary-surjectivity and transitivity on $\mathcal C$ is @lem:isotropic-classes-lift(2). The other two images are trivial because $\widetilde\Orth(T_\Co)=K$ and $\widetilde\Orth^+(T_\Co)\iscontainedin K$, and the number of classes is @lem:isotropic-classes-lift(2). For $R_{\Gamma_{\mathrm{En},2}}$ the defining equation $\bar\rho=\rho$ gives $\rho(R_{\Gamma_{\mathrm{En},2}})=P_0$, and $K\iscontainedin R_{\Gamma_{\mathrm{En},2}}$, so (2) applies.
+:::
+
 ::: {.theorem #thm:coble-zero-cusp-count title="The $527$ orbits of primitive isotropic lines of $T_\Co$"}
 
 Let $B=\latI_{2,9}$, $T_\Co=B(2)$, $q=q_{T_\Co}$ and $\rho=\rho_{T_\Co}\colon\Orth(T_\Co)\too\Orth(q)$, and put
