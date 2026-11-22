@@ -95,11 +95,11 @@ If all the quadratic values lie in $\bZ/2\bZ$, the decomposition contains only $
 
 ::: {.corollary #cor:twoelementary-monoidal-k0 title="The monoidal Grothendieck group of $2$-elementary quadratic forms"}
 Let $\mathcal Q_{2,W}^{\simeq}$ be the symmetric monoidal groupoid whose objects are the nondegenerate finite $2$-elementary $W$-valued quadratic forms of @thm:2elementary-decomposition, whose morphisms are isometries, and whose monoidal product is orthogonal sum. Then the group completion of its isometry-class monoid (@def:k0-monoidal) is
-$
+$$
 K_0^{\perp}(\mathcal Q_{2,W}^{\simeq})
 \cong\bZ\langle[q]\rangle\oplus
 (\bZ/4\bZ)\langle[p]-[q]\rangle.
-$
+$$
 In particular, $[q]$ has infinite order and $[p]-[q]$ has exact order $4$. This computes monoidal $K_0^{\perp}$, not a Grothendieck group associated with an unspecified exact structure.
 :::
 
