@@ -1,0 +1,51 @@
+research#802 — acceptance item by item
+read at 6aaa39cc1735bd1d68a72dec5a062b67bd4f5fb0
+
+1. "the statement proved on a page of writing/ and read MET by one Kimi review"
+NOT MET. The statement is not proved on a page, and no Kimi review has read it:
+what is on the page refutes it instead
+(writing/coble/lattices-and-moduli/moduli-construction.md:1146,
+prop:no-identification-with-the-period-domain).
+
+2. "or refuted with a counterexample"
+MET. Two counterexamples, one per equivalence as stated, each an object whose
+automorphism group is an invariant of the stack the equivalence would have to
+preserve (writing/coble/lattices-and-moduli/moduli-construction.md:1125,
+lem:automorphism-group-under-an-equivalence):
+
+  (a) the marked Coble stack is not D(T_Co) - Z.
+      An object of the marked stack has the covering involution as a nontrivial
+      automorphism, "The covering involution $\iota$ is a nontrivial automorphism
+      of every labelled object"
+      (writing/coble/lattices-and-moduli/moduli-construction.md:1097,
+      rmk:coble-labelled-versus-unlabelled(1)); an object of the stack
+      represented by the space D(T_Co)^+ - Z has only the identity
+      (moduli-construction.md:1150, prop:no-identification-with-the-period-
+      domain(1) with G = 1); a witness pair, at
+      moduli-construction.md:1154.
+
+  (b) the Coble stack is not [(D(T_Co)^+ - Z)/G] for G a group of isometries of
+      T_Co, hence not for G = Otilde+(T_Co).
+      A point of the quotient has finite stabiliser
+      (moduli-construction.md:1150-1152,
+      prop:no-identification-with-the-period-domain(1),
+      lem:period-stabiliser-finite), while the isotropy of the Coble stack is
+      infinite at every object (moduli-construction.md:1156,
+      prop:no-identification-with-the-period-domain(3), on
+      lem:coble-automorphism-group-is-infinite(3),
+      rmk:coble-labelled-versus-unlabelled(2) and
+      prop:coble-family-over-c-star-with-infinite-monodromy-on-m).
+
+The identification G = Otilde+(T_Co) inside the statement under (b) is not
+reached: there is no equivalence whose group could be that group.
+
+Correction in the page commit:
+writing/coble/lattices-and-moduli/local-systems-of-lattices-and-monodromy.md:186,
+which named research#802 as the place the quotient presentation of the Coble
+family would come from, now states that no such presentation exists for any
+subgroup of Orth(T_Co).
+
+Not run: the rendered book gate (CI renders writing/), and tests/engineering
+(needs dzack_research). scripts/docs_check.py --source reports 29 citation-key
+findings, the same count as at the parent commit, none of them on either page
+touched here.
