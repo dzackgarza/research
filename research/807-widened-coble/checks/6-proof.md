@@ -360,4 +360,3 @@ This is the group that @thm:coble-monodromy-on-m-classical computes on the class
 
 *3.* The inclusion is @thm:coble-classical-substack-is-open-dense-and-proper(1) and the description of the complement is (3) there; a loop of $\mcM_\Co$ that is moved into $\mcM_\Co\sm\mcH$ lies in $\mcM^{\mathrm{cl}}_\Co$.
 :::
-
