@@ -200,15 +200,19 @@ The prespectrum is a *spectrum object* when every $\eps_n$ is an equivalence (@d
 
 ::: {.theorem #thm:stabilization-universal title="The universal property of the stabilization"}
 
-For an $\infty$-category $\mcc$ the stabilization $\mathrm{Stab}(\mcc)$ is universal among stable $\infty$-categories equipped with a left exact (@def:exact-complex) functor to $\mcc$ [@Lur09, Prop. 10.12].
+For an $\infty$-category $\mcc$ admitting finite limits, the stabilization $\mathrm{Stab}(\mcc)$ satisfies the following universal property [@Lur09, Prop. 10.12]: for every pointed $\infty$-category $\mathcal A$ admitting finite colimits, composition with the canonical functor $\mathrm{Stab}(\mcc)\to\mcc$ induces an equivalence
+$
+\mathrm{Exc}(\mathcal A,\mathrm{Stab}(\mcc))\simeq\mathrm{Exc}(\mathcal A,\mcc),
+$
+where $\mathrm{Exc}$ denotes the $\infty$-category of excisive functors.
 The $\infty$-category of spectra is $\mathrm{Sp}=\mathrm{Sp}(\mcs_{*})=\mathrm{Stab}(\mcs)$ [@Lur09, Def. 9.1], and it is freely generated under colimits (@def:limit), as a stable $\infty$-category, by the sphere (@def:spheres) spectrum [@Lur09, Cor. 15.6].
 :::
 
 ::: {.proof}
 
 $\mathrm{Stab}(\mcc)=\mathrm{Sp}(\mcc_{*})$ is [@Lur09, Def. 8.4].
-$\mathrm{Sp}=\mathrm{Stab}(\mcs)$ in [@Lur09, Def. 9.1] is the case $\mcc=\mcs$, together with the identification $\mcs_{*}=\mcs$ up to the trivial fibration of [@Lur09, Rem. 8.5].
-The universal property is the equivalence (@def:equivalence-of-objects) $\mathrm{Exc}(\mathcal{C},\mathrm{Stab}(\mathcal{D}))\simeq\mathrm{Exc}(\mathcal{C},\mathcal{D})$ of [@Lur09, Prop. 10.12].
+$\mathrm{Sp}=\mathrm{Sp}(\mcs_*)=\mathrm{Stab}(\mcs)$ follows directly by applying [@Lur09, Def. 8.4] to $\mcs$ and using [@Lur09, Def. 9.1]. **No equivalence $\mcs_*\simeq\mcs$ is used:** $\mcs_*$ has a zero object, while $\mcs$ has distinct initial and terminal objects $\varnothing$ and $*$. The trivial-fibration statement of [@Lur09, Rem. 8.5] applies only when its input $\infty$-category is already pointed.
+The displayed equivalence of excisive-functor $\infty$-categories is exactly [@Lur09, Prop. 10.12], with its hypotheses: the source $\mathcal A$ is pointed with finite colimits, and the target $\mcc$ has finite limits.
 Free (@def:module-subcategories) generation by the sphere spectrum is [@Lur09, Cor. 15.6]: evaluation (@def:dualizable-object) on the sphere spectrum induces $\operatorname{Pr}^{\mathrm L}(\mathrm{Sp},\mathcal{D})\simeq\mathcal{D}$ for stable presentable $\mathcal{D}$.
 :::
 
