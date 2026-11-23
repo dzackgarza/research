@@ -86,7 +86,7 @@ Let $v\in T_\Co$ be primitive and isotropic (@def:isotropic-subspace) and $\ell=
 Let $v$ be primitive isotropic, $\ell=\bZ v$, $c=[\ell/2]$, and let $\Gamma$ be a subgroup with $\widetilde O^+\iscontainedin\Gamma\iscontainedin\Orth(T_\Co)$. Then
 
 1. $\rho\bigl(\Stab_\Gamma(v)\bigr)=\rho(\Gamma)\intersect\Stab_{\Orth(q)}(c)$;
-2. $-\id\in\widetilde O\iscontainedin\Gamma$, so $\Stab_\Gamma(\ell)=\Stab_\Gamma(v)\cdot\generators{\pm1}$ and therefore $\rho\bigl(\Stab_\Gamma(\ell)\bigr)$ is the same subgroup.
+2. $-\id\in\widetilde O\intersect\Orth^+(T_\Co)=\widetilde O^+\iscontainedin\Gamma$, so $\Stab_\Gamma(\ell)=\Stab_\Gamma(v)\cdot\generators{\pm1}$ and therefore $\rho\bigl(\Stab_\Gamma(\ell)\bigr)$ is the same subgroup.
 
 In particular the stabilizer of a line has the same discriminant image as the stabilizer of either of its two vectors, and for $\Gamma=O$ that image is all of $\Stab_{\Orth(q)}(c)$, of order $\abs{\Orth(q)}/527=89\,181\,388\,800$.
 :::
@@ -95,7 +95,7 @@ In particular the stabilizer of a line has the same discriminant image as the st
 
 (1) The class of $gv$ is $\rho(g)c$ by @lem:o2-line-classmap(1), so an element of $\Stab_\Gamma(v)$ has its image in the stabilizer of $c$: the inclusion $\subseteq$. Conversely let $h\in\rho(\Gamma)\intersect\Stab_{\Orth(q)}(c)$ and $\gamma\in\Gamma$ with $\rho(\gamma)=h$. Then $[\gamma v/2]=\rho(\gamma)c=c=[v/2]$, so by @lem:o2-line-classmap(3) there is $k\in\widetilde O^+$ with $k\gamma v=v$. Now $k\gamma\in\Gamma$ because $\widetilde O^+\iscontainedin\Gamma$, it fixes $v$, and $\rho(k\gamma)=\rho(\gamma)=h$.
 
-(2) $-\id$ acts trivially on $A=B/2B$, which is $2$-torsion, so $-\id\in\ker\rho=\widetilde O$; and $\Stab_\Gamma(\ell)$ is the union of $\Stab_\Gamma(v)$ and $-\Stab_\Gamma(v)$, since $g\ell=\ell$ means $gv=\pm v$. The order is $\abs{\Stab_{\Orth(q)}(c)}=\abs{\Orth(q)}/527$ by @lem:cusp-vector-stabilizer-image(1) and the transitivity of @lem:isotropic-classes-lift(2).
+(2) $-\id$ acts trivially on $A=B/2B$, which is $2$-torsion, so $-\id\in\ker\rho$; and $-\id\in\Orth^+(T_\Co)$ because the positive index of $T_\Co$ is $2$ (@lem:minus-identity-spinor-norm), so $-\id\in\widetilde O^+$, and $\widetilde O^+\iscontainedin\Gamma$ puts it in $\Gamma$; and $\Stab_\Gamma(\ell)$ is the union of $\Stab_\Gamma(v)$ and $-\Stab_\Gamma(v)$, since $g\ell=\ell$ means $gv=\pm v$. The order is $\abs{\Stab_{\Orth(q)}(c)}=\abs{\Orth(q)}/527$ by @lem:cusp-vector-stabilizer-image(1) and the transitivity of @lem:isotropic-classes-lift(2).
 :::
 
 ::: {.theorem #thm:o2-lines title="Integral line orbits for the four groups"}
