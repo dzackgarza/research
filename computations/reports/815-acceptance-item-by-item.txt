@@ -1,0 +1,16 @@
+#815 repair acceptance
+Repair commit: ab9663043626ebc1ff019237c461af60bf6e7c24
+
+1. MET — Distinct boundary components are disjoint and their half-classes have intersection 0; the diagonal intersection remains -1: writing/coble/coble-moduli/coble-surfaces-with-finite-automorphism-group.md:87.
+2. MET — The Lemma 3.13 construction now requires n>=3, the proper transform of a bi-section with E.B=2, Halphen index 2, all boundary components in F, the second component and curve, and a primitive isotropic class in D(S): writing/coble/coble-moduli/coble-surfaces-with-finite-automorphism-group.md:176.
+3. MET — Both Vinberg threshold occurrences now use rank(CM(S))-2=8, with n=9 and maximal parabolic rank n-1: writing/coble/coble-moduli/coble-surfaces-with-finite-automorphism-group.md:188,199.
+4. MET — Theorem 5.1 is used only for finite graph shapes; surface classification is assigned to sections 6-7: writing/coble/coble-moduli/coble-surfaces-with-finite-automorphism-group.md:190,202.
+5. MET — Both section 6 case (2) blow-up alternatives are restored and compared to obtain n=1: writing/coble/coble-moduli/coble-surfaces-with-finite-automorphism-group.md:284.
+6. MET — The global odd-prime determinant criterion is removed; V, VI, VII, MI and MII now use Kondo's separate rowwise fibration and row-specific discriminant arguments: writing/coble/coble-moduli/coble-surfaces-with-finite-automorphism-group.md:300-312.
+7. MET — Type VI n=5 and n=1 are listed separately, with ranks/bounds 11/21 and 10/20; V and VII remain 11/21 and 10/20: writing/coble/coble-moduli/coble-surfaces-with-finite-automorphism-group.md:325-334.
+8. MET — C_alpha has bidegree (2,2), the four lines have bidegrees (1,0),(1,0),(0,1),(0,1), and the total branch divisor has bidegree (4,4): writing/coble/coble-moduli/coble-surfaces-with-finite-automorphism-group.md:390-398.
+9. MET — Non-classicality is restricted to the one-boundary type I surface; no assertion is made for the two-boundary type I surface: writing/coble/coble-moduli/coble-surfaces-with-finite-automorphism-group.md:469.
+
+Preservation: MET — The nine-row classification table was compared byte-for-byte before and after the edit and is unchanged; no strong-Coble case was edited.
+Focused check: PASS — `uvx --from quarto-cli quarto render coble/coble-moduli/coble-surfaces-with-finite-automorphism-group.md --to html` in `writing/.book`, with only the known one-page post-render copy step temporarily disabled and the configuration restored afterward. No full suite or whole-book source check was run.
+Remaining repair gaps: none among the nine findings.
