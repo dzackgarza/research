@@ -81,8 +81,15 @@ Enough projectives (@def:module-subcategories) is not used; the statement is for
 
 Let $F\colon\mcc\to\mca$ be left adjoint (@def:pairing-adjoints) to $U\colon\mca\to\mcc$.
 The composite $\bot=FU$, with counit $\eps\colon\bot\Rightarrow\id_{\mca}$ and comultiplication built from the unit, is a comonad on $\mca$ [@Wei94, Def. 8.6.1, Main Application 8.6.2].
-For an object $X$ of $\mca$ the associated augmented simplicial object has $\bot^{\,n+1}X$ in degree (@def:graded-object) $n$, with faces and degeneracies from $\eps$ and the unit, and its chain complex (@def:chain-complexes) is a resolution of $X$ [@Wei94, §8.6].
-For $\mca=A\text{-}\mathbf{Mod}$ and $F$ the free (@def:module-subcategories) module functor this is the bar resolution, and it computes the derived functors of an additive functor out of $\mca$.
+For an object $X$ of $\mca$, the associated augmented simplicial object has $\bot^{\,n+1}X$ in degree (@def:graded-object) $n$, with faces and degeneracies induced by $\eps$ and the unit [@Wei94, 8.6.4].
+If $\mca$ is abelian, its alternating-face chain complex (@def:chain-complexes) is defined, but **need not be an exact resolution of $X$**.
+The general result is that the augmented simplicial object becomes left contractible **after applying $U$** [@Wei94, Prop. 8.6.10]; exactness of the augmented chain complex in $\mca$ follows, for example, when $X$ is $\bot$-projective [@Wei94, Prop. 8.6.8].
+For a counterexample to unconditional exactness, take $\mcc=\mca=\mathbf{Ab}$, $F(V)=(\bZ/2)\tensor_{\bZ}V$, $U(M)=\Hom_{\bZ}(\bZ/2,M)$, and $X=\bZ$. The tensor–Hom adjunction gives $\bot X=0$, so the augmented complex $0\to X\to0$ is not exact.
+
+There are two distinct module specializations.
+For a ring homomorphism $k\to R$, the forgetful functor $U:R\text{-}\mathbf{Mod}\to k\text{-}\mathbf{Mod}$ with left adjoint $F(V)=R\tensor_kV$ yields the **relative bar resolution**: its degree-$n$ term is $R^{\tensor_k(n+1)}\tensor_kM$, and the augmented complex is exact over $R$ and split exact over $k$; its terms need not be projective $R$-modules [@Wei94, 8.6.12].
+In contrast, for $U:R\text{-}\mathbf{Mod}\to\mathbf{Sets}$ and its free-module left adjoint $F(S)=R^{(S)}$, the cotriple yields an **ordinary free resolution** of every $R$-module, suitable for computing ordinary left-derived functors of additive functors [@Wei94, 8.6.14].
+The two cotriples must not be identified.
 :::
 
 ::: {.definition #def:n-dual-complex title="The $n$-dual of a complex" defines="$C^{r}$; $n$-dual"}
