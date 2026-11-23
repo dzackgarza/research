@@ -95,9 +95,9 @@ For (3): $\alpha\cdot C=2e\cdot C$ for a $(-2)$-root $C$ as soon as $C$ is disjo
 
 :::
 
-::: {.definition #def:coble-r-invariant title="The $R$-invariant of a strong Coble surface"}
+::: {.definition #def:coble-r-invariant title="The $R$-invariant in characteristic $p\neq2$"}
 
-Let $S$ be a strong Coble surface with boundary components $B_1,\dots,B_n$, let $\pi\colon X\too S$ be the double cover branched along $\sum_iB_i$ with covering involution $\sigma$, put $L^+=\pi^*\CM(S)$ and let $L^-$ be the orthogonal complement of $L^+$ in $\Pic(X)$; the $(-2)$-curves $\tilde B_i$ with $\pi^*(B_i)=2\tilde B_i$ lie in $L^-$ [@Kon21, §3].
+Let $S$ be a strong Coble surface over an algebraically closed field $k$ of characteristic $p\neq2$, with boundary components $B_1,\dots,B_n$. Let $\pi\colon X\too S$ be the **separable** double cover branched along $\sum_iB_i$, with its nontrivial covering involution $\sigma$, and put $L^+=\pi^*\CM(S)$ and let $L^-$ be the orthogonal complement of $L^+$ in $\Pic(X)$; the $(-2)$-curves $\tilde B_i$ with $\pi^*(B_i)=2\tilde B_i$ lie in $L^-$ [@Kon21, §3].
 Put
 $$
 h^\pm = \theset{\delta^\pm\in L^\pm : \exists\delta^\mp\in L^\mp,\ (\delta^\pm)^2=-4,\ \tfrac12(\delta^+ + \delta^-)\in\Pic(X)}
@@ -115,7 +115,13 @@ contains $K$ with index $\abs{H}$.
 The pair $(K,H)$ is the $R$-**invariant** of $S$ [@Kon21, §3].
 :::
 
-A $(-2)$-curve $C$ contributes $\delta^\pm=\tilde C^+\pm\tilde C^-$, and a $(-1)$-root $2e+\tfrac12\beta_i+\tfrac12\beta_j$ contributes $\delta^+=2\tilde E+\tilde B_i+\tilde B_j$ and $\delta^-=\tilde B_i\pm\tilde B_j$, so both kinds of effective irreducible root are visible in $h^\pm$ [@Kon21, §3].
+The hypothesis $p\neq2$ is essential to this K3-cover formulation. In characteristic $2$ the canonical cover is instead a **purely inseparable $\mu_2$-cover**, which can be singular and need not be a K3 surface [@KK21, Introduction, Theorem 1.1]. On function fields its extension $k(S)\subseteq k(X)$ is purely inseparable of degree $2$: every $z\in k(X)$ satisfies $z^2\in k(S)$. If $\tau\in\Aut_{k(S)}(k(X))$, then
+$$
+(\tau(z)-z)^2=\tau(z^2)-z^2=0.
+$$
+Since $k(X)$ is a field, $\tau(z)=z$ for every $z$, whence $\tau=\id$. Thus **there is no nontrivial geometric deck involution** in characteristic $2$; the infinitesimal group scheme $\mu_2$ is not an order-two automorphism on geometric points, since $\mu_2(k)=\{1\}$. The source [@Kon21, §3], which assumes characteristic different from $2$, therefore does **not** define the displayed $R$-invariant through a covering involution on an arbitrary characteristic-two Coble surface. A characteristic-two analogue would require a separate definition and proof involving the $\mu_2$ action and the potentially singular cover. This does not change @def:strong-coble-surface or the characteristic-two canonical-cover theorem of @prop:strong-coble-is-terminal-coble.
+
+Under the hypotheses of @def:coble-r-invariant, a $(-2)$-curve $C$ contributes $\delta^\pm=\tilde C^+\pm\tilde C^-$, and a $(-1)$-root $2e+\tfrac12\beta_i+\tfrac12\beta_j$ contributes $\delta^+=2\tilde E+\tilde B_i+\tilde B_j$ and $\delta^-=\tilde B_i\pm\tilde B_j$, so both kinds of effective irreducible root are visible in $h^\pm$ [@Kon21, §3].
 Two differences from the Enriques case are recorded in [@Kon21, §3] and matter below: the overlattice $K_H$ may contain $(-1)$-vectors, and it does as soon as $n\ge2$, the $(-1)$-vectors being $\tfrac12(\tilde B_i+\tilde B_j)$; and $\CM(S)$ need not be $E_{10}$, so the $R$-invariant is not a refinement of a single lattice statement (@lem:kondo-possible-characteristics(1)).
 
 ::: {.corollary #cor:one-boundary-coble-roots-are-curves title="With one boundary component every effective irreducible root is a curve"}
@@ -350,7 +356,7 @@ For type $\mathrm{MII}$, the maximal parabolic subdiagrams force $p=3$ and $n\in
 
 ::: {.remark #rmk:kondo-supersingular-covers title="Picard number of the cover: proved lower bounds and the unresolved supersingularity steps"}
 
-Write $\pi\colon X\too S$ for the double cover, $\sigma$ for the covering involution, $L^+=\pi^*\CM(S)$ and $L^-=(L^+)^\perp$ inside $\Pic(X)$.
+Here $S$ is one of the strong Coble surfaces of @thm:kondo-finite-aut-classification, over an algebraically closed field of characteristic $p\neq2$, so the cover is separable and its covering involution exists by @prop:strong-coble-is-terminal-coble. Write $\pi\colon X\too S$ for that cover, $\sigma$ for its covering involution, $L^+=\pi^*\CM(S)$ and $L^-=(L^+)^\perp$ inside $\Pic(X)$.
 Then $\rank L^+=10$ and $\Pic(X)\tensor\QQ=L^+\tensor\QQ\oplus L^-\tensor\QQ$, so
 $$
 \rho(X)=10+\rank L^- .
