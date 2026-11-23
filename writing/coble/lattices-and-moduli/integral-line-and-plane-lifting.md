@@ -354,10 +354,46 @@ So $K=\generators{\theset{t_Vft_{V'}^{-1}}}$.
 
 This is the Schreier argument of @lem:o2-even-part with the finite transversal *constructed* instead of assumed; the only finiteness used is that of the orbit $\mathcal W$, and no element of $H$ is ever lifted other than through an actual element of $S$. Applied with $S=\Stab_{\Orth(T_\Co)}(x)$, the group $K$ is the $R_\Gamma$-stabilizer, so an exact enumeration of $\mathcal W$ *is* an explicit finite integral family for it.
 
+
+::: {.lemma #lem:o2-marked-integral-isometry title="An integral isometry carrying the degree-two marked $U(2)$ block to the computational block"}
+Take the *marked* decomposition of the Coble lattice
+$$
+T_\Co^{\mathrm{src}}=\generators{2}h\perp U(2)_{\mathrm{src}}\perp E_8(2)
+$$
+of [@DK13, equation (3.6)], with negative-definite $E_8$ and with the $U(2)$ discriminant summand distinguished by [@Ste91, Proposition 2.7; @AEGS25, Definition 2.6]. On dividing the form by $2$, write $B_{\mathrm{src}}=\generators{1}h\perp U_{\mathrm{src}}\perp E_8$. In the computational lattice $B=U_1\perp U_2\perp D$, where $D=\generators{-1}^7$ has orthogonal basis $d_1,\ldots,d_7$, define in $U_2\perp D$
+$$
+\begin{aligned}
+a&=-2e_2-2f_2+\sum_{j=1}^{7}d_j,\\
+\beta_0&=f_2-d_1-d_2,\\
+\beta_1&=-e_2-2f_2+\sum_{j=2}^{7}d_j,\\
+\beta_i&=d_{i-1}-d_i\qquad(2\le i\le7).
+\end{aligned}
+$$
+Choose simple roots $\alpha_0,\ldots,\alpha_7$ of the negative-definite source $E_8$ whose Dynkin diagram has edges $(0,3),(1,2),(2,3),(3,4),(4,5),(5,6),(6,7)$. Then the map
+$$
+m:B_{\mathrm{src}}\too B,\qquad
+h\longmapsto a,\quad
+e_{\mathrm{src}}\longmapsto e_1,\quad
+f_{\mathrm{src}}\longmapsto f_1,\quad
+\alpha_i\longmapsto\beta_i
+$$
+is an **integral lattice isometry with integral inverse**. After multiplying both forms by $2$, it identifies the *distinguished* $U(2)_{\mathrm{src}}$ with $2U_1$ and therefore identifies the specified discriminant block $A_{U(2)}$ with **exactly**
+$$W=\generators{[e_1/2],[f_1/2]}\leq A_{B(2)}=B/2B.$$
+Consequently the subgroup $\rho^{-1}(\Stab_{\Orth(q)}(W))$ in the integral Schreier construction is the coordinate realization, through the explicit marked isometry $m$, of the *original* arithmetic $R_\Gamma$, rather than a subgroup inferred from the orbit counts of an unspecified block.
+:::
+
+::: {.proof}
+In $U_2\perp D$ the bilinear form is determined by $(e_2,f_2)=1$, $e_2^2=f_2^2=0$, $d_i^2=-1$ and all other basis pairings zero. Direct expansion gives
+$$
+a^2=8-7=1,\qquad (a,\beta_i)=0,\qquad \beta_i^2=-2\quad(0\le i\le7).
+$$
+The only nonzero pairings $(\beta_i,\beta_j)$ for $i<j$ are $+1$ precisely at the seven displayed Dynkin edges. Thus the $\beta_i$ have the negative $E_8$ simple-root Gram matrix, of determinant $1$. More strongly, the $9\times9$ integer matrix with *columns* $a,\beta_0,\ldots,\beta_7$ in the ordered basis $(e_2,f_2,d_1,\ldots,d_7)$ has determinant $-1$ (expansion of the displayed coordinates). Hence these nine vectors form a $\ZZ$-basis of $U_2\perp D$, not merely a finite-index or rational sublattice; their orthogonal Gram matrix is $\generators{1}\perp E_8$. Appending the unchanged hyperbolic basis $(e_1,f_1)$ produces an integral Gram-preserving basis map $m$ of the whole $B_{\mathrm{src}}$, with determinant $\pm1$, so its inverse is integral. This simultaneously proves the lattice isomorphism and its compatibility with the marked hyperbolic summand. On scaling by $2$, the discriminant quotient of $2U_{\mathrm{src}}$ maps to that of $2U_1$ by the very same integral isometry. Thus the displayed equality of marked blocks is proved *before* the finite Schreier enumeration, independently of its numerical output.
+:::
+
 ::: {.theorem #thm:o2-congruence-family title="Complete integral families for the $R_\Gamma$ stabilizers at every representative"}
 Keep the notation of @sec-o2-groups, with $B=\latI_{2,9}=U_1\perp U_2\perp D$, $T_\Co=B(2)$ and $\rho\definedas\rho_{T_\Co}$, so that $A=A_{T_\Co}=B/2B$. The two-dimensional subspace
 $$W\definedas A_{U(2)}=\generators{[e_1/2],[f_1/2]}=\generators{e_1,f_1}\ \text{in}\ B/2B$$
-is the image of the $U(2)$ summand: $T_\Co=B(2)=U_1(2)\perp K(2)$ and $K(2)=\latI_{1,8}(2)$ is isometric to $\generators{2}\oplus E_8(2)$, so $U(2)=2U_1$ and its discriminant classes are those of $e_1,f_1$. Let $P=\Stab_{\Orth(q)}(W)$.
+is the image of the $U(2)$ summand: $T_\Co=B(2)=U_1(2)\perp K(2)$ and $K(2)=\latI_{1,8}(2)$ is isometric to $\generators{2}\oplus E_8(2)$, so $U(2)=2U_1$ and its discriminant classes are those of $e_1,f_1$ by the **explicit integral marked isometry** @lem:o2-marked-integral-isometry. Let $P=\Stab_{\Orth(q)}(W)$.
 
 1. *(The line.)* Take $S=\Stab_{\Orth(T_\Co)}(e_1)$ and $F$ the symmetrization of the complete family of @thm:o2-line-family — the same family with the inverse of each of its $19$ members adjoined, so a list of $38$ entries. Then $\mathcal W$ has exactly $256$ elements, and the family of @lem:o2-explicit-transversal has $256\cdot38=9728$ entries, of which $1306$ are the identity and $948$ are pairwise distinct integral matrices. It generates $\Stab_{R_\Gamma}(e_1)$, and together with $-\id_B$ it generates
 $$\Stab_{R_\Gamma}(\bZ e_1)=\Stab_{R_\Gamma}(e_1)\times\generators{-\id_B}.$$
@@ -376,11 +412,11 @@ The two Schreier-orbit sizes are derived from the independently verified $P$-orb
 :::
 
 ::: {.remark #rmk:o2-congruence-run title="The certificate, and the four checks it does and does not make"}
-`computations/reports/coble_833-congruence-schreier.py` writes `computations/reports/coble_833-congruence-schreier.json`, which holds the two transversals — the $256$ and $768$ exact integral matrices $t_V$, indexed by the three nonzero vectors of $V$ — and the index of every member of each family as a pair (state, generator), from which the matrix $t_Vft_{V'}^{-1}$ is recomputed exactly. It also records, and the run transcript `...-schreier-run.txt` prints, these exact checks: the $527$ nonzero isotropic classes and the $67\,456$ plus-type two-dimensional subspaces of $A$ (so the index $[\Orth(q):P]$ of @prop:gamma-co-images(3) is reproduced); the orbits of $P$ on those classes, of sizes $2$, $120$, $270$, $135$, which are exactly the four numbers of @prop:coble-cong-point-stabilizer(2) and are what pins $W$ to $A_{U(2)}$; the Gram preservation and the fixed object of every member of the two input families; the two determinants $2$ of the bases of $D^{\mathrm{ev}}$ and $K_{\mathrm{ev}}$ used in the proofs of @thm:o2-plane-family and @thm:o2-line-family; the words in $W,A$ for the standard generators of $GL_2(\bZ)$; the $9728$ and $46\,080$ members with their Gram, isotropy and $W$-stability checks; and the telescoping identity of @lem:o2-explicit-transversal(3) on random elements of $K$, reproduced exactly. It does **not** prove the completeness of $F$ — that is @thm:o2-line-family and @thm:o2-plane-family — and it does not identify $R_\Gamma$ with any monodromy group.
+`computations/reports/coble_833-congruence-schreier.py` writes `computations/reports/coble_833-congruence-schreier.json`, which holds the two transversals — the $256$ and $768$ exact integral matrices $t_V$, indexed by the three nonzero vectors of $V$ — and the index of every member of each family as a pair (state, generator), from which the matrix $t_Vft_{V'}^{-1}$ is recomputed exactly. It also records, and the run transcript `...-schreier-run.txt` prints, these exact checks: the $527$ nonzero isotropic classes and the $67\,456$ plus-type two-dimensional subspaces of $A$ (so the index $[\Orth(q):P]$ of @prop:gamma-co-images(3) is reproduced); the orbits of $P$ on those classes, of sizes $2$, $120$, $270$, $135$, which are exactly the four numbers of @prop:coble-cong-point-stabilizer(2) and serve as a consistency check *after* the literal marked isometry of @lem:o2-marked-integral-isometry;  the Gram preservation and the fixed object of every member of the two input families; the two determinants $2$ of the bases of $D^{\mathrm{ev}}$ and $K_{\mathrm{ev}}$ used in the proofs of @thm:o2-plane-family and @thm:o2-line-family; the words in $W,A$ for the standard generators of $GL_2(\bZ)$; the $9728$ and $46\,080$ members with their Gram, isotropy and $W$-stability checks; and the telescoping identity of @lem:o2-explicit-transversal(3) on random elements of $K$, reproduced exactly. It does **not** prove the completeness of $F$ — that is @thm:o2-line-family and @thm:o2-plane-family — and it does not identify $R_\Gamma$ with any monodromy group.
 :::
 
 ::: {.remark #rmk:o2-which-summand title="Which hyperbolic summand carries $A_{U(2)}$, and why the answer does not enter the proof"}
-The model $B=\latI_{2,9}=U_1\perp U_2\perp D$, $T_\Co=B(2)$, carries two hyperbolic summands $2U_1$ and $2U_2$, each isometric to $U(2)$, and the page's decomposition $T_\Co=\generators{h}\oplus E_{10}(2)$ does not by itself say which of them is the $U(2)$ block: since $2K=I_{1,8}(2)=U(2)\perp\generators{-2}^7$ is isometric to $\generators{2}\oplus E_8(2)$, either hyperbolic plane can be paired with a $\generators{2}$-direction inside the other to produce the stated decomposition. @thm:o2-congruence-family fixes the choice by taking $W=\generators{[e_1/2],[f_1/2]}$, the discriminant block of $2U_1$, and the certificate confirms it in the only way available inside this model: $P$ then has orbits $2$, $120$, $270$, $135$ on the $527$ isotropic classes, and the class $[e_1/2]$ of the standard line lies in the two-element orbit, which is $W\intersect\mathcal C$ and is the orbit @prop:coble-cong-point-stabilizer(2) attaches to the two isotropic classes $u_1,u_2$ of $A_{U(2)}$.
+The model $B=\latI_{2,9}=U_1\perp U_2\perp D$, $T_\Co=B(2)$, carries two hyperbolic summands $2U_1$ and $2U_2$, each isometric to $U(2)$, and the page's decomposition $T_\Co=\generators{h}\oplus E_{10}(2)$ does not by itself say which of them is the $U(2)$ block: since $2K=I_{1,8}(2)=U(2)\perp\generators{-2}^7$ is isometric to $\generators{2}\oplus E_8(2)$, either hyperbolic plane can be paired with a $\generators{2}$-direction inside the other to produce the stated decomposition. @lem:o2-marked-integral-isometry **proves the marking** by an integral isometry $m$ carrying the original degree-two $U(2)$ summand to $2U_1$; @thm:o2-congruence-family consequently takes $W=\generators{[e_1/2],[f_1/2]}$ without any choice of a new unmarked group. The certificate independently checks the $P$-orbits of lengths $2$, $120$, $270$, $135$ on the $527$ isotropic classes, with $[e_1/2]$ in the two-element orbit, but these numerical invariants are only *consistency checks*: conjugate choices of $W$ have the same orbit-size multiset and cannot establish the literal marked isometry.
 
 The construction of @lem:o2-explicit-transversal is insensitive to that choice — it needs a finite symmetric generating set of $S_x$, the subspace $W$ and $\rho$ — but the *group it outputs* is not: the other choice $W'=\generators{[e_2/2],[f_2/2]}$ gives the conjugate stabilizer of a different plus-type two-dimensional subspace, and the same script then returns $|\mathcal W|=17\,280$ for the line $\bZ e_1$ (whose class then lies in the orbit of size $135$) and $|\mathcal W|=768$ for $P_0$, with its own families. Both computations are certified by the same certificate, which prints the orbit of $[e_1/2]$ under $P$ together with the four orbit sizes; what the theorem states, and what the acceptance of sage-extensions\#286 needs, is the family for the subgroup attached to the summand named there, and the corpus's $P$ is the one for which the primitive isotropic classes with vanishing $E_8(2)$-component lie in the two-element orbit.
 :::
