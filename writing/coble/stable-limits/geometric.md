@@ -30,8 +30,8 @@ The double points of $B$ are ordinary nodes or cusps, possibly infinitely near [
 
 ::: {.proposition #prop:coble-enriques-degeneration title="Coble surfaces as degenerations of Enriques quotients"}
 
-Let $S$ be a terminal (@def:terminal-coble-surface) Coble surface (@def:coble-surface) of K3 type with anti-bicanonical divisor $C$.
-The double cover $X_0\to S$ branched along $C$ is a K3 surface, with covering involution $\tau_0$.
+Let $S$ be a terminal (@def:terminal-coble-surface) Coble surface (@def:coble-surface) of K3 type over an algebraically closed field of characteristic $p\neq2$, with anti-bicanonical divisor $C$.
+The double cover $X_0\to S$ branched along $C$ is separable and $X_0$ is a smooth K3 surface, with covering involution $\tau_0$ [@DK25, Proposition 9.1.1 and the $p\neq2$ case of its proof; @KK21, Introduction].
 The pair $(X_0, \tau_0)$ is a degeneration of a pair $(X, \tau)$ of a K3 surface $X$ and a fixed-point-free involution $\tau$ [@Dol17, Sec. 5.1].
 :::
 

@@ -28,9 +28,15 @@ where each $B_i$ is a nonsingular rational curve and $B_i\intersect B_j=\varnoth
 
 ::: {.proposition #prop:strong-coble-is-terminal-coble title="The classified objects are exactly the terminal Coble surfaces of K3 type"}
 
-Let $S$ be a smooth projective rational surface with $\abs{-K_S}=\varnothing$ and $\abs{-2K_S}\neq\varnothing$.
+Let $S$ be a smooth projective rational surface over an algebraically closed field $k$ of characteristic $p$, with $\abs{-K_S}=\varnothing$ and $\abs{-2K_S}\neq\varnothing$.
 Then $S$ is a strong Coble surface with $n$ boundary components in the sense of @def:strong-coble-surface if and only if it is a terminal Coble surface of K3 type with $n$ boundary components in the sense of @def:coble-surface.
-In that case $B_i^2=-4$, $K_S\cdot B_i=2$, $K_S^2=-n$, $\rho(S)=10+n$, $n\le 10$, and there is a double cover $\pi\colon X\too S$ branched along $B_1+\cdots+B_n$ with $X$ a K3 surface [@Kon21, §1, §3; @DK25, Proposition 9.1.1, Corollary 9.1.5; @prop:terminal-coble-basic-rational].
+In that case $B_i^2=-4$, $K_S\cdot B_i=2$, $K_S^2=-n$, $\rho(S)=10+n$ and $n\le 10$ [@Kon21, §3; @DK25, §9.1, Corollary 9.1.5; @prop:terminal-coble-basic-rational].
+Let $\pi\colon X\too S$ be the canonical double cover defined by $\OO_S(-K_S)$.
+If $p\neq2$, then $\pi$ is separable, branched along $B_1+\cdots+B_n$, and $X$ is smooth and is a K3 surface [@DK25, Proposition 9.1.1 and the $p\neq2$ case of its proof; @KK21, Introduction].
+If $p=2$, then $\pi$ is a purely inseparable $\mu_2$-cover, and $X$ is K3-like: $\omega_X\iso\OO_X$ and $H^1(X,\OO_X)=0$.
+Let $A$ be the conductrix, defined by $(\eta)=-\sum_{i=1}^nB_i+2A$.
+If $A=0$, then $X$ has some singular point, all its singularities are rational double points, and its minimal nonsingular model is a supersingular K3 surface; the K3 surface is that resolution, not the cover $X$.
+If $A\neq0$, then $X$ is a rational surface, $A^2=-2$, and its isolated singularities are $4-n$ rational double points of type $A_1$ [@KK21, Introduction, Theorem 1.1, Theorem 3.1, Theorem 3.6, Proposition 3.17, Corollary 3.18].
 :::
 
 ::: {.proof}
@@ -41,7 +47,7 @@ So $D$ is the only member of $\abs{-2K_S}$ and is a disjoint union of $(-4)$-cur
 
 *From terminal to strong.* Conversely, if $\abs{-2K_S}=\theset{D}$ with $D$ reduced and a disjoint union of smooth rational $(-4)$-curves, then naming the components $B_1,\ldots,B_n$ gives the strong Coble data, by the same numbering.
 
-The numerical invariants and the bound are those of @prop:terminal-coble-basic-rational, and the double cover is [@Kon21, §1].
+The numerical invariants and the bound are those of @prop:terminal-coble-basic-rational. The separable smooth K3 cover for $p\neq2$ is [@Kon21, §1; @DK25, Proposition 9.1.1, the $p\neq2$ case of its proof; @KK21, Introduction], and the characteristic-$2$ statements are [@KK21, Introduction, Theorem 1.1, Theorem 3.1, Theorem 3.6, Proposition 3.17, Corollary 3.18].
 
 :::
 
@@ -185,7 +191,7 @@ Then:
 
 1. every genus one fibration on $S$ has extremal Jacobian [@Kon21, Proposition 3.10]; each of the extremal fibrations of [@Kon21, §2, Table 3] that [@Kon21, §6] allows has a reducible fibre, whose vertices are represented by $(-1)$- and $(-2)$-roots [@Kon21, Remark 3.14], so $S$ carries an effective irreducible root;
 2. some genus one fibration on $S$ is special;
-3. let $\Gamma$ be the graph of effective irreducible roots obtained from a special fibration by iterating (2) on the new fibrations produced by a special bi-section; then $W(\Gamma)$ has finite index in $\Orth(\CM(S))$ if and only if every connected parabolic subdiagram of $\Gamma$ is a component of a parabolic subdiagram of $\Gamma$ of rank $\rank\CM(S)-2=8$, and in that case $\Gamma$ is the whole set of effective irreducible roots.
+3. let $\Gamma$ be the graph of effective irreducible roots obtained from a special fibration by iterating (2) on the new fibrations produced by a special bi-section, and assume that $\Gamma$ has no $m$-tuple lines with $m\ge3$; then $W(\Gamma)$ has finite index in $\Orth(\CM(S))$ if and only if every connected parabolic subdiagram of $\Gamma$ is a component of a parabolic subdiagram of $\Gamma$ of rank $\rank\CM(S)-2=8$, and in that case $\Gamma$ is the whole set of effective irreducible roots.
 
 Consequently the induction leaves only finitely many possible dual graphs, classified in @thm:kondo-possible-dual-graphs. Passing from those graphs to finitely many isomorphism classes of surfaces requires the characteristic and boundary restrictions of [@Kon21, §6] and the uniqueness arguments of [@Kon21, §7], not the graph finiteness alone.
 :::
@@ -196,14 +202,14 @@ Consequently the induction leaves only finitely many possible dual graphs, class
 
 (2) is [@Kon21, Lemma 3.13] applied to the root of (1).
 
-(3) The graph $\Gamma$ is a finite set of $(-2)$-vectors in the even lattice $\CM(S)$ of signature $(1,9)$, with no $m$-tuple lines for $m\ge3$, so Vinberg's criterion [@Kon21, Theorem 2.3] applies verbatim and gives the stated equivalence. For a lattice of signature $(1,n)$ the maximal parabolic rank is $n-1$; here $n=9$, hence the threshold is $\rank\CM(S)-2=8$.
-The non-degeneracy hypothesis of that criterion is automatic here: the roots of the reducible fibres of an extremal fibration together with a special bi-section generate $\CM(S)\tensor\QQ$, so the cone $K(\Gamma)$ is strictly convex [@Kon21, Remark 3.6]. With the finite index in hand, $\Gamma$ is complete by @prop:coble-mukai-nef-and-completeness(3).
+(3) The graph $\Gamma$ is a finite set of $(-2)$-vectors in the even lattice $\CM(S)$ of signature $(1,9)$. Vinberg's criterion [@Kon21, Theorem 2.3] requires that set to be finite, $\Gamma$ to be non-degenerate, and the absence of $m$-tuple lines assumed in the statement, and it then gives the stated equivalence. For a lattice of signature $(1,n)$ the maximal parabolic rank is $n-1$; here $n=9$, hence the threshold is $\rank\CM(S)-2=8$.
+The non-degeneracy hypothesis of that criterion is automatic here: the roots of the reducible fibres of an extremal fibration together with a special bi-section generate $\CM(S)\tensor\QQ$, so the cone $K(\Gamma)$ is strictly convex [@Kon21, Remark 3.6]. Moreover $W(\Gamma)\subseteq W(S)$, so finite index of $W(\Gamma)$ implies finite index of $W(S)$, to which @prop:coble-mukai-nef-and-completeness(2) applies. With the finite index in hand, $\Gamma$ is complete by @prop:coble-mukai-nef-and-completeness(3).
 
 The graph-finiteness sentence is [@Kon21, Theorem 5.1, §5]: the finite-index condition constrains the graph alone, with $\rank\CM(S)=10$ bounding the possible parabolic configurations. The subsequent deduction of the surface classification is [@Kon21, Theorem 1.1, §6, §7].
 
 :::
 
-The two directions are used asymmetrically in [@Kon21]: the existence half (§5) is (1)--(3) applied to an unknown surface, and the identification half (§4, §6) is the same statements applied to the nine exhibited graphs, where clause 3 of @prop:coble-mukai-nef-and-completeness supplies completeness and clause 2 of @prop:coble-mukai-nef-and-completeness supplies finiteness of the automorphism group.
+The two directions are used asymmetrically in [@Kon21]: the existence half (§5) is (1)--(3) applied to an unknown surface, while the identification of the examples (§4) requires a finite-index check on each displayed graph before @prop:coble-mukai-nef-and-completeness can supply finiteness and completeness. The graphwise input, including the two rows for which Kondō's example does not repeat that check, is @lem:kondo-exhibited-graph-finiteness below. Section 6 instead determines characteristic and boundary number from parabolic fibrations; it supplies no Vinberg verification.
 
 ::: {.theorem #thm:kondo-possible-dual-graphs title="The possible dual graphs of effective irreducible roots"}
 
@@ -219,10 +225,39 @@ The steps [@Kon21, §5, (4.18), (4.23.2), (4.24.3), (4.24.4), (4.26)] are the on
 
 ## The classification
 
+::: {.lemma #lem:kondo-exhibited-graph-finiteness title="Finite automorphism groups from the exhibited root graphs"}
+Let $S$ be one of the strong Coble surfaces exhibited in [@Kon21, Example 4.1, Example 4.3, Example 4.5, Example 4.7, Example 4.9, Example 4.12, Example 4.15, Example 4.17, Example 4.20], and let $\Gamma$ be its displayed graph of effective irreducible roots.
+Then $W(\Gamma)$ has finite index in $\Orth(\CM(S))$, $\Aut(S)$ is finite, and $\Gamma$ is the complete graph of effective irreducible roots on $S$.
+This conclusion uses Kondō's Theorem 2.3 and Propositions 3.5 and 3.7, not a row of Theorem 1.1 or Table 2.
+:::
+
+::: {.proof}
+
+The Coble--Mukai lattice has signature $(1,9)$ [@KK21, Introduction]. Vinberg's criterion [@Kon21, Theorem 2.3] therefore applies to a finite set $\Delta$ of $(-2)$-vectors precisely when $\Gamma$ is non-degenerate, contains no $m$-tuple lines with $m\ge3$, and every connected parabolic subdiagram of $\Gamma$ is a connected component of a parabolic subdiagram of rank $n-1=8$; then $W(\Gamma)$ has finite index in $\Orth(\CM(S))$.
+Here $\Delta$ has $12$, $20$ or $40$ elements in the cited examples. Figures 2--6 have only single and double lines, and the definitions of the remaining two graphs likewise give only these two multiplicities [@Kon21, Figures 2--6, Example 4.17, Example 4.20], so no $m$-tuple line with $m\ge3$ occurs.
+For the graph types of Examples 4.1, 4.5, 4.7, 4.9 and 4.15, non-degeneracy is part of Kondō's graphwise assertion quoted below, whose fibration basis is [@Kon21, Remark 3.6]: the reducible fibres of an extremal genus-one fibration together with a special bi-section generate $\CM(S)\tensor\QQ$, hence $K(\Gamma)$ is strictly convex. For $\mathrm{MI}$ and $\mathrm{MII}$, [@Kon21, Lemma 4.18, Lemma 4.21] say explicitly that every maximal parabolic diagram defines a special genus-one fibration, so the same remark applies without assuming that the displayed roots are already complete. The two transferred cases are handled below by graph and lattice identification, not by assuming completeness.
+
+The maximal-parabolic condition is checked graph by graph, not inferred from Table 2:
+
+| graph | Vinberg's rank-$8$ condition and its source |
+|---|---|
+| $\Gamma_{\mathrm I}$ | [@Kon21, Example 4.1] states that the complete graph satisfies Theorem 2.3. The rank-$8$ completions recorded in [@Kon21, §6, case (1)] are $\tilde E_8$, $\tilde E_7+\tilde A_1$ and $\tilde A_7+\tilde A_1$, of ranks $8$, $7+1$ and $7+1$. Example 4.3 uses this same abstract graph for the one-boundary surface. |
+| $\Gamma_{\mathrm{II}}$ | [@Kon21, Example 4.5] states the condition; [@Kon21, §6, case (2)] records $\tilde D_8$ and $\tilde D_5+\tilde A_3$, of ranks $8$ and $5+3$. |
+| $\Gamma_{\mathrm V}$ | [@Kon21, Example 4.7] states the condition; [@Kon21, §6, case (4)] records $\tilde D_6+\tilde A_1+\tilde A_1$, $\tilde E_7+\tilde A_1$ and $\tilde E_6+\tilde A_2$, of ranks $6+1+1$, $7+1$ and $6+2$. |
+| $\Gamma_{\mathrm{VI}}$ | [@Kon21, Example 4.9] states the condition; [@Kon21, §6, case (5)] records $\tilde E_6+\tilde A_2$, $\tilde A_4+\tilde A_4$, $\tilde A_5+\tilde A_2+\tilde A_1$ and $\tilde D_5+\tilde A_3$, of ranks $6+2$, $4+4$, $5+2+1$ and $5+3$. Example 4.12 uses this same abstract graph in characteristic $5$. |
+| $\Gamma_{\mathrm{VII}}$ | [@Kon21, Example 4.15] states the condition; [@Kon21, §6, case (6)] records $\tilde A_4+\tilde A_4$, $\tilde A_8$ and $\tilde A_5+\tilde A_2+\tilde A_1$, of ranks $4+4$, $8$ and $5+2+1$. |
+| $\Gamma_{\mathrm{MI}}$ | [@Kon21, Lemma 4.18] proves directly that every connected parabolic subdiagram is a component of one of its maximal diagrams; their component-rank multisets are $\{5,2,1\}$, $\{4,4\}$, $\{3,3,1,1\}$ and $\{2,2,2,2\}$, each summing to $8$. |
+| $\Gamma_{\mathrm{MII}}$ | [@Kon21, Lemma 4.21] proves the same statement, with component-rank multisets $\{7,1\}$, $\{5,2,1\}$, $\{3,3,1,1\}$ and $\{2,2,2,2\}$. |
+
+For the one-boundary type $\mathrm I$ example and the characteristic-$5$ type $\mathrm{VI}$ example, the two transfers asserted in the table are legitimate: the graphs are respectively the same abstract $\Gamma_{\mathrm I}$ and $\Gamma_{\mathrm{VI}}$, and the ambient lattice is $E_{10}$ for each one-boundary surface by [@Kon21, Proposition 3.1(1)], as it is for the type $\mathrm I$--$\mathrm{VII}$ companion graphs by [@Kon21, Lemma 6.1]. Vinberg's criterion therefore transfers together with the abstract graph and the ambient $E_{10}$. So every exhibited graph satisfies the complete hypothesis of that criterion and $W(\Gamma)$ has finite index.
+Since $W(\Gamma)\subseteq W(S)$, $W(S)$ has finite index in $\Orth(\CM(S))$ as well, and $\Aut(S)$ is finite by [@Kon21, Proposition 3.5]. Only with this finiteness established does [@Kon21, Proposition 3.7] apply, proving that the displayed $\Gamma$ is the whole set of effective irreducible roots. No finiteness assertion is made for any other strong or terminal Coble surface.
+
+:::
+
 ::: {.theorem #thm:kondo-finite-aut-classification title="Coble surfaces with finite automorphism group in characteristic $p\neq2$"}
 
 Let $S$ be a strong Coble surface over an algebraically closed field of characteristic $p\neq2$, with finite automorphism group.
-Then $S$ is isomorphic to exactly one of the nine surfaces of the table below, and each row is realized by such a surface [@Kon21, Theorem 1.1].
+Then $S$ is isomorphic to exactly one of the nine surfaces of the table below. Each row is realized by such a surface: existence and finiteness are @lem:kondo-exhibited-graph-finiteness, proved above independently of Table 2, and classification and uniqueness are [@Kon21, Theorem 1.1].
 Here $n$ is the number of boundary components, $k$ is the number of effective irreducible roots — Kondō's letter, which the ground-field symbol of @def:strong-coble-surface must not be confused with — the two middle columns count the roots by kind, and the last-but-one column is the $R$-invariant of @def:coble-r-invariant.
 :::
 
@@ -439,7 +474,7 @@ $$
 
 ::: {.proof}
 
-(1) $\CM(S)\iso E_{10}$ and $\CM(S)=K_S^{\perp}$ are @prop:kondo-coble-mukai-is-e10 for $n=1$. The twelve classes span $\CM(S)\tensor\QQ$ because $\Gamma_{\mathrm{I}}$ satisfies the criterion of [@Kon21, Theorem 2.3] — this is the assertion of [@Kon21, Example 4.3] that the dual graph satisfies the condition — so $W(\Gamma_{\mathrm{I}})$ has finite index in $\Orth(\CM(S))$ by that theorem, and a reflection group of finite index cannot fix a nonzero vector, so the roots generate $\CM(S)\tensor\QQ$.
+(1) $\CM(S)\iso E_{10}$ and $\CM(S)=K_S^{\perp}$ are @prop:kondo-coble-mukai-is-e10 for $n=1$. @lem:kondo-exhibited-graph-finiteness, whose type $\mathrm I$ input is the same graph $\Gamma_{\mathrm I}$ of [@Kon21, Example 4.1] transferred to Example 4.3, gives finite index of $W(\Gamma_{\mathrm I})$ in $\Orth(\CM(S))$. A reflection group of finite index cannot fix a nonzero vector, so the twelve root classes generate $\CM(S)\tensor\QQ$.
 
 (2) The parabolic subdiagram of type $\tilde E_8$ is [@Kon21, §6, case (1)]. Its nine vertices are $(-2)$-curves by @cor:one-boundary-coble-roots-are-curves, and the affine diagram $\tilde E_8$ is the Dynkin diagram $E_8$ with one vertex attached to the vertex adjacent to the branch node; deleting that vertex leaves $E_8$.
 
