@@ -167,9 +167,9 @@ $$
 commutes (@def:commutative-diagram) with the two differentials and is an isomorphism (@def:isomorphism-of-objects) of complexes; it is the symmetry of @def:braided-symmetric for this tensor product.
 :::
 
-::: {.definition #def:value-complex title="Value complexes" defines="value complex; $W[n]$"}
+::: {.definition #def:value-complex title="Value complexes" defines="value complex; $W\langle n\rangle$"}
 
-For $n\in\bZ$ write $W[n]$ for the complex with $W$ in degree (@def:graded-object) $n$, the zero module in every other degree, and zero differentials.
+Regard $W$ as the complex concentrated in degree zero. For $n\in\bZ$ define $W\langle n\rangle:=W[-n]$, using @def:translation; thus $W\langle n\rangle$ has $W$ in degree $n$, zero modules elsewhere, and zero differentials. This placement notation is distinct from the translate $W[n]$, which is concentrated in degree $-n$.
 :::
 
 ::: {.definition #def:complex-form title="Bilinear forms on a complex" defines="$W$-valued bilinear form of degree $n$ on $C$"}
@@ -177,15 +177,15 @@ For $n\in\bZ$ write $W[n]$ for the complex with $W$ in degree (@def:graded-objec
 Let $C\in\mathbf{Ch}(R\text{-}\mathbf{Mod})$.
 A *$W$-valued bilinear form of degree (@def:graded-object) $n$ on $C$* is a chain map (@def:chain-complexes)
 $$
-\beta\colon C\tensor_RC\too W[n].
+\beta\colon C\tensor_RC\too W\langle n\rangle.
 $$
 
-Since $W[n]$ vanishes outside degree $n$, such a chain map is one $R$-linear map
+Since $W\langle n\rangle$ vanishes outside degree $n$, such a chain map is one $R$-linear map
 $$
 \beta_n\colon\bigoplus_{p+q=n}C_p\tensor_RC_q\too W,
 $$
 equivalently a family of $R$-bilinear maps $\beta_{p,q}\colon C_p\times C_q\to W$ indexed by the pairs with $p+q=n$.
-The differentials of $W[n]$ are zero, so the condition that $\beta$ be a chain map is $\beta_n\circ d_{n+1}=0$, which reads
+The differentials of $W\langle n\rangle$ are zero, so the condition that $\beta$ be a chain map is $\beta_n\circ d_{n+1}=0$, which reads
 $$
 \beta_{p-1,q}(d^Cx,y)+(-1)^p\beta_{p,q-1}(x,d^Cy)=0
 \qquad(x\in C_p,\ y\in C_q,\ p+q=n+1).
@@ -243,7 +243,7 @@ $$
 \qquad(x\in Z_p(C),\ y\in Z_q(C))
 $$
 is a well-defined $R$-bilinear map $H_p(C)\times H_q(C)\to W$.
-If $\beta_n=\gamma\circ d_{n+1}$ for some $R$-linear $\gamma\colon(C\tensor_RC)_{n+1}\to W$, then $\bar\beta_{p,q}=0$.
+Put $T=C\tensor_RC$ and denote its differential by $d_n^T\colon T_n\to T_{n-1}$. If $\beta_n=\gamma\circ d_n^T$ for an $R$-linear $\gamma\colon T_{n-1}\to W$, then $\bar\beta_{p,q}=0$.
 :::
 
 ::: {.proof}
@@ -253,7 +253,7 @@ In $(C\tensor_RC)_{n+1}$ one has $d(x\tensor_R y)=d^Cx\tensor_R y+(-1)^px\tensor
 Similarly, for $x'\in C_{p+1}$ and $y\in Z_q(C)$ one has $d(x'\tensor_R y)=d^Cx'\tensor_R y$, so $\beta_{p,q}(d^Cx',y)=0$.
 Thus $\beta_{p,q}$ annihilates $Z_p(C)\times B_q(C)$ and $B_p(C)\times Z_q(C)$, and $B_p\subseteq Z_p$ makes it descend to a pairing $H_p(C)\times H_q(C)\to W$, which is the assignment displayed.
 
-If $\beta_n=\gamma\circ d_{n+1}$ and $x,y$ are cycles, then $d(x\tensor_Ry)=0$ by the first computation, so $\beta_{p,q}(x,y)=\gamma\bigl(d(x\tensor_Ry)\bigr)=0$ by the factorization.
+If $\beta_n=\gamma\circ d_n^T$ and $x,y$ are cycles with $p+q=n$, then $d_n^T(x\tensor_R y)=d^Cx\tensor_R y+(-1)^px\tensor_R d^Cy=0$. Hence $\beta_{p,q}(x,y)=\gamma\bigl(d_n^T(x\tensor_R y)\bigr)=0$.
 :::
 
 ::: {.proposition #prop:degreewise-isometry title="Degreewise isometries"}
