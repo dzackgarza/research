@@ -1,70 +1,75 @@
 research#833 (A24-O2), acceptance item by item.
-Commit: d1d7496977777cd2df1d00c74aaf6f16c4ca0b1c on main (page added at 289e41d5dc, one repair at d1d7496977).
-Page: writing/coble/lattices-and-moduli/integral-line-and-plane-lifting.md
+Reviewed patch: working branch issue833-correct, based on omm/main@39e7c4748e649beb2cff1d23cfa77de58ace57b4.
+Page: writing/coble/lattices-and-moduli/integral-line-and-plane-lifting.md.
+Final landed commit is reported in the delivery response; this card deliberately records the base as well.
 
 Acceptance 1. "The research page proves the required integral line and plane orbits and the complete
 integral stabilizer families for every group named in #667, without dropping a group or an object type."
-  Orbits, lines: MET. thm:o2-lines (page:101): O = 1, Otilde = 527, Otilde+ = 527, R_Gamma = 4 of sizes
-    2,135,270,120; the character subgroups carry the same numbers (thm:o2-lines(4)).
-  Orbits, planes: MET. thm:o2-planes (page:139): O = 1, Otilde = 189720, Otilde+ = 189720,
-    R_Gamma = 7; and R_Gamma cap O+ also 7.
-  Groups: the four are the groups of sage-extensions#286, with R_{Gamma_En} = Otilde+ and
-    R_{Gamma^K_En} = O by prop:gamma-co-images(1),(2); rmk:o2-group-list (page:25) states it.
-  Complete integral stabilizer families: NOT MET.
-    MET for planes of O: thm:o2-plane-family (page:185), thirty explicit integral isometries,
-      completeness proved from L lt U with L = GL_2(Z) x O(D), U by the skew-matrix reduction.
-    MET for planes of Otilde and Otilde+: thm:o2-plane-family-kernel (page:212).
-    NOT MET for planes of R_Gamma: (C4) of tbl-o2-ledger (page:58); exact statement
-      qst:o2-congruence-family (page:271). Stab_{R_Gamma}(P_0) does not contain the plane
-      parabolic (thm:o2-planes(4), page:139), so thm:o2-plane-family is not a family of it.
-    NOT MET for lines of every group: (C3) of tbl-o2-ledger (page:58), reduced by
-      lem:o2-line-reduction (page:229) to qst:o2-line-family (page:265), a finite family
-      generating Orth(I_{1,8}); undecidable by any finite discriminant image
-      (lem:o2-line-kernel-infinite, page:245).
-  No group and no object type dropped: tbl-o2-ledger names (L1)-(L6), (S1)-(S2), (C1)-(C4), (U1)-(U2).
+  Line orbits: MET. thm:o2-lines: O = 1; Otilde and Otilde+ = 527; R_Gamma = 4 of sizes
+    2,135,270,120. Character restrictions have the same counts. thm:o2-lines(2) now proves the
+    double-coset formula from the fibres for every Gamma and cites SH23 Lemma 3.6 only when
+    Otilde is contained in Gamma; the false application to Otilde^+ is removed.
+  Plane orbits: MET. thm:o2-planes: O = 1; Otilde and Otilde+ = 189720; R_Gamma = 7. The recent
+    prose accidentally saying that the plane-stabilizer image is "inside P" has been removed;
+    divisibility in fact proves it is not a subgroup of P.
+  Integral plane families: MET for O, Otilde and Otilde+.
+    O: thm:o2-plane-family retains the original complete 30-element integral family.
+    Otilde: thm:o2-plane-family-kernel(1) supplies 26 elements: four GL2(2) Levi generators,
+      seven signs, fourteen even Eichler transvections and sigma^2.
+    Otilde+: thm:o2-plane-family-kernel(2) supplies the 25 elements after omitting J; the correct
+      kernel is Gamma_SL(2), not Gamma_GL(2), and tau is removed rather than adjoined.
+    R_Gamma: NOT MET (C4), qst:o2-congruence-family.
+  Integral line families: MET for O and the three stable groups, NOT MET for R_Gamma.
+    O: thm:o2-line-family transports HR Theorem 2.1 and supplies 19 elements for Stab(v) and
+      20 for Stab(L), preserving the nine K_ev-basis transvections and adjoining -id_K and -id_B.
+    Otilde: lem:o2-level-two-membership proves the corrected vector/line decomposition; the Levi
+      family is 240 side reflections plus m and -id_K (thm:o2-stable-level-two-generation), the
+      nine transvections use a K-basis (not K_ev), and -id_B is the central line factor. Thus 251
+      elements for Stab(v), 252 for Stab(L).
+    Otilde cap SO, Otilde cap O+, Otilde cap SO+: thm:o2-stable-line(3),(5) computes indices
+      2,2,4 and gives complete families by actual Schreier transversals, not generator commutators.
+    R_Gamma: NOT MET (C5), restored explicitly to the ledger and qst:o2-congruence-family;
+      Stab_RGamma(L) = Stab_RGamma(v) x <-id_B>, and its discriminant image and finite index are
+      stated, but no complete integral generating family or transversal with lifts is supplied.
+  The old 35-family: REFUTED, not open. It lies in the norm-one reflection subgroup by the exact
+    products t(e,2d)=r_(e+d)r_d and t(f,2d)=r_(f+d)r_d. Independently, r_(e+f+d1) is a level-two
+    reflection whose (e,e)-coordinate at level four is 1 while all 35 old classes have coordinate 0.
+    The bare 21/45 span is assigned no generation conclusion.
+  R_Gamma = Gamma^cong_Co,2 is kept distinct from monodromy Gamma_Co,2 throughout. Nothing about
+  either monodromy group is inferred from these arithmetic-family statements.
 
 Acceptance 2. "The page identifies which domains of the later fibre, incidence and public-computation
 issues these proofs supply."
-  MET. tbl-o2-consumers (page:288): O3 = research#834 consumes the fibre theorems and the stabilizer
-  images; O4 = research#835 consumes the plane classification, the line classification and
-  thm:coble-integral-flag-lifting, and must supply condition (*) itself; O5 = research#836 consumes
-  the four counts and the plane families, and must supply the public operation, the cards and the
-  line family. The paragraph after the table records that the "theorem used instead" clause is not
-  vacuous: Gamma = Otilde+ does not contain Otilde.
+  MET. tbl-o2-consumers retains O3/O4 their previous domains. O5 now consumes the full/stable line
+  and plane families, and still must supply the public operation, the cards and the R_Gamma line
+  and plane families. O3 uses the direct fibre argument for Otilde^+ rather than the inapplicable
+  citation. Accepted orbit classifications and consumers were not removed.
 
 Acceptance 3. "Each cited theorem names its numbered published statement and verifies its hypotheses
 on T_Co."
-  MET. Section "What is not covered" item 3 (page:296): DK13 (3.6) and Proposition 3.2; Nik80
-  Theorem 3.6.3 with even/indefinite/2-elementary verified; GHS08 section 3.1 equations (4) and (5)
-  used as formulas with the integrality condition k in K_ev; SH23 Lemma 3.6 as a general group lemma
-  with U subset K verified at thm:o2-lines(2); Nik79b sections 1.2 and 0.1 cited only for what they
-  do not give (qst:o2-line-family).
+  MET for the new and touched arguments. HR Theorem 2.1 is applied at n=8; HR Theorem 2.2 and ERT
+  Theorem 2.1 (including the n=8 split sequences and displayed matrix) are applied only after
+  lem:o2-ert-hr-transport proves the integral basis transport, sign/time conventions and
+  projective/integral lift. ERT/HR O+ is time orientation, never silently the GHS spinor kernel;
+  -I supplies the full integral group. SH23 Lemma 3.6 has its U subset K hypothesis checked. GHS08
+  section 3.1 equations (4),(5) are used only as transvection formulas. No Kneser/GHS Witt-index >=2
+  generation theorem is invoked. New bibliography keys ERT10 and HR14 carry numbered-statement notes.
 
-Not all acceptance items are met; item 1 is MET for the orbits and for the plane families of three of
-the four groups, and NOT MET for the plane family of R_Gamma and for the line family of every group.
-The two missing statements are (U1) and (U2), by exact statement, and no count is substituted for
-either. Nothing is asserted for Gamma_Co or Gamma_{Co,2}.
+Overall: NOT MET, exactly on R_Gamma line and plane integral stabilizer-family completion (C4,C5,U2).
+Everything else in tbl-o2-ledger is marked proved by the revised page; this is not an ALL-MET report.
 
-Checks run: scripts/docs_check.py --source (no finding on the new page; the 29 findings are the
-pre-existing ones), a label-resolution check (53 references, none missing), and
-computations/reports/coble_833-line-parabolic-checks.py with its run transcript. The engineering
-pytest suite was not run (it needs sage_extensions / dzack_research), and CI is not visible from here.
-
---- Update after the stable-group section (commit that adds sec-o2-stable-line) ---
-
-Acceptance 1, stable-group part. (C3') of tbl-o2-ledger -- a complete integral family for Stab_{Otilde}(L)
-and for its three character subgroups -- is NOT MET. What is proved: lem:o2-level-two-membership (the
-four level-two membership laws), thm:o2-stable-line(1)-(3) (the semidirect structure
-Stab_Otilde(L) = (id_P perp Gamma_K(2)) x 2K_ev, the unipotent factor generated by nine explicit
-transvections, the three character subgroups as index-two kernels with explicit character witnesses),
-thm:o2-stable-line(4) (all four discriminant images trivial, so the image side of the stable level is
-closed), and thm:o2-stable-line(6) (the stable-group family is equivalent to (U1) modulo finitely many
-explicit integral isometries, so it is not a smaller problem). What is missing is exactly
-qst:o2-stable-line-family: whether the 35 elements r_dj, t_K(e,2dj), t_K(f,2dj), r_(e+dj), r_(f+dj)
-generate Gamma_K(2) = ker(Orth(I_1,8) -> Orth(I_1,8/2)). rmk:o2-stable-line-level-four records the
-necessary condition at level four (the 35 span 21 of the 45 admissible dimensions; the extra element
-r_(e+d_1+d_2) r_(e+d_1-d_2) lies inside the span), which neither proves nor refutes it.
-
-So acceptance 1 remains NOT MET, on two items: the plane family of R_Gamma ((U2)) and the line family,
-now for O it is (U1) and for Otilde it is (U1'), the two being equivalent modulo explicit finite data.
-The orbit counts of thm:o2-lines and thm:o2-planes are unchanged and are not at issue here.
+Checks actually run:
+  python3 computations/reports/coble_833-ert-hr-transport.py -- PASS. Exact integral transport,
+    determinants -1,1,-1 and Phi^T H Phi=-G; ERT matrix transport; 240 root orbit; both old-35
+    product identities; the one-coordinate counterexample. Transcript in the adjacent -run.txt.
+  The independent m1 witness script -- 65 checks PASS; m2 index audit -- PASS; m3 transport -- PASS;
+    m5 plane Gamma(2) and descent scripts -- PASS, including 66/66 exact descents.
+  python3 scripts/docs_check.py --source -- 29 pre-existing missing-bibliography findings on other
+    pages; no finding on the edited page.
+  Page cross-reference check -- 57 labels, none missing; 36 unique block definitions on the page;
+    no duplicate definitions and no unclosed divs.
+  Quarto generated the edited page HTML, with its pre-existing sec-cusp-lifting warning only, then
+    failed in an unrelated resource-copy command. just docs-assets copied bib/macros and separately
+    failed on an unresolved Git-LFS chamber figure. Thus no clean full-render success is claimed.
+  Python py_compile on the three edited/new arithmetic scripts -- PASS.
+  The engineering pytest suite was not run (it needs sage_extensions/dzack_research); CI is not visible.

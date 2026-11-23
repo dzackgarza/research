@@ -14,12 +14,14 @@ stable-group line stabilizer") claims exactly four things, and this script check
    seven t_K(e,2d_j), the seven r_{e+d_j}), which is the set of those that act trivially on the
    plane P = <v,e> through id_P perp phi.
 
-3. E(e,k) is additive in k: E(e,k_1)E(e,k_2) = E(e,k_1+k_2) exactly, so the nine transvections at a
-   Z-basis of K_ev generate the whole acting group {E(e,k) : k in K_ev} of the parabolic.
+3. E(e,k) is additive in k: E(e,k_1)E(e,k_2) = E(e,k_1+k_2) exactly.  For the full line parabolic,
+   nine transvections at a Z-basis of K_ev generate it.  For the *stable* unipotent radical
+   U_v cap Otilde = {E(e,2k) : k in K}, the corresponding nine transvections must instead be indexed
+   by a Z-basis of K; a K_ev basis gives only the index-two subgroup E(e,2K_ev).
 
 4. The central shear sigma = E_{e_1,e_2} of the *plane* parabolic is not congruent to the identity
-   modulo 2B, while sigma^2 is: this is why the level-2 unipotent radical is 2K_ev and not K_ev, and
-   it is the exact point at which the plane family of thm:o2-plane-family leaves the stable group.
+   modulo 2B, while sigma^2 is.  This is a separate check of the plane level-two membership law, not
+   a description of the stable *line* radical, which is E(e,2K), not E(e,2K_ev).
 
 5. The necessary condition of lem:o2-level-four.  Gamma_K(2)/Gamma_K(4) injects into
    {A in Mat_9(F_2) : A^t Gbar + Gbar A = 0}, of dimension 45; the 35 elements above span 21 of it,
