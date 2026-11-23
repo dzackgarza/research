@@ -81,9 +81,9 @@ For vectors $v = \Sum a_j e_j$ and $w = \Sum b_j e_j$, we have $\beta(v,w) = v^t
 Similarly, for a quadratic module $(L,q)$, a **Gram matrix** $G_q$ is any matrix such that $q(v) = v^t G_q v$.
 We define the **discriminant** $\disc{L}$ of $L$ as $\det(G_\beta)$ in any choice of basis.
 For a **finite-index** sublattice $S\subseteq L$ (necessarily of the same rank), one has
-$
+$$
 \disc{S} = [L:S]^2 \disc{L}.
-$
+$$
 Indeed, if the columns of the integral matrix $A$ express a basis of $S$ in a basis of $L$, then $G_S=A^tG_LA$ and $\abs{\det A}=[L:S]$.
 This formula does not apply to a lower-rank sublattice, for which $[L:S]$ is infinite.
 We say $L$ is **unimodular** of $\disc{L} = \pm 1$.
@@ -93,20 +93,20 @@ The Gram matrix reflects properties of the form: $\beta$ is symmetric $\iff G_\b
 ::: {.proposition title="{Unimodular Sublattices and Orthogonal Splittings}" #prop:divisibility-properties-revised}
 Let $(L,\beta)$ be a nondegenerate lattice and let $S\subseteq L$ be an **integral unimodular** sublattice.
 Assume
-$
+$$
 \beta(L,S)\subseteq\ZZ,
-$
+$$
 as holds in particular when $L$ is integral.
 Then the inclusion is primitive and there is an **integral orthogonal splitting**
-$
+$$
 L=S\perp T,\qquad
 T\definedas S^{\perp}=\theset{v\in L\st\beta(v,S)=0}.
-$
+$$
 The discriminants satisfy
-$
+$$
 \disc{L}=\disc{S}\disc{T},\qquad
 \disc{T}=\disc{L}/\disc{S}.
-$
+$$
 Since $\disc{S}=\pm1$, the complement $T$ is unimodular **if and only if** $L$ is unimodular.
 :::
 
