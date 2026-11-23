@@ -151,6 +151,7 @@ book:
         - coble/lattices-and-moduli/special-lattices.md
         - coble/lattices-and-moduli/discriminant-orbits-of-the-coble-lattice.md
         - coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md
+        - coble/lattices-and-moduli/integral-line-and-plane-lifting.md
         - coble/lattices-and-moduli/coble-lattice-table.md
         - coble/lattices-and-moduli/nodal-enriques-lattices.md
     - part: Moduli spaces and period domains
