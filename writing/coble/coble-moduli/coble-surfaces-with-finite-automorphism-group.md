@@ -84,7 +84,7 @@ so $\alpha\cdot\alpha'=1$ if and only if $E$ and $E'$ are disjoint and the two r
 
 ::: {.proof}
 
-(1) and (2) are [@Kon21, Lemma 3.2, Lemma 3.3] verbatim; the count $4-\abs{\theset{\cdot}}$ records that $\tfrac12\beta_j\cdot\tfrac12\beta_k=1$ when $j\neq k$ and $-1$ when $j=k$, the four half-boundary classes contributing $4$ minus the number of distinct ones.
+(1) and (2) are [@Kon21, Lemma 3.2, Lemma 3.3] verbatim; since distinct boundary components are disjoint, $\tfrac12\beta_j\cdot\tfrac12\beta_k=0$ when $j\neq k$, while $\tfrac12\beta_j\cdot\tfrac12\beta_j=-1$. Thus the four half-boundary classes contribute $4$ minus the number of distinct boundary components.
 For (3): $\alpha\cdot C=2e\cdot C$ for a $(-2)$-root $C$ as soon as $C$ is disjoint from the boundary, and $E\cdot C\in\ZZ$.
 
 :::
@@ -173,7 +173,7 @@ Let $S$ be a strong Coble surface with boundary components $B_1,\dots,B_n$.
 
 :::
 
-The mechanism of [@Kon21, Lemma 3.13] deserves naming, since the classification is an induction on it: a $(-1)$-curve $E$ meeting two boundary components $B,B'$ gives the $(-1)$-root $2e+\tfrac12\beta+\tfrac12\beta'$ [@Kon21, Lemma 3.2], and a $(-1)$-curve meeting one boundary component with multiplicity $2$ gives the primitive isotropic class $e+\tfrac12\beta$, hence a new fibration [@Kon21, Lemma 3.11], whose bi-section is then a root of the other kind.
+The mechanism of [@Kon21, Lemma 3.13] deserves naming, since the classification is an induction on it: a $(-1)$-curve $E$ meeting two boundary components $B,B'$ gives the $(-1)$-root $2e+\tfrac12\beta+\tfrac12\beta'$ [@Kon21, Lemma 3.2]. Its other case is conditional, not an unrestricted fibration construction. It starts with $n\ge3$, a fibration $p$ with Halphen model $H$, and the proper transform $E$ of a bi-section such that $E$ meets one boundary component $B$ with multiplicity $2$. Then $H$ has index $2$, and every boundary component lies in the fibre $F$ of $p$ containing $B$. There are a second boundary component $B'$ and a $(-1)$-curve $E_1$ with $E_1\cdot B=E_1\cdot B'=1$; moreover $2E+B$ is nef and isotropic. Thus $e+\tfrac12\beta$ is a primitive isotropic class in $D(S)\cap\CM(S)$, so [@Kon21, Lemma 3.11] gives a new fibration, of which $2e_1+\tfrac12\beta+\tfrac12\beta'$ is a special bi-section [@Kon21, Lemma 3.13].
 The two kinds of root of @lem:effective-root-dichotomy are exactly the two ways a fibration can change.
 
 ## The mechanism of the classification
@@ -185,9 +185,9 @@ Then:
 
 1. every genus one fibration on $S$ has extremal Jacobian [@Kon21, Proposition 3.10]; each of the extremal fibrations of [@Kon21, §2, Table 3] that [@Kon21, §6] allows has a reducible fibre, whose vertices are represented by $(-1)$- and $(-2)$-roots [@Kon21, Remark 3.14], so $S$ carries an effective irreducible root;
 2. some genus one fibration on $S$ is special;
-3. let $\Gamma$ be the graph of effective irreducible roots obtained from a special fibration by iterating (2) on the new fibrations produced by a special bi-section; then $W(\Gamma)$ has finite index in $\Orth(\CM(S))$ if and only if every connected parabolic subdiagram of $\Gamma$ is a component of a parabolic subdiagram of $\Gamma$ of rank $\rank\CM(S)-1=8$, and in that case $\Gamma$ is the whole set of effective irreducible roots.
+3. let $\Gamma$ be the graph of effective irreducible roots obtained from a special fibration by iterating (2) on the new fibrations produced by a special bi-section; then $W(\Gamma)$ has finite index in $\Orth(\CM(S))$ if and only if every connected parabolic subdiagram of $\Gamma$ is a component of a parabolic subdiagram of $\Gamma$ of rank $\rank\CM(S)-2=8$, and in that case $\Gamma$ is the whole set of effective irreducible roots.
 
-Consequently $S$ is one of finitely many isomorphism classes, the list being obtained by running the induction over the finitely many shapes that a graph of $(-2)$-vectors in a rank-$10$ space, with parabolic subdiagrams of rank at most $8$, can take.
+Consequently the induction leaves only finitely many possible dual graphs, classified in @thm:kondo-possible-dual-graphs. Passing from those graphs to finitely many isomorphism classes of surfaces requires the characteristic and boundary restrictions of [@Kon21, §6] and the uniqueness arguments of [@Kon21, §7], not the graph finiteness alone.
 :::
 
 ::: {.proof}
@@ -196,10 +196,10 @@ Consequently $S$ is one of finitely many isomorphism classes, the list being obt
 
 (2) is [@Kon21, Lemma 3.13] applied to the root of (1).
 
-(3) The graph $\Gamma$ is a finite set of $(-2)$-vectors in the even lattice $\CM(S)$ of signature $(1,9)$, with no $m$-tuple lines for $m\ge3$, so Vinberg's criterion [@Kon21, Theorem 2.3] applies verbatim and gives the stated equivalence, $\rank\CM(S)-1=8$ being the maximal rank of a parabolic subdiagram for signature $(1,9)$.
+(3) The graph $\Gamma$ is a finite set of $(-2)$-vectors in the even lattice $\CM(S)$ of signature $(1,9)$, with no $m$-tuple lines for $m\ge3$, so Vinberg's criterion [@Kon21, Theorem 2.3] applies verbatim and gives the stated equivalence. For a lattice of signature $(1,n)$ the maximal parabolic rank is $n-1$; here $n=9$, hence the threshold is $\rank\CM(S)-2=8$.
 The non-degeneracy hypothesis of that criterion is automatic here: the roots of the reducible fibres of an extremal fibration together with a special bi-section generate $\CM(S)\tensor\QQ$, so the cone $K(\Gamma)$ is strictly convex [@Kon21, Remark 3.6]. With the finite index in hand, $\Gamma$ is complete by @prop:coble-mukai-nef-and-completeness(3).
 
-The last sentence: the finite-index condition is a condition on the graph alone, and the graphs are constrained by $\rank\CM(S)=10$, since a maximal parabolic subdiagram of rank $8$ together with the two dimensions of the base and the fibre class already accounts for the whole rank.
+The graph-finiteness sentence is [@Kon21, Theorem 5.1, §5]: the finite-index condition constrains the graph alone, with $\rank\CM(S)=10$ bounding the possible parabolic configurations. The subsequent deduction of the surface classification is [@Kon21, Theorem 1.1, §6, §7].
 
 :::
 
@@ -281,10 +281,10 @@ Let $S$ be a strong Coble surface over an algebraically closed field of characte
 | type | $p$ | $n$ | the restriction that decides it |
 |---|---|---|---|
 | $\mathrm{I}$ | any $p\neq2$ | $1$ or $2$ | an $\tilde E_8$ subdiagram comes from $(\II^*)$, $(\II^*,\II)$, $(\II^*,\mathrm{I}_1)$ or $(\II^*,\mathrm{I}_1,\mathrm{I}_1)$ |
-| $\mathrm{II}$ | any $p\neq2$ | $1$ | $\tilde D_8$ and $\tilde D_5+\tilde A_3$ force one blow-up of a fibre of type $\mathrm{I}_1$ |
+| $\mathrm{II}$ | any $p\neq2$ | $1$ | $\tilde D_8$ gives $(\mathrm{I}_4^*,\mathrm{I}_1,\mathrm{I}_1,\mathrm{I}_1)$ with the singular points of one or two $\mathrm{I}_1$ fibres blown up; $\tilde D_5+\tilde A_3$ gives $(\mathrm{I}_1^*,\mathrm{I}_4,\mathrm{I}_1)$ with the singular point(s) of one or two of its $\mathrm{I}_4$ and $\mathrm{I}_1$ fibres blown up; comparing the two models gives $n=1$ |
 | $\mathrm{III}$, $\mathrm{IV}$ | none | — | $\tilde D_4+\tilde D_4$ comes from $(\mathrm{I}_0^*,\mathrm{I}_0^*)$ with no blow-up, so the type is empty |
-| $\mathrm{V}$ | $3$ | $2$ | $\tilde D_6+\tilde A_1+\tilde A_1$ gives $n\in\theset{2,4}$ and $\tilde E_7+\tilde A_1$ gives $n\in\theset{1,2,3}$; $n=2$ needs two blown-up fibres of type $\II$ |
-| $\mathrm{VI}$ | $3$ or $5$ | $5$ if $p=3$, $1$ if $p=5$ | for $p\neq3$ the subdiagrams $\tilde E_6+\tilde A_2$ and $\tilde A_4+\tilde A_4$ give $n=1$, and $\abs{\det A_4}=5$ forces $p=5$ |
+| $\mathrm{V}$ | $3$ | $2$ | the first two fibrations give $n=2$; comparing $\tilde E_6+\tilde A_2$ in arbitrary characteristic with its characteristic-$3$ quasi-elliptic form leaves only $p=3$, with two fibres of type $\II$ blown up |
+| $\mathrm{VI}$ | $3$ or $5$ | $5$ if $p=3$, $1$ if $p=5$ | for $p\neq3$ the two indicated fibrations give $n=1$, after which Kondō's row-specific $R$-invariant and discriminant calculation gives $p=5$; for $p=3$ the alternative fibrations and the further $\tilde A_5+\tilde A_2+\tilde A_1$ and $\tilde D_5+\tilde A_3$ subdiagrams give $n=5$ |
 | $\mathrm{VII}$ | $5$ | $1$ | the subdiagrams give $n\in\theset{1,2}$; an $A_9$ of $(-2)$-curves forces the covering K3 surface to be supersingular in characteristic $5$, and $(\mathrm{I}_5,\mathrm{I}_5,\II)$ then excludes $n=2$ |
 | $\mathrm{MI}$ | $3$ | $2$ | the four maximal parabolic subdiagrams give $n=6$ for $p\neq3$ and $n=2$ for $p=3$; $n=6$ is excluded by a $\tilde A_3+\tilde A_3+\tilde A_1+\tilde A_1$ subdiagram whose two $\tilde A_1$'s are of different kinds |
 | $\mathrm{MII}$ | $3$ | $8$ | $p=3$ and $n\in\theset{2,8}$; $n=2$ is excluded by counting the $(-2)$-roots of a quasi-elliptic fibration $(\IV,\IV,\IV,\IV)$ |
@@ -297,23 +297,19 @@ Let $S$ be a strong Coble surface over an algebraically closed field of characte
 
 :::
 
-Two regularities in @lem:kondo-possible-characteristics are worth recording, and neither is stated as a theorem in [@Kon21].
+The characteristic restrictions in @lem:kondo-possible-characteristics are separate rowwise fibration arguments; no global determinant-divisibility test is invoked.
 
-::: {.remark #rmk:kondo-det-k-and-characteristic title="The characteristic is read off $\det K$"}
+::: {.remark #rmk:kondo-det-k-and-characteristic title="The rowwise characteristic restrictions"}
 
-In each row whose characteristic is forced, $p$ is an odd prime dividing $\abs{\det K}$, where $(K,H)$ is the $R$-invariant; and the three rows with $\abs{\det K}$ a power of $2$ are exactly the rows that exist for every $p\neq2$:
+For type $\mathrm V$, the fibrations attached to $\tilde D_6+\tilde A_1+\tilde A_1$ and $\tilde E_7+\tilde A_1$ first give $n\in\theset{2,4}$ and $n\in\theset{1,2,3}$, hence $n=2$. The subdiagram $\tilde E_6+\tilde A_2$ then leaves only the characteristic-$3$ quasi-elliptic alternative: blowing up two fibres of type $\II$ produces the required two boundary components. Thus $p=3$ [@Kon21, §6, case (4)].
 
-| $K$ | $\abs{\det K}$ | odd primes |
-|---|---|---|
-| $E_8\oplus A_1$, $E_8\oplus A_1^{\oplus2}$, $D_9$ | $2$, $4$, $4$ | none |
-| $E_7\oplus A_2\oplus A_1^{\oplus2}$ | $24$ | $3$ |
-| $E_6\oplus D_5$ | $12$ | $3$ |
-| $E_6\oplus A_4$ | $15$ | $3,5$ |
-| $A_9\oplus A_1$ | $20$ | $5$ |
-| $A_5^{\oplus2}\oplus A_1^{\oplus2}$, $D_8\oplus A_2^{\oplus2}$ | $144$, $36$ | $3$ |
+For type $\mathrm{VI}$ with $p\neq3$, the fibrations attached to $\tilde E_6+\tilde A_2$ and $\tilde A_4+\tilde A_4$ give $n=1$. The graph then determines the $R$-invariant $(E_6\oplus A_4,\theset{0})$; Kondō's discriminant calculation for this particular invariant, using $\abs{\det A_4}=5$ together with [@Kon21, Proposition 3.16, Lemma 2.1], identifies $X$ as a supersingular K3 surface in characteristic $5$. If instead $p=3$, the first fibration is replaced by quasi-elliptic $(\IV^*,\IV)$ or elliptic $(\IV^*,\mathrm{I}_3)$; the further subdiagrams $\tilde A_5+\tilde A_2+\tilde A_1$ and $\tilde D_5+\tilde A_3$ exclude the latter and force $n=5$ [@Kon21, §6, case (5)].
 
-The mechanism is the one used in [@Kon21, §6]: by Artin's theorem the discriminant group of the Picard lattice of a supersingular K3 surface in characteristic $p>0$ is $(\ZZ/p\ZZ)^{2\sigma}$ [@Kon21, Proposition 3.16], and the root lattice $K$ sits in the anti-invariant part of the Picard lattice of the covering K3 surface, so an odd prime $q$ dividing $\abs{\det K}$ can only be the characteristic.
-The row $E_6\oplus A_4$ shows that the criterion is necessary and not sufficient: it admits $q=3$, and characteristic $3$ is excluded in [@Kon21, §6, case (5)] by a different argument, namely that in characteristic $3$ the fibration $(\IV^*,\mathrm{I}_3,\mathrm{I}_1)$ is replaced by a quasi-elliptic $(\IV^*,\IV)$ or by $(\IV^*,\mathrm{I}_3)$, which changes $n$ from $1$ to $5$.
+For type $\mathrm{VII}$, the three listed parabolic subdiagrams first give $n\in\theset{1,2}$. The $15$-vertex single-edge subdiagram consists entirely of $(-2)$-curves: the alternative that all its vertices are $(-1)$-roots is incompatible with $n\le2$. Its $A_9$ component in $K$ then gives, by Kondō's row-specific application of [@Kon21, Proposition 3.16, Lemma 2.1], a supersingular cover in characteristic $5$. In that characteristic the $\tilde A_4+\tilde A_4$ fibration is $(\mathrm{I}_5,\mathrm{I}_5,\II)$, which excludes $n=2$ and leaves the unique $n=1$ row [@Kon21, §6, case (6)].
+
+For type $\mathrm{MI}$, the four maximal parabolic subdiagrams give $n=6$ if $p\neq3$ and $n=2$ if $p=3$. Under $n=6$, the first fibration makes all triads $(-2)$-curves, all duads $(-1)$-roots, and all synthemes $(-2)$-curves (after interchanging duads and synthemes if necessary). In the fibration $(\mathrm{I}_4,\mathrm{I}_4,\mathrm{I}_2,\mathrm{I}_2)$ attached to $\tilde A_3+\tilde A_3+\tilde A_1+\tilde A_1$, one $\mathrm{I}_2$ fibre is blown up and the other is not; but one $\tilde A_1$ consists of a duad and a syntheme, while the other consists of triads. These root-kind assignments are incompatible, so $p=3$ and $n=2$ [@Kon21, §6, case (7); @Kon21, Lemma 4.18].
+
+For type $\mathrm{MII}$, the maximal parabolic subdiagrams force $p=3$ and $n\in\theset{2,8}$. If $n=2$, the quasi-elliptic fibration $(\IV,\IV,\IV,\IV)$ would make all forty vertices $(-2)$-curves, whereas the blown-up $\mathrm{I}_2$ fibre in $(\mathrm{I}_4,\mathrm{I}_4,\mathrm{I}_2,\mathrm{I}_2)$ supplies a $(-1)$-root. Thus $n=8$ [@Kon21, §6, case (8); @Kon21, Lemma 4.21]. Types $\mathrm I$ and $\mathrm{II}$ instead have examples in every characteristic $p\neq2$, and types $\mathrm{III}$ and $\mathrm{IV}$ are empty by their fibration configurations [@Kon21, §6, cases (1)--(4)].
 :::
 
 ::: {.remark #rmk:kondo-supersingular-covers title="Picard number of the cover, and two grades of support for the supersingularity claims"}
@@ -326,7 +322,16 @@ $$
 The root lattice $K$ of the $R$-invariant satisfies $K(2)\subseteq L^-$ [@Kon21, §3] and the $n$ boundary components contribute the $n$ independent $(-2)$-curves $\tilde B_i$, so $\rank L^-\ge\max(\rank K,n)$, and $\rho(X)=22$ is equivalent to $\rank L^-=12$.
 
 For $\mathrm{MI}$ and $\mathrm{MII}$ the cover is identified: the Fermat quartic surface [@Kon21, Example 4.17] and $\operatorname{Kum}(E\times E)$ for the supersingular elliptic curve [@Kon21, Example 4.20], both supersingular of Artin invariant $1$, and indeed $\rank K=12$ in both rows.
-For $\mathrm{V}$, $\mathrm{VI}$ and $\mathrm{VII}$ the displayed data give $\rank K=11,11,10$ and hence only $\rho(X)\ge21,21,20$; the assertion of [@Kon21, §1] that these covers are supersingular needs $\rank L^-=12$, which is not read off from the $R$-invariant, and no computation of $\rank L^-$ appears in the extracted text.
+For $\mathrm V$, both rows of type $\mathrm{VI}$, and $\mathrm{VII}$, the $R$-invariants give the following separate lower bounds:
+
+| type | $\rank K$ | $\rho(X)=10+\rank L^-\ge$ | source |
+|---|---|---|---|
+| $\mathrm V$, $n=2$ | $11$ | $21$ | [@Kon21, Proposition 4.8] |
+| $\mathrm{VI}$, $n=5$ | $11$ | $21$ | [@Kon21, Proposition 4.11] |
+| $\mathrm{VI}$, $n=1$ | $10$ | $20$ | [@Kon21, Proposition 4.13] |
+| $\mathrm{VII}$, $n=1$ | $10$ | $20$ | [@Kon21, Proposition 4.16] |
+
+The assertion of [@Kon21, §1] that these covers are supersingular needs $\rank L^-=12$, which is not read off from the $R$-invariant, and no computation of $\rank L^-$ appears in the extracted text.
 Nothing below depends on it: the classification, the characteristics and the counts do not use supersingularity, except at [@Kon21, §6, case (6)] where it is used to exclude $n=2$ for type $\mathrm{VII}$.
 :::
 
@@ -382,11 +387,15 @@ That inclusion is a statement about one surface; it says nothing about the confi
 
 ::: {.proposition #prop:kondo-type-i-one-boundary title="The type $\mathrm{I}$ pencil on $\PP^1\times\PP^1$, and its three Coble members"}
 
-Let $k$ be algebraically closed of characteristic $p\neq2$, let $\phi$ be the involution $(u_0:u_1,v_0:v_1)\mapsto(u_0:-u_1,v_0:-v_1)$ of $\PP^1\times\PP^1$, let $L_1,\dots,L_4$ be the four curves $u_0=\pm u_1$ and $v_0=\pm v_1$ of bidegree $(1,1)$, and for $\alpha\in k$ let $C_\alpha$ be the curve of bidegree $(4,4)$
+Let $k$ be algebraically closed of characteristic $p\neq2$, let $\phi$ be the involution $(u_0:u_1,v_0:v_1)\mapsto(u_0:-u_1,v_0:-v_1)$ of $\PP^1\times\PP^1$, and let $L_1,L_2$ be the curves $u_0=\pm u_1$ of bidegree $(1,0)$ and $L_3,L_4$ the curves $v_0=\pm v_1$ of bidegree $(0,1)$. For $\alpha\in k$ let $C_\alpha$ be the curve of bidegree $(2,2)$
 $$
 (2u_0^2-u_1^2)(v_0^2-v_1^2)=\qty(2\alpha v_0^2+(1-2\alpha)v_1^2)(u_0^2-u_1^2).
 $$
-Let $X\too\PP^1\times\PP^1$ be the minimal resolution of the double cover branched along $C_\alpha+\sum_iL_i$, and let $\sigma$ be the lift of $\phi$.
+The total branch divisor has bidegree
+$$
+[C_\alpha]+[L_1]+[L_2]+[L_3]+[L_4]=(2,2)+2(1,0)+2(0,1)=(4,4).
+$$
+Let $X\too\PP^1\times\PP^1$ be the minimal resolution of the double cover branched along $C_\alpha+\sum_iL_i$, and let $\sigma$ be the lift of $\phi$ [@Kon21, Example 4.1].
 
 1. The fixed points of $\phi$ are the four points $(1:0,1:0)$, $(1:0,0:1)$, $(0:1,1:0)$, $(0:1,0:1)$, and none of them lies on any $L_i$.
 2. A fixed point of $\phi$ lies on $C_\alpha$ for exactly three values of $\alpha$: at $\alpha=1$ the two points $(1:0,1:0)$ and $(0:1,0:1)$, at $\alpha=\tfrac12$ the point $(0:1,1:0)$, at $\alpha=\tfrac32$ the point $(1:0,0:1)$.
@@ -457,7 +466,7 @@ That proposition gives the absence of ten pairwise disjoint $(-1)$-curves; the e
 
 Three statements are outside @thm:kondo-finite-aut-classification, and none of them follows from it.
 
-1. *Isomorphism with any other non-classical object.* The type $\mathrm{I}$ surfaces are non-classical by @cor:type-i-one-boundary-not-classical, and so are the surfaces $S_{Z_8}$ and $S_{Z_{64}}$ of @ex:coble-sextics-with-an-a15-point. Sharing the property "non-classical" is not an isomorphism, and no comparison between the twelve-root configuration of @prop:kondo-type-i-one-boundary(4) and the configurations of those two surfaces is made here or in [@Kon21]. What the example gives the complex theory is a second, independent supply of objects with an $E_8$ configuration of $(-2)$-curves, hence a second family of plane models whose ten centres cannot be ten distinct nodes.
+1. *Isomorphism with any other non-classical object.* The one-boundary type $\mathrm{I}$ surface is non-classical by @cor:type-i-one-boundary-not-classical, and so are the surfaces $S_{Z_8}$ and $S_{Z_{64}}$ of @ex:coble-sextics-with-an-a15-point. The corollary does not assert non-classicality of the two-boundary type $\mathrm{I}$ surface. Sharing the property "non-classical" is not an isomorphism, and no comparison between the twelve-root configuration of @prop:kondo-type-i-one-boundary(4) and the configurations of those two surfaces is made here or in [@Kon21]. What the example gives the complex theory is a second, independent supply of objects with an $E_8$ configuration of $(-2)$-curves, hence a second family of plane models whose ten centres cannot be ten distinct nodes.
 2. *A presentation by ten distinct centres.* The contrary is proved: @cor:type-i-one-boundary-not-classical.
 3. *Monodromy.* Finiteness of $\Aut(S)$ at the nine surfaces is isotropy data at nine objects. The monodromy of a local system on a moduli stack is a property of a family over a base, computed from loops, and it is not a function of the automorphism group of a single fibre; @thm:kondo-finite-aut-classification constructs no family and no base, so it yields no statement about the monodromy groups $\Gamma_\Co$ and $\Gamma_{\Co,2}$ of the Coble families, and none about which lattice group the stack's monodromy is. In particular the nine surfaces do not supply a computation of the monodromy of $\mcM_\Co$ over $\CC$; the finite-isotropy locus being nine points is compatible with a monodromy group that is large on the complement.
 
