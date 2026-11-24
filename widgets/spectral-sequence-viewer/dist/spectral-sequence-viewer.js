@@ -1647,7 +1647,7 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 	function D(e) {
 		let { schema: t, opts: n, gen: r } = e;
 		y(e, () => {
-			n.$comment && t.$comment && V(e), R(e), r.let(l.default.vErrors, null), r.let(l.default.errors, 0), n.unevaluated && k(e), I(e), ee(e);
+			n.$comment && t.$comment && V(e), R(e), r.let(l.default.vErrors, null), r.let(l.default.errors, 0), n.unevaluated && k(e), I(e), H(e);
 		});
 	}
 	function k(e) {
@@ -1706,11 +1706,11 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 			e.code((0, c._)`${l.default.self}.opts.$comment(${a}, ${n}, ${i}.schema)`);
 		}
 	}
-	function ee(e) {
+	function H(e) {
 		let { gen: t, schemaEnv: n, validateName: r, ValidationError: i, opts: a } = e;
-		n.$async ? t.if((0, c._)`${l.default.errors} === 0`, () => t.return(l.default.data), () => t.throw((0, c._)`new ${i}(${l.default.vErrors})`)) : (t.assign((0, c._)`${r}.errors`, l.default.vErrors), a.unevaluated && H(e), t.return((0, c._)`${l.default.errors} === 0`));
+		n.$async ? t.if((0, c._)`${l.default.errors} === 0`, () => t.return(l.default.data), () => t.throw((0, c._)`new ${i}(${l.default.vErrors})`)) : (t.assign((0, c._)`${r}.errors`, l.default.vErrors), a.unevaluated && ee(e), t.return((0, c._)`${l.default.errors} === 0`));
 	}
-	function H({ gen: e, evaluated: t, props: n, items: r }) {
+	function ee({ gen: e, evaluated: t, props: n, items: r }) {
 		n instanceof c.Name && e.assign((0, c._)`${t}.props`, n), r instanceof c.Name && e.assign((0, c._)`${t}.items`, r);
 	}
 	function te(e, t, n, a) {
@@ -2445,7 +2445,7 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 		normalizeIPv6: b,
 		stringArrayToHexStripped: f
 	};
-})), ee = /* @__PURE__ */ s(((e, t) => {
+})), H = /* @__PURE__ */ s(((e, t) => {
 	var { isUUID: n } = V(), r = /^([\da-z][\d\-a-z]{0,31}):((?:[\w!$'()*+,\-./:;=@]|%[\da-f]{2})+)$/iu, i = [
 		"http",
 		"https",
@@ -2551,8 +2551,8 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 		isValidSchemeName: a,
 		getSchemeHandler: y
 	};
-})), H = /* @__PURE__ */ s(((e, t) => {
-	var { normalizeIPv6: n, removeDotSegments: r, removeDotSegmentsRelative: i, recomposeAuthority: a, normalizePercentEncoding: o, normalizePathEncoding: s, serializePathEncoding: c, normalizeQueryFragmentEncoding: l, encodeQuery: u, encodeFragment: d, reescapeHostDelimiters: f, isIPv4: p, nonSimpleDomain: m } = V(), { SCHEMES: h, getSchemeHandler: g } = ee(), _ = /^[A-Za-z][A-Za-z0-9+.-]*$/u, v = "URI scheme is malformed.", y = "URI host is malformed.", b = /[\0-\x20"#/:<>?@[\\\]^`{|}\x7F]/u;
+})), ee = /* @__PURE__ */ s(((e, t) => {
+	var { normalizeIPv6: n, removeDotSegments: r, removeDotSegmentsRelative: i, recomposeAuthority: a, normalizePercentEncoding: o, normalizePathEncoding: s, serializePathEncoding: c, normalizeQueryFragmentEncoding: l, encodeQuery: u, encodeFragment: d, reescapeHostDelimiters: f, isIPv4: p, nonSimpleDomain: m } = V(), { SCHEMES: h, getSchemeHandler: g } = H(), _ = /^[A-Za-z][A-Za-z0-9+.-]*$/u, v = "URI scheme is malformed.", y = "URI host is malformed.", b = /[\0-\x20"#/:<>?@[\\\]^`{|}\x7F]/u;
 	function x(e) {
 		let t = String(e);
 		if (!_.test(t)) throw TypeError(v);
@@ -2593,7 +2593,7 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 		return o.fragment = t.fragment, o;
 	}
 	function T(e, t, n) {
-		let r = H(e, n), i = H(t, n);
+		let r = ee(e, n), i = ee(t, n);
 		return r !== void 0 && i !== void 0 && r === i;
 	}
 	function E(e, t) {
@@ -2728,7 +2728,7 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 			malformedScheme: s
 		};
 	}
-	function H(e, t) {
+	function ee(e, t) {
 		if (typeof e != "string" && typeof e != "object") return;
 		let n;
 		try {
@@ -2751,7 +2751,7 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 	t.exports = te, t.exports.default = te, t.exports.fastUri = te;
 })), te = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = H();
+	var t = ee();
 	t.code = "require(\"ajv/dist/runtime/uri\").default", e.default = t;
 })), ne = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.CodeGen = e.Name = e.nil = e.stringify = e.str = e._ = e.KeywordCxt = void 0;
@@ -3009,14 +3009,14 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 			else if (typeof e == "object" && t === void 0) {
 				if (t = e, n = t.keyword, Array.isArray(n) && !n.length) throw Error("addKeywords: keyword must be string or non-empty array");
 			} else throw Error("invalid addKeywords parameters");
-			if (ee.call(this, n, t), !t) return (0, u.eachItem)(n, (e) => H.call(this, e)), this;
+			if (H.call(this, n, t), !t) return (0, u.eachItem)(n, (e) => ee.call(this, e)), this;
 			re.call(this, t);
 			let r = {
 				...t,
 				type: (0, l.getJSONTypes)(t.type),
 				schemaType: (0, l.getJSONTypes)(t.schemaType)
 			};
-			return (0, u.eachItem)(n, r.type.length === 0 ? (e) => H.call(this, e, r) : (e) => r.type.forEach((t) => H.call(this, e, r, t))), this;
+			return (0, u.eachItem)(n, r.type.length === 0 ? (e) => ee.call(this, e, r) : (e) => r.type.forEach((t) => ee.call(this, e, r, t))), this;
 		}
 		getKeyword(e) {
 			let t = this.RULES.all[e];
@@ -3143,14 +3143,14 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 		throw Error("logger must implement log, warn and error methods");
 	}
 	var V = /^[a-z_$][a-z0-9_$:-]*$/i;
-	function ee(e, t) {
+	function H(e, t) {
 		let { RULES: n } = this;
 		if ((0, u.eachItem)(e, (e) => {
 			if (n.keywords[e]) throw Error(`Keyword ${e} is already defined`);
 			if (!V.test(e)) throw Error(`Keyword ${e} has invalid name`);
 		}), t && t.$data && !("code" in t || "validate" in t)) throw Error("$data keyword must have \"code\" or \"validate\" function");
 	}
-	function H(e, t, n) {
+	function ee(e, t, n) {
 		var r;
 		let i = t?.post;
 		if (n && i) throw Error("keyword with \"post\" flag cannot have \"type\"");
@@ -42971,49 +42971,53 @@ var fa = (e) => e.map((e) => [e, e]), pa = (e) => String(e).replace(/\d/g, (e) =
 		], D = E.map((e) => S(tt(a, e), T("E", e))), O = E.map((e) => {
 			let t = a.terms.get(U(e)), n = tt(a, e), r = n === "zero" ? "0" : t?.module ?? t?.label;
 			return r ? S(n, r) : "";
-		}), k = [y, b], A = k.map((e) => S(e.status, "\\xrightarrow{" + T("d", e.a) + "}")), j = k.map((e) => {
-			let t = a.terms.get(U(e.a))?.generator, n = e.status === "zero" ? "0" : e.image;
-			return t && n ? S(e.status, t + "\\mapsto " + n) : e.formula && e.formula !== "0" ? S(e.status, e.formula) : "";
-		}), M = [[
+		}), k = [y, b], A = k.map((e) => S(e.status, "\\xrightarrow{" + T("d", e.a) + "}")), j = [[
 			D[0],
 			A[0],
 			D[1],
 			A[1],
 			D[2]
 		]];
-		O.some(Boolean) && M.push([
+		O.some(Boolean) && j.push([
 			O[0],
 			"",
 			O[1],
 			"",
 			O[2]
-		]), j.some(Boolean) && M.push([
-			j[0],
-			"",
-			j[1],
-			"",
-			""
 		]);
-		let N = "\\begin{array}{c@{\\;}c@{\\;}c@{\\;}c@{\\;}c}" + M.map((e) => e.join("&")).join("\\\\") + "\\end{array}", P = $(N);
-		P.classList.add("chain"), P.querySelector("svg").setAttribute("aria-label", N), _.append(P);
-		let F = a.stable.get(U(this.selected));
-		F !== void 0 && F <= i.index && _.append(" stable from page " + F);
-		let I = document.createElement("header");
-		I.append(c, u);
+		for (let [e, t] of k.entries()) {
+			let n = a.terms.get(U(t.a))?.generator, r = t.status === "zero" ? "0" : t.image, i = [
+				"",
+				"",
+				"",
+				"",
+				""
+			];
+			if (n && r) i[2 * e] = n, i[2 * e + 1] = S(t.status, "\\longmapsto"), i[2 * e + 2] = r;
+			else if (t.formula && t.formula !== "0") i[2 * e + 1] = S(t.status, t.formula);
+			else continue;
+			j.push(i);
+		}
+		let M = "\\begin{array}{ccccc}" + j.map((e) => e.join("&")).join("\\\\") + "\\end{array}", N = $(M);
+		N.classList.add("chain"), N.querySelector("svg").setAttribute("aria-label", M), _.append(N);
+		let P = a.stable.get(U(this.selected));
+		P !== void 0 && P <= i.index && _.append(" stable from page " + P);
+		let F = document.createElement("header");
+		F.append(c, u);
+		let I = document.createElement("div");
+		I.className = "canvas";
 		let L = document.createElement("div");
-		L.className = "canvas";
+		L.className = "vertical-axis", L.append($(n.qLabel ?? "q"), " ↑");
 		let R = document.createElement("div");
-		R.className = "vertical-axis", R.append($(n.qLabel ?? "q"), " ↑");
+		R.className = "horizontal-axis", R.append($(n.pLabel ?? "p"), " →"), I.append(L, g, R);
 		let z = document.createElement("div");
-		z.className = "horizontal-axis", z.append($(n.pLabel ?? "p"), " →"), L.append(R, g, z);
+		z.className = "layout";
 		let B = document.createElement("div");
-		B.className = "layout";
-		let V = document.createElement("div");
-		V.className = "guide";
-		let ee = document.createElement("button");
-		ee.textContent = "Color key";
+		B.className = "guide";
+		let V = document.createElement("button");
+		V.textContent = "Color key";
 		let H = document.createElement("div");
-		H.popover = "auto", ee.popoverTargetElement = H;
+		H.popover = "auto", V.popoverTargetElement = H;
 		for (let [e, t] of [
 			["zero", "Red · zero"],
 			["nonzero", "Blue · nonzero"],
@@ -43022,7 +43026,7 @@ var fa = (e) => e.map((e) => [e, e]), pa = (e) => String(e).replace(/\d/g, (e) =
 			let n = document.createElement("span");
 			n.className = "state-" + e, n.textContent = t, H.append(n);
 		}
-		V.append(ee, H), _.append(V, p), B.append(L, _), s.append(I, l, B), this.root.replaceChildren(o, s), t && this.root.querySelector("[aria-label=\"" + CSS.escape(t) + "\"]")?.focus({ preventScroll: !0 });
+		B.append(V, H), _.append(B, p), z.append(I, _), s.append(F, l, z), this.root.replaceChildren(o, s), t && this.root.querySelector("[aria-label=\"" + CSS.escape(t) + "\"]")?.focus({ preventScroll: !0 });
 	}
 };
 // src/index.ts

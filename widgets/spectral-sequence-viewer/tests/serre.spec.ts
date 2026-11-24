@@ -12,9 +12,9 @@ test("the transgression identifies the modules and sends each generator to its i
   const figure = page.locator("#co");
   await figure.getByRole("button", { name: "(3,2)", exact: true }).click();
   const chain = figure.locator(".chain > svg");
-  await expect(chain.locator('[data-mml-node="mtr"]')).toHaveCount(3);
+  await expect(chain.locator('[data-mml-node="mtr"]')).toHaveCount(4);
   await expect(chain).toHaveAccessibleName(/d_3\^\{0,4\}.*d_3\^\{3,2\}.*state-zero.*E_3\^\{6,0\}/);
-  await expect(chain).toHaveAccessibleName(/x\^\{2\}.*\\mapsto 2ux.*ux.*\\mapsto 0/);
+  await expect(chain).toHaveAccessibleName(/x\^\{2\}.*\\longmapsto.*2ux.*ux.*\\longmapsto.*0/);
 });
 
 test("generator images occupy the column of their receiving module", async ({ page }) => {

@@ -164,16 +164,22 @@ export class Viewer extends HTMLElement {
     });
     const maps = [first, second];
     const arrows = maps.map(map => colored(map.status, "\\xrightarrow{" + indexed("d", map.a) + "}"));
-    const actions = maps.map(map => {
-      const generator = m.terms.get(key(map.a))?.generator;
-      const image = map.status === "zero" ? "0" : map.image;
-      if (generator && image) return colored(map.status, generator + "\\mapsto " + image);
-      return map.formula && map.formula !== "0" ? colored(map.status, map.formula) : "";
-    });
     const rows = [[termRow[0], arrows[0], termRow[1], arrows[1], termRow[2]]];
     if (moduleRow.some(Boolean)) rows.push([moduleRow[0], "", moduleRow[1], "", moduleRow[2]]);
-    if (actions.some(Boolean)) rows.push([actions[0], "", actions[1], "", ""]);
-    const tex = "\\begin{array}{c@{\\;}c@{\\;}c@{\\;}c@{\\;}c}" +
+    for (const [i, map] of maps.entries()) {
+      const generator = m.terms.get(key(map.a))?.generator;
+      const image = map.status === "zero" ? "0" : map.image;
+      const row = ["", "", "", "", ""];
+      if (generator && image) {
+        row[2 * i] = generator;
+        row[2 * i + 1] = colored(map.status, "\\longmapsto");
+        row[2 * i + 2] = image;
+      } else if (map.formula && map.formula !== "0") {
+        row[2 * i + 1] = colored(map.status, map.formula);
+      } else continue;
+      rows.push(row);
+    }
+    const tex = "\\begin{array}{ccccc}" +
       rows.map(row => row.join("&")).join("\\\\") + "\\end{array}";
     const chain = math(tex);
     chain.classList.add("chain");
