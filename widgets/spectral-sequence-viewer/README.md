@@ -39,7 +39,7 @@ A term's `label` appears on the chart. Its optional `module` identifies the grou
 
 Set `support` to `"unrestricted"` for signed native bidegrees. The default is `"first-quadrant"`. Column restrictions, term records, map sources, and stability declarations always use native degrees.
 
-Set `settings.projection` to `"total-filtration"` to plot total degree horizontally and filtration degree vertically. The default is `"native"`. An explicit viewport bounds the horizontal and vertical display coordinates. With no viewport, the viewer projects the extent. Arrow keys follow the displayed axes, and inspection names the native component.
+Set `settings.projection` to `"total-filtration"` to plot total degree horizontally and filtration degree vertically. The default is `"native"`. An explicit viewport bounds the horizontal and vertical display coordinates. Without an explicit viewport, the square opening view fits the nonzero terms and nonzero map endpoints across the supplied pages. An empty chart opens near the lower bounds of its data extent. Arrow keys follow the displayed axes, and inspection names the native component.
 
 For a component with several generator images, supply an ordered `assignments` array on the map, for example `[{"generator":"a","image":"u"},{"generator":"b","image":"0"}]`. Each assignment occupies one row between the same source and target. Set the status on the component as a whole.
 
@@ -62,3 +62,14 @@ Native coordinates, projected coordinates, and incident differential endpoints
 must fit in JavaScript’s safe integer range. The viewer validates them before
 replacing the displayed sequence. Select a named class to inspect its term
 label and module together.
+
+### Move around the chart
+
+Drag or swipe to pan. Turn the wheel or pinch to zoom about the gesture location.
+When the gesture ends, the axes snap to whole lattice boxes. Focus the plot to
+pan with the arrow keys, zoom with + or −, or return Home. **Reset view** restores
+the opening crop and keeps the inspected term and page.
+
+An explicit rectangular crop is centered in the square frame at equal axis
+scales. Wide fits use an overview with authored terms and spaced ticks; zoom
+in for individual grid cells. The frame adapts to the embedding width.

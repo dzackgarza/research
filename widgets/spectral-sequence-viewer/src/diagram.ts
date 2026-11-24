@@ -14,6 +14,7 @@ export const coord = (t: Point) => "(" + key(t) + ")";
 export function diagram(
   m: Model,
   r: Rect,
+  pixels: number,
   selected: Point,
   mode: string,
   zeroStyle: string,
@@ -28,11 +29,16 @@ export function diagram(
 ) {
   const graph = document.createElement("div");
   graph.className = "plot";
-  const width = (r.pMax - r.pMin + 1) * 112,
-    height = (r.qMax - r.qMin + 1) * 82;
-  graph.style.minWidth = (r.pMax - r.pMin + 1) * 60 + "px";
-  graph.style.setProperty("--columns", String(r.pMax - r.pMin + 1));
-  graph.style.height = height + "px";
+  const columns = r.pMax - r.pMin + 1,
+    rows = r.qMax - r.qMin + 1;
+  const pitch = pixels / Math.max(columns, rows);
+  const width = columns * pitch,
+    height = rows * pitch,
+    side = pixels;
+  graph.style.width = (width / side) * 100 + "%";
+  graph.style.height = (height / side) * 100 + "%";
+  graph.style.setProperty("--columns", String(columns));
+  graph.style.setProperty("--rows", String(rows));
   const ns = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(ns, "svg");
   svg.setAttribute("viewBox", "0 0 " + width + " " + height);
@@ -56,22 +62,49 @@ export function diagram(
   marker.append(tip);
   svg.append(marker);
   graph.append(svg);
-  const x = (p: number) => (p - r.pMin + 0.5) * 112,
-    y = (q: number) => (r.qMax - q + 0.5) * 82;
+  const x = (p: number) => (p - r.pMin + 0.5) * pitch,
+    y = (q: number) => (r.qMax - q + 0.5) * pitch;
   function tick(label: number, left: number, top: number) {
     const el = document.createElement("span");
     el.className = "tick";
     el.append(math(String(label)));
     el.style.left = (left / width) * 100 + "%";
-    el.style.top = top + "px";
+    el.style.top = (top / height) * 100 + "%";
     graph.append(el);
   }
-  for (let p = r.pMin; p <= r.pMax; p++) tick(p, x(p), height - 8);
-  for (let q = r.qMin; q <= r.qMax; q++) tick(q, 8, y(q));
+  const step = Math.max(1, Math.ceil(Math.max(columns, rows) / 16));
+  for (let i = 0; i < columns; i += step)
+    tick(r.pMin + i, x(r.pMin + i), height - 8);
+  for (let i = 0; i < rows; i += step) tick(r.qMin + i, 8, y(r.qMin + i));
   const positions = new Map<string, Point>();
-  for (let q = r.qMax; q >= r.qMin; q--)
-    for (let p = r.pMin; p <= r.pMax; p++)
-      positions.set(key({ p, q }), { p, q });
+  if (step === 1) {
+    for (let q = r.qMax; q >= r.qMin; q--)
+      for (let p = r.pMin; p <= r.pMax; p++)
+        positions.set(key({ p, q }), { p, q });
+  } else {
+    graph.classList.add("overview");
+    graph.onclick = (event) => {
+      if (event.target !== graph) return;
+      const box = graph.getBoundingClientRect();
+      const p =
+        r.pMin +
+        Math.min(
+          columns - 1,
+          Math.floor(((event.clientX - box.left) / box.width) * columns),
+        );
+      const q =
+        r.qMax -
+        Math.min(
+          rows - 1,
+          Math.floor(((event.clientY - box.top) / box.height) * rows),
+        );
+      choose(nativePoint(m.data, { p, q }));
+    };
+    for (const term of [...m.page.terms, selected]) {
+      const pos = plotPoint(m.data, term);
+      if (inside(pos, r)) positions.set(key(pos), pos);
+    }
+  }
   for (const map of m.page.maps) {
     const point = plotPoint(m.data, map);
     positions.set(key(point), point);
@@ -80,7 +113,7 @@ export function diagram(
     const classes = id && m.classes.get(id)?.term.classes;
     return classes
       ? (classes.findIndex((c) => c.id === id) - (classes.length - 1) / 2) *
-          Math.min(30, 65 / classes.length)
+          Math.min(30, (pitch * 0.78) / classes.length)
       : 0;
   }
   for (const { p, q } of positions.values()) {
@@ -115,10 +148,11 @@ export function diagram(
         const dx = x(b.p) - x(p),
           dy = endY - startY,
           length = Math.hypot(dx, dy);
+        const inset = Math.min(22, length / 4);
         const segment = clipPolyline(
           [
-            [x(p) + (22 * dx) / length, startY + (22 * dy) / length],
-            [x(b.p) - (22 * dx) / length, endY - (22 * dy) / length],
+            [x(p) + (inset * dx) / length, startY + (inset * dy) / length],
+            [x(b.p) - (inset * dx) / length, endY - (inset * dy) / length],
           ],
           [0, 0, width, height],
         )[0];
@@ -190,7 +224,7 @@ export function diagram(
       const button = document.createElement("button");
       button.className = "cell chart-class";
       button.style.left = (x(p) / width) * 100 + "%";
-      button.style.top = y(q) + offset(c.id) + "px";
+      button.style.top = ((y(q) + offset(c.id)) / height) * 100 + "%";
       button.dataset.status = "nonzero";
       button.setAttribute("aria-label", "Class " + c.id);
       button.setAttribute("aria-pressed", String(active === "Class " + c.id));
@@ -215,7 +249,7 @@ export function diagram(
           "Term " + coord(a) + " stable from page " + first,
         );
         tag.style.left = (x(p) / width) * 100 + "%";
-        tag.style.top = y(q) + 30 + "px";
+        tag.style.top = ((y(q) + 30) / height) * 100 + "%";
         graph.append(tag);
       }
       continue;
@@ -226,7 +260,7 @@ export function diagram(
     cell.className = "cell";
     cell.style.left = (x(p) / width) * 100 + "%";
     cell.dataset.status = status;
-    cell.style.top = y(q) + "px";
+    cell.style.top = (y(q) / height) * 100 + "%";
     cell.setAttribute("aria-label", coord(a));
     cell.setAttribute(
       "aria-pressed",

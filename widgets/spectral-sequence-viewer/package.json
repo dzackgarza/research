@@ -8,11 +8,15 @@
   },
   "dependencies": {
     "ajv": "^8.20.0",
+    "d3-selection": "^3.0.1",
+    "d3-zoom": "^3.0.1",
     "lineclip": "^2.0.0",
     "mathjax-full": "3.2.2"
   },
   "devDependencies": {
     "@playwright/test": "^1.65.1",
+    "@types/d3-selection": "^3.0.12",
+    "@types/d3-zoom": "^3.0.9",
     "@types/lineclip": "^2.0.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",

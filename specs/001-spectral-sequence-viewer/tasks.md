@@ -104,6 +104,6 @@ The completed first-quadrant tasks above describe the original implementation. T
 
 ## Phase 14: View navigation
 
-- [ ] T043 Fit the initial view to mathematical content, preserve explicit crops, and draw equal-scale lattice boxes in a responsive square frame.
-- [ ] T044 Pan and zoom with mouse and touch, snap to integral bounds, and provide keyboard navigation and reset.
-- [ ] T045 Verify real wheel, drag, touch, responsive geometry, reset, and inspection through the distributed widget.
+- [X] T043 Fit the initial view to mathematical content, preserve explicit crops, and draw equal-scale lattice boxes in a responsive square frame.
+- [X] T044 Pan and zoom with mouse and touch, snap to integral bounds, and provide keyboard navigation and reset.
+- [X] T045 Verify real wheel, drag, touch, responsive geometry, reset, and inspection through the distributed widget.

@@ -12,12 +12,6 @@
   "settings": {
     "title": "H^*(F;\\mathbb Z)",
     "initialPage": 3,
-    "viewport": {
-      "pMin": 0,
-      "pMax": 3,
-      "qMin": 0,
-      "qMax": 4
-    },
     "zeroStyle": "dot"
   },
   "pages": [

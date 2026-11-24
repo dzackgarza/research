@@ -2,7 +2,7 @@ import {
   indexPage,
   nativePoint,
   plotPoint,
-  viewport,
+  type Rect,
   parseSequence,
   key,
   type Sequence,
@@ -10,6 +10,7 @@ import {
   type Point,
 } from "./sequence";
 import { endpoint, differential, inside, termStatus } from "./differentials";
+import { openingView, safeView, navigateChart } from "./navigation";
 import { diagram } from "./diagram";
 import { math } from "./math";
 import css from "./viewer.css?inline";
@@ -42,16 +43,30 @@ export class Viewer extends HTMLElement {
   private arrowSelected = false;
   private active?: string;
   private relation?: Relation;
+  private resize?: ResizeObserver;
+  disconnectedCallback() {
+    this.resize?.disconnect();
+  }
+  connectedCallback() {
+    if (this.data) this.render();
+  }
+  private home!: Rect;
+  private view!: Rect;
   private filter = "All";
   private zeros = "zero";
   set sequence(input: Sequence) {
     const data = parseSequence(input);
+    const r = openingView(data);
+    if (!safeView(data, r))
+      throw new Error(
+        "opening viewport exceeds the safe integer coordinate range",
+      );
+    this.home = this.view = r;
     this.data = data;
     this.active = undefined;
     this.relation = undefined;
     this.arrowSelected = false;
     this.i = (data.settings?.initialPage ?? data.firstPage) - data.firstPage;
-    const r = viewport(data);
     this.selected = nativePoint(data, { p: r.pMin, q: r.qMin });
     this.zeros = data.settings?.zeroStyle ?? "zero";
     this.filter = "All";
@@ -60,9 +75,10 @@ export class Viewer extends HTMLElement {
   private render() {
     const data = this.data;
     if (!data) return;
+    this.resize?.disconnect();
     const focus = this.root.activeElement?.getAttribute("aria-label");
     const settings = data.settings ?? {},
-      r = viewport(data),
+      r = this.view,
       page = data.pages[this.i],
       m = indexPage(data, page);
     const style = document.createElement("style");
@@ -184,11 +200,20 @@ export class Viewer extends HTMLElement {
     );
     const scroll = document.createElement("div");
     scroll.className = "scroll";
+    scroll.tabIndex = 0;
+    scroll.setAttribute("role", "group");
+    scroll.setAttribute("aria-label", "Chart viewport");
+    scroll.title =
+      "Drag to pan. Scroll or pinch to zoom. Arrow keys pan; + and − zoom.";
+    const layer = document.createElement("div");
+    layer.className = "view-layer";
+    scroll.append(layer);
     const drawPlot = () =>
-      scroll.replaceChildren(
+      layer.replaceChildren(
         diagram(
           m,
           r,
+          scroll.clientWidth || 512,
           this.selected,
           this.filter,
           this.zeros,
@@ -206,7 +231,6 @@ export class Viewer extends HTMLElement {
           },
         ),
       );
-    drawPlot();
     const panel = document.createElement("aside");
     panel.setAttribute("role", "region");
     panel.setAttribute("aria-label", "Inspector");
@@ -367,10 +391,31 @@ export class Viewer extends HTMLElement {
     const controls = document.createElement("footer");
     controls.className = "figure-controls";
     controls.append(guide, trigger, display);
+    const reset = document.createElement("button");
+    reset.textContent = "Reset view";
+    reset.setAttribute("aria-label", "Reset view");
+    reset.onclick = () => {
+      this.view = this.home;
+      this.render();
+    };
+    controls.insertBefore(reset, trigger);
     panel.append(controls);
     layout.append(canvas, panel);
     section.append(header, formula, layout);
     this.root.replaceChildren(style, section);
+    drawPlot();
+    let lastWidth = scroll.clientWidth;
+    this.resize = new ResizeObserver(() => {
+      if (scroll.clientWidth !== lastWidth) {
+        lastWidth = scroll.clientWidth;
+        drawPlot();
+      }
+    });
+    if (this.isConnected) this.resize.observe(scroll);
+    navigateChart(scroll, data, r, this.home, (next) => {
+      this.view = next;
+      this.render();
+    });
     if (focus)
       this.root
         .querySelector<HTMLElement>('[aria-label="' + CSS.escape(focus) + '"]')

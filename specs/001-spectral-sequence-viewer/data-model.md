@@ -5,7 +5,7 @@
 | Record | Fields and rules |
 | --- | --- |
 | Sequence | Required `convention` (cohomological or homological), `firstPage`, `extent`, and nonempty ordered `pages`. Optional `pageCount` equals the array length. Page indices increase by one from firstPage. Optional `degenerationPage` may exceed the last supplied index. |
-| Rectangle | Inclusive signed integer `pMin,pMax,qMin,qMax`, each minimum at most its maximum. The extent bounds term records. The display viewport defaults to the projected extent. |
+| Rectangle | Inclusive signed integer `pMin,pMax,qMin,qMax`, each minimum at most its maximum. The extent bounds term records. The opening viewport fits projected nonzero data across the supplied pages. Each figure owns its current display bounds independently. |
 | Page | Required `index`, `terms`, and `maps`; optional TeX `formula`. Within each list coordinates are unique. |
 | Term | `p,q,status` with status zero, nonzero, or unknown, and optional TeX `label`. Sequence-level `stableTerms` records contain `p,q,fromPage`, unique per coordinate. This makes the declared first stable page available on all later pages. |
 | Map | `p,q` locate the source. Required `status` is zero, nonzero, or undetermined. Optional TeX `formula`. The convention and page determine the target. |
