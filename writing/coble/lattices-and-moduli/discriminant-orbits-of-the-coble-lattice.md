@@ -329,7 +329,7 @@ Now $\latI_{1,8}$ has a unit vector $v$, and $v\perp x$, so $s_v$ fixes $x$ whil
 ::: {.proposition #prop:tco-no-hyperbolic-plane title="$T_\Co$ contains no copy of $U$"}
 
 Every value of $\beta_{T_\Co}$ is even (@def:form-axioms). Hence $T_\Co$ contains no sublattice isometric to $U$, and
-@thm:eichler-criterion does not apply to $T_\Co$.
+@thm:eichler-criterion does not apply to $T_\Co$: the lattice is even, so the evenness hypothesis of that criterion holds, and what fails is its splitting hypothesis.
 :::
 
 ::: {.proof}

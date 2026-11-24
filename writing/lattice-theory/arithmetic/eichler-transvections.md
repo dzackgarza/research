@@ -16,6 +16,7 @@ E_{e, a}(v) = v + (ev)\,a - (av)\,e
 .
 $$
 The construction is due to Eichler [@Eic74].
+The pair $(e,a)$ is taken in the rational space $L_\QQ$, so $E_{e,a}$ is an isometry of $L_\QQ$ for every lattice $L$; it need not preserve the integral lattice $L\subseteq L_\QQ$, and the sharp condition on $a$ for it to do so is @prop:eichler-integrality-criterion.
 :::
 
 ::: {.definition #def:eichler-group title="The Eichler transvection group" defines="Eichler transvection group; $E(L)$"}
@@ -26,13 +27,51 @@ e\in L^{\mathrm{prim}}[0],
 \qquad
 \div_L(e)=1,
 \qquad
-a\in\generators{e}^{\perp L}.
+a\in\generators{e}^{\perp L},
+\qquad
+a^2\in 2\ZZ .
 $$
+The last condition is the integrality condition of @prop:eichler-integrality-criterion.
+On an even lattice every $a\in L$ has even square (@def:form-axioms), so it is automatic and the family is the usual one; on an odd lattice it cannot be dropped, since then some transvections satisfying the other three conditions are not isometries of $L$.
+:::
+
+::: {.proposition #prop:eichler-integrality-criterion title="When an Eichler--Siegel transvection is integral"}
+
+Let $L$ be an integral lattice, let $e\in L$ be primitive isotropic with $\div_L(e)=1$, and let $a\in L\cap\generators{e}^{\perp L}$.
+Then
+$$
+E_{e,a}\in\Orth(L)
+\iff
+a^2\in 2\ZZ .
+$$
+:::
+
+::: {.proof}
+
+By @def:eichler-siegel, for $x\in L$,
+$$
+E_{e,a}(x) - x = (e,x)\,a - \qty{(a,x) + \tfrac{1}{2}a^2(e,x)}e .
+$$
+Both $(e,x)$ and $(a,x)$ are integers, so $(e,x)a\in L$ and $(a,x)e\in L$; the only summand that can fail to be integral is $-\tfrac12 a^2(e,x)e$.
+If $a^2$ is even, every summand is integral and $E_{e,a}(L)\subseteq L$.
+The inverse of $E_{e,a}$ is $E_{e,-a}$: both composites fix $e$, act on $e^{\perp}$ by $x\mapsto x\pm(a,x)e$ in opposite directions, and a substitution in the formula gives $E_{e,-a}\qty(E_{e,a}(f)) = f$ for an $f$ with $(e,f)=1$.
+Since $(-a)^2 = a^2$ is even, $E_{e,-a}(L)\subseteq L$ as well, so $E_{e,a}$ is a bijection of $L$ and lies in $\Orth(L)$.
+Conversely, $\div_L(e)=1$ provides $f\in L$ with $(e,f)=1$ (@def:lattice-divisibility), and
+$$
+E_{e,a}(f) = f + a - \qty{(a,f) + \tfrac12 a^2}e .
+$$
+If this lies in $L$, then $\tfrac12 a^2 e\in L$, and since $e$ is primitive, $\QQ e\cap L = \ZZ e$ (@def:primitive-embedding), so $\tfrac12 a^2\in\ZZ$.
+:::
+
+::: {.remark}
+
+On an even lattice every $a\in L$ has even square, so @def:eichler-group is the generating family of [@GHS08, §3.3], whose lattice is integral and even by hypothesis.
+@prop:eichler-integrality-criterion is the sharp form of the integrality condition for an arbitrary integral lattice: [@GHS08, §3.1, Lem. 3.1, eq. (4)] states the transvection as a rational isometry and licenses no integrality claim beyond the formula itself.
 :::
 
 ::: {.theorem #thm:eichler-criterion title="The Eichler criterion"}
 
-Let $\phi\colon U\perp U_1\perp L_0\isoto L$ be an isometry, where $U_1$ is a second hyperbolic plane (@def:hyperbolic-plane), and let $v_1,v_2\in L$ be primitive (@def:primitive-embedding).
+Let $L$ be an even lattice (@def:even-lattice), let $\phi\colon U\perp U_1\perp L_0\isoto L$ be an isometry, where $U_1$ is a second hyperbolic plane (@def:hyperbolic-plane), and let $v_1,v_2\in L$ be primitive (@def:primitive-embedding).
 Then there exists $g\in\widetilde{\SO}^+(L)$ with $g(v_1)=v_2$ if and only if
 $$
 v_1^2=v_2^2,
@@ -40,7 +79,7 @@ v_1^2=v_2^2,
 v_1^*=v_2^*\ \text{in }A_L,
 $$
 where $v_i^*\definedas \frac{v_i}{\div_L(v_i)}+L\in A_L$.
-This is Eichler's criterion in the form of [@GHS08, Prop. 3.3(i)].
+This is Eichler's criterion in the form of [@GHS08, Prop. 3.3(i)], which is stated there for an integral even lattice; the evenness is not removable (@ex:eichler-criterion-fails-odd).
 :::
 
 ::: {.proof}
@@ -52,6 +91,17 @@ $$
 $$
 with $\tau(v_1)=v_2$.
 The converse follows because every element of $\widetilde{\SO}^+(L)$ preserves the norm (@def:lattice-basic-invariants) and acts trivially on $A_L$.
+:::
+
+::: {.example #ex:eichler-criterion-fails-odd title="The Eichler criterion fails on an odd unimodular lattice"}
+
+Let $L = U\perp U_1\perp\ZZ a$ with $a^2 = -1$, of signature $(2,3)$, let $e,f$ be the hyperbolic basis of the first plane $U$, and let $e_1,f_1$ be that of $U_1$.
+Put $v \definedas a$ and $w \definedas a+e$.
+Both are primitive of norm $-1$ and of divisibility $1$, and $L$ is unimodular, so $A_L = 0$ and $v^* = w^*$: the two vectors satisfy the hypotheses of @thm:eichler-criterion other than evenness.
+Nevertheless no isometry of $L$ carries $v$ to $w$.
+An isometry preserves the *characteristic* property $(x,y)\equiv y^2\pmod 2$ for all $y\in L$.
+For $y = me+nf+m'e_1+n'f_1+ta$ one has $(v,y) = -t\equiv -t^2 = y^2\pmod 2$, so $v$ is characteristic, while $(w,f) = 1$ and $f^2 = 0$, so $w$ is not.
+Hence $v$ and $w$ lie in different $\Orth(L)$-orbits.
 :::
 
 ::: {.example #ex:eichler-two-hyperbolic-planes title="Even twists contain no hyperbolic plane"}

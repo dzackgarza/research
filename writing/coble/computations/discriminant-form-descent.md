@@ -979,9 +979,9 @@ At the Enriques lattice the sufficient condition of @thm:joint-double-coset(3) f
 ## Supporting lift theorems {#sec-descent-eichler}
 
 ::: {.proposition #prop:descent-eichler title="Eichler filling"}
-Let $L\cong U\perp U_1\perp L_0$, with $U_1$ a second hyperbolic plane (@def:hyperbolic-plane). If $v,v'\in L$ are primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) with $v^*=v'^*$ in $A_L$, then there is $g\in\widetilde{\SO}^+(L)$ with $g(v)=v'$. Consequently, for every $\Gamma\leq\Orth(L)$ with $\widetilde{\SO}^+(L)\subseteq\Gamma$, the primitive isotropic vectors (@def:isotropic-subspace) with a fixed descent class (@def:descent-class) form one $\Gamma$-orbit.
+Let $L\cong U\perp U_1\perp L_0$ be an even lattice (@def:even-lattice), with $U_1$ a second hyperbolic plane (@def:hyperbolic-plane). If $v,v'\in L$ are primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) with $v^*=v'^*$ in $A_L$, then there is $g\in\widetilde{\SO}^+(L)$ with $g(v)=v'$. Consequently, for every $\Gamma\leq\Orth(L)$ with $\widetilde{\SO}^+(L)\subseteq\Gamma$, the primitive isotropic vectors (@def:isotropic-subspace) with a fixed descent class (@def:descent-class) form one $\Gamma$-orbit.
 :::
 
 ::: {.proof}
-Apply @thm:eichler-criterion to $v_1=v$ and $v_2=v'$: both squares are $0$, and $v_1^*=v_2^*$ by hypothesis.
+Apply @thm:eichler-criterion, whose hypothesis of evenness is that of @def:descent-class and of this proposition, to $v_1=v$ and $v_2=v'$: both squares are $0$, and $v_1^*=v_2^*$ by hypothesis.
 :::
