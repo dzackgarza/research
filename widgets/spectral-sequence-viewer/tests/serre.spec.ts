@@ -31,3 +31,20 @@ test("generator images occupy the column of their receiving module", async ({ pa
     expect(Math.abs(module.x - image.x)).toBeLessThan(2);
   }
 });
+
+test("display options leave the figure caption in place", async ({ page }) => {
+  await page.goto("/examples/serre/");
+  const figure = page.locator("figure").first();
+  const options = figure.getByText("Display options", { exact: true });
+  await options.scrollIntoViewIfNeeded();
+  const caption = figure.locator("figcaption");
+  const position = () => caption.evaluate(el => el.getBoundingClientRect().top + scrollY);
+  const before = await position();
+  await options.click();
+  await expect(figure.getByLabel("Arrows")).toBeVisible();
+  expect(await position()).toBeCloseTo(before, 0);
+  await figure.getByLabel("Arrows").selectOption("None");
+  await expect(figure.locator("line[data-status]")).toHaveCount(0);
+  await figure.getByLabel("Arrows").press("Escape");
+  await expect(figure.getByLabel("Arrows")).toBeHidden();
+});
