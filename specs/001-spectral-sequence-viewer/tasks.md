@@ -100,4 +100,4 @@ The completed first-quadrant tasks above describe the original implementation. T
 
 ## Phase 13: Convergence
 
-- [ ] T042 Preserve individual permanence along explicit predecessor links. Through the public setter, reject a named nonzero generator image on a later page when its representative descends from a declared permanent class. Identify the offending page and assignment, retain the previous figure, and verify that a different class in the same term can still support a nonzero differential per FR-08, T027 and T028 (contradicts).
+- [X] T042 Preserve individual permanence along explicit predecessor links. Through the public setter, reject a named nonzero generator image on a later page when its representative descends from a declared permanent class. Identify the offending page and assignment, retain the previous figure, and verify that a different class in the same term can still support a nonzero differential per FR-08, T027 and T028 (contradicts).

@@ -170,17 +170,16 @@ export function parseSequence(input: Sequence): Sequence {
             `page ${page.index} terms ${key(term)}: ` +
               "classes require a nonzero term",
           );
-        if (
-          c.previous &&
-          !data.pages[i - 1]?.terms
+        if (c.previous) {
+          const predecessor = data.pages[i - 1]?.terms
             .find((t) => key(t) === key(term))
-            ?.classes?.some((old) => old.id === c.previous)
-        )
-          fail(
-            `page ${page.index} terms ${key(term)}: ` +
-              "invalid previous class " +
-              c.previous,
-          );
+            ?.classes?.find((old) => old.id === c.previous);
+          if (!predecessor)
+            fail(
+              `page ${page.index} terms ${key(term)}: invalid previous class ${c.previous}`,
+            );
+          if (predecessor?.permanent) c.permanent = true;
+        }
       }
     }
     for (const [j, relation] of (page.relations ?? []).entries()) {
@@ -232,8 +231,7 @@ export function parseSequence(input: Sequence): Sequence {
           assignment.image.trim() !== "0"
         )
           fail(
-            `page ${page.index} maps ${key(map)}: ` +
-              "permanent class has nonzero image",
+            `page ${page.index} maps ${key(map)} assignments[${i}]: permanent class ${assignment.sourceClass} has nonzero image`,
           );
       }
       const generators =

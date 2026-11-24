@@ -27,6 +27,8 @@ Use `support: "unrestricted"` for signed native bidegrees or `"first-quadrant"` 
 `id` and a TeX `label`. Set `permanent: true` on an individual permanent cycle.
 A class on a later page can name its `previous` representative in the same
 bidegree on the preceding page. This also describes a quotient class.
+A representative linked to a permanent class inherits permanence. Reusing
+a page-local ID alone establishes no relation between the classes.
 
 A generator assignment can identify its chart endpoints with `sourceClass`
 and `targetClass`. Its `image` still gives the full expression, including

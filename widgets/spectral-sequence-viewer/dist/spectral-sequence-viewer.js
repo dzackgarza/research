@@ -4898,7 +4898,10 @@ function st(e) {
 			let s = i.get(r);
 			s && s !== a && n(`page ${e.index} terms ${r}: stable term changed from ${s} to ${a}`), i.set(r, a);
 		}
-		for (let r of e.terms) for (let i of r.classes ?? []) r.status !== "nonzero" && n(`page ${e.index} terms ${H(r)}: classes require a nonzero term`), i.previous && !t.pages[o - 1]?.terms.find((e) => H(e) === H(r))?.classes?.some((e) => e.id === i.previous) && n(`page ${e.index} terms ${H(r)}: invalid previous class ` + i.previous);
+		for (let r of e.terms) for (let i of r.classes ?? []) if (r.status !== "nonzero" && n(`page ${e.index} terms ${H(r)}: classes require a nonzero term`), i.previous) {
+			let a = t.pages[o - 1]?.terms.find((e) => H(e) === H(r))?.classes?.find((e) => e.id === i.previous);
+			a || n(`page ${e.index} terms ${H(r)}: invalid previous class ${i.previous}`), a?.permanent && (i.permanent = !0);
+		}
 		for (let [r, i] of (e.relations ?? []).entries()) {
 			let a = `page ${e.index} relations[${r}]`;
 			for (let e of ["source", "target"]) l.classes.has(i[e]) || n(`${a}.${e}: unknown class ${i[e]}`);
@@ -4910,7 +4913,7 @@ function st(e) {
 			for (let [i, a] of (t.assignments ?? []).entries()) {
 				for (let [r, i] of [[a.sourceClass, t], [a.targetClass, tt(l, t, 1)]]) r && l.classes.get(r)?.term !== l.terms.get(H(i)) && n(`page ${e.index} maps ${H(t)}: incorrect class endpoint ` + r), r && !l.classes.has(r) && n(`page ${e.index} maps ${H(t)}: unknown class ` + r);
 				let o = a.targetClass && l.classes.get(a.targetClass);
-				r && o && a.image.trim() === o.c.label.trim() && n(`page ${e.index} maps ${H(t)} assignments[${i}]: a zero differential cannot have image ${o.c.label}`), a.sourceClass && l.classes.get(a.sourceClass)?.c.permanent && a.image.trim() !== "0" && n(`page ${e.index} maps ${H(t)}: permanent class has nonzero image`);
+				r && o && a.image.trim() === o.c.label.trim() && n(`page ${e.index} maps ${H(t)} assignments[${i}]: a zero differential cannot have image ${o.c.label}`), a.sourceClass && l.classes.get(a.sourceClass)?.c.permanent && a.image.trim() !== "0" && n(`page ${e.index} maps ${H(t)} assignments[${i}]: permanent class ${a.sourceClass} has nonzero image`);
 			}
 			let i = t.assignments?.map((e) => e.generator) ?? [];
 			new Set(i).size !== i.length && n("page " + e.index + " maps " + H(t) + " has duplicate generator assignments");
