@@ -299,3 +299,24 @@ test("parallel products can each be selected by pointer and keyboard", async ({
     ).toBeVisible();
   }
 });
+
+test("permanence follows renamed representatives across pages", async ({page})=>{
+  await page.goto("/examples/static/");
+  const figure=page.locator("spectral-sequence-viewer");
+  const terms=(classes: {id:string,label:string,previous?:string,permanent?:boolean}[])=>[{p:0,q:3,status:"nonzero",classes}];
+  const from=(id:string,previous:string)=>({id,label:id,previous});
+  const data={firstPage:2,convention:"cohomological",extent:{pMin:0,pMax:4,qMin:0,qMax:3},settings:{initialPage:4},pages:[
+    {index:2,terms:terms([{id:"a",label:"a",permanent:true}]),maps:[]},
+    {index:3,terms:terms([from("b","a")]),maps:[]},
+    {index:4,terms:[...terms([from("c","b"),{id:"a",label:"a"}]),{p:4,q:0,status:"nonzero",classes:[{id:"u",label:"u"}]}],
+     maps:[{p:0,q:3,status:"nonzero",assignments:[{generator:"a",sourceClass:"a",targetClass:"u",image:"u"}]}]}
+  ]};
+  await figure.evaluate((el,d)=>{Object.assign(el,{sequence:d})},data);
+  const independent=figure.getByRole("button",{name:"Differential a to u",exact:true});
+  await expect(independent).toBeVisible();
+  data.pages[2].maps[0].assignments[0]={generator:"c",sourceClass:"c",targetClass:"u",image:"u"};
+  await expect(figure.evaluate((el,d)=>{Object.assign(el,{sequence:d})},data)).rejects.toThrow(/page 4.*assignments\[0\].*permanent/);
+  await expect(independent).toBeVisible();
+  await expect(figure.getByRole("button",{name:"Class c",exact:true})).toContainText("permanent");
+  await expect(figure.getByRole("button",{name:"Class a",exact:true})).not.toContainText("permanent");
+});

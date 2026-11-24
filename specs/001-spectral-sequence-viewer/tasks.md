@@ -97,3 +97,7 @@ The completed first-quadrant tasks above describe the original implementation. T
 - [X] T039 Reject incompatible known zero and nonzero statuses for the same stable term on supplied pages at or after its declared stability or global degeneration. Preserve unknown statuses as missing knowledge. Verify a contradictory replacement reports the page and bidegree and retains the previous figure per FR-07, FR-08 and T017 (contradicts).
 - [X] T040 Handle derived coordinates outside the exact integer range before rendering. Verify that projecting a one-cell extent with p = 9007199254740991 and q = 1 terminates with an exact chart or a located validation error; check native endpoint and inverse projection arithmetic at the same boundary per FR-03, FR-04, FR-08 and T020 (partial).
 - [X] T041 Preserve an authored term label when the term also has a module and named classes. Through the published widget, verify that the reader can inspect the distinct term label, module and selected class as typeset mathematics per FR-06, T012 and T027 (partial).
+
+## Phase 13: Convergence
+
+- [ ] T042 Preserve individual permanence along explicit predecessor links. Through the public setter, reject a named nonzero generator image on a later page when its representative descends from a declared permanent class. Identify the offending page and assignment, retain the previous figure, and verify that a different class in the same term can still support a nonzero differential per FR-08, T027 and T028 (contradicts).
