@@ -31,13 +31,13 @@ A reader finds a term already stable while a differential elsewhere still acts.
 | ID | Required behavior |
 | --- | --- |
 | FR-01 | Publish a documented, machine-readable input schema and a reusable browser widget in the repository. A static host can embed the distributed widget without building an application. |
-| FR-02 | Accept a first page index, an ordered contiguous collection of pages defining the page count, an optional initially selected page, and an optional terminal degeneration page. Display one page at a time. Disable navigation past either end. |
+| FR-02 | Accept a first page index, an explicit positive page count, an ordered contiguous collection of pages, an optional initially selected page, and an optional degeneration page. When the count is omitted, derive it from the collection. When supplied, validate it against the collection. Display one page at a time. Disable navigation past either end. |
 | FR-03 | Place terms on integral axes with p increasing rightward and q upward. Track the extent of supplied data separately from the visible rectangle. Within the data extent, an author declares whether unlisted cells mean zero or unknown. Default to unknown. |
 | FR-04 | Support the cohomological degree (r,1−r) and homological degree (−r,r−1) on page r. Compute each target from the source and convention. Terms outside the first quadrant are zero. |
 | FR-05 | Offer four arrow modes. All shows every admissible arrow between visible cells, including zero maps. Potentially nonzero removes maps explicitly zero or incident to known zero terms, retaining undetermined maps. Known nonzero shows only asserted nonzero maps. None hides arrows. Show status in the inspector and identify clipped endpoints. |
 | FR-06 | Accept optional plot title, axis labels, page formulas, term labels, and map formulas. Typeset mathematical content with MathJax on initial display and after navigation. Support zero, centered dot, and blank as display choices for known zero terms. Unknown terms retain a distinct marker. |
 | FR-07 | Support per-term stable-from declarations and global degeneration. Use text as well as color to communicate stability. Provide keyboard access to page selection, filtering, and term inspection. |
-| FR-08 | Reject contradictory or malformed input with the affected page and field or coordinate. Examples include duplicate term coordinates, negative indices, missing intermediate pages, a declared terminal page different from the last supplied page, and a claimed nonzero map incident to a known zero term. |
+| FR-08 | Reject contradictory or malformed input with the affected page and field or coordinate. Examples include a page-count mismatch, duplicate term coordinates, negative indices, missing intermediate pages, and a claimed nonzero map incident to a known zero term or on a page at or after declared degeneration. |
 
 ### Key entities
 
@@ -48,6 +48,9 @@ The sequence owns the grading convention, data extent, pages, and degeneration d
 A single supplied page needs no navigation. A blank zero remains selectable. A missing endpoint outside the supplied rectangle but inside the quadrant has unknown status. Incoming and outgoing differentials on a declared stable page can be shown as zero where global degeneration implies vanishing of that page's differential.
 
 ## Success criteria
+
+- With pages 0 through 3, a page count of four, and degeneration at 2, all four pages remain selectable. The selector identifies page 2 as the first infinity page. A declared degeneration beyond the available pages does not mark any displayed page as the infinity page.
+- A reader can distinguish a term's first stable page after navigating past it, for example by reading “stable from page 2” on page 3.
 
 - From a React application built with Vite, an author can pass the same sequence as a data object. A plain HTML author can load the viewer with one JavaScript module.
 - Selecting a term highlights its visible incoming and outgoing arrows. For example, show a nonzero second differential from (0,1) to (2,0), a term at (0,0) marked stable from page 2, and degeneration at page 3. On page 2 the reader can inspect the highlighted map and read the local stability label. On page 3 the reader sees the infinity-page identification.
