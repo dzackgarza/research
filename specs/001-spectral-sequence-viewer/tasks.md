@@ -110,4 +110,4 @@ The completed first-quadrant tasks above describe the original implementation. T
 
 ## Serre example notation
 
-- [ ] T046 Show the integral span and isomorphism type of each displayed nonzero term in both Serre figures. Identify the choice of generator, its transgression, the dual homology generators, and the representatives of the quotient classes.
+- [X] T046 Show the integral span and isomorphism type of each displayed nonzero term in both Serre figures. Identify the choice of generator, its transgression, the dual homology generators, and the representatives of the quotient classes.
