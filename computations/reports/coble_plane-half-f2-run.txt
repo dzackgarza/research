@@ -1,31 +1,50 @@
 provenance
-  Sage: 11.0.beta5
-  sage-extensions: pin 15db925b0c92
+  exact integer arithmetic; finite orders are Schreier-Sims orders in GAP
+  ambient family computations/reports/coble_ambient_twenty_one_generators.json
+  sha256 fee0199e6ecdee578d048a7551e254252f960ee676690686416ebeebfcaa7a4c
 
-B = U + U + I_{0,7}: rank 11, det -1, signature (2, 9);  P primitive of rank 2
+B = U_1 + U_2 + I_{0,7}: rank 11, Gram determinant -1, signature (2, 9)
+P_0 = <e_1, e_2>: rank 2, primitive, totally isotropic
 
-|O(q)| = 46998591897600   (358 s)
-mask isomorphism A = B/2B: 2048 classes   (9 s)
+(1) the complete integral family of thm:o2-plane-family
+  GL_2(Z): the transposition of the two hyperbolic planes and its shear (2)
+  O(D): the six adjacent transpositions and the seven sign changes (13)
+  the unipotent half: fourteen even-norm transvections and the central shear (15)
+  total 30
+  every member is an integral Gram isometry of B: True
+  every member maps P_0 into P_0, with determinant +-1: True
+  the parameters d_j + d_7 (1 <= j <= 6) and 2d_7 have norms [-2, -2, -2, -2, -2, -2, -4]
+  their coordinates are a basis of D^ev, of determinant 2
+  the thirteen signed permutations generate O(D), of order 645120
+  which is the order 2^7 * 7! = 645120 of the signed permutations: True
+  they act on P_0 by gamma and on <f_1, f_2> by (gamma^{-1})^T: True
+  they generate GL_2(Z): [[0, -1], [1, 0]] and -I_2 are words in them of length 5 and 10
+  each transvection fixes e_1 and e_2 and moves f_i to f_i + w - (w,w)/2 e_i: True
+  the central shear fixes e_1 and e_2 and moves f_1 to f_1 + e_2, f_2 to f_2 - e_1: True
+
+(1 cont.) reduction modulo 2
+  A = B/2B: 2048 classes, q(x) = (x,x)_B/2 mod 2, and rho(g) is g mod 2
+  the commutator of E_{e_1,d_1+d_7} and E_{e_2,d_2+d_7} reduces to the central shear: True
+  all twenty-one integral generators of thm:coble-ambient-21-generators are Gram isometries: True
 
 (2) G = O(q) over F_2
-  |G| = 46998591897600, equals |O(q)|: True   (4 s)
-  |H| = |rho(Stab_{O(B)}(P))| = 247726080
+  |G| = |O(q)| = 46998591897600  (thm:coble-ambient-21-generators, rho onto)
+  the Eichler subgroup of thm:coble-ambient-21-generators has index 2 in G
+  |H| = |rho(Stab_{O(B)}(P_0))| = 247726080
 
 (2 cont.) J, its stabilizer, its orbit
-  building J = <e1/2, e2/2>, trying the available GAP constructions
-    Subspace(V, [vector, vector])      FAILED: GAPError: Error, usage: Submodule( <M>, <gens> [, "basis"] )
-    Subspace(V, gens, "basis")         FAILED: GAPError: Error, usage: Submodule( <M>, <gens> [, "basis"] )
-    Submodule(V, gens, "basis")        FAILED: GAPError: Error, usage: Submodule( <M>, <gens> [, "basis"] )
-    the canonical-basis matrix         OK, dimension n/a
+  J = <e_1/2, e_2/2> = [1, 4, 5]
   |Stab_{O(q)}(J)| = 1981808640
-  |O(q) . J| = 23715
+  |O(q) . J| = 23715, the J' attained by primitive isotropic planes, rho onto O(q)
   |Stab| * |orbit| = |G|: True
-  H <= Stab: True   (3 s)
+  H <= Stab: True
 
 THE NUMBERS
-  |H| = |rho(Stab_{O(B)}(P))|      = 247726080
+  |H| = |rho(Stab_{O(B)}(P_0))|    = 247726080
   |Stab_{O(q)}(J)|                 = 1981808640
   index [Stab : H]                 = 8
-  liftable J (= |G . J|, rho onto) = 23715
-  1-cusp count of F_Co             = 189720
+  planes over J, |O(q) . J|        = 23715
+  discriminant-kernel plane orbits = 189720 = [O(q) : H] = 8 * 23715
+  (orbits of the primitive isotropic planes under Otilde = ker rho, thm:o2-planes(3b);
+   a count of orbits on the discriminant data, not the 1-cusps of F_Co)
   23 715 and the five page sizes   = 23715
