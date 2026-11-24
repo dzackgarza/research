@@ -77,3 +77,8 @@ The completed first-quadrant tasks above describe the original implementation. T
 - [X] T028 Follow an authored representative to a surviving or quotient class on the next page.
 - [X] T029 Draw and inspect authored multiplication relations and limiting-page extensions independently of differential filters.
 - [X] T030 Clip asserted differentials crossing the viewport, including those with both endpoints outside.
+
+## Phase 10: Convergence
+
+- [ ] T031 Filter and style a named generator's zero image correctly in a nonzero differential per FR-05 and T027 (contradicts).
+- [ ] T032 Identify the page and field or coordinate in class and relation validation errors per FR-08 (partial).
