@@ -42833,7 +42833,7 @@ function sa(e, t, n, r, i, a) {
 	return o;
 }
 // src/viewer.css?inline
-var ca = ":host{--ink:#22233a;--panel:#222840;--line:#47516b;--point:#f9f7f2;--selected:#ffce73;color:var(--ink);max-width:65rem;margin:1.5rem auto .5rem;font:1rem/1.5 system-ui,sans-serif;display:block;container-type:inline-size}*{box-sizing:border-box}section{background:#f1f0ec;border:1px solid #c7c7c9;border-radius:.65rem;overflow:hidden}header{background:var(--panel);color:#f5f4ee;border-bottom:1px solid var(--line);justify-content:space-between;align-items:center;gap:1rem;padding:.9rem 1.35rem;display:flex}h2,h3{margin:0;font:1.4rem/1.3 Georgia,serif}.toolbar{align-items:center;gap:.2rem;display:flex}.toolbar button,.toolbar label{height:2.2rem;color:inherit;cursor:pointer;place-items:center;display:grid}.toolbar button{background:0 0;border:0;border-radius:.25rem;width:2.2rem;font:1.6rem/1 Georgia,serif}.toolbar button:hover:enabled,.toolbar label:hover{background:#37405c}.toolbar button:disabled{color:#737d97;cursor:default}.toolbar label{border-block:1px solid #64718c;grid-auto-flow:column;gap:.4rem;padding:0 .55rem;position:relative}.toolbar label:after{content:\"⌄\";font-size:.75rem}.toolbar select{opacity:0;cursor:pointer;width:100%;height:100%;position:absolute;inset:0}.toolbar label:focus-within,:focus-visible{outline-offset:2px;outline:2px solid #ac72dd}[aria-label=Page\\ formula]:not(:empty){background:var(--panel);color:#fff;padding:.65rem 1.35rem}.layout{grid-template-columns:minmax(0,1.85fr) minmax(12rem,1fr);display:grid}.canvas{background:var(--panel);min-width:0;color:var(--point);padding:.8rem 1.25rem}.vertical-axis,.horizontal-axis,.tick{color:#c1c9db;font-size:.8rem}.horizontal-axis{text-align:right}.scroll{overflow:auto}.plot{background-image:linear-gradient(90deg,#0000 calc(50% - .5px),#343d55 50%,#0000 calc(50% + .5px)),linear-gradient(#0000 40px,#343d55 41px,#0000 42px);background-size:calc(100% / var(--columns)) 82px;border-bottom:1px solid #748199;border-left:1px solid #748199;width:100%;position:relative}.plot>svg{pointer-events:none;width:100%;height:100%;position:absolute;inset:0}.cell,.tick{position:absolute;transform:translate(-50%,-50%)}.tick{background:var(--panel);font-size:.68rem}.cell{font:inherit;color:var(--point);background:var(--panel);cursor:pointer;border:1px solid #0000;border-radius:.35rem;min-width:34px;min-height:34px;padding:.15rem .35rem;font-size:1.12rem;transition:border-color .15s,background .15s}.cell[data-status=zero]{color:#a2aec5;background:0 0}.cell:hover{border-color:#8a94ac}.cell[aria-pressed=true]{background:var(--selected);color:#2a2532}.cell.stable{color:#dbf9e8;background:#304f49}.cell.stable[aria-pressed=true]{border-color:var(--selected);color:#fff;background:#416559}.cell small{font-size:.6rem;display:block}.plot line{vector-effect:non-scaling-stroke;stroke:#d1defe;stroke-width:2px}.plot line[data-status=zero]{stroke:#8390a9;stroke-dasharray:2 5}.plot line[data-status=undetermined]{stroke-dasharray:6 4}.plot line[data-highlighted=true]{stroke:var(--selected);stroke-width:3px}aside{min-width:0;padding:1.3rem;font-size:.85rem;line-height:1.6}aside h3{font-size:1.25rem}aside h3 small{color:#54576c;margin:.3rem 0;font:italic .87rem Georgia,serif;display:block}aside>mjx-container{margin:.6rem 0;font-size:1.5rem;display:block}aside p{border-top:1px solid #cdced3;margin:.9rem 0 0;padding-top:.65rem}aside b{color:#52556a;letter-spacing:.04em;font-size:.72rem;display:block}aside p .map-formula{margin:.4rem 0;display:block}details{border-top:1px solid #cdced3;margin-top:1.3rem;padding-top:.6rem}summary{cursor:pointer;font-size:.8rem}details label{gap:.2rem;margin:.6rem 0;font-size:.75rem;display:grid}details select{font:inherit;color:var(--ink);background:#fff;border:1px solid #aaacbd;padding:.4rem}@container (width<=38rem){.layout{grid-template-columns:minmax(0,1fr)}.canvas{padding:.6rem .9rem}aside{grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem 1rem;padding:1rem;display:grid}aside h3,details{grid-column:1/-1}aside>mjx-container{grid-column:1/-1;margin:0}aside p,details{margin:0}header{padding:.6rem .9rem}}@media (prefers-reduced-motion:reduce){.cell{transition:none}}";
+var ca = ":host{--ink:#22233a;--panel:#222840;--line:#47516b;--point:#f9f7f2;--selected:#ffce73;color:var(--ink);max-width:65rem;margin:1.5rem auto .5rem;font:1rem/1.5 system-ui,sans-serif;display:block;container-type:inline-size}*{box-sizing:border-box}section{background:#f1f0ec;border:1px solid #c7c7c9;border-radius:.65rem;overflow:hidden}header{background:var(--panel);color:#f5f4ee;border-bottom:1px solid var(--line);justify-content:space-between;align-items:center;gap:1rem;padding:.9rem 1.35rem;display:flex}h2,h3{margin:0;font:1.4rem/1.3 Georgia,serif}.toolbar{align-items:center;gap:.2rem;display:flex}.toolbar button,.toolbar label{height:2.2rem;color:inherit;cursor:pointer;place-items:center;display:grid}.toolbar button{background:0 0;border:0;border-radius:.25rem;width:2.2rem;font:1.6rem/1 Georgia,serif}.toolbar button:hover:enabled,.toolbar label:hover{background:#37405c}.toolbar button:disabled{color:#737d97;cursor:default}.toolbar label{border-block:1px solid #64718c;grid-auto-flow:column;gap:.4rem;padding:0 .55rem;position:relative}.toolbar label:after{content:\"⌄\";font-size:.75rem}.toolbar select{opacity:0;cursor:pointer;width:100%;height:100%;position:absolute;inset:0}.toolbar label:focus-within,:focus-visible{outline-offset:2px;outline:2px solid #ac72dd}[aria-label=Page\\ formula]:not(:empty){background:var(--panel);color:#fff;padding:.65rem 1.35rem}.layout{grid-template-columns:minmax(0,1fr);display:grid}.canvas{background:var(--panel);min-width:0;color:var(--point);padding:.8rem 1.25rem}.vertical-axis,.horizontal-axis,.tick{color:#c1c9db;font-size:.8rem}.horizontal-axis{text-align:right}.scroll{overflow:auto}.plot{background-image:linear-gradient(90deg,#0000 calc(50% - .5px),#343d55 50%,#0000 calc(50% + .5px)),linear-gradient(#0000 40px,#343d55 41px,#0000 42px);background-size:calc(100% / var(--columns)) 82px;border-bottom:1px solid #748199;border-left:1px solid #748199;width:100%;position:relative}.plot>svg{pointer-events:none;width:100%;height:100%;position:absolute;inset:0}.cell,.tick{position:absolute;transform:translate(-50%,-50%)}.tick{background:var(--panel);font-size:.68rem}.cell{font:inherit;color:var(--point);background:var(--panel);cursor:pointer;border:1px solid #0000;border-radius:.35rem;min-width:34px;min-height:34px;padding:.15rem .35rem;font-size:1.12rem;transition:border-color .15s,background .15s}.cell[data-status=zero]{color:#a2aec5;background:0 0}.cell:hover{border-color:#8a94ac}.cell[aria-pressed=true]{background:var(--selected);color:#2a2532}.cell.stable{color:#dbf9e8;background:#304f49}.cell.stable[aria-pressed=true]{border-color:var(--selected);color:#fff;background:#416559}.cell small{font-size:.6rem;display:block}.plot line{vector-effect:non-scaling-stroke;stroke:#d1defe;stroke-width:2px}.plot line[data-status=zero]{stroke:#8390a9;stroke-dasharray:2 5}.plot line[data-status=undetermined]{stroke-dasharray:6 4}.plot line[data-highlighted=true]{stroke:var(--selected);stroke-width:3px}aside{min-width:0;padding:1.3rem;font-size:.85rem;line-height:1.6}.chain{padding:.5rem 0;font-size:1.15rem;display:block;overflow-x:auto}details{border-top:1px solid #cdced3;margin-top:1.3rem;padding-top:.6rem}summary{cursor:pointer;font-size:.8rem}details label{gap:.2rem;margin:.6rem 0;font-size:.75rem;display:grid}details select{font:inherit;color:var(--ink);background:#fff;border:1px solid #aaacbd;padding:.4rem}@container (width<=38rem){.layout{grid-template-columns:minmax(0,1fr)}.canvas{padding:.6rem .9rem}aside{padding:1rem}header{padding:.6rem .9rem}}@media (prefers-reduced-motion:reduce){.cell{transition:none}}";
 // src/viewer.ts
 function la(e, t, n, r) {
 	let i = document.createElement("label");
@@ -42905,38 +42905,26 @@ var ua = (e) => e.map((e) => [e, e]), da = (e) => String(e).replace(/\d/g, (e) =
 		}));
 		let _ = document.createElement("aside");
 		_.setAttribute("role", "region"), _.setAttribute("aria-label", "Inspector");
-		let v = document.createElement("h3");
-		v.append("Term ", $(oa(this.selected)));
-		let y = document.createElement("small");
-		y.textContent = nt(a, this.selected), v.append(y), _.append(v);
-		let b = a.terms.get(H(this.selected));
-		b?.label && _.append($(b.label));
-		let x = a.stable.get(H(this.selected));
-		x !== void 0 && x <= i.index && _.append(" stable from page " + x);
-		let S = (e) => {
-			let t = oa(e), n = $(t);
-			n.querySelector("svg").setAttribute("aria-label", t);
-			let i = document.createElement("span");
-			return i.append(n), et(e, r) || i.append(" offscreen"), i;
-		};
-		for (let [e, t] of [["Incoming", tt(a, this.selected, -1)], ["Outgoing", this.selected]]) {
-			let n = it(a, t), r = document.createElement("p"), i = document.createElement("b");
-			if (i.textContent = e, r.append(i, S(t), " ", $("\\to"), " ", S(n.b), " · " + n.status), n.formula) {
-				let e = $(n.formula);
-				e.classList.add("map-formula"), r.append(e);
-			}
-			_.append(r);
-		}
-		let C = document.createElement("header");
-		C.append(c, u);
-		let w = document.createElement("div");
-		w.className = "canvas";
-		let T = document.createElement("div");
-		T.className = "vertical-axis", T.append($(n.qLabel ?? "q"), " ↑");
-		let E = document.createElement("div");
-		E.className = "horizontal-axis", E.append($(n.pLabel ?? "p"), " →"), w.append(T, g, E);
-		let D = document.createElement("div");
-		D.className = "layout", _.append(p), D.append(w, _), s.append(C, l, D), this.root.replaceChildren(o, s), t && this.root.querySelector("[aria-label=\"" + CSS.escape(t) + "\"]")?.focus({ preventScroll: !0 });
+		let v = tt(a, this.selected, -1), y = it(a, v), b = it(a, this.selected), x = i.index, S = (t) => {
+			let n = t.p + "," + t.q, i = e.convention === "cohomological" ? "E_" + (x < 10 ? x : "{" + x + "}") + "^{" + n + "}" : "E^{" + x + "}_{" + n + "}", o = nt(a, t), s = o === "zero" ? "=0" : o === "nonzero" ? "\\ne0" : "", c = [], l = a.terms.get(H(t))?.label;
+			return s && c.push(s), l && c.push(l), o === "unknown" && c.push("?"), t.p >= 0 && t.q >= 0 && !et(t, r) && c.push("\\text{offscreen}"), c.length ? "\\underset{" + c.join("\\;") + "}{" + i + "}" : i;
+		}, C = (e) => {
+			let t = e.status === "zero" ? "0" : "d_{" + x + "}", n = e.status === "nonzero" ? "\\ne0" : e.status === "undetermined" ? "^{?}" : "";
+			return "\\xrightarrow[" + (e.formula === "0" ? "" : e.formula ?? "") + "]{" + t + n + "}";
+		}, w = S(v) + C(y) + S(this.selected) + C(b) + S(b.b), T = $(w);
+		T.classList.add("chain"), T.querySelector("svg").setAttribute("aria-label", w), _.append(T);
+		let E = a.stable.get(H(this.selected));
+		E !== void 0 && E <= i.index && _.append(" stable from page " + E);
+		let D = document.createElement("header");
+		D.append(c, u);
+		let O = document.createElement("div");
+		O.className = "canvas";
+		let k = document.createElement("div");
+		k.className = "vertical-axis", k.append($(n.qLabel ?? "q"), " ↑");
+		let A = document.createElement("div");
+		A.className = "horizontal-axis", A.append($(n.pLabel ?? "p"), " →"), O.append(k, g, A);
+		let j = document.createElement("div");
+		j.className = "layout", _.append(p), j.append(O, _), s.append(D, l, j), this.root.replaceChildren(o, s), t && this.root.querySelector("[aria-label=\"" + CSS.escape(t) + "\"]")?.focus({ preventScroll: !0 });
 	}
 };
 // src/index.ts

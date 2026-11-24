@@ -100,7 +100,7 @@ h3 {
 }
 .layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.85fr) minmax(12rem, 1fr);
+  grid-template-columns: minmax(0, 1fr);
 }
 .canvas {
   min-width: 0;
@@ -125,7 +125,13 @@ h3 {
   position: relative;
   border-left: 1px solid #748199;
   border-bottom: 1px solid #748199;
-  background-image: linear-gradient(90deg, transparent calc(50% - .5px), #343d55 50%, transparent calc(50% + .5px)),
+  background-image:
+    linear-gradient(
+      90deg,
+      transparent calc(50% - 0.5px),
+      #343d55 50%,
+      transparent calc(50% + 0.5px)
+    ),
     linear-gradient(transparent 40px, #343d55 41px, transparent 42px);
   background-size: calc(100% / var(--columns)) 82px;
 }
@@ -206,37 +212,13 @@ aside {
   font-size: 0.85rem;
   line-height: 1.6;
 }
-aside h3 {
-  font-size: 1.25rem;
-}
-aside h3 small {
+.chain {
   display: block;
-  font:
-    italic 0.87rem Georgia,
-    serif;
-  margin: 0.3rem 0;
-  color: #54576c;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+  font-size: 1.15rem;
 }
-aside > mjx-container {
-  display: block;
-  margin: 0.6rem 0;
-  font-size: 1.5rem;
-}
-aside p {
-  margin: 0.9rem 0 0;
-  padding-top: 0.65rem;
-  border-top: 1px solid #cdced3;
-}
-aside b {
-  display: block;
-  color: #52556a;
-  font-size: 0.72rem;
-  letter-spacing: 0.04em;
-}
-aside p .map-formula {
-  display: block;
-  margin: 0.4rem 0;
-}
+
 details {
   margin-top: 1.3rem;
   border-top: 1px solid #cdced3;
@@ -267,22 +249,7 @@ details select {
     padding: 0.6rem 0.9rem;
   }
   aside {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.5rem 1rem;
     padding: 1rem;
-  }
-  aside h3,
-  details {
-    grid-column: 1/-1;
-  }
-  aside > mjx-container {
-    grid-column: 1/-1;
-    margin: 0;
-  }
-  aside p,
-  details {
-    margin: 0;
   }
   header {
     padding: 0.6rem 0.9rem;

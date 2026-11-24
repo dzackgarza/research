@@ -18,14 +18,9 @@ test("local permanence has a first page independent of global degeneration", asy
   await cell.click();
   const inspector = page.getByRole("region", { name: "Inspector" });
   await expect(inspector).toContainText("stable from page 2");
-  const outgoing = inspector.locator("p").filter({ hasText: "Outgoing" });
-  await expect(
-    outgoing.getByRole("img", { name: "(0,0)", exact: true }),
-  ).toBeVisible();
-  await expect(
-    outgoing.getByRole("img", { name: "(2,-1)", exact: true }),
-  ).toBeVisible();
-  await expect(outgoing).toContainText("offscreen · zero");
+  await expect(inspector.getByRole("img")).toHaveAccessibleName(
+    /E_2\^\{-2,1\}.*\\xrightarrow\[\]\{0\}.*E_2\^\{0,0\}.*\\xrightarrow\[\]\{0\}.*E_2\^\{2,-1\}/,
+  );
   await pages.selectOption("3");
   await expect(inspector).toContainText("stable from page 2");
   await expect(

@@ -6,29 +6,18 @@ test("inspect clipped maps through all filters and zero styles", async ({
   await page.goto("/examples/static/");
   await page.getByRole("button", { name: "(2,1)", exact: true }).click();
   const inspector = page.getByRole("region", { name: "Inspector" });
-  await expect(inspector.getByRole("img", {name:/E_2\^\{0,2\}.*E_2\^\{2,1\}.*E_2\^\{4,0\}/})).toBeVisible({timeout:2000});
-  for (const [index, pair] of ["(0,2)", "(2,1)", "(2,1)", "(4,0)"].entries()) {
-    const endpoint = inspector
-      .locator("p mjx-container svg[aria-label]")
-      .nth(index);
-    await expect(endpoint).toHaveAttribute("aria-label", pair, {
-      timeout: 2500,
-    });
-    await expect(endpoint).toBeVisible();
-  }
+  await expect(
+    inspector.getByRole("img", {
+      name: /E_2\^\{0,2\}.*E_2\^\{2,1\}.*E_2\^\{4,0\}/,
+    }),
+  ).toBeVisible({ timeout: 2000 });
+  const chain = inspector.locator(".chain > svg");
   await page.getByText("Display options", { exact: true }).click();
   for (const mode of ["All", "Potentially nonzero", "Known nonzero", "None"]) {
     await page.getByLabel("Arrows").selectOption(mode);
-    await expect(
-      inspector
-        .locator("span")
-        .filter({ has: page.getByRole("img", { name: "(0,2)", exact: true }) }),
-    ).toHaveText("offscreen");
-    await expect(
-      inspector.getByRole("img", { name: "(4,0)", exact: true }),
-    ).toBeVisible();
-    await expect(inspector).toContainText("undetermined");
-    await expect(inspector.locator("svg")).not.toHaveCount(0);
+    await expect(chain).toHaveAccessibleName(
+      /offscreen.*E_2\^\{0,2\}.*g.*E_2\^\{2,1\}.*\\xrightarrow\[\]\{0\}.*E_2\^\{4,0\}/,
+    );
     const arrows = page.locator("line[data-status]");
     if (mode === "All") await expect(arrows).toHaveCount(3);
     if (mode === "Potentially nonzero")
@@ -44,7 +33,9 @@ test("inspect clipped maps through all filters and zero styles", async ({
     const zero = page.getByRole("button", { name: "(1,0)", exact: true });
     await zero.focus();
     await zero.press("Enter");
-    await expect(inspector).toContainText("zero");
+    await expect(chain).toHaveAccessibleName(
+      /\\underset\{=0\}\{E_2\^\{1,0\}\}/,
+    );
     await expect(
       page.getByRole("button", { name: "(3,1)", exact: true }),
     ).toContainText("?");
@@ -57,19 +48,7 @@ test("inspect clipped maps through all filters and zero styles", async ({
       pages: sequence.pages.map((p) => ({ ...p, maps: [] })),
     });
   await page.getByRole("button", { name: "(2,1)", exact: true }).click();
-  await expect(
-    inspector
-      .locator("p")
-      .filter({ hasText: "Incoming" })
-      .getByRole("img", { name: "(4,0)", exact: true }),
-  ).toBeVisible();
-  const outgoing = inspector.locator("p").filter({ hasText: "Outgoing" });
-  await expect(
-    outgoing.getByRole("img", { name: "(2,1)", exact: true }),
-  ).toBeVisible();
-  await expect(
-    outgoing
-      .locator("span")
-      .filter({ has: page.getByRole("img", { name: "(0,2)", exact: true }) }),
-  ).toHaveText("offscreen");
+  await expect(chain).toHaveAccessibleName(
+    /E\^\{2\}_\{4,0\}.*E\^\{2\}_\{2,1\}.*offscreen.*E\^\{2\}_\{0,2\}/,
+  );
 });

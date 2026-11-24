@@ -6,7 +6,7 @@ import {
   type Point,
 } from "./sequence";
 import { endpoint, differential, inside, termStatus } from "./differentials";
-import { diagram, coord } from "./diagram";
+import { diagram } from "./diagram";
 import { math } from "./math";
 import css from "./viewer.css?inline";
 
@@ -142,50 +142,54 @@ export class Viewer extends HTMLElement {
     const panel = document.createElement("aside");
     panel.setAttribute("role", "region");
     panel.setAttribute("aria-label", "Inspector");
-    const title = document.createElement("h3");
-    title.append("Term ", math(coord(this.selected)));
-    const status = document.createElement("small");
-    status.textContent = termStatus(m, this.selected);
-    title.append(status);
-    panel.append(title);
-    const term = m.terms.get(key(this.selected));
-    if (term?.label) panel.append(math(term.label));
+    const source = endpoint(m, this.selected, -1);
+    const first = differential(m, source);
+    const second = differential(m, this.selected);
+    const rIndex = page.index;
+    const term = (point: Point) => {
+      const degree = point.p + "," + point.q;
+      const symbol =
+        data.convention === "cohomological"
+          ? "E_" + (rIndex < 10 ? rIndex : "{" + rIndex + "}") + "^{" + degree + "}"
+          : "E^{" + rIndex + "}_{" + degree + "}";
+      const status = termStatus(m, point);
+      const value =
+        status === "zero" ? "=0" : status === "nonzero" ? "\\ne0" : "";
+      const notes = [];
+      const label = m.terms.get(key(point))?.label;
+      if (value) notes.push(value);
+      if (label) notes.push(label);
+      if (status === "unknown") notes.push("?");
+      if (point.p >= 0 && point.q >= 0 && !inside(point, r))
+        notes.push("\\text{offscreen}");
+      return notes.length
+        ? "\\underset{" + notes.join("\\;") + "}{" + symbol + "}"
+        : symbol;
+    };
+    const arrow = (map: typeof first) => {
+      const label = map.status === "zero" ? "0" : "d_{" + rIndex + "}";
+      const status =
+        map.status === "nonzero"
+          ? "\\ne0"
+          : map.status === "undetermined"
+            ? "^{?}"
+            : "";
+      const annotation = map.formula === "0" ? "" : (map.formula ?? "");
+      return "\\xrightarrow[" + annotation + "]{" + label + status + "}";
+    };
+    const tex =
+      term(source) +
+      arrow(first) +
+      term(this.selected) +
+      arrow(second) +
+      term(second.b);
+    const chain = math(tex);
+    chain.classList.add("chain");
+    chain.querySelector("svg")!.setAttribute("aria-label", tex);
+    panel.append(chain);
     const stable = m.stable.get(key(this.selected));
     if (stable !== undefined && stable <= page.index)
       panel.append(" stable from page " + stable);
-    const location = (point: Point) => {
-      const label = coord(point);
-      const pair = math(label);
-      pair.querySelector("svg")!.setAttribute("aria-label", label);
-      const span = document.createElement("span");
-      span.append(pair);
-      if (!inside(point, r)) span.append(" offscreen");
-      return span;
-    };
-    for (const [name, a] of [
-      ["Incoming", endpoint(m, this.selected, -1)],
-      ["Outgoing", this.selected],
-    ] as const) {
-      const arrow = differential(m, a),
-        row = document.createElement("p");
-      const caption = document.createElement("b");
-      caption.textContent = name;
-      row.append(
-        caption,
-        location(a),
-        " ",
-        math("\\to"),
-        " ",
-        location(arrow.b),
-        " · " + arrow.status,
-      );
-      if (arrow.formula) {
-        const formula = math(arrow.formula);
-        formula.classList.add("map-formula");
-        row.append(formula);
-      }
-      panel.append(row);
-    }
     const header = document.createElement("header");
     header.append(heading, toolbar);
     const canvas = document.createElement("div");
