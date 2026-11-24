@@ -42748,18 +42748,62 @@ var ct = /* @__PURE__ */ s(((e) => {
 			}
 		}
 	});
-})), ea = ft(), ta = Ut(), na = Oi(), ra = ji(), ia = Yi();
-Ht(), $i(), (0, ia.RegisterHTMLHandler)((0, ra.browserAdaptor)());
-var aa = ea.mathjax.document(document, {
-	InputJax: new ta.TeX({ packages: ["base", "ams"] }),
-	OutputJax: new na.SVG({ fontCache: "none" })
+})), ea = /* @__PURE__ */ s(((e, t, n) => {
+	var r = n && n.__importDefault || function(e) {
+		return e && e.__esModule ? e : { default: e };
+	};
+	Object.defineProperty(e, "__esModule", { value: !0 });
+	var i = r(K()), a = {};
+	a.Href = function(e, t) {
+		var n = e.GetArgument(t), r = o(e, t);
+		i.default.setAttribute(r, "href", n), e.Push(r);
+	}, a.Class = function(e, t) {
+		var n = e.GetArgument(t), r = o(e, t), a = i.default.getAttribute(r, "class");
+		a && (n = a + " " + n), i.default.setAttribute(r, "class", n), e.Push(r);
+	}, a.Style = function(e, t) {
+		var n = e.GetArgument(t), r = o(e, t), a = i.default.getAttribute(r, "style");
+		a && (n.charAt(n.length - 1) !== ";" && (n += ";"), n = a + " " + n), i.default.setAttribute(r, "style", n), e.Push(r);
+	}, a.Id = function(e, t) {
+		var n = e.GetArgument(t), r = o(e, t);
+		i.default.setAttribute(r, "id", n), e.Push(r);
+	};
+	var o = function(e, t) {
+		var n = e.ParseArg(t);
+		if (!i.default.isInferred(n)) return n;
+		var r = i.default.getChildren(n);
+		if (r.length === 1) return r[0];
+		var a = e.create("node", "mrow");
+		return i.default.copyChildren(n, a), i.default.copyAttributes(n, a), a;
+	};
+	e.default = a;
+})), ta = /* @__PURE__ */ s(((e, t, n) => {
+	var r = n && n.__importDefault || function(e) {
+		return e && e.__esModule ? e : { default: e };
+	};
+	Object.defineProperty(e, "__esModule", { value: !0 }), e.HtmlConfiguration = void 0;
+	var i = Pt(), a = It(), o = r(ea());
+	new a.CommandMap("html_macros", {
+		href: "Href",
+		class: "Class",
+		style: "Style",
+		cssId: "Id"
+	}, o.default), e.HtmlConfiguration = i.Configuration.create("html", { handler: { macro: ["html_macros"] } });
+})), na = ft(), ra = Ut(), ia = Oi(), aa = ji(), oa = Yi();
+Ht(), $i(), ta(), (0, oa.RegisterHTMLHandler)((0, aa.browserAdaptor)());
+var sa = na.mathjax.document(document, {
+	InputJax: new ra.TeX({ packages: [
+		"base",
+		"ams",
+		"html"
+	] }),
+	OutputJax: new ia.SVG({ fontCache: "none" })
 });
 function $(e) {
-	return aa.convert(e, { display: !1 });
+	return sa.convert(e, { display: !1 });
 }
 // src/diagram.ts
-var oa = (e) => "(" + H(e) + ")";
-function sa(e, t, n, r, i, a) {
+var ca = (e) => "(" + H(e) + ")";
+function la(e, t, n, r, i, a) {
 	let o = document.createElement("div");
 	o.className = "plot";
 	let s = (t.pMax - t.pMin + 1) * 112, c = (t.qMax - t.qMin + 1) * 82;
@@ -42801,7 +42845,7 @@ function sa(e, t, n, r, i, a) {
 			i.dataset.status = h.status, i.dataset.highlighted = String(H(n) === H(f) || H(n) === H(g)), i.setAttribute("marker-end", "url(#tip)"), u.append(i);
 		}
 		let _ = document.createElement("button"), v = e.terms.get(H(f)), y = nt(e, f);
-		_.className = "cell", _.style.left = p(d) / s * 100 + "%", _.dataset.status = y, _.style.top = m(c) + "px", _.setAttribute("aria-label", oa(f)), _.setAttribute("aria-pressed", String(H(f) === H(n))), y === "zero" ? _.textContent = i === "blank" ? "" : i === "dot" ? "·" : "0" : (y === "unknown" && _.append("?"), v?.label ? _.append($(v.label)) : y === "nonzero" && _.append("●"));
+		_.className = "cell", _.style.left = p(d) / s * 100 + "%", _.dataset.status = y, _.style.top = m(c) + "px", _.setAttribute("aria-label", ca(f)), _.setAttribute("aria-pressed", String(H(f) === H(n))), y === "zero" ? _.textContent = i === "blank" ? "" : i === "dot" ? "·" : "0" : (y === "unknown" && _.append("?"), v?.label ? _.append($(v.label)) : y === "nonzero" && _.append("●"));
 		let b = e.stable.get(H(f));
 		if (b !== void 0 && b <= e.page.index) {
 			_.classList.add("stable");
@@ -42833,9 +42877,9 @@ function sa(e, t, n, r, i, a) {
 	return o;
 }
 // src/viewer.css?inline
-var ca = ":host{--ink:#22233a;--panel:#222840;--line:#47516b;--point:#f9f7f2;--selected:#ffce73;color:var(--ink);max-width:65rem;margin:1.5rem auto .5rem;font:1rem/1.5 system-ui,sans-serif;display:block;container-type:inline-size}*{box-sizing:border-box}section{background:#f1f0ec;border:1px solid #c7c7c9;border-radius:.65rem;overflow:hidden}header{background:var(--panel);color:#f5f4ee;border-bottom:1px solid var(--line);justify-content:space-between;align-items:center;gap:1rem;padding:.9rem 1.35rem;display:flex}h2,h3{margin:0;font:1.4rem/1.3 Georgia,serif}.toolbar{align-items:center;gap:.2rem;display:flex}.toolbar button,.toolbar label{height:2.2rem;color:inherit;cursor:pointer;place-items:center;display:grid}.toolbar button{background:0 0;border:0;border-radius:.25rem;width:2.2rem;font:1.6rem/1 Georgia,serif}.toolbar button:hover:enabled,.toolbar label:hover{background:#37405c}.toolbar button:disabled{color:#737d97;cursor:default}.toolbar label{border-block:1px solid #64718c;grid-auto-flow:column;gap:.4rem;padding:0 .55rem;position:relative}.toolbar label:after{content:\"⌄\";font-size:.75rem}.toolbar select{opacity:0;cursor:pointer;width:100%;height:100%;position:absolute;inset:0}.toolbar label:focus-within,:focus-visible{outline-offset:2px;outline:2px solid #ac72dd}[aria-label=Page\\ formula]:not(:empty){background:var(--panel);color:#fff;padding:.65rem 1.35rem}.layout{grid-template-columns:minmax(0,1fr);display:grid}.canvas{background:var(--panel);min-width:0;color:var(--point);padding:.8rem 1.25rem}.vertical-axis,.horizontal-axis,.tick{color:#c1c9db;font-size:.8rem}.horizontal-axis{text-align:right}.scroll{overflow:auto}.plot{background-image:linear-gradient(90deg,#0000 calc(50% - .5px),#343d55 50%,#0000 calc(50% + .5px)),linear-gradient(#0000 40px,#343d55 41px,#0000 42px);background-size:calc(100% / var(--columns)) 82px;border-bottom:1px solid #748199;border-left:1px solid #748199;width:100%;position:relative}.plot>svg{pointer-events:none;width:100%;height:100%;position:absolute;inset:0}.cell,.tick{position:absolute;transform:translate(-50%,-50%)}.tick{background:var(--panel);font-size:.68rem}.cell{font:inherit;color:var(--point);background:var(--panel);cursor:pointer;border:1px solid #0000;border-radius:.35rem;min-width:34px;min-height:34px;padding:.15rem .35rem;font-size:1.12rem;transition:border-color .15s,background .15s}.cell[data-status=zero]{color:#a2aec5;background:0 0}.cell:hover{border-color:#8a94ac}.cell[aria-pressed=true]{background:var(--selected);color:#2a2532}.cell.stable{color:#dbf9e8;background:#304f49}.cell.stable[aria-pressed=true]{border-color:var(--selected);color:#fff;background:#416559}.cell small{font-size:.6rem;display:block}.plot line{vector-effect:non-scaling-stroke;stroke:#d1defe;stroke-width:2px}.plot line[data-status=zero]{stroke:#8390a9;stroke-dasharray:2 5}.plot line[data-status=undetermined]{stroke-dasharray:6 4}.plot line[data-highlighted=true]{stroke:var(--selected);stroke-width:3px}aside{min-width:0;padding:1.3rem;font-size:.85rem;line-height:1.6}.chain{padding:.5rem 0;font-size:1.15rem;display:block;overflow-x:auto}details{border-top:1px solid #cdced3;margin-top:1.3rem;padding-top:.6rem}summary{cursor:pointer;font-size:.8rem}details label{gap:.2rem;margin:.6rem 0;font-size:.75rem;display:grid}details select{font:inherit;color:var(--ink);background:#fff;border:1px solid #aaacbd;padding:.4rem}@container (width<=38rem){.layout{grid-template-columns:minmax(0,1fr)}.canvas{padding:.6rem .9rem}aside{padding:1rem}header{padding:.6rem .9rem}}@media (prefers-reduced-motion:reduce){.cell{transition:none}}";
+var ua = ":host{--ink:#22233a;--panel:#222840;--line:#47516b;--point:#f9f7f2;--selected:#ffce73;color:var(--ink);max-width:65rem;margin:1.5rem auto .5rem;font:1rem/1.5 system-ui,sans-serif;display:block;container-type:inline-size}*{box-sizing:border-box}section{background:#f1f0ec;border:1px solid #c7c7c9;border-radius:.65rem;overflow:hidden}header{background:var(--panel);color:#f5f4ee;border-bottom:1px solid var(--line);justify-content:space-between;align-items:center;gap:1rem;padding:.9rem 1.35rem;display:flex}h2,h3{margin:0;font:1.4rem/1.3 Georgia,serif}.toolbar{align-items:center;gap:.2rem;display:flex}.toolbar button,.toolbar label{height:2.2rem;color:inherit;cursor:pointer;place-items:center;display:grid}.toolbar button{background:0 0;border:0;border-radius:.25rem;width:2.2rem;font:1.6rem/1 Georgia,serif}.toolbar button:hover:enabled,.toolbar label:hover{background:#37405c}.toolbar button:disabled{color:#737d97;cursor:default}.toolbar label{border-block:1px solid #64718c;grid-auto-flow:column;gap:.4rem;padding:0 .55rem;position:relative}.toolbar label:after{content:\"⌄\";font-size:.75rem}.toolbar select{opacity:0;cursor:pointer;width:100%;height:100%;position:absolute;inset:0}.toolbar label:focus-within,:focus-visible{outline-offset:2px;outline:2px solid #ac72dd}[aria-label=Page\\ formula]:not(:empty){background:var(--panel);color:#fff;padding:.65rem 1.35rem}.layout{grid-template-columns:minmax(0,1fr);display:grid}.canvas{background:var(--panel);min-width:0;color:var(--point);padding:.8rem 1.25rem}.vertical-axis,.horizontal-axis,.tick{color:#c1c9db;font-size:.8rem}.horizontal-axis{text-align:right}.scroll{overflow:auto}.plot{background-image:linear-gradient(90deg,#0000 calc(50% - .5px),#343d55 50%,#0000 calc(50% + .5px)),linear-gradient(#0000 40px,#343d55 41px,#0000 42px);background-size:calc(100% / var(--columns)) 82px;border-bottom:1px solid #748199;border-left:1px solid #748199;width:100%;position:relative}.plot>svg{pointer-events:none;width:100%;height:100%;position:absolute;inset:0}.cell,.tick{position:absolute;transform:translate(-50%,-50%)}.tick{background:var(--panel);font-size:.68rem}.cell{font:inherit;color:var(--point);background:var(--panel);cursor:pointer;border:1px solid #0000;border-radius:.35rem;min-width:34px;min-height:34px;padding:.15rem .35rem;font-size:1.12rem;transition:border-color .15s,background .15s}.cell[data-status=zero]{color:#a2aec5;background:0 0}.cell:hover{border-color:#8a94ac}.cell[aria-pressed=true]{background:var(--selected);color:#2a2532}.cell.stable{color:#dbf9e8;background:#304f49}.cell.stable[aria-pressed=true]{border-color:var(--selected);color:#fff;background:#416559}.cell small{font-size:.6rem;display:block}.plot line{vector-effect:non-scaling-stroke;stroke:#d1defe;stroke-width:2px}.plot line[data-status=zero]{stroke:#8390a9;stroke-dasharray:2 5}.plot line[data-status=undetermined]{stroke-dasharray:6 4}.plot line[data-highlighted=true]{stroke:var(--selected);stroke-width:3px}aside{min-width:0;padding:1.3rem;font-size:.85rem;line-height:1.6}.chain{padding:.5rem 0;font-size:1.15rem;display:block;overflow-x:auto}details{border-top:1px solid #cdced3;margin-top:1.3rem;padding-top:.6rem}summary{cursor:pointer;font-size:.8rem}details label{gap:.2rem;margin:.6rem 0;font-size:.75rem;display:grid}details select{font:inherit;color:var(--ink);background:#fff;border:1px solid #aaacbd;padding:.4rem}@container (width<=38rem){.layout{grid-template-columns:minmax(0,1fr)}.canvas{padding:.6rem .9rem}aside{padding:1rem}header{padding:.6rem .9rem}}@media (prefers-reduced-motion:reduce){.cell{transition:none}}.canvas{--zero:#ffa5a8;--nonzero:#9ecbff;--unknown:#ffb568}aside{--zero:#a12a3c;--nonzero:#205da1;--unknown:#924606}.state-zero,.cell[data-status=zero]{color:var(--zero)}.state-nonzero,.cell[data-status=nonzero]{color:var(--nonzero)}.state-unknown,.state-undetermined,.cell[data-status=unknown]{color:var(--unknown)}.plot line[data-status=zero]{stroke:var(--zero)}.plot line[data-status=nonzero]{stroke:var(--nonzero)}.plot line[data-status=undetermined]{stroke:var(--unknown)}.cell[aria-pressed=true]{background:#35415d;border-color:#eef2ff}.cell.stable[aria-pressed=true]{background:#304f49;border-color:#eef2ff}.guide{width:fit-content;position:relative}.guide button{color:#495367;font:inherit;cursor:pointer;background:0 0;border:0;padding:.35rem 0;-webkit-text-decoration:underline dotted;text-decoration:underline dotted}.guide [popover]{position-anchor:auto;inset:auto;bottom:anchor(top);left:anchor(left);background:#faf9f6;border:1px solid #b4bac5;border-radius:.4rem;margin:0;padding:.5rem .8rem;position:absolute}.guide [popover]:popover-open{display:grid}";
 // src/viewer.ts
-function la(e, t, n, r) {
+function da(e, t, n, r) {
 	let i = document.createElement("label");
 	i.append(e + " ");
 	let a = document.createElement("select");
@@ -42843,7 +42887,7 @@ function la(e, t, n, r) {
 	for (let [e, n] of t) a.add(new Option(n, e));
 	return a.value = n, a.onchange = () => r(a.value), i.append(a), i;
 }
-var ua = (e) => e.map((e) => [e, e]), da = (e) => String(e).replace(/\d/g, (e) => "₀₁₂₃₄₅₆₇₈₉"[Number(e)]), fa = class extends HTMLElement {
+var fa = (e) => e.map((e) => [e, e]), pa = (e) => String(e).replace(/\d/g, (e) => "₀₁₂₃₄₅₆₇₈₉"[Number(e)]), ma = class extends HTMLElement {
 	root = this.attachShadow({ mode: "open" });
 	data;
 	i = 0;
@@ -42866,7 +42910,7 @@ var ua = (e) => e.map((e) => [e, e]), da = (e) => String(e).replace(/\d/g, (e) =
 		let e = this.data;
 		if (!e) return;
 		let t = this.root.activeElement?.getAttribute("aria-label"), n = e.settings ?? {}, r = n.viewport ?? e.extent, i = e.pages[this.i], a = st(e, i), o = document.createElement("style");
-		o.textContent = ca;
+		o.textContent = ua;
 		let s = document.createElement("section"), c = document.createElement("h2");
 		c.append(n.title ? $(n.title) : "Spectral sequence");
 		let l = document.createElement("div");
@@ -42879,18 +42923,18 @@ var ua = (e) => e.map((e) => [e, e]), da = (e) => String(e).replace(/\d/g, (e) =
 			let r = document.createElement("button");
 			return r.textContent = n < 0 ? "‹" : "›", r.title = t, r.setAttribute("aria-label", t), r.disabled = !e.pages[this.i + n], r.onclick = () => d(this.i + n), r;
 		};
-		u.append(f("Previous", -1), la("Page", e.pages.map((t) => [String(t.index), "E" + da(t.index) + (t.index === e.degenerationPage ? " = E∞" : "")]), String(i.index), (t) => d(Number(t) - e.firstPage)), f("Next", 1));
+		u.append(f("Previous", -1), da("Page", e.pages.map((t) => [String(t.index), "E" + pa(t.index) + (t.index === e.degenerationPage ? " = E∞" : "")]), String(i.index), (t) => d(Number(t) - e.firstPage)), f("Next", 1));
 		let p = document.createElement("details");
 		p.open = this.root.querySelector("details")?.open ?? !1;
 		let m = document.createElement("summary");
-		m.textContent = "Display options", p.append(m, la("Arrows", ua([
+		m.textContent = "Display options", p.append(m, da("Arrows", fa([
 			"All",
 			"Potentially nonzero",
 			"Known nonzero",
 			"None"
 		]), this.filter, (e) => {
 			this.filter = e, this.render();
-		}), la("Zero style", ua([
+		}), da("Zero style", fa([
 			"zero",
 			"dot",
 			"blank"
@@ -42900,33 +42944,48 @@ var ua = (e) => e.map((e) => [e, e]), da = (e) => String(e).replace(/\d/g, (e) =
 		let h = u.querySelector("label");
 		h.firstChild?.remove(), h.prepend($("E_{" + i.index + "}" + (i.index === e.degenerationPage ? "=E_{\\infty}" : "")));
 		let g = document.createElement("div");
-		g.className = "scroll", g.append(sa(a, r, this.selected, this.filter, this.zeros, (e) => {
+		g.className = "scroll", g.append(la(a, r, this.selected, this.filter, this.zeros, (e) => {
 			this.selected = e, this.render(), this.root.querySelector("[aria-pressed=\"true\"]")?.focus();
 		}));
 		let _ = document.createElement("aside");
 		_.setAttribute("role", "region"), _.setAttribute("aria-label", "Inspector");
-		let v = tt(a, this.selected, -1), y = it(a, v), b = it(a, this.selected), x = i.index, S = (t) => {
-			let n = t.p + "," + t.q, i = e.convention === "cohomological" ? "E_" + (x < 10 ? x : "{" + x + "}") + "^{" + n + "}" : "E^{" + x + "}_{" + n + "}", o = nt(a, t), s = o === "zero" ? "=0" : o === "nonzero" ? "\\ne0" : "", c = [], l = a.terms.get(H(t))?.label;
-			return s && c.push(s), l && c.push(l), o === "unknown" && c.push("?"), t.p >= 0 && t.q >= 0 && !et(t, r) && c.push("\\text{offscreen}"), c.length ? "\\underset{" + c.join("\\;") + "}{" + i + "}" : i;
-		}, C = (e) => {
-			let t = e.status === "zero" ? "0" : "d_{" + x + "}", n = e.status === "nonzero" ? "\\ne0" : e.status === "undetermined" ? "^{?}" : "";
-			return "\\xrightarrow[" + (e.formula === "0" ? "" : e.formula ?? "") + "]{" + t + n + "}";
-		}, w = S(v) + C(y) + S(this.selected) + C(b) + S(b.b), T = $(w);
-		T.classList.add("chain"), T.querySelector("svg").setAttribute("aria-label", w), _.append(T);
-		let E = a.stable.get(H(this.selected));
-		E !== void 0 && E <= i.index && _.append(" stable from page " + E);
-		let D = document.createElement("header");
-		D.append(c, u);
-		let O = document.createElement("div");
-		O.className = "canvas";
+		let v = tt(a, this.selected, -1), y = it(a, v), b = it(a, this.selected), x = i.index, S = (e, t) => "\\class{state-" + e + "}{" + t + "}", C = (t) => {
+			let n = t.p + "," + t.q, i = e.convention === "cohomological" ? "E_" + (x < 10 ? x : "{" + x + "}") + "^{" + n + "}" : "E^{" + x + "}_{" + n + "}", o = nt(a, t), s = [], c = a.terms.get(H(t))?.label;
+			return c && s.push(c), t.p >= 0 && t.q >= 0 && !et(t, r) && s.push("\\text{offscreen}"), S(o, s.length ? "\\underset{" + s.join("\\;") + "}{" + i + "}" : i);
+		}, w = (e) => {
+			let t = e.status === "zero" ? "0" : "d_{" + x + "}", n = e.formula === "0" ? "" : e.formula ?? "";
+			return S(e.status, "\\xrightarrow[" + n + "]{" + t + "}");
+		}, T = C(v) + w(y) + C(this.selected) + w(b) + C(b.b), E = $(T);
+		E.classList.add("chain"), E.querySelector("svg").setAttribute("aria-label", T), _.append(E);
+		let D = a.stable.get(H(this.selected));
+		D !== void 0 && D <= i.index && _.append(" stable from page " + D);
+		let O = document.createElement("header");
+		O.append(c, u);
 		let k = document.createElement("div");
-		k.className = "vertical-axis", k.append($(n.qLabel ?? "q"), " ↑");
+		k.className = "canvas";
 		let A = document.createElement("div");
-		A.className = "horizontal-axis", A.append($(n.pLabel ?? "p"), " →"), O.append(k, g, A);
+		A.className = "vertical-axis", A.append($(n.qLabel ?? "q"), " ↑");
 		let j = document.createElement("div");
-		j.className = "layout", _.append(p), j.append(O, _), s.append(D, l, j), this.root.replaceChildren(o, s), t && this.root.querySelector("[aria-label=\"" + CSS.escape(t) + "\"]")?.focus({ preventScroll: !0 });
+		j.className = "horizontal-axis", j.append($(n.pLabel ?? "p"), " →"), k.append(A, g, j);
+		let M = document.createElement("div");
+		M.className = "layout";
+		let N = document.createElement("div");
+		N.className = "guide";
+		let P = document.createElement("button");
+		P.textContent = "Color key";
+		let F = document.createElement("div");
+		F.popover = "auto", P.popoverTargetElement = F;
+		for (let [e, t] of [
+			["zero", "Red · zero"],
+			["nonzero", "Blue · nonzero"],
+			["unknown", "Orange · unknown"]
+		]) {
+			let n = document.createElement("span");
+			n.className = "state-" + e, n.textContent = t, F.append(n);
+		}
+		N.append(P, F), _.append(N, p), M.append(k, _), s.append(O, l, M), this.root.replaceChildren(o, s), t && this.root.querySelector("[aria-label=\"" + CSS.escape(t) + "\"]")?.focus({ preventScroll: !0 });
 	}
 };
 // src/index.ts
-customElements.define("spectral-sequence-viewer", fa);
+customElements.define("spectral-sequence-viewer", ma);
 export { $ as math };

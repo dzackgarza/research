@@ -260,3 +260,18 @@ details select {
     transition: none;
   }
 }
+
+.canvas { --zero: #ffa5a8; --nonzero: #9ecbff; --unknown: #ffb568; }
+aside { --zero: #a12a3c; --nonzero: #205da1; --unknown: #924606; }
+.state-zero, .cell[data-status="zero"] { color: var(--zero); }
+.state-nonzero, .cell[data-status="nonzero"] { color: var(--nonzero); }
+.state-unknown, .state-undetermined, .cell[data-status="unknown"] { color: var(--unknown); }
+.plot line[data-status="zero"] { stroke: var(--zero); }
+.plot line[data-status="nonzero"] { stroke: var(--nonzero); }
+.plot line[data-status="undetermined"] { stroke: var(--unknown); }
+.cell[aria-pressed="true"] { background: #35415d; border-color: #eef2ff; }
+.cell.stable[aria-pressed="true"] { background: #304f49; border-color: #eef2ff; }
+.guide { position: relative; width: fit-content; }
+.guide button { background: transparent; color: #495367; border: 0; text-decoration: underline dotted; font: inherit; cursor: pointer; padding: .35rem 0; }
+.guide [popover] { position: absolute; position-anchor: auto; inset: auto; bottom: anchor(top); left: anchor(left); margin: 0; border: 1px solid #b4bac5; border-radius: .4rem; padding: .5rem .8rem; background: #faf9f6; }
+.guide [popover]:popover-open { display: grid; }

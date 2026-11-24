@@ -146,6 +146,8 @@ export class Viewer extends HTMLElement {
     const first = differential(m, source);
     const second = differential(m, this.selected);
     const rIndex = page.index;
+    const colored = (status: string, tex: string) =>
+      "\\class{state-" + status + "}{" + tex + "}";
     const term = (point: Point) => {
       const degree = point.p + "," + point.q;
       const symbol =
@@ -153,29 +155,19 @@ export class Viewer extends HTMLElement {
           ? "E_" + (rIndex < 10 ? rIndex : "{" + rIndex + "}") + "^{" + degree + "}"
           : "E^{" + rIndex + "}_{" + degree + "}";
       const status = termStatus(m, point);
-      const value =
-        status === "zero" ? "=0" : status === "nonzero" ? "\\ne0" : "";
       const notes = [];
       const label = m.terms.get(key(point))?.label;
-      if (value) notes.push(value);
       if (label) notes.push(label);
-      if (status === "unknown") notes.push("?");
       if (point.p >= 0 && point.q >= 0 && !inside(point, r))
         notes.push("\\text{offscreen}");
-      return notes.length
+      return colored(status, notes.length
         ? "\\underset{" + notes.join("\\;") + "}{" + symbol + "}"
-        : symbol;
+        : symbol);
     };
     const arrow = (map: typeof first) => {
       const label = map.status === "zero" ? "0" : "d_{" + rIndex + "}";
-      const status =
-        map.status === "nonzero"
-          ? "\\ne0"
-          : map.status === "undetermined"
-            ? "^{?}"
-            : "";
       const annotation = map.formula === "0" ? "" : (map.formula ?? "");
-      return "\\xrightarrow[" + annotation + "]{" + label + status + "}";
+      return colored(map.status, "\\xrightarrow[" + annotation + "]{" + label + "}");
     };
     const tex =
       term(source) +
@@ -203,7 +195,21 @@ export class Viewer extends HTMLElement {
     canvas.append(vertical, scroll, horizontal);
     const layout = document.createElement("div");
     layout.className = "layout";
-    panel.append(display);
+    const guide = document.createElement("div");
+    guide.className = "guide";
+    const button = document.createElement("button");
+    button.textContent = "Color key";
+    const legend = document.createElement("div");
+    legend.popover = "auto";
+    button.popoverTargetElement = legend;
+    for (const [state, name] of [["zero", "Red · zero"], ["nonzero", "Blue · nonzero"], ["unknown", "Orange · unknown"]]) {
+      const item = document.createElement("span");
+      item.className = "state-" + state;
+      item.textContent = name;
+      legend.append(item);
+    }
+    guide.append(button, legend);
+    panel.append(guide, display);
     layout.append(canvas, panel);
     section.append(header, formula, layout);
     this.root.replaceChildren(style, section);

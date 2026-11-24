@@ -34,7 +34,7 @@ test("inspect clipped maps through all filters and zero styles", async ({
     await zero.focus();
     await zero.press("Enter");
     await expect(chain).toHaveAccessibleName(
-      /\\underset\{=0\}\{E_2\^\{1,0\}\}/,
+      /state-zero\}\{E_2\^\{1,0\}\}/,
     );
     await expect(
       page.getByRole("button", { name: "(3,1)", exact: true }),
