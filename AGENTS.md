@@ -778,6 +778,8 @@ Full catalogue: `.agents/references/terminology-dictionary.md`; code-shape patte
 
 # Docs prose policy (always-on)
 
+Use MathJax as the sole renderer for all mathematics. This includes inline and display math in prose, headings, captions, diagrams, labels, and interactive controls.
+
 Prose in the docs book is governed by the [mathematical writing policy](https://github.com/dzackgarza/ai/blob/main/opencode/skills/mathematics/writing/policy/policy.md) (the `mathematical-writing-policy` skill) — a citable policy index of banned prose patterns, each with a concrete example and remediation — together with the [writing house conventions](CONTRIBUTING.md#writing-house-conventions):
 
 - **Prose tells (`PR-*`)** — bad prose on its own terms; the fix is a rewrite.
