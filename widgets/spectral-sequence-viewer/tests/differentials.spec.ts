@@ -6,6 +6,7 @@ test("inspect clipped maps through all filters and zero styles", async ({
   await page.goto("/examples/static/");
   await page.getByRole("button", { name: "(2,1)", exact: true }).click();
   const inspector = page.getByRole("region", { name: "Inspector" });
+  await page.getByText("Display options", { exact: true }).click();
   for (const mode of ["All", "Potentially nonzero", "Known nonzero", "None"]) {
     await page.getByLabel("Arrows").selectOption(mode);
     await expect(inspector).toContainText("(0,2) offscreen");

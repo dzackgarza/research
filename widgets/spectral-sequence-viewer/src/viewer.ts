@@ -71,7 +71,8 @@ export class Viewer extends HTMLElement {
     };
     const step = (name: string, delta: number) => {
       const b = document.createElement("button");
-      b.textContent = name;
+      b.textContent = delta < 0 ? "‹" : "›";
+      b.title = name;
       b.setAttribute("aria-label", name);
       b.disabled = !data.pages[this.i + delta];
       b.onclick = () => move(this.i + delta);
@@ -91,6 +92,13 @@ export class Viewer extends HTMLElement {
         (v) => move(Number(v) - data.firstPage),
       ),
       step("Next", 1),
+    );
+    const display = document.createElement("details");
+    display.open = this.root.querySelector("details")?.open ?? false;
+    const summary = document.createElement("summary");
+    summary.textContent = "Display options";
+    display.append(
+      summary,
       select(
         "Arrows",
         labels(["All", "Potentially nonzero", "Known nonzero", "None"]),
@@ -134,8 +142,10 @@ export class Viewer extends HTMLElement {
     panel.setAttribute("role", "region");
     panel.setAttribute("aria-label", "Inspector");
     const title = document.createElement("h3");
-    title.textContent =
-      "Term " + coord(this.selected) + " · " + termStatus(m, this.selected);
+    title.append("Term ", math(coord(this.selected)));
+    const status = document.createElement("small");
+    status.textContent = termStatus(m, this.selected);
+    title.append(status);
     panel.append(title);
     const term = m.terms.get(key(this.selected));
     if (term?.label) panel.append(math(term.label));
@@ -150,19 +160,25 @@ export class Viewer extends HTMLElement {
     ] as const) {
       const arrow = differential(m, a),
         row = document.createElement("p");
+      const caption = document.createElement("b");
+      caption.textContent = name;
       row.append(
-        name +
-          " " +
-          location(a) +
-          " → " +
-          location(arrow.b) +
-          " · " +
-          arrow.status,
+        caption,
+        " " + location(a) + " → " + location(arrow.b) + " · " + arrow.status,
       );
       if (arrow.formula) row.append("　", math(arrow.formula));
       panel.append(row);
     }
-    section.append(heading, formula, toolbar, axes, scroll, panel);
+    const header = document.createElement("header");
+    header.append(heading, toolbar);
+    const canvas = document.createElement("div");
+    canvas.className = "canvas";
+    canvas.append(axes, scroll);
+    const layout = document.createElement("div");
+    layout.className = "layout";
+    panel.append(display);
+    layout.append(canvas, panel);
+    section.append(header, formula, layout);
     this.root.replaceChildren(style, section);
     if (focus)
       this.root

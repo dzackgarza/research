@@ -1,64 +1,113 @@
 :host {
   display: block;
-  color: #183940;
+  container-type: inline-size;
+  --ink: #25373d;
+  --muted: #586a70;
+  --accent: #a14222;
+  --rule: #c9cdc5;
+  --paper: #faf9f4;
+  color: var(--ink);
   font:
     1rem/1.5 system-ui,
     sans-serif;
-  margin: 1rem auto;
+  margin: 1.8rem auto 1rem;
   max-width: 65rem;
 }
+* {
+  box-sizing: border-box;
+}
 section {
-  border: 1px solid #bad0ca;
-  background: #fcfbf7;
-  border-radius: 0.7rem;
-  padding: clamp(1rem, 3vw, 2rem);
+  border-block: 2px solid var(--ink);
+  padding: 1rem 0;
+  background: var(--paper);
+}
+header,
+.toolbar {
+  display: flex;
+  align-items: center;
+}
+header {
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 0.6rem 0.9rem;
+  border-bottom: 1px solid var(--rule);
+  flex-wrap: wrap;
 }
 h2,
 h3 {
-  font-family: Georgia, serif;
-  margin: 0 0 0.5rem;
-}
-h2 {
-  font-size: 1.65rem;
+  margin: 0;
+  font:
+    normal 1.5rem/1.3 Georgia,
+    serif;
 }
 .toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.55rem;
-  margin: 1rem 0;
+  border: 1px solid var(--rule);
+  border-radius: 2rem;
+  background: white;
+  padding: 0.12rem 0.28rem;
+  white-space: nowrap;
+}
+.toolbar button,
+.toolbar select {
+  background: transparent;
+  border: 0;
+  color: var(--ink);
+  cursor: pointer;
+}
+.toolbar button {
+  font:
+    1.5rem/1 Georgia,
+    serif;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+}
+.toolbar button:hover:enabled,
+.cell:hover {
+  background: #ebece4;
+}
+.toolbar button:disabled {
+  color: #9aaba8;
+  cursor: default;
 }
 .toolbar label {
-  font-size: 0.875rem;
+  font-size: 0.78rem;
+  padding: 0 0.35rem;
 }
-button,
 select {
   font: inherit;
-  color: inherit;
-  border: 1px solid #91a9a4;
-  border-radius: 0.35rem;
-  background: white;
-  padding: 0.3rem 0.55rem;
+  color: var(--ink);
 }
-button:disabled {
-  opacity: 0.45;
+[aria-label="Page formula"]:not(:empty) {
+  padding: 0.75rem;
+}
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(13rem, 1fr);
+  align-items: start;
+}
+.canvas {
+  padding: 0.7rem 0.7rem 0.3rem;
+  min-width: 0;
 }
 .axes,
 .tick {
-  color: #536d70;
+  color: var(--muted);
+  font-size: 0.78rem;
 }
 .scroll {
   overflow: auto;
 }
 .plot {
   position: relative;
-  background-color: #fff;
-  border: 1px solid #a8bfba;
-  background-image:
-    linear-gradient(to right, #e8efec 1px, transparent 1px),
-    linear-gradient(to bottom, #e8efec 1px, transparent 1px);
-  background-size: 112px 82px;
-  background-position: 56px 41px;
+  border-left: 1px solid #9aa9a6;
+  border-bottom: 1px solid #9aa9a6;
+  background-image: repeating-linear-gradient(
+    to top,
+    transparent 0 81px,
+    #e1e4dc 81px 82px
+  );
+  background-position: 0 41px;
 }
 .plot > svg {
   position: absolute;
@@ -72,47 +121,141 @@ button:disabled {
   position: absolute;
   transform: translate(-50%, -50%);
 }
+.tick {
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
+}
 .cell {
+  font: inherit;
+  color: inherit;
   min-width: 34px;
   min-height: 34px;
-  border-radius: 0.4rem;
+  padding: 0.15rem 0.3rem;
+  background: var(--paper);
+  border: 1px solid transparent;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.cell[data-status="zero"] {
+  background: transparent;
+  color: var(--muted);
 }
 .cell.stable {
-  background: #d4eee0;
+  background: #d8e9df;
+}
+.cell.stable[aria-pressed="true"] {
+  background: #d8e9df;
 }
 .cell small {
   display: block;
-  font-size: 0.62rem;
+  font-size: 0.65rem;
 }
 .cell[aria-pressed="true"] {
-  border: 2px solid #00665e;
-}
-.tick {
-  font-size: 0.68rem;
+  color: var(--accent);
+  border-color: var(--accent);
+  background: #fff1e5;
 }
 .plot line {
-  stroke: #647d82;
-  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+  stroke: #4f666a;
+  stroke-width: 1.7;
 }
 .plot line[data-status="zero"] {
+  stroke: #9ca7a6;
   stroke-dasharray: 2 5;
 }
 .plot line[data-status="undetermined"] {
   stroke-dasharray: 6 4;
 }
 .plot line[data-highlighted="true"] {
-  stroke: #ad4721;
-  stroke-width: 3;
+  stroke: var(--accent);
+  stroke-width: 2.6;
 }
 aside {
-  border-top: 1px solid #b7ccc6;
-  margin-top: 1rem;
-  padding-top: 1rem;
+  margin: 1.25rem 0 0;
+  padding: 0 1rem;
+  border-left: 1px solid var(--rule);
+  font-size: 0.87rem;
+  line-height: 1.6;
+}
+aside h3 {
+  font-size: 1.15rem;
+}
+aside h3 small {
+  display: block;
+  font:
+    italic 0.9rem Georgia,
+    serif;
+  color: var(--muted);
+  margin: 0.28rem 0 0.6rem;
 }
 aside p {
-  margin: 0.3rem 0;
+  margin: 0.8rem 0;
+}
+aside b {
+  display: block;
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+aside p mjx-container {
+  display: block;
+  margin: 0.35rem 0;
+  color: var(--ink);
+}
+details {
+  margin-top: 1.2rem;
+  border-top: 1px solid var(--rule);
+  padding-top: 0.55rem;
+}
+summary {
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+details label {
+  display: grid;
+  gap: 0.15rem;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+}
+details select {
+  width: 100%;
+  padding: 0.3rem;
+  background: white;
+  border: 1px solid var(--rule);
 }
 :focus-visible {
-  outline: 3px solid #b16122;
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+@container (max-width:38rem) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  aside {
+    margin: 0.8rem 0.6rem 0;
+    padding: 0.7rem 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--rule);
+  }
+  aside p {
+    display: inline-block;
+    vertical-align: top;
+    width: 50%;
+    padding-right: 0.6rem;
+  }
+  aside > mjx-container {
+    display: block;
+  }
+  header {
+    gap: 0.4rem;
+  }
+  details {
+    margin-top: 0.2rem;
+  }
+  .canvas {
+    padding-inline: 0.4rem;
+  }
 }

@@ -42763,9 +42763,9 @@ function sa(e, t, n, r, i, a) {
 	let o = document.createElement("div");
 	o.className = "plot";
 	let s = (t.pMax - t.pMin + 1) * 112, c = (t.qMax - t.qMin + 1) * 82;
-	o.style.width = s + "px", o.style.height = c + "px";
+	o.style.width = "min(100%, " + s + "px)", o.style.minWidth = (t.pMax - t.pMin + 1) * 60 + "px", o.style.height = c + "px";
 	let l = "http://www.w3.org/2000/svg", u = document.createElementNS(l, "svg");
-	u.setAttribute("viewBox", "0 0 " + s + " " + c), u.setAttribute("aria-hidden", "true");
+	u.setAttribute("viewBox", "0 0 " + s + " " + c), u.setAttribute("aria-hidden", "true"), u.setAttribute("preserveAspectRatio", "none");
 	let d = document.createElementNS(l, "marker");
 	for (let [e, t] of Object.entries({
 		id: "tip",
@@ -42781,59 +42781,59 @@ function sa(e, t, n, r, i, a) {
 	let p = (e) => (e - t.pMin + .5) * 112, m = (e) => (t.qMax - e + .5) * 82;
 	function h(e, t, n) {
 		let r = document.createElement("span");
-		r.className = "tick", r.textContent = String(e), r.style.left = t + "px", r.style.top = n + "px", o.append(r);
+		r.className = "tick", r.textContent = String(e), r.style.left = t / s * 100 + "%", r.style.top = n + "px", o.append(r);
 	}
 	for (let e = t.pMin; e <= t.pMax; e++) h(e, p(e), c - 8);
 	for (let e = t.qMin; e <= t.qMax; e++) h(e, 8, m(e));
-	for (let s = t.qMax; s >= t.qMin; s--) for (let c = t.pMin; c <= t.pMax; c++) {
-		let d = {
-			p: c,
-			q: s
-		}, f = it(e, d), h = f.b;
-		if (et(h, t) && r !== "None" && (r === "All" || (r === "Potentially nonzero" ? f.status !== "zero" : f.status === "nonzero"))) {
-			let e = p(h.p) - p(c), t = m(h.q) - m(s), r = Math.hypot(e, t), i = document.createElementNS(l, "line");
+	for (let c = t.qMax; c >= t.qMin; c--) for (let d = t.pMin; d <= t.pMax; d++) {
+		let f = {
+			p: d,
+			q: c
+		}, h = it(e, f), g = h.b;
+		if (et(g, t) && r !== "None" && (r === "All" || (r === "Potentially nonzero" ? h.status !== "zero" : h.status === "nonzero"))) {
+			let e = p(g.p) - p(d), t = m(g.q) - m(c), r = Math.hypot(e, t), i = document.createElementNS(l, "line");
 			for (let [n, a] of Object.entries({
-				x1: p(c) + 22 * e / r,
-				y1: m(s) + 22 * t / r,
-				x2: p(h.p) - 22 * e / r,
-				y2: m(h.q) - 22 * t / r
+				x1: p(d) + 22 * e / r,
+				y1: m(c) + 22 * t / r,
+				x2: p(g.p) - 22 * e / r,
+				y2: m(g.q) - 22 * t / r
 			})) i.setAttribute(n, String(a));
-			i.dataset.status = f.status, i.dataset.highlighted = String(H(n) === H(d) || H(n) === H(h)), i.setAttribute("marker-end", "url(#tip)"), u.append(i);
+			i.dataset.status = h.status, i.dataset.highlighted = String(H(n) === H(f) || H(n) === H(g)), i.setAttribute("marker-end", "url(#tip)"), u.append(i);
 		}
-		let g = document.createElement("button"), _ = e.terms.get(H(d)), v = nt(e, d);
-		g.className = "cell", g.style.left = p(c) + "px", g.style.top = m(s) + "px", g.setAttribute("aria-label", oa(d)), g.setAttribute("aria-pressed", String(H(d) === H(n))), v === "zero" ? g.textContent = i === "blank" ? "" : i === "dot" ? "·" : "0" : (v === "unknown" && g.append("?"), _?.label ? g.append($(_.label)) : v === "nonzero" && g.append("●"));
-		let y = e.stable.get(H(d));
-		if (y !== void 0 && y <= e.page.index) {
-			g.classList.add("stable");
+		let _ = document.createElement("button"), v = e.terms.get(H(f)), y = nt(e, f);
+		_.className = "cell", _.style.left = p(d) / s * 100 + "%", _.dataset.status = y, _.style.top = m(c) + "px", _.setAttribute("aria-label", oa(f)), _.setAttribute("aria-pressed", String(H(f) === H(n))), y === "zero" ? _.textContent = i === "blank" ? "" : i === "dot" ? "·" : "0" : (y === "unknown" && _.append("?"), v?.label ? _.append($(v.label)) : y === "nonzero" && _.append("●"));
+		let b = e.stable.get(H(f));
+		if (b !== void 0 && b <= e.page.index) {
+			_.classList.add("stable");
 			let e = document.createElement("small");
-			e.textContent = "stable", g.append(e);
+			e.textContent = "stable", _.append(e);
 		}
-		g.onclick = () => a(d), g.onkeydown = (e) => {
+		_.onclick = () => a(f), _.onkeydown = (e) => {
 			let n = {
 				ArrowUp: {
-					p: c,
-					q: s + 1
+					p: d,
+					q: c + 1
 				},
 				ArrowDown: {
-					p: c,
-					q: s - 1
+					p: d,
+					q: c - 1
 				},
 				ArrowLeft: {
-					p: c - 1,
-					q: s
+					p: d - 1,
+					q: c
 				},
 				ArrowRight: {
-					p: c + 1,
-					q: s
+					p: d + 1,
+					q: c
 				}
 			}[e.key];
 			n && (e.preventDefault(), et(n, t) && a(n));
-		}, o.append(g);
+		}, o.append(_);
 	}
 	return o;
 }
 // src/viewer.css?inline
-var ca = ":host{color:#183940;max-width:65rem;margin:1rem auto;font:1rem/1.5 system-ui,sans-serif;display:block}section{background:#fcfbf7;border:1px solid #bad0ca;border-radius:.7rem;padding:clamp(1rem,3vw,2rem)}h2,h3{margin:0 0 .5rem;font-family:Georgia,serif}h2{font-size:1.65rem}.toolbar{flex-wrap:wrap;align-items:center;gap:.55rem;margin:1rem 0;display:flex}.toolbar label{font-size:.875rem}button,select{font:inherit;color:inherit;background:#fff;border:1px solid #91a9a4;border-radius:.35rem;padding:.3rem .55rem}button:disabled{opacity:.45}.axes,.tick{color:#536d70}.scroll{overflow:auto}.plot{background-color:#fff;background-image:linear-gradient(90deg,#e8efec 1px,#0000 1px),linear-gradient(#e8efec 1px,#0000 1px);background-position:56px 41px;background-size:112px 82px;border:1px solid #a8bfba;position:relative}.plot>svg{pointer-events:none;width:100%;height:100%;position:absolute;inset:0}.cell,.tick{position:absolute;transform:translate(-50%,-50%)}.cell{border-radius:.4rem;min-width:34px;min-height:34px}.cell.stable{background:#d4eee0}.cell small{font-size:.62rem;display:block}.cell[aria-pressed=true]{border:2px solid #00665e}.tick{font-size:.68rem}.plot line{stroke:#647d82;stroke-width:2px}.plot line[data-status=zero]{stroke-dasharray:2 5}.plot line[data-status=undetermined]{stroke-dasharray:6 4}.plot line[data-highlighted=true]{stroke:#ad4721;stroke-width:3px}aside{border-top:1px solid #b7ccc6;margin-top:1rem;padding-top:1rem}aside p{margin:.3rem 0}:focus-visible{outline-offset:2px;outline:3px solid #b16122}";
+var ca = ":host{--ink:#25373d;--muted:#586a70;--accent:#a14222;--rule:#c9cdc5;--paper:#faf9f4;color:var(--ink);max-width:65rem;margin:1.8rem auto 1rem;font:1rem/1.5 system-ui,sans-serif;display:block;container-type:inline-size}*{box-sizing:border-box}section{border-block:2px solid var(--ink);background:var(--paper);padding:1rem 0}header,.toolbar{align-items:center;display:flex}header{border-bottom:1px solid var(--rule);flex-wrap:wrap;justify-content:space-between;gap:1rem;padding:0 .6rem .9rem}h2,h3{margin:0;font:1.5rem/1.3 Georgia,serif}.toolbar{border:1px solid var(--rule);white-space:nowrap;background:#fff;border-radius:2rem;padding:.12rem .28rem}.toolbar button,.toolbar select{color:var(--ink);cursor:pointer;background:0 0;border:0}.toolbar button{border-radius:50%;width:2rem;height:2rem;font:1.5rem/1 Georgia,serif}.toolbar button:hover:enabled,.cell:hover{background:#ebece4}.toolbar button:disabled{color:#9aaba8;cursor:default}.toolbar label{padding:0 .35rem;font-size:.78rem}select{font:inherit;color:var(--ink)}[aria-label=Page\\ formula]:not(:empty){padding:.75rem}.layout{grid-template-columns:minmax(0,2fr) minmax(13rem,1fr);align-items:start;display:grid}.canvas{min-width:0;padding:.7rem .7rem .3rem}.axes,.tick{color:var(--muted);font-size:.78rem}.scroll{overflow:auto}.plot{background-image:repeating-linear-gradient(0deg,#0000 0 81px,#e1e4dc 81px 82px);background-position:0 41px;border-bottom:1px solid #9aa9a6;border-left:1px solid #9aa9a6;position:relative}.plot>svg{pointer-events:none;width:100%;height:100%;position:absolute;inset:0}.cell,.tick{position:absolute;transform:translate(-50%,-50%)}.tick{font-variant-numeric:tabular-nums;font-size:.68rem}.cell{font:inherit;color:inherit;background:var(--paper);cursor:pointer;border:1px solid #0000;border-radius:50%;min-width:34px;min-height:34px;padding:.15rem .3rem}.cell[data-status=zero]{color:var(--muted);background:0 0}.cell.stable,.cell.stable[aria-pressed=true]{background:#d8e9df}.cell small{font-size:.65rem;display:block}.cell[aria-pressed=true]{color:var(--accent);border-color:var(--accent);background:#fff1e5}.plot line{vector-effect:non-scaling-stroke;stroke:#4f666a;stroke-width:1.7px}.plot line[data-status=zero]{stroke:#9ca7a6;stroke-dasharray:2 5}.plot line[data-status=undetermined]{stroke-dasharray:6 4}.plot line[data-highlighted=true]{stroke:var(--accent);stroke-width:2.6px}aside{border-left:1px solid var(--rule);margin:1.25rem 0 0;padding:0 1rem;font-size:.87rem;line-height:1.6}aside h3{font-size:1.15rem}aside h3 small{color:var(--muted);margin:.28rem 0 .6rem;font:italic .9rem Georgia,serif;display:block}aside p{margin:.8rem 0}aside b{color:var(--muted);letter-spacing:.04em;font-size:.75rem;font-weight:600;display:block}aside p mjx-container{color:var(--ink);margin:.35rem 0;display:block}details{border-top:1px solid var(--rule);margin-top:1.2rem;padding-top:.55rem}summary{cursor:pointer;font-size:.8rem;font-weight:600}details label{gap:.15rem;margin-top:.5rem;font-size:.75rem;display:grid}details select{border:1px solid var(--rule);background:#fff;width:100%;padding:.3rem}:focus-visible{outline:2px solid var(--accent);outline-offset:2px}@container (width<=38rem){.layout{grid-template-columns:minmax(0,1fr)}aside{border-left:0;border-top:1px solid var(--rule);margin:.8rem .6rem 0;padding:.7rem 0 0}aside p{vertical-align:top;width:50%;padding-right:.6rem;display:inline-block}aside>mjx-container{display:block}header{gap:.4rem}details{margin-top:.2rem}.canvas{padding-inline:.4rem}}";
 // src/viewer.ts
 function la(e, t, n, r) {
 	let i = document.createElement("label");
@@ -42877,9 +42877,13 @@ var ua = (e) => e.map((e) => [e, e]), da = (e) => String(e).replace(/\d/g, (e) =
 			this.i = e, this.render();
 		}, f = (t, n) => {
 			let r = document.createElement("button");
-			return r.textContent = t, r.setAttribute("aria-label", t), r.disabled = !e.pages[this.i + n], r.onclick = () => d(this.i + n), r;
+			return r.textContent = n < 0 ? "‹" : "›", r.title = t, r.setAttribute("aria-label", t), r.disabled = !e.pages[this.i + n], r.onclick = () => d(this.i + n), r;
 		};
-		u.append(f("Previous", -1), la("Page", e.pages.map((t) => [String(t.index), "E" + da(t.index) + (t.index === e.degenerationPage ? " = E∞" : "")]), String(i.index), (t) => d(Number(t) - e.firstPage)), f("Next", 1), la("Arrows", ua([
+		u.append(f("Previous", -1), la("Page", e.pages.map((t) => [String(t.index), "E" + da(t.index) + (t.index === e.degenerationPage ? " = E∞" : "")]), String(i.index), (t) => d(Number(t) - e.firstPage)), f("Next", 1));
+		let p = document.createElement("details");
+		p.open = this.root.querySelector("details")?.open ?? !1;
+		let m = document.createElement("summary");
+		m.textContent = "Display options", p.append(m, la("Arrows", ua([
 			"All",
 			"Potentially nonzero",
 			"Known nonzero",
@@ -42893,26 +42897,33 @@ var ua = (e) => e.map((e) => [e, e]), da = (e) => String(e).replace(/\d/g, (e) =
 		]), this.zeros, (e) => {
 			this.zeros = e, this.render();
 		}));
-		let p = document.createElement("div");
-		p.className = "axes", p.append("↑ ", $(n.qLabel ?? "q"), "　", $(n.pLabel ?? "p"), " →");
-		let m = document.createElement("div");
-		m.className = "scroll", m.append(sa(a, r, this.selected, this.filter, this.zeros, (e) => {
+		let h = document.createElement("div");
+		h.className = "axes", h.append("↑ ", $(n.qLabel ?? "q"), "　", $(n.pLabel ?? "p"), " →");
+		let g = document.createElement("div");
+		g.className = "scroll", g.append(sa(a, r, this.selected, this.filter, this.zeros, (e) => {
 			this.selected = e, this.render(), this.root.querySelector("[aria-pressed=\"true\"]")?.focus();
 		}));
-		let h = document.createElement("aside");
-		h.setAttribute("role", "region"), h.setAttribute("aria-label", "Inspector");
-		let g = document.createElement("h3");
-		g.textContent = "Term " + oa(this.selected) + " · " + nt(a, this.selected), h.append(g);
-		let _ = a.terms.get(H(this.selected));
-		_?.label && h.append($(_.label));
-		let v = a.stable.get(H(this.selected));
-		v !== void 0 && v <= i.index && h.append(" stable from page " + v);
-		let y = (e) => oa(e) + (et(e, r) ? "" : " offscreen");
+		let _ = document.createElement("aside");
+		_.setAttribute("role", "region"), _.setAttribute("aria-label", "Inspector");
+		let v = document.createElement("h3");
+		v.append("Term ", $(oa(this.selected)));
+		let y = document.createElement("small");
+		y.textContent = nt(a, this.selected), v.append(y), _.append(v);
+		let b = a.terms.get(H(this.selected));
+		b?.label && _.append($(b.label));
+		let x = a.stable.get(H(this.selected));
+		x !== void 0 && x <= i.index && _.append(" stable from page " + x);
+		let S = (e) => oa(e) + (et(e, r) ? "" : " offscreen");
 		for (let [e, t] of [["Incoming", tt(a, this.selected, -1)], ["Outgoing", this.selected]]) {
-			let n = it(a, t), r = document.createElement("p");
-			r.append(e + " " + y(t) + " → " + y(n.b) + " · " + n.status), n.formula && r.append("　", $(n.formula)), h.append(r);
+			let n = it(a, t), r = document.createElement("p"), i = document.createElement("b");
+			i.textContent = e, r.append(i, " " + S(t) + " → " + S(n.b) + " · " + n.status), n.formula && r.append("　", $(n.formula)), _.append(r);
 		}
-		s.append(c, l, u, p, m, h), this.root.replaceChildren(o, s), t && this.root.querySelector("[aria-label=\"" + CSS.escape(t) + "\"]")?.focus({ preventScroll: !0 });
+		let C = document.createElement("header");
+		C.append(c, u);
+		let w = document.createElement("div");
+		w.className = "canvas", w.append(h, g);
+		let T = document.createElement("div");
+		T.className = "layout", _.append(p), T.append(w, _), s.append(C, l, T), this.root.replaceChildren(o, s), t && this.root.querySelector("[aria-label=\"" + CSS.escape(t) + "\"]")?.focus({ preventScroll: !0 });
 	}
 };
 // src/index.ts

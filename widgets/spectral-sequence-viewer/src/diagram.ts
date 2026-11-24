@@ -14,12 +14,14 @@ export function diagram(
   graph.className = "plot";
   const width = (r.pMax - r.pMin + 1) * 112,
     height = (r.qMax - r.qMin + 1) * 82;
-  graph.style.width = width + "px";
+  graph.style.width = "min(100%, " + width + "px)";
+  graph.style.minWidth = (r.pMax - r.pMin + 1) * 60 + "px";
   graph.style.height = height + "px";
   const ns = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(ns, "svg");
   svg.setAttribute("viewBox", "0 0 " + width + " " + height);
   svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("preserveAspectRatio", "none");
   const marker = document.createElementNS(ns, "marker");
   for (const [attr, val] of Object.entries({
     id: "tip",
@@ -43,7 +45,7 @@ export function diagram(
     const el = document.createElement("span");
     el.className = "tick";
     el.textContent = String(label);
-    el.style.left = left + "px";
+    el.style.left = (left / width) * 100 + "%";
     el.style.top = top + "px";
     graph.append(el);
   }
@@ -84,7 +86,8 @@ export function diagram(
         term = m.terms.get(key(a)),
         status = termStatus(m, a);
       cell.className = "cell";
-      cell.style.left = x(p) + "px";
+      cell.style.left = (x(p) / width) * 100 + "%";
+      cell.dataset.status = status;
       cell.style.top = y(q) + "px";
       cell.setAttribute("aria-label", coord(a));
       cell.setAttribute("aria-pressed", String(key(a) === key(selected)));

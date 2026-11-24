@@ -9,7 +9,7 @@ test("articles and late insertion publish independent figures", async ({
   ]) {
     await page.goto(url);
     await expect(page.getByLabel("Page", { exact: true })).toHaveValue("2");
-    await expect(page.getByRole("heading").locator("svg")).toBeVisible();
+    await expect(page.getByRole("heading", {level: 2}).locator("svg")).toBeVisible();
   }
   await page.goto("/examples/static/");
   await page.getByText("Insert figure").click();
