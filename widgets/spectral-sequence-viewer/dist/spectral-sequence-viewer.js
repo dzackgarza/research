@@ -43053,24 +43053,7 @@ function ga(e, t, n, r, i, a, o, s) {
 			p,
 			q: m
 		}, t)) continue;
-		for (let t of e.terms.get(U(_))?.classes ?? []) {
-			let e = document.createElement("button");
-			if (e.className = "cell chart-class", e.style.left = h(p) / l * 100 + "%", e.style.top = g(m) + y(t.id) + "px", e.dataset.status = "nonzero", e.setAttribute("aria-label", "Class " + t.id), e.setAttribute("aria-pressed", String(o === "Class " + t.id)), e.append($(t.label)), t.permanent) {
-				let t = document.createElement("small");
-				t.textContent = "permanent", e.append(t);
-			}
-			e.onclick = () => s(_, !1, "Class " + t.id), c.append(e);
-		}
-		if (e.terms.get(U(_))?.classes?.length) continue;
-		let x = document.createElement("button"), S = e.terms.get(U(_)), C = nt(e, _);
-		x.className = "cell", x.style.left = h(p) / l * 100 + "%", x.dataset.status = C, x.style.top = g(m) + "px", x.setAttribute("aria-label", ha(_)), x.setAttribute("aria-pressed", String(!o && U(_) === U(n))), C === "zero" ? i !== "blank" && x.append($(i === "dot" ? "\\cdot" : "0")) : (C === "unknown" && x.append("?"), S?.label ? x.append($(S.label)) : C === "nonzero" && x.append("●"));
-		let w = e.stable.get(U(_));
-		if (w !== void 0 && w <= e.page.index) {
-			x.classList.add("stable");
-			let e = document.createElement("small");
-			e.textContent = "stable", x.append(e);
-		}
-		x.onclick = () => s(_), x.onkeydown = (n) => {
+		let x = (n) => {
 			let r = {
 				ArrowUp: {
 					p,
@@ -43089,8 +43072,29 @@ function ga(e, t, n, r, i, a, o, s) {
 					q: m
 				}
 			}[n.key];
-			r && (n.preventDefault(), $e(r, t) && s(lt(e.data, r)));
-		}, c.append(x);
+			if (r && (n.preventDefault(), $e(r, t))) {
+				let t = lt(e.data, r), n = e.terms.get(U(t))?.classes?.[0];
+				s(t, !1, n && "Class " + n.id);
+			}
+		};
+		for (let t of e.terms.get(U(_))?.classes ?? []) {
+			let e = document.createElement("button");
+			if (e.className = "cell chart-class", e.style.left = h(p) / l * 100 + "%", e.style.top = g(m) + y(t.id) + "px", e.dataset.status = "nonzero", e.setAttribute("aria-label", "Class " + t.id), e.setAttribute("aria-pressed", String(o === "Class " + t.id)), e.append($(t.label)), t.permanent) {
+				let t = document.createElement("small");
+				t.textContent = "permanent", e.append(t);
+			}
+			e.onkeydown = x, e.onclick = () => s(_, !1, "Class " + t.id), c.append(e);
+		}
+		if (e.terms.get(U(_))?.classes?.length) continue;
+		let S = document.createElement("button"), C = e.terms.get(U(_)), w = nt(e, _);
+		S.className = "cell", S.style.left = h(p) / l * 100 + "%", S.dataset.status = w, S.style.top = g(m) + "px", S.setAttribute("aria-label", ha(_)), S.setAttribute("aria-pressed", String(!o && U(_) === U(n))), w === "zero" ? i !== "blank" && S.append($(i === "dot" ? "\\cdot" : "0")) : (w === "unknown" && S.append("?"), C?.label ? S.append($(C.label)) : w === "nonzero" && S.append("●"));
+		let T = e.stable.get(U(_));
+		if (T !== void 0 && T <= e.page.index) {
+			S.classList.add("stable");
+			let e = document.createElement("small");
+			e.textContent = "stable", S.append(e);
+		}
+		S.onclick = () => s(_), S.onkeydown = x, c.append(S);
 	}
 	for (let t of e.page.relations ?? []) {
 		let n = e.classes.get(t.source).term, r = ct(e.data, n), i = ct(e.data, e.classes.get(t.target).term), a = document.createElementNS(d, "path"), c = g(r.q) + y(t.source), l = g(i.q) + y(t.target);

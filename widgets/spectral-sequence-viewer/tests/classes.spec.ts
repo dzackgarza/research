@@ -166,13 +166,21 @@ test("locate an invalid class reference in a relation", async ({ page }) => {
   ).rejects.toThrow(/page 2 relations\[0\].target.*absent/);
 });
 
-test("navigate between a named class and the adjacent grid cell", async ({page}) => {
+test("navigate between a named class and the adjacent grid cell", async ({
+  page,
+}) => {
   await page.goto("/examples/static/");
-  const figure=page.locator("spectral-sequence-viewer");
-  await figure.evaluate((el,d)=>{Object.assign(el,{sequence:d})},shared);
-  await figure.getByRole("button",{name:"Class x",exact:true}).press("ArrowRight");
-  const cell=figure.getByRole("button",{name:"(1,1)",exact:true});
+  const figure = page.locator("spectral-sequence-viewer");
+  await figure.evaluate((el, d) => {
+    Object.assign(el, { sequence: d });
+  }, shared);
+  await figure
+    .getByRole("button", { name: "Class x", exact: true })
+    .press("ArrowRight");
+  const cell = figure.getByRole("button", { name: "(1,1)", exact: true });
   await expect(cell).toBeFocused();
   await cell.press("ArrowLeft");
-  await expect(figure.getByRole("button",{name:"Class x",exact:true})).toBeFocused();
+  await expect(
+    figure.getByRole("button", { name: "Class x", exact: true }),
+  ).toBeFocused();
 });

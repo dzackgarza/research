@@ -11,3 +11,7 @@ All mode draws admissible arrows with both endpoints visible. Potentially nonzer
 ## Extended contract
 
 The default axes show native bidegrees. In a regraded view the diagram places both endpoints in display coordinates, and inspection identifies the component by its native page and source bidegree. Selecting a component with several generator images shows each assignment. The signed-coordinate and rank-two examples in the [specification](../spec.md) exercise the same public sequence setter as the Serre figures.
+
+When a generator has a named chart endpoint, the zero image is written as `0`. Its arrow has zero status even when another generator has nonzero image under the same differential. The inspector retains both assignments under every filter. An authored differential that crosses the viewport can be inspected along its visible segment.
+
+Each named class is selectable by keyboard. Arrow keys move to the adjacent bidegree in the displayed coordinates. When that bidegree contains several named classes, focus enters at the first class in the author's list. Tab moves between the classes.

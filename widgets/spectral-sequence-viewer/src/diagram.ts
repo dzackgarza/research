@@ -150,6 +150,23 @@ export function diagram(
       }
     }
     if (!inside({ p, q }, r)) continue;
+    const navigate = (e: KeyboardEvent) => {
+      const moves: Record<string, Point> = {
+        ArrowUp: { p, q: q + 1 },
+        ArrowDown: { p, q: q - 1 },
+        ArrowLeft: { p: p - 1, q },
+        ArrowRight: { p: p + 1, q },
+      };
+      const next = moves[e.key];
+      if (next) {
+        e.preventDefault();
+        if (inside(next, r)) {
+          const point = nativePoint(m.data, next);
+          const first = m.terms.get(key(point))?.classes?.[0];
+          choose(point, false, first && "Class " + first.id);
+        }
+      }
+    };
     for (const c of m.terms.get(key(a))?.classes ?? []) {
       const button = document.createElement("button");
       button.className = "cell chart-class";
@@ -164,6 +181,7 @@ export function diagram(
         tag.textContent = "permanent";
         button.append(tag);
       }
+      button.onkeydown = navigate;
       button.onclick = () => choose(a, false, "Class " + c.id);
       graph.append(button);
     }
@@ -196,19 +214,7 @@ export function diagram(
       cell.append(tag);
     }
     cell.onclick = () => choose(a);
-    cell.onkeydown = (e) => {
-      const moves: Record<string, Point> = {
-        ArrowUp: { p, q: q + 1 },
-        ArrowDown: { p, q: q - 1 },
-        ArrowLeft: { p: p - 1, q },
-        ArrowRight: { p: p + 1, q },
-      };
-      const next = moves[e.key];
-      if (next) {
-        e.preventDefault();
-        if (inside(next, r)) choose(nativePoint(m.data, next));
-      }
-    };
+    cell.onkeydown = navigate;
     graph.append(cell);
   }
   for (const rel of m.page.relations ?? []) {

@@ -82,4 +82,4 @@ The completed first-quadrant tasks above describe the original implementation. T
 
 - [X] T031 Filter and style a named generator's zero image correctly in a nonzero differential per FR-05 and T027 (contradicts).
 - [X] T032 Identify the page and field or coordinate in class and relation validation errors per FR-08 (partial).
-- [ ] T033 Preserve keyboard movement between grid cells containing named classes per FR-07 and the browser interface contract (partial).
+- [X] T033 Preserve keyboard movement between grid cells containing named classes per FR-07 and the browser interface contract (partial).
