@@ -49,6 +49,10 @@ A single supplied page needs no navigation. A blank zero remains selectable. A m
 
 ## Success criteria
 
+- From a React application built with Vite, an author can pass the same sequence as a data object. A plain HTML author can load the viewer with one JavaScript module.
+- Selecting a term highlights its visible incoming and outgoing arrows. For example, show a nonzero second differential from (0,1) to (2,0), a term at (0,0) marked stable from page 2, and degeneration at page 3. On page 2 the reader can inspect the highlighted map and read the local stability label. On page 3 the reader sees the infinity-page identification.
+- An author can set inclusive minimum and maximum values on each visible axis and supply a page formula such as \(E_2^{p,q}=H^p(B;H^q(F))\). An unknown cell has a distinct marker such as a question mark even when the zero glyph is blank.
+
 - An author can reuse one dataset across all three publishing scenarios without changing its mathematical content.
 - A reader can reproduce the page labels, endpoints, filter results, and stability distinctions specified above using the public controls.
 - Changing zero style preserves every map status and every term's inspectable information.
@@ -56,3 +60,5 @@ A single supplied page needs no navigation. A blank zero remains selectable. A m
 ## Assumptions
 
 Authors supply page data and stability information. The viewer presents that data. Computing cohomology, proving degeneration, and resolving extensions in an abutment fall outside this feature. Choice of rendering library and component framework belongs to implementation planning.
+
+The proposed implementation is a framework-independent TypeScript Web Component registered as `<spectral-sequence-viewer>`, with SVG for the diagram and MathJax for its mathematical labels. React is a possible host and an implementation option. The public embedding behavior above governs the choice.
