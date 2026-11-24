@@ -93,28 +93,29 @@ export class Viewer extends HTMLElement {
       ),
       step("Next", 1),
     );
-    const display = document.createElement("details");
-    display.open = this.root.querySelector("details")?.open ?? false;
-    const summary = document.createElement("summary");
-    summary.textContent = "Display options";
+    const display = document.createElement("div");
+    display.className = "display-options";
+    display.popover = "auto";
+    const trigger = document.createElement("button");
+    trigger.textContent = "Display options";
+    trigger.popoverTargetElement = display;
     display.append(
-      summary,
       select(
         "Arrows",
         labels(["All", "Potentially nonzero", "Known nonzero", "None"]),
         this.filter,
         (v) => {
           this.filter = v;
-          this.render();
+          drawPlot();
         },
       ),
       select(
         "Zero style",
-        labels(["zero", "dot", "blank"]),
+        [["zero", "Numeral"], ["dot", "Dot"], ["blank", "Blank"]],
         this.zeros,
         (v) => {
           this.zeros = v;
-          this.render();
+          drawPlot();
         },
       ),
     );
@@ -130,7 +131,7 @@ export class Viewer extends HTMLElement {
     );
     const scroll = document.createElement("div");
     scroll.className = "scroll";
-    scroll.append(
+    const drawPlot = () => scroll.replaceChildren(
       diagram(m, r, this.selected, this.filter, this.zeros, (t) => {
         this.selected = t;
         this.render();
@@ -139,6 +140,7 @@ export class Viewer extends HTMLElement {
           ?.focus();
       }),
     );
+    drawPlot();
     const panel = document.createElement("aside");
     panel.setAttribute("role", "region");
     panel.setAttribute("aria-label", "Inspector");
@@ -215,7 +217,10 @@ export class Viewer extends HTMLElement {
       legend.append(item);
     }
     guide.append(button, legend);
-    panel.append(guide, display);
+    const controls = document.createElement("footer");
+    controls.className = "figure-controls";
+    controls.append(guide, trigger, display);
+    panel.append(controls);
     layout.append(canvas, panel);
     section.append(header, formula, layout);
     this.root.replaceChildren(style, section);

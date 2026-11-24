@@ -1647,7 +1647,7 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 	function D(e) {
 		let { schema: t, opts: n, gen: r } = e;
 		y(e, () => {
-			n.$comment && t.$comment && V(e), R(e), r.let(l.default.vErrors, null), r.let(l.default.errors, 0), n.unevaluated && k(e), I(e), H(e);
+			n.$comment && t.$comment && B(e), R(e), r.let(l.default.vErrors, null), r.let(l.default.errors, 0), n.unevaluated && k(e), I(e), te(e);
 		});
 	}
 	function k(e) {
@@ -1671,7 +1671,7 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 	}
 	function P(e, t) {
 		let { schema: n, gen: r, opts: i } = e;
-		i.$comment && n.$comment && V(e), z(e), B(e);
+		i.$comment && n.$comment && B(e), z(e), ee(e);
 		let a = r.const("_errs", l.default.errors);
 		I(e, a), r.var(t, (0, c._)`${a} === ${l.default.errors}`);
 	}
@@ -1679,9 +1679,9 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 		(0, d.checkUnknownRules)(e), L(e);
 	}
 	function I(e, t) {
-		if (e.opts.jtd) return te(e, [], !1, t);
+		if (e.opts.jtd) return H(e, [], !1, t);
 		let r = (0, n.getSchemaTypes)(e.schema);
-		te(e, r, !(0, n.coerceAndCheckDataType)(e, r), t);
+		H(e, r, !(0, n.coerceAndCheckDataType)(e, r), t);
 	}
 	function L(e) {
 		let { schema: t, errSchemaPath: n, opts: r, self: i } = e;
@@ -1695,10 +1695,10 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 		let t = e.schema[e.opts.schemaId];
 		t && (e.baseId = (0, u.resolveUrl)(e.opts.uriResolver, e.baseId, t));
 	}
-	function B(e) {
+	function ee(e) {
 		if (e.schema.$async && !e.schemaEnv.$async) throw Error("async schema in sync schema");
 	}
-	function V({ gen: e, schemaEnv: t, schema: n, errSchemaPath: r, opts: i }) {
+	function B({ gen: e, schemaEnv: t, schema: n, errSchemaPath: r, opts: i }) {
 		let a = n.$comment;
 		if (i.$comment === !0) e.code((0, c._)`${l.default.self}.logger.log(${a})`);
 		else if (typeof i.$comment == "function") {
@@ -1706,14 +1706,14 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 			e.code((0, c._)`${l.default.self}.opts.$comment(${a}, ${n}, ${i}.schema)`);
 		}
 	}
-	function H(e) {
+	function te(e) {
 		let { gen: t, schemaEnv: n, validateName: r, ValidationError: i, opts: a } = e;
-		n.$async ? t.if((0, c._)`${l.default.errors} === 0`, () => t.return(l.default.data), () => t.throw((0, c._)`new ${i}(${l.default.vErrors})`)) : (t.assign((0, c._)`${r}.errors`, l.default.vErrors), a.unevaluated && ee(e), t.return((0, c._)`${l.default.errors} === 0`));
+		n.$async ? t.if((0, c._)`${l.default.errors} === 0`, () => t.return(l.default.data), () => t.throw((0, c._)`new ${i}(${l.default.vErrors})`)) : (t.assign((0, c._)`${r}.errors`, l.default.vErrors), a.unevaluated && V(e), t.return((0, c._)`${l.default.errors} === 0`));
 	}
-	function ee({ gen: e, evaluated: t, props: n, items: r }) {
+	function V({ gen: e, evaluated: t, props: n, items: r }) {
 		n instanceof c.Name && e.assign((0, c._)`${t}.props`, n), r instanceof c.Name && e.assign((0, c._)`${t}.items`, r);
 	}
-	function te(e, t, n, a) {
+	function H(e, t, n, a) {
 		let { gen: o, schema: s, data: u, allErrors: f, opts: p, self: m } = e, { RULES: h } = m;
 		if (s.$ref && (p.ignoreKeywordsWithRef || !(0, d.schemaHasRulesButRef)(s, h))) {
 			o.block(() => fe(e, "$ref", h.all.$ref.definition));
@@ -2075,7 +2075,7 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 	properties: () => R,
 	required: () => L,
 	type: () => I
-}), P, F, I, L, R, z, B = o((() => {
+}), P, F, I, L, R, z, ee = o((() => {
 	P = "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#", F = "Meta-schema for $data reference (JSON AnySchema extension proposal)", I = "object", L = ["$data"], R = { $data: {
 		type: "string",
 		anyOf: [{ format: "relative-json-pointer" }, { format: "json-pointer" }]
@@ -2087,7 +2087,7 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 		properties: R,
 		additionalProperties: !1
 	};
-})), V = /* @__PURE__ */ s(((e, t) => {
+})), B = /* @__PURE__ */ s(((e, t) => {
 	var n = RegExp.prototype.test.bind(/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/iu), r = RegExp.prototype.test.bind(/^(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)$/u), i = RegExp.prototype.test.bind(/^\d*$/u), a = RegExp.prototype.test.bind(/^[\da-f]{2}$/iu), o = RegExp.prototype.test.bind(/^[\da-z\-._~]$/iu), s = RegExp.prototype.test.bind(/^[A-Za-z0-9\-._~!$&'()*+,;=:@/]$/u), c = RegExp.prototype.test.bind(/^[A-Za-z0-9\-._~!$&'()*+,;=:@/?]$/u), l = RegExp.prototype.test.bind(/^[A-Za-z0-9\-._~!$&'()*+,;=:]$/u), u = Array(256);
 	{
 		let e = "0123456789ABCDEF";
@@ -2445,8 +2445,8 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 		normalizeIPv6: b,
 		stringArrayToHexStripped: f
 	};
-})), H = /* @__PURE__ */ s(((e, t) => {
-	var { isUUID: n } = V(), r = /^([\da-z][\d\-a-z]{0,31}):((?:[\w!$'()*+,\-./:;=@]|%[\da-f]{2})+)$/iu, i = [
+})), te = /* @__PURE__ */ s(((e, t) => {
+	var { isUUID: n } = B(), r = /^([\da-z][\d\-a-z]{0,31}):((?:[\w!$'()*+,\-./:;=@]|%[\da-f]{2})+)$/iu, i = [
 		"http",
 		"https",
 		"ws",
@@ -2551,8 +2551,8 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 		isValidSchemeName: a,
 		getSchemeHandler: y
 	};
-})), ee = /* @__PURE__ */ s(((e, t) => {
-	var { normalizeIPv6: n, removeDotSegments: r, removeDotSegmentsRelative: i, recomposeAuthority: a, normalizePercentEncoding: o, normalizePathEncoding: s, serializePathEncoding: c, normalizeQueryFragmentEncoding: l, encodeQuery: u, encodeFragment: d, reescapeHostDelimiters: f, isIPv4: p, nonSimpleDomain: m } = V(), { SCHEMES: h, getSchemeHandler: g } = H(), _ = /^[A-Za-z][A-Za-z0-9+.-]*$/u, v = "URI scheme is malformed.", y = "URI host is malformed.", b = /[\0-\x20"#/:<>?@[\\\]^`{|}\x7F]/u;
+})), V = /* @__PURE__ */ s(((e, t) => {
+	var { normalizeIPv6: n, removeDotSegments: r, removeDotSegmentsRelative: i, recomposeAuthority: a, normalizePercentEncoding: o, normalizePathEncoding: s, serializePathEncoding: c, normalizeQueryFragmentEncoding: l, encodeQuery: u, encodeFragment: d, reescapeHostDelimiters: f, isIPv4: p, nonSimpleDomain: m } = B(), { SCHEMES: h, getSchemeHandler: g } = te(), _ = /^[A-Za-z][A-Za-z0-9+.-]*$/u, v = "URI scheme is malformed.", y = "URI host is malformed.", b = /[\0-\x20"#/:<>?@[\\\]^`{|}\x7F]/u;
 	function x(e) {
 		let t = String(e);
 		if (!_.test(t)) throw TypeError(v);
@@ -2593,7 +2593,7 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 		return o.fragment = t.fragment, o;
 	}
 	function T(e, t, n) {
-		let r = ee(e, n), i = ee(t, n);
+		let r = V(e, n), i = V(t, n);
 		return r !== void 0 && i !== void 0 && r === i;
 	}
 	function E(e, t) {
@@ -2715,9 +2715,9 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 		return L(e, t).parsed;
 	}
 	function z(e, t) {
-		return B(e, t).normalized;
+		return ee(e, t).normalized;
 	}
-	function B(e, t) {
+	function ee(e, t) {
 		let { parsed: n, malformedAuthorityOrPort: r, malformedPercentEncoding: i, malformedSchemeSpecific: a, malformedHost: o, malformedScheme: s } = L(e, t);
 		return {
 			normalized: r || i || a || o || s ? e : E(n, t),
@@ -2728,7 +2728,7 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 			malformedScheme: s
 		};
 	}
-	function ee(e, t) {
+	function V(e, t) {
 		if (typeof e != "string" && typeof e != "object") return;
 		let n;
 		try {
@@ -2736,10 +2736,10 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 		} catch {
 			return;
 		}
-		let { normalized: r, malformedAuthorityOrPort: i, malformedPercentEncoding: a, malformedSchemeSpecific: o, malformedHost: s, malformedScheme: c } = B(n, t);
+		let { normalized: r, malformedAuthorityOrPort: i, malformedPercentEncoding: a, malformedSchemeSpecific: o, malformedHost: s, malformedScheme: c } = ee(n, t);
 		return i || a || o || s || c ? void 0 : r;
 	}
-	var te = {
+	var H = {
 		SCHEMES: h,
 		normalize: S,
 		resolve: C,
@@ -2748,10 +2748,10 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 		serialize: E,
 		parse: R
 	};
-	t.exports = te, t.exports.default = te, t.exports.fastUri = te;
-})), te = /* @__PURE__ */ s(((e) => {
+	t.exports = H, t.exports.default = H, t.exports.fastUri = H;
+})), H = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = ee();
+	var t = V();
 	t.code = "require(\"ajv/dist/runtime/uri\").default", e.default = t;
 })), ne = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.CodeGen = e.Name = e.nil = e.stringify = e.str = e._ = e.KeywordCxt = void 0;
@@ -2794,7 +2794,7 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 			return n.CodeGen;
 		}
 	});
-	var r = A(), i = j(), a = y(), o = M(), s = m(), c = O(), l = x(), u = h(), f = (B(), d(N).default), p = te(), g = (e, t) => new RegExp(e, t);
+	var r = A(), i = j(), a = y(), o = M(), s = m(), c = O(), l = x(), u = h(), f = (ee(), d(N).default), p = H(), g = (e, t) => new RegExp(e, t);
 	g.code = "new RegExp";
 	var _ = [
 		"removeAdditional",
@@ -3009,14 +3009,14 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 			else if (typeof e == "object" && t === void 0) {
 				if (t = e, n = t.keyword, Array.isArray(n) && !n.length) throw Error("addKeywords: keyword must be string or non-empty array");
 			} else throw Error("invalid addKeywords parameters");
-			if (H.call(this, n, t), !t) return (0, u.eachItem)(n, (e) => ee.call(this, e)), this;
+			if (te.call(this, n, t), !t) return (0, u.eachItem)(n, (e) => V.call(this, e)), this;
 			re.call(this, t);
 			let r = {
 				...t,
 				type: (0, l.getJSONTypes)(t.type),
 				schemaType: (0, l.getJSONTypes)(t.schemaType)
 			};
-			return (0, u.eachItem)(n, r.type.length === 0 ? (e) => ee.call(this, e, r) : (e) => r.type.forEach((t) => ee.call(this, e, r, t))), this;
+			return (0, u.eachItem)(n, r.type.length === 0 ? (e) => V.call(this, e, r) : (e) => r.type.forEach((t) => V.call(this, e, r, t))), this;
 		}
 		getKeyword(e) {
 			let t = this.RULES.all[e];
@@ -3142,15 +3142,15 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 		if (e.log && e.warn && e.error) return e;
 		throw Error("logger must implement log, warn and error methods");
 	}
-	var V = /^[a-z_$][a-z0-9_$:-]*$/i;
-	function H(e, t) {
+	var B = /^[a-z_$][a-z0-9_$:-]*$/i;
+	function te(e, t) {
 		let { RULES: n } = this;
 		if ((0, u.eachItem)(e, (e) => {
 			if (n.keywords[e]) throw Error(`Keyword ${e} is already defined`);
-			if (!V.test(e)) throw Error(`Keyword ${e} has invalid name`);
+			if (!B.test(e)) throw Error(`Keyword ${e} has invalid name`);
 		}), t && t.$data && !("code" in t || "validate" in t)) throw Error("$data keyword must have \"code\" or \"validate\" function");
 	}
-	function ee(e, t, n) {
+	function V(e, t, n) {
 		var r;
 		let i = t?.post;
 		if (n && i) throw Error("keyword with \"post\" flag cannot have \"type\"");
@@ -42889,7 +42889,7 @@ function la(e, t, n, r, i, a) {
 	return o;
 }
 // src/viewer.css?inline
-var ua = ":host{--ink:#22233a;--panel:#222840;--line:#47516b;--point:#f9f7f2;--selected:#ffce73;color:var(--ink);max-width:65rem;margin:1.5rem auto .5rem;font:1rem/1.5 system-ui,sans-serif;display:block;container-type:inline-size}*{box-sizing:border-box}section{background:#f1f0ec;border:1px solid #c7c7c9;border-radius:.65rem;overflow:hidden}header{background:var(--panel);color:#f5f4ee;border-bottom:1px solid var(--line);justify-content:space-between;align-items:center;gap:1rem;padding:.9rem 1.35rem;display:flex}h2,h3{margin:0;font:1.4rem/1.3 Georgia,serif}.toolbar{align-items:center;gap:.2rem;display:flex}.toolbar button,.toolbar label{height:2.2rem;color:inherit;cursor:pointer;place-items:center;display:grid}.toolbar button{background:0 0;border:0;border-radius:.25rem;width:2.2rem;font:1.6rem/1 Georgia,serif}.toolbar button:hover:enabled,.toolbar label:hover{background:#37405c}.toolbar button:disabled{color:#737d97;cursor:default}.toolbar label{border-block:1px solid #64718c;grid-auto-flow:column;gap:.4rem;padding:0 .55rem;position:relative}.toolbar label:after{content:\"⌄\";font-size:.75rem}.toolbar select{opacity:0;cursor:pointer;width:100%;height:100%;position:absolute;inset:0}.toolbar label:focus-within,:focus-visible{outline-offset:2px;outline:2px solid #ac72dd}[aria-label=Page\\ formula]:not(:empty){background:var(--panel);color:#fff;padding:.65rem 1.35rem}.layout{grid-template-columns:minmax(0,1fr);display:grid}.canvas{background:var(--panel);min-width:0;color:var(--point);padding:.8rem 1.25rem}.vertical-axis,.horizontal-axis,.tick{color:#c1c9db;font-size:.8rem}.horizontal-axis{text-align:right}.scroll{overflow:auto}.plot{background-image:linear-gradient(90deg,#0000 calc(50% - .5px),#343d55 50%,#0000 calc(50% + .5px)),linear-gradient(#0000 40px,#343d55 41px,#0000 42px);background-size:calc(100% / var(--columns)) 82px;border-bottom:1px solid #748199;border-left:1px solid #748199;width:100%;position:relative}.plot>svg{pointer-events:none;width:100%;height:100%;position:absolute;inset:0}.cell,.tick{position:absolute;transform:translate(-50%,-50%)}.tick{background:var(--panel);font-size:.68rem}.cell{font:inherit;color:var(--point);background:var(--panel);cursor:pointer;border:1px solid #0000;border-radius:.35rem;min-width:34px;min-height:34px;padding:.15rem .35rem;font-size:1.12rem;transition:border-color .15s,background .15s}.cell[data-status=zero]{color:#a2aec5;background:0 0}.cell:hover{border-color:#8a94ac}.cell[aria-pressed=true]{background:var(--selected);color:#2a2532}.cell.stable{color:#dbf9e8;background:#304f49}.cell.stable[aria-pressed=true]{border-color:var(--selected);color:#fff;background:#416559}.cell small{font-size:.6rem;display:block}.plot line{vector-effect:non-scaling-stroke;stroke:#d1defe;stroke-width:2px}.plot line[data-status=zero]{stroke:#8390a9;stroke-dasharray:2 5}.plot line[data-status=undetermined]{stroke-dasharray:6 4}.plot line[data-highlighted=true]{stroke:var(--selected);stroke-width:3px}aside{min-width:0;padding:1.3rem;font-size:.85rem;line-height:1.6}.chain{padding:.5rem 0;font-size:1.15rem;display:block;overflow-x:auto}details{border-top:1px solid #cdced3;margin-top:1.3rem;padding-top:.6rem}summary{cursor:pointer;font-size:.8rem}details label{gap:.2rem;margin:.6rem 0;font-size:.75rem;display:grid}details select{font:inherit;color:var(--ink);background:#fff;border:1px solid #aaacbd;padding:.4rem}@container (width<=38rem){.layout{grid-template-columns:minmax(0,1fr)}.canvas{padding:.6rem .9rem}aside{padding:1rem}header{padding:.6rem .9rem}}@media (prefers-reduced-motion:reduce){.cell{transition:none}}.canvas{--zero:#ffa5a8;--nonzero:#9ecbff;--unknown:#ffb568}aside{--zero:#a12a3c;--nonzero:#205da1;--unknown:#924606}.state-zero,.cell[data-status=zero]{color:var(--zero)}.state-nonzero,.cell[data-status=nonzero]{color:var(--nonzero)}.state-unknown,.state-undetermined,.cell[data-status=unknown]{color:var(--unknown)}.plot line[data-status=zero]{stroke:var(--zero)}.plot line[data-status=nonzero]{stroke:var(--nonzero)}.plot line[data-status=undetermined]{stroke:var(--unknown)}.cell[aria-pressed=true]{background:#35415d;border-color:#eef2ff}.cell.stable[aria-pressed=true]{background:#304f49;border-color:#eef2ff}.guide{width:fit-content;position:relative}.guide button{color:#495367;font:inherit;cursor:pointer;background:0 0;border:0;padding:.35rem 0;-webkit-text-decoration:underline dotted;text-decoration:underline dotted}.guide [popover]{position-anchor:auto;inset:auto;bottom:anchor(top);left:anchor(left);background:#faf9f6;border:1px solid #b4bac5;border-radius:.4rem;margin:0;padding:.5rem .8rem;position:absolute}.guide [popover]:popover-open{display:grid}@container (width<=26rem){.chain{font-size:1rem}}";
+var ua = ":host{--ink:#22233a;--panel:#222840;--line:#47516b;--point:#f9f7f2;--selected:#ffce73;color:var(--ink);max-width:65rem;margin:1.5rem auto .5rem;font:1rem/1.5 system-ui,sans-serif;display:block;container-type:inline-size}*{box-sizing:border-box}section{background:#f1f0ec;border:1px solid #c7c7c9;border-radius:.65rem;overflow:hidden}header{background:var(--panel);color:#f5f4ee;border-bottom:1px solid var(--line);justify-content:space-between;align-items:center;gap:1rem;padding:.9rem 1.35rem;display:flex}h2,h3{margin:0;font:1.4rem/1.3 Georgia,serif}.toolbar{align-items:center;gap:.2rem;display:flex}.toolbar button,.toolbar label{height:2.2rem;color:inherit;cursor:pointer;place-items:center;display:grid}.toolbar button{background:0 0;border:0;border-radius:.25rem;width:2.2rem;font:1.6rem/1 Georgia,serif}.toolbar button:hover:enabled,.toolbar label:hover{background:#37405c}.toolbar button:disabled{color:#737d97;cursor:default}.toolbar label{border-block:1px solid #64718c;grid-auto-flow:column;gap:.4rem;padding:0 .55rem;position:relative}.toolbar label:after{content:\"⌄\";font-size:.75rem}.toolbar select{opacity:0;cursor:pointer;width:100%;height:100%;position:absolute;inset:0}.toolbar label:focus-within,:focus-visible{outline-offset:2px;outline:2px solid #ac72dd}[aria-label=Page\\ formula]:not(:empty){background:var(--panel);color:#fff;padding:.65rem 1.35rem}.layout{grid-template-columns:minmax(0,1fr);display:grid}.canvas{background:var(--panel);min-width:0;color:var(--point);padding:.8rem 1.25rem}.vertical-axis,.horizontal-axis,.tick{color:#c1c9db;font-size:.8rem}.horizontal-axis{text-align:right}.scroll{overflow:auto}.plot{background-image:linear-gradient(90deg,#0000 calc(50% - .5px),#343d55 50%,#0000 calc(50% + .5px)),linear-gradient(#0000 40px,#343d55 41px,#0000 42px);background-size:calc(100% / var(--columns)) 82px;border-bottom:1px solid #748199;border-left:1px solid #748199;width:100%;position:relative}.plot>svg{pointer-events:none;width:100%;height:100%;position:absolute;inset:0}.cell,.tick{position:absolute;transform:translate(-50%,-50%)}.tick{background:var(--panel);font-size:.68rem}.cell{font:inherit;color:var(--point);background:var(--panel);cursor:pointer;border:1px solid #0000;border-radius:.35rem;min-width:34px;min-height:34px;padding:.15rem .35rem;font-size:1.12rem;transition:border-color .15s,background .15s}.cell[data-status=zero]{color:#a2aec5;background:0 0}.cell:hover{border-color:#8a94ac}.cell[aria-pressed=true]{background:var(--selected);color:#2a2532}.cell.stable{color:#dbf9e8;background:#304f49}.cell.stable[aria-pressed=true]{border-color:var(--selected);color:#fff;background:#416559}.cell small{font-size:.6rem;display:block}.plot line{vector-effect:non-scaling-stroke;stroke:#d1defe;stroke-width:2px}.plot line[data-status=zero]{stroke:#8390a9;stroke-dasharray:2 5}.plot line[data-status=undetermined]{stroke-dasharray:6 4}.plot line[data-highlighted=true]{stroke:var(--selected);stroke-width:3px}aside{min-width:0;padding:1.3rem;font-size:.85rem;line-height:1.6}.chain{padding:.5rem 0;font-size:1.15rem;display:block;overflow-x:auto}@container (width<=38rem){.layout{grid-template-columns:minmax(0,1fr)}.canvas{padding:.6rem .9rem}aside{padding:1rem}header{padding:.6rem .9rem}}@media (prefers-reduced-motion:reduce){.cell{transition:none}}.canvas{--zero:#ffa5a8;--nonzero:#9ecbff;--unknown:#ffb568}aside{--zero:#a12a3c;--nonzero:#205da1;--unknown:#924606}.state-zero,.cell[data-status=zero]{color:var(--zero)}.state-nonzero,.cell[data-status=nonzero]{color:var(--nonzero)}.state-unknown,.state-undetermined,.cell[data-status=unknown]{color:var(--unknown)}.plot line[data-status=zero]{stroke:var(--zero)}.plot line[data-status=nonzero]{stroke:var(--nonzero)}.plot line[data-status=undetermined]{stroke:var(--unknown)}.cell[aria-pressed=true]{background:#35415d;border-color:#eef2ff}.cell.stable[aria-pressed=true]{background:#304f49;border-color:#eef2ff}.guide{width:fit-content;position:relative}.guide button{color:#495367;font:inherit;cursor:pointer;background:0 0;border:0;padding:.35rem 0;-webkit-text-decoration:underline dotted;text-decoration:underline dotted}.guide [popover]{position-anchor:auto;inset:auto;bottom:anchor(top);left:anchor(left);background:#faf9f6;border:1px solid #b4bac5;border-radius:.4rem;margin:0;padding:.5rem .8rem;position:absolute}.guide [popover]:popover-open{display:grid}@container (width<=26rem){.chain{font-size:1rem}}.figure-controls{border-top:1px solid #d4d2ce;justify-content:space-between;align-items:center;margin-top:.8rem;padding-top:.25rem;display:flex}.figure-controls button{color:#454c61;cursor:pointer;background:0 0;border:0;padding:.5rem .2rem;font:500 .82rem/1.4 system-ui,sans-serif;text-decoration:none}.figure-controls button:hover{color:#18263f;text-decoration:underline}.figure-controls>button:after{content:\"\";border:1.5px solid;border-width:1.5px 1.5px 0 0;width:.4rem;height:.4rem;margin:0 .2rem 0 .6rem;display:inline-block;transform:rotate(-45deg)}.display-options{position-anchor:auto;inset:auto;bottom:anchor(top);right:anchor(right);width:min(17rem,86vw);color:var(--ink);background:#faf9f6;border:1px solid #c9c7c2;border-radius:.5rem;margin:0 0 .2rem;padding:.35rem 1rem;position:absolute;box-shadow:0 .3rem 1.3rem #19213726}.display-options label{grid-template-columns:5rem minmax(0,1fr);align-items:center;padding:.55rem 0;font-size:.83rem;display:grid}.display-options label+label{border-top:1px solid #dddcd7}.display-options select{width:100%;color:inherit;font:inherit;background:#fffefa;border:1px solid #c6c7c9;border-radius:.3rem;padding:.5rem .2rem}";
 // src/viewer.ts
 function da(e, t, n, r) {
 	let i = document.createElement("label");
@@ -42936,56 +42936,58 @@ var fa = (e) => e.map((e) => [e, e]), pa = (e) => String(e).replace(/\d/g, (e) =
 			return r.textContent = n < 0 ? "‹" : "›", r.title = t, r.setAttribute("aria-label", t), r.disabled = !e.pages[this.i + n], r.onclick = () => d(this.i + n), r;
 		};
 		u.append(f("Previous", -1), da("Page", e.pages.map((t) => [String(t.index), "E" + pa(t.index) + (t.index === e.degenerationPage ? " = E∞" : "")]), String(i.index), (t) => d(Number(t) - e.firstPage)), f("Next", 1));
-		let p = document.createElement("details");
-		p.open = this.root.querySelector("details")?.open ?? !1;
-		let m = document.createElement("summary");
-		m.textContent = "Display options", p.append(m, da("Arrows", fa([
+		let p = document.createElement("div");
+		p.className = "display-options", p.popover = "auto";
+		let m = document.createElement("button");
+		m.textContent = "Display options", m.popoverTargetElement = p, p.append(da("Arrows", fa([
 			"All",
 			"Potentially nonzero",
 			"Known nonzero",
 			"None"
 		]), this.filter, (e) => {
-			this.filter = e, this.render();
-		}), da("Zero style", fa([
-			"zero",
-			"dot",
-			"blank"
-		]), this.zeros, (e) => {
-			this.zeros = e, this.render();
+			this.filter = e, _();
+		}), da("Zero style", [
+			["zero", "Numeral"],
+			["dot", "Dot"],
+			["blank", "Blank"]
+		], this.zeros, (e) => {
+			this.zeros = e, _();
 		}));
 		let h = u.querySelector("label");
 		h.firstChild?.remove(), h.prepend($("E_{" + i.index + "}" + (i.index === e.degenerationPage ? "=E_{\\infty}" : "")));
 		let g = document.createElement("div");
-		g.className = "scroll", g.append(la(a, r, this.selected, this.filter, this.zeros, (e) => {
+		g.className = "scroll";
+		let _ = () => g.replaceChildren(la(a, r, this.selected, this.filter, this.zeros, (e) => {
 			this.selected = e, this.render(), this.root.querySelector("[aria-pressed=\"true\"]")?.focus();
 		}));
-		let _ = document.createElement("aside");
-		_.setAttribute("role", "region"), _.setAttribute("aria-label", "Inspector");
-		let v = et(a, this.selected, -1), y = rt(a, v), b = rt(a, this.selected), x = i.index, S = (e, t) => "\\class{state-" + e + "}{" + t + "}", C = e.convention === "cohomological", w = x < 10 ? String(x) : "{" + x + "}", T = (e, t) => {
+		_();
+		let v = document.createElement("aside");
+		v.setAttribute("role", "region"), v.setAttribute("aria-label", "Inspector");
+		let y = et(a, this.selected, -1), b = rt(a, y), x = rt(a, this.selected), S = i.index, C = (e, t) => "\\class{state-" + e + "}{" + t + "}", w = e.convention === "cohomological", T = S < 10 ? String(S) : "{" + S + "}", E = (e, t) => {
 			let n = "{" + U(t) + "}";
-			return e + (C ? "_" + w + "^" + n : "^" + w + "_" + n);
-		}, E = [
-			v,
+			return e + (w ? "_" + T + "^" + n : "^" + T + "_" + n);
+		}, D = [
+			y,
 			this.selected,
-			b.b
-		], D = E.map((e) => S(tt(a, e), T("E", e))), O = E.map((e) => {
+			x.b
+		], O = D.map((e) => C(tt(a, e), E("E", e))), k = D.map((e) => {
 			let t = a.terms.get(U(e)), n = tt(a, e), r = n === "zero" ? "0" : t?.module ?? t?.label;
-			return r ? S(n, r) : "";
-		}), k = [y, b], A = k.map((e) => S(e.status, "\\xrightarrow{" + T("d", e.a) + "}")), j = [[
-			D[0],
-			A[0],
-			D[1],
-			A[1],
-			D[2]
-		]];
-		O.some(Boolean) && j.push([
+			return r ? C(n, r) : "";
+		}), A = [b, x], j = A.map((e) => C(e.status, "\\xrightarrow{" + E("d", e.a) + "}")), M = [[
 			O[0],
-			"",
+			j[0],
 			O[1],
-			"",
+			j[1],
 			O[2]
+		]];
+		k.some(Boolean) && M.push([
+			k[0],
+			"",
+			k[1],
+			"",
+			k[2]
 		]);
-		for (let [e, t] of k.entries()) {
+		for (let [e, t] of A.entries()) {
 			let n = a.terms.get(U(t.a))?.generator, r = t.status === "zero" ? "0" : t.image, i = [
 				"",
 				"",
@@ -42993,40 +42995,42 @@ var fa = (e) => e.map((e) => [e, e]), pa = (e) => String(e).replace(/\d/g, (e) =
 				"",
 				""
 			];
-			if (n && r) i[2 * e] = n, i[2 * e + 1] = S(t.status, "\\longmapsto"), i[2 * e + 2] = r;
-			else if (t.formula && t.formula !== "0") i[2 * e + 1] = S(t.status, t.formula);
+			if (n && r) i[2 * e] = n, i[2 * e + 1] = C(t.status, "\\longmapsto"), i[2 * e + 2] = r;
+			else if (t.formula && t.formula !== "0") i[2 * e + 1] = C(t.status, t.formula);
 			else continue;
-			j.push(i);
+			M.push(i);
 		}
-		let M = "\\begin{array}{ccccc}" + j.map((e) => e.join("&")).join("\\\\") + "\\end{array}", N = $(M);
-		N.classList.add("chain"), N.querySelector("svg").setAttribute("aria-label", M), _.append(N);
-		let P = a.stable.get(U(this.selected));
-		P !== void 0 && P <= i.index && _.append(" stable from page " + P);
-		let F = document.createElement("header");
-		F.append(c, u);
-		let I = document.createElement("div");
-		I.className = "canvas";
+		let N = "\\begin{array}{ccccc}" + M.map((e) => e.join("&")).join("\\\\") + "\\end{array}", P = $(N);
+		P.classList.add("chain"), P.querySelector("svg").setAttribute("aria-label", N), v.append(P);
+		let F = a.stable.get(U(this.selected));
+		F !== void 0 && F <= i.index && v.append(" stable from page " + F);
+		let I = document.createElement("header");
+		I.append(c, u);
 		let L = document.createElement("div");
-		L.className = "vertical-axis", L.append($(n.qLabel ?? "q"), " ↑");
+		L.className = "canvas";
 		let R = document.createElement("div");
-		R.className = "horizontal-axis", R.append($(n.pLabel ?? "p"), " →"), I.append(L, g, R);
+		R.className = "vertical-axis", R.append($(n.qLabel ?? "q"), " ↑");
 		let z = document.createElement("div");
-		z.className = "layout";
+		z.className = "horizontal-axis", z.append($(n.pLabel ?? "p"), " →"), L.append(R, g, z);
+		let ee = document.createElement("div");
+		ee.className = "layout";
 		let B = document.createElement("div");
 		B.className = "guide";
-		let V = document.createElement("button");
-		V.textContent = "Color key";
-		let H = document.createElement("div");
-		H.popover = "auto", V.popoverTargetElement = H;
+		let te = document.createElement("button");
+		te.textContent = "Color key";
+		let V = document.createElement("div");
+		V.popover = "auto", te.popoverTargetElement = V;
 		for (let [e, t] of [
 			["zero", "Red · zero"],
 			["nonzero", "Blue · nonzero"],
 			["unknown", "Orange · unknown"]
 		]) {
 			let n = document.createElement("span");
-			n.className = "state-" + e, n.textContent = t, H.append(n);
+			n.className = "state-" + e, n.textContent = t, V.append(n);
 		}
-		B.append(V, H), _.append(B, p), z.append(I, _), s.append(F, l, z), this.root.replaceChildren(o, s), t && this.root.querySelector("[aria-label=\"" + CSS.escape(t) + "\"]")?.focus({ preventScroll: !0 });
+		B.append(te, V);
+		let H = document.createElement("footer");
+		H.className = "figure-controls", H.append(B, m, p), v.append(H), ee.append(L, v), s.append(I, l, ee), this.root.replaceChildren(o, s), t && this.root.querySelector("[aria-label=\"" + CSS.escape(t) + "\"]")?.focus({ preventScroll: !0 });
 	}
 };
 // src/index.ts

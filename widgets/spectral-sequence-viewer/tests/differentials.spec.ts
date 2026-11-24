@@ -29,6 +29,7 @@ test("inspect clipped maps through all filters and zero styles", async ({
   await page.getByRole("button", { name: "(0,1)", exact: true }).click();
   await expect(page.locator('line[data-highlighted="true"]')).toHaveCount(1);
   for (const style of ["dot", "blank", "zero"]) {
+    await page.getByRole("button", { name: "Display options" }).click();
     await page.getByLabel("Zero style").selectOption(style);
     const zero = page.getByRole("button", { name: "(1,0)", exact: true });
     await zero.focus();
