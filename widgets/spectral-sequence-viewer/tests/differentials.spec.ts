@@ -6,6 +6,11 @@ test("inspect clipped maps through all filters and zero styles", async ({
   await page.goto("/examples/static/");
   await page.getByRole("button", { name: "(2,1)", exact: true }).click();
   const inspector = page.getByRole("region", { name: "Inspector" });
+  for (const [index, pair] of ["(0,2)", "(2,1)", "(2,1)", "(4,0)"].entries()) {
+    const endpoint = inspector.locator("p mjx-container svg[aria-label]").nth(index);
+    await expect(endpoint).toHaveAttribute("aria-label", pair, {timeout: 2500});
+    await expect(endpoint).toBeVisible();
+  }
   await page.getByText("Display options", { exact: true }).click();
   for (const mode of ["All", "Potentially nonzero", "Known nonzero", "None"]) {
     await page.getByLabel("Arrows").selectOption(mode);
