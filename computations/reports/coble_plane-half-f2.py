@@ -300,6 +300,14 @@ print('  each transvection fixes e_1 and e_2 and moves f_i to f_i + w - (w,w)/2 
       % (moves == 2 * len(even)))
 print('  the central shear fixes e_1 and e_2 and moves f_1 to f_1 + e_2, f_2 to f_2 - e_1: %s'
       % shears)
+kernel = 0
+for k in unipotent:
+    member = plane[k]
+    kernel += int(all(mv(member, unit(i))[j] == unit(i)[j]
+                      for i in (0, 2) + tuple(range(4, N))
+                      for j in (1, 3) + tuple(range(4, N))))
+print('  the fifteen unipotent members fix P_0 and P_0^perp/P_0 pointwise: %s'
+      % (kernel == len(unipotent)))
 
 print('\n(1 cont.) reduction modulo 2')
 print('  A = B/2B: %d classes, q(x) = (x,x)_B/2 mod 2, and rho(g) is g mod 2' % (1 << N))

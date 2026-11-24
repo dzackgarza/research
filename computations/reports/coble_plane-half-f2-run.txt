@@ -21,6 +21,7 @@ P_0 = <e_1, e_2>: rank 2, primitive, totally isotropic
   they generate GL_2(Z): [[0, -1], [1, 0]] and -I_2 are words in them of length 5 and 10
   each transvection fixes e_1 and e_2 and moves f_i to f_i + w - (w,w)/2 e_i: True
   the central shear fixes e_1 and e_2 and moves f_1 to f_1 + e_2, f_2 to f_2 - e_1: True
+  the fifteen unipotent members fix P_0 and P_0^perp/P_0 pointwise: True
 
 (1 cont.) reduction modulo 2
   A = B/2B: 2048 classes, q(x) = (x,x)_B/2 mod 2, and rho(g) is g mod 2
