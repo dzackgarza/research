@@ -1,5 +1,7 @@
 # Spectral sequence viewer
 
+For a worked example, serve this directory with `python3 -m http.server` and open [The order of π₄(S²)](examples/serre/index.html) at `/examples/serre/`. The article uses the cohomological and homological Serre spectral sequences of the same fibration.
+
 Copy `dist/` onto a static HTTP host. The ES module includes MathJax with SVG glyphs. Supply an author dataset that follows [the JSON Schema](dist/sequence.schema.json). [The example](examples/sequence.json) supplies four cohomological pages. Serve the package directory with `python3 -m http.server` and open `/examples/static/` for an interactive article.
 
 ```html
