@@ -4,8 +4,12 @@
   --ink: #22233a;
   --panel: #222840;
   --line: #47516b;
-  --point: #f9f7f2;
-  --selected: #ffce73;
+  --point: #202237;
+  --paper: #fbfaf7;
+  --zero: #aa3949;
+  --nonzero: #285a97;
+  --unknown: #944a08;
+  --selected: #e8e7e3;
   color: var(--ink);
   font:
     1rem/1.5 system-ui,
@@ -90,7 +94,7 @@ h3 {
 }
 .toolbar label:focus-within,
 :focus-visible {
-  outline: 2px solid #ac72dd;
+  outline: 2px solid currentColor;
   outline-offset: 2px;
 }
 [aria-label="Page formula"]:not(:empty) {
@@ -104,7 +108,7 @@ h3 {
 }
 .canvas {
   min-width: 0;
-  background: var(--panel);
+  background: var(--paper);
   color: var(--point);
   padding: 0.8rem 1.25rem;
 }
@@ -112,7 +116,7 @@ h3 {
 .horizontal-axis,
 .tick {
   font-size: 0.8rem;
-  color: #c1c9db;
+  color: #565765;
 }
 .horizontal-axis {
   text-align: right;
@@ -129,10 +133,10 @@ h3 {
     linear-gradient(
       90deg,
       transparent calc(50% - 0.5px),
-      #343d55 50%,
+      #dcdad5 50%,
       transparent calc(50% + 0.5px)
     ),
-    linear-gradient(transparent 40px, #343d55 41px, transparent 42px);
+    linear-gradient(transparent 40px, #dcdad5 41px, transparent 42px);
   background-size: calc(100% / var(--columns)) 82px;
 }
 .plot > svg {
@@ -149,7 +153,7 @@ h3 {
 }
 .tick {
   font-size: 0.68rem;
-  background: var(--panel);
+  background: var(--paper);
 }
 .cell {
   font: inherit;
@@ -160,14 +164,13 @@ h3 {
   padding: 0.15rem 0.35rem;
   border: 1px solid transparent;
   border-radius: 0.35rem;
-  background: var(--panel);
+  background: var(--paper);
   cursor: pointer;
   transition:
     border-color 0.15s,
     background 0.15s;
 }
 .cell[data-status="zero"] {
-  color: #a2aec5;
   background: transparent;
 }
 .cell:hover {
@@ -175,38 +178,29 @@ h3 {
 }
 .cell[aria-pressed="true"] {
   background: var(--selected);
-  color: #2a2532;
+  border-color: var(--ink);
 }
-.cell.stable {
-  background: #304f49;
-  color: #dbf9e8;
-}
-.cell.stable[aria-pressed="true"] {
-  border-color: var(--selected);
-  background: #416559;
-  color: white;
-}
+.cell.stable { background: #efeeea; }
+.cell.stable[aria-pressed="true"] { background: #dddedb; }
 .cell small {
   display: block;
   font-size: 0.6rem;
 }
 .plot line {
   vector-effect: non-scaling-stroke;
-  stroke: #d1defe;
   stroke-width: 2;
 }
 .plot line[data-status="zero"] {
-  stroke: #8390a9;
   stroke-dasharray: 2 5;
 }
 .plot line[data-status="undetermined"] {
   stroke-dasharray: 6 4;
 }
 .plot line[data-highlighted="true"] {
-  stroke: var(--selected);
   stroke-width: 3;
 }
 aside {
+  border-top: 1px solid #c7c7c9;
   padding: 1.3rem;
   min-width: 0;
   font-size: 0.85rem;
@@ -239,16 +233,12 @@ aside {
   }
 }
 
-.canvas { --zero: #ffa5a8; --nonzero: #9ecbff; --unknown: #ffb568; }
-aside { --zero: #a12a3c; --nonzero: #205da1; --unknown: #924606; }
 .state-zero, .cell[data-status="zero"] { color: var(--zero); }
 .state-nonzero, .cell[data-status="nonzero"] { color: var(--nonzero); }
 .state-unknown, .state-undetermined, .cell[data-status="unknown"] { color: var(--unknown); }
 .plot line[data-status="zero"] { stroke: var(--zero); }
 .plot line[data-status="nonzero"] { stroke: var(--nonzero); }
 .plot line[data-status="undetermined"] { stroke: var(--unknown); }
-.cell[aria-pressed="true"] { background: #35415d; border-color: #eef2ff; }
-.cell.stable[aria-pressed="true"] { background: #304f49; border-color: #eef2ff; }
 .guide { position: relative; width: fit-content; }
 .guide button { background: transparent; color: #495367; border: 0; text-decoration: underline dotted; font: inherit; cursor: pointer; padding: .35rem 0; }
 .guide [popover] { position: absolute; position-anchor: auto; inset: auto; bottom: anchor(top); left: anchor(left); margin: 0; border: 1px solid #b4bac5; border-radius: .4rem; padding: .5rem .8rem; background: #faf9f6; }
@@ -312,7 +302,7 @@ aside { --zero: #a12a3c; --nonzero: #205da1; --unknown: #924606; }
   width: 100%;
   background: #fffefa;
   color: inherit;
-  border: 1px solid #c6c7c9;
+  border: 1px solid #898992;
   border-radius: .3rem;
   padding: .5rem .2rem;
   font: inherit;
