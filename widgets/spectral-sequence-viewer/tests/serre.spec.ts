@@ -59,3 +59,16 @@ test("the color key matches the plotted mathematical status", async ({ page }) =
     await expect(figure.locator('line[data-status="' + status + '"]').first()).toHaveCSS("stroke", ink);
   }
 });
+
+test("Serre terms identify the integral module before and after passage to the quotient", async ({page}) => {
+  await page.goto("/examples/serre/");
+  for (const [id, degree, generator] of [["co","(3,2)","ux"],["ho","(0,4)","b_2"]]) {
+    const figure=page.locator("#"+id);
+    await figure.getByRole("button",{name:degree,exact:true}).click();
+    const chain=figure.locator(".chain > svg");
+    for (const [index,g,type] of [["2",generator,""],["3",generator,""],["4","["+generator+"]","/2"]]) {
+      await figure.getByLabel("Page",{exact:true}).selectOption(index);
+      await expect(chain).toHaveAttribute("aria-label",expect.stringContaining("\\langle "+g+"\\rangle_{\\mathbb Z}\\cong\\mathbb Z"+type));
+    }
+  }
+});

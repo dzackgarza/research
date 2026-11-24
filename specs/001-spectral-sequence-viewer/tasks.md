@@ -107,3 +107,7 @@ The completed first-quadrant tasks above describe the original implementation. T
 - [X] T043 Fit the initial view to mathematical content, preserve explicit crops, and draw equal-scale lattice boxes in a responsive square frame.
 - [X] T044 Pan and zoom with mouse and touch, snap to integral bounds, and provide keyboard navigation and reset.
 - [X] T045 Verify real wheel, drag, touch, responsive geometry, reset, and inspection through the distributed widget.
+
+## Serre example notation
+
+- [ ] T046 Show the integral span and isomorphism type of each displayed nonzero term in both Serre figures. Identify the choice of generator, its transgression, the dual homology generators, and the representatives of the quotient classes.
