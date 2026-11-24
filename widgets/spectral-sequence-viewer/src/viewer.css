@@ -337,3 +337,8 @@ aside {
   border-radius: .4rem;
 }
 .toolbar option { padding: .35rem .6rem; }
+.plot .chart-class { min-height: 22px; padding: 0 .25rem; font-size: .9rem; }
+.plot path.multiplication, .plot path.extension { fill: none; stroke: #515969; stroke-width: 2px; }
+.plot path.extension { stroke-dasharray: 6 3; }
+.plot path.relation-hit { stroke: transparent; stroke-width: 12px; pointer-events: stroke; cursor: pointer; }
+.plot path.relation-hit:focus-visible { stroke: #52556644; }

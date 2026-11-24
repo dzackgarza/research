@@ -12,14 +12,32 @@ export interface Rect {
   qMin: number;
   qMax: number;
 }
+export interface ChartClass {
+  id: string;
+  label: string;
+  permanent?: boolean;
+  previous?: string;
+}
+export interface Relation {
+  kind: "multiplication" | "extension";
+  source: string;
+  target: string;
+  formula: string;
+}
 export interface Term extends Point {
   status: "zero" | "nonzero" | "unknown";
   label?: string;
   generator?: string;
   module?: string;
+  classes?: ChartClass[];
 }
 export interface Arrow extends Point {
-  assignments?: { generator: string; image: string }[];
+  assignments?: {
+    generator: string;
+    image: string;
+    sourceClass?: string;
+    targetClass?: string;
+  }[];
   image?: string;
   status: "zero" | "nonzero" | "undetermined";
   formula?: string;
@@ -28,6 +46,7 @@ export interface Page {
   index: number;
   terms: Term[];
   maps: Arrow[];
+  relations?: Relation[];
   formula?: string;
 }
 export interface Sequence {
@@ -88,13 +107,63 @@ export function parseSequence(input: Sequence): Sequence {
     unique(page.terms, "page " + page.index + " terms");
     unique(page.maps, "page " + page.index + " maps");
     const model = indexPage(data, page);
+    for (const term of page.terms) {
+      for (const c of term.classes ?? []) {
+        if (term.status !== "nonzero") fail("classes require a nonzero term");
+        if (
+          c.previous &&
+          !data.pages[i - 1]?.terms
+            .find((t) => key(t) === key(term))
+            ?.classes?.some((old) => old.id === c.previous)
+        )
+          fail("invalid previous class " + c.previous);
+      }
+    }
+    for (const relation of page.relations ?? []) {
+      if (
+        !model.classes.has(relation.source) ||
+        !model.classes.has(relation.target)
+      )
+        fail("unknown relation endpoint");
+      if (relation.kind === "extension" && page.index !== data.degenerationPage)
+        fail("extensions require the limiting page");
+    }
     for (const term of page.terms)
       if (term.status !== "zero" && outsideSupport(data, term))
-        fail("page " + page.index + " terms " + key(term) + " outside declared support");
+        fail(
+          "page " +
+            page.index +
+            " terms " +
+            key(term) +
+            " outside declared support",
+        );
     for (const map of page.maps) {
-      const generators = map.assignments?.map(assignment => assignment.generator) ?? [];
+      for (const assignment of map.assignments ?? []) {
+        for (const [id, point] of [
+          [assignment.sourceClass, map],
+          [assignment.targetClass, endpoint(model, map, 1)],
+        ] as const) {
+          if (id && model.classes.get(id)?.term !== model.terms.get(key(point)))
+            fail("incorrect class endpoint " + id);
+          if (id && !model.classes.has(id)) fail("unknown class " + id);
+        }
+        if (
+          assignment.sourceClass &&
+          model.classes.get(assignment.sourceClass)?.c.permanent &&
+          assignment.image !== "0"
+        )
+          fail("permanent class has nonzero image");
+      }
+      const generators =
+        map.assignments?.map((assignment) => assignment.generator) ?? [];
       if (new Set(generators).size !== generators.length)
-        fail("page " + page.index + " maps " + key(map) + " has duplicate generator assignments");
+        fail(
+          "page " +
+            page.index +
+            " maps " +
+            key(map) +
+            " has duplicate generator assignments",
+        );
     }
     for (const arrow of page.maps)
       if (
@@ -112,7 +181,14 @@ export function parseSequence(input: Sequence): Sequence {
   return data;
 }
 export function indexPage(data: Sequence, page: Page) {
+  const classes = new Map<string, { c: ChartClass; term: Term }>();
+  for (const term of page.terms)
+    for (const c of term.classes ?? []) {
+      if (classes.has(c.id)) throw new Error("duplicate class " + c.id);
+      classes.set(c.id, { c, term });
+    }
   return {
+    classes,
     data,
     page,
     terms: new Map(page.terms.map((t) => [key(t), t])),

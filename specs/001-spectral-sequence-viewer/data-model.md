@@ -20,3 +20,19 @@ Navigation changes the selected page and preserves the inspected coordinate and 
 ## Signed support, projection, and assignments
 
 Use `support: "unrestricted"` for signed native bidegrees or `"first-quadrant"` (default). Set `settings.projection` to `"total-filtration"` for horizontal total degree and vertical filtration, or `"native"` (default). A support restriction gives mathematical vanishing. The data extent governs missing records, and the viewport crops the projected diagram. Key terms, stability declarations, and differential sources by native bidegree under every projection. A component can supply an ordered `assignments` array of distinct generator and image pairs. The current singular `generator` and `image` fields describe only one assignment.
+
+### Classes and relations
+
+`terms[].classes` lists individual classes in a nonzero term. Each has a page-local
+`id` and a TeX `label`. Set `permanent: true` on an individual permanent cycle.
+A class on a later page can name its `previous` representative in the same
+bidegree on the preceding page. This also describes a quotient class.
+
+A generator assignment can identify its chart endpoints with `sourceClass`
+and `targetClass`. Its `image` still gives the full expression, including
+coefficients. For instance, the edge to the class labelled \(z\) can carry
+the assignment \(x\mapsto 2z\).
+
+Each entry in `pages[].relations` has a `kind`, two page-local class IDs
+(`source` and `target`), and a TeX `formula`. Use `multiplication` for
+products and `extension` for an extension supplied on `degenerationPage`.

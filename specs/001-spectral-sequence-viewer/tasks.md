@@ -73,7 +73,7 @@ The completed first-quadrant tasks above describe the original implementation. T
 
 ## Phase 9: Class-level charts
 
-- [ ] T027 Select individual classes sharing a bidegree; attach component assignments to named classes and represent individual permanence.
-- [ ] T028 Follow an authored representative to a surviving or quotient class on the next page.
-- [ ] T029 Draw and inspect authored multiplication relations and limiting-page extensions independently of differential filters.
-- [ ] T030 Clip asserted differentials crossing the viewport, including those with both endpoints outside.
+- [X] T027 Select individual classes sharing a bidegree; attach component assignments to named classes and represent individual permanence.
+- [X] T028 Follow an authored representative to a surviving or quotient class on the next page.
+- [X] T029 Draw and inspect authored multiplication relations and limiting-page extensions independently of differential filters.
+- [X] T030 Clip asserted differentials crossing the viewport, including those with both endpoints outside.

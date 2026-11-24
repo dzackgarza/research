@@ -1,9 +1,12 @@
 import {
   indexPage,
-  nativePoint, plotPoint, viewport,
+  nativePoint,
+  plotPoint,
+  viewport,
   parseSequence,
   key,
   type Sequence,
+  type Relation,
   type Point,
 } from "./sequence";
 import { endpoint, differential, inside, termStatus } from "./differentials";
@@ -37,11 +40,15 @@ export class Viewer extends HTMLElement {
   private i = 0;
   private selected: Point = { p: 0, q: 0 };
   private arrowSelected = false;
+  private active?: string;
+  private relation?: Relation;
   private filter = "All";
   private zeros = "zero";
   set sequence(input: Sequence) {
     const data = parseSequence(input);
     this.data = data;
+    this.active = undefined;
+    this.relation = undefined;
     this.arrowSelected = false;
     this.i = (data.settings?.initialPage ?? data.firstPage) - data.firstPage;
     const r = viewport(data);
@@ -73,6 +80,21 @@ export class Viewer extends HTMLElement {
     const toolbar = document.createElement("div");
     toolbar.className = "toolbar";
     const move = (i: number) => {
+      let id = this.active?.startsWith("Class ")
+        ? this.active.slice(6)
+        : undefined;
+      const delta = Math.sign(i - this.i);
+      for (let j = this.i; id && j !== i; j += delta) {
+        const classes = data.pages[delta > 0 ? j + 1 : j].terms.find(
+          (t) => key(t) === key(this.selected),
+        )?.classes;
+        id =
+          delta > 0
+            ? classes?.find((c) => c.previous === id)?.id
+            : classes?.find((c) => c.id === id)?.previous;
+      }
+      this.active = id ? "Class " + id : undefined;
+      this.relation = undefined;
       this.i = i;
       this.arrowSelected = false;
       this.render();
@@ -119,7 +141,11 @@ export class Viewer extends HTMLElement {
       ),
       select(
         "Zero style",
-        [["zero", "Numeral"], ["dot", "Dot"], ["blank", "Blank"]],
+        [
+          ["zero", "Numeral"],
+          ["dot", "Dot"],
+          ["blank", "Blank"],
+        ],
         this.zeros,
         (v) => {
           this.zeros = v;
@@ -129,8 +155,11 @@ export class Viewer extends HTMLElement {
     );
     const pageControl = toolbar.querySelector("label")!;
     const picker = pageControl.querySelector("select")!;
-    picker.onkeydown = event => {
-      if (!picker.matches(":open") && (event.key === "Home" || event.key === "End")) {
+    picker.onkeydown = (event) => {
+      if (
+        !picker.matches(":open") &&
+        (event.key === "Home" || event.key === "End")
+      ) {
         event.preventDefault();
         move(event.key === "Home" ? 0 : data.pages.length - 1);
       }
@@ -138,7 +167,11 @@ export class Viewer extends HTMLElement {
     for (const option of pageControl.querySelectorAll("option")) {
       option.setAttribute("aria-label", option.text);
       const i = Number(option.value);
-      option.replaceChildren(math("E_{" + i + "}" + (i === data.degenerationPage ? "=E_{\\infty}" : "")));
+      option.replaceChildren(
+        math(
+          "E_{" + i + "}" + (i === data.degenerationPage ? "=E_{\\infty}" : ""),
+        ),
+      );
     }
     pageControl.firstChild?.remove();
     pageControl.prepend(
@@ -151,16 +184,28 @@ export class Viewer extends HTMLElement {
     );
     const scroll = document.createElement("div");
     scroll.className = "scroll";
-    const drawPlot = () => scroll.replaceChildren(
-      diagram(m, r, this.selected, this.filter, this.zeros, this.arrowSelected, (t, arrow = false) => {
-        this.selected = t;
-        this.arrowSelected = arrow;
-        this.render();
-        this.root
-          .querySelector<HTMLButtonElement>('[aria-pressed="true"]')
-          ?.focus({ preventScroll: true });
-      }),
-    );
+    const drawPlot = () =>
+      scroll.replaceChildren(
+        diagram(
+          m,
+          r,
+          this.selected,
+          this.filter,
+          this.zeros,
+          this.arrowSelected,
+          this.active,
+          (t, arrow = false, active, relation) => {
+            this.active = active;
+            this.relation = relation;
+            this.selected = t;
+            this.arrowSelected = arrow;
+            this.render();
+            this.root
+              .querySelector<HTMLButtonElement>('[aria-pressed="true"]')
+              ?.focus({ preventScroll: true });
+          },
+        ),
+      );
     drawPlot();
     const panel = document.createElement("aside");
     panel.setAttribute("role", "region");
@@ -175,30 +220,50 @@ export class Viewer extends HTMLElement {
     const index = rIndex < 10 ? String(rIndex) : "{" + rIndex + "}";
     const indexed = (letter: string, point: Point) => {
       const degree = "{" + key(point) + "}";
-      return letter + (cohomology ? "_" + index + "^" + degree : "^" + index + "_" + degree);
+      return (
+        letter +
+        (cohomology ? "_" + index + "^" + degree : "^" + index + "_" + degree)
+      );
     };
     const points = [source, this.selected, second.b];
-    const termRow = points.map(point => {
+    const termRow = points.map((point) => {
       const term = colored(termStatus(m, point), indexed("E", point));
-      return inside(plotPoint(data, point), r) ? term : "\\class{clipped}{\\underline{" + term + "}}";
+      return inside(plotPoint(data, point), r)
+        ? term
+        : "\\class{clipped}{\\underline{" + term + "}}";
     });
-    const moduleRow = points.map(point => {
+    const moduleRow = points.map((point) => {
       const term = m.terms.get(key(point));
       const status = termStatus(m, point);
-      const module = status === "zero" ? "0" : term?.module ?? term?.label ?? (status === "unknown" ? "?" : "\\ne 0");
+      const module =
+        status === "zero"
+          ? "0"
+          : (term?.module ??
+            term?.label ??
+            (status === "unknown" ? "?" : "\\ne 0"));
       return module ? colored(status, module) : "";
     });
     const maps = [first, second];
-    const arrows = maps.map(map => {
-      const mark = map.status === "undetermined" ? "[?]" : map.status === "zero" ? "[0]" : "";
-      return colored(map.status, "\\xrightarrow" + mark + "{" + indexed("d", map.a) + "}");
+    const arrows = maps.map((map) => {
+      const mark =
+        map.status === "undetermined"
+          ? "[?]"
+          : map.status === "zero"
+            ? "[0]"
+            : "";
+      return colored(
+        map.status,
+        "\\xrightarrow" + mark + "{" + indexed("d", map.a) + "}",
+      );
     });
     const rows = [[termRow[0], arrows[0], termRow[1], arrows[1], termRow[2]]];
-    if (moduleRow.some(Boolean)) rows.push([moduleRow[0], "", moduleRow[1], "", moduleRow[2]]);
+    if (moduleRow.some(Boolean))
+      rows.push([moduleRow[0], "", moduleRow[1], "", moduleRow[2]]);
     for (const [i, map] of maps.entries()) {
       const generator = m.terms.get(key(map.a))?.generator;
       const image = map.status === "zero" ? "0" : map.image;
-      const assignments = map.assignments ?? (generator && image ? [{ generator, image }] : []);
+      const assignments =
+        map.assignments ?? (generator && image ? [{ generator, image }] : []);
       if (assignments.length) {
         for (const assignment of assignments) {
           const row = ["", "", "", "", ""];
@@ -214,12 +279,24 @@ export class Viewer extends HTMLElement {
         rows.push(row);
       }
     }
-    const tex = "\\begin{array}{ccccc}" +
-      rows.map(row => row.join("&")).join("\\\\") + "\\end{array}";
+    const tex =
+      "\\begin{array}{ccccc}" +
+      rows.map((row) => row.join("&")).join("\\\\") +
+      "\\end{array}";
     const chain = math(tex);
     chain.classList.add("chain");
     chain.querySelector("svg")!.setAttribute("aria-label", tex);
-    panel.append(chain);
+    if (this.relation) {
+      const formula = math(this.relation.formula);
+      formula.setAttribute("aria-label", this.relation.formula);
+      panel.append(formula);
+    } else {
+      if (this.active?.startsWith("Class ")) {
+        const selectedClass = m.classes.get(this.active.slice(6))!;
+        panel.append(math(selectedClass.c.label + "\\in " + indexed("E", selectedClass.term)));
+      }
+      panel.append(chain);
+    }
     const stable = m.stable.get(key(this.selected));
     if (stable !== undefined && stable <= page.index) {
       const note = document.createElement("span");
@@ -233,10 +310,22 @@ export class Viewer extends HTMLElement {
     canvas.className = "canvas";
     const vertical = document.createElement("div");
     vertical.className = "vertical-axis";
-    vertical.append(math(settings.qLabel ?? (settings.projection === "total-filtration" ? "p" : "q")), " ↑");
+    vertical.append(
+      math(
+        settings.qLabel ??
+          (settings.projection === "total-filtration" ? "p" : "q"),
+      ),
+      " ↑",
+    );
     const horizontal = document.createElement("div");
     horizontal.className = "horizontal-axis";
-    horizontal.append(math(settings.pLabel ?? (settings.projection === "total-filtration" ? "p+q" : "p")), " →");
+    horizontal.append(
+      math(
+        settings.pLabel ??
+          (settings.projection === "total-filtration" ? "p+q" : "p"),
+      ),
+      " →",
+    );
     canvas.append(vertical, scroll, horizontal);
     const layout = document.createElement("div");
     layout.className = "layout";
@@ -247,7 +336,11 @@ export class Viewer extends HTMLElement {
     const legend = document.createElement("div");
     legend.popover = "auto";
     button.popoverTargetElement = legend;
-    for (const [state, name] of [["zero", "Zero"], ["nonzero", "Nonzero"], ["unknown", "Unknown"]]) {
+    for (const [state, name] of [
+      ["zero", "Zero"],
+      ["nonzero", "Nonzero"],
+      ["unknown", "Unknown"],
+    ]) {
       const item = document.createElement("span");
       item.className = "state-" + state;
       item.textContent = name;

@@ -195,6 +195,35 @@
                 },
                 "module": {
                   "type": "string"
+                },
+                "classes": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "label": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "previous": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "permanent": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "label"
+                    ],
+                    "additionalProperties": false
+                  }
                 }
               },
               "required": [
@@ -246,6 +275,14 @@
                       "image": {
                         "type": "string",
                         "minLength": 1
+                      },
+                      "sourceClass": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "targetClass": {
+                        "type": "string",
+                        "minLength": 1
                       }
                     },
                     "required": [
@@ -272,6 +309,40 @@
           },
           "formula": {
             "type": "string"
+          },
+          "relations": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "multiplication",
+                    "extension"
+                  ]
+                },
+                "source": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "target": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "formula": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "kind",
+                "source",
+                "target",
+                "formula"
+              ],
+              "additionalProperties": false
+            }
           }
         },
         "required": [

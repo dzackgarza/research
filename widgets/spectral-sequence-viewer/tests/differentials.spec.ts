@@ -19,9 +19,12 @@ test("inspect clipped maps through all filters and zero styles", async ({
       /E_2\^\{0,2\}.*d_2\^\{0,2\}.*E_2\^\{2,1\}.*state-zero.*d_2\^\{2,1\}.*E_2\^\{4,0\}.*g/,
     );
     const arrows = page.locator("line[data-status]");
-    if (mode === "All") await expect(arrows).toHaveCount(3);
+    const crossing = page.getByRole("button", { name: "Differential (0,2) to (2,1)" });
+    if (mode === "All" || mode === "Potentially nonzero") await expect(crossing).toBeVisible();
+    else await expect(crossing).toHaveCount(0);
+    if (mode === "All") await expect(arrows).toHaveCount(4);
     if (mode === "Potentially nonzero")
-      await expect(arrows.filter({ visible: true })).toHaveCount(2);
+      await expect(arrows.filter({ visible: true })).toHaveCount(3);
     if (mode === "Known nonzero") await expect(arrows).toHaveCount(1);
     if (mode === "None") await expect(arrows).toHaveCount(0);
   }

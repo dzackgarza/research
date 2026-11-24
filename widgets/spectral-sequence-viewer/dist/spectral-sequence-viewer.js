@@ -4672,7 +4672,31 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 								] },
 								label: { type: "string" },
 								generator: { type: "string" },
-								module: { type: "string" }
+								module: { type: "string" },
+								classes: {
+									type: "array",
+									minItems: 1,
+									items: {
+										type: "object",
+										properties: {
+											id: {
+												type: "string",
+												minLength: 1
+											},
+											label: {
+												type: "string",
+												minLength: 1
+											},
+											previous: {
+												type: "string",
+												minLength: 1
+											},
+											permanent: { type: "boolean" }
+										},
+										required: ["id", "label"],
+										additionalProperties: !1
+									}
+								}
 							},
 							required: [
 								"p",
@@ -4717,6 +4741,14 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 											image: {
 												type: "string",
 												minLength: 1
+											},
+											sourceClass: {
+												type: "string",
+												minLength: 1
+											},
+											targetClass: {
+												type: "string",
+												minLength: 1
 											}
 										},
 										required: ["generator", "image"],
@@ -4733,7 +4765,36 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 							not: { required: ["assignments", "image"] }
 						}
 					},
-					formula: { type: "string" }
+					formula: { type: "string" },
+					relations: {
+						type: "array",
+						minItems: 1,
+						items: {
+							type: "object",
+							properties: {
+								kind: { enum: ["multiplication", "extension"] },
+								source: {
+									type: "string",
+									minLength: 1
+								},
+								target: {
+									type: "string",
+									minLength: 1
+								},
+								formula: {
+									type: "string",
+									minLength: 1
+								}
+							},
+							required: [
+								"kind",
+								"source",
+								"target",
+								"formula"
+							],
+							additionalProperties: !1
+						}
+					}
 				},
 				required: [
 					"index",
@@ -4812,8 +4873,14 @@ function ot(e) {
 	return r(t.stableTerms ?? [], "stableTerms"), t.pages.forEach((e, i) => {
 		e.index !== t.firstPage + i && n("pages[" + i + "].index expected " + (t.firstPage + i)), r(e.terms, "page " + e.index + " terms"), r(e.maps, "page " + e.index + " maps");
 		let a = st(t, e);
+		for (let r of e.terms) for (let e of r.classes ?? []) r.status !== "nonzero" && n("classes require a nonzero term"), e.previous && !t.pages[i - 1]?.terms.find((e) => U(e) === U(r))?.classes?.some((t) => t.id === e.previous) && n("invalid previous class " + e.previous);
+		for (let r of e.relations ?? []) a.classes.has(r.source) && a.classes.has(r.target) || n("unknown relation endpoint"), r.kind === "extension" && e.index !== t.degenerationPage && n("extensions require the limiting page");
 		for (let r of e.terms) r.status !== "zero" && tt(t, r) && n("page " + e.index + " terms " + U(r) + " outside declared support");
 		for (let t of e.maps) {
+			for (let e of t.assignments ?? []) {
+				for (let [r, i] of [[e.sourceClass, t], [e.targetClass, et(a, t, 1)]]) r && a.classes.get(r)?.term !== a.terms.get(U(i)) && n("incorrect class endpoint " + r), r && !a.classes.has(r) && n("unknown class " + r);
+				e.sourceClass && a.classes.get(e.sourceClass)?.c.permanent && e.image !== "0" && n("permanent class has nonzero image");
+			}
 			let r = t.assignments?.map((e) => e.generator) ?? [];
 			new Set(r).size !== r.length && n("page " + e.index + " maps " + U(t) + " has duplicate generator assignments");
 		}
@@ -4821,7 +4888,16 @@ function ot(e) {
 	}), t;
 }
 function st(e, t) {
+	let n = /* @__PURE__ */ new Map();
+	for (let e of t.terms) for (let t of e.classes ?? []) {
+		if (n.has(t.id)) throw Error("duplicate class " + t.id);
+		n.set(t.id, {
+			c: t,
+			term: e
+		});
+	}
 	return {
+		classes: n,
 		data: e,
 		page: t,
 		terms: new Map(t.terms.map((e) => [U(e), e])),
@@ -42872,16 +42948,36 @@ var da = oa.mathjax.document(document, {
 function $(e) {
 	return da.convert(e, { display: !1 });
 }
+// node_modules/lineclip/index.js
+function fa(e, t, n) {
+	let r = e.length, i = ma(e[0], t), a = [], o, s, c, l, u;
+	for (n ||= [], o = 1; o < r; o++) {
+		for (s = e[o - 1], c = e[o], l = u = ma(c, t);;) if (!(i | l)) {
+			a.push(s), l === u ? o === r - 1 && a.push(c) : (a.push(c), o < r - 1 && (n.push(a), a = []));
+			break;
+		} else if (i & l) break;
+		else i ? (s = pa(s, c, i, t), i = ma(s, t)) : (c = pa(s, c, l, t), l = ma(c, t));
+		i = u;
+	}
+	return a.length && n.push(a), n;
+}
+function pa(e, t, n, r) {
+	return n & 8 ? [e[0] + (t[0] - e[0]) * (r[3] - e[1]) / (t[1] - e[1]), r[3]] : n & 4 ? [e[0] + (t[0] - e[0]) * (r[1] - e[1]) / (t[1] - e[1]), r[1]] : n & 2 ? [r[2], e[1] + (t[1] - e[1]) * (r[2] - e[0]) / (t[0] - e[0])] : n & 1 ? [r[0], e[1] + (t[1] - e[1]) * (r[0] - e[0]) / (t[0] - e[0])] : null;
+}
+function ma(e, t) {
+	let n = 0;
+	return e[0] < t[0] ? n |= 1 : e[0] > t[2] && (n |= 2), e[1] < t[1] ? n |= 4 : e[1] > t[3] && (n |= 8), n;
+}
 // src/diagram.ts
-var fa = (e) => "(" + U(e) + ")";
-function pa(e, t, n, r, i, a, o) {
-	let s = document.createElement("div");
-	s.className = "plot";
-	let c = (t.pMax - t.pMin + 1) * 112, l = (t.qMax - t.qMin + 1) * 82;
-	s.style.minWidth = (t.pMax - t.pMin + 1) * 60 + "px", s.style.setProperty("--columns", String(t.pMax - t.pMin + 1)), s.style.height = l + "px";
-	let u = "http://www.w3.org/2000/svg", d = document.createElementNS(u, "svg");
-	d.setAttribute("viewBox", "0 0 " + c + " " + l), d.setAttribute("role", "group"), d.setAttribute("aria-label", "Differentials"), d.setAttribute("preserveAspectRatio", "none");
-	let f = document.createElementNS(u, "marker");
+var ha = (e) => "(" + U(e) + ")";
+function ga(e, t, n, r, i, a, o, s) {
+	let c = document.createElement("div");
+	c.className = "plot";
+	let l = (t.pMax - t.pMin + 1) * 112, u = (t.qMax - t.qMin + 1) * 82;
+	c.style.minWidth = (t.pMax - t.pMin + 1) * 60 + "px", c.style.setProperty("--columns", String(t.pMax - t.pMin + 1)), c.style.height = u + "px";
+	let d = "http://www.w3.org/2000/svg", f = document.createElementNS(d, "svg");
+	f.setAttribute("viewBox", "0 0 " + l + " " + u), f.setAttribute("role", "group"), f.setAttribute("aria-label", "Differentials"), f.setAttribute("preserveAspectRatio", "none");
+	let p = document.createElementNS(d, "marker");
 	for (let [e, t] of Object.entries({
 		id: "tip",
 		viewBox: "0 0 10 10",
@@ -42890,71 +42986,122 @@ function pa(e, t, n, r, i, a, o) {
 		markerWidth: "5",
 		markerHeight: "5",
 		orient: "auto"
-	})) f.setAttribute(e, t);
-	let p = document.createElementNS(u, "path");
-	p.setAttribute("d", "M0 0L10 5L0 10Z"), p.setAttribute("fill", "context-stroke"), f.append(p), d.append(f), s.append(d);
-	let m = (e) => (e - t.pMin + .5) * 112, h = (e) => (t.qMax - e + .5) * 82;
-	function g(e, t, n) {
+	})) p.setAttribute(e, t);
+	let m = document.createElementNS(d, "path");
+	m.setAttribute("d", "M0 0L10 5L0 10Z"), m.setAttribute("fill", "context-stroke"), p.append(m), f.append(p), c.append(f);
+	let h = (e) => (e - t.pMin + .5) * 112, g = (e) => (t.qMax - e + .5) * 82;
+	function _(e, t, n) {
 		let r = document.createElement("span");
-		r.className = "tick", r.append($(String(e))), r.style.left = t / c * 100 + "%", r.style.top = n + "px", s.append(r);
+		r.className = "tick", r.append($(String(e))), r.style.left = t / l * 100 + "%", r.style.top = n + "px", c.append(r);
 	}
-	for (let e = t.pMin; e <= t.pMax; e++) g(e, m(e), l - 8);
-	for (let e = t.qMin; e <= t.qMax; e++) g(e, 8, h(e));
-	for (let l = t.qMax; l >= t.qMin; l--) for (let f = t.pMin; f <= t.pMax; f++) {
-		let p = lt(e.data, {
-			p: f,
-			q: l
-		}), g = it(e, p), _ = ct(e.data, g.b);
-		if ($e(_, t) && r !== "None" && (r === "All" || (r === "Potentially nonzero" ? g.status !== "zero" : g.status === "nonzero"))) {
-			let e = m(_.p) - m(f), t = h(_.q) - h(l), r = Math.hypot(e, t), i = document.createElementNS(u, "line");
-			for (let [n, a] of Object.entries({
-				x1: m(f) + 22 * e / r,
-				y1: h(l) + 22 * t / r,
-				x2: m(_.p) - 22 * e / r,
-				y2: h(_.q) - 22 * t / r
-			})) i.setAttribute(n, String(a));
-			i.dataset.status = g.status, i.dataset.highlighted = String(U(n) === U(p) || !a && U(n) === U(g.b)), i.setAttribute("marker-end", "url(#tip)");
-			let s = i.cloneNode(!1);
-			s.removeAttribute("data-status"), s.removeAttribute("data-highlighted"), s.removeAttribute("marker-end"), s.classList.add("arrow-hit"), s.setAttribute("role", "button"), s.setAttribute("tabindex", "0"), s.setAttribute("aria-label", "Differential " + fa(p) + " to " + fa(g.b)), s.setAttribute("aria-pressed", String(a && U(n) === U(p))), s.onclick = () => o(p, !0), s.onkeydown = (e) => {
-				(e.key === "Enter" || e.key === " ") && (e.preventDefault(), o(p, !0));
-			}, d.append(i, s);
+	for (let e = t.pMin; e <= t.pMax; e++) _(e, h(e), u - 8);
+	for (let e = t.qMin; e <= t.qMax; e++) _(e, 8, g(e));
+	let v = /* @__PURE__ */ new Map();
+	for (let e = t.qMax; e >= t.qMin; e--) for (let n = t.pMin; n <= t.pMax; n++) v.set(U({
+		p: n,
+		q: e
+	}), {
+		p: n,
+		q: e
+	});
+	for (let t of e.page.maps) {
+		let n = ct(e.data, t);
+		v.set(U(n), n);
+	}
+	function y(t) {
+		let n = t && e.classes.get(t)?.term.classes;
+		return n ? (n.findIndex((e) => e.id === t) - (n.length - 1) / 2) * Math.min(30, 65 / n.length) : 0;
+	}
+	for (let { p, q: m } of v.values()) {
+		let _ = lt(e.data, {
+			p,
+			q: m
+		}), v = it(e, _), b = ct(e.data, v.b);
+		if (($e(b, t) || e.maps.has(U(_))) && r !== "None" && (r === "All" || (r === "Potentially nonzero" ? v.status !== "zero" : v.status === "nonzero"))) {
+			let e = v.assignments?.filter((e) => e.sourceClass || e.targetClass);
+			for (let t of e?.length ? e : [void 0]) {
+				let e = g(m) + y(t?.sourceClass), r = g(b.q) + y(t?.targetClass), i = h(b.p) - h(p), c = r - e, x = Math.hypot(i, c), S = fa([[h(p) + 22 * i / x, e + 22 * c / x], [h(b.p) - 22 * i / x, r - 22 * c / x]], [
+					0,
+					0,
+					l,
+					u
+				])[0];
+				if (!S) continue;
+				let C = document.createElementNS(d, "line");
+				for (let [e, t] of Object.entries({
+					x1: S[0][0],
+					y1: S[0][1],
+					x2: S[1][0],
+					y2: S[1][1]
+				})) C.setAttribute(e, String(t));
+				C.dataset.status = v.status, C.dataset.highlighted = String(U(n) === U(_) || !a && U(n) === U(v.b)), C.setAttribute("marker-end", "url(#tip)");
+				let w = C.cloneNode(!1);
+				w.removeAttribute("data-status"), w.removeAttribute("data-highlighted"), w.removeAttribute("marker-end"), w.classList.add("arrow-hit"), w.setAttribute("role", "button"), w.setAttribute("tabindex", "0");
+				let T = "Differential " + (t?.sourceClass ?? ha(_)) + " to " + (t?.targetClass ?? ha(v.b));
+				w.setAttribute("aria-label", T), w.setAttribute("aria-pressed", String(o === T)), w.onclick = () => s(_, !0, T), w.onkeydown = (e) => {
+					(e.key === "Enter" || e.key === " ") && (e.preventDefault(), s(_, !0, T));
+				}, f.append(C, w);
+			}
 		}
-		let v = document.createElement("button"), y = e.terms.get(U(p)), b = nt(e, p);
-		v.className = "cell", v.style.left = m(f) / c * 100 + "%", v.dataset.status = b, v.style.top = h(l) + "px", v.setAttribute("aria-label", fa(p)), v.setAttribute("aria-pressed", String(U(p) === U(n))), b === "zero" ? i !== "blank" && v.append($(i === "dot" ? "\\cdot" : "0")) : (b === "unknown" && v.append("?"), y?.label ? v.append($(y.label)) : b === "nonzero" && v.append("●"));
-		let x = e.stable.get(U(p));
-		if (x !== void 0 && x <= e.page.index) {
-			v.classList.add("stable");
+		if (!$e({
+			p,
+			q: m
+		}, t)) continue;
+		for (let t of e.terms.get(U(_))?.classes ?? []) {
+			let e = document.createElement("button");
+			if (e.className = "cell chart-class", e.style.left = h(p) / l * 100 + "%", e.style.top = g(m) + y(t.id) + "px", e.dataset.status = "nonzero", e.setAttribute("aria-label", "Class " + t.id), e.setAttribute("aria-pressed", String(o === "Class " + t.id)), e.append($(t.label)), t.permanent) {
+				let t = document.createElement("small");
+				t.textContent = "permanent", e.append(t);
+			}
+			e.onclick = () => s(_, !1, "Class " + t.id), c.append(e);
+		}
+		if (e.terms.get(U(_))?.classes?.length) continue;
+		let x = document.createElement("button"), S = e.terms.get(U(_)), C = nt(e, _);
+		x.className = "cell", x.style.left = h(p) / l * 100 + "%", x.dataset.status = C, x.style.top = g(m) + "px", x.setAttribute("aria-label", ha(_)), x.setAttribute("aria-pressed", String(!o && U(_) === U(n))), C === "zero" ? i !== "blank" && x.append($(i === "dot" ? "\\cdot" : "0")) : (C === "unknown" && x.append("?"), S?.label ? x.append($(S.label)) : C === "nonzero" && x.append("●"));
+		let w = e.stable.get(U(_));
+		if (w !== void 0 && w <= e.page.index) {
+			x.classList.add("stable");
 			let e = document.createElement("small");
-			e.textContent = "stable", v.append(e);
+			e.textContent = "stable", x.append(e);
 		}
-		v.onclick = () => o(p), v.onkeydown = (n) => {
+		x.onclick = () => s(_), x.onkeydown = (n) => {
 			let r = {
 				ArrowUp: {
-					p: f,
-					q: l + 1
+					p,
+					q: m + 1
 				},
 				ArrowDown: {
-					p: f,
-					q: l - 1
+					p,
+					q: m - 1
 				},
 				ArrowLeft: {
-					p: f - 1,
-					q: l
+					p: p - 1,
+					q: m
 				},
 				ArrowRight: {
-					p: f + 1,
-					q: l
+					p: p + 1,
+					q: m
 				}
 			}[n.key];
-			r && (n.preventDefault(), $e(r, t) && o(lt(e.data, r)));
-		}, s.append(v);
+			r && (n.preventDefault(), $e(r, t) && s(lt(e.data, r)));
+		}, c.append(x);
 	}
-	return s;
+	for (let t of e.page.relations ?? []) {
+		let n = e.classes.get(t.source).term, r = ct(e.data, n), i = ct(e.data, e.classes.get(t.target).term), a = document.createElementNS(d, "path"), c = g(r.q) + y(t.source), l = g(i.q) + y(t.target);
+		a.setAttribute("d", `M ${h(r.p)} ${c} Q ${(h(r.p) + h(i.p)) / 2 + 18} ${(c + l) / 2 - 28} ${h(i.p)} ${l}`), a.setAttribute("class", t.kind);
+		let u = a.cloneNode(!1);
+		u.classList.add("relation-hit");
+		let p = t.kind[0].toUpperCase() + t.kind.slice(1) + " " + t.source + " to " + t.target;
+		u.setAttribute("aria-label", p), u.setAttribute("aria-pressed", String(o === p)), u.setAttribute("role", "button"), u.setAttribute("tabindex", "0"), u.onclick = () => s(n, !1, p, t), u.onkeydown = (e) => {
+			(e.key === "Enter" || e.key === " ") && (e.preventDefault(), s(n, !1, p, t));
+		}, f.append(a, u);
+	}
+	return c;
 }
 // src/viewer.css?inline
-var ma = ":host{--ink:#22233a;--panel:#222840;--line:#47516b;--point:#202237;--paper:#fbfaf7;--zero:#aa3949;--nonzero:#285a97;--unknown:#403e40;--selected:#e8e7e3;color:var(--ink);max-width:65rem;margin:1.5rem auto .5rem;font:1rem/1.5 system-ui,sans-serif;display:block;container-type:inline-size}*{box-sizing:border-box}section{background:#f1f0ec;border:1px solid #c7c7c9;border-radius:.65rem;overflow:hidden}header{background:var(--panel);color:#f5f4ee;border-bottom:1px solid var(--line);justify-content:space-between;align-items:center;gap:1rem;padding:.9rem 1.35rem;display:flex}h2,h3{margin:0;font:1.4rem/1.3 Georgia,serif}.toolbar{align-items:center;gap:.2rem;display:flex}.toolbar button,.toolbar label{height:2.2rem;color:inherit;cursor:pointer;place-items:center;display:grid}.toolbar button{background:0 0;border:0;border-radius:.25rem;width:2.2rem;font:1.6rem/1 Georgia,serif}.toolbar button:hover:enabled,.toolbar label:hover{background:#37405c}.toolbar button:disabled{color:#737d97;cursor:default}.toolbar label{border-block:1px solid #64718c;grid-auto-flow:column;gap:.4rem;padding:0 .55rem;position:relative}.toolbar label:after{content:\"⌄\";font-size:.75rem}.toolbar select{opacity:0;cursor:pointer;width:100%;height:100%;position:absolute;inset:0}.toolbar label:focus-within,:focus-visible{outline-offset:2px;outline:2px solid}[aria-label=Page\\ formula]:not(:empty){background:var(--panel);color:#fff;padding:.65rem 1.35rem}.layout{grid-template-columns:minmax(0,1fr);display:grid}.canvas{background:var(--paper);min-width:0;color:var(--point);padding:.8rem 1.25rem}.vertical-axis,.horizontal-axis,.tick{color:#565765;font-size:.8rem}.horizontal-axis{text-align:right}.scroll{overflow:auto}.plot{background-image:linear-gradient(90deg,#0000 calc(50% - .5px),#dcdad5 50%,#0000 calc(50% + .5px)),linear-gradient(#0000 40px,#dcdad5 41px,#0000 42px);background-size:calc(100% / var(--columns)) 82px;border-bottom:1px solid #748199;border-left:1px solid #748199;width:100%;position:relative}.plot>svg{pointer-events:none;width:100%;height:100%;position:absolute;inset:0}.cell,.tick{position:absolute;transform:translate(-50%,-50%)}.tick{background:var(--paper);font-size:.68rem}.cell{font:inherit;color:var(--point);background:var(--paper);cursor:pointer;border:1px solid #0000;border-radius:.35rem;min-width:34px;min-height:34px;padding:.15rem .35rem;font-size:1.12rem;transition:border-color .15s,background .15s}.cell[data-status=zero]{background:0 0}.cell:hover{border-color:#8a94ac}.cell[aria-pressed=true]{background:var(--selected);border-color:var(--ink)}.cell.stable{background:#efeeea}.cell.stable[aria-pressed=true]{background:#dddedb}.cell small{font-size:.6rem;display:block}.plot line{vector-effect:non-scaling-stroke;stroke-width:2px}.plot line[data-status=zero]{stroke-dasharray:2 5}.plot line[data-status=undetermined]{stroke-dasharray:6 4}.plot line[data-highlighted=true]{stroke-width:3px}aside{border-top:1px solid #c7c7c9;min-width:0;padding:1.3rem;font-size:.85rem;line-height:1.6}.chain{padding:.5rem 0;font-size:1.15rem;display:block;overflow-x:auto}@container (width<=38rem){.layout{grid-template-columns:minmax(0,1fr)}.canvas{padding:.6rem .9rem}aside{padding:1rem}header{padding:.6rem .9rem}}@media (prefers-reduced-motion:reduce){.cell{transition:none}}.state-zero,.cell[data-status=zero]{color:var(--zero)}.state-nonzero,.cell[data-status=nonzero]{color:var(--nonzero)}.state-unknown,.state-undetermined,.cell[data-status=unknown]{color:var(--unknown)}.plot line[data-status=zero]{stroke:var(--zero)}.plot line[data-status=nonzero]{stroke:var(--nonzero)}.plot line[data-status=undetermined]{stroke:var(--unknown)}.guide{width:fit-content;position:relative}.guide button{color:#495367;font:inherit;cursor:pointer;background:0 0;border:0;padding:.35rem 0;-webkit-text-decoration:underline dotted;text-decoration:underline dotted}.guide [popover]{position-anchor:auto;inset:auto;bottom:anchor(top);left:anchor(left);background:#faf9f6;border:1px solid #b4bac5;border-radius:.4rem;margin:0;padding:.5rem .8rem;position:absolute}.guide [popover]:popover-open{display:grid}@container (width<=26rem){.chain{font-size:1rem}}.figure-controls{border-top:1px solid #d4d2ce;justify-content:space-between;align-items:center;margin-top:.8rem;padding-top:.25rem;display:flex}.figure-controls button{color:#454c61;cursor:pointer;background:0 0;border:0;padding:.5rem .2rem;font:500 .82rem/1.4 system-ui,sans-serif;text-decoration:none}.figure-controls button:hover{color:#18263f;text-decoration:underline}.figure-controls>button:after{content:\"\";border:1.5px solid;border-width:1.5px 1.5px 0 0;width:.4rem;height:.4rem;margin:0 .2rem 0 .6rem;display:inline-block;transform:rotate(-45deg)}.display-options{position-anchor:auto;inset:auto;bottom:anchor(top);right:anchor(right);width:min(17rem,86vw);color:var(--ink);background:#faf9f6;border:1px solid #c9c7c2;border-radius:.5rem;margin:0 0 .2rem;padding:.35rem 1rem;position:absolute;box-shadow:0 .3rem 1.3rem #19213726}.display-options label{grid-template-columns:5rem minmax(0,1fr);align-items:center;padding:.55rem 0;font-size:.83rem;display:grid}.display-options label+label{border-top:1px solid #dddcd7}.display-options select{width:100%;color:inherit;font:inherit;background:#fffefa;border:1px solid #898992;border-radius:.3rem;padding:.5rem .2rem}.guide [popover] span{align-items:center;gap:.6rem;display:flex}.guide [popover] span:before{content:\"\";border-top:2px solid;width:1.75rem}.guide [popover] .state-zero:before{border-top-style:dotted}.guide [popover] .state-unknown:before{border-top-style:dashed}.plot line.arrow-hit{stroke:#0000;stroke-width:14px;pointer-events:stroke;cursor:pointer;outline:none}.plot line.arrow-hit:focus-visible{stroke:#52556644;outline:none}.toolbar select{appearance:base-select}.toolbar select::picker(select){appearance:base-select}.toolbar select::picker(select){color:var(--ink);background:var(--paper);border:1px solid #c9c7c2;border-radius:.4rem;padding:.2rem}.toolbar option{padding:.35rem .6rem}";
+var _a = ":host{--ink:#22233a;--panel:#222840;--line:#47516b;--point:#202237;--paper:#fbfaf7;--zero:#aa3949;--nonzero:#285a97;--unknown:#403e40;--selected:#e8e7e3;color:var(--ink);max-width:65rem;margin:1.5rem auto .5rem;font:1rem/1.5 system-ui,sans-serif;display:block;container-type:inline-size}*{box-sizing:border-box}section{background:#f1f0ec;border:1px solid #c7c7c9;border-radius:.65rem;overflow:hidden}header{background:var(--panel);color:#f5f4ee;border-bottom:1px solid var(--line);justify-content:space-between;align-items:center;gap:1rem;padding:.9rem 1.35rem;display:flex}h2,h3{margin:0;font:1.4rem/1.3 Georgia,serif}.toolbar{align-items:center;gap:.2rem;display:flex}.toolbar button,.toolbar label{height:2.2rem;color:inherit;cursor:pointer;place-items:center;display:grid}.toolbar button{background:0 0;border:0;border-radius:.25rem;width:2.2rem;font:1.6rem/1 Georgia,serif}.toolbar button:hover:enabled,.toolbar label:hover{background:#37405c}.toolbar button:disabled{color:#737d97;cursor:default}.toolbar label{border-block:1px solid #64718c;grid-auto-flow:column;gap:.4rem;padding:0 .55rem;position:relative}.toolbar label:after{content:\"⌄\";font-size:.75rem}.toolbar select{opacity:0;cursor:pointer;width:100%;height:100%;position:absolute;inset:0}.toolbar label:focus-within,:focus-visible{outline-offset:2px;outline:2px solid}[aria-label=Page\\ formula]:not(:empty){background:var(--panel);color:#fff;padding:.65rem 1.35rem}.layout{grid-template-columns:minmax(0,1fr);display:grid}.canvas{background:var(--paper);min-width:0;color:var(--point);padding:.8rem 1.25rem}.vertical-axis,.horizontal-axis,.tick{color:#565765;font-size:.8rem}.horizontal-axis{text-align:right}.scroll{overflow:auto}.plot{background-image:linear-gradient(90deg,#0000 calc(50% - .5px),#dcdad5 50%,#0000 calc(50% + .5px)),linear-gradient(#0000 40px,#dcdad5 41px,#0000 42px);background-size:calc(100% / var(--columns)) 82px;border-bottom:1px solid #748199;border-left:1px solid #748199;width:100%;position:relative}.plot>svg{pointer-events:none;width:100%;height:100%;position:absolute;inset:0}.cell,.tick{position:absolute;transform:translate(-50%,-50%)}.tick{background:var(--paper);font-size:.68rem}.cell{font:inherit;color:var(--point);background:var(--paper);cursor:pointer;border:1px solid #0000;border-radius:.35rem;min-width:34px;min-height:34px;padding:.15rem .35rem;font-size:1.12rem;transition:border-color .15s,background .15s}.cell[data-status=zero]{background:0 0}.cell:hover{border-color:#8a94ac}.cell[aria-pressed=true]{background:var(--selected);border-color:var(--ink)}.cell.stable{background:#efeeea}.cell.stable[aria-pressed=true]{background:#dddedb}.cell small{font-size:.6rem;display:block}.plot line{vector-effect:non-scaling-stroke;stroke-width:2px}.plot line[data-status=zero]{stroke-dasharray:2 5}.plot line[data-status=undetermined]{stroke-dasharray:6 4}.plot line[data-highlighted=true]{stroke-width:3px}aside{border-top:1px solid #c7c7c9;min-width:0;padding:1.3rem;font-size:.85rem;line-height:1.6}.chain{padding:.5rem 0;font-size:1.15rem;display:block;overflow-x:auto}@container (width<=38rem){.layout{grid-template-columns:minmax(0,1fr)}.canvas{padding:.6rem .9rem}aside{padding:1rem}header{padding:.6rem .9rem}}@media (prefers-reduced-motion:reduce){.cell{transition:none}}.state-zero,.cell[data-status=zero]{color:var(--zero)}.state-nonzero,.cell[data-status=nonzero]{color:var(--nonzero)}.state-unknown,.state-undetermined,.cell[data-status=unknown]{color:var(--unknown)}.plot line[data-status=zero]{stroke:var(--zero)}.plot line[data-status=nonzero]{stroke:var(--nonzero)}.plot line[data-status=undetermined]{stroke:var(--unknown)}.guide{width:fit-content;position:relative}.guide button{color:#495367;font:inherit;cursor:pointer;background:0 0;border:0;padding:.35rem 0;-webkit-text-decoration:underline dotted;text-decoration:underline dotted}.guide [popover]{position-anchor:auto;inset:auto;bottom:anchor(top);left:anchor(left);background:#faf9f6;border:1px solid #b4bac5;border-radius:.4rem;margin:0;padding:.5rem .8rem;position:absolute}.guide [popover]:popover-open{display:grid}@container (width<=26rem){.chain{font-size:1rem}}.figure-controls{border-top:1px solid #d4d2ce;justify-content:space-between;align-items:center;margin-top:.8rem;padding-top:.25rem;display:flex}.figure-controls button{color:#454c61;cursor:pointer;background:0 0;border:0;padding:.5rem .2rem;font:500 .82rem/1.4 system-ui,sans-serif;text-decoration:none}.figure-controls button:hover{color:#18263f;text-decoration:underline}.figure-controls>button:after{content:\"\";border:1.5px solid;border-width:1.5px 1.5px 0 0;width:.4rem;height:.4rem;margin:0 .2rem 0 .6rem;display:inline-block;transform:rotate(-45deg)}.display-options{position-anchor:auto;inset:auto;bottom:anchor(top);right:anchor(right);width:min(17rem,86vw);color:var(--ink);background:#faf9f6;border:1px solid #c9c7c2;border-radius:.5rem;margin:0 0 .2rem;padding:.35rem 1rem;position:absolute;box-shadow:0 .3rem 1.3rem #19213726}.display-options label{grid-template-columns:5rem minmax(0,1fr);align-items:center;padding:.55rem 0;font-size:.83rem;display:grid}.display-options label+label{border-top:1px solid #dddcd7}.display-options select{width:100%;color:inherit;font:inherit;background:#fffefa;border:1px solid #898992;border-radius:.3rem;padding:.5rem .2rem}.guide [popover] span{align-items:center;gap:.6rem;display:flex}.guide [popover] span:before{content:\"\";border-top:2px solid;width:1.75rem}.guide [popover] .state-zero:before{border-top-style:dotted}.guide [popover] .state-unknown:before{border-top-style:dashed}.plot line.arrow-hit{stroke:#0000;stroke-width:14px;pointer-events:stroke;cursor:pointer;outline:none}.plot line.arrow-hit:focus-visible{stroke:#52556644;outline:none}.toolbar select{appearance:base-select}.toolbar select::picker(select){appearance:base-select}.toolbar select::picker(select){color:var(--ink);background:var(--paper);border:1px solid #c9c7c2;border-radius:.4rem;padding:.2rem}.toolbar option{padding:.35rem .6rem}.plot .chart-class{min-height:22px;padding:0 .25rem;font-size:.9rem}.plot path.multiplication,.plot path.extension{fill:none;stroke:#515969;stroke-width:2px}.plot path.extension{stroke-dasharray:6 3}.plot path.relation-hit{stroke:#0000;stroke-width:12px;pointer-events:stroke;cursor:pointer}.plot path.relation-hit:focus-visible{stroke:#52556644}";
 // src/viewer.ts
-function ha(e, t, n, r) {
+function va(e, t, n, r) {
 	let i = document.createElement("label");
 	i.append(e + " ");
 	let a = document.createElement("select");
@@ -42962,7 +43109,7 @@ function ha(e, t, n, r) {
 	for (let [e, n] of t) a.add(new Option(n, e));
 	return a.value = n, a.onchange = () => r(a.value), i.append(a), i;
 }
-var ga = (e) => e.map((e) => [e, e]), _a = (e) => String(e).replace(/\d/g, (e) => "₀₁₂₃₄₅₆₇₈₉"[Number(e)]), va = class extends HTMLElement {
+var ya = (e) => e.map((e) => [e, e]), ba = (e) => String(e).replace(/\d/g, (e) => "₀₁₂₃₄₅₆₇₈₉"[Number(e)]), xa = class extends HTMLElement {
 	root = this.attachShadow({ mode: "open" });
 	data;
 	i = 0;
@@ -42971,11 +43118,13 @@ var ga = (e) => e.map((e) => [e, e]), _a = (e) => String(e).replace(/\d/g, (e) =
 		q: 0
 	};
 	arrowSelected = !1;
+	active;
+	relation;
 	filter = "All";
 	zeros = "zero";
 	set sequence(e) {
 		let t = ot(e);
-		this.data = t, this.arrowSelected = !1, this.i = (t.settings?.initialPage ?? t.firstPage) - t.firstPage;
+		this.data = t, this.active = void 0, this.relation = void 0, this.arrowSelected = !1, this.i = (t.settings?.initialPage ?? t.firstPage) - t.firstPage;
 		let n = ut(t);
 		this.selected = lt(t, {
 			p: n.pMin,
@@ -42986,7 +43135,7 @@ var ga = (e) => e.map((e) => [e, e]), _a = (e) => String(e).replace(/\d/g, (e) =
 		let e = this.data;
 		if (!e) return;
 		let t = this.root.activeElement?.getAttribute("aria-label"), n = e.settings ?? {}, r = ut(e), i = e.pages[this.i], a = st(e, i), o = document.createElement("style");
-		o.textContent = ma;
+		o.textContent = _a;
 		let s = document.createElement("section"), c = document.createElement("h2");
 		c.append(n.title ? $(n.title) : "Spectral sequence");
 		let l = document.createElement("div");
@@ -42996,24 +43145,29 @@ var ga = (e) => e.map((e) => [e, e]), _a = (e) => String(e).replace(/\d/g, (e) =
 		}
 		let u = document.createElement("div");
 		u.className = "toolbar";
-		let d = (e) => {
-			this.i = e, this.arrowSelected = !1, this.render();
+		let d = (t) => {
+			let n = this.active?.startsWith("Class ") ? this.active.slice(6) : void 0, r = Math.sign(t - this.i);
+			for (let i = this.i; n && i !== t; i += r) {
+				let t = e.pages[r > 0 ? i + 1 : i].terms.find((e) => U(e) === U(this.selected))?.classes;
+				n = r > 0 ? t?.find((e) => e.previous === n)?.id : t?.find((e) => e.id === n)?.previous;
+			}
+			this.active = n ? "Class " + n : void 0, this.relation = void 0, this.i = t, this.arrowSelected = !1, this.render();
 		}, f = (t, n) => {
 			let r = document.createElement("button");
 			return r.textContent = n < 0 ? "‹" : "›", r.title = t, r.setAttribute("aria-label", t), r.disabled = !e.pages[this.i + n], r.onclick = () => d(this.i + n), r;
 		};
-		u.append(f("Previous", -1), ha("Page", e.pages.map((t) => [String(t.index), "E" + _a(t.index) + (t.index === e.degenerationPage ? " = E∞" : "")]), String(i.index), (t) => d(Number(t) - e.firstPage)), f("Next", 1));
+		u.append(f("Previous", -1), va("Page", e.pages.map((t) => [String(t.index), "E" + ba(t.index) + (t.index === e.degenerationPage ? " = E∞" : "")]), String(i.index), (t) => d(Number(t) - e.firstPage)), f("Next", 1));
 		let p = document.createElement("div");
 		p.className = "display-options", p.popover = "auto";
 		let m = document.createElement("button");
-		m.textContent = "Display options", m.popoverTargetElement = p, p.append(ha("Arrows", ga([
+		m.textContent = "Display options", m.popoverTargetElement = p, p.append(va("Arrows", ya([
 			"All",
 			"Potentially nonzero",
 			"Known nonzero",
 			"None"
 		]), this.filter, (e) => {
 			this.filter = e, v();
-		}), ha("Zero style", [
+		}), va("Zero style", [
 			["zero", "Numeral"],
 			["dot", "Dot"],
 			["blank", "Blank"]
@@ -43032,8 +43186,8 @@ var ga = (e) => e.map((e) => [e, e]), _a = (e) => String(e).replace(/\d/g, (e) =
 		h.firstChild?.remove(), h.prepend($("E_{" + i.index + "}" + (i.index === e.degenerationPage ? "=E_{\\infty}" : "")));
 		let _ = document.createElement("div");
 		_.className = "scroll";
-		let v = () => _.replaceChildren(pa(a, r, this.selected, this.filter, this.zeros, this.arrowSelected, (e, t = !1) => {
-			this.selected = e, this.arrowSelected = t, this.render(), this.root.querySelector("[aria-pressed=\"true\"]")?.focus({ preventScroll: !0 });
+		let v = () => _.replaceChildren(ga(a, r, this.selected, this.filter, this.zeros, this.arrowSelected, this.active, (e, t = !1, n, r) => {
+			this.active = n, this.relation = r, this.selected = e, this.arrowSelected = t, this.render(), this.root.querySelector("[aria-pressed=\"true\"]")?.focus({ preventScroll: !0 });
 		}));
 		v();
 		let y = document.createElement("aside");
@@ -43095,7 +43249,16 @@ var ga = (e) => e.map((e) => [e, e]), _a = (e) => String(e).replace(/\d/g, (e) =
 			}
 		}
 		let P = "\\begin{array}{ccccc}" + N.map((e) => e.join("&")).join("\\\\") + "\\end{array}", F = $(P);
-		F.classList.add("chain"), F.querySelector("svg").setAttribute("aria-label", P), y.append(F);
+		if (F.classList.add("chain"), F.querySelector("svg").setAttribute("aria-label", P), this.relation) {
+			let e = $(this.relation.formula);
+			e.setAttribute("aria-label", this.relation.formula), y.append(e);
+		} else {
+			if (this.active?.startsWith("Class ")) {
+				let e = a.classes.get(this.active.slice(6));
+				y.append($(e.c.label + "\\in " + D("E", e.term)));
+			}
+			y.append(F);
+		}
 		let I = a.stable.get(U(this.selected));
 		if (I !== void 0 && I <= i.index) {
 			let e = document.createElement("span");
@@ -43132,5 +43295,5 @@ var ga = (e) => e.map((e) => [e, e]), _a = (e) => String(e).replace(/\d/g, (e) =
 	}
 };
 // src/index.ts
-customElements.define("spectral-sequence-viewer", va);
+customElements.define("spectral-sequence-viewer", xa);
 export { $ as math };
