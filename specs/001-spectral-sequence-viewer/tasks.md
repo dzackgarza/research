@@ -91,3 +91,9 @@ The completed first-quadrant tasks above describe the original implementation. T
 - [X] T036 Use authored class endpoints when highlighting incident differentials. Selecting a permanent class must distinguish its own incident arrows from those of another class in the same term; selecting one named arrow must identify that edge per T022 and T027 (partial).
 - [X] T037 Display the local stability mark of a term containing named classes from its declared page onward. Preserve the distinction between stability of the term and permanence declared for an individual class per FR-07 and T017 (partial).
 - [X] T038 Make distinct authored relations of the same kind between the same classes individually inspectable by pointer and keyboard. Exercise two multiplication formulas with the same endpoints and verify each selection shows its own formula per T029 (partial).
+
+## Phase 12: Convergence
+
+- [ ] T039 Reject incompatible known zero and nonzero statuses for the same stable term on supplied pages at or after its declared stability or global degeneration. Preserve unknown statuses as missing knowledge. Verify a contradictory replacement reports the page and bidegree and retains the previous figure per FR-07, FR-08 and T017 (contradicts).
+- [ ] T040 Handle derived coordinates outside the exact integer range before rendering. Verify that projecting a one-cell extent with p = 9007199254740991 and q = 1 terminates with an exact chart or a located validation error; check native endpoint and inverse projection arithmetic at the same boundary per FR-03, FR-04, FR-08 and T020 (partial).
+- [ ] T041 Preserve an authored term label when the term also has a module and named classes. Through the published widget, verify that the reader can inspect the distinct term label, module and selected class as typeset mathematics per FR-06, T012 and T027 (partial).
