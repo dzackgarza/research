@@ -84,3 +84,7 @@ The [package comparison](research.md#what-published-spectral-sequence-charts-can
 - After an author-supplied injective map given by multiplication by two between infinite cyclic groups, the reader can follow the target generator to its residue class on the next page when there are no other incident maps. The next-page data and their relation are supplied by the author.
 - A reader can distinguish multiplication by a specified class from a differential with the same endpoints. On the limiting page the author can separately supply a nonsplit extension of two cyclic groups of order two. Without the extension assertion the displayed filtration factors leave the abutment undecided.
 - A reader can trace the visible portion of an asserted differential through the boundary of a cropped chart, including a segment crossing the viewport with neither endpoint inside. Cropping changes neither the indexed endpoints nor the status.
+
+### Navigate the lattice
+
+A reader opens a square plot fitted to the supplied nonzero terms and asserted nonzero differential endpoints across pages. An authored viewport continues to set the initial crop. Drag or swipe to pan, and use the wheel or pinch to zoom about the pointer or pinch midpoint. On release, the plot aligns to whole lattice boxes with equal scales on both axes. Changing the view preserves page, inspection, filtering and mathematical status. The reader can restore the opening view.

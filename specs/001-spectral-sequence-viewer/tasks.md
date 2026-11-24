@@ -101,3 +101,9 @@ The completed first-quadrant tasks above describe the original implementation. T
 ## Phase 13: Convergence
 
 - [X] T042 Preserve individual permanence along explicit predecessor links. Through the public setter, reject a named nonzero generator image on a later page when its representative descends from a declared permanent class. Identify the offending page and assignment, retain the previous figure, and verify that a different class in the same term can still support a nonzero differential per FR-08, T027 and T028 (contradicts).
+
+## Phase 14: View navigation
+
+- [ ] T043 Fit the initial view to mathematical content, preserve explicit crops, and draw equal-scale lattice boxes in a responsive square frame.
+- [ ] T044 Pan and zoom with mouse and touch, snap to integral bounds, and provide keyboard navigation and reset.
+- [ ] T045 Verify real wheel, drag, touch, responsive geometry, reset, and inspection through the distributed widget.

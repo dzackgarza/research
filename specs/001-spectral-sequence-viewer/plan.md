@@ -27,3 +27,5 @@ Implement signed native coordinates and explicit support in the shared model fir
 ## Class-level chart inspection
 
 Index named classes within each page. Use explicit predecessor links for page transitions and class references for incidence. Display author-supplied products and extensions as separate relations. Clip asserted differential segments in projected plot coordinates while retaining native endpoints for inspection.
+
+Store the viewport per widget in projected integral coordinates. Use D3 zoom for mouse, wheel and touch gesture recognition. Apply a transient transform during a gesture and redraw the diagram and inspector from the snapped rectangle when it ends. Keep explicit crops and both grading conventions.

@@ -24,3 +24,9 @@ The comparisons below use Hood Chatham's [SpectralSequences manual](https://mirr
 | Compare differentials from several pages or follow a named family | Chatham's page-range view overlays differentials from a chosen interval on an identified base page. Families group classes and lines for display. Bauer also supports disjoint coordinate ranges. | The current viewer shows one contiguous rectangle on one page. An overlay, a family filter, and an axis break are distinct optional reading aids. An overlay must retain the page of each map. |
 
 The first four rows affect which mathematical facts a chart can communicate. The last two distinguish grading coverage from optional presentation features. Package support is evidence of a use case, not a requirement to implement a TeX interpreter or to infer algebra from the drawing.
+
+### Navigating a plot embedded in an article
+
+D3 zoom supports wheel, mouse drag and pinch, with zoom anchored at the gesture location. Leaflet distinguishes fitting data bounds from limits on subsequent navigation. Use those conventions, and leave page scrolling available outside the figure. Sources: [D3 zoom](https://d3js.org/d3-zoom), [Leaflet map options](https://leafletjs.com/reference.html#map).
+
+WCAG 2.2 gives a 24 CSS pixel minimum pointer target with spacing exceptions. For this chart, use a 44 pixel pitch when setting the ordinary zoom-out limit and a square frame capped at 32 rem. These are layout choices for the widget. A wider data fit can open as an overview; detailed navigation remains available by zooming in. [W3C target size guidance](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html)
