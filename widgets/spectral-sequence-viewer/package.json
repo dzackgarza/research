@@ -1,0 +1,20 @@
+{
+  "name": "spectral-sequence-viewer",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit && vite build && cp schema/sequence.schema.json dist/",
+    "test:browser": "playwright test"
+  },
+  "dependencies": {
+    "ajv": "^8.20.0",
+    "mathjax-full": "3.2.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8"
+  }
+}

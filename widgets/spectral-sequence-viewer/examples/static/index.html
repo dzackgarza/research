@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>Spectral sequence</title>
+  <spectral-sequence-viewer></spectral-sequence-viewer
+  ><button id="insert">Insert figure</button>
+  <script type="module">
+    import "../../dist/spectral-sequence-viewer.js";
+    const data = await (await fetch("../sequence.json")).json();
+    document.querySelector("spectral-sequence-viewer").sequence = data;
+    document.querySelector("#insert").onclick = () => {
+      const figure = document.createElement("spectral-sequence-viewer");
+      figure.sequence = data;
+      document.querySelector("#insert").before(figure);
+    };
+  </script>
+</html>

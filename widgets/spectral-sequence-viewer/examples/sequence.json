@@ -1,0 +1,160 @@
+{
+  "firstPage": 0,
+  "pageCount": 4,
+  "degenerationPage": 3,
+  "convention": "cohomological",
+  "extent": {
+    "pMin": 0,
+    "pMax": 4,
+    "qMin": 0,
+    "qMax": 2
+  },
+  "stableTerms": [
+    {
+      "p": 0,
+      "q": 0,
+      "fromPage": 2
+    }
+  ],
+  "settings": {
+    "viewport": {
+      "pMin": 0,
+      "pMax": 4,
+      "qMin": 0,
+      "qMax": 1
+    },
+    "initialPage": 2,
+    "title": "E_r^{p,q}",
+    "pLabel": "p",
+    "qLabel": "q"
+  },
+  "pages": [
+    {
+      "index": 0,
+      "formula": "E_0^{p,q}",
+      "terms": [
+        {
+          "p": 0,
+          "q": 0,
+          "status": "nonzero",
+          "label": "k"
+        },
+        {
+          "p": 1,
+          "q": 1,
+          "status": "nonzero",
+          "label": "k"
+        },
+        {
+          "p": 1,
+          "q": 0,
+          "status": "zero"
+        }
+      ],
+      "maps": []
+    },
+    {
+      "index": 1,
+      "formula": "E_1^{p,q}",
+      "terms": [
+        {
+          "p": 0,
+          "q": 0,
+          "status": "nonzero",
+          "label": "k"
+        },
+        {
+          "p": 1,
+          "q": 1,
+          "status": "nonzero",
+          "label": "k"
+        },
+        {
+          "p": 1,
+          "q": 0,
+          "status": "zero"
+        }
+      ],
+      "maps": []
+    },
+    {
+      "index": 2,
+      "formula": "E_2^{p,q}=H^p(B;H^q(F))",
+      "terms": [
+        {
+          "p": 0,
+          "q": 0,
+          "status": "nonzero",
+          "label": "k"
+        },
+        {
+          "p": 1,
+          "q": 1,
+          "status": "nonzero",
+          "label": "k"
+        },
+        {
+          "p": 1,
+          "q": 0,
+          "status": "zero"
+        },
+        {
+          "p": 0,
+          "q": 1,
+          "status": "nonzero",
+          "label": "A"
+        },
+        {
+          "p": 2,
+          "q": 0,
+          "status": "nonzero",
+          "label": "B"
+        }
+      ],
+      "maps": [
+        {
+          "p": 0,
+          "q": 1,
+          "status": "nonzero",
+          "formula": "f"
+        },
+        {
+          "p": 0,
+          "q": 2,
+          "status": "undetermined",
+          "formula": "g"
+        },
+        {
+          "p": 2,
+          "q": 1,
+          "status": "zero",
+          "formula": "0"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "formula": "E_3^{p,q}",
+      "terms": [
+        {
+          "p": 0,
+          "q": 0,
+          "status": "nonzero",
+          "label": "k"
+        },
+        {
+          "p": 1,
+          "q": 1,
+          "status": "nonzero",
+          "label": "k"
+        },
+        {
+          "p": 1,
+          "q": 0,
+          "status": "zero"
+        }
+      ],
+      "maps": []
+    }
+  ]
+}

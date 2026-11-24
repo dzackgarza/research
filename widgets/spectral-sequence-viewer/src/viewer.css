@@ -1,0 +1,118 @@
+:host {
+  display: block;
+  color: #183940;
+  font:
+    1rem/1.5 system-ui,
+    sans-serif;
+  margin: 1rem auto;
+  max-width: 65rem;
+}
+section {
+  border: 1px solid #bad0ca;
+  background: #fcfbf7;
+  border-radius: 0.7rem;
+  padding: clamp(1rem, 3vw, 2rem);
+}
+h2,
+h3 {
+  font-family: Georgia, serif;
+  margin: 0 0 0.5rem;
+}
+h2 {
+  font-size: 1.65rem;
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 1rem 0;
+}
+.toolbar label {
+  font-size: 0.875rem;
+}
+button,
+select {
+  font: inherit;
+  color: inherit;
+  border: 1px solid #91a9a4;
+  border-radius: 0.35rem;
+  background: white;
+  padding: 0.3rem 0.55rem;
+}
+button:disabled {
+  opacity: 0.45;
+}
+.axes,
+.tick {
+  color: #536d70;
+}
+.scroll {
+  overflow: auto;
+}
+.plot {
+  position: relative;
+  background-color: #fff;
+  border: 1px solid #a8bfba;
+  background-image:
+    linear-gradient(to right, #e8efec 1px, transparent 1px),
+    linear-gradient(to bottom, #e8efec 1px, transparent 1px);
+  background-size: 112px 82px;
+  background-position: 56px 41px;
+}
+.plot > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.cell,
+.tick {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+.cell {
+  min-width: 34px;
+  min-height: 34px;
+  border-radius: 0.4rem;
+}
+.cell.stable {
+  background: #d4eee0;
+}
+.cell small {
+  display: block;
+  font-size: 0.62rem;
+}
+.cell[aria-pressed="true"] {
+  border: 2px solid #00665e;
+}
+.tick {
+  font-size: 0.68rem;
+}
+.plot line {
+  stroke: #647d82;
+  stroke-width: 2;
+}
+.plot line[data-status="zero"] {
+  stroke-dasharray: 2 5;
+}
+.plot line[data-status="undetermined"] {
+  stroke-dasharray: 6 4;
+}
+.plot line[data-highlighted="true"] {
+  stroke: #ad4721;
+  stroke-width: 3;
+}
+aside {
+  border-top: 1px solid #b7ccc6;
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+aside p {
+  margin: 0.3rem 0;
+}
+:focus-visible {
+  outline: 3px solid #b16122;
+  outline-offset: 2px;
+}

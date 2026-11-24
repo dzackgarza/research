@@ -1,0 +1,251 @@
+{
+  "type": "object",
+  "properties": {
+    "firstPage": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "pageCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "degenerationPage": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "convention": {
+      "enum": [
+        "cohomological",
+        "homological"
+      ]
+    },
+    "extent": {
+      "type": "object",
+      "properties": {
+        "pMin": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "pMax": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "qMin": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "qMax": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "pMin",
+        "pMax",
+        "qMin",
+        "qMax"
+      ],
+      "additionalProperties": false
+    },
+    "unlisted": {
+      "enum": [
+        "unknown",
+        "zero"
+      ]
+    },
+    "stableTerms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "p": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "q": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "fromPage": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "p",
+          "q",
+          "fromPage"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "settings": {
+      "type": "object",
+      "properties": {
+        "viewport": {
+          "type": "object",
+          "properties": {
+            "pMin": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "pMax": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "qMin": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "qMax": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": [
+            "pMin",
+            "pMax",
+            "qMin",
+            "qMax"
+          ],
+          "additionalProperties": false
+        },
+        "initialPage": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "title": {
+          "type": "string"
+        },
+        "pLabel": {
+          "type": "string"
+        },
+        "qLabel": {
+          "type": "string"
+        },
+        "zeroStyle": {
+          "enum": [
+            "zero",
+            "dot",
+            "blank"
+          ]
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "pages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "terms": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "p": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "q": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "status": {
+                  "enum": [
+                    "zero",
+                    "nonzero",
+                    "unknown"
+                  ]
+                },
+                "label": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "p",
+                "q",
+                "status"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "maps": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "p": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "q": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "status": {
+                  "enum": [
+                    "zero",
+                    "nonzero",
+                    "undetermined"
+                  ]
+                },
+                "formula": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "p",
+                "q",
+                "status"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "formula": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "index",
+          "terms",
+          "maps"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "firstPage",
+    "convention",
+    "extent",
+    "pages"
+  ],
+  "additionalProperties": false
+}
