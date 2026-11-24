@@ -53,3 +53,10 @@ test("inspect clipped maps through all filters and zero styles", async ({
     /E\^2_\{4,0\}.*E\^2_\{2,1\}.*E\^2_\{0,2\}/,
   );
 });
+
+test("an undetermined map and a zero map can be read without colour", async ({ page }) => {
+  await page.goto("/examples/static/");
+  await page.getByRole("button", { name: "(2,1)", exact: true }).click();
+  const chain = page.locator(".chain > svg");
+  await expect(chain).toHaveAccessibleName(/state-undetermined.*\\xrightarrow\[\?\].*state-zero.*\\xrightarrow\[0\]/);
+});
