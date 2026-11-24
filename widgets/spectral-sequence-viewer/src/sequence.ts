@@ -145,7 +145,10 @@ export function parseSequence(input: Sequence): Sequence {
             " outside declared support",
         );
     for (const map of page.maps) {
-      for (const assignment of map.assignments ?? []) {
+      const zero =
+        map.status === "zero" ||
+        forcedZero(model, map, endpoint(model, map, 1));
+      for (const [i, assignment] of (map.assignments ?? []).entries()) {
         for (const [id, point] of [
           [assignment.sourceClass, map],
           [assignment.targetClass, endpoint(model, map, 1)],
@@ -161,6 +164,12 @@ export function parseSequence(input: Sequence): Sequence {
               `page ${page.index} maps ${key(map)}: ` + "unknown class " + id,
             );
         }
+        const target =
+          assignment.targetClass && model.classes.get(assignment.targetClass);
+        if (zero && target && assignment.image.trim() === target.c.label.trim())
+          fail(
+            `page ${page.index} maps ${key(map)} assignments[${i}]: a zero differential cannot have image ${target.c.label}`,
+          );
         if (
           assignment.sourceClass &&
           model.classes.get(assignment.sourceClass)?.c.permanent &&

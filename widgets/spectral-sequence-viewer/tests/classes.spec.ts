@@ -185,67 +185,117 @@ test("navigate between a named class and the adjacent grid cell", async ({
   ).toBeFocused();
 });
 
-test("zero component rejects an assignment to the target class itself", async ({page})=>{
+test("zero component rejects an assignment to the target class itself", async ({
+  page,
+}) => {
   await page.goto("/examples/static/");
-  const figure=page.locator("spectral-sequence-viewer");
-  for (const forced of [false,true]) {
-    const data=structuredClone(shared);
-    if(forced) data.degenerationPage=2;
-    data.pages[0].maps[0].status=forced?"undetermined":"zero";
-    data.pages[0].maps[0].assignments[0].image="z";
-    await expect(figure.evaluate((el,d)=>{Object.assign(el,{sequence:d})},data)).rejects.toThrow(/page 2.*assignments\[0\]/);
-    await expect(figure.getByLabel("Page",{exact:true})).toHaveValue("2");
+  const figure = page.locator("spectral-sequence-viewer");
+  for (const forced of [false, true]) {
+    const data = structuredClone(shared);
+    if (forced) data.degenerationPage = 2;
+    data.pages[0].maps[0].status = forced ? "undetermined" : "zero";
+    data.pages[0].maps[0].assignments[0].image = "z";
+    await expect(
+      figure.evaluate((el, d) => {
+        Object.assign(el, { sequence: d });
+      }, data),
+    ).rejects.toThrow(/page 2.*assignments\[0\]/);
+    await expect(figure.getByLabel("Page", { exact: true })).toHaveValue("2");
   }
 });
 
-test("mixed assignments retain an unnamed nonzero image on the plot",async({page})=>{
-  const data=structuredClone(shared);
-  data.pages[0].maps[0].assignments=[{generator:"x",image:"2z"},{generator:"y",image:"0",sourceClass:"y",targetClass:"z"}] as typeof data.pages[0]["maps"][0]["assignments"];
+test("mixed assignments retain an unnamed nonzero image on the plot", async ({
+  page,
+}) => {
+  const data = structuredClone(shared);
+  data.pages[0].maps[0].assignments = [
+    { generator: "x", image: "2z" },
+    { generator: "y", image: "0", sourceClass: "y", targetClass: "z" },
+  ] as (typeof data.pages)[0]["maps"][0]["assignments"];
   await page.goto("/examples/static/");
-  const figure=page.locator("spectral-sequence-viewer");
-  await figure.evaluate((el,d)=>{Object.assign(el,{sequence:d})},data);
-  await figure.getByRole("button",{name:"Display options"}).click();
+  const figure = page.locator("spectral-sequence-viewer");
+  await figure.evaluate((el, d) => {
+    Object.assign(el, { sequence: d });
+  }, data);
+  await figure.getByRole("button", { name: "Display options" }).click();
   await figure.getByLabel("Arrows").selectOption("Known nonzero");
-  await expect(figure.getByRole("button",{name:"Differential (0,1) to (2,0)",exact:true})).toBeVisible();
+  await expect(
+    figure.getByRole("button", {
+      name: "Differential (0,1) to (2,0)",
+      exact: true,
+    }),
+  ).toBeVisible();
 });
 
-test("class selection highlights only incident named edges",async({page})=>{
+test("class selection highlights only incident named edges", async ({
+  page,
+}) => {
   await page.goto("/examples/static/");
-  const figure=page.locator("spectral-sequence-viewer");
-  await figure.evaluate((el,d)=>{Object.assign(el,{sequence:d})},shared);
-  await figure.getByRole("button",{name:"Class y",exact:true}).click();
-  await expect(figure.locator('line[data-status="nonzero"][data-highlighted="true"]')).toHaveCount(0);
-  await figure.getByRole("button",{name:"Class x",exact:true}).click();
-  await expect(figure.locator('line[data-status="nonzero"][data-highlighted="true"]')).toHaveCount(1);
+  const figure = page.locator("spectral-sequence-viewer");
+  await figure.evaluate((el, d) => {
+    Object.assign(el, { sequence: d });
+  }, shared);
+  await figure.getByRole("button", { name: "Class y", exact: true }).click();
+  await expect(
+    figure.locator('line[data-status="nonzero"][data-highlighted="true"]'),
+  ).toHaveCount(0);
+  await figure.getByRole("button", { name: "Class x", exact: true }).click();
+  await expect(
+    figure.locator('line[data-status="nonzero"][data-highlighted="true"]'),
+  ).toHaveCount(1);
 });
 
-test("term stability is visible on the chart with named classes",async({page})=>{
+test("term stability is visible on the chart with named classes", async ({
+  page,
+}) => {
   await page.goto("/examples/static/");
-  const figure=page.locator("spectral-sequence-viewer");
-  await figure.evaluate((el,d)=>{Object.assign(el,{sequence:d})},{...shared,stableTerms:[{...a,fromPage:3}]});
-  await expect(figure.locator(".plot").getByText("stable",{exact:true})).toHaveCount(0);
-  await figure.getByRole("button",{name:"Next"}).click();
-  await expect(figure.locator(".plot").getByText("stable",{exact:true})).toBeVisible();
+  const figure = page.locator("spectral-sequence-viewer");
+  await figure.evaluate(
+    (el, d) => {
+      Object.assign(el, { sequence: d });
+    },
+    { ...shared, stableTerms: [{ ...a, fromPage: 3 }] },
+  );
+  await expect(
+    figure.locator(".plot").getByText("stable", { exact: true }),
+  ).toHaveCount(0);
+  await figure.getByRole("button", { name: "Next" }).click();
+  await expect(
+    figure.locator(".plot").getByText("stable", { exact: true }),
+  ).toBeVisible();
 });
 
-test("parallel products can each be selected by pointer and keyboard",async({page})=>{
-  const data=structuredClone(shared);
-  const relations=data.pages[0].relations!;
-  relations.push({...relations[0],formula:"kx=z"});
+test("parallel products can each be selected by pointer and keyboard", async ({
+  page,
+}) => {
+  const data = structuredClone(shared);
+  const relations = data.pages[0].relations!;
+  relations.push({ ...relations[0], formula: "kx=z" });
   await page.goto("/examples/static/");
-  const figure=page.locator("spectral-sequence-viewer");
-  await figure.evaluate((el,d)=>{Object.assign(el,{sequence:d})},data);
-  for(const relation of relations){
-    const edge=figure.getByRole("button",{name:"Multiplication x to z "+relation.formula,exact:true});
-    await edge.press("Enter");
-    await expect(figure.getByLabel(relation.formula,{exact:true})).toBeVisible();
-    const pos=await edge.evaluate(el=>{
-      const path=el as SVGPathElement;
-      const point=path.getPointAtLength(path.getTotalLength()/2).matrixTransform(path.getScreenCTM()!);
-      return {x:point.x,y:point.y};
+  const figure = page.locator("spectral-sequence-viewer");
+  await figure.evaluate((el, d) => {
+    Object.assign(el, { sequence: d });
+  }, data);
+  for (const relation of relations) {
+    const edge = figure.getByRole("button", {
+      name: "Multiplication x to z " + relation.formula,
+      exact: true,
     });
-    await figure.getByRole("button",{name:"Class x",exact:true}).click();
-    await page.mouse.click(pos.x,pos.y);
-    await expect(figure.getByLabel(relation.formula,{exact:true})).toBeVisible();
+    await edge.press("Enter");
+    await expect(
+      figure.getByLabel(relation.formula, { exact: true }),
+    ).toBeVisible();
+    const pos = await edge.evaluate((el) => {
+      const path = el as SVGPathElement;
+      const point = path
+        .getPointAtLength(path.getTotalLength() / 2)
+        .matrixTransform(path.getScreenCTM()!);
+      return { x: point.x, y: point.y };
+    });
+    await figure.getByRole("button", { name: "Class x", exact: true }).click();
+    await page.mouse.click(pos.x, pos.y);
+    await expect(
+      figure.getByLabel(relation.formula, { exact: true }),
+    ).toBeVisible();
   }
 });

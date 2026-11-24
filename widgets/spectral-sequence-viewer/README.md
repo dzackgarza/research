@@ -42,3 +42,13 @@ Set `support` to `"unrestricted"` for signed native bidegrees. The default is `"
 Set `settings.projection` to `"total-filtration"` to plot total degree horizontally and filtration degree vertically. The default is `"native"`. An explicit viewport bounds the horizontal and vertical display coordinates. With no viewport, the viewer projects the extent. Arrow keys follow the displayed axes, and inspection names the native component.
 
 For a component with several generator images, supply an ordered `assignments` array on the map, for example `[{"generator":"a","image":"u"},{"generator":"b","image":"0"}]`. Each assignment occupies one row between the same source and target. Set the status on the component as a whole.
+
+An assignment with class IDs draws an arrow at those classes. Assignments
+without class IDs share a component arrow between bidegrees. In a mixed list,
+the filters apply to the named arrows and to the unnamed group separately.
+Select a class to highlight the edges that name it. A term marked “stable”
+can contain individually labelled classes; “permanent” belongs to the class
+on which the author declared it.
+
+Products with the same endpoints appear as separate curves. Click a curve or
+focus it and press Enter to inspect its formula.

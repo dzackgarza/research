@@ -341,4 +341,13 @@ aside {
 .plot path.multiplication, .plot path.extension { fill: none; stroke: #515969; stroke-width: 2px; }
 .plot path.extension { stroke-dasharray: 6 3; }
 .plot path.relation-hit { stroke: transparent; stroke-width: 12px; pointer-events: stroke; cursor: pointer; }
-.plot path.relation-hit:focus-visible { stroke: #52556644; }
+.plot path.relation-hit:focus-visible { stroke: #52556644; outline: none; }
+.term-stability {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border-radius: .25rem;
+  padding: 0 .25rem;
+  background: #efeeea;
+  font-size: .68rem;
+  pointer-events: none;
+}

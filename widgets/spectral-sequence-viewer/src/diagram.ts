@@ -91,8 +91,20 @@ export function diagram(
       const assignments = arrow.assignments?.filter(
         (row) => row.sourceClass || row.targetClass,
       );
-      for (const row of assignments?.length ? assignments : [undefined]) {
-        const status = row?.image.trim() === "0" ? "zero" : arrow.status;
+      const unnamed = arrow.assignments?.filter(
+        (row) => !row.sourceClass && !row.targetClass,
+      );
+      const edges = [
+        ...(assignments ?? []),
+        ...(!assignments?.length || unnamed?.length ? [undefined] : []),
+      ];
+      for (const row of edges) {
+        const zeroImage = row
+          ? row.image.trim() === "0"
+          : assignments?.length &&
+            unnamed?.length &&
+            unnamed.every((entry) => entry.image.trim() === "0");
+        const status = zeroImage ? "zero" : arrow.status;
         if (
           (mode === "Potentially nonzero" && status === "zero") ||
           (mode === "Known nonzero" && status !== "nonzero")
@@ -120,10 +132,6 @@ export function diagram(
         }))
           line.setAttribute(attr, String(val));
         line.dataset.status = status;
-        line.dataset.highlighted = String(
-          key(selected) === key(a) ||
-            (!arrowSelected && key(selected) === key(arrow.b)),
-        );
         line.setAttribute("marker-end", "url(#tip)");
         const hit = line.cloneNode(false) as SVGLineElement;
         hit.removeAttribute("data-status");
@@ -137,6 +145,17 @@ export function diagram(
           (row?.sourceClass ?? coord(a)) +
           " to " +
           (row?.targetClass ?? coord(arrow.b));
+        const classId = active?.startsWith("Class ")
+          ? active.slice(6)
+          : undefined;
+        line.dataset.highlighted = String(
+          arrowSelected
+            ? active === name
+            : (key(selected) === key(a) &&
+                (!classId || row?.sourceClass === classId)) ||
+                (key(selected) === key(arrow.b) &&
+                  (!classId || row?.targetClass === classId)),
+        );
         hit.setAttribute("aria-label", name);
         hit.setAttribute("aria-pressed", String(active === name));
         hit.onclick = () => choose(a, true, name);
@@ -185,7 +204,22 @@ export function diagram(
       button.onclick = () => choose(a, false, "Class " + c.id);
       graph.append(button);
     }
-    if (m.terms.get(key(a))?.classes?.length) continue;
+    if (m.terms.get(key(a))?.classes?.length) {
+      const first = m.stable.get(key(a));
+      if (first !== undefined && first <= m.page.index) {
+        const tag = document.createElement("small");
+        tag.className = "term-stability";
+        tag.textContent = "stable";
+        tag.setAttribute(
+          "aria-label",
+          "Term " + coord(a) + " stable from page " + first,
+        );
+        tag.style.left = (x(p) / width) * 100 + "%";
+        tag.style.top = y(q) + 30 + "px";
+        graph.append(tag);
+      }
+      continue;
+    }
     const cell = document.createElement("button"),
       term = m.terms.get(key(a)),
       status = termStatus(m, a);
@@ -217,17 +251,25 @@ export function diagram(
     cell.onkeydown = navigate;
     graph.append(cell);
   }
-  for (const rel of m.page.relations ?? []) {
+  const relations = m.page.relations ?? [];
+  for (const rel of relations) {
     const term = m.classes.get(rel.source)!.term;
     const a = plotPoint(m.data, term),
       b = plotPoint(m.data, m.classes.get(rel.target)!.term);
     const path = document.createElementNS(ns, "path");
     const ay = y(a.q) + offset(rel.source),
       by = y(b.q) + offset(rel.target);
-    path.setAttribute(
-      "d",
-      `M ${x(a.p)} ${ay} Q ${(x(a.p) + x(b.p)) / 2 + 18} ${(ay + by) / 2 - 28} ${x(b.p)} ${by}`,
+    const parallel = relations.filter(
+      (other) => other.source === rel.source && other.target === rel.target,
     );
+    const lane = parallel.indexOf(rel);
+    const bend = (lane % 2 ? -1 : 1) * (32 + 36 * Math.floor(lane / 2));
+    const dx = x(b.p) - x(a.p),
+      dy = by - ay,
+      length = Math.hypot(dx, dy);
+    const cx = (x(a.p) + x(b.p)) / 2 + (length ? dy / length : 1) * bend;
+    const cy = (ay + by) / 2 - (length ? dx / length : 1) * bend;
+    path.setAttribute("d", `M ${x(a.p)} ${ay} Q ${cx} ${cy} ${x(b.p)} ${by}`);
     path.setAttribute("class", rel.kind);
     const hit = path.cloneNode(false) as SVGPathElement;
     hit.classList.add("relation-hit");
@@ -237,7 +279,10 @@ export function diagram(
       " " +
       rel.source +
       " to " +
-      rel.target;
+      rel.target +
+      (parallel.some((other) => other !== rel && other.kind === rel.kind)
+        ? " " + rel.formula
+        : "");
     hit.setAttribute("aria-label", name);
     hit.setAttribute("aria-pressed", String(active === name));
     hit.setAttribute("role", "button");
