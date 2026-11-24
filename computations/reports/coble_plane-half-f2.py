@@ -172,7 +172,7 @@ print('B = U_1 + U_2 + I_{0,7}: rank %d, Gram determinant %d, signature (%d, %d)
       % (N, determinant(GRAM), *signature(GRAM)))
 print('P_0 = <e_1, e_2>: rank %d, primitive, totally isotropic\n' % len(P_0))
 
-print('(1) the complete integral family of thm:o2-plane-family')
+print('(1) integral plane stabilizer: Levi factor')
 plane = {}
 
 
@@ -203,12 +203,6 @@ levi_od = ['swap_d%d' % j for j in range(1, 7)] + ['sign_d%d' % j for j in range
 unipotent = ['E_e1_%d' % j for j in range(len(even))] + ['E_e2_%d' % j for j in range(len(even))]
 unipotent += ['central']
 assert sorted(plane) == sorted(levi_gl + levi_od + unipotent)
-print('  GL_2(Z): the transposition of the two hyperbolic planes and its shear (%d)'
-      % len(levi_gl))
-print('  O(D): the six adjacent transpositions and the seven sign changes (%d)' % len(levi_od))
-print('  the unipotent half: fourteen even-norm transvections and the central shear (%d)'
-      % len(unipotent))
-print('  total %d' % len(plane))
 
 
 def plane_matrix(M):
@@ -219,14 +213,12 @@ def plane_matrix(M):
 
 
 planes = {k: plane_matrix(M) for k, M in plane.items()}
-print('  every member is an integral Gram isometry of B: %s'
-      % all(iso(M) for M in plane.values()))
-print('  every member maps P_0 into P_0, with determinant +-1: %s'
-      % all(planes[k][1] and abs(determinant(planes[k][0])) == 1 for k in plane))
-print('  the parameters d_j + d_7 (1 <= j <= 6) and 2d_7 have norms %s'
-      % [dot(w, w) for w in even])
-print('  their coordinates are a basis of D^ev, of determinant %d'
-      % abs(determinant([[w[j] for j in range(4, N)] for w in even])))
+assert all(iso(M) for M in plane.values())
+assert all(planes[k][1] and abs(determinant(planes[k][0])) == 1 for k in plane)
+assert all(dot(w, w) % 2 == 0 for w in even)
+# D_even has index two, since the coordinate sum mod two is surjective.
+# These integral even vectors have index two by their determinant, hence form its basis.
+assert abs(determinant([[w[j] for j in range(4, N)] for w in even])) == 2
 
 
 def dpoint(v):
@@ -243,9 +235,8 @@ def dvector(i, s):
 order_od = int(libgap.Size(libgap.Group(
     [libgap.PermList([dpoint(mv(plane[k], dvector(i, s))) for i in range(7) for s in (1, -1)])
      for k in levi_od])))
-print('  the thirteen signed permutations generate O(D), of order %d' % order_od)
-print('  which is the order 2^7 * 7! = %d of the signed permutations: %s'
-      % (2 ** 7 * 5040, order_od == 2 ** 7 * 5040))
+assert order_od == 2 ** 7 * 5040
+print('  |O(D)| = %d' % order_od)
 
 
 def two_by_two(A, B):
@@ -280,10 +271,10 @@ for depth in range(1, 11):
                 if key in reached and reached[key] is None:
                     reached[key] = depth
     frontier = following
-print('  they act on P_0 by gamma and on <f_1, f_2> by (gamma^{-1})^T: %s'
-      % (contragredient == len(levi_gl)))
-print('  they generate GL_2(Z): [[0, -1], [1, 0]] and -I_2 are words in them of length %d and %d'
-      % (reached[((0, -1), (1, 0))], reached[((-1, 0), (0, -1))]))
+assert contragredient == len(levi_gl)
+# The standard rotation and -I, together with the shear, generate SL_2(Z)
+# by the Euclidean algorithm. The swap provides determinant minus one.
+assert all(depth is not None for depth in reached.values())
 
 moves = 0
 for e_index, label in ((0, 'e1'), (2, 'e2')):
@@ -296,32 +287,25 @@ central = plane['central']
 shears = (mv(central, unit(0)) == unit(0) and mv(central, unit(2)) == unit(2)
           and mv(central, unit(1)) == add(unit(1), unit(2))
           and mv(central, unit(3)) == add(unit(3), [-z for z in unit(0)]))
-print('  each transvection fixes e_1 and e_2 and moves f_i to f_i + w - (w,w)/2 e_i: %s'
-      % (moves == 2 * len(even)))
-print('  the central shear fixes e_1 and e_2 and moves f_1 to f_1 + e_2, f_2 to f_2 - e_1: %s'
-      % shears)
-kernel = 0
+assert moves == 2 * len(even)
+assert shears
 for k in unipotent:
     member = plane[k]
-    kernel += int(all(mv(member, unit(i))[j] == unit(i)[j]
-                      for i in (0, 2) + tuple(range(4, N))
-                      for j in (1, 3) + tuple(range(4, N))))
-print('  the fifteen unipotent members fix P_0 and P_0^perp/P_0 pointwise: %s'
-      % (kernel == len(unipotent)))
+    assert all(mv(member, unit(i)) == unit(i) for i in (0, 2))
+    assert all(mv(member, unit(i))[j] == unit(i)[j]
+               for i in range(4, N)
+               for j in (1, 3) + tuple(range(4, N)))
 
 print('\n(1 cont.) reduction modulo 2')
 print('  A = B/2B: %d classes, q(x) = (x,x)_B/2 mod 2, and rho(g) is g mod 2' % (1 << N))
 commutator = mul(mul(mul(plane['E_e1_0'], plane['E_e2_1']), inv(plane['E_e1_0'])),
                  inv(plane['E_e2_1']))
-print('  the commutator of E_{e_1,d_1+d_7} and E_{e_2,d_2+d_7} reduces to the central shear: %s'
-      % (table(commutator) == table(central)))
+assert table(commutator) == table(central)
 basis_change = raw['standard_from_split']
 inverse_change = mul(mul(GRAM, tr(basis_change)), raw['standard_gram'])
 assert mul(inverse_change, basis_change) == I
 ambient = [mul(mul(inverse_change, g['matrix_standard']), basis_change) for g in raw['generators']]
 assert len(ambient) == 21 and all(map(iso, ambient))
-print('  all twenty-one integral generators of thm:coble-ambient-21-generators are Gram'
-      ' isometries: True')
 
 print('\n(2) G = O(q) over F_2')
 G_q = libgap.Group([as_permutation(M) for M in ambient])
@@ -330,6 +314,17 @@ order_G = int(libgap.Size(G_q))
 order_H = int(libgap.Size(H))
 eichler = raw['eichler_generator_indices']
 order_eichler = int(libgap.Size(libgap.Group([as_permutation(ambient[i]) for i in eichler])))
+# Independent exact order formula: in the hyperbolic 2m-space there
+# are (2^(2m-1)+2^(m-1)-1)*2^(2m-2) ordered hyperbolic pairs.
+# Removing a pair leaves the hyperbolic space of dimension 2m-2.
+expected_ambient_order = 1
+for m in range(1, 6):
+    expected_ambient_order *= (2 ** (2*m-1) + 2 ** (m-1) - 1) * 2 ** (2*m-2)
+assert order_G == expected_ambient_order
+# In the proved parabolic family the Levi image has order 6*7!,
+# and the image of the radical has order 2^13 (thm:coble-plane-stabilizer-image).
+assert order_H == 6 * 5040 * 2 ** 13
+assert order_G == 2 * order_eichler
 print('  |G| = |O(q)| = %d  (thm:coble-ambient-21-generators, rho onto)' % order_G)
 print('  the Eichler subgroup of thm:coble-ambient-21-generators has index %d in G'
       % (order_G // order_eichler))
@@ -337,7 +332,7 @@ print('  |H| = |rho(Stab_{O(B)}(P_0))| = %d' % order_H)
 
 print('\n(2 cont.) J, its stabilizer, its orbit')
 J = sorted({mask(P_0[0]), mask(P_0[1]), mask(add(P_0[0], P_0[1]))})
-print('  J = <e_1/2, e_2/2> = %s' % J)
+assert len(J) == 3
 on_sets = libgap.OnSets
 stable = libgap.Stabilizer(G_q, libgap(J), on_sets)
 order_stab = int(libgap.Size(stable))
@@ -345,16 +340,19 @@ order_orbit = len(list(libgap.Orbit(G_q, libgap(J), on_sets)))
 print('  |Stab_{O(q)}(J)| = %d' % order_stab)
 print("  |O(q) . J| = %d, the J' attained by primitive isotropic planes, rho onto O(q)"
       % order_orbit)
-print('  |Stab| * |orbit| = |G|: %s' % (order_stab * order_orbit == order_G))
-print('  H <= Stab: %s' % bool(libgap.IsSubgroup(stable, H)))
+assert order_stab * order_orbit == order_G
+assert bool(libgap.IsSubgroup(stable, H))
+assert order_stab % order_H == 0
+print('  |Stab| * |orbit| = |G|: True')
+print('  H <= Stab: True')
 
 print('\nTHE NUMBERS')
 print('  |H| = |rho(Stab_{O(B)}(P_0))|    = %d' % order_H)
 print('  |Stab_{O(q)}(J)|                 = %d' % order_stab)
 print('  index [Stab : H]                 = %d' % (order_stab // order_H))
-print('  planes over J, |O(q) . J|        = %d' % order_orbit)
+print('  liftable data |O(q) . J|        = %d' % order_orbit)
 print('  discriminant-kernel plane orbits = %d = [O(q) : H] = %d * %d'
       % (order_G // order_H, order_stab // order_H, order_orbit))
 print('  (orbits of the primitive isotropic planes under Otilde = ker rho, thm:o2-planes(3b);')
-print('   a count of orbits on the discriminant data, not the 1-cusps of F_Co)')
+print('   integral plane orbits, with eight over each discriminant datum, not the 1-cusps of F_Co)')
 print('  23 715 and the five page sizes   = %d' % (1575 + 270 + 9450 + 3780 + 8640))
