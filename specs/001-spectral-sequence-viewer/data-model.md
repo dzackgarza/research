@@ -1,5 +1,7 @@
 # Author input and viewer state
 
+## Implemented first-quadrant schema
+
 | Record | Fields and rules |
 | --- | --- |
 | Sequence | Required `convention` (cohomological or homological), `firstPage`, `extent`, and nonempty ordered `pages`. Optional `pageCount` equals the array length. Page indices increase by one from firstPage. Optional `degenerationPage` may exceed the last supplied index. |
@@ -14,3 +16,7 @@ Use nonnegative integer page indices and record coordinates. Resolve an unlisted
 For page r use displacement (r,1−r) in cohomology and (−r,r−1) in homology. Add the displacement for the outgoing target and subtract it for the incoming source. A known zero endpoint or global degeneration forces the map to zero. Local permanence from page s likewise forces incident differentials to vanish from s onward. Reject a nonzero assertion that conflicts with forced vanishing. Otherwise use the stated map status, defaulting to undetermined. Validate bounds, counts, ordering and duplicate keys before accepting the sequence.
 
 Navigation changes the selected page and preserves the inspected coordinate and filter. Changing the filter or zero glyph changes presentation only. Local stability text gives its first page. The selector identifies the supplied degeneration page with infinity and keeps every later supplied page selectable.
+
+## Model changes required by the extended stories
+
+Store signed native bidegrees independently of the declared support. A support restriction gives mathematical vanishing. The data extent governs missing records, and the viewport crops the projected diagram. Key terms, stability declarations, and differential sources by native bidegree under every projection. A component owns a collection of generator-image assignments. The current singular `generator` and `image` fields describe only one assignment.

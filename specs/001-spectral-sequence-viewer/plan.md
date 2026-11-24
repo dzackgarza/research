@@ -19,3 +19,7 @@ The package owns `src/`, `schema/sequence.schema.json`, `examples/`, and `tests/
 ## Constitution check
 
 This checkout supplies governance through `INTENT.md`, `AGENTS.md`, and `CONTRIBUTING.md`. The design satisfies the presentation boundary before and after interface design. Each displayed assertion traces to author data or the grading and display rules in the specification. Browser tests establish observable display behavior. The viewer supplies no computational evidence to the formal programme.
+
+## Extensions to the first-quadrant implementation
+
+Implement signed native coordinates and explicit support in the shared model first. The plotting layer consumes these coordinates and projects both endpoints for display. Selection resolves to the native term before looking up an incident component. Extend the component record and inspector together for multiple generator images. The acceptance examples and open work are in the [specification](spec.md) and [task list](tasks.md).

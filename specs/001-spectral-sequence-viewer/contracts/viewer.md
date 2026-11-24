@@ -7,3 +7,7 @@ A successful assignment displays the configured initial page. Invalid assignment
 Expose labelled previous, next and page selection controls. Disable movement beyond either end. Position p rightwards and q upwards. Make each visible cell inspectable, including unknown and blank zero cells. A keyboard user can enter the grid, move between cells and inspect the focused coordinate. Indicate selected terms, stability and map status in text.
 
 All mode draws admissible arrows with both endpoints visible. Potentially nonzero mode draws nonzero and undetermined arrows. Known nonzero mode draws asserted nonzero arrows. None draws no arrows. Selection highlights incident drawn arrows. In every mode the inspector gives both maps, their endpoints, statuses and supplied formulas, marking offscreen endpoints. Arrow visibility never changes the inspector's underlying data.
+
+## Extended contract (pending implementation)
+
+The default axes show native bidegrees. In a regraded view the diagram places both endpoints in display coordinates, and inspection identifies the component by its native page and source bidegree. Selecting a component with several generator images shows each assignment. The signed-coordinate and rank-two examples in the [specification](../spec.md) exercise the same public sequence setter as the Serre figures.
