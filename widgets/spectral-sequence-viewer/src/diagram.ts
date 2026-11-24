@@ -87,18 +87,17 @@ export function diagram(
     const a = nativePoint(m.data, { p, q }),
       arrow = differential(m, a),
       b = plotPoint(m.data, arrow.b);
-    if (
-      (inside(b, r) || m.maps.has(key(a))) &&
-      mode !== "None" &&
-      (mode === "All" ||
-        (mode === "Potentially nonzero"
-          ? arrow.status !== "zero"
-          : arrow.status === "nonzero"))
-    ) {
+    if ((inside(b, r) || m.maps.has(key(a))) && mode !== "None") {
       const assignments = arrow.assignments?.filter(
         (row) => row.sourceClass || row.targetClass,
       );
       for (const row of assignments?.length ? assignments : [undefined]) {
+        const status = row?.image.trim() === "0" ? "zero" : arrow.status;
+        if (
+          (mode === "Potentially nonzero" && status === "zero") ||
+          (mode === "Known nonzero" && status !== "nonzero")
+        )
+          continue;
         const startY = y(q) + offset(row?.sourceClass),
           endY = y(b.q) + offset(row?.targetClass);
         const dx = x(b.p) - x(p),
@@ -120,7 +119,7 @@ export function diagram(
           y2: segment[1][1],
         }))
           line.setAttribute(attr, String(val));
-        line.dataset.status = arrow.status;
+        line.dataset.status = status;
         line.dataset.highlighted = String(
           key(selected) === key(a) ||
             (!arrowSelected && key(selected) === key(arrow.b)),
@@ -177,7 +176,10 @@ export function diagram(
     cell.dataset.status = status;
     cell.style.top = y(q) + "px";
     cell.setAttribute("aria-label", coord(a));
-    cell.setAttribute("aria-pressed", String(!active && key(a) === key(selected)));
+    cell.setAttribute(
+      "aria-pressed",
+      String(!active && key(a) === key(selected)),
+    );
     if (status === "zero") {
       if (zeroStyle !== "blank")
         cell.append(math(zeroStyle === "dot" ? "\\cdot" : "0"));

@@ -109,24 +109,31 @@ export function parseSequence(input: Sequence): Sequence {
     const model = indexPage(data, page);
     for (const term of page.terms) {
       for (const c of term.classes ?? []) {
-        if (term.status !== "nonzero") fail("classes require a nonzero term");
+        if (term.status !== "nonzero")
+          fail(
+            `page ${page.index} terms ${key(term)}: ` +
+              "classes require a nonzero term",
+          );
         if (
           c.previous &&
           !data.pages[i - 1]?.terms
             .find((t) => key(t) === key(term))
             ?.classes?.some((old) => old.id === c.previous)
         )
-          fail("invalid previous class " + c.previous);
+          fail(
+            `page ${page.index} terms ${key(term)}: ` +
+              "invalid previous class " +
+              c.previous,
+          );
       }
     }
-    for (const relation of page.relations ?? []) {
-      if (
-        !model.classes.has(relation.source) ||
-        !model.classes.has(relation.target)
-      )
-        fail("unknown relation endpoint");
+    for (const [j, relation] of (page.relations ?? []).entries()) {
+      const field = `page ${page.index} relations[${j}]`;
+      for (const side of ["source", "target"] as const)
+        if (!model.classes.has(relation[side]))
+          fail(`${field}.${side}: unknown class ${relation[side]}`);
       if (relation.kind === "extension" && page.index !== data.degenerationPage)
-        fail("extensions require the limiting page");
+        fail(field + ".kind: extensions require the limiting page");
     }
     for (const term of page.terms)
       if (term.status !== "zero" && outsideSupport(data, term))
@@ -144,15 +151,25 @@ export function parseSequence(input: Sequence): Sequence {
           [assignment.targetClass, endpoint(model, map, 1)],
         ] as const) {
           if (id && model.classes.get(id)?.term !== model.terms.get(key(point)))
-            fail("incorrect class endpoint " + id);
-          if (id && !model.classes.has(id)) fail("unknown class " + id);
+            fail(
+              `page ${page.index} maps ${key(map)}: ` +
+                "incorrect class endpoint " +
+                id,
+            );
+          if (id && !model.classes.has(id))
+            fail(
+              `page ${page.index} maps ${key(map)}: ` + "unknown class " + id,
+            );
         }
         if (
           assignment.sourceClass &&
           model.classes.get(assignment.sourceClass)?.c.permanent &&
-          assignment.image !== "0"
+          assignment.image.trim() !== "0"
         )
-          fail("permanent class has nonzero image");
+          fail(
+            `page ${page.index} maps ${key(map)}: ` +
+              "permanent class has nonzero image",
+          );
       }
       const generators =
         map.assignments?.map((assignment) => assignment.generator) ?? [];
@@ -184,7 +201,10 @@ export function indexPage(data: Sequence, page: Page) {
   const classes = new Map<string, { c: ChartClass; term: Term }>();
   for (const term of page.terms)
     for (const c of term.classes ?? []) {
-      if (classes.has(c.id)) throw new Error("duplicate class " + c.id);
+      if (classes.has(c.id))
+        throw new Error(
+          `page ${page.index} terms ${key(term)}: ` + "duplicate class " + c.id,
+        );
       classes.set(c.id, { c, term });
     }
   return {

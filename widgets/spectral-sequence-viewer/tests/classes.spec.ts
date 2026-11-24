@@ -130,23 +130,49 @@ test("inspect the segment with neither endpoint visible", async ({ page }) => {
   await expect(figure.locator(".chain .clipped")).toHaveCount(3);
 });
 
-test("filter a zero generator image in a nonzero component", async ({page}) => {
+test("filter a zero generator image in a nonzero component", async ({
+  page,
+}) => {
   await page.goto("/examples/static/");
   const figure = page.locator("spectral-sequence-viewer");
   const data = structuredClone(shared);
-  data.pages[0].maps[0].assignments.push({generator:"y", image:"0", sourceClass:"y", targetClass:"z"});
-  await figure.evaluate((el,d)=>{Object.assign(el,{sequence:d})},data);
-  const zero = figure.getByRole("button",{name:"Differential y to z"});
+  data.pages[0].maps[0].assignments.push({
+    generator: "y",
+    image: "0",
+    sourceClass: "y",
+    targetClass: "z",
+  });
+  await figure.evaluate((el, d) => {
+    Object.assign(el, { sequence: d });
+  }, data);
+  const zero = figure.getByRole("button", { name: "Differential y to z" });
   await expect(zero).toBeVisible();
-  await figure.getByRole("button",{name:"Display options"}).click();
+  await figure.getByRole("button", { name: "Display options" }).click();
   await figure.getByLabel("Arrows").selectOption("Known nonzero");
   await expect(zero).toHaveCount(0);
-  await expect(figure.getByRole("button",{name:"Differential x to z"})).toBeVisible();
+  await expect(
+    figure.getByRole("button", { name: "Differential x to z" }),
+  ).toBeVisible();
 });
 
-test("locate an invalid class reference in a relation", async ({page}) => {
+test("locate an invalid class reference in a relation", async ({ page }) => {
   await page.goto("/examples/static/");
-  const data=structuredClone(shared);
-  data.pages[0].relations![0].target="absent";
-  await expect(page.locator("spectral-sequence-viewer").evaluate((el,d)=>{Object.assign(el,{sequence:d})},data)).rejects.toThrow(/page 2 relations\[0\].target.*absent/);
+  const data = structuredClone(shared);
+  data.pages[0].relations![0].target = "absent";
+  await expect(
+    page.locator("spectral-sequence-viewer").evaluate((el, d) => {
+      Object.assign(el, { sequence: d });
+    }, data),
+  ).rejects.toThrow(/page 2 relations\[0\].target.*absent/);
+});
+
+test("navigate between a named class and the adjacent grid cell", async ({page}) => {
+  await page.goto("/examples/static/");
+  const figure=page.locator("spectral-sequence-viewer");
+  await figure.evaluate((el,d)=>{Object.assign(el,{sequence:d})},shared);
+  await figure.getByRole("button",{name:"Class x",exact:true}).press("ArrowRight");
+  const cell=figure.getByRole("button",{name:"(1,1)",exact:true});
+  await expect(cell).toBeFocused();
+  await cell.press("ArrowLeft");
+  await expect(figure.getByRole("button",{name:"Class x",exact:true})).toBeFocused();
 });

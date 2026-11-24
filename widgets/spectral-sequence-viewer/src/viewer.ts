@@ -268,7 +268,10 @@ export class Viewer extends HTMLElement {
         for (const assignment of assignments) {
           const row = ["", "", "", "", ""];
           row[2 * i] = assignment.generator;
-          row[2 * i + 1] = colored(map.status, "\\longmapsto");
+          row[2 * i + 1] = colored(
+            assignment.image.trim() === "0" ? "zero" : map.status,
+            "\\longmapsto",
+          );
           row[2 * i + 2] = assignment.image;
           rows.push(row);
         }
@@ -293,7 +296,11 @@ export class Viewer extends HTMLElement {
     } else {
       if (this.active?.startsWith("Class ")) {
         const selectedClass = m.classes.get(this.active.slice(6))!;
-        panel.append(math(selectedClass.c.label + "\\in " + indexed("E", selectedClass.term)));
+        panel.append(
+          math(
+            selectedClass.c.label + "\\in " + indexed("E", selectedClass.term),
+          ),
+        );
       }
       panel.append(chain);
     }

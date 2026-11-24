@@ -4873,13 +4873,17 @@ function ot(e) {
 	return r(t.stableTerms ?? [], "stableTerms"), t.pages.forEach((e, i) => {
 		e.index !== t.firstPage + i && n("pages[" + i + "].index expected " + (t.firstPage + i)), r(e.terms, "page " + e.index + " terms"), r(e.maps, "page " + e.index + " maps");
 		let a = st(t, e);
-		for (let r of e.terms) for (let e of r.classes ?? []) r.status !== "nonzero" && n("classes require a nonzero term"), e.previous && !t.pages[i - 1]?.terms.find((e) => U(e) === U(r))?.classes?.some((t) => t.id === e.previous) && n("invalid previous class " + e.previous);
-		for (let r of e.relations ?? []) a.classes.has(r.source) && a.classes.has(r.target) || n("unknown relation endpoint"), r.kind === "extension" && e.index !== t.degenerationPage && n("extensions require the limiting page");
+		for (let r of e.terms) for (let a of r.classes ?? []) r.status !== "nonzero" && n(`page ${e.index} terms ${U(r)}: classes require a nonzero term`), a.previous && !t.pages[i - 1]?.terms.find((e) => U(e) === U(r))?.classes?.some((e) => e.id === a.previous) && n(`page ${e.index} terms ${U(r)}: invalid previous class ` + a.previous);
+		for (let [r, i] of (e.relations ?? []).entries()) {
+			let o = `page ${e.index} relations[${r}]`;
+			for (let e of ["source", "target"]) a.classes.has(i[e]) || n(`${o}.${e}: unknown class ${i[e]}`);
+			i.kind === "extension" && e.index !== t.degenerationPage && n(o + ".kind: extensions require the limiting page");
+		}
 		for (let r of e.terms) r.status !== "zero" && tt(t, r) && n("page " + e.index + " terms " + U(r) + " outside declared support");
 		for (let t of e.maps) {
-			for (let e of t.assignments ?? []) {
-				for (let [r, i] of [[e.sourceClass, t], [e.targetClass, et(a, t, 1)]]) r && a.classes.get(r)?.term !== a.terms.get(U(i)) && n("incorrect class endpoint " + r), r && !a.classes.has(r) && n("unknown class " + r);
-				e.sourceClass && a.classes.get(e.sourceClass)?.c.permanent && e.image !== "0" && n("permanent class has nonzero image");
+			for (let r of t.assignments ?? []) {
+				for (let [i, o] of [[r.sourceClass, t], [r.targetClass, et(a, t, 1)]]) i && a.classes.get(i)?.term !== a.terms.get(U(o)) && n(`page ${e.index} maps ${U(t)}: incorrect class endpoint ` + i), i && !a.classes.has(i) && n(`page ${e.index} maps ${U(t)}: unknown class ` + i);
+				r.sourceClass && a.classes.get(r.sourceClass)?.c.permanent && r.image.trim() !== "0" && n(`page ${e.index} maps ${U(t)}: permanent class has nonzero image`);
 			}
 			let r = t.assignments?.map((e) => e.generator) ?? [];
 			new Set(r).size !== r.length && n("page " + e.index + " maps " + U(t) + " has duplicate generator assignments");
@@ -4889,10 +4893,10 @@ function ot(e) {
 }
 function st(e, t) {
 	let n = /* @__PURE__ */ new Map();
-	for (let e of t.terms) for (let t of e.classes ?? []) {
-		if (n.has(t.id)) throw Error("duplicate class " + t.id);
-		n.set(t.id, {
-			c: t,
+	for (let e of t.terms) for (let r of e.classes ?? []) {
+		if (n.has(r.id)) throw Error(`page ${t.index} terms ${U(e)}: duplicate class ` + r.id);
+		n.set(r.id, {
+			c: r,
 			term: e
 		});
 	}
@@ -43017,30 +43021,32 @@ function ga(e, t, n, r, i, a, o, s) {
 			p,
 			q: m
 		}), v = it(e, _), b = ct(e.data, v.b);
-		if (($e(b, t) || e.maps.has(U(_))) && r !== "None" && (r === "All" || (r === "Potentially nonzero" ? v.status !== "zero" : v.status === "nonzero"))) {
+		if (($e(b, t) || e.maps.has(U(_))) && r !== "None") {
 			let e = v.assignments?.filter((e) => e.sourceClass || e.targetClass);
 			for (let t of e?.length ? e : [void 0]) {
-				let e = g(m) + y(t?.sourceClass), r = g(b.q) + y(t?.targetClass), i = h(b.p) - h(p), c = r - e, x = Math.hypot(i, c), S = fa([[h(p) + 22 * i / x, e + 22 * c / x], [h(b.p) - 22 * i / x, r - 22 * c / x]], [
+				let e = t?.image.trim() === "0" ? "zero" : v.status;
+				if (r === "Potentially nonzero" && e === "zero" || r === "Known nonzero" && e !== "nonzero") continue;
+				let i = g(m) + y(t?.sourceClass), c = g(b.q) + y(t?.targetClass), x = h(b.p) - h(p), S = c - i, C = Math.hypot(x, S), w = fa([[h(p) + 22 * x / C, i + 22 * S / C], [h(b.p) - 22 * x / C, c - 22 * S / C]], [
 					0,
 					0,
 					l,
 					u
 				])[0];
-				if (!S) continue;
-				let C = document.createElementNS(d, "line");
+				if (!w) continue;
+				let T = document.createElementNS(d, "line");
 				for (let [e, t] of Object.entries({
-					x1: S[0][0],
-					y1: S[0][1],
-					x2: S[1][0],
-					y2: S[1][1]
-				})) C.setAttribute(e, String(t));
-				C.dataset.status = v.status, C.dataset.highlighted = String(U(n) === U(_) || !a && U(n) === U(v.b)), C.setAttribute("marker-end", "url(#tip)");
-				let w = C.cloneNode(!1);
-				w.removeAttribute("data-status"), w.removeAttribute("data-highlighted"), w.removeAttribute("marker-end"), w.classList.add("arrow-hit"), w.setAttribute("role", "button"), w.setAttribute("tabindex", "0");
-				let T = "Differential " + (t?.sourceClass ?? ha(_)) + " to " + (t?.targetClass ?? ha(v.b));
-				w.setAttribute("aria-label", T), w.setAttribute("aria-pressed", String(o === T)), w.onclick = () => s(_, !0, T), w.onkeydown = (e) => {
-					(e.key === "Enter" || e.key === " ") && (e.preventDefault(), s(_, !0, T));
-				}, f.append(C, w);
+					x1: w[0][0],
+					y1: w[0][1],
+					x2: w[1][0],
+					y2: w[1][1]
+				})) T.setAttribute(e, String(t));
+				T.dataset.status = e, T.dataset.highlighted = String(U(n) === U(_) || !a && U(n) === U(v.b)), T.setAttribute("marker-end", "url(#tip)");
+				let E = T.cloneNode(!1);
+				E.removeAttribute("data-status"), E.removeAttribute("data-highlighted"), E.removeAttribute("marker-end"), E.classList.add("arrow-hit"), E.setAttribute("role", "button"), E.setAttribute("tabindex", "0");
+				let D = "Differential " + (t?.sourceClass ?? ha(_)) + " to " + (t?.targetClass ?? ha(v.b));
+				E.setAttribute("aria-label", D), E.setAttribute("aria-pressed", String(o === D)), E.onclick = () => s(_, !0, D), E.onkeydown = (e) => {
+					(e.key === "Enter" || e.key === " ") && (e.preventDefault(), s(_, !0, D));
+				}, f.append(T, E);
 			}
 		}
 		if (!$e({
@@ -43235,7 +43241,7 @@ var ya = (e) => e.map((e) => [e, e]), ba = (e) => String(e).replace(/\d/g, (e) =
 					"",
 					""
 				];
-				r[2 * e] = n.generator, r[2 * e + 1] = w(t.status, "\\longmapsto"), r[2 * e + 2] = n.image, N.push(r);
+				r[2 * e] = n.generator, r[2 * e + 1] = w(n.image.trim() === "0" ? "zero" : t.status, "\\longmapsto"), r[2 * e + 2] = n.image, N.push(r);
 			}
 			if (t.formula && t.formula !== "0") {
 				let n = [
