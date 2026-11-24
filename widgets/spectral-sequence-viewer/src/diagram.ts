@@ -1,4 +1,4 @@
-import { key, type Model, type Point, type Rect } from "./sequence";
+import { key, nativePoint, plotPoint, type Model, type Point, type Rect } from "./sequence";
 import { differential, inside, termStatus } from "./differentials";
 import { math } from "./math";
 export const coord = (t: Point) => "(" + key(t) + ")";
@@ -53,9 +53,9 @@ export function diagram(
   for (let q = r.qMin; q <= r.qMax; q++) tick(q, 8, y(q));
   for (let q = r.qMax; q >= r.qMin; q--)
     for (let p = r.pMin; p <= r.pMax; p++) {
-      const a = { p, q },
+      const a = nativePoint(m.data, { p, q }),
         arrow = differential(m, a),
-        b = arrow.b;
+        b = plotPoint(m.data, arrow.b);
       if (
         inside(b, r) &&
         mode !== "None" &&
@@ -77,7 +77,7 @@ export function diagram(
           line.setAttribute(attr, String(val));
         line.dataset.status = arrow.status;
         line.dataset.highlighted = String(
-          key(selected) === key(a) || key(selected) === key(b),
+          key(selected) === key(a) || key(selected) === key(arrow.b),
         );
         line.setAttribute("marker-end", "url(#tip)");
         svg.append(line);
@@ -117,7 +117,7 @@ export function diagram(
         const next = moves[e.key];
         if (next) {
           e.preventDefault();
-          if (inside(next, r)) choose(next);
+          if (inside(next, r)) choose(nativePoint(m.data, next));
         }
       };
       graph.append(cell);

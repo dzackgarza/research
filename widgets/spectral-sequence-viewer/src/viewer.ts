@@ -1,5 +1,6 @@
 import {
   indexPage,
+  nativePoint, viewport,
   parseSequence,
   key,
   type Sequence,
@@ -41,8 +42,8 @@ export class Viewer extends HTMLElement {
     const data = parseSequence(input);
     this.data = data;
     this.i = (data.settings?.initialPage ?? data.firstPage) - data.firstPage;
-    const r = data.settings?.viewport ?? data.extent;
-    this.selected = { p: r.pMin, q: r.qMin };
+    const r = viewport(data);
+    this.selected = nativePoint(data, { p: r.pMin, q: r.qMin });
     this.zeros = data.settings?.zeroStyle ?? "zero";
     this.filter = "All";
     this.render();
@@ -52,7 +53,7 @@ export class Viewer extends HTMLElement {
     if (!data) return;
     const focus = this.root.activeElement?.getAttribute("aria-label");
     const settings = data.settings ?? {},
-      r = settings.viewport ?? data.extent,
+      r = viewport(data),
       page = data.pages[this.i],
       m = indexPage(data, page);
     const style = document.createElement("style");
@@ -174,15 +175,20 @@ export class Viewer extends HTMLElement {
     for (const [i, map] of maps.entries()) {
       const generator = m.terms.get(key(map.a))?.generator;
       const image = map.status === "zero" ? "0" : map.image;
-      const row = ["", "", "", "", ""];
-      if (generator && image) {
-        row[2 * i] = generator;
-        row[2 * i + 1] = colored(map.status, "\\longmapsto");
-        row[2 * i + 2] = image;
+      const assignments = map.assignments ?? (generator && image ? [{ generator, image }] : []);
+      if (assignments.length) {
+        for (const assignment of assignments) {
+          const row = ["", "", "", "", ""];
+          row[2 * i] = assignment.generator;
+          row[2 * i + 1] = colored(map.status, "\\longmapsto");
+          row[2 * i + 2] = assignment.image;
+          rows.push(row);
+        }
       } else if (map.formula && map.formula !== "0") {
+        const row = ["", "", "", "", ""];
         row[2 * i + 1] = colored(map.status, map.formula);
-      } else continue;
-      rows.push(row);
+        rows.push(row);
+      }
     }
     const tex = "\\begin{array}{ccccc}" +
       rows.map(row => row.join("&")).join("\\\\") + "\\end{array}";
@@ -199,10 +205,10 @@ export class Viewer extends HTMLElement {
     canvas.className = "canvas";
     const vertical = document.createElement("div");
     vertical.className = "vertical-axis";
-    vertical.append(math(settings.qLabel ?? "q"), " ↑");
+    vertical.append(math(settings.qLabel ?? (settings.projection === "total-filtration" ? "p" : "q")), " ↑");
     const horizontal = document.createElement("div");
     horizontal.className = "horizontal-axis";
-    horizontal.append(math(settings.pLabel ?? "p"), " →");
+    horizontal.append(math(settings.pLabel ?? (settings.projection === "total-filtration" ? "p+q" : "p")), " →");
     canvas.append(vertical, scroll, horizontal);
     const layout = document.createElement("div");
     layout.className = "layout";

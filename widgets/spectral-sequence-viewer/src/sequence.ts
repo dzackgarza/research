@@ -1,6 +1,6 @@
 import Ajv from "ajv";
 import schema from "../schema/sequence.schema.json";
-import { endpoint, forcedZero, inside } from "./differentials";
+import { endpoint, forcedZero, inside, outsideSupport } from "./differentials";
 
 export interface Point {
   p: number;
@@ -19,6 +19,7 @@ export interface Term extends Point {
   module?: string;
 }
 export interface Arrow extends Point {
+  assignments?: { generator: string; image: string }[];
   image?: string;
   status: "zero" | "nonzero" | "undetermined";
   formula?: string;
@@ -30,6 +31,7 @@ export interface Page {
   formula?: string;
 }
 export interface Sequence {
+  support?: "unrestricted" | "first-quadrant";
   supportedColumns?: number[];
   firstPage: number;
   pages: Page[];
@@ -40,6 +42,7 @@ export interface Sequence {
   degenerationPage?: number;
   stableTerms?: (Point & { fromPage: number })[];
   settings?: {
+    projection?: "native" | "total-filtration";
     viewport?: Rect;
     initialPage?: number;
     title?: string;
@@ -85,6 +88,14 @@ export function parseSequence(input: Sequence): Sequence {
     unique(page.terms, "page " + page.index + " terms");
     unique(page.maps, "page " + page.index + " maps");
     const model = indexPage(data, page);
+    for (const term of page.terms)
+      if (term.status !== "zero" && outsideSupport(data, term))
+        fail("page " + page.index + " terms " + key(term) + " outside declared support");
+    for (const map of page.maps) {
+      const generators = map.assignments?.map(assignment => assignment.generator) ?? [];
+      if (new Set(generators).size !== generators.length)
+        fail("page " + page.index + " maps " + key(map) + " has duplicate generator assignments");
+    }
     for (const arrow of page.maps)
       if (
         arrow.status === "nonzero" &&
@@ -110,3 +121,23 @@ export function indexPage(data: Sequence, page: Page) {
   };
 }
 export type Model = ReturnType<typeof indexPage>;
+
+export function plotPoint(data: Sequence, point: Point): Point {
+  return data.settings?.projection === "total-filtration"
+    ? { p: point.p + point.q, q: point.p }
+    : point;
+}
+
+export function nativePoint(data: Sequence, point: Point): Point {
+  return data.settings?.projection === "total-filtration"
+    ? { p: point.q, q: point.p - point.q }
+    : point;
+}
+
+export function viewport(data: Sequence): Rect {
+  if (data.settings?.viewport) return data.settings.viewport;
+  const { pMin, pMax, qMin, qMax } = data.extent;
+  const lo = plotPoint(data, { p: pMin, q: qMin });
+  const hi = plotPoint(data, { p: pMax, q: qMax });
+  return { pMin: lo.p, pMax: hi.p, qMin: lo.q, qMax: hi.q };
+}

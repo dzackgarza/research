@@ -36,3 +36,9 @@ For an installed Chromium, supply its executable with `CHROMIUM_PATH=/path/to/ch
 Use `supportedColumns` to declare the columns that can contain nonzero terms on any page. Outside those columns all terms vanish, even beyond the supplied extent. The viewport only crops the drawing.
 
 A term's `label` appears on the chart. Its optional `module` identifies the group beneath the indexed term. To show the action on a generator, supply the source term's `generator` and the map's `image` as TeX. The viewer supplies the image of a generator under a known zero map.
+
+Set `support` to `"unrestricted"` for signed native bidegrees. The default is `"first-quadrant"`. Column restrictions, term records, map sources, and stability declarations always use native degrees.
+
+Set `settings.projection` to `"total-filtration"` to plot total degree horizontally and filtration degree vertically. The default is `"native"`. An explicit viewport bounds the horizontal and vertical display coordinates. With no viewport, the viewer projects the extent. Arrow keys follow the displayed axes, and inspection names the native component.
+
+For a component with several generator images, supply an ordered `assignments` array on the map, for example `[{"generator":"a","image":"u"},{"generator":"b","image":"0"}]`. Each assignment occupies one row between the same source and target. Set the status on the component as a whole.

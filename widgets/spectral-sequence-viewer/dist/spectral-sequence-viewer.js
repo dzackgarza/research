@@ -4530,22 +4530,22 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 			properties: {
 				pMin: {
 					type: "integer",
-					minimum: 0,
+					minimum: -9007199254740991,
 					maximum: 9007199254740991
 				},
 				pMax: {
 					type: "integer",
-					minimum: 0,
+					minimum: -9007199254740991,
 					maximum: 9007199254740991
 				},
 				qMin: {
 					type: "integer",
-					minimum: 0,
+					minimum: -9007199254740991,
 					maximum: 9007199254740991
 				},
 				qMax: {
 					type: "integer",
-					minimum: 0,
+					minimum: -9007199254740991,
 					maximum: 9007199254740991
 				}
 			},
@@ -4565,12 +4565,12 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 				properties: {
 					p: {
 						type: "integer",
-						minimum: 0,
+						minimum: -9007199254740991,
 						maximum: 9007199254740991
 					},
 					q: {
 						type: "integer",
-						minimum: 0,
+						minimum: -9007199254740991,
 						maximum: 9007199254740991
 					},
 					fromPage: {
@@ -4595,22 +4595,22 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 					properties: {
 						pMin: {
 							type: "integer",
-							minimum: 0,
+							minimum: -9007199254740991,
 							maximum: 9007199254740991
 						},
 						pMax: {
 							type: "integer",
-							minimum: 0,
+							minimum: -9007199254740991,
 							maximum: 9007199254740991
 						},
 						qMin: {
 							type: "integer",
-							minimum: 0,
+							minimum: -9007199254740991,
 							maximum: 9007199254740991
 						},
 						qMax: {
 							type: "integer",
-							minimum: 0,
+							minimum: -9007199254740991,
 							maximum: 9007199254740991
 						}
 					},
@@ -4634,7 +4634,8 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 					"zero",
 					"dot",
 					"blank"
-				] }
+				] },
+				projection: { enum: ["native", "total-filtration"] }
 			},
 			required: [],
 			additionalProperties: !1
@@ -4656,12 +4657,12 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 							properties: {
 								p: {
 									type: "integer",
-									minimum: 0,
+									minimum: -9007199254740991,
 									maximum: 9007199254740991
 								},
 								q: {
 									type: "integer",
-									minimum: 0,
+									minimum: -9007199254740991,
 									maximum: 9007199254740991
 								},
 								status: { enum: [
@@ -4688,12 +4689,12 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 							properties: {
 								p: {
 									type: "integer",
-									minimum: 0,
+									minimum: -9007199254740991,
 									maximum: 9007199254740991
 								},
 								q: {
 									type: "integer",
-									minimum: 0,
+									minimum: -9007199254740991,
 									maximum: 9007199254740991
 								},
 								status: { enum: [
@@ -4702,14 +4703,34 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 									"undetermined"
 								] },
 								formula: { type: "string" },
-								image: { type: "string" }
+								image: { type: "string" },
+								assignments: {
+									type: "array",
+									minItems: 1,
+									items: {
+										type: "object",
+										properties: {
+											generator: {
+												type: "string",
+												minLength: 1
+											},
+											image: {
+												type: "string",
+												minLength: 1
+											}
+										},
+										required: ["generator", "image"],
+										additionalProperties: !1
+									}
+								}
 							},
 							required: [
 								"p",
 								"q",
 								"status"
 							],
-							additionalProperties: !1
+							additionalProperties: !1,
+							not: { required: ["assignments", "image"] }
 						}
 					},
 					formula: { type: "string" }
@@ -4727,10 +4748,11 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 			type: "array",
 			items: {
 				type: "integer",
-				minimum: 0
+				minimum: -9007199254740991
 			},
 			uniqueItems: !0
-		}
+		},
+		support: { enum: ["first-quadrant", "unrestricted"] }
 	},
 	required: [
 		"firstPage",
@@ -4752,25 +4774,29 @@ function et(e, t, n) {
 	};
 }
 function tt(e, t) {
-	return t.p < 0 || t.q < 0 || e.data.supportedColumns && !e.data.supportedColumns.includes(t.p) ? "zero" : e.terms.get(U(t))?.status ?? ($e(t, e.data.extent) ? e.data.unlisted : void 0) ?? "unknown";
+	return e.support !== "unrestricted" && (t.p < 0 || t.q < 0) || e.supportedColumns !== void 0 && !e.supportedColumns.includes(t.p);
 }
-function nt(e, t, n) {
-	return e.page.index >= (e.data.degenerationPage ?? Infinity) || [t, n].some((t) => tt(e, t) === "zero" || e.page.index >= (e.stable.get(U(t)) ?? Infinity));
+function nt(e, t) {
+	return tt(e.data, t) ? "zero" : e.terms.get(U(t))?.status ?? ($e(t, e.data.extent) ? e.data.unlisted : void 0) ?? "unknown";
 }
-function rt(e, t) {
+function rt(e, t, n) {
+	return e.page.index >= (e.data.degenerationPage ?? Infinity) || [t, n].some((t) => nt(e, t) === "zero" || e.page.index >= (e.stable.get(U(t)) ?? Infinity));
+}
+function it(e, t) {
 	let n = et(e, t, 1), r = e.maps.get(U(t));
 	return {
 		a: t,
 		b: n,
-		status: nt(e, t, n) ? "zero" : r?.status ?? "undetermined",
+		status: rt(e, t, n) ? "zero" : r?.status ?? "undetermined",
 		formula: r?.formula,
-		image: r?.image
+		image: r?.image,
+		assignments: r?.assignments
 	};
 }
 // src/sequence.ts
-var U = ({ p: e, q: t }) => e + "," + t, it = new Ze.default().compile(Qe);
-function at(e) {
-	if (!it(e)) throw Error(new Ze.default().errorsText(it.errors));
+var U = ({ p: e, q: t }) => e + "," + t, at = new Ze.default().compile(Qe);
+function ot(e) {
+	if (!at(e)) throw Error(new Ze.default().errorsText(at.errors));
 	let t = structuredClone(e), n = (e) => {
 		throw Error(e);
 	};
@@ -4785,11 +4811,16 @@ function at(e) {
 	};
 	return r(t.stableTerms ?? [], "stableTerms"), t.pages.forEach((e, i) => {
 		e.index !== t.firstPage + i && n("pages[" + i + "].index expected " + (t.firstPage + i)), r(e.terms, "page " + e.index + " terms"), r(e.maps, "page " + e.index + " maps");
-		let a = ot(t, e);
-		for (let t of e.maps) t.status === "nonzero" && nt(a, t, et(a, t, 1)) && n("page " + e.index + " maps " + U(t) + " conflicts with forced zero");
+		let a = st(t, e);
+		for (let r of e.terms) r.status !== "zero" && tt(t, r) && n("page " + e.index + " terms " + U(r) + " outside declared support");
+		for (let t of e.maps) {
+			let r = t.assignments?.map((e) => e.generator) ?? [];
+			new Set(r).size !== r.length && n("page " + e.index + " maps " + U(t) + " has duplicate generator assignments");
+		}
+		for (let t of e.maps) t.status === "nonzero" && rt(a, t, et(a, t, 1)) && n("page " + e.index + " maps " + U(t) + " conflicts with forced zero");
 	}), t;
 }
-function ot(e, t) {
+function st(e, t) {
 	return {
 		data: e,
 		page: t,
@@ -4798,10 +4829,38 @@ function ot(e, t) {
 		stable: new Map(e.stableTerms?.map((e) => [U(e), e.fromPage]))
 	};
 }
+function ct(e, t) {
+	return e.settings?.projection === "total-filtration" ? {
+		p: t.p + t.q,
+		q: t.p
+	} : t;
+}
+function lt(e, t) {
+	return e.settings?.projection === "total-filtration" ? {
+		p: t.q,
+		q: t.p - t.q
+	} : t;
+}
+function ut(e) {
+	if (e.settings?.viewport) return e.settings.viewport;
+	let { pMin: t, pMax: n, qMin: r, qMax: i } = e.extent, a = ct(e, {
+		p: t,
+		q: r
+	}), o = ct(e, {
+		p: n,
+		q: i
+	});
+	return {
+		pMin: a.p,
+		pMax: o.p,
+		qMin: a.q,
+		qMax: o.q
+	};
+}
 // node_modules/mathjax-full/js/components/version.js
-var st = /* @__PURE__ */ s(((e) => {
+var dt = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.VERSION = void 0, e.VERSION = "3.2.2";
-})), ct = /* @__PURE__ */ s(((e) => {
+})), ft = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.PrioritizedList = void 0, e.PrioritizedList = function() {
 		function e() {
 			this.items = [], this.items = [];
@@ -4832,7 +4891,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			t >= 0 && this.items.splice(t, 1);
 		}, e.DEFAULTPRIORITY = 5, e;
 	}();
-})), lt = /* @__PURE__ */ s(((e, t, n) => {
+})), pt = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -4889,8 +4948,8 @@ var st = /* @__PURE__ */ s(((e) => {
 		}, t.prototype.document = function(e, t) {
 			return t === void 0 && (t = null), this.handlesDocument(e).create(e, t);
 		}, t;
-	}(ct().PrioritizedList);
-})), ut = /* @__PURE__ */ s(((e) => {
+	}(ft().PrioritizedList);
+})), mt = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.retryAfter = e.handleRetriesFor = void 0;
 	function t(e) {
 		return new Promise(function t(n, r) {
@@ -4913,9 +4972,9 @@ var st = /* @__PURE__ */ s(((e) => {
 		throw t.retry = e, t;
 	}
 	e.retryAfter = n;
-})), dt = /* @__PURE__ */ s(((e) => {
+})), ht = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.mathjax = void 0;
-	var t = st(), n = lt(), r = ut();
+	var t = dt(), n = pt(), r = mt();
 	e.mathjax = {
 		version: t.VERSION,
 		handlers: new n.HandlerList(),
@@ -5107,7 +5166,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return n === void 0 && (n = null), t.hasOwnProperty(e) ? t[e] : n;
 	}
 	e.lookup = y;
-})), ft = /* @__PURE__ */ s(((e, t, n) => {
+})), gt = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -5197,10 +5256,10 @@ var st = /* @__PURE__ */ s(((e) => {
 				})();
 			});
 		}, t;
-	}(ct().PrioritizedList);
-})), pt = /* @__PURE__ */ s(((e) => {
+	}(ft().PrioritizedList);
+})), _t = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.AbstractInputJax = void 0;
-	var t = W(), n = ft();
+	var t = W(), n = gt();
 	e.AbstractInputJax = function() {
 		function e(e) {
 			e === void 0 && (e = {}), this.adaptor = null, this.mmlFactory = null;
@@ -5234,7 +5293,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return e.execute(i), i.data;
 		}, e.NAME = "generic", e.OPTIONS = {}, e;
 	}();
-})), mt = /* @__PURE__ */ s(((e) => {
+})), vt = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.AbstractFindMath = void 0;
 	var t = W();
 	e.AbstractFindMath = function() {
@@ -5292,7 +5351,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return e.trim().split(/\s+/);
 	}
 	e.split = u;
-})), ht = /* @__PURE__ */ s(((e) => {
+})), yt = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.newState = e.STATE = e.AbstractMathItem = e.protoItem = void 0;
 	function t(e, t, n, r, i, a, o) {
 		return o === void 0 && (o = null), {
@@ -5364,7 +5423,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		e.STATE[t] = n;
 	}
 	e.newState = n;
-})), gt = /* @__PURE__ */ s(((e, t, n) => {
+})), bt = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -5399,7 +5458,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return a;
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.FindTeX = void 0;
-	var a = mt(), o = G(), s = ht();
+	var a = vt(), o = G(), s = yt();
 	e.FindTeX = function(e) {
 		r(t, e);
 		function t(t) {
@@ -5456,7 +5515,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			processRefs: !0
 		}, t;
 	}(a.AbstractFindMath);
-})), _t = /* @__PURE__ */ s(((e, t, n) => {
+})), xt = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__values || function(e) {
 		var t = typeof Symbol == "function" && Symbol.iterator, n = t && e[t], r = 0;
 		if (n) return n.call(e);
@@ -5526,7 +5585,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return this.global;
 		}, t;
 	}();
-})), vt = /* @__PURE__ */ s(((e, t, n) => {
+})), St = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -5752,7 +5811,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return a;
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.XMLNode = e.TextNode = e.AbstractMmlEmptyNode = e.AbstractMmlBaseNode = e.AbstractMmlLayoutNode = e.AbstractMmlTokenNode = e.AbstractMmlNode = e.indentAttributes = e.TEXCLASSNAMES = e.TEXCLASS = void 0;
-	var s = _t(), c = vt();
+	var s = xt(), c = St();
 	e.TEXCLASS = {
 		ORD: 0,
 		OP: 1,
@@ -6473,7 +6532,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return "XML data";
 		}, t;
 	}(f);
-})), yt = /* @__PURE__ */ s(((e, t, n) => {
+})), Ct = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__values || function(e) {
 		var t = typeof Symbol == "function" && Symbol.iterator, n = t && e[t], r = 0;
 		if (n) return n.call(e);
@@ -8238,7 +8297,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			"︸": e.MO.WIDEACCENT
 		}
 	}, e.OPTABLE.infix["^"] = e.MO.WIDEREL, e.OPTABLE.infix._ = e.MO.WIDEREL, e.OPTABLE.infix["⫝̸"] = e.MO.REL;
-})), bt = /* @__PURE__ */ s(((e, t, n) => {
+})), wt = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -8288,7 +8347,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		throw TypeError(t ? "Object is not iterable." : "Symbol.iterator is not defined.");
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.MmlMo = void 0;
-	var s = K(), c = yt(), l = G();
+	var s = K(), c = Ct(), l = G();
 	e.MmlMo = function(e) {
 		r(t, e);
 		function t() {
@@ -8512,7 +8571,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return e.concat(a || Array.prototype.slice.call(t));
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var o = K(), s = bt(), c;
+	var o = K(), s = wt(), c;
 	(function(e) {
 		var t = /* @__PURE__ */ new Map([
 			["autoOP", !0],
@@ -8659,7 +8718,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}
 		e.getForm = D;
 	})(c ||= {}), e.default = c;
-})), xt = /* @__PURE__ */ s(((e, t, n) => {
+})), Tt = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__values || function(e) {
 		var t = typeof Symbol == "function" && Symbol.iterator, n = t && e[t], r = 0;
 		if (n) return n.call(e);
@@ -8862,9 +8921,9 @@ var st = /* @__PURE__ */ s(((e) => {
 			return r.join("");
 		}, e.pattern = /%(\d+|\{\d+\}|\{[a-z]+:\%\d+(?:\|(?:%\{\d+\}|%.|[^\}])*)+\}|.)/g, e;
 	}();
-})), St = /* @__PURE__ */ s(((e) => {
+})), Et = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.asyncLoad = void 0;
-	var t = dt();
+	var t = ht();
 	function n(e) {
 		return t.mathjax.asyncLoad ? new Promise(function(n, r) {
 			var i = t.mathjax.asyncLoad(e);
@@ -8876,9 +8935,9 @@ var st = /* @__PURE__ */ s(((e) => {
 		}) : Promise.reject(`Can't load '${e}': No asyncLoad method specified`);
 	}
 	e.asyncLoad = n;
-})), Ct = /* @__PURE__ */ s(((e) => {
+})), Dt = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.numeric = e.translate = e.remove = e.add = e.entities = e.options = void 0;
-	var t = ut(), n = St();
+	var t = mt(), n = Et();
 	e.options = { loadMissingEntities: !0 }, e.entities = {
 		ApplyFunction: "⁡",
 		Backslash: "∖",
@@ -9345,7 +9404,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return e && e.__esModule ? e : { default: e };
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var o = K(), s = a(q()), c = a(Tt()), l = a(J()), u = Ct(), d;
+	var o = K(), s = a(q()), c = a(kt()), l = a(J()), u = Dt(), d;
 	(function(e) {
 		var t = 7.2, n = {
 			em: function(e) {
@@ -9661,7 +9720,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			];
 		}
 	})(d ||= {}), e.default = d;
-})), wt = /* @__PURE__ */ s(((e, t, n) => {
+})), Ot = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__values || function(e) {
 		var t = typeof Symbol == "function" && Symbol.iterator, n = t && e[t], r = 0;
 		if (n) return n.call(e);
@@ -9742,7 +9801,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return "stack[\n  " + this.stack.join("\n  ") + "\n]";
 		}, e;
 	}();
-})), Tt = /* @__PURE__ */ s(((e, t, n) => {
+})), kt = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__values || function(e) {
 		var t = typeof Symbol == "function" && Symbol.iterator, n = t && e[t], r = 0;
 		if (n) return n.call(e);
@@ -9776,7 +9835,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return e && e.__esModule ? e : { default: e };
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var s = o(Y()), c = o(wt()), l = o(J()), u = K();
+	var s = o(Y()), c = o(Ot()), l = o(J()), u = K();
 	e.default = function() {
 		function e(e, t, n) {
 			var i, a;
@@ -9977,7 +10036,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return (t = this.configuration.nodeFactory).create.apply(t, a([e], i(n), !1));
 		}, e;
 	}();
-})), Et = /* @__PURE__ */ s(((e, t, n) => {
+})), At = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -10165,7 +10224,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			middle: ["ExtraMiddle", "Extra \\middle"]
 		}, t;
 	}(l);
-})), Dt = /* @__PURE__ */ s(((e, t, n) => {
+})), jt = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__values || function(e) {
 		var t = typeof Symbol == "function" && Symbol.iterator, n = t && e[t], r = 0;
 		if (n) return n.call(e);
@@ -10235,7 +10294,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return Array.from(this.nodeMap.keys());
 		}, e.defaultNodes = {}, e;
 	}();
-})), Ot = /* @__PURE__ */ s(((e, t, n) => {
+})), Mt = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -10254,7 +10313,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		};
 	})(), i;
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var a = Et(), o = Dt(), s = function(e) {
+	var a = At(), o = jt(), s = function(e) {
 		r(t, e);
 		function t() {
 			return e !== null && e.apply(this, arguments) || this;
@@ -10269,7 +10328,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}
 		return t.DefaultStackItems = (i = {}, i[s.prototype.kind] = s, i), t;
 	}(o.AbstractFactory);
-})), kt = /* @__PURE__ */ s(((e, t, n) => {
+})), Nt = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__read || function(e, t) {
 		var n = typeof Symbol == "function" && e[Symbol.iterator];
 		if (!n) return e;
@@ -10329,7 +10388,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return this.factory[e];
 		}, e;
 	}();
-})), At = /* @__PURE__ */ s(((e, t, n) => {
+})), Pt = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__read || function(e, t) {
 		var n = typeof Symbol == "function" && e[Symbol.iterator];
 		if (!n) return e;
@@ -10363,7 +10422,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return e && e.__esModule ? e : { default: e };
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var s = o(Ot()), c = kt(), l = o(q()), u = W();
+	var s = o(Mt()), c = Nt(), l = o(q()), u = W();
 	e.default = function() {
 		function e(e, t) {
 			t === void 0 && (t = []), this.options = {}, this.packageData = /* @__PURE__ */ new Map(), this.parsers = [], this.root = null, this.nodeLists = {}, this.error = !1, this.handlers = e.handlers, this.nodeFactory = new c.NodeFactory(), this.nodeFactory.configuration = this, this.nodeFactory.setCreators(e.nodes), this.itemFactory = new s.default(e.items), this.itemFactory.configuration = this, u.defaultOptions.apply(void 0, i([this.options], r(t), !1)), (0, u.defaultOptions)(this.options, e.options);
@@ -10424,7 +10483,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return !!e;
 		}, e;
 	}();
-})), jt = /* @__PURE__ */ s(((e, t, n) => {
+})), Ft = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -10455,7 +10514,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return e && e.__esModule ? e : { default: e };
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.TagsFactory = e.AllTags = e.NoTags = e.AbstractTags = e.TagInfo = e.Label = void 0;
-	var o = a(Tt()), s = function() {
+	var o = a(kt()), s = function() {
 		function e(e, t) {
 			e === void 0 && (e = "???"), t === void 0 && (t = ""), this.tag = e, this.id = t;
 		}
@@ -10610,7 +10669,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return e.create(n);
 		};
 	})(e.TagsFactory ||= {});
-})), Mt = /* @__PURE__ */ s(((e, t, n) => {
+})), It = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__values || function(e) {
 		var t = typeof Symbol == "function" && Symbol.iterator, n = t && e[t], r = 0;
 		if (n) return n.call(e);
@@ -10639,7 +10698,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return a;
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SubHandlers = e.SubHandler = e.MapHandler = void 0;
-	var a = ct(), o = ft(), s;
+	var a = ft(), o = gt(), s;
 	(function(e) {
 		var t = /* @__PURE__ */ new Map();
 		e.register = function(e) {
@@ -10798,7 +10857,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return this.map.keys();
 		}, e;
 	}();
-})), Nt = /* @__PURE__ */ s(((e, t, n) => {
+})), Lt = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__values || function(e) {
 		var t = typeof Symbol == "function" && Symbol.iterator, n = t && e[t], r = 0;
 		if (n) return n.call(e);
@@ -10827,7 +10886,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return a;
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.ParserConfiguration = e.ConfigurationHandler = e.Configuration = void 0;
-	var a = W(), o = Mt(), s = ft(), c = ct(), l = jt();
+	var a = W(), o = It(), s = gt(), c = ft(), l = Ft();
 	e.Configuration = function() {
 		function e(e, t, n, r, i, a, o, s, c, l, u, d, f) {
 			t === void 0 && (t = {}), n === void 0 && (n = {}), r === void 0 && (r = {}), i === void 0 && (i = {}), a === void 0 && (a = {}), o === void 0 && (o = {}), s === void 0 && (s = []), c === void 0 && (c = []), l === void 0 && (l = null), u === void 0 && (u = null), this.name = e, this.handler = t, this.fallback = n, this.items = r, this.tags = i, this.options = a, this.nodes = o, this.preprocessors = s, this.postprocessors = c, this.initMethod = l, this.configMethod = u, this.priority = d, this.parser = f, this.handler = Object.assign({
@@ -10993,7 +11052,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			}
 		}, e;
 	}();
-})), Pt = /* @__PURE__ */ s(((e) => {
+})), Rt = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.Macro = e.Symbol = void 0, e.Symbol = function() {
 		function e(e, t, n) {
 			this._symbol = e, this._char = t, this._attributes = n;
@@ -11041,7 +11100,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			configurable: !0
 		}), e;
 	}();
-})), Ft = /* @__PURE__ */ s(((e, t, n) => {
+})), zt = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -11089,7 +11148,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return e.concat(a || Array.prototype.slice.call(t));
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.EnvironmentMap = e.CommandMap = e.MacroMap = e.DelimiterMap = e.CharacterMap = e.AbstractParseMap = e.RegExpMap = e.AbstractSymbolMap = e.parseResult = void 0;
-	var s = Pt(), c = Mt();
+	var s = Rt(), c = It();
 	function l(e) {
 		return e === void 0 || e;
 	}
@@ -11233,7 +11292,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return !a || !o ? null : l(this.parser(n, a.symbol, o, a.args));
 		}, t;
 	}(p);
-})), It = /* @__PURE__ */ s(((e, t, n) => {
+})), Bt = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -11273,7 +11332,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return e && e.__esModule ? e : { default: e };
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.EquationItem = e.EqnArrayItem = e.ArrayItem = e.DotsItem = e.NonscriptItem = e.NotItem = e.FnItem = e.MmlItem = e.CellItem = e.PositionItem = e.StyleItem = e.EndItem = e.BeginItem = e.RightItem = e.Middle = e.LeftItem = e.OverItem = e.SubsupItem = e.PrimeItem = e.CloseItem = e.OpenItem = e.StopItem = e.StartItem = void 0;
-	var s = Mt(), c = Ct(), l = K(), u = o(J()), d = o(Y()), f = o(q()), p = Et();
+	var s = It(), c = Dt(), l = K(), u = o(J()), d = o(Y()), f = o(q()), p = At();
 	e.StartItem = function(e) {
 		r(t, e);
 		function t(t, n) {
@@ -11861,7 +11920,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return e.prototype.checkItem.call(this, t);
 		}, t;
 	}(p.BaseItem);
-})), Lt = /* @__PURE__ */ s(((e) => {
+})), Vt = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.TexConstant = void 0, (function(e) {
 		e.Variant = {
 			NORMAL: "normal",
@@ -11974,7 +12033,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			PC: "pc"
 		};
 	})(e.TexConstant ||= {});
-})), Rt = /* @__PURE__ */ s(((e) => {
+})), Ht = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.px = e.emRounded = e.em = e.percent = e.length2em = e.MATHSPACE = e.RELUNITS = e.UNITS = e.BIGDIMEN = void 0, e.BIGDIMEN = 1e6, e.UNITS = {
 		px: 1,
 		in: 96,
@@ -12034,7 +12093,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return n === void 0 && (n = -e.BIGDIMEN), r === void 0 && (r = 16), t *= r, n && t < n && (t = n), Math.abs(t) < .1 ? "0" : t.toFixed(1).replace(/\.0$/, "") + "px";
 	}
 	e.px = a;
-})), zt = /* @__PURE__ */ s(((e, t, n) => {
+})), Ut = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__assign || function() {
 		return r = Object.assign || function(e) {
 			for (var t, n = 1, r = arguments.length; n < r; n++) for (var i in t = arguments[n], t) Object.prototype.hasOwnProperty.call(t, i) && (e[i] = t[i]);
@@ -12083,7 +12142,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return e && e.__esModule ? e : { default: e };
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var l = o(It()), u = c(q()), d = c(J()), f = c(Tt()), p = Lt(), m = c(Y()), h = K(), g = jt(), _ = Rt(), v = Ct(), y = W(), b = {}, x = 1.2 / .85, S = {
+	var l = o(Bt()), u = c(q()), d = c(J()), f = c(kt()), p = Vt(), m = c(Y()), h = K(), g = Ft(), _ = Ht(), v = Dt(), y = W(), b = {}, x = 1.2 / .85, S = {
 		fontfamily: 1,
 		fontsize: 1,
 		fontweight: 1,
@@ -12534,7 +12593,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			a
 		]));
 	}, e.default = b;
-})), Bt = /* @__PURE__ */ s(((e, t, n) => {
+})), Wt = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__read || function(e, t) {
 		var n = typeof Symbol == "function" && e[Symbol.iterator];
 		if (!n) return e;
@@ -12558,7 +12617,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return e && e.__esModule ? e : { default: e };
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var o = a(q()), s = Lt(), c = a(Y()), l;
+	var o = a(q()), s = Vt(), c = a(Y()), l;
 	(function(e) {
 		function t(e, t) {
 			var n = c.default.getFontDef(e), r = e.stack.env;
@@ -12615,7 +12674,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}
 		e.environment = p;
 	})(l ||= {}), e.default = l;
-})), Vt = /* @__PURE__ */ s(((e, t, n) => {
+})), Gt = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__createBinding || (Object.create ? (function(e, t, n, r) {
 		r === void 0 && (r = n);
 		var i = Object.getOwnPropertyDescriptor(t, n);
@@ -12643,7 +12702,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return e && e.__esModule ? e : { default: e };
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var s = a(Ft()), c = Lt(), l = o(zt()), u = o(Bt()), d = o(Y()), f = K(), p = Rt();
+	var s = a(zt()), c = Vt(), l = o(Ut()), u = o(Wt()), d = o(Y()), f = K(), p = Ht();
 	new s.RegExpMap("letter", u.default.variable, /[a-z]/i), new s.RegExpMap("digit", u.default.digit, /[0-9.,]/), new s.RegExpMap("command", u.default.controlSequence, /^\\/), new s.MacroMap("special", {
 		"{": "Open",
 		"}": "Close",
@@ -13502,7 +13561,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		"⊵": "⋭",
 		"∃": "∄"
 	});
-})), Ht = /* @__PURE__ */ s(((e, t, n) => {
+})), Kt = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -13556,9 +13615,9 @@ var st = /* @__PURE__ */ s(((e) => {
 		return e && e.__esModule ? e : { default: e };
 	}, l;
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.BaseConfiguration = e.BaseTags = e.Other = void 0;
-	var u = Nt(), d = Mt(), f = c(J()), p = c(q()), m = Ft(), h = o(It()), g = jt();
-	Vt();
-	var _ = yt();
+	var u = Lt(), d = It(), f = c(J()), p = c(q()), m = zt(), h = o(Bt()), g = Ft();
+	Gt();
+	var _ = Ct();
 	new m.CharacterMap("remap", null, {
 		"-": "−",
 		"*": "∗",
@@ -13636,7 +13695,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		tags: { base: S },
 		postprocessors: [[x, -4]]
 	});
-})), Ut = /* @__PURE__ */ s(((e, t, n) => {
+})), qt = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -13678,8 +13737,8 @@ var st = /* @__PURE__ */ s(((e) => {
 		return e && e.__esModule ? e : { default: e };
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.TeX = void 0;
-	var s = pt(), c = W(), l = gt(), u = o(xt()), d = o(q()), f = o(Tt()), p = o(J()), m = o(At()), h = jt(), g = Nt();
-	Ht(), e.TeX = function(e) {
+	var s = _t(), c = W(), l = bt(), u = o(Tt()), d = o(q()), f = o(kt()), p = o(J()), m = o(Pt()), h = Ft(), g = Lt();
+	Kt(), e.TeX = function(e) {
 		r(t, e);
 		function t(n) {
 			n === void 0 && (n = {});
@@ -13736,9 +13795,9 @@ var st = /* @__PURE__ */ s(((e) => {
 			}
 		}), t;
 	}(s.AbstractInputJax);
-})), Wt = /* @__PURE__ */ s(((e) => {
+})), Jt = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.AbstractOutputJax = void 0;
-	var t = W(), n = ft();
+	var t = W(), n = gt();
 	e.AbstractOutputJax = function() {
 		function e(e) {
 			e === void 0 && (e = {}), this.adaptor = null;
@@ -13766,7 +13825,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return e.execute(i), i.data;
 		}, e.NAME = "generic", e.OPTIONS = {}, e;
 	}();
-})), Gt = /* @__PURE__ */ s(((e, t, n) => {
+})), Yt = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__values || function(e) {
 		var t = typeof Symbol == "function" && Symbol.iterator, n = t && e[t], r = 0;
 		if (n) return n.call(e);
@@ -14150,7 +14209,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}, e;
 	}();
 	e.Styles = b;
-})), Kt = /* @__PURE__ */ s(((e, t, n) => {
+})), Xt = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__values || function(e) {
 		var t = typeof Symbol == "function" && Symbol.iterator, n = t && e[t], r = 0;
 		if (n) return n.call(e);
@@ -14244,7 +14303,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return a.join("\n");
 		}, e;
 	}();
-})), qt = /* @__PURE__ */ s(((e, t, n) => {
+})), Zt = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -14294,7 +14353,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		throw TypeError(t ? "Object is not iterable." : "Symbol.iterator is not defined.");
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.CommonOutputJax = void 0;
-	var s = Wt(), c = ht(), l = W(), u = Rt(), d = Gt(), f = Kt();
+	var s = Jt(), c = yt(), l = W(), u = Ht(), d = Yt(), f = Xt();
 	e.CommonOutputJax = function(e) {
 		r(t, e);
 		function t(t, n, r) {
@@ -14586,7 +14645,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			cssStyles: null
 		}), t.commonStyles = {}, t;
 	}(s.AbstractOutputJax);
-})), Jt = /* @__PURE__ */ s(((e, t, n) => {
+})), Qt = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -14632,8 +14691,8 @@ var st = /* @__PURE__ */ s(((e) => {
 			var t = [...arguments].slice(1);
 			return this.create.apply(this, a([e.kind, e], i(t), !1));
 		}, t;
-	}(Dt().AbstractFactory);
-})), Yt = /* @__PURE__ */ s(((e, t, n) => {
+	}(jt().AbstractFactory);
+})), $t = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -14664,10 +14723,10 @@ var st = /* @__PURE__ */ s(((e) => {
 			enumerable: !1,
 			configurable: !0
 		}), t.defaultNodes = {}, t;
-	}(Jt().AbstractWrapperFactory);
+	}(Qt().AbstractWrapperFactory);
 })), X = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.BBox = void 0;
-	var t = Rt();
+	var t = Ht();
 	e.BBox = function() {
 		function e(e) {
 			e === void 0 && (e = {
@@ -14718,7 +14777,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			]
 		], e;
 	}();
-})), Xt = /* @__PURE__ */ s(((e) => {
+})), en = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.AbstractWrapper = void 0, e.AbstractWrapper = function() {
 		function e(e, t) {
 			this.factory = e, this.node = t;
@@ -14733,7 +14792,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return this.factory.wrap(e);
 		}, e;
 	}();
-})), Zt = /* @__PURE__ */ s(((e, t, n) => {
+})), tn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__assign || function() {
 		return r = Object.assign || function(e) {
 			for (var t, n = 1, r = arguments.length; n < r; n++) for (var i in t = arguments[n], t) Object.prototype.hasOwnProperty.call(t, i) && (e[i] = t[i]);
@@ -15232,7 +15291,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			extra_ic: .033
 		}, e.defaultDelimiters = {}, e.defaultChars = {}, e.defaultSizeVariants = [], e.defaultStretchVariants = [], e;
 	}();
-})), Qt = /* @__PURE__ */ s(((e, t, n) => {
+})), nn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -15303,7 +15362,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return e.concat(a || Array.prototype.slice.call(t));
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.CommonWrapper = void 0;
-	var u = Xt(), d = K(), f = G(), p = o(Rt()), m = Gt(), h = X(), g = Zt(), _ = 2 / 18;
+	var u = en(), d = K(), f = G(), p = o(Ht()), m = Yt(), h = X(), g = tn(), _ = 2 / 18;
 	function v(e, t) {
 		return e ? t < _ ? 0 : _ : t;
 	}
@@ -15646,7 +15705,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return a;
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGWrapper = void 0;
-	var o = X(), s = Qt(), c = Oi();
+	var o = X(), s = nn(), c = Mi();
 	e.SVGWrapper = function(e) {
 		r(t, e);
 		function t() {
@@ -15975,7 +16034,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return t === void 0 && (t = 1), this.jax.fixed(e * 1e3, t);
 		}, t.kind = "unknown", t.borderFuzz = .005, t;
 	}(s.CommonWrapper);
-})), $t = /* @__PURE__ */ s(((e, t, n) => {
+})), rn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -16006,7 +16065,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}(e);
 	}
 	e.CommonMathMixin = i;
-})), en = /* @__PURE__ */ s(((e, t, n) => {
+})), an = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -16081,7 +16140,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			indentshiftlast: "indentshift"
 		}), t;
 	}(a.AbstractMmlLayoutNode);
-})), tn = /* @__PURE__ */ s(((e, t, n) => {
+})), on = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -16126,7 +16185,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		throw TypeError(t ? "Object is not iterable." : "Symbol.iterator is not defined.");
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGmath = void 0;
-	var o = Z(), s = $t(), c = en(), l = X();
+	var o = Z(), s = rn(), c = an(), l = X();
 	e.SVGmath = function(e) {
 		r(t, e);
 		function t() {
@@ -16179,7 +16238,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			"mjx-container[jax=\"SVG\"][justify=\"right\"]": { "text-align": "right" }
 		}, t;
 	}((0, s.CommonMathMixin)(o.SVGWrapper));
-})), nn = /* @__PURE__ */ s(((e, t, n) => {
+})), sn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -16323,7 +16382,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}(e);
 	}
 	e.CommonInferredMrowMixin = l;
-})), rn = /* @__PURE__ */ s(((e, t, n) => {
+})), cn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -16524,7 +16583,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return "[" + this.childNodes.join(",") + "]";
 		}, t.defaults = s.defaults, t;
 	}(s);
-})), an = /* @__PURE__ */ s(((e, t, n) => {
+})), ln = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -16543,7 +16602,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		};
 	})();
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGinferredMrow = e.SVGmrow = void 0;
-	var i = Z(), a = nn(), o = nn(), s = rn(), c = function(e) {
+	var i = Z(), a = sn(), o = sn(), s = cn(), c = function(e) {
 		r(t, e);
 		function t() {
 			return e !== null && e.apply(this, arguments) || this;
@@ -16560,7 +16619,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}
 		return t.kind = s.MmlInferredMrow.prototype.kind, t;
 	}((0, o.CommonInferredMrowMixin)(c));
-})), on = /* @__PURE__ */ s(((e, t, n) => {
+})), un = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -16591,7 +16650,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}(e);
 	}
 	e.CommonMiMixin = i;
-})), sn = /* @__PURE__ */ s(((e, t, n) => {
+})), dn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -16636,7 +16695,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return n.length > 1 && n.match(t.operatorName) && this.attributes.get("mathvariant") === "normal" && this.getProperty("autoOP") === void 0 && this.getProperty("texClass") === void 0 && (this.texClass = a.TEXCLASS.OP, this.setProperty("autoOP", !0)), this;
 		}, t.defaults = i({}, a.AbstractMmlTokenNode.defaults), t.operatorName = /^[a-z][a-z0-9]*$/i, t.singleCharacter = /^[\uD800-\uDBFF]?.[\u0300-\u036F\u1AB0-\u1ABE\u1DC0-\u1DFF\u20D0-\u20EF]*$/, t;
 	}(a.AbstractMmlTokenNode);
-})), cn = /* @__PURE__ */ s(((e, t, n) => {
+})), fn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -16655,7 +16714,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		};
 	})();
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGmi = void 0;
-	var i = Z(), a = on(), o = sn();
+	var i = Z(), a = un(), o = dn();
 	e.SVGmi = function(e) {
 		r(t, e);
 		function t() {
@@ -16663,7 +16722,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}
 		return t.kind = o.MmlMi.prototype.kind, t;
 	}((0, a.CommonMiMixin)(i.SVGWrapper));
-})), ln = /* @__PURE__ */ s(((e, t, n) => {
+})), pn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -16716,7 +16775,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		throw TypeError(t ? "Object is not iterable." : "Symbol.iterator is not defined.");
 	}, c;
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.CommonMoMixin = e.DirectionVH = void 0;
-	var l = X(), u = G(), d = Zt();
+	var l = X(), u = G(), d = tn();
 	e.DirectionVH = (c = {}, c[1] = "v", c[2] = "h", c);
 	function f(e) {
 		return function(e) {
@@ -16815,7 +16874,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}(e);
 	}
 	e.CommonMoMixin = f;
-})), un = /* @__PURE__ */ s(((e, t, n) => {
+})), mn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -16860,7 +16919,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return a;
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGmo = void 0;
-	var o = Z(), s = ln(), c = bt(), l = .1, u = .1;
+	var o = Z(), s = pn(), c = wt(), l = .1, u = .1;
 	e.SVGmo = function(e) {
 		r(t, e);
 		function t() {
@@ -16996,7 +17055,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return this.addGlyph(e, t, (n - r) / 2, 0), [(n - r) / 2, (n + r) / 2];
 		}, t.kind = c.MmlMo.prototype.kind, t;
 	}((0, s.CommonMoMixin)(o.SVGWrapper));
-})), dn = /* @__PURE__ */ s(((e, t, n) => {
+})), hn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -17034,7 +17093,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}(e);
 	}
 	e.CommonMnMixin = i;
-})), fn = /* @__PURE__ */ s(((e, t, n) => {
+})), gn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -17073,7 +17132,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			configurable: !0
 		}), t.defaults = i({}, a.AbstractMmlTokenNode.defaults), t;
 	}(a.AbstractMmlTokenNode);
-})), pn = /* @__PURE__ */ s(((e, t, n) => {
+})), _n = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -17092,7 +17151,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		};
 	})();
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGmn = void 0;
-	var i = Z(), a = dn(), o = fn();
+	var i = Z(), a = hn(), o = gn();
 	e.SVGmn = function(e) {
 		r(t, e);
 		function t() {
@@ -17100,7 +17159,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}
 		return t.kind = o.MmlMn.prototype.kind, t;
 	}((0, a.CommonMnMixin)(i.SVGWrapper));
-})), mn = /* @__PURE__ */ s(((e, t, n) => {
+})), vn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -17152,7 +17211,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}(e);
 	}
 	e.CommonMsMixin = o;
-})), hn = /* @__PURE__ */ s(((e, t, n) => {
+})), yn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -17194,7 +17253,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			rquote: "\""
 		}), t;
 	}(a.AbstractMmlTokenNode);
-})), gn = /* @__PURE__ */ s(((e, t, n) => {
+})), bn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -17213,7 +17272,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		};
 	})();
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGms = void 0;
-	var i = Z(), a = mn(), o = hn();
+	var i = Z(), a = vn(), o = yn();
 	e.SVGms = function(e) {
 		r(t, e);
 		function t() {
@@ -17221,7 +17280,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}
 		return t.kind = o.MmlMs.prototype.kind, t;
 	}((0, a.CommonMsMixin)(i.SVGWrapper));
-})), _n = /* @__PURE__ */ s(((e, t, n) => {
+})), xn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -17278,7 +17337,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}, t;
 	}
 	e.CommonMtextMixin = i;
-})), vn = /* @__PURE__ */ s(((e, t, n) => {
+})), Sn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -17323,7 +17382,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			configurable: !0
 		}), t.defaults = i({}, a.AbstractMmlTokenNode.defaults), t;
 	}(a.AbstractMmlTokenNode);
-})), yn = /* @__PURE__ */ s(((e, t, n) => {
+})), Cn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -17342,7 +17401,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		};
 	})();
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGmtext = void 0;
-	var i = Z(), a = _n(), o = vn();
+	var i = Z(), a = xn(), o = Sn();
 	e.SVGmtext = function(e) {
 		r(t, e);
 		function t() {
@@ -17350,7 +17409,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}
 		return t.kind = o.MmlMtext.prototype.kind, t;
 	}((0, a.CommonMtextMixin)(i.SVGWrapper));
-})), bn = /* @__PURE__ */ s(((e, t, n) => {
+})), wn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -17401,7 +17460,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			configurable: !0
 		}), t.defaults = i({}, a.AbstractMmlNode.defaults), t;
 	}(a.AbstractMmlNode);
-})), xn = /* @__PURE__ */ s(((e, t, n) => {
+})), Tn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -17420,7 +17479,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		};
 	})();
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGmerror = void 0;
-	var i = Z(), a = bn();
+	var i = Z(), a = wn();
 	e.SVGmerror = function(e) {
 		r(t, e);
 		function t() {
@@ -17447,7 +17506,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			}
 		}, t;
 	}(i.SVGWrapper);
-})), Sn = /* @__PURE__ */ s(((e, t, n) => {
+})), En = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -17480,7 +17539,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}(e);
 	}
 	e.CommonMspaceMixin = i;
-})), Cn = /* @__PURE__ */ s(((e, t, n) => {
+})), Dn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -17545,7 +17604,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			linebreak: "auto"
 		}), t;
 	}(a.AbstractMmlTokenNode);
-})), wn = /* @__PURE__ */ s(((e, t, n) => {
+})), On = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -17564,7 +17623,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		};
 	})();
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGmspace = void 0;
-	var i = Z(), a = Sn(), o = Cn();
+	var i = Z(), a = En(), o = Dn();
 	e.SVGmspace = function(e) {
 		r(t, e);
 		function t() {
@@ -17572,7 +17631,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}
 		return t.kind = o.MmlMspace.prototype.kind, t;
 	}((0, a.CommonMspaceMixin)(i.SVGWrapper));
-})), Tn = /* @__PURE__ */ s(((e, t, n) => {
+})), kn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -17644,7 +17703,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}(e);
 	}
 	e.CommonMpaddedMixin = a;
-})), En = /* @__PURE__ */ s(((e, t, n) => {
+})), An = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -17688,7 +17747,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			voffset: 0
 		}), t;
 	}(a.AbstractMmlLayoutNode);
-})), Dn = /* @__PURE__ */ s(((e, t, n) => {
+})), jn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -17723,7 +17782,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return a;
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGmpadded = void 0;
-	var a = Z(), o = Tn(), s = En();
+	var a = Z(), o = kn(), s = An();
 	e.SVGmpadded = function(e) {
 		r(t, e);
 		function t() {
@@ -17734,7 +17793,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			(l || o) && (t = this.adaptor.append(t, this.svg("g")), this.place(l, o, t)), this.addChildren(t);
 		}, t.kind = s.MmlMpadded.prototype.kind, t;
 	}((0, o.CommonMpaddedMixin)(a.SVGWrapper));
-})), On = /* @__PURE__ */ s(((e, t, n) => {
+})), Mn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -17773,7 +17832,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			configurable: !0
 		}), t.defaults = i({}, a.AbstractMmlLayoutNode.defaults), t;
 	}(a.AbstractMmlLayoutNode);
-})), kn = /* @__PURE__ */ s(((e, t, n) => {
+})), Nn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -17792,7 +17851,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		};
 	})();
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGmphantom = void 0;
-	var i = Z(), a = On();
+	var i = Z(), a = Mn();
 	e.SVGmphantom = function(e) {
 		r(t, e);
 		function t() {
@@ -17802,7 +17861,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			this.standardSVGnode(e);
 		}, t.kind = a.MmlMphantom.prototype.kind, t;
 	}(i.SVGWrapper);
-})), An = /* @__PURE__ */ s(((e, t, n) => {
+})), Pn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -17910,7 +17969,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}(e);
 	}
 	e.CommonMfracMixin = o;
-})), jn = /* @__PURE__ */ s(((e, t, n) => {
+})), Fn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -17992,7 +18051,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			bevelled: !1
 		}), t;
 	}(o.AbstractMmlBaseNode);
-})), Mn = /* @__PURE__ */ s(((e, t, n) => {
+})), In = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -18027,7 +18086,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return a;
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGmfrac = void 0;
-	var a = Z(), o = An(), s = jn();
+	var a = Z(), o = Pn(), s = Fn();
 	e.SVGmfrac = function(e) {
 		r(t, e);
 		function t() {
@@ -18057,7 +18116,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			r.toSVG(t), this.bevel.toSVG(t), a.toSVG(t), r.place(u.L * u.rscale, s), this.bevel.place(f - l / 2, 0), a.place(f + this.bevel.getOuterBBox().w + d.L * d.rscale - l, c);
 		}, t.kind = s.MmlMfrac.prototype.kind, t;
 	}((0, o.CommonMfracMixin)(a.SVGWrapper));
-})), Nn = /* @__PURE__ */ s(((e, t, n) => {
+})), Ln = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -18144,7 +18203,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}(e);
 	}
 	e.CommonMsqrtMixin = s;
-})), Pn = /* @__PURE__ */ s(((e, t, n) => {
+})), Rn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -18199,7 +18258,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			this.childNodes[0].setInheritedAttributes(e, t, n, !0);
 		}, t.defaults = i({}, a.AbstractMmlNode.defaults), t;
 	}(a.AbstractMmlNode);
-})), Fn = /* @__PURE__ */ s(((e, t, n) => {
+})), zn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -18218,7 +18277,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		};
 	})();
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGmsqrt = void 0;
-	var i = Z(), a = Nn(), o = Pn();
+	var i = Z(), a = Ln(), o = Rn();
 	e.SVGmsqrt = function(e) {
 		r(t, e);
 		function t() {
@@ -18235,7 +18294,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			}));
 		}, t.prototype.addRoot = function(e, t, n, r) {}, t.kind = o.MmlMsqrt.prototype.kind, t;
 	}((0, a.CommonMsqrtMixin)(i.SVGWrapper));
-})), In = /* @__PURE__ */ s(((e, t, n) => {
+})), Bn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -18289,7 +18348,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}(e);
 	}
 	e.CommonMrootMixin = i;
-})), Ln = /* @__PURE__ */ s(((e, t, n) => {
+})), Vn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -18338,7 +18397,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			this.childNodes[0].setInheritedAttributes(e, t, n, !0), this.childNodes[1].setInheritedAttributes(e, !1, n + 2, r);
 		}, t.defaults = i({}, a.AbstractMmlNode.defaults), t;
 	}(a.AbstractMmlNode);
-})), Rn = /* @__PURE__ */ s(((e, t, n) => {
+})), Hn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -18373,7 +18432,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return a;
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGmroot = void 0;
-	var a = Fn(), o = In(), s = Ln();
+	var a = zn(), o = Bn(), s = Vn();
 	e.SVGmroot = function(e) {
 		r(t, e);
 		function t() {
@@ -18385,7 +18444,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			t.place(c * l.rscale, s), this.dx = o;
 		}, t.kind = s.MmlMroot.prototype.kind, t;
 	}((0, o.CommonMrootMixin)(a.SVGmsqrt));
-})), zn = /* @__PURE__ */ s(((e, t, n) => {
+})), Un = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -18473,7 +18532,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}(e);
 	}
 	e.CommonMfencedMixin = s;
-})), Bn = /* @__PURE__ */ s(((e, t, n) => {
+})), Wn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -18576,7 +18635,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			separators: ","
 		}), t;
 	}(o.AbstractMmlNode);
-})), Vn = /* @__PURE__ */ s(((e, t, n) => {
+})), Gn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -18605,7 +18664,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		throw TypeError(t ? "Object is not iterable." : "Symbol.iterator is not defined.");
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGmfenced = void 0;
-	var a = Z(), o = zn(), s = Bn();
+	var a = Z(), o = Un(), s = Wn();
 	e.SVGmfenced = function(e) {
 		r(t, e);
 		function t() {
@@ -18632,7 +18691,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			}
 		}, t.kind = s.MmlMfenced.prototype.kind, t;
 	}((0, o.CommonMfencedMixin)(a.SVGWrapper));
-})), Hn = /* @__PURE__ */ s(((e, t, n) => {
+})), Kn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -18885,7 +18944,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return t.useIC = !0, t;
 	}
 	e.CommonScriptbaseMixin = c;
-})), Un = /* @__PURE__ */ s(((e, t, n) => {
+})), qn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -18930,8 +18989,8 @@ var st = /* @__PURE__ */ s(((e) => {
 			var t = this.standardSVGnode(e), n = this.getBaseWidth(), r = i(this.getOffset(), 2), a = r[0], o = r[1];
 			this.baseChild.toSVG(t), this.scriptChild.toSVG(t), this.scriptChild.place(n + a, o);
 		}, t.kind = "scriptbase", t;
-	}((0, Hn().CommonScriptbaseMixin)(a.SVGWrapper));
-})), Wn = /* @__PURE__ */ s(((e, t, n) => {
+	}((0, Kn().CommonScriptbaseMixin)(a.SVGWrapper));
+})), Jn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -19048,7 +19107,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return t.useIC = !1, t;
 	}
 	e.CommonMsubsupMixin = s;
-})), Gn = /* @__PURE__ */ s(((e, t, n) => {
+})), Yn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -19164,7 +19223,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			configurable: !0
 		}), t.defaults = i({}, o.defaults), t;
 	}(o);
-})), Kn = /* @__PURE__ */ s(((e, t, n) => {
+})), Xn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -19199,7 +19258,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return a;
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGmsubsup = e.SVGmsup = e.SVGmsub = void 0;
-	var a = Un(), o = Wn(), s = Wn(), c = Wn(), l = Gn();
+	var a = qn(), o = Jn(), s = Jn(), c = Jn(), l = Yn();
 	e.SVGmsub = function(e) {
 		r(t, e);
 		function t() {
@@ -19226,7 +19285,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			r.toSVG(t), a.toSVG(t), o.toSVG(t), o.place(s, d), a.place(s + c, u);
 		}, t.kind = l.MmlMsubsup.prototype.kind, t;
 	}((0, c.CommonMsubsupMixin)(a.SVGscriptbase));
-})), qn = /* @__PURE__ */ s(((e, t, n) => {
+})), Zn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -19368,7 +19427,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}(e);
 	}
 	e.CommonMunderoverMixin = c;
-})), Jn = /* @__PURE__ */ s(((e, t, n) => {
+})), Qn = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -19509,7 +19568,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			"accentunder"
 		], t;
 	}(o);
-})), Yn = /* @__PURE__ */ s(((e, t, n) => {
+})), $n = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -19544,7 +19603,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return a;
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGmunderover = e.SVGmover = e.SVGmunder = void 0;
-	var a = Kn(), o = qn(), s = qn(), c = qn(), l = Jn();
+	var a = Xn(), o = Zn(), s = Zn(), c = Zn(), l = Qn();
 	e.SVGmunder = function(e) {
 		r(t, e);
 		function t() {
@@ -19604,7 +19663,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			}
 		}, t.kind = l.MmlMunderover.prototype.kind, t;
 	}((0, c.CommonMunderoverMixin)(a.SVGmsubsup));
-})), Xn = /* @__PURE__ */ s(((e, t, n) => {
+})), er = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -19750,7 +19809,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}(t);
 	}
 	e.CommonMmultiscriptsMixin = c;
-})), Zn = /* @__PURE__ */ s(((e, t, n) => {
+})), tr = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -19774,7 +19833,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}, i.apply(this, arguments);
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.MmlNone = e.MmlMprescripts = e.MmlMmultiscripts = void 0;
-	var a = K(), o = Gn();
+	var a = K(), o = Yn();
 	e.MmlMmultiscripts = function(e) {
 		r(t, e);
 		function t() {
@@ -19855,7 +19914,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			e.prototype.verifyTree.call(this, t), this.parent && !this.parent.isKind("mmultiscripts") && this.mError(this.kind + " must be a child of mmultiscripts", t, !0);
 		}, t.defaults = i({}, a.AbstractMmlNode.defaults), t;
 	}(a.AbstractMmlNode);
-})), Qn = /* @__PURE__ */ s(((e, t, n) => {
+})), nr = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -19890,7 +19949,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return a;
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGmmultiscripts = e.AlignX = void 0;
-	var a = Kn(), o = Xn(), s = Zn(), c = G();
+	var a = Xn(), o = er(), s = tr(), c = G();
 	function l(e) {
 		return {
 			left: function(e, t) {
@@ -19926,7 +19985,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return e + p;
 		}, t.kind = s.MmlMmultiscripts.prototype.kind, t;
 	}((0, o.CommonMmultiscriptsMixin)(a.SVGmsubsup));
-})), $n = /* @__PURE__ */ s(((e) => {
+})), rr = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.max = e.sum = void 0;
 	function t(e) {
 		return e.reduce(function(e, t) {
@@ -19940,7 +19999,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}, 0);
 	}
 	e.max = n;
-})), er = /* @__PURE__ */ s(((e, t, n) => {
+})), ir = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -19988,7 +20047,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		throw TypeError(t ? "Object is not iterable." : "Symbol.iterator is not defined.");
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.CommonMtableMixin = void 0;
-	var s = X(), c = G(), l = $n();
+	var s = X(), c = G(), l = rr();
 	function u(e) {
 		return function(e) {
 			r(t, e);
@@ -20305,7 +20364,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}(e);
 	}
 	e.CommonMtableMixin = u;
-})), tr = /* @__PURE__ */ s(((e, t, n) => {
+})), ar = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -20460,7 +20519,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			minlabelspacing: "0.8em"
 		}), t;
 	}(o.AbstractMmlNode);
-})), nr = /* @__PURE__ */ s(((e, t, n) => {
+})), or = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -20498,7 +20557,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return e.concat(a || Array.prototype.slice.call(t));
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGmtable = void 0;
-	var o = Z(), s = er(), c = tr(), l = "mjx-";
+	var o = Z(), s = ir(), c = ar(), l = "mjx-";
 	e.SVGmtable = function(e) {
 		r(t, e);
 		function t(t, n, r) {
@@ -20644,7 +20703,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			"g[data-mml-node=\"mtable\"] > g > svg": { overflow: "visible" }
 		}, t;
 	}((0, s.CommonMtableMixin)(o.SVGWrapper));
-})), rr = /* @__PURE__ */ s(((e, t, n) => {
+})), sr = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -20803,7 +20862,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}(e);
 	}
 	e.CommonMlabeledtrMixin = o;
-})), ir = /* @__PURE__ */ s(((e, t, n) => {
+})), cr = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -20837,7 +20896,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		throw TypeError(t ? "Object is not iterable." : "Symbol.iterator is not defined.");
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.MmlMlabeledtr = e.MmlMtr = void 0;
-	var o = K(), s = _t(), c = G(), l = function(e) {
+	var o = K(), s = xt(), c = G(), l = function(e) {
 		r(t, e);
 		function t() {
 			return e !== null && e.apply(this, arguments) || this;
@@ -20949,7 +21008,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			configurable: !0
 		}), t;
 	}(l);
-})), ar = /* @__PURE__ */ s(((e, t, n) => {
+})), lr = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -20987,7 +21046,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return e.concat(a || Array.prototype.slice.call(t));
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGmlabeledtr = e.SVGmtr = void 0;
-	var o = Z(), s = rr(), c = rr(), l = ir(), u = function(e) {
+	var o = Z(), s = sr(), c = sr(), l = cr(), u = function(e) {
 		r(t, e);
 		function t() {
 			return e !== null && e.apply(this, arguments) || this;
@@ -21030,7 +21089,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			n && n.toSVG(this.parent.labels);
 		}, t.kind = l.MmlMlabeledtr.prototype.kind, t;
 	}((0, c.CommonMlabeledtrMixin)(u));
-})), or = /* @__PURE__ */ s(((e, t, n) => {
+})), ur = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -21072,7 +21131,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}(e);
 	}
 	e.CommonMtdMixin = i;
-})), sr = /* @__PURE__ */ s(((e, t, n) => {
+})), dr = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -21096,7 +21155,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}, i.apply(this, arguments);
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.MmlMtd = void 0;
-	var a = K(), o = _t();
+	var a = K(), o = xt();
 	e.MmlMtd = function(e) {
 		r(t, e);
 		function t() {
@@ -21132,7 +21191,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			groupalign: o.INHERIT
 		}), t;
 	}(a.AbstractMmlBaseNode);
-})), cr = /* @__PURE__ */ s(((e, t, n) => {
+})), fr = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -21151,7 +21210,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		};
 	})();
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGmtd = void 0;
-	var i = Z(), a = or(), o = sr();
+	var i = Z(), a = ur(), o = dr();
 	e.SVGmtd = function(e) {
 		r(t, e);
 		function t() {
@@ -21165,7 +21224,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			a && i.kind(a) === "rect" && i.getAttribute(a, "data-bgcolor") && (i.setAttribute(a, "x", this.fixed(e)), i.setAttribute(a, "y", this.fixed(t)), i.setAttribute(a, "width", this.fixed(n)), i.setAttribute(a, "height", this.fixed(r)));
 		}, t.kind = o.MmlMtd.prototype.kind, t;
 	}((0, a.CommonMtdMixin)(i.SVGWrapper));
-})), lr = /* @__PURE__ */ s(((e, t, n) => {
+})), pr = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -21238,7 +21297,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}(t);
 	}
 	e.CommonMactionMixin = s;
-})), ur = /* @__PURE__ */ s(((e, t, n) => {
+})), mr = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -21320,7 +21379,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			selection: 1
 		}), t;
 	}(a.AbstractMmlNode);
-})), dr = /* @__PURE__ */ s(((e, t, n) => {
+})), hr = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -21339,7 +21398,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		};
 	})();
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGmaction = void 0;
-	var i = Z(), a = lr(), o = lr(), s = ur();
+	var i = Z(), a = pr(), o = pr(), s = mr();
 	e.SVGmaction = function(e) {
 		r(t, e);
 		function t() {
@@ -21442,7 +21501,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			}, { status: null }]]
 		]), t;
 	}((0, a.CommonMactionMixin)(i.SVGWrapper));
-})), fr = /* @__PURE__ */ s(((e, t, n) => {
+})), gr = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__read || function(e, t) {
 		var n = typeof Symbol == "function" && e[Symbol.iterator];
 		if (!n) return e;
@@ -21725,7 +21784,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			}];
 		};
 	};
-})), pr = /* @__PURE__ */ s(((e, t, n) => {
+})), _r = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -21796,7 +21855,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		throw TypeError(t ? "Object is not iterable." : "Symbol.iterator is not defined.");
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.CommonMencloseMixin = void 0;
-	var u = o(fr()), d = G();
+	var u = o(gr()), d = G();
 	function f(e) {
 		return function(e) {
 			r(t, e);
@@ -21983,7 +22042,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}(e);
 	}
 	e.CommonMencloseMixin = f;
-})), mr = /* @__PURE__ */ s(((e, t, n) => {
+})), vr = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__createBinding || (Object.create ? (function(e, t, n, r) {
 		r === void 0 && (r = n);
 		var i = Object.getOwnPropertyDescriptor(t, n);
@@ -22011,8 +22070,8 @@ var st = /* @__PURE__ */ s(((e) => {
 		for (var n in e) n !== "default" && !Object.prototype.hasOwnProperty.call(t, n) && r(t, e, n);
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.Arrow = e.DiagonalArrow = e.DiagonalStrike = e.Border2 = e.Border = e.RenderLine = e.lineOffset = e.lineData = e.computeLineData = void 0;
-	var s = a(fr());
-	o(fr(), e), e.computeLineData = {
+	var s = a(gr());
+	o(gr(), e), e.computeLineData = {
 		top: function(e, t, n, r) {
 			return [
 				0,
@@ -22115,7 +22174,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			e.adaptor.append(e.element, t);
 		})(e);
 	};
-})), hr = /* @__PURE__ */ s(((e, t, n) => {
+})), yr = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -22168,7 +22227,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return e = this.childNodes[0].setTeXclass(e), this.updateTeXclass(this.childNodes[0]), e;
 		}, t.defaults = i(i({}, a.AbstractMmlNode.defaults), { notation: "longdiv" }), t;
 	}(a.AbstractMmlNode);
-})), gr = /* @__PURE__ */ s(((e, t, n) => {
+})), br = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -22236,7 +22295,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return a;
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGmenclose = void 0;
-	var l = Z(), u = pr(), d = o(mr()), f = hr();
+	var l = Z(), u = _r(), d = o(vr()), f = yr();
 	e.SVGmenclose = function(e) {
 		r(t, e);
 		function t() {
@@ -22441,7 +22500,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			}]
 		]), t;
 	}((0, u.CommonMencloseMixin)(l.SVGWrapper));
-})), _r = /* @__PURE__ */ s(((e, t, n) => {
+})), xr = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -22475,7 +22534,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}(e);
 	}
 	e.CommonSemanticsMixin = i;
-})), vr = /* @__PURE__ */ s(((e, t, n) => {
+})), Sr = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -22561,7 +22620,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			configurable: !0
 		}), t.defaults = i({}, o.defaults), t;
 	}(o);
-})), yr = /* @__PURE__ */ s(((e, t, n) => {
+})), Cr = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -22580,7 +22639,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		};
 	})();
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGxml = e.SVGannotationXML = e.SVGannotation = e.SVGsemantics = void 0;
-	var i = Z(), a = _r(), o = vr(), s = K();
+	var i = Z(), a = xr(), o = Sr(), s = K();
 	e.SVGsemantics = function(e) {
 		r(t, e);
 		function t() {
@@ -22630,7 +22689,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			e.w = r, e.h = i, e.d = a;
 		}, t.prototype.getStyles = function() {}, t.prototype.getScale = function() {}, t.prototype.getVariant = function() {}, t.kind = s.XMLNode.prototype.kind, t.autoStyle = !1, t;
 	}(i.SVGWrapper);
-})), br = /* @__PURE__ */ s(((e, t, n) => {
+})), wr = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -22688,7 +22747,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}(e);
 	}
 	e.CommonMglyphMixin = o;
-})), xr = /* @__PURE__ */ s(((e, t, n) => {
+})), Tr = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -22737,7 +22796,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			valign: "0em"
 		}), t;
 	}(a.AbstractMmlTokenNode);
-})), Sr = /* @__PURE__ */ s(((e, t, n) => {
+})), Er = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -22756,7 +22815,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		};
 	})();
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGmglyph = void 0;
-	var i = Z(), a = br(), o = xr();
+	var i = Z(), a = wr(), o = Tr();
 	e.SVGmglyph = function(e) {
 		r(t, e);
 		function t() {
@@ -22778,7 +22837,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			}
 		}, t.kind = o.MmlMglyph.prototype.kind, t;
 	}((0, a.CommonMglyphMixin)(i.SVGWrapper));
-})), Cr = /* @__PURE__ */ s(((e, t, n) => {
+})), Dr = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -22813,7 +22872,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}(e);
 	}
 	e.CommonTeXAtomMixin = a;
-})), wr = /* @__PURE__ */ s(((e, t, n) => {
+})), Or = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -22837,7 +22896,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}, i.apply(this, arguments);
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.TeXAtom = void 0;
-	var a = K(), o = bt(), s = function(e) {
+	var a = K(), o = wt(), s = function(e) {
 		r(t, e);
 		function t(t, n, r) {
 			var i = e.call(this, t, n, r) || this;
@@ -22868,7 +22927,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}, t.defaults = i({}, a.AbstractMmlBaseNode.defaults), t;
 	}(a.AbstractMmlBaseNode);
 	e.TeXAtom = s, s.prototype.adjustTeXclass = o.MmlMo.prototype.adjustTeXclass;
-})), Tr = /* @__PURE__ */ s(((e, t, n) => {
+})), kr = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -22887,7 +22946,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		};
 	})();
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGTeXAtom = void 0;
-	var i = Z(), a = Cr(), o = wr(), s = K();
+	var i = Z(), a = Dr(), o = Or(), s = K();
 	e.SVGTeXAtom = function(e) {
 		r(t, e);
 		function t() {
@@ -22900,7 +22959,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			}
 		}, t.kind = o.TeXAtom.prototype.kind, t;
 	}((0, a.CommonTeXAtomMixin)(i.SVGWrapper));
-})), Er = /* @__PURE__ */ s(((e, t, n) => {
+})), Ar = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -22988,7 +23047,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}(e);
 	}
 	e.CommonTextNodeMixin = o;
-})), Dr = /* @__PURE__ */ s(((e, t, n) => {
+})), jr = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -23048,13 +23107,13 @@ var st = /* @__PURE__ */ s(((e) => {
 				}
 			}
 		}, t.kind = a.TextNode.prototype.kind, t.styles = { "mjx-container[jax=\"SVG\"] path[data-c], mjx-container[jax=\"SVG\"] use[data-c]": { "stroke-width": 3 } }, t;
-	}((0, Er().CommonTextNodeMixin)(o.SVGWrapper));
-})), Or = /* @__PURE__ */ s(((e) => {
+	}((0, Ar().CommonTextNodeMixin)(o.SVGWrapper));
+})), Mr = /* @__PURE__ */ s(((e) => {
 	var t;
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGWrappers = void 0;
-	var n = Z(), r = tn(), i = an(), a = cn(), o = un(), s = pn(), c = gn(), l = yn(), u = xn(), d = wn(), f = Dn(), p = kn(), m = Mn(), h = Fn(), g = Rn(), _ = Vn(), v = Kn(), y = Yn(), b = Qn(), x = nr(), S = ar(), C = cr(), w = dr(), T = gr(), E = yr(), D = Sr(), O = Tr(), k = Dr();
+	var n = Z(), r = on(), i = ln(), a = fn(), o = mn(), s = _n(), c = bn(), l = Cn(), u = Tn(), d = On(), f = jn(), p = Nn(), m = In(), h = zn(), g = Hn(), _ = Gn(), v = Xn(), y = $n(), b = nr(), x = or(), S = lr(), C = fr(), w = hr(), T = br(), E = Cr(), D = Er(), O = kr(), k = jr();
 	e.SVGWrappers = (t = {}, t[r.SVGmath.kind] = r.SVGmath, t[i.SVGmrow.kind] = i.SVGmrow, t[i.SVGinferredMrow.kind] = i.SVGinferredMrow, t[a.SVGmi.kind] = a.SVGmi, t[o.SVGmo.kind] = o.SVGmo, t[s.SVGmn.kind] = s.SVGmn, t[c.SVGms.kind] = c.SVGms, t[l.SVGmtext.kind] = l.SVGmtext, t[u.SVGmerror.kind] = u.SVGmerror, t[d.SVGmspace.kind] = d.SVGmspace, t[f.SVGmpadded.kind] = f.SVGmpadded, t[p.SVGmphantom.kind] = p.SVGmphantom, t[m.SVGmfrac.kind] = m.SVGmfrac, t[h.SVGmsqrt.kind] = h.SVGmsqrt, t[g.SVGmroot.kind] = g.SVGmroot, t[_.SVGmfenced.kind] = _.SVGmfenced, t[v.SVGmsub.kind] = v.SVGmsub, t[v.SVGmsup.kind] = v.SVGmsup, t[v.SVGmsubsup.kind] = v.SVGmsubsup, t[y.SVGmunder.kind] = y.SVGmunder, t[y.SVGmover.kind] = y.SVGmover, t[y.SVGmunderover.kind] = y.SVGmunderover, t[b.SVGmmultiscripts.kind] = b.SVGmmultiscripts, t[x.SVGmtable.kind] = x.SVGmtable, t[S.SVGmtr.kind] = S.SVGmtr, t[S.SVGmlabeledtr.kind] = S.SVGmlabeledtr, t[C.SVGmtd.kind] = C.SVGmtd, t[w.SVGmaction.kind] = w.SVGmaction, t[T.SVGmenclose.kind] = T.SVGmenclose, t[E.SVGsemantics.kind] = E.SVGsemantics, t[E.SVGannotation.kind] = E.SVGannotation, t[E.SVGannotationXML.kind] = E.SVGannotationXML, t[E.SVGxml.kind] = E.SVGxml, t[D.SVGmglyph.kind] = D.SVGmglyph, t[O.SVGTeXAtom.kind] = O.SVGTeXAtom, t[k.SVGTextNode.kind] = k.SVGTextNode, t[n.SVGWrapper.kind] = n.SVGWrapper, t);
-})), kr = /* @__PURE__ */ s(((e, t, n) => {
+})), Nr = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -23073,7 +23132,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		};
 	})();
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVGWrapperFactory = void 0;
-	var i = Yt(), a = Or();
+	var i = $t(), a = Mr();
 	e.SVGWrapperFactory = function(e) {
 		r(t, e);
 		function t() {
@@ -23129,8 +23188,8 @@ var st = /* @__PURE__ */ s(((e) => {
 		throw TypeError(t ? "Object is not iterable." : "Symbol.iterator is not defined.");
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.AddPaths = e.SVGFontData = void 0;
-	var c = Zt();
-	o(Zt(), e);
+	var c = tn();
+	o(tn(), e);
 	var l = function(e) {
 		r(t, e);
 		function t() {
@@ -23174,7 +23233,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return e;
 	}
 	e.AddPaths = u;
-})), Ar = /* @__PURE__ */ s(((e, t, n) => {
+})), Pr = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -23294,7 +23353,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		], t.defaultStretchVariants = ["-size4"], t;
 	}
 	e.CommonTeXFontMixin = s;
-})), jr = /* @__PURE__ */ s(((e) => {
+})), Fr = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.boldItalic = void 0, e.boldItalic = {
 		47: [
 			.711,
@@ -23330,9 +23389,9 @@ var st = /* @__PURE__ */ s(((e) => {
 			.894
 		]
 	};
-})), Mr = /* @__PURE__ */ s(((e) => {
+})), Ir = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.boldItalic = void 0;
-	var t = Q(), n = jr();
+	var t = Q(), n = Fr();
 	e.boldItalic = (0, t.AddPaths)(n.boldItalic, {
 		47: "189 -210Q179 -210 170 -203T160 -179Q160 -171 162 -166Q164 -163 420 266T679 698Q686 711 704 711Q714 711 723 704T733 681Q733 672 730 667Q723 654 469 228T211 -201Q202 -210 189 -210",
 		305: "24 296Q24 305 34 328T63 380T115 430T187 452Q205 452 223 448T262 435T295 406T308 360Q308 345 287 290T240 170T207 87Q202 67 202 57Q202 42 215 42Q235 42 257 64Q288 92 302 140Q307 156 310 159T330 162H336H347Q367 162 367 148Q367 140 357 117T329 65T276 14T201 -8Q158 -8 121 15T83 84Q83 104 133 229T184 358Q189 376 189 388Q189 402 177 402Q156 402 134 380Q103 352 89 304Q84 288 81 285T61 282H55H44Q24 282 24 296",
@@ -23341,7 +23400,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		8710: "65 0Q59 6 59 9T61 16Q64 20 334 357T608 698Q616 706 629 710Q630 710 634 710T644 710T656 711Q686 711 694 703Q698 699 700 693Q706 674 805 345T904 14Q904 7 894 1L479 0H65ZM630 342L567 551L232 134L462 133H693Q693 137 630 342",
 		10744: "189 -210Q179 -210 170 -203T160 -179Q160 -171 162 -166Q164 -163 420 266T679 698Q686 711 704 711Q714 711 723 704T733 681Q733 672 730 667Q723 654 469 228T211 -201Q202 -210 189 -210"
 	}, {});
-})), Nr = /* @__PURE__ */ s(((e) => {
+})), Lr = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.bold = void 0, e.bold = {
 		33: [
 			.705,
@@ -24625,9 +24684,9 @@ var st = /* @__PURE__ */ s(((e) => {
 			.447
 		]
 	};
-})), Pr = /* @__PURE__ */ s(((e) => {
+})), Rr = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.bold = void 0;
-	var t = Q(), n = Nr();
+	var t = Q(), n = Lr();
 	e.bold = (0, t.AddPaths)(n.bold, {
 		33: "89 629Q89 663 116 684T171 705Q215 705 237 681T260 634Q260 619 233 434T204 244Q201 237 175 237Q150 237 146 244Q144 248 117 433T89 629ZM90 86Q90 125 116 148T177 171Q211 169 235 146T259 86Q259 48 235 25T175 1Q138 1 114 24T90 86",
 		34: "38 572T38 608T61 669T121 694Q167 694 196 657T225 559Q225 520 214 482T186 418T151 370T119 339T99 329T82 340T70 360Q70 365 74 369T92 385T122 414Q142 441 154 471T170 518L172 535L166 532Q160 530 148 527T122 523Q85 523 62 547ZM305 572T305 608T328 669T388 694Q434 694 463 657T492 559Q492 520 481 482T453 418T418 370T386 339T366 329T349 340T337 360Q337 365 341 369T359 385T389 414Q409 441 421 471T436 518L439 535L433 532Q427 530 415 527T389 523Q352 523 329 547",
@@ -24886,18 +24945,18 @@ var st = /* @__PURE__ */ s(((e) => {
 		8930: "⋢",
 		8931: "⋣"
 	});
-})), Fr = /* @__PURE__ */ s(((e) => {
+})), zr = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.doubleStruck = void 0, e.doubleStruck = {};
-})), Ir = /* @__PURE__ */ s(((e) => {
+})), Br = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.doubleStruck = void 0;
-	var t = Fr();
+	var t = zr();
 	Object.defineProperty(e, "doubleStruck", {
 		enumerable: !0,
 		get: function() {
 			return t.doubleStruck;
 		}
 	});
-})), Lr = /* @__PURE__ */ s(((e) => {
+})), Vr = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.frakturBold = void 0, e.frakturBold = {
 		33: [
 			.689,
@@ -25096,9 +25155,9 @@ var st = /* @__PURE__ */ s(((e) => {
 			.727
 		]
 	};
-})), Rr = /* @__PURE__ */ s(((e) => {
+})), Hr = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.frakturBold = void 0;
-	var t = Q(), n = Lr();
+	var t = Q(), n = Vr();
 	e.frakturBold = (0, t.AddPaths)(n.frakturBold, {
 		33: "121 621Q121 657 132 673T177 689Q223 689 223 644V635Q223 604 222 595Q221 590 210 490T187 292T175 190V186L166 185L156 184Q156 185 139 393T121 621ZM107 47Q107 70 127 87T174 104Q201 104 221 89T241 48Q241 24 222 6T174 -12Q147 -12 127 6T107 47",
 		34: "53 695Q74 695 90 679V622L65 433L52 432H39L27 516Q10 626 10 655Q10 680 26 688Q33 693 39 693Q49 695 53 695ZM151 668Q151 691 191 691Q217 691 224 685T231 661V652Q230 634 219 531L207 433L195 432Q183 432 183 433L168 541Q151 664 151 668",
@@ -25140,7 +25199,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		58120: "602 575Q505 508 505 489Q505 488 505 482T506 463T507 432Q507 314 456 237L449 226L434 216Q420 208 325 143L316 137Q453 82 488 82Q527 82 585 127L596 136Q597 136 599 126L602 115Q578 85 511 27T428 -31Q400 -31 308 10T170 51Q143 51 123 43T92 24T54 -15L34 6L41 14Q65 41 170 129L188 144L204 145Q254 147 293 164T350 208Q378 249 378 344Q378 422 362 478T320 563T268 605T213 618Q177 618 156 600T134 561Q134 539 162 508T217 446T245 394Q245 368 213 337T85 250L62 262Q73 269 86 279T116 308T133 338T108 378T57 439T32 499Q32 556 117 617T291 679Q350 679 393 658Q415 647 433 631T462 600T480 572T490 550T494 541T499 544T516 556T547 578T603 613T689 662L720 679L730 670Q742 659 756 649T785 629T810 615T836 601T855 590Q855 587 860 536T870 419T875 312Q875 114 800 -25Q794 -35 781 -47Q584 -220 398 -220Q322 -220 278 -190Q253 -173 239 -155L244 -150Q248 -145 255 -138T271 -120T290 -100T310 -80T328 -63T341 -51T349 -46Q350 -46 351 -46T354 -47Q357 -47 357 -52Q359 -68 364 -83T383 -118T424 -151T491 -166Q559 -166 613 -129Q629 -118 641 -108T674 -68T710 1T735 107T746 260Q746 433 727 507Q727 512 685 535T615 570L602 575",
 		58121: "351 571Q317 571 247 563T171 555Q153 555 133 563T107 584Q94 605 98 609Q101 615 138 658T190 717H207Q204 710 204 699Q204 673 231 666Q235 665 264 665Q296 665 345 667T426 669Q474 669 501 660T545 626Q553 612 553 594Q553 531 498 474T379 384Q371 379 371 378Q371 376 390 376H411H434Q520 376 602 318Q621 303 627 288T633 234Q633 59 540 -34Q465 -109 348 -130Q308 -137 235 -137Q159 -136 143 -129Q132 -125 132 -118V-53Q118 -24 90 -24Q69 -24 37 -39L27 -44L25 -42Q23 -39 21 -35T17 -30Q17 -28 40 -14T103 19T177 44Q183 45 205 45Q219 45 227 44T245 37T259 20T264 -12Q264 -33 262 -48T259 -80Q259 -93 260 -95Q271 -110 305 -110Q343 -110 383 -86T443 -33Q491 34 491 154Q491 223 467 249Q428 288 334 288H322Q288 288 237 276L222 273L206 286L262 367Q279 369 303 377T358 403T410 452T431 524Q431 531 431 533T427 545T416 558T392 566T351 571"
 	}, {});
-})), zr = /* @__PURE__ */ s(((e) => {
+})), Ur = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.fraktur = void 0, e.fraktur = {
 		33: [
 			.689,
@@ -25345,9 +25404,9 @@ var st = /* @__PURE__ */ s(((e) => {
 			{ ic: .013 }
 		]
 	};
-})), Br = /* @__PURE__ */ s(((e) => {
+})), Wr = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.fraktur = void 0;
-	var t = Q(), n = zr();
+	var t = Q(), n = Ur();
 	e.fraktur = (0, t.AddPaths)(n.fraktur, {
 		33: "102 582T102 620T112 673T152 689Q190 689 190 638Q190 605 167 373L148 187L133 184Q102 582 102 620ZM91 24T91 48T107 88T148 104Q171 104 187 87T204 48Q204 22 188 5T149 -12Q124 -12 108 6",
 		34: "33 436Q8 603 8 648Q8 663 9 671T19 687T43 695Q63 695 74 681Q76 678 76 650V623L66 532Q57 443 55 436V432H33V436ZM128 666Q128 691 162 691T196 668Q196 634 186 531Q176 441 176 432H166Q155 432 155 434L142 545Q135 603 130 647Q128 664 128 666",
@@ -25390,7 +25449,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		58118: "117 531Q117 533 137 544T178 566L198 577Q200 577 204 575T208 572V570Q208 568 208 566T207 560Q197 496 197 397V392H321L295 353H199V260Q199 157 200 145V122L269 68Q271 67 274 67Q282 67 310 83T342 100Q343 100 345 92T346 83L211 -21L172 12Q117 59 117 63Q117 65 117 87T119 150T120 238V353H75L29 354L65 391H118V460Q117 498 117 531",
 		58119: "337 91V78L324 71Q288 53 256 29T206 -8T180 -22Q174 -22 158 -9Q82 46 60 46H59L63 51Q67 56 73 68T85 96Q101 158 101 254Q101 300 95 330T83 370T66 394L53 388Q48 385 41 382T24 374Q22 376 20 378T16 381T13 383T10 385V386L119 475Q150 439 160 430L171 422V409Q173 377 173 300Q173 228 166 183T152 122T145 102Q207 81 242 58L337 104V111Q340 146 340 227Q340 320 339 351T338 408V423L422 469Q425 465 429 462L426 438Q413 354 413 251Q413 152 423 119Q426 110 435 96T452 82Q454 82 509 103Q514 98 514 89Q514 87 507 81T472 51T409 -7L395 -20Q393 -18 390 -17Q386 -14 382 -6Q380 -2 379 1Q369 24 361 40T348 62T341 73T338 84L337 91"
 	}, {});
-})), Vr = /* @__PURE__ */ s(((e) => {
+})), Gr = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.italic = void 0, e.italic = {
 		33: [
 			.716,
@@ -25735,9 +25794,9 @@ var st = /* @__PURE__ */ s(((e) => {
 			.778
 		]
 	};
-})), Hr = /* @__PURE__ */ s(((e) => {
+})), Kr = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.italic = void 0;
-	var t = Q(), n = Vr();
+	var t = Q(), n = Gr();
 	e.italic = (0, t.AddPaths)(n.italic, {
 		33: "330 716Q351 716 365 703T380 670V659L304 433Q230 207 227 204Q225 198 205 198Q184 198 184 207T220 439T260 669Q270 694 297 708Q300 709 304 710T311 713T316 714Q324 716 330 716ZM107 51Q110 83 133 102T179 121Q207 121 219 105T231 72Q231 45 209 23T156 0Q138 0 123 11T107 51",
 		34: "214 620Q214 647 236 670T289 694Q312 694 326 677T341 633V624Q341 588 327 550T294 482T253 428T216 392T196 379Q191 379 184 388T176 401Q176 404 195 421T243 472T287 547Q299 576 299 582L295 580Q291 578 282 576T264 573Q241 573 228 585T214 620ZM411 620Q411 647 433 670T486 694Q509 694 523 677T538 633V624Q538 588 524 550T491 482T450 428T413 392T393 379Q388 379 381 388T373 401Q373 404 392 421T440 472T484 547Q496 576 496 582L492 580Q488 578 479 576T461 573Q438 573 425 585T411 620",
@@ -25800,7 +25859,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		8710: "574 715L582 716Q589 716 595 716Q612 716 616 714Q621 712 621 709Q622 707 705 359T788 8Q786 5 785 3L781 0H416Q52 0 50 2T48 6Q48 9 305 358T567 711Q572 712 574 715ZM599 346L538 602L442 474Q347 345 252 217T157 87T409 86T661 88L654 120Q646 151 629 220T599 346",
 		10744: "166 -215T159 -215T147 -212T141 -204T139 -197Q139 -190 144 -183Q157 -157 378 274T602 707Q605 716 618 716Q625 716 630 712T636 703T638 696Q638 691 406 241T170 -212Q166 -215 159 -215"
 	}, {});
-})), Ur = /* @__PURE__ */ s(((e) => {
+})), qr = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.largeop = void 0, e.largeop = {
 		40: [
 			1.15,
@@ -26059,9 +26118,9 @@ var st = /* @__PURE__ */ s(((e) => {
 			.611
 		]
 	};
-})), Wr = /* @__PURE__ */ s(((e) => {
+})), Jr = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.largeop = void 0;
-	var t = Q(), n = Ur();
+	var t = Q(), n = qr();
 	e.largeop = (0, t.AddPaths)(n.largeop, {
 		40: "180 96T180 250T205 541T266 770T353 944T444 1069T527 1150H555Q561 1144 561 1141Q561 1137 545 1120T504 1072T447 995T386 878T330 721T288 513T272 251Q272 133 280 56Q293 -87 326 -209T399 -405T475 -531T536 -609T561 -640Q561 -643 555 -649H527Q483 -612 443 -568T353 -443T266 -270T205 -41",
 		41: "35 1138Q35 1150 51 1150H56H69Q113 1113 153 1069T243 944T330 771T391 541T416 250T391 -40T330 -270T243 -443T152 -568T69 -649H56Q43 -649 39 -647T35 -637Q65 -607 110 -548Q283 -316 316 56Q324 133 324 251Q324 368 316 445Q278 877 48 1123Q36 1137 35 1138",
@@ -26113,7 +26172,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		12296: "112 244V258L473 1130Q482 1150 498 1150Q511 1150 517 1142T523 1125V1118L344 685Q304 587 257 473T187 305L165 251L344 -184L523 -616V-623Q524 -634 517 -641T499 -649Q484 -649 473 -629L112 244",
 		12297: "112 -649Q103 -649 95 -642T87 -623V-616L266 -184L445 251Q445 252 356 466T178 898T86 1123Q85 1134 93 1142T110 1150Q126 1150 133 1137Q134 1136 317 695L498 258V244L317 -194Q134 -635 133 -636Q126 -649 112 -649"
 	}, { 10764: "∬∬" });
-})), Gr = /* @__PURE__ */ s(((e) => {
+})), Yr = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.monospace = void 0, e.monospace = {
 		32: [
 			0,
@@ -26506,9 +26565,9 @@ var st = /* @__PURE__ */ s(((e) => {
 			.525
 		]
 	};
-})), Kr = /* @__PURE__ */ s(((e) => {
+})), Xr = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.monospace = void 0;
-	var t = Q(), n = Gr();
+	var t = Q(), n = Yr();
 	e.monospace = (0, t.AddPaths)(n.monospace, {
 		32: "",
 		33: "206 565Q206 590 222 606T265 622Q287 621 303 606T319 565T314 392L308 216Q299 194 273 194H262Q247 194 241 195T228 200T217 216L211 392Q206 539 206 565ZM206 56Q206 83 223 99T265 115Q288 113 304 99T320 58Q320 33 303 17T262 0Q237 0 222 17T206 56",
@@ -26590,7 +26649,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		8244: "′′′",
 		8279: "′′′′"
 	});
-})), qr = /* @__PURE__ */ s(((e) => {
+})), Zr = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.normal = void 0, e.normal = {
 		32: [
 			0,
@@ -33678,9 +33737,9 @@ var st = /* @__PURE__ */ s(((e) => {
 			.525
 		]
 	};
-})), Jr = /* @__PURE__ */ s(((e) => {
+})), Qr = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.normal = void 0;
-	var t = Q(), n = qr();
+	var t = Q(), n = Zr();
 	e.normal = (0, t.AddPaths)(n.normal, {
 		32: "",
 		33: "78 661Q78 682 96 699T138 716T180 700T199 661Q199 654 179 432T158 206Q156 198 139 198Q121 198 119 206Q118 209 98 431T78 661ZM79 61Q79 89 97 105T141 121Q164 119 181 104T198 61Q198 31 181 16T139 1Q114 1 97 16T79 61",
@@ -34982,7 +35041,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		8931: "⋣",
 		10764: "∬∬"
 	});
-})), Yr = /* @__PURE__ */ s(((e) => {
+})), $r = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.sansSerifBoldItalic = void 0, e.sansSerifBoldItalic = {
 		305: [
 			.458,
@@ -34995,14 +35054,14 @@ var st = /* @__PURE__ */ s(((e) => {
 			.286
 		]
 	};
-})), Xr = /* @__PURE__ */ s(((e) => {
+})), ei = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.sansSerifBoldItalic = void 0;
-	var t = Q(), n = Yr();
+	var t = Q(), n = $r();
 	e.sansSerifBoldItalic = (0, t.AddPaths)(n.sansSerifBoldItalic, {
 		305: "54 431Q63 458 102 458H127H149Q192 458 199 433Q201 427 201 229T199 25Q190 0 149 0H125L81 1Q61 7 54 28V431",
 		567: "-38 -84Q-36 -84 -14 -95T33 -106H38Q70 -103 78 -86Q83 -78 83 -49T84 180Q84 427 86 433Q93 458 136 458H158H180Q201 458 209 456T225 443Q230 436 231 418Q232 397 232 313V183V124V40Q232 -55 228 -87T203 -147Q166 -205 78 -205Q31 -205 -20 -189T-71 -159Q-71 -156 -59 -123Q-50 -96 -47 -91T-38 -84"
 	}, {});
-})), Zr = /* @__PURE__ */ s(((e) => {
+})), ti = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.sansSerifBold = void 0, e.sansSerifBold = {
 		33: [
 			.694,
@@ -35245,9 +35304,9 @@ var st = /* @__PURE__ */ s(((e) => {
 			.917
 		]
 	};
-})), Qr = /* @__PURE__ */ s(((e) => {
+})), ni = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.sansSerifBold = void 0;
-	var t = Q(), n = Zr();
+	var t = Q(), n = ti();
 	e.sansSerifBold = (0, t.AddPaths)(n.sansSerifBold, {
 		33: "111 669Q111 680 111 682T113 689T121 693T137 694H184H249Q255 686 256 681Q244 220 239 213Q236 208 229 208T183 207T137 207T127 213T118 431T111 669ZM110 71V95Q110 137 136 144Q140 146 183 146H200Q246 146 254 121Q256 115 256 73V51Q256 9 230 2Q225 0 181 0L138 1Q121 7 113 21L111 28L110 71",
 		34: "38 687Q42 693 45 693Q46 694 111 694H176Q179 690 183 687V556L144 501Q139 494 134 486T126 474T120 465T114 457T110 451T106 447T102 445T98 443T94 443T89 442H73H62Q37 442 37 453Q37 458 55 501T74 546Q74 548 59 548L44 549L38 555V687ZM275 687Q279 693 282 693Q283 694 348 694H413Q416 690 420 687V556L381 501Q376 494 371 486T363 474T357 465T351 457T347 451T343 447T339 445T335 443T331 443T326 442H310H299Q274 442 274 453Q274 458 292 501T311 546Q311 548 296 548L281 549L275 555V687",
@@ -35298,7 +35357,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		8260: "103 -249Q81 -249 71 -235T61 -207Q61 -201 62 -198Q64 -192 235 265T409 727Q418 750 445 750Q464 750 476 737T488 707Q488 701 313 234Q143 -225 137 -232Q126 -249 103 -249",
 		8710: "381 692Q386 694 458 694Q516 694 527 693T549 687Q564 680 575 663Q576 658 715 349T856 27Q856 6 838 1H826Q815 1 795 1T747 1T686 1T616 0T539 0T458 0T378 0T300 0T230 0T169 1T122 1T90 1H78Q60 6 60 27Q62 38 201 349T341 663Q356 687 381 692ZM627 148Q626 149 581 250T492 453L447 554Q447 553 446 552Q444 546 326 278L268 148Q268 147 448 147Q627 147 627 148"
 	}, {});
-})), $r = /* @__PURE__ */ s(((e) => {
+})), ri = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.sansSerifItalic = void 0, e.sansSerifItalic = {
 		33: [
 			.694,
@@ -35774,9 +35833,9 @@ var st = /* @__PURE__ */ s(((e) => {
 			.833
 		]
 	};
-})), ei = /* @__PURE__ */ s(((e) => {
+})), ii = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.sansSerifItalic = void 0;
-	var t = Q(), n = $r();
+	var t = Q(), n = ri();
 	e.sansSerifItalic = (0, t.AddPaths)(n.sansSerifItalic, {
 		33: "160 187L257 694H306Q355 694 355 693L238 186H199Q160 186 160 187ZM110 2Q111 3 120 49T131 96Q131 98 180 98T229 96L219 50Q209 3 208 2V0H110V2",
 		34: "171 647L180 694H229Q278 694 278 693L276 686Q275 680 273 668T268 644L258 597L182 471H157Q133 471 133 472L189 595Q189 596 174 596H160V598Q160 601 171 647ZM365 647L374 694H423Q472 694 472 693L470 686Q469 680 467 668T462 644L452 597L376 471H351Q327 471 327 472L383 595Q383 596 368 596H354V598Q354 601 365 647",
@@ -35861,7 +35920,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		8260: "564 744L568 747Q573 750 579 750Q588 750 594 744T599 729Q597 721 321 241T41 -243Q37 -250 27 -250Q6 -250 6 -230Q6 -228 8 -222Q9 -219 285 261T564 744",
 		8710: "273 343L510 694H617Q790 2 790 0H416L42 1L273 343ZM539 576Q536 597 536 600Q536 602 535 605Q534 607 534 607Q527 580 222 130L201 98H651L648 110Q645 123 639 149T627 198Q554 489 539 576"
 	}, {});
-})), ti = /* @__PURE__ */ s(((e) => {
+})), ai = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.sansSerif = void 0, e.sansSerif = {
 		33: [
 			.694,
@@ -36224,9 +36283,9 @@ var st = /* @__PURE__ */ s(((e) => {
 			.833
 		]
 	};
-})), ni = /* @__PURE__ */ s(((e) => {
+})), oi = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.sansSerif = void 0;
-	var t = Q(), n = ti();
+	var t = Q(), n = ai();
 	e.sansSerif = (0, t.AddPaths)(n.sansSerif, {
 		33: "120 187Q120 225 115 440T110 693Q110 694 159 694T208 693Q208 655 203 440T198 187Q198 186 159 186T120 187ZM110 0V98H208V0H110",
 		34: "33 596V694H131V597L82 471H32L47 532Q62 593 63 594Q63 596 48 596H33ZM227 596V694H325V597L276 471H226L241 532Q256 593 257 594Q257 596 242 596H227",
@@ -36301,29 +36360,29 @@ var st = /* @__PURE__ */ s(((e) => {
 		8260: "423 750Q432 750 438 744T444 730Q444 725 271 248T92 -240Q85 -250 75 -250Q68 -250 62 -245T56 -231Q56 -221 230 257T407 740Q411 750 423 750",
 		8710: "203 348L362 694H470L629 348Q789 2 790 1Q790 0 416 0T42 1Q43 2 203 348ZM630 98Q630 100 584 198T481 422T407 603L405 610L403 600Q388 544 191 122L180 99L405 98H630"
 	}, {});
-})), ri = /* @__PURE__ */ s(((e) => {
+})), si = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.scriptBold = void 0, e.scriptBold = {};
-})), ii = /* @__PURE__ */ s(((e) => {
+})), ci = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.scriptBold = void 0;
-	var t = ri();
+	var t = si();
 	Object.defineProperty(e, "scriptBold", {
 		enumerable: !0,
 		get: function() {
 			return t.scriptBold;
 		}
 	});
-})), ai = /* @__PURE__ */ s(((e) => {
+})), li = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.script = void 0, e.script = {};
-})), oi = /* @__PURE__ */ s(((e) => {
+})), ui = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.script = void 0;
-	var t = ai();
+	var t = li();
 	Object.defineProperty(e, "script", {
 		enumerable: !0,
 		get: function() {
 			return t.script;
 		}
 	});
-})), si = /* @__PURE__ */ s(((e) => {
+})), di = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.smallop = void 0, e.smallop = {
 		40: [
 			.85,
@@ -36582,9 +36641,9 @@ var st = /* @__PURE__ */ s(((e) => {
 			.472
 		]
 	};
-})), ci = /* @__PURE__ */ s(((e) => {
+})), fi = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.smallop = void 0;
-	var t = Q(), n = si();
+	var t = Q(), n = di();
 	e.smallop = (0, t.AddPaths)(n.smallop, {
 		40: "152 251Q152 646 388 850H416Q422 844 422 841Q422 837 403 816T357 753T302 649T255 482T236 250Q236 124 255 19T301 -147T356 -251T403 -315T422 -340Q422 -343 416 -349H388Q359 -325 332 -296T271 -213T212 -97T170 56T152 251",
 		41: "305 251Q305 -145 69 -349H56Q43 -349 39 -347T35 -338Q37 -333 60 -307T108 -239T160 -136T204 27T221 250T204 473T160 636T108 740T60 807T35 839Q35 850 50 850H56H69Q197 743 256 566Q305 425 305 251",
@@ -36636,7 +36695,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		12296: "373 850Q392 850 394 832Q394 825 267 538L139 250L267 -38Q394 -325 394 -332Q392 -350 375 -350Q361 -350 356 -338Q354 -331 289 -186T161 103T97 250T160 397T289 685T356 838Q362 850 373 850",
 		12297: "77 832Q77 837 82 843T98 850Q110 849 115 838Q117 831 182 686T310 397T374 250T311 103T182 -185T115 -338Q110 -350 96 -350Q79 -350 77 -332Q77 -325 204 -38L332 250L204 538Q77 825 77 832"
 	}, { 10764: "∬∬" });
-})), li = /* @__PURE__ */ s(((e) => {
+})), pi = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.texCalligraphicBold = void 0, e.texCalligraphicBold = {
 		65: [
 			.751,
@@ -36852,9 +36911,9 @@ var st = /* @__PURE__ */ s(((e) => {
 			{ sk: .0958 }
 		]
 	};
-})), ui = /* @__PURE__ */ s(((e) => {
+})), mi = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.texCalligraphicBold = void 0;
-	var t = Q(), n = li();
+	var t = Q(), n = pi();
 	e.texCalligraphicBold = (0, t.AddPaths)(n.texCalligraphicBold, {
 		65: "761 751Q784 751 784 728V711Q784 570 795 417T820 191Q844 76 865 76Q868 76 902 93T962 112H973Q989 104 989 94Q989 92 987 86Q978 47 846 -11Q812 -25 779 -26Q722 -26 708 9Q688 47 669 161H524L379 162L359 136Q286 43 234 -3T142 -49T71 -19T39 55Q39 92 60 131T103 174Q113 174 117 167T124 149T136 128T166 110Q183 105 190 105Q230 105 341 246Q401 322 453 397T531 514T582 601T611 651H640V663Q640 692 676 718T745 750Q747 750 752 750T761 751ZM658 266Q653 312 649 377T644 489T641 541V556L557 415Q500 325 448 253Q467 261 524 261H568H658V266",
 		66: "441 83Q571 83 571 195Q571 246 538 279T466 322T386 333Q378 333 357 330T329 327Q307 327 307 345Q307 354 313 365T347 396T419 430Q546 472 581 498Q594 508 594 535Q594 574 567 589T508 604Q469 604 442 583Q390 546 342 457T265 256Q237 148 186 60Q167 29 144 13Q105 -15 68 -17H65Q40 -17 40 1Q40 7 53 29T87 100T124 210Q162 373 190 575Q188 575 174 567T138 550T98 542Q75 542 75 560Q75 588 123 618Q135 625 203 659T281 696Q299 703 316 703Q339 703 339 685Q339 656 328 583L333 588Q338 592 346 599T367 615T394 634T428 654T467 674T511 690T559 701T611 705Q651 704 681 689Q739 659 739 598Q739 507 595 427L584 421Q585 420 595 416T610 410T626 402T644 392T660 380T677 365T691 347T703 325T710 299T715 268Q717 193 665 130Q622 73 531 28T348 -17Q275 -17 225 10Q206 19 200 24T193 36Q193 57 231 86T311 119H322Q386 83 441 83",
@@ -36885,7 +36944,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		305: "24 296Q24 305 34 328T63 380T115 430T187 452Q205 452 223 448T262 435T295 406T308 360Q308 345 287 290T240 170T207 87Q202 67 202 57Q202 42 215 42Q235 42 257 64Q288 92 302 140Q307 156 310 159T330 162H336H347Q367 162 367 148Q367 140 357 117T329 65T276 14T201 -8Q158 -8 121 15T83 84Q83 104 133 229T184 358Q189 376 189 388Q189 402 177 402Q156 402 134 380Q103 352 89 304Q84 288 81 285T61 282H55H44Q24 282 24 296",
 		567: "297 360T297 373T294 392T288 400T278 401H276Q237 398 200 363Q181 343 170 325T156 299T149 287T129 282H123H116Q102 282 97 284T92 298Q93 303 98 315T118 349T151 390T201 427T267 451H279Q357 451 388 422T420 354V339L370 138Q321 -60 317 -69Q287 -157 163 -194Q133 -201 99 -201Q39 -201 14 -178T-12 -125Q-12 -94 11 -69T68 -43Q93 -43 108 -57T123 -95Q123 -121 100 -151H104Q131 -151 155 -125T193 -60Q195 -54 244 141T294 345Q297 360 297 373"
 	}, {});
-})), di = /* @__PURE__ */ s(((e) => {
+})), hi = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.texCalligraphic = void 0, e.texCalligraphic = {
 		65: [
 			.728,
@@ -37089,9 +37148,9 @@ var st = /* @__PURE__ */ s(((e) => {
 			}
 		]
 	};
-})), fi = /* @__PURE__ */ s(((e) => {
+})), gi = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.texCalligraphic = void 0;
-	var t = Q(), n = di();
+	var t = Q(), n = hi();
 	e.texCalligraphic = (0, t.AddPaths)(n.texCalligraphic, {
 		65: "576 668Q576 688 606 708T660 728Q676 728 675 712V571Q675 409 688 252Q696 122 720 57Q722 53 723 50T728 46T732 43T737 41T743 39L754 45Q788 61 803 61Q819 61 819 47Q818 43 814 35Q799 15 755 -7T675 -30Q659 -30 648 -25T630 -8T621 11T614 34Q603 77 599 106T594 146T591 160V163H460L329 164L316 145Q241 35 196 -7T119 -50T59 -24T30 43Q30 75 46 100T74 125Q81 125 83 120T88 104T96 84Q118 57 151 57Q189 57 277 182Q432 400 542 625L559 659H567Q574 659 575 660T576 668ZM584 249Q579 333 577 386T575 473T574 520V581L563 560Q497 426 412 290L372 228L370 224H371L383 228L393 232H586L584 249",
 		66: "304 342Q292 342 292 353Q292 372 323 391Q331 396 417 428T533 487Q563 512 563 555V562Q563 575 557 589T530 618T475 636Q429 636 396 613T330 539Q263 446 210 238Q196 183 173 120Q135 31 121 16Q108 1 85 -10T47 -22T32 -10Q32 -5 44 18T77 93T112 206Q135 296 154 395T182 550T191 615Q191 616 190 616Q188 616 179 611T157 601T131 594Q113 594 113 605Q113 623 144 644Q154 650 205 676T267 703Q277 705 279 705Q295 705 295 693Q295 686 288 635T278 575Q278 572 287 582Q336 635 402 669T540 704Q603 704 633 673T664 599Q664 559 638 523T580 462Q553 440 504 413L491 407L504 402Q566 381 596 338T627 244Q627 172 575 110T444 13T284 -22Q208 -22 158 28Q144 42 146 50Q150 67 178 85T230 103Q236 103 246 95T267 75T302 56T357 47Q436 47 486 93Q526 136 526 198V210Q526 228 518 249T491 292T436 330T350 345Q335 345 321 344T304 342",
@@ -37120,7 +37179,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		89: "65 599Q65 618 107 650T204 683Q267 683 312 643T380 533T414 385T424 217Q424 186 423 160T422 123Q426 123 468 170T567 304T650 469Q661 503 661 519Q661 546 639 570Q615 591 583 591Q569 591 569 616Q569 640 582 661T613 683Q624 683 638 679T671 664T702 625T714 558Q714 472 639 329T426 45Q361 -21 282 -82T154 -143Q97 -143 64 -104T31 -20Q31 4 44 25T70 46Q78 46 81 39T87 16T97 -9Q127 -51 182 -51Q184 -51 187 -50H190Q233 -41 314 25Q330 36 330 40Q336 79 336 178Q336 508 223 594Q199 614 158 619L148 620L139 611Q111 586 83 586Q65 586 65 599",
 		90: "694 220Q708 220 708 210Q708 195 695 167T658 105T593 42T502 3Q492 1 458 1Q400 1 293 11T150 22Q116 22 92 11T51 0Q37 0 37 10Q37 21 63 44T179 146T367 319L391 343H343L296 344Q285 350 285 358Q285 365 289 372T300 383T313 392T324 398L329 400H450L561 518Q597 558 607 571L621 587H596Q553 589 484 599T383 609Q342 609 326 596T301 555Q294 533 263 514T208 492Q189 492 189 503Q189 510 197 528T215 559Q249 607 318 645T466 683Q504 683 573 673T669 662L690 661Q734 682 748 683Q767 683 767 673Q767 666 746 640Q655 531 555 428L529 400Q529 399 543 399Q604 397 604 366Q604 350 587 337T551 322Q541 322 539 323Q529 328 529 334Q529 339 487 342L470 343L446 320Q272 153 200 96L235 95Q297 95 392 86T533 74H554Q586 116 597 159Q604 179 635 199T694 220"
 	}, {});
-})), pi = /* @__PURE__ */ s(((e) => {
+})), _i = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.texMathit = void 0, e.texMathit = {
 		65: [
 			.716,
@@ -37383,9 +37442,9 @@ var st = /* @__PURE__ */ s(((e) => {
 			.409
 		]
 	};
-})), mi = /* @__PURE__ */ s(((e) => {
+})), vi = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.texMathit = void 0;
-	var t = Q(), n = pi();
+	var t = Q(), n = _i();
 	e.texMathit = (0, t.AddPaths)(n.texMathit, {
 		65: "85 46Q112 48 132 56T161 73T176 92T185 104Q185 106 353 407T524 709Q527 716 551 716Q568 716 572 712Q573 711 574 710Q576 708 594 384Q613 54 617 52H618Q626 46 672 46H689Q696 41 696 36Q696 13 683 0H670Q639 2 557 2Q526 2 500 2T459 2T441 1Q425 1 425 10Q425 12 427 24Q428 27 429 31T430 36T432 40T434 43T437 45T443 46T450 46Q514 46 514 69Q514 74 511 136L506 209H292L260 152Q222 84 222 74Q222 48 264 46Q280 46 280 35Q280 33 278 21Q275 7 272 4T259 0Q256 0 232 1T159 2Q135 2 109 1T78 0Q58 0 58 10Q58 14 61 26T66 40Q68 46 85 46ZM504 260Q503 263 496 407T486 553L466 520Q446 486 402 406L318 256Q318 255 411 255H504V260",
 		66: "57 11Q57 38 69 45L74 46Q78 46 85 46T99 46Q134 47 145 50T162 62Q164 66 233 344T303 626Q303 627 302 629V631Q296 637 241 637H223Q217 642 217 645T219 664Q223 677 229 683H411L593 682L605 680Q616 678 628 675T660 662T694 639T720 601T732 547Q732 519 726 503Q710 452 662 414T556 360L545 357L556 355Q604 346 641 312T678 221Q678 155 622 92T482 8Q459 2 439 2T256 0H154H105Q74 0 66 2T57 11ZM629 549Q628 550 629 557T627 576T619 600T601 622T570 636Q564 637 490 637Q472 637 454 637T424 636T411 636Q399 635 395 622T364 500Q333 377 332 376Q332 374 408 374L485 375L495 377Q547 390 588 437T629 549ZM504 336Q500 337 410 337Q323 337 322 336Q322 334 305 263T270 122T252 51Q252 47 337 46Q346 46 361 46T384 45Q425 45 455 55T515 95Q574 156 574 235Q574 276 555 304T504 336",
@@ -37440,7 +37499,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		121: "75 287Q75 299 89 333T135 404T205 441Q246 441 269 420T293 357Q292 338 259 245T225 95Q225 26 274 26Q325 26 367 93L405 245Q442 393 446 404Q460 431 490 431T522 402Q522 400 416 -24Q389 -102 327 -153T196 -205Q152 -205 122 -181T91 -119Q91 -84 110 -67T152 -49Q170 -49 180 -60T191 -87Q191 -108 174 -128Q167 -134 157 -138T146 -144Q155 -153 159 -156T173 -163T199 -167Q229 -167 255 -149T297 -105T325 -52T342 -6T347 15Q315 -10 269 -10Q204 -10 176 25T148 108Q148 161 184 262T221 383Q221 405 206 405Q178 405 158 375T128 313T116 279Q115 278 97 278H81Q75 284 75 287",
 		122: "160 317Q158 317 155 317Q136 317 136 324Q136 351 171 396T260 442Q292 442 321 410T365 375H369Q384 375 404 408L425 441Q427 442 444 442H460Q466 436 466 434Q466 419 426 367Q387 314 294 222T178 105L170 95L181 94Q198 93 236 81T295 68Q328 68 356 89T395 141Q398 150 401 151T419 153Q441 153 441 144Q441 110 394 50T282 -11Q251 -11 221 23T171 57Q157 57 143 47T121 26T104 3T95 -10Q93 -11 76 -11H60Q54 -5 54 -2Q54 3 61 14Q103 88 233 215Q349 329 349 338L302 351Q269 362 247 362Q227 362 212 356T192 342T183 327T178 320Q175 317 160 317"
 	}, {});
-})), hi = /* @__PURE__ */ s(((e) => {
+})), yi = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.texOldstyleBold = void 0, e.texOldstyleBold = {
 		48: [
 			.46,
@@ -37694,9 +37753,9 @@ var st = /* @__PURE__ */ s(((e) => {
 			}
 		]
 	};
-})), gi = /* @__PURE__ */ s(((e) => {
+})), bi = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.texOldstyleBold = void 0;
-	var t = Q(), n = hi();
+	var t = Q(), n = yi();
 	e.texOldstyleBold = (0, t.AddPaths)(n.texOldstyleBold, {
 		48: "259 460H279Q352 460 403 444T491 378Q528 320 528 219Q528 100 475 45Q417 -17 287 -17Q152 -17 99 44T46 219Q46 246 47 265T57 318T82 376T131 422T210 454Q234 460 259 460ZM389 229V271Q389 351 371 380T280 409Q232 409 208 385Q194 371 190 345T185 229V210Q185 108 194 83Q208 35 287 35Q317 35 336 42Q372 55 380 85T389 204V229",
 		49: "119 417Q191 417 240 428T310 450T338 461Q353 461 357 452T361 400Q361 389 361 342T360 254V62H420H456Q483 62 488 58T494 35V29Q494 13 491 7T473 0Q468 0 424 1T295 2T167 1T117 0Q114 0 111 0T107 1Q96 8 96 27V35Q96 54 102 58T140 62H170H229V213Q229 363 228 363Q220 360 196 358T150 356L130 355H93Q84 360 82 365T80 386Q80 404 81 407T95 417H119",
@@ -37735,7 +37794,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		89: "73 555Q49 555 49 573Q49 602 110 644T239 686Q319 686 376 624Q416 584 444 511T483 361T499 240T503 173Q503 165 504 165Q506 165 524 184T556 218Q631 297 674 377T718 485Q718 505 699 526Q673 552 628 552Q619 552 613 562T607 590Q607 617 621 645T658 685Q661 686 671 686Q718 686 757 652T797 545Q797 476 749 369T602 146Q500 29 371 -67T176 -164Q112 -164 74 -120T36 -29Q36 5 55 36T95 67Q104 67 108 59T115 39T128 12T154 -12Q183 -30 216 -30Q239 -30 305 7L361 44L367 49V54Q367 95 364 143T351 273T312 429T243 546Q206 581 156 588L146 581Q108 555 73 555",
 		90: "622 574Q522 579 420 579H396Q373 579 364 574T351 550Q339 516 297 490T218 462Q195 462 195 479Q195 487 197 492Q218 565 313 625T509 685Q564 685 650 683T755 680Q787 680 807 683T831 686Q853 686 853 669Q853 657 826 626Q742 532 641 437L619 415L622 414Q626 414 631 414T642 414Q697 411 697 388Q697 367 670 345T607 323Q605 323 592 325T546 329H522L490 302Q457 274 400 226T289 136L260 113L318 112Q345 111 452 109T587 106H627Q650 143 656 170Q666 197 710 225T788 253Q811 253 811 237Q811 211 781 160T710 77Q619 0 515 0Q507 0 497 0T484 1Q434 1 319 3T177 6Q123 6 95 2Q83 2 71 0H68Q46 0 46 17Q46 28 58 44Q68 56 100 80T210 165T383 307L408 329H361L314 330Q297 338 297 350Q297 368 320 388T368 413Q375 415 441 415H506L647 555L664 574H622"
 	}, {});
-})), _i = /* @__PURE__ */ s(((e) => {
+})), xi = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.texOldstyle = void 0, e.texOldstyle = {
 		48: [
 			.452,
@@ -37989,9 +38048,9 @@ var st = /* @__PURE__ */ s(((e) => {
 			}
 		]
 	};
-})), vi = /* @__PURE__ */ s(((e) => {
+})), Si = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.texOldstyle = void 0;
-	var t = Q(), n = _i();
+	var t = Q(), n = xi();
 	e.texOldstyle = (0, t.AddPaths)(n.texOldstyle, {
 		48: "39 213Q39 274 53 319T89 389T139 429T192 448T242 452Q347 452 400 400Q460 335 460 213Q460 -22 250 -22Q39 -22 39 213ZM364 242Q364 279 363 301T355 348T338 385T306 406T254 415Q250 415 245 415T238 416Q217 416 190 404T150 368Q136 339 136 221Q136 114 146 78T200 23Q219 16 250 16Q280 16 299 23Q341 41 352 77T364 221V242",
 		49: "116 410Q176 412 215 423T269 443T288 453H291Q293 453 301 447V254Q301 62 303 60Q307 52 322 49T394 46Q418 46 422 43T426 23Q426 8 424 4T411 0Q407 0 369 1T258 2T148 1T106 0Q96 0 94 4T91 23Q91 40 95 43T123 46Q180 46 195 49T215 61Q216 63 216 220V376Q192 367 119 364H93L86 371V403L92 410H116",
@@ -38030,7 +38089,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		89: "65 599Q65 618 107 650T204 683Q267 683 312 643T380 533T414 385T424 217Q424 186 423 160T422 123Q426 123 468 170T567 304T650 469Q661 503 661 519Q661 546 639 570Q615 591 583 591Q569 591 569 616Q569 640 582 661T613 683Q624 683 638 679T671 664T702 625T714 558Q714 472 639 329T426 45Q361 -21 282 -82T154 -143Q97 -143 64 -104T31 -20Q31 4 44 25T70 46Q78 46 81 39T87 16T97 -9Q127 -51 182 -51Q184 -51 187 -50H190Q233 -41 314 25Q330 36 330 40Q336 79 336 178Q336 508 223 594Q199 614 158 619L148 620L139 611Q111 586 83 586Q65 586 65 599",
 		90: "694 220Q708 220 708 210Q708 195 695 167T658 105T593 42T502 3Q492 1 458 1Q400 1 293 11T150 22Q116 22 92 11T51 0Q37 0 37 10Q37 21 63 44T179 146T367 319L391 343H343L296 344Q285 350 285 358Q285 365 289 372T300 383T313 392T324 398L329 400H450L561 518Q597 558 607 571L621 587H596Q553 589 484 599T383 609Q342 609 326 596T301 555Q294 533 263 514T208 492Q189 492 189 503Q189 510 197 528T215 559Q249 607 318 645T466 683Q504 683 573 673T669 662L690 661Q734 682 748 683Q767 683 767 673Q767 666 746 640Q655 531 555 428L529 400Q529 399 543 399Q604 397 604 366Q604 350 587 337T551 322Q541 322 539 323Q529 328 529 334Q529 339 487 342L470 343L446 320Q272 153 200 96L235 95Q297 95 392 86T533 74H554Q586 116 597 159Q604 179 635 199T694 220"
 	}, {});
-})), yi = /* @__PURE__ */ s(((e) => {
+})), Ci = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.texSize3 = void 0, e.texSize3 = {
 		40: [
 			1.45,
@@ -38154,9 +38213,9 @@ var st = /* @__PURE__ */ s(((e) => {
 			.75
 		]
 	};
-})), bi = /* @__PURE__ */ s(((e) => {
+})), wi = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.texSize3 = void 0;
-	var t = Q(), n = yi();
+	var t = Q(), n = Ci();
 	e.texSize3 = (0, t.AddPaths)(n.texSize3, {
 		40: "701 -940Q701 -943 695 -949H664Q662 -947 636 -922T591 -879T537 -818T475 -737T412 -636T350 -511T295 -362T250 -186T221 17T209 251Q209 962 573 1361Q596 1386 616 1405T649 1437T664 1450H695Q701 1444 701 1441Q701 1436 681 1415T629 1356T557 1261T476 1118T400 927T340 675T308 359Q306 321 306 250Q306 -139 400 -430T690 -924Q701 -936 701 -940",
 		41: "34 1438Q34 1446 37 1448T50 1450H56H71Q73 1448 99 1423T144 1380T198 1319T260 1238T323 1137T385 1013T440 864T485 688T514 485T526 251Q526 134 519 53Q472 -519 162 -860Q139 -885 119 -904T86 -936T71 -949H56Q43 -949 39 -947T34 -937Q88 -883 140 -813Q428 -430 428 251Q428 453 402 628T338 922T245 1146T145 1309T46 1425Q44 1427 42 1429T39 1433T36 1436L34 1438",
@@ -38183,7 +38242,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		12296: "126 242V259L361 845Q595 1431 597 1435Q610 1450 624 1450Q634 1450 644 1443T654 1419V1411L422 831Q190 253 190 250T422 -331L654 -910V-919Q654 -936 644 -943T624 -950Q612 -950 597 -935Q595 -931 361 -345L126 242",
 		12297: "94 1424Q94 1426 97 1432T107 1444T124 1450Q141 1450 152 1435Q154 1431 388 845L623 259V242L388 -345Q153 -933 152 -934Q142 -949 127 -949H125Q95 -949 95 -919V-910L327 -331Q559 247 559 250T327 831Q94 1411 94 1424"
 	}, {});
-})), xi = /* @__PURE__ */ s(((e) => {
+})), Ti = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.texSize4 = void 0, e.texSize4 = {
 		40: [
 			1.75,
@@ -38462,9 +38521,9 @@ var st = /* @__PURE__ */ s(((e) => {
 			{ ic: .01 }
 		]
 	};
-})), Si = /* @__PURE__ */ s(((e) => {
+})), Ei = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.texSize4 = void 0;
-	var t = Q(), n = xi();
+	var t = Q(), n = Ti();
 	e.texSize4 = (0, t.AddPaths)(n.texSize4, {
 		40: "758 -1237T758 -1240T752 -1249H736Q718 -1249 717 -1248Q711 -1245 672 -1199Q237 -706 237 251T672 1700Q697 1730 716 1749Q718 1750 735 1750H752Q758 1744 758 1741Q758 1737 740 1713T689 1644T619 1537T540 1380T463 1176Q348 802 348 251Q348 -242 441 -599T744 -1218Q758 -1237 758 -1240",
 		41: "33 1741Q33 1750 51 1750H60H65Q73 1750 81 1743T119 1700Q554 1207 554 251Q554 -707 119 -1199Q76 -1250 66 -1250Q65 -1250 62 -1250T56 -1249Q55 -1249 53 -1249T49 -1250Q33 -1250 33 -1239Q33 -1236 50 -1214T98 -1150T163 -1052T238 -910T311 -727Q443 -335 443 251Q443 402 436 532T405 831T339 1142T224 1438T50 1716Q33 1737 33 1741",
@@ -38521,7 +38580,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		57685: "",
 		57686: ""
 	});
-})), Ci = /* @__PURE__ */ s(((e) => {
+})), Di = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.texVariant = void 0, e.texVariant = {
 		710: [
 			.845,
@@ -38720,9 +38779,9 @@ var st = /* @__PURE__ */ s(((e) => {
 			.778
 		]
 	};
-})), wi = /* @__PURE__ */ s(((e) => {
+})), Oi = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.texVariant = void 0;
-	var t = Q(), n = Ci();
+	var t = Q(), n = Di();
 	e.texVariant = (0, t.AddPaths)(n.texVariant, {
 		710: "1 561Q-3 563 -6 577T-12 604L-14 618Q-14 625 -7 628T23 635Q31 636 36 637Q63 641 621 745Q1148 845 1165 845Q1167 845 1752 739L2338 630Q2346 630 2346 618Q2340 565 2332 561Q2329 561 1749 654Q1617 675 1466 699T1241 736T1167 748Q1165 748 1093 737T867 700T583 654Q3 561 1 561",
 		732: "804 788Q717 788 606 772T397 732T213 685T75 645T18 628Q11 628 11 632Q8 637 4 668T2 704Q2 713 36 732Q55 739 242 795Q622 898 826 898Q893 898 947 895Q1009 887 1056 872T1187 819Q1286 776 1356 758T1527 739Q1614 739 1725 755T1934 795T2118 842T2256 882T2313 899Q2320 899 2320 895Q2323 890 2327 860T2329 824Q2329 818 2296 795Q2273 787 2089 732Q1810 657 1598 632Q1562 629 1492 629Q1389 629 1320 644T1144 708Q1048 751 977 769T804 788",
@@ -38763,9 +38822,9 @@ var st = /* @__PURE__ */ s(((e) => {
 		10955: "82 -14T82 -7T95 15H431L529 170H435Q341 170 333 175Q149 218 98 368Q84 406 84 461Q84 515 98 555Q126 633 193 686T346 750Q347 750 373 750T440 751T520 752H680Q693 739 693 732Q693 727 680 712H526Q364 712 353 710Q268 700 207 646T126 512Q123 496 123 461T126 410Q141 350 180 304T280 232Q312 217 344 214T464 210H555L589 261Q613 301 620 311T635 321Q644 321 650 315T657 301Q657 296 651 286T630 252T604 212Q604 210 642 210H680Q693 197 693 190Q693 186 692 184T686 177T680 170H578L526 92L478 17L580 15H682Q693 4 693 -4T680 -25H451L353 -179L518 -181H682Q694 -193 694 -201Q694 -211 682 -219L504 -221H326L293 -272Q257 -332 246 -332Q238 -332 232 -326T225 -313Q225 -310 226 -308Q226 -305 251 -265T278 -223Q278 -221 186 -221H95Q93 -218 89 -214T84 -208T82 -201T95 -181H306L404 -25H249L93 -23L86 -19Q82 -14 82 -7",
 		10956: "82 732Q82 739 95 752H251Q415 752 426 750Q539 736 615 657Q667 599 689 517Q692 496 692 461T689 406Q668 325 615 266Q522 170 382 170H355L326 95Q319 80 311 59T298 28T293 17Q293 15 486 15H680Q693 0 693 -6T680 -25H275L213 -179L449 -181H682Q693 -192 693 -199T680 -221H198L178 -270Q153 -333 139 -333Q132 -333 126 -327T119 -314T135 -266T153 -223Q153 -221 124 -221H95Q82 -207 82 -201T95 -181H171L233 -25H162L93 -23L86 -19Q82 -14 82 -7T95 15H251L313 170H202L93 172L86 177Q82 182 82 190Q82 199 93 210H211L329 212L349 261Q366 301 372 311T386 321Q392 321 399 315T407 302Q407 295 390 254T373 210Q374 209 377 209Q412 209 444 217Q512 231 564 273T638 377Q651 414 651 461Q651 509 638 548Q613 613 555 656T422 710Q411 712 249 712H95Q82 727 82 732"
 	}, {});
-})), Ti = /* @__PURE__ */ s(((e) => {
+})), ki = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.delimiters = e.VSIZES = e.HDW3 = e.HDW2 = e.HDW1 = void 0;
-	var t = Zt();
+	var t = tn();
 	e.HDW1 = [
 		.75,
 		.25,
@@ -39694,7 +39753,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		65079: y,
 		65080: b
 	};
-})), Ei = /* @__PURE__ */ s(((e, t, n) => {
+})), Ai = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -39723,7 +39782,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		throw TypeError(t ? "Object is not iterable." : "Symbol.iterator is not defined.");
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.TeXFont = void 0;
-	var a = Q(), o = Ar(), s = Mr(), c = Pr(), l = Ir(), u = Rr(), d = Br(), f = Hr(), p = Wr(), m = Kr(), h = Jr(), g = Xr(), _ = Qr(), v = ei(), y = ni(), b = ii(), x = oi(), S = ci(), C = ui(), w = fi(), T = mi(), E = gi(), D = vi(), O = bi(), k = Si(), A = wi(), j = Ti();
+	var a = Q(), o = Pr(), s = Ir(), c = Rr(), l = Br(), u = Hr(), d = Wr(), f = Kr(), p = Jr(), m = Xr(), h = Qr(), g = ei(), _ = ni(), v = ii(), y = oi(), b = ci(), x = ui(), S = fi(), C = mi(), w = gi(), T = vi(), E = bi(), D = Si(), O = wi(), k = Ei(), A = Oi(), j = ki();
 	e.TeXFont = function(e) {
 		r(t, e);
 		function t(t) {
@@ -39798,7 +39857,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			"-tex-variant": "V"
 		}, t;
 	}((0, o.CommonTeXFontMixin)(a.SVGFontData));
-})), Di = /* @__PURE__ */ s(((e) => {
+})), ji = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.FontCache = void 0, e.FontCache = function() {
 		function e(e) {
 			this.cache = /* @__PURE__ */ new Map(), this.defs = null, this.localID = "", this.nextID = 0, this.jax = e;
@@ -39819,7 +39878,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return this.defs;
 		}, e;
 	}();
-})), Oi = /* @__PURE__ */ s(((e, t, n) => {
+})), Mi = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -39859,7 +39918,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return a;
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.SVG = e.XLINKNS = e.SVGNS = void 0;
-	var o = qt(), s = kr(), c = Ei(), l = Di(), u = G(), d = Rt();
+	var o = Zt(), s = Nr(), c = Ai(), l = ji(), u = G(), d = Ht();
 	e.SVGNS = "http://www.w3.org/2000/svg", e.XLINKNS = "http://www.w3.org/1999/xlink", e.SVG = function(t) {
 		r(n, t);
 		function n(e) {
@@ -39987,7 +40046,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			}
 		}, n.FONTCACHEID = "MJX-SVG-global-cache", n.STYLESHEETID = "MJX-SVG-styles", n;
 	}(o.CommonOutputJax);
-})), ki = /* @__PURE__ */ s(((e, t, n) => {
+})), Ni = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__values || function(e) {
 		var t = typeof Symbol == "function" && Symbol.iterator, n = t && e[t], r = 0;
 		if (n) return n.call(e);
@@ -40078,7 +40137,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return t ? t.replace(/  +/g, " ").replace(/^ /, "").replace(/ $/, "").split(/ /) : [];
 		}, e;
 	}();
-})), Ai = /* @__PURE__ */ s(((e, t, n) => {
+})), Pi = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -40257,15 +40316,15 @@ var st = /* @__PURE__ */ s(((e) => {
 				bottom: t.bottom
 			};
 		}, t;
-	}(ki().AbstractDOMAdaptor);
-})), ji = /* @__PURE__ */ s(((e) => {
+	}(Ni().AbstractDOMAdaptor);
+})), Fi = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.browserAdaptor = void 0;
-	var t = Ai();
+	var t = Pi();
 	function n() {
 		return new t.HTMLAdaptor(window);
 	}
 	e.browserAdaptor = n;
-})), Mi = /* @__PURE__ */ s(((e, t, n) => {
+})), Ii = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__generator || function(e, t) {
 		var n = {
 			label: 0,
@@ -40499,7 +40558,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return u.data !== e.END && (this.list.prev.next = t.list.next, t.list.next.prev = this.list.prev, t.list.prev.next = this.list, this.list.prev = t.list.prev, t.list.next = t.list.prev = t.list), this;
 		}, t;
 	}();
-})), Ni = /* @__PURE__ */ s(((e, t, n) => {
+})), Li = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -40525,8 +40584,8 @@ var st = /* @__PURE__ */ s(((e) => {
 		return t.prototype.isBefore = function(e, t) {
 			return e.start.i < t.start.i || e.start.i === t.start.i && e.start.n < t.start.n;
 		}, t;
-	}(Mi().LinkedList);
-})), Pi = /* @__PURE__ */ s(((e, t, n) => {
+	}(Ii().LinkedList);
+})), Ri = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -40552,8 +40611,8 @@ var st = /* @__PURE__ */ s(((e) => {
 		return t.prototype.create = function(e, t, n) {
 			return t === void 0 && (t = {}), n === void 0 && (n = []), this.node[e](t, n);
 		}, t;
-	}(Dt().AbstractFactory);
-})), Fi = /* @__PURE__ */ s(((e, t, n) => {
+	}(jt().AbstractFactory);
+})), zi = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -40577,7 +40636,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}, i.apply(this, arguments);
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.MmlMstyle = void 0;
-	var a = K(), o = _t();
+	var a = K(), o = xt();
 	e.MmlMstyle = function(e) {
 		r(t, e);
 		function t() {
@@ -40613,7 +40672,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			infixlinebreakstyle: "before"
 		}), t;
 	}(a.AbstractMmlLayoutNode);
-})), Ii = /* @__PURE__ */ s(((e, t, n) => {
+})), Bi = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -40637,7 +40696,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		}, i.apply(this, arguments);
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.MmlMaligngroup = void 0;
-	var a = K(), o = _t();
+	var a = K(), o = xt();
 	e.MmlMaligngroup = function(e) {
 		r(t, e);
 		function t() {
@@ -40659,7 +40718,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			t = this.addInheritedAttributes(t, this.attributes.getAllAttributes()), e.prototype.setChildInheritedAttributes.call(this, t, n, r, i);
 		}, t.defaults = i(i({}, a.AbstractMmlLayoutNode.defaults), { groupalign: o.INHERIT }), t;
 	}(a.AbstractMmlLayoutNode);
-})), Li = /* @__PURE__ */ s(((e, t, n) => {
+})), Vi = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -40709,7 +40768,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			configurable: !0
 		}), t.defaults = i(i({}, a.AbstractMmlNode.defaults), { edge: "left" }), t;
 	}(a.AbstractMmlNode);
-})), Ri = /* @__PURE__ */ s(((e, t, n) => {
+})), Hi = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -40762,12 +40821,12 @@ var st = /* @__PURE__ */ s(((e) => {
 			this.parent.replaceChild(a, this), a.setInheritedAttributes(e, t, n, r);
 		}, t.defaults = i({}, a.AbstractMmlBaseNode.defaults), t;
 	}(a.AbstractMmlBaseNode);
-})), zi = /* @__PURE__ */ s(((e) => {
+})), Ui = /* @__PURE__ */ s(((e) => {
 	var t;
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.MML = void 0;
-	var n = K(), r = en(), i = sn(), a = fn(), o = bt(), s = vn(), c = Cn(), l = hn(), u = rn(), d = jn(), f = Pn(), p = Ln(), m = Fi(), h = bn(), g = En(), _ = On(), v = Bn(), y = hr(), b = ur(), x = Gn(), S = Jn(), C = Zn(), w = tr(), T = ir(), E = sr(), D = Ii(), O = Li(), k = xr(), A = vr(), j = wr(), M = Ri();
+	var n = K(), r = an(), i = dn(), a = gn(), o = wt(), s = Sn(), c = Dn(), l = yn(), u = cn(), d = Fn(), f = Rn(), p = Vn(), m = zi(), h = wn(), g = An(), _ = Mn(), v = Wn(), y = yr(), b = mr(), x = Yn(), S = Qn(), C = tr(), w = ar(), T = cr(), E = dr(), D = Bi(), O = Vi(), k = Tr(), A = Sr(), j = Or(), M = Hi();
 	e.MML = (t = {}, t[r.MmlMath.prototype.kind] = r.MmlMath, t[i.MmlMi.prototype.kind] = i.MmlMi, t[a.MmlMn.prototype.kind] = a.MmlMn, t[o.MmlMo.prototype.kind] = o.MmlMo, t[s.MmlMtext.prototype.kind] = s.MmlMtext, t[c.MmlMspace.prototype.kind] = c.MmlMspace, t[l.MmlMs.prototype.kind] = l.MmlMs, t[u.MmlMrow.prototype.kind] = u.MmlMrow, t[u.MmlInferredMrow.prototype.kind] = u.MmlInferredMrow, t[d.MmlMfrac.prototype.kind] = d.MmlMfrac, t[f.MmlMsqrt.prototype.kind] = f.MmlMsqrt, t[p.MmlMroot.prototype.kind] = p.MmlMroot, t[m.MmlMstyle.prototype.kind] = m.MmlMstyle, t[h.MmlMerror.prototype.kind] = h.MmlMerror, t[g.MmlMpadded.prototype.kind] = g.MmlMpadded, t[_.MmlMphantom.prototype.kind] = _.MmlMphantom, t[v.MmlMfenced.prototype.kind] = v.MmlMfenced, t[y.MmlMenclose.prototype.kind] = y.MmlMenclose, t[b.MmlMaction.prototype.kind] = b.MmlMaction, t[x.MmlMsub.prototype.kind] = x.MmlMsub, t[x.MmlMsup.prototype.kind] = x.MmlMsup, t[x.MmlMsubsup.prototype.kind] = x.MmlMsubsup, t[S.MmlMunder.prototype.kind] = S.MmlMunder, t[S.MmlMover.prototype.kind] = S.MmlMover, t[S.MmlMunderover.prototype.kind] = S.MmlMunderover, t[C.MmlMmultiscripts.prototype.kind] = C.MmlMmultiscripts, t[C.MmlMprescripts.prototype.kind] = C.MmlMprescripts, t[C.MmlNone.prototype.kind] = C.MmlNone, t[w.MmlMtable.prototype.kind] = w.MmlMtable, t[T.MmlMlabeledtr.prototype.kind] = T.MmlMlabeledtr, t[T.MmlMtr.prototype.kind] = T.MmlMtr, t[E.MmlMtd.prototype.kind] = E.MmlMtd, t[D.MmlMaligngroup.prototype.kind] = D.MmlMaligngroup, t[O.MmlMalignmark.prototype.kind] = O.MmlMalignmark, t[k.MmlMglyph.prototype.kind] = k.MmlMglyph, t[A.MmlSemantics.prototype.kind] = A.MmlSemantics, t[A.MmlAnnotation.prototype.kind] = A.MmlAnnotation, t[A.MmlAnnotationXML.prototype.kind] = A.MmlAnnotationXML, t[j.TeXAtom.prototype.kind] = j.TeXAtom, t[M.MathChoice.prototype.kind] = M.MathChoice, t[n.TextNode.prototype.kind] = n.TextNode, t[n.XMLNode.prototype.kind] = n.XMLNode, t);
-})), Bi = /* @__PURE__ */ s(((e, t, n) => {
+})), Wi = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -40786,7 +40845,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		};
 	})();
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.MmlFactory = void 0;
-	var i = Pi(), a = zi();
+	var i = Ri(), a = Ui();
 	e.MmlFactory = function(e) {
 		r(t, e);
 		function t() {
@@ -40800,7 +40859,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			configurable: !0
 		}), t.defaultNodes = a.MML, t;
 	}(i.AbstractNodeFactory);
-})), Vi = /* @__PURE__ */ s(((e, t, n) => {
+})), Gi = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -40898,7 +40957,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return t.allocate.apply(t, o([], a(e), !1)), t;
 	}
 	e.BitFieldClass = c;
-})), Hi = /* @__PURE__ */ s(((e, t, n) => {
+})), Ki = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -40946,7 +41005,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return e.concat(a || Array.prototype.slice.call(t));
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.AbstractMathDocument = e.resetAllOptions = e.resetOptions = e.RenderList = void 0;
-	var s = W(), c = pt(), l = Wt(), u = Ni(), d = ht(), f = Bi(), p = Vi(), m = function(e) {
+	var s = W(), c = _t(), l = Jt(), u = Li(), d = yt(), f = Wi(), p = Gi(), m = function(e) {
 		r(t, e);
 		function t() {
 			return e !== null && e.apply(this, arguments) || this;
@@ -41059,7 +41118,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			}
 			return null;
 		}, t;
-	}(ct().PrioritizedList);
+	}(ft().PrioritizedList);
 	e.RenderList = m, e.resetOptions = {
 		all: !1,
 		processed: !1,
@@ -41358,7 +41417,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			})
 		}, t.ProcessBits = (0, p.BitFieldClass)("findMath", "compile", "getMetrics", "typeset", "updateDocument"), t;
 	}();
-})), Ui = /* @__PURE__ */ s(((e, t, n) => {
+})), qi = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -41383,7 +41442,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return e !== null && e.apply(this, arguments) || this;
 		}
 		return t;
-	}(Hi().AbstractMathDocument);
+	}(Ki().AbstractMathDocument);
 	e.AbstractHandler = function() {
 		function e(e, t) {
 			t === void 0 && (t = 5), this.documentClass = i, this.adaptor = e, this.priority = t;
@@ -41400,7 +41459,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			return new this.documentClass(e, this.adaptor, t);
 		}, e.NAME = "generic", e;
 	}();
-})), Wi = /* @__PURE__ */ s(((e, t, n) => {
+})), Ji = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -41419,7 +41478,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		};
 	})();
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.HTMLMathItem = void 0;
-	var i = ht();
+	var i = yt();
 	e.HTMLMathItem = function(e) {
 		r(t, e);
 		function t(t, n, r, i, a) {
@@ -41471,7 +41530,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			}
 		}, t;
 	}(i.AbstractMathItem);
-})), Gi = /* @__PURE__ */ s(((e, t, n) => {
+})), Yi = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -41495,8 +41554,8 @@ var st = /* @__PURE__ */ s(((e) => {
 			return e !== null && e.apply(this, arguments) || this;
 		}
 		return t;
-	}(Ni().AbstractMathList);
-})), Ki = /* @__PURE__ */ s(((e, t, n) => {
+	}(Li().AbstractMathList);
+})), Xi = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__read || function(e, t) {
 		var n = typeof Symbol == "function" && e[Symbol.iterator];
 		if (!n) return e;
@@ -41575,7 +41634,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			processHtmlClass: "mathjax_process"
 		}, e;
 	}();
-})), qi = /* @__PURE__ */ s(((e, t, n) => {
+})), Zi = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -41625,7 +41684,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		throw TypeError(t ? "Object is not iterable." : "Symbol.iterator is not defined.");
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.HTMLDocument = void 0;
-	var s = Hi(), c = W(), l = Wi(), u = Gi(), d = Ki(), f = ht();
+	var s = Ki(), c = W(), l = Ji(), u = Yi(), d = Xi(), f = yt();
 	e.HTMLDocument = function(e) {
 		r(t, e);
 		function t(t, n, r) {
@@ -41790,7 +41849,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			DomStrings: null
 		}), t;
 	}(s.AbstractMathDocument);
-})), Ji = /* @__PURE__ */ s(((e, t, n) => {
+})), Qi = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -41809,7 +41868,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		};
 	})();
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.HTMLHandler = void 0;
-	var i = Ui(), a = qi();
+	var i = qi(), a = Zi();
 	e.HTMLHandler = function(e) {
 		r(t, e);
 		function t() {
@@ -41832,15 +41891,15 @@ var st = /* @__PURE__ */ s(((e) => {
 			return e.prototype.create.call(this, t, n);
 		}, t;
 	}(i.AbstractHandler);
-})), Yi = /* @__PURE__ */ s(((e) => {
+})), $i = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.RegisterHTMLHandler = void 0;
-	var t = dt(), n = Ji();
+	var t = ht(), n = Qi();
 	function r(e) {
 		var r = new n.HTMLHandler(e);
 		return t.mathjax.handlers.register(r), r;
 	}
 	e.RegisterHTMLHandler = r;
-})), Xi = /* @__PURE__ */ s(((e, t, n) => {
+})), ea = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -41866,7 +41925,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return e && e.__esModule ? e : { default: e };
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.FlalignItem = e.MultlineItem = void 0;
-	var o = It(), s = a(Y()), c = a(q()), l = a(J()), u = Lt();
+	var o = Bt(), s = a(Y()), c = a(q()), l = a(J()), u = Vt();
 	e.MultlineItem = function(e) {
 		r(t, e);
 		function t(t) {
@@ -41932,7 +41991,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			}
 		}, t;
 	}(o.EqnArrayItem);
-})), Zi = /* @__PURE__ */ s(((e, t, n) => {
+})), ta = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__assign || function() {
 		return r = Object.assign || function(e) {
 			for (var t, n = 1, r = arguments.length; n < r; n++) for (var i in t = arguments[n], t) Object.prototype.hasOwnProperty.call(t, i) && (e[i] = t[i]);
@@ -41958,7 +42017,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return e && e.__esModule ? e : { default: e };
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.NEW_OPS = e.AmsMethods = void 0;
-	var o = a(Y()), s = a(Bt()), c = a(q()), l = Lt(), u = a(Tt()), d = a(J()), f = Pt(), p = a(zt()), m = K();
+	var o = a(Y()), s = a(Wt()), c = a(q()), l = Vt(), u = a(kt()), d = a(J()), f = Rt(), p = a(Ut()), m = K();
 	e.AmsMethods = {}, e.AmsMethods.AmsEqnArray = function(e, t, n, r, i, a, s) {
 		var c = e.GetBrackets("\\begin{" + t.getName() + "}"), l = p.default.EqnArray(e, t, n, r, i, a, s);
 		return o.default.setArrayAlign(l, c);
@@ -42113,7 +42172,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		var n = e.GetStar(), r = o.default.trimSpaces(e.GetArgument(t));
 		e.tags.tag(r, n);
 	}, e.AmsMethods.HandleNoTag = p.default.HandleNoTag, e.AmsMethods.HandleRef = p.default.HandleRef, e.AmsMethods.Macro = p.default.Macro, e.AmsMethods.Accent = p.default.Accent, e.AmsMethods.Tilde = p.default.Tilde, e.AmsMethods.Array = p.default.Array, e.AmsMethods.Spacer = p.default.Spacer, e.AmsMethods.NamedOp = p.default.NamedOp, e.AmsMethods.EqnArray = p.default.EqnArray, e.AmsMethods.Equation = p.default.Equation;
-})), Qi = /* @__PURE__ */ s(((e, t, n) => {
+})), na = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__createBinding || (Object.create ? (function(e, t, n, r) {
 		r === void 0 && (r = n);
 		var i = Object.getOwnPropertyDescriptor(t, n);
@@ -42141,7 +42200,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		return e && e.__esModule ? e : { default: e };
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var s = Zi(), c = a(Ft()), l = Lt(), u = o(Bt()), d = o(Y()), f = K(), p = Rt();
+	var s = ta(), c = a(zt()), l = Vt(), u = o(Wt()), d = o(Y()), f = K(), p = Ht();
 	new c.CharacterMap("AMSmath-mathchar0mo", u.default.mathchar0mo, { iiiint: ["⨌", { texClass: f.TEXCLASS.OP }] }), new c.RegExpMap("AMSmath-operatorLetter", s.AmsMethods.operatorLetter, /[-*]/i), new c.CommandMap("AMSmath-macros", {
 		mathring: ["Accent", "02DA"],
 		nobreakspace: "Tilde",
@@ -42696,7 +42755,7 @@ var st = /* @__PURE__ */ s(((e) => {
 		implies: ["Macro", "\\;\\Longrightarrow\\;"],
 		impliedby: ["Macro", "\\;\\Longleftarrow\\;"]
 	}, s.AmsMethods);
-})), $i = /* @__PURE__ */ s(((e, t, n) => {
+})), ra = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__extends || (function() {
 		var e = function(t, n) {
 			return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(e, t) {
@@ -42715,9 +42774,9 @@ var st = /* @__PURE__ */ s(((e) => {
 		};
 	})(), i;
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.AmsConfiguration = e.AmsTags = void 0;
-	var a = Nt(), o = Xi(), s = jt(), c = Zi();
-	Qi();
-	var l = Ft(), u = function(e) {
+	var a = Lt(), o = ea(), s = Ft(), c = ta();
+	na();
+	var l = zt(), u = function(e) {
 		r(t, e);
 		function t() {
 			return e !== null && e.apply(this, arguments) || this;
@@ -42760,7 +42819,7 @@ var st = /* @__PURE__ */ s(((e) => {
 			}
 		}
 	});
-})), ea = /* @__PURE__ */ s(((e, t, n) => {
+})), ia = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__importDefault || function(e) {
 		return e && e.__esModule ? e : { default: e };
 	};
@@ -42788,34 +42847,34 @@ var st = /* @__PURE__ */ s(((e) => {
 		return i.default.copyChildren(n, a), i.default.copyAttributes(n, a), a;
 	};
 	e.default = a;
-})), ta = /* @__PURE__ */ s(((e, t, n) => {
+})), aa = /* @__PURE__ */ s(((e, t, n) => {
 	var r = n && n.__importDefault || function(e) {
 		return e && e.__esModule ? e : { default: e };
 	};
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.HtmlConfiguration = void 0;
-	var i = Nt(), a = Ft(), o = r(ea());
+	var i = Lt(), a = zt(), o = r(ia());
 	new a.CommandMap("html_macros", {
 		href: "Href",
 		class: "Class",
 		style: "Style",
 		cssId: "Id"
 	}, o.default), e.HtmlConfiguration = i.Configuration.create("html", { handler: { macro: ["html_macros"] } });
-})), na = dt(), ra = Ut(), ia = Oi(), aa = ji(), oa = Yi();
-Ht(), $i(), ta(), (0, oa.RegisterHTMLHandler)((0, aa.browserAdaptor)());
-var sa = na.mathjax.document(document, {
-	InputJax: new ra.TeX({ packages: [
+})), oa = ht(), sa = qt(), ca = Mi(), la = Fi(), ua = $i();
+Kt(), ra(), aa(), (0, ua.RegisterHTMLHandler)((0, la.browserAdaptor)());
+var da = oa.mathjax.document(document, {
+	InputJax: new sa.TeX({ packages: [
 		"base",
 		"ams",
 		"html"
 	] }),
-	OutputJax: new ia.SVG({ fontCache: "none" })
+	OutputJax: new ca.SVG({ fontCache: "none" })
 });
 function $(e) {
-	return sa.convert(e, { display: !1 });
+	return da.convert(e, { display: !1 });
 }
 // src/diagram.ts
-var ca = (e) => "(" + U(e) + ")";
-function la(e, t, n, r, i, a) {
+var fa = (e) => "(" + U(e) + ")";
+function pa(e, t, n, r, i, a) {
 	let o = document.createElement("div");
 	o.className = "plot";
 	let s = (t.pMax - t.pMin + 1) * 112, c = (t.qMax - t.qMin + 1) * 82;
@@ -42842,10 +42901,10 @@ function la(e, t, n, r, i, a) {
 	for (let e = t.pMin; e <= t.pMax; e++) h(e, p(e), c - 8);
 	for (let e = t.qMin; e <= t.qMax; e++) h(e, 8, m(e));
 	for (let c = t.qMax; c >= t.qMin; c--) for (let d = t.pMin; d <= t.pMax; d++) {
-		let f = {
+		let f = lt(e.data, {
 			p: d,
 			q: c
-		}, h = rt(e, f), g = h.b;
+		}), h = it(e, f), g = ct(e.data, h.b);
 		if ($e(g, t) && r !== "None" && (r === "All" || (r === "Potentially nonzero" ? h.status !== "zero" : h.status === "nonzero"))) {
 			let e = p(g.p) - p(d), t = m(g.q) - m(c), r = Math.hypot(e, t), i = document.createElementNS(l, "line");
 			for (let [n, a] of Object.entries({
@@ -42854,18 +42913,18 @@ function la(e, t, n, r, i, a) {
 				x2: p(g.p) - 22 * e / r,
 				y2: m(g.q) - 22 * t / r
 			})) i.setAttribute(n, String(a));
-			i.dataset.status = h.status, i.dataset.highlighted = String(U(n) === U(f) || U(n) === U(g)), i.setAttribute("marker-end", "url(#tip)"), u.append(i);
+			i.dataset.status = h.status, i.dataset.highlighted = String(U(n) === U(f) || U(n) === U(h.b)), i.setAttribute("marker-end", "url(#tip)"), u.append(i);
 		}
-		let _ = document.createElement("button"), v = e.terms.get(U(f)), y = tt(e, f);
-		_.className = "cell", _.style.left = p(d) / s * 100 + "%", _.dataset.status = y, _.style.top = m(c) + "px", _.setAttribute("aria-label", ca(f)), _.setAttribute("aria-pressed", String(U(f) === U(n))), y === "zero" ? _.textContent = i === "blank" ? "" : i === "dot" ? "·" : "0" : (y === "unknown" && _.append("?"), v?.label ? _.append($(v.label)) : y === "nonzero" && _.append("●"));
+		let _ = document.createElement("button"), v = e.terms.get(U(f)), y = nt(e, f);
+		_.className = "cell", _.style.left = p(d) / s * 100 + "%", _.dataset.status = y, _.style.top = m(c) + "px", _.setAttribute("aria-label", fa(f)), _.setAttribute("aria-pressed", String(U(f) === U(n))), y === "zero" ? _.textContent = i === "blank" ? "" : i === "dot" ? "·" : "0" : (y === "unknown" && _.append("?"), v?.label ? _.append($(v.label)) : y === "nonzero" && _.append("●"));
 		let b = e.stable.get(U(f));
 		if (b !== void 0 && b <= e.page.index) {
 			_.classList.add("stable");
 			let e = document.createElement("small");
 			e.textContent = "stable", _.append(e);
 		}
-		_.onclick = () => a(f), _.onkeydown = (e) => {
-			let n = {
+		_.onclick = () => a(f), _.onkeydown = (n) => {
+			let r = {
 				ArrowUp: {
 					p: d,
 					q: c + 1
@@ -42882,16 +42941,16 @@ function la(e, t, n, r, i, a) {
 					p: d + 1,
 					q: c
 				}
-			}[e.key];
-			n && (e.preventDefault(), $e(n, t) && a(n));
+			}[n.key];
+			r && (n.preventDefault(), $e(r, t) && a(lt(e.data, r)));
 		}, o.append(_);
 	}
 	return o;
 }
 // src/viewer.css?inline
-var ua = ":host{--ink:#22233a;--panel:#222840;--line:#47516b;--point:#202237;--paper:#fbfaf7;--zero:#aa3949;--nonzero:#285a97;--unknown:#403e40;--selected:#e8e7e3;color:var(--ink);max-width:65rem;margin:1.5rem auto .5rem;font:1rem/1.5 system-ui,sans-serif;display:block;container-type:inline-size}*{box-sizing:border-box}section{background:#f1f0ec;border:1px solid #c7c7c9;border-radius:.65rem;overflow:hidden}header{background:var(--panel);color:#f5f4ee;border-bottom:1px solid var(--line);justify-content:space-between;align-items:center;gap:1rem;padding:.9rem 1.35rem;display:flex}h2,h3{margin:0;font:1.4rem/1.3 Georgia,serif}.toolbar{align-items:center;gap:.2rem;display:flex}.toolbar button,.toolbar label{height:2.2rem;color:inherit;cursor:pointer;place-items:center;display:grid}.toolbar button{background:0 0;border:0;border-radius:.25rem;width:2.2rem;font:1.6rem/1 Georgia,serif}.toolbar button:hover:enabled,.toolbar label:hover{background:#37405c}.toolbar button:disabled{color:#737d97;cursor:default}.toolbar label{border-block:1px solid #64718c;grid-auto-flow:column;gap:.4rem;padding:0 .55rem;position:relative}.toolbar label:after{content:\"⌄\";font-size:.75rem}.toolbar select{opacity:0;cursor:pointer;width:100%;height:100%;position:absolute;inset:0}.toolbar label:focus-within,:focus-visible{outline-offset:2px;outline:2px solid}[aria-label=Page\\ formula]:not(:empty){background:var(--panel);color:#fff;padding:.65rem 1.35rem}.layout{grid-template-columns:minmax(0,1fr);display:grid}.canvas{background:var(--paper);min-width:0;color:var(--point);padding:.8rem 1.25rem}.vertical-axis,.horizontal-axis,.tick{color:#565765;font-size:.8rem}.horizontal-axis{text-align:right}.scroll{overflow:auto}.plot{background-image:linear-gradient(90deg,#0000 calc(50% - .5px),#dcdad5 50%,#0000 calc(50% + .5px)),linear-gradient(#0000 40px,#dcdad5 41px,#0000 42px);background-size:calc(100% / var(--columns)) 82px;border-bottom:1px solid #748199;border-left:1px solid #748199;width:100%;position:relative}.plot>svg{pointer-events:none;width:100%;height:100%;position:absolute;inset:0}.cell,.tick{position:absolute;transform:translate(-50%,-50%)}.tick{background:var(--paper);font-size:.68rem}.cell{font:inherit;color:var(--point);background:var(--paper);cursor:pointer;border:1px solid #0000;border-radius:.35rem;min-width:34px;min-height:34px;padding:.15rem .35rem;font-size:1.12rem;transition:border-color .15s,background .15s}.cell[data-status=zero]{background:0 0}.cell:hover{border-color:#8a94ac}.cell[aria-pressed=true]{background:var(--selected);border-color:var(--ink)}.cell.stable{background:#efeeea}.cell.stable[aria-pressed=true]{background:#dddedb}.cell small{font-size:.6rem;display:block}.plot line{vector-effect:non-scaling-stroke;stroke-width:2px}.plot line[data-status=zero]{stroke-dasharray:2 5}.plot line[data-status=undetermined]{stroke-dasharray:6 4}.plot line[data-highlighted=true]{stroke-width:3px}aside{border-top:1px solid #c7c7c9;min-width:0;padding:1.3rem;font-size:.85rem;line-height:1.6}.chain{padding:.5rem 0;font-size:1.15rem;display:block;overflow-x:auto}@container (width<=38rem){.layout{grid-template-columns:minmax(0,1fr)}.canvas{padding:.6rem .9rem}aside{padding:1rem}header{padding:.6rem .9rem}}@media (prefers-reduced-motion:reduce){.cell{transition:none}}.state-zero,.cell[data-status=zero]{color:var(--zero)}.state-nonzero,.cell[data-status=nonzero]{color:var(--nonzero)}.state-unknown,.state-undetermined,.cell[data-status=unknown]{color:var(--unknown)}.plot line[data-status=zero]{stroke:var(--zero)}.plot line[data-status=nonzero]{stroke:var(--nonzero)}.plot line[data-status=undetermined]{stroke:var(--unknown)}.guide{width:fit-content;position:relative}.guide button{color:#495367;font:inherit;cursor:pointer;background:0 0;border:0;padding:.35rem 0;-webkit-text-decoration:underline dotted;text-decoration:underline dotted}.guide [popover]{position-anchor:auto;inset:auto;bottom:anchor(top);left:anchor(left);background:#faf9f6;border:1px solid #b4bac5;border-radius:.4rem;margin:0;padding:.5rem .8rem;position:absolute}.guide [popover]:popover-open{display:grid}@container (width<=26rem){.chain{font-size:1rem}}.figure-controls{border-top:1px solid #d4d2ce;justify-content:space-between;align-items:center;margin-top:.8rem;padding-top:.25rem;display:flex}.figure-controls button{color:#454c61;cursor:pointer;background:0 0;border:0;padding:.5rem .2rem;font:500 .82rem/1.4 system-ui,sans-serif;text-decoration:none}.figure-controls button:hover{color:#18263f;text-decoration:underline}.figure-controls>button:after{content:\"\";border:1.5px solid;border-width:1.5px 1.5px 0 0;width:.4rem;height:.4rem;margin:0 .2rem 0 .6rem;display:inline-block;transform:rotate(-45deg)}.display-options{position-anchor:auto;inset:auto;bottom:anchor(top);right:anchor(right);width:min(17rem,86vw);color:var(--ink);background:#faf9f6;border:1px solid #c9c7c2;border-radius:.5rem;margin:0 0 .2rem;padding:.35rem 1rem;position:absolute;box-shadow:0 .3rem 1.3rem #19213726}.display-options label{grid-template-columns:5rem minmax(0,1fr);align-items:center;padding:.55rem 0;font-size:.83rem;display:grid}.display-options label+label{border-top:1px solid #dddcd7}.display-options select{width:100%;color:inherit;font:inherit;background:#fffefa;border:1px solid #898992;border-radius:.3rem;padding:.5rem .2rem}.guide [popover] span{align-items:center;gap:.6rem;display:flex}.guide [popover] span:before{content:\"\";border-top:2px solid;width:1.75rem}.guide [popover] .state-zero:before{border-top-style:dotted}.guide [popover] .state-unknown:before{border-top-style:dashed}";
+var ma = ":host{--ink:#22233a;--panel:#222840;--line:#47516b;--point:#202237;--paper:#fbfaf7;--zero:#aa3949;--nonzero:#285a97;--unknown:#403e40;--selected:#e8e7e3;color:var(--ink);max-width:65rem;margin:1.5rem auto .5rem;font:1rem/1.5 system-ui,sans-serif;display:block;container-type:inline-size}*{box-sizing:border-box}section{background:#f1f0ec;border:1px solid #c7c7c9;border-radius:.65rem;overflow:hidden}header{background:var(--panel);color:#f5f4ee;border-bottom:1px solid var(--line);justify-content:space-between;align-items:center;gap:1rem;padding:.9rem 1.35rem;display:flex}h2,h3{margin:0;font:1.4rem/1.3 Georgia,serif}.toolbar{align-items:center;gap:.2rem;display:flex}.toolbar button,.toolbar label{height:2.2rem;color:inherit;cursor:pointer;place-items:center;display:grid}.toolbar button{background:0 0;border:0;border-radius:.25rem;width:2.2rem;font:1.6rem/1 Georgia,serif}.toolbar button:hover:enabled,.toolbar label:hover{background:#37405c}.toolbar button:disabled{color:#737d97;cursor:default}.toolbar label{border-block:1px solid #64718c;grid-auto-flow:column;gap:.4rem;padding:0 .55rem;position:relative}.toolbar label:after{content:\"⌄\";font-size:.75rem}.toolbar select{opacity:0;cursor:pointer;width:100%;height:100%;position:absolute;inset:0}.toolbar label:focus-within,:focus-visible{outline-offset:2px;outline:2px solid}[aria-label=Page\\ formula]:not(:empty){background:var(--panel);color:#fff;padding:.65rem 1.35rem}.layout{grid-template-columns:minmax(0,1fr);display:grid}.canvas{background:var(--paper);min-width:0;color:var(--point);padding:.8rem 1.25rem}.vertical-axis,.horizontal-axis,.tick{color:#565765;font-size:.8rem}.horizontal-axis{text-align:right}.scroll{overflow:auto}.plot{background-image:linear-gradient(90deg,#0000 calc(50% - .5px),#dcdad5 50%,#0000 calc(50% + .5px)),linear-gradient(#0000 40px,#dcdad5 41px,#0000 42px);background-size:calc(100% / var(--columns)) 82px;border-bottom:1px solid #748199;border-left:1px solid #748199;width:100%;position:relative}.plot>svg{pointer-events:none;width:100%;height:100%;position:absolute;inset:0}.cell,.tick{position:absolute;transform:translate(-50%,-50%)}.tick{background:var(--paper);font-size:.68rem}.cell{font:inherit;color:var(--point);background:var(--paper);cursor:pointer;border:1px solid #0000;border-radius:.35rem;min-width:34px;min-height:34px;padding:.15rem .35rem;font-size:1.12rem;transition:border-color .15s,background .15s}.cell[data-status=zero]{background:0 0}.cell:hover{border-color:#8a94ac}.cell[aria-pressed=true]{background:var(--selected);border-color:var(--ink)}.cell.stable{background:#efeeea}.cell.stable[aria-pressed=true]{background:#dddedb}.cell small{font-size:.6rem;display:block}.plot line{vector-effect:non-scaling-stroke;stroke-width:2px}.plot line[data-status=zero]{stroke-dasharray:2 5}.plot line[data-status=undetermined]{stroke-dasharray:6 4}.plot line[data-highlighted=true]{stroke-width:3px}aside{border-top:1px solid #c7c7c9;min-width:0;padding:1.3rem;font-size:.85rem;line-height:1.6}.chain{padding:.5rem 0;font-size:1.15rem;display:block;overflow-x:auto}@container (width<=38rem){.layout{grid-template-columns:minmax(0,1fr)}.canvas{padding:.6rem .9rem}aside{padding:1rem}header{padding:.6rem .9rem}}@media (prefers-reduced-motion:reduce){.cell{transition:none}}.state-zero,.cell[data-status=zero]{color:var(--zero)}.state-nonzero,.cell[data-status=nonzero]{color:var(--nonzero)}.state-unknown,.state-undetermined,.cell[data-status=unknown]{color:var(--unknown)}.plot line[data-status=zero]{stroke:var(--zero)}.plot line[data-status=nonzero]{stroke:var(--nonzero)}.plot line[data-status=undetermined]{stroke:var(--unknown)}.guide{width:fit-content;position:relative}.guide button{color:#495367;font:inherit;cursor:pointer;background:0 0;border:0;padding:.35rem 0;-webkit-text-decoration:underline dotted;text-decoration:underline dotted}.guide [popover]{position-anchor:auto;inset:auto;bottom:anchor(top);left:anchor(left);background:#faf9f6;border:1px solid #b4bac5;border-radius:.4rem;margin:0;padding:.5rem .8rem;position:absolute}.guide [popover]:popover-open{display:grid}@container (width<=26rem){.chain{font-size:1rem}}.figure-controls{border-top:1px solid #d4d2ce;justify-content:space-between;align-items:center;margin-top:.8rem;padding-top:.25rem;display:flex}.figure-controls button{color:#454c61;cursor:pointer;background:0 0;border:0;padding:.5rem .2rem;font:500 .82rem/1.4 system-ui,sans-serif;text-decoration:none}.figure-controls button:hover{color:#18263f;text-decoration:underline}.figure-controls>button:after{content:\"\";border:1.5px solid;border-width:1.5px 1.5px 0 0;width:.4rem;height:.4rem;margin:0 .2rem 0 .6rem;display:inline-block;transform:rotate(-45deg)}.display-options{position-anchor:auto;inset:auto;bottom:anchor(top);right:anchor(right);width:min(17rem,86vw);color:var(--ink);background:#faf9f6;border:1px solid #c9c7c2;border-radius:.5rem;margin:0 0 .2rem;padding:.35rem 1rem;position:absolute;box-shadow:0 .3rem 1.3rem #19213726}.display-options label{grid-template-columns:5rem minmax(0,1fr);align-items:center;padding:.55rem 0;font-size:.83rem;display:grid}.display-options label+label{border-top:1px solid #dddcd7}.display-options select{width:100%;color:inherit;font:inherit;background:#fffefa;border:1px solid #898992;border-radius:.3rem;padding:.5rem .2rem}.guide [popover] span{align-items:center;gap:.6rem;display:flex}.guide [popover] span:before{content:\"\";border-top:2px solid;width:1.75rem}.guide [popover] .state-zero:before{border-top-style:dotted}.guide [popover] .state-unknown:before{border-top-style:dashed}";
 // src/viewer.ts
-function da(e, t, n, r) {
+function ha(e, t, n, r) {
 	let i = document.createElement("label");
 	i.append(e + " ");
 	let a = document.createElement("select");
@@ -42899,7 +42958,7 @@ function da(e, t, n, r) {
 	for (let [e, n] of t) a.add(new Option(n, e));
 	return a.value = n, a.onchange = () => r(a.value), i.append(a), i;
 }
-var fa = (e) => e.map((e) => [e, e]), pa = (e) => String(e).replace(/\d/g, (e) => "₀₁₂₃₄₅₆₇₈₉"[Number(e)]), ma = class extends HTMLElement {
+var ga = (e) => e.map((e) => [e, e]), _a = (e) => String(e).replace(/\d/g, (e) => "₀₁₂₃₄₅₆₇₈₉"[Number(e)]), va = class extends HTMLElement {
 	root = this.attachShadow({ mode: "open" });
 	data;
 	i = 0;
@@ -42910,19 +42969,19 @@ var fa = (e) => e.map((e) => [e, e]), pa = (e) => String(e).replace(/\d/g, (e) =
 	filter = "All";
 	zeros = "zero";
 	set sequence(e) {
-		let t = at(e);
+		let t = ot(e);
 		this.data = t, this.i = (t.settings?.initialPage ?? t.firstPage) - t.firstPage;
-		let n = t.settings?.viewport ?? t.extent;
-		this.selected = {
+		let n = ut(t);
+		this.selected = lt(t, {
 			p: n.pMin,
 			q: n.qMin
-		}, this.zeros = t.settings?.zeroStyle ?? "zero", this.filter = "All", this.render();
+		}), this.zeros = t.settings?.zeroStyle ?? "zero", this.filter = "All", this.render();
 	}
 	render() {
 		let e = this.data;
 		if (!e) return;
-		let t = this.root.activeElement?.getAttribute("aria-label"), n = e.settings ?? {}, r = n.viewport ?? e.extent, i = e.pages[this.i], a = ot(e, i), o = document.createElement("style");
-		o.textContent = ua;
+		let t = this.root.activeElement?.getAttribute("aria-label"), n = e.settings ?? {}, r = ut(e), i = e.pages[this.i], a = st(e, i), o = document.createElement("style");
+		o.textContent = ma;
 		let s = document.createElement("section"), c = document.createElement("h2");
 		c.append(n.title ? $(n.title) : "Spectral sequence");
 		let l = document.createElement("div");
@@ -42935,18 +42994,18 @@ var fa = (e) => e.map((e) => [e, e]), pa = (e) => String(e).replace(/\d/g, (e) =
 			let r = document.createElement("button");
 			return r.textContent = n < 0 ? "‹" : "›", r.title = t, r.setAttribute("aria-label", t), r.disabled = !e.pages[this.i + n], r.onclick = () => d(this.i + n), r;
 		};
-		u.append(f("Previous", -1), da("Page", e.pages.map((t) => [String(t.index), "E" + pa(t.index) + (t.index === e.degenerationPage ? " = E∞" : "")]), String(i.index), (t) => d(Number(t) - e.firstPage)), f("Next", 1));
+		u.append(f("Previous", -1), ha("Page", e.pages.map((t) => [String(t.index), "E" + _a(t.index) + (t.index === e.degenerationPage ? " = E∞" : "")]), String(i.index), (t) => d(Number(t) - e.firstPage)), f("Next", 1));
 		let p = document.createElement("div");
 		p.className = "display-options", p.popover = "auto";
 		let m = document.createElement("button");
-		m.textContent = "Display options", m.popoverTargetElement = p, p.append(da("Arrows", fa([
+		m.textContent = "Display options", m.popoverTargetElement = p, p.append(ha("Arrows", ga([
 			"All",
 			"Potentially nonzero",
 			"Known nonzero",
 			"None"
 		]), this.filter, (e) => {
 			this.filter = e, _();
-		}), da("Zero style", [
+		}), ha("Zero style", [
 			["zero", "Numeral"],
 			["dot", "Dot"],
 			["blank", "Blank"]
@@ -42957,21 +43016,21 @@ var fa = (e) => e.map((e) => [e, e]), pa = (e) => String(e).replace(/\d/g, (e) =
 		h.firstChild?.remove(), h.prepend($("E_{" + i.index + "}" + (i.index === e.degenerationPage ? "=E_{\\infty}" : "")));
 		let g = document.createElement("div");
 		g.className = "scroll";
-		let _ = () => g.replaceChildren(la(a, r, this.selected, this.filter, this.zeros, (e) => {
+		let _ = () => g.replaceChildren(pa(a, r, this.selected, this.filter, this.zeros, (e) => {
 			this.selected = e, this.render(), this.root.querySelector("[aria-pressed=\"true\"]")?.focus();
 		}));
 		_();
 		let v = document.createElement("aside");
 		v.setAttribute("role", "region"), v.setAttribute("aria-label", "Inspector");
-		let y = et(a, this.selected, -1), b = rt(a, y), x = rt(a, this.selected), S = i.index, C = (e, t) => "\\class{state-" + e + "}{" + t + "}", w = e.convention === "cohomological", T = S < 10 ? String(S) : "{" + S + "}", E = (e, t) => {
+		let y = et(a, this.selected, -1), b = it(a, y), x = it(a, this.selected), S = i.index, C = (e, t) => "\\class{state-" + e + "}{" + t + "}", w = e.convention === "cohomological", T = S < 10 ? String(S) : "{" + S + "}", E = (e, t) => {
 			let n = "{" + U(t) + "}";
 			return e + (w ? "_" + T + "^" + n : "^" + T + "_" + n);
 		}, D = [
 			y,
 			this.selected,
 			x.b
-		], O = D.map((e) => C(tt(a, e), E("E", e))), k = D.map((e) => {
-			let t = a.terms.get(U(e)), n = tt(a, e), r = n === "zero" ? "0" : t?.module ?? t?.label ?? (n === "unknown" ? "?" : "\\ne 0");
+		], O = D.map((e) => C(nt(a, e), E("E", e))), k = D.map((e) => {
+			let t = a.terms.get(U(e)), n = nt(a, e), r = n === "zero" ? "0" : t?.module ?? t?.label ?? (n === "unknown" ? "?" : "\\ne 0");
 			return r ? C(n, r) : "";
 		}), A = [b, x], j = A.map((e) => {
 			let t = e.status === "undetermined" ? "[?]" : e.status === "zero" ? "[0]" : "";
@@ -42991,17 +43050,30 @@ var fa = (e) => e.map((e) => [e, e]), pa = (e) => String(e).replace(/\d/g, (e) =
 			k[2]
 		]);
 		for (let [e, t] of A.entries()) {
-			let n = a.terms.get(U(t.a))?.generator, r = t.status === "zero" ? "0" : t.image, i = [
-				"",
-				"",
-				"",
-				"",
-				""
-			];
-			if (n && r) i[2 * e] = n, i[2 * e + 1] = C(t.status, "\\longmapsto"), i[2 * e + 2] = r;
-			else if (t.formula && t.formula !== "0") i[2 * e + 1] = C(t.status, t.formula);
-			else continue;
-			M.push(i);
+			let n = a.terms.get(U(t.a))?.generator, r = t.status === "zero" ? "0" : t.image, i = t.assignments ?? (n && r ? [{
+				generator: n,
+				image: r
+			}] : []);
+			if (i.length) for (let n of i) {
+				let r = [
+					"",
+					"",
+					"",
+					"",
+					""
+				];
+				r[2 * e] = n.generator, r[2 * e + 1] = C(t.status, "\\longmapsto"), r[2 * e + 2] = n.image, M.push(r);
+			}
+			else if (t.formula && t.formula !== "0") {
+				let n = [
+					"",
+					"",
+					"",
+					"",
+					""
+				];
+				n[2 * e + 1] = C(t.status, t.formula), M.push(n);
+			}
 		}
 		let N = "\\begin{array}{ccccc}" + M.map((e) => e.join("&")).join("\\\\") + "\\end{array}", P = $(N);
 		P.classList.add("chain"), P.querySelector("svg").setAttribute("aria-label", N), v.append(P);
@@ -43012,9 +43084,9 @@ var fa = (e) => e.map((e) => [e, e]), pa = (e) => String(e).replace(/\d/g, (e) =
 		let L = document.createElement("div");
 		L.className = "canvas";
 		let R = document.createElement("div");
-		R.className = "vertical-axis", R.append($(n.qLabel ?? "q"), " ↑");
+		R.className = "vertical-axis", R.append($(n.qLabel ?? (n.projection === "total-filtration" ? "p" : "q")), " ↑");
 		let z = document.createElement("div");
-		z.className = "horizontal-axis", z.append($(n.pLabel ?? "p"), " →"), L.append(R, g, z);
+		z.className = "horizontal-axis", z.append($(n.pLabel ?? (n.projection === "total-filtration" ? "p+q" : "p")), " →"), L.append(R, g, z);
 		let ee = document.createElement("div");
 		ee.className = "layout";
 		let B = document.createElement("div");
@@ -43037,5 +43109,5 @@ var fa = (e) => e.map((e) => [e, e]), pa = (e) => String(e).replace(/\d/g, (e) =
 	}
 };
 // src/index.ts
-customElements.define("spectral-sequence-viewer", ma);
+customElements.define("spectral-sequence-viewer", va);
 export { $ as math };

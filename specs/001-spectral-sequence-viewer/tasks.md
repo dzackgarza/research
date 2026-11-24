@@ -55,10 +55,10 @@ Complete setup before T002 and T003. T004 consumes the schema; T005 consumes the
 
 Within each phase the marked tasks can start together. For US1 the browser assertions and host examples use the agreed public interface. For US2 the navigation scenarios and math conversion use separate files. For US3 the inspector scenarios and SVG rendering share the coordinate contract. For US4 the browser scenarios and visual treatment use the model's existing permanence rules. Write the acceptance assertions before wiring their corresponding behavior; run them against the finished increment.
 
-## Outstanding schema and viewer work
+## Signed grading, projection, and component maps
 
 The completed first-quadrant tasks above describe the original implementation. The extended stories in the [specification](spec.md) require the following public behaviours.
 
-- [ ] T019 Support signed bidegrees in the schema, records, extents, viewport, and endpoint lookup. Make first-quadrant vanishing a support declaration. Exercise the negative-column example and its unknown neighbour through the public viewer.
-- [ ] T020 Separate the display projection from the native grading in chart placement, axes, clipping, keyboard navigation, and selection. Check the same indexed component in the native and total-degree views under both conventions.
-- [ ] T021 Represent multiple generator images per component in the schema and inspector. Exercise the rank-two source in the specification through the built widget and verify both assignments remain attached to one arrow.
+- [X] T019 Support signed bidegrees in the schema, records, extents, viewport, and endpoint lookup. Make first-quadrant vanishing a support declaration. Exercise the negative-column example and its unknown neighbour through the public viewer.
+- [X] T020 Separate the display projection from the native grading in chart placement, axes, clipping, keyboard navigation, and selection. Check the same indexed component in the native and total-degree views under both conventions.
+- [X] T021 Represent multiple generator images per component in the schema and inspector. Exercise the rank-two source in the specification through the built widget and verify both assignments remain attached to one arrow.
