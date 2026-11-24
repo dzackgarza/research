@@ -28,49 +28,65 @@
           "p": 0,
           "q": 0,
           "status": "nonzero",
-          "label": "b_0"
+          "label": "b_0",
+          "generator": "b_0",
+          "module": "\\langle b_0\\rangle_{\\mathbb Z}"
         },
         {
           "p": 3,
           "q": 0,
           "status": "nonzero",
-          "label": "sb_0"
+          "label": "sb_0",
+          "generator": "sb_0",
+          "module": "\\langle sb_0\\rangle_{\\mathbb Z}"
         },
         {
           "p": 0,
           "q": 2,
           "status": "nonzero",
-          "label": "b_1"
+          "label": "b_1",
+          "generator": "b_1",
+          "module": "\\langle b_1\\rangle_{\\mathbb Z}"
         },
         {
           "p": 3,
           "q": 2,
           "status": "nonzero",
-          "label": "sb_1"
+          "label": "sb_1",
+          "generator": "sb_1",
+          "module": "\\langle sb_1\\rangle_{\\mathbb Z}"
         },
         {
           "p": 0,
           "q": 4,
           "status": "nonzero",
-          "label": "b_2"
+          "label": "b_2",
+          "generator": "b_2",
+          "module": "\\langle b_2\\rangle_{\\mathbb Z}"
         },
         {
           "p": 3,
           "q": 4,
           "status": "nonzero",
-          "label": "sb_2"
+          "label": "sb_2",
+          "generator": "sb_2",
+          "module": "\\langle sb_2\\rangle_{\\mathbb Z}"
         },
         {
           "p": 0,
           "q": 6,
           "status": "nonzero",
-          "label": "b_3"
+          "label": "b_3",
+          "generator": "b_3",
+          "module": "\\langle b_3\\rangle_{\\mathbb Z}"
         },
         {
           "p": 3,
           "q": 6,
           "status": "nonzero",
-          "label": "sb_3"
+          "label": "sb_3",
+          "generator": "sb_3",
+          "module": "\\langle sb_3\\rangle_{\\mathbb Z}"
         }
       ],
       "maps": []
@@ -82,49 +98,65 @@
           "p": 0,
           "q": 0,
           "status": "nonzero",
-          "label": "b_0"
+          "label": "b_0",
+          "generator": "b_0",
+          "module": "\\langle b_0\\rangle_{\\mathbb Z}"
         },
         {
           "p": 3,
           "q": 0,
           "status": "nonzero",
-          "label": "sb_0"
+          "label": "sb_0",
+          "generator": "sb_0",
+          "module": "\\langle sb_0\\rangle_{\\mathbb Z}"
         },
         {
           "p": 0,
           "q": 2,
           "status": "nonzero",
-          "label": "b_1"
+          "label": "b_1",
+          "generator": "b_1",
+          "module": "\\langle b_1\\rangle_{\\mathbb Z}"
         },
         {
           "p": 3,
           "q": 2,
           "status": "nonzero",
-          "label": "sb_1"
+          "label": "sb_1",
+          "generator": "sb_1",
+          "module": "\\langle sb_1\\rangle_{\\mathbb Z}"
         },
         {
           "p": 0,
           "q": 4,
           "status": "nonzero",
-          "label": "b_2"
+          "label": "b_2",
+          "generator": "b_2",
+          "module": "\\langle b_2\\rangle_{\\mathbb Z}"
         },
         {
           "p": 3,
           "q": 4,
           "status": "nonzero",
-          "label": "sb_2"
+          "label": "sb_2",
+          "generator": "sb_2",
+          "module": "\\langle sb_2\\rangle_{\\mathbb Z}"
         },
         {
           "p": 0,
           "q": 6,
           "status": "nonzero",
-          "label": "b_3"
+          "label": "b_3",
+          "generator": "b_3",
+          "module": "\\langle b_3\\rangle_{\\mathbb Z}"
         },
         {
           "p": 3,
           "q": 6,
           "status": "nonzero",
-          "label": "sb_3"
+          "label": "sb_3",
+          "generator": "sb_3",
+          "module": "\\langle sb_3\\rangle_{\\mathbb Z}"
         }
       ],
       "maps": [
@@ -132,25 +164,25 @@
           "p": 3,
           "q": 0,
           "status": "nonzero",
-          "formula": "d_3(sb_0)=b_1"
+          "image": "b_1"
         },
         {
           "p": 3,
           "q": 2,
           "status": "nonzero",
-          "formula": "d_3(sb_1)=2b_2"
+          "image": "2b_2"
         },
         {
           "p": 3,
           "q": 4,
           "status": "nonzero",
-          "formula": "d_3(sb_2)=3b_3"
+          "image": "3b_3"
         },
         {
           "p": 3,
           "q": 6,
           "status": "nonzero",
-          "formula": "d_3(sb_3)=4b_4"
+          "image": "4b_4"
         }
       ]
     },
@@ -178,5 +210,9 @@
       ],
       "maps": []
     }
+  ],
+  "supportedColumns": [
+    0,
+    3
   ]
 }

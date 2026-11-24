@@ -19,7 +19,7 @@ test("local permanence has a first page independent of global degeneration", asy
   const inspector = page.getByRole("region", { name: "Inspector" });
   await expect(inspector).toContainText("stable from page 2");
   await expect(inspector.getByRole("img")).toHaveAccessibleName(
-    /E_2\^\{-2,1\}.*\\xrightarrow\[\]\{0\}.*E_2\^\{0,0\}.*\\xrightarrow\[\]\{0\}.*E_2\^\{2,-1\}/,
+    /E_2\^\{-2,1\}.*state-zero.*d_2.*E_2\^\{0,0\}.*state-zero.*d_2.*E_2\^\{2,-1\}/,
   );
   await pages.selectOption("3");
   await expect(inspector).toContainText("stable from page 2");

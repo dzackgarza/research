@@ -11,6 +11,7 @@ export function endpoint(m: Model, source: Point, direction: 1 | -1) {
 }
 export function termStatus(m: Model, t: Point) {
   if (t.p < 0 || t.q < 0) return "zero";
+  if (m.data.supportedColumns && !m.data.supportedColumns.includes(t.p)) return "zero";
   return (
     m.terms.get(key(t))?.status ??
     (inside(t, m.data.extent) ? m.data.unlisted : undefined) ??
@@ -35,5 +36,6 @@ export function differential(m: Model, a: Point) {
     b,
     status: forcedZero(m, a, b) ? "zero" : (record?.status ?? "undetermined"),
     formula: record?.formula,
+    image: record?.image,
   };
 }

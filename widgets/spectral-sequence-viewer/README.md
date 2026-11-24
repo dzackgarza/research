@@ -32,3 +32,7 @@ bun run test:browser
 ```
 
 For an installed Chromium, supply its executable with `CHROMIUM_PATH=/path/to/chromium bun run test:browser`. The tests serve the built assets over HTTP and open both article hosts.
+
+Use `supportedColumns` to declare the columns that can contain nonzero terms on any page. Outside those columns all terms vanish, even beyond the supplied extent. The viewport only crops the drawing.
+
+A term's `label` appears on the chart. Its optional `module` identifies the group beneath the indexed term. To show the action on a generator, supply the source term's `generator` and the map's `image` as TeX. The viewer supplies the image of a generator under a known zero map.

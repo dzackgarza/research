@@ -183,6 +183,12 @@
                 },
                 "label": {
                   "type": "string"
+                },
+                "generator": {
+                  "type": "string"
+                },
+                "module": {
+                  "type": "string"
                 }
               },
               "required": [
@@ -217,6 +223,9 @@
                 },
                 "formula": {
                   "type": "string"
+                },
+                "image": {
+                  "type": "string"
                 }
               },
               "required": [
@@ -239,6 +248,14 @@
         "additionalProperties": false
       },
       "minItems": 1
+    },
+    "supportedColumns": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "uniqueItems": true
     }
   },
   "required": [

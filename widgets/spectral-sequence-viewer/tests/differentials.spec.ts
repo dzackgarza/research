@@ -16,7 +16,7 @@ test("inspect clipped maps through all filters and zero styles", async ({
   for (const mode of ["All", "Potentially nonzero", "Known nonzero", "None"]) {
     await page.getByLabel("Arrows").selectOption(mode);
     await expect(chain).toHaveAccessibleName(
-      /offscreen.*E_2\^\{0,2\}.*g.*E_2\^\{2,1\}.*\\xrightarrow\[\]\{0\}.*E_2\^\{4,0\}/,
+      /E_2\^\{0,2\}.*d_2\^\{0,2\}.*E_2\^\{2,1\}.*state-zero.*d_2\^\{2,1\}.*E_2\^\{4,0\}.*g/,
     );
     const arrows = page.locator("line[data-status]");
     if (mode === "All") await expect(arrows).toHaveCount(3);
@@ -49,6 +49,6 @@ test("inspect clipped maps through all filters and zero styles", async ({
     });
   await page.getByRole("button", { name: "(2,1)", exact: true }).click();
   await expect(chain).toHaveAccessibleName(
-    /E\^\{2\}_\{4,0\}.*E\^\{2\}_\{2,1\}.*offscreen.*E\^\{2\}_\{0,2\}/,
+    /E\^2_\{4,0\}.*E\^2_\{2,1\}.*E\^2_\{0,2\}/,
   );
 });

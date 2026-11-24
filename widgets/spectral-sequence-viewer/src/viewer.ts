@@ -5,7 +5,7 @@ import {
   type Sequence,
   type Point,
 } from "./sequence";
-import { endpoint, differential, inside, termStatus } from "./differentials";
+import { endpoint, differential, termStatus } from "./differentials";
 import { diagram } from "./diagram";
 import { math } from "./math";
 import css from "./viewer.css?inline";
@@ -148,33 +148,33 @@ export class Viewer extends HTMLElement {
     const rIndex = page.index;
     const colored = (status: string, tex: string) =>
       "\\class{state-" + status + "}{" + tex + "}";
-    const term = (point: Point) => {
-      const degree = point.p + "," + point.q;
-      const symbol =
-        data.convention === "cohomological"
-          ? "E_" + (rIndex < 10 ? rIndex : "{" + rIndex + "}") + "^{" + degree + "}"
-          : "E^{" + rIndex + "}_{" + degree + "}";
+    const cohomology = data.convention === "cohomological";
+    const index = rIndex < 10 ? String(rIndex) : "{" + rIndex + "}";
+    const indexed = (letter: string, point: Point) => {
+      const degree = "{" + key(point) + "}";
+      return letter + (cohomology ? "_" + index + "^" + degree : "^" + index + "_" + degree);
+    };
+    const points = [source, this.selected, second.b];
+    const termRow = points.map(point => colored(termStatus(m, point), indexed("E", point)));
+    const moduleRow = points.map(point => {
+      const term = m.terms.get(key(point));
       const status = termStatus(m, point);
-      const notes = [];
-      const label = m.terms.get(key(point))?.label;
-      if (label) notes.push(label);
-      if (point.p >= 0 && point.q >= 0 && !inside(point, r))
-        notes.push("\\text{offscreen}");
-      return colored(status, notes.length
-        ? "\\underset{" + notes.join("\\;") + "}{" + symbol + "}"
-        : symbol);
-    };
-    const arrow = (map: typeof first) => {
-      const label = map.status === "zero" ? "0" : "d_{" + rIndex + "}";
-      const annotation = map.formula === "0" ? "" : (map.formula ?? "");
-      return colored(map.status, "\\xrightarrow[" + annotation + "]{" + label + "}");
-    };
-    const tex =
-      term(source) +
-      arrow(first) +
-      term(this.selected) +
-      arrow(second) +
-      term(second.b);
+      const module = status === "zero" ? "0" : term?.module ?? term?.label;
+      return module ? colored(status, module) : "";
+    });
+    const maps = [first, second];
+    const arrows = maps.map(map => colored(map.status, "\\xrightarrow{" + indexed("d", map.a) + "}"));
+    const actions = maps.map(map => {
+      const generator = m.terms.get(key(map.a))?.generator;
+      const image = map.status === "zero" ? "0" : map.image;
+      if (generator && image) return colored(map.status, generator + "\\mapsto " + image);
+      return map.formula && map.formula !== "0" ? colored(map.status, map.formula) : "";
+    });
+    const rows = [[termRow[0], arrows[0], termRow[1], arrows[1], termRow[2]]];
+    if (moduleRow.some(Boolean)) rows.push([moduleRow[0], "", moduleRow[1], "", moduleRow[2]]);
+    if (actions.some(Boolean)) rows.push([actions[0], "", actions[1], "", ""]);
+    const tex = "\\begin{array}{c@{\\;}c@{\\;}c@{\\;}c@{\\;}c}" +
+      rows.map(row => row.join("&")).join("\\\\") + "\\end{array}";
     const chain = math(tex);
     chain.classList.add("chain");
     chain.querySelector("svg")!.setAttribute("aria-label", tex);

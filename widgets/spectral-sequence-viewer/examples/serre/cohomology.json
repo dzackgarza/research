@@ -28,49 +28,65 @@
           "p": 0,
           "q": 0,
           "status": "nonzero",
-          "label": "1"
+          "label": "1",
+          "generator": "1",
+          "module": "\\langle 1\\rangle_{\\mathbb Z}"
         },
         {
           "p": 3,
           "q": 0,
           "status": "nonzero",
-          "label": "u"
+          "label": "u",
+          "generator": "u",
+          "module": "\\langle u\\rangle_{\\mathbb Z}"
         },
         {
           "p": 0,
           "q": 2,
           "status": "nonzero",
-          "label": "x"
+          "label": "x",
+          "generator": "x",
+          "module": "\\langle x\\rangle_{\\mathbb Z}"
         },
         {
           "p": 3,
           "q": 2,
           "status": "nonzero",
-          "label": "ux"
+          "label": "ux",
+          "generator": "ux",
+          "module": "\\langle ux\\rangle_{\\mathbb Z}"
         },
         {
           "p": 0,
           "q": 4,
           "status": "nonzero",
-          "label": "x^{2}"
+          "label": "x^{2}",
+          "generator": "x^{2}",
+          "module": "\\langle x^{2}\\rangle_{\\mathbb Z}"
         },
         {
           "p": 3,
           "q": 4,
           "status": "nonzero",
-          "label": "ux^{2}"
+          "label": "ux^{2}",
+          "generator": "ux^{2}",
+          "module": "\\langle ux^{2}\\rangle_{\\mathbb Z}"
         },
         {
           "p": 0,
           "q": 6,
           "status": "nonzero",
-          "label": "x^{3}"
+          "label": "x^{3}",
+          "generator": "x^{3}",
+          "module": "\\langle x^{3}\\rangle_{\\mathbb Z}"
         },
         {
           "p": 3,
           "q": 6,
           "status": "nonzero",
-          "label": "ux^{3}"
+          "label": "ux^{3}",
+          "generator": "ux^{3}",
+          "module": "\\langle ux^{3}\\rangle_{\\mathbb Z}"
         }
       ],
       "maps": []
@@ -82,49 +98,65 @@
           "p": 0,
           "q": 0,
           "status": "nonzero",
-          "label": "1"
+          "label": "1",
+          "generator": "1",
+          "module": "\\langle 1\\rangle_{\\mathbb Z}"
         },
         {
           "p": 3,
           "q": 0,
           "status": "nonzero",
-          "label": "u"
+          "label": "u",
+          "generator": "u",
+          "module": "\\langle u\\rangle_{\\mathbb Z}"
         },
         {
           "p": 0,
           "q": 2,
           "status": "nonzero",
-          "label": "x"
+          "label": "x",
+          "generator": "x",
+          "module": "\\langle x\\rangle_{\\mathbb Z}"
         },
         {
           "p": 3,
           "q": 2,
           "status": "nonzero",
-          "label": "ux"
+          "label": "ux",
+          "generator": "ux",
+          "module": "\\langle ux\\rangle_{\\mathbb Z}"
         },
         {
           "p": 0,
           "q": 4,
           "status": "nonzero",
-          "label": "x^{2}"
+          "label": "x^{2}",
+          "generator": "x^{2}",
+          "module": "\\langle x^{2}\\rangle_{\\mathbb Z}"
         },
         {
           "p": 3,
           "q": 4,
           "status": "nonzero",
-          "label": "ux^{2}"
+          "label": "ux^{2}",
+          "generator": "ux^{2}",
+          "module": "\\langle ux^{2}\\rangle_{\\mathbb Z}"
         },
         {
           "p": 0,
           "q": 6,
           "status": "nonzero",
-          "label": "x^{3}"
+          "label": "x^{3}",
+          "generator": "x^{3}",
+          "module": "\\langle x^{3}\\rangle_{\\mathbb Z}"
         },
         {
           "p": 3,
           "q": 6,
           "status": "nonzero",
-          "label": "ux^{3}"
+          "label": "ux^{3}",
+          "generator": "ux^{3}",
+          "module": "\\langle ux^{3}\\rangle_{\\mathbb Z}"
         }
       ],
       "maps": [
@@ -132,19 +164,19 @@
           "p": 0,
           "q": 2,
           "status": "nonzero",
-          "formula": "d_3(x)=u"
+          "image": "u"
         },
         {
           "p": 0,
           "q": 4,
           "status": "nonzero",
-          "formula": "d_3(x^2)=2ux"
+          "image": "2ux"
         },
         {
           "p": 0,
           "q": 6,
           "status": "nonzero",
-          "formula": "d_3(x^3)=3ux^2"
+          "image": "3ux^2"
         }
       ]
     },
@@ -178,5 +210,9 @@
       ],
       "maps": []
     }
+  ],
+  "supportedColumns": [
+    0,
+    3
   ]
 }

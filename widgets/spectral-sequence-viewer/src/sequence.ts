@@ -15,8 +15,11 @@ export interface Rect {
 export interface Term extends Point {
   status: "zero" | "nonzero" | "unknown";
   label?: string;
+  generator?: string;
+  module?: string;
 }
 export interface Arrow extends Point {
+  image?: string;
   status: "zero" | "nonzero" | "undetermined";
   formula?: string;
 }
@@ -27,6 +30,7 @@ export interface Page {
   formula?: string;
 }
 export interface Sequence {
+  supportedColumns?: number[];
   firstPage: number;
   pages: Page[];
   convention: "cohomological" | "homological";
