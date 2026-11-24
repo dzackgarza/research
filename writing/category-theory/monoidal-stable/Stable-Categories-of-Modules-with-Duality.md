@@ -81,8 +81,15 @@ Enough projectives (@def:module-subcategories) is not used; the statement is for
 
 Let $F\colon\mcc\to\mca$ be left adjoint (@def:pairing-adjoints) to $U\colon\mca\to\mcc$.
 The composite $\bot=FU$, with counit $\eps\colon\bot\Rightarrow\id_{\mca}$ and comultiplication built from the unit, is a comonad on $\mca$ [@Wei94, Def. 8.6.1, Main Application 8.6.2].
-For an object $X$ of $\mca$ the associated augmented simplicial object has $\bot^{\,n+1}X$ in degree (@def:graded-object) $n$, with faces and degeneracies from $\eps$ and the unit, and its chain complex (@def:chain-complexes) is a resolution of $X$ [@Wei94, §8.6].
-For $\mca=A\text{-}\mathbf{Mod}$ and $F$ the free (@def:module-subcategories) module functor this is the bar resolution, and it computes the derived functors of an additive functor out of $\mca$.
+For an object $X$ of $\mca$, the associated augmented simplicial object has $\bot^{\,n+1}X$ in degree (@def:graded-object) $n$, with faces and degeneracies induced by $\eps$ and the unit [@Wei94, 8.6.4].
+If $\mca$ is abelian, its alternating-face chain complex (@def:chain-complexes) is defined, but **need not be an exact resolution of $X$**.
+The general result is that the augmented simplicial object becomes left contractible **after applying $U$** [@Wei94, Prop. 8.6.10]; exactness of the augmented chain complex in $\mca$ follows, for example, when $X$ is $\bot$-projective [@Wei94, Prop. 8.6.8].
+For a counterexample to unconditional exactness, take $\mcc=\mca=\mathbf{Ab}$, $F(V)=(\bZ/2)\tensor_{\bZ}V$, $U(M)=\Hom_{\bZ}(\bZ/2,M)$, and $X=\bZ$. The tensor–Hom adjunction gives $\bot X=0$, so the augmented complex $0\to X\to0$ is not exact.
+
+There are two distinct module specializations.
+For a ring homomorphism $k\to R$, the forgetful functor $U:R\text{-}\mathbf{Mod}\to k\text{-}\mathbf{Mod}$ with left adjoint $F(V)=R\tensor_kV$ yields the **relative bar resolution**: its degree-$n$ term is $R^{\tensor_k(n+1)}\tensor_kM$, and the augmented complex is exact over $R$ and split exact over $k$; its terms need not be projective $R$-modules [@Wei94, 8.6.12].
+In contrast, for $U:R\text{-}\mathbf{Mod}\to\mathbf{Sets}$ and its free-module left adjoint $F(S)=R^{(S)}$, the cotriple yields an **ordinary free resolution** of every $R$-module, suitable for computing ordinary left-derived functors of additive functors [@Wei94, 8.6.14].
+The two cotriples must not be identified.
 :::
 
 ::: {.definition #def:n-dual-complex title="The $n$-dual of a complex" defines="$C^{r}$; $n$-dual"}
@@ -200,15 +207,19 @@ The prespectrum is a *spectrum object* when every $\eps_n$ is an equivalence (@d
 
 ::: {.theorem #thm:stabilization-universal title="The universal property of the stabilization"}
 
-For an $\infty$-category $\mcc$ the stabilization $\mathrm{Stab}(\mcc)$ is universal among stable $\infty$-categories equipped with a left exact (@def:exact-complex) functor to $\mcc$ [@Lur09, Prop. 10.12].
+For an $\infty$-category $\mcc$ admitting finite limits, the stabilization $\mathrm{Stab}(\mcc)$ satisfies the following universal property [@Lur09, Prop. 10.12]: for every pointed $\infty$-category $\mathcal A$ admitting finite colimits, composition with the canonical functor $\mathrm{Stab}(\mcc)\to\mcc$ induces an equivalence
+\[
+\mathrm{Exc}(\mathcal A,\mathrm{Stab}(\mcc))\simeq\mathrm{Exc}(\mathcal A,\mcc),
+\]
+where $\mathrm{Exc}$ denotes the $\infty$-category of excisive functors.
 The $\infty$-category of spectra is $\mathrm{Sp}=\mathrm{Sp}(\mcs_{*})=\mathrm{Stab}(\mcs)$ [@Lur09, Def. 9.1], and it is freely generated under colimits (@def:limit), as a stable $\infty$-category, by the sphere (@def:spheres) spectrum [@Lur09, Cor. 15.6].
 :::
 
 ::: {.proof}
 
 $\mathrm{Stab}(\mcc)=\mathrm{Sp}(\mcc_{*})$ is [@Lur09, Def. 8.4].
-$\mathrm{Sp}=\mathrm{Stab}(\mcs)$ in [@Lur09, Def. 9.1] is the case $\mcc=\mcs$, together with the identification $\mcs_{*}=\mcs$ up to the trivial fibration of [@Lur09, Rem. 8.5].
-The universal property is the equivalence (@def:equivalence-of-objects) $\mathrm{Exc}(\mathcal{C},\mathrm{Stab}(\mathcal{D}))\simeq\mathrm{Exc}(\mathcal{C},\mathcal{D})$ of [@Lur09, Prop. 10.12].
+$\mathrm{Sp}=\mathrm{Sp}(\mcs_*)=\mathrm{Stab}(\mcs)$ follows directly by applying [@Lur09, Def. 8.4] to $\mcs$ and using [@Lur09, Def. 9.1]. **No equivalence $\mcs_*\simeq\mcs$ is used:** $\mcs_*$ has a zero object, while $\mcs$ has distinct initial and terminal objects $\varnothing$ and $*$. The trivial-fibration statement of [@Lur09, Rem. 8.5] applies only when its input $\infty$-category is already pointed.
+The displayed equivalence of excisive-functor $\infty$-categories is exactly [@Lur09, Prop. 10.12], with its hypotheses: the source $\mathcal A$ is pointed with finite colimits, and the target $\mcc$ has finite limits.
 Free (@def:module-subcategories) generation by the sphere spectrum is [@Lur09, Cor. 15.6]: evaluation (@def:dualizable-object) on the sphere spectrum induces $\operatorname{Pr}^{\mathrm L}(\mathrm{Sp},\mathcal{D})\simeq\mathcal{D}$ for stable presentable $\mathcal{D}$.
 :::
 

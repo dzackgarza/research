@@ -1,0 +1,38 @@
+=== 0. the discriminant model
+  nonzero isotropic classes |C| = 527 (527 expected, lem:isotropic-classes-lift(2))
+  2-dimensional subspaces of A: 698027; of plus type (isometric to A_U(2)): 67456 (= [O(q):P], Step 6 of prop:gamma-co-images(3))
+  W = A_U(2) = <e_1,f_1> mod 2B: q-values ['0', '0', '1'] (0,0,1 expected), dim W^perp = 9
+  P-orbits on C under <swap, tau_v (q(v)=1)>: [2, 120, 135, 270] (2,120,270,135 expected: prop:coble-cong-point-stabilizer(2))
+  the class c = [e_1/2] of the standard line lies in W cap C, so its P-orbit has size 2
+
+=== 1. the two proved families (thm:o2-plane-family, thm:o2-line-family)
+  plane: 30 integral Gram isometries, all fix the object (P_0 preserved)
+    (each preserves P_0 as a lattice: the induced 2x2 matrix is unimodular)
+  line: 19 integral Gram isometries, all fix the object pointwise
+  det of d_1+d_7,...,d_6+d_7,2d_7 in D: 2 (2 expected: a Z-basis of D^ev)
+  |det| of e_2,f_2,d_1+d_7,...,d_6+d_7,2d_7 in K: 2 (2 expected: a Z-basis of K_ev, index 2 in K)
+  squares of those nine vectors in K: [0, 0, -2, -2, -2, -2, -2, -2, -4] (all even, i.e. in K_ev)
+  the standard generators of GL_2(Z) as words in {W,A,A^-1} of length at most 12: {'-I': '*W*A*W*Ai*Ai*W*A*W*Ai*Ai', 'S': '*Ai*W*A*W*Ai'}
+
+=== 2. the Schreier-BFS families for K_x = Stab_{R_Gamma}(x)
+  line: |W_x| = 256 states; transversal: 256 exact integral matrices t_V
+    Schreier pairs 9728, of which identities 1306; remaining 8422: non-isometries 0, outside S_x 0
+    also drop duplicates: 948 distinct non-identity integral matrices
+  plane: |W_x| = 768 states; transversal: 768 exact integral matrices t_V
+    Schreier pairs 46080, of which identities 4130; remaining 41950: non-isometries 0, outside S_x 0
+    also drop duplicates: 2957 distinct non-identity integral matrices
+
+  the two orbit sizes against the index formula |W_x| = [O(q):P] * |P.datum| / |datum set|:
+    line:  [O(q):P] = 67456, |P.c| = 2, |C| = 527:  67456*2/527 = 256
+    plane: [O(q):P] = 67456, |P.(J,s)| = 2160, |D| = 189720: 67456*2160/189720 = 768
+
+=== 3. the line stabilizer's central factor
+  -id_B: integral Gram isometry True; congruent to id mod 2B (rho = 1) True; stabilizes Z e_1 True
+  so Stab_{R_Gamma}(Z e_1) = Stab_{R_Gamma}(e_1) x <-id_B> (lem:o2-level-two-membership(3)),
+  and the line family is the BFS family above together with -id_B.
+
+=== 4. the telescoping identity, on random elements of K_x (a check of the bookkeeping)
+  line: 10/10 random words in K_x reproduced exactly by the telescoping product over the family
+  plane: 10/10 random words in K_x reproduced exactly by the telescoping product over the family
+
+Wrote computations/reports/coble_833-congruence-schreier.json (the two transversals, exact matrices).

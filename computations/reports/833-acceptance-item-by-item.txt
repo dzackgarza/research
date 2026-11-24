@@ -1,0 +1,75 @@
+research#833 (A24-O2), acceptance item by item.
+Reviewed patch: working branch issue833-correct, based on omm/main@39e7c4748e649beb2cff1d23cfa77de58ace57b4.
+Page: writing/coble/lattices-and-moduli/integral-line-and-plane-lifting.md.
+Final landed commit is reported in the delivery response; this card deliberately records the base as well.
+
+Acceptance 1. "The research page proves the required integral line and plane orbits and the complete
+integral stabilizer families for every group named in #667, without dropping a group or an object type."
+  Line orbits: MET. thm:o2-lines: O = 1; Otilde and Otilde+ = 527; R_Gamma = 4 of sizes
+    2,135,270,120. Character restrictions have the same counts. thm:o2-lines(2) now proves the
+    double-coset formula from the fibres for every Gamma and cites SH23 Lemma 3.6 only when
+    Otilde is contained in Gamma; the false application to Otilde^+ is removed.
+  Plane orbits: MET. thm:o2-planes: O = 1; Otilde and Otilde+ = 189720; R_Gamma = 7. The recent
+    prose accidentally saying that the plane-stabilizer image is "inside P" has been removed;
+    divisibility in fact proves it is not a subgroup of P.
+  Integral plane families: MET for O, Otilde and Otilde+.
+    O: thm:o2-plane-family retains the original complete 30-element integral family.
+    Otilde: thm:o2-plane-family-kernel(1) supplies 26 elements: four GL2(2) Levi generators,
+      seven signs, fourteen even Eichler transvections and sigma^2.
+    Otilde+: thm:o2-plane-family-kernel(2) supplies the 25 elements after omitting J; the correct
+      kernel is Gamma_SL(2), not Gamma_GL(2), and tau is removed rather than adjoined.
+    R_Gamma: NOT MET (C4), qst:o2-congruence-family.
+  Integral line families: MET for O and the three stable groups, NOT MET for R_Gamma.
+    O: thm:o2-line-family transports HR Theorem 2.1 and supplies 19 elements for Stab(v) and
+      20 for Stab(L), preserving the nine K_ev-basis transvections and adjoining -id_K and -id_B.
+    Otilde: lem:o2-level-two-membership proves the corrected vector/line decomposition; the Levi
+      family is 240 side reflections plus m and -id_K (thm:o2-stable-level-two-generation), the
+      nine transvections use a K-basis (not K_ev), and -id_B is the central line factor. Thus 251
+      elements for Stab(v), 252 for Stab(L).
+    Otilde cap SO, Otilde cap O+, Otilde cap SO+: thm:o2-stable-line(3),(5) computes indices
+      2,2,4 and gives complete families by actual Schreier transversals, not generator commutators.
+    R_Gamma: NOT MET (C5), restored explicitly to the ledger and qst:o2-congruence-family;
+      Stab_RGamma(L) = Stab_RGamma(v) x <-id_B>, and its discriminant image and finite index are
+      stated, but no complete integral generating family or transversal with lifts is supplied.
+  The old 35-family: REFUTED, not open. It lies in the norm-one reflection subgroup by the exact
+    products t(e,2d)=r_(e+d)r_d and t(f,2d)=r_(f+d)r_d. Independently, r_(e+f+d1) is a level-two
+    reflection whose (e,e)-coordinate at level four is 1 while all 35 old classes have coordinate 0.
+    The bare 21/45 span is assigned no generation conclusion.
+  R_Gamma = Gamma^cong_Co,2 is kept distinct from monodromy Gamma_Co,2 throughout. Nothing about
+  either monodromy group is inferred from these arithmetic-family statements.
+
+Acceptance 2. "The page identifies which domains of the later fibre, incidence and public-computation
+issues these proofs supply."
+  MET. tbl-o2-consumers retains O3/O4 their previous domains. O5 now consumes the full/stable line
+  and plane families, and still must supply the public operation, the cards and the R_Gamma line
+  and plane families. O3 uses the direct fibre argument for Otilde^+ rather than the inapplicable
+  citation. Accepted orbit classifications and consumers were not removed.
+
+Acceptance 3. "Each cited theorem names its numbered published statement and verifies its hypotheses
+on T_Co."
+  MET for the new and touched arguments. HR Theorem 2.1 is applied at n=8; HR Theorem 2.2 and ERT
+  Theorem 2.1 (including the n=8 split sequences and displayed matrix) are applied only after
+  lem:o2-ert-hr-transport proves the integral basis transport, sign/time conventions and
+  projective/integral lift. ERT/HR O+ is time orientation, never silently the GHS spinor kernel;
+  -I supplies the full integral group. SH23 Lemma 3.6 has its U subset K hypothesis checked. GHS08
+  section 3.1 equations (4),(5) are used only as transvection formulas. No Kneser/GHS Witt-index >=2
+  generation theorem is invoked. New bibliography keys ERT10 and HR14 carry numbered-statement notes.
+
+Overall: NOT MET, exactly on R_Gamma line and plane integral stabilizer-family completion (C4,C5,U2).
+Everything else in tbl-o2-ledger is marked proved by the revised page; this is not an ALL-MET report.
+
+Checks actually run:
+  python3 computations/reports/coble_833-ert-hr-transport.py -- PASS. Exact integral transport,
+    determinants -1,1,-1 and Phi^T H Phi=-G; ERT matrix transport; 240 root orbit; both old-35
+    product identities; the one-coordinate counterexample. Transcript in the adjacent -run.txt.
+  The independent m1 witness script -- 65 checks PASS; m2 index audit -- PASS; m3 transport -- PASS;
+    m5 plane Gamma(2) and descent scripts -- PASS, including 66/66 exact descents.
+  python3 scripts/docs_check.py --source -- 29 pre-existing missing-bibliography findings on other
+    pages; no finding on the edited page.
+  Page cross-reference check -- 57 labels, none missing; 36 unique block definitions on the page;
+    no duplicate definitions and no unclosed divs.
+  Quarto generated the edited page HTML, with its pre-existing sec-cusp-lifting warning only, then
+    failed in an unrelated resource-copy command. just docs-assets copied bib/macros and separately
+    failed on an unresolved Git-LFS chamber figure. Thus no clean full-render success is claimed.
+  Python py_compile on the three edited/new arithmetic scripts -- PASS.
+  The engineering pytest suite was not run (it needs sage_extensions/dzack_research); CI is not visible.

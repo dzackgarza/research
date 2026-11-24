@@ -1,0 +1,25 @@
+1. integral HR basis transport
+   det(C), det(A), det(Phi): -1 1 -1
+   Phi has integral entries: True
+   Phi^T H Phi = -G: True
+   Phi(z) = eps8: True | z^2 = -1
+
+2. ERT's nth-longest matrix and its integral lift
+   ERT matrix preserves its own Lorentz form: True
+   permutation changes the coordinate convention: True
+   Phi (-r_a) Phi^-1 = permuted ERT matrix: True
+   m integral and level two: True True
+
+3. the 240 norm-one side roots
+   orbit cardinality: 240
+   all have norm one: True
+   each is eta+v8 with eta in v8-perp of norm two: True
+
+4. why the old 35-family lies in the norm-one reflection subgroup
+   t_K(e,2d_j) = r_(e+d_j) r_d_j and t_K(f,2d_j) = r_(f+d_j) r_d_j for all j: True
+   all old 35 generators are integral level-two elements in that subgroup: True
+   m is the separate n=8 coset witness supplied by ERT/HR (matrix checked above)
+
+5. the explicit one-coordinate counterexample to the old family
+   (e,e)-entry on all 35 old level-four classes: [0]
+   witness w=e+f+d1 has norm one: True | r_w integral level two: True | its (e,e)-entry: 1

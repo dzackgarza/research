@@ -1,0 +1,10 @@
+Z8 P matches: True
+Z8 P factored: -w**2*(w - 4)**2*(w**2 + 32*w + 288)/110592
+Z8 residual factor discriminant: -128
+Z8 nonzero discriminant implies P is not a square in C(w)
+Z64 P matches: True
+Z64 P factored: w**2*(w + 40)**3*(w + 72)/7077888
+Z64 residual factor discriminant: 1024
+Z64 nonzero discriminant implies P is not a square in C(w)
+E8 Gram: [[-2, 1, 0, 0, 0, 0, 0, 0], [1, -2, 1, 0, 0, 0, 0, 0], [0, 1, -2, 1, 0, 0, 0, 1], [0, 0, 1, -2, 1, 0, 0, 0], [0, 0, 0, 1, -2, 1, 0, 0], [0, 0, 0, 0, 1, -2, 1, 0], [0, 0, 0, 0, 0, 1, -2, 0], [0, 0, 1, 0, 0, 0, 0, -2]]
+E8 determinant: 1

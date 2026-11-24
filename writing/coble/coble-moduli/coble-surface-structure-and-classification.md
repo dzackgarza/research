@@ -107,6 +107,8 @@ So its orthogonal complement has rank $10$ and signature $(1,9)$.
 Is $\CM(S)$ rather than $S_{\Co}$ the natural home for the action of $\Gamma_{\Co}$, the monodromy group of the VHS on the universal family over the moduli stack of Coble surfaces (@def:gamma-co-groups(1)), and how are the two related?
 :::
 
+The Coble surfaces with finite automorphism group are classified, in nine isomorphism classes in characteristic $p\neq2$, by their dual graph of effective irreducible roots: [Coble surfaces with finite automorphism group](#sec-coble-finite-automorphism).
+
 ## The Dolgachev-Zhang classification
 
 ::: {.definition #def:coble-elliptic-rational-type title="Elliptic and rational types" defines="elliptic type with respect to $E$; rational type with respect to $E$; elliptic type; rational type"}

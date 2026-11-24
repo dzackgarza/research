@@ -1,0 +1,151 @@
+Downloading pygments (1.2MiB)
+Downloading widgetsnbextension (2.1MiB)
+Downloading notebook (5.4MiB)
+Downloading babel (9.7MiB)
+Downloading jedi (4.7MiB)
+Downloading debugpy (3.8MiB)
+Downloading jupyterlab (16.5MiB)
+   Building quarto-cli==1.11.9
+ Downloaded pygments
+ Downloaded widgetsnbextension
+ Downloaded debugpy
+ Downloaded notebook
+ Downloaded jedi
+ Downloaded babel
+ Downloaded jupyterlab
+      Built quarto-cli==1.11.9
+Installed 98 packages in 120ms
+[1mpandoc [22m
+  to: html
+  output-file: lattices.html
+  standalone: true
+  toc: true
+  number-sections: true
+  title-prefix: Coble and Enriques surfaces
+  section-divs: true
+  html-math-method: mathjax
+  wrap: none
+  default-image-extension: png
+  toc-depth: 3
+  css:
+    - ../../tikz-diagrams.css
+  number-offset:
+    - 81
+
+[1mmetadata[22m
+  crossref:
+    chapters: true
+  document-css: false
+  link-citations: true
+  date-format: long
+  lang: en
+  bibliography:
+    - ../../.assets/references.bib
+    - ../../.assets/refs-web.bib
+    - ../../coble/coble_supplement.bib
+    - ../../coble/heegner-report/coble_references.bib
+  tikz:
+    cache: true
+    svg-engine: pdftocairo
+  custom-numbered-blocks:
+    appearances:
+      thmlike:
+        container: quartothmlike
+    groups:
+      blocks:
+        appearance: thmlike
+    classes:
+      theorem:
+        group: blocks
+        label: Theorem
+        listin:
+          - results
+      lemma:
+        group: blocks
+        label: Lemma
+        listin:
+          - results
+      corollary:
+        group: blocks
+        label: Corollary
+        listin:
+          - results
+      proposition:
+        group: blocks
+        label: Proposition
+        listin:
+          - results
+      conjecture:
+        group: blocks
+        label: Conjecture
+        listin:
+          - results
+      definition:
+        group: blocks
+        label: Definition
+        listin:
+          - definitions
+      example:
+        group: blocks
+        label: Example
+      construction:
+        group: blocks
+        label: Construction
+        listin:
+          - definitions
+      notation:
+        group: blocks
+        label: Notation
+        listin:
+          - definitions
+      convention:
+        group: blocks
+        label: Convention
+        listin:
+          - definitions
+      exercise:
+        group: blocks
+        label: Exercise
+      problem:
+        group: blocks
+        label: Problem
+      question:
+        group: blocks
+        label: Question
+      remark:
+        group: blocks
+        label: Remark
+      warning:
+        group: blocks
+        label: Warning
+      observation:
+        group: blocks
+        label: Observation
+      note:
+        group: blocks
+        label: Note
+      claim:
+        group: blocks
+        label: Claim
+      assumption:
+        group: blocks
+        label: Assumption
+  theme:
+    light: cosmo
+    dark: darkly
+  code-copy: true
+  smooth-scroll: true
+  hide-description: true
+  title: "[[81]{.chapter-number}\_ [Period domain embeddings and normalization]{.chapter-title}]{#sec-lattices .quarto-section-identifier}"
+
+[33mWARNING (/workspace/nucleus/work/projects/p-9fcb4ed7f4b64e008de2ee29a7197bf4/repo/.scratch/wt-810/.tmp/uv-cache/archive-v0/3nH-djJKWgAhsgDq/lib/python3.12/site-packages/quarto_cli/share/filters/main.lua:10073)
+The following string was found in the document: :::
+
+This usually indicates a problem with a fenced div in the document. Please check the document for errors.
+[39m[WARNING] Citeproc: citation prop:gamma-co-images not found
+[33mWARN: coble/lattices-and-moduli/lattices.html: Unable to resolve crossref @sec-local-systems-of-a-free-quotient[39m
+[33mWARN: coble/lattices-and-moduli/lattices.html: Unable to resolve crossref @sec-local-systems-of-a-free-quotient[39m
+[33mWARN: coble/lattices-and-moduli/lattices.html: Unable to resolve crossref @eq-period-map-equivariance[39m
+[33mWARN: coble/lattices-and-moduli/lattices.html: Unable to resolve crossref @eq-period-map-equivariance[39m
+[33mWARN: coble/lattices-and-moduli/lattices.html: Unable to resolve crossref @sec-moduli-construction[39m
+cp: cannot create regular file '/workspace/nucleus/work/projects/p-9fcb4ed7f4b64e008de2ee29a7197bf4/repo/.scratch/wt-810/writing/.book/_site/category-theory/': Not a directory

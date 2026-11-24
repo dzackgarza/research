@@ -1,0 +1,29 @@
+research#797, first missing inference after independent review aj0n
+
+COMPLETED RESULT
+Analytic Isom representability is retained, with a proof valid on arbitrary complex-space section bases. In thm:coble-isom-sheaf-representable, step 3 decomposes U into the clopen loci U_psi on which the change of marking is a fixed element of Gamma_rho. On each piece AEH24's fine universal property gives the unique equivariant isomorphism; these glue. thm:coble-atlas uses the same constant-sheaf formulation, so disconnected bases cause no hidden global-constant-marking assumption.
+
+SOURCE CHECKS
+AEH24 (Alexeev--Engel--Han, arXiv:2110.13834v2), Definition 2.2: a rho-marked family over B has a global isomorphism of local systems; no connectedness hypothesis on B.
+AEH24, Lemma 2.7: M_rho is a fine moduli space and an open subset of pi^{-1}(D_rho minus Delta_rho); the fine universal property is the only external input to the repaired comparison.
+Stacks Project, Lemma 80.11.3(2), Tag 0ADV: finite-type fppf descent data for algebraic spaces are effective; the finite-type hypothesis is supplied by the original flat projective finite-presentation families.
+Stacks Project, Lemma 99.13.3, Tag 0D1G: flat, proper, finitely presented algebraic spaces form an fppf stack. Only descent in this enlarged category follows.
+Stacks Project, Lemma 110.67.1, Section 110.67 (Tag 08J0): projectivity is not local on the base; Stacks Lemma 110.68.1, Section 110.68 (Tag 08KE): a projective-scheme descent datum need not be effective as a scheme, although the displayed example is effective as an algebraic space. These examples block the bare-projectivity proof, not every special-family argument.
+Stacks Project, Definition 94.12.1, Tag 026O: an algebraic stack additionally needs an algebraic-space diagonal and a smooth surjective scheme atlas. AEH24 supplies neither algebraic statement.
+
+FIRST INFERENCE: NOT SETTLED, NOT REFUTED
+The original objects, morphisms, Cartesian pullbacks and anti-bicanonical K3-cover family of def:coble-moduli-functor-z are unchanged. Effective fppf descent remains unknown in that original projective-scheme groupoid. The exact missing theorem is:
+
+  For every Z[1/2]-scheme Y, every fppf cover Y' -> Y and every descent datum of objects of def:coble-moduli-functor-z over Y', the flat proper finite-presentation algebraic space supplied by Lemmas 80.11.3(2) and 99.13.3 is a projective scheme over Y, and its descended double cover and covering involution recover the given datum.
+
+Algebraicity of the original stack over Z[1/2] is NOT MET: the fppf-stack premise is open and no algebraic-space diagonal or smooth scheme atlas has been supplied by the analytic construction. No O2 quotient or monodromy statement was inferred. No finite-isotropy hypothesis was used, and no inertia was dropped.
+
+PAGE: writing/coble/lattices-and-moduli/moduli-construction.md
+  disconnected Isom sections: step 3 at :612-614; constant-sheaf atlas at :636;
+  algebraic-space partial descent and exact scheme/projective obstruction: :1089 and :1097.
+SOURCES ADDED TO BIBLIOGRAPHY: writing/coble/coble_supplement.bib, tags 026O, 08J0, 08KE, 0ADV, 0D1G.
+GUARDS: tests/engineering/test_coble_797_items34.py at :472-511 pins disconnected sections and the exact missing premise.
+
+VERIFICATION
+Three intended-red assertions failed before the page edit and passed afterward when the same test functions were executed directly. Pytest collection was not available: tests/conftest.py requires dzack_research, which is not installed. Pandoc --from=markdown --to=native parsed the page, and git diff --check passed.
+python3 scripts/docs_check.py --source returned 26 pre-existing missing-bibliography findings on other pages, none on moduli-construction.md or coble_supplement.bib. The preceding just docs-assets step copied bibliography/macros but stopped at an unresolved Git LFS pointer in the shared pandoc figures directory; this did not prevent the source-only check or the direct pandoc parse.

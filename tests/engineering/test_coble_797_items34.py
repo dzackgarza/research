@@ -37,6 +37,9 @@ def test_the_quotient_presentation_is_stated_with_its_hypotheses():
     assert "\\widetilde\\Orth^+(T_\\Co)" in body
     # the non-emptiness is NOT claimed from the proposition whose t <= 9 fails
     assert "@Dol96, Cor. 5.2" in body
+    # O3: point/component information is not relabelled as a stack presentation
+    assert "moduli stack" in body and "open" in body
+    assert "stabilizers" in body and "cone preservation" in body
 
 
 def test_the_monodromy_sequence_is_stated_with_its_cover():
@@ -80,17 +83,17 @@ PERIOD_STACK = "thm:coble-period-map-of-the-stack"
 FROM_UNIVERSAL = "prop:gamma-co-from-the-universal-family"
 
 
-def test_the_transfer_is_proved_at_the_level_of_the_stack():
+def test_stack_transfer_keeps_the_inertia_comparison_open():
     text = MC.read_text(encoding="utf-8")
     body = _block(text, PERIOD_STACK)
-    # the four clauses: defined, injective on labelled objects, local Torelli, descent
     assert "injectivity on objects" in body.lower()
     assert "Local Torelli" in body or "local Torelli" in body
-    assert "fully faithful" in body
-    # the two numbered inputs that do the work
+    assert "fully faithful" in body and "open" in body
+    assert "essential image" in body and "do not identify the inertia groups" in body
     proof = text[text.index("#" + PERIOD_STACK):]
     assert "@BHPV04, Ch. VIII, Thm. 11.1" in proof
     assert "@Dol96, §3" in proof
+    assert "withdrawn" in proof and "Neither proves" in proof
 
 
 def test_item6_says_which_group_a_restriction_gives():
@@ -343,3 +346,224 @@ def test_injectivity_comes_from_the_chamber_not_from_an_ample_class():
     # and the ledger no longer carries the chamber item as owed
     led = text[text.index("#thm:gamma-co-is-the-stack-monodromy"):]
     assert "only item still owed" in led[:6000]
+
+
+MOVED = "prop:coble-moved-minus-two-class"
+FIVE_CLAUSES = "rmk:coble-moduli-functor-five-clauses"
+
+
+def test_the_picard_general_locus_is_the_complement_of_all_the_heegner_divisors():
+    body = _block(MC.read_text(encoding="utf-8"), MOVED)
+    # clause 1 names the locus as the complement of the (-2d)-divisors, not of Z alone
+    assert "\\bigcup_{d\\ge1}\\mch_{-2d}" in body
+    assert "@def:heegner-divisor" in body
+    # and both directions of the equivalence, with the negative-square step in the proof
+    text = MC.read_text(encoding="utf-8")
+    tail = text[text.index("#" + MOVED):]
+    proof = tail[tail.index("\\begin") if "\\begin" in tail else 0:]
+    for need in ["positive index $2$", "U(2)", "primitive", "locally finite"]:
+        assert need in proof[:9000], need
+
+
+def test_a_minus_two_class_is_moved_off_the_minus_two_divisor():
+    text = MC.read_text(encoding="utf-8")
+    body = _block(text, MOVED)
+    # the counterexample: a square -4 class of T_Co, and the square -2 class it makes with e_0
+    assert "\\delta^2=-4" in body
+    assert "e_0+\\delta" in body and "e_0-\\delta" in body
+    # the existence is by the Baire category theorem on one hyperplane, not by a computation
+    tail = text[text.index("#" + MOVED):]
+    assert "Baire" in tail[:9000]
+    assert "@cons:coble-involution" in tail[:9000]
+
+
+TOR_QUOTED = re.compile(r"every reflection in a \$\(-2\)\$-class of \$\\Pic\(X'\)\$ commutes")
+PAIRS = "thm:coble-torelli-for-pairs"
+
+
+def test_the_refuted_sentence_is_gone_and_the_case_split_is_a_remark():
+    text = MC.read_text(encoding="utf-8")
+    # the withdrawn justification asserted commutation for every (-2)-class of Pic(X'),
+    # which prop:coble-moved-minus-two-class(2) refutes off the Picard-general locus
+    assert not TOR_QUOTED.search(text), TOR_QUOTED.search(text).group(0)
+    body = _block(text, FIVE_CLAUSES)
+    # what stands instead: the unconditional Torelli step, and the two cases as remarks
+    assert "@thm:coble-torelli-for-pairs" in body
+    assert "The Torelli step is settled." in body
+    assert "What the case split added, and why it is no longer needed." in body
+    assert "@prop:coble-moved-minus-two-class(2)" in body
+    # and the universal property is a paragraph of its own, proved
+    assert "\n   *The universal property.*" in body
+    assert "5. **Coarse space.** **Proved**" in body
+
+
+def test_torelli_for_pairs_is_stated_on_the_whole_coble_locus():
+    text = MC.read_text(encoding="utf-8")
+    body = _block(text, PAIRS)
+    # the two clauses: the isomorphism of pairs with its correction element, and bijectivity
+    assert "\\varphi\\iota=\\iota'\\varphi" in body
+    assert "u\\varphi" in body
+    assert "on the image of $\\bD(T_\\Co)\\sm Z$" in body
+    # the restriction to Picard-general periods must not appear in the statement
+    assert "Picard" not in body, [w for w in body.split(".") if "Picard" in w][:2]
+    # the number of the block is the one the remark cites
+    assert "@thm:coble-torelli-for-pairs" in _block(text, FIVE_CLAUSES)
+
+
+def test_torelli_for_pairs_quotes_its_numbered_inputs():
+    text = MC.read_text(encoding="utf-8")
+    tail = text[text.index("#" + PAIRS):]
+    proof = tail[:14000]
+    # fundamental domain, simple transitivity, Torelli, and the sign handled by -id
+    assert "@PS24, Proposition 19.1.3(2)" in proof
+    assert "@PS24, Proposition 17.2.5(3)" in proof
+    assert "acts simply transitively on root bases and on Weyl chambers" in proof
+    assert "@PS24, Theorem 19.2.2" in proof
+    assert "-\\id\\in\\Gamma_\\rho" in proof
+    # the conjugation computation is on the page, not only in a report
+    assert "(\\iota' u\\iota')\\varphi(\\mathcal A_X)" in proof
+
+
+HOLOMORPHY = re.compile(r"what is missing is that this map is holomorphic")
+
+
+def test_the_withdrawn_diagnosis_of_the_universal_property_is_gone():
+    text = MC.read_text(encoding="utf-8")
+    # the false diagnosis, withdrawn twice: first that the analyticity was missing,
+    # then that the descent fails at all
+    assert not HOLOMORPHY.search(text), HOLOMORPHY.search(text).group(0)
+    assert "What fails is the descent for *families*" not in text
+    body = _block(text, FIVE_CLAUSES)
+    # what stands: the induced set map is holomorphic, and the descent is proved
+    assert "that map is holomorphic" in body
+    assert "automatically constant on isomorphism classes" in body
+
+
+def test_the_universal_property_is_proved_by_descent_to_a_manifold_chart():
+    body = _block(MC.read_text(encoding="utf-8"), FIVE_CLAUSES)
+    # the two parts of a coarse space, and where each comes from
+    assert "@thm:coble-torelli-for-pairs(2) gives for $F=F_S$" in body
+    # the descent: equality of morphisms is not taken from agreement at points
+    assert "agreement at every point of $Y$ gives equality only when $Y$ is reduced" in body
+    # the chart is the universal deformation over its smooth base, quoted from the page
+    assert "is the pullback of $\\mathcal Z$ along $h$" in body
+    assert "@thm:coble-classical-substack-is-open-dense-and-proper" in body
+    # and the conclusion
+    assert "So $g=f\\circ p$ on every object, and $F_S$ is a coarse space of $\\mcM_\\Co$." in body
+
+
+def test_the_period_charts_do_not_decide_smoothness_and_algebraicity_stays_open():
+    """The analytic chart does not supply the scheme atlas required by 026O."""
+    text = MC.read_text(encoding="utf-8")
+    body = _block(text, FIVE_CLAUSES)
+    assert "It gives essential surjectivity and only that." in body
+    assert "They are not an atlas" in body
+    assert "3. **Algebraicity.** **Open**" in body
+    assert "$\\CC^*\\to\\CC$" in body
+    assert "$\\CC\\sqcup\\CC^*\\to\\CC$" in body
+    # the coarse-space verdict is untouched by any of this
+    assert "5. **Coarse space.** **Proved**" in body
+
+
+ISOM = "thm:coble-isom-sheaf-representable"
+ATLAS = "thm:coble-atlas"
+
+
+def test_the_isomorphism_sheaf_is_representable_and_glued_on_the_whole_locus():
+    text = MC.read_text(encoding="utf-8")
+    body = _block(text, ISOM)
+    assert "is representable by a complex space over $T$" in body
+    proof = text[text.index("#" + ISOM):text.index("#" + ATLAS)]
+    assert "every open $U\\subseteq T_a$" in proof
+    assert "countable disjoint union" in proof
+    assert "locally closed" in proof and "not closed" in proof
+    assert "clopen" in proof and "locally constant" in proof
+    assert "U_\\psi" in proof
+    assert "Yoneda" in proof and "cocycle" in proof
+    assert "No restriction of the locus" in proof
+
+
+def test_the_atlas_is_analytic_and_does_not_assert_an_algebraic_stack():
+    text = MC.read_text(encoding="utf-8")
+    body = _block(text, ATLAS)
+    assert "smooth and essentially surjective" in body
+    assert "no algebraic-space diagonal" in body
+    assert "@stacks-026O" in body
+    proof = text[text.index("#" + ATLAS):text.index("#prop:coble-moved-minus-two-class")]
+    assert "every open $U\\subseteq T$" in proof
+    assert "torsor" in proof and "Gamma_\\rho" in proof
+    assert "constant sheaf" in proof and "disconnected" in proof
+    assert "@stacks-06FS" not in proof
+    five = _block(text, FIVE_CLAUSES)
+    assert "3. **Algebraicity.** **Open**" in five
+    assert "Clause 3 is the first open one." in five
+
+
+def test_fppf_effectivity_is_not_inferred_from_base_change_stability():
+    text = MC.read_text(encoding="utf-8")
+    start = text.index("#lem:coble-moduli-functor-fppf")
+    end = text.index("#def:enriques-partial-compactification", start)
+    body = text[start:end]
+    assert "is not proved and is withdrawn" in body
+    assert "@stacks-08J0" in body and "@stacks-08KE" in body
+    assert "@stacks-0ADV" in body
+    assert "descended algebraic space is again a projective scheme" in body
+    assert "@qst:coble-projective-return" in body
+    assert "effective" in body
+
+
+POLARIZED_RETURN = "lem:coble-fppf-invariant-polarization"
+ANTI_POLARIZATION = "prop:anti-bicanonical-is-not-a-polarization"
+PROJECTIVE_RETURN = "qst:coble-projective-return"
+
+
+def test_the_polarized_return_checks_each_descent_hypothesis():
+    text = MC.read_text(encoding="utf-8")
+    body = _block(text, POLARIZED_RETURN)
+    assert "relatively ample" in body and "line-bundle descent datum" in body
+    proof = text[text.index("#" + POLARIZED_RETURN):text.index("#" + ANTI_POLARIZATION)]
+    for tag in ["@stacks-0ADV", "@stacks-0D1G", "@stacks-0DFQ", "@stacks-04W8",
+                "@stacks-0D3C", "@stacks-0D36", "@stacks-01VW", "@stacks-0BCL"]:
+        assert tag in proof, tag
+    assert "@stacks-023T" not in proof
+    assert "scheme-only Proposition 35.5.2" in proof
+    assert "finite presentation" in proof
+    assert "fpqc covering of algebraic spaces" in proof
+
+
+def test_anti_bicanonical_is_not_a_polarization():
+    text = MC.read_text(encoding="utf-8")
+    body = _block(text, ANTI_POLARIZATION)
+    assert "(-K_S)^2=K_S^2=-1<0" in body
+    assert "(-2K_S)^2=C^2=-4<0" in body
+    proof = text[text.index("#" + ANTI_POLARIZATION):text.index("#" + PROJECTIVE_RETURN)]
+    assert "Nakai" in proof
+
+
+def test_the_projective_return_is_one_statement_for_the_original_functor():
+    text = MC.read_text(encoding="utf-8")
+    body = _block(text, PROJECTIVE_RETURN)
+    assert "original flat projective Coble-cover functor" in body
+    assert "descended proper flat algebraic space" in body
+    assert "projective over $Y$" in body
+    assert "No invariant polarization is added" in body
+    assert "exact hypotheses" in body
+
+
+def test_the_deformation_claim_keeps_the_cover_and_does_not_assert_stack_smoothness():
+    text = MC.read_text(encoding="utf-8")
+    body = _block(text, "prop:coble-stack-smooth-connected")
+    assert "H^2(S_b,T_{S_b})\\cong H^0(S_b,\\Omega^1_{S_b}\\otimes K_{S_b})^*" in body
+    assert "**not** $H^0(S_b,\\Omega^1_{S_b})^*$" in body
+    assert "Deformations of $S_b$ are therefore unobstructed, and $\\mcM_\\Co$ is a smooth stack" not in body
+    assert "withdrawn" in body and "algebraicity" in body
+
+
+def test_the_hodge_rank_claim_is_only_the_distinct_centre_case():
+    text = MC.read_text(encoding="utf-8")
+    body = _block(text, "prop:coble-stack-smooth-connected")
+    assert "distinct centres" in body
+    assert "nine ordinary nodes and one ordinary cusp" in body
+    assert "$10$, not $20$" in body
+    assert "full #807 object class" in body
+    assert "infinitely near" in body

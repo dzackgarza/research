@@ -1,0 +1,1254 @@
+research#806 -- acceptance item by item
+
+Commits: b295afdf05 (the corrected lemma and the first recheck), 6caa489ac9 (the
+first report), e82f2521af with c508c596c0 (the proof without stalks; the S_10 product
+order), 63bc64d349 (the transport systems, the S_10 derivation, and the citing
+results stated for what is proved), 835db4f69a (the descent of the tautological
+system and the comparison of monodromies), 0bd48d7aa3 (this report records the
+descent and the comparison), fc7fd874ea (the five citers state their exact status,
+and the index-two sentence is withdrawn), 324a7f8dad (the statements made
+conditional on the descent, and the first seven rows below, rebased onto
+272d2b00f9), a1ccad7119 (the rebase onto #807), 1227d63ace (the free-action
+replacement after review hyjh), 1227d63ace with e84e964da8 (the three repairs
+after review ltn3, comment 7059864089), and the commit that carries this report,
+which is the LTN4 round: the tower paragraph's "Gamma_Co = Otilde^+ up to
++-id" claim and the thirteen sites that depended on it; and, in a later commit
+of this file, the VG3H round: the diagram's |W(E_8)| label, the universal
+quotient-monodromy sentence, the no-count-transfer sentence, and two Noohi
+citation numbers; and, in a later commit, the WEJM round: the cusp page's
+proof sentence that denied count coincidence, and the same overstatement
+in cusps-over-sterk-cusps.md:3; and, in a later commit, the YFDV round: the
+cusp page's four 0-cusps and their semifans renamed from F_{Co,2} to
+D(T_Co)/R, with the same renaming carried to its citers; and, in a later commit, the
+3NFL round: the Case B verification made cusp by cusp at :185, and the ledger
+row at open-questions.md:56; and, in a later commit, the PBNM round: the cusp
+theorem's item (1) and proof reconciled cusp by cusp on the record's evidence,
+the pseudo-ample fibre hypothesis restored at moduli-construction.md:2417, and
+the orbit-count clause at discriminant-orbits:272; and, in a later commit, the
+WZ6B round: the matched-inertia hypothesis (v) named in
+thm:gamma-co-labelled-equality, its proof, and its list of remaining
+hypotheses.
+Paths are relative to the repository root; line numbers are those of the commit
+that carries this file.
+
+CURRENT STATUS AFTER WZ6B (review wz6b of research#806)
+
+  Review wz6b reads the 45 citer sites of the scope comment: 43 MET and 2 NOT
+  MET, the replacement lemma MET.  Both open sites are in
+  thm:gamma-co-labelled-equality and its proof, and both are repaired here;
+  nothing else was touched.
+
+  THE DEFECT.  The theorem assumed (i)--(iv) and concluded that the period map
+  is an equivalence of stacks with the isotropy {id, iota} on both sides, and
+  clause 2 then transported the quotient's monodromy to M^gen across it.  The
+  matched-inertia statement --- that the stabiliser of a period in
+  Otilde^+(T_Co) is the automorphism group of the object --- is none of
+  (i)--(iv): the page records it as unavailable at :2101 (item 1, "an
+  equivalence of stacks onto its image with the inertia groups matched"), as
+  (H1) of @prop:coble-monodromy-is-the-marking-group at :2052, and as the
+  clause of @thm:coble-period-map-of-the-stack(2)'s proof at :2023 ("not an
+  isomorphism on groupoids without matching that isotropy").  So both clauses
+  were unproved under the hypotheses as named.
+
+  SITES REPAIRED, in moduli-construction.md.
+
+  1. The hypothesis list of the statement, after (iv): "(v) the period
+     stabiliser is the isotropy: for every pi in U^gen the stabiliser
+     Stab_{Otilde^+(T_Co)}(pi) is {id, iota}, which is the automorphism group
+     of a labelled object of M^gen with period pi."
+  2. The descent sentence after it: "The descent that this statement formerly
+     assumed as a further hypothesis is @thm:quotient-local-system-descent:
+     ... That theorem does not supply (v): it identifies the transports of the
+     descended system on the quotient with those computed per loop, and states
+     nothing about the automorphisms of the objects of M^gen."  The old
+     sentence called the descent "(v)", which the new numbering takes.
+  3. Clause 1: "under (v), the period map induces an equivalence ... with the
+     isotropy {id, iota} on both sides".  Clause 2: "under (v), the monodromy
+     representation of T_Co on pi_1(M^gen) has image Otilde^+(T_Co)".
+  4. The proof of clause 1: the matched-inertia step is now named where the
+     old text passed over it.  OLD: "So the period map is an equivalence onto
+     an open substack with the same isotropy, and U^gen is its image."  NEW:
+     "What that gives is a bijection on objects and on the morphisms between
+     distinct objects: it does not compare the automorphism group of an object
+     with the stabiliser of its period, and a stabiliser of pi in G larger than
+     {id, iota} would leave the period map non-faithful at that object while
+     identifying no two distinct objects.  That the two groups agree at every
+     period of U^gen is (v), and it is not a consequence of (i)--(iv):
+     @thm:coble-period-map-of-the-stack(2) gives a bijection on objects and, as
+     its proof records, no statement about automorphisms without matching the
+     isotropy.  Under (v) the period map is an equivalence onto an open
+     substack with the same isotropy at every point, and U^gen is its image."
+  5. The proof of clause 2: the transport across the equivalence is now
+     attributed.  Added after the per-loop and descent computations: "Both
+     computations are statements about [U^gen/G], and carrying them to M^gen
+     is the equivalence of clause 1, hence rests on (v): at a period whose
+     stabiliser in G is larger than {id, iota} the two stacks differ at that
+     object, the two fundamental groups are not identified, and the image is a
+     statement about the quotient only."
+  6. The list of remaining hypotheses (:2299, now :2300) includes it: after the
+     openness and connectedness clause, "and it needs (v), the matched-inertia
+     comparison, which the list (i)--(iv) did not carry: (i)--(iv) give a
+     bijection on objects and say nothing about automorphisms, and (v) is the
+     statement that the stabiliser of every period of U^gen is {id, iota},
+     which no source read supplies --- it is the input recorded as unavailable
+     at @rmk:findings-ii-iii-and-the-isotropy and carried as (H1) of
+     @prop:coble-monodromy-is-the-marking-group.  The descent adds no
+     hypothesis: ..." (the sentence ending "formerly called (v)" is reworded,
+     since (v) is now the inertia comparison).
+
+  NOT TOUCHED.  No other site was edited.  No other page of the volume states
+  the hypotheses of this theorem: a search for "gamma-co-labelled-equality"
+  finds only its own title line, and a search for "(i)--(iv)" finds nothing
+  else, so no citer had to be reworded with it.  The later global theorem
+  keeps (A1)--(A4), and (A2) is where the same inertia input sits there.
+
+  CHECKS RUN.
+  - scripts/docs_check.py --source on this tree and on a base worktree at the
+    same commit (e694d7b8d6): byte-identical output, the same 29 pre-existing
+    "citation is in no bibliography" findings, none on a touched page.
+  - every @label in the file resolves, including the two named above.
+  - scripts/docs_dependency_graph.py over writing/.book on base and on this
+    tree: 1904 blocks, 1117 cited results, 9527 edges and 123 findings on both,
+    the finding sets equal up to rotation of one pre-existing cycle; the two
+    labels newly named in the statement are already cited in that block, so no
+    edge and no finding is new.
+
+  NOT RUN.  tests/engineering/*.py: the conftest imports dzack_research, so
+  collection fails on a plain checkout.  No render was made; CI's gate is not
+  visible from the session and is not claimed.
+
+STATUS AFTER PBNM (superseded by the section above; review pbnm of research#806 at 93f165c867)
+
+  Three items of review pbnm are this issue's; the fourth, the coined terms,
+  was removed by a separate sweep and nothing of it was touched here.  All
+  three are repaired in this commit.
+
+  1. cusp-diagram-calculations.md, thm:coble-pair-semifan: the statement and
+     its proof now agree cusp by cusp, and the two incompatible verdicts on
+     coincidence are resolved against the record the proof itself names.
+
+     The evidence first.  (B5) of @thm:semifan-restriction fails exactly when
+     two roots of different relevance cut the same restricted wall.  The page
+     says both that no two walls coincide (:268, and (2) at :279, "the five
+     irrelevant roots cut five walls, no two walls coinciding") and that at
+     cusp 5 a wall coincides (:277, :313, :325).  The record that :268 names,
+     computations/reports/coble_672-zero-cusp-sterk-two-run.txt:59-71, prints
+     for Sterk 5 "printed 14  multiples of delta [9]  projected 13
+     proportional pairs []", and separately lists the degenerate-span pairs
+     (8,14) and (10,14) that :268 says are not proportionality.  So the record
+     supports :268: no two restricted walls coincide at any of the four
+     cusps, hence (B5) holds at all four, and the sole hypothesis of Case B
+     that fails at cusp 5 is (B1), δ itself being an irrelevant root there.
+
+     (a) :255, item (1) of the theorem.  OLD: "The chamber and the marking. At
+         each of the four the chamber is the facet ... and the marking is
+         inherited: a wall of C_delta is relevant exactly when the root of C
+         that cuts it is relevant".  NEW, retitled "The chamber and the
+         marking, cusp by cusp": the chamber is the facet at each of the four
+         and no two of its walls coincide, so each wall is cut by roots of one
+         relevance only; at the three cusps over 2, 3 and 4 the marking is
+         inherited and Case B applies, so F^k cap delta^perp is the generalized
+         Coxeter semifan of C_delta with that marking; at the cusp over 5 (B1)
+         fails, Case B does not apply, the relevance of each root of C is
+         recorded in the table there, and the theorem asserts no identification
+         of F^5 cap delta^perp with the generalized Coxeter semifan of C_delta.
+     (b) :277, the verification.  OLD: "At the cusp over 5, (B1) and (B5) both
+         fail: δ is itself an irrelevant root there, and the coincident wall
+         3 = 13 = 10 carries the relevant root 3 together with the irrelevant
+         roots 10,13."  NEW: "At the cusp over 5 exactly one of them fails,
+         (B1) ... Condition (B5) holds at all four cusps, because no two
+         restricted walls coincide (:268): the roots 3, 13 and 10 project to
+         three distinct walls, and the merging of them into one wall, which an
+         earlier form of this page recorded at cusp 5, is what the test of
+         research#672 refuted (:279)."  The same line's (B5) clause for cusps
+         2-4 is reworded to "no two of the restricted walls coincide, so that a
+         wall carries one relevance only".
+     (c) :313, the proof of (1).  OLD: "The coincident walls are the parallel
+         pairs, listed in the table, and at cusps 2, 3, 4 each of them carries
+         one relevance only, which is (B5)."  NEW: "No two restricted walls
+         coincide, at any of the four cusps (:268), so no wall carries two
+         relevances and (B5) holds at all four."  And OLD: "At cusp 5 the cut
+         mirror is on that list and one wall carries roots of both relevances,
+         so Case B does not apply ..."  NEW: "At cusp 5 the cut mirror itself
+         is on the irrelevant list, so (B1) fails, Case B does not apply, and
+         the marking is not inherited there as a semifan marking ...".  The
+         opening of the clause now reads "at the three cusps where Case B
+         applies the inherited marking is the statement of
+         @thm:semifan-restriction(1) and (3)".
+     (d) :325, the remark rmk:coble-pair-semifan-marking.  OLD: "both (B1) and
+         (B5) ... fail: the cut mirror is irrelevant, so the face delta^perp is
+         one the coarsening deletes, and one restricted wall carries the
+         relevant root 3 together with the irrelevant roots 10,13."  NEW: "the
+         hypothesis (B1) ... fails: the cut mirror delta is irrelevant, so the
+         face delta^perp is one the coarsening deletes, and the relevance of
+         the roots of C is not inherited as a marking of the semifan."
+
+  2. moduli-construction.md:2417, the item-6 summary.  OLD: "For the quotient
+     stack of item 3 the kernel is trivial: K_T = pi_1(D(T_Co)^+), and
+     D(T_Co)^+ is a bounded symmetric domain, hence contractible, so the
+     monodromy representation is an isomorphism pi_1(F_S) -> Otilde^+(T_Co)."
+     NEW: "For the quotient stack of item 3, and under the pseudo-ample fibre
+     hypothesis of its presentation (@prop:coble-quotient-presentation(3)),
+     without which that presentation of the quotient is not available, the
+     kernel is trivial: ...".  This is the hypothesis the page attaches to the
+     same presentation at :1960 and :1989.
+
+  3. discriminant-orbits-of-the-coble-lattice.md:272, the last clause of
+     lem:stable-orthogonal-not-transitive.  OLD: "none of those four counts is
+     a count for Gamma_{Co,2} or for Gamma_Co."  NEW: "For Gamma_{Co,2} what
+     is proved is the inclusion Gamma_{Co,2} in R cap O^+(T_Co)
+     (lem:d2-degree-two-base(3)), so each of those four counts is a lower bound
+     for the corresponding count of Gamma_{Co,2} --- the orbits of R on these
+     lattices being those of R cap O^+(T_Co) (rmk:coble-monodromy-counts), and
+     a subgroup having at least as many orbits as the group --- and whether the
+     two counts coincide is open; for Gamma_Co the containment in
+     R cap O^+(T_Co) is not proved either, following only from
+     conj:gamma-co-stable, so no bound and no inequality is asserted for its
+     counts."
+
+  ONE OBSERVATION, NOT EDITED, for the owner of thm:coble-pair-semifan.  At
+  cusp 5 the row "no-intersection pairs" of the table (:261) reads 13,14, and
+  :313 reads "13,14 at cusp 5", while :268 gives the degenerate-span pairs at
+  that cusp as (8,14) and (10,14) "in the library's printed indices".  The two
+  may be one pair in two index conventions, figure order against library
+  order, but the page does not say so and the same ambiguity is what the
+  merged-roots history turned on.  Not changed here: settling it needs the
+  printed-root matching of the transcript, and it is #789's theorem.
+
+  CHECKS RUN.
+  - scripts/docs_check.py --source on this tree and on a base worktree at the
+    same commit (60c2d2bdb6): byte-identical output, the same 29 pre-existing
+    "citation is in no bibliography" findings, none on a touched page.
+  - every @label in the three touched files resolves to a {#...} div.
+  - scripts/docs_dependency_graph.py over writing/.book on base and on this
+    tree: 1904 blocks, 1117 cited results, 9532 -> 9534 edges, 123 findings on
+    both, the finding sets equal up to rotation of two pre-existing cycles; no
+    new finding.
+
+  NOT RUN.  tests/engineering/*.py: the conftest imports dzack_research, so
+  collection fails on a plain checkout.  No render was made; CI's gate is not
+  visible from the session and is not claimed.
+
+STATUS AFTER 3NFL (superseded by the section above; review 3nfl of research#806 at e1d6772c91)
+
+  Of the three items of review 3nfl, two are this issue's and are repaired;
+  the third is an instruction not to touch a file, and it was not touched.
+  The general connected-group clause of thm:quotient-local-system-descent is
+  research#810's.
+
+  SITES REPAIRED.
+
+  1. cusp-diagram-calculations.md:185, in rmk:coble-relevance-state.
+     OLD: "The mirror case is Case B of @thm:semifan-restriction, and at the
+     four $0$-cusps of $\bD(T_\Co)/R_{\gent}$ its hypotheses are verified one
+     by one in @thm:coble-pair-semifan, where the restricted chambers are the
+     facets of @prop:facet-angles-aegs."  That contradicts the page's own
+     proof, which verifies the hypotheses at three cusps and records that two
+     of them fail at the fourth (:277: "The hypotheses of Case B ... hold at
+     the cusps over 2, 3 and 4 ... At the cusp over 5, (B1) and (B5) both
+     fail"; :325 the same, in the last paragraph of the theorem's proof).
+     NEW: "at three of the four $0$-cusps of $\bD(T_\Co)/R_{\gent}$, those
+     over Sterk's $2$, $3$ and $4$, its hypotheses are verified one by one in
+     @thm:coble-pair-semifan, where the restricted chambers are the facets of
+     @prop:facet-angles-aegs.  At the cusp over $5$ two of them, (B1) and
+     (B5), fail, so what is defined there is the intersection
+     $\mathcal F^{5}\cap\delta^{\perp}$ (the last paragraph of the proof of
+     @thm:coble-pair-semifan)."  The three passages now agree cusp by cusp.
+
+  2. writing/open-questions.md:56, the status-ledger row.
+     OLD: "@prob:direct-semifan (answered at the four $0$-cusps of
+     $F_{\Co,2}$: @thm:coble-pair-semifan)".
+     NEW: "@prob:direct-semifan (answered at the four $0$-cusps of
+     $\bD(T_\Co)/R_{\gent}$: @thm:coble-pair-semifan; the $0$-cusps of
+     $F_{\Co,2}$ map onto these four, and whether one of them splits is open,
+     @lem:d2-degree-two-base(3))".  This matches the section heading and the
+     theorem title at :228 and :239 of the cusp page.
+
+  3. writing/talks/2026-07 PCRM/pcrm_pres.tex: NOT TOUCHED, as instructed.
+     It is the owner's record of a past talk, not a page of the volume.  No
+     site in it was edited, and no claim in it was counted in the searches
+     below.
+
+  SEARCHES RUN FOR THE SAME CLAIM.
+
+  - "Case B of @thm:semifan-restriction": three sites besides :185.  :277 and
+    :325 say what is proved and are unchanged.  coble-heegner-research-
+    report.md:2882 says "All hypotheses of Case B ... hold" for the candidate
+    at Sterk cusp $2$ only, in the proof of that cusp's nine-wall chamber, and
+    is correct as it stands.
+  - "hypotheses are verified" and "verified one by one": no other site.
+  - "answered at the four $0$-cusps" and "at the four $0$-cusps of":
+    writing/open-questions.md:56 was the only remaining site of that shape
+    after the YFDV round; the others already name $\bD(T_\Co)/R_{\gent}$.
+
+  TWO OBSERVATIONS, NOT EDITED, FOR THE OWNER OF thm:coble-pair-semifan.
+
+  (a) The page asserts at :277 and at :325 that at cusp $5$ "the coincident
+      wall $3\equiv13\equiv10$ carries the relevant root $3$ together with the
+      irrelevant roots $10,13$", which is how (B5) is said to fail there.
+      But :268 of the same proof says "no two walls coincide: the record
+      prints for each of the four cusps the projected walls together with the
+      pairs whose normals are proportional, and that set is empty at all
+      four", and the record it names,
+      computations/reports/coble_672-zero-cusp-sterk-two-run.txt:59-71,
+      prints "proportional pairs []" at Sterk 2, 3, 4 and 5.  Either the
+      recorded prohibition is what fails, or the coincidence is not one of
+      projected normals; the two passages cannot both be right as worded, and
+      deciding it is #789's, so neither was changed here.
+  (b) Item (1) of the theorem (:255) says "At each of the four ... the marking
+      is inherited", while the last paragraph of its proof (:325) says "it is
+      not the generalized Coxeter semifan of the restricted diagram with an
+      inherited marking, and this theorem asserts no such identification at
+      that cusp" of cusp $5$.  The statement and its proof therefore still
+      disagree at that cusp; the repair of :185 above follows the proof, and
+      item (1) is left for #789 to settle.
+
+  CHECKS RUN.
+  - scripts/docs_check.py --source on this tree and on a base worktree at the
+    same commit (b2b5b4a778): byte-identical output, the same 29 pre-existing
+    "citation is in no bibliography" findings, none on a touched page.
+  - every @label in the two touched files resolves to a {#...} div.
+  - scripts/docs_dependency_graph.py over writing/.book on base and on this
+    tree: 1904 blocks, 1116 cited results, 9529 edges and 124 findings on both,
+    the finding sets equal up to rotation of two pre-existing cycles; no new
+    edge and no new finding.
+
+  NOT RUN.  tests/engineering/*.py: the conftest imports dzack_research, so
+  collection fails on a plain checkout.  No render was made; CI's gate is not
+  visible from the session and is not claimed.
+
+STATUS AFTER YFDV (superseded by the section above; review yfdv of research#806 at a177886c0f)
+
+  Review yfdv accepts the C:304 and cusps-over-sterk-cusps.md:3 repairs and
+  reports that vmuk has since taken M:1104 to thm:quotient-local-system-descent
+  (8f17a013db), so that site is not this issue's.  What remains is that the
+  cusp page assigned to F_{Co,2} the four 0-cusps and their semifans that
+  thm:coble-pair-semifan computes for D(T_Co)/R.  For Gamma_{Co,2} only
+  Gamma_{Co,2} in R cap O^+ is proved, which gives a surjection from
+  Gamma_{Co,2}-orbits onto R-orbits and no splitting statement.
+
+  SITES REPAIRED IN cusp-diagram-calculations.md.
+
+  1. :228, the section heading.  OLD: "The generalized Coxeter semifan at the
+     0-cusps of F_{Co,2}".  NEW: "... at the four 0-cusps of D(T_Co)/R_gent".
+     The id sec-coble-pair-semifan is unchanged, so its cross-references
+     still resolve.
+  2. :239, the theorem title.  OLD: "... of the Coble stable pairs at each
+     0-cusp of F_{Co,2}".  NEW: "... at each 0-cusp of D(T_Co)/R_gent".
+  3. :185, the prose that sends the reader to the theorem.  OLD: "at the four
+     0-cusps of F_{Co,2} its hypotheses are verified one by one in
+     thm:coble-pair-semifan".  NEW: "at the four 0-cusps of D(T_Co)/R_gent".
+  4. :235, the section's opening prose.  OLD: "The semifan at a 0-cusp of
+     F_{Co,2} is not formed from a divisor of the Coble surface ...".  NEW:
+     "The semifan at a 0-cusp of D(T_Co)/R_gent is not formed ...", followed by
+     the one direction that is proved: "The 0-cusps of F_{Co,2} are not
+     computed here, one direction of the comparison being all that is proved:
+     Gamma_{Co,2} in R_gent cap O^+ (lem:d2-degree-two-base(3)), so the
+     quotient map D(T_Co)/Gamma_{Co,2} -> D(T_Co)/R_gent carries each 0-cusp of
+     F_{Co,2} onto one of these four, and whether one of the four splits into
+     several is open."
+  5. :242, item (0) of the theorem, aligned with the same standard.  OLD: "the
+     same four are not identified as the 0-cusps of F_{Co,2} ... : that
+     transfer would need the identification Gamma_{Co,2} = R cap O^+, which is
+     false".  NEW: "they are not the 0-cusps of F_{Co,2} = D(T_Co)/Gamma_{Co,2},
+     which sit over them: ... every R_gent-orbit is a union of Gamma_{Co,2}-
+     orbits, the induced map from the 0-cusps of F_{Co,2} onto these four is
+     surjective, and the count for F_{Co,2} is at least four.  Whether one of
+     the four splits is open: the identification Gamma_{Co,2} = R cap O^+,
+     which would make the two counts equal, is false."
+  6. :329, the scope remark.  OLD: "The theorem gives the semifan at the four
+     0-cusps of F_{Co,2}, which is the datum a semitoroidal compactification of
+     F_{Co,2} consumes at its 0-cusps."  NEW: the four 0-cusps are those of
+     D(T_Co)/R_gent, "the datum a semitoroidal compactification of F_{Co,2}
+     consumes at its 0-cusps once a splitting is known", and then what is
+     proved for F_{Co,2} itself: the quotient map carries each of its 0-cusps
+     onto one of these four, the count is at least four, and whether one of the
+     four splits is open.
+
+  FURTHER "of F_{Co,2}" CLAIMS, FOUND AND REPAIRED.  The other cusp pages of
+  the cusp-correspondence directory were searched: cusp-diagrams-by-moduli-
+  space.md and enriques-to-coble-cusp-correspondence.md carry no claim of this
+  shape.  Outside that directory the same claim is made by citers of the
+  renamed theorem, and each is now renamed to the group it computes:
+
+  7. cusp-correspondence-morphism-chain.md:84.  OLD: "each of Sterk's cusps 2
+     to 5 carries a 0-cusp of F_{Co,2} with boundary lattice (9,9,1)_1, by
+     thm:coble-pair-semifan(0) ...".  NEW: "carries a 0-cusp of
+     D(T_Co)/R_gent ... --- the 0-cusps of F_{Co,2} sit over these four, and
+     whether one of the four splits is open (lem:d2-degree-two-base(3))".
+  8. cusp-correspondence-morphism-chain.md:103.  OLD: "That each is a 0-cusp
+     of F_{Co,2} over the cusp named by the same vector is
+     lem:cusp-map-of-a-period-lattice-embedding ...".  NEW: "a 0-cusp of
+     D(T_Co)/R_gent".
+  9. coble-heegner-research-report.md:1624.  OLD: "the four 0-cusps of
+     F_{Co,2} and the one 0-cusp of F^un have one and the same cusp lattice".
+     NEW: "the four 0-cusps of D(T_Co)/R_gent and the one 0-cusp ...".
+ 10. coble-heegner-research-report.md:1722.  OLD: "at the four cusps of
+     F_{Co,2}" (heading).  NEW: "at the four cusps of D(T_Co)/R_gent".
+ 11. coble-heegner-research-report.md:1976.  OLD: "At the four 0-cusps of
+     F_{Co,2} the generalized semifan is a theorem ... thm:coble-pair-semifan
+     answers the three questions of this unit at each of them."  NEW: the four
+     0-cusps are those of D(T_Co)/R_gent, and "The 0-cusps of F_{Co,2} sit
+     over these four, and whether one of them splits is open
+     (lem:d2-degree-two-base(3))."
+ 12. coble-heegner-research-report.md:3004 (the status table).  OLD: "Exact
+     Coble semifans | established at the four 0-cusps of F_{Co,2} by
+     restriction, the marking inherited".  NEW: "... at the four 0-cusps of
+     D(T_Co)/R_gent ..., the marking inherited (the 0-cusps of F_{Co,2} sit
+     over them, splitting open)".
+ 13. the-heegner-line-and-the-coble-arithmetic-group.md:2933, the title of
+     prop:coble-cong-point-stabilizer.  OLD: "... and the 0-cusps of F_{Co,2}".
+     NEW: "... and the 0-cusps of D(T_Co)/(R_gent cap O^+(T_Co))", which is
+     what its clause 3 already computes.
+ 14. the-heegner-line-and-the-coble-arithmetic-group.md:2993, the title of
+     rmk:coble-plane-incidence-rows.  OLD: "... the cusps of F_{Co,2} and the
+     incidence".  NEW: "... the cusps of D(T_Co)/R_gent and the incidence".
+ 15. coble/open-problems/open-problems.md:174.  OLD: "it is a theorem at the
+     four 0-cusps of F_{Co,2}, with the marking inherited by restriction
+     (thm:coble-pair-semifan)".  NEW: "... at the four 0-cusps of
+     D(T_Co)/R_gent ... --- the 0-cusps of F_{Co,2} sit over them, and whether
+     one of the four splits is open ---".
+
+  CHECKED AND LEFT.  The phrase "Coble 0-cusp", used of a cusp of \fentwo that
+  carries Coble data (thm:coble-zero-cusp-sterk-two, cusps-over-sterk-cusps.md,
+  the heegner report, the extracted-references entry for Sterk), is a different
+  object from a 0-cusp of F_{Co,2} and is not renamed.  polarizing-divisors-
+  for-coble-moduli.md:441 already says "at the four 0-cusps of
+  D(T_Co)/R_gent".  The two remaining cusp pages and the envelopes of the
+  theorem's other items name no F_{Co,2}.
+
+  CHECKS RUN.
+  - scripts/docs_check.py --source on this tree and on a base worktree at the
+    same commit (8f17a013db): byte-identical, the same 29 pre-existing
+    bibliography findings, none on a touched page; the renamed section id and
+    the renamed theorem id both still resolve, so their cross-references and
+    the index entries are unaffected.
+  - every @label in the five touched files resolves to a {#...} div.
+  - scripts/docs_dependency_graph.py over writing/.book on base and on this
+    tree: 1904 blocks, 1116 cited results, 9527 -> 9529 edges, 124 findings on
+    both, the finding sets equal up to rotation of one pre-existing cycle; the
+    two added edges are the lem:d2-degree-two-base(3) citations in the two
+    blocks that did not carry it.
+
+  NOT RUN.  tests/engineering/*.py: the conftest imports dzack_research, so
+  collection fails on a plain checkout.  No render was made, so the renamed
+  headings and titles are not checked by a build; CI's gate is not visible from
+  the session and is not claimed.
+
+STATUS AFTER WEJM (superseded by the section above; review wejm of research#806 at b487dd8633)
+
+  Review wejm accepts the M:53 and M:1104 repairs and accepts the lower bound
+  at C:304 (lem:d2-degree-two-base(3) gives Gamma_{Co,2} in R cap O^+
+  unconditionally, and a subgroup has at least as many orbits as the group).
+  It finds one defect left in the same paragraph: "fails" and "are not counts
+  for Gamma_{Co,2}" assert a difference of counts that
+  prop:coble-monodromy-equality-false does not prove --- it proves
+  Gamma_{Co,2} != R cap O^+, and a proper subgroup can have the same number of
+  orbits as the group.
+
+  SITE REPAIRED.
+
+  1. cusp-diagram-calculations.md:304 (the proof of thm:coble-pair-semifan,
+     item (0)).
+     OLD: "The corresponding statement for Gamma_{Co,2} fails: G5 ...
+     is false ..., and so is the equality with R itself ....  So the counts of
+     this page are counts for R and for R cap O^+, and they are not counts for
+     Gamma_{Co,2}: the route recorded for that transfer ... is false, and what
+     is proved is the containment Gamma_{Co,2} in R cap O^+ ..., which makes
+     each count here a lower bound ... and not an equality.  Whether the count
+     for Gamma_{Co,2} ... coincides with these numbers is not decided on this
+     page."
+     NEW: "Gamma_{Co,2} is neither R nor R cap O^+: G5 ... is false ..., and so
+     is the equality with R itself ....  The counts of this page are counts for
+     R and for R cap O^+.  What is proved for Gamma_{Co,2} is the containment
+     Gamma_{Co,2} in R cap O^+ (lem:d2-degree-two-base(3)), which makes each
+     count here a lower bound for the corresponding count of Gamma_{Co,2} --- a
+     subgroup has at least as many orbits as the group --- and not an equality.
+     Whether each count for Gamma_{Co,2}, hence for F_{Co,2} =
+     D(T_Co)/Gamma_{Co,2}, equals the corresponding count for R cap O^+ is
+     open: the inequality of the groups does not decide it, a proper subgroup
+     having as many orbits as the group it sits in in general."
+     "fails" and "are not counts for Gamma_{Co,2}" are gone; the inequality of
+     the groups and the lower bound are kept; the equality of counts is stated
+     open rather than denied.
+
+  SEARCH OF THE OTHER CUSP PAGES FOR THE SAME OVERSTATEMENT.
+
+  2. cusps-over-sterk-cusps.md:3 carried it, and is repaired.  OLD: "Every
+     statement below names its group, and none of the counts is a count for
+     F_Co or F_{Co,2}" and, at the end of the paragraph, "... that equality is
+     false (prop:coble-monodromy-equality-false), so the counts below are not
+     asserted for F_{Co,2}."  NEW: "none of the counts is established as the
+     count for F_Co or for F_{Co,2}"; and the closing sentence now reads
+     "What is proved is the containment Gamma_{Co,2} in R cap O^+
+     (lem:d2-degree-two-base(3)), which makes each count below a lower bound
+     for the corresponding count of F_{Co,2} and not an equality, the orbits of
+     R on these lattices being those of R cap O^+ (rmk:coble-monodromy-counts);
+     whether the counts of F_{Co,2} equal those below is open."
+
+  3. cusp-diagrams-by-moduli-space.md: read; its counts are attributed to the
+     stable group at :98 and no count is transferred to Gamma_{Co,2} or
+     F_{Co,2}.  No change.
+  4. enriques-to-coble-cusp-correspondence.md: read; its counts are the 527
+     orbits of Otilde^+ (:434, :450, :459) and its Gamma_{Co,2} statements are
+     about the lifting, not about counts.  No change.
+  5. cusp-diagram-calculations.md:242, the statement of the theorem: it already
+     says that the four are "not identified as the 0-cusps of F_{Co,2} = ...
+     by this theorem" and that the transfer "would need the identification
+     Gamma_{Co,2} = R cap O^+, which is false".  That is the route-qualified
+     form and is left as it is.
+
+  ONE NEAR-MISS, NOT CHANGED, AND WHY.  lattices.md:859 (item 3 of
+  prop:coble-monodromy-equality-false) reads "No count of orbits of R_gent is
+  a count for F_{Co,2} by that route."  The qualifier "by that route" makes it
+  a statement about the route, not a denial that the numbers coincide, which is
+  the standard the review asks for; it is also the proved proposition's own
+  page and not a cusp page.  It is reported here rather than edited.
+
+  CHECKS RUN.
+  - scripts/docs_check.py --source on this tree and on a base worktree at the
+    same commit (232892c469): byte-identical output, the same 29 pre-existing
+    "citation is in no bibliography" findings, none on a touched page.
+  - every @label in the two touched files resolves to a {#...} div.
+  - scripts/docs_dependency_graph.py over writing/.book on base and on this
+    tree: 1904 blocks, 1118 cited results, 9530 edges and 124 findings on both,
+    the finding sets equal up to rotation of one pre-existing cycle; the two
+    added citations (lem:d2-degree-two-base(3), rmk:coble-monodromy-counts) are
+    already used in the blocks that receive them, so no edge and no finding is
+    new.
+
+  NOT RUN.  tests/engineering/*.py: the conftest imports dzack_research, so
+  collection fails on a plain checkout.  No render was made; CI's gate is not
+  visible from the session and is not claimed.
+
+STATUS AFTER VG3H (superseded by the section above; review vg3h of research#806, comment 7060858868)
+
+  Review vg3h accepts the route (the proved free-action replacement of #803,
+  no full descent owed by #806) and #806's line-59 repair, and names three
+  citers that still assert more than is proved: the degree label of the tower
+  diagram at M:53, the universal quotient-monodromy sentence at M:1104, and
+  the no-count-transfer sentence at C:304.  All three are repaired below; the
+  orchestrator's edge #806 <- #810 is not needed for any of them.
+
+  SITES REPAIRED, each with the old claim and its new status.
+
+  1. moduli-construction.md:53, the tikz diagram "moduli-tower".
+     OLD: the vertical arrow F_Co -> F_{Co,2} carried the label
+     "|W(E_8)|", an unconditional degree that M:59 had already ceased to
+     assert; worse, |W(E_8)| = |P| = [R_gent cap O^+ : Otilde^+] is exactly
+     the value M:59 says the degree is NOT.
+     NEW: the label is removed and the arrow is drawn unlabelled, and M:59
+     now says so in words: "No value of the degree is known, and the diagram
+     above therefore carries no degree on that arrow; in particular it is not
+     |W(E_8)| = 696 729 600, which would put Gamma_{Co,2} at
+     R_gent cap O^+ (qst:coble-monodromy-equality, false by
+     prop:coble-monodromy-equality-false)."  The diagram and its paragraph
+     now assert the same thing.
+
+  2. moduli-construction.md:1104 (qaa9's M:1054, moved).
+     OLD: "The monodromy group of a quotient [Gamma\D^+] is Gamma, so reading
+     the presentation [Otilde^+ \ D(T_Co)^+] as the labelled stack *is* the
+     equality Gamma_Co(B) = Otilde^+, which is qst:gamma-co-sign-is-realised
+     and is not proved."
+     NEW: the universal sentence is restricted to the free case and the case
+     here is stated as conditional.  In order: (i) "For a *free* quotient the
+     monodromy group of [Gamma\D^+] is Gamma
+     (@lem:orbifold-monodromy-of-a-quotient(2), with phi the defining
+     inclusion, which is injective)"; (ii) the quotient here is not free,
+     -id_{T_Co} in Otilde^+(T_Co) (prop:sign-is-a-loop-of-the-labelled-base
+     with thm:gamma-co-is-stable(1)) acting trivially on D(T_Co)^+
+     (rmk:no-loop-carries-the-sign-is-another-base(2)); (iii) "the statement
+     needed is then the descended-system clause of
+     @lem:orbifold-monodromy-of-a-nonfree-quotient(3), which is conditional on
+     the descent hypothesis (D) named there --- the descent along the
+     2-morphisms that @rmk:the-descent-stops-at-the-2-morphisms leaves open,
+     research#810, formerly item 4 of research#797.  Without (D) that lemma
+     gives the transport of each loop and not the monodromy of a local system
+     on the quotient."  The closing clause now reads "what the presentation
+     supplies unconditionally is the inclusion", so the open equality is still
+     named where it is used and nothing unconditional is claimed.
+
+  3. cusp-diagram-calculations.md:304 (the cusp-computation page).
+     OLD: "so no count here is a count for Gamma_{Co,2} or for F_{Co,2}."
+     That is too strong: the refuted equality blocks one route of transfer, it
+     does not prove that the numbers cannot coincide.
+     NEW: "So the counts of this page are counts for R and for
+     R cap O^+(T_Co), and they are not counts for Gamma_{Co,2}: the route
+     recorded for that transfer, the equality Gamma_{Co,2} = R cap O^+(T_Co),
+     is false, and what is proved is the containment Gamma_{Co,2} in
+     R cap O^+(T_Co) (@lem:d2-degree-two-base(3)), which makes each count here
+     a lower bound for the corresponding count of Gamma_{Co,2} --- a subgroup
+     has at least as many orbits as the group --- and not an equality.  Whether
+     the count for Gamma_{Co,2}, hence for F_{Co,2} = D(T_Co)/Gamma_{Co,2},
+     coincides with these numbers is not decided on this page."  What is not
+     established is now the coincidence, not the transfer; and the valid lower
+     bound is stated rather than dropped.
+
+  4. local-systems-of-lattices-and-monodromy.md:124 and :144, not one of the
+     three, but the same citation defect vg3h names in its first audit row.
+     OLD: "Noohi, Proposition 18.18" for the existence of a lift of a loop,
+     which requires the image-of-pi_1 hypothesis and so does not apply.
+     NEW: "Noohi, Definition 18.13", which is the applicable statement and is
+     the one this volume already uses for the same purpose at
+     lattices.md:228.
+
+  WHAT WAS NOT CHANGED.  No other page carries the unconditional degree label
+  or the universal quotient-monodromy sentence: grep over writing/ for
+  |W(E_8)|, for "monodromy group of a quotient", and for "no count ... is a
+  count" returns only the sites above.  The other citers vg3h marks "mostly
+  correct as conditional" are untouched.
+
+  CHECKS RUN.
+  - scripts/docs_check.py --source on this tree and on a base worktree at the
+    same commit (eaf2129572): byte-identical output, the same 29 pre-existing
+    "citation is in no bibliography" findings in other chapters, none on a
+    touched page.
+  - every @label in the three touched files resolves to a {#...} div.
+  - scripts/docs_dependency_graph.py over writing/.book on base and on this
+    tree: 1903 blocks, 1097 cited results, 9470 -> 9476 edges, 124 findings on
+    both, and the finding sets are equal up to rotation of one pre-existing
+    cycle; no new cycle and no new finding from the added citations.
+  - the tikz diagram is inside a code fence and is not read by either check;
+    the change is the deletion of one label, "|W(E_8)|", from one arrow.
+
+  NOT RUN.  tests/engineering/*.py: the conftest imports dzack_research, so
+  collection fails before any test runs on a plain checkout.  No render was
+  made, so the tikz change is not checked by a build; CI's gate is not visible
+  from the session and is not claimed.
+
+STATUS AFTER LTN4 (superseded by the section above; the repair of the "Gamma_Co = Otilde^+ up to +-id" error)
+
+  Scope of this round: the tower paragraph of moduli-construction.md said
+  "By @thm:gamma-co-is-stable, Gamma_Co = Otilde^+(T_Co) up to +-id" and
+  derived from it an inclusion Gamma_Co in Gamma_{Co,2}, the degree of
+  F_Co -> F_{Co,2}, and two divisibility statements.  thm:gamma-co-is-stable
+  proves neither equality: (1) is Gamma_Co(B) contained in Otilde^+, and (2)
+  says that neither Gamma_Co(B) = Otilde^+ nor Gamma_Co = Otilde^+ is proved.
+  "Up to +-id" was nowhere proved on the page and is deleted everywhere it
+  appeared; no proof of it exists to keep.
+
+  The rule applied at every site below: a containment, a degree or a count
+  is asserted only together with the exact hypothesis it needs, named by its
+  block -- Gamma_Co contained in Gamma_{Co,2}, or Gamma_Co = Otilde^+
+  (conj:gamma-co-stable, research#780), plus Gamma_Co = Gamma_Co(B)
+  (research#797, item 6) wherever a labelled-base statement is transferred
+  to Gamma_Co.  No policy note was added to any page; the statements and
+  their uses were repaired.
+
+  SITES REPAIRED, each with the old claim and its new status.
+
+  1. moduli-construction.md:59 (the tower paragraph after the diagram).
+     OLD: "The vertical map is F_Co -> F_{Co,2}, finite of degree
+     [Gamma_{Co,2}:Gamma_Co] once Gamma_Co in Gamma_{Co,2}.  By
+     @thm:gamma-co-is-stable, Gamma_Co = Otilde^+(T_Co) up to +-id, and
+     Otilde^+ in R_gent cap O^+ unconditionally; so Gamma_Co in
+     Gamma_{Co,2} whenever Gamma_{Co,2} contains Otilde^+, and the degree is
+     [Gamma_{Co,2}:Otilde^+], which divides |W(E_8)| = 696 729 600; it is
+     not that number ... and with Gamma_{Co,2} in Gamma_{10A_1} it is a
+     divisor of 10! whenever Otilde^+ in Gamma_{Co,2}."
+     NEW: the map and its degree are stated only under Gamma_Co contained in
+     Gamma_{Co,2}, which is named as not proved; both inputs are named as
+     open -- Gamma_Co = Otilde^+ is conj:gamma-co-stable (research#780) and
+     Otilde^+ in Gamma_{Co,2} is open at prop:d2b-index-exact; the only
+     unconditional containment stated is in the supergroup R_gent cap O^+;
+     the degree is [Gamma_{Co,2}:Otilde^+] only under those two hypotheses,
+     the divisibility by 10! only under them, and any reading off the
+     labelled base only with Gamma_Co = Gamma_Co(B) (research#797, item 6).
+     |W(E_8)| now appears only as the value the degree is NOT, with the
+     reference that settles it (qst:coble-monodromy-equality is false).
+
+  2. moduli-construction.md:31 (the page-wide promise on item 6).
+     OLD: "no statement below uses it except @thm:gamma-co-is-the-stack-
+     monodromy, where it is hypothesis (A4)."
+     NEW: "... except @thm:gamma-co-is-the-stack-monodromy, where it is
+     hypothesis (A4), and the paragraph after the diagram below, which
+     states what the degree of the vertical map would be under it."  The
+     promise is now exact; it was the paragraph of site 1 that made the old
+     wording false.
+
+  3. moduli-construction.md:2107 ("What is proved, and what is not").
+     OLD: "The inclusion Gamma_Co in Otilde^+(T_Co) is
+     @thm:gamma-co-is-stable(1), and equality is the conjecture of
+     @conj:gamma-co-stable."
+     NEW: the inclusion proved is Gamma_Co(B) in Otilde^+, a statement about
+     the labelled presentation; for Gamma_Co itself what is proved is
+     Gamma_Co in O^+ (lem:monodromy-is-spinor-positive), the containment in
+     the discriminant kernel being exactly the content of
+     conj:gamma-co-stable, whose stack reading this is.
+
+  4. moduli-construction.md:1842, :1848, :1852, :1857 and the proof at
+     :1866 and :1868 (prop:d2b-index-exact).
+     OLD: the standing hypothesis was Gamma_{Co,2} in R_gent, and under it
+     (2) displayed [R_gent:Gamma_{Co,2}] = 2|P|/[Gamma_{Co,2}:Otilde^+],
+     (3) asserted the chain Otilde^+ in Gamma_{Co,2} in Gamma_Co(B-bar) in
+     Gamma_{10A_1} with 384 <= [R_gent:Gamma_{Co,2}] <= 1 393 459 200, and
+     (4) made the index a divisor of 10!; the proof of (3) cited
+     @lem:d2b-family-over-the-labelled-base(4) for the first containment,
+     which that lemma explicitly does not assert.
+     NEW: Otilde^+ in Gamma_{Co,2} is named in the proposition's hypothesis
+     line together with the two open inputs it needs (Gamma_Co(B) =
+     Otilde^+, qst:gamma-co-sign-is-realised, and Gamma_Co(B) in
+     Gamma_{Co,2}), (2)--(4) are each marked as holding  under that
+     containment, and the proof of (3) now says that the containment is
+     unproved, that the labelled-base lemma's group is Gamma_Co(B) and
+     asserts neither input, and that what is unconditional is
+     Gamma_{Co,2} in Gamma_Co(B-bar) in Gamma_{10A_1}.
+
+  5. lattices.md:908 (rmk:gamma-co-counts).
+     OLD: "The cusp counts of F_Co are the counts for the stable subgroup:
+     F_Co = D(T_Co)/Gamma_Co has the coarse space of D(T_Co)/Otilde^+
+     (@thm:gamma-co-is-stable), hence 527 0-cusps and 189 720 1-cusps."
+     NEW: conditional on Gamma_Co = Otilde^+ (conj:gamma-co-stable,
+     research#780); the unconditional statements are Gamma_Co in O^+
+     (lem:monodromy-is-spinor-positive) and Gamma_Co(B) in Otilde^+, so 527
+     and 189 720 are lower bounds for the counts of Gamma_Co(B) and the
+     counts for Gamma_Co follow only through Gamma_Co = Gamma_Co(B)
+     (research#797, item 6).  This makes the remark agree with
+     lattices.md:600, which already said the stable counts are not proved
+     to be counts for F_Co.
+
+  6. the-heegner-line-and-the-coble-arithmetic-group.md:2907
+     (thm:coble-plane-orbit-counts, last sentence).
+     OLD: "the count for Gamma_Co is 189 720, since Gamma_Co is the stable
+     group on the labelled base (@thm:gamma-co-is-stable)."
+     NEW: the count for Gamma_Co is 189 720 only under Gamma_Co = Otilde^+
+     together with Gamma_Co = Gamma_Co(B); on the labelled base 189 720 is a
+     lower bound for the count of Gamma_Co(B).
+
+  7. coble-heegner-research-report.md:1055.
+     OLD: "has Gamma_Co(B) = Otilde^+(T_Co) on the labelled presentation
+     (@thm:gamma-co-is-stable)".
+     NEW: "has Gamma_Co(B) contained in Otilde^+(T_Co) ... (1), the reverse
+     inclusion and the equality being @qst:gamma-co-sign-is-realised".
+
+  8. coble-heegner-research-report.md:2399.
+     OLD: "... on the labelled base Gamma_Co and Otilde^+(T_Co) being equal
+     up to +-id (@thm:gamma-co-is-stable)."
+     NEW: "... the group of the labelled base being only Gamma_Co(B)
+     contained in Otilde^+, with the equality itself open
+     (qst:gamma-co-sign-is-realised) and its transfer to Gamma_Co the
+     comparison of research#797, item 6."
+
+  9. lattice-and-diagram-conventions.md:146.
+     OLD: "The equality Gamma_Co = Otilde^+(T_Co) is @conj:gamma-co-stable,
+     proved on the labelled base (@thm:gamma-co-is-stable)."
+     NEW: the equality is the conjecture; on the labelled base only the
+     inclusion Gamma_Co(B) in Otilde^+ is proved, the reverse being
+     qst:gamma-co-sign-is-realised, and identifying that group with Gamma_Co
+     is research#797, item 6.
+
+ 10. lattice-and-diagram-conventions.md:147, last clause.
+     OLD: "for Gamma_Co, the count 527 (@thm:gamma-co-is-stable)."
+     NEW: "for Gamma_Co, the count 527 under Gamma_Co = Otilde^+
+     (@conj:gamma-co-stable, @thm:coble-zero-cusp-count(2))."
+
+ 11. polarizing-divisors-for-coble-moduli.md:466.
+     OLD: "On the labelled base ... the group is Otilde^+(T_Co) up to +-id
+     (@thm:gamma-co-is-stable): so every class of S_Co is invariant under the
+     monodromy, F_Co maps finitely to D/Gamma_P and to D/R_gent, each of the
+     two structures is defined on F_Co itself, and its Baily--Borel boundary
+     is that of the stable quotient."
+     NEW: the group of the labelled base is Gamma_Co(B) and only its
+     inclusion in Otilde^+ is proved; the paragraph's statements for F_Co
+     hold under Gamma_Co = Otilde^+ (research#780), and reading them off the
+     labelled base needs Gamma_Co = Gamma_Co(B) (research#797, item 6).
+
+ 12. dissertation/GAPS.md:1029.
+     OLD: "the equality Gamma_Co = O~+(T_Co) is a theorem on the labelled
+     base (thm:gamma-co-is-stable), so the section applies to the monodromy
+     group."
+     NEW: the equality is open (conj:gamma-co-stable), the labelled base
+     proving only Gamma_Co(B) <= O~+(T_Co) (thm:gamma-co-is-stable(1)), so
+     the section applies to the monodromy group only under that equality
+     together with Gamma_Co = Gamma_Co(B) (research#797, item 6).
+
+ 13. dissertation/GAPS.md:1333.
+     OLD: "Gamma_Co = O~+(T_Co) on the labelled base (thm:gamma-co-is-stable),
+     so the two agree."
+     NEW: Gamma_Co = O~+(T_Co) is conj:gamma-co-stable, proved on the
+     labelled base only in one direction, Gamma_Co(B) <= O~+(T_Co), with
+     Gamma_Co = Gamma_Co(B) the comparison of research#797, item 6, so the
+     two agree under that conjecture only.
+
+  SITES THAT ALREADY CARRIED THE CONDITION, READ AND LEFT UNCHANGED:
+  moduli-construction.md:395, :400, :505-:507, :520, :1097, :1110, :1253,
+  :1277, :1659, :1801, :1813, :2072, :2101, :2297 and :2303;
+  lattices.md:403 and :600; the-heegner-line:1706, :2000 and :2723;
+  open-questions.md:38 and :41.  thm:gamma-co-is-the-stack-monodromy keeps item 6 as (A4) and
+  nothing else.
+
+  FLAGGED, NOT EDITED (owned by research#779: ksba.md and the cusp pages).
+
+  a. ksba.md:538: "It is not the monodromy group Gamma_Co of
+     @def:gamma-co-groups, which equals the stable subgroup Otilde^+(T_Co) on
+     the labelled base (@thm:gamma-co-is-stable)."  The clause names the wrong
+     group for the equality and the wrong clause of the theorem: the labelled
+     base gives Gamma_Co(B) contained in Otilde^+, not an equality, and not
+     Gamma_Co.
+  b. cusp-correspondence/enriques-to-coble-cusp-correspondence.md:318: "By
+     @thm:gamma-co-is-stable, Gamma_Co = Otilde^+(T_Co) up to +-id, so
+     condition (2) of @prop:gamma-co-strong-lifting holds."  Condition (2) is
+     Gamma_Co contained in Otilde^+, which is what the page's own
+     prop:gamma-co-strong-lifting takes as hypothesis (:293) and leaves open;
+     the proof of its corollary cannot discharge it by citation.  The same
+     page :285 has the same clause in the proof ("that inclusion is proved on
+     the labelled base, where the two groups are equal up to +-id"), and its
+     surrounding sentence is otherwise correct: it says the inclusion for
+     Gamma_Co is not asserted without it.
+
+  CHECKS RUN.
+  - scripts/docs_check.py --source on this tree and on a base worktree at the
+    same commit: byte-identical output, 29 pre-existing "citation is in no
+    bibliography" findings in other chapters, none on a touched page.  So no
+    citation, cross-reference, block link or macro finding was added.
+  - every @label in the seven touched files resolves to a {#...} div in the
+    tree (script check over writing/**/*.md).
+  - scripts/docs_dependency_graph.py over writing/.book on the base and on
+    this tree: 1900 blocks, 1092 cited results, 9398 -> 9405 edges, 123
+    findings on both, and the finding sets are equal up to rotation of the
+    two pre-existing cycles in moduli-construction.md; no new cycle, no new
+    finding.
+  - the pinned strings of tests/engineering/test_coble_a13_acceptance.py:716
+    ("The vertical map is $F_{\Co}\to F_{\Co,2}$") and of
+    test_coble_a2_acceptance.py's equality scan were checked against the new
+    text: still present, and no new occurrence of the equality outside the
+    conjecture's own block.
+
+  NOT RUN.  tests/engineering/*.py: the conftest imports dzack_research,
+  which a plain checkout does not have (ModuleNotFoundError before collection),
+  so the suite is not evidence here.  CI's gate is not visible from the
+  session and is not claimed.
+
+STATUS AFTER LTN3 (superseded by the section above; the line numbers are those of its own commit)
+
+  The three defects named in review ltn3 are repaired.
+
+  1. @lem:orbifold-monodromy-of-a-nonfree-quotient(2), second exact
+     sequence: lattices.md:238 now uses the homomorphism
+     ker rho -> ker phi, lambda |-> psi(lambda)^{-1}, because psi is an
+     anti-homomorphism.  It is onto since psi is onto, and its kernel is
+     ker psi = pi_1(U~,x~); the proof at :240 states that derivation and
+     the sequence follows.  The loop-lifting citation in the same proof is
+     corrected from Noohi Proposition 18.18 to Definition 18.13, the source
+     for an arbitrary loop's lift.
+
+  2. @thm:gamma-co-is-the-stack-monodromy: research#797 item 6 is now the
+     named hypothesis (A4) at moduli-construction.md:2290.  It identifies
+     the generic substack and its local system with the generic labelled
+     stack and the local system of the universal family, in group form
+     Gamma_Co = Gamma_Co(B) on the generic locus.  The proof invokes it at
+     :2297 in the opening of the chain and in step (f); the ledger row is
+     at :2313, and "what remains owed" at :2324 now lists (A1)--(A4).
+     The page-wide promises at :31, :1165 and :1256 now say that the only
+     use of item 6 is hypothesis (A4) of this theorem.
+
+  3. @lem:d2-local-system(4): the asserted containment
+     Gamma_Co(B-bar) contains Gamma_Co is deleted.  The clause at
+     moduli-construction.md:1227 now asserts only the proved
+     Gamma_Co(B) contained in Gamma_Co(B-bar), from the pullback
+     T_B-bar|_B = T, and says that no containment involving Gamma_Co is
+     asserted; Gamma_Co contained in Gamma_Co(B-bar) would follow only from
+     Gamma_Co = Gamma_Co(B), research#797 item 6, which is not proved.
+     The proof at :1232 gives the pullback and base-change argument.  The
+     index paragraph at :507 now names the index
+     [Gamma_Co(B-bar):Gamma_Co(B)] rather than an index involving Gamma_Co.
+     This agrees with lattices.md:549, which says the same and records
+     research#797 item 6 as the missing input.
+
+  The free-action replacement remains MET as in the previous round, and the
+  non-free descended-system conclusion remains conditional on research#797
+  item 4.  No corrected-and-proved general non-free lemma is claimed; the
+  open inputs named above stay open.
+
+HISTORICAL ROUNDS (the line numbers and dispositions below predate this round;
+superseded by CURRENT STATUS above)
+
+ACCEPTANCE (one disjunctive item, quoted from the issue)
+
+  "the lemma is replaced by the proved free-action statement of #803
+  (local-systems-of-lattices-and-monodromy.md, at research 14830a5d6b), or corrected
+  and proved, and every result that cites it is rechecked."
+
+  SUPERSEDED: this was the reading of the per-loop route before the replacement.
+  The current disposition is CURRENT STATUS above.  Historically the note read:
+  the lemma proves the per-loop transport of a loop of the quotient and the two
+  exact sequences, and it asserts no local system on the quotient.  Whether the
+  programme's uses of a tautological local system on a stack are proved is a
+  separate question, and the pages answer it as conditional, with the input
+  named (the eight rows below).
+
+  The lemma is corrected and proved: lattices.md:177 (statement), :198 (proof).  It
+  posits no local system on the quotient orbifold, and it no longer calls an
+  arbitrary abelian group a lattice.  For a loop lambda the proof builds the
+  transport system on S^1 --- P = lambda^{-1}U~ is a Gamma-torsor, (P x T)/Gamma is
+  a covering of S^1 with fibre T --- and computes in it (:202): the chart torsor has
+  (0,h) ~ (1,hg^{-1}), the transport system has (0,t) ~ (1,phi(g)t), and the
+  transport is phi(g)^{-1}.  What is proved, for U~ a connected manifold, Gamma a
+  group acting properly discontinuously with finite stabilizers, U = U~/Gamma and
+  phi: Gamma -> Aut(T):
+    (1) a loop of U at x is a pair (g, gamma~); the assignment
+        lambda |-> psi(lambda)^{-1} is a surjective homomorphism
+        pi_1^orb(U,x~) -> Gamma with kernel pi_1(U~,x~), that is,
+        1 -> pi_1(U~) -> pi_1^orb(U) -> Gamma -> 1 is exact (:196);
+    (2) the representation defined by the transports is rho = phi o psi^{-1}, with
+        im rho = phi(Gamma) and ker rho = {lambda : psi(lambda) in ker phi}, and the
+        exact sequence 1 -> pi_1(U~) -> ker rho -> ker phi -> 1 (:210); for phi
+        injective, im rho = Gamma and ker rho = pi_1(U~).
+  The old form claimed im rho = Gamma and ker rho = pi_1(U~) for every Gamma-module;
+  the counterexample is research#803's, recorded at lattices.md:213
+  (rmk:orbifold-monodromy-depends-on-the-equivariant-structure): U~ a point, T = Z,
+  Gamma = C_2 acting trivially, im rho = 1, ker rho = C_2.
+
+THE CITERS AND THEIR EXACT STATUS ON THE PAGE (eight rows)
+
+  The scope decision is comment 7058559021: a citer is rechecked when the page
+  states its exact status -- proved from the corrected lemma, or conditional with
+  its open input named by issue -- and no citer is left asserting more than is
+  proved.  The corrected lemma is @lem:orbifold-monodromy-of-a-quotient
+  (lattices.md:177, proof :198).  What it is paired with is
+  @lem:tautological-system-descends (lattices.md:218, proof :228), whose scope is
+  stated in @rmk:the-descent-stops-at-the-2-morphisms (lattices.md:239): pullbacks
+  along maps from topological spaces, not the 2-morphisms of the site.  That gap
+  is research#797, item 4, and it is named as an input in every statement below
+  that calls the descended object a local system on a stack.  Rows 1-5 are the
+  citers ai05 named; rows 6-7 are the direct sites drl1 added; row 8 is the
+  remaining direct use added by hyjh.  Line numbers are those of the commit that
+  carries this file.
+
+  1. @thm:gamma-co-is-full -- lattices.md:244, statement :248, proof :261.
+     CONDITIONAL on three inputs, all named in the statement, and proved from the
+     corrected lemma given them: (1) the orbifold structure, research#797, items 3
+     and 4; (2) that the complement, in the chosen component, of the image of the
+     period map is a proper closed ANALYTIC subset -- finding (iii) of
+     @rmk:findings-ii-iii-and-the-isotropy, reducing to the algebraicity of M_Co,
+     research#797, item 1, openness of the image giving only closed and proper;
+     (3) the descent along the 2-morphisms, @rmk:the-descent-stops-at-the-2-
+     morphisms, research#797, item 4.  Proved: the representation is
+     rho = phi o psi^{-1} with im rho = phi(Gamma) = Orth^+(T_Co) for the defining
+     (injective) action.
+     Change from the previous round: the previous statement named (1) and (2) and
+     said the conclusion was proved from @lem:tautological-system-descends; drl1
+     is right that the monodromy step uses the descent, so (3) is now an input and
+     the proof says so at the step.
+
+  2. @lem:d2a-monodromy-of-the-stack -- moduli-construction.md:1123, hypothesis
+     (D) at :1127, clauses (1)-(3) at :1131-1133, proof :1138 and :1150.
+     CONDITIONAL on (D), now in the statement for all three clauses: the
+     equivalence between G-equivariant local systems of lattices on V and local
+     systems of lattices on [V/G], with pullback inverse to descent and including
+     the 2-morphism comparisons and cocycle conditions.  The statement names this
+     research#797, item 4, and @rmk:the-descent-stops-at-the-2-morphisms.  The
+     descended system is written L_[V/G], distinct from its pullback L.  The
+     connected-Lie-group path computation is unchanged, but the proof now says
+     that (D) supplies the descended system whose monodromy it computes.  Clause
+     (3) still stops at Gamma_Co(B) = rho(pi_1(V,s)); the identification with
+     Gamma_Co remains research#797, item 6, unproved and unused.  This repairs
+     hyjh's finding that clauses (1)-(2) asserted the equivalence unconditionally.
+
+  3. @prop:coble-monodromy-is-the-marking-group -- moduli-construction.md:1881,
+     (H1)-(H3) at :1884-1886, clause 3 at :1894, its proof :1901, clause 4 at
+     :1895, the "what this settles" paragraph :1919.
+     CONDITIONAL on (H1)-(H3), all in the statement.  (H1) is the stack-level
+     Torelli with inertia (findings (i) and (iv); the ample class is (ii),
+     research#797 item 5; the equality research#798); (H2) is connectedness of U
+     (finding (iii), research#797 item 1); (H3) is the descent along the
+     2-morphisms (@rmk:the-descent-stops-at-the-2-morphisms, research#797 item 4).
+     Clause 3 now reads "Under (H3), ... the monodromy representation of that local
+     system is ...", and its proof says the computation is per loop and that (H3)
+     is what makes the transports the monodromy of a local system on the stack.
+     Changed from the previous round: clause 3 asserted the tautological system's
+     monodromy from @lem:orbifold-monodromy-of-a-quotient alone; that is drl1's
+     finding, and (H3) is its repair.  The index-two sentence was already
+     withdrawn (clause 4) and stays withdrawn.
+
+  4. @thm:gamma-co-labelled-equality -- moduli-construction.md:2107, (i)-(v) at
+     :2110-2114, clause 3 at :2120, proof step 2 at :2125.
+     CONDITIONAL on (i)-(v), all in the statement and none proved: (i) M_gen open
+     and nonempty; (ii) every period of U realised in M_gen; (iii) equal-period
+     labelled objects isomorphic; (iv) U_gen open and connected; (v) the descent
+     along the 2-morphisms (research#797, item 4).
+     CORRECTED beyond conditioning: clause 3 no longer prints
+     "Gamma_Co = rho^lab(pi_1) = Otilde^+(T_Co)".  It now prints
+     rho^lab(pi_1) = Otilde^+(T_Co) and says that the identification of that group
+     with Gamma_Co of @def:gamma-co-groups(1) is research#797, item 6 and is not
+     asserted.  The title, which carried the same identity, is cut to
+     rho^lab(pi_1) = Otilde^+(T_Co); the proof step no longer cites
+     @def:gamma-co-groups(1).  The monodromy step no longer claims the descent from
+     @lem:tautological-system-descends: it computes the per-loop transport and
+     names (v).
+
+  5. @thm:gamma-co-is-the-stack-monodromy -- moduli-construction.md:2161,
+     (A1)-(A3) at :2164-2166, chain :2173, ledger :2191 and :2198.
+     CONDITIONAL on (A1)-(A3).  (A2) remains (H1)-(H3) of row 3; the new (A3)
+     states explicitly the equivalence between G-equivariant local systems on
+     U^gen and local systems on [U^gen/G], with pullback inverse to descent and
+     including the 2-morphism comparisons and cocycle conditions.  It names
+     research#797, item 4, and @rmk:the-descent-stops-at-the-2-morphisms.  Step
+     (e) invokes both (A2)/(H3) and (A3), and the ledger and "what remains owed"
+     paragraph repeat that (A3) is assumed, not proved.  The torsor correction of
+     the previous round stands: the G-torsor is U^gen -> [U^gen/G] and the period
+     map is an equivalence.
+
+  6. @lem:d2b-forgets-to-d2a(3) -- moduli-construction.md:1581, clause 3 at :1591,
+     its proof :1605.  CONDITIONAL on the descent: the clause now reads "the
+     tautological system has monodromy phi(R_gent) = R_gent ... (for the
+     transports per loop, and the descent along the 2-morphisms for the reading of
+     them as the monodromy of a local system on the quotient, @rmk:the-descent-
+     stops-at-the-2-morphisms, research#797, item 4)", and the proof repeats it.
+     The conclusion of the clause -- that Delta_2 carries no family whose local
+     system is the tautological one -- is unchanged and is what the descent is an
+     input for.
+
+  7. @cor:monodromy-of-the-tautological-system -- moduli-construction.md:1810,
+     statement :1811, proof :1815.  CONDITIONAL on the descent, stated in the
+     corollary itself: "given the descent of the equivariant system ... along the
+     2-morphisms (@rmk:the-descent-stops-at-the-2-morphisms, research#797, item
+     4), the monodromy group ... is Otilde^+(T_Co) itself ...; without that input
+     the lemma below gives the transport of every loop and not the monodromy of a
+     local system on F_S".  The heading of the paragraph introducing it, "The case
+     the programme uses, proved", now reads "per loop".
+
+  8. @lem:coble-invariant-lattice-in-families(3) -- moduli-construction.md:1201,
+     clause 3 at :1210, clause 4 at :1215, proof :1222.
+     CONDITIONAL on (D_{S_10}), stated in clause 3: the equivalence between
+     S_10-equivariant local systems of lattices on B and local systems of lattices
+     on [B/S_10], with pullback inverse to descent and including the 2-morphism
+     comparisons and cocycle conditions.  It names research#797, item 4, and
+     @rmk:the-descent-stops-at-the-2-morphisms.  The proof begins "Assume
+     (D_{S_10})"; the product-order and transport calculation is unchanged.
+     Clause 4 and its proof now mark the conclusions that use clause 3, including
+     the first contribution and the lower bound by S_10, as conditional on the
+     same hypothesis, so it does not re-enter there unconditionally.  The
+     Bertini and isotropy computations do not use it.  This repairs hyjh's
+     finding at the former unconditional descent assertion in clause 3.
+
+THE LEMMA'S OWN STATUS AFTER drl1
+
+  - The per-loop statement is proved and unchanged in substance: the pair model of
+    a loop, psi an anti-homomorphism with the first exact sequence, the transport
+    system (P x T)/Gamma with endpoint relation (0,t) ~ (1, phi(g)t) and transport
+    phi(g)^{-1}, and rho = phi o psi^{-1} with im rho = phi(Gamma) and the second
+    exact sequence.
+  - The arbitrary-abelian-group "local system of lattices" is repaired: the lemma's
+    U~ x T is now "the trivial local system of abelian groups", with the lattice
+    case marked as the one where T is finitely generated free and phi lands in
+    Orth(T) -- which is the case of every application -- and @def:
+    local-system-of-lattices does require finitely generated free stalks
+    (local-systems-of-lattices-and-monodromy.md, definition of a local system of
+    lattices).  The same correction is made at the opening of
+    @lem:tautological-system-descends and in its clause 1.
+  - The descent is now stated for what it proves.  Its title, its clause 2 and its
+    proof paragraph on functoriality no longer say that the assignment is a sheaf
+    on the site of U: they say that the pullbacks are functorial and satisfy the
+    sheaf axioms for the strict maps, and that the restriction along the
+    2-morphisms is not constructed.  The new @rmk:the-descent-stops-at-the-2-
+    morphisms states the gap, says what a morphism of the site carries, notes that
+    the omission is not about open covers (at a point with finite stabilizer the
+    site over it has one object and its 2-morphisms are the stabilizer), and names
+    it research#797, item 4.  It does not claim the comparison cannot be written
+    down, and nothing here attempts it.
+
+CONSISTENCY REPAIRS THE REVIEW ASKED FOR, NONE OF THEM NEW MATHEMATICS
+
+  - moduli-construction.md:1080, :1115-1116, :1120 and :1153 called the
+    labelled-base monodromy simply Gamma_Co.  Each now says Gamma_Co(B), and says
+    that identifying it with Gamma_Co is research#797, item 6.  With those, the
+    promise at :31 ("no statement below uses it") is true.
+  - the labelled equality's clause 3, title and proof step: see row 4; the
+    previous round printed Gamma_Co = rho^lab(pi_1) = Otilde^+(T_Co).
+  - the review list at :1939 gains a finding (v), the descent, with the issue, so
+    that the page's own list of what is open matches the hypotheses it states.
+
+THE COMPARISON THE THIRD REVIEW NAMED AS REMAINING (MET)
+
+  Inputs, each a numbered statement read in Noohi, Foundations of topological stacks
+  I (arXiv:math/0503247): Definition 3.3 and Proposition 3.4 (the chart presents the
+  quotient stack), Lemma 6.3 (the chart is representable), Definition 4.5 and
+  Example 4.6(1) with Definition 18.10 (the chart is a covering of stacks),
+  Definition 13.8 and Example 13.1(6) (U is a topological stack), Definition 18.2
+  (local connectivity through the chart), Theorem 18.19 with Corollary 18.20
+  (coverings and pi_1-sets; the deck group as the automorphisms of the pi_1-set),
+  Proposition 18.18 and Lemma 18.12 (lifting and its uniqueness, applied to the loop
+  cut open at the base point), Lemma 18.14 (ii) <=> (iii) and Proposition 18.15 (the
+  kernel and the injectivity of p_*).  No printed-page, PDF-page or offset locator is
+  used.
+
+THE REVIEW'S FINDINGS, AND WHERE EACH IS DISPOSED OF (line numbers are those of
+the round that answered each; current locations are in the table above)
+
+  K1. "T is a well-defined local system on the orbifold ... UNPROVED. This is
+      asserted as a definition at lattices.md:181, with no descent proof or numbered
+      source."  REMOVED.  The lemma no longer asserts a local system on U and no
+      longer defines one by its pullbacks.  The object constructed is the transport
+      system of a loop, on the space S^1 (:202); its existence (a covering with fibre
+      T), its transport, well-definedness on homotopy classes and multiplicativity
+      are proved there and at :204.  The statement at :177-196 mentions no sheaf on
+      U.
+
+  K2. "lem:coble-invariant-lattice-in-families(3) correctly computes transport by
+      sigma^{-1}. --- UNPROVED. At :1145 this transport is asserted, not derived from
+      the family's equivariant structure. ... The equivariant label action is itself
+      written using sigma^{-1}-indexing at :978, so the necessary reconciliation
+      cannot be skipped."  DERIVED at :1170.  The representation is identified: the
+      action on the frame is phi_sigma(eps_i) = eps_{sigma(i)}, the inverse of the
+      index convention E_i -> E_{sigma^{-1}(i)} of lem:d2-unpolarised-family(3),
+      because that index map is an anti-homomorphism and a descent uses a
+      homomorphism.  The transport is phi_sigma^{-1} = eps_i -> eps_{sigma^{-1}(i)},
+      and phi_{tau sigma}^{-1} = phi_sigma^{-1} phi_tau^{-1} shows it is a
+      homomorphism in the pair, whose group element is tau sigma.
+
+  K3. "prop:coble-monodromy-is-the-marking-group proves orbifold monodromy
+      Otilde^+(T_Co). --- UNPROVED. Its assertions at 1752-1757 require the period-map
+      equivalence, connectedness, and reconstruction inputs."  STATED FOR WHAT IS
+      PROVED (:1774).  The proposition now assumes (H1) the period map is an
+      equivalence of stacks onto its open image with the isotropy matched and (H2) U
+      is connected; clause 1 is (H1), clauses 2-3 are proved from it, and clause 4
+      and the "what this settles" paragraph (:1816) are stated under (H1)-(H2).
+
+  K4. "thm:gamma-co-labelled-equality(2) is valid. --- UNPROVED. ... 1982 expressly
+      says that openness, nonemptiness, and connectedness of the two loci are
+      unproved."  STATED FOR WHAT IS PROVED (:1998).  The theorem now assumes
+      (i) M_gen open and nonempty, (ii) every period of U realised in M_gen,
+      (iii) injectivity on isomorphism classes, (iv) U_gen open and connected, and
+      its clauses are proved from these.
+
+  K5. "thm:gamma-co-is-the-stack-monodromy proves the global equality. --- UNPROVED
+      and inconsistent with the volume. ... chain at :2016 uses the preceding
+      conditional results, :2035-2040 explicitly owes smoothness and connectedness,
+      and :1819-1826 contradicts itself on pseudo-ampleness. Moreover :1914 records
+      that the Dolgachev theorem used in chain step (a) is false as stated."
+      STATED FOR WHAT IS PROVED (:2047).  The theorem assumes (A1) M_Co smooth and
+      connected and (A2) the hypotheses of K3; chain step (a) now takes existence
+      from @thm:coble-period-surjectivity, which @rmk:coble-period-surjectivity-
+      sources records as using neither [@Dol96, Thm. 3.1] nor pseudo-ampleness; the
+      ledger (:2066-2078) and "what remains owed" (:2082) are updated.  K6 below is
+      the pseudo-ampleness contradiction.
+
+  K6. ":1819-1826 contradicts itself on pseudo-ampleness."  FIXED (:1844).  The
+      proposition's statement recorded pseudo-ampleness as open while its proof
+      concluded that the intersection was nonempty; the title, clause 3, its proof
+      and the following paragraph now say the same thing: e_0 is nef and big, e_0 is
+      not in C(M)^+ because e_0.e_i = 0 for the ten classes, and pseudo-ampleness is
+      open.  [@Dol96, Thm. 3.1] is quoted there only conditionally, with the note
+      that it is false as stated.
+
+  K7. "citing results assert the equality at 1757, 1786, 2012. The acceptance
+      report's statement that these are 'not consequences' does not recheck or
+      resolve them."  RESOLVED: those three lines are now the conditional statements
+      of K3, K3's summary and K5, each with its hypotheses named in the statement.
+
+CONVENTIONS CHECKED (def:transport-and-monodromy: gamma delta is delta followed by
+gamma)
+
+  - Chart torsor: P|_I = I x Gamma by (s,h) -> (s, h gamma~(s)); at the two ends
+    (0,h) represents (0,h x~) and (1,h') represents (1,h' g x~), so the gluing is
+    (0,h) ~ (1,h g^{-1}) (:202).
+  - Transport system: (0,t) ~ (1, phi(g) t) in (P x T)/Gamma, since
+    (0,x~) = (1,x~) and (1,g x~, phi(g)t) = (1,x~,t); the transport around S^1 is
+    phi(g)^{-1} (:202).
+  - Product: lambda = (g,gamma~), mu = (h,delta~); lambda mu is mu followed by
+    lambda, whose lift from x~ is delta~ followed by the h-translate of gamma~ and
+    ends at h g x~; so psi(lambda mu) = h g = psi(mu) psi(lambda) and
+    rho(lambda mu) = phi(hg)^{-1} = phi(g)^{-1} phi(h)^{-1} = rho(lambda) rho(mu)
+    (:204).
+  - Item 2: with (sigma,gamma~) and (tau,delta~) the same computation gives
+    tau sigma and phi_{tau sigma}^{-1} = phi_sigma^{-1} phi_tau^{-1} (:1170).
+  - lem:d2-label-lift(2) was corrected earlier to the same convention: the composite
+    ends at sigma' sigma s and the homomorphism is sigma -> sigma^{-1} (:1120, :1129).
+
+EVERY RESULT THAT CITES THE LEMMA, RECHECKED (line numbers are those of 835db4f69a;
+  current locations and statuses are in the table above)
+
+  lattices.md:258, proof of thm:gamma-co-is-full (the line moved by the insertion).  Only the image is used, for the
+    defining action of Orth^+(T_Co); clause (2) with phi injective.  MET for that
+    input.
+  moduli-construction.md:1079 and :1086, lem:d2a-monodromy-of-the-stack.  The pair
+    description only; the exact sequence is expressly not used (:1086), and the
+    connected-group argument is the result's own.  MET.
+  moduli-construction.md:1129, lem:d2-label-lift(2), and its uses at :870, :881,
+    :1137, :1144, :1157.  The statement gives the homomorphism sigma -> sigma^{-1}
+    and the anti-homomorphism sigma (:1120); the uses need only the kernel and the
+    group.  MET.
+  moduli-construction.md:1170, lem:coble-invariant-lattice-in-families(3).  Now
+    derived (K2); the statement of (3) is unchanged, inversion not changing S_10.
+    MET.
+  moduli-construction.md:1484 and :1498, lem:d2b-forgets-to-d2a(3).  The defining
+    action of R_gEn <= Orth(T_Co); clause (2).  MET.
+  moduli-construction.md:1699-1701 and :1708,
+    cor:monodromy-of-the-tautological-system, with the paragraph stating the case the
+    programme uses.  Defining action of Otilde^+(T_Co); clause (2).  MET.
+  moduli-construction.md:1786 and :1793,
+    prop:coble-monodromy-is-the-marking-group(3): under (H1)-(H2); see K3.  The
+    monodromy step is proved; the proposition is conditional.
+  moduli-construction.md:2015, thm:gamma-co-labelled-equality(2): under (i)-(iv);
+    see K4.  The monodromy step is proved; the theorem is conditional.
+  moduli-construction.md:2058, thm:gamma-co-is-the-stack-monodromy step (e): under
+    (A1)-(A2); see K5.
+  moduli-construction.md:2075, the input ledger: the row now names the defining
+    action, and the [@Dol96, Thm. 3.1] row is replaced by @thm:coble-period-
+    surjectivity.
+  computations/reports/797-programme-items-3-4.txt:76 and :256.  A review record,
+    not a result; left unchanged.
+
+CHECKS RUN
+
+  scripts/docs_check.py --source, on a worktree at fa66cab619 and on the repaired
+    tree: byte-identical output, 29 findings, all pre-existing "citation is in no
+    bibliography" findings in other chapters, none on these two pages.  The .assets
+    copy was made before both runs.
+  scripts/docs_dependency_graph.py --check: 121 findings at fa66cab619 and 121 on
+    the repaired tree, with one added block and its edges; no finding names the new
+    lemma.
+  tests/engineering: not run.  tests/conftest.py imports dzack_research, which a
+    plain checkout does not have.
+  CI: not used as evidence.
+
+CHECKS RUN FOR THE CITERS' ROUND (the commit that carries this file)
+
+  scripts/docs_check.py --source: byte-identical to a detached worktree at
+    393498f777, 29 findings, all pre-existing "citation is in no bibliography" in
+    other chapters, none on lattices.md or moduli-construction.md.
+  scripts/docs_dependency_graph.py --check: 122 findings on both trees, 9249 edges
+    at 393498f777 and 9260 here (the eleven new citations); the five cycle
+    findings are the same five as at the base, differing only in the order the two
+    names are printed.  No finding names the descent lemma or a touched block.
+  tests/engineering: not run, for the reason above.
+  CI: not used as evidence.
+
+CHECKS RUN FOR THE drl1 ROUND (324a7f8dad)
+
+  scripts/docs_check.py --source: byte-identical to a detached worktree at
+    272d2b00f9 (the commit this one is rebased onto), 29 findings, all pre-existing
+    "citation is in no bibliography" in other chapters, none on lattices.md or
+    moduli-construction.md.
+  scripts/docs_dependency_graph.py --check: 123 findings on both trees, 1892 blocks
+    here against 1891 (the new remark), 9321 edges against 9308 (the thirteen new
+    citations); the six cycle findings and the fourteen missing-id findings are the
+    same as at the base, the latter shifted only by the line numbers they print.
+    The one finding this round produced -- an uncited "pullback of a local system"
+    in the chain of @thm:gamma-co-is-the-stack-monodromy -- was fixed by citing
+    @def:pullback-of-local-system there, and none remains.
+  tests/engineering: not run, for the reason above.
+  CI: not used as evidence.
+
+CHECKS RUN FOR THE LTN3 ROUND (the commit that carries this file)
+
+  scripts/docs_check.py --source: byte-identical to a detached worktree at
+    1227d63ace, 29 findings, all pre-existing "citation is in no bibliography" in
+    other chapters, none on lattices.md or moduli-construction.md.
+  scripts/docs_dependency_graph.py --project writing/.book --check: 1899 blocks
+    and 1092 cited results on both trees, 9365 edges here against 9360 at
+    1227d63ace (the (A4) and corrected-containment references).  The finding
+    kinds are 77 unlocated-citation, 21 uncited-term, 14 missing-id,
+    5 missing-defines and 2 orphan-proof on both trees; cycles are 6 at the base
+    and 3 here.  No finding is added and the three removed cycle findings are not
+    repairs: the new (A4) references join the strongly connected components
+    containing (prop:coble-plane-model-comparison, prop:coble-stack-as-quotient),
+    (lem:coble-invariant-lattice-in-families,
+    lem:pi1-of-a-groupoid-quotient-is-generated-by-three-contributions) and
+    (lem:gamma-co-labelled-index, lem:relabelling-discriminant-action) to the
+    existing large component, which remains an SCC on both trees.  No finding
+    names a touched block.
+  tests/engineering: not run.  tests/conftest.py imports dzack_research, which a
+    plain checkout does not have.
+  CI: not used as evidence.

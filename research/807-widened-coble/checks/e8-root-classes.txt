@@ -1,0 +1,4 @@
+E8 roots: 240
+simple-root Gram determinant: -1
+root classes modulo 2E8: 120
+each class has exactly one antipodal pair: PASS

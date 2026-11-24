@@ -1,0 +1,34 @@
+research#797 -- the fppf projective-return attempt
+
+RESULT
+The unconditional fppf effectivity statement is NOT proved. The page now proves the exact positive criterion: a descent-datum-compatible relatively ample line bundle on the original Coble family descends and makes the descended algebraic space a projective scheme, with the anti-bicanonical double cover and involution recovered. It also proves that the anti-bicanonical line bundle is not such a polarization. The smallest remaining input is qst:coble-projective-return: existence of that compatible relatively ample bundle, equivalently projectivity of the descended family.
+
+NUMBERED SOURCES AND HYPOTHESES CHECKED
+Stacks 99.13.3 (0D1G): the category of flat, proper, finitely presented algebraic spaces is an fppf stack. Hypothesis: original S'->Y' is a scheme and flat, proper, finitely presented (def:coble-moduli-functor-z). Conclusion used: descended S->Y is an algebraic space with those same three properties. It says neither scheme nor projective.
+Stacks 80.11.3(2) (0ADV): finite-type fppf descent data for algebraic spaces are effective. Hypothesis: S'->Y' finite presentation, hence finite type; part (2), unlike part (1), has no countability condition. Conclusion used: the same algebraic-space effectivity, independently.
+Stacks 35.5.2 (023T): every descent datum for quasi-coherent sheaves relative to an fpqc covering is effective. Hypothesis: the one-member fppf cover Y'->Y is quasi-compact because Y,Y' are quasi-compact finitely presented S_0-schemes, hence it is fpqc. The line bundle L' is quasi-coherent. Conclusion used: L' and its cocycle descend uniquely.
+Stacks 74.13.1 (0D3C): ampleness is fpqc-local on the base. Hypotheses: morphism S->Y of algebraic spaces, invertible L, one-member fpqc cover; the pullback L' is ample. Conclusion used: L is relatively ample.
+Stacks 71.14.6 (0D36): relative ampleness is equivalent to every scheme base change being a scheme with ample pullback. Hypotheses: S->Y algebraic spaces, L invertible, L ample. Taking the identity scheme base Y gives that S is a scheme and L is ample.
+Stacks Definition 29.41.1 (01VW): finite type plus a relatively ample invertible sheaf is quasi-projective. Hypothesis: S->Y finite presentation, hence finite type, and L is relatively ample from 0D3C.
+Stacks Lemma 29.43.13 (0BCL): over a quasi-compact and quasi-separated base, projective iff quasi-projective and proper. Hypothesis: Y is finitely presented over affine S_0, hence quasi-compact and quasi-separated; S->Y remains proper. Conclusion used: S->Y projective.
+
+WHY THE ANTI-BICANONICAL BUNDLE DOES NOT SUPPLY THE INPUT
+On each Coble fibre, K_S^2=-1 and C=-2K_S has C^2=-4 (thm:coble-smooth-antibicanonical-is-a-plane-blowup(1)). For m nonzero, O(-mK_S) has self-intersection -m^2<0, so Nakai--Moishezon prevents ampleness; m=0 is O_S, also not ample. Thus neither O(-K_S) nor O(-2K_S) is a polarization.
+
+WHY KNOWN DESCENT THEOREMS STOP
+Stacks Lemma 37.48.2 (05WN) refines an fppf cover only by a composite of finite locally free and open morphisms; it does not produce one finite locally free cover. Stacks Lemma 39.25.3 (0CCJ) applies to a surjective finite locally free X->Y and a projective (or otherwise ample) V/X, and makes the descent datum effective as a scheme. Its conclusion does not preserve a relative ample sheaf or projectivity. At the first finite-locally-free level of the refinement the input is projective but the output's projectivity is unproved; hence the second level lacks the projective/ample hypothesis. This is the same return theorem, not a proof of it.
+The counterexamples Stacks 08J0 and 08KE show that base-change stability, geometric-fibre projectivity and Zariski-local projectivity do not imply the return. The analytic fine-moduli result only gives analytic representability.
+
+EXACT RESIDUE
+qst:coble-projective-return: for every fppf cover Y'->Y over Z[1/2] and every descent datum of def:coble-moduli-functor-z, either (equivalently) the descended algebraic space of 0D1G/0ADV is a scheme projective over Y, or there is a Y'-relatively ample invertible sheaf on S' with a line-bundle descent datum compatible with the object datum. No theorem read supplies either form.
+
+CHANGED PAGE
+writing/coble/lattices-and-moduli/moduli-construction.md:
+  lem:coble-fppf-invariant-polarization (positive return criterion and proof);
+  prop:anti-bicanonical-is-not-a-polarization;
+  qst:coble-projective-return (exact residue);
+  rmk:fppf-refinement-does-not-supply-the-return;
+  lem:coble-moduli-functor-fppf (revised status).
+
+CHECKS
+Four focused test functions passed after failing first. pandoc parsed the page; git diff --check passed. No full test suite or long job was run. Full pytest collection remains unavailable because dzack_research is not installed.

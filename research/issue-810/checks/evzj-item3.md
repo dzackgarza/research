@@ -1,0 +1,3 @@
+# Kimi item 3: base naturality of atlas descent
+
+*Base naturality.* For a map $f\colon Y\to X$, putting $R_f=Y\times_XR$ gives the pullback groupoid with objects $Y\times_XU$. Iterating $2$-fibre products canonically identifies $f^*[E/R]$ with $[f^{-1}E/R_f]$, where $f^{-1}E$ is pulled back along the projection $Y\times_XU\to U$. A map compatible with the descent data on $Y$ is exactly a map compatible with the descent data on $X$ after pullback along $f$. These canonical identifications respect composition in $f$: their triple-product cocycles are the original cocycles on $R$ pulled back to $R_f$. Every family-wise system, not only its coefficients, is recovered on $Y$.

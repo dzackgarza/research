@@ -131,44 +131,47 @@ For more details, see [@AEGS25; @GHK15; @Eng18].
 :::
 
 ::: {.definition title="Weight Filtration on Cohomology" #def:weight-filtration-cohomology}
-Let $N = \log(T)$ be the logarithm of the unipotent monodromy operator.
-The **weight filtration** $\incfiltration{W }$ on $H^2(\mcx_t; \CC)$ is defined by:
+Let \(V=H^2(\mcx_t;\QQ)\) and let \(N=\log T\) be the nilpotent logarithm of the unipotent monodromy. The **monodromy weight filtration centred at weight \(2\)** is the unique increasing filtration
 $$
-W_k H^2 = \theset{ v \in H^2 \st N^{j} v = 0 \text{ for } j > k }
-,$$
-yielding a canonical increasing filtration
+0=W_{-1}\subseteq W_0\subseteq W_1\subseteq W_2\subseteq W_3\subseteq W_4=V
 $$
-0 = W_{-1} \subset W_0 \subset W_1 \subset W_2 \subset W_3 \subset W_4 = H^2(\mcx_t; \CC)
-.$$
-The **graded pieces** are $\Gr_k^W H^2 \definedas  W_k / W_{k-1}$, and carry the limiting mixed Hodge structure by @Del71.
+satisfying
+$$
+N(W_k)\subseteq W_{k-2},
+\qquad
+N^\ell:\Gr^W_{2+\ell}V\iso\Gr^W_{2-\ell}V\quad(\ell=0,1,2),
+$$
+where \(W_k=0\) for \(k<0\), and \(\Gr_k^WV=W_k/W_{k-1}\) [@Sch73, Lemma 6.4, printed p. 247]. Extend \(W\) to \(H^2(\mcx_t;\CC)\) by scalar extension. This is the weight filtration of the limiting mixed Hodge structure. In particular, it is **not** given by the sequence of kernels of powers of \(N\): that sequence has a different indexing and in general different steps.
 :::
 
-In the case of K3 surfaces, we can explicitly recover the filtration in terms of the order of nilpotency:
+In the case of Kulikov degenerations of K3 surfaces, the filtration is as follows.
 
 ::: {.theorem title="Weight Filtration and Kulikov Type" #thm:weight-filtration-kulikov-types}
-Let $N$ be the logarithm of the monodromy in a degeneration of K3 (or analogous) surfaces.
-Then:
+Put \(V=H^2(\mcx_t;\QQ)\), with \(N=\log T\).
 
-- **Type I** (trivial monodromy, $N = 0$): $W_2 = H^2$, and all higher pieces vanish.
+1. **Type I** (\(N=0\)): \(W_0=W_1=0\), \(W_2=W_3=W_4=V\). Only \(\Gr^W_2\) is nonzero.
+2. **Type \(\II\)** (\(N\neq0,\ N^2=0\)): \(W_0=0\), \(W_1=\im N\), \(W_2=\ker N\), \(W_3=W_4=V\). The nonzero graded pieces are \(\Gr^W_1,\Gr^W_2,\Gr^W_3\).
+3. **Type \(\III\)** (\(N^2\neq0,\ N^3=0\)): \(W_0=W_1=\im N^2\), \(W_2=W_3=\ker N^2\), \(W_4=V\). The only nonzero graded pieces are \(\Gr^W_0,\Gr^W_2,\Gr^W_4\), of dimensions \(1,20,1\).
 
-- **Type $\II$** ($N^2 = 0,\ N \neq 0$): $W_0 = \ker(N)$; $W_2 = H^2$; $W_4 = 0$.
-
-- **Type $\III$** ($N^3 = 0,\ N^2 \neq 0$): all steps in the filtration are nontrivial.
-
-The geometric interpretations are as follows:
-
-- $\Gr_0^W$ encodes contributions from singular or reducible components;
-
-- $\Gr_2^W$ corresponds to the part of the cohomology preserved in the degeneration;
-
-- $\Gr_4^W$ arises from new cycles present in Type $\III$ degenerations.
-
-This filtration packages the mixed Hodge structure obtained from the Clemens–Schmid exact sequence and classifies degenerations according to their limit behavior by @Kul77.
+The Type \(\III\) assertion uses the special monodromy form of a **K3 Kulikov degeneration**; the condition \(N^3=0\) alone, for an arbitrary nilpotent endomorphism, does not exclude Jordan blocks of size two and does not imply vanishing of \(\Gr^W_1,\Gr^W_3\). The Type \(\II\) middle graded piece \(\ker N/\im N\) is the weight-two boundary lattice space \(I^\perp/I\) appearing in @prop:weight-filtration-by-type and the discussion of the Type \(\II\) cusp in @sec-kulikov-models.
 :::
 
 ::: {.proof}
+Schmid's uniqueness criterion [@Sch73, Lemma 6.4, printed p. 247] is the definition above. In Type I, it forces all of \(V\) to have weight \(2\).
 
-This is [@Kul77]. The weight filtration of the limiting mixed Hodge structure is the monodromy weight filtration of $N$: with $N^2 = 0$ and $N\neq0$ it has length two, giving $W_0 = \ker N$, $W_2 = H^2$ and $W_4 = 0$, while $N^3 = 0$ with $N^2\neq0$ forces the third step to be nonzero as well.
+In Type \(\II\), \(N^2=0\) implies \(\im N\subseteq\ker N\). With the displayed filtration, \(N(W_k)\subseteq W_{k-2}\), and
+$$
+N: \Gr^W_3=V/\ker N\;\iso\;\im N=\Gr^W_1
+$$
+by the first isomorphism theorem; all the other required \(N^\ell\) isomorphisms are either the identity for \(\ell=0\) or between zero spaces. This proves the claimed filtration without treating \(\ker N\) as \(W_0\).
+
+For a Type \(\III\) K3 Kulikov degeneration, the monodromy formula of @prop:type-iii-monodromy-triple-points (from [@FS86, Lemma 1.1 and Proposition 7.1]) gives
+$$
+Nx=(x\cdot\delta)\lambda-(x\cdot\lambda)\delta,\quad
+\delta^2=\delta\cdot\lambda=0,\quad
+N^2x=-\lambda^2(x\cdot\delta)\delta,
+$$
+with \(\lambda^2\neq0\). Thus \(\im N^2=\QQ\delta\), \(\ker N^2=\delta^\perp\), and \(N(\delta^\perp)\subseteq\QQ\delta\). The displayed filtration satisfies Schmid's conditions: \(\Gr^W_1=\Gr^W_3=0\), and \(N^2:V/\ker N^2\iso\im N^2\). The dimensions follow from \(\dim V=22\) and \(\rank N^2=1\).
 :::
 
 Degenerations with unipotent monodromy give rise to *monodromy invariants*, which we now describe.

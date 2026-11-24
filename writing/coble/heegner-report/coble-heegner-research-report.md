@@ -213,7 +213,7 @@ The first two are nonsymplectic and the product is symplectic.
 The quotient $Z=X/\iota_{\mathrm{En}}$ is generically Enriques, while $X/\iota_{\mathrm{Nik}}$ is a K3 surface with eight $A_1$ singularities.
 The ramification divisor used in the AEGS stable-pair problem is the ramification of the **del Pezzo involution**, not the fixed locus of the Enriques involution.
 
-### The AEGS lattice package {#sec-aegs-lattices}
+### Lattice conventions of AEGS {#sec-aegs-lattices}
 
 The involutions act on $L_{K3}=U^3\oplus E_8^2$ with eigenspaces
 
@@ -421,7 +421,7 @@ The quotient of the open nodal invariant $(4,4)$ locus by the full centralizer o
 Equivalently, the projective diagram can be reconstructed intrinsically from the Coble pair, and the resulting period map has image the full relevant period-domain component.
 :::
 
-## The Coble lattice package {#sec-coble-lattices}
+## Coble lattice conventions {#sec-coble-lattices}
 
 ### The orthogonal complement lattice {#sec-orthogonal-complement}
 
@@ -481,12 +481,12 @@ For $\delta$ one has $\delta(T_{\Co}) = 0$ exactly when the image of $q$ lies in
 Finally $T_{\Co}$ is even: every vector of $\langle2\rangle\perp U(2)\perp E_8(2)$ has even square, $\eta^2 = 2$ being even in $\bZ$. An even $2$-elementary lattice of rank $11$ with $A=(\bZ/2)^{11}$ and $\delta=1$ is unique, and this one is $I_{2,9}(2)$ in the notation of @sec-unimodular-lattice-classification.
 :::
 
-### The invariant lattice and the reflection twist {#sec-reflection-twist}
+### The invariant lattice and the composite involution $I_{\Co}=w_\alpha I_{\mathrm{En}}$ {#sec-coble-involution}
 
 Let $I_{\mathrm{En}}$ be the Enriques involution on the K3 lattice, acting as $+1$ on $S_{\mathrm{En}}$ and as $-1$ on $T_{\mathrm{En}}$.
 Let $w_\alpha$ be the reflection in the root $\alpha$.
 
-::: {.construction #cons:reflection-twist title="reflection twist" defines="reflection twist; $I_{\Co}$"}
+::: {.construction #cons:coble-involution title="The composite involution $I_{\Co}=w_\alpha I_{\mathrm{En}}$" defines="$I_{\Co}$"}
 Define
 
 \[
@@ -496,7 +496,7 @@ I_{\Co}:=w_\alpha I_{\mathrm{En}}.
 
 Since $I_{\mathrm{En}}(\alpha)=-\alpha$, the two factors commute.
 
-::: {.proposition #prop:coble-eigenspaces title="eigenspaces of the reflection twist"}
+::: {.proposition #prop:coble-eigenspaces title="Eigenspaces of the composite involution $I_{\Co}$"}
 One has
 
 \[
@@ -542,10 +542,10 @@ and the $(-1)$-eigenspace is $T_\Co$ by the same computation with the sign rever
 Let $e,f$ be the isotropic basis of the summand $U$ of $T_\En = U\oplus U(2)\oplus E_8(2)$, with $e\cdot f = 1$, so that $\alpha = e-f$.
 Since $E_8$ is negative definite, the vectors of square $-4$ in $E_8(2)$ are the $240$ roots of $E_8$.
 For each such $v$ the vector $\beta = (e+f)+v$ has $\beta^2 = 2-4 = -2$, and $\beta\notin U$.
-So $T_\En$ has vectors of square $-2$ outside $U$, and @cons:reflection-twist depends on the choice of $\alpha$.
+So $T_\En$ has vectors of square $-2$ outside $U$, and @cons:coble-involution depends on the choice of $\alpha$.
 :::
 
-::: {.question #qst:twist-root-conjugacy title="conjugacy of reflection twists"}
+::: {.question #qst:coble-involution-conjugacy title="Conjugacy of the composite involutions"}
 Let $\beta\in T_\En$ be a vector of square $-2$.
 Is the pair $(I_\En, w_\beta I_\En)$ conjugate to the pair $(I_\En, w_\alpha I_\En)$ by an isometry of $\lkt$?
 :::
@@ -739,7 +739,7 @@ Is $S_{\mathrm{dP}} = \pi^*\Pic(Y)\perp\ZZ D_1\perp\cdots\perp\ZZ D_k$?
 
 ::: {.proposition #prop:twist-pair-not-construction-pair title="the pair $\{I_\En,I_\Co\}$ is not the pair of a one-node member"}
 Let $b$ be a one-node member.
-No isometry of $\lkt$ conjugates the set $\{I_\En,I_\Co\}$ of @cons:reflection-twist to the set $\{I_{\Co,b},I_{\mathrm{dP},b}\}$.
+No isometry of $\lkt$ conjugates the set $\{I_\En,I_\Co\}$ of @cons:coble-involution to the set $\{I_{\Co,b},I_{\mathrm{dP},b}\}$.
 :::
 
 ::: {.proof}
@@ -971,8 +971,8 @@ If the descent of $L$ is ample, then $K_{V^\sharp}+\epsilon R^\sharp$ is ample.
 The autonomous strategy should begin with a stack of labeled K3-cover data.
 The following definition is a mathematical specification; representability and equivalence with the singular pair moduli are required theorems.
 
-::: {.definition #def:direct-cover-datum title="direct resolved Coble cover datum" defines="direct resolved degree-$2$ Coble cover datum"}
-Over a scheme (@def:scheme-as-lrs) $S$, a direct resolved degree-$2$ Coble cover datum consists of
+::: {.definition #def:resolved-coble-cover-tuple title="The tuple $(\widetilde{\mcx}/S,\mce,\iota_{\Co},\iota_{\mathrm{dP}},\mch,\mcc)$" defines="$\widetilde{\mcx}/S$; $\mce$; $\iota_{\Co}$; $\iota_{\mathrm{dP}}$; $\mch$; $\mcc$"}
+Over a scheme (@def:scheme-as-lrs) $S$, consider the tuple
 
 \[
 (\widetilde{\mcx}/S,
@@ -1004,8 +1004,8 @@ The chamber and the effective root are part of the data because an abstract latt
 
 ### The singular-pair moduli problem {#sec-singular-moduli}
 
-::: {.definition #def:direct-singular-datum title="direct singular Coble datum" defines="direct singular Coble datum"}
-Over $S$, a direct singular Coble datum consists of
+::: {.definition #def:singular-coble-pair-tuple title="The tuple $(\mcv^\sharp/S,\mcl^\sharp,\tau_{\mathrm{dP}},\mcr^\sharp)$" defines="$\mcv^\sharp/S$; $\mcl^\sharp$; $\tau_{\mathrm{dP}}$; $\mcr^\sharp$"}
+Over $S$, consider the tuple
 
 \[
 (\mcv^\sharp/S,
@@ -1039,8 +1039,8 @@ The equivalence is compatible with base change and automorphisms.
 Fix an embedded root $\alpha\in T_{\mathrm{En}}$ and put $T_{\Co}=\alpha^\perp$.
 There are at least four natural groups.
 
-::: {.definition #def:unpolarized-direct-group title="direct unpolarized Coble group" defines="direct unpolarized Coble group; $\Gamma_{\Co}^{\mathrm{dir}}$"}
-Dropping the degree-$4$ polarization (@def:numerical-polarization) and the del Pezzo involution from the labeled datum gives the candidate direct unpolarized group
+::: {.definition #def:unpolarized-centralizer-image title="The image of the unpolarized centralizer in $O^+(T_{\Co})$" defines="$\Gamma_{\Co}^{\mathrm{dir}}$"}
+Dropping the degree-$4$ polarization (@def:numerical-polarization) and the del Pezzo involution from the labeled datum gives the image
 
 \[
 \Gamma_{\Co}^{\mathrm{dir}}
@@ -1052,10 +1052,10 @@ Dropping the degree-$4$ polarization (@def:numerical-polarization) and the del P
 
 The corresponding geometric monodromy group is defined from the direct unpolarized Coble moduli stack.
 The expected equality $\Gamma_{\Co}^{\mathrm{dir}}=O^+(T_{\Co})$ is compatible with the full stabilizer (@def:group-orbit) lemma below, but it remains a geometric monodromy statement until the direct period theorem is proved.
-The group $\Gamma_\Co$ of @def:gamma-co-groups, the monodromy group of the VHS on the universal family over the moduli stack of Coble surfaces, has $\Gamma_\Co(B)=\widetilde\Orth^+(T_\Co)$ on the labelled presentation (@thm:gamma-co-is-stable); no relation between $\Gamma_{\Co}^{\mathrm{dir}}$ and $\Gamma_\Co$ is established.
+The group $\Gamma_\Co$ of @def:gamma-co-groups, the monodromy group of the VHS on the universal family over the moduli stack of Coble surfaces, has $\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co)$ on the labelled presentation (@thm:gamma-co-is-stable(1)), the reverse inclusion and the equality being @qst:gamma-co-sign-is-realised; no relation between $\Gamma_{\Co}^{\mathrm{dir}}$ and $\Gamma_\Co$ is established.
 :::
 
-::: {.definition #def:hodge-group title="Hodge-theoretic Heegner group" defines="Hodge-theoretic Heegner group; $\Gamma_{\Co,2}^{\mathrm{Hdg}}$"}
+::: {.definition #def:heegner-stabilizer-image title="The image of the Heegner stabilizer in $O^+(T_{\Co})$" defines="$\Gamma_{\Co,2}^{\mathrm{Hdg}}$"}
 
 \[
 \Gamma_{\Co,2}^{\mathrm{Hdg}}
@@ -1066,9 +1066,9 @@ The group $\Gamma_\Co$ of @def:gamma-co-groups, the monodromy group of the VHS o
 \]
 :::
 
-This group is the natural group of a fixed normalized Heegner component once the Enriques construction has been fixed.
+This image is the natural group of a fixed normalized Heegner component once the Enriques construction has been fixed.
 
-::: {.definition #def:direct-group title="direct labeled centralizer group" defines="direct labeled centralizer group; $\Gamma_{\Co,2}^{\mathrm{dir}}$"}
+::: {.definition #def:labeled-centralizer-image title="The image of the labeled centralizer in $O^+(T_{\Co})$" defines="$\Gamma_{\Co,2}^{\mathrm{dir}}$"}
 
 \[
 \Gamma_{\Co,2}^{\mathrm{dir}}
@@ -1079,15 +1079,15 @@ This group is the natural group of a fixed normalized Heegner component once the
 \]
 :::
 
-::: {.remark #rmk:direct-group-chamber title="The chamber in the datum of the direct group"}
+::: {.remark #rmk:labeled-centralizer-chamber title="The chamber in the datum of the labeled centralizer"}
 
-The chamber $\mcc$ is part of the datum of @def:direct-group. It is not an extra label at a member whose Picard lattice is the invariant lattice $S_{\Co,b}$: there the chamber is a function of $H$ and $\alpha$, so every element of the centralizer $Z_{O(L_{K3})}(I_{\Co},I_{\mathrm{dP}})_{H,\alpha}$ preserves it and the group above is the one @prop:direct-eq-heegner computes, $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$. At a member whose Picard lattice is larger the chamber is cut finer and the subscript is a genuine condition on the centralizer (@rmk:chamber-pinned-scope, and @thm:chamber-subscript-is-a-condition for the element that witnesses it); it is not one on the elements that preserve the member's period, which preserve its chamber at every member (@lem:chamber-preserved-on-period). So the group below is the group of a member and not of the labels, and @qst:chamber-subscript-image asks the one thing left about it, whether the condition changes its image.
+The chamber $\mcc$ is part of the datum of @def:labeled-centralizer-image. It is not an extra label at a member whose Picard lattice is the invariant lattice $S_{\Co,b}$: there the chamber is a function of $H$ and $\alpha$, so every element of the centralizer $Z_{O(L_{K3})}(I_{\Co},I_{\mathrm{dP}})_{H,\alpha}$ preserves it and the group above is the one @prop:direct-eq-heegner computes, $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$. At a member whose Picard lattice is larger the chamber is cut finer and the subscript is a genuine condition on the centralizer (@rmk:chamber-pinned-scope, and @thm:chamber-subscript-is-a-condition for the element that witnesses it); it is not one on the elements that preserve the member's period, which preserve its chamber at every member (@lem:chamber-preserved-on-period). So the group below is the group of a member and not of the labels, and @qst:chamber-subscript-image asks the one thing left about it, whether the condition changes its image.
 :::
 
 This is the arithmetic group naturally attached to the autonomous lattice datum, provided the labeled rigidity theorem holds.
 
 ::: {.definition #def:geometric-monodromy title="geometric monodromy group" defines="geometric monodromy group; $\Gamma_{\Co,2}^{\mathrm{geom}}$"}
-$\Gamma_{\Co,2}^{\mathrm{geom}}$ is the image of the orbifold monodromy representation (@def:transport-and-monodromy) of the connected direct moduli stack of polarized Coble data on the local system $T_{\Co}$.
+$\Gamma_{\Co,2}^{\mathrm{geom}}$ is the image of the orbifold monodromy representation (@def:transport-and-monodromy) of the connected direct moduli stack of polarized Coble data on the local system of lattices (@def:local-system-of-lattices) $T_{\Co}$ of the universal family (@def:classifying-object) on that stack, that is, on the fundamental groupoid of the stack (@def:transport-and-monodromy).
 :::
 
 Finally, the degree-$2$ marking gives an orthogonal decomposition $A_{T_{\mathrm{En}}} \cong A_{U(2)}\perp A_{E_8(2)}$, and hence the finite subgroup $P:=O(q_{U(2)})\cross O(q_{E_8(2)})$.
@@ -1111,7 +1111,7 @@ Prove
 
 Each equality requires a separate argument: global Torelli and parallel transport for the first, labeled embedding comparison for the second, and discriminant-form gluing for the third.
 The third is now settled in the form it can hold in: the block condition on the two gluings is decided affirmatively, so $\Gamma^{\mathrm{Hdg}}_\Co = \Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ (@cor:gamma-hdg-is-congruence, with @prop:coble-block-compatibility), the congruence group exceeding that by the spinor sign of $s_\zeta$ alone.
-The first two are now settled as well. The second's lattice input is @prop:coble-enriques-ambient-isometry, and with the chamber of the datum in place the equality $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2}$ is @prop:direct-eq-heegner. The first is @prob:B25, whose proof identifies the geometric monodromy group with $\Gamma^{\mathrm{dir}}_{\Co,2}$ and the deck group of the marking cover with its quotient by $\{\pm\id\}$, using the period image of @prob:B24 (@thm:sign-is-isotropy, @thm:no-loop-carries-the-sign). The four groups therefore coincide with the congruence group intersected with $\Orth^+(T_\Co)$ (@cor:four-groups-decided), the congruence group itself being the union of that group with its $s_\zeta$-coset.
+The first two are now settled as well. The second's lattice input is @prop:coble-enriques-ambient-isometry, and with the chamber of the datum in place the equality $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2}$ is @prop:direct-eq-heegner. The first is @prob:B25, whose proof identifies the geometric monodromy group with $\Gamma^{\mathrm{dir}}_{\Co,2}$ and the deck group of the cover by markings, a covering of stacks in the sense of [@Noo05, Definition 18.10], with its quotient by $\{\pm\id\}$, using the period image of @prob:B24 (@thm:sign-is-isotropy, @thm:no-loop-carries-the-sign). The four groups therefore coincide with the congruence group intersected with $\Orth^+(T_\Co)$ (@cor:four-groups-decided), the congruence group itself being the union of that group with its $s_\zeta$-coset.
 :::
 
 With $\alpha$ the vector $\delta$ of @lem:coble-heegner-vector, $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ is the group $\Gamma^{\mathrm{Hdg}}_\Co$ of @prop:gamma-co-in-heegner-group.
@@ -1581,9 +1581,9 @@ b_{\operatorname{link}}
 The formula is integral and defines the correct hyperplane in $a^\perp$.
 It does not imply that $b_{\operatorname{link}}$ is a root of the orthogonal lattice.
 
-### Candidate reflection twist at a cusp {#sec-cusp-reflection-twist}
+### The composite involution at a cusp {#sec-cusp-coble-involution}
 
-At the full K3-lattice level one has the reflection twist $I_{\Co}=w_\alpha I_{\mathrm{En}}$.
+At the full K3-lattice level one has the composite involution $I_{\Co}=w_\alpha I_{\mathrm{En}}$.
 If a primitive isotropic line $e$ is orthogonal to $\alpha$, the involutions induce actions on the cusp quotient $e^\perp/e$.
 This suggests the cusp-level candidate $J_{\Co}=w_{\bar\alpha}J_{\mathrm{En}}$, where $\bar\alpha$ is the image of $\alpha$ in the cusp lattice.
 
@@ -1621,7 +1621,7 @@ Whether the displayed walls form a complete simple system is @prob:coxeter-compl
 Let $\Gamma\le\Orth(T_\Co)$ be any arithmetic subgroup (@def:hsd-arithmetic-subgroup) and let $e$ be a primitive isotropic vector (@def:isotropic-subspace) of $T_\Co$ whose line is a $0$-cusp of $\bD(T_\Co)/\Gamma$.
 Then
 $$e^{\perp}/\bZ e\cong I_{1,8}(2).$$
-In particular the four $0$-cusps of $F_{\Co,2}$ and the one $0$-cusp of $F^{\mathrm{un}}_{\Co}$ have one and the same cusp lattice, and the Coxeter data by which they differ are the images $\Gamma_e\le\Orth(I_{1,8}(2))$ of their stabilizers (@def:group-orbit), not the lattice.
+In particular the four $0$-cusps of $\bD(T_\Co)/R_{\gent}$ and the one $0$-cusp of $F^{\mathrm{un}}_{\Co}$ have one and the same cusp lattice, and the Coxeter data by which they differ are the images $\Gamma_e\le\Orth(I_{1,8}(2))$ of their stabilizers (@def:group-orbit), not the lattice.
 :::
 
 ::: {.proof}
@@ -1719,7 +1719,7 @@ It does not: $P$ contains all of $O(q_{U(2)})$, so only *some* action on the $U(
 That is @lem:cusp-image-is-the-stabilizer-of-a-class, which uses nothing beyond the two facts @lem:cusp-image-is-finite already records, and it is the reason the first of the two inputs this section used to name is no longer missing.
 :::
 
-**What item 1 still waits on, at the four cusps of $F_{\Co,2}$.** One input, and the other is supplied.
+**What item 1 still waits on, at the four cusps of $\bD(T_\Co)/R_{\gent}$.** One input, and the other is supplied.
 Supplied at a labelled cusp in the shape of @prop:cusp-stabilizer-orthogonal-coble, that is for the representative $\eta=e$ of the $U(2)$ summand: the image is $\rho_K^{-1}(\Stab_{\Orth(q_K)}(e_0))$ with $e_0=[h/2]$, it contains every reflection of $K$, and the labelled chamber is the unpolarized chamber (@lem:cusp-image-is-the-stabilizer-of-a-class, @thm:labelled-chamber-is-the-unpolarized-chamber).
 What the four published representatives still need is the transport of that one class to each of them: for $\eta_i$ carried to $e$ by $g_i\in\Orth(T_\Co)$ the group $R_{\gent}$ is carried to $\rho^{-1}(\rho(g_i)P\rho(g_i)^{-1})$, so the class whose stabilizer is the image at the $i$-th cusp is $\rho(g_i)(e_0)$ and not $e_0$ unless $g_i$ normalizes $P$.
 So the image at a labelled cusp is now a single class of $A_K$ per cusp, and the four classes are computable from the four recorded representatives.
@@ -1751,7 +1751,7 @@ The reflections of $T_\Co$ that lie in $\widetilde\Orth^+(T_\Co)$ are given by @
 
 ## Integral-affine structures, dlt quotients, and stable models {#sec-integral-affine}
 
-### The AEGS dictionary {#sec-aegs-dictionary}
+### Correspondence between the degeneration data of AEGS {#sec-aegs-correspondence}
 
 AEGS relate five forms of degeneration data:
 
@@ -1774,12 +1774,12 @@ They become edge lengths, internal blowup parameters, and nodal-surgery sizes in
 A zero coordinate places the monodromy on a wall.
 If the wall corresponds to a visible curve, the zero can collapse a path joining two focus-focus singularities.
 
-The direct Coble theory should preserve this dictionary but must add the data of the fixed exceptional root and its quotient branch curve.
+The direct Coble theory should preserve this correspondence but must add the data of the fixed exceptional root and its quotient branch curve.
 
-### The Coble integral-affine package {#sec-coble-affine-package}
+### The tuple of integral-affine data {#sec-coble-integral-affine-tuple}
 
-::: {.definition #def:coble-affine-package title="candidate polarized Coble integral-affine package" defines="Coble integral-affine package"}
-A Coble integral-affine package is a tuple
+::: {.definition #def:coble-integral-affine-tuple title="The tuple $(B(\lambda),R_{\IA},E_{\IA},\iota_{\Co,IA},\iota_{\mathrm{dP,IA}})$" defines="$B(\lambda)$; $R_{\IA}$; $E_{\IA}$; $\iota_{\Co,IA}$; $\iota_{\mathrm{dP,IA}}$"}
+Consider the tuple
 
 \[
 \bigl(B(\lambda),R_{\IA},E_{\IA},
@@ -1794,7 +1794,7 @@ where
 
 3. $E_{\IA}$ records the visible class, collapsed path (@def:path-connectedness), or marked affine stratum associated with the exceptional root $\alpha$;
 
-4. the two affine involutions commute and preserve the full polarized package;
+4. the two affine involutions commute and preserve all five entries of this tuple;
 
 5. the quotient data predicts the branch curve $C$ and the divisor $R_{\wV}$ on a Coble dlt model (@def:dlt-model).
 :::
@@ -1815,7 +1815,7 @@ This is the same local operation used by AEGS for crossed nodes, but in the Cobl
 ### Required realization theorem {#sec-affine-realization}
 
 ::: {.problem #prob:affine-realization title="Required theorem (direct integral-affine realization)"}
-For every sufficiently divisible monodromy invariant in every direct Coble cusp chamber, construct a K3 divisor model $(\mcx,\mcr,\mce)\too(C,0)$ whose dual complex is the prescribed Coble integral-affine package.
+For every sufficiently divisible monodromy invariant in every direct Coble cusp chamber, construct a K3 divisor model $(\mcx,\mcr,\mce)\too(C,0)$ whose dual complex is the prescribed tuple.
 Conversely, show that every direct Coble degeneration admits such a model after finite base change and allowed dlt modification.
 :::
 
@@ -1827,7 +1827,7 @@ An affine symmetry is not automatically an algebraic involution.
 AEGS use limiting-period conditions and invariant component/gluing parameters to extend their involution over a general divisor model.
 The Coble version must also retain the exceptional root.
 
-::: {.problem #prob:algebraic-extension title="Required theorem (algebraic extension of the Coble package)"}
+::: {.problem #prob:algebraic-extension title="Required theorem (algebraic extension of the tuple of integral-affine data)"}
 A general divisor model with direct Coble monodromy admits commuting regular involutions $\iota_{\Co}$ and $\iota_{\mathrm{dP}}$ such that
 
 \[
@@ -1973,7 +1973,7 @@ For each direct Coble $0$-cusp, define a root to be relevant if a general crossi
 The maximal regions of combinatorial constancy of direct Coble stable pairs are exactly the cones of the generalized Coxeter semifan obtained from the direct Coble Coxeter diagram of @prob:coxeter-completeness and the intrinsic relevance marking.
 :::
 
-At the four $0$-cusps of $F_{\Co,2}$ the generalized semifan is a theorem, with the marking inherited by restriction from the Enriques semifans: @thm:coble-pair-semifan answers the three questions of this unit at each of them. At the one $0$-cusp of $F^{\mathrm{un}}_\Co$ there is no Enriques cusp above it to restrict from, and there the Coxeter part is @thm:coble-coxeter-semifan, a fan with one Type II ray; what is missing at that cusp is the marking, the dictionary from its nine simple roots to curves of the Coble surface, which @warn:coble-marking records.
+At the four $0$-cusps of $\bD(T_\Co)/R_{\gent}$ the generalized semifan is a theorem, with the marking inherited by restriction from the Enriques semifans: @thm:coble-pair-semifan answers the three questions of this unit at each of them. The $0$-cusps of $F_{\Co,2}$ sit over these four, and whether one of them splits is open (@lem:d2-degree-two-base(3)). At the one $0$-cusp of $F^{\mathrm{un}}_\Co$ there is no Enriques cusp above it to restrict from, and there the Coxeter part is @thm:coble-coxeter-semifan, a fan with one Type II ray; what is missing at that cusp is the marking, the dictionary from its nine simple roots to curves of the Coble surface, which @warn:coble-marking records.
 
 The theorem must determine cusp by cusp whether the irrelevant reflection group is finite, whether the semifan is an actual fan, and whether any Type II parabolic component consists entirely of irrelevant roots.
 
@@ -2085,7 +2085,7 @@ What is settled below is the shape of that complement and the published status o
 
 The unpolarized form of the open identification is published: [@DK13, Prop. 3.2] identifies the moduli space $\mcm_\Co$ of classical Coble surfaces with an open subset of $\bD(N)/\Orth(N)$, where $N=\langle2\rangle\oplus E(2)$ with $E=U\oplus E_8$ [@DK13, (3.6)], and that $N$ is $T_\Co$ by @prop:coble-transcendental.
 Two qualifications belong with it.
-The group is the whole orthogonal group, so the quotient is $F^{\mathrm{un}}_\Co=\bD(T_\Co)/\Orth(T_\Co)$ and not the $\Gamma_{\Co,2}^{\mathrm{dir}}\backslash\bD_\Co$ of the clause: the passage from $\Orth(T_\Co)$ to the finite-index subgroup $\Gamma^{\mathrm{dir}}_{\Co,2}$ of @def:direct-group, which lies inside $\Orth^+(T_\Co)$ (@lem:minus-id-in-direct-group(2)), is @prob:B25, and the two-element ambiguity its proof recorded is decided: the sign is in the orbifold group of @def:geometric-monodromy (@thm:sign-is-isotropy) and in no loop (@thm:no-loop-carries-the-sign).
+The group is the whole orthogonal group, so the quotient is $F^{\mathrm{un}}_\Co=\bD(T_\Co)/\Orth(T_\Co)$ and not the $\Gamma_{\Co,2}^{\mathrm{dir}}\backslash\bD_\Co$ of the clause: the passage from $\Orth(T_\Co)$ to the finite-index subgroup $\Gamma^{\mathrm{dir}}_{\Co,2}$ of @def:labeled-centralizer-image, which lies inside $\Orth^+(T_\Co)$ (@lem:minus-id-in-labeled-centralizer(2)), is @prob:B25, and the two-element ambiguity its proof recorded is decided: the sign is in the orbifold group of @def:geometric-monodromy (@thm:sign-is-isotropy) and in no loop (@thm:no-loop-carries-the-sign).
 And the Coble surfaces of [@DK13, §3] are the blowups of ten nodes of an irreducible plane sextic, so the proposition covers the unpolarized Coble moduli space and not the labeled tuple of @sec-labeled-lattice-data.
 
 The complement is not empty and contains the whole root arrangement: @thm:direct-period-misses-root-walls.
@@ -2174,7 +2174,7 @@ Under this isomorphism:
 
 Target theorem B is the comparison theorem of @sec-central-problem.
 **Status, clause by clause, and it is a target theorem.** Of the six clauses, the first is decided: the direct and Heegner arithmetic groups agree, at $\Gamma^{\mathrm{dir}}_{\Co,2}=\Gamma^{\mathrm{Hdg}}_{\Co,2}=\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ (@cor:four-groups-decided, with the loop and isotropy readings separated at @thm:no-loop-carries-the-sign and @thm:sign-is-isotropy).
-The other five are not established: the commuting period diagram is @prob:period-diagram, clause four needs the folded diagrams that clause three of Target theorem A owes, clause five needs the descended ramification divisor's identity with the restriction of $R_Z$ and the marking dictionary (@def:coble-descended-ramification, @warn:coble-marking), and clause six needs clause two of Target theorem A.
+The other five are not established: the commuting period diagram is @prob:period-diagram, clause four needs the folded diagrams that clause three of Target theorem A owes, clause five needs the descended ramification divisor's identity with the restriction of $R_Z$ and the identification of the marked root (@def:coble-descended-ramification, @warn:coble-marking), and clause six needs clause two of Target theorem A.
 The canonical isomorphism itself, at the head of the statement, is not established either, and nothing in this report proves it.
 Target theorem A is a substantial independent theorem and an intermediate strategy, but it becomes a proof of the Heegner statement only after Target theorem B is established.
 
@@ -2205,6 +2205,8 @@ The strategy requires the following sequence.
 ::: {.problem #prob:A1 title="A1. Root-orbit and embedded-component lemma"}
 The relevant roots form one orbit under the actual degree-$2$ Enriques group, or the chosen component is otherwise specified intrinsically.
 The stabilizer image on $T_{\Co}$ is computed.
+
+Both clauses stand, and they stand differently. The first is settled affirmatively: the relevant roots are the $(-2)$ vectors of $T_\En$ with Coble complement, and they are one $\gent$-orbit, by [@Ste91, 2.10 and 3.6] (@thm:coble-root-orbit-uniqueness-published), so the alternative of specifying a component intrinsically is not needed. The second is @def:gamma-co-en, and for $\gent$ it is evaluated in @prop:gamma-co-images(3) as $R_{\gent} = \bar\rho^{-1}(P)$; items (1) and (2) there are the images for the other two Enriques-side groups, and the image for the monodromy group $\Gamma_\Co$ is not among the three.
 :::
 
 ::: {.problem #prob:A2 title="A2. Root-marked universal-family lemma"}
@@ -2242,7 +2244,7 @@ With A1--A8, the conclusion follows by normality and finite birationality.
 
 The following ingredients are available.
 
-- The root complement $T_{\Co}$ and reflection twist are explicit.
+- The root complement $T_{\Co}$ and the composite involution are explicit.
 
 - The open local Coble quotient and stable divisor are explicit.
 
@@ -2275,7 +2277,7 @@ Each of these steps requires a proof; the chain A1--A8 states the required lemma
 #### Autonomous outline {#sec-strategy-autonomous-outline}
 
 This strategy never defines the direct Coble objects as a locus in Enriques moduli.
-It begins with the direct cover datum of Definition (direct resolved Coble cover datum) (@def:direct-cover-datum), computes its period theory, and reproduces Coble analogues of the AEGS constructions.
+It begins with the tuple of K3-cover data of @def:resolved-coble-cover-tuple, computes its period theory, and reproduces Coble analogues of the AEGS constructions.
 Only after the autonomous compactification theorem is proved does one compare it with the Heegner divisor.
 
 #### Open moduli and periods {#sec-strategy-B-section2}
@@ -2321,14 +2323,14 @@ The transition isometry $g = \psi_{b'}^{-1}\psi_b\colon H^2(X_b,\ZZ)\iso H^2(X_{
 This is not in conflict with @thm:chamber-clause-fails: that theorem compares two members with different periods that share their labels, and shows that the labels alone do not determine the chamber. The chamber is a function of the marked period — the datum the moduli stack carries — and not of the labels alone.
 :::
 
-::: {.lemma #lem:minus-id-in-direct-group title="the label centralizer contains $-\id_{T_\Co}$, and its image lies in $\Orth^+$"}
+::: {.lemma #lem:minus-id-in-labeled-centralizer title="the label centralizer contains $-\id_{T_\Co}$, and its image lies in $\Orth^+$"}
 
-Let $b$ be a one-node member of @prop:one-node-family with $\Pic(\widehat X_b) = S_{\Co,b}$, and let $Z=Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha,\mcc}$ be the centralizer of @def:direct-group at that member.
+Let $b$ be a one-node member of @prop:one-node-family with $\Pic(\widehat X_b) = S_{\Co,b}$, and let $Z=Z_{\Orth(\lkt)}(I_\Co,I_{\mathrm{dP}})_{H,\alpha,\mcc}$ be the centralizer of @def:labeled-centralizer-image at that member.
 Then
 
 1. $g\definedas\id_{S_\Co}\oplus(-\id_{T_\Co})$ is an isometry of $\lkt$ lying in $Z$, so its image $-\id_{T_\Co}$ lies in $\Gamma^{\mathrm{dir}}_{\Co,2}$;
 
-2. $-\id_{T_\Co}\in\Orth^+(T_\Co)$, so the image of $Z$ lies in $\rho_{T_\Co}^{-1}(P)\intersect\Orth^+(T_\Co)$, which is $\Gamma^{\mathrm{dir}}_{\Co,2}$ by @prop:direct-eq-heegner, and the target $O^+(T_\Co)$ of @def:direct-group is the correct one.
+2. $-\id_{T_\Co}\in\Orth^+(T_\Co)$, so the image of $Z$ lies in $\rho_{T_\Co}^{-1}(P)\intersect\Orth^+(T_\Co)$, which is $\Gamma^{\mathrm{dir}}_{\Co,2}$ by @prop:direct-eq-heegner, and the target $O^+(T_\Co)$ of @def:labeled-centralizer-image is the correct one.
 :::
 
 ::: {.proof}
@@ -2339,7 +2341,7 @@ Both discriminant groups are $2$-torsion: $A_{T_\Co}\cong(\bZ/2)^{11}$ by @prop:
 So $g$ acts on $A_{S_\Co}\oplus A_{T_\Co}$ as $(-\id,\id)=(\id,\id)$, that is trivially, and hence preserves every subgroup; so $g\in\Orth(\lkt)$.
 
 *The labels.*
-$I_\Co$ acts by $+\id$ on $S_\Co$ and by $-\id$ on $T_\Co$ (@cons:reflection-twist, @prop:coble-transcendental), and $g$ acts by the same two scalars, so $gI_\Co=I_\Co g$.
+$I_\Co$ acts by $+\id$ on $S_\Co$ and by $-\id$ on $T_\Co$ (@cons:coble-involution, @prop:coble-transcendental), and $g$ acts by the same two scalars, so $gI_\Co=I_\Co g$.
 $I_{\mathrm{dP}}$ commutes (@def:commutative-diagram) with $I_\Co$, hence preserves each of the two lattices, and $g$ is a scalar on each, so $gI_{\mathrm{dP}}=I_{\mathrm{dP}}g$.
 $H$ and $\alpha$ lie in $S_\Co$, both being fixed by $I_\Co$ (@sec-labeled-lattice-data), and $g$ is the identity on $S_\Co$, so $gH=H$ and $g\alpha=\alpha$.
 For the chamber: at this member $\Delta_b\subseteq S_{\Co,b}$ and $\mcc_b$ is cut out of $\mathcal C_b$ by the sign conditions of @thm:chamber-pinned-by-labels, parts (1) and (2), and $g$ is the identity on $S_{\Co,b}$, hence on $\mathcal C_b\subseteq\Pic(\widehat X_b)\otimes\RR$, so it preserves $\mcc_b$; that is part (3) of the same theorem applied to $\id\in\Orth(S_{\Co,b})$, whose hypothesis at $H_b$ and $\alpha_b$ it meets.
@@ -2353,14 +2355,14 @@ The criterion by cone (@def:closed-cone) components must not be transported here
 For signature $(2,9)$ the set $\set{v: v^2>0}$ is connected — $t\mapsto(\cos t,\sin t,0,\dots,0)$ joins a vector of square $1$ to its negative inside it — so there are no two halves for $-\id$ to exchange, and the cone reading has no content here.
 :::
 
-::: {.warning #warn:direct-group-orth-plus title="withdrawn: the group of @def:direct-group is inside $\Orth^+$, and the coset recorded at @cor:four-groups-decided stands"}
+::: {.warning #warn:labeled-centralizer-orth-plus title="withdrawn: the group of @def:labeled-centralizer-image is inside $\Orth^+$, and the coset recorded at @cor:four-groups-decided stands"}
 This warning recorded three landed statements as unable to stand, on the ground that $-\id_{T_\Co}$ lies outside $\Orth^+(T_\Co)$. It does not, and the ground is a definition read outside its hypothesis.
 
 $\Orth^+(L)$ is $\Theta_\bR(L)$, the kernel of the real spinor norm (@def:lattice-spinor-kernels), and $\spinornorm_\bR(-\id_L) = [(-1)^p]$ on a lattice of signature $(p,q)$, so $-\id_L\in\Orth^+(L)$ exactly when $p$ is even (@lem:minus-identity-spinor-norm). Here $p = 2$. The reading the warning used is [@AEGS25, §5.1], which defines $O^+(\Lambda)$ for a hyperbolic lattice of signature $(1,r-1)$, where the positive cone is one of the two halves of $\set{v: v^2>0}$; for signature $(2,9)$ that set is connected, and the corpus's identification of the two readings is @prop:spinor-plus-cone-components, stated for signature $(1,n)$. The element $s_\zeta$, on the other hand, is outside $\Orth^+(T_\Co)$ under the corpus's definition, $\spinornorm_\bR(s_\zeta) = [-\tfrac12\cdot 2] = [-1]$, which is what carries the $s_\zeta$-coset of @cor:four-groups-decided.
 
 So the three statements stand as written:
 
-1. The target of @def:direct-group, $O^+(T_\Co)$, is the correct one, and the image of the centralizer lies in it (@lem:minus-id-in-direct-group(2)).
+1. The target of @def:labeled-centralizer-image, $O^+(T_\Co)$, is the correct one, and the image of the centralizer lies in it (@lem:minus-id-in-labeled-centralizer(2)).
 
 2. @prop:direct-eq-heegner, the paragraph resolving @prob:group-identification, and @cor:four-groups-decided: $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ holds as stated.
 
@@ -2381,7 +2383,7 @@ By @prob:B24 the complement of $\mathrm{im}(p)$ is a union of Heegner divisors, 
 
 ::: {.theorem #prob:B25 title="B2.5. Direct monodromy theorem — proved"}
 
-The deck group of the marking cover and the geometric monodromy group of @def:geometric-monodromy differ by the isotropy of the moduli stack: the deck group is $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm1\}$, the monodromy of loops over the coarse moduli space (@thm:no-loop-carries-the-sign), and the orbifold monodromy group is $\Gamma^{\mathrm{dir}}_{\Co,2}$ (@thm:sign-is-isotropy). The dichotomy an earlier form of this statement carried — $\Gamma^{\mathrm{dir}}_{\Co,2}$ if the $\{\pm1\}$-cover of the period image is nontrivial and $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm1\}$ if it splits — is that difference, and both branches are computed. $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2} = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ in either case. The chamber datum is the member's own (@def:coble-polarization-classes, part 3), and by @lem:chamber-from-marked-period it is a function of the marked period, so no hypothesis on the labels beyond @sec-labeled-lattice-data enters.
+The deck group of the cover by markings and the geometric monodromy group of @def:geometric-monodromy differ by the isotropy of the moduli stack: the deck group is $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm1\}$, the monodromy of loops over the coarse moduli space (@thm:no-loop-carries-the-sign), and the orbifold monodromy group is $\Gamma^{\mathrm{dir}}_{\Co,2}$ (@thm:sign-is-isotropy). The dichotomy an earlier form of this statement carried — $\Gamma^{\mathrm{dir}}_{\Co,2}$ if the $\{\pm1\}$-cover of the period image is nontrivial and $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm1\}$ if it splits — is that difference, and both branches are computed. $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2} = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ in either case. The chamber datum is the member's own (@def:coble-polarization-classes, part 3), and by @lem:chamber-from-marked-period it is a function of the marked period, so no hypothesis on the labels beyond @sec-labeled-lattice-data enters.
 :::
 
 ::: {.proof}
@@ -2392,11 +2394,11 @@ The deck group of the marking cover and the geometric monodromy group of @def:ge
 
 *$O$ is connected* by @lem:b25-O-connected.
 
-*The two covers.* Two markings with the same period differ by a label-preserving isometry acting trivially on $\bD(T_\Co)$. Since $I_\Co$ acts by $-1$ on $T_\Co$, the element $-\id_{T_\Co}$ lies in $\Gamma_{\mathrm{lab}}$ — it pairs with $\id_{S_\Co}$ through the glue, $-\id = \id$ on the $2$-torsion of $A_{T_\Co}$ — and it acts trivially on the period domain, so the period cover $O\to O/\Gamma_{\mathrm{lab}} = \mathfrak M$ has deck group $\Gamma_{\mathrm{lab}}/\{\pm1\}$ and not $\Gamma_{\mathrm{lab}}$. The marking cover is the $\{\pm1\}$-cover of $O$ above it, of degree (@def:graded-object) $\abs{\Gamma_{\mathrm{lab}}}$ over $\mathfrak M$; it trivializes $T_\Co$, since a marking is an isometry of $H^2$ carrying the labels, and the monodromy is the deck group of *that* cover.
+*The two covers.* Two markings with the same period differ by a label-preserving isometry acting trivially on $\bD(T_\Co)$. Since $I_\Co$ acts by $-1$ on $T_\Co$, the element $-\id_{T_\Co}$ lies in $\Gamma_{\mathrm{lab}}$ — it pairs with $\id_{S_\Co}$ through the glue, $-\id = \id$ on the $2$-torsion of $A_{T_\Co}$ — and it acts trivially on the period domain, so the quotient map $O\to O/\Gamma_{\mathrm{lab}} = \mathfrak M$, a covering of stacks in the sense of [@Noo05, Definition 18.10], has deck group $\Gamma_{\mathrm{lab}}/\{\pm1\}$ and not $\Gamma_{\mathrm{lab}}$. The cover by markings is the $\{\pm1\}$-cover of $O$ above it, of degree (@def:graded-object) $\abs{\Gamma_{\mathrm{lab}}}$ over $\mathfrak M$; it trivializes $T_\Co$, since a marking is an isometry of $H^2$ carrying the labels, and the monodromy is the deck group of *that* cover.
 
 *What that leaves, and what answers it.* Over the coarse moduli space the monodromy is $\Gamma_{\mathrm{lab}}/\{\pm1\}$ and no loop carries $-\id_{T_\Co}$ (@thm:no-loop-carries-the-sign), while the orbifold monodromy of @def:geometric-monodromy is $\Gamma_{\mathrm{lab}}$ itself, the sign being the isotropy $I_\Co$ that every member carries (@thm:sign-is-isotropy):
 $$\Gamma^{\mathrm{geom}}_{\Co,2} = \Gamma^{\mathrm{dir}}_{\Co,2},$$
-and the quotient branch is the same statement read over the coarse space. The two branches an earlier form of this paragraph carried are that distinction, not two unknowns. What @prob:B24 does not supply is the word itself: it identifies which walls the image meets (@def:replete-full-meet), hence which reflections the Heegner loops carry. The word is supplied by the arithmetic of @thm:coble-block-sign-in-w, which puts $\iota$ in $W(T_\Co)$; what it does not supply is the loop. Three facts about the ambiguity are established, and they are what the question starts from. First, it is genuine and internal to the label group, not a defect of the notation: $\iota\definedas\id_{S_\Co}\oplus(-\id_{T_\Co})$ is the involution $I_\Co$, it lies in $\Gamma^{\mathrm{dir}}_{\Co,2} = \rho_{T_\Co}^{-1}(P)\intersect\Orth^+(T_\Co)$ (@lem:minus-id-in-direct-group, part 1, and @prop:direct-eq-heegner), and it lies in $\Orth^+(T_\Co)$ because $\spinornorm_\bR(-\id_L) = [(-1)^p]$ with $p = 2$ (@lem:minus-identity-spinor-norm), equivalently because $\det(-1|_W) = (-1)^2 = 1$ on a positive $2$-plane (@prop:spinor-norm-orientation-classes(4)); so it is an element of the group the monodromy is asserted to equal, and the dichotomy asks which subgroup of that group is realized. Second, $\iota$ is not the square of any isometry of $\lkt$: from $g^2 = \iota$ one gets $g\iota = g\,g^2 = g^3 = g^2g = \iota g$, so $g$ preserves the two eigenspaces $S_\Co$ and $T_\Co$, and $g|_{T_\Co}$ is then an orthogonal complex structure (@def:calculus-module-complex-structure) on a space of signature $(2,9)$, which pairs positive vectors with positive and negative with negative and so forces both ranks even, against $9$. The sign therefore cannot arise as the square of an orbifold stabiliser, which is how $-1$ does enter the monodromy of the elliptic curves, where the local monodromy (@def:transport-and-monodromy) at $j=i$ has order $4$. Third, the branch "no loop carries it" is false one level up, where it can be checked: under the identification of the monodromy group of the degree-$2$ numerically polarized Enriques space with $\Gamma_{\En,2}$ that the corpus records (`writing/dissertation/sections/1-part-combinatorial/3-chapter-enriques-k3/475-our-cusps.md`:126, [@Ste91]) and uses in @def:gamma-co-groups, that group contains $I_\En$ itself — it commutes (@def:commutative-diagram) with $I_\En$ and fixes $h\in S_\En$ — and its image in $\Orth(T_\En)$ is $-\id_{T_\En}$; and that containment is of the group and not of the loop monodromy: the inference from the one to the other is what @thm:no-loop-carries-the-sign blocks in the Coble case, and it blocks it one level up for the same reason, where $I_\En$ is the isotropy of that moduli stack and $\delta^{\perp T_\En} = \eta(T_\Co)$ is the sublattice on which it acts by $-1$. That isotropy is not a loop of $\mathfrak M$, and the Coble statement does not follow from it, on the labelled base $\Gamma_\Co$ and $\widetilde\Orth^+(T_\Co)$ being equal up to $\pm\id$ (@thm:gamma-co-is-stable). So the two-element question that @qst:b25-sign-holonomy posed is answered on both readings it can be read in: the sign is in the orbifold group through the isotropy and in no loop, and $\epsilon$ is a word too (@thm:coble-block-sign-in-w).
+and the quotient branch is the same statement read over the coarse space. The two branches an earlier form of this paragraph carried are that distinction, not two unknowns. What @prob:B24 does not supply is the word itself: it identifies which walls the image meets (@def:replete-full-meet), hence which reflections are carried by the loops around the Heegner divisors. The word is supplied by the arithmetic of @thm:coble-block-sign-in-w, which puts $\iota$ in $W(T_\Co)$; what it does not supply is the loop. Three facts about the ambiguity are established, and they are what the question starts from. First, it is genuine and internal to the label group, not a defect of the notation: $\iota\definedas\id_{S_\Co}\oplus(-\id_{T_\Co})$ is the involution $I_\Co$, it lies in $\Gamma^{\mathrm{dir}}_{\Co,2} = \rho_{T_\Co}^{-1}(P)\intersect\Orth^+(T_\Co)$ (@lem:minus-id-in-labeled-centralizer, part 1, and @prop:direct-eq-heegner), and it lies in $\Orth^+(T_\Co)$ because $\spinornorm_\bR(-\id_L) = [(-1)^p]$ with $p = 2$ (@lem:minus-identity-spinor-norm), equivalently because $\det(-1|_W) = (-1)^2 = 1$ on a positive $2$-plane (@prop:spinor-norm-orientation-classes(4)); so it is an element of the group the monodromy is asserted to equal, and the dichotomy asks which subgroup of that group is realized. Second, $\iota$ is not the square of any isometry of $\lkt$: from $g^2 = \iota$ one gets $g\iota = g\,g^2 = g^3 = g^2g = \iota g$, so $g$ preserves the two eigenspaces $S_\Co$ and $T_\Co$, and $g|_{T_\Co}$ is then an orthogonal complex structure (@def:calculus-module-complex-structure) on a space of signature $(2,9)$, which pairs positive vectors with positive and negative with negative and so forces both ranks even, against $9$. The sign therefore cannot arise as the square of an orbifold stabiliser, which is how $-1$ does enter the monodromy of the elliptic curves, where the local monodromy (@def:transport-and-monodromy) at $j=i$ has order $4$. Third, the branch "no loop carries it" is false one level up, where it can be checked: under the identification of the monodromy group of the degree-$2$ numerically polarized Enriques space with $\Gamma_{\En,2}$ that the corpus records (`writing/dissertation/sections/1-part-combinatorial/3-chapter-enriques-k3/475-our-cusps.md`:126, [@Ste91]) and uses in @def:gamma-co-groups, that group contains $I_\En$ itself — it commutes (@def:commutative-diagram) with $I_\En$ and fixes $h\in S_\En$ — and its image in $\Orth(T_\En)$ is $-\id_{T_\En}$; and that containment is of the group and not of the loop monodromy: the inference from the one to the other is what @thm:no-loop-carries-the-sign blocks in the Coble case, and it blocks it one level up for the same reason, where $I_\En$ is the isotropy of that moduli stack and $\delta^{\perp T_\En} = \eta(T_\Co)$ is the sublattice on which it acts by $-1$. That isotropy is not a loop of $\mathfrak M$, and the Coble statement does not follow from it, the group of the labelled base being only $\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable(1)), with the equality itself open (@qst:gamma-co-sign-is-realised) and its transfer to $\Gamma_\Co$ the comparison of research#797, item 6. So the two-element question that @qst:b25-sign-holonomy posed is answered on both readings it can be read in: the sign is in the orbifold group through the isotropy and in no loop, and $\epsilon$ is a word too (@thm:coble-block-sign-in-w).
 :::
 
 ::: {.question #qst:b25-sign-holonomy title="The sign holonomy of the direct Coble stack"}
@@ -2443,7 +2445,7 @@ $I_\Co$ and $I_{\mathrm{dP}}$ are automorphisms of every member of the construct
 They commute with each other and fix $H$ and $\alpha$ (@sec-labeled-lattice-data), and each commutes (@def:commutative-diagram) with both label involutions, so each is an automorphism of the labelled object; with the identity and the product they form $(\bZ/2)^2$.
 
 *Their action on $T_\Co$.*
-$T_\Co=\alpha^{\perp}_{T_\En}$ and $I_\Co=w_\alpha I_\En$ acts there as $I_\En$, which is $-1$ on $T_\En$; so $I_\Co$ acts on $T_\Co$ by $-1$ (@cons:reflection-twist, @prop:coble-transcendental).
+$T_\Co=\alpha^{\perp}_{T_\En}$ and $I_\Co=w_\alpha I_\En$ acts there as $I_\En$, which is $-1$ on $T_\En$; so $I_\Co$ acts on $T_\Co$ by $-1$ (@cons:coble-involution, @prop:coble-transcendental).
 
 *Why the isotropy is in the representation.*
 A local system on a Deligne--Mumford stack is a functor on its fundamental groupoid, so it assigns to every automorphism of every object an automorphism of the fibre at that object; the orbifold monodromy representation of @def:geometric-monodromy is therefore defined on the isotropy groups as well as on the loops.
@@ -2453,7 +2455,7 @@ So $\iota$ is in the image, and with @thm:no-loop-carries-the-sign the image is 
 ::: {.remark title="the dichotomy of @prob:B25 is the coarse-versus-stacky distinction, and both branches are computed"}
 The two branches of the dichotomy are not two unknowns but two group functors, and both are now computed: $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm\id\}$ is the monodromy over the coarse moduli space, by loops (@thm:no-loop-carries-the-sign), and $\Gamma^{\mathrm{dir}}_{\Co,2}$ is the orbifold monodromy over the stack (@thm:sign-is-isotropy), the two differing by the isotropy $\{\pm\id\}$ that every member carries.
 @def:geometric-monodromy names the orbifold one, so the geometric entry of @cor:four-groups-decided is $\Gamma^{\mathrm{dir}}_{\Co,2}$.
-The first clause of @prob:B25, which asserts that the deck group of the marking cover and the geometric monodromy group coincide, is therefore false as it stands and is corrected at its line; the arithmetic identifications it records are unaffected.
+The first clause of @prob:B25, which asserts that the deck group of the cover by markings and the geometric monodromy group coincide, is therefore false as it stands and is corrected at its line; the arithmetic identifications it records are unaffected.
 :::
 
 ::: {.warning #warn:no-word-for-the-sign title="withdrawn: no word in the reflection group gives the sign"}
@@ -2502,9 +2504,9 @@ $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2} = \Gamma^\theta_\
 
 ::: {.corollary #cor:g3-g4-decided title="The two comparison entries left untouched: $G_3$ is the geometric monodromy, $G_4$ is strictly larger than it"}
 
-Write $G_1\definedas\Gamma^{\mathrm{geom}}_{\Co,2}$ (@def:geometric-monodromy), $G_2\definedas\Gamma^{\mathrm{dir}}_{\Co,2}$ (@def:direct-group), $G_3\definedas\Gamma^{\mathrm{Hdg}}_{\Co,2}$ and $G_4\definedas\Gamma^{\mathrm{cong}}_{\Co,2}$ — the entries $G_1$ to $G_4$ of the ledger of research#720, whose last two it left untouched. Then
+Write $G_1\definedas\Gamma^{\mathrm{geom}}_{\Co,2}$ (@def:geometric-monodromy), $G_2\definedas\Gamma^{\mathrm{dir}}_{\Co,2}$ (@def:labeled-centralizer-image), $G_3\definedas\Gamma^{\mathrm{Hdg}}_{\Co,2}$ and $G_4\definedas\Gamma^{\mathrm{cong}}_{\Co,2}$ — the entries $G_1$ to $G_4$ of the ledger of research#720, whose last two it left untouched. Then
 
-1. $G_1 = G_2 = G_3$. The geometric monodromy group in the sense of @def:geometric-monodromy is the direct group (@thm:sign-is-isotropy), and $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2}$ (@prop:direct-eq-heegner).
+1. $G_1 = G_2 = G_3$. The geometric monodromy group in the sense of @def:geometric-monodromy is the image of the labeled centralizer (@thm:sign-is-isotropy), and $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2}$ (@prop:direct-eq-heegner).
 2. $G_4\neq G_1$. The congruence group is the union of $\Gamma^{\mathrm{dir}}_{\Co,2}$ with its $s_\zeta$-coset, and $s_\zeta\notin\Orth^+(T_\Co)$ (@cor:four-groups-decided), whereas $G_1 = G_2$ lies in $\Orth^+(T_\Co)$.
 3. Read over the coarse moduli space instead of the stack, the monodromy is $H$, the complement of $\{\pm\id_{T_\Co}\}$ of @thm:no-loop-carries-the-sign, and no one of $G_2$, $G_3$, $G_4$ equals it: $H$ has index two in $G_2 = G_3$ and contains no $-\id_{T_\Co}$, which $G_4$ contains.
 :::
@@ -2513,7 +2515,7 @@ Write $G_1\definedas\Gamma^{\mathrm{geom}}_{\Co,2}$ (@def:geometric-monodromy), 
 
 (1) is @thm:sign-is-isotropy and @prop:direct-eq-heegner composed.
 For (2): $G_4 = \Gamma^{\mathrm{dir}}_{\Co,2}\cup s_\zeta\Gamma^{\mathrm{dir}}_{\Co,2}$ with $s_\zeta\notin\Orth^+(T_\Co)$ (@cor:four-groups-decided), and $\Gamma^{\mathrm{dir}}_{\Co,2} = \rho_{T_\Co}^{-1}(P)\intersect\Orth^+(T_\Co)\subseteq\Orth^+(T_\Co)$ (@prop:direct-eq-heegner), so $s_\zeta\in G_4\setminus G_1$.
-For (3): $H\{ \pm\id_{T_\Co}\} = \Gamma^{\mathrm{dir}}_{\Co,2}$ with $H\cap\{\pm\id_{T_\Co}\} = \{\id\}$ (@thm:no-loop-carries-the-sign), so $H$ has index two in $G_2 = G_3$; and $-\id_{T_\Co}\in\Gamma^{\mathrm{dir}}_{\Co,2}$ (@lem:minus-id-in-direct-group) lies in $G_4$ but not in $H$.
+For (3): $H\{ \pm\id_{T_\Co}\} = \Gamma^{\mathrm{dir}}_{\Co,2}$ with $H\cap\{\pm\id_{T_\Co}\} = \{\id\}$ (@thm:no-loop-carries-the-sign), so $H$ has index two in $G_2 = G_3$; and $-\id_{T_\Co}\in\Gamma^{\mathrm{dir}}_{\Co,2}$ (@lem:minus-id-in-labeled-centralizer) lies in $G_4$ but not in $H$.
 :::
 
 ::: {.problem #prob:B26 title="B2.6. Direct stable-pair theorem"}
@@ -2532,7 +2534,7 @@ Prove termination, completeness of the simple roots, and compute the chamber aut
 :::
 
 ::: {.problem #prob:B33 title="B3.3. Full-lattice lift theorem"}
-Lift every cusp-lattice involution or reflection-twist description through the discriminant gluing to the labeled K3 lattice datum.
+Lift every cusp-lattice involution or description as a composite with a root reflection through the discriminant gluing to the labeled K3 lattice datum.
 :::
 
 ::: {.problem #prob:B34 title="B3.4. Parabolic and elliptic exhaustion theorem"}
@@ -2546,7 +2548,7 @@ Construct, for every direct Coble cusp, the mirror anticanonical pair, moment po
 :::
 
 ::: {.problem #prob:B42 title="B4.2. Integral-affine realization theorem"}
-Realize every sufficiently divisible chamber point by a divisor model carrying the full Coble affine package.
+Realize every sufficiently divisible chamber point by a divisor model carrying the entire tuple of integral-affine data.
 :::
 
 ::: {.problem #prob:B43 title="B4.3. Affine-symmetry characterization theorem"}
@@ -2564,7 +2566,7 @@ Prove the dlt and slc properties, canonical bundle formula, positivity, and exac
 #### Sections 5--7 analogues: semifans and boundary classification {#sec-strategy-B-section5}
 
 ::: {.problem #prob:B51 title="B5.1. Coble recognizability theorem"}
-Prove that the direct divisor package is recognizable from limiting Hodge and combinatorial data in the sense required by the Alexeev--Engel compactification theory.
+Prove that the divisor data of a direct Coble stable pair are recognizable from limiting Hodge and combinatorial data in the sense required by the Alexeev--Engel compactification theory.
 :::
 
 ::: {.problem #prob:B52 title="B5.2. Geometric relevance theorem"}
@@ -2599,11 +2601,11 @@ The autonomous strategy has three advantages.
 
 Its principal difficulties are equally clear: direct monodromy, complete Vinberg calculations, algebraic realization of the fixed exceptional curve in degenerations, and a Coble-specific recognizable-divisor theorem.
 
-### Strategy C: direct K3-to-Coble folding or reflection twisting {#sec-strategy-folding}
+### Strategy C: direct K3-to-Coble folding or composition with a root reflection {#sec-strategy-folding}
 
 #### Candidate mechanism {#sec-strategy-C-mechanism}
 
-The identity $I_{\Co}=w_\alpha I_{\mathrm{En}}$ suggests that the Coble theory can be obtained from the K3 involution space $\mcf_{(2,2,0)}$ by a direct reflection-twisted folding, rather than by first folding to Enriques and then slicing by $\alpha^\perp$.
+The identity $I_{\Co}=w_\alpha I_{\mathrm{En}}$ suggests that the Coble theory can be obtained from the K3 involution space $\mcf_{(2,2,0)}$ by direct composition with a root reflection, rather than by first folding to Enriques and then slicing by $\alpha^\perp$.
 
 At a cusp, the candidate operation is $J_{\Co}=w_{\bar\alpha}J_{\mathrm{En}}$.
 
@@ -2684,7 +2686,7 @@ The required chain is:
 
 4. restriction of the AEGS family to the direct period space identified in steps 1--3;
 
-5. integral cusp and Vinberg calculations for the direct group;
+5. integral cusp and Vinberg calculations for the image of the labeled centralizer;
 
 6. normalized toroidal restriction and semitoroidal compatibility;
 
@@ -2982,7 +2984,7 @@ The table lists each statement, whether it is proved, and the section that prove
 | The level sets of the discriminant forms of $S_\Co$ and $T_\Co$ | computed exactly: $528$, $496$, $496$, $528$ and $528$, $528$, $496$, $496$ over the $2048$ classes | @rmk:coble-discriminant-levels |
 | A primitive $(-4)$-class in $T_{\Co,b}\intersect\Pic$ at the member $b_\star$ | proved, with the class $D_{1,+}-\widehat\iota_{\Co,b_\star}(D_{1,+})$ of two components of split ruling fibres | @thm:direct-period-meets-minus-four |
 | $T_{\Co}\cong\langle2\rangle\oplus U(2)\oplus E_8(2)$ | established | @sec-orthogonal-complement |
-| $S_{\Co}$ and reflection twist | established as lattice calculations | @sec-reflection-twist |
+| $S_{\Co}$ and the composite involution | established as lattice calculations | @sec-coble-involution |
 | Labeled embedding uniqueness | required theorem | @sec-labeled-lattice-data |
 | Degree-$2$ class is quasipolarized on $\wV$ | established | @sec-resolved-diagram |
 | $\lvert-2K_{\widetilde V}\rvert=\{C\}$ generically | established | @sec-anti-bicanonical |
@@ -2997,9 +2999,9 @@ The table lists each statement, whether it is proved, and the section that prove
 | Unpolarized Coxeter chamber | established | @sec-unpolarized-coxeter |
 | Polarized wall-slice arrangements | established computations | @sec-wall-slices |
 | Polarized Coble Coxeter diagrams | the lattice is one, $I_{1,8}(2)$, at every cusp (@thm:one-cusp-lattice); the folded diagrams at the four stabilizer images are not established | @sec-coxeter |
-| Integral-affine Coble package | defined; realization open | @sec-coble-affine-package |
+| The tuple of integral-affine data | defined; realization open | @sec-coble-integral-affine-tuple |
 | Direct dlt and stable-model theorem | open | @sec-coble-dlt |
-| Exact Coble semifans | established at the four $0$-cusps of $F_{\Co,2}$ by restriction, the marking inherited; no marking at the one $0$-cusp of $F^{\mathrm{un}}_\Co$ | @sec-direct-semifans, @sec-coble-pair-semifan |
+| Exact Coble semifans | established at the four $0$-cusps of $\bD(T_\Co)/R_{\gent}$ by restriction, the marking inherited (the $0$-cusps of $F_{\Co,2}$ sit over them, splitting open); no marking at the one $0$-cusp of $F^{\mathrm{un}}_\Co$ | @sec-direct-semifans, @sec-coble-pair-semifan |
 | Normalization of the Heegner KSBA closure | target theorem | @sec-heegner-target |
 | Target theorem B, clause by clause | clause 1 decided (@cor:four-groups-decided); clauses 2 to 6 not established, and with them the canonical isomorphism at the head of the statement | @sec-heegner-target |
 
@@ -3189,7 +3191,7 @@ On the resolution, the degree-$2$ class is a quasipolarization, $|-2K|$ consists
 \frac{1+\epsilon}{2}C+\epsilon R_{\wV}.
 \]
 
-The open problems are the labeled embedding rigidity, complete Vinberg chambers, algebraic realization of the Coble affine package, intrinsic relevance of walls, and the comparison between the autonomous compactification and the normalized Enriques Heegner closure; the equality of the labelled group with the geometric monodromy is no longer one of them, being @thm:sign-is-isotropy over the moduli stack and @thm:no-loop-carries-the-sign over the coarse space.
+The open problems are the labeled embedding rigidity, complete Vinberg chambers, algebraic realization of this tuple of integral-affine data, intrinsic relevance of walls, and the comparison between the autonomous compactification and the normalized Enriques Heegner closure; the equality of the labelled group with the geometric monodromy is no longer one of them, being @thm:sign-is-isotropy over the moduli stack and @thm:no-loop-carries-the-sign over the coarse space.
 
 The autonomous strategy organizes these issues into direct Coble analogues of the AEGS theorem chain.
 The Heegner strategy organizes them into arithmetic normalization, universal-family, and no-further-coarsening statements.

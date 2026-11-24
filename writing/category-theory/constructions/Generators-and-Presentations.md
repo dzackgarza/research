@@ -32,13 +32,15 @@ For emptiness take $R=\bZ$, $I=\{1,2\}$, $M=N=\bZ$, $s(a,b)=a$ and $t(a,b)=b$: b
 
 ::: {.proposition #prop:generating-frame-is-structure title="A generating frame is chosen structure"}
 Write $U_I\colon\operatorname{GenFrame}_I(R)\to R\text{-}\mathbf{Mod}$ for the comma-category projection $(M,s)\mapsto M$.
-Then $U_I$ is faithful and is not full, and its fibre over $M$ is the discrete category on the set of surjections $R^{(I)}\twoheadrightarrow M$.
+Then $U_I$ is faithful, and its fibre over $M$ is the discrete category on the set of surjections $R^{(I)}\twoheadrightarrow M$.
+Moreover, $U_I$ is not full if $I\neq\varnothing$ and $R\neq0$; it is full if $I=\varnothing$ or $R=0$.
 Hence a generating frame (@def:generating-frame) is a chosen object of a fibre of $U_I$, and $M$ admits one exactly when that set is nonempty.
 :::
 
 ::: {.proof}
 A morphism of $\operatorname{GenFrame}_I(R)$ is an $R$-linear map subject to a condition, so $U_I$ is injective (@def:injective-map) on morphisms and faithful.
-It is not full: for $I$ a one-element set, $M=N=R$ and $s=t=\id_R$, multiplication by $r\in R$ is a morphism $(R,s)\to(R,t)$ only when $r=1$.
+Suppose $I\neq\varnothing$ and $R\neq0$. Choose $i\in I$ and let $s=t\colon R^{(I)}\twoheadrightarrow R$ be projection onto the $i$th coordinate. The zero $R$-linear endomorphism of $R$ is not a morphism $(R,s)\to(R,t)$, since $0\circ s\neq t$; hence $U_I$ is not full.
+If $I=\varnothing$, any surjection $R^{(I)}=0\twoheadrightarrow M$ forces $M=0$. If $R=0$, every $R$-module is zero. In either case all morphisms between the available framed objects are the unique zero-module morphisms, so $U_I$ is full.
 A morphism $(M,s)\to(M,s')$ over $\id_M$ is the identity of $M$ together with the requirement $s=s'$, so the fibre has no morphisms other than identities.
 :::
 

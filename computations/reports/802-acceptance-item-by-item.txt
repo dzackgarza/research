@@ -1,0 +1,56 @@
+research#802 — acceptance item by item
+read at d33b0e5ab8ad253fc30fca4f1862b29a94218b90
+
+1. "the statement proved on a page of writing/ and read MET by one Kimi review"
+NOT MET. The statements are not proved on a page and no Kimi review has read
+them; both clauses of #802 are refuted instead.
+
+2. "or refuted with a counterexample"
+MET, by a counterexample for each clause, each proved on its own:
+
+  (a) the phi-marked clause, the marked Coble covers against D(T_Co) - Z.
+      Refuted at writing/coble/lattices-and-moduli/marked-coble-covers-and-
+      the-period-map.md:96, prop:phi-marked-is-not-the-period-domain: the period
+      map is essentially surjective (thm:coble-period-surjectivity) and faithful
+      and not full, and an equivalence must be all three. The counterexample is
+      the pair of marked covers of prop:marked-coble-period-not-injective
+      (same page, :25): equal periods, no isomorphism.
+      Objects and isotropy, same page :73,
+      lem:phi-marked-objects-and-automorphisms: Aut(X,iota,phi) = {id} and every
+      morphism set is empty or a singleton, so the marked groupoid is discrete;
+      the covering involution satisfies phi o iota^* = rho o phi != phi and is
+      therefore not an automorphism of the marked object, unlike on a labelled
+      object; the markings of one surface form a torsor under the centraliser of
+      rho, and the period sees the marking only through the T_Co component.
+      The exact statement decided is named at same page :117,
+      rmk:phi-marked-what-is-decided(1): "a marked Coble cover is determined up
+      to isomorphism by its period and every period off Z occurs".
+
+  (b) the unmarked clause, the Coble stack against [(D(T_Co) - Z)/G].
+      Refuted at writing/coble/lattices-and-moduli/moduli-construction.md:1201,
+      prop:no-identification-with-the-period-domain, clause (3) at :1211, by the
+      one unnodal classical witness: every object of [U/G] over a point has
+      finite automorphism group (clause (1) at :1205, lem:period-stabiliser-
+      finite), and that object's automorphism group is infinite
+      (lem:coble-automorphism-group-is-infinite(3); [@CD12, Theorem 3.5]).
+      Finite-isotropy objects of M_Co exist and are distinct from the witness
+      (rmk:coble-automorphisms-infinite(2), :1143). No equivalence exists whose
+      group could be identified as Otilde+(T_Co), so the clause of #802 that
+      would read G = Otilde+(T_Co) off it has nothing to read.
+
+  The two refutations are independent: (a) uses the isotropy of the
+  phi-marked objects and the failure of fullness at the pair of
+  prop:marked-coble-period-not-injective, and nothing from (b); (b) uses the
+  unlabelled stack, and nothing from (a). The eleven-class-labelled stack
+  decides neither: it is a third object, with isotropy {id, iota} where a
+  phi-marked object has isotropy {id}.
+
+3. Correction carried from the earlier round:
+writing/coble/lattices-and-moduli/local-systems-of-lattices-and-monodromy.md:186
+states that for no subgroup of Orth(T_Co) does a quotient presentation of the
+unmarked Coble family exist, and says nothing about a phi-marked equivalence.
+
+Not run: the rendered book gate (CI renders writing/), and tests/engineering
+(needs dzack_research). scripts/docs_check.py --source runs all eight source
+checks and reports 29 citation-key findings, none of them on the page touched
+here.

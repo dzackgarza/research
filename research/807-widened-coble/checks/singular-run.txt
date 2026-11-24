@@ -1,0 +1,126 @@
+// ** redefining partialDegree (;return();)
+// ** redefining belongTo (;return();)
+// ** redefining variableWithSmallestPositiveDegree (;return();)
+// ** redefining smallestProperSimpleFactor (;return();)
+// ** redefining smallestProperFactor (;return();)
+// ** redefining extensionContainingSmoothPoint (;return();)
+// ** redefining RothsteinTragerResultant (;return();)
+// ** redefining RothsteinTrager (;return();)
+// ** redefining absFactorizeIrreducible (;return();)
+// ** redefining absFactorize (;return();)
+// ** redefining absFactorize (;return();)
+// ** redefining absFactorizeBCG (;return();)
+// ** redefining absFactorizeBCG (;return();)
+check q1 = w1 + 6 (x - z) z^2: 0
+C_0 smooth: dimension of the affine cone over its singular locus (0 means empty): 0
+== Z8
+degree: 6
+genus of the projective curve: 0
+number of absolute factors: 1
+multiplicities (first entry belongs to the constant factor): 1,1
+restriction to the line z = 0: x6
+at o: Milnor number 15  delta 8
+at o: normal form
+About the singularity :
+          Milnor number(f)   = 15
+          Corank(f)          = 1
+          Determinacy       <= 16
+Guessing type via Milnorcode:  A[15]
+
+Computing normal form ...
+   Arnold step number 2
+The singularity
+   y2-2x3y-6xy3+16y4+x6+6x4y2-16x3y3+9x2y4
+is R-equivalent to A[15].
+   Milnor number = 15
+   modality      = 0
+z2+x16
+at ( 1 , 0 ): value 0  Milnor number 1  delta 1
+normal form
+About the singularity :
+          Milnor number(f)   = 1
+          Corank(f)          = 0
+          Determinacy       <= 2
+Guessing type via Milnorcode:  A[1]
+
+Computing normal form ...
+   Arnold step number 2
+The singularity
+   12x2+8y2
+is R-equivalent to A[1].
+   Milnor number = 1
+   modality      = 0
+2x2+y2
+at ( 0 , 0 ): value 0  Milnor number 1  delta 1
+normal form
+About the singularity :
+          Milnor number(f)   = 1
+          Corank(f)          = 0
+          Determinacy       <= 2
+Guessing type via Milnorcode:  A[1]
+
+Computing normal form ...
+   Arnold step number 2
+The singularity
+   9x2+16y2
+is R-equivalent to A[1].
+   Milnor number = 1
+   modality      = 0
+2x2+y2
+== general member t = 1 of the first pencil: genus 1
+check q2 = w2 - 3 (x - 2z) z^2: 0
+C_0 smooth: dimension of the affine cone over its singular locus (0 means empty): 0
+== Z64
+degree: 6
+genus of the projective curve: 0
+number of absolute factors: 1
+multiplicities (first entry belongs to the constant factor): 1,1
+restriction to the line z = 0: x6
+at o: Milnor number 15  delta 8
+at o: normal form
+About the singularity :
+          Milnor number(f)   = 15
+          Corank(f)          = 1
+          Determinacy       <= 16
+Guessing type via Milnorcode:  A[15]
+
+Computing normal form ...
+   Arnold step number 2
+The singularity
+   y2-2x3y+30xy3+20y4+x6-30x4y2-20x3y3+225x2y4+108xy5-540y6
+is R-equivalent to A[15].
+   Milnor number = 15
+   modality      = 0
+z2+x16
+at ( 2 , 0 ): value 0  Milnor number 1  delta 1
+normal form
+About the singularity :
+          Milnor number(f)   = 1
+          Corank(f)          = 0
+          Determinacy       <= 2
+Guessing type via Milnorcode:  A[1]
+
+Computing normal form ...
+   Arnold step number 2
+The singularity
+   -375x2+64y2
+is R-equivalent to A[1].
+   Milnor number = 1
+   modality      = 0
+2x2+y2
+at ( -3 , 0 ): value 0  Milnor number 2  delta 1
+normal form
+About the singularity :
+          Milnor number(f)   = 2
+          Corank(f)          = 1
+          Determinacy       <= 3
+Guessing type via Milnorcode:  A[2]
+
+Computing normal form ...
+   Arnold step number 2
+The singularity
+   -16y2-200x3-24xy2
+is R-equivalent to A[2].
+   Milnor number = 2
+   modality      = 0
+y2+x3

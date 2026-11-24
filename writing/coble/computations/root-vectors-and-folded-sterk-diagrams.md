@@ -77,7 +77,7 @@ $s^2_k = w_k + w_{18-k}$, together with $s^2_9 = w_9$ and $s^2_{10} = w_{18}+w_{
 
 ::: {#cons:sterk-3-root-vectors .construction title="Sterk 3: 12 nodes, norms $(-2,-4,-4,-4,-4,-4,-4,-4,-2,-4,-4,-4)$" defines="$w_\alpha$; $I$; $s^3_{11}$; $s^3_{12}$"}
 
-This case is reflection-twisted rather than a plain permutation.
+This case uses a composite involution rather than a plain permutation.
 Set
 $$
 w_\alpha(x) = x + \tfrac12\inner{v_{22}}{x}\, v_{22},

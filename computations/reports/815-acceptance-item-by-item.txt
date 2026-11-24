@@ -1,0 +1,15 @@
+#815 residual-repair acceptance
+Base independently read: c17f2f9045e6fd4e6dd139913560e1101207a298
+Page repair commit: 811f407fa9b3908227cc003aa03e74e8f9fa7d71
+
+1. MET — Type II now uses Kondo §2, Table 3's (I4*,I1,I1), records Euler contribution 10+1+1=12, and retains n=1 through the explicit intersection of the two models' possibilities {1,2} and {1,4,5}: writing/coble/coble-moduli/coble-surfaces-with-finite-automorphism-group.md:284.
+2. MET — Types VI and VII no longer identify supersingular covers from Lemma 2.1 or Proposition 3.16. The page states that Proposition 3.16 assumes supersingularity, Lemma 2.1 does not prove rho(X)=22, and the missing step is rank L-=12 or an independent supersingularity proof; the proved rho(X)>=20/21 bounds remain: writing/coble/coble-moduli/coble-surfaces-with-finite-automorphism-group.md:287-288,296,306-335.
+3. MET — The fibration dictionary distinguishes an actual general-fibre class [F] from the primitive generator f, records [F]=2f in the index-two Halphen case, and gives the resulting special-bisection pairings: writing/coble/coble-moduli/coble-surfaces-with-finite-automorphism-group.md:164.
+4. MET — The alpha=1 splitting and its expansion now read C1=Q1Q2 and L-R=u1^2v0^2-u0^2v1^2=Q1Q2, with no factor 2: writing/coble/coble-moduli/coble-surfaces-with-finite-automorphism-group.md:403,414.
+5. MET — The distinct-centre clause now says exactly ten double points, each an ordinary node or an ordinary cusp, while preserving the exclusion of a presentation by ten distinct ordinary nodes: writing/coble/coble-moduli/coble-surfaces-with-finite-automorphism-group.md:461.
+
+Preservation: MET — The seven other independent-review findings were not edited. The nine-row classification table is byte-for-byte identical to c17f2f9045e6fd4e6dd139913560e1101207a298.
+Focused assertions: PASS — All five page assertions; the type-II Euler computation and symbolic expansion; all page-local external citations resolve and new citations carry statement/section/table locators; no printed-page/PDF-page locator occurs on the touched page.
+Focused render: PASS — `uvx --from quarto-cli quarto render coble/coble-moduli/coble-surfaces-with-finite-automorphism-group.md --to html` in `writing/.book`. Both post-render hooks were disabled for the isolated one-page render and the exact configuration was restored. The rendered page contains no unresolved DK25/Kon21 citation or stale C1 equation.
+Not run: No full suite, whole-book source check, or whole-book render. `just docs-assets` copied the bibliography and macros but its figure-staging step stopped at an unrelated unresolved Git-LFS pointer; the focused page render does not use that figure.
+Scope: This five-item repair does not claim that the broad #815 investigation closes; a later independent read is still required.

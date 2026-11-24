@@ -1,0 +1,17 @@
+=== 1. the integrality and level-2 boundary for E(e,k), k in K_ev
+   k = d_1 + d_2 (K_ev, not 2K)   integral isometry True | = id mod 2K False | fixes Ze True
+   k = 2d_1 (in 2K)               integral isometry True | = id mod 2K True | fixes Ze True
+
+=== 2. the 35-element level-2 family
+   size 35 | all integral isometries True | all = id mod 2K True
+   those fixing the line Ze: 21 (the seven r_d, the seven t_K(e,2d), the seven r_(e+d))
+
+=== 3. additivity in the second argument
+   E(e,2d_1)E(e,2d_2) = E(e,2d_1+2d_2) exactly: True
+
+=== 4. the central shear sigma of the plane parabolic
+   sigma = id mod 2B: False | sigma^2 = id mod 2B: True | both integral isometries: True
+
+=== 5. the level-4 datum
+   dim {A : A^t Gbar + Gbar A = 0} = 45 | dim spanned by the 35 elements = 21
+   witness r_(e+d1+d2) r_(e+d1-d2): isometry True | = id mod 2K True | class inside the span: True

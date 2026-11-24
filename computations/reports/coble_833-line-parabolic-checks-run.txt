@@ -1,0 +1,31 @@
+=== 1. the eight even-weight vectors in D = <-1>^7
+  det of d_1+d_7,...,d_6+d_7,2d_7 in the d-coordinates: 2
+  index of D^ev in D: 2 (2 expected: D^ev is the even-norm sublattice)
+  each has even square in D: True
+
+=== 2. GL_2(Z) = <transposition, shear>
+  word search over {W, T, T^-1}, entries bounded by 25 , length at most 10
+  [[0,-1],[1,0]] reached at length: 5  (None = not reached)
+  -I reached at length: 10  (None = not reached)
+  |subgroup elements found| = 1862
+
+=== 3. K_ev/2K for K = U_2 perp D
+  dim K_ev/2K over F_2: 8 (8 expected)
+
+=== 4. an infinite-order element of Stab_O(e_1) inside ker rho
+  (2d_1)^2 = -4 (in K_ev: even)
+  Gram preserving: True
+  integral: True
+  fixes e_1: True
+  congruent to id mod 2: True
+  s^m = id for m = 1,2,3,4: [False, False, False, False]
+  s^2 - id has displacement 2*(2e_2 + 2d_1) on f_2: [0, 0, 8, 0, 4, 0, 0, 0, 0, 0, 0]
+
+=== 5. the arithmetic the page quotes
+  527 * 89 181 388 800 = 46998591897600  (= |O(q)| = 46 998 591 897 600)
+  46 998 591 897 600 / 23 715 = 1981808640 exact: True  (= |Stab_{O(q)}(J)| = 1 981 808 640)
+  1 981 808 640 / 247 726 080 = 8  (= 8 = [Stab(J) : rho(Stab(P_0))])
+  30 240 * 2^13 = 247726080
+  8 * 23 715 = 189720    3 * 189 720 = 569160
+  2^18 * 3^3 * 5 * 7 = 247726080    2^14 * 3^5 * 5^2 * 7 = 696729600
+  gcd(247 726 080, 696 729 600) = 15482880

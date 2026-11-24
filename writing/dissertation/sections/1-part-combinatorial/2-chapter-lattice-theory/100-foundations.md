@@ -80,29 +80,56 @@ Given a basis $B_L = (e_i)_{1 \leq i \leq n}$ for a bilinear module $(L,\beta)$,
 For vectors $v = \Sum a_j e_j$ and $w = \Sum b_j e_j$, we have $\beta(v,w) = v^t G_\beta w$.
 Similarly, for a quadratic module $(L,q)$, a **Gram matrix** $G_q$ is any matrix such that $q(v) = v^t G_q v$.
 We define the **discriminant** $\disc{L}$ of $L$ as $\det(G_\beta)$ in any choice of basis.
-We note that for any sublattice $S \leq L$, we have the formula
+For a **finite-index** sublattice $S\subseteq L$ (necessarily of the same rank), one has
 $$
-\disc{S} = [L:S]^2 \disc{L}
-,$$
-so the discriminant typically *increases* when passing to a sublattice.
+\disc{S} = [L:S]^2 \disc{L}.
+$$
+Indeed, if the columns of the integral matrix $A$ express a basis of $S$ in a basis of $L$, then $G_S=A^tG_LA$ and $\abs{\det A}=[L:S]$.
+This formula does not apply to a lower-rank sublattice, for which $[L:S]$ is infinite.
 We say $L$ is **unimodular** of $\disc{L} = \pm 1$.
 The Gram matrix reflects properties of the form: $\beta$ is symmetric $\iff G_\beta^t = G_\beta$, skew-symmetric $\iff G_\beta^t = -G_\beta$, and an integral lattice is even $\iff G_\beta$ is an integer matrix with diagonal entries in $2\ZZ$.
 :::
 
-::: {.proposition title="{Primitive Isotropic Vectors, Divisibility, and Hyperbolic Splittings}" #prop:divisibility-properties-revised}
-Let $S$ be any unimodular lattice admitting a primitive embedding into a nondegenerate lattice $L$.
-Then $L \cong S \oplus T$ where
+::: {.proposition title="{Unimodular Sublattices and Orthogonal Splittings}" #prop:divisibility-properties-revised}
+Let $(L,\beta)$ be a nondegenerate lattice and let $S\subseteq L$ be an **integral unimodular** sublattice.
+Assume
 $$
-T\definedas S^{\perp} = \theset{v\in L \st \beta(v, S) = 0}
+\beta(L,S)\subseteq\ZZ,
 $$
-is the **orthogonal complement** of $S$ in $L$.
-Moreover, if $S$ is unimodular, then so is $T$.
+as holds in particular when $L$ is integral.
+Then the inclusion is primitive and there is an **integral orthogonal splitting**
+$$
+L=S\perp T,\qquad
+T\definedas S^{\perp}=\theset{v\in L\st\beta(v,S)=0}.
+$$
+The discriminants satisfy
+$$
+\disc{L}=\disc{S}\disc{T},\qquad
+\disc{T}=\disc{L}/\disc{S}.
+$$
+Since $\disc{S}=\pm1$, the complement $T$ is unimodular **if and only if** $L$ is unimodular.
 :::
 
 ::: {.proof}
-This follows from [@PS24, Lem. 1.3.1]: we can write $\disc{S} = [S\oplus T: L]\cdot c_S$ for some $c_S\in \ZZ$.
-By unimodularity, $\disc{S} = \pm 1$ forces $c_S = \pm 1$ and $[S\oplus T: L] = 1$, yielding the first claim.
-For the second, we note that $\disc{S\oplus T} = \disc{S} \cdot \disc{T}$ by standard properties of determinants, forcing $\disc{T} = \pm 1$.
+For each $x\in L$, the functional $s\mapsto\beta(x,s)$ on $S$ is integer-valued by hypothesis.
+Because the restriction $\beta|_S$ is integral and unimodular, its adjoint
+$S\to\Hom_{\ZZ}(S,\ZZ)$ is an isomorphism.
+Thus there is a unique $s_x\in S$ with
+$\beta(s_x,s)=\beta(x,s)$ for every $s\in S$.
+Hence $x-s_x\in T$, so $L=S+T$.
+Since the form restricted to $S$ is nondegenerate, $S\cap T=0$.
+This proves the asserted orthogonal splitting, and also shows $S$ is primitive.
+Taking determinants in integral bases of the two summands gives
+$\disc{L}=\disc{S}\disc{T}$ and the claimed equivalence of unimodularity.
+
+Both hypotheses matter.
+For the integral lattice $L=\langle1\rangle\perp\langle2\rangle$ and
+$S=\langle1\rangle$, the splitting holds, but $\disc{T}=2$, so $T$ is not unimodular.
+For the $\QQ$-valued lattice with basis $e,f$ and Gram matrix
+$\left(\begin{smallmatrix}1&1/2\\1/2&1\end{smallmatrix}\right)$,
+the primitive sublattice $S=\ZZ e$ is integral unimodular, but
+$\beta(f,e)=1/2$ violates the hypothesis.
+Here $T=\ZZ(-e+2f)$ and $[L:S\oplus T]=2$, so even the integral splitting fails.
 :::
 
 ::: {.definition title="{Rank and Signature}" #def:rank-signature}

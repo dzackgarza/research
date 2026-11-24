@@ -1,0 +1,31 @@
+research#648 (A5, qst:coble_root_orbit_uniqueness)
+commit d31a05bab83fdbd2eeb71080fc81b1cb0fa44d79 on main (base 57d3b6fd606521d919360789242e8487f8aa4358)
+
+1. MET  The issue question is answered on its page.
+        writing/coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md:76-86
+        states it as qst:coble_root_orbit_uniqueness and records the answer; :88-97 is
+        thm:coble-root-orbit-uniqueness-published; :99-133 is its proof, which checks the
+        lattice and the signs, the group, and the class of vectors, and supplies the step
+        Sterk leaves to the reader in 3.6 before applying 3.3; :135-146 is
+        rmk:coble-root-orbit-uniqueness-conventions, which records the one difference that
+        remains (the period domain) and why it does not bear on the statement.
+        The input is [Ste91, 2.10 and the sentence after it], proved at [Ste91, 3.6] on
+        [Ste91, 3.3], cited by numbered statement; it is proved for Sterk's Gamma, which is
+        gent (prop:sterk-group-identification(1)), and not for O(T_En).
+
+2. MET  Every page that cites the open form is updated.
+        writing/coble/heegner-report/coble-heegner-research-report.md:2205-2210 (prob:A1,
+        clause 1), which stated it as an open problem of the Heegner strategy.
+
+Not done:
+        ksba.md cor:coble-root-orbit-unique still derives the vector statement from
+        thm:coble-heegner-line-unique and the Daw22 route; that page is owned by research#779
+        and was not edited.  The new theorem makes that route redundant; the corollary's
+        conclusion is unchanged.
+        No computation was run: the acceptance admits a published statement cited by number
+        with its hypotheses checked, and no computation would replace it.
+
+Not used, as the brief requires: Namikawa's full-group statement for the conclusion, O(T_En)
+in place of gent, and the equality Gamma_Co = Otilde^+(T_Co).
+
+There is no other acceptance item.

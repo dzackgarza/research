@@ -69,6 +69,11 @@ writing/**/*_files/
 # under these paths is an input to a later session.
 .tmp/
 .tmp-*
+# A session's worktree lives at `.scratch/<name>`, and the message files it
+# writes sit beside it; `git add -A` inside such a worktree swept both into
+# `main` on 2026-11-20. Same rule as `.tmp/`, which is the surface AGENTS.md
+# names for scratch a turn must keep inside the repository.
+.scratch/
 
 # xdvipdfmx intermediate left by the xelatex pass over a talk's slides. It is
 # 1.6 MB of driver output that `latexmk -c` deletes, so tracking it means a
