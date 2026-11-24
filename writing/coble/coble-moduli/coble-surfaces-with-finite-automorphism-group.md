@@ -276,8 +276,8 @@ Here $n$ is the number of boundary components, $k$ is the number of effective ir
 | $\mathrm{II}$ | any $p\neq2$ | $1$ | $12$ | $12$ | $0$ | $S_4$ | $(D_9,\theset{0})$ | [@Kon21, Example 4.5, Proposition 4.6; §6, case (2)] |
 | $\mathrm{V}$ | $3$ | $2$ | $20$ | $16$ | $4$ | $S_4\times\ZZ/2\ZZ$ | $(E_7\oplus A_2\oplus A_1^{\oplus2},(\ZZ/2\ZZ)^2)$ | [@Kon21, Example 4.7, Proposition 4.8; §6, case (4)] |
 | $\mathrm{VI}$ | $3$ | $5$ | $20$ | $10$ | $10$ | $S_5$ | $(E_6\oplus D_5,\ZZ/2\ZZ)$ | [@Kon21, Example 4.9, Proposition 4.11; §6, case (5)] |
-| $\mathrm{VI}$ | $5$ | $1$ | for $p\neq3$ the two fibrations give $n=1$ and the graph gives $K=E_6\oplus A_4$; the anti-invariant lattice argument in @rmk:kondo-supersingular-covers forces $p=5$ |
-| $\mathrm{VII}$ | $5$ | $1$ | the fibrations give $n\in\theset{1,2}$; the anti-invariant lattice argument in @rmk:kondo-supersingular-covers forces $p=5$ in both cases; the $(\mathrm{I}_5,\mathrm{I}_5,\II)$ fibration then excludes $n=2$ |
+| $\mathrm{VI}$ | $5$ | $1$ | $20$ | $20$ | $0$ | $S_5$ | $(E_6\oplus A_4,\theset{0})$ | [@Kon21, Example 4.12, Proposition 4.13; §6, case (5)] |
+| $\mathrm{VII}$ | $5$ | $1$ | $20$ | $20$ | $0$ | $S_5$ | $(A_9\oplus A_1,\ZZ/2\ZZ)$ | [@Kon21, Example 4.15, Proposition 4.16; §6, case (6)] |
 | $\mathrm{MI}$ | $3$ | $2$ | $40$ | $30$ | $10$ | $\Aut(S_6)$ | $(A_5^{\oplus2}\oplus A_1^{\oplus2},(\ZZ/2\ZZ)^3)$ | [@Kon21, Example 4.17, Proposition 4.19] |
 | $\mathrm{MII}$ | $3$ | $8$ | $40$ | $24$ | $16$ | $(S_4\times S_4)\cdot\ZZ/2\ZZ$ | $(D_8\oplus A_2^{\oplus2},(\ZZ/2\ZZ)^2)$ | [@Kon21, Example 4.20, Proposition 4.22] |
 
