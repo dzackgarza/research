@@ -83,3 +83,11 @@ The completed first-quadrant tasks above describe the original implementation. T
 - [X] T031 Filter and style a named generator's zero image correctly in a nonzero differential per FR-05 and T027 (contradicts).
 - [X] T032 Identify the page and field or coordinate in class and relation validation errors per FR-08 (partial).
 - [X] T033 Preserve keyboard movement between grid cells containing named classes per FR-07 and the browser interface contract (partial).
+
+## Phase 11: Convergence
+
+- [ ] T034 Reject an explicitly zero or forced-zero component that sends a generator to the named nonzero target class itself. Exercise the contradiction through the public setter, report the page and assignment, and retain the previously displayed figure per FR-08 and T005 (contradicts).
+- [ ] T035 Preserve a nonzero component in the arrow filters when a named assignment has zero image and an assignment without class IDs has nonzero image. Exercise mixed named and unnamed assignments through the built widget, retaining both inspector rows per FR-05, T021 and T031 (partial).
+- [ ] T036 Use authored class endpoints when highlighting incident differentials. Selecting a permanent class must distinguish its own incident arrows from those of another class in the same term; selecting one named arrow must identify that edge per T022 and T027 (partial).
+- [ ] T037 Display the local stability mark of a term containing named classes from its declared page onward. Preserve the distinction between stability of the term and permanence declared for an individual class per FR-07 and T017 (partial).
+- [ ] T038 Make distinct authored relations of the same kind between the same classes individually inspectable by pointer and keyboard. Exercise two multiplication formulas with the same endpoints and verify each selection shows its own formula per T029 (partial).
