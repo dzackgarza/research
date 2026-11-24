@@ -153,8 +153,15 @@ export class Viewer extends HTMLElement {
     const stable = m.stable.get(key(this.selected));
     if (stable !== undefined && stable <= page.index)
       panel.append(" stable from page " + stable);
-    const location = (t: Point) =>
-      coord(t) + (inside(t, r) ? "" : " offscreen");
+    const location = (point: Point) => {
+      const label = coord(point);
+      const pair = math(label);
+      pair.querySelector("svg")!.setAttribute("aria-label", label);
+      const span = document.createElement("span");
+      span.append(pair);
+      if (!inside(point, r)) span.append(" offscreen");
+      return span;
+    };
     for (const [name, a] of [
       ["Incoming", endpoint(m, this.selected, -1)],
       ["Outgoing", this.selected],
@@ -165,9 +172,18 @@ export class Viewer extends HTMLElement {
       caption.textContent = name;
       row.append(
         caption,
-        " " + location(a) + " → " + location(arrow.b) + " · " + arrow.status,
+        location(a),
+        " ",
+        math("\\to"),
+        " ",
+        location(arrow.b),
+        " · " + arrow.status,
       );
-      if (arrow.formula) row.append("　", math(arrow.formula));
+      if (arrow.formula) {
+        const formula = math(arrow.formula);
+        formula.classList.add("map-formula");
+        row.append(formula);
+      }
       panel.append(row);
     }
     const header = document.createElement("header");

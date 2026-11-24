@@ -233,7 +233,7 @@ aside b {
   font-size: 0.72rem;
   letter-spacing: 0.04em;
 }
-aside p mjx-container {
+aside p .map-formula {
   display: block;
   margin: 0.4rem 0;
 }

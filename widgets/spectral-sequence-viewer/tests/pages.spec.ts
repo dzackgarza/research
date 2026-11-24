@@ -10,9 +10,13 @@ test("navigate pages with the keyboard and retain the selected coordinate", asyn
   await expect(selector).toHaveValue("3");
   await expect(selector.locator("option:checked")).toHaveText("E₃ = E∞");
   await expect(page.getByRole("button", { name: "Next" })).toBeDisabled();
-  await expect(page.getByRole("region", { name: "Inspector" })).toContainText(
-    "(2,1)",
-  );
+  await expect(
+    page
+      .getByRole("region", { name: "Inspector" })
+      .locator("p")
+      .filter({ hasText: "Outgoing" })
+      .getByRole("img", { name: "(2,1)", exact: true }),
+  ).toBeVisible();
   await expect(page.getByLabel("Page formula").locator("svg")).toBeVisible();
   await page.getByRole("button", { name: "Previous" }).press("Enter");
   await expect(selector).toHaveValue("2");
