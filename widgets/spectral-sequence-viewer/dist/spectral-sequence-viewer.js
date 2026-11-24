@@ -42917,3 +42917,4 @@ var ua = (e) => e.map((e) => [e, e]), da = (e) => String(e).replace(/\d/g, (e) =
 };
 // src/index.ts
 customElements.define("spectral-sequence-viewer", fa);
+export { $ as math };

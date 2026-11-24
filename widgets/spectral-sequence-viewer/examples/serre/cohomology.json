@@ -132,19 +132,19 @@
           "p": 0,
           "q": 2,
           "status": "nonzero",
-          "formula": "d_3(x^{1})=1ux^{0}"
+          "formula": "d_3(x)=u"
         },
         {
           "p": 0,
           "q": 4,
           "status": "nonzero",
-          "formula": "d_3(x^{2})=2ux^{1}"
+          "formula": "d_3(x^2)=2ux"
         },
         {
           "p": 0,
           "q": 6,
           "status": "nonzero",
-          "formula": "d_3(x^{3})=3ux^{2}"
+          "formula": "d_3(x^3)=3ux^2"
         }
       ]
     },
