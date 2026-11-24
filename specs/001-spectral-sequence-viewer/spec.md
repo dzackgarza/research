@@ -75,3 +75,12 @@ A single supplied page needs no navigation. A blank zero remains selectable. A m
 Authors supply page data and stability information. The viewer presents that data. Computing cohomology, proving degeneration, and resolving extensions in an abutment fall outside this feature. Choice of rendering library and component framework belongs to implementation planning.
 
 The proposed implementation is a framework-independent TypeScript Web Component registered as `<spectral-sequence-viewer>`, with SVG for the diagram and MathJax for its mathematical labels. React is a possible host and an implementation option. The public embedding behavior above governs the choice.
+
+### Chart semantics found in published examples
+
+The [package comparison](research.md#what-published-spectral-sequence-charts-can-express) identifies further author and reader stories beyond T019–T021. These are proposed extensions.
+
+- A reader can distinguish two classes in one bidegree, select the class supporting a differential, and follow the other class to the next page. Declaring one class permanent still permits a differential on the other.
+- After an author-supplied injective map given by multiplication by two between infinite cyclic groups, the reader can follow the target generator to its residue class on the next page when there are no other incident maps. The next-page data and their relation are supplied by the author.
+- A reader can distinguish multiplication by a specified class from a differential with the same endpoints. On the limiting page the author can separately supply a nonsplit extension of two cyclic groups of order two. Without the extension assertion the displayed filtration factors leave the abutment undecided.
+- A reader can trace the visible portion of an asserted differential through the boundary of a cropped chart, including a segment crossing the viewport with neither endpoint inside. Cropping changes neither the indexed endpoints nor the status.
