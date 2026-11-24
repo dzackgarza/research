@@ -6,6 +6,7 @@ test("inspect clipped maps through all filters and zero styles", async ({
   await page.goto("/examples/static/");
   await page.getByRole("button", { name: "(2,1)", exact: true }).click();
   const inspector = page.getByRole("region", { name: "Inspector" });
+  await expect(inspector.getByRole("img", {name:/E_2\^\{0,2\}.*E_2\^\{2,1\}.*E_2\^\{4,0\}/})).toBeVisible({timeout:2000});
   for (const [index, pair] of ["(0,2)", "(2,1)", "(2,1)", "(4,0)"].entries()) {
     const endpoint = inspector
       .locator("p mjx-container svg[aria-label]")
