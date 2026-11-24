@@ -8,7 +8,7 @@
   --paper: #fbfaf7;
   --zero: #aa3949;
   --nonzero: #285a97;
-  --unknown: #944a08;
+  --unknown: #403e40;
   --selected: #e8e7e3;
   color: var(--ink);
   font:
@@ -307,3 +307,15 @@ aside {
   padding: .5rem .2rem;
   font: inherit;
 }
+.guide [popover] span {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+}
+.guide [popover] span::before {
+  content: "";
+  width: 1.75rem;
+  border-top: 2px solid currentColor;
+}
+.guide [popover] .state-zero::before { border-top-style: dotted; }
+.guide [popover] .state-unknown::before { border-top-style: dashed; }

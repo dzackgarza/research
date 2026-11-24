@@ -161,11 +161,14 @@ export class Viewer extends HTMLElement {
     const moduleRow = points.map(point => {
       const term = m.terms.get(key(point));
       const status = termStatus(m, point);
-      const module = status === "zero" ? "0" : term?.module ?? term?.label;
+      const module = status === "zero" ? "0" : term?.module ?? term?.label ?? (status === "unknown" ? "?" : "\\ne 0");
       return module ? colored(status, module) : "";
     });
     const maps = [first, second];
-    const arrows = maps.map(map => colored(map.status, "\\xrightarrow{" + indexed("d", map.a) + "}"));
+    const arrows = maps.map(map => {
+      const mark = map.status === "undetermined" ? "[?]" : map.status === "zero" ? "[0]" : "";
+      return colored(map.status, "\\xrightarrow" + mark + "{" + indexed("d", map.a) + "}");
+    });
     const rows = [[termRow[0], arrows[0], termRow[1], arrows[1], termRow[2]]];
     if (moduleRow.some(Boolean)) rows.push([moduleRow[0], "", moduleRow[1], "", moduleRow[2]]);
     for (const [i, map] of maps.entries()) {
@@ -210,7 +213,7 @@ export class Viewer extends HTMLElement {
     const legend = document.createElement("div");
     legend.popover = "auto";
     button.popoverTargetElement = legend;
-    for (const [state, name] of [["zero", "Red · zero"], ["nonzero", "Blue · nonzero"], ["unknown", "Orange · unknown"]]) {
+    for (const [state, name] of [["zero", "Zero"], ["nonzero", "Nonzero"], ["unknown", "Unknown"]]) {
       const item = document.createElement("span");
       item.className = "state-" + state;
       item.textContent = name;
