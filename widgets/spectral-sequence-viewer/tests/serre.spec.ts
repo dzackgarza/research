@@ -68,7 +68,7 @@ test("Serre terms identify the integral module before and after passage to the q
     const chain=figure.locator(".chain > svg");
     for (const [index,g,type] of [["2",generator,""],["3",generator,""],["4","["+generator+"]","/2"]]) {
       await figure.getByLabel("Page",{exact:true}).selectOption(index);
-      await expect(chain).toHaveAttribute("aria-label",expect.stringContaining("\\langle "+g+"\\rangle_{\\mathbb Z}\\cong\\mathbb Z"+type));
+      expect(await chain.getAttribute("aria-label")).toContain("\\langle "+g+"\\rangle_{\\mathbb Z}\\cong\\mathbb Z"+type);
     }
   }
 });
