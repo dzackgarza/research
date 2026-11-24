@@ -17,6 +17,11 @@ preamble_megadoc_file := "docs/preamble-megadoc.md"
 default:
     @just --list
 
+# Preview the interactive Serre spectral sequence article
+serre-preview port="4193":
+    @echo 'http://127.0.0.1:{{port}}/examples/serre/'
+    @python3 -m http.server '{{port}}' --bind 127.0.0.1 --directory widgets/spectral-sequence-viewer
+
 # Build the installable Sage research distribution
 build: _lock
     uv build
