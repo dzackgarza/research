@@ -298,7 +298,14 @@ export class Viewer extends HTMLElement {
         const selectedClass = m.classes.get(this.active.slice(6))!;
         panel.append(
           math(
-            selectedClass.c.label + "\\in " + indexed("E", selectedClass.term),
+            selectedClass.c.label +
+              "\\in " +
+              indexed("E", selectedClass.term) +
+              (selectedClass.term.label &&
+              selectedClass.term.module &&
+              selectedClass.term.label !== selectedClass.term.module
+                ? "=" + selectedClass.term.label
+                : ""),
           ),
         );
       }

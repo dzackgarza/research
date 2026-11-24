@@ -1,6 +1,12 @@
 import Ajv from "ajv";
 import schema from "../schema/sequence.schema.json";
-import { endpoint, forcedZero, inside, outsideSupport } from "./differentials";
+import {
+  endpoint,
+  forcedZero,
+  inside,
+  outsideSupport,
+  termStatus,
+} from "./differentials";
 
 export interface Point {
   p: number;
@@ -101,12 +107,62 @@ export function parseSequence(input: Sequence): Sequence {
     }
   };
   unique(data.stableTerms ?? [], "stableTerms");
+  const stableStatuses = new Map<string, "zero" | "nonzero">();
+  // Only an explicitly listed coordinate can differ from the common unlisted policy.
+  const termPoints = new Map(
+    data.pages.flatMap((page) => page.terms.map((t) => [key(t), t] as const)),
+  );
+  const range = viewport(data);
+  const coordinate = (point: Point, field: string) => {
+    if (!Number.isSafeInteger(point.p) || !Number.isSafeInteger(point.q))
+      fail(field + " exceeds the safe integer coordinate range");
+    return point;
+  };
+  const inspectable = new Map<string, Point>();
+  for (const p of [range.pMin, range.pMax])
+    for (const q of [range.qMin, range.qMax]) {
+      // Both projections and both differential displacements are affine.
+      const corner = coordinate({ p, q }, "projected extent");
+      const native = coordinate(nativePoint(data, corner), "inverse viewport");
+      inspectable.set(key(native), native);
+    }
+  // An authored arrow or relation may select a source outside the viewport.
+  // The viewer keeps that coordinate when the reader changes pages.
+  for (const page of data.pages)
+    for (const point of [...page.maps, ...page.terms])
+      inspectable.set(key(point), point);
   data.pages.forEach((page, i) => {
     if (page.index !== data.firstPage + i)
       fail("pages[" + i + "].index expected " + (data.firstPage + i));
     unique(page.terms, "page " + page.index + " terms");
     unique(page.maps, "page " + page.index + " maps");
     const model = indexPage(data, page);
+    for (const point of inspectable.values()) {
+      const field = "page " + page.index + " coordinate " + key(point);
+      coordinate(plotPoint(data, point), field);
+      for (const direction of [-1, 1] as const) {
+        const end = coordinate(endpoint(model, point, direction), field);
+        coordinate(plotPoint(data, end), field);
+      }
+    }
+    for (const [coord, point] of termPoints) {
+      if (
+        page.index <
+        Math.min(
+          data.degenerationPage ?? Infinity,
+          model.stable.get(coord) ?? Infinity,
+        )
+      )
+        continue;
+      const status = termStatus(model, point);
+      if (status === "unknown") continue;
+      const previous = stableStatuses.get(coord);
+      if (previous && previous !== status)
+        fail(
+          `page ${page.index} terms ${coord}: stable term changed from ${previous} to ${status}`,
+        );
+      stableStatuses.set(coord, status);
+    }
     for (const term of page.terms) {
       for (const c of term.classes ?? []) {
         if (term.status !== "nonzero")

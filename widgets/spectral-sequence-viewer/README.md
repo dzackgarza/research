@@ -52,3 +52,13 @@ on which the author declared it.
 
 Products with the same endpoints appear as separate curves. Click a curve or
 focus it and press Enter to inspect its formula.
+
+From the declared stable page of a term, or from global degeneration, all
+known statuses for that bidegree must agree. An unknown entry leaves the
+question open. An omitted entry inside the extent follows the sequence’s
+`unlisted` policy.
+
+Native coordinates, projected coordinates, and incident differential endpoints
+must fit in JavaScript’s safe integer range. The viewer validates them before
+replacing the displayed sequence. Select a named class to inspect its term
+label and module together.
