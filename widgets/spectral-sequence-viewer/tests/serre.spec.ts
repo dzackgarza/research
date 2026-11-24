@@ -48,3 +48,14 @@ test("display options leave the figure caption in place", async ({ page }) => {
   await figure.getByLabel("Arrows").press("Escape");
   await expect(figure.getByLabel("Arrows")).toBeHidden();
 });
+
+test("the color key matches the plotted mathematical status", async ({ page }) => {
+  await page.goto("/examples/serre/");
+  const figure = page.locator("#co");
+  await figure.getByRole("button", { name: "Color key" }).click();
+  for (const status of ["zero", "nonzero"]) {
+    const ink = await figure.locator(".guide .state-" + status).evaluate(el => getComputedStyle(el).color);
+    await expect(figure.locator('.cell[data-status="' + status + '"]').first()).toHaveCSS("color", ink);
+    await expect(figure.locator('line[data-status="' + status + '"]').first()).toHaveCSS("stroke", ink);
+  }
+});
