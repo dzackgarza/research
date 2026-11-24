@@ -70,3 +70,10 @@ The completed first-quadrant tasks above describe the original implementation. T
 - [X] T024 Preserve a distinct author-supplied component formula alongside its generator assignments. In the inspector, exercise a component with a named formula and two generator images; verify the name and both actions remain visible without duplicating the assignments per the differential-inspection acceptance scenario and FR-06 (partial)
 - [X] T025 Typeset mathematical labels that still use plain text, including grid zero numerals, the stability page number, and the selectable page expressions. Exercise the open selector, navigation, zero-style changes, and keyboard access with the shipped MathJax renderer per FR-06, T011 and T012 (partial)
 - [X] T026 Extend the public browser scenarios to reject a negative page index while retaining the previous figure, and to verify the selected page’s actual formula, cell data, and inspector indices after navigation. Retain the separate signed-bidegree acceptance case per FR-08, T006 and T010 (partial)
+
+## Phase 9: Class-level charts
+
+- [ ] T027 Select individual classes sharing a bidegree; attach component assignments to named classes and represent individual permanence.
+- [ ] T028 Follow an authored representative to a surviving or quotient class on the next page.
+- [ ] T029 Draw and inspect authored multiplication relations and limiting-page extensions independently of differential filters.
+- [ ] T030 Clip asserted differentials crossing the viewport, including those with both endpoints outside.

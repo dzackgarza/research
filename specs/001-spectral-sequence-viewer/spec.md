@@ -78,7 +78,7 @@ The proposed implementation is a framework-independent TypeScript Web Component 
 
 ### Chart semantics found in published examples
 
-The [package comparison](research.md#what-published-spectral-sequence-charts-can-express) identifies further author and reader stories beyond T019–T021. These are proposed extensions.
+The [package comparison](research.md#what-published-spectral-sequence-charts-can-express) identifies further author and reader stories beyond T019–T021. These stories are required for class-level chart inspection.
 
 - A reader can distinguish two classes in one bidegree, select the class supporting a differential, and follow the other class to the next page. Declaring one class permanent still permits a differential on the other.
 - After an author-supplied injective map given by multiplication by two between infinite cyclic groups, the reader can follow the target generator to its residue class on the next page when there are no other incident maps. The next-page data and their relation are supplied by the author.

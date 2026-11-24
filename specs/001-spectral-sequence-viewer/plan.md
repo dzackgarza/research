@@ -23,3 +23,7 @@ This checkout supplies governance through `INTENT.md`, `AGENTS.md`, and `CONTRIB
 ## Extensions to the first-quadrant implementation
 
 Implement signed native coordinates and explicit support in the shared model first. The plotting layer consumes these coordinates and projects both endpoints for display. Selection resolves to the native term before looking up an incident component. Extend the component record and inspector together for multiple generator images. The acceptance examples and open work are in the [specification](spec.md) and [task list](tasks.md).
+
+## Class-level chart inspection
+
+Index named classes within each page. Use explicit predecessor links for page transitions and class references for incidence. Display author-supplied products and extensions as separate relations. Clip asserted differential segments in projected plot coordinates while retaining native endpoints for inspection.
