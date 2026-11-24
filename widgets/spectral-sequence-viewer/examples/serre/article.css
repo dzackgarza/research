@@ -1,0 +1,149 @@
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 2rem;
+}
+body {
+  margin: 0;
+  background: #fbfaf7;
+  color: #202237;
+  font:
+    1.13rem/1.65 Georgia,
+    serif;
+}
+.spread {
+  max-width: 79rem;
+  margin: auto;
+  display: grid;
+  grid-template-columns: 12rem minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 6rem);
+  padding: clamp(1.25rem, 5vw, 5rem);
+}
+nav {
+  position: sticky;
+  top: 3rem;
+  align-self: start;
+  display: grid;
+  border-top: 3px solid #34376a;
+  padding-top: 1rem;
+  font:
+    0.82rem/1.5 system-ui,
+    sans-serif;
+}
+nav a {
+  padding: 0.55rem 0;
+  text-decoration: none;
+  color: #545467;
+}
+nav a:first-child {
+  font-weight: 700;
+  color: #252740;
+  margin-bottom: 0.6rem;
+}
+a {
+  color: #424dad;
+  text-underline-offset: 0.2em;
+}
+nav a:hover {
+  text-decoration: underline;
+}
+main {
+  min-width: 0;
+}
+header {
+  border-top: 3px solid #34376a;
+  padding-block: 1.8rem 1.2rem;
+  border-bottom: 1px solid #c8c6c2;
+}
+h1,
+h2 {
+  font-weight: 400;
+  text-wrap: balance;
+}
+h1 {
+  font-size: clamp(2.9rem, 5.9vw, 5.8rem);
+  letter-spacing: -0.055em;
+  line-height: 1.08;
+  margin: 0 0 1.4rem;
+}
+h1 .tex {
+  white-space: nowrap;
+}
+h2 {
+  margin: 2.4rem 0 0.6rem;
+  font-size: clamp(1.65rem, 3vw, 2.4rem);
+  letter-spacing: -0.035em;
+  line-height: 1.18;
+}
+p {
+  max-width: 62ch;
+  margin: 0.7em 0;
+}
+header p {
+  font-size: 1.13em;
+}
+figure {
+  margin: 1.8rem 0 2.4rem;
+}
+figcaption {
+  border-left: 2px solid #606cb3;
+  padding-left: 0.85rem;
+  margin-top: 0.7rem;
+  font:
+    0.9rem/1.55 system-ui,
+    sans-serif;
+  color: #4f5060;
+}
+mjx-container {
+  display: inline-block;
+  line-height: 0;
+}
+strong {
+  display: block;
+  text-align: center;
+  font-weight: 400;
+  padding: 1.5rem 0.2rem;
+  font-size: clamp(1rem, 2vw, 1.5rem);
+}
+footer {
+  border-top: 1px solid #b6b5bc;
+  margin-top: 3rem;
+  font-size: 0.95rem;
+}
+footer h2 {
+  font-size: 1.35rem;
+  margin-top: 1rem;
+}
+@media (max-width: 55rem) {
+  .spread {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    padding: clamp(1rem, 4vw, 2rem);
+  }
+  nav {
+    position: static;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.35rem 1rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #c8c6c2;
+  }
+  nav a {
+    padding: 0.15rem 0;
+  }
+  nav a:first-child {
+    display: none;
+  }
+  header {
+    border-top: 0;
+    padding-top: 0.8rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

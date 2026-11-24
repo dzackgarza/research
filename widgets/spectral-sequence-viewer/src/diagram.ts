@@ -14,8 +14,8 @@ export function diagram(
   graph.className = "plot";
   const width = (r.pMax - r.pMin + 1) * 112,
     height = (r.qMax - r.qMin + 1) * 82;
-  graph.style.width = "min(100%, " + width + "px)";
   graph.style.minWidth = (r.pMax - r.pMin + 1) * 60 + "px";
+  graph.style.setProperty("--columns", String(r.pMax - r.pMin + 1));
   graph.style.height = height + "px";
   const ns = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(ns, "svg");
@@ -44,7 +44,7 @@ export function diagram(
   function tick(label: number, left: number, top: number) {
     const el = document.createElement("span");
     el.className = "tick";
-    el.textContent = String(label);
+    el.append(math(String(label)));
     el.style.left = (left / width) * 100 + "%";
     el.style.top = top + "px";
     graph.append(el);

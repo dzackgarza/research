@@ -118,14 +118,15 @@ export class Viewer extends HTMLElement {
         },
       ),
     );
-    const axes = document.createElement("div");
-    axes.className = "axes";
-    axes.append(
-      "↑ ",
-      math(settings.qLabel ?? "q"),
-      "　",
-      math(settings.pLabel ?? "p"),
-      " →",
+    const pageControl = toolbar.querySelector("label")!;
+    pageControl.firstChild?.remove();
+    pageControl.prepend(
+      math(
+        "E_{" +
+          page.index +
+          "}" +
+          (page.index === data.degenerationPage ? "=E_{\\infty}" : ""),
+      ),
     );
     const scroll = document.createElement("div");
     scroll.className = "scroll";
@@ -173,7 +174,13 @@ export class Viewer extends HTMLElement {
     header.append(heading, toolbar);
     const canvas = document.createElement("div");
     canvas.className = "canvas";
-    canvas.append(axes, scroll);
+    const vertical = document.createElement("div");
+    vertical.className = "vertical-axis";
+    vertical.append(math(settings.qLabel ?? "q"), " ↑");
+    const horizontal = document.createElement("div");
+    horizontal.className = "horizontal-axis";
+    horizontal.append(math(settings.pLabel ?? "p"), " →");
+    canvas.append(vertical, scroll, horizontal);
     const layout = document.createElement("div");
     layout.className = "layout";
     panel.append(display);
