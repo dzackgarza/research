@@ -780,6 +780,10 @@ Full catalogue: `.agents/references/terminology-dictionary.md`; code-shape patte
 
 Use MathJax as the sole renderer for all mathematics. This includes inline and display math in prose, headings, captions, diagrams, labels, and interactive controls.
 
+For an interactive mathematical article, use the mathematical writing policy and the writing house conventions before drafting the proof, figure captions, or worked example. This applies under `examples/` just as it does under `writing/`. When adapting a published calculation, cite the specific result, state what it establishes, and identify any further argument needed for the conclusion. Give a figure caption a mathematical job: name the class or map the reader should inspect and say what they can read from it.
+
+Use `design-taste-frontend` and `design` before laying out a research figure with controls. Start with the reader’s mathematical action: following a differential calls for a visible source, target, and map, with page navigation close to the diagram and display settings secondary. Use `responsive-design` when the figure is embedded at different widths. Inspect the figure inside its article with a term selected and after a page change. Check the mathematics in the controls and inspector as well as on the axes: a bidegree beside a status label still goes through MathJax.
+
 Prose in the docs book is governed by the [mathematical writing policy](https://github.com/dzackgarza/ai/blob/main/opencode/skills/mathematics/writing/policy/policy.md) (the `mathematical-writing-policy` skill) — a citable policy index of banned prose patterns, each with a concrete example and remediation — together with the [writing house conventions](CONTRIBUTING.md#writing-house-conventions):
 
 - **Prose tells (`PR-*`)** — bad prose on its own terms; the fix is a rewrite.
