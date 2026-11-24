@@ -22,6 +22,7 @@ test("rejects invalid replacements atomically", async ({ page }) => {
   await expect(page.getByLabel("Page", { exact: true })).toHaveValue("2");
   for (const [field, change] of [
     ["pageCount", (d) => d.pageCount++],
+    ["index", (d) => (d.pages[0].index = -1)],
     ["index", (d) => (d.pages[1].index = 8)],
     ["duplicate", (d) => d.pages[2].terms.push(d.pages[2].terms[0])],
     ["terms", (d) => (d.pages[0].terms[0].p = -1)],

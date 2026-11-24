@@ -14,12 +14,17 @@ for (const convention of ["cohomological", "homological"]) {
         pages: [{ index: 2, terms: [
           { ...source, status: "nonzero", module: "A" },
           { ...target, status: "nonzero", module: "B" },
-        ], maps: [{ ...source, status: "nonzero", assignments: [
+        ], maps: [{ ...source, status: "nonzero", formula: "f", assignments: [
           { generator: "a", image: "u" }, { generator: "b", image: "0" },
         ] }] }],
       };
       await viewer.evaluate((el, input) => { Object.assign(el, { sequence: input }); }, data);
       const cell = viewer.getByRole("button", { name: "(-2,3)", exact: true });
+      await cell.click();
+      const arrow = viewer.getByRole("button", { name: "Differential (" + source.p + "," + source.q + ") to (" + target.p + "," + target.q + ")" });
+      await arrow.click();
+      await arrow.press("Enter");
+      await expect(viewer.locator(".chain > svg")).toHaveAccessibleName(/state-nonzero.*\{f\}/);
       await cell.click();
       await expect(viewer.locator(".chain > svg")).toHaveAccessibleName(/&*a&.*longmapsto.*&u.*b&.*longmapsto.*&0/);
       await expect(viewer.locator('line[data-status="nonzero"]')).toHaveCount(1);

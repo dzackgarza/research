@@ -8,7 +8,10 @@ test("navigate pages with the keyboard and retain the selected coordinate", asyn
   const selector = page.getByLabel("Page", { exact: true });
   await page.getByRole("button", { name: "Next" }).press("Enter");
   await expect(selector).toHaveValue("3");
-  await expect(selector.locator("option:checked")).toHaveText("E₃ = E∞");
+  await expect(selector.locator("option:checked svg")).toHaveCount(1);
+  await expect(page.getByLabel("Page formula")).toHaveAttribute("data-tex", sequence.pages[3].formula);
+  await expect(page.getByRole("button", { name: "(0,1)", exact: true })).toHaveAttribute("data-status", "unknown");
+  await expect(selector.locator("option:checked")).toHaveAttribute("aria-label", "E₃ = E∞");
   await expect(page.getByRole("button", { name: "Next" })).toBeDisabled();
   await expect(
     page.getByRole("region", { name: "Inspector" }).getByRole("img"),
@@ -27,7 +30,7 @@ test("navigate pages with the keyboard and retain the selected coordinate", asyn
       .evaluate((el, d) => Object.assign(el, { sequence: d }), data);
     await expect(selector.locator("option")).toHaveCount(4);
     await expect(
-      selector.locator("option").filter({ hasText: "∞" }),
+      selector.locator("option[aria-label*='∞']"),
     ).toHaveCount(degenerationPage === 2 ? 1 : 0);
   }
 });
