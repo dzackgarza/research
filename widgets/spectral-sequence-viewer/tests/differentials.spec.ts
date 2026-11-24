@@ -60,3 +60,21 @@ test("an undetermined map and a zero map can be read without colour", async ({ p
   const chain = page.locator(".chain > svg");
   await expect(chain).toHaveAccessibleName(/state-undetermined.*\\xrightarrow\[\?\].*state-zero.*\\xrightarrow\[0\]/);
 });
+
+test("a cropped nonzero target keeps its formula and status under every filter", async ({ page }) => {
+  await page.goto("/examples/static/");
+  const viewer = page.locator("spectral-sequence-viewer");
+  for (const pMax of [4, 1]) {
+    const data = structuredClone(sequence);
+    data.settings.viewport.pMax = pMax;
+    await viewer.evaluate((el, input) => { Object.assign(el, { sequence: input }); }, data);
+    await viewer.getByRole("button", { name: "(0,1)", exact: true }).click();
+    await viewer.getByRole("button", { name: "Display options" }).click();
+    const chain = viewer.locator(".chain > svg");
+    for (const mode of ["All", "Potentially nonzero", "Known nonzero", "None"]) {
+      await viewer.getByLabel("Arrows").selectOption(mode);
+      await expect(chain.locator(".clipped .state-nonzero")).toHaveCount(pMax === 1 ? 1 : 0);
+      await expect(chain).toHaveAccessibleName(/state-nonzero.*E_2\^\{2,0\}.*\{f\}/);
+    }
+  }
+});

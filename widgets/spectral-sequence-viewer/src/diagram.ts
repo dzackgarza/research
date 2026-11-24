@@ -8,7 +8,8 @@ export function diagram(
   selected: Point,
   mode: string,
   zeroStyle: string,
-  choose: (t: Point) => void,
+  arrowSelected: boolean,
+  choose: (t: Point, arrow?: boolean) => void,
 ) {
   const graph = document.createElement("div");
   graph.className = "plot";
@@ -20,7 +21,8 @@ export function diagram(
   const ns = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(ns, "svg");
   svg.setAttribute("viewBox", "0 0 " + width + " " + height);
-  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("role", "group");
+  svg.setAttribute("aria-label", "Differentials");
   svg.setAttribute("preserveAspectRatio", "none");
   const marker = document.createElementNS(ns, "marker");
   for (const [attr, val] of Object.entries({
@@ -77,10 +79,26 @@ export function diagram(
           line.setAttribute(attr, String(val));
         line.dataset.status = arrow.status;
         line.dataset.highlighted = String(
-          key(selected) === key(a) || key(selected) === key(arrow.b),
+          key(selected) === key(a) || (!arrowSelected && key(selected) === key(arrow.b)),
         );
         line.setAttribute("marker-end", "url(#tip)");
-        svg.append(line);
+        const hit = line.cloneNode(false) as SVGLineElement;
+        hit.removeAttribute("data-status");
+        hit.removeAttribute("data-highlighted");
+        hit.removeAttribute("marker-end");
+        hit.classList.add("arrow-hit");
+        hit.setAttribute("role", "button");
+        hit.setAttribute("tabindex", "0");
+        hit.setAttribute("aria-label", "Differential " + coord(a) + " to " + coord(arrow.b));
+        hit.setAttribute("aria-pressed", String(arrowSelected && key(selected) === key(a)));
+        hit.onclick = () => choose(a, true);
+        hit.onkeydown = event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            choose(a, true);
+          }
+        };
+        svg.append(line, hit);
       }
       const cell = document.createElement("button"),
         term = m.terms.get(key(a)),
@@ -91,10 +109,9 @@ export function diagram(
       cell.style.top = y(q) + "px";
       cell.setAttribute("aria-label", coord(a));
       cell.setAttribute("aria-pressed", String(key(a) === key(selected)));
-      if (status === "zero")
-        cell.textContent =
-          zeroStyle === "blank" ? "" : zeroStyle === "dot" ? "·" : "0";
-      else {
+      if (status === "zero") {
+        if (zeroStyle !== "blank") cell.append(math(zeroStyle === "dot" ? "\\cdot" : "0"));
+      } else {
         if (status === "unknown") cell.append("?");
         if (term?.label) cell.append(math(term.label));
         else if (status === "nonzero") cell.append("●");

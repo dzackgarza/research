@@ -319,3 +319,21 @@ aside {
 }
 .guide [popover] .state-zero::before { border-top-style: dotted; }
 .guide [popover] .state-unknown::before { border-top-style: dashed; }
+
+.plot line.arrow-hit {
+  outline: none;
+  stroke: transparent;
+  stroke-width: 14px;
+  pointer-events: stroke;
+  cursor: pointer;
+}
+.plot line.arrow-hit:focus-visible { stroke: #52556644; outline: none; }
+.toolbar select, .toolbar select::picker(select) { appearance: base-select; }
+.toolbar select::picker(select) {
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid #c9c7c2;
+  padding: .2rem;
+  border-radius: .4rem;
+}
+.toolbar option { padding: .35rem .6rem; }

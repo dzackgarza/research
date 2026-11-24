@@ -24,6 +24,8 @@ for (const convention of ["cohomological", "homological"]) {
       const arrow = viewer.getByRole("button", { name: "Differential (" + source.p + "," + source.q + ") to (" + target.p + "," + target.q + ")" });
       await arrow.click();
       await arrow.press("Enter");
+      await expect(arrow).toHaveAttribute("aria-pressed", "true");
+      await expect(arrow).toBeFocused();
       await expect(viewer.locator(".chain > svg")).toHaveAccessibleName(/state-nonzero.*\{f\}/);
       await cell.click();
       await expect(viewer.locator(".chain > svg")).toHaveAccessibleName(/&*a&.*longmapsto.*&u.*b&.*longmapsto.*&0/);

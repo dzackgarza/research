@@ -42874,14 +42874,14 @@ function $(e) {
 }
 // src/diagram.ts
 var fa = (e) => "(" + U(e) + ")";
-function pa(e, t, n, r, i, a) {
-	let o = document.createElement("div");
-	o.className = "plot";
-	let s = (t.pMax - t.pMin + 1) * 112, c = (t.qMax - t.qMin + 1) * 82;
-	o.style.minWidth = (t.pMax - t.pMin + 1) * 60 + "px", o.style.setProperty("--columns", String(t.pMax - t.pMin + 1)), o.style.height = c + "px";
-	let l = "http://www.w3.org/2000/svg", u = document.createElementNS(l, "svg");
-	u.setAttribute("viewBox", "0 0 " + s + " " + c), u.setAttribute("aria-hidden", "true"), u.setAttribute("preserveAspectRatio", "none");
-	let d = document.createElementNS(l, "marker");
+function pa(e, t, n, r, i, a, o) {
+	let s = document.createElement("div");
+	s.className = "plot";
+	let c = (t.pMax - t.pMin + 1) * 112, l = (t.qMax - t.qMin + 1) * 82;
+	s.style.minWidth = (t.pMax - t.pMin + 1) * 60 + "px", s.style.setProperty("--columns", String(t.pMax - t.pMin + 1)), s.style.height = l + "px";
+	let u = "http://www.w3.org/2000/svg", d = document.createElementNS(u, "svg");
+	d.setAttribute("viewBox", "0 0 " + c + " " + l), d.setAttribute("role", "group"), d.setAttribute("aria-label", "Differentials"), d.setAttribute("preserveAspectRatio", "none");
+	let f = document.createElementNS(u, "marker");
 	for (let [e, t] of Object.entries({
 		id: "tip",
 		viewBox: "0 0 10 10",
@@ -42890,65 +42890,69 @@ function pa(e, t, n, r, i, a) {
 		markerWidth: "5",
 		markerHeight: "5",
 		orient: "auto"
-	})) d.setAttribute(e, t);
-	let f = document.createElementNS(l, "path");
-	f.setAttribute("d", "M0 0L10 5L0 10Z"), f.setAttribute("fill", "context-stroke"), d.append(f), u.append(d), o.append(u);
-	let p = (e) => (e - t.pMin + .5) * 112, m = (e) => (t.qMax - e + .5) * 82;
-	function h(e, t, n) {
+	})) f.setAttribute(e, t);
+	let p = document.createElementNS(u, "path");
+	p.setAttribute("d", "M0 0L10 5L0 10Z"), p.setAttribute("fill", "context-stroke"), f.append(p), d.append(f), s.append(d);
+	let m = (e) => (e - t.pMin + .5) * 112, h = (e) => (t.qMax - e + .5) * 82;
+	function g(e, t, n) {
 		let r = document.createElement("span");
-		r.className = "tick", r.append($(String(e))), r.style.left = t / s * 100 + "%", r.style.top = n + "px", o.append(r);
+		r.className = "tick", r.append($(String(e))), r.style.left = t / c * 100 + "%", r.style.top = n + "px", s.append(r);
 	}
-	for (let e = t.pMin; e <= t.pMax; e++) h(e, p(e), c - 8);
-	for (let e = t.qMin; e <= t.qMax; e++) h(e, 8, m(e));
-	for (let c = t.qMax; c >= t.qMin; c--) for (let d = t.pMin; d <= t.pMax; d++) {
-		let f = lt(e.data, {
-			p: d,
-			q: c
-		}), h = it(e, f), g = ct(e.data, h.b);
-		if ($e(g, t) && r !== "None" && (r === "All" || (r === "Potentially nonzero" ? h.status !== "zero" : h.status === "nonzero"))) {
-			let e = p(g.p) - p(d), t = m(g.q) - m(c), r = Math.hypot(e, t), i = document.createElementNS(l, "line");
+	for (let e = t.pMin; e <= t.pMax; e++) g(e, m(e), l - 8);
+	for (let e = t.qMin; e <= t.qMax; e++) g(e, 8, h(e));
+	for (let l = t.qMax; l >= t.qMin; l--) for (let f = t.pMin; f <= t.pMax; f++) {
+		let p = lt(e.data, {
+			p: f,
+			q: l
+		}), g = it(e, p), _ = ct(e.data, g.b);
+		if ($e(_, t) && r !== "None" && (r === "All" || (r === "Potentially nonzero" ? g.status !== "zero" : g.status === "nonzero"))) {
+			let e = m(_.p) - m(f), t = h(_.q) - h(l), r = Math.hypot(e, t), i = document.createElementNS(u, "line");
 			for (let [n, a] of Object.entries({
-				x1: p(d) + 22 * e / r,
-				y1: m(c) + 22 * t / r,
-				x2: p(g.p) - 22 * e / r,
-				y2: m(g.q) - 22 * t / r
+				x1: m(f) + 22 * e / r,
+				y1: h(l) + 22 * t / r,
+				x2: m(_.p) - 22 * e / r,
+				y2: h(_.q) - 22 * t / r
 			})) i.setAttribute(n, String(a));
-			i.dataset.status = h.status, i.dataset.highlighted = String(U(n) === U(f) || U(n) === U(h.b)), i.setAttribute("marker-end", "url(#tip)"), u.append(i);
+			i.dataset.status = g.status, i.dataset.highlighted = String(U(n) === U(p) || !a && U(n) === U(g.b)), i.setAttribute("marker-end", "url(#tip)");
+			let s = i.cloneNode(!1);
+			s.removeAttribute("data-status"), s.removeAttribute("data-highlighted"), s.removeAttribute("marker-end"), s.classList.add("arrow-hit"), s.setAttribute("role", "button"), s.setAttribute("tabindex", "0"), s.setAttribute("aria-label", "Differential " + fa(p) + " to " + fa(g.b)), s.setAttribute("aria-pressed", String(a && U(n) === U(p))), s.onclick = () => o(p, !0), s.onkeydown = (e) => {
+				(e.key === "Enter" || e.key === " ") && (e.preventDefault(), o(p, !0));
+			}, d.append(i, s);
 		}
-		let _ = document.createElement("button"), v = e.terms.get(U(f)), y = nt(e, f);
-		_.className = "cell", _.style.left = p(d) / s * 100 + "%", _.dataset.status = y, _.style.top = m(c) + "px", _.setAttribute("aria-label", fa(f)), _.setAttribute("aria-pressed", String(U(f) === U(n))), y === "zero" ? _.textContent = i === "blank" ? "" : i === "dot" ? "·" : "0" : (y === "unknown" && _.append("?"), v?.label ? _.append($(v.label)) : y === "nonzero" && _.append("●"));
-		let b = e.stable.get(U(f));
-		if (b !== void 0 && b <= e.page.index) {
-			_.classList.add("stable");
+		let v = document.createElement("button"), y = e.terms.get(U(p)), b = nt(e, p);
+		v.className = "cell", v.style.left = m(f) / c * 100 + "%", v.dataset.status = b, v.style.top = h(l) + "px", v.setAttribute("aria-label", fa(p)), v.setAttribute("aria-pressed", String(U(p) === U(n))), b === "zero" ? i !== "blank" && v.append($(i === "dot" ? "\\cdot" : "0")) : (b === "unknown" && v.append("?"), y?.label ? v.append($(y.label)) : b === "nonzero" && v.append("●"));
+		let x = e.stable.get(U(p));
+		if (x !== void 0 && x <= e.page.index) {
+			v.classList.add("stable");
 			let e = document.createElement("small");
-			e.textContent = "stable", _.append(e);
+			e.textContent = "stable", v.append(e);
 		}
-		_.onclick = () => a(f), _.onkeydown = (n) => {
+		v.onclick = () => o(p), v.onkeydown = (n) => {
 			let r = {
 				ArrowUp: {
-					p: d,
-					q: c + 1
+					p: f,
+					q: l + 1
 				},
 				ArrowDown: {
-					p: d,
-					q: c - 1
+					p: f,
+					q: l - 1
 				},
 				ArrowLeft: {
-					p: d - 1,
-					q: c
+					p: f - 1,
+					q: l
 				},
 				ArrowRight: {
-					p: d + 1,
-					q: c
+					p: f + 1,
+					q: l
 				}
 			}[n.key];
-			r && (n.preventDefault(), $e(r, t) && a(lt(e.data, r)));
-		}, o.append(_);
+			r && (n.preventDefault(), $e(r, t) && o(lt(e.data, r)));
+		}, s.append(v);
 	}
-	return o;
+	return s;
 }
 // src/viewer.css?inline
-var ma = ":host{--ink:#22233a;--panel:#222840;--line:#47516b;--point:#202237;--paper:#fbfaf7;--zero:#aa3949;--nonzero:#285a97;--unknown:#403e40;--selected:#e8e7e3;color:var(--ink);max-width:65rem;margin:1.5rem auto .5rem;font:1rem/1.5 system-ui,sans-serif;display:block;container-type:inline-size}*{box-sizing:border-box}section{background:#f1f0ec;border:1px solid #c7c7c9;border-radius:.65rem;overflow:hidden}header{background:var(--panel);color:#f5f4ee;border-bottom:1px solid var(--line);justify-content:space-between;align-items:center;gap:1rem;padding:.9rem 1.35rem;display:flex}h2,h3{margin:0;font:1.4rem/1.3 Georgia,serif}.toolbar{align-items:center;gap:.2rem;display:flex}.toolbar button,.toolbar label{height:2.2rem;color:inherit;cursor:pointer;place-items:center;display:grid}.toolbar button{background:0 0;border:0;border-radius:.25rem;width:2.2rem;font:1.6rem/1 Georgia,serif}.toolbar button:hover:enabled,.toolbar label:hover{background:#37405c}.toolbar button:disabled{color:#737d97;cursor:default}.toolbar label{border-block:1px solid #64718c;grid-auto-flow:column;gap:.4rem;padding:0 .55rem;position:relative}.toolbar label:after{content:\"⌄\";font-size:.75rem}.toolbar select{opacity:0;cursor:pointer;width:100%;height:100%;position:absolute;inset:0}.toolbar label:focus-within,:focus-visible{outline-offset:2px;outline:2px solid}[aria-label=Page\\ formula]:not(:empty){background:var(--panel);color:#fff;padding:.65rem 1.35rem}.layout{grid-template-columns:minmax(0,1fr);display:grid}.canvas{background:var(--paper);min-width:0;color:var(--point);padding:.8rem 1.25rem}.vertical-axis,.horizontal-axis,.tick{color:#565765;font-size:.8rem}.horizontal-axis{text-align:right}.scroll{overflow:auto}.plot{background-image:linear-gradient(90deg,#0000 calc(50% - .5px),#dcdad5 50%,#0000 calc(50% + .5px)),linear-gradient(#0000 40px,#dcdad5 41px,#0000 42px);background-size:calc(100% / var(--columns)) 82px;border-bottom:1px solid #748199;border-left:1px solid #748199;width:100%;position:relative}.plot>svg{pointer-events:none;width:100%;height:100%;position:absolute;inset:0}.cell,.tick{position:absolute;transform:translate(-50%,-50%)}.tick{background:var(--paper);font-size:.68rem}.cell{font:inherit;color:var(--point);background:var(--paper);cursor:pointer;border:1px solid #0000;border-radius:.35rem;min-width:34px;min-height:34px;padding:.15rem .35rem;font-size:1.12rem;transition:border-color .15s,background .15s}.cell[data-status=zero]{background:0 0}.cell:hover{border-color:#8a94ac}.cell[aria-pressed=true]{background:var(--selected);border-color:var(--ink)}.cell.stable{background:#efeeea}.cell.stable[aria-pressed=true]{background:#dddedb}.cell small{font-size:.6rem;display:block}.plot line{vector-effect:non-scaling-stroke;stroke-width:2px}.plot line[data-status=zero]{stroke-dasharray:2 5}.plot line[data-status=undetermined]{stroke-dasharray:6 4}.plot line[data-highlighted=true]{stroke-width:3px}aside{border-top:1px solid #c7c7c9;min-width:0;padding:1.3rem;font-size:.85rem;line-height:1.6}.chain{padding:.5rem 0;font-size:1.15rem;display:block;overflow-x:auto}@container (width<=38rem){.layout{grid-template-columns:minmax(0,1fr)}.canvas{padding:.6rem .9rem}aside{padding:1rem}header{padding:.6rem .9rem}}@media (prefers-reduced-motion:reduce){.cell{transition:none}}.state-zero,.cell[data-status=zero]{color:var(--zero)}.state-nonzero,.cell[data-status=nonzero]{color:var(--nonzero)}.state-unknown,.state-undetermined,.cell[data-status=unknown]{color:var(--unknown)}.plot line[data-status=zero]{stroke:var(--zero)}.plot line[data-status=nonzero]{stroke:var(--nonzero)}.plot line[data-status=undetermined]{stroke:var(--unknown)}.guide{width:fit-content;position:relative}.guide button{color:#495367;font:inherit;cursor:pointer;background:0 0;border:0;padding:.35rem 0;-webkit-text-decoration:underline dotted;text-decoration:underline dotted}.guide [popover]{position-anchor:auto;inset:auto;bottom:anchor(top);left:anchor(left);background:#faf9f6;border:1px solid #b4bac5;border-radius:.4rem;margin:0;padding:.5rem .8rem;position:absolute}.guide [popover]:popover-open{display:grid}@container (width<=26rem){.chain{font-size:1rem}}.figure-controls{border-top:1px solid #d4d2ce;justify-content:space-between;align-items:center;margin-top:.8rem;padding-top:.25rem;display:flex}.figure-controls button{color:#454c61;cursor:pointer;background:0 0;border:0;padding:.5rem .2rem;font:500 .82rem/1.4 system-ui,sans-serif;text-decoration:none}.figure-controls button:hover{color:#18263f;text-decoration:underline}.figure-controls>button:after{content:\"\";border:1.5px solid;border-width:1.5px 1.5px 0 0;width:.4rem;height:.4rem;margin:0 .2rem 0 .6rem;display:inline-block;transform:rotate(-45deg)}.display-options{position-anchor:auto;inset:auto;bottom:anchor(top);right:anchor(right);width:min(17rem,86vw);color:var(--ink);background:#faf9f6;border:1px solid #c9c7c2;border-radius:.5rem;margin:0 0 .2rem;padding:.35rem 1rem;position:absolute;box-shadow:0 .3rem 1.3rem #19213726}.display-options label{grid-template-columns:5rem minmax(0,1fr);align-items:center;padding:.55rem 0;font-size:.83rem;display:grid}.display-options label+label{border-top:1px solid #dddcd7}.display-options select{width:100%;color:inherit;font:inherit;background:#fffefa;border:1px solid #898992;border-radius:.3rem;padding:.5rem .2rem}.guide [popover] span{align-items:center;gap:.6rem;display:flex}.guide [popover] span:before{content:\"\";border-top:2px solid;width:1.75rem}.guide [popover] .state-zero:before{border-top-style:dotted}.guide [popover] .state-unknown:before{border-top-style:dashed}";
+var ma = ":host{--ink:#22233a;--panel:#222840;--line:#47516b;--point:#202237;--paper:#fbfaf7;--zero:#aa3949;--nonzero:#285a97;--unknown:#403e40;--selected:#e8e7e3;color:var(--ink);max-width:65rem;margin:1.5rem auto .5rem;font:1rem/1.5 system-ui,sans-serif;display:block;container-type:inline-size}*{box-sizing:border-box}section{background:#f1f0ec;border:1px solid #c7c7c9;border-radius:.65rem;overflow:hidden}header{background:var(--panel);color:#f5f4ee;border-bottom:1px solid var(--line);justify-content:space-between;align-items:center;gap:1rem;padding:.9rem 1.35rem;display:flex}h2,h3{margin:0;font:1.4rem/1.3 Georgia,serif}.toolbar{align-items:center;gap:.2rem;display:flex}.toolbar button,.toolbar label{height:2.2rem;color:inherit;cursor:pointer;place-items:center;display:grid}.toolbar button{background:0 0;border:0;border-radius:.25rem;width:2.2rem;font:1.6rem/1 Georgia,serif}.toolbar button:hover:enabled,.toolbar label:hover{background:#37405c}.toolbar button:disabled{color:#737d97;cursor:default}.toolbar label{border-block:1px solid #64718c;grid-auto-flow:column;gap:.4rem;padding:0 .55rem;position:relative}.toolbar label:after{content:\"⌄\";font-size:.75rem}.toolbar select{opacity:0;cursor:pointer;width:100%;height:100%;position:absolute;inset:0}.toolbar label:focus-within,:focus-visible{outline-offset:2px;outline:2px solid}[aria-label=Page\\ formula]:not(:empty){background:var(--panel);color:#fff;padding:.65rem 1.35rem}.layout{grid-template-columns:minmax(0,1fr);display:grid}.canvas{background:var(--paper);min-width:0;color:var(--point);padding:.8rem 1.25rem}.vertical-axis,.horizontal-axis,.tick{color:#565765;font-size:.8rem}.horizontal-axis{text-align:right}.scroll{overflow:auto}.plot{background-image:linear-gradient(90deg,#0000 calc(50% - .5px),#dcdad5 50%,#0000 calc(50% + .5px)),linear-gradient(#0000 40px,#dcdad5 41px,#0000 42px);background-size:calc(100% / var(--columns)) 82px;border-bottom:1px solid #748199;border-left:1px solid #748199;width:100%;position:relative}.plot>svg{pointer-events:none;width:100%;height:100%;position:absolute;inset:0}.cell,.tick{position:absolute;transform:translate(-50%,-50%)}.tick{background:var(--paper);font-size:.68rem}.cell{font:inherit;color:var(--point);background:var(--paper);cursor:pointer;border:1px solid #0000;border-radius:.35rem;min-width:34px;min-height:34px;padding:.15rem .35rem;font-size:1.12rem;transition:border-color .15s,background .15s}.cell[data-status=zero]{background:0 0}.cell:hover{border-color:#8a94ac}.cell[aria-pressed=true]{background:var(--selected);border-color:var(--ink)}.cell.stable{background:#efeeea}.cell.stable[aria-pressed=true]{background:#dddedb}.cell small{font-size:.6rem;display:block}.plot line{vector-effect:non-scaling-stroke;stroke-width:2px}.plot line[data-status=zero]{stroke-dasharray:2 5}.plot line[data-status=undetermined]{stroke-dasharray:6 4}.plot line[data-highlighted=true]{stroke-width:3px}aside{border-top:1px solid #c7c7c9;min-width:0;padding:1.3rem;font-size:.85rem;line-height:1.6}.chain{padding:.5rem 0;font-size:1.15rem;display:block;overflow-x:auto}@container (width<=38rem){.layout{grid-template-columns:minmax(0,1fr)}.canvas{padding:.6rem .9rem}aside{padding:1rem}header{padding:.6rem .9rem}}@media (prefers-reduced-motion:reduce){.cell{transition:none}}.state-zero,.cell[data-status=zero]{color:var(--zero)}.state-nonzero,.cell[data-status=nonzero]{color:var(--nonzero)}.state-unknown,.state-undetermined,.cell[data-status=unknown]{color:var(--unknown)}.plot line[data-status=zero]{stroke:var(--zero)}.plot line[data-status=nonzero]{stroke:var(--nonzero)}.plot line[data-status=undetermined]{stroke:var(--unknown)}.guide{width:fit-content;position:relative}.guide button{color:#495367;font:inherit;cursor:pointer;background:0 0;border:0;padding:.35rem 0;-webkit-text-decoration:underline dotted;text-decoration:underline dotted}.guide [popover]{position-anchor:auto;inset:auto;bottom:anchor(top);left:anchor(left);background:#faf9f6;border:1px solid #b4bac5;border-radius:.4rem;margin:0;padding:.5rem .8rem;position:absolute}.guide [popover]:popover-open{display:grid}@container (width<=26rem){.chain{font-size:1rem}}.figure-controls{border-top:1px solid #d4d2ce;justify-content:space-between;align-items:center;margin-top:.8rem;padding-top:.25rem;display:flex}.figure-controls button{color:#454c61;cursor:pointer;background:0 0;border:0;padding:.5rem .2rem;font:500 .82rem/1.4 system-ui,sans-serif;text-decoration:none}.figure-controls button:hover{color:#18263f;text-decoration:underline}.figure-controls>button:after{content:\"\";border:1.5px solid;border-width:1.5px 1.5px 0 0;width:.4rem;height:.4rem;margin:0 .2rem 0 .6rem;display:inline-block;transform:rotate(-45deg)}.display-options{position-anchor:auto;inset:auto;bottom:anchor(top);right:anchor(right);width:min(17rem,86vw);color:var(--ink);background:#faf9f6;border:1px solid #c9c7c2;border-radius:.5rem;margin:0 0 .2rem;padding:.35rem 1rem;position:absolute;box-shadow:0 .3rem 1.3rem #19213726}.display-options label{grid-template-columns:5rem minmax(0,1fr);align-items:center;padding:.55rem 0;font-size:.83rem;display:grid}.display-options label+label{border-top:1px solid #dddcd7}.display-options select{width:100%;color:inherit;font:inherit;background:#fffefa;border:1px solid #898992;border-radius:.3rem;padding:.5rem .2rem}.guide [popover] span{align-items:center;gap:.6rem;display:flex}.guide [popover] span:before{content:\"\";border-top:2px solid;width:1.75rem}.guide [popover] .state-zero:before{border-top-style:dotted}.guide [popover] .state-unknown:before{border-top-style:dashed}.plot line.arrow-hit{stroke:#0000;stroke-width:14px;pointer-events:stroke;cursor:pointer;outline:none}.plot line.arrow-hit:focus-visible{stroke:#52556644;outline:none}.toolbar select{appearance:base-select}.toolbar select::picker(select){appearance:base-select}.toolbar select::picker(select){color:var(--ink);background:var(--paper);border:1px solid #c9c7c2;border-radius:.4rem;padding:.2rem}.toolbar option{padding:.35rem .6rem}";
 // src/viewer.ts
 function ha(e, t, n, r) {
 	let i = document.createElement("label");
@@ -42966,11 +42970,12 @@ var ga = (e) => e.map((e) => [e, e]), _a = (e) => String(e).replace(/\d/g, (e) =
 		p: 0,
 		q: 0
 	};
+	arrowSelected = !1;
 	filter = "All";
 	zeros = "zero";
 	set sequence(e) {
 		let t = ot(e);
-		this.data = t, this.i = (t.settings?.initialPage ?? t.firstPage) - t.firstPage;
+		this.data = t, this.arrowSelected = !1, this.i = (t.settings?.initialPage ?? t.firstPage) - t.firstPage;
 		let n = ut(t);
 		this.selected = lt(t, {
 			p: n.pMin,
@@ -42985,11 +42990,14 @@ var ga = (e) => e.map((e) => [e, e]), _a = (e) => String(e).replace(/\d/g, (e) =
 		let s = document.createElement("section"), c = document.createElement("h2");
 		c.append(n.title ? $(n.title) : "Spectral sequence");
 		let l = document.createElement("div");
-		l.setAttribute("aria-label", "Page formula"), i.formula && l.append($(i.formula));
+		if (l.setAttribute("aria-label", "Page formula"), i.formula) {
+			let e = $(i.formula);
+			e.setAttribute("aria-label", i.formula), l.append(e);
+		}
 		let u = document.createElement("div");
 		u.className = "toolbar";
 		let d = (e) => {
-			this.i = e, this.render();
+			this.i = e, this.arrowSelected = !1, this.render();
 		}, f = (t, n) => {
 			let r = document.createElement("button");
 			return r.textContent = n < 0 ? "‹" : "›", r.title = t, r.setAttribute("aria-label", t), r.disabled = !e.pages[this.i + n], r.onclick = () => d(this.i + n), r;
@@ -43004,52 +43012,63 @@ var ga = (e) => e.map((e) => [e, e]), _a = (e) => String(e).replace(/\d/g, (e) =
 			"Known nonzero",
 			"None"
 		]), this.filter, (e) => {
-			this.filter = e, _();
+			this.filter = e, v();
 		}), ha("Zero style", [
 			["zero", "Numeral"],
 			["dot", "Dot"],
 			["blank", "Blank"]
 		], this.zeros, (e) => {
-			this.zeros = e, _();
+			this.zeros = e, v();
 		}));
-		let h = u.querySelector("label");
+		let h = u.querySelector("label"), g = h.querySelector("select");
+		g.onkeydown = (t) => {
+			g.matches(":open") || t.key !== "Home" && t.key !== "End" || (t.preventDefault(), d(t.key === "Home" ? 0 : e.pages.length - 1));
+		};
+		for (let t of h.querySelectorAll("option")) {
+			t.setAttribute("aria-label", t.text);
+			let n = Number(t.value);
+			t.replaceChildren($("E_{" + n + "}" + (n === e.degenerationPage ? "=E_{\\infty}" : "")));
+		}
 		h.firstChild?.remove(), h.prepend($("E_{" + i.index + "}" + (i.index === e.degenerationPage ? "=E_{\\infty}" : "")));
-		let g = document.createElement("div");
-		g.className = "scroll";
-		let _ = () => g.replaceChildren(pa(a, r, this.selected, this.filter, this.zeros, (e) => {
-			this.selected = e, this.render(), this.root.querySelector("[aria-pressed=\"true\"]")?.focus();
+		let _ = document.createElement("div");
+		_.className = "scroll";
+		let v = () => _.replaceChildren(pa(a, r, this.selected, this.filter, this.zeros, this.arrowSelected, (e, t = !1) => {
+			this.selected = e, this.arrowSelected = t, this.render(), this.root.querySelector("[aria-pressed=\"true\"]")?.focus({ preventScroll: !0 });
 		}));
-		_();
-		let v = document.createElement("aside");
-		v.setAttribute("role", "region"), v.setAttribute("aria-label", "Inspector");
-		let y = et(a, this.selected, -1), b = it(a, y), x = it(a, this.selected), S = i.index, C = (e, t) => "\\class{state-" + e + "}{" + t + "}", w = e.convention === "cohomological", T = S < 10 ? String(S) : "{" + S + "}", E = (e, t) => {
+		v();
+		let y = document.createElement("aside");
+		y.setAttribute("role", "region"), y.setAttribute("aria-label", "Inspector");
+		let b = et(a, this.selected, -1), x = it(a, b), S = it(a, this.selected), C = i.index, w = (e, t) => "\\class{state-" + e + "}{" + t + "}", T = e.convention === "cohomological", E = C < 10 ? String(C) : "{" + C + "}", D = (e, t) => {
 			let n = "{" + U(t) + "}";
-			return e + (w ? "_" + T + "^" + n : "^" + T + "_" + n);
-		}, D = [
-			y,
+			return e + (T ? "_" + E + "^" + n : "^" + E + "_" + n);
+		}, O = [
+			b,
 			this.selected,
-			x.b
-		], O = D.map((e) => C(nt(a, e), E("E", e))), k = D.map((e) => {
+			S.b
+		], k = O.map((t) => {
+			let n = w(nt(a, t), D("E", t));
+			return $e(ct(e, t), r) ? n : "\\class{clipped}{\\underline{" + n + "}}";
+		}), A = O.map((e) => {
 			let t = a.terms.get(U(e)), n = nt(a, e), r = n === "zero" ? "0" : t?.module ?? t?.label ?? (n === "unknown" ? "?" : "\\ne 0");
-			return r ? C(n, r) : "";
-		}), A = [b, x], j = A.map((e) => {
+			return r ? w(n, r) : "";
+		}), j = [x, S], M = j.map((e) => {
 			let t = e.status === "undetermined" ? "[?]" : e.status === "zero" ? "[0]" : "";
-			return C(e.status, "\\xrightarrow" + t + "{" + E("d", e.a) + "}");
-		}), M = [[
-			O[0],
-			j[0],
-			O[1],
-			j[1],
-			O[2]
-		]];
-		k.some(Boolean) && M.push([
+			return w(e.status, "\\xrightarrow" + t + "{" + D("d", e.a) + "}");
+		}), N = [[
 			k[0],
-			"",
+			M[0],
 			k[1],
-			"",
+			M[1],
 			k[2]
+		]];
+		A.some(Boolean) && N.push([
+			A[0],
+			"",
+			A[1],
+			"",
+			A[2]
 		]);
-		for (let [e, t] of A.entries()) {
+		for (let [e, t] of j.entries()) {
 			let n = a.terms.get(U(t.a))?.generator, r = t.status === "zero" ? "0" : t.image, i = t.assignments ?? (n && r ? [{
 				generator: n,
 				image: r
@@ -43062,9 +43081,9 @@ var ga = (e) => e.map((e) => [e, e]), _a = (e) => String(e).replace(/\d/g, (e) =
 					"",
 					""
 				];
-				r[2 * e] = n.generator, r[2 * e + 1] = C(t.status, "\\longmapsto"), r[2 * e + 2] = n.image, M.push(r);
+				r[2 * e] = n.generator, r[2 * e + 1] = w(t.status, "\\longmapsto"), r[2 * e + 2] = n.image, N.push(r);
 			}
-			else if (t.formula && t.formula !== "0") {
+			if (t.formula && t.formula !== "0") {
 				let n = [
 					"",
 					"",
@@ -43072,40 +43091,44 @@ var ga = (e) => e.map((e) => [e, e]), _a = (e) => String(e).replace(/\d/g, (e) =
 					"",
 					""
 				];
-				n[2 * e + 1] = C(t.status, t.formula), M.push(n);
+				n[2 * e + 1] = w(t.status, t.formula), N.push(n);
 			}
 		}
-		let N = "\\begin{array}{ccccc}" + M.map((e) => e.join("&")).join("\\\\") + "\\end{array}", P = $(N);
-		P.classList.add("chain"), P.querySelector("svg").setAttribute("aria-label", N), v.append(P);
-		let F = a.stable.get(U(this.selected));
-		F !== void 0 && F <= i.index && v.append(" stable from page " + F);
-		let I = document.createElement("header");
-		I.append(c, u);
-		let L = document.createElement("div");
-		L.className = "canvas";
+		let P = "\\begin{array}{ccccc}" + N.map((e) => e.join("&")).join("\\\\") + "\\end{array}", F = $(P);
+		F.classList.add("chain"), F.querySelector("svg").setAttribute("aria-label", P), y.append(F);
+		let I = a.stable.get(U(this.selected));
+		if (I !== void 0 && I <= i.index) {
+			let e = document.createElement("span");
+			e.setAttribute("aria-label", "stable from page " + I), e.append(" stable from page ", $(String(I))), y.append(e);
+		}
+		let L = document.createElement("header");
+		L.append(c, u);
 		let R = document.createElement("div");
-		R.className = "vertical-axis", R.append($(n.qLabel ?? (n.projection === "total-filtration" ? "p" : "q")), " ↑");
+		R.className = "canvas";
 		let z = document.createElement("div");
-		z.className = "horizontal-axis", z.append($(n.pLabel ?? (n.projection === "total-filtration" ? "p+q" : "p")), " →"), L.append(R, g, z);
+		z.className = "vertical-axis", z.append($(n.qLabel ?? (n.projection === "total-filtration" ? "p" : "q")), " ↑");
 		let ee = document.createElement("div");
-		ee.className = "layout";
+		ee.className = "horizontal-axis", ee.append($(n.pLabel ?? (n.projection === "total-filtration" ? "p+q" : "p")), " →"), R.append(z, _, ee);
 		let B = document.createElement("div");
-		B.className = "guide";
-		let te = document.createElement("button");
-		te.textContent = "Color key";
-		let V = document.createElement("div");
-		V.popover = "auto", te.popoverTargetElement = V;
+		B.className = "layout";
+		let te = document.createElement("div");
+		te.className = "guide";
+		let V = document.createElement("button");
+		V.textContent = "Color key";
+		let H = document.createElement("div");
+		H.popover = "auto", V.popoverTargetElement = H;
 		for (let [e, t] of [
 			["zero", "Zero"],
 			["nonzero", "Nonzero"],
 			["unknown", "Unknown"]
 		]) {
 			let n = document.createElement("span");
-			n.className = "state-" + e, n.textContent = t, V.append(n);
+			n.className = "state-" + e, n.textContent = t, H.append(n);
 		}
-		B.append(te, V);
-		let H = document.createElement("footer");
-		H.className = "figure-controls", H.append(B, m, p), v.append(H), ee.append(L, v), s.append(I, l, ee), this.root.replaceChildren(o, s), t && this.root.querySelector("[aria-label=\"" + CSS.escape(t) + "\"]")?.focus({ preventScroll: !0 });
+		let ne = document.createElement("small");
+		ne.textContent = "Underlined terms lie outside the plot.", H.append(ne), te.append(V, H);
+		let re = document.createElement("footer");
+		re.className = "figure-controls", re.append(te, m, p), y.append(re), B.append(R, y), s.append(L, l, B), this.root.replaceChildren(o, s), t && this.root.querySelector("[aria-label=\"" + CSS.escape(t) + "\"]")?.focus({ preventScroll: !0 });
 	}
 };
 // src/index.ts
