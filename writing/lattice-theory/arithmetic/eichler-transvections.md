@@ -37,8 +37,7 @@ On an even lattice every $a\in L$ has even square (@def:form-axioms), so it is a
 
 ::: {.proposition #prop:eichler-integrality-criterion title="When an Eichler--Siegel transvection is integral"}
 
-Let $L$ be a nondegenerate symmetric integral lattice, $e\in L$ isotropic, and $a\in L\cap\generators{e}^{\perp L}$. If $a^2\in2\ZZ$, then $E_{e,a}\in\Orth(L)$. If additionally $e$ is primitive with $\div_L(e)=1$, the converse holds.
-Then
+Let $L$ be a nondegenerate symmetric integral lattice, $e\in L$ isotropic, and $a\in L\cap\generators{e}^{\perp L}$. If $a^2\in2\ZZ$, then $E_{e,a}\in\Orth(L)$. If additionally $e$ is primitive with $\div_L(e)=1$, then
 $$
 E_{e,a}\in\Orth(L)
 \iff

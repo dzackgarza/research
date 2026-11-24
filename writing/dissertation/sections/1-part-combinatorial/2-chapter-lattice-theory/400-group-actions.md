@@ -21,8 +21,7 @@ This last condition is automatic when $L$ is even, and it is necessary in genera
 If $L$ is even, then $\eichlergroup{L} \iscontainedin \discriminantkernel{L}$.
 
 ::: {.proposition #prop:siegel-transvection-integrality title="Integrality criterion for Siegel-Eichler transvections"}
-Let $L$ be a nondegenerate symmetric integral lattice, $e\in L$ isotropic, and $a\in L\cap\generators{e}^{\perp_L}$. If $a^2\in2\ZZ$, then $E_{e,a}\in\Orth(L)$. If additionally $e$ is primitive with $\div_L(e)=1$, the converse holds.
-Then
+Let $L$ be a nondegenerate symmetric integral lattice, $e\in L$ isotropic, and $a\in L\cap\generators{e}^{\perp_L}$. If $a^2\in2\ZZ$, then $E_{e,a}\in\Orth(L)$. If additionally $e$ is primitive with $\div_L(e)=1$, then
 $$
 E_{e,a} \in \Orth(L) \iff a^2 \in 2\ZZ .
 $$
