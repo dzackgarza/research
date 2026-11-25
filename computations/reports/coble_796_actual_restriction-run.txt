@@ -1,0 +1,35 @@
+Exact Sage Python run, 2026-11-25 UTC; all assertions passed.
+Input coble_enriques-white-root-facets-run.txt, git blob ddd21b441eed7c9e53992ac4074e33d48c4bbd9d;
+input SHA-256 dd754bd2a1566402903fa7e4e54217a07895041f438eac2e185b44ac38577695.
+Script SHA-256 22e9f2c3f127d33dca06969336b372d8c0e915e34dc61b99f6009bf75b550987.
+Executed with the existing Sage Python launcher and the identical input text embedded for container access.
+
+cusp 2 delta 10 ambient irrelevant [4] effective irrelevant [4]
+irrelevant Gram [[-4]] rank 1
+rays (ordinary, ideal, outside) [8, 1, 0]
+ideal [1, 2, 4, 5, 6, 7, 8, 9] non-toroidal False
+cusp 3 delta 5 ambient irrelevant [10, 11, 12] effective irrelevant [10, 12]
+irrelevant Gram [[-4, 0], [0, -4]] rank 2
+rays (ordinary, ideal, outside) [22, 3, 0]
+ideal [1, 2, 4, 6, 7, 8, 9, 11, 12] non-toroidal False
+ideal [1, 2, 3, 4, 6, 8, 9, 10, 12] non-toroidal False
+ideal [1, 2, 3, 4, 6, 7, 8, 9] non-toroidal False
+cusp 4 delta 9 ambient irrelevant [10, 11] effective irrelevant [10, 11]
+irrelevant Gram [[-4, 0], [0, -4]] rank 2
+rays (ordinary, ideal, outside) [18, 3, 0]
+ideal [1, 2, 3, 4, 5, 6, 7, 8] non-toroidal False
+ideal [1, 2, 4, 5, 6, 7, 8, 10, 11] non-toroidal False
+ideal [1, 2, 3, 4, 5, 6, 8, 10] non-toroidal False
+cusp 5 delta 11 ambient irrelevant [9, 10, 11, 12, 13, 14] effective irrelevant [9, 10, 12, 13, 14]
+irrelevant Gram [[-2, 0, 0, 0, 2], [0, -2, 0, 2, 0], [0, 0, -2, 0, 2], [0, 2, 0, -2, 4], [2, 0, 2, 4, -4]] rank 5
+rays (ordinary, ideal, outside) [61, 9, 0]
+ideal [2, 3, 4, 6, 7, 8, 9, 10, 12, 14] non-toroidal True
+ideal [1, 3, 4, 5, 6, 7, 9, 10, 14] non-toroidal False
+ideal [1, 3, 4, 5, 6, 7, 8, 9] non-toroidal False
+ideal [1, 2, 3, 5, 6, 7, 9, 10, 12] non-toroidal False
+ideal [1, 2, 4, 5, 6, 8, 9, 10, 12, 13] non-toroidal True
+ideal [1, 3, 4, 5, 7, 8, 9, 10, 12] non-toroidal False
+ideal [1, 2, 3, 5, 7, 8, 10, 12, 14] non-toroidal False
+ideal [1, 3, 5, 6, 7, 8, 9, 12, 13] non-toroidal False
+ideal [1, 2, 3, 5, 6, 7, 8, 12] non-toroidal False
+All exact checks passed.
