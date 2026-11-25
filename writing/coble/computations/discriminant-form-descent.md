@@ -932,7 +932,7 @@ Here $s$ has determinant $-1$ and spinor norm $[-\beta(e-f,e-f)/2]=[1]=1$ becaus
 Let a group $A$ act transitively on a nonempty set $\Omega$, let $x\in\Omega$, put $B\definedas\Stab_A(x)$, and let $\chi\colon A\to\theset{\pm1}$ be a homomorphism with kernel $A^+\definedas\ker\chi$.
 Then the number of $A^+$-orbits in $\Omega$ is
 $$ [\chi(A):\chi(B)], $$
-a divisor of $2$, and it is $2$ exactly when $\chi(B)=\theset{1}$, that is exactly when $B\subseteq A^+$; if $\chi(A)=\theset{1}$ there is one orbit.
+a divisor of $2$, and it is $2$ exactly when $\chi$ is onto and $\chi(B)=\theset{1}$, that is exactly when $\chi(A)=\theset{\pm1}$ and $B\subseteq A^+$; when $\chi(A)=\theset{1}$ there is one orbit.
 The formula is computed at the stabilizer in the group that acts: for a subgroup $A'\leq A$ acting on an $A'$-invariant nonempty subset $\Omega'\subseteq\Omega$ with $x'\in\Omega'$, the number of $A'^+$-orbits in $\Omega'$ is $[\chi(A'):\chi(\Stab_{A'}(x'))]$, and this is not $[\chi(A):\chi(\Stab_A(x'))]$ in general (@ex:sign-sensitive-splitting-u2).
 :::
 
