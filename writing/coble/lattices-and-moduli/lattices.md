@@ -1064,7 +1064,7 @@ For a primitive totally isotropic plane $\varPi\subseteq\ten$ let $D(\varPi)\leq
 The vector $\alpha/2$ corresponds to $e_1\notin E_8$, so $z$ is primitive in $U\oplus E_8(2)$, and $e'$ is primitive in $U(2)$; a span of primitive vectors of two orthogonal summands is primitive in their sum, so $\varPi_2$ is primitive, and so is $\varPi_1$.
 The vector $e$ has divisibility one.
 For a primitive $az+be'\in\varPi_2$, the ideal $(az+be',\ten)$ contains $(az+be',f) = 2a$ and $(az+be',f') = 2b$, and it lies in $2\ZZ$ because $(z,\ten)$ and $(e',\ten)$ do; so $az+be'$ has divisibility two.
-By [@Ste91, Prop. 4.6] there are exactly two $\Orth(\ten)$-classes of primitive isotropic planes, and divisibility is invariant under $\Orth(\ten)$, so $\varPi_1$ and $\varPi_2$ represent the two classes.
+By [@Ste91, Prop. 4.6] there are exactly two $\Orth(\ten)$-classes of primitive isotropic planes. An independent proof of both rank-one and rank-two transitivity classifications is D. Allcock, [*The Period Lattice for Enriques Surfaces*](https://web.ma.utexas.edu/users/allcock/research/elattice.pdf), Lemma 1 and Corollary 4: the intrinsic lattice construction identifies the full isometry group of $U\perp U(2)\perp E_8(2)$ with that of the odd unimodular lattice $I_{2,10}$, where Corollary 4 proves that each of the two ranks has exactly two orbits. The correspondence on primitive sublattices sends a rational totally isotropic subspace to its saturated intersection with the respective lattice (after the common scalar rescaling in Lemma 1); it is bijective and equivariant for the identical actions. Thus the orbit counts apply to $\ten$ itself, not merely to its finite discriminant form. Divisibility is invariant under $\Orth(\ten)$, so $\varPi_1$ and $\varPi_2$ represent the two classes.
 
 (2), (3): the subgroup $D(\varPi)$.
 $A_{\ten}$ has exponent two, so $2\ten^*\subseteq\ten$, and primitivity of $\varPi$ gives $\varPi_\QQ\cap\ten^*\subseteq\tfrac12(\varPi_\QQ\cap\ten) = \tfrac12\varPi$.
@@ -1196,7 +1196,7 @@ $$
 ::: {.proof}
 
 For $g\in\Orth(\ten)$ one has $c(g\ZZ v) = \rho(g)\,c(\ZZ v)$, because $g$ preserves divisibility (@def:lattice-divisibility).
-By [@Ste91, Prop. 4.5] there is $g\in\Orth(\ten)$ with $g\ZZ v_0 = \ZZ v$ for $v_0 = e$ or $v_0 = e'$.
+By the rank-one classification of [@Ste91, Prop. 4.5] (also Allcock, Lemma 1 and Corollary 4, with the saturated-subspace correspondence in @prop:ten-plane-classes), there are exactly two orbits on primitive isotropic lines. The lines $\ZZ e$ and $\ZZ e'$ have distinct divisibilities $1$ and $2$, so one can choose $g\in\Orth(\ten)$ with $g\ZZ v_0=\ZZ v$ for $v_0=e$ or $e'$.
 Conjugation by $g$ carries $\Stab_{\Orth(\ten)}(\ZZ v_0)$ to $\Stab_{\Orth(\ten)}(\ZZ v)$, and conjugation by $\rho(g)$ carries the stabilizer (@def:group-orbit) of $c(\ZZ v_0)$ to the stabilizer of $c(\ZZ v)$.
 The first equality holds for $v_0$ by @lem:ten-base-stabilizers, because $c(\ZZ e) = 0$ and $c(\ZZ e') = d_1$.
 
@@ -1216,7 +1216,7 @@ Two primitive isotropic lines $\ell,\ell'\subseteq\ten$ are $\Gamma$-equivalent 
 
 If $\ell' = \gamma\ell$ with $\gamma\in\Gamma$, then $c(\ell') = \rho(\gamma)c(\ell)$.
 Conversely let $c(\ell') = h\,c(\ell)$ with $h\in H$.
-The class $c(\ell)$ is $0$ exactly when $\operatorname{div}(\ell) = 1$, so $\ell$ and $\ell'$ have the same divisibility (@def:lattice-divisibility), and by [@Ste91, Prop. 4.5] there is $g\in\Orth(\ten)$ with $g\ell = \ell'$.
+The class $c(\ell)$ is $0$ exactly when $\operatorname{div}(\ell) = 1$, so $\ell$ and $\ell'$ have the same divisibility (@def:lattice-divisibility), and the two full line orbits are distinguished by divisibility, as proved using the rank-one classification in @lem:line-stabilizer-image. Hence there is $g\in\Orth(\ten)$ with $g\ell=\ell'$.
 Then $h^{-1}\rho(g)$ fixes $c(\ell)$, so by @lem:line-stabilizer-image $h^{-1}\rho(g) = \rho(s)$ with $s\in\Stab_{\Orth(\ten)}(\ell)$.
 The element $\gamma = gs^{-1}$ carries $\ell$ to $\ell'$ and has $\rho(\gamma) = h$, so $\gamma\in\rho^{-1}(H) = \Gamma$.
 :::
