@@ -121,17 +121,23 @@ Here $S\leq F$, because $\Stab_{\Orth(L)}(x)$ preserves $D(x)$ by @lem:descent-s
 ## Spinor restriction {#sec-descent-spinor}
 
 ::: {.proposition #prop:descent-spinor-fibre title="Orbit-by-orbit spinor restriction"}
-Put $\Gamma^+=\Gamma\cap\Orth^+(L)$, where $\Orth^+(L)$ is the normalized real spinor kernel (@def:lattice-spinor-kernels), and fix one $\Gamma$-orbit $\mathcal O=\Gamma x\subseteq\mathcal F_{\mathcal X}(D)$. If $\Stab_{\mathcal G_D\cap\Gamma}(x)$ contains a spinor-negative element, then $\mathcal O$ is still one $\Gamma^+$-orbit.
 
-Consequently, when this hypothesis holds at a point $x$, the $\Gamma^+$-orbits inside $\mathcal G_D\cdot x$ are computed by the *unreduced* double cosets
+Let $\Gamma\leq\Orth(L)$ and put $\Gamma^+=\Gamma\intersect\Orth^+(L)$, where $\Orth^+(L)$ is the normalized real spinor kernel (@def:lattice-spinor-kernels). Fix an integral object $x$ in a full orthogonal-group orbit $\mathcal X$, and write $B_x=\Stab_\Gamma(x)$ and $\chi=\spinornorm_\bR|_\Gamma$. The number of $\Gamma^+$-orbits in the single $\Gamma$-orbit $\Gamma x$ is
+$$ [\chi(\Gamma):\chi(B_x)]. $$
+In particular, if $\chi(\Gamma)=\{\pm1\}$, that orbit remains one orbit exactly when its actual integral stabilizer contains a spinor-negative element; otherwise it splits into two. If $\chi$ is trivial on $\Gamma$, there is no splitting. No assumption that $\Gamma x$ lies in a fixed discriminant-datum fibre is made.
+
+With the notation of @thm:descent-double-coset, the $\Gamma^+\cap\mathcal G_D$-orbits in the fixed-datum fibre $\mathcal G_D\cdot x$ are always computed by the unreduced double cosets
 $$ (\Gamma^+\cap\mathcal G_D)\bigl\backslash\mathcal G_D\bigl/\Stab_{\mathcal G_D}(x). $$
-If $K=\ker\rho_{L,q}\subseteq\Gamma^+$, these reduce to $(H^+\cap F)\backslash F/S$ with $H^+=\rho_{L,q}(\Gamma^+)$. That last simplification is *not* allowed merely because $K\subseteq\Gamma$: $\Gamma^+$ need not contain $K$.
+The analogous index formula holds within each $\Gamma\cap\mathcal G_D$-orbit in that fibre. If $K=\ker\rho_{L,q}\subseteq\Gamma^+$, these double cosets reduce to $(H^+\cap F)\backslash F/S$ with $H^+=\rho_{L,q}(\Gamma^+)$. This simplification is not allowed merely because $K\subseteq\Gamma$: $\Gamma^+$ need not contain $K$.
+
 :::
 
 ::: {.proof}
-For $y=gx$ with $g\in\Gamma$, if $g\notin\Orth^+(L)$ and $\tau\in\Stab_{\mathcal G_D\cap\Gamma}(x)$ is spinor-negative, then $g\tau\in\Gamma^+$ also takes $x$ to $y$ (the product $g\tau$ has positive spinor norm (@def:lattice-basic-invariants) (@def:spinor-norm)). Conjugation by the same $g$ keeps $\Gamma$ stable, so the hypothesis at $x$ gives the required witness at every point of $\mathcal O$. If the hypothesis holds at a representative of every $\Gamma$-orbit, every $\Gamma$-orbit in the fibre remains one $\Gamma^+$-orbit.
 
-The displayed formula is @thm:descent-double-coset applied with $\Gamma^+$ substituted for $\Gamma$. Only when $K\subseteq\Gamma^+$ does its final reduction modulo $K$ apply; replacing $H$ by $H^+$ without this containment would discard the $\Gamma^+$-ineffective double cosets.
+The orbit map identifies $\Gamma x$ with $\Gamma/B_x$. Hence its $\Gamma^+$-orbits are $\Gamma^+\backslash\Gamma/B_x$. As $\Gamma^+=\ker\chi$ is normal in $\Gamma$, the map $\Gamma^+gB_x\mapsto\chi(g)\chi(B_x)$ is bijective: equality of the image cosets means $\chi(g')=\chi(g)\chi(b)$ for some $b\in B_x$, so $g'(gb)^{-1}\in\Gamma^+$ and $g'$ belongs to the same double coset. Surjectivity follows from the definition of $\chi(\Gamma)$. This proves the index and both cases of the splitting assertion. Conjugation by any element of $\Gamma$ transports the stabilizer and preserves its spinor image.
+
+Apply this argument also to $\Gamma\cap\mathcal G_D$ and its normal spinor kernel $\Gamma^+\cap\mathcal G_D$. The unreduced fixed-fibre formula is @thm:descent-double-coset with $\Gamma^+$ substituted for $\Gamma$, since it is the fibre-preserving subgroup that acts on that fibre. Only when $K\subseteq\Gamma^+$ does the reduction of that theorem apply.
+
 :::
 
 ## Flags {#sec-descent-flags}
