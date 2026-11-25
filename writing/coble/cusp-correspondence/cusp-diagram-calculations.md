@@ -204,7 +204,7 @@ By [@AE22, Prop. 5.5] such isotropic vectors are unique up to $\Orth(T_\Co)$, wi
 - $v_1 = 2h + \alpha_1 + \alpha_2$.
 
 Then $v_0^2 = v_1^2 = 0$, $v_1 \in v_0^{\perp T_{\Co}}/\generators{v_0}$ and $v_0v_1 = 0$, so $J \definedas \generators{v_0, v_1}$ is an isotropic plane.
-Write $\div_{T_{\Co}}(v_0, v_1) \definedas \bigl(\div_{T_{\Co}}(v_0), \div_{T_{\Co}}(v_1)\bigr)$; then $\div_{T_{\Co}}(v_0, v_1) = (2, 2)$.
+Write $\divisibility_{T_{\Co}}(v_0, v_1) \definedas \bigl(\divisibility_{T_{\Co}}(v_0), \divisibility_{T_{\Co}}(v_1)\bigr)$; then $\divisibility_{T_{\Co}}(v_0, v_1) = (2, 2)$.
 
 ::: {.example #ex:coble-cusp-divisibilities title="Divisibilities of $v_0$ and $v_1$"}
 
@@ -216,7 +216,7 @@ Write $\div_{T_{\Co}}(v_0, v_1) \definedas \bigl(\div_{T_{\Co}}(v_0), \div_{T_{\
 
 : Images of the isotropic vectors of $T_{\Co}$ and their divisibilities. {#tbl-coble-cusp-divisibilities}
 
-In $\tdp$ the image of $v_0$ is $e'\in U(2)$ and $e'f' = 2$, so $\div_{\tdp}(v_0) = 2$. Since $v_1\alpha_3 = 1$, $\div_{\tdp}(v_1) = 1$.
+In $\tdp$ the image of $v_0$ is $e'\in U(2)$ and $e'f' = 2$, so $\divisibility_{\tdp}(v_0) = 2$. Since $v_1\alpha_3 = 1$, $\divisibility_{\tdp}(v_1) = 1$.
 :::
 
 ::: {.example #ex:coble-cusp-parabolic title="The maximal parabolic subdiagram at $v_0$"}

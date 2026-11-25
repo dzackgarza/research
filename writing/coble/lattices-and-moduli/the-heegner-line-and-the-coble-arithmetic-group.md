@@ -1105,7 +1105,7 @@ The difference $C_+-C_-$ of the two components over one fibre is not in $T_\Co$:
 
 (3) $D_{1,-}=f-D_{1,+}$ and $D_{-1,\pm}$ lie in $S_{\Co,b}+\ZZ D_{1,+}$, and $2D_{1,+}=s_0+v$. $D_{1,+}\notin S_{\Co,b}\perp\langle v\rangle$, since $v\cdot D_{1,+} = -2$ and $\tfrac{v\cdot D_{1,+}}{v^2}=\tfrac12$. So the index is $2$ and $\abs{\det M}=2^{11}\cdot4/4=2^{11}$, with $\abs{\det S_{\Co,b}}=2^{11}$ (@prop:coble-invariant-lattice).
 
-(4) The components are curves, so $M\subseteq\Pic$; the transcendental lattice is orthogonal to $v$ and lies in $T_\Co$. $\abs{\det v^{\perp T_\Co}} = \abs{\det T_\Co}\cdot\abs{v^2}/\div(v)^2 = 2^{11}\cdot4/4$.
+(4) The components are curves, so $M\subseteq\Pic$; the transcendental lattice is orthogonal to $v$ and lies in $T_\Co$. $\abs{\det v^{\perp T_\Co}} = \abs{\det T_\Co}\cdot\abs{v^2}/\divisibility(v)^2 = 2^{11}\cdot4/4$.
 :::
 
 ::: {.lemma #lem:chamber-condition-is-period-condition title="The chamber condition is a linear condition on the period, not a count of chambers"}
@@ -1412,7 +1412,7 @@ Then the reflection $s_v$ is an isometry of $S_\En$ fixing $h$, and it acts nont
 
 ::: {.proof}
 
-In $S_\En$ one has $u_0^2 = w_0^2 = 0$ and $b(u_0,w_0) = 2$, so $v^2 = -4$ and $\div_{S_\En}(v) = 2$; the reflection is therefore the integral isometry $s_v(x) = x + \tfrac12 b(x,v)v$ of @def:spinor-norm.
+In $S_\En$ one has $u_0^2 = w_0^2 = 0$ and $b(u_0,w_0) = 2$, so $v^2 = -4$ and $\divisibility_{S_\En}(v) = 2$; the reflection is therefore the integral isometry $s_v(x) = x + \tfrac12 b(x,v)v$ of @def:spinor-norm.
 It fixes $h$: $b(h,v) = b(u_0+w_0,\,u_0-w_0) = 0-2+2-0 = 0$, hence $s_v(h) = h$.
 
 For the discriminant, the class of $u_0/2$ lies in $S_\En^*$, because $b_{S_\En} = 2\,b_C$ and $u_0, y\in C$ give $b_{S_\En}(u_0/2, y) = b_C(u_0,y)\in\ZZ$ for every $y\in S_\En$.
@@ -3271,7 +3271,7 @@ Consequently the reflective set (@def:reflective-set) of $\widetilde\Orth^+(T_\C
 ::: {.proof}
 
 *Integrality.*
-A primitive $v$ has $\div_{T_\Co}(v) = 2$ (@lem:divisibilityAlwaysTwoTco), so $\beta(v,T_\Co) = 2\ZZ$; then $2\beta(x,v)/\beta(v,v)$ is an integer for every $x\in T_\Co$ exactly when $\beta(v,v)$ divides $4$, because $2\beta(x,v)$ runs over $4\ZZ$ while $\beta(v,v)$ need not divide it.
+A primitive $v$ has $\divisibility_{T_\Co}(v) = 2$ (@lem:divisibilityAlwaysTwoTco), so $\beta(v,T_\Co) = 2\ZZ$; then $2\beta(x,v)/\beta(v,v)$ is an integer for every $x\in T_\Co$ exactly when $\beta(v,v)$ divides $4$, because $2\beta(x,v)$ runs over $4\ZZ$ while $\beta(v,v)$ need not divide it.
 So for primitive $v$ the reflection is integral exactly for $v^2\in\{2,-2,4,-4\}$.
 Primitivity cannot be dropped from that clause: $s_v$ depends only on the line $\ZZ v$, so $v = 2w$ with $w^2 = -2$ has $v^2 = -8$ and $s_v = s_w$, which is integral.
 The real spinor norm of @def:spinor-norm is $\spinornorm_\bR(s_w) = [-\tfrac12\beta(w,w)]$ for any nonisotropic $w$, so $\spinornorm_\bR(s_v)$ is $[-1]$ for $v^2 = 2$, $[1]$ for $v^2 = -2$, $[-2] = [-1]$ for $v^2 = 4$, and $[2] = [1]$ for $v^2 = -4$.

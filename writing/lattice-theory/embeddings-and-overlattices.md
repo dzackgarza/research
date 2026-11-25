@@ -297,7 +297,7 @@ Thus $S^{\perp L}$ is unimodular.
 
 Let $L$ be a nondegenerate (@def:polarization) unimodular lattice (@def:unimodular) and let $v\in L$ be a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) vector.
 Then there exists $w\in L$ with $\beta_L(v, w) = 1$.
-In particular $\div_L(v) = 1$ for every primitive vector $v\in L$.
+In particular $\divisibility_L(v) = 1$ for every primitive vector $v\in L$.
 :::
 
 ::: {.proof}
@@ -306,7 +306,7 @@ Since $L$ is unimodular, the canonical map $L\to \dualof{L}$ is an isomorphism (
 Because $v$ is primitive, by the primitive-sublattice characterization (@prop:primitive-characterization) it extends to a $\ZZ$-basis $e_1 = v, e_2,\ldots,e_n$ of $L$.
 Let $\varphi\colon L\to\ZZ$ be the dual-basis functional with $\varphi(v) = 1$ and $\varphi(e_j) = 0$ for $j > 1$.
 Writing $\varphi = \beta_L(w,\,\cdot\,)$ for the corresponding $w\in L$ and using symmetry gives $\beta_L(v, w) = \beta_L(w, v) = \varphi(v) = 1$.
-For the divisibility (@def:lattice-divisibility) statement, the image $\beta_L(v, L) = \div_L(v)\ZZ$ contains $\beta_L(v, w) = 1$, so $\div_L(v) = 1$.
+For the divisibility (@def:lattice-divisibility) statement, the image $\beta_L(v, L) = \divisibility_L(v)\ZZ$ contains $\beta_L(v, w) = 1$, so $\divisibility_L(v) = 1$.
 :::
 
 ::: {.corollary #cor:hyperbolic-splitting title="Hyperbolic splitting of unimodular lattices"}

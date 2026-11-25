@@ -135,7 +135,7 @@ A_T = (\tfrac12 B)/B \cong B/2B .
 $$
 For $x\in B$ one has $(x,x)_T = 2\,b_B(x,x)$, so $q_T([x/2]) = \tfrac12(x,x)_T = b_B(x,x) \bmod 2$.
 An isometry of $T$ is an isometry of $B$, because the two forms differ by the scalar $2$, and it carries $\tfrac12 v$ to $\tfrac12 gv$; so its action on $A_T$ is its own reduction modulo $2$.
-(2) A primitive $v\in T$ is primitive in $B$, the two lattices having the same underlying abelian group; so $(v,B) = \ZZ$ and $(v,T) = 2\,(v,B) = 2\ZZ$, that is $\div_T(v) = 2$, and $[v/2]\neq 0$ because $v\notin 2B$.
+(2) A primitive $v\in T$ is primitive in $B$, the two lattices having the same underlying abelian group; so $(v,B) = \ZZ$ and $(v,T) = 2\,(v,B) = 2\ZZ$, that is $\divisibility_T(v) = 2$, and $[v/2]\neq 0$ because $v\notin 2B$.
 (3) $\rank N_n = 12-n$ and the signature of $N_n$ is $(2,\,10-n) = (2,\,(12-n)-2)$, so @prop:type-iv-dimension gives $\dim_\CC\bD(N_n) = (12-n)-2 = 10-n$.
 :::
 

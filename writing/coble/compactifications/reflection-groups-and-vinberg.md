@@ -63,7 +63,7 @@ For a $2$-elementary lattice $L$, the roots are precisely the vectors $v\in L$ o
 
 - a **short root**, with $v^2 = -2$; or
 
-- a **long root**, with $v^2 = -4$ and $\div_L(v) = 2$.
+- a **long root**, with $v^2 = -4$ and $\divisibility_L(v) = 2$.
 :::
 
 ::: {.proposition #prop:root-integrality title="Integrality of the two root types"}
@@ -77,22 +77,22 @@ For a short root $s_v(x) = x + \beta_L(v,x)\,v$, and for a long root $s_v(x) = x
 
 The formulas for $s_v$ are those of @def:reflection with $\beta_L(v,v) = -2$, respectively $-4$.
 If $v^2 = -2$, the integrality condition $2\beta_L(v,L)\iscontainedin 2\ZZ$ holds because $L$ is integral.
-If $v^2 = -4$, the integrality condition is $\beta_L(v,L)\iscontainedin 2\ZZ$, that is $2\mid\div_L(v)$.
-The vector $v/\div_L(v)$ lies in $\dualof{L}$, and since $v$ is primitive its class in $A_L$ has order $\div_L(v)$.
-As $A_L$ is $2$-elementary, $\div_L(v)\in\theset{1,2}$, so $2\mid\div_L(v)$ holds exactly when $\div_L(v) = 2$.
+If $v^2 = -4$, the integrality condition is $\beta_L(v,L)\iscontainedin 2\ZZ$, that is $2\mid\divisibility_L(v)$.
+The vector $v/\divisibility_L(v)$ lies in $\dualof{L}$, and since $v$ is primitive its class in $A_L$ has order $\divisibility_L(v)$.
+As $A_L$ is $2$-elementary, $\divisibility_L(v)\in\theset{1,2}$, so $2\mid\divisibility_L(v)$ holds exactly when $\divisibility_L(v) = 2$.
 :::
 
 ::: {.theorem #thm:2elementary-roots-characterization title="The two root types exhaust the roots"}
 
 Let $L$ be an even $2$-elementary lattice and let $v\in L$ be primitive (@def:primitive-embedding) with $v^2 < 0$.
-Then $s_v\in\Orth(L)$ if and only if either $v^2 = -2$, or $v^2 = -4$ and $\div_L(v) = 2$.
+Then $s_v\in\Orth(L)$ if and only if either $v^2 = -2$, or $v^2 = -4$ and $\divisibility_L(v) = 2$.
 This is the description of roots in [@Ale22, §2], where a root is a vector $\alpha$ with $\alpha^2<0$ and $s_\alpha(L) = L$.
 :::
 
 ::: {.proof}
 
 Sufficiency is @prop:root-integrality.
-For necessity, $\div_L(v)\in\theset{1, 2}$ by the proof of @prop:root-integrality, so the integrality condition $2\div_L(v)/v^2\in\ZZ$ of @def:k-root restricts $v^2$ to $\theset{-2, -4}$, with $\div_L(v) = 2$ forced in the second case.
+For necessity, $\divisibility_L(v)\in\theset{1, 2}$ by the proof of @prop:root-integrality, so the integrality condition $2\divisibility_L(v)/v^2\in\ZZ$ of @def:k-root restricts $v^2$ to $\theset{-2, -4}$, with $\divisibility_L(v) = 2$ forced in the second case.
 :::
 
 ## Coroots and the weight space

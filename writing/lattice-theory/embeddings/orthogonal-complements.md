@@ -421,9 +421,9 @@ So the action in item 2 is faithful exactly when $\Stab_{\Orth(L)}(P)\cap\rho_L^
 
 ::: {.corollary #cor:isotropic-reduction-rank-one title="Isotropic reduction along a primitive isotropic vector"}
 
-Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ be integral and let $v\in L$ be primitive (@def:primitive-embedding) and isotropic (@def:orthogonal-complement), with divisibility $\div_L(v)$ of @def:lattice-divisibility.
-Put $P=\generators{v}_{\bZ}$ and $c\definedas[v/\div_L(v)]\in A_L$.
-Then $N_V=\bZ\,v/\div_L(v)$, $[N_V:P]=\div_L(v)$, $D(P)=\generators{c}$, and $\varphi_P$ of @thm:isotropic-reduction-discriminant is an isometry
+Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ be integral and let $v\in L$ be primitive (@def:primitive-embedding) and isotropic (@def:orthogonal-complement), with divisibility $\divisibility_L(v)$ of @def:lattice-divisibility.
+Put $P=\generators{v}_{\bZ}$ and $c\definedas[v/\divisibility_L(v)]\in A_L$.
+Then $N_V=\bZ\,v/\divisibility_L(v)$, $[N_V:P]=\divisibility_L(v)$, $D(P)=\generators{c}$, and $\varphi_P$ of @thm:isotropic-reduction-discriminant is an isometry
 $$
 A_{v^{\perp_L}/v}\isoto\generators{c}^{\perp}/\generators{c}.
 $$
@@ -433,7 +433,7 @@ $$
 
 Here $r=1$ and $V=\bQ v$ in @not:isotropic-reduction-setup.
 An element $tv$ with $t\in\bQ$ lies in $N=L^{\#}$ exactly when $t\,\beta_L(v,x)\in\bZ$ for every $x\in L$.
-By @def:lattice-divisibility the values $\beta_L(v,x)$ for $x\in L$ form the ideal $\div_L(v)\bZ$, so the condition is $t\,\div_L(v)\in\bZ$, and $N_V=N\cap V=\bZ\,v/\div_L(v)$.
-Hence $[N_V:P]=\div_L(v)$, and $D(P)$, the image of $N_V$ in $A_L$, is the cyclic group (@def:group) $\generators{c}$.
+By @def:lattice-divisibility the values $\beta_L(v,x)$ for $x\in L$ form the ideal $\divisibility_L(v)\bZ$, so the condition is $t\,\divisibility_L(v)\in\bZ$, and $N_V=N\cap V=\bZ\,v/\divisibility_L(v)$.
+Hence $[N_V:P]=\divisibility_L(v)$, and $D(P)$, the image of $N_V$ in $A_L$, is the cyclic group (@def:group) $\generators{c}$.
 Since $M=P^{\perp_L}=v^{\perp_L}$ and $Q=M/P=v^{\perp_L}/v$, the isometry is @thm:isotropic-reduction-discriminant.
 :::

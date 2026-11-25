@@ -10,18 +10,18 @@ $$
 For $\fentwo$, there are two isometry classes, one which does not split into further subclass corresponding to orbits of divisibility one vectors in $\ten$, the other splitting into four sub-classes, reflecting an $\Orth(\ten)$ orbit of divisibility two vectors that splits into 4 separate orbits.
 We label the cusps $\eta_1,\cdots, \eta_5$, and note that the two isometry classes are given by
 $$
-\div_{\ten}(\eta) = 1\colon \EnriquesInvariants_1,
+\divisibility_{\ten}(\eta) = 1\colon \EnriquesInvariants_1,
 \qquad
-\div_{\ten}(\eta) = 2\colon (10, 8, 0)_1
+\divisibility_{\ten}(\eta) = 2\colon (10, 8, 0)_1
 $$
 
 | $\fentwo$ Cusp | $\fttz$ Cusp | Involution | Folded Lattice |
 |---|---|---|---|
-| $\eta_1$ ($\div(\eta_1) = 1$) | $\tilde\eta_1 \definedas (18,2,0)_1$ | $180^\circ$ rotation | $\EnriquesInvariants_1$ |
-| $\eta_2$ ($\div(\eta_2) = 2$) | $\tilde\eta_2 \definedas (18,0,0)_1$ | Vertical reflection | $(10,8,0)_1$ |
-| $\eta_3$ ($\div(\eta_3) = 2$) | $\tilde\eta_1 \definedas (18,2,0)_1$ | Diagonal + reflection | $(10,8,0)_1$ |
-| $\eta_4$ ($\div(\eta_4) = 2$) | $\tilde\eta_1 \definedas (18,2,0)_1$ | Horizontal reflection | $(10,8,0)_1$ |
-| $\eta_5$ ($\div(\eta_5) = 2$) | $\tilde\eta_1 \definedas (18,2,0)_1$ | 8 commuting reflections | $(10,8,0)_1$ |
+| $\eta_1$ ($\divisorof(\eta_1) = 1$) | $\tilde\eta_1 \definedas (18,2,0)_1$ | $180^\circ$ rotation | $\EnriquesInvariants_1$ |
+| $\eta_2$ ($\divisorof(\eta_2) = 2$) | $\tilde\eta_2 \definedas (18,0,0)_1$ | Vertical reflection | $(10,8,0)_1$ |
+| $\eta_3$ ($\divisorof(\eta_3) = 2$) | $\tilde\eta_1 \definedas (18,2,0)_1$ | Diagonal + reflection | $(10,8,0)_1$ |
+| $\eta_4$ ($\divisorof(\eta_4) = 2$) | $\tilde\eta_1 \definedas (18,2,0)_1$ | Horizontal reflection | $(10,8,0)_1$ |
+| $\eta_5$ ($\divisorof(\eta_5) = 2$) | $\tilde\eta_1 \definedas (18,2,0)_1$ | 8 commuting reflections | $(10,8,0)_1$ |
 
 ### Cusps by Folding
 
@@ -101,13 +101,13 @@ $$
 ,\quad\textor\quad
 (18,0,0)_1 = U \oplus E_8^2
 ,$$
-corresponding to the two 0-cusps of the Baily-Borel compactification $\bbcpt{\fttz}$, and distinguished by the divisibility $\div_{\tdp}(\eta)$ of $\eta$ in $\tdp$.
-From a similar analysis of $\bbcpt{\fen}$, the moduli space of *unpolarized* Enriques surfaces, one finds that there are similarly two possibilities, which are the two orbits of @prop:fen-two-zero-cusps and are separated by $\div_{\ten}(\eta)$
+corresponding to the two 0-cusps of the Baily-Borel compactification $\bbcpt{\fttz}$, and distinguished by the divisibility $\divisibility_{\tdp}(\eta)$ of $\eta$ in $\tdp$.
+From a similar analysis of $\bbcpt{\fen}$, the moduli space of *unpolarized* Enriques surfaces, one finds that there are similarly two possibilities, which are the two orbits of @prop:fen-two-zero-cusps and are separated by $\divisibility_{\ten}(\eta)$
 $$
 \bdlattice{\ten}{\eta}: \quad
-\div_{\ten}(\eta) = 1\colon\ \EnriquesInvariants_1 = U(2) \oplus E_8(2)
+\divisibility_{\ten}(\eta) = 1\colon\ \EnriquesInvariants_1 = U(2) \oplus E_8(2)
 ,\quad
-\div_{\ten}(\eta) = 2\colon\ (10,8,0)_1 = U \oplus E_8(2)
+\divisibility_{\ten}(\eta) = 2\colon\ (10,8,0)_1 = U \oplus E_8(2)
 .$$
 Both possibilities for $\bdlattice{\tdp}{\eta}$ are hyperbolic, 2-elementary lattices with induced involutions $\bar{I}_{\En}$ and $\bar{I}_{\dP}$, and if we write $J\definedas -\bar{I}_{\En}$ then we recover $\bdlattice{\tdp}{\eta}^J = \bdlattice{\ten}{\eta}$ as the invariant sublattice.
 We immediately note that the involution $J$ is highly sensitive to the choice of $\eta$, as are the isometry classes of $\bdlattice{\tdp}{\eta}$ and thus $\bdlattice{\ten}{\eta}$ -- in our situation, this highly depends on the geometry of the moduli spaces $\fentwo$ and $\fttz$.
@@ -138,7 +138,7 @@ $$
 corresponding to degree 2 numerically polarized Enriques surfaces and quartic hyperelliptic K3 surfaces respectively.
 To study the Baily-Borel compactification $\bbcpt{\fentwo}$, we will be interested in $\Gamma_{\En, 2}$-orbits of primitive isotropic vectors $\eta_i$, which correspond to 0-cusps, and the Coxeter diagrams for the stable reflection groups $\Gamma_{\En, 2, \eta_i}$ at each $\eta_i$, which can be used to determine the 1-cusps and their adjacencies.
 We note that if $\alpha\in \Phi(\tdp)$ is a (negative) root of $\tdp$, then the folded root $\alpha_I$ is in $\Phi(\tdp^I) = \Phi(\ten)$ and is thus a root of $\ten$.
-We can thus use the known stable reflection groups of $\tdp$ at its known 0-cusps to study those of $\ten$ and $\bar{\ten}_{\eta_i}$ at each cusp $\eta_i$.
+We can thus use the known stable reflection groups of $\tdp$ at its known 0-cusps to study those of $\ten$ and $\overline{\ten}_{\eta_i}$ at each cusp $\eta_i$.
 We analyze the structure of reflection groups and invariant lattices associated to each $0$-cusp $\eta_i$ on the moduli space, using the correspondence between the (negative) roots of the covering domain and its foldings.
 The results are organized by cusp.
 
@@ -268,7 +268,7 @@ Let $\eta_1,\;\eta_2\;\in T$ be primitive isotropic vectors satisfying
 
 1. $\eta_1^2=\eta_2^2=k$;
 
-2. $\div_T(\eta_1)=\div_T(\eta_2)=p>0$ (so $(\eta_i,T)=p\Bbb Z$);
+2. $\divisibility_T(\eta_1)=\divisibility_T(\eta_2)=p>0$ (so $(\eta_i,T)=p\Bbb Z$);
 
 3. $\eta_1\equiv \eta_2\pmod{pT}$.
 
@@ -304,7 +304,7 @@ We then find that all divisibility one vectors are in the same orbit:
 ::: {.proposition
   title="[@Ste91, Lem. 4.2.1]"
 }
-If $\div_{\ten}(v)=1$, then $v \sim_{\gent } v_{1} \definedas e \in U$.
+If $\divisibility_{\ten}(v)=1$, then $v \sim_{\gent } v_{1} \definedas e \in U$.
 :::
 
 ::: {.proof}
@@ -312,7 +312,7 @@ We apply @thm:orbit-classification-sterk: since
 
 - $v^{2}=e^{2}=0$,
 
-- $\div_{\ten}(v)=\div_{\ten}(e)=1$, and
+- $\divisibility_{\ten}(v)=\divisibility_{\ten}(e)=1$, and
 
 - $v \equiv e \bmod \ten$,
 
@@ -323,7 +323,7 @@ The item number is the book's and is not confirmed: the paper is not retained in
 Nothing here rests on the number, since what is used is the statement as quoted together with its citation; but a reader checking it should expect to look in §4.2 rather than at one numbered lemma.
 :::
 
-The divisibility 2 vectors require a slightly finer analysis, but this quickly reduces to studying the large (but finite) discriminant group $A_{\ten}$: [@Ste91, §4.2.2] first uses the fact that there is a decomposition $$A_{\ten} = A\oplus B \definedas {1\over 2}U/U \oplus {1\over 2}E_8/E_8$$ and if $\div_{\ten}(\eta) = k \geq 2$ then $\eta/k \in \dualof{\ten}$ induces a nontrivial class in $A_{\ten}$.
+The divisibility 2 vectors require a slightly finer analysis, but this quickly reduces to studying the large (but finite) discriminant group $A_{\ten}$: [@Ste91, §4.2.2] first uses the fact that there is a decomposition $$A_{\ten} = A\oplus B \definedas {1\over 2}U/U \oplus {1\over 2}E_8/E_8$$ and if $\divisibility_{\ten}(\eta) = k \geq 2$ then $\eta/k \in \dualof{\ten}$ induces a nontrivial class in $A_{\ten}$.
 Any such class can be written as $g = a + b$ with $a\in A, b\in B$ and $q(g) = q_A(a) + q_B(b)$.
 If $q(g) = 0\pmod{2\ZZ}$, there are exactly two possibilities:
 

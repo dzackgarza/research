@@ -80,7 +80,7 @@ $e$ is primitive, and it is isotropic. Quotienting by $\ZZ\eta$ removes one rank
 Its restriction to $\ZZ\eta\oplus K_I$ is $\id_{\ZZ\eta}\oplus g$, so the map it induces on the quotient $\eta^{\perp}/\ZZ\eta = K_I$ is $g$.
 Conversely an isometry fixing $\eta$ preserves $\eta^\perp$ and the line $\ZZ\eta$, hence induces an isometry of that quotient, so restriction is a well-defined homomorphism $\Stab_{\Orth(T_\Co)}(\eta)\to\Orth(K_I)$; the assignment $g\mapsto\hat g$ is a section of it, and a surjection with a section is onto. So the image is $\Orth(K_I)$.
 
-*Item 3.* A root $r$ of $K_I$ has $r^2\in\theset{-2,-4}$ and is primitive: from $r = 2s$ we would get $s^2 = -1$ or $-1/2$, and $K_I$ is even, so $s^2$ is even. Every pairing of $r$ with $K_I$ is even --- with $h$ it is $2r_h$, and with a vector of $E_8(2)$ it is twice an integer because $E_8(2)$ is the lattice $E_8$ with its form doubled --- and $r$ is primitive, so $\div_{K_I}(r) = 2$.
+*Item 3.* A root $r$ of $K_I$ has $r^2\in\theset{-2,-4}$ and is primitive: from $r = 2s$ we would get $s^2 = -1$ or $-1/2$, and $K_I$ is even, so $s^2$ is even. Every pairing of $r$ with $K_I$ is even --- with $h$ it is $2r_h$, and with a vector of $E_8(2)$ it is twice an integer because $E_8(2)$ is the lattice $E_8$ with its form doubled --- and $r$ is primitive, so $\divisibility_{K_I}(r) = 2$.
 The reflection $s_r(x) = x - 2\frac{(x,r)}{(r,r)}r$ is integral on $K_I$: for $r^2 = -2$ its coefficient is $-(x,r)$, an integer, and for $r^2 = -4$ it is $(x,r)/2$, an integer by the divisibility. So each $s_r$ is an isometry of $K_I$, and
 $$
 W^{(2,4)}(K_I) = \generators{s_r \st r \text{ a root of } K_I} \leq \Orth(K_I)

@@ -159,7 +159,7 @@ For a negative vector $r\in M$, the reflection is
 w_r(x)=x-\frac{2(x,r)}{r^2}r.
 \]
 
-The vector $r$ is a **root** if $w_r\in O(M)$; equivalently, $2\div(r)\in r^2\bZ$.
+The vector $r$ is a **root** if $w_r\in O(M)$; equivalently, $2\divisibility(r)\in r^2\bZ$.
 
 A **Coxeter chamber** is a fundamental chamber for a reflection group acting on the positive cone.
 Its codimension-one walls are perpendicular to simple roots.

@@ -104,13 +104,13 @@ $$
 .
 $$
 In coordinates $\beta = (2u, \alpha_1 - \alpha_2, \alpha_2 - \alpha_1)$, so $\beta^2 = 4u^2 + 2(\alpha_1-\alpha_2)^2\in 4\ZZ$, since $N$ and $E_8$ are even.
-So $\beta^2\neq -2$, and by @def:2elementary-roots $\beta\in\Phi(\ten)$ exactly when $\beta^2 = -4$ and $\div_\ten(\beta) = 2$.
-If $\beta^2 = -4$ and $\beta = m y$ with $y\in\ten$, then $y^2 = -4/m^2$ lies in $2\ZZ$, so $m = \pm1$ and $\beta$ is primitive; and $\beta\cdot\ten\iscontainedin 2\ZZ$ by the displayed identity, so $\div_\ten(\beta) = 2$.
+So $\beta^2\neq -2$, and by @def:2elementary-roots $\beta\in\Phi(\ten)$ exactly when $\beta^2 = -4$ and $\divisibility_\ten(\beta) = 2$.
+If $\beta^2 = -4$ and $\beta = m y$ with $y\in\ten$, then $y^2 = -4/m^2$ lies in $2\ZZ$, so $m = \pm1$ and $\beta$ is primitive; and $\beta\cdot\ten\iscontainedin 2\ZZ$ by the displayed identity, so $\divisibility_\ten(\beta) = 2$.
 Hence $\beta\in\Phi(\ten)$ if and only if $v^2 + v\cdot I(v) = -2$.
 
 For $v\in\Phi^2(\tdp)$ this is the condition $v\cdot I(v) = 0$ of (3), and then $v$ and $I(v)$ are orthogonal roots in $\Phi^2(\tdp)$.
 For $v\in\Phi^4(\tdp)$ it would require $v\cdot I(v) = 2$.
-But $\div_\tdp(v) = 2$ gives $u\cdot N\iscontainedin 2\ZZ$ and $\alpha_j\cdot E_8\iscontainedin 2\ZZ$.
+But $\divisibility_\tdp(v) = 2$ gives $u\cdot N\iscontainedin 2\ZZ$ and $\alpha_j\cdot E_8\iscontainedin 2\ZZ$.
 As $E_8$ is unimodular, $\alpha_j\in 2E_8$, so $\alpha_1\cdot\alpha_2\in 4\ZZ$.
 Writing $u = u' + u''$ with $u'\in U$ and $u''\in U(2)$, unimodularity of $U$ gives $u'\in 2U$, so $u'^2\in 8\ZZ$, while $u''^2\in 4\ZZ$ because the form of $U(2)$ is twice an even form.
 So $v\cdot I(v) = u^2 - 2\,\alpha_1\cdot\alpha_2\in 4\ZZ$, which excludes $v\cdot I(v) = 2$.
@@ -141,13 +141,13 @@ The last statement and the list (1)--(3) together are the forward direction of [
 
 A **mirror move** is a lattice-theoretic operation governed by the existence of a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) vector $\eta \in T$ of a specified type and splitting [@AE22, Def. 5.6, printed p. 23]:
 
-- **Odd/simple:** $\div_T(\eta) = 1$, splitting as $T \cong U \oplus K$.
+- **Odd/simple:** $\divisibility_T(\eta) = 1$, splitting as $T \cong U \oplus K$.
   The new invariants are $(r-2, a, \delta)$: the odd move preserves the coparity (@def:p-elementary).
 
-- **Even (@def:form-axioms), ordinary:** $\div_T(\eta) = 2$ and $\eta^*$ is ordinary, splitting as $T \cong U(2) \oplus K$.
+- **Even (@def:form-axioms), ordinary:** $\divisibility_T(\eta) = 2$ and $\eta^*$ is ordinary, splitting as $T \cong U(2) \oplus K$.
   The new invariants are $(r-2, a-2, \delta)$: the even ordinary (@def:two-elementary-isotropic-types) move preserves the coparity and lowers the generator length (@def:anticanonical-pair) by two.
 
-- **Even, characteristic:** $\div_T(\eta) = 2$ and $\eta^*$ is characteristic, splitting as $T \cong I_{1,1}(2) \oplus K$.
+- **Even, characteristic:** $\divisibility_T(\eta) = 2$ and $\eta^*$ is characteristic, splitting as $T \cong I_{1,1}(2) \oplus K$.
   The move is possible only from a lattice of coparity $\delta = 1$, and the new invariants are $(r-2, a-2, 0)$.
 
 The move replaces $T$ with $\overline{T}_\eta = \eta^{\perp T}/\eta$.

@@ -2,7 +2,7 @@
 
 ::: {#rmk:two-elementary-sign-convention .remark title="Sign convention"}
 
-Hyperbolic means signature $(1, r-1)$, root lattices are negative definite, and the roots of an even $2$-elementary lattice are the short roots $v^2 = -2$ and the long roots $v^2 = -4$ with $\div_L(v) = 2$ (@def:2elementary-roots).
+Hyperbolic means signature $(1, r-1)$, root lattices are negative definite, and the roots of an even $2$-elementary lattice are the short roots $v^2 = -2$ and the long roots $v^2 = -4$ with $\divisibility_L(v) = 2$ (@def:2elementary-roots).
 :::
 
 ## Reflective and two-reflective lattices
@@ -134,7 +134,7 @@ with hyperbolic summand $U(2)$ and negative definite part $A_1\oplus E_8(2) = B_
 ::: {.definition #def:main-roots title="Main roots" defines="main roots"}
 
 Let $L$ be an even (@def:form-axioms) $2$-elementary lattice.
-The **main roots** of $L$ are the short roots (@def:2elementary-roots) $\alpha$, $\alpha^2 = -2$, of divisibility (@def:lattice-divisibility) $\div_L(\alpha) = 1$, that is those satisfying $\beta_L(\alpha, L) = \ZZ$.
+The **main roots** of $L$ are the short roots (@def:2elementary-roots) $\alpha$, $\alpha^2 = -2$, of divisibility (@def:lattice-divisibility) $\divisibility_L(\alpha) = 1$, that is those satisfying $\beta_L(\alpha, L) = \ZZ$.
 :::
 
 ::: {.definition #def:edge-n-fold-graph title="The edge $n$-fold graph" defines="edge $n$-fold graph; $G^{(n)}$"}

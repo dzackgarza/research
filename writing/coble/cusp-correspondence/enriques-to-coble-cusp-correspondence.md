@@ -3,7 +3,7 @@
 
 ::: {.theorem #thm:cusp_correspondence}
 
-Let $\eta\colon T_\Co\injects\ten$ be the primitive embedding (@def:primitive-embedding), $v_1, v_2$ the isotropic vectors (@def:isotropic-subspace) of @lem:divisibilityTcoOne and $\tilde J = \generators{\eta(v_1), \eta(v_2)}$. Then $\tilde J$ is an isotropic plane, $\eta(v_1)$ is isotropic with $\div_\ten(\eta(v_1)) = 2$, and
+Let $\eta\colon T_\Co\injects\ten$ be the primitive embedding (@def:primitive-embedding), $v_1, v_2$ the isotropic vectors (@def:isotropic-subspace) of @lem:divisibilityTcoOne and $\tilde J = \generators{\eta(v_1), \eta(v_2)}$. Then $\tilde J$ is an isotropic plane, $\eta(v_1)$ is isotropic with $\divisibility_\ten(\eta(v_1)) = 2$, and
 $$\eta(v_1)^{\perp\ten}/\eta(v_1)\cong(10,8,0)_1, \qquad \tilde J^{\perp\ten}/\tilde J\cong(8,6,0)_0,$$
 the boundary lattices of the $0$-cusp $(10,8,0)_1$ and the $1$-cusp $(8,6,0)_0$ of the Enriques cusp diagram; while
 $$v_1^{\perp T_\Co}/v_1\cong(9,9,1)_1, \qquad J^{\perp T_\Co}/J\cong(7,7,1)_0$$
@@ -12,7 +12,7 @@ are the corresponding Coble boundary lattices.
 
 ::: {.proof}
 
-The vector $\eta(v_1)$ is isotropic with $\div_\ten(\eta(v_1)) = 2$ by @lem:divisibilityTcoOne, and its boundary lattice is $(10,8,0)_1$ by @lem:w1_perp_calculation. The plane $\tilde J$ is isotropic with boundary lattice $(8,6,0)_0$ by @lem:1_cusp_correspondence. The Coble boundary lattices are computed in the proofs of @lem:divisibilityTcoOne and @lem:1_cusp_correspondence.
+The vector $\eta(v_1)$ is isotropic with $\divisibility_\ten(\eta(v_1)) = 2$ by @lem:divisibilityTcoOne, and its boundary lattice is $(10,8,0)_1$ by @lem:w1_perp_calculation. The plane $\tilde J$ is isotropic with boundary lattice $(8,6,0)_0$ by @lem:1_cusp_correspondence. The Coble boundary lattices are computed in the proofs of @lem:divisibilityTcoOne and @lem:1_cusp_correspondence.
 :::
 ::: {#fig-enriques-coble-correspondence .figure}
 \input{tikz/fig_Cusp_Correspondence_Co_En.tex}
@@ -22,7 +22,7 @@ Cusp correspondence between the boundary lattices of $F^{\mathrm{un}}_\Co$ and t
 
 ::: {.lemma #lem:divisibilityAlwaysTwoTco}
 
-Every $v\in T_\Co$ has $\div_{T_\Co}(v)$ even; and $\div_{T_\Co}(v) = 2$ exactly when $\div_L(v) = 1$ for $L=\generators{1}\oplus E_{10}$, that is when $v$ is primitive (@def:primitive-embedding) in $L$, equivalently when its coordinates in a $\ZZ$-basis of $L$ have no common divisor.
+Every $v\in T_\Co$ has $\divisibility_{T_\Co}(v)$ even; and $\divisibility_{T_\Co}(v) = 2$ exactly when $\divisibility_L(v) = 1$ for $L=\generators{1}\oplus E_{10}$, that is when $v$ is primitive (@def:primitive-embedding) in $L$, equivalently when its coordinates in a $\ZZ$-basis of $L$ have no common divisor.
 :::
 
 ::: {.proof}
@@ -34,10 +34,10 @@ $$
 of @prop:coble-transcendental, and twisting by a unit does not change the underlying module.
 So $T_\Co$ and $L$ have the same underlying $\bZ$-module and $\beta_{T_\Co}=2\,\beta_L$.
 
-For $v,x\in T_\Co$ then $\beta_{T_\Co}(v,x)=2\beta_L(v,x)$, so every value is even, whether or not $v$ pairs nontrivially with something: $\div_{T_\Co}(v)$ is even for every $v$.
+For $v,x\in T_\Co$ then $\beta_{T_\Co}(v,x)=2\beta_L(v,x)$, so every value is even, whether or not $v$ pairs nontrivially with something: $\divisibility_{T_\Co}(v)$ is even for every $v$.
 
-For the second, $\div_{T_\Co}(v)=2\div_L(v)$, so $\div_{T_\Co}(v)=2$ exactly when $\div_L(v)=1$, that is when no integer $m>1$ divides every value $\beta_L(v,x)$.
-Because $L$ is unimodular, $\beta_L^{\sharp}\colon L\to L^{*}$ is an isomorphism (@def:isomorphism-of-objects), and $\beta_L(v,-)$ is divisible by $m$ exactly when $v\in mL$; so $\div_L(v)=1$ is the indivisibility of the functional $\beta_L(v,-)$, equivalently the primitivity of $v$ in $L$, and in coordinates it is the statement that the gcd of the coordinates of $v$ is one.
+For the second, $\divisibility_{T_\Co}(v)=2\divisibility_L(v)$, so $\divisibility_{T_\Co}(v)=2$ exactly when $\divisibility_L(v)=1$, that is when no integer $m>1$ divides every value $\beta_L(v,x)$.
+Because $L$ is unimodular, $\beta_L^{\sharp}\colon L\to L^{*}$ is an isomorphism (@def:isomorphism-of-objects), and $\beta_L(v,-)$ is divisible by $m$ exactly when $v\in mL$; so $\divisibility_L(v)=1$ is the indivisibility of the functional $\beta_L(v,-)$, equivalently the primitivity of $v$ in $L$, and in coordinates it is the statement that the gcd of the coordinates of $v$ is one.
 Evaluated in a $\ZZ$-basis with Gram matrix $G$, the divisibility is the gcd of the entries of $Gv$, which is the gcd of the coordinates of $v$ exactly when $G$ is unimodular; the two gcds are then related by the adjugate, whose entries are integral.
 The gcd of the coordinates is itself basis-independent, since one $\ZZ$-basis of $L$ changes to another by a unimodular matrix.
 For a form that is not unimodular the identification fails, and the rank-one lattice $\generators{2}$ shows both directions failing: its generator is primitive and has divisibility $2$, while $3$ is not primitive and has divisibility $6$.
@@ -55,7 +55,7 @@ J &\definedas \generators{v_1, v_2} & \tilde J &\definedas \generators{w_1, w_2}
 \end{aligned}
 $$
 
-We then have $\div_{\ten}(w_1) = 2$.
+We then have $\divisibility_{\ten}(w_1) = 2$.
 :::
 
 ::: {.proof}
@@ -66,8 +66,8 @@ By @thm:unpolarized-cusps and @prop:tco-split-maximal, $\Orth^+(T_\Co)$ is trans
 Since $\tilde e' \tilde f' = 2$, and $\tilde e'$ is orthogonal to the remaining generators of $\ten$, we have
 
 $$
-\div_{\ten}(w_1) \definedas \div_{\ten}(\eta(e'))
-= \div_{\ten}(\tilde e') = 2.
+\divisibility_{\ten}(w_1) \definedas \divisibility_{\ten}(\eta(e'))
+= \divisibility_{\ten}(\tilde e') = 2.
 $$
 
 Explicitly, write $\ten = U \oplus U(2) \oplus E_8(2)$ and $x+y+z\in U \oplus U(2)\oplus E_8(2)$. Then
@@ -122,7 +122,7 @@ Both $v_2$ and $w_2$ are isotropic: $v_2^2 = 4h^2+\alpha_1^2+\alpha_2^2 = 8-4-4 
 By [@AE22 Prop. 5.5, Lem. 5.9], it suffices to show
 
 $$
-\div_{w_1^{\perp \ten} /w_1}(w_2) \definedas \div_{U \oplus E_8(2)}(2\tilde e + 2\tilde f + \tilde \alpha_1 + \tilde \alpha_2)= 2
+\divisibility_{w_1^{\perp \ten} /w_1}(w_2) \definedas \divisibility_{U \oplus E_8(2)}(2\tilde e + 2\tilde f + \tilde \alpha_1 + \tilde \alpha_2)= 2
 ,
 $$
 
@@ -191,7 +191,7 @@ $$
 \end{aligned}
 $$
 
-To determine the map on 1-cusps, it suffices to determine $$\div_{U\oplus E_8^2}(\tilde w_2), \qquad \tilde w_2 = 2e + 2f + \alpha_1 + \alpha_2 + \tilde \alpha_1 + \tilde \alpha_2.$$
+To determine the map on 1-cusps, it suffices to determine $$\divisibility_{U\oplus E_8^2}(\tilde w_2), \qquad \tilde w_2 = 2e + 2f + \alpha_1 + \alpha_2 + \tilde \alpha_1 + \tilde \alpha_2.$$
 
 However, observing that $\tilde w_2\cdot \alpha_3 = 1$, we immediately obtain that the divisibility is one.
 Thus $\tilde w_2$ is odd, and we apply case (a) of [@AE22 Thm. 5.10].
@@ -386,11 +386,11 @@ Every vector in the image of $\Phi$ has divisibility (@def:lattice-divisibility)
 
 ::: {.proof}
 
-Divisibility is an isometry invariant, so it is constant on $\Gamma_\En$-orbits, and $\div_\ten(\tilde e) = 1$ because $\tilde e\cdot\tilde f = 1$. So it suffices to show that $\div_\ten(\eta(v))$ is even for every primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) $v\in T_\Co$.
+Divisibility is an isometry invariant, so it is constant on $\Gamma_\En$-orbits, and $\divisibility_\ten(\tilde e) = 1$ because $\tilde e\cdot\tilde f = 1$. So it suffices to show that $\divisibility_\ten(\eta(v))$ is even for every primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) $v\in T_\Co$.
 
 Since $\ten = \eta(T_\Co) + \ZZ\tilde e$,
-$$\div_\ten(\eta(v)) = \gcd\bigl(\div_{T_\Co}(v),\ \beta_\ten(\eta(v),\tilde e)\bigr), \qquad \beta_\ten(\eta(v),\tilde e) = \tfrac12\beta_{T_\Co}(v,h),$$
-the second because $\tilde e = \tfrac12(h+k)$ with $\eta(v)\perp k$. Both entries of the gcd are even. $\div_{T_\Co}$ is even for every vector, since the Gram matrix of $T_\Co$ is even entrywise; and if $v = ah + y$ with $y$ in the $U(2)\oplus E_8(2)$ summand, then $v^2 = 2a^2 + y^2$ with $y^2\equiv0 \pmod 4$, that summand being twice an even lattice (@def:even-lattice), so $v^2 = 0$ forces $a$ even. Hence $\div_\ten(\eta(v))$ is even, and since $\eta(v)$ is a primitive vector of a $2$-elementary lattice, it is $2$.
+$$\divisibility_\ten(\eta(v)) = \gcd\bigl(\divisibility_{T_\Co}(v),\ \beta_\ten(\eta(v),\tilde e)\bigr), \qquad \beta_\ten(\eta(v),\tilde e) = \tfrac12\beta_{T_\Co}(v,h),$$
+the second because $\tilde e = \tfrac12(h+k)$ with $\eta(v)\perp k$. Both entries of the gcd are even. $\divisibility_{T_\Co}$ is even for every vector, since the Gram matrix of $T_\Co$ is even entrywise; and if $v = ah + y$ with $y$ in the $U(2)\oplus E_8(2)$ summand, then $v^2 = 2a^2 + y^2$ with $y^2\equiv0 \pmod 4$, that summand being twice an even lattice (@def:even-lattice), so $v^2 = 0$ forces $a$ even. Hence $\divisibility_\ten(\eta(v))$ is even, and since $\eta(v)$ is a primitive vector of a $2$-elementary lattice, it is $2$.
 :::
 
 *The fibres of $\Phi$.* The fibre of $\Phi$ over the class $[\tilde w]$ consists of the classes $[v]$ with $\gamma\eta(v) = \tilde w$ for some $\gamma\in\Gamma_\En$. Put

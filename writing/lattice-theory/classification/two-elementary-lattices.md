@@ -3,7 +3,7 @@
 ::: {.definition #def:two-elementary-isotropic-types title="Primitive isotropic-vector types" defines="$j_L$; $r_L$; characteristic isotropic vector; ordinary isotropic vector; odd isotropic vector; even ordinary; even characteristic"}
 
 Let $L$ be an even (@def:form-axioms) $2$-elementary lattice.
-For every primitive (@def:primitive-embedding) vector, $\div_L(v)\in\theset{1,2}$.
+For every primitive (@def:primitive-embedding) vector, $\divisibility_L(v)\in\theset{1,2}$.
 Since multiplication by $2$ annihilates $A_L^\sharp$, one has $N_b(L)\mid2$.
 Hence the bilinear value module admits the canonical monomorphism
 $$
@@ -21,7 +21,7 @@ r_L\colon
 $$
 be the restriction of the canonical quotient $\bQ/2\bZ\to\bQ/\bZ$.
 
-For $v$ with $\div_L(v)=2$, its discriminant class $[v^*]\in A_L^\sharp$ from @def:lattice-discriminant-class is **characteristic** when
+For $v$ with $\divisibility_L(v)=2$, its discriminant class $[v^*]\in A_L^\sharp$ from @def:lattice-discriminant-class is **characteristic** when
 $$
 r_L\qty{q_L(x)}
 =
@@ -33,11 +33,11 @@ Otherwise $v^*$ is **ordinary**.
 
 For $e\in L^{\mathrm{prim}}[0]$, define its type by
 
-1. **odd** when $\div_L(e)=1$;
+1. **odd** when $\divisibility_L(e)=1$;
 
-2. **even ordinary** when $\div_L(e)=2$ and $e^*$ is ordinary;
+2. **even ordinary** when $\divisibility_L(e)=2$ and $e^*$ is ordinary;
 
-3. **even characteristic** when $\div_L(e)=2$ and $e^*$ is characteristic.
+3. **even characteristic** when $\divisibility_L(e)=2$ and $e^*$ is characteristic.
 :::
 
 ::: {.theorem #thm:two-elementary-classification title="Nikulin's classification of indefinite even $2$-elementary lattices"}

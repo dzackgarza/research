@@ -1155,7 +1155,7 @@ def test_item2_the_difference_class_leaves_exactly_two_cases():
     thm = _block(page, "{.theorem #rmk:divisibility-of-the-difference-class")
     assert "kj = 2" in thm or "kj = 2" in thm.replace("$", "")
     assert "(k,j) = (2,1)" in thm and "(k,j) = (1,2)" in thm
-    assert "\\div_{T_\\Co}(u)^2" in thm
+    assert "\\divisibility_{T_\\Co}(u)^2" in thm
     # the superseded claim is gone from the page
     assert "d^2\\in\\{1\\}" not in page
 

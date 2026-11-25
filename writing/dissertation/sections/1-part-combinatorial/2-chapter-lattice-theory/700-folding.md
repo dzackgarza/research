@@ -510,7 +510,7 @@ a contradiction.
 
 Case 2: $v^2=-4$.
 
-In this case we have $\div_{T_{dP}}(v) = 2$ and $\alpha_1,\alpha_2,\alpha_1 + \alpha_2 \in 2E_8$.
+In this case we have $\divisibility_{T_{dP}}(v) = 2$ and $\alpha_1,\alpha_2,\alpha_1 + \alpha_2 \in 2E_8$.
 By similar computations as in the first case, we again obtain
 $$
 -\lambda \geq 8 \implies v \cdot I(v) \geq 4 \implies v_I^2 \geq 0

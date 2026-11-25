@@ -257,27 +257,27 @@ The **Witt index** $\WI(L)$ is the maximal rank of an isotropic sublattice.
 
 ::: {.definition title="{Divisibility}" #def:divisibility-primitive-elements}
 Let $L$ be a lattice with form $\beta$, and let $v \in L$.
-The **divisibility** of $v$ in $L$, denoted $\div_L(v)$, is the positive generator of the ideal $\theset{ \beta(v, w)\st w \in L} \iscontainedin \ZZ$.
+The **divisibility** of $v$ in $L$, denoted $\divisibility_L(v)$, is the positive generator of the ideal $\theset{ \beta(v, w)\st w \in L} \iscontainedin \ZZ$.
 :::
 
 ::: {.proposition title="{Divisibility and Discriminant for Primitive Vectors}" #prop:divisibility-discriminant}
 Let $L$ be a nondegenerate lattice, and $v \in L$ an arbitrary (not necessarily isotropic) vector.
-The element $v^* \definedas v/\div_L(v) \in \dualof{L}$ is primitive in the dual lattice, and its image in the discriminant group $A_L \definedas \dualof{L}/L$ has order $\div_L(v)$.
-In particular, $\div_L(v)$ divides the order of $A_L$, and hence $|\disc{L}|$.
+The element $v^* \definedas v/\divisibility_L(v) \in \dualof{L}$ is primitive in the dual lattice, and its image in the discriminant group $A_L \definedas \dualof{L}/L$ has order $\divisibility_L(v)$.
+In particular, $\divisibility_L(v)$ divides the order of $A_L$, and hence $|\disc{L}|$.
 :::
 
 ::: {.proof}
-Since the divisibility $\div_L(v) = d$ is by definition the positive generator of the ideal $\{(v, w)\st w \in L\}$, one has $v/d \in \dualof{L}$ and this vector is primitive in $\dualof{L}$.
+Since the divisibility $\divisibility_L(v) = d$ is by definition the positive generator of the ideal $\{(v, w)\st w \in L\}$, one has $v/d \in \dualof{L}$ and this vector is primitive in $\dualof{L}$.
 Indeed, if $v/d = m y$ for some $m \in \ZZ$, $y \in \dualof{L}$, then $v = d m y \in L$, and primitivity of $v$ in $L$ implies $m = \pm 1$.
 The order of $v^*$ in $A_L$ is the minimal positive $n$ such that $n v^* \in L$.
-This occurs precisely when $n$ is divisible by $d$, so the order is $d = \div_L(v)$.
-Since $A_L$ is finite of order $|\disc{L}|$, it follows in particular that $\div_L(v)$ divides $|\disc{L}|$.
+This occurs precisely when $n$ is divisible by $d$, so the order is $d = \divisibility_L(v)$.
+Since $A_L$ is finite of order $|\disc{L}|$, it follows in particular that $\divisibility_L(v)$ divides $|\disc{L}|$.
 :::
 
 ::: {.lemma title="Divisibility of Isotropic Vectors in Unimodular Lattices" #lem:isotropic-pairing-unimodular}
 Let $L$ be a nondegenerate unimodular lattice, and let $v \in L$ be a primitive isotropic vector.
 Then there exists $w \in L$ such that $(v, w) = 1$.
-In particular, $\div_L(v) = 1$ for all $v\in L$.
+In particular, $\divisibility_L(v) = 1$ for all $v\in L$.
 :::
 
 ::: {.proof}

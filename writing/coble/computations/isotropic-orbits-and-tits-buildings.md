@@ -46,7 +46,7 @@ Then
 
 1. $v_1^2 = v_2^2$;
 
-2. $\div_L(v_1) = \div_L(v_2)$, and the isometry induced by $\phi$ on $A_L$ carries $[v_1^*]$ to $[v_2^*]$;
+2. $\divisibility_L(v_1) = \divisibility_L(v_2)$, and the isometry induced by $\phi$ on $A_L$ carries $[v_1^*]$ to $[v_2^*]$;
 
 3. $\phi$ restricts to an isometry $v_1^{\perp L}\to v_2^{\perp L}$, so the two complements are isometric and in particular have equal discriminants.
 :::
@@ -57,8 +57,8 @@ All three are invariance under an isometry, and none needs $v_i$ isotropic (@def
 
 (1) $\phi$ preserves the form, so $v_2^2=\phi(v_1)^2=v_1^2$.
 
-(2) $\phi$ induces an isomorphism (@def:isomorphism-of-objects) of the dual lattices, so $\beta_{L}(\phi v_1,\phi x)=\beta_L(v_1,x)$ shows that the divisibility ideals of @def:lattice-divisibility agree, hence $\div_L(v_1)=\div_L(v_2)$ as positive generators of the same ideal.
-For the classes: $\phi$ carries $v_1/\div_L(v_1)$ to $v_2/\div_L(v_2)$ because it is linear and preserves the divisibility, and it passes to the quotient $A_L=L^\#/L$ because it maps $L$ to $L$; so the induced automorphism of $A_L$ sends $[v_1^*]$ to $[v_2^*]$ by @def:lattice-discriminant-class.
+(2) $\phi$ induces an isomorphism (@def:isomorphism-of-objects) of the dual lattices, so $\beta_{L}(\phi v_1,\phi x)=\beta_L(v_1,x)$ shows that the divisibility ideals of @def:lattice-divisibility agree, hence $\divisibility_L(v_1)=\divisibility_L(v_2)$ as positive generators of the same ideal.
+For the classes: $\phi$ carries $v_1/\divisibility_L(v_1)$ to $v_2/\divisibility_L(v_2)$ because it is linear and preserves the divisibility, and it passes to the quotient $A_L=L^\#/L$ because it maps $L$ to $L$; so the induced automorphism of $A_L$ sends $[v_1^*]$ to $[v_2^*]$ by @def:lattice-discriminant-class.
 
 (3) $\phi(v_1)=v_2$ gives $\phi(v_1^{\perp L})=v_2^{\perp L}$: if $x\perp v_1$ then $\beta(\phi x,v_2)=\beta(x,v_1)=0$, and conversely by applying $\phi^{-1}$.
 The restriction is an isometry onto, hence an isometry of lattices, so the complements are isometric and by @def:discriminant they have the same discriminant form.
@@ -71,20 +71,20 @@ Then
 $$
 \abs{\det\bigl(v^{\perp L}\bigr)}
 =
-\abs{\det L}\cdot\frac{\abs{q(v)}}{\div_L(v)^{2}}
+\abs{\det L}\cdot\frac{\abs{q(v)}}{\divisibility_L(v)^{2}}
 .
 $$
 :::
 
 ::: {.proof}
 
-The map $\varphi\colon L\to\ZZ$, $x\mapsto\beta(x,v)$, has image $\div_L(v)\ZZ$ and kernel (@def:kernel-cokernel) $v^{\perp L}$, and it carries $\ZZ v$ onto $q(v)\ZZ$; so
+The map $\varphi\colon L\to\ZZ$, $x\mapsto\beta(x,v)$, has image $\divisibility_L(v)\ZZ$ and kernel (@def:kernel-cokernel) $v^{\perp L}$, and it carries $\ZZ v$ onto $q(v)\ZZ$; so
 $$
-L\big/\bigl(\ZZ v+v^{\perp L}\bigr) \;\iso\; \div_L(v)\ZZ\big/ q(v)\ZZ
+L\big/\bigl(\ZZ v+v^{\perp L}\bigr) \;\iso\; \divisibility_L(v)\ZZ\big/ q(v)\ZZ
 ,\qquad
-\bigl[L:\ZZ v+v^{\perp L}\bigr] = \frac{\abs{q(v)}}{\div_L(v)}
+\bigl[L:\ZZ v+v^{\perp L}\bigr] = \frac{\abs{q(v)}}{\divisibility_L(v)}
 ,$$
-the quotient on the right being finite of that order because $q(v)\in\div_L(v)\ZZ$.
+the quotient on the right being finite of that order because $q(v)\in\divisibility_L(v)\ZZ$.
 On the other hand $\det(\ZZ v\oplus v^{\perp L}) = q(v)\cdot\det(v^{\perp L})$ and $\det(\ZZ v\oplus v^{\perp L}) = [L:\ZZ v+v^{\perp L}]^{2}\cdot\det L$; substituting the index gives the formula.
 :::
 
@@ -136,7 +136,7 @@ Then $g(v_1) = v_2$ for some $g\in\wh{\Orth}^+(L)$.
 ::: {.proof}
 
 *The complements.*
-Both vectors are primitive (@def:primitive-embedding), with $v^2 = 20$ and $\div_L(v) = 4$, so by @lem:complement-determinant both complements $N_i = v_i^{\perp L}$ have determinant $4\cdot 20/4^{2} = 5$.
+Both vectors are primitive (@def:primitive-embedding), with $v^2 = 20$ and $\divisibility_L(v) = 4$, so by @lem:complement-determinant both complements $N_i = v_i^{\perp L}$ have determinant $4\cdot 20/4^{2} = 5$.
 In $\ZZ$-bases of $N_1$ and $N_2$ their Gram matrices are
 $$
 G_1 = \begin{pmatrix} -2&-1&1&-1\\ -1&-2&1&-1\\ 1&1&-2&1\\ -1&-1&1&-2\end{pmatrix},

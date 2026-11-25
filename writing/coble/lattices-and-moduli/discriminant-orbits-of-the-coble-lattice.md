@@ -250,7 +250,7 @@ The zero class is fixed, and by @prop:coble-q-fibers there are $528 - 1 = 527$ n
 
 ::: {.proposition #prop:coble-primitive-isotropic-classes title="Primitive isotropic vectors and their discriminant classes"}
 
-Every primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) $v\in T_\Co$ has $\div_{T_\Co}(v) = 2$, and its associated class
+Every primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) $v\in T_\Co$ has $\divisibility_{T_\Co}(v) = 2$, and its associated class
 $$
 v^* \definedas \tfrac{1}{2}v + T_\Co \in A_{T_\Co}
 $$
@@ -260,7 +260,7 @@ By @thm:coble-isotropic-class-orbits, all such classes lie in the single nonzero
 
 ::: {.proof}
 
-By @lem:divisibilityAlwaysTwoTco, $\div_{T_\Co}(v)=2$. By @def:coble-discriminant-forms and the divisibility conventions of the Lattice Theory section, $v^*$ therefore has order $2$ in $A_{T_\Co}$, so $v^*\neq0$.
+By @lem:divisibilityAlwaysTwoTco, $\divisibility_{T_\Co}(v)=2$. By @def:coble-discriminant-forms and the divisibility conventions of the Lattice Theory section, $v^*$ therefore has order $2$ in $A_{T_\Co}$, so $v^*\neq0$.
 Writing $v\in B$ and using $\beta_{T_\Co} = 2\beta_B$, isotropy of $v$ gives $\beta_B(v,v) = 0$, hence $q_{T_\Co}(v^*) = 0$ by @lem:coble-discriminant-form(1).
 By @thm:coble-isotropic-class-orbits, the nonzero isotropic classes form a single orbit.
 :::

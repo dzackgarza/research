@@ -56,7 +56,7 @@ In $\ten = U \oplus E_{10}(2)$ with $\omega = 2w_8$ (norm 4) and $\alpha = 2w_1$
 $$
 \eta_1 = e,\quad \eta_2 = e',\quad \eta_3 = e'+f'+\omega,\quad \eta_4 = e'+2f'+\alpha,\quad \eta_5 = 2e+2f+\alpha,
 $$
-with the invariants $\div(e)=1$ and $e^\perp/e \cong E_{10}(2) = \EnriquesInvariants$; $\div(e')=2$ and $e'^\perp/e' \cong U\oplus E_8(2) = (10,8,0)$; $\generators{e,e'}^\perp/\generators{e,e'} \cong E_8(2) = (8,8,0)$; and for $v' = 2e+2f+2w_1$, $\generators{e',v'}^\perp \cong (8,6,0)$.
+with the invariants $\divisibility(e)=1$ and $e^\perp/e \cong E_{10}(2) = \EnriquesInvariants$; $\divisibility(e')=2$ and $e'^\perp/e' \cong U\oplus E_8(2) = (10,8,0)$; $\generators{e,e'}^\perp/\generators{e,e'} \cong E_8(2) = (8,8,0)$; and for $v' = 2e+2f+2w_1$, $\generators{e',v'}^\perp \cong (8,6,0)$.
 
 The $(r,a,\delta)$ invariants of further lattices are $U(2)\to(2,2,0)$, $U(2)\oplus E_8(2)\to\EnriquesInvariants$, $U^3\oplus E_8(2)\to(14,8,0)$, $U\oplus U(2)\oplus E_8^{\oplus2}\to(20,2,0)$, $U\oplus U(2)\oplus E_8(2)\to(12,10,0)$, $E_8(2)\to(8,8,0)$.
 Here $\delta = 1$ when some diagonal entry of the discriminant quadratic form, in a basis of $A_L$, is non-integral, and $\delta = 0$ otherwise [@AE22, Def. 2.3].

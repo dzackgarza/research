@@ -24,7 +24,7 @@ Definitions 2.5–2.7 (article pp. 586–587). Transcribed, not paraphrased:
 In the coordinates of that record, $T_{\En} = U\oplus U(2)\oplus E_8(2)$ with slots $0$–$1$ the $U$
 summand, $2$–$3$ the $U(2)$ summand, $4$–$11$ the $E_8(2)$ basis. The polarization of Def. 2.6 is
 
-$$h = e+f = \text{slot } 2 + \text{slot } 3 ,\qquad h^2 = 2\cdot 2 = 4,\qquad \div_{T_{\En}}(h) = 2,$$
+$$h = e+f = \text{slot } 2 + \text{slot } 3 ,\qquad h^2 = 2\cdot 2 = 4,\qquad \divisibility_{T_{\En}}(h) = 2,$$
 
 so $h/2\in T_{\En}^\#$ and its class $[h/2]\in A_{T_{\En}}$ has $q([h/2]) = h^2/4 = 1$.
 

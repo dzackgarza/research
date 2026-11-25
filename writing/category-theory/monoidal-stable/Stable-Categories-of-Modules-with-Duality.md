@@ -4,7 +4,7 @@
 
 ::: {.definition #def:ring-with-involution title="Involutions and the duality functor" defines="ring with involution; $\bar a$; duality functor; $(-)^{*}$; $f^{*}$; $\operatorname{can}_M$"}
 
-An *involution* on a ring $A$ is a ring isomorphism (@def:isomorphism-of-objects) $A\to A^{\opop}$, written $a\mapsto\bar a$, with $\bar{\bar a}=a$ for every $a\in A$.
+An *involution* on a ring $A$ is a ring isomorphism (@def:isomorphism-of-objects) $A\to A^{\opop}$, written $a\mapsto\bar a$, with $\overline{\bar a}=a$ for every $a\in A$.
 It defines the *duality functor*
 $$
 (-)^{*}\colon A\text{-}\mathbf{Mod}\too A\text{-}\mathbf{Mod},

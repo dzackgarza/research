@@ -85,15 +85,15 @@ In any case, the even 2-elementary lattices that admit a primitive embedding int
 
 #### Ordinary and Characteristic
 
-For 2-elementary lattices, one always has $\div_{L}(v) \in\{1,2\}$.
-We set $v^{*}\definedas v / \div_{L}(v) \in$ $A_{L}$.
+For 2-elementary lattices, one always has $\divisibility_{L}(v) \in\{1,2\}$.
+We set $v^{*}\definedas v / \divisibility_{L}(v) \in$ $A_{L}$.
 Letting $q_{L}: A_{L} \to {1\over 2} \ZZ / \ZZ$ be the induced quadratic form on $A_{L}$, we say $v^{*}$ is **characteristic** if $q_{L}(x)=\beta_{L}\left(v^{*}, x\right) \bmod \ZZ$ for all $x \in A_{L}$, and is **ordinary** otherwise.
 We say that a primitive isotropic vector $e \in L$ is
 
-- **odd** if $\div_{L}(v)=1$,
+- **odd** if $\divisibility_{L}(v)=1$,
 
-- **even ordinary** if $\div_{L}(v)=2$ and $v^{*}$ is ordinary, or
+- **even ordinary** if $\divisibility_{L}(v)=2$ and $v^{*}$ is ordinary, or
 
-- **even characteristic** if $\div_{L}(v)=2$ and $v^{*}$ is characteristic.
+- **even characteristic** if $\divisibility_{L}(v)=2$ and $v^{*}$ is characteristic.
 
 Such vectors play a role in the mirror move algorithm of @AE22, which can be used to determine 0-cusps and 1-cusps of K3 compactifications.
