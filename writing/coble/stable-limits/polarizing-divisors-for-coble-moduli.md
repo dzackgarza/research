@@ -12,7 +12,7 @@ The results are these.
 1. On $F^{\mathrm{un}}_\Co = \bD(T_\Co)/\Orth(T_\Co)$ no polarizing divisor exists. The classes that are invariant under the automorphisms of a general surface are the multiples of the canonical class (@thm:coble-invariant-classes), no line bundle among them is big (@cor:coble-no-canonical-polarization), and the period map of a family that has a polarization factors through a cover of $F^{\mathrm{un}}_\Co$ of degree divisible by $527$ (@thm:coble-polarized-family).
 2. A polarization is an added structure. The surfaces with a polarization of a fixed type have a moduli space $\bD(T_\Co)/\Gamma_\lambda$, a finite cover of $F^{\mathrm{un}}_\Co$ (@prop:coble-polarized-moduli).
 3. Two such structures occur in the sources: the plane model (@prop:coble-plane-model-space, @thm:coble-plane-model-compactification) and the numerical polarization of degree $2$ (@prop:coble-degree-two-space, @thm:coble-degree-two-compactification). Each gives a compact moduli space of KSBA-stable pairs for its cover.
-4. For $F^{\mathrm{un}}_\Co$ itself each cover gives the finite map to the Baily--Borel compactification (@prop:coble-bb-finite). The semifans of the degree-$2$ structure computed in @thm:coble-pair-semifan are not $\Orth(T_\Co)$-invariant (@prop:coble-degree-two-semifan-not-invariant). For the plane model the same question is not decided (@rmk:coble-plane-model-invariance-open).
+4. For $F^{\mathrm{un}}_\Co$ itself each cover gives the finite map to the Baily--Borel compactification (@prop:coble-bb-finite). The semifans of the degree-$2$ structure computed in @thm:coble-pair-semifan are not $\Orth(T_\Co)$-invariant (@prop:coble-degree-two-semifan-not-invariant). For the plane model the same question is not decided (@rmk:coble-plane-model-invariance-open). Nonetheless @thm:coble-symmetrized-compactification constructs a normal projective semitoroidal compactification of the unpolarized coarse arithmetic quotient by taking all conjugate polarized limits and their common refinement.
 
 ## The surface and its automorphisms
 
@@ -511,6 +511,41 @@ A finite extension of graded rings induces a finite morphism of projective spect
 
 A semitoroidal compactification of $\bD(T_\Co)/\Gamma'$ maps to its Baily--Borel compactification (@cor:toroidal-to-baily-borel), and so to that of $F^{\mathrm{un}}_\Co$.
 A $\Gamma'$-admissible semifan $\mcf'$ is the restriction of an $\Orth(T_\Co)$-admissible semifan exactly when $g(\mcf'_I)=\mcf'_{gI}$ for every $g\in\Orth(T_\Co)$ and every primitive isotropic line $I$; then it defines a semitoroidal compactification of $F^{\mathrm{un}}_\Co$ (@def:semitoroidal-compactification), and the compactification of the cover maps finitely onto it. Call $\mcf'$ *$\Orth(T_\Co)$-invariant* in that case.
+
+::: {.theorem #thm:coble-symmetrized-compactification title="Semitoroidal descent using all conjugate polarizations"}
+
+Use one connected component $D$ of the Coble period domain and let $\Gamma$ be the component-preserving subgroup of $\Orth(T_\Co)$. Write $X_G=D/G$ for a finite-index subgroup $G$ of $\Gamma$. Take either normalized polarized compactification $Y_H$ from @cor:coble-polarized-semitoroidal-closures, at $H=\Gamma_P$ or $R_{\gent}$ intersected with $\Gamma$, with semifan $\mathcal F_H$. Then there is a normal projective semitoroidal compactification of $X_G$ whose maximal cones are the full-dimensional intersections of cones of the finite collection of translated semifans
+$
+\{g\mathcal F_H:g\in G/(G\cap H)\}.
+$
+The faces and rank-two compatibility data are those of this common refinement. This applies in particular to the full unpolarized coarse arithmetic quotient and to $D/\Gamma_\Co$ if $\Gamma_\Co$ is the arithmetic group of that quotient. It does not require that either original polarized semifan be invariant under $G$.
+
+:::
+
+::: {.proof}
+
+Put $N=\bigcap_{g\in G}g(G\cap H)g^{-1}$, the finite-index normal core. For each left coset $g(G\cap H)$ define $p_g:X_N\to X_H$ by $[x]\mapsto[g^{-1}x]_H$. The map is independent of the coset representative, and normality of $N$ makes it well defined. Let $Z_N$ be the normalization of the reduced graph closure
+$
+X_N\longrightarrow X_N^{\mathrm{BB}}\times\prod_{g(G\cap H)}Y_H,\qquad
+[x]\longmapsto\bigl([x],(p_g([x]))_g\bigr).
+$
+Over the open $X_N$ the graph is closed because the factors are separated, and is isomorphic to the normal variety $X_N$. Hence $Z_N$ contains $X_N$ as an open dense subset and maps to $X_N^{\mathrm{BB}}$. It is projective since the product is projective and normalization is finite.
+
+Choose a toroidal fan refining $\mathcal F_H$ [@AE23, Thm. 5.14]. Take the common intersection refinement $\mathcal T$ of its finitely many $G$-translates on the common level $N$. This rational polyhedral fan has full support, is locally finite and $G$-invariant. For admissibility, one may first choose a common admissible refinement of the finite collection at a neat finite-index level, using the standard common refinement of toroidal fans (Lan, [*Closed immersions of toroidal compactifications of Shimura varieties*](https://doi.org/10.4310/MRL.2022.v29.n2.a8), Proposition 4.10 in the same-domain case). Every cone of the intersection fan contains a cone of that finer fan of the same dimension with relative interior in its own relative interior. Finiteness of the finer fan's orbits therefore gives finiteness of the intersection fan's orbits. For a noncongruence finite-index $G$ the same argument can be made in the congruence ambient group: include all translates by $\Gamma$ of a toroidal refinement for $H$, then use its $\Gamma$-invariant common refinement on every subgroup of finite index. The level changes do not change the rational cones.
+
+The toroidal compactification $X_N^{\mathcal T}$ maps to all factors $Y_H$ by the toroidal refinement, translation, the finite-level quotient with unchanged fan (Lan, Proposition 3.4(5) in the same-domain case, or the arithmetic toroidal charts), and semitoroidal contraction [@AE23, Thm. 5.13]. These maps together with the minimal map dominate the graph closure and factor through $Z_N$ by normality. The group $G/N$ acts on the product by its action on the minimal factor and permutation of the other factors, since $p_g(kx)=p_{k^{-1}g}(x)$. The closure and its normalization are invariant. The quotient $Z_G=Z_N/(G/N)$ is normal and projective, with open $X_G$; projectivity follows by tensoring the translates of an ample line bundle and descending a sufficiently divisible power. All maps are equivariant by separatedness, since they are equivariant on $X_N$. The finite-level toroidal quotient with the same $G$-invariant fan is $X_G^{\mathcal T}$, by the local arithmetic quotient construction. Thus
+$
+X_G^{\mathcal T}\longrightarrow Z_G\longrightarrow X_G^{\mathrm{BB}}
+$
+extends the identity, and [@AE23, Thm. 5.14] proves that $Z_G$ is semitoroidal.
+
+To determine the cones, use the proof of Theorem 5.14 on $X_N^{\mathcal T}\to Z_N$. A Type III boundary curve from a codimension-one face is contracted if and only if every graph coordinate is constant on it, since the minimal coordinate is constant and normalization is finite. In a given coordinate $g$ this is exactly the condition that the adjacent chambers lie in the same cone of $g\mathcal F_H$: it is the one-dimensional torus calculation of @thm:coble-semitoroidal-normalized-closure with equal source and target cusp spaces. The simultaneous condition merges exactly the chambers in the full-dimensional intersections in the statement. Each such intersection is convex, so the same path-through-adjacent-chambers argument proves that it is a single merged cone. Finite quotient by $G/N$ does not change contraction of curves and identifies precisely the $G$-orbits of boundary strata. Theorem 5.14 supplies the compatible rank-two data. This proves the claimed refinement.
+
+When $H\subseteq G$ and the original semifan already is $G$-invariant, the result is the compactified finite forgetful map for that same semifan. Otherwise the construction is a common refinement, not a quotient of the original polarized compactification by a group acting on that compactification. It yields a finite cover $Z_N\to Z_G$ and maps $Z_N\to Y_H$ recording the individual polarized limits.
+
+The resulting compactification is a coarse construction recording all these polarized limits. It is not a KSBA moduli space of pairs with a single canonical divisor on the unpolarized surface: even a finite orbit of big classes under its automorphism group is excluded by @thm:coble-invariant-classes. Neither the normalization nor the finite quotient proves existence of a descended universal stable pair. This is the distinction between a compactification constructed from polarized KSBA spaces and a KSBA compactification of the unpolarized moduli stack itself.
+
+:::
 
 ::: {.proposition #prop:coble-degree-two-semifan-not-invariant title="The semifans of the degree-$2$ structure are not invariant"}
 
