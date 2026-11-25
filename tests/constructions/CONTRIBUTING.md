@@ -234,19 +234,16 @@ example for it (owner ruling, 2026-09-25).
 Every test file in this subtree takes its names from the session by the star import `from dzack_research.preamble.all import *` and never imports a preamble name individually, so a test can only ever speak the session's vocabulary or fail for lacking a word.
 
 Every test file in this subtree, in `tests/user_simulations/`, and the
-shared `tests/conftest.py` is read-only on disk.  An expectation, once
-written, is not edited to follow the implementation: not when a category is
-renamed, not when a constructor's signature changes, not when a red row is
-inconvenient.  If the implementation moves, the test stays and reports the
-move.  The lock is a local file mode, so it must be reapplied after a fresh
-checkout:
+shared `tests/conftest.py` is locked by `.githooks/pre-commit`: a commit that
+modifies, deletes, or renames one of them is rejected.  New test files and
+the bridges in `tests/constructions/conftest.py` are admitted.  An
+expectation, once written, is not edited to follow the implementation: not
+when a category is renamed, not when a constructor's signature changes, not
+when a red row is inconvenient.  If the implementation moves, the test stays
+and reports the move.
 
-```bash
-chmod a-w tests/conftest.py tests/constructions/* tests/user_simulations/*
-```
-
-Unlocking a file is a decision that the expectation itself was wrong as
-mathematics, made deliberately and recorded in the commit that changes it.
+An expectation that is wrong as mathematics goes to the repository owner.
+No commit marker admits that edit.
 
 ## Growing the subtree
 

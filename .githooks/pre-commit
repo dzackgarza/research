@@ -1,5 +1,13 @@
 #!/bin/sh
 set -eu
+locked=$(git diff --cached --name-only --diff-filter=DMRT -- tests/conftest.py tests/constructions tests/user_simulations ':!tests/constructions/conftest.py' ':!*.md')
+if [ -n "$locked" ]; then
+    printf '%s\n' \
+        'Commit rejected: it changes or deletes a protected expectation (AGENTS.md, "The expectation subtrees are never edited to match an implementation"):' \
+        "$locked" \
+        'Only the repository owner (dzackgarza) can correct an expectation whose mathematics is wrong. Ask the owner; do not edit the test.' >&2
+    exit 1
+fi
 hooks=$(git config --global --path --get core.hooksPath || true)
 if [ -z "$hooks" ]; then
     printf '%s\n' \
