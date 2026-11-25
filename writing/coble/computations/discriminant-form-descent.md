@@ -50,7 +50,7 @@ An isometry preserves $\beta$, hence $\divisibility_L(gv) = \divisibility_L(v)$,
 
 Define the attained subset
 $$ \mathcal C_{\mathrm{prim}}(L) \definedas \theset{[v/\divisibility_L(v)]\in\mathcal C(L)\st v\in L^{\mathrm{prim}}[0]}. $$
-By @lem:descent-well-defined the class is an invariant of the orbit, and the $\Gamma$-orbits of primitive isotropic vectors, for $\Gamma\leq\Orth(L)$, map onto the $\rho_{L,q}(\Gamma)$-orbits in $\mathcal C_{\mathrm{prim}}(L)$.
+By @lem:descent-well-defined the invariant of a $\Gamma$-orbit, for $\Gamma\leq\Orth(L)$, is the $\rho_{L,q}(\Gamma)$-orbit of its class, not necessarily the class itself. The induced map from $\Gamma$-orbits of primitive isotropic vectors onto $\rho_{L,q}(\Gamma)$-orbits in $\mathcal C_{\mathrm{prim}}(L)$ is surjective by the definition of the attained subset. For example, in $L=U\perp U\perp U(2)$, swapping the two isotropic basis vectors of the last summand is an integral isometry but interchanges their distinct divided classes.
 
 ## The integral orbit-fibre formula {#sec-descent-fibre}
 
@@ -801,7 +801,7 @@ for its discriminant kernel (@def:mm-integral-spinor-data) and for the group of 
 
 ::: {.definition #def:graph-character title="Graph characters of congruence data" defines="$N_m$; graph character"}
 
-Assume $m\geq1$ with $mM\subseteq L$, so that $\pi_m$ of @def:stabilizer-congruence-data is defined, and put $N_m\definedas\bar K_m\intersect\Stab_G(L)$ for the congruence kernel (@def:kernel-cokernel) inside the stabilizer (@def:group-orbit). A character $\chi\colon\Stab_G(L)\to\theset{\pm1}$ is a **graph character** of the data at $m$ when $\chi(N_m)=1$, equivalently when $\chi$ is constant on the cosets of $N_m$, equivalently when $\chi=\bar\chi\circ\pi_m$ on $\Stab_G(L)$ for a character $\bar\chi$ of the finite group (@def:group) $\bar H_m=\pi_m\qty(\Stab_G(L))$.
+Assume $m\geq1$ with $mM\subseteq L$, so that $\pi_m$ of @def:stabilizer-congruence-data is defined, and put $N_m\definedas\bar K_m\intersect\Stab_G(L)$ for the congruence kernel (@def:kernel-cokernel) inside the stabilizer (@def:group-orbit). A group homomorphism $\chi\colon\Stab_G(L)\to C$, for a group $C$, is said here to **factor through the congruence data** at $m$ when $\chi(N_m)=\{1_C\}$. Equivalently it is constant on the cosets of $N_m$, or $\chi=\bar\chi\circ\pi_m$ on $\Stab_G(L)$ for a unique homomorphism $\bar\chi\colon\bar H_m\to C$, where $\bar H_m=\pi_m(\Stab_G(L))$. For the sign group $C=\{\pm1\}$ such a character is called a **graph character** of the data. The equivalences follow from the first isomorphism theorem, since $N_m$ is precisely the kernel of the restricted congruence representation.
 
 Two objects are involved here and they must not be confused. The element $\pi_m(g)$ of $\bar H_m$ is a group element; the vertex $\pi_m(g)\bar L_m$ is a point of the finite action on $M/mM$. For $g\in\Stab_G(L)$ one has $gL=L$, hence $\pi_m(g)\bar L_m=\overline{gL}_m=\bar L_m$: the vertex is the constant $\bar L_m$ on the whole stabilizer, a function of the vertex alone is constant there, and the vertex records only the subgroup $\bar H_m$ that fixes it. A graph character is a function of the group element $\pi_m(g)$, and its triviality on $N_m$ is a condition on that element.
 :::
@@ -832,13 +832,13 @@ The last two entries are values of characters at the three rational isometries $
 *Item 3.* Multiplicativity of $\kappa_L$, and $\rho_L(k_1k_2)=\rho_L(k_1)\rho_L(k_2)$.
 :::
 
-::: {.proposition #prop:joint-character-congruence title="Which components of the joint character are graph characters"}
+::: {.proposition #prop:joint-character-congruence title="Factorization of the joint representation through congruence data"}
 
 Assume $m\geq1$ with $mM\subseteq e_2L$, so that $N_m=\bar K_m\intersect\Stab_G(L)$ is contained in $\Stab_G(L)\intersect\ker\rho_L$ by @cor:stabilizer-modulus.
 
-1. The discriminant component of $\kappa_L$ is constant on the cosets of $N_m$, hence is a graph character (@def:graph-character) of the data at every modulus satisfying $mM\subseteq e_2L$: it is the homomorphism $\Phi_m$ of @thm:stabilizer-discriminant-image read on $\pi_m(g)$.
+1. The discriminant component of $\kappa_L$ factors through the congruence data (@def:graph-character) at every modulus satisfying $mM\subseteq e_2L$: it is the homomorphism $\Phi_m$ of @thm:stabilizer-discriminant-image read on $\pi_m(g)$.
 2. The whole character $\kappa_L$ is constant on the cosets of $N_m$ exactly when $\det$ and $\spinornorm_\bR$ are both trivial on $N_m$, and each sign can fail: at $N=T_\En$ with $m=2$ the spinor sign fails (@prop:spinor-congruence-obstruction(2)), and at the lattice of @ex:joint-character-sign-witness with $M=L$, $m=2$ and the integral group of that example both signs fail, the determinant on $s_a$ and the spinor norm on $\sigma$. At the finer modulus used in that example both signs are graph characters instead; see @ex:joint-character-sign-witness.
-3. Consequently the joint image is a subgroup of $\Orth(A_L)\times\theset{\pm1}^2$ — and, when $L$ is even, of $\Orth(A_{L,q})\times\theset{\pm1}^2$ by @def:joint-character — whose first projection is a graph character and whose sign projection need not be one, and @thm:joint-double-coset uses the joint image rather than its first projection in order to keep the sign information that the graph does not determine.
+3. Consequently the joint image is a subgroup of $\Orth(A_L)\times\theset{\pm1}^2$ — and, when $L$ is even, of $\Orth(A_{L,q})\times\theset{\pm1}^2$ by @def:joint-character — whose discriminant component always factors through the congruence data, whereas its sign characters need not be graph characters, and @thm:joint-double-coset uses the joint image rather than its first projection in order to keep the sign information that the graph does not determine.
 :::
 
 ::: {.proof}
