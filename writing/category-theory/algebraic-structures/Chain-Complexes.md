@@ -352,14 +352,56 @@ Every finitely generated (@def:module-subcategories) graded $R$-module has a gra
 
 This is [@Eis95, Thm. 1.13].
 The proof uses exactness of the Koszul complex $K(x_1,\dots,x_r)$ on a regular sequence, which makes it a free resolution of $k$ of length $r$ [@Eis95, Cor. 17.5], and the coincidence of the minimal (@def:minimal-resolution) resolution with the computation of Tor [@Eis95, Cor. 19.5].
-With those, the bound is $\Tor^R_i(M,k)\cong F_i\tensor_Rk$ for the minimal resolution (@def:minimal-resolution-of-surface-singularity) $F$ of $M$, which vanishes for $i>r$ because $K(x)$ does, so $F_i=0$ for $i>r$.
+With those, the bound is $\Tor^R_i(M,k)\cong F_i\tensor_Rk$ for the minimal resolution $F$ of $M$ supplied by @thm:minimal-free-resolution-existence-splitting, which vanishes for $i>r$ because $K(x)$ does, so $F_i=0$ for $i>r$.
 :::
 
 ::: {.definition #def:minimal-resolution title="Minimal free resolutions" defines="minimal free resolution"}
 
-Let $(R,\mathfrak m)$ be a local ring.
-A free resolution (@def:resolution) $F$ of $M$ is *minimal* if $\im\varphi_n\iscontainedin\mathfrak mF_{n-1}$ for every $n$, equivalently if every differential of $F\tensor_RR/\mathfrak m$ is zero [@Eis95, §19.1, Definition before Lem. 19.4].
-For a finitely generated module (@def:cyclic-module) over a local ring, and for a finitely generated (@def:module-subcategories) graded module over a positively graded algebra over a field with its graded maximal ideal, the minimal free resolution is unique up to isomorphism (@def:isomorphism-of-objects), and every free resolution is the direct sum of the minimal one with a free resolution of the zero module [@Eis95, Thm. 20.2].
+Let $(R,\mathfrak m)$ be a commutative local ring, or a nonnegatively graded commutative algebra over a field $k$ with $R_0=k$ and $\mathfrak m=R_{>0}$ (in the latter case all modules and maps in the resolution are graded).
+A free resolution (@def:resolution) $F$ of $M$ is *minimal* if $\im\varphi_n\iscontainedin\mathfrak mF_{n-1}$ for every $n\geq1$, equivalently if every differential of the unaugmented complex $F\tensor_R R/\mathfrak m$ is zero [@Eis95, §19.1, Definition before Lem. 19.4, pp. 472–473].
+This definition does not assert existence over arbitrary local rings.
+
+:::
+
+::: {.theorem #thm:minimal-free-resolution-existence-splitting title="Existence, uniqueness, and splitting of finite-term minimal free resolutions"}
+
+Let $(R,\mathfrak m)$ be a commutative Noetherian local ring and $M$ a finitely generated $R$-module. There exists a minimal free resolution $F\to M$ with every $F_i$ finite free. More generally, the construction works over an arbitrary commutative local ring whenever $M$ and all successive kernels in the construction are finitely generated.
+
+The same existence statement holds in the graded category when $R$ is a Noetherian nonnegatively graded commutative $k$-algebra, $R_0=k$ is a field, $\mathfrak m=R_{>0}$, and $M$ is finitely generated as a graded module.
+
+In either the local or graded setting, **if** $M$ admits a degreewise finite free minimal resolution $F\to M$, then every free resolution $G\to M$ (with no finite-rank requirement on $G_i$) is isomorphic, as an augmented complex, to $F\oplus C$, where $C$ is a contractible complex of free modules resolving zero. Every minimal free resolution is therefore isomorphic to $F$. This is the conditional splitting principle of [@Eis95, Thm. 20.2, p. 491]; the finiteness condition on $F_i$ is part of the argument.
+
+:::
+
+::: {.proof}
+
+Write $K_0=M$. In the local case, choose lifts of a basis of the finite-dimensional residue vector space $K_i/\mathfrak m K_i$ and let $F_i\to K_i$ be the map from the free module on those lifts. Nakayama's lemma ([Stacks Project, Lemma 10.20.1(4), Tag 00DV](https://stacks.math.columbia.edu/tag/00DV)) proves that the map is onto when $K_i$ is finitely generated. Since the induced residue-space map is an isomorphism, its kernel $K_{i+1}$ is contained in $\mathfrak m F_i$. Noetherianity ensures that $K_{i+1}$ is finitely generated. Iterating, and composing $F_{i+1}\to K_{i+1}$ with the inclusion in $F_i$, gives the required exact minimal complex. The same induction proves the stated more general sufficient condition. In the graded case choose homogeneous residue-space bases and give each free generator the degree of its lift. Each finite graded module over a nonnegatively graded ring is bounded below in internal degree; if a bounded-below graded module $N$ satisfies $N=R_{>0}N$, its least nonzero homogeneous degree would be strictly greater than itself. Thus $N=0$, giving graded Nakayama and the same induction in graded modules. Noetherianity again ensures that each kernel is finite.
+
+For splitting, use @thm:resolution-comparison to choose chain maps $a:F\to G$ and $b:G\to F$ lifting the identity of $M$, in the indicated category. Their composite $ba$ is chain homotopic to $\id_F$. Minimality implies $(ba)_i\equiv\id_{F_i}\pmod{\mathfrak m}$, since both terms of the homotopy formula contain a differential of $F$. In the local case the determinant of $(ba)_i$ is a unit (finite freeness is essential here). In the graded case its cokernel is a bounded-below graded module and is zero by graded Nakayama, so $(ba)_i$ is surjective; since $F_i$ is finite free, a right inverse gives a unit determinant and hence invertibility. Its inverse is graded since the map is graded and bijective. Thus $ba$ is a chain automorphism, and replacing $b$ by $(ba)^{-1}b$ makes $ba=\id_F$. In particular $a$ identifies $F$ with a direct summand complex of $G$, with complementary complex $C=\ker b$.
+
+Here is why the complementary terms are free, even for infinite-rank $G_i$. A split injection $F_i\to G_i$ remains injective modulo $\mathfrak m$. The images of a finite basis of $F_i$ have finite support in a basis of $G_i$, and some square minor of size $\operatorname{rank}F_i$ is invertible modulo $\mathfrak m$. In the local case this minor has unit determinant. In the graded case choose the minor separately for each residue-space degree, with homogeneous coordinates of the same degrees as the source generators; the selected free summand then has the same multiset of generator degrees as $F_i$. Its projection matrix has determinant of degree zero, nonzero modulo $R_{>0}$, so its determinant is a unit in $k$. The projection of $a(F_i)$ to that selected free summand is therefore an isomorphism. In the decomposition of $G_i$ into the selected summand and the span of the remaining basis vectors, $a(F_i)$ is the graph of a linear map out of the selected summand. The quotient $G_i/a(F_i)$ is isomorphic to the span of the remaining basis vectors, so is free (graded free in the graded case). Since $C_i\simeq G_i/a(F_i)$, this proves freeness without a finite-rank assumption on $G_i$.
+
+The augmentations of $F$ and $G$ agree under $a$, hence $C$ is exact, with zero augmentation. A bounded-below exact complex of projective modules is contractible: writing $Z_i=\ker(d_i:C_i\to C_{i-1})$ with $C_{-1}=0$, the exact sequences $0\to Z_i\to C_i\to Z_{i-1}\to0$ split inductively starting at $Z_0=C_0$, since each previous $Z_{i-1}$ is projective and then $Z_i$ is a direct summand of $C_i$. The splittings provide the contracting homotopy; this argument also works in graded modules. Finally if $G$ is minimal, its direct summand $C$ is minimal. Exactness and minimality give $C_0=\mathfrak m C_0$, which forces $C_0=0$ because a nonzero free module, of any rank, has nonzero residue vector space. Inductively $C_{i-1}=0$ gives $C_i=\im d_{i+1}\subseteq\mathfrak m C_i$, so $C_i=0$. Thus $C=0$ and the minimal resolution is unique up to isomorphism.
+
+:::
+
+::: {.example #ex:minimal-resolution-nonexistence-idempotent-maximal-ideal title="Failure of minimal free resolutions over a non-Noetherian local domain"}
+
+For a field $k$, take the compatible union
+$$
+R=\bigcup_{j\geq0}k[[t^{1/2^j}]],\qquad
+\mathfrak m=\bigcup_{j\geq0}t^{1/2^j}k[[t^{1/2^j}]]
+$$
+inside the union of the corresponding Laurent-series fields, with $t^{1/2^j}=(t^{1/2^{j+1}})^2$. Then $R$ is a local domain with residue field $k$ and nonzero idempotent maximal ideal $\mathfrak m^2=\mathfrak m$. The cyclic module $k=R/\mathfrak m$ admits no minimal free resolution, even allowing infinite free ranks.
+
+Indeed the compatible constant-term maps have kernel $\mathfrak m$ and every element outside it is already a unit in one of the power-series rings. If $x=t^{1/2^j}u\in\mathfrak m$, it is the product of $t^{1/2^{j+1}}$ and $t^{1/2^{j+1}}u$, both in $\mathfrak m$; hence $\mathfrak m^2=\mathfrak m\ne0$. Suppose a minimal free resolution $F\to k$ exists. Then
+$$
+\mathfrak m F_0\subseteq\ker\epsilon=\im d_1\subseteq\mathfrak m F_0,
+$$
+so $F_0/\mathfrak m F_0\cong k$. Since $F_0$ is free it has rank one, and under a basis whose image in $k$ is $1$, $\epsilon:R\to k$ is the residue map. Now $d_1(F_1)=\mathfrak m$, and
+$$ d_1(\mathfrak m F_1)=\mathfrak m d_1(F_1)=\mathfrak m^2=\mathfrak m. $$
+Given $x\in F_1$, choose $y\in\mathfrak m F_1$ with $d_1(y)=d_1(x)$. Then $x-y\in\ker d_1=\im d_2\subseteq\mathfrak m F_1$, so $F_1=\mathfrak m F_1$. A free module of arbitrary rank reduces to a direct sum of copies of the residue field, one per basis element; thus $F_1=0$, contrary to $d_1(F_1)=\mathfrak m\ne0$. No application of Nakayama's lemma to an infinitely generated module is involved.
+
 :::
 
 ## Derived functors, Ext, and Tor {#sec-derived-functors}
