@@ -1,0 +1,13 @@
+Independent replay, 2026-11-25 UTC.
+Source: research@ee9c9df0f29bb86c249ab112a2823e7d01cdea6f, computations/reports/coble_766_rel_mod16_independent.py
+Git blob: 8f8db1feef7a302bc62ebfc8b45062aff299b3a9
+SHA-256 of exact script: 0097095daf75a147cd649a2c3c6115dc5362a9a48fea0fd92693f563d5bc2014
+Command: sage-docker-python -c "$(git show ee9c9df0f29bb86c249ab112a2823e7d01cdea6f:computations/reports/coble_766_rel_mod16_independent.py)"
+Executed in the existing pinned Sage environment. Exit status 0.
+
+root reflections 1641
+ranks [55, 54, 55]
+E8 block sign mod16 membership: True
+-id mod16 membership: True
+
+This replays the exact finite congruence calculation. It is not itself a proof of the integral reflection-group membership; that inference uses the local-to-global argument of thm:coble-block-sign-in-w, whose independent full mathematical review is separate.
