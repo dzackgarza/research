@@ -143,11 +143,51 @@ Apply this argument also to $\Gamma\cap\mathcal G_D$ and its normal spinor kerne
 
 ## Flags {#sec-descent-flags}
 
-Apply @thm:descent-double-coset to the full flag $x=(P,L)$ with $L\subset P$. Set $J=D(P)$ and $C=D(L)$, both as isotropic subgroups of $A_L$, and
+Fix the full integral orbit of the flag $x=(P,L)$ with $L\subset P$, and apply @thm:descent-double-coset on that orbit. Set $J=D(P)$ and $C=D(L)$, both as isotropic subgroups of $A_L$, and
 $$ F_{J,C}=\Stab_Q(J)\cap\Stab_Q(C). $$
-Then the flags over $(J,C)$ are governed by
+Within this full integral orbit, the orbits of flags over $(J,C)$ under the fibre-preserving subgroup are governed by
 $$ (\Gamma\cap\rho^{-1}(F_{J,C}))\bigl\backslash\rho^{-1}(F_{J,C})\bigr/\Stab_{\rho^{-1}(F_{J,C})}(P,L). $$
 If $K\subseteq\Gamma$, this reduces to the corresponding double coset with $H\cap F_{J,C}$ on the left and $\rho(\Stab_{\Orth(L)}(P)\cap\Stab_{\Orth(L)}(L))$ on the right.
+
+::: {.proposition #prop:descent-flag-endpoints title="Endpoint maps on the actual finite double cosets"}
+
+Let $G=\Orth(L)$, $K=\ker\rho_{L,q}$, $K\subseteq\Gamma\subseteq G$, $Q=\rho_{L,q}(G)$ and $H=\rho_{L,q}(\Gamma)$. Choose representatives $\ell_i$ and $P_j$ of the $G$-orbits of primitive isotropic lines and planes, respectively, and put
+$$
+S_i=\rho_{L,q}(\Stab_G(\ell_i)),\qquad T_j=\rho_{L,q}(\Stab_G(P_j)).
+$$
+Choose a representative $x_r=(\ell_r'\subset P_r')$ of each $G$-orbit of flags and put $U_r=\rho_{L,q}(\Stab_G(x_r))$. For every $r$ choose the indices $i(r),j(r)$ and integral transporters $a_r,b_r\in G$ with $a_r\ell_{i(r)}=\ell_r'$ and $b_rP_{j(r)}=P_r'$.
+
+The line, plane and flag $\Gamma$-orbit sets are respectively
+$$
+\bigsqcup_i H\backslash Q/S_i,\qquad
+\bigsqcup_j H\backslash Q/T_j,\qquad
+\bigsqcup_r H\backslash Q/U_r.
+$$
+The endpoint map on the $r$-th summand of the last set is
+$$
+HqU_r\ \longmapsto\
+\bigl((i(r),Hq\rho_{L,q}(a_r)S_{i(r)}),\
+(j(r),Hq\rho_{L,q}(b_r)T_{j(r)})\bigr).
+$$
+Its image, and not necessarily its domain, is the incidence relation between line and plane orbits. No equality of a flag stabilizer image with an intersection of the images of its two endpoint stabilizers is assumed.
+
+:::
+
+::: {.proof}
+
+The three decompositions follow from @cor:descent-full-orbit-double-coset on each full $G$-orbit separately. Every element of $\Stab_G(x_r)$ fixes both endpoints of $x_r$, so
+$$
+U_r\subseteq\rho_{L,q}(a_r)S_{i(r)}\rho_{L,q}(a_r)^{-1},
+\qquad
+U_r\subseteq\rho_{L,q}(b_r)T_{j(r)}\rho_{L,q}(b_r)^{-1}.
+$$
+These inclusions give well-defined endpoint maps: replacing $q$ by $hqu$ with $h\in H$ and $u\in U_r$ leaves both endpoint double cosets unchanged. For $q=\rho_{L,q}(g)$ the pair displayed is precisely the orbit of $g\ell_r'=ga_r\ell_{i(r)}$ and the orbit of $gP_r'=gb_rP_{j(r)}$. This also proves independence of the chosen transporters: another transporter differs on the right by an integral stabilizer of the chosen representative. Every flag lies in one of the full $G$-orbits and therefore produces such a pair. Conversely, every displayed pair is realized by a flag, since $q$ has an integral lift $g\in G$. This proves equality with the incidence relation.
+
+Thus a finite computation of the orbit graph needs complete full-orbit representatives, the actual images of their integral stabilizers, and the two integral endpoint transporters. The number of flag orbits alone is not a certificate of the number of distinct endpoint pairs. With a joint character in place of $\rho_{L,q}$ and its kernel contained in $\Gamma$, the same proof applies to the joint image. For a fixed discriminant chain the formula preceding this proposition is used separately on every full $G$-orbit attaining that chain.
+
+:::
+
+
 
 ## Forgetting a flag, and the incidence bijections {#sec-descent-forget}
 
@@ -343,8 +383,14 @@ Item d is items 1, 3 and 4 of @thm:enriques-degree-two-arithmetic together with 
 Part 2. The group $Q$ is $\Orth(q)$ by @thm:two-elementary-surjectivity.
 Item a holds because $\Gamma^+=\widetilde\Orth^+(T_\Co)\subseteq\ker\rho$, so $\rho(\Gamma^+)=1\leq F_{C,J}$. Hence $(\Gamma^+)_{(C,J)}=\Gamma^+\cap\rho^{-1}(F_{C,J})=\Gamma^+$; the same computation with $\Gamma=\ker\rho$ gives $\Gamma_{(C,J)}=\Gamma$.
 Item b is item 4 of @thm:coble-plane-stabilizer-image, and the count is its item 5 with $H=1$: the double cosets $1\backslash F/S$ number $[F:S]=8$.
-Item c. Both groups of the item satisfy $\widetilde\Orth^+(T_\Co)\subseteq\Gamma\subseteq\Orth(T_\Co)$, so parts 1--3 of @thm:cusp-lifting apply to each: at $\Gamma=\ker\rho$ its image is $\rho(\ker\rho)=1$, so the $\ker\rho$-orbits of lines, of planes and of flags are in bijection with the three finite data sets, that is with the data themselves, and at $\Gamma=\widetilde\Orth^+(T_\Co)$ its image is trivial by item a, so the $\widetilde\Orth^+(T_\Co)$-orbits are in bijection with those same three sets through the same datum map. Two objects with the same datum are therefore equivalent under both groups, and since $\widetilde\Orth^+(T_\Co)\subseteq\ker\rho$ each $\ker\rho$-orbit is a single $\widetilde\Orth^+(T_\Co)$-orbit. Item 4 of that theorem separates the two hypotheses and is what this item needs at the level of one orbit: it does not supply a containment $\ker\rho\subseteq\widetilde\Orth^+(T_\Co)$, which is false, but it states that parts 1--3 hold for $\Gamma\intersect\Orth^+(T_\Co)$ with its own finite image, and its proof exhibits, for a line, a plane and a flag, a spinor-negative element of $\ker\rho$ in the stabilizer, so that by @prop:descent-spinor-fibre the number $[\chi(\ker\rho):\chi(\Stab_{\ker\rho}(x))]$ of $\widetilde\Orth^+(T_\Co)$-orbits in the $\ker\rho$-orbit of $x$ is one. For primitive isotropic vectors the two orbit sets are those of the lines, because $-\id_{T_\Co}\in\widetilde\Orth^+(T_\Co)$: it lies in $\ker\rho$, $A_{T_\Co}$ having exponent two, and $\spinornorm_\bR(-\id_{T_\Co})=[(-1)^2]=1$ at positive index two (@lem:minus-identity-spinor-norm).
-Item d is item 2 of @prop:coble-arithmetic-flag-incidence, which is item 2 of @prop:flag-incidence-bijection applied to $\Gamma^+$ with $(\Gamma^+)_{(C,J)}=\Gamma^+$ and $(\Gamma^+)_{P,C}=\Stab_{\Gamma^+}(P)$ by item a.
+Item c has a direct proof that does not use the classification of finite data. On the standard plane $P_0=\generators{e_1,e_2}$, put $\tau=-\id_{U_1}\oplus\id_{U_2\perp\generators{-1}^{7}}$. It fixes $e_2$, preserves $\ZZ e_2$ and $P_0$, and hence stabilizes the flag $\ZZ e_2\subset P_0$. It is the identity modulo $2B$, so lies in $K=\ker\rho$ (the dual of $B(2)$ is $\frac12 B$). Its normalized real spinor norm is $-1$: $U_1$ has positive index one and @lem:minus-identity-spinor-norm and @lem:split-isometry-spinor-norm apply. The full integral group $\Orth(B)$ is transitive on primitive isotropic vectors by @lem:I29-plus-line-transitivity, and on primitive isotropic planes by @thm:plane-transitivity-tco. It is also transitive on flags: after carrying a plane to $P_0$, its primitive lines are carried to $\ZZ e_2$ by the integral Levi matrices $A\oplus(A^{-1})^T\oplus\id_D$, $A\in GL_2(\ZZ)$, of @thm:coble-plane-stabilizer-image(1). Such an $A$ exists by completing a primitive generator to a unimodular basis. Conjugating $\tau$ by these integral isometries supplies a spinor-negative element of $K$ in the stabilizer of every vector, line, plane and flag, since $K$ is normal and the spinor norm is a character. Now @prop:descent-spinor-fibre, at the group $K$ itself, gives
+$$
+[\chi(K):\chi(\Stab_K(x))]=[\{\pm1\}:\{\pm1\}]=1
+$$
+for each of those objects. This proves the assertion for every individual $K$-orbit, independently of the description of its finite datum.
+
+To compare with @thm:cusp-lifting, the finite invariants of the $K$-orbits are $[v/2]$ for vectors or lines, $(J(P),s(P))$ for planes, and $(J(P),s(P),[v_\ell/2])$ for flags. In particular the raw subgroup $D(P)=J(P)$ is not that complete invariant, and neither is the raw chain $D(\ell\subset P)=(D(\ell),J(P))$. The eight-plane distinction in item b is not erased on imposing the spinor condition. Indeed, @lem:plane-stars identifies the eight $K$-orbits over $J$ with the eight stars: the stabilizer image of $P_0$ in $F$ is precisely the stabilizer of its star, and equivariance transports this fact to every plane. The fixed-raw-datum fibre is the union of those eight distinct orbits for each of $K$ and $\Gamma^+$, not a single orbit.
+Item d follows directly on the plane $P_0$. A primitive line of $P_0$ is represented by a primitive column $v\in\ZZ^2$, and its discriminant class is $v\bmod 2$, because $B$ is unimodular. For two primitive columns $v,w$ in the same nonzero parity class, choose second columns $v',w'$ with $\det(v,v')=\det(w,w')=1$. Their reductions satisfy $\det(\bar v,\bar w'-\bar v')=0$ over $\F_2$, so $\bar w'-\bar v'$ is a multiple of $\bar v=\bar w$. Subtracting the corresponding multiple of $w$ from $w'$ makes the two determinant-one matrices equal modulo $2$. Their quotient is a matrix $A\in SL_2(\ZZ)$ with $Av=w$ and $A\equiv I_2\pmod2$. Its integral Levi extension on $B$ is trivial modulo $2B$ and spinor-positive, the real extension lying in the image of the connected group $SL_2(\RR)$. Thus $\Stab_{\Gamma^+}(P_0)$ acts transitively on the primitive lines in each of the three nonzero parity classes. Conjugation by an integral isometry carrying $P_0$ to another plane gives the same assertion there, since $\Gamma^+$ is normal. The unrestricted flag assembly in @prop:flag-incidence-bijection then gives exactly one flag orbit for each plane orbit and each of its three nonzero line classes. Over a fixed raw chain $(\generators c,J)$ with $c\ne0$ in $J$ there are therefore eight flag orbits, one for each star of $J$; over $J$ there are twenty-four. This proves item d without assuming that the raw chain determines a flag orbit.
 :::
 
 ## The stabilizer's discriminant image is a congruence quotient {#sec-descent-congruence}
