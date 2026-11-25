@@ -109,7 +109,7 @@ This holds for each of the stated object types: a primitive vector, an unoriente
 :::
 
 ::: {.proof}
-The map $g\mapsto gx$ identifies $\mathcal X$ with $\Orth(L)/\Stab_{\Orth(L)}(x)$, so its $\Gamma$-orbit set is $\Gamma\backslash\Orth(L)/\Stab_{\Orth(L)}(x)$. The normal subgroup $K$ is contained in the left subgroup $\Gamma$. Thus [@DH23, Lemma 3.6], with its normal subgroup $U=K$, its left subgroup $\Gamma$ and its right subgroup $\Stab_{\Orth(L)}(x)$, reduces these integral double cosets to $H\backslash Q/S$ without changing their index set. The displayed bijection is the resulting map on representatives. This argument uses no transitivity theorem on discriminant data and no Eichler criterion.
+The map $g\mapsto gx$ identifies $\mathcal X$ with $\Orth(L)/\Stab_{\Orth(L)}(x)$, so its $\Gamma$-orbit set is $\Gamma\backslash\Orth(L)/\Stab_{\Orth(L)}(x)$. The normal subgroup $K$ is contained in the left subgroup $\Gamma$. Thus [@SH23, Lemma 3.6], with its normal subgroup $U=K$, its left subgroup $\Gamma$ and its right subgroup $\Stab_{\Orth(L)}(x)$, reduces these integral double cosets to $H\backslash Q/S$ without changing their index set. The displayed bijection is the resulting map on representatives. This argument uses no transitivity theorem on discriminant data and no Eichler criterion.
 :::
 
 ::: {.corollary #cor:descent-finite-orbit-sum title="The sum over finite orbits"}
@@ -129,6 +129,7 @@ In particular, if $\chi(\Gamma)=\{\pm1\}$, that orbit remains one orbit exactly 
 With the notation of @thm:descent-double-coset, the $\Gamma^+\cap\mathcal G_D$-orbits in the fixed-datum fibre $\mathcal G_D\cdot x$ are always computed by the unreduced double cosets
 $$ (\Gamma^+\cap\mathcal G_D)\bigl\backslash\mathcal G_D\bigl/\Stab_{\mathcal G_D}(x). $$
 The analogous index formula holds within each $\Gamma\cap\mathcal G_D$-orbit in that fibre. If $K=\ker\rho_{L,q}\subseteq\Gamma^+$, these double cosets reduce to $(H^+\cap F)\backslash F/S$ with $H^+=\rho_{L,q}(\Gamma^+)$. This simplification is not allowed merely because $K\subseteq\Gamma$: $\Gamma^+$ need not contain $K$.
+A sign refinement is indexed at the group that acts on the object and not at a larger one: @cor:sign-sensitive-splitting states the full-orbit and the fixed-datum cases separately, and @ex:sign-sensitive-splitting-u2 is a fibre on which the global index is two and the index at $\Gamma\cap\mathcal G_D$ is one.
 
 :::
 
@@ -322,12 +323,12 @@ That is @lem:zero-datum-divisibility, which identifies the datum $0$ with divisi
 1. Let $L=T_\En$ of @sec-lattices, $\Gamma=\Gamma_{\En,2}=\rho^{-1}(M)$ and $\Gamma^+=\Gamma\intersect\Orth^+(L)$. Then $Q=\Orth(A_L,q_L)$, $\ker\rho\subseteq\Gamma$, and:
    a. for a primitive isotropic line $\ell=\ZZ v$, $S=\rho(\Stab_{\Orth(L)}(\ell))=\Stab_Q(D(\ell))$;
    b. for every primitive isotropic plane $P$, $S=\rho(\Stab_{\Orth(L)}(P))=F=\Stab_Q(D(P))$, so the planes over each $M$-orbit of discriminant images form one $\Gamma$-orbit;
-   c. $\Gamma$ and $\Gamma^+$ have the same orbits (@def:group-orbit) on primitive isotropic lines, on primitive isotropic planes and on flags;
+   c. $\Gamma$ and $\Gamma^+$ have the same orbits (@def:group-orbit) on primitive isotropic vectors, on primitive isotropic lines, on primitive isotropic planes and on flags;
    d. the divisibility-one line orbit is incident exactly to the four plane orbits of [@Ste91, §4.3.16], although $0\subseteq D(P)$ for all nine plane orbits.
 2. Let $L=T_\Co=B(2)$ with $B=U_1\perp U_2\perp\generators{-1}^{7}$, $\Gamma=\ker\rho$ and $\Gamma^+=\widetilde\Orth^+(T_\Co)=\ker\rho\intersect\Orth^+(B)$. Then $Q=\Orth(q)$, and:
    a. $\rho(\Gamma^+)=\rho(\widetilde\Orth^+(T_\Co))=1$. Thus, when @lem:chain-stabilizer is applied to $\Gamma^+$, its chain group is $(\Gamma^+)_{(C,J)}=\Gamma^+$ for every chain $(C,J)$; when it is applied to $\Gamma=\ker\rho$, the chain group is instead $\Gamma_{(C,J)}=\Gamma$;
    b. for the standard plane $P=\generators{e_1,e_2}$ with $J=D(P)$, $[F:S]=8$, so the planes over $J$ form eight $\ker\rho$-orbits;
-   c. $\ker\rho$ and $\widetilde\Orth^+(T_\Co)$ have the same orbits on primitive isotropic lines, on primitive isotropic planes and on flags;
+   c. $\ker\rho$ and $\widetilde\Orth^+(T_\Co)$ have the same orbits on primitive isotropic vectors, on primitive isotropic lines, on primitive isotropic planes and on flags;
    d. for each $\widetilde\Orth^+(T_\Co)$-orbit of planes over $J$ and each nonzero $c\in J$, there is exactly one $\widetilde\Orth^+(T_\Co)$-orbit of flags $(\ell\subset P')$ with $P'$ in that orbit and $D(\ell)=\generators{c}$.
 :::
 
@@ -336,14 +337,13 @@ That is @lem:zero-datum-divisibility, which identifies the datum $0$ with divisi
 Part 1. The group $Q$ is $\Orth(A_L,q_L)$ by @thm:two-elementary-surjectivity, and $\ker\rho\subseteq\Gamma$ is @prop:sterk-group-identification(2).
 Item a is @lem:line-stabilizer-image; since $A_L$ has exponent two, the stabilizer (@def:group-orbit) of a class $c$ is the stabilizer of the subgroup $\generators{c}$.
 Item b is @thm:enriques-integral-plane-stabilizers, and the orbit statement is then @thm:descent-double-coset with $(H\cap F)\backslash F/S=(H\cap F)\backslash F/F$, one double coset.
-Item c is @thm:enriques-spinor-orbit-agreement.
+Item c is @thm:enriques-spinor-orbit-agreement, whose last sentence is the vector case: $-\id_N\in\ker\rho$, $A_L$ having exponent two, and $\spinornorm_\bR(-\id_N)=[(-1)^2]=1$ at positive index two (@lem:minus-identity-spinor-norm), so $-\id_N\in\Gamma\cap\Gamma^+$ and the two generators of a line lie in one orbit of both groups.
 Item d is items 1, 3 and 4 of @thm:enriques-degree-two-arithmetic together with @lem:zero-datum-divisibility: the line orbit of type $1$ is the divisibility-one orbit, and the plane orbits whose labels contain $1$ are the four planes of [@Ste91, §4.3.16].
 
 Part 2. The group $Q$ is $\Orth(q)$ by @thm:two-elementary-surjectivity.
 Item a holds because $\Gamma^+=\widetilde\Orth^+(T_\Co)\subseteq\ker\rho$, so $\rho(\Gamma^+)=1\leq F_{C,J}$. Hence $(\Gamma^+)_{(C,J)}=\Gamma^+\cap\rho^{-1}(F_{C,J})=\Gamma^+$; the same computation with $\Gamma=\ker\rho$ gives $\Gamma_{(C,J)}=\Gamma$.
 Item b is item 4 of @thm:coble-plane-stabilizer-image, and the count is its item 5 with $H=1$: the double cosets $1\backslash F/S$ number $[F:S]=8$.
-The group $\widetilde\Orth^+(T_\Co)$ does not contain $\ker\rho$, so @thm:descent-double-coset is applied at $\Gamma=\ker\rho$ and @prop:descent-spinor-fibre then passes to $\Gamma^+=\widetilde\Orth^+(T_\Co)$.
-Its hypothesis is part 4 of @thm:cusp-lifting: each line, plane and flag has a spinor-negative element of $\ker\rho$ in its stabilizer. This gives item c.
+Item c. Both groups of the item satisfy $\widetilde\Orth^+(T_\Co)\subseteq\Gamma\subseteq\Orth(T_\Co)$, so parts 1--3 of @thm:cusp-lifting apply to each: at $\Gamma=\ker\rho$ its image is $\rho(\ker\rho)=1$, so the $\ker\rho$-orbits of lines, of planes and of flags are in bijection with the three finite data sets, that is with the data themselves, and at $\Gamma=\widetilde\Orth^+(T_\Co)$ its image is trivial by item a, so the $\widetilde\Orth^+(T_\Co)$-orbits are in bijection with those same three sets through the same datum map. Two objects with the same datum are therefore equivalent under both groups, and since $\widetilde\Orth^+(T_\Co)\subseteq\ker\rho$ each $\ker\rho$-orbit is a single $\widetilde\Orth^+(T_\Co)$-orbit. Item 4 of that theorem separates the two hypotheses and is what this item needs at the level of one orbit: it does not supply a containment $\ker\rho\subseteq\widetilde\Orth^+(T_\Co)$, which is false, but it states that parts 1--3 hold for $\Gamma\intersect\Orth^+(T_\Co)$ with its own finite image, and its proof exhibits, for a line, a plane and a flag, a spinor-negative element of $\ker\rho$ in the stabilizer, so that by @prop:descent-spinor-fibre the number $[\chi(\ker\rho):\chi(\Stab_{\ker\rho}(x))]$ of $\widetilde\Orth^+(T_\Co)$-orbits in the $\ker\rho$-orbit of $x$ is one. For primitive isotropic vectors the two orbit sets are those of the lines, because $-\id_{T_\Co}\in\widetilde\Orth^+(T_\Co)$: it lies in $\ker\rho$, $A_{T_\Co}$ having exponent two, and $\spinornorm_\bR(-\id_{T_\Co})=[(-1)^2]=1$ at positive index two (@lem:minus-identity-spinor-norm).
 Item d is item 2 of @prop:coble-arithmetic-flag-incidence, which is item 2 of @prop:flag-incidence-bijection applied to $\Gamma^+$ with $(\Gamma^+)_{(C,J)}=\Gamma^+$ and $(\Gamma^+)_{P,C}=\Stab_{\Gamma^+}(P)$ by item a.
 :::
 
@@ -354,7 +354,7 @@ Let $T_\Co=B(2)$ and let $G_\Co\leq\Orth(q_{T_\Co})$ be the finite image of @thm
 :::
 
 ::: {.proof}
-The kernel inclusion $\ker\rho_{T_\Co}\subseteq\Gamma$ is immediate from the definition of $\Gamma$. By @thm:cusp-lifting(2), the integral plane orbits are the $G_\Co$-orbits of pairs $(J,s)$ consisting of an order-$4$ isotropic subgroup and one of its eight stars (@def:plane-star); by @thm:cusp-lifting(3), the flag orbits are the $G_\Co$-orbits of triples $(J,s,c)$ with $0\neq c\in J$. The exact finite enumeration in `computations/reports/coble_gco_plane-orbits.py` and `computations/reports/coble_gco_plane-orbits-run.txt`, cited in the proof of @thm:cusp-lifting, gives respectively seven and thirteen orbits. The spinor-negative stabilizers (@def:group-orbit) constructed in @thm:cusp-lifting(4) show that neither orbit set splits upon intersection with $\Orth^+(T_\Co)$. This is @thm:coble-integral-lifting-fibre(1) at $\Gamma=\rho^{-1}(G_\Co)$, and its item 2 is the step that lets the count be read off the finite $G_\Co$-orbits: the integral stabilizer of a plane or of a flag realizes the whole finite stabilizer of its datum, so the double quotient of the fibre is one point per datum.
+The kernel inclusion $\ker\rho_{T_\Co}\subseteq\Gamma$ is immediate from the definition of $\Gamma$, and with $\widetilde\Orth^+(T_\Co)\subseteq\ker\rho_{T_\Co}$ it gives the hypothesis $\widetilde\Orth^+(T_\Co)\subseteq\Gamma\subseteq\Orth(T_\Co)$ of @thm:cusp-lifting and of @thm:coble-integral-lifting-fibre; the discriminant image is $\rho_{T_\Co}(\Gamma)=G_\Co$. By @thm:cusp-lifting(2), the integral plane orbits are the $G_\Co$-orbits of pairs $(J,s)$ consisting of an order-$4$ isotropic subgroup and one of its eight stars (@def:plane-star); by @thm:cusp-lifting(3), the flag orbits are the $G_\Co$-orbits of triples $(J,s,c)$ with $0\neq c\in J$. The exact finite enumeration in `computations/reports/coble_gco_plane-orbits.py` and `computations/reports/coble_gco_plane-orbits-run.txt`, cited in the proof of @thm:cusp-lifting, gives respectively seven and thirteen orbits. The spinor-negative stabilizers (@def:group-orbit) constructed in @thm:cusp-lifting(4) show that neither orbit set splits upon intersection with $\Orth^+(T_\Co)$. This is @thm:coble-integral-lifting-fibre(1) at $\Gamma=\rho^{-1}(G_\Co)$, and its item 2 is the step that lets the count be read off the finite $G_\Co$-orbits: the integral stabilizer of a plane or of a flag realizes the whole finite stabilizer of its datum, so the double quotient of the fibre is one point per datum.
 :::
 
 The five orbits of $G_\Co$ on *undecorated* finite isotropic planes in @tbl-finite-plane-orbits are not five integral plane orbits: the integral fibre over each finite plane has eight star choices by @lem:plane-stars, and the arithmetic group acts on those choices. In particular the seven integral plane orbits above do not follow from the five-row table without this stabilizer-image calculation. These statements concern $\rho^{-1}(G_\Co)$, identified with $R_{\gent}$ in @prop:coble-cong-point-stabilizer, and not the geometric monodromy group $\Gamma_\Co$ (@def:gamma-co-groups); the theorem proves only $\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co)$ on the labelled presentation (@thm:gamma-co-is-stable(1)); equality for $\Gamma_\Co$ is @conj:gamma-co-stable.
@@ -879,7 +879,7 @@ J_x\definedas\kappa_{L,q}\qty(B),
 $$
 subgroups of $\Orth(A_{L,q})\times\theset{\pm1}^2$. Assume $E_L\subseteq\Gamma_1$; this holds in particular when $\ker\rho_{L,q}\subseteq\Gamma$ and $\Gamma_1=\theset{g\in\Gamma\st\beta(\epsilon(g))=1}$ for a character $\beta$ of $\theset{\pm1}^2$.
 
-1. The three groups are finite, and the $\Gamma_1$-orbits in $\mathcal F_{\mathcal X}(D)$ are in bijection with the double cosets $J_1\backslash J_D/J_x$. This is the **joint-image double-coset formula**.
+1. The three groups are finite, and the $A_1$-orbits in $\mathcal F_{\mathcal X}(D)$, that is the orbits of $\Gamma_1\intersect\rho_{L,q}^{-1}(F)$, are in bijection with the double cosets $J_1\backslash J_D/J_x$. These are the $\Gamma_1$-orbits of the fibre exactly when $\rho_{L,q}(\Gamma_1)\subseteq F$, that is when $\Gamma_1$ preserves the fibre; otherwise $\Gamma_1$ carries the fibre to other fibres and only $A_1$ acts on this one (@rmk:descent-fibre-scope). This is the **joint-image double-coset formula**.
 2. The projection $J_D\to F$, $\kappa_{L,q}(g)\mapsto\rho_{L,q}(g)$, is surjective with kernel $\theset{\id}\times\Sigma_{\Orth(L)}(\kappa)=\kappa_{L,q}(K)$, so the joint image of one discriminant fibre is an extension
 $$
 1\too\theset{\id}\times\Sigma_{\Orth(L)}(\kappa)\too J_D\too F\too1
@@ -903,7 +903,7 @@ that is, if and only if at every point $y=ax$ of *this* fibre the kernel $K$ is 
 
 ::: {.proof}
 
-*Item 1.* By @thm:descent-double-coset the group $A$ acts transitively on $\mathcal F_{\mathcal X}(D)$, with $B$ the stabilizer of $x$, so the $\Gamma_1$-orbits are the double cosets $A_1\backslash A/B$. The group $E_L$ is the kernel of $\kappa_{L,q}$ on $\Orth(L)$, so it is normal in $A$ and is contained in $A_1$ by hypothesis; for a normal subgroup $E\subseteq A'$ of a group $A$ acting on a set with point stabilizer $B$, the orbits of $A'$ on $A/B$ are the double cosets $(A'/E)\backslash(A/E)/(BE/E)$, the fibres of $A/B\to A/EB$ being single $E$-orbits. With $A'=A_1$ and $B=\Stab_A(x)$, the quotients $A_1/E_L$, $A/E_L$ and $BE_L/E_L$ are $J_1$, $J_D$ and $J_x$ by the definition of $\kappa_{L,q}$, and all three lie in the finite group $\Orth(A_{L,q})\times\theset{\pm1}^2$.
+*Item 1.* By @thm:descent-double-coset the group $A$ acts transitively on $\mathcal F_{\mathcal X}(D)$, with $B$ the stabilizer of $x$, so the $A_1$-orbits in it are the double cosets $A_1\backslash A/B$; these are the $\Gamma_1$-orbits only when $\Gamma_1\subseteq A$. The group $E_L$ is the kernel of $\kappa_{L,q}$ on $\Orth(L)$, so it is normal in $A$ and is contained in $A_1$ by hypothesis; for a normal subgroup $E\subseteq A'$ of a group $A$ acting on a set with point stabilizer $B$, the orbits of $A'$ on $A/B$ are the double cosets $(A'/E)\backslash(A/E)/(BE/E)$, the fibres of $A/B\to A/EB$ being single $E$-orbits. With $A'=A_1$ and $B=\Stab_A(x)$, the quotients $A_1/E_L$, $A/E_L$ and $BE_L/E_L$ are $J_1$, $J_D$ and $J_x$ by the definition of $\kappa_{L,q}$, and all three lie in the finite group $\Orth(A_{L,q})\times\theset{\pm1}^2$.
 
 *Item 2.* The composition $J_D\to F$ is surjective because $\rho_{L,q}(A)=F$, and its kernel is $\kappa_{L,q}\qty(\ker\rho_{L,q})=\theset{\id}\times\Sigma_{\Orth(L)}(\kappa)$ by @thm:kernel-sign-image(1). A surjection of groups with that kernel is the displayed extension, and it is injective exactly when that kernel is trivial, that is when $\kappa_{L,q}(K)=\theset{\id}$: no element of the discriminant kernel carries a nontrivial sign. Plain injectivity of $\kappa_{L,q}$ on $K$ is a different condition, independent of this one, asking instead that only $\id\in K$ be mapped to $\id$; it is the displayed kernel, and not that injectivity, that decides the projection.
 
@@ -927,22 +927,81 @@ Here $s$ has determinant $-1$ and spinor norm $[-\beta(e-f,e-f)/2]=[1]=1$ becaus
 **The groups are not isomorphic even when the kernel is contained.** Take now $\Gamma=\Gamma_1=\Orth(U)$. Then $\ker\rho_U=\Orth(U)\subseteq\Gamma_1$, so the sufficient condition of @thm:joint-double-coset(3) holds and the two counts agree once more; but $J_D=\kappa_{U,q}\qty(\Orth(U))=\theset{\id}\times\Sigma_{\Orth(U)}(\kappa)=\theset{\id}\times\theset{\pm1}^2$ has four elements while $F=1$: the equality is between subgroups of the product $\Orth(A_{U,q})\times\theset{\pm1}^2$, in which the sign group $\Sigma_{\Orth(U)}(\kappa)=\theset{\pm1}^2$ occupies the second factor. So the projection $J_D\to F$ has all of $J_D$ as its kernel, and $J_D$ is not isomorphic to $F$; the identification is $J_D/\Sigma\cong F=1$, that quotient being taken in the same product, after which the double-coset sets agree. This is why @thm:joint-double-coset(3) is stated with the quotients by $\Sigma$ and not with isomorphisms of the unquotiented groups.
 :::
 
-::: {.corollary #cor:sign-sensitive-splitting title="Sign-sensitive splitting of one orbit"}
+::: {.lemma #lem:sign-kernel-orbits title="The orbits of the kernel of a sign character on a transitive orbit"}
 
-Let $L$ be even, let $\Gamma\leq\Orth(L)$ satisfy $\ker\rho_L\subseteq\Gamma$, and let $\beta$ be a character of $\theset{\pm1}^2$ with $\Gamma_1\definedas\theset{g\in\Gamma\st\beta(\epsilon(g))=1}$ of index two in $\Gamma$. For an object $x$ of @sec-descent-fibre with datum $D$ and nonempty fibre $\mathcal F_{\mathcal X}(D)$, every $\Gamma$-orbit $\mathcal O\subseteq\mathcal F_{\mathcal X}(D)$ is the union of one or two $\Gamma_1$-orbits, and it is two exactly when $\Stab_\Gamma(x_{\mathcal O})\subseteq\Gamma_1$, equivalently when no element of the stabilizer (@def:group-orbit) has $\beta\circ\epsilon=-1$. Since the stabilizer's sign data are the finite group $\kappa_{L,q}\qty(\Stab_\Gamma(x_{\mathcal O}))$, that test is decided on a finite group. Consequently
-$$
-\#\qty(\Gamma_1\text{-orbits in }\mathcal F_{\mathcal X}(D))
-=\#\qty(\Gamma\text{-orbits in }\mathcal F_{\mathcal X}(D))
-+\#\theset{\mathcal O\subseteq\mathcal F_{\mathcal X}(D):\Stab_\Gamma(x_{\mathcal O})\subseteq\Gamma_1},
-$$
-where the $\Gamma$-orbits are counted by @thm:descent-double-coset and the $\Gamma_1$-orbits by @thm:joint-double-coset.
-
-The case of the second-factor character $\beta(d,s)=s$ of $\theset{\pm1}^2$, so that $\Gamma_1=\Gamma\intersect\ker\spinornorm_\bR$, is @prop:descent-spinor-fibre: the $\Gamma$-orbit stays one $\Gamma_1$-orbit when its stabilizer contains a spinor-negative element. The joint image adds that this is a decision on a finite group and that the orbits (@def:group-orbit) which do split are the ones counted by the second term.
+Let a group $A$ act transitively on a nonempty set $\Omega$, let $x\in\Omega$, put $B\definedas\Stab_A(x)$, and let $\chi\colon A\to\theset{\pm1}$ be a homomorphism with kernel $A^+\definedas\ker\chi$.
+Then the number of $A^+$-orbits in $\Omega$ is
+$$ [\chi(A):\chi(B)], $$
+a divisor of $2$, and it is $2$ exactly when $\chi(B)=\theset{1}$, that is exactly when $B\subseteq A^+$; if $\chi(A)=\theset{1}$ there is one orbit.
+The formula is computed at the stabilizer in the group that acts: for a subgroup $A'\leq A$ acting on an $A'$-invariant nonempty subset $\Omega'\subseteq\Omega$ with $x'\in\Omega'$, the number of $A'^+$-orbits in $\Omega'$ is $[\chi(A'):\chi(\Stab_{A'}(x'))]$, and this is not $[\chi(A):\chi(\Stab_A(x'))]$ in general (@ex:sign-sensitive-splitting-u2).
 :::
 
 ::: {.proof}
 
-By @thm:descent-double-coset the $\Gamma$-orbits in $\mathcal F_{\mathcal X}(D)$ are the double cosets $(\Gamma\cap\rho^{-1}(F))\backslash\rho^{-1}(F)/\Stab_{\rho^{-1}(F)}(x)$, and by the same argument the $\Gamma_1$-orbits inside one $\Gamma$-orbit $\Gamma x_{\mathcal O}$ are the double cosets $\Gamma_1\backslash\Gamma/\Stab_\Gamma(x_{\mathcal O})$. With $[\Gamma:\Gamma_1]=2$ the subgroup $\Gamma_1$ is normal, so these are the orbits of $\Stab_\Gamma(x_{\mathcal O})$ on the two-element set $\Gamma/\Gamma_1$: there are two when $\Stab_\Gamma(x_{\mathcal O})\subseteq\Gamma_1$ and one otherwise. The class of $\beta\circ\epsilon$ on a stabilizer element is the sign coordinate of $\kappa_{L,q}$ of that element, so containment in $\Gamma_1$ is exactly the vanishing of $\beta\circ\epsilon$ on the stabilizer, and membership of $\kappa_{L,q}(\Stab_\Gamma(x_{\mathcal O}))$ in the finite group $\kappa_{L,q}(\Gamma)$ decides it. Summing the two possibilities over the $\Gamma$-orbits gives the displayed count.
+The orbit map $a\mapsto ax$ identifies $\Omega$ with $A/B$, and the $A^+$-orbits in $\Omega$ with the double cosets $A^+\backslash A/B$.
+Since $A^+=\ker\chi$ is normal in $A$, the rule $A^+aB\mapsto\chi(a)\chi(B)$ is a well-defined map onto the coset set $\chi(A)/\chi(B)$: if $a'=uab$ with $u\in A^+$ and $b\in B$, then $\chi(a')\chi(B)=\chi(a)\chi(b)\chi(B)=\chi(a)\chi(B)$.
+It is injective: if $\chi(a')\chi(B)=\chi(a)\chi(B)$, then $\chi(a'^{-1}a)\in\chi(B)$, say $\chi(a'^{-1}a)=\chi(b)$ with $b\in B$, and $u\definedas a'^{-1}ab^{-1}$ has $\chi(u)=1$, so $u\in A^+$ and $a'=ab^{-1}u^{-1}$ lies in $A^+aB$.
+It is surjective because $\chi(A)$ is the image of $A$.
+The cardinality of $\chi(A)/\chi(B)$ is $[\chi(A):\chi(B)]$, the subgroup $\chi(B)$ being a subgroup of the two-element group $\chi(A)$, and $\chi(B)=\theset{1}$ exactly when $B\subseteq\ker\chi=A^+$.
+:::
+
+::: {.corollary #cor:sign-sensitive-splitting title="Sign-sensitive splitting of a full orbit and of a fixed-datum fibre"}
+
+Let $L$ be even (@def:form-axioms), let $\Gamma\leq\Orth(L)$ contain $\ker\rho_{L,q}$, and let $\beta$ be a character of $\theset{\pm1}^2$ with $\chi\definedas\beta\circ\epsilon$ surjective on $\Gamma$; put
+$$ \Gamma_1\definedas\ker\chi=\theset{g\in\Gamma\st\beta(\epsilon(g))=1}, $$
+of index two in $\Gamma$.
+
+1. **A full orbit.** Let $x$ be an object of @sec-descent-fibre and $\mathcal O=\Gamma x'\subseteq\Orth(L)\cdot x$ a $\Gamma$-orbit. Then $\mathcal O$ is the union of $[\chi(\Gamma):\chi(\Stab_\Gamma(x'))]$ orbits of $\Gamma_1$, that is of two exactly when $\Stab_\Gamma(x')\subseteq\Gamma_1$ and of one otherwise. Consequently the $\Gamma_1$-orbits in $\Orth(L)\cdot x$ number
+$$ \#\theset{\Gamma\text{-orbits in }\Orth(L)\cdot x}+\#\theset{\mathcal O\subseteq\Orth(L)\cdot x:\ \Stab_\Gamma(x_{\mathcal O})\subseteq\Gamma_1}. $$
+Equivalently, the splitting occurs exactly when no element of $\Stab_\Gamma(x')$ has $\chi=-1$; and because $\chi$ is the sign coordinate of $\kappa_{L,q}$, that test is decided on the finite group $\kappa_{L,q}\qty(\Stab_\Gamma(x'))$.
+
+2. **A fixed-datum fibre.** Let $D$ be a datum of @sec-descent-fibre with nonempty fibre $\mathcal F_{\mathcal X}(D)=\theset{y\in\mathcal X:\ D(y)=D}$, and put
+$$ \Gamma_D\definedas\Gamma\intersect\rho_{L,q}^{-1}\qty(\Stab_Q(D)),\qquad \Gamma_D^+\definedas\Gamma_D\intersect\Gamma_1=\Gamma_D\intersect\ker\chi . $$
+The full group $\Gamma$ preserves this fibre exactly when $\rho_{L,q}(\Gamma)\subseteq\Stab_Q(D)$, that is exactly when $\Gamma_D=\Gamma$; in general $g\in\Gamma$ carries the fibre to the fibre over $\rho_{L,q}(g)D$ and $\Gamma$ does not act on this one. The group that acts on it is $\Gamma_D$ (@thm:descent-double-coset), and each $\Gamma_D$-orbit $\mathcal O$ in it splits into
+$$ [\chi(\Gamma_D):\chi(\Stab_{\Gamma_D}(x_{\mathcal O}))] $$
+orbits of $\Gamma_D^+$, an index computed at $\Gamma_D$ and not at $\Gamma$. Hence
+$$ \#\theset{\Gamma_D^+\text{-orbits in }\mathcal F_{\mathcal X}(D)}=\#\theset{\Gamma_D\text{-orbits in }\mathcal F_{\mathcal X}(D)}+\#\theset{\mathcal O\subseteq\mathcal F_{\mathcal X}(D):\ \Stab_{\Gamma_D}(x_{\mathcal O})\subseteq\Gamma_D^+}, $$
+and when $\Gamma_D=\Gamma$ this is the count for the pair $(\Gamma,\Gamma_1)$ on that fibre.
+
+3. **The two indices differ.** The index of item 2 can be one while the index of item 1 at the same object is two: @ex:sign-sensitive-splitting-u2 is such a fibre, with $L=U(2)$, $\chi=\det$ and $\Gamma=\Orth(L)$. What decides a fibre is the pair $(\Gamma_D,\Gamma_D^+)$: $\chi$ may be trivial on $\Gamma_D$ and nontrivial on $\Gamma$, and the sign that $\Gamma$ attains outside $\Gamma_D$ is then attained on the other fibres.
+
+4. **The spinor case, and which kernel does what.** For the second-factor character $\beta(d,s)=s$ one has $\Gamma_1=\Gamma\intersect\ker\spinornorm_\bR$; item 1 is then the first paragraph of @prop:descent-spinor-fibre and item 2 its second paragraph. Under the hypothesis of this corollary $\ker\rho_{L,q}\subseteq\Gamma_D$, since $\ker\rho_{L,q}\subseteq\Gamma$ and $\ker\rho_{L,q}\subseteq\rho_{L,q}^{-1}\qty(\Stab_Q(D))$; so @thm:descent-double-coset at $\Gamma_D$ computes the $\Gamma_D$-orbits of item 2. The group $\Gamma_D^+$ need not contain $\ker\rho_{L,q}$, but it does contain $E_L=\ker\rho_{L,q}\intersect\ker\det\intersect\ker\spinornorm_\bR$, because $E_L\subseteq\ker\epsilon$ and $\beta$ is a character; so the $\Gamma_D^+$-orbits of item 2 are the double cosets $J_1\backslash J_D/J_x$ of @thm:joint-double-coset(1) at the pair $(\Gamma_D,\Gamma_D^+)$, whose hypothesis $E_L\subseteq\Gamma_D^+$ is thus automatic here.
+:::
+
+::: {.proof}
+
+Item 1 is @lem:sign-kernel-orbits applied to the group $\Gamma$ acting transitively on the orbit $\Gamma x'$, and the displayed sum is the sum of the indices over the $\Gamma$-orbits, each summand being $1$ or $2$ because $\chi$ takes values in $\theset{\pm1}$.
+
+Item 2 is the same lemma applied to $\Gamma_D$ acting on each of its orbits in the fibre; that the fibre is a union of $\Gamma_D$-orbits, and that each of them is a single orbit of $\rho_{L,q}^{-1}\qty(\Stab_Q(D))$, is @thm:descent-double-coset. The splitting is computed at $\Gamma_D$ because that is the group whose orbits are being split, and $\Gamma_D^+=\ker\qty(\chi|_{\Gamma_D})$.
+
+For the fibre-preservation assertion: by @lem:descent-subobject-data the datum is equivariant, $D(gy)=\rho_{L,q}(g)D(y)$ for $g\in\Orth(L)$, so $g$ carries the fibre over $D$ onto the fibre over $\rho_{L,q}(g)D$. It preserves the fibre exactly when $\rho_{L,q}(g)D=D$ for every $g\in\Gamma$, that is when $\rho_{L,q}(\Gamma)\subseteq\Stab_Q(D)$, which by the definition of $\Gamma_D$ is the condition $\Gamma_D=\Gamma$.
+
+Item 3 is @ex:sign-sensitive-splitting-u2. Item 4: the description of $\Gamma_1$ is the definition of $\chi$; the reduction of the fixed-fibre double cosets is the second paragraph of @prop:descent-spinor-fibre, whose kernel hypothesis is stated there; $\ker\rho_{L,q}\subseteq\Gamma_D$ because both containments displayed hold; and $E_L\subseteq\Gamma_D^+$ because every element of $E_L$ has $\epsilon=(1,1)$, on which $\beta$ is $1$.
+:::
+
+::: {.example #ex:sign-sensitive-splitting-u2 title="A fibre whose global index is two and whose restricted index is one: $L=U(2)$"}
+
+Let $L=U(2)=\bZ e\oplus\bZ f$ with $\beta(e,f)=2$, so that $L$ is even (@def:form-axioms), of rank two and signature $(1,1)$.
+For $x=\tfrac a2e+\tfrac b2f$ one has $(x,e)=b$ and $(x,f)=a$, so $L^\sharp=\bZ\qty(\tfrac e2)\oplus\bZ\qty(\tfrac f2)$ and $A_L=(\bZ/2)^2$.
+With the quadratic form of @def:discriminant,
+$$ q_L\qty(\tfrac a2e+\tfrac b2f)=ab\bmod2\bZ,\qquad b_L\qty(\tfrac e2,\tfrac f2)=\tfrac12 , $$
+so $q_L([e/2])=q_L([f/2])=0$ and $q_L([(e+f)/2])=1$; the isotropic classes are $0$, $[e/2]$ and $[f/2]$.
+The isotropic vectors of $L_\bQ$ satisfy $(ae+bf)^2=4ab=0$, so the primitive isotropic vectors are $\pm e,\pm f$ and the primitive isotropic lines are $\bZ e$ and $\bZ f$; and $(e,L)=(f,L)=2\bZ$, so
+$$ D(\bZ e)=\generators{[e/2]}\ \neq\ \generators{[f/2]}=D(\bZ f), $$
+two different subgroups of order two, each equal to its own negative because $A_L$ has exponent two.
+
+1. $\Orth(L)=\theset{\pm\id,\pm\sigma}$ for the swap $\sigma$ of $e$ and $f$. An isometry has a matrix $\begin{pmatrix}a&b\\c&d\end{pmatrix}$ with $2(ax+by)(cx+dy)=2xy$ for all $x,y$, that is $ac=bd=0$ and $ad+bc=1$; if $a=0$ then $bc=1$ and $d=0$, while if $a\neq0$ then $c=0$, $ad=1$ and $b=0$.
+2. $\rho_{L,q}(\sigma)$ is the swap of $[e/2]$ and $[f/2]$, and $\rho_{L,q}(-\id)=\id$ because $A_L$ has exponent two; so $\ker\rho_{L,q}=\theset{\pm\id}$ and $Q=\rho_{L,q}\qty(\Orth(L))=\Orth(A_{L,q})=\theset{\id,\text{swap}}$.
+3. Take $\Gamma\definedas\Orth(L)$ and $\beta(d,s)\definedas d$, so that $\chi=\det$ and $\Gamma_1=\ker\det=\theset{\pm\id}$ is of index two in $\Gamma$. The full orbit of $x=\bZ e$ is $\mathcal X=\theset{\bZ e,\bZ f}$, and $\Stab_\Gamma(x)=\theset{\pm\id}=\Gamma_1$. By @lem:sign-kernel-orbits the $\Gamma_1$-orbits in $\mathcal X$ number $[\theset{\pm1}:\det(\theset{\pm\id})]=2$: each of the two lines is fixed by $\pm\id$.
+4. The fibre over $D\definedas D(\bZ e)$ is $\mathcal F_{\mathcal X}(D)=\theset{\bZ e}$, a single point: $\sigma$ carries $x$ to $\bZ f$ and $\generators{[e/2]}$ to $\generators{[f/2]}\neq D$, so $\Stab_Q(D)=1$ and
+$$ \Gamma_D=\Gamma\intersect\rho_{L,q}^{-1}\qty(\Stab_Q(D))=\ker\rho_{L,q}=\theset{\pm\id},\qquad \Gamma_D^+=\Gamma_D\intersect\Gamma_1=\Gamma_D . $$
+The determinant of $-1$ in rank two is $+1$, so $\chi$ is trivial on $\Gamma_D$ and the index of @cor:sign-sensitive-splitting(2) is $[\theset{1}:\theset{1}]=1$: **the fibre does not split, although the full orbit does.**
+5. **The two counts are not interchangeable.** The $\Gamma_1$-orbits in the fibre number one, while no $\Gamma$-orbit is contained in the fibre, since $\Gamma\cdot\bZ e=\mathcal X$ and $\bZ f\notin\mathcal F_{\mathcal X}(D)$; so the number of $\Gamma_1$-orbits in a fixed fibre is not the number of $\Gamma$-orbits in that fibre plus a splitting term, and the two numbers are attached to different groups. The pair $(\Gamma,\Gamma_D)$ also separates the two questions "is the datum fixed?" and "is the sign attained?": $\chi$ is trivial on $\Gamma_D$, the stabilizer in $\Gamma$ of the datum, and nontrivial at $\sigma$, which moves that datum to $\generators{[f/2]}$.
+:::
+
+::: {.remark #rmk:descent-fibre-scope title="Which group acts: a full orbit, and one datum fibre"}
+
+Two quotients occur on this page and they are taken at different groups. A full orbit is $\Orth(L)/\Stab_{\Orth(L)}(x)$; its $\Gamma$-orbit set is the double coset set $\Gamma\backslash\Orth(L)/\Stab_{\Orth(L)}(x)$, and the discriminant kernel is divided out of the left subgroup only when it is contained in it (@cor:descent-full-orbit-double-coset). A fibre over one datum is $\mathcal G_D/\Stab_{\mathcal G_D}(x)$ for $\mathcal G_D=\rho_{L,q}^{-1}\qty(\Stab_Q(D))$, and the subgroup of $\Gamma$ that acts on that fibre is $\Gamma_D=\Gamma\intersect\mathcal G_D$: a $\Gamma$-orbit meets the fibre in a $\Gamma_D$-orbit or in nothing, so a statement about the orbits of $\Gamma$ *in* a fibre is a statement about $\Gamma_D$, and the sign refinement of such a statement is taken at $\Gamma_D^+$ (@cor:sign-sensitive-splitting(2), @ex:sign-sensitive-splitting-u2). Under the equivariant map to finite data the fibre is transported to one datum representative, the stabilizer $F=\Stab_Q(D)$ of that datum is what acts there (@thm:descent-double-coset), and the forgetting maps of @lem:flag-datum-compatibility commute with this reduction, which is what @prop:flag-incidence-bijection and @prop:line-plane-incidence use.
 :::
 
 ::: {.example #ex:joint-character-sign-witness title="Signs in the discriminant kernel of $U\perp A_1\perp A_1$"}
