@@ -1,1 +1,0 @@
-"use strict";(self.rspackChunk_dzack_jupyterlab_sage_syntax=self.rspackChunk_dzack_jupyterlab_sage_syntax||[]).push([[278],{277(){}}]);

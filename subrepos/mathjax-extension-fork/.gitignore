@@ -1,0 +1,8 @@
+node_modules/
+lib/
+static/
+schemas/
+dzack_mathjax_extension/labextension/
+tsconfig.tsbuildinfo
+jupyterlab-debug.log
+.yarn/

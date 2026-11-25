@@ -1,1 +1,7 @@
 tsconfig.tsbuildinfo
+lib/
+static/
+.yarn/
+.pnp.cjs
+.pnp.loader.mjs
+test-results/
