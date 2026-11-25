@@ -933,16 +933,16 @@ Let a group $A$ act transitively on a nonempty set $\Omega$, let $x\in\Omega$, p
 Then the number of $A^+$-orbits in $\Omega$ is
 $$ [\chi(A):\chi(B)], $$
 a divisor of $2$, and it is $2$ exactly when $\chi$ is onto and $\chi(B)=\theset{1}$, that is exactly when $\chi(A)=\theset{\pm1}$ and $B\subseteq A^+$; when $\chi(A)=\theset{1}$ there is one orbit.
-The formula is computed at the stabilizer in the group that acts: for a subgroup $A'\leq A$ acting on an $A'$-invariant nonempty subset $\Omega'\subseteq\Omega$ with $x'\in\Omega'$, the number of $A'^+$-orbits in $\Omega'$ is $[\chi(A'):\chi(\Stab_{A'}(x'))]$, and this is not $[\chi(A):\chi(\Stab_A(x'))]$ in general (@ex:sign-sensitive-splitting-u2).
+The formula is computed at the stabilizer in the group that acts: for any subgroup $A'\leq A$, put $A'^+=A'\cap\ker\chi$. On each $A'$-orbit $\Omega'=A'x'\subseteq\Omega$, the number of $A'^+$-orbits is $[\chi(A'):\chi(\Stab_{A'}(x'))]$, and this is not $[\chi(A):\chi(\Stab_A(x'))]$ in general (@ex:sign-sensitive-splitting-u2).
 :::
 
 ::: {.proof}
 
 The orbit map $a\mapsto ax$ identifies $\Omega$ with $A/B$, and the $A^+$-orbits in $\Omega$ with the double cosets $A^+\backslash A/B$.
 Since $A^+=\ker\chi$ is normal in $A$, the rule $A^+aB\mapsto\chi(a)\chi(B)$ is a well-defined map onto the coset set $\chi(A)/\chi(B)$: if $a'=uab$ with $u\in A^+$ and $b\in B$, then $\chi(a')\chi(B)=\chi(a)\chi(b)\chi(B)=\chi(a)\chi(B)$.
-It is injective: if $\chi(a')\chi(B)=\chi(a)\chi(B)$, then $\chi(a'^{-1}a)\in\chi(B)$, say $\chi(a'^{-1}a)=\chi(b)$ with $b\in B$, and $u\definedas a'^{-1}ab^{-1}$ has $\chi(u)=1$, so $u\in A^+$ and $a'=ab^{-1}u^{-1}$ lies in $A^+aB$.
+It is injective: if $\chi(a')\chi(B)=\chi(a)\chi(B)$, then $\chi(a'^{-1}a)\in\chi(B)$, say $\chi(a'^{-1}a)=\chi(b)$ with $b\in B$, and $u\definedas a'^{-1}ab^{-1}$ has $\chi(u)=1$, so $u\in A^+$ and $a'=ab^{-1}u^{-1}=(ab^{-1}u^{-1}ba^{-1})ab^{-1}\in A^+aB$ by normality.
 It is surjective because $\chi(A)$ is the image of $A$.
-The cardinality of $\chi(A)/\chi(B)$ is $[\chi(A):\chi(B)]$, the subgroup $\chi(B)$ being a subgroup of the two-element group $\chi(A)$, and $\chi(B)=\theset{1}$ exactly when $B\subseteq\ker\chi=A^+$.
+The cardinality of $\chi(A)/\chi(B)$ is $[\chi(A):\chi(B)]$, where $\chi(B)\leq\chi(A)\leq\theset{\pm1}$, and $\chi(B)=\theset{1}$ exactly when $B\subseteq\ker\chi=A^+$.
 :::
 
 ::: {.corollary #cor:sign-sensitive-splitting title="Sign-sensitive splitting of a full orbit and of a fixed-datum fibre"}
@@ -953,15 +953,17 @@ of index two in $\Gamma$.
 
 1. **A full orbit.** Let $x$ be an object of @sec-descent-fibre and $\mathcal O=\Gamma x'\subseteq\Orth(L)\cdot x$ a $\Gamma$-orbit. Then $\mathcal O$ is the union of $[\chi(\Gamma):\chi(\Stab_\Gamma(x'))]$ orbits of $\Gamma_1$, that is of two exactly when $\Stab_\Gamma(x')\subseteq\Gamma_1$ and of one otherwise. Consequently the $\Gamma_1$-orbits in $\Orth(L)\cdot x$ number
 $$ \#\theset{\Gamma\text{-orbits in }\Orth(L)\cdot x}+\#\theset{\mathcal O\subseteq\Orth(L)\cdot x:\ \Stab_\Gamma(x_{\mathcal O})\subseteq\Gamma_1}. $$
-Equivalently, the splitting occurs exactly when no element of $\Stab_\Gamma(x')$ has $\chi=-1$; and because $\chi$ is the sign coordinate of $\kappa_{L,q}$, that test is decided on the finite group $\kappa_{L,q}\qty(\Stab_\Gamma(x'))$.
+Equivalently, the splitting occurs exactly when no element of $\Stab_\Gamma(x')$ has $\chi=-1$; and because $\chi$ factors through the two sign coordinates of $\kappa_{L,q}$ via $\beta$, that test is decided on the finite group $\kappa_{L,q}\qty(\Stab_\Gamma(x'))$.
 
 2. **A fixed-datum fibre.** Let $D$ be a datum of @sec-descent-fibre with nonempty fibre $\mathcal F_{\mathcal X}(D)=\theset{y\in\mathcal X:\ D(y)=D}$, and put
 $$ \Gamma_D\definedas\Gamma\intersect\rho_{L,q}^{-1}\qty(\Stab_Q(D)),\qquad \Gamma_D^+\definedas\Gamma_D\intersect\Gamma_1=\Gamma_D\intersect\ker\chi . $$
 The full group $\Gamma$ preserves this fibre exactly when $\rho_{L,q}(\Gamma)\subseteq\Stab_Q(D)$, that is exactly when $\Gamma_D=\Gamma$; in general $g\in\Gamma$ carries the fibre to the fibre over $\rho_{L,q}(g)D$ and $\Gamma$ does not act on this one. The group that acts on it is $\Gamma_D$ (@thm:descent-double-coset), and each $\Gamma_D$-orbit $\mathcal O$ in it splits into
 $$ [\chi(\Gamma_D):\chi(\Stab_{\Gamma_D}(x_{\mathcal O}))] $$
-orbits of $\Gamma_D^+$, an index computed at $\Gamma_D$ and not at $\Gamma$. Hence
-$$ \#\theset{\Gamma_D^+\text{-orbits in }\mathcal F_{\mathcal X}(D)}=\#\theset{\Gamma_D\text{-orbits in }\mathcal F_{\mathcal X}(D)}+\#\theset{\mathcal O\subseteq\mathcal F_{\mathcal X}(D):\ \Stab_{\Gamma_D}(x_{\mathcal O})\subseteq\Gamma_D^+}, $$
-and when $\Gamma_D=\Gamma$ this is the count for the pair $(\Gamma,\Gamma_1)$ on that fibre.
+orbits of $\Gamma_D^+$, an index computed at $\Gamma_D$ and not at $\Gamma$. Writing $R_D$ for representatives of the $\Gamma_D$-orbits in the fibre, the count is
+$ \#\qty(\Gamma_D^+\backslash\mathcal F_{\mathcal X}(D))
+=\sum_{y\in R_D}[\chi(\Gamma_D):\chi(\Stab_{\Gamma_D}(y))]
+=|R_D|+\#\theset{y\in R_D:\chi(\Gamma_D)=\theset{\pm1},\ \chi(\Stab_{\Gamma_D}(y))=\theset{1}}. $
+If $\chi(\Gamma_D)=\theset{1}$ then the second term is zero, not $|R_D|$. When $\Gamma_D=\Gamma$ this is the count for the pair $(\Gamma,\Gamma_1)$ on that fibre.
 
 3. **The two indices differ.** The index of item 2 can be one while the index of item 1 at the same object is two: @ex:sign-sensitive-splitting-u2 is such a fibre, with $L=U(2)$, $\chi=\det$ and $\Gamma=\Orth(L)$. What decides a fibre is the pair $(\Gamma_D,\Gamma_D^+)$: $\chi$ may be trivial on $\Gamma_D$ and nontrivial on $\Gamma$, and the sign that $\Gamma$ attains outside $\Gamma_D$ is then attained on the other fibres.
 
@@ -972,7 +974,7 @@ and when $\Gamma_D=\Gamma$ this is the count for the pair $(\Gamma,\Gamma_1)$ on
 
 Item 1 is @lem:sign-kernel-orbits applied to the group $\Gamma$ acting transitively on the orbit $\Gamma x'$, and the displayed sum is the sum of the indices over the $\Gamma$-orbits, each summand being $1$ or $2$ because $\chi$ takes values in $\theset{\pm1}$.
 
-Item 2 is the same lemma applied to $\Gamma_D$ acting on each of its orbits in the fibre; that the fibre is a union of $\Gamma_D$-orbits, and that each of them is a single orbit of $\rho_{L,q}^{-1}\qty(\Stab_Q(D))$, is @thm:descent-double-coset. The splitting is computed at $\Gamma_D$ because that is the group whose orbits are being split, and $\Gamma_D^+=\ker\qty(\chi|_{\Gamma_D})$.
+Item 2 is the same lemma applied to $\Gamma_D$ acting transitively on each $\Gamma_D$-orbit in the fibre. The whole fibre, not each of its $\Gamma_D$-orbits, is a single orbit of $\rho_{L,q}^{-1}\qty(\Stab_Q(D))$ by @thm:descent-double-coset. The splitting is computed at $\Gamma_D$ because that is the group whose orbits are being split, and $\Gamma_D^+=\ker\qty(\chi|_{\Gamma_D})$. Summing over $R_D$ gives the displayed identity: a summand is two precisely when the restricted character is surjective and its restriction to the point stabilizer is trivial; otherwise it is one.
 
 For the fibre-preservation assertion: by @lem:descent-subobject-data the datum is equivariant, $D(gy)=\rho_{L,q}(g)D(y)$ for $g\in\Orth(L)$, so $g$ carries the fibre over $D$ onto the fibre over $\rho_{L,q}(g)D$. It preserves the fibre exactly when $\rho_{L,q}(g)D=D$ for every $g\in\Gamma$, that is when $\rho_{L,q}(\Gamma)\subseteq\Stab_Q(D)$, which by the definition of $\Gamma_D$ is the condition $\Gamma_D=\Gamma$.
 
@@ -995,7 +997,7 @@ two different subgroups of order two, each equal to its own negative because $A_
 3. Take $\Gamma\definedas\Orth(L)$ and $\beta(d,s)\definedas d$, so that $\chi=\det$ and $\Gamma_1=\ker\det=\theset{\pm\id}$ is of index two in $\Gamma$. The full orbit of $x=\bZ e$ is $\mathcal X=\theset{\bZ e,\bZ f}$, and $\Stab_\Gamma(x)=\theset{\pm\id}=\Gamma_1$. By @lem:sign-kernel-orbits the $\Gamma_1$-orbits in $\mathcal X$ number $[\theset{\pm1}:\det(\theset{\pm\id})]=2$: each of the two lines is fixed by $\pm\id$.
 4. The fibre over $D\definedas D(\bZ e)$ is $\mathcal F_{\mathcal X}(D)=\theset{\bZ e}$, a single point: $\sigma$ carries $x$ to $\bZ f$ and $\generators{[e/2]}$ to $\generators{[f/2]}\neq D$, so $\Stab_Q(D)=1$ and
 $$ \Gamma_D=\Gamma\intersect\rho_{L,q}^{-1}\qty(\Stab_Q(D))=\ker\rho_{L,q}=\theset{\pm\id},\qquad \Gamma_D^+=\Gamma_D\intersect\Gamma_1=\Gamma_D . $$
-The determinant of $-1$ in rank two is $+1$, so $\chi$ is trivial on $\Gamma_D$ and the index of @cor:sign-sensitive-splitting(2) is $[\theset{1}:\theset{1}]=1$: **the fibre does not split, although the full orbit does.**
+The determinant of $-1$ in rank two is $+1$, so $\chi$ is trivial on $\Gamma_D$ and the index of @cor:sign-sensitive-splitting(2) is $[\theset{1}:\theset{1}]=1$: **the fibre does not split, although the full orbit does.** In the sum of that corollary $R_D=\theset{\bZ e}$ and the second term is zero, since the restricted character is not surjective.
 5. **The two counts are not interchangeable.** The $\Gamma_1$-orbits in the fibre number one, while no $\Gamma$-orbit is contained in the fibre, since $\Gamma\cdot\bZ e=\mathcal X$ and $\bZ f\notin\mathcal F_{\mathcal X}(D)$; so the number of $\Gamma_1$-orbits in a fixed fibre is not the number of $\Gamma$-orbits in that fibre plus a splitting term, and the two numbers are attached to different groups. The pair $(\Gamma,\Gamma_D)$ also separates the two questions "is the datum fixed?" and "is the sign attained?": $\chi$ is trivial on $\Gamma_D$, the stabilizer in $\Gamma$ of the datum, and nontrivial at $\sigma$, which moves that datum to $\generators{[f/2]}$.
 :::
 
