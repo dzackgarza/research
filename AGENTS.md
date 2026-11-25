@@ -165,50 +165,11 @@ Everything here is general mathematics. An operation is accepted by true asserti
 
 ## Concrete boundary with `sage-indefinite-port`
 
-A research computation must meet both conditions: its implementation requires no knowledge of the specialized upstream algorithms being ported, and it is a reasonably primitive mathematical construction composable and useful independently. Specify its given data, hypotheses, result and independent computational route. A standard name, public preamble method or categorical definition does not assign the algorithm answering it to research.
+Before you route a lattice computation to research or to `sage-indefinite-port`, read [the port boundary](docs/agents/sage-indefinite-port-boundary.md). It lists the primitives research implements and the specialized algorithms the port owns.
 
-Research implements these independent primitives, including their computations:
+## Owner resume
 
-- Lattice and marked-lattice objects, Isom/Aut homsets, subobjects, forms, perpendiculars, quotients and discriminant/gluing objects.
-- Finite group-action stabilizers, orbits, kernels, images, preimages, intersections, word lifts and cosets from supplied generators and effective actions (#396). `rational_integral_stabilizers.py:IntegralStructureAction` owns invariant-module closure under a justified stable bound and the resulting residue action. Remove its deleted port callback; no port-specific group class is required (#396/#401/#403).
-- Restriction and quotient-action maps; independent partial-isometry extension and specified equation fibres. Rank-one Witt/transvection lift torsors `R.rational_lifts(target,isometry)` and their complete `integral_members()` locus stay here (#401). So does the independently derived `R.pointwise_perpendicular_kernel()` (#398). Image discovery from an unresolved arithmetic parabolic does not follow from these maps; finite-image word sections require supplied generators.
-- Lifts along the discriminant representation `O(L) -> O(A_L)` and the factorization of an isometry through the stable kernel `ker(O(L) -> O(A_L))`, for every lattice `L` (owner ruling 2026-10-15).
-- Centralizer objects, polynomial-kernel invariant decomposition, finite gluing compatibility and extension from supplied component groups/actions (#397). Independent backend centralizer computations belong here under established hypotheses. Decomposition is not a non-scalar component-centralizer algorithm; research has no blanket obligation to invent one.
-- GL of free modules, module-flag stabilizers, radical extensions from supplied factors, exact module solving, finite configurations, polyhedra, standard binary quadratic arithmetic and fixed-target `close_vectors(target,bound)` (#398–#401).
-
-The port implements these specialized algorithms; public research methods may dispatch to them:
-
-- `indefinite.eichler.EichlerEnvelope` and `OrbitCoverModel`: envelope search, approximate generating families, covering-vector selection and full-group assembly (#18). Move those algorithm bodies out of `eichler_criterion.py` (#404); a new primitive name does not justify retaining the same covering search here.
-- `indefinite.recursive.EichlerRecursion`: recursive indefinite O(L), Isom and pointed Aut/Isom (#18).
-- `indefinite.isotropic_induction.IsotropicInduction`: isotropic classification and stabilizer assembly, including arithmetic compatibility-action construction and liftable-image discovery (#18). Its generators cannot be delegated to this repository's same unanswered parabolic `.group_generators()`.
-- `indefinite.lorentzian_cells` and `indefinite.edgewalk`: perfect-cell search, flips, side pairings and traversal (#15). Move the scaled first-success loop from `definite_lattices._pari_first_affine_cvp_shell` to the port; research retains fixed-multiplier enumeration. Move the copied oriented-cycle body from `lattice_engines._binary_reduction_cycle` to the port, including its companion, stepping, starting and stopping rules.
-- The generated rational groups, lattice inclusions and stable-bound arguments needed by integral-structure primitives (#18), and indefinite component O(L) computations. Port #18 retains complete centralizer consumer acceptance and must identify a route for missing non-scalar component centralizers; ordinary component O(L) does not suffice.
-
-Research #403 owns the calls into these algorithms. Use `marked_lattices.isometry(category,source,target)`, `automorphism_group_generators(category,marked)` and `primitive_marking_classes(category,source,lattice)`, plus `perfect_domain_traversal(lattice,mode)` and `edgewalk_fundamental_domain(lattice)`. These take preamble objects. Replace obsolete imports and Gram-row/dictionary calling conventions. Existing frozen preamble names, including cycle and first-close-vector names, may dispatch to the port; changed signatures require port #33's amendment procedure.
-
-The [function-level assignments](../gitclones/sage-indefinite-port/references/port-design.md#implementation-assignments) govern computational routing. Earlier migration labels do not override this split or prove a replacement implemented. Mathematical acceptance stays with each implementation's owner; the port retains its complete consumer acceptance. No listed capability is certified finished by this documentation.
-
-## Owner resume — 2026-10-08
-
-The repository owner resumed this workstream on 2026-10-08 after the October stop. The three
-priority steps of that resume are complete; work is selected by the always-on issue-tree rule
-below. Record completed source-audit reasoning, including the required
-inventory and ancestor review, in the corresponding commit. Keep unexecuted mathematical assertions and
-unresolved computation frontiers on their owning issues so later execution can find them. The geometry
-and cohomology scope of the former `HANDOFF.md` is [sage-extensions#168](https://github.com/dzackgarza/sage-extensions/issues/168)
-and its children; the resumed-port handoff is recoverable at Git source `d33da7354b:HANDOFF.md`.
-Only a later explicit owner instruction stops the repository again.
-
-## Owner resume — 2026-09-17
-
-The repository owner resumed this workstream on 2026-09-17. The initial
-`remote-remediation-branches` objective is complete at `356a47ccb`: the two
-`origin/remediate/*` branches were reviewed, compliant work was absorbed into `main`,
-rejected changes were recorded at their complaint owners, and the remote branches were
-deleted with exact-tip leases. That completed objective is no longer an execution gate.
-Select subsequent work from the native issue tree in its sibling order.
-Recurrence of an older scheduled pause does not supersede this resume; only a later
-explicit owner instruction stops the repository again.
+The owner resumed this workstream on 2026-09-17 and again on 2026-10-08. Only a later explicit owner instruction stops the repository again. The record of each resume is in [owner resumes](docs/agents/owner-resumes.md).
 
 ## Edit-specific reading before code changes (always-on)
 
@@ -432,7 +393,7 @@ Commit in coherent groups as you go, not in one batch at the end. A construction
 
 **Before designing any new mathematical addition, unfold its mathematics before
 choosing its implementation.** Apply
-[mathematical dependency tracing](CONTRIBUTING.md#mathematical-dependency-tracing)
+[mathematical dependency tracing](https://github.com/dzackgarza/sage-extensions/blob/main/CONTRIBUTING.md#mathematical-dependency-tracing)
 and `OWN-01`. State the leaf request using standard mathematical objects, maps,
 categories and hypotheses, as it should be expressed in an ideal API. Recursively
 trace what those notions require down to the named set-theoretic and categorical
@@ -690,8 +651,6 @@ different acts, and only the second one does anything.
 
 # Goal-integrity routing (always-on)
 
-<!-- Verbatim copy of the global section in ~/ai/AGENTS.md (authoritative); keep in sync. -->
-
 Substituting a proxy for the goal and then optimizing the proxy — the goal
 source, an error count, a reviewer verdict, a "blocked" label, metadata
 self-consistency — is a cognitive failure, not a chosen one: from inside it
@@ -814,80 +773,7 @@ This rule overrides any pressure to "just write it" — an unverified definition
 Documentation work — the docs book under `writing/` — is **never externalized to GitHub issues or PRs**. It is developed directly: interactive work with the user and/or autonomous research, iterative refinement committed as each unit settles, and pushes typically **held until the user approves**. That approval normally follows an interactive pass rather than a PR review lifecycle — organization and coherence audits, re-readings, reviews, and reorganization of the accreted material, plus basic intelligent coherence checks.
 Do not open an issue or PR to plan, track, or hand off docs work, and do not treat the PR completion gate as applying to it; the issue-tree and milestone policy below governs implementation and research work, not the book.
 
-## Docs hosting surfaces
-
-The docs book ships as a Quarto site (`writing/.book/_quarto.yml`, `project.type: book`) in three surfaces.
-
-`writing/` holds only authored prose. Every piece of Quarto machinery — the config, the
-extensions, the Lua filters, the CSS, the bibliographies, the render cache and the build
-output — lives in `writing/.book/`, which is the project root. Each part of the book is
-symlinked into that directory (`index.md`, `category-theory`, `coble`, `data`), so book
-membership is what `ls writing/.book` shows, and the writing that is not site content
-(the dissertation, talks, exams, research statement) is excluded simply by not being
-linked in. Edit the real file under `writing/`; the symlink is only how Quarto reaches it.
-
-- **Local site** — http://lattice-research.localhost/, served by nginx from
-  `/var/www/static-sites/lattice-research`, which is a symlink straight at
-  `writing/.book/_site`. `just docs-deploy` rebuilds it: the gate runs first, so a book
-  with a broken citation or a dangling reference never reaches the served copy. Local site updates use an explicit docs-deploy; the push gate does not render
-  or deploy. GitHub Pages has a separate push-triggered docs workflow. The dashboard picks
-  the site up on its own — it lists every directory under `/var/www/static-sites` that
-  has an `index.html`, and takes the card's name from that page's `<title>`.
-
-- **Local preview** — `just docs-preview` serves `writing/.book` at http://localhost:7654/
-  with live reload, for the annotation loop below and for tight edit-and-look work. Run
-  it when you want it and stop it when you are done: it is not a service, and `docs-check`
-  refuses to start while it is running, because the two renders write the same
-  intermediate paths and corrupt each other.
-
-- **Published site** — GitHub Pages at https://dzackgarza.github.io/research/ (`build_type: workflow`, branch `main`), deployed by `.github/workflows/docs.yml`. The site-url is recorded in `_quarto.yml` (`book.site-url`). The lattice database is published separately, at https://dzackgarza.github.io/lattice-database/, from its own repository.
-
-- **GitHub wiki** — the repo's native GitHub wiki is **disabled** (no `wiki/` ref exists; `hasWiki: true` in API but no commits).
-  Do not conflate "the wiki" (historical name for the docs book, migrated via PR #272 "wiki-book-migration") with the GitHub wiki feature.
-  The book under `writing/` is the wiki's successor.
-
-A push of `main` that changes `writing/` triggers `docs.yml` and redeploys Pages; local edits do not appear on the published site until pushed.
-
-The two gates read different bibliographies. `just docs-check` copies `~/.pandoc/bib/references.bib`, the working copy of the `pandoc-config` clone; `docs.yml` clones that repository's `main`. While the working copy holds an uncommitted bib edit, the local gate and the CI gate disagree on which citation keys are undefined.
-
-## Annotation feedback loop
-
-The user delivers docs feedback by annotating the rendered pages in the browser; the `annotate` CLI turns those annotations into a committed batch the agent acts on.
-The CLI is not installed on `PATH` (`/bin/annotate` is an unrelated tool) — it is the `uvx`-installable console script from the Hypothesis fork at `~/gitclones/hypothesis-fork-project/hypothesis-review`, always invoked as:
-
-```bash
-uvx --from ~/gitclones/hypothesis-fork-project/hypothesis-review annotate <subcommand>   # run from ~/research
-```
-
-`<subcommand>` is `wait` / `pull` / `slice` / `record` / `resolve` / `status` / `doctor`; the steps below name it bare for readability.
-One cycle:
-
-1. **Serve** — `just docs-preview` runs in the background on `:7654`.
-
-2. **Open a session** — from `~/research`, `annotate doctor` first confirms readiness (inside a git repo, `h` API + Postgres reachable), then `annotate wait` records the open timestamp locally and blocks, serving the loopback session-close endpoint on `127.0.0.1:8902`, waiting for the browser.
-   A *session* is a time window.
-   Run it as a background job so the agent can keep working while the window is open.
-   **Spawn `annotate wait` with `notifyOnExit: true`** (or the equivalent exit-notification flag on your PTY/spawn tool) so that when the user hits **Send to agent** and `wait` exits, the agent receives the completion signal automatically instead of having to poll.
-   Do not poll with `pty_read` + sleep loops to detect completion; wait for the exit notification.
-
-3. **Annotate** — over the `:7654` pages, the user highlights spans and writes comments via the Hypothesis client, then hits **Send to agent**. That closes the window and unblocks `wait`.
-
-4. **Record + deliver** — `wait` collects every annotation created during the window, appends them to `feedback/ledger.jsonl`, commits (`feedback: record N annotation(s) …`), *then* drains them from `h`, and prints the batch JSON. **Record-before-drain is the safety property**: feedback cannot reach the agent unrecorded, and a failed write leaves the notes in the sidebar rather than deleting the only copy.
-   (`pull` does the same for an already-open session; `slice`+`record` capture ad-hoc notes made outside a session.)
-
-5. **Act (agent)** — read the batch / ledger.
-   **Discuss before editing.** An annotation identifies a concern; it is not an implementation instruction.
-   Before changing any artifact, discuss the intended update with the user and obtain explicit approval.
-   For mathematical feedback, establish the correct theory and the source that states it before proposing prose.
-   Do not make a reflexive local correction from the quoted span or from memory: confirm that the proposed change fits the document's global mathematical story.
-
-   Each entry's `uri` (`localhost:7654/category-theory/Roadmap.html`) plus the normalized `TextQuoteSelector.exact` pin the exact source span → map to `writing/category-theory/Roadmap.md` and apply the edit.
-   Hot-reload re-renders each touched page live: the tight edit → one reload → look cycle.
-
-6. **Resolve** — `annotate resolve` tags the batch acted via the Hypothesis API, dropping it from the open set (`annotate status` shows open vs. acted).
-   Commit the doc edits alongside the already-committed ledger so git history anchors each note to the state it landed against.
-
-7. **Reopen** — `annotate wait` again for the next window (with `notifyOnExit: true`). Back to step 2.
+Before you build, preview, or deploy the docs book, or act on browser annotations, read [docs hosting and annotation](docs/agents/docs-hosting-and-annotation.md). It covers the local site, the live preview, GitHub Pages, the two bibliographies, and the `annotate` feedback cycle.
 
 # Work-selection discipline (always-on)
 
@@ -1005,185 +891,16 @@ arriving destroyed the measurement the correction was about.
 
 # Repository layout
 
-Top-level directories (this is a navigational map; each tree owns its own README/AGENTS.md):
+Before you add, move, or import code, read [the repository layout](docs/agents/repository-layout.md). It maps the top-level directories, gives the rule that makes each kind of code importable in a Sage notebook, explains the `just tags` source index, and records the earlier attempts at the same substrate. These rules from it apply to every task:
 
-- **`computations/`** — the working computational corpus.
-  Its `experiments/` subtree holds the **spikes** (see the lineage note below and *QC integration for spikes*). Other subdirs are task-specific: `vendor/` (third-party code — see below), `coxiter/` (CoxIter tool integration), `enriques-moduli/` + `enriques-paper-artifacts/` (Enriques-surface moduli work), `notebooks/` (**the user's plane — see below**), `scripts/` (one-off and exploratory scripts — **the only `scripts/` dir; it is QC-exempt**, and is where exploratory code is relocated to de-scope it from the strict gates; holds `components/`, the reusable computation pieces such as the `coxeter-vinberg/` prototypes, relocated here in `746595e`, and the exploratory `lattice-orbits/` isotropic-orbit scripts), `reports/` (generated output).
-
-- **`src/`** — the installable package (`dzack_research`). The session preamble is `src/dzack_research/preamble/`; `from dzack_research.preamble.all import *` is the session import. The mathematical library lives in [sage-extensions](https://github.com/dzackgarza/sage-extensions) (`sage_extensions`), a git dependency on its `main` head. Non-mathematical repository tooling that analyzes or generates source artifacts lives under `src/dzack_research/utilities/` and is not part of the preamble session surface. **Migration criterion:** code lives in a spike until it has matured past spike status and is usable for real research — demonstrated by *shipped, tested, high-level notebooks* that do actual work with it.
-  Only then does it migrate here, and the move is the semantic statement that it is meant to be shared and reused.
-  Do not promote code into `src/` because it looks finished; promote it when a notebook proves a researcher can use it.
-
-- **`computations/`** is the JupyterLab `root_dir`, so the live research control surface opens at the computational workspace rather than at `$HOME` or only the notebook subtree.
-- **`computations/notebooks/`** — **the user's notebook audit and control plane, not agent work.** It is not subject to QC, to layout conventions, to naming or taxonomy rules, or to agent tidying: no agent proposes reorganizing it, splitting it, imposing folder schemes on it, or holding its contents to the standards that govern `src/` and the spikes.
-  Agents write here only when explicitly asked.
-  What agents *may* do is make things reachable from it — see the symlinks below.
-
-  Reachability is by symlink, verified working through the live server (list, open, save, delete all round-trip to the real path, no restart needed):
-
-  - `archive/` → `archives/notebooks/` — the retired notebooks, still live reference material
-
-  Symlinking is preferred over moving: the originals stay in the tree that owns them (archive stays QC-exempt), while the control plane can see everything.
-
-  **Implicit typesetting:** a bare `X` at the end of a cell renders as LaTeX when Sage can genuinely typeset `X`, so `show()` is not needed for ordinary inspection.
-  Explicit `show()` still works and is still worth writing where the intent is presentation rather than inspection.
-
-  The source of that behaviour is **`sage-init.sage` at the repo root** — tracked here, because it is part of how this repo's notebooks are meant to read. It loads `dzack_research.preamble.all`.
-  It becomes active only by being linked to Sage's startup file:
-
-  ```
-  just sage-init-install   # links ${DOT_SAGE:-~/.sage}/init.sage -> sage-init.sage
-  just sage-init-check     # proves in a real kernel that Sage objects typeset and plain text does not
-  ```
-
-  `sage-init-install` is idempotent and refuses to replace anything it did not create, including a symlink pointing elsewhere — a pre-existing `init.sage` is never clobbered.
-  Sage reads that one file for the terminal REPL *and* every Jupyter kernel, so installing it once covers both with nothing to remember per notebook.
-
-  It is deliberately *not* `%display latex`, which also typesets strings, numpy arrays and opaque objects into unreadable character-by-character fallbacks; the file's own header comment records the measurements behind that choice.
-  Being a tracked `.sage` file it is in Sage QC scope: it passes `_sage-syntax` (the commit tier) and draws no vulture findings.
-
-- **`computations/vendor/`** — **third-party code you did not write.** Clone or drop external scripts here and they are importable from every Sage process (CLI, `sage -python`, every Jupyter kernel) with no restart and no registration; see its README. Contents are gitignored, and `vendor` is already a globally QC-excluded directory name, so external code never enters the gates.
-  Nothing authored here ever graduates — write your own code in a spike.
-
-**How code becomes importable in a Sage notebook.** One rule per kind, no bespoke path plumbing:
-
-| Kind | Home | Made importable by |
-| --- | --- | --- |
-| External, published | — | `sage -pip install <pkg>` (or `sage -pip install "<name> @ git+<url>"` when it has no PyPI wheel, as `ore_algebra` does) |
-| External, unpackaged | `computations/vendor/` | drop it there; `sage-init.sage` puts it on `sys.path` for interactive sessions |
-| Ours, spike | `computations/experiments/<name>_spike/` | `sage -pip install --no-deps -e <spike-dir>` (already done for both spikes; edits are live) |
-| Ours, graduated | `src/dzack_research/` | `sage -pip install --no-deps -e .` (already done; edits are live) |
-
-Editable installs point at the working tree, so a rebuilt or reinstalled Sage is the only thing that breaks them — re-run the two `-e` installs and check the vendor path with `sage -c 'import _vendor_selfcheck'`.
-
-- **`tests/`** — the expectation suite (`tests/constructions/`, `tests/user_simulations/`, `tests/conftest.py`) and the tests of the research tooling. The implementation tests, the test lint, the suite budget and the coverage recipes live in sage-extensions.
-  The archived preamble's tests travelled with it to `archives/preamble/tests/`.
-  Spike tests live in each spike's own `tests/` tree.
-  `projects/lattice-research/` is a **git submodule** (`dzackgarza/lattice-research`) and contains `category_specs/` (see lineage note), plus `src/`, `theory/`, `lean/`, `paper/`, `tests/`, `reports/`. Because it is a submodule, edits there are commits to a *separate* repo.
-
-- **The lattice database** — the catalogue of lattices, one record per lattice, and its site, live in their own repository, `dzackgarza/lattice-database`. It imports this preamble from research's `src/`, so a preamble change can break its build; its nightly `verify` workflow checks it against `research` `main`. Its `AGENTS.md` owns the rule that it stores every computation about its lattices.
-
-- **`writing/`** — authored prose: the Coble paper draft and research notes, oral exams, research statement, talks.
-  The user's durable authored artifacts — preserve native LaTeX/tikz source.
-
-- **`notes/`** — research notes (`computations/`, `papers/`, `topics/`). The terminology-drift dictionary is **not** here; it is vault-owned at `.agents/references/terminology-dictionary.md` (see the banned-language index above).
-
-- **`references/`** — external inputs: `pdfs/`, `generated-indexes/`, `local-system-dependencies/`.
-
-- **`archives/`** — retired material (`provenance/`, `preamble/`, `lattice-research/`, `notebooks/`).
-
-## Source index (ctags)
-
-`just tags` writes a Universal Ctags index of `src/` to `tags` at the repo
-root. Use it to find where a class, method, or function is defined, instead of
-searching the tree by name. Every entry carries a `class:` scope field, which
-tells apart the many same-named methods the category tree holds — 403 tags for
-`__init__`, 243 for `super_categories`.
-
-The file is gitignored. It goes stale as soon as a definition in `src/`
-changes, so run `just tags` yourself before you trust it. The run takes about
-0.1 seconds.
-
-## category_specs and the absorbed spikes (prior attempts at the same substrate)
-
-The goal — a mathematically-semantic, Sage-compatible substrate for exact lattice/surface computation — had three earlier attempts, all finished as separate surfaces:
-
-- **`projects/lattice-research/category_specs/`** — the older, more ambitious attempt, **frozen prior art**: read it for design intent only. Parity-audit issues (#26/#84/#85 …) citing `category_specs/…` paths point at this frozen surface.
-
-- **The spikes** (`sage_lattice_category_spike`, `sage_lattice_feature_spike`) — the second attempt — were absorbed into the preamble and deleted on 2026-08-19 (PLAN-spike-absorption-workstreams; the migration commits' bodies record each notion's origin and synthesis). Git history is their archive; do not expect their directories to exist.
-
-- **The archived preamble** — the third attempt — was archived on 2026-08-30 at `archives/preamble/`.
-- **The live preamble** is `src/dzack_research/preamble/`. `from dzack_research.preamble.all import *` is the session import. Its mathematics is [sage-extensions](https://github.com/dzackgarza/sage-extensions) (`sage_extensions`).
+- **`computations/notebooks/`** is the user's notebook audit and control plane, not agent work. Agents write there only when explicitly asked.
+- **`computations/vendor/`** holds third-party code you did not write. Nothing authored there ever graduates — write your own code in a spike.
+- Code migrates into **`src/`** only when shipped, tested, high-level notebooks prove a researcher can use it.
+- **`projects/lattice-research/`** is a git submodule. Edits there are commits to a separate repo.
 
 # Issue-tree and milestone policy (research repo)
 
-## Execution order
-
-Minimize the work needed to complete the full required programme, including
-implementation, verification and rework. Rank work by its mathematical consequence
-and the later work it removes before sorting dependencies. The default
-priority is: shared wrong answers and failed constructions; reusable operations
-that unblock named computations; required mathematical capability; broad audits,
-interface normalization, typing and cleanup; then optional extensions. State the
-concrete consumer or repeated implementation avoided when promoting a refactor.
-An architectural label, scanner score, issue count or small task size is not a
-payoff. A historical report requires current-source confirmation at selection.
-
-Before selecting a repair, inspect the scheduled changes to its owner and callers.
-If a later construction or refactor replaces that code or changes the required
-interface, advance that shared change and its prerequisites. Implement the repair
-on the resulting owner. Record the affected issue numbers, source paths and work
-saved in the owning issue. A smaller immediate patch earns priority only when it
-is needed to perform the shared change or has an independent result that survives it.
-
-After a shared change, compare each affected issue's full requirements with the
-delivered result. Work already discharged becomes a closure check; retain and
-schedule any remaining requirements. Preserve the original acceptance obligations.
-Reassess this order when source or dependencies change. Observed workflow costs
-that recur across required tasks can justify early repair on the same basis.
-
-Split a concrete correctness repair out of a whole-repository survey when the
-survey would delay it. Preserve both contracts and make the survey depend on
-the repair. Performance work moves forward only for a measured obstruction to
-a named computation. A constructor that cannot produce its mathematical object
-is a correctness failure, distinct from a general construction-cost survey.
-
-Global API freeze and aggregate acceptance do not supply mathematical inputs to
-independent feature computations. Keep the actual construction dependencies;
-retain every owner-local assertion and the full final acceptance obligations.
-The native order at issue #46 records the current payoff assessment. Milestone
-numbers identify scopes and do not impose a numerical execution order.
-
-Native sub-issue order is the execution priority. `itree next` selects the
-first ready work unit in depth-first order; it does not propagate a consumer's
-priority to its prerequisites. When adding or moving a task, place each open
-prerequisite before its consumer. For a grouping issue, place its prerequisites
-before the whole subtree. A grouping issue must never block on a descendant.
-Move a prerequisite branch earlier when necessary; do not add dependency edges
-merely to express priority.
-
-Required repairs precede optional extensions. A construction consumed by required
-work is required too: preserve its full contract and place it in the required
-milestone. Acceptance issues depend on all required branches they claim to
-accept. Construction and loading defects precede the acceptance that exercises
-them. Shared primitives retain their own acceptance; a port consumer does not
-gate their closure.
-
-Validate both the dependency graph and the native traversal order. A clean
-`itree doctor` establishes structural consistency, not agreement with these
-priorities. Check that every open blocker precedes its consumer, no ancestor
-blocks on its descendant, required tasks have no optional prerequisites, and
-each acceptance issue reaches all work in its stated scope, including required
-tasks moved to another milestone for execution. An acceptance task can follow
-its inputs in a later milestone without losing any of those obligations.
-
-## Milestone scope
-
-This is a research repository with a much longer work horizon, more detailed planning, and more human check-ins than a typical software project.
-Naive software-geared structural rules (e.g. itree's W040 native-milestone mirror) are less applicable here: treat such findings as a flag to investigate whether *some* consolidation is warranted, never as a mandate — and never collapse the tree or milestones by an order of magnitude to satisfy one.
-The itree issue tree is authoritative; native GitHub milestones are capability-level human-review checkpoints created just-in-time (user ruling 2026-07-11; W040 = 46 is accepted as-is).
-
-The `needs-research` label is the parking state — work parked pending investigation or upstream capability — not a register of decisions awaiting the user.
-Do not enumerate labeled issues as "open human decisions"; genuine decisions are extracted through decision-register sweeps (see #97) and recorded as rulings on the issues, the gap ledger, and plan cards.
-
-## Where in-progress ideas live
-
-Ideas are not all issues yet.
-An agent that searches only the issue tree will miss live thinking and re-derive it badly.
-
-- **GitHub Discussions** hold ideas still **in flux**: competing framings, pasted prompt responses to be reconciled, designs whose scope has not settled.
-  A discussion is a thinking surface, not a decision — nothing in one is authoritative, and implementation requires a scoped issue.
-  Live example: #217 (*Bridging Lean to computational backends*, Ideas category).
-
-- **Issues** hold ideas that have a scope, carrying the label that names their state: `draft` (the scope itself is provisional; expect the body to change), `research` (empirical research or evaluation required before implementation), `needs-research` (parked — above), `needs-planning` (scope known; decomposition or an executable plan required before implementation).
-
-The pipeline is one-directional: **a discussion is crystallized into an issue once its scope stops moving**, and everything downstream — implementation research, decomposition into work units, proof obligations, completion claims — is carried out on the issue tree, never in the discussion.
-Link the discussion from the issue and leave it in place as the rationale trail; the development of an idea, including its retractions, is the record of why the scope is what it is.
-Do not delete it or summarize it away.
-
-Practical consequences: when picking up a topic, search discussions as well as issues.
-When a discussion has stabilized, the next action is to file the issue, not to keep commenting.
-When a discussion is still moving, do not manufacture an issue to make it look tracked.
+Before you select, order, add, or move issues or milestones, read [the issue-tree and milestone policy](docs/agents/issue-tree-and-milestones.md). It gives the execution order, the milestone scope, and where in-progress ideas live (GitHub Discussions and labeled issues).
 
 # QC integration
 
@@ -1207,35 +924,7 @@ own entrypoints and are not invoked by root commit/push gates.
 
 ## Adding a new spike
 
-Create `computations/experiments/<spike_name>/` with:
-
-1. **`justfile`** delegating to the global Sage QC (this is the whole file):
-
-   ```justfile
-   export PYTHONDONTWRITEBYTECODE := "1"
-
-   test:
-       @just -f ~/ai-review-ci/justfiles/sage.just -d . test
-
-   test-ci:
-       @just -f ~/ai-review-ci/justfiles/sage.just -d . test-ci
-   ```
-
-   Pure-Python spikes delegate to `python.just` instead.
-   Run `just -f ~/ai-review-ci/justfiles/sage.just setup` for the full wiring contract; the QC preflight prints the exact fix for anything missing.
-
-2. **`pyproject.toml`** — minimal `[project]` with `name`, `version`, and `requires-python = ">=3.14"` (QC installs the spike editable for mypy).
-
-3. **Package importability** — the spike directory is a package (`__init__.py`). For shells and tests the repo `.envrc` puts `computations/experiments` on `PYTHONPATH`. **Notebook kernels do not inherit that** — the systemd unit runs `direnv exec /home/dzack`, which loads `~/.envrc`, not the repo's. Kernels get the spikes from `sage -pip install --no-deps -e <spike-dir>`, which is the durable mechanism; see the importability table under *Repository layout*. A new spike needs that one install, once.
-
-4. **Tests as `.sage` files** (`tests/**/test_*.sage`) so the Sage preparser converts integer literals to `Integer`/`Rational` before pytest collects them.
-   Never commit generated `*.sage.py` preparse artifacts — they are gitignored; QC preparses into a tempdir itself.
-
-5. **Environment** — `SAGE_BIN` is exported by the repo `.envrc`; nothing per-spike.
-   Tests execute under Sage's own Python (which has pytest), not a uvx CPython.
-
-Code in spikes is held to the global strict gates (ruff, strict mypy, pytest at commit; vulture/coverage/slop stack at push).
-QC tool configs are owned centrally in `~/ai-review-ci` — never add local ruff/mypy/coverage config to a spike.
+Before you create a directory under `computations/experiments/`, read [adding a spike](docs/agents/adding-a-spike.md).
 
 # Review Guidelines
 

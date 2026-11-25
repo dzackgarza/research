@@ -1,7 +1,7 @@
 # vendor
 
 Drop point for third-party Python code you want importable from Sage sessions.
-This is the *external* tier; see the table in `AGENTS.md` under "Repository layout"
+This is the *external* tier; see the table in `docs/agents/repository-layout.md`
 for the other three (published external, spike, graduated `src/`).
 Nothing you author belongs here — code you write starts in a spike.
 

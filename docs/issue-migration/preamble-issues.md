@@ -1,14 +1,14 @@
 # Preamble work issues
 
 Implement issue work directly on `main`. Use a branch only when parallel work
-requires a separate worktree. The [delivery policy](CONTRIBUTING.md#delivery-workflow)
+requires a separate worktree. The [delivery policy](../../CONTRIBUTING.md#delivery-workflow)
 overrides `itree next`'s generic instruction to open a PR.
 
 The roadmap is [the ordered research issue tree, #46](https://github.com/dzackgarza/research/issues/46); its milestones route to `Phase:` issues under [sage-extensions#14](https://github.com/dzackgarza/sage-extensions/issues/14), which hold the work units (`itree next dzackgarza/sage-extensions`). Order minimizes the work needed to complete the required programme, including rework. Shared correctness and construction, reusable mathematical operations, and required capability normally precede broad reviews and final acceptance. Advance a shared change when it removes or shortens named later repairs; reassess those repairs against their full acceptance after delivery. Performance and workflow repairs move earlier for observed costs on required work. Optional work follows required work.
 
-[AGENTS.md](AGENTS.md#execution-order) states the payoff and dependency rules. Milestone numbers retain their identities; native sibling order determines execution. Task contracts, hypotheses, specimens, acceptance and dependencies live in the issues. This file maps the former source identifiers to their current owners.
+[The issue-tree and milestone policy](../agents/issue-tree-and-milestones.md#execution-order) states the payoff and dependency rules. Milestone numbers retain their identities; native sibling order determines execution. Task contracts, hypotheses, specimens, acceptance and dependencies live in the issues. This file maps the former source identifiers to their current owners.
 
-[INTENT.md](INTENT.md), [AGENTS.md](AGENTS.md) and [CONTRIBUTING.md](CONTRIBUTING.md) govern implementation. Issue [#414](https://github.com/dzackgarza/research/issues/414) retains the shared execution contract. Terminal acceptance [sage-extensions#238](https://github.com/dzackgarza/sage-extensions/issues/238), including its continuation comments, and required-extension acceptance [sage-extensions#240](https://github.com/dzackgarza/sage-extensions/issues/240) retain their complete obligations.
+[INTENT.md](../../INTENT.md), [AGENTS.md](../../AGENTS.md) and [CONTRIBUTING.md](../../CONTRIBUTING.md) govern implementation. Issue [#414](https://github.com/dzackgarza/research/issues/414) retains the shared execution contract. Terminal acceptance [sage-extensions#238](https://github.com/dzackgarza/sage-extensions/issues/238), including its continuation comments, and required-extension acceptance [sage-extensions#240](https://github.com/dzackgarza/sage-extensions/issues/240) retain their complete obligations.
 
 Concrete repairs extracted from broader surveys are [minimal-prime loci sage-extensions#87](https://github.com/dzackgarza/sage-extensions/issues/87), [indexed-family equality sage-extensions#90](https://github.com/dzackgarza/sage-extensions/issues/90), [Coxeter construction #563](https://github.com/dzackgarza/research/issues/563), and [spinor-generator accumulation #564](https://github.com/dzackgarza/research/issues/564). Their original surveys or inventories depend on these repairs.
 
