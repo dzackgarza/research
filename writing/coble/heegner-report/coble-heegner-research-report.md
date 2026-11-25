@@ -2982,7 +2982,7 @@ The table lists each statement, whether it is proved, and the section that prove
 | Polarized Coble Coxeter diagrams | the lattice is one, $I_{1,8}(2)$, at every cusp (@thm:one-cusp-lattice); the folded diagrams at the four stabilizer images are not established | @sec-coxeter |
 | The tuple of integral-affine data | defined; realization open | @sec-coble-integral-affine-tuple |
 | Direct dlt and stable-model theorem | open | @sec-coble-dlt |
-| Exact Coble semifans | established at the four $0$-cusps of $\bD(T_\Co)/R_{\gent}$ by restriction, the marking inherited (the $0$-cusps of $F_{\Co,2}$ sit over them, splitting open); no marking at the one $0$-cusp of $F^{\mathrm{un}}_\Co$ | @sec-direct-semifans, @sec-coble-pair-semifan |
+| Exact Coble semifans | established at the four $0$-cusps of $\bD(T_\Co)/R_{\gent}$ by restriction, with the effective marking given by @thm:semifan-restriction (the $0$-cusps of $F_{\Co,2}$ sit over them, splitting open); no marking at the one $0$-cusp of $F^{\mathrm{un}}_\Co$ | @sec-direct-semifans, @sec-coble-pair-semifan |
 | Normalization of the Heegner KSBA closure | target theorem | @sec-heegner-target |
 | Target theorem B, clause by clause | clause 1 refuted for the memberwise chamber datum (@qst:chamber-subscript-image); clauses 2 to 6 and the canonical isomorphism at the head of the statement are separate questions | @sec-heegner-target |
 
