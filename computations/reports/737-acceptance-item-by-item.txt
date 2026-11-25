@@ -24,3 +24,124 @@ Verification supporting these two verdicts:
   * python3 scripts/docs_check.py --source: no finding on the touched page or on DH23; exit 1 on unrelated pre-existing findings elsewhere.
   * git diff --check: passed; theorem/proof div blocks: 73 open and 73 close.
   * The full Quarto render was not run because uvx is absent. Plain Pandoc parsed the file but emitted expected warnings for the book's custom TeX macros, so this is not counted as a render check. The public Sage/workflow computations and engineering pytest suite were not rerun; this was a mathematical/source review and the retained complete finite computation's method was read.
+
+================================================================================
+Round after the cor:sign-sensitive-splitting repair.  Page read at main
+97b340e87a1ef19a29380a0c81fe126d6c938507 (commits 1eddea9eed, 97b340e87a on 59617433dc).
+The record above is the round at 6be90fe4c7 and is kept as written.  The list below is
+this round's, read against the issue's original question first.  It is a worker's audit
+and is not acceptance; item K is the independent read, and it is not met.
+================================================================================
+
+ORIGINAL QUESTION (issue body, [derived from stage 1]): for an even lattice L, a primitive
+isotropic vector or plane x of L and a group Gamma with Otilde(L) <= Gamma <= O(L), the
+Gamma-orbits in the O(L)-orbit of x correspond bijectively to the double cosets
+rho(Gamma)\rho(O(L))/rho(Stab_{O(L)}(x)), and the flag orbits are assembled over the plane
+and line orbits.
+Objects: even lattice L, primitive isotropic vector, line, plane, flag.  Group: Gamma with
+Otilde(L) <= Gamma <= O(L).  Statement: the orbit-fibre formula and the flag assembly, in
+general.
+  1. Same objects: MET.  thm:descent-double-coset (:82) is stated for all four object types
+     with their data (class, cyclic subgroup, isotropic subgroup, chain); lem:descent-
+     subobject-data (:68) proves the data are well defined and equivariant for each.
+  2. Same groups: MET with one recorded correction.  The page proves the reduction under
+     K = ker rho_{L,q} <= Gamma (:82 proof, :112, cor:descent-full-orbit-double-coset :101),
+     and proves the unreduced formula Gamma\Orth(L)/Stab for every subgroup with no kernel
+     hypothesis.  The hypothesis Otilde(L) <= Gamma is neither needed for the unreduced
+     formula nor sufficient for the reduction: at L = T_Co with Gamma = Otilde^+(T_Co) the
+     kernel is not contained (rmk at :1055, prop:descent-inputs-enriques-coble(2a) :329-:330).
+     Every use on the page has K <= Gamma (prop:descent-inputs-enriques-coble :321, rmk at
+     :1055; cor:coble-heegner-integral-plane-descent :357 states the inclusion explicitly).
+  3. General statement, not a case: MET.  no L, no lattice-specific hypothesis and no
+     Eichler criterion enters thm:descent-double-coset, prop:descent-spinor-fibre or
+     prop:line-plane-incidence; prop:descent-eichler (:1060) is the only U + U_1
+     input on the page and is used by nothing.
+
+ACCEPTANCE ITEMS.
+
+A. Full-orbit fibre formula proved, all primitive isotropic objects, flag incidence.
+   MET.  thm:descent-double-coset (:82), cor:descent-full-orbit-double-coset (:101, via
+   [@SH23, Lemma 3.6] at :112), lem:flag-datum-compatibility (:154), lem:chain-stabilizer
+   (:185), prop:flag-incidence-bijection (:252), prop:line-plane-incidence (:291).
+
+B. Separately proved spinor criterion.  MET.  prop:descent-spinor-fibre (:123), with the
+   full-orbit index and the unreduced fixed-fibre double cosets separated at :129-:132.
+
+C. Sign-sensitive corollary repaired; full-orbit and fixed-fibre statements consistent;
+   every group action and character index proved.  MET.  lem:sign-kernel-orbits (:930, with
+   proof) proves [chi(A):chi(Stab_A(x))]; cor:sign-sensitive-splitting (:948) states the
+   full orbit at Gamma and the fixed fibre at Gamma_D = Gamma cap rho^{-1}(Stab_Q(D)), with
+   the exact fibre-preservation criterion rho(Gamma) <= Stab_Q(D) <=> Gamma_D = Gamma
+   (:960, proved at :977); :965 gives the U(2) fibre at which the global index is two
+   and the restricted index one, computed at :995-:998; :999 records that the old count is
+   false there.  The old
+   statement, which quantified over Gamma-orbits contained in a fixed-datum fibre and
+   counted Gamma_1-orbits in it, is gone; the pre-repair text is 4aa55b0 lines 930-946.
+
+D. The U(2) witness present and checked.  MET.  ex:sign-sensitive-splitting-u2 (:982):
+   O(U(2)) = {+-id, +-swap} proved at :993 and confirmed by exhaustive search over 2x2
+   integer matrices with entries in [-2,2]; D(Z e) = <[e/2]> and D(Z f) = <[f/2]> distinct
+   (:989-:991); swap exchanges them, ker rho_L = {+-id} fixes both (:993); det trivial on
+   Gamma_D = {+-id} at :997-:998.
+
+E. thm:joint-double-coset audited against its hypotheses.  MET.  item 1 (:882) no longer
+   attributes the Gamma_1-orbits of a fixed-datum fibre to a group that need not preserve
+   it: it states the A_1-orbits, A_1 = Gamma_1 cap rho^{-1}(F), with the preservation
+   condition displayed; proof sentence at :906 corrected; item 4's fixed-fibre criterion
+   (:897-:901) unchanged and consistent.  The theorem is not used outside the page (no
+   other file in writing/ cites it).
+
+F. prop:line-plane-incidence audited.  MET without change: necessity (:296) uses only
+   equivariance and containment; sufficiency (:305) is the datum-fibre transitivity
+   hypothesis at the line level; item 3 (:299) rests on lem:zero-datum-divisibility (:215)
+   and the containment 0 <= D(P) is explicitly not used.  It assumes no datum is fixed by
+   the arithmetic group.
+
+G. prop:descent-inputs-enriques-coble audited; Enriques and Coble hypotheses invoke proved
+   integral stabilizer and transport results.  MET after repair.  1a lem:line-stabilizer-
+   image; 1b thm:enriques-integral-plane-stabilizers; 1c thm:enriques-spinor-orbit-
+   agreement, extended at :340 to vectors; 1d thm:enriques-degree-two-arithmetic(1),(3),
+   (4) with lem:zero-datum-divisibility; 2a-2b thm:coble-plane-stabilizer-image(4),(5);
+   2c now routed through thm:cusp-lifting(1)-(4) with the two hypotheses separated (:346),
+   not through a "part 4 hypothesis" the theorem does not state; 2d
+   prop:coble-arithmetic-flag-incidence(2).
+
+H. cor:coble-heegner-integral-plane-descent audited; not just finite enumeration.  MET.
+   :357 checks Otilde^+(T_Co) <= ker rho <= Gamma, which is the hypothesis of both
+   thm:cusp-lifting and thm:coble-integral-lifting-fibre; the seven and thirteen are then
+   the G_Co-orbits of the proved integral lifting, with item 2 of that theorem (S_x = F_D)
+   supplying one lattice orbit per finite datum.  Statement unchanged; the corollary is
+   cited by name on five other pages (cusps-over-sterk-cusps, coble-heegner-research-report,
+   integral-line-and-plane-lifting, lattices, the-heegner-line-and-the-coble-arithmetic-
+   group) and none of them changed.
+
+I. Sources checked.  MET.  [@SH23, Lemma 3.6] read in arXiv:2302.01679v2: "U a normal
+   subgroup and K, H two subgroups of G such that U is contained in K"; the page applies it
+   with U = K = ker rho and K (their) = Gamma, so the containment is the page's K <= Gamma.
+   The key DH23, used before this commit, is not in the bibliography: replaced by SH23, the
+   entry integral-line-and-plane-lifting.md names.  Numbered Sterk citations on the page are
+   [@Ste91, §4.3.16] inside prop:descent-inputs-enriques-coble(1d), whose content is
+   thm:enriques-degree-two-arithmetic(3),(4); not changed by this commit.
+
+J. One complete mechanism key on main, no new branch or PR.  MET.  main is
+   97b340e87a1ef19a29380a0c81fe126d6c938507; commits 1eddea9eed and 97b340e87a on top of
+   59617433dc; only writing/coble/computations/discriminant-form-descent.md is touched.
+
+K. Independent review of the entire mathematical proof.  NOT MET.  No independent reader
+   has read this repaired page.  This file is the worker's own audit and is not evidence
+   of acceptance; review of the page as a whole is outstanding.
+
+L. Numerical orbit counts, public operations, lattice-database cards, geometric monodromy.
+   NOT CLAIMED by this page and not in this acceptance: they remain under #667, research#748,
+   sage-extensions#294/#286 and lattice-database#7.  Nothing on the page reads a count off a
+   public row; cor:coble-heegner-integral-plane-descent cites the enumeration only after the
+   integral lifting theorem.
+
+M. Checks run.  Block structure of the page balanced (73 opener/closer pairs before this
+   commit, 77 after; zero depth at end).  Every @label introduced (lem:sign-kernel-orbits,
+   ex:sign-sensitive-splitting-u2, rmk:descent-fibre-scope) is defined exactly once in
+   writing/.  NOT RUN: scripts/docs_check.py --source, which exits at
+   "bibliography writing/.book/.assets/references.bib is missing" in this container (the
+   shared ~/.pandoc source of `just docs-assets` is absent), so no citation-key resolution,
+   render, or cross-reference gate was executed here; quarto is not installed.  CI's own
+   gate was not observed.
