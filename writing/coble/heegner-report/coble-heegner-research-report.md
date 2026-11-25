@@ -601,8 +601,7 @@ The problem above is **false as stated**, and it fails in two independent ways, 
 On the one-node locus the labels, the degree-$4$ class and the root are conjugate (@thm:a21-labels), and the chamber clause nevertheless fails: @thm:chamber-clause-fails exhibits two one-node members whose tuples satisfy all five conditions above and whose labels are conjugate, but which no isometry carrying the labels carries one chamber onto the other.
 Independently of any chamber, @prop:node-count-invariant shows that one-node and two-node members of the construction both occur and that no isometry of $\lkt$ carries the tuple of one to the tuple of the other, since the invariant lattice of $I_{\mathrm{dP}}$ has rank $k+2$; so the blanket quantifier over tuples of the construction fails at the one-node/two-node boundary before the chamber is reached.
 
-Of the Coble-to-Enriques instance that A20 item 2 reads this problem for, the lattice labels are settled by an object and not only by an argument: @prop:coble-enriques-ambient-isometry builds $L_{K3}$, the Coble and Enriques primitive embeddings with their marked classes, and the integral isometry of $L_{K3}$ carrying one labelled datum to the other, and checks the labels pointwise.
-That comparison stands on its own; what is withdrawn is its reading as the Coble-to-Enriques instance of a rigidity theorem for the Coble tuple, the statement it would be read from being false.
+For the Coble-to-Enriques instance of A20 item 2, @prop:coble-enriques-ambient-isometry constructs the isometry in the abstract AEGS marking. @thm:reflected-pair-integral-gluing additionally proves that the actual one-node geometric involutions, specified polarization and effective root match the reflected AEGS labels in the entire integral K3 lattice. The uniform chamber-inclusive comparison is nevertheless false: at the explicit split-fibre member the restriction image of its chamber stabilizer is strictly smaller than the Heegner image (@qst:chamber-subscript-image), not merely a smaller ambient centralizer.
 
 ::: {.lemma #lem:one-node-picard-rank title="the invariant lattices of a one-node member"}
 Let $b$ be a one-node member of @prop:one-node-family.
@@ -758,10 +757,10 @@ $$\bigl(r_{++},r_{+-},r_{-+},r_{--}\bigr)(I_{\Co,b},I_{\mathrm{dP},b}) = (3,8,0,
 The multisets $\{10,1,0,11\}$ and $\{3,8,0,11\}$ differ.
 :::
 
-::: {.question #qst:reflected-pair-conjugacy title="the reflected pair"}
-Let $I_{\mathrm{dP}}$ be the del Pezzo involution of [@AEGS25, Def. 2.3], and suppose that $w_\alpha I_{\mathrm{dP}}$ is an involution that commutes with $w_\alpha I_\En$.
-For a one-node member $b$, is there $g\in\Orth(\lkt)$ with
-$$g\,(w_\alpha I_\En)\,g^{-1} = I_{\Co,b},\qquad g\,(w_\alpha I_{\mathrm{dP}})\,g^{-1} = I_{\mathrm{dP},b},\qquad g(H) = H_b,\qquad g(\alpha) = \alpha_b?$$
+::: {.proposition #qst:reflected-pair-conjugacy title="The reflected pair is integrally conjugate, including the effective root"}
+Let $I_{\mathrm{dP}}$ and $I_\En$ be the AEGS involutions [@AEGS25, Def. 2.3, p. 586]. For every one-node member $b$ there is $g\in\Orth(\lkt)$ with
+$$g\,(w_\alpha I_\En)\,g^{-1} = I_{\Co,b},\qquad g\,(w_\alpha I_{\mathrm{dP}})\,g^{-1} = I_{\mathrm{dP},b},\qquad g(H) = H_b,\qquad g(\alpha) = \alpha_b.$$
+The two reflected involutions commute. This is @thm:reflected-pair-integral-gluing, applied in the inverse direction. Its proof uses the actual invariant lattice, its characteristic ramification root, the specified ruling classes and the full graph of the gluing anti-isometry. It is not an assertion of conjugacy with the unreflected AEGS pair (which has different invariant ranks), nor of chamber conjugacy.
 :::
 
 ### The embedded comparison chain {#sec-embedded-chain}
@@ -1081,7 +1080,7 @@ This image is the natural group of a fixed normalized Heegner component once the
 
 ::: {.remark #rmk:labeled-centralizer-chamber title="The chamber in the datum of the labeled centralizer"}
 
-The chamber $\mcc$ is part of the datum of @def:labeled-centralizer-image. It is not an extra label at a member whose Picard lattice is the invariant lattice $S_{\Co,b}$: there the chamber is a function of $H$ and $\alpha$, so every element of the centralizer $Z_{O(L_{K3})}(I_{\Co},I_{\mathrm{dP}})_{H,\alpha}$ preserves it and the group above is the one @prop:direct-eq-heegner computes, $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$. At a member whose Picard lattice is larger the chamber is cut finer and the subscript is a genuine condition on the centralizer (@rmk:chamber-pinned-scope, and @thm:chamber-subscript-is-a-condition for the element that witnesses it); it is not one on the elements that preserve the member's period, which preserve its chamber at every member (@lem:chamber-preserved-on-period). So the group below is the group of a member and not of the labels, and @qst:chamber-subscript-image asks the one thing left about it, whether the condition changes its image.
+The chamber $\mcc$ is part of the datum of @def:labeled-centralizer-image. It is not an extra label at a member whose Picard lattice is the invariant lattice $S_{\Co,b}$: there the chamber is a function of $H$ and $\alpha$, so every element of the centralizer $Z_{O(L_{K3})}(I_{\Co},I_{\mathrm{dP}})_{H,\alpha}$ preserves it and the group above is the one @prop:direct-eq-heegner computes, $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$. At a member whose Picard lattice is larger the chamber is cut finer and the subscript is a genuine condition on the centralizer (@rmk:chamber-pinned-scope, and @thm:chamber-subscript-is-a-condition for the element that witnesses it); it is not one on the elements that preserve the member's period, which preserve its chamber at every member (@lem:chamber-preserved-on-period). So the group below is the group of a member and not of the labels, and @qst:chamber-subscript-image proves that it changes the full image at $b_\star$: the restriction image is the Heegner group intersected with the stabilizer of $\Pic(\widehat X_b)\cap T_\Co$.
 :::
 
 This is the arithmetic group naturally attached to the autonomous lattice datum, provided the labeled rigidity theorem holds.
@@ -1111,8 +1110,7 @@ Prove
 
 Each equality requires a separate argument: global Torelli and parallel transport for the first, labeled embedding comparison for the second, and discriminant-form gluing for the third.
 The third is now settled in the form it can hold in: the block condition on the two gluings is decided affirmatively, so $\Gamma^{\mathrm{Hdg}}_\Co = \Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ (@cor:gamma-hdg-is-congruence, with @prop:coble-block-compatibility), the congruence group exceeding that by the spinor sign of $s_\zeta$ alone.
-The first two are now settled as well. The second's lattice input is @prop:coble-enriques-ambient-isometry, and with the chamber of the datum in place the equality $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2}$ is @prop:direct-eq-heegner. The first is @prob:B25, whose proof identifies the geometric monodromy group with $\Gamma^{\mathrm{dir}}_{\Co,2}$ and the deck group of the cover by markings, a covering of stacks in the sense of [@Noo05, Definition 18.10], with its quotient by $\{\pm\id\}$, using the period image of @prob:B24 (@thm:sign-is-isotropy, @thm:no-loop-carries-the-sign). The four groups therefore coincide with the congruence group intersected with $\Orth^+(T_\Co)$ (@cor:four-groups-decided), the congruence group itself being the union of that group with its $s_\zeta$-coset.
-:::
+The second is decided at both its readings: the four-label image without the chamber is the Heegner group, by @thm:reflected-pair-integral-gluing; at a member with $\Pic(\widehat X_b)=S_{\Co,b}$ the chamber adds no condition, by @prop:direct-eq-heegner. For the actual chamber at the explicit special member, @qst:chamber-subscript-image gives a strict inclusion, so the memberwise equality in the displayed target is false. The monodromy calculation of @prob:B25 uses the arithmetic deck group, equivalently the four-label image or the chamber-preserving image at a generic basepoint. It must not identify that constant (up to conjugacy) monodromy group with the chamber stabilizer of every special member. The Heegner and $\theta$ groups are the component-preserving half of the congruence group, the latter being the union of this half with its $s_\zeta$-coset.
 
 With $\alpha$ the vector $\delta$ of @lem:coble-heegner-vector, $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ is the group $\Gamma^{\mathrm{Hdg}}_\Co$ of @prop:gamma-co-in-heegner-group.
 The images of $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ and $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ in $\Orth(q_{T_\Co})$, their indices over $\widetilde\Orth^+(T_\Co)$, and the condition under which the two groups coincide are @prop:gamma-cong-eq-heegner.
@@ -2173,10 +2171,7 @@ Under this isomorphism:
 :::
 
 Target theorem B is the comparison theorem of @sec-central-problem.
-**Status, clause by clause, and it is a target theorem.** Of the six clauses, the first is decided: the direct and Heegner arithmetic groups agree, at $\Gamma^{\mathrm{dir}}_{\Co,2}=\Gamma^{\mathrm{Hdg}}_{\Co,2}=\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ (@cor:four-groups-decided, with the loop and isotropy readings separated at @thm:no-loop-carries-the-sign and @thm:sign-is-isotropy).
-The other five are not established: the commuting period diagram is @prob:period-diagram, clause four needs the folded diagrams that clause three of Target theorem A owes, clause five needs the descended ramification divisor's identity with the restriction of $R_Z$ and the identification of the marked root (@def:coble-descended-ramification, @warn:coble-marking), and clause six needs clause two of Target theorem A.
-The canonical isomorphism itself, at the head of the statement, is not established either, and nothing in this report proves it.
-Target theorem A is a substantial independent theorem and an intermediate strategy, but it becomes a proof of the Heegner statement only after Target theorem B is established.
+**Status, clause by clause, and it is a target theorem.** The first clause at its stated memberwise chamber reading is false: @qst:chamber-subscript-image gives an explicit obstruction at $b_\star$. The integral reflected label comparison is affirmative (@thm:reflected-pair-integral-gluing); the generic direct group and the chamber-free four-label image equal $\Gamma^{\mathrm{Hdg}}_{\Co,2}=\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$, but this does not establish the original chamber-inclusive equality.
 
 ## Proof strategies and research programs {#sec-strategies}
 
@@ -2364,7 +2359,7 @@ So the three statements stand as written:
 
 1. The target of @def:labeled-centralizer-image, $O^+(T_\Co)$, is the correct one, and the image of the centralizer lies in it (@lem:minus-id-in-labeled-centralizer(2)).
 
-2. @prop:direct-eq-heegner, the paragraph resolving @prob:group-identification, and @cor:four-groups-decided: $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ holds as stated.
+2. @prop:direct-eq-heegner, the paragraph resolving @prob:group-identification, and @cor:four-groups-decided: $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ holds at a generic member with $\Pic=S_\Co$, and not memberwise (@qst:chamber-subscript-image).
 
 3. $-\id_{T_\Co}$ lies in $\Gamma^{\mathrm{cong}}_{\Co,2}$ and in its $\Orth^+$-half, so it forces no identification of the two halves and no equality $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{cong}}_{\Co,2}$; the excess is the $s_\zeta$-coset, and whether $s_\zeta$ equals $-\id$ modulo $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ remains the joint spinor computation of research#751.
 
@@ -2497,25 +2492,19 @@ Multiplication by an element of $W(T_\Co)$ is a bijection of $\Orth(T_\Co)$, so 
 The question of @lem:sign-reduces-to-positive-plane is answered, in the positive: $\epsilon$ and $\iota$ are words in the reflections (@thm:coble-block-sign-in-w), while no loop gives $\iota$ (@thm:no-loop-carries-the-sign).
 :::
 
-::: {.corollary #cor:four-groups-decided title="The four arithmetic groups"}
+::: {.corollary #cor:four-groups-decided title="The four arithmetic groups and the memberwise chamber obstruction"}
 
-$\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2} = \Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$, and $\Gamma^{\mathrm{cong}}_{\Co,2}$ is the union of that group with its $s_\zeta$-coset. The geometric entry is either $\Gamma^{\mathrm{geom}}_{\Co,2}=\Gamma^{\mathrm{dir}}_{\Co,2}$ or $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm1\}$, and the two are separated by which monodromy group is meant: $\Gamma^{\mathrm{dir}}_{\Co,2}$ is the orbifold group of @def:geometric-monodromy (@thm:sign-is-isotropy) and $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm1\}$ is the monodromy of loops over the coarse moduli space (@thm:no-loop-carries-the-sign).
+The Heegner group equals $\Gamma^\theta_\Co=\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$, and the congruence group is the union of this half with its $s_\zeta$-coset. The actual chamber-preserving $\Gamma^{\mathrm{dir}}_{\Co,2}$ equals the Heegner group at a member with $\Pic=S_\Co$, but is strictly smaller at $b_\star$ (@qst:chamber-subscript-image). The arithmetic group used in the orbifold/coarse monodromy comparison of @prob:B25 is the four-label group (the generic chamber group); the original memberwise comparison is false.
 :::
 
-::: {.corollary #cor:g3-g4-decided title="The two comparison entries left untouched: $G_3$ is the geometric monodromy, $G_4$ is strictly larger than it"}
+::: {.corollary #cor:g3-g4-decided title="The Heegner and congruence entries versus the member's direct entry"}
 
-Write $G_1\definedas\Gamma^{\mathrm{geom}}_{\Co,2}$ (@def:geometric-monodromy), $G_2\definedas\Gamma^{\mathrm{dir}}_{\Co,2}$ (@def:labeled-centralizer-image), $G_3\definedas\Gamma^{\mathrm{Hdg}}_{\Co,2}$ and $G_4\definedas\Gamma^{\mathrm{cong}}_{\Co,2}$ — the entries $G_1$ to $G_4$ of the ledger of research#720, whose last two it left untouched. Then
-
-1. $G_1 = G_2 = G_3$. The geometric monodromy group in the sense of @def:geometric-monodromy is the image of the labeled centralizer (@thm:sign-is-isotropy), and $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{Hdg}}_{\Co,2}$ (@prop:direct-eq-heegner).
-2. $G_4\neq G_1$. The congruence group is the union of $\Gamma^{\mathrm{dir}}_{\Co,2}$ with its $s_\zeta$-coset, and $s_\zeta\notin\Orth^+(T_\Co)$ (@cor:four-groups-decided), whereas $G_1 = G_2$ lies in $\Orth^+(T_\Co)$.
-3. Read over the coarse moduli space instead of the stack, the monodromy is $H$, the complement of $\{\pm\id_{T_\Co}\}$ of @thm:no-loop-carries-the-sign, and no one of $G_2$, $G_3$, $G_4$ equals it: $H$ has index two in $G_2 = G_3$ and contains no $-\id_{T_\Co}$, which $G_4$ contains.
+With the notation $G_1=\Gamma^{\mathrm{geom}}_{\Co,2}$, $G_2=\Gamma^{\mathrm{dir}}_{\Co,2}$, $G_3=\Gamma^{\mathrm{Hdg}}_{\Co,2}$, $G_4=\Gamma^{\mathrm{cong}}_{\Co,2}$, we have $G_2=G_3$ at a member with $\Pic=S_\Co$ and $G_2\subsetneq G_3$ at $b_\star$. The inclusion $G_3\subsetneq G_4$ holds, of index two, independently of the chamber. In particular there is no identification $G_1=G_2=G_3$ uniform over all one-node members, even though the monodromy group of a connected family is independent of the chosen basepoint up to parallel transport.
 :::
 
 ::: {.proof}
 
-(1) is @thm:sign-is-isotropy and @prop:direct-eq-heegner composed.
-For (2): $G_4 = \Gamma^{\mathrm{dir}}_{\Co,2}\cup s_\zeta\Gamma^{\mathrm{dir}}_{\Co,2}$ with $s_\zeta\notin\Orth^+(T_\Co)$ (@cor:four-groups-decided), and $\Gamma^{\mathrm{dir}}_{\Co,2} = \rho_{T_\Co}^{-1}(P)\intersect\Orth^+(T_\Co)\subseteq\Orth^+(T_\Co)$ (@prop:direct-eq-heegner), so $s_\zeta\in G_4\setminus G_1$.
-For (3): $H\{ \pm\id_{T_\Co}\} = \Gamma^{\mathrm{dir}}_{\Co,2}$ with $H\cap\{\pm\id_{T_\Co}\} = \{\id\}$ (@thm:no-loop-carries-the-sign), so $H$ has index two in $G_2 = G_3$; and $-\id_{T_\Co}\in\Gamma^{\mathrm{dir}}_{\Co,2}$ (@lem:minus-id-in-labeled-centralizer) lies in $G_4$ but not in $H$.
+The first assertions are @thm:reflected-pair-integral-gluing and @qst:chamber-subscript-image. The index-two assertion follows from @cor:gamma-hdg-is-congruence and the positive-root reflection $s_\zeta\in G_4\setminus\Orth^+(T_\Co)$. These conclusions do not require asserting a new monodromy theorem.
 :::
 
 ::: {.problem #prob:B26 title="B2.6. Direct stable-pair theorem"}
@@ -3003,7 +2992,7 @@ The table lists each statement, whether it is proved, and the section that prove
 | Direct dlt and stable-model theorem | open | @sec-coble-dlt |
 | Exact Coble semifans | established at the four $0$-cusps of $\bD(T_\Co)/R_{\gent}$ by restriction, the marking inherited (the $0$-cusps of $F_{\Co,2}$ sit over them, splitting open); no marking at the one $0$-cusp of $F^{\mathrm{un}}_\Co$ | @sec-direct-semifans, @sec-coble-pair-semifan |
 | Normalization of the Heegner KSBA closure | target theorem | @sec-heegner-target |
-| Target theorem B, clause by clause | clause 1 decided (@cor:four-groups-decided); clauses 2 to 6 not established, and with them the canonical isomorphism at the head of the statement | @sec-heegner-target |
+| Target theorem B, clause by clause | clause 1 refuted for the memberwise chamber datum (@qst:chamber-subscript-image); clauses 2 to 6 and the canonical isomorphism at the head of the statement are separate questions | @sec-heegner-target |
 
 : Statements of the report and the sections that prove or state them. {#tbl-status-ledger}
 
@@ -3169,17 +3158,17 @@ The issue's acceptance is a list, and this section holds it in one place: each e
 |:---|:---|:---|
 | A20 1(a) | met | `computations/reports/coble_a20-owner-capabilities-run.txt`, lines 7 and 23: $T_\Co$ of determinant $-2048$ and signature $(2,9)$, and `discriminant_representation_is_surjective()` returning `True` |
 | A20 1(b) | met | the same transcript, lines 15 and 17--18: the typed isometry to $A_{T_\En}(-1)$, the twisted identity on all $1024$ classes, $1024$ distinct images |
-| A20 1 | met, and the un-intersected statement refuted | @prop:direct-eq-heegner with @cor:four-groups-decided: $\Gamma^{\mathrm{dir}}_{\Co,2}=\Gamma^{\mathrm{Hdg}}_{\Co,2}=\Gamma^\theta_\Co=\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$, the last as the union with its $s_\zeta$-coset; the transcript `computations/reports/coble_a21-ambient-extension-run.txt`, lines 117 and 126 |
-| A20 2 | open | the chamber condition is decided and genuine (@thm:chamber-subscript-is-a-condition), it is linear in the period (@lem:chamber-condition-is-period-condition) and equivalent to preserving the member's Picard lattice (@cor:chamber-preserved-by-picard-stabilizer); what is known of that lattice is @lem:known-part-of-the-picard-lattice-at-the-test-member, which is all of it exactly when $\rho(\widehat X_{b_\star})=12$ (@rmk:divisibility-of-the-difference-class); it waits on that Picard number, which is the image question @qst:chamber-subscript-image, and on the labelled comparison, research#664 |
+| A20 1 | decided at the Heegner/congruence reading; direct memberwise equality refuted | $\Gamma^{\mathrm{Hdg}}_{\Co,2}=\Gamma^\theta_\Co=\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$; generic direct equality and special-member strictness are @cor:four-groups-decided |
+| A20 2 | decided: reflected labels conjugate, chamber-inclusive equality refuted | @thm:reflected-pair-integral-gluing for the actual integral reflected pair and @qst:chamber-subscript-image for the missing restriction at $b_\star$; the exact Picard rank is irrelevant to this counterexample |
 | A20 3 | met | @thm:no-loop-carries-the-sign and @thm:sign-is-isotropy, with @thm:coble-block-sign-in-w for the word; the reduction to the block sign is @lem:sign-reduces-to-positive-plane |
 | #720 (D1) | met, decided false | @cor:d1-minus-two-half for the $(-2)$ half, @thm:d1-minus-four-half for the $(-4)$ half with @cor:d1-concrete-witness, and the record `computations/reports/coble_663-d1-level-orbits-run.txt` |
 | #720 (RI) | met, decided false | @prop:kernel-exceeds-short-roots; the surviving index is @qst:gamma-co-reflection-index |
 | #720 (REL) | met | the block sign and $-\id_{T_\Co}$ lie in $W(T_\Co)$ (@thm:coble-block-sign-in-w, with the $2$-adic computation @lem:coble-2adic-closure-short-roots the odd-local coinvariant record `computations/reports/coble_663-rel-odd-local-perfection-run.txt`, and the spin-lift record `computations/reports/coble_663-rel-spin-lifts-run.txt`), so the block-diagonal section exists (@cor:coble-rel-section); the reduction to the explicit $k\in\Gamma(4)$ (@lem:block-sign-reduces-to-gamma-four) is no longer needed |
 | #720 (INV) | met, decided false | @thm:chamber-subscript-is-a-condition; the part that holds is @lem:chamber-preserved-on-period |
-| #720 $G_3$ | met | @cor:g3-g4-decided, clause (1): $G_3=\Gamma^{\mathrm{Hdg}}_{\Co,2}$ is the geometric monodromy group |
-| #720 $G_4$ | met, decided false | @cor:g3-g4-decided, clause (2): $\Gamma^{\mathrm{cong}}_{\Co,2}$ strictly exceeds it, with the coarse-space reading in clause (3) |
+| #720 $G_3$ | generic direct equality; memberwise identification refuted | @cor:g3-g4-decided; the chamber obstruction is @qst:chamber-subscript-image |
+| #720 $G_4$ | strictly larger than $G_3$ | @cor:g3-g4-decided |
 
-One entry is open: A20 2 waits on an explicit $\Pic(\widehat X_{b_\star})$, which is not in this paper. (REL) is met, by @thm:coble-block-sign-in-w and @cor:coble-rel-section.
+The precise labelled extension question is decided by @thm:reflected-pair-integral-gluing and the full memberwise equality is refuted by @qst:chamber-subscript-image. Neither conclusion depends on the Picard rank of $b_\star$. (REL) holds by @thm:coble-block-sign-in-w and @cor:coble-rel-section.
 
 ## Conclusion {#sec-conclusion}
 
