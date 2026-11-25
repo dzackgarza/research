@@ -3010,7 +3010,7 @@ An *object* is a primitive isotropic line $\ell\subset T_\Co$, a primitive isotr
 $$
 S_x=F_D .
 $$
-the integral stabilizer (@def:group-orbit) of an object realizes the whole finite stabilizer of its datum. Consequently the double quotient of the fibre of @thm:descent-double-coset is
+the integral stabilizer (@def:group-orbit) of an object realizes the whole finite stabilizer of its datum. If $\ker\rho\subseteq\Gamma$, the fibre's orbit set under $\Gamma_D=\Gamma\cap\rho^{-1}(F_D)$ is identified by @thm:descent-double-coset with the double quotient
 $$
 \left(H\intersect F_D\right)\backslash F_D\big/ S_x
  =\left(H\intersect F_D\right)\backslash F_D\big/ F_D ,
