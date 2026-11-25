@@ -18,6 +18,7 @@ import argparse
 import ast
 import json
 import re
+from collections import Counter
 from dataclasses import dataclass, field
 from fnmatch import fnmatchcase
 from functools import cache
@@ -56,16 +57,24 @@ def _vertex(base: str, axioms: tuple[str, ...]) -> str:
     return ".".join((base, *sorted(axioms)))
 
 
+def _grouped[K: Hashable, V](pairs: list[tuple[K, V]]) -> dict[K, list[V]]:
+    """Each key with its values, keys and values in order of first appearance."""
+    return {
+        key: [value for k, value in pairs if k == key]
+        for key in dict.fromkeys(k for k, _ in pairs)
+    }
+
+
 @dataclass(frozen=True)
 class Supercategory:
     """One declared supercategory, and where its name comes from."""
 
     expression: str
     head: str
-    resolved: str  # the head with any import alias followed back to its name
-    origin: str  # "owned", "sage", or "expression"
+    resolved: str
+    origin: str
     axioms: tuple[str, ...] = ()
-    parameters: tuple[str, ...] = ()  # category-valued arguments, as vertices
+    parameters: tuple[str, ...] = ()
 
     @property
     def vertex(self) -> str:
@@ -88,12 +97,12 @@ class CategoryDeclaration:
     declares: bool
     abstract: bool
     supercategories: tuple[Supercategory, ...] = field(default_factory=tuple)
-    axiom_of: str = ""  # for a nested axiom class, the category it refines
-    nested_in: str = ""  # for a nested construction such as ``_MorCategory``, the vertex enclosing it
-    parameter: str = ""  # source symbol distinguishing the optional-parameter branch
+    axiom_of: str = ""
+    nested_in: str = ""
+    parameter: str = ""
     object_methods: tuple[
         str, ...
-    ] = ()  # the methods its ``ParentMethods`` installs on objects
+    ] = ()
 
     @property
     def vertex(self) -> str:
@@ -342,7 +351,7 @@ def _factories(trees: list[ast.Module]) -> dict[str, str]:
     ``Sets.Finite``; a declaration of ``FiniteSets()`` declares that vertex.
     A name defined twice is left unresolved.
     """
-    found: dict[str, list[str]] = {}
+    pairs: list[tuple[str, str]] = []
     for tree in trees:
         for statement in tree.body:
             if not isinstance(statement, ast.FunctionDef) or statement.args.args:
@@ -354,7 +363,8 @@ def _factories(trees: list[ast.Module]) -> dict[str, str]:
             ]
             match body:
                 case [ast.Return(value=ast.Call() as value)]:
-                    found.setdefault(statement.name, []).append(ast.unparse(value))
+                    pairs.append((statement.name, ast.unparse(value)))
+    found = _grouped(pairs)
     return {
         name: expressions[0]
         for name, expressions in found.items()
@@ -417,7 +427,6 @@ def read_tree(root: Path) -> list[CategoryDeclaration]:
         )
 
     known: set[str] = set()
-    # Close the declared Python inheritance chain independently of file order.
     previous: set[str] | None = None
     while previous != known:
         previous = known.copy()
@@ -426,8 +435,6 @@ def read_tree(root: Path) -> list[CategoryDeclaration]:
                 if isinstance(node, ast.ClassDef) and _is_category(node, known):
                     known.add(node.name)
     category_classes = set(known)
-    # A category name is also bound by a factory function or a rebinding, so
-    # those count as defined when a declaration names them.
     for _, tree in parsed:
         known |= _module_level_names(tree)
     factories = _factories([tree for _, tree in parsed])
@@ -484,10 +491,6 @@ def read_tree(root: Path) -> list[CategoryDeclaration]:
                             for expression in expressions
                             for unfolded in (_unfold(expression, factories, imported),)
                         ),
-                        # A class nested in a category is that category with the
-                        # axioms the nesting names; a protected nested class is a
-                        # construction on it, such as its Mor category, and refines
-                        # nothing.
                         axiom_of=scope[0]
                         if scope
                         and scope[0] in known
@@ -546,10 +549,9 @@ def render_table(declarations: list[CategoryDeclaration]) -> str:
 
 def render_by_supercategory(declarations: list[CategoryDeclaration]) -> str:
     """Group the tree the other way round: each supercategory, and who claims it."""
-    claimants: dict[str, list[str]] = {}
-    for declaration in declarations:
-        for head in declaration.heads:
-            claimants.setdefault(head, []).append(declaration.qualified_name)
+    claimants = _grouped(
+        [(head, d.qualified_name) for d in declarations for head in d.heads]
+    )
     lines = [
         "Every declared supercategory, and the categories declaring it.",
         "",
@@ -616,32 +618,22 @@ def render_audit(declarations: list[CategoryDeclaration]) -> str:
         | _defined_names(declarations)
     )
 
-    missing: dict[str, list[str]] = {}
-    unstated: dict[str, list[str]] = {}
-    for declaration in declarations:
-        for supercategory in declaration.supercategories:
-            if supercategory.origin == "expression":
-                if supercategory.resolved not in declared:
-                    unstated.setdefault(supercategory.expression, []).append(
-                        declaration.qualified_name
-                    )
-            elif (
-                supercategory.origin == "owned"
-                and supercategory.resolved not in declared
-            ):
-                missing.setdefault(supercategory.resolved, []).append(
-                    declaration.qualified_name
-                )
+    undeclared = [
+        (supercategory, declaration.qualified_name)
+        for declaration in declarations
+        for supercategory in declaration.supercategories
+        if supercategory.resolved not in declared
+    ]
+    unstated = _grouped(
+        [(s.expression, name) for s, name in undeclared if s.origin == "expression"]
+    )
+    missing = _grouped(
+        [(s.resolved, name) for s, name in undeclared if s.origin == "owned"]
+    )
 
-    # A category declaring its own name over other data (`Modules(R)` declaring
-    # `Modules(S)`) is a restriction-of-scalars edge, ruled out on 2026-09-16
-    # because Sage applies every axiom along it; reported apart from cycles
-    # because it is a loop on the name, not on the objects.
     recursive = sorted(
         {d.name for d in declarations if not d.parameter and d.name in d.heads}
     )
-    # A strongly connected component with more than one category is a set of
-    # categories each declared to lie under the others.
     cycles = [
         ", ".join(sorted(_name(vertex) for vertex in component))
         for component in _digraph(
@@ -689,9 +681,6 @@ def _declared_edges(
     also declares each vertex with one axiom fewer.
     """
     names = {d.name for d in declarations}
-    # A construction whose own declaration is its parameter (``return
-    # [self.base_category()]``) declares nothing the reader can name at the
-    # class; each instance ``H(P)`` declares ``P``.
     parameterized = {
         d.name
         for d in declarations
@@ -728,32 +717,55 @@ def _axiom_edges(
     ``Schemes.QuasiAffine.FiniteType -> Schemes.QuasiProjective``, therefore
     reaches every join that includes those axioms.
     """
-    nested: dict[str, set[str]] = {}
-    for d in declarations:
-        if d.axiom_of:
-            nested.setdefault(d.axiom_of, set()).update(d.qualified_name.split(".")[1:])
-    above: dict[str, set[str]] = {}
-    written: dict[str, set[tuple[frozenset[str], str, frozenset[str]]]] = {}
-    for below, over in declared:
-        below_base, *below_axioms = below.split(".")
-        over_base, *over_axioms = over.split(".")
-        written.setdefault(below_base, set()).add(
-            (frozenset(below_axioms), over_base, frozenset(over_axioms))
-        )
-        if not below_axioms and not over_axioms:
-            above.setdefault(below, set()).add(over)
+    axiom_declarations = [d for d in declarations if d.axiom_of]
+    split = [
+        (below_base, frozenset(below_axioms), over_base, frozenset(over_axioms))
+        for below, over in declared
+        for below_base, *below_axioms in [below.split(".")]
+        for over_base, *over_axioms in [over.split(".")]
+    ]
+    bases = (
+        {below_base for below_base, _, _, _ in split}
+        | {over_base for _, _, over_base, _ in split}
+        | {d.axiom_of for d in axiom_declarations}
+        | {d.vertex.split(".")[0] for d in axiom_declarations}
+    )
+    written = {
+        base: {
+            (below_axioms, over_base, over_axioms)
+            for below_base, below_axioms, over_base, over_axioms in split
+            if below_base == base
+        }
+        for base in bases
+    }
+    above = {
+        below: set(overs)
+        for below, overs in _grouped(
+            [
+                (below_base, over_base)
+                for below_base, below_axioms, over_base, over_axioms in split
+                if not below_axioms and not over_axioms
+            ]
+        ).items()
+    }
 
-    # Axioms a base can apply: its own nested ones and those of every category
-    # above it, closed by iteration until nothing changes.
-    defined: dict[str, set[str]] = {b: set(a) for b, a in nested.items()}
+    defined = {
+        base: {
+            axiom
+            for d in axiom_declarations
+            if d.axiom_of == base
+            for axiom in d.qualified_name.split(".")[1:]
+        }
+        for base in bases
+    }
     changed = True
     while changed:
         changed = False
         for base, overs in above.items():
-            gathered = set(defined.get(base, set()))
+            gathered = set(defined[base])
             for over in overs:
-                gathered |= defined.get(over, set())
-            if gathered != defined.get(base, set()):
+                gathered |= defined[over]
+            if gathered != defined[base]:
                 defined[base] = gathered
                 changed = True
 
@@ -768,12 +780,10 @@ def _axiom_edges(
             _vertex(base, tuple(a for a in axioms if a != dropped))
             for dropped in axioms
         ]
-        for stated, over, written_over_axioms in written.get(base, ()):
+        for stated, over, written_over_axioms in written[base]:
             if not stated <= set(axioms):
                 continue
-            carried = {
-                a for a in axioms if a not in stated and a in defined.get(over, ())
-            }
+            carried = {a for a in axioms if a not in stated and a in defined[over]}
             target_axioms = tuple(written_over_axioms | carried)
             if target_axioms and (stated or carried):
                 targets.append(_vertex(over, target_axioms))
@@ -912,9 +922,7 @@ def render_shape(declarations: list[CategoryDeclaration]) -> str:
         if breadth[name]:
             lines.append(f"{breadth[name]:5d}  {name}")
 
-    histogram: dict[int, int] = {}
-    for value in depth.values():
-        histogram[value] = histogram.get(value, 0) + 1
+    histogram = Counter(depth.values())
     lines += ["", "## Depth: longest chain above each category", ""]
     for value in sorted(histogram):
         lines.append(f"  depth {value:2d}: {histogram[value]:4d} categories")
@@ -966,9 +974,6 @@ def render_cells(declarations: list[CategoryDeclaration]) -> str:
     written = {frozenset(edge) for edge in _declared_edges(declarations)}
 
     def is_axiom_join(cycle: list[str]) -> bool:
-        # Inside one base every route is an inclusion of axiom subcategories,
-        # and a cycle with at most one written edge closes through edges Sage
-        # computes; either way the two routes are the same functor.
         one_base = len({_base_of(v) for v in cycle}) == 1
         written_edges = sum(
             frozenset(pair) in written for pair in zip(cycle, cycle[1:] + cycle[:1])
@@ -1124,9 +1129,6 @@ def _construction_axioms(
         if d.name not in names:
             continue
         node, _ = _class_at(d)
-        # Only the category's declared supercategories place properties on
-        # every object.  An unrelated object method referring to an affine
-        # scheme does not make an atlas or a divisor group an affine scheme.
         placement_methods = tuple(
             member for member in node.body
             if isinstance(member, ast.FunctionDef)
@@ -1291,7 +1293,7 @@ def _realization_methods(
     declarations: list[CategoryDeclaration],
 ) -> dict[str, list[str]]:
     """Methods of the classes that are not categories, by method name."""
-    found: dict[str, list[str]] = {}
+    pairs: list[tuple[str, str]] = []
     for path in sorted({Path(d.path) for d in declarations}):
         tree = ast.parse(path.read_text(encoding="utf-8"))
         categories = {d.line for d in declarations if Path(d.path) == path}
@@ -1301,12 +1303,12 @@ def _realization_methods(
                 and node.lineno not in categories
                 and node.name != "ParentMethods"
             ):
-                for method in node.body:
-                    if isinstance(method, ast.FunctionDef):
-                        found.setdefault(method.name, []).append(
-                            f"{node.name} {path}:{method.lineno}"
-                        )
-    return found
+                pairs += [
+                    (method.name, f"{node.name} {path}:{method.lineno}")
+                    for method in node.body
+                    if isinstance(method, ast.FunctionDef)
+                ]
+    return _grouped(pairs)
 
 
 def render_routes(
@@ -1347,11 +1349,14 @@ def render_routes(
         ]
     )
 
-    definers: dict[str, list[str]] = {}
-    for d in declarations:
-        for name in d.object_methods:
-            if not name.startswith("_"):
-                definers.setdefault(name, []).append(d.vertex)
+    definers = _grouped(
+        [
+            (name, d.vertex)
+            for d in declarations
+            for name in d.object_methods
+            if not name.startswith("_")
+        ]
+    )
     selected = operations or sorted(definers)
     unknown = [name for name in selected if name not in definers]
     assert not unknown, f"no category defines the object operation(s) {unknown!r}"
@@ -1361,7 +1366,7 @@ def render_routes(
         owners = [
             v
             for v in definers[name]
-            if not any(other in above.get(v, set()) for other in definers[name])
+            if not any(other in above[v] for other in definers[name])
         ]
         for owner in sorted(owners):
             dispatch = _dispatch(by_vertex[owner], name, factories)
@@ -1429,7 +1434,7 @@ def render_routes(
                 f"categories below it that define {name} or a hook: {', '.join(definitions) or 'none'}",
             ]
             hooked = sorted(
-                {entry for hook in supplies for entry in realizations.get(hook, [])}
+                {entry for hook in supplies if hook in realizations for entry in realizations[hook]}
             )
             if hooked:
                 lines += [
@@ -1503,8 +1508,6 @@ def _construction_sites(
         def placed(statements: list[ast.stmt]) -> list[str]:
             found = []
             for statement in statements:
-                # A nested guard has its own hypotheses.  Its placement is
-                # not a consequence of an enclosing, weaker guard alone.
                 if isinstance(statement, (ast.If, ast.Match, ast.For, ast.While)):
                     continue
                 for node in ast.walk(statement):
@@ -1543,9 +1546,6 @@ def _construction_sites(
                         guarded.append((guard, body))
             pairs = []
             for test, body in guarded:
-                # Do not turn one conjunct of a compound guard into a
-                # sufficient hypothesis (enumerated factors alone never
-                # make their Cartesian product finite).
                 inputs = (
                     [vertex_of(test.comparators[0])]
                     if isinstance(test, ast.Compare)
@@ -1705,9 +1705,6 @@ def render_constructions(
         for path in sorted(root.rglob("*.py"))
     }
     factories = _factories(list(trees.values()))
-    # The import base is the first ancestor outside the package's
-    # __init__.py chain: src/ for both src/sage_extensions and
-    # src/dzack_research/preamble.
     source_root = root.parent
     while (source_root / "__init__.py").exists():
         source_root = source_root.parent
@@ -1732,7 +1729,8 @@ def render_constructions(
 
     def category_class(expression: ast.expr) -> str | None:
         head = _head(ast.unparse(expression))
-        head = factories.get(head, head)
+        if head in factories:
+            head = factories[head]
         head = _head(head)
         return head if head in classes else None
 
@@ -1785,7 +1783,7 @@ def render_constructions(
     ) -> tuple[ast.FunctionDef, Path, str, dict[str, ast.FunctionDef]] | None:
         r"""The method ``name`` that ``owner``'s objects inherit through ``container``."""
         vertex = by_name[owner].vertex if owner in by_name else owner
-        for ancestor in sorted(above.get(vertex, set())):
+        for ancestor in sorted(above[vertex]):
             if ancestor in classes:
                 found = _container_methods(classes[ancestor], container)
                 if name in found:
@@ -1897,6 +1895,13 @@ def render_constructions(
         "Every public operation a category gives its objects, elements and morphisms, and the category the source places its result in.",
         "",
     ]
+    at_runtime = {
+        (category, container, operation): placement
+        for category, by_container in inferred.items()
+        for container, by_operation in by_container.items()
+        for operation, placement in by_operation.items()
+        if placement
+    }
     containers = (
         ("ParentMethods", "Objects X", "X"),
         ("ElementMethods", "Elements x of objects", "x"),
@@ -1917,10 +1922,10 @@ def render_constructions(
             for name, method in methods.items():
                 if name.startswith("_"):
                     continue
-                at_runtime = inferred.get(d.name, {}).get(container, {}).get(name)
+                key = (d.name, container, name)
                 outcomes = trace(method, Path(d.path), d.name, methods, 4, container) or [
-                    f"{at_runtime}, read from the returned value's class"
-                    if at_runtime
+                    f"{at_runtime[key]}, read from the returned value's class"
+                    if key in at_runtime
                     else "not resolved from the source, and not inferred at runtime (it needs arguments or "
                     "its category has no example object); it returns "
                     + ("; ".join(ast.unparse(v) for v in _returns(method)) or "nothing")
