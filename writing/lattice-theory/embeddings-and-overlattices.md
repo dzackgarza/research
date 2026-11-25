@@ -486,6 +486,22 @@ row of @tbl-unimodular-definite-class-numbers, for the negative-definite sign by
 records. So $M\cong\latI_{0,7}$.
 :::
 
+::: {.lemma #lem:odd-rank-scaled-unimodular-line-transitivity title="Primitive isotropic lines of odd-rank scaled unimodular lattices"}
+
+Let $B$ be a nondegenerate integral unimodular lattice of odd rank and signature $(p,q)$, with $p,q\geq2$, and let $L=B(d)$ for a positive integer $d$. Then $\Orth(L)$ is transitive on its primitive isotropic vectors, hence on its primitive isotropic lines. In particular the set of $\Orth(L)$-orbits of primitive isotropic lines has exactly one element.
+
+:::
+
+::: {.proof}
+
+The form of $B$ is odd because an even unimodular integral lattice has even rank (its reduction modulo $2$ is nondegenerate alternating). By the indefinite unimodular classification, $B\cong\latI_{p,q}$ ([@PS24, Thm. 2.3.1], [author's text, p. 62](https://www-fourier.univ-grenoble-alpes.fr/~peters/Books/QuadraticForms/QuadForms.pdf)). In particular $B$ has a primitive isotropic vector, the sum of a positive and a negative unit vector. In that diagonal model every characteristic vector has all coordinates odd, and its square is congruent to $p-q$ modulo $8$ by @lem:characteristic-vectors-of-Ipq. Since the rank is odd, $p-q$ is odd; no isotropic vector is characteristic.
+
+For an arbitrary primitive isotropic $v$, choose $w$ with $(v,w)=1$ using unimodularity. If $w^2$ is odd, there is an element $z\in v^\perp$ of odd square: otherwise, writing every $x\in B$ as $(v,x)w+z_x$ with $z_x\in v^\perp$ gives $x^2\equiv (v,x)\pmod 2$ and makes $v$ characteristic. Replace $w$ by $w+z$ in this case, so in either case $w$ has even square and $(v,w)=1$. Then $f=w-(w^2/2)v$ satisfies $f^2=0$, $(v,f)=1$. The span $\ZZ v+\ZZ f$ is unimodular, hence splits off orthogonally. Its complement is unimodular of signature $(p-1,q-1)$, of odd rank, hence odd and indefinite. Again the indefinite unimodular classification identifies the complement with $\latI_{p-1,q-1}$. For two primitive isotropic vectors choose these splittings; mapping the marked hyperbolic bases and any isometry between the two complements gives an integral isometry carrying the first vector to the second.
+
+Scaling the form by $d$ does not change its integral orthogonal group, primitive vectors, or isotropic vectors, so the result follows for $L$. This argument does not classify characteristic isotropic vectors in even rank, or definite complements when one signature index is one. It proves the ambient orbit assertion independently of any discriminant-image or stabilizer-image computation.
+
+:::
+
 ::: {.proposition #prop:rank-nine-line-transitivity title="Primitive isotropic lines of $\latI_{1,8}$ and of its twist"}
 
 Let $L$ be $\latI_{1,8}$ or its twist $\latI_{1,8}(2)$, of rank $9$ and signature $(1,8)$. Then $\Orth(L)$
