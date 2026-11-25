@@ -1,144 +1,358 @@
-"""#645/#667, plane half as F_2 linear algebra: |H|, |Stab(J)|, |orbit|, index, 1-cusp count.
+"""#761, the plane half of the discriminant action of the full integral plane stabilizer.
 
+    sage computations/reports/coble_plane-half-f2.py
     .scratch/udocker_dir/bin/proot-x86_64 -R <rootfs> -b /proc -b /dev -b /sys \
         -b <repo>:/repo -w /repo /sage/.venv/bin/python \
         /repo/computations/reports/coble_plane-half-f2.py
 
-Provider pin sage-extensions 15db925b0c92e525f769fcbf57135f1391263a9e.
+T_Co = B(2) with B = U_1 + U_2 + I_{0,7} unimodular, so A_{T_Co} = B/2B, q([x/2]) = (x,x)_B/2 mod 2,
+and the discriminant action of g in O(B) = O(T_Co) is the reduction of g modulo 2 on B/2B
+(thm:coble-plane-stabilizer-image).  The integral matrices are written out here and not asked of a
+library: the thirty generators of Stab_{O(B)}(P_0) are the complete family of thm:o2-plane-family,
+and the twenty-one of O(B) are the complete family of thm:coble-ambient-21-generators, read from the
+source-hashed JSON beside this file.  Each of them is checked in the record: exact Gram identity,
+integral action on P_0, the even-norm parameters and the central shear of the unipotent half.
 
-T_Co = B(2) with B unimodular, so A_{T_Co} = B/2B is F_2^11, q(x) = (x,x)_B/2 mod 2, and the
-discriminant action of g in O(B) is g mod 2.  Extends coble_plane-half.py, which returns the 119
-generators of Stab_{O(B)}(P) and documents the two library gaps; here the reduction mod 2 is done
-by hand so the gaps do not bite.
+Every printed line is a value of the groups: the finite orders are Schreier-Sims orders of the
+faithful permutation action on the 2047 nonzero classes of A, the representation of #834/#835
+(computations/reports/coble_834_835_orbit_fibres.py).  Nothing printed is a timing, the size of a
+library's generating set, or a probe of a library call, and no order is imposed as an expected
+value: the integer arithmetic and the permutation groups decide them.
 """
-import os
+import hashlib
+import json
 import sys
-import time
+from fractions import Fraction
+from pathlib import Path
+
+from sage.all import libgap
 
 sys.stdout.reconfigure(line_buffering=True)
-os.environ["PATH"] = os.path.dirname(os.path.realpath("/sage/.venv/bin/sage")) + os.pathsep + os.environ.get("PATH", "")
 
-from sage.all import GF, QQ, ZZ, block_diagonal_matrix, libgap, matrix  # noqa: E402
-from sage.version import version as SAGE_VERSION  # noqa: E402
-from sage_extensions.all import Lattices  # noqa: E402
-
-PIN = '15db925b0c92e525f769fcbf57135f1391263a9e'
-print('provenance\n  Sage: %s\n  sage-extensions: pin %s\n' % (SAGE_VERSION, PIN[:12]))
-
-G_B = block_diagonal_matrix(matrix(ZZ, [[0, 1], [1, 0]]), matrix(ZZ, [[0, 1], [1, 0]]),
-                           -matrix.identity(ZZ, 7))
-B = Lattices(ZZ)([list(x) for x in G_B.rows()])
-T = Lattices(ZZ)([list(x) for x in (2 * G_B).rows()])
-r = int(B.rank())
-basis = [B.basis_vector(i) for i in range(r)]
-P = B.primitive_sublattice_from([basis[0], basis[2]])
-print('B = U + U + I_{0,7}: rank %d, det %s, signature %s;  P primitive of rank %d\n'
-      % (r, B.determinant(), B.signature_pair(), P.rank()))
-
-start = time.time()
-A = T.discriminant_quadratic_form()
-O = A.orthogonal_group()
-order_O = int(O.order())
-print('|O(q)| = %d   (%.0f s)' % (order_O, time.time() - start))
-
-start = time.time()
-eT = [T.basis_vector(i) for i in range(r)]
-c = [T.discriminant_class(T.primitive_dual(eT[i])) for i in range(r)]
-mask = {A.zero(): 0}
-for i in range(r):
-    for elem, m in list(mask.items()):
-        mask.setdefault(elem + c[i], m | (1 << i))
-print('mask isomorphism A = B/2B: %d classes   (%.0f s)' % (len(mask), time.time() - start))
+# B = U_1 + U_2 + I_{0,7} in the basis (e_1, f_1, e_2, f_2, d_1, ..., d_7), and the exact integer
+# helpers of computations/reports/coble_834_835_orbit_fibres.py.
+N = 11
+I = [[int(i == j) for j in range(N)] for i in range(N)]
+GRAM = [[0] * N for _ in range(N)]
+GRAM[0][1] = GRAM[1][0] = GRAM[2][3] = GRAM[3][2] = 1
+for i in range(4, N):
+    GRAM[i][i] = -1
 
 
-def mat_of(theta):
-    cols = [mask[theta(c[i])] for i in range(r)]
-    return matrix(GF(2), r, r, [[(cols[j] >> i) & 1 for j in range(r)] for i in range(r)])
+def tr(M):
+    return list(map(list, zip(*M)))
 
+
+def mul(A, B):
+    return [[sum(a * b for a, b in zip(row, col)) for col in zip(*B)] for row in A]
+
+
+def inv(A):
+    return mul(mul(GRAM, tr(A)), GRAM)
+
+
+def mv(M, x):
+    return [sum(a * b for a, b in zip(r, x)) for r in M]
+
+
+def dot(x, y):
+    return sum(a * b for a, b in zip(x, mv(GRAM, y)))
+
+
+def unit(i):
+    return I[i][:]
+
+
+def add(x, y):
+    return [a + b for a, b in zip(x, y)]
+
+
+def iso(M):
+    return mul(mul(tr(M), GRAM), M) == GRAM and mul(M, inv(M)) == I
+
+
+def trans(v, k):
+    """The Eichler transvection E_{v,k}; integral exactly when k has even norm (B is odd)."""
+    assert dot(v, v) == dot(v, k) == 0 and dot(k, k) % 2 == 0
+    return tr([[a - dot(x, k) * b + dot(x, v) * c - dot(k, k) // 2 * dot(x, v) * b
+                for a, b, c in zip(x, v, k)] for x in I])
+
+
+def determinant(M):
+    M = [[Fraction(x) for x in row] for row in M]
+    value = Fraction(1)
+    for c in range(len(M)):
+        pivot_row = next(r for r in range(c, len(M)) if M[r][c])
+        if pivot_row != c:
+            M[c], M[pivot_row] = M[pivot_row], M[c]
+            value = -value
+        value *= M[c][c]
+        for r in range(c + 1, len(M)):
+            factor = M[r][c] / M[c][c]
+            for k in range(c, len(M)):
+                M[r][k] -= factor * M[c][k]
+    return int(value)
+
+
+def signature(M):
+    """The inertia of a symmetric integer matrix, by exact symmetric elimination.
+
+    A zero diagonal entry whose column is nonzero is handled by the 2x2 block
+    [[0, m], [m, x]], of determinant -m^2 < 0, which contributes (1, 1).
+    """
+    M = [[Fraction(x) for x in row] for row in M]
+    n = len(M)
+    pos = neg = 0
+    c = 0
+    while c < n:
+        if M[c][c] != 0:
+            pivot = M[c][c]
+            pos, neg = (pos + 1, neg) if pivot > 0 else (pos, neg + 1)
+            for r in range(c + 1, n):
+                factor = M[r][c] / pivot
+                for k in range(c, n):
+                    M[r][k] -= factor * M[c][k]
+            c += 1
+            continue
+        r = next((r for r in range(c + 1, n) if M[r][c]), None)
+        if r is None:
+            c += 1
+            continue
+        if r != c + 1:
+            M[c + 1], M[r] = M[r], M[c + 1]
+            for row in M:
+                row[c + 1], row[r] = row[r], row[c + 1]
+        m, x = M[c][c + 1], M[c + 1][c + 1]
+        pos, neg = pos + 1, neg + 1
+        inverse = [[-x / (m * m), 1 / m], [1 / m, Fraction(0)]]
+        for i in range(c + 2, n):
+            left = [M[i][c], M[i][c + 1]]
+            for j in range(c + 2, n):
+                right = [M[c][j], M[c + 1][j]]
+                M[i][j] -= (left[0] * (inverse[0][0] * right[0] + inverse[0][1] * right[1])
+                            + left[1] * (inverse[1][0] * right[0] + inverse[1][1] * right[1]))
+        c += 2
+    return pos, neg
+
+
+def mask(v):
+    return sum((x % 2) << i for i, x in enumerate(v))
+
+
+def table(M):
+    """The reduction of M modulo 2 as a permutation of the 2048 classes of A = B/2B."""
+    columns = list(map(mask, tr(M)))
+    images = [0] * (1 << N)
+    for x in range(1, 1 << N):
+        low = x & -x
+        images[x] = images[x ^ low] ^ columns[low.bit_length() - 1]
+    assert len(set(images)) == len(images)
+    return images
+
+
+def as_permutation(M):
+    return libgap.PermList(table(M)[1:])
+
+
+# `sage script.py` evaluates the script in Sage's own namespace, where __file__ is sage's, so the
+# file beside this script is looked up from the script's own path, then from the run directory.
+name = 'coble_ambient_twenty_one_generators.json'
+candidates = [Path(__file__).resolve().with_name(name),
+              Path(sys.argv[0]).resolve().with_name(name),
+              Path.cwd() / 'computations' / 'reports' / name]
+input_path = next(path for path in candidates if path.is_file())
+raw = json.loads(input_path.read_text())
+print('provenance\n  exact integer arithmetic; finite orders are Schreier-Sims orders in GAP'
+      '\n  ambient family computations/reports/%s\n  sha256 %s\n'
+      % (input_path.name, hashlib.sha256(input_path.read_bytes()).hexdigest()))
+
+P_0 = [unit(0), unit(2)]
+assert all(dot(x, y) == 0 for x in P_0 for y in P_0)
+print('B = U_1 + U_2 + I_{0,7}: rank %d, Gram determinant %d, signature (%d, %d)'
+      % (N, determinant(GRAM), *signature(GRAM)))
+print('P_0 = <e_1, e_2>: rank %d, primitive, totally isotropic\n' % len(P_0))
+
+print('(1) integral plane stabilizer: Levi factor')
+plane = {}
+
+
+def perm(p):
+    return [[int(i == p[j]) for j in range(N)] for i in range(N)]
+
+
+plane['swap'] = perm([2, 3, 0, 1] + list(range(4, N)))
+shear = [r[:] for r in I]
+shear[0][2] = 1
+shear[3][1] = -1
+plane['shear'] = shear
+for i in range(4, 10):
+    p = list(range(N))
+    p[i], p[i + 1] = p[i + 1], p[i]
+    plane['swap_d%d' % (i - 3)] = perm(p)
+for i in range(4, N):
+    signs = [r[:] for r in I]
+    signs[i][i] = -1
+    plane['sign_d%d' % (i - 3)] = signs
+even = [add(unit(i), unit(10)) for i in range(4, 10)] + [[2 * z for z in unit(10)]]
+for i, e in ((0, 'e1'), (2, 'e2')):
+    for j, w in enumerate(even):
+        plane['E_%s_%d' % (e, j)] = trans(unit(i), w)
+plane['central'] = trans(unit(0), unit(2))
+levi_gl = ['swap', 'shear']
+levi_od = ['swap_d%d' % j for j in range(1, 7)] + ['sign_d%d' % j for j in range(1, 8)]
+unipotent = ['E_e1_%d' % j for j in range(len(even))] + ['E_e2_%d' % j for j in range(len(even))]
+unipotent += ['central']
+assert sorted(plane) == sorted(levi_gl + levi_od + unipotent)
+
+
+def plane_matrix(M):
+    """The action of an isometry on P_0 in the basis (e_1, e_2), and the action's existence."""
+    a, b = mv(M, P_0[0]), mv(M, P_0[1])
+    inside = all(a[i] == b[i] == 0 for i in (1, 3) + tuple(range(4, N)))
+    return [[a[0], b[0]], [a[2], b[2]]], inside
+
+
+planes = {k: plane_matrix(M) for k, M in plane.items()}
+assert all(iso(M) for M in plane.values())
+assert all(planes[k][1] and abs(determinant(planes[k][0])) == 1 for k in plane)
+assert all(dot(w, w) % 2 == 0 for w in even)
+# D_even has index two, since the coordinate sum mod two is surjective.
+# These integral even vectors have index two by their determinant, hence form its basis.
+assert abs(determinant([[w[j] for j in range(4, N)] for w in even])) == 2
+
+
+def dpoint(v):
+    i = next(i for i in range(7) if v[4 + i])
+    return 2 * i + (1 if v[4 + i] > 0 else 2)
+
+
+def dvector(i, s):
+    v = [0] * N
+    v[4 + i] = s
+    return v
+
+
+order_od = int(libgap.Size(libgap.Group(
+    [libgap.PermList([dpoint(mv(plane[k], dvector(i, s))) for i in range(7) for s in (1, -1)])
+     for k in levi_od])))
+assert order_od == 2 ** 7 * 5040
+print('  |O(D)| = %d' % order_od)
+
+
+def two_by_two(A, B):
+    return [[A[0][0] * B[0][0] + A[0][1] * B[1][0], A[0][0] * B[0][1] + A[0][1] * B[1][1]],
+            [A[1][0] * B[0][0] + A[1][1] * B[1][0], A[1][0] * B[0][1] + A[1][1] * B[1][1]]]
+
+
+contragredient = 0
+for k in levi_gl:
+    a, b, c, d = mv(plane[k], unit(0)), mv(plane[k], unit(2)), mv(plane[k], unit(1)), \
+        mv(plane[k], unit(3))
+    assert all(c[i] == d[i] == 0 for i in (0, 2) + tuple(range(4, N)))
+    gamma = [[a[0], b[0]], [a[2], b[2]]]
+    dual = [[c[1], d[1]], [c[3], d[3]]]
+    gdet = determinant(gamma)
+    inverse_transpose = [[Fraction(gamma[1][1], gdet), Fraction(-gamma[1][0], gdet)],
+                         [Fraction(-gamma[0][1], gdet), Fraction(gamma[0][0], gdet)]]
+    contragredient += int(dual == [[int(z) for z in row] for row in inverse_transpose])
+word = {((1, 0), (0, 1)): 0}
+reached = {((0, -1), (1, 0)): None, ((-1, 0), (0, -1)): None}
+frontier = [((1, 0), (0, 1))]
+for depth in range(1, 11):
+    following = []
+    for current in frontier:
+        A = [list(current[0]), list(current[1])]
+        for step in ([[0, 1], [1, 0]], [[1, 1], [0, 1]], [[1, -1], [0, 1]]):
+            product = two_by_two(A, step)
+            key = (tuple(product[0]), tuple(product[1]))
+            if key not in word:
+                word[key] = depth
+                following.append(key)
+                if key in reached and reached[key] is None:
+                    reached[key] = depth
+    frontier = following
+assert contragredient == len(levi_gl)
+# The standard rotation and -I, together with the shear, generate SL_2(Z)
+# by the Euclidean algorithm. The swap provides determinant minus one.
+assert all(depth is not None for depth in reached.values())
+
+moves = 0
+for e_index, label in ((0, 'e1'), (2, 'e2')):
+    for j, w in enumerate(even):
+        member = plane['E_%s_%d' % (label, j)]
+        target = add(add(unit(e_index + 1), w), [(-dot(w, w) // 2) * z for z in unit(e_index)])
+        moves += int(mv(member, unit(e_index)) == unit(e_index)
+                     and mv(member, unit(e_index + 1)) == target)
+central = plane['central']
+shears = (mv(central, unit(0)) == unit(0) and mv(central, unit(2)) == unit(2)
+          and mv(central, unit(1)) == add(unit(1), unit(2))
+          and mv(central, unit(3)) == add(unit(3), [-z for z in unit(0)]))
+assert moves == 2 * len(even)
+assert shears
+for k in unipotent:
+    member = plane[k]
+    assert all(mv(member, unit(i)) == unit(i) for i in (0, 2))
+    assert all(mv(member, unit(i))[j] == unit(i)[j]
+               for i in range(4, N)
+               for j in (1, 3) + tuple(range(4, N)))
+
+print('\n(1 cont.) reduction modulo 2')
+print('  A = B/2B: %d classes, q(x) = (x,x)_B/2 mod 2, and rho(g) is g mod 2' % (1 << N))
+commutator = mul(mul(mul(plane['E_e1_0'], plane['E_e2_1']), inv(plane['E_e1_0'])),
+                 inv(plane['E_e2_1']))
+assert table(commutator) == table(central)
+basis_change = raw['standard_from_split']
+inverse_change = mul(mul(GRAM, tr(basis_change)), raw['standard_gram'])
+assert mul(inverse_change, basis_change) == I
+ambient = [mul(mul(inverse_change, g['matrix_standard']), basis_change) for g in raw['generators']]
+assert len(ambient) == 21 and all(map(iso, ambient))
 
 print('\n(2) G = O(q) over F_2')
-start = time.time()
-gensO = list(O.group_generators())
-G = libgap.Group([libgap(mat_of(t)) for t in gensO])
-order_G = int(libgap.Size(G))
-print('  |G| = %d, equals |O(q)|: %s   (%.0f s)' % (order_G, order_G == order_O, time.time() - start))
-
-gensB = list(B.Isom(B).stabilizer(P, action='setwise').group_generators())
-inv = G_B.inverse()
-gens_H = []
-for g in gensB:
-    cols = []
-    for j in range(r):
-        pair = matrix(ZZ, 1, r, [B.pairing(g(basis[j]), basis[i]) for i in range(r)])
-        coords = (pair * inv)[0]
-        cols.append([int(QQ(x)) % 2 for x in coords])
-    # GAP acts on row vectors by right multiplication, so the column-convention matrix of the
-    # module automorphism enters the comparison transposed; the O(q) generators stay as mat_of
-    # returns them, and the two sides then agree on J.
-    gens_H.append(matrix(GF(2), r, r, [[cols[j][i] for j in range(r)] for i in range(r)]).transpose())
-H = libgap.Group([libgap(g) for g in gens_H])
+G_q = libgap.Group([as_permutation(M) for M in ambient])
+H = libgap.Group([as_permutation(M) for M in plane.values()])
+order_G = int(libgap.Size(G_q))
 order_H = int(libgap.Size(H))
-print('  |H| = |rho(Stab_{O(B)}(P))| = %d' % order_H)
+eichler = raw['eichler_generator_indices']
+order_eichler = int(libgap.Size(libgap.Group([as_permutation(ambient[i]) for i in eichler])))
+# Independent exact order formula: in the hyperbolic 2m-space there
+# are (2^(2m-1)+2^(m-1)-1)*2^(2m-2) ordered hyperbolic pairs.
+# Removing a pair leaves the hyperbolic space of dimension 2m-2.
+expected_ambient_order = 1
+for m in range(1, 6):
+    expected_ambient_order *= (2 ** (2*m-1) + 2 ** (m-1) - 1) * 2 ** (2*m-2)
+assert order_G == expected_ambient_order
+# In the proved parabolic family the Levi image has order 6*7!,
+# and the image of the radical has order 2^13 (thm:coble-plane-stabilizer-image).
+assert order_H == 6 * 5040 * 2 ** 13
+assert order_G == 2 * order_eichler
+print('  |G| = |O(q)| = %d  (thm:coble-ambient-21-generators, rho onto)' % order_G)
+print('  the Eichler subgroup of thm:coble-ambient-21-generators has index %d in G'
+      % (order_G // order_eichler))
+print('  |H| = |rho(Stab_{O(B)}(P_0))| = %d' % order_H)
 
 print('\n(2 cont.) J, its stabilizer, its orbit')
-start = time.time()
-V = libgap.GF(2) ** r
-r1 = [0] * r; r1[0] = 1
-r3 = [0] * r; r3[2] = 1
-print('  building J = <e1/2, e2/2>, trying the available GAP constructions')
-J = None
-candidates = [
-    ("Subspace(V, [vector, vector])", lambda: libgap.Subspace(V, libgap([libgap(r1), libgap(r3)]))),
-    ("Subspace(V, gens, \"basis\")", lambda: libgap.Subspace(V, libgap([libgap(r1), libgap(r3)]), "basis")),
-    ("Submodule(V, gens, \"basis\")", lambda: libgap.Submodule(V, libgap([libgap(r1), libgap(r3)]), "basis")),
-    ("the canonical-basis matrix", lambda: libgap(matrix(GF(2), [r1, r3])),
-     ),
-]
-for entry in candidates:
-    name, build = entry[0], entry[1]
-    try:
-        candidate = build()
-        try:
-            dim = int(libgap.Dimension(candidate))
-        except Exception:
-            dim = 'n/a'
-        print('    %-34s OK, dimension %s' % (name, dim))
-        J = candidate
-        break
-    except Exception as exc:                                # noqa: BLE001
-        print('    %-34s FAILED: %s: %s' % (name, type(exc).__name__, exc))
-if J is None:
-    print('  no construction of J succeeded; stopping')
-    raise SystemExit(1)
-start = time.time()
-Stab = libgap.Stabilizer(G, J, libgap.OnSubspacesByCanonicalBasis)
-order_stab = int(libgap.Size(Stab))
-orbit = libgap.Orbit(G, J, libgap.OnSubspacesByCanonicalBasis)
-order_orbit = len(list(orbit))
+J = sorted({mask(P_0[0]), mask(P_0[1]), mask(add(P_0[0], P_0[1]))})
+assert len(J) == 3
+on_sets = libgap.OnSets
+stable = libgap.Stabilizer(G_q, libgap(J), on_sets)
+order_stab = int(libgap.Size(stable))
+order_orbit = len(list(libgap.Orbit(G_q, libgap(J), on_sets)))
 print('  |Stab_{O(q)}(J)| = %d' % order_stab)
-print('  |O(q) . J| = %d' % order_orbit)
-print('  |Stab| * |orbit| = |G|: %s' % (order_stab * order_orbit == order_G))
-contained = bool(libgap.IsSubgroup(Stab, H))
-print('  H <= Stab: %s   (%.0f s)' % (contained, time.time() - start))
-if not contained:
-    print('  the containment fails; scanning for the first generator that moves J')
-    Jm = matrix(GF(2), [r1, r3])
-    for k, g in enumerate(gens_H):
-        M2 = Jm * g
-        image = libgap.Subspace(libgap.GF(2) ** r, libgap([[int(x) for x in M2[i]] for i in (0, 1)]))
-        try:
-            same = bool(libgap.IsSubspace(J, image))
-        except Exception:
-            same = False
-        if not same:
-            print('  generator %d moves J; its matrix over GF(2) is' % k)
-            print(g)
-            break
+print("  |O(q) . J| = %d, the J' attained by primitive isotropic planes, rho onto O(q)"
+      % order_orbit)
+assert order_stab * order_orbit == order_G
+assert bool(libgap.IsSubgroup(stable, H))
+assert order_stab % order_H == 0
+print('  |Stab| * |orbit| = |G|: True')
+print('  H <= Stab: True')
 
 print('\nTHE NUMBERS')
-print('  |H| = |rho(Stab_{O(B)}(P))|      = %d' % order_H)
+print('  |H| = |rho(Stab_{O(B)}(P_0))|    = %d' % order_H)
 print('  |Stab_{O(q)}(J)|                 = %d' % order_stab)
 print('  index [Stab : H]                 = %d' % (order_stab // order_H))
-print('  liftable J (= |G . J|, rho onto) = %d' % order_orbit)
-print('  1-cusp count of F_Co             = %d' % (order_orbit * (order_stab // order_H)))
+print('  liftable data |O(q) . J|        = %d' % order_orbit)
+print('  discriminant-kernel plane orbits = %d = [O(q) : H] = %d * %d'
+      % (order_G // order_H, order_stab // order_H, order_orbit))
+print('  (orbits of the primitive isotropic planes under Otilde = ker rho, thm:o2-planes(3b);')
+print('   integral plane orbits, with eight over each discriminant datum, not the 1-cusps of F_Co)')
 print('  23 715 and the five page sizes   = %d' % (1575 + 270 + 9450 + 3780 + 8640))

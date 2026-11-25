@@ -263,7 +263,7 @@ We briefly describe the methods that go into finding these cusps, due to @Ste91.
   #thm:orbit-classification-sterk
   }
 
-Fix an even lattice $T$ with a splitting $T = U \oplus \bdlattice{T}{\eta}$ with $\bar T$ negative–definite and even [@Ste91, Cor. 3.3].
+Let $T=U\oplus U(2)\oplus P$, where $P$ is an even nondegenerate symmetric integral lattice [@Ste91, Cor. 3.3, p. 11].
 Let $\eta_1,\;\eta_2\;\in T$ be primitive isotropic vectors satisfying
 
 1. $\eta_1^2=\eta_2^2=k$;
@@ -276,27 +276,10 @@ Then there exists an isometry $\phi \in \discriminantkernel{T}$ such that $\phi(
 In particular, $\eta_1$ and $\eta_2$ lie in the same $\discriminantkernel{T}$-orbit.
 :::
 
-::: {.proof title="Sketch"} 
-The idea is to let $\eta_i = a_i e + b_i e + c_i$ where $c_i\in \bdlattice{T}{\eta}$, and then put both $\eta_i$ into normal form.
-Sterk shows that you can arrange for $\eta_1\cdot e = p$, so $a_1 = 0, b_1 = p$ by some $g\in \discriminantkernel{T}$, and that you can arrange for $\eta_2\cdot e =p$ simultaneously, so $a_2=0,v_2=p$.
-Thus
-$$
-\eta_1 = pe + c_1, \eta_2 = pe + c_2, \qquad \eta_1 f = \eta_2 f = p
-.$$
-One then checks that $$\eta_1 \equiv_{p T}\eta_2 \implies \eta_1 - \eta_2 \in pT \implies c_1 - c_2 = pc \in p\bdlattice{T}{\eta}$$ by canceling the now-identical $pf$ components, and writes $$\eta_1 - \eta_2 = pc \implies \eta_1 = \eta_2 + pc, \qquad c\in \bdlattice{T}{\eta}.$$ Constructing the Siegel-Eichler transvection $$E_{f, c}(x) = x - (x, f)c + \left( (x, c) - {1\over 2}c^2 (x, f)\right)f,$$ one finds that
+::: {.proof}
+Sterk [@Ste91, Cor. 3.3, p. 11] proves Step 1: for any primitive $v\in T$ of divisibility $p$ there exists an element of the discriminant kernel taking $v$ to a vector whose pairing with the standard basis vector $f\in U$ is $p$. This uses both summands $U$ and $U(2)$, not an arbitrary splitting with one hyperbolic plane. Apply Step 1 separately to both vectors; because the isometries act trivially on the discriminant group, their congruence modulo $pT$ is preserved.
 
-\begin{align*}
-E_{f, c}(\eta_1) 
-&\equiv_{\ZZ f} \eta_1 - (\eta_1, f)c  \\
-&\equiv_{\ZZ f} (pe+ c_1) - pc  \\
-&\equiv_{\ZZ f} (pe+ c_1) - (c_1 - c_2)  \\
-&\equiv_{\ZZ f} pe + c_2  \\
-&\equiv_{\ZZ f} \eta_2 \\
-.\end{align*} Writing $\eta_1 = \eta_2 + \lambda  f$, one concludes by checking that
-$$
-k = \eta_1^2 = E_{f, c}(\eta_1)^2 = (\eta_2 + \lambda f)^2 = \eta^2 + 2\lambda (\eta_2, f) + \lambda^2 f^2 = k + 2\lambda p
-,$$
-forcing $\lambda=0$ and $\eta_1 = \eta_2$.
+After these changes write $\eta_1-\eta_2=pc$ with $c\in T$. Then $(c,f)=0$, and $c^2$ is even. In the sign convention of @prop:siegel-transvection-integrality use $E_{f,-c}$; this is an integral isometry. For any $x\in T^\#$, both $(x,f)$ and $(x,c)$ are integral, and $c^2/2$ is integral, so $E_{f,-c}(x)-x\in T$. Thus the transformation belongs to the discriminant kernel. Its formula gives $E_{f,-c}(\eta_1)=\eta_2+\lambda f$ with $\lambda\in\ZZ$. Since the two original vectors have equal norm and $(\eta_2,f)=p$, equality of norms gives $2\lambda p=0$, hence $\lambda=0$. Composing with the normalizing isometries proves the result.
 :::
 
 We then find that all divisibility one vectors are in the same orbit:
@@ -317,10 +300,7 @@ We apply @thm:orbit-classification-sterk: since
 - $v \equiv e \bmod \ten$,
 
 we have $v \sim_{\discriminantkernel{\ten}} e$.
-The statement above is under $\gent$ and not under the kernel, and the passage between the two is not formal: two groups' orbits on the same set need not agree, and @thm:orbit-classification-sterk compares $\gent$ with nothing.
-What supplies the stated form is the source itself, [@Ste91, Lem. 4.2.1], which is quoted here rather than rederived; the argument above proves the kernel case, which is the weaker orbit statement (its orbits are coarser than or equal to those of any subgroup, so the implication runs from the subgroup to the kernel and not back).
-The item number is the book's and is not confirmed: the paper is not retained in this tree, and the only retained source consulted that reports Sterk's orbit statements, Koca--Sert\H{o}z (arXiv:math:0509687, §3), cites his Propositions 4.2.3 and 4.5 for them.
-Nothing here rests on the number, since what is used is the statement as quoted together with its citation; but a reader checking it should expect to look in §4.2 rather than at one numbered lemma.
+The lattice $\ten=U\oplus U(2)\oplus E_8(-2)$ satisfies the hypotheses. By [@Ste91, Prop. 2.7, p. 6], $\gent$ is the subgroup preserving the two indicated summands of the discriminant form, so it contains the discriminant kernel. The kernel orbit therefore lies in a single $\gent$-orbit, as in [@Ste91, Lem. 4.2.1, p. 16].
 :::
 
 The divisibility 2 vectors require a slightly finer analysis, but this quickly reduces to studying the large (but finite) discriminant group $A_{\ten}$: [@Ste91, §4.2.2] first uses the fact that there is a decomposition $$A_{\ten} = A\oplus B \definedas {1\over 2}U/U \oplus {1\over 2}E_8/E_8$$ and if $\divisibility_{\ten}(\eta) = k \geq 2$ then $\eta/k \in \dualof{\ten}$ induces a nontrivial class in $A_{\ten}$.

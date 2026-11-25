@@ -1,0 +1,12 @@
+E8 determinant: 1
+dim: 10; q=0: 528; q=1: 496
+ordered hyperbolic pairs: 134912
+distinct hyperbolic planes: 67456
+527*256/2: 67456
+singular counts in all complements: [136]
+characteristic identity checked on 2048 classes; failures: 0
+hyperbolic-pair choices by half-dimension: [2, 36, 560, 8640, 134912]
+|O2+|=2; |O4+|=72; |O6+|=40320; |O8+|=348364800; |O10+|=46998591897600
+|P|=696729600; index=67456
+|H^perp|=2048; |H^perp/H|=1024
+ALL INDEPENDENT FINITE CHECKS PASSED

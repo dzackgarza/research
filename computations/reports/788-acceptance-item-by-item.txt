@@ -1,0 +1,215 @@
+research#788 — independent final G4 acceptance review
+
+VERDICT: MET after the repairs in b8a83b4ba0db7f49faa280b508d6cca8a9ff8bd0.
+Original-question match: MATCH.
+Reviewed base: 122f88c9be43e09f09c65b759210903fb69c3e46 (remote main).
+Required ancestors confirmed: 1159aa609e1e9a2639d074d6382478a893a89cae,
+2493cbeb8feba311025d839995c4b8002d9ebbd4, and the previous session's
+129caec400a3942a15acc509d52e9f9d6fb7c84b.
+Repair commit: b8a83b4ba0db7f49faa280b508d6cca8a9ff8bd0.
+
+The three objects are the original ones: the full orthogonal group O(T_Co), the
+restriction image R_gent of Stab_{Gamma_{En,2}}(delta) (not a geometric
+monodromy group), and the general index 2^7*17*31. No geometric monodromy
+equality, special-case family, or closure of G5 is used or required.
+
+Paths below abbreviate:
+  lattices.md = writing/coble/lattices-and-moduli/lattices.md
+  heegner.md  = writing/coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md
+  moduli.md   = writing/coble/lattices-and-moduli/moduli-construction.md
+  cusps.md    = writing/coble/cusp-correspondence/cusps-over-sterk-cusps.md
+Line numbers are those of b8a83b4ba0. Printed pages are source-review evidence,
+not newly inserted repository citation syntax.
+
+1. ORIGINAL KEY A — every isometry extends while fixing delta: MET.
+
+   lattices.md:689-730 proves, for every phi in O(T_Co), a unique extension
+   phi oplus id_delta in O(T_En) fixing delta.
+
+   Actual checks:
+   - The glue generator is (h/2,delta/2), with q=1/2-1/2=0 mod 2Z, and
+     (h+delta)/2 = tilde-e; adjoining it recovers the explicit T_En, not merely
+     an abstract overlattice (lattices.md:645-710 and primitive_embedding_eta
+     at :20-53).
+   - H^perp = {(a,y,a)}: pairing with the generator is (a-c)/2. Subtracting
+     a(h/2,delta/2) leaves a unique representative (0,y,0), so kappa(y)=[(0,y,0)]
+     is a bijective isometry A_E10(2) -> H^perp/H = A_TEn (:645-687).
+   - On A_TCo, q mod 1 is linear because 2-elementarity makes 2b integral.
+     The h, U(2), E8(2) block computations show that w=[h/2] is the unique
+     characteristic class. The three block pairings prove nondegeneracy;
+     applying the defining equation to sigma^{-1}x shows every discriminant
+     isometry fixes w (:712-724).
+   - Nikulin Corollary 1.5.2 reduces extension to preservation of H, which is
+     exactly fixing w because the delta-coordinate remains nonzero (:726).
+     Restriction is injective since delta and delta^perp span the rational space.
+     Surjectivity from Theorem 3.6.3 is not needed for this existence step.
+   - The stable restricted stabilizer is also correct (:732-740): kappa transfers
+     the discriminant kernel and real spinor norm is multiplicative on an
+     orthogonal sum, giving R_{Gamma_En}=Otilde^+(T_Co). The positive-square
+     reflection s_h has trivial discriminant action and real spinor sign -1
+     (heegner.md:3253-3299), not the sign of -id in signature (2,9).
+
+2. ORIGINAL KEY B — R_gent = bar-rho^{-1}(P): MET.
+
+   lattices.md:740-742 proves both inclusions and ker(bar-rho) <= R_gent.
+
+   Actual checks:
+   - AEGS Definition 2.6 and Sterk Proposition 2.7 describe the same arithmetic
+     subgroup. Coordinate match checked directly: with Sterk m=(u,e),
+     m'=(u',e'), and third-summand h=-v, his involution is exactly AEGS
+     I_En(v,u,u',e,e')=(-v,u',u,e',e); the fixed diagonal polarization matches.
+   - kappa carries the U(2), E8(2) summands to their namesakes and intertwines
+     the extension action (:645-687). For g=phi oplus id_delta, membership in
+     gent is therefore exactly preservation of those blocks by bar-rho(phi).
+   - Every discriminant isometry fixes w, and restriction to w^perp is an
+     isomorphism (extend by id_w). Thus this condition is exactly bar-rho(phi)
+     in P, the ordered-decomposition stabilizer, not an order-only identification.
+   - lattices.md:1006-1043 gives the underlying page proof of
+     gent=rho^{-1}(M), rho(gent)=M. No Gamma_Co,2 monodromy equality is involved.
+
+3. ORIGINAL KEY C — index 2^7*17*31 = 67456: MET.
+
+   lattices.md:744-762 proves the index by two independent calculations.
+
+   Actual checks:
+   - On w^perp there are 528 singular classes including zero and 496 nonsingular
+     classes, so it is a ten-dimensional plus space (:744-750 and
+     heegner.md:1609-1637).
+   - For each of 527 nonzero singular a, b(a,b)=1/2 gives 512 choices of b.
+     Translation b -> b+a preserves this affine hyperplane and toggles q by
+     q(a)+2b(a,b)=1, leaving exactly 256 singular b. Each hyperbolic plane has
+     two nonzero singular vectors. Hence N=527*256/2=67456. Every complement
+     is an eight-dimensional plus space, so no decomposition is missed.
+   - Ordered hyperbolic bases independently give
+       |O_2^+(2)| = 2,
+       |O_8^+(2)| = 348364800,
+       |P| = 696729600,
+       |O(q_TCo)| = 527*256*348364800 = 46998591897600.
+     Their quotient is N. Orbit-stabilizer bounds the orbit by N, and equality
+     of the independently computed quotient with N forces exhaustiveness;
+     transitivity is not assumed (:750-758).
+   - Nikulin Theorem 3.6.3 is applicable because T_Co is even, indefinite of
+     signature (2,9), and 2-elementary. It gives
+     [O(T_Co):R_gent]=[O(q_TCo):P]=67456 (:728 and :744).
+   - Sterk Remark 2.12 independently prints the same group-order ratio (:760).
+   - Independent new computation, research/g4-788-final/checks/
+     independent-finite-check.py, exit 0 at the repair commit:
+       E8 determinant 1; 528/496 values; 134912 ordered pairs;
+       67456 distinct planes; all complements have 136 singular classes;
+       all 2048 characteristic identities; |P|=696729600;
+       |O_10^+|=46998591897600; |H^perp/H|=1024.
+     Output: research/g4-788-final/checks/independent-finite-check-output.txt.
+     This program does not reuse the existing index script.
+
+4. NIKULIN NUMBERED-STATEMENT AND HYPOTHESIS AUDIT: MET.
+
+   - Proposition 1.5.1, printed p.111: even primitive gluing and the
+     H^perp/H quotient formula. Used at lattices.md:702. (Proposition 1.4.1
+     states the most general overlattice correspondence, but 1.5.1 suffices
+     for this primitive-embedding application.)
+   - Corollary 1.5.2, printed p.111: compatible-isometry extension criterion.
+     Used at :726, with the identity on Z delta and preservation of H as its
+     exact specialization.
+   - Theorem 3.6.2, printed p.144: even 2-elementary genus/isometry-class
+     statement, with t_+,t_->0 for uniqueness. Here T_Co has signature (2,9),
+     a=11 and coparity 1 (:770); its explicit decomposition already verifies
+     the object, so this is not used as an extension theorem.
+   - Theorem 3.6.3, printed p.144, proof p.145: surjectivity for every even
+     indefinite 2-elementary lattice. T_Co satisfies these hypotheses. Its
+     maximal-discriminant-rank branch has a=rank=11 and the required U(2)
+     summand (:728).
+   - Characteristic-element material, Section 3.9, printed pp.149-150, and the
+     nondegenerate discriminant-form discussion preceding Theorem 1.3.1,
+     printed p.109, were read. The repaired proof now derives these two facts
+     directly (:712-724, :772-773), so no section-level citation is needed.
+   - Theorem 1.14.4, printed p.126: primitive-embedding uniqueness into an even
+     unimodular lattice, not an extension theorem for a fixed delta^perp.
+     It is correctly recorded as unused at :782. Its AEGS Lemma 2.4 use has
+     M=U(2)+E8(2) of signature (1,9) in L of signature (3,19): differences
+     (2,10)>0, odd-primary lengths zero and rank difference 12>=2; condition
+     (3) is vacuous because 12 != ell(A_{M_2})=10.
+   - AEGS Definition 2.6, printed p.587 (Lemma 2.4, p.586), and Sterk
+     Proposition 2.7, printed p.6 with proof p.7, were checked against the
+     degree-two group used above. Sterk Remark 2.12 is printed p.8.
+
+5. EVERY STEP PROVED ON THE PAGE OR SOURCED: MET after repair.
+
+   The dependency inventory is lattices.md:645-687 (kappa), :689-762 (G4),
+   :766-782 (input/source inventory), :1006-1043 (Sterk identification),
+   heegner.md:1609-1637 (finite blocks), and :3253-3312 (reflection signs).
+   Witt's extension theorem over a nondegenerate finite quadratic space is the
+   standard input used for the finite-form orbits and hyperbolic-basis counts;
+   its applicability is stated at heegner.md:1624-1625. No unstated reduction
+   to geometric monodromy, equal group orders, or a large run is made.
+
+   Repairs made:
+   - lattices.md:715-724 and :772-773 now prove the block values,
+     nondegeneracy, and characteristic class directly; the malformed
+     `Section 3.9--150` locators are gone. The unused embedding citation is
+     now explicitly `Thm. 1.14.4` at :782.
+   - The B2 text had literally written R<=gent and R=Stab_gent(delta), although
+     R<=O(T_Co) while gent<=O(T_En). cusps.md:54,78,84-88 now uses
+     Stab_gent(delta) on tilde-Y_k and its restriction image R on Y_k. This
+     is a genuine local type correction, not a change to the cusp statement.
+   - The U(2) block now says correctly that its three nonzero classes have
+     q-values 0,0,1 (lattices.md:715).
+
+6. G5 AND B2 CITE THE READ STATEMENT: MET (citation-use obligation only).
+
+   G5:
+   - lattices.md:919-936, lem:coble-monodromy-reverse-reduction, uses
+     R_gent=bar-rho^{-1}(P) with the correct O^+ intersection. Its repaired
+     proof at :934 multiplies a wrong-sign lift by s_h: s_h is integral,
+     discriminant-trivial and spinor-negative, so s_h*x is an O^+ lift with
+     the same discriminant image and remains in R_gent. Commit 2493cbeb8f's
+     correction is valid.
+   - moduli.md:32,36 cites prop:gamma-co-images(3), keeps R_gent and
+     R_gent cap O^+ distinct, and does not infer geometric realization.
+   No assessment that all of G5 is proved is made.
+
+   B2:
+   - cusps.md:24-36 states the same restriction image, R=bar-rho^{-1}(P), the
+     same decomposition, and index 67456, citing prop:gamma-co-images(3).
+   - Later uses at :303 and :314 correctly use bar-rho(R)=P.
+   - The domain repair at :54,78,84-88 makes the forgetful-map proof
+     well-typed: the Enriques stabilizer acts on tilde-Y_k; R acts on Y_k.
+
+7. CHECKS, INDEPENDENCE, AND UNVERIFIED ITEMS.
+
+   - Eight fresh moonshotai/kimi-k3.1-pro max reviews (Ultramath smwuwn7xz)
+     returned three-key MET verdicts. Each report was checked individually;
+     all eight were accepted after verification, and the swarm ended solved.
+     One report supplied the B2 domain finding repaired above. Unanimity was
+     not used as mathematical evidence.
+   - The independent finite program exited 0 at b8a83b4ba0. Its complete
+     output and a self-contained reading are in research/g4-788-final/.
+     The siege ledger gate there is PROVED #2, checked by model and compute.
+   - pandoc parsed lattices.md and cusps.md successfully.
+   - scripts/docs_check.py --source returned 29 missing-bibliography findings,
+     all on untouched material. No finding concerns the edited citations or
+     the B2 consumer. The bibliography was copied read-only from the shared
+     checkout; this is a local source audit, not CI.
+   - tests/engineering/test_coble_788_arithmetic_group_naming.py: 11/12.
+     The sole failure is test_no_page_asserts_non_membership_that_is_the_open_question,
+     on unchanged ksba.md wording, pre-existing at the reviewed base and not a
+     regression from these edits. The Sage/engineering suite was not run.
+   - just, uvx, and quarto are unavailable. The one-page Quarto renders were
+     not run; no full-book build or CI result is claimed. Lean was not used:
+     there is no Lean statement of this result and none was requested.
+   - The ordinary commit hook was unavailable because global Git hooks are not
+     installed. The repair was committed with --no-verify using the repository's
+     permitted non-preamble/docs path; the policy token is present in its message.
+
+8. PREVIOUS-SESSION CLAIM CHECK.
+
+   Commit 129caec400a3942a15acc509d52e9f9d6fb7c84b is an ancestor of reviewed
+   main. Its two content claims survive: open-questions.md:51 says the remaining
+   orbit issue is not the separation of 12 from 13, and ResearchStatement.md:154
+   keeps Gamma_Co and Gamma_Co,2 under their respective named questions. Later
+   main has changed the status of the degree-two question to false; this review
+   does not reopen or edit it. The previous report's 12/12 test result was not
+   reused: on current main the sentinel is 11/12 for the unrelated reason above.
+
+BOUNDARY: this verdict is arithmetic G4 plus its consumer-citation obligation.
+It is not a proof of G5, of a geometric monodromy equality, or of monodromy
+cusp counts for any group other than the lattice group R_gent named here.

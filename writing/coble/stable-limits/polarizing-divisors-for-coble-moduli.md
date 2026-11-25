@@ -148,7 +148,7 @@ Let $G\iscontainedin\Orth(\Lambda)$ be a subgroup of finite index (@def:index), 
 ::: {.proof}
 
 The stabilizer (@def:group-orbit) of $v$ in $G$ has finite index in $\Orth(\Lambda)$, so it is enough to treat a vector $v$ that $G$ fixes.
-Let $e\in\Lambda$ be isotropic (@def:orthogonal-complement) and $a\in\Lambda$ with $a\cdot e=0$. The Eichler--Siegel transvection $E_{e,a}$ of @def:eichler-siegel maps $\Lambda$ to itself, because $\Lambda$ is even (@def:form-axioms), and a substitution in its formula gives $E_{e,a}E_{e,b} = E_{e,a+b}$ for $a,b$ orthogonal to $e$.
+Let $e\in\Lambda$ be isotropic (@def:orthogonal-complement) and $a\in\Lambda$ with $a\cdot e=0$. The Eichler--Siegel transvection $E_{e,a}$ of @def:eichler-siegel maps $\Lambda$ to itself, because $\Lambda$ is even (@def:form-axioms) and hence $a^2$ is even for $a\in\Lambda$ (@prop:eichler-integrality-criterion), and a substitution in its formula gives $E_{e,a}E_{e,b} = E_{e,a+b}$ for $a,b$ orthogonal to $e$.
 So the elements $E_{e,ka}$, $k\in\ZZ$, form a cyclic subgroup, and $E_{e,Na}\in G$ for some $N\ge1$.
 Then
 $$

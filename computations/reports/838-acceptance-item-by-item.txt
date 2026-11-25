@@ -1,0 +1,64 @@
+research#838 — acceptance item by item
+Commit: this commit on main (the one carrying these edits), base 2493cbeb8feba311025d839995c4b8002d9ebbd4.
+Scope: the three acceptance clauses integral_group, rational_definition, application_audit.
+
+1. integral_group — MET.
+   Reference: writing/lattice-theory/arithmetic/eichler-transvections.md:22-36
+   (`def:eichler-group`) now generates E(L) only from transvections with
+   e in L primitive isotropic, div_L(e)=1, a in e^⊥ ∩ L, and a^2 in 2Z.
+   The sharp criterion is stated and proved at :38-66
+   (`prop:eichler-integrality-criterion`): E_{e,a} in O(L) iff a^2 is even.
+   Sufficiency: every summand of E_{e,a}(x)-x is integral; the inverse is
+   E_{e,-a}; both preserve L, so E_{e,a} is a bijection of L.
+   Necessity: div_L(e)=1 gives f with (e,f)=1, E_{e,a}(f)=f+a-((a,f)+a^2/2)e
+   in L forces (a^2/2)e in L, and primitivity gives Qe ∩ L = Ze.
+   Dissertation: writing/dissertation/sections/1-part-combinatorial/2-chapter-lattice-theory/400-group-actions.md:19
+   imposes a^2 in 2Z in the definition, and :23-45 proves the same iff
+   (`prop:siegel-transvection-integrality`).
+   Even lattices: the condition is automatic (:68, `def:eichler-group` remark),
+   so no even-lattice statement changes.
+
+2. rational_definition — MET.
+   `def:eichler-siegel` (eichler-transvections.md:5-20) is unchanged: same
+   formula, same rational domain e in L_Q, a in e^⊥ ∩ L_Q, conclusion in
+   O(L_Q).  The added sentence at :19 records only that it is a rational
+   isometry and defers integrality to `prop:eichler-integrality-criterion`;
+   no hypothesis, formula or codomain was altered.  The dissertation's
+   rational definition (400-group-actions.md:8-16) is likewise unchanged.
+
+3. application_audit — MET.
+   Reference theorem: `thm:eichler-criterion` (eichler-transvections.md:72-84)
+   now assumes L even and says the evenness is GHS's and is not removable;
+   `ex:eichler-criterion-fails-odd` (:96-107) is the odd unimodular
+   counterexample L = U ⊥ U_1 ⊥ Za, a^2 = -1, v = a, w = a+e, separated by
+   the characteristic form x·y mod 2, so not even O(L) carries v to w.
+   Consumers checked:
+   - writing/coble/compactifications/scattone-cusp-method.md:44-47 (E_iso(L)
+     for L even) now cites the criterion for its integrality;
+     `thm:scattone-eichler-criterion` (:65) already assumes L even.
+   - writing/coble/computations/discriminant-form-descent.md:981-990
+     (`prop:descent-eichler`) now assumes L even; the page's standing
+     hypothesis (`def:descent-class`, :26) is evenness, and the proof invokes
+     the criterion.
+   - writing/coble/lattices-and-moduli/discriminant-orbits-of-the-coble-lattice.md:331-332
+     records that T_Co is even, so what fails for the criterion on the scaled
+     T_Co = B(2) is the splitting hypothesis, not evenness; the no-unimodular-U
+     statement is `prop:tco-no-hyperbolic-plane` and is unchanged.
+   - Odd unscaled B model: every transvection used there already carries an
+     even-square parameter, now identified as the sharp criterion —
+     the-heegner-line-and-the-coble-arithmetic-group.md:2033 (k in K_ev),
+     :2348 (w_i in D^ev), integral-line-and-plane-lifting.md:211 (k in D^ev),
+     polarizing-divisors-for-coble-moduli.md:151 (Lambda even).
+   - Dissertation consumer: the Scattone orbit theorem
+     (400-group-actions.md, "even lattice that decomposes as L ≅ U^2 ⊕ M")
+     already assumes evenness; its proof's use of E(L) ⊆ discriminant kernel
+     is under that hypothesis.
+   No original claim was weakened: every statement that was true under
+   evenness keeps its statement, and the odd-lattice statements retain their
+   explicit even-square hypotheses.
+
+Open (not in this scope): the dissertation's sketch of Sterk's Proposition
+3.3 proof (475-our-cusps.md:286-297) constructs E_{f,c} with c read off a
+coset of T_En^#; T_En is even but c's lattice membership is not discussed
+there.  It is a sketch of a cited proposition, not an application of
+`thm:eichler-criterion`, and it was left untouched.

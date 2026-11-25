@@ -51,7 +51,7 @@ If $v\in T_\Co$ is primitive (@def:primitive-embedding) in $T_\Co$, it is primit
 Suppose $v = mw$ with $w\in\ten$ and $m>1$. Since $v\in T_\Co = \delta^{\perp\ten}$, $0 = v\cdot\delta = m\,(w\cdot\delta)$, hence $w\cdot\delta = 0$ and $w\in\delta^{\perp\ten} = T_\Co$. So $v$ is not primitive in $T_\Co$.
 :::
 
-Consequently a primitive isotropic line or plane of $T_\Co$ is a primitive isotropic line or plane of $\ten$. This, and $R\leq\gent$, is what makes the forgetful map on cusps below well defined; a $\gent$-orbit of lines or planes of $\ten$ need not however preserve $\delta^{\perp}=T_\Co$, and none of the arguments below uses such a statement.
+Consequently a primitive isotropic line or plane of $T_\Co$ is a primitive isotropic line or plane of $\ten$. Together with the fact that every $r\in R$ is the restriction of an element of $\Stab_{\gent}(\delta)$ (@prop:gamma-co-images(3)), this makes the forgetful map on cusps below well defined; a $\gent$-orbit of lines or planes of $\ten$ need not however preserve $\delta^{\perp}=T_\Co$, and none of the arguments below uses such a statement.
 
 ## The correspondence
 
@@ -75,17 +75,17 @@ $$
 :::
 
 ::: {.proof}
-$(1)$ A primitive isotropic line of $T_\Co$ is a primitive isotropic line of $\ten$ (@lem:primitivity-tco-in-ten), and $R\leq\gent$, so the $\gent$-orbit of $\ell$ depends only on the $R$-orbit of $\ell$.
+$(1)$ A primitive isotropic line of $T_\Co$ is a primitive isotropic line of $\ten$ (@lem:primitivity-tco-in-ten), and restriction sends $\Stab_{\gent}(\delta)$ onto $R$ (@prop:gamma-co-images(3)), so the $\gent$-orbit of $\ell$ depends only on the $R$-orbit of $\ell$.
 
 $(2)$ Let $\mathcal Y_k$ be the set of primitive isotropic lines $\ell\subset T_\Co$ with $[\ell]_{\gent} = [e_k]_{\gent}$, so that the fibre is the set $R\backslash\mathcal Y_k$ of $R$-orbits; and let $\tilde Y_k = \{\gamma\in\gent : \gamma e_k\perp\delta\}$, so that $\gamma\mapsto\gamma e_k$ is a surjection $\tilde Y_k\to\mathcal Y_k$ whose fibres are the cosets of $\Stab_{\gent}(e_k)$. Define
 $$
 \Psi_k\colon\tilde Y_k\longrightarrow L_k\definedas\{\alpha\in\ten : \alpha^2 = -2,\ \alpha\perp e_k\},\qquad \gamma\longmapsto \gamma^{-1}\delta .
 $$
-The target (@def:globular-boundary) is right: $(\gamma^{-1}\delta)\cdot e_k = \delta\cdot(\gamma e_k) = 0$ because $\gamma e_k\in T_\Co = \delta^{\perp}$, and $\delta^2 = -2$. The map is invariant under left multiplication by $R = \Stab_{\gent}(\delta)$, because $(r\gamma)^{-1}\delta = \gamma^{-1}r^{-1}\delta = \gamma^{-1}\delta$; and it is equivariant for right multiplication by $s\in\Stab_{\gent}(e_k)$, with $s e_k = \pm e_k$, acting on $L_k$ by $\alpha\mapsto s^{-1}\alpha$, which preserves $L_k$ because $(s^{-1}\alpha)\cdot e_k = \alpha\cdot(s e_k) = \pm\alpha\cdot e_k = 0$. It is surjective: for $\alpha\in L_k$, transitivity of $\gent$ on the $(-2)$-vectors of $\ten$ [@Ste91, 2.10] gives $\gamma\in\gent$ with $\gamma\alpha = \delta$, and then $\gamma e_k\perp\delta$ and $\Psi_k(\gamma) = \gamma^{-1}\delta = \alpha$. It is injective (@def:injective-map) on $R$-orbits: if $\gamma^{-1}\delta = \gamma'^{-1}\delta$ then $\gamma'\gamma^{-1}\delta = \delta$, so $\gamma'\gamma^{-1}\in R$ and $\gamma'$ lies in the $R$-orbit of $\gamma$. Hence $\Psi_k$ induces a bijection
+The target (@def:globular-boundary) is right: $(\gamma^{-1}\delta)\cdot e_k = \delta\cdot(\gamma e_k) = 0$ because $\gamma e_k\in T_\Co = \delta^{\perp}$, and $\delta^2 = -2$. The map is invariant under left multiplication by $\Stab_{\gent}(\delta)$, because $(r\gamma)^{-1}\delta = \gamma^{-1}r^{-1}\delta = \gamma^{-1}\delta$; and it is equivariant for right multiplication by $s\in\Stab_{\gent}(e_k)$, with $s e_k = \pm e_k$, acting on $L_k$ by $\alpha\mapsto s^{-1}\alpha$, which preserves $L_k$ because $(s^{-1}\alpha)\cdot e_k = \alpha\cdot(s e_k) = \pm\alpha\cdot e_k = 0$. It is surjective: for $\alpha\in L_k$, transitivity of $\gent$ on the $(-2)$-vectors of $\ten$ [@Ste91, 2.10] gives $\gamma\in\gent$ with $\gamma\alpha = \delta$, and then $\gamma e_k\perp\delta$ and $\Psi_k(\gamma) = \gamma^{-1}\delta = \alpha$. It is injective (@def:injective-map) on $\Stab_{\gent}(\delta)$-orbits: if $\gamma^{-1}\delta = \gamma'^{-1}\delta$ then $\gamma'\gamma^{-1}\delta = \delta$, so $\gamma'\gamma^{-1}\in\Stab_{\gent}(\delta)$ and $\gamma'$ lies in that stabilizer's orbit of $\gamma$. Hence $\Psi_k$ induces a bijection
 $$
-R\backslash\tilde Y_k/\Stab_{\gent}(e_k)\ \cong\ \Stab_{\gent}(e_k)\backslash L_k,
+\Stab_{\gent}(\delta)\backslash\tilde Y_k/\Stab_{\gent}(e_k)\ \cong\ \Stab_{\gent}(e_k)\backslash L_k,
 $$
-and the left-hand side is $R\backslash\mathcal Y_k$, the fibre.
+and restriction identifies the left-hand side with $R\backslash\mathcal Y_k$, the fibre, because $R$ is the image of $\Stab_{\gent}(\delta)$ (@prop:gamma-co-images(3)).
 
 $(3)$ The $0$-cusps of $F_{\En,2}$ are the $\gent$-orbits of primitive isotropic lines, and Sterk's five representatives exhaust them [@Ste91, (4.2.3)], so the cusp set of $F_{\En,2}$ is the disjoint union of the five orbits (@def:group-orbit) and (2) applies over each. For the second bijection, send the $R$-orbit of $\ell$ to the $\gent$-orbit of $(\ell,\delta)$, and the $\gent$-orbit of $(\ell,\alpha)$ to the $R$-orbit of $\gamma\ell$, where $\gamma\in\gent$ is any element with $\gamma\alpha = \delta$; that $\gamma\ell\subset T_\Co$ and that its $R$-orbit does not depend on $\gamma$ are the computations of (2), and the two assignments are inverse by construction.
 :::
