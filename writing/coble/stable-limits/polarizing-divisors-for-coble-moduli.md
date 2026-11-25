@@ -389,7 +389,7 @@ For the plane model the hypotheses are these.
 
 The conclusion is a statement about $F_{S_\Co}=\bD(T_\Co)/\ker\rho$, the space of surfaces with the ten curves ordered, and not about $\bD(T_\Co)/\Gamma_P$: the map from $F_{S_\Co}$ to the pairs forgets the order, so it has degree $10!$ onto $Z_P$ and is not the embedding that [@AE23, Rem. 6.10 and Prop. 6.12, arXiv v3 p. 17] suppose. So [@AE23, Thm. 9.1] is to be read for the group $\Gamma_P$: the normalization of $\bar Z_P$ is the semitoroidal compactification of $\bD(T_\Co)/\Gamma_P$ for the restricted semifan, which is $\Gamma_P$-invariant because the semifan of $F_2$ is invariant under the group of $F_2$.
 The proof in [@AE23] of the restriction statement is two sentences and rests on "the functoriality of the stable pair and semitoroidal constructions under restriction to Noether--Lefschetz subdomains"; the same step is used for the Enriques locus in the proof of [@AEGS25, Thm. 5.9, arXiv v2 p. 31], for a group that is also a stabilizer and not a pointwise stabilizer of $M'$.
-This volume records that step as @prob:restricted-semifan. It is not proved on this page, and @thm:coble-plane-model-compactification does not use it.
+The normalized-closure assertion is proved below in @thm:coble-semitoroidal-normalized-closure and applied in @cor:coble-polarized-semitoroidal-closures. This supplies the geometric normalization part of @prob:restricted-semifan without assuming the general combinatorial constancy statement for the Coble stable-pair family.
 
 A second published statement applies to the divisor of (1): for a K3 surface with a nonsymplectic group action, a combination of fixed curves and of $(-2)$-curves of the generic Picard lattice that is big and nef is said to be recognizable "with the same proof" [@AEH24, §5B, arXiv v2 p. 17]. The divisor $\bar C+\sum_if^*E_i$ is such a combination. The ten curves are not preserved by the monodromy of $\bD(T_\Co)/\Orth(T_\Co)$, so the statement is again one about a cover.
 :::
@@ -449,7 +449,46 @@ On the dense locus of @prop:coble-nodal-ksba-specialization, the pair $(Z,\eps\b
 :::
 
 
-That the normalization of $W_\Delta$ is the semitoroidal compactification for the semifans of @thm:coble-pair-semifan is @prob:restricted-semifan.
+::: {.theorem #thm:coble-semitoroidal-normalized-closure title="Normalization of a type IV subdomain closure"}
+
+Let $V\subset V'$ be a rational nondegenerate quadratic subspace of signature $(2,n)$ in signature $(2,n')$, with $n\ge3$. Let $G'$ be an integral congruence arithmetic group on $V'$, and $H$ the image on $V$ of its setwise subdomain stabilizer. Use connected domains and component-preserving actions. Suppose $X=\bD(V)/H\to Y=\bD(V')/G'$ is generically injective. For a semitoroidal compactification $\overline Y^{\mathcal F}$, the normalization $Z$ of the reduced closure of $X$ in it is the semitoroidal compactification of $X$ whose maximal cones are the full-dimensional intersections of the ambient semifan with the cusp subspaces of $V$. The faces and rank-two compatibility data are those of this resulting semifan.
+
+:::
+
+::: {.proof}
+
+Choose an ambient toroidal fan $\mathcal G$ refining $\mathcal F$ by [@AE23, Thm. 5.14]. For each primitive isotropic line $I$ in $V$ the inclusion of cusp spaces is $I^{\perp V}/I\hookrightarrow I^{\perp V'}/I$. Intersect the ambient fan with these subspaces to obtain $\mathcal G_X$. The finite toroidal and minimal maps with these induced cones are supplied by K.-W. Lan, [*Closed immersions of toroidal compactifications of Shimura varieties*, Math. Res. Lett. 29 (2022), 487--528](https://doi.org/10.4310/MRL.2022.v29.n2.a8), Proposition 3.4(1)--(5), in Case (1), with the weaker level-inclusion hypothesis of Proposition 3.4. In particular part (4) specifies the induced cones, and part (5) gives finiteness, not just properness, for that choice.
+
+For application to these arithmetic quotients, take a normal neat principal congruence subgroup of the ambient group, preserving the component and with determinant one. Take it sufficiently deep that its subdomain stabilizer acts trivially on the negative definite orthogonal complement of $V$: the integral isometry group of the complementary lattice is finite. The source group on this level is the induced congruence group for the inclusion $\mathrm{SO}(V)\hookrightarrow\mathrm{SO}(V')$ acting identically on the orthogonal complement. This inclusion respects the type IV Shimura data. The rational cusp-space maps are precisely the above inclusions and their rank-two analogues. The rational cones are unchanged on passing to the neat level. Every element of $H$ lifts to the original ambient stabilizer, so the intersection fan is $H$-invariant. The maps descend after composition with the maps to the original targets: invariance under the finite level quotient holds on the dense domain and hence everywhere by separatedness. The descended maps are proper with finite fibres, hence finite. This argument requires neither that the original group be neat nor that the subdomain image be embedded without self-intersections.
+
+The toroidal map $X^{\mathcal G_X}\to\overline Y^{\mathcal F}$ factors through $Z$, by dominance onto the reduced closure and normality of the source. The minimal map $X^{\mathrm{BB}}\to Y^{\mathrm{BB}}$ is finite and generically injective, so $X^{\mathrm{BB}}$ is the normalization of its reduced image. Thus the map from $Z$ to that image factors through $X^{\mathrm{BB}}$. Over the open period locus the same normalization identifies the interior with $X$, and boundary maps to minimal boundary by Lan, Proposition 3.4(1) and the compatibility of the minimal and toroidal maps. We have the sandwich
+$
+X^{\mathcal G_X}\longrightarrow Z\longrightarrow X^{\mathrm{BB}}
+$
+extending the identity on $X$. Theorem 5.14 of [@AE23] applies, proving that $Z$ is semitoroidal.
+
+To determine its semifan, use the contracted-curve construction in the proof of that theorem. Let $\tau$ be the codimension-one face between adjacent full-dimensional cones of $\mathcal G_X$. Its relative interior meets the positive cone because $n\ge3$. Denote the real source and ambient cusp spaces by $B\subset B'$, and let $\kappa$ be the ambient semifan cone whose relative interior contains the relative interior of $\tau$. This is well defined by the induced fan and the ambient refinement. On the dense one-dimensional torus of the boundary curve of $\tau$, the cocharacter map to the ambient semitoroidal stratum is
+$
+B/\operatorname{span}\tau\ \longrightarrow\ B'/\operatorname{span}\kappa.
+$
+This is the composite of the torus map of Lan, Proposition 3.4(2)--(3), and the torus quotient in [@AE23, Thm. 5.13]. Finite arithmetic quotients and the finite normalization map do not change whether the curve is contracted. The displayed map is zero exactly when $B\subset\operatorname{span}\kappa$. At a relative interior point of $\tau$ the cone $\kappa$ contains a neighborhood in its span; thus this zero condition holds exactly when the two adjacent source cones lie in the same full-dimensional intersection $\kappa\cap B$. The converse follows by taking a neighborhood across their common face. The chambers in each such intersection are connected by these adjacencies: join interior points by a path in the convex intersection inside the positive cone, avoiding codimension-two faces. Local finiteness gives finitely many crossings. Hence the maximal merged cones in the proof of Theorem 5.14 are exactly the full-dimensional intersections. The same theorem supplies the faces, admissibility and rank-two compatibility. This proves the assertion on the normalization without assuming that distinct branches are disjoint in the unnormalized closure.
+
+:::
+
+::: {.corollary #cor:coble-polarized-semitoroidal-closures title="Normalized Coble stable-pair closures"}
+
+The normalization of $\bar Z_P$ in @thm:coble-plane-model-compactification is the semitoroidal compactification for the restricted degree-two K3 ramification semifan. The normalization of $\bar\Delta$ in @thm:coble-degree-two-compactification is the semitoroidal compactification for the restrictions $\mathcal F^k\cap\delta^\perp$, $k=2,3,4,5$, of @thm:coble-pair-semifan.
+
+:::
+
+::: {.proof}
+
+For the plane model take $V=T_\Co\otimes\QQ\subset V'=e_0^\perp\otimes\QQ$. The ambient group contains the discriminant kernel by unimodular gluing, and so is congruence. The stabilizer image and generically injective map are those of @prop:coble-plane-model-space. Algebraicity and the finite minimal extension follow from the neat-level construction in @thm:coble-semitoroidal-normalized-closure. Apply that theorem to the ambient semitoroidal normalization of [@AET23, Thm. 1.2]. The resulting normalized closure maps finitely onto the closure of the stable pairs. On the general double-plane locus the pair determines the minimal resolution and the pullback of the ramification divisor, of class $3e_0$; the Picard group of a smooth K3 is torsion-free, so the polarization $e_0$ is recovered. The polarized period therefore is recovered, by Torelli. The finite map is birational, so it is the normalization of the stable-pair closure.
+
+For the numerical degree-two model use $V=T_\Co\otimes\QQ=\delta^\perp\subset T_\En\otimes\QQ$ and the ambient group $\Gamma_{\En,2}$, which contains the discriminant kernel by unimodular gluing with the identity on $S_\En$ fixing the polarization. The setwise stabilizer of the rational line $\QQ\delta$ sends its primitive vector to $\pm\delta$; the reflection in $\delta$ belongs to $\Gamma_{\En,2}$ and is trivial on its perpendicular, so its stabilizer image is exactly $R_{\gent}$. The interior map is generically injective by @prop:coble-degree-two-space(2) and its referenced normalization. Apply @thm:coble-semitoroidal-normalized-closure with [@AEGS25, Thm. 5.9]. The normalization of $W_\Delta$ is the asserted restricted compactification, and @cor:coble-degree-two-ksba-normalization identifies it with the normalization of $\bar\Delta$. Both assertions concern arithmetic compactifications; neither asserts that the actual geometric family monodromy equals a stabilizer image.
+
+:::
+
 
 The published theorem for a fixed curve of genus at least $2$ does apply to the K3 cover of a surface with a degree-$2$ polarization, for a second involution.
 The K3 cover of a surface of @prop:coble-quarter-singularity is the minimal resolution of a double cover of $\PP^1\times\PP^1$ branched along a curve of bidegree $(4,4)$ with one node. Such resolutions, with the covering involution, form the family of type $(3,3,1)$: it is the $(+1,+1)$-move from $(2,2,0)$, on which the fixed curve of genus $9$ acquires a node and the fixed curve of the limit has genus $8$ [@AE22, Lemma 4.10, arXiv v2 p. 19].
