@@ -1060,7 +1060,7 @@ For a primitive totally isotropic plane $\varPi\subseteq\ten$ let $D(\varPi)\leq
 
 ::: {.proof}
 
-(1) The vectors $e$, $e'$ and $z$ are isotropic and pairwise orthogonal: $(2e+2f)^2 = 8$ and $\alpha^2 = -2\cdot4 = -8$.
+(1) The vectors $e$, $e'$ and $z$ are isotropic, since $(2e+2f)^2=8$ and $\alpha^2=-2\cdot4=-8$. The summand $U(2)$ is orthogonal to $U\perp E_8(2)$, so $(e,e')=(z,e')=0$. These are precisely the orthogonality relations required for the two displayed planes; $(e,z)=2$ is nonzero.
 The vector $\alpha/2$ corresponds to $e_1\notin E_8$, so $z$ is primitive in $U\oplus E_8(2)$, and $e'$ is primitive in $U(2)$; a span of primitive vectors of two orthogonal summands is primitive in their sum, so $\varPi_2$ is primitive, and so is $\varPi_1$.
 The vector $e$ has divisibility one.
 For a primitive $az+be'\in\varPi_2$, the ideal $(az+be',\ten)$ contains $(az+be',f) = 2a$ and $(az+be',f') = 2b$, and it lies in $2\ZZ$ because $(z,\ten)$ and $(e',\ten)$ do; so $az+be'$ has divisibility two.
