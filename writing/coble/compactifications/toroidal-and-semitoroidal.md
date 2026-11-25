@@ -251,7 +251,7 @@ $\Gamma$-admissibility: an element of $\Gamma$ fixing $\eta$ carries a degenerat
 
 Two basic examples of recognizable divisors:
 
-1. The **rational curve divisor** $R_{\rcop} = \Sum R_i$ (the sum of all smooth rational curves in $|L|$), recognizable for all $d$ [@AE23]. The assertion is also readable in a deposited source: [@AE23a] states that $R_{\rcop}$ "was proven to be recognizable in" [@AE23], and gives $R_{\rcop}\in|n_dL|$.
+1. The **rational curve divisor** $R_{\rcop} = \Sum R_i$ (the sum of rational curves in $|L|$ on the generic surface, as in [@AE23, Def. 10.3], with the special-fibre multiplicities of [@AE23, Def. 10.6]), recognizable for all $d$ [@AE23]. The assertion is also readable in a deposited source: [@AE23a] states that $R_{\rcop}$ "was proven to be recognizable in" [@AE23], and gives $R_{\rcop}\in|n_dL|$.
 
 2. The **ramification divisor** $R_\iota$ of a nonsymplectic involution.
 
@@ -335,23 +335,32 @@ Then, with $I=V-J$, $W_J=\langle w_j\mid j\in J\rangle$ and $L=\Union_{h\in W_J}
 *Step 3: the properties.* Assertions (2), (3) and (4) are [@AET23, Prop. 4.17, printed pp. 26--27] and [@AET23, Cor. 4.18, printed p. 27], in whose notation $I$ is the set of active and $J$ the set of inactive mirrors, with the fan criterion of [@AE22, Rem. 9.11, printed p. 57] and [@AET23, Rem. 4.19, printed p. 27]. The first clause of (W) is what makes Step 2 legitimate: without it a semifan may cut the interior of a chamber, and @prop:semifan-coarsening-fails exhibits exactly that.
 :::
 
-::: {.proposition #prop:semifan-coarsening-extension title="(W) is the extension of the universal family over the Coxeter toroidal compactification"}
+::: {.proposition #prop:semifan-coarsening-extension title="Coarsening and extension of the stable-pair classifying map"}
 
-Let $R$ be a recognizable polarizing divisor for $F_S$ and let $\eta$ be a $0$-cusp. Then the coarsening clause of (W) --- that every cone (@def:closed-cone) of $\mcf_{R,\eta}$ is a union of cones of the Coxeter semifan (@def:coxeter-semifan), equivalently that the Coxeter fan $\mcf^{\mathrm{cox}}$ refines $\mcf_{R,\eta}$ --- is equivalent to each of the following:
+Let $F_S$ be a type IV moduli quotient of lattice-polarized K3 surfaces, $R$ a recognizable divisor for which [@AE23, Thm. 9.1] applies, and $\mcf_R$ its collection of semifans. Write $Y_R$ for the coarse KSBA compactification, whose normalization is $\overline F^{\mcf_R}$. Suppose the Coxeter fans form an admissible collection $\mcf^{\mathrm{cox}}$.
 
-1. the family of stable pairs $(X,\eps R)$ extends from $F_S$ to a family of stable pairs over the toroidal compactification $\overline F^{\mcf^{\mathrm{cox}}}$;
-2. there is a morphism $\overline F^{\mcf^{\mathrm{cox}}}\to\overline F^{\mcf_R}$ over the Baily--Borel compactification, and the family of item 1 is the pullback (@def:pullback-square) under it of the family over $\overline F^{\mcf_R}$.
+The following are equivalent.
+
+1. At every $0$-cusp, $\mcf^{\mathrm{cox}}$ refines $\mcf_R$.
+2. The identity on $F_S$ extends to a morphism $\overline F^{\mcf^{\mathrm{cox}}}\to\overline F^{\mcf_R}$ over the Baily--Borel compactification.
+3. The classifying map for the pairs $(X,\eps R)$ extends to a morphism $\overline F^{\mcf^{\mathrm{cox}}}\to Y_R$.
+
+In particular, failure of the coarsening at even one $0$-cusp rules out an extension of the family of stable pairs over the Coxeter toroidal compactification. The converse assertion about existence of a family on the coarse space is not part of the equivalence.
+
 :::
 
 ::: {.proof}
 
-The family over $\overline F^{\mcf_R}$ is what the identification of @thm:semifan-stratum supplies, $\overline F^{\mcf_R}$ being the normalization of the KSBA compactification.
+The normalization statement is [@AE23, Thm. 9.1], and the normalized space maps to the Baily--Borel compactification by its semitoroidal construction.
 
-*Item 1 implies item 2.* A family of stable pairs over $\overline F^{\mcf^{\mathrm{cox}}}$ restricts to the universal family (@def:classifying-object) on $F_S$, so it and the universal family are classified by the same map to the moduli of stable pairs, which therefore extends over the boundary; that map is the required morphism, and the family is its pullback.
+(1) implies (2) by [@AE23, Thm. 5.13], and (2) implies (3) by composition with the normalization map.
 
-*The coarsening implies item 2.* A refinement of semifans gives a morphism of the semitoroidal compactifications, which is @prop:semifan-refinement-morphism [@AE23, Thm. 5.13; @Loo02, Lem. 6.6].
+For (3) implies (2), the classifying map is dominant, since it is the identity on the dense common moduli open set. The toroidal compactification is normal. The universal property of normalization therefore factors the morphism uniquely through $\overline F^{\mcf_R}$. The two resulting maps to the Baily--Borel compactification agree on $F_S$, so agree everywhere by separatedness.
 
-*Item 1 implies the coarsening.* A family of stable pairs over $\overline F^{\mcf^{\mathrm{cox}}}$ is flat, so its combinatorial type is locally constant on the base, hence constant on each boundary stratum of the toroidal compactification, the strata being connected. By @thm:semifan-stratum the cones of $\mcf_{R,\eta}$ are the loci of constant combinatorial type, so every cone of $\mcf^{\mathrm{cox}}$ lies in a cone of $\mcf_{R,\eta}$.
+For (2) implies (1), apply the proof of [@AE23, Thm. 5.14] to the specified morphism from the toroidal compactification for $\mcf^{\mathrm{cox}}$. In that proof the semifan of the normal target is constructed by merging maximal cones of the given source fan along the codimension-one faces whose corresponding boundary curves are contracted; it is a coarsening of the given fan. The uniqueness of the semifan for the normalization of $Y_R$ in [@AE23, Thm. 9.1] identifies that coarsening with $\mcf_R$. This argument uses the given source fan, not merely the existence of some toroidal compactification dominating $Y_R$.
+
+An extending stable family would induce the morphism of item 3 by composition of its map to the stack of stable pairs with the coarse moduli morphism. Consequently failure of item 1 at one cusp precludes such a family. No fine moduli property of $Y_R$ is needed for this implication. Existence of the coarse morphism alone does not supply a lift to the stack and hence does not prove existence of a universal family on the coarse space. Nor does flatness by itself imply local constancy of the combinatorial type of stable fibres.
+
 :::
 
 ::: {.proposition #prop:semifan-coarsening-fails title="(W) is not automatic: the rational-curve divisor on the elliptic locus"}
@@ -482,31 +491,28 @@ For the second class the answer is now known at $d=1$: by @lem:rcop-refinement-c
 
 ::: {.lemma #lem:rcop-refinement-criterion title="The rational-curve divisor does not coarsen the Coxeter semifan at the $F_2$ cusp"}
 
-Let $d=1$ and let $\eta$ be the unique $0$-cusp of $F_2$, with boundary lattice $U\oplus E_8(-1)^{\oplus 2}\oplus A_1(-1)$, Coxeter diagram (@def:coxeter-matrix) $\Gamma$ of twenty-four roots and cone (@def:closed-cone) inventory as printed in @thm:cone-inventory-printed. Then the rational-curve divisor $R_{\rcop}$ has a cone of $\mcf_{R_{\rcop},\eta}$ that is not a union of cones of $\mcf^{\mathrm{cox}}$, and consequently the universal family (@def:classifying-object) of stable pairs $(X,\eps R_{\rcop})$ does not extend over the toroidal compactification $\overline F_2^{\mcf^{\mathrm{cox}}}$ (@prop:semifan-coarsening-extension).
+Let $d=1$ and let $\eta$ be the unique $0$-cusp of $F_2$, with boundary lattice $N=U\oplus E_8(-1)^{\oplus2}\oplus A_1(-1)$ and Coxeter diagram of twenty-four roots as in [@AET23, Def. 4.1] and @thm:cone-inventory-printed. Then the rational-curve divisor $R_{\rcop}$ has a cone of $\mcf_{R_{\rcop},\eta}$ that is not a union of cones of $\mcf^{\mathrm{cox}}$. Consequently the classifying map of the pairs $(X,\eps R_{\rcop})$ does not extend over the Coxeter toroidal compactification, and neither does a family of stable pairs inducing that map.
+
 :::
 
 ::: {.proof}
 
-*The cusp and the unigonal hyperplane.* A quasipolarized K3 surface of degree (@def:graded-object) (@def:numerical-polarization) $2d$ is unigonal when it is elliptic with $L=s+(d+1)f$ [@AE23, Def. 10.9, printed p. 36], and on a unigonal surface the rational-curve divisor is $R_{\rcop}=n_d\bigl(s+\frac{d+1}{24}\sum_{i=1}^{24}f_i\bigr)$ [@AE23, Prop. 10.10, printed p. 36]. The $0$-cusps of $F_{2d}$ number $\lfloor (N+2)/2\rfloor$, where $d=N^2d_0$ with $d_0$ squarefree [@AE23, §10C, printed p. 37]; for $d=1$ there is exactly one, and its invariant is $\delta^*=2qNd_0=0$ with $q\in\ZZ/N\ZZ$, which for $N=1$ forces $q=0$, that is $p_*(\delta)=1$. Its boundary lattice is $\delta^\perp/\delta\cong\langle-2\rangle\oplus U\oplus E_8(-1)^{\oplus2}=N$ [@AE23, §10C, printed p. 38], with $H=U$ the hyperbolic plane (@def:hyperbolic-plane) and $E_8$ carrying the negative definite (@def:definiteness) form of the K3 lattice; at $d=1$ the cusp has $p_*(\delta)=1$, the case in which the printed first summand $\langle-2d/p_*(\delta)\rangle$ is $\langle-2\rangle$ (@lem:cusp-lattice-p-greater-one). Write $t$ for a generator of the $A_1(-1)$ summand, so that $N=\langle t\rangle\oplus U\oplus E_8(-1)^{\oplus2}$, $t^2=-2$ and $t^\perp=U\oplus E_8(-1)^{\oplus2}$: this is the unigonal hyperplane $\langle-2d\rangle^\perp$ of [@AE23, Thm. 10.16, printed p. 38] at $d=1$.
+The divisor is the rational-curve divisor of [@AE23, Def. 10.3] (extended to special surfaces as in that paper), recognizable by [@AE23, Thm. 10.11]. At $d=1$ the primitive isotropic cusp has invariant $p_*(\delta)=1$ by [@AE23, §10C]. Put $M=U\oplus E_8(-1)^{\oplus2}$ and write $N=\ZZ t\perp M$ with $t^2=-2$. Thus the unigonal hyperplane is $M_\RR=t^\perp$.
 
-*The cone of the semifan.* Let $\mcf_{R_{\rcop},\eta}=\mcf^{\mathrm{rc}}_\delta$ be the semifan of [@AE23, Def. 10.15, printed p. 38]. By [@AE23, Thm. 10.16, printed p. 38] the restriction of $\mcf_{R_{\rcop},\eta}$ to $t^\perp$ is a fan and $\langle-2d\rangle^\perp\cap C_\delta^+$ is a union of cones of $\mcf^{\mathrm{rc}}_\delta$; the proof of the theorem identifies that restriction with the fan of [@ABE22, §4C, printed p. 14] and shows that each of its maximal cones (@def:maximal-cone-of-fan) is itself a cone of $\mcf^{\mathrm{rc}}_\delta$, not only a slice of a $19$-dimensional cone. By [@ABE22, §4C, printed p. 14] that fan subdivides the Coxeter chamber (@def:coble-polarization-classes) $P\subset t^\perp$ by the hyperplanes $\beta_L^\perp,\gamma_L^\perp,\beta_R^\perp,\gamma_R^\perp$ into nine cones $\sigma_{LR}$, and $\sigma_{22}$ has facets (@def:facet-maximal-face) on $\gamma_L^\perp$ and on $\beta_L^\perp$ that meet the interior of $P$. Put $h_\gamma=\sigma_{22}\cap\gamma_L^\perp$ and $h_\beta=\sigma_{22}\cap\beta_L^\perp$; both are $17$-dimensional cones in $t^\perp$.
+*The Coxeter fan on the hyperplane.* By [@AET23, Def. 4.1], the Coxeter fan in the positive cone of $N$ is cut out by the mirrors of all $r\in N$ with $r^2=-2$. In the integral orthogonal decomposition write $r=at+w$, $a\in\ZZ$, $w\in M$. Then
+$$
+w^2=2a^2-2.
+$$
+If $a=0$, the mirror restricts to the mirror of the root $w$ of $M$. Conversely every root of $M$ occurs this way. If $a\ne0$ and $w\ne0$, then $w^2\ge0$, so its perpendicular in $M_\RR$ contains no positive vector: the orthogonal complement of any positive vector in signature $(1,17)$ is negative definite. If $w=0$, the equation forces $a=\pm1$, and the mirror is the entire unigonal hyperplane. Thus no other ambient root mirror cuts the positive cone in $t^\perp$. Since $t$ is itself a root, the positive part of $t^\perp$ is a union of faces of the ambient Coxeter fan, and the induced chamber decomposition there is exactly the Coxeter chamber decomposition of $M$. In particular, in the positive part of $t^\perp$, the relative interior of an $M$-Coxeter chamber $P$ is a single relative-interior stratum of the ambient fan.
 
-*The cutting vectors are primitive.* In [@ABE22, §4C, printed p. 14],
-$$\beta_L=\alpha_3+2\alpha_2-\alpha_1,\qquad \gamma_L=\alpha_3-\alpha_1,$$
-and in the diagram of [@ABE22, Fig. 1, printed p. 12] the vertex $\alpha_1$ is pendant at $\alpha_4$ and $\alpha_2,\dots,\alpha_{18}$ is a chain, so that $\alpha_1\cdot\alpha_2=\alpha_1\cdot\alpha_3=0$ and $\alpha_2\cdot\alpha_3=1$. Hence
-$$\beta_L\cdot\alpha_1=2,\qquad \beta_L\cdot\alpha_2=-3,\qquad \gamma_L\cdot\alpha_2=1,\qquad \beta_L^2=-8,\qquad \gamma_L^2=-4,$$
-the three values $\beta_L\cdot\alpha_1=2$, $\beta_L^2=-8$ and $\gamma_L^2=-4$ being printed in [@ABE22, §4C, printed p. 14]. A vector pairing to $1$ with a vector of the lattice is primitive, and so is one whose pairings with $\alpha_1$ and $\alpha_2$ have gcd $1$; hence $\gamma_L$ and $\beta_L$ are primitive in $U\oplus E_8(-1)^{\oplus2}$.
+*The cone of the rational-curve semifan.* By [@AE23, Thm. 10.16 and proof], restriction of the rational-curve semifan to the unigonal hyperplane is the elliptic rational-curve fan of [@ABE22, §4C]. The same theorem, including the deformation argument in its proof, shows that its eighteen-dimensional maximal cones are actual cones of the ambient semifan, not just intersections with the hyperplane. This statement applies at $d=1$: the proof explicitly handles the smaller coefficient $m=(d+1)/24\le1/3$ by identifying the unchanged stratum function.
 
-*Neither facet is a mirror (@not:hyperbolic-polytope-setting) trace.* The walls (@not:coxeter-polytope-faces) of $\mcf^{\mathrm{cox}}$ are the mirrors of the vectors of square $-2$ [@AET23, Def. 4.1, printed p. 21], and the twenty-four simple roots of the diagram are such vectors [@AET23, §5C, printed p. 29; Fig. 1, printed p. 22]. Let $r\in N$ be one with $h_\gamma\subset r^\perp$. The span of $h_\gamma$ is $\gamma_L^\perp\cap t^\perp$, so $r$ lies in its orthogonal complement, $\operatorname{span}(t,\gamma_L)$: write $r=at+k\gamma_L$, with $a\in\ZZ$ and $k\in\ZZ$, the latter because $\gamma_L$ is primitive. Then
-$$-2=r^2=-2a^2+k^2\gamma_L^2=-2a^2-4k^2,$$
-so $a^2+2k^2=1$ and $k=0$: the only root whose mirror contains $h_\gamma$ is $r=\pm t$, that is the mirror $t^\perp$ itself. The same computation with $\beta_L$, whose square is $-8$, gives $a^2+4k^2=1$ and again $k=0$. So neither $h_\gamma$ nor $h_\beta$ is contained in the mirror of a root other than $t^\perp$.
+By [@ABE22, §4C, Fig. 2 and (4.2)], the elliptic rational-curve fan cuts $P$ into nine distinct full-dimensional cones $\sigma_{LR}$, with $L,R\in\{1,2,3\}$. In particular $\sigma_{22}$ is a proper subcone of $P$ and its relative interior meets the relative interior of $P$ in the positive cone. Choose $x$ in that intersection. The only relative-interior stratum of the ambient Coxeter fan containing $x$ is the relative interior of the cone $P$ (within the positive cone). If $\sigma_{22}$ were a union of cones of the ambient Coxeter fan, one of those cones containing $x$ would have $P$ as a face, and hence would contain all of $P$. This contradicts $\sigma_{22}\subsetneq P$. Thus $\sigma_{22}$ is an actual cone of the rational-curve semifan which is not such a union. The calculation does not require the full rational-curve semifan away from the unigonal hyperplane, any root truncation, or a general unproved Heegner restriction result.
 
-A vector of square $-4$ does not cut the fan, and such vectors do exist: $\gamma_L$ itself has $\gamma_L^2=-4$, so the mirror $\gamma_L^\perp$ contains $h_\gamma$ and is not a wall of $\mcf^{\mathrm{cox}}$ [@AET23, Def. 4.1, printed p. 21]. What the computation above excludes is exactly the walls: no $(-2)$-vector other than $\pm t$ has its mirror through $h_\gamma$ or $h_\beta$.
+The nonextension of the coarse classifying map, and hence of any stable family inducing it, follows from @prop:semifan-coarsening-extension.
 
-*A union of Coxeter cones cannot have $h_\gamma$ as a facet.* Suppose that $\sigma_{22}$ were a union of cones of $\mcf^{\mathrm{cox}}_\eta$. The mirrors of $\mcf^{\mathrm{cox}}_\eta$ are locally finite and $h_\gamma$ is contained in none of them other than $t^\perp$, so a relative interior point $x$ of $h_\gamma$ that lies in the interior of $P$ lies on no mirror other than $t^\perp$. The cone of $\mcf^{\mathrm{cox}}_\eta$ whose relative interior contains $x$ is then the facet $F$ of a chamber along $t^\perp$, and $F$ is $18$-dimensional. Since $x\in\sigma_{22}$, the cone of the fan whose relative interior contains $x$ is contained in $\sigma_{22}$, so $F\subset\sigma_{22}$. But $F$ and $\sigma_{22}$ are both $18$-dimensional, so $x$ is a relative interior point of $\sigma_{22}$, whereas it lies in the facet $h_\gamma$ of $\sigma_{22}$. This is a contradiction.
-
-So $\sigma_{22}$ is a cone of $\mcf_{R_{\rcop},\eta}$ that is not a union of cones of $\mcf^{\mathrm{cox}}_\eta$: the coarsening clause of (W) fails for $R_{\rcop}$ at $\eta$. By @prop:semifan-coarsening-extension the universal family of stable pairs $(X,\eps R_{\rcop})$ does not extend over $\overline F_2^{\mcf^{\mathrm{cox}}}$.
 :::
+
 
 ::: {.lemma #lem:cusp-lattice-p-greater-one title="The boundary lattice at every cusp with $p_*>1$"}
 
