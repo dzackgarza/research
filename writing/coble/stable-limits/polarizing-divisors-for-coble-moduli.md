@@ -555,8 +555,8 @@ Then $\mcf_A$ is not $\Orth(T_\Co)$-invariant.
 
 ::: {.proof}
 
-The primitive (@def:primitive-embedding) isotropic vectors (@def:isotropic-subspace) of $T_\Co$ form one orbit (@def:group-orbit) of $\Orth(T_\Co)$ (@thm:unpolarized-cusps), so an element $g$ carries the cusp over $k=2$ to the cusp over $k=3$, and it induces an isometry of their boundary lattices.
-If $\mcf_A$ were invariant, this isometry would carry $\mcf^2\intersect\delta^{\perp}$ to $\mcf^3\intersect\delta^{\perp}$.
+The primitive (@def:primitive-embedding) isotropic vectors (@def:isotropic-subspace) of $T_\Co$ form one orbit (@def:group-orbit) of $\Orth(T_\Co)$ (@thm:unpolarized-cusps), so an element $g$ carries the cusp over $k=2$ to the cusp over $k=5$, and it induces an isometry of their boundary lattices.
+If $\mcf_A$ were invariant, this isometry would carry $\mcf^2\intersect\delta^{\perp}$ to $\mcf^5\intersect\delta^{\perp}$.
 By @thm:coble-pair-semifan(3) the first is a fan and the second is not, and the image of a fan under an isometry is a fan.
 :::
 
