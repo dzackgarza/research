@@ -560,7 +560,7 @@ it does not authorize deferring, dropping, or weakening unfinished requirements.
 
 ## The expectation subtrees are never edited to match an implementation (always-on)
 
-`tests/constructions/` and `tests/user_simulations/`, with their shared catalogue `tests/conftest.py`, record what a mathematician expects of a session, written with zero knowledge of the implementation. They live in research, not in sage-extensions, so the repository that changes the implementation cannot edit them. They measure the preamble; the preamble never measures them. **Never change a test in these subtrees to match an implementation. Not ever.** Not when a category is renamed, not when a constructor's signature changes, not when a spelling the test uses does not exist, not when a red row is inconvenient, not when a refactor touches every caller. If the implementation moves, the test stays and reports the move; if a name the test uses is missing, that absence is the finding. The files are read-only on disk for this reason, and a red suite there is the expected state until the preamble meets it.
+`tests/constructions/` and `tests/user_simulations/`, with their shared catalogue `tests/conftest.py`, record what a mathematician expects of a session, written with zero knowledge of the implementation. They live in research, not in sage-extensions, so the repository that changes the implementation cannot edit them. They measure the preamble; the preamble never measures them. Never change a test in these subtrees to match an implementation. This holds when a category is renamed, when a constructor's signature changes, when a spelling the test uses does not exist, when a red row is inconvenient, and when a refactor touches every caller. If the implementation moves, the test stays and reports the move; if a name the test uses is missing, that absence is the finding. The files are read-only on disk for this reason, and a red suite there is the expected state until the preamble meets it.
 
 The only edit these subtrees admit is one that changes the mathematics an expectation states, because the mathematics was wrong, recorded as such in its commit. Everything else about them, including that they are written blind, take every name from the session's star import, and are never run in order to shape them, is in `tests/constructions/CONTRIBUTING.md`.
 
@@ -573,7 +573,7 @@ Every doc in this repository — this file, `CLAUDE.md`, `CONTRIBUTING.md`, the
 be**. It is the design, written down. When the code does not match it, **the
 code is missing something.** The doc is right.
 
-So: **never edit a doc to record an absence.** Not "there is no X", not "X is
+So: do not edit a doc to record an absence. Not "there is no X", not "X is
 not implemented yet", not "X is the shape to aim at", not replacing the example
 that names X with one that exists. The requirement was written down in exactly
 one place; after that edit it is written down nowhere, and the work it named is
@@ -763,14 +763,14 @@ After the edit, compare the destination with the source for lost definitions, hy
 Each source proposition ends preserved, corrected with a mathematical reason, or recorded as an open contradiction.
 When a diagram fails to render, render it alone and read the first TeX diagnostic.
 
-**Never write a definition or insert a citation from memory.** Before writing or editing any definition, open and read an actual source — the theory docs, the book's existing defining occurrence, the cited reference, or the upstream text — and transcribe from it.
+Do not write a definition or insert a citation from memory. Before writing or editing any definition, open and read an actual source — the theory docs, the book's existing defining occurrence, the cited reference, or the upstream text — and transcribe from it.
 A definition recalled from training is a fabrication risk; a citation key recalled from memory is a fabrication risk (it may not exist in the bib file, or may point at the wrong entry).
 Verify the source exists and the citation key resolves before committing.
-This rule overrides any pressure to "just write it" — an unverified definition or citation is worse than a TODO placeholder.
+An unverified definition or citation is worse than a TODO placeholder, so leave the placeholder when no source is at hand.
 
 # Docs workflow (always-on)
 
-Documentation work — the docs book under `writing/` — is **never externalized to GitHub issues or PRs**. It is developed directly: interactive work with the user and/or autonomous research, iterative refinement committed as each unit settles, and pushes typically **held until the user approves**. That approval normally follows an interactive pass rather than a PR review lifecycle — organization and coherence audits, re-readings, reviews, and reorganization of the accreted material, plus basic intelligent coherence checks.
+Documentation work — the docs book under `writing/` — is not externalized to GitHub issues or PRs. It is developed directly: interactive work with the user and/or autonomous research, iterative refinement committed as each unit settles, and pushes are typically held until the user approves. That approval normally follows an interactive pass rather than a PR review lifecycle — organization and coherence audits, re-readings, reviews, and reorganization of the accreted material, plus basic intelligent coherence checks.
 Do not open an issue or PR to plan, track, or hand off docs work, and do not treat the PR completion gate as applying to it; the issue-tree and milestone policy below governs implementation and research work, not the book.
 
 Before you build, preview, or deploy the docs book, or act on browser annotations, read [docs hosting and annotation](docs/agents/docs-hosting-and-annotation.md). It covers the local site, the live preview, GitHub Pages, the two bibliographies, and the `annotate` feedback cycle.
@@ -789,21 +789,21 @@ This is the fourth graduation of one lesson (tests assert accomplishment, not de
 - **Mathematical questions get mathematical answers** — stated before any plan card, schema, or memory is touched.
   Artifact updates are exhaust around the answer, never the answer.
 
-- **Undecidability audit (always-on).** Before writing code, reflect explicitly on whether the requested operation or equality check relies on or attempts to resolve an **undecidable problem** (e.g. morphism equality in presented modules/groups, the Word Problem, general equivalence of infinite algebraic structures). Never invent hand-rolled or ground-up boolean checks (`==`, `is_zero()`, `is_isomorphic()`) for undecidable problems; state the exact decidability boundary, rely only on battle-tested decision algorithms where they exist, and keep axiomatic invariants as paper-proven category theory rather than pseudo-computable runtime booleans.
+- **Undecidability audit (always-on).** Before writing code, reflect explicitly on whether the requested operation or equality check relies on or attempts to resolve an **undecidable problem** (e.g. morphism equality in presented modules/groups, the Word Problem, general equivalence of infinite algebraic structures). Do not write hand-rolled boolean checks (`==`, `is_zero()`, `is_isomorphic()`) for undecidable problems; state the exact decidability boundary, rely only on battle-tested decision algorithms where they exist, and keep axiomatic invariants as paper-proven category theory rather than pseudo-computable runtime booleans.
 
 - **A correction that removes machinery halts artifact production.** The rebuild's first act is the specimen, not the re-filed card; two machinery-removals on one proposal invalidate the frame (vault: `global/advice/corrections-update-the-model-not-the-artifact`).
 
 - **Turn audit.** What statement could now be falsified that could not before this turn?
   If none, the turn was preparation — apply the deletion test (vault: `global/traps/hard-problem-artifact-drift`). Meaningful work can be embarrassing; process noise cannot.
 
-- **mypy is a discovery tool, not a gate.** A type error is a signal about the actual code: a wrong return type, a missing method on a real class, a type hierarchy that doesn't match the mathematics. The correct response is to understand what the code's types actually are and fix them — never to silence the checker with `object`, `Any`, `type`, deleted annotations, `# type: ignore`, or config loopholes. Those carry zero type information; a function annotated `-> object` passes on literally anything, which means it asserts nothing.
+- **mypy is a discovery tool, not a gate.** A type error is a signal about the actual code: a wrong return type, a missing method on a real class, a type hierarchy that doesn't match the mathematics. The correct response is to understand what the code's types actually are and fix them — not to silence the checker with `object`, `Any`, `type`, deleted annotations, `# type: ignore`, or config loopholes. Those carry zero type information; a function annotated `-> object` passes on literally anything, which means it asserts nothing.
   When a type is genuinely unnameable because the object is load-injected from a `.sage` file mypy cannot import, the fix is to make it importable (move to `.py`, add a stub, or restructure the import boundary) — not to annotate around the absence.
-  Never probe the QC config (`mypy-global.ini`, `ai-review-ci`) looking for what `Any`-related settings might be allowed. The rule is: never use `object`, and use `Any` only where *`object` is never a type; `Any` has exactly one position* permits it. That is already known from the errors mypy reports. Looking for a loophole is hacking the gate, not doing the work.
+  Do not probe the QC config (`mypy-global.ini`, `ai-review-ci`) looking for what `Any`-related settings might be allowed. The rule is: never use `object`, and use `Any` only where *`object` is never a type; `Any` has exactly one position* permits it. That is already known from the errors mypy reports. Looking for a loophole is hacking the gate, not doing the work.
 
 Work-shape catalogue with this repo's exemplars and the meaningful-vs-noise litmus: `.agents/references/displacement-pattern-index.md` (D1–D7). These are review criteria for plans and completion claims alike — the Review Guidelines below guard completion *claims*; this section guards the loop that never claims.
 This discipline is culture, not a gate: do not build detectors, hooks, or mandatory checklists from it.
 
-**Pre-push terminology audit (invented language).** Run this audit once, after a coherent feature is implemented and before pushing it. Never run it on an individual edit, correction, commit, issue body, plan card, or partial feature slice.
+**Pre-push terminology audit (invented language).** Run this audit once, after a coherent feature is implemented and before pushing it. Do not run it on an individual edit, correction, commit, issue body, plan card, or partial feature slice.
 Everything this repo touches is an honest mathematical entity with a standard name in a wide, well-established corpus — work here has no reason to invent terminology or types, and inventions are poison memetics: they recruit faithful re-implementations and bias architectural decisions (caught late, the cost is a remediation pass or a discarded subtree).
 At the pre-push boundary, spawn a fresh-context subagent primed verbatim with `.agents/references/mathematical-auditor-priming.md`. Give it the complete feature artifact, never a summary.
 
