@@ -1,0 +1,7 @@
+eta = (2, 2, 0, 0, -4, -5, -7, -10, -8, -6, -4, -2)
+12 (1, 1, 3, 3, -2, 1, 2, 2, 1, 0, 0, 0) projection (1, 1) q_W 1
+13 (1, 1, 3, 4, -2, 2, 3, 4, 3, 2, 1, 0) projection (1, 0) q_W 0
+14 (1, 1, 2, 3, -2, 0, 1, 0, 0, 0, 0, 0) projection (0, 1) q_W 0
+M preserves Gram, delta, eta, both discriminant blocks and all root labels as specified.
+M fixes positive plane in delta-perp, Gram diag(2,12).
+Exact certificate passed.
