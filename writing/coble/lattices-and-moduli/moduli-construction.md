@@ -2260,7 +2260,7 @@ Put $H=R_{\gent}\cap\Orth^+(T_\Co)$. For the actual D2b stack of @def:coble-fami
 :::
 
 ::: {.proof}
-The image equality and realization of the Picard-general periods are @thm:gamma-co-is-the-stack-monodromy. A positive-square reflection in the discriminant kernel exchanges the two components and belongs to $R_{\gent}$ by @thm:coble-monodromy-versus-enriques(2), so the two-component arithmetic quotient by $R_{\gent}$ is the single-component quotient by $H$. The normalization theorem applies to this arithmetic map, not to an arbitrary family period map. Equality of the subgroups proves (1)--(2).
+The image equality and realization of the Picard-general periods are @thm:gamma-co-is-the-stack-monodromy. A positive-square reflection in the discriminant kernel exchanges the two components and belongs to $R_{\gent}$ by @thm:coble-monodromy-versus-enriques(2), so the two-component arithmetic quotient by $R_{\gent}$ is the single-component quotient by $H$. The normalization theorem applies to this arithmetic map, not to an arbitrary family period map. Equality of the subgroups proves (1)--(2). In particular $-\id_T\in\Gamma_{\Co,2}$, also independently proved by @lem:d2b-sign-is-in-gamma-co-2. The general sign-selected degree formula of the preceding argument (research#824) is retained: for a finite-index $G\subseteq H$, the generic degree of the arithmetic map $D^+/G\to D^+/H$ is $[H:G\{\pm\id\}]$, since the generic stabilizer in $H$ is $\{\pm\id\}$. Thus it is $[H:G]$ when $-\id\in G$, and half that index otherwise. For the actual group $G=H$ the first case gives degree one.
 :::
 
 ::: {.proposition #prop:d2b-index-exact title="The degree-two index for the actual stack"}
