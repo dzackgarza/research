@@ -708,6 +708,50 @@ and $\beta_r=g\alpha=\alpha$ because $g\in\Stab_G(\alpha)$, so $t_{\beta_r}=t_\a
 So $g$ lies in the displayed subgroup.
 :::
 
+
+::: {.theorem #thm:integral-maximal-isotropic-stabilizer-family title="Complete integral generators for a maximal isotropic plane and its flags"}
+
+Let $L$ be any even integral nondegenerate lattice of signature $(2,n)$, let $P\subset L$ be a primitive totally isotropic plane, and let $x$ denote either $P$ or a flag $\ell\subset P$ of a primitive line. Set $V=L\otimes\QQ$ and $D=(P^\perp\cap L)/P$. There is a finite, exact construction of a generating family of the actual integral group $\Stab_{\Orth(L)}(x)$ from these data, using integral linear algebra, a finite search in the definite lattice $D$, and one finite lattice-orbit Schreier construction. For any specified subgroup of the finite discriminant group and any specified subgroup of the joint determinant and real spinor character image, the same construction gives complete integral generators of the intersection of this stabilizer with their preimages. In particular this applies to every primitive isotropic plane and flag of $T_\En$ and $T_\Co$, for the arithmetic polarization groups and their spinor-positive subgroups, without supposing that the discriminant datum is a complete invariant.
+
+:::
+
+::: {.proof}
+
+Choose a basis $p_1,p_2$ of $P$, with $p_1$ generating $\ell$ in the flag case. Rational linear algebra produces dual isotropic vectors $q_1,q_2$ with $(p_i,q_j)=\delta_{ij}$ and $(q_i,q_j)=0$: start with any dual vectors and subtract half their symmetric Gram matrix times the $p_i$. Let $D_\QQ$ be the perpendicular to the resulting rational hyperbolic space. The projection of $P^\perp\cap L$ onto $D_\QQ$ along $P_\QQ$ identifies its image integrally and isometrically with $D$. This is an even, negative definite lattice, including the zero lattice if $n=2$. Write $D_0$ for its image and put
+$$
+M_0=\bigoplus_i\ZZ p_i\;\oplus D_0\oplus\bigoplus_i\ZZ q_i .
+$$
+Choose an integer $a\geq1$ with $aM_0\subseteq L\subseteq a^{-1}M_0$; such an integer is obtained by clearing denominators of the two rational change-of-basis matrices.
+
+We first construct a split lattice preserved by **every** member of the actual stabilizer. In the ordered blocks $p,D_0,q$, an isometry $g$ preserving $P$ is block upper triangular because it preserves $P_\QQ^\perp$. Its diagonal blocks are $A,C,A^{-t}$, where $A\in GL_2(\ZZ)$ is its action on $P$, and $C\in\Orth(D_0)$ is its induced action on $(P^\perp\cap L)/P$. The last block follows from the dual pairings $(p_i,q_j)=\delta_{ij}$. If $gL=L$, then $g(aM_0)\subset L\subset a^{-1}M_0$, so every matrix entry in the three strictly upper blocks is in $a^{-2}\ZZ$. The same statement holds for $g^{-1}$. Consequently both preserve the split lattice
+$$
+M_1=\bigoplus_i\ZZ(p_i/a^4)\;\oplus a^{-2}D_0\oplus\bigoplus_i\ZZ q_i.
+$$
+Indeed the $p$ component of $g(a^{-2}D_0)$ is in $a^{-4}P$, the $D_0$ component of $g(q_i)$ is in $a^{-2}D_0$, and the $p$ component of $g(q_i)$ is in $a^{-2}P\subset a^{-4}P$. The diagonal actions preserve the respective blocks. Multiplying the bilinear form by $a^4$ identifies $M_1$ with $U\oplus U\oplus D$: the indicated dual vectors now pair to one, and the $D$ Gram is unchanged. Scaling a form by a positive rational constant does not change its isometries or the component character. The enlargement is a rational calculation, not a substitution of the original integral group.
+
+Let $G$ be the stabilizer in $\Orth(M_1)$ of the rational plane, and, in the flag case, also of the rational line. We give a finite integral generating family of $G$. In the split basis write $u_i=p_i/a^4$, $v_i=q_i$, and use the scaled form in the following formulas. The Levi actions are
+$$
+A\oplus C\oplus A^{-t},\qquad C\in\Orth(D),\quad A\in GL_2(\ZZ).
+$$
+For the flag, $A$ is precisely upper triangular with diagonal entries $\pm1$. In the plane case take the swap of the two basis vectors, the upper unit shear, and one diagonal sign change as generators of $GL_2(\ZZ)$; Euclidean column reduction generates $SL_2(\ZZ)$ by the two unit shears, and the sign change supplies the other coset. In the flag case take the two diagonal sign changes and the upper unit shear. For $\Orth(D)$, enumerate, for each basis vector, all vectors of its prescribed norm in the negative definite integral lattice, retain the tuples having the original pairwise Gram entries and determinant $\pm1$, and take that finite group as the family. This enumeration terminates: the norm bounds cut out bounded ellipsoids, with finitely many lattice points. In rank zero use the identity.
+
+For the unipotent radical take, for each $i=1,2$ and each member $d$ of an integral basis of the even lattice $D$, the transvection $E_{u_i,d}$, given by
+$$
+E_{u_i,d}(v_i)=v_i+d-(d,d)u_i/2,\qquad
+E_{u_i,d}(y)=y-(d,y)u_i\quad(y\in D)
+$$
+and the identity on $u_1,u_2,v_j$ for $j\ne i$. Also take the central shear $v_1\mapsto v_1+u_2$, $v_2\mapsto v_2-u_1$, fixing the other basis vectors. These are integral because $D$ is even, and their form equations follow by pairing the indicated images. To prove completeness, cancel the Levi part of any member of $G$. Its residual action fixes both $u_i$ and is the identity on the $D$ quotient. Each $v_i$ has a $D$ component $d_i\in D$. Transvections cancel these two components (they are additive in their $D$ parameter and the two cancellations do not change the other $D$ component). Orthogonality to the resulting images of the $v_i$ forces the image of each $D$ vector to be that vector. Finally $v_i\mapsto v_i+\sum_j c_{ji}u_j$, with $c_{ij}+c_{ji}=0$ by orthogonality; thus the remaining map is a power of the central shear. This proves generation for the plane and for the flag, with no additional source theorem about their integral parabolics.
+
+The actual integral stabilizer is now exactly
+$$
+\Stab_{\Orth(L)}(x)=\Stab_G(L).
+$$
+One inclusion was proved by constructing $M_1$; conversely a member of $G$ stabilizing $L$ restricts to an integral isometry of $L$ and preserves $P=P_\QQ\cap L$ and, in the flag case, $\ell=\ell_\QQ\cap L$, by primitivity. Choose $b\geq1$ with $bM_1\subseteq L\subseteq b^{-1}M_1$. The ambient lattice $M=b^{-1}M_1$ is preserved by $G$, and $b^2 M\subseteq L\subseteq M$. Apply @lem:congruence-stabilizer-preimage at modulus $b^2$ and @lem:schreier-stabilizer to the orbit of $L/b^2M$ in $M/b^2M$. Enumerate this finite orbit by the symmetric generating family just proved, keeping integral word representatives $t_p$ of its points (integral on $M$, rational on $V$). For each directed generator edge $p\mapsto sp$, form $t_{sp}^{-1}st_p$. By the Schreier telescoping identity these generate the entire stabilizer of $L$, hence are integral on $L$ and generate precisely the required group. The finite orbit, unlike a list of elements of a discriminant stabilizer, certifies completeness of the integral family.
+
+Finally the quadratic discriminant representation of the group just constructed is computed on its actual generators, as in @thm:schreier-discriminant-image. Compute also their determinant and real component characters on the original lattice. For any prescribed subgroup of the product of these finite images take its exact inverse image, again by finite-orbit Schreier generators (the action on cosets of that subgroup in the actual joint image). In particular one can impose separately the discriminant block or polarization condition, determinant, and spinor-positive condition. Neither of the two signs is inferred from the discriminant reduction. All the steps use exact integer or rational linear algebra, definite bounded enumeration, and finite orbit enumeration, so terminate. This gives the stated families; it does not assert that the size of this construction is suitable for every numerical computation, or that an existing software routine performs it.
+
+:::
+
 ::: {.theorem #thm:schreier-discriminant-image title="The Schreier elements give the discriminant image of the stabilizer"}
 
 Take the data of @def:stabilizer-congruence-data with $m\geq1$ and $mM\subseteq L$, and let $S\subseteq G$ be a finite symmetric generating set: $G=\generators{S}$, $S^{-1}=S$ and $\abs{S}<\infty$.
