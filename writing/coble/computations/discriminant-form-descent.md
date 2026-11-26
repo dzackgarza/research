@@ -798,6 +798,25 @@ For illustration, in the basis $(u,v,p,q,d)$ with $J=2I$, $H=0$, $K=(1,0)^t$, $A
 
 :::
 
+
+::: {.corollary #cor:complete-integral-plane-parabolic title="The complete integral parabolic from its actual quotient image"}
+
+For a primitive maximal isotropic plane in an integral lattice of signature $(2,n)$, the quotient lattice in @thm:smith-parabolic-block-decision is negative definite or zero. The integral setwise stabilizer admits the following complete finite generating family: generators of its unipotent radical, integral lifts of generators of the plane projection with quotient action identity, and integral lifts of generators of the actual quotient image. Neither the plane projection nor the quotient image is required to be surjective.
+
+:::
+
+::: {.proof}
+
+Use the notation of @thm:smith-parabolic-block-decision and put $d=|\det J|$. For fixed $C$ and fixed determinant sign of $B$, liftability is constant on residue classes modulo $2d^2$. Indeed, if $B'\equiv B\pmod{2d^2}$, their inverse transposes differ by a multiple of $2d^2$ by the adjugate formula for two-by-two unimodular matrices of the same determinant. Hence $U'-U$ is divisible by $2d$, and integrality of $U$ and $U'$ is equivalent. The column lattices of $M=UJ=JB^{-t}$ and $M'=U'J=JB'^{-t}$ both equal $J\ZZ^2$. Keeping $Y$ fixed, the change of $F=K-UKC^t$ is divisible by $2d$ and therefore lies in this column lattice. The new mixed equation has integral solutions. The image of the symmetric equation is unchanged by unimodular column operations on $M$, and the change $\Delta R$ of its right-hand side is symmetric and divisible by $2d$. The integral matrix $(\Delta R/2)M'^{-t}$ has symmetric image $\Delta R$. Applying the same argument in reverse proves equivalence.
+
+In particular the plane projection of the quotient kernel contains the principal congruence subgroup at level $2d^2$, and its membership is decided by the block equations. Enumerating its cosets in $SL_2(\ZZ)$ by the elementary shears terminates. Schreier generators of this finite-index subgroup, and one reversing lift if the reversing component is nonempty, generate the plane projection of the quotient kernel. For prescribed $C$, the liftable plane actions, if nonempty, constitute a coset of that projection (in the row-matrix convention). Testing representatives in both determinant components therefore decides whether $C$ lifts. The radical generators are complete by @thm:smith-parabolic-block-decision. Thus the first two families generate the entire kernel of the quotient action.
+
+Write $F=O(A)$ and let $M\leq F$ be the actual image. The preceding decision is a membership predicate for $M$. The group $F$ is finite, since a definite lattice has finitely many vectors of every fixed norm, and its isometries are determined by images of a basis. If every generator of $F$ lifts then $M=F$. Otherwise enumerate the finite coset space using this exact membership predicate, and use a transversal and Schreier's lemma to obtain generators of $M$. Each of them has an integral lift. For any element of the original parabolic, cancel its quotient action by a word in the lifted generators of $M$, then express the remainder by the first two families. This proves the claim without positing a splitting of the integral extension.
+
+For explicit proper and coupled images, take $H=0$, $J=2I_2$, $A=-4I_2$. With $K=\operatorname{diag}(1,0)$, the mixed equation modulo two is $K=UKC^t$, with $U$ invertible. Thus $C$ must preserve the kernel of $K$ modulo two; the permutation interchanging the two quotient directions is excluded. Both independent sign changes lift: in the basis $(u,v,p,q,d,f)$, one sends $d$ to $p-d$, the other sends $f$ to $-f$, fixing all remaining basis vectors. Consequently the quotient image is the four-element diagonal sign group in the eight-element signed permutation group. With $K=I_2$ instead, the mixed equation modulo two forces $UC^t=I_2$. A quotient swap cannot lift with identity plane action, but simultaneously swapping $u,v$, $p,q$ and $d,f$ is an integral isometry. The independent quotient signs lift by $d\mapsto p-d$ and $f\mapsto q-f$ with all other basis vectors fixed. Thus the quotient image is all eight elements, even though the pointwise-plane image is proper. These examples distinguish an exact proper quotient image and a coupled image from an incomplete family of generators.
+
+:::
+
 ::: {.theorem #thm:schreier-discriminant-image title="The Schreier elements give the discriminant image of the stabilizer"}
 
 Take the data of @def:stabilizer-congruence-data with $m\geq1$ and $mM\subseteq L$, and let $S\subseteq G$ be a finite symmetric generating set: $G=\generators{S}$, $S^{-1}=S$ and $\abs{S}<\infty$.
