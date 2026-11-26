@@ -82,3 +82,6 @@ tags:
 | **Two forms of the embedding $S_\En\hookrightarrow S_\Nod$** | @sec-nodal-enriques-moduli-program |
 
 : {tbl-colwidths="[35,65]"}
+
+
+The effective plane-presentation family is now constructed with its resultant square-root line (@lem:d2-unpolarised-family). Its integral monodromy has index at most two in the stable positive group, and the remaining question for this specified lift is the central sign (@thm:gamma-co-is-stable). The cover-retaining plane-presentation stack and the nonzero-equation labelled base have full stable integral image; neither is the unmarked universal stack.

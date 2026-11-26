@@ -359,187 +359,107 @@ $$[\Gamma_\Co(\bar B):\Gamma_\Co(B)]=\abs{\bar\rho\qty{\Gamma_\Co(\bar B)}}.$$
 That image is a subgroup of $\Theta$ (@prop:gamma-co-geometric-bound(2)) and it is $\Theta$: the relabelling arrows act on $T_\Co$ by the discriminant classes $\gamma\bar\rho_M(\sigma)\gamma^{-1}$ over all $\sigma\in\mathfrak S_{10}$, and that is $\Theta$ (@lem:relabelling-discriminant-action(3)); equivalently the label permutations are all realized by the monodromy of the unlabelled family. So the index is $\abs{\Theta}=10!$.
 :::
 
-::: {.lemma #lem:d2-monodromy-in-discriminant-kernel title="The forward inclusion from the lattice-polarized period theorem, and why the reverse is out of its reach"}
+::: {.lemma #lem:d2-monodromy-in-discriminant-kernel title="The labelled family has trivial discriminant action"}
 
-Let $M=\generators{2}\oplus\generators{-2}^{\oplus10}$ be the second summand $S_\Co$ of $\lkt$ and $N=M^{\perp\lkt}=T_\Co$ (@prop:coble-period-domain(2), [@DK13, (3.6)]). Then:
+For the actual family on $B$ of @lem:d2-unpolarised-family, the monodromy is contained in $K^+=\widetilde\Orth^+(T_\Co)$. Its projective image is $K^+/\{\pm\id\}$; its integral image is not determined merely by the coarse or effective orbifold period map.
 
-1. The monodromy group of the labelled base of @def:coble-family-unpolarized satisfies
-$$\Gamma_\Co(B)\subseteq \Orth(N)^*\cap\Orth^+(N)=\widetilde\Orth^+(T_\Co),$$
-where $\Orth(N)^*$ is the kernel of $\Orth(N)\to\Orth(A_N)$; this is [@Dol96, Prop. 3.3], whose hypotheses are those checked in the proof, applied through the marked period bijection of [@Dol96, Cor. 3.2].
-2. The reverse inclusion is not available from that theorem, and no statement about the quotient $\bD(N)/\Orth(N)^*$ is: $-\id$ acts trivially on $\bD(N)$, so it lies in the kernel of the action of $\Orth(N)^*$ on the period domain, and the quotient determines a monodromy group only modulo $\{\pm\id\}$.
 :::
 
 ::: {.proof}
-
-1. The base $B$ of @def:coble-family-unpolarized(3) is the moduli space of $M$-polarized K3 surfaces *with the marking of $M$ fixed*: a point is a labelled ten-nodal sextic, the double cover $X_b$ is a K3 surface whose classes $e_0,\dots,e_{10}$ of @prop:coble-period-domain(1) are the labelled ones, and they generate $M$ primitively (@lem:d2-local-system(2)), so the pair $(X_b,M\subset H^2(X_b,\ZZ))$ is an $M$-polarized K3 surface with its polarization marked, and $B$ is the moduli of those by @lem:d2a-family-is-yzz.
-
-By [@Dol96, Cor. 3.2] the period map is a bijection between marked ample $M$-polarized K3 surfaces and the open period domain, and by [@Dol96, Prop. 3.3] the group by which the marked period domain is quotiented to give that moduli space is $\Gamma_M=\Orth(N)^*$, where $\Gamma(M)$ is the pointwise stabilizer (@def:pointwise-stabilizer-of-sublattice) of $M$ in $\Orth(\lkt)$ and $\Gamma_M$ its image in $\Orth(N)$. So the monodromy group $\Gamma_\Co(B)$ of the presentation is contained in $\Orth(N)^*$.
-
-The hypothesis of [@Dol96, Cor. 3.2] is ampleness with respect to the polarization, that is the period point avoiding the hyperplanes of $(-2)$-vectors of $N$; the general member of the family has $\Pic(X_b)=M$ (@prop:coble-period-domain(1), @lem:d2-local-system(2)), so its period lies in that open set. The further containment in $\Orth^+(N)$ is @lem:monodromy-is-spinor-positive, the periods being single-valued on the connected base $B$ (@lem:d2-incidence-connected(3)).
-
-2. $\bD(N)$ is a domain of *lines*: a point is the line $H^{2,0}(X_b)\subset N\otimes\CC$ (@prop:coble-period-domain(1)). The isometry $-\id_N$ fixes every line, so it acts trivially on $\bD(N)$, and likewise on the domain of oriented positive $2$-planes used in [@Dol96]. Hence $\Orth(N)^*$ and $\Orth(N)^*/\{\pm\id\}$ have the same orbits (@def:group-orbit) and give the same quotient, and the deck group of the marked period domain over the moduli space is $\Orth(N)^*/\{\pm\id\}$. A monodromy group read off that quotient is therefore determined only modulo $\{\pm\id\}$, which is the statement of 2.
+The eleven classes in @lem:d2-local-system(2) are global flat sections, span the primitive invariant lattice, and are fixed by transport. The discriminant actions on the two primitive orthogonal lattices in the unimodular K3 lattice agree through their anti-isometry, so the action on $A_{T_\Co}$ is trivial. The Hodge two-plane orientation gives the positive condition. The projective equality is @thm:gamma-co-is-stable, which uses the actual effective nodal-sextic orbifold theorem rather than a classification of unmarked Coble objects.
 :::
+::: {.lemma #lem:d2-arrangement-classes title="The projected roots cutting the nodal-sextic arrangement"}
 
-
-::: {.lemma #lem:d2-arrangement-classes title="The classes $\gamma$ that cut the discriminant, and which of them can carry monodromy"}
-
-Let $\Lambda_1=H^{\perp\Lambda}$, with $\Lambda_1\supseteq L\oplus Q$, $L=A_1^{\oplus10}$ and $Q=T_\Co$ (@lem:ten-a1-permutation-forces-strictness), and let $r\in\Lambda_1$ be a root, $r^2=-2$, $r\notin L$, written $r=t+s$ with $t\in L_\QQ$ and $s\in Q_\QQ$, with $\gamma\definedas2s$ as in @lem:d2-vanishing-reflections(2). Then:
-
-1. *(Classification.)* The classes $\gamma$ that occur are exactly the vectors $\gamma\in Q$ for which there are $\lambda\in L$ and a root as above with
-$$\lambda^2+\gamma^2=-8,\qquad \gamma=2s,\ \lambda=2t,\quad \bigl([\lambda/2],[\gamma/2]\bigr)\in H_0=\Lambda_1/(L\oplus Q).$$
-Writing $\lambda=\sum_i n_i\ell_i$ gives $\gamma^2=-8+2\sum_i n_i^2$; so the squares that can occur are $-8,-6,-4,-2,0,2,4,\dots$, and each of them does occur for a suitable $\lambda$ ($\gamma^2=-2$ for $\lambda=\ell_1+\ell_2+\ell_3$, $\gamma^2=0$ for $\lambda=2\ell_1$, and so on), subject to the gluing condition.
-2. *(Which can matter.)* A member of the family has $H=f^*\OO_{\PP^2}(1)$ for the double cover $f\colon X_b\to S_b\to\PP^2$ (@lem:d2-unpolarised-family(1)); this $H$ is nef and **not** ample, because $H\cdot\ell_i=0$ for the ten classes $\ell_i$ contracted by $f$, which are nonzero. So an earlier form of this clause was wrong: the negative definiteness of the orthogonal complement of an ample class does not apply, and the classes $\ell_i$ are effective algebraic classes orthogonal to $H$. In particular the components of $\calH_T$ with $\gamma^2\ge0$ are *not* excluded from the family by the Hodge index theorem, and no such exclusion is available.
-
-3. *(What the meridians generate.)* So the components that can carry monodromy of the family are those with $\gamma^2\in\{-2,-4,-6,-8\}$. For $\gamma^2=-2$ the meridian is the reflection $s_\gamma$ (@lem:d2-vanishing-reflections(3), [@Voi07, Thm. 3.16]). For $\gamma^2\le-4$, if a loop of the labelled family encircles that component its monodromy lies in $\widetilde\Orth^+(T_\Co)$, since $\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable(1)) and it is a monodromy operator of that presentation; in particular it is *not* the reflection $s_\gamma$, which for $\gamma^2=-4$ lies outside $\ker\bar\rho$ (@prop:gamma-co-reflective-set(3)). Consequently
-$$W(T_\Co)\subseteq\generators{\text{meridians}}\subseteq\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co),$$
-and no meridian of the labelled family produces an element outside the stable group.
-:::
-
-::: {.proof}
-
-1. That $2s\in Q$ and $\lambda=2t\in L$ hold, and that the class of the pair lies in $H_0$, is the lattice description of $\Lambda_1\supseteq L\oplus Q$: $\Lambda_1/(L\oplus Q)$ is the gluing subgroup, an elementary abelian $2$-group, so $2r\in L\oplus Q$. Then $4r^2=4(-2)=\lambda^2+\gamma^2$ is the displayed relation. Substituting $\lambda=\sum_in_i\ell_i$, whose square is $-2\sum_i n_i^2$ because the $\ell_i$ are orthogonal of square $-2$, gives $\gamma^2=-8+2\sum_in_i^2$; the values $0,1,2,3,4,\dots$ of $\sum_in_i^2$ give the listed squares, the corresponding $\lambda$ are as named, and each pair has to satisfy the gluing condition, which is what selects the subset that actually occurs.
-
-2. A member of the family has $H=f^*\OO_{\PP^2}(1)$ for the double cover $f\colon X_b\to S_b\to\PP^2$ (@lem:d2-unpolarised-family(1)); this $H$ is nef and **not** ample, since $H\cdot\ell_i=0$ for the ten classes $\ell_i$ contracted by $f$ and those classes are nonzero. So the negative definiteness of the orthogonal complement of an ample class [@Huy05, Ch. 3] does not apply to $H^{\perp}$, and an algebraic class orthogonal to $H$ need not be excluded: the classes $\ell_i$ themselves are effective, algebraic and orthogonal to $H$. Hence the components of $\calH_T$ with $\gamma^2\ge0$ are *not* excluded from the family by the Hodge index theorem, and an earlier form of this clause, which drew that exclusion, was wrong.
-
-3. The first containment is @lem:d2-vanishing-reflections(3)-(4) and the last is @thm:gamma-co-is-stable(1); the middle one is by definition, the monodromy group being generated by the monodromy of loops. For $\gamma^2=-4$, $s_\gamma\in\Orth^+(T_\Co)$ and $s_\gamma\notin\ker\bar\rho$ by @prop:gamma-co-reflective-set(3), so $s_\gamma\notin\widetilde\Orth^+(T_\Co)$; a monodromy operator of the labelled presentation lies in $\widetilde\Orth^+(T_\Co)$, hence cannot be $s_\gamma$.
-:::
-
-::: {.lemma #lem:d2-vanishing-reflections title="The square-$(-2)$ vectors of $T_\Co$, and the hyperplanes of the discriminant"}
-
-Let $T_\Co=\generators{h}\oplus E_{10}(2)$ with $h^2=2$ (@def:gamma-co-groups), let $W(T_\Co)=\generators{s_v : v\in T_\Co,\ v^2=-2}$ be the short-root reflection group of @prop:gamma-co-reflective-set(1), and let $\Lambda_1=H^{\perp\Lambda}$ with $H$ the polarization class, so that $\Lambda_1\supseteq L\oplus Q$ with $L=A_1^{\oplus10}$ and $Q=T_\Co$ (@lem:ten-a1-permutation-forces-strictness). Then:
-
-1. The vectors of square $-2$ in $T_\Co$ are exactly the vectors $ah+v$ with $a$ **odd** and $v\in E_{10}(2)$ of square $-2(a^2+1)$. In particular the coefficient of $h$ is not $\pm1$ in general, and there are infinitely many $h$-degrees among them. Each of them has divisibility $2$ and its reflection lies in $\widetilde\Orth^+(T_\Co)$ (@prop:gamma-co-reflective-set(1)).
-2. The base is **not** identified with $\bD(Q)-\calH_T$: what @lem:d2a-family-is-yzz gives is that $B$ is the labelled moduli space of the family, and @lem:d2a-period-map gives its classifying map into $\bD(T_\Co)/\Gamma_\Co$, which is all that is used below; the components of $\calH_T$ are the divisors along which a member degenerates, and it is the meridian of such a divisor *in the base* that carries the local monodromy. Let $\calH_T$ be then the discriminant arrangement of @YZZ25, §3.3, the union of $r^{\perp}$ for the roots $r$ with $r^2=-2$, $r\perp H$, $r\notin L$. Every component of $\calH_T$ is of the form $\gamma^{\perp}$ for a vector $\gamma\in Q$ of square $4(-2-t^2)$ with $t\in L_\QQ$ of square $t^2\in 2\ZZ$, and conversely each $\delta\in Q$ with $\delta^2=-2$ contributes the component $\delta^{\perp}$. So the $(-2)$-arrangement is *contained* in $\calH_T$, and the containment is **strict**: for an isotropic $e\in U(2)\subset E_{10}(2)$ the vector $r=\ell_1+e$ has $r^2=-2+0+0=-2$, is orthogonal to $H$, and is not in $L$, so it is one of the roots defining $\calH_T$, while its hyperplane $r^{\perp}\cap\bD(Q)$ is $e^{\perp}$, the hyperplane of an *isotropic* class of $Q$ and not of a $(-2)$-class. Hence no description of the monodromy by the reflections $s_\delta$ alone can be complete.
-3. For a component $\delta^{\perp}$ with $\delta^2=-2$ of the kind in 1, the local monodromy of the loop about it is the reflection $s_\delta$: this is the Picard--Lefschetz formula of [@Voi07, Thm. 3.16], $T(\alpha)=\alpha-\langle\alpha,\delta\rangle\delta$ for a surface, applied to the degeneration of @lem:d2-monodromy-in-discriminant-kernel whose vanishing class (@def:coble-marked-root) is $\delta$. For the other components of 2 nothing of the kind is asserted.
-4. Consequently, what the meridian argument gives is the containment
-$$W(T_\Co)\subseteq\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co),$$
-and no identification of $\Gamma_\Co(B)$ with either of the two groups is asserted.
-:::
-
-::: {.proof}
-
-1. Write $x=ah+v$ with $a\in\ZZ$ and $v\in E_{10}(2)$; then $x^2=2a^2+v^2$, and squares in $E_{10}(2)=U(2)\oplus E_8(2)$ are multiples of $4$ (in $U(2)$, with $e^2=f^2=0$ and $e\cdot f=2$, one has $(ae+bf)^2=4ab$; $E_8(2)$ is twice an even form). So $x^2=-2$ gives $2a^2\equiv-2\pmod 4$, that is $a$ odd, and then $v^2=-2-2a^2=-2(a^2+1)$. Conversely, for $a$ odd and $d\definedas-(a^2+1)/2\in\ZZ$, the vector $v=e+df\in U(2)$ has $v^2=4d=-2(a^2+1)$, so $ah+v$ has square $-2$; thus *every* odd $a$ occurs. Concretely $3h+e-5f$ has square $18-20=-2$, with $v^2=-20$: the earlier description by $\pm h+v$ with $v^2=-4$ was wrong, and it is the case $a=\pm1$ only. Divisibility $2$ is @lem:divisibilityAlwaysTwoTco, and the reflection of a square-$(-2)$ vector is in $\widetilde\Orth^+(T_\Co)$ by @prop:gamma-co-reflective-set(1).
-
-2. Let $r\in\Lambda_1$ with $r^2=-2$ and $r\notin L$, and write $r=t+s$ with $t\in L_\QQ$ and $s\in Q_\QQ$. Since $L$ is primitive in $\Lambda$ and $\Lambda_1\cap L_\QQ=L$, we have $s\neq0$. For $q\in Q$ one has $(s,q)=(r,q)\in\ZZ$, so $s\in Q^*$; $Q=T_\Co$ is $2$-elementary, so $2s=:\gamma\in Q$ and $\gamma\neq0$.
-A line $[\omega]\in\bD(Q)$ satisfies $(\omega,r)=(\omega,s)$ because $\omega\perp L_\QQ$, so $r^{\perp}\cap\bD(Q)=\gamma^{\perp}\cap\bD(Q)$: each component of $\calH_T$ is a hyperplane $\gamma^{\perp}$ with $\gamma\in Q$. Its square is $\gamma^2=4s^2=4(r^2-t^2)=4(-2-t^2)$, with $t^2\in2\ZZ$. For $t=0$ one has $r=s\in Q$ of square $-2$ and $\gamma=2r$ of square $-8$, which is the component $\delta^{\perp}$ for $\delta=r$; so every $\delta\in Q$ of square $-2$ contributes a component. For $t^2=-2$ one gets $\gamma^2=0$, an isotropic class, and such a component is not of the form $\delta^{\perp}$ with $\delta^2=-2$.
-
-*The strictness is realized.* Take $t=\ell_1$, of square $-2$, and $s=e$, the isotropic vector of $U(2)\subset E_{10}(2)$ with $e^2=0$ and $e\cdot f=2$: then $r=\ell_1+e$ lies in $L+Q\subseteq\Lambda_1$, has $r^2=\ell_1^2+e^2+2(\ell_1,e)=-2+0+0=-2$, is orthogonal to $H$ (both summands are), and is not in $L$; and its $Q$-component is $s=e$, whose hyperplane is the one of the isotropic class $\gamma=2e$. So $\calH_T$ strictly contains the $(-2)$-arrangement.
-
-3. The vanishing class of the nodal degeneration of @lem:d2-monodromy-in-discriminant-kernel has square $-2$ and lies in $Q$; the local monodromy is the reflection in it by [@Voi07, Thm. 3.16], whose hypotheses are those of a Lefschetz degeneration of surfaces, the central fibre being a K3 with one ordinary double point.
-
-4. The containment $W(T_\Co)\subseteq\Gamma_\Co(B)$ follows from 3 and @lem:d2-monodromy-in-discriminant-kernel; the second is @thm:gamma-co-is-stable(1). Part 2 shows that the arrangement which the meridian argument can use is $\calH_T$, which contains the $(-2)$-arrangement and possibly more, so no equality of $\Gamma_\Co(B)$ with $W(T_\Co)$ follows: that would need every component of $\calH_T$ to be a $(-2)$-hyperplane, which part 2 leaves open.
-:::
-
-
-
-::: {.theorem #thm:gamma-co-is-stable title="G1: what is proved about the monodromy group, and the exact statement that remains"}
-
-Let $H$ be the labelled base $B=V/\PGL_3$ of @def:coble-family-unpolarized(3), let $s\in H$, and let
-$$\rho\colon\pi_1(H,s)\too\Orth(T_\Co)$$
-be the monodromy representation of the local system $\bT$ of @lem:d2-local-system on the fibre at $s$, so that $\Gamma_\Co(B)=\rho\qty{\pi_1(H,s)}$ is the monodromy of that presentation of $\mcM_\Co$ (@def:gamma-co-groups(1)). Then:
-
-1. $\Gamma_\Co(B)\cong\pi_1(H,s)/\ker\rho$ is a subgroup of $\widetilde\Orth^+(T_\Co)$. This is proved.
-2. *Neither* equality is proved: neither $\Gamma_\Co(B)=\widetilde\Orth^+(T_\Co)$ nor $\Gamma_\Co=\widetilde\Orth^+(T_\Co)$. For the first, a proof must supply an explicit, well-defined map $\pi_1(H,s)\to\widetilde\Orth^+(T_\Co)$ — equivalently a map on $\pi_1(H,s)/\ker\rho$ — which is surjective; no such map is exhibited below, and the two inclusions that would give it are stated as what is missing, not assumed. The second additionally needs $\Gamma_\Co=\Gamma_\Co(B)$, the identification of the stack's group with that of the presentation, which is research#797, item 6. Under @def:gamma-co-groups(1), research#780 asks for the equality for $\Gamma_\Co$ and therefore needs both.
-:::
-
-::: {.proof}
-
-1. This is @lem:coble-family-labelled-monodromy; here is the same argument with the two halves named. The eleven classes $\varepsilon_0,\dots,\varepsilon_{10}$ are values of global sections of $\bV$ (@lem:d2-local-system(2)), so every $\rho(\gamma)$ fixes them and acts trivially on $M=\generators{2}\oplus\generators{-2}^{\oplus10}$ and hence on $A_M$. By @lem:coble-discriminant-actions-conjugate its discriminant action on $T_\Co$ is conjugate to its action on $A_M$, so it is trivial and $\rho(\gamma)\in\discriminantkernel{T_\Co}$; and $\rho(\gamma)\in\Orth^+(T_\Co)$ by @lem:monodromy-is-spinor-positive. Hence $\rho(\gamma)\in\widetilde\Orth^+(T_\Co)$. The isomorphism $\Gamma_\Co(B)\cong\pi_1(H,s)/\ker\rho$ is the first isomorphism theorem, $\rho$ being a homomorphism of groups.
-
-2.
-:::
-
-::: {.remark #rmk:gamma-co-is-stable-context title="Why the reverse inclusion is open"}
-
-The failure of the reverse inclusion is not a gap in one argument but the failure of three routes, recorded with the step that fails in @rmk:d2-routes-for-the-equality: the sextic-base orbifold route stops at $P\Gamma_T$ (@rmk:gamma-co-orbifold-obstruction), the reflection route stops because the discriminant arrangement is strictly larger than the $(-2)$-arrangement (@lem:d2-arrangement-classes), and the Enriques-side route is withdrawn because it relates $\Gamma_\Co$ to nothing: the description of the Coble family as the restriction of the Enriques family is a statement about *which* family it is, and identifying the monodromy of that restriction with a stabilizer requires exactly the map that the theorem asks for.
-:::
-
-
-::: {.remark #rmk:d2-marked-moduli-and-the-sign title="The marked moduli of Coble K3 covers, and what the generic stabilizer does to the count"}
-
-This records the state of the route through the marked period domain, in the three steps it decomposes into, with the step that resists.
-
-*(a1) Surjectivity, and the failed input.* The route cannot use [@Dol96, Thm. 3.1]: that theorem is false as stated (@rmk:coble-period-surjectivity-sources). The replacement is @thm:coble-period-surjectivity, whose proof uses [@Huy16, Theorem 7.4.1] and realises every period off the $(-2)$-arrangement by a marked Coble cover. Thus the required marked K3 surfaces exist without the pseudo-ample fibre assertion of Dolgachev's theorem.
-
-*(a2) Injectivity.* For marked objects the period map is injective ([@Dol96, Cor. 3.2], from the global Torelli theorem). The involution needs no separate classification argument: under a marking that fixes $M$ pointwise, the covering involution acts on $M$ as $+1$ — $M=f^*\Pic(S)$ — and on $T_\Co$ as $-\id$ (@prop:coble-transcendental, [@DK13, §3]), and the two blocks determine the isometry of $\Lambda_{\mathrm{K3}}$ because $\Lambda\otimes\QQ=M\oplus T_\Co$. So the marked object determines the involution, and a Hodge isometry of the markings is one commuting with it.
-
-*(a3) Reconstruction, and this is where the route resists.* That every marked $M$-polarized K3 with $\Pic=M$ is the K3 double cover of a Coble surface with its ten labels is *not* in the sources read: [@DK13, Prop. 3.2] places the classical Coble construction in an open subset of $\bD(N)/\Orth(N)$, one direction only, and neither [@YZZ25, Thm. 3.4] nor [@Dol96, Thm. 3.1] identifies the $M$-polarized K3s with the Coble covers. What the volume does prove is the converse, that the Coble family is a family of $M$-polarized K3s (@lem:d2-local-system), and the fibre identification with the family of type $10A_1$ (@lem:d2a-family-is-yzz).
-
-*The generic stabilizer.* (c) of the route is @prop:gamma-co-images(1): the isometries of $T_\Co$ extending to $\Lambda_{\mathrm{K3}}$, commuting with the involution and fixing $M$ pointwise are $\Orth(N)^*=\widetilde\Orth(T_\Co)$, and intersecting with $\Orth^+$ gives $\widetilde\Orth^+(T_\Co)$ (@def:gamma-co-groups(3)). Since $-\id_{T_\Co}$ is one of them — it is $\restrictionof{\iota^*}{T_\Co}$ — and it acts trivially on $\bD(T_\Co)$, the quotient stack $(\bD(T_\Co)-Z)/G$ has **generic stabilizer $\{\pm\id\}\cong\{1,\iota\}$**: it is a $\ZZ/2$-gerbe over the base of the Coble-surface family, the gerbe class being the covering involution. Equivalently, the moduli stack of Coble K3 covers has generic stabilizer $\ZZ/2$ while the labelled base $B$ of @def:coble-family-unpolarized is a space (@lem:d2-plane-sextic-freeness(3)).
-
-*What that does to the count.* If (a) held, then the cover of $B$ parameterizing markings would be $\bD(T_\Co)-Z$ with deck group a subgroup of $G$, and $\Gamma_\Co(B)$ would be the image of $\pi_1(B)$ under the period-quotient. The size of that image cannot be read off from $G$ alone, because $\pi_1(\bD(T_\Co)-Z)$ is not trivial: it is generated by the meridians of the arrangement $Z$, and those acts as the reflections $s_\delta$ (@lem:d2-vanishing-reflections(3)). So the order count that would give $\abs{\Gamma_\Co(B)}=\abs{\widetilde\Orth^+(T_\Co)}$ from $\abs{G}=\abs{\widetilde\Orth(T_\Co)}=2\abs{\widetilde\Orth^+(T_\Co)}$ is not available: the kernel of $\pi_1(B)\to G$ is not known, and it is here — not in the equality of $G$ with the stabilizer, which is (c) and is proved — that the argument stops.
-:::
-
-::: {.remark #rmk:d2-routes-for-the-equality title="The three routes to the reverse inclusion, and the step at which each fails"}
-
-The reverse inclusion $\widetilde\Orth^+(T_\Co)\subseteq\Gamma_\Co(B)$ of @thm:gamma-co-is-stable(2) has been attempted by three routes. Each is recorded here with the exact step that fails, so that the next attempt does not repeat it.
-
-*1. The sextic base and the orbifold period theorem.* [@YZZ25, Thm. 3.4] gives $\mcm_T\cong\Gamma_T\backslash(\bD_T-\calH_T)$ and [@YZZ25, Prop. 6.6] with [@YZZ25, Prop. 6.5] upgrades it to the orbifold $P\Gamma_T\backslash(\bD_T-\calH_T)$, with $P\Gamma_T=\Gamma_T/\{\pm\id\}$ [@YZZ25, §6.1]. Since $-\id$ acts trivially on $\bD_T$ and as $-\id$ on the fibre $Q_F=T_\Co$, the lattice local system does not descend across that comparison, so the theorem identifies the period map and not the monodromy group; this is @rmk:gamma-co-orbifold-obstruction and it is where this route stops.
-
-*2. Picard--Lefschetz reflections.* Each nodal degeneration gives the reflection $s_\delta$ in a vanishing class $\delta$ of square $-2$ (@lem:d2-vanishing-reflections), so $W(T_\Co)\subseteq\Gamma_\Co(B)$. But the discriminant arrangement of the family is strictly larger than the $(-2)$-arrangement: for an isotropic $e$ the vector $\ell_1+e$ is a root whose hyperplane is $e^{\perp}$ (@lem:d2-arrangement-classes), the meridian of a component with $\gamma^2\le-4$ is not a reflection, and the components with $\gamma^2\ge0$ are not excluded by the Hodge index theorem, $H$ being nef and not ample (@lem:d2-arrangement-classes(2)). So this route gives the containment $W(T_\Co)\subseteq\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co)$ and cannot close it.
-
-*3. The Enriques side.* The Coble locus is the $(-2)$-Heegner divisor of the Enriques period domain, so the Coble family is the Enriques family restricted to that divisor. It was proposed to read $\Gamma_\Co(B)$ as the image of $\Stab_{\Gamma_\En}(\ZZ\delta)$ and then to use $R_{\Gamma_\En}=\widetilde\Orth^+(T_\Co)$ (@prop:gamma-co-images(1)). That is withdrawn, and the reason is worth stating exactly: a loop of the Coble base does not give an element of $\Stab_{\Gamma_\En}(\ZZ\delta)$ unless one already knows that the Coble base *is* the divisor modulo that stabilizer, which is a statement about the base and not a consequence of the restriction; and to relate the monodromy of the restricted family to the stabilizer one needs a map $\pi_1(H,s)\to\Stab_{\Gamma_\En}(\ZZ\delta)$, which loops around divisors do not supply. Relating $\Gamma_\Co(B)$ to $T_\Co$'s isometries is precisely the theorem, so no step may assume it.
-
-*What a proof must do.* By @thm:gamma-co-is-stable(2), it must exhibit an explicit, well-defined map $\pi_1(H,s)\to\widetilde\Orth^+(T_\Co)$, equivalently $\pi_1(H,s)/\ker\rho\to\widetilde\Orth^+(T_\Co)$, and show it onto. The natural candidate is the comparison of the base with a quotient of the period domain, and the precise obstruction there is that the identification of $H$ with $(\bD(T_\Co)-Z)/G$ for an explicit $G$ is *equivalent* to the equality: the deck group of $\bD(T_\Co)-Z\to H$ is by definition $\Gamma_\Co(B)/(\Gamma_\Co(B)\cap\{\pm\id\})$, so naming $G=\widetilde\Orth^+(T_\Co)$ as the group of that quotient assumes what is to be proved.
-:::
-
-::: {.remark #rmk:gamma-co-orbifold-obstruction title="Why the orbifold theorem of the source does not give $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$"}
-
-The period theorem of [@YZZ25, Thm. 3.4] is an isomorphism of \emph{coarse} spaces $\mcm_T\cong\Gamma_T\backslash(\bD_T-\calH_T)$. Its orbifold refinement, [@YZZ25, Thm. 1.1] together with [@YZZ25, Prop. 6.6] and the criterion [@YZZ25, Prop. 6.5], is an isomorphism of $\mcm_T$ with
-$$P\Gamma_T\backslash(\bD_T-\calH_T),\qquad P\Gamma_T=\Gamma_T/\{\pm\id\},$$
-the group used in [@YZZ25, §6.1]. Those two quotients are \emph{not} the same orbifold, and [@YZZ25, §6.1] says so: $-\id$ acts trivially on $\bD_T$, hence lies in every point stabilizer of $\Gamma_T\backslash(\bD_T-\calH_T)$ and in none of $P\Gamma_T\backslash(\bD_T-\calH_T)$.
-
-The lattice local system cannot be carried across that comparison. Its fibre is $Q_F=T_\Co$, on which $-\id$ acts as $-\id$ (@prop:coble-discriminant-group), so an orbifold local system with fibre $Q_F$ does not descend to the $P\Gamma_T$-quotient, and the monodromy group of a local system is read on the orbifold whose stabilizers act on its fibre. Consequently the orbifold statement of the source identifies the period map, not the monodromy group of $\bT$, and $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ does not follow from it.
-
-What remains is the reverse inclusion required by @thm:gamma-co-is-stable(2). The loop carrying $-\id_{T_\Co}$ is already supplied by @prop:sign-is-a-loop-of-the-labelled-base; it gives $-\id\in\Gamma_\Co(B)$, not surjectivity onto $\widetilde\Orth^+(T_\Co)$. No argument here supplies the remaining monodromy elements.
-:::
-
-::: {.question #qst:gamma-co-sign-is-realised title="The sign of the monodromy on the labelled base, and the stable-group equality it does not settle"}
-
-Is there a loop of $B=V/\PGL_3$ whose monodromy on $T_\Co$ is $-\id$? The answer is yes: @prop:sign-is-a-loop-of-the-labelled-base exhibits one, so $-\id\in\Gamma_\Co(B)$, and $-\id$ is not an element that loops miss. That does *not* give $\Gamma_\Co(B)=\widetilde\Orth^+(T_\Co)$, which is @thm:gamma-co-is-stable(2): the sign is necessary for the equality and not sufficient (@rmk:the-sign-is-a-loop-not-a-missing-sign(2)), and the equality itself is @conj:gamma-co-stable. Nor does the sign give $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$: by @thm:gamma-co-sextic-group(4) that identity is equivalent to $\Gamma_\Co(B)=\widetilde\Orth^+(T_\Co)$ and not to the sign. What the sign does give is that $\Gamma_\Co(B)$ is a finite-index subgroup of $\widetilde\Orth^+(T_\Co)$ containing $-W(T_\Co)$, with the bound of @rmk:the-sign-is-a-loop-not-a-missing-sign(3); its index is not constrained to be two, and every count stated for the stable quotient is a count for $\fco$ only under the equality.
-:::
-:::
-
-::: {.proposition #prop:sign-is-a-loop-of-the-labelled-base title="A loop of the labelled base carries $-\id_{T_\Co}$"}
-
-Let $W(T_\Co)$ be the group generated by the reflections $s_v$ in the $(-2)$-vectors $v$ of $T_\Co$ (@prop:gamma-co-reflective-set(1)), let $B=V/\PGL_3$ be the labelled base of @def:coble-family-unpolarized(3), and let $\Gamma_\Co(B)=\rho\qty{\pi_1(B,s)}$ (@def:gamma-co-groups(1)). Then
+Use the primitive invariant lattice $M=\ZZ H\perp L$, $L=A_1^{\oplus10}$ and $Q=T_\Co$ inside the unimodular K3 lattice, with $H^2=2$. The arrangement $\mathcal H_{10A_1}$ of [Yu--Zheng--Zhong, *Moduli spaces of sextic curves with simple singularities and their compactifications*, arXiv:2505.16727, Theorem 3.4 and preceding definition, p. 8](https://arxiv.org/pdf/2505.16727) is the union of the restrictions of the mirrors of roots $r\perp H$, $r\notin L$. Write $r=(\lambda+\gamma)/2$ by projection to $L_\QQ\oplus Q_\QQ$. Then $\lambda\in L$, $\gamma\in Q$, and the gluing condition is that the divided classes agree via the anti-isometry from $A_M$ to $A_Q$. In particular
 $$
-W(T_\Co)\subseteq\Gamma_\Co(B),\qquad\text{and hence}\qquad -\id_{T_\Co}\in\Gamma_\Co(B),
+\gamma^2=-8+2\sum_{i=1}^{10} n_i^2,\qquad \lambda=\sum_i n_i\ell_i.
 $$
-the second containment being @thm:coble-block-sign-in-w. Consequently the question @qst:gamma-co-sign-is-realised is answered positively: the sign is the monodromy of a loop of $B$, and it is not an element that loops miss.
+A nonempty intersection with the type IV domain requires $\gamma^2<0$. Thus only the projected norms $-8,-6,-4,-2$ can give hyperplanes there. The arrangement contains, but is strictly larger than, the short-root arrangement of $Q$.
+
 :::
 
 ::: {.proof}
+The two projections have denominator dividing two because the discriminant groups of the primitive invariant and anti-invariant lattices have exponent two. The $H$-coefficient is zero by orthogonality, and $\gamma\ne0$ by primitivity of $L$ (it is a direct summand of the primitive $M$). The equation follows by taking squares. A nonzero vector in a real space of signature $(2,n)$ can be perpendicular to a positive-definite two-plane if and only if its square is negative: the orthogonal complement of such a plane is negative definite, and conversely the complement of a negative vector has positive index two. In particular the formerly exhibited isotropic projected vector does **not** cut a hyperplane inside the period domain.
 
-The discriminant arrangement of the family has components $\delta^{\perp}$ for $\delta$ a $(-2)$-vector of $T_\Co$ (@lem:d2-vanishing-reflections(2)), and these are divisors in the base: what the meridian of such a divisor carries is the local monodromy of the family over the base, and that monodromy is the reflection $s_\delta$ (@lem:d2-vanishing-reflections(3), by the Picard--Lefschetz formula of [@Voi07, Thm. 3.16]). A meridian of a divisor of $B$ is a loop of $B$, so $s_\delta\in\rho\qty{\pi_1(B,s)}=\Gamma_\Co(B)$ for every $(-2)$-vector $\delta$, which is the first containment. That $-\id_{T_\Co}\in W(T_\Co)$ is @thm:coble-block-sign-in-w, whose record is `computations/reports/coble_663-rel-lemma-c.py` with its `-run.txt` and its assertions in the `.json` beside them.
+Every short root $\delta\in Q$ itself is an allowed $r$, with $\lambda=0$, $\gamma=2\delta$. For an additional mirror take $\lambda=\ell_1+\ell_2$, of square $-4$. The anti-isometric image of $[\lambda/2]$ lies in the characteristic element's perpendicular of $A_Q$, is nonzero and has quadratic value $1$ modulo $2$. The hyperbolic-plane vector $u=e'-f'\in U(2)\subset Q$ is primitive of square $-4$, and $[u/2]$ is another such nonsingular class. The quadratic form on the characteristic perpendicular is nondegenerate over $\mathbb F_2$ (@lem:coble-discriminant-blocks); Witt extension gives an isometry carrying one nonsingular class to the other, and extend it by the identity on the characteristic line. By Nikulin's surjectivity theorem (@thm:two-elementary-surjectivity, Theorem 3.6.3 of [@Nik80], p. 144), this finite isometry lifts to $\Orth(Q)$. Thus there is a primitive $\gamma$ of square $-4$ with the required glued class. The vector $r=(\lambda+\gamma)/2$ lies in the unimodular lattice, is perpendicular to $H$, and has square $-2$. Its mirror meets the domain and is not a short-root mirror: proportional rational vectors of squares $-4$ and $-2$ would have squared ratio $2$ or $1/2$, impossible for a rational ratio. This proves strictness using a genuine glued root.
+:::
+::: {.lemma #lem:d2-vanishing-reflections title="Short-root mirrors and the sign of local monodromy"}
+
+1. A vector $ah+v$ of $Q=\langle h\rangle\perp E_{10}(2)$ has square $-2$ precisely when $a$ is odd and $v^2=-2(a^2+1)$.
+2. Each such root defines a mirror in $\mathcal H_{10A_1}$, and the additional mirrors are as in @lem:d2-arrangement-classes.
+3. The short-root reflection $s_\delta$ belongs to the stable positive group, and its projective action is realized by a loop of the labelled presentation.
+4. The full short-root group $W(Q)$ is contained in the integral monodromy of the equation-marked cover family of @prop:sign-is-a-loop-of-the-labelled-base, but no such containment on $B$ follows merely from the mirror description.
+
 :::
 
-::: {.remark #rmk:the-sign-is-a-loop-not-a-missing-sign title="What the loop carrying the sign does and does not settle"}
+::: {.proof}
+Squares in $E_{10}(2)$ are multiples of four, which gives (1), and (2) is the preceding lattice lemma. A reflection in a square-minus-two vector is integral and fixes every discriminant class, because its difference on a dual vector is an integral multiple of the root. It preserves the period component by fixing a positive plane pointwise. Its projective image is realized by (the actual projective surjectivity of) @thm:gamma-co-is-stable. A genuine one-parameter ordinary-double-point smoothing with its cover specified has the Picard--Lefschetz reflection as monodromy, but it requires a family across the puncture with that multiplication and smoothing parameter. The mirror description alone does not supply such a lift for every mirror, or identify its central deck sign on the chosen base. Part (4) follows from the full equation-marked image, independently of a generation claim about these meridians.
+:::
+::: {.theorem #thm:gamma-co-is-stable title="The exact projective monodromy of the labelled sextic presentation"}
 
-1. An earlier form of @prop:coble-monodromy-is-the-marking-group(4) read that no loop carries $\iota$, so that the image of $\pi_1(B)$ is an index-two subgroup and the two readings differ by exactly $\{\pm\id\}$. That is denied for the labelled base by @prop:sign-is-a-loop-of-the-labelled-base: the loop group already contains the sign, and the two readings do not differ by it. What @thm:no-loop-carries-the-sign establishes is a statement about the coarse space of the direct construction, not about $B$; the transfer between the two is finding (iv) of @rmk:findings-ii-iii-and-the-isotropy and is unproved, and clause 4 now states the two readings without asserting the index.
-2. Nor does a loop carrying $-\id$ give the equality $\Gamma_\Co(B)=\widetilde\Orth^+(T_\Co)$: the sentence of @qst:gamma-co-sign-is-realised that reads the question as equivalent to that equality is an implication in one direction only, since the sign is necessary for the equality and not sufficient. The equality is @conj:gamma-co-stable and nothing here proves it.
-3. What the sign does give is the finiteness of the index and a bound on it. With $\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable(1)) and $W(T_\Co)\subseteq\Gamma_\Co(B)$,
+Let $B=V/\PGL_3$ and $\bar B=[B/S_{10}]$ with the genuine cover family of @lem:d2-unpolarised-family. Put $K^+=\widetilde\Orth^+(T_\Co)$ and $Z=\{\pm\id\}$. Then
+
+1. $\Gamma_\Co(B)\leq K^+$ and $\Gamma_\Co(\bar B)\leq\Gamma_{10A_1}$.
+2. Their projective images are exactly $K^+/Z$ and $\Gamma_{10A_1}/Z$, respectively. In particular the index of $\Gamma_\Co(B)$ in $K^+$ is either one or two, with equality of the groups if and only if $-\id\in\Gamma_\Co(B)$. The analogous conclusion holds on $\bar B$.
+3. On the cover-retaining plane-presentation stacks (labelled and unlabelled) the integral monodromy images are $K^+$ and $\Gamma_{10A_1}$, respectively. A different integral lift of the same projective system on an effective presentation can change the central character; it is not determined by the period map. The particular resultant choice is specified by @lem:d2-unpolarised-family.
+
+:::
+
+::: {.proof}
+The two upper bounds follow from the actual labelled lattice classes and unimodular gluing: the labelled group fixes them, and the unlabelled group permutes the ten exceptional classes, hence has discriminant action in $\Theta$. Orientation of the period plane is preserved. The arithmetic image of the marked $H,\Delta$ stabilizer is $\Gamma_{10A_1}=\Orth^+(Q)\cap\bar\rho^{-1}(\Theta)$ by @thm:gamma-co-sextic-group(2).
+
+The effective unlabelled nodal-sextic quotient is the orbifold of the irreducible type $10A_1$ in [Yu--Zheng--Zhong, arXiv:2505.16727, Theorem 3.4, p. 8, Proposition 6.5(i), Proposition 6.6, p. 24, and Lemma 6.7, p. 25](https://arxiv.org/pdf/2505.16727). Its irreducible nodal hypothesis holds by the definition of $V$; the lattice $P=\langle H\rangle\oplus A_1^{10}$ and the $S_{10}$ action on its discriminant are exactly those of @lem:d2-local-system. The cited statements prove an isomorphism of effective orbifolds
 $$
-[\widetilde\Orth^+(T_\Co):\Gamma_\Co(B)]\ \leq\ [\widetilde\Orth^+(T_\Co):W(T_\Co)],
+\bar B\cong[(D^+\setminus\mathcal H_{10A_1})/(\Gamma_{10A_1}/Z)].
 $$
-and the right-hand side is finite because $W(T_\Co)$ has finite index in $\Orth(T_\Co)$ (@thm:coble-block-sign-in-w). Its value is @qst:gamma-co-reflection-index and is not known; the index of the loop group in $\widetilde\Orth^+$ is therefore a finite number bounded by the reflection index, not the number $2$ that the sign was taken to produce.
+The stack quotient on the right has a connected manifold as its covering atlas: a locally finite union of proper complex hyperplanes has path-connected complement in the domain. For example one can join two points in coordinate balls by a two-segment path avoiding the measure-zero cones over the real codimension-two strata, as in @thm:gamma-co-is-the-stack-monodromy. Given any group element, choose such a path between a base period and its translate; using the corresponding endpoint group arrow defines an orbifold loop. Thus the map from the orbifold fundamental group onto the effective arithmetic group is surjective.
+
+This is precisely the projective transport of the actual family, not a new local system defined on the quotient: locally mark the cohomology of the genuine family and lift its period to the domain. The actual period maps are the ones of Theorem 3.4 by the minimal resolution of the double plane; on overlaps the lifts differ by the change-of-marking isometries. Projectively these are exactly the transition elements in the effective orbifold period map of Proposition 6.5(i). At a special fibre the comparison of isotropy is the one in Proposition 6.1 and Proposition 6.5, where the cover's deck transformation is divided out on both sides. Equivalently, a loop lifts in the projective marking cover to its period path with the same endpoints, so the arithmetic quotient's endpoint element is the projective class of actual transport. This establishes the asserted surjectivity without trying to descend the unprojectivized $T$ local system to a quotient in which its central sign was discarded.
+
+The $S_{10}$-cover $B\to\bar B$ has kernel on fundamental groups precisely the loops preserving the labels. Under the projective representation that permutation is the discriminant action in $\Theta$, since the invariant classes are permuted faithfully on $A_M$ (Lemma 6.7), and the discriminant gluing agrees with the action on $Q$. The kernel of the map $\Gamma_{10A_1}/Z\to\Theta$ is $K^+/Z$, because $Z$ acts trivially on the exponent-two discriminant group. Projective surjectivity on $\bar B$ therefore gives projective surjectivity on $B$. If $L$ is either integral image inside its asserted ambient group $G$, the equality of projective images means $LZ=G$, so $[G:L]=[Z:L\cap Z]$, either one or two.
+
+The cover-retaining plane-presentation stack is the $\mu_2$-gerbe of @lem:d2a-moduli-stack. Its actual cohomology transport includes the projective image just computed and the deck inertia acting by $-\id$ on $Q$. It also satisfies the same integral upper bound. Hence its image is the entire specified ambient group. This proves (3). In fact if a cover on the effective base has representation $\rho$, twist that cover by the $\mu_2$-torsor defined by the character $\det\circ\rho$; the new representation is $\gamma\mapsto(\det\rho(\gamma))\rho(\gamma)$. Since $\rank Q=11$ is odd, this lift has determinant $+1$ and cannot contain $-\id$. It still has the same full projective image. The torsor is an ordinary two-sheeted topological cover with its induced holomorphic structure on the analytic base (or a finite étale cover by the Riemann existence theorem on the complex algebraic base); descent of the double-cover algebra gives the twisted genuine family. In the unlabelled case perform the twist on the effective stack. Thus a full integral image is not a consequence of the projective image, even when the cover has been constructed globally.
+:::
+::: {.remark #rmk:gamma-co-is-stable-context title="The remaining integral question on the effective presentation"}
+
+The actual square-root family is constructed in @lem:d2-unpolarised-family. The effective orbifold theorem now proves full projective monodromy by @thm:gamma-co-is-stable. The remaining index is one or two, and only the central sign of this specified family is undecided. On the cover-retaining presentation and on the equation-marked base the integral image is already the full stable group. Neither presentation is the unmarked universal stack.
+:::
+::: {.remark #rmk:d2-marked-moduli-and-the-sign title="Marked moduli, projective transport and deck inertia"}
+
+The marked-family path theorem @thm:gamma-co-is-the-stack-monodromy computes the monodromy of the actual unmarked Coble stack; @cor:coble-invariant-marking-monodromy computes the invariant-marked image. The effective plane-presentation orbifold is a different moduli problem, but its projective holonomy is precisely the one in @thm:gamma-co-is-stable. The cover-retaining presentation has deck inertia acting as $-\id$; the effective quotient does not. The construction and descent of a genuine chosen cover on the effective base, including its square-root line, are in @lem:d2-unpolarised-family. A projective period quotient alone cannot determine the sign of the integral transport of that chosen family.
+:::
+::: {.remark #rmk:d2-routes-for-the-equality title="The effective orbifold route and the central sign"}
+
+The orbifold route now succeeds projectively, as proved in @thm:gamma-co-is-stable. The previously proposed meridian route did not verify that every integral local monodromy is the asserted reflection for the chosen lift of the cover, and cannot determine its central character. The projected-root arrangement is strictly larger than the short-root arrangement by @lem:d2-arrangement-classes; the extra mirror there has negative norm, not isotropic norm. Restriction of an Enriques arithmetic stabilizer is not a computation of the integral monodromy of a specified sextic family. The equation-marked scalar loop supplies the missing deck sign on that base by @prop:sign-is-a-loop-of-the-labelled-base, not on the effective projective base.
+:::
+::: {.remark #rmk:gamma-co-orbifold-obstruction title="What the effective orbifold theorem computes"}
+
+The effective nodal-sextic orbifold theorem of [@YZZ25, Proposition 6.5 and Proposition 6.6, p. 24] supplies the full **projective** monodromy, as proved in @thm:gamma-co-is-stable. The source explicitly divides out $\{\pm\id\}$. Its use is therefore legitimate for the projectivized lattice local system but does not fix an integral lift's central character. The actual family over the effective bases is constructed with its tautological square root in @lem:d2-unpolarised-family; the actual cover-retaining presentation stack and the nonzero-equation family have the full integral images.
+:::
+::: {.question #qst:gamma-co-sign-is-realised title="The remaining sign for the particular resultant cover on the effective presentation"}
+
+By @thm:gamma-co-is-stable, the only remaining integral-image question on $B$ is whether the specified resultant-square-root family of @lem:d2-unpolarised-family realizes $-\id$ on a loop. Its index in $\widetilde\Orth^+(T_\Co)$ is one if so, two otherwise. The effective period theorem does not decide it. The cover-retaining presentation stack and the equation-marked base both have full stable integral image, proved independently below. The unmarked universal stack has the full positive group, not the stable group, by @thm:gamma-co-is-the-stack-monodromy.
 :::
 
-::: {.remark #rmk:no-loop-carries-the-sign-is-another-base title="Why a loop of $B$ may carry the sign while no loop of the direct construction's coarse space does"}
+::: {.proposition #prop:sign-is-a-loop-of-the-labelled-base title="The equation-marked family realizes the full stable positive group"}
 
-@thm:no-loop-carries-the-sign states that the monodromy of $T_\Co$ over the coarse moduli space $\mathfrak M$ of the direct construction, the space of @prob:B24, is $\Gamma^{\mathrm{dir}}_{\Co,2}/\{\pm\id\}$, so that no loop of $\mathfrak M$ carries $\iota$; @prop:sign-is-a-loop-of-the-labelled-base states that a loop of $B=V/\PGL_3$ does. Neither statement is withdrawn, and the two are consistent for two reasons.
+Let $\widehat V\to V$ be the $\mathbb C^*$-torsor of nonzero sextic equations in the tautological line, retaining the node labels. Define its actual K3 family by the blow-up of the ten nodes and the double-cover multiplication given by the pulled-back tautological equation. Its integral monodromy on $Q$ is $\widetilde\Orth^+(Q)$, including $-\id$.
 
-1. They are about different bases. $\mathfrak M$ is the coarse space of the direct construction, whose objects are labelled Coble data with their $(H,\alpha)$; $B$ is the labelled base of @def:coble-family-unpolarized. No page identifies them, and the morphism between them is not written down.
-
-2. $-\id$ acts trivially on the period domain: $[\omega]=[-\omega]$ in $\bP(T_\Co\otimes\CC)$, which is the sentence of the proof of @thm:no-loop-carries-the-sign. The period map therefore cannot separate $-\id$ from $\id$, and a loop that carries $-\id$ on the local system leaves every period fixed. This is why the sign can be a loop of $B$ on the local system and simultaneously the identity of the quotient taken at $\mathfrak M$: the quotient by $\{\pm\id\}$ is exactly the identification of the two.
-
-The index is then a question about $W(T_\Co)$, not about the sign. Since
-$$W(T_\Co)\subseteq\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co),$$
-one has
-$$[\widetilde\Orth^+(T_\Co):\Gamma_\Co(B)]\ \leq\ [\widetilde\Orth^+(T_\Co):W(T_\Co)]\ =\ \frac{[\Orth(T_\Co):W(T_\Co)]}{2\,\abs{\Orth(q_{T_\Co})}},$$
-the denominator being $[\Orth(T_\Co):\widetilde\Orth^+(T_\Co)] = 2\abs{\Orth(q_{T_\Co})} = 93\,997\,183\,795\,200$ (@def:gamma-co-groups(3), @thm:two-elementary-surjectivity, @thm:gamma-co-sextic-group(3)). The numerator is finite (@thm:coble-block-sign-in-w) and is **not computed on the page**: the record of that theorem, `computations/reports/coble_663-rel-lemma-c.py` with its `-run.txt`, decides membership of $-\id$ in the group generated by the $1641$ distinct reflections of the diagonal model by a closure computation in the $2$-adic layers of $\Gamma(2)$; it does not compute the index $[\Orth(T_\Co):W(T_\Co)]$. Whether the inclusion $W\subseteq\Gamma_\Co(B)$ is an equality is the question that meridians alone do not settle, and it is the same defect the retired meridian criterion carried.
 :::
 
+::: {.proof}
+The tautological section trivializes the base line on $\widehat V$, so the half-line is the relative anticanonical line and the family is globally defined. The invariant labelled classes are fixed and transport preserves orientation, giving the stable positive upper bound. The maps $\widehat V\to V\to B$ are locally trivial with connected fibres $\mathbb C^*$ and $\PGL_3$. Thus their maps on fundamental groups are onto: lift a base loop and close it by a path in the fibre. All genuine cover lifts of this plane family have identical projective transport, since they differ locally by the central deck sign, and their quotient and branch are the same. Therefore @thm:gamma-co-is-stable(2) gives the full projective image on $\widehat V$.
+
+For a fixed sextic equation $F$, the loop of equations $tF$ with $|t|=1$ is a loop of $\widehat V$ fixing the labelled nodes. Over the double cover $t=u^2$ it trivializes by scaling the covering coordinate by $u$; the path from $u=1$ to $u=-1$ therefore has monodromy the deck involution, which acts as $-\id$ on $Q$. Together with projective surjectivity this proves full integral image. The loop is constant after projecting to $V$ or $B$, and is not a proof of the sign for the resultant family on either effective base.
+:::
+::: {.remark #rmk:the-sign-is-a-loop-not-a-missing-sign title="The sign distinguishes a chosen lift from its effective period quotient"}
+
+The sign on the cover-retaining stack and equation-marked base is established by @thm:gamma-co-is-stable and @prop:sign-is-a-loop-of-the-labelled-base. On the effective labelled base the index is at most two, not bounded only by an unknown reflection index: the projective image is already the full stable projective group. Its integral equality is equivalent to the sign question for the specified cover. The arithmetic fact $-\id\in W(T_\Co)$ in @thm:coble-block-sign-in-w is unchanged; it does not prove that every short-root reflection is a loop with the asserted integral sign in that effective family.
+:::
+::: {.remark #rmk:no-loop-carries-the-sign-is-another-base title="Different bases and the projective period map"}
+
+The projective action of $-\id$ is trivial. An effective arithmetic quotient therefore does not detect this sign, whereas an actual cover-retaining family may realize it. The concrete scalar loop over the nonzero-equation base realizes it, and the cover-retaining presentation has it as inertia. The chosen cover on the effective labelled space requires a separate integral sign calculation; the direct construction's coarse period quotient does not perform that calculation.
+:::
 ::: {.proposition #prop:gamma-co-geometric-bound title="The discriminant image on each base"}
 
 Let $\Gamma_\Co(B)$ and $\Gamma_\Co(\bar B)$ be the monodromy groups of the labelled and unlabelled bases of @def:coble-family-unpolarized, and $\Gamma_\Co$ that of the moduli stack (@def:gamma-co-groups(1)).
@@ -582,12 +502,12 @@ The proof stops at the stalk, and that is all that is used. Two remarks on why t
 
 Let $T=10A_1$, so that $P=\generators{H}\oplus L$ with $L=A_1^{\oplus10}$ and $Q=P^{\perp\Lkt}=T_\Co$ (@thm:occult-period-map-sextics, @lem:ten-a1-permutation-forces-strictness), and let $\Gamma_{10A_1}\le\Orth(T_\Co)$ be the group of [@YZZ25, §3.1] for that type: the image of $\Orth(\Lkt,\Delta,H)\to\Orth(Q)$, restricted to the subgroup preserving the component $\bD(Q)$. Let $\Theta\le\Orth(q_{T_\Co})$ be the image of the permutations of $e_1,\dots,e_{10}$ fixing $e_0$ (@prop:gamma-co-geometric-bound(2)). Then:
 
-0. The unlabelled base $\bar B$ of @def:coble-family-unpolarized is the moduli stack of sextics of irreducible type $T=10A_1$, with coarse space $\mathcal M_T$, and the stalk (@def:stalk) of the local system $\bT$ of @lem:d2-local-system is the lattice $Q_F$ of [@YZZ25, §3.1] (@lem:d2a-family-is-yzz). The *group* identity $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ is **not** a consequence of this, for the reason recorded in @rmk:gamma-co-orbifold-obstruction; what holds is $\Gamma_\Co(\bar B)\subseteq\Gamma_{10A_1}$ (@prop:gamma-co-geometric-bound(2)), with the index of $\Gamma_\Co(B)$ in $\Gamma_\Co(\bar B)$ equal to $\abs{\bar\rho(\Gamma_\Co(\bar B))}$ (@lem:gamma-co-labelled-index).
+0. The unlabelled base $\bar B$ of @def:coble-family-unpolarized is the moduli stack of sextics of irreducible type $T=10A_1$, with coarse space $\mathcal M_T$, and the stalk (@def:stalk) of the local system $\bT$ of @lem:d2-local-system is the lattice $Q_F$ of [@YZZ25, §3.1] (@lem:d2a-family-is-yzz). The integral *group* identity $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ on the effective presentation is not a consequence of the stalk comparison; its projective version is proved by @thm:gamma-co-is-stable, for the reason recorded in @rmk:gamma-co-orbifold-obstruction; what holds is $\Gamma_\Co(\bar B)\subseteq\Gamma_{10A_1}$ (@prop:gamma-co-geometric-bound(2)), with the index of $\Gamma_\Co(B)$ in $\Gamma_\Co(\bar B)$ equal to $\abs{\bar\rho(\Gamma_\Co(\bar B))}$ (@lem:gamma-co-labelled-index).
 1. $\Theta\cong\mathfrak S_{10}$ and $|\Theta|=10!=3\,628\,800$.
 2. $\Gamma_{10A_1}=\Orth^+(T_\Co)\intersect\bar\rho^{-1}(\Theta)$.
 3. $[\Gamma_{10A_1}:\widetilde\Orth^+(T_\Co)]=|\Theta|=10!$ and
 $$[\Orth^+(T_\Co):\Gamma_{10A_1}]=\frac{\abs{\Orth(q_{T_\Co})}}{10!}=2^{13}\cdot3\cdot17\cdot31=12\,951\,552 .$$
-4. $\widetilde\Orth^+(T_\Co)\subsetneq\Gamma_{10A_1}\subsetneq\Orth^+(T_\Co)$; on the family of @def:coble-family-unpolarized one has $\Gamma_\Co(B)\subseteq\Gamma_\Co(\bar B)\subseteq\Gamma_{10A_1}$ (@lem:d2-local-system(4), @prop:gamma-co-geometric-bound(2)), and $[\Gamma_\Co(\bar B):\Gamma_\Co(B)]=10!$ (@lem:gamma-co-labelled-index(2)). The inclusion $\Gamma_\Co\subseteq\Gamma_\Co(\bar B)$ is *not* one of these: it follows from them only together with $\Gamma_\Co=\Gamma_\Co(B)$, the identification of the group of the stack with that of the labelled presentation, which is research#797, item 6 and is open (@def:gamma-co-groups(1)). Since $\Gamma_\Co(\bar B)\subseteq\Gamma_{10A_1}$ with both discriminant images equal to $\Theta$, the identity $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ is equivalent to $\Gamma_\Co(B)=\widetilde\Orth^+(T_\Co)$, which is @qst:gamma-co-sign-is-realised and is *not* proved; clause (0) records why it is not a consequence of the identification of the stalk.
+4. $\widetilde\Orth^+(T_\Co)\subsetneq\Gamma_{10A_1}\subsetneq\Orth^+(T_\Co)$. The actual effective-family images satisfy $\Gamma_\Co(B)\subseteq\Gamma_\Co(\bar B)\subseteq\Gamma_{10A_1}$ and $[\Gamma_\Co(\bar B):\Gamma_\Co(B)]=10!$ by @lem:gamma-co-labelled-index. Both projective images are the entire corresponding projective groups, by @thm:gamma-co-is-stable. Both integral indices in the corresponding ambient group are equal and at most two. The unmarked stack has the full positive group, and is not the unlabelled presentation.
 :::
 
 ::: {.proof}
@@ -606,33 +526,25 @@ $$[\Orth^+(T_\Co):\Gamma_{10A_1}]=\frac{\abs{\Orth(q_{T_\Co})}}{10!}=2^{13}\cdot
 
 (3). By @thm:two-elementary-surjectivity the map $\bar\rho\colon\Orth(T_\Co)\to\Orth(q_{T_\Co})$ is onto, its hypotheses being that $T_\Co$ is even, indefinite and $2$-elementary, which it is: $T_\Co=\generators{2}\oplus E_{10}(2)$ of signature $(2,9)$ (@prop:coble-period-domain(2)). The kernel $\ker\bar\rho$ contains the reflection $s_\zeta$ in a primitive vector $\zeta$ of square $2$, and $s_\zeta\notin\Orth^+(T_\Co)$ (@prop:gamma-co-reflective-set(2)); so of the two cosets of $\ker\bar\rho$ over a class $g\in\Orth(q_{T_\Co})$ one lies in $\Orth^+$, and $\bar\rho$ maps $\Orth^+(T_\Co)$ onto $\Orth(q_{T_\Co})$. Hence $\Orth^+(T_\Co)\intersect\bar\rho^{-1}(\Theta)\to\Theta$ is onto with kernel $\Orth^+(T_\Co)\intersect\ker\bar\rho=\widetilde\Orth^+(T_\Co)$, so the first index is $|\Theta|=10!$, and the second is $|\Orth(q_{T_\Co})|/10!$ with $|\Orth(q_{T_\Co})|$ from @prop:coble-discriminant-group.
 
-(4). Both indices in (3) exceed $1$. The last clause is @lem:gamma-co-labelled-index(2): the index of $\Gamma_\Co(B)$ in $\Gamma_\Co(\bar B)$ is $\abs{\bar\rho(\Gamma_\Co(\bar B))}$, read off the $S_{10}$-cover, and it is $\abs{\Theta}=10!$ because the relabelling arrows realize every element of $\Theta$ (@lem:relabelling-discriminant-action(3)); the containment $\Gamma_\Co(\bar B)\subseteq\Gamma_{10A_1}$ is the inclusion into $\bar\rho^{-1}(\Theta)$ with @thm:gamma-co-sextic-group(2). With $\bar\rho(\Gamma_\Co(\bar B))=\bar\rho(\Gamma_{10A_1})=\Theta$, the identity $\Gamma_\Co(\bar B)=\Gamma_{10A_1}$ is equivalent to $\Gamma_\Co(B)=\widetilde\Orth^+(T_\Co)$, and that is not proved, which is clause (0); the argument does not use the labelled-base theorem.
+(4). The relative index of the presentation groups is $10!$ by @lem:gamma-co-labelled-index, which follows from the faithful permutation action on the invariant discriminant and the connected label cover. The arithmetic index of $\Gamma_{10A_1}$ over the stable group is also $10!$ by (3). Hence the two remaining indices are equal by multiplicativity of subgroup indices. Their bound and projective equality are @thm:gamma-co-is-stable. The distinction from the unmarked stack is @thm:gamma-co-is-the-stack-monodromy.
 :::
 
-::: {.corollary #cor:gamma-co-inclusions title="What G1 decides for the stable group"}
+::: {.corollary #cor:gamma-co-inclusions title="The actual and presentation monodromy groups"}
 
-1. *The labelled base* (@def:coble-family-unpolarized), the base whose monodromy group is $\Gamma_\Co(B)$, the group of the presentation (@def:gamma-co-groups(1)). What is proved is $\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co)$ (@thm:gamma-co-is-stable(1)); the identification $\Gamma_\Co=\Gamma_\Co(B)$ is research#797, item 6 (@def:gamma-co-groups(1)), so no inclusion for $\Gamma_\Co$ itself follows. The equality $\Gamma_\Co(B)=\widetilde\Orth^+(T_\Co)$, and with it @conj:gamma-co-stable on this base, is not proved: containing $-\id_{T_\Co}$ is necessary for it (@thm:gamma-co-is-stable(2)) and not sufficient (@rmk:the-sign-is-a-loop-not-a-missing-sign(2)), and where $\Gamma_\Co(B)$ sits inside $\widetilde\Orth^+(T_\Co)$ is @qst:gamma-co-sign-is-realised.
-2. *The unlabelled base.* $\Gamma_\Co(\bar B)\subseteq\Gamma_{10A_1}=\Orth^+(T_\Co)\intersect\bar\rho^{-1}(\Theta)$ (@thm:gamma-co-sextic-group(2), @prop:gamma-co-geometric-bound(2)), so
-$$\widetilde\Orth^+(T_\Co)\subsetneq\Gamma_{10A_1}\subsetneq\Orth^+(T_\Co),\qquad[\Gamma_{10A_1}:\widetilde\Orth^+(T_\Co)]=10!,\qquad[\Orth^+(T_\Co):\Gamma_{10A_1}]=12\,951\,552 .$$
-The inclusion $\Gamma_\Co(B)\subseteq\Gamma_\Co(\bar B)$ is @lem:d2-local-system(4), and $[\Gamma_\Co(\bar B):\Gamma_\Co(B)]=10!$ by @thm:gamma-co-sextic-group(4) with @lem:gamma-co-labelled-index(2). For $\Gamma_\Co$ itself the same inclusion is conditional on $\Gamma_\Co=\Gamma_\Co(B)$, which is research#797, item 6.
-3. *The coarse space.* There is no family (@rmk:d2-what-is-open(1)); given its two inputs, @thm:gamma-co-is-full gives the descended local system monodromy $\Gamma^{\mathrm{desc}}_\Co=\Orth^+(T_\Co)$, and
-$$[\Orth^+(T_\Co):\widetilde\Orth^+(T_\Co)]=\abs{\Orth(q_{T_\Co})}=2^{21}\cdot3^5\cdot5^2\cdot7\cdot17\cdot31=46\,998\,591\,897\,600$$
-by @thm:two-elementary-surjectivity and @prop:coble-discriminant-group.
+1. The effective labelled family has full stable projective image, integral index at most two in $\widetilde\Orth^+(T_\Co)$; the cover-retaining labelled presentation and the nonzero-equation family have that entire integral group (@thm:gamma-co-is-stable, @prop:sign-is-a-loop-of-the-labelled-base).
+2. The effective unlabelled family has full projective image in $\Gamma_{10A_1}/\{\pm\id\}$ and integral index at most two; its actual cover-retaining presentation stack has integral image $\Gamma_{10A_1}$. The two chosen effective-family images have relative index $10!$ by the discriminant action and the label cover.
+3. The universal unmarked stack has $\Gamma_\Co=\Orth^+(T_\Co)$ and the actual degree-two stack has $\Gamma_{\Co,2}=R_{\gent}\cap\Orth^+(T_\Co)$, by @thm:gamma-co-is-the-stack-monodromy. The stable quotient is associated instead to the invariant-marked stack (@cor:coble-invariant-marking-monodromy).
 :::
-
 ::: {.remark #rmk:gamma-co-stable-quotient-counts title="Which quotient the stable counts describe"}
-
-Accordingly the counts stated for the stable quotient --- $527$ $0$-cusps (@thm:coble-zero-cusp-count(2)) and $189\,720$ $1$-cusps (@thm:plane-fibre(3)) --- are counts for $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$, and are counts for $\fco$ only under that hypothesis.
+The stable arithmetic quotient has $527$ line orbits and $189\,720$ plane orbits by the integral lifting results @thm:coble-zero-cusp-count(2) and @thm:plane-fibre(3). These describe the arithmetic quotient of the invariant-marked stack image; the unmarked universal image is the full positive group. Since the deck sign is trivial on isotropic sublattices, either integral lift of the full projective image on the effective labelled base gives the same arithmetic subspace-orbit counts, but this does not identify that presentation with the unmarked moduli problem.
 :::
-
 ::: {.remark #rmk:gamma-co-d2a title="The presentation groups and the actual stack group"}
 The labelled presentation group lies in $\widetilde\Orth^+(T_\Co)$ and the unlabelled presentation group lies in $\Gamma_{10A_1}$; their relative index is $10!$ (@lem:gamma-co-labelled-index, @thm:gamma-co-sextic-group). The equality of the former with the stable group is a separate question. Neither presentation is the actual universal stack: its monodromy is $\Orth^+(T_\Co)$ by @thm:gamma-co-is-the-stack-monodromy, even on the classical open substack. The arithmetic quotient by the full orthogonal group identifies the two period components and gives the same arithmetic space as the quotient of one component by the positive group. This statement does not construct a universal family over the coarse arithmetic space.
 :::
 
-::: {.remark #rmk:gamma-co-status title="The established actual group and the separate presentation problem"}
-The universal stack group is $\Gamma_\Co=\Orth^+(T_\Co)$, by @thm:gamma-co-is-the-stack-monodromy. The chosen plane-model groups retain their established bounds: $\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co)$, $\Gamma_\Co(\bar B)\subseteq\Gamma_{10A_1}$, and their relative index is $10!$ (@thm:gamma-co-is-stable, @lem:gamma-co-labelled-index, @thm:gamma-co-sextic-group). The labelled group contains the short-root reflections (@lem:d2-vanishing-reflections) and the sign $-\id$ (@prop:sign-is-a-loop-of-the-labelled-base). Equality of that labelled group with the stable group is not implied by the computation of the actual universal group.
+::: {.remark #rmk:gamma-co-status title="The established actual group and the presentation sign"}
+The universal unmarked group is $\Orth^+(T_\Co)$; the actual numerical degree-two group is the positive restricted Enriques stabilizer (@thm:gamma-co-is-the-stack-monodromy). The effective labelled and unlabelled presentation groups have their full projective images by @thm:gamma-co-is-stable, with integral index at most two in the corresponding arithmetic group. Their cover-retaining presentation stacks, and the nonzero-equation labelled family for the first, have the full integral images. The central sign for the specific resultant cover on the effective labelled base is the remaining question @qst:gamma-co-sign-is-realised, not a reflection-index bound.
 :::
-
 ::: {.lemma #lem:gluing-discriminant-identification title="The gluing identification $\kappa\colon A_{E_{10}(2)}\isoto A_{T_\En}$"}
 
 With $T_\Co = \generators{h}\perp E_{10}(2)$, $T_\En = U\perp E_{10}(2)$, $\delta$ and $H = \generators{(h/2,\delta/2)}$ as in @def:gamma-co-groups, put $S\definedas T_\Co\perp\ZZ\delta$, so that $T_\En = S_H$ and $A_{T_\En} = H^{\perp}/H$ carries the quadratic form induced by $q_S$ (@thm:nikulin-gluing); the map $\kappa$ below is the quotient $A_{E_{10}(2)}\isoto H^{\perp}/H$ and is not the inclusion $\kappa_h$ of that theorem.
