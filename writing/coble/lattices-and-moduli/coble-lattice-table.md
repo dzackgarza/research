@@ -104,3 +104,123 @@ The other entries of @tbl-coble-lattices are those of [@CDL25, Table 5.1, p. 553
    The lattices $\generators{2}^{\oplus 2}$ and $\latI_{2,0}(2)$ have the same Gram matrix $\diag(2,2)$.
 
 :::
+
+## The two rows at $n=8$ {#sec-coble-two-rows-at-eight}
+
+At $n=8$ the table has two rows, and the moduli space of complex Coble surfaces with eight boundary components has two irreducible components [@DK25, §9.1].
+@prop:coble-complement-is-scaled-unimodular gives the lattice reason for the two rows.
+@rmk:coble-eight-boundary-configurations gives the geometric reason: two configurations of reducible conics on the quintic del Pezzo surface.
+@prop:coble-kummer-product-row identifies the row with $\delta=0$ with the Kummer surfaces of products of two elliptic curves.
+
+::: {.proposition #prop:coble-complement-is-scaled-unimodular title="The complement $N$ is a twisted unimodular lattice"}
+
+In each row of @tbl-coble-lattices, $N\cong L(2)$ (@def:form-twist) for a unimodular (@def:unimodular) lattice $L$ of signature $(2,10-n)$, and $L$ is even (@def:even-lattice) if and only if $\delta=0$.
+Hence $\delta=0$ only at $n=8$.
+At $n=8$ the row with $\delta=0$ has $L\cong\latII_{2,2}=U^{\perp 2}$, and the row with $\delta=1$ has $L\cong\latI_{2,2}$.
+
+:::
+
+::: {.proof}
+
+By @prop:coble-table-invariants, $N$ has rank $12-n$ and signature $(2,10-n)$.
+By @cor:primitive-complement-signature, $A_{N,q}\cong A_{M,q}(-1)$.
+So $N$ is $2$-elementary (@def:p-elementary) with $a(N)=a(M)=12-n=\rank N$, and $q_N$ takes values in $\bZ/2\bZ$ exactly when $q_M$ does, that is $\delta_N=\delta_M=\delta$.
+
+Since $A_N^\sharp=N^\#/N$ is $2$-elementary, $2N^\#\subseteq N$.
+The indices are $[N^\#:N]=2^{a(N)}=2^{\rank N}=[N^\#:2N^\#]$, so $N=2N^\#$.
+Let $L$ be the $\bZ$-module $N^\#$ with the form $b_L(x,y)\definedas 2b_N(x,y)$.
+The form $b_L$ is integral, because $2b_N(x,y)=b_N(2x,y)$ with $2x\in N$ and $y\in N^\#$.
+The map $L(2)\to N$, $x\mapsto 2x$, is a bijection, and $b_N(2x,2y)=4b_N(x,y)=2b_L(x,y)$, so it is an isometry.
+Also $\abs{\disc{L}}=2^{\rank N}\abs{\disc{N^\#}}=2^{\rank N}/\abs{\disc{N}}=1$, because $\abs{\disc{N}}=2^{a(N)}$.
+So $L$ is unimodular, with the signature $(2,10-n)$ of $N$.
+
+For $x\in N^\#$, $b_L(x,x)=2b_N(x,x)$, and $b_N(x,x)\bmod 2\bZ$ is $q_N(x+N)$.
+So $L$ is even if and only if $q_N$ takes values in $\bZ/2\bZ$, that is, if and only if $\delta=0$ [@Nik80, §3.6].
+The lattice $L$ is indefinite.
+If $\delta=0$, @thm:indefinite-unimodular-classification gives $2-(10-n)=n-8\equiv0\pmod 8$, so $n=8$ for $1\le n\le 10$, and $L\cong\latII_{2,2}=U^{\perp2}$.
+If $\delta=1$, the same theorem gives $L\cong\latI_{2,10-n}$.
+
+:::
+
+::: {.remark #rmk:coble-two-rows-parity title="Parity, not decomposability, separates the two rows"}
+
+Both lattices $N$ at $n=8$ are orthogonal sums: $\mathrm{U}(2)\perp\mathrm{U}(2)$ and $\generators{2}^{\perp2}\perp\generators{-2}^{\perp2}$.
+By @prop:coble-complement-is-scaled-unimodular, the two rows differ in the parity of $L=N(\tfrac12)$: $L$ is the even unimodular lattice $U^{\perp 2}$ in one row and the odd unimodular lattice $\latI_{2,2}$ in the other.
+The even case is possible only where an even unimodular lattice of signature $(2,10-n)$ exists, and that is only at $n=8$.
+
+:::
+
+::: {.remark #rmk:coble-eight-boundary-configurations title="The two configurations of reducible conics"}
+
+For $5\le n\le10$, [@DK25, §9.1] constructs a general Coble surface $V$ with $n$ boundary components as follows.
+Let $\mathcal D_5$ be the del Pezzo surface (@def:degree-of-del-pezzo-surface) of degree $5$, the blowup of four points $p_1,\dots,p_4$ of $\PP^2$, no three collinear.
+Let $e_0,\dots,e_4$ be the geometric basis of $\Pic(\mathcal D_5)$, and let $L_i\definedas\abs{e_0-e_i}$ for $i=1,\dots,4$ and $L_5\definedas\abs{2e_0-e_1-e_2-e_3-e_4}$ be the five pencils of conics.
+Choose one conic $K_i\in L_i$ for each $i$.
+Then $V$ is the blowup of the singular points of $K_1\cup\dots\cup K_5$, and the boundary of $V$ is the union of the proper transforms of the irreducible components of the $K_i$.
+If all five conics are irreducible, $n=5$, and each reducible conic adds one boundary component.
+
+At $n=8$, three of the five conics are reducible.
+Up to quadratic Cremona transformations there are two configurations, (a) and (b) [@DK25, §9.1, Fig. 9.1].
+The linear system of conics through $p_3,p_4$ gives a rational map $\PP^2\dashrightarrow Q=\PP^1\times\PP^1$.
+On $Q$ the two configurations are:
+
+(a) $V$ is the blowup of the intersection points of eight lines on $Q$, four from each ruling.
+
+(b) $V$ is the blowup of the intersection points of six lines on $Q$, three from each ruling, and of a conic through one of these intersection points, together with the infinitely near points of the tangent directions of the two lines and the conic at that point.
+
+The two rulings of $Q$ give two elliptic pencils on the K3 cover $X$ of $V$.
+In case (a), a pencil has four fibres of type $\tilde{\mathrm D}_4$ and four disjoint sections, and $\Pic(X)\cong\mathrm U\oplus\mathrm D_8\oplus\mathrm D_8$.
+In case (b), a pencil has two fibres of type $\tilde{\mathrm D}_6$, two fibres of type $\tilde{\mathrm A}_1$ and four sections, and $\Pic(X)\cong\mathrm U\oplus\mathrm E_7\oplus\mathrm E_7\oplus\mathrm A_1\oplus\mathrm A_1$.
+In both cases $A_{\Pic(X)}\cong(\bZ/2)^4$, and the discriminant form is even in case (a) and odd in case (b) [@DK25, §9.1].
+So case (a) is the row $(18,4,0)$ and case (b) is the row $(18,4,1)$.
+
+The orthogonal sum decompositions of $M$ are not canonical.
+By @thm:two-elementary-classification, the lattice $\mathrm U\oplus\mathrm D_8\oplus\mathrm D_8$ of case (a) is isometric to the lattice $\mathrm E_8\oplus\mathrm D_8\oplus\mathrm U(2)$ of @tbl-coble-lattices, because both are even $2$-elementary of signature $(1,17)$ with $a=4$ and $\delta=0$.
+The presentation $\mathrm U\oplus\mathrm D_8\oplus\mathrm D_8$ comes from the configuration of fibres and sections of the elliptic pencil, and the presentation in the table comes from the classification.
+
+:::
+
+::: {.proposition #prop:coble-kummer-product-row title="The row $\delta=0$ is the Kummer-product locus"}
+
+Let $V$ be a Coble surface of type (a) in @rmk:coble-eight-boundary-configurations.
+Then there are elliptic curves $E$ and $F$ such that the K3 cover of $V$ is the Kummer surface $X=\operatorname{Km}(E\times F)$, and $V=X/\iota$ for the involution $\iota$ of $X$ induced by $(x,y)\mapsto(x,-y)$.
+If $E$ and $F$ are not isogenous, then $T_X\cong\mathrm U(2)^{\oplus 2}$, which is the complement $N$ of the row $(18,4,0)$, and $\Pic(X)$ is the lattice $M$ of that row.
+
+:::
+
+::: {.proof}
+
+Let the four lines of the first ruling of $Q=\PP^1\times\PP^1$ be $\{u_i\}\times\PP^1$ and the four lines of the second ruling be $\PP^1\times\{v_j\}$.
+Let $E\to\PP^1$ be the double cover branched at $u_1,\dots,u_4$.
+By Riemann–Hurwitz, $E$ has genus $1$.
+With a ramification point as origin, the covering involution is $x\mapsto-x$, and its fixed points, the points over $u_1,\dots,u_4$, are the points of $E[2]$.
+Define $F\to\PP^1$ from $v_1,\dots,v_4$ in the same way.
+
+The group of automorphisms of $E\times F$ generated by $-1$ and $(x,y)\mapsto(x,-y)$ also contains $(x,y)\mapsto(-x,y)$, and the quotient of $E\times F$ by it is $(E/\pm1)\times(F/\pm1)=Q$.
+On $X=\operatorname{Km}(E\times F)$, the involution $\iota$ induced by $(x,y)\mapsto(x,-y)$ fixes pointwise exactly eight smooth rational curves $E_1,\dots,E_4,F_1,\dots,F_4$, it acts as $1$ on $\Pic(X)$ and as $-1$ on $T_X$, and contracting the images of the sixteen exceptional curves $G_{ij}$ of $X$ on $X/\iota$ gives the smooth quadric $Q$ [@KK01, §5].
+Write $E[2]=\{p_1,\dots,p_4\}$ and $F[2]=\{q_1,\dots,q_4\}$, with $p_i$ over $u_i$ and $q_j$ over $v_j$.
+The curves $E_j$ and $F_i$ are the images of $E\times\{q_j\}$ and $\{p_i\}\times F$ [@KK01, §2], so they map to the lines $\PP^1\times\{v_j\}$ and $\{u_i\}\times\PP^1$.
+The curve $G_{ij}$ lies over the point $(p_i,q_j)$, so its image is the exceptional curve over the intersection point $(u_i,v_j)$.
+So $X/\iota$ is the blowup of $Q$ at the sixteen intersection points of the eight lines, which is $V$.
+
+The double cover $X\to V$ is branched exactly along the images of the eight curves $E_i$ and $F_j$, which are the boundary components $C$ of $V$.
+A double cover of $V$ branched along $C$ is given by a line bundle whose square is $\OO_V(C)$.
+Such a line bundle is unique, because $V$ is rational and so $\Pic(V)$ is torsion free.
+So $X$ is the K3 cover of $V$ in @prop:coble-k3-cover.
+
+If $E$ and $F$ are not isogenous, then $T_X\cong\mathrm U(2)^{\oplus 2}$ [@KK01, §1, Case I].
+This is $N$ in the row $(18,4,0)$ of @tbl-coble-lattices.
+So $\Pic(X)$ is even and $2$-elementary of signature $(1,17)$ with $A_{\Pic(X),q}\cong A_{N,q}(-1)$ by @cor:primitive-complement-signature, and so $a=4$ and $\delta=0$.
+By @thm:two-elementary-classification, $\Pic(X)$ is isometric to the lattice $M$ of that row.
+
+:::
+
+::: {.remark #rmk:coble-kummer-product-row-meaning title="The meaning of $N=\mathrm U(2)^{\oplus2}$"}
+
+By @prop:coble-kummer-product-row, the complement $N=\mathrm U(2)^{\oplus 2}$ of the row $(18,4,0)$ is the transcendental lattice of the Kummer surface $\operatorname{Km}(E\times F)$ of a product of two non-isogenous elliptic curves.
+The chain is:
+reducible conics on $\mathcal D_5$; two configurations when three conics are reducible; two families of K3 covers at $n=8$; the rows $(18,4,0)$ and $(18,4,1)$; even and odd discriminant forms; $N=\mathrm U(2)^{\oplus2}$ and $N=\latI_{2,2}(2)$.
+In the row $\delta=0$ this is: four lines from each ruling of $Q$; $\operatorname{Km}(E\times F)$; $T_X=\mathrm U(2)^{\oplus2}$.
+So the two rows at $n=8$ are two different geometric components, and the component with $\delta=0$ is the locus of Kummer surfaces of products of two elliptic curves.
+
+:::

@@ -93,6 +93,7 @@ Each triple is a row of @tbl-coble-lattices by @prop:coble-table-invariants.
 
 Write $n \definedas 12 - a$. The ten triples with $\delta = 1$ are the lattices $(10+n,\, 12-n,\, 1)$ for $n = 1, \dots, 10$, and the eleventh is $(18,4,0)$, which has $n = 8$.
 Hence @tbl-coble-lattices has one row for each $n$ from $1$ to $10$ and two rows at $n = 8$, the family $(10+n,\, 12-n,\, \delta)$ is a family of ten values of $n$ and eleven lattices, and the "ten lattices" of the programme's organizing observation counts $n$ and not lattices.
+@sec-coble-two-rows-at-eight gives the lattice and geometric reasons for the two rows at $n = 8$.
 The triple $(14,8,0)$ lies on the edge and is a lattice, but it is not one of the eleven: by (2) of the proof the complement $N$ of $(14,8,0)$ would be an even lattice (@def:even-lattice) of signature $(2,6)$ with $(\delta; t_+, t_-, a) = (0; 2, 6, 8)$, and the condition attached to $a = t_+ + t_-$, which holds there with equality, requires $2 - 6 = -4 \equiv 0 \pmod 8$, which fails.
 :::
 
