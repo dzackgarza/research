@@ -752,6 +752,52 @@ Finally the quadratic discriminant representation of the group just constructed 
 
 :::
 
+::: {.theorem #thm:smith-parabolic-block-decision title="Smith-coordinate lifting and the integral radical lattice"}
+
+Let $P$ be a primitive isotropic plane in a nondegenerate integral lattice $L$. Complete bases in the saturated inclusions $P\subset P^\perp\cap L\subset L$, in the order complement, plane, reduction. Write the Gram matrix as
+$$
+G=\begin{pmatrix}H&J&K\\J^t&0&0\\K^t&0&A\end{pmatrix}.
+$$
+Here $J$ is nonsingular of size two and $A$ is nondegenerate. The integral lift of a prescribed plane action $B\in GL_2(\ZZ)$ and quotient action $C\in O(A)$ is decided by two integer congruence kernels and finite row residue tests. In particular, there is no requirement that the mixed block of a lift vanish. The integral translation-parameter lattice of the unipotent radical is computed by two linear congruence kernels, without enumerating its residue classes.
+
+:::
+
+::: {.proof}
+
+In the row convention of [Dutour Sikirić--Hulek, arXiv:2302.01679v2, Theorem 4.9, pp. 33--34](https://arxiv.org/pdf/2302.01679v2), write a lift as
+$$
+g=\begin{pmatrix}U&X&Y\\0&B&0\\0&Z&C\end{pmatrix}.
+$$
+Expanding $gGg^t=G$ gives $U=JB^{-t}J^{-1}$ and
+$$
+MZ^t+YN=F,\quad MX^t+XM^t=R(Y),
+$$
+where $M=UJ$, $N=AC^t$, $F=K-UKC^t$, and
+$$R(Y)=H-UHU^t-YAY^t-YK^tU^t-UKY^t.$$
+Reject a nonintegral $U$. Otherwise $U$ is unimodular. Take a Smith form $SMT=D=\operatorname{diag}(d_1,d_2)$, $S,T$ unimodular and $d_i>0$. Put $V=SY$, $W=T^{-1}Z^t$, $X'=SXT^{-t}$, $F'=SF$, $H'=S(H-UHU^t)S^t$, $K'=SUK$. Then the equations are
+$$
+DW+VN=F',\quad DX'^t+X'D=H'-VAV^t-VK'^t-K'V^t.
+$$
+For row $v_i$ of $V$, solve $v_iN\equiv F'_i\pmod{d_i}$ by integer linear algebra, adjoining $d_i I$ to the coefficient system. Keep the residues modulo $m_i=d_i$ if $A$ is even or $d_i$ is even, and $m_i=2d_i$ otherwise. Enumerate the projected kernel of the augmented integer matrix on this finite residue module and translate by a particular solution. This gives exactly the allowable row classes. Impose
+$$
+H'_{ii}-v_i A v_i^t-2v_i K_i'^t\equiv0\pmod{2d_i}.
+$$
+Changing $v_i$ by $m_i z$ does not change this condition: its norm changes by $2m_i v_i A z^t+m_i^2 z A z^t$, divisible by $2d_i$ by the definition of $m_i$. The linear term has the same divisibility. The only remaining condition is
+$$
+H'_{12}-v_1 A v_2^t-v_1K_2'^t-K_1'v_2^t\equiv0\pmod{\gcd(d_1,d_2)}.
+$$
+Both moduli $m_i$ are multiples of this gcd, so the condition is independent of representatives. These three divisibilities are necessary and sufficient for the integral symmetric equation: the diagonal entries are twice $d_i$ times the respective unknowns, and the off-diagonal equation is a single Bézout equation in $d_1,d_2$. Recover $W=D^{-1}(F'-VN)$ and solve for $X'$, then reverse the unimodular transformations. All resulting blocks are integral, and $\det g=\det C=\pm1$. Failure on the full finite row sets proves absence of a lift. Rank zero for $A$ gives just the symmetric equation.
+
+For the radical use column coordinates with identity diagonal blocks, translation parameter $c$ of size $(\operatorname{rank} A)\times2$, and the other blocks $a,\tau$. The equations are
+$$
+\tau=-J^{-1}c^t A,\qquad Ja+a^tJ^t=Q(c):=-(Kc+c^tK^t+c^tAc).
+$$
+First compute the lattice $T_0$ of $c$ satisfying the linear congruence $\operatorname{adj}(J)c^t A\equiv0\pmod{|\det J|}$. Let $\Lambda$ be the rank-three image of $a\mapsto Ja+a^tJ^t$ in $\operatorname{Sym}_2(\ZZ)$. On $T_0$ the map $Q$ modulo $\Lambda$ is additive. Indeed for $c,d\in T_0$ the cross term $c^t A d+d^t A c$ is $Jb+b^tJ^t$ with $b=J^{-1}c^t A d$ integral. Hence the parameter lattice is the kernel of the linear homomorphism $T_0\to\operatorname{Sym}_2(\ZZ)/\Lambda$ specified by $Q$ on an integral basis of $T_0$. Both congruence kernels are obtained by adjoining the corresponding modulus times an identity matrix and projecting the integral kernel; the auxiliary coordinates are uniquely determined. Thus the projected integral basis is complete. Each parameter basis vector lifts by the symmetric linear equation, and after cancellation of the parameter the residual element belongs to the central skew kernel. Together with a basis of that kernel these lifts generate the whole radical. This proves completeness without a bound on the number of residue classes.
+
+For illustration, in the basis $(u,v,p,q,d)$ with $J=2I$, $H=0$, $K=(1,0)^t$, $A=(-4)$, the integral involution sending $(u,v,p,q,d)$ to $(-u,v,-p,q,d-p)$ has the stated Gram matrix and fixes the plane. It has $B=\operatorname{diag}(-1,1)$, $C=1$, $Y=0$, $Z=(-1,0)$. Imposing $Z=0$ would instead require $Y=(-1/2,0)^t$. The quotient sign has another integral lift fixing $u,v,p,q$ and sending $d$ to $p-d$. These examples explain why a rational zero-mixed-block normalization is not a criterion for the integral Levi image.
+
+:::
+
 ::: {.theorem #thm:schreier-discriminant-image title="The Schreier elements give the discriminant image of the stabilizer"}
 
 Take the data of @def:stabilizer-congruence-data with $m\geq1$ and $mM\subseteq L$, and let $S\subseteq G$ be a finite symmetric generating set: $G=\generators{S}$, $S^{-1}=S$ and $\abs{S}<\infty$.
