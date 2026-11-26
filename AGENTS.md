@@ -648,6 +648,7 @@ different acts, and only the second one does anything.
 - `japi` is the required interface for reading cells, restarting kernels, and verifying rendered results in `computations/notebooks/` during development and debugging.
 - Skip test, QC, build, execution, and rendered-result verification for changes confined to `computations/notebooks/`, `src/dzack_research/preamble/` or sage-extensions.  This exemption holds even though those changes do contain code; it is a scope decision, not the prose rule under *QC integration*.
 - Commit those changes with verification hooks skipped; do not let unrelated repository failures block notebook or preamble work.
+- The JupyterLab server at `127.0.0.1:8888` is `subrepos/systemd/jupyter-sagemath.service`, owned by this repository; project-management shows its localhost route but does not generate or restart it. The server and its kernels run in the research container through the host `jupyter` launcher ([SAGE-CONTAINER.md](https://github.com/dzackgarza/ai-review-ci/blob/main/SAGE-CONTAINER.md)), which owns port 8888.
 
 # Goal-integrity routing (always-on)
 
