@@ -1470,8 +1470,8 @@ All three carry primitive vectors to primitive vectors, because $\gcd(a+2kc,c)=\
 
 *Odd--odd.*
 Let $a$ and $c$ be odd.
-Choose $k$ with $\abs{a+2kc}\leq\abs{c}$ and apply $A^k$, or symmetrically choose $k$ with $\abs{c+2ka}\leq\abs{a}$ and apply $B^k$.
-Both entries remain odd, so neither can become $0$, and the maximum of the absolute values strictly decreases.
+If $\abs a>\abs c$, choose $k$ with $\abs{a+2kc}\leq\abs{c}$ and apply $A^k$; if $\abs c>\abs a$, choose $k$ with $\abs{c+2ka}\leq\abs{a}$ and apply $B^k$.
+In either case both entries remain odd, so neither becomes $0$, and the maximum of the absolute values strictly decreases. If the absolute values are equal, the reduction terminates.
 Iterating, we reach a pair on which no move reduces the maximum; such a pair has $\abs a=\abs c$, and primitivity forces $\abs a=\abs c=1$.
 So the terminal pair (@def:mmp-singularities) is one of $(1,1)$, $(1,-1)$, $(-1,1)$, $(-1,-1)$.
 Of these, $(-1,-1)=-\id(1,1)$ and $(-1,1)=-\id(1,-1)$ are reached from $(1,1)$ and $(1,-1)$ by $-\id$, and $B(1,-1)=(1,-1+2)=(1,1)$; so all four lie in the $\Lambda$-orbit of $(1,1)$, and no sign is left unaccounted for.
@@ -1491,9 +1491,9 @@ Passing to lines changes nothing, since $-\id$ acts trivially on $\PP^1(\bZ)$; a
 
 *Item 3.*
 $\mu\equiv\begin{pmatrix}1&0\\1&1\end{pmatrix}\not\equiv\id\pmod 2$, and $\mu(a,c)=(a,\,a+c)$.
-For $a$ odd the second coordinate changes parity, so $\mu[1:0]=[1:1]$ and $\mu[1:1]=[1:0]$; for $a$ even $\mu$ fixes the vector $(0,c)$.
+For $a$ odd the second coordinate changes parity. On integral primitive lines $\mu[1:0]=[1:1]$ and $\mu[1:1]=[1:2]$; modulo $2$ these exchange the two odd-first-coordinate classes. For $a$ even the second coordinate keeps its parity, and $\mu$ fixes the representative $[0:1]$.
 Hence $\mu$ preserves the parity of the first coordinate, and so do $A$, $B$ and $-\id$, so every element of $\generators{\Lambda,\mu}$ does.
-Within the odd part (@def:even-odd-part-reflection-group) $\Lambda$ is transitive on $[1:0]$ and on $[1:1]$ by item 2 and $\mu$ exchanges them, and within the even part (@def:even-odd-part-reflection-group) $\Lambda$ is transitive on $[0:1]$; hence these two sets are exactly the orbits.
+Within the odd part (@def:even-odd-part-reflection-group), $\Lambda$ is transitive on each of the parity classes represented by $[1:0]$ and $[1:1]$ by item 2; the element $\mu$ carries the first representative to the second, so the two classes form one orbit under the enlarged group. Within the even part (@def:even-odd-part-reflection-group), $\Lambda$ is transitive on the class represented by $[0:1]$. The first-coordinate parity is invariant, so these two sets are exactly the orbits.
 
 :::
 
