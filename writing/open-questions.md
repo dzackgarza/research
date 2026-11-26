@@ -85,3 +85,6 @@ tags:
 
 
 The effective plane-presentation family is now constructed with its resultant square-root line (@lem:d2-unpolarised-family). Its integral monodromy has index at most two in the stable positive group, and the remaining question for this specified lift is the central sign (@thm:gamma-co-is-stable). The cover-retaining plane-presentation stack and the nonzero-equation labelled base have full stable integral image; neither is the unmarked universal stack.
+
+
+**D2b period image (research#787).** @lem:d2-degree-two-base gives the exact classical locus $D_{\mathrm{cl}}/H$ (the finite union of translates of the nodal-sextic locus, modulo the actual polarized monodromy), and the wider smooth image $(D^+\setminus Z_T)/H$. @qst:coble-degree-two-torelli proves Torelli on isomorphism classes at every period of those loci. The original all-$\Delta_2$ assertion is false: a general period orthogonal to the primitive orthogonal pair $\delta=e-f$, $r=e+f+e\prime-f\prime$ in $T_{\En}$ has no smooth lift, for either possible root-line branch. The arithmetic normalization of the full divisor is unchanged. This does not assert an equivalence of the actual stack with an arithmetic quotient stack.
