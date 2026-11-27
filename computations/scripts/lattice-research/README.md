@@ -103,9 +103,11 @@ files; the files themselves are here.
 
 `src/sage_patches/` — seven modules installing methods onto Sage's own classes
 by `setattr` (module base rings, ideals as submodules, $\mathbb Q/\mathbb Z$
-quotients, free and torsion parts, `End`/`Aut`, completions). The preamble owns
-all of it through owned categories and override-refine, and monkey-patching
-Sage's classes is banned outright. `category_specs/` is standing prior art,
-already harvested. Third-party code (CARAT,
-Movasati's `foliation.lib`, Dawes's `buildings.sage`, the conda installers) was
-never absorbed.
+quotients, free and torsion parts, `End`/`Aut`, completions). The old
+monkey-patching approach is not a maintained implementation. The complete
+historical category specifications, Sage patches and other previously
+unmatched files are now preserved in
+[the source snapshot](../../../archives/provenance/lattice-research/source-main/).
+Preservation does not establish satisfaction of every original mathematical
+obligation by the current formalization and acceptance owners. Third-party
+code has not been promoted to a maintained implementation.
