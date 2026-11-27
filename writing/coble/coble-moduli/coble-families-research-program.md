@@ -18,7 +18,7 @@ notes: |-
 
 ::: {#cons:coble-set-lattices .construction title="The lattices from a Coble set" defines="$M$; $N$; $F_{\Co,n}$"}
 
-Let $S$ be a terminal (@def:coble-surface) Coble surface (@def:coble-surface) of K3 type with $n$ boundary components, and let $X$ be its K3 double cover (@not:coble-ten-point-blowup), branched along $C = C_1 + \cdots + C_n$.
+Let $S$ be a terminal (@def:terminal-coble-surface) Coble surface of K3 type (@def:terminal-coble-k3-type) with $n$ boundary components, and let $X$ be its K3 double cover (@not:coble-ten-point-blowup), branched along $C = C_1 + \cdots + C_n$.
 For a general such $S$, $\Pic(X)$ is the $2$-elementary lattice $M$ of @tbl-coble-lattices with invariants $(r,a,\delta) = (10+n,\, 12-n,\, \delta)$.
 The period domain construction of @sec-moduli-construction, applied to $M$ and its orthogonal complement $N = M^{\perp\lkt}$, gives the moduli spaces $F_{\Co,n}$.
 :::

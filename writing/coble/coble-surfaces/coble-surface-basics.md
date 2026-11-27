@@ -4,13 +4,34 @@
 
 Let $S$ be a Coble surface of K3 type, so that $\abs{-2K_S} = \theset{C}$ with $C$ a reduced divisor.
 Then $C$ is a reduced union of smooth rational curves and is a simple normal crossing divisor.
-Blowing up the singular points of $C$ gives a terminal (@def:terminal-coble-surface) Coble surface of K3 type in the sense of @def:coble-surface [@DK25, §9.1].
+Blowing up the singular points of $C$ gives a terminal (@def:terminal-coble-surface) Coble surface of K3 type in the sense of @def:terminal-coble-k3-type [@DK25, §9.1].
 
+:::
+
+::: {.lemma #lem:coble-boundary-pairing title="Pairwise intersection numbers of the boundary curves"}
+Let $C_1,\ldots,C_n$ be the boundary components (@def:coble-boundary-component) of a Coble surface $S$ terminal of K3 type (@def:terminal-coble-k3-type). Then $C_i\cdot C_j=-4\delta_{ij}$.
+:::
+
+::: {.proof}
+For $i=j$ this is @lem:coble-boundary-self-intersection. For $i\ne j$, the curves are smooth by @lem:coble-boundary-rational and disjoint by @lem:coble-boundary-disjoint, so @lem:intersection-disjoint-curves gives $C_i\cdot C_j=0$.
+:::
+
+::: {.lemma #lem:coble-canonical-boundary-degree title="Canonical degree of a boundary curve"}
+Let $C_i$ be a boundary component (@def:coble-boundary-component) on a Coble surface $S$ terminal of K3 type (@def:terminal-coble-k3-type). Then $K_S\cdot C_i=2$.
+:::
+
+::: {.proof}
+The smooth divisor $C$ of @lem:coble-boundary-unique is reduced, so it is the sum of its boundary components (@def:coble-boundary-component), each with multiplicity one. Since $C\in\abs{-2K_S}$, the definition of the complete linear system (@def:complete-linear-system) gives $C\sim-2K_S$.
+By @lem:intersection-additive-divisor and @lem:intersection-linear-equivalence,
+$$
+-2(K_S\cdot C_i)=C\cdot C_i=\sum_j C_j\cdot C_i.
+$$
+The sum is $-4$ by @lem:coble-boundary-pairing.
 :::
 
 ::: {.proposition #prop:coble-boundary-intersections title="Intersection numbers of the boundary components"}
 
-Let $S$ be a terminal (@def:terminal-coble-surface) Coble surface of K3 type with boundary components $C_1, \ldots, C_n$.
+Let $S$ be a terminal (@def:terminal-coble-surface) Coble surface of K3 type (@def:terminal-coble-k3-type) with boundary components (@def:coble-boundary-component) $C_1, \ldots, C_n$.
 Then
 $$
 C_i\cdot C_j = -4\,\delta_{ij},
@@ -23,8 +44,7 @@ $$
 
 ::: {.proof}
 
-By @def:coble-surface, the curves $C_i$ are disjoint and $C_i^2 = -4$, so $C_i\cdot C_j = -4\delta_{ij}$.
-Since $C = C_1+\cdots+C_n \sim -2K_S$, intersecting with $C_i$ gives $-2K_S\cdot C_i = C\cdot C_i = C_i^2 = -4$, so $K_S\cdot C_i = 2$.
+The first formula is @lem:coble-boundary-pairing. The second is @lem:coble-canonical-boundary-degree.
 
 :::
 
@@ -36,7 +56,7 @@ A Coble surface (@def:coble-surface) $S$ is **minimal (@def:minimal-coble-surfac
 
 ::: {.proposition #prop:coble-one-boundary-minimal title="One boundary component implies minimal"}
 
-A terminal (@def:terminal-coble-surface) Coble surface (@def:coble-surface) of K3 type with $n = 1$ is minimal (@def:minimal-coble-surface) in the sense of @def:minimal-coble-surface [@DK25, proof of Prop. 9.1.4].
+A terminal (@def:terminal-coble-surface) Coble surface of K3 type (@def:terminal-coble-k3-type) with $n = 1$ is minimal (@def:minimal-coble-surface) in the sense of @def:minimal-coble-surface [@DK25, proof of Prop. 9.1.4].
 
 :::
 

@@ -355,7 +355,7 @@ For the last claim, an isometry commuting with an involution preserves its eigen
 ::: {.proposition #prop:unnodal-coble-polarization-nef title="The degree-$2$ polarization of an unnodal Coble surface is nef and big"}
 
 Let $S$ be an unnodal (@def:nodal-enriques-surface) Coble surface (@def:coble-surface), that is one with no $(-2)$-curves, let $F_1\in\abs{f_1}$ and $F_2\in\abs{f_2}$ be half-fibres of its two Halphen fibrations of index (@def:index) (@def:halphen-surface-index) $2$, and put $h = F_1+F_2$, so that $F_i^2 = 0$, $F_1\cdot F_2 = 1$ and $h^2 = 2$.
-Then $\abs{2h}$ has no base points (@def:complete-linear-system), and $h$ is nef and big.
+Then $\abs{2h}$ has no base points (@def:base-point-linear-system), and $h$ is nef and big.
 :::
 
 ::: {.proof}
@@ -933,7 +933,7 @@ Let $H = \set{f(p) = 0}\subset\abs{\OO_Y(4,4)}^\tau$, of dimension $11$ since ev
 ::: {.proof}
 
 Write $\ell\subset\abs{\OO_Y(4,4)}$ for the projective line through $f_0$ and $f_1$; it lies in $H$ because vanishing at $p$ is linear. Its base locus contains $p$, and it meets $C_{f_0}\cap C_{f_1}$. The conditions a member can fail to meet $B$ are, one by one, closed conditions on $\ell$ that are not identically satisfied:
-- a shared base point (@def:complete-linear-system) $q\ne p$: "singular at $q$" is a closed linear evaluation condition, and it cannot hold for every member of the pencil, since $f_0$ is not singular at $q$;
+- a shared base point (@def:base-point-linear-system) $q\ne p$: "singular at $q$" is a closed linear evaluation condition, and it cannot hold for every member of the pencil, since $f_0$ is not singular at $q$;
 - degeneracy of the quadratic part at $p$: this is the vanishing of a determinant of five coefficients, closed on $\ell$, and $f_0$ does not satisfy it;
 - a singularity away from the base locus: by Bertini's theorem for pencils on a smooth variety, a general member of $\ell$ has no singularity outside the base locus, so the set of such $t$ is a closed proper subset.
 

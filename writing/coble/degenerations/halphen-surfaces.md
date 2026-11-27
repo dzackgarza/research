@@ -63,7 +63,7 @@ attached to the fibre.
 
 ::: {.proposition #prop:terminal-coble-halphen-blowup title="Terminal Coble surfaces as blowups of Halphen surfaces"}
 
-Let $V$ be a terminal (@def:terminal-coble-surface) Coble surface of K3 type (@def:coble-surface).
+Let $V$ be a terminal (@def:terminal-coble-surface) Coble surface of K3 type (@def:terminal-coble-k3-type).
 Then $V$ is isomorphic to one of the following:
 
 1. the blowup of a Halphen surface of index (@def:index) $1$ at singular points of two simple reduced fibres;
@@ -76,10 +76,10 @@ In case 2 the fibre is of type $\tilde A_k$ with $k\leq8$, and in case 1 the two
 
 ::: {.proposition #prop:coble-sextic-halphen-pencil title="The Halphen pencil of a Coble sextic"}
 
-Let $V$ be a terminal (@def:terminal-coble-surface) Coble surface (@def:coble-surface) of K3 type with $n = 1$, and let $W = V(F_6)$ be the irreducible plane sextic of @prop:coble-sextic-model, with $10$ ordinary nodes or cusps, possibly infinitely near.
+Let $V$ be a terminal (@def:terminal-coble-surface) Coble surface of K3 type (@def:terminal-coble-k3-type) with $n = 1$, and let $W = V(F_6)$ be the irreducible plane sextic of @prop:coble-sextic-model, with $10$ ordinary nodes or cusps, possibly infinitely near.
 Choose $9$ of the $10$ double points of $W$.
 Then a plane cubic $V(F_3)$ passes through them, and the pencil $V(\lambda F_6 + \mu F_3^2)$ is a Halphen pencil of index (@def:index) $2$.
-The minimal resolution (@def:minimal-resolution-of-surface-singularity) of its base points (@def:complete-linear-system) is a Halphen surface of index $2$, and $V$ is the blowup of a singular point of an irreducible simple fibre of this pencil.
+The minimal resolution (@def:minimal-resolution-of-surface-singularity) of its base points (@def:base-point-linear-system) is a Halphen surface of index $2$, and $V$ is the blowup of a singular point of an irreducible simple fibre of this pencil.
 
 Let $F$ be a reducible simple fibre of the pencil.
 The blowup of a singular point of $F$ is a non-terminal Coble surface of K3 type with $n = 1$, whose anti-bicanonical curve is the proper transform (@def:strict-transform) of $F$.
@@ -89,7 +89,7 @@ The blowup of the singular points of this curve is a terminal Coble surface of K
 ::: {.proposition #prop:terminal-coble-deformations title="Deformations of terminal Coble surfaces"}
 
 Let $k$ be the base field, of characteristic $p\neq2$.
-Let $V$ be a terminal (@def:terminal-coble-surface) Coble surface (@def:coble-surface) of K3 type with $K_V^2 = -n$ and anti-bicanonical curve $C$.
+Let $V$ be a terminal (@def:terminal-coble-surface) Coble surface of K3 type (@def:terminal-coble-k3-type) with $K_V^2 = -n$ and anti-bicanonical curve $C$.
 Then
 $$
 h^i(\Theta_{V/k}) = \begin{cases} 10 + 2n & i = 1, \\ 0 & \text{otherwise} \end{cases}

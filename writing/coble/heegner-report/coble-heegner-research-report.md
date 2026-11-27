@@ -1114,6 +1114,7 @@ The second is decided at both its readings: the four-label image without the cha
 
 With $\alpha$ the vector $\delta$ of @lem:coble-heegner-vector, $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ is the group $\Gamma^{\mathrm{Hdg}}_\Co$ of @prop:gamma-co-in-heegner-group.
 The images of $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ and $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ in $\Orth(q_{T_\Co})$, their indices over $\widetilde\Orth^+(T_\Co)$, and the condition under which the two groups coincide are @prop:gamma-cong-eq-heegner.
+:::
 
 ### A lattice-theoretic stabilizer sequence {#sec-stabilizer-sequence}
 

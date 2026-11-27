@@ -128,6 +128,9 @@ What it got wrong is the uniqueness: the boundary lattice is $(9,9,1)_1$ at all 
 
 ::: {#def:terminal-coble-surface .definition title="Terminal" defines="terminal Coble surface"}
 
-A Coble surface (@def:coble-surface) is **terminal** when it is not the image of any birational but not biregular morphism from another Coble surface.
-The $n=1$ case, the blowup of a plane sextic at $N=10$ ordinary double points (@def:ordinary-double-point) (some possibly infinitely near), is terminal.
+A Coble surface (@def:coble-surface) is *terminal* when it is not the image of any birational but not biregular morphism from another Coble surface [@DZ99, §1.1].
+:::
+
+::: {.example #ex:terminal-coble-one-boundary title="The plane sextic with one boundary component"}
+In the one-component case of @thm:coble-smooth-antibicanonical-is-a-plane-blowup, the surface is the blowup of the plane at the ten double points of a sextic, including infinitely near points when necessary. The unique smooth bi-anticanonical curve has square $-4$ by that theorem. The converse in [@DZ99, Prop. 6.4(2)] therefore gives terminality (@def:terminal-coble-surface).
 :::

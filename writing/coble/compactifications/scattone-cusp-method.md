@@ -7,7 +7,7 @@
 Let $d\geq 1$, let $\lkttd\cong\langle -2d\rangle\oplus U^2\oplus E_8^2$ be the lattice of signature (@def:signature) $(2,19)$ of @def:degree-2d-k3-period-data, let $D$ be a connected component of the type IV domain $\Omega_{\lkttd}$, and let $\Gamma\leq\Orth(\lkttd)$ be an arithmetic subgroup (@def:hsd-arithmetic-subgroup) that preserves $D$.
 Then the boundary of the Baily--Borel compactification $\bbcpt{D/\Gamma}$ is the disjoint union of
 
-1. one point $p_v$, a **$0$-cusp** (Type III boundary component (@def:coble-surface)), for each $\Gamma$-orbit of primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) lines $\ZZ v\iscontainedin\lkttd$, and
+1. one point $p_v$, a **$0$-cusp** (Type III boundary component (@rmk:hsd-boundary-components)), for each $\Gamma$-orbit of primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) lines $\ZZ v\iscontainedin\lkttd$, and
 
 2. one curve $C_E$, a **$1$-cusp** (Type II boundary component), for each $\Gamma$-orbit of primitive totally isotropic planes $E\iscontainedin\lkttd$
 
