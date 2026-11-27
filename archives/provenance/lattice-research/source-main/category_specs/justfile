@@ -1,0 +1,398 @@
+default: _clean-generated-artifacts
+    @just --list
+
+[private]
+_clean-generated-artifacts:
+    #!/usr/bin/env python3
+    import shutil
+    from pathlib import Path
+
+    root = Path(r"{{justfile_directory()}}")
+
+    for pattern in ("*.sage.py", "*.orig"):
+        for path in root.rglob(pattern):
+            if path.is_file() or path.is_symlink():
+                path.unlink()
+
+    for dirname in ("__pycache__", ".serena"):
+        directories = sorted(root.rglob(dirname), key=lambda path: len(path.parts), reverse=True)
+        for path in directories:
+            if path.is_dir():
+                shutil.rmtree(path)
+
+    directories = sorted(
+        (path for path in root.rglob("*") if path.is_dir()),
+        key=lambda path: len(path.parts),
+        reverse=True,
+    )
+    for path in directories:
+        try:
+            path.rmdir()
+        except OSError:
+            pass
+
+category-obligations: _clean-generated-artifacts
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd {{justfile_directory()}}
+    cleanup() {
+        just --justfile {{justfile()}} _clean-generated-artifacts >/dev/null
+    }
+    trap cleanup EXIT
+
+    obligation_files=(
+        "type_alias_obligations.sage"
+        "cat/category_obligations.sage"
+        "homsets/category_obligations.sage"
+        "forms/category_obligations.sage"
+        "sets/category_obligations.sage"
+        "posets/category_obligations.sage"
+        "topological_spaces/category_obligations.sage"
+        "tensor_algebra_components/category_obligations.sage"
+        "algebras/category_obligations.sage"
+        "rings/category_obligations.sage"
+        "modules/category_obligations.sage"
+        "lattices/chain_category_obligations.sage"
+        "lattices/category_obligations.sage"
+    )
+
+    failures=()
+    for test_file in "${obligation_files[@]}"; do
+        echo "==> sage ${test_file}"
+        if ! sage "${test_file}"; then
+            failures+=("${test_file}")
+        fi
+    done
+
+    if ((${#failures[@]})); then
+        printf '\nCategory obligation files with failed assertions:\n'
+        printf '  %s\n' "${failures[@]}"
+        exit 1
+    fi
+
+category-obligation-file test_file: _clean-generated-artifacts
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd {{justfile_directory()}}
+    cleanup() {
+        just --justfile {{justfile()}} _clean-generated-artifacts >/dev/null
+    }
+    trap cleanup EXIT
+
+    sage "{{test_file}}"
+
+check-abstract-redefinitions:
+    #!/usr/bin/env python3
+    from __future__ import annotations
+
+    import ast
+    from dataclasses import dataclass
+    from pathlib import Path
+
+    PROJECT_PREFIX = "category_specs"
+    PROVIDER_NAMES = {
+        "Constructors",
+        "ElementMethods",
+        "MorphismMethods",
+        "ParentMethods",
+        "SubcategoryMethods",
+    }
+
+    root = Path(r"{{justfile_directory()}}")
+
+
+    @dataclass(frozen=True)
+    class MethodInfo:
+        name: str
+        line: int
+        abstract: bool
+
+
+    @dataclass(frozen=True)
+    class ClassInfo:
+        fullname: str
+        module: str
+        qualname: str
+        simple_name: str
+        path: Path
+        line: int
+        bases: tuple[str, ...]
+        methods: dict[str, MethodInfo]
+        imports: dict[str, str]
+
+
+    def module_name(path: Path) -> str:
+        relative = path.relative_to(root).with_suffix("")
+        parts = list(relative.parts)
+        if parts[-1] == "__init__":
+            parts = parts[:-1]
+        return ".".join([PROJECT_PREFIX, *parts])
+
+
+    def package_name(path: Path, module: str) -> str:
+        if path.name == "__init__.py":
+            return module
+        return module.rsplit(".", maxsplit=1)[0]
+
+
+    def resolve_import_module(path: Path, module: str, node: ast.ImportFrom) -> str:
+        imported = node.module or ""
+        if node.level == 0:
+            return imported
+        package_parts = package_name(path, module).split(".")
+        prefix = package_parts[: len(package_parts) - node.level + 1]
+        if imported:
+            prefix.extend(imported.split("."))
+        return ".".join(prefix)
+
+
+    def decorator_leaf(node: ast.expr) -> str:
+        if isinstance(node, ast.Call):
+            return decorator_leaf(node.func)
+        if isinstance(node, ast.Name):
+            return node.id
+        if isinstance(node, ast.Attribute):
+            return node.attr
+        return ""
+
+
+    def expression_name(node: ast.expr) -> str:
+        if isinstance(node, ast.Name):
+            return node.id
+        if isinstance(node, ast.Attribute):
+            prefix = expression_name(node.value)
+            if prefix:
+                return f"{prefix}.{node.attr}"
+            return node.attr
+        if isinstance(node, ast.Subscript):
+            return expression_name(node.value)
+        return ast.unparse(node)
+
+
+    module_imports: dict[str, dict[str, str]] = {}
+    classes: dict[str, ClassInfo] = {}
+    simple_index: dict[str, list[str]] = {}
+    provider_assignments: list[tuple[str, str]] = []
+    python_files = [
+        path
+        for path in sorted(root.rglob("*.py"))
+        if ".git" not in path.parts
+        and ".serena" not in path.parts
+        and "__pycache__" not in path.parts
+    ]
+
+    for path in python_files:
+        source = path.read_text()
+        tree = ast.parse(source, filename=str(path))
+        module = module_name(path)
+        imports: dict[str, str] = {}
+        for node in tree.body:
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    local = alias.asname or alias.name.split(".")[0]
+                    imports[local] = alias.name
+            if isinstance(node, ast.ImportFrom):
+                imported_module = resolve_import_module(path, module, node)
+                for alias in node.names:
+                    if alias.name == "*":
+                        continue
+                    local = alias.asname or alias.name
+                    imports[local] = f"{imported_module}.{alias.name}"
+        module_imports[module] = imports
+
+        def visit_class(node: ast.ClassDef, parents: tuple[str, ...]) -> None:
+            qualname = ".".join([*parents, node.name])
+            fullname = f"{module}.{qualname}"
+            methods = {}
+            for item in node.body:
+                if isinstance(item, ast.FunctionDef):
+                    abstract = any(
+                        decorator_leaf(decorator) == "abstract_method"
+                        for decorator in item.decorator_list
+                    )
+                    methods[item.name] = MethodInfo(item.name, item.lineno, abstract)
+            info = ClassInfo(
+                fullname=fullname,
+                module=module,
+                qualname=qualname,
+                simple_name=node.name,
+                path=path,
+                line=node.lineno,
+                bases=tuple(expression_name(base) for base in node.bases),
+                methods=methods,
+                imports=imports,
+            )
+            classes[fullname] = info
+            simple_index.setdefault(node.name, []).append(fullname)
+
+            for item in node.body:
+                if isinstance(item, ast.Assign):
+                    for target in item.targets:
+                        if isinstance(target, ast.Name) and target.id in PROVIDER_NAMES:
+                            provider_assignments.append((module, expression_name(item.value)))
+                if isinstance(item, ast.ClassDef):
+                    visit_class(item, (*parents, node.name))
+
+        for node in tree.body:
+            if isinstance(node, ast.Assign):
+                for target in node.targets:
+                    if isinstance(target, ast.Name) and target.id in PROVIDER_NAMES:
+                        provider_assignments.append((module, expression_name(node.value)))
+            if isinstance(node, ast.ClassDef):
+                visit_class(node, ())
+
+
+    def resolve_reference(module: str, reference: str) -> str | None:
+        parts = reference.split(".")
+        if reference.startswith(f"{PROJECT_PREFIX}.") and reference in classes:
+            return reference
+
+        local_candidate = f"{module}.{reference}"
+        if local_candidate in classes:
+            return local_candidate
+
+        imports = module_imports[module]
+        if parts[0] in imports:
+            imported = ".".join([imports[parts[0]], *parts[1:]])
+            if imported in classes:
+                return imported
+
+        matches = simple_index.get(reference, [])
+        if len(matches) == 1:
+            return matches[0]
+        return None
+
+
+    provider_classes = {
+        fullname
+        for fullname, info in classes.items()
+        if info.simple_name in PROVIDER_NAMES
+        or info.simple_name.endswith("Methods")
+    }
+    for module, reference in provider_assignments:
+        resolved = resolve_reference(module, reference)
+        if resolved is not None:
+            provider_classes.add(resolved)
+
+    changed = True
+    while changed:
+        changed = False
+        for fullname in tuple(provider_classes):
+            info = classes[fullname]
+            for base in info.bases:
+                resolved = resolve_reference(info.module, base)
+                if resolved is not None and resolved not in provider_classes:
+                    provider_classes.add(resolved)
+                    changed = True
+
+
+    def explicit_ancestors(fullname: str) -> list[str]:
+        seen: set[str] = set()
+        pending = [
+            (classes[fullname].module, base)
+            for base in classes[fullname].bases
+        ]
+        ancestors: list[str] = []
+        while pending:
+            module, reference = pending.pop(0)
+            resolved = resolve_reference(module, reference)
+            if resolved is None or resolved in seen:
+                continue
+            seen.add(resolved)
+            ancestors.append(resolved)
+            pending.extend((classes[resolved].module, base) for base in classes[resolved].bases)
+        return ancestors
+
+
+    findings: list[str] = []
+    for fullname in sorted(provider_classes):
+        info = classes[fullname]
+        abstract_methods = [
+            method
+            for method in info.methods.values()
+            if method.abstract
+        ]
+        if not abstract_methods:
+            continue
+        for method in abstract_methods:
+            for ancestor_name in explicit_ancestors(fullname):
+                if ancestor_name not in provider_classes:
+                    continue
+                ancestor = classes[ancestor_name]
+                inherited = ancestor.methods.get(method.name)
+                if inherited is not None and inherited.abstract:
+                    lower = f"{info.path}:{method.line} {info.qualname}.{method.name}"
+                    upper = f"{ancestor.path}:{inherited.line} {ancestor.qualname}.{method.name}"
+                    findings.append(f"{lower} restates {upper}")
+                    break
+
+    if findings:
+        print("Redundant abstract-method redefinitions found:")
+        for finding in findings:
+            print(f"- {finding}")
+
+    assert not findings, "remove redundant lower abstract-method declarations"
+    print(
+        "No redundant abstract-method redefinitions found "
+        f"across {len(provider_classes)} project method-provider classes."
+    )
+
+test: check-banned-spec-patterns check-constructor-name-inventory validate-super-categories category-obligations _clean-generated-artifacts
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd {{justfile_directory()}}
+    cleanup() {
+        just --justfile {{justfile()}} _clean-generated-artifacts >/dev/null
+    }
+    trap cleanup EXIT
+
+    test_dirs=(
+        "cat/tests"
+        "homsets/tests"
+        "sets/tests/regression"
+        "sets/tests/new_spec"
+        "sets/tests/sage_gaps"
+        "topological_spaces/tests"
+        "algebras/tests"
+        "rings/tests/regression"
+        "rings/tests/new_spec"
+        "rings/tests/sage_gaps"
+        "modules/tests"
+    )
+
+    while IFS= read -r test_file; do
+        echo "==> sage ${test_file}"
+        sage "${test_file}"
+    done < <(
+        find "${test_dirs[@]}" -type f -name '*.sage' \
+            ! -name '*_obligations.sage' \
+            ! -name 'category_obligations.sage' \
+            | sort
+    )
+
+check-banned-spec-patterns:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd {{justfile_directory()}}/..
+    python3 category_specs/validators/banned_spec_patterns.py
+
+check-constructor-name-inventory:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd {{justfile_directory()}}/..
+    python3 category_specs/validators/constructor_name_inventory_validator.py
+
+validate-super-categories:
+    #!/usr/bin/env bash
+    set -uo pipefail
+    cd {{justfile_directory()}}
+    banned_status=0
+    constructor_status=0
+    graph_status=0
+    just --justfile {{justfile()}} check-banned-spec-patterns || banned_status=$?
+    just --justfile {{justfile()}} check-constructor-name-inventory || constructor_status=$?
+    sage validators/super_categories_validator.py
+    graph_status=$?
+    if ((banned_status != 0 || constructor_status != 0 || graph_status != 0)); then
+        exit 1
+    fi

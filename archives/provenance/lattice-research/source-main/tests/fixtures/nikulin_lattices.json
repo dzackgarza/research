@@ -1,0 +1,589 @@
+{
+  "description": "Nikulin's 75 even indefinite 2-elementary lattices (Theorem 1.14.2). Each triple (r, a, delta) is realised by the listed direct sum of standard building blocks. All 75 constructions verified in Sage via discriminant_group().invariants() and quadratic_product() integrality check.",
+  "source": "V.V. Nikulin (1979); pyramid from Alexeev et al. (2022) arXiv:2208.10383 Fig. 1.",
+  "delta_definition": "delta = 0 iff q([v]) in Z for all [v] in A_L (the discriminant group); equivalently, the discriminant quadratic form takes only integral values.",
+  "additivity_theorems": {
+    "r": "r(L \u2295 M) = r(L) + r(M)",
+    "a": "a(L \u2295 M) = a(L) + a(M)  [when both factors are 2-elementary]",
+    "delta": "delta(L \u2295 M) = max(delta(L), delta(M))"
+  },
+  "building_blocks": {
+    "U": {
+      "r": 2,
+      "a": 0,
+      "delta": 0,
+      "note": "II_{1,1}, hyperbolic plane"
+    },
+    "U(2)": {
+      "r": 2,
+      "a": 2,
+      "delta": 0,
+      "note": "U scaled by 2"
+    },
+    "A1": {
+      "r": 1,
+      "a": 1,
+      "delta": 1,
+      "note": "<2>"
+    },
+    "D4": {
+      "r": 4,
+      "a": 2,
+      "delta": 0
+    },
+    "D6": {
+      "r": 6,
+      "a": 2,
+      "delta": 1
+    },
+    "D8": {
+      "r": 8,
+      "a": 2,
+      "delta": 0
+    },
+    "E7": {
+      "r": 7,
+      "a": 1,
+      "delta": 1
+    },
+    "E8": {
+      "r": 8,
+      "a": 0,
+      "delta": 0,
+      "note": "unimodular"
+    },
+    "E8(2)": {
+      "r": 8,
+      "a": 8,
+      "delta": 0,
+      "note": "E8 scaled by 2"
+    }
+  },
+  "lattices": [
+    {
+      "r": 1,
+      "a": 1,
+      "delta": 1,
+      "construction": "A_{1}",
+      "verified": true
+    },
+    {
+      "r": 2,
+      "a": 0,
+      "delta": 0,
+      "construction": "U",
+      "verified": true
+    },
+    {
+      "r": 2,
+      "a": 2,
+      "delta": 0,
+      "construction": "U(2)",
+      "verified": true
+    },
+    {
+      "r": 2,
+      "a": 2,
+      "delta": 1,
+      "construction": "A_{1}^{2}",
+      "verified": true
+    },
+    {
+      "r": 3,
+      "a": 1,
+      "delta": 1,
+      "construction": "U + + + A_{1}",
+      "verified": true
+    },
+    {
+      "r": 3,
+      "a": 3,
+      "delta": 1,
+      "construction": "U(2) + + + A_{1}",
+      "verified": true
+    },
+    {
+      "r": 4,
+      "a": 2,
+      "delta": 1,
+      "construction": "U + + + A_{1}^{2}",
+      "verified": true
+    },
+    {
+      "r": 4,
+      "a": 4,
+      "delta": 1,
+      "construction": "U(2) + + + A_{1}^{2}",
+      "verified": true
+    },
+    {
+      "r": 5,
+      "a": 3,
+      "delta": 1,
+      "construction": "A_{1} + + + D_{4}",
+      "verified": true
+    },
+    {
+      "r": 5,
+      "a": 5,
+      "delta": 1,
+      "construction": "U(2)^{2} + + + A_{1}",
+      "verified": true
+    },
+    {
+      "r": 6,
+      "a": 2,
+      "delta": 0,
+      "construction": "U + + + D_{4}",
+      "verified": true
+    },
+    {
+      "r": 6,
+      "a": 4,
+      "delta": 0,
+      "construction": "U(2) + + + D_{4}",
+      "verified": true
+    },
+    {
+      "r": 6,
+      "a": 4,
+      "delta": 1,
+      "construction": "A_{1}^{2} + + + D_{4}",
+      "verified": true
+    },
+    {
+      "r": 6,
+      "a": 6,
+      "delta": 1,
+      "construction": "U(2)^{2} + + + A_{1}^{2}",
+      "verified": true
+    },
+    {
+      "r": 7,
+      "a": 3,
+      "delta": 1,
+      "construction": "A_{1} + + + D_{6}",
+      "verified": true
+    },
+    {
+      "r": 7,
+      "a": 5,
+      "delta": 1,
+      "construction": "U(2) + + + A_{1} + + + D_{4}",
+      "verified": true
+    },
+    {
+      "r": 7,
+      "a": 7,
+      "delta": 1,
+      "construction": "U(2)^{3} + + + A_{1}",
+      "verified": true
+    },
+    {
+      "r": 8,
+      "a": 2,
+      "delta": 1,
+      "construction": "U + + + D_{6}",
+      "verified": true
+    },
+    {
+      "r": 8,
+      "a": 4,
+      "delta": 1,
+      "construction": "U(2) + + + D_{6}",
+      "verified": true
+    },
+    {
+      "r": 8,
+      "a": 6,
+      "delta": 1,
+      "construction": "U(2) + + + A_{1}^{2} + + + D_{4}",
+      "verified": true
+    },
+    {
+      "r": 8,
+      "a": 8,
+      "delta": 1,
+      "construction": "U(2)^{3} + + + A_{1}^{2}",
+      "verified": true
+    },
+    {
+      "r": 9,
+      "a": 1,
+      "delta": 1,
+      "construction": "U + + + E_{7}",
+      "verified": true
+    },
+    {
+      "r": 9,
+      "a": 3,
+      "delta": 1,
+      "construction": "U(2) + + + E_{7}",
+      "verified": true
+    },
+    {
+      "r": 9,
+      "a": 5,
+      "delta": 1,
+      "construction": "U(2) + + + A_{1} + + + D_{6}",
+      "verified": true
+    },
+    {
+      "r": 9,
+      "a": 7,
+      "delta": 1,
+      "construction": "U(2)^{2} + + + A_{1} + + + D_{4}",
+      "verified": true
+    },
+    {
+      "r": 9,
+      "a": 9,
+      "delta": 1,
+      "construction": "A_{1} + + + E_{8}(2)",
+      "verified": true
+    },
+    {
+      "r": 10,
+      "a": 0,
+      "delta": 0,
+      "construction": "U + + + E_{8}",
+      "verified": true
+    },
+    {
+      "r": 10,
+      "a": 2,
+      "delta": 0,
+      "construction": "U + + + D_{8}",
+      "verified": true
+    },
+    {
+      "r": 10,
+      "a": 2,
+      "delta": 1,
+      "construction": "U^{2} + + + D_{6}",
+      "verified": true
+    },
+    {
+      "r": 10,
+      "a": 4,
+      "delta": 0,
+      "construction": "U(2) + + + D_{8}",
+      "verified": true
+    },
+    {
+      "r": 10,
+      "a": 4,
+      "delta": 1,
+      "construction": "D_{4} + + + D_{6}",
+      "verified": true
+    },
+    {
+      "r": 10,
+      "a": 6,
+      "delta": 0,
+      "construction": "U(2) + + + D_{4}^{2}",
+      "verified": true
+    },
+    {
+      "r": 10,
+      "a": 6,
+      "delta": 1,
+      "construction": "U(2)^{2} + + + D_{6}",
+      "verified": true
+    },
+    {
+      "r": 10,
+      "a": 8,
+      "delta": 0,
+      "construction": "U + + + E_{8}(2)",
+      "verified": true
+    },
+    {
+      "r": 10,
+      "a": 8,
+      "delta": 1,
+      "construction": "U(2)^{2} + + + A_{1}^{2} + + + D_{4}",
+      "verified": true
+    },
+    {
+      "r": 10,
+      "a": 10,
+      "delta": 0,
+      "construction": "U(2) + + + E_{8}(2)",
+      "verified": true
+    },
+    {
+      "r": 10,
+      "a": 10,
+      "delta": 1,
+      "construction": "A_{1}^{2} + + + E_{8}(2)",
+      "verified": true
+    },
+    {
+      "r": 11,
+      "a": 1,
+      "delta": 1,
+      "construction": "U^{2} + + + E_{7}",
+      "verified": true
+    },
+    {
+      "r": 11,
+      "a": 3,
+      "delta": 1,
+      "construction": "D_{4} + + + E_{7}",
+      "verified": true
+    },
+    {
+      "r": 11,
+      "a": 5,
+      "delta": 1,
+      "construction": "U(2)^{2} + + + E_{7}",
+      "verified": true
+    },
+    {
+      "r": 11,
+      "a": 7,
+      "delta": 1,
+      "construction": "U(2)^{2} + + + A_{1} + + + D_{6}",
+      "verified": true
+    },
+    {
+      "r": 11,
+      "a": 9,
+      "delta": 1,
+      "construction": "U + + + A_{1} + + + E_{8}(2)",
+      "verified": true
+    },
+    {
+      "r": 11,
+      "a": 11,
+      "delta": 1,
+      "construction": "U(2) + + + A_{1} + + + E_{8}(2)",
+      "verified": true
+    },
+    {
+      "r": 12,
+      "a": 2,
+      "delta": 1,
+      "construction": "U^{3} + + + D_{6}",
+      "verified": true
+    },
+    {
+      "r": 12,
+      "a": 4,
+      "delta": 1,
+      "construction": "D_{6}^{2}",
+      "verified": true
+    },
+    {
+      "r": 12,
+      "a": 6,
+      "delta": 1,
+      "construction": "U(2) + + + D_{4} + + + D_{6}",
+      "verified": true
+    },
+    {
+      "r": 12,
+      "a": 8,
+      "delta": 1,
+      "construction": "U(2)^{3} + + + D_{6}",
+      "verified": true
+    },
+    {
+      "r": 12,
+      "a": 10,
+      "delta": 1,
+      "construction": "U + + + A_{1}^{2} + + + E_{8}(2)",
+      "verified": true
+    },
+    {
+      "r": 13,
+      "a": 3,
+      "delta": 1,
+      "construction": "D_{6} + + + E_{7}",
+      "verified": true
+    },
+    {
+      "r": 13,
+      "a": 5,
+      "delta": 1,
+      "construction": "U(2) + + + D_{4} + + + E_{7}",
+      "verified": true
+    },
+    {
+      "r": 13,
+      "a": 7,
+      "delta": 1,
+      "construction": "U(2)^{3} + + + E_{7}",
+      "verified": true
+    },
+    {
+      "r": 13,
+      "a": 9,
+      "delta": 1,
+      "construction": "U^{2} + + + A_{1} + + + E_{8}(2)",
+      "verified": true
+    },
+    {
+      "r": 14,
+      "a": 2,
+      "delta": 0,
+      "construction": "U + + + D_{4} + + + E_{8}",
+      "verified": true
+    },
+    {
+      "r": 14,
+      "a": 4,
+      "delta": 0,
+      "construction": "U + + + D_{4} + + + D_{8}",
+      "verified": true
+    },
+    {
+      "r": 14,
+      "a": 4,
+      "delta": 1,
+      "construction": "D_{6} + + + D_{8}",
+      "verified": true
+    },
+    {
+      "r": 14,
+      "a": 6,
+      "delta": 0,
+      "construction": "U(2) + + + D_{4} + + + D_{8}",
+      "verified": true
+    },
+    {
+      "r": 14,
+      "a": 6,
+      "delta": 1,
+      "construction": "U(2) + + + D_{6}^{2}",
+      "verified": true
+    },
+    {
+      "r": 14,
+      "a": 8,
+      "delta": 1,
+      "construction": "U(2)^{2} + + + D_{4} + + + D_{6}",
+      "verified": true
+    },
+    {
+      "r": 15,
+      "a": 3,
+      "delta": 1,
+      "construction": "D_{8} + + + E_{7}",
+      "verified": true
+    },
+    {
+      "r": 15,
+      "a": 5,
+      "delta": 1,
+      "construction": "U(2) + + + D_{6} + + + E_{7}",
+      "verified": true
+    },
+    {
+      "r": 15,
+      "a": 7,
+      "delta": 1,
+      "construction": "U(2)^{2} + + + D_{4} + + + E_{7}",
+      "verified": true
+    },
+    {
+      "r": 16,
+      "a": 2,
+      "delta": 1,
+      "construction": "U + + + D_{6} + + + E_{8}",
+      "verified": true
+    },
+    {
+      "r": 16,
+      "a": 4,
+      "delta": 1,
+      "construction": "U + + + D_{6} + + + D_{8}",
+      "verified": true
+    },
+    {
+      "r": 16,
+      "a": 6,
+      "delta": 1,
+      "construction": "U(2) + + + D_{6} + + + D_{8}",
+      "verified": true
+    },
+    {
+      "r": 17,
+      "a": 1,
+      "delta": 1,
+      "construction": "U + + + E_{7} + + + E_{8}",
+      "verified": true
+    },
+    {
+      "r": 17,
+      "a": 3,
+      "delta": 1,
+      "construction": "U + + + D_{8} + + + E_{7}",
+      "verified": true
+    },
+    {
+      "r": 17,
+      "a": 5,
+      "delta": 1,
+      "construction": "U(2) + + + D_{8} + + + E_{7}",
+      "verified": true
+    },
+    {
+      "r": 18,
+      "a": 0,
+      "delta": 0,
+      "construction": "U + + + E_{8}^{2}",
+      "verified": true
+    },
+    {
+      "r": 18,
+      "a": 2,
+      "delta": 0,
+      "construction": "U + + + D_{8} + + + E_{8}",
+      "verified": true
+    },
+    {
+      "r": 18,
+      "a": 2,
+      "delta": 1,
+      "construction": "U^{2} + + + D_{6} + + + E_{8}",
+      "verified": true
+    },
+    {
+      "r": 18,
+      "a": 4,
+      "delta": 0,
+      "construction": "U + + + D_{8}^{2}",
+      "verified": true
+    },
+    {
+      "r": 18,
+      "a": 4,
+      "delta": 1,
+      "construction": "D_{4} + + + D_{6} + + + E_{8}",
+      "verified": true
+    },
+    {
+      "r": 19,
+      "a": 1,
+      "delta": 1,
+      "construction": "U^{2} + + + E_{7} + + + E_{8}",
+      "verified": true
+    },
+    {
+      "r": 19,
+      "a": 3,
+      "delta": 1,
+      "construction": "D_{4} + + + E_{7} + + + E_{8}",
+      "verified": true
+    },
+    {
+      "r": 20,
+      "a": 2,
+      "delta": 1,
+      "construction": "U^{3} + + + D_{6} + + + E_{8}",
+      "verified": true
+    }
+  ]
+}

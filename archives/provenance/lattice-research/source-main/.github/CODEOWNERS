@@ -1,0 +1,12 @@
+# Ownership of agent/project control files
+/.github/ @dzackgarza
+/AGENTS.md @dzackgarza
+/.agents/ @dzackgarza
+/.nimbalyst/ @dzackgarza
+
+# Canonical research and project docs
+/GOAL.md @dzackgarza
+/.agents/skills/research-state-machine/ @dzackgarza
+/.agents/skills/research-proof-auditing/ @dzackgarza
+/plans/ @dzackgarza
+/tasks/ @dzackgarza

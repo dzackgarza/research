@@ -1,0 +1,72 @@
+# Sage compilation artifacts
+*.sage.py
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# Backup files
+*.orig
+*~
+.DS_Store
+src.bak/
+tests.bak/
+
+# Virtual environments
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Lean build artifacts
+.lake/
+build/
+.worktrees
+
+# Agent scratch workspace (ephemeral, never committed)
+scratch/
+
+# Large binaries and build artifacts
+src.bak/backends/external/bin/
+Miniconda*.sh
+Miniforge*.sh
+codeql-db/
+*.sarif
+*.log
+.coverage
+coverage.xml
+
+# Archives and compiled libraries
+*.tar.gz
+*.tgz
+*.tar.bz2
+*.zip
+*.a
+*.so
+*.dylib
+*.dll
+*.o
+*.out
+
+# Cache and temporary data
+.cache/
+.serena/cache/
+.grain.toml
+
+# Models
+models/
+
+# External research tools, fetched fresh to upstream latest via `just fetch-externals`.
+# Not git submodules: submodules pin a SHA, which rots (orphaned upstream commits,
+# stale clones). These are tracked dirs only on disk, never committed.
+src.bak/backends/external/carat/
+src.bak/backends/external/vinbergs_algorithm/references/VinbergsAlgorithmNF/
+src.bak/backends/external/vinbergs_algorithm/references/vinal/
+src.bak/backends/external/vinbergs_algorithm/references/AlVin/
+src/external/dutsik_polyhedral/polyhedral_common/
+
+# Local Hermes/IWE memory lock files
+.agents/memories/hermes/*.lock

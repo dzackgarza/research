@@ -1,0 +1,4 @@
+# Exclude vendored/external third-party code from semgrep scanning.
+# These files are not authored here and should not be modified to satisfy
+# local lint rules.
+src/external/
