@@ -1,0 +1,22 @@
+Task 5.1 theta verification from the actual primitive decomposition
+================================================================================
+
+Ambient lattice:
+  Rank: 22
+  Signature: (3, 19)
+  Determinant: -1
+
+Primitive decomposition:
+  Embedded S_Co primitive: True
+  Computed complement primitive: True
+  Cross pairing zero: True
+
+Theta checks:
+  Integral in ambient basis: True
+  theta^2 = I: True
+  theta^T G theta = G: True
+  theta acts by -I on embedded S_Co: True
+  theta acts by +I on computed complement: True
+
+Outcome:
+  PASS: exact theta verification succeeded on the actual glued ambient lattice.

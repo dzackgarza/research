@@ -1,0 +1,56 @@
+================================================================================
+Task 1.2 (FIXED): Gram Matrices via Explicit Orthogonal Complement
+================================================================================
+
+================================================================================
+[Step 1] Constructing Coble Lattice S_Co
+================================================================================
+
+S_Co Gram matrix: diag(2, -2, ..., -2)
+  Size: 11 × 11
+  Signature: (1, 10)
+  ✓ Signature is (1, 10)
+  Determinant: 2048
+
+================================================================================
+[Step 2] Constructing K3 Lattice Λ_K3
+================================================================================
+
+Λ_K3 signature: (3, 19)
+  Rank: 22
+  Unimodular: True
+  ✓ Signature is (3, 19)
+
+================================================================================
+[Step 3] Explicit ORTHOGONAL Embedding S_Co ↪ Λ_K3
+================================================================================
+
+  e_0: (1,1) in U₁, norm = 2
+  e_1: (1,-1) in U₂, norm = -2
+  e_2: (1,-1) in U₃, norm = -2
+  e_3: (1,-1) in U₁, norm = -2
+
+  Finding orthogonal -2 vectors in E_8(-1)²...
+    Found 0 orthogonal vectors in first E_8(-1)
+    Found 0 orthogonal vectors in second E_8(-1)
+
+  Total embedded vectors: 4
+
+Verifying orthogonality...
+  ✓ All vectors mutually orthogonal
+
+Verifying Gram matrix preservation...
+  Computed diagonal: [2, -2, -2, -2]
+  Expected diagonal: [2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2]
+  Note: Gram matrix differs (using rational embedding)
+
+================================================================================
+[Step 4] Computing T_Co = S_Co^⊥
+================================================================================
+
+Kernel dimension: 18
+Traceback (most recent call last):
+  File "/home/dzack/research/computations/task1_2_gram_matrices_fixed.sage.py", line 214, in <module>
+    assert kernel.dimension() == _sage_const_11 
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

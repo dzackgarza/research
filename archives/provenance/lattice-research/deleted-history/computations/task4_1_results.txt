@@ -1,0 +1,38 @@
+Task 4.1 Results: Maximal Parabolic Subdiagram B̃₇(2) Search
+================================================================================
+
+Coxeter Diagram Structure:
+  Nodes: 10
+  Simple edges: 8
+  Double edges: 1
+  Connected: True
+
+Affine Subdiagrams Found:
+  B̃₇(2): 1
+  F̃_4: 3
+  Ẽ_6: 3
+
+Maximal Affine Subdiagrams:
+  B̃₇(2): 1
+    - nodes (0, 1, 2, 3, 4, 5, 6, 7)
+  F̃_4: 3
+    - nodes (2, 3, 4, 5, 6)
+    - nodes (3, 4, 5, 6, 7)
+    - nodes (4, 5, 6, 7, 9)
+  Ẽ_6: 3
+    - nodes (0, 1, 2, 3, 4, 5, 8)
+    - nodes (0, 1, 2, 3, 4, 5, 9)
+    - nodes (0, 1, 2, 3, 4, 8, 9)
+
+B̃₇(2) Details:
+  Total B̃₇(2): 1
+  Maximal B̃₇(2): 1
+  Nodes: (0, 1, 2, 3, 4, 5, 6, 7)
+
+Conclusion:
+  Found 1 maximal B̃₇(2) among 7 total maximal affine.
+
+References:
+  [AEGS23] Section 3: Coxeter diagrams for Coble moduli
+  [Nikulin1979] Section 3: Reflection groups
+  [BourbakiLie4-6] Classification of affine Dynkin diagrams

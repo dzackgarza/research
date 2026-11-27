@@ -1,0 +1,6 @@
+- Integrate sirocco: https://github.com/miguelmarco/sirocco2
+    - Used to define pi_1 of curve complements
+- Wrap and interface with https://doc.sagemath.org/html/en/reference/curves/sage/schemes/riemann_surfaces/riemann_surface.html
+- Wrap and interface with https://github.com/mkauers/ore_algebra
+- Computations of the JNF of a monodromy operator of a family of curves f(x,y,t) and a family of surfaces f(x,y,z,t)    
+    - Compute Picard-Fuchs operators, see e.g. `foliation.lib` in Singular at https://github.com/movasati/NoetherLefschetz/tree/master

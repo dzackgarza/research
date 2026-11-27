@@ -1,0 +1,37 @@
+Task 2.1 Results: Isotropic Vectors and O(q_T)-Orbits
+================================================================================
+
+Lattice T_Co:
+  Gram matrix: diag(2, 2, -2, ..., -2)
+  Signature: (2, 9)
+  (r, a, δ): (11, 11, 1)
+
+Discriminant group A_T:
+  Structure: (ℤ/2ℤ)^11
+  Order: 2048
+  Bilinear form: Nondegenerate
+
+Isotropic vectors:
+  Total count: 528
+  Fraction: 25.8%
+  Zero vectors: 1
+  Nonzero vectors: 527
+
+O(q_T)-orbit decomposition:
+  Number of orbits: 2
+  Orbit 0: Zero vector
+    Representative: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    Size: 1
+  Orbit 1: Nonzero isotropic
+    Representative: [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1]
+    Size: 527
+
+--------------------------------------------------------------------------------
+Theoretical verification:
+  Prediction: 2 orbits (zero + nonzero)
+  Computed: 2 orbits
+  Status: PASS
+
+References:
+  [Nikulin1979] Prop. 1.5.2: O(T) → O(q_T) surjective for r > a
+  [Sterk1991]: Orbit analysis for cusp classification

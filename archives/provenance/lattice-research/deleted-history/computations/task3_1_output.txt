@@ -1,0 +1,118 @@
+================================================================================
+Task 3.1: Compute Γ_Co Matrix Generators
+================================================================================
+
+Section 1: Constructing T_En (Enriques Transcendental Lattice)
+--------------------------------------------------------------------------------
+T_En Gram matrix: diag(2, 2, -2, ..., -2)
+  Rank: 10
+  Signature: (2, 8)
+  Determinant: 1024
+  Is even: True
+
+Discriminant group A_TEn:
+  Cardinality: 1024
+  Structure: (2, 2, 2, 2, 2, 2, 2, 2, 2, 2)
+
+Section 2: Identifying h_Co (Coble Polarization)
+--------------------------------------------------------------------------------
+h_Co vector: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  Norm h_Co²: 2
+  ✓ h_Co has correct norm: 2
+  GCD of coordinates: 1
+  ✓ h_Co is primitive
+
+Section 3: Constructing θ (Horizontal Folding Involution)
+--------------------------------------------------------------------------------
+θ involution matrix (diagonal):
+  Diagonal: [1, 1, -1, -1, -1, -1, -1, -1, -1, -1]
+  θ² = I: True
+  θ preserves Gram matrix: True
+  ✓ θ is a valid involution on T_En
+
+  θ(h_Co) = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  h_Co is fixed by θ: True
+
+Section 4: Generating O(T_En) via Reflections
+--------------------------------------------------------------------------------
+
+Finding roots (vectors with norm ±2)...
+  Found 108 roots
+
+Generating reflection matrices...
+  Generated 108 reflection matrices
+  After removing duplicates: 98 reflections
+
+Section 5: Computing Stabilizer of h_Co
+--------------------------------------------------------------------------------
+
+Finding reflections that stabilize h_Co...
+  Found 9 reflections stabilizing h_Co
+
+Verifying stabilizer condition...
+  All stabilize h_Co: True
+
+Section 6: Computing Centralizer of θ
+--------------------------------------------------------------------------------
+
+Finding reflections that commute with θ...
+  Found 10 reflections commuting with θ
+
+Verifying centralizer condition...
+  All commute with θ: True
+
+Section 7: Computing Γ_Co = Stab(h_Co) ∩ Z(θ)
+--------------------------------------------------------------------------------
+
+Finding intersection...
+  Found 9 generators in Γ_Co
+
+Section 8: Analyzing Γ_Co Generators
+--------------------------------------------------------------------------------
+
+Γ_Co has 9 reflection generators
+
+Generator properties:
+  Generator 1: det=-1, trace=8, order=2
+  Generator 2: det=-1, trace=8, order=2
+  Generator 3: det=-1, trace=8, order=2
+  Generator 4: det=-1, trace=8, order=2
+  Generator 5: det=-1, trace=8, order=2
+  Generator 6: det=-1, trace=8, order=2
+  Generator 7: det=-1, trace=8, order=2
+  Generator 8: det=-1, trace=8, order=2
+  Generator 9: det=-1, trace=8, order=2
+
+Section 9: Verifying Γ_Co Conditions
+--------------------------------------------------------------------------------
+
+Verifying each generator:
+  ✓ All 9 generators satisfy Γ_Co conditions
+
+================================================================================
+SUMMARY
+================================================================================
+
+Lattice T_En:
+  Gram matrix: diag(2, 2, -2, ..., -2)
+  Rank: 10, Signature: (2, 8)
+  Discriminant group: (Z/2Z)^10
+
+Coble polarization h_Co:
+  Vector: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  Norm: 2
+
+Involution theta:
+  Type: Diagonal involution
+  Diagonal: [1, 1, -1, -1, ..., -1]
+
+Gamma_Co = Stab(h_Co) cap Z(theta):
+  Number of reflection generators: 9
+
+
+Results saved to: /home/dzack/research/computations/task3_1_results.txt
+Generator matrices saved to: /home/dzack/research/computations/task3_1_generators.sage
+
+================================================================================
+Task 3.1 Complete
+================================================================================

@@ -1,0 +1,224 @@
+================================================================================
+Task 5.1: Construct θ Involution and Verify Eigenspaces
+================================================================================
+
+================================================================================
+[Step 1] Constructing K3 Lattice Λ_K3 = U³ ⊕ E₈(-1)²
+================================================================================
+
+Λ_K3 Gram matrix:
+  Rank: 22
+  Signature: (3, 19) (positive=3, negative=19)
+  Determinant: -1
+  Is unimodular: True
+  Is even: True
+  ✓ Signature matches expected (3, 19)
+
+================================================================================
+[Step 2] Constructing Target Lattices T_Co and S_Co
+================================================================================
+
+T_Co (target fixed sublattice):
+  Gram matrix: diag(2, 2, -2, ..., -2)
+  Rank: 11
+  Signature: (2, 9)
+  Determinant: -2048
+
+S_Co (target coinvariant sublattice):
+  Gram matrix: diag(2, -2, ..., -2)
+  Rank: 11
+  Signature: (1, 10)
+  Determinant: 2048
+  ✓ Signatures match expected values
+
+================================================================================
+[Step 3] Constructing Involution θ
+================================================================================
+
+Constructing orthogonal decomposition Λ_K3 = V_+ ⊕ V_-...
+
+  Step 3a: Constructing model T_Co ⊕ S_Co...
+    Model lattice rank: 22
+    Model lattice signature: (3, 19)
+
+  Step 3b: Finding isometry to Λ_K3...
+
+  Step 3c: Direct construction of θ...
+
+  Using eigenbasis construction...
+
+  Verifying T_Co embedding...
+    T_Co embedded Gram diagonal: [2, 2, -2, -2, -2, -2, -2, -2, -2, -2, -2]
+    Expected: [2, 2, -2, -2, -2, -2, -2, -2, -2, -2, -2]
+    Matches: True
+
+  Checking E₈ root orthogonality...
+    Set A (T_Co): indices {0, 2, 4, 6}
+      0 · 2 = 0 (should be 0)
+      0 · 4 = 0 (should be 0)
+      0 · 6 = 0 (should be 0)
+      2 · 4 = 0 (should be 0)
+      2 · 6 = 0 (should be 0)
+      4 · 6 = 0 (should be 0)
+    Set B (S_Co): indices {1, 3, 5, 7}
+      1 · 3 = 0 (should be 0)
+      1 · 5 = 0 (should be 0)
+      1 · 7 = 0 (should be 0)
+      3 · 5 = 0 (should be 0)
+      3 · 7 = 0 (should be 0)
+      5 · 7 = 0 (should be 0)
+
+  Verifying S_Co embedding...
+    S_Co embedded Gram diagonal: [2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2]
+    Expected: [2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2]
+    Matches: True
+
+  Note: M_T_plus and M_S_minus are not orthogonal embeddings,
+  but the eigenspaces of θ will be orthogonal (see Step 6).
+
+  Change-of-basis matrix P: 22 × 22
+  det(P) = -8
+  P is invertible: True
+
+  Involution matrix θ (22×22) constructed
+
+================================================================================
+[Step 4] Verifying θ² = I
+================================================================================
+
+θ² = I: True
+  ✓ θ is an involution
+
+================================================================================
+[Step 5] Computing Eigenspaces of θ
+================================================================================
+
+  Computing +1 eigenspace (Λ_K3^θ)...
+    Dimension: 11
+    Dimension: 11
+
+  Total dimension: 22 (should be 22)
+  ✓ Eigenspace dimensions are correct
+
+================================================================================
+[Step 6] Extracting Lattice Structures on Eigenspaces
+================================================================================
+
+  +1 eigenspace basis: 11 vectors in ℚ^22
+  -1 eigenspace basis: 11 vectors in ℚ^22
+
+  Computing induced Gram matrix on +1 eigenspace...
+    Gram matrix size: 11 × 11
+    Signature: (2, 9)
+    Determinant: -2048
+
+  Computing induced Gram matrix on -1 eigenspace...
+    Gram matrix size: 11 × 11
+    Signature: (1, 10)
+    Determinant: 2048
+
+  Verifying eigenspace orthogonality...
+    Eigenspace cross Gram is zero: False
+    WARNING: Eigenspaces are not orthogonal!
+
+================================================================================
+[Step 7] Verifying Isometry with T_Co and S_Co
+================================================================================
+
+  Comparing +1 eigenspace with T_Co:
+    +1 eigenspace signature: (2, 9)
+    T_Co signature: (2, 9)
+    Signatures match: True
+    +1 eigenspace determinant: -2048
+    T_Co determinant: -2048
+    Determinants match: True
+
+  Comparing -1 eigenspace with S_Co:
+    -1 eigenspace signature: (1, 10)
+    S_Co signature: (1, 10)
+    Signatures match: True
+    -1 eigenspace determinant: 2048
+    S_Co determinant: 2048
+    Determinants match: True
+
+================================================================================
+[Step 8] Computing (r, a, δ) Invariants
+================================================================================
+
+  +1 eigenspace (Λ_K3^θ ≅ T_Co):
+    r (rank) = 11
+    a (discriminant rank) = 11
+    Discriminant group order: 2048
+    δ = 1
+
+  -1 eigenspace (Λ_K3^{-θ} ≅ S_Co):
+    r (rank) = 11
+    a (discriminant rank) = 11
+    Discriminant group order: 2048
+    δ = 1
+
+================================================================================
+[Step 9] Verifying Polarization Swap (h_En ↔ h_Co)
+================================================================================
+
+  Identifying polarization vectors...
+
+  h_Co candidate (from +1 eigenspace):
+    Vector: (1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+    Norm: 2
+
+  h_En candidate (from -1 eigenspace):
+    Vector: (1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+    Norm: -2
+
+  θ(h_Co) = h_Co (fixed): True
+  θ(h_En) = -h_En (flipped): True
+
+  Note: θ fixes h_Co and flips h_En, which is consistent with
+  the horizontal folding where h_Co is in the invariant sector
+  and h_En is in the coinvariant sector.
+
+================================================================================
+VERIFICATION SUMMARY
+================================================================================
+
+Property                                           Status    
+--------------------------------------------------------------------------------
+✓ θ is 22×22 matrix                               True      
+✓ θ² = I (involution)                             True      
+✓ +1 eigenspace dimension = 11                    True      
+✓ -1 eigenspace dimension = 11                    True      
+✓ +1 eigenspace signature = (2,9)                 True      
+✓ -1 eigenspace signature = (1,10)                True      
+✓ +1 eigenspace det = T_Co det                    True      
+✓ -1 eigenspace det = S_Co det                    True      
+✗ Eigenspaces orthogonal                          False     
+
+--------------------------------------------------------------------------------
+Invariant Summary:
+--------------------------------------------------------------------------------
+
+  Λ_K3^(+1) (+1 eigenspace, should be T_Co):
+    (r, a, δ) = (11, 11, 1)
+    Signature: (2, 9)
+    Expected T_Co: (11, 11, 1), signature (2, 9)
+
+  Λ_K3^(-1) (-1 eigenspace, should be S_Co):
+    (r, a, δ) = (11, 11, 1)
+    Signature: (1, 10)
+    Expected S_Co: (11, 11, 1), signature (1, 10)
+
+================================================================================
+FINAL STATUS: SOME VERIFICATIONS FAILED ✗
+================================================================================
+
+================================================================================
+EXPORTING RESULTS
+================================================================================
+
+Results saved to: /home/dzack/research/computations/task5_1_results.txt
+θ matrix saved to: /home/dzack/research/computations/theta_matrix.sage
+
+================================================================================
+Task 5.1 Complete
+================================================================================

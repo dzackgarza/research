@@ -17,6 +17,8 @@ $$
 
 :::
 
+The geometric lattice $S_\Co$ and its complement $T_\Co$ occur on the explicit double plane of @ex:explicit-ten-nodal-sextic, with a basis of $S_\Co$ supplied by the eleven geometric pullbacks.
+
 ::: {.lemma #lem:primitive_embedding_eta}
 
 Writing

@@ -1,0 +1,39 @@
+Task 1.2 Results: Gram Matrices and (r,a,δ) Invariants
+================================================================================
+
+S_Co Gram Matrix:
+[ 2  0  0  0  0  0  0  0  0  0  0]
+[ 0 -2  0  0  0  0  0  0  0  0  0]
+[ 0  0 -2  0  0  0  0  0  0  0  0]
+[ 0  0  0 -2  0  0  0  0  0  0  0]
+[ 0  0  0  0 -2  0  0  0  0  0  0]
+[ 0  0  0  0  0 -2  0  0  0  0  0]
+[ 0  0  0  0  0  0 -2  0  0  0  0]
+[ 0  0  0  0  0  0  0 -2  0  0  0]
+[ 0  0  0  0  0  0  0  0 -2  0  0]
+[ 0  0  0  0  0  0  0  0  0 -2  0]
+[ 0  0  0  0  0  0  0  0  0  0 -2]
+
+T_Co Gram Matrix:
+[ 2  0  0  0  0  0  0  0  0  0  0]
+[ 0  2  0  0  0  0  0  0  0  0  0]
+[ 0  0 -2  0  0  0  0  0  0  0  0]
+[ 0  0  0 -2  0  0  0  0  0  0  0]
+[ 0  0  0  0 -2  0  0  0  0  0  0]
+[ 0  0  0  0  0 -2  0  0  0  0  0]
+[ 0  0  0  0  0  0 -2  0  0  0  0]
+[ 0  0  0  0  0  0  0 -2  0  0  0]
+[ 0  0  0  0  0  0  0  0 -2  0  0]
+[ 0  0  0  0  0  0  0  0  0 -2  0]
+[ 0  0  0  0  0  0  0  0  0  0 -2]
+
+Invariants:
+S_Co: (r, a, δ) = (11, 11, 1), signature = (1, 10)
+T_Co: (r, a, δ) = (11, 11, 1), signature = (2, 9)
+
+Genus Uniqueness:
+S_Co: r = 11, a = 11, r > a is False
+T_Co: r = 11, a = 11, r > a is False
+
+Note: For 2-elementary lattices with r = a, genus uniqueness
+requires additional analysis beyond the simple r > a criterion.

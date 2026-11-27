@@ -39,6 +39,10 @@ and invariants, not by its triple alone. Table 2 includes distinct rows with
 identical triples. No identification of two such lattices is inferred merely
 from the triple.
 
+## Relation to the maintained catalogue
+
+At sage-extensions revision [`c457e6b4`](https://github.com/dzackgarza/sage-extensions/blob/c457e6b4aa087d447711b6cc374a212b72ef5051/src/sage_extensions/catalogue.py), `TwoElementary` implements the 75 K3 invariant triples and `NegativeDefTwoElementary` stores 128 recipes grouped under 51 invariant triples. Comparing the number of recipes for every triple with `table-2-source-rows.json` gives exact agreement. This establishes that the table already has a maintained representation; it is not a proof of row-by-row isometry or of the prescribed root sublattices. In particular 51 is a count of keys, not a count of definite isometry classes. The independently derived specimens in this directory supply mathematical evidence for checking the catalogue rather than an alternative implementation. The root inclusions, glue indices and pairwise distinction of repeated triples require their own mathematical acceptance checks.
+
 ## Basis and discriminant conventions
 
 All root lattices here are negative definite. Write $e_i$ for orthonormal

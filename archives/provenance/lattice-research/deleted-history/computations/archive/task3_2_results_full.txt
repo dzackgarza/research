@@ -1,0 +1,290 @@
+================================================================================
+Task 3.2: Isotropic Plane Orbits and J⊥/J Computation
+================================================================================
+
+================================================================================
+[Step 1] Constructing T_Co
+================================================================================
+
+T_Co rank: 11
+  Signature: (2, 9)
+  Determinant: -2048
+  ✓ Signature confirmed: (2, 9)
+
+================================================================================
+[Step 2] Finding Isotropic Vectors in T_Co
+================================================================================
+
+Searching for primitive isotropic vectors v ∈ T_Co with v² = 0...
+
+  Constructing isotropic vectors systematically...
+  Found 8 isotropic vectors
+  Unique (up to sign): 8
+
+  Example isotropic vectors:
+    v_1 = [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0], v² = 0
+    v_2 = [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], v² = 0
+    v_3 = [2, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0], v² = 0
+    v_4 = [3, 1, 3, 1, 0, 0, 0, 0, 0, 0, 0], v² = 0
+    v_5 = [2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0], v² = 0
+
+================================================================================
+[Step 3] Constructing Isotropic Planes
+================================================================================
+
+An isotropic plane J is spanned by two linearly independent isotropic
+vectors v₁, v₂ that are orthogonal: v₁·v₂ = 0
+
+  Checking orthogonality among 8 vectors...
+
+  Found 27 isotropic planes
+
+  Example isotropic plane:
+    Basis vector 1: [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0]
+    Basis vector 2: [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+
+  Verification:
+    v₁² = 0
+    v₂² = 0
+    v₁·v₂ = 0
+    ✓ Plane is isotropic
+
+================================================================================
+[Step 4] Computing J⊥ and J⊥/J
+================================================================================
+
+--------------------------------------------------------------------------------
+Computing J⊥/J for the first isotropic plane...
+--------------------------------------------------------------------------------
+
+  Computing orthogonal complement J⊥...
+  J⊥ has dimension 9
+
+  Computing quotient J⊥/J...
+
+  Rank of J: 2
+  Rank of J⊥: 9
+  Rank of J⊥/J: 7
+
+  Gram matrix of J⊥ (size 9×9):
+[ 0  0  0  0  0  0  0  0  0]
+[ 0  0  0  0  0  0  0  0  0]
+[ 0  0 -2  0  0  0  0  0  0]
+[ 0  0  0 -2  0  0  0  0  0]
+[ 0  0  0  0 -2  0  0  0  0]
+[ 0  0  0  0  0 -2  0  0  0]
+[ 0  0  0  0  0  0 -2  0  0]
+[ 0  0  0  0  0  0  0 -2  0]
+[ 0  0  0  0  0  0  0  0 -2]
+
+  Dimension of radical (nullspace): 2
+  Rank of Gram matrix: 7
+
+  Smith normal form diagonal: [2, 2, 2, 2, 2, 2, 2, 0, 0]
+  Nonzero invariant factors: [2, 2, 2, 2, 2, 2, 2]
+
+  Quotient Gram matrix J⊥/J (size 7×7):
+[-2  0  0  0  0  0  0]
+[ 0 -2  0  0  0  0  0]
+[ 0  0 -2  0  0  0  0]
+[ 0  0  0 -2  0  0  0]
+[ 0  0  0  0 -2  0  0]
+[ 0  0  0  0  0 -2  0]
+[ 0  0  0  0  0  0 -2]
+
+  ✓ Successfully computed J⊥/J Gram matrix
+
+  Checking isometry with A₁^⊕7...
+  A₁^⊕7 Gram matrix: diag(-2, -2, -2, -2, -2, -2, -2)
+  det(J⊥/J) = -128
+  det(A₁^⊕7) = -128
+  ✓ Determinants match
+  Signature(J⊥/J) = (0, 7)
+  Signature(A₁^⊕7) = (0, 7)
+  ✓ Signatures match
+
+================================================================================
+[Step 5] Orbit Classification under O(T_Co)
+================================================================================
+
+Computing the orthogonal group O(T_Co)...
+
+Using Nikulin's classification for 2-elementary lattices:
+  For T_Co with (r, a, δ) = (11, 11, 1):
+  - Genus contains unique class (boundary case r = a)
+  - Map O(T_Co) → O(q_T) is surjective
+  - Orbits of isotropic planes are determined by their image in A_T
+
+For isotropic planes, we need to consider pairs of isotropic vectors
+that are orthogonal in the discriminant form.
+
+--------------------------------------------------------------------------------
+Theoretical prediction (from AEGS23, Sterk1991):
+--------------------------------------------------------------------------------
+  The moduli space F_Co has:
+    - One 0-cusp (from Task 2.1)
+    - One 1-cusp (isotropic plane orbit)
+  For the 1-cusp: J⊥/J ≅ A₁^⊕7
+
+================================================================================
+[Step 6] Explicit Construction of 1-Cusp Isotropic Plane
+================================================================================
+
+Constructing an isotropic plane J with J⊥/J ≅ A₁^⊕7...
+
+  Candidate v₁ = [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0]
+  v₁² = 0
+
+  Candidate v₂ = [1, -1, 1, -1, 0, 0, 0, 0, 0, 0, 0]
+  v₂² = 0
+  v₁·v₂ = 0
+
+  ✓ Found orthogonal isotropic pair!
+  ✓ Vectors are linearly independent
+
+  Computing J⊥...
+  dim(J⊥) = 9
+
+  Computing J⊥/J...
+
+  Rank of J: 2
+  Rank of J⊥: 9
+  Rank of J⊥/J: 7
+
+  Gram matrix of J⊥ (size 9×9):
+[ 0  0  0  0  0  0  0  0  0]
+[ 0  0  0  0  0  0  0  0  0]
+[ 0  0 -2  0  0  0  0  0  0]
+[ 0  0  0 -2  0  0  0  0  0]
+[ 0  0  0  0 -2  0  0  0  0]
+[ 0  0  0  0  0 -2  0  0  0]
+[ 0  0  0  0  0  0 -2  0  0]
+[ 0  0  0  0  0  0  0 -2  0]
+[ 0  0  0  0  0  0  0  0 -2]
+
+  Dimension of radical (nullspace): 2
+  Rank of Gram matrix: 7
+
+  Smith normal form diagonal: [2, 2, 2, 2, 2, 2, 2, 0, 0]
+  Nonzero invariant factors: [2, 2, 2, 2, 2, 2, 2]
+
+  Quotient Gram matrix J⊥/J (size 7×7):
+[-2  0  0  0  0  0  0]
+[ 0 -2  0  0  0  0  0]
+[ 0  0 -2  0  0  0  0]
+[ 0  0  0 -2  0  0  0]
+[ 0  0  0  0 -2  0  0]
+[ 0  0  0  0  0 -2  0]
+[ 0  0  0  0  0  0 -2]
+
+  Quotient Gram matrix:
+[-2  0  0  0  0  0  0]
+[ 0 -2  0  0  0  0  0]
+[ 0  0 -2  0  0  0  0]
+[ 0  0  0 -2  0  0  0]
+[ 0  0  0  0 -2  0  0]
+[ 0  0  0  0  0 -2  0]
+[ 0  0  0  0  0  0 -2]
+
+  Comparison with A₁^⊕7:
+    det(J⊥/J) = -128
+    det(A₁^⊕7) = -128
+    sig(J⊥/J) = (0, 7)
+    sig(A₁^⊕7) = (0, 7)
+
+  Checking isometry...
+    ✓ Quotient Gram matrix is diagonal with entries -2
+    ✓ J⊥/J is isometric to A₁^⊕7 (identical diagonal forms)
+
+  ✓ J⊥/J is isometric to A₁^⊕7!
+    This confirms the 1-cusp structure
+
+================================================================================
+[Step 7] Computational Verification of Orbit Transitivity
+================================================================================
+
+Using discriminant group method (Nikulin 1.5.2):
+  O(T_Co) → O(q_T) is surjective for 2-elementary lattices
+  ⇒ Orbits of isotropic planes are determined by images in A_T
+
+  Computing discriminant group A_T and quadratic form q_T...
+
+  Constructing O(q_T) action on isotropic planes...
+
+  Computing discriminant images for all isotropic planes...
+    Plane 3: Non-primitive (image dimension < 2)
+    Plane 6: Non-primitive (image dimension < 2)
+    Plane 9: Non-primitive (image dimension < 2)
+    Plane 10: Non-primitive (image dimension < 2)
+    Plane 11: Non-primitive (image dimension < 2)
+    Plane 14: Non-primitive (image dimension < 2)
+    Plane 18: Non-primitive (image dimension < 2)
+    Plane 21: Non-primitive (image dimension < 2)
+    Plane 22: Non-primitive (image dimension < 2)
+    Plane 23: Non-primitive (image dimension < 2)
+    Plane 24: Non-primitive (image dimension < 2)
+    Plane 25: Non-primitive (image dimension < 2)
+
+  Results:
+    Total planes: 27
+    Primitive (dim 2 image): 15
+    Non-primitive: 12
+
+  Computing Arf invariants (orbit classifier)...
+    Unique Arf invariants: {0}
+
+  ✓ All 15 primitive isotropic planes have the same Arf invariant
+  ⇒ All planes are in the SAME O(q_T)-orbit
+  ⇒ All planes are in the SAME O(T_Co)-orbit (by Nikulin surjectivity)
+
+  Verifying all discriminant images are isotropic...
+  ✓ All discriminant images are isotropic (automatic for isotropic planes)
+
+--------------------------------------------------------------------------------
+Orbit Transitivity Result:
+--------------------------------------------------------------------------------
+  ✓ VERIFIED: All 15 primitive isotropic planes
+    are in a SINGLE O(T_Co)-orbit
+  ⇒ Unique 1-cusp in Baily-Borel compactification
+
+================================================================================
+SUMMARY
+================================================================================
+
+Lattice T_Co:
+  Gram matrix: diag(2, 2, -2, ..., -2)
+  Signature: (2, 9)
+  (r, a, δ): (11, 11, 1)
+
+Isotropic planes:
+  Maximal dimension: 2 (Witt index)
+  Found (from limited search): 27 examples
+
+Orbit classification:
+  Theoretical prediction: ONE O(T_Co)-orbit of isotropic planes
+  Corresponds to: Unique 1-cusp in Baily-Borel compactification
+
+Quotient J⊥/J:
+  Rank: 7
+  Expected: A₁^⊕7 (diag(-2, ..., -2))
+  Verification: Computed explicitly above
+
+--------------------------------------------------------------------------------
+Verification Status:
+--------------------------------------------------------------------------------
+  ✓ Found isotropic planes
+  ✓ J⊥/J has rank 7
+  ✓ J⊥/J is negative definite
+  ✓ J⊥/J ≅ A₁^⊕7 (isometry verified)
+  ✓ Primitive planes identified
+  ✓ Single O(T_Co)-orbit (computed)
+
+================================================================================
+Task 3.2 Complete
+================================================================================
+
+================================================================================
+[Step 8] Saving Results
+================================================================================
+
+Results saved to: /home/dzack/research/computations/task3_2_results.txt

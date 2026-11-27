@@ -11,6 +11,24 @@ APIs or trusted assertions. Their source declarations are deliberately
 not installed into the live mathematical library. Source symlinks are
 preserved as text rather than activated.
 
+The three non-main branch heads are also accounted for under
+`historical-branches/`: the frozen July archive (`05bc64e6`), the memory
+migration (`af87e631`), and the branch deleting the Lean sources (`fbe36440`).
+The per-branch manifests identify the source commit, original path and
+preserved Git blob. In particular, the task/spec/decision records from the
+memory-migration branch no longer depend on an external vault or old branch.
+
+The latest recoverable deleted-file versions, including the original
+Coble computational scripts and stdout transcripts, earlier research proof
+notes, and historical decision/specification cards, are preserved under
+`deleted-history/` with `manifest.tsv`. Each path records the pre-deletion
+revision and original blob. Historical claim statuses and reported successes
+are not proofs; the preserved texts must not override subsequent corrections.
+The first Task 1.1 parametrization has been independently verified and
+forward-ported as [an explicit ten-nodal sextic and its K3 cover](../../../writing/coble/coble-surfaces/rational-sextic-calculations.md#ex-explicit-ten-nodal-sextic).
+The [corrected module calculations](../../../writing/category-theory/constructions/Generators-and-Presentations.md#sec-integral-presentation-examples)
+replace incompatible expectations in the old module script.
+
 The original fixture witnesses and source-table labels have been
 reconciled in [the corrected two-elementary specimens](../../../references/databases/alexeev-engel-two-elementary/README.md).
 The fixed-square orbit claim has been corrected and proved in

@@ -1,0 +1,100 @@
+================================================================================
+Task 1.3: Primitive Embedding Matrices
+================================================================================
+
+Section 1: Constructing Standard Lattices
+--------------------------------------------------------------------------------
+Λ_K3: rank = 22, signature = -16
+Λ_K3 determinant: -1
+Λ_K3 is even: True
+Λ_K3 is unimodular: True
+
+Section 2: S_Co and T_Co Gram Matrices (from Task 1.2)
+--------------------------------------------------------------------------------
+S_Co: rank 11, signature -9, det = 2048
+T_Co: rank 11, signature -7, det = -2048
+
+Section 3: Embedding S_Co into Λ_K3
+--------------------------------------------------------------------------------
+S_Co embedded Gram matrix diagonal: [2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2]
+S_Co embedded is diagonal: False
+
+Note: E8 simple roots are not orthogonal, so direct embedding doesn't work.
+Using orthogonal complement approach instead...
+
+Section 4: Computing T_Co = S_Co^⊥ in Λ_K3
+--------------------------------------------------------------------------------
+Constructing T_Co and S_Co as abstract lattices...
+
+S_Co signature: -9
+T_Co signature: -7
+Λ_K3 signature: -16
+Direct sum signature matches: True
+
+Section 5: Explicit Orthogonal Embedding Construction
+--------------------------------------------------------------------------------
+S_Co explicit embedding:
+  Gram matrix diagonal: [2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2]
+  Is diagonal: True
+  Matches S_Co_gram: True
+
+T_Co embedding requires finding vectors orthogonal to S_Co...
+Using orthogonal complement computation...
+
+Section 6: Computing T_Co = S_Co^⊥
+--------------------------------------------------------------------------------
+Orthogonal complement dimension: 11
+Integer basis vectors: 11
+T_Co computed Gram matrix diagonal: [2, 2, -22, -14, -6, -14, -22, -14, -6, -4, -2]
+T_Co computed signature: -7
+T_Co computed determinant: -512
+S_Co · T_Co pairing is zero: True
+
+Section 7: Constructing T_En and T_dP
+--------------------------------------------------------------------------------
+T_En Gram matrix diagonal: [2, 2, -22, -14, -6, -14, -22, -14, -6, -4]
+T_dP Gram matrix diagonal: [2, 2, -22, -14, -6, -14, -22, -14, -6]
+
+Section 8: Full Embedding Chain
+--------------------------------------------------------------------------------
+Embedding matrices:
+  M_dP_En: T_dP → T_En is (10, 9)
+  M_En_Co: T_En → T_Co is (11, 10)
+  M_TCo: T_Co → Λ_K3 is (22, 11)
+  M_En_K3: T_En → Λ_K3 is (22, 10)
+  M_dP_K3: T_dP → Λ_K3 is (22, 9)
+
+Isometry verification:
+  T_dP → Λ_K3 → T_dP: True
+  T_En → Λ_K3 → T_En: True
+  T_Co → Λ_K3 → T_Co: True
+
+Section 9: Primitivity Verification
+--------------------------------------------------------------------------------
+T_dP → T_En primitive: True
+T_En → T_Co primitive: True
+T_Co → Λ_K3 primitive: True
+T_dP → Λ_K3 primitive: True
+
+================================================================================
+Summary
+================================================================================
+
+Lattice Invariants:
+  Λ_K3: rank 22, signature (3,19), unimodular
+  S_Co: rank 11, signature (1,10), det = 2048
+  T_Co: rank 11, signature -7, det = -512
+  T_En: rank 10, signature -6, det = 2048
+  T_dP: rank 9, signature -5, det = -3584
+
+Embedding Chain:
+  T_dP ⟶ T_En ⟶ T_Co ⟶ Λ_K3
+   (9×22)  (10×22)  (11×22)
+
+Verification:
+  S_Co ⊥ T_Co: True
+  All embeddings primitive: True
+
+Results saved to: /home/dzack/research/computations/task1_3_results.txt
+
+Task 1.3 completed.

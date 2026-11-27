@@ -1,0 +1,40 @@
+================================================================================
+Task 5.1 exact primitive/complement gate
+================================================================================
+
+[1] Building exact glued K3-lattice model
+  Ambient rank: 22
+  Ambient signature: (3, 19)
+  Ambient determinant: -1
+  Ambient even: True
+
+[2] Embedding S_Co with exact target Gram matrix
+  Embedded S_Co rank: 11
+  Embedded S_Co Smith diagonal: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  Embedded S_Co Gram diagonal: [2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2]
+  PASS: embedded S_Co has the exact expected Gram matrix
+  PASS: embedded S_Co is primitive
+
+[3] Computing the true orthogonal complement T = S_Co^perp
+  Complement rank: 11
+  Complement signature: (2, 9)
+  Complement determinant: -2048
+  Complement Smith diagonal: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  Cross pairing zero: True
+  Combined Smith diagonal: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+  PASS: true complement has rank 11, signature (2,9), zero cross-pairing, and |det| = 2048
+
+[4] Checking discriminant compatibility on the actual computed complement
+  |A_S|: 2048
+  |A_T(actual)|: 2048
+  A_T(actual) invariants: (2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2)
+  Brown(q_S): 7
+  Brown(q_T(actual)): 1
+  Expected Brown(q_T(actual)): 1
+  q_T(actual) diagonal sample: [1/2, 1/2, 3/2, 3/2, 3/2]
+  PASS: discriminant-group compatibility is verified on the actual computed complement
+
+[5] Primitive results written
+  Results file: /home/dzack/research/computations/task5_1_primitive_results.txt
+
+Task 5.1 primitive/complement gate passed.

@@ -1,0 +1,23 @@
+Task 5.1 primitive embedding and complement gate
+================================================================================
+
+Ambient lattice:
+  Rank: 22
+  Signature: (3, 19)
+  Determinant: -1
+
+Embedded S_Co:
+  Primitive: True
+  Gram diagonal: [2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2]
+
+Computed orthogonal complement:
+  Rank: 11
+  Signature: (2, 9)
+  Determinant: -2048
+  Cross pairing zero: True
+
+Actual complement discriminant group:
+  Order: 2048
+  Invariants: (2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2)
+  Brown(q_T(actual)): 1
+  Expected -Brown(q_S): 1
