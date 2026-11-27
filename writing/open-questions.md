@@ -17,8 +17,8 @@ tags:
 | **Monoidal structures with an invertible object of nonzero Witt class** | @sec-open-statements; sharpened by @thm:invertible-summand |
 | **The discriminant construction as a functor on Poincaré complexes** | @sec-open-statements |
 | **A canonical universe for the equality predicate** | @qst:canonical-equality-universe |
-| **Computing a stable stem from the geometry of a sphere-spectrum space** | @qst:stable-stem-from-qs |
-| **Distributional and algebra-valued kernels for a pairing** | @qst:gram-operator-kernel |
+| **Computing stable stems from $QS^n$, including $Q_0S^0$** | @qst:stable-stem-from-qs, with the first stem computed in @ex:qs-zero-first-stem |
+| **Scalar multiplication inside an integral kernel and its algebra-valued generalization** | @ex:scalar-kernel-multiplication, @qst:gram-operator-kernel |
 
 : {tbl-colwidths="[35,65]"}
 
@@ -95,13 +95,15 @@ tags:
 
 | Question | Stated in |
 |:---|:---|
-| **Symbolic computation of integral monodromy from a family equation** | @qst:symbolic-family-monodromy |
+| **Computing a period equation or the full Gauss–Manin system with `periods`, `HolonomicFunctions`, or `foliation.lib`** | @qst:symbolic-family-monodromy |
 
 : {tbl-colwidths="[35,65]"}
 
 ## Questions with worked answers
 
-For a genus-one degeneration, @ex:genus-one-monodromy-powers answers @qst:genus-one-monodromy-types by taking powers of the integral local monodromy matrices.
+For Scattone's odd-prime case, @qst:scattone-prime-boundary-curves asks for the multiplicities of $Y_1(1)$ and $Y_1(q)$ in the boundary. @prop:scattone-prime-boundary-count expresses each as a sum over plane orbits for the specified degree.
+
+For a genus-one degeneration, @ex:genus-one-monodromy-powers answers @qst:genus-one-monodromy-types by expressing the integral monodromy in the generators $S$ and $T$ and computing the nilpotency index after base change.
 
 The change of ambient lattice for a polarized Enriques surface preserves the integral image on the anti-invariant lattice (@qst:enriques-polarization-ambient-lattice). The distinction between the augmentation image, module coinvariants, and orthogonal coinvariants can be seen in a single sign action (@ex:coinvariant-sign-action). For monodromy computed from a family equation, @qst:monodromy-from-family-equation leads to the Legendre calculation in @ex:legendre-monodromy.
 

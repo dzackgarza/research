@@ -112,23 +112,33 @@ and the corresponding isomorphisms with $B$. They identify the adjoints after ex
 ## Distributional kernels and pairings {#sec-distributional-kernel-pairings}
 
 ::: {.definition #def:distribution-dual title="The space of distributions" defines="distribution; $\mathcal D'(U)$"}
-For an open set $U\subseteq\RR^d$, let $\mathcal D(U)=C_c^\infty(U,\RR)$ with its usual test-function topology. A *distribution* on $U$ is a continuous linear functional on $\mathcal D(U)$. Write $\mathcal D'(U)$ for this dual and $\langle u,f\rangle=u(f)$ for evaluation [@Fol99, §9.1].
+For an open set $U\subseteq\RR^d$, let $\mathcal D(U)=C_c^\infty(U,\RR)$ with its usual test-function topology. A *distribution* on $U$ is a continuous linear functional on $\mathcal D(U)$. Write $\mathcal D'(U)$ for this dual. Evaluation is the pairing $\mathcal D'(U)\times\mathcal D(U)\to\RR$, $(u,f)\mapsto u(f)$ [@Fol99, §9.1].
 :::
 
 ::: {.construction #cons:kernel-pairing title="The pairing associated to a distributional kernel" defines="pairing associated to a distributional kernel"}
-For $K\in\mathcal D'(U\times U)$ (@def:distribution-dual), put
+Write $\mu_\RR\colon\RR\times\RR\to\RR$ for multiplication. For $K\in\mathcal D'(U\times U)$ (@def:distribution-dual), put
 $$
 b_K(f,g)=K(f\otimes g),\qquad
-(f\otimes g)(x,y)=f(x)g(y),\qquad
-\langle T_K g,f\rangle=b_K(f,g).
+(f\otimes g)(x,y)=\mu_\RR(f(x),g(y)),\qquad
+(T_K g)(f)=b_K(f,g).
 $$
 The map $T_K\colon\mathcal D(U)\to\mathcal D'(U)$ is the right adjoint of the pairing (@def:pairing-adjoints), with values in the continuous dual (@def:distribution-dual). For fixed $g$, the map $f\mapsto f\otimes g$ is continuous: on test functions supported in a fixed compact set, each derivative of $f\otimes g$ is a product of derivatives of $f$ and $g$. Thus $T_Kg$ lies in $\mathcal D'(U)$. The first argument tests the output, and the second is the input (compare [@Kna17, Ch. VIII, §7]).
+:::
+
+::: {.example #ex:scalar-kernel-multiplication title="Scalar multiplication inside an integral kernel"}
+Fixing $a\in\RR$ in $\mu_\RR$ gives the linear map $M_a=\mu_\RR(a,-)\colon\RR\to\RR$. Let $K\in C_c^\infty(U\times U,\RR)$. For fixed $x,y$, the coefficient $K(x,y)$ is a real number and $M_{K(x,y)}$ acts on the value $g(y)$. The integral operator and its bilinear form are
+$$
+(A_Kg)(x)=\int_U M_{K(x,y)}(g(y))\,dy,\qquad
+b_K(f,g)=\iint_{U\times U}
+  \mu_\RR\!\left(f(x),\mu_\RR(K(x,y),g(y))\right)\,dx\,dy .
+$$
+With $(f,h)_{L^2}=\int_U\mu_\RR(f(x),h(x))\,dx$, the distributional operator of @cons:kernel-pairing satisfies $(T_Kg)(f)=(f,A_Kg)_{L^2}$ for the distribution defined by $K$. Moving $M_{K(x,y)}$ between the two scalar arguments uses commutativity and associativity of $\mu_\RR$. Taking the adjoint of $A_K$ also exchanges $x$ and $y$. Interchanging integration variables gives $(f,A_Kg)_{L^2}=(A_{K^\top}f,g)_{L^2}$ with $K^\top(x,y)=K(y,x)$.
 :::
 
 ::: {.question #qst:gram-operator-kernel title="How does a Gram operator generalize to a distributional or algebra-valued kernel?"}
 In @cons:kernel-pairing, where does a reference pairing enter if the kernel is to act on functions? Let $\mathcal D(U)$ embed continuously and densely in a real Hilbert space $H$, and let $J\colon H\to H'$ be the Riesz map $Jg(f)=(f,g)_H$. For which $g\in\mathcal D(U)$ is $T_Kg$ continuous for the $H$-norm, and hence the restriction of a unique $Ju$ with $u\in H$?
 
-If the coefficients belong to an associative algebra $A$, which left and right $A$-modules supply the arguments of the pairing, and in which bimodule does the kernel take its values? For a kernel given by a function, which action gives $K(x,y)g(y)$ and which gives $g(y)K(x,y)$? How is the adjoint expressed when those actions differ?
+For an associative real algebra $A$ with multiplication $\mu_A$, fixing $a\in A$ gives two operators on $A$, $L_a=\mu_A(a,-)$ and $R_a=\mu_A(-,a)$. For test functions with values in modules over $A$, what replaces the integrand $\mu_\RR(f(x),M_{K(x,y)}(g(y)))$ of @ex:scalar-kernel-multiplication? For $K(x,y)\in A$, which pairing lets the left action on the input move across as a right action on the output test function? If the kernel takes values in a bimodule instead, which map sends its value to an operator between the coefficient modules? Which transpose or involution enters the integral adjoint?
 :::
 
 ## Perfectness depends on the value module {#sec-value-module-duality}

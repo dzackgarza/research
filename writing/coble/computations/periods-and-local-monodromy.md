@@ -64,8 +64,10 @@ Continue a fundamental system of solutions around a positively oriented loop. At
 
 For instance, for $E_t\colon y^2=x^3-t$, put $t=u^6$, $x=u^2X$, $y=u^3Y$. The pulled-back curve has the constant equation $Y^2=X^3-1$, and the relative differential $dx/y$ becomes $u^{-1}dX/Y$. Its periods satisfy $(6tD_t+1)y=0$. This calculation detects one eigenvalue directly from the family. The cohomology of the elliptic curve has rank two.
 
-::: {.question #qst:symbolic-family-monodromy title="How does one compute monodromy from the family equation in a symbolic algebra system?"}
-For the smooth projective completion of $y^2=x^3-t$ over the punctured $t$-disc, which symbolic operations, starting with the equation and $dx/y$, return the monic Picard–Fuchs operator $D_t+1/(6t)$ of this differential (@cons:pf-from-jacobian)? Which further calculation produces the Gauss–Manin connection on all of $H^1_{\mathrm{dR}}$ and the integral monodromy in a specified basis of cycles? Can the result be recovered from the input polynomial before identifying the singular fibre?
+::: {.question #qst:symbolic-family-monodromy title="Which software computes monodromy from the family equation?"}
+Start with $f(x,y,t)=y^2-x^3-t$, the smooth projective completion $E_t$ of $f=0$ for $t\ne0$, and $\omega=dx/y$. This is the preceding family under $t\mapsto -t$. Which invocation of Lairez's Magma package `periods` [@Lai15, §8], Koutschan's `HolonomicFunctions`, or Movasati's `foliation.lib` for Singular takes these data to an annihilating operator for the periods of $\omega$? For each proposed route, how must the polynomial and form be represented, what commands take those inputs, and what operator do they return? Is the output already the monic minimal operator $D_t+1/(6t)$ of @cons:pf-from-jacobian? If the output has higher order, how can one recover the minimal operator for this differential?
+
+Which invocation computes the Gauss–Manin connection on the de Rham basis $dx/y,\,x\,dx/y$ of $H^1_{\mathrm{dR}}(E_t)$? What does the program return for each basis element, and how does continuation compare with transport in a specified integral basis of cycles? If `ore_algebra` takes a differential operator as input for continuation, which preceding command constructs that input from $f$? Does continuation act on the one-dimensional solution space of the minimal operator for $\omega$, or on solutions of the full rank-two system?
 :::
 
 ::: {.corollary #cor:pf-unipotent-monodromy title="Unipotence and the logarithm of monodromy"}

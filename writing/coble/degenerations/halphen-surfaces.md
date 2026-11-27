@@ -61,14 +61,28 @@ Changing the homology basis conjugates every displayed matrix. In
 particular, the matrices are representatives, not canonical matrices
 attached to the fibre.
 
-::: {.question #qst:genus-one-monodromy-types title="How does the genus-one degeneration classification read directly from $T\in\mathrm{SL}_2(\ZZ)$?"}
-For local monodromy $T$ around the puncture, which integral conjugacy classes occur before base change? After a base change $t=u^e$ making $T^e$ unipotent, which classes have $N=\log(T^e)=0$ (Type I), and which have $N\ne0$ and $N^2=0$ (Type II)? Here the Roman numeral describes the monodromy after base change. The fibre labels in the table above are Kodaira's.
+::: {.question #qst:genus-one-monodromy-types title="How does the genus-one degeneration classification read directly from $M\in\mathrm{SL}_2(\ZZ)$?"}
+Let $M\in\mathrm{SL}_2(\ZZ)$ be the local monodromy around the puncture. After a base change $t=u^e$ making $M^e$ unipotent, what is the nilpotency index of $N=\log(M^e)$? Within each resulting type, which powers of the modular generators $S$, $ST$, or $T$, with which central sign, represent the integral conjugacy class of the original $M$?
 :::
 
-::: {.example #ex:genus-one-monodromy-powers title="The two nilpotency orders in the fibre table"}
-For the rows $I_0,II,III,IV,I_0^*,IV^*,III^*,II^*$, the displayed matrices have orders $1,6,4,3,2,3,4,6$, respectively. Taking $e$ equal to the order gives $N=0$. The table distinguishes the integral conjugacy classes of a finite-order matrix and its inverse when they belong to different rows.
+::: {.example #ex:genus-one-monodromy-powers title="The Kodaira matrices as powers of modular generators"}
+Use the homology basis and loop orientation of the Kodaira table above. Put
+$$
+S=\begin{pmatrix}0&-1\\1&0\end{pmatrix},\qquad
+T=\begin{pmatrix}1&1\\0&1\end{pmatrix},\qquad
+R=ST=\begin{pmatrix}0&-1\\1&1\end{pmatrix}.
+$$
+Multiplication gives $S^2=R^3=-I$ and $R^{-1}=\left(\begin{smallmatrix}1&1\\-1&0\end{smallmatrix}\right)$. Substitution in the Kodaira table gives the following representatives on the first homology of the elliptic fibre. For comparison, in a Kulikov degeneration of K3 surfaces the nilpotency indices one and two on second cohomology characterize Types I and II, respectively (@def:kulikov-types).
 
-Put $E=\left(\begin{smallmatrix}0&1\\0&0\end{smallmatrix}\right)$. For $n>0$, the other rows give $T=I+nE$ for $I_n$ and $T=-(I+nE)$ for $I_n^*$. Since $E^2=0$, the logarithm is $nE$ in the first case and $\log(T^2)=2nE$ in the second. In both cases the nilpotency index is two. The original matrix retains the sign and the integral shear parameter $n$.
+| Nilpotency index of $N$ | Representative of $M$ | Kodaira fibre, in the same order |
+| --- | --- | --- |
+| $1$ | $I,\ -I$ | $I_0,\ I_0^*$ |
+| $1$ | $S^{-1},\ S$ | $III,\ III^*$ |
+| $1$ | $R^{-1},\ R$ | $II,\ II^*$ |
+| $1$ | $R^{-2},\ R^2$ | $IV,\ IV^*$ |
+| $2$ | $T^n,\ -T^n$ for $n>0$ | $I_n,\ I_n^*$ |
+
+For finite-order $M$, take $e$ equal to its order. Then $N=0$ has nilpotency index one. For $M=\pm T^n$, write $E=T-I$. Since $E^2=0$, one has $\log(T^n)=nE$ and $\log((-T^n)^2)=2nE$. Both have nilpotency index two. Before base change, the trace distinguishes the signs. The index of $(M\mp I)\ZZ^2$ in its saturation is $n$ for $M=\pm T^n$, so integral conjugacy also preserves the shear parameter.
 :::
 
 ::: {.proposition #prop:terminal-coble-halphen-blowup title="Terminal Coble surfaces as blowups of Halphen surfaces"}

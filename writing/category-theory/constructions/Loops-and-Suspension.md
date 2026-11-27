@@ -170,12 +170,18 @@ The transition map at stage $r$ is $\Omega^r$ applied to the unit $\Sigma^r X\to
 :::
 
 ::: {.question #qst:stable-stem-from-qs title="Can the geometry of $QS^n$ compute a stable stem independently?"}
-For $n\geq1$ and $k>0$, the definition gives [@May99, p. 233]
+For $n\geq0$ and $k>0$, take the constant loop as basepoint. The definition gives [@May99, p. 233]
 $$
 \pi_{n+k}(QS^n)\cong\operatorname*{colim}_r\pi_{n+k+r}(S^{n+r})
 =\pi_k^{\mathrm s}(S^0).
 $$
-For which $k$ can one compute the left side from a geometric model of $QS^n$ (@def:q-construction)? In a model by configurations of points labelled in $S^n$, which attaching maps or operations determine a homotopy class and its order? Can the calculation give a stem using only information obtained from that model?
+For which $k$ can one compute the left side from a geometric model of $QS^n$ (@def:q-construction)? In a model by configurations of points labelled in $S^n$, which attaching maps or operations determine a homotopy class and its order? For $n=0$, which positive stems can one obtain from the ordinary homotopy of the degree-zero component $Q_0S^0$ after group completion?
+:::
+
+::: {.example #ex:qs-zero-first-stem title="The first stable stem from permutations"}
+Under disjoint union, the groupoid of finite sets and bijections has classifying space $\coprod_{m\geq0}B\mathfrak S_m$. The Barratt–Priddy–Quillen theorem identifies its group completion with $QS^0$ [@Seg74, Prop. 3.5 and §4]. On components, group completion sends cardinality in $\mathbb N$ to degree in $\ZZ$. In degree zero it gives a homology isomorphism $B\mathfrak S_\infty\to Q_0S^0$, where $\mathfrak S_\infty=\bigcup_m\mathfrak S_m$ under the inclusions fixing the new letter.
+
+The transpositions generate $\mathfrak S_\infty$, are conjugate, and have order two. The sign map detects their common class in the abelianization. Hence $H_1(B\mathfrak S_\infty;\ZZ)=\ZZ/2$. The fundamental group of the infinite loop space $Q_0S^0$ is abelian, so its degree-one Hurewicz map is an isomorphism. This computes $\pi_1(Q_0S^0)=\ZZ/2$ from permutations and gives $\pi_1^{\mathrm s}(S^0)=\ZZ/2$ by @qst:stable-stem-from-qs.
 :::
 
 ## Extending the sequences {#sec-extended-sequences}
