@@ -1312,6 +1312,9 @@ class there before using it.
 
 ### Source-grounded mathematics and original work
 
+For worked examples of choosing a useful formulation, tracking choices, and
+deciding which inference needs proof, see [Mathematical taste and method](docs/mathematical-method.md).
+
 Before inserting a mathematical definition, hypothesis, criterion, theorem,
 or identification into a research artifact, establish its source and its
 place in the requested task. Read the cited passage and check the objects,
