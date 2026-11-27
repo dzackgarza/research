@@ -71,7 +71,7 @@ $$
 \end{aligned}
 $$
 
-and thus an embedding $\fco \injects \fttz$.
+and thus an inclusion of type IV period domains $\bD(T_\Co)\injects\bD(\tdp)$.
 The three matrices, in the standard basis of the marking of @thm:theta-co-coordinates, are displayed later in the book.
 :::
 
@@ -81,7 +81,6 @@ The displayed map is isometric on each summand: on $\generators{2}$ as in @lem:p
 Its cokernel is $U/\bZ(\tilde e+\tilde f)\oplus(E_8\oplus E_8)/\theset{(y,y)}$.
 The first summand is $\bZ$ by @lem:primitive_embedding_eta, and $(a,b)\mapsto a-b$ identifies the second with $E_8$.
 The cokernel is torsion-free, so the map is primitive by @prop:primitive-characterization.
-The embedding $\fco\injects\fttz$ is the one that @lem:locally_closed_embedding_BB induces.
 
 For uniqueness, by [@AEGS25 Lem. 2.4] it suffices to show uniqueness of $\sen \injects S_{\Co}$, i.e.
 
@@ -103,14 +102,14 @@ By @cons:embedding-gluing-data, its gluing datum is the graph of an isometry bet
 Similarly, by [@Nik80 Cor. 1.5.2, Thm. 3.6.3], the homomorphism $\Orth(\lkt)\to \Orth(T_\Co)$ is surjective.
 :::
 
-::: {.lemma #lem:locally_closed_embedding_BB}
+::: {.lemma #lem:locally_closed_embedding_BB title="Extension of an equivariant period-domain map"}
 
-The embeddings of lattices $\eta: T_\Co\injects T_\En$ (resp. $T_{\Co} \injects \tdp$) induce locally closed (@def:locally-closed-subset) embeddings $\fco \injects \fen$ (resp. $\fco \injects \fttz$) which extend to morphisms on the Baily--Borel compactifications.
+Let an isometric lattice inclusion induce a holomorphic map of connected type IV domains. If the map is equivariant for the chosen arithmetic groups, the induced map of quotients extends uniquely to a morphism of their Baily--Borel compactifications.
 :::
 
 ::: {.proof}
 
-This follows from [@KK72 §5, Thm.2].
+The map on quotients has a holomorphic lift, namely the given inclusion of domains. Apply [@KK72, §5, Thm. 2] on the identity components of the transformation groups. For a finite extension of the arithmetic groups preserving the chosen domains, pass first to compatible normal subgroups in the identity components. Uniqueness on the dense interior makes the extension equivariant under the finite quotient, so it descends. The compactifications are projective, hence the holomorphic extension is algebraic.
 :::
 
 ::: {.definition #def:gamma-co-groups title="The groups of the Coble lattice" defines="$\delta$; $\Gamma_\En$; $\Gamma^K_\En$; $\gent$; $\Gamma_\Co$; $\fco$; $\Gamma^{\mathrm{un}}_\Co$; $F^{\mathrm{un}}_\Co$; $\widetilde\Orth^+(T_\Co)$; $R_\Gamma$; $\Gamma_{\Co,2}$; $F_{\Co,2}$"}
@@ -233,7 +232,6 @@ so that $R=U\times_XU\rightrightarrows U$. Then:
 
 The same construction applies to a homotopy of loops of the stack in the sense of [@Noo05, Definition 17.2], $H\colon I^2\to X$. Pulling the chart back gives a $G$-torsor over the square. Trivialize it on a finite grid and glue compatible sections to obtain $Q_H\cong I^2\times G$. Its section gives the paths $\widetilde\gamma_u$. Since $G$ is discrete and $I^2$ is connected, the endpoint element $g$ is independent of $u$; the endpoint identifications of the homotopy make the initial and final section agree with the chosen sections on the two loops. This is precisely the homotopy of pairs in [@Col09, Definitions 3.2--3.3]: paths in $U$ move continuously, the group element remains fixed, and endpoint identifications are respected. Colman's statement is used only for the pair terminology, so no manifold hypothesis on $U$ is needed. Concatenation of intervals gives the same composition on the two sides, with the group law of the action groupoid. The inversion in the displayed representation is the product convention of @def:transport-and-monodromy, not a different fundamental group.
 
-:::
 :::
 
 ::: {.lemma #lem:orbifold-monodromy-of-a-nonfree-quotient title="The non-free quotient: per-loop transport, descent, and monodromy"}

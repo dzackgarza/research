@@ -60,11 +60,13 @@ inside $R$, for the divisibility ideal $I_v$ of @def:lattice-divisibility.
 
 ::: {.proof}
 The displayed vanishing is exactly the condition that $s_v\circ\iota_L$ admit a unique lift along the kernel (@def:kernel-cokernel) $\iota_L$:
-```tikzcd
+
+\begin{tikzcd}
 U(L) \arrow[r,dashed,"\widetilde s_v"] \arrow[d,"\iota_L"'] &
 U(L) \arrow[d,"\iota_L"]\\
 L_K \arrow[r,"s_v"'] & L_K.
-```
+\end{tikzcd}
+
 Faithfulness of extension of scalars, together with $s_v^2=\id_{L_K}$ and the isometry identity of @prop:reflection-rational-isometry, gives $\widetilde s_v^2=\id_{U(L)}$ and preservation of $\beta_L$.
 
 Suppose the rank-one embedding $R\to U(L)$ is primitive. Its cokernel (@def:kernel-cokernel) is finitely generated (@def:module-subcategories) torsion-free, hence projective (@def:module-subcategories) over the Dedekind domain $R$. Thus the sequence splits, and there is an $R$-linear retraction $r\colon U(L)\to R$ with $r(v)=1$. For $x\in U(L)$ put $c_x=2\beta_L(x,v)/\beta_L(v,v)\in K$. The formula $s_v(x)=x-c_xv$ lies in $U(L)$ exactly when $c_xv\in U(L)$. Applying the retraction proves that this is equivalent to $c_x\in R$. Requiring this for every $x$ is precisely $2I_v\hookrightarrow\beta_L(v,v)R$.

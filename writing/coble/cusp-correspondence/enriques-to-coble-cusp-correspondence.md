@@ -167,7 +167,7 @@ $$
 The first identification is forced: $(18,0,0)_1$ is the unique even unimodular lattice of its (indefinite (@def:definiteness)) signature.
 The second lattice is even, unimodular, and negative-definite of rank $16$, and is thus determined only up to the two such isometry classes.
 
-Thus the embedding $\fco \injects \fttz$ induces the following maps on cusps:
+Under the composite from the mirror quotient for $\gent$ through $\fentwo$ to $\fttz$ (@cons:coble-embedding-extensions), the indicated representatives have the following boundary lattices:
 
 $$
 \begin{aligned}
@@ -266,80 +266,67 @@ using $\gamma k = k$; a vector of $\ten$ orthogonal to $k$ lies in $\ten\interse
 
 ::: {.lemma #lem:monodromy-is-spinor-positive title="The monodromy of a family of Coble surfaces lies in $\Orth^+(T_\Co)$"}
 
-Let $\mathcal S\to B$ be a family of Coble surfaces over a connected base, with the local system of lattices $T_\Co$, monodromy group (@def:transport-and-monodromy) $\Gamma_\Co\le\Orth(T_\Co)$ (@def:gamma-co-groups(1), @def:coble-family-unpolarized) and periods in one component $D^+\subset\bD(T_\Co)$. Then $\Gamma_\Co\subseteq\Orth^+(T_\Co)=\Theta_\bR(T_\Co)$.
+Let $\mathcal S\to B$ be a Coble family over a connected complex manifold with anti-invariant local system of fibre $T_\Co$ (@def:coble-family-unpolarized). Choose the component $D^+\subset\bD(T_\Co)$ containing a marked period. The image of the monodromy on $T_\Co$ is contained in $\Orth^+(T_\Co)=\Theta_\bR(T_\Co)$.
 :::
 
 ::: {.proof}
 
-Transport is an isometry (@prop:local-system-of-lattices-monodromy), and it carries $D^+$ to $D^+$: the period map (@def:period-map) of the family is single-valued on the connected base, so $\rho(\gamma)$ permutes the components of $\bD(T_\Co)$ and fixes the one containing the periods (@eq-period-map-equivariance).
+Parallel transport is an isometry (@prop:local-system-of-lattices-monodromy). The period map on the connected universal cover of $B$ takes values in $D^+$. By equivariance (@eq-period-map-equivariance), a loop takes a period in $D^+$ to another point of $D^+$, hence its isometry preserves that component.
 
 *The component stabilizer (@def:group-orbit).* The lattice $T_\Co$ carries the weight-$2$ Hodge structure of its K3 double cover, with Hodge numbers $h^{2,0}=1$ --- a holomorphic $2$-form is anti-invariant under the non-symplectic involution --- and $h^{1,1}=9$, the signature being $(2,9)$ (@prop:coble-transcendental). So the case $h^{m,m}>0$ of @thm:period-domain-component-stabilizer applies with $m=1$ and $\epsilon=1$, and
 $$\Stab_{G_\bR}(D^+)=\Theta_\bR(T_\Co\otimes\bR).$$
 By @conv:spinor-positive-subgroup this is $\Orth^+(T_\Co)$, and $\rho(\gamma)$ lies there.
 
-The conclusion is sharp and is not containment in $\SO$: a reflection $s_\delta$ in a vector of square $-2$ has $\det = -1$ and $\spinornorm_\bR(s_\delta) = [-\delta^2/2] = [1]$, so it lies in $\Orth^+$ and not in $\SO$, and @prop:monodromy-contains-root-reflections places such reflections in the geometric monodromy. What the lifting needs is the spinor condition, which is what this lemma gives.
+For the unmarked stack the image is all of $\Orth^+(T_\Co)$ by @thm:gamma-co-is-the-stack-monodromy. In particular it contains a reflection in a vector $\delta$ of square $-2$. This reflection has determinant $-1$ and real spinor norm $[-\delta^2/2]=[1]$.
 :::
 
 ::: {.remark #rmk:coble-strong-lifting-group title="The group in the strong lifting"}
 
-The statement is about $\widetilde\Orth^+(T_\Co) = \discriminantkernel{T_\Co}\intersect\Orth^+(T_\Co)$, and every step of the proof uses only that group: the condition $\bar\varphi(h/2) = h/2$ of the extension criterion holds because $\bar\varphi$ is the identity on $A_{T_\Co}$, and the sign is inherited by the spinor-norm identity. So the conclusion holds verbatim for every subgroup of $\widetilde\Orth^+(T_\Co)$. The lifting of the monodromy group $\Gamma_\Co$ of the Coble family (@def:gamma-co-groups(1)) therefore needs exactly the inclusion $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$. On the labelled presentation @thm:gamma-co-is-stable(1) proves $\Gamma_\Co(B)\subseteq\widetilde\Orth^+(T_\Co)$; the inclusion for $\Gamma_\Co$ additionally needs $\Gamma_\Co=\Gamma_\Co(B)$, research#797, item 6. Neither the equivariance nor the stabilizer comparison is asserted here without that inclusion. The sign half of the inclusion is unconditional: the monodromy of a family of Coble surfaces lies in $\Orth^+(T_\Co)$ (@lem:monodromy-is-spinor-positive). So the inclusion $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$ reduces to its discriminant half, which the ten exceptional classes of the K3 double cover decide (@cor:gamma-co-lifting-criterion); the precise statement, with the inclusion it needs, is @prop:gamma-co-strong-lifting.
+The homomorphism $\mathrm{Ext}$ of @thm:coble-strong-lifting fixes $k$ and restricts on $\eta(T_\Co)$ to the given isometry of $T_\Co$. Its domain is the stable positive group. For a particular Coble family over a connected base $B$, write $G_B$ for the image of its anti-invariant monodromy in $\Orth^+(T_\Co)$ (@lem:monodromy-is-spinor-positive). The following criterion determines when all elements of $G_B$ admit such a lift.
 :::
 
-::: {.proposition #prop:gamma-co-strong-lifting title="The $\Gamma_\Co$ form of the strong lifting, under the inclusion it needs"}
+::: {.proposition #prop:gamma-co-strong-lifting title="Criterion for lifting a subgroup to the stable Enriques group"}
 
-Let $\Gamma_\Co\le\Orth(T_\Co)$ be the monodromy group (@def:group) of the family of unpolarized Coble surfaces, with $\fco=\bD(T_\Co)/\Gamma_\Co$ and periods in one component (@def:gamma-co-groups(1)).
-
-1. Every $\varphi\in\Gamma_\Co$ has exactly one $\gamma\in\Gamma_\En$ with $\gamma\circ\eta=\eta\circ\varphi$ and $\gamma(k)=k$; the assignment $\mathrm{Ext}\colon\Gamma_\Co\to\Gamma_\En$ is a homomorphism, $\mathrm{res}$ is a left inverse of it, and $\eta$ is $\mathrm{Ext}$-equivariant.
-2. $\Gamma_\Co\subseteq\widetilde\Orth^+(T_\Co)$.
-3. Under (1), $\mathrm{Ext}(\Gamma_\Co) = \Stab_{\Gamma_\En}(k)$.
-
-Then (1) and (2) are equivalent, and, given (1), (3) is equivalent to the equality $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ of @conj:gamma-co-stable. The sign half of (2) holds unconditionally, $\Gamma_\Co\subseteq\Orth^+(T_\Co)$ (@lem:monodromy-is-spinor-positive). The other half, $\Gamma_\Co\subseteq\discriminantkernel{T_\Co}$, is the inclusion of @conj:gamma-co-stable, and no other statement of this book asserts it (@rmk:gamma-co-status). So the $\Gamma_\Co$ form of the lifting is equivalent to that inclusion and rests on it; it does not need the equality.
+Let $G\leq\Orth^+(T_\Co)$. Each $\varphi\in G$ extends to an element of $\Gamma_\En$ fixing $k$ if and only if $G\subseteq\widetilde\Orth^+(T_\Co)$. In that case the extensions are unique and form the subgroup $\mathrm{Ext}(G)$. It equals $\Stab_{\Gamma_\En}(k)$ if and only if $G=\widetilde\Orth^+(T_\Co)$.
 :::
 
 ::: {.proof}
 
-Assume (2). Then $\Gamma_\Co$ is a subgroup of $\widetilde\Orth^+(T_\Co)$ and @rmk:coble-strong-lifting-group gives (1), the theorem applying verbatim to every subgroup.
-Conversely, a lift $\gamma\in\Gamma_\En$ of $\varphi$ lies in $\discriminantkernel{\ten}$, and $\gamma\circ\eta = \eta\circ\varphi$ with $\gamma(k)=k$ makes it preserve $\eta(T_\Co)$; the two arguments of the stabilizer (@def:group-orbit) comparison in the proof of @thm:coble-strong-lifting --- on the classes of $A_{E_{10}(2)}$ and on the class $h/2$ --- conclude $\bar\rho_{T_\Co}(\varphi) = \id$ from exactly those three facts. So (1) places $\Gamma_\Co$ in $\discriminantkernel{T_\Co}$, and with the sign of @lem:monodromy-is-spinor-positive it gives (2).
-
-For (3), assume (1). The image $\mathrm{Ext}(\Gamma_\Co)$ is a subgroup of $\Stab_{\Gamma_\En}(k) = \mathrm{Ext}(\widetilde\Orth^+(T_\Co))$ by (2) and @thm:coble-strong-lifting(2), and $\mathrm{Ext}$ is injective (@def:injective-map), so $\mathrm{Ext}(\Gamma_\Co) = \mathrm{Ext}(\widetilde\Orth^+(T_\Co))$ holds exactly when $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$. The reverse implication is that theorem again. (Without (1) the group $\mathrm{Ext}(\Gamma_\Co)$ is not defined, which is why (3) is stated under it.)
+By @thm:coble-strong-lifting(1), (2), restriction to $\eta(T_\Co)$ and extension fixing $k$ are inverse isomorphisms between $\Stab_{\Gamma_\En}(k)$ and $\widetilde\Orth^+(T_\Co)$. Taking subgroups gives the criterion and the equality assertion.
 :::
 
-::: {.corollary #cor:coble-lifting-under-conjecture title="The $\Gamma_\Co$ form of the strong lifting, under the book's own conjecture"}
+::: {.corollary #cor:coble-lifting-under-conjecture title="Lifting on the invariant-marked and unmarked Coble stacks"}
 
-Assume @conj:gamma-co-stable, that is $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$. Then the conclusion of @thm:coble-strong-lifting holds with $\Gamma_\Co$ in place of $\widetilde\Orth^+(T_\Co)$:
-
-1. every $\varphi\in\Gamma_\Co$ has exactly one $\gamma\in\Gamma_\En$ with $\gamma\circ\eta = \eta\circ\varphi$ and $\gamma(k) = k$, and the assignment $\mathrm{Ext}$ is a homomorphism of which $\mathrm{res}$ is a left inverse;
-2. $\mathrm{Ext}(\Gamma_\Co) = \Stab_{\Gamma_\En}(k)$, and $\eta$ is $\mathrm{Ext}$-equivariant.
-
+On the component of the invariant-marked Coble stack of @cor:coble-invariant-marking-monodromy the entire anti-invariant monodromy lifts, with image $\Stab_{\Gamma_\En}(k)$. On the unmarked stack the subgroup admitting this lift is the proper subgroup $\widetilde\Orth^+(T_\Co)$ of $\Gamma_\Co$. On the labelled plane presentation all elements of its monodromy lift.
 :::
 
 ::: {.proof}
 
-By the assumed @conj:gamma-co-stable, $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$, so condition (2) of @prop:gamma-co-strong-lifting holds, and (1) there gives the first clause; clause (3) of the same proposition gives the second, since $\Gamma_\Co$ is now the whole of $\widetilde\Orth^+(T_\Co)$ and the image of $\mathrm{Ext}$ on that group (@def:group) is $\Stab_{\Gamma_\En}(k)$ by @thm:coble-strong-lifting(2). The equivariance is the identity $\mathrm{Ext}(\varphi)\circ\eta = \eta\circ\varphi$.
+The invariant marking gives precisely the stable positive image by @cor:coble-invariant-marking-monodromy. The unmarked image is the full positive group and has nontrivial discriminant action by @thm:gamma-co-is-the-stack-monodromy. The labelled presentation has image contained in the stable positive group by @thm:gamma-co-is-stable(1). Apply @prop:gamma-co-strong-lifting to each group.
 :::
 
-::: {.proposition #prop:cusp-correspondence-descends title="The cusp correspondence from $F_\Co$ to $F_{\En,2}$, under the lifting"}
+::: {.proposition #prop:cusp-correspondence-descends title="Descent of the isotropic-line map to orbit sets"}
 
-Assume @conj:gamma-co-stable. Then $\eta$ induces a well-defined map
-$$\Phi_\Co\colon\Gamma_\Co\backslash\{\text{primitive isotropic vectors of }T_\Co\}\ \longrightarrow\ \Gamma_\En\backslash\{\text{primitive isotropic vectors of }\ten\},$$
-and its image lies in the $\Gamma_{\En,2}$-orbits of $\ten$ as soon as $\mathrm{Ext}(\Gamma_\Co)\subseteq\Gamma_{\En,2}$.
+Let $\Gamma$ be one of the Enriques groups of @def:gamma-co-groups and let $G\le R_\Gamma$. Write $I(T)$ for the set of primitive isotropic lines in $T$. Then the rule $\ell\mapsto\eta(\ell)$ induces a map
+$$G\backslash I(T_\Co)\longrightarrow\Gamma\backslash I(\ten).$$
+For $\Gamma=\Gamma_\En$ it applies to the invariant-marked stack and the labelled presentation. For the full and degree-two Enriques groups it applies to the respective unmarked and degree-two Coble monodromy groups.
 :::
 
 ::: {.proof}
 
-By @cor:coble-lifting-under-conjecture the homomorphism $\mathrm{Ext}\colon\Gamma_\Co\to\Gamma_\En$ exists with $\mathrm{Ext}(\varphi)\circ\eta = \eta\circ\varphi$ for every $\varphi\in\Gamma_\Co$, and $\mathrm{res}\circ\mathrm{Ext} = \id$. So $\eta$ carries the $\Gamma_\Co$-orbit of a primitive (@def:primitive-embedding) isotropic $v$ into the $\mathrm{Ext}(\Gamma_\Co)$-orbit of $\eta(v)$, and the assignment is independent of the representative: replacing $v$ by $\varphi v$ replaces $\eta(v)$ by $\mathrm{Ext}(\varphi)\eta(v)$, which is in the same $\mathrm{Ext}(\Gamma_\Co)$-orbit, $\mathrm{Ext}$ being a homomorphism. The last clause is the definition of the orbits (@def:group-orbit) of a subgroup of $\Orth(\ten)$ containing $\mathrm{Ext}(\Gamma_\Co)$.
+Given $g\in G$, the definition of the restricted stabilizer supplies $\gamma\in\Gamma$ stabilizing $\ZZ k$ with $\eta g=\gamma\eta$ on $T_\Co$. Thus $\eta(g\ell)$ and $\eta(\ell)$ are in the same target orbit. The stated inclusions of monodromy groups follow from @cor:coble-lifting-under-conjecture, @prop:gamma-co-images and @thm:gamma-co-is-the-stack-monodromy.
 :::
 
 ::: {.lemma #lem:meridian-kernel title="The reflections and Eichler transvections lie in the discriminant kernel"}
 
-Let $L$ be an integral lattice, $A_L = L^\vee/L$, and $\rho = \rho_L\colon\Orth(L)\too\Orth(A_L,q_L)$ the discriminant representation of @def:discriminant-rep. Let $\Gamma\leq\Orth(L)$ be generated by elements of the two forms
+Let $L$ be a nondegenerate even integral lattice, $A_L = L^\vee/L$, and $\rho = \rho_L\colon\Orth(L)\too\Orth(A_L,q_L)$ the discriminant representation of @def:discriminant-rep. Let $\Gamma\leq\Orth(L)$ be generated by elements of the two forms
 
 1. a reflection $s_\delta$ in a vector $\delta\in L$ with $\delta^2 = -2$, that is $s_\delta(x) = x - \frac{2(x,\delta)}{(\delta,\delta)}\delta$ (@def:spinor-norm);
 2. an Eichler transvection $\tau_{u,v}(x) \definedas x + (x\cdot u)v - (x\cdot v)u$, for $u,v\in L$ isotropic with $u\cdot v = 0$.
 
 Then $\Gamma\subseteq\ker\rho$.
 
-Consequently, with @lem:monodromy-is-spinor-positive, if the monodromy group (@def:transport-and-monodromy) $\Gamma_\Co$ of the family of unpolarized Coble surfaces is generated by these two forms --- the reflections being the Picard--Lefschetz monodromies of the $(-2)$-walls, for which @prop:monodromy-contains-root-reflections supplies the containment $W(T_\Co)\subseteq\Gamma^{\mathrm{geom}}$, and the transvections the unipotent monodromies at the cusps, whose lattice form is verified in `computations/reports/coble_658-cusp-parabolic-probe-run.txt` --- then $\Gamma_\Co\subseteq\ker\rho_{T_\Co}\cap\Orth^+(T_\Co) = \widetilde\Orth^+(T_\Co)$, which is condition (2) of @prop:gamma-co-strong-lifting, and the $\Gamma_\Co$ form of @thm:coble-strong-lifting follows.
+Both kinds of isometries therefore satisfy the discriminant condition of @prop:gamma-co-strong-lifting. Under the meridian hypothesis of @prop:monodromy-contains-root-reflections the corresponding Picard--Lefschetz operators are among these reflections. Since the unmarked Coble stack has monodromy $\Orth^+(T_\Co)$ with nontrivial discriminant action (@thm:gamma-co-is-the-stack-monodromy), these two kinds alone cannot generate its monodromy.
 :::
 
 ::: {.proof}
@@ -353,7 +340,7 @@ Each generator therefore acts trivially on $A_L = L^\vee/L$, and $\rho$ is a hom
 
 ::: {.lemma #lem:coble-discriminant-actions-conjugate title="The two discriminant actions of an isometry of the K3 lattice"}
 
-Let $M = \generators{e_0,\dots,e_{10}}\cong\generators{2}\oplus\generators{-2}^{\oplus 10}$ be the Picard lattice generated by the classes of $E_0,\dots,E_{10}$ on the K3 double cover (@not:coble-ten-point-blowup) of a Coble surface (@def:coble-surface), and $N\definedas M^{\perp\lkt}$ its orthogonal complement in $\lkt = \latII_{3,19}$, so that $N\cong T_\Co$ and $q_N\cong -q_M$ [@DK13, (3.6); @Nik80, Cor. 1.6.2]; in particular $M$ is primitive (@def:primitive-embedding) in $\lkt$ and $A_M\cong(\ZZ/2)^{11}$. Since $\lkt$ is unimodular, the gluing subgroup of $M\oplus N$ is the graph of an isometry $\gamma\colon A_M\isoto A_N(-1)$ (@cor:lifting-unimodular). Let $g\in\Orth(\lkt)$ preserve $M$ and $N$, with $\psi\definedas\restrictionof{g}{M}$, $\varphi\definedas\restrictionof{g}{N}$ and $\bar\psi\definedas\rho_M(\psi)$, $\bar\varphi\definedas\rho_N(\varphi)$. Then
+Choose the ten-point plane presentation of @not:coble-ten-point-blowup for a Coble surface (@def:coble-surface). On its K3 double cover let $M=\generators{e_0,\dots,e_{10}}\cong\generators{2}\oplus\generators{-2}^{\oplus 10}$ be the invariant lattice in the resulting plane frame, and let $N\definedas M^{\perp\lkt}$ be its orthogonal complement in $\lkt = \latII_{3,19}$, so that $N\cong T_\Co$ and $q_N\cong -q_M$ [@DK13, (3.6); @Nik80, Cor. 1.6.2]; in particular $M$ is primitive (@def:primitive-embedding) in $\lkt$ and $A_M\cong(\ZZ/2)^{11}$. Since $\lkt$ is unimodular, the gluing subgroup of $M\oplus N$ is the graph of an isometry $\gamma\colon A_M\isoto A_N(-1)$ (@cor:lifting-unimodular). Let $g\in\Orth(\lkt)$ preserve $M$ and $N$, with $\psi\definedas\restrictionof{g}{M}$, $\varphi\definedas\restrictionof{g}{N}$ and $\bar\psi\definedas\rho_M(\psi)$, $\bar\varphi\definedas\rho_N(\varphi)$. Then
 $$\bar\varphi = \gamma\,\bar\psi\,\gamma^{-1}.$$
 A subgroup $G\subseteq\Orth(\lkt)$ preserving both summands therefore acts trivially on $A_N = A_{T_\Co}$ exactly when it acts trivially on $A_M$. In particular an isometry carrying $e_i$ to $e_j$ with $i\neq j$ moves the class of $\tfrac12 e_i$, and so acts nontrivially on $A_{T_\Co}$.
 :::
@@ -365,16 +352,16 @@ The isometry $g$ preserves $M\oplus N$ and $\lkt$, hence preserves the gluing su
 
 ::: {.corollary #cor:gamma-co-lifting-criterion title="What decides the lifting for the monodromy group"}
 
-Let $X\to\PP^2$ be the double cover branched along the plane sextic, a K3 surface on which the classes $e_0,\dots,e_{10}$ of $M = \generators{2}\oplus\generators{-2}^{\oplus 10}$ are the classes of $E_0,\dots,E_{10}$, with $N_X = M_X^{\perp\lkt}\cong T_\Co$ and $q_{N_X} = -q_M$ [@DK13, (3.6)]. The period lattice of the Coble moduli problem is that $N_X$ [@DK13, Prop. 3.2], and $M$ and $N$ are the two summands of one $H^2$ of one family, so the monodromy of the family of Coble surfaces --- the image of $\pi_1$ of its base, which maps to that of the base of the family of K3 double covers --- acts on $M$ as well as on $T_\Co$. Then
-$$\Gamma_\Co\subseteq\discriminantkernel{T_\Co}\quad\Longleftrightarrow\quad\text{the monodromy acts trivially on }A_M,$$
-which by @rmk:coble-strong-lifting-group is one of the two conditions for the strong lifting to hold for $\Gamma_\Co$. $A_M$ is generated by the classes of $\tfrac12 e_0,\dots,\tfrac12 e_{10}$, so the condition holds exactly when every loop of the family fixes each of those eleven classes, and it fails as soon as a loop exchanges two of the ten exceptional classes $e_1,\dots,e_{10}$; such a loop refutes the $\Gamma_\Co$ form of the lifting (@lem:coble-discriminant-actions-conjugate). The other condition, the sign, needs no hypothesis: $\Gamma_\Co\subseteq\Orth^+(T_\Co)$ (@lem:monodromy-is-spinor-positive). So, on the presentation of the moduli problem that [@DK13, Prop. 3.2] uses, the $\Gamma_\Co$ form of @thm:coble-strong-lifting holds exactly when the monodromy acts trivially on $A_M$: that is condition (2) of @prop:gamma-co-strong-lifting, which is there shown equivalent to the $\Gamma_\Co$ form of the theorem.
+Fix the plane frame of the K3 double cover in @lem:coble-discriminant-actions-conjugate, with invariant lattice $M=\generators{e_0,\dots,e_{10}}$ and anti-invariant lattice $N=M^{\perp\lkt}\cong T_\Co$ [@DK13, (3.6)]. For a Coble family over a connected base $B$, let $G_B$ be its monodromy on $N$. Then
+$$G_B\subseteq\discriminantkernel{T_\Co}\quad\Longleftrightarrow\quad\text{the monodromy on }A_M\text{ is trivial}.$$
+Indeed the two discriminant actions are conjugate by the gluing anti-isometry. Since the classes $[e_i/2]$ generate $A_M$, the criterion holds precisely when transport along every loop fixes each of those classes. A loop interchanging exceptional classes $e_i$ and $e_j$ acts nontrivially. Together with @lem:monodromy-is-spinor-positive this gives the criterion of @prop:gamma-co-strong-lifting for $G_B$.
 :::
 
-::: {.remark #rmk:coble-lifting-criterion-not-lattice title="What the criterion is not decided by"}
+::: {.remark #rmk:coble-lifting-criterion-not-lattice title="Restriction on the period mirror and transport in a family"}
 
-The condition of @cor:gamma-co-lifting-criterion is not a question about the lattices. The discriminant representation $\rho_{T_\Co}$ is onto (@thm:two-elementary-surjectivity), so for every $\psi\in\Orth(M)$ there is $\varphi\in\Orth(T_\Co)$ with $\bar\varphi\gamma = \gamma\bar\psi$ on the gluing subgroup, and by @cor:lifting-unimodular the pair extends to an isometry of $L_{\mathrm{K3}}$; in particular every permutation of the ten exceptional classes is realised by an isometry of $L_{\mathrm{K3}}$. What is at issue is whether it is realised by an element of the monodromy group $\Gamma_\Co$. So the criterion is decided by the family, not by exhibiting an isometry of the lattices.
+By @thm:two-elementary-surjectivity and @cor:lifting-unimodular, every permutation of the ten exceptional classes extends to an isometry of the K3 lattice. Realization by a loop is a statement about the base of the family. For instance, on a base with the ten nodes named, their exceptional classes have trivial permutation monodromy (@thm:gamma-co-is-stable).
 
-Nor is it decided by functoriality from the Enriques family, which is the second tempting shortcut. @def:gamma-co-groups(1) says that the family of unpolarized Enriques surfaces "induces this family and its local system", and @prop:gamma-co-images(1) identifies the image of $\Stab_{\Gamma_\En}(\delta)$ in $\Orth(T_\Co)$ with $\widetilde\Orth^+(T_\Co)$; together those read as if $\Gamma_\Co$ were the restriction of $\Gamma_\En$ and lay inside $\widetilde\Orth^+(T_\Co)$ in two lines. The inference is not available, because what the Enriques family induces is the pair of local systems $T_\Co = \delta^{\perp\ten}\subset\ten$ and not an inclusion of bases. The periods of Coble surfaces lie in the Heegner divisor $\mch_{-2}$, which is the image of the map of @thm:normalization, while the moduli space of Enriques surfaces is the complement $(\bD(\ten)\sm\mch_{-2})/\Orth(\ten)$ of [@DK13, §3], where $\mch_{-2}$ is the Heegner divisor (3.2) and $\ten\cong U\oplus\mathbb E(2)$ the lattice (3.3) of that section. The Coble moduli is thus a stratum that the Enriques moduli excludes, there is no map $\pi_1$ of the one base into that of the other, and no containment of $\Gamma_\Co$ in the image of $\Stab_{\Gamma_\En}(\delta)$ follows. That image is what a monodromy would have to lie in if it were known to come from the Enriques side; it is not what $\Gamma_\Co$ is known to be.
+On the arithmetic root mirror, restriction of the equivariant Enriques lattice to $k^\perp$ gives the local system with action $R_\Gamma$. The smooth Enriques period locus omits this mirror [@DK13, §3, (3.2)]. For Coble families the anti-invariant local system comes from the cohomology of the K3 cover with its involution (@prop:coble-enriques-maps-and-the-vhs). Its monodromy on each stack is computed by transport around loops in that stack (@thm:gamma-co-is-the-stack-monodromy, @cor:coble-invariant-marking-monodromy).
 :::
 
 The same argument applies to the other gluing of the Coble lattice, $S_\Co\oplus T_\Co\subset\lkt$: $\lkt$ is unimodular and the index is $2^{11} = \abs{A_{S_\Co}} = \abs{A_{T_\Co}}$, so the gluing subgroup is the graph of an anti-isometry $A_{S_\Co}\isoto A_{T_\Co}(-1)$ (@cor:lifting-unimodular), and a subgroup of $\Orth(\lkt)$ preserving both summands acts trivially on $A_{T_\Co}$ exactly when it acts trivially on $A_{S_\Co}$. The monodromy of the one-node construction lands in the stabilizer of the quadruple $(S_\Co,S_{\mathrm{dP}},H,\alpha)$ (@cor:construction-monodromy), so it preserves both summands, and the criterion for that family can be read on either side.
@@ -424,23 +411,20 @@ The orbit (@def:group-orbit) map $\Phi$ is injective (@def:injective-map): if $v
 By @prop:cusp-map-separates-mod-two, $v\equiv v'\pmod{2T_\Co}$, so $\tfrac12 v - \tfrac12 v'\in T_\Co$ and the classes $v^* = \tfrac12 v + T_\Co$ and $v'^*$ of @prop:coble-primitive-isotropic-classes are equal. By @thm:coble-zero-cusp-count, parts 1 and 2, the map $\widetilde\Orth^+(T_\Co) v\mapsto v^*$ is injective. Hence $\widetilde\Orth^+(T_\Co) v = \widetilde\Orth^+(T_\Co) v'$.
 :::
 
-::: {.proposition #prop:cusp-map-onto-criterion title="Surjectivity of $\Phi$ is an orbit count per class"}
+::: {.proposition #prop:cusp-map-onto-criterion title="Stable Coble cusps over the divisibility-two Enriques lines"}
 
-$\Phi$ is onto the divisibility-$2$ locus if and only if every nonzero isotropic class (@def:descent-class) of $A_{\ten}$ carries exactly one $\Gamma_\En$-orbit of primitive (@def:primitive-embedding) isotropic vectors (@def:isotropic-subspace) of divisibility $2$.
+The stable cusp map $\Phi$ is a bijection onto the divisibility-$2$ cusps of $\bD(\ten)/\Gamma_\En$. Its composite with passage to the full Enriques quotient has a single image point.
 :::
 
 ::: {.proof}
 
-Source and image. The source of $\Phi$ has $527$ orbits (@def:group-orbit) (@thm:coble-zero-cusp-count(2)) and $\Phi$ is injective (@def:injective-map) (@prop:cusp-map-injective), so the image has $527$ elements. By @prop:cusp-map-surjective-on-classes the classes of those $527$ vectors are exactly the $527$ nonzero isotropic classes of $A_{\ten}$; hence the image meets each such class in exactly one $\Gamma_\En$-orbit.
+By @prop:cusp-map-surjective-on-classes, $v\mapsto[\eta(v)/2]$ identifies the stable Coble line orbits with the nonzero isotropic classes of $A_{\ten}$. For the discriminant kernel in $\Orth(\ten)$, @thm:sterk-line-fibres identifies the divisibility-$2$ line orbits with the same classes. Passing to its positive subgroup $\Gamma_\En$ preserves these line orbits by @thm:enriques-spinor-orbit-agreement. In both lattices $-\mathrm{id}$ preserves the component of the period domain and acts trivially on the exponent-two discriminant group, so the two primitive generators of a line define the same stable orbit. Under the two identifications $\Phi$ sends each divided class to the corresponding Enriques class. In the full group the primitive isotropic lines of divisibility $2$ form one orbit [@Ste91, Prop. 4.5].
 
-The criterion. Every divisibility-$2$ vector has a nonzero isotropic class, and the class of a vector is invariant under $\Gamma_\En$, which acts trivially on $A_{\ten}$. So the divisibility-$2$ locus is the disjoint union, over the $527$ classes, of the orbits lying in each. The image already contributes one orbit to every class, so $\Phi$ is onto exactly when no class carries a second one, that is exactly when each class carries exactly one.
 :::
 
 ::: {.proposition #prop:cusp-map-surjective-on-classes title="The divisibility-$2$ classes are exactly the classes of the image of $\Phi$"}
 
 The classes of the vectors in the image of $\Phi$ are exactly the $527$ nonzero isotropic classes (@def:descent-class) of $A_{\ten}$: $v\mapsto[\eta(v)/2]$ is a bijection from the $\widetilde\Orth^+(T_\Co)$-orbits of primitive (@def:primitive-embedding) isotropic vectors (@def:isotropic-subspace) of $T_\Co$ onto them.
-
-The statement is about classes and not about orbits (@def:group-orbit). Whether every divisibility-$2$ $\Gamma_\En$-orbit meets $\eta(T_\Co)$ --- equivalently, whether every divisibility-$2$ $0$-cusp of $\fen$ lies over a Coble $0$-cusp --- is a question about the orbits of $\Gamma_\En$ and is not implied by an equality of discriminant classes; it is recorded as open in @sec-enriques-coble-correspondence.
 :::
 
 ::: {.proof}
@@ -453,7 +437,7 @@ The statement is about classes and not about orbits (@def:group-orbit). Whether 
 
 *There are exactly $527$.* $|A_{\ten}| = 2^{10}$ because $\det\ten = 2^{10}$ (@lem:primitive_embedding_eta's lattice) and the count of nonzero isotropic classes of $A_{\ten}$ is $527$, exactly as for $T_\Co$; both counts are computed from the Gram matrices in `computations/reports/coble_658-image-census-probe-run.txt`, the $T_\Co$ count reproducing the $527$ of @thm:coble-zero-cusp-count(2).
 
-A set of $527$ distinct classes inside a set of $527$ is the whole set. This proves the statement about classes; it says nothing about which $\Gamma_\En$-orbits those classes come from, which is the open question named in the proposition.
+Thus the image realizes every nonzero isotropic discriminant class.
 :::
 
 So $\Phi$ embeds the $527$ $0$-cusps of the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ (@thm:coble-zero-cusp-count(2), one $0$-cusp per nonzero isotropic class, the fibre over one class being a single orbit, by @thm:coble-integral-lifting-fibre(1), (2)) into the set of $\Gamma_\En$-orbits of primitive isotropic vectors of divisibility $2$ in $\ten$. The orbit of such a vector $\tilde w$ is in the image exactly when some $\gamma\in\Gamma_\En$ carries $\tilde w$ into $\eta(T_\Co)=k^{\perp\ten}$, that is, when
@@ -461,4 +445,4 @@ $$\beta_\ten\bigl(\tilde w,\ \gamma^{-1}k\bigr) = 0$$
 for some $\gamma\in\Gamma_\En$: when $\tilde w$ is orthogonal to a $(-2)$-vector in the $\Gamma_\En$-orbit of $k$.
 For example, by @lem:stable-orthogonal-not-transitive the isotropic generators $e'$ and $f'$ of the $U(2)$ summand lie in different $\widetilde\Orth^+(T_\Co)$-orbits, and $[\tilde e']\neq[\tilde f']$.
 
-Every period of $T_\Co$ is orthogonal to $k$, so the image of $\fco$ in $\fen = \bD(\ten)/\Gamma_\En$ lies in the Heegner divisor $\mch_{-2}/\Gamma_\En$ (@thm:normalization). The cusp diagram of [@AEGS25, Fig. 3], with the two $0$-cusps $(10,10,0)_1$, $(10,8,0)_1$ and the two $1$-cusps $(8,8,0)_0$, $(8,6,0)_0$, is the diagram of $F^K_\En = \bD(\ten)/\Gamma^K_\En$.
+For the stable Enriques group, the source of the mirror normalization is $\bD(T_\Co)/R_{\Gamma_\En}$, with $R_{\Gamma_\En}=\widetilde\Orth^+(T_\Co)$ (@prop:gamma-co-images). Passing to $F^K_\En$ identifies the divisibility-$2$ cusps in its image. The two line orbits in [@AEGS25, Fig. 3] belong to this full Enriques quotient.

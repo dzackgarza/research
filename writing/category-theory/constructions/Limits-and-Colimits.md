@@ -48,6 +48,19 @@ Dually, a *colimit* of $D$ is a representation of $\operatorname{Cone}(D,-)$, eq
 Limits of $D$ are unique up to a unique isomorphism compatible with the limit cones, since terminal objects are.
 :::
 
+::: {.question #qst:colimit-functor-model title="What turns objectwise universal constructions into one functor?"}
+
+Fix the diagram shape $J$. Two constructions of the homotopy colimit agree up to equivalence on each diagram. What compares these choices as the diagram varies?
+
+In an ordinary category, choose a universal cocone $\eta_D\colon D\to\Delta C_D$ for each $D$. A natural transformation $u\colon D\to E$ gives the cocone $\eta_Eu$. Universality gives a unique arrow $C_u\colon C_D\to C_E$ with $\Delta(C_u)\eta_D=\eta_Eu$. The identity and composition laws follow by applying the same uniqueness to $\eta_D$ and to $\eta_Fvu$. Two choices of universal cocones consequently give a unique natural isomorphism compatible with their legs.
+
+In an $\infty$-category admitting $J$-shaped colimits, the corresponding structure is the adjunction
+$
+\adj{\operatorname{Fun}(J,\mcc)}{\mcc}{\operatorname{colim}_J}{\Delta}.
+$
+Its mapping-space equivalence is natural in both the diagram and the target. A chosen colimit with its cocone has a contractible space of compatible universal choices. To obtain a strict functor between specified categories presenting the homotopy theory, which representative of the induced map does the construction give for each arrow? How does it preserve composition on the nose, and how does its localization compare with the left adjoint? A list of representatives of the values leaves those questions open [@Lur18c, Def. 7.1.1.18, Tag 05Q9].
+:::
+
 ## Named shapes {#sec-named-shapes}
 
 Each standard construction is the limit or colimit of a diagram of a specific shape [@Rie16, Definitions 3.1.9–3.1.23; @Mac98, §III.3–4].
@@ -69,9 +82,6 @@ A cone over a parallel pair $f,g\colon A\to B$ is determined by a single morphis
 
 For morphisms $f\colon X\to Z$ and $g\colon Y\to Z$, the limit of the diagram they form has apex written $X\times_ZY$ and legs (@def:cone) $p,q$, displayed by the cartesian square
 
-```{.tikz}
-%%| filename: general-pullback-square
-%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
 \begin{tikzcd}
 X\times_Z Y
   \arrow[r,"q"]
@@ -80,7 +90,6 @@ X\times_Z Y
 Y \arrow[d,"g"]\\
 X \arrow[r,"f"'] & Z
 \end{tikzcd}
-```
 
 The leg at $Z$ is the common composite $fp=gq$, so a cone (@def:cone) with apex $W$ is a pair $(h\colon W\to X,\;k\colon W\to Y)$ with $fh=gk$, and the universal property is the bijection
 $$
@@ -91,9 +100,6 @@ $$
 natural in $W$ [@Rie16, Definition 3.1.15].
 The dual construction, the colimit (@def:limit) of $X\from Z\to Y$, is the pushout $X\amalg_ZY$, displayed by the cocartesian square
 
-```{.tikz}
-%%| filename: general-pushout-square
-%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
 \begin{tikzcd}
 Z \arrow[r,"g"] \arrow[d,"f"'] &
 Y \arrow[d,"i_Y"]\\
@@ -101,7 +107,7 @@ X \arrow[r,"i_X"']
   \arrow[ur,phantom,very near end,"\ulcorner"] &
 X\amalg_Z Y
 \end{tikzcd}
-```
+
 :::
 
 ## Shape categories {#sec-shape-categories}

@@ -7,11 +7,22 @@ All surfaces are over $\CC$.
 A **smooth projective surface** is a nonsingular projective variety (@def:projective-variety) of dimension $2$ over $\CC$ [@Har77, Ch. V, Sect. 1].
 :::
 
-::: {.definition #def:complete-linear-system title="Complete linear system" defines="complete linear system; base point of a linear system; base-point-free linear system"}
+::: {.definition #def:complete-linear-system title="Complete linear system" defines="complete linear system"}
 
 Let $X$ be a smooth projective variety (@def:projective-variety) and $D_0$ a divisor on $X$.
 The **complete linear system** $|D_0|$ is the set of all effective divisors linearly equivalent to $D_0$ [@Har77, Ch. II, Sect. 7, definition before Lem. 7.8].
-A point $P\in X$ is a **base point** of a linear system if $P$ lies in the support of every divisor of the system, and a linear system is **base-point-free** if it has no base point [@Har77, Ch. II, Sect. 7, Lem. 7.8].
+:::
+
+::: {.definition #def:linear-system-divisors title="Linear system of divisors" defines="linear system of divisors; linear system"}
+A *linear system* on a smooth projective variety $X$ is a projective linear subspace of a complete linear system (@def:complete-linear-system). Its members are the zero divisors of nonzero sections in a fixed vector subspace of $H^0(X,\OO_X(D_0))$, up to scalar [@Har77, Ch. II, Sect. 7, linear systems].
+:::
+
+::: {.definition #def:base-point-linear-system title="Base point of a linear system" defines="base point of a linear system"}
+A *base point* of a linear system (@def:linear-system-divisors) on $X$ is a point $P\in X$ in the support of every divisor of the system [@Har77, Ch. II, Sect. 7, Lem. 7.8].
+:::
+
+::: {.definition #def:base-point-free-linear-system title="Base-point-free linear system" defines="base-point-free linear system"}
+A linear system is *base-point-free* if it has no base point (@def:base-point-linear-system) [@Har77, Ch. II, Sect. 7, Lem. 7.8].
 :::
 
 ::: {.definition #def:pullback-of-divisor title="Pullback of a divisor" defines="pullback of a divisor; inverse image of a divisor"}
@@ -21,14 +32,42 @@ The inverse image of an invertible sheaf gives a homomorphism $f^*\colon\Pic X\t
 If $f$ is surjective, the **pullback (@def:pullback-square)** $f^*D$ of a divisor $D$ on $X$ is the divisor on $S$ with $f^*\OO_X(D)=\OO_S(f^*D)$ [@Bea96, Fact I.1].
 :::
 
+::: {.definition #def:degree-line-bundle-curve title="Degree of a line bundle on a proper curve" defines="degree of a line bundle on a proper curve"}
+For a proper curve $C$ over a field and an invertible sheaf $L$ on $C$, its *degree* is $\deg L=\chi(C,L)-\chi(C,\OO_C)$ [@stacks-0AYR].
+:::
+
 ::: {.definition #def:intersection-number-divisor-curve title="Intersection number of a divisor and a curve" defines="intersection number of a divisor and a curve; $D\cdot C$"}
 
 Let $S$ be a smooth projective surface (@def:smooth-projective-surface), $C\subset S$ a nonsingular irreducible curve, and $D$ a divisor on $S$.
-The **intersection number** $D\cdot C$ is the degree (@def:graded-object) of the restriction of the line bundle $\OO_S(D)$ to $C$:
+The *intersection number* $D\cdot C$ is the degree (@def:degree-line-bundle-curve) of the restriction of the line bundle $\OO_S(D)$ to $C$:
 $$
 D\cdot C=\deg\bigl(\OO_S(D)|_C\bigr)
 $$
 [@Bea96, Lem. I.6; @Har77, Ch. V, Lem. 1.3].
+:::
+
+::: {.lemma #lem:intersection-linear-equivalence title="Intersection with a curve respects linear equivalence"}
+On a smooth projective surface, linearly equivalent divisors $D$ and $D'$ have equal intersection numbers (@def:intersection-number-divisor-curve) with any nonsingular irreducible curve $C$.
+:::
+
+::: {.proof}
+Linear equivalence gives $\OO_S(D)\cong\OO_S(D')$ [@Har77, Ch. II, Prop. 6.13]. Their restrictions to $C$ are isomorphic and hence have the same degree (@def:degree-line-bundle-curve). Apply @def:intersection-number-divisor-curve.
+:::
+
+::: {.lemma #lem:intersection-additive-divisor title="Additivity in the divisor"}
+Fix a nonsingular irreducible curve $C$ on a smooth projective surface $S$. The map $D\mapsto D\cdot C$ (@def:intersection-number-divisor-curve) is a homomorphism from the divisor group of $S$ to $\ZZ$.
+:::
+
+::: {.proof}
+The identity $\OO_S(D+E)\cong\OO_S(D)\otimes\OO_S(E)$ [@Har77, Ch. II, Prop. 6.13] persists after restriction to $C$. Degree (@def:degree-line-bundle-curve) is additive on tensor products of invertible sheaves [@stacks-0AYX]. Apply @def:intersection-number-divisor-curve.
+:::
+
+::: {.lemma #lem:intersection-disjoint-curves title="Intersection of disjoint curves"}
+Let $B,C$ be disjoint nonsingular irreducible curves on a smooth projective surface $S$. Then $B\cdot C=0$ (@def:intersection-number-divisor-curve).
+:::
+
+::: {.proof}
+The canonical section of $\OO_S(B)$ vanishes precisely on $B$ [@stacks-01X0], so its restriction to $C$ trivializes $\OO_S(B)|_C$. The trivial line bundle has degree zero by @def:degree-line-bundle-curve. Apply @def:intersection-number-divisor-curve.
 :::
 
 ::: {.definition #def:strict-transform title="Strict transform" defines="strict transform; proper transform"}
@@ -40,7 +79,7 @@ The **strict transform** $\widetilde Y$ of $Y$ is the closure of $\pi^{-1}(Y\set
 ::: {.definition #def:resolution-of-base-points-of-a-pencil title="Resolution of the base points of a pencil" defines="resolution of base points of a pencil; elimination of indeterminacy"}
 
 Let $P$ be a pencil on a smooth projective surface (@def:smooth-projective-surface), that is, a linear system of dimension $1$ with no fixed component, defining a rational map $\varphi\colon S\dashrightarrow\PP^1$.
-A **resolution of the base points (@def:complete-linear-system)** of $P$ is a composite $\eta\colon S'\to S$ of finitely many blow-ups at base points, together with a morphism $f\colon S'\to\PP^1$ such that $f=\varphi\circ\eta$ [@Bea96, Thm. II.7].
+A **resolution of the base points (@def:base-point-linear-system)** of $P$ is a composite $\eta\colon S'\to S$ of finitely many blow-ups at base points, together with a morphism $f\colon S'\to\PP^1$ such that $f=\varphi\circ\eta$ [@Bea96, Thm. II.7].
 :::
 
 ::: {.definition #def:degree-of-plane-pencil title="Degree of a pencil of plane curves" defines="degree of a pencil of curves; pencil of plane curves of degree $d$"}

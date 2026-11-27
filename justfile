@@ -27,6 +27,11 @@ docs-assets:
     cp --remove-destination ~/.pandoc/templates/css/mathjax-macros.html writing/.assets/mathjax-macros.html
     python3 scripts/docs_figures.py
 
+[doc("Rebuild the Outstanding Work page from the book's numbered questions and conjectures")]
+outstanding-work: docs-assets
+    cd writing/.book && uvx --from quarto-cli quarto render --to html
+    @echo "writing/.book/_site/outstanding-work.html"
+
 [doc("Rebuild the book and refresh the local static copy at http://lattice-research.localhost/")]
 docs-deploy: docs-check
     @just docs-publish
@@ -125,6 +130,11 @@ book-unused:
 [doc("Count the numbered blocks by kind and part of the book")]
 book-stats:
     @just book stats
+
+[doc("Export the book's requirements in dependency order. Pass block IDs for a focused packet, --book-tasks for unresolved source edits, or --json for records.")]
+[positional-arguments]
+book-catalogue *ARGS:
+    @just book catalogue "$@"
 
 [doc("Every citation that names no result (a whole work, a chapter, a section, a page), in statements, proofs and prose, with its sentence and block, grouped by work; read each and keep it as attribution or tighten it to the result it uses. Report: .tmp/citation-audit.md")]
 docs-citation-audit:

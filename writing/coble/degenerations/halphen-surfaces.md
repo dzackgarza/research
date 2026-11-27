@@ -61,9 +61,33 @@ Changing the homology basis conjugates every displayed matrix. In
 particular, the matrices are representatives, not canonical matrices
 attached to the fibre.
 
+::: {.question #qst:genus-one-monodromy-types title="How does the genus-one degeneration classification read directly from $M\in\mathrm{SL}_2(\ZZ)$?"}
+Let $M\in\mathrm{SL}_2(\ZZ)$ be the local monodromy around the puncture. After a base change $t=u^e$ making $M^e$ unipotent, what is the nilpotency index of $N=\log(M^e)$? Within each resulting type, which powers of the modular generators $S$, $ST$, or $T$, with which central sign, represent the integral conjugacy class of the original $M$?
+:::
+
+::: {.example #ex:genus-one-monodromy-powers title="The Kodaira matrices as powers of modular generators"}
+Use the homology basis and loop orientation of the Kodaira table above. Put
+$$
+S=\begin{pmatrix}0&-1\\1&0\end{pmatrix},\qquad
+T=\begin{pmatrix}1&1\\0&1\end{pmatrix},\qquad
+R=ST=\begin{pmatrix}0&-1\\1&1\end{pmatrix}.
+$$
+Multiplication gives $S^2=R^3=-I$ and $R^{-1}=\left(\begin{smallmatrix}1&1\\-1&0\end{smallmatrix}\right)$. Substitution in the Kodaira table gives the following representatives on the first homology of the elliptic fibre. For comparison, in a Kulikov degeneration of K3 surfaces the nilpotency indices one and two on second cohomology characterize Types I and II, respectively (@def:kulikov-types).
+
+| Nilpotency index of $N$ | Representative of $M$ | Kodaira fibre, in the same order |
+| --- | --- | --- |
+| $1$ | $I,\ -I$ | $I_0,\ I_0^*$ |
+| $1$ | $S^{-1},\ S$ | $III,\ III^*$ |
+| $1$ | $R^{-1},\ R$ | $II,\ II^*$ |
+| $1$ | $R^{-2},\ R^2$ | $IV,\ IV^*$ |
+| $2$ | $T^n,\ -T^n$ for $n>0$ | $I_n,\ I_n^*$ |
+
+For finite-order $M$, take $e$ equal to its order. Then $N=0$ has nilpotency index one. For $M=\pm T^n$, write $E=T-I$. Since $E^2=0$, one has $\log(T^n)=nE$ and $\log((-T^n)^2)=2nE$. Both have nilpotency index two. Before base change, the trace distinguishes the signs. The index of $(M\mp I)\ZZ^2$ in its saturation is $n$ for $M=\pm T^n$, so integral conjugacy also preserves the shear parameter.
+:::
+
 ::: {.proposition #prop:terminal-coble-halphen-blowup title="Terminal Coble surfaces as blowups of Halphen surfaces"}
 
-Let $V$ be a terminal (@def:terminal-coble-surface) Coble surface of K3 type (@def:coble-surface).
+Let $V$ be a terminal (@def:terminal-coble-surface) Coble surface of K3 type (@def:terminal-coble-k3-type).
 Then $V$ is isomorphic to one of the following:
 
 1. the blowup of a Halphen surface of index (@def:index) $1$ at singular points of two simple reduced fibres;
@@ -76,10 +100,10 @@ In case 2 the fibre is of type $\tilde A_k$ with $k\leq8$, and in case 1 the two
 
 ::: {.proposition #prop:coble-sextic-halphen-pencil title="The Halphen pencil of a Coble sextic"}
 
-Let $V$ be a terminal (@def:terminal-coble-surface) Coble surface (@def:coble-surface) of K3 type with $n = 1$, and let $W = V(F_6)$ be the irreducible plane sextic of @prop:coble-sextic-model, with $10$ ordinary nodes or cusps, possibly infinitely near.
+Let $V$ be a terminal (@def:terminal-coble-surface) Coble surface of K3 type (@def:terminal-coble-k3-type) with $n = 1$, and let $W = V(F_6)$ be the irreducible plane sextic of @prop:coble-sextic-model, with $10$ ordinary nodes or cusps, possibly infinitely near.
 Choose $9$ of the $10$ double points of $W$.
 Then a plane cubic $V(F_3)$ passes through them, and the pencil $V(\lambda F_6 + \mu F_3^2)$ is a Halphen pencil of index (@def:index) $2$.
-The minimal resolution (@def:minimal-resolution-of-surface-singularity) of its base points (@def:complete-linear-system) is a Halphen surface of index $2$, and $V$ is the blowup of a singular point of an irreducible simple fibre of this pencil.
+The minimal resolution (@def:minimal-resolution-of-surface-singularity) of its base points (@def:base-point-linear-system) is a Halphen surface of index $2$, and $V$ is the blowup of a singular point of an irreducible simple fibre of this pencil.
 
 Let $F$ be a reducible simple fibre of the pencil.
 The blowup of a singular point of $F$ is a non-terminal Coble surface of K3 type with $n = 1$, whose anti-bicanonical curve is the proper transform (@def:strict-transform) of $F$.
@@ -89,7 +113,7 @@ The blowup of the singular points of this curve is a terminal Coble surface of K
 ::: {.proposition #prop:terminal-coble-deformations title="Deformations of terminal Coble surfaces"}
 
 Let $k$ be the base field, of characteristic $p\neq2$.
-Let $V$ be a terminal (@def:terminal-coble-surface) Coble surface (@def:coble-surface) of K3 type with $K_V^2 = -n$ and anti-bicanonical curve $C$.
+Let $V$ be a terminal (@def:terminal-coble-surface) Coble surface of K3 type (@def:terminal-coble-k3-type) with $K_V^2 = -n$ and anti-bicanonical curve $C$.
 Then
 $$
 h^i(\Theta_{V/k}) = \begin{cases} 10 + 2n & i = 1, \\ 0 & \text{otherwise} \end{cases}

@@ -265,7 +265,8 @@ $$
 \iota^*b=0.
 $$
 Equivalently, there are unique lifts $\ell_{\iota}^{\mathrm L}$ and $\ell_{\iota}^{\mathrm R}$ in the commuting triangles
-```tikzcd
+
+\begin{tikzcd}
 & {}^{\perp_b}T \arrow[d,"\kappa_{\iota}^{\mathrm L}"]
 &
 & T^{\perp_b} \arrow[d,"\kappa_{\iota}^{\mathrm R}"] \\
@@ -274,7 +275,8 @@ T \arrow[ur,dashed,"\ell_{\iota}^{\mathrm L}"] \arrow[r,"\iota"']
 &
 T \arrow[ur,dashed,"\ell_{\iota}^{\mathrm R}"] \arrow[r,"\iota"']
 & M
-```
+\end{tikzcd}
+
 so that
 $$
 \kappa_{\iota}^{\mathrm L}\circ\ell_{\iota}^{\mathrm L}=\iota,

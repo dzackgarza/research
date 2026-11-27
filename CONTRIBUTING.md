@@ -1292,11 +1292,17 @@ class there before using it.
 
 ### Citations (`CITE-*`)
 
-- Zotero is the source of truth. The global bibliography is exported to
+- Choose each source for its mathematical relevance to the exact claim and
+  for the credit owed to the source of the result or argument. Whether a
+  work is already in Zotero has zero weight in this choice, even as a
+  tie-breaker.
+- Zotero owns the bibliographic record. The global bibliography is exported to
   `~/.pandoc/bib/references.bib` and copied into `writing/.book/references.bib`
   by the build. Cite with a Better BibTeX key: `[@OR23, Definition 1.5.1]`.
   Add a missing work to Zotero first, by DOI or arXiv identifier, through the
-  `zotero` skill.
+  `zotero` skill. Cite the selected work through its exported key even when
+  its author is named in the sentence. An author name, title, year, or URL
+  in prose cannot stand in for that citation.
 - `writing/coble/coble_supplement.bib` holds only entries with no global
   counterpart yet; the work still belongs in Zotero.
 - The docs gate rejects an inline URL to arXiv, a DOI, or nLab (`CITE-2`).
@@ -1305,6 +1311,9 @@ class there before using it.
   `[Tag 02LS]`.
 
 ### Source-grounded mathematics and original work
+
+For worked examples of choosing a useful formulation, tracking choices, and
+deciding which inference needs proof, see [Mathematical taste and method](docs/mathematical-method.md).
 
 Before inserting a mathematical definition, hypothesis, criterion, theorem,
 or identification into a research artifact, establish its source and its
@@ -1320,10 +1329,25 @@ theory does not authorize original mathematical development. Neither an
 agent-written proof nor a label such as “sufficient condition” supplies
 that authorization.
 
-Original mathematical development requires an explicit request from the
-user. Attribute it as original work and distinguish proved results from
-conjectures. Before committing source-based exposition, check each added
-statement for a verified source or a derivation of a requested claim;
+An explicit request is required to develop new mathematics. Permission to
+attempt a proof establishes neither authorship nor priority. Apply `CITE-10`
+to the result and to the proof. Search the published literature beyond the
+local Zotero collection for the precise statement and the method. Follow
+references to earlier work, read the relevant passages, and add missing
+sources to Zotero before citing their Better BibTeX keys.
+
+Credit the source of an argument even when the manuscript changes its
+notation, supplies details, or applies it to a new example. A reference
+found later can verify a step. It cannot establish where a generated
+argument came from. Never assign an agent-generated proof to the researcher
+or call it independent, new, or first on the strength of the chat, the
+commit identity, or a search that returned no match. Identify the actual
+contributor from documented evidence. Support any claim of novelty with a
+comparison to the closest prior results and proofs. If provenance remains
+unresolved, give the verified premises and deduction without claiming credit.
+
+Distinguish proved results from conjectures. Before committing source-based
+exposition, check each added statement for a verified source or a derivation of a requested claim;
 remove additions that satisfy neither condition. Record unresolved source
 questions under the house rule for open problems.
 

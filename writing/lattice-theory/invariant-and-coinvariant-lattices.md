@@ -48,6 +48,11 @@ Thus $nL_G\subseteq I_G L\subseteq L_G$, proving the saturation (@def:saturation
 Passing the norm through $L/I_G L$ gives $\ker\bar\nu_G=L_G/I_G L=\coker(\kappa_G)$ and $\coker\bar\nu_G=\coker(\nu_G)$. The displayed identity also yields $nL\subseteq L^G+L_G$, so $C_G$ is finite and $n$-torsion. Finally $\nu_G(s)=ns$ for $s\in L^G$, establishing the same annihilator for $\coker(\nu_G)$; that for $\coker(\kappa_G)$ follows from $nL_G\subseteq I_G L$.
 :::
 
+::: {.example #ex:coinvariant-sign-action title="The augmentation image, the quotient, and the orthogonal lattice"}
+
+Let the group $G=\{1,\sigma\}$ act on the rank-one lattice $L=\langle1\rangle$ by $\sigma x=-x$. The map $\sigma-1$ has image $I_GL=2L$. The module coinvariants are the quotient $L_G^{\mathrm{mod}}=L/2L\cong\ZZ/2$. Here $L^G=0$, so its orthogonal complement in $L$ is the whole lattice $L_G=L$. The norm $1+\sigma$ vanishes. In @thm:invariants-coinvariants-integral the map $\kappa_G$ is the inclusion $2L\hookrightarrow L$, and its cokernel maps isomorphically to $L_G^{\mathrm{mod}}$. Saturating the augmentation image recovers the orthogonal coinvariant lattice, while quotienting $L$ by that image retains the index.
+:::
+
 ::: {.proposition #prop:group-augmentation-exact title="Derived augmentation sequences"}
 The augmentation sequence $0\too J_G\too\bZ[G]\xrightarrow{\epsilon_G}\bZ\too0$ is exact (@def:exact-complex) as a sequence of both left and right $\bZ[G]$-modules. It gives the complete exact sequences in $\bZ\text{-}\mathbf{Mod}$
 $$
@@ -301,10 +306,11 @@ $$
 therefore gives unique $a_w,b_w\in L$ with $\iota_L(a_w)=Iw-w$ and $\iota_L(b_w)=2w$.
 
 Primitivity of $L^\pm\injects L$ gives the pullback (@def:pullback-square) square
-```tikzcd
+
+\begin{tikzcd}
 L^\pm \arrow[r] \arrow[d] & L \arrow[d] \\
 (L^\pm)_\QQ \arrow[r] & L_\QQ .
-```
+\end{tikzcd}
 
 Since $2x\in L$ and $2x\in(L^\pm)_\QQ$, the pullback square gives a unique element $y_\pm\in L^\pm$ mapping to $2x$.
 Thus multiplication by $2$ annihilates $A_{L^\pm}^\sharp$, so $L^\pm$ is $2$-elementary by @def:p-elementary.

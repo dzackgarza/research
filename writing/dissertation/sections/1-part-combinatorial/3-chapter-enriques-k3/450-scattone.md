@@ -196,9 +196,9 @@ which are not isometric. Hence $\bbcpt{\fen}$ has exactly two 0-cusps, $\eta_1 \
 
 ::: {.proof}
 
-The lattice $\ten$ is even $2$-elementary of invariants $(12,10,0)_2$: its discriminant group is $A_{\ten} = \tfrac12 M/M \cong (\ZZ/2)^{10}$ with $M \definedas U(2)\oplus E_8(2)$, and $q_{\ten}$ takes integral values on it, because $x^2 \in 4\ZZ$ for every $x \in M$, so that $q_{\ten}(x/2) = x^2/4 \in \ZZ$. Hence $\delta(\ten) = 0$ in the sense of @thm:two-elementary-classification, the functional $q_{\ten} \bmod \ZZ$ vanishes, and $A_{\ten}$ has no nonzero characteristic class: such a class $x$ would satisfy $\bar\beta(x,y) = q_{\ten}(y)\bmod\ZZ$ for every $y$, so it would lie in the radical of a nondegenerate form. The third case of @thm:isotropic-trichotomy requires $\delta = 1$ and therefore does not occur, and every primitive isotropic vector of $\ten$ is of the first or the second type.
+The lattice $\ten$ is even $2$-elementary of invariants $(12,10,0)_2$: its discriminant group is $A_{\ten} = \tfrac12 M/M \cong (\ZZ/2)^{10}$ with $M \definedas U(2)\oplus E_8(2)$, and $q_{\ten}$ takes integral values on it, because $x^2 \in 4\ZZ$ for every $x \in M$, so that $q_{\ten}(x/2) = x^2/4 \in \ZZ$. Hence $\delta(\ten) = 0$ in the sense of @thm:two-elementary-classification, the functional $q_{\ten} \bmod \ZZ$ vanishes, and $A_{\ten}$ has no nonzero characteristic class: such a class $x$ would satisfy $\bar\beta(x,y) = q_{\ten}(y)\bmod\ZZ$ for every $y$, so it would lie in the radical of a nondegenerate form. The third case of [@AE22, Prop. 5.5] requires $\delta = 1$ and therefore does not occur, and every primitive isotropic vector of $\ten$ is of the first or the second type.
 
-The first type gives $\ten \cong U \perp \bdlattice{T}{\eta}$ with $\bdlattice{T}{\eta}$ of signature $(1,9)$ and invariants $(10,10,0)$, and the second gives $\ten \cong U(2)\perp \bdlattice{T}{\eta}$ with $\bdlattice{T}{\eta}$ of signature $(1,9)$ and invariants $(10,8,0)$. Both lattices exist, namely $U(2)\oplus E_8(2)$ and $U\oplus E_8(2)$, and each is the unique even $2$-elementary lattice of its signature and invariants up to isometry by @thm:two-elementary-classification; the determinants $2^2\cdot 2^8$ and $2^8$ and the generator lengths $2 + 8$ and $8$ are those read off the two splittings. The representatives $e$ and $e'$ realize the two types: $\divisibility_{\ten}(e) = 1$ because $e\cdot f = 1$, and $\divisibility_{\ten}(e') = 2$ because $e'$ is orthogonal to $U \oplus E_8(2)$ and $e'\cdot U(2) = 2\ZZ$; and the class of $e'/2$ is ordinary because no class of $A_{\ten}$ is characteristic. By the existence and uniqueness clause of @thm:isotropic-trichotomy --- an isotropic vector of a given type exists if and only if a $2$-elementary lattice with the corresponding invariants exists, and it is then unique up to $\Orth(\ten)$ --- each type contributes exactly one $\Orth(\ten)$-orbit of primitive isotropic vectors, and there are no other types. The two orbits are distinct because an isometry carries $\eta^{\perp \ten}/\eta$ isometrically onto $(\eta')^{\perp \ten}/\eta'$, whereas the two quotients have unequal generator lengths, $10$ and $8$. This agrees with [@Ste91, Prop. 4.5].
+The first type gives $\ten \cong U \perp \bdlattice{T}{\eta}$ with $\bdlattice{T}{\eta}$ of signature $(1,9)$ and invariants $(10,10,0)$, and the second gives $\ten \cong U(2)\perp \bdlattice{T}{\eta}$ with $\bdlattice{T}{\eta}$ of signature $(1,9)$ and invariants $(10,8,0)$. Both lattices exist, namely $U(2)\oplus E_8(2)$ and $U\oplus E_8(2)$, and each is the unique even $2$-elementary lattice of its signature and invariants up to isometry by @thm:two-elementary-classification; the determinants $2^2\cdot 2^8$ and $2^8$ and the generator lengths $2 + 8$ and $8$ are those read off the two splittings. The representatives $e$ and $e'$ realize the two types: $\divisibility_{\ten}(e) = 1$ because $e\cdot f = 1$, and $\divisibility_{\ten}(e') = 2$ because $e'$ is orthogonal to $U \oplus E_8(2)$ and $e'\cdot U(2) = 2\ZZ$; and the class of $e'/2$ is ordinary because no class of $A_{\ten}$ is characteristic. By the existence and uniqueness clause of [@AE22, Prop. 5.5] --- an isotropic vector of a given type exists if and only if a $2$-elementary lattice with the corresponding invariants exists, and it is then unique up to $\Orth(\ten)$ --- each type contributes exactly one $\Orth(\ten)$-orbit of primitive isotropic vectors, and there are no other types. The two orbits are distinct because an isometry carries $\eta^{\perp \ten}/\eta$ isometrically onto $(\eta')^{\perp \ten}/\eta'$, whereas the two quotients have unequal generator lengths, $10$ and $8$. This agrees with [@Ste91, Prop. 4.5].
 
 The count is the same for $\Gamma_{\En} = \Orth^+(\ten)$ as for $\Orth(\ten)$. Let $\eta$ be $e$ or $e'$, and let $H$ be the summand $U$ or $U(2)$ of $\ten$ that contains it, so that $\ten = H \perp H^{\perp \ten}$. The isometry $\tau \definedas -\id_H \oplus \id_{H^{\perp \ten}}$ maps $\eta$ to $-\eta$, so it fixes the line $\generators{\eta}$. By @prop:spinor-norm-orientation-classes (3), the real spinor norm of $\tau$ is that of $-\id_H$, and $H$ has signature $(1,1)$, so this spinor norm is $[-1]$ by @lem:minus-identity-spinor-norm and $\tau \notin \Gamma_{\En}$. The real spinor norm is therefore a surjective group morphism $\Orth(\ten) \to \theset{\pm 1}$ with kernel $\Gamma_{\En}$, and $\Gamma_{\En}$ has index two in $\Orth(\ten)$. If $g \in \Orth(\ten)$ carries $\generators{\eta}$ onto a primitive isotropic line $\ell$, then so does $g\tau$, and exactly one of $g$ and $g\tau$ lies in $\Gamma_{\En}$. So the orbits of the two groups on primitive isotropic lines agree.
 :::
@@ -220,7 +220,7 @@ With $\ten$ the lattice $L_- = \mathbf{H}\oplus\mathbf{H}(2)\oplus E_8(-2)$ of @
 
 The planes $I_{1,2}$ and $I_2$ are isotropic: the only nonzero pairing among $e$, $f$, $e'$ and the summand $E_8(2)$ is $e\cdot f = 1$, so $(2e+2f+\alpha)^2 = 8 + \alpha^2 = 0$ and $e'\cdot(2e+2f+\alpha) = 0$. They are primitive. For $I_{1,2}$ this holds because $e$ and $e'$ are basis vectors of $\ten$. For $I_2$, the vector $\alpha$ is primitive in $E_8(2)$, since $\alpha/n$ has square $-8/n^2 \notin 4\ZZ$ for $n \ge 2$; so $a e' + b(2e+2f+\alpha)$ is divisible by $n$ in $\ten$ only if $n$ divides $a$ and $b$.
 
-The two planes lie in different $\Orth(\ten)$-orbits. The plane $I_{1,2}$ contains $e$, and $\divisibility_{\ten}(e) = 1$. Every vector of $I_2$ has divisibility $2$, because $e'$ and $2e+2f+\alpha$ pair into $2\ZZ$ with every vector of $\ten$. By @prop:fen-two-zero-cusps, the primitive isotropic vectors of divisibility $1$ form the orbit of $e$, and those of divisibility $2$ form the orbit of $e'$. This also gives the incidences: the closure of the 1-cusp of a plane $I$ contains the 0-cusps of the primitive isotropic lines in $I$.
+The two planes lie in different $\Orth(\ten)$-orbits. The plane $I_{1,2}$ contains $e$, and $\divisibility_{\ten}(e) = 1$. Every primitive vector of $I_2$ pairs into $2\ZZ$ with $\ten$ and is primitive in $\ten$. Its divisibility is therefore $2$, since $A_{\ten}$ has exponent two. By @prop:fen-two-zero-cusps, the primitive isotropic vectors of divisibility $1$ form the orbit of $e$, and those of divisibility $2$ form the orbit of $e'$. This also gives the incidences: the closure of the 1-cusp of a plane $I$ contains the 0-cusps of the primitive isotropic lines in $I$.
 
 The $\Gamma_{\En}$-orbits are the $\Orth(\ten)$-orbits. Let $\tau_U \definedas -\id_U \oplus \id_{U^{\perp \ten}}$ and $\tau_{U(2)} \definedas -\id_{U(2)} \oplus \id_{U(2)^{\perp \ten}}$. By the proof of @prop:fen-two-zero-cusps, both have real spinor norm $[-1]$, and $\Gamma_{\En}$ has index two in $\Orth(\ten)$. The isometry $\tau_U$ maps $e$ to $-e$ and fixes $e'$, so it preserves $I_{1,2}$. The isometry $\tau_{U(2)}$ maps $e'$ to $-e'$ and fixes $2e+2f+\alpha$, so it preserves $I_2$. If $g \in \Orth(\ten)$ carries one of the two planes onto a plane $P$, and $\tau$ is the isometry that preserves that plane, then $g\tau$ also carries it onto $P$, and exactly one of $g$ and $g\tau$ lies in $\Gamma_{\En}$.
 :::
@@ -231,7 +231,6 @@ These representatives give the following cusp diagram:
 
 \begin{tikzpicture}
 \pic[cusp labels=none] (E) {object=bb-cusps/fen};
-% The isotropic vectors spanning each cusp.
 \foreach \c/\v in {E10/{\eta_1 = e}, E8/{I_{1,2} = \generators{e, e'}}, UE8/{\eta_2 = e'},
     D8/{I_2 = \generators{e', 2e + 2f + \alpha_1 + \alpha_2}}}
   {\node[below=2mm] at (E-\c.south) {$\v$};}
@@ -242,85 +241,37 @@ The cusp diagram of $\fen$, the moduli space of unpolarized Enriques surfaces.
 
 ##### Mirror Moves
 
-All of the above situations involved somewhat ad-hoc analyses, which can be verified by computing the Coxeter-Vinberg diagrams $G(\Gamma_\eta)$ at the 0-cusps $\eta$ associated to the arithmetic subgroup $\Gamma$ and classifying their maximal elliptic and parabolic subdiagrams.
-This can be computationally difficult, so we note a algorithm that can unify most of the above situations when $\Gamma$ is the full (stable) orthogonal group.
-Let $T$ be a 2-elementary, nondegenerate, even unimodular lattice of signature $(2, n)$ embedding into the K3 lattice $\lkt$, let $\Gamma = \discriminantkernel{T}$, and consider the corresponding arithmetic quotient $\FG = \dmodgamma{ \halfpd{T} }{ \Gamma }$.
-All such lattices are encoded in Nikulin’s pyramid diagram (see [@AE22]) of 2-elementary lattices.
-The **cusp diagram** of $\cpt{F}_\Gamma$ is a labeled, directed graph whose vertices are boundary points and curves in $\cpt{F}_\Gamma$, corresponding (up to $\Gamma$-equivalence) with primitive isotropic vectors $\eta, I$ in $T$ and their associated boundary lattices $\bdlattice{T}{\eta}$, $\bdlattice{T}{I}$, with an edge $v_1 \to v_2$ between vertices if the corresponding boundary stratum $F_1$ is contained in the closure of $F_2$.
-The cusp diagram is computed as follows.
+Let $S$ be a primitive hyperbolic $2$-elementary sublattice of the K3 lattice $\lkt$, and let $T=S^{\perp\lkt}$ have signature $(2,n)$. For the action of $\Orth(T)$, a mirror move classifies a primitive isotropic line $\ell=\ZZ\eta$ by the splitting $T=H\perp K$ with $\ell\subset H$ and $K\cong\ell^\perp/\ell$ [@AE22, Def. 5.6 and Thm. 5.8]. The boundary points correspond to line orbits, the boundary curves to plane orbits, and incidence to containment of representatives.
 
-A **mirror move** is a lattice-theoretic operation governed by the existence of a primitive isotropic vector $\eta \in T$ of a specified type and splitting as proved in @AE22:
+Write $(r,a,\delta)$ for the rank, discriminant length and coparity of $T$. The isotropic vector classification [@AE22, Prop. 5.5] gives the following splittings. A row occurs when its target is realized by a lattice $K$ of signature $(1,n-1)$ with the indicated invariants.
 
-- **Odd/simple:** $\divisibility_T(\eta) = 1$, and $T \cong U \oplus K$
-
-- **Even, ordinary:** $\divisibility_T(\eta) = 2$ and $\eta^*$ is ordinary in $A_T$, and $T \cong U(2) \oplus K$
-
-- **Even, characteristic:** $\divisibility_T(\eta) = 2$ and $\eta^*$ is characteristic, and $T \cong I_{1,1}(2) \oplus K$
-
-The move replaces $T$ with $\bdlattice{T}{\eta}$, computing the new invariants in each case.
-A mirror move is only possible if the resulting lattice is realized (i.e., if the corresponding node exists in Nikulin's pyramid, see [@AE22, Fig. 1]) and admits the required splitting.
-
-###### Step 1: Find All Orbits of $0$-Cusps $\eta$
-
-1. **Start at the node $(r_0, a_0, \delta_0)$** in Nikulin’s pyramid associated to $T$.
-
-2. **For every admissible mirror move,** check for outgoing arrows (*mirror moves*) from this node, corresponding to possible splittings of boundary lattices $T_{\eta_a}$ for isotropic vectors $\eta_a$.
-   Each outgoing arrow from $(r_0, a_0, \delta_0)$ will be of one of the following types:
-   
-| Type of $\eta_a \in T$ | Destination $(r_1, a_1, \delta_1)$ | Splitting of $\bdlattice{T}{\eta_a}$ |
-|---|---|---|
-| Odd/simple | $(r_0-2,\, a_0,\, 1)$ | $U \oplus K$ |
-| Even, ordinary | $(r_0-2,\, a_0-2,\, 1)$ | $U(2) \oplus K$ |
-| Even, characteristic | $(r_0-2,\, a_0-2,\, 0)$ | $I_{1,1}(2) \oplus K$ |
-
-**A $0$-cusp $\eta_a$ exists** if the arrow exists: the destination represents a realizable, hyperbolic, 2-elementary lattice $\bdlattice{T}{\eta_a}$ in Nikulin’s table, and the node at the head of the arrow gives the invariants $(r_1, a_1, \delta_1)$ of the boundary lattice $\bdlattice{T}{\eta_a}$.
-
-###### Step 2: All $1$-Cusps and Incidence Structure
-
-1. For each $0$-cusp $\eta_a$ determined in Step 1, recursively use $\bdlattice{T}{\eta_a}$ with invariants $(r_1, a_1, \delta_1)$ as a new starting point and consider all outgoing arrows from $(r_1, a_1, \delta_1)$ to construct $(r_2, a_2, \delta_2)$.
-   Each move corresponds to a splitting of $\bdlattice{T}{I} \definedas  \overline{(T_{\eta_a})}_{\eta_b}$ for a primitive isotropic vector $\eta_b \in \bdlattice{T}{\eta_a}$:
-
-| Type of $\eta_b \in \bdlattice{T}{\eta_a}$ | Destination $(r_2, a_2, \delta_2)$ | Splitting of $\bdlattice{T}{I} = \cpt{(T_{\eta_a})}_{\eta_b}$ |
-|---|---|---|
-| Odd/simple | $(r_1 - 2,\, a_1,\, \delta_1)$ | $U \oplus K'$ |
-| Even, ordinary | $(r_1 - 2,\, a_1 - 2,\, \delta_1)$ | $U(2) \oplus K'$ |
-| Even, characteristic | $(r_1 - 2,\, a_1 - 2,\, 0)$ | $I_{1,1}(2) \oplus K'$ |
-
-2. **A $1$-cusp $I$ of type $(\eta_a, \eta_b)$ exists** if and only if the move $(r_1, a_1, \delta_1) \to (r_2, a_2, \delta_2)$ exists, corresponding to a 2-elementary lattice $\bdlattice{T}{I}$ with the specified invariants.
-   The $1$-cusp $I$ is incident to $\eta_a$ if and only if it arises from such a two-step sequence.
-
-###### Step 3: Diagram Extraction
-
-The **nodes for $0$-cusps** are given by a single admissible mirror move from $(r_0, a_0, \delta_0)$, labeled by $(r_1, a_1, \delta_1)$, the corresponding lattice splitting, and the root system $\Phi(\bdlattice{T}{\eta})$.
-The **nodes for $1$-cusps** are determined by two-step sequences $(r_0, a_0, \delta_0) \to (r_1, a_1, \delta_1) \to (r_2, a_2, \delta_2)$, with associated lattice splitting and root system $\Phi(\bdlattice{T}{I})$.
-Each $1$-cusp is incident to every $0$-cusp $(r_1, a_1, \delta_1)$ that occurs as an intermediate node in such a sequence.
-While the boundary lattice $\bdlattice{T}{I}$ for a $1$-cusp is determined up to isometry by invariants $(r_2, a_2, \delta_2)$, distinct $\Gamma$-orbits of $1$-cusps are distinguished by their root lattices $\Phi(\bdlattice{T}{I})$, either tabulated in @AE22 or computed via Vinberg’s algorithm.
-We conclude by tabulating several useful references to use when carrying out this algorithm:
-
-| Cusp | Invariants | Existence Condition |
-|---|---|---|
-| $0$-cusp $\eta$ | $(r_1, a_1, \delta_1)$ | $\exists\, (r_0, a_0, \delta_0) \to (r_1, a_1, \delta_1)$ |
-| $1$-cusp $I$ | $(r_2, a_2, \delta_2)$, $\Phi(\bdlattice{T}{I})$ | $\exists\, (r_0, a_0, \delta_0) \to (r_1, a_1, \delta_1) \to (r_2, a_2, \delta_2)$ |
-
-| Step 1 Type, $\eta_a$ | Step 2 Type, $\eta_b$ | $(r_1, a_1, \delta_1)$ | $(r_2, a_2, \delta_2)$ |
+| Type of $\eta$ | $\divisibility_T(\eta)$ | $H$ | Invariants of $K$ |
 |---|---|---|---|
-| Odd/simple | Odd/simple | $(r_0 - 2,\, a_0,\, 1)$ | $(r_0 - 4,\, a_0,\, 1)$ |
-| Odd/simple | Even, ordinary | $(r_0 - 2,\, a_0,\, 1)$ | $(r_0 - 4,\, a_0 - 2,\, 1)$ |
-| Odd/simple | Even, characteristic | $(r_0 - 2,\, a_0,\, 1)$ | $(r_0 - 4,\, a_0 - 2,\, 0)$ |
-| Even, ordinary | Odd/simple | $(r_0 - 2,\, a_0 - 2,\, 1)$ | $(r_0 - 4,\, a_0 - 2,\, 1)$ |
-| Even, ordinary | Even, ordinary | $(r_0 - 2,\, a_0 - 2,\, 1)$ | $(r_0 - 4,\, a_0 - 4,\, 1)$ |
-| Even, ordinary | Even, characteristic | $(r_0 - 2,\, a_0 - 2,\, 1)$ | $(r_0 - 4,\, a_0 - 4,\, 0)$ |
-| Even, characteristic | Odd/simple | $(r_0 - 2,\, a_0 - 2,\, 0)$ | $(r_0 - 4,\, a_0 - 2,\, 0)$ |
-| Even, characteristic | Even, ordinary | $(r_0 - 2,\, a_0 - 2,\, 0)$ | $(r_0 - 4,\, a_0 - 4,\, 0)$ |
-| Even, characteristic | Even, characteristic | $(r_0 - 2,\, a_0 - 2,\, 0)$ | $(r_0 - 4,\, a_0 - 4,\, 0)$ |
+| Odd (simple) | $1$ | $U$ | $(r-2,a,\delta)$ |
+| Even ordinary | $2$ | $U(2)$ | $(r-2,a-2,\delta)$ |
+| Even characteristic ($\delta=1$) | $2$ | $I_{1,1}(2)$ | $(r-2,a-2,0)$ |
 
-: Change of invariants under 2-step mirror moves.
+The discriminant form of $U$ is trivial. That of $U(2)$ is integral-valued, so removing either summand preserves coparity. Only the characteristic move changes it. For an isotropic flag $\ell\subset I$, apply the same splitting rule to the primitive line $I/\ell$ of $\ell^\perp/\ell$. Its boundary lattice is $I^\perp/I$, now negative definite. The second step uses the coparity of $\ell^\perp/\ell$. In particular a characteristic move cannot follow a characteristic move. To pass from flags to plane orbits one must identify the underlying planes. The rank, discriminant length and coparity of a definite lattice in general specify only its genus [@AE22, Lemma 5.9 and Thm. 5.10].
 
-Carrying out this algorithm for $\fen$ shows that there are exactly two 1-cusps and two 0-cusps.
-The following diagram encodes the mirror-move procedure, recording a sequence of moves starting from a primitive sublattice $S\injects \lkt$, computing $T\definedas S^{\perp \lkt}$, finding $\bar{T}$, the first type of boundary lattice corresponding to a 1-step mirror move (corresponding to $0$-cusps) and finally finding $\overline{\bar T}$, the target of a 2-step mirror move.
-We find that there are two possibilities for $\bar{T}$, indicated in the $\bar{T}$ column as $(10,10,0)_1$ and $(10, 8, 0)_1$, and two possibilities present in the $\overline{\bar{T}}$ column.
-There are three 2-step paths through the diagram, but only two possibilities for $\overline{\bar{T}}$, yielding two $1$-cusps and two $0$-cusps.
-We record the resulting cusp diagram below as well.
+For $T=\ten$, the basis lines of $U$ and $U(2)$ give the two targets $(10,10,0)_1$ and $(10,8,0)_1$ of @prop:fen-two-zero-cusps. The plane $I_{1,2}$ contains a line of each type. Every primitive line in $I_2$ has divisibility two. Thus the three incidences in the diagram belong to the two plane orbits of @prop:fen-two-one-cusps. Both propositions show that the same orbits occur for $\Gamma_{\En}=\Orth^+(\ten)$.
+
+For the discriminant kernel, write $\rho\colon\Orth(\ten)\to\Orth(A_{\ten},q_{\ten})$ for the discriminant action. The class $c(\ell)=[v/\divisibility_{\ten}(v)]$ of a primitive isotropic line $\ell=\ZZ v$ is independent of the sign of $v$ since $2A_{\ten}=0$. On the two line orbits of @prop:fen-two-zero-cusps it takes the values $0$ and a nonzero isotropic class, respectively.
+
+To see why the class determines a kernel orbit, write $\ten=U\perp M(2)$ with $M=U\perp E_8$. Identify $A_{\ten}$ with $M/2M$ by $\bar m\mapsto[m/2]$. In these coordinates $q(\bar m)=m^2/2\bmod 2$, with the square taken in $M$. The isometries of $M(2)$ fix $e$ in the first summand and induce the full finite orthogonal group [@Nik80, Thm. 3.6.3]. For $e'$ in the second hyperbolic summand, use the unscaled form of $M$ and write $M=\ZZ e'\oplus\ZZ f'\oplus E_8$, with $(e',f')=1$. A finite isometry fixing $\bar e'$ sends $\bar f'$ to $\bar f'+\bar z+q(\bar z)\bar e'$ for some $\bar z\in E_8/2E_8$, since it preserves the pairing with $\bar e'$ and the square of $\bar f'$. For a lift $z\in E_8$ this action on $\bar f'$ lifts to the integral isometry of $M$ given by
+$$
+e'\mapsto e',\qquad f'\mapsto f'+z-\tfrac{z^2}{2}e',\qquad
+x\mapsto x-(x,z)e'\quad(x\in E_8).
+$$
+After composing with its inverse the finite isometry fixes both $\bar e'$ and $\bar f'$. Its restriction to their orthogonal complement lifts because $W(E_8)\to\Orth(E_8/2E_8,q)$ is onto [@CDL25, Remark 0.8.17]. Extending both lifts by the identity on the first $U$ proves $\rho(\Stab_{\Orth(\ten)}(\ell))=\Stab_{\Orth(A_{\ten},q_{\ten})}(c(\ell))$ for the second representative as well.
+
+If $c(g\ell)=c(\ell)$, choose $s$ fixing $\ell$ with $\rho(s)=\rho(g)$. Then $gs^{-1}\in\ker\rho$ takes $\ell$ to $g\ell$. Thus each attained class gives one kernel orbit.
+
+The finite quadratic space $A_{\ten}$ is the split space of dimension ten over $\mathbb F_2$. In hyperbolic coordinates its isotropic classes are the pairs $(x,y)\in\mathbb F_2^5\times\mathbb F_2^5$ with $x\cdot y=0$. The full finite orthogonal group is transitive on the nonzero isotropic classes by Witt's theorem. All are therefore attained from the divisibility-two representative. The component-reversing isometry used in @prop:fen-two-zero-cusps acts trivially on $A_{\ten}$ for either representative, since it is minus the identity on one summand and the discriminant group has exponent two. Hence restricting the kernel to $\Orth^+(\ten)$ preserves each line orbit as well.
+
+| Acting group on $\ten$ | Divisibility one | Divisibility two | Total line orbits |
+|---|---:|---:|---:|
+| $\Orth(\ten)$ or $\Gamma_{\En}$ | $1$ | $1$ | $2$ |
+| $\ker\rho$ or $\ker\rho\cap\Gamma_{\En}$ | $1$ | $32+31\cdot16-1=527$ | $528$ |
 
 ::: {#fig:fen-mirror-move-summary .figure}
 
@@ -328,7 +279,7 @@ We record the resulting cusp diagram below as well.
 \pic {object=mirror-moves/enriques};
 \end{tikzpicture}
 
-A concise summary of the mirror move algorithm applied to $\EnriquesInvariants_1$, corresponding to $\fen$.
+The two first moves preserve $\delta=0$. Their common second target $(8,8,0)_0$ represents the plane $I_{1,2}$ incident to both line orbits.
 
 :::
 
@@ -338,6 +289,6 @@ A concise summary of the mirror move algorithm applied to $\EnriquesInvariants_1
 \pic[cusp labels=eta] {object=bb-cusps/fen};
 \end{tikzpicture}
 The cusp diagram of $\fen$, indicating two 0-cusps $\eta_{1}, \eta_2$ and two 1-cusps $I_{1,2}, I_2$.
-We note that this recovers the known cusp diagram shown in @sec:fen-unpolarized-cusps.
+The plane $I_2$ meets only the divisibility-two cusp $\eta_2$.
 
 :::

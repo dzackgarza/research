@@ -22,7 +22,7 @@ Substituting $\mcl = -K_Y$ gives $K_X = \pi^*(K_Y - K_Y) = \OO_X$.
 
 ::: {.proposition #prop:coble-canonical-cover title="The canonical cover of a terminal Coble surface"}
 
-Let $S$ be a terminal (@def:terminal-coble-surface) Coble surface of K3 type (@def:coble-surface) over $\CC$, with $\abs{-2K_S} = \theset{C}$ and $C = C_1+\cdots+C_n$ a disjoint union of $n$ smooth rational curves of square $-4$.
+Let $S$ be a terminal (@def:terminal-coble-surface) Coble surface of K3 type (@def:terminal-coble-k3-type) over $\CC$, with $\abs{-2K_S} = \theset{C}$ and $C = C_1+\cdots+C_n$ a disjoint union of $n$ smooth rational curves of square $-4$.
 Let $\mcl = \OO_S(-K_S)$, let $s\in H^0(\mcl^{\tensor_{\OO_S} 2})$ be a section with zero locus $C$, and let $f\colon X\to S$ be the double cover defined by $(\mcl, s)$.
 Then $X$ is a smooth K3 surface [@DK25, Prop. 9.1.1].
 For a general such $S$, $\Pic(X)$ is a $2$-elementary lattice of rank $10+n$ whose discriminant group (@def:group) has rank $12-n$ over $\FF_2$ [@CDL25, Sec. 5.4].

@@ -52,9 +52,7 @@ Let $U\colon\mcs\to\mcc$ and $F\colon\mcd\to\mcc$ be specified functors.
 The structured objects of $\mcd$ obtained from $U$ are given by the pseudo-pullback $\mathcal P$ in the square
 
 ::: {.definition #def:axiom-through-functor title="Pulling back structured objects" defines="pullback of structured objects"}
-```{.tikz}
-%%| filename: structured-object-pullback
-%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
+
 \begin{tikzcd}
 \mathcal P
   \arrow[r,"\operatorname{pr}_{\mathcal S}"]
@@ -63,7 +61,7 @@ The structured objects of $\mcd$ obtained from $U$ are given by the pseudo-pullb
 \mathcal S \arrow[d,"U"]\\
 \mathcal D \arrow[r,"F"'] & \mathcal C
 \end{tikzcd}
-```
+
 If $U$ is a replete (@def:subcategory) full inclusion, it is an isofibration, and the strict pullback (@def:pullback-square) presents this pseudo-pullback up to equivalence (@def:equivalence-of-objects) (@sec-pullback-cat).
 Its objects are exactly the $D\in\mcd$ for which $F(D)$ satisfies the stated property.
 :::

@@ -5,16 +5,10 @@ After=default.target
 [Service]
 Type=simple
 WorkingDirectory=/home/dzack/research/computations
-ExecStartPre=/home/dzack/.config/systemd/user/check-port-8888.py
-# This unit is owned by the research repository. project-management exposes its
-# localhost route/card but must not generate or restart this service.
-# Run JupyterLab from Sage's meson-era virtualenv directly: the source-tree
-# ./sage notebook wrapper does not run against this installation layout.
-ExecStart=/bin/direnv exec /home/dzack /home/dzack/gitclones/sage-dev-allopts/.venv/bin/jupyter-lab --IdentityProvider.password_required=False --IdentityProvider.hashed_password='' --IdentityProvider.token='' --ServerApp.disable_check_xsrf=True --ServerApp.local_hostnames=localhost --ServerApp.local_hostnames=jupyterlab.localhost --ip=127.0.0.1 --port=8888 --ServerApp.root_dir=/home/dzack/research/computations --no-browser
+ExecStart=/bin/direnv exec /home/dzack /home/dzack/.local/bin/jupyter lab --IdentityProvider.password_required=False --IdentityProvider.hashed_password='' --IdentityProvider.token='' --ServerApp.disable_check_xsrf=True --ServerApp.local_hostnames=localhost --ServerApp.local_hostnames=jupyterlab.localhost --ServerApp.root_dir=/home/dzack/research/computations
 Restart=on-failure
 RestartSec=5
 Environment=HOME=/home/dzack
-Environment=JUPYTER_PORT=8888
 
 [Install]
 WantedBy=default.target

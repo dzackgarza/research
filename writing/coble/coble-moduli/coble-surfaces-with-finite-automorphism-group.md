@@ -29,7 +29,7 @@ where each $B_i$ is a nonsingular rational curve and $B_i\intersect B_j=\varnoth
 ::: {.proposition #prop:strong-coble-is-terminal-coble title="The classified objects are exactly the terminal Coble surfaces of K3 type"}
 
 Let $S$ be a smooth projective rational surface over an algebraically closed field $k$ of characteristic $p$, with $\abs{-K_S}=\varnothing$ and $\abs{-2K_S}\neq\varnothing$.
-Then $S$ is a strong Coble surface with $n$ boundary components in the sense of @def:strong-coble-surface if and only if it is a terminal Coble surface of K3 type with $n$ boundary components in the sense of @def:coble-surface.
+Then $S$ is a strong Coble surface with $n$ boundary components in the sense of @def:strong-coble-surface if and only if it is a terminal Coble surface of K3 type (@def:terminal-coble-k3-type) with $n$ boundary components (@def:coble-boundary-component).
 In that case $B_i^2=-4$, $K_S\cdot B_i=2$, $K_S^2=-n$, $\rho(S)=10+n$ and $n\le 10$ [@Kon21, §3; @DK25, §9.1, Corollary 9.1.5; @prop:terminal-coble-basic-rational].
 Let $\pi\colon X\too S$ be the canonical double cover defined by $\OO_S(-K_S)$.
 If $p\neq2$, then $\pi$ is separable, branched along $B_1+\cdots+B_n$, and $X$ is smooth and is a K3 surface [@DK25, Proposition 9.1.1 and the $p\neq2$ case of its proof; @KK21, Introduction].
@@ -43,9 +43,9 @@ If $A\neq0$, then $X$ is a rational surface, $A^2=-2$, and its isolated singular
 
 *From strong to terminal.* By hypothesis $\abs{-2K_S}$ has the single member $D=B_1+\cdots+B_n$, which is reduced because the $B_i$ are distinct prime divisors and they are pairwise disjoint.
 Intersecting $D\sim-2K_S$ with $B_i$ gives $-2K_S\cdot B_i=B_i^2$, that is $B_i\cdot K_S=-\tfrac12B_i^2$; adjunction on the smooth rational curve $B_i$ gives $-2=B_i^2+B_i\cdot K_S$, and the two together give $B_i^2=-4$ and $B_i\cdot K_S=2$.
-So $D$ is the only member of $\abs{-2K_S}$ and is a disjoint union of $(-4)$-curves, which is the terminal K3-type condition of @def:coble-surface.
+So $D$ is the only member of $\abs{-2K_S}$ and is a disjoint union of $(-4)$-curves, so it is smooth as required by @def:terminal-coble-k3-type.
 
-*From terminal to strong.* Conversely, if $\abs{-2K_S}=\theset{D}$ with $D$ reduced and a disjoint union of smooth rational $(-4)$-curves, then naming the components $B_1,\ldots,B_n$ gives the strong Coble data, by the same numbering.
+*From terminal to strong.* Conversely, @lem:coble-boundary-unique gives the unique smooth member $D$. Its components are disjoint by @lem:coble-boundary-disjoint and smooth rational by @lem:coble-boundary-rational. Thus they give the data of @def:strong-coble-surface.
 
 The numerical invariants and the bound are those of @prop:terminal-coble-basic-rational. The separable smooth K3 cover for $p\neq2$ is [@Kon21, §1; @DK25, Proposition 9.1.1, the $p\neq2$ case of its proof; @KK21, Introduction], and the characteristic-$2$ statements are [@KK21, Introduction, Theorem 1.1, Theorem 3.1, Theorem 3.6, Proposition 3.17, Corollary 3.18].
 

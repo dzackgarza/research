@@ -26,9 +26,6 @@ is an isomorphism [@Ran98, §20A, paragraph before Def. 20.1].
 Let $\epsilon\in A$ be a central unit with $\bar\epsilon=\epsilon^{-1}$.
 An *$\epsilon$-symmetric form* $(M,\phi)$ is a finitely generated projective (@def:module-subcategories) $A$-module $M$ together with an $A$-module morphism $\phi\colon M\to M^{*}$ making the triangle
 
-```{.tikz}
-%%| filename: epsilon-symmetry-triangle
-%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
 \begin{tikzcd}
 M
   \arrow[r,"\operatorname{can}_M"]
@@ -38,7 +35,6 @@ M^{**} \arrow[d,"\epsilon\,\phi^{*}"]
 \\
 & M^{*}
 \end{tikzcd}
-```
 
 commute.
 The form is *nonsingular* if $\phi$ is an isomorphism (@def:isomorphism-of-objects).
@@ -181,9 +177,6 @@ Let $\mcc$ be an $\infty$-category.
 A *prespectrum object* of $\mcc$ is a functor $X\colon\mathrm N(\mathbf Z\times\mathbf Z)\to\mcc$ whose value $X(i,j)$ is a zero object (@def:preadditive) of $\mcc$ whenever $i\neq j$; write $E_n=X(n,n)$ [@Lur09, Def. 8.1, Rmk. 8.3].
 The square of $X$ on the corners $(n,n)$, $(n,n+1)$, $(n+1,n)$, $(n+1,n+1)$ is
 
-```{.tikz}
-%%| filename: prespectrum-structure-square
-%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
 \begin{tikzcd}
 E_n
   \arrow[r]
@@ -193,7 +186,6 @@ E_n
 \\
 0 \arrow[r] & E_{n+1}
 \end{tikzcd}
-```
 
 By @def:loops-suspension the pushout (@def:pullback-square) of the span $0\from E_n\to0$ is $\Sigma E_n$, and the pullback (@def:pullback-square) of the cospan $0\to E_{n+1}\from0$ is $\Omega E_{n+1}$, so the square determines the *structure maps*
 $$

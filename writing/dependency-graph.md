@@ -35,7 +35,11 @@ A citation of a whole work, as `[@Vin75]`, or of a chapter, a section or a page 
 
 Only uses arrows can make a definition or a proof circular. So the check for circular definitions and proofs reads the uses arrows only, and a remark and the theorem it discusses can cite each other.
 
-The findings list under the graph names each defect that the render found. An **uncited use** is a block of the logical development that uses a term of two or more words, set in bold where it is defined, and that does not reach the defining block through its citations. It is a use that the arrows do not show. The check matches the words of the term, not its sense, so each finding is a candidate to read: a block that writes "right adjoints" of a functor is listed against the right adjoints of a pairing. A use in another sense is written `right adjoints`; the check skips it, and the page shows plain text.
+A book editor can run `just book-catalogue --book-tasks` to find passages that need review. An **uncited use** flags a term listed in a declaration's `defines` attribute when its paragraph has no citation to a defining block. Read the passage to identify the intended sense. Cite the definition there, or mark a different sense with a span such as `[right adjoints]{.other-sense}`. A citation in the statement does not identify the premise of a later proof step.
+
+Review the mathematics in each chapter as well. A formula can use a result without repeating any of its terminology. Give each separately used definition or result a label and state its hypotheses. Cite it at the step that uses it. For example, @lem:coble-canonical-boundary-degree uses both additivity and invariance under linear equivalence to compute the canonical degree. Its proof cites both intersection lemmas at the equality they justify.
+
+Run `just book-catalogue` to export the declarations in prerequisite order. Add a block ID to export that declaration with its prerequisites and their source passages.
 
 Choose a block to see what it rests on, what rests on it, or both, to a chosen depth. Click a node to move to it; the link under the graph opens the block in its chapter. The render builds the graph from the chapter sources. The same graph is in [GraphML](dependency-graph/dependency-graph.graphml), [DOT](dependency-graph/dependency-graph.dot) and [node-link JSON](dependency-graph/dependency-graph.json).
 

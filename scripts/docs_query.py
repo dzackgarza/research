@@ -23,6 +23,7 @@ there and reused while no chapter, `_quarto.yml` or script has changed.
 
 Subcommands (each takes --json for machine output where it prints records):
   list      the blocks, filtered by kind, chapter, title or proof status
+  catalogue candidate Lean formalization material, with statements and dependencies
   show      the source of blocks, with their proofs
   tree      the heading structure of the book, with the blocks under each heading
   search    hybrid (BM25 and sentence-embedding) search over block text, via txtai
@@ -46,29 +47,26 @@ import os
 import pickle
 import re
 import sys
+from collections import defaultdict, deque
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
 from typing import TYPE_CHECKING
 
 import networkx as nx
 import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import docs_dependency_graph as ddg  # noqa: E402
+import docs_dependency_graph as ddg
 
 if TYPE_CHECKING:
     from txtai import Embeddings
 
 INDEX_VERSION = 5
-# The sentence-embedding model of the semantic half of `search` and `term`.
 EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
-# Block kinds that assert something a proof establishes.
-# One printed record: a block, a cited result, an occurrence or a count row.
 Row = dict[str, str | bool | int]
 PROVABLE = frozenset({"theorem", "lemma", "corollary", "proposition", "observation", "claim"})
 _OPEN = re.compile(r"^\s*(:{3,})\s*(\{.*\}|[\w-]+)\s*$")
-# A bold phrase with no mathematics in it.
 _CLOSE = re.compile(r"^\s*:{3,}\s*$")
 _CODE_FENCE = re.compile(r"^\s*(`{3,}|~{3,})")
 _HEADING = re.compile(r"^(#{1,6})\s+(.*?)\s*(?:\{([^}]*)\})?\s*$")
@@ -102,13 +100,10 @@ class Index:
     graph: nx.DiGraph
     findings: list[ddg.Finding]
     chapters: list[str]
-    # chapter (as `_quarto.yml` names it) -> source path relative to the working directory
     files: dict[str, str]
     spans: dict[str, Span] = field(default_factory=dict)
     headings: list[Heading] = field(default_factory=list)
-    # source path -> its lines
     lines: dict[str, list[str]] = field(default_factory=dict)
-    # the fingerprint of the sources the index was built from
     key: str = ""
 
 
@@ -116,7 +111,8 @@ def display_path(path: Path) -> str:
     return os.path.relpath(path.resolve(), Path.cwd())
 
 
-def scan(file: str, lines: list[str], spans: dict[str, Span], headings: list[Heading]) -> None:
+def scan(file: str, lines: list[str], spans: dict[str, Span], headings: list[Heading],
+         anonymous: dict[str, deque[str]]) -> None:
     """Record the fenced divs with ids and the headings of one chapter's lines.
 
     A fence of three or more colons with attributes opens a div; a bare fence closes the
@@ -124,7 +120,6 @@ def scan(file: str, lines: list[str], spans: dict[str, Span], headings: list[Hea
     A `.proof` div opened right after a block with an id closes (blank lines between
     are allowed) proves that block, as `docs_dependency_graph` reads it.
     """
-    # (opening line, id, classes, the block a proof proves)
     stack: list[tuple[int, str | None, list[str], str | None]] = []
     code: str | None = None
     last_closed: str | None = None
@@ -147,12 +142,16 @@ def scan(file: str, lines: list[str], spans: dict[str, Span], headings: list[Hea
                                         anchor.group(1) if anchor else ""))
         opened = _OPEN.match(line)
         if opened:
-            # A quoted value, such as a title holding $D_{16}$, is no class or id.
             attrs = re.sub(r'"[^"]*"', '""', opened.group(2))
             classes = _ATTR_CLASS.findall(attrs) if attrs.startswith("{") else [attrs]
-            ident = _ATTR_ID.search(attrs) if attrs.startswith("{") else None
+            match = _ATTR_ID.search(attrs) if attrs.startswith("{") else None
+            ident = match.group(1) if match else None
+            if ident is None:
+                kind = next((c for c in classes if anonymous.get(c)), None)
+                if kind is not None:
+                    ident = anonymous[kind].popleft()
             proves = last_closed if "proof" in classes else None
-            stack.append((number, ident.group(1) if ident else None, classes, proves))
+            stack.append((number, ident, classes, proves))
             last_closed = None
             continue
         if _CLOSE.match(line) and stack:
@@ -190,18 +189,22 @@ def load(project: Path, cache: Path | None) -> Index:
     graph, findings = ddg.build(project)
     files = {c: display_path(project / c) for c in chapters}
     index = Index(graph, findings, chapters, files, key=key)
+    unnamed = defaultdict(lambda: defaultdict(deque))
+    for finding in findings:
+        if finding.kind == ddg.Kind.MISSING_ID:
+            ident, = finding.blocks
+            unnamed[finding.chapter][graph.nodes[ident]["kind"]].append(ident)
     for chapter in chapters:
         file = files[chapter]
         lines = (project / chapter).read_text().splitlines()
         index.lines[file] = lines
-        scan(file, lines, index.spans, index.headings)
+        scan(file, lines, index.spans, index.headings, unnamed[chapter])
     if cache is not None:
         cache.parent.mkdir(parents=True, exist_ok=True)
         cache.write_bytes(pickle.dumps((key, index)))
     return index
 
 
-# --- records -------------------------------------------------------------------------
 
 
 def is_block(data: dict[str, str | bool | int]) -> bool:
@@ -276,7 +279,6 @@ def enclosing_block(index: Index, file: str, line: int) -> str | None:
     return best[1] if best else None
 
 
-# --- subcommands ---------------------------------------------------------------------
 
 
 def cmd_list(index: Index, args: argparse.Namespace) -> None:
@@ -317,6 +319,225 @@ def cmd_show(index: Index, args: argparse.Namespace) -> None:
         print(f"== {span.file}:{span.start}")
         print("\n".join(lines[span.start - 1:end]))
         print()
+
+
+def catalogue_order(graph: nx.DiGraph, targets: list[str]) -> Iterator[
+    tuple[str, str, int | None, str | None, list[str]]
+]:
+    """Order internal declarations by their recorded uses, with cycles kept together."""
+    uses = nx.DiGraph()
+    uses.add_nodes_from(graph)
+    uses.add_edges_from((user, dep) for user, dep, relation in graph.edges(data="relation")
+                        if relation == "uses")
+    selected = set(graph)
+    if targets:
+        selected = set(targets)
+        for target in targets:
+            if graph.nodes[target]["kind"] in ddg.COMMENTARY:
+                selected.update(graph.successors(target))
+        for target in list(selected):
+            selected.update(nx.descendants(uses, target))
+        selected.update(n for user in tuple(selected) for n in graph[user]
+                        if graph.nodes[n]["kind"] in ddg.COMMENTARY)
+
+    def position(node: str) -> tuple[int, str]:
+        return graph.nodes[node]["position"], node
+
+    logical = [n for n in selected if graph.nodes[n]["kind"] in ddg.LOGICAL]
+    dag = nx.condensation(uses.subgraph(logical).reverse())
+    held = {}
+    ordered = []
+    for level, generation in enumerate(nx.topological_generations(dag)):
+        for group in generation:
+            members = sorted(dag.nodes[group]["members"], key=position)
+            blockers = set().union(*(held[p] for p in dag.predecessors(group)))
+            cycle = members[0] if len(members) > 1 else None
+            if cycle:
+                blockers.add(cycle)
+            held[group] = blockers
+            ordered.append((bool(blockers), level, position(members[0]), members, cycle, sorted(blockers)))
+    for waiting, level, _, members, cycle, blockers in sorted(ordered):
+        section = f"Dependency layer {level}" if not waiting else f"Requires cycle review · layer {level}"
+        for node in members:
+            yield node, section, level, cycle, blockers
+    for section, kinds in [
+        ("Examples and exercises", {"example", "exercise"}),
+        ("Open problems and questions", {"problem", "question"}),
+        ("Supporting exposition", ddg.COMMENTARY - {"example", "exercise", "problem", "question"}),
+    ]:
+        for node in sorted((n for n in selected if graph.nodes[n]["kind"] in kinds), key=position):
+            yield node, section, None, None, []
+    references = {n for n in selected if graph.nodes[n]["kind"] == ddg.REFERENCE}
+    for node in selected:
+        references.update(n for n in graph[node] if graph.nodes[n]["kind"] == ddg.REFERENCE)
+    for node in sorted(references):
+        yield node, "Cited results to locate", None, None, []
+
+
+def cmd_catalogue(index: Index, args: argparse.Namespace) -> None:
+    """Prepare a worker's targets and their prerequisites from the book index."""
+    rows = []
+    previous_section = None
+    graph = index.graph
+    targets = [require(index, ident) for ident in args.targets]
+    order = list(catalogue_order(graph, targets))
+    selected = {ident for ident, *_ in order}
+
+    def describe(node: str) -> str:
+        data = graph.nodes[node]
+        title = data.get("title", "")
+        name = f" · {title}" if title and title != node else ""
+        return f"{data['kind']} `{node}`{name}"
+
+    roles = {**dict.fromkeys(PROVABLE, "Result to prove"),
+             **dict.fromkeys(ddg.COMMENTARY, "Supporting exposition"),
+             "definition": "Definition", "construction": "Construction",
+             "notation": "Notation", "convention": "Convention",
+             "assumption": "State as a hypothesis", "conjecture": "State the conjecture",
+             "example": "Example to realize", "exercise": "Exercise to solve",
+             "problem": "Problem statement", "question": "Question"}
+    if not args.json and not args.book_tasks:
+        print("# Lean formalization catalogue")
+        if targets:
+            for ident in targets:
+                print(f"\n**Target** · `{ident}` · {graph.nodes[ident]['title']}")
+        print("\nLayer 0 contains declarations with no recorded prerequisite in the book. "
+              "Each later layer follows its cited inputs. Within an ordinary layer the graph "
+              "allows parallel work. Each entry gives its hypotheses and its source in the exposition.")
+        print("\nThe book's statements and proofs supply the prerequisites. "
+              "Unresolved uses are editing tasks for the book. "
+              "Run `just book-catalogue --book-tasks` to list them.")
+        if targets:
+            print("\n## Assignment order\n\n| Layer | Declaration | Cited in statement | Cited in proof |"
+                  "\n| --- | --- | --- | --- |")
+            for ident, _, level, _, blockers in order:
+                if level is None:
+                    continue
+                stage = f"{level} (cycle review)" if blockers else str(level)
+                inputs = neighbours(graph, ident, False, True)
+                cells = [", ".join(f"`{n}`" for n in inputs if graph.edges[ident, n][part]) or "—"
+                         for part in ("statement", "proof")]
+                print(f"| {stage} | `{ident}` | " + " | ".join(cells) + " |")
+        else:
+            print("\nTo extract one assignment with its prerequisites, run `just book-catalogue BLOCK_ID`.")
+    uncited_terms = defaultdict(dict)
+    proof_sources = defaultdict(list)
+    book_tasks = defaultdict(list)
+    for user, introductions in graph.nodes(data="defining_passages"):
+        if introductions:
+            book_tasks[user].append({"part": "statement", "introductions": introductions.splitlines(),
+                                     "action": "Check the marked defining passages. Give each distinct notion "
+                                               "its own labelled definition and keep aliases together."})
+    for finding in index.findings:
+        if isinstance(finding, ddg.TermUse):
+            user, *definitions = finding.blocks
+            uncited_terms[user][finding.detail] = definitions
+            book_tasks[user].append({"part": finding.part, "paragraph": finding.paragraph,
+                                     "term": finding.detail, "candidates": definitions,
+                                     "passage": finding.excerpt,
+                                     "action": "Identify the sense in this passage and cite its definition."})
+        elif finding.kind == ddg.Kind.UNLOCATED_CITATION:
+            user, = finding.blocks
+            proof_sources[user].append(finding.detail)
+            book_tasks[user].append({"part": "proof", "citation": finding.detail,
+                                     "action": "Identify the result used, or mark this citation as attribution."})
+        elif finding.kind == ddg.Kind.DANGLING:
+            user, missing = finding.blocks
+            book_tasks[user].append({"citation": missing, "action": "Resolve the missing book reference."})
+        elif finding.kind == ddg.Kind.MISSING_ID:
+            user, = finding.blocks
+            book_tasks[user].append({"part": "statement", "action": "Give this declaration a label so other passages can cite it."})
+        elif finding.kind == ddg.Kind.MISSING_DEFINES:
+            user, = finding.blocks
+            book_tasks[user].append({"part": "statement", "action": "Name the terms introduced by this declaration in its defines attribute."})
+    if args.book_tasks:
+        sources = [ident for ident, *_ in order]
+        if not targets:
+            sources.extend(index.chapters)
+        tasks = [{"block": ident, "location": index.files[ident] if ident in index.files else location(index, ident),
+                  **task} for ident in sources for task in book_tasks[ident]]
+        if args.json:
+            print(json.dumps(tasks, indent=1, ensure_ascii=False))
+        else:
+            print("# Book edits for missing prerequisites\n")
+            for task in tasks:
+                where = f" · {task['part']}" if "part" in task else ""
+                if "paragraph" in task:
+                    where += f" ¶{task['paragraph']}"
+                print(f"- `{task['block']}` · `{task['location']}`{where} · {task['action']} "
+                      + str(task.get("term", task.get("citation", ""))))
+                if "candidates" in task:
+                    print("  Candidate definitions · " + ", ".join(task["candidates"]))
+                if "introductions" in task:
+                    print("  Defining passages · " + " / ".join(task["introductions"]))
+                if "passage" in task:
+                    print("  > " + " ".join(task["passage"].split()))
+        return
+    for ident, section, level, cycle, blockers in order:
+        data = graph.nodes[ident]
+        if not args.json and section != previous_section:
+            print(f"\n## {section}\n")
+            previous_section = section
+        if data["kind"] == ddg.REFERENCE:
+            users = sorted(selected.intersection(graph.predecessors(ident)))
+            if args.json:
+                rows.append({"id": ident, "kind": ddg.REFERENCE, "work": data["work"], "cited_by": users})
+            else:
+                print(f"- **{ident}** · cited by " + ", ".join(f"`{u}`" for u in users))
+            continue
+        span = index.spans.get(ident)
+        if span is None:
+            sys.exit(f"docs-query: cannot locate the statement of {ident} in {data['chapter']}")
+        statement = "\n".join(index.lines[span.file][span.start:span.end - 1]).strip()
+        proof = ("\n".join(index.lines[span.file][span.proof_start:span.proof_end - 1]).strip()
+                 if span.proof_start is not None and span.proof_end is not None else None)
+        uses = {"statement": [], "proof": []}
+        mentions = []
+        for _, target, edge in index.graph.out_edges(ident, data=True):
+            if edge["relation"] == "uses":
+                for part in uses:
+                    if edge[part]:
+                        uses[part].append(target)
+            else:
+                mentions.append(target)
+        terms = ddg.defined_terms(data.get("defines", ""))
+        role = roles[data["kind"]]
+        users = neighbours(graph, ident, True, True)
+        heading = section_of(index, span.file, span.start)
+        if args.json:
+            rows.append({**record(index, ident), "role": role, "terms": terms, "statement": statement,
+                         "proof": proof, "layer": level, "section": section, "cycle": cycle,
+                         "blocked_by_cycles": blockers, "required_by": users,
+                         "source_heading": heading.text if heading else None,
+                         "uses": uses, "mentions": mentions, "uncited_terms": uncited_terms[ident],
+                         "unlocated_proof_citations": proof_sources[ident], "book_tasks": book_tasks[ident]})
+            continue
+        print(f"\n### {data['kind'].capitalize()} · {data['title'] or ident}\n")
+        print(f"`{ident}` · `{location(index, ident)}`" + (f" · {heading.text}" if heading else ""))
+        if cycle:
+            print(f"**Circular group** · `{cycle}`\n")
+        if blockers:
+            print("**Resolve circular references** · " + ", ".join(blockers) + "\n")
+        fields = {"Defined terms": terms,
+                  "Needed to state": [describe(n) for n in uses["statement"]],
+                  "Used by the source proof": [describe(n) for n in uses["proof"]],
+                  "Context cited": [describe(n) for n in mentions],
+                  "Proof citations without a result locator": proof_sources[ident],
+                  "Possible uncited definitions": [
+                      f"{term} ({', '.join(f'{n} at {location(index, n)}' for n in ids)})"
+                      for term, ids in uncited_terms[ident].items()]}
+        if targets:
+            fields["Used by"] = [describe(n) for n in users if n in selected]
+        for name, values in fields.items():
+            if values:
+                print(f"\n**{name}** · " + ", ".join(values))
+        print(f"\n**{role}**\n\n{statement}")
+        if proof:
+            print("\n**Source proof**\n\n" + proof)
+        if data["kind"] in PROVABLE and not data["proved"]:
+            print("\nNo attached proof in the exposition.")
+    if args.json:
+        print(json.dumps(rows, indent=1, ensure_ascii=False))
 
 
 def cmd_tree(index: Index, args: argparse.Namespace) -> None:
@@ -364,7 +585,7 @@ def search_engine(index: Index, cache: Path | None) -> Embeddings:
 
     It is saved beside the --cache pickle and rebuilt when the book changes.
     """
-    from txtai import Embeddings  # torch loads for search only, not for the other queries
+    from txtai import Embeddings
 
     engine = Embeddings(path=EMBEDDING_MODEL, hybrid=True, content=False)
     store = cache.parent / "txtai" if cache is not None else None
@@ -560,6 +781,10 @@ def main() -> None:
     p.add_argument("--unused", action="store_true",
                    help="only logical blocks that no logical block uses")
     p.add_argument("--ids", action="store_true", help="print only the ids")
+    p = command("catalogue", cmd_catalogue, "Order formalization candidates by prerequisite.")
+    p.add_argument("--book-tasks", action="store_true", help="list source edits for unresolved prerequisites")
+    p.add_argument("targets", metavar="BLOCK_ID", nargs="*",
+                   help="include these targets, their prerequisites, statements and proofs")
     p = command("show", cmd_show, "Print the source of blocks, with their proofs.")
     p.add_argument("ids", nargs="+")
     p.add_argument("--no-proof", action="store_true")

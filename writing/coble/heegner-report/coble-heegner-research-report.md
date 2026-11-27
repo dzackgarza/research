@@ -416,9 +416,8 @@ Thus the expected moduli dimension is $12-1-2=9$.
 
 The finite symmetry group permutes the four fixed points.
 
-::: {.problem #prob:projective-coverage title="Required theorem (projective coverage and intrinsic reconstruction)"}
-The quotient of the open nodal invariant $(4,4)$ locus by the full centralizer of $\tau$ is the complete direct moduli stack of generic degree-$2$ Coble data.
-Equivalently, the projective diagram can be reconstructed intrinsically from the Coble pair, and the resulting period map has image the full relevant period-domain component.
+::: {.problem #prob:projective-coverage title="Which degree-two Coble data admit the direct invariant $(4,4)$ presentation?"}
+Given a generic degree-two Coble pair, how can one reconstruct the quadric, its involution $\tau$, and the branch curve from the pair? Do the resulting presentations, with isomorphisms in the full centralizer of $\tau$, give an equivalence from the quotient of the open nodal invariant $(4,4)$ locus to the direct moduli stack? The direct one-node construction misses every root divisor of $T_\Co$ (@thm:direct-period-misses-root-walls). Which points of the classical polarized period image $D_{\mathrm{cl}}/H$ of @lem:d2-degree-two-base admit this presentation?
 :::
 
 ## Coble lattice conventions {#sec-coble-lattices}
@@ -1114,6 +1113,7 @@ The second is decided at both its readings: the four-label image without the cha
 
 With $\alpha$ the vector $\delta$ of @lem:coble-heegner-vector, $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ is the group $\Gamma^{\mathrm{Hdg}}_\Co$ of @prop:gamma-co-in-heegner-group.
 The images of $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ and $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ in $\Orth(q_{T_\Co})$, their indices over $\widetilde\Orth^+(T_\Co)$, and the condition under which the two groups coincide are @prop:gamma-cong-eq-heegner.
+:::
 
 ### A lattice-theoretic stabilizer sequence {#sec-stabilizer-sequence}
 
@@ -1812,9 +1812,8 @@ This is the same local operation used by AEGS for crossed nodes, but in the Cobl
 
 ### Required realization theorem {#sec-affine-realization}
 
-::: {.problem #prob:affine-realization title="Required theorem (direct integral-affine realization)"}
-For every sufficiently divisible monodromy invariant in every direct Coble cusp chamber, construct a K3 divisor model $(\mcx,\mcr,\mce)\too(C,0)$ whose dual complex is the prescribed tuple.
-Conversely, show that every direct Coble degeneration admits such a model after finite base change and allowed dlt modification.
+::: {.problem #prob:affine-realization title="Which marked integral-affine spheres occur as actual Coble degenerations?"}
+For every sufficiently divisible monodromy invariant in each direct Coble cusp chamber, is there a K3 divisor model $(\mcx,\mcr,\mce)\too(C,0)$ realizing the prescribed marked sphere as its dual complex? Which choices of component periods and gluing parameters realize its markings and extend its affine symmetries to the algebraic involutions of @prob:algebraic-extension? Conversely, does every direct Coble degeneration admit such a model after finite base change and an allowed dlt modification?
 :::
 
 The proof must include polygon closure, parity and divisibility conditions, triangulation, component periods, gluing parameters, and the realization of the exceptional class as a Cartier divisor or contractible ADE configuration.
@@ -1907,9 +1906,8 @@ D+\frac{1+\epsilon}{2}C+\epsilon R
 \right).
 \]
 
-::: {.problem #prob:component-classification title="Required theorem (Coble component classification)"}
-Classify all finite Type III and affine Type II component pairs arising in direct Coble stable limits.
-Give explicit equations or toric models, involutions, quotient singularities, branch allocation, decorations, and stable contractions; prove that every component occurs in the list and every listed type occurs.
+::: {.problem #prob:component-classification title="Which component pairs actually occur on the KSBA boundary?"}
+Which finite Type III and affine Type II component pairs arise in direct Coble stable limits? For each type, what are its equations or toric model, involution, quotient singularities, branch divisors, decorations, and stable contraction? Which degeneration realizes each type, and why does every component of a direct stable limit occur in the classification?
 :::
 
 This is the Coble analogue of the AEGS ABCDE surface classification.

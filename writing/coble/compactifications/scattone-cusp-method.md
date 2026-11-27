@@ -7,7 +7,7 @@
 Let $d\geq 1$, let $\lkttd\cong\langle -2d\rangle\oplus U^2\oplus E_8^2$ be the lattice of signature (@def:signature) $(2,19)$ of @def:degree-2d-k3-period-data, let $D$ be a connected component of the type IV domain $\Omega_{\lkttd}$, and let $\Gamma\leq\Orth(\lkttd)$ be an arithmetic subgroup (@def:hsd-arithmetic-subgroup) that preserves $D$.
 Then the boundary of the Baily--Borel compactification $\bbcpt{D/\Gamma}$ is the disjoint union of
 
-1. one point $p_v$, a **$0$-cusp** (Type III boundary component (@def:coble-surface)), for each $\Gamma$-orbit of primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) lines $\ZZ v\iscontainedin\lkttd$, and
+1. one point $p_v$, a **$0$-cusp** (Type III boundary component (@rmk:hsd-boundary-components)), for each $\Gamma$-orbit of primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) lines $\ZZ v\iscontainedin\lkttd$, and
 
 2. one curve $C_E$, a **$1$-cusp** (Type II boundary component), for each $\Gamma$-orbit of primitive totally isotropic planes $E\iscontainedin\lkttd$
 
@@ -165,6 +165,15 @@ $$
 
 ## Modular curves on the boundary
 
+::: {.question #qst:isotropic-reduction-fibres title="When does reduction to the discriminant group compute integral isotropic orbits?"}
+
+Let $L$ be an even nondegenerate integral lattice of signature $(2,n)$, and let $\Gamma\leq\Orth^+(L)$ be an arithmetic subgroup. For a primitive totally isotropic sublattice $I\subset L$, put
+$$
+H_I=\big((I\otimes\QQ)\cap L^\#\big)/I\ \hookrightarrow\ A_L=L^\#/L .
+$$
+The inclusion uses $(I\otimes\QQ)\cap L=I$. For an isotropic line $\ZZ v$, @prop:coble-divisibility-discriminant gives the generator $[v/\divisibility_L(v)]$ up to sign. For each rank, which orbits of isotropic subgroups of $A_L$ under the image of $\Gamma$ lift, and how many $\Gamma$-orbits lie over each? For a plane $I$, which complement classes $I^\perp/I$ and integral gluing data distinguish its lifts? For a flag $\ell\subset I$, which orbits of lines under $\operatorname{Stab}_\Gamma(I)$ induce the prescribed inclusion $H_\ell\subseteq H_I$?
+:::
+
 For $L_k=\langle -2k\rangle\oplus U^2\oplus E_8^2$, let $E\subset L_k$ be a primitive totally isotropic plane of divisibility $e$ and suppose $\gcd(e,2k/e^2)=1$. Scattone identifies the image of its stabilizer in $\SL_2(\ZZ)$ for the stable orthogonal group with $\Gamma^1(e)$, so the open one-cusp $C_E$ is $Y_1(e)=\mathbb H/\Gamma^1(e)$ [@Sca87, Prop. 5.5.3]. The compact modular curve $X_1(e)$ has the following invariants in the cases recorded there:
 
 | $e$ | $1$ | $3$ | $5$ | $7$ | $9$ | $11$ | $13$ | $15$ | prime $q>3$ |
@@ -173,6 +182,31 @@ For $L_k=\langle -2k\rangle\oplus U^2\oplus E_8^2$, let $E\subset L_k$ be a prim
 | Cusps | $1$ | $2$ | $4$ | $6$ | $8$ | $10$ | $12$ | $16$ | $q-1$ |
 
 The closure $\overline{C_E}$ in the Baily–Borel compactification need not be $X_1(e)$: the extension $X_1(e)\to\overline{C_E}$ can identify several of the modular cusps at one boundary point [@Sca87, §5.5]. Thus the table counts cusps on the normalization; it does not by itself give the number of distinct zero-cusps incident to $C_E$.
+
+::: {.question #qst:scattone-prime-boundary-curves title="How many boundary curves of each type occur when $N=q$ is an odd prime?"}
+Let $2k$ be cubefree, write $k=\widetilde k N^2$ with $\widetilde k$ squarefree, and suppose $N=q$ is an odd prime. Let $D_k$ be a component of the degree-$2k$ K3 period domain and $\Gamma_k$ the subgroup of $\Orth(L_k)$ preserving $D_k$ and acting trivially on $A_{L_k}$. In the Baily–Borel boundary of $D_k/\Gamma_k$, how many distinct $1$-cusps are isomorphic to $Y_1(1)$, how many to $Y_1(q)$, and what is their total for the given $k$?
+
+The $\frac{q+1}{2}$ points of [@Sca87, Desc. 5.5.5 and Ex. 5.5.6] are $0$-cusps. By @thm:baily-borel-isotropic-boundary each $1$-cusp is an orbit of a plane $E$. Its imprimitivity index $e=|H_E|$, with $H_E$ as in @qst:isotropic-reduction-fibres, determines its modular curve $Y_1(e)$ [@Sca87, Thm. 5.0.3]. Here $e=1$ or $q$.
+:::
+
+::: {.proposition #prop:scattone-prime-boundary-count title="Multiplicity of each modular-curve type"}
+For $e\in\{1,q\}$, let $\mathcal E_e$ be the set of primitive isotropic planes $E\subset L_k$ with $|H_E|=e$. For each such plane put $M_E=E^\perp/E$ and let $\rho_E\colon\Orth(M_E)\to\Orth(A_{M_E})$ be the action on its discriminant form. The number of $1$-cusps of type $Y_1(e)$ in @qst:scattone-prime-boundary-curves is
+$$
+c_e(k)=\sum_{[E]\in\Orth^+(L_k)\backslash\mathcal E_e}
+  [\Orth(A_{M_E}):\rho_E(\Orth(M_E))].
+$$
+The total is $c_1(k)+c_q(k)$.
+:::
+
+::: {.proof}
+For each $\Orth^+(L_k)$-orbit the summand counts the $\Gamma_k$-orbits above it by [@Sca87, Prop. 5.6.8]. Its hypothesis $\gcd(e,2k/e^2)=1$ holds because $2k$ is cubefree. The two values of $e$ exhaust the plane orbits by [@Sca87, (5.1.1)]. Under the same hypothesis the $\Orth^+(L_k)$-orbits coincide with the $\Orth(L_k)$-orbits [@Sca87, §5.3].
+
+For $e=1$ the complements $M_E$ run once over $\mathcal G(k)$ of @prop:scattone-niemeier-complements [@Sca87, Prop. 5.4.7]. For $e=q$ one takes pairs $(t,[M])$ with $[M]\in\mathcal G(\widetilde k)$ and $1\le t<q$ such that $t/\widetilde k$ is a square in $\mathbb F_q^\times$ [@Sca87, Cor. 5.4.6]. These pairs map onto the plane orbits [@Sca87, Lem. 5.4.2]. To evaluate the sum using the pairs one must determine when they give the same orbit [@Sca87, Rem. 5.4.3].
+:::
+
+::: {.example #ex:scattone-nine-curve-count title="The two multiplicities for $k=9$"}
+Here $q=3$ and $\widetilde k=1$. For $e=3$ the only possible value is $t=1$, so the complements run once over $\mathcal G(1)$ [@Sca87, Rem. 5.4.3]. Since $9$ is the square of an odd prime, every summand in @prop:scattone-prime-boundary-count is one [@Sca87, Cor. 5.6.10]. Thus there are $|\mathcal G(9)|$ curves isomorphic to $Y_1(1)$ and $|\mathcal G(1)|=4$ curves isomorphic to $Y_1(3)$, using @ex:scattone-f2-diagram for the last equality.
+:::
 
 Scattone's oriented incidence graph has one vertex for each $\Gamma$-orbit of primitive isotropic lines or planes. For a line $\ell$ and a plane $E$, an edge $[\ell]\to[E]$ means that a representative of $[\ell]$ lies in a representative of $[E]$. Its multiplicity is
 $$

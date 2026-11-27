@@ -28,7 +28,7 @@ Adjunction on the smooth rational curve $E$ gives $E^2 = -2 - E\cdot K_S$.
 Since $C\sim -2K_S$, this is $E^2 = -2 + \tfrac12\,E\cdot C$.
 If $E$ is not a component of $C$, then $E\cdot C\geq 0$, and $E\cdot C = -2E\cdot K_S$ is even (@def:form-axioms).
 The values $E\cdot C = 0$ and $E\cdot C = 2$ give $E^2 = -2$ and $E^2 = -1$, and $E\cdot C\geq 4$ gives $E^2\geq 0$, which is excluded.
-If $E$ is a component of $C$, then $E$ is a boundary component and $E^2 = -4$ by @def:coble-surface.
+If $E$ is a component of $C$, then $E$ is a boundary component (@def:coble-boundary-component) and $E^2 = -4$ by @lem:coble-boundary-self-intersection.
 :::
 
 ## Automorphisms
@@ -58,7 +58,7 @@ In particular, does every Coble surface of rational type in the sense of @def:co
 
 ::: {.definition #def:coble-mukai-lattice title="Coble-Mukai lattice" defines="$\widetilde{\Pic}(S)$; Coble-Mukai lattice; $\CM(S)$"}
 
-Let $S$ be a terminal (@def:terminal-coble-surface) Coble surface (@def:coble-surface) of K3 type with boundary components $C_1,\ldots,C_n$, and let $\beta_i\in\Pic(S)$ be the class of $C_i$.
+Let $S$ be a terminal (@def:terminal-coble-surface) Coble surface of K3 type (@def:terminal-coble-k3-type) with boundary components $C_1,\ldots,C_n$, and let $\beta_i\in\Pic(S)$ be the class of $C_i$.
 Let $\widetilde{\Pic}(S)$ be the $\ZZ$-submodule of $\Pic(S)_\QQ$ spanned by $\Pic(S)$ and $\tfrac12\beta_1,\ldots,\tfrac12\beta_n$.
 The **Coble-Mukai lattice** of $S$ is
 $$

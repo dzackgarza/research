@@ -18,127 +18,126 @@ notes: |-
 
 ::: {.definition #def:period-map title="Period matrix and period map" defines="period matrix; $\Pi(t)$; period map; $\mathcal P$; $\omega_i$; $P_X$; $\omega$; projective period map"}
 
-Let $\pi \colon \mathcal{X} \to M$ be a smooth projective (or compact Kähler) family of complex $m$-dimensional varieties over a connected complex quasi-projective variety (@def:projective-variety) (or complex manifold) $M$.
-Fix a reference fiber (@def:fiber-cofiber) $X = X_{t_0} = \inverseof{\pi}(t_0)$, and let $\{\Sigma_0, \dots, \Sigma_{k-1}\} \subset H_m(X, \ZZ)/\mathrm{tors}$ be an integral basis (@def:based-module) of the middle homology (@def:homology) modulo torsion, where $k = b_m(X)$ is the middle Betti number.
-For each $t \in M$, let $\{\omega_1(t), \dots, \omega_p(t)\}$ be a basis of a holomorphic subbundle of the relative de Rham cohomology, such as $H^{m,0}(X_t) \subset H^m_{\dR}(X_t)$ where $p = h^{m,0}(X)$, varying holomorphically with $t$.
+Let $\pi\colon\mathcal X\to M$ be a smooth projective family of complex $m$-folds (or a smooth proper Kähler family) over a connected complex manifold $M$ or a connected complex quasi-projective base taken in the analytic topology. Fix a reference fibre $X=X_{t_0}$ and a basis $\Sigma_0,\ldots,\Sigma_{k-1}$ of $H_m(X,\ZZ)/\mathrm{tors}$. Parallel transport along a path from $t_0$ to $t$ gives cycles $\Sigma_i(t)$ on $X_t$. Integration identifies the de Rham class of a closed $m$-form $\Omega$ with the functional
+$$
+H_m(X_t,\ZZ)/\mathrm{tors}\longrightarrow\CC,\qquad
+\Sigma\longmapsto\int_\Sigma\Omega.
+$$
+Indeed integration on cycles gives the de Rham comparison with singular cohomology, and evaluation on integral homology identifies $H^m(X_t,\CC)$ with this space of functionals. For a morphism $f\colon Y\to X_t$, the comparison respects pullback because $\int_\gamma f^*\Omega=\int_{f_*\gamma}\Omega$.
 
-1. **The general period matrix and period map:** The *period matrix* of the fiber $X_t$ with respect to the chosen bases (@def:based-module) is the $p \times k$ matrix of period integrals
-   $$
-   \Pi(t) \;\coloneqq\; \begin{pmatrix}
-   \ds\int_{\Sigma_0(t)} \omega_1(t) & \cdots & \ds\int_{\Sigma_{k-1}(t)} \omega_1(t) \\
-   \vdots & \ddots & \vdots \\
-   \ds\int_{\Sigma_0(t)} \omega_p(t) & \cdots & \ds\int_{\Sigma_{k-1}(t)} \omega_p(t)
-   \end{pmatrix}
-   \;\in\; \Mat_{p \times k}(\CC).
-   $$
-   Because the basis of holomorphic forms is determined only up to an invertible change of basis in $\GL_p(\CC)$, the $p$-dimensional subspace spanned by the rows of $\Pi(t)$ defines a point in the Grassmannian $\Gr(p, H^m(X, \CC))$, or more precisely in the Griffiths period domain $\mathcal{D} \subset \Gr(p, k)$ cut out by the Riemann–Hodge bilinear relations.
-   Modulo the global monodromy group (@def:transport-and-monodromy) $\Gamma \le \Aut(H_m(X, \ZZ), Q)$, this association defines the *period map* of the family
-   $$
-   \mathcal{P} \colon M \too \mathcal{D}/\Gamma.
-   $$
+In a local holomorphic frame $\omega_1(t),\ldots,\omega_p(t)$ of $F^m_t=H^{m,0}(X_t)$, the **period matrix** is
+$$
+\Pi(t)_{ji}=\int_{\Sigma_i(t)}\omega_j(t).
+$$
+Its rows are the coordinates of these classes in the cohomology basis dual to the transported cycles. Replacing the frame by $\omega'_j=\sum_l C_{jl}\omega_l$ and the cycles by $\Sigma'_i=\sum_l\Sigma_l B_{li}$ gives $\Pi'=C\Pi B$. Left multiplication preserves the row space. Right multiplication expresses that same subspace in the new coordinates.
 
-2. **Specialization to the one-form case ($p = 1$, Calabi–Yau varieties):** When $X$ is a smooth $m$-dimensional Calabi–Yau variety (such as an elliptic curve with $m=1$, a K3 surface with $m=2$, or a Calabi–Yau threefold with $m=3$), the space of holomorphic top forms is one-dimensional: $h^{m,0}(X) = 1$.
-   There is therefore a unique (up to scaling) non-vanishing holomorphic $m$-form $\Omega \in H^{m,0}(X)$.
-   In this setting, there is exactly one form to integrate ($p = 1$), and the general period matrix specializes to a single row vector of $k = b_m$ period integrals $\omega_0, \dots, \omega_{k-1}$, given by
-   $$
-   \omega_i \;=\; \int_{\Sigma_i} \Omega \qquad (i = 0, \dots, k-1).
-   $$
-   Since $\Omega$ is determined up to an arbitrary non-zero constant $\lambda \in \unitsof{\CC}$, the period integrals are determined up to scalar multiplication, and their totality defines a well-defined point $P_X$ in projective space (@def:projective-morphism-of-schemes) $\PP^{k-1}(\CC)$:
-   $$
-   P_X \;=\; [\omega_0 : \dots : \omega_{k-1}] \;\in\; \PP^{k-1}.
-   $$
-   When $X = X_t = \inverseof{\pi}(t)$ varies in a family $\pi \colon \mathcal{X} \to M$, with $\pi$ determining a locally topologically trivial fibration over a complex quasi-projective variety $M$ and $t \in M$, the association $t \mapsto P_{X_t}$ extends to a holomorphic map
-   $$
-   \omega \colon M \too \PP^{k-1}, \qquad t \longmapsto P_{X_t} = [\omega_0(t) : \dots : \omega_{k-1}(t)],
-   $$
-   called the *projective period map* of the family.
+Transport on the universal cover $\widetilde M$ therefore gives a holomorphic map to $\Gr(p,H^m(X,\CC))$. For a polarized variation the full Hodge filtration gives the period map $\mathcal P\colon M\to\mathcal D/\Gamma$, where $\mathcal D$ classifies filtrations of the prescribed Hodge numbers satisfying the Hodge--Riemann relations and $\Gamma$ is the monodromy group (@def:transport-and-monodromy). The row space above records its top filtration piece.
+
+When $p=1$, as for a K3 surface, choose a local generator $\Omega_t$ of the Hodge line and put $\omega_i(t)=\int_{\Sigma_i(t)}\Omega_t$. The **projective period map** in a flat marking is
+$$
+\omega\colon\widetilde M\to\PP(H^m(X,\CC)),\qquad
+\tilde t\longmapsto P_{X_t,\tilde t}=[\omega_0(t):\cdots:\omega_{k-1}(t)].
+$$
+For a marked K3 surface with marking $\varphi\colon H^2(X_t,\ZZ)\isoto\lkt$, this point is the line $\varphi_{\CC}(H^{2,0}(X_t))\subset\lkt\otimes\CC$. Rescaling $\Omega_t$ fixes the point. A deck transformation acts on it by projective monodromy. Over $M$ the Hodge line defines a section of the projectivized cohomology bundle, and the marked period descends to the quotient by $\Gamma$. A global flat marking gives a map to the fixed projective space itself.
 :::
 
-## The algebraic construction
+## From the family equation to monodromy
 
-::: {.construction #cons:pf-from-jacobian title="From the defining polynomial to the local monodromy" defines="Jacobian ideal; $J$; monomial basis; $B$; Milnor number; $\mu$; $P$; Picard--Fuchs operator; $\mathcal L$; local monodromy exponent; $R$; $R_s$; $R_n$; local monodromy; $T$"}
+::: {.question #qst:monodromy-from-family-equation title="Can one compute monodromy before classifying the singular fibre?"}
 
-Let $k$ have characteristic $0$ and let $f\in k[x_0,\dots,x_{n-1},t]$ present a family of affine hypersurfaces over a one-dimensional base with parameter $t$.
-
-1. Form the Jacobian ideal $J = \left(\partial f/\partial x_0,\dots,\partial f/\partial x_{n-1}\right)$ in $k(t)[x_0,\dots,x_{n-1}]$ and a monomial basis $B$ of the Milnor algebra $k(t)[x]/J$.
-   Then $\mu = \lvert B\rvert$ is the Milnor number of the generic fiber (@def:fiber-cofiber), the base field being $k(t)$.
-
-2. On the Brieskorn module of $f$, take the Gauss--Manin connection (@def:calculus-connection), and apply it to the form
-   $$
-   P \;=\; (-1)^{n-1}\,\frac{\partial_t f}{t}\Bigl(\Sum_{b\in B} b\Bigr)
-   $$
-   with cycle vector $e = [1]$.
-
-3. The result is the Picard--Fuchs operator
-   $$
-   \mathcal L \;=\; \Sum_{i=0}^{\mu} c_i(t)\, D_t^{\,i}
-   \;\in\; k[t]\langle D_t\rangle ,
-   $$
-   of order $\mu$, with each $c_i$ a polynomial in $t$ alone.
-
-4. Compute the indicial polynomial of $\mathcal L$ at $t = 0$.
-   Its roots are the exponents $\alpha_1,\dots,\alpha_\mu$.
-   Its degree (@def:graded-object) (@def:numerical-polarization) equals $\mu$ exactly when $t = 0$ is a regular singular point (@def:regular-singular-point), so checking that degree is checking the hypothesis under which the remaining steps are valid.
-
-5. Let $R$ be the Jordan form over $\overline{\QQ}$ of the companion matrix of the monic indicial polynomial, and let $R = R_s + R_n$ be its Jordan decomposition into commuting semisimple and nilpotent parts.
-
-6. The local monodromy at $t = 0$ is
-   $$
-   T \;=\; \exp(2\pi i R) \;=\; \exp(2\pi i R_s)\,\exp(2\pi i R_n),
-   \qquad
-   \exp(2\pi i R_s) = \diag\!\left(e^{2\pi i\alpha_j}\right),
-   $$
-   the second factor a finite sum since $R_n$ is nilpotent.
-   This is the multiplicative Jordan decomposition of $T$: the first factor is its semisimple part, the second its unipotent part.
+Given the equation of a family over a punctured disc, how can its monodromy be an output of the calculation? Which de Rham class supplies the period, how does the Gauss--Manin connection produce its differential equation, and when do the solutions detect the monodromy on the whole cohomology? A classification by singular fibres can check such a computation once it has been made.
 :::
 
-::: {.corollary #cor:pf-unipotent-monodromy title="Unipotency and the log monodromy"}
+::: {.construction #cons:pf-from-jacobian title="The differential equation of a specified class" defines="Picard--Fuchs operator"}
 
-Let $T$, $R = R_s + R_n$ and $\alpha_1,\dots,\alpha_\mu$ be as in @cons:pf-from-jacobian.
+Let $X_t$ be a smooth projective family over an open subset of the complex $t$-line. On its generic fibre take the finite-dimensional space $H=H^m_{\mathrm{dR}}(X_t/\CC(t))$ with Gauss--Manin connection $\nabla_t$. Specify a nonzero class $\omega\in H$. For a smooth projective hypersurface $f_t=0$, primitive classes can be presented as residues of rational forms with poles along $f_t=0$. For such a form $\eta$, the period of $\operatorname{Res}(\eta)$ over a middle-dimensional cycle $\gamma$ is $(2\pi i)^{-1}\int_{\operatorname{Tube}(\gamma)}\eta$, where the tube circles the hypersurface once in the positive normal direction. Reduction of differentiated forms modulo exact forms uses the Jacobian ideal $J=(\partial_{x_i}f_t)_i$ [@Mor92, §3, eq. (6)].
 
-1. $T$ is unipotent if and only if every exponent $\alpha_j$ is an integer.
+Let $r$ be the first index at which $\omega,\nabla_t\omega,\ldots,\nabla_t^r\omega$ become dependent. Write the first relation as $\sum_{i=0}^r a_i(t)\nabla_t^i\omega=0$, with $a_r=1$. For any flat cycle $\gamma(t)$, differentiation under the period pairing gives
+$$
+\mathcal L\int_{\gamma(t)}\omega=0,\qquad
+\mathcal L=\sum_{i=0}^r a_i(t)D_t^i,\qquad D_t a=aD_t+\partial_t a .
+$$
+The monic minimal operator for this class is its *Picard--Fuchs operator*. Clearing denominators gives a polynomial-coefficient equation. Its rank is the dimension of the differential submodule generated by $\omega$. To recover the full local system when $r<\dim H$, compute the connection on a basis of $H$, including how it acts between the submodule and its quotient.
 
-2. In that case
-   $$
-   N \;=\; \log T \;=\; 2\pi i\, R_n ,
-   $$
-   so the nilpotency index (@def:nilpotency-index) of $N$ is the nilpotency index of $R_n$, and the Jordan block sizes of $T$ are those of $R$.
+Continue a fundamental system of solutions around a positively oriented loop. At a regular singular point, Frobenius expansions do this locally by continuing $t^\alpha$ and $\log t$. The former acquires the factor $e^{2\pi i\alpha}$, and the latter acquires the summand $2\pi i$. Thus the indicial roots give the eigenvalues. The logarithmic terms determine additional entries of the continuation matrix. Identifying an integral lattice in the solution space requires comparison with periods of integral cycles [@Mor92, §1, pp. 3–5].
+:::
 
-3. The Jordan type of $T$, and hence the nilpotency index of $N$ and the type of @def:kulikov-types, is the same in every basis (@def:based-module) of the fiber (@def:fiber-cofiber) cohomology.
+::: {.construction #cons:integral-monodromy-by-periods title="Monodromy in an integral basis of cycles"}
+
+In the family of @cons:pf-from-jacobian, choose a basis $\omega_1,\ldots,\omega_n$ of the full degree-$m$ de Rham cohomology over $\CC(t)$. Fix a base point $t_0$ and a loop $\ell$ along which these classes are a frame. Transport an integral basis $\gamma_1,\ldots,\gamma_n$ of $H_m(X_{t_0},\ZZ)/\mathrm{tors}$ along $\ell$. Write
+$$
+\nabla_t\omega_i=\sum_k A_{ik}\omega_k,\qquad
+P_{ij}(t)=\int_{\gamma_j(t)}\omega_i(t).
+$$
+Differentiating gives $P'=AP$, with forms indexing rows and cycles indexing columns [@Mov21, §13.5, Prop. 13.2]. The de Rham comparison in @def:period-map makes $P(t_0)$ invertible. After continuation around $\ell$, the de Rham basis returns to its original value because it is single-valued. The $j$th column of the continued matrix $P^\ell(t_0)$ therefore consists of integrals over the transported cycle $T_\ell\gamma_j$. With the images of basis cycles written in columns, this gives
+$$
+P^\ell(t_0)=P(t_0)T_\ell,\qquad T_\ell=P(t_0)^{-1}P^\ell(t_0).
+$$
+This choice of periods determines the integral matrix. An arbitrary fundamental matrix of the same system determines its complex conjugacy class. A single class $\omega$ supplies a frame by successive derivatives precisely when the order of its minimal Picard--Fuchs operator equals $n$. If its order is smaller, its scalar equation describes the periods restricted to the differential submodule it generates.
+:::
+
+::: {.question #qst:symbolic-family-monodromy title="What does the period of a single elliptic differential determine?"}
+
+Let $E_t$ be the smooth projective completion of $y^2=x^3-t$ for $t\ne0$. What is the minimal differential equation for the periods of $dx/y$? How can its solutions form a complex line when $H_1(E_t,\ZZ)$ has rank two? What determines the action of a positive loop about $0$ on integral cycles?
+:::
+
+::: {.example #ex:elliptic-monodromy-from-equation title="Integral monodromy of the family $y^2=x^3-t$"}
+
+Put $\omega=dx/y$ and $\eta=x\,dx/y$. Differentiation at fixed $x$ gives $\partial_t(1/y)=1/(2y^3)$. Using $2y\,d_xy=3x^2\,dx$ on the fibre gives the exact differentials
+$$
+(6t\partial_t+1)\omega=-2\,d_x(x/y),\qquad
+(6t\partial_t-1)\eta=-2\,d_x(x^2/y).
+$$
+The classes of $\omega$ and $\eta$ form a basis of $H^1_{\mathrm{dR}}(E_t)$. Indeed, $\omega$ is holomorphic and nowhere zero. The only pole of $\eta$ is a double pole at infinity. Its residue is zero by the residue theorem, so its periods descend to cycles on the complete curve. If $\eta-c\omega$ were exact, its meromorphic primitive would have a single simple pole. It would give a degree-one map $E_t\to\PP^1$, which is impossible. The nonzero holomorphic form $\omega$ itself has no meromorphic primitive, since such a primitive would be holomorphic on the projective curve. This proves independence in the two-dimensional cohomology.
+
+Thus the connection matrix in @cons:integral-monodromy-by-periods is $\frac{1}{6t}\operatorname{diag}(-1,1)$ in this basis. The minimal operator for $\omega$ is $D_t+1/(6t)$. The periods of $\omega$ are constant multiples of $t^{-1/6}$, and those of $\eta$ are constant multiples of $t^{1/6}$. The substitution $t=u^6$, $x=u^2X$, $y=u^3Y$ gives the same exponents geometrically. The curve becomes $Y^2=X^3-1$, and the two forms become $u^{-1}dX/Y$ and $uX\,dX/Y$.[^elliptic-period-implementations]
+
+Fix $t_0\ne0$ and write $\zeta=e^{2\pi i/6}$. Integration of $\omega$ identifies $H_1(E_{t_0},\ZZ)$ with its period lattice $\Lambda\subset\CC$ [@Sil09, VI, Prop. 5.2]. For a cycle with period $p$, continuation of $t^{-1/6}$ around a positive loop gives the period $\zeta^{-1}p$. Thus multiplication by $\zeta^{-1}$ acts on $\Lambda$ as the monodromy. The periods of two basis cycles are independent over $\RR$ even though their period functions are proportional over $\CC$.
+
+Choose a shortest nonzero period $\lambda$. Then $\lambda,\zeta\lambda$ belong to $\Lambda$ and form a positively oriented basis over $\RR$ of $\CC$. They also generate $\Lambda$ over $\ZZ$. Indeed, express any period in this real basis and round each coefficient to the nearest integer. The remainder is a period of length at most $\sqrt{3}\,|\lambda|/2$, so it vanishes by minimality. Since $\zeta^{-1}=1-\zeta$, transport sends the cycle with period $\lambda$ to the cycle with period $\lambda-\zeta\lambda$, and the one with period $\zeta\lambda$ to the one with period $\lambda$. In that ordered integral basis,
+$$
+T=\begin{pmatrix}1&1\\-1&0\end{pmatrix}.
+$$
+Its eigenvalues $\zeta^{-1},\zeta$ agree with the continuation factors for the two rows of the period matrix.
+:::
+
+[^elliptic-period-implementations]: For the scalar equation, see Lairez's Magma package `periods` [@Lai15, §8] and Koutschan's `HolonomicFunctions`. An annihilating operator can have higher order than the minimal operator derived here. For the connection matrix, Movasati describes `gaussmaninmatrix` in the Singular library `foliation.lib` [@Mov21, §20.3]. Compare the result in the ordered basis $(\omega,\eta)$. Numerical continuation with `ore_algebra` starts from a supplied differential operator. Comparison with integral cycles is a further step.
+
+::: {.corollary #cor:pf-unipotent-monodromy title="Unipotence and the logarithm of monodromy"}
+
+Let $T$ act on the solution space of a regular singular equation at $0$ with indicial roots $\alpha_j$.
+
+1. $T$ is unipotent if and only if every $\alpha_j$ is an integer.
+2. If $T$ is unipotent, then $N=\log T=\sum_{k\ge1}(-1)^{k+1}(T-I)^k/k$ is a finite sum.
+3. The Jordan type of $T$ and the nilpotency index of $N$, when defined, are invariant under change of basis. For a Kulikov degeneration the test in @def:kulikov-types applies to the action on the full $H^2$.
 :::
 
 ::: {.proof}
-
-For (1), step 6 of @cons:pf-from-jacobian gives $\exp(2\pi i R_s) = \diag(e^{2\pi i\alpha_j})$ as the semisimple part of $T$.
-By uniqueness of the multiplicative Jordan decomposition, $T$ is unipotent exactly when its semisimple part is the identity, that is, when $e^{2\pi i\alpha_j} = 1$ for every $j$.
-
-For (2), integral exponents give $\exp(2\pi i R_s) = I$, so $T = \exp(2\pi i R_n)$.
-The series $\exp$ and $\log$ are inverse bijections between nilpotent and unipotent matrices, so $\log T = 2\pi i R_n$.
-A nonzero scalar multiple of $R_n$ has the nilpotency index and Jordan type of $R_n$.
-The matrix $R$ is in Jordan form, so on each Jordan block of $R$ the part $R_s$ is the scalar $\alpha_j$ and $R_n$ is a single nilpotent Jordan block of the same size.
-On that block $T - I = 2\pi i R_n\, u$ with $u = \Sum_{k\geq0} (2\pi i R_n)^k/(k+1)!$ invertible and commuting with $R_n$, so $\ker (T-I)^k = \ker R_n^k$ for every $k$, and $T$ has the Jordan block sizes of $R_n$.
-
-For (3), a change of basis conjugates $T$ by an invertible matrix, and conjugates $N = \log T$ by the same matrix.
-The Jordan type and the nilpotency index are invariant under conjugation.
+The eigenvalues are $e^{2\pi i\alpha_j}$ by @cons:pf-from-jacobian. They all equal one precisely for integral exponents. Then $T-I$ is nilpotent. The logarithm is a polynomial in $T-I$, so conjugating $T$ conjugates $N$ by the same change of basis.
 :::
 
-## The Legendre specimen
+The equations $y''=0$ and $t(1-t)y''+ty'-y=0$ have the same monic indicial polynomial $s(s-1)$ at zero. The first has solutions $1,t$. The second has solutions $t,1+t\log t$, as substitution shows. Continuation adds $2\pi i\,t$ to its second solution. The same indicial polynomial thus occurs with two different Jordan types.
 
-::: {.example #ex:legendre-monodromy title="The Legendre family"}
+## The Legendre family
 
-For $y^2 = x(x-1)(x-t)$, presented in $k[x,y,t]$ with weights $(2,3,1)$ and the weighted degree-reverse-lexicographic order, @cons:pf-from-jacobian returns
+::: {.example #ex:legendre-monodromy title="The logarithm in the periods of the Legendre family"}
+
+Let $y^2=x(x-1)(x-t)$ and $\omega=dx/y$. Differentiating at fixed $x$ gives
 $$
-\mu = 2,
+\left(t(1-t)D_t^2+(1-2t)D_t-\tfrac14\right)\omega
+=\tfrac12\,d_x\!\left(\frac{x(x-1)}{(x-t)y}\right).
 $$
-a Picard--Fuchs operator of order $2$ whose coefficient list begins
+Hence the operator on the left annihilates the periods. The classes of $\omega$ and $\nabla_t\omega$ span $H^1$. Indeed $\partial_t\omega=dx/(2(x-t)y)$ has a double pole at the ramification point over $x=t$ and is regular elsewhere. If $\partial_t\omega-c\omega$ were exact on a smooth fibre, a meromorphic primitive would have just one simple pole. It would define a degree-one map from that elliptic curve to $\PP^1$, which is impossible.
+
+At zero the holomorphic solution $y_1$ with $y_1(0)=1$ has coefficients $(n+1)^2a_{n+1}=(n+\tfrac12)^2a_n$. Reduction of order gives a second solution
 $$
--3t+3,\qquad 12t^2+8t-4,\qquad 12t^3-8t^2-4t,
+y_2=y_1\int\frac{dt}{t(1-t)y_1^2}.
 $$
-indicial polynomial $-4\alpha^2$ at $t = 0$, hence a double exponent $\alpha = 0$; nilpotent part with Jordan form $\begin{psmallmatrix}0&1\\0&0\end{psmallmatrix}$; and
+The integrand has residue one. Thus $y_2=y_1\log t+h(t)$ for a holomorphic $h$. Continuation fixes $y_1$ and sends $y_2$ to $y_2+2\pi i\,y_1$. In the ordered solution basis $(y_1,y_2)$ its matrix is
 $$
-T \;=\; \begin{pmatrix} 1 & 2\pi i \\ 0 & 1\end{pmatrix},
+T=\begin{pmatrix}1&2\pi i\\0&1\end{pmatrix}.
 $$
-a single Jordan block, so $T$ is unipotent with $N\neq 0$ and $N^2 = 0$.
+Here $N\ne0$ and $N^2=0$. The logarithm in the solution exhibits the nonzero entry.
 :::
 
 ::: {.proposition #prop:legendre-monodromy-basis-not-integral title="The Legendre monodromy is not written in an integral basis"}
@@ -156,6 +155,32 @@ The second statement is @cor:pf-unipotent-monodromy(3) applied to the single Jor
 :::
 
 ## The topological construction
+
+::: {.question #qst:braid-monodromy-on-homology title="How does a braid of branch values act on the homology of the covering curve?"}
+
+Fix a projection $x\colon C_t\to\PP^1$ of a family of smooth connected projective curves over a punctured disc. Suppose its degree is constant and its distinct branch values move without collision. A positive loop in the parameter traces a braid of branch values. Which braids lift to the reference cover? What determines the lift for the given family? From the lift, how can one compute an integral matrix on $H_1(C_{t_0},\ZZ)$ and its Jordan form over $\CC$, including for covers of degree greater than two?
+:::
+
+::: {.construction #cons:branch-braid-lift title="Lifting the braid with its action on the sheets"}
+
+Write $C=C_{t_0}$, let $B\subset\PP^1$ be the branch set (including infinity if it is branched), and choose a base point $x_*$ away from the paths of the branch values. Number the $d$ points over $x_*$. Path lifting gives the permutation representation $\theta\colon\pi_1(\PP^1\setminus B,x_*)\to\mathfrak S_d$. An isotopy moving the branch values along the braid and fixing $x_*$ ends at a homeomorphism $h$ of $(\PP^1,B)$. A lift $\widetilde h$ that induces the permutation $\sigma$ over $x_*$ must satisfy
+$$
+\theta(h_*\gamma)=\sigma\,\theta(\gamma)\,\sigma^{-1}
+\qquad\text{for every }\gamma\in\pi_1(\PP^1\setminus B,x_*).
+$$
+Conversely, when this identity holds, send sheet $i$ to sheet $\sigma(i)$ and lift paths from $x_*$. The identity makes the endpoint independent of the chosen path representing a point upstairs. This gives the unique lift with that action on the sheets [@Hat02, §1.3]. Without $\sigma$, two lifts of the same $h$ can differ by a deck transformation. For a plane equation $f(x,y,t)=0$, take $x_*$ where $f(x_*,y,t)$ has $d$ distinct finite roots throughout the loop. Continuing these roots in $t$ gives $\sigma$. Continuing the roots in $x$ around the individual branch values at fixed $t_0$ gives the permutations defining $\theta$.
+
+For an integral matrix, choose a sheet $i$ and put $H_i=\theta^{-1}(\operatorname{Stab}(i))$. This is the fundamental group of $C\setminus x^{-1}(B)$ based at that sheet. In $H_i^{\mathrm{ab}}$, kill the class of a small positive circle about **each** point of $x^{-1}(B)$ to obtain $H_1(C,\ZZ)$. A cycle of length $e$ in a branch permutation contributes one such circle, obtained by lifting $e$ turns about the corresponding branch value. The lift extends over these punctures and permutes their circles [@Hat02, §1.3; @Hat02, §2.2]. Apply $h_*$ to loops and start their lifts at $\sigma(i)$. A path back to the original base sheet identifies the two fundamental groups up to inner automorphism, which acts trivially after abelianization. Express the resulting classes in an integral basis of the quotient. Their coordinates are the columns of the required matrix.
+:::
+
+::: {.example #ex:fixed-branch-values-moving-sheets title="A smooth plane quartic with stationary branch values"}
+
+Take $C_t\colon y^3=t\,x(x-1)(x-2)(x-3)$, with $t\ne0$, and its smooth plane quartic completion. Projection to $x$ has degree three. The finite branch values and infinity stay fixed, so the braid is the identity. Yet along $t=t_0 e^{2\pi i s}$ the maps $(x,y)\mapsto(x,e^{2\pi i s/3}y)$ identify the successive fibres. At $s=1$ the three points over $x_*$ have undergone a $3$-cycle.
+
+Put $\zeta=e^{2\pi i/3}$. A basis of holomorphic differentials is $dx/y,\,dx/y^2,\,x\,dx/y^2$. At each finite branch point $y$ is a parameter and $dx$ vanishes to order two. At infinity $x,y,dx$ have poles of orders three, four and four. Thus the three forms are regular. They are independent because $y,1,x$ are independent, and a smooth plane quartic has genus three. Its plane embedding is canonical by adjunction, so this curve is non-hyperelliptic. The deck transformation acts on these forms with eigenvalues $\zeta^{-1},\zeta,\zeta$. Their complex conjugates give the other half of $H^1(C,\CC)$. Hence the Jordan form on complex homology is diagonal with each of $\zeta,\zeta^{-1}$ occurring three times.
+
+For the integral matrix, let $\zeta$ act on $H_1(C,\ZZ)$ by transport $T$. The relation $T^2+T+I=0$ follows from the eigenvalues and torsion-freeness. Every nonzero element of $\ZZ[\zeta]$ acts invertibly on rational homology. Thus $H_1(C,\ZZ)$ is torsion-free of rank three over the Euclidean ring $\ZZ[\zeta]$. Choose a basis $u_1,u_2,u_3$ over that ring. On each integral pair $(u_i,Tu_i)$ the matrix is $\left(\begin{smallmatrix}0&-1\\1&-1\end{smallmatrix}\right)$. The constant family with this same reference cover has the same braid and acts as the identity on homology.
+:::
 
 ::: {.construction #cons:lefschetz-periods title="Periods from a Lefschetz pencil" defines="vanishing cycle; $\delta_i$; thimble; $\Delta_i$"}
 

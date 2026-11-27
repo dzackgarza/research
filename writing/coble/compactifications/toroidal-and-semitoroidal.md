@@ -53,6 +53,15 @@ For example, $Q=\left(\begin{smallmatrix}2&1\\1&3\end{smallmatrix}\right)$ is po
 
 ![Two hexagonal cells with edge lengths $a,b,c$ in the archive illustration.](/rendered/honeycomb_sidelengths.jpg){#fig-ppav-hexagons}
 
+::: {.question #qst:genus-two-boundary-chamber title="Does a period map explain the genus-two specialization poset?"}
+
+A stratum of the Deligne--Mumford boundary of $\overline{\mathcal M}_2$ has a stable dual graph: vertices record the genera of the components, and edges record nodes. Smoothing nodes contracts the corresponding edges, with the genus of the vertex increasing when the edge is a loop. On the period side, specialization of strata is read from faces of cones, modulo the arithmetic group and with any prescribed roots declared irrelevant (@def:generalized-coxeter-semifan).
+
+For an unmarked stable graph of genus two, the vertex contributions $2g_v-2+\operatorname{val}(v)$ are positive integers with sum $2$. Hence there are at most two vertices. With one vertex, its genus and its number of loops sum to two. With two, each contribution is one, so each vertex is elliptic of valence one or rational of valence three. Connectedness now gives the following list. Order the strata by specialization from the smooth stratum. Label the smooth graph by $24$, the irreducible one-node graph by $12$, and the two elliptic vertices joined by a bridge by $8$. In codimension two, label the rational vertex with two loops by $6$, and the rational vertex with a loop joined to an elliptic vertex by $4$. The trivalent graphs have two rational vertices. Label the graph with three parallel edges by $3$ and the graph with a loop at each end of a bridge by $2$. Contracting an edge gives precisely the covers for divisibility on these labels, with $24$ at the smooth end. For instance the bridge in the last graph contracts to give $6$, and either loop contracts to give $4$. The graph labelled $3$ contracts only to $6$. Thus the comparison with the divisors of $24$ other than $1$ includes the smooth stratum; the proper boundary omits $24$.
+
+Does a period model induce this correspondence? What lattice, cusp and reflection group would produce the proposed $D_4$-shaped diagram, with which edge labels? Which graph contraction corresponds to each face specialization, and how do the respective stabilizers act? The abstract poset calculation leaves open whether a morphism of compactifications induces it.
+:::
+
 ## Semitoroidal compactifications
 
 ::: {.definition #def:semitoroidal-compactification defines="semitoroidal compactification; $\semitorcpt{\FG}$; semifan"}
@@ -619,7 +628,7 @@ A cone of the Coxeter semifan (@def:coxeter-semifan) of dimension $18$ is a face
 
 Let $\eta$ be a $0$-cusp of $F_{2d}$ with $p_*(\delta_\eta)=p>1$. Write $d=N^2d_0$ with $d_0$ squarefree, let $h=\gcd(q,N)$ for the class $\{\pm q\}$ of $\eta$, so that $p=N/h$ [@AE23, §10C, printed p. 37], and put $a=q/h$ and $k=d/p^2=d_0h^2$. Let $g$ generate the $\langle-2d\rangle$ summand of $L_{2d}$ and let $e_1,f_1$ be the basis (@def:based-module) of the first hyperbolic plane (@def:hyperbolic-plane). Then
 $$\delta=a g+p e_1+p d_0q^2f_1$$
-is a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) representative of $\eta$ with $p_*(\delta)=p$. The vector $e_2$ of the second hyperbolic plane is primitive isotropic with $p_*(e_2)=1$, and $\delta\cdot e_2=0$; so $J=\ZZ\delta\oplus\ZZ e_2$ is a primitive isotropic rank-two sublattice. The boundary component (@def:coble-surface) $F_J$ is a $1$-cusp of the Baily--Borel compactification [@AET23, §3B, printed pp. 15--16], and both $F_{\ZZ\delta}$ and $F_{\ZZ e_2}$ lie in its closure: every $0$-cusp with $p_*>1$ and the unigonal cusp of $F_{2d}$ lie on a common $1$-cusp. By the compatibility clause of [@AE23, Def. 5.11, printed p. 14] the two $0$-cusp semifans (@def:semitoroidal-compactification) are constrained by the same $1$-cusp.
+is a primitive (@def:primitive-embedding) isotropic (@def:orthogonal-complement) representative of $\eta$ with $p_*(\delta)=p$. The vector $e_2$ of the second hyperbolic plane is primitive isotropic with $p_*(e_2)=1$, and $\delta\cdot e_2=0$; so $J=\ZZ\delta\oplus\ZZ e_2$ is a primitive isotropic rank-two sublattice. The boundary component (@rmk:hsd-boundary-components) $F_J$ is a $1$-cusp of the Baily--Borel compactification [@AET23, §3B, printed pp. 15--16], and both $F_{\ZZ\delta}$ and $F_{\ZZ e_2}$ lie in its closure: every $0$-cusp with $p_*>1$ and the unigonal cusp of $F_{2d}$ lie on a common $1$-cusp. By the compatibility clause of [@AE23, Def. 5.11, printed p. 14] the two $0$-cusp semifans (@def:semitoroidal-compactification) are constrained by the same $1$-cusp.
 :::
 
 ::: {.proof}

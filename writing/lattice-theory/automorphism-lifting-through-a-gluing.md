@@ -26,10 +26,12 @@ $\pi_{M\perp N}\colon(M\perp N)^\#\twoheadrightarrow A_{M\perp N}^\sharp$
 of @def:metric-dual induces
 $h\colon(H,0)\injects A_{M\perp N}$
 in $\mathbf{BilMod}_{\bZ}$, characterized by
-```tikzcd
+
+\begin{tikzcd}
 L \arrow[r] \arrow[d,two heads,"c"'] & (M\perp N)^\# \arrow[d,two heads,"\pi_{M\perp N}"] \\
 H \arrow[r,hook,"U_{\mathrm{mod}}(h)"'] & A_{M\perp N}^\sharp
-```
+\end{tikzcd}
+
 The gluing datum is the isotropic subobject $h$ of $A_{M\perp N}$, whose value module is $W_b(M\perp N)$ of @def:discriminant.
 
 If $L,M,N$ are even, $h$ refines to
@@ -49,10 +51,10 @@ Put $\psi\definedas\varphi_M\perp\varphi_N$ and $\bar\psi\definedas\rho_{M\perp 
 Then $\psi$ extends to an isometry of $L$ if and only if there exists
 $u\in\Aut_{\bZ\text{-}\mathbf{Mod}}(H)$ for which the following square commutes (@def:commutative-diagram):
 
-```tikzcd
+\begin{tikzcd}
 H \arrow[r,"u"] \arrow[d,"h"'] & H \arrow[d,"h"] \\
 A_{M\perp N} \arrow[r,"\bar\psi"'] & A_{M\perp N}
-```
+\end{tikzcd}
 
 The extension is then unique and restricts to $\varphi_M$ on $M$ and to $\varphi_N$ on $N$.
 :::
@@ -82,10 +84,10 @@ Let $\Stab_{\Orth(A_M)}(h)\injects\Orth(A_M)$ be the stabilizer (@def:group-orbi
 $h\colon(H,0)\injects A_{M\perp N}$ under the action through the first summand of the common-value isometry of @prop:discriminant-orthogonal-sum.
 The stabilizer $\Stab_\Gamma(h)$ is the pullback in $\mathbf{Grp}$
 
-```tikzcd
+\begin{tikzcd}
 \Stab_\Gamma(h) \arrow[r] \arrow[d] & \Gamma \arrow[d,"\rho_M|_\Gamma"] \\
 \Stab_{\Orth(A_M)}(h) \arrow[r,hook] & \Orth(A_M).
-```
+\end{tikzcd}
 
 Then the elements of $\Stab_\Gamma(h)$ are exactly the isometries of $M$ that extend over $L$ while fixing $N$ pointwise.
 The pullback defining $\Stab_\Gamma(h)$ induces the monomorphisms
@@ -109,6 +111,26 @@ $\widetilde\Orth(M)\mathbin{\times}_{\Orth(M)}\Gamma\injects\Stab_\Gamma(h)$.
 The discriminant module $A_M^\sharp$ has finite length (@def:anticanonical-pair) over $\bZ$, hence finite cardinality; therefore $\Orth(A_M)$ is finite and $\Stab_\Gamma(h)\injects\Gamma$ has finite index.
 :::
 
+
+::: {.corollary #cor:gluing-congruence-level title="A congruence level for isometries fixing a nonisotropic vector"}
+
+Let $L$ be a nondegenerate integral lattice, $v\in L$ with $v^2\ne0$, and $K=v^{\perp L}$. Let $d$ be the exponent of $L/(\ZZ v\oplus K)$, with $d=1$ when the quotient is trivial. Every $F\in\Orth(K)$ acting identically on $K/dK$ extends uniquely to an isometry of $L$ fixing $v$.
+:::
+
+::: {.proof}
+
+Choose a basis of $L$ and let $P$ have columns $v$ followed by a basis of $K$. The orthogonal decomposition $L_\QQ=\QQ v\perp K_\QQ$ makes $P$ invertible over $\QQ$. The inclusion $dL\subseteq\ZZ v\oplus K$ is equivalent to integrality of $dP^{-1}$. The unique rational extension has matrix
+$$
+P\operatorname{diag}(1,F)P^{-1}
+=I+P\operatorname{diag}\!\left(0,\frac{F-I}{d}\right)(dP^{-1}).
+$$
+Both this matrix and the one obtained from $F^{-1}$ are integral, so the extension preserves $L$. The level can be read from the largest invariant factor of $P$.
+:::
+
+::: {.example #ex:hyperbolic-plane-gluing-extension title="A complement isometry that fails to extend over the hyperbolic plane"}
+
+In $L=U$ take a hyperbolic basis $p,q$ and put $v=p+2q$. Then $K=\ZZ(p-2q)$ and $L/(\ZZ v\oplus K)\cong\ZZ/4$. The rational isometry fixing $v$ and negating $p-2q$ sends $p$ to $2q$ and $q$ to $p/2$. Thus negation on $K$ fails to extend even though $L$ is unimodular.
+:::
 
 ::: {.proposition #prop:gluing-lifting-obstruction-sequence title="Exact sequence and obstruction set for gluing extensions"}
 For $\Gamma\injects\Orth(M)$ and the gluing subobject $h$ of @cor:liftable-automorphisms, put

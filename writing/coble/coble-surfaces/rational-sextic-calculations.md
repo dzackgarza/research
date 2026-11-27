@@ -8,16 +8,11 @@ Then $C$ is a rational curve if and only if it has exactly ten $A_1$ singulariti
 
 ::: {.proof}
 
-Recall the genus–degree (@def:graded-object) (@def:numerical-polarization) formula for singular plane curves:
-
+Let $\nu\colon\widetilde C\to C$ be the normalization. For an integral plane curve of degree $d$, the plane genus formula gives $p_a(C)=(d-1)(d-2)/2$. The cokernel of $\OO_C\to\nu_*\OO_{\widetilde C}$ has length $\delta_p$ at each singular point $p$. Taking Euler characteristics gives
 $$
-p_a(C) = {1\over 2}(d-1)(d-2) - \Sum_p \delta_p
+g(\widetilde C)=p_a(C)-\sum_{p\in C^{\rm sing}}\delta_p.
 $$
-
-where the sum is over the singular locus of $C$.
-Since $C$ has at worst $A_1$ singularities, each singularity contributes $\delta_p = 1$.
-Noting that $d=6$, we obtain the geometric genus $g = 10 - k$, where $k$ is the number of $A_1$ singularities.
-Thus $g = 0$ if and only if $k = 10$.
+A node contributes one. Thus a sextic with $n$ nodes and no other singularities has arithmetic genus $10$ and normalization of genus $10-n$. Over $\CC$ the normalization is rational exactly when this genus is zero [@stacks-0CE0].
 :::
 
 ::: {.proposition #prop:rational-sextic-severi title="The Severi variety of rational sextics"}
@@ -25,6 +20,17 @@ Thus $g = 0$ if and only if $k = 10$.
 1. Let $S_{6,0}\iscontainedin\PP^{27}$ be the Severi variety of rational plane sextics. It is irreducible of dimension $17$ and degree (@def:graded-object) (@def:numerical-polarization) $26312976$. Its general member has exactly $10$ nodes, and the set of these $10$ nodes determines the curve [@BHO+12, §4, proof of Thm. 2].
 2. There is a rational cuspidal plane sextic over $\CC$ whose only singular point is a cusp with multiplicity sequence $[5]$ [@GK20, Thm. 1.1, Thm. 3.1]. It does not have ten $A_1$ singularities.
 
+:::
+
+::: {.question #qst:sextic-moduli-maps title="Can one recover a nodal plane sextic from its abstract curve or its pointed normalization?"}
+
+Fix an irreducible plane sextic with $n$ ordinary nodes and no other singularities, and put $g=10-n$. Forgetting the plane gives a stable curve in $\overline{\mathcal M}_{10}$. Normalizing gives a smooth curve of genus $g$ with $n$ unordered pairs of distinct branch points. On the equinodal locus, label the nodes and order their branches étale locally. Changing these choices gives the action of $G_n=(\mathfrak S_2)^n\rtimes\mathfrak S_n$ on the markings. The two constructions fit into
+$$
+[\text{equinodal sextics}/\mathrm{PGL}_3]\longrightarrow
+[\mathcal M_{g,2n}/G_n]\xrightarrow{\ \mathrm{glue\ the\ pairs}\ }
+\overline{\mathcal M}_{10}.
+$$
+Gluing recovers the original abstract nodal curve. What are the fibres of these maps from the plane-curve stack? For a given pointed normalization, which base-point-free plane linear series of degree six identify just the prescribed pairs and give ordinary nodes? On which locus, if any, can the plane series be recovered up to projectivity from the abstract curve? This recovery is the issue in asking for an embedding into curve moduli.
 :::
 
 ::: {.proposition #prop:coble-canonical-class title="Canonical class of the blowup of the ten nodes"}

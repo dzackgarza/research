@@ -12,10 +12,10 @@ $\iota_\QQ\colon S_\QQ\injects L_\QQ$ be its base change (@def:module-base-chang
 $j_L\colon L\to L_\QQ$ be the canonical map.
 The **saturation** of $\iota$ is the pullback (@def:pullback-square) in $\ZZ\text{-}\mathbf{Mod}$
 
-```tikzcd
+\begin{tikzcd}
 \Sat_L(\iota) \arrow[r] \arrow[d] & S_\QQ \arrow[d,"\iota_\QQ"] \\
 L \arrow[r,"j_L"'] & L_\QQ
-```
+\end{tikzcd}
 
 The maps $S\to S_\QQ$ and $\iota\colon S\to L$ induce a canonical morphism
 $S\to\Sat_L(\iota)$.
@@ -87,10 +87,12 @@ $S/\mathbf{Lat}_\ZZ$ on primitive (@def:primitive-embedding) morphisms.
 Thus its objects are primitive embeddings (@def:primitive-embedding) $\iota\colon S\injects M$, and a morphism
 from $\iota_1\colon S\injects M_1$ to $\iota_2\colon S\injects M_2$ is an isometry
 $\varphi\colon M_1\isoto M_2$ for which the triangle
-```tikzcd
+
+\begin{tikzcd}
 & S \arrow[dl,"\iota_1"'] \arrow[dr,"\iota_2"] & \\
 M_1 \arrow[rr,"\varphi"'] && M_2
-```
+\end{tikzcd}
+
 commutes.
 
 For a fixed target (@def:globular-boundary) $L$, write
@@ -140,10 +142,12 @@ as posets [@Nik80, §1.4].
 For $h_q$ with bilinear monomorphism $h\colon H\injects A_S^\sharp$, let
 $\pi_S\colon S^\#\twoheadrightarrow A_S^\sharp$ be the cokernel (@def:kernel-cokernel) morphism.
 The corresponding overlattice is the pullback (@def:pullback-square) in $\bZ\text{-}\mathbf{Mod}$
-```tikzcd
+
+\begin{tikzcd}
 L_h \arrow[r] \arrow[d] & S^\# \arrow[d,"\pi_S"] \\
 H \arrow[r,hook,"h"'] & A_S^\sharp .
-```
+\end{tikzcd}
+
 It fits into
 $$
 0\too S\too L_h\too H\too0.
@@ -241,6 +245,91 @@ $$
 $$
 If $L$ is unimodular, the two projections are isomorphisms (@def:isomorphism-of-objects) and $A_{S,q}\isoto A_{T,q}(-1)$.
 This is the primitive-embedding gluing construction of [@Nik80, §1.4--1.5].
+:::
+
+## Finite-index sublattices and their characters {#sec-sublattice-characters}
+
+::: {.proposition #prop:sublattice-gluing-character-pairing title="The characters and the gluing subgroup of a finite-index inclusion"}
+
+Let $S\subset T$ have finite index, where $T$ is a nondegenerate integral lattice and $S$ has the restricted form. Put $H=T/S$. With $T$ fixed, $S$ determines the finite subgroup of $\operatorname{Hom}(T,\QQ/\ZZ)$ consisting of characters vanishing on $S$. With $S$ fixed, $T$ determines the subgroup $H\subset A_S=S^\sharp/S$ by @def:overlattice. It is isotropic for the discriminant bilinear form and, if $T$ is even, for the quadratic refinement. The two classifying subgroups are in perfect duality by
+$$
+(S^\sharp/T^\sharp)\times(T/S)\longrightarrow\QQ/\ZZ,
+\qquad ([x],[t])\longmapsto (x,t)\bmod\ZZ.
+$$
+:::
+
+::: {.proof}
+
+Pullback along $T\to H$ identifies $H^\dagger=\operatorname{Hom}(H,\QQ/\ZZ)$ with the characters of $T$ that vanish on $S$. Evaluation recovers $S$ as their common kernel by finite biduality (@prop:torsion-duality-exact). Conversely a finite subgroup $D\subset\operatorname{Hom}(T,\QQ/\ZZ)$ is the full character subgroup of its common kernel: choose $n$ annihilating $D$ and apply finite biduality and exactness to $D\subset(T/nT)^\dagger$. This gives an inclusion-reversing correspondence and uses only the additive group of $T$.
+
+The rational pairing identifies $T_\QQ$ with its linear dual. Every character of $H$ pulls back to a character of $T$ and lifts, on a basis of $T$, to a rational linear functional. Its representing vector belongs to $S^\sharp$ because the character vanishes on $S$. Two such vectors represent the same character precisely when their difference belongs to $T^\sharp$. Thus $[x]$ represents the character $[t]\mapsto(x,t)\bmod\ZZ$. Under an isometry $u\colon(T,S)\to(T',S')$, its image $[u(x)]$ represents the character carried to $T'/S'$ by composition with the inverse of the induced isomorphism $T/S\to T'/S'$. This follows from $(u(x),u(t))=(x,t)$. On the gluing side, it is the discriminant pairing of $A_S$ against $H$: its annihilator in $A_S$ is $H^\perp=T^\sharp/S$. Thus $A_S/H^\perp\cong H^\dagger$ while $H^\perp/H\cong A_T$ by the gluing correspondence (@thm:nikulin-gluing in the even case).
+
+For a chain $S\subset T\subset L$ of finite-index inclusions of integral lattices, $T/S\subset L/S\subset A_S$ is a flag of bilinearly isotropic subgroups. Dualizing $0\to T/S\to L/S\to L/T\to0$ gives
+$$
+0\to T^\sharp/L^\sharp\to S^\sharp/L^\sharp\to S^\sharp/T^\sharp\to0.
+$$
+The last arrow restricts characters from $L/S$ to $T/S$. In particular the two descriptions commute with passage to an intermediate lattice.
+:::
+
+::: {.question #qst:lattice-scissors-squares title="Which cuts of an integral lattice give a scissors relation?"}
+
+A Jordan decomposition over $\ZZ_p$ supplies local modular summands. Which inclusion, quotient and commutative square would justify cutting the original $\ZZ$-lattice into pieces? Even a primitive nondegenerate inclusion $S\subset L$ can leave finite glue between $S\perp S^\perp$ and $L$.
+
+For example, give $L=\ZZ^2$ its usual dot product and take $S=\ZZ(1,1)$. Its orthogonal complement is $\ZZ(1,-1)$. Both lines are primitive, but their generators have determinant $-2$. The sum has index two, and $L/S$ has no pairing induced directly by the dot product: $0$ and $(1,1)$ represent the same coset and have different squares.
+
+In a scissors construction based on squares, which squares are admissible, what are their horizontal and vertical maps, and which pullbacks express compatible refinements of two cuts? For an orthogonal splitting the relation $[L]=[S]+[S^\perp]$ follows from additivity under orthogonal sum. Should a finite-index decomposition impose this same relation, or should the embedding and its glue contribute a term? Which choice gives an invariant of integral lattices and recovers the proposed local relations after completion?
+:::
+
+## Jordan constituents and higher Grothendieck–Witt groups {#sec-jordan-higher-gw}
+
+::: {.notation #not:jordan-scales title="Scales in a Jordan decomposition"}
+Write a Jordan decomposition of a nondegenerate integral symmetric lattice over $\ZZ_3$ as
+$$
+L\simeq\mathop{\perp}_{a\geq0} U_a(3^a).
+$$
+Here $U_a$ is unimodular (@def:unimodular), its pairing is multiplied by $3^a$, and only finitely many constituents have positive rank [@OM00, §91C]. Write $J(L)=\sum_a[U_a]t^a$ in the polynomial semiring over the isometry classes of unimodular $\ZZ_3$-lattices, with orthogonal sum and tensor product as the coefficient operations. The non-dyadic isometry criterion identifies the summands up to isometry at each scale [@OM00, Thm. 92:2].
+:::
+
+::: {.question #qst:jordan-higher-gw title="What does Jordan decomposition over $\ZZ_3$ give in higher Grothendieck–Witt theory for non-unimodular forms?"}
+Which spectrum for nondegenerate integral symmetric forms realizes the constituent calculation of @not:jordan-scales on $\pi_0$ after group completion? In positive degrees, does the valuation filtration give copies of the unimodular Grothendieck–Witt spectrum indexed by scale? If so, does it split, or does it recover the higher groups through extensions? In particular, how does the construction account for isometries of $L$ that move a chosen Jordan summand?
+:::
+
+## Gluing integral forms over the finite adèles
+
+::: {.construction #cons:adelic-gluing-genus title="Adelic gluing in a fixed genus"}
+
+Let $R=\mathcal O_K$ be the ring of integers of a number field. Write $\widehat R=\prod_{v\nmid\infty}R_v$ for the product of its completed local rings, and $\mathbb A_{K,f}=\prod'_{v\nmid\infty}K_v$ for the restricted product with respect to $R_v$. The square of inclusions
+
+\begin{tikzcd}
+R \arrow[r] \arrow[d] \arrow[dr,phantom,very near start,"\lrcorner"] & \widehat R \arrow[d] \\
+K \arrow[r] & \mathbb A_{K,f}
+\end{tikzcd}
+
+is a pullback of commutative rings (@def:pullback-square). Indeed an element of $K$ is integral at every finite place exactly when it lies in $R$. For an integral lattice $L$ whose pairing is nonsingular over $K$, put $V=L\otimes_R K$ and $\widehat L=L\otimes_R\widehat R$. Write $G$ for the orthogonal group of $V$ over $K$. Each $g\in G(\mathbb A_{K,f})$ gives the integral lattice
+$$
+L_g=V\cap g\widehat L\ \subset V\otimes_K\mathbb A_{K,f}.
+$$
+Its completion is $g\widehat L$. To see this, choose $0\ne a\in R$ such that $a\widehat L\subset g\widehat L\subset a^{-1}\widehat L$. The finite module $a^{-1}L/aL$ is the product of its localizations at the primes dividing $a$. The submodule specified by $g\widehat L/a\widehat L$ therefore lifts uniquely between $aL$ and $a^{-1}L$. This lift is $L_g$.
+
+A change of integral frames multiplies $g$ on the right by $\Orth(\widehat L)$. A rational isometry multiplies it on the left by an element of $G(K)$. Conversely, an integral isometry between two glued lattices extends over $K$ and identifies their completions. Thus the isometry classes in the genus in $V$ are the double cosets
+$$
+G(K)\backslash G(\mathbb A_{K,f})/\Orth(\widehat L),
+\qquad
+\Orth(L_g)=G(K)\cap g\Orth(\widehat L)g^{-1}.
+$$
+Their number is the class number. When the stabilizers are finite, their reciprocal orders sum to the mass (@def:mass). For instance $E_8^{\perp2}$ and $D_{16}^+$ are different global classes with the same local isometry types (@ex:rank16-genus-spinor-partition).
+:::
+
+::: {.question #qst:adelic-descent-nonunimodular-forms title="Does adelic gluing extend to a spectrum for non-unimodular forms?"}
+
+For a finite projective $R$-module $L$ with symmetric pairing, suppose $b^\sharp\colon L\to L^\vee$ becomes invertible over $K$. At each finite place $v$, the cokernel of $b_v^\sharp$ identifies with $L_v^\#/L_v$. On this finite module the extended form induces the linking pairing $(\bar x,\bar y)\mapsto b(x,y)\bmod R_v$ with values in $K_v/R_v$. Which category of forms and which relations retain these cokernels and the gluings of @qst:lattice-scissors-squares under extension of scalars? If $E$ denotes the spectrum obtained from such a construction, applying $E$ to the ring square of @cons:adelic-gluing-genus gives a commutative square of spectra
+
+\begin{tikzcd}
+E(R) \arrow[r] \arrow[d] & E(\widehat R) \arrow[d] \\
+E(K) \arrow[r] & E(\mathbb A_{K,f})
+\end{tikzcd}
+
+Under which hypotheses is this square a pullback in spectra? Does the integral term retain the distinction between individual global classes in @cons:adelic-gluing-genus after group completion? How could one recover the automorphism groups or their contributions to the mass? The ordinary gluing construction gives both a class set and a stabilizer at each class against which to test the proposed spectrum.
 :::
 
 ## Splitting of unimodular sublattices
@@ -789,8 +878,10 @@ If $L$ is unimodular, then $A_L=0$, so the exact sequence gives $A_{L(m)}\isoto 
 
 ::: {.definition #def:simultaneous-discriminant-spinor-kernel title="Simultaneous discriminant and spinor kernel" defines="simultaneous discriminant and spinor kernel; $\widetilde\Orth^+(L)$"}
 Let $\Orth^+(L)\injects\Orth(L)$ be the spinor kernel of @def:lattice-spinor-kernels. Define $\widetilde\Orth^+(L)$ by the pullback (@def:pullback-square)
-```tikzcd
+
+\begin{tikzcd}
 \widetilde\Orth^+(L) \arrow[r] \arrow[d] & \widetilde\Orth(L) \arrow[d] \\
 \Orth^+(L) \arrow[r] & \Orth(L).
-```
+\end{tikzcd}
+
 :::

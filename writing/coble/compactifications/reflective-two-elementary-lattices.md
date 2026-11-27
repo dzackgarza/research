@@ -555,7 +555,7 @@ Let $X$ be a complex projective K3 surface with Picard lattice $S_X$.
 The fibres are the members of the base-point-free pencil $\pi^*\abs{\OO_{\PP^1}(1)}$, so $F^2 = 0$ and $F\cdot C\geq 0$ for every curve $C$, that is, $F$ is nef.
 A smooth fibre is an integral curve of arithmetic genus one [@Huy16, Def. 11.1.1], so $F$ is primitive and $h^0(X,\OO(F)) = 2$ [@Huy16, Rem. 2.3.13(i)]; hence $\abs{F}$ is the pencil of fibres, and $\pi$ is the morphism defined by $\abs{F}$, up to an automorphism of $\PP^1$, so the map is injective (@def:injective-map).
 Conversely let $v\neq 0$ be primitive, isotropic and nef, and let $L$ be the line bundle of class $v$.
-By [@Huy16, Prop. 2.3.10], $L$ is base point (@def:complete-linear-system) free and $L\cong\OO(mE)$ for a smooth fibre $E$ of an elliptic fibration $X\to\PP^1$ and some $m > 0$.
+By [@Huy16, Prop. 2.3.10], $L$ is base-point-free (@def:base-point-free-linear-system) and $L\cong\OO(mE)$ for a smooth fibre $E$ of an elliptic fibration $X\to\PP^1$ and some $m > 0$.
 Since $v$ is primitive, $m = 1$, so $v$ is the fibre class of that fibration and the map is surjective.
 
 (2) Replacing $v$ by $-v$ we may take $v$ in the closure of the positive cone (@not:reflection-groups-sign-convention); then a finite product of reflections $s_{[C]}$ in $(-2)$-curves $C$ maps $v$ to a nef class [@Huy16, Rem. 8.2.13].

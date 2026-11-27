@@ -1,3 +1,12 @@
+> **Planning migration — Spec Kit and itree**
+>
+> Select the work-unit issue with itree. Use Spec Kit to plan and execute the work.
+> The issue body and comments hold the current plan, tasks, progress and evidence.
+> Earlier instructions that assign this work to vault cards or a separate task list
+> identify records to migrate. Match each obligation to its owning issue. Preserve
+> task IDs, order, prerequisites, acceptance criteria and evidence. Verify the transfer
+> on the issue before retiring the old tracker. An open obligation stays open.
+
 Git use: git for this repo is primarily an alternative to dropbox. It is not used for typically software engineering (blaming, focused commits, PRs, etc), it is just used to save whatever the current state is (however messy) and understand what the research work looked like at any point in time. It is not a problem if unrelated work is swept into a commit, if a commit is broad and not "targeted". If auto-formatting is applied, that is intended and should never be excluded from a commit or reverted. Nothing should ever be left in local-only unstaged work -- this can result in lost work or research. Just because it is unrelated to this session does not mean it is not your concern, your job is to ensure all work is committed at all times so that no critical research progress is ever lost.
 
 # Ground everything in INTENT.md (read before anything else)
@@ -143,8 +152,7 @@ agent-memory add --scope project --type context --title <title> --content <conte
 agent-memory add --scope project --type reference --title <title> --content <content>
 ```
 
-Plan work is card-backed.
-Create and update plan cards with `agent-memory plan add` and `agent-memory plan update`, not `agent-memory add --type plan`.
+Use Spec Kit to plan each itree work unit. Its GitHub issue owns the current plan, tasks and progress.
 
 Use `agent-memory retrieve <key>`, `agent-memory update <key>`, and `agent-memory delete <key>` for memory CRUD.
 
@@ -648,6 +656,7 @@ different acts, and only the second one does anything.
 - `japi` is the required interface for reading cells, restarting kernels, and verifying rendered results in `computations/notebooks/` during development and debugging.
 - Skip test, QC, build, execution, and rendered-result verification for changes confined to `computations/notebooks/`, `src/dzack_research/preamble/` or sage-extensions.  This exemption holds even though those changes do contain code; it is a scope decision, not the prose rule under *QC integration*.
 - Commit those changes with verification hooks skipped; do not let unrelated repository failures block notebook or preamble work.
+- The JupyterLab server at `127.0.0.1:8888` is `subrepos/systemd/jupyter-sagemath.service`, owned by this repository; project-management shows its localhost route but does not generate or restart it. The server and its kernels run in the research container through the host `jupyter` launcher ([SAGE-CONTAINER.md](https://github.com/dzackgarza/ai-review-ci/blob/main/SAGE-CONTAINER.md)), which owns port 8888.
 
 # Goal-integrity routing (always-on)
 
@@ -762,6 +771,8 @@ Requirements the docs must satisfy (definition-before-use, resolvable references
 After the edit, compare the destination with the source for lost definitions, hypotheses, codomains, diagrams, citations, examples, and anchors; then run the fresh-context audit above.
 Each source proposition ends preserved, corrected with a mathematical reason, or recorded as an open contradiction.
 When a diagram fails to render, render it alone and read the first TeX diagnostic.
+
+**Diagrams go through the user's TikZ template.** Write a diagram in a book page as a bare raw block: `\begin{tikzcd}` … `\end{tikzcd}` (or `tikzpicture`, or an `\input` of a `.tikz` file) on its own lines, with no code fence and no preamble. The `pandoc-tikzcd` filter in `writing/.book/_quarto.yml` loads `~/.pandoc/filters/tikzcd.lua` from pandoc-config. That filter puts the block into `~/.pandoc/templates/standalone-tikz.tex`, which loads `dzg-tikz.sty`. That style file is the one source of the TikZ libraries, styles and macros, and it shares the macros with MathJax, so `\QQ`, `\Orth` and the other book macros work in a diagram. Never put packages, `additionalPackages`, `\usetikzlibrary` or macro definitions into a figure; a missing macro or style goes into pandoc-config, where every document gets it. A ```` ```tikzcd ```` fence is a code block, so the page shows the TikZ source. A ```` ```{.tikz} ```` fence goes through the other `tikz` extension, which has its own preamble and does not use the template. `writing/category-theory/foundations/Higher-Categories-and-Universes.md` shows the correct form.
 
 Do not write a definition or insert a citation from memory. Before writing or editing any definition, open and read an actual source — the theory docs, the book's existing defining occurrence, the cited reference, or the upstream text — and transcribe from it.
 A definition recalled from training is a fabrication risk; a citation key recalled from memory is a fabrication risk (it may not exist in the bib file, or may point at the wrong entry).
