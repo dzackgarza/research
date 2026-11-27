@@ -70,8 +70,10 @@ local makeblocktitle = function(el)
       pandoctitle = el1.content
         table.remove(el.content, 1) 
       else 
-      local blocks = pandoc.read(info.mdtitle, "markdown-fancy_lists").blocks
-      pandoctitle = #blocks > 0 and blocks[1].content or {}
+      local blocks = pandoc.read("x " .. info.mdtitle, "markdown").blocks
+      pandoctitle = blocks[1].content
+      table.remove(pandoctitle, 1)
+      table.remove(pandoctitle, 1)
     end
   end
   info.pandoctitle = pandoctitle
