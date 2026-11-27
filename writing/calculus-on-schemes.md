@@ -130,6 +130,32 @@ The *relative tangent sheaf* is $\mathcal T_{X/S}=\mathcal H om_{\mathcal A}(\Om
 If $X\to S$ is smooth, $\Omega^1_{X/S}$ is finite locally free [@stacks-02G1]. Consequently evaluation identifies $\Omega^1_{X/S}$ with $\mathcal T_{X/S}^{\vee}$, where $\mathcal F^{\vee}=\mathcal H om_{\mathcal A}(\mathcal F,\mathcal A)$. For finite locally free $\mathcal E,\mathcal F$, the map $\lambda\otimes t\mapsto(s\mapsto\lambda(s)t)$ identifies $\mathcal E^{\vee}\otimes\mathcal F$ with $\mathcal H om_{\mathcal A}(\mathcal E,\mathcal F)$. In a local basis these maps send dual basis tensors to matrix units, which proves the identifications. They are used below only under these hypotheses.
 :::
 
+::: {.question #qst:tangent-slice-first-order title="How does the categorical tangent construction recover an ordinary tangent vector?"}
+
+Let $x\colon A\to k$ be a $k$-point of an affine scheme over a field $k$. A tangent vector at $x$ lifts the point to the dual numbers. On algebras the lift is $a\mapsto x(a)+\epsilon D(a)$ with $\epsilon^2=0$. Multiplication gives $D(ab)=x(a)D(b)+x(b)D(a)$. Thus $D$ is a $k$-derivation into $k$ with its $A$-action through $x$. The value of $df$ at $x$ is a covector. It evaluates to $D(f)$ on this tangent vector. On the affine line, $df=f'(z)\,dz$ and $D(f)=f'(x(z))D(z)$ [@stacks-0B28].
+
+Where does this particular lift appear in the stabilization of a slice? Regard $k$ and $A$ as discrete commutative ring spectra, and work in commutative $k$-algebras over $A$. A pointed object of this slice is an augmented $A$-algebra $A\to B\to A$ with composite the identity. Stabilizing these pointed objects gives $\operatorname{Mod}_A$. Its zeroth-space functor sends a module $M$ to the split square-zero algebra $A\oplus M\to A$. The relative cotangent complex $L_{A/k}$ represents sections of this projection **as $k$-algebra maps**: their space is $\operatorname{Map}_{\operatorname{Mod}_A}(L_{A/k},M)$ [@Lur09b, §§1.4–1.5, Thm. 1.5.14 and Rmk. 1.5.16].
+
+Set $M=k$ with action through $x$. The following square is a pullback of $k$-algebras.
+
+```{.tikz}
+%%| filename: tangent-square-zero-pullback
+%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
+\begin{tikzcd}
+A\oplus k \arrow[r,"{(a,m)\mapsto x(a)+\epsilon m}"] \arrow[d,swap,"\mathrm{pr}_A"] \arrow[dr,phantom,very near start,"\lrcorner"]
+& k[\epsilon]/(\epsilon^2) \arrow[d,"\epsilon\mapsto0"] \\
+A \arrow[r,swap,"x"] & k
+\end{tikzcd}
+```
+
+A section over $A$ therefore gives exactly a lift of $x$. By extension and restriction of scalars its component is an element of
+$$
+\pi_0\operatorname{Map}_{\operatorname{Mod}_k}
+   (k\otimes_A^{\mathbf L} L_{A/k},k).
+$$
+Both algebras in the section calculation are discrete, so these components are precisely the classical derivations $D$ above. This identifies the object that represents first-order variation and the operation that recovers the given vector.
+:::
+
 :::{.definition #def:calculus-de-rham title="Relative de Rham forms" defines="$\Omega^p_{X/S}$; relative de Rham differential"}
 Set $\Omega^p_{X/S}=\bigwedge^p_{\mathcal A}\Omega^1_{X/S}$ for $p\geq0$, with $\Omega^0_{X/S}=\mathcal A$. The *relative de Rham differential* extends $d$ by
 

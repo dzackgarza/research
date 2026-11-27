@@ -53,6 +53,15 @@ For example, $Q=\left(\begin{smallmatrix}2&1\\1&3\end{smallmatrix}\right)$ is po
 
 ![Two hexagonal cells with edge lengths $a,b,c$ in the archive illustration.](/rendered/honeycomb_sidelengths.jpg){#fig-ppav-hexagons}
 
+::: {.question #qst:genus-two-boundary-chamber title="Does the genus-two boundary-poset comparison come from a map of compactifications?"}
+
+A stratum of the Deligne--Mumford boundary of $\overline{\mathcal M}_2$ has a stable dual graph: vertices record the genera of the components, and edges record nodes. Smoothing nodes contracts the corresponding edges, with the genus of the vertex increasing when the edge is a loop. On the period side, specialization of strata is read from faces of cones, modulo the arithmetic group and with any prescribed roots declared irrelevant (@def:generalized-coxeter-semifan).
+
+For an unmarked stable graph of genus two, the vertex contributions $2g_v-2+\operatorname{val}(v)$ are positive integers with sum $2$. Hence there are at most two vertices. With one vertex, its genus and its number of loops sum to two. With two, each contribution is one, so each vertex is elliptic of valence one or rational of valence three. Connectedness now gives the following list. Order the strata by specialization from the smooth stratum. Label the smooth graph by $24$, the irreducible one-node graph by $12$, and the two elliptic vertices joined by a bridge by $8$. In codimension two, label the rational vertex with two loops by $6$, and the rational vertex with a loop joined to an elliptic vertex by $4$. The trivalent graphs have two rational vertices. Label the graph with three parallel edges by $3$ and the graph with a loop at each end of a bridge by $2$. Contracting an edge gives precisely the covers for divisibility on these labels, with $24$ at the smooth end. For instance the bridge in the last graph contracts to give $6$, and either loop contracts to give $4$. The graph labelled $3$ contracts only to $6$. Thus the comparison with the divisors of $24$ other than $1$ includes the smooth stratum; the proper boundary omits $24$.
+
+Does a period model induce this correspondence? What lattice, cusp and reflection group would produce the proposed $D_4$-shaped diagram, with which edge labels? Which graph contraction corresponds to each face specialization, and how do the respective stabilizers act? The abstract poset calculation leaves open whether a morphism of compactifications induces it.
+:::
+
 ## Semitoroidal compactifications
 
 ::: {.definition #def:semitoroidal-compactification defines="semitoroidal compactification; $\semitorcpt{\FG}$; semifan"}

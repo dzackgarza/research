@@ -598,6 +598,13 @@ An object $i\colon*\to C$ is initial if $\operatorname{Map}_C(i,x)$ is contracti
 A higher category (@def:higher-category) is *contractible* when it is equivalent to $*$.
 :::
 
+::: {.question #qst:detecting-contractibility title="Which notion of contractibility can be detected from points?"}
+
+Must one test $\operatorname{Map}_{\mathcal C}(Y,X)$ for every $Y$ to recognize a terminal object $X$? If $\mathcal C$ has a terminal object $1$, global points test just $Y=1$. This suffices when $\operatorname{Map}_{\mathcal C}(1,-)$ reflects equivalences of maps $X\to1$. Indeed, a contractible space of points then makes the image of $X\to1$ an equivalence, and reflection makes $X$ terminal. More generally, a family of test objects suffices if their mapping-space functors jointly detect these equivalences.
+
+For categories, what does the chosen functor to spaces retain? The walking arrow $[1]$ has contractible geometric realization: its nerve realizes to an interval. Its endpoints are inequivalent objects, so $[1]$ is inequivalent to the terminal category. The category with one object and endomorphism monoid $(\mathbb N,+)$ has terminal core, since only $0$ is invertible. Its endomorphism set prevents the category itself from being terminal up to equivalence. In $\mathrm{Cat}_\infty$ the global-points space $\operatorname{Map}(*,C)$ is the core of $C$. Passing instead to the realization of the nerve inverts all arrows. The examples identify precisely where each proposed test loses information.
+:::
+
 ::: {.definition #def:truncated title="Truncated objects and morphisms" defines="$n$-truncated object; $C_{/Y}$; $n$-truncated morphism; $n$-truncated type; $\tau_{\leq n}^C$"}
 
 Let $C$ be a higher category (@def:higher-category).

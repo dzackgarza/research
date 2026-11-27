@@ -267,6 +267,15 @@ $$
 The last arrow restricts characters from $L/S$ to $T/S$. In particular the two descriptions commute with passage to an intermediate lattice.
 :::
 
+::: {.question #qst:lattice-scissors-squares title="Which decompositions of integral lattices support a scissors relation?"}
+
+A Jordan decomposition over $\ZZ_p$ supplies local modular summands. Which inclusion, quotient and commutative square would justify cutting the original $\ZZ$-lattice into pieces? Even a primitive nondegenerate inclusion $S\subset L$ can leave finite glue between $S\perp S^\perp$ and $L$.
+
+For example, give $L=\ZZ^2$ its usual dot product and take $S=\ZZ(1,1)$. Its orthogonal complement is $\ZZ(1,-1)$. Both lines are primitive, but their generators have determinant $-2$. The sum has index two, and $L/S$ has no pairing induced directly by the dot product: $0$ and $(1,1)$ represent the same coset and have different squares.
+
+In a scissors construction based on squares, which squares are admissible, what are their horizontal and vertical maps, and which pullbacks express compatible refinements of two cuts? For an orthogonal splitting the relation $[L]=[S]+[S^\perp]$ follows from additivity under orthogonal sum. Should a finite-index decomposition impose this same relation, or should the embedding and its glue contribute a term? Which choice gives an invariant of integral lattices and recovers the proposed local relations after completion?
+:::
+
 ## Splitting of unimodular sublattices
 
 ::: {.definition #def:lattice-split title="Orthogonal splitting" defines="orthogonal splitting"}

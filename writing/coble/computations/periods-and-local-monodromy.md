@@ -41,91 +41,64 @@ $$
 For a marked K3 surface with marking $\varphi\colon H^2(X_t,\ZZ)\isoto\lkt$, this point is the line $\varphi_{\CC}(H^{2,0}(X_t))\subset\lkt\otimes\CC$. Rescaling $\Omega_t$ fixes the point. A deck transformation acts on it by projective monodromy. Over $M$ the Hodge line defines a section of the projectivized cohomology bundle, and the marked period descends to the quotient by $\Gamma$. A global flat marking gives a map to the fixed projective space itself.
 :::
 
-## The algebraic construction
+## From the family equation to monodromy
 
-::: {.construction #cons:pf-from-jacobian title="From the defining polynomial to the local monodromy" defines="Jacobian ideal; $J$; monomial basis; $B$; Milnor number; $\mu$; $P$; Picard--Fuchs operator; $\mathcal L$; local monodromy exponent; $R$; $R_s$; $R_n$; local monodromy; $T$"}
+::: {.question #qst:monodromy-from-family-equation title="Can one compute monodromy before classifying the singular fibre?"}
 
-Let $k$ have characteristic $0$ and let $f\in k[x_0,\dots,x_{n-1},t]$ present a family of affine hypersurfaces over a one-dimensional base with parameter $t$.
-
-1. Form the Jacobian ideal $J = \left(\partial f/\partial x_0,\dots,\partial f/\partial x_{n-1}\right)$ in $k(t)[x_0,\dots,x_{n-1}]$ and a monomial basis $B$ of the Milnor algebra $k(t)[x]/J$.
-   Then $\mu = \lvert B\rvert$ is the Milnor number of the generic fiber (@def:fiber-cofiber), the base field being $k(t)$.
-
-2. On the Brieskorn module of $f$, take the Gauss--Manin connection (@def:calculus-connection), and apply it to the form
-   $$
-   P \;=\; (-1)^{n-1}\,\frac{\partial_t f}{t}\Bigl(\Sum_{b\in B} b\Bigr)
-   $$
-   with cycle vector $e = [1]$.
-
-3. The result is the Picard--Fuchs operator
-   $$
-   \mathcal L \;=\; \Sum_{i=0}^{\mu} c_i(t)\, D_t^{\,i}
-   \;\in\; k[t]\langle D_t\rangle ,
-   $$
-   of order $\mu$, with each $c_i$ a polynomial in $t$ alone.
-
-4. Compute the indicial polynomial of $\mathcal L$ at $t = 0$.
-   Its roots are the exponents $\alpha_1,\dots,\alpha_\mu$.
-   Its degree (@def:graded-object) (@def:numerical-polarization) equals $\mu$ exactly when $t = 0$ is a regular singular point (@def:regular-singular-point), so checking that degree is checking the hypothesis under which the remaining steps are valid.
-
-5. Let $R$ be the Jordan form over $\overline{\QQ}$ of the companion matrix of the monic indicial polynomial, and let $R = R_s + R_n$ be its Jordan decomposition into commuting semisimple and nilpotent parts.
-
-6. The local monodromy at $t = 0$ is
-   $$
-   T \;=\; \exp(2\pi i R) \;=\; \exp(2\pi i R_s)\,\exp(2\pi i R_n),
-   \qquad
-   \exp(2\pi i R_s) = \diag\!\left(e^{2\pi i\alpha_j}\right),
-   $$
-   the second factor a finite sum since $R_n$ is nilpotent.
-   This is the multiplicative Jordan decomposition of $T$: the first factor is its semisimple part, the second its unipotent part.
+Given the equation of a family over a punctured disc, how can its monodromy be an output of the calculation? Which de Rham class supplies the period, how does the Gauss--Manin connection produce its differential equation, and when do the solutions detect the monodromy on the whole cohomology? A classification by singular fibres can check such a computation once it has been made.
 :::
 
-::: {.corollary #cor:pf-unipotent-monodromy title="Unipotency and the log monodromy"}
+::: {.construction #cons:pf-from-jacobian title="The differential equation of a specified class" defines="Picard--Fuchs operator"}
 
-Let $T$, $R = R_s + R_n$ and $\alpha_1,\dots,\alpha_\mu$ be as in @cons:pf-from-jacobian.
+Let $X_t$ be a smooth projective family over an open subset of the complex $t$-line. On its generic fibre take the finite-dimensional space $H=H^m_{\mathrm{dR}}(X_t/\CC(t))$ with Gauss--Manin connection $\nabla_t$. Specify a nonzero class $\omega\in H$. For a smooth projective hypersurface $f_t=0$, primitive classes can be presented as residues of rational forms with poles along $f_t=0$. For such a form $\eta$, the period of $\operatorname{Res}(\eta)$ over a middle-dimensional cycle $\gamma$ is $(2\pi i)^{-1}\int_{\operatorname{Tube}(\gamma)}\eta$, where the tube circles the hypersurface once in the positive normal direction. Reduction of differentiated forms modulo exact forms uses the Jacobian ideal $J=(\partial_{x_i}f_t)_i$ [@Mor92, §3, eq. (6)].
 
-1. $T$ is unipotent if and only if every exponent $\alpha_j$ is an integer.
+Let $r$ be the first index at which $\omega,\nabla_t\omega,\ldots,\nabla_t^r\omega$ become dependent. Write the first relation as $\sum_{i=0}^r a_i(t)\nabla_t^i\omega=0$, with $a_r=1$. For any flat cycle $\gamma(t)$, differentiation under the period pairing gives
+$$
+\mathcal L\int_{\gamma(t)}\omega=0,\qquad
+\mathcal L=\sum_{i=0}^r a_i(t)D_t^i,\qquad D_t a=aD_t+\partial_t a .
+$$
+The monic minimal operator for this class is its *Picard--Fuchs operator*. Clearing denominators gives a polynomial-coefficient equation. Its rank is the dimension of the differential submodule generated by $\omega$. To recover the full local system when $r<\dim H$, compute the connection on a basis of $H$, including how it acts between the submodule and its quotient.
 
-2. In that case
-   $$
-   N \;=\; \log T \;=\; 2\pi i\, R_n ,
-   $$
-   so the nilpotency index (@def:nilpotency-index) of $N$ is the nilpotency index of $R_n$, and the Jordan block sizes of $T$ are those of $R$.
+Continue a fundamental system of solutions around a positively oriented loop. At a regular singular point, Frobenius expansions do this locally by continuing $t^\alpha$ and $\log t$. The former acquires the factor $e^{2\pi i\alpha}$, and the latter acquires the summand $2\pi i$. Thus the indicial roots give the eigenvalues. The logarithmic terms determine additional entries of the continuation matrix. Identifying an integral lattice in the solution space requires comparison with periods of integral cycles [@Mor92, §1, pp. 3–5].
+:::
 
-3. The Jordan type of $T$, and hence the nilpotency index of $N$ and the type of @def:kulikov-types, is the same in every basis (@def:based-module) of the fiber (@def:fiber-cofiber) cohomology.
+For instance, for $E_t\colon y^2=x^3-t$, put $t=u^6$, $x=u^2X$, $y=u^3Y$. The pulled-back curve has the constant equation $Y^2=X^3-1$, and the relative differential $dx/y$ becomes $u^{-1}dX/Y$. Its periods satisfy $(6tD_t+1)y=0$. This calculation detects one eigenvalue directly from the family. The cohomology of the elliptic curve has rank two.
+
+::: {.corollary #cor:pf-unipotent-monodromy title="Unipotence and the logarithm of monodromy"}
+
+Let $T$ act on the solution space of a regular singular equation at $0$ with indicial roots $\alpha_j$.
+
+1. $T$ is unipotent if and only if every $\alpha_j$ is an integer.
+2. If $T$ is unipotent, then $N=\log T=\sum_{k\ge1}(-1)^{k+1}(T-I)^k/k$ is a finite sum.
+3. The Jordan type of $T$ and the nilpotency index of $N$, when defined, are invariant under change of basis. For a Kulikov degeneration the test in @def:kulikov-types applies to the action on the full $H^2$.
 :::
 
 ::: {.proof}
-
-For (1), step 6 of @cons:pf-from-jacobian gives $\exp(2\pi i R_s) = \diag(e^{2\pi i\alpha_j})$ as the semisimple part of $T$.
-By uniqueness of the multiplicative Jordan decomposition, $T$ is unipotent exactly when its semisimple part is the identity, that is, when $e^{2\pi i\alpha_j} = 1$ for every $j$.
-
-For (2), integral exponents give $\exp(2\pi i R_s) = I$, so $T = \exp(2\pi i R_n)$.
-The series $\exp$ and $\log$ are inverse bijections between nilpotent and unipotent matrices, so $\log T = 2\pi i R_n$.
-A nonzero scalar multiple of $R_n$ has the nilpotency index and Jordan type of $R_n$.
-The matrix $R$ is in Jordan form, so on each Jordan block of $R$ the part $R_s$ is the scalar $\alpha_j$ and $R_n$ is a single nilpotent Jordan block of the same size.
-On that block $T - I = 2\pi i R_n\, u$ with $u = \Sum_{k\geq0} (2\pi i R_n)^k/(k+1)!$ invertible and commuting with $R_n$, so $\ker (T-I)^k = \ker R_n^k$ for every $k$, and $T$ has the Jordan block sizes of $R_n$.
-
-For (3), a change of basis conjugates $T$ by an invertible matrix, and conjugates $N = \log T$ by the same matrix.
-The Jordan type and the nilpotency index are invariant under conjugation.
+The eigenvalues are $e^{2\pi i\alpha_j}$ by @cons:pf-from-jacobian. They all equal one precisely for integral exponents. Then $T-I$ is nilpotent. The logarithm is a polynomial in $T-I$, so conjugating $T$ conjugates $N$ by the same change of basis.
 :::
 
-## The Legendre specimen
+The equations $y''=0$ and $t(1-t)y''+ty'-y=0$ have the same monic indicial polynomial $s(s-1)$ at zero. The first has solutions $1,t$. The second has solutions $t,1+t\log t$, as substitution shows. Continuation adds $2\pi i\,t$ to its second solution. The same indicial polynomial thus occurs with two different Jordan types.
 
-::: {.example #ex:legendre-monodromy title="The Legendre family"}
+## The Legendre family
 
-For $y^2 = x(x-1)(x-t)$, presented in $k[x,y,t]$ with weights $(2,3,1)$ and the weighted degree-reverse-lexicographic order, @cons:pf-from-jacobian returns
+::: {.example #ex:legendre-monodromy title="The logarithm in the periods of the Legendre family"}
+
+Let $y^2=x(x-1)(x-t)$ and $\omega=dx/y$. Differentiating at fixed $x$ gives
 $$
-\mu = 2,
+\left(t(1-t)D_t^2+(1-2t)D_t-\tfrac14\right)\omega
+=\tfrac12\,d_x\!\left(\frac{x(x-1)}{(x-t)y}\right).
 $$
-a Picard--Fuchs operator of order $2$ whose coefficient list begins
+Hence the operator on the left annihilates the periods. The classes of $\omega$ and $\nabla_t\omega$ span $H^1$. Indeed $\partial_t\omega=dx/(2(x-t)y)$ has a double pole at the ramification point over $x=t$ and is regular elsewhere. If $\partial_t\omega-c\omega$ were exact on a smooth fibre, a meromorphic primitive would have just one simple pole. It would define a degree-one map from that elliptic curve to $\PP^1$, which is impossible.
+
+At zero the holomorphic solution $y_1$ with $y_1(0)=1$ has coefficients $(n+1)^2a_{n+1}=(n+\tfrac12)^2a_n$. Reduction of order gives a second solution
 $$
--3t+3,\qquad 12t^2+8t-4,\qquad 12t^3-8t^2-4t,
+y_2=y_1\int\frac{dt}{t(1-t)y_1^2}.
 $$
-indicial polynomial $-4\alpha^2$ at $t = 0$, hence a double exponent $\alpha = 0$; nilpotent part with Jordan form $\begin{psmallmatrix}0&1\\0&0\end{psmallmatrix}$; and
+The integrand has residue one. Thus $y_2=y_1\log t+h(t)$ for a holomorphic $h$. Continuation fixes $y_1$ and sends $y_2$ to $y_2+2\pi i\,y_1$. In the ordered solution basis $(y_1,y_2)$ its matrix is
 $$
-T \;=\; \begin{pmatrix} 1 & 2\pi i \\ 0 & 1\end{pmatrix},
+T=\begin{pmatrix}1&2\pi i\\0&1\end{pmatrix}.
 $$
-a single Jordan block, so $T$ is unipotent with $N\neq 0$ and $N^2 = 0$.
+Here $N\ne0$ and $N^2=0$. The logarithm in the solution exhibits the nonzero entry.
 :::
 
 ::: {.proposition #prop:legendre-monodromy-basis-not-integral title="The Legendre monodromy is not written in an integral basis"}

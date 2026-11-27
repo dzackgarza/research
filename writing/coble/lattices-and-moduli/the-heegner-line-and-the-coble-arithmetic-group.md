@@ -192,6 +192,20 @@ An isometry of $\lkt$ commuting with $\Ien$ is the same as a pair $(g_S, g_T)\in
 The polarization $h$ lies in $\sen$, so the condition $g(h) = h$ on $\lkt$ is the condition $g_S(h) = h$.
 :::
 
+::: {.question #qst:enriques-polarization-ambient-lattice title="Can a polarization be absorbed into a change of ambient lattice?"}
+
+Let $\iota$ be an Enriques involution on the K3 lattice $\Lambda$, and $h$ the primitive invariant class of square four pulled back from a numerical polarization of degree two. Replace $\Lambda$ by $K=h^\perp$ *before* taking the centralizer of $\iota$. What happens to the period lattice, and what happens to the group acting on it?
+
+The anti-invariant lattice $T=\ker(1+\iota)$ is unchanged, even integrally. For $x\in T$, the identity $(x,h)=(\iota x,\iota h)=-(x,h)$ gives $x\in K$. For the groups, restriction gives
+$$
+\{g\in O(\Lambda):g\iota=\iota g,\ g(h)=h\}
+\longrightarrow C_{O(K)}(\iota|_K)\longrightarrow O(T).
+$$
+An isometry in the middle group lifts fixing $h$ precisely when it acts trivially on $A_K$. Indeed $\Lambda$ is unimodular, so the glue of $\ZZ h\perp K$ is the graph of an anti-isometry of the full discriminant groups (@cor:lifting-unimodular). The extension commutes with $\iota$ because it does so on the finite-index sum.
+
+Do the two groups have the same image on $T$? Here $A_K\cong\ZZ/4$, since $h^2=4$. An element $g$ of the middle group acts there by $+1$ or $-1$. In the latter case multiply it by $(-\id_K)\iota|_K$. This factor acts by $-1$ on $A_K$, since $\iota$ extends fixing $h$, and it acts by $+1$ on $T$, since $\iota|_T=-\id_T$. Thus the corrected element extends and has exactly the same restriction to $T$. The integral images coincide, hence so do their actions on either chosen period component after restricting to its stabilizer. The extension condition still distinguishes isometries of $K$ itself. Compare @prop:polarization-stabilizer-enriques.
+:::
+
 ::: {.proposition #prop:polarization-stabilizer-enriques title="The integral stabilizer of the degree-$2$ polarization"}
 
 Write $\sen = C(2)$ with $C = U\oplus E_8$ even unimodular of signature (@def:signature) $(1,9)$, and let $h\in \sen$ be the polarization (@def:numerical-polarization) vector of the discriminant description of $\gent$ (@prop:gamma-en-two-gluing), so that $h = u_0 + w_0$ for a basis (@def:based-module) $u_0, w_0$ of the $U$ summand of $C$ with $u_0\cdot w_0 = 1$.
@@ -909,20 +923,20 @@ So for $k\ge1$ the five bullets of @sec-labeled-lattice-data hold on $\widehat X
 
 ::: {.proposition #prop:one-node-family title="The one-node construction is a smooth proper equivariant family with a relative polarization and an exceptional divisor"}
 
-Let $B\subset\abs{\OO_Y(4,4)}^\tau$ be the set of $\tau$-invariant sections whose branch curve has exactly one node, at the $\tau$-fixed point $p$, and is otherwise smooth with nondegenerate (@def:polarization) quadratic part at $p$; it is open in the invariant linear system of @sec-invariant-system, and it is nonempty by @ex:one-node-branch-curve. Put $\mathcal L\definedas\OO_Y(2,2)$, a square root of $\OO_Y(4,4)$, and $\mathcal Y\definedas Y\times B$. Then:
-1. $\mathcal X^\sharp = \Spec_{\mathcal Y}(\OO_{\mathcal Y}\oplus\mathcal L^{-1})$, with algebra structure $z^2 = f_b$ for $z$ the coordinate on the $\mathcal L$-summand, is a flat family of surfaces, finite and hence proper and projective over $\mathcal Y$ and over $B$, smooth away from the section $\sigma$ over $p$; the blow-up $\beta\colon\widehat{\mathcal X}\to\mathcal X^\sharp$ of $\sigma(B)$ is smooth and proper over $B$ with K3 fibres;
+Let $B\subset\abs{\OO_Y(4,4)}^\tau$ be the set of $\tau$-invariant sections whose branch curve has exactly one node, at the $\tau$-fixed point $p$, and is otherwise smooth with nondegenerate (@def:polarization) quadratic part at $p$; it is open in the incidence hyperplane $H_p=\{[f]:f(p)=0\}$ of the invariant linear system of @sec-invariant-system, and it is nonempty by @ex:one-node-branch-curve. Put $\mathcal L\definedas\OO_Y(2,2)$, a square root of $\OO_Y(4,4)$, and $\mathcal Y\definedas Y\times B$. Then:
+1. $\mathcal X^\sharp = \Spec_{\mathcal Y}(\OO_{\mathcal Y}\oplus\mathcal L^{-1})$, with algebra structure $z^2 = f_b$ for $z$ the coordinate on the $\mathcal L$-summand, is a flat family of surfaces, finite over $\mathcal Y$ and projective over $B$, smooth away from the section $\sigma$ over $p$; the blow-up $\beta\colon\widehat{\mathcal X}\to\mathcal X^\sharp$ of $\sigma(B)$ is smooth and proper over $B$ with K3 fibres;
 2. $\iota_\Co$ and $\iota_{\mathrm{dP}}$ act fibrewise, commute, and fix $\sigma$, hence lift to $\widehat{\mathcal X}$ commuting with $\beta$;
 3. $\mathcal H\definedas\pi^*\OO_Y(1,1)$ is a line bundle on $\widehat{\mathcal X}$ whose restriction to every fibre is nef of degree (@def:graded-object) (@def:numerical-polarization) $4$, hence big, and not ample, its degree on the exceptional curves being $0$; its class is $H_b$;
-4. the exceptional divisor $\mathcal D$ of $\beta$ is a $\PP^1$-bundle over $B$ with $\mathcal D_b^2 = -2$ and $\mathcal H_b\cdot\mathcal D_b = 0$, and $c_1(\mathcal H)$ and $[\mathcal D]$ are sections of $R^2\widehat\pi_*\ZZ$ flat for the Gauss–Manin connection (@def:calculus-connection).
+4. the exceptional divisor $\mathcal D$ of $\beta$ is a smooth conic bundle over $B$ with $\mathcal D_b^2 = -2$ and $\mathcal H_b\cdot\mathcal D_b = 0$, and $c_1(\mathcal H)$ and $[\mathcal D]$ are sections of $R^2\widehat\pi_*\ZZ$ flat for the Gauss–Manin connection (@def:calculus-connection).
 :::
 
 ::: {.proof}
 
-$B$ is open because the node condition is the vanishing of the coefficient of $x_0^4y_0^4$ at $p$ together with nondegeneracy of the quadratic part, an open condition (@lem:node-condition, @sec-invariant-system), and smoothness elsewhere is open.
-(1) Since $\mathcal L^2 = \OO_Y(4,4)$, the sheaf of algebras $\OO\oplus\mathcal L^{-1}$ with $z^2 = f_b$ is a coherent sheaf of $\OO_{\mathcal Y}$-algebras, flat over $B$ because $f_b$ varies linearly, so $\mathcal X^\sharp\to B$ is finite and flat and the fibres are surfaces; the linear system is base-point free, so no fibre contains a component of a $\PP^1$-fibre and $B$ parametrizes a bounded family; projectivity comes from finiteness over the projective $\mathcal Y\to B$. The branch curve of the double cover is $B$, and $K_{\mathcal X^\sharp} = \pi^*(K_Y+\mathcal L) = \pi^*(\OO(-2,-2)+\OO(2,2)) = \OO_{\mathcal X^\sharp}$, with $\pi_*\OO_{\mathcal X^\sharp} = \OO_Y\oplus\mathcal L^{-1} = \OO_Y\oplus K_Y$; the fibres are K3 surfaces. The singular points of the fibres are the nodes, one per fibre by construction, at $p$; locally the family is $z^2 = q_b(x,y) + (\text{terms of order }\ge3)$ with $q_b$ nondegenerate for every $b\in B$, so the singular locus is exactly $\sigma(B)$ and is a family of ordinary (@def:two-elementary-isotropic-types) double points, which the blow-up of $\sigma(B)$ resolves simultaneously in a smooth family; on each fibre the blow-up replaces the node by a $(-2)$-curve.
+Evaluation at $p$ is a nonzero linear functional on invariant sections. Vanishing of its corner coefficient cuts out $H_p$. In local coordinates on which $\tau$ acts by $(x,y)\mapsto(-x,-y)$, an invariant section through $p$ has no linear term. A nonzero Hessian determinant makes its singularity an ordinary node (@lem:node-condition). On this open subset of $H_p$, the proper transforms on $\Bl_p Y$ form a family of divisors; smoothness away from the node is equivalent to smoothness of the transform, an open condition by properness. To take the double cover over $B$, fix a second $\tau$-fixed corner $q$ and a basis of $\OO_Y(4,4)|_q$. Its coefficient never vanishes on $B$, since incidence there would give a second singularity. Normalize it to one to obtain the equation $f_b$ in the family.
+(1) The algebra $\OO_{\mathcal Y}\oplus\mathcal L^{-1}$ is locally free of rank two on $\mathcal Y$, so the cover is finite flat there. Since $\mathcal Y=Y\times B$ is flat and projective over $B$, the cover is flat and projective over $B$. Its branch divisor in each fibre is $f_b=0$. The double-cover formula gives trivial dualizing sheaf on that fibre since $K_Y+\mathcal L=0$ in $\Pic Y$. Also $H^1(\OO_Y\oplus K_Y)=0$. Along the nodal section the local equation has a nondegenerate quadratic part $z^2-q_b(x,y)$. Blowing up the section resolves each ordinary double point: the exceptional conic is smooth, so in the blow-up charts the strict transform is smooth over $B$ along the exceptional divisor, by the relative Jacobian criterion. The resolution of an ordinary double point is crepant and the singularity is rational. Its smooth projective resolution therefore has trivial canonical bundle and vanishing $H^1(\OO)$, so it is a K3 surface.
 (2) $\iota_{\mathrm{dP}}$ acts by $z\mapsto-z$ and $\iota_\Co$ by $(z,x,y)\mapsto(-z,-x,-y)$ on the $\mathcal L$-coordinate and on $Y$; both preserve each equation, commute, and fix the point over $p$, where $z = 0$; an automorphism fixing the centre of a blow-up lifts to it.
 (3) $H_b\cdot C = \OO(1,1)\cdot\pi_b(C)\ge0$ for every curve $C$ on a fibre, since $\OO(1,1)$ is ample, so $H_b$ is nef; $H_b^2 = \deg\pi_b\cdot(\OO(1,1))^2 = 4>0$, so $H_b$ is big; and $H_b\cdot D_b = 0$ against the curve $D_b$, so $H_b$ is not ample.
-(4) The exceptional divisor of the blow-up of a smooth subscheme is the projectivized normal bundle, so a $\PP^1$-bundle over $B$ when the centre is a smooth section; its fibre is $D_b$, of square $-2$, and $\pi$ contracts it, so $\mathcal H_b\cdot\mathcal D_b = 0$. The classes of a flat family of divisors are flat sections of $R^2\widehat\pi_*\ZZ$.
+(4) The exceptional divisor is the projectivized relative tangent cone along the section. Its fibres have equation $z^2=q_b(x,y)$ in $\PP^2$. Each smooth conic $D_b$ has square $-2$ by adjunction on the resolved K3 surface, and $\mathcal H_b\cdot D_b=0$ because $\pi$ contracts it. Restricting the global classes of $\mathcal H$ and $\mathcal D$ gives locally constant sections of $R^2\widehat\pi_*\ZZ$.
 :::
 
 ::: {.proposition #prop:one-node-connected title="The one-node locus is path-connected: any two members lie on a pencil meeting the bad strata in finitely many points"}
@@ -932,14 +946,19 @@ Let $H = \set{f(p) = 0}\subset\abs{\OO_Y(4,4)}^\tau$, of dimension $11$ since ev
 
 ::: {.proof}
 
-Write $\ell\subset\abs{\OO_Y(4,4)}$ for the projective line through $f_0$ and $f_1$; it lies in $H$ because vanishing at $p$ is linear. Its base locus contains $p$, and it meets $C_{f_0}\cap C_{f_1}$. The conditions a member can fail to meet $B$ are, one by one, closed conditions on $\ell$ that are not identically satisfied:
-- a shared base point (@def:base-point-linear-system) $q\ne p$: "singular at $q$" is a closed linear evaluation condition, and it cannot hold for every member of the pencil, since $f_0$ is not singular at $q$;
-- degeneracy of the quadratic part at $p$: this is the vanishing of a determinant of five coefficients, closed on $\ell$, and $f_0$ does not satisfy it;
-- a singularity away from the base locus: by Bertini's theorem for pencils on a smooth variety, a general member of $\ell$ has no singularity outside the base locus, so the set of such $t$ is a closed proper subset.
+For distinct $f_0,f_1$, their projective line $\ell$ lies in $H$ because vanishing at $p$ is linear. The complement of $B$ in $H$ is closed by @prop:one-node-family. Its intersection with $\ell$ is proper since $f_0\in B$, hence finite. When $f_0=f_1$ the constant path suffices.
 
-Each of those closed loci is therefore a finite subset of $\ell$, as is their union.
-The curve of @ex:one-node-branch-curve lies in $B$, so $B\ne\varnothing$.
 A projective line with finitely many points removed is path-connected, so $f_0$ and $f_1$ are joined by a path (@def:path-connectedness) in $\ell\cap B$.
+:::
+
+::: {.question #qst:fixed-incidence-branch-singularities title="What does incidence at fixed points force on a branch curve?"}
+
+In the invariant $(4,4)$ system, fix the subset of the four corners through which an irreducible branch curve passes. The Newton polygon records the convex hull of the support of its equation. The coefficients determine which corner values vanish and the quadratic term at each incident corner. A nondegenerate quadratic term gives an ordinary node at that corner. Requiring the rest of the curve to be smooth gives the one-node locus of @prop:one-node-family when only one corner is incident. When it degenerates, which singularities of the *curve* occur there, and which can occur away from the fixed points? What restrictions do the local jets, the involution and the genus formula $g(\widetilde C)+\sum_p\delta_p=9$ impose on their joint occurrence? Can their embedded resolution graphs be determined on the resulting strata?
+:::
+
+::: {.question #qst:quadric-sextic-exceptional-curves title="Following the quadric and plane constructions on one Coble surface"}
+
+Start with an invariant $(4,4)$ curve with ordinary nodes at a nonempty set of fixed corners and smooth elsewhere. Resolve its double cover and take the quotient by the lift fixing the exceptional curves (@prop:tuple-of-the-construction). Which plane models does the resulting smooth Coble surface admit? For each such model, trace the curves on the resolution through the blowdown to $\PP^2$ and through contraction of the boundary components to singularities of type $\tfrac14(1,1)$. In particular, when several fixed nodes occur, what becomes of each of their exceptional curves? The local quotient calculation identifies the singularity over an individual node. Identifying the same surface on the plane side also requires its blowdown data (@prop:coble-plane-model-comparison). Compare the sextic branch pairs of @qst:sextic-moduli-maps.
 :::
 
 ::: {.theorem #thm:a21-labels title="The labels of any two tuples of the one-node direct-projective construction are conjugate"}

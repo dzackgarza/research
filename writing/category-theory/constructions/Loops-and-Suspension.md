@@ -118,9 +118,16 @@ $$
 The fiber over $(x,y)$ is the hom-category $[x,y]_C$; applying $\Pi_\infty$ gives $\operatorname{Map}_C(x,y)$.
 The fiber over $(x,x)$ is the endomorphism category of $x$, and its full subcategory on the invertible objects is the automorphism category of $x$.
 
+::: {.question #qst:arrow-fibre-fullness title="In what sense does the arrow category contain a hom-category?"}
+
+For an ordinary category $C$, the endpoint functor $\operatorname{Fun}([1],C)\to C\times C$ sends a commutative square to its two vertical maps. Its strict fibre over $(x,y)$ contains the arrows $x\to y$. A square in that fibre must have vertical maps $\id_x,\id_y$, so its two horizontal arrows agree. The fibre is the discrete category on $\Hom_C(x,y)$.
+
+Is it full on those objects? In vector spaces the square from $\id_V$ to itself with both vertical maps zero commutes. For $V\ne0$, the square lies outside the endpoint fibre. In a strict $2$-category there is a further choice. Strictly commuting squares with identity endpoints still impose equality of the horizontal arrows. A lax square with the same endpoints can carry a specified $2$-cell between them; reversing the lax convention reverses its direction. Which arrow construction and which cells over the identities recover the intended hom-category? This choice is part of interpreting the endpoint square in @def:mapping-spaces.
+:::
+
 ## The suspension-loop adjunction {#sec-adjunctions}
 
-When $\mcc$ has finite limits and colimits, suspension is left adjoint to loops:
+When $\mcc$ is pointed and has finite limits and colimits, suspension is left adjoint to loops:
 $$
 \adj{\mcc}{\mcc}{\Sigma}{\Omega},
 \qquad \Sigma\dashv\Omega.
@@ -130,6 +137,20 @@ $$
 \operatorname{Map}_*(\Sigma X,Y)\simeq
 \operatorname{Map}_*(X,\Omega Y).
 $$
+
+::: {.question #qst:loops-derived-endomorphisms title="Which object is being looped when endomorphisms appear?"}
+
+In a stable $\infty$-category $\mathcal C$, the loop object $\Omega B=0\times_B0$ belongs to $\mathcal C$. The mapping spectrum $\operatorname{map}_{\mathcal C}(A,-)$ preserves this pullback. Hence
+$$
+\operatorname{map}_{\mathcal C}(A,\Omega B)\simeq\Omega\operatorname{map}_{\mathcal C}(A,B).
+$$
+For the derived $\infty$-category of an ordinary ring $R$, put a module $A$ in degree zero. With cohomological shift $[n]$, its derived endomorphisms give
+$$
+\pi_{-n}\operatorname{map}(A,A)=\Hom_{D(R)}(A,A[n])=\operatorname{Ext}^n_R(A,A),\qquad n\ge0 .
+$$
+
+What does a loop *at* $A$ in the space of objects give? The core $\mathcal C^\simeq$ retains only equivalences, so $\Omega_A(\mathcal C^\simeq)\simeq\operatorname{Aut}_{\mathcal C}(A)$. Inside $\Omega^\infty\operatorname{map}(A,A)$ this is the union of components invertible under composition. Thus shifting an object, taking homotopy groups of its endomorphism spectrum, and following an equivalence around a loop at that object answer different questions.
+:::
 
 ::: {.definition #def:fiber-sequence title="Fiber sequences" defines="fiber sequence"}
 

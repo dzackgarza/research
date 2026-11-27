@@ -16,7 +16,7 @@ N\,\beta_{L_\bQ}(x,x)\in2\bZ
 $$
 Equivalently, after choosing an ordered basis (@def:based-module) with Gram matrix $G_L$, the matrix $N_q(L)G_L^{-1}$ is integral with even (@def:form-axioms) diagonal (@def:polarization-functors).
 For even $L$, this is the level used in the theory of theta series [@Han13; @SSP99].
-Its **bilinear denominator** is the exponent (@cons:pf-from-jacobian) of the finite group (@def:group) $L^\#/L$,
+Its **bilinear denominator** is the exponent of the finite group (@def:group) $L^\#/L$,
 $$
 N_b(L)\definedas\exp(L^\#/L),
 $$
