@@ -1351,6 +1351,75 @@ exposition, check each added statement for a verified source or a derivation of 
 remove additions that satisfy neither condition. Record unresolved source
 questions under the house rule for open problems.
 
+### Diagrams (`DIA-8`)
+
+Every diagram in the book compiles through the user's figure template in
+pandoc-config. `writing/.book/_quarto.yml` loads the `pandoc-tikzcd` filter.
+That filter runs `~/.pandoc/filters/tikzcd.lua`, which puts each diagram into
+`~/.pandoc/templates/standalone-tikz.tex`. The template loads `dzg-tikz.sty`,
+and that style file loads the TikZ libraries, the styles, and the macro tiers
+in `~/.pandoc/styles/macros/`. The book's MathJax macros come from the same
+tiers (`mathjax-sources.txt`). Thus `\QQ`, `\Orth` and `\Sat` have the same
+meaning in a diagram and in the prose.
+
+The book's filter reads only a raw TeX block, so `DIA-8` has one accepted
+form here:
+
+- a block that starts with `\begin{tikzcd}` or `\begin{tikzpicture}` at
+  column 0 and ends with the matching `\end{…}`;
+- or a block that is one `\input{…}` of a `.tikz` or `.tikzcd` file;
+- with a blank line before and after it, and with no code fence around it.
+
+The figure holds only the diagram. A figure never loads a package, a TikZ
+library or a style, and never defines a macro. If a diagram needs a macro or a
+style that `dzg-tikz.sty` does not supply, add it to pandoc-config, at the
+tier that the macro README names. Then every document, and MathJax for a
+MathJax-safe macro, gets the same definition.
+
+Bad, three forms seen in this book:
+
+````markdown
+```{.tikz}
+%%| filename: finite-adelic-ring-pullback
+%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
+\begin{tikzcd} R \arrow[r] & \widehat R \end{tikzcd}
+```
+
+```tikzcd
+R \arrow[r] & \widehat R
+```
+
+$$\begin{tikzcd} R \arrow[r] & \widehat R \end{tikzcd}$$
+````
+
+- The `{.tikz}` fence goes to the separate `tikz` Quarto extension. That
+  extension compiles the figure with its own preamble, not the template, so
+  the figure needs bespoke packages and its macros can differ from the book's.
+- The ```` ```tikzcd ```` fence is an ordinary code block. No filter compiles
+  it, so the page shows the TikZ source. 24 fences of this form were in the
+  book until `f5ce30a98f`.
+- The `$$` form is display math. MathJax receives the diagram source.
+
+Good:
+
+```markdown
+The square of inclusions
+
+\begin{tikzcd}
+R \arrow[r] \arrow[d] \arrow[dr,phantom,very near start,"\lrcorner"] & \widehat R \arrow[d] \\
+K \arrow[r] & \mathbb A_{K,f}
+\end{tikzcd}
+
+is a pullback of commutative rings.
+```
+
+After adding a diagram, render its page and look at it. A correct diagram is
+an inline SVG in a `span.tikzcd` or `span.tikzpic` element. A
+`pre.tikzcd` element, or TikZ source in a `code` element, is a failed
+diagram. A diagram that the filter does not recognise can also disappear and
+leave only its caption (`writing/.book/TRAPS.md`). On a compile failure, read
+the first `[tikzcd-figure-error]` line of the render log.
+
 ### House parameters
 
 - **Definiendum (`DEF-26`, `PR-10`).** The term being defined is in *italics*
