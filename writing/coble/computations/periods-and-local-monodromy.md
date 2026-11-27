@@ -62,13 +62,46 @@ The monic minimal operator for this class is its *Picard--Fuchs operator*. Clear
 Continue a fundamental system of solutions around a positively oriented loop. At a regular singular point, Frobenius expansions do this locally by continuing $t^\alpha$ and $\log t$. The former acquires the factor $e^{2\pi i\alpha}$, and the latter acquires the summand $2\pi i$. Thus the indicial roots give the eigenvalues. The logarithmic terms determine additional entries of the continuation matrix. Identifying an integral lattice in the solution space requires comparison with periods of integral cycles [@Mor92, §1, pp. 3–5].
 :::
 
-For instance, for $E_t\colon y^2=x^3-t$, put $t=u^6$, $x=u^2X$, $y=u^3Y$. The pulled-back curve has the constant equation $Y^2=X^3-1$, and the relative differential $dx/y$ becomes $u^{-1}dX/Y$. Its periods satisfy $(6tD_t+1)y=0$. This calculation detects one eigenvalue directly from the family. The cohomology of the elliptic curve has rank two.
+::: {.construction #cons:integral-monodromy-by-periods title="Monodromy in an integral basis of cycles"}
 
-::: {.question #qst:symbolic-family-monodromy title="Which software computes monodromy from the family equation?"}
-Start with $f(x,y,t)=y^2-x^3-t$, the smooth projective completion $E_t$ of $f=0$ for $t\ne0$, and $\omega=dx/y$. This is the preceding family under $t\mapsto -t$. Which invocation of Lairez's Magma package `periods` [@Lai15, §8], Koutschan's `HolonomicFunctions`, or Movasati's `foliation.lib` for Singular takes these data to an annihilating operator for the periods of $\omega$? For each proposed route, how must the polynomial and form be represented, what commands take those inputs, and what operator do they return? Is the output already the monic minimal operator $D_t+1/(6t)$ of @cons:pf-from-jacobian? If the output has higher order, how can one recover the minimal operator for this differential?
-
-Which invocation computes the Gauss–Manin connection on the de Rham basis $dx/y,\,x\,dx/y$ of $H^1_{\mathrm{dR}}(E_t)$? What does the program return for each basis element, and how does continuation compare with transport in a specified integral basis of cycles? If `ore_algebra` takes a differential operator as input for continuation, which preceding command constructs that input from $f$? Does continuation act on the one-dimensional solution space of the minimal operator for $\omega$, or on solutions of the full rank-two system?
+In the family of @cons:pf-from-jacobian, choose a basis $\omega_1,\ldots,\omega_n$ of the full degree-$m$ de Rham cohomology over $\CC(t)$. Fix a base point $t_0$ and a loop $\ell$ along which these classes are a frame. Transport an integral basis $\gamma_1,\ldots,\gamma_n$ of $H_m(X_{t_0},\ZZ)/\mathrm{tors}$ along $\ell$. Write
+$$
+\nabla_t\omega_i=\sum_k A_{ik}\omega_k,\qquad
+P_{ij}(t)=\int_{\gamma_j(t)}\omega_i(t).
+$$
+Differentiating gives $P'=AP$, with forms indexing rows and cycles indexing columns [@Mov21, §13.5, Prop. 13.2]. The de Rham comparison in @def:period-map makes $P(t_0)$ invertible. After continuation around $\ell$, the de Rham basis returns to its original value because it is single-valued. The $j$th column of the continued matrix $P^\ell(t_0)$ therefore consists of integrals over the transported cycle $T_\ell\gamma_j$. With the images of basis cycles written in columns, this gives
+$$
+P^\ell(t_0)=P(t_0)T_\ell,\qquad T_\ell=P(t_0)^{-1}P^\ell(t_0).
+$$
+This choice of periods determines the integral matrix. An arbitrary fundamental matrix of the same system determines its complex conjugacy class. A single class $\omega$ supplies a frame by successive derivatives precisely when the order of its minimal Picard--Fuchs operator equals $n$. If its order is smaller, its scalar equation describes the periods restricted to the differential submodule it generates.
 :::
+
+::: {.question #qst:symbolic-family-monodromy title="What does the period of a single elliptic differential determine?"}
+
+Let $E_t$ be the smooth projective completion of $y^2=x^3-t$ for $t\ne0$. What is the minimal differential equation for the periods of $dx/y$? How can its solutions form a complex line when $H_1(E_t,\ZZ)$ has rank two? What determines the action of a positive loop about $0$ on integral cycles?
+:::
+
+::: {.example #ex:elliptic-monodromy-from-equation title="Integral monodromy of the family $y^2=x^3-t$"}
+
+Put $\omega=dx/y$ and $\eta=x\,dx/y$. Differentiation at fixed $x$ gives $\partial_t(1/y)=1/(2y^3)$. Using $2y\,d_xy=3x^2\,dx$ on the fibre gives the exact differentials
+$$
+(6t\partial_t+1)\omega=-2\,d_x(x/y),\qquad
+(6t\partial_t-1)\eta=-2\,d_x(x^2/y).
+$$
+The classes of $\omega$ and $\eta$ form a basis of $H^1_{\mathrm{dR}}(E_t)$. Indeed, $\omega$ is holomorphic and nowhere zero. The only pole of $\eta$ is a double pole at infinity. Its residue is zero by the residue theorem, so its periods descend to cycles on the complete curve. If $\eta-c\omega$ were exact, its meromorphic primitive would have a single simple pole. It would give a degree-one map $E_t\to\PP^1$, which is impossible. The nonzero holomorphic form $\omega$ itself has no meromorphic primitive, since such a primitive would be holomorphic on the projective curve. This proves independence in the two-dimensional cohomology.
+
+Thus the connection matrix in @cons:integral-monodromy-by-periods is $\frac{1}{6t}\operatorname{diag}(-1,1)$ in this basis. The minimal operator for $\omega$ is $D_t+1/(6t)$. The periods of $\omega$ are constant multiples of $t^{-1/6}$, and those of $\eta$ are constant multiples of $t^{1/6}$. The substitution $t=u^6$, $x=u^2X$, $y=u^3Y$ gives the same exponents geometrically. The curve becomes $Y^2=X^3-1$, and the two forms become $u^{-1}dX/Y$ and $uX\,dX/Y$.[^elliptic-period-implementations]
+
+Fix $t_0\ne0$ and write $\zeta=e^{2\pi i/6}$. Integration of $\omega$ identifies $H_1(E_{t_0},\ZZ)$ with its period lattice $\Lambda\subset\CC$ [@Sil09, VI, Prop. 5.2]. For a cycle with period $p$, continuation of $t^{-1/6}$ around a positive loop gives the period $\zeta^{-1}p$. Thus multiplication by $\zeta^{-1}$ acts on $\Lambda$ as the monodromy. The periods of two basis cycles are independent over $\RR$ even though their period functions are proportional over $\CC$.
+
+Choose a shortest nonzero period $\lambda$. Then $\lambda,\zeta\lambda$ belong to $\Lambda$ and form a positively oriented basis over $\RR$ of $\CC$. They also generate $\Lambda$ over $\ZZ$. Indeed, express any period in this real basis and round each coefficient to the nearest integer. The remainder is a period of length at most $\sqrt{3}\,|\lambda|/2$, so it vanishes by minimality. Since $\zeta^{-1}=1-\zeta$, transport sends the cycle with period $\lambda$ to the cycle with period $\lambda-\zeta\lambda$, and the one with period $\zeta\lambda$ to the one with period $\lambda$. In that ordered integral basis,
+$$
+T=\begin{pmatrix}1&1\\-1&0\end{pmatrix}.
+$$
+Its eigenvalues $\zeta^{-1},\zeta$ agree with the continuation factors for the two rows of the period matrix.
+:::
+
+[^elliptic-period-implementations]: For the scalar equation, see Lairez's Magma package `periods` [@Lai15, §8] and Koutschan's `HolonomicFunctions`. An annihilating operator can have higher order than the minimal operator derived here. For the connection matrix, Movasati describes `gaussmaninmatrix` in the Singular library `foliation.lib` [@Mov21, §20.3]. Compare the result in the ordered basis $(\omega,\eta)$. Numerical continuation with `ore_algebra` starts from a supplied differential operator. Comparison with integral cycles is a further step.
 
 ::: {.corollary #cor:pf-unipotent-monodromy title="Unipotence and the logarithm of monodromy"}
 

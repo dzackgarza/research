@@ -91,21 +91,15 @@ tags:
 
 : {tbl-colwidths="[35,65]"}
 
-## Computational methods
-
-| Question | Stated in |
-|:---|:---|
-| **Computing a period equation or the full Gauss–Manin system with `periods`, `HolonomicFunctions`, or `foliation.lib`** | @qst:symbolic-family-monodromy |
-
-: {tbl-colwidths="[35,65]"}
-
 ## Questions with worked answers
 
 For Scattone's odd-prime case, @qst:scattone-prime-boundary-curves asks for the multiplicities of $Y_1(1)$ and $Y_1(q)$ in the boundary. @prop:scattone-prime-boundary-count expresses each as a sum over plane orbits for the specified degree.
 
 For a genus-one degeneration, @ex:genus-one-monodromy-powers answers @qst:genus-one-monodromy-types by expressing the integral monodromy in the generators $S$ and $T$ and computing the nilpotency index after base change.
 
-The change of ambient lattice for a polarized Enriques surface preserves the integral image on the anti-invariant lattice (@qst:enriques-polarization-ambient-lattice). The distinction between the augmentation image, module coinvariants, and orthogonal coinvariants can be seen in a single sign action (@ex:coinvariant-sign-action). For monodromy computed from a family equation, @qst:monodromy-from-family-equation leads to the Legendre calculation in @ex:legendre-monodromy.
+How does the equation of a family determine its local monodromy (@qst:monodromy-from-family-equation)? For $y^2=x^3-t$, @qst:symbolic-family-monodromy asks what the periods of $dx/y$ determine. Their common differential equation has order one. The period lattice gives the action on integral cycles (@ex:elliptic-monodromy-from-equation). In the Legendre family the periods satisfy an equation of order two, and a logarithmic solution detects nontrivial unipotent monodromy (@ex:legendre-monodromy).
+
+The change of ambient lattice for a polarized Enriques surface preserves the integral image on the anti-invariant lattice (@qst:enriques-polarization-ambient-lattice). The distinction between the augmentation image, module coinvariants, and orthogonal coinvariants can be seen in a single sign action (@ex:coinvariant-sign-action).
 
 Functoriality of a chosen colimit follows from its universal cocone (@qst:colimit-functor-model). The endpoint fibre of an arrow category restricts the squares as well as their endpoints (@qst:arrow-fibre-fullness). Looping an object and looping the core at that object give different constructions (@qst:loops-derived-endomorphisms). The walking arrow and a one-object monoid distinguish tests for contractibility (@qst:detecting-contractibility). The square-zero extension in @qst:tangent-slice-first-order recovers the tangent vector at a specified point.
 
