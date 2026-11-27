@@ -46,10 +46,6 @@ $$
 Restricting $\Psi$ to its scheme-theoretic image $X$ yields a finite, birational map from the normal variety $\fentwo$ to $X$, which by Zariski's Main Theorem exhibits $\fentwo$ as the normalization of $X$.
 :::
 
-```{.tikz}
-%%| filename: bb-boundary-correspondence
-%%| additionalPackages: \usepackage{amsmath,amssymb,tikz}
-\usetikzlibrary{arrows.meta}
 \begin{tikzpicture}[>={Stealth[round]}, thick, every node/.style={font=\small}]
   % the Enriques Baily--Borel boundary
   \node[circle,fill,inner sep=1.6pt,label=left:$2$]      (e2) at (0,3) {};
@@ -75,7 +71,6 @@ Restricting $\Psi$ to its scheme-theoretic image $X$ yields a finite, birational
   \draw[->,red] (e2) ++(0,-0.35) -- ++(0,-2.3);
   \draw[->,red] (e1) ++(0,-0.35) -- ++(0,-2.3);
 \end{tikzpicture}
-```
 
 The correspondence of Baily--Borel boundaries under $\Psi\colon \fentwo\to \fttz$: the $0$-cusps of $\bbcpt{\fentwo}$ (top) map to the $0$-cusps of $\bbcpt{\fttz}$ (bottom), and the $1$-cusps to $1$-cusps, by [@AEGS25 Lem. 3.2].
 The $0$-cusps of $\fttz$ are distinguished by the divisibility $\mathrm{div}(e)\in\theset{1,2}$ of the isotropic vector, and the map is read off from the divisibilities of Sterk's $e_1,\dots,e_5$ taken in $\ten$ and in $\tdp$ separately; the Enriques $1$-cusps are labelled as in the Sterk cusp-label notation (@not:sterk-cusp-labels).

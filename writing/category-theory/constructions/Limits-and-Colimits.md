@@ -82,9 +82,6 @@ A cone over a parallel pair $f,g\colon A\to B$ is determined by a single morphis
 
 For morphisms $f\colon X\to Z$ and $g\colon Y\to Z$, the limit of the diagram they form has apex written $X\times_ZY$ and legs (@def:cone) $p,q$, displayed by the cartesian square
 
-```{.tikz}
-%%| filename: general-pullback-square
-%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
 \begin{tikzcd}
 X\times_Z Y
   \arrow[r,"q"]
@@ -93,7 +90,6 @@ X\times_Z Y
 Y \arrow[d,"g"]\\
 X \arrow[r,"f"'] & Z
 \end{tikzcd}
-```
 
 The leg at $Z$ is the common composite $fp=gq$, so a cone (@def:cone) with apex $W$ is a pair $(h\colon W\to X,\;k\colon W\to Y)$ with $fh=gk$, and the universal property is the bijection
 $$
@@ -104,9 +100,6 @@ $$
 natural in $W$ [@Rie16, Definition 3.1.15].
 The dual construction, the colimit (@def:limit) of $X\from Z\to Y$, is the pushout $X\amalg_ZY$, displayed by the cocartesian square
 
-```{.tikz}
-%%| filename: general-pushout-square
-%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
 \begin{tikzcd}
 Z \arrow[r,"g"] \arrow[d,"f"'] &
 Y \arrow[d,"i_Y"]\\
@@ -114,7 +107,7 @@ X \arrow[r,"i_X"']
   \arrow[ur,phantom,very near end,"\ulcorner"] &
 X\amalg_Z Y
 \end{tikzcd}
-```
+
 :::
 
 ## Shape categories {#sec-shape-categories}

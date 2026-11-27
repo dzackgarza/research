@@ -124,18 +124,20 @@ L_K
 \Hom_R(L,K).
 $$
 The **metric $I$-dual** $L^{\# I}$ is the pullback
-```tikzcd
+
+\begin{tikzcd}
 L^{\# I} \arrow[r] \arrow[d] &
 L_K \arrow[d,"\beta_{L_K}^{\sharp}"] \\
 \Hom_R(L,I) \arrow[r] &
 \Hom_R(L,K)
-```
+\end{tikzcd}
 
 An **$I$-integral structure** on $L$ is the unique morphism $\eta_{L,I}\colon L\too L^{\# I}$ in $R\text{-}\mathbf{Mod}$ making
-```tikzcd
+
+\begin{tikzcd}
 & L^{\# I} \arrow[d] \\
 L \arrow[ur,"\eta_{L,I}"] \arrow[r] & L_K
-```
+\end{tikzcd}
 
 commute; $L$ is **$I$-integral** when this lift exists.
 For an $I$-integral lattice define $A_L^{\# I}$ by the exact sequence
@@ -485,7 +487,8 @@ The long exact sequence is the snake lemma of @thm:diagram-lemmas applied to the
 ::: {.theorem #thm:double-complex title="Discriminant comparison via localization"}
 Let $L\in\mathbf{Lat}_R^{\mathrm{nd}}$.
 The adjoint (@def:adjoint-morphism) of the scalar-extended form gives the commutative (@def:operation-axioms) diagram
-```tikzcd
+
+\begin{tikzcd}
 0 \arrow[r] &
 L \arrow[r] \arrow[d,"b^\sharp"'] &
 L_K \arrow[r] \arrow[d,"b_K^\sharp\;(\sim)"'] &
@@ -496,7 +499,7 @@ L^* \arrow[r] &
 \operatorname{Hom}_R(L,K) \arrow[r] &
 \operatorname{Hom}_R(L,K/R) \arrow[r] &
 0
-```
+\end{tikzcd}
 
 The snake lemma gives
 $$

@@ -12,10 +12,10 @@ $\iota_\QQ\colon S_\QQ\injects L_\QQ$ be its base change (@def:module-base-chang
 $j_L\colon L\to L_\QQ$ be the canonical map.
 The **saturation** of $\iota$ is the pullback (@def:pullback-square) in $\ZZ\text{-}\mathbf{Mod}$
 
-```tikzcd
+\begin{tikzcd}
 \Sat_L(\iota) \arrow[r] \arrow[d] & S_\QQ \arrow[d,"\iota_\QQ"] \\
 L \arrow[r,"j_L"'] & L_\QQ
-```
+\end{tikzcd}
 
 The maps $S\to S_\QQ$ and $\iota\colon S\to L$ induce a canonical morphism
 $S\to\Sat_L(\iota)$.
@@ -87,10 +87,12 @@ $S/\mathbf{Lat}_\ZZ$ on primitive (@def:primitive-embedding) morphisms.
 Thus its objects are primitive embeddings (@def:primitive-embedding) $\iota\colon S\injects M$, and a morphism
 from $\iota_1\colon S\injects M_1$ to $\iota_2\colon S\injects M_2$ is an isometry
 $\varphi\colon M_1\isoto M_2$ for which the triangle
-```tikzcd
+
+\begin{tikzcd}
 & S \arrow[dl,"\iota_1"'] \arrow[dr,"\iota_2"] & \\
 M_1 \arrow[rr,"\varphi"'] && M_2
-```
+\end{tikzcd}
+
 commutes.
 
 For a fixed target (@def:globular-boundary) $L$, write
@@ -140,10 +142,12 @@ as posets [@Nik80, §1.4].
 For $h_q$ with bilinear monomorphism $h\colon H\injects A_S^\sharp$, let
 $\pi_S\colon S^\#\twoheadrightarrow A_S^\sharp$ be the cokernel (@def:kernel-cokernel) morphism.
 The corresponding overlattice is the pullback (@def:pullback-square) in $\bZ\text{-}\mathbf{Mod}$
-```tikzcd
+
+\begin{tikzcd}
 L_h \arrow[r] \arrow[d] & S^\# \arrow[d,"\pi_S"] \\
 H \arrow[r,hook,"h"'] & A_S^\sharp .
-```
+\end{tikzcd}
+
 It fits into
 $$
 0\too S\too L_h\too H\too0.
@@ -828,8 +832,10 @@ If $L$ is unimodular, then $A_L=0$, so the exact sequence gives $A_{L(m)}\isoto 
 
 ::: {.definition #def:simultaneous-discriminant-spinor-kernel title="Simultaneous discriminant and spinor kernel" defines="simultaneous discriminant and spinor kernel; $\widetilde\Orth^+(L)$"}
 Let $\Orth^+(L)\injects\Orth(L)$ be the spinor kernel of @def:lattice-spinor-kernels. Define $\widetilde\Orth^+(L)$ by the pullback (@def:pullback-square)
-```tikzcd
+
+\begin{tikzcd}
 \widetilde\Orth^+(L) \arrow[r] \arrow[d] & \widetilde\Orth(L) \arrow[d] \\
 \Orth^+(L) \arrow[r] & \Orth(L).
-```
+\end{tikzcd}
+
 :::

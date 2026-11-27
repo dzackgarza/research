@@ -48,10 +48,12 @@ $$
 \Sigma^\sharp(L)=\operatorname{im}\qty{\sigma_{\mathbb A_f}\big|_{\widetilde\Orth(\widehat L)}}.
 $$
 The subgroup $K_L\hookrightarrow\Sigma(L)$ is the pullback (@def:pullback-square) in $\mathbf{Ab}$
-```tikzcd
+
+\begin{tikzcd}
 K_L \arrow[r] \arrow[d] & \Sigma(L) \arrow[d,hook] \\
 \Gamma_\bQ \arrow[r,hook] & \Gamma_{\mathbb A_f}.
-```
+\end{tikzcd}
+
 In particular, $K_L=\Gamma_\bQ\cap\Sigma(L)$ inside $\Gamma_{\mathbb A_f}$ [@MM09, Ch. VIII, §2, display defining $\Sigma^\#(L)$, and §3, display defining $\Sigma(L)$].
 :::
 

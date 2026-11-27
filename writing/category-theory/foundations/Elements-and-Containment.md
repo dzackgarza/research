@@ -38,9 +38,6 @@ A construction that uses an embedding names a particular monomorphism.
 Let $C$ have a terminal object (@def:initial-terminal) $1$ and the relevant pullbacks (@def:pullback-square), let $f\colon X\to Y$, and let $y\colon 1\to Y$ be a point.
 The *fiber of $f$ over $y$* is the apex of the cartesian square
 
-```{.tikz}
-%%| filename: fiber-over-a-point
-%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
 \begin{tikzcd}
 f^{-1}(y)
   \arrow[r]
@@ -49,7 +46,6 @@ f^{-1}(y)
 X \arrow[d,"f"]\\
 1 \arrow[r,"y"'] & Y
 \end{tikzcd}
-```
 
 In a concrete category (@def:concrete-category) whose underlying-set functor is corepresented as in @def:element-functor, its points are the elements of $X$ sent by $f$ to $y$.
 When $C$ is pointed and $y$ is the zero point, this is the fiber of @def:fiber-cofiber.

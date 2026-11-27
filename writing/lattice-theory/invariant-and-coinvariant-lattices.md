@@ -306,10 +306,11 @@ $$
 therefore gives unique $a_w,b_w\in L$ with $\iota_L(a_w)=Iw-w$ and $\iota_L(b_w)=2w$.
 
 Primitivity of $L^\pm\injects L$ gives the pullback (@def:pullback-square) square
-```tikzcd
+
+\begin{tikzcd}
 L^\pm \arrow[r] \arrow[d] & L \arrow[d] \\
 (L^\pm)_\QQ \arrow[r] & L_\QQ .
-```
+\end{tikzcd}
 
 Since $2x\in L$ and $2x\in(L^\pm)_\QQ$, the pullback square gives a unique element $y_\pm\in L^\pm$ mapping to $2x$.
 Thus multiplication by $2$ annihilates $A_{L^\pm}^\sharp$, so $L^\pm$ is $2$-elementary by @def:p-elementary.

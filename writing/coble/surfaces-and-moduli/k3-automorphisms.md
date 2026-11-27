@@ -132,10 +132,12 @@ $$
 \Aut(X)\isoto P_S\times_Q G_X\definedas\theset{(s,t)\in P_S\times G_X\st a(s)=b(t)}.
 $$
 Equivalently, the following square of groups is a pullback:
-```tikzcd
+
+\begin{tikzcd}
 \Aut(X) \arrow[r,"f\mapsto f_*|_T"] \arrow[d,"f\mapsto f_*|_S"'] \arrow[dr, phantom, "\lrcorner", very near start] & G_X \arrow[d,"b|_{G_X}"] \\
 P_S \arrow[r,"a"'] & Q
-```
+\end{tikzcd}
+
 For an elliptic $K3$ surface of Picard rank $2$ this is [@MS24, equation (3.15)].
 :::
 
@@ -305,10 +307,12 @@ By @def:k3-mm-obstruction, $A_2=e_S^+(b(G_X))\iscontainedin\im e_S^+$.
 
 In @not:k3-automorphism-data, the fibre product $P_S\times_Q\Orth(T)\definedas\theset{(s,t)\in P_S\times\Orth(T)\st a(s)=b(t)}$ is isomorphic, by extension of $s\perp t$, to the group (@def:group) of isometries of $L$ that preserve $S$ and $\Amp(X)$.
 The group $\Aut(X)$ is its pullback along the inclusion $G_X\injects\Orth(T)$:
-```tikzcd
+
+\begin{tikzcd}
 \Aut(X) \arrow[r] \arrow[d] \arrow[dr, phantom, "\lrcorner", very near start] & G_X \arrow[d,hook] \\
 P_S\times_Q\Orth(T) \arrow[r] & \Orth(T)
-```
+\end{tikzcd}
+
 :::
 
 ::: {.proof}

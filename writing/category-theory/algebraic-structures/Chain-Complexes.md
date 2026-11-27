@@ -87,14 +87,16 @@ is exact (@def:exact-complex) [@Wei94, Thm. 1.3.1].
 ::: {.proof}
 
 This is [@Wei94, Thm. 1.3.1], and the proof is the snake lemma applied to
-```tikzcd
+
+\begin{tikzcd}
 A_n/B_n(A) \arrow[r] \arrow[d, "d^A"] &
 B_n/B_n(B) \arrow[r] \arrow[d, "d^B"] &
 C_n/B_n(C) \arrow[r] \arrow[d, "d^C"] & 0 \\
 Z_{n-1}(A) \arrow[r] &
 Z_{n-1}(B) \arrow[r] &
 Z_{n-1}(C) & {}
-```
+\end{tikzcd}
+
 whose rows are exact by @thm:chain-complexes-abelian and whose two ends the snake lemma of @thm:diagram-lemmas identifies as $H_n(C)$ and $H_{n-1}(A)$.
 Applying it to the translate $[n]$ gives the sequence in every degree (@def:graded-object) at once, and naturality is functoriality of the snake lemma.
 :::

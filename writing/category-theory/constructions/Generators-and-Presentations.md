@@ -89,9 +89,6 @@ The module $M$ is *finitely presented* if it admits a finite presentation.
 
 Let $\operatorname{FinPres}(R)$ be the category whose objects are the finite presentations of @def:finite-presentation and whose morphisms are the commutative diagrams
 
-```{.tikz}
-%%| filename: finite-presentation-morphism
-%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
 \begin{tikzcd}
 R^{m} \arrow[r,"d_M"] \arrow[d,"A_1"'] &
 R^{n} \arrow[r,"q_M"] \arrow[d,"A_0"'] &
@@ -102,7 +99,6 @@ R^{n'} \arrow[r,"q_N"'] &
 N \arrow[r] &
 0
 \end{tikzcd}
-```
 
 so the datum of a morphism includes the pair $(A_1,A_0)$ of maps of free (@def:module-subcategories) modules.
 Relative to the standard bases (@def:based-module), $A_1$ and $A_0$ are matrices over $R$, and $f$ is the $R$-linear map they present.

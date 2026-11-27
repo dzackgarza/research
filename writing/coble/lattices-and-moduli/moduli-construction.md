@@ -36,9 +36,6 @@ The stable subgroup $\widetilde\Orth^+(T_\Co)$ is the kernel of the action on $A
 The actual monodromy is $\Gamma_{\Co,2}=R_{\gent}\cap\Orth^+(T_\Co)=\bar\rho^{-1}(P)\cap\Orth^+(T_\Co)$, of index $134\,912$ in the full orthogonal group and $67\,456$ in its positive subgroup. See @thm:gamma-co-is-the-stack-monodromy and @thm:coble-monodromy-versus-enriques. The component condition cannot be dropped.
 :::
 
-```{.tikz}
-%%| filename: moduli-tower
-%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
 \begin{tikzcd}[column sep=large, row sep=large]
 F_{\mathrm{Co},2}
   \arrow[r]
@@ -53,7 +50,6 @@ F_{\mathrm{Co}}
   \arrow[r] &
 F_{\mathrm{En}}
 \end{tikzcd}
-```
 
 The tower relates the degree-$2$ numerically polarized Coble and Enriques moduli $F_{\Co,2}$, $\fentwo$, their unpolarized quotients $\fco$, $\fen$, and the degree-$(2,2,0)$ K3 moduli space $\fttz\injects F_4$.
 The Coble forgetful arithmetic map is $F_{\Co,2}\to F_\Co$, in this direction: the actual group inclusion is $R_{\gent}\cap\Orth^+(T_\Co)\subset\Orth^+(T_\Co)$ by @thm:gamma-co-is-the-stack-monodromy. Its finite generic degree is $67\,456$, since the common central projective kernel $\{\pm\id\}$ belongs to both groups. The inverse-direction quotient map induced by the identity of the domain does not exist. This is a statement about arithmetic quotients; the forgetful morphism of the actual smooth moduli stacks need not be identified with the whole finite map.

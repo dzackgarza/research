@@ -119,12 +119,12 @@ For a domain $R$ with fraction field $F$, a generically nondegenerate form has t
 
 Assume $\operatorname{char}F\ne2$ and put $V=M\otimes_R F$. Let $\operatorname{Pin}(V)$ denote the norm-one homogeneous Clifford group defined by Clifford conjugation. Define $E_R^{\mathrm{gen}}$ by the Cartesian square of groups
 
-```tikzcd
+\begin{tikzcd}
 E_R^{\mathrm{gen}} \arrow[r] \arrow[d] \arrow[dr, phantom, "\lrcorner", very near start]
   & \operatorname{Pin}(V)(F) \arrow[d,"p"] \\
 O(M,q)(R) \arrow[r,"g\mapsto g_F"]
   & O(V,q_F)(F).
-```
+\end{tikzcd}
 
 Thus
 $$

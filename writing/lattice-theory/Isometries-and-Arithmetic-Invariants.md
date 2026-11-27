@@ -25,10 +25,12 @@ $$
 $$
 The **bilinear discriminant representation** is $\rho_L\colon\Orth(L)\too\Orth(A_L)$, $\varphi\longmapsto\bar{\varphi}$.
 Define $\widetilde\Orth(L)$ by the pullback
-```tikzcd
+
+\begin{tikzcd}
 \widetilde\Orth(L) \arrow[r] \arrow[d] & \Orth(L) \arrow[d,"\rho_L"] \\
 1 \arrow[r] & \Orth(A_L).
-```
+\end{tikzcd}
+
 Let $I_L\injects\Orth(A_L)$ be the image subobject (@def:subobject-relation).
 Then
 $$
@@ -65,10 +67,12 @@ is exact.
 ::: {.convention #conv:stable-subgroup title="Stable subgroups" defines="stable subgroup; $\widetilde G$"}
 
 For a subgroup $G\le\Orth(L)$, define $\widetilde G$ by the pullback (@def:pullback-square)
-```tikzcd
+
+\begin{tikzcd}
 \widetilde G \arrow[r] \arrow[d] \arrow[dr,phantom,very near start,"\lrcorner"] & G \arrow[d] \\
 \widetilde\Orth(L) \arrow[r] & \Orth(L).
-```
+\end{tikzcd}
+
 :::
 
 ::: {.proposition #prop:lattice-morphisms-monic title="Lattice morphisms are monomorphisms"}
@@ -163,10 +167,12 @@ f^\vee\definedas\Hom_{R\text{-}\mathbf{Mod}}(f,W)\colon
 \Hom_{R\text{-}\mathbf{Mod}}(N,W)\too\Hom_{R\text{-}\mathbf{Mod}}(M,W).
 $$
 An **adjoint** of $f$ is a morphism $f^*\in\Hom_{R\text{-}\mathbf{Mod}}(N,M)$ making the square
-```tikzcd
+
+\begin{tikzcd}
 N \arrow[r,"f^*"] \arrow[d,"b_N^\sharp"'] & M \arrow[d,"b_M^\sharp"] \\
 \Hom_{R\text{-}\mathbf{Mod}}(N,W) \arrow[r,"f^\vee"'] & \Hom_{R\text{-}\mathbf{Mod}}(M,W)
-```
+\end{tikzcd}
+
 commute.
 If $b_M$ is nondegenerate (@def:polarization), such an adjoint is unique when it exists.
 If $b_M$ is perfect (@def:polarization), it exists and equals $(b_M^\sharp)^{-1}\circ f^\vee\circ b_N^\sharp$.

@@ -7,9 +7,6 @@ Let $\mcc$ be a pointed $\infty$-category, with zero object $*$, and suppose tha
 
 For $f\colon X\to Y$, its fiber over the zero morphism $0\colon *\to Y$ is defined by the cartesian square
 
-```{.tikz}
-%%| filename: fiber-square
-%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
 \begin{tikzcd}
 \operatorname{Fib}(f)
   \arrow[r,"p_X"]
@@ -18,7 +15,6 @@ For $f\colon X\to Y$, its fiber over the zero morphism $0\colon *\to Y$ is defin
 X \arrow[d,"f"]\\
 * \arrow[r,"0"'] & Y
 \end{tikzcd}
-```
 
 The fiber-product notation for its apex is
 $$
@@ -26,9 +22,6 @@ $$
 $$
 The cofiber is defined by the cocartesian square
 
-```{.tikz}
-%%| filename: cofiber-square
-%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
 \begin{tikzcd}
 X
   \arrow[r,"f"]
@@ -37,7 +30,6 @@ X
 Y \arrow[d,"i_Y"]\\
 * \arrow[r,"i_*"'] & \operatorname{Cof}(f)
 \end{tikzcd}
-```
 
 The pushout (@def:pullback-square) notation for its apex is
 $$
@@ -50,9 +42,6 @@ These definitions specialize in pointed spaces to the usual homotopy fiber and h
 
 For an object $X$ of $\mcc$, loops (@def:based-loop) are defined by the pullback (@def:pullback-square) square
 
-```{.tikz}
-%%| filename: loop-square
-%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
 \begin{tikzcd}
 \Omega X
   \arrow[r,"\operatorname{pr}_2"]
@@ -61,13 +50,9 @@ For an object $X$ of $\mcc$, loops (@def:based-loop) are defined by the pullback
 * \arrow[d,"0"]\\
 * \arrow[r,"0"'] & X
 \end{tikzcd}
-```
 
 Suspension is defined by the pushout (@def:pullback-square) square
 
-```{.tikz}
-%%| filename: suspension-square
-%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
 \begin{tikzcd}
 X
   \arrow[r,"0"]
@@ -76,7 +61,6 @@ X
 * \arrow[d,"j_1"]\\
 * \arrow[r,"j_2"'] & \Sigma X
 \end{tikzcd}
-```
 
 Thus
 $$

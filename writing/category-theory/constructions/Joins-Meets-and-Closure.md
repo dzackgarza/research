@@ -11,9 +11,6 @@ Equivalently, its elements are isomorphism-invariant properties of objects of $C
 For $A,B\in\operatorname{RFull}(C)$, their meet is the replete full subcategory (@def:property-structure-stuff) on the objects lying in both $A$ and $B$.
 It is represented by the pullback
 
-```{.tikz}
-%%| filename: full-subcategory-intersection
-%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
 \begin{tikzcd}
 A\cap B
   \arrow[r,"\operatorname{pr}_B"]
@@ -22,7 +19,7 @@ A\cap B
 B \arrow[d,hook]\\
 A \arrow[r,hook] & C
 \end{tikzcd}
-```
+
 Its universal property (@def:universal-arrow) is the greatest lower bound in $\operatorname{RFull}(C)$.
 :::
 

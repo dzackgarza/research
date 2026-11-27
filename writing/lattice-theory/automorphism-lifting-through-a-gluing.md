@@ -26,10 +26,12 @@ $\pi_{M\perp N}\colon(M\perp N)^\#\twoheadrightarrow A_{M\perp N}^\sharp$
 of @def:metric-dual induces
 $h\colon(H,0)\injects A_{M\perp N}$
 in $\mathbf{BilMod}_{\bZ}$, characterized by
-```tikzcd
+
+\begin{tikzcd}
 L \arrow[r] \arrow[d,two heads,"c"'] & (M\perp N)^\# \arrow[d,two heads,"\pi_{M\perp N}"] \\
 H \arrow[r,hook,"U_{\mathrm{mod}}(h)"'] & A_{M\perp N}^\sharp
-```
+\end{tikzcd}
+
 The gluing datum is the isotropic subobject $h$ of $A_{M\perp N}$, whose value module is $W_b(M\perp N)$ of @def:discriminant.
 
 If $L,M,N$ are even, $h$ refines to
@@ -49,10 +51,10 @@ Put $\psi\definedas\varphi_M\perp\varphi_N$ and $\bar\psi\definedas\rho_{M\perp 
 Then $\psi$ extends to an isometry of $L$ if and only if there exists
 $u\in\Aut_{\bZ\text{-}\mathbf{Mod}}(H)$ for which the following square commutes (@def:commutative-diagram):
 
-```tikzcd
+\begin{tikzcd}
 H \arrow[r,"u"] \arrow[d,"h"'] & H \arrow[d,"h"] \\
 A_{M\perp N} \arrow[r,"\bar\psi"'] & A_{M\perp N}
-```
+\end{tikzcd}
 
 The extension is then unique and restricts to $\varphi_M$ on $M$ and to $\varphi_N$ on $N$.
 :::
@@ -82,10 +84,10 @@ Let $\Stab_{\Orth(A_M)}(h)\injects\Orth(A_M)$ be the stabilizer (@def:group-orbi
 $h\colon(H,0)\injects A_{M\perp N}$ under the action through the first summand of the common-value isometry of @prop:discriminant-orthogonal-sum.
 The stabilizer $\Stab_\Gamma(h)$ is the pullback in $\mathbf{Grp}$
 
-```tikzcd
+\begin{tikzcd}
 \Stab_\Gamma(h) \arrow[r] \arrow[d] & \Gamma \arrow[d,"\rho_M|_\Gamma"] \\
 \Stab_{\Orth(A_M)}(h) \arrow[r,hook] & \Orth(A_M).
-```
+\end{tikzcd}
 
 Then the elements of $\Stab_\Gamma(h)$ are exactly the isometries of $M$ that extend over $L$ while fixing $N$ pointwise.
 The pullback defining $\Stab_\Gamma(h)$ induces the monomorphisms

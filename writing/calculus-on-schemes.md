@@ -138,15 +138,11 @@ Where does this particular lift appear in the stabilization of a slice? Regard $
 
 Set $M=k$ with action through $x$. The following square is a pullback of $k$-algebras.
 
-```{.tikz}
-%%| filename: tangent-square-zero-pullback
-%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
 \begin{tikzcd}
 A\oplus k \arrow[r,"{(a,m)\mapsto x(a)+\epsilon m}"] \arrow[d,swap,"\mathrm{pr}_A"] \arrow[dr,phantom,very near start,"\lrcorner"]
 & k[\epsilon]/(\epsilon^2) \arrow[d,"\epsilon\mapsto0"] \\
 A \arrow[r,swap,"x"] & k
 \end{tikzcd}
-```
 
 A section over $A$ therefore gives exactly a lift of $x$. By extension and restriction of scalars its component is an element of
 $$
@@ -581,14 +577,10 @@ Both displayed components are fixed by $\rho$, by conjugate-linearity and $\rho^
 
 For an algebraic $\mathbb R$-scheme $X$, the base change $p:X_{\mathbb C}\to X$ is instead defined by the Cartesian square
 
-```{.tikz}
-%%| filename: calculus-complex-base-change
-%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
 \begin{tikzcd}
 X_{\mathbb C} \arrow[r] \arrow[d,"p"'] \arrow[dr,phantom,"\lrcorner",very near start] & \operatorname{Spec}\mathbb C \arrow[d] \\
 X \arrow[r] & \operatorname{Spec}\mathbb R.
 \end{tikzcd}
-```
 
 Its conjugation $\sigma$ is an involution over $X$. Quasicoherent sheaves on $X$ correspond to quasicoherent sheaves $\mathcal F$ on $X_{\mathbb C}$ with descent isomorphism $\theta:\sigma^*\mathcal F\to\mathcal F$ satisfying $\theta\circ\sigma^*\theta=1$ [@stacks-023T]. Morphisms commute with $\theta$. This is descent along $p$. It is not reconstruction from a fixed-point subscheme: fixed complex-valued points recover $X(\mathbb R)$, while descent recovers the scheme and its sheaves. The fixed-section calculation in @prop:calculus-module-descent is the corresponding algebra calculation on affine opens.
 

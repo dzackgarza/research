@@ -29,12 +29,12 @@ Flat base change (@def:module-base-change) along $\bZ\to\bQ$ sends the kernel (@
 Nondegeneracy of $L_\bQ$ and isotropy of $v$ give $\radic\qty{v^{\perp_{L_\bQ}}}=\bQ v$.
 Primitivity of $\iota_v$ gives the Cartesian square
 
-```tikzcd
+\begin{tikzcd}
 \generators{v}_{\bZ} \arrow[r,hook,"\iota_v"] \arrow[d,hook] &
 L \arrow[d,hook] \\
 \bQ v \arrow[r,hook] &
 L_\bQ .
-```
+\end{tikzcd}
 
 Hence $\radic(v^{\perp_L})$ is the pullback (@def:pullback-square) of $\bQ v\injects v^{\perp_{L_\bQ}}$ along $v^{\perp_L}\injects v^{\perp_{L_\bQ}}$, so $\bar{\lambda}_v$ is an isomorphism.
 The displayed sequence is the defining cokernel (@def:kernel-cokernel) sequence of the nondegenerate reduction.
