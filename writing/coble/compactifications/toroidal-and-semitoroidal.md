@@ -53,7 +53,7 @@ For example, $Q=\left(\begin{smallmatrix}2&1\\1&3\end{smallmatrix}\right)$ is po
 
 ![Two hexagonal cells with edge lengths $a,b,c$ in the archive illustration.](/rendered/honeycomb_sidelengths.jpg){#fig-ppav-hexagons}
 
-::: {.question #qst:genus-two-boundary-chamber title="Does the genus-two boundary-poset comparison come from a map of compactifications?"}
+::: {.question #qst:genus-two-boundary-chamber title="Does a period map explain the genus-two specialization poset?"}
 
 A stratum of the Deligne--Mumford boundary of $\overline{\mathcal M}_2$ has a stable dual graph: vertices record the genera of the components, and edges record nodes. Smoothing nodes contracts the corresponding edges, with the genus of the vertex increasing when the edge is a loop. On the period side, specialization of strata is read from faces of cones, modulo the arithmetic group and with any prescribed roots declared irrelevant (@def:generalized-coxeter-semifan).
 

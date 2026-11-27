@@ -94,7 +94,7 @@ If $C$ and $D$ are both terminal objects of the same category of cones, or more 
 Which identifications *count* is fixed by placing the objects over a higher category $W$, with $p_C \colon C \to W$ and $p_D \colon D \to W$, and taking $\operatorname{Way}(C, D)$ to be the equivalences in the slice $\mathbf{Cat}_{\infty,\infty}/W$.
 Such an equivalence lifts $\id_W$.
 
-::: {.question #qst:canonical-equality-universe title="A canonical equality-bearing universe"}
+::: {.question #qst:canonical-equality-universe title="What determines which equivalences count as ways to identify two objects?"}
 Is there a fully canonical choice of $W$, and hence of $\operatorname{Way}$?
 The equality predicate of @sec-equality-predicate depends on that subcategory.
 :::

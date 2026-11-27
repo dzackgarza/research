@@ -64,6 +64,10 @@ Continue a fundamental system of solutions around a positively oriented loop. At
 
 For instance, for $E_t\colon y^2=x^3-t$, put $t=u^6$, $x=u^2X$, $y=u^3Y$. The pulled-back curve has the constant equation $Y^2=X^3-1$, and the relative differential $dx/y$ becomes $u^{-1}dX/Y$. Its periods satisfy $(6tD_t+1)y=0$. This calculation detects one eigenvalue directly from the family. The cohomology of the elliptic curve has rank two.
 
+::: {.question #qst:symbolic-family-monodromy title="How does one compute monodromy from the family equation in a symbolic algebra system?"}
+For the smooth projective completion of $y^2=x^3-t$ over the punctured $t$-disc, which symbolic operations, starting with the equation and $dx/y$, return the monic Picard–Fuchs operator $D_t+1/(6t)$ of this differential (@cons:pf-from-jacobian)? Which further calculation produces the Gauss–Manin connection on all of $H^1_{\mathrm{dR}}$ and the integral monodromy in a specified basis of cycles? Can the result be recovered from the input polynomial before identifying the singular fibre?
+:::
+
 ::: {.corollary #cor:pf-unipotent-monodromy title="Unipotence and the logarithm of monodromy"}
 
 Let $T$ act on the solution space of a regular singular equation at $0$ with indicial roots $\alpha_j$.

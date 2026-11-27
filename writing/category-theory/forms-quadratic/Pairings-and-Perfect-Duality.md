@@ -109,6 +109,28 @@ $$
 and the corresponding isomorphisms with $B$. They identify the adjoints after extension of scalars with the stated tensor products. Flatness preserves kernels and cokernels of the two complete exact sequences. Faithfully flat scalar extension also reflects zero modules, yielding the last equivalences.
 :::
 
+## Distributional kernels and pairings {#sec-distributional-kernel-pairings}
+
+::: {.definition #def:distribution-dual title="The space of distributions" defines="distribution; $\mathcal D'(U)$"}
+For an open set $U\subseteq\RR^d$, let $\mathcal D(U)=C_c^\infty(U,\RR)$ with its usual test-function topology. A *distribution* on $U$ is a continuous linear functional on $\mathcal D(U)$. Write $\mathcal D'(U)$ for this dual and $\langle u,f\rangle=u(f)$ for evaluation [@Fol99, §9.1].
+:::
+
+::: {.construction #cons:kernel-pairing title="The pairing associated to a distributional kernel" defines="pairing associated to a distributional kernel"}
+For $K\in\mathcal D'(U\times U)$ (@def:distribution-dual), put
+$$
+b_K(f,g)=K(f\otimes g),\qquad
+(f\otimes g)(x,y)=f(x)g(y),\qquad
+\langle T_K g,f\rangle=b_K(f,g).
+$$
+The map $T_K\colon\mathcal D(U)\to\mathcal D'(U)$ is the right adjoint of the pairing (@def:pairing-adjoints), with values in the continuous dual (@def:distribution-dual). For fixed $g$, the map $f\mapsto f\otimes g$ is continuous: on test functions supported in a fixed compact set, each derivative of $f\otimes g$ is a product of derivatives of $f$ and $g$. Thus $T_Kg$ lies in $\mathcal D'(U)$. The first argument tests the output, and the second is the input (compare [@Kna17, Ch. VIII, §7]).
+:::
+
+::: {.question #qst:gram-operator-kernel title="How does a Gram operator generalize to a distributional or algebra-valued kernel?"}
+In @cons:kernel-pairing, where does a reference pairing enter if the kernel is to act on functions? Let $\mathcal D(U)$ embed continuously and densely in a real Hilbert space $H$, and let $J\colon H\to H'$ be the Riesz map $Jg(f)=(f,g)_H$. For which $g\in\mathcal D(U)$ is $T_Kg$ continuous for the $H$-norm, and hence the restriction of a unique $Ju$ with $u\in H$?
+
+If the coefficients belong to an associative algebra $A$, which left and right $A$-modules supply the arguments of the pairing, and in which bimodule does the kernel take its values? For a kernel given by a function, which action gives $K(x,y)g(y)$ and which gives $g(y)K(x,y)$? How is the adjoint expressed when those actions differ?
+:::
+
 ## Perfectness depends on the value module {#sec-value-module-duality}
 
 ::: {.example #ex:pairing-nondegenerate-not-perfect title="Nondegenerate and perfect are distinct"}

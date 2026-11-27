@@ -235,7 +235,7 @@ More precisely, a face gluing specifies a finite diagram of cells and face maps.
 
 For a regular triangulated surface, the link of an interior vertex is a circle and the link of a boundary vertex is an interval. Face identifications can instead produce a nonregular cell complex, where a face poset alone loses attaching data [@Hat02, §2.1]. An automorphism of that incidence complex need not preserve the affine atlas. Likewise, an involution on the completed affine sphere is a map of that structured sphere; a symmetry visible in a planar drawing supplies no such map without an equivariant realization [@AEGS25, Prop. 4.5].
 
-::: {.question #qst:cellular-attaching-diagrams title="What must a cellular analogue of a simplicial set remember?"}
+::: {.question #qst:cellular-attaching-diagrams title="What category of cell shapes encodes CW attaching maps?"}
 
 Can one choose a category of shapes so that its diagrams encode cellular attaching maps and realization recovers the glued space? Consider $X_d=S^1\cup_{f_d}D^2$, where $f_d(z)=z^d$ on the boundary circle. For $d=1,2$ the cells and their face incidences agree. In the cellular chain complex the boundary from degree two to degree one is multiplication by $d$, so $H_1(X_1;\ZZ)=0$ and $H_1(X_2;\ZZ)=\ZZ/2$. Repeating a cell once for each element of an indexing set gives copies of the cell. The degree is carried by the map from its boundary [@Hat02, §2.2].
 

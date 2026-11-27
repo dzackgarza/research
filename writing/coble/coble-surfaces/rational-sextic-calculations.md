@@ -22,7 +22,7 @@ A node contributes one. Thus a sextic with $n$ nodes and no other singularities 
 
 :::
 
-::: {.question #qst:sextic-moduli-maps title="Which moduli map does a nodal plane sextic define?"}
+::: {.question #qst:sextic-moduli-maps title="Can one recover a nodal plane sextic from its abstract curve or its pointed normalization?"}
 
 Fix an irreducible plane sextic with $n$ ordinary nodes and no other singularities, and put $g=10-n$. Forgetting the plane gives a stable curve in $\overline{\mathcal M}_{10}$. Normalizing gives a smooth curve of genus $g$ with $n$ unordered pairs of distinct branch points. On the equinodal locus, label the nodes and order their branches étale locally. Changing these choices gives the action of $G_n=(\mathfrak S_2)^n\rtimes\mathfrak S_n$ on the markings. The two constructions fit into
 $$

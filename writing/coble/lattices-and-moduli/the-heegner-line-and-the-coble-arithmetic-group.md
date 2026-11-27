@@ -951,12 +951,12 @@ For distinct $f_0,f_1$, their projective line $\ell$ lies in $H$ because vanishi
 A projective line with finitely many points removed is path-connected, so $f_0$ and $f_1$ are joined by a path (@def:path-connectedness) in $\ell\cap B$.
 :::
 
-::: {.question #qst:fixed-incidence-branch-singularities title="What does incidence at fixed points force on a branch curve?"}
+::: {.question #qst:fixed-incidence-branch-singularities title="What does passage through specified fixed corners force on an invariant $(4,4)$-curve?"}
 
 In the invariant $(4,4)$ system, fix the subset of the four corners through which an irreducible branch curve passes. The Newton polygon records the convex hull of the support of its equation. The coefficients determine which corner values vanish and the quadratic term at each incident corner. A nondegenerate quadratic term gives an ordinary node at that corner. Requiring the rest of the curve to be smooth gives the one-node locus of @prop:one-node-family when only one corner is incident. When it degenerates, which singularities of the *curve* occur there, and which can occur away from the fixed points? What restrictions do the local jets, the involution and the genus formula $g(\widetilde C)+\sum_p\delta_p=9$ impose on their joint occurrence? Can their embedded resolution graphs be determined on the resulting strata?
 :::
 
-::: {.question #qst:quadric-sextic-exceptional-curves title="Following the quadric and plane constructions on one Coble surface"}
+::: {.question #qst:quadric-sextic-exceptional-curves title="How do the quadric and sextic constructions produce the same Coble surface when several fixed nodes occur?"}
 
 Start with an invariant $(4,4)$ curve with ordinary nodes at a nonempty set of fixed corners and smooth elsewhere. Resolve its double cover and take the quotient by the lift fixing the exceptional curves (@prop:tuple-of-the-construction). Which plane models does the resulting smooth Coble surface admit? For each such model, trace the curves on the resolution through the blowdown to $\PP^2$ and through contraction of the boundary components to singularities of type $\tfrac14(1,1)$. In particular, when several fixed nodes occur, what becomes of each of their exceptional curves? The local quotient calculation identifies the singularity over an individual node. Identifying the same surface on the plane side also requires its blowdown data (@prop:coble-plane-model-comparison). Compare the sextic branch pairs of @qst:sextic-moduli-maps.
 :::

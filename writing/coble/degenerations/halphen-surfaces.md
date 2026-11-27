@@ -61,6 +61,16 @@ Changing the homology basis conjugates every displayed matrix. In
 particular, the matrices are representatives, not canonical matrices
 attached to the fibre.
 
+::: {.question #qst:genus-one-monodromy-types title="How does the genus-one degeneration classification read directly from $T\in\mathrm{SL}_2(\ZZ)$?"}
+For local monodromy $T$ around the puncture, which integral conjugacy classes occur before base change? After a base change $t=u^e$ making $T^e$ unipotent, which classes have $N=\log(T^e)=0$ (Type I), and which have $N\ne0$ and $N^2=0$ (Type II)? Here the Roman numeral describes the monodromy after base change. The fibre labels in the table above are Kodaira's.
+:::
+
+::: {.example #ex:genus-one-monodromy-powers title="The two nilpotency orders in the fibre table"}
+For the rows $I_0,II,III,IV,I_0^*,IV^*,III^*,II^*$, the displayed matrices have orders $1,6,4,3,2,3,4,6$, respectively. Taking $e$ equal to the order gives $N=0$. The table distinguishes the integral conjugacy classes of a finite-order matrix and its inverse when they belong to different rows.
+
+Put $E=\left(\begin{smallmatrix}0&1\\0&0\end{smallmatrix}\right)$. For $n>0$, the other rows give $T=I+nE$ for $I_n$ and $T=-(I+nE)$ for $I_n^*$. Since $E^2=0$, the logarithm is $nE$ in the first case and $\log(T^2)=2nE$ in the second. In both cases the nilpotency index is two. The original matrix retains the sign and the integral shear parameter $n$.
+:::
+
 ::: {.proposition #prop:terminal-coble-halphen-blowup title="Terminal Coble surfaces as blowups of Halphen surfaces"}
 
 Let $V$ be a terminal (@def:terminal-coble-surface) Coble surface of K3 type (@def:terminal-coble-k3-type).

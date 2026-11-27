@@ -159,6 +159,25 @@ Applying homotopy groups (@def:homotopy-groups) gives the long exact (@def:exact
 Its component-level portion is the pointed-set sequence of @sec-pi0-fiber.
 :::
 
+## The spaces of the sphere spectrum {#sec-sphere-spectrum-spaces}
+
+::: {.definition #def:q-construction title="The infinite loop space $QX$" defines="$QX$"}
+For a based CW complex $X$, put
+$$
+QX=\operatorname*{colim}_{r\geq 0}\Omega^r\Sigma^r X .
+$$
+The transition map at stage $r$ is $\Omega^r$ applied to the unit $\Sigma^r X\to\Omega\Sigma(\Sigma^r X)$ of the suspension-loop adjunction (@sec-adjunctions) [@May99, p. 233].
+:::
+
+::: {.question #qst:stable-stem-from-qs title="Can the geometry of $QS^n$ compute a stable stem independently?"}
+For $n\geq1$ and $k>0$, the definition gives [@May99, p. 233]
+$$
+\pi_{n+k}(QS^n)\cong\operatorname*{colim}_r\pi_{n+k+r}(S^{n+r})
+=\pi_k^{\mathrm s}(S^0).
+$$
+For which $k$ can one compute the left side from a geometric model of $QS^n$ (@def:q-construction)? In a model by configurations of points labelled in $S^n$, which attaching maps or operations determine a homotopy class and its order? Can the calculation give a stem using only information obtained from that model?
+:::
+
 ## Extending the sequences {#sec-extended-sequences}
 
 For $f\colon X\to Y$ the fiber square of @def:fiber-cofiber may be extended to the left, since the fiber of $\operatorname{Fib}(f)\to X$ is computed by a pasted pullback square and is $\Omega Y$:

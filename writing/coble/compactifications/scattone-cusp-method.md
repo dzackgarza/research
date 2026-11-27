@@ -165,6 +165,15 @@ $$
 
 ## Modular curves on the boundary
 
+::: {.question #qst:isotropic-reduction-fibres title="When does reduction to the discriminant group compute integral isotropic orbits?"}
+
+Let $L$ be an even nondegenerate integral lattice of signature $(2,n)$, and let $\Gamma\leq\Orth^+(L)$ be an arithmetic subgroup. For a primitive totally isotropic sublattice $I\subset L$, put
+$$
+H_I=\big((I\otimes\QQ)\cap L^\#\big)/I\ \hookrightarrow\ A_L=L^\#/L .
+$$
+The inclusion uses $(I\otimes\QQ)\cap L=I$. For an isotropic line $\ZZ v$, @prop:coble-divisibility-discriminant gives the generator $[v/\divisibility_L(v)]$ up to sign. For each rank, which orbits of isotropic subgroups of $A_L$ under the image of $\Gamma$ lift, and how many $\Gamma$-orbits lie over each? For a plane $I$, which complement classes $I^\perp/I$ and integral gluing data distinguish its lifts? For a flag $\ell\subset I$, which orbits of lines under $\operatorname{Stab}_\Gamma(I)$ induce the prescribed inclusion $H_\ell\subseteq H_I$?
+:::
+
 For $L_k=\langle -2k\rangle\oplus U^2\oplus E_8^2$, let $E\subset L_k$ be a primitive totally isotropic plane of divisibility $e$ and suppose $\gcd(e,2k/e^2)=1$. Scattone identifies the image of its stabilizer in $\SL_2(\ZZ)$ for the stable orthogonal group with $\Gamma^1(e)$, so the open one-cusp $C_E$ is $Y_1(e)=\mathbb H/\Gamma^1(e)$ [@Sca87, Prop. 5.5.3]. The compact modular curve $X_1(e)$ has the following invariants in the cases recorded there:
 
 | $e$ | $1$ | $3$ | $5$ | $7$ | $9$ | $11$ | $13$ | $15$ | prime $q>3$ |
