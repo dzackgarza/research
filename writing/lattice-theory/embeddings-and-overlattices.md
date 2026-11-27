@@ -296,14 +296,10 @@ Which spectrum for nondegenerate integral symmetric forms realizes the constitue
 
 Let $R=\mathcal O_K$ be the ring of integers of a number field. Write $\widehat R=\prod_{v\nmid\infty}R_v$ for the product of its completed local rings, and $\mathbb A_{K,f}=\prod'_{v\nmid\infty}K_v$ for the restricted product with respect to $R_v$. The square of inclusions
 
-```{.tikz}
-%%| filename: finite-adelic-ring-pullback
-%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
 \begin{tikzcd}
 R \arrow[r] \arrow[d] \arrow[dr,phantom,very near start,"\lrcorner"] & \widehat R \arrow[d] \\
 K \arrow[r] & \mathbb A_{K,f}
 \end{tikzcd}
-```
 
 is a pullback of commutative rings (@def:pullback-square). Indeed an element of $K$ is integral at every finite place exactly when it lies in $R$. For an integral lattice $L$ whose pairing is nonsingular over $K$, put $V=L\otimes_R K$ and $\widehat L=L\otimes_R\widehat R$. Write $G$ for the orthogonal group of $V$ over $K$. Each $g\in G(\mathbb A_{K,f})$ gives the integral lattice
 $$
@@ -324,14 +320,10 @@ Their number is the class number. When the stabilizers are finite, their recipro
 
 For a finite projective $R$-module $L$ with symmetric pairing, suppose $b^\sharp\colon L\to L^\vee$ becomes invertible over $K$. At each finite place $v$, the cokernel of $b_v^\sharp$ identifies with $L_v^\#/L_v$. On this finite module the extended form induces the linking pairing $(\bar x,\bar y)\mapsto b(x,y)\bmod R_v$ with values in $K_v/R_v$. Which category of forms and which relations retain these cokernels and the gluings of @qst:lattice-scissors-squares under extension of scalars? If $E$ denotes the spectrum obtained from such a construction, applying $E$ to the ring square of @cons:adelic-gluing-genus gives a commutative square of spectra
 
-```{.tikz}
-%%| filename: finite-adelic-spectrum-square
-%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
 \begin{tikzcd}
 E(R) \arrow[r] \arrow[d] & E(\widehat R) \arrow[d] \\
 E(K) \arrow[r] & E(\mathbb A_{K,f})
 \end{tikzcd}
-```
 
 Under which hypotheses is this square a pullback in spectra? Does the integral term retain the distinction between individual global classes in @cons:adelic-gluing-genus after group completion? How could one recover the automorphism groups or their contributions to the mass? The ordinary gluing construction gives both a class set and a stabilizer at each class against which to test the proposed spectrum.
 :::
