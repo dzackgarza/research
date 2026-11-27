@@ -1292,11 +1292,17 @@ class there before using it.
 
 ### Citations (`CITE-*`)
 
-- Zotero is the source of truth. The global bibliography is exported to
+- Choose each source for its mathematical relevance to the exact claim and
+  for the credit owed to the source of the result or argument. Whether a
+  work is already in Zotero has zero weight in this choice, even as a
+  tie-breaker.
+- Zotero owns the bibliographic record. The global bibliography is exported to
   `~/.pandoc/bib/references.bib` and copied into `writing/.book/references.bib`
   by the build. Cite with a Better BibTeX key: `[@OR23, Definition 1.5.1]`.
   Add a missing work to Zotero first, by DOI or arXiv identifier, through the
-  `zotero` skill.
+  `zotero` skill. Cite the selected work through its exported key even when
+  its author is named in the sentence. An author name, title, year, or URL
+  in prose cannot stand in for that citation.
 - `writing/coble/coble_supplement.bib` holds only entries with no global
   counterpart yet; the work still belongs in Zotero.
 - The docs gate rejects an inline URL to arXiv, a DOI, or nLab (`CITE-2`).
