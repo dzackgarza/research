@@ -110,6 +110,26 @@ The discriminant module $A_M^\sharp$ has finite length (@def:anticanonical-pair)
 :::
 
 
+::: {.corollary #cor:gluing-congruence-level title="A congruence level for isometries fixing a nonisotropic vector"}
+
+Let $L$ be a nondegenerate integral lattice, $v\in L$ with $v^2\ne0$, and $K=v^{\perp L}$. Let $d$ be the exponent of $L/(\ZZ v\oplus K)$, with $d=1$ when the quotient is trivial. Every $F\in\Orth(K)$ acting identically on $K/dK$ extends uniquely to an isometry of $L$ fixing $v$.
+:::
+
+::: {.proof}
+
+Choose a basis of $L$ and let $P$ have columns $v$ followed by a basis of $K$. The orthogonal decomposition $L_\QQ=\QQ v\perp K_\QQ$ makes $P$ invertible over $\QQ$. The inclusion $dL\subseteq\ZZ v\oplus K$ is equivalent to integrality of $dP^{-1}$. The unique rational extension has matrix
+$$
+P\operatorname{diag}(1,F)P^{-1}
+=I+P\operatorname{diag}\!\left(0,\frac{F-I}{d}\right)(dP^{-1}).
+$$
+Both this matrix and the one obtained from $F^{-1}$ are integral, so the extension preserves $L$. The level can be read from the largest invariant factor of $P$.
+:::
+
+::: {.example #ex:hyperbolic-plane-gluing-extension title="A complement isometry that fails to extend over the hyperbolic plane"}
+
+In $L=U$ take a hyperbolic basis $p,q$ and put $v=p+2q$. Then $K=\ZZ(p-2q)$ and $L/(\ZZ v\oplus K)\cong\ZZ/4$. The rational isometry fixing $v$ and negating $p-2q$ sends $p$ to $2q$ and $q$ to $p/2$. Thus negation on $K$ fails to extend even though $L$ is unimodular.
+:::
+
 ::: {.proposition #prop:gluing-lifting-obstruction-sequence title="Exact sequence and obstruction set for gluing extensions"}
 For $\Gamma\injects\Orth(M)$ and the gluing subobject $h$ of @cor:liftable-automorphisms, put
 $$

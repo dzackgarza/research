@@ -118,6 +118,19 @@ With $\mathcal X$ as above, let $\mathcal R$ be a set of representatives of the 
 
 Here $S\leq F$, because $\Stab_{\Orth(L)}(x)$ preserves $D(x)$ by @lem:descent-subobject-data; the fibre over $D$ is one $\Gamma_D$-orbit exactly when $(H\cap F)S=F$. This is a transitivity criterion for the **fibre-preserving** subgroup $\Gamma_D$, not a claim that the full $\Gamma$ acts on the fixed fibre.
 
+::: {.example #ex:proper-line-stabilizer-image title="Distinct discriminant-kernel orbits over the same divided class"}
+
+Let $B=U\perp\langle-12\rangle$ with hyperbolic basis $e,f$ and orthogonal generator $k$ of square $-12$. Put $L=B(2)$ and $\ell=\ZZ e$. Scaling the form preserves the integral isometry group, and $\divisibility_L(e)=2$. In this basis the matrix
+$$
+g=\begin{pmatrix}3&2&12\\32&27&144\\4&3&17\end{pmatrix}
+$$
+satisfies $g^t G g=G$ for $G=\begin{pmatrix}0&1&0\\1&0&0\\0&0&-12\end{pmatrix}$ and has determinant $1$. Thus $g\in\Orth(L)$. Since $ge=3e+32f+4k\equiv e\pmod{2L}$, its discriminant action fixes $[e/2]$.
+
+The inclusion $B^\sharp\subset L^\sharp=\tfrac12 B^\sharp$ identifies $A_B$ with an invariant subgroup of $A_L$ because $B$ and $L$ have the same underlying module. The class of $k/12$ generates $A_B\cong\ZZ/12$. The last column of $g$ gives $g[k/12]=17[k/12]=5[k/12]$. For $h\in\Stab_{\Orth(L)}(\ell)$ we have $h(k)\in\ell^{\perp B}=\ZZ e\oplus\ZZ k$. Its square in $B$ is $-12$, so $h(k)=ae\pm k$. Since $h(k/12)\in B^\sharp$, pairing with $f$ gives $12\mid a$. Thus $h$ acts on $A_B$ by $1$ or $-1$.
+
+Consequently $\rho_{L,q}(g)\in F\setminus S$ in @thm:descent-double-coset. The lines $\ell$ and $g\ell$ have the same divided class and lie in the same $\Orth(L)$-orbit. If $u\in\ker\rho_{L,q}$ carried $\ell$ to $g\ell$, then $u^{-1}g$ would fix $\ell$ and act by $5$ on $A_B$, a contradiction.
+:::
+
 ## Spinor restriction {#sec-descent-spinor}
 
 ::: {.proposition #prop:descent-spinor-fibre title="Orbit-by-orbit spinor restriction"}
