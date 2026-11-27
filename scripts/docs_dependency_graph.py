@@ -41,11 +41,8 @@ Findings, each one a defect in the book:
   - a defining block (definition, construction, notation, convention) with no
     `defines` attribute. The attribute lists what the block defines, separated by
     semicolons: `defines="even lattice; $L^\\#$"`. It is metadata and is not rendered;
-  - a use with no citation: a logical block whose prose contains a term of two or
-    more words that the `defines` of a defining block lists, when no block that it
-    reaches through citations defines that term. One-word terms and terms with
-    mathematics are not checked, because the same word has different senses in
-    different parts and a formula is not prose;
+  - a use with no citation: a statement or proof paragraph uses a defined term
+    without citing one of its defining blocks in that paragraph;
   - an unlocated citation: the proof of a logical block cites a whole work, or a chapter,
     section or page of one. If the proof rests on one result of that work, the citation
     must name it; if the proof only says where the argument comes from, the citation is
@@ -78,37 +75,19 @@ import networkx as nx
 import panflute as pf
 import yaml
 
-# The theorem-family reference prefixes, as the amsthm-refs filter registers them.
 AMSTHM_REFS = "_extensions/local/amsthm-refs/amsthm-refs.lua"
 
-# Block kinds whose statement or proof is part of the logical development: a later
-# proof can take the block as a premise. A citation between two of them is a `uses`
-# edge. An observation is a stated fact with its proof, so it is logical; a conjecture
-# is logical because a result can be proved conditionally on it.
 LOGICAL = frozenset({
     "theorem", "lemma", "corollary", "proposition", "observation", "claim", "conjecture",
     "definition", "construction", "notation", "convention", "assumption",
 })
 
-# Block kinds that comment on the development and establish nothing in it. A citation
-# to or from one of them is a `mentions` edge. An example illustrates and a remark or
-# note points; an exercise, problem or question asks for work that the text does not
-# do, so none of them can be a premise.
 COMMENTARY = frozenset({
     "example", "remark", "note", "warning", "exercise", "problem", "question",
 })
 
-# The kind of a node that is one result of a cited work, keyed "<bibliography key>
-# <locator>", as "AEGS25 Lem. 3.9". A result taken from a paper is a premise, so a citation
-# of it by a logical block is a `uses` edge. A citation of a whole work, or of a chapter,
-# section or page of one, names no result: it says where something comes from or
-# summarizes the work, so it makes no node and no edge.
 REFERENCE = "reference"
-# Keys that name one result by themselves: a Stacks Project tag, an nLab page.
 RESULT_KEY_PREFIXES = ("stacks-", "nlab:")
-# The spellings of each kind of result, mapped to one abbreviation, so that "Theorem 2"
-# and "Thm. 2" are one node. A numbered section counts as a result when it has a
-# subsection number (§4.2); a chapter, a whole section (§2) or a page does not.
 RESULT_LABELS = {
     "Thm.": ("theorems", "theorem", "thms", "thm", "th"),
     "Prop.": ("propositions", "proposition", "props", "prop"),
@@ -136,13 +115,9 @@ _RESULT = re.compile(
     r"(?<![\w.])(" + "|".join(sorted(map(re.escape, _LABEL), key=len, reverse=True))
     + r")\.?\s*((?:" + _NUMBER + r")(?:\s*(?:,|and|&)\s*(?:" + _NUMBER + r"))*)",
     re.IGNORECASE)
-# A Stacks Project tag in a locator: "Tag 0109", "Tags 01DQ and 02F5".
 _TAGS = re.compile(r"\bTags?\s+([0-9A-Z]{4}(?:\s*(?:,|and)\s*[0-9A-Z]{4})*)")
-# A Bourbaki numbered paragraph: "Ch. V §3 no. 1".
 _BOURBAKI = re.compile(r"(?:(?:Ch\.|Chapter)\s*([IVXLC\d]+),?\s*)?§\s*(\d+)\s*no\.\s*(\d+)")
-# A numbered item of an introduction: "Introduction, no. 1", "Intro., 4".
 _INTRO_ITEM = re.compile(r"\b(?:Introduction|Intro\.)\s*,?\s*(?:no\.\s*)?(\d+)(?![\d.])")
-# A bare item or equation number with a dot: "4.6", "V.3.3", "(2.1.10)".
 _BARE_NUMBER = re.compile(r"(?<![\w.§])\(?(?:[IVXLC]+\.\d+(?:\.\d+)*|\d+(?:\.\d+)+)\)?(?![\w.])")
 
 
@@ -161,7 +136,6 @@ def cited_results(key: str, locator: str) -> list[str]:
         for tag in re.split(r"\s*(?:,|and)\s*", match.group(1)):
             add(f"{key} Tag {tag}")
     rest = _TAGS.sub(" ", rest)
-    # O'Meara's item numbers, "42:16", read before a section label can take the "42".
     for match in re.finditer(r"(?<![\w.:])\d+:\d+(?![\w:])", rest):
         add(f"{key} {match.group(0)}")
     rest = re.sub(r"(?<![\w.:])\d+:\d+(?![\w:])", " ", rest)
@@ -175,8 +149,6 @@ def cited_results(key: str, locator: str) -> list[str]:
     for match in _RESULT.finditer(rest):
         label = _LABEL[match.group(1).lower()]
         for number in re.split(r"\s*(?:,|and|&)\s*", match.group(2)):
-            # A section is a result only at subsection depth: §4.2, §III.2, §3D.
-            # A parenthesized number after another label is an equation: "§III.2 and (2.9)".
             if number.startswith("(") and label != "eq.":
                 add(f"{key} {number}")
                 continue
@@ -184,16 +156,12 @@ def cited_results(key: str, locator: str) -> list[str]:
                                 and not (number[0].isdigit() and number[-1].isalpha())):
                 continue
             add(f"{key} {label}{'' if label == '§' else ' '}{number}")
-    # A page reference is never a result; drop it before reading bare numbers.
     rest = re.sub(r"\bpp?\.\s*\S+", " ", _RESULT.sub(" ", rest))
     for match in _BARE_NUMBER.finditer(rest):
         add(f"{key} {match.group(0)}")
     return out
-# Quarto's own cross-reference keys (sections, figures, tables, equations), which are
-# neither blocks nor works.
 QUARTO_CROSSREF_PREFIXES = ("sec-", "fig-", "tbl-", "eq-")
 
-# Block kinds that define terms, which their `defines` attribute lists.
 DEFINING = frozenset({"definition", "construction", "notation", "convention"})
 
 
@@ -275,19 +243,26 @@ def theorem_prefixes(project: Path) -> set[str]:
     return set(re.findall(r'(\w+)"?\]?\s*=\s*true', table.group(1)))
 
 
+@dataclass(frozen=True)
+class TermUse(Finding):
+    part: str = ""
+    paragraph: int = 0
+    excerpt: str = ""
+
+
 @dataclass
 class Contents:
     """What one statement or proof holds, not counting nested numbered blocks or proofs."""
 
-    # (citation key, locator): `[@AEGS25, Lem. 3.9]` is ("AEGS25", "Lem. 3.9").
     cited: list[tuple[str, str]] = dataclasses.field(default_factory=list)
-    # The prose words, lowercased; mathematics and citations are left out.
-    text: str = ""
+    paragraphs: list[tuple[str, set[str], str]] = dataclasses.field(default_factory=list)
+    marked_terms: list[set[str]] = dataclasses.field(default_factory=list)
 
 
 def contents(elem: pf.Element, block_classes: set[str]) -> Contents:
     found = Contents()
     words: list[str] = []
+    marked: list[str] = []
 
     def walk(e: pf.Element) -> None:
         if isinstance(e, pf.Div) and e is not elem and (
@@ -301,16 +276,24 @@ def contents(elem: pf.Element, block_classes: set[str]) -> Contents:
         if isinstance(e, pf.Str):
             words.append(e.text)
         elif isinstance(e, pf.Math):
-            # A formula stays a token, so "marked $K3$ surface" does not read as
-            # "marked surface".
             words.append(" \u00a4 ")
         elif isinstance(e, (pf.Space, pf.SoftBreak, pf.LineBreak)):
             words.append(" ")
+        start, first_citation, first_mark = len(words), len(found.cited), len(marked)
         for child in children(e):
             walk(child)
+        if isinstance(e, pf.Span) and "other-sense" in e.classes:
+            words[start:] = [" ¤ "]
+            del marked[first_mark:]
+        if isinstance(e, (pf.Strong, pf.Emph)):
+            marked.append(" ".join("".join(words[start:]).lower().split()))
+        if isinstance(e, (pf.Para, pf.Plain)):
+            text = " ".join("".join(words[start:]).lower().split())
+            keys = {key for key, _ in found.cited[first_citation:]}
+            found.paragraphs.append((text, keys, pf.stringify(e).strip()))
+            found.marked_terms.append(set(marked[first_mark:]))
 
     walk(elem)
-    found.text = " ".join("".join(words).lower().split())
     return found
 
 
@@ -363,10 +346,8 @@ def build(project: Path) -> tuple[nx.DiGraph, list[Finding]]:
     prefixes = theorem_prefixes(project)
     graph = nx.DiGraph()
     findings: list[Finding] = []
-    # (source id, cited id, part) in reading order; resolved once every block is known
-    citations: list[tuple[str, str, str, str]] = []
-    # Each block's prose (statement and proof), and each defined term's defining blocks.
-    prose: dict[str, str] = {}
+    citations: list[tuple[str, str, str, str, str]] = []
+    prose: dict[tuple[str, str], Contents] = {}
     definers: dict[str, set[str]] = {}
 
     position = 0
@@ -375,7 +356,7 @@ def build(project: Path) -> tuple[nx.DiGraph, list[Finding]]:
         for warning in warnings:
             findings.append(Finding(Kind.PARSE_WARNING, chapter, (), warning))
 
-        def visit_list(blocks: list[pf.Element]) -> None:
+        def visit_list(blocks: list[pf.Element], in_environment: bool = False) -> None:
             nonlocal position
             previous: str | None = None
             for block in blocks:
@@ -383,7 +364,6 @@ def build(project: Path) -> tuple[nx.DiGraph, list[Finding]]:
                 if isinstance(block, pf.Div) and kinds:
                     ident = block.identifier
                     if not ident:
-                        # Nothing can cite it, but its own references are still edges.
                         ident = f"{chapter}#{position}"
                         findings.append(Finding(Kind.MISSING_ID, chapter, (ident,)))
                     if ident in graph:
@@ -400,10 +380,15 @@ def build(project: Path) -> tuple[nx.DiGraph, list[Finding]]:
                     found = contents(block, block_classes)
                     for cited, locator in found.cited:
                         citations.append((chapter, ident, cited, locator, "statement"))
-                    prose[ident] = found.text
+                    prose[ident, "statement"] = found
                     if graph.nodes[ident]["kind"] in DEFINING:
                         terms = defined_terms(block.attributes.get("defines", ""))
                         graph.nodes[ident]["defines"] = "; ".join(terms)
+                        declared = {term.lower() for term in terms}
+                        introductions = [", ".join(sorted(terms_here)) for marks in found.marked_terms
+                                         if (terms_here := marks & declared)]
+                        if len(set(introductions)) > 1:
+                            graph.nodes[ident]["defining_passages"] = "\n".join(introductions)
                         if not terms:
                             findings.append(Finding(Kind.MISSING_DEFINES, chapter, (ident,)))
                         for term in terms:
@@ -418,12 +403,16 @@ def build(project: Path) -> tuple[nx.DiGraph, list[Finding]]:
                         found = contents(block, block_classes)
                         for cited, locator in found.cited:
                             citations.append((chapter, previous, cited, locator, "proof"))
-                        prose[previous] += " " + found.text
+                        prose[previous, "proof"] = found
                     previous = None
                 else:
                     previous = None
+                    if not in_environment and isinstance(block, (pf.Para, pf.Plain)):
+                        passage = contents(block, block_classes)
+                        prose.setdefault((chapter, "prose"), Contents()).paragraphs.extend(passage.paragraphs)
                 for sub in block_lists(block):
-                    visit_list(sub)
+                    visit_list(sub, in_environment or bool(kinds)
+                               or (isinstance(block, pf.Div) and "proof" in block.classes))
 
         visit_list(list(doc.content))
 
@@ -443,8 +432,6 @@ def build(project: Path) -> tuple[nx.DiGraph, list[Finding]]:
             continue
         if cited.startswith(QUARTO_CROSSREF_PREFIXES):
             continue
-        # A bibliography key. Each result it names is a node; its page is the citing
-        # chapter, whose bibliography holds the work as `#ref-<key>`.
         results = cited_results(cited, locator)
         for result in results:
             if result not in graph:
@@ -470,18 +457,15 @@ def build(project: Path) -> tuple[nx.DiGraph, list[Finding]]:
     return graph, findings
 
 
-def uncited_terms(graph: nx.DiGraph, prose: dict[str, str],
+def uncited_terms(graph: nx.DiGraph, prose: dict[tuple[str, str], Contents],
                   definers: dict[str, set[str]]) -> list[Finding]:
-    """Uses of a defined term by a block that cites none of the blocks defining it.
+    """Find paragraphs using a declared term without a direct citation to a definer.
 
-    A defining block lists its terms in `defines`. A block of the logical development whose
-    prose contains that term (or its plural), that defines it nowhere itself and that
-    cites none of its defining blocks, uses the definition without a citation, which the
-    citation edges cannot show.
+    Each finding locates a passage for editorial review. The author can cite the
+    intended definition or mark a homonym with the other-sense span.
     """
     if not definers:
         return []
-    # "long roots" and "long root" are one term: a plural folds into its singular.
     for term in sorted(definers):
         for suffix in ("es", "s"):
             if term.endswith(suffix) and term[:-len(suffix)] in definers:
@@ -490,17 +474,15 @@ def uncited_terms(graph: nx.DiGraph, prose: dict[str, str],
     terms = sorted(definers, key=len, reverse=True)
     pattern = re.compile(r"(?<![\w-])(" + "|".join(map(re.escape, terms)) + r")(?:s|es)?(?![\w-])")
     out: list[Finding] = []
-    for ident, text in prose.items():
-        data = graph.nodes[ident]
-        if data["kind"] not in LOGICAL:
-            continue
-        cited = nx.descendants(graph, ident)
-        for term in sorted({m.group(1) for m in pattern.finditer(text)}):
-            owners = definers[term]
-            if ident in owners or cited & owners:
-                continue
-            out.append(Finding(Kind.UNCITED_TERM, data["chapter"],
-                               (ident, *sorted(owners)), term))
+    for (ident, part), found in prose.items():
+        chapter = ident if part == "prose" else graph.nodes[ident]["chapter"]
+        for number, (text, cited, excerpt) in enumerate(found.paragraphs, 1):
+            for term in sorted({m.group(1) for m in pattern.finditer(text)}):
+                owners = definers[term]
+                if ident in owners or cited & owners:
+                    continue
+                out.append(TermUse(Kind.UNCITED_TERM, chapter, (ident, *sorted(owners)),
+                                   term, part, number, excerpt))
     return out
 
 
