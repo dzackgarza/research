@@ -133,6 +133,7 @@ A round apple is an apple (@def:a) of round shape.
 """
     first = TWO.replace("By @lem:b, trees bear apples.", "Trees bear round apples (@def:round).")
     first = first.replace("::: {.remark", "::: {.proof}\nApply @lem:b.\n:::\n\n::: {.remark")
+
     def catalogue(*args):
         return json.loads(query(tmp_path, "catalogue", "--json", *args, one=first + definitions, two=ONE))
 
@@ -144,3 +145,37 @@ A round apple is an apple (@def:a) of round shape.
     assert set(packet) == {"thm:c", "def:round", "lem:b", "def:a", "Smith20 Thm. 2"}
     assert packet["thm:c"]["uses"] == {"statement": ["def:round"], "proof": ["lem:b"]}
     assert packet["thm:c"]["proof"] == "Apply @lem:b."
+
+
+def test_catalogue_separates_cycles_from_independent_work(tmp_path):
+    chapter = ONE.replace("An **apple**", "Given @lem:b, an **apple**")
+    chapter += "\n::: {.definition #def:tree defines=\"tree\"}\nA tree.\n:::\n"
+    rows = {r["id"]: r for r in json.loads(query(tmp_path, "catalogue", "--json", one=chapter))}
+    cycle = rows["def:a"]["cycle"]
+    assert cycle and rows["lem:b"]["cycle"] == cycle
+    assert rows["thm:c"]["blocked_by_cycles"] == [cycle]
+    assert rows["thm:c"]["cycle"] is None
+    assert rows["def:tree"]["layer"] == 0 and rows["def:tree"]["blocked_by_cycles"] == []
+    assert rows["rmk:d"]["layer"] is None
+
+
+def test_proof_needs_its_own_explicit_prerequisite(tmp_path):
+    chapter = """
+::: {.theorem #thm:c}
+Fix a round fruit (@def:a).
+:::
+
+::: {.proof}
+Every round fruit has the stated property by @lem:b.
+:::
+"""
+    rows = json.loads(query(tmp_path, "catalogue", "thm:c", "--json", two=chapter))
+    target = next(row for row in rows if row["id"] == "thm:c")
+    assert "def:a" not in target["uses"]["proof"]
+    assert any(task["part"] == "proof" and task["term"] == "round fruit"
+               for task in target.get("book_tasks", []))
+    repaired = chapter.replace("Every round fruit has", "Every round fruit (@def:a) has")
+    rows = json.loads(query(tmp_path, "catalogue", "thm:c", "--json", two=repaired))
+    target = next(row for row in rows if row["id"] == "thm:c")
+    assert "def:a" in target["uses"]["proof"]
+    assert not target["book_tasks"]
