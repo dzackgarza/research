@@ -81,7 +81,9 @@ collapse, missing base categories, the Sage boundary, spec weakening),
 `agents/skills/`, `agents/plans/` (the twenty feature cards naming the
 research program, plus the plan DAG and its diagrams).
 
-Deliberately not migrated, because they are administration rather than
+Excluded from the August 2026 migration, because they were administration rather than
 mathematics: the 323 per-task SPEC cards under each feature, the
 `category_specs` mypy-ledger generator scripts, the issue-tracker templates,
-and the repository's own QC and packaging configuration.
+and the repository's own QC and packaging configuration. The November source
+recovery above supersedes these exclusions for tracked entries of the pinned
+source revision.
