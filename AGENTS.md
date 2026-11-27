@@ -1,3 +1,12 @@
+> **Planning migration — Spec Kit and itree**
+>
+> Select the work-unit issue with itree. Use Spec Kit to plan and execute the work.
+> The issue body and comments hold the current plan, tasks, progress and evidence.
+> Earlier instructions that assign this work to vault cards or a separate task list
+> identify records to migrate. Match each obligation to its owning issue. Preserve
+> task IDs, order, prerequisites, acceptance criteria and evidence. Verify the transfer
+> on the issue before retiring the old tracker. An open obligation stays open.
+
 Git use: git for this repo is primarily an alternative to dropbox. It is not used for typically software engineering (blaming, focused commits, PRs, etc), it is just used to save whatever the current state is (however messy) and understand what the research work looked like at any point in time. It is not a problem if unrelated work is swept into a commit, if a commit is broad and not "targeted". If auto-formatting is applied, that is intended and should never be excluded from a commit or reverted. Nothing should ever be left in local-only unstaged work -- this can result in lost work or research. Just because it is unrelated to this session does not mean it is not your concern, your job is to ensure all work is committed at all times so that no critical research progress is ever lost.
 
 # Ground everything in INTENT.md (read before anything else)
@@ -143,8 +152,7 @@ agent-memory add --scope project --type context --title <title> --content <conte
 agent-memory add --scope project --type reference --title <title> --content <content>
 ```
 
-Plan work is card-backed.
-Create and update plan cards with `agent-memory plan add` and `agent-memory plan update`, not `agent-memory add --type plan`.
+Use Spec Kit to plan each itree work unit. Its GitHub issue owns the current plan, tasks and progress.
 
 Use `agent-memory retrieve <key>`, `agent-memory update <key>`, and `agent-memory delete <key>` for memory CRUD.
 
