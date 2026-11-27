@@ -70,6 +70,30 @@ Finally @prop:coble-invariant-lattice applies to this particular one-component c
 
 :::
 
+::: {.example #ex:two-more-explicit-ten-nodal-sextics title="Two further explicit ten-nodal sextics"}
+
+The two other parametrizations recovered from the same computation history have the following coefficient rows in the ordered monomials $(s^6,s^5t,\ldots,t^6)$:
+$$
+\begin{pmatrix}
+1&2&-1&3&1&-2&1\\
+2&-1&3&2&-1&3&2\\
+3&1&2&-1&3&1&1
+\end{pmatrix},
+\qquad
+\begin{pmatrix}
+1&3&2&-1&1&2&1\\
+2&1&3&2&-1&1&3\\
+1&-1&1&3&2&-1&2
+\end{pmatrix}.
+$$
+Each image is an irreducible rational plane sextic with ten ordinary nodes, and hence each supplies a Coble surface and K3 cover with the lattices of @ex:explicit-ten-nodal-sextic.
+
+:::
+
+::: {.proof}
+The equation for each was recovered independently by finding the one-dimensional kernel of degree-six substitution over $\bQ$ and clearing denominators; both exact equations are recorded in [the arithmetic script](../scripts/certificates/rational_sextic_example.py). For each, direct substitution gives zero over $\bZ$; at the same prime $101$ the base-point gcd is $1$, at least one leading coefficient is nonzero, the degree-five substitution matrix has rank $21$, and the bad singularity ideals have Gröbner basis $[1]$ in all three affine charts. The proof of @ex:explicit-ten-nodal-sextic applies without change. This verifies all three original parametrizations, but does not assert that their moduli points are pairwise distinct.
+:::
+
 ::: {.proposition #prop:rational-sextic-severi title="The Severi variety of rational sextics"}
 
 1. Let $S_{6,0}\iscontainedin\PP^{27}$ be the Severi variety of rational plane sextics. It is irreducible of dimension $17$ and degree (@def:graded-object) (@def:numerical-polarization) $26312976$. Its general member has exactly $10$ nodes, and the set of these $10$ nodes determines the curve [@BHO+12, §4, proof of Thm. 2].
