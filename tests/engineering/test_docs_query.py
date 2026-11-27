@@ -179,3 +179,15 @@ Every round fruit has the stated property by @lem:b.
     target = next(row for row in rows if row["id"] == "thm:c")
     assert "def:a" in target["uses"]["proof"]
     assert not target["book_tasks"]
+
+
+def test_book_edits_locate_separate_definitions_and_narrative_uses(tmp_path):
+    definitions = ONE.replace('apple; round fruit', 'apple; orchard').replace(
+        'An **apple** is a **round fruit**.', 'An **apple** is a fruit.\n\nAn **orchard** is a grove.')
+    chapter = TWO + '\nAn orchard needs water.\n\nThis orchard (@def:a) has water.\n'
+    tasks = json.loads(query(tmp_path, "catalogue", "--book-tasks", "--json", one=definitions, two=chapter))
+    assert any(task["block"] == "def:a" and task.get("introductions") == ["apple", "orchard"]
+               for task in tasks)
+    narrative = [task for task in tasks if task["part"] == "prose"]
+    assert [(t["location"], t["passage"], t["candidates"]) for t in narrative] == [
+        ("two.md", "An orchard needs water.", ["def:a"])]

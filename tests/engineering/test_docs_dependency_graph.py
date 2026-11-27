@@ -30,7 +30,7 @@ custom-numbered-blocks:
 LUA = 'local ref_prefixes = { thm = true, lem = true, def = true }\n'
 
 ONE = """\
-::: {.definition #def:a title="A"}
+::: {.definition #def:a title="A" defines="round apple"}
 An $a$ is a **round apple**; an **apple** is a fruit; $b$ are **round apples**.
 :::
 
@@ -109,12 +109,10 @@ def test_edges_come_from_statement_and_proof_references(tmp_path):
                                          "relation": "uses",
                                          "statement": False, "proof": True}
     assert ("thm:c", "lem:b") in edges
-    # A remark and a theorem that cite each other are commentary, not a cycle.
     assert edges[("thm:c", "rmk:d")]["relation"] == edges[("rmk:d", "thm:c")]["relation"] == "mentions"
     nodes = {n["id"]: n for n in graph["nodes"]}
     assert nodes["lem:b"]["proved"] and not nodes["thm:c"]["proved"]
     assert [nodes[i]["position"] for i in ("def:a", "lem:b", "thm:c")] == [0, 1, 2]
-    # The unnamed lemma is a node whose reference is still an edge.
     assert ("three.md#3", "def:a") in edges
     assert code == 1
 
@@ -124,43 +122,33 @@ def test_findings_name_each_defect(tmp_path):
     _, findings, _ = run(tmp_path)
     by_kind = {f["kind"]: f for f in findings}
     assert sorted(f["kind"] for f in findings) == [
-        "cycle", "dangling", "missing-id", "orphan-proof", "parse-warning", "uncited-term",
+        "cycle", "dangling", "missing-id", "orphan-proof", "parse-warning", "uncited-term", "uncited-term", "uncited-term",
         "unlocated-citation", "unlocated-citation"]
-    # lem:e uses the defined phrase and cites nothing. lem:b cites def:a, thm:c reaches it
-    # through lem:b, and rmk:d is commentary; the one-word term "apple" is not checked.
-    assert by_kind["uncited-term"] == {"kind": "uncited-term", "chapter": "three.md",
-                                       "blocks": ["lem:e", "def:a"], "detail": "round apple"}
+    uses = [f for f in findings if f["kind"] == "uncited-term"]
+    assert {tuple(f["blocks"]) for f in uses} == {("lem:e", "def:a"), ("thm:c", "def:a"), ("rmk:d", "def:a")}
+    assert all(f["detail"] == "round apple" and f["part"] == "statement" for f in uses)
     assert by_kind["dangling"] == {"kind": "dangling", "chapter": "three.md",
                                    "blocks": ["thm:c", "thm:missing"], "detail": ""}
     assert by_kind["missing-id"]["blocks"] == ["three.md#3"]
     assert by_kind["orphan-proof"]["chapter"] == "one.md"
-    # A closing fence on a text line leaves the div open; pandoc warns and the checker reports it.
     assert by_kind["parse-warning"]["chapter"] == "three.md"
     assert "unclosed" in by_kind["parse-warning"]["detail"]
-    # lem:f marks its use as another sense, so it is not listed.
     assert [f for f in findings if f["blocks"][:1] == ["lem:f"]] == []
-    # The lem:b <-> thm:c circle of uses is reported; the thm:c <-> rmk:d mentions are not.
     assert sorted(by_kind["cycle"]["blocks"]) == ["lem:b", "thm:c"]
 
 def test_cited_results_are_nodes(tmp_path):
     graph, findings, _ = run(tmp_path)
     nodes = {n["id"]: n for n in graph["nodes"]}
     edges = {(e["source"], e["target"]): e for e in graph["edges"]}
-    # A citation that names a result is an edge to that result, one node per result.
-    # "Theorem 2" and "Thm. 2" are one result; "Theorem 2 and Lem. 4.1" are two.
     assert nodes["Smith20 Thm. 2"]["kind"] == "reference"
     assert nodes["Smith20 Thm. 2"]["work"] == "Smith20"
     assert edges[("lem:b", "Smith20 Thm. 2")]["relation"] == "uses"
     assert edges[("lem:b", "Smith20 Lem. 4.1")]["proof"]
     assert edges[("rmk:d", "Jones19 Thm. 1")]["relation"] == "mentions"
-    # A key that names one result, as a Stacks Project tag does, is that result.
     assert edges[("lem:g", "stacks-02LS")]["relation"] == "uses"
-    # A whole work, or a chapter of one, is not a result: no node and no edge.
     works = {n["work"] for n in graph["nodes"] if n["kind"] == "reference"}
     assert "Brown18" not in works and "Green21" not in works
     assert not any(t.startswith(("Green21", "Brown18")) for _, t in edges)
-    # In a proof such a citation is a premise that cannot be checked, so it is a finding;
-    # in a statement it is attribution, and is not.
     unlocated = sorted((f["blocks"], f["detail"]) for f in findings
                        if f["kind"] == "unlocated-citation")
     assert unlocated == [(["lem:g"], "@Green21"), (["lem:g"], "@Green21, Ch. 3")]
@@ -173,7 +161,6 @@ def test_locators_name_tags_subsections_and_numbered_items(tmp_path):
 
 
 def test_a_page_is_not_a_lettered_section(tmp_path):
-    # "§8, p. 37" names a section and a page; "p" is not a section letter as in "§3D".
     graph, _, _ = run(tmp_path)
     assert not any(n["id"].startswith("Dol13") for n in graph["nodes"])
 
