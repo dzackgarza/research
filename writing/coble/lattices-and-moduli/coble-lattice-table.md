@@ -4,22 +4,22 @@ Let $S$ be a terminal Coble surface of K3 type with $\abs{-2K_S} = \theset{C}$, 
 By @prop:coble-k3-cover, $S$ is the blowup of $\PP^2$ at a set $\Sigma$ of $\abs{\Sigma} = 9+n$ points, possibly infinitely near, and $K_S^2 = -n$.
 For a very general such $S$, $\Pic(X)$ is a $2$-elementary lattice $M$ of rank $r = 10+n$ with $a(M) = 12-n$, and the ramification divisor of $f$ is as in @prop:nikulin-fixed-locus with $g = 0$ and $k = n-1$.
 @tbl-coble-lattices lists these lattices $M$.
-It is [@CDL25, Table 5.1, p. 553] with the entries at $n=2$ and $n=10$ corrected by @prop:coble-table-cdl-corrections.
+The triples $(r,a,\delta)$ are those of [@CDL25, Table 5.1, p. 553]. The notation $\mathrm{II}_{p,q}$ denotes the even indefinite unimodular lattice of signature $(p,q)$, with $\mathrm{II}_{1,1}=U$ (@thm:indefinite-unimodular-classification). The corrections at $n=2$ and $n=10$ are proved in @prop:coble-table-cdl-corrections.
 @prop:coble-table-invariants gives the orthogonal complements $N$ of the lattices $M$ in $\lkt$.
 
-| $n$ | $\abs{\Sigma}$ | $K_{\mathrm{V}}^{2}$ | $M = (r, l, \delta)$ | 2-elementary lattice $M$ | $N=M^{\perp}$ |
-| :-- | :------------- | :------------------- | :------------------- | :-------------------------------------------------------------------------------- | :------------------------- |
-| 1 | 10 | -1 | $(11,11,1)$ | $\mathrm{E}_{10}(2) \oplus \mathrm{A}_{1}$ | $\latI_{2,9}(2)$ |
-| 2 | 11 | -2 | $(12,10,1)$ | $\mathrm{E}_{8}(2) \oplus \mathrm{U} \oplus \mathrm{A}_1^{\oplus 2}$ | $\latI_{2,8}(2)$ |
-| 3 | 12 | -3 | $(13,9,1)$ | $\mathrm{D}_{4}^{\oplus 2} \oplus \mathrm{A}_{1}^{\oplus 3} \oplus \mathrm{U}(2)$ | $\latI_{2,7}(2)$ |
-| 4 | 13 | -4 | $(14,8,1)$ | $\mathrm{E}_{7} \oplus \mathrm{A}_{1}^{\oplus 5} \oplus \mathrm{U}(2)$ | $\latI_{2,6}(2)$ |
-| 5 | 14 | -5 | $(15,7,1)$ | $\mathrm{E}_{8} \oplus \mathrm{A}_{1}^{\oplus 5} \oplus \mathrm{U}(2)$ | $\latI_{2,5}(2)$ |
-| 6 | 15 | -6 | $(16,6,1)$ | $\mathrm{E}_{10} \oplus \mathrm{A}_{1}^{\oplus 6}$ | $\latI_{2,4}(2)$ |
-| 7 | 16 | -7 | $(17,5,1)$ | $\mathrm{E}_{8} \oplus \mathrm{D}_{6} \oplus \mathrm{A}_{1} \oplus \mathrm{U}(2)$ | $\latI_{2,3}(2)$ |
-| 8 | 17 | -8 | $(18,4,0)$ | $\mathrm{E}_{8} \oplus \mathrm{D}_{8} \oplus \mathrm{U}(2)$ | $\mathrm{U}(2)^{\oplus 2}$ |
-| 8 | 17 | -8 | $(18,4,1)$ | $\mathrm{E}_{10} \oplus \mathrm{D}_{6} \oplus \mathrm{A}_{1}^{\oplus 2}$ | $\latI_{2,2}(2)$ |
-| 9 | 18 | -9 | $(19,3,1)$ | $\mathrm{E}_{10} \oplus \mathrm{D}_{8} \oplus \mathrm{A}_{1}$ | $\latI_{2,1}(2)$ |
-| 10 | 19 | -10 | $(20,2,1)$ | $\mathrm{E}_{10} \oplus \mathrm{D}_{10}$ | $\latI_{2,0}(2)$ |
+| $n$ | $\abs{\Sigma}$ | $K_{\mathrm{V}}^{2}$ | $M = (r, a, \delta)$ | 2-elementary lattice $M$ | $N=M^{\perp}$ |
+|---:|---:|---:|:---:|:---|:---|
+| 1 | 10 | -1 | $(11,11,1)$ | $\left\langle{-2}\right\rangle \oplus \mathrm{II}_{1,9}(2)$ | $\mathrm{I}_{2,9}(2)$ |
+| 2 | 11 | -2 | $(12,10,1)$ | $\left\langle{-2}\right\rangle^{\oplus 2} \oplus \mathrm{II}_{1,1} \oplus \mathrm{E}_{8}(2)$ | $\mathrm{I}_{2,8}(2)$ |
+| 3 | 12 | -3 | $(13,9,1)$ | $\left\langle{-2}\right\rangle^{\oplus 7} \oplus \mathrm{II}_{1,1} \oplus \mathrm{D}_{4}$ | $\mathrm{I}_{2,7}(2)$ |
+| 4 | 13 | -4 | $(14,8,1)$ | $\left\langle{-2}\right\rangle^{\oplus 5} \oplus \mathrm{II}_{1,1}(2) \oplus \mathrm{E}_{7}$ | $\mathrm{I}_{2,6}(2)$ |
+| 5 | 14 | -5 | $(15,7,1)$ | $\left\langle{-2}\right\rangle^{\oplus 5} \oplus \mathrm{II}_{1,1}(2) \oplus \mathrm{E}_{8}$ | $\mathrm{I}_{2,5}(2)$ |
+| 6 | 15 | -6 | $(16,6,1)$ | $\left\langle{-2}\right\rangle^{\oplus 6} \oplus \mathrm{II}_{1,9}$ | $\mathrm{I}_{2,4}(2)$ |
+| 7 | 16 | -7 | $(17,5,1)$ | $\left\langle{-2}\right\rangle \oplus \mathrm{II}_{1,1}(2) \oplus \mathrm{E}_{7}^{\oplus 2}$ | $\mathrm{I}_{2,3}(2)$ |
+| 8 | 17 | -8 | $(18,4,0)$ | $\mathrm{II}_{1,1}(2) \oplus \mathrm{D}_{8} \oplus \mathrm{E}_{8}$ | $\mathrm{II}_{1,1}(2)^{\oplus 2}$ |
+| 8 | 17 | -8 | $(18,4,1)$ | $\left\langle{-2}\right\rangle \oplus \mathrm{II}_{1,1}(2) \oplus \mathrm{E}_{7} \oplus \mathrm{E}_{8}$ | $\mathrm{I}_{2,2}(2)$ |
+| 9 | 18 | -9 | $(19,3,1)$ | $\left\langle{-2}\right\rangle \oplus \mathrm{II}_{1,1}(2) \oplus \mathrm{E}_{8}^{\oplus 2}$ | $\mathrm{I}_{2,1}(2)$ |
+| 10 | 19 | -10 | $(20,2,1)$ | $\left\langle{-2}\right\rangle^{\oplus 2} \oplus \mathrm{II}_{1,17}$ | $\langle 2\rangle^{\oplus 2}$ |
 
 : Table of Coble lattices {#tbl-coble-lattices}
 
@@ -46,56 +46,42 @@ Each row of the table satisfies $\rank M = 10+n$, $a(M)=12-n$, and $K_S^2=-n$, w
 ::: {.proof}
 
 The invariants of an orthogonal sum (@def:orthogonal-sum) are the sums of those of the summands: ranks add, and $A_M$ is the orthogonal sum of the $A_{M_i}$ by @def:discriminant, so $a$ adds.
-The summands needed are
-$$
-\rank,\ a\ \text{of}\ \ \mathrm{E}_8,\ \mathrm{E}_{10},\ \mathrm{U}:\ (8,0),\ (10,0),\ (2,0)
-\qquad\text{(all unimodular)},
-$$
-$$
-\mathrm{A}_1:\ (1,1),\qquad
-\mathrm{E}_7:\ (7,1),\qquad
-\mathrm{D}_{2m}:\ (2m,2),\qquad
-\mathrm{E}_8(2):\ (8,8),\qquad
-\mathrm{E}_{10}(2):\ (10,10),\qquad
-\mathrm{U}(2):\ (2,2),
-$$
-the $D_{2m}$ entries because $\det D_{2m}=4$ with $A_{D_{2m}}\cong(\bZ/2)^2$, and the twisted entries because every $L$ they twist (@def:form-twist) is unimodular: for unimodular $L$, @prop:scaled-discriminant-ses gives $A_{L(2)}\cong L/2L\cong(\bZ/2)^{\rank L}$, so $a(L(2)) = \rank L$.
-In general only the exact (@def:exact-complex) sequence $0\to L/2L\to A_{L(2)}\to A_L\to 0$ holds and the splitting can fail: for $L = \generators{2}$ the lattice $L(2) = \generators{4}$ has discriminant group (@def:group) $\bZ/4$, not $(\bZ/2)^2$.
-Row by row this gives
+The unimodular summands contribute zero to $a$. For a unimodular lattice $L$, twisting the form by $2$ gives $A_{L(2)}\cong L/2L$ by @prop:scaled-discriminant-ses, so $a(L(2))=\rank L$. The remaining summands $\generators{-2},E_7,D_4,D_8$ have discriminant groups $\bZ/2,\bZ/2,(\bZ/2)^2,(\bZ/2)^2$, respectively. Adding their contributions in the order displayed gives
 
-- $n=1$: $11,0+1+10=11$;
-- $n=2$: $12$, $a=8+0+2=10$;
-- $n=3$: $13$, $a=2\cdot2+3+2=9$;
-- $n=4$: $14$, $a=1+5+2=8$;
-- $n=5$: $15$, $a=0+5+2=7$;
-- $n=6$: $16$, $a=0+6=6$;
-- $n=7$: $17$, $a=0+2+1+2=5$;
-- $n=8$: $18$, $a=0+2+2=4$ and $a=0+2+2=4$ in the two rows;
-- $n=9$: $19$, $a=0+2+1=3$;
-- $n=10$: $20$, $a=0+2=2$.
+| $n$ | $\delta$ | $\rank M$ | $a(M)$ |
+|---:|---:|---:|:---|
+| 1 | 1 | 11 | $1+10=11$ |
+| 2 | 1 | 12 | $2+0+8=10$ |
+| 3 | 1 | 13 | $7+0+2=9$ |
+| 4 | 1 | 14 | $5+2+1=8$ |
+| 5 | 1 | 15 | $5+2+0=7$ |
+| 6 | 1 | 16 | $6+0=6$ |
+| 7 | 1 | 17 | $1+2+2=5$ |
+| 8 | 0 | 18 | $2+2+0=4$ |
+| 8 | 1 | 18 | $1+2+1+0=4$ |
+| 9 | 1 | 19 | $1+2+0=3$ |
+| 10 | 1 | 20 | $2+0=2$ |
 
-So $a=12-n$ in every row, and $\rank M=10+n$.
+Each displayed $M$ is even of signature $(1,9+n)$. In every row with a $\generators{-2}$ summand, half its generator has discriminant value $-1/2$, so $\delta=1$. In the remaining row, $\mathrm{II}_{1,1}(2)$ has integral discriminant values since $\mathrm{II}_{1,1}$ is even. For $D_8$ the discriminant group is generated in the negative definite coordinate model by the classes of $(1,0,\ldots,0)$ and $(1/2,\ldots,1/2)$, of squares $-1$ and $-2$ and mutual pairing $-1/2$. Thus all its discriminant values are integral as well, and $\delta=0$. By @thm:two-elementary-classification these invariants identify each displayed $M$ with the lattice of its row.
 
 For the complement, $M$ is primitive (@def:primitive-embedding) in $\lkt$ of rank $22$ and signature (@def:signature) $(3,19)$, so by @thm:orthogonal-decomposition $N$ has rank $22-(10+n) = 12-n$ and signature $(2,\,19-(9+n)) = (2,10-n)$.
 By @cor:primitive-complement-signature, $N$ has the opposite discriminant form to $M$, hence the same $a$ and $\delta$. By @lem:coble-halving-the-form, $N=L(2)$ for a unimodular lattice $L$ that is even exactly when $\delta=0$. For $n<10$ its signature is indefinite, so @thm:indefinite-unimodular-classification gives the displayed complement in each row. For $n=10$ the complement is $\generators{2}^{\perp2}$ by [@CDL25, Table 5.1, p. 553].
 Finally $K_S^2=-n$: since $-2K_S=C=C_1+\cdots+C_n$ with $C_i^2=-4$ and $C_i\cdot C_j=0$, $K_S^2=\tfrac14C^2=-\tfrac14\cdot4n=-n$, which is the entry in the $K_{\mathrm V}^2$ column, and $K_S^2=9-\abs{\Sigma}$ together with $K_S^2=-n$ fixes $\abs{\Sigma}=9+n$.
 :::
 
-::: {#not:coble-table-invariants .notation title="Coble table invariants" defines="$l$; $\delta$"}
+::: {#not:coble-table-invariants .notation title="Coble table invariants" defines="$a$; $\delta$"}
 
-In @tbl-coble-lattices, $l$ is the invariant $a(M)$ of @def:p-elementary and $\delta$ is the coparity $\delta_M$ of @def:p-elementary.
+In @tbl-coble-lattices, $a=a(M)$ is the generator length of @def:p-elementary and $\delta$ is the coparity $\delta_M$ of @def:p-elementary.
 In [@CDL25, Table 5.1, p. 553] the number $n$ of components of $C$ is written $k$, the number $\abs{\Sigma}$ of blown-up points is written $N$, and $a(M)$ is written $l$.
 
 :::
 
 ::: {.proposition #prop:coble-table-cdl-corrections title="The rows $n=2$ and $n=10$ of the Coble table"}
 
-1. For a general $S$ with $n=2$, $\Pic(X)\cong\mathrm{E}_8(2)\oplus\mathrm{U}\oplus\mathrm{A}_1^{\oplus 2}$.
+1. For a general $S$ with $n=2$, $\Pic(X)\cong\generators{-2}^{\oplus2}\oplus\mathrm{II}_{1,1}\oplus\mathrm E_8(2)$.
    The lattice $\mathrm{E}_{10}(2)\oplus\mathrm{A}_1^{\oplus 2}$ of the row $k=2$ of [@CDL25, Table 5.1, p. 553] has $a = 12$, so it does not have the invariants $(12,10,1)$ of that row.
 2. For $n=10$, $\abs{\Sigma} = 19$.
    The row $k=10$ of [@CDL25, Table 5.1, p. 553] gives $N = 20$, which contradicts $K_{\mathrm V}^2 = -10$.
-
-The other entries of @tbl-coble-lattices are those of [@CDL25, Table 5.1, p. 553]. At $n=10$ that table writes $N = M^\perp$ as $\generators{2}^{\oplus 2}$, which is $\latI_{2,0}(2)$.
 
 :::
 
@@ -103,8 +89,8 @@ The other entries of @tbl-coble-lattices are those of [@CDL25, Table 5.1, p. 553
 
 1. By @cor:coble-k3-cover-lattice-chain, for a general $S$ the lattice $f^*\Pic(S)\cong\latI_{1,11}(2)$ has finite index (@def:index) in $\Pic(X)$, so $\Pic(X)$ has signature (@def:signature) $(1,11)$.
    By @prop:coble-k3-cover (6), $\Pic(X)$ is $2$-elementary with $a = 12-n = 10$, and $\delta = 1$ is the entry of [@CDL25, Table 5.1, p. 553] at $k=2$.
-   The lattice $L\definedas\mathrm{E}_8(2)\oplus\mathrm{U}\oplus\mathrm{A}_1^{\oplus 2}$ is even.
-   It has signature $(0,8)+(1,1)+(0,2) = (1,11)$, and $a(L) = 8+0+2 = 10$ by the summand values in the proof of @prop:coble-table-invariants.
+   The lattice $L\definedas\generators{-2}^{\oplus2}\oplus\mathrm{II}_{1,1}\oplus\mathrm E_8(2)$ is even.
+   It has signature $(0,2)+(1,1)+(0,8) = (1,11)$, and $a(L) = 2+0+8 = 10$ by the summand values in the proof of @prop:coble-table-invariants.
    The basis (@def:based-module) vector $x$ of $\mathrm{A}_1 = \generators{-2}$ gives the class of $x/2$ in $A_L$, with $q_L(x/2) = -\tfrac12\notin\bZ/2\bZ$, so $\delta(L) = 1$.
    By @thm:two-elementary-classification, the signature, $a$ and $\delta$ determine an indefinite (@def:definiteness) even $2$-elementary lattice up to isometry, so $\Pic(X)\cong L$.
    For the lattice of [@CDL25, Table 5.1, p. 553], $\mathrm{E}_{10}$ is unimodular, and @prop:scaled-discriminant-ses gives $A_{\mathrm{E}_{10}(2)}\cong(\bZ/2)^{10}$, so
@@ -230,11 +216,11 @@ In (a) the four points in either ruling can vary independently, so one may choos
 
 ::: {.corollary #cor:coble-eight-picard-presentations title="Picard lattices and fibre root lattices"}
 
-For very general members of (a) and (b), respectively, the Picard lattices admit the presentations
+For very general members of (a) and (b), respectively, the Picard lattices in @tbl-coble-lattices also admit the presentations of [@DK25, §9.1]
 $$
 U\perp D_8^{\perp2},\qquad U\perp E_7^{\perp2}\perp A_1^{\perp2}.
 $$
-In (a) neither $D_8$ summand is the root lattice of a singular fibre of either ruling.
+In (a) the table presents the same lattice as $\mathrm{II}_{1,1}(2)\oplus D_8\oplus E_8$. The root lattice of each singular fibre of either ruling is $D_4$.
 
 :::
 
