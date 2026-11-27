@@ -117,7 +117,7 @@ Define a regularized theta series for the hyperbolic lattices of the Coble and E
 
 For $L[m]=\{v\in L:(v,v)=m\}$ and a specified $\Gamma\leq\Orth(L)$, can one construct a series whose norm-$m$ coefficient counts $\Gamma\backslash L[m]$, or gives a stabilizer-weighted count, and determine its transformation law? For which $\Gamma$ and $m$ is the orbit count finite? In the weighted case, which measure gives the weight of an infinite stabilizer?
 
-For primitive vectors of norm $m\ne0$ and specified divisibility, how much of the local genus is determined by the discriminant class $[v/\operatorname{div}_L(v)]\in A_L$ (@def:lattice-discriminant-class)? For $\Gamma=\Orth(L)$, @qst:relative-embedding-class-number asks for the number of global embedding classes in each such genus.
+For primitive vectors of norm $m\ne0$ and specified divisibility, how much of the local genus is determined by the discriminant class $[v/\operatorname{div}_L(v)]\in A_L$ (@def:lattice-discriminant-class)? For a fixed lattice, @qst:relative-embedding-class-number asks for the number of global embedding classes in each genus. For a specified group $\Gamma$, @qst:embedding-orbits-arithmetic-subgroup retains its local closures. Can an independent total mass certify that a proposed list accounts for every orbit in the coefficient (@qst:primitive-orbit-mass)?
 :::
 
 ## The GIT and Looijenga models of the Coble moduli space

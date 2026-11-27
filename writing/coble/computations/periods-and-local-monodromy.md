@@ -156,6 +156,32 @@ The second statement is @cor:pf-unipotent-monodromy(3) applied to the single Jor
 
 ## The topological construction
 
+::: {.question #qst:braid-monodromy-on-homology title="How does a braid of branch values act on the homology of the covering curve?"}
+
+Fix a projection $x\colon C_t\to\PP^1$ of a family of smooth connected projective curves over a punctured disc. Suppose its degree is constant and its distinct branch values move without collision. A positive loop in the parameter traces a braid of branch values. Which braids lift to the reference cover? What determines the lift for the given family? From the lift, how can one compute an integral matrix on $H_1(C_{t_0},\ZZ)$ and its Jordan form over $\CC$, including for covers of degree greater than two?
+:::
+
+::: {.construction #cons:branch-braid-lift title="Lifting the braid with its action on the sheets"}
+
+Write $C=C_{t_0}$, let $B\subset\PP^1$ be the branch set (including infinity if it is branched), and choose a base point $x_*$ away from the paths of the branch values. Number the $d$ points over $x_*$. Path lifting gives the permutation representation $\theta\colon\pi_1(\PP^1\setminus B,x_*)\to\mathfrak S_d$. An isotopy moving the branch values along the braid and fixing $x_*$ ends at a homeomorphism $h$ of $(\PP^1,B)$. A lift $\widetilde h$ that induces the permutation $\sigma$ over $x_*$ must satisfy
+$$
+\theta(h_*\gamma)=\sigma\,\theta(\gamma)\,\sigma^{-1}
+\qquad\text{for every }\gamma\in\pi_1(\PP^1\setminus B,x_*).
+$$
+Conversely, when this identity holds, send sheet $i$ to sheet $\sigma(i)$ and lift paths from $x_*$. The identity makes the endpoint independent of the chosen path representing a point upstairs. This gives the unique lift with that action on the sheets [@Hat02, §1.3]. Without $\sigma$, two lifts of the same $h$ can differ by a deck transformation. For a plane equation $f(x,y,t)=0$, take $x_*$ where $f(x_*,y,t)$ has $d$ distinct finite roots throughout the loop. Continuing these roots in $t$ gives $\sigma$. Continuing the roots in $x$ around the individual branch values at fixed $t_0$ gives the permutations defining $\theta$.
+
+For an integral matrix, choose a sheet $i$ and put $H_i=\theta^{-1}(\operatorname{Stab}(i))$. This is the fundamental group of $C\setminus x^{-1}(B)$ based at that sheet. In $H_i^{\mathrm{ab}}$, kill the class of a small positive circle about **each** point of $x^{-1}(B)$ to obtain $H_1(C,\ZZ)$. A cycle of length $e$ in a branch permutation contributes one such circle, obtained by lifting $e$ turns about the corresponding branch value. The lift extends over these punctures and permutes their circles [@Hat02, §1.3; @Hat02, §2.2]. Apply $h_*$ to loops and start their lifts at $\sigma(i)$. A path back to the original base sheet identifies the two fundamental groups up to inner automorphism, which acts trivially after abelianization. Express the resulting classes in an integral basis of the quotient. Their coordinates are the columns of the required matrix.
+:::
+
+::: {.example #ex:fixed-branch-values-moving-sheets title="A smooth plane quartic with stationary branch values"}
+
+Take $C_t\colon y^3=t\,x(x-1)(x-2)(x-3)$, with $t\ne0$, and its smooth plane quartic completion. Projection to $x$ has degree three. The finite branch values and infinity stay fixed, so the braid is the identity. Yet along $t=t_0 e^{2\pi i s}$ the maps $(x,y)\mapsto(x,e^{2\pi i s/3}y)$ identify the successive fibres. At $s=1$ the three points over $x_*$ have undergone a $3$-cycle.
+
+Put $\zeta=e^{2\pi i/3}$. A basis of holomorphic differentials is $dx/y,\,dx/y^2,\,x\,dx/y^2$. At each finite branch point $y$ is a parameter and $dx$ vanishes to order two. At infinity $x,y,dx$ have poles of orders three, four and four. Thus the three forms are regular. They are independent because $y,1,x$ are independent, and a smooth plane quartic has genus three. Its plane embedding is canonical by adjunction, so this curve is non-hyperelliptic. The deck transformation acts on these forms with eigenvalues $\zeta^{-1},\zeta,\zeta$. Their complex conjugates give the other half of $H^1(C,\CC)$. Hence the Jordan form on complex homology is diagonal with each of $\zeta,\zeta^{-1}$ occurring three times.
+
+For the integral matrix, let $\zeta$ act on $H_1(C,\ZZ)$ by transport $T$. The relation $T^2+T+I=0$ follows from the eigenvalues and torsion-freeness. Every nonzero element of $\ZZ[\zeta]$ acts invertibly on rational homology. Thus $H_1(C,\ZZ)$ is torsion-free of rank three over the Euclidean ring $\ZZ[\zeta]$. Choose a basis $u_1,u_2,u_3$ over that ring. On each integral pair $(u_i,Tu_i)$ the matrix is $\left(\begin{smallmatrix}0&-1\\1&-1\end{smallmatrix}\right)$. The constant family with this same reference cover has the same braid and acts as the identity on homology.
+:::
+
 ::: {.construction #cons:lefschetz-periods title="Periods from a Lefschetz pencil" defines="vanishing cycle; $\delta_i$; thimble; $\Delta_i$"}
 
 For a smooth projective hypersurface $X$, an iterated Lefschetz pencil $X\dashrightarrow\PP^1$ has critical values the roots of the discriminant of the pencil.

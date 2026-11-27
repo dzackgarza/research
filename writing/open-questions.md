@@ -29,9 +29,11 @@ tags:
 | **Isotropic lines and flags for modules with free and torsion parts** | @qst:mixed-isotropic-lines |
 | **Scissors relations for integral lattices with finite glue** | @qst:lattice-scissors-squares |
 | **The orbit count or stabilizer weight in an indefinite theta coefficient** | @qst:regularized-theta |
-| **Global embedding classes in one local genus** | @qst:relative-embedding-class-number |
+| **Global embedding classes with prescribed local orbits** | @qst:relative-embedding-class-number for the full local isometry groups and @qst:embedding-orbits-arithmetic-subgroup for a specified arithmetic subgroup and its local closures |
+| **Computing a total mass before enumerating primitive vectors** | @qst:primitive-orbit-mass, with a fixed-lattice calculation in @ex:ternary-primitive-orbit-mass |
 | **Lifting discriminant data to orbits of integral isotropic lines, planes and flags** | @qst:isotropic-reduction-fibres |
 | **Jordan constituents in higher Grothendieck–Witt theory** | @qst:jordan-higher-gw |
+| **Adelic descent for non-unimodular forms** | @qst:adelic-descent-nonunimodular-forms, with the class set and stabilizers in @cons:adelic-gluing-genus |
 | **The geometric meaning of cusp covolume** | @qst:cusp-volume-moduli-invariant |
 | **The cusp-stabilizer containment** | @qst:cusp-stabilizer-containment |
 | **Global questions on hyperbolic Coxeter diagrams** | @qst:maximal-parabolic-complexity, @conj:galois-invariance-parabolics, @qst:parabolic-count-growth, @qst:exact-covolume, @qst:regularized-theta |
@@ -98,6 +100,8 @@ For Scattone's odd-prime case, @qst:scattone-prime-boundary-curves asks for the 
 For a genus-one degeneration, @ex:genus-one-monodromy-powers answers @qst:genus-one-monodromy-types by expressing the integral monodromy in the generators $S$ and $T$ and computing the nilpotency index after base change.
 
 How does the equation of a family determine its local monodromy (@qst:monodromy-from-family-equation)? For $y^2=x^3-t$, @qst:symbolic-family-monodromy asks what the periods of $dx/y$ determine. Their common differential equation has order one. The period lattice gives the action on integral cycles (@ex:elliptic-monodromy-from-equation). In the Legendre family the periods satisfy an equation of order two, and a logarithmic solution detects nontrivial unipotent monodromy (@ex:legendre-monodromy).
+
+For a fixed projection of a curve, @qst:braid-monodromy-on-homology asks how the braid of the branch values acts on integral homology. The lift uses the permutation of the sheets (@cons:branch-braid-lift). A plane quartic has nontrivial monodromy even though all branch values stay fixed (@ex:fixed-branch-values-moving-sheets).
 
 The change of ambient lattice for a polarized Enriques surface preserves the integral image on the anti-invariant lattice (@qst:enriques-polarization-ambient-lattice). The distinction between the augmentation image, module coinvariants, and orthogonal coinvariants can be seen in a single sign action (@ex:coinvariant-sign-action).
 
