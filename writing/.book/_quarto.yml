@@ -1,19 +1,6 @@
-# This directory is the Quarto project root and holds nothing but build
-# machinery. The prose lives one level up; each part of the book is symlinked
-# in beside this file (index.md, category-theory, lattice-theory, coble, data),
-# so the project root exposes the same chapter tree that the book configuration
-# names below.
-# The writing that is not site content -- the dissertation, which builds through
-# ~/.pandoc, plus the talks, exams and research statement -- is simply not
-# linked in, which is why no render-exclusion list appears below.
 project:
   type: book
   output-dir: _site
-  # `resources:` is unused here. A directory entry is collected by a walk that does not
-  # descend a symlink, and every part reaches this directory as one, so it silently
-  # copies nothing; a single file that is itself a symlink is copied *as a symlink*,
-  # which lands dangling in _site and then collides with itself on the second render
-  # pass. Everything the site needs is copied by the post-render step instead.
   post-render:
     - .assets/copy-resources.sh
     - .assets/dependency-graph.sh
@@ -25,23 +12,8 @@ book:
   search: true
   sidebar:
     collapse-level: 1
-  # Two levels is all a book sidebar has: parts, then chapters. A nested `part:`
-  # fails schema validation and `book.sidebar.contents` is accepted and then
-  # ignored -- see TRAPS.md. So the parts below carry the whole tree, and each one
-  # is a run the part's own landing page already names.
-  #
-  # This list is the book's reading order, and it is the only place that order is
-  # written down. A chapter's position is a claim about its mathematics: that
-  # everything it uses is defined above it, and that the part it sits in names the
-  # subject it is about. So a new page is placed by reading it -- never by
-  # appending to a part or inserting beside a similar filename. Filename order is
-  # unrelated to dependency order, and here it once produced the exact reverse of
-  # it.
   chapters:
     - index.md
-    # Part 1. The landing page heads its own first group. Order is
-    # definition-before-use: classifiers are needed by both limits and monoidal
-    # structure, so truncation precedes them.
     - part: category-theory/index.md
       chapters:
         - category-theory/foundations/Higher-Categories-and-Universes.md
@@ -61,9 +33,6 @@ book:
         - category-theory/foundations/Distinguished-Functors.md
         - category-theory/foundations/Elements-and-Containment.md
         - category-theory/foundations/Generic-Elements.md
-    # One dependency chain, in its own order: forms, then Witt theory and the
-    # stable/morphism constructions built on it. Lattice theory has its own part
-    # below rather than being mixed into this categorical framework.
     - part: Forms and Witt theory
       chapters:
         - category-theory/forms-quadratic/Bilinear-and-Quadratic-Forms.md
@@ -78,8 +47,6 @@ book:
     - part: Reference
       chapters:
         - category-theory/references/Mathematical-Sources.md
-    # Part 2. The geometry the paper starts from: the three surface classes, then
-    # the K3 cover that carries every lattice-theoretic statement later.
     - calculus-on-schemes.md
     - symmetric-spaces-and-period-domains.md
     - modular-forms-and-hecke-operators.md
@@ -96,19 +63,6 @@ book:
         - coble/coble-moduli/coble-surface-structure-and-classification.md
         - coble/coble-moduli/coble-surfaces-with-finite-automorphism-group.md
         - coble/coble-surfaces/rational-sextic-calculations.md
-    # General lattice machinery, complete before any Coble-specific lattice is
-    # named. Splitting this from the next part is what keeps either readable.
-    #
-    # The order below is the dependency order of the prose, not the order the files
-    # sit in: the defining pages first (@sec-lattices-discriminant, then
-    # @sec-basic-invariants), then the structure built on them (embeddings,
-    # isometries, reflections, the spinor and Eichler arithmetic), then the genus,
-    # then classification, then the root and Coxeter systems. The
-    # Miranda--Morrison page sits inside classification because it consumes the
-    # 2-elementary decomposition and is consumed by the lattice classification that
-    # follows it. One reference still points forward, and it is named in the part
-    # landing page: @sec-two-elementary-discriminant-classification cites
-    # @thm:two-elementary-classification, which the next page states.
     - part: lattice-theory/index.md
       chapters:
         - lattice-theory/Lattices-and-Discriminant-Forms.md
@@ -143,9 +97,6 @@ book:
         - lattice-theory/arithmetic/indefinite-binary-class-numbers.md
         - lattice-theory/arithmetic/kneser-neighbors-and-orthogonal-modular-forms.md
         - lattice-theory/arithmetic/finite-automorphism-groups-and-polynomial-certificates.md
-    # This project's own arithmetic, in dependency order: the discriminant orbits
-    # are what the Heegner line is cut out of, and the lifting criterion is stated
-    # for the arithmetic group that chapter constructs.
     - part: The Coble lattice
       chapters:
         - coble/lattices-and-moduli/special-lattices.md
@@ -179,9 +130,6 @@ book:
         - coble/degenerations/divisor-and-dlt-models.md
         - coble/degenerations/halphen-surfaces.md
         - coble/degenerations/morrison-flowerpot-degenerations.md
-    # The algorithm, then the diagrams it produces for each moduli space, then the
-    # correspondence between them -- which runs Enriques to Coble, the direction the
-    # mirror moves go.
     - part: The cusp correspondence
       chapters:
         - coble/cusp-correspondence/cusp-diagram-calculations.md
@@ -203,8 +151,6 @@ book:
         - coble/results-f-en-2/main-theorem-and-cusps.md
         - coble/results-f-en-2/ksba-semitoroidal-comparison.md
         - coble/results-f-en-2/classifying-map-and-involution.md
-    # The split below is the one the pages declare themselves, in their own
-    # `unit:` frontmatter: reusable method, then the results it produced.
     - part: Computational methods
       chapters:
         - coble/computations/computational-toolchain-and-recipe.md
@@ -220,8 +166,6 @@ book:
         - coble/computations/sterk-root-counts-and-computed-chambers.md
         - coble/computations/sterk-integral-affine-data.md
         - coble/computations/coble-lattice-isotropic-candidates.md
-    # Everything still conjectural, together: the pages below all carry
-    # `status: conjectural`, and a reader is owed that boundary in the structure.
     - part: Open problems and research programs
       chapters:
         - coble/open-problems/open-problems.md
@@ -230,37 +174,17 @@ book:
         - coble/adjacent-programs/nodal-enriques-moduli-program.md
         - coble/adjacent-programs/halphen-index-2-moduli-program.md
         - coble/heegner-report/coble-heegner-research-report.md
-    # Back matter. coble/tables/*.md are untitled fragments, not chapters: they
-    # are pulled into the Diagrams page by include, which is why they no longer
-    # appear as blank entries in the sidebar.
     - part: Reference
       chapters:
         - coble/appendix-reference/adjunction-and-ramification-formulae.md
         - coble/appendix-reference/coxeter-and-dynkin-diagrams.md
         - coble/reference-tables/lattice-and-diagram-conventions.md
         - coble/extracted-references/extracted-references.md
-    # The register of research unknowns across the whole book: it cites blocks from
-    # every part and from the dissertation, so it closes the reading order.
     - open-questions.md
+    - outstanding-work.md
     - index-of-results.md
     - index-of-definitions.md
     - dependency-graph.md
-# Deliberately unlisted prose under the linked parts. A book renders exactly
-# `book.chapters`, so nothing below reaches the site; each reason is recorded
-# because the counterpart rule is "listed, or deliberately unlisted".
-#
-#   coble/tables/coble-lattices.md
-#     an untitled table fragment that no chapter includes. The same table stands,
-#     in full and as a chapter, at coble/lattices-and-moduli/coble-lattice-table.md;
-#     keep one of the two.
-#   coble/tables/dynkin-diagrams.md
-#     an untitled table fragment, pulled in by `include` from
-#     coble/appendix-reference/coxeter-and-dynkin-diagrams.md, which is its page.
-#   coble/heegner-report/README.md
-#     the build instructions for the standalone report beside it.
-# Assets that pandoc, rather than Quarto, opens must live in .assets/ -- see the
-# note beside `filters:` below. The two Coble bibliographies need no such
-# treatment: they sit inside a symlinked part, so both tools reach them the same way.
 bibliography:
   - .assets/references.bib
   - .assets/refs-web.bib
@@ -283,19 +207,6 @@ format:
     css: tikz-diagrams.css
     include-in-header: .assets/mathjax-order.html
     include-before-body: .assets/mathjax-macros.html
-# Quarto resolves a project-relative path against this directory, but pandoc runs
-# with its working directory at the *real* location of the input, and the parts are
-# symlinked in from writing/ -- so every such path lands one level above this
-# directory, whatever the input's depth. Two consequences, both load-bearing:
-#
-#   * Filters are named, never given as a path. A bare `*.lua` path misses by that
-#     hop; an extension filter is resolved by name and is immune, so the two local
-#     filters are packaged under _extensions/local/.
-#   * Anything pandoc itself opens (the bibliographies, the header includes) lives
-#     in .assets/, which is physically writing/.assets and reached from here through
-#     a symlink. Both tools then find it: Quarto through the symlink, pandoc at the
-#     place its relative path actually lands. Quarto-side assets such as the
-#     stylesheet need none of this and stay beside this file.
 filters:
   - book-toc
   - amsthm-refs
@@ -307,14 +218,6 @@ filters:
 tikz:
   cache: true
   svg-engine: pdftocairo
-# Numbered amsthm-style environments (custom-numbered-blocks, the dzackgarza fork that
-# keeps one registry at the project root for chapters in any directory).
-# One shared per-chapter counter (all kinds in group blocks): a block is Kind N.M in one sequence;
-# quartothmlike appearance mimics native Quarto theorems.
-# The syntax is the one the pandoc papers use (the amsenv filter, convert_amsthm_envs.lua):
-#   ::: {.theorem #thm:key title="Optional title"} ... :::
-#   @thm:key or [@thm:key] -> Theorem 2.9;  [-@thm:key] -> 2.9  (amsthm-refs rewrites these for cnb).
-# Ids use a colon after the family prefix, so they never collide with the Quarto-reserved thm-/def-/... prefixes.
 custom-numbered-blocks:
   appearances:
     thmlike:
@@ -348,6 +251,7 @@ custom-numbered-blocks:
       label: Conjecture
       listin:
         - results
+        - outstanding-work
     definition:
       group: blocks
       label: Definition
@@ -380,6 +284,8 @@ custom-numbered-blocks:
     question:
       group: blocks
       label: Question
+      listin:
+        - outstanding-work
     remark:
       group: blocks
       label: Remark
