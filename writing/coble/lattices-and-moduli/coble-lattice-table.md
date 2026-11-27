@@ -187,7 +187,7 @@ For every configuration (a), let $E$ and $F$ be the double covers of the two rul
 
 ::: {.proof}
 
-Each double cover has genus one by Riemann–Hurwitz, and its deck map is negation for the chosen origin. The quotient of $E\times F$ by independent sign changes is $Q$. The intermediate quotient by simultaneous negation is the double cover of $Q$ branched along the eight lines. Its sixteen nodes lie under the pairs of two-torsion points [@KK01, §2].
+Keum and Kondō identify the quotient by the sign change on one factor and its contraction to the quadric in [@KK01, §5, Case I]. The branch construction gives this quotient for arbitrary $E$ and $F$ as follows. Each double cover has genus one by Riemann–Hurwitz, and its deck map is negation for the chosen origin. The quotient of $E\times F$ by independent sign changes is $Q$. The intermediate quotient by simultaneous negation is the double cover of $Q$ branched along the eight lines. Its sixteen nodes lie under the pairs of two-torsion points [@KK01, §2].
 
 Blow up the sixteen crossings on $Q$. Locally the double cover $z^2=uv$ then has normalization $w^2=s$ in the chart $v=us$, where $w=z/u$. It is smooth and branches along the strict transforms. This resolves the nodes and gives $\operatorname{Km}(E\times F)$ over $V$. Its branch divisor is the Coble boundary. Since $\Pic(V)$ is torsion free, $\OO_V(-K_V)$ is the unique square root of the boundary bundle. The cover is therefore the canonical one of @prop:coble-k3-cover. The remaining sign change induces its deck map. Starting with two elliptic curves and their quotients by negation gives the same eight lines and blowups.
 
@@ -201,9 +201,14 @@ In configuration (a), if $E$ and $F$ are non-isogenous, then $\Pic(X)=M$, $T_X\c
 
 ::: {.proof}
 
-Put $A=E\times F$. In the Künneth decomposition of $H^2(A,\bZ)$ the two factor classes span $U$. Their orthogonal complement is $H^1(E,\bZ)\otimes H^1(F,\bZ)\cong U^{\perp2}$, as one sees by pairing symplectic bases of the two factors. The integral classes of type $(1,1)$ in this tensor summand correspond, by the principal polarization, to morphisms of Hodge structures $H^1(E,\bZ)\to H^1(F,\bZ)$. These are pullbacks by homomorphisms $F\to E$: on the universal covers the dual integral map of period lattices extends to a complex-linear map. Thus for non-isogenous factors $T_A=U^{\perp2}$. The Kummer isometry $T_X\cong T_A(2)$ [@Mor84, Prop. 4.3(i)] gives the asserted $T_X$, also listed in [@KK01, §1, Case I].
+Put $A=E\times F$, and let $U$ be the lattice spanned by the two factor classes. Both classes have square zero and their intersection is one. The correspondence theorem [@BL04, Thm. 11.5.1] identifies line bundles on $E\times F$ modulo pullbacks from the factors with homomorphisms $E\to F$, using the origins to identify the curves with their Jacobians. Since $\Pic^0(A)=\Pic^0(E)\times\Pic^0(F)$, this gives
+$$
+\operatorname{NS}(A)/U\cong\operatorname{Hom}(E,F).
+$$
 
-By @cor:primitive-complement-signature, $\Pic(X)$ has rank $18$, discriminant of absolute value $16$, and $\delta=0$. The sublattice $M$ has the same rank and discriminant by @prop:coble-k3-cover, so its index is one. For isogenous factors the graph of an isogeny gives a nonzero class in the tensor summand after projection. Then $\rank T_A<4$, and the same isometry gives $\rank\Pic(X)>18$.
+For non-isogenous factors the quotient vanishes. By Künneth, $T_A=U^\perp$ is the tensor product of the two integral first cohomology groups. Pairing symplectic bases gives $T_A\cong U^{\perp2}$. Morrison's Kummer isometry [@Mor84, Prop. 4.3(i)] now gives $T_X\cong T_A(2)\cong U(2)^{\perp2}$, as in [@KK01, §1, Case I]. By @cor:primitive-complement-signature, $\Pic(X)$ has rank $18$, discriminant of absolute value $16$, and $\delta=0$. The sublattice $M$ has the same rank and discriminant by @prop:coble-k3-cover, so its index is one.
+
+For isogenous factors $\operatorname{Hom}(E,F)$ has positive rank. Thus $\rank\operatorname{NS}(A)>2$ and $\rank T_A<4$. The same Kummer isometry gives $\rank\Pic(X)>18$.
 
 The deck involution fixes all pullbacks from $V$ and each ramification curve, hence fixes $M$ pointwise. On $A$ the map $(x,y)\mapsto(x,-y)$ acts by $-1$ on the tensor summand containing $T_A$. The Kummer isometry is induced by pushforward, so the action on $T_X$ is also $-1$. If $F=E$, the diagonal and the anti-diagonal give distinct smooth rational curves on $X$ that the involution exchanges. Their classes are distinct because a $(-2)$-curve has negative self-intersection and meets any other irreducible curve nonnegatively.
 
@@ -217,7 +222,7 @@ The eight-line configuration gives a general member of the component $(18,4,0)$,
 
 ::: {.proof}
 
-For (b) one can read the odd discriminant form directly from the blowups. Choose a vertical and a horizontal branch line away from the triple point. These two lines and the conic meet pairwise in three distinct double points. Let $D$ be the sum of the exceptional curves over those points on $V$. Then $D^2=-3$, and $D$ meets each of the three chosen boundary curves twice and every other boundary curve zero times. Thus $f^*D/2$ pairs integrally with both $f^*\Pic(V)$ and the ramification curves: for a boundary component $C_i$ the latter pairing is $D\cdot C_i/2$. These classes generate $M$. Consequently $f^*D/2\in M^\#$ has square $-3/2$, proving $\delta(M)=1$.
+Dolgachev and Kondō distinguish the two components by their discriminant forms [@DK25, §9.1, after Fig. 9.1]. In (b) the blowups exhibit a discriminant class with half-integral square. Choose a vertical and a horizontal branch line away from the triple point. These two lines and the conic meet pairwise in three distinct double points. Let $D$ be the sum of the exceptional curves over those points on $V$. Then $D^2=-3$, and $D$ meets each of the three chosen boundary curves twice and every other boundary curve zero times. Thus $f^*D/2$ pairs integrally with both $f^*\Pic(V)$ and the ramification curves: for a boundary component $C_i$ the latter pairing is $D\cdot C_i/2$. These classes generate $M$. Consequently $f^*D/2\in M^\#$ has square $-3/2$, proving $\delta(M)=1$.
 
 In (a) the four points in either ruling can vary independently, so one may choose non-isogenous factors. Then @lem:coble-product-picard gives $\delta(M)=0$. This value holds for every grid: in the ruling and exceptional basis of $\Pic(V)$ the boundary classes are the ruling classes minus the four exceptional classes on each line. Thus the lattice generated by the pullbacks and the half-pullbacks of these boundary classes has the same Gram form for every choice of the two quadruples. By @lem:coble-eight-quadric-models the two constructions give general members, and [@DK25, §9.1] gives exactly two irreducible components. The computed values of $\delta(M)$ distinguish them.
 
