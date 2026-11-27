@@ -99,7 +99,7 @@ files; the files themselves are here.
   form-preserving morphism matrices. Superseded by the preamble's category
   obligations.
 
-## Not migrated
+## Historical exclusions and subsequent recovery
 
 `src/sage_patches/` — seven modules installing methods onto Sage's own classes
 by `setattr` (module base rings, ideals as submodules, $\mathbb Q/\mathbb Z$

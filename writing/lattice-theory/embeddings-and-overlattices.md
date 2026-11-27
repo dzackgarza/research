@@ -660,6 +660,52 @@ Nikulin's equivalence relation (@def:equivalence-relation) on these gluing data 
 Hence only finitely many $\Orth(L)$-orbits of primitive embeddings (@def:primitive-embedding) occur.
 :::
 
+::: {.proposition #prop:fixed-norm-orbit-finiteness title="Finiteness of fixed-square vector orbits"}
+
+Let $L$ be a nondegenerate integral lattice and let $n\in\bZ$.
+There are finitely many $\Orth(L)$-orbits of primitive vectors of square $n$.
+If $n\ne0$, there are also finitely many orbits of all vectors of square $n$.
+If $L$ contains a nonzero isotropic vector, the set of all vectors of square zero has infinitely many orbits.
+:::
+
+::: {.proof}
+
+Use the classical finiteness of integral isometry classes of nondegenerate forms of fixed rank and determinant (for example, *Quantitative Reduction Theory and Unlikely Intersections*, IMRN 2022, [Lemma 2.4](https://academic.oup.com/imrn/article/2022/20/16138/6322312)). The determinant of a rank-zero lattice is taken to be one.
+
+First suppose $v$ is primitive and $v^2=n\ne0$. Write $d>0$ for the positive generator of $(v,L)$ and set $K=v^{\perp_L}$. The homomorphism $(v,-)/d\colon L\to\bZ$ is onto, has kernel $K$, and maps $\bZ v$ onto $(n/d)\bZ$. Therefore
+$$
+[L:\bZ v\perp K]=|n|/d,\qquad
+|\det K|=\frac{|n|}{d^2}|\det L|.
+$$
+The number of possible $d$ is finite since $d\mid n$. For each $d$ the rank and absolute determinant of $K$ are fixed, so there are finitely many possibilities for its isometry class. Fix one representative $K$ and a generator $e$ of the rank-one lattice $[n]$ of square $n$. Every such marked pair $(L,v)$ arises from an integral overlattice of $M=\bZ e\perp K$ inside $M^\vee$, with $v$ identified with $e$. There are finitely many intermediate lattices since $M^\vee/M$ is finite. Equal intermediate lattices give isometric marked pairs, hence one $\Orth(L)$-orbit when the underlying lattice is $L$.
+
+Now suppose $v$ is primitive and isotropic. The class of $v/d$ in $L^\vee/L$ has order $d$, by primitivity, so $d\mid|\det L|$. Choose $w\in L$ with $(v,w)=d$. The map $(v,-)/d$ exhibits $L=v^\perp\oplus\bZ w$ as abelian groups. The quotient $K=v^\perp/\bZ v$ is free (because $v$ is primitive) and nondegenerate: over $\bQ$, the radical of $v^\perp$ is precisely $\bQ v$. Lifting a basis of $K$ gives an integral basis of $L$ together with $v,w$. In this ordered basis the Gram matrix is
+$$
+\begin{pmatrix}
+0&0&d\\
+0&G_K&b\\
+d&b^\mathsf{T}&c
+\end{pmatrix},
+\qquad
+\det L=-d^2\det K.
+$$
+Again there are finitely many $d$ and possible isometry classes of $K$. Choose one basis for each class. Adding multiples of $v$ to its lifted basis vectors changes the entries of $b$ by arbitrary multiples of $d$ without changing $G_K$; replacing $w$ by $w+kv$ changes $c$ by $2kd$ and leaves $b$ unchanged. Thus all marked Gram matrices have representatives with $0\le b_i<d$ and $0\le c<2d$. There are only finitely many such matrices. Equality of two marked Gram matrices gives an integral isometry mapping their first basis vector to the other, proving the primitive assertion.
+
+For nonzero square $n$, each nonprimitive vector is $m v$ with $v$ primitive and $m>0$ satisfying $m^2\mid n$. This is a finite union of images of finite primitive orbit sets. For square zero, choose any nonzero primitive isotropic $v$; the multiples $mv$ for positive integers $m$ have distinct contents in the underlying free abelian group, which are invariant under every integral automorphism. They are therefore in distinct orbits.
+:::
+
+The last assertion is essential when interpreting representation-counting
+results. Ratcliffe–Tschantz, [*On the Representation of Integers by the
+Lorentzian Quadratic Form*](https://doi.org/10.1006/jfan.1997.3129),
+counts nonzero-square representations in a Euclidean ball. Lauret,
+[*An asymptotic formula for representations of integers by indefinite
+hermitian forms*](https://arxiv.org/abs/1109.6697), treats a fixed negative
+value for forms of signature $(n,1)$. Gorodnik–Nevo,
+[*Counting lattice points*](https://arxiv.org/abs/0903.1515), concerns
+quantitative counting in lattice orbits under stated regularity and
+ergodic hypotheses. None of these assertions, as stated, removes the
+primitive restriction at square zero.
+
 ::: {.proposition #prop:scaled-discriminant-ses title="Bilinear discriminant form of a scaled lattice"}
 
 Let $L$ be an integral lattice and let $m>0$.

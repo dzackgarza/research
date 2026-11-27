@@ -1,5 +1,24 @@
 # Provenance: the lattice-research corpus (research records)
 
+## Source recovery (2026-11-27)
+
+`source-main-67c244a0.tsv` maps every tracked entry of lattice-research
+main at `67c244a011c24c8870a9d84c7f1210add1457e92` to an identical existing
+research blob or a preserved source file under `source-main/` (or records
+an external Git link). The recovered category specifications, Sage
+patches, fixtures and theory notes are historical inputs, not maintained
+APIs or trusted assertions. Their source declarations are deliberately
+not installed into the live mathematical library. Source symlinks are
+preserved as text rather than activated.
+
+The original fixture witnesses and source-table labels have been
+reconciled in [the corrected two-elementary specimens](../../../references/databases/alexeev-engel-two-elementary/README.md).
+The fixed-square orbit claim has been corrected and proved in
+[the lattice theory chapter](../../../writing/lattice-theory/embeddings-and-overlattices.md#prop-fixed-norm-orbit-finiteness).
+The source snapshot establishes preservation, not semantic or execution
+parity of the historical category specifications; their assertions must
+be judged at the present formalization and acceptance owners.
+
 Research records migrated 2026-08-20 from `~/gitclones/lattice-research`
 (the frozen first-attempt lattice DSL repository), per the corpora-audit
 registry sections R1-lattice-research-backends and R2-lattice-research-prose.

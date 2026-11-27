@@ -1,0 +1,901 @@
+{
+  "source": "Alexeev–Engel, arXiv:2208.10383, Table 2 (local TeX: writing/coble/papers/AE22/2el.tex, tab:neg-def)",
+  "rows": [
+    {
+      "r": 0,
+      "a": 0,
+      "delta": 0,
+      "source_label": "0",
+      "stars": 0
+    },
+    {
+      "r": 1,
+      "a": 1,
+      "delta": 1,
+      "source_label": "A_1",
+      "stars": 0
+    },
+    {
+      "r": 2,
+      "a": 2,
+      "delta": 1,
+      "source_label": "A_1^2",
+      "stars": 0
+    },
+    {
+      "r": 3,
+      "a": 3,
+      "delta": 1,
+      "source_label": "A_1^3",
+      "stars": 0
+    },
+    {
+      "r": 4,
+      "a": 2,
+      "delta": 0,
+      "source_label": "D_4",
+      "stars": 0
+    },
+    {
+      "r": 4,
+      "a": 4,
+      "delta": 1,
+      "source_label": "A_1^4",
+      "stars": 0
+    },
+    {
+      "r": 5,
+      "a": 3,
+      "delta": 1,
+      "source_label": "D_4 A_1",
+      "stars": 0
+    },
+    {
+      "r": 5,
+      "a": 5,
+      "delta": 1,
+      "source_label": "A_1^5",
+      "stars": 0
+    },
+    {
+      "r": 6,
+      "a": 2,
+      "delta": 1,
+      "source_label": "D_6",
+      "stars": 0
+    },
+    {
+      "r": 6,
+      "a": 4,
+      "delta": 1,
+      "source_label": "D_4 A_1^2",
+      "stars": 0
+    },
+    {
+      "r": 6,
+      "a": 6,
+      "delta": 1,
+      "source_label": "A_1^6",
+      "stars": 0
+    },
+    {
+      "r": 7,
+      "a": 1,
+      "delta": 1,
+      "source_label": "E_7",
+      "stars": 0
+    },
+    {
+      "r": 7,
+      "a": 3,
+      "delta": 1,
+      "source_label": "D_6A_1",
+      "stars": 0
+    },
+    {
+      "r": 7,
+      "a": 5,
+      "delta": 1,
+      "source_label": "D_4 A_1^3",
+      "stars": 0
+    },
+    {
+      "r": 7,
+      "a": 7,
+      "delta": 1,
+      "source_label": "A_1^7",
+      "stars": 0
+    },
+    {
+      "r": 8,
+      "a": 0,
+      "delta": 0,
+      "source_label": "E_8",
+      "stars": 0
+    },
+    {
+      "r": 8,
+      "a": 2,
+      "delta": 0,
+      "source_label": "D_8",
+      "stars": 0
+    },
+    {
+      "r": 8,
+      "a": 2,
+      "delta": 1,
+      "source_label": "E_7A_1",
+      "stars": 0
+    },
+    {
+      "r": 8,
+      "a": 4,
+      "delta": 0,
+      "source_label": "D_4^2",
+      "stars": 0
+    },
+    {
+      "r": 8,
+      "a": 4,
+      "delta": 1,
+      "source_label": "D_6 A_1^2",
+      "stars": 0
+    },
+    {
+      "r": 8,
+      "a": 6,
+      "delta": 0,
+      "source_label": "A_1^8",
+      "stars": 1
+    },
+    {
+      "r": 8,
+      "a": 6,
+      "delta": 1,
+      "source_label": "D_4 A_1^4",
+      "stars": 0
+    },
+    {
+      "r": 8,
+      "a": 8,
+      "delta": 0,
+      "source_label": "E_8(2)",
+      "stars": 0
+    },
+    {
+      "r": 8,
+      "a": 8,
+      "delta": 1,
+      "source_label": "A_1^8",
+      "stars": 0
+    },
+    {
+      "r": 9,
+      "a": 1,
+      "delta": 1,
+      "source_label": "E_8A_1",
+      "stars": 0
+    },
+    {
+      "r": 9,
+      "a": 3,
+      "delta": 1,
+      "source_label": "E_7 A_1^2",
+      "stars": 0
+    },
+    {
+      "r": 9,
+      "a": 3,
+      "delta": 1,
+      "source_label": "D_8A_1",
+      "stars": 0
+    },
+    {
+      "r": 9,
+      "a": 5,
+      "delta": 1,
+      "source_label": "D_6 A_1^3",
+      "stars": 0
+    },
+    {
+      "r": 9,
+      "a": 5,
+      "delta": 1,
+      "source_label": "D_4^2A_1",
+      "stars": 0
+    },
+    {
+      "r": 9,
+      "a": 7,
+      "delta": 1,
+      "source_label": "A_1^9",
+      "stars": 1
+    },
+    {
+      "r": 9,
+      "a": 7,
+      "delta": 1,
+      "source_label": "A_1^5 D_4",
+      "stars": 0
+    },
+    {
+      "r": 9,
+      "a": 9,
+      "delta": 1,
+      "source_label": "A_1^9",
+      "stars": 0
+    },
+    {
+      "r": 9,
+      "a": 9,
+      "delta": 1,
+      "source_label": "A_1 E_8(2)",
+      "stars": 0
+    },
+    {
+      "r": 10,
+      "a": 2,
+      "delta": 1,
+      "source_label": "D_{10}",
+      "stars": 0
+    },
+    {
+      "r": 10,
+      "a": 2,
+      "delta": 1,
+      "source_label": "E_8 A_1^2",
+      "stars": 0
+    },
+    {
+      "r": 10,
+      "a": 4,
+      "delta": 1,
+      "source_label": "E_7 A_1^3",
+      "stars": 0
+    },
+    {
+      "r": 10,
+      "a": 4,
+      "delta": 1,
+      "source_label": "D_8 A_1^2",
+      "stars": 0
+    },
+    {
+      "r": 10,
+      "a": 4,
+      "delta": 1,
+      "source_label": "D_6 D_4",
+      "stars": 0
+    },
+    {
+      "r": 10,
+      "a": 6,
+      "delta": 1,
+      "source_label": "D_4^2 A_1^2",
+      "stars": 1
+    },
+    {
+      "r": 10,
+      "a": 6,
+      "delta": 1,
+      "source_label": "A_1^6 D_4",
+      "stars": 1
+    },
+    {
+      "r": 10,
+      "a": 6,
+      "delta": 1,
+      "source_label": "D_6 A_1^4",
+      "stars": 0
+    },
+    {
+      "r": 10,
+      "a": 8,
+      "delta": 1,
+      "source_label": "D_4 A_1^6",
+      "stars": 1
+    },
+    {
+      "r": 10,
+      "a": 8,
+      "delta": 1,
+      "source_label": "A_1^{10}",
+      "stars": 1
+    },
+    {
+      "r": 10,
+      "a": 8,
+      "delta": 1,
+      "source_label": "A_3 E_7(2)",
+      "stars": 1
+    },
+    {
+      "r": 11,
+      "a": 3,
+      "delta": 1,
+      "source_label": "D_{10}A_1",
+      "stars": 0
+    },
+    {
+      "r": 11,
+      "a": 3,
+      "delta": 1,
+      "source_label": "E_8 A_1^3",
+      "stars": 0
+    },
+    {
+      "r": 11,
+      "a": 3,
+      "delta": 1,
+      "source_label": "E_7 D_4",
+      "stars": 0
+    },
+    {
+      "r": 11,
+      "a": 5,
+      "delta": 1,
+      "source_label": "D_6D_4A_1",
+      "stars": 0
+    },
+    {
+      "r": 11,
+      "a": 5,
+      "delta": 1,
+      "source_label": "D_8A_1^3",
+      "stars": 0
+    },
+    {
+      "r": 11,
+      "a": 5,
+      "delta": 1,
+      "source_label": "E_7A_1^4",
+      "stars": 0
+    },
+    {
+      "r": 11,
+      "a": 5,
+      "delta": 1,
+      "source_label": "D_6A_1^5",
+      "stars": 1
+    },
+    {
+      "r": 11,
+      "a": 7,
+      "delta": 1,
+      "source_label": "D_6A_1^5",
+      "stars": 0
+    },
+    {
+      "r": 11,
+      "a": 7,
+      "delta": 1,
+      "source_label": "A_1^7 D_4",
+      "stars": 1
+    },
+    {
+      "r": 11,
+      "a": 7,
+      "delta": 1,
+      "source_label": "D_4^2A_1^3",
+      "stars": 0
+    },
+    {
+      "r": 11,
+      "a": 7,
+      "delta": 1,
+      "source_label": "A_5 E_6(2)",
+      "stars": 1
+    },
+    {
+      "r": 12,
+      "a": 2,
+      "delta": 0,
+      "source_label": "E_8 D_4",
+      "stars": 0
+    },
+    {
+      "r": 12,
+      "a": 2,
+      "delta": 0,
+      "source_label": "D_{12}",
+      "stars": 0
+    },
+    {
+      "r": 12,
+      "a": 4,
+      "delta": 0,
+      "source_label": "E_7 A_1^5",
+      "stars": 1
+    },
+    {
+      "r": 12,
+      "a": 4,
+      "delta": 0,
+      "source_label": "D_8 D_4",
+      "stars": 0
+    },
+    {
+      "r": 12,
+      "a": 4,
+      "delta": 1,
+      "source_label": "D_8 A_1^4",
+      "stars": 1
+    },
+    {
+      "r": 12,
+      "a": 4,
+      "delta": 1,
+      "source_label": "E_8 A_1^4",
+      "stars": 0
+    },
+    {
+      "r": 12,
+      "a": 4,
+      "delta": 1,
+      "source_label": "D_6^2",
+      "stars": 0
+    },
+    {
+      "r": 12,
+      "a": 4,
+      "delta": 1,
+      "source_label": "D_{10} A_1^2",
+      "stars": 0
+    },
+    {
+      "r": 12,
+      "a": 4,
+      "delta": 1,
+      "source_label": "E_7 D_4 A_1",
+      "stars": 0
+    },
+    {
+      "r": 12,
+      "a": 6,
+      "delta": 0,
+      "source_label": "D_4^3",
+      "stars": 0
+    },
+    {
+      "r": 12,
+      "a": 6,
+      "delta": 0,
+      "source_label": "E_6 E_6(2)",
+      "stars": 1
+    },
+    {
+      "r": 12,
+      "a": 6,
+      "delta": 0,
+      "source_label": "D_6 A_1^6",
+      "stars": 1
+    },
+    {
+      "r": 12,
+      "a": 6,
+      "delta": 1,
+      "source_label": "D_6A_1^6",
+      "stars": 1
+    },
+    {
+      "r": 12,
+      "a": 6,
+      "delta": 1,
+      "source_label": "E_7A_1^5",
+      "stars": 0
+    },
+    {
+      "r": 12,
+      "a": 6,
+      "delta": 1,
+      "source_label": "D_4^2 A_1^4",
+      "stars": 1
+    },
+    {
+      "r": 12,
+      "a": 6,
+      "delta": 1,
+      "source_label": "D_8A_1^4",
+      "stars": 0
+    },
+    {
+      "r": 12,
+      "a": 6,
+      "delta": 1,
+      "source_label": "D_6D_4A_1^2",
+      "stars": 0
+    },
+    {
+      "r": 12,
+      "a": 6,
+      "delta": 1,
+      "source_label": "A_7 D_5(2)",
+      "stars": 1
+    },
+    {
+      "r": 13,
+      "a": 3,
+      "delta": 1,
+      "source_label": "D_{12}A_1",
+      "stars": 0
+    },
+    {
+      "r": 13,
+      "a": 3,
+      "delta": 1,
+      "source_label": "E_7D_6",
+      "stars": 0
+    },
+    {
+      "r": 13,
+      "a": 3,
+      "delta": 1,
+      "source_label": "E_8D_4A_1",
+      "stars": 0
+    },
+    {
+      "r": 13,
+      "a": 3,
+      "delta": 1,
+      "source_label": "D_{10}A_1^3",
+      "stars": 1
+    },
+    {
+      "r": 13,
+      "a": 5,
+      "delta": 1,
+      "source_label": "D_8 D_4 A_1",
+      "stars": 0
+    },
+    {
+      "r": 13,
+      "a": 5,
+      "delta": 1,
+      "source_label": "E_7 D_4 A_1^2",
+      "stars": 0
+    },
+    {
+      "r": 13,
+      "a": 5,
+      "delta": 1,
+      "source_label": "D_6^2 A_1",
+      "stars": 0
+    },
+    {
+      "r": 13,
+      "a": 5,
+      "delta": 1,
+      "source_label": "E_7 A_1^6",
+      "stars": 1
+    },
+    {
+      "r": 13,
+      "a": 5,
+      "delta": 1,
+      "source_label": "D_6 D_4 A_1^3",
+      "stars": 1
+    },
+    {
+      "r": 13,
+      "a": 5,
+      "delta": 1,
+      "source_label": "D_{10} A_1^3",
+      "stars": 0
+    },
+    {
+      "r": 13,
+      "a": 5,
+      "delta": 1,
+      "source_label": "E_8 A_1^5",
+      "stars": 0
+    },
+    {
+      "r": 13,
+      "a": 5,
+      "delta": 1,
+      "source_label": "D_8 A_1^5",
+      "stars": 1
+    },
+    {
+      "r": 13,
+      "a": 5,
+      "delta": 1,
+      "source_label": "A_9 A_4(2)",
+      "stars": 1
+    },
+    {
+      "r": 14,
+      "a": 2,
+      "delta": 1,
+      "source_label": "D_{12} A_1^2",
+      "stars": 1
+    },
+    {
+      "r": 14,
+      "a": 2,
+      "delta": 1,
+      "source_label": "D_{14}",
+      "stars": 0
+    },
+    {
+      "r": 14,
+      "a": 2,
+      "delta": 1,
+      "source_label": "E_8 D_6",
+      "stars": 0
+    },
+    {
+      "r": 14,
+      "a": 2,
+      "delta": 1,
+      "source_label": "E_7^2",
+      "stars": 0
+    },
+    {
+      "r": 14,
+      "a": 4,
+      "delta": 1,
+      "source_label": "D_6^2 A_1^2",
+      "stars": 1
+    },
+    {
+      "r": 14,
+      "a": 4,
+      "delta": 1,
+      "source_label": "E_8 D_4 A_1^2",
+      "stars": 0
+    },
+    {
+      "r": 14,
+      "a": 4,
+      "delta": 1,
+      "source_label": "E_7 D_6 A_1",
+      "stars": 0
+    },
+    {
+      "r": 14,
+      "a": 4,
+      "delta": 1,
+      "source_label": "D_{10} A_1^4",
+      "stars": 1
+    },
+    {
+      "r": 14,
+      "a": 4,
+      "delta": 1,
+      "source_label": "D_8 D_4 A_1^2",
+      "stars": 1
+    },
+    {
+      "r": 14,
+      "a": 4,
+      "delta": 1,
+      "source_label": "E_7 D_4 A_1^3",
+      "stars": 1
+    },
+    {
+      "r": 14,
+      "a": 4,
+      "delta": 1,
+      "source_label": "D_{12} A_1^2",
+      "stars": 0
+    },
+    {
+      "r": 14,
+      "a": 4,
+      "delta": 1,
+      "source_label": "D_{10} D_4",
+      "stars": 0
+    },
+    {
+      "r": 14,
+      "a": 4,
+      "delta": 1,
+      "source_label": "D_8 D_6",
+      "stars": 0
+    },
+    {
+      "r": 14,
+      "a": 4,
+      "delta": 1,
+      "source_label": "A_{11} (A_2 A_1)(2)",
+      "stars": 1
+    },
+    {
+      "r": 15,
+      "a": 1,
+      "delta": 1,
+      "source_label": "E_8 E_7",
+      "stars": 0
+    },
+    {
+      "r": 15,
+      "a": 1,
+      "delta": 1,
+      "source_label": "D_{14} A_1",
+      "stars": 1
+    },
+    {
+      "r": 15,
+      "a": 3,
+      "delta": 1,
+      "source_label": "E_7^2 A_1",
+      "stars": 0
+    },
+    {
+      "r": 15,
+      "a": 3,
+      "delta": 1,
+      "source_label": "D_8 E_7",
+      "stars": 0
+    },
+    {
+      "r": 15,
+      "a": 3,
+      "delta": 1,
+      "source_label": "D_{14} A_1",
+      "stars": 0
+    },
+    {
+      "r": 15,
+      "a": 3,
+      "delta": 1,
+      "source_label": "E_8 D_6A_1",
+      "stars": 0
+    },
+    {
+      "r": 15,
+      "a": 3,
+      "delta": 1,
+      "source_label": "D_{12} A_1^3",
+      "stars": 1
+    },
+    {
+      "r": 15,
+      "a": 3,
+      "delta": 1,
+      "source_label": "D_{10} D_4A_1",
+      "stars": 1
+    },
+    {
+      "r": 15,
+      "a": 3,
+      "delta": 1,
+      "source_label": "D_8 D_6 A_1",
+      "stars": 1
+    },
+    {
+      "r": 15,
+      "a": 3,
+      "delta": 1,
+      "source_label": "E_7 D_6 A_1^2",
+      "stars": 1
+    },
+    {
+      "r": 15,
+      "a": 3,
+      "delta": 1,
+      "source_label": "A_{13} A_1(2)",
+      "stars": 2
+    },
+    {
+      "r": 16,
+      "a": 0,
+      "delta": 0,
+      "source_label": "E_8^2",
+      "stars": 0
+    },
+    {
+      "r": 16,
+      "a": 0,
+      "delta": 0,
+      "source_label": "D_{16}",
+      "stars": 1
+    },
+    {
+      "r": 16,
+      "a": 2,
+      "delta": 0,
+      "source_label": "D_8^2",
+      "stars": 1
+    },
+    {
+      "r": 16,
+      "a": 2,
+      "delta": 0,
+      "source_label": "E_7^2 A_1^2",
+      "stars": 1
+    },
+    {
+      "r": 16,
+      "a": 2,
+      "delta": 0,
+      "source_label": "E_8 D_8",
+      "stars": 0
+    },
+    {
+      "r": 16,
+      "a": 2,
+      "delta": 0,
+      "source_label": "D_{12} D_4",
+      "stars": 1
+    },
+    {
+      "r": 16,
+      "a": 2,
+      "delta": 0,
+      "source_label": "D_{16}",
+      "stars": 0
+    },
+    {
+      "r": 16,
+      "a": 2,
+      "delta": 0,
+      "source_label": "A_{15} A_1(2)",
+      "stars": 1
+    },
+    {
+      "r": 16,
+      "a": 2,
+      "delta": 1,
+      "source_label": "E_8 E_7 A_1",
+      "stars": 0
+    },
+    {
+      "r": 16,
+      "a": 2,
+      "delta": 1,
+      "source_label": "D_8 E_7 A_1",
+      "stars": 1
+    },
+    {
+      "r": 16,
+      "a": 2,
+      "delta": 1,
+      "source_label": "D_{10} D_6",
+      "stars": 1
+    },
+    {
+      "r": 16,
+      "a": 2,
+      "delta": 1,
+      "source_label": "D_{14} A_1^2",
+      "stars": 1
+    },
+    {
+      "r": 16,
+      "a": 2,
+      "delta": 1,
+      "source_label": "A_{15}",
+      "stars": 2
+    },
+    {
+      "r": 17,
+      "a": 1,
+      "delta": 1,
+      "source_label": "E_8^2 A_1",
+      "stars": 0
+    },
+    {
+      "r": 17,
+      "a": 1,
+      "delta": 1,
+      "source_label": "D_{16} A_1",
+      "stars": 1
+    },
+    {
+      "r": 17,
+      "a": 1,
+      "delta": 1,
+      "source_label": "D_{10} E_7",
+      "stars": 1
+    },
+    {
+      "r": 17,
+      "a": 1,
+      "delta": 1,
+      "source_label": "A_{17}",
+      "stars": 1
+    }
+  ]
+}
