@@ -18,40 +18,27 @@ notes: |-
 
 ::: {.definition #def:period-map title="Period matrix and period map" defines="period matrix; $\Pi(t)$; period map; $\mathcal P$; $\omega_i$; $P_X$; $\omega$; projective period map"}
 
-Let $\pi \colon \mathcal{X} \to M$ be a smooth projective (or compact Kähler) family of complex $m$-dimensional varieties over a connected complex quasi-projective variety (@def:projective-variety) (or complex manifold) $M$.
-Fix a reference fiber (@def:fiber-cofiber) $X = X_{t_0} = \inverseof{\pi}(t_0)$, and let $\{\Sigma_0, \dots, \Sigma_{k-1}\} \subset H_m(X, \ZZ)/\mathrm{tors}$ be an integral basis (@def:based-module) of the middle homology (@def:homology) modulo torsion, where $k = b_m(X)$ is the middle Betti number.
-For each $t \in M$, let $\{\omega_1(t), \dots, \omega_p(t)\}$ be a basis of a holomorphic subbundle of the relative de Rham cohomology, such as $H^{m,0}(X_t) \subset H^m_{\dR}(X_t)$ where $p = h^{m,0}(X)$, varying holomorphically with $t$.
+Let $\pi\colon\mathcal X\to M$ be a smooth projective family of complex $m$-folds (or a smooth proper Kähler family) over a connected complex manifold $M$ or a connected complex quasi-projective base taken in the analytic topology. Fix a reference fibre $X=X_{t_0}$ and a basis $\Sigma_0,\ldots,\Sigma_{k-1}$ of $H_m(X,\ZZ)/\mathrm{tors}$. Parallel transport along a path from $t_0$ to $t$ gives cycles $\Sigma_i(t)$ on $X_t$. Integration identifies the de Rham class of a closed $m$-form $\Omega$ with the functional
+$$
+H_m(X_t,\ZZ)/\mathrm{tors}\longrightarrow\CC,\qquad
+\Sigma\longmapsto\int_\Sigma\Omega.
+$$
+Indeed integration on cycles gives the de Rham comparison with singular cohomology, and evaluation on integral homology identifies $H^m(X_t,\CC)$ with this space of functionals. For a morphism $f\colon Y\to X_t$, the comparison respects pullback because $\int_\gamma f^*\Omega=\int_{f_*\gamma}\Omega$.
 
-1. **The general period matrix and period map:** The *period matrix* of the fiber $X_t$ with respect to the chosen bases (@def:based-module) is the $p \times k$ matrix of period integrals
-   $$
-   \Pi(t) \;\coloneqq\; \begin{pmatrix}
-   \ds\int_{\Sigma_0(t)} \omega_1(t) & \cdots & \ds\int_{\Sigma_{k-1}(t)} \omega_1(t) \\
-   \vdots & \ddots & \vdots \\
-   \ds\int_{\Sigma_0(t)} \omega_p(t) & \cdots & \ds\int_{\Sigma_{k-1}(t)} \omega_p(t)
-   \end{pmatrix}
-   \;\in\; \Mat_{p \times k}(\CC).
-   $$
-   Because the basis of holomorphic forms is determined only up to an invertible change of basis in $\GL_p(\CC)$, the $p$-dimensional subspace spanned by the rows of $\Pi(t)$ defines a point in the Grassmannian $\Gr(p, H^m(X, \CC))$, or more precisely in the Griffiths period domain $\mathcal{D} \subset \Gr(p, k)$ cut out by the Riemann–Hodge bilinear relations.
-   Modulo the global monodromy group (@def:transport-and-monodromy) $\Gamma \le \Aut(H_m(X, \ZZ), Q)$, this association defines the *period map* of the family
-   $$
-   \mathcal{P} \colon M \too \mathcal{D}/\Gamma.
-   $$
+In a local holomorphic frame $\omega_1(t),\ldots,\omega_p(t)$ of $F^m_t=H^{m,0}(X_t)$, the **period matrix** is
+$$
+\Pi(t)_{ji}=\int_{\Sigma_i(t)}\omega_j(t).
+$$
+Its rows are the coordinates of these classes in the cohomology basis dual to the transported cycles. Replacing the frame by $\omega'_j=\sum_l C_{jl}\omega_l$ and the cycles by $\Sigma'_i=\sum_l\Sigma_l B_{li}$ gives $\Pi'=C\Pi B$. Left multiplication preserves the row space. Right multiplication expresses that same subspace in the new coordinates.
 
-2. **Specialization to the one-form case ($p = 1$, Calabi–Yau varieties):** When $X$ is a smooth $m$-dimensional Calabi–Yau variety (such as an elliptic curve with $m=1$, a K3 surface with $m=2$, or a Calabi–Yau threefold with $m=3$), the space of holomorphic top forms is one-dimensional: $h^{m,0}(X) = 1$.
-   There is therefore a unique (up to scaling) non-vanishing holomorphic $m$-form $\Omega \in H^{m,0}(X)$.
-   In this setting, there is exactly one form to integrate ($p = 1$), and the general period matrix specializes to a single row vector of $k = b_m$ period integrals $\omega_0, \dots, \omega_{k-1}$, given by
-   $$
-   \omega_i \;=\; \int_{\Sigma_i} \Omega \qquad (i = 0, \dots, k-1).
-   $$
-   Since $\Omega$ is determined up to an arbitrary non-zero constant $\lambda \in \unitsof{\CC}$, the period integrals are determined up to scalar multiplication, and their totality defines a well-defined point $P_X$ in projective space (@def:projective-morphism-of-schemes) $\PP^{k-1}(\CC)$:
-   $$
-   P_X \;=\; [\omega_0 : \dots : \omega_{k-1}] \;\in\; \PP^{k-1}.
-   $$
-   When $X = X_t = \inverseof{\pi}(t)$ varies in a family $\pi \colon \mathcal{X} \to M$, with $\pi$ determining a locally topologically trivial fibration over a complex quasi-projective variety $M$ and $t \in M$, the association $t \mapsto P_{X_t}$ extends to a holomorphic map
-   $$
-   \omega \colon M \too \PP^{k-1}, \qquad t \longmapsto P_{X_t} = [\omega_0(t) : \dots : \omega_{k-1}(t)],
-   $$
-   called the *projective period map* of the family.
+Transport on the universal cover $\widetilde M$ therefore gives a holomorphic map to $\Gr(p,H^m(X,\CC))$. For a polarized variation the full Hodge filtration gives the period map $\mathcal P\colon M\to\mathcal D/\Gamma$, where $\mathcal D$ classifies filtrations of the prescribed Hodge numbers satisfying the Hodge--Riemann relations and $\Gamma$ is the monodromy group (@def:transport-and-monodromy). The row space above records its top filtration piece.
+
+When $p=1$, as for a K3 surface, choose a local generator $\Omega_t$ of the Hodge line and put $\omega_i(t)=\int_{\Sigma_i(t)}\Omega_t$. The **projective period map** in a flat marking is
+$$
+\omega\colon\widetilde M\to\PP(H^m(X,\CC)),\qquad
+\tilde t\longmapsto P_{X_t,\tilde t}=[\omega_0(t):\cdots:\omega_{k-1}(t)].
+$$
+For a marked K3 surface with marking $\varphi\colon H^2(X_t,\ZZ)\isoto\lkt$, this point is the line $\varphi_{\CC}(H^{2,0}(X_t))\subset\lkt\otimes\CC$. Rescaling $\Omega_t$ fixes the point. A deck transformation acts on it by projective monodromy. Over $M$ the Hodge line defines a section of the projectivized cohomology bundle, and the marked period descends to the quotient by $\Gamma$. A global flat marking gives a map to the fixed projective space itself.
 :::
 
 ## The algebraic construction

@@ -20,16 +20,25 @@ Let $\fttz=\bD(\tdp)/\Gamma_\dP$ be the moduli space of K3 surfaces of degree (@
 2. The inclusion $\gent\subseteq\Gamma^K_\En$ of a subgroup of finite index (@def:index) induces a morphism $\fentwo\to F_{(10,10,0)}=\bD(T_\En)/\Gamma^K_\En$ of degree $2^7\cdot17\cdot31$ [@AEGS25, §2.3; @Ste91, Rem. 2.12, printed p. 8].
 :::
 
-::: {#cons:coble-embedding-extensions .construction title="The embedding and its two extensions" defines="$\eta$; $\tilde\eta$"}
+::: {#cons:coble-embedding-extensions .construction title="The Coble period mirror for the three Enriques arithmetic groups" defines="$\eta$; $\tilde\eta$"}
 
-By @lem:locally_closed_embedding_BB, the lattice embeddings $T_\Co\injects\ten$ and $T_\Co\injects\tdp$ induce locally closed (@def:locally-closed-subset) embeddings $\fco\injects\fen$ and $\fco\injects\fttz$, which extend to morphisms of Baily--Borel compactifications:
+On a family of smooth Coble covers $(X\to S,\iota)$ the geometric map retains $(X,\iota)$. On its image the inverse takes the relative quotient $X/\langle\iota\rangle$, which commutes with base change (@prop:coble-enriques-maps-and-the-vhs(3)). The period of the cover is the Hodge line of its anti-invariant cohomology, transported using the marking torsor (@thm:coble-period-map-of-the-stack). For the singular-pair problem, taking the quotient after contraction and reconstructing a resolved family from the index-one cover are additional geometric operations. Their compatibility with base change and automorphisms is the equivalence asked for in @prob:cover-singular-equivalence.
+
+On period domains the lattice embedding $\eta$ instead sends a line $[\omega]$ to $[\eta_\CC(\omega)]$ in the mirror of $\delta$. For each Enriques group $\Gamma$ of @def:gamma-co-groups its descent is
 $$
-\eta: \bbcpt{\fco} \to \bbcpt{\fen},
-\qquad
-\tilde\eta: \bbcpt{\fco} \to \bbcpt{\fttz} .
+f^\Gamma\colon\bD(T_\Co)/R_\Gamma\longrightarrow\bD(\ten)/\Gamma,
 $$
-The stratification of $\partial\bbcpt{F^{\mathrm{un}}_\Co}$ is obtained by applying the mirror moves (@def:mirror-move) of [@AE22] to $S_{\Co} = (11,11,1)_1$.
-On $0$-cusps, $\eta$ induces an injective map (@def:injective-map) from the $527$ $0$-cusps of the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ (@thm:coble-zero-cusp-count(2), the cusps being the nonzero isotropic classes (@def:descent-class), the fibre over one class being a single $\widetilde\Orth^+(T_\Co)$-orbit by @thm:coble-integral-lifting-fibre(1), (2)) to the $0$-cusps of $\fen$ of divisibility $2$: the orbit (@def:group-orbit) map is defined because the embedding is equivariant, $\eta(\varphi v) = \mathrm{Ext}(\varphi)\eta(v)$ (@thm:coble-strong-lifting); it is injective (@def:injective-map) (@prop:cusp-map-injective) and it misses the divisibility-$1$ cusps (@prop:cusp-map-not-onto).
+where $R_\Gamma$ is the restriction of the stabilizer of $\ZZ\delta$. This map normalizes the Heegner divisor (@thm:normalization). Its Baily--Borel extension is $\overline f^\Gamma$ by @lem:locally_closed_embedding_BB. At degree two the further map $\tilde\eta$ is the composite of $\overline f^{\gent}$ with the Baily--Borel extension of $\fentwo\to\fttz$ from @prop:fen2-forgetful-maps(1).
+
+On the boundary, $\overline f^\Gamma$ sends the cusp indexed by $\ZZ v$ to the cusp indexed by $\ZZ\eta(v)$ (@lem:cusp-map-of-a-period-lattice-embedding). Its orbit depends on the target group (@prop:gamma-co-images).
+
+| Target group | Source group $R_\Gamma$ | Image on zero-dimensional cusps |
+|---|---|---|
+| Stable $\Gamma_\En=\widetilde\Orth^+(\ten)$ | $\widetilde\Orth^+(T_\Co)$ | One cusp over each of the $527$ nonzero isotropic classes, giving all divisibility-two cusps (@prop:cusp-map-onto-criterion). |
+| Unpolarized $\Gamma^K_\En=\Orth(\ten)$ | $\Orth(T_\Co)$ | One cusp, represented by a line of divisibility two [@Ste91, Prop. 4.5]. |
+| Degree two $\gent$ | $R_{\gent}$ | The four cusps numbered $2$ through $5$ by Sterk (@thm:coble-zero-cusp-sterk-two). |
+
+The quotient maps from the stable groups to the full groups commute with $f^\Gamma$. Both composites send $[\omega]$ to the full orbit of $[\eta_\CC(\omega)]$. At the boundary this sends the $527$ stable line classes to a single unpolarized cusp. On the full Coble quotient, the mirror moves for $(11,11,1)_1$ record the incidence of its unique zero-dimensional cusp with the one-dimensional boundary (@fig-mirror-moves-coble-simplified). For a geometric family the passage to any of these arithmetic quotients uses its actual marking data and monodromy (@prop:coble-enriques-maps-and-the-vhs).
 :::
 
 ## The two cusp identifications
@@ -79,7 +88,7 @@ $$\Phi([\ell])=\lim_{t\to\infty}\Phi([w(z_t)])=\lim_{t\to\infty}[w(z_t)]=[\iota(
 Let $\delta = e-f$, $T_\Co = \delta^{\perp\ten}$, $R_{\gent}$ the image of $\Stab_{\gent}(\delta)$ in $\Orth(T_\Co)$ (@prop:gamma-co-images(3)) and $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ with $\Gamma_{\Co,2}$ the monodromy group (@def:transport-and-monodromy) of the family of @def:coble-family-degree-two (@def:gamma-co-groups), and let $\eta_1,\dots,\eta_5$ be Sterk's five cusp vectors in $\ten = U\oplus U(2)\oplus E_8(2)$, that is the vectors the lattice database returns as `Sterk.selected_isotropic_vectors()` [@Ste91, (4.2.2)--(4.2.3), printed p. 16], whose coordinates and divisibilities are tabulated in @ex:sterk-isotropic-divisibilities.
 Then:
 
-1. **Cusp $1$ carries no Coble $0$-cusp.** $(\eta_1,\delta) = -1$, so $\eta_1\notin T_\Co$.
+1. **Cusp $1$ carries no Coble $0$-cusp.** The pairing $(\eta_1,\delta)=-1$ gives $\eta_1$ divisibility one in $\ten$. Divisibility is constant on its orbit, and every primitive isotropic vector in $\eta(T_\Co)$ has divisibility two in $\ten$ (@prop:cusp-map-not-onto).
 2. **Each of cusps $2$, $3$, $4$, $5$ carries one, and all four have the same boundary lattice.** For $k=2,3,4,5$ the vector $\eta_k$ is primitive (@def:primitive-embedding) and isotropic with $(\eta_k,\delta) = 0$ and $\divisibility_{\ten}(\eta_k) = 2$, and the lattice $\eta_k^{\perp T_\Co}/\ZZ\eta_k$ is even of rank $9$, determinant $2^9$, signature $(1,8)$ and invariants $(r,a,\delta) = (9,9,1)$, hence is $(9,9,1)_1$ (@thm:two-elementary-classification).
    So each of Sterk's cusps $2$ to $5$ carries a $0$-cusp of $\bD(T_\Co)/R_{\gent}$ with boundary lattice $(9,9,1)_1$, by @thm:coble-pair-semifan(0) and @lem:cusp-map-of-a-period-lattice-embedding --- these are exactly the four $0$-cusps of the arithmetic quotient for the actual group $\Gamma_{\Co,2}=R_{\gent}\cap\Orth^+(T_\Co)$, with no splitting by @thm:gamma-co-is-the-stack-monodromy and @thm:o2-positive-parabolic-families; and since $\Gamma_{\Co,2}\subseteq\Orth(T_\Co)$ and $\Orth(T_\Co)$ is transitive on primitive isotropic vectors (@def:isotropic-subspace) (@thm:unpolarized-cusps), the four sit over the one $0$-cusp $(9,9,1)_1$ of $F^{\mathrm{un}}_\Co$.
    **The boundary lattice therefore singles out no cusp**: the identification of the Coble $0$-cusp with cusp $2$ alone is false in this reading.

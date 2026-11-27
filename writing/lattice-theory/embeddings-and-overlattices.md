@@ -243,6 +243,30 @@ If $L$ is unimodular, the two projections are isomorphisms (@def:isomorphism-of-
 This is the primitive-embedding gluing construction of [@Nik80, §1.4--1.5].
 :::
 
+## Finite-index sublattices and their characters {#sec-sublattice-characters}
+
+::: {.proposition #prop:sublattice-gluing-character-pairing title="The characters and the gluing subgroup of a finite-index inclusion"}
+
+Let $S\subset T$ have finite index, where $T$ is a nondegenerate integral lattice and $S$ has the restricted form. Put $H=T/S$. With $T$ fixed, $S$ determines the finite subgroup of $\operatorname{Hom}(T,\QQ/\ZZ)$ consisting of characters vanishing on $S$. With $S$ fixed, $T$ determines the subgroup $H\subset A_S=S^\sharp/S$ by @def:overlattice. It is isotropic for the discriminant bilinear form and, if $T$ is even, for the quadratic refinement. The two classifying subgroups are in perfect duality by
+$$
+(S^\sharp/T^\sharp)\times(T/S)\longrightarrow\QQ/\ZZ,
+\qquad ([x],[t])\longmapsto (x,t)\bmod\ZZ.
+$$
+:::
+
+::: {.proof}
+
+Pullback along $T\to H$ identifies $H^\dagger=\operatorname{Hom}(H,\QQ/\ZZ)$ with the characters of $T$ that vanish on $S$. Evaluation recovers $S$ as their common kernel by finite biduality (@prop:torsion-duality-exact). Conversely a finite subgroup $D\subset\operatorname{Hom}(T,\QQ/\ZZ)$ is the full character subgroup of its common kernel: choose $n$ annihilating $D$ and apply finite biduality and exactness to $D\subset(T/nT)^\dagger$. This gives an inclusion-reversing correspondence and uses only the additive group of $T$.
+
+The rational pairing identifies $T_\QQ$ with its linear dual. Every character of $H$ pulls back to a character of $T$ and lifts, on a basis of $T$, to a rational linear functional. Its representing vector belongs to $S^\sharp$ because the character vanishes on $S$. Two such vectors represent the same character precisely when their difference belongs to $T^\sharp$. Thus $[x]$ represents the character $[t]\mapsto(x,t)\bmod\ZZ$. Under an isometry $u\colon(T,S)\to(T',S')$, its image $[u(x)]$ represents the character carried to $T'/S'$ by composition with the inverse of the induced isomorphism $T/S\to T'/S'$. This follows from $(u(x),u(t))=(x,t)$. On the gluing side, it is the discriminant pairing of $A_S$ against $H$: its annihilator in $A_S$ is $H^\perp=T^\sharp/S$. Thus $A_S/H^\perp\cong H^\dagger$ while $H^\perp/H\cong A_T$ by the gluing correspondence (@thm:nikulin-gluing in the even case).
+
+For a chain $S\subset T\subset L$ of finite-index inclusions of integral lattices, $T/S\subset L/S\subset A_S$ is a flag of bilinearly isotropic subgroups. Dualizing $0\to T/S\to L/S\to L/T\to0$ gives
+$$
+0\to T^\sharp/L^\sharp\to S^\sharp/L^\sharp\to S^\sharp/T^\sharp\to0.
+$$
+The last arrow restricts characters from $L/S$ to $T/S$. In particular the two descriptions commute with passage to an intermediate lattice.
+:::
+
 ## Splitting of unimodular sublattices
 
 ::: {.definition #def:lattice-split title="Orthogonal splitting" defines="orthogonal splitting"}

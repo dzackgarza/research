@@ -4,7 +4,7 @@ What was noticed while moving the dissertation from LaTeX back to Markdown, with
 The open items are work units in the [issue tree](https://github.com/dzackgarza/research/issues/46): #721, #722, #723 and #724. None of them blocks the build, which compiles with no LaTeX errors.
 What has since been settled is listed at the end, so that a reader can tell "resolved" from "never noticed".
 
-A convention on the group $\Gamma_{\mathrm{Co}}$, whose definition moved under this ledger. The book defines $\Gamma_{\mathrm{Co}}$ as the monodromy group of the VHS on the universal family over the moduli stack of Coble surfaces (@def:gamma-co-groups(1)), not as the subgroup $\Orth^+(T_{\mathrm{Co}})\cap\ker\rho$ and not as the monodromy of a chosen family --- the labelled base $B$ is a presentation, and its group is written $\Gamma_{\mathrm{Co}}(B)$ ---, and the two are related only conjecturally (@conj:gamma-co-stable; the sign half of $\Gamma_{\mathrm{Co}}\subseteq\widetilde\Orth^+(T_{\mathrm{Co}})$ is proved by @lem:monodromy-is-spinor-positive, and the discriminant half is open, @rmk:gamma-co-status). An entry below that was written under the earlier convention --- one that has $\Gamma_{\mathrm{Co}}$ act trivially on $A_{T_{\mathrm{Co}}}$, or on the isotropic classes of $A_{T_{\mathrm{Co}}}$, or that writes an orbit set $\Gamma_{\mathrm{Co}}\backslash I(T_{\mathrm{Co}})$ --- is to be read with $\widetilde\Orth^+(T_{\mathrm{Co}})$ in the place of $\Gamma_{\mathrm{Co}}$, unless it says otherwise. Where the distinction decides the assertion, it is flagged in place; the strong lifting is the entry where it does (@rmk:coble-strong-lifting-group).
+The book writes $\Gamma_{\mathrm{Co}}$ for the anti-invariant monodromy group of the unmarked stack of Coble covers (@def:gamma-co-groups(1)). This group is $\Orth^+(T_{\mathrm{Co}})$ by @thm:gamma-co-is-the-stack-monodromy. The invariant-marked stack on the component of @cor:coble-invariant-marking-monodromy has the stable positive group. Read the historical entries below that assume trivial discriminant action with the stable group as their hypothesis. The monodromy of the labelled plane presentation is a subgroup of that stable group (@thm:gamma-co-is-stable).
 
 ## Possibly missing content
 
@@ -1557,7 +1557,9 @@ A convention on the group $\Gamma_{\mathrm{Co}}$, whose definition moved under t
 ## Settled since this list was written
 
 Each of these was open when this list was written and is settled now; the two that appeared above have been removed from it.
-The check is the one each item names, run over `sections/`.
+The check is the one each item names.
+
+- **The stable Coble cusp image.** The stable cusp correspondence is bijective onto the divisibility-two Enriques cusps (@prop:cusp-map-onto-criterion). The divided class of a primitive line identifies the source and the image with the same nonzero isotropic discriminant classes. Passage to the full Enriques group sends them to one cusp.
 
 - **Five targets with no label.** The text no longer uses `\Cref` at all; every cross-reference is written `@label`, and each of those names a label `sections/` declares.
   The five were:

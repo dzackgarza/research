@@ -87,6 +87,27 @@ $$
 In pointed spaces these are the usual loop-space and reduced-suspension constructions.
 :::
 
+## Evaluation with a variable point {#sec-evaluation-variable-point}
+
+Let $\mathcal C$ be a cartesian closed category with pullbacks and terminal object $1$. The identity of $B^A$ corresponds under the exponential adjunction (@def:closed-monoidal) to $\mathrm{ev}\colon B^A\times A\to B$. Equivalently, internal composition gives $B^A\times A^1\to B^1$ under the canonical isomorphisms $A^1\cong A$ and $B^1\cong B$. For any test object $U$, evaluation sends a pair $f\colon U\times A\to B$, $a\colon U\to A$ to $f\circ(\mathrm{id}_U,a)\colon U\to B$. This formula commutes with precomposition in $U$.
+
+A point $a\colon1\to A$ alone gives $\mathrm{ev}_a\colon B^A\to B$ by restriction along $(\mathrm{id},a\circ !)$. A point $b\colon1\to B$ alone gives a pullback with two projections:
+$$
+B^A\xleftarrow{\ \mathrm{pr}_1\ } E_b=(B^A\times A)\times_B1
+\xrightarrow{\ \mathrm{pr}_2\ } A.
+$$
+Over a point $f\colon1\to B^A$ corresponding to $\bar f\colon A\to B$, the fibre of $E_b\to B^A$ is $A\times_{B}1$ along $\bar f$ and $b$. Over $a\colon1\to A$, the fibre of $E_b\to A$ is $B^A\times_{B}1$ along $\mathrm{ev}_a$ and $b$. These identifications follow by pasting pullbacks (@def:pullback-square). In sets, the first projection sends $(f,a)$ with $f(a)=b$ to $f$. Its image consists of the maps that hit $b$, whereas its fibre over $f$ retains every choice of preimage. The second projection has as its fibre over $a$ the maps $(A,a)\to(B,b)$.
+
+External global points $\Gamma=\operatorname{Hom}_{\mathcal C}(1,-)$ preserve pullbacks. Applied to the defining square of $E_b$, this gives
+$$
+\Gamma(E_b)\cong
+\bigl(\operatorname{Hom}_{\mathcal C}(A,B)\times\Gamma(A)\bigr)
+\times_{\Gamma(B)}\Gamma(1).
+$$
+Here $\Gamma(B^A)\cong\operatorname{Hom}_{\mathcal C}(A,B)$ by adjunction. The two maps to $\Gamma(B)$ send $(f,a)$ to $f\circ a$ and the unique element of $\Gamma(1)$ to $b$, respectively. In a cartesian closed $\infty$-category with pullbacks, external points form mapping spaces and the displayed pullback is a homotopy pullback. A point of this fibre includes a path from $f\circ a$ to $b$.
+
+For an interval presented by a factorization $1\amalg1\xrightarrow{j}I\to1$, its endpoints are $a_i=j\circ\iota_i$ for the coprojections $\iota_i\colon1\to1\amalg1$. Hence a path starting at $b$ is represented by the pullback of $\mathrm{ev}_{a_0}\colon B^I\to B$ along $b$. Letting the point of $I$ vary instead gives paths equipped with a point at which they take the value $b$.
+
 ## Arrow categories and path spaces {#sec-interval-presentations}
 
 For a higher category $C$, evaluation at the endpoints of the constructed walking arrow gives
