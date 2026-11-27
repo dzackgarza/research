@@ -1320,10 +1320,25 @@ theory does not authorize original mathematical development. Neither an
 agent-written proof nor a label such as “sufficient condition” supplies
 that authorization.
 
-Original mathematical development requires an explicit request from the
-user. Attribute it as original work and distinguish proved results from
-conjectures. Before committing source-based exposition, check each added
-statement for a verified source or a derivation of a requested claim;
+An explicit request is required to develop new mathematics. Permission to
+attempt a proof establishes neither authorship nor priority. Apply `CITE-10`
+to the result and to the proof. Search the published literature beyond the
+local Zotero collection for the precise statement and the method. Follow
+references to earlier work, read the relevant passages, and add missing
+sources to Zotero before citing their Better BibTeX keys.
+
+Credit the source of an argument even when the manuscript changes its
+notation, supplies details, or applies it to a new example. A reference
+found later can verify a step. It cannot establish where a generated
+argument came from. Never assign an agent-generated proof to the researcher
+or call it independent, new, or first on the strength of the chat, the
+commit identity, or a search that returned no match. Identify the actual
+contributor from documented evidence. Support any claim of novelty with a
+comparison to the closest prior results and proofs. If provenance remains
+unresolved, give the verified premises and deduction without claiming credit.
+
+Distinguish proved results from conjectures. Before committing source-based
+exposition, check each added statement for a verified source or a derivation of a requested claim;
 remove additions that satisfy neither condition. Record unresolved source
 questions under the house rule for open problems.
 
