@@ -213,6 +213,26 @@ Since $\Orth(\widehat L)$ is a group (@def:group), $\Orth(V)\,\Theta_{\mathbb A_
 So $\alpha$ lies in this set if and only if $\alpha u=\alpha'$ does.
 :::
 
+::: {.example #ex:binary-same-genus-not-isometric title="Two binary lattices of one genus but distinct isometry classes"}
+
+Let $L$ and $M$ have Gram matrices $\operatorname{diag}(1,55)$ and $\operatorname{diag}(5,11)$, respectively. They belong to the same genus but are not integrally isometric. This is the specimen attributed to Milnor--Husemoller, §II, Example 3, p. 44 in the [original lattice-research assertion](https://github.com/dzackgarza/research/blob/889f214f54198fb4e46fce69be1d80a84b062230/computations/scripts/lattice-research/specs/tests/test_lattices.py#L280-L292).
+
+:::
+
+::: {.proof}
+
+For every odd prime $p$, the matrix
+$$
+P=\frac14\begin{pmatrix}1&-11\\1&5\end{pmatrix}
+$$
+belongs to $\operatorname{SL}_2(\ZZ_p)$ and satisfies $P^{\mathsf T}\operatorname{diag}(5,11)P=\operatorname{diag}(1,55)$. For $p=2$, the unit $-43/5$ is congruent to $1$ modulo $8$ and hence is a square in $\ZZ_2$: starting with an odd square root modulo $8$, a root modulo $2^n$ for $n\ge3$ can be adjusted by $2^{n-1}$ to obtain a root modulo $2^{n+1}$, since the change in its square is $2^n$ modulo $2^{n+1}$. The resulting sequence converges in $\ZZ_2$. Choose $a\in\ZZ_2$ with $a^2=-43/5$. Then
+$$
+Q=\begin{pmatrix}a&-22\\2&5a\end{pmatrix}
+$$
+has determinant $5a^2+44=1$ and satisfies $Q^{\mathsf T}\operatorname{diag}(5,11)Q=\operatorname{diag}(1,55)$. Both real forms are positive definite. Thus $L$ and $M$ are locally isometric at all places. But $L$ represents $1$ and every nonzero integral vector of $M$ has norm at least $5$, so no integral isometry exists.
+
+:::
+
 ::: {.example #ex:rank16-genus-spinor-partition title="A rank-16 genus and its spinor partition"}
 
 Let $L_{16}\definedas E_8^{\perp2}$.

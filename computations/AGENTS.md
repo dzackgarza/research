@@ -899,3 +899,7 @@ that standard.
 
 Do not run software verification or terminology audits for notebook or preamble work
 unless the user explicitly requests them.
+
+## Retired lattice-research reference corpus
+
+The former `scripts/lattice-research/` tree is historical source, not an implementation or executable specification owner. Its [exact sources and current mathematical owners](../archives/provenance/lattice-research/README.md) are retained in research. Use the current formal declarations, owned library operations and corresponding acceptance issues instead. The other computational scripts retain their own scopes.

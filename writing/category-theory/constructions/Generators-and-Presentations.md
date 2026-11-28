@@ -158,7 +158,7 @@ A chosen partial resolution finitely generated through degree (@def:graded-objec
 
 ## Finite presentations over the integers: mixed modules and selected maps {#sec-integral-presentation-examples}
 
-The historical lattice-research [module expectations](../../../computations/scripts/lattice-research/specs/sage_spec/module_methods.sage) contain several incompatible assertions. The following calculations give the mathematical expectations independently of a particular representation or software interface.
+The historical lattice-research [module expectations](https://github.com/dzackgarza/research/blob/889f214f54198fb4e46fce69be1d80a84b062230/computations/scripts/lattice-research/specs/sage_spec/module_methods.sage) contain several incompatible assertions. The following calculations give the mathematical expectations independently of a particular representation or software interface.
 
 ::: {.example #ex:mixed-integral-presentation title="A mixed free and torsion module"}
 Let $F=\bZ^3$, $T=\bZ/2\bZ$, and $M=F\oplus T$, presented by the single relation $2e_4$ in $\bZ^4$. The torsion submodule is the kernel of the projection $M\to F$, and has two elements. The free rank of $M$ is three. The nonunit, nonzero torsion invariant factor is $2$; a Smith presentation padded to four diagonal entries has one $2$ and three zeros, not three units. Indeed a unit diagonal relation kills its generator and a zero relation leaves it free.

@@ -297,9 +297,20 @@ Where the mathematics landed:
   machinery → the preamble
   (`lattice_homomorphisms.sage`, `lattice_isometries.sage`, `engines.sage`,
   `isotropic_orbits.sage`, `integral_lattices.sage`, `vector_orbits.sage`).
-- The code corpus — backend implementations, the executable specifications,
-  and the written design specification →
-  `computations/scripts/lattice-research/`, which has its own map.
+- The former code corpus (93 tracked files) is preserved at its
+  [immutable pre-retirement revision](https://github.com/dzackgarza/research/tree/889f214f54198fb4e46fce69be1d80a84b062230/computations/scripts/lattice-research).
+  The current operation owners and specific open implementation obligations are
+  recorded at [sage-extensions #60](https://github.com/dzackgarza/sage-extensions/issues/60#issuecomment-7239055418),
+  [cas-dsl #8](https://github.com/dzackgarza/cas-dsl/issues/8#issuecomment-7239055676),
+  [sage-extensions #124](https://github.com/dzackgarza/sage-extensions/issues/124#issuecomment-7239055875),
+  [#129](https://github.com/dzackgarza/sage-extensions/issues/129#issuecomment-7239056048),
+  and [sage-indefinite-port #64](https://github.com/dzackgarza/sage-indefinite-port/issues/64#issuecomment-7239056249).
+  The historical binary same-genus/nonisometry example is now proved in
+  [Discriminant forms and genus](../../../writing/lattice-theory/discriminant-forms-and-genus.md#ex-binary-same-genus-not-isometric).
+  The obsolete reference code does not remain a second implementation under
+  `computations/scripts/`; the exact original tree is reachable from research's
+  published history. This is the lattice-research disposition of
+  [research #727](https://github.com/dzackgarza/research/issues/727).
 - The reading of that design, and where the preamble differs from it →
   `notes/category-design/lattice-dsl-prior-attempt.md`.
 - The two Lean files →

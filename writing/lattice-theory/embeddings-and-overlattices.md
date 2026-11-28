@@ -302,7 +302,7 @@ M=\begin{pmatrix}1&-2\\1&1\end{pmatrix},
 $$
 Thus equality of the raw constituent coefficient lists is not a necessary
 condition for dyadic local isometry. This witness comes from the original
-[local-isometry canonicalization specification](../../computations/scripts/lattice-research/specs/tests/test_local_isometry_canonicalization.py).
+[local-isometry canonicalization specification](https://github.com/dzackgarza/research/blob/889f214f54198fb4e46fce69be1d80a84b062230/computations/scripts/lattice-research/specs/tests/test_local_isometry_canonicalization.py).
 :::
 
 ::: {.question #qst:jordan-higher-gw title="What does Jordan decomposition over $\ZZ_3$ give in higher Grothendieck–Witt theory for non-unimodular forms?"}
