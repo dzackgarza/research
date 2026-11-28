@@ -1341,7 +1341,7 @@ The sizes are @tbl-finite-vector-orbits and @tbl-finite-plane-orbits.
 : Finite totally singular plane orbits. {#tbl-finite-plane-orbits}
 
 ::: {.definition #def:plane-star title="Stars of an order-$4$ isotropic subgroup" defines="star"}
-Let $J$ be an order-$4$ isotropic (@def:orthogonal-complement) subgroup and let $V = J^{\perp}/J$, the perpendicular taken in $A_{S_\En}$.
+Let $J\leq A_{T_\Co}$ be an order-$4$ isotropic (@def:orthogonal-complement) subgroup. Put $A^0=[h/2]^\perp\subset A_{T_\Co}$ and $V=(J^\perp\cap A^0)/J$. Every isotropic class lies in $A^0$; under the identification of @lem:gco-orbit-transfer this is exactly the quotient $J^\perp/J$ formed in $A_{S_\En}$, with its $\bF_2$-valued quadratic form.
 A **star** of $J$ is a set of seven nonsingular vectors of $V$ that are pairwise non-orthogonal.
 :::
 
