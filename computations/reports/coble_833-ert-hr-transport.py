@@ -1,18 +1,23 @@
 """Exact checks for research#833's ERT/HR integral transport.
 
-The mathematical generation conclusions use HR Theorems 2.1--2.2 and ERT
-Theorem 2.1, as cited on the research page.  This script checks only the
+The mathematical generation conclusions use HR Theorems 2.1--2.2
+(arXiv:1412.2918v1, pp. 7--9) and the unnumbered n=8 split sequences
+and matrix in ERT Section 2 (arXiv:1009.3231v1, pp. 6--7), not ERT
+Theorem 2.1, whose range is 2 <= n <= 7.  This script checks only the
 integral matrices, coordinate changes and finite root orbit used to apply them.
 It is not a generation proof by computation.  Run with Python 3 + SymPy.
+The Gram matrices G and H use coordinates (e,f,d1,...,d7) of
+K = U perp <-1>^7 and (eps0,...,eps8) of HR, respectively; P sends
+ERT time to HR eps0 and reverses the eight spatial coordinate signs.
 """
 import sympy as sp
 
 I9 = sp.eye(9)
-G = sp.zeros(9)  # K = U perp <-1>^7, coordinates e,f,d1,...,d7
+G = sp.zeros(9)
 G[0, 1] = G[1, 0] = 1
 for i in range(2, 9):
     G[i, i] = -1
-H = sp.diag(*([-1] + [1] * 8))  # HR coordinates eps0,...,eps8
+H = sp.diag(*([-1] + [1] * 8))
 
 
 def vec(*xs):
@@ -61,7 +66,7 @@ M_ert = sp.Matrix([[-3] + [-2] * 7 + [6]] +
                   [[-2] * i + [-3] + [-2] * (7 - i) + [6]
                    for i in range(1, 8)] + [[-6] * 8 + [17]])
 J_ert = sp.diag(*([1] * 8 + [-1]))
-P = sp.zeros(9)  # HR eps0=ERT time, HR eps_i=-ERT space_i
+P = sp.zeros(9)
 P[0, 8] = 1
 for i in range(1, 9):
     P[i, i - 1] = -1
