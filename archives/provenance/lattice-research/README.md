@@ -169,6 +169,49 @@ stable-model surgery and slc obligation is retained in
 [research #669](https://github.com/dzackgarza/research/issues/669), not treated
 as solved by the old diagonal-model calculation.
 
+The remaining concrete category and consumer requirements identified in the
+source declarations and regression examples are assigned to the following
+active mathematical issues, with the original source links, hypotheses,
+maps, and acceptance specimens in the issue bodies:
+
+| Original mathematical construction | Current owner |
+|---|---|
+| Left/right/two-sided algebra ideals, radical, Peirce components and idempotent lifts | [lean-categories #231](https://github.com/dzackgarza/lean-categories/issues/231) |
+| Ore quotient modules and pseudolinear action | [#232](https://github.com/dzackgarza/lean-categories/issues/232) |
+| Recursive enumeration, successor graphs, finite-depth and graded families | [#233](https://github.com/dzackgarza/lean-categories/issues/233) |
+| Laurent and Puiseux series, inclusions, coefficient maps and valuation | [#234](https://github.com/dzackgarza/lean-categories/issues/234) |
+| Number-field class groups, unit groups, regulator, different and local integral bases | [#235](https://github.com/dzackgarza/lean-categories/issues/235) |
+| Real and complex interval, ball and rounded arithmetic with approximation data | [#236](https://github.com/dzackgarza/lean-categories/issues/236) |
+| Shifted free graded modules, homogeneous finite presentations and resolutions | [#237](https://github.com/dzackgarza/lean-categories/issues/237) |
+| Indexed families, paired maps, selected subfamilies and inverse on image | [#238](https://github.com/dzackgarza/lean-categories/issues/238) |
+| Polynomial-family enumeration and finite-field trace-dual bases | [#239](https://github.com/dzackgarza/lean-categories/issues/239) |
+| Hochschild chain complexes with bimodule coefficients | [#240](https://github.com/dzackgarza/lean-categories/issues/240) |
+| Hecke cell modules and their descended actions | [#241](https://github.com/dzackgarza/lean-categories/issues/241) |
+| Tor with the rational torsion quotient and arbitrary-module resolutions | [#242](https://github.com/dzackgarza/lean-categories/issues/242) |
+
+These are not requests to reproduce the old Sage wrapper classes. For
+example, the source's cyclic Tor/Ext cases already have maintained
+specimens in sage-extensions' `test_tor_and_ext_of_finite_cyclic_groups.sage`
+and `test_derived_functors.sage`; #242 retains the additional non-finitely
+generated Q/Z case and corrects the degree conventions. The Hecke
+cell-module and Hochschild requests extend the existing named Lean
+construction owners, not new definitions. Existing lattice isometry,
+centralizer and discriminant operations are retained through the
+sage-extensions and sage-indefinite-port owners.
+
+The original rook-placement bijections, finite-lattice congruences and
+certificates, metric examples, tensor symmetry data and cyclic/submodule
+coordinate maps are attached to #228–230, #108 and sage-extensions #109.
+The [set/module acceptance owner](https://github.com/dzackgarza/cas-dsl/issues/7#issuecomment-7238518089)
+links the new requirements; the
+[lattice acceptance owner](https://github.com/dzackgarza/cas-dsl/issues/8#issuecomment-7238518364)
+also retains the remaining historical saturation, gluing, radical-signature,
+stabilizer and flag questions. Failed searches and incorrect old assertions
+are not positive acceptance evidence. The historical local-only commit
+`e4ded1c41bd875858c8f906e434e4e965d6120ad` was agent container guidance,
+not an additional mathematical branch; the original local reflogs contain
+no other commits outside the four published source histories.
+
 This source audit does not establish declaration-by-declaration semantic
 equivalence for all historical revisions. [Research #727](https://github.com/dzackgarza/research/issues/727)
 and the current consumer requirements remain open.
