@@ -32,13 +32,31 @@ Mathlib's `MvPolynomial.IsHomogeneous.sum_X_mul_pderiv` for Euler's identity.
 
 ## `IsotropicPlanes.lean` — every proof `sorry`
 
-Statements only, and both of them are wrong as written: the file models
-$T_{\mathrm{Co}}$ by a diagonal form that is a different lattice, and its proof
-sketch classifies orbits by the Arf invariant, which does not classify integral
-lattices. The corrected mathematics, the claim's open status, and the owned
-surface on which it can be decided are in
-`notes/topics/isotropic-vector-orbits/tco-isotropic-plane-orbit-claim.md`.
-The file is kept only as the record of what was attempted.
+This file is a historical formalization attempt, not a checked proof. Its
+intended diagonal lattice model is correct: the manuscript establishes
+[$T_{\mathrm{Co}}\cong I_{2,9}(2)$](../../writing/coble/lattices-and-moduli/discriminant-orbits-of-the-coble-lattice.md#prop-tco-as-twist).
+This does not certify the literal Lean definition. The proposed Arf-invariant
+argument is insufficient, and the quotient theorem's type expresses a linear
+equivalence rather than a pairing-preserving isometry.
+
+The intended full-orthogonal-group transitivity and the lattice isometry
+$J^\perp/J\cong A_1^{\oplus 7}$ are now proved in the manuscript:
+[plane transitivity](../../writing/lattice-theory/embeddings-and-overlattices.md#thm-plane-transitivity-tco)
+and [isotropic quotients](../../writing/lattice-theory/embeddings-and-overlattices.md#cor-tco-isotropic-splitting).
+The old identification with the number of geometric one-cusps must not be
+reused without identifying the arithmetic group: the
+[group-specific plane orbit theorem](../../writing/coble/lattices-and-moduli/integral-line-and-plane-lifting.md#thm-o2-planes)
+distinguishes the full, stable, and restricted groups. The outstanding
+formal and public-language acceptance obligations are retained in
+[cas-dsl #8](https://github.com/dzackgarza/cas-dsl/issues/8), rather than
+counting the sorry'd declarations as proofs.
+
+The original project's `Basic.lean` and `Main.lean` are greeting
+scaffolds; `CobleResearchLean.lean` is the import aggregator. Its README,
+CI workflow, ignore file, Lake configuration and manifest, and toolchain
+file are historical build infrastructure, preserved in the original Git
+history under `archive/lattice-research/main`. None supplies another
+mathematical theorem.
 
 ## `Splitting.lean` — proved, no `sorry`
 

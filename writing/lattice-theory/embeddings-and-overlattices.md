@@ -290,6 +290,21 @@ $$
 Here $U_a$ is unimodular (@def:unimodular), its pairing is multiplied by $3^a$, and only finitely many constituents have positive rank [@OM00, §91C]. Write $J(L)=\sum_a[U_a]t^a$ in the polynomial semiring over the isometry classes of unimodular $\ZZ_3$-lattices, with orthogonal sum and tensor product as the coefficient operations. The non-dyadic isometry criterion identifies the summands up to isometry at each scale [@OM00, Thm. 92:2].
 :::
 
+::: {.example #ex:dyadic-jordan-symbol-isometry title="Local isometry and noncanonical Jordan constituents at $2$"}
+The integral Gram matrices $A=\operatorname{diag}(1,2)$ and
+$B=\operatorname{diag}(3,6)$ define isometric lattices over $\ZZ_2$,
+although their displayed diagonal Jordan constituents have different unit
+coefficients. The explicit change of basis is
+$$
+M=\begin{pmatrix}1&-2\\1&1\end{pmatrix},
+\qquad M^{\mathsf T}AM=B,
+\qquad \det(M)=3\in\ZZ_2^\times.
+$$
+Thus equality of the raw constituent coefficient lists is not a necessary
+condition for dyadic local isometry. This witness comes from the original
+[local-isometry canonicalization specification](../../computations/scripts/lattice-research/specs/tests/test_local_isometry_canonicalization.py).
+:::
+
 ::: {.question #qst:jordan-higher-gw title="What does Jordan decomposition over $\ZZ_3$ give in higher Grothendieck–Witt theory for non-unimodular forms?"}
 Which spectrum for nondegenerate integral symmetric forms realizes the constituent calculation of @not:jordan-scales on $\pi_0$ after group completion? In positive degrees, does the valuation filtration give copies of the unimodular Grothendieck–Witt spectrum indexed by scale? If so, does it split, or does it recover the higher groups through extensions? In particular, how does the construction account for isometries of $L$ that move a chosen Jordan summand?
 :::

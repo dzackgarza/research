@@ -72,6 +72,41 @@ the linked script. [Research #851](https://github.com/dzackgarza/research/issues
 owns the remaining classical nine-point completion questions; the earlier
 generic sextics alone did not satisfy the literature-specific fixture.
 
+## Live mathematical owners (2026-11-28)
+
+The old CAS prototype is archived. Its successor is
+[cas-dsl](https://github.com/dzackgarza/cas-dsl); the original consumer
+requirements are now explicitly owned by its roadmap children
+[#7: sets, modules and morphisms](https://github.com/dzackgarza/cas-dsl/issues/7),
+[#8: lattices, isometries and cusps](https://github.com/dzackgarza/cas-dsl/issues/8),
+and [#9: geometry and families](https://github.com/dzackgarza/cas-dsl/issues/9).
+These supplement the successor's immutable baseline; they do not claim
+the original assertions have been discharged. In particular the source
+of these requirements includes the frozen category specifications,
+written design specifications and mathematical regression tests.
+
+The old monodromy requirements are also linked to
+[sage-extensions #129](https://github.com/dzackgarza/sage-extensions/issues/129);
+the rank-two cone question to
+[#265](https://github.com/dzackgarza/sage-extensions/issues/265);
+tensor universal maps and fraction/global-field questions to
+[lean-categories #108](https://github.com/dzackgarza/lean-categories/issues/108)
+and [#102](https://github.com/dzackgarza/lean-categories/issues/102).
+The older dyadic isometry witness is now a
+[manuscript example](../../../writing/lattice-theory/embeddings-and-overlattices.md#ex-dyadic-jordan-symbol-isometry).
+
+The original Lean mathematical files have their research owner in
+[formalization/coble-enriques](../../../formalization/coble-enriques/README.md).
+The earlier paper is preserved in `paper/` and the full Git history.
+Its `main.tex`, `macros/research-notes.tex`, five sections
+(`claims.tex`, `current-program.tex`, `failed-explorations.tex`,
+`uncertainty.tex`, `workstreams.tex`), README and ignore file constitute
+a paper scaffold, claim-status machinery, and research-policy/workstream
+templates, not an additional mathematical manuscript. The current
+dissertation and mathematical writing, together with the issue tree,
+supersede that scaffold. No mathematical claim from the paper requires
+another copy in the writing tree.
+
 Research records migrated 2026-08-20 from `~/gitclones/lattice-research`
 (the frozen first-attempt lattice DSL repository), per the corpora-audit
 registry sections R1-lattice-research-backends and R2-lattice-research-prose.
