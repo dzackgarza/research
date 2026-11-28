@@ -1,0 +1,234 @@
+================================================================================
+Task 5.1: Construct θ Involution and Verify Eigenspaces
+================================================================================
+
+================================================================================
+[Step 1] Constructing K3 Lattice Λ_K3 = U³ ⊕ E₈(-1)²
+================================================================================
+
+Λ_K3 rank: 22
+  Signature: -16
+  Determinant: -1
+  Is unimodular: True
+  Is even: True
+
+================================================================================
+[Step 2] Constructing Target Lattices T_Co and S_Co
+================================================================================
+
+T_Co (target fixed sublattice):
+  Rank: 11
+  Signature: -7
+  Determinant: -2048
+
+S_Co (target coinvariant sublattice):
+  Rank: 11
+  Signature: -9
+  Determinant: 2048
+
+================================================================================
+[Step 3] Constructing Involution θ
+================================================================================
+
+Constructing orthogonal decomposition Λ_K3 = V_+ ⊕ V_-...
+
+  Step 3a: Constructing model T_Co ⊕ S_Co...
+    Model lattice rank: 22
+    Model lattice signature: (3, 19)
+
+  Step 3b: Finding isometry to Λ_K3...
+
+  Step 3c: Direct construction of θ...
+
+  Using eigenbasis construction...
+
+  Verifying T_Co embedding...
+    T_Co embedded Gram diagonal: [2, 2, -2, -2, -2, -2, -2, -2, -2, -2, -2]
+    Expected: [2, 2, -2, -2, -2, -2, -2, -2, -2, -2, -2]
+    Matches: True
+
+  Checking E₈ root orthogonality...
+    Set A (T_Co): indices {0, 2, 4, 6}
+      0 · 2 = 0 (should be 0)
+      0 · 4 = 0 (should be 0)
+      0 · 6 = 0 (should be 0)
+      2 · 4 = 0 (should be 0)
+      2 · 6 = 0 (should be 0)
+      4 · 6 = 0 (should be 0)
+    Set B (S_Co): indices {1, 3, 5, 7}
+      1 · 3 = 0 (should be 0)
+      1 · 5 = 0 (should be 0)
+      1 · 7 = 0 (should be 0)
+      3 · 5 = 0 (should be 0)
+      3 · 7 = 0 (should be 0)
+      5 · 7 = 0 (should be 0)
+
+  Verifying S_Co embedding...
+    S_Co embedded Gram diagonal: [2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2]
+    Expected: [2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2]
+    Matches: True
+
+  Note: M_T_plus and M_S_minus are not orthogonal embeddings,
+  and eigenspace orthogonality will be checked explicitly in Step 6.
+
+  Change-of-basis matrix P: 22 × 22
+  det(P) = -8
+  P is invertible: True
+
+  Involution matrix θ (22×22) constructed
+
+================================================================================
+[Step 4] Verifying θ² = I
+================================================================================
+
+θ² = I: True
+  ✓ θ is an involution
+
+================================================================================
+[Step 5] Computing Eigenspaces of θ
+================================================================================
+
+  Computing +1 eigenspace (Λ_K3^θ)...
+    Dimension: 11
+    Dimension: 11
+
+  Total dimension: 22 (should be 22)
+  ✓ Eigenspace dimensions are correct
+
+================================================================================
+[Step 6] Extracting Lattice Structures on Eigenspaces
+================================================================================
+
+  +1 eigenspace basis: 11 vectors in ℚ^22
+  -1 eigenspace basis: 11 vectors in ℚ^22
+
+  Computing induced Gram matrix on +1 eigenspace...
+    Gram matrix size: 11 × 11
+    Signature: (2, 9)
+    Determinant: -2048
+
+  Computing induced Gram matrix on -1 eigenspace...
+    Gram matrix size: 11 × 11
+    Signature: (1, 10)
+    Determinant: 2048
+
+  Checking compatibility with the Λ_K3 bilinear form...
+    θ^T G θ = G: False
+    G θ = θ^T G: False
+    V_+ ⟂ V_-: False
+    Cross-term matrix V_+ G V_-^T:
+[0 0 0 0 0 0 0 0 0 0 0]
+[0 0 0 0 0 0 0 0 0 0 0]
+[0 0 0 0 0 0 0 0 0 0 0]
+[0 0 0 1 0 0 0 0 0 0 0]
+[0 0 0 1 1 0 0 0 0 0 0]
+[0 0 0 0 1 1 1 0 0 0 0]
+[0 0 0 0 0 1 0 0 0 0 0]
+[0 0 0 0 0 0 0 1 0 0 0]
+[0 0 0 0 0 0 0 1 1 0 0]
+[0 0 0 0 0 0 0 0 1 1 1]
+[0 0 0 0 0 0 0 0 0 1 0]
+
+================================================================================
+[Step 7] Verifying Isometry with T_Co and S_Co
+================================================================================
+
+  Comparing +1 eigenspace with T_Co:
+    +1 eigenspace signature: (2, 9)
+    T_Co signature: -7
+    Signatures match: False
+    +1 eigenspace determinant: -2048
+    T_Co determinant: -2048
+    Determinants match: True
+
+  Comparing -1 eigenspace with S_Co:
+    -1 eigenspace signature: (1, 10)
+    S_Co signature: -9
+    Signatures match: False
+    -1 eigenspace determinant: 2048
+    S_Co determinant: 2048
+    Determinants match: True
+
+================================================================================
+[Step 8] Computing (r, a, δ) Invariants
+================================================================================
+
+  +1 eigenspace (Λ_K3^θ ≅ T_Co):
+    r (rank) = 11
+    a (discriminant rank) = 11
+    Discriminant group order: 2048
+    δ = 1
+
+  -1 eigenspace (Λ_K3^{-θ} ≅ S_Co):
+    r (rank) = 11
+    a (discriminant rank) = 11
+    Discriminant group order: 2048
+    δ = 1
+
+================================================================================
+[Step 9] Verifying Polarization Swap (h_En ↔ h_Co)
+================================================================================
+
+  Identifying polarization vectors...
+
+  h_Co candidate (from +1 eigenspace):
+    Vector: (1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+    Norm: 2
+
+  h_En candidate (from -1 eigenspace):
+    Vector: (1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+    Norm: -2
+
+  θ(h_Co) = h_Co (fixed): True
+  θ(h_En) = -h_En (flipped): True
+
+  Note: θ fixes h_Co and flips h_En, which is consistent with
+  the horizontal folding where h_Co is in the invariant sector
+  and h_En is in the coinvariant sector.
+
+================================================================================
+VERIFICATION SUMMARY
+================================================================================
+
+Property                                           Status    
+--------------------------------------------------------------------------------
+✓ θ is 22×22 matrix                               True      
+✓ θ² = I (involution)                             True      
+✗ θ preserves Λ_K3 form                           False     
+✗ θ is self-adjoint for Λ_K3 form                 False     
+✓ +1 eigenspace dimension = 11                    True      
+✓ -1 eigenspace dimension = 11                    True      
+✓ +1 eigenspace signature = (2,9)                 True      
+✓ -1 eigenspace signature = (1,10)                True      
+✓ +1 eigenspace det = T_Co det                    True      
+✓ -1 eigenspace det = S_Co det                    True      
+✗ Eigenspaces orthogonal                          False     
+
+--------------------------------------------------------------------------------
+Invariant Summary:
+--------------------------------------------------------------------------------
+
+  Λ_K3^(+1) (+1 eigenspace, should be T_Co):
+    (r, a, δ) = (11, 11, 1)
+    Signature: (2, 9)
+    Expected T_Co: (11, 11, 1), signature (2, 9)
+
+  Λ_K3^(-1) (-1 eigenspace, should be S_Co):
+    (r, a, δ) = (11, 11, 1)
+    Signature: (1, 10)
+    Expected S_Co: (11, 11, 1), signature (1, 10)
+
+================================================================================
+FINAL STATUS: SOME VERIFICATIONS FAILED ✗
+================================================================================
+
+================================================================================
+EXPORTING RESULTS
+================================================================================
+
+Results saved to: /home/dzack/research/computations/task5_1_results.txt
+θ matrix saved to: /home/dzack/research/computations/theta_matrix.sage
+
+================================================================================
+Task 5.1 Complete
+================================================================================

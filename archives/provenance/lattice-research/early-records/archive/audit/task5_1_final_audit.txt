@@ -1,0 +1,50 @@
+================================================================================
+Task 5.1: Construct θ Involution and Verify Eigenspaces
+================================================================================
+
+================================================================================
+[Step 1] Constructing K3 Lattice Λ_K3 = U³ ⊕ E₈(-1)²
+================================================================================
+
+Λ_K3 rank: 22
+  Signature: -16
+  Determinant: -1
+  Is unimodular: True
+  Is even: True
+
+================================================================================
+[Step 2] Constructing Target Lattices T_Co and S_Co
+================================================================================
+
+T_Co (target fixed sublattice):
+  Rank: 11
+  Signature: -7
+  Determinant: -2048
+
+S_Co (target coinvariant sublattice):
+  Rank: 11
+  Signature: -9
+  Determinant: 2048
+
+================================================================================
+[Step 3] Constructing Involution θ
+================================================================================
+
+Constructing orthogonal decomposition Λ_K3 = V_+ ⊕ V_-...
+
+  Step 3a: Constructing model T_Co ⊕ S_Co...
+    Model lattice rank: 22
+    Model lattice signature: (3, 19)
+
+  Step 3b: Finding isometry to Λ_K3...
+
+  Step 3c: Direct construction of θ...
+
+  Using eigenbasis construction...
+
+  Verifying T_Co embedding...
+    T_Co embedded Gram diagonal: [2, 2, -2, -2, -2, -2, -2, -2, -2, -2, -2]
+    Expected: [2, 2, -2, -2, -2, -2, -2, -2, -2, -2, -2]
+    Matches: True
+
+  Checking E₈ root orthogonality...

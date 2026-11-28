@@ -37,6 +37,41 @@ The source snapshot establishes preservation, not semantic or execution
 parity of the historical category specifications; their assertions must
 be judged at the present formalization and acceptance owners.
 
+## Complete published Git history and earlier numbered records (2026-11-28)
+
+The four original published branch tips are preserved as lightweight archival
+tags in the research repository itself. Their object IDs were checked against
+the source remote refs:
+
+| Original tip | Research tag | Commit |
+|---|---|---|
+| main | archive/lattice-research/main | 67c244a011c24c8870a9d84c7f1210add1457e92 |
+| chore/archive-frozen-category-specifications | archive/lattice-research/archive-frozen-category-specifications | 05bc64e6eacc1a083df0bef6f0f69fc066ca8bab |
+| chore/migrate-memories-to-iwe2 | archive/lattice-research/migrate-memories-to-iwe2 | af87e6315f8d260554e46a71b87ffa8fe293ac34 |
+| claude/gallant-mccarthy-oglg4j | archive/lattice-research/gallant-mccarthy-oglg4j | fbe36440a96be7dc6b04ca0f6dfc4d362b187e01 |
+
+These are frozen source-history refs, not development branches. Every ancestor
+and tracked Git object reachable from these tips can be retrieved from research
+without access to the former repository. This retains intermediate revisions
+without installing obsolete code or duplicating every revision as files.
+
+[early-records/manifest.tsv](early-records/manifest.tsv) additionally maps 296
+previously unmatched historical authored paths to byte-identical files,
+including the original numbered tasks (144 paths), earlier proof attempts,
+audit and verification records, and the original Nikulin pyramid. There are
+210 additional materialized blobs. The remaining downloaded literature and
+other historical versions are retained in the archival Git tags. Historical
+assertions and task completion statuses are not current proofs or acceptance
+evidence.
+
+The literature-specific ten-point fixture of T-1007 and T-3001 is now
+[the explicit Desargues sextic](../../../writing/coble/coble-surfaces/rational-sextic-calculations.md#ex-thas-desargues-sextic),
+including the ten rational nodes, all ten configuration lines and the
+index-16 curve-generated sublattice. Its exact arithmetic is reproduced in
+the linked script. [Research #851](https://github.com/dzackgarza/research/issues/851)
+owns the remaining classical nine-point completion questions; the earlier
+generic sextics alone did not satisfy the literature-specific fixture.
+
 Research records migrated 2026-08-20 from `~/gitclones/lattice-research`
 (the frozen first-attempt lattice DSL repository), per the corpora-audit
 registry sections R1-lattice-research-backends and R2-lattice-research-prose.

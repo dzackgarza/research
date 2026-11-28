@@ -1,0 +1,35 @@
+task_id: T-3011
+tier: 3
+status: selected
+activation_wave: A
+isolation: isolated worktree required before implementation
+allowed_paths:
+  - tasks/T-3011/**
+  - tasks/T-0003/**
+  - tasks/T-0008/**
+  - tasks/T-1001/**
+  - tasks/T-1002/**
+  - tasks/T-1004/**
+  - tasks/T-2003/**
+  - tasks/T-2008/**
+  - tasks/T-2009/**
+  - tasks/T-3002/**
+  - tasks/T-3003/**
+  - src/**
+  - theory/**
+  - notes/**
+  - justfile
+allowed_modules:
+  - involution_primitives (T-0008: sign_involution, eigenspace_extraction, discriminant_action)
+  - embedding_primitives (T-0003: for sublattice extraction)
+  - invariant_predicates (T-0002: (r,a,δ), isometry verification)
+allowed_outputs:
+  - Involution matrix θ (22×22 integer matrix)
+  - Isometry verification proof
+  - +1 eigenspace verification (isometric to T_Co)
+  - -1 eigenspace verification (isometric to S_Co)
+  - Discriminant action verification
+  - Distinguished vector transport certificate
+notes:
+  - Edits outside the task directory and declared working set require an explicit scope amendment.
+  - Sacred project docs remain read-only unless the user explicitly changes the policy.

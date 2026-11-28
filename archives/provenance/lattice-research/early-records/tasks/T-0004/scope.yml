@@ -1,0 +1,25 @@
+# T-0004: scope.yml
+
+allowed_files:
+  - tasks/T-0004/implementation/*
+
+allowed_modules:
+  - coble_geometry_foundation.sage
+  - SageMath (via sage command)
+  - theory/gap_orbits.md (reference only)
+
+allowed_outputs:
+  - Orbit representatives (as F_2^11 vectors)
+  - Orbit sizes
+  - Stabilizer sizes
+  - Verification that sum of orbit sizes = 528
+
+required_isolation:
+  type: worktree
+  branch: T-0004-work
+  worktree_path: .worktrees/T-0004-work
+
+prohibited:
+  - Modifying coble_geometry_foundation.sage
+  - Modifying any file outside tasks/T-0004/implementation/
+  - Using floating-point arithmetic

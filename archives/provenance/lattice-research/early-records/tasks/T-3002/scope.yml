@@ -1,0 +1,32 @@
+task_id: T-3002
+tier: 3
+status: selected
+activation_wave: A
+isolation: isolated worktree required before implementation
+allowed_paths:
+  - tasks/T-3002/**
+  - tasks/T-0001/**
+  - tasks/T-0002/**
+  - tasks/T-1001/**
+  - tasks/T-1002/**
+  - tasks/T-1003/**
+  - tasks/T-2001/**
+  - tasks/T-2002/**
+  - tasks/T-2009/**
+  - src/**
+  - theory/**
+  - notes/**
+  - justfile
+allowed_modules:
+  - coble_geometry_foundation (lattice constructors from T-0001)
+  - discriminant_form (invariant computation from T-0002)
+  - lattice_invariants (signature, determinant, rank)
+allowed_outputs:
+  - Verified S_Co Gram matrix (11x11 integer matrix)
+  - Verified T_Co Gram matrix (11x11 integer matrix)
+  - (r,a,δ) invariant report for both lattices
+  - Discriminant form isomorphism certification
+  - Genus cardinality verification report
+notes:
+  - Edits outside the task directory and declared working set require an explicit scope amendment.
+  - Sacred project docs remain read-only unless the user explicitly changes the policy.

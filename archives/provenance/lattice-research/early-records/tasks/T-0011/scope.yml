@@ -1,0 +1,16 @@
+task_id: T-0011
+tier: 0
+status: selected
+activation_wave: A
+isolation: isolated worktree required before implementation
+allowed_paths:
+- tasks/T-0011/**
+- src/coble_geometry_foundation.sage
+- justfile
+notes:
+- Shared-base edits are limited to the foundation file, the task-local replay harness,
+  and the single just recipe named in tasks/T-0011/replay_contract.md.
+- Theory notes, governance docs, and task graph artifacts are read-only sources unless
+  a later replan explicitly broadens scope.
+- Downstream task directories and shared non-task-local replay harnesses are out of
+  scope for implementation under this task.

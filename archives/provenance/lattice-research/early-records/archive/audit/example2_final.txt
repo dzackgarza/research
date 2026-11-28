@@ -1,0 +1,44 @@
+================================================================================
+Task 1.1 Example 2: Rational Sextic with 10 Nodes
+================================================================================
+
+[Step 1] Defining parametrization...
+  f₀(s:t) = s^6 + 2*s^5*t - s^4*t^2 + 3*s^3*t^3 + s^2*t^4 - 2*s*t^5 + t^6
+  f₁(s:t) = 2*s^6 - s^5*t + 3*s^4*t^2 + 2*s^3*t^3 - s^2*t^4 + 3*s*t^5 + 2*t^6
+  f₂(s:t) = 3*s^6 + s^5*t + 2*s^4*t^2 - s^3*t^3 + 3*s^2*t^4 + s*t^5 + t^6
+
+[Step 2] Computing implicit equation F(x,y,z) = 0...
+  Computing resultant with respect to s...
+  Final F degree: 6
+
+[Step 4] Finding singular points...
+  Solving in chart z=1...
+  Total singular points (projective): 10
+
+[Step 5] Verifying nodes (A₁ singularities)...
+    Point 1: ✓ NODE (A₁)
+    Point 2: ✓ NODE (A₁)
+    Point 3: ✓ NODE (A₁)
+    Point 4: ✓ NODE (A₁)
+    Point 5: ✓ NODE (A₁)
+    Point 6: ✓ NODE (A₁)
+    Point 7: ✓ NODE (A₁)
+    Point 8: ✓ NODE (A₁)
+    Point 9: ✓ NODE (A₁)
+    Point 10: ✓ NODE (A₁)
+
+  Found 10 nodes.
+
+✓ SUCCESS: Exactly 10 nodes found.
+
+================================================================================
+Step 6: Compute Stabilizer Group Γ_Co
+================================================================================
+Found 9 reflection generators in Γ_Co.
+
+================================================================================
+Step 7: Comparison with Example 1
+================================================================================
+Example 2 T_En Invariants (r, a, delta, sig): (10, 10, 1, (2, 8))
+
+Results saved to /home/dzack/research/computations/task1_1_example2_results.txt

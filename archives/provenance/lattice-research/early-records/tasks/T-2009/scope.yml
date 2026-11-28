@@ -1,0 +1,23 @@
+task_id: T-2009
+tier: 2
+status: selected
+activation_wave: A
+isolation: isolated worktree required before implementation
+allowed_paths:
+  - tasks/T-2009/**
+  - tasks/T-3001/**
+  - tasks/T-3002/**
+  - tasks/T-3003/**
+  - tasks/T-3011/**
+  - src/**
+  - theory/**
+  - justfile
+allowed_modules:
+  - None (policy gate - no computational module)
+allowed_outputs:
+  - Gate pass/fail report with ledger compliance status
+  - List of T-3 tasks with missing or incomplete reduction_ledger.md
+notes:
+  - Edits outside the task directory and declared working set require an explicit scope amendment.
+  - Sacred project docs remain read-only unless the user explicitly changes the policy.
+  - This is a structural/policy gate, not a computational gate.

@@ -1,0 +1,13 @@
+task_id: T-1003
+tier: 1
+status: selected
+activation_wave: A
+isolation: isolated worktree required before implementation
+allowed_paths:
+  - tasks/T-1003/**
+  - theory/**
+  - papers/**
+  - REFERENCES.md
+notes:
+  - Edits outside the task directory and declared working set require an explicit scope amendment.
+  - Sacred project docs remain read-only unless the user explicitly changes the policy.

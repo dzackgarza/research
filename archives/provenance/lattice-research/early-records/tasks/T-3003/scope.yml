@@ -1,0 +1,29 @@
+task_id: T-3003
+tier: 3
+status: selected
+activation_wave: A
+isolation: isolated worktree required before implementation
+allowed_paths:
+  - tasks/T-3003/**
+  - tasks/T-0003/**
+  - tasks/T-1002/**
+  - tasks/T-1004/**
+  - tasks/T-2003/**
+  - tasks/T-2009/**
+  - src/**
+  - theory/**
+  - notes/**
+  - justfile
+allowed_modules:
+  - embedding_primitives (T-0003: compose_embeddings, extract_image, orthogonal_complement)
+  - lattice_constructors (T-0001: T_Co, Λ_K3 constructors)
+  - invariant_predicates (T-0002: is_primitive, is_isometric)
+allowed_outputs:
+  - Embedding matrix M (11×22 integer matrix)
+  - Primitivity certificate (cokernel torsion-free verification)
+  - Gram matrix preservation proof
+  - Complement lattice certification (S_Co isometry)
+  - Explicit coordinate basis report
+notes:
+  - Edits outside the task directory and declared working set require an explicit scope amendment.
+  - Sacred project docs remain read-only unless the user explicitly changes the policy.

@@ -1,0 +1,28 @@
+{
+  "description": "Nikulin's 75 lattices - explicit constructions from standard components",
+  "note": "Each entry shows a construction from root lattices (A1, D4, D6, D8, E7, E8), U (hyperbolic), and twists. Signature is (r-1, 1).",
+  "constructions": {
+    "(2, 0, 0)": "U",
+    "(2, 2, 0)": "U scaled by 2 (U(2))",
+    "(6, 2, 0)": "D4 ⊕ U", 
+    "(6, 4, 0)": "D4 ⊕ U(2)",
+    "(10, 0, 0)": "E8 ⊕ U",
+    "(10, 2, 0)": "D8 ⊕ U",
+    "(10, 4, 0)": "D8 ⊕ U(2)",
+    "(10, 8, 0)": "E8(2) ⊕ U",
+    "(10, 10, 0)": "E8(2) ⊕ U(2)"
+  },
+  "library": [
+    {"name": "A1", "rank": 1, "signature": "(1,0)", "a": 1, "delta": 0, "description": "Z with form <2>"},
+    {"name": "A1(-)", "rank": 1, "signature": "(0,1)", "a": 1, "delta": 0, "description": "negative A1"},
+    {"name": "D4", "rank": 4, "signature": "(4,0)", "a": 2, "delta": 0, "description": "D4 root lattice"},
+    {"name": "D4(-)", "rank": 4, "signature": "(0,4)", "a": 2, "delta": 0, "description": "negative D4"},
+    {"name": "D6", "rank": 6, "signature": "(6,0)", "a": 2, "delta": 0, "description": "D6 root lattice"},
+    {"name": "D8", "rank": 8, "signature": "(8,0)", "a": 2, "delta": 0, "description": "D8 root lattice"},
+    {"name": "E7", "rank": 7, "signature": "(7,0)", "a": 1, "delta": 0, "description": "E7 root lattice"},
+    {"name": "E8", "rank": 8, "signature": "(8,0)", "a": 0, "delta": 0, "description": "E8 root lattice, unimodular"},
+    {"name": "U", "rank": 2, "signature": "(1,1)", "a": 0, "delta": 0, "description": "hyperbolic plane, unimodular"},
+    {"name": "U(2)", "rank": 2, "signature": "(1,1)", "a": 2, "delta": 0, "description": "U twisted by 2, discriminant Z/2 × Z/2"},
+    {"name": "E8(2)", "rank": 8, "signature": "(8,0)", "a": 8, "delta": 0, "description": "E8 twisted by 2, 2-elementary with a=8"}
+  ]
+}

@@ -1,0 +1,25 @@
+task_id: T-3001
+tier: 3
+status: selected
+activation_wave: A
+isolation: isolated worktree required before implementation
+allowed_paths:
+  - tasks/T-3001/**
+  - tasks/T-0007/**
+  - tasks/T-1007/**
+  - tasks/T-2006/**
+  - src/**
+  - theory/**
+  - notes/**
+  - justfile
+allowed_modules:
+  - sextic_primitives (T-0007: nodal linear systems, singularity checks, K3 cover)
+  - point_configuration (T-1007: canonical 10-point fixture)
+allowed_outputs:
+  - Explicit sextic polynomial F(x,y,z) with exact rational coefficients
+  - Verified 10-node profile (positions and types)
+  - K3 cover equation w^2 = F in P(1,1,1,3)
+  - K3 singularity verification report
+notes:
+  - Edits outside the task directory and declared working set require an explicit scope amendment.
+  - Sacred project docs remain read-only unless the user explicitly changes the policy.

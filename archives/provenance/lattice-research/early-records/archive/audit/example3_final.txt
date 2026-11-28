@@ -1,0 +1,38 @@
+================================================================================
+Task 1.1 Example 3: Rational Sextic with 10 Nodes
+================================================================================
+
+[Step 1] Defining parametrization...
+  f₀(s:t) = s^6 + 3*s^5*t + 2*s^4*t^2 - s^3*t^3 + s^2*t^4 + 2*s*t^5 + t^6
+  f₁(s:t) = 2*s^6 + s^5*t + 3*s^4*t^2 + 2*s^3*t^3 - s^2*t^4 + s*t^5 + 3*t^6
+  f₂(s:t) = s^6 - s^5*t + s^4*t^2 + 3*s^3*t^3 + 2*s^2*t^4 - s*t^5 + 2*t^6
+
+[Step 2] Computing implicit equation F(x,y,z) = 0...
+  Computing resultant with respect to s...
+  Final F degree: 6
+
+[Step 3] Finding singular points...
+  Solving in chart z=1...
+  Checking points at infinity (z=0)...
+  Total unique singular points (projective): 10
+
+[Step 4] Verifying nodes (A₁ singularities)...
+    Point 1: ✓ NODE (A₁)
+    Point 2: ✓ NODE (A₁)
+    Point 3: ✓ NODE (A₁)
+    Point 4: ✓ NODE (A₁)
+    Point 5: ✓ NODE (A₁)
+    Point 6: ✓ NODE (A₁)
+    Point 7: ✓ NODE (A₁)
+    Point 8: ✓ NODE (A₁)
+    Point 9: ✓ NODE (A₁)
+    Point 10: ✓ NODE (A₁)
+
+  Found 10 nodes.
+
+================================================================================
+Step 5: Compute Stabilizer Group Γ_Co
+================================================================================
+Found 9 reflection generators in Γ_Co.
+
+Results saved to computations/task1_1_example3_results.txt

@@ -1,0 +1,125 @@
+================================================================================
+Task 1.1: Rational Sextic with 10 Nodes for Coble Surface
+================================================================================
+
+[Step 1] Defining parametrization...
+  f₀(s:t) = s^6 + s^5*t + 2*s^4*t^2 + 3*s^3*t^3 + 2*s^2*t^4 + s*t^5 + t^6
+  f₁(s:t) = 2*s^6 + 3*s^5*t + s^4*t^2 + 2*s^3*t^3 + 3*s^2*t^4 + s*t^5 + 2*t^6
+  f₂(s:t) = 3*s^6 + 2*s^5*t + 3*s^4*t^2 + s^3*t^3 + 2*s^2*t^4 + 3*s*t^5 + t^6
+
+[Step 2] Computing implicit equation F(x,y,z) = 0...
+  Computing resultant with respect to s...
+  Resultant degree: 12
+  Number of factors: 2
+    Degree 1: multiplicity 6
+    Degree 6: multiplicity 1
+  Using sextic factor
+  Final F degree: 6
+
+[Step 3] Coefficients of F(x,y,z)...
+  Number of non-zero coefficients: 28
+
+[Step 4] Finding singular points...
+  Solving in chart z=1...
+    Found 10 singular points
+  Checking points at infinity (z=0)...
+    Found 1 points
+
+  Total singular points (projective): 10
+
+[Step 5] Verifying nodes (A₁ singularities)...
+    Point 1: Hessian rank = 2  ✓ NODE (A₁)
+    Point 2: Hessian rank = 2  ✓ NODE (A₁)
+    Point 3: Hessian rank = 2  ✓ NODE (A₁)
+    Point 4: Hessian rank = 2  ✓ NODE (A₁)
+    Point 5: Hessian rank = 2  ✓ NODE (A₁)
+    Point 6: Hessian rank = 2  ✓ NODE (A₁)
+    Point 7: Hessian rank = 2  ✓ NODE (A₁)
+    Point 8: Hessian rank = 2  ✓ NODE (A₁)
+    Point 9: Hessian rank = 2  ✓ NODE (A₁)
+    Point 10: Hessian rank = 2  ✓ NODE (A₁)
+
+================================================================================
+VERIFICATION SUMMARY
+================================================================================
+
+Implicit equation F(x,y,z):
+  Degree: 6
+  Non-zero coefficients: 28
+
+Singular points analysis:
+  Total found: 10
+  Nodes (A₁ singularities): 10
+  Other/degenerate: 0
+
+Genus verification:
+  Arithmetic genus: g_a = (6-1)(6-2)/2 = 10
+  Sum of delta-invariants: Σδ ≥ 10 (each node contributes δ=1)
+  Geometric genus: g = g_a - Σδ ≤ 10 - 10 = 0
+
+✓ SUCCESS: F(x,y,z) has exactly 10 nodes!
+  This is the required Coble curve equation.
+
+================================================================================
+EXPLICIT SEXTIC EQUATION
+================================================================================
+
+F(x,y,z) = 19783*x^6 - 277523*x^5*y + 1236290*x^4*y^2 - 1155576*x^3*y^3 + 608968*x^2*y^4 - 195808*x*y^5 + 26447*y^6 + 205052*x^5*z - 1702068*x^4*y*z + 1686557*x^3*y^2*z - 1099558*x^2*y^3*z + 366024*x*y^4*z - 45478*y^5*z + 584140*x^4*z^2 - 622975*x^3*y*z^2 + 609573*x^2*y^2*z^2 - 130204*x*y^3*z^2 + 8334*y^4*z^2 + 3528*x^3*z^3 - 73520*x^2*y*z^3 - 118908*x*y^2*z^3 + 15408*y^3*z^3 - 16747*x^2*z^4 + 89450*x*y*z^4 + 2144*y^2*z^4 - 14520*x*z^5 - 9276*y*z^5 + 2732*z^6
+
+================================================================================
+COEFFICIENT TABLE
+================================================================================
+
+F(x,y,z) = Σ_{i+j+k=6} a_ijk x^i y^j z^k
+
+Non-zero coefficients:
+
+  a_{006} = 2732
+  a_{015} = -9276
+  a_{024} = 2144
+  a_{033} = 15408
+  a_{042} = 8334
+  a_{051} = -45478
+  a_{060} = 26447
+  a_{105} = -14520
+  a_{114} = 89450
+  a_{123} = -118908
+  a_{132} = -130204
+  a_{141} = 366024
+  a_{150} = -195808
+  a_{204} = -16747
+  a_{213} = -73520
+  a_{222} = 609573
+  a_{231} = -1099558
+  a_{240} = 608968
+  a_{303} = 3528
+  a_{312} = -622975
+  a_{321} = 1686557
+  a_{330} = -1155576
+  a_{402} = 584140
+  a_{411} = -1702068
+  a_{420} = 1236290
+  a_{501} = 205052
+  a_{510} = -277523
+  a_{600} = 19783
+
+================================================================================
+NODE POSITIONS
+================================================================================
+
+The 10 nodes of the Coble curve are located at:
+
+  p_1 = [1/3 : 2/3 : 1]
+  p_2 = [-2/3 : 2/3 : 1]
+  p_3 = [-0.09923846360363988? : 0.5224629693111025? : 1]
+  p_4 = [-0.4215120652829309? : 0.6905538325048670? : 1]
+  p_5 = [0.3412581309980233? : 0.6981844053144190? : 1]
+  p_6 = [0.04365406493251152? : 0.8758292759998493? : 1]
+  p_7 = [0.3173460914039290? + 0.02328895291644069?*I : 0.7696132023173891? - 0.2902829241974071?*I : 1]
+  p_8 = [0.3173460914039290? - 0.02328895291644069?*I : 0.7696132023173891? + 0.2902829241974071?*I : 1]
+  p_9 = [0.3535808252673406? - 0.11484618805973614?*I : 0.7710297045028471? - 0.4368854490483247?*I : 1]
+  p_10 = [0.3535808252673406? + 0.11484618805973614?*I : 0.7710297045028471? + 0.4368854490483247?*I : 1]
+
+================================================================================
+FINAL STATUS: SUCCESS
+================================================================================
