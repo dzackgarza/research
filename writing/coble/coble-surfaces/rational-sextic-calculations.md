@@ -155,6 +155,33 @@ Write $H$ for the pullback of a line and $E_i$ for the exceptional divisors. The
 
 The different affine coordinate degrees of Thas's parametrization and the three examples in @ex:explicit-ten-nodal-sextic and @ex:two-more-explicit-ten-nodal-sextics do not prove projective inequivalence. Such a comparison requires a projective invariant, for instance the incidence of the nodes.
 
+
+::: {.proposition #prop:generic-nine-nodes-twelve-completions title="Nine prescribed nodes do not determine the tenth node"}
+
+Let $E\subset\PP^2_\CC$ be a smooth cubic with a flex as origin, and choose a nonzero $\tau\in E[2]$. For a general choice of eight ordered points $p_1,\ldots,p_8$ on $E$, put $p_9=\tau-\sum_{i=1}^8p_i$. The complete linear system of sextics double at the nine distinct points is a Halphen pencil of index two, whose twelve integral rational members have exactly ten ordinary nodes each. Their tenth nodes are pairwise distinct.
+
+:::
+
+::: {.proof}
+
+Let $Y$ be the blowup at the nine points, and $D$ the strict transform of $E$. Then $D=-K_Y$, $D^2=0$, and its normal bundle $N=\OO_D(D)$ is the nontrivial order-two line bundle corresponding to $-\tau$. In particular the exact sequence for $D$ gives $h^0(D)=1$, since $h^0(N)=0$. Riemann--Roch gives $\chi(\OO_Y(D))=1$, and Serre duality gives $h^2(D)=h^0(-2D)=0$ by negative plane degree. Consequently $h^1(D)=0$. The restriction sequence
+$$
+0\too\OO_Y(D)\too\OO_Y(2D)\too N^{\otimes2}\too0
+$$
+gives $h^0(2D)=2$ and a section nonvanishing on $D$. Together with the section of divisor $2D$, it gives a base-point-free pencil.
+
+For general choices, every member other than $2D$ is integral. Indeed any component of another fibre is disjoint from $D$ and cannot be an exceptional curve since $D\cdot E_i=1$. Its plane image has degree $d>0$ and multiplicities $0\le m_i\le2$ at the nine points, with $d\le6$ and $\sum m_i=3d$. The intersection divisor with $E$ forces $\sum m_i p_i=0$ in the elliptic group. If the $m_i$ are not all equal, substituting for $p_9$ gives a proper closed condition on the eight freely varying points: some coefficient $m_i-m_9$ is nonzero, and multiplication by a nonzero integer on $E$ is surjective. General choices avoid the finitely many such conditions. If every $m_i=m$, then $d=3m$ and $m\tau=0$, whence $m=2,d=6$ and the component is the whole member. This excludes both reducible and additional nonreduced fibres. The generic fibre is smooth by generic smoothness and has arithmetic genus one by adjunction.
+
+The general admissible nine-point configuration has dimension $9+8=17$ (the cubic is uniquely determined by the points). In contrast, integral rational plane sextics having a nonnodal singularity form a locus of dimension at most $16$: the base-point-free birational parametrizations form an open parameter space in $\PP^{20}$, with fibres of dimension three over their implicit equations (reparametrizations of the normalization). The nonnodal locus is a proper closed condition relative to the integral rational locus by the singular-Hessian criterion and projectivity, and generic projection gives rational sextics with only nodes. Marking nine distinct singular points has finite fibres over this locus, so its image among nine-point configurations has dimension at most $16$. A general admissible configuration avoids that image.
+
+A singular integral fibre of the pencil has arithmetic genus one and rational normalization, so its plane image is an integral rational sextic. By the dimension argument it is nodal, with exactly ten nodes by the genus formula. Its strict transform is a nodal rational curve with Euler characteristic one. Every smooth fibre and the support of the multiple fibre has Euler characteristic zero. Additivity of Euler characteristic for the fibration and $e(Y)=3+9=12$ give exactly twelve singular integral fibres. Their remaining nodes lie off the nine exceptional curves and are on different fibres, hence have distinct plane images.
+
+:::
+
+The classical source is [G. Halphen, *Sur les courbes planes du sixième degré à neuf points doubles*, Bull. Soc. Math. France **10** (1882), 162–172, §5 and §7](https://www.numdam.org/item/10.24033/bsmf.243.pdf). In §7 Halphen also gives a special pencil with four reducible members each containing three conics; the generic count of twelve distinct integral rational members is not universal. Compare [M. H. Gizatullin, *Rational G-surfaces*, Math. USSR Izv. **16** (1981), pp. 132–133 before Proposition 10](https://www.mathnet.ru/links/a7899a47f74a771cdf3e747ab009360a/im1634_eng.pdf).
+
+Coolidge, [*A Treatise on Algebraic Plane Curves* (1931), Book IV, Ch. I, §5, Theorems 27–28, pp. 391–392](https://djvu.online/file/Ys5R0JnJqxogX), concerns a condition on every nine-element subset of a specified ten-point configuration. It does not assert uniqueness of a tenth point given nine. In the nonreduced interpretation the unrestricted implication is false: any nine points lie on a cubic and hence on its square, whereas ten general points do not admit a sextic singular at all ten. On the other hand, two different integral sextics cannot share ten distinct nodes, since Bézout gives total intersection number $36$ and each shared node contributes at least four. The exact extension of Coolidge's all-nine-subsets implication to exceptional integral configurations is an open question in [research #851](https://github.com/dzackgarza/research/issues/851).
+
 ::: {.proposition #prop:rational-sextic-severi title="The Severi variety of rational sextics"}
 
 1. Let $S_{6,0}\iscontainedin\PP^{27}$ be the Severi variety of rational plane sextics. It is irreducible of dimension $17$ and degree (@def:graded-object) (@def:numerical-polarization) $26312976$. Its general member has exactly $10$ nodes, and the set of these $10$ nodes determines the curve [@BHO+12, §4, proof of Thm. 2].
