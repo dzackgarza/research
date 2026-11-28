@@ -158,7 +158,7 @@ The different affine coordinate degrees of Thas's parametrization and the three 
 
 ::: {.proposition #prop:generic-nine-nodes-twelve-completions title="Nine prescribed nodes do not determine the tenth node"}
 
-Let $E\subset\PP^2_\CC$ be a smooth cubic with a flex as origin, and choose a nonzero $\tau\in E[2]$. For a general choice of eight ordered points $p_1,\ldots,p_8$ on $E$, put $p_9=\tau-\sum_{i=1}^8p_i$. The complete linear system of sextics double at the nine distinct points is a Halphen pencil of index two, whose twelve integral rational members have exactly ten ordinary nodes each. Their tenth nodes are pairwise distinct.
+Let $E\subset\PP^2_\CC$ be a general smooth cubic with a flex as origin, and choose a nonzero $\tau\in E[2]$. For a general choice of eight ordered points $p_1,\ldots,p_8$ on $E$, put $p_9=\tau-\sum_{i=1}^8p_i$. The complete linear system of sextics double at the nine distinct points is a Halphen pencil of index two, whose twelve integral rational members have exactly ten ordinary nodes each. Their tenth nodes are pairwise distinct.
 
 :::
 
