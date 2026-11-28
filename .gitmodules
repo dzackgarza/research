@@ -1,6 +1,3 @@
-[submodule "projects/lattice-research"]
-	path = archives/lattice-research
-	url = https://github.com/dzackgarza/lattice-research.git
 [submodule "subrepos/jupyter-assistant-api"]
 	path = subrepos/jupyter-assistant-api
 	url = https://github.com/dzackgarza/jupyter-mcp-server.git

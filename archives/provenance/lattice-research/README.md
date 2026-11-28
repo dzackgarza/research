@@ -50,6 +50,16 @@ the source remote refs:
 | chore/migrate-memories-to-iwe2 | archive/lattice-research/migrate-memories-to-iwe2 | af87e6315f8d260554e46a71b87ffa8fe293ac34 |
 | claude/gallant-mccarthy-oglg4j | archive/lattice-research/gallant-mccarthy-oglg4j | fbe36440a96be7dc6b04ca0f6dfc4d362b187e01 |
 
+The former snapshot submodule at `archives/lattice-research/` was pinned
+to exactly `05bc64e6eacc1a083df0bef6f0f69fc066ca8bab`, now preserved by the
+second archival tag above. The redundant gitlink and live submodule
+references are removed ([research #726](https://github.com/dzackgarza/research/issues/726)).
+The original `NodeCriteria.lean` and `IsotropicPlanes.lean` are byte-identical
+in `formalization/coble-enriques/`; its README identifies the other Lean
+files and the obsolete project infrastructure. The paper scaffold is retained
+in the provenance tree and superseded as explained below. No original
+tracked object needs the old submodule to remain reachable.
+
 These are frozen source-history refs, not development branches. Every ancestor
 and tracked Git object reachable from these tips can be retrieved from research
 without access to the former repository. This retains intermediate revisions
@@ -279,7 +289,7 @@ Where the mathematics landed:
 - Theory corpus → `notes/topics/coble-enriques-lattice-theory/` (this
   migration supersedes the older 2026-07-13 snapshot of the same corpus at
   `archives/lattice-research/`, which the registry records as strictly older
-  and smaller; that snapshot awaits its own decommission receipt).
+  and smaller; that duplicate snapshot has been retired).
 - Literature extractions → `references/literature/lattice-research/`.
 - Reflective Lorentzian database →
   `references/databases/scharlau-kirschmer-reflective-lorentzian/`.

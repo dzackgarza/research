@@ -69,4 +69,4 @@ interpretation, provenance and completeness limits.
 
 ## Live Projects
 
-- `projects/lattice-research`: submodule for the live Coble/lattice research project.
+- [Original lattice-research provenance](archives/provenance/lattice-research/README.md): frozen source histories, original research records, and their current mathematical owners.

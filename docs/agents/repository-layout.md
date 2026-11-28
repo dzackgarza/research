@@ -54,7 +54,7 @@ Editable installs point at the working tree, so a rebuilt or reinstalled Sage is
 - **`tests/`** — the expectation suite (`tests/constructions/`, `tests/user_simulations/`, `tests/conftest.py`) and the tests of the research tooling. The implementation tests, the test lint, the suite budget and the coverage recipes live in sage-extensions.
   The archived preamble's tests travelled with it to `archives/preamble/tests/`.
   Spike tests live in each spike's own `tests/` tree.
-  `projects/lattice-research/` is a **git submodule** (`dzackgarza/lattice-research`) and contains `category_specs/` (see lineage note), plus `src/`, `theory/`, `lean/`, `paper/`, `tests/`, `reports/`. Because it is a submodule, edits there are commits to a *separate* repo.
+  The original lattice-research source is retained by the research repository’s archival tags and [provenance records](../../archives/provenance/lattice-research/README.md). Its former submodule is retired.
 
 - **The lattice database** — the catalogue of lattices, one record per lattice, and its site, live in their own repository, `dzackgarza/lattice-database`. It imports this preamble from research's `src/`, so a preamble change can break its build; its nightly `verify` workflow checks it against `research` `main`. Its `AGENTS.md` owns the rule that it stores every computation about its lattices.
 
@@ -65,7 +65,7 @@ Editable installs point at the working tree, so a rebuilt or reinstalled Sage is
 
 - **`references/`** — external inputs: `pdfs/`, `generated-indexes/`, `local-system-dependencies/`.
 
-- **`archives/`** — retired material (`provenance/`, `preamble/`, `lattice-research/`, `notebooks/`).
+- **`archives/`** — retired material (`provenance/`, `preamble/`, `notebooks/`).
 
 ## Source index (ctags)
 
@@ -83,7 +83,7 @@ changes, so run `just tags` yourself before you trust it. The run takes about
 
 The goal — a mathematically-semantic, Sage-compatible substrate for exact lattice/surface computation — had three earlier attempts, all finished as separate surfaces:
 
-- **`projects/lattice-research/category_specs/`** — the older, more ambitious attempt, **frozen prior art**: read it for design intent only. Parity-audit issues (#26/#84/#85 …) citing `category_specs/…` paths point at this frozen surface.
+- **`archives/provenance/lattice-research/source-main/category_specs/`** — the frozen first attempt; the historical source references, retained mathematical results and live acceptance requirements are linked in its [provenance README](../../archives/provenance/lattice-research/README.md). Parity-audit issues citing `category_specs/…` paths refer to that source.
 
 - **The spikes** (`sage_lattice_category_spike`, `sage_lattice_feature_spike`) — the second attempt — were absorbed into the preamble and deleted on 2026-08-19 (PLAN-spike-absorption-workstreams; the migration commits' bodies record each notion's origin and synthesis). Git history is their archive; do not expect their directories to exist.
 

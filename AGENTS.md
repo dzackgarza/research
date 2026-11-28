@@ -907,7 +907,7 @@ Before you add, move, or import code, read [the repository layout](docs/agents/r
 - **`computations/notebooks/`** is the user's notebook audit and control plane, not agent work. Agents write there only when explicitly asked.
 - **`computations/vendor/`** holds third-party code you did not write. Nothing authored there ever graduates — write your own code in a spike.
 - Code migrates into **`src/`** only when shipped, tested, high-level notebooks prove a researcher can use it.
-- **`projects/lattice-research/`** is a git submodule. Edits there are commits to a separate repo.
+- **`archives/provenance/lattice-research/`** retains the frozen original lattice-research records and links to their mathematical owners. Its published source histories are preserved by the `archive/lattice-research/*` tags; do not revive the retired submodule.
 
 # Issue-tree and milestone policy (research repo)
 
