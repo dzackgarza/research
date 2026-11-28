@@ -140,10 +140,37 @@ The consumer requirements are linked to cas-dsl #7--9, including the original
 lattice-expression parser's mathematical constructors without requiring its
 old regex implementation. Genuine external Sage stub obligations remain
 under [sage-stubs #5](https://github.com/dzackgarza/sage-stubs/issues/5).
-The old linked note `Spec Enforcement in Sage.md` was not located in the
-inspected vault or its history. This source audit does not establish a
-declaration-by-declaration semantic equivalence for all historical
-revisions; [research #727](https://github.com/dzackgarza/research/issues/727)
+The previously missing note `Spec Enforcement in Sage.md` was located in
+the separate historical vault (`research/spec-enforcement-in-sage.md`, private
+repository `agent-memory-vault`, revision
+`4e0bf48fa0f01770b97e51306836ff08c6a3c95f`, blob
+`dc483f1ed4fa63b0faedfe4b503eb8e242955595`). Its user requirement was
+to inspect the inherited mathematical obligations of actual objects, discover
+constructors and reuse constructions through composition. This survives as
+[CAS DSL #10](https://github.com/dzackgarza/cas-dsl/issues/10) and in
+[the architecture-inspection documentation](../../../docs/architecture-inspection.md);
+the original private discussion remains in its vault, not copied into public
+research. Four adjacent May 22–27 work-forward and stub-ownership notes at that
+revision were also read. They concern the already transferred checker and
+stub requirements and the superseded local category-provider architecture;
+they do not supply additional mathematical theorems.
+
+The original concrete Zq and Qq unramified p-adic extension constructors
+and precision contracts were not found in the current owned library.
+[Sage-extensions #630](https://github.com/dzackgarza/sage-extensions/issues/630)
+now owns those constructions with the original ring regression and category
+obligation specimens. The unfinished source comments in
+`tests/sage_spec/coxeter.sage` (embedded subdiagram posets, angles, folding,
+fixed and orthogonal coinvariant lattices, and enumeration) and
+`category_specs/modules/tests/new_spec/surface_gaps.sage` (actual quotient
+presentation, coordinate maps and polynomial-ring module) have been
+transferred to the existing CAS DSL #8 and #7 respectively. The original
+stable-model surgery and slc obligation is retained in
+[research #669](https://github.com/dzackgarza/research/issues/669), not treated
+as solved by the old diagonal-model calculation.
+
+This source audit does not establish declaration-by-declaration semantic
+equivalence for all historical revisions. [Research #727](https://github.com/dzackgarza/research/issues/727)
 and the current consumer requirements remain open.
 
 The original Lean mathematical files have their research owner in

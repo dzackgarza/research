@@ -77,13 +77,49 @@ just tags json sage_extensions/categories/group
 
 Inspect the receiver and declaration-side contract before calling a private access a violation. The duplicate view retains its original relative source locations and roots. It detects literal AST-body reuse, not all equivalent algorithms. A same-name survey also exposes distinct return shapes: those may indicate different operations that need different names.
 
+## Inspect a mathematical object in the CAS
+
+The original user request in the May 18 lattice-research spec-enforcement
+discussion was to inspect the inherited spec on an actual object and discover
+available constructions without reading implementation source. The former
+[Spec Core Query Workflow](https://github.com/dzackgarza/lattice-research/blob/67c244a011c24c8870a9d84c7f1210add1457e92/category_specs/spec_core/README.md)
+provided queryable obligation, constructor, provider, witness and missing-obligation
+records. Its handcrafted reports were not general inspection of objects or
+proofs of mathematical obligations.
+
+In the current language, these questions are about the checked category and
+its selected structure, the registered mathematical operations and their
+hypotheses, the actual structural composites and comparisons, and the available
+realizations. An unavailable computation is different from an unproved
+mathematical hypothesis. The Lean catalogue owns the former mathematical
+declarations; the runtime may report execution availability but does not
+supply mathematical proof. The source surveys above are useful for
+implementation inspection but are not this user-facing operation.
+
+The original free-module example asks for the actual comparison of the
+underlying set of a free module with a chosen finite basis with the Cartesian
+power of the coefficient carrier, and for inherited cardinality and enumeration
+through that comparison. For a basis of size three over the five-element
+field, the comparison is bijective and gives cardinality $5^3=125$. For
+$\mathbb Z^2$, it gives the carrier on which a selected countable-product
+enumeration acts. In rank zero the product has a singleton carrier; positive
+rank over an uncountable coefficient field does not have a countable
+enumeration, since the coefficient carrier injects along any basis coordinate.
+The original query and composition requirement is
+[cas-dsl #10](https://github.com/dzackgarza/cas-dsl/issues/10), with the
+existing formal catalogue owner
+[lean-categories #28](https://github.com/dzackgarza/lean-categories/issues/28)
+and transitional constructor-discovery owner
+[sage-extensions #230](https://github.com/dzackgarza/sage-extensions/issues/230).
+It does not require restoring the old Python registry.
+
 ## Inspect constructors against their mathematical owners
 
-Use `just refactor-survey --view constructors` to locate the current Python entrypoints, their signatures, lexical owners, return expressions and direct calls. A Python constructor declaration is evidence about the transitional preamble; it does not register a category or operation in the final language. Compare each found construction with the typed declaration and maps in `lean-categories/LeanCategories/Catalogue`, then with the request and result route in `lean-cas-dsl`. [Constructor architecture](https://github.com/dzackgarza/sage-extensions/blob/main/docs/constructor-architecture.md) records the ownership and the data that must survive migration.
+Use `just refactor-survey --view constructors` to locate the current Python entrypoints, their signatures, lexical owners, return expressions and direct calls. A Python constructor declaration is evidence about the transitional preamble; it does not register a category or operation in the final language. Compare each found construction with the typed declaration and maps in `lean-categories/LeanCategories/Catalogue`, then with the request and result route in `cas-dsl`. [Constructor architecture](https://github.com/dzackgarza/sage-extensions/blob/main/docs/constructor-architecture.md) records the ownership and the data that must survive migration.
 
 The current `_object_of` route, `ConstructionContract` and provider order explain how a research object is built today. Inspect them when tracing a consumer, but do not reproduce their MRO or initializer protocol in the kernel. The kernel uses explicit applications of registered functors and comparisons; a leaf can supply only an opaque computation against an already registered operation and input form. A named lattice string can select a private input presentation, as described in the constructor architecture document, without defining the object or its laws.
 
-For a named constructor, record the exact input type and hypotheses, its formal category and declaration, its retained object and morphism data, the result type, and the selected structural path. Read the `lean-categories` registration to establish semantic ownership. Read the `lean-cas-dsl` request path to establish how the typed construction is used. Source inspection does not certify the computation or replace the permanent acceptance assertions.
+For a named constructor, record the exact input type and hypotheses, its formal category and declaration, its retained object and morphism data, the result type, and the selected structural path. Read the `lean-categories` registration to establish semantic ownership. Read the `cas-dsl` request path to establish how the typed construction is used. Source inspection does not certify the computation or replace the permanent acceptance assertions.
 
 These research source sites are useful starting points:
 
