@@ -177,14 +177,8 @@ Then $X$ is the space $\CC/\ZZ$; the descended system is the constant local syst
 The assertion of research#803 is therefore false with the descent datum left unspecified, and what it asserts is true of the pair consisting of the $G$-covering $\pi\colon U\to X$ and a faithful $\varphi$.
 :::
 
-::: {.remark #rmk:monodromy-of-the-coble-lattice title="What the corollary gives for $\Gamma_\Co$, and what it leaves open"}
-
-@def:gamma-co-groups(1) defines $\Gamma_\Co$ as the monodromy group of the local system of lattices of fibre $T_\Co$ of the family of unpolarized Coble surfaces.
-Let $\bD=\bD(T_\Co)^+$ and let $Z$ be the $(-2)$-arrangement of @prop:the-coble-locus-in-the-period-domain, so that $U=\bD\sm Z$ is the locus of periods realised by a Coble cover and, by @prop:the-coble-locus-in-the-period-domain(4), open and connected.
-@cor:monodromy-of-the-descended-local-system is the free case; whether the action of a group $G\iscontainedin\Orth(T_\Co)$ on $U$ is free is not asserted here.
-What the reduction of research#798 takes from this page is that computation: if the family's local system of lattices is the descent of the constant system $T_{\Co,U}$ with the defining equivariant structure of a subgroup $G\iscontainedin\Orth(T_\Co)$ on a free quotient, then its monodromy group is $G$.
-Two inputs are outside the corollary, and neither is proved on this page: the presentation of the family's moduli stack as such a quotient — the label presentation is @prop:coble-quotient-presentation, for the $S_\Co$-polarized $\mathrm{K3}$ moduli stack, and for the unmarked family of Coble surfaces no such quotient presentation exists at all, for no subgroup of $\Orth(T_\Co)$ (@prop:no-identification-with-the-period-domain(3)) — and the identification of the family's local system of lattices with that descent.
-Nothing on this page computes $\Gamma_\Co$ or identifies it with $\widetilde\Orth^+(T_\Co)$: @conj:gamma-co-stable remains open.
+::: {.remark #rmk:monodromy-of-the-coble-lattice title="Application to the universal Coble local system"}
+The free-quotient corollary does not apply to the actual Coble stack. The involution moduli has a fine space of full K3 markings with its Kähler chambers, by [@AEH24, Definition 2.2 and Lemma 2.8]; its quotient by changes of marking is @thm:coble-chamber-stack-presentations. By @thm:coble-vhs-marking-cover the universal anti-invariant local system is the pullback of the tautological one on the arithmetic quotient stack, and its monodromy-kernel covering is the quotient of the full marked space by the kernel of restriction to $T_\Co$. It retains nontrivial fundamental group. The marked-path theorem @thm:gamma-co-is-the-stack-monodromy yields $\Gamma_\Co=\Orth^+(T_\Co)$ and the polarized image $R_{\gent}\cap\Orth^+(T_\Co)$ without equating the moduli and period stacks.
 :::
 
 ## The sheaves of orientation classes {#sec-orientation-sheaf}
