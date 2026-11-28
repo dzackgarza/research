@@ -182,6 +182,21 @@ Put $\zeta=e^{2\pi i/3}$. A basis of holomorphic differentials is $dx/y,\,dx/y^2
 For the integral matrix, let $\zeta$ act on $H_1(C,\ZZ)$ by transport $T$. The relation $T^2+T+I=0$ follows from the eigenvalues and torsion-freeness. Every nonzero element of $\ZZ[\zeta]$ acts invertibly on rational homology. Thus $H_1(C,\ZZ)$ is torsion-free of rank three over the Euclidean ring $\ZZ[\zeta]$. Choose a basis $u_1,u_2,u_3$ over that ring. On each integral pair $(u_i,Tu_i)$ the matrix is $\left(\begin{smallmatrix}0&-1\\1&-1\end{smallmatrix}\right)$. The constant family with this same reference cover has the same braid and acts as the identity on homology.
 :::
 
+## Plane-curve complements and numerical curve periods
+
+The monodromy of a projection of a fixed plane curve and the fundamental group of its ambient complement are different constructions from the integral local system of a family. For a plane curve defined over $\QQ$ or an embedded number field, the [Sage Zariski--van Kampen implementation](https://doc.sagemath.org/html/en/reference/curves/sage/schemes/curves/zariski_vankampen.html) computes braid monodromy for a projection and constructs a finite presentation of the affine or projective complement group. [SIROCCO2](https://github.com/miguelmarco/sirocco2) supplies certified root continuation along the paths used by Sage's `followstrand` and `braid_monodromy`; `fundamental_group_from_braid_mon` converts the braids to a presentation. The projection, geometric basis of loops, factor labels, vertical components and affine versus projective ambient space are part of the input or output data, not interchangeable presentation choices.
+
+The original lattice-research Sirocco investigation recorded a local Sage run for $f=x^2+y^3$ giving the braid $(s_1s_0)^2$ and the affine complement presentation
+$$
+\langle a,b\mid b^{-1}a^{-1}b^{-1}aba=1\rangle
+=\langle a,b\mid aba=bab\rangle.
+$$
+The projective completion has complement group cyclic of order three, as recorded in the linked Sage documentation. These are not isomorphic: abelianizing the affine presentation gives the single relation $a=b$ on two free abelian generators, hence $\ZZ$. The original [backend mapping and probe](https://github.com/dzackgarza/research/blob/main/archives/provenance/lattice-research/historical-branches/migrate-memories-to-iwe2/.agents/plans/features/FEATURE-GEOMETRY-CATEGORY-INTERFACES/specs/SPEC-SIROCCO-ZARISKI-VANKAMPEN-BACKEND-MAPPING.md) did not implement a public mathematical complement-group operation; that requirement is [sage-extensions #628](https://github.com/dzackgarza/sage-extensions/issues/628).
+
+For a smooth compact complex curve $C$, choose an integral homology basis and a basis of holomorphic differentials. The period map into $H^0(C,\Omega_C^1)^\vee$ sends a cycle to the functional given by integration. The quotient by the integral period lattice is the Jacobian; integrating degree-zero divisors along paths gives the Abel--Jacobi map modulo periods. The [Sage RiemannSurface implementation](https://doc.sagemath.org/html/en/reference/curves/sage/schemes/riemann_surfaces/riemann_surface.html) supplies lifted homology from a plane model, holomorphic differentials, numerical period integrals, and Abel--Jacobi evaluation. Its numerical searches for endomorphisms, homomorphisms and symplectic isomorphisms of period lattices supply candidates, not proofs of exact morphisms or integral transport in a family. The original [Jacobian and period-lattice specification](https://github.com/dzackgarza/research/blob/main/archives/provenance/lattice-research/historical-branches/migrate-memories-to-iwe2/.agents/plans/features/FEATURE-GEOMETRY-CATEGORY-INTERFACES/specs/SPEC-CURVE-JACOBIAN-PERIOD-LATTICE-OWNERSHIP.md) distinguishes these outputs from exact mathematical maps. Its computational requirements are [sage-extensions #629](https://github.com/dzackgarza/sage-extensions/issues/629).
+
+## Periods from Lefschetz pencils
+
 ::: {.construction #cons:lefschetz-periods title="Periods from a Lefschetz pencil" defines="vanishing cycle; $\delta_i$; thimble; $\Delta_i$"}
 
 For a smooth projective hypersurface $X$, an iterated Lefschetz pencil $X\dashrightarrow\PP^1$ has critical values the roots of the discriminant of the pencil.

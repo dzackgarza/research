@@ -31,6 +31,19 @@ A factorization from the subobject represented by $i\colon N\hookrightarrow M$ t
 The assertion that some monomorphism $A\to B$ exists is a proposition.
 A construction that uses an embedding names a particular monomorphism.
 
+::: {.example #ex:real-subsets-ambient-and-components title="A real subset and its interval components"}
+
+For $A\subseteq X\subseteq\mathbb R$ with the induced topologies, the inclusion $A\hookrightarrow X$ determines the relative topology operations. For example,
+$$
+\overline A^{\,X}=X\cap\overline A^{\,\mathbb R}.
+$$
+Indeed a neighborhood of $x\in X$ in $X$ is the intersection with $X$ of an ambient neighborhood of $x$, and since $A\subseteq X$, either neighborhood meets $A$ exactly when its intersection with $X$ meets $A$. In particular $[0,1]$ is open in itself and has empty boundary there, whereas its boundary in $\mathbb R$ is $\{0,1\}$.
+
+For a subset represented as a finite union of intervals, its maximal connected intervals form a finite set of components; these components are not the points of the subset. The subset $(0,1)\cup(2,3)$ has two interval components, but infinitely many points. The [Sage RealSet reference](https://doc.sagemath.org/html/en/reference/sets/sage/sets/real_set.html) provides interval-component iteration. The distinction between the two sets and their enumerations is the requirement recorded in the original [RealSet discussion](https://github.com/dzackgarza/research/blob/main/archives/provenance/lattice-research/realset_update_session.md). In the absolute real-line topology the boundary of the normalized union is the union of the component boundaries: the finite union of their closures is the closure, and a shared finite endpoint at which the union is a neighborhood would join the intervals into a single connected component.
+
+The measure of a measurable subset is evaluated using a specified measure, here Lebesgue measure on $\mathbb R$; a sigma-algebra alone does not select such a measure. These requirements are recorded with their original constructor examples in [lean-categories #230](https://github.com/dzackgarza/lean-categories/issues/230).
+:::
+
 ## Fibers of a morphism {#sec-fibers}
 
 ::: {.definition #def:fiber-over-point title="The fiber over a point" defines="fiber of $f$ over $y$"}

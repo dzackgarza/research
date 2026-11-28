@@ -95,6 +95,57 @@ and [#102](https://github.com/dzackgarza/lean-categories/issues/102).
 The older dyadic isometry witness is now a
 [manuscript example](../../../writing/lattice-theory/embeddings-and-overlattices.md#ex-dyadic-jordan-symbol-isometry).
 
+The further source audit included the six original issue records, five
+merged pull requests, their conversation comments and inline review comments.
+All five PR head commits are reachable from the archived refs. The source
+repository has its wiki flag enabled, but the wiki Git endpoint was not
+available and the web wiki URL redirected to the repository; no accessible
+wiki pages were found. Discussions are disabled and no project boards were
+listed. The inspected source checkout and archive had no additional authored
+untracked files; the one local-only source commit changed agent guidance,
+not mathematics.
+
+The separate agent-memory project was also checked at the pre-deletion tree
+of the vault commit `49e8a748a4202cef405791377b972333d89136e2`. Its 605
+entries were compared with the transferred research vault and corpus.
+Six paths with no same-basename match were four upstream polyhedral-common
+documentation files and two obsolete diagnostic scripts, not original
+mathematical results. The retained vault and Git source archive preserve
+the historical plans. A completed mapping card is not evidence that its
+mapped functionality was implemented.
+
+Specific previously omitted contracts from those sources now have active
+owners:
+
+- [lean-categories #228](https://github.com/dzackgarza/lean-categories/issues/228):
+  fixed-base set partitions, refinement/coarsening, ordered coarsening and
+  crossing/nesting operations; the original mathematical constructions
+  are in [Joins, meets, and closure](../../../writing/category-theory/constructions/Joins-Meets-and-Closure.md).
+- [lean-categories #229](https://github.com/dzackgarza/lean-categories/issues/229):
+  the deferred finite-poset graph, polyhedral, algebraic and polynomial
+  operations, including the already existing order-complex route.
+- [lean-categories #230](https://github.com/dzackgarza/lean-categories/issues/230):
+  real subsets, relative topology, interval components and measure, including
+  the explicit user corrections in both recorded conversations.
+  See [the real-subset example](../../../writing/category-theory/foundations/Elements-and-Containment.md#ex-real-subsets-ambient-and-components).
+- [sage-extensions #628](https://github.com/dzackgarza/sage-extensions/issues/628):
+  Sirocco and Zariski--van Kampen plane-curve complement groups.
+- [sage-extensions #629](https://github.com/dzackgarza/sage-extensions/issues/629):
+  analytic curve period lattices, Jacobians, Abel--Jacobi maps, and the
+  distinction between numerical candidates and proved morphisms.
+  The original backend results and limitations for both geometry threads
+  now appear in [Periods, Picard--Fuchs operators, and local monodromy](../../../writing/coble/computations/periods-and-local-monodromy.md).
+
+The consumer requirements are linked to cas-dsl #7--9, including the original
+lattice-expression parser's mathematical constructors without requiring its
+old regex implementation. Genuine external Sage stub obligations remain
+under [sage-stubs #5](https://github.com/dzackgarza/sage-stubs/issues/5).
+The old linked note `Spec Enforcement in Sage.md` was not located in the
+inspected vault or its history. This source audit does not establish a
+declaration-by-declaration semantic equivalence for all historical
+revisions; [research #727](https://github.com/dzackgarza/research/issues/727)
+and the current consumer requirements remain open.
+
 The original Lean mathematical files have their research owner in
 [formalization/coble-enriques](../../../formalization/coble-enriques/README.md).
 The earlier paper is preserved in `paper/` and the full Git history.
