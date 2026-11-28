@@ -97,7 +97,13 @@ The older dyadic isometry witness is now a
 
 The further source audit included the six original issue records, five
 merged pull requests, their conversation comments and inline review comments.
-All five PR head commits are reachable from the archived refs. The source
+All five PR head commits are reachable from the archived refs.
+The complete original issue bodies, conversation comments, PR reviews and
+inline review threads are also retained in
+[github-conversations.json](github-conversations.json), including original
+URLs, authors, timestamps, and reviewed commit and source coordinates.
+The record contains all eleven source threads and does not depend on the
+continued availability of the original GitHub repository. The source
 repository has its wiki flag enabled, but the wiki Git endpoint was not
 available and the web wiki URL redirected to the repository; no accessible
 wiki pages were found. Discussions are disabled and no project boards were
@@ -207,7 +213,19 @@ links the new requirements; the
 [lattice acceptance owner](https://github.com/dzackgarza/cas-dsl/issues/8#issuecomment-7238518364)
 also retains the remaining historical saturation, gluing, radical-signature,
 stabilizer and flag questions. Failed searches and incorrect old assertions
-are not positive acceptance evidence. The historical local-only commit
+are not positive acceptance evidence. The original monodromy tool note additionally specifies the global Legendre
+representation and the Hesse pencil; the corrected loop matrices, group
+distinction, and four type $I_3$ fibers of the Hesse pencil are retained in
+[sage-extensions #129](https://github.com/dzackgarza/sage-extensions/issues/129)
+and [cas-dsl #9](https://github.com/dzackgarza/cas-dsl/issues/9).
+The original specialized Hodge-cycle, Fermat period, and Hodge-locus
+procedure mapping is retained in
+[lean-categories #243](https://github.com/dzackgarza/lean-categories/issues/243).
+The original weighted Coxeter subdiagram orbits and their orbit posets
+are represented by the existing `coxeter_diagrams.py` operations in
+sage-extensions, including `subdiagram_orbit_poset`.
+
+The historical local-only commit
 `e4ded1c41bd875858c8f906e434e4e965d6120ad` was agent container guidance,
 not an additional mathematical branch; the original local reflogs contain
 no other commits outside the four published source histories.
