@@ -94,6 +94,67 @@ Each image is an irreducible rational plane sextic with ten ordinary nodes, and 
 The equation for each was recovered independently by finding the one-dimensional kernel of degree-six substitution over $\bQ$ and clearing denominators; both exact equations are recorded in [the arithmetic script](../scripts/certificates/rational_sextic_example.py). For each, direct substitution gives zero over $\bZ$; at the same prime $101$ the base-point gcd is $1$, at least one leading coefficient is nonzero, the degree-five substitution matrix has rank $21$, and the bad singularity ideals have Gröbner basis $[1]$ in all three affine charts. The proof of @ex:explicit-ten-nodal-sextic applies without change. This verifies all three original parametrizations, but does not assert that their moduli points are pairwise distinct.
 :::
 
+
+::: {.example #ex:thas-desargues-sextic title="A ten-nodal sextic with a Desargues configuration"}
+
+Specialize Charles Thas's parametrization in [*A rational sextic associated with a Desargues configuration*, Geom. Dedicata **51** (1994), 163–180, §3, pp. 167–170](https://doi.org/10.1007/BF01265327) to $(a,b,c)=(2,2,3)$. Homogenize the three affine polynomials
+$$
+\begin{aligned}
+X(t)&=6t^6+8t^4-10t^2-4,\\
+Y(t)&=-16t^5+116t^4-40t^3-8t,\\
+Z(t)&=12t^5+32t^3-116t^2+20t
+\end{aligned}
+$$
+to common degree six. Their reduced plane image is an irreducible rational sextic with ten rational nodes, indexed by $0,\ldots,9$:
+$$
+\begin{array}{c|rrr@{\qquad}c|rrr}
+0&1&0&0&5&-1&-8&4\\
+1&2&1&1&6&2&-4&12\\
+2&14&4&-2&7&0&1&-1\\
+3&14&-1&3&8&0&2&1\\
+4&2&28&28&9&0&1&3
+\end{array}
+$$
+Its implicit equation has coefficient rows in the monomials $x^{6-j-h}y^jz^h$ for $h=0,\ldots,6$, $j=0,\ldots,6-h$:
+$$
+\begin{array}{c|rrrrrrr}
+0&0&0&240&-696&96&0&9\\
+1&0&416&-928&8&348&-24\\
+2&128&-1160&3268&-464&-14\\
+3&-464&136&-580&52\\
+4&80&232&9\\
+5&0&-20\\
+6&4
+\end{array}
+$$
+The configuration lines are indexed by
+$$
+\mathcal T=\{014,025,036,129,138,237,459,468,567,789\},
+$$
+where $014$ denotes the line through points $0,1,4$.
+
+Let $S$ be the blowup of these points and $B$ the strict transform of the sextic. Then $S$ is a Coble surface. The strict transforms of the ten configuration lines are smooth rational $(-2)$-curves disjoint from $B$, whose classes generate a sublattice of index $16$ in $K_S^\perp$.
+
+:::
+
+::: {.proof}
+
+The [exact arithmetic script](../scripts/certificates/desargues_sextic.py) verifies that the parametrization is base-point free: the three affine polynomials have gcd one and the leading coefficient of $X$ is nonzero. Substitution into the displayed sextic gives zero, and the degree-five substitution matrix has rank $21$. Thus there is no relation of degree five or lower. As in @ex:explicit-ten-nodal-sextic, the image degree times the generic mapping degree is six, forcing the image degree to be six and the map to be birational.
+
+The script verifies pairwise projective distinctness of the ten points, vanishing of the equation and all first derivatives, and homogeneous Hessian rank two at every point. The Hessian argument of @ex:explicit-ten-nodal-sextic identifies each as an ordinary node; the genus formula excludes any further singularities. Checking all $\binom{10}{3}=120$ determinants gives exactly the ten triples displayed above. No four points are collinear, and every point belongs to three lines.
+
+The configuration conic $x^2-yz=0$ satisfies
+$$
+X(t)^2-Y(t)Z(t)=4(3t^6+12t^4-58t^3+15t^2+2)^2.
+$$
+None of the ten nodes lies on this conic.
+
+Write $H$ for the pullback of a line and $E_i$ for the exceptional divisors. The argument of @ex:explicit-ten-nodal-sextic gives the Coble surface and its K3 cover. The strict transform of the line indexed by $I$ has class $C_I=H-\sum_{i\in I}E_i$. By @prop:blowup-geometric-basis, $C_I^2=-2$, $K_S\cdot C_I=0$ and $B\cdot C_I=0$. The latter vanishing gives disjointness since the effective curves have no common component. The Gram matrix in the displayed order is $G_{IJ}=1-|I\cap J|$. Its determinant is $-256$, with characteristic polynomial $(\lambda-1)(\lambda+1)^5(\lambda+4)^4$. These ten classes therefore span a rank-ten sublattice of $K_S^\perp$. Since $K_S^2=-1$ and the blowup lattice is unimodular, it splits integrally as $\bZ K_S\perp K_S^\perp$ and $K_S^\perp$ is unimodular. The sublattice index is $\sqrt{256}=16$. This calculation does not assert that the curves exhaust the effective roots.
+
+:::
+
+The different affine coordinate degrees of Thas's parametrization and the three examples in @ex:explicit-ten-nodal-sextic and @ex:two-more-explicit-ten-nodal-sextics do not prove projective inequivalence. Such a comparison requires a projective invariant, for instance the incidence of the nodes.
+
 ::: {.proposition #prop:rational-sextic-severi title="The Severi variety of rational sextics"}
 
 1. Let $S_{6,0}\iscontainedin\PP^{27}$ be the Severi variety of rational plane sextics. It is irreducible of dimension $17$ and degree (@def:graded-object) (@def:numerical-polarization) $26312976$. Its general member has exactly $10$ nodes, and the set of these $10$ nodes determines the curve [@BHO+12, §4, proof of Thm. 2].
